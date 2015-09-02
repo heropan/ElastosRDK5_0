@@ -6,6 +6,8 @@
 
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Os::IBinder)
 
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Accounts::IAccount)
+
 #endif // __ELASTOS_DROID_EXT_FRAMEWORKHASH_H__
 
 

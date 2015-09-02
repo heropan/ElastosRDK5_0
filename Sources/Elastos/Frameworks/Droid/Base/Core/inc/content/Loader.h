@@ -4,22 +4,54 @@
 
 #include <ext/frameworkext.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/Object.h>
 
-using namespace Elastos;
-using namespace Elastos::Core;
-using namespace Elastos::IO;
-using namespace Elastos::Droid::Database;
+using Elastos::IO::IFileDescriptor;
+using Elastos::IO::IPrintWriter;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
+/**
+ * A class that performs asynchronous loading of data. While Loaders are active
+ * they should monitor the source of their data and deliver new results when the contents
+ * change.  See {@link android.app.LoaderManager} for more detail.
+ *
+ * <p><b>Note on threading:</b> Clients of loaders should as a rule perform
+ * any calls on to a Loader from the main thread of their process (that is,
+ * the thread the Activity callbacks and other things occur on).  Subclasses
+ * of Loader (such as {@link AsyncTaskLoader}) will often perform their work
+ * in a separate thread, but when delivering their results this too should
+ * be done on the main thread.</p>
+ *
+ * <p>Subclasses generally must implement at least {@link #onStartLoading()},
+ * {@link #onStopLoading()}, {@link #onForceLoad()}, and {@link #onReset()}.</p>
+ *
+ * <p>Most implementations should not derive directly from this class, but
+ * instead inherit from {@link AsyncTaskLoader}.</p>
+ *
+ * <div class="special reference">
+ * <h3>Developer Guides</h3>
+ * <p>For more information about using loaders, read the
+ * <a href="{@docRoot}guide/topics/fundamentals/loaders.html">Loaders</a> developer guide.</p>
+ * </div>
+ *
+ * @param <D> The result returned when the load is complete
+ */
 class Loader
+    : public Object
+    , public ILoader
 {
 public:
+    CAR_INTERFACE_DECL()
+
     Loader();
 
-    ~Loader();
+    virtual ~Loader();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
 
     /**
      * Sends the result of the load to the registered listener. Should only be called by subclasses.
@@ -235,6 +267,24 @@ public:
         /* [out] */ Boolean* succeeded);
 
     /**
+     * Commit that you have actually fully processed a content change that
+     * was returned by {@link #takeContentChanged}.  This is for use with
+     * {@link #rollbackContentChanged()} to handle situations where a load
+     * is cancelled.  Call this when you have completely processed a load
+     * without it being cancelled.
+     */
+    CARAPI CommitContentChanged();
+
+    /**
+     * Report that you have abandoned the processing of a content change that
+     * was returned by {@link #takeContentChanged()} and would like to rollback
+     * to the state where there is again a pending content change.  This is
+     * to handle the case where a data load due to a content change has been
+     * canceled before its data was delivered back to the loader.
+     */
+    CARAPI RollbackContentChanged();
+
+    /**
      * Called when {@link ForceLoadContentObserver} detects a change.  The
      * default implementation checks to see if the loader is currently started;
      * if so, it simply calls {@link #forceLoad()}; otherwise, it sets a flag
@@ -268,9 +318,6 @@ public:
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ IPrintWriter* writer,
         /* [in] */ ArrayOf<String>* args);
-
-    CARAPI Init(
-        /* [in] */ IContext* context);
 
 protected:
     /**
@@ -338,7 +385,7 @@ private:
     Boolean mStarted;
     Boolean mAbandoned;
     Boolean mReset;
-
+    Boolean mProcessingChange;// = false;
 };
 
 }

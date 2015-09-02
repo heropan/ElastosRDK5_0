@@ -9,21 +9,19 @@ INCLUDES += ../
 
 C_DEFINES += -DDROID_CORE
 
+SOURCES += content.cpp
 SOURCES += AbstractThreadedSyncAdapter.cpp
-
-
-
-
-#SOURCES = CBroadcastReceiverPendingResult.cpp
-#SOURCES += BroadcastReceiver.cpp
+SOURCES += AsyncQueryHandler.cpp
+SOURCES += AsyncTaskLoader.cpp
+SOURCES += BroadcastReceiver.cpp
+SOURCES += CClipData.cpp
+SOURCES += CClipDataItem.cpp
+SOURCES += CClipDataHelper.cpp
+SOURCES += CClipDescription.cpp
+SOURCES += CClipDescriptionHelper.cpp
 #SOURCES += CClipboardManager.cpp
-#SOURCES += CClipData.cpp
-#SOURCES += CClipDataItem.cpp
-#SOURCES += CClipDataHelper.cpp
-#SOURCES += CClipDescription.cpp
-#SOURCES += CClipDescriptionHelper.cpp
-#SOURCES += CComponentName.cpp
-#SOURCES += CComponentNameHelper.cpp
+SOURCES += CComponentName.cpp
+SOURCES += CComponentNameHelper.cpp
 #SOURCES += ContentProvider.cpp
 #SOURCES += CContentProviderTransport.cpp
 #SOURCES += CContentProviderHelper.cpp
@@ -34,6 +32,15 @@ SOURCES += AbstractThreadedSyncAdapter.cpp
 #SOURCES += CContentProviderOperationBuilder.cpp
 #SOURCES += CContentProviderOperationHelper.cpp
 #SOURCES += CContentProviderResult.cpp
+
+
+
+
+SOURCES += Loader.cpp
+
+#SOURCES += CLoaderForceLoadContentObserver.cpp
+
+
 #SOURCES += ContentResolver.cpp
 #SOURCES += CContentResolverHelper.cpp
 #SOURCES += CContentResolverOpenResourceIdResult.cpp
@@ -41,10 +48,6 @@ SOURCES += AbstractThreadedSyncAdapter.cpp
 #SOURCES += CContentValues.cpp
 #SOURCES += ContextWrapper.cpp
 #SOURCES += CContextWrapper.cpp
-#SOURCES += Loader.cpp
-#SOURCES += CLoader.cpp
-#SOURCES += CLoaderForceLoadContentObserver.cpp
-#SOURCES += AsyncTaskLoader.cpp
 #SOURCES += CCursorLoader.cpp
 #SOURCES += CEntity.cpp
 #SOURCES += CEntityNamedContentValues.cpp
@@ -87,7 +90,6 @@ SOURCES += AbstractThreadedSyncAdapter.cpp
 #SOURCES += CSearchRecentSuggestionsProvider.cpp
 #SOURCES += CContentQueryMap.cpp
 #SOURCES += AbstractThreadedSyncAdapter.cpp
-#SOURCES += AsyncQueryHandler.cpp
 #SOURCES += CNativeLibraryHelper.cpp
 #SOURCES += CPackageHelper.cpp
 #SOURCES += PackageHelper.cpp

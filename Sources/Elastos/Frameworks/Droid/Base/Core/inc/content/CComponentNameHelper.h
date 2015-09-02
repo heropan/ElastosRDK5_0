@@ -3,17 +3,23 @@
 #define __ELASTOS_DROID_CONTENT_CCOMPONENTNAMEHELPER_H__
 
 #include "_Elastos_Droid_Content_CComponentNameHelper.h"
-#include <ext/frameworkext.h>
+#include <elastos/core/Singleton.h>
 
-using namespace Elastos;
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CComponentNameHelper)
+    , public Singleton
+    , public IComponentNameHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Recover a ComponentName from a String that was previously created with
      * {@link #flattenToString()}.  It splits the string at the first '/',

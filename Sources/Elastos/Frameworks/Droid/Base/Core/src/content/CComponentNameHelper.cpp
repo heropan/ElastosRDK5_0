@@ -6,11 +6,14 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
+CAR_INTERFACE_IMPL(CComponentNameHelper, Singleton, IComponentNameHelper)
+
+CAR_SINGLETON_IMPL(CComponentNameHelper)
+
 ECode CComponentNameHelper::UnflattenFromString(
     /* [in] */ const String& str,
     /* [out] */ IComponentName** componentName)
 {
-    VALIDATE_NOT_NULL(componentName)
     return CComponentName::UnflattenFromString(str, componentName);
 }
 
@@ -25,7 +28,6 @@ ECode CComponentNameHelper::ReadFromParcel(
     /* [in] */ IParcel* source,
     /* [out] */ IComponentName** cn)
 {
-    VALIDATE_NOT_NULL(cn)
     return CComponentName::ReadFromParcel(source, cn);
 }
 

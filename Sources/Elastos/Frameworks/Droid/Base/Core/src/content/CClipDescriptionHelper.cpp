@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
+CAR_INTERFACE_IMPL(CClipDescriptionHelper, Singleton, IClipDescriptionHelper)
+
+CAR_SINGLETON_IMPL(CClipDescriptionHelper)
+
 ECode CClipDescriptionHelper::CompareMimeTypes(
     /* [in] */ const String& concreteType,
     /* [in] */ const String& desiredType,

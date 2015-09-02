@@ -1,32 +1,39 @@
 
 #include "ext/frameworkdef.h"
 #include "content/CClipDataItem.h"
-#include "text/CSpannableStringBuilder.h"
-#include "text/Html.h"
-#include "text/style/CURLSpan.h"
+// #include "text/CSpannableStringBuilder.h"
+// #include "text/Html.h"
+// #include "text/style/CURLSpan.h"
 #include <elastos/core/StringBuilder.h>
 
+
+using Elastos::Droid::Text::ISpanned;
+using Elastos::Droid::Text::ISpannableStringBuilder;
+// using Elastos::Droid::Text::CSpannableStringBuilder;
+using Elastos::Droid::Text::IEditable;
+// using Elastos::Droid::Text::Html;
+using Elastos::Droid::Text::ISpannable;
+using Elastos::Droid::Text::Style::IURLSpan;
+// using Elastos::Droid::Text::Style::CURLSpan;
+using Elastos::Droid::Content::Res::IAssetFileDescriptor;
+using Elastos::Droid::Os::IBundle;
 using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
+using Elastos::Core::IAppendable;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::IInputStream;
 using Elastos::IO::ICloseable;
+using Elastos::IO::IReader;
 using Elastos::IO::IInputStreamReader;
 using Elastos::IO::CInputStreamReader;
-using Elastos::Droid::Text::CSpannableStringBuilder;
-using Elastos::Droid::Text::ISpanned;
-using Elastos::Droid::Text::ISpannableStringBuilder;
-using Elastos::Droid::Text::IEditable;
-using Elastos::Droid::Text::Html;
-using Elastos::Droid::Text::ISpannable;
-using Elastos::Droid::Text::Style::IURLSpan;
-using Elastos::Droid::Text::Style::CURLSpan;
-using Elastos::Droid::Content::Res::IAssetFileDescriptor;
-using Elastos::Droid::Os::IBundle;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
+
+CAR_INTERFACE_IMPL(CClipDataItem, Object, IClipDataItem)
+
+CAR_OBJECT_IMPL(CClipDataItem)
 
 ECode CClipDataItem::GetText(
     /* [out] */ ICharSequence** text)
@@ -91,17 +98,16 @@ ECode CClipDataItem::CoerceToText(
         ECode ec = resolver->OpenTypedAssetFileDescriptor(uri, String("text/*"),
                 NULL, (IAssetFileDescriptor**)&descr);
         if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
-            String tmp;
-            uri->ToString(&tmp);
+            String tmp = Object::ToString(uri);
             return CString::New(tmp, text);
         }
 
         FAIL_RETURN(descr->CreateInputStream((IFileInputStream**)&stream));
         AutoPtr<IInputStreamReader> reader;
-        ec = CInputStreamReader::New(stream, String("UTF-8"), (IInputStreamReader**)&reader);
+        ec = CInputStreamReader::New(IInputStream::Probe(stream), String("UTF-8"), (IInputStreamReader**)&reader);
         if (FAILED(ec)) {
             if (stream != NULL) {
-                stream->Close();
+                ICloseable::Probe(stream)->Close();
             }
             return ec;
         }
@@ -110,8 +116,8 @@ ECode CClipDataItem::CoerceToText(
         StringBuilder builder(128);
         AutoPtr< ArrayOf<Char32> > buffer = ArrayOf<Char32>::Alloc(8192);
         Int32 len;
-        while (reader->ReadChars(buffer, &len), len > 0) {
-            builder.AppendChars(*buffer, 0, len);
+        while (IReader::Probe(reader)->Read(buffer, &len), len > 0) {
+            builder.Append(*buffer, 0, len);
         }
         String str;
         builder.ToString(&str);
@@ -120,7 +126,7 @@ ECode CClipDataItem::CoerceToText(
         REFCOUNT_ADD(*text);
 
         if (stream != NULL) {
-            stream->Close();
+            ICloseable::Probe(stream)->Close();
         }
         // } catch (FileNotFoundException e) {
             // Unable to open content URI as text...  not really an
@@ -272,21 +278,22 @@ ECode CClipDataItem::CoerceToHtmlOrStyledText(
             FAIL_GOTO(ec, EXIT);
             ec = descr->CreateInputStream((IFileInputStream**)&stream);
             FAIL_GOTO(ec, EXIT);
-            ec = CInputStreamReader::New(stream, String("UTF-8"), (IInputStreamReader**)&reader);
+            ec = CInputStreamReader::New(IInputStream::Probe(stream), String("UTF-8"), (IInputStreamReader**)&reader);
             FAIL_GOTO(ec, EXIT);
 
-            while ((reader->ReadChars(buffer, &len), len) > 0) {
-                ec = builder->AppendChars(*buffer, 0, len);
+            while ((IReader::Probe(reader)->Read(buffer, &len), len) > 0) {
+                ec = builder->Append(*buffer, 0, len);
                 FAIL_GOTO(ec, EXIT);
             }
 
-            FAIL_GOTO(builder->ToString(&text), EXIT);
+            text = Object::ToString(builder);
 
             if (hasHtml) {
                 if (styled) {
                     // We loaded HTML formatted text and the caller
                     // want styled text, convert it.
-                    newText = Html::FromHtml(text);
+                    assert(0 && "TODO");
+                    // newText = Html::FromHtml(text);
 
                     if (newText != NULL) {
                         *cs = newText;
@@ -321,8 +328,9 @@ ECode CClipDataItem::CoerceToHtmlOrStyledText(
 
                 AutoPtr<ICharSequence> tmp;
                 CString::New(text, (ICharSequence**)&tmp);
-                String value = Html::EscapeHtml(tmp);
-                return CString::New(value, cs);
+                assert(0 && "TODO");
+                // String value = Html::EscapeHtml(tmp);
+                // return CString::New(value, cs);
             }
 
             // } catch (FileNotFoundException e) {
@@ -364,8 +372,7 @@ EXIT:
         // If we couldn't open the URI as a stream, then we can build
         // some HTML text with the URI itself.
         // probably serves fairly well as a textual representation.
-        String str;
-        FAIL_RETURN(mUri->ToString(&str));
+        String str = Object::ToString(mUri);
         if (styled) {
             return UriToStyledText(str, cs);
         }
@@ -399,38 +406,38 @@ ECode CClipDataItem::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
-    AutoPtr<IStringBuilder> b = new StringBuilder(128);
-    b->AppendString(String("ClipData.Item { "));
-    FAIL_RETURN(ToShortString(b));
-    b->AppendString(String(" }"));
-    return b->ToString(str);
+    AutoPtr<IStringBuilder> builder = new StringBuilder(128);
+    builder->Append(String("ClipData.Item { "));
+    FAIL_RETURN(ToShortString(builder));
+    builder->Append(String(" }"));
+    *str = Object::ToString(builder);
+    return NOERROR;
 }
 
 ECode CClipDataItem::ToShortString(
     /* [in] */ IStringBuilder* sb)
 {
     if (!mHtmlText.IsNull()) {
-        sb->AppendString(String("H:"));
-        sb->AppendString(mHtmlText);
+        sb->Append(String("H:"));
+        sb->Append(mHtmlText);
     }
     else if (mText != NULL) {
-        sb->AppendString(String("T:"));
+        sb->Append(String("T:"));
         String str;
         FAIL_RETURN(mText->ToString(&str));
-        sb->AppendString(str);
+        sb->Append(str);
     }
     else if (mUri != NULL) {
-        sb->AppendString(String("U:"));
-        String str;
-        FAIL_RETURN(mUri->ToString(&str));
-        sb->AppendString(str);
+        sb->Append(String("U:"));
+        String str = Object::ToString(mUri);
+        sb->Append(str);
     }
     else if (mIntent != NULL) {
-        sb->AppendString(String("I:"));
+        sb->Append(String("I:"));
         FAIL_RETURN(mIntent->ToShortString(sb, TRUE, TRUE, TRUE, TRUE));
     }
     else {
-        sb->AppendString(String("NULL"));
+        sb->Append(String("NULL"));
     }
 
     return NOERROR;
@@ -516,13 +523,14 @@ ECode CClipDataItem::UriToHtml(
     AutoPtr<ICharSequence> uriSeq;
     CString::New(uri, (ICharSequence**)&uriSeq);
     StringBuilder builder(256);
-    builder += "<a href=\"";
-    builder += Html::EscapeHtml(uriSeq);
-    builder += uri;
-    builder += "\">";
-    builder += Html::EscapeHtml(uriSeq);
-    builder += uri;
-    builder += "</a>";
+    assert(0 && "TODO");
+    // builder += "<a href=\"";
+    // builder += Html::EscapeHtml(uriSeq);
+    // builder += uri;
+    // builder += "\">";
+    // builder += Html::EscapeHtml(uriSeq);
+    // builder += uri;
+    // builder += "</a>";
     return builder.ToString(htmlText);
 }
 
@@ -532,18 +540,19 @@ ECode CClipDataItem::UriToStyledText(
 {
     VALIDATE_NOT_NULL(cs)
     AutoPtr<ISpannableStringBuilder> builder;
-    FAIL_RETURN(CSpannableStringBuilder::New((ISpannableStringBuilder**)&builder));
+    assert(0 && "TODO");
+    // FAIL_RETURN(CSpannableStringBuilder::New((ISpannableStringBuilder**)&builder));
     AutoPtr<ICharSequence> tmpUri;
     FAIL_RETURN(CString::New(uri, (ICharSequence**)&tmpUri));
-    FAIL_RETURN(builder->Append(tmpUri));
+    FAIL_RETURN(IAppendable::Probe(builder)->Append(tmpUri));
 
     AutoPtr<IURLSpan> span;
-    CURLSpan::New(uri, (IURLSpan**)&span);
+    assert(0 && "TODO");
+    // CURLSpan::New(uri, (IURLSpan**)&span);
     Int32 len = 0;
-    builder->GetLength(&len);
-    builder->SetSpan(span, 0, len, ISpannable::SPAN_EXCLUSIVE_EXCLUSIVE);
-    String str;
-    FAIL_RETURN(builder->ToString(&str));
+    ICharSequence::Probe(builder)->GetLength(&len);
+    ISpannable::Probe(builder)->SetSpan(span, 0, len, ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
+    String str = Object::ToString(builder);
     *cs = ICharSequence::Probe(builder.Get());
     REFCOUNT_ADD(*cs);
     return NOERROR;

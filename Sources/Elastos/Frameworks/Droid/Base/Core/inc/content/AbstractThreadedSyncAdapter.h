@@ -11,6 +11,7 @@ using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::Thread;
+using Elastos::Core::IThread;
 
 namespace Elastos {
 namespace Droid {

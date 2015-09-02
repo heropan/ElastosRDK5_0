@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CCLIPDATAITEM_H__
 
 #include "_Elastos_Droid_Content_CClipDataItem.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IStringBuilder;
@@ -15,8 +16,14 @@ namespace Content {
 class CClipData;
 
 CarClass(CClipDataItem)
+    , public Object
+    , public IClipDataItem
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     /**
      * Retrieve the raw text contained in this Item.
      */
@@ -92,7 +99,7 @@ public:
      * <li> If {@link #getUri} is non-null, try to retrieve its data
      * as a text stream from its content provider.  If the provider can
      * supply text/html data, that will be preferred and returned as-is.
-     * Otherwise, any text/* data will be returned and escaped to HTML.
+     * Otherwise, any text data will be returned and escaped to HTML.
      * If it is not a content: URI or the content provider does not supply
      * a text representation, HTML text containing a link to the URI
      * will be returned.

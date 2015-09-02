@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CCLIPDATAHELPER_H__
 
 #include "_Elastos_Droid_Content_CClipDataHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Net::IUri;
@@ -12,8 +13,14 @@ namespace Droid {
 namespace Content {
 
 CarClass(CClipDataHelper)
+    , public Singleton
+    , public IClipDataHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Create a new ClipData holding data of the type
      * {@link ClipDescription#MIMETYPE_TEXT_PLAIN}.

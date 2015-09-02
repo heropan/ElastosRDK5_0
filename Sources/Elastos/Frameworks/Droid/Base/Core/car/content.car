@@ -128,20 +128,266 @@ module
     merge("content/res/TypedArray.car");
     merge("content/res/XmlResourceParser.car");
 
-//     using interface Elastos.Utility.IObservable;
-//     using interface Elastos.Core.ICharSequence;
-//     using interface Elastos.Core.IComparable;
-//     using interface Elastos.IO.IInputStream;
-//     using interface Elastos.IO.IFlushable;
-//     using interface Elastos.Crypto.IMac;
+    using interface Elastos.Core.IComparable;
+    using interface Elastos.Core.ICloneable;
+    using interface Elastos.Core.ICharSequence;
 
-//     interface Elastos.Droid.Net.IUri;
-//     interface Elastos.Droid.Content.IIntent;
-//     interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Net.IUri;
 
-//     namespace Elastos {
-//     namespace Droid {
-//     namespace Content {
+    namespace Elastos {
+    namespace Droid {
+    namespace Content {
+
+        class CLoader {
+            /**
+             * Stores away the application context associated with context.
+             * Since Loaders can be used across multiple activities it's dangerous to
+             * store the context directly; always use {@link #getContext()} to retrieve
+             * the Loader's Context, don't use the constructor argument directly.
+             * The Context returned by {@link #getContext} is safe to use across
+             * Activity instances.
+             *
+             * @param context used to retrieve the application context.
+             */
+            constructor(
+                [in] IContext* ctx);
+
+            interface ILoader;
+        }
+
+        /**
+         * State for a result that is pending for a broadcast receiver.  Returned
+         * by {@link BroadcastReceiver#goAsync() goAsync()}
+         * while in {@link BroadcastReceiver#onReceive BroadcastReceiver.onReceive()}.
+         * This allows you to return from onReceive() without having the broadcast
+         * terminate; you must call {@link #finish()} once you are done with the
+         * broadcast.  This allows you to process the broadcast off of the main
+         * thread of your app.
+         *
+         * <p>Note on threading: the state inside of this class is not itself
+         * thread-safe, however you can use it from any thread if you properly
+         * sure that you do not have races.  Typically this means you will hand
+         * the entire object to another thread, which will be solely responsible
+         * for setting any results and finally calling {@link #finish()}.
+         */
+        class CPendingResult {
+            /** @hide */
+            constructor(
+                [in] Int32 resultCode,
+                [in] String resultData,
+                [in] IBundle* resultExtras,
+                [in] Int32 type,
+                [in] Boolean ordered,
+                [in] Boolean sticky,
+                [in] IBinder* token,
+                [in] Int32 userId);
+
+            interface IPendingResult;
+        }
+
+        [deprecated]
+        class CClipData {
+
+            constructor();
+
+            /**
+             * Create a new clip.
+             *
+             * @param label Label to show to the user describing this clip.
+             * @param mimeTypes An array of MIME types this data is available as.
+             * @param item The contents of the first item in the clip.
+             */
+            constructor(
+                [in] ICharSequence* label,
+                [in] ArrayOf<String>* mimeTypes,
+                [in] IClipDataItem* item);
+
+            /**
+             * Create a new clip.
+             *
+             * @param description The ClipDescription describing the clip contents.
+             * @param item The contents of the first item in the clip.
+             */
+            constructor(
+                [in] IClipDescription* description,
+                [in] IClipDataItem* item);
+
+            /**
+             * Create a new clip that is a copy of another clip.  This does a deep-copy
+             * of all items in the clip.
+             *
+             * @param other The existing ClipData that is to be copied.
+             */
+            constructor(
+                [in] IClipData* other);
+
+            interface IClipData;
+            interface IParcelable;
+        }
+
+        class CClipDataItem {
+            /**
+             * Create an Item consisting of a single block of (possibly styled) text.
+             */
+            constructor(
+                [in] ICharSequence* text);
+
+            /**
+             * Create an Item consisting of a single block of (possibly styled) text,
+             * with an alternative HTML formatted representation.  You <em>must</em>
+             * supply a plain text representation in addition to HTML text; coercion
+             * will not be done from HTML formated text into plain text.
+             */
+            constructor(
+                [in] ICharSequence* text,
+                [in] String htmlText);
+
+            /**
+             * Create an Item consisting of an arbitrary Intent.
+             */
+            constructor(
+                [in] IIntent* intent);
+
+            /**
+             * Create an Item consisting of an arbitrary URI.
+             */
+            constructor(
+                [in] IUri* uri);
+
+            /**
+             * Create a complex Item, containing multiple representations of
+             * text, Intent, and/or URI.
+             */
+            constructor(
+                [in] ICharSequence* text,
+                [in] IIntent* intent,
+                [in] IUri* uri);
+
+            /**
+             * Create a complex Item, containing multiple representations of
+             * text, HTML text, Intent, and/or URI.  If providing HTML text, you
+             * <em>must</em> supply a plain text representation as well; coercion
+             * will not be done from HTML formated text into plain text.
+             */
+            constructor(
+                [in] ICharSequence* text,
+                [in] String htmlText,
+                [in] IIntent* intent,
+                [in] IUri* uri);
+
+            interface IClipDataItem;
+        }
+
+        singleton class CClipDataHelper {
+            interface IClipDataHelper;
+        }
+
+        [deprecated]
+        class CClipDescription {
+            /**
+             * Create a new clip.
+             *
+             * @param label Label to show to the user describing this clip.
+             * @param mimeTypes An array of MIME types this data is available as.
+             */
+            constructor(
+                [in] ICharSequence* label,
+                [in] ArrayOf<String>* mimeTypes);
+
+            /**
+             * Create a copy of a ClipDescription.
+             */
+            constructor(
+                [in] IClipDescription* o);
+
+            constructor();
+
+            interface IClipDescription;
+            interface IParcelable;
+        }
+
+        singleton class CClipDescriptionHelper {
+            interface IClipDescriptionHelper;
+        }
+
+
+        [local]
+        class CClipboardManager {
+            /** {@hide} */
+            constructor(
+                [in] IContext* ctx);
+
+            interface IClipboardManager;
+            interface Elastos.Droid.Text.IClipboardManager;
+        }
+
+        /**
+         * Identifier for a specific application component
+         * ({@link android.app.Activity}, {@link android.app.Service},
+         * {@link android.content.BroadcastReceiver}, or
+         * {@link android.content.ContentProvider}) that is available.  Two
+         * pieces of information, encapsulated here, are required to identify
+         * a component: the package (a String) it exists in, and the class (a String)
+         * name inside of that package.
+         *
+         */
+        [local]
+        class CComponentName {
+            constructor();
+
+            /**
+             * Create a new component identifier.
+             *
+             * @param pkg The name of the package that the component exists in.  Can
+             * not be null.
+             * @param cls The name of the class inside of <var>pkg</var> that
+             * implements the component.  Can not be null.
+             */
+            constructor(
+                [in] String pkg,
+                [in] String cls);
+
+            /**
+             * Create a new component identifier from a Context and class name.
+             *
+             * @param pkg A Context for the package implementing the component,
+             * from which the actual package name will be retrieved.
+             * @param cls The name of the class inside of <var>pkg</var> that
+             * implements the component.
+             */
+            constructor(
+                [in] IContext* pkgCtx,
+                [in] String cls);
+
+            /**
+             * Create a new component identifier from a Context and Class object.
+             *
+             * @param pkg A Context for the package implementing the component, from
+             * which the actual package name will be retrieved.
+             * @param cls The Class object of the desired component, from which the
+             * actual class name will be retrieved.
+             */
+            constructor(
+                [in] IContext* pkg,
+                [in] IClassInfo* IClassInfo);
+
+            interface IComponentName;
+            interface IParcelable;
+            interface ICloneable;
+            interface IComparable;
+        }
+
+        singleton class CComponentNameHelper {
+            interface IComponentNameHelper;
+        }
+
+
+    }//namespace Elastos
+    }//namespace Droid
+    }//namespace Content
+
 //     namespace Pm {
 
 //     /**
@@ -990,373 +1236,6 @@ module
 //     namespace Droid {
 //     namespace Content {
 
-//     /**
-//      * State for a result that is pending for a broadcast receiver.  Returned
-//      * by {@link BroadcastReceiver#goAsync() goAsync()}
-//      * while in {@link BroadcastReceiver#onReceive BroadcastReceiver.onReceive()}.
-//      * This allows you to return from onReceive() without having the broadcast
-//      * terminate; you must call {@link #finish()} once you are done with the
-//      * broadcast.  This allows you to process the broadcast off of the main
-//      * thread of your app.
-//      *
-//      * <p>Note on threading: the state inside of this class is not itself
-//      * thread-safe, however you can use it from any thread if you properly
-//      * sure that you do not have races.  Typically this means you will hand
-//      * the entire object to another thread, which will be solely responsible
-//      * for setting any results and finally calling {@link #finish()}.
-//      */
-//     class CPendingResult {
-//         /** @hide */
-//         constructor(
-//             [in] Int32 resultCode,
-//             [in] String resultData,
-//             [in] IBundle* resultExtras,
-//             [in] Int32 type,
-//             [in] Boolean ordered,
-//             [in] Boolean sticky,
-//             [in] IBinder* token,
-//             [in] Int32 userId);
-
-//         interface IPendingResult;
-//     }
-
-//     /**
-//      * Interface to the clipboard service, for placing and retrieving text in
-//      * the global clipboard.
-//      *
-//      * <p>
-//      * You do not instantiate this class directly; instead, retrieve it through
-//      * {@link android.content.Context#getSystemService}.
-//      *
-//      * <p>
-//      * The ClipboardManager API itself is very simple: it consists of methods
-//      * to atomically get and set the current primary clipboard data.  That data
-//      * is expressed as a {@link ClipData} object, which defines the protocol
-//      * for data exchange between applications.
-//      *
-//      * <div class="special reference">
-//      * <h3>Developer Guides</h3>
-//      * <p>For more information about using the clipboard framework, read the
-//      * <a href="{@docRoot}guide/topics/clipboard/copy-paste.html">Copy and Paste</a>
-//      * developer guide.</p>
-//      * </div>
-//      *
-//      * @see android.content.Context#getSystemService
-//      */
-//     [local]
-//     class CClipboardManager {
-//         /** {@hide} */
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IClipboardManager;
-//     }
-
-//     /**
-//      * Representation of a clipped data on the clipboard.
-//      *
-//      * <p>ClippedData is a complex type containing one or Item instances,
-//      * each of which can hold one or more representations of an item of data.
-//      * For display to the user, it also has a label and iconic representation.</p>
-//      *
-//      * <p>A ClipData contains a {@link ClipDescription}, which describes
-//      * important meta-data about the clip.  In particular, its
-//      * {@link ClipDescription#getMimeType(int) getDescription().getMimeType(int)}
-//      * must return correct MIME type(s) describing the data in the clip.  For help
-//      * in correctly constructing a clip with the correct MIME type, use
-//      * {@link #newPlainText(CharSequence, CharSequence)},
-//      * {@link #newUri(ContentResolver, CharSequence, Uri)}, and
-//      * {@link #newIntent(CharSequence, Intent)}.
-//      *
-//      * <p>Each Item instance can be one of three main classes of data: a simple
-//      * CharSequence of text, a single Intent object, or a Uri.  See {@link Item}
-//      * for more details.
-//      *
-//      * <div class="special reference">
-//      * <h3>Developer Guides</h3>
-//      * <p>For more information about using the clipboard framework, read the
-//      * <a href="{@docRoot}guide/topics/clipboard/copy-paste.html">Copy and Paste</a>
-//      * developer guide.</p>
-//      * </div>
-//      *
-//      * <a name="ImplementingPaste"></a>
-//      * <h3>Implementing Paste or Drop</h3>
-//      *
-//      * <p>To implement a paste or drop of a ClippedData object into an application,
-//      * the application must correctly interpret the data for its use.  If the {@link Item}
-//      * it contains is simple text or an Intent, there is little to be done: text
-//      * can only be interpreted as text, and an Intent will typically be used for
-//      * creating shortcuts (such as placing icons on the home screen) or other
-//      * actions.
-//      *
-//      * <p>If all you want is the textual representation of the clipped data, you
-//      * can use the convenience method {@link Item#coerceToText Item.coerceToText}.
-//      * In this case there is generally no need to worry about the MIME types
-//      * reported by {@link ClipDescription#getMimeType(int) getDescription().getMimeType(int)},
-//      * since any clip item an always be converted to a string.
-//      *
-//      * <p>More complicated exchanges will be done through URIs, in particular
-//      * "content:" URIs.  A content URI allows the recipient of a ClippedData item
-//      * to interact closely with the ContentProvider holding the data in order to
-//      * negotiate the transfer of that data.  The clip must also be filled in with
-//      * the available MIME types; {@link #newUri(ContentResolver, CharSequence, Uri)}
-//      * will take care of correctly doing this.
-//      *
-//      * <p>For example, here is the paste function of a simple NotePad application.
-//      * When retrieving the data from the clipboard, it can do either two things:
-//      * if the clipboard contains a URI reference to an existing note, it copies
-//      * the entire structure of the note into a new note; otherwise, it simply
-//      * coerces the clip into text and uses that as the new note's contents.
-//      *
-//      * {@sample development/samples/NotePad/src/com/example/android/notepad/NoteEditor.java
-//      *      paste}
-//      *
-//      * <p>In many cases an application can paste various types of streams of data.  For
-//      * example, an e-mail application may want to allow the user to paste an image
-//      * or other binary data as an attachment.  This is accomplished through the
-//      * ContentResolver {@link ContentResolver#getStreamTypes(Uri, String)} and
-//      * {@link ContentResolver#openTypedAssetFileDescriptor(Uri, String, android.os.Bundle)}
-//      * methods.  These allow a client to discover the type(s) of data that a particular
-//      * content URI can make available as a stream and retrieve the stream of data.
-//      *
-//      * <p>For example, the implementation of {@link Item#coerceToText Item.coerceToText}
-//      * itself uses this to try to retrieve a URI clip as a stream of text:
-//      *
-//      * {@sample frameworks/base/core/java/android/content/ClipData.java coerceToText}
-//      *
-//      * <a name="ImplementingCopy"></a>
-//      * <h3>Implementing Copy or Drag</h3>
-//      *
-//      * <p>To be the source of a clip, the application must construct a ClippedData
-//      * object that any recipient can interpret best for their context.  If the clip
-//      * is to contain a simple text, Intent, or URI, this is easy: an {@link Item}
-//      * containing the appropriate data type can be constructed and used.
-//      *
-//      * <p>More complicated data types require the implementation of support in
-//      * a ContentProvider for describing and generating the data for the recipient.
-//      * A common scenario is one where an application places on the clipboard the
-//      * content: URI of an object that the user has copied, with the data at that
-//      * URI consisting of a complicated structure that only other applications with
-//      * direct knowledge of the structure can use.
-//      *
-//      * <p>For applications that do not have intrinsic knowledge of the data structure,
-//      * the content provider holding it can make the data available as an arbitrary
-//      * number of types of data streams.  This is done by implementing the
-//      * ContentProvider {@link ContentProvider#getStreamTypes(Uri, String)} and
-//      * {@link ContentProvider#openTypedAssetFile(Uri, String, android.os.Bundle)}
-//      * methods.
-//      *
-//      * <p>Going back to our simple NotePad application, this is the implementation
-//      * it may have to convert a single note URI (consisting of a title and the note
-//      * text) into a stream of plain text data.
-//      *
-//      * {@sample development/samples/NotePad/src/com/example/android/notepad/NotePadProvider.java
-//      *      stream}
-//      *
-//      * <p>The copy operation in our NotePad application is now just a simple matter
-//      * of making a clip containing the URI of the note being copied:
-//      *
-//      * {@sample development/samples/NotePad/src/com/example/android/notepad/NotesList.java
-//      *      copy}
-//      *
-//      * <p>Note if a paste operation needs this clip as text (for example to paste
-//      * into an editor), then {@link Item#coerceToText(Context)} will ask the content
-//      * provider for the clip URI as text and successfully paste the entire note.
-//      */
-//     [deprecated]
-//     class CClipData {
-//         /**
-//          * Create a new clip.
-//          *
-//          * @param label Label to show to the user describing this clip.
-//          * @param mimeTypes An array of MIME types this data is available as.
-//          * @param item The contents of the first item in the clip.
-//          */
-//         constructor(
-//             [in] ICharSequence* label,
-//             [in] ArrayOf<String>* mimeTypes,
-//             [in] IClipDataItem* item);
-
-//         /**
-//          * Create a new clip.
-//          *
-//          * @param description The ClipDescription describing the clip contents.
-//          * @param item The contents of the first item in the clip.
-//          */
-//         constructor(
-//             [in] IClipDescription* description,
-//             [in] IClipDataItem* item);
-
-//         /**
-//          * Create a new clip that is a copy of another clip.  This does a deep-copy
-//          * of all items in the clip.
-//          *
-//          * @param other The existing ClipData that is to be copied.
-//          */
-//         constructor(
-//             [in] IClipData* other);
-
-//         constructor();
-
-//         interface IParcelable;
-//         interface IClipData;
-//     }
-
-//     class CClipDataItem {
-//         /**
-//          * Create an Item consisting of a single block of (possibly styled) text.
-//          */
-//         constructor(
-//             [in] ICharSequence* text);
-
-//         /**
-//          * Create an Item consisting of a single block of (possibly styled) text,
-//          * with an alternative HTML formatted representation.  You <em>must</em>
-//          * supply a plain text representation in addition to HTML text; coercion
-//          * will not be done from HTML formated text into plain text.
-//          */
-//         constructor(
-//             [in] ICharSequence* text,
-//             [in] String htmlText);
-
-//         /**
-//          * Create an Item consisting of an arbitrary Intent.
-//          */
-//         constructor(
-//             [in] IIntent* intent);
-
-//         /**
-//          * Create an Item consisting of an arbitrary URI.
-//          */
-//         constructor(
-//             [in] IUri* uri);
-
-//         /**
-//          * Create a complex Item, containing multiple representations of
-//          * text, Intent, and/or URI.
-//          */
-//         constructor(
-//             [in] ICharSequence* text,
-//             [in] IIntent* intent,
-//             [in] IUri* uri);
-
-//         /**
-//          * Create a complex Item, containing multiple representations of
-//          * text, HTML text, Intent, and/or URI.  If providing HTML text, you
-//          * <em>must</em> supply a plain text representation as well; coercion
-//          * will not be done from HTML formated text into plain text.
-//          */
-//         constructor(
-//             [in] ICharSequence* text,
-//             [in] String htmlText,
-//             [in] IIntent* intent,
-//             [in] IUri* uri);
-
-//         interface IClipDataItem;
-//     }
-
-//     singleton class CClipDataHelper {
-//         interface IClipDataHelper;
-//     }
-
-//     /**
-//      * Meta-data describing the contents of a {@link ClipData}.  Provides enough
-//      * information to know if you can handle the ClipData, but not the data
-//      * itself.
-//      *
-//      * <div class="special reference">
-//      * <h3>Developer Guides</h3>
-//      * <p>For more information about using the clipboard framework, read the
-//      * <a href="{@docRoot}guide/topics/clipboard/copy-paste.html">Copy and Paste</a>
-//      * developer guide.</p>
-//      * </div>
-//      */
-//     [deprecated]
-//     class CClipDescription {
-//         /**
-//          * Create a new clip.
-//          *
-//          * @param label Label to show to the user describing this clip.
-//          * @param mimeTypes An array of MIME types this data is available as.
-//          */
-//         constructor(
-//             [in] ICharSequence* label,
-//             [in] ArrayOf<String>* mimeTypes);
-
-//         /**
-//          * Create a copy of a ClipDescription.
-//          */
-//         constructor(
-//             [in] IClipDescription* o);
-
-//         constructor();
-
-//         interface IClipDescription;
-//         interface IParcelable;
-//     }
-
-//     singleton class CClipDescriptionHelper {
-//         interface IClipDescriptionHelper;
-//     }
-
-//     /**
-//      * Identifier for a specific application component
-//      * ({@link android.app.Activity}, {@link android.app.Service},
-//      * {@link android.content.BroadcastReceiver}, or
-//      * {@link android.content.ContentProvider}) that is available.  Two
-//      * pieces of information, encapsulated here, are required to identify
-//      * a component: the package (a String) it exists in, and the class (a String)
-//      * name inside of that package.
-//      *
-//      */
-//     [local]
-//     class CComponentName {
-//         constructor();
-
-//         /**
-//          * Create a new component identifier.
-//          *
-//          * @param pkg The name of the package that the component exists in.  Can
-//          * not be null.
-//          * @param cls The name of the class inside of <var>pkg</var> that
-//          * implements the component.  Can not be null.
-//          */
-//         constructor(
-//             [in] String pkg,
-//             [in] String cls);
-
-//         /**
-//          * Create a new component identifier from a Context and class name.
-//          *
-//          * @param pkg A Context for the package implementing the component,
-//          * from which the actual package name will be retrieved.
-//          * @param cls The name of the class inside of <var>pkg</var> that
-//          * implements the component.
-//          */
-//         constructor(
-//             [in] IContext* pkgCtx,
-//             [in] String cls);
-
-//         /**
-//          * Create a new component identifier from a Context and Class object.
-//          *
-//          * @param pkg A Context for the package implementing the component, from
-//          * which the actual package name will be retrieved.
-//          * @param cls The Class object of the desired component, from which the
-//          * actual class name will be retrieved.
-//          */
-//         constructor(
-//             [in] IContext* pkg,
-//             [in] IClassInfo* IClassInfo);
-
-//         interface IComponentName;
-//         interface IParcelable;
-//     }
-
-//     singleton class CComponentNameHelper {
-
-//         interface IComponentNameHelper;
-//     }
 
 //     singleton class CContentProviderHelper {
 
@@ -1555,48 +1434,6 @@ module
 //         interface IContextWrapper;
 //     }
 
-//     /**
-//      * An abstract class that performs asynchronous loading of data. While Loaders are active
-//      * they should monitor the source of their data and deliver new results when the contents
-//      * change.  See {@link android.app.LoaderManager} for more detail.
-//      *
-//      * <p><b>Note on threading:</b> Clients of loaders should as a rule perform
-//      * any calls on to a Loader from the main thread of their process (that is,
-//      * the thread the Activity callbacks and other things occur on).  Subclasses
-//      * of Loader (such as {@link AsyncTaskLoader}) will often perform their work
-//      * in a separate thread, but when delivering their results this too should
-//      * be done on the main thread.</p>
-//      *
-//      * <p>Subclasses generally must implement at least {@link #onStartLoading()},
-//      * {@link #onStopLoading()}, {@link #onForceLoad()}, and {@link #onReset()}.</p>
-//      *
-//      * <p>Most implementations should not derive directly from this class, but
-//      * instead inherit from {@link AsyncTaskLoader}.</p>
-//      *
-//      * <div class="special reference">
-//      * <h3>Developer Guides</h3>
-//      * <p>For more information about using loaders, read the
-//      * <a href="{@docRoot}guide/topics/fundamentals/loaders.html">Loaders</a> developer guide.</p>
-//      * </div>
-//      *
-//      * @param <D> The result returned when the load is complete
-//      */
-// //    class CLoader {
-// //        /**
-// //         * Stores away the application context associated with context.
-// //         * Since Loaders can be used across multiple activities it's dangerous to
-// //         * store the context directly; always use {@link #getContext()} to retrieve
-// //         * the Loader's Context, don't use the constructor argument directly.
-// //         * The Context returned by {@link #getContext} is safe to use across
-// //         * Activity instances.
-// //         *
-// //         * @param context used to retrieve the application context.
-// //         */
-// //        constructor(
-// //            [in] IContext* ctx);
-// //
-// //        interface ILoader;
-// //    }
 
 //     /**
 //      * An implementation of a ContentObserver that takes care of connecting

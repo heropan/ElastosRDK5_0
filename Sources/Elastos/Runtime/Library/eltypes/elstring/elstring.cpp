@@ -912,6 +912,10 @@ Int32 String::Compare(const char* other) const
     if (!mString) return -2;
     if (!other) return 2;
 
+    if (IsEmpty() && strcmp(other, "") == 0) {
+        return 0;
+    }
+
     return strcmp(mString, other);
 }
 
@@ -920,6 +924,10 @@ Int32 String::CompareIgnoreCase(const char* other) const
     if (mString == other) return 0;
     if (!mString) return -2;
     if (!other) return 2;
+
+    if (IsEmpty() && strcmp(other, "") == 0) {
+        return 0;
+    }
 
     Int32 strLength = strlen(mString);
     Int32 subLength = strlen(other);

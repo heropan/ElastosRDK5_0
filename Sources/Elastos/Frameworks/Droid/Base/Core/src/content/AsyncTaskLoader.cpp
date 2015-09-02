@@ -1,31 +1,53 @@
 
 #include "content/AsyncTaskLoader.h"
+#include "os/CHandler.h"
+#include "util/TimeUtils.h"
+#include "os/SystemClock.h"
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Utility::TimeUtils;
+using Elastos::Core::StringUtils;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Utility::Concurrent::CCountDownLatch;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
-const CString AsyncTaskLoader::TAG = "AsyncTaskLoader";
+const String AsyncTaskLoader::TAG("AsyncTaskLoader");
 const Boolean AsyncTaskLoader::DEBUG = FALSE;
 
+//==================================================================
+// AsyncTaskLoader::LoadTask
+//==================================================================
+CAR_INTERFACE_IMPL(AsyncTaskLoader::LoadTask, AsyncTask, IRunnable)
+
 AsyncTaskLoader::LoadTask::LoadTask(
-    /* [in] */ AsyncTaskLoader* context)
-    : mDone(NULL)
-    , waiting(FALSE)
-    , mContext(context)
+    /* [in] */ IWeakReference* loader)
+    : mWaiting(FALSE)
+    , mWeakHost(loader)
 {
-//***    CCountDownLatch::New((ICountDownLatch**)&mDone);
+    CCountDownLatch::New(1, (ICountDownLatch**)&mDone);
 }
 
 AsyncTaskLoader::LoadTask::~LoadTask()
 {}
 
-CAR_INTERFACE_IMPL_2(AsyncTaskLoader::LoadTask, IAsyncTask, IRunnable)
-
 ECode AsyncTaskLoader::LoadTask::Run()
 {
-    waiting = FALSE;
-    return mContext->ExecutePendingTask();
+    AutoPtr<IAsyncTaskLoader> atl;
+    mWeakHost->Resolve(EIID_IAsyncTaskLoader, (IInterface**)&atl);
+    if (atl == NULL) return NOERROR;
+
+    AsyncTaskLoader* loader = (AsyncTaskLoader*)atl.Get();
+    mWaiting = FALSE;
+    return loader->ExecutePendingTask();
 }
 
 ECode AsyncTaskLoader::LoadTask::WaitForLoader()
@@ -38,13 +60,22 @@ ECode AsyncTaskLoader::LoadTask::DoInBackground(
     /* [out] */ IInterface** result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
     if (AsyncTaskLoader::DEBUG) {
-//        Slog.v(TAG, this + " >>> doInBackground");
+//        Slogger::V(TAG, this + " >>> doInBackground");
     }
+
+    AutoPtr<IAsyncTaskLoader> atl;
+    mWeakHost->Resolve(EIID_IAsyncTaskLoader, (IInterface**)&atl);
+    if (atl == NULL) return NOERROR;
+
+    AsyncTaskLoader* loader = (AsyncTaskLoader*)atl.Get();
+
 //    try {
-    FAIL_RETURN(mContext->OnLoadInBackground(result));
+    FAIL_RETURN(loader->OnLoadInBackground(result));
     if (AsyncTaskLoader::DEBUG) {
-//        Slog.v(TAG, this + "  <<< doInBackground");
+//        Slogger::V(TAG, this + "  <<< doInBackground");
     }
     return NOERROR;
 //    } catch (OperationCanceledException ex) {
@@ -57,7 +88,7 @@ ECode AsyncTaskLoader::LoadTask::DoInBackground(
             // So we treat this case as an unhandled exception.
 //            throw ex;
 //        }
-//        if (AsyncTaskLoader::DEBUG) Slog.v(TAG, this + "  <<< doInBackground (was canceled)");
+//        if (AsyncTaskLoader::DEBUG) Slogger::V(TAG, this + "  <<< doInBackground (was canceled)");
 //        return null;
 //    }
 }
@@ -66,9 +97,15 @@ ECode AsyncTaskLoader::LoadTask::OnPostExecute(
     /* [in] */ IInterface* data)
 {
     if (AsyncTaskLoader::DEBUG) {
-//        Slog.v(TAG, this + " onPostExecute");
+//        Slogger::V(TAG, this + " onPostExecute");
     }
-    ECode ec = mContext->DispatchOnLoadComplete(this, data);
+
+    AutoPtr<IAsyncTaskLoader> atl;
+    mWeakHost->Resolve(EIID_IAsyncTaskLoader, (IInterface**)&atl);
+    if (atl == NULL) return NOERROR;
+
+    AsyncTaskLoader* loader = (AsyncTaskLoader*)atl.Get();
+    ECode ec = loader->DispatchOnLoadComplete(this, data);
     FAIL_RETURN(mDone->CountDown());
     return ec;
 }
@@ -77,76 +114,44 @@ ECode AsyncTaskLoader::LoadTask::OnCancelled(
     /* [in] */ IInterface* data)
 {
     if (AsyncTaskLoader::DEBUG) {
-//        Slog.v(TAG, this + " onCancelled");
+//        Slogger::V(TAG, this + " onCancelled");
     }
-    ECode ec = mContext->DispatchOnCancelled(this, data);
+
+    AutoPtr<IAsyncTaskLoader> atl;
+    mWeakHost->Resolve(EIID_IAsyncTaskLoader, (IInterface**)&atl);
+    if (atl == NULL) return NOERROR;
+
+    AsyncTaskLoader* loader = (AsyncTaskLoader*)atl.Get();
+    ECode ec = loader->DispatchOnCancelled(this, data);
     FAIL_RETURN(mDone->CountDown());
     return ec;
 }
 
-AsyncTaskLoader::AsyncTaskLoader()
-    : mTask(NULL)
-    , mCancellingTask(NULL)
-    , mUpdateThrottle(0)
-    , mLastLoadCompleteTime(-10000)
-    , mHandler(NULL)
-{}
+//==================================================================
+// AsyncTaskLoader
+//==================================================================
+CAR_INTERFACE_IMPL(AsyncTaskLoader, Loader, IAsyncTaskLoader)
 
-AsyncTaskLoader::AsyncTaskLoader(
-    /* [in] */ IContext* context)
-    : mTask(NULL)
-    , mCancellingTask(NULL)
-    , mUpdateThrottle(0)
+AsyncTaskLoader::AsyncTaskLoader()
+    : mUpdateThrottle(0)
     , mLastLoadCompleteTime(-10000)
-    , mHandler(NULL)
-{
-    Loader::Init(context);
-}
+{}
 
 AsyncTaskLoader::~AsyncTaskLoader()
 {}
 
-CAR_INTERFACE_IMPL(AsyncTaskLoader, IAsyncTaskLoader)
-
-ECode AsyncTaskLoader::Aggregate(
-    /* [in] */ AggrType aggrType,
-    /* [in] */ PInterface pObject)
+ECode AsyncTaskLoader::constructor(
+    /* [in] */ IContext* context)
 {
-    return E_NOT_IMPLEMENTED;
+    return constructor(context, AsyncTask::THREAD_POOL_EXECUTOR);
 }
 
-ECode AsyncTaskLoader::GetDomain(
-    /* [out] */ PInterface *ppObject)
+ECode AsyncTaskLoader::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IExecutor* executor)
 {
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode AsyncTaskLoader::GetClassID(
-    /* [out] */ ClassID *pCLSID)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode AsyncTaskLoader::Equals(
-    /* [in] */ IInterface* other,
-    /* [out] */ Boolean * result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = FALSE;
-    VALIDATE_NOT_NULL(other);
-
-    IAsyncTaskLoader * o = IAsyncTaskLoader::Probe(other);
-    if (o != NULL) {
-        *result = (o == THIS_PROBE(IAsyncTaskLoader));
-    }
-    return NOERROR;
-}
-
-ECode AsyncTaskLoader::GetHashCode(
-    /* [out] */ Int32* hash)
-{
-    VALIDATE_NOT_NULL(hash);
-    *hash = (Int32)THIS_PROBE(IAsyncTaskLoader);
+    FAIL_RETURN(Loader::constructor(context))
+    mExecutor = executor;
     return NOERROR;
 }
 
@@ -155,7 +160,7 @@ ECode AsyncTaskLoader::ToString(
 {
     VALIDATE_NOT_NULL(info);
     StringBuilder sb("AsyncTaskLoader:(");
-    sb += (Int32)THIS_PROBE(IAsyncTaskLoader);
+    sb += StringUtils::ToString((Int32)this);
     sb += ")";
     sb.ToString(info);
     return NOERROR;
@@ -166,8 +171,79 @@ ECode AsyncTaskLoader::SetUpdateThrottle(
 {
     mUpdateThrottle = delayMS;
     if (delayMS != 0) {
-//        mHandler = new Handler();
+        mHandler = 0;
+        CHandler::New((IHandler**)&mHandler);
     }
+    return NOERROR;
+}
+
+ECode AsyncTaskLoader::OnForceLoad()
+{
+    FAIL_RETURN(Loader::OnForceLoad());
+    Boolean ret = FALSE;
+    FAIL_RETURN(CancelLoad(&ret))
+    AutoPtr<IWeakReference> wr;
+    GetWeakReference((IWeakReference**)&wr);
+    mTask = new LoadTask(wr);
+    if (DEBUG) {
+//        Slogger::V(TAG, "Preparing load: mTask=" + mTask);
+    }
+
+    return ExecutePendingTask();
+}
+
+ECode AsyncTaskLoader::OnCancelLoad(
+    /* [out] */ Boolean* isCanceled)
+{
+    VALIDATE_NOT_NULL(isCanceled)
+    *isCanceled = FALSE;
+
+    if (DEBUG) {
+//        Slogger::V(TAG, "onCancelLoad: mTask=" + mTask);
+    }
+
+    if (NULL != mTask.Get()) {
+        if (NULL != mCancellingTask) {
+            // There was a pending task already waiting for a previous
+            // one being canceled; just drop it.
+            if (DEBUG) {
+//                Slogger::V(TAG, "cancelLoad: still waiting for cancelled task; dropping next");
+            }
+            if (mTask->mWaiting) {
+                mTask->mWaiting = FALSE;
+                mHandler->RemoveCallbacks(mTask);
+            }
+            mTask = NULL;
+            *isCanceled = FALSE;
+            return NOERROR;
+        }
+        else if (mTask->mWaiting) {
+            // There is a task, but it is waiting for the time it should
+            // execute.  We can just toss it.
+            if (DEBUG) {
+//                Slogger::V(TAG, "cancelLoad: task is waiting, dropping it");
+            }
+            mTask->mWaiting = FALSE;
+            mHandler->RemoveCallbacks(mTask);
+            mTask = NULL;
+            *isCanceled = FALSE;
+            return NOERROR;
+        }
+        else {
+            *isCanceled =  mTask->Cancel(FALSE);
+            if (DEBUG) {
+//                Slogger::V(TAG, "cancelLoad: cancelled=" + cancelled);
+            }
+            if (*isCanceled) {
+                mCancellingTask = mTask;
+                FAIL_RETURN(CancelLoadInBackground());
+            }
+            mTask = NULL;
+            return NOERROR;
+        }
+    }
+
+    *isCanceled = FALSE;
     return NOERROR;
 }
 
@@ -175,6 +251,93 @@ ECode AsyncTaskLoader::OnCanceled(
     /* [in] */ IInterface* data)
 {
     return NOERROR;
+}
+
+ECode AsyncTaskLoader::ExecutePendingTask()
+{
+    if (NULL == mCancellingTask && NULL != mTask) {
+        if (mTask->mWaiting) {
+            mTask->mWaiting = FALSE;
+            mHandler->RemoveCallbacks(mTask);
+        }
+        if (mUpdateThrottle > 0) {
+            Int64 now = 0;
+            now = SystemClock::GetUptimeMillis();
+            if (now < (mLastLoadCompleteTime+mUpdateThrottle)) {
+                // Not yet time to do another load.
+                if (DEBUG) {
+//                    Slogger::V(TAG, "Waiting until " + (mLastLoadCompleteTime+mUpdateThrottle)
+//                        + " to execute: " + mTask);
+                }
+                mTask->mWaiting = TRUE;
+                Boolean bval;
+                mHandler->PostAtTime(mTask, mLastLoadCompleteTime + mUpdateThrottle, &bval);
+                return NOERROR;
+            }
+        }
+        if (DEBUG) {
+//            Slogger::V(TAG, "Executing: " + mTask);
+        }
+        mTask->ExecuteOnExecutor(AsyncTask::THREAD_POOL_EXECUTOR, NULL);
+    }
+
+    return NOERROR;
+}
+
+ECode AsyncTaskLoader::DispatchOnCancelled(
+    /* [in] */ LoadTask* task,
+    /* [in] */ IInterface* data)
+{
+    FAIL_RETURN(OnCanceled(data));
+    if (mCancellingTask.Get() == task) {
+        if (DEBUG) {
+//            Slogger::V(TAG, "Cancelled task is now canceled!");
+        }
+        mLastLoadCompleteTime = SystemClock::GetUptimeMillis();
+        mCancellingTask = NULL;
+        if (DEBUG) {
+//            Slogger::V(TAG, "Delivering cancellation");
+        }
+        FAIL_RETURN(DeliverCancellation())
+        FAIL_RETURN(ExecutePendingTask())
+    }
+
+    return NOERROR;
+}
+
+ECode AsyncTaskLoader::DispatchOnLoadComplete(
+    /* [in] */ LoadTask* task,
+    /* [in] */ IInterface* data)
+{
+    if (mTask.Get() != task) {
+        if (DEBUG) {
+            Slogger::V(TAG, "Load complete of old task, trying to cancel");
+        }
+        FAIL_RETURN(DispatchOnCancelled(task, data));
+    }
+    else {
+        Boolean ret = FALSE;
+        if (IsAbandoned(&ret), ret) {
+            // This cursor has been abandoned; just cancel the new data.
+            FAIL_RETURN(OnCanceled(data));
+        }
+        else {
+            mLastLoadCompleteTime = SystemClock::GetUptimeMillis();
+            mTask = NULL;
+            if (DEBUG) {
+                Slogger::V(TAG, "Delivering result");
+            }
+            FAIL_RETURN(DeliverResult(data));
+        }
+    }
+
+    return NOERROR;
+}
+
+ECode AsyncTaskLoader::OnLoadInBackground(
+    /* [out] */ IInterface** result)
+{
+    return LoadInBackground(result);
 }
 
 ECode AsyncTaskLoader::CancelLoadInBackground()
@@ -192,7 +355,7 @@ ECode AsyncTaskLoader::IsLoadInBackgroundCanceled(
 
 ECode AsyncTaskLoader::WaitForLoader()
 {
-    AutoPtr<AsyncTaskLoader::LoadTask> task = mTask;
+    AutoPtr<LoadTask> task = mTask;
     if (NULL != task) {
         FAIL_RETURN(task->WaitForLoader());
     }
@@ -209,179 +372,27 @@ ECode AsyncTaskLoader::Dump(
     FAIL_RETURN(Loader::Dump(prefix, fd, writer, args));
 
     if (NULL != mTask) {
-        writer->PrintString(prefix);
-        writer->PrintString(String("mTask="));
-        writer->PrintObject(mTask);
-        writer->PrintString(String(" waiting="));
-        writer->PrintBoolean(mTask->waiting);
+        writer->Print(prefix);
+        writer->Print(String("mTask="));
+        writer->Print(TO_IINTERFACE(mTask));
+        writer->Print(String(" waiting="));
+        writer->Print(mTask->mWaiting);
     }
     if (NULL != mCancellingTask) {
-        writer->PrintString(prefix);
-        writer->PrintString(String("mCancellingTask="));
-        writer->PrintObject(mCancellingTask);
-        writer->PrintString(String(" waiting="));
-        writer->PrintBoolean(mCancellingTask->waiting);
+        writer->Print(prefix);
+        writer->Print(String("mCancellingTask="));
+        writer->Print(TO_IINTERFACE(mCancellingTask));
+        writer->Print(String(" waiting="));
+        writer->Print(mCancellingTask->mWaiting);
     }
     if (mUpdateThrottle != 0) {
-        writer->PrintString(prefix);
-        writer->PrintString(String("mUpdateThrottle="));
-//        TimeUtils.formatDuration(mUpdateThrottle, writer);
-        writer->PrintString(String(" mLastLoadCompleteTime="));
-//        TimeUtils.formatDuration(mLastLoadCompleteTime,
-//        SystemClock.uptimeMillis(), writer);
+        writer->Print(prefix);
+        writer->Print(String("mUpdateThrottle="));
+        TimeUtils::FormatDuration(mUpdateThrottle, writer);
+        writer->Print(String(" mLastLoadCompleteTime="));
+        TimeUtils::FormatDuration(mLastLoadCompleteTime,
+            SystemClock::GetUptimeMillis(), writer);
         writer->Println();
-    }
-
-    return NOERROR;
-}
-
-ECode AsyncTaskLoader::OnForceLoad()
-{
-    FAIL_RETURN(Loader::OnForceLoad());
-    Boolean ret = FALSE;
-    FAIL_RETURN(Loader::CancelLoad(&ret));
-    mTask = new LoadTask(this);
-    if (DEBUG) {
-//        Slog.v(TAG, "Preparing load: mTask=" + mTask);
-    }
-    FAIL_RETURN(ExecutePendingTask());
-    return NOERROR;
-}
-
-ECode AsyncTaskLoader::OnCancelLoad(
-    /* [out] */ Boolean* isCanceled)
-{
-    VALIDATE_NOT_NULL(isCanceled)
-    if (DEBUG) {
-//        Slog.v(TAG, "onCancelLoad: mTask=" + mTask);
-    }
-
-    if (NULL != mTask) {
-        if (NULL != mCancellingTask) {
-            // There was a pending task already waiting for a previous
-            // one being canceled; just drop it.
-            if (DEBUG) {
-//                Slog.v(TAG, "cancelLoad: still waiting for cancelled task; dropping next");
-            }
-            if (mTask->waiting) {
-                mTask->waiting = FALSE;
-//                mHandler.removeCallbacks(mTask);
-            }
-            mTask = NULL;
-            *isCanceled = FALSE;
-            return NOERROR;
-        }
-        else if (mTask->waiting) {
-            // There is a task, but it is waiting for the time it should
-            // execute.  We can just toss it.
-            if (DEBUG) {
-//                Slog.v(TAG, "cancelLoad: task is waiting, dropping it");
-            }
-            mTask->waiting = FALSE;
-//            mHandler.removeCallbacks(mTask);
-            mTask = NULL;
-            *isCanceled = FALSE;
-            return NOERROR;
-        }
-        else {
-//***            FAIL_RETURN(mTask->Cancel(FALSE, isCanceled));
-            if (DEBUG) {
-//                Slog.v(TAG, "cancelLoad: cancelled=" + cancelled);
-            }
-            if (*isCanceled) {
-                mCancellingTask = mTask;
-                FAIL_RETURN(CancelLoadInBackground());
-            }
-            mTask = NULL;
-            return NOERROR;
-        }
-    }
-
-    *isCanceled = FALSE;
-    return NOERROR;
-}
-
-ECode AsyncTaskLoader::OnLoadInBackground(
-    /* [out] */ IInterface** result)
-{
-    return LoadInBackground(result);
-}
-
-ECode AsyncTaskLoader::ExecutePendingTask()
-{
-    if (NULL == mCancellingTask && NULL != mTask) {
-        if (mTask->waiting) {
-            mTask->waiting = FALSE;
-//            mHandler.removeCallbacks(mTask);
-        }
-        if (mUpdateThrottle > 0) {
-            Int64 now = 0;
-//            now = SystemClock.uptimeMillis();
-            if (now < (mLastLoadCompleteTime+mUpdateThrottle)) {
-                // Not yet time to do another load.
-                if (DEBUG) {
-//                    Slog.v(TAG, "Waiting until " + (mLastLoadCompleteTime+mUpdateThrottle)
-//                        + " to execute: " + mTask);
-                }
-                mTask->waiting = TRUE;
-//                mHandler.postAtTime(mTask, mLastLoadCompleteTime+mUpdateThrottle);
-                return NOERROR;
-            }
-        }
-        if (DEBUG) {
-//            Slog.v(TAG, "Executing: " + mTask);
-        }
-//        mTask->ExecuteOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, NULL);
-    }
-
-    return NOERROR;
-}
-
-ECode AsyncTaskLoader::DispatchOnCancelled(
-    /* [in] */ LoadTask* task,
-    /* [in] */ IInterface* data)
-{
-    FAIL_RETURN(OnCanceled(data));
-    if (_CObject_Compare(mCancellingTask, task)) {
-        if (DEBUG) {
-//            Slog.v(TAG, "Cancelled task is now canceled!");
-        }
-//        mLastLoadCompleteTime = SystemClock.uptimeMillis();
-        mCancellingTask = NULL;
-        if (DEBUG) {
-//            Slog.v(TAG, "Delivering cancellation");
-        }
-        FAIL_RETURN(Loader::DeliverCancellation());
-        FAIL_RETURN(ExecutePendingTask());
-    }
-
-    return NOERROR;
-}
-
-ECode AsyncTaskLoader::DispatchOnLoadComplete(
-    /* [in] */ LoadTask* task,
-    /* [in] */ IInterface* data)
-{
-    if (!_CObject_Compare(mTask, task)) {
-        if (DEBUG) {
-//            Slog.v(TAG, "Load complete of old task, trying to cancel");
-        }
-        FAIL_RETURN(DispatchOnCancelled(task, data));
-    }
-    else {
-        Boolean ret = FALSE;
-        if ((Loader::IsAbandoned(&ret), ret)) {
-            // This cursor has been abandoned; just cancel the new data.
-            FAIL_RETURN(OnCanceled(data));
-        }
-        else {
-//            mLastLoadCompleteTime = SystemClock.uptimeMillis();
-            mTask = NULL;
-            if (DEBUG) {
-//                Slog.v(TAG, "Delivering result");
-            }
-            FAIL_RETURN(Loader::DeliverResult(data));
-        }
     }
 
     return NOERROR;

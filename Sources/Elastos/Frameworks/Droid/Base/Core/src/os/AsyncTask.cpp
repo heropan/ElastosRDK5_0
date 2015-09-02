@@ -173,7 +173,8 @@ ECode AsyncTask::WorkerRunnable::Call(
 
     Process::SetThreadPriority(IProcess::THREAD_PRIORITY_BACKGROUND);
     //noinspection unchecked
-    AutoPtr<IInterface> r = mOwner->DoInBackground(mParams);
+    AutoPtr<IInterface> r;
+    mOwner->DoInBackground(mParams, (IInterface**)&r);
     AutoPtr<IInterface> _r = mOwner->PostResult(r);
     *result = _r;
     REFCOUNT_ADD(*result);
@@ -338,7 +339,7 @@ ECode AsyncTask::Execute(
     return sDefaultExecutor->Execute(runnable);
 }
 
-void AsyncTask::PublishProgress(
+ECode AsyncTask::PublishProgress(
     /* [in] */ ArrayOf<IInterface*>* values)
 {
     if (!IsCancelled()) {
@@ -346,8 +347,9 @@ void AsyncTask::PublishProgress(
 
         AutoPtr<IMessage> msg;
         GetHandler()->ObtainMessage(MESSAGE_POST_PROGRESS, TO_IINTERFACE(atResult), (IMessage**)&msg);
-        msg->SendToTarget();
+        return msg->SendToTarget();
     }
+    return NOERROR;
 }
 
 void AsyncTask::Finish(

@@ -509,8 +509,9 @@ protected:
      * @see #onPostExecute
      * @see #publishProgress
      */
-    virtual CARAPI_(AutoPtr<IInterface>) DoInBackground(
-        /* [in] */ ArrayOf<IInterface*>* params) = 0;
+    virtual CARAPI DoInBackground(
+        /* [in] */ ArrayOf<IInterface*>* params,
+        /* [out] */ IInterface** result) = 0;
 
     /**
      * Runs on the UI thread before {@link #doInBackground}.
@@ -518,7 +519,7 @@ protected:
      * @see #onPostExecute
      * @see #doInBackground
      */
-    virtual CARAPI_(void) OnPreExecute() {}
+    virtual CARAPI OnPreExecute() { return NOERROR; }
 
     /**
      * <p>Runs on the UI thread after {@link #doInBackground}. The
@@ -532,8 +533,8 @@ protected:
      * @see #doInBackground
      * @see #onCancelled(Object)
      */
-    virtual CARAPI_(void) OnPostExecute(
-        /* [in] */ IInterface* result) {}
+    virtual CARAPI OnPostExecute(
+        /* [in] */ IInterface* result) { return NOERROR; }
 
     /**
      * Runs on the UI thread after {@link #publishProgress} is invoked.
@@ -544,8 +545,8 @@ protected:
      * @see #publishProgress
      * @see #doInBackground
      */
-    virtual CARAPI_(void) OnProgressUpdate(
-        /* [in] */ ArrayOf<IInterface*>* values) {}
+    virtual CARAPI OnProgressUpdate(
+        /* [in] */ ArrayOf<IInterface*>* values) { return NOERROR; }
 
     /**
      * <p>Runs on the UI thread after {@link #cancel(boolean)} is invoked and
@@ -561,10 +562,10 @@ protected:
      * @see #cancel(boolean)
      * @see #isCancelled()
      */
-    virtual CARAPI_(void) OnCancelled(
+    virtual CARAPI OnCancelled(
         /* [in] */ IInterface* result)
     {
-        OnCancelled();
+        return OnCancelled();
     }
 
     /**
@@ -579,7 +580,7 @@ protected:
      * @see #cancel(boolean)
      * @see #isCancelled()
      */
-    virtual CARAPI_(void) OnCancelled() {}
+    virtual CARAPI OnCancelled() { return NOERROR; }
 
     /**
      * This method can be invoked from {@link #doInBackground} to
@@ -595,7 +596,7 @@ protected:
      * @see #onProgressUpdate
      * @see #doInBackground
      */
-    CARAPI_(void) PublishProgress(
+    CARAPI PublishProgress(
         /* [in] */ ArrayOf<IInterface*>* values);
 
 private:

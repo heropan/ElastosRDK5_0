@@ -1,14 +1,20 @@
 
 #include "content/CClipDescription.h"
 #include "content/CClipDescriptionHelper.h"
-#include "text/TextUtils.h"
+// #include "text/TextUtils.h"
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Droid::Text::TextUtils;
+//using Elastos::Droid::Text::TextUtils;
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
+
+CAR_INTERFACE_IMPL_2(CClipDescription, Object, IClipDescription, IParcelable)
+
+CAR_OBJECT_IMPL(CClipDescription)
 
 CClipDescription::CClipDescription()
     : mLabel(NULL)
@@ -138,10 +144,10 @@ ECode CClipDescription::ToString(
 {
     VALIDATE_NOT_NULL(str)
     StringBuilder b(128);
-    b.AppendString(String("ClipDescription { "));
+    b.Append(String("ClipDescription { "));
     Boolean ret = FALSE;
     FAIL_RETURN(ToShortString((IStringBuilder*)&b, &ret));
-    b.AppendString(String(" }"));
+    b.Append(String(" }"));
     return b.ToString(str);
 }
 
@@ -157,7 +163,7 @@ ECode CClipDescription::ToShortString(
             builder->AppendChar(' ');
         }
         first = FALSE;
-        builder->AppendString((*mMimeTypes)[i]);
+        builder->Append((*mMimeTypes)[i]);
     }
     if (NULL != mLabel) {
         if (!first) {
@@ -165,7 +171,7 @@ ECode CClipDescription::ToShortString(
         }
         first = FALSE;
         builder->AppendChar('"');
-        builder->AppendCharSequence(mLabel);
+        builder->Append(mLabel);
         builder->AppendChar('"');
     }
 
@@ -177,7 +183,8 @@ ECode CClipDescription::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     mLabel = NULL;
-    FAIL_RETURN(TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(source, (ICharSequence**)&mLabel));
+    assert(0 && "TODO");
+    // FAIL_RETURN(TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(source, (ICharSequence**)&mLabel));
     FAIL_RETURN(CreateStringArray(source, (ArrayOf<String>**)&mMimeTypes));
     return NOERROR;
 }
@@ -185,7 +192,8 @@ ECode CClipDescription::ReadFromParcel(
 ECode CClipDescription::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    TextUtils::WriteToParcel(mLabel, dest);
+    assert(0 && "TODO");
+    // TextUtils::WriteToParcel(mLabel, dest);
     FAIL_RETURN(WriteStringArray(dest, mMimeTypes));
     return NOERROR;
 }

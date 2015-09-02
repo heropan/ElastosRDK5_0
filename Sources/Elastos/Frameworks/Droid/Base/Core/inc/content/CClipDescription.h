@@ -6,20 +6,26 @@
 #include <ext/frameworkext.h>
 #include <elastos/core/StringBuilder.h>
 
-using namespace Elastos;
-using namespace Elastos::Core;
-using namespace Elastos::Utility;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IStringBuilder;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CClipDescription)
+    , public Object
+    , public IClipDescription
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CClipDescription();
 
-    ~CClipDescription();
+    virtual ~CClipDescription();
 
     /**
      * Return the label for this clip.

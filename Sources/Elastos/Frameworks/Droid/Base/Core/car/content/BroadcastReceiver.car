@@ -1,7 +1,6 @@
 
 module
 {
-
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Os.IBundle;
@@ -137,6 +136,9 @@ module
 
         GetInitialStickyHint(
             [out] Boolean* initialStickyHint);
+
+        GetSendingUserId(
+            [out] Int32* userId);
     }
 
 

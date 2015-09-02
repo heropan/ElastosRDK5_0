@@ -3,13 +3,15 @@
 //***#include "content/CSyncContext.h"
 //***#include "content/CSyncResult.h"
 #include "os/CBundle.h"
-#include <elaatomics.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
+#include <elaatomics.h>
 
-using Elastos::Core::StringUtils;
 using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Os::IBaseBundle;
 using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::ITrace;
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -53,7 +55,7 @@ ECode AbstractThreadedSyncAdapter::ISyncAdapterImpl::StartSync(
         if (it == mAdapterContext->mSyncThreads.End()) {
             Boolean ret = FALSE;
             if (mAdapterContext->mAutoInitialize && NULL != extras
-                    && (extras->GetBoolean(IContentResolver::SYNC_EXTRAS_INITIALIZE, FALSE, &ret), ret)) {
+                    && (IBaseBundle::Probe(extras)->GetBoolean(IContentResolver::SYNC_EXTRAS_INITIALIZE, FALSE, &ret), ret)) {
                 AutoPtr<IContentResolverHelper> resolverHelper;
                 Int32 result = 0;
 //***                FAIL_RETURN(ContentResolverHelper::AcquireSingleton((IContentResolverHelper**)&resolverHelper))
@@ -103,7 +105,7 @@ ECode AbstractThreadedSyncAdapter::ISyncAdapterImpl::CancelSync(
         AutoPtr<SyncThread> current;
         for (; it != mAdapterContext->mSyncThreads.End(); it++) {
             current = it->mSecond;
-            if (_CObject_Compare(current->mSyncContext, syncContext)) {
+            if (Object::Equals(current->mSyncContext, syncContext)) {
                 info = current;
                 break;
             }
@@ -128,7 +130,7 @@ ECode AbstractThreadedSyncAdapter::ISyncAdapterImpl::Initialize(
 {
     AutoPtr<IBundle> extras;
     FAIL_RETURN(CBundle::New((IBundle**)&extras))
-    FAIL_RETURN(extras->PutBoolean(IContentResolver::SYNC_EXTRAS_INITIALIZE, TRUE))
+    FAIL_RETURN(IBaseBundle::Probe(extras)->PutBoolean(IContentResolver::SYNC_EXTRAS_INITIALIZE, TRUE))
     FAIL_RETURN(StartSync(NULL, authority, account, extras))
     return NOERROR;
 }
@@ -174,7 +176,7 @@ ECode AbstractThreadedSyncAdapter::SyncThread::Run()
     // threads in order to track overlapping operations, so we'll do it here for now.
     AutoPtr<ITrace> trace;
 //***    FAIL_RETURN(CTrace::AcquireSingleton((ITrace**)&trace))
-    FAIL_RETURN(trace->TraceBegin(ITrace::TRACE_TAG_SYNC_MANAGER, mAuthority))
+    //FAIL_RETURN(trace->TraceBegin(ITrace::TRACE_TAG_SYNC_MANAGER, mAuthority))
 
     AutoPtr<ISyncResult> syncResult;
 //***    FAIL_RETURN(CSyncResult::New((ISyncResult**)&syncResult))
@@ -205,7 +207,7 @@ ECode AbstractThreadedSyncAdapter::SyncThread::Run()
         }
     }
 EXIT:
-    FAIL_RETURN(trace->TraceEnd(ITrace::TRACE_TAG_SYNC_MANAGER))
+   // FAIL_RETURN(trace->TraceEnd(ITrace::TRACE_TAG_SYNC_MANAGER))
 
     if (NULL != provider) {
         Boolean ret = FALSE;
@@ -284,7 +286,7 @@ ECode AbstractThreadedSyncAdapter::GetSyncAdapterBinder(
     /* [out] */ IBinder** binder)
 {
     VALIDATE_NOT_NULL(binder)
-    *binder = IISyncAdapter::Probe((IISyncAdapter*) mISyncAdapterImpl);
+    *binder = IBinder::Probe(mISyncAdapterImpl);
     REFCOUNT_ADD(*binder);
     return NOERROR;
 }

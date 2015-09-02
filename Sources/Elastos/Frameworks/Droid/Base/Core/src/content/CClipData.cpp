@@ -1,19 +1,21 @@
 
 #include "content/CClipData.h"
 #include "content/CClipDescription.h"
-#include "content/CIntent.h"
+// #include "content/CIntent.h"
 #include "content/CClipDataItem.h"
-#include "graphics/CBitmap.h"
-#include "text/TextUtils.h"
-#include "net/Uri.h"
+// #include "content/ContentProvider.h"
+// #include "graphics/CBitmap.h"
+// #include "text/TextUtils.h"
+// #include "net/Uri.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::IStringBuilder;
-using Elastos::Droid::Text::TextUtils;
-using Elastos::Droid::Graphics::CBitmap;
-using Elastos::Droid::Net::Uri;
+// using Elastos::Droid::Text::TextUtils;
+// using Elastos::Droid::Graphics::CBitmap;
+// using Elastos::Droid::Net::Uri;
 using Elastos::Utility::Logging::Slogger;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::IStringBuilder;
 
 namespace Elastos {
 namespace Droid {
@@ -48,6 +50,14 @@ const AutoPtr< ArrayOf<String> > CClipData::MIMETYPES_TEXT_URILIST = InitMimeTyp
 const AutoPtr< ArrayOf<String> > CClipData::MIMETYPES_TEXT_INTENT = InitMimeTypes(3);
 
 const String CClipData::TAG("CClipData");
+
+CAR_INTERFACE_IMPL_2(CClipData, Object, IClipData, IParcelable)
+
+CAR_OBJECT_IMPL(CClipData)
+
+CClipData::CClipData()
+{
+}
 
 CClipData::~CClipData()
 {
@@ -190,14 +200,90 @@ ECode CClipData::GetItemAt(
     return NOERROR;
 }
 
+ECode CClipData::PrepareToLeaveProcess()
+{
+    Int32 size = mItems.GetSize();
+    AutoPtr<IClipDataItem> item;
+    for (Int32 i = 0; i < size; i++) {
+        item = mItems[i];
+        AutoPtr<IIntent> intent;
+        item->GetIntent((IIntent**)&intent);
+        if (intent != NULL) {
+            intent->PrepareToLeaveProcess();
+        }
+
+        AutoPtr<IUri> uri;
+        item->GetUri((IUri**)&uri);
+        assert(0 && "TODO");
+        if (uri != NULL /* && CStrictMode::VmFileUriExposureEnabled() */) {
+            uri->CheckFileUriExposed(String("ClipData.Item.getUri()"));
+        }
+    }
+    return NOERROR;
+}
+
+ECode CClipData::FixUris(
+    /* [in] */ Int32 contentUserHint)
+{
+    Int32 size = mItems.GetSize();
+    AutoPtr<IClipDataItem> item;
+    for (Int32 i = 0; i < size; i++) {
+        item = mItems[i];
+        AutoPtr<IIntent> intent;
+        item->GetIntent((IIntent**)&intent);
+        if (intent != NULL) {
+            intent->FixUris(contentUserHint);
+        }
+
+        assert(0 && "TODO");
+        // AutoPtr<IUri> uri;
+        // item->GetUri((IUri**)&uri);
+        // if (uri != NULL) {
+        //     AutoPtr<IUri> newUri = ContentProvider::MaybeAddUserId(uri, contentUserHint);
+        //     item->SetUri(newUri);
+        // }
+    }
+    return NOERROR;
+}
+
+ECode CClipData::FixUrisLight(
+    /* [in] */ Int32 contentUserHint)
+{
+    assert(0 && "TODO");
+
+    // Int32 size = mItems.GetSize();
+    // AutoPtr<IClipDataItem> item;
+    // for (Int32 i = 0; i < size; i++) {
+    //     item = mItems[i];
+    //     AutoPtr<IIntent> intent;
+    //     item->GetIntent((IIntent**)&intent);
+    //     if (intent != NULL) {
+    //         AutoPtr<IUri> data;
+    //         intent->GetData((IUri**)&data);
+    //         if (data != NULL) {
+    //             AutoPtr<IUri> newUri = ContentProvider::MaybeAddUserId(data, contentUserHint);
+    //             intent->SetData(data);
+    //         }
+    //     }
+
+    //     AutoPtr<IUri> uri;
+    //     item->GetUri((IUri**)&uri);
+    //     if (uri != NULL) {
+    //         AutoPtr<IUri> newUri = ContentProvider::MaybeAddUserId(uri, contentUserHint);
+    //         item->SetUri(newUri);
+    //     }
+    // }
+    return NOERROR;
+}
+
 ECode CClipData::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
     AutoPtr<StringBuilder> b = new StringBuilder(128);
-    b->AppendCStr("ClipData { ");
-    ToShortString((IStringBuilder*)b);
-    b->AppendCStr(" }");
+    b->Append("ClipData { ");
+    ToShortString((IStringBuilder*)b.Get());
+    b->Append(" }");
     return b->ToString(str);
 }
 
@@ -219,14 +305,14 @@ ECode CClipData::ToShortString(
             sb->AppendChar(' ');
         }
         first = FALSE;
-        sb->AppendString(String("I:"));
+        sb->Append(String("I:"));
         Int32 width = 0;
         mIcon->GetWidth(&width);
-        sb->AppendInt32(width);
+        sb->Append(width);
         sb->AppendChar('x');
         Int32 height = 0;
         mIcon->GetHeight(&height);
-        sb->AppendInt32(height);
+        sb->Append(height);
     }
     List< AutoPtr<IClipDataItem> >::Iterator it;
     for (it = mItems.Begin(); it != mItems.End(); ++it) {
@@ -262,7 +348,8 @@ ECode CClipData::WriteToParcel(
     List< AutoPtr<IClipDataItem> >::Iterator it;
     for (it = mItems.Begin(); it != mItems.End(); ++it) {
         AutoPtr<CClipDataItem> item = (CClipDataItem*)(*it).Get();
-        TextUtils::WriteToParcel(item->mText, dest);
+        assert(0 && "TODO");
+        // TextUtils::WriteToParcel(item->mText, dest);
         dest->WriteString(item->mHtmlText);
         if (item->mIntent != NULL) {
             dest->WriteInt32(1);
@@ -274,7 +361,8 @@ ECode CClipData::WriteToParcel(
         }
         if (item->mUri != NULL) {
             dest->WriteInt32(1);
-            Uri::WriteToParcel(dest, item->mUri);
+            assert(0 && "TODO");
+            // Uri::WriteToParcel(dest, item->mUri);
         }
         else {
             dest->WriteInt32(0);
@@ -293,7 +381,8 @@ ECode CClipData::ReadFromParcel(
     Int32 value;
     source->ReadInt32(&value);
     if (value != 0) {
-        ASSERT_SUCCEEDED(CBitmap::New((IBitmap**)&mIcon));
+        assert(0 && "TODO");
+        // ASSERT_SUCCEEDED(CBitmap::New((IBitmap**)&mIcon));
         p = (IParcelable*)mIcon->Probe(EIID_IParcelable);
         p->ReadFromParcel(source);
     }
@@ -304,20 +393,23 @@ ECode CClipData::ReadFromParcel(
     source->ReadInt32(&N);
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<ICharSequence> text;
-        FAIL_RETURN(TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(source, (ICharSequence**)&text));
+        assert(0 && "TODO");
+        // FAIL_RETURN(TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(source, (ICharSequence**)&text));
         String htmlText;
         source->ReadString(&htmlText);
         source->ReadInt32(&value);
         AutoPtr<IIntent> intent;
         if (value != 0) {
-            ASSERT_SUCCEEDED(CIntent::New((IIntent**)&intent));
+            assert(0 && "TODO");
+            // ASSERT_SUCCEEDED(CIntent::New((IIntent**)&intent));
             p = (IParcelable*)intent->Probe(EIID_IParcelable);
             p->ReadFromParcel(source);
         }
         source->ReadInt32(&value);
         AutoPtr<IUri> uri;
         if (value != 0) {
-            Uri::ReadFromParcel(source, (IUri**)&uri);
+            assert(0 && "TODO");
+            // Uri::ReadFromParcel(source, (IUri**)&uri);
         }
         AutoPtr<IClipDataItem> item;
         ASSERT_SUCCEEDED(CClipDataItem::New(text, htmlText, intent, uri, (IClipDataItem**)&item));

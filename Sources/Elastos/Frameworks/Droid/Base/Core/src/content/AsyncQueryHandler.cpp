@@ -1,16 +1,18 @@
 
 #include "content/AsyncQueryHandler.h"
+#include "os/CHandlerThread.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
-#include "os/CHandlerThread.h"
+#include <elastos/core/AutoLock.h>
 
-using Elastos::Core::StringUtils;
-using Elastos::Core::CInteger32;
-using Elastos::Core::IInteger32;
-using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::EIID_IHandler;
 using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Os::CHandlerThread;
+using Elastos::Core::StringUtils;
+using Elastos::Core::CInteger32;
+using Elastos::Core::IInteger32;
+using Elastos::Core::IThread;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -24,19 +26,23 @@ const Int32 AsyncQueryHandler::EVENT_ARG_UPDATE;
 const Int32 AsyncQueryHandler::EVENT_ARG_DELETE;
 AutoPtr<ILooper> AsyncQueryHandler::sLooper;
 
+//==============================================================
+// AsyncQueryHandler::WorkerArgs
+//==============================================================
 AsyncQueryHandler::WorkerArgs::WorkerArgs()
 {}
 
 AsyncQueryHandler::WorkerArgs::~WorkerArgs()
 {}
 
-CAR_INTERFACE_IMPL(AsyncQueryHandler::WorkerArgs, IInterface)
-
+//==============================================================
+// AsyncQueryHandler::WorkerHandler
+//==============================================================
 AsyncQueryHandler::WorkerHandler::WorkerHandler(
     /* [in] */ ILooper* looper,
-    /* [in] */ AsyncQueryHandler* context)
-    : HandlerBase(looper)
-    , mContext(context)
+    /* [in] */ IWeakReference* context)
+    : Handler(looper)
+    , mWeakContext(context)
 {}
 
 AsyncQueryHandler::WorkerHandler::~WorkerHandler()
@@ -45,8 +51,13 @@ AsyncQueryHandler::WorkerHandler::~WorkerHandler()
 ECode AsyncQueryHandler::WorkerHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
+    AutoPtr<IAsyncQueryHandler> aqh;
+    mWeakContext->Resolve(EIID_IAsyncQueryHandler, (IInterface**)&aqh);
+    if (NULL == aqh) return NOERROR;
+
+    AsyncQueryHandler* context = (AsyncQueryHandler*)aqh.Get();
     AutoPtr<IInterface> resolverObj;
-    mContext->mResolver->Resolve(EIID_IInterface, (IInterface**)&resolverObj);
+    context->mResolver->Resolve(EIID_IInterface, (IInterface**)&resolverObj);
     if (NULL == resolverObj) return NOERROR;
     AutoPtr<IContentResolver> resolver = (IContentResolver*)resolverObj->Probe(EIID_IContentResolver);
     if (NULL == resolver) return NOERROR;
@@ -57,7 +68,7 @@ ECode AsyncQueryHandler::WorkerHandler::HandleMessage(
     AutoPtr<IInterface> obj;
     msg->GetObj((IInterface**)&obj);
 
-    AutoPtr<WorkerArgs> args = (WorkerArgs*)obj.Get();
+    AutoPtr<WorkerArgs> args = (WorkerArgs*)IObject::Probe(obj);
     Int32 token = what;
     Int32 event = arg1;
 
@@ -116,63 +127,62 @@ ECode AsyncQueryHandler::WorkerHandler::HandleMessage(
     AutoPtr<IHandler> replyHandler = args->mHandler;
 
     AutoPtr<IMessage> reply;
-    replyHandler->ObtainMessage(token, 1, 0, args, (IMessage**)&reply);
+    replyHandler->ObtainMessage(token, 1, 0, TO_IINTERFACE(args), (IMessage**)&reply);
     return reply->SendToTarget();
 }
 
+//==============================================================
+// AsyncQueryHandler::WorkerHandler
+//==============================================================
+CAR_INTERFACE_IMPL(AsyncQueryHandler, Handler, IAsyncQueryHandler)
+
 AsyncQueryHandler::AsyncQueryHandler()
-    : Handler(FALSE)
-{}
-
-AsyncQueryHandler::AsyncQueryHandler(
-    /* [in] */ IContentResolver* cr)
-    : Handler(FALSE)
-    , mWorkerThreadHandler(NULL)
 {
-    AutoPtr<IWeakReferenceSource> wrs = (IWeakReferenceSource*)cr->Probe(EIID_IWeakReferenceSource);
-    assert(wrs != NULL);
-    wrs->GetWeakReference((IWeakReference**)&mResolver);
-
-    {
-        AutoLock lock(mAsyncQueryHandlerLock);
-        if (NULL == sLooper) {
-            AutoPtr<IHandlerThread> thread;
-            CHandlerThread::New(String("AsyncQueryWorker"), (IHandlerThread**)&thread);
-            thread->Start();
-            thread->GetLooper((ILooper**)&sLooper);
-        }
-    }
-
-    ASSERT_SUCCEEDED(CreateHandler(sLooper, (IHandler**)&mWorkerThreadHandler))
+    // must call constructor right after create a AsyncQueryHandler.
 }
 
 AsyncQueryHandler::~AsyncQueryHandler()
 {}
 
-ECode AsyncQueryHandler::Init(
+ECode AsyncQueryHandler::constructor()
+{
+    return Handler::constructor(FALSE);
+}
+
+ECode AsyncQueryHandler::constructor(
     /* [in] */ IContentResolver* cr)
 {
+    FAIL_RETURN(Handler::constructor(FALSE))
+
     AutoPtr<IWeakReferenceSource> wrs = (IWeakReferenceSource*)cr->Probe(EIID_IWeakReferenceSource);
     assert(wrs != NULL);
     wrs->GetWeakReference((IWeakReference**)&mResolver);
 
-    mWorkerThreadHandler = NULL;
     {
         AutoLock lock(mAsyncQueryHandlerLock);
         if (NULL == sLooper) {
             AutoPtr<IHandlerThread> thread;
             CHandlerThread::New(String("AsyncQueryWorker"), (IHandlerThread**)&thread);
-            thread->Start();
+            IThread::Probe(thread)->Start();
             thread->GetLooper((ILooper**)&sLooper);
         }
     }
-    ASSERT_SUCCEEDED(CreateHandler(sLooper, (IHandler**)&mWorkerThreadHandler))
-    return NOERROR;
+
+    return CreateHandler(sLooper, (IHandler**)&mWorkerThreadHandler);
 }
 
-CAR_INTERFACE_IMPL_2(AsyncQueryHandler, IAsyncQueryHandler, IHandler)
-
-IHANDLER_METHODS_IMPL(AsyncQueryHandler, Handler)
+ECode AsyncQueryHandler::CreateHandler(
+    /* [in] */ ILooper* looper,
+    /* [out] */ IHandler** handler)
+{
+    VALIDATE_NOT_NULL(handler)
+    AutoPtr<IWeakReference> wr;
+    GetWeakReference((IWeakReference**)&wr);
+    AutoPtr<WorkerHandler> worker = new WorkerHandler(looper, wr);
+    *handler = (IHandler*)worker.Get();
+    REFCOUNT_ADD(*handler);
+    return NOERROR;
+}
 
 ECode AsyncQueryHandler::StartQuery(
     /* [in] */ Int32 token,
@@ -186,7 +196,7 @@ ECode AsyncQueryHandler::StartQuery(
     // Use the token as what so cancelOperations works properly
 
     AutoPtr<WorkerArgs> args = new WorkerArgs();
-    args->mHandler = (IHandler*) this;
+    args->mHandler = THIS_PROBE(IHandler);
     args->mUri = uri;
     args->mProjection = projection;
     args->mSelection = selection;
@@ -195,7 +205,7 @@ ECode AsyncQueryHandler::StartQuery(
     args->mCookie = cookie;
 
     AutoPtr<IMessage> msg;
-    mWorkerThreadHandler->ObtainMessage(token, EVENT_ARG_QUERY, 0, args, (IMessage**)&msg);
+    mWorkerThreadHandler->ObtainMessage(token, EVENT_ARG_QUERY, 0, TO_IINTERFACE(args), (IMessage**)&msg);
     Boolean result;
     return mWorkerThreadHandler->SendMessage(msg, &result);
 }
@@ -214,13 +224,13 @@ ECode AsyncQueryHandler::StartInsert(
 {
     // Use the token as what so cancelOperations works properly
     AutoPtr<WorkerArgs> args = new WorkerArgs();
-    args->mHandler = (IHandler*) this;
+    args->mHandler = THIS_PROBE(IHandler);
     args->mUri = uri;
     args->mCookie = cookie;
     args->mValues = initialValues;
 
     AutoPtr<IMessage> msg;
-    mWorkerThreadHandler->ObtainMessage(token, EVENT_ARG_INSERT, 0, args, (IMessage**)&msg);
+    mWorkerThreadHandler->ObtainMessage(token, EVENT_ARG_INSERT, 0, TO_IINTERFACE(args), (IMessage**)&msg);
     Boolean result;
     return mWorkerThreadHandler->SendMessage(msg, &result);
 }
@@ -235,7 +245,7 @@ ECode AsyncQueryHandler::StartUpdate(
 {
     // Use the token as what so cancelOperations works properly
     AutoPtr<WorkerArgs> args = new WorkerArgs();
-    args->mHandler = (IHandler*) this;
+    args->mHandler = THIS_PROBE(IHandler);
     args->mUri = uri;
     args->mCookie = cookie;
     args->mValues = values;
@@ -243,7 +253,7 @@ ECode AsyncQueryHandler::StartUpdate(
     args->mSelectionArgs = selectionArgs;
 
     AutoPtr<IMessage> msg;
-    mWorkerThreadHandler->ObtainMessage(token, EVENT_ARG_UPDATE, 0, args, (IMessage**)&msg);
+    mWorkerThreadHandler->ObtainMessage(token, EVENT_ARG_UPDATE, 0, TO_IINTERFACE(args), (IMessage**)&msg);
     Boolean result;
     return mWorkerThreadHandler->SendMessage(msg, &result);
 }
@@ -257,69 +267,16 @@ ECode AsyncQueryHandler::StartDelete(
 {
     // Use the token as what so cancelOperations works properly
     AutoPtr<WorkerArgs> args = new WorkerArgs();
-    args->mHandler = (IHandler*) this;
+    args->mHandler = THIS_PROBE(IHandler);
     args->mUri = uri;
     args->mCookie = cookie;
     args->mSelection = selection;
     args->mSelectionArgs = selectionArgs;
 
     AutoPtr<IMessage> msg;
-    mWorkerThreadHandler->ObtainMessage(token, EVENT_ARG_DELETE, 0, args, (IMessage**)&msg);
+    mWorkerThreadHandler->ObtainMessage(token, EVENT_ARG_DELETE, 0, TO_IINTERFACE(args), (IMessage**)&msg);
     Boolean result;
     return mWorkerThreadHandler->SendMessage(msg, &result);
-}
-
-ECode AsyncQueryHandler::HandleMessage(
-    /* [in] */ IMessage* msg)
-{
-    Int32 what, arg1;
-    msg->GetWhat(&what);
-    msg->GetArg1(&arg1);
-    AutoPtr<IInterface> obj;
-    msg->GetObj((IInterface**)&obj);
-
-    AutoPtr<WorkerArgs> args = (WorkerArgs*) obj.Get();
-    if (localLOGV) {
-        Logger::D(TAG, "AsyncQueryHandler.handleMessage: msg.what=%d, msg.arg1=%d", what, arg1);
-    }
-
-    Int32 token = what;
-    Int32 event = arg1;
-
-    // pass token back to caller on each callback.
-    switch (event) {
-        case EVENT_ARG_QUERY:
-            return OnQueryComplete(token, args->mCookie, ICursor::Probe(args->mResult.Get()));
-
-        case EVENT_ARG_INSERT:
-            return OnInsertComplete(token, args->mCookie, IUri::Probe(args->mResult));
-
-        case EVENT_ARG_UPDATE:
-        {
-            Int32 result = 0;
-            FAIL_RETURN(IInteger32::Probe(args->mResult)->GetValue(&result))
-            return OnUpdateComplete(token, args->mCookie, result);
-        }
-        case EVENT_ARG_DELETE:
-        {
-            Int32 result = 0;
-            FAIL_RETURN(IInteger32::Probe(args->mResult)->GetValue(&result))
-            return OnDeleteComplete(token, args->mCookie, result);
-        }
-    }
-
-    return NOERROR;
-}
-
-ECode AsyncQueryHandler::CreateHandler(
-    /* [in] */ ILooper* looper,
-    /* [out] */ IHandler** handler)
-{
-    VALIDATE_NOT_NULL(handler)
-    AutoPtr<WorkerHandler> worker = new WorkerHandler(looper, this);
-    *handler = (IHandler*)worker.Get();
-    REFCOUNT_ADD(*handler);
-    return NOERROR;
 }
 
 ECode AsyncQueryHandler::OnQueryComplete(
@@ -351,6 +308,48 @@ ECode AsyncQueryHandler::OnDeleteComplete(
     /* [in] */ IInterface* cookie,
     /* [in] */ Int32 result)
 {
+    return NOERROR;
+}
+
+ECode AsyncQueryHandler::HandleMessage(
+    /* [in] */ IMessage* msg)
+{
+    Int32 what, arg1;
+    msg->GetWhat(&what);
+    msg->GetArg1(&arg1);
+    AutoPtr<IInterface> obj;
+    msg->GetObj((IInterface**)&obj);
+
+    AutoPtr<WorkerArgs> args = (WorkerArgs*) IObject::Probe(obj);
+    if (localLOGV) {
+        Logger::D(TAG, "AsyncQueryHandler.handleMessage: msg.what=%d, msg.arg1=%d", what, arg1);
+    }
+
+    Int32 token = what;
+    Int32 event = arg1;
+
+    // pass token back to caller on each callback.
+    switch (event) {
+        case EVENT_ARG_QUERY:
+            return OnQueryComplete(token, args->mCookie, ICursor::Probe(args->mResult.Get()));
+
+        case EVENT_ARG_INSERT:
+            return OnInsertComplete(token, args->mCookie, IUri::Probe(args->mResult));
+
+        case EVENT_ARG_UPDATE:
+        {
+            Int32 result = 0;
+            FAIL_RETURN(IInteger32::Probe(args->mResult)->GetValue(&result))
+            return OnUpdateComplete(token, args->mCookie, result);
+        }
+        case EVENT_ARG_DELETE:
+        {
+            Int32 result = 0;
+            FAIL_RETURN(IInteger32::Probe(args->mResult)->GetValue(&result))
+            return OnDeleteComplete(token, args->mCookie, result);
+        }
+    }
+
     return NOERROR;
 }
 

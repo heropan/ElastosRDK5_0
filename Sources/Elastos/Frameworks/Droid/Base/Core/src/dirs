@@ -2,7 +2,7 @@
 DIRS += os
 DIRS += net
 DIRS += util
-#DIRS += content
+DIRS += content
 #DIRS += media
 #DIRS += graphics
 #DIRS += text

@@ -1,23 +1,34 @@
 
 #include "content/Loader.h"
+#include <elastos/core/StringBuilder.h>
+
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
+CAR_INTERFACE_IMPL(Loader, Object, ILoader)
+
 Loader::Loader()
-    : mId(0)
-    , mListener(NULL)
-    , mOnLoadCanceledListener(NULL)
-    , mContext(NULL)
+    : mContentChanged(FALSE)
+    , mId(0)
     , mStarted(FALSE)
     , mAbandoned(FALSE)
     , mReset(TRUE)
-    , mContentChanged(FALSE)
+    , mProcessingChange(FALSE)
 {}
 
 Loader::~Loader()
 {}
+
+ECode Loader::constructor(
+    /* [in] */ IContext* context)
+{
+    VALIDATE_NOT_NULL(context)
+    FAIL_RETURN(context->GetApplicationContext((IContext**)&mContext));
+    return NOERROR;
+}
 
 ECode Loader::DeliverResult(
     /* [in] */ IInterface* data)
@@ -178,6 +189,7 @@ ECode Loader::Reset()
     mStarted = FALSE;
     mAbandoned = FALSE;
     mContentChanged = FALSE;
+    mProcessingChange = FALSE;
     return NOERROR;
 }
 
@@ -187,6 +199,21 @@ ECode Loader::TakeContentChanged(
     VALIDATE_NOT_NULL(succeeded)
     *succeeded = mContentChanged;
     mContentChanged = FALSE;
+    mProcessingChange |= *succeeded;
+    return NOERROR;
+}
+
+ECode Loader::CommitContentChanged()
+{
+    mProcessingChange = FALSE;
+    return NOERROR;
+}
+
+ECode Loader::RollbackContentChanged()
+{
+    if (mProcessingChange) {
+        mContentChanged = TRUE;
+    }
     return NOERROR;
 }
 
@@ -210,22 +237,22 @@ ECode Loader::DataToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
-    AutoPtr<IStringBuilder> sb = new StringBuilder(64);
+    StringBuilder sb(64);
 //***    DebugUtils::BuildShortClassTag(data, sb);
-    sb->AppendString(String("}"));
-    return sb->ToString(str);
+    sb.Append("}");
+    return sb.ToString(str);
 }
 
 ECode Loader::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
-    AutoPtr<IStringBuilder> sb = new StringBuilder(64);
+    StringBuilder sb(64);
 //***    DebugUtils::BuildShortClassTag(this, sb);
-    sb->AppendString(String(" id="));
-    sb->AppendInt32(mId);
-    sb->AppendString(String("}"));
-    return sb->ToString(str);
+    sb.Append(" id=");
+    sb.Append(mId);
+    sb.Append("}");
+    return sb.ToString(str);
 }
 
 ECode Loader::Dump(
@@ -234,28 +261,16 @@ ECode Loader::Dump(
     /* [in] */ IPrintWriter* writer,
     /* [in] */ ArrayOf<String>* args)
 {
-    writer->PrintString(prefix);
-    writer->PrintString(String("mId="));
-    writer->PrintInt32(mId);
-    writer->PrintString(String(" mListener="));
-    writer->PrintObject(mListener);
-    writer->PrintString(prefix);
-    writer->PrintString(String("mStarted="));
-    writer->PrintBoolean(mStarted);
-    writer->PrintString(String(" mContentChanged="));
-    writer->PrintBoolean(mContentChanged);
-    writer->PrintString(String(" mAbandoned="));
-    writer->PrintBoolean(mAbandoned);
-    writer->PrintString(String(" mReset="));
-    writer->PrintBooleanln(mReset);
-    return NOERROR;
-}
-
-ECode Loader::Init(
-    /* [in] */ IContext* context)
-{
-    VALIDATE_NOT_NULL(context)
-    FAIL_RETURN(context->GetApplicationContext((IContext**)&mContext));
+    assert(0 && "TODO");
+    // if (mStarted || mContentChanged || mProcessingChange) {
+    //     writer.print(prefix); writer.print("mStarted="); writer.print(mStarted);
+    //             writer.print(" mContentChanged="); writer.print(mContentChanged);
+    //             writer.print(" mProcessingChange="); writer.println(mProcessingChange);
+    // }
+    // if (mAbandoned || mReset) {
+    //     writer.print(prefix); writer.print("mAbandoned="); writer.print(mAbandoned);
+    //             writer.print(" mReset="); writer.println(mReset);
+    // }
     return NOERROR;
 }
 

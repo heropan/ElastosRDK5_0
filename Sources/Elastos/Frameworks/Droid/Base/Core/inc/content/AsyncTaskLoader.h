@@ -3,26 +3,22 @@
 #define __ELASTOS_DROID_CONTENT_ASYNCTASKLOADER_H__
 
 #include <ext/frameworkext.h>
-#include <elastos/core/StringBuilder.h>
-#include "Loader.h"
 #include "os/AsyncTask.h"
+#include "content/Loader.h"
 
-using namespace Elastos;
-using namespace Elastos::Core;
-using namespace Elastos::IO;
-using namespace Elastos::Droid::Database;
-using namespace Elastos::Droid::Os;
-using namespace Elastos::Droid::Utility;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::AsyncTask;
+using Elastos::Utility::Concurrent::ICountDownLatch;
+using Elastos::Utility::Concurrent::IExecutor;
+using Elastos::Core::IRunnable;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 class AsyncTaskLoader
-    : public ElRefBase
-    , public IObject
+    : public Loader
     , public IAsyncTaskLoader
-    , public Loader
 {
 private:
     class LoadTask
@@ -32,12 +28,12 @@ private:
     friend class AsyncTaskLoader;
 
     public:
-        LoadTask(
-            /* [in] */ AsyncTaskLoader* context);
-
-        ~LoadTask();
-
         CAR_INTERFACE_DECL()
+
+        LoadTask(
+            /* [in] */ IWeakReference* loader);
+
+        virtual ~LoadTask();
 
         /* Runs on the UI thread, when the waiting task is posted to a handler.
          * This method is only executed when task execution was deferred (waiting was true). */
@@ -64,37 +60,23 @@ private:
         AutoPtr<ICountDownLatch> mDone;
         // Set to true to indicate that the task has been posted to a handler for
         // execution at a later time.  Used to throttle updates.
-        Boolean waiting;
-        AutoPtr<AsyncTaskLoader> mContext;
-
+        Boolean mWaiting;
+        AutoPtr<IWeakReference> mWeakHost;
     };
 
 public:
-    AsyncTaskLoader();
+    CAR_INTERFACE_DECL()
 
-    AsyncTaskLoader(
-        /* [in] */ IContext* context);
+    AsyncTaskLoader();
 
     virtual ~AsyncTaskLoader();
 
-    CAR_INTERFACE_DECL()
+    CARAPI constructor(
+        /* [in] */ IContext* context);
 
-    CARAPI Aggregate(
-        /* [in] */ AggrType aggrType,
-        /* [in] */ PInterface pObject);
-
-    CARAPI GetDomain(
-        /* [out] */ PInterface *ppObject);
-
-    CARAPI GetClassID(
-        /* [out] */ ClassID *pCLSID);
-
-    CARAPI Equals(
-        /* [in] */ IInterface* other,
-        /* [out] */ Boolean * result);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hash);
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IExecutor* excutor);
 
     CARAPI ToString(
         /* [out] */ String* info);
@@ -211,7 +193,6 @@ protected:
     CARAPI OnLoadInBackground(
         /* [out] */ IInterface** result);
 
-private:
     CARAPI ExecutePendingTask();
 
     CARAPI DispatchOnCancelled(
@@ -223,12 +204,14 @@ private:
         /* [in] */ IInterface* data);
 
 private:
-    static const CString TAG;
+    static const String TAG;
     static const Boolean DEBUG;
 
 private:
-    /* volatile */ AutoPtr<LoadTask> mTask;
-    /* volatile */ AutoPtr<LoadTask> mCancellingTask;
+    AutoPtr<IExecutor> mExecutor;
+
+    /*volatile*/ AutoPtr<LoadTask> mTask;
+    /*volatile*/ AutoPtr<LoadTask> mCancellingTask;
 
     Int64 mUpdateThrottle;
     Int64 mLastLoadCompleteTime;

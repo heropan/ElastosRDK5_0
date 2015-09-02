@@ -7,6 +7,10 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
+CAR_INTERFACE_IMPL(CClipDataHelper, Singleton, IClipDataHelper)
+
+CAR_SINGLETON_IMPL(CClipDataHelper)
+
 ECode CClipDataHelper::NewPlainText(
     /* [in] */ ICharSequence* label,
     /* [in] */ ICharSequence* text,

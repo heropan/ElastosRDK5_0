@@ -3,14 +3,29 @@
 #define __ELASTOS_DROID_CONTENT_CCOMPONENTNAME_H__
 
 #include "_Elastos_Droid_Content_CComponentName.h"
+#include <elastos/core/StringBuilder.h>
+
+using Elastos::Core::StringBuilder;
+using Elastos::Core::ICloneable;
+using Elastos::Core::IComparable;
+using Elastos::IO::IPrintWriter;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CComponentName)
+    , public Object
+    , public IComponentName
+    , public IParcelable
+    , public ICloneable
+    , public IComparable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     /**
@@ -50,7 +65,7 @@ public:
         /* [in] */ IClassInfo* cls);
 
     CARAPI Clone(
-        /* [out] */ IComponentName** newComponentName);
+        /* [out] */ IInterface** newComponentName);
 
     /**
      * Return the package name of this component.
@@ -122,7 +137,7 @@ public:
         /* [out] */ Int32* hashCode);
 
     CARAPI CompareTo(
-        /* [in] */ IComponentName* that,
+        /* [in] */ IInterface* that,
         /* [out] */ Int32* result);
 
     CARAPI ReadFromParcel(
@@ -138,6 +153,31 @@ public:
     static CARAPI WriteToParcel(
         /* [in] */ IComponentName* component,
         /* [in] */ IParcel* dest);
+
+private:
+    static CARAPI AppendShortClassName(
+        /* [in] */ StringBuilder* sb,
+        /* [in] */ const String& packageName,
+        /* [in] */ const String& className);
+
+    static CARAPI PrintShortClassName(
+        /* [in] */ IPrintWriter* sb,
+        /* [in] */ const String& packageName,
+        /* [in] */ const String& className);
+
+    CARAPI AppendShortString(
+        /* [in] */ StringBuilder* sb);
+
+    static CARAPI AppendShortString(
+        /* [in] */ StringBuilder* sb,
+        /* [in] */ const String& packageName,
+        /* [in] */ const String& className);
+
+    static CARAPI PrintShortString(
+        /* [in] */ IPrintWriter* sb,
+        /* [in] */ const String& packageName,
+        /* [in] */ const String& className);
+
 
 private:
     String mPackage;

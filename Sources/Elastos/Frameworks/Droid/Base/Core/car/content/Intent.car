@@ -5140,6 +5140,24 @@ module
             [out] String* str);
 
         /**
+         * Prepare this {@link Intent} to leave an app process.
+         *
+         * @hide
+         */
+        PrepareToLeaveProcess();
+
+        /**
+         * @hide
+         */
+        PrepareToEnterProcess();
+
+        /**
+         * @hide
+         */
+        FixUris(
+            [in] Int32 contentUserHint);
+
+        /**
          * Migrate any {@link #EXTRA_STREAM} in {@link #ACTION_SEND} and
          * {@link #ACTION_SEND_MULTIPLE} to {@link ClipData}. Also inspects nested
          * intents in {@link #ACTION_CHOOSER}.

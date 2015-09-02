@@ -3,13 +3,12 @@
 #define __ELASTOS_DROID_CONTENT_ASYNCQUERYHANDLER_H__
 
 #include <ext/frameworkext.h>
-#include "os/HandlerBase.h"
+#include "os/Handler.h"
 
-
-using Elastos::Core::IRunnable;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
+using Elastos::Core::IRunnable;
 
 namespace Elastos {
 namespace Droid {
@@ -20,23 +19,17 @@ namespace Content {
  * queries easier.
  */
 class AsyncQueryHandler
-    : public ElRefBase
-    , public Handler
+    : public Handler
     , public IAsyncQueryHandler
-    , public IHandler
 {
-
 protected:
     class WorkerArgs
-        : public ElRefBase
-        , public IInterface
+        : public Object
     {
     public:
         WorkerArgs();
 
-        ~WorkerArgs();
-
-        CAR_INTERFACE_DECL()
+        virtual ~WorkerArgs();
 
     public:
         AutoPtr<IUri> mUri;
@@ -51,37 +44,37 @@ protected:
     };
 
     class WorkerHandler
-        : public HandlerBase
+        : public Handler
     {
     public:
         WorkerHandler(
             /* [in] */ ILooper* looper,
-            /* [in] */ AsyncQueryHandler* context);
+            /* [in] */ IWeakReference* context);
 
-        ~WorkerHandler();
+        virtual ~WorkerHandler();
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
 
     private:
-        AutoPtr<AsyncQueryHandler> mContext;
+        AutoPtr<IWeakReference> mWeakContext;
+        //AutoPtr<AsyncQueryHandler> mContext;
     };
 
 friend class WorkerHandler;
 
 public:
-    AsyncQueryHandler();
+    CAR_INTERFACE_DECL()
 
-    AsyncQueryHandler(
-        /* [in] */ IContentResolver* cr);
+    // must call constructor right after create a AsyncQueryHandler.
+    AsyncQueryHandler();
 
     virtual ~AsyncQueryHandler();
 
-    CARAPI Init(
-        /* [in] */ IContentResolver* cr);
+    CARAPI constructor();
 
-    CAR_INTERFACE_DECL()
-    IHANDLER_METHODS_DECL()
+    CARAPI constructor(
+        /* [in] */ IContentResolver* cr);
 
     /**
      * This method begins an asynchronous query. When the query is done
@@ -243,10 +236,12 @@ protected:
 private:
     static const String TAG;
     static const Boolean localLOGV;
+
     static const Int32 EVENT_ARG_QUERY = 1;
     static const Int32 EVENT_ARG_INSERT = 2;
     static const Int32 EVENT_ARG_UPDATE = 3;
     static const Int32 EVENT_ARG_DELETE = 4;
+
     static AutoPtr<ILooper> sLooper;
 
 private:
@@ -255,7 +250,6 @@ private:
     AutoPtr<IWeakReference> mResolver;
     AutoPtr<IHandler> mWorkerThreadHandler;
     Object mAsyncQueryHandlerLock;
-
 };
 
 }

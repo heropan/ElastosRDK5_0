@@ -2,30 +2,46 @@
 #ifndef __ELASTOS_DROID_CONTENT_BROADCASTRECEIVER_H__
 #define __ELASTOS_DROID_CONTENT_BROADCASTRECEIVER_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
+#include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::App::IIActivityManager;
 using Elastos::Core::IClassLoader;
-using namespace Elastos::Droid::Os;
-using namespace Elastos::Droid::App;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 class BroadcastReceiver
-    : public ElRefBase
-    , public IObject
+    : public Object
     , public IBroadcastReceiver
-    , public IWeakReferenceSource
 {
 public:
+
+    /**
+     * State for a result that is pending for a broadcast receiver.  Returned
+     * by {@link BroadcastReceiver#goAsync() goAsync()}
+     * while in {@link BroadcastReceiver#onReceive BroadcastReceiver.onReceive()}.
+     * This allows you to return from onReceive() without having the broadcast
+     * terminate; you must call {@link #finish()} once you are done with the
+     * broadcast.  This allows you to process the broadcast off of the main
+     * thread of your app.
+     *
+     * <p>Note on threading: the state inside of this class is not itself
+     * thread-safe, however you can use it from any thread if you properly
+     * sure that you do not have races.  Typically this means you will hand
+     * the entire object to another thread, which will be solely responsible
+     * for setting any results and finally calling {@link #finish()}.
+     */
     class PendingResult
+        : public Object
+        , public IPendingResult
     {
     public:
+        CAR_INTERFACE_DECL()
+
         PendingResult();
 
         PendingResult(
@@ -39,6 +55,16 @@ public:
             /* [in] */ Int32 userId);
 
         virtual ~PendingResult();
+
+        CARAPI constructor(
+            /* [in] */ Int32 resultCode,
+            /* [in] */ const String& resultData,
+            /* [in] */ IBundle* resultExtras,
+            /* [in] */ Int32 type,
+            /* [in] */ Boolean ordered,
+            /* [in] */ Boolean sticky,
+            /* [in] */ IBinder* token,
+            /* [in] */ Int32 userId);
 
         /**
          * Version of {@link BroadcastReceiver#setResultCode(int)
@@ -145,15 +171,6 @@ public:
         CARAPI GetInitialStickyHint(
             /* [out] */ Boolean* initialStickyHint);
 
-        CARAPI Init(
-            /* [in] */ Int32 resultCode,
-            /* [in] */ const String& resultData,
-            /* [in] */ IBundle* resultExtras,
-            /* [in] */ Int32 type,
-            /* [in] */ Boolean ordered,
-            /* [in] */ Boolean sticky,
-            /* [in] */ IBinder* token,
-            /* [in] */ Int32 userId);
     private:
         CARAPI CheckSynchronousHint();
 
@@ -180,45 +197,16 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     BroadcastReceiver();
 
     virtual ~BroadcastReceiver();
 
     virtual CARAPI Initialize();
 
-    CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
-
-    CARAPI Aggregate(
-        /* [in] */ AggrType aggrType,
-        /* [in] */ PInterface pObject);
-
-    CARAPI GetDomain(
-        /* [out] */ PInterface *ppObject);
-
-    CARAPI GetClassID(
-        /* [out] */ ClassID *pCLSID);
-
-    CARAPI Equals(
-        /* [in] */ IInterface* other,
-        /* [out] */ Boolean * result);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hash);
-
     CARAPI ToString(
         /* [out] */ String* info);
-
-    CARAPI GetWeakReference(
-        /* [out] */ IWeakReference** weakReference);
 
     /**
      * This method is called when the BroadcastReceiver is receiving an Intent

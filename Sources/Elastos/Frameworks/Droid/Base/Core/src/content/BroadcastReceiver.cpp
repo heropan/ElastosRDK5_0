@@ -1,14 +1,13 @@
-#include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
-#include "app/ActivityManagerNative.h"
-#ifdef DROID_CORE
+//#include "app/ActivityManagerNative.h"
 #include "os/CBundle.h"
-#endif
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
-using Elastos::Core::StringBuilder;
-using Elastos::Utility::Logging::Slogger;
+#include <elastos/core/AutoLock.h>
 
+using Elastos::Droid::Os::IBaseBundle;
+using Elastos::Droid::Os::CBundle;
+using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -18,6 +17,7 @@ namespace Content {
 //==============================================================================
 // BroadcastReceiver::PendingResult
 //==============================================================================
+CAR_INTERFACE_IMPL(BroadcastReceiver::PendingResult, Object, IPendingResult)
 
 const Int32 BroadcastReceiver::PendingResult::TYPE_COMPONENT;
 const Int32 BroadcastReceiver::PendingResult::TYPE_REGISTERED;
@@ -58,6 +58,27 @@ BroadcastReceiver::PendingResult::PendingResult(
 
 BroadcastReceiver::PendingResult::~PendingResult()
 {}
+
+ECode BroadcastReceiver::PendingResult::constructor(
+    /* [in] */ Int32 resultCode,
+    /* [in] */ const String& resultData,
+    /* [in] */ IBundle* resultExtras,
+    /* [in] */ Int32 type,
+    /* [in] */ Boolean ordered,
+    /* [in] */ Boolean sticky,
+    /* [in] */ IBinder* token,
+    /* [in] */ Int32 userId)
+{
+    mResultCode = resultCode;
+    mResultData = resultData;
+    mResultExtras = resultExtras;
+    mType = type;
+    mOrderedHint = ordered;
+    mInitialStickyHint = sticky;
+    mToken = token;
+    mSendingUser = userId;
+    return NOERROR;
+}
 
 ECode BroadcastReceiver::PendingResult::SetResultCode(
     /* [in] */ Int32 code)
@@ -105,8 +126,9 @@ ECode BroadcastReceiver::PendingResult::GetResultExtras(
 {
     VALIDATE_NOT_NULL(resultExtras);
     *resultExtras = mResultExtras;
+    REFCOUNT_ADD(*resultExtras)
+
     if (!makeMap) {
-        REFCOUNT_ADD(*resultExtras)
         return NOERROR;
     }
 
@@ -153,8 +175,9 @@ ECode BroadcastReceiver::PendingResult::ClearAbortBroadcast()
 
 ECode BroadcastReceiver::PendingResult::Finish()
 {
+    assert(0 && "TODO");
     if (mType == TYPE_COMPONENT) {
-        AutoPtr<IIActivityManager> mgr = ActivityManagerNative::GetDefault();
+        // AutoPtr<IIActivityManager> mgr = ActivityManagerNative::GetDefault();
         // if (QueuedWork.hasPendingWork()) {
         //     // If this is a broadcast component, we need to make sure any
         //     // queued work is complete before telling AM we are done, so
@@ -177,15 +200,15 @@ ECode BroadcastReceiver::PendingResult::Finish()
         // if (ActivityThread::DEBUG_BROADCAST) {
         //     Slogger::I("BroadcastReceiver::PendingResult", "Finishing broadcast to component %p", mToken.Get());
         // }
-        SendFinished(mgr);
+        // SendFinished(mgr);
         // }
     }
     else if (mOrderedHint && mType != TYPE_UNREGISTERED) {
         // if (ActivityThread::DEBUG_BROADCAST) {
         //     Slogger::I("BroadcastReceiver::PendingResult", "Finishing broadcast to %p", mToken.Get());
         // }
-        AutoPtr<IIActivityManager> mgr = ActivityManagerNative::GetDefault();
-        SendFinished(mgr);
+        // AutoPtr<IIActivityManager> mgr = ActivityManagerNative::GetDefault();
+        // SendFinished(mgr);
     }
     return NOERROR;
 }
@@ -194,7 +217,7 @@ ECode BroadcastReceiver::PendingResult::SetExtrasClassLoader(
     /* [in] */ IClassLoader* cl)
 {
     if (NULL != mResultExtras) {
-        FAIL_RETURN(mResultExtras->SetClassLoader(cl))
+        FAIL_RETURN(IBaseBundle::Probe(mResultExtras)->SetClassLoader(cl))
     }
     return NOERROR;
 }
@@ -250,27 +273,6 @@ ECode BroadcastReceiver::PendingResult::GetInitialStickyHint(
     return NOERROR;
 }
 
-ECode BroadcastReceiver::PendingResult::Init(
-    /* [in] */ Int32 resultCode,
-    /* [in] */ const String& resultData,
-    /* [in] */ IBundle* resultExtras,
-    /* [in] */ Int32 type,
-    /* [in] */ Boolean ordered,
-    /* [in] */ Boolean sticky,
-    /* [in] */ IBinder* token,
-    /* [in] */ Int32 userId)
-{
-    mResultCode = resultCode;
-    mResultData = resultData;
-    mResultExtras = resultExtras;
-    mType = type;
-    mOrderedHint = ordered;
-    mInitialStickyHint = sticky;
-    mToken = token;
-    mSendingUser = userId;
-    return NOERROR;
-}
-
 ECode BroadcastReceiver::PendingResult::CheckSynchronousHint()
 {
     // Note that we don't assert when receiving the initial sticky value,
@@ -288,10 +290,10 @@ ECode BroadcastReceiver::PendingResult::CheckSynchronousHint()
 //==============================================================================
 // BroadcastReceiver
 //==============================================================================
+CAR_INTERFACE_IMPL(BroadcastReceiver, Object, IBroadcastReceiver)
 
 BroadcastReceiver::BroadcastReceiver()
-    : mPendingResult(NULL)
-    , mDebugUnregister(FALSE)
+    : mDebugUnregister(FALSE)
 {}
 
 BroadcastReceiver::~BroadcastReceiver()
@@ -302,99 +304,6 @@ ECode BroadcastReceiver::Initialize()
     return NOERROR;
 }
 
-UInt32 BroadcastReceiver::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 BroadcastReceiver::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface BroadcastReceiver::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IBroadcastReceiver*)this;
-    }
-    else if (riid == EIID_IObject) {
-        return (IObject*)this;
-    }
-    else if (riid == EIID_IBroadcastReceiver) {
-        return (IBroadcastReceiver*)this;
-    }
-    else if (riid == EIID_IWeakReferenceSource) {
-        return (IWeakReferenceSource*)this;
-    }
-    return NULL;
-}
-
-ECode BroadcastReceiver::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
-
-    if (pObject == (IInterface *)(IBroadcastReceiver *)this) {
-        *pIID = EIID_IBroadcastReceiver;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IObject *)this) {
-        *pIID = EIID_IObject;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IWeakReferenceSource *)this) {
-        *pIID = EIID_IWeakReferenceSource;
-        return NOERROR;
-    }
-
-    return E_INVALID_ARGUMENT;
-}
-
-ECode BroadcastReceiver::Aggregate(
-    /* [in] */ AggrType aggrType,
-    /* [in] */ PInterface pObject)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode BroadcastReceiver::GetDomain(
-    /* [out] */ PInterface *ppObject)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode BroadcastReceiver::GetClassID(
-    /* [out] */ ClassID *pCLSID)
-{
-    assert(0);
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode BroadcastReceiver::Equals(
-    /* [in] */ IInterface* other,
-    /* [out] */ Boolean * result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = FALSE;
-    VALIDATE_NOT_NULL(other);
-
-    IBroadcastReceiver* o = IBroadcastReceiver::Probe(other);
-    if (o != NULL) {
-        *result = (o == THIS_PROBE(IBroadcastReceiver));
-    }
-    return NOERROR;
-}
-
-ECode BroadcastReceiver::GetHashCode(
-    /* [out] */ Int32* hash)
-{
-    VALIDATE_NOT_NULL(hash);
-    *hash = (Int32)THIS_PROBE(IBroadcastReceiver);
-    return NOERROR;
-}
-
 ECode BroadcastReceiver::ToString(
     /* [out] */ String* info)
 {
@@ -402,15 +311,6 @@ ECode BroadcastReceiver::ToString(
     String str("BroadcastReceiver:(");
     str.AppendFormat("%p", THIS_PROBE(IBroadcastReceiver));
     *info = str;
-    return NOERROR;
-}
-
-ECode BroadcastReceiver::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -430,11 +330,14 @@ ECode BroadcastReceiver::PeekService(
     /* [out] */ IBinder** binder)
 {
     VALIDATE_NOT_NULL(binder)
-    AutoPtr<IIActivityManager> am = ActivityManagerNative::GetDefault();
+    *binder = NULL;
+
+    assert(0 && "TODO");
+    AutoPtr<IIActivityManager> am ;//= ActivityManagerNative::GetDefault();
     AutoPtr<IContentResolver> resolver;
     String type;
 
-    FAIL_RETURN(service->SetAllowFds(FALSE))
+    FAIL_RETURN(service->PrepareToLeaveProcess())
     FAIL_RETURN(myContext->GetContentResolver((IContentResolver**)&resolver))
     FAIL_RETURN(service->ResolveTypeIfNeeded(resolver, &type))
     return am->PeekService(service, type, binder);
@@ -499,9 +402,9 @@ ECode BroadcastReceiver::GetResultExtras(
     /* [out] */ IBundle** extras)
 {
     VALIDATE_NOT_NULL(extras);
+    *extras = NULL;
 
     if (NULL == mPendingResult) {
-        *extras = NULL;
         return NOERROR;
     }
 
@@ -611,9 +514,7 @@ ECode BroadcastReceiver::GetPendingResult(
 ECode BroadcastReceiver::GetSendingUserId(
     /* [out] */ Int32* userId)
 {
-    VALIDATE_NOT_NULL(userId);
-    FAIL_RETURN(mPendingResult->GetSendingUserId(userId));
-    return NOERROR;
+    return mPendingResult->GetSendingUserId(userId);
 }
 
 ECode BroadcastReceiver::SetDebugUnregister(

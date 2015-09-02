@@ -1,13 +1,18 @@
 
 #include "ext/frameworkext.h"
 #include "content/CComponentName.h"
-#include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::StringBuilder;
+using Elastos::IO::IWriter;
+using Elastos::Core::EIID_ICloneable;
+using Elastos::Core::EIID_IComparable;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
+
+CAR_INTERFACE_IMPL_4(CComponentName, Object, IComponentName, IParcelable, ICloneable, IComparable)
+
+CAR_OBJECT_IMPL(CComponentName)
 
 ECode CComponentName::constructor()
 {
@@ -49,20 +54,23 @@ ECode CComponentName::constructor(
     /* [in] */ IClassInfo* cls)
 {
     pkg->GetPackageName(&mPackage);
-    StringBuf* pStringBuf = StringBuf::Alloc(256);
-    cls->GetName(pStringBuf);
+    String name;
+    cls->GetName(&name);
 
     //TODO?: In java: cls.getName will get the content(package name + '.' + class name), so...
-    mClass = mPackage + String(".") + String(pStringBuf->GetPayload());
-    StringBuf::Free(pStringBuf);
+    mClass = mPackage + String(".") + name;
     return NOERROR;
 }
 
 ECode CComponentName::Clone(
-    /* [out] */ IComponentName** newComponentName)
+    /* [out] */ IInterface** newComponentName)
 {
     VALIDATE_NOT_NULL(newComponentName)
-    return CComponentName::New(mPackage, mClass, newComponentName);
+    AutoPtr<IComponentName> cloneObj;
+    CComponentName::New(mPackage, mClass, (IComponentName**)&cloneObj);
+    *newComponentName = TO_IINTERFACE(cloneObj);
+    REFCOUNT_ADD(*newComponentName)
+    return NOERROR;
 }
 
 ECode CComponentName::GetPackageName(
@@ -97,6 +105,42 @@ ECode CComponentName::GetShortClassName(
     return NOERROR;
 }
 
+ECode CComponentName::AppendShortClassName(
+    /* [in] */ StringBuilder* sb,
+    /* [in] */ const String& packageName,
+    /* [in] */ const String& className)
+{
+    if (className.StartWith(packageName)) {
+        Int32 PN = packageName.GetLength();
+        Int32 CN = className.GetLength();
+        if (CN > PN && className.GetChar(PN) == '.') {
+            AutoPtr<ArrayOf<Char32> > chars = className.GetChars();
+            sb->Append(*chars.Get(), PN, CN);
+            return NOERROR;
+        }
+    }
+    sb->Append(className);
+    return NOERROR;
+}
+
+ECode CComponentName::PrintShortClassName(
+    /* [in] */ IPrintWriter* pw,
+    /* [in] */ const String& packageName,
+    /* [in] */ const String& className)
+{
+    if (className.StartWith(packageName)) {
+        Int32 PN = packageName.GetLength();
+        Int32 CN = className.GetLength();
+        if (CN > PN && className.GetChar(PN) == '.') {
+            AutoPtr<ArrayOf<Char32> > chars = className.GetChars();
+            IWriter::Probe(pw)->Write(chars, PN, CN - PN);
+            return NOERROR;
+        }
+    }
+    pw->Print(className);
+    return NOERROR;
+}
+
 ECode CComponentName::FlattenToString(
     /* [out] */ String* name)
 {
@@ -111,14 +155,38 @@ ECode CComponentName::FlattenToString(
 ECode CComponentName::FlattenToShortString(
     /* [out] */ String* name)
 {
-    VALIDATE_NOT_NULL(name)
-    StringBuilder sb;
-    sb.Append(mPackage);
-    sb.AppendChar('/');
-    String tmp;
-    GetShortClassName(&tmp);
-    sb.Append(tmp);
-    return sb.ToString(name);
+    StringBuilder sb(mPackage.GetLength() + mClass.GetLength());
+    AppendShortString(&sb, mPackage, mClass);
+    *name = sb.ToString();
+    return NOERROR;
+}
+
+ECode CComponentName::AppendShortString(
+    /* [in] */ StringBuilder* sb)
+{
+    return AppendShortString(sb, mPackage, mClass);
+}
+
+ECode CComponentName::AppendShortString(
+    /* [in] */ StringBuilder* sb,
+    /* [in] */ const String& packageName,
+    /* [in] */ const String& className)
+{
+    VALIDATE_NOT_NULL(sb)
+    sb->Append(packageName);
+    sb->AppendChar('/');
+    return AppendShortClassName(sb, packageName, className);
+}
+
+ECode CComponentName::PrintShortString(
+    /* [in] */ IPrintWriter* pw,
+    /* [in] */ const String& packageName,
+    /* [in] */ const String& className)
+{
+    VALIDATE_NOT_NULL(pw)
+    pw->Print(packageName);
+    pw->PrintChar('/');
+    return PrintShortClassName(pw, packageName, className);
 }
 
 ECode CComponentName::UnflattenFromString(
@@ -204,11 +272,15 @@ ECode CComponentName::GetHashCode(
 }
 
 ECode CComponentName::CompareTo(
-    /* [in] */ IComponentName* that,
+    /* [in] */ IInterface* thatObj,
     /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(that)
     VALIDATE_NOT_NULL(result)
+    *result = -1;
+
+    IComponentName* that = IComponentName::Probe(thatObj);
+    VALIDATE_NOT_NULL(that)
+
     Int32 v = 0;
     String pkg;
     that->GetPackageName(&pkg);

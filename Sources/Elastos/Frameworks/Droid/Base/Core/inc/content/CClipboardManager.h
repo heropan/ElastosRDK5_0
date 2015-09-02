@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Content_CClipboardManager.h"
 #include <ext/frameworkext.h>
-#include "os/HandlerBase.h"
+#include "os/Handler.h"
 #include <elastos/utility/etl/List.h>
 
 using namespace Elastos;
@@ -17,10 +17,13 @@ namespace Droid {
 namespace Content {
 
 CarClass(CClipboardManager)
+    , public Object // public Elastos::Droid::Text::ClipboardManager
+    , public IClipboardManager
 {
 private:
 
-    class MyHandler : public HandlerBase
+    class MyHandler
+        : public Handler
     {
     public:
         MyHandler(
@@ -35,16 +38,17 @@ private:
     };
 
     class PrimaryClipChangedServiceListener
-        : public ElRefBase
+        : public Object
         , public IOnPrimaryClipChangedListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         PrimaryClipChangedServiceListener(
             /* [in] */ CClipboardManager* context);
 
         ~PrimaryClipChangedServiceListener();
 
-        CAR_INTERFACE_DECL()
 
         CARAPI DispatchPrimaryClipChanged();
 
@@ -53,9 +57,11 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     CClipboardManager();
 
-    ~CClipboardManager();
+    virtual ~CClipboardManager();
 
     /**
      * Sets the current primary clip on the clipboard.  This is the clip that
