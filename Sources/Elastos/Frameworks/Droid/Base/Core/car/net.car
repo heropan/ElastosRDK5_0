@@ -276,15 +276,15 @@ module
 //        interface IParcelable;
 //    }
 
-//    class CDhcpInfo {
-//        constructor();
+    class CDhcpInfo {
+        constructor();
 
-//        constructor(
-//            [in] IDhcpInfo* service);
+        constructor(
+            [in] IDhcpInfo* service);
 
-//        interface IDhcpInfo;
-//        interface IParcelable;
-//    }
+        interface IDhcpInfo;
+        interface IParcelable;
+    }
 
 //    class CLinkProperties {
 //        constructor();

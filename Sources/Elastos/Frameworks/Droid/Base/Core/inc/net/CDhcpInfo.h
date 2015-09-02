@@ -2,19 +2,29 @@
 #ifndef __ELASTOS_DROID_NET_CDHCPINFO_H__
 #define __ELASTOS_DROID_NET_CDHCPINFO_H__
 
+#include "ext/frameworkext.h"
 #include "_Elastos_Droid_Net_CDhcpInfo.h"
+#include <elastos/core/Object.h>
 #include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::StringBuffer;
 using Elastos::Core::CString;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
 CarClass(CDhcpInfo)
+    , public Object
+    , public IDhcpInfo
+    , public IParcelable
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor();
 
     CARAPI constructor(

@@ -57,15 +57,6 @@ module
 
         Clear();
 
-        /** Implement the Parcelable interface */
-        WriteToParcel(
-            [in] IParcel* dest,
-            [in] Int32 flags);
-
-        ReadFromParcel(
-            [in] IDhcpResults* dhcpResults,
-            [in] IParcel* parcel);
-
         // Utils for jni population - false on success
         // Not part of the superclass because they're only used by the JNI iterface to the DHCP daemon.
         SetIpAddress(
