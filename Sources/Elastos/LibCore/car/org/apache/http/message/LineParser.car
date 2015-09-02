@@ -6,8 +6,8 @@ module
     interface Org.Apache.Http.IRequestLine;
     interface Org.Apache.Http.IStatusLine;
     interface Org.Apache.Http.IProtocolVersion;
-    interface Org.Apache.Http.Message.ICharArrayBuffer;
-    interface Org.Apache.Http.Utility.IParserCursor;
+    interface Org.Apache.Http.Message.IParserCursor;
+    interface Org.Apache.Http.Utility.ICharArrayBuffer;
 
     namespace Org {
     namespace Apache {
@@ -90,7 +90,7 @@ module
         ParseRequestLine(
             [in] ICharArrayBuffer* buffer,
             [in] IParserCursor* cursor,
-            [out] IRequestLine* requestLine);
+            [out] IRequestLine** requestLine);
 
 
         /**
@@ -107,7 +107,7 @@ module
         ParseStatusLine(
             [in] ICharArrayBuffer* buffer,
             [in] IParserCursor* cursor,
-            [out] IStatusLine* statusLine);
+            [out] IStatusLine** statusLine);
 
 
         /**
@@ -127,7 +127,7 @@ module
          */
         ParseHeader(
             [in] ICharArrayBuffer* buffer,
-            [out] IHeader* header);
+            [out] IHeader** header);
 
     }
 

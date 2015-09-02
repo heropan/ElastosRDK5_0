@@ -2,6 +2,8 @@
 module
 {
 
+    using interface Elastos.Utility.IDate;
+
     namespace Org {
     namespace Apache {
     namespace Http {
@@ -59,7 +61,7 @@ module
          * @return Expiration {@link Date}, or <tt>null</tt>.
          */
         GetExpiryDate(
-            [out] IDate* date);
+            [out] IDate** date);
 
         /**
          * Returns <tt>false</tt> if the cookie should be discarded at the end
@@ -77,7 +79,7 @@ module
          * @return the value of the domain attribute
          */
         GetDomain(
-            [out] String* domain);
+            [out] String* domainAttr);
 
         /**
          * Returns the path attribute of the cookie
@@ -110,7 +112,7 @@ module
          * @return the version of the cookie.
          */
         GetVersion(
-            [out] Int32* version);
+            [out] Int32* ver);
 
         /**
          * Returns true if this cookie has expired.

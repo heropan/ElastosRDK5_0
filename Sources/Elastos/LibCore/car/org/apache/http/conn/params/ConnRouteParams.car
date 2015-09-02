@@ -4,8 +4,9 @@ module
 
     using interface Elastos.Net.IInetAddress;
 
+    interface Org.Apache.Http.IHttpHost;
     interface Org.Apache.Http.Conn.Routing.IHttpRoute;
-    interface Ogr.Apache.Http.Params.IHttpParams;
+    interface Org.Apache.Http.Params.IHttpParams;
 
     namespace Org {
     namespace Apache {
@@ -102,7 +103,7 @@ module
          */
         GetLocalAddress(
             [in] IHttpParams* params,
-            [out] IInetAddress** local);
+            [out] IInetAddress** loc);
 
         /**
          * Sets the {@link ConnRoutePNames#LOCAL_ADDRESS LOCAL_ADDRESS}
@@ -113,13 +114,13 @@ module
          */
         SetLocalAddress(
             [in] IHttpParams* params,
-            [in] IInetAddress* local);
+            [in] IInetAddress* loc);
 
         GetNoHost(
             [out] IHttpHost** host);
 
         GetNoRoute(
-            [out] IHttpRoute* route);
+            [out] IHttpRoute** route);
 
     }
 

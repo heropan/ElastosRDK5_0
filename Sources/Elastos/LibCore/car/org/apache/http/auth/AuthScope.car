@@ -22,7 +22,8 @@ module
          * The <tt>null</tt> value represents any host. In the future versions of
          * HttpClient the use of this parameter will be discontinued.
          */
-        const String ANY_HOST = NULL;
+        // TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //const String ANY_HOST = NULL;
 
         /**
          * The <tt>-1</tt> value represents any port.
@@ -32,12 +33,12 @@ module
         /**
          * The <tt>null</tt> value represents any realm.
          */
-        const String ANY_REALM = NULL;
+        //const String ANY_REALM = NULL;
 
         /**
          * The <tt>null</tt> value represents any authentication scheme.
          */
-        const String ANY_SCHEME = NULL;
+        //const String ANY_SCHEME = NULL;
 
         /**
          * @return the host

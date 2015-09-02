@@ -26,7 +26,7 @@ module
          * </p>
          * @see java.net.SocketOptions#SO_TIMEOUT
          */
-        String SO_TIMEOUT = "http.socket.timeout";
+        const String SO_TIMEOUT = "http.socket.timeout";
 
         /**
          * Determines whether Nagle's algorithm is to be used. The Nagle's algorithm
@@ -39,7 +39,7 @@ module
          * </p>
          * @see java.net.SocketOptions#TCP_NODELAY
          */
-        String TCP_NODELAY = "http.tcp.nodelay";
+        const String TCP_NODELAY = "http.tcp.nodelay";
 
         /**
          * Determines the size of the internal socket buffer used to buffer data
@@ -48,7 +48,7 @@ module
          * This parameter expects a value of type {@link Integer}.
          * </p>
          */
-        String SOCKET_BUFFER_SIZE = "http.socket.buffer-size";
+        const String SOCKET_BUFFER_SIZE = "http.socket.buffer-size";
 
         /**
          * Sets SO_LINGER with the specified linger time in seconds. The maximum timeout
@@ -60,7 +60,7 @@ module
          * </p>
          * @see java.net.SocketOptions#SO_LINGER
          */
-        String SO_LINGER = "http.socket.linger";
+        const String SO_LINGER_HTTP = "http.socket.linger";
 
         /**
          * Determines the timeout until a connection is etablished. A value of zero
@@ -69,7 +69,7 @@ module
          * This parameter expects a value of type {@link Integer}.
          * </p>
          */
-        String CONNECTION_TIMEOUT = "http.connection.timeout";
+        const String CONNECTION_TIMEOUT = "http.connection.timeout";
 
         /**
          * Determines whether stale connection check is to be used. Disabling
@@ -80,7 +80,7 @@ module
          * This parameter expects a value of type {@link Boolean}.
          * </p>
          */
-        String STALE_CONNECTION_CHECK = "http.connection.stalecheck";
+        const String STALE_CONNECTION_CHECK = "http.connection.stalecheck";
 
         /**
          * Determines the maximum line length limit. If set to a positive value, any HTTP
@@ -90,7 +90,7 @@ module
          * This parameter expects a value of type {@link Integer}.
          * </p>
          */
-        String MAX_LINE_LENGTH = "http.connection.max-line-length";
+        const String MAX_LINE_LENGTH = "http.connection.max-line-length";
 
         /**
          * Determines the maximum HTTP header count allowed. If set to a positive value,
@@ -101,7 +101,7 @@ module
          * This parameter expects a value of type {@link Integer}.
          * </p>
          */
-        String MAX_HEADER_COUNT = "http.connection.max-header-count";
+        const String MAX_HEADER_COUNT = "http.connection.max-header-count";
     }
 
     } // namespace Params

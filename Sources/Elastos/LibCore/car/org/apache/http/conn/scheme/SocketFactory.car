@@ -1,8 +1,10 @@
 
 module
 {
-    using Elastos.Net.IInetAddress;
-    using Elastos.Net.ISocket;
+    using interface Elastos.Net.IInetAddress;
+    using interface Elastos.Net.ISocket;
+
+    interface Org.Apache.Http.Params.IHttpParams;
 
     namespace Org {
     namespace Apache {

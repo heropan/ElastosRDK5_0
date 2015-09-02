@@ -64,7 +64,7 @@ module
          */
         AppendProtocolVersion(
             [in] ICharArrayBuffer* buffer,
-            [in] IProtocolVersion* version,
+            [in] IProtocolVersion* ver,
             [out] ICharArrayBuffer** buf);
 
         /**

@@ -50,6 +50,198 @@ module
     merge("apache/harmony/security/x509/ITBSCertificate.car");
     merge("apache/harmony/security/x509/IValidity.car");
 
+    merge("apache/http/ConnectionReuseStrategy.car");
+    merge("apache/http/FormattedHeader.car");
+    merge("apache/http/Header.car");
+    merge("apache/http/HeaderElement.car");
+    merge("apache/http/HeaderElementIterator.car");
+    merge("apache/http/HeaderIterator.car");
+    merge("apache/http/HttpClientConnection.car");
+    merge("apache/http/HttpConnection.car");
+    merge("apache/http/HttpConnectionMetrics.car");
+    merge("apache/http/HttpEntity.car");
+    merge("apache/http/HttpEntityEnclosingRequest.car");
+    merge("apache/http/HttpHost.car");
+    merge("apache/http/HttpInetConnection.car");
+    merge("apache/http/HttpMessage.car");
+    merge("apache/http/HttpRequest.car");
+    merge("apache/http/HttpRequestFactory.car");
+    merge("apache/http/HttpRequestInterceptor.car");
+    merge("apache/http/HttpResponse.car");
+    merge("apache/http/HttpResponseFactory.car");
+    merge("apache/http/HttpResponseInterceptor.car");
+    merge("apache/http/HttpServerConnection.car");
+    merge("apache/http/HttpStatus.car");
+    merge("apache/http/HttpVersion.car");
+    merge("apache/http/NameValuePair.car");
+    merge("apache/http/ProtocolVersion.car");
+    merge("apache/http/ReasonPhraseCatalog.car");
+    merge("apache/http/RequestLine.car");
+    merge("apache/http/StatusLine.car");
+    merge("apache/http/TokenIterator.car");
+    merge("apache/http/Exceptions.car");
+
+    merge("apache/http/auth/AUTH.car");
+    merge("apache/http/auth/AuthScheme.car");
+    merge("apache/http/auth/AuthSchemeFactory.car");
+    merge("apache/http/auth/AuthSchemeRegistry.car");
+    merge("apache/http/auth/AuthScope.car");
+    merge("apache/http/auth/AuthState.car");
+    merge("apache/http/auth/BasicUserPrincipal.car");
+    merge("apache/http/auth/Credentials.car");
+    merge("apache/http/auth/NTCredentials.car");
+    merge("apache/http/auth/NTUserPrincipal.car");
+    merge("apache/http/auth/UsernamePasswordCredentials.car");
+
+    merge("apache/http/auth/params/AuthParamBean.car");
+    merge("apache/http/auth/params/AuthParams.car");
+    merge("apache/http/auth/params/AuthPNames.car");
+
+    merge("apache/http/client/AuthenticationHandler.car");
+    merge("apache/http/client/CookieStore.car");
+    merge("apache/http/client/CredentialsProvider.car");
+    merge("apache/http/client/HttpClient.car");
+    merge("apache/http/client/HttpRequestRetryHandler.car");
+    merge("apache/http/client/RedirectHandler.car");
+    merge("apache/http/client/RequestDirector.car");
+    merge("apache/http/client/ResponseHandler.car");
+    merge("apache/http/client/UserTokenHandler.car");
+
+    merge("apache/http/client/methods/AbortableHttpRequest.car");
+    merge("apache/http/client/methods/HttpDelete.car");
+    merge("apache/http/client/methods/HttpGet.car");
+    merge("apache/http/client/methods/HttpHead.car");
+    merge("apache/http/client/methods/HttpOptions.car");
+    merge("apache/http/client/methods/HttpPost.car");
+    merge("apache/http/client/methods/HttpPut.car");
+    merge("apache/http/client/methods/HttpUriRequest.car");
+
+    merge("apache/http/client/params/AllClientPNames.car");
+    merge("apache/http/client/params/AuthPolicy.car");
+    merge("apache/http/client/params/ClientParamBean.car");
+    merge("apache/http/client/params/ClientPNames.car");
+    merge("apache/http/client/params/CookiePolicy.car");
+    merge("apache/http/client/params/HttpClientParams.car");
+
+    merge("apache/http/client/protocol/ClientContext.car");
+    merge("apache/http/client/protocol/ClientContextConfigurer.car");
+
+    merge("apache/http/conn/ClientConnectionManager.car");
+    merge("apache/http/conn/ClientConnectionManagerFactory.car");
+    merge("apache/http/conn/ClientConnectionOperator.car");
+    merge("apache/http/conn/ClientConnectionRequest.car");
+    merge("apache/http/conn/ConnectionKeepAliveStrategy.car");
+    merge("apache/http/conn/ConnectionReleaseTrigger.car");
+    merge("apache/http/conn/EofSensorInputStream.car");
+    merge("apache/http/conn/EofSensorWatcher.car");
+    merge("apache/http/conn/ManagedClientConnection.car");
+    merge("apache/http/conn/MultihomePlainSocketFactory.car");
+    merge("apache/http/conn/OperatedClientConnection.car");
+
+    merge("apache/http/conn/params/ConnConnectionParamBean.car");
+    merge("apache/http/conn/params/ConnConnectionPNames.car");
+    merge("apache/http/conn/params/ConnManagerParamBean.car");
+    merge("apache/http/conn/params/ConnManagerParams.car");
+    merge("apache/http/conn/params/ConnManagerPNames.car");
+    merge("apache/http/conn/params/ConnPerRoute.car");
+    merge("apache/http/conn/params/ConnPerRouteBean.car");
+    merge("apache/http/conn/params/ConnRouteParamBean.car");
+    merge("apache/http/conn/params/ConnRouteParams.car");
+    merge("apache/http/conn/params/ConnRoutePNames.car");
+
+    merge("apache/http/conn/routing/BasicRouteDirector.car");
+    merge("apache/http/conn/routing/HttpRoute.car");
+    merge("apache/http/conn/routing/HttpRouteDirector.car");
+    merge("apache/http/conn/routing/HttpRoutePlanner.car");
+    merge("apache/http/conn/routing/RouteInfo.car");
+    merge("apache/http/conn/routing/RouteTracker.car");
+
+    merge("apache/http/conn/scheme/HostNameResolver.car");
+    merge("apache/http/conn/scheme/LayeredSocketFactory.car");
+    merge("apache/http/conn/scheme/PlainSocketFactory.car");
+    merge("apache/http/conn/scheme/Scheme.car");
+    merge("apache/http/conn/scheme/SchemeRegistry.car");
+    merge("apache/http/conn/scheme/SocketFactory.car");
+
+    merge("apache/http/conn/ssl/AbstractVerifier.car");
+    merge("apache/http/conn/ssl/SSLSocketFactory.car");
+    merge("apache/http/conn/ssl/X509HostnameVerifier.car");
+
+    merge("apache/http/cookie/ClientCookie.car");
+    merge("apache/http/cookie/Cookie.car");
+    merge("apache/http/cookie/CookieAttributeHandler.car");
+    merge("apache/http/cookie/CookieOrigin.car");
+    merge("apache/http/cookie/CookieSpec.car");
+    merge("apache/http/cookie/CookieSpecFactory.car");
+    merge("apache/http/cookie/CookieSpecRegistry.car");
+    merge("apache/http/cookie/SetCookie.car");
+    merge("apache/http/cookie/SetCookie2.car");
+    merge("apache/http/cookie/SM.car");
+
+    merge("apache/http/cookie/params/CookieSpecParamBean.car");
+    merge("apache/http/cookie/params/CookieSpecPNames.car");
+
+    merge("apache/http/entity/AbstractHttpEntity.car");
+    merge("apache/http/entity/BasicHttpEntity.car");
+    merge("apache/http/entity/ContentLengthStrategy.car");
+    merge("apache/http/entity/ContentProducer.car");
+
+    merge("apache/http/impl/auth/NTLMEngine.car");
+    merge("apache/http/impl/conn/tsccm/RefQueueHandler.car");
+    merge("apache/http/impl/conn/tsccm/PoolEntryRequest.car");
+
+    merge("apache/http/io/HttpMessageParser.car");
+    merge("apache/http/io/HttpMessageWriter.car");
+    merge("apache/http/io/HttpTransportMetrics.car");
+    merge("apache/http/io/SessionInputBuffer.car");
+    merge("apache/http/io/SessionOutputBuffer.car");
+
+    merge("apache/http/message/BasicHeaderIterator.car");
+    merge("apache/http/message/BasicHeaderValueFormatter.car");
+    merge("apache/http/message/BasicHeaderValueParser.car");
+    merge("apache/http/message/BasicHttpResponse.car");
+    merge("apache/http/message/BasicLineFormatter.car");
+    merge("apache/http/message/BasicLineParser.car");
+    merge("apache/http/message/BasicListHeaderIterator.car");
+    merge("apache/http/message/BasicTokenIterator.car");
+    merge("apache/http/message/HeaderGroup.car");
+    merge("apache/http/message/HeaderValueFormatter.car");
+    merge("apache/http/message/HeaderValueParser.car");
+    merge("apache/http/message/LineFormatter.car");
+    merge("apache/http/message/LineParser.car");
+    merge("apache/http/message/ParserCursor.car");
+
+    merge("apache/http/params/BasicHttpParams.car");
+    merge("apache/http/params/CoreConnectionPNames.car");
+    merge("apache/http/params/CoreProtocolPNames.car");
+    merge("apache/http/params/DefaultedHttpParams.car");
+    merge("apache/http/params/HttpConnectionParamBean.car");
+    merge("apache/http/params/HttpConnectionParams.car");
+    merge("apache/http/params/HttpParams.car");
+    merge("apache/http/params/HttpProtocolParamBean.car");
+    merge("apache/http/params/HttpProtocolParams.car");
+
+    merge("apache/http/protocol/BasicHttpProcessor.car");
+    merge("apache/http/protocol/DefaultedHttpContext.car");
+    merge("apache/http/protocol/ExecutionContext.car");
+    merge("apache/http/protocol/HTTP.car");
+    merge("apache/http/protocol/HttpContext.car");
+    merge("apache/http/protocol/HttpDateGenerator.car");
+    merge("apache/http/protocol/HttpExpectationVerifier.car");
+    merge("apache/http/protocol/HttpProcessor.car");
+    merge("apache/http/protocol/HttpRequestExecutor.car");
+    merge("apache/http/protocol/HttpRequestHandler.car");
+    merge("apache/http/protocol/HttpRequestHandlerRegistry.car");
+    merge("apache/http/protocol/HttpRequestHandlerResolver.car");
+    merge("apache/http/protocol/HttpRequestInterceptorList.car");
+    merge("apache/http/protocol/HttpResponseInterceptorList.car");
+    merge("apache/http/protocol/HttpService.car");
+    merge("apache/http/protocol/UriPatternMatcher.car");
+
+    merge("apache/http/util/ByteArrayBuffer.car");
+    merge("apache/http/util/CharArrayBuffer.car");
+    merge("apache/http/util/VersionInfo.car");
+
 
     interface Elastos.IO.IInputStream;
 

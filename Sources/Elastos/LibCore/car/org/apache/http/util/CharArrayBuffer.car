@@ -1,8 +1,6 @@
-''
+
 module
 {
-
-    interface Org.Apache.Http.Utility.IByteArrayBuffer;
 
     namespace Org {
     namespace Apache {
@@ -18,11 +16,10 @@ module
      *
      * @since 4.0
      */
-    [deprecated]
     interface ICharArrayBuffer {
 
         Append(
-            [in] ArrayOf<Char32>* b,
+            [in] ArrayOf<Char32> b,
             [in] Int32 off,
             [in] Int32 len);
 
@@ -41,7 +38,7 @@ module
             [in] Char32 ch);
 
         Append(
-            [in] ArrayOf<Byte>* b,
+            [in] ArrayOf<Byte> b,
             [in] Int32 off,
             [in] Int32 len);
 

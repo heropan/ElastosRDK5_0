@@ -47,7 +47,7 @@ module
          */
         FormatElements(
             [in] ICharArrayBuffer* buffer,
-            [in] ArrayOf<IHeaderElement*>* elems,
+            [in] ArrayOf<IHeaderElement*> elems,
             [in] Boolean quote,
             [out] ICharArrayBuffer** buf);
 
@@ -87,7 +87,7 @@ module
          */
         FormatParameters(
             [in] ICharArrayBuffer* buffer,
-            [in] ArrayOf<INameValuePair*>* nvps,
+            [in] ArrayOf<INameValuePair*> nvps,
             [in] Boolean quote,
             [out] ICharArrayBuffer** buf);
 

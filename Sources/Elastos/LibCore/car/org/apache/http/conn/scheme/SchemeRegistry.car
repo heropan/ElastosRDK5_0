@@ -1,9 +1,10 @@
 
 module
 {
-    using Elastos.Utility.IList;
-    using Elastos.Utility.IMap;
+    using interface Elastos.Utility.IList;
+    using interface Elastos.Utility.IMap;
 
+    interface Org.Apache.Http.IHttpHost;
     interface Org.Apache.Http.Conn.Scheme.IScheme;
 
     namespace Org {

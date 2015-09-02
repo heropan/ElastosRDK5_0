@@ -4,6 +4,9 @@ module
 
     using interface Elastos.Utility.IList;
 
+    interface Org.Apache.Http.IHttpRequestInterceptor;
+    interface Org.Apache.Http.IHttpResponseInterceptor;
+
     namespace Org {
     namespace Apache {
     namespace Http {

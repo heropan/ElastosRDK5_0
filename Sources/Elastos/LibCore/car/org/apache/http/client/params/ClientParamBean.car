@@ -2,7 +2,10 @@
 module
 {
 
+    using interface Elastos.Utility.ICollection;
 
+    interface Org.Apache.Http.IHttpHost;
+    interface Org.Apache.Http.Conn.IClientConnectionManagerFactory;
 
     namespace Org {
     namespace Apache {
@@ -16,7 +19,7 @@ module
             [in] String factory);
 
         SetConnectionManagerFactory(
-            [in] IClientConnectionManagerFactory factory);
+            [in] IClientConnectionManagerFactory* factory);
 
         SetHandleRedirects(
             [in] Boolean handle);

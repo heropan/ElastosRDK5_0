@@ -4,6 +4,7 @@ module
 
     using interface Elastos.Net.IInetAddress;
 
+    interface Org.Apache.Http.IHttpHost;
     interface Org.Apache.Http.Conn.IOperatedClientConnection;
     interface Org.Apache.Http.Params.IHttpParams;
     interface Org.Apache.Http.Protocol.IHttpContext;
@@ -57,7 +58,7 @@ module
         OpenConnection(
             [in] IOperatedClientConnection* conn,
             [in] IHttpHost* target,
-            [in] IInetAddress* local,
+            [in] IInetAddress* loc,
             [in] IHttpContext* context,
             [in] IHttpParams* params);
 

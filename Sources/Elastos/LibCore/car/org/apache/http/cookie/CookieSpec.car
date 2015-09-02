@@ -4,6 +4,7 @@ module
 
     using interface Elastos.Utility.IList;
 
+    interface Org.Apache.Http.IHeader;
     interface Org.Apache.Http.Cookie.ICookieOrigin;
 
     namespace Org {
@@ -35,7 +36,7 @@ module
          * @return version of the state management specification
          */
         GetVersion(
-            [out] Int32* version);
+            [out] Int32* ver);
 
         /**
           * Parse the <tt>"Set-Cookie"</tt> Header into an array of Cookies.
@@ -98,7 +99,7 @@ module
          * specification does not support <tt>Cookie2</tt> header.
          */
         GetVersionHeader(
-            [out] IHeader* header);
+            [out] IHeader** header);
 
     }
 

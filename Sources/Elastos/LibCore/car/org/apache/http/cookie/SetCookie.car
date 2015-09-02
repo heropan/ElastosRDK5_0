@@ -2,7 +2,7 @@
 module
 {
 
-    using Elastos.Utility.IDate;
+    using interface Elastos.Utility.IDate;
 
     namespace Org {
     namespace Apache {
@@ -59,7 +59,7 @@ module
          * @see Cookie#getDomain
          */
         SetDomain(
-            [in] String domain);
+            [in] String domainAttr);
 
         /**
          * Sets the path attribute.
@@ -96,7 +96,7 @@ module
          * @see Cookie#getVersion
          */
         SetVersion(
-            [in] Int32 version);
+            [in] Int32 ver);
 
     }
 

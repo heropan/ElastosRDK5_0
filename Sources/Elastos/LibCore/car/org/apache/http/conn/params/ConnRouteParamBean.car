@@ -4,6 +4,7 @@ module
 
     using interface Elastos.Net.IInetAddress;
 
+    interface Org.Apache.Http.IHttpHost;
     interface Org.Apache.Http.Conn.Routing.IHttpRoute;
 
     namespace Org {

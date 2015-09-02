@@ -3,6 +3,7 @@ module
 {
 
     interface Org.Apache.Http.Cookie.ICookieSpec;
+    interface Org.Apache.Http.Params.IHttpParams;
 
     namespace Org {
     namespace Apache {

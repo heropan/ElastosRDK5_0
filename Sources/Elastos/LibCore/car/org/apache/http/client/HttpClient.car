@@ -2,8 +2,12 @@
 module
 {
 
+    interface Org.Apache.Http.IHttpResponse;
+    interface Org.Apache.Http.IHttpHost;
+    interface Org.Apache.Http.IHttpRequest;
     interface Org.Apache.Http.Params.IHttpParams;
     interface Org.Apache.Http.Protocol.IHttpContext;
+    interface Org.Apache.Http.Client.IResponseHandler;
     interface Org.Apache.Http.Client.Methods.IHttpUriRequest;
     interface Org.Apache.Http.Conn.IClientConnectionManager;
 
