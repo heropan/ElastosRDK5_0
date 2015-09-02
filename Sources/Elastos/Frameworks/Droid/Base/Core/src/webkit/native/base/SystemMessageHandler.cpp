@@ -1,4 +1,6 @@
 
+#include "webkit/native/base/SystemMessageHandler.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -9,8 +11,7 @@ const Int32 SystemMessageHandler::DELAYED_SCHEDULED_WORK;
 
 SystemMessageHandler::SystemMessageHandler(
     /* [in] */ Int64 messagePumpDelegateNative)
-    : mMessagePumpDelegateNative(0)
-    , mDelayedScheduledTimeTicks(0)
+    : mDelayedScheduledTimeTicks(0)
     , mMessagePumpDelegateNative(messagePumpDelegateNative)
 {
 }
@@ -19,7 +20,8 @@ SystemMessageHandler::SystemMessageHandler(
 ECode SystemMessageHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
-    Int64 what;
+    VALIDATE_NOT_NULL(msg);
+    Int32 what;
     msg->GetWhat(&what);
     if (what == DELAYED_SCHEDULED_WORK) {
         mDelayedScheduledTimeTicks = 0;
@@ -33,7 +35,8 @@ ECode SystemMessageHandler::HandleMessage(
 //@CalledByNative
 void SystemMessageHandler::ScheduleWork()
 {
-    SendEmptyMessage(SCHEDULED_WORK);
+    assert(0);
+//    SendEmptyMessage(SCHEDULED_WORK);
 }
 
 //@SuppressWarnings("unused")
@@ -42,19 +45,25 @@ void SystemMessageHandler::ScheduleDelayedWork(
     /* [in] */ Int64 delayedTimeTicks,
     /* [in] */ Int64 millis)
 {
+    assert(0);
+#if 0
     if (mDelayedScheduledTimeTicks != 0) {
         RemoveMessages(DELAYED_SCHEDULED_WORK);
     }
     mDelayedScheduledTimeTicks = delayedTimeTicks;
     SendEmptyMessageDelayed(DELAYED_SCHEDULED_WORK, millis);
+#endif
 }
 
 //@SuppressWarnings("unused")
 //@CalledByNative
 void SystemMessageHandler::RemoveAllPendingMessages()
 {
+    assert(0);
+#if 0
     RemoveMessages(SCHEDULED_WORK);
     RemoveMessages(DELAYED_SCHEDULED_WORK);
+#endif
 }
 
 //@CalledByNative

@@ -1,4 +1,6 @@
 
+#include "webkit/native/base/PathService.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {

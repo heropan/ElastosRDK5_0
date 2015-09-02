@@ -2,9 +2,11 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_PATHUTILS_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_PATHUTILS_H__
 
-// import android.content.Context;
-// import android.content.pm.ApplicationInfo;
-// import android.os.Environment;
+#include "ext/frameworkext.h"
+
+using Elastos::IO::IFile;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
 
 namespace Elastos {
 namespace Droid {

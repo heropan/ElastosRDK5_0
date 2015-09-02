@@ -1,4 +1,16 @@
 
+#include "webkit/native/base/BuildInfo.h"
+#include "os/Build.h"
+
+#include <elastos/core/Math.h>
+
+using Elastos::Core::ICharSequence;
+using Elastos::Core::Math;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::Pm::IPackageInfo;
+using Elastos::Droid::Content::Pm::IPackageManager;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -18,19 +30,19 @@ BuildInfo::BuildInfo()
 //@CalledByNative
 String BuildInfo::GetDevice()
 {
-    return IBuild::DEVICE;
+    return Build::DEVICE;
 }
 
 //@CalledByNative
 String BuildInfo::GetBrand()
 {
-    return IBuild::BRAND;
+    return Build::BRAND;
 }
 
 //@CalledByNative
 String BuildInfo::GetAndroidBuildId()
 {
-    return IBuild::ID;
+    return Build::ID;
 }
 
 /**
@@ -41,10 +53,12 @@ String BuildInfo::GetAndroidBuildId()
 //@CalledByNative
 String BuildInfo::GetAndroidBuildFingerprint()
 {
-    String str(IBuild::FINGERPRINT);
+    String str(Build::FINGERPRINT);
     Int32 length = str.GetLength();
-    Int32 minLen = Math::Min(length, MAX_FINGERPRINT_LENGTH);
-    return str.Substring(0, minLen, MAX_FINGERPRINT_LENGTH);
+    Int32 minLen = Elastos::Core::Math::Min(length, MAX_FINGERPRINT_LENGTH);
+//    return str.Substring(0, minLen, MAX_FINGERPRINT_LENGTH);
+    assert(0);
+    return String(NULL);
 }
 
 //@CalledByNative
@@ -69,7 +83,8 @@ String BuildInfo::GetPackageVersionCode(
         Int32 versionCode;
         pi->GetVersionCode(&versionCode);
         if (versionCode > 0) {
-            msg = Integer.toString(pi.versionCode);
+            assert(0);
+//            msg = Integer.toString(pi.versionCode);
         }
     //} catch (NameNotFoundException e) {
     //    Log.d(TAG, msg);
@@ -135,13 +150,13 @@ String BuildInfo::GetPackageName(
 //@CalledByNative
 String BuildInfo::GetBuildType()
 {
-    return IBuild::TYPE;
+    return Build::TYPE;
 }
 
 //@CalledByNative
 Int32 BuildInfo::GetSdkInt()
 {
-    return Build.VERSION.SDK_INT;
+    return Build::VERSION::SDK_INT;
 }
 
 } // namespace Base

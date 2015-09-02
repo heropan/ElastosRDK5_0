@@ -2,10 +2,15 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_BASECHROMIUMAPPLICATION_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_BASECHROMIUMAPPLICATION_H__
 
-// import android.app.Activity;
-// import android.app.Application;
-// import android.os.Bundle;
-// import android.view.Window;
+#include "ext/frameworkext.h"
+#include "webkit/native/base/WindowCallbackWrapper.h"
+//#include "app/Application.h"
+
+using Elastos::Droid::App::IActivity;
+//using Elastos::Droid::App::Application;
+using Elastos::Droid::App::IApplication;
+using Elastos::Droid::App::IActivityLifecycleCallbacks;
+using Elastos::Droid::Os::IBundle;
 
 namespace Elastos {
 namespace Droid {
@@ -16,8 +21,9 @@ namespace Base {
  * Basic application functionality that should be shared among all browser applications.
  */
 class BaseChromiumApplication
-    : public Object
-    , public IApplication
+    //: public Object
+    //: public Application
+    : public IApplication
 {
 public:
     /**
@@ -26,6 +32,8 @@ public:
     class WindowFocusChangedListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         /**
          * Called when the window focus changes for {@code activity}.
          * @param activity The {@link Activity} that has a window focus changed event.
@@ -38,15 +46,16 @@ public:
 
 private:
     class InnerActivityLifecycleCallbacks
-        : public Object
-        , public IActivityLifecycleCallbacks
+        //: public Object
+        : public IActivityLifecycleCallbacks
     {
     private:
         class InnerWindowCallbackWrapper : public WindowCallbackWrapper
         {
         public:
             InnerWindowCallbackWrapper(
-                /* [in] */ InnerActivityLifecycleCallbacks* owner);
+                /* [in] */ InnerActivityLifecycleCallbacks* owner,
+                /* [in] */ IWindowCallback* callback);
 
             //@Override
             CARAPI OnWindowFocusChanged(
@@ -57,6 +66,8 @@ private:
         };
 
     public:
+        CAR_INTERFACE_DECL()
+
         InnerActivityLifecycleCallbacks(
             /* [in] */ BaseChromiumApplication* owner);
 
@@ -95,6 +106,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     //@Override
     CARAPI OnCreate();
 
@@ -113,8 +126,8 @@ public:
         /* [in] */ WindowFocusChangedListener* listener);
 
 private:
-    ObserverList<WindowFocusChangedListener> mWindowFocusListeners =
-            new ObserverList<WindowFocusChangedListener>();
+    // ObserverList<WindowFocusChangedListener> mWindowFocusListeners =
+    //         new ObserverList<WindowFocusChangedListener>();
 };
 
 } // namespace Base

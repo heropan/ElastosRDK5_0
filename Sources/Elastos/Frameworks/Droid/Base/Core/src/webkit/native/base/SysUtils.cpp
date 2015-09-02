@@ -1,4 +1,6 @@
 
+#include "webkit/native/base/SysUtils.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -25,6 +27,8 @@ SysUtils::SysUtils()
 //@CalledByNative
 Int32 SysUtils::AmountOfPhysicalMemoryKB()
 {
+    assert(0);
+#if 0
     // Extract total memory RAM size by parsing /proc/meminfo, note that
     // this is exactly what the implementation of sysconf(_SC_PHYS_PAGES)
     // does. However, it can't be called because this method must be
@@ -76,7 +80,7 @@ Int32 SysUtils::AmountOfPhysicalMemoryKB()
     } finally {
         StrictMode.setThreadPolicy(oldPolicy);
     }
-
+#endif
     return 0;
 }
 
@@ -86,14 +90,21 @@ Int32 SysUtils::AmountOfPhysicalMemoryKB()
 //@CalledByNative
 Boolean SysUtils::IsLowEndDevice()
 {
+    assert(0);
+#if 0
     if (sLowEndDeviceInit == FALSE) {
         sLowEndDevice = DetectLowEndDevice();
         sLowEndDeviceInit = TRUE;
     }
     return sLowEndDevice;
+#endif
+    return FALSE;
 }
 
-Boolean SysUtils::DetectLowEndDevice() {
+Boolean SysUtils::DetectLowEndDevice()
+{
+    assert(0);
+#if 0
     if (CommandLine::IsInitialized()) {
         if (CommandLine::GetInstance()->HasSwitch(BaseSwitches::ENABLE_LOW_END_DEVICE_MODE)) {
             return TRUE;
@@ -110,6 +121,8 @@ Boolean SysUtils::DetectLowEndDevice() {
 
     Int32 ramSizeKB = AmountOfPhysicalMemoryKB();
     return (ramSizeKB > 0 && ramSizeKB / 1024 < ANDROID_LOW_MEMORY_DEVICE_THRESHOLD_MB);
+#endif
+    return FALSE;
 }
 
 } // namespace Base

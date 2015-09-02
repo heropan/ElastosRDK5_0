@@ -1,4 +1,9 @@
 
+#include "webkit/native/base/PathUtils.h"
+#include "os/Environment.h"
+
+using Elastos::Droid::Os::Environment;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -81,14 +86,16 @@ String PathUtils::GetCacheDirectory(
 String PathUtils::GetDownloadsDirectory(
     /* [in] */ IContext* appContext)
 {
-    AutoPtr<IUserEnvironment> env;
-    CUserEnvironment::AcquireSingleton((IUserEnvironment**)&env);
-    AutoPtr<IFile> file;
-    env->GetExternalStoragePublicDirectory(
-            IEnvironment::DIRECTORY_DOWNLOADS, (IFile**)&file);
-    String path;
-    file->GetPath(&path);
-    return path;
+    assert(0);
+    // AutoPtr<IUserEnvironment> env;
+    // CUserEnvironment::AcquireSingleton((IUserEnvironment**)&env);
+    // AutoPtr<IFile> file;
+    // env->GetExternalStoragePublicDirectory(
+    //         Environment::DIRECTORY_DOWNLOADS, (IFile**)&file);
+    // String path;
+    // file->GetPath(&path);
+    // return path;
+    return String(NULL);
 }
 
 /**
@@ -102,7 +109,7 @@ String PathUtils::GetNativeLibraryDirectory(
     AutoPtr<IApplicationInfo> ai;
     appContext->GetApplicationInfo((IApplicationInfo**)&ai);
     Int32 flags;
-    appContext->GetFlags(&flags);
+    ai->GetFlags(&flags);
     if ((flags & IApplicationInfo::FLAG_UPDATED_SYSTEM_APP) != 0 ||
         (flags & IApplicationInfo::FLAG_SYSTEM) == 0)
     {
@@ -121,13 +128,15 @@ String PathUtils::GetNativeLibraryDirectory(
 //@CalledByNative
 String PathUtils::GetExternalStorageDirectory()
 {
-    AutoPtr<IUserEnvironment> env;
-    CUserEnvironment::AcquireSingleton((IUserEnvironment**)&env);
-    AutoPtr<IFile> file;
-    env->GetExternalStorageDirectory((IFile**)&file);
-    String path;
-    file->GetAbsolutePath(&path);
-    return path;
+    assert(0);
+    // AutoPtr<IUserEnvironment> env;
+    // CUserEnvironment::AcquireSingleton((IUserEnvironment**)&env);
+    // AutoPtr<IFile> file;
+    // env->GetExternalStorageDirectory((IFile**)&file);
+    // String path;
+    // file->GetAbsolutePath(&path);
+    // return path;
+    return String(NULL);
 }
 
 } // namespace Base

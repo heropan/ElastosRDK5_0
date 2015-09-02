@@ -1,4 +1,7 @@
 
+#include "webkit/native/base/PowerMonitor.h"
+#include "webkit/native/base/PowerStatusReceiver.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {

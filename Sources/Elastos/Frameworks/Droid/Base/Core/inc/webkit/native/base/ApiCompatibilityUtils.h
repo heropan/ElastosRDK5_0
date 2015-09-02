@@ -2,16 +2,19 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_APICOMPATIBILITYUTILS_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_APICOMPATIBILITYUTILS_H__
 
-// import android.app.PendingIntent;
-// import android.content.res.Configuration;
-// import android.graphics.drawable.Drawable;
-// import android.os.Build;
-// import android.view.View;
-// import android.view.ViewGroup.MarginLayoutParams;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroupMarginLayoutParams;
 // import android.view.ViewTreeObserver;
-// import android.widget.ImageView;
-// import android.widget.RemoteViews;
-// import android.widget.TextView;
+using Elastos::Droid::View::IOnGlobalLayoutListener;
+using Elastos::Droid::Widget::IImageView;
+using Elastos::Droid::Widget::IRemoteViews;
+using Elastos::Droid::Widget::ITextView;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -171,7 +174,7 @@ public:
      */
     static CARAPI_(void) RemoveOnGlobalLayoutListener(
         /* [in] */ IView* view,
-        /* [in] */ IViewTreeObserverOnGlobalLayoutListener* listener);
+        /* [in] */ IOnGlobalLayoutListener* listener);
 
     /**
      * @see android.widget.ImageView#setImageAlpha(int)

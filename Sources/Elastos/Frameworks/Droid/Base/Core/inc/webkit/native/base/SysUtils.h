@@ -2,8 +2,11 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_SYSUTILS_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_SYSUTILS_H__
 
-// import android.os.Build;
-// import android.os.StrictMode;
+#include "ext/frameworkext.h"
+#include "os/Build.h"
+
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::IStrictMode;
 // import android.util.Log;
 
 // import java.io.BufferedReader;
@@ -47,7 +50,7 @@ private:
 private:
     // Any device that runs this or an older version of the system cannot be considered 'low-end'
     static const Int32 ANDROID_LOW_MEMORY_ANDROID_SDK_THRESHOLD =
-            Build.VERSION_CODES.JELLY_BEAN_MR2;
+            Build::VERSION_CODES::JELLY_BEAN_MR2;
 
     // A device reporting strictly more total memory in megabytes cannot be considered 'low-end'.
     static const Int64 ANDROID_LOW_MEMORY_DEVICE_THRESHOLD_MB = 512;

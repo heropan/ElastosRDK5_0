@@ -1,4 +1,6 @@
 
+#include "webkit/native/base/ImportantFileWriterAndroid.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {

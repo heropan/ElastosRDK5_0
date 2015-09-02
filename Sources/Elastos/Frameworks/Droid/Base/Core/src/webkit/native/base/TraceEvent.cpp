@@ -1,4 +1,15 @@
 
+#include "webkit/native/base/TraceEvent.h"
+#include "webkit/native/base/CommandLine.h"
+#include "webkit/native/base/BaseSwitches.h"
+#include "webkit/native/base/ThreadUtils.h"
+#include "os/SystemClock.h"
+#include "os/CLooperHelper.h"
+
+using Elastos::Droid::Os::CLooperHelper;
+using Elastos::Droid::Os::ILooperHelper;
+using Elastos::Droid::Os::SystemClock;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -12,11 +23,11 @@ namespace Base {
 ECode TraceEvent::BasicLooperMonitor::Println(
     /* [in] */ const String& line)
 {
-    if (line.StartsWith(">")) {
+    if (line.StartWith(">")) {
         BeginHandling(line);
     }
     else {
-        assert(line.StartsWith("<"));
+        assert(line.StartWith("<"));
         EndHandling(line);
     }
 
@@ -66,11 +77,11 @@ void TraceEvent::IdleTracingLooperMonitor::SyncIdleMonitoring()
 {
     if (sEnabled && !mIdleMonitorAttached) {
         // approximate start time for computational purposes
-        mLastIdleStartedAt = SystemClock::ElapsedRealtime();
+        mLastIdleStartedAt = SystemClock::GetElapsedRealtime();
         AutoPtr<ILooperHelper> looperHelper;
         CLooperHelper::AcquireSingleton((ILooperHelper**)&looperHelper);
         AutoPtr<IMessageQueue> queue;
-        looperHelper->MyQueue((IMessageQueue**)&queue);
+        looperHelper->GetMyQueue((IMessageQueue**)&queue);
         queue->AddIdleHandler(this);
         mIdleMonitorAttached = TRUE;
 //        Log.v(TAG, "attached idle handler");
@@ -79,7 +90,7 @@ void TraceEvent::IdleTracingLooperMonitor::SyncIdleMonitoring()
         AutoPtr<ILooperHelper> looperHelper;
         CLooperHelper::AcquireSingleton((ILooperHelper**)&looperHelper);
         AutoPtr<IMessageQueue> queue;
-        looperHelper->MyQueue((IMessageQueue**)&queue);
+        looperHelper->GetMyQueue((IMessageQueue**)&queue);
         queue->RemoveIdleHandler(this);
         mIdleMonitorAttached = FALSE;
 //        Log.v(TAG, "detached idle handler");
@@ -94,7 +105,7 @@ void TraceEvent::IdleTracingLooperMonitor::BeginHandling(
     if (mNumTasksSinceLastIdle == 0) {
         TraceEvent::End(IDLE_EVENT_NAME);
     }
-    mLastWorkStartedAt = SystemClock::ElapsedRealtime();
+    mLastWorkStartedAt = SystemClock::GetElapsedRealtime();
     SyncIdleMonitoring();
     BasicLooperMonitor::BeginHandling(line);
 }
@@ -103,11 +114,11 @@ void TraceEvent::IdleTracingLooperMonitor::BeginHandling(
 void TraceEvent::IdleTracingLooperMonitor::EndHandling(
     /* [in] */ const String& line)
 {
-    const Int64 elapsed = SystemClock::elapsedRealtime()
+    const Int64 elapsed = SystemClock::GetElapsedRealtime()
             - mLastWorkStartedAt;
     if (elapsed > MIN_INTERESTING_DURATION_MILLIS) {
-        TraceAndLog(Log.WARN, "observed a task that took "
-                + elapsed + "ms: " + line);
+//        TraceAndLog(Log.WARN, "observed a task that took "
+//                + elapsed + "ms: " + line);
     }
     BasicLooperMonitor::EndHandling(line);
     SyncIdleMonitoring();
@@ -124,12 +135,16 @@ void TraceEvent::IdleTracingLooperMonitor::TraceAndLog(
 }
 
 //@Override
-Boolean TraceEvent::IdleTracingLooperMonitor::QueueIdle()
+ECode TraceEvent::IdleTracingLooperMonitor::QueueIdle(
+    /* [out] */ Boolean* result)
 {
-    const Int64 now =  SystemClock::ElapsedRealtime();
+    VALIDATE_NOT_NULL(result);
+    const Int64 now =  SystemClock::GetElapsedRealtime();
     if (mLastIdleStartedAt == 0) mLastIdleStartedAt = now;
     const Int64 elapsed = now - mLastIdleStartedAt;
     mNumIdlesSeen++;
+    assert(0);
+#if 0
     TraceEvent::Begin(IDLE_EVENT_NAME, mNumTasksSinceLastIdle + " tasks since last idle.");
     if (elapsed > MIN_INTERESTING_BURST_DURATION_MILLIS) {
         // Dump stats
@@ -139,9 +154,12 @@ Boolean TraceEvent::IdleTracingLooperMonitor::QueueIdle()
                 + elapsed + "ms elapsed since last idle";
         TraceAndLog(Log.DEBUG, statsString);
     }
+#endif
     mLastIdleStartedAt = now;
     mNumTasksSinceLastIdle = 0;
-    return TRUE; // stay installed
+    *result = TRUE; // stay installed
+
+    return NOERROR;
 }
 
 
@@ -149,18 +167,18 @@ Boolean TraceEvent::IdleTracingLooperMonitor::QueueIdle()
 //                TraceEvent::LooperMonitorHolder
 //===============================================================
 
-static AutoPtr<BasicLooperMonitor> BasicLooperMonitor_Create()
+AutoPtr<TraceEvent::BasicLooperMonitor> BasicLooperMonitor_Create()
 {
-    AutoPtr<BasicLooperMonitor> instant;
+    AutoPtr<TraceEvent::BasicLooperMonitor> instant;
     if (CommandLine::GetInstance()->HasSwitch(BaseSwitches::ENABLE_IDLE_TRACING)) {
-        instant = new IdleTracingLooperMonitor();
+        instant = new TraceEvent::IdleTracingLooperMonitor();
     }
     else {
-        instant = new BasicLooperMonitor();
+        instant = new TraceEvent::BasicLooperMonitor();
     }
 }
 
-const AutoPtr<BasicLooperMonitor> TraceEvent::LooperMonitorHolder::sInstance = BasicLooperMonitor_Create();
+const AutoPtr<TraceEvent::BasicLooperMonitor> TraceEvent::LooperMonitorHolder::sInstance = BasicLooperMonitor_Create();
 
 //===============================================================
 //                         TraceEvent
@@ -245,7 +263,7 @@ void TraceEvent::Instant(
 void TraceEvent::StartAsync(
     /* [in] */ Int64 id)
 {
-    if (sEnabled) NativeStartAsync(getCallerName(), id, String(NULL));
+    if (sEnabled) NativeStartAsync(GetCallerName(), id, String(NULL));
 }
 
 /**
@@ -282,7 +300,7 @@ void TraceEvent::StartAsync(
 void TraceEvent::FinishAsync(
     /* [in] */ Int64 id)
 {
-    if (sEnabled) NativeFinishAsync(getCallerName(), id, String(NULL));
+    if (sEnabled) NativeFinishAsync(GetCallerName(), id, String(NULL));
 }
 
 /**
@@ -376,7 +394,10 @@ void TraceEvent::End(
     if (sEnabled) NativeEnd(name, arg);
 }
 
-String TraceEvent::GetCallerName() {
+String TraceEvent::GetCallerName()
+{
+    assert(0);
+#if 0
     // This was measured to take about 1ms on Trygon device.
     StackTraceElement[] stack = java.lang.Thread.currentThread().getStackTrace();
 
@@ -389,6 +410,7 @@ String TraceEvent::GetCallerName() {
 
     // '4' Was derived using the above commented out code snippet.
     return stack[4].getClassName() + "." + stack[4].getMethodName();
+#endif
 }
 
 void TraceEvent::NativeRegisterEnabledObserver()

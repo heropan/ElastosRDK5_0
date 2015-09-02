@@ -1,4 +1,6 @@
 
+#include "webkit/native/base/BaseSwitches.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {

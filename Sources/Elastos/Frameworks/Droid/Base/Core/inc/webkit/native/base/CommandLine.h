@@ -2,15 +2,16 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_COMMANDLINE_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_COMMANDLINE_H__
 
-// import android.text.TextUtils;
+#include "ext/frameworkext.h"
+
 // import android.util.Log;
 
-// import java.io.File;
-// import java.io.FileInputStream;
+using Elastos::IO::IFile;
+using Elastos::IO::IFileInputStream;
 // import java.io.FileNotFoundException;
 // import java.io.IOException;
-// import java.io.InputStreamReader;
-// import java.io.Reader;
+using Elastos::IO::IInputStreamReader;
+using Elastos::IO::IReader;
 // import java.util.ArrayList;
 // import java.util.Arrays;
 // import java.util.HashMap;
@@ -29,88 +30,11 @@ namespace Base {
 **/
 class CommandLine
 {
-private:
-    class JavaCommandLine : public CommandLine
-    {
-    public:
-        JavaCommandLine(
-            /* [in] */ ArrayOf<String>* args);
-
-        //@Override
-        CARAPI_(Boolean) HasSwitch(
-            /* [in] */ String switchString);
-
-        //@Override
-        CARAPI_(String) GetSwitchValue(
-            /* [in] */ String switchString);
-
-        //@Override
-        CARAPI_(void) AppendSwitch(
-            /* [in] */ String switchString);
-
-        /**
-         * Appends a switch to the current list.
-         * @param switchString the switch to add.  It should NOT start with '--' !
-         * @param value the value for this switch.
-         */
-        //@Override
-        CARAPI_(void) AppendSwitchWithValue(
-            /* [in] */ String switchString,
-            /* [in] */ String value);
-
-        //@Override
-        CARAPI_(void) AppendSwitchesAndArguments(
-            /* [in] */ ArrayOf<String>* array);
-
-    private:
-        /**
-         * Returns the switches and arguments passed into the program, with switches and their
-         * values coming before all of the arguments.
-         */
-        CARAPI_(AutoPtr< ArrayOf<String> >) GetCommandLineArguments();
-
-        // Add the specified arguments, but skipping the first |skipCount| elements.
-        CARAPI_(void) AppendSwitchesInternal(
-            /* [in] */ ArrayOf<String>* array,
-            /* [in] */ Int32 skipCount);
-
-    private:
-        HashMap<String, String> mSwitches;
-        ArrayList<String> mArgs;
-
-        // The arguments begin at index 1, since index 0 contains the executable name.
-        Int32 mArgsBegin;
-    };
-
-    class NativeCommandLine : public CommandLine
-    {
-    public:
-        //@Override
-        CARAPI_(Boolean) HasSwitch(
-            /* [in] */ String switchString);
-
-        //@Override
-        CARAPI_(String) GetSwitchValue(
-            /* [in] */ String switchString);
-
-        //@Override
-        CARAPI_(void) AppendSwitch(
-            /* [in] */ String switchString);
-
-        //@Override
-        CARAPI_(void) AppendSwitchWithValue(
-            /* [in] */ String switchString,
-            /* [in] */ String value);
-
-        //@Override
-        CARAPI_(void) AppendSwitchesAndArguments(
-            /* [in] */ ArrayOf<String>* array);
-
-        //@Override
-        CARAPI_(Boolean) IsNativeImplementation();
-    };
-
+    friend class JavaCommandLine;
+    friend class NativeCommandLine;
 public:
+    CAR_INTERFACE_DECL();
+
     // Public abstract interface, implemented in derived classes.
     // All these methods reflect their native-side counterparts.
     /**
@@ -255,13 +179,93 @@ private:
         /* [in] */ ArrayOf<String>* array);
 
 private:
-    static final AtomicReference<CommandLine> sCommandLine =
-        new AtomicReference<CommandLine>();
+    // static final AtomicReference<CommandLine> sCommandLine =
+    //     new AtomicReference<CommandLine>();
 
     static const String TAG;
     static const String SWITCH_PREFIX;
     static const String SWITCH_TERMINATOR;
     static const String SWITCH_VALUE_SEPARATOR;
+};
+
+class JavaCommandLine : public CommandLine
+{
+public:
+    JavaCommandLine(
+        /* [in] */ ArrayOf<String>* args);
+
+    //@Override
+    CARAPI_(Boolean) HasSwitch(
+        /* [in] */ String switchString);
+
+    //@Override
+    CARAPI_(String) GetSwitchValue(
+        /* [in] */ String switchString);
+
+    //@Override
+    CARAPI_(void) AppendSwitch(
+        /* [in] */ String switchString);
+
+    /**
+     * Appends a switch to the current list.
+     * @param switchString the switch to add.  It should NOT start with '--' !
+     * @param value the value for this switch.
+     */
+    //@Override
+    CARAPI_(void) AppendSwitchWithValue(
+        /* [in] */ String switchString,
+        /* [in] */ String value);
+
+    //@Override
+    CARAPI_(void) AppendSwitchesAndArguments(
+        /* [in] */ ArrayOf<String>* array);
+
+private:
+    /**
+     * Returns the switches and arguments passed into the program, with switches and their
+     * values coming before all of the arguments.
+     */
+    CARAPI_(AutoPtr< ArrayOf<String> >) GetCommandLineArguments();
+
+    // Add the specified arguments, but skipping the first |skipCount| elements.
+    CARAPI_(void) AppendSwitchesInternal(
+        /* [in] */ ArrayOf<String>* array,
+        /* [in] */ Int32 skipCount);
+
+private:
+//        HashMap<String, String> mSwitches;
+//        ArrayList<String> mArgs;
+
+    // The arguments begin at index 1, since index 0 contains the executable name.
+    Int32 mArgsBegin;
+};
+
+class NativeCommandLine : public CommandLine
+{
+public:
+    //@Override
+    CARAPI_(Boolean) HasSwitch(
+        /* [in] */ String switchString);
+
+    //@Override
+    CARAPI_(String) GetSwitchValue(
+        /* [in] */ String switchString);
+
+    //@Override
+    CARAPI_(void) AppendSwitch(
+        /* [in] */ String switchString);
+
+    //@Override
+    CARAPI_(void) AppendSwitchWithValue(
+        /* [in] */ String switchString,
+        /* [in] */ String value);
+
+    //@Override
+    CARAPI_(void) AppendSwitchesAndArguments(
+        /* [in] */ ArrayOf<String>* array);
+
+    //@Override
+    CARAPI_(Boolean) IsNativeImplementation();
 };
 
 } // namespace Base

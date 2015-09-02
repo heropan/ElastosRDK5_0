@@ -1,4 +1,6 @@
 
+#include "webkit/native/base/PerfTraceEvent.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -36,8 +38,8 @@ Boolean PerfTraceEvent::sEnabled = FALSE;
 Boolean PerfTraceEvent::sTrackTiming = TRUE;
 Boolean PerfTraceEvent::sTrackMemory = FALSE;
 
-AutoPtr<IJSONArray> PerfTraceEvent::sPerfTraceStrings;
-List<String> PerfTraceEvent::sFilter;
+//AutoPtr<IJSONArray> PerfTraceEvent::sPerfTraceStrings;
+//List<String> PerfTraceEvent::sFilter;
 Int64 PerfTraceEvent::sBeginNanoTime;
 
 /**
@@ -46,20 +48,23 @@ Int64 PerfTraceEvent::sBeginNanoTime;
  * @param strings Event names we will record.
  */
 //synchronized
-void PerfTraceEvent::SetFilter(
-    /* [in] */ List<String>* strings)
-{
-    AutoLock lock(this);
-    sFilter = new LinkedList<String>(strings);
-}
+// void PerfTraceEvent::SetFilter(
+//     /* [in] */ List<String>* strings)
+// {
+//     AutoLock lock(this);
+//     sFilter = new LinkedList<String>(strings);
+// }
 
 /**
  * Enable or disable perf tracing.
  * Disabling of perf tracing will dump trace data to the system log.
  */
 //synchronized
-void PerfTraceEvent::SetEnabled(boolean enabled)
+void PerfTraceEvent::SetEnabled(
+    /* [in] */ Boolean enabled)
 {
+    assert(0);
+#if 0
     AutoLock lock(this);
     if (sEnabled == enabled) {
         return;
@@ -75,6 +80,7 @@ void PerfTraceEvent::SetEnabled(boolean enabled)
         sFilter = null;
     }
     sEnabled = enabled;
+#endif
 }
 
 /**
@@ -94,7 +100,7 @@ void PerfTraceEvent::SetEnabled(boolean enabled)
 void PerfTraceEvent::SetMemoryTrackingEnabled(
     /* [in] */ Boolean enabled)
 {
-    AutoLock lock(this);
+//    AutoLock lock(this);
     sTrackMemory = enabled;
 }
 
@@ -114,7 +120,7 @@ void PerfTraceEvent::SetMemoryTrackingEnabled(
 void PerfTraceEvent::SetTimingTrackingEnabled(
     /* [in] */ Boolean enabled)
 {
-    AutoLock lock(this);
+//    AutoLock lock(this);
     sTrackTiming = enabled;
 }
 
@@ -126,7 +132,7 @@ void PerfTraceEvent::SetTimingTrackingEnabled(
 //synchronized
 Boolean PerfTraceEvent::Enabled()
 {
-    AutoLock lock(this);
+//    AutoLock lock(this);
     return sEnabled;
 }
 
@@ -137,6 +143,8 @@ Boolean PerfTraceEvent::Enabled()
 void PerfTraceEvent::Instant(
     /* [in] */ String name)
 {
+    assert(0);
+#if 0
     AutoLock lock(this);
     // Instant doesn't really need/take an event id, but this should be okay.
     Int64 eventId = name.HashCode();
@@ -144,6 +152,7 @@ void PerfTraceEvent::Instant(
     if (sEnabled && MatchesFilter(name)) {
         SavePerfString(name, eventId, EventType::INSTANT, FALSE);
     }
+#endif
 }
 
 
@@ -155,6 +164,8 @@ void PerfTraceEvent::Instant(
 void PerfTraceEvent::Begin(
     /* [in] */ String name)
 {
+    assert(0);
+#if 0
     AutoLock lock(this);
     const Int64 eventId = name.HashCode();
     TraceEvent::StartAsync(name, eventId);
@@ -169,6 +180,7 @@ void PerfTraceEvent::Begin(
             SavePerfString(name, eventId, EventType::START, FALSE);
         }
     }
+#endif
 }
 
 /**
@@ -180,6 +192,8 @@ void PerfTraceEvent::Begin(
 void PerfTraceEvent::End(
     /* [in] */ String name)
 {
+    assert(0);
+#if 0
     AutoLock lock(this);
     const Int64 eventId = name.HashCode();
     TraceEvent::FinishAsync(name, eventId);
@@ -194,12 +208,14 @@ void PerfTraceEvent::End(
                     TRUE);
         }
     }
+#endif
 }
 
 /**
  * Record an "begin" memory trace event.
  * Begin trace events should have a matching end event.
  */
+#if 0
 //synchronized
 void PerfTraceEvent::Begin(
     /* [in] */ String name,
@@ -219,12 +235,14 @@ void PerfTraceEvent::Begin(
         }
     }
 }
+#endif
 
 /**
  * Record an "end" memory trace event, to match a begin event.  The
  * memory usage delta between begin and end is usually interesting to
  * graph code.
  */
+#if 0
 //synchronized
 void PerfTraceEvent::End(
     /* [in] */ String name,
@@ -244,6 +262,7 @@ void PerfTraceEvent::End(
                 timestampUs, memoryInfo);
     }
 }
+#endif
 
 /**
  * Determine if we are interested in this trace event.
@@ -252,7 +271,9 @@ void PerfTraceEvent::End(
 Boolean PerfTraceEvent::MatchesFilter(
     /* [in] */ String name)
 {
-    return sFilter != null ? sFilter.contains(name) : false;
+    assert(0);
+//    return sFilter != null ? sFilter.contains(name) : false;
+    return FALSE;
 }
 
 /**
@@ -269,6 +290,8 @@ void PerfTraceEvent::SavePerfString(
     /* [in] */ String type,
     /* [in] */ Boolean includeMemory)
 {
+    assert(0);
+#if 0
     Int64 timestampUs = (System::NanoTime() - sBeginNanoTime) / 1000;
     AutoPtr<IMemoryInfo> memInfo;
     if (includeMemory) {
@@ -276,6 +299,7 @@ void PerfTraceEvent::SavePerfString(
         Debug::GetMemoryInfo(memInfo);
     }
     SavePerfString(name, id, type, timestampUs, memInfo);
+#endif
 }
 
 /**
@@ -288,6 +312,7 @@ void PerfTraceEvent::SavePerfString(
  * @param memoryInfo Memory details to be included in this perf string, null if
  *                   no memory details are to be included.
  */
+#if 0
 void PerfTraceEvent::SavePerfString(
     /* [in] */ String name,
     /* [in] */ Int64 id,
@@ -316,6 +341,7 @@ void PerfTraceEvent::SavePerfString(
     //    throw new RuntimeException(e);
     //}
 }
+#endif
 
 /**
  * Generating a trace name for tracking memory based on the timing name passed in.
@@ -364,7 +390,7 @@ String PerfTraceEvent::MakeSafeTraceName(
 void PerfTraceEvent::SetOutputFile(
     /* [in] */ IFile* file)
 {
-    AutoLock lock(this);
+//    AutoLock lock(this);
     sOutputFile = file;
 }
 
@@ -374,6 +400,8 @@ void PerfTraceEvent::SetOutputFile(
  */
 void PerfTraceEvent::DumpPerf()
 {
+    assert(0);
+#if 0
     String json = sPerfTraceStrings.toString();
 
     if (sOutputFile == null) {
@@ -395,7 +423,7 @@ void PerfTraceEvent::DumpPerf()
             Log.e("PerfTraceEvent", "Unable to dump perf trace data to output file.");
         }
     }
-}
+#endif
 }
 
 } // namespace Base

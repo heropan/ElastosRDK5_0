@@ -2,17 +2,19 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_WINDOWCALLBACKWRAPPER_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_WINDOWCALLBACKWRAPPER_H__
 
+#include "ext/frameworkext.h"
+
 // import android.annotation.SuppressLint;
-// import android.view.ActionMode;
-// import android.view.ActionMode.Callback;
-// import android.view.KeyEvent;
-// import android.view.Menu;
-// import android.view.MenuItem;
-// import android.view.MotionEvent;
-// import android.view.View;
-// import android.view.Window;
-// import android.view.WindowManager.LayoutParams;
-// import android.view.accessibility.AccessibilityEvent;
+using Elastos::Droid::View::IActionMode;
+using Elastos::Droid::View::IActionModeCallback;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IMenu;
+using Elastos::Droid::View::IMenuItem;
+using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IWindowCallback;
+using Elastos::Droid::View::IWindowManagerLayoutParams;
+using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 
 namespace Elastos {
 namespace Droid {
@@ -24,12 +26,14 @@ namespace Base {
  * window messages.
  */
 class WindowCallbackWrapper
-    : public Object
-    , public IWindowCallback
+    //: public Object
+    : public IWindowCallback
 {
 public:
     WindowCallbackWrapper(
         /* [in] */ IWindowCallback* callback);
+
+    CAR_INTERFACE_DECL();
 
     //@Override
     CARAPI DispatchGenericMotionEvent(
@@ -84,7 +88,7 @@ public:
     //@Override
     CARAPI OnCreatePanelView(
         /* [in] */ Int32 featureId,
-        /* [out] */ IView* view);
+        /* [out] */ IView** view);
 
     //@Override
     //@SuppressLint("MissingSuperCall")

@@ -1,4 +1,14 @@
 
+#include "webkit/native/base/JavaHandlerThread.h"
+#include "os/CHandler.h"
+#include "os/CHandlerThread.h"
+
+using Elastos::Core::IThread;
+using Elastos::Core::EIID_IThread;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::CHandlerThread;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -9,15 +19,19 @@ namespace Base {
 //===============================================================
 
 JavaHandlerThread::InnerRunnable::InnerRunnable(
-    /* [in] */ JavaHandlerThread* owner)
+    /* [in] */ JavaHandlerThread* owner,
+    /* [in] */ const Int64 nativeThread,
+    /* [in] */ const Int64 nativeEvent)
     : mOwner(owner)
+    , mNativeThread(nativeThread)
+    , mNativeEvent(nativeEvent)
 {
 }
 
 //@Override
 ECode JavaHandlerThread::InnerRunnable::Run()
 {
-    mOwner->NativeInitializeThread(nativeThread, nativeEvent);
+    mOwner->NativeInitializeThread(mNativeThread, mNativeEvent);
     return NOERROR;
 }
 
@@ -44,13 +58,15 @@ void JavaHandlerThread::Start(
     /* [in] */ const Int64 nativeThread,
     /* [in] */ const Int64 nativeEvent)
 {
-    mThread->Start();
+    AutoPtr<IThread> thread = (IThread*)mThread->Probe(EIID_IThread);
+    thread->Start();
     AutoPtr<ILooper> looper;
     mThread->GetLooper((ILooper**)&looper);
     AutoPtr<IHandler> handler;
     CHandler::New(looper, (IHandler**)&handler);
-    AutoPtr<IRunnable> runnable = new InnerRunnable(this);
-    handler->Post(runnable);
+    AutoPtr<IRunnable> runnable = new InnerRunnable(this, nativeThread, nativeEvent);
+    Boolean result = FALSE;
+    handler->Post(runnable, &result);
 }
 
 void JavaHandlerThread::NativeInitializeThread(

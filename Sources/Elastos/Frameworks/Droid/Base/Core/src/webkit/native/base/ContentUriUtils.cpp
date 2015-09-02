@@ -1,4 +1,10 @@
 
+#include "webkit/native/base/ContentUriUtils.h"
+//#include "net/CUriHelper.h"
+
+//using Elastos::Droid::Net::CUriHelper;
+using Elastos::Droid::Net::IUriHelper;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -66,13 +72,14 @@ AutoPtr<IParcelFileDescriptor> ContentUriUtils::GetParcelFileDescriptor(
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
     AutoPtr<IUriHelper> helper;
-    CUriHelper::AcquireSingleton((IUriHelper**)&helper);
+    assert(0);
+//    CUriHelper::AcquireSingleton((IUriHelper**)&helper);
     AutoPtr<IUri> uri;
     helper->Parse(uriString, (IUri**)&uri);
 
     AutoPtr<IParcelFileDescriptor> pfd;
     //try {
-        resolver->OpenFileDescriptor(uri, String("r"), (IParcelFileDescriptor**)pfd);
+        resolver->OpenFileDescriptor(uri, String("r"), (IParcelFileDescriptor**)&pfd);
     //} catch (java.io.FileNotFoundException e) {
     //    Log.w(TAG, "Cannot find content uri: " + uriString, e);
     //}
@@ -103,7 +110,8 @@ String ContentUriUtils::GetDisplayName(
 
         Int32 count;
         if (cursor != NULL && (cursor->GetCount(&count), count >= 1)) {
-            cursor->MoveToFirst();
+            Boolean bFirst;
+            cursor->MoveToFirst(&bFirst);
             Int32 index;
             cursor->GetColumnIndex(columnField, &index);
             if (index > -1) {

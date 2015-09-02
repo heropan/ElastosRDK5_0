@@ -2,10 +2,12 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_MEMORYPRESSURELISTENER_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_MEMORYPRESSURELISTENER_H__
 
-// import android.app.Activity;
-// import android.content.ComponentCallbacks2;
-// import android.content.Context;
-// import android.content.res.Configuration;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::App::IActivity;
+using Elastos::Droid::Content::IComponentCallbacks2;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IConfiguration;
 
 namespace Elastos {
 namespace Droid {
@@ -21,12 +23,13 @@ class MemoryPressureListener
 {
 private:
     class InnerComponentCallbacks2
-        : public Object
-        , public IComponentCallbacks2
+//        : public Object
+        : public IComponentCallbacks2
     {
     public:
-        InnerComponentCallbacks2(
-            /* [in] */ MemoryPressureListener* owner);
+        InnerComponentCallbacks2();
+
+        CAR_INTERFACE_DECL()
 
         //@Override
         CARAPI OnTrimMemory(
@@ -38,9 +41,6 @@ private:
         //@Override
         CARAPI OnConfigurationChanged(
             /* [in] */ IConfiguration* configuration);
-
-    private:
-        MemoryPressureListener* mOwner;
     };
 
 public:
@@ -83,7 +83,7 @@ private:
 private:
     //@CalledByNative
     static CARAPI_(void) RegisterSystemCallback(
-        /* [in] */ IContex*t context);
+        /* [in] */ IContext* context);
 
     static CARAPI_(void) SimulateLowMemoryPressureSignal(
         /* [in] */ IActivity* activity);

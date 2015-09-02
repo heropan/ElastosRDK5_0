@@ -1,17 +1,24 @@
 
+#include "webkit/native/base/CommandLine.h"
+//#include "text/TextUtils.h"
+
+//using Elastos::Droid::Text::TextUtils;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Base {
 
 //===============================================================
-//              CommandLine::JavaCommandLine
+//              JavaCommandLine
 //===============================================================
 
-CommandLine::JavaCommandLine::JavaCommandLine(
+JavaCommandLine::JavaCommandLine(
     /* [in] */ ArrayOf<String>* args)
     : mArgsBegin(1)
 {
+    assert(0);
+#if 0
     if (args == NULL || args->GetLength() == 0 || (*args)[0] == NULL) {
         mArgs.add("");
     }
@@ -21,39 +28,48 @@ CommandLine::JavaCommandLine::JavaCommandLine(
     }
     // Invariant: we always have the argv[0] program name element.
     assert mArgs.size() > 0;
+#endif
 }
 
 /**
  * Returns the switches and arguments passed into the program, with switches and their
  * values coming before all of the arguments.
  */
-AutoPtr< ArrayOf<String> > CommandLine::JavaCommandLine::GetCommandLineArguments()
+AutoPtr< ArrayOf<String> > JavaCommandLine::GetCommandLineArguments()
 {
-    return mArgs.toArray(new String[mArgs.size()]);
+//    return mArgs.toArray(new String[mArgs.size()]);
+    assert(0);
+    return NULL;
 }
 
 //@Override
-Boolean CommandLine::JavaCommandLine::HasSwitch(
+Boolean JavaCommandLine::HasSwitch(
     /* [in] */ String switchString)
 {
-    return mSwitches.containsKey(switchString);
+    assert(0);
+//    return mSwitches.ContainsKey(switchString);
+    return FALSE;
 }
 
 //@Override
-String CommandLine::JavaCommandLine::GetSwitchValue(
+String JavaCommandLine::GetSwitchValue(
     /* [in] */ String switchString)
 {
+    assert(0);
+#if 0
     // This is slightly round about, but needed for consistency with the NativeCommandLine
     // version which does not distinguish empty values from key not present.
     String value = mSwitches.get(switchString);
     return value == NULL || value.IsEmpty() ? NULL : value;
+#endif
+    return String(NULL);
 }
 
 //@Override
-void CommandLine::JavaCommandLine::AppendSwitch(
+void JavaCommandLine::AppendSwitch(
     /* [in] */ String switchString)
 {
-    AppendSwitchWithValue(switchString, NULL);
+    AppendSwitchWithValue(switchString, String(NULL));
 }
 
 /**
@@ -62,10 +78,12 @@ void CommandLine::JavaCommandLine::AppendSwitch(
  * @param value the value for this switch.
  */
 //@Override
-void CommandLine::JavaCommandLine::AppendSwitchWithValue(
+void JavaCommandLine::AppendSwitchWithValue(
     /* [in] */ String switchString,
     /* [in] */ String value)
 {
+    assert(0);
+#if 0
     mSwitches.put(switchString, value == null ? "" : value);
 
     // Append the switch and update the switches/arguments divider mArgsBegin.
@@ -74,20 +92,23 @@ void CommandLine::JavaCommandLine::AppendSwitchWithValue(
         combinedSwitchString += SWITCH_VALUE_SEPARATOR + value;
 
     mArgs.add(mArgsBegin++, combinedSwitchString);
+#endif
 }
 
 //@Override
-void CommandLine::JavaCommandLine::AppendSwitchesAndArguments(
+void JavaCommandLine::AppendSwitchesAndArguments(
     /* [in] */ ArrayOf<String>* array)
 {
     AppendSwitchesInternal(array, 0);
 }
 
 // Add the specified arguments, but skipping the first |skipCount| elements.
-void CommandLine::JavaCommandLine::AppendSwitchesInternal(
+void JavaCommandLine::AppendSwitchesInternal(
     /* [in] */ ArrayOf<String>* array,
     /* [in] */ Int32 skipCount)
 {
+    assert(0);
+#if 0
     Boolean parseSwitches = TRUE;
     Int32 length = array->GetLength();
     for (Int32 i = 0; i < length; ++i) {
@@ -110,35 +131,36 @@ void CommandLine::JavaCommandLine::AppendSwitchesInternal(
             mArgs.add(arg);
         }
     }
+#endif
 }
 
 //===============================================================
-//               CommandLine::NativeCommandLine
+//                    NativeCommandLine
 //===============================================================
 
 //@Override
-Boolean CommandLine::NativeCommandLine::HasSwitch(
+Boolean NativeCommandLine::HasSwitch(
     /* [in] */ String switchString)
 {
     return NativeHasSwitch(switchString);
 }
 
 //@Override
-String CommandLine::NativeCommandLine::GetSwitchValue(
+String NativeCommandLine::GetSwitchValue(
     /* [in] */ String switchString)
 {
     return NativeGetSwitchValue(switchString);
 }
 
 //@Override
-void CommandLine::NativeCommandLine::AppendSwitch(
+void NativeCommandLine::AppendSwitch(
     /* [in] */ String switchString)
 {
     NativeAppendSwitch(switchString);
 }
 
 //@Override
-void CommandLine::NativeCommandLine::AppendSwitchWithValue(
+void NativeCommandLine::AppendSwitchWithValue(
     /* [in] */ String switchString,
     /* [in] */ String value)
 {
@@ -146,14 +168,14 @@ void CommandLine::NativeCommandLine::AppendSwitchWithValue(
 }
 
 //@Override
-void CommandLine::NativeCommandLine::AppendSwitchesAndArguments(
+void NativeCommandLine::AppendSwitchesAndArguments(
     /* [in] */ ArrayOf<String>* array)
 {
     NativeAppendSwitchesAndArguments(array);
 }
 
 //@Override
-Boolean CommandLine::NativeCommandLine::IsNativeImplementation()
+Boolean NativeCommandLine::IsNativeImplementation()
 {
     return TRUE;
 }
@@ -162,10 +184,10 @@ Boolean CommandLine::NativeCommandLine::IsNativeImplementation()
 //                         CommandLine
 //===============================================================
 
-static const String CommandLine::TAG("CommandLine");
-static const String CommandLine::SWITCH_PREFIX("--");
-static const String CommandLine::SWITCH_TERMINATOR(SWITCH_PREFIX);
-static const String CommandLine::SWITCH_VALUE_SEPARATOR("=");
+const String CommandLine::TAG("CommandLine");
+const String CommandLine::SWITCH_PREFIX("--");
+const String CommandLine::SWITCH_TERMINATOR(SWITCH_PREFIX);
+const String CommandLine::SWITCH_VALUE_SEPARATOR("=");
 
 CommandLine::CommandLine()
 {
@@ -182,8 +204,10 @@ String CommandLine::GetSwitchValue(
     /* [in] */ String switchString,
     /* [in] */ String defaultValue)
 {
-    String value = getSwitchValue(switchString);
-    return TextUtils.isEmpty(value) ? defaultValue : value;
+    String value = GetSwitchValue(switchString);
+    assert(0);
+//    return TextUtils::IsEmpty(value) ? defaultValue : value;
+    return String(NULL);
 }
 
 /**
@@ -200,15 +224,21 @@ Boolean CommandLine::IsNativeImplementation()
  */
 Boolean CommandLine::IsInitialized()
 {
-    return sCommandLine.get() != null;
+//    return sCommandLine.get() != null;
+    assert(0);
+    return FALSE;
 }
 
 // Equivalent to CommandLine::ForCurrentProcess in C++.
 AutoPtr<CommandLine> CommandLine::GetInstance()
 {
+    assert(0);
+#if 0
     CommandLine commandLine = sCommandLine.get();
     assert commandLine != null;
     return commandLine;
+#endif
+    return NULL;
 }
 
 /**
@@ -219,8 +249,9 @@ AutoPtr<CommandLine> CommandLine::GetInstance()
 void CommandLine::Init(
     /* [in] */ ArrayOf<String>* args)
 {
-    AutoPtr<CommandLine> instance = new JavaCommandLine(args);
-    SetInstance(instance);
+    assert(0);
+//    AutoPtr<CommandLine> instance = new JavaCommandLine(args);
+//    SetInstance(instance);
 }
 
 /**
@@ -257,6 +288,8 @@ void CommandLine::Reset()
 AutoPtr< ArrayOf<String> > CommandLine::TokenizeQuotedAruments(
     /* [in] */ ArrayOf<Int8>* buffer)
 {
+    assert(0);
+#if 0
     ArrayList<String> args = new ArrayList<String>();
     StringBuilder arg = null;
     final char noQuote = '\0';
@@ -290,6 +323,8 @@ AutoPtr< ArrayOf<String> > CommandLine::TokenizeQuotedAruments(
         args.add(arg.toString());
     }
     return args.toArray(new String[args.size()]);
+#endif
+    return NULL;
 }
 
 void CommandLine::EnableNativeProxy()
@@ -297,26 +332,34 @@ void CommandLine::EnableNativeProxy()
     // Make a best-effort to ensure we make a clean (atomic) switch over from the old to
     // the new command line implementation. If another thread is modifying the command line
     // when this happens, all bets are off. (As per the native CommandLine).
-    sCommandLine.set(new NativeCommandLine());
+    assert(0);
+//    sCommandLine.set(new NativeCommandLine());
 }
 
 AutoPtr< ArrayOf<String> > CommandLine::GetJavaSwitchesOrNull()
 {
+    assert(0);
+#if 0
     CommandLine commandLine = sCommandLine.get();
     if (commandLine != null) {
         assert !commandLine.isNativeImplementation();
         return ((JavaCommandLine) commandLine).getCommandLineArguments();
     }
     return null;
+#endif
+    return NULL;
 }
 
 void CommandLine::SetInstance(
     /* [in] */ CommandLine* commandLine)
 {
+    assert(0);
+#if 0
     CommandLine oldCommandLine = sCommandLine.getAndSet(commandLine);
     if (oldCommandLine != null && oldCommandLine.isNativeImplementation()) {
         nativeReset();
     }
+#endif
 }
 
 /**
@@ -329,6 +372,8 @@ AutoPtr< ArrayOf<Int8> > CommandLine::ReadUtf8FileFully(
     /* [in] */ String fileName,
     /* [in] */ Int32 sizeLimit)
 {
+    assert(0);
+#if 0
     Reader reader = null;
     File f = new File(fileName);
     long fileLength = f.length();
@@ -362,6 +407,8 @@ AutoPtr< ArrayOf<Int8> > CommandLine::ReadUtf8FileFully(
             Log.e(TAG, "Unable to close file reader.", e);
         }
     }
+#endif
+    return NULL;
 }
 
 void CommandLine::NativeReset()
@@ -379,12 +426,20 @@ String CommandLine::NativeGetSwitchValue(
 }
 
 void CommandLine::NativeAppendSwitch(
-    /* [in] */ String switchString);
+    /* [in] */ String switchString)
+{
+}
+
 void CommandLine::NativeAppendSwitchWithValue(
     /* [in] */ String switchString,
-    /* [in] */ String value);
+    /* [in] */ String value)
+{
+}
+
 void CommandLine::NativeAppendSwitchesAndArguments(
-    /* [in] */ ArrayOf<String>* array);
+    /* [in] */ ArrayOf<String>* array)
+{
+}
 
 } // namespace Base
 } // namespace Webkit

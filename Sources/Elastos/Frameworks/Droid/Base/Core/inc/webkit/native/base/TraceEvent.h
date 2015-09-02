@@ -2,11 +2,14 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_TRACEEVENT_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_TRACEEVENT_H__
 
-// import android.os.Looper;
-// import android.os.MessageQueue;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IMessageQueue;
+using Elastos::Droid::Os::IIdleHandler;
 // import android.os.SystemClock;
 // import android.util.Log;
-// import android.util.Printer;
+using Elastos::Droid::Utility::IPrinter;
 
 namespace Elastos {
 namespace Droid {
@@ -23,12 +26,14 @@ namespace Base {
 //@JNINamespace("base::android")
 class TraceEvent
 {
-private:
+public:
     class BasicLooperMonitor
-        : public Object,
-        , public IPrinter
+        //: public Object,
+        : public IPrinter
     {
     public:
+        CAR_INTERFACE_DECL();
+
         //@Override
         CARAPI Println(
             /* [in] */ const String& line);
@@ -40,6 +45,9 @@ private:
             /* [in] */ const String& line);
     };
 
+    friend AutoPtr<BasicLooperMonitor> BasicLooperMonitor_Create();
+
+private:
     /**
      * A class that records, traces and logs statistics about the UI thead's Looper.
      * The output of this class can be used in a number of interesting ways:
@@ -63,13 +71,16 @@ private:
      */
     class IdleTracingLooperMonitor
         : public BasicLooperMonitor
-        , public MessageQueue.IdleHandler
+        , public IIdleHandler
     {
     public:
         IdleTracingLooperMonitor();
 
+        CAR_INTERFACE_DECL();
+
         //@Override
-        CARAPI_(Boolean) QueueIdle();
+        CARAPI QueueIdle(
+            /* [out] */ Boolean* result);
 
         //@Override
         CARAPI_(void) BeginHandling(
@@ -117,7 +128,7 @@ private:
     // Holder for monitor avoids unnecessary construction on non-debug runs
     class LooperMonitorHolder
     {
-    private:
+    public:
         static const AutoPtr<BasicLooperMonitor> sInstance;
     };
 

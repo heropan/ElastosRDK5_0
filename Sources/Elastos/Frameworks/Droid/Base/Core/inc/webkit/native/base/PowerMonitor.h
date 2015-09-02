@@ -2,12 +2,15 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_POWERMONITOR_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_POWERMONITOR_H__
 
-// import android.content.Context;
-// import android.content.Intent;
-// import android.content.IntentFilter;
-// import android.os.BatteryManager;
-// import android.os.Handler;
-// import android.os.Looper;
+#include "ext/frameworkext.h"
+#include "webkit/native/base/ApplicationStatus.h"
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Os::IBatteryManager;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::ILooper;
 
 namespace Elastos {
 namespace Droid {
@@ -21,25 +24,25 @@ namespace Base {
 class PowerMonitor : public ApplicationStatus::ApplicationStateListener
 {
 private:
+    static AutoPtr<IRunnable> Runnable_Create();
+private:
     class LazyHolder
     {
     private:
-        static const AutoPr<PowerMonitor> INSTANCE;
+//        static const AutoPr<PowerMonitor> INSTANCE;
     };
 
     class InnerRunnable
-        : public Object
-        , public IRunnable
+    //    : public Object
+        : public IRunnable
     {
     public:
-        InnerRunnable(
-            /* [in] */ PowerMonitor* owner);
+        InnerRunnable();
+
+        CAR_INTERFACE_DECL();
 
         CARAPI Run();
-
-    private:
-        PowerMonitor* mOwner;
-    }
+    };
 
 public:
     static CARAPI_(void) CreateForTests(
@@ -63,16 +66,16 @@ public:
 private:
     static const Int64 SUSPEND_DELAY_MS = 1 * 60 * 1000;  // 1 minute.
 
-    static AutoPr<PowerMonitor> sInstance;
+//    static AutoPr<PowerMonitor> sInstance;
 
     Boolean mIsBatteryPower;
-    const AutoPr<IHandler> mHandler;
+    const AutoPtr<IHandler> mHandler;
 
     // Asynchronous task used to fire the "paused" event to the native side 1 minute after the main
     // activity transitioned to the "paused" state. This event is not sent immediately because it
     // would be too aggressive. An Android activity can be in the "paused" state quite often. This
     // can happen when a dialog window shows up for instance.
-    static const AutoPr<IRunnable> sSuspendTask;
+    static const AutoPtr<IRunnable> sSuspendTask;
 
 private:
     PowerMonitor();

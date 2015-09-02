@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_ACTIVITYSTATE_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_ACTIVITYSTATE_H__
 
+#include "ext/frameworkext.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -13,45 +15,35 @@ namespace Base {
 class ActivityState
 {
 public:
-    ActivityState()
-        : CREATED(1)
-        , STARTED(2)
-        , RESUMED(3)
-        , PAUSED(4)
-        , STOPPED(5)
-        , DESTROYED(6)
-    {
-    }
-
     /**
      * Represents Activity#onCreate().
      */
-    const Int32 CREATED;
+    static const Int32 CREATED = 1;
 
     /**
      * Represents Activity#onStart().
      */
-    const Int32 STARTED;
+    static const Int32 STARTED = 2;
 
     /**
      * Represents Activity#onResume().
      */
-    const Int32 RESUMED;
+    static const Int32 RESUMED = 3;
 
     /**
      * Represents Activity#onPause().
      */
-    const Int32 PAUSED;
+    static const Int32 PAUSED = 4;
 
     /**
      * Represents Activity#onStop().
      */
-    const Int32 STOPPED;
+    static const Int32 STOPPED = 5;
 
     /**
      * Represents Activity#onDestroy().  This is also used when the state of an Activity is unknown.
      */
-    const Int32 DESTROYED;
+    static const Int32 DESTROYED = 6;
 };
 
 } // namespace Base

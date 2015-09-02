@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_EVENTLOG_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_EVENTLOG_H__
 
+#include "ext/frameworkext.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {

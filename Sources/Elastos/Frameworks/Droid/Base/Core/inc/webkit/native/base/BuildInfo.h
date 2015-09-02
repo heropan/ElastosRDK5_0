@@ -2,6 +2,10 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_BUILDINFO_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_BUILDINFO_H__
 
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::Content::IContext;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -64,7 +68,7 @@ private:
      */
     BuildInfo();
 
-    static const String;
+    static const String TAG;
     static const Int32 MAX_FINGERPRINT_LENGTH = 128;
 };
 

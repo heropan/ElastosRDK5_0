@@ -2,8 +2,10 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_SYSTEMMESSAGEHANDLER_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_SYSTEMMESSAGEHANDLER_H__
 
-// import android.os.Handler;
-// import android.os.Message;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IMessage;
 
 namespace Elastos {
 namespace Droid {
@@ -11,10 +13,12 @@ namespace Webkit {
 namespace Base {
 
 class SystemMessageHandler
-    : public Object
-    , public IHandler
+    //: public Object
+    //, public IHandler
 {
 public:
+    CAR_INTERFACE_DECL();
+
     //@Override
     ECode HandleMessage(
         /* [in] */ IMessage* msg);

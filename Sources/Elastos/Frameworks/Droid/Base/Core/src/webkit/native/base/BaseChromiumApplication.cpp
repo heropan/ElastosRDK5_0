@@ -1,4 +1,9 @@
 
+#include "webkit/native/base/BaseChromiumApplication.h"
+#include "webkit/native/base/ApplicationStatus.h"
+
+using Elastos::Droid::View::IWindow;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -9,8 +14,10 @@ namespace Base {
 //============================================================================================
 
 BaseChromiumApplication::InnerActivityLifecycleCallbacks::InnerWindowCallbackWrapper::InnerWindowCallbackWrapper(
-    /* [in] */ InnerActivityLifecycleCallbacks* owner)
+    /* [in] */ BaseChromiumApplication::InnerActivityLifecycleCallbacks* owner,
+    /* [in] */ IWindowCallback* callback)
     : mOwner(owner)
+    , WindowCallbackWrapper(callback)
 {
 }
 
@@ -20,9 +27,10 @@ ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::InnerWindowCallb
 {
     WindowCallbackWrapper::OnWindowFocusChanged(hasFocus);
 
-    for (WindowFocusChangedListener listener : mWindowFocusListeners) {
-        listener.onWindowFocusChanged(activity, hasFocus);
-    }
+    assert(0);
+    // for (WindowFocusChangedListener listener : mWindowFocusListeners) {
+    //     listener.onWindowFocusChanged(activity, hasFocus);
+    // }
 
     return NOERROR;
 }
@@ -47,7 +55,7 @@ ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivityCreate
     AutoPtr<IWindowCallback> callback;
     window->GetCallback((IWindowCallback**)&callback);
 
-    AutoPtr<IWindowCallback> cb = new InnerWindowCallbackWrapper(callback);
+    AutoPtr<IWindowCallback> cb = new InnerWindowCallbackWrapper(this, callback);
     window->SetCallback(cb);
 
     return NOERROR;
@@ -55,13 +63,14 @@ ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivityCreate
 
 //@Override
 ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivityDestroyed(
-    /* [in] */ Activity activity)
+    /* [in] */ IActivity* activity)
 {
     AutoPtr<IWindow> window;
     activity->GetWindow((IWindow**)&window);
     AutoPtr<IWindowCallback> callback;
     window->GetCallback((IWindowCallback**)&callback);
-    assert(callback->Probe(EIID_WindowCallbackWrapper));
+    assert(0);
+//    assert(callback->Probe(EIID_WindowCallbackWrapper));
 
     return NOERROR;
 }
@@ -73,7 +82,8 @@ ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivityPaused
     activity->GetWindow((IWindow**)&window);
     AutoPtr<IWindowCallback> callback;
     window->GetCallback((IWindowCallback**)&callback);
-    assert(callback->Probe(EIID_WindowCallbackWrapper));
+    assert(0);
+//    assert(callback->Probe(EIID_WindowCallbackWrapper));
 
     return NOERROR;
 }
@@ -85,7 +95,8 @@ ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivityResume
     activity->GetWindow((IWindow**)&window);
     AutoPtr<IWindowCallback> callback;
     window->GetCallback((IWindowCallback**)&callback);
-    assert(callback->Probe(EIID_WindowCallbackWrapper));
+    assert(0);
+//    assert(callback->Probe(EIID_WindowCallbackWrapper));
 
     return NOERROR;
 }
@@ -98,7 +109,8 @@ ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivitySaveIn
     activity->GetWindow((IWindow**)&window);
     AutoPtr<IWindowCallback> callback;
     window->GetCallback((IWindowCallback**)&callback);
-    assert(callback->Probe(EIID_WindowCallbackWrapper));
+    assert(0);
+//    assert(callback->Probe(EIID_WindowCallbackWrapper));
 
     return NOERROR;
 }
@@ -111,7 +123,8 @@ ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivityStarte
     activity->GetWindow((IWindow**)&window);
     AutoPtr<IWindowCallback> callback;
     window->GetCallback((IWindowCallback**)&callback);
-    assert(callback->Probe(EIID_WindowCallbackWrapper));
+    assert(0);
+//    assert(callback->Probe(EIID_WindowCallbackWrapper));
 
     return NOERROR;
 }
@@ -124,7 +137,8 @@ ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivityStoppe
     activity->GetWindow((IWindow**)&window);
     AutoPtr<IWindowCallback> callback;
     window->GetCallback((IWindowCallback**)&callback);
-    assert(callback->Probe(EIID_WindowCallbackWrapper));
+    assert(0);
+//    assert(callback->Probe(EIID_WindowCallbackWrapper));
 
     return NOERROR;
 }
@@ -136,7 +150,7 @@ ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivityStoppe
 //@Override
 ECode BaseChromiumApplication::OnCreate()
 {
-    super.onCreate();
+//    Application::OnCreate();
     ApplicationStatus::Initialize(this);
 
     AutoPtr<IActivityLifecycleCallbacks> callback = new InnerActivityLifecycleCallbacks(this);
@@ -152,7 +166,8 @@ ECode BaseChromiumApplication::OnCreate()
 void BaseChromiumApplication::RegisterWindowFocusChangedListener(
     /* [in] */ WindowFocusChangedListener* listener)
 {
-    mWindowFocusListeners.addObserver(listener);
+    assert(0);
+//    mWindowFocusListeners.addObserver(listener);
 }
 
 /**
@@ -162,7 +177,8 @@ void BaseChromiumApplication::RegisterWindowFocusChangedListener(
 void BaseChromiumApplication::UnregisterWindowFocusChangedListener(
     /* [in] */ WindowFocusChangedListener* listener)
 {
-    mWindowFocusListeners.removeObserver(listener);
+    assert(0);
+//    mWindowFocusListeners.removeObserver(listener);
 }
 
 } // namespace Base

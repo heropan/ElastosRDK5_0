@@ -1,4 +1,11 @@
 
+#include "webkit/native/base/ApiCompatibilityUtils.h"
+#include "os/Build.h"
+
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::View::EIID_IView;
+using Elastos::Droid::View::IViewTreeObserver;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -18,7 +25,7 @@ ApiCompatibilityUtils::ApiCompatibilityUtils()
 Boolean ApiCompatibilityUtils::IsLayoutRtl(
     /* [in] */ IView* view)
 {
-    if (IBuild::VERSION.SDK_INT >= IBuild::VERSION_CODES.JELLY_BEAN_MR1) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR1) {
         Int32 direction;
         view->GetLayoutDirection(&direction);
         return direction == IView::LAYOUT_DIRECTION_RTL;
@@ -35,7 +42,7 @@ Boolean ApiCompatibilityUtils::IsLayoutRtl(
 Int32 ApiCompatibilityUtils::GetLayoutDirection(
     /* [in] */ IConfiguration* configuration)
 {
-    if (IBuild::VERSION.SDK_INT >= IBuild::VERSION_CODES.JELLY_BEAN_MR1) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR1) {
         Int32 dir;
         configuration->GetLayoutDirection(&dir);
         return dir;
@@ -51,7 +58,7 @@ Int32 ApiCompatibilityUtils::GetLayoutDirection(
  */
 Boolean ApiCompatibilityUtils::IsPrintingSupported()
 {
-    return IBuild::VERSION.SDK_INT >= IBuild::VERSION_CODES.KITKAT;
+    return Build::VERSION::SDK_INT >= Build::VERSION_CODES::KITKAT;
 }
 
 /**
@@ -59,7 +66,7 @@ Boolean ApiCompatibilityUtils::IsPrintingSupported()
  */
 Boolean ApiCompatibilityUtils::IsHTMLClipboardSupported()
 {
-    return IBuild::VERSION.SDK_INT >= IBuild::VERSION_CODES.JELLY_BEAN;
+    return Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN;
 }
 
 /**
@@ -69,7 +76,7 @@ void ApiCompatibilityUtils::SetLayoutDirection(
     /* [in] */ IView* view,
     /* [in] */ Int32 layoutDirection)
 {
-    if (IBuild::VERSION.SDK_INT >= IBuild::VERSION_CODES.JELLY_BEAN_MR1) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR1) {
         view->SetLayoutDirection(layoutDirection);
     }
     else {
@@ -84,7 +91,7 @@ void ApiCompatibilityUtils::SetTextAlignment(
     /* [in] */ IView* view,
     /* [in] */ Int32 textAlignment)
 {
-    if (IBuild::VERSION.SDK_INT >= IBuild::VERSION_CODES.JELLY_BEAN_MR1) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR1) {
         view->SetTextAlignment(textAlignment);
     }
     else {
@@ -99,7 +106,7 @@ void ApiCompatibilityUtils::SetMarginEnd(
     /* [in] */ IViewGroupMarginLayoutParams* layoutParams,
     /* [in] */ Int32 end)
 {
-    if (IBuild::VERSION.SDK_INT >= IBuild::VERSION_CODES.JELLY_BEAN_MR1) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR1) {
         layoutParams->SetMarginEnd(end);
     }
     else {
@@ -114,7 +121,7 @@ Int32 ApiCompatibilityUtils::GetMarginEnd(
     /* [in] */ IViewGroupMarginLayoutParams* layoutParams)
 {
     Int32 margin;
-    if (IBuild::VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR1) {
         layoutParams->GetMarginEnd(&margin);
         return margin;
     }
@@ -131,7 +138,7 @@ void ApiCompatibilityUtils::SetMarginStart(
     /* [in] */ IViewGroupMarginLayoutParams* layoutParams,
     /* [in] */ Int32 start)
 {
-    if (IBuild::VERSION.SDK_INT >= IBuild::VERSION_CODES.JELLY_BEAN_MR1) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR1) {
         layoutParams->SetMarginStart(start);
     }
     else {
@@ -146,7 +153,7 @@ Int32 ApiCompatibilityUtils::GetMarginStart(
     /* [in] */ IViewGroupMarginLayoutParams* layoutParams)
 {
     Int32 margin;
-    if (IBuild::VERSION.SDK_INT >= IBuild::VERSION_CODES.JELLY_BEAN_MR1) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR1) {
         layoutParams->GetMarginStart(&margin);
         return margin;
     }
@@ -166,7 +173,7 @@ void ApiCompatibilityUtils::SetPaddingRelative(
     /* [in] */ Int32 end,
     /* [in] */ Int32 bottom)
 {
-    if (IBuild::VERSION.SDK_INT >= IBuild::VERSION_CODES.JELLY_BEAN_MR1) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR1) {
         view->SetPaddingRelative(start, top, end, bottom);
     }
     else {
@@ -181,7 +188,7 @@ void ApiCompatibilityUtils::SetPaddingRelative(
 Int32 ApiCompatibilityUtils::GetPaddingStart(
     /* [in] */ IView* view)
 {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR1) {
         Int32 start;
         view->GetPaddingStart(&start);
         return start;
@@ -200,7 +207,7 @@ Int32 ApiCompatibilityUtils::GetPaddingStart(
 Int32 ApiCompatibilityUtils::GetPaddingEnd(
     /* [in] */ IView* view)
 {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR1) {
         Int32 end;
         view->GetPaddingEnd(&end);
         return end;
@@ -224,14 +231,15 @@ void ApiCompatibilityUtils::SetCompoundDrawablesRelative(
     /* [in] */ IDrawable* end,
     /* [in] */ IDrawable* bottom)
 {
-    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    if (Build::VERSION::SDK_INT == Build::VERSION_CODES::JELLY_BEAN_MR1) {
         // On JB MR1, due to a platform bug, setCompoundDrawablesRelative() is a no-op if the
         // view has ever been measured. As a workaround, use setCompoundDrawables() directly.
         // See: http://crbug.com/368196 and http://crbug.com/361709
-        boolean isRtl = IsLayoutRtl(textView);
+        AutoPtr<IView> view = (IView*)textView->Probe(EIID_IView);
+        Boolean isRtl = IsLayoutRtl(view);
         textView->SetCompoundDrawables(isRtl ? end : start, top, isRtl ? start : end, bottom);
     }
-    else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    else if (Build::VERSION::SDK_INT > Build::VERSION_CODES::JELLY_BEAN_MR1) {
         textView->SetCompoundDrawablesRelative(start, top, end, bottom);
     }
     else {
@@ -250,13 +258,14 @@ void ApiCompatibilityUtils::SetCompoundDrawablesRelativeWithIntrinsicBounds(
     /* [in] */ IDrawable* end,
     /* [in] */ IDrawable* bottom)
 {
-    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    if (Build::VERSION::SDK_INT == Build::VERSION_CODES::JELLY_BEAN_MR1) {
         // Work around the platform bug described in setCompoundDrawablesRelative() above.
-        boolean isRtl = IsLayoutRtl(textView);
+        AutoPtr<IView> view = (IView*)textView->Probe(EIID_IView);
+        Boolean isRtl = IsLayoutRtl(view);
         textView->SetCompoundDrawablesWithIntrinsicBounds(isRtl ? end : start, top,
                 isRtl ? start : end, bottom);
     }
-    else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    else if (Build::VERSION::SDK_INT > Build::VERSION_CODES::JELLY_BEAN_MR1) {
         textView->SetCompoundDrawablesRelativeWithIntrinsicBounds(start, top, end, bottom);
     }
     else {
@@ -275,13 +284,14 @@ void ApiCompatibilityUtils::SetCompoundDrawablesRelativeWithIntrinsicBounds(
     /* [in] */ Int32 end,
     /* [in] */ Int32 bottom)
 {
-    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    if (Build::VERSION::SDK_INT == Build::VERSION_CODES::JELLY_BEAN_MR1) {
         // Work around the platform bug described in setCompoundDrawablesRelative() above.
-        Boolean isRtl = IsLayoutRtl(textView);
+        AutoPtr<IView> view = (IView*)textView->Probe(EIID_IView);
+        Boolean isRtl = IsLayoutRtl(view);
         textView->SetCompoundDrawablesWithIntrinsicBounds(isRtl ? end : start, top,
                 isRtl ? start : end, bottom);
     }
-    else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    else if (Build::VERSION::SDK_INT > Build::VERSION_CODES::JELLY_BEAN_MR1) {
         textView->SetCompoundDrawablesRelativeWithIntrinsicBounds(start, top, end, bottom);
     }
     else {
@@ -295,7 +305,7 @@ void ApiCompatibilityUtils::SetCompoundDrawablesRelativeWithIntrinsicBounds(
 void ApiCompatibilityUtils::PostInvalidateOnAnimation(
     /* [in] */ IView* view)
 {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN) {
         view->PostInvalidateOnAnimation();
     }
     else {
@@ -311,7 +321,7 @@ void ApiCompatibilityUtils::SetContentDescriptionForRemoteView(
     /* [in] */ Int32 viewId,
     /* [in] */ ICharSequence* contentDescription)
 {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::ICE_CREAM_SANDWICH_MR1) {
         remoteViews->SetContentDescription(viewId, contentDescription);
     }
     else {
@@ -328,7 +338,7 @@ void ApiCompatibilityUtils::SetBackgroundForView(
     /* [in] */ IView* view,
     /* [in] */ IDrawable* drawable)
 {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN) {
         view->SetBackground(drawable);
     }
     else {
@@ -341,9 +351,9 @@ void ApiCompatibilityUtils::SetBackgroundForView(
  */
 void ApiCompatibilityUtils::RemoveOnGlobalLayoutListener(
     /* [in] */ IView* view,
-    /* [in] */ IViewTreeObserverOnGlobalLayoutListener* listener)
+    /* [in] */ IOnGlobalLayoutListener* listener)
 {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN) {
         AutoPtr<IViewTreeObserver> obsever;
         view->GetViewTreeObserver((IViewTreeObserver**)&obsever);
         obsever->RemoveOnGlobalLayoutListener(listener);
@@ -362,7 +372,7 @@ void ApiCompatibilityUtils::SetImageAlpha(
     /* [in] */ IImageView* iv,
     /* [in] */ Int32 alpha)
 {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN) {
         iv->SetImageAlpha(alpha);
     }
     else {
@@ -377,7 +387,7 @@ String ApiCompatibilityUtils::GetCreatorPackage(
     /* [in] */ IPendingIntent* intent)
 {
     String pkgName;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR1) {
         intent->GetCreatorPackage(&pkgName);
         return pkgName;
     }
@@ -391,7 +401,7 @@ Boolean ApiCompatibilityUtils::DatePickerRequiresAccept()
 {
     // TODO(miguelg) use the final code for the L
     // https://crbug.com/399198
-    return Build.VERSION.SDK_INT <  20; /* CUR_DEVELOPMENT */
+    return Build::VERSION::SDK_INT <  20; /* CUR_DEVELOPMENT */
 }
 
 } // namespace Base

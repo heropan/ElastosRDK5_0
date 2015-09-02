@@ -2,9 +2,11 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_POWERSTATUSRECEIVER_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_POWERSTATUSRECEIVER_H__
 
-// import android.content.BroadcastReceiver;
-// import android.content.Context;
-// import android.content.Intent;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::Content::IBroadcastReceiver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
 
 namespace Elastos {
 namespace Droid {
@@ -18,14 +20,16 @@ namespace Base {
  * declared in its manifest.
  */
 class PowerStatusReceiver
-    : public Object
-    , public IBroadcastReceiver
+    //: public Object
+    : public IBroadcastReceiver
 {
 public:
+    CAR_INTERFACE_DECL();
+
     //@Override
     CARAPI OnReceive(
         /* [in] */ IContext* context,
-        /* [in] */ Intent intent);
+        /* [in] */ IIntent* intent);
 };
 
 } // namespace Base

@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_PERFTRACEEVENT_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_PERFTRACEEVENT_H__
 
+#include "ext/frameworkext.h"
+
 // import android.os.Debug;
 // import android.os.Debug.MemoryInfo;
 // import android.util.Log;
@@ -10,7 +12,7 @@
 // import org.json.JSONException;
 // import org.json.JSONObject;
 
-// import java.io.File;
+using Elastos::IO::IFile;
 // import java.io.FileNotFoundException;
 // import java.io.FileOutputStream;
 // import java.io.PrintStream;
@@ -39,7 +41,7 @@ namespace Base {
  * the @TracePerf annotation.  Thus, unlike TraceEvent, we do not
  * support an implicit trace name based on the callstack.
  */
-class PerfTraceEvent : public Object
+class PerfTraceEvent// : public Object
 {
 private:
     /** The event types understood by the perf trace scripts. */
@@ -68,8 +70,8 @@ public:
      * @param strings Event names we will record.
      */
     //synchronized
-    static CARAPI_(void) SetFilter(
-        /* [in] */ List<String>* strings);
+//    static CARAPI_(void) SetFilter(
+//        /* [in] */ List<String>* strings);
 
     /**
      * Enable or disable perf tracing.
@@ -149,9 +151,9 @@ public:
      * Begin trace events should have a matching end event.
      */
     //synchronized
-    static CARAPI_(void) Begin(
-        /* [in] */ String name,
-        /* [in] */ IMemoryInfo* memoryInfo);
+//    static CARAPI_(void) Begin(
+//        /* [in] */ String name,
+//        /* [in] */ IMemoryInfo* memoryInfo);
 
     /**
      * Record an "end" memory trace event, to match a begin event.  The
@@ -159,9 +161,9 @@ public:
      * graph code.
      */
     //synchronized
-    static CARAPI_(void) End(
-        /* [in] */ String name,
-        /* [in] */ IMemoryInfo* memoryInfo);
+//    static CARAPI_(void) End(
+//        /* [in] */ String name,
+//        /* [in] */ IMemoryInfo* memoryInfo);
 
     /**
      * Generating a trace name for tracking memory based on the timing name passed in.
@@ -210,12 +212,12 @@ private:
     // A list of performance trace event strings.
     // Events are stored as a JSON dict much like TraceEvent.
     // E.g. timestamp is in microseconds.
-    static AutoPtr<IJSONArray> sPerfTraceStrings;
+//    static AutoPtr<IJSONArray> sPerfTraceStrings;
 
     // A filter for performance tracing.  Only events that match a
     // string in the list are saved.  Presence of a filter does not
     // necessarily mean perf tracing is enabled.
-    static List<String> sFilter;
+//    static List<String> sFilter;
 
     // Nanosecond start time of performance tracing.
     static Int64 sBeginNanoTime;
@@ -252,12 +254,12 @@ private:
      * @param memoryInfo Memory details to be included in this perf string, null if
      *                   no memory details are to be included.
      */
-    static CARAPI_(void) SavePerfString(
-        /* [in] */ String name,
-        /* [in] */ Int64 id,
-        /* [in] */ String type,
-        /* [in] */ Int64 timestampUs,
-        /* [in] */ IMemoryInfo* memoryInfo);
+//    static CARAPI_(void) SavePerfString(
+//        /* [in] */ String name,
+//        /* [in] */ Int64 id,
+//        /* [in] */ String type,
+//        /* [in] */ Int64 timestampUs,
+//        /* [in] */ IMemoryInfo* memoryInfo);
 
     /**
      * Dump all performance data we have saved up to the log.

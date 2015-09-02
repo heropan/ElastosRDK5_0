@@ -1,4 +1,6 @@
 
+#include "webkit/native/base/EventLog.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -13,7 +15,8 @@ void EventLog::WriteEvent(
     /* [in] */ Int32 tag,
     /* [in] */ Int32 value)
 {
-    Elastos::util::EventLog::WriteEvent(tag, value);
+    assert(0);
+//    Elastos::util::EventLog::WriteEvent(tag, value);
 }
 
 } // namespace Base

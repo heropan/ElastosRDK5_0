@@ -2,11 +2,13 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_CONTENTURIUTILS_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_CONTENTURIUTILS_H__
 
-// import android.content.ContentResolver;
-// import android.content.Context;
-// import android.database.Cursor;
-// import android.net.Uri;
-// import android.os.ParcelFileDescriptor;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Os::IParcelFileDescriptor;
 // import android.util.Log;
 
 namespace Elastos {

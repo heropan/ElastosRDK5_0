@@ -2,11 +2,17 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_APPLICATIONSTATUS_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_APPLICATIONSTATUS_H__
 
-// import android.app.Activity;
-// import android.app.Application;
-// import android.app.Application.ActivityLifecycleCallbacks;
-// import android.content.Context;
-// import android.os.Bundle;
+#include "webkit/native/base/BaseChromiumApplication.h"
+
+using Elastos::Core::IInteger32;
+using Elastos::Core::IRunnable;
+using Elastos::Utility::IMap;
+
+using Elastos::Droid::App::IActivity;
+using Elastos::Droid::App::IApplication;
+using Elastos::Droid::App::IActivityLifecycleCallbacks;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::IBundle;
 
 // import java.lang.ref.WeakReference;
 // import java.util.ArrayList;
@@ -34,6 +40,8 @@ public:
     class ApplicationStateListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         /**
          * Called when the application's state changes.
          * @param newState The application state.
@@ -78,87 +86,75 @@ private:
         /**
          * @return A list of {@link ActivityStateListener}s listening to this activity.
          */
-        virtual CARAPI_(ObserverList<ActivityStateListener>) GetListeners();
+//        virtual CARAPI_(ObserverList<ActivityStateListener>) GetListeners();
 
     private:
         Int32 mStatus;// = ActivityState.DESTROYED;
-        ObserverList<ActivityStateListener> mListeners;// = new ObserverList<ActivityStateListener>();
+//        ObserverList<ActivityStateListener> mListeners;// = new ObserverList<ActivityStateListener>();
     };
 
     class InnerWindowFocusChangedListener : public BaseChromiumApplication::WindowFocusChangedListener
     {
     public:
-        InnerWindowFocusChangedListener(
-            /* [in] */ ApplicationStatus* owner);
+        InnerWindowFocusChangedListener();
 
         virtual CARAPI_(void) OnWindowFocusChanged(
             /* [in] */ IActivity* activity,
             /* [in] */ Boolean hasFocus);
-
-    private:
-        ApplicationStatus* mOwner;
     };
 
     class InnerActivityLifecycleCallbacks
-        : public Object,
-        , public IActivityLifecycleCallbacks
+        //: public Object,
+        : public IActivityLifecycleCallbacks
     {
     public:
-        InnerActivityLifecycleCallbacks(
-            /* [in] */ ApplicationStatus* owner);
+        InnerActivityLifecycleCallbacks();
 
-        virtual CARAPI_(void) OnActivityCreated(
+        CAR_INTERFACE_DECL();
+
+        CARAPI OnActivityCreated(
             /* [in] */ IActivity* activity,
             /* [in] */ IBundle* savedInstanceState);
 
-        virtual CARAPI_(void) OnActivityDestroyed(
+        CARAPI OnActivityDestroyed(
             /* [in] */ IActivity* activity);
 
-        virtual CARAPI_(void) OnActivityPaused(
+        CARAPI OnActivityPaused(
             /* [in] */ IActivity* activity);
 
-        virtual CARAPI_(void) OnActivityResumed(
+        CARAPI OnActivityResumed(
             /* [in] */ IActivity* activity);
 
-        virtual CARAPI_(void) OnActivitySaveInstanceState(
+        CARAPI OnActivitySaveInstanceState(
             /* [in] */ IActivity* activity,
             /* [in] */ IBundle* outState);
 
-        virtual CARAPI_(void) OnActivityStarted(
+        CARAPI OnActivityStarted(
             /* [in] */ IActivity* activity);
 
-        virtual CARAPI_(void) OnActivityStopped(
+        CARAPI OnActivityStopped(
             /* [in] */ IActivity* activity);
-
-    private:
-        ApplicationStatus* mOwner;
-    }
+    };
 
     class InnerRunnable
-        : public Object
-        , public IRunnable
+        //: public Object
+        : public IRunnable
     {
     public:
-        InnerRunnable(
-            /* [in] */ ApplicationStatus* owner);
+        InnerRunnable();
+
+        CAR_INTERFACE_DECL();
 
         CARAPI Run();
-
-    private:
-        ApplicationStatus* mOwner;
     };
 
     class InnerApplicationStateListener : public ApplicationStateListener
     {
     public:
-        InnerApplicationStateListener(
-            /* [in] */ ApplicationStatus* owner);
+        InnerApplicationStateListener();
 
         virtual CARAPI_(void) OnApplicationStateChange(
             /* [in] */ Int32 newState);
-
-    private:
-        ApplicationStatus* mOwner;
     };
 
 public:
@@ -186,7 +182,7 @@ public:
     /**
      * @return A {@link List} of all non-destroyed {@link Activity}s.
      */
-    static CARAPI_(List<WeakReference<Activity>>) GetRunningActivities();
+//    static CARAPI_(List<WeakReference<Activity>>) GetRunningActivities();
 
     /**
      * @return The {@link Context} for the {@link Application}.
@@ -339,7 +335,7 @@ private:
 private:
     static AutoPtr<IApplication> sApplication;
 
-    static Object sCachedApplicationStateLock;
+//    static Object sCachedApplicationStateLock;
     static AutoPtr<IInteger32> sCachedApplicationState;
 
     /** Last activity that was shown (or null if none or it was destroyed). */
@@ -351,21 +347,20 @@ private:
     /**
      * A map of which observers listen to state changes from which {@link Activity}.
      */
-    static final Map<Activity, ActivityInfo> sActivityInfo =
-            new ConcurrentHashMap<Activity, ActivityInfo>();
+    static const AutoPtr<IMap> sActivityInfo;
 
     /**
      * A list of observers to be notified when any {@link Activity} has a state change.
      */
-    static final ObserverList<ActivityStateListener> sGeneralActivityStateListeners =
-            new ObserverList<ActivityStateListener>();
+//    static final ObserverList<ActivityStateListener> sGeneralActivityStateListeners =
+//            new ObserverList<ActivityStateListener>();
 
     /**
      * A list of observers to be notified when the visibility state of this {@link Application}
      * changes.  See {@link #getStateForApplication()}.
      */
-    static final ObserverList<ApplicationStateListener> sApplicationStateListeners =
-            new ObserverList<ApplicationStateListener>();
+//    static final ObserverList<ApplicationStateListener> sApplicationStateListeners =
+//            new ObserverList<ApplicationStateListener>();
 };
 
 } // namespace Base

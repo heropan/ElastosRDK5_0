@@ -1,4 +1,9 @@
 
+#include "webkit/native/base/ApplicationStatus.h"
+#include "webkit/native/base/ApplicationState.h"
+#include "webkit/native/base/ActivityState.h"
+#include "webkit/native/base/ThreadUtils.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -33,22 +38,20 @@ void ApplicationStatus::ActivityInfo::SetStatus(
 /**
  * @return A list of {@link ActivityStateListener}s listening to this activity.
  */
-ObserverList<ActivityStateListener> ApplicationStatus::ActivityInfo::GetListeners()
-{
-    return mListeners;
-}
+// ObserverList<ActivityStateListener> ApplicationStatus::ActivityInfo::GetListeners()
+// {
+//     return mListeners;
+// }
 
 //===============================================================
 //      ApplicationStatus::InnerWindowFocusChangedListener
 //===============================================================
 
-ApplicationStatus::InnerWindowFocusChangedListener::InnerWindowFocusChangedListener(
-    /* [in] */ ApplicationStatus* owner)
-    : mOwner(owner)
+ApplicationStatus::InnerWindowFocusChangedListener::InnerWindowFocusChangedListener()
 {
 }
 
-void ApplicationStatus::InnerWindowFocusChangedListenerOnWindowFocusChanged(
+void ApplicationStatus::InnerWindowFocusChangedListener::OnWindowFocusChanged(
     /* [in] */ IActivity* activity,
     /* [in] */ Boolean hasFocus)
 {
@@ -67,62 +70,65 @@ void ApplicationStatus::InnerWindowFocusChangedListenerOnWindowFocusChanged(
 //      ApplicationStatus::InnerActivityLifecycleCallbacks
 //===============================================================
 
-ApplicationStatus::InnerActivityLifecycleCallbacks::InnerActivityLifecycleCallbacks(
-    /* [in] */ ApplicationStatus* owner)
-    : mOwner(owner)
+ApplicationStatus::InnerActivityLifecycleCallbacks::InnerActivityLifecycleCallbacks()
 {
 }
 
-void ApplicationStatus::InnerActivityLifecycleCallbacks::OnActivityCreated(
+ECode ApplicationStatus::InnerActivityLifecycleCallbacks::OnActivityCreated(
     /* [in] */ IActivity* activity,
     /* [in] */ IBundle* savedInstanceState)
 {
-    ApplicationStatus::OnStateChange(activity, ActivityState.CREATED);
+    ApplicationStatus::OnStateChange(activity, ActivityState::CREATED);
+    return NOERROR;
 }
 
-void ApplicationStatus::InnerActivityLifecycleCallbacks::OnActivityDestroyed(
+ECode ApplicationStatus::InnerActivityLifecycleCallbacks::OnActivityDestroyed(
     /* [in] */ IActivity* activity)
 {
-    ApplicationStatus::OnStateChange(activity, ActivityState.DESTROYED);
+    ApplicationStatus::OnStateChange(activity, ActivityState::DESTROYED);
+    return NOERROR;
 }
 
-void ApplicationStatus::InnerActivityLifecycleCallbacks::OnActivityPaused(
+ECode ApplicationStatus::InnerActivityLifecycleCallbacks::OnActivityPaused(
     /* [in] */ IActivity* activity)
 {
-    ApplicationStatus::OnStateChange(activity, ActivityState.PAUSED);
+    ApplicationStatus::OnStateChange(activity, ActivityState::PAUSED);
+    return NOERROR;
 }
 
-void ApplicationStatus::InnerActivityLifecycleCallbacks::OnActivityResumed(
+ECode ApplicationStatus::InnerActivityLifecycleCallbacks::OnActivityResumed(
     /* [in] */ IActivity* activity)
 {
-    ApplicationStatus::OnStateChange(activity, ActivityState.RESUMED);
+    ApplicationStatus::OnStateChange(activity, ActivityState::RESUMED);
+    return NOERROR;
 }
 
-void ApplicationStatus::InnerActivityLifecycleCallbacks::OnActivitySaveInstanceState(
+ECode ApplicationStatus::InnerActivityLifecycleCallbacks::OnActivitySaveInstanceState(
     /* [in] */ IActivity* activity,
     /* [in] */ IBundle* outState)
 {
+    return NOERROR;
 }
 
-void ApplicationStatus::InnerActivityLifecycleCallbacks::OnActivityStarted(
+ECode ApplicationStatus::InnerActivityLifecycleCallbacks::OnActivityStarted(
     /* [in] */ IActivity* activity)
 {
-    ApplicationStatus::OnStateChange(activity, ActivityState.STARTED);
+    ApplicationStatus::OnStateChange(activity, ActivityState::STARTED);
+    return NOERROR;
 }
 
-void ApplicationStatus::InnerActivityLifecycleCallbacks::OnActivityStopped(
+ECode ApplicationStatus::InnerActivityLifecycleCallbacks::OnActivityStopped(
     /* [in] */ IActivity* activity)
 {
     ApplicationStatus::OnStateChange(activity, ActivityState::STOPPED);
+    return NOERROR;
 }
 
 //===============================================================
 //             ApplicationStatus::InnerRunnable
 //===============================================================
 
-ApplicationStatus::InnerRunnable::InnerRunnable(
-    /* [in] */ ApplicationStatus* owner)
-    : mOwner(owner)
+ApplicationStatus::InnerRunnable::InnerRunnable()
 {
 }
 
@@ -130,7 +136,7 @@ ECode ApplicationStatus::InnerRunnable::Run()
 {
     if (ApplicationStatus::sNativeApplicationStateListener != NULL) return NOERROR;
 
-    ApplicationStatus::sNativeApplicationStateListener = new InnerApplicationStateListener(mOwner);
+    ApplicationStatus::sNativeApplicationStateListener = new InnerApplicationStateListener();
     RegisterApplicationStateListener(sNativeApplicationStateListener);
 
     return NOERROR;
@@ -140,13 +146,11 @@ ECode ApplicationStatus::InnerRunnable::Run()
 //       ApplicationStatus::InnerApplicationStateListener
 //===============================================================
 
-ApplicationStatus::InnerApplicationStateListener::InnerApplicationStateListener(
-    /* [in] */ ApplicationStatus* owner)
-    : mOwner(owner)
+ApplicationStatus::InnerApplicationStateListener::InnerApplicationStateListener()
 {
 }
 
-void ApplicationStatus::InnerApplicationStateListenerOnApplicationStateChange(
+void ApplicationStatus::InnerApplicationStateListener::OnApplicationStateChange(
     /* [in] */ Int32 newState)
 {
     ApplicationStatus::NativeOnApplicationStateChange(newState);
@@ -170,10 +174,10 @@ void ApplicationStatus::Initialize(
 {
     sApplication = application;
 
-    AutoPtr<BaseChromiumApplication::WindowFocusChangedListener> listener = new InnerWindowFocusChangedListener(this);
+    AutoPtr<BaseChromiumApplication::WindowFocusChangedListener> listener = new InnerWindowFocusChangedListener();
     application->RegisterWindowFocusChangedListener(listener);
 
-    AutoPtr<IActivityLifecycleCallbacks> callback = new InnerActivityLifecycleCallbacks(this);
+    AutoPtr<IActivityLifecycleCallbacks> callback = new InnerActivityLifecycleCallbacks();
     application->RegisterActivityLifecycleCallbacks(callback);
 }
 
@@ -187,7 +191,12 @@ void ApplicationStatus::OnStateChange(
     /* [in] */ IActivity* activity,
     /* [in] */ Int32 newState)
 {
-    if (activity == NULL) throw new IllegalArgumentException("null activity is not supported");
+    assert(0);
+#if 0
+    if (activity == NULL) {
+        assert(0);
+//        throw new IllegalArgumentException("null activity is not supported");
+    }
 
     if (sActivity == NULL
             || newState == ActivityState::CREATED
@@ -233,6 +242,7 @@ void ApplicationStatus::OnStateChange(
         sActivityInfo.remove(activity);
         if (activity == sActivity) sActivity = null;
     }
+#endif
 }
 
 /**
@@ -257,14 +267,14 @@ AutoPtr<IActivity> ApplicationStatus::GetLastTrackedFocusedActivity()
 /**
  * @return A {@link List} of all non-destroyed {@link Activity}s.
  */
-List<WeakReference<Activity>> ApplicationStatus::GetRunningActivities()
-{
-    List<WeakReference<Activity>> activities = new ArrayList<WeakReference<Activity>>();
-    for (Activity activity : sActivityInfo.keySet()) {
-        activities.add(new WeakReference<Activity>(activity));
-    }
-    return activities;
-}
+// List<WeakReference<Activity>> ApplicationStatus::GetRunningActivities()
+// {
+//     List<WeakReference<Activity>> activities = new ArrayList<WeakReference<Activity>>();
+//     for (Activity activity : sActivityInfo.keySet()) {
+//         activities.add(new WeakReference<Activity>(activity));
+//     }
+//     return activities;
+// }
 
 /**
  * @return The {@link Context} for the {@link Application}.
@@ -272,7 +282,9 @@ List<WeakReference<Activity>> ApplicationStatus::GetRunningActivities()
 AutoPtr<IContext> ApplicationStatus::GetApplicationContext()
 {
     AutoPtr<IContext> context;
-    return sApplication != NULL ? (sApplication->GetApplicationContext((IContext**)&context), context) : NULL;
+    assert(0);
+//    return sApplication != NULL ? (sApplication->GetApplicationContext((IContext**)&context), context) : NULL;
+    return NULL;
 }
 
 /**
@@ -321,8 +333,12 @@ AutoPtr<IContext> ApplicationStatus::GetApplicationContext()
 Int32 ApplicationStatus::GetStateForActivity(
     /* [in] */ IActivity* activity)
 {
+    assert(0);
+#if 0
     ActivityInfo info = sActivityInfo.get(activity);
     return info != null ? info.getStatus() : ActivityState.DESTROYED;
+#endif
+    return 0;
 }
 
 /**
@@ -330,6 +346,8 @@ Int32 ApplicationStatus::GetStateForActivity(
  */
 Int32 ApplicationStatus::GetStateForApplication()
 {
+    assert(0);
+#if 0
     {
         AutoLock lock(sCachedApplicationStateLock);
         if (sCachedApplicationState == NULL) {
@@ -340,6 +358,8 @@ Int32 ApplicationStatus::GetStateForApplication()
     Int32 value;
     sCachedApplicationState->GetValue(&value);
     return value;
+#endif
+    return 0;
 }
 
 /**
@@ -361,7 +381,9 @@ Boolean ApplicationStatus::HasVisibleActivities()
  */
 Boolean ApplicationStatus::IsEveryActivityDestroyed()
 {
-    return sActivityInfo.isEmpty();
+    assert(0);
+//    return sActivityInfo.isEmpty();
+    return FALSE;
 }
 
 /**
@@ -371,7 +393,8 @@ Boolean ApplicationStatus::IsEveryActivityDestroyed()
 void ApplicationStatus::RegisterStateListenerForAllActivities(
     /* [in] */ ActivityStateListener* listener)
 {
-    sGeneralActivityStateListeners->AddObserver(listener);
+    assert(0);
+//    sGeneralActivityStateListeners->AddObserver(listener);
 }
 
 /**
@@ -383,14 +406,17 @@ void ApplicationStatus::RegisterStateListenerForAllActivities(
  * @param activity Activity to track or {@code null} to track all activities.
  */
 void ApplicationStatus::RegisterStateListenerForActivity(
-    /**/ ActivityStateListener listener,
-        Activity activity)
+    /* [in] */ ActivityStateListener* listener,
+    /* [in] */ IActivity* activity)
 {
+    assert(0);
+#if 0
     assert activity != null;
 
     ActivityInfo info = sActivityInfo.get(activity);
     assert info != null && info.getStatus() != ActivityState.DESTROYED;
     info.getListeners().addObserver(listener);
+#endif
 }
 
 /**
@@ -398,14 +424,17 @@ void ApplicationStatus::RegisterStateListenerForActivity(
  * @param listener Listener that doesn't want to receive state changes.
  */
 void ApplicationStatus::UnregisterActivityStateListener(
-    /* [in] */ ActivityStateListener listener)
+    /* [in] */ ActivityStateListener* listener)
 {
+    assert(0);
+#if 0
     sGeneralActivityStateListeners.removeObserver(listener);
 
     // Loop through all observer lists for all activities and remove the listener.
     for (ActivityInfo info : sActivityInfo.values()) {
         info.getListeners().removeObserver(listener);
     }
+#endif
 }
 
 /**
@@ -415,7 +444,8 @@ void ApplicationStatus::UnregisterActivityStateListener(
 void ApplicationStatus::RegisterApplicationStateListener(
     /* [in] */ ApplicationStateListener* listener)
 {
-    sApplicationStateListeners->AddObserver(listener);
+    assert(0);
+//    sApplicationStateListeners->AddObserver(listener);
 }
 
 /**
@@ -425,7 +455,8 @@ void ApplicationStatus::RegisterApplicationStateListener(
 void ApplicationStatus::UnregisterApplicationStateListener(
     /* [in] */ ApplicationStateListener* listener)
 {
-    sApplicationStateListeners->RemoveObserver(listener);
+    assert(0);
+//    sApplicationStateListeners->RemoveObserver(listener);
 }
 
 /**
@@ -435,8 +466,9 @@ void ApplicationStatus::UnregisterApplicationStateListener(
  * side, hence lifecycle management is greatly simplified.
  */
 //@CalledByNative
-void ApplicationStatus::RegisterThreadSafeNativeApplicationStateListener() {
-    AutoPtr<IRunnable> runnable = new InnerRunnable(this);
+void ApplicationStatus::RegisterThreadSafeNativeApplicationStateListener()
+{
+    AutoPtr<IRunnable> runnable = new InnerRunnable();
     ThreadUtils::RunOnUiThread(runnable);
 }
 
@@ -451,6 +483,8 @@ void ApplicationStatus::RegisterThreadSafeNativeApplicationStateListener() {
  */
 Int32 ApplicationStatus::DetermineApplicationState()
 {
+    assert(0);
+#if 0
     Boolean hasPausedActivity = FALSE;
     Boolean hasStoppedActivity = FALSE;
 
@@ -470,6 +504,8 @@ Int32 ApplicationStatus::DetermineApplicationState()
     if (hasPausedActivity) return ApplicationState.HAS_PAUSED_ACTIVITIES;
     if (hasStoppedActivity) return ApplicationState.HAS_STOPPED_ACTIVITIES;
     return ApplicationState.HAS_DESTROYED_ACTIVITIES;
+#endif
+    return 0;
 }
 
 // Called to notify the native side of state changes.

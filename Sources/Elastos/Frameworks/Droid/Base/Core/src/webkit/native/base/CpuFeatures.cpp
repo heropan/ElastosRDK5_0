@@ -1,4 +1,6 @@
 
+#include "webkit/native/base/CpuFeatures.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -7,7 +9,7 @@ namespace Base {
 /**
  * Return the number of CPU Cores on the device.
  */
-Int32 CpuFeatures::getCount()
+Int32 CpuFeatures::GetCount()
 {
     return NativeGetCoreCount();
 }

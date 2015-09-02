@@ -1,4 +1,11 @@
 
+#include "webkit/native/base/MemoryPressureListener.h"
+#include "webkit/native/base/MemoryPressureLevelList.h"
+
+using Elastos::Droid::App::IApplication;
+using Elastos::Droid::Content::IComponentCallbacks;
+using Elastos::Droid::Content::EIID_IComponentCallbacks;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -8,9 +15,7 @@ namespace Base {
 //       MemoryPressureListener::InnerComponentCallbacks2
 //===============================================================
 
-MemoryPressureListener::InnerComponentCallbacks2::InnerComponentCallbacks2(
-    /* [in] */ MemoryPressureListener* owner)
-    : mOwner(owner)
+MemoryPressureListener::InnerComponentCallbacks2::InnerComponentCallbacks2()
 {
 }
 
@@ -26,6 +31,7 @@ ECode MemoryPressureListener::InnerComponentCallbacks2::OnTrimMemory(
 ECode MemoryPressureListener::InnerComponentCallbacks2::OnLowMemory()
 {
     NativeOnMemoryPressure(MemoryPressureLevelList::MEMORY_PRESSURE_CRITICAL);
+    return NOERROR;
 }
 
 //@Override
@@ -48,7 +54,8 @@ const String MemoryPressureListener::ACTION_TRIM_MEMORY_MODERATE("org.chromium.b
 void MemoryPressureListener::RegisterSystemCallback(
     /* [in] */ IContext* context)
 {
-    AutoPtr<IComponentCallbacks2> callback = new InnerComponentCallbacks2(this);
+    AutoPtr<IComponentCallbacks2> callback2 = new InnerComponentCallbacks2();
+    AutoPtr<IComponentCallbacks> callback = (IComponentCallbacks*)callback2->Probe(EIID_IComponentCallbacks);
     context->RegisterComponentCallbacks(callback);
 }
 
@@ -66,7 +73,7 @@ Boolean MemoryPressureListener::HandleDebugIntent(
     else if (ACTION_TRIM_MEMORY.Equals(action)) {
         SimulateTrimMemoryPressureSignal(activity, IComponentCallbacks2::TRIM_MEMORY_COMPLETE);
     }
-    else if (ACTION_TRIM_MEMORY_RUNNING_CRITICAL.equals(action)) {
+    else if (ACTION_TRIM_MEMORY_RUNNING_CRITICAL.Equals(action)) {
         SimulateTrimMemoryPressureSignal(activity, IComponentCallbacks2::TRIM_MEMORY_MODERATE);
     }
     else if (ACTION_TRIM_MEMORY_MODERATE.Equals(action)) {
@@ -114,7 +121,7 @@ void MemoryPressureListener::SimulateTrimMemoryPressureSignal(
     // method is called.  Notifying these will simulate the event at the App/Activity level
     // as well as trigger the listener bound from native in this process.
     AutoPtr<IApplication> app;
-    activity->GetApplication((IApplication**)&app)
+    activity->GetApplication((IApplication**)&app);
     app->OnTrimMemory(level);
     activity->OnTrimMemory(level);
 }

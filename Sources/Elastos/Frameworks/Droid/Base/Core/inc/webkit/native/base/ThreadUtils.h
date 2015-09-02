@@ -2,11 +2,14 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_THREADUTILS_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_THREADUTILS_H__
 
-// import android.os.Handler;
-// import android.os.Looper;
-// import android.os.Process;
+#include "ext/frameworkext.h"
 
-// import java.util.concurrent.Callable;
+using Elastos::Core::IRunnable;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IProcess;
+
+using Elastos::Utility::Concurrent::ICallable;
 // import java.util.concurrent.ExecutionException;
 // import java.util.concurrent.FutureTask;
 
@@ -42,7 +45,8 @@ public:
      * @param c The Callable to run
      * @return The result of the callable
      */
-    public static <T> T runOnUiThreadBlockingNoException(Callable<T> c);
+    static CARAPI_(AutoPtr<IInterface>) RunOnUiThreadBlockingNoException(
+        /* [in] */ ICallable* c);
 
     /**
      * Run the supplied Callable on the main thread, The method will block until the Callable
@@ -52,7 +56,8 @@ public:
      * @return The result of the callable
      * @throws ExecutionException c's exception
      */
-    public static <T> T runOnUiThreadBlocking(Callable<T> c);
+    static CARAPI_(AutoPtr<IInterface>) RunOnUiThreadBlocking(
+        /* [in] */ ICallable* c);
 
     /**
      * Run the supplied FutureTask on the main thread. The method will block only if the current
@@ -61,7 +66,8 @@ public:
      * @param task The FutureTask to run
      * @return The queried task (to aid inline construction)
      */
-    public static <T> FutureTask<T> runOnUiThread(FutureTask<T> task);
+    // static CARAPI_(AutoPtr<IFutureTask>) RunOnUiThread(
+    //     /* [in] */ IFutureTask* task);
 
     /**
      * Run the supplied Callable on the main thread. The method will block only if the current
@@ -70,7 +76,8 @@ public:
      * @param c The Callable to run
      * @return A FutureTask wrapping the callable to retrieve results
      */
-    public static <T> FutureTask<T> runOnUiThread(Callable<T> c);
+    // static CARAPI_(AutoPtr<IFutureTask>) RunOnUiThread(
+    //     /* [in] */ ICallable* c);
 
     /**
      * Run the supplied Runnable on the main thread. The method will block only if the current
@@ -78,7 +85,8 @@ public:
      *
      * @param r The Runnable to run
      */
-    public static CARAPI_(void) runOnUiThread(Runnable r);
+    static CARAPI_(void) RunOnUiThread(
+        /* [in] */ IRunnable* r);
 
     /**
      * Post the supplied FutureTask to run on the main thread. The method will not block, even if
@@ -87,7 +95,8 @@ public:
      * @param task The FutureTask to run
      * @return The queried task (to aid inline construction)
      */
-    public static <T> FutureTask<T> postOnUiThread(FutureTask<T> task);
+    // static CARAPI_(AutoPtr<IFutureTask>) PostOnUiThread(
+    //     /* [in] */ IFutureTask* task);
 
     /**
      * Post the supplied Runnable to run on the main thread. The method will not block, even if
@@ -95,7 +104,7 @@ public:
      *
      * @param task The Runnable to run
      */
-    public static CARAPI_(void) PostOnUiThread(
+    static CARAPI_(void) PostOnUiThread(
         /* [in] */ IRunnable* task);
 
     /**
@@ -105,32 +114,33 @@ public:
      * @param task The Runnable to run
      * @param delayMillis The delay in milliseconds until the Runnable will be run
      */
-    public static CARAPI_(void) PostOnUiThreadDelayed(
+    static CARAPI_(void) PostOnUiThreadDelayed(
         /* [in] */ IRunnable* task,
         /* [in] */ Int64 delayMillis);
 
     /**
      * Asserts that the current thread is running on the main thread.
      */
-    public static CARAPI_(void) AssertOnUiThread();
+    static CARAPI_(void) AssertOnUiThread();
 
     /**
      * @return true iff the current thread is the main (UI) thread.
      */
-    public static CARAPI_(Boolean) RunningOnUiThread();
+    static CARAPI_(Boolean) RunningOnUiThread();
 
-    public static CARAPI_(AutoPtr<ILooper>) GetUiThreadLooper();
+    static CARAPI_(AutoPtr<ILooper>) GetUiThreadLooper();
 
     /**
      * Set thread priority to audio.
      */
     //@CalledByNative
-    public static CARAPI_(void) SetThreadPriorityAudio(int tid);
+    static CARAPI_(void) SetThreadPriorityAudio(
+        /* [in] */ Int32 tid);
 
 private:
     static CARAPI_(AutoPtr<IHandler>) GetUiThreadHandler();
 
-    static const Object sLock;
+//    static const Object sLock;
 
     static Boolean sWillOverride;
 

@@ -1,4 +1,6 @@
 
+#include "webkit/native/base/WindowCallbackWrapper.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -153,9 +155,9 @@ ECode WindowCallbackWrapper::OnSearchRequested(
 
 //@Override
 ECode WindowCallbackWrapper::OnWindowAttributesChanged(
-    /* [in] */ IWindowManagerLayoutParams attrs)
+    /* [in] */ IWindowManagerLayoutParams* attrs)
 {
-    mCallback.onWindowAttributesChanged(attrs);
+    mCallback->OnWindowAttributesChanged(attrs);
 }
 
 //@Override

@@ -2,8 +2,11 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_JAVAHANDLERTHREAD_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_JAVAHANDLERTHREAD_H__
 
-// import android.os.Handler;
-// import android.os.HandlerThread;
+#include "ext/frameworkext.h"
+
+using Elastos::Core::IRunnable;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IHandlerThread;
 
 namespace Elastos {
 namespace Droid {
@@ -19,17 +22,27 @@ class JavaHandlerThread
 {
 private:
     class InnerRunnable
+        : public IRunnable
     {
     public:
         InnerRunnable(
-            /* [in] */ JavaHandlerThread* owner);
+            /* [in] */ JavaHandlerThread* owner,
+            /* [in] */ const Int64 nativeThread,
+            /* [in] */ const Int64 nativeEvent);
+
+        CAR_INTERFACE_DECL();
 
         //@Override
         CARAPI Run();
 
     private:
         JavaHandlerThread* mOwner;
+        const Int64 mNativeThread;
+        const Int64 mNativeEvent;
     };
+
+public:
+    CAR_INTERFACE_DECL();
 
 public:
     AutoPtr<IHandlerThread> mThread;
