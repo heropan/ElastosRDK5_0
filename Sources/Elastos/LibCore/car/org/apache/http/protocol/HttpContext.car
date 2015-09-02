@@ -27,7 +27,7 @@ module
 
         GetAttribute(
             [in] String id,
-            [out] Interface** attr);
+            [out] IInterface** attr);
 
         SetAttribute(
             [in] String id,

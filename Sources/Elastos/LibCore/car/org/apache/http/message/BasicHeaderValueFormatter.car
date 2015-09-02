@@ -53,7 +53,7 @@ module
          * @return  a length estimate, in number of characters
          */
         EstimateElementsLen(
-            [in] ArrayOf<IHeaderElement*>* elems,
+            [in] ArrayOf<IHeaderElement*> elems,
             [out] Int32* length);
 
         /**
@@ -75,7 +75,7 @@ module
          * @return  a length estimate, in number of characters
          */
         EstimateParametersLen(
-            [in] ArrayOf<INameValuePair*>* nvps,
+            [in] ArrayOf<INameValuePair*> nvps,
             [out] Int32* length);
 
         /**

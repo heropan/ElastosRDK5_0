@@ -4,7 +4,7 @@ module
 
     interface Org.Apache.Http.IHeaderElement;
     interface Org.Apache.Http.INameValuePair;
-    interface Org.Apache.Http.IParserCursor;
+    interface Org.Apache.Http.Message.IParserCursor;
     interface Org.Apache.Http.Utility.ICharArrayBuffer;
 
     namespace Org {

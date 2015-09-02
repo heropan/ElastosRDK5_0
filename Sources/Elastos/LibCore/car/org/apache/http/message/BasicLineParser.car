@@ -82,7 +82,7 @@ module
          * @return  a new status line with the given data
          */
         CreateStatusLine(
-            [in] IProtocolVersion ver,
+            [in] IProtocolVersion* ver,
             [in] Int32 status,
             [in] String reason,
             [out] IStatusLine** statusLine);

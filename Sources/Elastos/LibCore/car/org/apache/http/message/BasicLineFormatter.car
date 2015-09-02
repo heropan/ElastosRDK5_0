@@ -3,8 +3,10 @@ module
 {
 
     interface Org.Apache.Http.IHeaderElement;
-    interface Org.Apache.Http.INameValuePair;
-    interface Org.Apache.Http.IParserCursor;
+    interface Org.Apache.Http.IProtocolVersion;
+    interface Org.Apache.Http.IRequestLine;
+    interface Org.Apache.Http.IStatusLine;
+    interface Org.Apache.Http.IHeader;
     interface Org.Apache.Http.Utility.ICharArrayBuffer;
 
     namespace Org {
@@ -62,8 +64,8 @@ module
          *          in characters
          */
         EstimateProtocolVersionLen(
-            [in] IProtocolVersion* version,
-            [out] Int32 len);
+            [in] IProtocolVersion* ver,
+            [out] Int32* len);
 
         /**
          * Actually formats a request line.

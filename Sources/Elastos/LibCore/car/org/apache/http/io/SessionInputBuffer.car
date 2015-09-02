@@ -22,13 +22,13 @@ module
     interface ISessionInputBuffer {
 
         Read(
-            [in] ArrayOf<Byte>* b,
+            [in] ArrayOf<Byte> b,
             [in] Int32 off,
             [in] Int32 len,
             [out] Int32* count);
 
         Read(
-            [in] ArrayOf<Byte>* b,
+            [in] ArrayOf<Byte> b,
             [out] Int32* count);
 
         Read(

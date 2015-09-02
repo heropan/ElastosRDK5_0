@@ -29,7 +29,7 @@ module
             [out] String* value);
 
         GetParameters(
-            [out] IArrayOf* parameters);
+            [out] IArrayOf** parameters);
 
         GetParameterByName(
             [in] String name,

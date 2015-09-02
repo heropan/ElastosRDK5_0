@@ -4,6 +4,8 @@ module
 
     using interface Elastos.Net.IInetAddress;
 
+    interface Org.Apache.Http.IHttpHost;
+
     namespace Org {
     namespace Apache {
     namespace Http {
@@ -19,8 +21,8 @@ module
      * Routes without a proxy cannot be tunnelled.
      */
     enum TunnelType {
-        PLAIN,
-        TUNNELLED
+        TunnelType_PLAIN,
+        TunnelType_TUNNELLED
     }
 
     /**
@@ -37,8 +39,8 @@ module
      * But we don't want to exclude that use case.
      */
     enum LayerType {
-        PLAIN,
-        LAYERED
+        LayerType_PLAIN,
+        LayerType_LAYERED
     }
 
     /**

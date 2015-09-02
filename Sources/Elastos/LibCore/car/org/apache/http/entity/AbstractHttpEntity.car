@@ -2,6 +2,8 @@
 module
 {
 
+    interface Org.Apache.Http.IHeader;
+
     namespace Org {
     namespace Apache {
     namespace Http {

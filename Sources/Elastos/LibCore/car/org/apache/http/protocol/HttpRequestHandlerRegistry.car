@@ -2,6 +2,8 @@
 module
 {
 
+    using interface Elastos.Utility.IMap;
+
     namespace Org {
     namespace Apache {
     namespace Http {

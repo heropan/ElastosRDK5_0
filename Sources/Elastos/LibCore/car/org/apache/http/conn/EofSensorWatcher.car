@@ -2,7 +2,7 @@
 module
 {
 
-    using Elastos.IO.IInputStream;
+    using interface Elastos.IO.IInputStream;
 
     namespace Org {
     namespace Apache {

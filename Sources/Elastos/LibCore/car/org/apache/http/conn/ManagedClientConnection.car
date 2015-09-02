@@ -2,9 +2,10 @@
 module
 {
 
-    using Elastos.Utility.Concurrent.ITimeUnit;
-    using Elastosx.Net.Ssl.ISSLSession;
+    using interface Elastos.Utility.Concurrent.ITimeUnit;
+    using interface Elastosx.Net.Ssl.ISSLSession;
 
+    interface Org.Apache.Http.IHttpHost;
     interface Org.Apache.Http.Params.IHttpParams;
     interface Org.Apache.Http.Protocol.IHttpContext;
     interface Org.Apache.Http.Conn.Routing.IHttpRoute;

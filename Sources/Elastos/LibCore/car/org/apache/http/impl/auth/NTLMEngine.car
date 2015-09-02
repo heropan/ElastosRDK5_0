@@ -29,7 +29,7 @@ module
          * @throws NTLMEngineException
          */
         GenerateType1Msg(
-            [in] String domain,
+            [in] String dom,
             [in] String workstation,
             [out] String* msg);
 
@@ -48,7 +48,7 @@ module
         GenerateType3Msg(
             [in] String username,
             [in] String password,
-            [in] String domain,
+            [in] String dom,
             [in] String workstation,
             [in] String challenge,
             [out] String* msg);

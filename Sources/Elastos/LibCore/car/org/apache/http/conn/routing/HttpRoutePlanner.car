@@ -2,6 +2,8 @@
 module
 {
 
+    interface Org.Apache.Http.IHttpHost;
+    interface Org.Apache.Http.IHttpRequest;
     interface Org.Apache.Http.Protocol.IHttpContext;
 
     namespace Org {

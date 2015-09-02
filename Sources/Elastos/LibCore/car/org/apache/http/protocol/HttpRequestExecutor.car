@@ -2,6 +2,10 @@
 module
 {
 
+    interface Org.Apache.Http.IHttpRequest;
+    interface Org.Apache.Http.IHttpResponse;
+    interface Org.Apache.Http.IHttpClientConnection;
+
     namespace Org {
     namespace Apache {
     namespace Http {

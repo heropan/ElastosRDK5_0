@@ -4,6 +4,9 @@ module
 
     using interface Elastos.Utility.IList;
 
+    interface Org.Apache.Http.Auth.IAuthSchemeRegistry;
+    interface Org.Apache.Http.Client.ICredentialsProvider;
+    interface Org.Apache.Http.Client.ICookieStore;
     interface Org.Apache.Http.Cookie.ICookieSpecRegistry;
 
     namespace Org {

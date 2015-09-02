@@ -78,7 +78,7 @@ module
          */
         SetVersion(
             [in] IHttpParams* params,
-            [in] IProtocolVersion* version);
+            [in] IProtocolVersion* ver);
 
         GetUserAgent(
             [in] IHttpParams* params,

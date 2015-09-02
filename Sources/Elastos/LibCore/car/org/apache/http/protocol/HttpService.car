@@ -2,6 +2,13 @@
 module
 {
 
+    interface Org.Apache.Http.IConnectionReuseStrategy;
+    interface Org.Apache.Http.IHttpResponseFactory;
+    interface Org.Apache.Http.IHttpRequest;
+    interface Org.Apache.Http.IHttpResponse;
+    interface Org.Apache.Http.IHttpServerConnection;
+    interface Org.Apache.Http.Params.IHttpParams;
+
     namespace Org {
     namespace Apache {
     namespace Http {

@@ -3,6 +3,8 @@ module
 {
     using interface Elastos.Utility.IMap;
 
+    interface Org.Apache.Http.IHttpResponse;
+    interface Org.Apache.Http.Auth.IAuthScheme;
     interface Org.Apache.Http.Protocol.IHttpContext;
 
     namespace Org {

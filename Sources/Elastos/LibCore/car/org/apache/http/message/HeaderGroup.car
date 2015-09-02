@@ -61,7 +61,7 @@ module
          * @param headers the headers to set
          */
         SetHeaders(
-            [in] ArrayOf<IHeader*>* headers);
+            [in] ArrayOf<IHeader*> headers);
 
         /**
          * Gets a header representing all of the header values with the given name.

@@ -2,8 +2,9 @@
 module
 {
 
-    using Elastos.Net.ISocket;
+    using interface Elastos.Net.ISocket;
 
+    interface Org.Apache.Http.IHttpHost;
     interface Org.Apache.Http.Params.IHttpParams;
 
     namespace Org {

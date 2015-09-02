@@ -1,7 +1,7 @@
 
 module
 {
-    using Elastos.Utility.Concurrent.ITimeUnit;
+    using interface Elastos.Utility.Concurrent.ITimeUnit;
 
     namespace Org {
     namespace Apache {

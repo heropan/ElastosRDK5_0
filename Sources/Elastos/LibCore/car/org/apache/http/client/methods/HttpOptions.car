@@ -2,7 +2,9 @@
 module
 {
 
-    usint interface Elastos.Utility.ISet;
+    using interface Elastos.Utility.ISet;
+
+    interface Org.Apache.Http.IHttpResponse;
 
     namespace Org {
     namespace Apache {

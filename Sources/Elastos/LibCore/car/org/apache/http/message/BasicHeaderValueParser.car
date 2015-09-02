@@ -4,7 +4,7 @@ module
 
     interface Org.Apache.Http.IHeaderElement;
     interface Org.Apache.Http.INameValuePair;
-    interface Org.Apache.Http.IParserCursor;
+    interface Org.Apache.Http.Message.IParserCursor;
     interface Org.Apache.Http.Utility.ICharArrayBuffer;
 
     namespace Org {
@@ -44,13 +44,13 @@ module
         CreateHeaderElement(
             [in] String name,
             [in] String value,
-            [in] ArrayOf<INameValuePair*>* params,
+            [in] ArrayOf<INameValuePair*> params,
             [out] IHeaderElement** element);
 
         ParseNameValuePair(
             [in] ICharArrayBuffer* buffer,
             [in] IParserCursor* cursor,
-            [in] ArrayOf<Char32>* delimiters,
+            [in] ArrayOf<Char32> delimiters,
             [out] INameValuePair** pair);
 
         /**
