@@ -1,5 +1,14 @@
 module
 {
+    interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.View.IKeyEvent;
+    interface Elastos.Droid.View.IInputEvent;
+    interface Elastos.Droid.View.ISurface;
+    interface Elastos.Droid.Media.Tv.ITvInputManagerSession;
+    interface Elastos.Droid.Media.Tv.ITvInputCallback;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -10,6 +19,7 @@ module
      * @hide
      */
     // @SystemApi
+    [deprecated]
     interface ITvInputManagerSessionCallback {
         /**
          * This is called after {@link TvInputManager#createSession} has been processed.
@@ -197,6 +207,7 @@ module
      * @hide
      */
     // @SystemApi
+    [deprecated]
     interface ITvInputManagerHardwareCallback {
         OnReleased();
 
@@ -210,6 +221,7 @@ module
      *
      * @hide
      */
+    [deprecated]
     interface ITvInputManagerSessionFinishedInputEventCallback {
         /**
          * Called when the dispatched input event is finished.
@@ -365,7 +377,7 @@ module
         DispatchInputEvent(
             [in] IInputEvent * event,
             [in] IInterface * token,
-            [in] ITvInputManagerSessionFinishedInputEventCallback * callback,
+            [in] ITvInputManagerSessionFinishedInputEventCallback * cb,
             [in] IHandler * handler,
             [out] Int32 * result);
     }
@@ -405,6 +417,7 @@ module
      * Central system API to the overall TV input framework (TIF) architecture, which arbitrates
      * interaction between applications and the selected TV inputs.
      */
+    [deprecated]
     interface ITvInputManager {
         /**
          * A generic reason. Video is not available due to an unspecified error.
@@ -550,7 +563,7 @@ module
          * @throws IllegalArgumentException if any of the arguments is {@code null}.
          */
         RegisterCallback(
-            [in] ITvInputCallback * callback,
+            [in] ITvInputCallback * cb,
             [in] IHandler * handler);
 
         /**
@@ -560,7 +573,7 @@ module
          * @throws IllegalArgumentException if any of the arguments is {@code null}.
          */
         UnregisterCallback(
-            [in] ITvInputCallback * callback);
+            [in] ITvInputCallback * cb);
 
         /**
          * Returns the user's parental controls enabled state.
@@ -650,7 +663,7 @@ module
         // @SystemApi
         CreateSession(
             [in] String inputId,
-            [in] ITvInputManagerSessionCallback * callback,
+            [in] ITvInputManagerSessionCallback * cb,
             [in] IHandler * handler);
 
         /**
@@ -712,7 +725,7 @@ module
         // @SystemApi
         AcquireTvInputHardware(
             [in] Int32 deviceId,
-            [in] ITvInputManagerHardwareCallback * callback,
+            [in] ITvInputManagerHardwareCallback * cb,
             [in] ITvInputInfo * info,
             [out] ITvInputManagerHardware ** result);
 

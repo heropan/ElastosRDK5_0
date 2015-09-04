@@ -52,7 +52,6 @@ module
 
         // More video file types
         const Int32 FILE_TYPE_MP2PS   = 200;
-        const Int32 FILE_TYPE_CEDARV  = 201;
 
         // Image file types
         const Int32 FILE_TYPE_JPEG    = 31;

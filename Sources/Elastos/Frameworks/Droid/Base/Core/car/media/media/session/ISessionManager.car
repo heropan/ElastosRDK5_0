@@ -1,5 +1,13 @@
 module
 {
+    interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.View.IKeyEvent;
+    interface Elastos.Droid.Media.IIRemoteVolumeController;
+    interface Elastos.Droid.Media.Session.IIActiveSessionsListener;
+    interface Elastos.Droid.Media.Session.ISessionCallback;
+    interface Elastos.Droid.Media.Session.IISession;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {

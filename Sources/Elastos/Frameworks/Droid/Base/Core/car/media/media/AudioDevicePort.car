@@ -1,6 +1,9 @@
 
 module
 {
+    interface IAudioGainConfig;
+    interface IAudioDevicePortConfig;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -21,6 +24,7 @@ module
      * @Involve
      * interface Elastos.Droid.Media.IAudioPort
      */
+    [deprecated]
     interface IAudioDevicePort {
         /**
          * Get the device type (e.g AudioManager.DEVICE_OUT_SPEAKER)

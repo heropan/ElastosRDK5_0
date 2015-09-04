@@ -3,20 +3,83 @@ module
 {
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.Media.Session.IMediaSessionLegacyHelper;
+    interface Elastos.Droid.Media.Session.IMediaSession;
 
     namespace Elastos {
     namespace Droid {
     namespace Media {
 
     /**
+     * Interface definition for a callback to be invoked when one of the metadata values has
+     * been updated.
+     * Implement this interface to receive metadata updates after registering your listener
+     * through {@link RemoteControlClient#setMetadataUpdateListener(OnMetadataUpdateListener)}.
+     */
+    interface IRemoteControlClientOnMetadataUpdateListener {
+        /**
+         * Called on the implementer to notify that the metadata field for the given key has
+         * been updated to the new value.
+         * @param key the identifier of the updated metadata field.
+         * @param newValue the Object storing the new value for the key.
+         */
+        OnMetadataUpdate(
+            [in] Int32 key,
+            [in] IInterface * newValue);
+    }
+
+    /**
+     * Interface definition for a callback to be invoked when the media playback position is
+     * requested to be updated.
+     * @see RemoteControlClient#FLAG_KEY_MEDIA_POSITION_UPDATE
+     */
+    interface IRemoteControlClientOnPlaybackPositionUpdateListener {
+        /**
+         * Called on the implementer to notify it that the playback head should be set at the given
+         * position. If the position can be changed from its current value, the implementor of
+         * the interface must also update the playback position using
+         * {@link #setPlaybackState(int, long, float)} to reflect the actual new
+         * position being used, regardless of whether it differs from the requested position.
+         * Failure to do so would cause the system to not know the new actual playback position,
+         * and user interface components would fail to show the user where playback resumed after
+         * the position was updated.
+         * @param newPositionMs the new requested position in the current media, expressed in ms.
+         */
+        OnPlaybackPositionUpdate(
+            [in] Int64 newPositionMs);
+    }
+
+    /**
+     * Interface definition for a callback to be invoked when the media playback position is
+     * queried.
+     * @see RemoteControlClient#FLAG_KEY_MEDIA_POSITION_UPDATE
+     */
+    interface IRemoteControlClientOnGetPlaybackPositionListener {
+        /**
+         * Called on the implementer of the interface to query the current playback position.
+         * @return a negative value if the current playback position (or the last valid playback
+         *     position) is not known, or a zero or positive value expressed in ms indicating the
+         *     current position, or the last valid known position.
+         */
+        OnGetPlaybackPosition(
+            [out] Int64 * result);
+    }
+
+    /**
      * Class used to modify metadata in a {@link RemoteControlClient} object.
-     * Use {@link RemoteControlClient#editMetadata(boolean)} to create an instance of an editor,
+     * Use {@link RemoteControlClient#editMetadata(Boolean)} to create an instance of an editor,
      * on which you set the metadata for the RemoteControlClient instance. Once all the information
      * has been set, use {@link #apply()} to make it the new metadata that should be displayed
      * for the associated client. Once the metadata has been "applied", you cannot reuse this
      * instance of the MetadataEditor.
+     *
+     * @deprecated Use {@link MediaMetadata} and {@link MediaSession} instead.
      */
-    interface IMetadataEditor {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Media.IMediaMetadataEditor
+     */
+    interface IRemoteControlClientMetadataEditor {
         /**
          * The metadata key for the content artwork / album art.
          */
@@ -32,7 +95,7 @@ module
          * @hide
          */
         Clone(
-            [out] IMetadataEditor** result);
+            [out] IInterface ** result);
 
         /**
          * Adds textual information to be displayed.
@@ -58,7 +121,7 @@ module
         PutString(
             [in] Int32 key,
             [in] String value,
-            [out] IMetadataEditor** result);
+            [out] IRemoteControlClientMetadataEditor** result);
 
         /**
          * Adds numerical information to be displayed.
@@ -78,38 +141,42 @@ module
         PutInt64(
             [in] Int32 key,
             [in] Int64 value,
-            [out] IMetadataEditor** result);
-
-        /**
-         * Sets the album / artwork picture to be displayed on the remote control.
-         * @param key the identifier of the bitmap to set. The only valid value is
-         *      {@link #BITMAP_KEY_ARTWORK}
-         * @param bitmap The bitmap for the artwork, or null if there isn't any.
-         * @return Returns a reference to the same MetadataEditor object, so you can chain put
-         *      calls together.
-         * @throws IllegalArgumentException
-         * @see android.graphics.Bitmap
-         */
-        PutBitmap(
-            [in] Int32 key,
-            [in] IBitmap* bitmap,
-            [out] IMetadataEditor** result);
-
-        /**
-         * Clears all the metadata that has been set since the MetadataEditor instance was
-         *     created with {@link RemoteControlClient#editMetadata(boolean)}.
-         */
-        Clear();
+            [out] IRemoteControlClientMetadataEditor** result);
 
         /**
          * Associates all the metadata that has been set since the MetadataEditor instance was
-         *     created with {@link RemoteControlClient#editMetadata(boolean)}, or since
+         *     created with {@link RemoteControlClient#editMetadata(Boolean)}, or since
          *     {@link #clear()} was called, with the RemoteControlClient. Once "applied",
          *     this MetadataEditor cannot be reused to edit the RemoteControlClient's metadata.
          */
         Apply();
     }
 
+    /**
+     * RemoteControlClient enables exposing information meant to be consumed by remote controls
+     * capable of displaying metadata, artwork and media transport control buttons.
+     *
+     * <p>A remote control client object is associated with a media button event receiver. This
+     * event receiver must have been previously registered with
+     * {@link AudioManager#registerMediaButtonEventReceiver(ComponentName)} before the
+     * RemoteControlClient can be registered through
+     * {@link AudioManager#registerRemoteControlClient(RemoteControlClient)}.
+     *
+     * <p>Here is an example of creating a RemoteControlClient instance after registering a media
+     * button event receiver:
+     * <pre>ComponentName myEventReceiver = new ComponentName(getPackageName(), MyRemoteControlEventReceiver.class.getName());
+     * AudioManager myAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+     * myAudioManager.registerMediaButtonEventReceiver(myEventReceiver);
+     * // build the PendingIntent for the remote control client
+     * Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+     * mediaButtonIntent.setComponent(myEventReceiver);
+     * PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, mediaButtonIntent, 0);
+     * // create and register the remote control client
+     * RemoteControlClient myRemoteControlClient = new RemoteControlClient(mediaPendingIntent);
+     * myAudioManager.registerRemoteControlClient(myRemoteControlClient);</pre>
+     *
+     * @deprecated Use {@link MediaSession} instead.
+     */
     interface IRemoteControlClient {
         /**
          * Playback state of a RemoteControlClient which is stopped.
@@ -228,6 +295,23 @@ module
          */
         const Int32 PLAYBACKINFO_INVALID_VALUE = 0x80000000; // = Integer.MIN_VALUE;
 
+        /**
+         * @hide
+         * An unknown or invalid playback position value.
+         */
+        const Int64 PLAYBACK_POSITION_INVALID = -1;
+        /**
+         * @hide
+         * An invalid playback position value associated with the use of {@link #setPlaybackState(int)}
+         * used to indicate that playback position will remain unknown.
+         */
+        const Int64 PLAYBACK_POSITION_ALWAYS_UNKNOWN = 0x8019771980198300;
+        /**
+         * @hide
+         * The default playback speed, 1x.
+         */
+        const Float PLAYBACK_SPEED_1X = 1.0;
+
         //==========================================
         // Public keys for playback information
         /**
@@ -268,14 +352,7 @@ module
         const Int32 PLAYBACKINFO_USES_STREAM = 5;
 
         //==========================================
-        // Private keys for playback information
-        /**
-         * @hide
-         * Used internally to relay playback state (set by the application with
-         * {@link #setPlaybackState(int)}) to AudioService
-         */
-        const Int32 PLAYBACKINFO_PLAYSTATE = 255;
-
+        // Public flags for the supported transport control capabilities
         /**
          * Flag indicating a RemoteControlClient makes use of the "previous" media key.
          *
@@ -341,6 +418,28 @@ module
         const Int32 FLAG_KEY_MEDIA_NEXT = 1 << 7;
 
         /**
+         * Flag indicating a RemoteControlClient can receive changes in the media playback position
+         * through the {@link OnPlaybackPositionUpdateListener} interface. This flag must be set
+         * in order for components that display the RemoteControlClient information, to display and
+         * let the user control media playback position.
+         * @see #setTransportControlFlags(int)
+         * @see #setOnGetPlaybackPositionListener(OnGetPlaybackPositionListener)
+         * @see #setPlaybackPositionUpdateListener(OnPlaybackPositionUpdateListener)
+         */
+        const Int32 FLAG_KEY_MEDIA_POSITION_UPDATE = 1 << 8;
+        /**
+         * Flag indicating a RemoteControlClient supports ratings.
+         * This flag must be set in order for components that display the RemoteControlClient
+         * information, to display ratings information, and, if ratings are declared editable
+         * (by calling {@link MediaMetadataEditor#addEditableKey(int)} with the
+         * {@link MediaMetadataEditor#RATING_KEY_BY_USER} key), it will enable the user to rate
+         * the media, with values being received through the interface set with
+         * {@link #setMetadataUpdateListener(OnMetadataUpdateListener)}.
+         * @see #setTransportControlFlags(int)
+         */
+        const Int32 FLAG_KEY_MEDIA_RATING = 1 << 9;
+
+        /**
          * @hide
          * The flags for when no media keys are declared supported.
          * Intentionally hidden as an application shouldn't set the transport control flags
@@ -375,9 +474,23 @@ module
          */
         const Int32 FLAG_INFORMATION_REQUEST_ALBUM_ART = 1 << 3;
 
-        /** @hide */
-        const Int32 DEFAULT_PLAYBACK_VOLUME_HANDLING = PLAYBACK_VOLUME_VARIABLE; // = 1;
+        /**
+         * @hide
+         * Flag to reflect that the application controlling this RemoteControlClient sends playback
+         * position updates. The playback position being "readable" is considered from the application's
+         * point of view.
+         */
+        const Int32 MEDIA_POSITION_READABLE = 1 << 0;
+        /**
+         * @hide
+         * Flag to reflect that the application controlling this RemoteControlClient can receive
+         * playback position updates. The playback position being "writable"
+         * is considered from the application's point of view.
+         */
+        const Int32 MEDIA_POSITION_WRITABLE = 1 << 1;
 
+        /** @hide */
+        const Int32 DEFAULT_PLAYBACK_VOLUME_HANDLING = 1; //PLAYBACK_VOLUME_VARIABLE;
         /** @hide */
         // hard-coded to the same number of steps as AudioService.MAX_STREAM_VOLUME[STREAM_MUSIC]
         const Int32 DEFAULT_PLAYBACK_VOLUME = 15;
@@ -389,6 +502,30 @@ module
         const Int32 RCSE_ID_UNREGISTERED = -1;
 
         /**
+         * @hide
+         */
+        RegisterWithSession(
+            [in] IMediaSessionLegacyHelper * helper);
+
+        /**
+         * @hide
+         */
+        UnregisterWithSession(
+            [in] IMediaSessionLegacyHelper * helper);
+
+        /**
+         * Get a {@link MediaSession} associated with this RCC. It will only have a
+         * session while it is registered with
+         * {@link AudioManager#registerRemoteControlClient}. The session returned
+         * should not be modified directly by the application but may be used with
+         * other APIs that require a session.
+         *
+         * @return A media session object or null.
+         */
+        GetMediaSession(
+            [out] IMediaSession ** result);
+
+        /**
          * Creates a {@link MetadataEditor}.
          * @param startEmpty Set to false if you want the MetadataEditor to contain the metadata that
          *     was previously applied to the RemoteControlClient, or true if it is to be created empty.
@@ -396,7 +533,7 @@ module
          */
         EditMetadata(
             [in] Boolean startEmpty,
-            [out] IMetadataEditor** result);
+            [out] IRemoteControlClientMetadataEditor ** result);
 
         /**
          * Sets the current playback state.
@@ -415,6 +552,34 @@ module
             [in] Int32 state);
 
         /**
+         * Sets the current playback state and the matching media position for the current playback
+         *   speed.
+         * @param state The current playback state, one of the following values:
+         *       {@link #PLAYSTATE_STOPPED},
+         *       {@link #PLAYSTATE_PAUSED},
+         *       {@link #PLAYSTATE_PLAYING},
+         *       {@link #PLAYSTATE_FAST_FORWARDING},
+         *       {@link #PLAYSTATE_REWINDING},
+         *       {@link #PLAYSTATE_SKIPPING_FORWARDS},
+         *       {@link #PLAYSTATE_SKIPPING_BACKWARDS},
+         *       {@link #PLAYSTATE_BUFFERING},
+         *       {@link #PLAYSTATE_ERROR}.
+         * @param timeInMs a 0 or positive value for the current media position expressed in ms
+         *    (same unit as for when sending the media duration, if applicable, with
+         *    {@link android.media.MediaMetadataRetriever#METADATA_KEY_DURATION} in the
+         *    {@link RemoteControlClient.MetadataEditor}). Negative values imply that position is not
+         *    known (e.g. listening to a live stream of a radio) or not applicable (e.g. when state
+         *    is {@link #PLAYSTATE_BUFFERING} and nothing had played yet).
+         * @param playbackSpeed a value expressed as a ratio of 1x playback: 1.0f is normal playback,
+         *    2.0f is 2x, 0.5f is half-speed, -2.0f is rewind at 2x speed. 0.0f means nothing is
+         *    playing (e.g. when state is {@link #PLAYSTATE_ERROR}).
+         */
+        SetPlaybackState(
+            [in] Int32 state,
+            [in] Int64 timeInMs,
+            [in] Float playbackSpeed);
+
+        /**
          * Sets the flags for the media transport control buttons that this client supports.
          * @param transportControlFlags A combination of the following flags:
          *      {@link #FLAG_KEY_MEDIA_PREVIOUS},
@@ -424,73 +589,48 @@ module
          *      {@link #FLAG_KEY_MEDIA_PAUSE},
          *      {@link #FLAG_KEY_MEDIA_STOP},
          *      {@link #FLAG_KEY_MEDIA_FAST_FORWARD},
-         *      {@link #FLAG_KEY_MEDIA_NEXT}
+         *      {@link #FLAG_KEY_MEDIA_NEXT},
+         *      {@link #FLAG_KEY_MEDIA_POSITION_UPDATE},
+         *      {@link #FLAG_KEY_MEDIA_RATING}.
          */
         SetTransportControlFlags(
             [in] Int32 transportControlFlags);
 
         /**
-         * @hide
-         * Set information describing information related to the playback of media so the system
-         * can implement additional behavior to handle non-local playback usecases.
-         * @param what a key to specify the type of information to set. Valid keys are
-         *        {@link #PLAYBACKINFO_PLAYBACK_TYPE},
-         *        {@link #PLAYBACKINFO_USES_STREAM},
-         *        {@link #PLAYBACKINFO_VOLUME},
-         *        {@link #PLAYBACKINFO_VOLUME_MAX},
-         *        and {@link #PLAYBACKINFO_VOLUME_HANDLING}.
-         * @param value the value for the supplied information to set.
+         * Sets the listener to be called whenever the metadata is updated.
+         * New metadata values will be received in the same thread as the one in which
+         * RemoteControlClient was created.
+         * @param l the metadata update listener
          */
-        SetPlaybackInformation(
-            [in] Int32 what,
-            [in] Int32 value);
+        SetMetadataUpdateListener(
+            [in] IRemoteControlClientOnMetadataUpdateListener * l);
 
         /**
-         * @hide
-         * Return playback information represented as an integer value.
-         * @param what a key to specify the type of information to retrieve. Valid keys are
-         *        {@link #PLAYBACKINFO_PLAYBACK_TYPE},
-         *        {@link #PLAYBACKINFO_USES_STREAM},
-         *        {@link #PLAYBACKINFO_VOLUME},
-         *        {@link #PLAYBACKINFO_VOLUME_MAX},
-         *        and {@link #PLAYBACKINFO_VOLUME_HANDLING}.
-         * @return the current value for the given information type, or
-         *   {@link #PLAYBACKINFO_INVALID_VALUE} if an error occurred or the request is invalid, or
-         *   the value is unknown.
+         * Sets the listener to be called whenever the media playback position is requested
+         * to be updated.
+         * Notifications will be received in the same thread as the one in which RemoteControlClient
+         * was created.
+         * @param l the position update listener to be called
          */
-        GetInt32PlaybackInformation(
-            [in] Int32 what,
-            [out] Int32* result);
+        SetPlaybackPositionUpdateListener(
+            [in] IRemoteControlClientOnPlaybackPositionUpdateListener * l);
+
+        /**
+         * Sets the listener to be called whenever the media current playback position is needed.
+         * Queries will be received in the same thread as the one in which RemoteControlClient
+         * was created.
+         * @param l the listener to be called to retrieve the playback position
+         */
+        SetOnGetPlaybackPositionListener(
+            [in] IRemoteControlClientOnGetPlaybackPositionListener * l);
 
         /**
          * @hide
          * Accessor to media button intent description (includes target component)
          */
         GetRcMediaIntent(
-            [out] IPendingIntent** result);
+            [out] IPendingIntent ** result);
 
-        /**
-         * @hide
-         * Accessor to IRemoteControlClient
-         */
-        GetIRemoteControlClient(
-            [out] IIRemoteControlClient** result);
-
-        /**
-         * @hide
-         * To be only used by AudioManager after it has received the unique id from
-         * IAudioService.registerRemoteControlClient()
-         * @param id the unique identifier of the RemoteControlStackEntry in AudioService with which
-         *              this RemoteControlClient is associated.
-         */
-        SetRcseId(
-            [in] Int32 id);
-
-        /**
-         * @hide
-         */
-        GetRcseId(
-            [out] Int32* result);
     }
 
     } // namespace Media

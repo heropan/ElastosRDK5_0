@@ -1,6 +1,14 @@
 
 module
 {
+    interface Elastos.IO.IByteBuffer;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Graphics.IRect;
+    interface Elastos.Droid.View.ISurface;
+    interface IMediaCrypto;
+    interface IMediaCodecInfo;
+    interface IMediaCodec;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -62,6 +70,7 @@ module
      * This information encapsulates per-sample metadata as outlined in
      * ISO/IEC FDIS 23001-7:2011 "Common encryption in ISO base media file format files".
      */
+    [deprecated]
     interface IMediaCodecCryptoInfo {
         Set(
             [in] Int32 newNumSubSamples,
@@ -129,7 +138,7 @@ module
         OnOutputBufferAvailable(
             [in] IMediaCodec * codec,
             [in] Int32 index,
-            [in] IBufferInfo * info);
+            [in] IMediaCodecBufferInfo * info);
 
         /**
          * Called when the MediaCodec encountered an error
@@ -139,7 +148,7 @@ module
          */
         OnError(
             [in] IMediaCodec * codec,
-            [in] ICodecException * e);
+            [in] ECode e);
 
         /**
          * Called when the output format has changed
@@ -658,7 +667,7 @@ module
         QueueSecureInputBuffer(
             [in] Int32 index,
             [in] Int32 offset,
-            [in] ICryptoInfo * info,
+            [in] IMediaCodecCryptoInfo * info,
             [in] Int64 presentationTimeUs,
             [in] Int32 flags);
 
@@ -688,7 +697,7 @@ module
          * @throws MediaCodec.CodecException upon codec error.
          */
         DequeueOutputBuffer(
-            [in] IBufferInfo * info,
+            [in] IMediaCodecBufferInfo * info,
             [in] Int64 timeoutUs,
             [out] Int32 * result);
 

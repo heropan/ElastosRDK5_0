@@ -1,5 +1,11 @@
 module
 {
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.View.IInputChannel;
+    interface ITvTrackInfo;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -10,10 +16,11 @@ module
      * about changes to the state of each TV input service.
      * @hide
      */
+    [deprecated]
     interface IITvInputClient {
         OnSessionCreated(
             [in] String inputId,
-            [in] IBinder token,
+            [in] IBinder * token,
             [in] IInputChannel * channel,
             [in] Int32 seq);
 

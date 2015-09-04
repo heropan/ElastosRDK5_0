@@ -731,7 +731,7 @@ module
          *             {@code null}.
          */
         CreateRating(
-            [in] String domain,
+            [in] String domainStr,
             [in] String ratingSystem,
             [in] String rating,
             [in] String subRatings,

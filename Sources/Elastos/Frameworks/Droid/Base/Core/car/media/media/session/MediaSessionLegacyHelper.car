@@ -1,5 +1,12 @@
 module
 {
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.View.IKeyEvent;
+    interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Media.IMediaMetadata;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {

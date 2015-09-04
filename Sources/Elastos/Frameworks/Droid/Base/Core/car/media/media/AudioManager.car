@@ -8,6 +8,12 @@ module
     interface Elastos.Droid.Media.IIRingtonePlayer;
     interface Elastos.Droid.Media.IRemoteControlClient;
     interface Elastos.Droid.Media.IIRemoteControlDisplay;
+    interface Elastos.Droid.Media.IRemoteController;
+    interface Elastos.Droid.Media.AudioPolicy.IAudioPolicy;
+    interface IAudioPort;
+    interface IAudioPatch;
+    interface IAudioPortConfig;
+    interface IIVolumeController;
 
     namespace Elastos {
     namespace Droid {
@@ -39,6 +45,7 @@ module
      * disconnections or attributes update.
      * @hide
      */
+    [deprecated]
     interface IOnAudioPortUpdateListener {
         /**
          * Callback method called upon audio port list update.
@@ -66,6 +73,7 @@ module
      * Use <code>Context.getSystemService(Context.AUDIO_SERVICE)</code> to get
      * an instance of this class.
      */
+    [deprecated]
     interface IAudioManager {
 
         /**
@@ -1030,65 +1038,65 @@ module
         /** @hide
          * The audio input device code for default built-in microphone
          */
-        cosnt Int32 DEVICE_IN_BUILTIN_MIC = 0x80000004; //AudioSystem.DEVICE_IN_BUILTIN_MIC;
+        const Int32 DEVICE_IN_BUILTIN_MIC = 0x80000004; //AudioSystem.DEVICE_IN_BUILTIN_MIC;
         /** @hide
          * The audio input device code for a Bluetooth SCO headset
          */
-        cosnt Int32 DEVICE_IN_BLUETOOTH_SCO_HEADSET = 0x80000008; // AudioSystem.DEVICE_IN_BLUETOOTH_SCO_HEADSET;
+        const Int32 DEVICE_IN_BLUETOOTH_SCO_HEADSET = 0x80000008; // AudioSystem.DEVICE_IN_BLUETOOTH_SCO_HEADSET;
         /** @hide
          * The audio input device code for wired headset microphone
          */
-        cosnt Int32 DEVICE_IN_WIRED_HEADSET = 0x80000010; // AudioSystem.DEVICE_IN_WIRED_HEADSET;
+        const Int32 DEVICE_IN_WIRED_HEADSET = 0x80000010; // AudioSystem.DEVICE_IN_WIRED_HEADSET;
         /** @hide
          * The audio input device code for HDMI
          */
-        cosnt Int32 DEVICE_IN_HDMI = 0x80000020; //AudioSystem.DEVICE_IN_HDMI;
+        const Int32 DEVICE_IN_HDMI = 0x80000020; //AudioSystem.DEVICE_IN_HDMI;
         /** @hide
          * The audio input device code for telephony voice RX path
          */
-        cosnt Int32 DEVICE_IN_TELEPHONY_RX = 0x80000040; //AudioSystem.DEVICE_IN_TELEPHONY_RX;
+        const Int32 DEVICE_IN_TELEPHONY_RX = 0x80000040; //AudioSystem.DEVICE_IN_TELEPHONY_RX;
         /** @hide
          * The audio input device code for built-in microphone pointing to the back
          */
-        cosnt Int32 DEVICE_IN_BACK_MIC = 0x80000080; //AudioSystem.DEVICE_IN_BACK_MIC;
+        const Int32 DEVICE_IN_BACK_MIC = 0x80000080; //AudioSystem.DEVICE_IN_BACK_MIC;
         /** @hide
          * The audio input device code for analog from a docking station
          */
-        cosnt Int32 DEVICE_IN_ANLG_DOCK_HEADSET = 0x80000200; //AudioSystem.DEVICE_IN_ANLG_DOCK_HEADSET;
+        const Int32 DEVICE_IN_ANLG_DOCK_HEADSET = 0x80000200; //AudioSystem.DEVICE_IN_ANLG_DOCK_HEADSET;
         /** @hide
          * The audio input device code for digital from a docking station
          */
-        cosnt Int32 DEVICE_IN_DGTL_DOCK_HEADSET = 0x80000400; //AudioSystem.DEVICE_IN_DGTL_DOCK_HEADSET;
+        const Int32 DEVICE_IN_DGTL_DOCK_HEADSET = 0x80000400; //AudioSystem.DEVICE_IN_DGTL_DOCK_HEADSET;
         /** @hide
          * The audio input device code for a USB audio accessory. The accessory is in USB host
          * mode and the Android device in USB device mode
          */
-        cosnt Int32 DEVICE_IN_USB_ACCESSORY = 0x80000800; //AudioSystem.DEVICE_IN_USB_ACCESSORY;
+        const Int32 DEVICE_IN_USB_ACCESSORY = 0x80000800; //AudioSystem.DEVICE_IN_USB_ACCESSORY;
         /** @hide
          * The audio input device code for a USB audio device. The device is in USB device
          * mode and the Android device in USB host mode
          */
-        cosnt Int32 DEVICE_IN_USB_DEVICE = 0x80001000; //AudioSystem.DEVICE_IN_USB_DEVICE;
+        const Int32 DEVICE_IN_USB_DEVICE = 0x80001000; //AudioSystem.DEVICE_IN_USB_DEVICE;
         /** @hide
          * The audio input device code for a FM radio tuner
          */
-        cosnt Int32 DEVICE_IN_FM_TUNER = 0x80002000; //AudioSystem.DEVICE_IN_FM_TUNER;
+        const Int32 DEVICE_IN_FM_TUNER = 0x80002000; //AudioSystem.DEVICE_IN_FM_TUNER;
         /** @hide
          * The audio input device code for a TV tuner
          */
-        cosnt Int32 DEVICE_IN_TV_TUNER = 0x80004000; //AudioSystem.DEVICE_IN_TV_TUNER;
+        const Int32 DEVICE_IN_TV_TUNER = 0x80004000; //AudioSystem.DEVICE_IN_TV_TUNER;
         /** @hide
          * The audio input device code for an analog jack with line impedance detected
          */
-        cosnt Int32 DEVICE_IN_LINE = 0x80008000; //AudioSystem.DEVICE_IN_LINE;
+        const Int32 DEVICE_IN_LINE = 0x80008000; //AudioSystem.DEVICE_IN_LINE;
         /** @hide
          * The audio input device code for a S/PDIF digital connection
          */
-        cosnt Int32 DEVICE_IN_SPDIF = 0x80010000; //AudioSystem.DEVICE_IN_SPDIF;
+        const Int32 DEVICE_IN_SPDIF = 0x80010000; //AudioSystem.DEVICE_IN_SPDIF;
         /** @hide
          * The audio input device code for audio loopback
          */
-        cosnt Int32 DEVICE_IN_LOOPBACK = 0x80040000; //AudioSystem.DEVICE_IN_LOOPBACK;
+        const Int32 DEVICE_IN_LOOPBACK = 0x80040000; //AudioSystem.DEVICE_IN_LOOPBACK;
 
         /**
          * Used as a key for {@link #getProperty} to request the native or optimal output sample rate

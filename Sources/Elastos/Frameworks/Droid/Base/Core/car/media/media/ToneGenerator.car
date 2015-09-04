@@ -5,7 +5,24 @@ module
     namespace Droid {
     namespace Media {
 
+    /**
+     * This class provides methods to play DTMF tones (ITU-T Recommendation Q.23),
+     * call supervisory tones (3GPP TS 22.001, CEPT) and proprietary tones (3GPP TS 31.111).
+     * Depending on call state and routing options, tones are mixed to the downlink audio
+     * or output to the speaker phone or headset.
+     * This API is not for generating tones over the uplink audio path.
+     */
     interface IToneGenerator {
+        /* Values for toneType parameter of ToneGenerator() constructor */
+        /*
+         * List of all available tones: These constants must be kept consistant with
+         * the enum in ToneGenerator C++ class.     */
+
+        /**
+         * Default value for an unknown or unspecified tone.
+         * @hide
+         */
+        const Int32 TONE_UNKNOWN = -1;
 
         /**
          * DTMF tone for key 0: 1336Hz, 941Hz, continuous</p>

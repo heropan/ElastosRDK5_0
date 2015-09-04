@@ -1,6 +1,16 @@
 module
 {
+    interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IResultReceiver;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Content.Pm.IParceledListSlice;
+    interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.Media.IRating;
+    interface Elastos.Droid.Media.IMediaMetadata;
+    interface Elastos.Droid.View.IKeyEvent;
+    interface IISessionControllerCallback;
+    interface IParcelableVolumeInfo;
 
     namespace Elastos {
     namespace Droid {

@@ -1,5 +1,16 @@
 module
 {
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.View.ISurface;
+    interface Elastos.Droid.Graphics.IRect;
+    interface Elastos.Droid.Media.Tv.ITvInputInfo;
+    interface Elastos.Droid.Media.Tv.ITvContentRatingSystemInfo;
+    interface Elastos.Droid.Media.Tv.ITvInputManagerCallback;
+    interface Elastos.Droid.Media.Tv.ITvInputClient;
+    interface Elastos.Droid.Media.Tv.ITvInputHardwareInfo;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -9,10 +20,11 @@ module
      * Interface to the TV input manager service.
      * @hide
      */
+    [deprecated]
     interface IITvInputManager {
         GetTvInputList(
             [in] Int32 userId,
-            [out] ArrayOf<ITvInputInfo*> * result);
+            [out, callee] ArrayOf<ITvInputInfo*> * result);
 
         GetTvInputInfo(
             [in] String inputId,
@@ -24,11 +36,11 @@ module
             [out] ITvContentRatingSystemInfo ** result);
 
         RegisterCallback(
-            [in] ITvInputManagerCallback * callback,
+            [in] ITvInputManagerCallback * cb,
             [in] Int32 userId);
 
         UnregisterCallback(
-            [in] ITvInputManagerCallback * callback,
+            [in] ITvInputManagerCallback * cb,
             [in] Int32 userId);
 
         IsParentalControlsEnabled(
@@ -136,7 +148,7 @@ module
 
         AcquireTvInputHardware(
             [in] Int32 deviceId,
-            [in] IITvInputHardwareCallback * callback,
+            [in] IITvInputHardwareCallback * cb,
             [in] ITvInputInfo * info,
             [in] Int32 userId,
             [out] IITvInputHardware ** result);

@@ -1,7 +1,8 @@
 
 module
 {
-    using interface Elastos.Utility.IDate;
+    interface Elastos.Utility.IDate;
+    interface Elastos.Utility.ISet;
 
     namespace Elastos {
     namespace Droid {
@@ -254,7 +255,7 @@ module
          * @return The set of metadata ID found.
          */
         KeySet(
-            [out] IObjectContainer** result);
+            [out] ISet ** result);
 
         /**
          * @return true if a value is present for the given key.

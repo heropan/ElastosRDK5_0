@@ -1,6 +1,8 @@
 
 module
 {
+    interface IAudioMixPortConfig;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {

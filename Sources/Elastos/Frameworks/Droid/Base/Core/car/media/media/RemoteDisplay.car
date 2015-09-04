@@ -35,6 +35,10 @@ module
          * Disconnects the remote display and stops listening for new connections.
          */
         Dispose();
+
+        Pause();
+
+        Resume();
     }
 
     interface IRemoteDisplayHelper {

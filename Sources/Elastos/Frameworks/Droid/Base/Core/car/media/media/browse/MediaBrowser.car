@@ -155,7 +155,7 @@ module
          * @throws IllegalStateException if not connected.
          */
          GetSessionToken(
-        [out] IMediaSessionToken ** result);
+            [out] IMediaSessionToken ** result);
 
         /**
          * Queries for information about the media items that are contained within

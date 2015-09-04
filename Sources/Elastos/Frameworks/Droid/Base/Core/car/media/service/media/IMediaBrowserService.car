@@ -1,14 +1,14 @@
 
 module
 {
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Media.Session.IMediaSessionToken;
+    interface Elastos.Droid.Media.Browse.IMediaBrowserMediaItem;
+
     namespace Elastos {
     namespace Droid {
     namespace Service {
     namespace Media {
-
-    interface Elastos.Droid.Os.IBundle;
-    interface Elastos.Droid.Media.Session.IMediaSessionToken;
-    interface Elastos.Droid.Media.Browse.IMediaBrowserMediaItem;
 
     /**
      * Completion handler for asynchronous callback methods in {@link MediaBrowserService}.

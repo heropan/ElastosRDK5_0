@@ -1,5 +1,12 @@
 module
 {
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.ISurface;
+    interface Elastos.Droid.View.IMotionEvent;
+    interface Elastos.Droid.Hardware.Hdmi.IHdmiDeviceInfo;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -12,6 +19,7 @@ module
      * @Involve
      * interface Elastos.Droid.View.IKeyEventCallback
      */
+    [local, deprecated]
     interface ITvInputServiceSession {
         /**
          * Enables or disables the overlay view. By default, the overlay view is disabled. Must be
@@ -21,7 +29,7 @@ module
          *            otherwise.
          */
         SetOverlayViewEnabled(
-            [in] Boolean enable);
+            [in] Boolean value);
 
         /**
          * Dispatches an event to the application using this session.
@@ -440,6 +448,7 @@ module
      * @Involve
      * interface Elastos.Droid.App.IService
      */
+    [local]
     interface ITvInputService {
         /**
          * This is the interface name that a service implementing a TV input should say that it support

@@ -63,7 +63,7 @@ module
      * Empty array if sampling rate is not relevant for this audio port
      */
     SamplingRates(
-        [out, calee] ArrayOf<Int32> * result);
+        [out, callee] ArrayOf<Int32> * result);
 
     /**
      * Get the list of supported channel mask configurations
@@ -71,7 +71,7 @@ module
      * Empty array if channel mask is not relevant for this audio port
      */
     ChannelMasks(
-        [out, calee] ArrayOf<Int32> * result);
+        [out, callee] ArrayOf<Int32> * result);
 
     /**
      * Get the list of supported audio format configurations
@@ -79,7 +79,7 @@ module
      * Empty array if format is not relevant for this audio port
      */
     Formats(
-        [out, calee] ArrayOf<Int32> * result);
+        [out, callee] ArrayOf<Int32> * result);
 
     /**
      * Get the list of gain descriptors

@@ -1,5 +1,11 @@
 module
 {
+    interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.View.IKeyEvent;
+    interface Elastos.Droid.Media.IIRemoteVolumeController;
+    interface Elastos.Droid.Media.Session.IISession;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -9,6 +15,7 @@ module
      * Listens for changes to the list of active sessions. This can be added
      * using {@link #addOnActiveSessionsChangedListener}.
      */
+    [deprecated]
     interface IMediaSessionManagerOnActiveSessionsChangedListener {
         OnActiveSessionsChanged(
             [in] ArrayOf<IMediaController*> * controllers);
@@ -25,6 +32,7 @@ module
      * @see MediaSession
      * @see MediaController
      */
+    [deprecated]
     interface IMediaSessionManager {
     /**
      * Create a new session in the system and get the binder for it.
@@ -56,7 +64,7 @@ module
      */
     GetActiveSessions(
         [in] IComponentName * notificationListener,
-        [out] ArrayOf<IMediaController*> * result);
+        [out, callee] ArrayOf<IMediaController*> * result);
 
     /**
      * Get active sessions for a specific user. To retrieve actions for a user
@@ -74,7 +82,7 @@ module
     GetActiveSessionsForUser(
         [in] IComponentName * notificationListener,
         [in] Int32 userId,
-        [out] ArrayOf<IMediaController*> * result);
+        [out, callee] ArrayOf<IMediaController*> * result);
 
     /**
      * Add a listener to be notified when the list of active sessions

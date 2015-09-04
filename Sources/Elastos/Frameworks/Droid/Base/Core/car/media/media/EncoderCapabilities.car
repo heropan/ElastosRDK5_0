@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Utility.IList;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -20,14 +22,14 @@ module
          * @see android.media.EncoderCapabilities.VideoEncoderCap
          */
         GetVideoEncoders(
-            [out] IObjectContainer** result);
+            [out] IList** result);
 
         /**
          * Returns the capabilities of the supported audio encoders.
          * @see android.media.EncoderCapabilities.AudioEncoderCap
          */
         GetAudioEncoders(
-            [out] IObjectContainer** result);
+            [out] IList** result);
     }
 
     } // namespace Media

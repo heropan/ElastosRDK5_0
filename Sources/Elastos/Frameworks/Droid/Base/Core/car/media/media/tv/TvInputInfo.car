@@ -1,5 +1,17 @@
 module
 {
+    interface Elastos.Core.ICharSequence;
+    interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
+    interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Content.Pm.IServiceInfo;
+    interface Elastos.Droid.Content.Pm.IResolveInfo;
+    interface Elastos.Droid.Hardware.Hdmi.IHdmiDeviceInfo;
+    interface Elastos.Utility.IMap;
+    interface Elastos.Utility.ISet;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -256,6 +268,7 @@ module
 
     }
 
+    [local]
     interface ITvInputInfoHelper {
 
         /**

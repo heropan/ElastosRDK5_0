@@ -34,7 +34,7 @@ module
          * channelMask() from LSB to MSB
          */
         Values(
-            [out] ArrayOf<Int32> * result);
+            [out, callee] ArrayOf<Int32> * result);
 
         /**
          * Ramp duration in milliseconds. N/A if mode() does not

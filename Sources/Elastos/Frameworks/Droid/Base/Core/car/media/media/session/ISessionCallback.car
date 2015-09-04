@@ -1,6 +1,10 @@
 module
 {
     interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IResultReceiver;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Media.IRating;
+    interface Elastos.Droid.Media.IMediaMetadata;
 
     namespace Elastos {
     namespace Droid {

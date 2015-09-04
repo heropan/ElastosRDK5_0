@@ -48,6 +48,11 @@ module
 
     interface IMediaScannerHelper {
 
+        /* MediaProvider calls this when a .nomedia file is added or removed */
+        ClearMediaPathCache(
+            [in] Boolean clearMediaPaths,
+            [in] Boolean clearNoMediaPaths);
+
         IsNoMediaPath(
             [in] String path,
             [out] Boolean* result);

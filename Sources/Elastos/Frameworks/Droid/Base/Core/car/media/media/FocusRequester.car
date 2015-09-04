@@ -1,6 +1,9 @@
 
 module
 {
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.IO.IPrintWriter;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -24,7 +27,8 @@ module
             [in] String pack,
             [out] Boolean * result);
 
-        HasSameUid(int uid,
+        HasSameUid(
+            [in] Int32 uid,
             [out] Boolean * result);
 
         GetGainRequest(

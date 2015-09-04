@@ -1,5 +1,20 @@
 module
 {
+    interface Elastos.Core.ICharSequence;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Os.IResultReceiver;
+    interface Elastos.Droid.View.IKeyEvent;
+    interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.Media.IMediaMetadata;
+    interface Elastos.Droid.Media.IRating;
+    interface Elastos.Droid.Media.IAudioAttributes;
+    interface Elastos.Droid.Media.Session.IPlaybackState;
+    interface Elastos.Droid.Media.Session.IMediaSessionQueueItem;
+    interface Elastos.Droid.Media.Session.IPlaybackStateCustomAction;
+    interface Elastos.Droid.Media.Session.IPlaybackInfo;
+    interface Elastos.Droid.Media.Session.IMediaSessionToken;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -9,6 +24,7 @@ module
      * Callback for receiving updates on from the session. A Callback can be
      * registered using {@link #registerCallback}
      */
+    [deprecated]
     interface IMediaControllerCallback {
         /**
          * Override to handle the session being destroyed. The session is no
@@ -291,7 +307,7 @@ module
          * @return A transport controls instance.
          */
         GetTransportControls(
-            [out] ITransportControls ** result);
+            [out] IMediaControllerTransportControls ** result);
 
         /**
          * Send the specified media button event to the session. Only media keys can
@@ -327,7 +343,7 @@ module
          * @return The current play queue or null.
          */
         GetQueue(
-            [out] ArrayOf<IMediaSessionQueueItem*> * result);
+            [out, callee] ArrayOf<IMediaSessionQueueItem*> * result);
 
         /**
          * Get the queue title for this session.
@@ -430,7 +446,7 @@ module
          * @param callback The callback object, must not be null.
          */
         RegisterCallback(
-            [in] IMediaControllerCallback * callback);
+            [in] IMediaControllerCallback * cb);
 
         /**
          * Registers a callback to receive updates from the session. Updates will be
@@ -441,7 +457,7 @@ module
          *            will be used.
          */
         RegisterCallback(
-            [in] IMediaControllerCallback * callback,
+            [in] IMediaControllerCallback * cb,
             [in] IHandler * handler);
 
         /**
@@ -451,7 +467,7 @@ module
          * @param callback The callback to remove.
          */
         UnregisterCallback(
-            [in] IMediaControllerCallback * callback);
+            [in] IMediaControllerCallback * cb);
 
         /**
          * Sends a generic command to the session. It is up to the session creator

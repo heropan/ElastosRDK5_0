@@ -67,7 +67,7 @@ module
             [in] String callingPackage,
             [in] IBinder * cb);
 
-        IsMasterMute(,
+        IsMasterMute(
             [out] Boolean * result);
 
         GetStreamVolume(
@@ -128,7 +128,7 @@ module
             [in] Int32 effectType,
             [in] Float volume);
 
-        LoadSoundEffects(,
+        LoadSoundEffects(
             [out] Boolean * result);
 
         [oneway] UnloadSoundEffects();
@@ -142,19 +142,19 @@ module
         SetSpeakerphoneOn(
             [in] Boolean on);
 
-        IsSpeakerphoneOn(,
+        IsSpeakerphoneOn(
             [out] Boolean * result);
 
         SetBluetoothScoOn(
             [in] Boolean on);
 
-        IsBluetoothScoOn(,
+        IsBluetoothScoOn(
             [out] Boolean * result);
 
         SetBluetoothA2dpOn(
             [in] Boolean on);
 
-        IsBluetoothA2dpOn(,
+        IsBluetoothA2dpOn(
             [out] Boolean * result);
 
         RequestAudioFocus(
@@ -281,7 +281,7 @@ module
             [in] IIAudioRoutesObserver * observer,
             [out] IAudioRoutesInfo ** result);
 
-        IsCameraSoundForced(,
+        IsCameraSoundForced(
             [out] Boolean * result);
 
         SetVolumeController(
@@ -301,7 +301,7 @@ module
             [in] Boolean on,
             [out] Int32 * result);
 
-        IsHdmiSystemAudioSupported(,
+        IsHdmiSystemAudioSupported(
             [out] Boolean * result);
 
         RegisterAudioPolicy(

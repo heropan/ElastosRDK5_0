@@ -1,11 +1,13 @@
 
 module
 {
+	interface Elastos.Droid.Media.IMediaRouterClientState;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
 
-    interface IIMediaRouterClient {
+    interface IIMediaRouterService {
 		RegisterClientAsUser(
 			[in] IIMediaRouterClient * client,
 			[in] String packageName,
