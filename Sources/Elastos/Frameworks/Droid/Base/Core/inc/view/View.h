@@ -523,6 +523,8 @@ public:
      */
     static const Int32 PFLAG2_HAS_TRANSIENT_STATE;
 
+    static const Int32 LAYOUT_DIRECTION_RESOLVED_DEFAULT;// = LAYOUT_DIRECTION_LTR;
+
     /**
      * Bit shift to get the horizontal layout direction. (bits after LAYOUT_DIRECTION_RESOLVED)
      * @hide
@@ -608,6 +610,12 @@ public:
      */
     static const Int32 PFLAG2_IMPORTANT_FOR_ACCESSIBILITY_MASK;
 
+    static const Int32 PFLAG2_ACCESSIBILITY_LIVE_REGION_SHIFT;// = 23;
+
+    static const Int32 ACCESSIBILITY_LIVE_REGION_DEFAULT;// = ACCESSIBILITY_LIVE_REGION_NONE;
+
+    static const Int32 PFLAG2_ACCESSIBILITY_LIVE_REGION_MASK;
+
     /**
      * Flag indicating whether a view has accessibility focus.
      */
@@ -616,7 +624,7 @@ public:
     /**
      * Flag indicating whether a view state for accessibility has changed.
      */
-    static const Int32 PFLAG2_ACCESSIBILITY_STATE_CHANGED;
+    static const Int32 PFLAG2_SUBTREE_ACCESSIBILITY_STATE_CHANGED;
 
     /**
      * Flag indicating whether a view failed the quickReject() check in draw(). This condition
@@ -638,6 +646,13 @@ public:
      * Flag indicating that the start/end drawables has been resolved into left/right ones.
      */
     static const Int32 PFLAG2_DRAWABLE_RESOLVED;
+
+    /**
+     * Indicates that the view is tracking some sort of transient state
+     * that the app should not need to be aware of, but that the framework
+     * should take special care to preserve.
+     */
+    static const Int32 PFLAG2_HAS_TRANSIENT_STATE;
 
     /**
      * Group of bits indicating that RTL properties resolution is done.
@@ -664,6 +679,46 @@ public:
      */
     static const Int32 PFLAG3_VIEW_IS_ANIMATING_ALPHA;
 
+    /**
+     * Flag indicating that the view has been through at least one layout since it
+     * was last attached to a window.
+     */
+    static const Int32 PFLAG3_IS_LAID_OUT;// = 0x4;
+
+    /**
+     * Flag indicating that a call to measure() was skipped and should be done
+     * instead when layout() is invoked.
+     */
+    static const Int32 PFLAG3_MEASURE_NEEDED_BEFORE_LAYOUT;// = 0x8;
+
+    /**
+     * Flag indicating that an overridden method correctly called down to
+     * the superclass implementation as required by the API spec.
+     */
+    static const Int32 PFLAG3_CALLED_SUPER;// = 0x10;
+
+    /**
+     * Flag indicating that we're in the process of applying window insets.
+     */
+    static const Int32 PFLAG3_APPLYING_INSETS;// = 0x20;
+
+    /**
+     * Flag indicating that we're in the process of fitting system windows using the old method.
+     */
+    static const Int32 PFLAG3_FITTING_SYSTEM_WINDOWS;// = 0x40;
+
+    /**
+     * Flag indicating that nested scrolling is enabled for this view.
+     * The view will optionally cooperate with views up its parent chain to allow for
+     * integrated nested scrolling along the same axis.
+     */
+    static const Int32 PFLAG3_NESTED_SCROLLING_ENABLED;// = 0x80;
+
+    /**
+     * Flag indicating that outline was invalidated and should be rebuilt the next time
+     * the DisplayList is updated.
+     */
+    static const Int32 PFLAG3_OUTLINE_INVALID;// = 0x100;
 
     /* End of masks for mPrivateFlags3 */
 
@@ -1085,7 +1140,7 @@ private:
      *
      * @hide
      */
-    static const Int32 PFLAG_PIVOT_EXPLICITLY_SET;
+    static const Int32 PFLAG_DOES_NOTHING_REUSE_PLEASE;
 
     /*
      * Array of horizontal layout direction flags for mapping attribute "layoutDirection" to correct
@@ -1104,6 +1159,8 @@ private:
      */
     static const Int32 TEXT_DIRECTION_DEFAULT;
 
+    static const Int32 TEXT_DIRECTION_RESOLVED_DEFAULT;//= TEXT_DIRECTION_FIRST_STRONG;
+
     /**
      * Array of text direction flags for mapping attribute "textDirection" to correct
      * flag value.
@@ -1115,6 +1172,8 @@ private:
      * Default text alignment is inherited
      */
     static const Int32 TEXT_ALIGNMENT_DEFAULT;
+
+    static const Int32 TEXT_ALIGNMENT_RESOLVED_DEFAULT;// = TEXT_ALIGNMENT_GRAVITY;
 
     /**
      * Array of text direction flags for mapping attribute "textAlignment" to correct
@@ -1129,20 +1188,9 @@ private:
     static const Int32 PFLAG2_TEXT_ALIGNMENT_RESOLVED_DEFAULT;
 
     /**
-     * Convenience value to check for float values that are close enough to zero to be considered
-     * zero.
-     */
-    static const Float NONZERO_EPSILON;
-
-    /**
      * Default undefined padding
      */
     static const Int32 UNDEFINED_PADDING;
-
-    /**
-     * The undefined cursor position.
-     */
-    static const Int32 ACCESSIBILITY_CURSOR_POSITION_UNDEFINED;
 
 protected:
     class TransformationInfo : public ElRefBase
@@ -1154,74 +1202,18 @@ protected:
 
     protected:
         /**
-         * An internal variable that tracks whether we need to recalculate the
-         * transform matrix, based on whether the rotation or scaleX/Y properties
-         * have changed since the matrix was last calculated.
-         */
-        Boolean mMatrixDirty;
-
-        /**
-         * The degrees rotation around the vertical axis through the pivot point.
-         */
-        //@ViewDebug.ExportedProperty
-        Float mRotationY;
-
-        /**
-         * The degrees rotation around the horizontal axis through the pivot point.
-         */
-        //@ViewDebug.ExportedProperty
-        Float mRotationX;
-
-        /**
-         * The degrees rotation around the pivot point.
-         */
-        //@ViewDebug.ExportedProperty
-        Float mRotation;
-
-        /**
-         * The amount of translation of the object away from its left property (post-layout).
-         */
-        //@ViewDebug.ExportedProperty
-        Float mTranslationX;
-
-        /**
-         * The amount of translation of the object away from its top property (post-layout).
-         */
-        //@ViewDebug.ExportedProperty
-        Float mTranslationY;
-
-        /**
-         * The amount of scale in the x direction around the pivot point. A
-         * value of 1 means no scaling is applied.
-         */
-        //@ViewDebug.ExportedProperty
-        Float mScaleX;
-
-        /**
-         * The amount of scale in the y direction around the pivot point. A
-         * value of 1 means no scaling is applied.
-         */
-        //@ViewDebug.ExportedProperty
-        Float mScaleY;
-
-        /**
-         * The x location of the point around which the view is rotated and scaled.
-         */
-        //@ViewDebug.ExportedProperty
-        Float mPivotX;
-
-        /**
-         * The y location of the point around which the view is rotated and scaled.
-         */
-        //@ViewDebug.ExportedProperty
-        Float mPivotY;
-
-        /**
          * The opacity of the View. This is a value from 0 to 1, where 0 means
          * completely transparent and 1 means completely opaque.
          */
         //@ViewDebug.ExportedProperty
         Float mAlpha;
+
+        /**
+         * The opacity of the view as manipulated by the Fade transition. This is a hidden
+         * property only used by transitions, which is composited with the other alpha
+         * values to calculate the final visual alpha value.
+         */
+        Float mTransitionAlpha;// = 1f;
 
     private:
         /**
@@ -1241,43 +1233,9 @@ protected:
          * to get the correct matrix based on the latest rotation and scale properties.
          */
         AutoPtr<IMatrix> mInverseMatrix;
-
-        /**
-         * An internal variable that tracks whether we need to recalculate the
-         * transform matrix, based on whether the rotation or scaleX/Y properties
-         * have changed since the matrix was last calculated.
-         */
-        Boolean mInverseMatrixDirty;
-
-        /**
-         * A variable that tracks whether we need to recalculate the
-         * transform matrix, based on whether the rotation or scaleX/Y properties
-         * have changed since the matrix was last calculated. This variable
-         * is only valid after a call to updateMatrix() or to a function that
-         * calls it such as getMatrix(), hasIdentityMatrix() and getInverseMatrix().
-         */
-        Boolean mMatrixIsIdentity;
-
-        /**
-         * The Camera object is used to compute a 3D matrix when rotationX or rotationY are set.
-         */
-        AutoPtr<ICamera> mCamera;
-
-        /**
-         * This matrix is used when computing the matrix for 3D rotations.
-         */
-        AutoPtr<IMatrix> matrix3D;
-
-        /**
-         * These prev values are used to recalculate a centered pivot point when necessary. The
-         * pivot point is only used in matrix operations (when rotation, scale, or translation are
-         * set), so thes values are only used then as well.
-         */
-        Int32 mPrevWidth;
-        Int32 mPrevHeight;
     };
 
-    class ListenerInfo : public ElRefBase
+    class ListenerInfo : public Object
     {
         friend class View;
     public:
@@ -1333,6 +1291,8 @@ protected:
         AutoPtr<IViewOnDragListener> mOnDragListener;
 
         AutoPtr<IViewOnSystemUiVisibilityChangeListener> mOnSystemUiVisibilityChangeListener;
+
+        AutoPtr<IViewOnApplyWindowInsetsListener> mOnApplyWindowInsetsListener;
     };
 
 public:
@@ -2064,6 +2024,16 @@ public:
     };
 
 private:
+    class TintInfo
+        : public Object
+    {
+    public:
+        AutoPtr<IColorStateList> mTintList;
+        PorterDuffMode mTintMode;
+        Boolean mHasTintMode;
+        Boolean mHasTintList;
+    };
+
     class CheckForTap : public Runnable
     {
     public:
@@ -5002,9 +4972,10 @@ public:
      * @hide
      */
     Boolean mCachingFailed;
-    String mXmlPath;
 
-    IContext* mInflaterContext;
+    static Boolean mDebugViewAttributes;// = false;
+
+    AutoPtr< ArrayOf<String> > mAttributes;
 
 protected:
     /**
@@ -5130,6 +5101,8 @@ protected:
     AutoPtr<TransformationInfo> mTransformationInfo;
 
     Boolean mLastIsOpaque;
+
+    AutoPtr<IRect> mClipBounds;
 
     /**
      * The distance in pixels from the left edge of this view's parent
@@ -5295,11 +5268,12 @@ protected:
 
     AutoPtr<ArrayOf<Int32> > mDrawableState;
 
+    AutoPtr<IViewOutlineProvider> mOutlineProvider;// = ViewOutlineProvider.BACKGROUND;
+
+    AutoPtr<IStateListAnimator> mStateListAnimator;
+
     AutoPtr<IBitmap> mDrawingCache;
     AutoPtr<IBitmap> mUnscaledDrawingCache;
-
-    AutoPtr<IHardwareLayer> mHardwareLayer;
-    AutoPtr<IDisplayList> mDisplayList;
 
     /**
      * When this view has focus and the next focus is {@link #FOCUS_LEFT},
@@ -5404,7 +5378,17 @@ protected:
     // })
     Int32 mLayerType;
     AutoPtr<IPaint> mLayerPaint;
-    AutoPtr<IRect> mLocalDirtyRect;
+
+    AutoPtr<IRenderNode> mRenderNode;
+
+    AutoPtr<IViewOverlay> mOverlay;
+
+    /**
+     * An overlay is going to draw this View instead of being drawn as part of this
+     * View's parent. mGhostView is the View in the Overlay that must be invalidated
+     * when this view is invalidated.
+     */
+    AutoPtr<IGhostView> mGhostView;
 
     /**
      * Set to true when the view is sending hover accessibility events because it
@@ -5423,10 +5407,16 @@ protected:
      */
     AutoPtr<InputEventConsistencyVerifier> mInputEventConsistencyVerifier;
 
+    AutoPtr<SendViewStateChangedAccessibilityEvent> mSendViewStateChangedAccessibilityEvent;
+
 private:
     /**
      * The next available accessibility id.
      */
+    static Boolean sCompatibilityDone;// = false;
+    static Boolean sUseBrokenMakeMeasureSpec;// = false;
+    static Boolean sIgnoreMeasureCache;// = false;
+
     static Int32 sNextAccessibilityViewId;
 
     static Int32 sNextGeneratedId;
@@ -5446,6 +5436,26 @@ private:
      * Map used to store views' tags.
      */
     HashMap<Int32, AutoPtr<IInterface> > mKeyedTags;
+
+    /**
+     * Cache if a left padding has been defined
+     */
+    Boolean mLeftPaddingDefined;// = false;
+
+    /**
+     * Cache if a right padding has been defined
+     */
+    Boolean mRightPaddingDefined;// = false;
+
+    HashMap<Int64, Int64> mMeasureCache;
+    AutoPtr<TintInfo> mBackgroundTint;
+    AutoPtr<IRenderNode> mBackgroundRenderNode;
+    String mTransitionName;
+    AutoPtr<IViewParent> mNestedScrollingParent;
+
+    AutoPtr< ArrayOf<Int32> > mTempNestedScrollConsumed;
+
+    HashMap<String, AutoPtr<IInterface> > mAttributeMap;
 };
 
 } // namespace View
