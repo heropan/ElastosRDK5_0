@@ -5,6 +5,9 @@
 #include "text/TextUtils.h"
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Database::DatabaseUtils;
+using Elastos::Droid::Provider::IBaseColumns;
 using Elastos::Core::CString;
 using Elastos::Utility::ISet;
 using Elastos::Utility::IIterator;
@@ -13,9 +16,6 @@ using Elastos::Utility::Regex::IPatternHelper;
 using Elastos::Utility::Regex::CPatternHelper;
 using Elastos::Utility::Regex::IMatcher;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Database::DatabaseUtils;
-using Elastos::Droid::Text::TextUtils;
-using Elastos::Droid::Provider::IBaseColumns;
 
 namespace Elastos {
 namespace Droid {

@@ -4,8 +4,8 @@
 #include "_Elastos_Droid_Database_CContentObserverTransport.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Droid::Net::IUri;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

@@ -4,10 +4,10 @@
 #include "os/CBundle.h"
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::Logging::Slogger;
+using Elastos::Droid::Os::CBundle;
 using Elastos::IO::ICloseable;
 using Elastos::IO::EIID_ICloseable;
-using Elastos::Droid::Os::CBundle;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {

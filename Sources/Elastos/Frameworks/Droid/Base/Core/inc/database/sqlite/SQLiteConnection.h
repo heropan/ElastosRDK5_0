@@ -4,22 +4,22 @@
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"
-#include "database/sqlite/SQLiteDatabaseConfiguration.h"
+#include "util/LruCache.h"
 #include "database/sqlite/SQLiteDebug.h"
 #include "database/sqlite/SQLiteStatementInfo.h"
-#include "util/LruCache.h"
-#include <elastos/core/StringBuilder.h>
+#include "database/sqlite/SQLiteDatabaseConfiguration.h"
 #include <elastos/core/Object.h>
+#include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::StringBuilder;
-using Elastos::Core::IArrayOf;
-using Elastos::Utility::Regex::IPattern;
-using Elastos::Text::ISimpleDateFormat;
 using Elastos::Droid::Utility::IPrinter;
 using Elastos::Droid::Utility::LruCache;
 using Elastos::Droid::Database::ICursorWindow;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Os::ICancellationSignalOnCancelListener;
+using Elastos::Core::IArrayOf;
+using Elastos::Core::StringBuilder;
+using Elastos::Text::ISimpleDateFormat;
+using Elastos::Utility::Regex::IPattern;
 
 namespace Elastos {
 namespace Droid {

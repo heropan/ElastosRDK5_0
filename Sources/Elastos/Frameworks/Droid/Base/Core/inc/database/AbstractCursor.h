@@ -3,14 +3,15 @@
 
 #include "ext/frameworkext.h"
 #include "database/ContentObserver.h"
-#include <elastos/utility/etl/HashMap.h>
 #include <elastos/core/Object.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::IO::ICloseable;
-using Elastos::Core::Object;
-using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Core::Object;
+using Elastos::IO::ICloseable;
+using Elastos::Utility::Etl::HashMap;
+
 
 namespace Elastos {
 namespace Droid {

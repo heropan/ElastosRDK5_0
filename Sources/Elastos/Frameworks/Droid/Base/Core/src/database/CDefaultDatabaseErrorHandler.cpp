@@ -1,9 +1,10 @@
 
 #include "database/CDefaultDatabaseErrorHandler.h"
-#include <elastos/utility/logging/Slogger.h>
-#include <elastos/core/StringBuilder.h>
 #include "database/sqlite/SQLiteDatabase.h"
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Database::Sqlite::SQLiteDatabase;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;
 using Elastos::IO::IFile;
@@ -14,7 +15,6 @@ using Elastos::Utility::IMap;
 using Elastos::Utility::IMapEntry;
 using Elastos::Utility::ISet;
 using Elastos::Utility::IIterator;
-using Elastos::Droid::Database::Sqlite::SQLiteDatabase;
 
 namespace Elastos {
 namespace Droid {

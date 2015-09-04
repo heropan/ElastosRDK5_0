@@ -3,11 +3,11 @@
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Utility::Regex::IPatternHelper;
-using Elastos::Utility::Regex::CPatternHelper;
-using Elastos::Utility::Regex::IMatcher;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::Regex::IMatcher;
+using Elastos::Utility::Regex::IPatternHelper;
+using Elastos::Utility::Regex::CPatternHelper;
 
 namespace Elastos {
 namespace Droid {

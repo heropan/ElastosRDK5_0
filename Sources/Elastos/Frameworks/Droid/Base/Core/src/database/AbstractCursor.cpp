@@ -1,17 +1,17 @@
 
 #include "database/AbstractCursor.h"
-#include "os/CBundle.h"
 #include "database/CDataSetObservable.h"
 #include "database/CContentObservable.h"
 #include "database/DatabaseUtils.h"
+#include "os/CBundle.h"
 #include "os/UserHandle.h"
-#include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Os::UserHandle;
 using Elastos::IO::EIID_ICloseable;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Os::UserHandle;
-using Elastos::Droid::Os::CBundle;
 
 namespace Elastos {
 namespace Droid {

@@ -1,19 +1,19 @@
 
 #include "database/sqlite/SQLiteGlobal.h"
-#include "os/SystemProperties.h"
-//#include "os/CStatFs.h"
 //#include "content/res/CResources.h"
-#include "R.h"
+//#include "os/CStatFs.h"
+#include "os/SystemProperties.h"
 #include <elastos/core/Math.h>
-#include <sqlite3.h>
 #include <elastos/core/AutoLock.h>
+#include "R.h"
+#include <sqlite3.h>
 
 using Elastos::Droid::R;
-//using Elastos::Droid::Content::Res::CResources;
-using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Os::IStatFs;
 //using Elastos::Droid::Os::CStatFs;
 using Elastos::Droid::Os::SystemProperties;
+//using Elastos::Droid::Content::Res::CResources;
+using Elastos::Droid::Content::Res::IResources;
 
 namespace Elastos {
 namespace Droid {

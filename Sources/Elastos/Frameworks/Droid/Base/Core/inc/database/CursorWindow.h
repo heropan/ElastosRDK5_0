@@ -6,8 +6,8 @@
 #include "database/sqlite/SQLiteClosable.h"
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Database::Sqlite::SQLiteClosable;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {

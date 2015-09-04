@@ -7,12 +7,12 @@
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Object.h>
 
-using Elastos::Utility::IMap;
+using Elastos::Droid::Database::ICursor;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IStringBuilder;
+using Elastos::Utility::IMap;
 using Elastos::Utility::Regex::IPattern;
-using Elastos::Droid::Database::ICursor;
 
 namespace Elastos {
 namespace Droid {

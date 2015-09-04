@@ -5,11 +5,11 @@
 #include "ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
-using Elastos::IO::ICloseable;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Core::Object;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace Droid {

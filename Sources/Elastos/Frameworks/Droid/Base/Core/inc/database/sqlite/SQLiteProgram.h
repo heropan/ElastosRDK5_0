@@ -6,8 +6,8 @@
 #include "database/sqlite/SQLiteSession.h"
 #include <sqlite3.h>
 
+using Elastos::Droid::Database::Sqlite::SQLiteClosable;
 using Elastos::Core::IArrayOf;
-using Droid::Database::Sqlite::SQLiteClosable;
 
 namespace Elastos {
 namespace Droid {

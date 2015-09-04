@@ -7,11 +7,11 @@
 #include "database/CBulkCursorDescriptor.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

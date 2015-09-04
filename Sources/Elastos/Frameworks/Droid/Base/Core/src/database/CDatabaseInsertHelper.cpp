@@ -9,10 +9,8 @@ ECode CDatabaseInsertHelper::constructor(
     /* [in] */ ISQLiteDatabase* db,
     /* [in] */ const String& tableName)
 {
-    Init(db, tableName);
-    return NOERROR;
+    return DatabaseUtils::InsertHelper::constructor(db, tableName);
 }
-
 
 ECode CDatabaseInsertHelper::GetColumnIndex(
     /* [in] */ const String& key,

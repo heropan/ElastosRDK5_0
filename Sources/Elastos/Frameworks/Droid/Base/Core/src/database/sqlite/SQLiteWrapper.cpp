@@ -1,12 +1,12 @@
 
 #include "database/sqlite/SQLiteWrapper.h"
 #include "widget/Toast.h"
-#include "R.h"
 #include <elastos/utility/logging/Slogger.h>
+#include "R.h"
 
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Widget::IToast;
 using Elastos::Droid::Widget::Toast;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {

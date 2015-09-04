@@ -7,8 +7,8 @@
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/Object.h>
 
-using Elastos::Utility::Etl::List;
 using Elastos::Droid::Utility::IPrinter;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {

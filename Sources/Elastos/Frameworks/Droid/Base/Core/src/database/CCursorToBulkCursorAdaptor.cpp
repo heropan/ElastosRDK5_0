@@ -2,13 +2,13 @@
 #include "database/CCursorToBulkCursorAdaptor.h"
 #include "database/CCrossProcessCursorWrapper.h"
 #include "database/CCursorWindow.h"
-#include <elastos/utility/logging/Slogger.h>
-#include <elastos/core/AutoLock.h>
 #include "os/Process.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::Process;
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Database::Sqlite::ISQLiteClosable;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {

@@ -7,19 +7,19 @@
 #include "os/Process.h"
 #include "os/Binder.h"
 #include "R.h"
-#include <elastos/core/StringBuilder.h>
-#include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/Character.h>
 #include <elastos/core/AutoLock.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::StringBuilder;
-using Elastos::Core::Character;
-using Elastos::Utility::Logging::Slogger;
+using Elastos::Droid::R;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::Binder;
 //using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::R;
+using Elastos::Core::Character;
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {

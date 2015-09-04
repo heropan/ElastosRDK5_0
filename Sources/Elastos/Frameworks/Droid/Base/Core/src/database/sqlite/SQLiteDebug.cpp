@@ -3,16 +3,16 @@
 #include "database/sqlite/SQLiteDatabase.h"
 #include "os/Build.h"
 #include "os/SystemProperties.h"
-#include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 #include <sqlite3.h>
 
-using Elastos::Utility::Logging::Logger;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::StringUtils;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::SystemProperties;
+using Elastos::Core::StringUtils;
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
