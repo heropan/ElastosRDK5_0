@@ -78,48 +78,6 @@ module
 
     }}} // Elastos.Droid.Media
 
-    namespace Org {
-    namespace Apache {
-    namespace Http {
-
-        interface IHttpHost {}
-
-        interface IHttpRequest {}
-
-        interface IHttpEntity {}
-
-        interface IHttpEntityEnclosingRequest {}
-
-        interface IStatusLine {}
-
-        namespace Conn {
-            namespace Routing {
-                interface IHttpRoutePlanner {}
-            }
-        }
-
-        namespace Params {
-            interface IHttpParams {}
-        }
-
-        namespace Utility {
-            interface ICharArrayBuffer {}
-        }
-
-    } // namespace Http
-    } // namespace Apache
-    } // namespace Org
-
-    namespace Org {
-    namespace Apache {
-    namespace Http {
-    namespace Conn {
-    namespace Ssl {
-
-        interface ISSLSocketFactory {}
-
-    }}}}} // Org.Apache.Http.Conn.Ssl.ISSLSocketFactory
-
     namespace Elastos {
     namespace Droid {
     namespace Text {
@@ -135,18 +93,6 @@ module
     }
     }
     }
-
-    namespace Org {
-    namespace Apache {
-    namespace Http {
-    namespace Entity {
-
-        interface IAbstractHttpEntity {}
-
-    } // namespace Entity
-    } // namespace Http
-    } // namespace Apache
-    } // namespace Org
 
 
     namespace Elastos {

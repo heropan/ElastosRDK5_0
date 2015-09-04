@@ -240,7 +240,7 @@ module
         GetHttpSocketFactory(
             [in] Int32 handshakeTimeoutMillis,
             [in] ISSLSessionCache* cache,
-            [out] Org.Apache.Http.Conn.Ssl.ISSLSocketFactory** result);
+            [out] Org.Apache.Http.Conn.SSL.ISSLSocketFactory** result);
 
         /**
          * Verify the hostname of the certificate used by the other end of a
