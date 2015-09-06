@@ -1,9 +1,8 @@
 
 #include "CByteArrayBuffer.h"
-#include <elastos/Logger.h>
-#include <elastos/core/Math.h>
+#include "Logger.h"
+#include "Math.h"
 
-using Elastos::Core::Math;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
@@ -22,8 +21,10 @@ CAR_INTERFACE_IMPL(CByteArrayBuffer, Object, IByteArrayBuffer)
 void CByteArrayBuffer::Expand(
     /* [in] */ Int32 newlen)
 {
-    ArrayOf<Char32> newbuffer = ArrayOf<Char32>::Alloc(Math::Max(mBuffer->GetLength() << 1, newlen));
-    newbuffer->Copy(0, mBuffer, 0, mlen);
+    using Elastos::Core::Math;
+
+    AutoPtr< ArrayOf<Byte> > newbuffer = ArrayOf<Byte>::Alloc(Math::Max(mBuffer->GetLength() << 1, newlen));
+    newbuffer->Copy(0, mBuffer, 0, mLen);
     mBuffer = newbuffer;
 }
 
@@ -37,7 +38,7 @@ ECode CByteArrayBuffer::Append(
     }
     if ((off < 0) || (off > b->GetLength()) || (len < 0) ||
             ((off + len) < 0) || ((off + len) > b->GetLength())) {
-        return E_INDEX_OUT_OF_BOUNDS-EXCEPTION;
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     if (len == 0) {
         return NOERROR;
@@ -56,7 +57,7 @@ ECode CByteArrayBuffer::Append(
 {
     Int32 newlen = mLen + 1;
     if (newlen > mBuffer->GetLength()) {
-        expand(newlen);
+        Expand(newlen);
     }
     (*mBuffer)[mLen] = (Byte)b;
     mLen = newlen;
@@ -73,7 +74,7 @@ ECode CByteArrayBuffer::Append(
     }
     if ((off < 0) || (off > b->GetLength()) || (len < 0) ||
             ((off + len) < 0) || ((off + len) > b->GetLength())) {
-        return E_INDEX_OUT_OF_BOUNDS-EXCEPTION;
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     if (len == 0) {
         return NOERROR;
@@ -106,6 +107,7 @@ ECode CByteArrayBuffer::Append(
 ECode CByteArrayBuffer::Clear()
 {
     mLen = 0;
+    return NOERROR;
 }
 
 ECode CByteArrayBuffer::ToByteArray(
@@ -143,7 +145,7 @@ ECode CByteArrayBuffer::GetLength(
 {
     VALIDATE_NOT_NULL(length)
     *length = mLen;
-    return NOERROR
+    return NOERROR;
 }
 
 ECode CByteArrayBuffer::GetBuffer(
@@ -159,7 +161,7 @@ ECode CByteArrayBuffer::SetLength(
     /* [in] */ Int32 len)
 {
     if (len < 0 || len > mBuffer->GetLength()) {
-        return E_INDEX_OUT_OF_BOUNDS-EXCEPTION;
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     mLen = len;
     return NOERROR;

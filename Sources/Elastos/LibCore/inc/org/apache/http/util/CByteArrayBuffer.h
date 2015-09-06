@@ -30,9 +30,6 @@ public:
 
     CAR_OBJECT_DECL()
 
-    CARAPI Expand(
-        /* [in] */ Int32 newlen);
-
     CARAPI Append(
         /* [in] */ ArrayOf<Byte>* b,
         /* [in] */ Int32 off,

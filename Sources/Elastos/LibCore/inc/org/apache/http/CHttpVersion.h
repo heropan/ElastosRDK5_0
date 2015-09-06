@@ -55,6 +55,9 @@ public:
     CARAPI constructor();
 
 public:
+    /** The protocol name. */
+    static const String HTTP;
+
     /** HTTP protocol version 0.9 */
     static const AutoPtr<IHttpVersion> HTTP_0_9;
 

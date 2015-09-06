@@ -6,6 +6,7 @@
 #include "_Org_Apache_Http_CHttpHost.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Core::ICloneable;
 
 namespace Org {
 namespace Apache {

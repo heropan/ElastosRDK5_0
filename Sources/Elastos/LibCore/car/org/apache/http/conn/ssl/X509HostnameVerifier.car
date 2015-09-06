@@ -15,6 +15,7 @@ module
      * @Involve
      * interface IHostnameVerifier;
      */
+    [deprecated]
     interface IX509HostnameVerifier {
 
         Verify(
@@ -41,8 +42,8 @@ module
          */
         Verify(
             [in] String host,
-            [in] ArrayOf<String> cns,
-            [in] ArrayOf<String> subjectAlts);
+            [in] ArrayOf<String>* cns,
+            [in] ArrayOf<String>* subjectAlts);
 
     }
 

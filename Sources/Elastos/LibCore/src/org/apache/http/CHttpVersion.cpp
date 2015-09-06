@@ -5,6 +5,8 @@ namespace Org {
 namespace Apache {
 namespace Http {
 
+const String CHttpVersion::HTTP("HTTP");
+
 static AutoPtr<IHttpVersion> InitHttpVersion(
     /* [in] */ Int32 major,
     /* [in] */ Int32 minor)
@@ -37,18 +39,18 @@ ECode CHttpVersion::ForVersion(
 
     if (major == 1) {
         if (minor == 0) {
-            *ver = HTTP_1_0;
+            *ver = IProtocolVersion::Probe(HTTP_1_0);
             REFCOUNT_ADD(*ver)
             return NOERROR;
         }
         if (minor == 1) {
-            *ver = HTTP_1_1;
+            *ver = IProtocolVersion::Probe(HTTP_1_1);
             REFCOUNT_ADD(*ver)
             return NOERROR;
         }
     }
     if ((major == 0) && (minor == 9)) {
-        *ver = HTTP_0_9;
+        *ver = IProtocolVersion::Probe(HTTP_0_9);
         REFCOUNT_ADD(*ver)
         return NOERROR;
     }
@@ -64,7 +66,7 @@ ECode CHttpVersion::Clone(
 
     AutoPtr<IHttpVersion> ver;
     CHttpVersion::New((IHttpVersion**)&ver);
-    CloneImpl(ver);
+    CloneImpl(IProtocolVersion::Probe(ver));
     *obj = ver->Probe(EIID_IInterface);
     REFCOUNT_ADD(*obj)
     return NOERROR;

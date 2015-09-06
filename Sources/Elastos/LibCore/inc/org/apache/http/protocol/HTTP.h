@@ -2,7 +2,6 @@
 #ifndef __ORG_APACHE_HTTP_PROTOCOL_HTTP_H_
 #define __ORG_APACHE_HTTP_PROTOCOL_HTTP_H_
 
-#include <Org.Apache.Http_server.h>
 #include <elastos/core/Object.h>
 
 namespace Org {
@@ -19,12 +18,14 @@ namespace Protocol {
  *
  * @since 4.0
  */
-class HTTP : public IHTTP
+class HTTP
+    : public Object
+    , public IHTTP
 {
 public:
     CAR_INTERFACE_DECL()
 
-    CARAPI_(Boolean) IsWhitespace(
+    static CARAPI_(Boolean) IsWhitespace(
         /* [in] */ Char32 ch);
 
 private:

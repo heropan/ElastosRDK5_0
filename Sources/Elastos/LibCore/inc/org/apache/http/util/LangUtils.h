@@ -2,7 +2,6 @@
 #ifndef __ORG_APACHE_HTTP_UTILITY_LANGUTILS_H_
 #define __ORG_APACHE_HTTP_UTILITY_LANGUTILS_H_
 
-#include <Org.Apache.Http_server.h>
 #include <elastos/core/Object.h>
 
 using Elastos::Core::IThrowable;
