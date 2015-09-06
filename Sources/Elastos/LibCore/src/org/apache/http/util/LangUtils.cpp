@@ -6,8 +6,8 @@ namespace Apache {
 namespace Http {
 namespace Utility {
 
-const Int32 LangUtils::HASH_SEED = 17;
-const Int32 LangUtils::HASH_OFFSET = 37;
+const Int32 LangUtils::HASH_SEED;
+const Int32 LangUtils::HASH_OFFSET;
 
 Int32 LangUtils::HashCode(
     /* [in] */ Int32 seed,

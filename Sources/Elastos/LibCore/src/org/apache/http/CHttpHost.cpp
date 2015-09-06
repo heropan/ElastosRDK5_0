@@ -2,12 +2,16 @@
 #include "CHttpHost.h"
 #include "CCharArrayBuffer.h"
 #include "LangUtils.h"
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include "CString.h"
+#include "StringUtils.h"
+#include "Logger.h"
 
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::Logging::Logger;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Org::Apache::Http::Utility::ICharArrayBuffer;
 using Org::Apache::Http::Utility::CCharArrayBuffer;
 using Org::Apache::Http::Utility::LangUtils;
@@ -53,12 +57,12 @@ ECode CHttpHost::ToURI(
     CCharArrayBuffer::New(32, (ICharArrayBuffer**)&buffer);
     buffer->Append(mSchemeName);
     buffer->Append(String("://"));
-    buffer->Append(mHostname);
+    buffer->Append(mHostName);
     if (mPort != -1) {
         buffer->Append(':');
-        buffer->Append(StringUtils::Int32ToString(mPort));
+        buffer->Append(StringUtils::ToString(mPort));
     }
-    return buffer->ToString(uri);
+    return IObject::Probe(buffer)->ToString(uri);
 }
 
 ECode CHttpHost::ToHostString(
@@ -68,12 +72,12 @@ ECode CHttpHost::ToHostString(
 
     AutoPtr<ICharArrayBuffer> buffer;
     CCharArrayBuffer::New(32, (ICharArrayBuffer**)&buffer);
-    buffer->Append(mHostname);
+    buffer->Append(mHostName);
     if (mPort != -1) {
         buffer->Append(':');
-        buffer->Append(StringUtils::Int32ToString(mPort));
+        buffer->Append(StringUtils::ToString(mPort));
     }
-    return buffer->ToString(uri);
+    return IObject::Probe(buffer)->ToString(hostString);
 }
 
 ECode CHttpHost::ToString(
@@ -93,7 +97,7 @@ ECode CHttpHost::Equals(
         *equals = FALSE;
         return NOERROR;
     }
-    if (this == obj) {
+    if (this->Probe(EIID_IInterface) == obj) {
         *equals = TRUE;
         return NOERROR;
     }
@@ -105,7 +109,7 @@ ECode CHttpHost::Equals(
         that->GetPort(&thatPort);
         String thatSchemeName;
         that->GetSchemeName(&thatSchemeName);
-        *equals = mLcHostname.Equals(thatHostName.ToLowerCase())
+        *equals = mLcHostName.Equals(thatHostName.ToLowerCase())
                 && mPort == thatPort
                 && mSchemeName.Equals(thatSchemeName);
     }
@@ -122,9 +126,13 @@ ECode CHttpHost::GetHashCode(
     VALIDATE_NOT_NULL(hashCode)
 
     Int32 hash = LangUtils::HASH_SEED;
-    hash = LangUtils::HashCode(hash, mLcHostname);
+    AutoPtr<ICharSequence> cs1;
+    CString::New(mLcHostName, (ICharSequence**)&cs1);
+    hash = LangUtils::HashCode(hash, IObject::Probe(cs1));
     hash = LangUtils::HashCode(hash, mPort);
-    hash = LangUtils::HashCode(hash, mSchemeName);
+    AutoPtr<ICharSequence> cs2;
+    CString::New(mSchemeName, (ICharSequence**)&cs2);
+    hash = LangUtils::HashCode(hash, IObject::Probe(cs2));
 
     *hashCode = hash;
     return NOERROR;
@@ -135,7 +143,7 @@ ECode CHttpHost::Clone(
 {
     VALIDATE_NOT_NULL(object)
     AutoPtr<IHttpHost> host;
-    CHttpHost::New(mHostname, mPort, mSchemeName, (IHttpHost**)&host);
+    CHttpHost::New(mHostName, mPort, mSchemeName, (IHttpHost**)&host);
     *object = host->Probe(EIID_IInterface);
     REFCOUNT_ADD(*object)
     return NOERROR;
@@ -146,14 +154,14 @@ ECode CHttpHost::constructor(
     /* [in] */ Int32 port,
     /* [in] */ const String& scheme)
 {
-    if (hostname.IsNull()) {
+    if (hostName.IsNull()) {
         Logger::E("CHttpHost", "Host name may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mHostname = hostname;
-    mLcHostname = hostname.ToLowerCase(ILocale::ENGLISH);
+    mHostName = hostName;
+    mLcHostName = hostName.ToLowerCase(/*CLocale::ENGLISH*/);
     if (!scheme.IsNull()) {
-        mSchemeName = scheme.ToLowerCase(ILocale::ENGLISH);
+        mSchemeName = scheme.ToLowerCase(/*CLocale::ENGLISH*/);
     }
     else {
         mSchemeName = DEFAULT_SCHEME_NAME;

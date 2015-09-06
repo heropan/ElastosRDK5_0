@@ -19,6 +19,7 @@ module
      * @Involve
      * interface ISetCookie;
      */
+    [deprecated]
     interface ISetCookie2 {
 
         /**
@@ -33,7 +34,7 @@ module
          * may be returned in a Cookie request header.
          */
         SetPorts(
-            [in] ArrayOf<Int32> ports);
+            [in] ArrayOf<Int32>* ports);
 
         /**
          * Set the Discard attribute.

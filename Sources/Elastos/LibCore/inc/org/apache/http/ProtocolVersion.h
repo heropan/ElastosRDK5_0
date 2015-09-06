@@ -2,9 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_PROTOCOLVERSION_H__
 #define __ORG_APACHE_HTTP_PROTOCOLVERSION_H__
 
-#include <Org.Apache.Http_server.h>
 #include <elastos/core/Object.h>
 
+using Elastos::Core::ICloneable;
 
 namespace Org {
 namespace Apache {
@@ -36,7 +36,7 @@ class ProtocolVersion
 public:
     ProtocolVersion();
 
-    virtual ~ProtocolVersion() = 0;
+    virtual ~ProtocolVersion() {}
 
     CAR_INTERFACE_DECL()
 

@@ -2,8 +2,14 @@
 TARGET_NAME= auth
 TARGET_TYPE= lib
 
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/http/auth
-#INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/http/util
+C_DEFINES += -DELASTOS_CORELIBRARY
+
+include $(MAKEDIR)/../../../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += ../../../../corelibrary
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/auth
+#INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/util
 
 SOURCES = CAuthSchemeRegistry.cpp
 SOURCES += CAuthScope.cpp

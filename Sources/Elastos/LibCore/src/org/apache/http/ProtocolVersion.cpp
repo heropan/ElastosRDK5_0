@@ -1,14 +1,15 @@
 
 #include "ProtocolVersion.h"
+#include "CProtocolVersion.h"
 #include "CCharArrayBuffer.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
+#include "StringUtils.h"
+#include "Logger.h"
 
 using Elastos::Core::StringUtils;
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::Logging::Logger;
-using Org::Apache::Http::Util::ICharArrayBuffer;
-using Org::Apache::Http::Util::CCharArrayBuffer;
-
+using Org::Apache::Http::Utility::ICharArrayBuffer;
+using Org::Apache::Http::Utility::CCharArrayBuffer;
 
 namespace Org {
 namespace Apache {
@@ -61,7 +62,7 @@ ECode ProtocolVersion::ForVersion(
     }
 
     // argument checking is done in the constructor
-    return ProtocolVersion::New(mProtocol, mMajor, mMinor, protocolVersion);;
+    return CProtocolVersion::New(mProtocol, mMajor, mMinor, protocolVersion);;
 }
 
 ECode ProtocolVersion::GetHashCode(
@@ -78,7 +79,7 @@ ECode ProtocolVersion::Equals(
 {
     VALIDATE_NOT_NULL(equals)
 
-    if (this == obj) {
+    if (this->Probe(EIID_IInterface) == obj) {
         *equals = TRUE;
         return NOERROR;
     }
@@ -179,10 +180,10 @@ CARAPI ProtocolVersion::ToString(
     CCharArrayBuffer::New(16, (ICharArrayBuffer**)&buffer);
     buffer->Append(this->mProtocol);
     buffer->Append('/');
-    buffer->Append(StringUtils::Int32ToString(this->mMajor));
+    buffer->Append(StringUtils::ToString(this->mMajor));
     buffer->Append('.');
-    buffer->Append(StringUtils::Int32ToString(this->mMinor));
-    return buffer->ToString(string);
+    buffer->Append(StringUtils::ToString(this->mMinor));
+    return IObject::Probe(buffer)->ToString(string);
 }
 
 CARAPI ProtocolVersion::CloneImpl(

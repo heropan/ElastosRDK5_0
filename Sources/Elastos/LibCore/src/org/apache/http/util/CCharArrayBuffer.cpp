@@ -1,10 +1,9 @@
 
 #include "CCharArrayBuffer.h"
 #include "HTTP.h"
-#include <elastos/Logger.h>
-#include <elastos/core/Math.h>
+#include "Logger.h"
+#include "Math.h"
 
-using Elastos::Core::Math;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Protocol::HTTP;
 
@@ -24,8 +23,10 @@ CAR_INTERFACE_IMPL(CCharArrayBuffer, Object, ICharArrayBuffer)
 void CCharArrayBuffer::Expand(
     /* [in] */ Int32 newlen)
 {
-    ArrayOf<Char32> newbuffer = ArrayOf<Char32>::Alloc(Math::Max(mBuffer->GetLength() << 1, newlen));
-    newbuffer->Copy(0, mBuffer, 0, mlen);
+    using Elastos::Core::Math;
+
+    AutoPtr< ArrayOf<Char32> > newbuffer = ArrayOf<Char32>::Alloc(Math::Max(mBuffer->GetLength() << 1, newlen));
+    newbuffer->Copy(0, mBuffer, 0, mLen);
     mBuffer = newbuffer;
 }
 
@@ -39,7 +40,7 @@ ECode CCharArrayBuffer::Append(
     }
     if ((off < 0) || (off > b->GetLength()) || (len < 0) ||
             ((off + len) < 0) || ((off + len) > b->GetLength())) {
-        return E_INDEX_OUT_OF_BOUNDS-EXCEPTION;
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     if (len == 0) {
         return NOERROR;
@@ -54,8 +55,9 @@ ECode CCharArrayBuffer::Append(
 }
 
 ECode CCharArrayBuffer::Append(
-    /* [in] */ const String& str)
+    /* [in] */ const String& _str)
 {
+    String str = _str;
     if (str.IsNull()) {
         str = String("null");
     }
@@ -64,7 +66,7 @@ ECode CCharArrayBuffer::Append(
     if (newlen > mBuffer->GetLength()) {
         Expand(newlen);
     }
-    strncat(mBuffer->GetPayload(), (const char*)str, strlen);
+    strncat((char*)mBuffer->GetPayload(), (const char*)str, strlen);
     mLen = newlen;
     return NOERROR;
 }
@@ -96,7 +98,7 @@ ECode CCharArrayBuffer::Append(
 {
     Int32 newlen = mLen + 1;
     if (newlen > mBuffer->GetLength()) {
-        expand(newlen);
+        Expand(newlen);
     }
     (*mBuffer)[mLen] = ch;
     mLen = newlen;
@@ -113,7 +115,7 @@ ECode CCharArrayBuffer::Append(
     }
     if ((off < 0) || (off > b->GetLength()) || (len < 0) ||
             ((off + len) < 0) || ((off + len) > b->GetLength())) {
-        return E_INDEX_OUT_OF_BOUNDS-EXCEPTION;
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     if (len == 0) {
         return NOERROR;
@@ -159,6 +161,7 @@ ECode CCharArrayBuffer::Append(
 ECode CCharArrayBuffer::Clear()
 {
     mLen = 0;
+    return NOERROR;
 }
 
 ECode CCharArrayBuffer::ToCharArray(
@@ -205,7 +208,7 @@ ECode CCharArrayBuffer::GetLength(
 {
     VALIDATE_NOT_NULL(length)
     *length = mLen;
-    return NOERROR
+    return NOERROR;
 }
 
 ECode CCharArrayBuffer::EnsureCapacity(
@@ -222,7 +225,7 @@ ECode CCharArrayBuffer::SetLength(
     /* [in] */ Int32 len)
 {
     if (len < 0 || len > mBuffer->GetLength()) {
-        return E_INDEX_OUT_OF_BOUNDS-EXCEPTION;
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     mLen = len;
     return NOERROR;
@@ -262,7 +265,7 @@ ECode CCharArrayBuffer::IndexOf(
         return NOERROR;
     }
     for (Int32 i = beginIndex; i < endIndex; i++) {
-        if ((*mBuffer)[i] == ch) {
+        if ((Int32)(*mBuffer)[i] == ch) {
             *index = i;
             return NOERROR;
         }
@@ -286,13 +289,13 @@ ECode CCharArrayBuffer::Substring(
 {
     VALIDATE_NOT_NULL(string)
     if (beginIndex < 0) {
-        return E_INDEX_OUT_OF_BOUNDS-EXCEPTION;
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     if (endIndex > mLen) {
-        return E_INDEX_OUT_OF_BOUNDS-EXCEPTION;
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     if (beginIndex > endIndex) {
-        return E_INDEX_OUT_OF_BOUNDS-EXCEPTION;
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     *string = String(*mBuffer, beginIndex, endIndex - beginIndex);
     return NOERROR;
@@ -305,13 +308,13 @@ ECode CCharArrayBuffer::SubstringTrimmed(
 {
     VALIDATE_NOT_NULL(string)
     if (beginIndex < 0) {
-        return E_INDEX_OUT_OF_BOUNDS-EXCEPTION;
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     if (endIndex > mLen) {
-        return E_INDEX_OUT_OF_BOUNDS-EXCEPTION;
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     if (beginIndex > endIndex) {
-        return E_INDEX_OUT_OF_BOUNDS-EXCEPTION;
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     while (beginIndex < endIndex && HTTP::IsWhitespace((*mBuffer)[beginIndex])) {
         beginIndex++;
@@ -327,7 +330,7 @@ ECode CCharArrayBuffer::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
-    *str = String(mBuffer, 0, mLen);
+    *str = String(*mBuffer, 0, mLen);
     return NOERROR;
 }
 

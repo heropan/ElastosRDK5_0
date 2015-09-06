@@ -19,15 +19,16 @@ module
      *
      * @since 4.0
      */
+    [deprecated]
     interface ISessionOutputBuffer {
 
         Write(
-            [in] ArrayOf<Byte> b,
+            [in] ArrayOf<Byte>* b,
             [in] Int32 off,
             [in] Int32 len);
 
         Write(
-            [in] ArrayOf<Byte> b);
+            [in] ArrayOf<Byte>* b);
 
         Write(
             [in] Int32 b);
