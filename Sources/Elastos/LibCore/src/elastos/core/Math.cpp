@@ -180,7 +180,7 @@ Double Math::Asin(
     return asin(d);
 }
 
-Double Math:: Atan(
+Double Math::Atan(
     /* [in] */ Double d)
 {
     return atan(d);
@@ -193,13 +193,13 @@ Double Math::Atan2(
     return atan2(y, x);
 }
 
-Double Math:: Cbrt(
+Double Math::Cbrt(
     /* [in] */ Double d)
 {
     return cbrt(d);
 }
 
-Double Math:: Ceil(
+Double Math::Ceil(
     /* [in] */ Double d)
 {
     return ceil(d);
@@ -217,7 +217,7 @@ Double Math::Cosh(
     return cosh(d);
 }
 
-Double Math:: Exp(
+Double Math::Exp(
     /* [in] */ Double d)
 {
     return exp(d);
@@ -464,19 +464,19 @@ Double Math::Sin(
     return sin(d);
 }
 
-Double Math:: Sinh(
+Double Math::Sinh(
     /* [in] */ Double d)
 {
     return sinh(d);
 }
 
-Double Math:: Sqrt(
+Double Math::Sqrt(
     /* [in] */ Double d)
 {
     return sqrt(d);
 }
 
-Double Math:: Tan(
+Double Math::Tan(
     /* [in] */ Double d)
 {
     return tan(d);
