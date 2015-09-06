@@ -1192,6 +1192,8 @@ View::View()
     if (InputEventConsistencyVerifier::IsInstrumentationEnabled()) {
         mInputEventConsistencyVerifier = new InputEventConsistencyVerifier((IInterface*)this, 0);
     }
+
+    mRenderNode = RenderNode::Create(String("View"), THIS_PROBE(IView));
 }
 
 View::View(
@@ -1324,13 +1326,13 @@ View::View(
         mInputEventConsistencyVerifier = new InputEventConsistencyVerifier((IInterface*)this, 0);
     }
 
-    Init(context, attrs);
+    Init(context, attrs, 0);
 }
 
 View::View(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
     : mCachingFailed(FALSE)
     , mMeasuredWidth(0)
     , mMeasuredHeight(0)
@@ -1392,7 +1394,76 @@ View::View(
         mInputEventConsistencyVerifier = new InputEventConsistencyVerifier((IInterface*)this, 0);
     }
 
-    Init(context, attrs, defStyle);
+    Init(context, attrs, defStyleAttr, 0);
+}
+
+View::View(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+    : mCachingFailed(FALSE)
+    , mMeasuredWidth(0)
+    , mMeasuredHeight(0)
+    , mRecreateDisplayList(FALSE)
+    , mID(IView::NO_ID)
+    , mAccessibilityViewId(IView::NO_ID)
+    , mAccessibilityCursorPosition(ACCESSIBILITY_CURSOR_POSITION_UNDEFINED)
+    , mOverScrollMode(0)
+    , mParent(NULL)
+    , mPrivateFlags(0)
+    , mPrivateFlags2(0)
+    , mPrivateFlags3(0)
+    , mSystemUiVisibility(0)
+    , mTransientStateCount(0)
+    , mWindowAttachCount(0)
+    , mViewFlags(0)
+    , mLastIsOpaque(FALSE)
+    , mLeft(0)
+    , mRight(0)
+    , mTop(0)
+    , mBottom(0)
+    , mScrollX(0)
+    , mScrollY(0)
+    , mPaddingLeft(0)
+    , mPaddingRight(0)
+    , mPaddingTop(0)
+    , mPaddingBottom(0)
+    , mUserPaddingRight(0)
+    , mUserPaddingBottom(0)
+    , mUserPaddingLeft(0)
+    , mUserPaddingStart(0)
+    , mUserPaddingEnd(0)
+    , mUserPaddingLeftInitial(0)
+    , mUserPaddingRightInitial(0)
+    , mOldWidthMeasureSpec(Elastos::Core::Math::INT32_MIN_VALUE)
+    , mOldHeightMeasureSpec(Elastos::Core::Math::INT32_MIN_VALUE)
+    , mLabelForId(IView::NO_ID)
+    , mBackgroundResource(0)
+    , mBackgroundSizeChanged(FALSE)
+    , mNextFocusLeftId(IView::NO_ID)
+    , mNextFocusRightId(IView::NO_ID)
+    , mNextFocusUpId(IView::NO_ID)
+    , mNextFocusDownId(IView::NO_ID)
+    , mNextFocusForwardId(IView::NO_ID)
+    , mHasPerformedLongPress(FALSE)
+    , mMinHeight(0)
+    , mMinWidth(0)
+    , mDrawingCacheBackgroundColor(0)
+    , mTouchSlop(0)
+    , mVerticalScrollFactor(0.0f)
+    , mVerticalScrollbarPosition(0)
+    , mLayerType(IView::LAYER_TYPE_NONE)
+    , mSendingHoverAccessibilityEvents(FALSE)
+    , mLeftPaddingDefined(FALSE)
+    , mRightPaddingDefined(FALSE)
+    //, mOutlineProvider(ViewOutlineProvider::BACKGROUND)
+{
+    if (InputEventConsistencyVerifier::IsInstrumentationEnabled()) {
+        mInputEventConsistencyVerifier = new InputEventConsistencyVerifier((IInterface*)this, 0);
+    }
+
+    Init(context, attrs, defStyleAttr, defStyleRes);
 }
 
 View::~View()
@@ -1443,6 +1514,32 @@ View::~View()
  * @param a the styled attributes set to initialize the fading edges from
  */
 void View::InitializeFadingEdge(
+    /* [in] */ ITypedArray* a)
+{
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+        const_cast<Int32 *>(R::styleable::View),
+        ARRAY_SIZE(R::styleable::View));
+    AutoPtr<ITypedArray> a;
+    ASSERT_SUCCEEDED(mContext->ObtainStyledAttributes(attrIds, (ITypedArray**)&a));
+
+    InitializeFadingEdgeInternal(a);
+
+    a->Recycle();
+}
+
+/**
+ * <p>
+ * Initializes the fading edges from a given set of styled attributes. This
+ * method should be called by subclasses that need fading edges and when an
+ * instance of these subclasses is created programmatically rather than
+ * being inflated from XML. This method is automatically called when the XML
+ * is inflated.
+ * </p>
+ *
+ * @param a the styled attributes set to initialize the fading edges from
+ * @hide This is the real method; the public one is shimmed to be safe to call from apps.
+ */
+void View::InitializeFadingEdgeInternal(
     /* [in] */ ITypedArray* a)
 {
     InitScrollCache();
@@ -1570,6 +1667,36 @@ Int32 View::GetHorizontalScrollbarHeight()
   * @param a the styled attributes set to initialize the scrollbars from
   */
 void View::InitializeScrollbars(
+    /* [in] */ ITypedArray* a)
+{
+    // It's not safe to use this method from apps. The parameter 'a' must have been obtained
+    // using the View filter array which is not available to the SDK. As such, internal
+    // framework usage now uses initializeScrollbarsInternal and we grab a default
+    // TypedArray with the right filter instead here.
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+        const_cast<Int32 *>(R::styleable::View),
+        ARRAY_SIZE(R::styleable::View));
+    AutoPtr<ITypedArray> a;
+    ASSERT_SUCCEEDED(mContext->ObtainStyledAttributes(attrIds, (ITypedArray**)&a));
+
+    InitializeScrollbarsInternal(a);
+
+    a->Recycle();
+}
+
+/**
+ * <p>
+ * Initializes the scrollbars from a given set of styled attributes. This
+ * method should be called by subclasses that need scrollbars and when an
+ * instance of these subclasses is created programmatically rather than
+ * being inflated from XML. This method is automatically called when the XML
+ * is inflated.
+ * </p>
+ *
+ * @param a the styled attributes set to initialize the scrollbars from
+ * @hide
+ */
+void View::InitializeScrollbarsInternal(
     /* [in] */ ITypedArray* a)
 {
     InitScrollCache();
@@ -1891,16 +2018,20 @@ ECode View::SetOnCreateContextMenuListener(
  */
 Boolean View::PerformClick()
 {
-    SendAccessibilityEvent(IAccessibilityEvent::TYPE_VIEW_CLICKED);
+
+    Boolean result;
 
     AutoPtr<ListenerInfo> li = mListenerInfo;
     if (li != NULL && li->mOnClickListener != NULL) {
         PlaySoundEffect(SoundEffectConstants::CLICK);
         li->mOnClickListener->OnClick(IVIEW_PROBE(this));
-        return TRUE;
+        result = TRUE;
+    } else {
+        result = FALSE;
     }
 
-    return FALSE;
+    SendAccessibilityEvent(IAccessibilityEvent::TYPE_VIEW_CLICKED);
+    return result;
 }
 
 Boolean View::CallOnClick()
@@ -2070,24 +2201,45 @@ ECode View::HandleFocusGainInternal(
 
     if ((mPrivateFlags & PFLAG_FOCUSED) == 0) {
         mPrivateFlags |= PFLAG_FOCUSED;
+
+        AutoPtr<IView> oldFocus;
+        if (mAttachInfo) {
+            GetRootView()->FindFocus((IView**)&oldFocus);
+        }
+
         if (mParent != NULL) {
             mParent->RequestChildFocus(
                 IVIEW_PROBE(this),
                 IVIEW_PROBE(this));
         }
 
+        if (mAttachInfo) {
+                mAttachInfo->mTreeObserver->DispatchOnGlobalFocusChange(oldFocus, THIS_PROBE(IView));
+        }
+
         OnFocusChanged(TRUE, direction, previouslyFocusedRect);
         RefreshDrawableState();
-
-        AutoPtr<IAccessibilityManager> manger;
-        CAccessibilityManager::GetInstance(mContext, (IAccessibilityManager**)&manger);
-        Boolean bval;
-        if (manger->IsEnabled(&bval),  bval) {
-            NotifyAccessibilityStateChanged();
-        }
     }
 
     return NOERROR;
+}
+
+/**
+ * Populates <code>outRect</code> with the hotspot bounds. By default,
+ * the hotspot bounds are identical to the screen bounds.
+ *
+ * @param outRect rect to populate with hotspot bounds
+ * @hide Only for internal use by views and widgets.
+ */
+void View::GetHotspotBounds(
+    /* [in] */ IRect* outRect)
+{
+    AutoPtr<IDrawable> background = GetBackground();
+    if (background) {
+        background->GetHotspotBounds(outRect);
+    } else {
+        GetBoundsOnScreen(outRect);
+    }
 }
 
 /**
@@ -2220,25 +2372,38 @@ ECode View::ClearFocus()
 //        System.out.println(this + " clearFocus()");
 //    }
 
+    ClearFocusInternal(NULL, TRUE, TRUE);
+    return NOERROR;
+}
+
+/**
+ * Clears focus from the view, optionally propagating the change up through
+ * the parent hierarchy and requesting that the root view place new focus.
+ *
+ * @param propagate whether to propagate the change up through the parent
+ *            hierarchy
+ * @param refocus when propagate is true, specifies whether to request the
+ *            root view place new focus
+ */
+ECode View::ClearFocusInternal(
+    /* [in] */ IView* focused,
+    /* [in] */ Boolean propagate,
+    /* [in] */ Boolean refocus)
+{
     if ((mPrivateFlags & PFLAG_FOCUSED) != 0) {
         mPrivateFlags &= ~PFLAG_FOCUSED;
-        if (mParent != NULL) {
-            mParent->ClearChildFocus(IVIEW_PROBE(this));
+
+        if (propagate && mParent) {
+            mParent->ClearChildFocus(THIS_PROBE(IView));
         }
 
         OnFocusChanged(FALSE, 0, NULL);
         RefreshDrawableState();
 
-        EnsureInputFocusOnFirstFocusable();
-
-        AutoPtr<IAccessibilityManager> manger;
-        CAccessibilityManager::GetInstance(mContext, (IAccessibilityManager**)&manger);
-        Boolean bval;
-        if (manger->IsEnabled(&bval),  bval) {
-            NotifyAccessibilityStateChanged();
+        if (propagate && (!refocus || !RootViewRequestFocus())) {
+            NotifyGlobalFocusCleared(THIS_PROBE(IView));
         }
     }
-    return NOERROR;
 }
 
 /**
@@ -2246,49 +2411,36 @@ ECode View::ClearFocus()
  * Doesn't call clearChildFocus, which prevents this view from taking
  * focus again before it has been removed from the parent
  */
-ECode View::ClearFocusForRemoval()
+ECode View::NotifyGlobalFocusCleared(
+    /* [in] */ IView* oldFocus)
 {
-    if ((mPrivateFlags & PFLAG_FOCUSED) != 0) {
-        mPrivateFlags &= ~PFLAG_FOCUSED;
-        OnFocusChanged(FALSE, 0, NULL);
-        RefreshDrawableState();
-    }
+    if (oldFocus && mAttachInfo) {
+            mAttachInfo->mTreeObserver->DispatchOnGlobalFocusChange(oldFocus, NULL);
+        }
 
     return NOERROR;
 }
 
-void View::EnsureInputFocusOnFirstFocusable()
+Boolean View::RootViewRequestFocus()
 {
     AutoPtr<IView> root = GetRootView();
-    if (root != NULL) {
-        Boolean res;
-        root->RequestFocus(&res);
-    }
+    Boolean res;
+    root->RequestFocus(&res);
+    return root != NULL && res;
 }
 
 /**
  * Called internally by the view system when a new view is getting focus.
  * This is what clears the old focus.
  */
-ECode View::UnFocus()
+ECode View::UnFocus(
+     /* [in] */ IView* focused)
 {
     //if (DBG) {
     //    System.out.println(this + " unFocus()");
     //}
 
-    if ((mPrivateFlags & PFLAG_FOCUSED) != 0) {
-        mPrivateFlags &= ~PFLAG_FOCUSED;
-        OnFocusChanged(FALSE, 0, NULL);
-        RefreshDrawableState();
-
-
-        AutoPtr<IAccessibilityManager> manger;
-        CAccessibilityManager::GetInstance(mContext, (IAccessibilityManager**)&manger);
-        Boolean bval;
-        if (manger->IsEnabled(&bval),  bval) {
-            NotifyAccessibilityStateChanged();
-        }
-    }
+    ClearFocusInternal(focused, FALSE, FALSE);
 
     return NOERROR;
 }
@@ -2318,6 +2470,16 @@ Boolean View::HasFocus()
  */
 Boolean View::HasFocusable()
 {
+    if (!IsFocusableInTouchMode()) {
+        while (IViewGroup::Probe(mParent)) {
+            AutoPtr<IViewGroup> g = (IViewGroup*)IViewGroup::Probe(mParent);
+            Boolean res;
+            if (g->ShouldBlockFocusForTouchscreen(&res), res) {
+                return FALSE;
+            }
+            mParent->GetParent((IViewParent**)&mParent);
+        }
+    }
     return (mViewFlags & VISIBILITY_MASK) == IView::VISIBLE && IsFocusable();
 }
 
@@ -14318,7 +14480,17 @@ ECode View::Init(
 ECode View::Init(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
+{
+    return Init(context, attrs, defStyleAttr);
+}
+
+
+ECode View::Init(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
     Init(context);
 
@@ -14328,7 +14500,11 @@ ECode View::Init(
         ARRAY_SIZE(R::styleable::View));
     AutoPtr<ITypedArray> a;
     ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
-            attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+            attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
+    if (mDebugViewAttributes) {
+            SaveAttributeData(attrs, a);
+        }
+
     AutoPtr<IDrawable> background;
 
     Int32 leftPadding = -1;
@@ -14349,6 +14525,8 @@ ECode View::Init(
     Int32 y = 0;
     Float tx = 0;
     Float ty = 0;
+    Float tz = 0;
+    Float elevation = 0;
     Float rotation = 0;
     Float rotationX = 0;
     Float rotationY = 0;
@@ -14411,11 +14589,11 @@ ECode View::Init(
                 break;
             case R::styleable::View_paddingStart:
                 a->GetDimensionPixelSize(attr, UNDEFINED_PADDING, &startPadding);
-                startPaddingDefined = TRUE;
+                startPaddingDefined = (startPadding != UNDEFINED_PADDING);;
                 break;
             case R::styleable::View_paddingEnd:
                 a->GetDimensionPixelSize(attr, UNDEFINED_PADDING, &endPadding);
-                endPaddingDefined = TRUE;
+                endPaddingDefined = (endPadding != UNDEFINED_PADDING);
                 break;
             case R::styleable::View_scrollX:
                 a->GetDimensionPixelOffset(attr, 0, &x);
@@ -14443,6 +14621,16 @@ ECode View::Init(
             case R::styleable::View_translationY:
                 a->GetDimensionPixelOffset(attr, 0, &nTemp);
                 ty = nTemp;
+                transformSet = TRUE;
+                break;
+            case R::styleable::View_translationZ:
+                a->GetDimensionPixelOffset(attr, 0, &nTemp);
+                tz = nTemp;
+                transformSet = TRUE;
+                break;
+            case R::styleable::View_elevation:
+                a->GetDimensionPixelOffset(attr, 0, &nTemp);
+                elevation = nTemp;
                 transformSet = TRUE;
                 break;
             case R::styleable::View_rotation:
@@ -14608,7 +14796,7 @@ ECode View::Init(
                 if (fadingEdge != FADING_EDGE_NONE) {
                     viewFlagValues |= fadingEdge;
                     viewFlagMasks |= FADING_EDGE_MASK;
-                    InitializeFadingEdge(a);
+                    InitializeFadingEdgeInternal(a);
                 }
                 break;
             }
@@ -14738,6 +14926,59 @@ ECode View::Init(
                 a->GetInt32(attr, IMPORTANT_FOR_ACCESSIBILITY_DEFAULT, &nTemp);
                 SetImportantForAccessibility(nTemp);
                 break;
+            case R::styleable::View_accessibilityLiveRegion:
+                a->GetInt32(attr, ACCESSIBILITY_LIVE_REGION_DEFAULT, &nTemp);
+                SetAccessibilityLiveRegion(nTemp);
+                break;
+            case R::styleable::View_transitionName:
+            {
+                String str;
+                a->GetString(attr, &str);
+                SetTransitionName(str);
+                break;
+            }
+            case R::styleable::View_nestedScrollingEnabled:
+            {
+                Boolean temp;
+                a->GetBoolean(attr, FALSE, &temp);
+                SetNestedScrollingEnabled(temp);
+                break;
+            }
+            case R::styleable::View_stateListAnimator:
+            {
+                Int32 temp;
+                a->GetResourceId(attr, 0, &temp);
+                AutoPtr<IStateListAnimator> animator;
+                AnimatorInflater::LoadStateListAnimator(context, temp, (IStateListAnimator**)&animator);
+                SetStateListAnimator(animator);
+                break;
+            }
+            case R::styleable::View_backgroundTint:
+            {
+                // This will get applied later during setBackground().
+                if (!mBackgroundTint) {
+                    mBackgroundTint = new TintInfo();
+                }
+                a->GetColorStateList(R::styleable::View_backgroundTint, (IColorStateList**)&(mBackgroundTint->mTintList));
+                mBackgroundTint->mHasTintList = TRUE;
+                break;
+            }
+            case R::styleable::View_backgroundTintMode:
+            {
+                // This will get applied later during setBackground().
+                if (!mBackgroundTint) {
+                    mBackgroundTint = new TintInfo();
+                }
+                Int32 temp;
+                a->GetInt32(R::styleable::View_backgroundTintMode, -1, &temp);
+                mBackgroundTint->mTintMode = Drawable::RarseTintMode(temp, NULL);
+                mBackgroundTint->mHasTintMode = TRUE;
+                break;
+            }
+            case R::styleable::View_outlineProvider:
+                a->GetInt32(R::styleable::View_outlineProvider, PROVIDER_BACKGROUND, &nTemp);
+                SetOutlineProviderFromAttribute(nTemp);
+                break;
             default:
                 break;
         }
@@ -14753,6 +14994,11 @@ ECode View::Init(
     if (background != NULL) {
         SetBackground(background);
     }
+
+    // setBackground above will record that padding is currently provided by the background.
+    // If we have padding specified via xml, record that here instead and use it.
+    mLeftPaddingDefined = leftPaddingDefined;
+    mRightPaddingDefined = rightPaddingDefined;
 
     if (padding >= 0) {
         leftPadding = padding;
@@ -14771,12 +15017,12 @@ ECode View::Init(
         // Padding from the background drawable is stored at this point in mUserPaddingLeftInitial
         // and mUserPaddingRightInitial) so drawable padding will be used as ultimate default if
         // defined.
-        if (!leftPaddingDefined && startPaddingDefined) {
+        if (!mLeftPaddingDefined && startPaddingDefined) {
             leftPadding = startPadding;
         }
 
         mUserPaddingLeftInitial = (leftPadding >= 0) ? leftPadding : mUserPaddingLeftInitial;
-        if (!rightPaddingDefined && endPaddingDefined) {
+        if (!mRightPaddingDefined && endPaddingDefined) {
             rightPadding = endPadding;
         }
         mUserPaddingRightInitial = (rightPadding >= 0) ? rightPadding : mUserPaddingRightInitial;
@@ -14787,10 +15033,12 @@ ECode View::Init(
         // Padding from the background drawable is stored at this point in mUserPaddingLeftInitial
         // and mUserPaddingRightInitial) so drawable padding will be used as ultimate default if
         // defined.
-        if (leftPaddingDefined) {
+
+        Boolean hasRelativePadding = startPaddingDefined || endPaddingDefined;
+        if (mLeftPaddingDefined && !hasRelativePadding) {
             mUserPaddingLeftInitial = leftPadding;
         }
-        if (rightPaddingDefined) {
+        if (mRightPaddingDefined && !hasRelativePadding) {
             mUserPaddingRightInitial = rightPadding;
         }
     }
@@ -14806,7 +15054,7 @@ ECode View::Init(
     }
 
     if (initializeScrollbars) {
-        InitializeScrollbars(a);
+        InitializeScrollbarsInternal(a);
     }
 
     a->Recycle();
@@ -14823,6 +15071,8 @@ ECode View::Init(
     if (transformSet) {
         SetTranslationX(tx);
         SetTranslationY(ty);
+        SetTranslationZ(tz);
+        SetElevation(elevation);
         SetRotation(rotation);
         SetRotationX(rotationX);
         SetRotationY(rotationY);
@@ -14838,6 +15088,72 @@ ECode View::Init(
 
     //printf("View::Init----END 0x%08x, ID = 0x%08x\n", (Int32)this->Probe(EIID_IView), mID);
     return NOERROR;
+}
+
+HashMap<Int32, String > View::GetAttributeMap()
+{
+    return mAttributeMap;
+}
+
+void View::SaveAttributeData(
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ ITypedArray* a)
+{
+    Int32 length = 0;
+    if (attrs) {
+        attrs->GetAttributeCount(&length);
+        Int32 temp;
+        a->GetIndexCount(&temp);
+        length += temp * 2;
+    }
+    mAttributes = ArrayOf<String>::Alloc(length);
+
+    Int32 i = 0;
+    if (attrs) {
+        Int32 count = 0;
+        attrs->GetAttributeCount(&count);
+        for (i = 0; i < count; i += 2) {
+            String str;
+            attrs->GetAttributeName(i, &str);
+            mAttributes[i] = str;
+            attrs->GetAttributeValue(i, &str);
+            mAttributes[i + 1] = str;
+        }
+
+    }
+    Int32 ITypeLen;
+    a->GetLength(&ITypeLen);
+    for (Int32 j = 0; j < ITypeLen; ++j) {
+        Boolean value;
+        if (a->HasValue(j, &value), value) {
+            //try {
+            Int32 resourceId;
+            a->GetResourceId(j, 0, &resourceId);
+            if (resourceId == 0) {
+                continue;
+            }
+
+            HashMap<Int32, String>::Iterator it = mAttributeMap.Find(resourceId);
+            if (it != mAttributeMap.End() & it->mSecond != NULL) {
+                String resourceName = it->mSecond;
+            }
+            if (resourceName.IsNullOrEmpty()) {
+                AutoPtr<IResources> res;
+                a->GetResources((IResources**)&res);
+                res->GetResourceName(resourceId, &resourceName);
+                mAttributeMap.Insert(HashMap<Int32, String>::ValueType(resourceId, resourceName));
+            }
+
+            mAttributes[i] = resourceName;
+            AutoPtr<ICharSequence> text;
+            a->GetText((ICharSequence**)&text);
+            text->ToString((*mAttributes)[i+1]);
+            i += 2;
+            //} catch (Resources.NotFoundException e) {
+                // if we can't get the resource name, we just ignore it
+            //}
+        }
+    }
 }
 
 ECode View::HandleInvalidate()

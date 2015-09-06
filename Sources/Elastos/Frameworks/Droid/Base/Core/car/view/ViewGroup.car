@@ -465,6 +465,9 @@ module
             GetTouchscreenBlocksFocus(
                 [out] Boolean* result);
 
+            ShouldBlockFocusForTouchscreen(
+                [out] Boolean* result)
+
             /**
              * Returns the focused child of this view, if any. The child may have focus
              * or contain focus.

@@ -2255,7 +2255,13 @@ public:
     View(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ Int32 defStyleAttr);
+
+    View(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     virtual ~View();
 
@@ -2374,20 +2380,27 @@ public:
 
     virtual CARAPI ClearFocus();
 
+    virtual CARAPI ClearFocusInternal(
+    /* [in] */ IView* focused,
+    /* [in] */ Boolean propagate,
+    /* [in] */ Boolean refocus);
+
     /**
      * Called to clear the focus of a view that is about to be removed.
      * Doesn't call clearChildFocus, which prevents this view from taking
      * focus again before it has been removed from the parent
      */
-    virtual CARAPI ClearFocusForRemoval();
+    virtual CARAPI NotifyGlobalFocusCleared(
+        /* [in] */ IView* oldFocus);
 
-    virtual CARAPI_(void) EnsureInputFocusOnFirstFocusable();
+    virtual CARAPI_(Boolean) RootViewRequestFocus();
 
     /**
      * Called internally by the view system when a new view is getting focus.
      * This is what clears the old focus.
      */
-    virtual CARAPI UnFocus();
+    virtual CARAPI UnFocus(
+        /* [in] */ IView* focused);
 
     virtual CARAPI_(Boolean) HasFocus();
 
@@ -3988,8 +4001,14 @@ public:
     CARAPI SetXmlPath(
         /* [in] */ const String& path);
 
+    CARAPI_(void) GetHotspotBounds(
+        /* [in] */ IRect* outRect);
+
 protected:
     virtual CARAPI_(void) InitializeFadingEdge(
+        /* [in] */ ITypedArray* a);
+
+    virtual CARAPI_(void) InitializeFadingEdgeInternal(
         /* [in] */ ITypedArray* a);
 
     virtual CARAPI_(Int32) GetHorizontalScrollbarHeight();
@@ -4280,7 +4299,13 @@ protected:
     CARAPI Init(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI Init(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     CARAPI_(AutoPtr<ListenerInfo>) GetListenerInfo();
 
@@ -4965,6 +4990,12 @@ private:
      */
     CARAPI_(Boolean) IsTextAlignmentResolved();
 
+    CARAPI_(HashMap<String, AutoPtr<IInterface> >) GetAttributeMap();
+
+    CARAPI_(void) SaveAttributeData(
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ ITypedArray* a);
+
 public:
     /**
      * Set to true when drawing cache is enabled and cannot be created.
@@ -5455,7 +5486,7 @@ private:
 
     AutoPtr< ArrayOf<Int32> > mTempNestedScrollConsumed;
 
-    HashMap<String, AutoPtr<IInterface> > mAttributeMap;
+    HashMap<Int32, String> mAttributeMap;
 };
 
 } // namespace View
