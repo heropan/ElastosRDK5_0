@@ -3,14 +3,13 @@
 #define __ELASTOS_DROID_CONTENT_CCLIPBOARDMANAGER_H__
 
 #include "_Elastos_Droid_Content_CClipboardManager.h"
-#include <ext/frameworkext.h>
+#include "ext/frameworkext.h"
 #include "os/Handler.h"
 #include <elastos/utility/etl/List.h>
 
-using namespace Elastos;
-using namespace Elastos::Core;
-using namespace Elastos::Utility;
-using namespace Elastos::Droid::Os;
+using Elastos::Droid::Os::Handler;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {

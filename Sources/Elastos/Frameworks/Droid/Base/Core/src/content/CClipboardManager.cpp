@@ -2,6 +2,7 @@
 #include "content/CClipboardManager.h"
 #include "content/CClipDataHelper.h"
 #include "os/ServiceManager.h"
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Os::ServiceManager;
 
@@ -10,7 +11,7 @@ namespace Droid {
 namespace Content {
 
 AutoPtr<IClipboard> CClipboardManager::sService;
-Mutex CClipboardManager::sStaticLock;
+Object CClipboardManager::sStaticLock;
 const Int32 CClipboardManager::MSG_REPORT_PRIMARY_CLIP_CHANGED = 1;
 
 ECode CClipboardManager::MyHandler::HandleMessage(

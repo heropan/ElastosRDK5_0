@@ -340,7 +340,7 @@ module
          * @return Return the canonical representation of <var>url</var>, or null if
          * canonicalization of that Uri is not supported.
          */
-        Ganonicalize(
+        Canonicalize(
             [in] IUri* uri,
             [out] IUri** result);
 
@@ -358,7 +358,7 @@ module
          * the data identified by the canonical representation can not be found in
          * the current environment.
          */
-        Unanonicalize(
+        Uncanonicalize(
             [in] IUri* uri,
             [out] IUri** result);
 

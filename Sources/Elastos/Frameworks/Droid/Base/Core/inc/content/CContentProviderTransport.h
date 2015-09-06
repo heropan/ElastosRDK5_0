@@ -105,6 +105,11 @@ private:
 
 private:
     ContentProvider* mContentProvider;
+
+    // AppOpsManager mAppOpsManager = null;
+    // int mReadOp = AppOpsManager.OP_NONE;
+    // int mWriteOp = AppOpsManager.OP_NONE;
+
 };
 
 } // namespace Content
