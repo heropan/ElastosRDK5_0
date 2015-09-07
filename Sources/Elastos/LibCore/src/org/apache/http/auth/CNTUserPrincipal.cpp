@@ -1,10 +1,14 @@
-1
-#include "CCNTUserPrincipal.h"
-#include "LangUtils.h"
-#include <StringBuilder.h>
-#include <elastos/Logger.h>
 
+#include "CNTUserPrincipal.h"
+#include "LangUtils.h"
+#include "CString.h"
+#include "StringBuilder.h"
+#include "Logger.h"
+
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
+using Elastos::Security::EIID_IPrincipal;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Utility::LangUtils;
 
@@ -13,9 +17,9 @@ namespace Apache {
 namespace Http {
 namespace Auth {
 
-CAR_INTERFACE_IMPL_2(CCNTUserPrincipal, Object, ICNTUserPrincipal, IPrincipal)
+CAR_INTERFACE_IMPL_2(CNTUserPrincipal, Object, INTUserPrincipal, IPrincipal)
 
-CAR_OBJECT_IMPL(CCNTUserPrincipal)
+CAR_OBJECT_IMPL(CNTUserPrincipal)
 
 ECode CNTUserPrincipal::GetName(
     /* [out] */ String* name)
@@ -37,7 +41,7 @@ ECode CNTUserPrincipal::GetUserName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name)
-    *name = mUsername;
+    *name = mUserName;
     return NOERROR;
 }
 
@@ -46,8 +50,11 @@ ECode CNTUserPrincipal::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode)
     Int32 hash = LangUtils::HASH_SEED;
-    hash = LangUtils::HashCode(hash, mUsername);
-    hash = LangUtils::HashCode(hash, mDomain);
+    AutoPtr<ICharSequence> namecs, domaincs;
+    CString::New(mUserName, (ICharSequence**)&namecs);
+    CString::New(mDomain, (ICharSequence**)&domaincs);
+    hash = LangUtils::HashCode(hash, IObject::Probe(namecs));
+    hash = LangUtils::HashCode(hash, IObject::Probe(domaincs));
     *hashCode = hash;
     return NOERROR;
 }
@@ -57,22 +64,28 @@ ECode CNTUserPrincipal::Equals(
     /* [out] */ Boolean* equals)
 {
     VALIDATE_NOT_NULL(*equals)
-    if (o == NULL) {
+    if (obj == NULL) {
         *equals = FALSE;
         return NOERROR;
     }
-    if (this == o) {
+    if (this->Probe(EIID_IInterface) == obj) {
         *equals = TRUE;
         return NOERROR;
     }
-    if (INTUserPrincipal::Probe(o) != NULL) {
-        AutoPtr<INTUserPrincipal> that = INTUserPrincipal::Probe(o);
+    if (INTUserPrincipal::Probe(obj) != NULL) {
+        AutoPtr<INTUserPrincipal> that = INTUserPrincipal::Probe(obj);
         String thatUsername;
         that->GetUserName(&thatUsername);
-        if (LangUtils::Equals(mUsername, that.username)) {
+        AutoPtr<ICharSequence> namecs, thatNamecs;
+        CString::New(mUserName, (ICharSequence**)&namecs);
+        CString::New(thatUsername, (ICharSequence**)&thatNamecs);
+        if (LangUtils::Equals(IObject::Probe(namecs), IObject::Probe(thatNamecs))) {
             String thatDomain;
             that->GetDomain(&thatDomain);
-            if (LangUtils::Equals(mDomain, thatDomain)) {
+            AutoPtr<ICharSequence> domaincs, thatDomaincs;
+            CString::New(mDomain, (ICharSequence**)&domaincs);
+            CString::New(thatDomain, (ICharSequence**)&thatDomaincs);
+            if (LangUtils::Equals(IObject::Probe(domaincs), IObject::Probe(thatDomaincs))) {
                 *equals = TRUE;
                 return NOERROR;
             }
@@ -94,13 +107,13 @@ ECode CNTUserPrincipal::constructor(
     /* [in] */ const String& domain,
     /* [in] */ const String& userName)
 {
-    if (username.IsNull()) {
+    if (userName.IsNull()) {
         Logger::E("CNTUserPrincipal", "User name may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mUsername = username;
+    mUserName = userName;
     if (!domain.IsNull()) {
-        mDomain = domain.ToUpperCase(ILocale::ENGLISH);
+        mDomain = domain.ToUpperCase(/*ILocale::ENGLISH*/);
     }
     else {
         mDomain = String(NULL);
@@ -109,11 +122,11 @@ ECode CNTUserPrincipal::constructor(
         StringBuilder buffer;
         buffer.Append(mDomain);
         buffer.AppendChar('/');
-        buffer.Append(mUsername);
+        buffer.Append(mUserName);
         mNtname = buffer.ToString();
     }
     else {
-        mNtname = mUsername;
+        mNtname = mUserName;
     }
     return NOERROR;
 }

@@ -1,10 +1,13 @@
-1
+
 #include "CNTCredentials.h"
 #include "CNTUserPrincipal.h"
 #include "LangUtils.h"
-#include <StringBuilder.h>
-#include <elastos/Logger.h>
+#include "CString.h"
+#include "StringBuilder.h"
+#include "Logger.h"
 
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Utility::LangUtils;
@@ -62,8 +65,10 @@ ECode CNTCredentials::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode)
     Int32 hash = LangUtils::HASH_SEED;
-    hash = LangUtils::HashCode(hash, mPrincipal);
-    hash = LangUtils::HashCode(hash, mWorkstation);
+    hash = LangUtils::HashCode(hash, IObject::Probe(mPrincipal));
+    AutoPtr<ICharSequence> cs;
+    CString::New(mWorkstation, (ICharSequence**)&cs);
+    hash = LangUtils::HashCode(hash, IObject::Probe(cs));
     *hashCode = hash;
     return NOERROR;
 }
@@ -73,22 +78,25 @@ ECode CNTCredentials::Equals(
     /* [out] */ Boolean* equals)
 {
     VALIDATE_NOT_NULL(equals)
-    if (o == NULL) {
-        *equals = FALSE
+    if (obj == NULL) {
+        *equals = FALSE;
         return NOERROR;
     }
-    if (o == this) {
+    if (obj == this->Probe(EIID_IInterface)) {
         *equals = TRUE;
         return NOERROR;
     }
-    if (INTCredentials::Probe(o) != NULL) {
-        AutoPtr<INTCredentials> that = INTCredentials::Probe(o);
+    if (INTCredentials::Probe(obj) != NULL) {
+        AutoPtr<INTCredentials> that = INTCredentials::Probe(obj);
         AutoPtr<IPrincipal> thatPrincipal;
-        that->GetUserPrincipal((IPrincipal**)&thatPrincipal);
-        if (LangUtils::Equals(mPrincipal, thatPrincipal)) {
+        ICredentials::Probe(that)->GetUserPrincipal((IPrincipal**)&thatPrincipal);
+        if (LangUtils::Equals(IObject::Probe(mPrincipal), IObject::Probe(thatPrincipal))) {
             String thatWorkstation;
             that->GetWorkstation(&thatWorkstation);
-            if (LangUtils::Equals(mWorkstation, thatWorkstation)) {
+            AutoPtr<ICharSequence> cs, thatCS;
+            CString::New(mWorkstation, (ICharSequence**)&cs);
+            CString::New(thatWorkstation, (ICharSequence**)&thatCS);
+            if (LangUtils::Equals(IObject::Probe(cs), IObject::Probe(thatCS))) {
                 *equals = TRUE;
                 return NOERROR;
             }
@@ -127,16 +135,16 @@ ECode CNTCredentials::constructor(
     }
     else {
         username = usernamePassword;
-        mPassword = STring(NULL);
+        mPassword = String(NULL);
     }
     Int32 atSlash = username.IndexOf('/');
     mPrincipal = NULL;
     if (atSlash >= 0) {
-        CNTUserPrincipal::New(username.Substring(0, atSlash).ToUpperCase(ILocale::ENGLISH),
+        CNTUserPrincipal::New(username.Substring(0, atSlash).ToUpperCase(/*ILocale::ENGLISH*/),
                 username.Substring(atSlash + 1), (INTUserPrincipal**)&mPrincipal);
     }
     else {
-        CNTUserPrincipal::New(String()NULL, username.Substring(atSlash + 1), (INTUserPrincipal**)&mPrincipal);
+        CNTUserPrincipal::New(String(NULL), username.Substring(atSlash + 1), (INTUserPrincipal**)&mPrincipal);
     }
     mWorkstation = String(NULL);
     return NOERROR;
@@ -156,7 +164,7 @@ ECode CNTCredentials::constructor(
     CNTUserPrincipal::New(domain, userName, (INTUserPrincipal**)&mPrincipal);
     mPassword = password;
     if (!workstation.IsNull()) {
-        mWorkstation = workstation.ToUpperCase(ILocale::ENGLISH);
+        mWorkstation = workstation.ToUpperCase(/*ILocale::ENGLISH*/);
     }
     else {
         mWorkstation = String(NULL);

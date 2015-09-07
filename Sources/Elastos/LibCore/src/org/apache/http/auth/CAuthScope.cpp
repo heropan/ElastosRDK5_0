@@ -1,12 +1,15 @@
 
 #include "CAuthScope.h"
 #include "LangUtils.h"
-#include <StringBuilder.h>
-#include <elastos/Logger.h>
+#include "StringBuilder.h"
+#include "CString.h"
+#include "Logger.h"
 
-using Elastos::Droid::StringBuilder;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CString;
+using Elastos::Utility::ILocale;
 using Elastos::Utility::Logging::Logger;
-using Libcore::ICU::ILocale;
 using Org::Apache::Http::Utility::LangUtils;
 
 namespace Org {
@@ -17,8 +20,8 @@ namespace Auth {
 static AutoPtr<IAuthScope> InitANY()
 {
     AutoPtr<CAuthScope> scope;
-    CAuthScope::NewByFriend(IAuthScope::ANY_HOST, IAuthScope::ANY_PORT,
-            IAuthScope::ANY_REALM, IAuthScope::ANY_SCHEME, (CAuthScope**)&scope);
+    CAuthScope::NewByFriend(String(NULL)/*IAuthScope::ANY_HOST*/, IAuthScope::ANY_PORT,
+            String(NULL)/*IAuthScope::ANY_REALM*/, String(NULL)/*IAuthScope::*/, (CAuthScope**)&scope);
     return (IAuthScope*)scope.Get();
 }
 const AutoPtr<IAuthScope> CAuthScope::ANY = InitANY();
@@ -69,11 +72,14 @@ ECode CAuthScope::Match(
 
     String thatScheme;
     that->GetScheme(&thatScheme);
-    if (LangUtils::Equals(mScheme, thatScheme)) {
+    AutoPtr<ICharSequence> schemeCS, thatSchemeCS;
+    CString::New(mScheme, (ICharSequence**)&schemeCS);
+    CString::New(thatScheme, (ICharSequence**)&thatSchemeCS);
+    if (LangUtils::Equals(IObject::Probe(schemeCS), IObject::Probe(thatSchemeCS))) {
         factor += 1;
     }
     else {
-        if (mScheme != ANY_SCHEME && thatScheme != ANY_SCHEME) {
+        if (mScheme != String(NULL)/*ANY_SCHEME*/ && thatScheme != String(NULL)/*ANY_SCHEME*/) {
             *value = -1;
             return NOERROR;
         }
@@ -81,11 +87,14 @@ ECode CAuthScope::Match(
 
     String thatRealm;
     that->GetRealm(&thatRealm);
-    if (LangUtils::Equals(mRealm, thatRealm)) {
+    AutoPtr<ICharSequence> realmCS, thatRealmCS;
+    CString::New(mRealm, (ICharSequence**)&realmCS);
+    CString::New(thatRealm, (ICharSequence**)&thatRealmCS);
+    if (LangUtils::Equals(IObject::Probe(realmCS), IObject::Probe(thatRealmCS))) {
         factor += 2;
     }
     else {
-        if (mRealm != ANY_REALM && thatRealm != ANY_REALM) {
+        if (mRealm != String(NULL)/*ANY_REALM*/ && thatRealm != String(NULL)/*ANY_REALM*/) {
             *value = -1;
             return NOERROR;
         }
@@ -105,11 +114,14 @@ ECode CAuthScope::Match(
 
     String thatHost;
     that->GetHost(&thatHost);
-    if (LangUtils::Equals(mHost, thatHost)) {
+    AutoPtr<ICharSequence> hostCS, thatHostCS;
+    CString::New(mHost, (ICharSequence**)&hostCS);
+    CString::New(thatHost, (ICharSequence**)&thatHostCS);
+    if (LangUtils::Equals(IObject::Probe(hostCS), IObject::Probe(thatHostCS))) {
         factor += 8;
     }
     else {
-        if (mHost != ANY_HOST && thatHost != ANY_HOST) {
+        if (mHost != String(NULL)/*ANY_HOST*/ && thatHost != String(NULL)/*ANY_HOST*/) {
             *value = -1;
             return NOERROR;
         }
@@ -124,26 +136,44 @@ ECode CAuthScope::Equals(
     /* [out] */ Boolean* equals)
 {
     VALIDATE_NOT_NULL(equals)
-    if (o == NULL) {
-        *equals = FALSE
+    if (obj == NULL) {
+        *equals = FALSE;
         return NOERROR;
     }
-    if (o == this) {
+    if (obj == this->Probe(EIID_IInterface)) {
         *equals = TRUE;
         return NOERROR;
     }
-    if (IAuthScope::Probe(o) == NULL) {
-        return Object::Equals(o, equals);
+    if (IAuthScope::Probe(obj) == NULL) {
+        return Object::Equals(obj, equals);
     }
-    AutoPtr<IAuthScope> that = IAuthScope::Probe(o);
+    AutoPtr<IAuthScope> that = IAuthScope::Probe(obj);
     String thatHost, thatRealm, thatScheme;
     that->GetHost(&thatHost);
     that->GetRealm(&thatRealm);
     that->GetScheme(&thatScheme);
-    Boolean result;
-    *equals = LangUtils::Equals(mHost, thatHost) &&
-            mPort == thatPort && LangUtils::Equals(mRealm, thatRealm)
-            && LangUtils::Equals(mScheme, thatScheme)
+    Int32 thatPort;
+    that->GetPort(&thatPort);
+    AutoPtr<ICharSequence> hostCS, thatHostCS;
+    CString::New(mHost, (ICharSequence**)&hostCS);
+    CString::New(thatHost, (ICharSequence**)&thatHostCS);
+    if (LangUtils::Equals(IObject::Probe(hostCS), IObject::Probe(thatHostCS)) && mPort == thatPort) {
+        AutoPtr<ICharSequence> realmCS, thatRealmCS;
+        CString::New(mRealm, (ICharSequence**)&realmCS);
+        CString::New(thatRealm, (ICharSequence**)&thatRealmCS);
+        if (LangUtils::Equals(IObject::Probe(realmCS), IObject::Probe(thatRealmCS))) {
+            AutoPtr<ICharSequence> schemeCS, thatSchemeCS;
+            CString::New(mScheme, (ICharSequence**)&schemeCS);
+            CString::New(thatScheme, (ICharSequence**)&thatSchemeCS);
+            *equals = LangUtils::Equals(IObject::Probe(schemeCS), IObject::Probe(thatSchemeCS));
+        }
+        else {
+            *equals = FALSE;
+        }
+    }
+    else {
+        *equals = FALSE;
+    }
     return NOERROR;
 }
 
@@ -153,7 +183,7 @@ ECode CAuthScope::ToString(
     VALIDATE_NOT_NULL(string)
     StringBuilder buffer;
     if (!mScheme.IsNull()) {
-        buffer.Append(mScheme.ToUpperCase(ILocale::ENGLISH));
+        buffer.Append(mScheme.ToUpperCase(/*ILocale::ENGLISH*/));
         buffer.Append(' ');
     }
     if (!mRealm.IsNull()) {
@@ -181,10 +211,14 @@ ECode CAuthScope::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode)
     Int32 hash = LangUtils::HASH_SEED;
-    hash = LangUtils::HashCode(hash, mHost);
+    AutoPtr<ICharSequence> hostCS, realmCS, schemeCS;
+    CString::New(mHost, (ICharSequence**)&hostCS);
+    CString::New(mRealm, (ICharSequence**)&realmCS);
+    CString::New(mScheme, (ICharSequence**)&schemeCS);
+    hash = LangUtils::HashCode(hash, IObject::Probe(hostCS));
     hash = LangUtils::HashCode(hash, mPort);
-    hash = LangUtils::HashCode(hash, mRealm);
-    hash = LangUtils::HashCode(hash, mScheme);
+    hash = LangUtils::HashCode(hash, IObject::Probe(realmCS));
+    hash = LangUtils::HashCode(hash, IObject::Probe(schemeCS));
     *hashCode = hash;
     return NOERROR;
 }
@@ -195,10 +229,10 @@ ECode CAuthScope::constructor(
     /* [in] */ const String& realm,
     /* [in] */ const String& scheme)
 {
-    mHost = host.IsNull() ? ANY_HOST: host.ToLowerCase(ILocale::ENGLISH);
+    mHost = host.IsNull() ? String(NULL)/*ANY_HOST*/: host.ToLowerCase(/*ILocale::ENGLISH*/);
     mPort = port < 0 ? ANY_PORT: port;
-    mRealm = realm.IsNull() ? ANY_REALM: realm;
-    mScheme = scheme.IsNull() ? ANY_SCHEME: scheme.ToUpperCase(ILocale::ENGLISH);
+    mRealm = realm.IsNull() ? String(NULL)/*ANY_REALM*/: realm;
+    mScheme = scheme.IsNull() ? String(NULL)/*ANY_SCHEME*/: scheme.ToUpperCase(/*ILocale::ENGLISH*/);
     return NOERROR;
 }
 
@@ -207,14 +241,14 @@ ECode CAuthScope::constructor(
     /* [in] */ Int32 port,
     /* [in] */ const String& realm)
 {
-    return constructor(host, port, realm, ANY_SCHEME);
+    return constructor(host, port, realm, String(NULL)/*ANY_SCHEME*/);
 }
 
 ECode CAuthScope::constructor(
     /* [in] */ const String& host,
     /* [in] */ Int32 port)
 {
-    return constructor(host, port, ANY_REALM, ANY_SCHEME);
+    return constructor(host, port, String(NULL)/*ANY_REALM*/, String(NULL)/*ANY_SCHEME*/);
 }
 
 ECode CAuthScope::constructor(
@@ -225,9 +259,9 @@ ECode CAuthScope::constructor(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     authscope->GetHost(&mHost);
-    authscope->GetPort(&port);
-    authscope->GetRealm(&realm);
-    authscope->GetScheme(&scheme);
+    authscope->GetPort(&mPort);
+    authscope->GetRealm(&mRealm);
+    authscope->GetScheme(&mScheme);
     return NOERROR;
 }
 

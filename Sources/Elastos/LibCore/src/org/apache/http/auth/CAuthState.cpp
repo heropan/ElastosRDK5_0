@@ -18,12 +18,13 @@ ECode CAuthState::Invalidate()
     mAuthScheme = NULL;
     mAuthScope = NULL;
     mCredentials = NULL;
+    return NOERROR;
 }
 
 ECode CAuthState::IsValid(
     /* [out] */ Boolean* isValid)
 {
-    VALIDATE_NOT_NULL(lessEquals)
+    VALIDATE_NOT_NULL(isValid)
     *isValid = mAuthScheme != NULL;
     return NOERROR;
 }
@@ -88,7 +89,7 @@ ECode CAuthState::ToString(
     buffer.Append("auth scope [");
     buffer.Append(mAuthScope);
     buffer.Append("]; credentials set [");
-    buffer.Append(this.credentials != NULL ? "true" : "false");
+    buffer.Append(mCredentials != NULL ? "true" : "false");
     buffer.Append("]");
     *str = buffer.ToString();
     return NOERROR;

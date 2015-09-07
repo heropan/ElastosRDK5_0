@@ -5,6 +5,7 @@
 #include "_Org_Apache_Http_Auth_CUsernamePasswordCredentials.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Security::IPrincipal;
 
 namespace Org {
 namespace Apache {

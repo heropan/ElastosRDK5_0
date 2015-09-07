@@ -47,7 +47,7 @@ SOURCES += CProtocolVersion.cpp
 SOURCES += CHttpVersion.cpp
 SOURCES += CHttpVersionHelper.cpp
 
-#LIBRARIES += auth/auth.lib
+LIBRARIES += auth/auth.lib
 #LIBRARIES += auth/params/params.lib
 #LIBRARIES += client/entity/entity.lib
 #LIBRARIES += client/methods/methods.lib

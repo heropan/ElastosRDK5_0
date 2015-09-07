@@ -6,6 +6,8 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Utility::IMap;
+using Elastos::Utility::IList;
+using Org::Apache::Http::Params::IHttpParams;
 
 namespace Org {
 namespace Apache {
@@ -99,8 +101,6 @@ public:
 
 private:
     AutoPtr<IMap> mRegisteredSchemes;
-    Map<String, AutoPtr<IAuthSchemeFactory> > mRegisteredSchemes;
-
 };
 
 } // namespace Auth

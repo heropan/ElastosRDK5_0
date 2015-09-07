@@ -1,5 +1,5 @@
 
-#DIRS = auth
+DIRS = auth
 #DIRS = auth/params
 #DIRS += client/entity
 #DIRS += client/methods
@@ -25,5 +25,5 @@
 #DIRS += impl/io
 #DIRS += message
 #DIRS += params
-DIRS = protocol
+DIRS += protocol
 DIRS += util

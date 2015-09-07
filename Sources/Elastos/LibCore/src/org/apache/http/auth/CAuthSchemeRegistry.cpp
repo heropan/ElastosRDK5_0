@@ -1,14 +1,19 @@
 
 #include "CAuthSchemeRegistry.h"
-#include <elastos/Logger.h>
+#include "CArrayList.h"
+#include "CLinkedHashMap.h"
+#include "CString.h"
+#include "Logger.h"
 
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
 using Elastos::Utility::CLinkedHashMap;
 using Elastos::Utility::ISet;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Logger;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 
 namespace Org {
 namespace Apache {
@@ -36,7 +41,7 @@ ECode CAuthSchemeRegistry::Register(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<ICharSequence> cs;
-    CString::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+    CString::New(name.ToLowerCase(/*ILocale::ENGLISH*/), (ICharSequence**)&cs);
     AutoPtr<IInterface> oldValue;
     return mRegisteredSchemes->Put(cs, factory, (IInterface**)&oldValue);
 }
@@ -49,7 +54,7 @@ ECode CAuthSchemeRegistry::Unregister(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<ICharSequence> cs;
-    CString::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+    CString::New(name.ToLowerCase(/*ILocale::ENGLISH*/), (ICharSequence**)&cs);
     AutoPtr<IInterface> value;
     return mRegisteredSchemes->Remove(cs, (IInterface**)&value);
 }
@@ -67,7 +72,7 @@ ECode CAuthSchemeRegistry::GetAuthScheme(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<ICharSequence> cs;
-    CString::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+    CString::New(name.ToLowerCase(/*ILocale::ENGLISH*/), (ICharSequence**)&cs);
     AutoPtr<IAuthSchemeFactory> factory;
     mRegisteredSchemes->Get(cs, (IInterface**)&factory);
     if (factory != NULL) {

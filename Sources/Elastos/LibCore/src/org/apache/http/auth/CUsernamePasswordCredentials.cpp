@@ -2,7 +2,7 @@
 #include "CUsernamePasswordCredentials.h"
 #include "CBasicUserPrincipal.h"
 #include "LangUtils.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Utility::LangUtils;
@@ -29,7 +29,8 @@ ECode CUsernamePasswordCredentials::GetUserName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name)
-    return mPrincipal->GetUserName(name);
+    AutoPtr<IPrincipal> p = IPrincipal::Probe(mPrincipal);
+    return p->GetName(name);
 }
 
 ECode CUsernamePasswordCredentials::GetPassword(
@@ -53,19 +54,19 @@ ECode CUsernamePasswordCredentials::Equals(
     /* [out] */ Boolean* equals)
 {
     VALIDATE_NOT_NULL(equals)
-    if (o == NULL) {
-        *equals = FALSE
+    if (obj == NULL) {
+        *equals = FALSE;
         return NOERROR;
     }
-    if (o == this) {
+    if (obj == this->Probe(EIID_IInterface)) {
         *equals = TRUE;
         return NOERROR;
     }
-    if (IUsernamePasswordCredentials::Probe(o) != NULL) {
-        AutoPtr<IUsernamePasswordCredentials> that = IUsernamePasswordCredentials::Probe(o);
+    if (IUsernamePasswordCredentials::Probe(obj) != NULL) {
+        AutoPtr<IUsernamePasswordCredentials> that = IUsernamePasswordCredentials::Probe(obj);
         AutoPtr<IPrincipal> thatPrincipal;
-        that->GetUserPrincipal((IPrincipal**)&thatPrincipal);
-        if (LangUtils::Equals(mPrincipal, thatPrincipal)) {
+        ICredentials::Probe(that)->GetUserPrincipal((IPrincipal**)&thatPrincipal);
+        if (LangUtils::Equals(IObject::Probe(mPrincipal), IObject::Probe(thatPrincipal))) {
             *equals = TRUE;
             return NOERROR;
         }
@@ -89,7 +90,7 @@ ECode CUsernamePasswordCredentials::constructor(
         Logger::E("CUsernamePasswordCredentials", "Username:password string may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    Int32 atColon = usernamePassword.indexOf(':');
+    Int32 atColon = usernamePassword.IndexOf(':');
     mPrincipal = NULL;
     if (atColon >= 0) {
         CBasicUserPrincipal::New(usernamePassword.Substring(0, atColon), (IBasicUserPrincipal**)&mPrincipal);

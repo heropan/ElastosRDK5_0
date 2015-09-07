@@ -1,10 +1,14 @@
 
 #include "CBasicUserPrincipal.h"
 #include "LangUtils.h"
-#include <StringBuilder.h>
-#include <elastos/Logger.h>
+#include "StringBuilder.h"
+#include "CString.h"
+#include "Logger.h"
 
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
+using Elastos::Security::EIID_IPrincipal;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Utility::LangUtils;
 
@@ -29,8 +33,10 @@ ECode CBasicUserPrincipal::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
     VALIDATE_NOT_NULL(hashCode)
-    Int32 hash = LangUtils.HASH_SEED;
-    hash = LangUtils::HashCode(hash, mUsername);
+    Int32 hash = LangUtils::HASH_SEED;
+    AutoPtr<ICharSequence> cs;
+    CString::New(mUsername, (ICharSequence**)&cs);
+    hash = LangUtils::HashCode(hash, IObject::Probe(cs));
     *hashCode = hash;
     return NOERROR;
 }
@@ -41,19 +47,23 @@ ECode CBasicUserPrincipal::Equals(
 {
     VALIDATE_NOT_NULL(equals)
 
-    if (o == NULL) {
+    if (obj == NULL) {
         *equals = FALSE;
         return NOERROR;
     }
-    if (this == o) {
+    if (this->Probe(EIID_IInterface) == obj) {
         *equals = TRUE;
         return NOERROR;
     }
-    if (IBasicUserPrincipal::Probe(o) != NULL) {
-        AutoPtr<IBasicUserPrincipal> that = IBasicUserPrincipal::Probe(o);
+    if (IBasicUserPrincipal::Probe(obj) != NULL) {
+        AutoPtr<IBasicUserPrincipal> that = IBasicUserPrincipal::Probe(obj);
+        AutoPtr<IPrincipal> thatP = IPrincipal::Probe(that);
         String thatName;
-        that->GetName(&thatName);
-        if (LangUtils::Equals(mUsername, thatName)) {
+        thatP->GetName(&thatName);
+        AutoPtr<ICharSequence> cs, thatCS;
+        CString::New(mUsername, (ICharSequence**)&cs);
+        CString::New(thatName, (ICharSequence**)&thatCS);
+        if (LangUtils::Equals(IObject::Probe(cs), IObject::Probe(thatCS))) {
             *equals = TRUE;
             return NOERROR;
         }
