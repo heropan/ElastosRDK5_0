@@ -2,14 +2,18 @@
 #ifndef  __ELASTOS_DROID_ANIMATION_PATHKEYFRAMES_H__
 #define  __ELASTOS_DROID_ANIMATION_PATHKEYFRAMES_H__
 
+#include "ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
-Elastos::Core::Object;
+using Elastos::Droid::Graphics::IPointF;
+using Elastos::Droid::Graphics::IPath;
+using Elastos::Core::Object;
+using Elastos::Core::ICloneable;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
 namespace Animation {
-
 
 /**
  * PathKeyframes relies on approximating the Path as a series of line segments.
@@ -28,7 +32,9 @@ namespace Animation {
  */
 class PathKeyframes
     : public Object
+    , public ICloneable
     , public IKeyframes
+    , public IPathKeyframes
 {
 private:
     class SimpleKeyframes
@@ -49,11 +55,11 @@ private:
 
         // @Override
         virtual CARAPI GetKeyframes(
-            /* [out] */ IArrayList** list);
+            /* [out, callee] */ ArrayOf<IKeyframe*>** list);
 
         // @Override
         virtual CARAPI Clone(
-            /* [out] */ IKeyframes** values);
+            /* [out] */ IInterface** values);
     };
 
     class Int32KeyframesBase
@@ -67,7 +73,7 @@ private:
 
         // @Override
         virtual CARAPI GetType(
-            /* [out] */ ClassID* type);
+            /* [out] */ InterfaceID* type);
 
         // @Override
         virtual CARAPI GetValue(
@@ -86,7 +92,7 @@ private:
 
         // @Override
         virtual CARAPI GetType(
-            /* [out] */ ClassID* type);
+            /* [out] */ InterfaceID* type);
 
         // @Override
         virtual CARAPI GetValue(
@@ -142,7 +148,7 @@ public:
 
     // @Override
     virtual CARAPI GetKeyframes(
-        /* [out] */ IArrayList** list);
+        /* [out, callee] */ ArrayOf<IKeyframe*>** list);
 
     // @Override
     virtual CARAPI GetValue(
@@ -158,11 +164,11 @@ public:
 
     // @Override
     virtual CARAPI GetType(
-        /* [out] */ ClassID* type);
+        /* [out] */ InterfaceID* type);
 
     // @Override
     virtual CARAPI Clone(
-        /* [out] */ IKeyframes** frames);
+        /* [out] */ IInterface** frames);
 
     /**
      * Returns a FloatKeyframes for the X component of the Path.
@@ -215,7 +221,7 @@ private:
     static const Int32 X_OFFSET;
     static const Int32 Y_OFFSET;
     static const Int32 NUM_COMPONENTS;
-    static AutoPtr<IArrayList> EMPTY_KEYFRAMES;
+    static AutoPtr<ArrayOf<IKeyframe*> > EMPTY_KEYFRAMES;
     static Boolean sInit;
 
     AutoPtr<IPointF> mTempPointF;

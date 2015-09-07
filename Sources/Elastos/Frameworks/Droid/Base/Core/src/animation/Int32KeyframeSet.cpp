@@ -2,12 +2,15 @@
 #include "animation/Int32KeyframeSet.h"
 
 using Elastos::Core::INumber;
+using Elastos::Core::EIID_IInteger32;
+using Elastos::Core::IInteger32;
+using Elastos::Core::CInteger32;
 
 namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-CAR_INTERFACE_IMPL_2(Int32KeyframeSet, KeyframeSet, IInt32KeyframeSet)
+CAR_INTERFACE_IMPL(Int32KeyframeSet, KeyframeSet, IInt32KeyframeSet)
 
 Int32KeyframeSet::Int32KeyframeSet(
     /* [in] */ ArrayOf<IInt32Keyframe*>* keyframes)
@@ -73,11 +76,11 @@ ECode Int32KeyframeSet::GetInt32Value(
         Int32 nextValue;
         nextKeyframe->GetInt32Value(&nextValue);
         Float prevFraction;
-        prevKeyframe->GetFraction(&prevFraction);
+        IKeyframe::Probe(prevKeyframe)->GetFraction(&prevFraction);
         Float nextFraction;
-        nextKeyframe->GetFraction(&nextFraction);
+        IKeyframe::Probe(nextKeyframe)->GetFraction(&nextFraction);
         AutoPtr<ITimeInterpolator> interpolator;
-        nextKeyframe->GetInterpolator((ITimeInterpolator**)&interpolator);
+        IKeyframe::Probe(nextKeyframe)->GetInterpolator((ITimeInterpolator**)&interpolator);
         if (interpolator != NULL) {
             interpolator->GetInterpolation(fraction, &fraction);
         }
@@ -106,11 +109,11 @@ ECode Int32KeyframeSet::GetInt32Value(
         Int32 nextValue;
         nextKeyframe->GetInt32Value(&nextValue);
         Float prevFraction;
-        prevKeyframe->GetFraction(&prevFraction);
+        IKeyframe::Probe(prevKeyframe)->GetFraction(&prevFraction);
         Float nextFraction;
-        nextKeyframe->GetFraction(&nextFraction);
+        IKeyframe::Probe(nextKeyframe)->GetFraction(&nextFraction);
         AutoPtr<ITimeInterpolator> interpolator;
-        nextKeyframe->GetInterpolator((ITimeInterpolator**)&interpolator);
+        IKeyframe::Probe(nextKeyframe)->GetInterpolator((ITimeInterpolator**)&interpolator);
         if (interpolator != NULL) {
             interpolator->GetInterpolation(fraction, &fraction);
         }
@@ -135,17 +138,17 @@ ECode Int32KeyframeSet::GetInt32Value(
     for (Int32 i = 1; i < mNumKeyframes; ++i) {
         AutoPtr<IInt32Keyframe> nextKeyframe = (IInt32Keyframe*)((*mKeyframes)[i]->Probe(EIID_IInt32Keyframe));
         Float nFraction;
-        nextKeyframe->GetFraction(&nFraction);
+        IKeyframe::Probe(nextKeyframe)->GetFraction(&nFraction);
         if (fraction < nFraction) {
             AutoPtr<ITimeInterpolator> interpolator;
-            nextKeyframe->GetInterpolator((ITimeInterpolator**)&interpolator);
+            IKeyframe::Probe(nextKeyframe)->GetInterpolator((ITimeInterpolator**)&interpolator);
             if (interpolator != NULL) {
                 interpolator->GetInterpolation(fraction, &fraction);
             }
 
             Float pFraction, nFraction;
-            prevKeyframe->GetFraction(&pFraction);
-            nextKeyframe->GetFraction(&nFraction);
+            IKeyframe::Probe(prevKeyframe)->GetFraction(&pFraction);
+            IKeyframe::Probe(nextKeyframe)->GetFraction(&nFraction);
             Float intervalFraction = (fraction - pFraction) / (nFraction - pFraction);
             Int32 prevValue;
             prevKeyframe->GetInt32Value(&prevValue);
@@ -173,7 +176,7 @@ ECode Int32KeyframeSet::GetInt32Value(
     // shouldn't get here
     AutoPtr<IInt32Keyframe> obj = (IInt32Keyframe*)((*mKeyframes)[mNumKeyframes - 1]->Probe(EIID_IInt32Keyframe));
     AutoPtr<INumber> rst;
-    obj->GetValue((IInterface**)&rst);
+    IKeyframe::Probe(obj)->GetValue((IInterface**)&rst);
     rst->Int32Value(value);
     return NOERROR;
 }
@@ -185,13 +188,13 @@ ECode Int32KeyframeSet::InvalidateCache()
 }
 
 ECode Int32KeyframeSet::Clone(
-    /* [out] */ IKeyframeSet** obj)
+    /* [out] */ IInterface** obj)
 {
     Int32 numKeyframes = mKeyframes->GetLength();
     AutoPtr<ArrayOf<IInt32Keyframe*> > newKeyframes = ArrayOf<IInt32Keyframe*>::Alloc(numKeyframes);
     for (Int32 i = 0; i < numKeyframes; ++i) {
         AutoPtr<IInt32Keyframe> newone;
-        (*mKeyframes)[i]->Clone((IKeyframe**)&newone);
+        ICloneable::Probe((*mKeyframes)[i])->Clone((IInterface**)&newone);
         newKeyframes->Set(i, newone);
     }
     AutoPtr<IInt32KeyframeSet> newSet = new Int32KeyframeSet(newKeyframes);
@@ -210,10 +213,10 @@ ECode Int32KeyframeSet::GetKeyframes(
 }
 
 ECode Int32KeyframeSet::GetType(
-    /* [out] */ ClassID* type)
+    /* [out] */ InterfaceID* type)
 {
     VALIDATE_NOT_NULL(type);
-    *type = ECLSID_CInteger32;
+    *type = EIID_IInteger32;
     return NOERROR;
 }
 

@@ -11,6 +11,7 @@ module
      * from the property type.
      * @see PropertyValuesHolder#setConverter(TypeConverter)
      */
+    [local]
     interface ITypeConverter {
         /**
          * Returns the target converted type. Used by the animation system to determine
@@ -18,13 +19,13 @@ module
          * @return The Class to convert the input to.
          */
         GetTargetType(
-            [out] IMethodInfo** type);
+            [out] InterfaceID* type);
 
         /**
          * Returns the source conversion type.
          */
         GetSourceType(
-            [out] IMethodInfo** type);
+            [out] InterfaceID* type);
 
         /**
          * Converts a value from one type to another.

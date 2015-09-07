@@ -6,8 +6,11 @@ module
     merge("animation/AnimatorSet.car");
     merge("animation/Keyframe.car");
     merge("animation/Keyframes.car");
+    merge("animation/PathKeyframes.car");
     merge("animation/KeyframeSet.car");
     merge("animation/TypeEvaluator.car");
+    merge("animation/TypeConverter.car");
+    merge("animation/BidirectionalTypeConverter.car");
     merge("animation/TimeInterpolator.car");
     merge("animation/ValueAnimator.car");
     merge("animation/TimeAnimator.car");
@@ -16,71 +19,86 @@ module
     merge("animation/PropertyValuesHolder.car");
     merge("animation/StateListAnimator.car");
 
-    // namespace Elastos {
-    // namespace Droid {
-    // namespace Animation {
+    using interface Elastos.Core.ICloneable;
 
-    // class CAnimatorSet {
-    //     interface IAnimatorSet;
-    // }
+    namespace Elastos {
+    namespace Droid {
+    namespace Animation {
 
-    // class CAnimatorSetBuilder {
-    //     constructor(
-    //         [in] IAnimatorSet* host,
-    //         [in] IAnimator* anim);
+        class CAnimatorSet {
+            interface IAnimatorSet;
+            interface IAnimator;
+            interface ICloneable;
+        }
 
-    //     interface IAnimatorSetBuilder;
-    // }
+        class CAnimatorSetBuilder {
+            constructor(
+                [in] IAnimatorSet* host,
+                [in] IAnimator* anim);
 
-    // class CArgbEvaluator {
-    //     interface IArgbEvaluator;
-    // }
+            interface IAnimatorSetBuilder;
+        }
 
-    // class CFloatEvaluator {
-    //     interface IFloatEvaluator;
-    // }
+        class CArgbEvaluator {
+            interface IArgbEvaluator;
+            interface ITypeEvaluator;
+        }
 
-    // class CInt32Evaluator {
-    //     interface IInt32Evaluator;
-    // }
+        class CFloatEvaluator {
+            interface IFloatEvaluator;
+            interface ITypeEvaluator;
+        }
 
-    // class CLayoutTransition {
-    //     constructor();
-    //     interface ILayoutTransition;
-    // }
+        class CInt32Evaluator {
+            interface IInt32Evaluator;
+            interface ITypeEvaluator;
+        }
 
-    // singleton class CKeyframeHelper {
-    //     interface IKeyframeHelper;
-    // }
+        class CLayoutTransition {
+            constructor();
 
-    // class CObjectAnimator {
-    //     constructor();
+            interface ILayoutTransition;
+        }
 
-    //     interface IObjectAnimator;
-    // }
+        singleton class CKeyframeHelper {
+            interface IKeyframeHelper;
+        }
 
-    // singleton class CObjectAnimatorHelper {
-    //     interface IObjectAnimatorHelper;
-    // }
+        class CObjectAnimator {
+            constructor();
 
-    // singleton class CPropertyValuesHolderHelper {
-    //     interface IPropertyValuesHolderHelper;
-    // }
+            interface IObjectAnimator;
+            interface IValueAnimator;
+            interface IAnimator;
+            interface ICloneable;
+        }
 
-    // class CTimeAnimator {
-    //     interface ITimeAnimator;
-    // }
+        singleton class CObjectAnimatorHelper {
+            interface IObjectAnimatorHelper;
+        }
 
-    // class CValueAnimator {
-    //     interface IValueAnimator;
-    // }
+        singleton class CPropertyValuesHolderHelper {
+            interface IPropertyValuesHolderHelper;
+        }
 
-    // singleton class CValueAnimatorHelper {
-    //     interface IValueAnimatorHelper;
-    // }
+        class CTimeAnimator {
+            interface ITimeAnimator;
+            interface IValueAnimator;
+            interface IAnimator;
+            interface ICloneable;
+        }
 
+        class CValueAnimator {
+            interface IValueAnimator;
+            interface IAnimator;
+            interface ICloneable;
+        }
 
-    // } // namespace Animation
-    // } // namepsace Droid
-    // } // namespace Elastos
+        singleton class CValueAnimatorHelper {
+            interface IValueAnimatorHelper;
+        }
+
+    } // namespace Animation
+    } // namepsace Droid
+    } // namespace Elastos
 }

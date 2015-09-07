@@ -41,7 +41,7 @@ public:
     virtual CARAPI InitAnimation();
 
     virtual CARAPI Clone(
-        /* [out] */ IAnimator** object);
+        /* [out] */ IInterface** object);
 
 private:
     AutoPtr<ITimeListener> mListener;

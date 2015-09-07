@@ -1,6 +1,7 @@
 
 #include "animation/Keyframe.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::ECLSID_CFloat;
 using Elastos::Core::ECLSID_CInteger32;
 
@@ -11,7 +12,7 @@ namespace Animation {
 //==============================================================================
 //                  Keyframe
 //==============================================================================
-CAR_INTERFACE_IMPL(Keyframe, Object, IKeyframe);
+CAR_INTERFACE_IMPL_2(Keyframe, Object, IKeyframe, ICloneable);
 Keyframe::Keyframe()
     : mFraction(0.0f)
     , mHasValue(FALSE)
@@ -59,150 +60,72 @@ ECode Keyframe::SetInterpolator(
 }
 
 ECode Keyframe::GetType(
-    /* [out] */ ClassID* id)
+    /* [out] */ InterfaceID* id)
 {
     VALIDATE_NOT_NULL(id);
     *id = mValueType;
     return NOERROR;
 }
 
-/**
- * Constructs a Keyframe object with the given time and value. The time defines the
- * time, as a proportion of an overall animation's duration, at which the value will hold true
- * for the animation. The value for the animation between keyframes will be calculated as
- * an interpolation between the values at those keyframes.
- *
- * @param fraction The time, expressed as a value between 0 and 1, representing the fraction
- * of time elapsed of the overall animation duration.
- * @param value The value that the object will animate to as the animation time approaches
- * the time in this keyframe, and the the value animated from as the time passes the time in
- * this keyframe.
- */
 ECode Keyframe::OfInt32(
     /* [in] */ Float fraction,
     /* [in] */ Int32 value,
     /* [out] */ IKeyframe** obj)
 {
     AutoPtr<IInt32Keyframe> rTmp = new Int32Keyframe(fraction, value);
-    *obj = rTmp.Get();
+    *obj = IKeyframe::Probe(rTmp);
     REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
-/**
- * Constructs a Keyframe object with the given time. The value at this time will be derived
- * from the target object when the animation first starts (note that this implies that keyframes
- * with no initial value must be used as part of an ObjectAnimator).
- * The time defines the
- * time, as a proportion of an overall animation's duration, at which the value will hold true
- * for the animation. The value for the animation between keyframes will be calculated as
- * an interpolation between the values at those keyframes.
- *
- * @sa ObjectAnimator
- *
- * @param fraction The time, expressed as a value between 0 and 1, representing the fraction
- * of time elapsed of the overall animation duration.
- */
 ECode Keyframe::OfInt32(
     /* [in] */ Float fraction,
     /* [out] */ IKeyframe** obj)
 {
     AutoPtr<IInt32Keyframe> rTmp = new Int32Keyframe(fraction);
-    *obj = rTmp.Get();
+    *obj = IKeyframe::Probe(rTmp);
     REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
-/**
- * Constructs a Keyframe object with the given time and value. The time defines the
- * time, as a proportion of an overall animation's duration, at which the value will hold true
- * for the animation. The value for the animation between keyframes will be calculated as
- * an interpolation between the values at those keyframes.
- *
- * @param fraction The time, expressed as a value between 0 and 1, representing the fraction
- * of time elapsed of the overall animation duration.
- * @param value The value that the object will animate to as the animation time approaches
- * the time in this keyframe, and the the value animated from as the time passes the time in
- * this keyframe.
- */
 ECode Keyframe::OfFloat(
     /* [in] */ Float fraction,
     /* [in] */ Float value,
     /* [out] */ IKeyframe** obj)
 {
     AutoPtr<IFloatKeyframe> rTmp = new FloatKeyframe(fraction, value);
-    *obj = rTmp.Get();
+    *obj = IKeyframe::Probe(rTmp);
     REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
-/**
- * Constructs a Keyframe object with the given time. The value at this time will be derived
- * from the target object when the animation first starts (note that this implies that keyframes
- * with no initial value must be used as part of an ObjectAnimator).
- * The time defines the
- * time, as a proportion of an overall animation's duration, at which the value will hold true
- * for the animation. The value for the animation between keyframes will be calculated as
- * an interpolation between the values at those keyframes.
- *
- * @sa ObjectAnimator
- *
- * @param fraction The time, expressed as a value between 0 and 1, representing the fraction
- * of time elapsed of the overall animation duration.
- */
 ECode Keyframe::OfFloat(
     /* [in] */ Float fraction,
     /* [out] */ IKeyframe** obj)
 {
     AutoPtr<IFloatKeyframe> rTmp = new FloatKeyframe(fraction);
-    *obj = rTmp.Get();
+    *obj = IKeyframe::Probe(rTmp);
     REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
-/**
- * Constructs a Keyframe object with the given time and value. The time defines the
- * time, as a proportion of an overall animation's duration, at which the value will hold true
- * for the animation. The value for the animation between keyframes will be calculated as
- * an interpolation between the values at those keyframes.
- *
- * @param fraction The time, expressed as a value between 0 and 1, representing the fraction
- * of time elapsed of the overall animation duration.
- * @param value The value that the object will animate to as the animation time approaches
- * the time in this keyframe, and the the value animated from as the time passes the time in
- * this keyframe.
- */
 ECode Keyframe::OfObject(
     /* [in] */ Float fraction,
     /* [in] */ IInterface* value,
     /* [out] */ IKeyframe** obj)
 {
     AutoPtr<IObjectKeyframe> rTmp = new ObjectKeyframe(fraction, value);
-    *obj = rTmp.Get();
+    *obj = IKeyframe::Probe(rTmp);
     REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
-/**
- * Constructs a Keyframe object with the given time. The value at this time will be derived
- * from the target object when the animation first starts (note that this implies that keyframes
- * with no initial value must be used as part of an ObjectAnimator).
- * The time defines the
- * time, as a proportion of an overall animation's duration, at which the value will hold true
- * for the animation. The value for the animation between keyframes will be calculated as
- * an interpolation between the values at those keyframes.
- *
- * @sa ObjectAnimator
- *
- * @param fraction The time, expressed as a value between 0 and 1, representing the fraction
- * of time elapsed of the overall animation duration.
- */
 ECode Keyframe::OfObject(
     /* [in] */ Float fraction,
     /* [out] */ IKeyframe** obj)
 {
     AutoPtr<IObjectKeyframe> rTmp = new ObjectKeyframe(fraction, NULL);
-    *obj = rTmp.Get();
+    *obj = IKeyframe::Probe(rTmp);
     REFCOUNT_ADD(*obj)
     return NOERROR;
 }
@@ -220,9 +143,10 @@ ObjectKeyframe::ObjectKeyframe(
     mHasValue = (mValue != NULL);
     if (mHasValue) {
         AutoPtr<IObject> obj = IObject::Probe(value);
-        obj->GetClassID(&mValueType);
+        obj->GetInterfaceID(value, &mValueType);
     } else {
-        mValueType = ECLSID_CDummyObject;
+        assert(0 && "TODO");
+        // mValueType = ECLSID_CDummyObject;
     }
 }
 
@@ -244,11 +168,14 @@ ECode ObjectKeyframe::SetValue(
 }
 
 ECode ObjectKeyframe::Clone(
-    /* [out] */ IKeyframe** object)
+    /* [out] */ IInterface** object)
 {
-    AutoPtr<ObjectKeyframe> kfClone = new ObjectKeyframe(mFraction, HasValue() ? mValue : NULL);
+    Boolean has = FALSE;
+    AutoPtr<ObjectKeyframe> kfClone = new ObjectKeyframe(mFraction, (HasValue(&has), has) ? mValue : NULL);
     kfClone->mValueWasSetOnStart = mValueWasSetOnStart;
-    kfClone->SetInterpolator(GetInterpolator());
+    AutoPtr<ITimeInterpolator> ti;
+    GetInterpolator((ITimeInterpolator**)&ti);
+    kfClone->SetInterpolator(ti);
 
     *object = (IKeyframe*)kfClone->Probe(EIID_IKeyframe);
     REFCOUNT_ADD(*object);
@@ -266,7 +193,7 @@ Int32Keyframe::Int32Keyframe(
 {
     mFraction = fraction;
     CInteger32::New(value, (IInteger32**)&mValue);
-    mValueType = ECLSID_CFloat;
+    mValueType = EIID_IFloat;
     mHasValue = TRUE;
 }
 
@@ -275,7 +202,7 @@ Int32Keyframe::Int32Keyframe(
 {
     CInteger32::New(0, (IInteger32**)&mValue);
     mFraction = fraction;
-    mValueType = ECLSID_CInteger32;
+    mValueType = EIID_IInteger32;
 }
 
 ECode Int32Keyframe::GetInt32Value(
@@ -307,7 +234,7 @@ ECode Int32Keyframe::SetValue(
 }
 
 ECode Int32Keyframe::Clone(
-    /* [out] */ IKeyframe** object)
+    /* [out] */ IInterface** object)
 {
     AutoPtr<Int32Keyframe> kfClone;
     if(mHasValue) {
@@ -317,7 +244,10 @@ ECode Int32Keyframe::Clone(
     } else {
         kfClone = new Int32Keyframe(mFraction);
     }
-    kfClone->SetInterpolator(Keyframe::GetInterpolator());
+
+    AutoPtr<ITimeInterpolator> ti;
+    Keyframe::GetInterpolator((ITimeInterpolator**)&ti);
+    kfClone->SetInterpolator(ti);
     kfClone->mValueWasSetOnStart = mValueWasSetOnStart;
     *object = (IKeyframe*)kfClone->Probe(EIID_IKeyframe);
     REFCOUNT_ADD(*object)
@@ -334,7 +264,7 @@ FloatKeyframe::FloatKeyframe(
 {
     mFraction = fraction;
     CFloat::New(value, (IFloat**)&mValue);
-    mValueType = ECLSID_CFloat;
+    mValueType = EIID_IFloat;
     mHasValue = TRUE;
 }
 
@@ -343,7 +273,7 @@ FloatKeyframe::FloatKeyframe(
 {
     CFloat::New(0.0, (IFloat**)&mValue);
     mFraction = fraction;
-    mValueType = ECLSID_CFloat;
+    mValueType = EIID_IFloat;
 }
 
 ECode FloatKeyframe::GetFloatValue(
@@ -375,7 +305,7 @@ ECode FloatKeyframe::SetValue(
 }
 
 ECode FloatKeyframe::Clone(
-    /* [out] */ IKeyframe** object)
+    /* [out] */ IInterface** object)
 {
     AutoPtr<FloatKeyframe> kfClone;
     if(mHasValue) {
@@ -385,19 +315,22 @@ ECode FloatKeyframe::Clone(
     } else {
         kfClone = new FloatKeyframe(mFraction);
     }
-    kfClone->SetInterpolator(Keyframe::GetInterpolator());
+
+    AutoPtr<ITimeInterpolator> ti;
+    Keyframe::GetInterpolator((ITimeInterpolator**)&ti);
+    kfClone->SetInterpolator(ti);
     kfClone->mValueWasSetOnStart = mValueWasSetOnStart;
     *object = (IKeyframe*)kfClone->Probe(EIID_IKeyframe);
     REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
-Boolean FloatKeyframe::ValueWasSetOnStart()
+Boolean Keyframe::ValueWasSetOnStart()
 {
     return mValueWasSetOnStart;
 }
 
-void FloatKeyframe::SetValueWasSetOnStart(
+void Keyframe::SetValueWasSetOnStart(
     /* [in] */ Boolean valueWasSetOnStart)
 {
     mValueWasSetOnStart = valueWasSetOnStart;

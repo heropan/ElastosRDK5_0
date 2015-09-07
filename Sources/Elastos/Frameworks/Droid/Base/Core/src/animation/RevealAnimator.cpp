@@ -1,5 +1,5 @@
 
-#include "view/RenderNodeAnimator.h"
+#include "animation/RevealAnimator.h"
 
 namespace Elastos {
 namespace Droid {
@@ -11,16 +11,18 @@ RevealAnimator::RevealAnimator(
     /* [in] */ Int32 y,
     /* [in] */ Float startRadius,
     /* [in] */ Float endRadius)
-    : RenderNodeAnimator(x, y, startRadius, endRadius)
-    , mClipView(clipView)
+    // : RenderNodeAnimator(x, y, startRadius, endRadius)
+    // , mClipView(clipView)
 {
-    SetTarget(mClipView);
+    assert(0 && "TODO");
+    // SetTarget(mClipView);
 }
 
 void RevealAnimator::OnFinished()
 {
-    mClipView.setRevealClip(false, 0, 0, 0);
-    super.onFinished();
+    mClipView->SetRevealClip(FALSE, 0, 0, 0);
+    assert(0 && "TODO");
+    // RenderNodeAnimator::OnFinished();
 }
 
 }   //namespace Animation

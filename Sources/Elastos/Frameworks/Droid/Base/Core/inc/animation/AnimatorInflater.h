@@ -4,10 +4,15 @@
 
 #include "ext/frameworkext.h"
 #include <Elastos.Droid.Core_server.h>
+#include "util/PathParser.h"
 
 using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Utility::PathDataNode;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IResourcesTheme;
+using Elastos::Droid::Content::Res::ITypedArray;
 
 namespace Elastos {
 namespace Droid {
@@ -39,7 +44,7 @@ private:
          * @param nodeArray The array to modify and return from <code>evaluate</code>.
          */
         PathDataEvaluator(
-            /* [in] */ IPathParserPathDataNode* nodeArray);
+            /* [in] */ ArrayOf<PathDataNode*>* nodeArray);
 
         CARAPI Evaluate(
             /* [in] */ Float fraction,
@@ -56,7 +61,7 @@ private:
         PathDataEvaluator() {}
 
     private:
-        AutoPtr<ArrayOf<IPathParserPathDataNode> > mNodeArray;
+        AutoPtr<ArrayOf<PathDataNode*> > mNodeArray;
     };
 
 public:
@@ -85,14 +90,14 @@ public:
      */
     static CARAPI LoadAnimator(
         /* [in] */ IResources* resources,
-        /* [in] */ ITheme* theme,
+        /* [in] */ IResourcesTheme* theme,
         /* [in] */ Int32 id,
         /* [out] */ IAnimator** animator) /*throws NotFoundException*/;
 
     /** @hide */
     static CARAPI LoadAnimator(
         /* [in] */ IResources* resources,
-        /* [in] */ ITheme* theme,
+        /* [in] */ IResourcesTheme* theme,
         /* [in] */ Int32 id,
         /* [in] */ Float pathErrorScale,
         /* [out] */ IAnimator** animator) /*throws NotFoundException*/;

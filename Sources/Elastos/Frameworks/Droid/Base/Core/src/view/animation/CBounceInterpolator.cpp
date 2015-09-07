@@ -8,7 +8,7 @@ namespace View {
 namespace Animation {
 
 CAR_OBJECT_IMPL(CBounceInterpolator);
-CAR_INTERFACE_IMPL_4(CBounceInterpolator, Object, IBounceInterpolator,INativeInterpolatorFactory,IHasNativeInterpolator,IInterpolator,ITimeInterpolator);
+CAR_INTERFACE_IMPL_4(CBounceInterpolator, Object, IBounceInterpolator,INativeInterpolatorFactory,IInterpolator,ITimeInterpolator);
 
 ECode CBounceInterpolator::constructor()
 {

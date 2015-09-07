@@ -1,5 +1,8 @@
 
-#include "view/PointFEvaluator.h"
+#include "animation/PointFEvaluator.h"
+// #include "graphics/CPointF.h"
+
+// using Elastos::Droid::Graphics::CPointF;
 
 namespace Elastos {
 namespace Droid {
@@ -23,7 +26,7 @@ ECode PointFEvaluator::Evaluate(
     /* [out] */ IInterface** pf)
 {
     VALIDATE_NOT_NULL(pf);
-    Float v1 = 0f, v2 = 0f;
+    Float v1 = 0.f, v2 = 0.f;
     startValue->GetX(&v1);
     endValue->GetX(&v2);
     Float x = v1 + (fraction * (v2 - v1));
@@ -39,7 +42,9 @@ ECode PointFEvaluator::Evaluate(
         return NOERROR;
     }
 
-    return CPointF::New(x, y, pf);
+    assert(0 && "TODO");
+    // return CPointF::New(x, y, pf);
+    return NOERROR;
 }
 
 }   //namespace Animation

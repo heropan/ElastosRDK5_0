@@ -3,7 +3,9 @@
 #define  __ELASTOS_DROID_ANIMATION_COBJECTANIMATORHELPER_H__
 
 #include "_Elastos_Droid_Animation_CObjectAnimatorHelper.h"
+#include <elastos/core/Singleton.h>
 
+using Elastos::Core::Singleton;
 using Elastos::Droid::Utility::IProperty;
 
 namespace Elastos {

@@ -1,12 +1,15 @@
 
 #include "animation/FloatKeyframeSet.h"
 
+using Elastos::Core::EIID_IFloat;
+using Elastos::Core::IFloat;
+using Elastos::Core::CFloat;
+
 namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-CAR_INTERFACE_IMPL_2(FloatKeyframeSet, KeyframeSet, IFloatKeyframeSet)
-
+CAR_INTERFACE_IMPL(FloatKeyframeSet, KeyframeSet, IFloatKeyframeSet)
 FloatKeyframeSet::FloatKeyframeSet(
     /* [in] */ ArrayOf<IFloatKeyframe*>* keyframes)
     : KeyframeSet((ArrayOf<IKeyframe*>*)keyframes)
@@ -31,13 +34,13 @@ ECode FloatKeyframeSet::GetValue(
 }
 
 ECode FloatKeyframeSet::Clone(
-    /* [out] */ IKeyframeSet** obj)
+    /* [out] */ IInterface** obj)
 {
     Int32 numKeyframes = mKeyframes->GetLength();
     AutoPtr<ArrayOf<IFloatKeyframe*> > newKeyframes = ArrayOf<IFloatKeyframe*>::Alloc(numKeyframes);
     for (Int32 i = 0; i < numKeyframes; ++i) {
         AutoPtr<IFloatKeyframe> frame;
-        (*mKeyframes)[i]->Clone((IKeyframe**)&frame);
+        ICloneable::Probe((*mKeyframes)[i])->Clone((IInterface**)&frame);
         newKeyframes->Set(i, frame);
     }
     AutoPtr<IFloatKeyframeSet> newSet = new FloatKeyframeSet(newKeyframes);
@@ -93,11 +96,11 @@ ECode FloatKeyframeSet::GetFloatValue(
         Float nextValue;
         nextKeyframe->GetFloatValue(&nextValue);
         Float prevFraction;
-        prevKeyframe->GetFraction(&prevFraction);
+        IKeyframe::Probe(prevKeyframe)->GetFraction(&prevFraction);
         Float nextFraction;
-        nextKeyframe->GetFraction(&nextFraction);
+        IKeyframe::Probe(nextKeyframe)->GetFraction(&nextFraction);
         AutoPtr<ITimeInterpolator> interpolator;
-        nextKeyframe->GetInterpolator((ITimeInterpolator**)&interpolator);
+        IKeyframe::Probe(nextKeyframe)->GetInterpolator((ITimeInterpolator**)&interpolator);
         if (interpolator != NULL) {
             interpolator->GetInterpolation(fraction, &fraction);
         }
@@ -127,11 +130,11 @@ ECode FloatKeyframeSet::GetFloatValue(
         Float nextValue;
         nextKeyframe->GetFloatValue(&nextValue);
         Float prevFraction;
-        prevKeyframe->GetFraction(&prevFraction);
+        IKeyframe::Probe(prevKeyframe)->GetFraction(&prevFraction);
         Float nextFraction;
-        nextKeyframe->GetFraction(&nextFraction);
+        IKeyframe::Probe(nextKeyframe)->GetFraction(&nextFraction);
         AutoPtr<ITimeInterpolator> interpolator;
-        nextKeyframe->GetInterpolator((ITimeInterpolator**)&interpolator);
+        IKeyframe::Probe(nextKeyframe)->GetInterpolator((ITimeInterpolator**)&interpolator);
         if (interpolator != NULL) {
             interpolator->GetInterpolation(fraction, &fraction);
         }
@@ -156,17 +159,17 @@ ECode FloatKeyframeSet::GetFloatValue(
     for (Int32 i = 1; i < mNumKeyframes; ++i) {
         AutoPtr<IFloatKeyframe> nextKeyframe = (IFloatKeyframe*)((*mKeyframes)[i]->Probe(EIID_IFloatKeyframe));
         Float nFraction;
-        nextKeyframe->GetFraction(&nFraction);
+        IKeyframe::Probe(nextKeyframe)->GetFraction(&nFraction);
         if (fraction < nFraction) {
             AutoPtr<ITimeInterpolator> interpolator;
-            nextKeyframe->GetInterpolator((ITimeInterpolator**)&interpolator);
+            IKeyframe::Probe(nextKeyframe)->GetInterpolator((ITimeInterpolator**)&interpolator);
             if (interpolator != NULL) {
                 interpolator->GetInterpolation(fraction, &fraction);
             }
 
-            nextKeyframe->GetFraction(&nFraction);
+            IKeyframe::Probe(nextKeyframe)->GetFraction(&nFraction);
             Float pFraction;
-            prevKeyframe->GetFraction(&pFraction);
+            IKeyframe::Probe(prevKeyframe)->GetFraction(&pFraction);
             Float intervalFraction = (fraction - pFraction) / (nFraction - pFraction);
             Float prevValue;
             prevKeyframe->GetFloatValue(&prevValue);
@@ -195,7 +198,7 @@ ECode FloatKeyframeSet::GetFloatValue(
     AutoPtr<IFloatKeyframe> frame =
             (IFloatKeyframe*)((*mKeyframes)[mNumKeyframes - 1]->Probe(EIID_IFloatKeyframe));
     AutoPtr<IFloat> obj;
-    frame->GetValue((IInterface**)&obj);
+    IKeyframe::Probe(frame)->GetValue((IInterface**)&obj);
     assert(obj != NULL);
     obj->GetValue(value);
     return NOERROR;
@@ -211,10 +214,10 @@ ECode FloatKeyframeSet::GetKeyframes(
 }
 
 ECode FloatKeyframeSet::GetType(
-    /* [out] */ ClassID* type)
+    /* [out] */ InterfaceID* type)
 {
     VALIDATE_NOT_NULL(type);
-    *type = ECLSID_CFloat;
+    *type = EIID_IFloat;
     return NOERROR;
 }
 

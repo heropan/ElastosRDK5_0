@@ -38,14 +38,14 @@ ECode CPathInterpolator::constructor(
 {
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
-    AutoPtr<ITheme> theme;
-    context->GetTheme((ITheme**)&theme);
+    AutoPtr<IResourcesTheme> theme;
+    context->GetTheme((IResourcesTheme**)&theme);
     return constructor(res, theme, attrs);
 }
 
 ECode CPathInterpolator::constructor(
     /* [in] */ IResources* res,
-    /* [in] */ ITheme* theme,
+    /* [in] */ IResourcesTheme* theme,
     /* [in] */ IAttributeSet* attrs)
 {
     AutoPtr<ITypedArray> a;

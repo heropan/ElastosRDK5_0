@@ -9,7 +9,7 @@ namespace View {
 namespace Animation {
 
 CAR_OBJECT_IMPL(CCycleInterpolator);
-CAR_INTERFACE_IMPL_5(CCycleInterpolator, Object, ICycleInterpolator,INativeInterpolatorFactory,IHasNativeInterpolator,IInterpolator,ITimeInterpolator);
+CAR_INTERFACE_IMPL_4(CCycleInterpolator, Object, ICycleInterpolator,INativeInterpolatorFactory,IInterpolator,ITimeInterpolator);
 
 ECode CCycleInterpolator::constructor(
     /* [in] */ Float cycles)
@@ -25,14 +25,14 @@ ECode CCycleInterpolator::constructor(
 {
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
-    AutoPtr<ITheme> theme;
-    context->GetTheme((ITheme**)&theme);
+    AutoPtr<IResourcesTheme> theme;
+    context->GetTheme((IResourcesTheme**)&theme);
     return constructor(res, theme, attrs);
 }
 
 ECode CCycleInterpolator::constructor(
     /* [in] */ IResources* res,
-    /* [in] */ ITheme* theme,
+    /* [in] */ IResourcesTheme* theme,
     /* [in] */ IAttributeSet* attrs)
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(

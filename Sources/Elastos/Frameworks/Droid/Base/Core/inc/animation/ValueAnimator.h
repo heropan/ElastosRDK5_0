@@ -14,6 +14,7 @@ namespace Droid {
 namespace Animation {
 
 extern "C" const InterfaceID EIID_ValueAnimator;
+class ObjectAnimator;
 
 class ValueAnimator
     : public Animator
@@ -21,8 +22,8 @@ class ValueAnimator
 {
 public:
     class AnimationHandler
-        : public IRunnable
-        , public Object
+        : public Object
+        , public IRunnable
     {
     public:
         CAR_INTERFACE_DECL();
@@ -46,6 +47,7 @@ public:
 
     private:
         friend class ValueAnimator;
+        friend class ObjectAnimator;
 
         // The per-thread list of all active animations
         List<AutoPtr<IValueAnimator> > mAnimations/* = new ArrayList<ValueAnimator>()*/;
@@ -154,7 +156,8 @@ public:
      * @return PropertyValuesHolder[] An array of PropertyValuesHolder objects which hold the
      * values, per property, that define the animation.
      */
-    virtual CARAPI_(AutoPtr<ArrayOf<IPropertyValuesHolder*> >) GetValues();
+    virtual CARAPI GetValues(
+        /* [out, callee] */ ArrayOf<IPropertyValuesHolder*>** values);
 
     /**
      * Sets the length of the animation. The default duration is 300 milliseconds.
@@ -398,7 +401,7 @@ public:
 
     //@Override
     virtual CARAPI Clone(
-        /* [out] */ IAnimator** object);
+        /* [out] */ IInterface** object);
 
     static CARAPI_(void) SetDurationScale(
         /* [in] */ Float durationScale);

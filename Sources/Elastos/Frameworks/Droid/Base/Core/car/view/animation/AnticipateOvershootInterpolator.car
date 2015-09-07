@@ -15,7 +15,6 @@ module
      * interface ITimeInterpolator
      * interface IInterpolator
      * interface INativeInterpolatorFactory
-     * interface IHasNativeInterpolator
      */
     interface IAnticipateOvershootInterpolator {
         GetInterpolation(

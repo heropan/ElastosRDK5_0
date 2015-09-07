@@ -16,6 +16,9 @@ using Elastos::Droid::View::IOnPreDrawListener;
 using Elastos::Droid::View::EIID_IOnPreDrawListener;
 using Elastos::Droid::View::IViewOnLayoutChangeListener;
 using Elastos::Droid::View::EIID_IViewOnLayoutChangeListener;
+using Elastos::Utility::IList;
+
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::View::IView);
 
 namespace Elastos {
 namespace Droid {
@@ -107,7 +110,7 @@ private:
     class _AnimatorListenerAdapterEx : public AnimatorListenerAdapter
     {
     public:
-        _AnimatorListenerAdapter(
+        _AnimatorListenerAdapterEx(
             /* [in] */ CLayoutTransition* host,
             /* [in] */ IView* child,
             /* [in] */ IViewGroup* parent,
@@ -134,7 +137,7 @@ private:
     class _AnimatorListenerAdapterEx2 : public AnimatorListenerAdapter
     {
     public:
-        _AnimatorListenerAdapter(
+        _AnimatorListenerAdapterEx2(
             /* [in] */ CLayoutTransition* host,
             /* [in] */ IView* child,
             /* [in] */ IViewGroup* parent);
@@ -151,7 +154,7 @@ private:
     class _AnimatorListenerAdapterEx3 : public AnimatorListenerAdapter
     {
     public:
-        _AnimatorListenerAdapter(
+        _AnimatorListenerAdapterEx3(
             /* [in] */ CLayoutTransition* host,
             /* [in] */ IView* child,
             /* [in] */ IViewGroup* parent,
@@ -168,8 +171,8 @@ private:
     };
 
     class _OnPreDrawListener
-            : public IOnPreDrawListener
-            , public Object
+        : public Object
+        , public IOnPreDrawListener
     {
     public:
 
@@ -650,7 +653,7 @@ public:
         /* [out, callee] */ ArrayOf<ITransitionListener*>** listeners);
 
     CARAPI GetTransitionListeners(
-        /* [out] */ IObjectContainer** listeners);
+        /* [out] */ IList** listeners);
 
 private:
     /**
@@ -810,14 +813,13 @@ private:
     /**
      * Static interpolators - these are stateless and can be shared across the instances
      */
-    static AutoPtr<ITimeInterpolator> ACCEL_DECEL_INTERPOLATOR =
-            new AccelerateDecelerateInterpolator();
-    static AutoPtr<ITimeInterpolator> DECEL_INTERPOLATOR = new DecelerateInterpolator();
-    static AutoPtr<ITimeInterpolator> sAppearingInterpolator = ACCEL_DECEL_INTERPOLATOR;
-    static AutoPtr<ITimeInterpolator> sDisappearingInterpolator = ACCEL_DECEL_INTERPOLATOR;
-    static AutoPtr<ITimeInterpolator> sChangingAppearingInterpolator = DECEL_INTERPOLATOR;
-    static AutoPtr<ITimeInterpolator> sChangingDisappearingInterpolator = DECEL_INTERPOLATOR;
-    static AutoPtr<ITimeInterpolator> sChangingInterpolator = DECEL_INTERPOLATOR;
+    static AutoPtr<ITimeInterpolator> ACCEL_DECEL_INTERPOLATOR;
+    static AutoPtr<ITimeInterpolator> DECEL_INTERPOLATOR;
+    static AutoPtr<ITimeInterpolator> sAppearingInterpolator;
+    static AutoPtr<ITimeInterpolator> sDisappearingInterpolator;
+    static AutoPtr<ITimeInterpolator> sChangingAppearingInterpolator;
+    static AutoPtr<ITimeInterpolator> sChangingDisappearingInterpolator;
+    static AutoPtr<ITimeInterpolator> sChangingInterpolator;
     static Boolean sInit;
 
     /**

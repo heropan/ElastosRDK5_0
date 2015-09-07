@@ -1,19 +1,21 @@
 
-#include "BidirectionalTypeConverter.h"
+#include "animation/BidirectionalTypeConverter.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-BidirectionalTypeConverter::InvertedConverter::InvertedConverter(
+InvertedConverter::InvertedConverter(
     /* [in] */ BidirectionalTypeConverter/*<To, From>*/* converter)
 {
-    super(converter.getTargetType(), converter.getSourceType());
-    BidirectionalTypeConverter::constructor(fromClass, toClass);
+    InterfaceID targetType, sourceType;
+    converter->GetTargetType(&targetType);
+    converter->GetSourceType(&sourceType);
+    BidirectionalTypeConverter::constructor(targetType, sourceType);
     mConverter = converter;
 }
 
-ECode BidirectionalTypeConverter::InvertedConverter::ConvertBack(
+ECode InvertedConverter::ConvertBack(
     /* [in] */ IInterface* value,
     /* [out] */ IInterface** result)
 {
@@ -21,35 +23,40 @@ ECode BidirectionalTypeConverter::InvertedConverter::ConvertBack(
     return mConverter->Convert(value, result);
 }
 
-ECode BidirectionalTypeConverter::InvertedConverter::Convert(
+ECode InvertedConverter::Convert(
     /* [in] */ IInterface* value,
     /* [out] */ IInterface** result)
 {
     VALIDATE_NOT_NULL(result);
-    return mConverter->ConvertBack(value);
+    return mConverter->ConvertBack(value, result);
 }
 
+CAR_INTERFACE_IMPL(BidirectionalTypeConverter, TypeConverter, IBidirectionalTypeConverter);
 BidirectionalTypeConverter::BidirectionalTypeConverter()
 {}
 
 BidirectionalTypeConverter::BidirectionalTypeConverter(
-    /* [in] */ IMethodInfo* fromClass,
-    /* [in] */ IMethodInfo* toClass)
+    /* [in] */ const InterfaceID& fromClass,
+    /* [in] */ const InterfaceID& toClass)
 {
     TypeConverter::constructor(fromClass, toClass);
 }
 
-AutoPtr<BidirectionalTypeConverter> BidirectionalTypeConverter::Invert()
+ECode BidirectionalTypeConverter::Invert(
+    /* [out] */ IBidirectionalTypeConverter** result)
 {
+    VALIDATE_NOT_NULL(result);
     if (mInvertedConverter == NULL) {
         mInvertedConverter = new InvertedConverter(this);
     }
-    return mInvertedConverter;
+    *result = mInvertedConverter;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
 }
 
 ECode BidirectionalTypeConverter::constructor(
-    /* [in] */ IMethodInfo* fromClass,
-    /* [in] */ IMethodInfo* toClass)
+    /* [in] */ const InterfaceID& fromClass,
+    /* [in] */ const InterfaceID& toClass)
 {
     return TypeConverter::constructor(fromClass, toClass);
 }

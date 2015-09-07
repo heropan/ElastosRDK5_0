@@ -5,6 +5,7 @@
 #include "animation/ValueAnimator.h"
 
 using Elastos::Droid::Utility::IProperty;
+using Elastos::Droid::Graphics::IPath;
 
 namespace Elastos {
 namespace Droid {
@@ -74,7 +75,8 @@ public:
      * object (if there was just one) or a comma-separated list of all of the
      * names (if there are more than one).</p>
      */
-    virtual CARAPI_(String) GetPropertyName();
+    virtual CARAPI GetPropertyName(
+        /* [out] */ String* name);
 
     // @Override
     virtual CARAPI_(String) GetNameForTrace();
@@ -150,7 +152,7 @@ public:
         /* [in] */ Float fraction);
 
     virtual CARAPI Clone(
-        /* [out] */ IAnimator** object);
+        /* [out] */ IInterface** object);
 
     /**
      * Constructs and returns an ObjectAnimator that animates between Int32 values. A single
@@ -227,7 +229,7 @@ public:
     static AutoPtr<IObjectAnimator> OfInt32(
         /* [in] */ IInterface* target,
         /* [in] */ IProperty* xProperty,
-        /* [in] */ IProperty yProperty,
+        /* [in] */ IProperty* yProperty,
         /* [in] */ IPath* path);
 
     /**
@@ -249,7 +251,7 @@ public:
     static CARAPI_(AutoPtr<IObjectAnimator>) OfMultiInt32(
         /* [in] */ IInterface* target,
         /* [in] */ const String& propertyName,
-        /* [in] */ int[][] values);
+        /* [in] */ ArrayOf<ArrayOf<Int32>* >* values);
 
     /**
      * Constructs and returns an ObjectAnimator that animates the target using a multi-int setter
@@ -522,7 +524,6 @@ public:
         /* [in] */ ITypeEvaluator* evaluator,
         /* [in] */ ArrayOf<IInterface*>* values);
 
-
     /**
      * Constructs and returns an ObjectAnimator that animates a property along a <code>Path</code>.
      * A <code>Path</code></> animation moves in two dimensions, animating coordinates
@@ -541,13 +542,12 @@ public:
      * @param path The <code>Path</code> to animate values along.
      * @return An ObjectAnimator object that is set up to animate along <code>path</code>.
      */
-    @NonNull
-    public static ObjectAnimator ofObject(Object target, String propertyName,
-            @Nullable TypeConverter<PointF, ?> converter, Path path) {
-        PropertyValuesHolder pvh = PropertyValuesHolder.ofObject(propertyName, converter, path);
-        return ofPropertyValuesHolder(target, pvh);
-    }
-
+    // @NonNull
+    static CARAPI_(AutoPtr<IObjectAnimator>) OfObject(
+        /* [in] */ IInterface* target,
+        /* [in] */ const String& propertyName,
+        /* [in] */ /*@Nullable*/ ITypeConverter* converter,
+        /* [in] */ IPath* path);
 
     /**
      * Constructs and returns an ObjectAnimator that animates between Object values. A single
@@ -568,13 +568,13 @@ public:
      * @param values A set of values that the animation will animate between over time.
      * @return An ObjectAnimator object that is set up to animate between the given values.
      */
-    @NonNull
-    public static <T, V, P> ObjectAnimator ofObject(T target, Property<T, P> property,
-            TypeConverter<V, P> converter, TypeEvaluator<V> evaluator, V... values) {
-        PropertyValuesHolder pvh = PropertyValuesHolder.ofObject(property, converter, evaluator,
-                values);
-        return ofPropertyValuesHolder(target, pvh);
-    }
+    // @NonNull
+    static CARAPI_(AutoPtr<IObjectAnimator>) OfObject(
+        /* [in] */ IInterface* target,
+        /* [in] */ IProperty* property,
+        /* [in] */ ITypeConverter* converter,
+        /* [in] */ ITypeEvaluator* evaluator,
+        /* [in] */ ArrayOf<IInterface*>* values);
 
     /**
      * Constructs and returns an ObjectAnimator that animates a property along a <code>Path</code>.
@@ -595,13 +595,12 @@ public:
      * @param path The <code>Path</code> to animate values along.
      * @return An ObjectAnimator object that is set up to animate along <code>path</code>.
      */
-    @NonNull
-    public static <T, V> ObjectAnimator ofObject(T target, @NonNull Property<T, V> property,
-            @Nullable TypeConverter<PointF, V> converter, Path path) {
-        PropertyValuesHolder pvh = PropertyValuesHolder.ofObject(property, converter, path);
-        return ofPropertyValuesHolder(target, pvh);
-    }
-
+    // @NonNull
+    static CARAPI_(AutoPtr<IObjectAnimator>) OfObject(
+        /* [in] */ IInterface* target,
+        /* [in] */ /*@NonNull*/ IProperty* property,
+        /* [in] */ /*@Nullable*/ ITypeConverter* converter,
+        /* [in] */ IPath* path);
 
     /**
      * Constructs and returns an ObjectAnimator that animates between the sets of values specified
@@ -671,7 +670,7 @@ protected:
         /* [in] */ AutoPtr<IProperty> property);
 
 private:
-    static const String LOG_TAG;
+    static const String LOGTAG;
 
     /**
      * A weak reference to the target object on which the property exists, set
@@ -683,7 +682,7 @@ private:
 
     AutoPtr<IProperty> mProperty;
 
-    Boolean mAutoCancel = FALSE;
+    Boolean mAutoCancel;
 };
 
 

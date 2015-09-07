@@ -3,9 +3,8 @@
 #include "animation/CAnimatorSet.h"
 #include "animation/CAnimatorSetBuilder.h"
 
-using Elastos::Core::CObjectContainer;
-
-DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Animation::AnimatorSet::Node)
+using Elastos::Utility::IIterator;
+using Elastos::Utility::CArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -198,7 +197,7 @@ ECode AnimatorSet::AnimatorSetListener::OnAnimationCancel(
             if (mAnimatorSet->mListeners.IsEmpty() == FALSE) {
                 List<AutoPtr<IAnimatorListener> >::Iterator it = mAnimatorSet->mListeners.Begin();
                 for (; it != mAnimatorSet->mListeners.Begin(); ++it) {
-                    (*it)->OnAnimationCancel((IAnimatorSet*)(mAnimatorSet->Probe(EIID_IAnimatorSet)));
+                    (*it)->OnAnimationCancel((IAnimator*)(mAnimatorSet->Probe(EIID_IAnimator)));
                 }
             }
         }
@@ -235,7 +234,7 @@ ECode AnimatorSet::AnimatorSetListener::OnAnimationEnd(
             if (mAnimatorSet->mListeners.IsEmpty() == FALSE) {
                 List<AutoPtr<IAnimatorListener> >::Iterator itListeners = mAnimatorSet->mListeners.Begin();
                 for (; itListeners != mAnimatorSet->mListeners.End(); ++itListeners) {
-                    (*itListeners)->OnAnimationEnd((IAnimatorSet*)(mAnimatorSet->Probe(EIID_IAnimatorSet)));
+                    (*itListeners)->OnAnimationEnd((IAnimator*)(mAnimatorSet->Probe(EIID_IAnimator)));
                 }
             }
             mAnimatorSet->mStarted = FALSE;
@@ -280,7 +279,7 @@ AnimatorSet::Node::Node(
 {}
 
 AnimatorSet::Node::Node()
-    :  mDone(FALSE)
+    : mDone(FALSE)
 {}
 
 AnimatorSet::Node::~Node()
@@ -300,8 +299,10 @@ void AnimatorSet::Node::AddDependency(
     dependencyNode->mNodeDependents.PushBack(this);
 }
 
-AutoPtr<AnimatorSet::Node> AnimatorSet::Node::Clone()
+ECode AnimatorSet::Node::Clone(
+    /* [out] */ IInterface** obj)
 {
+    VALIDATE_NOT_NULL(obj);
     AutoPtr<Node> newObject = new Node();
     mAnimation->Clone((IAnimator**)(&(newObject->mAnimation)));
     newObject->mDependencies.Assign(mDependencies.Begin(), mDependencies.End());
@@ -309,7 +310,9 @@ AutoPtr<AnimatorSet::Node> AnimatorSet::Node::Clone()
     newObject->mNodeDependencies.Assign(mNodeDependencies.Begin(), mNodeDependencies.End());
     newObject->mNodeDependents.Assign(mNodeDependents.Begin(), mNodeDependents.End());
     newObject->mDone = mDone;
-    return newObject;
+    *obj = (ICloneable*)newObject->Probe(EIID_ICloneable);
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
 }
 
 AnimatorSet::AnimatorListenerAdapterIMPL::AnimatorListenerAdapterIMPL(
@@ -362,12 +365,22 @@ ECode AnimatorSet::AnimatorListenerAdapterIMPL::OnAnimationRepeat(
 //                  AnimatorSet
 //==============================================================================
 
+UInt32 AnimatorSet::AddRef()
+{
+    return Animator::AddRef();
+}
+
+UInt32 AnimatorSet::Release()
+{
+    return Animator::Release();
+}
+
 ECode AnimatorSet::GetInterfaceID(
     /* [in] */ IInterface* object,
     /* [out] */ InterfaceID* iid)
 {
     VALIDATE_NOT_NULL(iid);
-    if (object == (IInterface*)(AnimatorSet *)this) {
+    if (object == reinterpret_cast<PInterface>((AnimatorSet *)this)) {
         *iid = EIID_AnimatorSet;
     }
     else if (object == (IInterface*)(IAnimatorSet *)this) {
@@ -387,7 +400,7 @@ PInterface AnimatorSet::Probe(
         return (IInterface*)(IAnimatorSet*)this;
     }
 
-    return Animator::Probe(riid)
+    return Animator::Probe(riid);
 }
 
 AnimatorSet::AnimatorSet()
@@ -409,7 +422,8 @@ ECode AnimatorSet::PlayTogether(
 {
     if (items != NULL && items->GetLength() > 0) {
         mNeedsSort = TRUE;
-        AutoPtr<IAnimatorSetBuilder> builder = Play((*items)[0]);
+        AutoPtr<IAnimatorSetBuilder> builder;
+        Play((*items)[0], (IAnimatorSetBuilder**)&builder);
         for (Int32 i = 1; i < items->GetLength(); ++i) {
             builder->With((*items)[i]);
         }
@@ -418,26 +432,26 @@ ECode AnimatorSet::PlayTogether(
 }
 
 ECode AnimatorSet::PlayTogether(
-    /* [in] */ IObjectContainer* items)
+    /* [in] */ ICollection* items)
 {
     if (items != NULL) {
         Int32 count;
-        items->GetObjectCount(&count);
+        items->GetSize(&count);
 
         if (count > 0) {
             mNeedsSort = TRUE;
             AutoPtr<IAnimatorSetBuilder> builder;
-            AutoPtr<IObjectEnumerator> enumerator;
-            items->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
+            AutoPtr<IIterator> it;
+            items->GetIterator((IIterator**)&it);
             Boolean hasNext = FALSE;
-            while (enumerator->MoveNext(&hasNext), hasNext) {
-                AutoPtr<IAnimator> current;
-                enumerator->Current((IInterface**)&current);
+            while (it->HasNext(&hasNext), hasNext) {
+                AutoPtr<IAnimator> anim;
+                it->GetNext((IInterface**)&anim);
                 if (builder == NULL) {
-                    builder = Play(current);
+                    Play(anim, (IAnimatorSetBuilder**)&builder);
                 }
                 else {
-                    builder->With(current);
+                    builder->With(anim);
                 }
             }
         }
@@ -451,11 +465,13 @@ ECode AnimatorSet::PlaySequentially(
     if (items != NULL) {
         mNeedsSort = TRUE;
         if (items->GetLength() == 1) {
-            Play((*items)[0]);
+            AutoPtr<IAnimatorSetBuilder> builder;
+            Play((*items)[0], (IAnimatorSetBuilder**)&builder);
         } else {
             mReversible = FALSE;
             for (Int32 i = 0; i < items->GetLength() - 1; ++i) {
-                AutoPtr<IAnimatorSetBuilder> builder = Play((*items)[i]);
+                AutoPtr<IAnimatorSetBuilder> builder;
+                Play((*items)[i], (IAnimatorSetBuilder**)&builder);
                 builder->Before((*items)[i+1]);
             }
         }
@@ -476,16 +492,16 @@ ECode AnimatorSet::PlaySequentially(
     if (items != NULL && (items->GetSize(&size), size) > 0) {
         mNeedsSort = TRUE;
         if (size == 1) {
-            AutoPtr<IInterface> animator;
+            AutoPtr<IAnimator> animator;
             items->Get(0, (IInterface**)&animator);
             AutoPtr<IAnimatorSetBuilder> as;
             Play(animator, (IAnimatorSetBuilder**)&as);
         } else {
             mReversible = FALSE;
             for (Int32 i = 0; i < size - 1; ++i) {
-                AutoPtr<IInterface> animator;
+                AutoPtr<IAnimator> animator;
                 items->Get(i, (IInterface**)&animator);
-                AutoPtr<IInterface> animator2;
+                AutoPtr<IAnimator> animator2;
                 items->Get(i + 1, (IInterface**)&animator2);
                 AutoPtr<IAnimatorSetBuilder> as;
                 Play(animator, (IAnimatorSetBuilder**)&as);
@@ -515,15 +531,16 @@ ECode AnimatorSet::GetChildAnimations(
 }
 
 ECode AnimatorSet::GetChildAnimations(
-    /* [out] */ IObjectContainer** childAnimations)
+    /* [out] */ IArrayList** childAnimations)
 {
     VALIDATE_NOT_NULL(childAnimations);
-    AutoPtr<IObjectContainer> array;
-    CObjectContainer::New((IObjectContainer**)&array);
+    AutoPtr<IArrayList> array;
+    CArrayList::New((IArrayList**)&array);
 
+    Int32 pos = 0;
     List<AutoPtr<Node> >::Iterator it = mNodes.Begin();
     for (; it != mNodes.End(); ++it) {
-        array->Add(((*it)->mAnimation).Get());
+        array->Add(pos++, ((*it)->mAnimation).Get());
     }
     *childAnimations = array;
     REFCOUNT_ADD(*childAnimations);
@@ -576,19 +593,20 @@ ECode AnimatorSet::Play(
 ECode AnimatorSet::Cancel()
 {
     mTerminated = TRUE;
-    if (IsStarted()) {
+    Boolean started = FALSE;
+    if (IsStarted(&started), started) {
         List<AutoPtr<IAnimatorListener> > tmpListeners(mListeners);
         if (tmpListeners.IsEmpty() == FALSE) {
             List<AutoPtr<IAnimatorListener> >::Iterator it = tmpListeners.Begin();
             for (; it != tmpListeners.End(); it++) {
-                (*it)->OnAnimationCancel(THIS_PROBE(IAnimatorSet));
+                (*it)->OnAnimationCancel(THIS_PROBE(IAnimator));
             }
         }
         Boolean running;
-        if (mDelayAnim != NULL && (mDelayAnim->IsRunning(&running), running)) {
+        if (mDelayAnim != NULL && (IAnimator::Probe(mDelayAnim)->IsRunning(&running), running)) {
             // If we're currently in the startDelay period, just cancel that animator and
             // send out the end event to all listeners
-            mDelayAnim->Cancel();
+            IAnimator::Probe(mDelayAnim)->Cancel();
         } else  if (mSortedNodes.IsEmpty() == FALSE) {
             List<AutoPtr<Node> >::Iterator it = mSortedNodes.Begin();
             for (; it != mSortedNodes.End(); it++) {
@@ -598,7 +616,7 @@ ECode AnimatorSet::Cancel()
         if (tmpListeners.IsEmpty() == FALSE) {
             List<AutoPtr<IAnimatorListener> >::Iterator it = tmpListeners.Begin();
             for (; it != tmpListeners.End(); it++) {
-                (*it)->OnAnimationEnd(THIS_PROBE(IAnimatorSet));
+                (*it)->OnAnimationEnd(THIS_PROBE(IAnimator));
             }
         }
         mStarted = FALSE;
@@ -609,7 +627,8 @@ ECode AnimatorSet::Cancel()
 ECode AnimatorSet::End()
 {
     mTerminated = TRUE;
-    if (IsStarted()) {
+    Boolean started = FALSE;
+    if (IsStarted(&started), started) {
         if (mSortedNodes.GetSize() != mNodes.GetSize()) {
             // hasn't been started yet - sort the nodes now, then end them
             SortNodes();
@@ -622,7 +641,7 @@ ECode AnimatorSet::End()
             }
         }
         if (mDelayAnim != NULL) {
-            mDelayAnim->Cancel();
+            IAnimator::Probe(mDelayAnim)->Cancel();
         }
         if (mSortedNodes.IsEmpty() == FALSE) {
             List<AutoPtr<Node> >::Iterator it = mSortedNodes.Begin();
@@ -634,7 +653,7 @@ ECode AnimatorSet::End()
             List<AutoPtr<IAnimatorListener> > tmpListeners(mListeners);
             List<AutoPtr<IAnimatorListener> >::Iterator it = tmpListeners.Begin();
             for (; it != tmpListeners.End(); it++) {
-                (*it)->OnAnimationEnd(THIS_PROBE(IAnimatorSet));
+                (*it)->OnAnimationEnd(THIS_PROBE(IAnimator));
             }
         }
         mStarted = FALSE;
@@ -656,7 +675,7 @@ ECode AnimatorSet::IsRunning(
         }
     }
     *_running = FALSE;
-    return NOERROR
+    return NOERROR;
 }
 
 ECode AnimatorSet::IsStarted(
@@ -728,7 +747,7 @@ ECode AnimatorSet::Pause()
     Animator::Pause();
     if (!previouslyPaused && mPaused) {
         if (mDelayAnim != NULL) {
-            mDelayAnim->Pause();
+            IAnimator::Probe(mDelayAnim)->Pause();
         } else {
             List<AutoPtr<Node> >::Iterator it = mNodes.Begin();
             for (; it != mNodes.End(); it++) {
@@ -736,6 +755,7 @@ ECode AnimatorSet::Pause()
             }
         }
     }
+    return NOERROR;
 }
 
 ECode AnimatorSet::Resume()
@@ -744,7 +764,7 @@ ECode AnimatorSet::Resume()
     Animator::Resume();
     if (previouslyPaused && !mPaused) {
         if (mDelayAnim != NULL) {
-            mDelayAnim->Resume();
+            IAnimator::Probe(mDelayAnim)->Resume();
         } else {
             List<AutoPtr<Node> >::Iterator it = mNodes.Begin();
             for (; it != mNodes.End(); it++) {
@@ -752,6 +772,7 @@ ECode AnimatorSet::Resume()
             }
         }
     }
+    return NOERROR;
 }
 
 ECode AnimatorSet::Start()
@@ -786,7 +807,7 @@ ECode AnimatorSet::Start()
     // contains the animation nodes in the correct order.
     SortNodes();
 
-    List<AutoPtr<Node> >::Iterator it = mSortedNodes.Begin();
+    it = mSortedNodes.Begin();
     for (; it!= mSortedNodes.End(); ++it) {
         AutoPtr<Node> node = *it;
         // First, clear out the old listeners
@@ -842,17 +863,17 @@ ECode AnimatorSet::Start()
         AutoPtr<ArrayOf<Float> > fArray = ArrayOf<Float>::Alloc(2);
         (*fArray)[0] = 0.0f; (*fArray)[1] = 1.0f;
         mDelayAnim = ValueAnimator::OfFloat(fArray);
-        mDelayAnim->SetDuration(mStartDelay);
+        IAnimator::Probe(mDelayAnim)->SetDuration(mStartDelay);
         AutoPtr<IAnimatorListener> aladapter = new AnimatorListenerAdapterIMPL(this, nodesToStart);
-        mDelayAnim->AddListener(aladapter);
-        mDelayAnim->Start();
+        IAnimator::Probe(mDelayAnim)->AddListener(aladapter);
+        IAnimator::Probe(mDelayAnim)->Start();
     }
 
     if (!mListeners.IsEmpty()) {
         List<AutoPtr<IAnimatorListener> > tmpListeners(mListeners);
         List<AutoPtr<IAnimatorListener> >::Iterator tmpIt = tmpListeners.Begin();
         for (; tmpIt != tmpListeners.End(); ++tmpIt) {
-            (*tmpIt)->OnAnimationStart(THIS_PROBE(IAnimatorSet));
+            (*tmpIt)->OnAnimationStart(THIS_PROBE(IAnimator));
         }
     }
     if (mNodes.IsEmpty() && mStartDelay == 0) {
@@ -863,7 +884,7 @@ ECode AnimatorSet::Start()
             List<AutoPtr<IAnimatorListener> > tmpListeners(mListeners);
             List<AutoPtr<IAnimatorListener> >::Iterator tmpIt = tmpListeners.Begin();
             for (; tmpIt != tmpListeners.End(); ++tmpIt) {
-                (*tmpIt)->OnAnimationEnd(THIS_PROBE(IAnimatorSet));
+                (*tmpIt)->OnAnimationEnd(THIS_PROBE(IAnimator));
             }
         }
     }
@@ -871,7 +892,7 @@ ECode AnimatorSet::Start()
 }
 
 ECode AnimatorSet::Clone(
-    /* [out] */ IAnimator** object)
+    /* [out] */ IInterface** object)
 {
     AutoPtr<CAnimatorSet> newObject;
     CAnimatorSet::NewByFriend((CAnimatorSet**)&newObject);
@@ -898,7 +919,9 @@ ECode AnimatorSet::Clone(
     List<AutoPtr<Node> >::Iterator it = mNodes.Begin();
     for (; it != mNodes.End(); it++) {
         AutoPtr<Node> node = *it;
-        AutoPtr<Node> nodeClone = node->Clone();
+        AutoPtr<IInterface> tmp;
+        node->Clone((IInterface**)&tmp);
+        AutoPtr<Node> nodeClone = (Node*)ICloneable::Probe(tmp);
         nodeCloneMap[node] = nodeClone;
         anim->mNodes.PushBack(nodeClone);
         (anim->mNodeMap)[nodeClone->mAnimation] = nodeClone;
@@ -947,7 +970,7 @@ ECode AnimatorSet::Clone(
         }
     }
 
-    *object = newObject;
+    *object = (IInterface*)newObject->Probe(EIID_IInterface);
     REFCOUNT_ADD(*object);
     return NOERROR;
 }
@@ -1030,7 +1053,7 @@ ECode AnimatorSet::CanReverse(
     for (; it != mNodes.End(); it++) {
         Boolean tmp = FALSE;
         Int64 delay = 0;
-        if (!(node->mAnimation->CanReverse(&tmp), tmp) || (node->mAnimation->GetStartDelay(&delay), delay) > 0) {
+        if (!((*it)->mAnimation->CanReverse(&tmp), tmp) || ((*it)->mAnimation->GetStartDelay(&delay), delay) > 0) {
             return NOERROR;
         }
     }

@@ -4,19 +4,20 @@
 #include "animation/CValueAnimatorHelper.h"
 #include "animation/PropertyValuesHolder.h"
 #include "animation/CObjectAnimator.h"
-#include "view/animation/CAccelerateDecelerateInterpolator.h"
-#include "view/animation/CDecelerateInterpolator.h"
+#include "animation/AnimatorListenerAdapter.h"
+// #include "view/animation/CAccelerateDecelerateInterpolator.h"
+// #include "view/animation/CDecelerateInterpolator.h"
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::CObjectContainer;
-using Elastos::Droid::View::Animation::CAccelerateDecelerateInterpolator;
+// using Elastos::Droid::View::Animation::CAccelerateDecelerateInterpolator;
 using Elastos::Droid::View::Animation::IAccelerateDecelerateInterpolator;
-using Elastos::Droid::View::Animation::CDecelerateInterpolator;
+// using Elastos::Droid::View::Animation::CDecelerateInterpolator;
 using Elastos::Droid::View::Animation::IDecelerateInterpolator;
 using Elastos::Droid::View::IOnPreDrawListener;
 using Elastos::Droid::View::IViewTreeObserver;
 using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::EIID_IViewGroup;
+using Elastos::Utility::CArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -47,17 +48,20 @@ Boolean CLayoutTransition::sInit = CLayoutTransition::InitStatics();
 Boolean CLayoutTransition::InitStatics()
 {
     AutoPtr<IAccelerateDecelerateInterpolator> tmp;
-    CAccelerateDecelerateInterpolator::New((IAccelerateDecelerateInterpolator**)&tmp);
+    assert(0 && "TODO");
+    // CAccelerateDecelerateInterpolator::New((IAccelerateDecelerateInterpolator**)&tmp);
     ACCEL_DECEL_INTERPOLATOR = ITimeInterpolator::Probe(tmp);
 
     AutoPtr<IDecelerateInterpolator> di;
-    CDecelerateInterpolator::New((IDecelerateInterpolator**)&di);
-    DECEL_INTERPOLATOR = IDecelerateInterpolator::Probe(di);
+    assert(0 && "TODO");
+    // CDecelerateInterpolator::New((IDecelerateInterpolator**)&di);
+    DECEL_INTERPOLATOR = ITimeInterpolator::Probe(di);
     sAppearingInterpolator = ACCEL_DECEL_INTERPOLATOR;
     sDisappearingInterpolator = ACCEL_DECEL_INTERPOLATOR;
     sChangingAppearingInterpolator = DECEL_INTERPOLATOR;
     sChangingDisappearingInterpolator = DECEL_INTERPOLATOR;
     sChangingInterpolator = DECEL_INTERPOLATOR;
+    return TRUE;
 }
 
 CAR_INTERFACE_IMPL(CLayoutTransition::_OnPreDrawListener, Object, IOnPreDrawListener)
@@ -66,8 +70,7 @@ CAR_INTERFACE_IMPL(CLayoutTransition::ViewOnLayoutChangeListener, Object, IViewO
 CLayoutTransition::_AnimatorListenerAdapter::_AnimatorListenerAdapter(
     /* [in] */ CLayoutTransition* host,
     /* [in] */ IView* child)
-    : AnimatorListenerAdapter()
-    , mHost(host)
+    : mHost(host)
     , mChild(child)
 {
 }
@@ -79,14 +82,13 @@ ECode CLayoutTransition::_AnimatorListenerAdapter::OnAnimationEnd(
     return NOERROR;
 }
 
-CLayoutTransition::_AnimatorListenerAdapterEx::_AnimatorListenerAdapter(
+CLayoutTransition::_AnimatorListenerAdapterEx::_AnimatorListenerAdapterEx(
     /* [in] */ CLayoutTransition* host,
     /* [in] */ IView* child,
     /* [in] */ IViewGroup* parent,
     /* [in] */ Boolean changeReason,
     /* [in] */ IViewOnLayoutChangeListener* listener)
-    : AnimatorListenerAdapter()
-    , mHost(host)
+    : mHost(host)
     , mChild(child)
     , mParent(parent)
     , mChangeReason(changeReason)
@@ -142,7 +144,7 @@ ECode CLayoutTransition::_AnimatorListenerAdapterEx::OnAnimationEnd(
     return NOERROR;
 }
 
-CLayoutTransition::_AnimatorListenerAdapterEx2::_AnimatorListenerAdapter(
+CLayoutTransition::_AnimatorListenerAdapterEx2::_AnimatorListenerAdapterEx2(
     /* [in] */ CLayoutTransition* host,
     /* [in] */ IView* child,
     /* [in] */ IViewGroup* parent)
@@ -168,7 +170,7 @@ ECode CLayoutTransition::_AnimatorListenerAdapterEx2::OnAnimationEnd(
     return NOERROR;
 }
 
-CLayoutTransition::_AnimatorListenerAdapterEx3::_AnimatorListenerAdapter(
+CLayoutTransition::_AnimatorListenerAdapterEx3::_AnimatorListenerAdapterEx3(
     /* [in] */ CLayoutTransition* host,
     /* [in] */ IView* child,
     /* [in] */ IViewGroup* parent,
@@ -200,15 +202,15 @@ ECode CLayoutTransition::_AnimatorListenerAdapterEx3::OnAnimationEnd(
 CLayoutTransition::_OnPreDrawListener::_OnPreDrawListener(
     /* [in] */ CLayoutTransition* host,
     /* [in] */ IViewGroup* parent)
-        : mHost(host)
-        , mParent(parent)
+    : mHost(host)
+    , mParent(parent)
 {}
 
 ECode CLayoutTransition::_OnPreDrawListener::OnPreDraw(
     /* [out] */ Boolean* result)
 {
     AutoPtr<IViewTreeObserver> observer;
-    mParent->GetViewTreeObserver((IViewTreeObserver**)&observer);
+    IView::Probe(mParent)->GetViewTreeObserver((IViewTreeObserver**)&observer);
     observer->RemoveOnPreDrawListener(this);
     Int32 count = mHost->mLayoutChangeListenerMap.GetSize();
     if (count > 0) {
@@ -276,25 +278,25 @@ ECode CLayoutTransition::ViewOnLayoutChangeListener::OnLayoutChange(
         case ILayoutTransition::APPEARING:
             startDelay = mHost->mChangingAppearingDelay + mHost->mStaggerDelay;
             mHost->mStaggerDelay += mHost->mChangingAppearingStagger;
-            if (mChangingAppearingInterpolator != sChangingAppearingInterpolator) {
-                anim->SetInterpolator(mChangingAppearingInterpolator);
+            if (mHost->mChangingAppearingInterpolator != sChangingAppearingInterpolator) {
+                mAnim->SetInterpolator(mHost->mChangingAppearingInterpolator);
             }
 
             break;
         case ILayoutTransition::DISAPPEARING:
             startDelay = mHost->mChangingDisappearingDelay + mHost->mStaggerDelay;
             mHost->mStaggerDelay += mHost->mChangingDisappearingStagger;
-            if (mChangingDisappearingInterpolator !=
+            if (mHost->mChangingDisappearingInterpolator !=
                     sChangingDisappearingInterpolator) {
-                anim->SetInterpolator(mChangingDisappearingInterpolator);
+                mAnim->SetInterpolator(mHost->mChangingDisappearingInterpolator);
             }
 
             break;
         case ILayoutTransition::CHANGING:
             startDelay = mHost->mChangingDelay + mHost->mStaggerDelay;
             mHost->mStaggerDelay += mHost->mChangingStagger;
-            if (mChangingInterpolator != sChangingInterpolator) {
-                anim->SetInterpolator(mChangingInterpolator);
+            if (mHost->mChangingInterpolator != sChangingInterpolator) {
+                mAnim->SetInterpolator(mHost->mChangingInterpolator);
             }
             break;
     }
@@ -364,35 +366,35 @@ CLayoutTransition::CLayoutTransition()
         AutoPtr<IObjectAnimatorHelper> helper;
         CObjectAnimatorHelper::AcquireSingleton((IObjectAnimatorHelper**)&helper);
         helper->OfPropertyValuesHolder(NULL, params, (IObjectAnimator**)&sDefaultChangeIn);
-        sDefaultChangeIn->SetDuration(DEFAULT_DURATION);
-        sDefaultChangeIn->SetStartDelay(mChangingAppearingDelay);
-        sDefaultChangeIn->SetInterpolator(mChangingAppearingInterpolator);
-        sDefaultChangeIn->Clone((IAnimator**)&sDefaultChangeOut);
-        sDefaultChangeOut->SetStartDelay(mChangingDisappearingDelay);
-        sDefaultChangeOut->SetInterpolator(mChangingDisappearingInterpolator);
-        sDefaultChangeIn->Clone((IAnimator**)&sDefaultChange);
-        sDefaultChange->SetStartDelay(mChangingDelay);
-        sDefaultChange->SetInterpolator(mChangingInterpolator);
+        IAnimator::Probe(sDefaultChangeIn)->SetDuration(DEFAULT_DURATION);
+        IAnimator::Probe(sDefaultChangeIn)->SetStartDelay(mChangingAppearingDelay);
+        IAnimator::Probe(sDefaultChangeIn)->SetInterpolator(mChangingAppearingInterpolator);
+        ICloneable::Probe(sDefaultChangeIn)->Clone((IInterface**)&sDefaultChangeOut);
+        IAnimator::Probe(sDefaultChangeOut)->SetStartDelay(mChangingDisappearingDelay);
+        IAnimator::Probe(sDefaultChangeOut)->SetInterpolator(mChangingDisappearingInterpolator);
+        ICloneable::Probe(sDefaultChangeIn)->Clone((IInterface**)&sDefaultChange);
+        IAnimator::Probe(sDefaultChange)->SetStartDelay(mChangingDelay);
+        IAnimator::Probe(sDefaultChange)->SetInterpolator(mChangingInterpolator);
 
         AutoPtr<ArrayOf<Float> > paramFloat1 = ArrayOf<Float>::Alloc(2);
         (*paramFloat1)[0] = 0.0f; (*paramFloat1)[1] = 1.0f;
         sDefaultFadeIn = CObjectAnimator::OfFloat(NULL, String("alpha"), paramFloat1);
-        sDefaultFadeIn->SetDuration(DEFAULT_DURATION);
-        sDefaultFadeIn->SetStartDelay(mAppearingDelay);
-        sDefaultFadeIn->SetInterpolator(mAppearingInterpolator);
+        IAnimator::Probe(sDefaultFadeIn)->SetDuration(DEFAULT_DURATION);
+        IAnimator::Probe(sDefaultFadeIn)->SetStartDelay(mAppearingDelay);
+        IAnimator::Probe(sDefaultFadeIn)->SetInterpolator(mAppearingInterpolator);
         AutoPtr<ArrayOf<Float> > paramFloat2 = ArrayOf<Float>::Alloc(2);
         (*paramFloat2)[0] = 1.0f; (*paramFloat2)[1] = 0.0f;
         sDefaultFadeOut = CObjectAnimator::OfFloat(NULL, String("alpha"), paramFloat2);
-        sDefaultFadeOut->SetDuration(DEFAULT_DURATION);
-        sDefaultFadeOut->SetStartDelay(mDisappearingDelay);
-        sDefaultFadeOut->SetInterpolator(mDisappearingInterpolator);
+        IAnimator::Probe(sDefaultFadeOut)->SetDuration(DEFAULT_DURATION);
+        IAnimator::Probe(sDefaultFadeOut)->SetStartDelay(mDisappearingDelay);
+        IAnimator::Probe(sDefaultFadeOut)->SetInterpolator(mDisappearingInterpolator);
     }
 //
-    mChangingAppearingAnim = sDefaultChangeIn;
-    mChangingDisappearingAnim = sDefaultChangeOut;
-    mChangingAnim = sDefaultChange;
-    mAppearingAnim = sDefaultFadeIn;
-    mDisappearingAnim = sDefaultFadeOut;
+    mChangingAppearingAnim = IAnimator::Probe(sDefaultChangeIn);
+    mChangingDisappearingAnim = IAnimator::Probe(sDefaultChangeOut);
+    mChangingAnim = IAnimator::Probe(sDefaultChange);
+    mAppearingAnim = IAnimator::Probe(sDefaultFadeIn);
+    mDisappearingAnim = IAnimator::Probe(sDefaultFadeOut);
 }
 ECode CLayoutTransition::constructor()
 {
@@ -773,17 +775,17 @@ void CLayoutTransition::RunChangeTransition(
         case ILayoutTransition::APPEARING:
             baseAnimator = mChangingAppearingAnim;
             duration = mChangingAppearingDuration;
-            parentAnimator = sDefaultChangeIn;
+            parentAnimator = IAnimator::Probe(sDefaultChangeIn);
             break;
         case ILayoutTransition::DISAPPEARING:
             baseAnimator = mChangingDisappearingAnim;
             duration = mChangingDisappearingDuration;
-            parentAnimator = sDefaultChangeOut;
+            parentAnimator = IAnimator::Probe(sDefaultChangeOut);
             break;
         case ILayoutTransition::CHANGING:
             baseAnimator = mChangingAnim;
             duration = mChangingDuration;
-            parentAnimator = sDefaultChange;
+            parentAnimator = IAnimator::Probe(sDefaultChange);
             break;
         default:
             // Shouldn't reach here
@@ -800,7 +802,7 @@ void CLayoutTransition::RunChangeTransition(
     mStaggerDelay = 0;
 
     AutoPtr<IViewTreeObserver> observer;
-    parent->GetViewTreeObserver((IViewTreeObserver**)&observer); // used for later cleanup
+    IView::Probe(parent)->GetViewTreeObserver((IViewTreeObserver**)&observer); // used for later cleanup
     assert(observer != NULL);
 
     Boolean alive = FALSE;
@@ -827,10 +829,10 @@ void CLayoutTransition::RunChangeTransition(
         IViewGroup* vg;
         while (tempParent != NULL) {
             AutoPtr<IViewParent> parentParent;
-            tempParent->GetParent((IViewParent**)&parentParent);
+            IView::Probe(tempParent)->GetParent((IViewParent**)&parentParent);
             vg = IViewGroup::Probe(parentParent);
             if (vg != NULL) {
-                SetupChangeAnimation(vg, changeReason, parentAnimator, duration, tempParent);
+                SetupChangeAnimation(vg, changeReason, parentAnimator, duration, IView::Probe(tempParent));
                 tempParent = vg;
             }
             else {
@@ -914,17 +916,18 @@ void CLayoutTransition::SetupChangeAnimation(
     CValueAnimatorHelper::AcquireSingleton((IValueAnimatorHelper**)&helper);
     AutoPtr<IValueAnimator> pendingAnimRemover;
     helper->OfFloat(params, (IValueAnimator**)&pendingAnimRemover);
-    pendingAnimRemover->SetDuration(duration + 100);
+    IAnimator::Probe(pendingAnimRemover)->SetDuration(duration + 100);
     AutoPtr<IAnimatorListener> adapter = new _AnimatorListenerAdapter(this, child);
-    pendingAnimRemover->AddListener(adapter);
-    pendingAnimRemover->Start();
+    IAnimator::Probe(pendingAnimRemover)->AddListener(adapter);
+    IAnimator::Probe(pendingAnimRemover)->Start();
 
     // Add a listener to track layout changes on this view. If we don't get a callback,
     // then there's nothing to animate.
      AutoPtr<IViewOnLayoutChangeListener> listener = new ViewOnLayoutChangeListener(this, changeReason, duration, child, parent);
 
     // Remove the animation from the cache when it ends
-    adapter = new _AnimatorListenerAdapter(this, child, parent, changeReason, listener);
+    adapter = NULL;
+    adapter = new _AnimatorListenerAdapterEx(this, child, parent, changeReason, listener);
     anim->AddListener(adapter);
 
     child->AddOnLayoutChangeListener(listener);
@@ -942,7 +945,7 @@ ECode CLayoutTransition::StartChangingAnimations()
         assert(anim != NULL);
         if (IObjectAnimator::Probe(anim) != NULL) {
             AutoPtr<IObjectAnimator> temp = (IObjectAnimator*)(anim->Probe(EIID_IObjectAnimator));
-            temp->SetCurrentPlayTime(0);
+            IValueAnimator::Probe(temp)->SetCurrentPlayTime(0);
         }
 
         anim->Start();
@@ -1122,11 +1125,11 @@ void CLayoutTransition::RunAppearingTransition(
     }
     if (IObjectAnimator::Probe(anim) != NULL) {
         AutoPtr<IObjectAnimator> temp = (IObjectAnimator*)(anim->Probe(EIID_IObjectAnimator));
-        temp->SetCurrentPlayTime(0);
+        IValueAnimator::Probe(temp)->SetCurrentPlayTime(0);
     }
 
     AutoPtr<IAnimatorListener> adapter =
-            new _AnimatorListenerAdapter(this, child, parent);
+            new _AnimatorListenerAdapterEx2(this, child, parent);
     anim->AddListener(adapter);
     mCurrentAppearingAnimations[child] = anim;
     anim->Start();
@@ -1165,12 +1168,12 @@ void CLayoutTransition::RunDisappearingTransition(
     Float preAnimAlpha = 0.0;
     child->GetAlpha(&preAnimAlpha);
     AutoPtr<IAnimatorListener> adapter =
-            new _AnimatorListenerAdapter(this, child, parent, preAnimAlpha);
+            new _AnimatorListenerAdapterEx3(this, child, parent, preAnimAlpha);
     anim->AddListener(adapter);
 
     if (IObjectAnimator::Probe(anim) != NULL) {
         AutoPtr<IObjectAnimator> temp = (IObjectAnimator*)(anim->Probe(EIID_IObjectAnimator));
-        temp->SetCurrentPlayTime(0);
+        IValueAnimator::Probe(temp)->SetCurrentPlayTime(0);
     }
 
     anim->Start();
@@ -1183,7 +1186,7 @@ void CLayoutTransition::AddChild(
 {
     assert(parent != NULL);
     Int32 visiable = 0;
-    if ((parent->GetWindowVisibility(&visiable), visiable) != IView::VISIBLE) {
+    if ((IView::Probe(parent)->GetWindowVisibility(&visiable), visiable) != IView::VISIBLE) {
         return;
     }
 
@@ -1227,7 +1230,7 @@ ECode CLayoutTransition::LayoutChange(
 {
     assert(parent != NULL);
     Int32 visiable = 0;
-    if ((parent->GetWindowVisibility(&visiable), visiable) != IView::VISIBLE) {
+    if ((IView::Probe(parent)->GetWindowVisibility(&visiable), visiable) != IView::VISIBLE) {
         return NOERROR;
     }
 
@@ -1277,7 +1280,7 @@ void CLayoutTransition::RemoveChild(
     /* [in] */ Boolean changesLayout)
 {
     Int32 visiable = 0;
-    if ((parent->GetWindowVisibility(&visiable), visiable) != IView::VISIBLE) {
+    if ((IView::Probe(parent)->GetWindowVisibility(&visiable), visiable) != IView::VISIBLE) {
         return;
     }
 
@@ -1378,11 +1381,11 @@ ECode CLayoutTransition::GetTransitionListeners(
 }
 
 ECode CLayoutTransition::GetTransitionListeners(
-    /* [out] */ IObjectContainer** listeners)
+    /* [out] */ IList** listeners)
 {
     VALIDATE_NOT_NULL(listeners);
 
-    CObjectContainer::New(listeners);
+    CArrayList::New(listeners);
     List<AutoPtr<ITransitionListener> >::Iterator item = mListeners.Begin();
     for (Int32 i = 0; item != mListeners.End(); ++item, ++i) {
         (*listeners)->Add(*item);

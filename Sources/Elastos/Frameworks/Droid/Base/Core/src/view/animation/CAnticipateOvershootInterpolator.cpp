@@ -8,7 +8,7 @@ namespace View {
 namespace Animation {
 
 CAR_OBJECT_IMPL(CAnticipateOvershootInterpolator);
-CAR_INTERFACE_IMPL_5(CAnticipateOvershootInterpolator, Object, IAnticipateOvershootInterpolator,INativeInterpolatorFactory,IHasNativeInterpolator,IInterpolator,ITimeInterpolator);
+CAR_INTERFACE_IMPL_4(CAnticipateOvershootInterpolator, Object, IAnticipateOvershootInterpolator,INativeInterpolatorFactory,IInterpolator,ITimeInterpolator);
 
 ECode CAnticipateOvershootInterpolator::constructor()
 {
@@ -40,14 +40,14 @@ ECode CAnticipateOvershootInterpolator::constructor(
 {
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
-    AutoPtr<ITheme> theme;
-    context->GetTheme((ITheme**)&theme);
+    AutoPtr<IResourcesTheme> theme;
+    context->GetTheme((IResourcesTheme**)&theme);
     return constructor(res, theme, attrs);
 }
 
 ECode CAnticipateOvershootInterpolator::constructor(
     /* [in] */ IResources* res,
-    /* [in] */ ITheme* theme,
+    /* [in] */ IResourcesTheme* theme,
     /* [in] */ IAttributeSet* attrs)
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(

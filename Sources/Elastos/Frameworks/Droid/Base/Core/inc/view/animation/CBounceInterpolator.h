@@ -16,7 +16,6 @@ CarClass(CBounceInterpolator)
     : public Object
     , public IBounceInterpolator
     , public INativeInterpolatorFactory
-    , public IHasNativeInterpolator
     , public IInterpolator
     , public ITimeInterpolator
 {

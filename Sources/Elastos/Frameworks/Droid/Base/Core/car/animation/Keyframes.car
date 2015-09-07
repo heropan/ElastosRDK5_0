@@ -26,7 +26,7 @@ module {
          * @return The value type contained by the contained Keyframes.
          */
         GetType(
-            [out] ClassID* type);
+            [out] InterfaceID* type);
 
         /**
          * Gets the animated value, given the elapsed fraction of the animation (interpolated by the
@@ -56,9 +56,6 @@ module {
          */
         GetKeyframes(
             [out, callee] ArrayOf<IKeyframe*>* frames);
-
-        Clone(
-            [out] IKeyframes** values);
     }
 
     /**

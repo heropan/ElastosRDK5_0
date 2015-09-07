@@ -8,7 +8,7 @@ namespace View {
 namespace Animation {
 
 CAR_OBJECT_IMPL(COvershootInterpolator);
-CAR_INTERFACE_IMPL_5(COvershootInterpolator, Object, IOvershootInterpolator,INativeInterpolatorFactory,IHasNativeInterpolator,IInterpolator,ITimeInterpolator);
+CAR_INTERFACE_IMPL_4(COvershootInterpolator, Object, IOvershootInterpolator,INativeInterpolatorFactory,IInterpolator,ITimeInterpolator);
 
 ECode COvershootInterpolator::constructor()
 {
@@ -31,14 +31,14 @@ ECode COvershootInterpolator::constructor(
 {
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
-    AutoPtr<ITheme> theme;
-    context->GetTheme((ITheme**)&theme);
+    AutoPtr<IResourcesTheme> theme;
+    context->GetTheme((IResourcesTheme**)&theme);
     return constructor(res, theme, attrs);
 }
 
 ECode COvershootInterpolator::constructor(
     /* [in] */ IResources* res,
-    /* [in] */ ITheme* theme,
+    /* [in] */ IResourcesTheme* theme,
     /* [in] */ IAttributeSet* attrs)
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(

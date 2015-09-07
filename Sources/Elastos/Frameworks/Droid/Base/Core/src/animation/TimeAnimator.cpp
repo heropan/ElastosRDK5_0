@@ -54,7 +54,7 @@ ECode TimeAnimator::InitAnimation()
 }
 
 ECode TimeAnimator::Clone(
-    /* [out] */ IAnimator** object)
+    /* [out] */ IInterface** object)
 {
     AutoPtr<CTimeAnimator> newObject;
     CTimeAnimator::NewByFriend((CTimeAnimator**)&newObject);
@@ -63,7 +63,7 @@ ECode TimeAnimator::Clone(
     TimeAnimator* temp = newObject;
     temp->mListener = mListener;
     temp->mPreviousTime = mPreviousTime;
-    *object = (IAnimator*)newObject->Probe(EIID_IAnimator);
+    *object = (IInterface*)newObject->Probe(EIID_IInterface);
     REFCOUNT_ADD(*object);
     return NOERROR;
 }

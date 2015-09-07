@@ -1,10 +1,16 @@
 
-#include "MultiFloatValuesHolder.h"
+#include "animation/MultiFloatValuesHolder.h"
+#include <elastos/core/AutoLock.h>
+
+using Elastos::Core::AutoLock;
+using Elastos::Core::IFloat;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
 namespace Animation {
 
+MultiFloatValuesHolder::ClassMethodMap MultiFloatValuesHolder::sJNISetterPropertyMap;
 CAR_INTERFACE_IMPL(MultiFloatValuesHolder, PropertyValuesHolder, IMultiFloatValuesHolder);
 MultiFloatValuesHolder::MultiFloatValuesHolder(
     /* [in] */ const String& propertyName,
@@ -41,7 +47,7 @@ ECode MultiFloatValuesHolder::SetAnimatedValue(
     list->GetSize(&numParameters);
 
     AutoPtr<ArrayOf<Float> > values = ArrayOf<Float>::Alloc(numParameters);
-    Float fv = 0f;
+    Float fv = 0.f;
     for (Int32 i = 0; i < numParameters; i++) {
         AutoPtr<IFloat> value;
         list->Get(i, (IInterface**)&value);
@@ -90,8 +96,8 @@ ECode MultiFloatValuesHolder::SetupSetter(
     AutoPtr<IClassInfo> info = TransformClassInfo(targetClass);
     AutoPtr<MethodMap> propertyMap = sJNISetterPropertyMap[info];
 
-    typename ClassMethodMap::Iterator it = sJNISetterPropertyMap->Find(key);
-    if ((it != sJNISetterPropertyMap->End()) && (it->mSecond != NULL)) {
+    typename ClassMethodMap::Iterator it = sJNISetterPropertyMap.Find(info);
+    if ((it != sJNISetterPropertyMap.End()) && (it->mSecond != NULL)) {
         propertyMap = it->mSecond;
         typename MethodMap::Iterator it2 = propertyMap->Find(mPropertyName);
         if ((it2 != propertyMap->End()) && (it2->mSecond != NULL)) {
@@ -101,7 +107,7 @@ ECode MultiFloatValuesHolder::SetupSetter(
 
     if (mJniSetter == NULL) {
         String methodName = GetMethodName(String("Set"), mPropertyName);
-        CalculateValue(0f);
+        CalculateValue(0.f);
         AutoPtr<IArrayList> values;
         GetAnimatedValue((IInterface**)&values);
         Int32 numParams = 0;

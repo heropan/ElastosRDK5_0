@@ -1,8 +1,13 @@
-#include "animation/FloatPropertyValuesHolder.h"
 
-using Elastos::Core::ECLSID_CFloat;
+#include "animation/FloatPropertyValuesHolder.h"
+#include <elastos/core/AutoLock.h>
+
 using Elastos::Droid::Utility::EIID_IFloatProperty;
-using Elastos::Droid::Widget::ECLSID_CButton;
+using Elastos::Core::AutoLock;
+using Elastos::Core::ECLSID_CFloat;
+using Elastos::Core::IFloat;
+using Elastos::Core::EIID_IFloat;
+using Elastos::Core::CFloat;
 
 namespace Elastos {
 namespace Droid {
@@ -15,20 +20,20 @@ FloatPropertyValuesHolder::FloatPropertyValuesHolder(
     /* [in] */ const String& propertyName,
     /* [in] */ IFloatKeyframes* keyframes)
     : PropertyValuesHolder(propertyName)
-    , mValueType(ECLSID_CFloat)
-    , mKeyframes(keyframes)
     , mFloatKeyframes(keyframes)
 {
+    mValueType = EIID_IFloat;
+    mKeyframes = IKeyframes::Probe(keyframes);
 }
 
 FloatPropertyValuesHolder::FloatPropertyValuesHolder(
     /* [in] */ IProperty* property,
     /* [in] */ IFloatKeyframes* keyframes)
     : PropertyValuesHolder(property)
-    , mValueType(ECLSID_CFloat)
-    , mKeyframes(keyframes)
     , mFloatKeyframes(keyframes)
 {
+    mValueType = EIID_IFloat;
+    mKeyframes = IKeyframes::Probe(keyframes);
 }
 
 FloatPropertyValuesHolder::FloatPropertyValuesHolder(
@@ -162,42 +167,38 @@ ECode FloatPropertyValuesHolder::SetupSetter(
         AutoLock lock(mPropertyMapLock);
         AutoPtr<IClassInfo> clInfo = TransformClassInfo(target);
         ClassID id;
-        id.pUunm = (char*)malloc(80);
+        id.mUunm = (char*)malloc(80);
         clInfo->GetId(&id);
-        free(id.pUunm);
+        free(id.mUunm);
         ClassMethodMapIterator exit = sJNISetterPropertyMap.Find(clInfo);
         AutoPtr<MethodMap> propertyMap;
-        if(exit != sJNISetterPropertyMap.End())
-        {
+        if(exit != sJNISetterPropertyMap.End()) {
             propertyMap = exit->mSecond;
-            if(propertyMap != NULL)
-            {
+            if(propertyMap != NULL) {
                 MethodMapIterator it = propertyMap->Find(mPropertyName);
-                if(it != propertyMap->End())
-                {
+                if(it != propertyMap->End()) {
                     AutoPtr<IMethodInfo> mtInfo = it->mSecond;
-                    if(mtInfo != NULL)
-                    {
+                    if(mtInfo != NULL) {
                         mJniSetter = mtInfo;
                     }
                 }
             }
         }
-        if(mJniSetter == NULL)
-        {
+
+        if(mJniSetter == NULL) {
             String methodName = GetMethodName(String("Set"), mPropertyName);
-            clInfo->GetMethodInfo(methodName, (IMethodInfo**)&mJniSetter);
-            if(mJniSetter != NULL)
-            {
-                if(propertyMap == NULL)
-                {
+            // clInfo->GetMethodInfo(methodName, (IMethodInfo**)&mJniSetter);
+            mJniSetter = nGetFloatMethod(target, methodName);
+            if(mJniSetter != NULL) {
+                if(propertyMap == NULL) {
                     propertyMap = new MethodMap();
                     sJNISetterPropertyMap[clInfo] = propertyMap;
                 }
-                 (*propertyMap)[mPropertyName] = mJniSetter;
+                (*propertyMap)[mPropertyName] = mJniSetter;
             }
         }
     }
+
     if (mJniSetter == NULL) {
         // Couldn't find method through fast JNI approach - just use reflection
         return PropertyValuesHolder::SetupSetter(target);

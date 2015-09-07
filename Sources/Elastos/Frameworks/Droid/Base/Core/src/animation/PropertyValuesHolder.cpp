@@ -4,17 +4,34 @@
 #include "animation/CFloatEvaluator.h"
 #include "animation/Int32PropertyValuesHolder.h"
 #include "animation/FloatPropertyValuesHolder.h"
-#include "animation/PropertyValuesHolderImpl.h"
+#include "animation/Int32ArrayEvaluator.h"
+#include "animation/MultiInt32ValuesHolder.h"
+#include "animation/FloatArrayEvaluator.h"
+#include "animation/MultiFloatValuesHolder.h"
+#include "animation/Keyframe.h"
 #include <elastos/core/Math.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Graphics::EIID_IPointF;
+using Elastos::Core::EIID_IArrayOf;
+using Elastos::Core::IArrayOf;
+using Elastos::Core::CArrayOf;
 using Elastos::Core::IDouble;
+using Elastos::Core::IFloat;
+using Elastos::Core::CFloat;
 using Elastos::Core::EIID_IDouble;
 using Elastos::Core::CDouble;
 using Elastos::Core::EIID_IFloat;
 using Elastos::Core::EIID_IInteger32;
 using Elastos::Core::ECLSID_CFloat;
 using Elastos::Core::ECLSID_CInteger32;
+using Elastos::Core::CInteger32;
 using Elastos::Core::ECLSID_CDouble;
+using Elastos::Core::AutoLock;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -27,17 +44,18 @@ extern "C" const InterfaceID EIID_PropertyValuesHolder =
     { 0x13386499, 0x5ce9, 0x419f, { 0x84, 0xcb, 0x52, 0xf8, 0xbb, 0x94, 0x42, 0xcc } };
 
 CAR_INTERFACE_IMPL(PropertyValuesHolder::PointFToFloatArray, TypeConverter, IPropertyValuesHolder);
-PropertyValuesHolder::PointFToFloatArray::PointFToFloatArray() {
-    super(PointF.class, float[].class);
+PropertyValuesHolder::PointFToFloatArray::PointFToFloatArray()
+{
+    TypeConverter::constructor(EIID_IPointF, EIID_IArrayOf /*float[].class*/);
     mCoordinates = ArrayOf<Float>::Alloc(2);
 }
 
 ECode PropertyValuesHolder::PointFToFloatArray::Convert(
-    /* [in] */ IPointF* value,
+    /* [in] */ IInterface* value,
     /* [out] */ IInterface** values)
 {
     VALIDATE_NOT_NULL(values);
-    value->Get(&(*mCoordinates)[0], &(*mCoordinates)[1])
+    IPointF::Probe(value)->Get(&(*mCoordinates)[0], &(*mCoordinates)[1]);
     // (*mCoordinates)[0] = value.x;
     // mCoordinates[1] = value.y;
     AutoPtr<IFloat> x, y;
@@ -56,17 +74,17 @@ ECode PropertyValuesHolder::PointFToFloatArray::Convert(
 CAR_INTERFACE_IMPL(PropertyValuesHolder::PointFToInt32Array, TypeConverter, IPropertyValuesHolder);
 PropertyValuesHolder::PointFToInt32Array::PointFToInt32Array()
 {
-    super(PointF.class, int[].class);
+    TypeConverter::constructor(EIID_IPointF, EIID_IArrayOf /*int[].class*/);
     mCoordinates = ArrayOf<Int32>::Alloc(2);
 }
 
 ECode PropertyValuesHolder::PointFToInt32Array::Convert(
-    /* [in] */ IPointF* value,
+    /* [in] */ IInterface* value,
     /* [out] */ IInterface** values)
 {
     VALIDATE_NOT_NULL(values);
     Float _x, _y;
-    value->Get(&_x, &_y)
+    IPointF::Probe(value)->Get(&_x, &_y);
     (*mCoordinates)[0] = Math::Round(_x);
     (*mCoordinates)[1] = Math::Round(_y);
     AutoPtr<IInteger32> x, y;
@@ -96,12 +114,54 @@ AutoPtr<ITypeEvaluator> PropertyValuesHolder::InitFloatEvaluator()
     return rst;
 }
 
-AutoPtr<ITypeEvaluator> PropertyValuesHolder::sIntEvaluator = InitInt32Evaluator();
+AutoPtr<ITypeEvaluator> PropertyValuesHolder::sInt32Evaluator = InitInt32Evaluator();
 AutoPtr<ITypeEvaluator> PropertyValuesHolder::sFloatEvaluator = InitFloatEvaluator();
+Int32 PropertyValuesHolder::FLOAT_VARIANTS[6] = {1/*float.class*/, 4/*Float.class*/, 2/*double.class*/, 0/*int.class*/,
+        5/*Double.class*/, 3/*Integer.class*/};
+Int32 PropertyValuesHolder::INTEGER_VARIANTS[6] = {0/*int.class*/, 3/*Integer.class*/, 1/*float.class*/, 2/*double.class*/,
+        4/*Float.class*/, 5/*Double.class*/};
+Int32 PropertyValuesHolder::DOUBLE_VARIANTS[6] = {2/*double.class*/, 5/*Double.class*/, 1/*float.class*/, 0/*int.class*/,
+        4/*Float.class*/, 3/*Integer.class*/};
 AutoPtr< PropertyValuesHolder::ClassMethodMap > PropertyValuesHolder::sSetterPropertyMap = new ClassMethodMap();
 AutoPtr< PropertyValuesHolder::ClassMethodMap > PropertyValuesHolder::sGetterPropertyMap = new ClassMethodMap();
 
-CAR_INTERFACE_IMPL(PropertyValuesHolder, Object, IPropertyValuesHolder);
+enum ClassType {
+    intclass = 0,
+    floatclass = 1,
+    doubleclass = 2,
+    Integerclass = 3,
+    Floatclass = 4,
+    Doubleclass = 5
+};
+
+String GetSignature(
+    /* [in] */ Int32 type)
+{
+    switch(type) {
+        case intclass: {
+            return String("(I32)E");
+        }
+        case floatclass: {
+            return String("(F)E");
+        }
+        case doubleclass: {
+            return String("(D)E");
+        }
+        case Integerclass: {
+            return String("(LElastos/Core/IInteger32;)E");
+        }
+        case Floatclass: {
+            return String("(LElastos/Core/IFloat;)E");
+        }
+        case Doubleclass: {
+            return String("(LElastos/Core/IDouble;)E");
+        }
+    }
+
+    assert(0 && "TODO");
+    return String(NULL);
+}
+
 PropertyValuesHolder::PropertyValuesHolder(
     /* [in] */ const String& propertyName)
     : mPropertyName(propertyName)
@@ -119,16 +179,26 @@ PropertyValuesHolder::PropertyValuesHolder(
     }
 }
 
+UInt32 PropertyValuesHolder::AddRef()
+{
+    return Object::AddRef();
+}
+
+UInt32 PropertyValuesHolder::Release()
+{
+    return Object::Release();
+}
+
 ECode PropertyValuesHolder::GetInterfaceID(
     /* [in] */ IInterface* object,
     /* [out] */ InterfaceID* iid)
 {
     VALIDATE_NOT_NULL(iid);
-    if (object == (IInterface*)(PropertyValuesHolder*)this) {
+    if (object == reinterpret_cast<PInterface>((PropertyValuesHolder*)this)) {
         *iid = EIID_PropertyValuesHolder;
         return NOERROR;
     }
-    else if (object == reinterpret_cast<PInterface>((PropertyValuesHolder*)this)) {
+    else if (object == reinterpret_cast<PInterface>((IPropertyValuesHolder*)this)) {
         *iid = EIID_IPropertyValuesHolder;
         return NOERROR;
     }
@@ -149,7 +219,7 @@ PInterface PropertyValuesHolder::Probe(
         return (IInterface*)(IPropertyValuesHolder*)this;
     }
 
-    return Object::Probe(riid)
+    return Object::Probe(riid);
 }
 
 AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfInt32(
@@ -157,7 +227,7 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfInt32(
     /* [in] */ ArrayOf<Int32>* values)
 {
     AutoPtr<IInt32PropertyValuesHolder> holder = new Int32PropertyValuesHolder(propertyName, values);
-    return holder;
+    return IPropertyValuesHolder::Probe(holder);
 }
 
 AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfInt32(
@@ -165,7 +235,7 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfInt32(
     /* [in] */ ArrayOf<Int32>* values)
 {
     AutoPtr<IInt32PropertyValuesHolder> holder = new Int32PropertyValuesHolder(property, values);
-    return holder;
+    return IPropertyValuesHolder::Probe(holder);
 }
 
 AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfFloat(
@@ -173,7 +243,7 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfFloat(
     /* [in] */ ArrayOf<Float>* values)
 {
     AutoPtr<IFloatPropertyValuesHolder> holder = new FloatPropertyValuesHolder(propertyName, values);
-    return holder;
+    return IPropertyValuesHolder::Probe(holder);
 }
 
 AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfFloat(
@@ -181,7 +251,7 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfFloat(
     /* [in] */ ArrayOf<Float>* values)
 {
     AutoPtr<IFloatPropertyValuesHolder> holder = new FloatPropertyValuesHolder(property, values);
-    return holder;
+    return IPropertyValuesHolder::Probe(holder);
 }
 
 AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfObject(
@@ -189,7 +259,7 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfObject(
     /* [in] */ ITypeEvaluator* evaluator,
     /* [in] */ ArrayOf<IInterface*>* values)
 {
-    AutoPtr<IPropertyValuesHolder> holder = new PropertyValuesHolderImpl(propertyName);
+    AutoPtr<IPropertyValuesHolder> holder = new PropertyValuesHolder(propertyName);
     holder->SetObjectValues(values);
     holder->SetEvaluator(evaluator);
     return holder;
@@ -200,7 +270,7 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfObject(
     /* [in] */ ITypeEvaluator* evaluator,
     /* [in] */ ArrayOf<IInterface*>* values)
 {
-    AutoPtr<IPropertyValuesHolder> holder = new PropertyValuesHolderImpl(property);
+    AutoPtr<IPropertyValuesHolder> holder = new PropertyValuesHolder(property);
     holder->SetObjectValues(values);
     holder->SetEvaluator(evaluator);
     return holder;
@@ -211,27 +281,7 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfKeyframe(
     /* [in] */ ArrayOf<IKeyframe*>* values)
 {
     AutoPtr<IKeyframeSet> keyframeSet = KeyframeSet::OfKeyframe(values);
-    return OfKeyframes(propertyName, keyframeSet);
-
-
-    // AutoPtr<IKeyframeSet> keyframeSet = KeyframeSet::OfKeyframe(values);
-    // if (keyframeSet->Probe(EIID_IInt32KeyframeSet)) {
-    //     AutoPtr<IInt32PropertyValuesHolder> holder = new Int32PropertyValuesHolder(propertyName, (IInt32KeyframeSet*)(keyframeSet.Get()));
-    //     return holder;
-    // }
-    // else if (keyframeSet->Probe(EIID_IFloatKeyframeSet)) {
-    //     AutoPtr<IFloatPropertyValuesHolder> holder = new FloatPropertyValuesHolder(propertyName, (IFloatKeyframeSet*)(keyframeSet.Get()));
-    //     return holder;
-    // }
-    // else {
-    //     AutoPtr<IPropertyValuesHolder> pvh = new PropertyValuesHolderImpl(propertyName);
-    //     PropertyValuesHolder* temp= reinterpret_cast<PropertyValuesHolder*>(pvh->Probe(EIID_PropertyValuesHolder));
-    //     temp->mKeyframes = keyframeSet;
-    //     ClassID id;
-    //     (*values)[0]->GetType(&id);
-    //     temp->mValueType = id;
-    //     return pvh;
-    // }
+    return OfKeyframes(propertyName, IKeyframes::Probe(keyframeSet));
 }
 
 AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfKeyframe(
@@ -239,24 +289,7 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfKeyframe(
     /* [in] */ ArrayOf<IKeyframe*>* values)
 {
     AutoPtr<IKeyframeSet> keyframeSet = KeyframeSet::OfKeyframe(values);
-    return OfKeyframes(property, keyframeSet);
-    // if (keyframeSet->Probe(EIID_IInt32KeyframeSet)) {
-    //     AutoPtr<IInt32PropertyValuesHolder> holder = new Int32PropertyValuesHolder(property, (IInt32KeyframeSet*)(keyframeSet.Get()));
-    //     return holder;
-    // }
-    // else if (keyframeSet->Probe(EIID_IFloatKeyframeSet)) {
-    //     AutoPtr<IFloatPropertyValuesHolder> holder = new FloatPropertyValuesHolder(property, (IFloatKeyframeSet*)(keyframeSet.Get()));
-    //     return holder;
-    // }
-    // else {
-    //     AutoPtr<IPropertyValuesHolder> pvh = new PropertyValuesHolderImpl(property);
-    //     PropertyValuesHolder* temp= reinterpret_cast<PropertyValuesHolder*>(pvh->Probe(EIID_PropertyValuesHolder));
-    //     temp->mKeyframes = keyframeSet;
-    //     ClassID id;
-    //     (*values)[0]->GetType(&id);
-    //     temp->mValueType = id;
-    //     return pvh;
-    // }
+    return OfKeyframes(property, IKeyframes::Probe(keyframeSet));
 }
 
 ECode PropertyValuesHolder::OfMultiInt32(
@@ -285,7 +318,7 @@ ECode PropertyValuesHolder::OfMultiInt32(
         }
 
         AutoPtr<IArrayOf> items;
-        CArrayOf::New(length, (IArrayOf**)&item);
+        CArrayOf::New(EIID_IInteger32, length, (IArrayOf**)&items);
         for (Int32 n = 0; n < length; n++) {
             AutoPtr<IInteger32> item;
             CInteger32::New((*((*values)[i]))[n], (IInteger32**)&item);
@@ -306,7 +339,7 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfMultiInt32(
     /* [in] */ const String& propertyName,
     /* [in] */ IPath* path)
 {
-    AutoPtr<IKeyframes> keyframes = KeyframeSet::OfPath(path);
+    AutoPtr<IKeyframes> keyframes = IKeyframes::Probe(KeyframeSet::OfPath(path));
     AutoPtr<PointFToInt32Array> converter = new PointFToInt32Array();
     return new MultiInt32ValuesHolder(propertyName, converter, NULL, keyframes);
 }
@@ -327,7 +360,7 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfMultiInt32(
     /* [in] */ ArrayOf<IKeyframe*>* values)
 {
     AutoPtr<IKeyframeSet> keyframeSet = KeyframeSet::OfKeyframe(values);
-    return new MultiInt32ValuesHolder(propertyName, converter, evaluator, keyframeSet);
+    return new MultiInt32ValuesHolder(propertyName, converter, evaluator, IKeyframes::Probe(keyframeSet));
 }
 
 ECode PropertyValuesHolder::OfMultiFloat(
@@ -342,8 +375,8 @@ ECode PropertyValuesHolder::OfMultiFloat(
     }
     Int32 numParameters = 0;
     AutoPtr<ArrayOf<IInterface*> > arrays = ArrayOf<IInterface*>::Alloc(values->GetLength());
-    for (Int32 i = 0; i < values.length; i++) {
-        if (values[i] == null) {
+    for (Int32 i = 0; i < values->GetLength(); i++) {
+        if ((*values)[i] == NULL) {
             // throw new IllegalArgumentException("values must not be null");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
@@ -356,7 +389,7 @@ ECode PropertyValuesHolder::OfMultiFloat(
         }
 
         AutoPtr<IArrayOf> items;
-        CArrayOf::New(length, (IArrayOf**)&items);
+        CArrayOf::New(EIID_IFloat, length, (IArrayOf**)&items);
         for (Int32 n = 0; n < length; n++) {
             AutoPtr<IFloat> item;
             CFloat::New((*((*values)[i]))[n], (IFloat**)&item);
@@ -377,7 +410,7 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfMultiFloat(
     /* [in] */ const String& propertyName,
     /* [in] */ IPath* path)
 {
-    AutoPtr<IKeyframes> keyframes = KeyframeSet::OfPath(path);
+    AutoPtr<IKeyframes> keyframes = IKeyframes::Probe(KeyframeSet::OfPath(path));
     AutoPtr<PointFToFloatArray> converter = new PointFToFloatArray();
     return new MultiFloatValuesHolder(propertyName, converter, NULL, keyframes);
 }
@@ -386,7 +419,7 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfMultiFloat(
     /* [in] */ const String& propertyName,
     /* [in] */ ITypeConverter* converter,
     /* [in] */ ITypeEvaluator* evaluator,
-    /* [in] */ ArrayOf<IInterface>* values)
+    /* [in] */ ArrayOf<IInterface*>* values)
 {
     return new MultiFloatValuesHolder(propertyName, converter, evaluator, values);
 }
@@ -398,7 +431,7 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfMultiFloat(
     /* [in] */ ArrayOf<IKeyframe*>* values)
 {
     AutoPtr<IKeyframeSet> keyframeSet = KeyframeSet::OfKeyframe(values);
-    return new MultiFloatValuesHolder(propertyName, converter, evaluator, keyframeSet);
+    return new MultiFloatValuesHolder(propertyName, converter, evaluator, IKeyframes::Probe(keyframeSet));
 }
 
 AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfObject(
@@ -407,8 +440,8 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfObject(
     /* [in] */ IPath* path)
 {
     AutoPtr<PropertyValuesHolder> pvh = new PropertyValuesHolder(propertyName);
-    pvh->mKeyframes = KeyframeSet::OfPath(path);
-    pvh->mValueType = PointF.class;
+    pvh->mKeyframes = IKeyframes::Probe(KeyframeSet::OfPath(path));
+    pvh->mValueType = EIID_IPointF;
     pvh->SetConverter(converter);
     return pvh;
 }
@@ -420,7 +453,7 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfObject(
     /* [in] */ ArrayOf<IInterface*>* values)
 {
     AutoPtr<IPropertyValuesHolder> pvh = new PropertyValuesHolder(property);
-    pvh->SetConverter(converter);
+    ((PropertyValuesHolder*)pvh.Get())->SetConverter(converter);
     pvh->SetObjectValues(values);
     pvh->SetEvaluator(evaluator);
     return pvh;
@@ -432,8 +465,8 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfObject(
     /* [in] */ IPath* path)
 {
     AutoPtr<PropertyValuesHolder> pvh = new PropertyValuesHolder(property);
-    pvh->mKeyframes = KeyframeSet::OfPath(path);
-    pvh->mValueType = PointF.class;
+    pvh->mKeyframes = IKeyframes::Probe(KeyframeSet::OfPath(path));
+    pvh->mValueType = EIID_IPointF;
     pvh->SetConverter(converter);
     return pvh;
 }
@@ -443,10 +476,9 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfKeyframes(
     /* [in] */ IKeyframes* keyframes)
 {
     if (IInt32Keyframes::Probe(keyframes)) {
-        return new IntPropertyValuesHolder(propertyName, IInt32Keyframes::Probe(keyframes));
+        return new Int32PropertyValuesHolder(propertyName, IInt32Keyframes::Probe(keyframes));
     } else if (IFloatKeyframes::Probe(keyframes)) {
-        return new FloatPropertyValuesHolder(propertyName,
-                IFloatKeyframes::Probe(keyframes));
+        return new FloatPropertyValuesHolder(propertyName, IFloatKeyframes::Probe(keyframes));
     } else {
         AutoPtr<PropertyValuesHolder> pvh = new PropertyValuesHolder(propertyName);
         pvh->mKeyframes = keyframes;
@@ -460,13 +492,13 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfKeyframes(
     /* [in] */ IKeyframes* keyframes)
 {
     if (IInt32Keyframes::Probe(keyframes)) {
-        return new IntPropertyValuesHolder(property, IInt32Keyframes::Probe(keyframes));
+        return new Int32PropertyValuesHolder(property, IInt32Keyframes::Probe(keyframes));
     } else if (IFloatKeyframes::Probe(keyframes)) {
         return new FloatPropertyValuesHolder(property, IFloatKeyframes::Probe(keyframes));
     } else {
         AutoPtr<IPropertyValuesHolder> pvh = new PropertyValuesHolder(property);
-        pvh->mKeyframes = keyframes;
-        keyframes->GetType(&pvh->mValueType);
+        ((PropertyValuesHolder*)pvh.Get())->mKeyframes = keyframes;
+        keyframes->GetType(&(((PropertyValuesHolder*)pvh.Get())->mValueType));
         return pvh;
     }
 }
@@ -474,16 +506,16 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfKeyframes(
 ECode PropertyValuesHolder::SetInt32Values(
     /* [in] */ ArrayOf<Int32>* values)
 {
-    mValueType = ECLSID_CInteger32;
-    mKeyframes = KeyframeSet::OfInt32(values);
+    mValueType = EIID_IInteger32;
+    mKeyframes = IKeyframes::Probe(KeyframeSet::OfInt32(values));
     return NOERROR;
 }
 
 ECode PropertyValuesHolder::SetFloatValues(
     /* [in] */ ArrayOf<Float>* values)
 {
-    mValueType = ECLSID_CFloat;
-    mKeyframes = KeyframeSet::OfFloat(values);
+    mValueType = EIID_IFloat;
+    mKeyframes = IKeyframes::Probe(KeyframeSet::OfFloat(values));
     return NOERROR;
 }
 
@@ -504,12 +536,13 @@ ECode PropertyValuesHolder::SetObjectValues(
     /* [in] */ ArrayOf<IInterface*>* values)
 {
     if (IObject::Probe((*values)[0])) {
-        IObject::Probe((*values)[0])->GetClassID(&mValueType);
+        IObject::Probe((*values)[0])->GetInterfaceID((*values)[0], &mValueType);
     }
     else {
-        mValueType = ECLSID_CDummyObject;
+        assert(0 && "TODO");
+        // mValueType = ECLSID_CDummyObject;
     }
-    mKeyframes = KeyframeSet::OfObject(values);
+    mKeyframes = IKeyframes::Probe(KeyframeSet::OfObject(values));
 
     if (mEvaluator != NULL) {
         mKeyframes->SetEvaluator(mEvaluator);
@@ -527,14 +560,15 @@ ECode PropertyValuesHolder::SetConverter(
 ECode PropertyValuesHolder::SetupSetter(
     /* [in] */ IInterface* targetClass)
 {
-    // Class<?> propertyType = mConverter == null ? mValueType : mConverter.getTargetType();
-    AutoPtr<IClassInfo> info = TransformClassInfo(targetClass);
-    if (info) {
-        mSetter = SetupSetterOrGetter(info, sSetterPropertyMap.Get(), String("Set"));
-        return NOERROR;
+    InterfaceID propertyType = mValueType;
+    if (mConverter != NULL) {
+        mConverter->GetTargetType(&propertyType);
     }
 
-    return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    AutoPtr<IClassInfo> info = TransformClassInfo(targetClass);
+    assert(info != NULL);
+    mSetter = SetupSetterOrGetter(info, sSetterPropertyMap.Get(), String("Set"), &propertyType);
+    return NOERROR;
 }
 
 ECode PropertyValuesHolder::SetupGetter(
@@ -542,7 +576,7 @@ ECode PropertyValuesHolder::SetupGetter(
 {
     AutoPtr<IClassInfo> info = TransformClassInfo(target);
     if (info) {
-        mGetter = SetupSetterOrGetter(info, sGetterPropertyMap.Get(), String("Get"));
+        mGetter = SetupSetterOrGetter(info, sGetterPropertyMap.Get(), String("Get"), NULL);
         return NOERROR;
     }
 
@@ -562,15 +596,15 @@ ECode PropertyValuesHolder::SetupSetterAndGetter(
             AutoPtr<IKeyframe> kf = (*keyframes)[i];
             Boolean has = FALSE, wasSet = FALSE;
             kf->HasValue(&has);
-            kf->ValueWasSetOnStart(&wasSet);
+            wasSet = ((Keyframe*)kf.Get())->ValueWasSetOnStart();
             if (!has || wasSet) {
                 if (testValue == NULL) {
                     AutoPtr<IInterface> v;
                     ASSERT_SUCCEEDED(mProperty->Get(target, (IInterface**)&v));
-                    testValue = ConvertBack(v);
+                    ConvertBack(v, (IInterface**)&testValue);
                 }
                 ASSERT_SUCCEEDED(kf->SetValue(testValue));
-                ASSERT_SUCCEEDED(kf->SetValueWasSetOnStart(FALSE));
+                ((Keyframe*)kf.Get())->SetValueWasSetOnStart(FALSE);
             }
         }
         return NOERROR;
@@ -587,7 +621,7 @@ ECode PropertyValuesHolder::SetupSetterAndGetter(
         IKeyframe* kf = (*frames)[i];
         Boolean has = FALSE, wasSet = FALSE;
         kf->HasValue(&has);
-        kf->ValueWasSetOnStart(&wasSet);
+        wasSet = ((Keyframe*)kf)->ValueWasSetOnStart();
         if (!has || wasSet) {
             if (mGetter == NULL) {
                 SetupGetter(target);
@@ -617,7 +651,7 @@ ECode PropertyValuesHolder::SetupSetterAndGetter(
                     AutoPtr<IInterface> value;
                     FAIL_RETURN(ConvertBack(carRst, (IInterface**)&value));
                     kf->SetValue(value);
-                    kf->SetValueWasSetOnStart(TRUE);
+                    ((Keyframe*)kf)->SetValueWasSetOnStart(TRUE);
                 }
                 else if(carType == CarDataType_Interface) {
                     AutoPtr<IInteger32> getRst;
@@ -627,7 +661,7 @@ ECode PropertyValuesHolder::SetupSetterAndGetter(
                     AutoPtr<IInterface> value;
                     FAIL_RETURN(ConvertBack(getRst, (IInterface**)&value));
                     kf->SetValue(value);
-                    kf->SetValueWasSetOnStart(TRUE);
+                    ((Keyframe*)kf)->SetValueWasSetOnStart(TRUE);
                 }
                 else {
                     assert(0);
@@ -644,7 +678,7 @@ ECode PropertyValuesHolder::SetupSetterAndGetter(
                     AutoPtr<IInterface> value;
                     FAIL_RETURN(ConvertBack(carRst, (IInterface**)&value));
                     kf->SetValue(value);
-                    kf->SetValueWasSetOnStart(TRUE);
+                    ((Keyframe*)kf)->SetValueWasSetOnStart(TRUE);
                 }
                 else if (carType == CarDataType_Interface) {
                     AutoPtr<IFloat> getRst;
@@ -654,7 +688,7 @@ ECode PropertyValuesHolder::SetupSetterAndGetter(
                     AutoPtr<IInterface> value;
                     FAIL_RETURN(ConvertBack(getRst, (IInterface**)&value));
                     kf->SetValue(value);
-                    kf->SetValueWasSetOnStart(TRUE);
+                    ((Keyframe*)kf)->SetValueWasSetOnStart(TRUE);
                 }
                 else{
                     assert(0);
@@ -671,7 +705,7 @@ ECode PropertyValuesHolder::SetupSetterAndGetter(
                     AutoPtr<IInterface> value;
                     FAIL_RETURN(ConvertBack(carRst, (IInterface**)&value));
                     kf->SetValue(value);
-                    kf->SetValueWasSetOnStart(TRUE);
+                    ((Keyframe*)kf)->SetValueWasSetOnStart(TRUE);
                 }
                 else if(carType == CarDataType_Interface) {
                     AutoPtr<IDouble> getRst;
@@ -681,7 +715,7 @@ ECode PropertyValuesHolder::SetupSetterAndGetter(
                     AutoPtr<IInterface> value;
                     FAIL_RETURN(ConvertBack(getRst, (IInterface**)&value));
                     kf->SetValue(value);
-                    kf->SetValueWasSetOnStart(TRUE);
+                    ((Keyframe*)kf)->SetValueWasSetOnStart(TRUE);
                 }
                 else{
                     assert(0);
@@ -695,7 +729,7 @@ ECode PropertyValuesHolder::SetupSetterAndGetter(
                 AutoPtr<IInterface> value;
                 FAIL_RETURN(ConvertBack(getRst, (IInterface**)&value));
                 kf->SetValue(value);
-                kf->SetValueWasSetOnStart(TRUE);
+                ((Keyframe*)kf)->SetValueWasSetOnStart(TRUE);
             }
         }
     }
@@ -753,10 +787,8 @@ ECode PropertyValuesHolder::SetupValue(
     paramInfo->GetTypeInfo((IDataTypeInfo**)&dataTypeInfo);
     CarDataType carType;
     dataTypeInfo->GetDataType(&carType);
-    if (mValueType == ECLSID_CInteger32)
-    {
-        if (carType == CarDataType_Int32)
-        {
+    if (mValueType == ECLSID_CInteger32) {
+        if (carType == CarDataType_Int32) {
             Int32 getRst;
             arg->SetOutputArgumentOfInt32Ptr(0, &getRst);
             FAIL_RETURN(mGetter->Invoke(target, arg));
@@ -871,7 +903,7 @@ ECode PropertyValuesHolder::CloneSuperData(
     holder->mProperty = mProperty;
     holder->mSetter = mSetter;
     holder->mValueType = mValueType;
-    mKeyframes->Clone((IKeyframeSet**)(&(holder->mKeyframes)));
+    ICloneable::Probe(mKeyframes)->Clone((IInterface**)(&(holder->mKeyframes)));
     holder->mTmpValueArray = mTmpValueArray;
     holder->mGetter = mGetter;
     holder->mEvaluator = mEvaluator;
@@ -980,7 +1012,7 @@ ECode PropertyValuesHolder::Init()
     if (mEvaluator == NULL) {
         // We already handle int and float automatically, but not their Object
         // equivalents
-        mEvaluator = (mValueType == ECLSID_CInteger32) ? sIntEvaluator :
+        mEvaluator = (mValueType == ECLSID_CInteger32) ? sInt32Evaluator :
                 (mValueType == ECLSID_CFloat) ? sFloatEvaluator :
                 NULL;
     }
@@ -1061,7 +1093,7 @@ ECode PropertyValuesHolder::ToString(
 {
     VALIDATE_NOT_NULL(str);
     String tmp;
-    mKeyframes->ToString(&tmp);
+    IObject::Probe(mKeyframes)->ToString(&tmp);
     *str = mPropertyName + String(": ") + tmp;
     return NOERROR;
 }
@@ -1080,19 +1112,74 @@ String PropertyValuesHolder::GetMethodName(
 }
 
 AutoPtr<IMethodInfo> PropertyValuesHolder::GetPropertyFunction(
-     /* [in] */ IClassInfo* targetClass,
-     /* [in] */ const String& prefix)
+    /* [in] */ IClassInfo* targetClass,
+    /* [in] */ const String& prefix,
+    /* [in] */ InterfaceID* valueType)
 {
-    String methodName = GetMethodName(prefix, mPropertyName);
+    // TODO: faster implementation...
     AutoPtr<IMethodInfo> returnVal;
-    targetClass->GetMethodInfo(methodName, (IMethodInfo**)&returnVal);
+    String methodName = GetMethodName(prefix, mPropertyName);
+    // Class args[] = null;
+    if (valueType == NULL) {
+        // try {
+        // returnVal = targetClass.getMethod(methodName, args);
+        targetClass->GetMethodInfo(methodName, String("()E"), (IMethodInfo**)&returnVal);
+        // } catch (NoSuchMethodException e) {
+        //     // Swallow the error, log it later
+        // }
+    } else {
+        // args = new Class[1];
+        Int32* typeVariants = NULL;
+        Int32 length = 1;
+        if (*valueType == EIID_IFloat) {
+            typeVariants = FLOAT_VARIANTS;
+            length = sizeof(FLOAT_VARIANTS)/sizeof(FLOAT_VARIANTS[0]);
+        } else if (*valueType == EIID_IInteger32) {
+            typeVariants = INTEGER_VARIANTS;
+            length = sizeof(INTEGER_VARIANTS)/sizeof(INTEGER_VARIANTS[0]);
+        } else if (*valueType == EIID_IDouble) {
+            typeVariants = DOUBLE_VARIANTS;
+            length = sizeof(DOUBLE_VARIANTS)/sizeof(DOUBLE_VARIANTS[0]);
+        } else {
+            // typeVariants = new Class[1];
+
+            assert(0 && "TODO");
+            length = 1;
+            // typeVariants[0] = valueType;
+        }
+
+        String signature;
+        for (Int32 i = 0; i < length; i++) {
+            signature = GetSignature(typeVariants[i]);
+            if (FAILED(targetClass->GetMethodInfo(methodName, signature, (IMethodInfo**)&returnVal)) || returnVal == NULL) {
+                continue;
+            }
+
+            if (mConverter == NULL) {
+                // change the value type to suit
+                assert(0 && "TODO");
+                // mValueType = typeVariant;
+            }
+            return returnVal;
+        }
+
+        // If we got here, then no appropriate function was found
+    }
+
+    if (returnVal == NULL) {
+        Slogger::W(String("PropertyValuesHolder"), String("Method ") +
+                methodName + String("() with type ") /*+ valueType */+
+                String(" not found on target class ") /*+ targetClass*/);
+    }
+
     return returnVal;
 }
 
 AutoPtr<IMethodInfo> PropertyValuesHolder::SetupSetterOrGetter(
-     /* [in] */ IClassInfo* targetClass,
-     /* [in] */ PropertyValuesHolder::ClassMethodMap * propertyMapMap,
-     /* [in] */ const String& prefix)
+    /* [in] */ IClassInfo* targetClass,
+    /* [in] */ PropertyValuesHolder::ClassMethodMap * propertyMapMap,
+    /* [in] */ const String& prefix,
+    /* [in] */ InterfaceID* valueType)
 {
     AutoPtr<IMethodInfo> setterOrGetter;
     {
@@ -1103,13 +1190,13 @@ AutoPtr<IMethodInfo> PropertyValuesHolder::SetupSetterOrGetter(
         if ((it != propertyMapMap->End()) && (it->mSecond != NULL)) {
             propertyMap = it->mSecond;
             typename MethodMap::Iterator it2 = propertyMap->Find(mPropertyName);
-            if ((it2 != propertyMap->End()) && (it2->mSecond != NULL))
-            {
+            if ((it2 != propertyMap->End()) && (it2->mSecond != NULL)) {
                 setterOrGetter = it2->mSecond;
             }
         }
+
         if (setterOrGetter == NULL) {
-            setterOrGetter = GetPropertyFunction(targetClass, prefix);
+            setterOrGetter = GetPropertyFunction(targetClass, prefix, valueType);
             if (propertyMap == NULL) {
                 propertyMap = new MethodMap();
                 (*propertyMapMap)[key] = propertyMap;
@@ -1130,16 +1217,16 @@ AutoPtr<IClassInfo> PropertyValuesHolder::TransformClassInfo(
     ClassID objId;
     obj->GetClassID(&objId);
     AutoPtr<IModuleInfo> moduleInfo;
-    String path(objId.pUunm);
+    String path(objId.mUunm);
     ASSERT_SUCCEEDED(_CReflector_AcquireModuleInfo(
            path, (IModuleInfo**)&moduleInfo));
     Int32 clsCount;
     moduleInfo->GetClassCount(&clsCount);
-    BufferOf<IClassInfo*>* buf = BufferOf<IClassInfo*>::Alloc(clsCount);
+    AutoPtr< ArrayOf<IClassInfo*> > buf = ArrayOf<IClassInfo*>::Alloc(clsCount);
     moduleInfo->GetAllClassInfos(buf);
     AutoPtr<IClassInfo> info;
     ClassID id;
-    id.pUunm = (char*)malloc(80);
+    id.mUunm = (char*)malloc(80);
     for (Int32 i = 0; i < clsCount; i++) {
         (*buf)[i]->GetId(&id);
         if (id == objId) {
@@ -1148,8 +1235,7 @@ AutoPtr<IClassInfo> PropertyValuesHolder::TransformClassInfo(
         }
     }
 
-    free(id.pUunm);
-    BufferOf<IClassInfo*>::Free(buf);
+    free(id.mUunm);
     return info;
 }
 
@@ -1159,7 +1245,7 @@ AutoPtr<IMethodInfo> PropertyValuesHolder::nGetInt32Method(
 {
     AutoPtr<IClassInfo> clInfo = TransformClassInfo(targetClass);
     AutoPtr<IMethodInfo> mi;
-    clInfo->GetMethodInfo(methodName, (IMethodInfo**)&mi);
+    clInfo->GetMethodInfo(methodName, String("(I32)E"), (IMethodInfo**)&mi);
     return mi;
 }
 
@@ -1169,7 +1255,7 @@ AutoPtr<IMethodInfo> PropertyValuesHolder::nGetFloatMethod(
 {
     AutoPtr<IClassInfo> clInfo = TransformClassInfo(targetClass);
     AutoPtr<IMethodInfo> mi;
-    clInfo->GetMethodInfo(methodName, (IMethodInfo**)&mi);
+    clInfo->GetMethodInfo(methodName, String("(F)E"), (IMethodInfo**)&mi);
     return mi;
 }
 

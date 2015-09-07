@@ -1203,7 +1203,6 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface ILinearInterpolator;
-    //     interface IHasNativeInterpolator;
     //     interface IInterpolator;
     //     interface ITimeInterpolator;
     //     interface INativeInterpolatorFactory;
@@ -1218,7 +1217,6 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface IAccelerateDecelerateInterpolator;
-    //     interface IHasNativeInterpolator;
     //     interface IInterpolator;
     //     interface ITimeInterpolator;
     //     interface INativeInterpolatorFactory;
@@ -1241,7 +1239,6 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface IAnticipateInterpolator;
-    //     interface IHasNativeInterpolator;
     //     interface IInterpolator;
     //     interface ITimeInterpolator;
     //     interface INativeInterpolatorFactory;
@@ -1268,7 +1265,6 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface IAnticipateOvershootInterpolator;
-    //     interface IHasNativeInterpolator;
     //     interface IInterpolator;
     //     interface ITimeInterpolator;
     //     interface INativeInterpolatorFactory;
@@ -1283,7 +1279,6 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface IBounceInterpolator;
-    //     interface IHasNativeInterpolator;
     //     interface IInterpolator;
     //     interface ITimeInterpolator;
     //     interface INativeInterpolatorFactory;
@@ -1304,7 +1299,6 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface ICycleInterpolator;
-    //     interface IHasNativeInterpolator;
     //     interface IInterpolator;
     //     interface ITimeInterpolator;
     //     interface INativeInterpolatorFactory;
@@ -1327,7 +1321,6 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface IDecelerateInterpolator;
-    //     interface IHasNativeInterpolator;
     //     interface IInterpolator;
     //     interface ITimeInterpolator;
     //     interface INativeInterpolatorFactory;
@@ -1350,7 +1343,6 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface IAccelerateInterpolator;
-    //     interface IHasNativeInterpolator;
     //     interface IInterpolator;
     //     interface ITimeInterpolator;
     //     interface INativeInterpolatorFactory;
@@ -1373,7 +1365,6 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface IOvershootInterpolator;
-    //     interface IHasNativeInterpolator;
     //     interface IInterpolator;
     //     interface ITimeInterpolator;
     //     interface INativeInterpolatorFactory;

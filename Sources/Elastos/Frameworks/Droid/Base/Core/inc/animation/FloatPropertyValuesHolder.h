@@ -19,11 +19,11 @@ public:
 
     FloatPropertyValuesHolder(
         /* [in] */ const String& propertyName,
-        /* [in] */ IFloatKeyframeSet* keyframeSet);
+        /* [in] */ IFloatKeyframes* keyframeSet);
 
     FloatPropertyValuesHolder(
         /* [in] */ IProperty* property,
-        /* [in] */ IFloatKeyframeSet* keyframeSet);
+        /* [in] */ IFloatKeyframes* keyframeSet);
 
     FloatPropertyValuesHolder(
         /* [in] */ const String& propertyName,

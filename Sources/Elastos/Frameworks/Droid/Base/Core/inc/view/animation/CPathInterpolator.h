@@ -78,7 +78,7 @@ public:
     /** @hide */
     CARAPI constructor(
         /* [in] */ IResources* res,
-        /* [in] */ ITheme* theme,
+        /* [in] */ IResourcesTheme* theme,
         /* [in] */ IAttributeSet* attrs);
 
     /**

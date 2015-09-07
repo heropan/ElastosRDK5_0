@@ -20,7 +20,6 @@ module
      * @Involve
      * interface ITimeInterpolator
      * interface INativeInterpolatorFactory
-     * interface IHasNativeInterpolator
      */
     [local]
     interface IFallbackLUTInterpolator {

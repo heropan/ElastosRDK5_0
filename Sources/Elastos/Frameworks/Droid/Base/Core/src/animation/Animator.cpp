@@ -3,6 +3,7 @@
 #include <elastos/utility/etl/Algorithm.h>
 
 using Elastos::Core::EIID_ICloneable;
+using Elastos::Utility::CArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -11,6 +12,16 @@ namespace Animation {
 // {be5c79d5-127b-4b30-87de-a89ca967d239}
 extern "C" const InterfaceID EIID_Animator =
         { 0xbe5c79d5, 0x127b, 0x4b30, { 0x87, 0xde, 0xa8, 0x9c, 0xa9, 0x67, 0xd2, 0x39 } };
+
+UInt32 Animator::AddRef()
+{
+    return Object::AddRef();
+}
+
+UInt32 Animator::Release()
+{
+    return Object::Release();
+}
 
 ECode Animator::GetInterfaceID(
     /* [in] */ IInterface* object,
@@ -75,13 +86,13 @@ ECode Animator::Pause()
         mPaused = TRUE;
         if (mPauseListeners != NULL) {
             AutoPtr<IArrayList> tmpListeners;
-            mPauseListeners->Clone((IInterface**)&tmpListeners);
+            ICloneable::Probe(mPauseListeners)->Clone((IInterface**)&tmpListeners);
             Int32 numListeners = 0;
             tmpListeners->GetSize(&numListeners);
             for (Int32 i = 0; i < numListeners; ++i) {
                 AutoPtr<IInterface> listener;
                 tmpListeners->Get(i, (IInterface**)&listener);
-                IAnimatorPauseListener::Probe(listener)->OnAnimationPause(this);
+                IAnimatorPauseListener::Probe(listener)->OnAnimationPause(THIS_PROBE(IAnimator));
             }
         }
     }
@@ -94,13 +105,13 @@ ECode Animator::Resume()
         mPaused = FALSE;
         if (mPauseListeners != NULL) {
             AutoPtr<IArrayList> tmpListeners;
-            mPauseListeners->Clone((IInterface**)&tmpListeners);
+            ICloneable::Probe(mPauseListeners)->Clone((IInterface**)&tmpListeners);
             Int32 numListeners = 0;
             tmpListeners->GetSize(&numListeners);
             for (Int32 i = 0; i < numListeners; ++i) {
                 AutoPtr<IInterface> listener;
                 tmpListeners->Get(i, (IInterface**)&listener);
-                IAnimatorPauseListener::Probe(listener)->OnAnimationResume(this);
+                IAnimatorPauseListener::Probe(listener)->OnAnimationResume(THIS_PROBE(IAnimator));
             }
         }
     }
@@ -174,7 +185,7 @@ ECode Animator::AddPauseListener(
     /* [in] */ IAnimatorPauseListener* listener)
 {
     if (mPauseListeners == NULL) {
-        CArrayList::New((IAnimatorPauseListener**)&mPauseListeners);
+        CArrayList::New((IArrayList**)&mPauseListeners);
     }
     return mPauseListeners->Add(listener);
 }
@@ -217,7 +228,7 @@ ECode Animator::CloneSuperData(
 
     if (mPauseListeners != NULL) {
         AutoPtr<IArrayList> oldListeners = mPauseListeners;
-        anim->mPauseListeners;
+        anim->mPauseListeners = NULL;
         CArrayList::New((IArrayList**)&anim->mPauseListeners);
         Int32 numListeners = 0;
         oldListeners->GetSize(&numListeners);

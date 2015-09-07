@@ -1,6 +1,11 @@
-#include "animation/Int32PropertyValuesHolder.h"
 
+#include "animation/Int32PropertyValuesHolder.h"
+#include <elastos/core/AutoLock.h>
+
+using Elastos::Core::AutoLock;
 using Elastos::Core::ECLSID_CInteger32;
+using Elastos::Core::EIID_IInteger32;
+using Elastos::Core::CInteger32;
 
 namespace Elastos {
 namespace Droid {
@@ -13,20 +18,20 @@ Int32PropertyValuesHolder::Int32PropertyValuesHolder(
     /* [in] */ const String& propertyName,
     /* [in] */ IInt32Keyframes* keyframes)
     : PropertyValuesHolder(propertyName)
-    , mValueType(ECLSID_CInteger32)
-    , mKeyframes(keyframes)
     , mInt32Keyframes(keyframes)
 {
+    mValueType = EIID_IInteger32;
+    mKeyframes = IKeyframes::Probe(keyframes);
 }
 
 Int32PropertyValuesHolder::Int32PropertyValuesHolder(
     /* [in] */ IProperty* property,
     /* [in] */ IInt32Keyframes* keyframes)
     : PropertyValuesHolder(property)
-    , mValueType(ECLSID_CInteger32)
-    , mKeyframes(keyframes)
     , mInt32Keyframes(keyframes)
 {
+    mValueType = EIID_IInteger32;
+    mKeyframes = IKeyframes::Probe(keyframes);
 }
 
 Int32PropertyValuesHolder::Int32PropertyValuesHolder(
@@ -176,7 +181,7 @@ ECode Int32PropertyValuesHolder::SetupSetter(
 
         if(mJniSetter == NULL) {
             String methodName = GetMethodName(String("Set"), mPropertyName);
-            clInfo->GetMethodInfo(methodName, (IMethodInfo**)&mJniSetter);
+            clInfo->GetMethodInfo(methodName, String("(I32)E"), (IMethodInfo**)&mJniSetter);
             if(mJniSetter != NULL) {
                 if (propertyMap == NULL) {
                     propertyMap = new MethodMap();

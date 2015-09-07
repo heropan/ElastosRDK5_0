@@ -1,10 +1,16 @@
 
-#ifndef  __ELASTOS_DROID_ANIMATION_PROPERTYVALUESHOLDER_H__
-#define  __ELASTOS_DROID_ANIMATION_PROPERTYVALUESHOLDER_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_STATELISTANIMATOR_H__
+#define  __ELASTOS_DROID_ANIMATION_STATELISTANIMATOR_H__
 
+#include "ext/frameworkext.h"
+#include "animation/AnimatorListenerAdapter.h"
 #include <elastos/core/Object.h>
+#include <elastos/utility/etl/List.h>
 
+using Elastos::Droid::View::IView;
 using Elastos::Core::Object;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
@@ -82,6 +88,8 @@ private:
 public:
     CAR_INTERFACE_DECL();
 
+    StateListAnimator();
+
     /**
      * Associates the given animator with the provided drawable state specs so that it will be run
      * when the View's drawable state matches the specs.
@@ -152,10 +160,11 @@ private:
     AutoPtr<IAnimator> mRunningAnimator;
 
     AutoPtr<IWeakReference> mViewRef;
+    AutoPtr<AnimatorListener> mAnimatorListener;
 };
 
 } // namespace Animation
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_ANIMATION_PROPERTYVALUESHOLDER_H__
+#endif // __ELASTOS_DROID_ANIMATION_STATELISTANIMATOR_H__

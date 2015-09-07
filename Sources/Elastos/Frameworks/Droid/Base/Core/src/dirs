@@ -1,4 +1,3 @@
-
 DIRS += os
 DIRS += net
 DIRS += util
@@ -10,7 +9,7 @@ DIRS += content
 DIRS += hardware
 #DIRS += view
 #DIRS += impl
-#DIRS += animation
+DIRS += animation
 #DIRS += bluetooth
 #DIRS += preference
 #DIRS += location

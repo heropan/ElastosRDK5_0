@@ -1,5 +1,11 @@
 
-#include "Int32ArrayEvaluator.h"
+#include "animation/Int32ArrayEvaluator.h"
+
+using Elastos::Core::IArrayOf;
+using Elastos::Core::CArrayOf;
+using Elastos::Core::EIID_IInteger32;
+using Elastos::Core::IInteger32;
+using Elastos::Core::CInteger32;
 
 namespace Elastos {
 namespace Droid {
@@ -34,7 +40,7 @@ ECode Int32ArrayEvaluator::Evaluate(
     }
 
     AutoPtr<IArrayOf> array;
-    CArrayOf::New(length, (IArrayOf**)&array);
+    CArrayOf::New(EIID_IInteger32, length, (IArrayOf**)&array);
     for (Int32 i = 0; i < length; i++) {
         AutoPtr<IInteger32> istart, iend;
         IArrayOf::Probe(startValue)->Get(i, (IInterface**)&istart);

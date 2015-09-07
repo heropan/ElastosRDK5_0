@@ -7,7 +7,12 @@
 #include "AnimatorListenerAdapter.h"
 #include <elastos/utility/etl/HashMap.h>
 
+using Elastos::Core::EIID_ICloneable;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::IList;
 using Elastos::Utility::Etl::HashMap;
+
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Animation::IAnimator)
 
 namespace Elastos {
 namespace Droid {
@@ -23,6 +28,7 @@ class AnimatorSet
 {
 public:
     class Node;
+
 private:
     /**
      * This class is the mechanism by which animations are started based on events in other
@@ -128,6 +134,7 @@ private:
             /* [in] */ Int32 rule);
     };
 
+public:
     /**
      * A Node is an embodiment of both the Animator that it wraps as well as
      * any dependencies that are associated with that Animation. This includes
@@ -154,8 +161,8 @@ private:
         void AddDependency(
             /* [in] */ Dependency* dependency);
 
-        CARAPI_(AutoPtr<Node>) Clone();
-
+        CARAPI Clone(
+            /* [out] */ IInterface** obj);
 
     private:
         Node();
@@ -254,7 +261,7 @@ public:
      * @param items The animations that will be started simultaneously.
      */
     virtual CARAPI PlayTogether(
-        /* [in] */ IObjectContainer* items);
+        /* [in] */ ICollection* items);
 
     /**
      * Sets up this AnimatorSet to play each of the supplied animations when the
@@ -286,7 +293,7 @@ public:
         /* [out, callee] */ ArrayOf<IAnimator*>** childAnimations);
 
     virtual CARAPI GetChildAnimations(
-        /* [out] */ IObjectContainer** childAnimations);
+        /* [out] */ IArrayList** childAnimations);
 
 
     //     @Override
@@ -398,7 +405,7 @@ public:
     virtual CARAPI Start();
 
     virtual CARAPI Clone(
-        /* [out] */ IAnimator** object);
+        /* [out] */ IInterface** object);
 
     /**
      * @hide
@@ -508,5 +515,51 @@ private:
 }   //namespace Animation
 }   //namespace Droid
 }   //namespace Elastos
+
+#ifndef NODE_PROBE
+#define NODE_PROBE(x) ((ICloneable *)x->Probe(EIID_ICloneable))
+#endif
+
+#ifndef DEFINE_OBJECT_HASH_FUNC_FOR_ANIMATORSET_NODE
+#define DEFINE_OBJECT_HASH_FUNC_FOR_ANIMATORSET_NODE(TypeName)                                           \
+_ETL_NAMESPACE_BEGIN                                                                    \
+template<> struct Hash<TypeName *>                                                      \
+{                                                                                       \
+    size_t operator()(TypeName * s) const                                               \
+    {                                                                                   \
+        return (size_t)Object::GetHashCode(s);                                          \
+    }                                                                                   \
+};                                                                                      \
+                                                                                        \
+template<> struct Hash<AutoPtr<TypeName> >                                              \
+{                                                                                       \
+    size_t operator()(const AutoPtr<TypeName> & s) const                                \
+    {                                                                                   \
+        return (size_t)Object::GetHashCode(s.Get());                                    \
+    }                                                                                   \
+};                                                                                      \
+                                                                                        \
+template<> struct EqualTo<TypeName *>                                                   \
+{                                                                                       \
+    size_t operator()(TypeName * x, TypeName * y) const                                 \
+    {                                                                                   \
+        return (size_t)Object::Equals(NODE_PROBE(x), NODE_PROBE(y));                    \
+    }                                                                                   \
+};                                                                                      \
+                                                                                        \
+template<> struct EqualTo<AutoPtr<TypeName> >                                           \
+{                                                                                       \
+    size_t operator()(const AutoPtr<TypeName> & x, const AutoPtr<TypeName> & y) const   \
+    {                                                                                   \
+        return (size_t)Object::Equals(NODE_PROBE(x), NODE_PROBE(y));                    \
+    }                                                                                   \
+};                                                                                      \
+                                                                                        \
+_ETL_NAMESPACE_END
+#endif // DEFINE_OBJECT_HASH_FUNC_FOR_ANIMATORSET_NODE
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::Animation::AnimatorSet::Node, ICloneable)
+// DEFINE_CONVERSION_FOR(Elastos::Droid::Animation::AnimatorSet::Node, IInterface)
+DEFINE_OBJECT_HASH_FUNC_FOR_ANIMATORSET_NODE(Elastos::Droid::Animation::AnimatorSet::Node)
 
 #endif  // __ELASTOS_DROID_ANIMATION_ANIMATORSET_H__

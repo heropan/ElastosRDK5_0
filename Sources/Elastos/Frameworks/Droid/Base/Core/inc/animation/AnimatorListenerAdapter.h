@@ -3,6 +3,9 @@
 #define  __ELASTOS_DROID_ANIMATION_ANIMATORLISTENERADAPTER_H__
 
 #include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

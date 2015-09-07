@@ -1,10 +1,16 @@
 
-#include "MultiInt32ValuesHolder.h"
+#include "animation/MultiInt32ValuesHolder.h"
+#include <elastos/core/AutoLock.h>
+
+using Elastos::Core::AutoLock;
+using Elastos::Core::IInteger32;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
 namespace Animation {
 
+MultiInt32ValuesHolder::ClassMethodMap MultiInt32ValuesHolder::sJNISetterPropertyMap;
 CAR_INTERFACE_IMPL(MultiInt32ValuesHolder, PropertyValuesHolder, IMultiInt32ValuesHolder);
 MultiInt32ValuesHolder::MultiInt32ValuesHolder(
     /* [in] */ const String& propertyName,
@@ -89,8 +95,8 @@ ECode MultiInt32ValuesHolder::SetupSetter(
     AutoPtr<IClassInfo> info = TransformClassInfo(targetClass);
     AutoPtr<MethodMap> propertyMap = sJNISetterPropertyMap[info];
 
-    typename ClassMethodMap::Iterator it = sJNISetterPropertyMap->Find(key);
-    if ((it != sJNISetterPropertyMap->End()) && (it->mSecond != NULL)) {
+    typename ClassMethodMap::Iterator it = sJNISetterPropertyMap.Find(info);
+    if ((it != sJNISetterPropertyMap.End()) && (it->mSecond != NULL)) {
         propertyMap = it->mSecond;
         typename MethodMap::Iterator it2 = propertyMap->Find(mPropertyName);
         if ((it2 != propertyMap->End()) && (it2->mSecond != NULL)) {
@@ -99,23 +105,23 @@ ECode MultiInt32ValuesHolder::SetupSetter(
     }
     if (mJniSetter == NULL) {
         String methodName = GetMethodName(String("Set"), mPropertyName);
-        CalculateValue(0f);
+        CalculateValue(0.f);
         AutoPtr<IArrayList> values;
         GetAnimatedValue((IInterface**)&values);
         Int32 numParams = 0;
         values->GetSize(&numParams);
         try {
-            mJniSetter = nGetMultipleIntMethod(info, methodName, numParams);
+            mJniSetter = nGetMultipleInt32Method(info, methodName, numParams);
         } catch (NoSuchMethodError e) {
             // try without the 'set' prefix
-            mJniSetter = nGetMultipleIntMethod(info, mPropertyName, numParams);
+            mJniSetter = nGetMultipleInt32Method(info, mPropertyName, numParams);
         }
         if (mJniSetter != NULL) {
             if (propertyMap == NULL) {
                 propertyMap = new MethodMap();
                 sJNISetterPropertyMap[info] = propertyMap;
             }
-            propertyMap[mPropertyName] = mJniSetter;
+            (*propertyMap)[mPropertyName] = mJniSetter;
         }
     }
     // } finally {

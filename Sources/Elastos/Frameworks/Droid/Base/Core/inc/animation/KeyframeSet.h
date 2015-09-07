@@ -2,7 +2,12 @@
 #ifndef  __ELASTOS_DROID_ANIMATION_KEYFRAMESET_H__
 #define  __ELASTOS_DROID_ANIMATION_KEYFRAMESET_H__
 
-#include "animation/Keyframe.h"
+#include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Droid::Graphics::IPath;
+using Elastos::Core::ICloneable;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -17,6 +22,7 @@ class KeyframeSet
     : public Object
     , public IKeyframeSet
     , public IKeyframes
+    , public ICloneable
 {
 public:
     CAR_INTERFACE_DECL();
@@ -57,7 +63,7 @@ public:
         /* [in] */ ITypeEvaluator* evaluator);
 
     virtual CARAPI GetType(
-        /* [out] */ ClassID* type);
+        /* [out] */ InterfaceID* type);
 
     /**
      * Gets the animated value, given the elapsed fraction of the animation (interpolated by the
@@ -76,7 +82,7 @@ public:
         /* [out] */ IInterface** value);
 
     virtual CARAPI Clone(
-        /* [out] */ IKeyframeSet** obj);
+        /* [out] */ IInterface** obj);
 
     /**
      * If subclass has variables that it calculates based on the Keyframes, it should reset them

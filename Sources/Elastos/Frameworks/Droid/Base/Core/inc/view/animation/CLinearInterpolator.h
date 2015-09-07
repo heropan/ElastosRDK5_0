@@ -5,7 +5,9 @@
 #include "_Elastos_Droid_View_Animation_CLinearInterpolator.h"
 
 using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Internal::View::Animation::INativeInterpolatorFactory;
 
 namespace Elastos {
 namespace Droid {
@@ -13,10 +15,9 @@ namespace View {
 namespace Animation {
 
 CarClass(CLinearInterpolator)
-    : public Object
+    , public Object
     , public ILinearInterpolator
     , public INativeInterpolatorFactory
-    , public IHasNativeInterpolator
     , public IInterpolator
     , public ITimeInterpolator
 {

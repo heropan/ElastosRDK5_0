@@ -14,8 +14,6 @@ CarClass(CValueAnimator) , public ValueAnimator
 public:
     CAR_OBJECT_DECL();
 
-    CAR_INTERFACE_DECL();
-
     /**
      * Constructs and returns a ValueAnimator that animates between Int32 values. A single
      * value implies that that value is the one being animated to. However, this is not typically

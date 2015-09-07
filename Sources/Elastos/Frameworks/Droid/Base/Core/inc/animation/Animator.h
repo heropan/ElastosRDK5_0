@@ -8,6 +8,7 @@
 
 using Elastos::Core::Object;
 using Elastos::Core::ICloneable;
+using Elastos::Utility::IArrayList;
 using Elastos::Utility::Etl::List;
 
 namespace Elastos {
@@ -275,7 +276,7 @@ public:
     virtual CARAPI Reverse();
 
     virtual CARAPI SetAllowRunningAsynchronously(
-        /* [in] */ Boolean mayRunAsync)
+        /* [in] */ Boolean mayRunAsync);
 
 protected:
     //@Override

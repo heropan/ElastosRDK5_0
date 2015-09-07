@@ -1,5 +1,11 @@
 
-#include "FloatArrayEvaluator.h"
+#include "animation/FloatArrayEvaluator.h"
+
+using Elastos::Core::CFloat;
+using Elastos::Core::IFloat;
+using Elastos::Core::EIID_IFloat;
+using Elastos::Core::IArrayOf;
+using Elastos::Core::CArrayOf;
 
 namespace Elastos {
 namespace Droid {
@@ -33,7 +39,7 @@ ECode FloatArrayEvaluator::Evaluate(
     }
 
     AutoPtr<IArrayOf> array;
-    CArrayOf::New(length, (IArrayOf**)&array);
+    CArrayOf::New(EIID_IFloat, length, (IArrayOf**)&array);
     for (Int32 i = 0; i < length; i++) {
         AutoPtr<IFloat> istart, iend;
         IArrayOf::Probe(startValue)->Get(i, (IInterface**)&istart);

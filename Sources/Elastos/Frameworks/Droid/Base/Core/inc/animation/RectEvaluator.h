@@ -2,8 +2,10 @@
 #ifndef  __ELASTOS_DROID_ANIMATION_RECTEVALUATOR_H__
 #define  __ELASTOS_DROID_ANIMATION_RECTEVALUATOR_H__
 
+#include "ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Droid::Graphics::IRect;
 using Elastos::Core::Object;
 
 namespace Elastos {

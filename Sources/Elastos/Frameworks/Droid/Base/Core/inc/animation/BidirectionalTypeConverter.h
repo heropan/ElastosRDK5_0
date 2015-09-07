@@ -2,6 +2,7 @@
 #ifndef  __ELASTOS_DROID_ANIMATION_BIDIRECTIONALTYPECONVERTER_H__
 #define  __ELASTOS_DROID_ANIMATION_BIDIRECTIONALTYPECONVERTER_H__
 
+#include "animation/TypeConverter.h"
 
 namespace Elastos {
 namespace Droid {
@@ -16,35 +17,38 @@ namespace Animation {
  */
 class BidirectionalTypeConverter
     : public TypeConverter
+    , public IBidirectionalTypeConverter
 {
-private:
-    class InvertedConverter
-        : public BidirectionalTypeConverter
-    {
-    public:
-        InvertedConverter(
-            /* [in] */ BidirectionalTypeConverter/*<To, From>*/* converter);
+// private:
+//     class InvertedConverter
+//         : public BidirectionalTypeConverter
+//     {
+//     public:
+//         InvertedConverter(
+//             /* [in] */ BidirectionalTypeConverter/*<To, From>*/* converter);
 
-        // @Override
-        virtual CARAPI ConvertBack(
-            /* [in] */ IInterface* value,
-            /* [out] */ IInterface** result);
+//         // @Override
+//         virtual CARAPI ConvertBack(
+//             /* [in] */ IInterface* value,
+//             /* [out] */ IInterface** result);
 
-        // @Override
-        virtual CARAPI Convert(
-            /* [in] */ IInterface* value,
-            /* [out] */ IInterface** result);
+//         // @Override
+//         virtual CARAPI Convert(
+//             /* [in] */ IInterface* value,
+//             /* [out] */ IInterface** result);
 
-    private:
-        AutoPtr<BidirectionalTypeConverter> mConverter;
-    };
+//     private:
+//         AutoPtr<BidirectionalTypeConverter> mConverter;
+//     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     BidirectionalTypeConverter();
 
     BidirectionalTypeConverter(
-        /* [in] */ IMethodInfo* fromClass,
-        /* [in] */ IMethodInfo* toClass);
+        /* [in] */ const InterfaceID& fromClass,
+        /* [in] */ const InterfaceID& toClass);
 
     ~BidirectionalTypeConverter() = 0;
 
@@ -66,15 +70,37 @@ public:
      * {@link #convertBack(Object)} calls.
      * @return The inverse of this converter, where the from and to classes are reversed.
      */
-    virtual CARAPI_(AutoPtr<BidirectionalTypeConverter>) Invert();
+    virtual CARAPI Invert(
+        /* [out] */ IBidirectionalTypeConverter** result);
 
 protected:
     virtual CARAPI constructor(
-        /* [in] */ IMethodInfo* fromClass,
-        /* [in] */ IMethodInfo* toClass);
+        /* [in] */ const InterfaceID& fromClass,
+        /* [in] */ const InterfaceID& toClass);
 
 private:
-    AutoPtr<BidirectionalTypeConverter> mInvertedConverter;
+    AutoPtr<IBidirectionalTypeConverter> mInvertedConverter;
+};
+
+class InvertedConverter
+    : public BidirectionalTypeConverter
+{
+public:
+    InvertedConverter(
+        /* [in] */ BidirectionalTypeConverter/*<To, From>*/* converter);
+
+    // @Override
+    virtual CARAPI ConvertBack(
+        /* [in] */ IInterface* value,
+        /* [out] */ IInterface** result);
+
+    // @Override
+    virtual CARAPI Convert(
+        /* [in] */ IInterface* value,
+        /* [out] */ IInterface** result);
+
+private:
+    AutoPtr<BidirectionalTypeConverter> mConverter;
 };
 
 }   //namespace Animation

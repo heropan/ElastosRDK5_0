@@ -3,7 +3,9 @@
 #define __ELASTOS_DROID_ANIMATION_CPROPERTYVALUESHOLDERHELPER_H__
 
 #include "_Elastos_Droid_Animation_CPropertyValuesHolderHelper.h"
+#include <elastos/core/Singleton.h>
 
+using Elastos::Core::Singleton;
 using Elastos::Droid::Utility::IProperty;
 
 namespace Elastos {

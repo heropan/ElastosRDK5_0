@@ -10,10 +10,13 @@ using Elastos::Core::EIID_IInteger32;
 using Elastos::Core::IFloat;
 using Elastos::Core::CFloat;
 using Elastos::Core::EIID_IFloat;
+using Elastos::Core::ICloneable;
 
 namespace Elastos {
 namespace Droid {
 namespace Animation {
+
+class PropertyValuesHolder;
 
 /**
  * This class holds a time/value pair for an animation. The Keyframe class is used
@@ -35,6 +38,7 @@ namespace Animation {
 class Keyframe
     : public Object
     , public IKeyframe
+    , public ICloneable
 {
 public:
     CAR_INTERFACE_DECL();
@@ -111,10 +115,10 @@ public:
      * @return The type of the value stored in the Keyframe.
      */
     virtual CARAPI GetType(
-        /* [out] */ ClassID* id);
+        /* [out] */ InterfaceID* id);
 
     virtual CARAPI Clone(
-        /* [out] */ IKeyframe** object) = 0;
+        /* [out] */ IInterface** object) = 0;
 public:
 
     /**
@@ -244,7 +248,7 @@ protected:
      * The type of the value in this Keyframe. This type is determined at construction time,
      * based on the type of the <code>value</code> object passed into the constructor.
      */
-    ClassID mValueType;
+    InterfaceID mValueType;
 
     /**
      * Flag to indicate whether this keyframe has a valid value. This flag is used when an
@@ -265,6 +269,8 @@ private:
      * (the default) results in linear interpolation over the interval.
      */
     AutoPtr<ITimeInterpolator> mInterpolator;
+
+    friend class PropertyValuesHolder;
 };
 
 /**
@@ -288,7 +294,7 @@ public:
         /* [in] */ IInterface* value);
 
     virtual CARAPI Clone(
-        /* [out] */ IKeyframe** object);
+        /* [out] */ IInterface** object);
 
 private:
     /**
@@ -324,7 +330,7 @@ public:
         /* [in] */ Int32* value);
 
     virtual CARAPI Clone(
-        /* [out] */ IKeyframe** object);
+        /* [out] */ IInterface** object);
 
 private:
     /**
@@ -341,8 +347,7 @@ class FloatKeyframe
     , public IFloatKeyframe
 {
 public:
-    IKEYFRAME_METHOD_DECL()
-    CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL();
 
     FloatKeyframe(
             /* [in] */ Float fraction);
@@ -361,7 +366,7 @@ public:
         /* [out] */ Float* value);
 
     virtual CARAPI Clone(
-        /* [out] */ IKeyframe** object);
+        /* [out] */ IInterface** object);
 
 private:
     /**

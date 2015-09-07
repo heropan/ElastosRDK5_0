@@ -28,17 +28,6 @@ public:
         /* [in] */ ArrayOf<IFloatKeyframe*>* keyframes);
 
     /**
-     * Sets the TypeEvaluator to be used when calculating animated values. This object
-     * is required only for KeyframeSets that are not either IntKeyframeSet or FloatKeyframeSet,
-     * both of which assume their own evaluator to speed up calculations with those primitive
-     * types.
-     *
-     * @param evaluator The TypeEvaluator to be used to calculate animated values.
-     */
-    CARAPI SetEvaluator(
-        /* [in] */ ITypeEvaluator* evaluator);
-
-    /**
      * Gets the animated value, given the elapsed fraction of the animation (interpolated by the
      * animation's interpolator) and the evaluator used to calculate in-between values. This
      * function maps the input fraction to the appropriate keyframe interval and a fraction
@@ -55,7 +44,7 @@ public:
         /* [out] */ IInterface** value);
 
     CARAPI Clone(
-        /* [out] */ IKeyframeSet** obj);
+        /* [out] */ IInterface** obj);
 
     virtual CARAPI InvalidateCache();
 
@@ -68,7 +57,7 @@ public:
 
     // @Override
     virtual CARAPI GetType(
-        /* [out] */ ClassID* type);
+        /* [out] */ InterfaceID* type);
 
 private:
     Float mFirstValue;

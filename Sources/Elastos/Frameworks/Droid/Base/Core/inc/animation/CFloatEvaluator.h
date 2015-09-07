@@ -3,6 +3,9 @@
 #define  __ELASTOS_DROID_ANIMATION_CFLOATEVALUATOR_H__
 
 #include "_Elastos_Droid_Animation_CFloatEvaluator.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

@@ -2,27 +2,28 @@
 #include "Elastos.Droid.Core_server.h"
 #include "animation/ValueAnimator.h"
 #include "animation/CValueAnimator.h"
-#include <unistd.h>
-#include <elastos/core/Math.h>
-#include <elastos/utility/etl/Algorithm.h>
+#include "animation/PropertyValuesHolder.h"
+#include "animation/CArgbEvaluator.h"
 #include "os/Looper.h"
 #include "os/SystemProperties.h"
-#include "view/animation/AnimationUtils.h"
-#include "animation/PropertyValuesHolder.h"
-#include "view/animation/CAccelerateDecelerateInterpolator.h"
-#include "view/CChoreographerHelper.h"
-#include "view/animation/CLinearInterpolator.h"
+// #include "view/animation/AnimationUtils.h"
+// #include "view/animation/CAccelerateDecelerateInterpolator.h"
+// #include "view/CChoreographerHelper.h"
+// #include "view/animation/CLinearInterpolator.h"
+#include <elastos/core/Math.h>
+#include <elastos/utility/etl/Algorithm.h>
+#include <unistd.h>
 
 using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Os::SystemProperties;
 using Elastos::Droid::View::IChoreographerHelper;
-using Elastos::Droid::View::CChoreographerHelper;
-using Elastos::Droid::View::Animation::AnimationUtils;
-using Elastos::Droid::View::Animation::CAccelerateDecelerateInterpolator;
+// using Elastos::Droid::View::CChoreographerHelper;
+// using Elastos::Droid::View::Animation::AnimationUtils;
+// using Elastos::Droid::View::Animation::CAccelerateDecelerateInterpolator;
 using Elastos::Droid::View::Animation::ILinearInterpolator;
-using Elastos::Droid::View::Animation::CLinearInterpolator;
+// using Elastos::Droid::View::Animation::CLinearInterpolator;
 
 namespace Elastos {
 namespace Droid {
@@ -40,7 +41,8 @@ ValueAnimator::AnimationHandler::AnimationHandler()
     : mAnimationScheduled(FALSE)
 {
     AutoPtr<IChoreographerHelper> helper;
-    ASSERT_SUCCEEDED(CChoreographerHelper::AcquireSingleton((IChoreographerHelper**)&helper));
+    assert(0 && "TODO");
+    // ASSERT_SUCCEEDED(CChoreographerHelper::AcquireSingleton((IChoreographerHelper**)&helper));
     helper->GetInstance((IChoreographer**)&mChoreographer);
 }
 
@@ -169,9 +171,11 @@ void ValueAnimator::AnimationHandler::ScheduleAnimation() {
 
 AutoPtr<ITimeInterpolator> CreateInterPolator()
 {
-    AutoPtr<CAccelerateDecelerateInterpolator> obj;
-    CAccelerateDecelerateInterpolator::NewByFriend((CAccelerateDecelerateInterpolator**)&obj);
-    return obj;
+    assert(0 && "TODO");
+    // AutoPtr<CAccelerateDecelerateInterpolator> obj;
+    // CAccelerateDecelerateInterpolator::NewByFriend((CAccelerateDecelerateInterpolator**)&obj);
+    // return obj;
+    return NULL;
 }
 
 static void ThreadDestructor(void* st)
@@ -197,6 +201,16 @@ Float ValueAnimator::sDurationScale = 1.0f;
 pthread_key_t ValueAnimator::sAnimationHandler;
 Boolean ValueAnimator::sHaveKey = InitTLS();
 const AutoPtr<ITimeInterpolator> ValueAnimator::sDefaultInterpolator = CreateInterPolator();
+
+UInt32 ValueAnimator::AddRef()
+{
+    return Animator::AddRef();
+}
+
+UInt32 ValueAnimator::Release()
+{
+    return Animator::Release();
+}
 
 ECode ValueAnimator::GetInterfaceID(
     /* [in] */ IInterface* object,
@@ -225,7 +239,7 @@ PInterface ValueAnimator::Probe(
         return (IInterface*)(IValueAnimator*)this;
     }
 
-    return Animator::Probe(riid)
+    return Animator::Probe(riid);
 }
 
 ValueAnimator::ValueAnimator()
@@ -279,7 +293,9 @@ ECode ValueAnimator::SetInt32Values(
 
     if (mValues == NULL || mValues->GetLength() == 0) {
         AutoPtr<IPropertyValuesHolder> pvh = PropertyValuesHolder::OfInt32(String(""), values);
-        SetValues(pvh);
+        AutoPtr<ArrayOf<IPropertyValuesHolder*> > a = ArrayOf<IPropertyValuesHolder*>::Alloc(1);
+        a->Set(0, pvh);
+        SetValues(a);
     } else {
         AutoPtr<IPropertyValuesHolder> valuesHolder = (*mValues)[0];
         valuesHolder->SetInt32Values(values);
@@ -298,7 +314,9 @@ ECode ValueAnimator::SetFloatValues(
     }
     if (mValues == NULL || mValues->GetLength() == 0) {
         AutoPtr<IPropertyValuesHolder> pvh = PropertyValuesHolder::OfFloat(String(""), values);
-        SetValues(pvh);
+        AutoPtr<ArrayOf<IPropertyValuesHolder*> > a = ArrayOf<IPropertyValuesHolder*>::Alloc(1);
+        a->Set(0, pvh);
+        SetValues(a);
     } else {
         AutoPtr<IPropertyValuesHolder> valuesHolder = (*mValues)[0];
         valuesHolder->SetFloatValues(values);
@@ -317,7 +335,9 @@ ECode ValueAnimator::SetObjectValues(
     }
     if (mValues == NULL || mValues->GetLength() == 0) {
         AutoPtr<IPropertyValuesHolder> pvh = PropertyValuesHolder::OfObject(String(""), NULL, values);
-        SetValues(pvh);
+        AutoPtr<ArrayOf<IPropertyValuesHolder*> > a = ArrayOf<IPropertyValuesHolder*>::Alloc(1);
+        a->Set(0, pvh);
+        SetValues(a);
     } else {
         AutoPtr<IPropertyValuesHolder> valuesHolder = (*mValues)[0];
         valuesHolder->SetObjectValues(values);
@@ -347,9 +367,13 @@ ECode ValueAnimator::SetValues(
     return NOERROR;
 }
 
-AutoPtr<ArrayOf<IPropertyValuesHolder*> > ValueAnimator::GetValues()
+ECode ValueAnimator::GetValues(
+    /* [out, callee] */ ArrayOf<IPropertyValuesHolder*>** values)
 {
-    return mValues;
+    VALIDATE_NOT_NULL(values);
+    *values = mValues;
+    REFCOUNT_ADD(*values);
+    return NOERROR;
 }
 
 ECode ValueAnimator::InitAnimation()
@@ -399,7 +423,9 @@ ECode ValueAnimator::SetCurrentPlayTime(
     /* [in] */ Int64 playTime)
 {
     InitAnimation();
-    Int64 currentTime = AnimationUtils::CurrentAnimationTimeMillis();
+    Int64 currentTime = 0;
+    assert(0 && "TODO");
+    // AnimationUtils::CurrentAnimationTimeMillis(&currentTime);
     if (mPlayingState != RUNNING) {
         mSeekTime = playTime;
         mPlayingState = SEEKED;
@@ -419,7 +445,10 @@ ECode ValueAnimator::GetCurrentPlayTime(
         return NOERROR;
     }
 
-    *playTime = AnimationUtils::CurrentAnimationTimeMillis() - mStartTime;
+    Int64 tmp = 0;
+    assert(0 && "TODO");
+    // AnimationUtils::CurrentAnimationTimeMillis(&tmp);
+    *playTime = tmp - mStartTime;
     return NOERROR;
 }
 
@@ -458,7 +487,8 @@ ECode ValueAnimator::GetAnimatedValue(
 Int64 ValueAnimator::GetFrameDelay()
 {
     AutoPtr<IChoreographerHelper> helper;
-    ASSERT_SUCCEEDED(CChoreographerHelper::AcquireSingleton((IChoreographerHelper**)&helper));
+    assert(0 && "TODO");
+    // ASSERT_SUCCEEDED(CChoreographerHelper::AcquireSingleton((IChoreographerHelper**)&helper));
     Int64 delay;
     helper->GetFrameDelay(&delay);
     return delay;
@@ -467,7 +497,8 @@ ECode ValueAnimator::SetFrameDelay(
     /* [in]*/ Int64 delay)
 {
     AutoPtr<IChoreographerHelper> helper;
-    ASSERT_SUCCEEDED(CChoreographerHelper::AcquireSingleton((IChoreographerHelper**)&helper));
+    assert(0 && "TODO");
+    // ASSERT_SUCCEEDED(CChoreographerHelper::AcquireSingleton((IChoreographerHelper**)&helper));
     return helper->SetFrameDelay(delay);
 }
 
@@ -547,7 +578,8 @@ ECode ValueAnimator::SetInterpolator(
 {
     mInterpolator = value;
     if (mInterpolator == NULL) {
-        CLinearInterpolator::New((ILinearInterpolator**)&mInterpolator);
+        assert(0 && "TODO");
+        // CLinearInterpolator::New((ILinearInterpolator**)&mInterpolator);
     }
 
     return NOERROR;
@@ -722,7 +754,9 @@ ECode ValueAnimator::Reverse()
 {
     mPlayingBackwards = !mPlayingBackwards;
     if (mPlayingState == RUNNING) {
-        Int64 currentTime = AnimationUtils::CurrentAnimationTimeMillis();
+        Int64 currentTime = 0;
+        assert(0 && "TODO");
+        // AnimationUtils::CurrentAnimationTimeMillis(&currentTime);
         Int64 currentPlayTime = currentTime - mStartTime;
         Int64 timeLeft = mDuration - currentPlayTime;
         mStartTime = currentTime - timeLeft;
@@ -770,20 +804,20 @@ void ValueAnimator::EndAnimation(
     mStarted = FALSE;
     mStartListenersCalled = FALSE;
     mPlayingBackwards = FALSE;
-    if (Trace.isTagEnabled(Trace.TRACE_TAG_VIEW)) {
-        Trace.asyncTraceEnd(Trace.TRACE_TAG_VIEW, getNameForTrace(),
-                System.identityHashCode(this));
-    }
+    // if (Trace.isTagEnabled(Trace.TRACE_TAG_VIEW)) {
+    //     Trace.asyncTraceEnd(Trace.TRACE_TAG_VIEW, getNameForTrace(),
+    //             System.identityHashCode(this));
+    // }
 }
 
 void ValueAnimator::StartAnimation(
     /* [in] */ AnimationHandler* handler)
 {
     assert(handler != NULL);
-    if (Trace.isTagEnabled(Trace.TRACE_TAG_VIEW)) {
-        Trace.asyncTraceBegin(Trace.TRACE_TAG_VIEW, getNameForTrace(),
-                System.identityHashCode(this));
-    }
+    // if (Trace.isTagEnabled(Trace.TRACE_TAG_VIEW)) {
+    //     Trace.asyncTraceBegin(Trace.TRACE_TAG_VIEW, getNameForTrace(),
+    //             System.identityHashCode(this));
+    // }
 
     InitAnimation();
     AutoPtr<IValueAnimator> anim = THIS_PROBE(IValueAnimator);
@@ -940,13 +974,13 @@ ECode ValueAnimator::AnimateValue(
 }
 
 ECode ValueAnimator::Clone(
-    /* [out] */ IAnimator** object)
+    /* [out] */ IInterface** object)
 {
     AutoPtr<CValueAnimator> newObject;
     CValueAnimator::NewByFriend((CValueAnimator**)&newObject);
     CloneSuperData(newObject.Get());
     CloneInternal(newObject);
-    *object = (IAnimator*)newObject->Probe(EIID_IAnimator);
+    *object = (IInterface*)newObject->Probe(EIID_IInterface);
     REFCOUNT_ADD(*object)
     return NOERROR;
 }
@@ -1023,8 +1057,8 @@ AutoPtr<IValueAnimator> ValueAnimator::OfArgb(
 {
     AutoPtr<IValueAnimator> anim;
     CValueAnimator::New((IValueAnimator**)&anim);
-    anim->SetIntValues(values);
-    anim->SetEvaluator(CArgbEvaluator::GetInstance());
+    anim->SetInt32Values(values);
+    anim->SetEvaluator(ITypeEvaluator::Probe(CArgbEvaluator::GetInstance()));
     return anim;
 }
 

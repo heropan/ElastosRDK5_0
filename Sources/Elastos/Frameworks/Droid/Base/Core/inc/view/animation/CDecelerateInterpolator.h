@@ -2,11 +2,15 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_CDECELERATEINTERPOLATOR_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_CDECELERATEINTERPOLATOR_H__
 
-#include "_Elastos_Droid_View_Animation_Elastos_Droid_View_CDecelerateInterpolator.h"
+#include "_Elastos_Droid_View_Animation_CDecelerateInterpolator.h"
 #include "R.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IResourcesTheme;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Content::IContext;
 
@@ -16,10 +20,9 @@ namespace View {
 namespace Animation {
 
 CarClass(CDecelerateInterpolator)
-    : public Object
+    , public Object
     , public IDecelerateInterpolator
     , public INativeInterpolatorFactory
-    , public IHasNativeInterpolator
     , public IInterpolator
     , public ITimeInterpolator
 {
@@ -40,7 +43,7 @@ public:
     /** @hide */
     CARAPI constructor(
         /* [in] */ IResources* res,
-        /* [in] */ ITheme* theme,
+        /* [in] */ IResourcesTheme* theme,
         /* [in] */ IAttributeSet* attrs);
 
     CARAPI GetInterpolation(

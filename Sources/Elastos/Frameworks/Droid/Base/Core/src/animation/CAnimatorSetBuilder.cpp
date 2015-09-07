@@ -90,11 +90,9 @@ ECode CAnimatorSetBuilder::After(
     (*values)[0] = 0.0f;
     (*values)[1] = 1.0f;
     AutoPtr<IValueAnimator> anim = CValueAnimator::OfFloat(values);
-    anim->SetDuration(delay);
-    After(anim.Get());
-    return NOERROR;
+    IAnimator::Probe(anim)->SetDuration(delay);
+    return After(IAnimator::Probe(anim));
 }
-
 
 }   //namespace Animation
 }   //namespace Droid

@@ -1,46 +1,44 @@
 
-#include "TypeConverter.h"
+#include "animation/TypeConverter.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Animation {
 
 CAR_INTERFACE_IMPL(TypeConverter, Object, ITypeConverter);
-
 TypeConverter::TypeConverter()
 {}
 
 TypeConverter::TypeConverter(
-    /* [in] */ IMethodInfo* fromClass,
-    /* [in] */ IMethodInfo* toClass)
+    /* [in] */ const InterfaceID& fromClass,
+    /* [in] */ const InterfaceID& toClass)
     : mFromClass(fromClass)
     , mToClass(toClass)
 {
 }
 
 ECode TypeConverter::constructor(
-    /* [in] */ IMethodInfo* fromClass,
-    /* [in] */ IMethodInfo* toClass)
+    /* [in] */ const InterfaceID& fromClass,
+    /* [in] */ const InterfaceID& toClass)
 {
     mFromClass = fromClass;
     mToClass = toClass;
+    return NOERROR;
 }
 
 ECode TypeConverter::GetTargetType(
-    /* [out] */ IMethodInfo** type)
+    /* [out] */ InterfaceID* type)
 {
     VALIDATE_NOT_NULL(type);
     *type = mToClass;
-    REFCOUNT_ADD(*type);
     return NOERROR;
 }
 
 ECode TypeConverter::GetSourceType(
-    /* [out] */ IMethodInfo** type)
+    /* [out] */ InterfaceID* type)
 {
     VALIDATE_NOT_NULL(type);
     *type = mFromClass;
-    REFCOUNT_ADD(*type);
     return NOERROR;
 }
 

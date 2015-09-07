@@ -28,7 +28,6 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
-CAR_INTERFACE_IMPL(AnimationUtils, Object, IAnimationUtils);
 ECode AnimationUtils::CurrentAnimationTimeMillis(
     /* [out] */ Int64* time)
 {
@@ -286,8 +285,8 @@ ECode AnimationUtils::LoadInterpolator(
     FAIL_RETURN(context->GetResources((IResources**)&res));
     AutoPtr<IXmlResourceParser> parser;
     FAIL_RETURN(res->GetAnimation(id, (IXmlResourceParser**)&parser));
-    AutoPtr<ITheme> theme;
-    context->GetTheme((ITheme**)&theme);
+    AutoPtr<IResourcesTheme> theme;
+    context->GetTheme((IResourcesTheme**)&theme);
     ECode ec = CreateInterpolatorFromXml(res, theme, parser, interpolator);
 
     if (parser != NULL) {
@@ -299,7 +298,7 @@ ECode AnimationUtils::LoadInterpolator(
 
 ECode AnimationUtils::LoadInterpolator(
     /* [in] */ IResources* res,
-    /* [in] */ ITheme* theme,
+    /* [in] */ IResourcesTheme* theme,
     /* [in] */ Int32 id,
     /* [out] */ IInterpolator** interpolator) /*throws NotFoundException */
 {
@@ -329,7 +328,7 @@ ECode AnimationUtils::LoadInterpolator(
 
 ECode AnimationUtils::CreateInterpolatorFromXml(
     /* [in] */ IResources* res,
-    /* [in] */ ITheme* theme,
+    /* [in] */ IResourcesTheme* theme,
     /* [in] */ IXmlPullParser* parser,
     /* [out] */ IInterpolator** interpolator)
 {

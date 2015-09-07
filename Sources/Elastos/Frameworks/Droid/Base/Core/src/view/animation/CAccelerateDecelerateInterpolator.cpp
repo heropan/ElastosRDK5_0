@@ -9,7 +9,7 @@ namespace View {
 namespace Animation {
 
 CAR_OBJECT_IMPL(CAccelerateDecelerateInterpolator);
-CAR_INTERFACE_IMPL_5(CAccelerateDecelerateInterpolator, Object, IAccelerateDecelerateInterpolator,INativeInterpolatorFactory,IHasNativeInterpolator,IInterpolator,ITimeInterpolator);
+CAR_INTERFACE_IMPL_4(CAccelerateDecelerateInterpolator, Object, IAccelerateDecelerateInterpolator,INativeInterpolatorFactory,IInterpolator,ITimeInterpolator);
 
 ECode CAccelerateDecelerateInterpolator::constructor()
 {

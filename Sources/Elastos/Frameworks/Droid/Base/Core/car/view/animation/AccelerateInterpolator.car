@@ -15,7 +15,6 @@ module
      * @Involve
      * interface ITimeInterpolator
      * interface IInterpolator
-     * interface IHasNativeInterpolator
      */
     interface IAccelerateInterpolator {
         GetInterpolation(

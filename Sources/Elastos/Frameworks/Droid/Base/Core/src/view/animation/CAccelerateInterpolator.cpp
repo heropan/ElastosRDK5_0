@@ -9,7 +9,7 @@ namespace View {
 namespace Animation {
 
 CAR_OBJECT_IMPL(CAccelerateInterpolator);
-CAR_INTERFACE_IMPL_5(CAccelerateInterpolator, Object, IAccelerateInterpolator,INativeInterpolatorFactory,IHasNativeInterpolator,IInterpolator,ITimeInterpolator);
+CAR_INTERFACE_IMPL_4(CAccelerateInterpolator, Object, IAccelerateInterpolator,INativeInterpolatorFactory,IInterpolator,ITimeInterpolator);
 
 ECode CAccelerateInterpolator::constructor()
 {
@@ -34,14 +34,14 @@ ECode CAccelerateInterpolator::constructor(
 {
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
-    AutoPtr<ITheme> theme;
-    context->GetTheme((ITheme**)&theme);
+    AutoPtr<IResourcesTheme> theme;
+    context->GetTheme((IResourcesTheme**)&theme);
     return constructor(res, theme, attrs);
 }
 
 ECode CAccelerateInterpolator::constructor(
     /* [in] */ IResources* res,
-    /* [in] */ ITheme* theme,
+    /* [in] */ IResourcesTheme* theme,
     /* [in] */ IAttributeSet* attrs)
 {
     AutoPtr<ITypedArray> a;

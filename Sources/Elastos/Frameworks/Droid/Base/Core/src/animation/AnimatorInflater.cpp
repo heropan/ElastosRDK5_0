@@ -1,20 +1,31 @@
 
 #include "animation/AnimatorInflater.h"
-#include <elastos/utility/etl/List.h>
-#include "R.h"
-#include "view/animation/AnimationUtils.h"
+// #include "view/animation/AnimationUtils.h"
 #include "animation/CAnimatorSet.h"
 #include "animation/CValueAnimator.h"
 #include "animation/CArgbEvaluator.h"
 #include "animation/CObjectAnimator.h"
+#include "animation/StateListAnimator.h"
+#include "animation/KeyframeSet.h"
+#include "animation/PropertyValuesHolder.h"
+#include "animation/PathKeyframes.h"
+#include "util/StateSet.h"
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/logging/Slogger.h>
+#include "R.h"
 
-using Elastos::Utility::Etl::List;
 using Elastos::Droid::R;
-using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Content::Res::ITypedArray;
-using Elastos::Droid::View::Animation::AnimationUtils;
+// using Elastos::Droid::View::Animation::AnimationUtils;
+using Elastos::Droid::View::Animation::IInterpolator;
+using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Droid::Utility::PathParser;
+using Elastos::Droid::Utility::StateSet;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -32,34 +43,61 @@ const Boolean AnimatorInflater::DBG_ANIMATOR_INFLATER = FALSE;
 
 CAR_INTERFACE_IMPL(AnimatorInflater::PathDataEvaluator, Object, ITypeEvaluator);
 AnimatorInflater::PathDataEvaluator::PathDataEvaluator(
-    /* [in] */ IPathParserPathDataNode* nodeArray)
+    /* [in] */ ArrayOf<PathDataNode*>* nodeArray)
     : mNodeArray(nodeArray)
 {
 }
 
 ECode AnimatorInflater::PathDataEvaluator::Evaluate(
     /* [in] */ Float fraction,
-    /* [in] */ IInterface* startPathData,
-    /* [in] */ IInterface* endPathData,
+    /* [in] */ IInterface* startPathData /*array*/,
+    /* [in] */ IInterface* endPathData /*array*/,
     /* [out] */ IInterface** result)
 {
-    if (!PathParser::CanMorph(startPathData, endPathData)) {
+    assert(IArrayList::Probe(startPathData) && IArrayList::Probe(endPathData));
+    Int32 count = 0;
+    IArrayList::Probe(startPathData)->GetSize(&count);
+    AutoPtr<ArrayOf<PathDataNode*> > sa = ArrayOf<PathDataNode*>::Alloc(count);
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IInterface> obj;
+        IArrayList::Probe(startPathData)->Get(i, (IInterface**)&obj);
+        sa->Set(i, (PathDataNode*)(IObject*)obj.Get());
+    }
+
+    IArrayList::Probe(endPathData)->GetSize(&count);
+    AutoPtr<ArrayOf<PathDataNode*> > ea = ArrayOf<PathDataNode*>::Alloc(count);
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IInterface> obj;
+        IArrayList::Probe(endPathData)->Get(i, (IInterface**)&obj);
+        ea->Set(i, (PathDataNode*)(IObject*)obj.Get());
+    }
+
+    if (!PathParser::CanMorph(sa, ea)) {
         // throw new IllegalArgumentException("Can't interpolate between"
         //         + " two incompatible pathData");
         *result = NULL;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    if (mNodeArray == NULL || !PathParser::CanMorph(mNodeArray, startPathData)) {
-        mNodeArray = PathParser::DeepCopyNodes(startPathData);
+    if (mNodeArray == NULL || !PathParser::CanMorph(mNodeArray, sa)) {
+        mNodeArray = PathParser::DeepCopyNodes(sa);
     }
 
-    for (Int32 i = 0; i < startPathData.length; i++) {
-        mNodeArray[i].interpolatePathDataNode(startPathData[i],
-                endPathData[i], fraction);
+    IArrayList::Probe(startPathData)->GetSize(&count);
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IInterface> objs, obje;
+        IArrayList::Probe(startPathData)->Get(i, (IInterface**)&objs);
+        IArrayList::Probe(endPathData)->Get(i, (IInterface**)&obje);
+        (*mNodeArray)[i]->InterpolatePathDataNode((PathDataNode*)(IObject*)objs.Get(),
+                (PathDataNode*)(IObject*)obje.Get(), fraction);
     }
 
-    *result = mNodeArray;
+    AutoPtr<IArrayList> ra;
+    CArrayList::New((IArrayList**)&ra);
+    for (Int32 i = 0; i < mNodeArray->GetLength(); i++) {
+        ra->Add((IObject*)((*mNodeArray)[i]->Probe(EIID_IObject)));
+    }
+    *result = ra;
     REFCOUNT_ADD(*result);
     return NOERROR;
 }
@@ -79,7 +117,7 @@ ECode AnimatorInflater::LoadAnimator(
 
 ECode AnimatorInflater::LoadAnimator(
     /* [in] */ IResources* resources,
-    /* [in] */ ITheme* theme,
+    /* [in] */ IResourcesTheme* theme,
     /* [in] */ Int32 id,
     /* [out] */ IAnimator** animator) /*throws NotFoundException*/
 {
@@ -89,7 +127,7 @@ ECode AnimatorInflater::LoadAnimator(
 
 ECode AnimatorInflater::LoadAnimator(
     /* [in] */ IResources* resources,
-    /* [in] */ ITheme* theme,
+    /* [in] */ IResourcesTheme* theme,
     /* [in] */ Int32 id,
     /* [in] */ Float pathErrorScale,
     /* [out] */ IAnimator** animator) /*throws NotFoundException*/
@@ -100,7 +138,7 @@ ECode AnimatorInflater::LoadAnimator(
     // try {
     ec = resources->GetAnimation(id, (IXmlResourceParser**)&parser);
     FAIL_GOTO(ec, error);
-    ec = CreateAnimatorFromXml(resources, theme, parser, pathErrorScale, animator);
+    ec = CreateAnimatorFromXml(resources, theme, IXmlPullParser::Probe(parser), pathErrorScale, animator);
     // } catch (XmlPullParserException ex) {
     //     Resources.NotFoundException rnf =
     //             new Resources.NotFoundException("Can't load animation resource ID #0x" +
@@ -143,7 +181,9 @@ ECode AnimatorInflater::LoadStateListAnimator(
     context->GetResources((IResources**)&res);
     ec = res->GetAnimation(id, (IXmlResourceParser**)&parser);
     FAIL_GOTO(ec, error);
-    ec = CreateStateListAnimatorFromXml(context, parser, Xml.asAttributeSet(parser), animator);
+    assert(0 && "TODO");
+    // ec = CreateStateListAnimatorFromXml(context, IXmlPullParser::Probe(parser),
+    //             Xml::AsAttributeSet(IXmlPullParser::Probe(parser)), animator);
     // } catch (XmlPullParserException ex) {
     //     Resources.NotFoundException rnf =
     //             new Resources.NotFoundException(
@@ -186,8 +226,7 @@ ECode AnimatorInflater::CreateStateListAnimatorFromXml(
 {
     VALIDATE_NOT_NULL(animator);
     Int32 type;
-    AutoPtr<IStateListAnimator> stateListAnimator;
-    CStateListAnimator::New((IStateListAnimator**)&stateListAnimator);
+    AutoPtr<IStateListAnimator> stateListAnimator = new StateListAnimator();
 
     while (TRUE) {
         FAIL_RETURN(parser->Next(&type));
@@ -215,20 +254,20 @@ ECode AnimatorInflater::CreateStateListAnimatorFromXml(
                         if (attrName == R::attr::animation) {
                             Int32 v = 0;
                             FAIL_RETURN(attributeSet->GetAttributeResourceValue(i, 0, &v));
-                            FAIL_RETURN(LoadAnimator(context, v, animator));
+                            FAIL_RETURN(LoadAnimator(context, v, (IAnimator**)&animator));
                         } else {
                             Boolean v = FALSE;
                             FAIL_RETURN(attributeSet->GetAttributeBooleanValue(i, FALSE, &v));
                             (*states)[stateIndex++] = v ? attrName : -attrName;
                         }
-
                     }
+
                     if (animator == NULL) {
                         AutoPtr<IResources> res;
                         context->GetResources((IResources**)&res);
                         AutoPtr<IResourcesTheme> theme;
                         context->GetTheme((IResourcesTheme**)&theme);
-                        FAIL_RETURN(CreateAnimatorFromXml(res, theme, parser, 1f, animator));
+                        FAIL_RETURN(CreateAnimatorFromXml(res, theme, parser, 1, (IAnimator**)&animator));
                     }
 
                     if (animator == NULL) {
@@ -237,7 +276,6 @@ ECode AnimatorInflater::CreateStateListAnimatorFromXml(
                         //         "animation state item must have a valid animation");
                     }
                     stateListAnimator->AddState(StateSet::TrimStateSet(states, stateIndex), animator);
-
                 }
                 break;
         }
@@ -252,17 +290,17 @@ void AnimatorInflater::ParseAnimatorFromTypeArray(
     /* [in] */ ITypedArray* arrayObjectAnimator,
     /* [in] */ Float pixelSize)
 {
-    Int64 duration = 0;
-    arrayAnimator->GetInt32(R::styleable::Animator_duration, 300, &duration);
+    Int32 value = 0;
+    arrayAnimator->GetInt32(R::styleable::Animator_duration, 300, &value);
+    Int64 duration = value;
 
-    Int64 startDelay = 0;
-    arrayAnimator->GetInt32(R::styleable::Animator_startOffset, 0, &startDelay);
+    arrayAnimator->GetInt32(R::styleable::Animator_startOffset, 0, &value);
+    Int64 startDelay = value;
 
     Int32 valueType = 0;
     arrayAnimator->GetInt32(R::styleable::Animator_valueType, VALUE_TYPE_FLOAT, &valueType);
 
     AutoPtr<ITypeEvaluator> evaluator;
-
     Boolean getFloats = (valueType == VALUE_TYPE_FLOAT);
 
     AutoPtr<ITypedValue> tvFrom;
@@ -284,7 +322,7 @@ void AnimatorInflater::ParseAnimatorFromTypeArray(
     // TODO: Further clean up this part of code into 4 types : path, color,
     // integer and float.
     if (valueType == VALUE_TYPE_PATH) {
-        evaluator = SetupAnimatorForPath(anim, arrayAnimator);
+        SetupAnimatorForPath(anim, arrayAnimator, (ITypeEvaluator**)&evaluator);
     } else {
         // Integer and float value types are handled here.
         if ((hasFrom && (fromType >= ITypedValue::TYPE_FIRST_COLOR_INT) &&
@@ -293,23 +331,23 @@ void AnimatorInflater::ParseAnimatorFromTypeArray(
                         (toType <= ITypedValue::TYPE_LAST_COLOR_INT))) {
             // special case for colors: ignore valueType and get ints
             getFloats = FALSE;
-            evaluator = CArgbEvaluator::GetInstance();
+            evaluator = ITypeEvaluator::Probe(CArgbEvaluator::GetInstance());
         }
         SetupValues(anim, arrayAnimator, getFloats, hasFrom, fromType, hasTo, toType);
     }
 
-    anim->SetDuration(duration);
-    anim->SetStartDelay(startDelay);
+    IAnimator::Probe(anim)->SetDuration(duration);
+    IAnimator::Probe(anim)->SetStartDelay(startDelay);
 
     Boolean hasValue = FALSE;
     if (arrayAnimator->HasValue(R::styleable::Animator_repeatCount, &hasValue), hasValue) {
         Int32 v = 0;
         arrayAnimator->GetInt32(R::styleable::Animator_repeatCount, 0, &v);
-        anim->SetRepeatCount(v;);
+        anim->SetRepeatCount(v);
     }
-    if (arrayAnimator->HasValue(R.styleable.Animator_repeatMode, &hasValue), hasValue) {
+    if (arrayAnimator->HasValue(R::styleable::Animator_repeatMode, &hasValue), hasValue) {
         Int32 v = 0;
-        arrayAnimator->GetInt32(R::styleable::Animator_repeatMode, IValueAnimator::RESTART, &v);
+        arrayAnimator->GetInt32(R::styleable::Animator_repeatMode, IValueAnimator::ANIMATION_RESTART, &v);
         anim->SetRepeatMode(v);
     }
     if (evaluator != NULL) {
@@ -327,34 +365,64 @@ ECode AnimatorInflater::SetupAnimatorForPath(
     /* [out] */ ITypeEvaluator** te)
 {
     VALIDATE_NOT_NULL(te);
+    *te = NULL;
     AutoPtr<ITypeEvaluator> evaluator;
     String fromString;
     arrayAnimator->GetString(R::styleable::Animator_valueFrom, &fromString);
     String toString;
     arrayAnimator->GetString(R::styleable::Animator_valueTo, &toString);
-    AutoPtr<ArrayOf<IPathParserPathDataNode> > nodesFrom = PathParser::CreateNodesFromPathData(fromString);
-    AutoPtr<ArrayOf<IPathParserPathDataNode> > nodesTo = PathParser::CreateNodesFromPathData(toString);
+    AutoPtr<ArrayOf<PathDataNode*> > nodesFrom = PathParser::CreateNodesFromPathData(fromString);
+    AutoPtr<ArrayOf<PathDataNode*> > nodesTo = PathParser::CreateNodesFromPathData(toString);
 
     if (nodesFrom != NULL) {
         if (nodesTo != NULL) {
-            anim->SetObjectValues(nodesFrom, nodesTo);
+            AutoPtr<IArrayList> nfa, nta;
+            CArrayList::New((IArrayList**)&nfa);
+            for (Int32 i = 0; i < nodesFrom->GetLength(); i++) {
+                nfa->Add((IObject*)((*nodesFrom)[i]->Probe(EIID_IObject)));
+            }
+            CArrayList::New((IArrayList**)&nta);
+            for (Int32 i = 0; i < nodesTo->GetLength(); i++) {
+                nta->Add((IObject*)((*nodesTo)[i]->Probe(EIID_IObject)));
+            }
+
+            AutoPtr<ArrayOf<IInterface*> > objs = ArrayOf<IInterface*>::Alloc(2);
+            objs->Set(0, nfa);
+            objs->Set(1, nta);
+            anim->SetObjectValues(objs);
             if (!PathParser::CanMorph(nodesFrom, nodesTo)) {
                 // throw new InflateException(arrayAnimator.getPositionDescription()
                 //         + " Can't morph from " + fromString + " to " + toString);
-                *te = NULL;
                 return E_INFLATE_EXCEPTION;
             }
         } else {
-            anim->SetObjectValues((Object)nodesFrom);
+            AutoPtr<IArrayList> nfa;
+            CArrayList::New((IArrayList**)&nfa);
+            for (Int32 i = 0; i < nodesFrom->GetLength(); i++) {
+                nfa->Add((IObject*)((*nodesFrom)[i]->Probe(EIID_IObject)));
+            }
+            AutoPtr<ArrayOf<IInterface*> > objs = ArrayOf<IInterface*>::Alloc(1);
+            objs->Set(0, nfa);
+            anim->SetObjectValues(objs);
         }
-        CPathDataEvaluator::New(PathParser::DeepCopyNodes(nodesFrom), te);
+        *te = new PathDataEvaluator(PathParser::DeepCopyNodes(nodesFrom));
+        REFCOUNT_ADD(*te);
     } else if (nodesTo != NULL) {
-        anim->SetObjectValues(nodesTo);
-        CPathDataEvaluator::New(PathParser::DeepCopyNodes(nodesTo), te);
+        AutoPtr<IArrayList> nta;
+        CArrayList::New((IArrayList**)&nta);
+        for (Int32 i = 0; i < nodesTo->GetLength(); i++) {
+            nta->Add((IObject*)((*nodesTo)[i]->Probe(EIID_IObject)));
+        }
+
+        AutoPtr<ArrayOf<IInterface*> > objs = ArrayOf<IInterface*>::Alloc(2);
+        objs->Set(0, nta);
+        anim->SetObjectValues(objs);
+        *te = new PathDataEvaluator(PathParser::DeepCopyNodes(nodesTo));
+        REFCOUNT_ADD(*te);
     }
 
     if (DBG_ANIMATOR_INFLATER && evaluator != NULL) {
-        Log::V(TAG, "create a new PathDataEvaluator here");
+        Slogger::V(TAG, "create a new PathDataEvaluator here");
     }
 
     return NOERROR;
@@ -368,15 +436,18 @@ ECode AnimatorInflater::SetupObjectAnimator(
 {
     AutoPtr<IObjectAnimator> oa = IObjectAnimator::Probe(anim);
     String pathData;
-    arrayObjectAnimator->GetString(R::styleable::PropertyAnimator_pathData, &pathData);
+    assert(0 && "TODO");
+    // arrayObjectAnimator->GetString(R::styleable::PropertyAnimator_pathData, &pathData);
 
     // Note that if there is a pathData defined in the Object Animator,
     // valueFrom / valueTo will be ignored.
     if (pathData != NULL) {
         String propertyXName;
-        arrayObjectAnimator->GetString(R::styleable::PropertyAnimator_propertyXName, &propertyXName);
+        assert(0 && "TODO");
+        // arrayObjectAnimator->GetString(R::styleable::PropertyAnimator_propertyXName, &propertyXName);
         String propertyYName;
-        arrayObjectAnimator->GetString(R::styleable::PropertyAnimator_propertyYName, &propertyYName);
+        assert(0 && "TODO");
+        // arrayObjectAnimator->GetString(R::styleable::PropertyAnimator_propertyYName, &propertyYName);
 
         if (propertyXName == NULL && propertyYName == NULL) {
             // throw new InflateException(arrayObjectAnimator.getPositionDescription()
@@ -389,11 +460,11 @@ ECode AnimatorInflater::SetupObjectAnimator(
             AutoPtr<IKeyframes> xKeyframes;
             AutoPtr<IKeyframes> yKeyframes;
             if (getFloats) {
-                keyframeSet->CreateXFloatKeyframes((IKeyframes**)&xKeyframes);
-                keyframeSet->CreateYFloatKeyframes((IKeyframes**)&yKeyframes);
+                xKeyframes = IKeyframes::Probe(((PathKeyframes*)keyframeSet.Get())->CreateXFloatKeyframes());
+                yKeyframes = IKeyframes::Probe(((PathKeyframes*)keyframeSet.Get())->CreateYFloatKeyframes());
             } else {
-                keyframeSet->CreateXIntKeyframes((IKeyframes**)&xKeyframes);
-                keyframeSet->CreateYIntKeyframes((IKeyframes**)&yKeyframes);
+                xKeyframes = IKeyframes::Probe(((PathKeyframes*)keyframeSet.Get())->CreateXInt32Keyframes());
+                yKeyframes = IKeyframes::Probe(((PathKeyframes*)keyframeSet.Get())->CreateYInt32Keyframes());
             }
             AutoPtr<IPropertyValuesHolder> x;
             AutoPtr<IPropertyValuesHolder> y;
@@ -403,12 +474,21 @@ ECode AnimatorInflater::SetupObjectAnimator(
             if (propertyYName != NULL) {
                 y = PropertyValuesHolder::OfKeyframes(propertyYName, yKeyframes);
             }
+
+            AutoPtr<ArrayOf<IPropertyValuesHolder*> > va;
             if (x == NULL) {
-                oa->SetValues(y);
+                va = ArrayOf<IPropertyValuesHolder*>::Alloc(1);
+                va->Set(0, y);
+                IValueAnimator::Probe(oa)->SetValues(va);
             } else if (y == NULL) {
-                oa->SetValues(x);
+                va = ArrayOf<IPropertyValuesHolder*>::Alloc(1);
+                va->Set(0, x);
+                IValueAnimator::Probe(oa)->SetValues(va);
             } else {
-                oa->SetValues(x, y);
+                va = ArrayOf<IPropertyValuesHolder*>::Alloc(2);
+                va->Set(0, x);
+                va->Set(1, y);
+                IValueAnimator::Probe(oa)->SetValues(va);
             }
         }
     } else {
@@ -436,35 +516,44 @@ void AnimatorInflater::SetupValues(
         Float valueTo;
         if (hasFrom) {
             if (fromType == ITypedValue::TYPE_DIMENSION) {
-                arrayAnimator->GetDimension(valueFromIndex, 0f, &valueFrom);
+                arrayAnimator->GetDimension(valueFromIndex, 0, &valueFrom);
             } else {
-                arrayAnimator->GetFloat(valueFromIndex, 0f, &valueFrom);
+                arrayAnimator->GetFloat(valueFromIndex, 0, &valueFrom);
             }
             if (hasTo) {
                 if (toType == ITypedValue::TYPE_DIMENSION) {
-                    arrayAnimator->GetDimension(valueToIndex, 0f, &valueTo);
+                    arrayAnimator->GetDimension(valueToIndex, 0, &valueTo);
                 } else {
-                    arrayAnimator->GetFloat(valueToIndex, 0f, &valueTo);
+                    arrayAnimator->GetFloat(valueToIndex, 0, &valueTo);
                 }
-                anim->SetFloatValues(valueFrom, valueTo);
+
+                AutoPtr<ArrayOf<Float> > fa = ArrayOf<Float>::Alloc(2);
+                fa->Set(0, valueFrom);
+                fa->Set(1, valueTo);
+                anim->SetFloatValues(fa);
             } else {
-                anim->SetFloatValues(valueFrom);
+                AutoPtr<ArrayOf<Float> > fa = ArrayOf<Float>::Alloc(1);
+                fa->Set(0, valueFrom);
+                anim->SetFloatValues(fa);
             }
         } else {
             if (toType == ITypedValue::TYPE_DIMENSION) {
-                arrayAnimator->GetDimension(valueToIndex, 0f, &valueTo);
+                arrayAnimator->GetDimension(valueToIndex, 0, &valueTo);
             } else {
-                arrayAnimator->GetFloat(valueToIndex, 0f, &valueTo);
+                arrayAnimator->GetFloat(valueToIndex, 0, &valueTo);
             }
-            anim->SetFloatValues(valueTo);
+
+            AutoPtr<ArrayOf<Float> > fa = ArrayOf<Float>::Alloc(1);
+            fa->Set(0, valueTo);
+            anim->SetFloatValues(fa);
         }
     } else {
         Int32 valueFrom;
         Int32 valueTo;
         if (hasFrom) {
-            Float tmp = 0f;
+            Float tmp = 0;
             if (fromType == ITypedValue::TYPE_DIMENSION) {
-                arrayAnimator->GetDimension(valueFromIndex, 0f, &tmp);
+                arrayAnimator->GetDimension(valueFromIndex, 0, &tmp);
                 valueFrom = tmp;
             } else if ((fromType >= ITypedValue::TYPE_FIRST_COLOR_INT) &&
                     (fromType <= ITypedValue::TYPE_LAST_COLOR_INT)) {
@@ -474,7 +563,7 @@ void AnimatorInflater::SetupValues(
             }
             if (hasTo) {
                 if (toType == ITypedValue::TYPE_DIMENSION) {
-                    arrayAnimator->GetDimension(valueToIndex, 0f, &tmp);
+                    arrayAnimator->GetDimension(valueToIndex, 0, &tmp);
                     valueTo = tmp;
                 } else if ((toType >= ITypedValue::TYPE_FIRST_COLOR_INT) &&
                         (toType <= ITypedValue::TYPE_LAST_COLOR_INT)) {
@@ -482,14 +571,21 @@ void AnimatorInflater::SetupValues(
                 } else {
                     arrayAnimator->GetInt32(valueToIndex, 0, &valueTo);
                 }
-                anim->SetIntValues(valueFrom, valueTo);
+
+                AutoPtr<ArrayOf<Int32> > ia = ArrayOf<Int32>::Alloc(2);
+                ia->Set(0, valueFrom);
+                ia->Set(1, valueTo);
+                anim->SetInt32Values(ia);
             } else {
-                anim->SetIntValues(valueFrom);
+                AutoPtr<ArrayOf<Int32> > ia = ArrayOf<Int32>::Alloc(1);
+                ia->Set(0, valueFrom);
+                anim->SetInt32Values(ia);
             }
         } else {
             if (hasTo) {
                 if (toType == ITypedValue::TYPE_DIMENSION) {
-                    arrayAnimator->GetDimension(valueToIndex, 0f, &tmp);
+                    Float tmp = 0;
+                    arrayAnimator->GetDimension(valueToIndex, 0, &tmp);
                     valueTo = tmp;
                 } else if ((toType >= ITypedValue::TYPE_FIRST_COLOR_INT) &&
                         (toType <= ITypedValue::TYPE_LAST_COLOR_INT)) {
@@ -497,7 +593,10 @@ void AnimatorInflater::SetupValues(
                 } else {
                     arrayAnimator->GetInt32(valueToIndex, 0, &valueTo);
                 }
-                anim->SetIntValues(valueTo);
+
+                AutoPtr<ArrayOf<Int32> > ia = ArrayOf<Int32>::Alloc(1);
+                ia->Set(0, valueTo);
+                anim->SetInt32Values(ia);
             }
         }
     }
@@ -511,8 +610,8 @@ ECode AnimatorInflater::CreateAnimatorFromXml(
     /* [out] */ IAnimator** animator) /*throws XmlPullParserException, IOException */
 {
     VALIDATE_NOT_NULL(animator);
-    AutoPtr<IAttributeSet> set;
-    Xml::AsAttributeSet(parser, (IAttributeSet**)&set);
+    assert(0 && "TODO");
+    AutoPtr<IAttributeSet> set/* = Xml::AsAttributeSet(parser)*/;
     return CreateAnimatorFromXml(res, theme, parser, set, NULL, 0,
             pixelSize, animator);
 }
@@ -549,21 +648,25 @@ ECode AnimatorInflater::CreateAnimatorFromXml(
         parser->GetName(&name);
 
         if (name.Equals(String("objectAnimator"))) {
-            FAIL_RETURN(LoadObjectAnimator(res, theme, attrs, pixelSize, animator));
+            FAIL_RETURN(LoadObjectAnimator(res, theme, attrs, pixelSize, (IObjectAnimator**)animator));
         } else if (name.Equals(String("animator"))) {
-            FAIL_RETURN(LoadAnimator(res, theme, attrs, null, pixelSize, animator));
+            FAIL_RETURN(LoadAnimator(res, theme, attrs, NULL, pixelSize, (IValueAnimator**)animator));
         } else if (name.Equals(String("set"))) {
             CAnimatorSet::New((IAnimator**)&animator);
             AutoPtr<ITypedArray> a;
+
+            AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+                    const_cast<Int32 *>(R::styleable::AnimatorSet),
+                    ARRAY_SIZE(R::styleable::AnimatorSet));
             if (theme != NULL) {
-                theme->ObtainStyledAttributes(attrs, R::styleable::AnimatorSet, 0, 0, (ITypedArray**)&a);
+                theme->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
             } else {
-                res->ObtainAttributes(attrs, R::styleable::AnimatorSet, (ITypedArray**)&a);
+                res->ObtainAttributes(attrs, attrIds, (ITypedArray**)&a);
             }
             Int32 ordering = 0;
             a->GetInt32(R::styleable::AnimatorSet_ordering, TOGETHER, &ordering);
             ec = CreateAnimatorFromXml(res, theme, parser, attrs, IAnimatorSet::Probe(*animator), ordering,
-                    pixelSize);
+                    pixelSize, animator);
             a->Recycle();
             if (FAILED(ec)) {
                 return ec;
@@ -608,8 +711,8 @@ ECode AnimatorInflater::LoadObjectAnimator(
     VALIDATE_NOT_NULL(animator);
     CObjectAnimator::New((IObjectAnimator**)&animator);
 
-    AutoPtr<IAnimator> tmp;
-    return LoadAnimator(res, theme, attrs, *animator, pathErrorScale, (IAnimator**)&tmp);
+    AutoPtr<IValueAnimator> tmp;
+    return LoadAnimator(res, theme, attrs, IValueAnimator::Probe(*animator), pathErrorScale, (IValueAnimator**)&tmp);
 }
 
 ECode AnimatorInflater::LoadAnimator(
@@ -626,22 +729,29 @@ ECode AnimatorInflater::LoadAnimator(
     AutoPtr<ITypedArray> arrayAnimator;
     AutoPtr<ITypedArray> arrayObjectAnimator;
     ECode ec = NOERROR;
+
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::Animator),
+            ARRAY_SIZE(R::styleable::AnimatorSet));
     if (theme != NULL) {
-        ec = theme->ObtainStyledAttributes(attrs, R::styleable::Animator, 0, 0, (ITypedArray**)&arrayAnimator);
+        ec = theme->ObtainStyledAttributes(attrs,attrIds, 0, 0, (ITypedArray**)&arrayAnimator);
         FAIL_GOTO(ec, error);
     } else {
-        ec = res->ObtainAttributes(attrs, R::styleable::Animator, (ITypedArray**)&arrayAnimator);
+        ec = res->ObtainAttributes(attrs, attrIds, (ITypedArray**)&arrayAnimator);
         FAIL_GOTO(ec, error);
     }
 
     // If anim is not null, then it is an object animator.
     if (anim != NULL) {
         if (theme != NULL) {
+            attrIds = ArrayOf<Int32>::Alloc(
+                        const_cast<Int32 *>(R::styleable::Animator),
+                        ARRAY_SIZE(R::styleable::PropertyAnimator));
             ec = theme->ObtainStyledAttributes(attrs,
-                    R::styleable::PropertyAnimator, 0, 0, (ITypedArray**)&arrayObjectAnimator);
+                    attrIds, 0, 0, (ITypedArray**)&arrayObjectAnimator);
             FAIL_GOTO(ec, error);
         } else {
-            ec = res->ObtainAttributes(attrs, R::styleable::PropertyAnimator, (ITypedArray**)&arrayObjectAnimator);
+            ec = res->ObtainAttributes(attrs, attrIds, (ITypedArray**)&arrayObjectAnimator);
             FAIL_GOTO(ec, error);
         }
     }
@@ -655,7 +765,10 @@ ECode AnimatorInflater::LoadAnimator(
     ec = arrayAnimator->GetResourceId(R::styleable::Animator_interpolator, 0, &resID);
     FAIL_GOTO(ec, error);
     if (resID > 0) {
-        ec = anim->SetInterpolator(AnimationUtils::LoadInterpolator(res, theme, resID));
+        AutoPtr<IInterpolator> timeInterpolator;
+        assert(0 && "TODO");
+        // AnimationUtils::LoadInterpolator(res, theme, resID, (IInterpolator**)&timeInterpolator);
+        ec = IAnimator::Probe(anim)->SetInterpolator(ITimeInterpolator::Probe(timeInterpolator));
         FAIL_GOTO(ec, error);
     }
 

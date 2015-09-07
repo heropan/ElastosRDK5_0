@@ -3,12 +3,18 @@
 #define  __ELASTOS_DROID_ANIMATION_PROPERTYVALUESHOLDER_H__
 
 #include "animation/Int32KeyframeSet.h"
+#include "animation/TypeConverter.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Core::INumber;
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::IInteger32;
 using Elastos::Droid::Utility::IProperty;
+using Elastos::Droid::Graphics::IPointF;
+using Elastos::Core::Object;
+using Elastos::Core::INumber;
+using Elastos::Core::IInteger32;
+using Elastos::Utility::Etl::HashMap;
+
+DEFINE_OBJECT_HASH_FUNC_FOR(IClassInfo);
 
 namespace Elastos {
 namespace Droid {
@@ -34,7 +40,7 @@ private:
 
         // @Override
         virtual CARAPI Convert(
-            /* [in] */ IPointF* value,
+            /* [in] */ IInterface* value,
             /* [out] */ IInterface** values);
 
     private:
@@ -53,8 +59,8 @@ private:
         PointFToInt32Array();
 
         // @Override
-        virtual CARAPI convert(
-            /* [in] */ IPointF* value,
+        virtual CARAPI Convert(
+            /* [in] */ IInterface* value,
             /* [out] */ IInterface** values);
 
     private:
@@ -65,7 +71,16 @@ public:
     typedef HashMap< String, AutoPtr<IMethodInfo> > MethodMap;
     typedef HashMap< AutoPtr<IClassInfo>, AutoPtr<PropertyValuesHolder::MethodMap > > ClassMethodMap;
 
-    CAR_INTERFACE_DECL();
+    CARAPI_(UInt32) AddRef();
+
+    CARAPI_(UInt32) Release();
+
+    CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
+
+    CARAPI GetInterfaceID(
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     /**
      * Constructs and returns a PropertyValuesHolder with a given property name and
@@ -223,7 +238,7 @@ public:
         /* [in] */ const String& propertyName,
         /* [in] */ ITypeConverter* converter,
         /* [in] */ ITypeEvaluator* evaluator,
-        /* [in] */ ArrayOf<IInterface>* values);
+        /* [in] */ ArrayOf<IInterface*>* values);
 
     /**
      * Constructs and returns a PropertyValuesHolder object with the specified property name or
@@ -421,9 +436,6 @@ public:
     static CARAPI_(AutoPtr<IPropertyValuesHolder>) OfKeyframe(
         /* [in] */ IProperty* property,
         /* [in] */ ArrayOf<IKeyframe*>* values);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
 
     /**
      * Set the animated values for this object to this set of ints.
@@ -660,7 +672,7 @@ protected:
 
     //The function will help you transform from a object to classInfo
 
-    CARAPI_(AutoPtr<IClassInfo>) TransformClassInfo(
+    static CARAPI_(AutoPtr<IClassInfo>) TransformClassInfo(
         /* [in] */ IInterface* o);
 
     static CARAPI_(AutoPtr<IMethodInfo>) nGetInt32Method(
@@ -749,7 +761,8 @@ private:
     //TODO
     AutoPtr<IMethodInfo> GetPropertyFunction(
         /* [in] */ IClassInfo* targetClass,
-        /* [in] */ const String& prefix);
+        /* [in] */ const String& prefix,
+        /* [in] */ InterfaceID* type);
 
     /**
      * Returns the setter or getter requested. This utility function checks whether the
@@ -765,7 +778,8 @@ private:
     AutoPtr<IMethodInfo> SetupSetterOrGetter(
         /* [in] */ IClassInfo* targetClass,
         /* [in] */ PropertyValuesHolder::ClassMethodMap * propertyMapMap,
-        /* [in] */ const String& prefix);
+        /* [in] */ const String& prefix,
+        /* [in] */ InterfaceID* type);
 
     /**
      * Utility function to get the getter from targetClass
@@ -792,6 +806,11 @@ private:
         /* [in] */ IInterface* value,
         /* [out] */ IInterface** outValue);
 
+private:
+    static CARAPI_(AutoPtr<ITypeEvaluator>) InitInt32Evaluator();
+
+    static CARAPI_(AutoPtr<ITypeEvaluator>) InitFloatEvaluator();
+
 protected:
     /**
      * The name of the property associated with the values. This need not be a real property,
@@ -817,7 +836,7 @@ protected:
      * The type of values supplied. This information is used both in deriving the setter/getter
      * functions and in deriving the type of TypeEvaluator.
      */
-    ClassID mValueType;
+    InterfaceID mValueType;
 
     /**
      * The set of keyframes (time/value pairs) that define this animation.
@@ -844,7 +863,7 @@ private:
     AutoPtr<IMethodInfo> mGetter;
 
     // type evaluators for the primitive types handled by this implementation
-    static AutoPtr<ITypeEvaluator> sIntEvaluator;
+    static AutoPtr<ITypeEvaluator> sInt32Evaluator;
     static AutoPtr<ITypeEvaluator> sFloatEvaluator;
 
     // We try several different types when searching for appropriate setter/getter functions.
@@ -854,6 +873,9 @@ private:
     // of primitive types (Float vs. Float). But most likely, the setter/getter functions
     // will take primitive types instead.
     // So we supply an ordered array of other types to try before giving up.
+    static Int32 FLOAT_VARIANTS[6];
+    static Int32 INTEGER_VARIANTS[6];
+    static Int32 DOUBLE_VARIANTS[6];
 
     //TODO
     // These maps hold all property entries for a particular class. This map

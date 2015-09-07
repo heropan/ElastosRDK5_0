@@ -14,6 +14,7 @@ using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IResourcesTheme;
 
 namespace Elastos {
 namespace Droid {
@@ -25,12 +26,10 @@ namespace Animation {
  *
  */
 class AnimationUtils
-    : public Object
-    , public IAnimationUtils
+    // : public Object
+    // , public IAnimationUtils
 {
 public:
-    CAR_INTERFACE_DECL();
-
     /**
      * Returns the current animation time in milliseconds. This time should be used when invoking
      * {@link Animation#setStartTime(long)}. Refer to {@link android.os.SystemClock} for more
@@ -123,7 +122,7 @@ public:
      */
     static CARAPI LoadInterpolator(
         /* [in] */ IResources* res,
-        /* [in] */ ITheme* theme,
+        /* [in] */ IResourcesTheme* theme,
         /* [in] */ Int32 id,
         /* [out] */ IInterpolator** interpolator) /*throws NotFoundException */;
 
@@ -153,7 +152,7 @@ private:
 
     static CARAPI CreateInterpolatorFromXml(
         /* [in] */ IResources* res,
-        /* [in] */ ITheme* theme,
+        /* [in] */ IResourcesTheme* theme,
         /* [in] */ IXmlPullParser* parser,
         /* [out] */ IInterpolator** interpolator);
 

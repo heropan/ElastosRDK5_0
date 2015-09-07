@@ -4,6 +4,9 @@
 
 #include "_Elastos_Droid_Animation_CKeyframeHelper.h"
 #include "animation/Keyframe.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Droid {

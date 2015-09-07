@@ -1,5 +1,16 @@
 
-#include "PathKeyframes.h"
+#include "animation/PathKeyframes.h"
+#include <elastos/core/Math.h>
+
+// using Elastos::Droid::Graphics::CPointF;
+using Elastos::Droid::Graphics::EIID_IPointF;
+using Elastos::Core::CFloat;
+using Elastos::Core::IFloat;
+using Elastos::Core::EIID_IFloat;
+using Elastos::Core::CInteger32;
+using Elastos::Core::IInteger32;
+using Elastos::Core::EIID_IInteger32;
+using Elastos::Core::EIID_ICloneable;
 
 namespace Elastos {
 namespace Droid {
@@ -22,7 +33,7 @@ ECode PathKeyframes::SimpleKeyframes::InvalidateCache()
 }
 
 ECode PathKeyframes::SimpleKeyframes::GetKeyframes(
-    /* [out] */ IArrayList** list)
+    /* [out, callee] */ ArrayOf<IKeyframe*>** list)
 {
     VALIDATE_NOT_NULL(list);
     *list = EMPTY_KEYFRAMES;
@@ -31,7 +42,7 @@ ECode PathKeyframes::SimpleKeyframes::GetKeyframes(
 }
 
 ECode PathKeyframes::SimpleKeyframes::Clone(
-    /* [out] */ IKeyframes** values)
+    /* [out] */ IInterface** values)
 {
     VALIDATE_NOT_NULL(values);
     AutoPtr<IKeyframes> clone;
@@ -50,10 +61,10 @@ PathKeyframes::Int32KeyframesBase::~Int32KeyframesBase()
 }
 
 ECode PathKeyframes::Int32KeyframesBase::GetType(
-    /* [out] */ ClassID* type)
+    /* [out] */ InterfaceID* type)
 {
     VALIDATE_NOT_NULL(type);
-    *type = ECLSID_CInteger32;
+    *type = EIID_IInteger32;
     return NOERROR;
 }
 
@@ -62,7 +73,9 @@ ECode PathKeyframes::Int32KeyframesBase::GetValue(
     /* [out] */ IInterface** value)
 {
     VALIDATE_NOT_NULL(value);
-    return GetInt32Value(fraction, value);
+    Int32 v = 0;
+    GetInt32Value(fraction, &v);
+    return CInteger32::New(v, (IInteger32**)value);
 }
 
 CAR_INTERFACE_IMPL(PathKeyframes::FloatKeyframesBase, SimpleKeyframes, IFloatKeyframes);
@@ -71,10 +84,10 @@ PathKeyframes::FloatKeyframesBase::~FloatKeyframesBase()
 }
 
 ECode PathKeyframes::FloatKeyframesBase::GetType(
-    /* [out] */ ClassID* type)
+    /* [out] */ InterfaceID* type)
 {
     VALIDATE_NOT_NULL(type);
-    *type = ECLSID_CFloat;
+    *type = EIID_IFloat;
     return NOERROR;
 }
 
@@ -83,7 +96,9 @@ ECode PathKeyframes::FloatKeyframesBase::GetValue(
     /* [out] */ IInterface** value)
 {
     VALIDATE_NOT_NULL(value);
-    return GetFloatValue(fraction, value);
+    Float f = 0.f;
+    GetFloatValue(fraction, &f);
+    return CFloat::New(f, (IFloat**)value);
 }
 
 ECode PathKeyframes::FloatKeyframesBase1::GetFloatValue(
@@ -113,9 +128,9 @@ ECode PathKeyframes::Int32KeyframesBase1::GetInt32Value(
     VALIDATE_NOT_NULL(value);
     AutoPtr<IPointF> pointF;
     GetValue(fraction, (IInterface**)&pointF);
-    Float v = 0f;
+    Float v = 0.f;
     pointF->GetX(&v);
-    *value = Math::Round(v);
+    *value = Elastos::Core::Math::Round(v);
     return NOERROR;
 }
 
@@ -126,9 +141,9 @@ ECode PathKeyframes::Int32KeyframesBase2::GetInt32Value(
     VALIDATE_NOT_NULL(value);
     AutoPtr<IPointF> pointF;
     GetValue(fraction, (IInterface**)&pointF);
-    Float v = 0f;
+    Float v = 0.f;
     pointF->GetY(&v);
-    *value = Math::Round(v);
+    *value = Elastos::Core::Math::Round(v);
     return NOERROR;
 }
 
@@ -137,18 +152,17 @@ const Int32 PathKeyframes::FRACTION_OFFSET = 0;
 const Int32 PathKeyframes::X_OFFSET = 1;
 const Int32 PathKeyframes::Y_OFFSET = 2;
 const Int32 PathKeyframes::NUM_COMPONENTS = 3;
-AutoPtr<IArrayList> PathKeyframes::EMPTY_KEYFRAMES;
+AutoPtr<ArrayOf<IKeyframe*> > PathKeyframes::EMPTY_KEYFRAMES;
 Boolean PathKeyframes::sInit = svInit();
 
-CAR_INTERFACE_IMPL(PathKeyframes, Object, IKeyframes);
-
+CAR_INTERFACE_IMPL_3(PathKeyframes, Object, IKeyframes, IPathKeyframes, ICloneable);
 PathKeyframes::PathKeyframes(
     /* [in] */ IPath* path)
 {
     constructor(path, 0.5f);
 }
 
-PathKeyframes(
+PathKeyframes::PathKeyframes(
     /* [in] */ IPath* path,
     /* [in] */ Float error)
 {
@@ -159,7 +173,8 @@ ECode PathKeyframes::constructor(
     /* [in] */ IPath* path,
     /* [in] */ Float error)
 {
-    CPointF((IPointF**)&mTempPointF);
+    assert(0 && "TODO");
+    // CPointF::New((IPointF**)&mTempPointF);
     Boolean isEmpty = FALSE;
     if (path == NULL || (path->IsEmpty(&isEmpty), isEmpty)) {
         // throw new IllegalArgumentException("The path must not be null or empty");
@@ -170,7 +185,7 @@ ECode PathKeyframes::constructor(
 }
 
 ECode PathKeyframes::GetKeyframes(
-    /* [out] */ IArrayList** list)
+    /* [out, callee] */ ArrayOf<IKeyframe*>** list)
 {
     VALIDATE_NOT_NULL(list);
     *list = EMPTY_KEYFRAMES;
@@ -185,13 +200,13 @@ ECode PathKeyframes::GetValue(
     VALIDATE_NOT_NULL(value);
     Int32 numPoints = mKeyframeData->GetLength() / 3;
     if (fraction < 0) {
-        return InterpolateInRange(fraction, 0, 1, value);
+        return InterpolateInRange(fraction, 0, 1, (IPointF**)value);
     } else if (fraction > 1) {
-        return InterpolateInRange(fraction, numPoints - 2, numPoints - 1, value);
+        return InterpolateInRange(fraction, numPoints - 2, numPoints - 1, (IPointF**)value);
     } else if (fraction == 0) {
-        return PointForIndex(0, value);
+        return PointForIndex(0, (IPointF**)value);
     } else if (fraction == 1) {
-        return PointForIndex(numPoints - 1, value);
+        return PointForIndex(numPoints - 1, (IPointF**)value);
     } else {
         // Binary search for the correct section
         Int32 low = 0;
@@ -206,12 +221,12 @@ ECode PathKeyframes::GetValue(
             } else if (fraction > midFraction) {
                 low = mid + 1;
             } else {
-                return PointForIndex(mid, value);
+                return PointForIndex(mid, (IPointF**)value);
             }
         }
 
         // now high is below the fraction and low is above the fraction
-        return InterpolateInRange(fraction, high, low, value);
+        return InterpolateInRange(fraction, high, low, (IPointF**)value);
     }
 }
 
@@ -256,15 +271,15 @@ ECode PathKeyframes::SetEvaluator(
 }
 
 ECode PathKeyframes::GetType(
-    /* [out] */ ClassID* type)
+    /* [out] */ InterfaceID* type)
 {
     VALIDATE_NOT_NULL(type);
-    *type = ECLSID_CPointF;
+    *type = EIID_IPointF;
     return NOERROR;
 }
 
 ECode PathKeyframes::Clone(
-    /* [out] */ IKeyframes** frames)
+    /* [out] */ IInterface** frames)
 {
     VALIDATE_NOT_NULL(frames);
     AutoPtr<IKeyframes> clone;
@@ -322,7 +337,7 @@ AutoPtr<IInt32Keyframes> PathKeyframes::CreateYInt32Keyframes()
 
 Boolean PathKeyframes::svInit()
 {
-    CArrayList::New((IArrayList**)&EMPTY_KEYFRAMES);
+    EMPTY_KEYFRAMES = ArrayOf<IKeyframe*>::Alloc(0);
     return TRUE;
 }
 

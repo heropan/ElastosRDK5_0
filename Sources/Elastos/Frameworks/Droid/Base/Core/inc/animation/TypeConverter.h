@@ -2,8 +2,10 @@
 #ifndef __ELASTOS_DROID_ANIMATION_TYPECONVERTER_H__
 #define __ELASTOS_DROID_ANIMATION_TYPECONVERTER_H__
 
+#include "ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Droid::Animation::ITypeConverter;
 using Elastos::Core::Object;
 
 namespace Elastos {
@@ -26,8 +28,8 @@ public:
     TypeConverter();
 
     TypeConverter(
-        /* [in] */ IMethodInfo* fromClass,
-        /* [in] */ IMethodInfo* toClass);
+        /* [in] */ const InterfaceID& fromClass,
+        /* [in] */ const InterfaceID& toClass);
 
     /**
      * Returns the target converted type. Used by the animation system to determine
@@ -35,13 +37,13 @@ public:
      * @return The Class to convert the input to.
      */
     virtual CARAPI GetTargetType(
-        /* [out] */ IMethodInfo** type);
+        /* [out] */ InterfaceID* type);
 
     /**
      * Returns the source conversion type.
      */
     virtual CARAPI GetSourceType(
-        /* [out] */ IMethodInfo** type);
+        /* [out] */ InterfaceID* type);
 
     /**
      * Converts a value from one type to another.
@@ -50,16 +52,16 @@ public:
      */
     virtual CARAPI Convert(
         /* [in] */ IInterface* value,
-        /* [out] */ IInterface** v);
+        /* [out] */ IInterface** v) = 0;
 
 protected:
-    virtual CARAPI constructor(
-        /* [in] */ IMethodInfo* fromClass,
-        /* [in] */ IMethodInfo* toClass);
+    CARAPI constructor(
+        /* [in] */ const InterfaceID& fromClass,
+        /* [in] */ const InterfaceID& toClass);
 
 private:
-    /*private Class<T>*/AutoPtr<IMethodInfo> mFromClass;
-    /*private Class<V> */AutoPtr<IMethodInfo> mToClass;
+    /*private Class<T> */InterfaceID mFromClass;
+    /*private Class<V> */InterfaceID mToClass;
 };
 
 } // namespace Animation

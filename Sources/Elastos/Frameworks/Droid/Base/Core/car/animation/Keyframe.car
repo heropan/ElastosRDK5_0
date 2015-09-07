@@ -110,7 +110,7 @@ module
          * @return The type of the value stored in the Keyframe.
          */
         GetType(
-            [out] ClassID* type);
+            [out] InterfaceID* type);
     }
 
     interface IKeyframeHelper {

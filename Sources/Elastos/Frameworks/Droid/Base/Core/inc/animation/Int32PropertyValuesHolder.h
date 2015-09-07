@@ -1,3 +1,4 @@
+
 #ifndef __ELASTOS_DROID_ANIMATION_INT32PROPERTYVALUESHOLDER_H__
 #define __ELASTOS_DROID_ANIMATION_INT32PROPERTYVALUESHOLDER_H__
 
@@ -52,10 +53,10 @@ public:
         /* [in] */ IInterface* targetClass);
 
 protected:
-
     AutoPtr<IMethodInfo> mJniSetter;
     AutoPtr<IInt32Keyframes> mInt32Keyframes;
     Int32 mInt32AnimatedValue;
+
 private:
     typedef HashMap<String, AutoPtr<IMethodInfo> > MethodMap;
     typedef typename MethodMap::Iterator MethodMapIterator;

@@ -8,7 +8,7 @@ namespace View {
 namespace Animation {
 
 CAR_OBJECT_IMPL(CLinearInterpolator);
-CAR_INTERFACE_IMPL_5(CLinearInterpolator, Object, ILinearInterpolator,INativeInterpolatorFactory,IHasNativeInterpolator,IInterpolator,ITimeInterpolator);
+CAR_INTERFACE_IMPL_4(CLinearInterpolator, Object, ILinearInterpolator,INativeInterpolatorFactory,IInterpolator,ITimeInterpolator);
 
 ECode CLinearInterpolator::constructor()
 {

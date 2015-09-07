@@ -1,5 +1,8 @@
 
-#include "view/RectEvaluator.h"
+#include "animation/RectEvaluator.h"
+// #include "graphics/CRect.h"
+
+// using Elastos::Droid::Graphics::CRect;
 
 namespace Elastos {
 namespace Droid {
@@ -40,7 +43,9 @@ ECode RectEvaluator::Evaluate(
     endValue->GetBottom(&v2);
     Int32 bottom = v1 + (Int32) ((v2 - v1) * fraction);
     if (mRect == NULL) {
-        return CRect::New(left, top, right, bottom, rect);
+        assert(0 && "TODO");
+        // return CRect::New(left, top, right, bottom, rect);
+        return NOERROR;
     }
 
     mRect->Set(left, top, right, bottom);

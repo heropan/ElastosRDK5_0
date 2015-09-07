@@ -10,7 +10,7 @@ namespace Animation {
 
 
 CAR_OBJECT_IMPL(CDecelerateInterpolator);
-CAR_INTERFACE_IMPL_5(CDecelerateInterpolator, Object, IDecelerateInterpolator,INativeInterpolatorFactory,IHasNativeInterpolator,IInterpolator,ITimeInterpolator);
+CAR_INTERFACE_IMPL_4(CDecelerateInterpolator, Object, IDecelerateInterpolator,INativeInterpolatorFactory,IInterpolator,ITimeInterpolator);
 
 ECode CDecelerateInterpolator::constructor()
 {
@@ -33,14 +33,14 @@ ECode CDecelerateInterpolator::constructor(
 {
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
-    AutoPtr<ITheme> theme;
-    context->GetTheme((ITheme**)&theme);
+    AutoPtr<IResourcesTheme> theme;
+    context->GetTheme((IResourcesTheme**)&theme);
     return constructor(res, theme, attrs);
 }
 
 ECode CDecelerateInterpolator::constructor(
     /* [in] */ IResources* res,
-    /* [in] */ ITheme* theme,
+    /* [in] */ IResourcesTheme* theme,
     /* [in] */ IAttributeSet* attrs)
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(

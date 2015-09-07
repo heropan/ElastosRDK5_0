@@ -19,7 +19,6 @@ CarClass(CCycleInterpolator)
     : public Object
     , public ICycleInterpolator
     , public INativeInterpolatorFactory
-    , public IHasNativeInterpolator
     , public IInterpolator
     , public ITimeInterpolator
 {
@@ -38,7 +37,7 @@ public:
     /** @hide */
     CARAPI constructor(
         /* [in] */ IResources* res,
-        /* [in] */ ITheme* theme,
+        /* [in] */ IResourcesTheme* theme,
         /* [in] */ IAttributeSet* attrs);
 
     CARAPI GetInterpolation(

@@ -1,5 +1,9 @@
 
-#include "StateListAnimator.h"
+#include "animation/StateListAnimator.h"
+#include "util/StateSet.h"
+
+using Elastos::Droid::Utility::StateSet;
+using Elastos::Droid::View::EIID_IView;
 
 namespace Elastos {
 namespace Droid {
@@ -13,7 +17,7 @@ StateListAnimator::Tuple::Tuple(
 {
 }
 
-AutoPtr<ArrayOf<Int32> >  StateListAnimator::Tuple::GetSpecs()
+AutoPtr<ArrayOf<Int32> > StateListAnimator::Tuple::GetSpecs()
 {
     return mSpecs;
 }
@@ -32,7 +36,7 @@ StateListAnimator::AnimatorListener::OnAnimationEnd(
     /* [in] */ IAnimator* animation)
 {
     animation->SetTarget(NULL);
-    if (mHost->mRunningAnimator == animation) {
+    if (mHost->mRunningAnimator.Get() == animation) {
         mHost->mRunningAnimator = NULL;
     }
     return NOERROR;
@@ -40,6 +44,11 @@ StateListAnimator::AnimatorListener::OnAnimationEnd(
 
 
 CAR_INTERFACE_IMPL(StateListAnimator, Object, IStateListAnimator);
+StateListAnimator::StateListAnimator()
+{
+    mAnimatorListener = new AnimatorListener(this);
+}
+
 ECode StateListAnimator::AddState(
     /* [in] */ ArrayOf<Int32>* specs,
     /* [in] */ IAnimator* animator)
@@ -65,7 +74,7 @@ ECode StateListAnimator::GetTarget(
     VALIDATE_NOT_NULL(view);
     *view = NULL;
     if (mViewRef != NULL) {
-        mViewRef->Resolve(EIID_IView, view);
+        mViewRef->Resolve(EIID_IView, (IInterface**)view);
     }
     return NOERROR;
 }
@@ -75,7 +84,7 @@ ECode StateListAnimator::SetTarget(
 {
     AutoPtr<IView> current;
     GetTarget((IView**)&view);
-    if (current == view) {
+    if (current.Get() == view) {
         return NOERROR;
     }
     if (current != NULL) {
@@ -120,7 +129,7 @@ ECode StateListAnimator::SetState(
         Cancel();
     }
     mLastMatch = match;
-    if (match != null) {
+    if (match != NULL) {
         Start(match);
     }
     return NOERROR;
@@ -130,9 +139,9 @@ void StateListAnimator::Start(
     /* [in] */ Tuple* match)
 {
     AutoPtr<IView> view;
-    GetTarget((IView**)&view)
+    GetTarget((IView**)&view);
     match->mAnimator->SetTarget(view);
-    mRunningAnimator = match.mAnimator;
+    mRunningAnimator = match->mAnimator;
     mRunningAnimator->Start();
 }
 

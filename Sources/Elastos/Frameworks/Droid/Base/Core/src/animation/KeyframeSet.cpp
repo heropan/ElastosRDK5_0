@@ -2,13 +2,19 @@
 #include "animation/KeyframeSet.h"
 #include "animation/Int32KeyframeSet.h"
 #include "animation/FloatKeyframeSet.h"
+#include "animation/Keyframe.h"
+#include "animation/PathKeyframes.h"
 #include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+
+using Elastos::Core::EIID_ICloneable;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-CAR_INTERFACE_IMPL_2(KeyframeSet, Object, IKeyframeSet, IKeyframes)
+CAR_INTERFACE_IMPL_3(KeyframeSet, Object, IKeyframeSet, IKeyframes, ICloneable)
 
 KeyframeSet::KeyframeSet(
     /* [in] */ ArrayOf<IKeyframe*>* keyframes)
@@ -87,7 +93,7 @@ AutoPtr<IKeyframeSet> KeyframeSet::OfFloat(
     }
 
     if (badValue) {
-        Log::W(String("Animator"), String("Bad value (NaN) in float animator"));
+        Slogger::W(String("Animator"), String("Bad value (NaN) in float animator"));
     }
 
     return new FloatKeyframeSet(keyframes);
@@ -188,7 +194,7 @@ ECode KeyframeSet::SetEvaluator(
 }
 
 ECode KeyframeSet::GetType(
-    /* [out] */ ClassID* type)
+    /* [out] */ InterfaceID* type)
 {
     VALIDATE_NOT_NULL(type);
     return mFirstKeyframe->GetType(type);
@@ -287,13 +293,13 @@ ECode KeyframeSet::GetValue(
 }
 
 ECode KeyframeSet::Clone(
-    /* [out] */ IKeyframeSet** object)
+    /* [out] */ IInterface** object)
 {
     Int32 numKeyframes = mKeyframes->GetLength();
     AutoPtr<ArrayOf<IKeyframe*> > newKeyframes = ArrayOf<IKeyframe*>::Alloc(numKeyframes);
     for (Int32 i = 0; i < numKeyframes; ++i) {
         AutoPtr<IKeyframe> temp;
-        (*mKeyframes)[i]->Clone((IKeyframe**)&temp);
+        ICloneable::Probe((*mKeyframes)[i])->Clone((IInterface**)&temp);
         newKeyframes->Set(i, temp);
     }
     AutoPtr<IKeyframeSet> newSet = new KeyframeSet(newKeyframes);
