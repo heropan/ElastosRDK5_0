@@ -3,15 +3,21 @@
 #define __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERHELPER_H__
 
 #include "_Elastos_Droid_Content_CContentProviderHelper.h"
-#include "ContentProvider.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CContentProviderHelper)
+    , public Singleton
+    , public IContentProviderHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Given an IContentProvider, try to coerce it back to the real
      * ContentProvider object if it is running in the local process.  This can
@@ -21,16 +27,14 @@ public:
      *
      * @param abstractInterface The ContentProvider interface that is to be
      *              coerced.
-     * @return If the IContentProvider is non-null and local, returns its actual
-     * ContentProvider instance.  Otherwise returns null.
+     * @return If the IContentProvider is non-{@code null} and local, returns its actual
+     * ContentProvider instance.  Otherwise returns {@code null}.
      * @hide
      */
     CARAPI CoerceToLocalContentProvider(
         /* [in] */ IIContentProvider* abstractInterface,
         /* [out] */ IContentProvider** localContentProvider);
 
-private:
-    // TODO: Add your private member variables here.
 };
 
 }

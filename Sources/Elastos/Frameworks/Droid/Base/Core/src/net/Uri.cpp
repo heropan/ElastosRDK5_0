@@ -1010,6 +1010,12 @@ ECode Uri::ReadFromParcel(
    Int32 type;
    parcel->ReadInt32(&type);
 
+   // if (type != NULL_TYPE_ID) {
+   //      Int32 pos;
+   //      parcel->GetDataPosition(&pos);
+   //      parcel->SetDataPosition(pos - sizeof(Int32));
+   // }
+
    switch (type) {
        case NULL_TYPE_ID: return NOERROR;
        case StringUri::TYPE_ID: return StringUri::ReadFrom(parcel, uri);

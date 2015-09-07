@@ -1,25 +1,43 @@
 
 #include "content/CContentProviderTransport.h"
-#include "ext/frameworkext.h"
+#include "content/ContentProvider.h"
 #include "os/Binder.h"
 #include "os/UserHandle.h"
 #include "os/CCancellationSignalHelper.h"
+//#include "app/AppOpsManager.h"
 
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Os::Binder;
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::UserHandle;
-using Elastos::Droid::Os::IICancellationSignal;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::ICancellationSignal;
 using Elastos::Droid::Os::ICancellationSignalHelper;
 using Elastos::Droid::Os::CCancellationSignalHelper;
+//using Elastos::Droid::App::AppOpsManager;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
-ECode CContentProviderTransport::constructor(
-    /* [in] */ Handle32 owner)
+CAR_INTERFACE_IMPL_3(CContentProviderTransport, Object, IContentProviderTransport, IIContentProvider, IBinder)
+
+CAR_OBJECT_IMPL(CContentProviderTransport)
+
+CContentProviderTransport::CContentProviderTransport()
+    : mReadOp(-1/*AppOpsManager::OP_NONE*/)
+    , mWriteOp(-1/*AppOpsManager::OP_NONE*/)
 {
-    mContentProvider = reinterpret_cast<ContentProvider*>(owner);
+    assert(0 && "TODO");
+}
+
+ECode CContentProviderTransport::constructor(
+    /* [in] */ IContentProvider* owner)
+{
+    AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(owner);
+    AutoPtr<IWeakReference> wr;
+    wrs->GetWeakReference((IWeakReference**)&wr);
+    mWeakContentProvider = wr;
     return NOERROR;
 }
 
@@ -27,7 +45,10 @@ ECode CContentProviderTransport::GetContentProvider(
     /* [out] */ IContentProvider** provider)
 {
     VALIDATE_NOT_NULL(provider)
-    *provider = (IContentProvider*)mContentProvider->Probe(EIID_IContentProvider);
+    *provider = NULL;
+    AutoPtr<IContentProvider> obj;
+    mWeakContentProvider->Resolve(EIID_IContentProvider, (IInterface**)&obj);
+    *provider = obj;
     REFCOUNT_ADD(*provider)
     return NOERROR;
 }
@@ -36,12 +57,15 @@ ECode CContentProviderTransport::GetProviderName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
-    assert(0);
-    return E_NOT_IMPLEMENTED;
+    AutoPtr<IContentProvider> provider;
+    GetContentProvider((IContentProvider**)&provider);
+    *name = Object::ToString(provider);
+    return NOERROR;
 }
 
 ECode CContentProviderTransport::Query(
-    /* [in] */ IUri* uri,
+    /* [in] */ const String& callingPkg,
+    /* [in] */ IUri* inUri,
     /* [in] */ ArrayOf<String>* projection,
     /* [in] */ const String& selection,
     /* [in] */ ArrayOf<String>* selectionArgs,
@@ -50,154 +74,415 @@ ECode CContentProviderTransport::Query(
     /* [out] */ ICursor** cursor)
 {
     VALIDATE_NOT_NULL(cursor);
-    FAIL_RETURN(EnforceReadPermission(uri))
+    *cursor = NULL;
+
+    AutoPtr<IContentProvider> contentProvider;
+    mWeakContentProvider->Resolve(EIID_IContentProvider, (IInterface**)&contentProvider);
+    if (contentProvider == NULL)  return NOERROR;
+
+    ContentProvider* cp = (ContentProvider*)contentProvider.Get();
+    FAIL_RETURN(cp->ValidateIncomingUri(inUri))
+
+    AutoPtr<IUri> uri;
+    ContentProvider::GetUriWithoutUserId(inUri, (IUri**)&uri);
+
+    Int32 ival;
+    FAIL_RETURN(EnforceReadPermission(callingPkg, uri, &ival))
+
     AutoPtr<ICancellationSignalHelper> helper;
     CCancellationSignalHelper::AcquireSingleton((ICancellationSignalHelper**)&helper);
     AutoPtr<ICancellationSignal> sig;
     helper->FromTransport(cancellationSignal, (ICancellationSignal**)&sig);
-    return mContentProvider->Query(uri, projection, selection, selectionArgs, sortOrder, sig, cursor);
+
+    if (ival != IAppOpsManager::MODE_ALLOWED) {
+        return cp->RejectQuery(uri, projection, selection, selectionArgs, sortOrder, sig, cursor);
+    }
+
+    String original = cp->SetCallingPackage(callingPkg);
+    ECode ec = contentProvider->Query(uri, projection, selection, selectionArgs, sortOrder, sig, cursor);
+    cp->SetCallingPackage(original);
+    return ec;
 }
 
 ECode CContentProviderTransport::GetType(
-    /* [in] */ IUri* uri,
+    /* [in] */ IUri* inUri,
     /* [out] */ String* type)
 {
     VALIDATE_NOT_NULL(type);
-    return mContentProvider->GetType(uri, type);
+    *type = String(NULL);
+
+    AutoPtr<IContentProvider> contentProvider;
+    mWeakContentProvider->Resolve(EIID_IContentProvider, (IInterface**)&contentProvider);
+    if (contentProvider == NULL)  return NOERROR;
+
+    ContentProvider* cp = (ContentProvider*)contentProvider.Get();
+    FAIL_RETURN(cp->ValidateIncomingUri(inUri))
+    AutoPtr<IUri> uri;
+    ContentProvider::GetUriWithoutUserId(inUri, (IUri**)&uri);
+
+    return contentProvider->GetType(uri, type);
 }
 
 ECode CContentProviderTransport::Insert(
-    /* [in] */ IUri* uri,
+    /* [in] */ const String& callingPkg,
+    /* [in] */ IUri* inUri,
     /* [in] */ IContentValues* initialValues,
     /* [out] */ IUri** insertedUri)
 {
     VALIDATE_NOT_NULL(insertedUri);
-    FAIL_RETURN(EnforceWritePermission(uri))
-    return mContentProvider->Insert(uri, initialValues, insertedUri);
+    *insertedUri = NULL;
+
+    AutoPtr<IContentProvider> contentProvider;
+    mWeakContentProvider->Resolve(EIID_IContentProvider, (IInterface**)&contentProvider);
+    if (contentProvider == NULL)  return NOERROR;
+
+    ContentProvider* cp = (ContentProvider*)contentProvider.Get();
+    FAIL_RETURN(cp->ValidateIncomingUri(inUri))
+
+    Int32 userId = ContentProvider::GetUserIdFromUri(inUri);
+    AutoPtr<IUri> uri;
+    ContentProvider::GetUriWithoutUserId(inUri, (IUri**)&uri);
+
+    Int32 ival;
+    FAIL_RETURN(EnforceWritePermission(callingPkg, uri, &ival))
+    if (ival != IAppOpsManager::MODE_ALLOWED) {
+        return cp->RejectInsert(uri, initialValues, insertedUri);
+    }
+
+    String original = cp->SetCallingPackage(callingPkg);
+    AutoPtr<IUri> tmpUri, resultUri;
+    ECode ec = contentProvider->Insert(uri, initialValues, (IUri**)&tmpUri);
+    FAIL_GOTO(ec, _Exit_)
+
+    resultUri = ContentProvider::MaybeAddUserId(tmpUri, userId);
+    *insertedUri = resultUri;
+    REFCOUNT_ADD(*insertedUri)
+
+_Exit_:
+    cp->SetCallingPackage(original);
+    return ec;
 }
 
 ECode CContentProviderTransport::BulkInsert(
-    /* [in] */ IUri* uri,
+    /* [in] */ const String& callingPkg,
+    /* [in] */ IUri* inUri,
     /* [in] */ ArrayOf<IContentValues*>* initialValues,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    FAIL_RETURN(EnforceWritePermission(uri))
-    return mContentProvider->BulkInsert(uri, initialValues, number);
+    *number = 0;
+
+    AutoPtr<IContentProvider> contentProvider;
+    mWeakContentProvider->Resolve(EIID_IContentProvider, (IInterface**)&contentProvider);
+    if (contentProvider == NULL)  return NOERROR;
+
+    ContentProvider* cp = (ContentProvider*)contentProvider.Get();
+    FAIL_RETURN(cp->ValidateIncomingUri(inUri))
+    AutoPtr<IUri> uri;
+    ContentProvider::GetUriWithoutUserId(inUri, (IUri**)&uri);
+
+    Int32 ival;
+    FAIL_RETURN(EnforceWritePermission(callingPkg, uri, &ival))
+    if (ival != IAppOpsManager::MODE_ALLOWED) {
+        return NOERROR;
+    }
+
+    String original = cp->SetCallingPackage(callingPkg);
+    ECode ec = contentProvider->BulkInsert(uri, initialValues, number);
+    cp->SetCallingPackage(original);
+    return ec;
 }
 
 ECode CContentProviderTransport::ApplyBatch(
-    /* [in] */ IObjectContainer* operations,
+    /* [in] */ const String& callingPkg,
+    /* [in] */ IArrayList* operations,
     /* [out, callee] */ ArrayOf<IContentProviderResult*>** providerResults)
 {
     VALIDATE_NOT_NULL(providerResults)
-    assert(operations != NULL);
-    AutoPtr<IObjectEnumerator> ObjEnumerator;
-    FAIL_RETURN(operations->GetObjectEnumerator((IObjectEnumerator**)&ObjEnumerator))
-    Boolean hasNext = FALSE;
-    while (ObjEnumerator->MoveNext(&hasNext), hasNext) {
-        AutoPtr<IContentProviderOperation> operation;
-        ObjEnumerator->Current((IInterface**)&operation);
-        Boolean isRead = FALSE;
-        Boolean isWrite = FALSE;
+    *providerResults = NULL;
+    VALIDATE_NOT_NULL(operations)
+
+    AutoPtr<IContentProvider> contentProvider;
+    mWeakContentProvider->Resolve(EIID_IContentProvider, (IInterface**)&contentProvider);
+    if (contentProvider == NULL)  return NOERROR;
+    ContentProvider* cp = (ContentProvider*)contentProvider.Get();
+
+    Int32 numOperations;
+    operations->GetSize(&numOperations);
+
+    Boolean isRead = FALSE;
+    Boolean isWrite = FALSE;
+    IContentProviderOperation* operation;
+
+    AutoPtr<ArrayOf<Int32> > userIds = ArrayOf<Int32>::Alloc(numOperations);
+    for (Int32 i = 0; i < numOperations; i++) {
+        AutoPtr<IInterface> obj;
+        operations->Get(i, (IInterface**)&obj);
+        operation = IContentProviderOperation::Probe(obj);
+
+        AutoPtr<IUri> uri;
+        operation->GetUri((IUri**)&uri);
+        FAIL_RETURN(cp->ValidateIncomingUri(uri))
+        (*userIds)[i] = ContentProvider::GetUserIdFromUri(uri);
+
+        if ((*userIds)[i] != IUserHandle::USER_CURRENT) {
+          // Removing the user id from the uri.
+            AutoPtr<IContentProviderOperation> newOp;
+            assert(0 && "TODO");
+            // CContentProviderOperation::New(operation, TRUE, (IContentProviderOperation**)&newOp);
+            operations->Set(i, newOp);
+            operation = newOp;
+        }
+
         if (operation->IsReadOperation(&isRead), isRead) {
-            AutoPtr<IUri> uri;
-            operation->GetUri((IUri**)&uri);
-            FAIL_RETURN(EnforceReadPermission(uri))
+            Int32 ival;
+            FAIL_RETURN(EnforceWritePermission(callingPkg, uri, &ival))
+            if (ival != IAppOpsManager::MODE_ALLOWED) {
+                // throw new OperationApplicationException("App op not allowed", 0);
+                return E_OPERATION_APPLICATION_EXCEPTION;
+            }
         }
 
         if (operation->IsWriteOperation(&isWrite), isWrite) {
-            AutoPtr<IUri> uri;
-            operation->GetUri((IUri**)&uri);
-            FAIL_RETURN(EnforceWritePermission(uri))
+            Int32 ival;
+            FAIL_RETURN(EnforceWritePermission(callingPkg, uri, &ival))
+            if (ival != IAppOpsManager::MODE_ALLOWED) {
+                // throw new OperationApplicationException("App op not allowed", 0);
+                return E_OPERATION_APPLICATION_EXCEPTION;
+            }
         }
     }
-    return mContentProvider->ApplyBatch(operations, providerResults);
+
+    String original = cp->SetCallingPackage(callingPkg);
+    AutoPtr<ArrayOf<IContentProviderResult*> > temp;
+    ECode ec = contentProvider->ApplyBatch(operations, (ArrayOf<IContentProviderResult*>**)&temp);
+    FAIL_GOTO(ec, _Exit_)
+
+    if (temp != NULL) {
+        for (Int32 i = 0; i < temp->GetLength(); ++i) {
+            if ((*userIds)[i] != IUserHandle::USER_CURRENT) {
+                // Adding the userId to the uri.
+                AutoPtr<IContentProviderResult> newResult;
+                assert(0 && "TODO");
+                // CContentProviderResult::New((*temp)[i], (*userId)[i],
+                //     (IContentProviderResult**)&newResult);
+                temp->Set(i, newResult);
+            }
+        }
+    }
+
+    *providerResults = temp;
+    REFCOUNT_ADD(*providerResults)
+
+_Exit_:
+    cp->SetCallingPackage(original);
+    return ec;
 }
 
 ECode CContentProviderTransport::Delete(
-    /* [in] */ IUri* uri,
+    /* [in] */ const String& callingPkg,
+    /* [in] */ IUri* inUri,
     /* [in] */ const String& selection,
     /* [in] */ ArrayOf<String>* selectionArgs,
     /* [out] */ Int32* rowsAffected)
 {
     VALIDATE_NOT_NULL(rowsAffected);
-    FAIL_RETURN(EnforceWritePermission(uri))
-    return mContentProvider->Delete(uri, selection, selectionArgs, rowsAffected);
+    *rowsAffected = 0;
+
+    AutoPtr<IContentProvider> contentProvider;
+    mWeakContentProvider->Resolve(EIID_IContentProvider, (IInterface**)&contentProvider);
+    if (contentProvider == NULL)  return NOERROR;
+
+    ContentProvider* cp = (ContentProvider*)contentProvider.Get();
+    FAIL_RETURN(cp->ValidateIncomingUri(inUri))
+    AutoPtr<IUri> uri;
+    ContentProvider::GetUriWithoutUserId(inUri, (IUri**)&uri);
+
+    Int32 ival;
+    FAIL_RETURN(EnforceWritePermission(callingPkg, uri, &ival))
+
+    if (ival != IAppOpsManager::MODE_ALLOWED) {
+        return NOERROR;
+    }
+
+    String original = cp->SetCallingPackage(callingPkg);
+    ECode ec = contentProvider->Delete(uri, selection, selectionArgs, rowsAffected);
+    cp->SetCallingPackage(original);
+    return ec;
 }
 
 ECode CContentProviderTransport::Update(
-    /* [in] */ IUri* uri,
+    /* [in] */ const String& callingPkg,
+    /* [in] */ IUri* inUri,
     /* [in] */ IContentValues* values,
     /* [in] */ const String& selection,
     /* [in] */ ArrayOf<String>* selectionArgs,
     /* [out] */ Int32* rowsAffected)
 {
     VALIDATE_NOT_NULL(rowsAffected);
-    FAIL_RETURN(EnforceWritePermission(uri))
-    return mContentProvider->Update(uri, values, selection, selectionArgs, rowsAffected);
+    *rowsAffected = 0;
+
+    AutoPtr<IContentProvider> contentProvider;
+    mWeakContentProvider->Resolve(EIID_IContentProvider, (IInterface**)&contentProvider);
+    if (contentProvider == NULL)  return NOERROR;
+
+    ContentProvider* cp = (ContentProvider*)contentProvider.Get();
+    FAIL_RETURN(cp->ValidateIncomingUri(inUri))
+    AutoPtr<IUri> uri;
+    ContentProvider::GetUriWithoutUserId(inUri, (IUri**)&uri);
+
+    Int32 ival;
+    FAIL_RETURN(EnforceWritePermission(callingPkg, uri, &ival))
+
+    if (ival != IAppOpsManager::MODE_ALLOWED) {
+        return NOERROR;
+    }
+
+    String original = cp->SetCallingPackage(callingPkg);
+    ECode ec = contentProvider->Update(uri, values, selection, selectionArgs, rowsAffected);
+    cp->SetCallingPackage(original);
+    return ec;
 }
 
 ECode CContentProviderTransport::OpenFile(
-    /* [in] */ IUri* uri,
+    /* [in] */ const String& callingPkg,
+    /* [in] */ IUri* inUri,
     /* [in] */ const String& mode,
+    /* [in] */ IICancellationSignal* cancellationSignal,
     /* [out] */ IParcelFileDescriptor** fileDescriptor)
 {
     VALIDATE_NOT_NULL(fileDescriptor);
-    // if (mode != null && mode.startsWith("w")) enforceWritePermission(uri);
-    if (!mode.IsNull() && mode.IndexOf('w') != -1) {
-        FAIL_RETURN(EnforceWritePermission(uri))
-    }
-    else {
-        FAIL_RETURN(EnforceReadPermission(uri))
-    }
-    return mContentProvider->OpenFile(uri, mode, fileDescriptor);
+    *fileDescriptor = NULL;
+
+    AutoPtr<IContentProvider> contentProvider;
+    mWeakContentProvider->Resolve(EIID_IContentProvider, (IInterface**)&contentProvider);
+    if (contentProvider == NULL)  return NOERROR;
+
+    ContentProvider* cp = (ContentProvider*)contentProvider.Get();
+    FAIL_RETURN(cp->ValidateIncomingUri(inUri))
+    AutoPtr<IUri> uri;
+    ContentProvider::GetUriWithoutUserId(inUri, (IUri**)&uri);
+
+    Int32 ival;
+    FAIL_RETURN(EnforceWritePermission(callingPkg, uri, &ival))
+
+    AutoPtr<ICancellationSignalHelper> helper;
+    CCancellationSignalHelper::AcquireSingleton((ICancellationSignalHelper**)&helper);
+    AutoPtr<ICancellationSignal> sig;
+    helper->FromTransport(cancellationSignal, (ICancellationSignal**)&sig);
+
+    String original = cp->SetCallingPackage(callingPkg);
+    ECode ec = contentProvider->OpenFile(uri, mode, sig, fileDescriptor);
+    cp->SetCallingPackage(original);
+    return ec;
 }
 
 ECode CContentProviderTransport::OpenAssetFile(
-    /* [in] */ IUri* uri,
+    /* [in] */ const String& callingPkg,
+    /* [in] */ IUri* inUri,
     /* [in] */ const String& mode,
+    /* [in] */ IICancellationSignal* cancellationSignal,
     /* [out] */ IAssetFileDescriptor** fileDescriptor)
 {
     VALIDATE_NOT_NULL(fileDescriptor);
-    // if (mode != null && mode.startsWith("w")) enforceWritePermission(uri);
-    if (!mode.IsNull() && mode.IndexOf('w') != -1) {
-        FAIL_RETURN(EnforceWritePermission(uri))
-    }
-    else {
-        FAIL_RETURN(EnforceReadPermission(uri))
-    }
-    return mContentProvider->OpenAssetFile(uri, mode, fileDescriptor);
+    *fileDescriptor = NULL;
+
+    AutoPtr<IContentProvider> contentProvider;
+    mWeakContentProvider->Resolve(EIID_IContentProvider, (IInterface**)&contentProvider);
+    if (contentProvider == NULL)  return NOERROR;
+
+    ContentProvider* cp = (ContentProvider*)contentProvider.Get();
+    FAIL_RETURN(cp->ValidateIncomingUri(inUri))
+    AutoPtr<IUri> uri;
+    ContentProvider::GetUriWithoutUserId(inUri, (IUri**)&uri);
+
+    Int32 ival;
+    FAIL_RETURN(EnforceWritePermission(callingPkg, uri, &ival))
+
+    AutoPtr<ICancellationSignalHelper> helper;
+    CCancellationSignalHelper::AcquireSingleton((ICancellationSignalHelper**)&helper);
+    AutoPtr<ICancellationSignal> sig;
+    helper->FromTransport(cancellationSignal, (ICancellationSignal**)&sig);
+
+    String original = cp->SetCallingPackage(callingPkg);
+    ECode ec = contentProvider->OpenAssetFile(uri, mode, sig, fileDescriptor);
+    cp->SetCallingPackage(original);
+    return ec;
 }
 
 ECode CContentProviderTransport::Call(
+    /* [in] */ const String& callingPkg,
     /* [in] */ const String& method,
     /* [in] */ const String& arg,
     /* [in] */ IBundle* extras,
     /* [out] */ IBundle** bundle)
 {
     VALIDATE_NOT_NULL(bundle);
-    return mContentProvider->Call(method, arg, extras, bundle);
+    *bundle = NULL;
+
+    AutoPtr<IContentProvider> contentProvider;
+    mWeakContentProvider->Resolve(EIID_IContentProvider, (IInterface**)&contentProvider);
+    if (contentProvider == NULL)  return NOERROR;
+    ContentProvider* cp = (ContentProvider*)contentProvider.Get();
+
+    String original = cp->SetCallingPackage(callingPkg);
+    ECode ec = contentProvider->Call(method, arg, extras, bundle);
+    cp->SetCallingPackage(original);
+    return ec;
 }
 
 ECode CContentProviderTransport::GetStreamTypes(
-    /* [in] */ IUri* uri,
+    /* [in] */ IUri* inUri,
     /* [in] */ const String& mimeTypeFilter,
     /* [out, callee] */ ArrayOf<String>** streamTypes)
 {
     VALIDATE_NOT_NULL(streamTypes);
-    return mContentProvider->GetStreamTypes(uri, mimeTypeFilter, streamTypes);
+    *streamTypes = NULL;
+
+    AutoPtr<IContentProvider> contentProvider;
+    mWeakContentProvider->Resolve(EIID_IContentProvider, (IInterface**)&contentProvider);
+    if (contentProvider == NULL)  return NOERROR;
+
+    ContentProvider* cp = (ContentProvider*)contentProvider.Get();
+    FAIL_RETURN(cp->ValidateIncomingUri(inUri))
+    AutoPtr<IUri> uri;
+    ContentProvider::GetUriWithoutUserId(inUri, (IUri**)&uri);
+
+    return contentProvider->GetStreamTypes(uri, mimeTypeFilter, streamTypes);
 }
 
 ECode CContentProviderTransport::OpenTypedAssetFile(
-    /* [in] */ IUri* uri,
+    /* [in] */ const String& callingPkg,
+    /* [in] */ IUri* inUri,
     /* [in] */ const String& mimeType,
     /* [in] */ IBundle* opts,
+    /* [in] */ IICancellationSignal* cancellationSignal,
     /* [out] */ IAssetFileDescriptor** fileDescriptor)
 {
     VALIDATE_NOT_NULL(fileDescriptor);
-    FAIL_RETURN(EnforceReadPermission(uri));
-    return mContentProvider->OpenTypedAssetFile(uri, mimeType, opts, fileDescriptor);
+    *fileDescriptor = NULL;
+
+    AutoPtr<IContentProvider> contentProvider;
+    mWeakContentProvider->Resolve(EIID_IContentProvider, (IInterface**)&contentProvider);
+    if (contentProvider == NULL)  return NOERROR;
+
+    ContentProvider* cp = (ContentProvider*)contentProvider.Get();
+    FAIL_RETURN(cp->ValidateIncomingUri(inUri))
+    AutoPtr<IUri> uri;
+    ContentProvider::GetUriWithoutUserId(inUri, (IUri**)&uri);
+
+    Int32 ival;
+    FAIL_RETURN(EnforceWritePermission(callingPkg, uri, &ival))
+
+    AutoPtr<ICancellationSignalHelper> helper;
+    CCancellationSignalHelper::AcquireSingleton((ICancellationSignalHelper**)&helper);
+    AutoPtr<ICancellationSignal> sig;
+    helper->FromTransport(cancellationSignal, (ICancellationSignal**)&sig);
+
+    String original = cp->SetCallingPackage(callingPkg);
+    ECode ec = contentProvider->OpenTypedAssetFile(uri, mimeType, opts, sig, fileDescriptor);
+    cp->SetCallingPackage(original);
+    return ec;
 }
 
 ECode CContentProviderTransport::CreateCancellationSignal(
@@ -209,163 +494,165 @@ ECode CContentProviderTransport::CreateCancellationSignal(
     return signalHelper->CreateTransport(cancellationSignal);
 }
 
+ECode CContentProviderTransport::Canonicalize(
+    /* [in] */ const String& callingPkg,
+    /* [in] */ IUri* inUri,
+    /* [out] */ IUri** result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
+    AutoPtr<IContentProvider> contentProvider;
+    mWeakContentProvider->Resolve(EIID_IContentProvider, (IInterface**)&contentProvider);
+    if (contentProvider == NULL)  return NOERROR;
+
+    ContentProvider* cp = (ContentProvider*)contentProvider.Get();
+    FAIL_RETURN(cp->ValidateIncomingUri(inUri))
+    Int32 userId = ContentProvider::GetUserIdFromUri(inUri);
+    AutoPtr<IUri> uri;
+    ContentProvider::GetUriWithoutUserId(inUri, (IUri**)&uri);
+
+    Int32 ival;
+    FAIL_RETURN(EnforceWritePermission(callingPkg, uri, &ival))
+
+    if (ival != IAppOpsManager::MODE_ALLOWED) {
+        return NOERROR;
+    }
+
+    String original = cp->SetCallingPackage(callingPkg);
+    AutoPtr<IUri> temp, tmpUri;
+    ECode ec = contentProvider->Canonicalize(uri, (IUri**)&uri);
+    FAIL_GOTO(ec, _Exit_)
+
+    tmpUri = ContentProvider::MaybeAddUserId(temp, userId);
+    *result = tmpUri;
+    REFCOUNT_ADD(*result)
+
+_Exit_:
+    cp->SetCallingPackage(original);
+    return ec;
+}
+
+ECode CContentProviderTransport::Uncanonicalize(
+    /* [in] */ const String& callingPkg,
+    /* [in] */ IUri* inUri,
+    /* [out] */ IUri** result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
+    AutoPtr<IContentProvider> contentProvider;
+    mWeakContentProvider->Resolve(EIID_IContentProvider, (IInterface**)&contentProvider);
+    if (contentProvider == NULL)  return NOERROR;
+
+    ContentProvider* cp = (ContentProvider*)contentProvider.Get();
+    FAIL_RETURN(cp->ValidateIncomingUri(inUri))
+    Int32 userId = ContentProvider::GetUserIdFromUri(inUri);
+    AutoPtr<IUri> uri;
+    ContentProvider::GetUriWithoutUserId(inUri, (IUri**)&uri);
+
+    Int32 ival;
+    FAIL_RETURN(EnforceWritePermission(callingPkg, uri, &ival))
+
+    if (ival != IAppOpsManager::MODE_ALLOWED) {
+        return NOERROR;
+    }
+
+    String original = cp->SetCallingPackage(callingPkg);
+    AutoPtr<IUri> temp,  tmpUri;
+    ECode ec = contentProvider->Uncanonicalize(uri, (IUri**)&uri);
+    FAIL_GOTO(ec, _Exit_)
+
+    tmpUri = ContentProvider::MaybeAddUserId(temp, userId);
+    *result = tmpUri;
+    REFCOUNT_ADD(*result)
+
+_Exit_:
+    cp->SetCallingPackage(original);
+    return ec;
+}
+
 ECode CContentProviderTransport::ToString(
     /* [out] */ String* str)
 {
-    assert(0);
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(str)
+    *str = String("CContentProviderTransport");
+    return NOERROR;
+}
+
+ECode CContentProviderTransport::EnforceFilePermission(
+    /* [in] */ const String& callingPkg,
+    /* [in] */ IUri* uri,
+    /* [in] */ const String& mode)
+{
+    if (!mode.IsNull() && mode.IndexOf('w') != -1) {
+        Int32 ivalue;
+        FAIL_RETURN(EnforceWritePermission(callingPkg, uri, &ivalue))
+        if (ivalue != IAppOpsManager::MODE_ALLOWED) {
+            // throw new FileNotFoundException("App op not allowed");
+            return E_FILE_NOT_FOUND_EXCEPTION;
+        }
+    }
+    else {
+        Int32 ivalue;
+        FAIL_RETURN(EnforceReadPermission(callingPkg, uri, &ivalue))
+
+        if (ivalue != IAppOpsManager::MODE_ALLOWED) {
+            // throw new FileNotFoundException("App op not allowed");
+            return E_FILE_NOT_FOUND_EXCEPTION;
+        }
+    }
+    return NOERROR;
 }
 
 ECode CContentProviderTransport::EnforceReadPermission(
-    /* [in] */ IUri* uri)
+    /* [in] */ const String& callingPkg,
+    /* [in] */ IUri* uri,
+    /* [out] */ Int32* result)
 {
-    AutoPtr<IContext> context;
-    FAIL_RETURN(mContentProvider->GetContext((IContext**)&context))
-    Int32 pid = Binder::GetCallingPid();
-    Int32 uid = Binder::GetCallingUid();
-    String missingPerm;
+    VALIDATE_NOT_NULL(*result)
+    Int32 op = -1;/* AppOpsManager::OP_NONE */;
+    *result = op;
 
-    if (UserHandle::IsSameApp(uid, mContentProvider->mMyUid)) {
-        return NOERROR;
+    AutoPtr<IContentProvider> contentProvider;
+    mWeakContentProvider->Resolve(EIID_IContentProvider, (IInterface**)&contentProvider);
+    if (contentProvider == NULL)  return NOERROR;
+
+    ContentProvider* cp = (ContentProvider*)contentProvider.Get();
+
+    FAIL_RETURN(cp->EnforceReadPermissionInner(uri))
+
+    if (mReadOp != op) {
+        return mAppOpsManager->NoteOp(mReadOp, Binder::GetCallingUid(), callingPkg, result);
     }
 
-    if (mContentProvider->mExported) {
-        String componentPerm;
-        mContentProvider->GetReadPermission(&componentPerm);
-        if (!componentPerm.IsNull()) {
-            Int32 permissionId = 0;
-            FAIL_RETURN(context->CheckPermission(componentPerm, pid, uid, &permissionId))
-            if (permissionId == IPackageManager::PERMISSION_GRANTED) {
-                return NOERROR;
-            }
-            else {
-                missingPerm = componentPerm;
-            }
-        }
-
-        // track if unprotected read is allowed; any denied
-        // <path-permission> below removes this ability
-        Boolean allowDefaultRead = componentPerm.IsNull();
-
-        AutoPtr<ArrayOf<IPathPermission*> > pps;
-        mContentProvider->GetPathPermissions((ArrayOf<IPathPermission*>**)&pps);
-        if (NULL != pps) {
-            String path;
-            uri->GetPath(&path);
-            for (Int32 i = 0; i < pps->GetLength(); i++) {
-                AutoPtr<IPathPermission> pp = (*pps)[i];
-                String pathPerm;
-                pp->GetReadPermission(&pathPerm);
-                Boolean isMatch = FALSE;
-                if (!pathPerm.IsNull() && (pp->Match(path, &isMatch), isMatch)) {
-                    Int32 checkPermission = 0;
-                    FAIL_RETURN(context->CheckPermission(pathPerm, pid, uid, &checkPermission))
-                    if (checkPermission == IPackageManager::PERMISSION_GRANTED){
-                        return NOERROR;
-                    }
-                    else {
-                        // any denied <path-permission> means we lose
-                        // default <provider> access.
-                        allowDefaultRead = FALSE;
-                        missingPerm = pathPerm;
-                    }
-                }
-            }
-        }
-
-        // if we passed <path-permission> checks above, and no default
-        // <provider> permission, then allow access.
-        if (allowDefaultRead) return NOERROR;
-    }
-
-    // last chance, check against any uri grants
-    Int32 uriPermission = 0;
-    FAIL_RETURN(context->CheckUriPermission(uri, pid, uid, IIntent::FLAG_GRANT_READ_URI_PERMISSION, &uriPermission))
-    if (uriPermission == IPackageManager::PERMISSION_GRANTED) return NOERROR;
-
-//    final String failReason = mExported
-//            ? " requires " + missingPerm + ", or grantUriPermission()"
-//            : " requires the provider be exported, or grantUriPermission()";
-//    throw new SecurityException("Permission Denial: reading "
-//            + ContentProvider.this.getClass().getName() + " uri " + uri + " from pid=" + pid
-//            + ", uid=" + uid + failReason);
-    return E_SECURITY_EXCEPTION;
+    *result =  IAppOpsManager::MODE_ALLOWED;
+    return NOERROR;
 }
 
 ECode CContentProviderTransport::EnforceWritePermission(
-    /* [in] */ IUri* uri)
+    /* [in] */ const String& callingPkg,
+    /* [in] */ IUri* uri,
+        /* [out] */ Int32* result)
 {
-    AutoPtr<IContext> context;
-    FAIL_RETURN(mContentProvider->GetContext((IContext**)&context))
-    const Int32 pid = Binder::GetCallingPid();
-    const Int32 uid = Binder::GetCallingUid();
-    String missingPerm;
+    VALIDATE_NOT_NULL(*result)
+    Int32 op = -1;/* AppOpsManager::OP_NONE */;
+    *result = op;
 
-    if (UserHandle::IsSameApp(uid, mContentProvider->mMyUid)) {
-        return NOERROR;
+    AutoPtr<IContentProvider> contentProvider;
+    mWeakContentProvider->Resolve(EIID_IContentProvider, (IInterface**)&contentProvider);
+    if (contentProvider == NULL)  return NOERROR;
+
+    ContentProvider* cp = (ContentProvider*)contentProvider.Get();
+
+    FAIL_RETURN(cp->EnforceWritePermissionInner(uri))
+
+    if (mWriteOp != op) {
+        return mAppOpsManager->NoteOp(mWriteOp, Binder::GetCallingUid(), callingPkg, result);
     }
 
-    if (mContentProvider->mExported) {
-        String componentPerm;
-        mContentProvider->GetWritePermission(&componentPerm);
-        if (!componentPerm.IsNull()) {
-            Int32 permissionId = 0;
-            FAIL_RETURN(context->CheckPermission(componentPerm, pid, uid, &permissionId))
-            if (permissionId == IPackageManager::PERMISSION_GRANTED) {
-                return NOERROR;
-            }
-            else {
-                missingPerm = componentPerm;
-            }
-        }
-
-        // track if unprotected write is allowed; any denied
-        // <path-permission> below removes this ability
-        Boolean allowDefaultWrite = componentPerm.IsNull();
-
-        AutoPtr<ArrayOf<IPathPermission*> > pps;
-        mContentProvider->GetPathPermissions((ArrayOf<IPathPermission*>**)&pps);
-        if (NULL != pps) {
-            String path;
-            FAIL_RETURN(uri->GetPath(&path))
-            for(Int32 i = 0; i < pps->GetLength(); i++) {
-                AutoPtr<IPathPermission> pp = (*pps)[i];
-                String pathPerm;
-                pp->GetWritePermission(&pathPerm);
-                Boolean isMatch = FALSE;
-                if (!pathPerm.IsNull() && (pp->Match(path, &isMatch), isMatch)) {
-                    Int32 checkPermission = 0;
-                    FAIL_RETURN(context->CheckPermission(pathPerm, pid, uid, &checkPermission))
-                    if (checkPermission == IPackageManager::PERMISSION_GRANTED){
-                        return NOERROR;
-                    }
-                    else {
-                        // any denied <path-permission> means we lose
-                        // default <provider> access.
-                        allowDefaultWrite = FALSE;
-                        missingPerm = pathPerm;
-                    }
-                }
-            }
-        }
-
-        // if we passed <path-permission> checks above, and no default
-        // <provider> permission, then allow access.
-        if (allowDefaultWrite) return NOERROR;
-    }
-
-    // last chance, check against any uri grants
-    Int32 uriPermission = 0;
-    FAIL_RETURN(context->CheckUriPermission(uri, pid, uid, IIntent::FLAG_GRANT_WRITE_URI_PERMISSION, &uriPermission))
-    if (uriPermission == IPackageManager::PERMISSION_GRANTED) return NOERROR;
-
-//    final String failReason = mExported
-//            ? " requires " + missingPerm + ", or grantUriPermission()"
-//            : " requires the provider be exported, or grantUriPermission()";
-//    throw new SecurityException("Permission Denial: writing "
-//            + ContentProvider.this.getClass().getName() + " uri " + uri + " from pid=" + pid
-//           + ", uid=" + uid + failReason);
-    return E_SECURITY_EXCEPTION;
+    *result =  IAppOpsManager::MODE_ALLOWED;
+    return NOERROR;
 }
 
 } // namespace Content

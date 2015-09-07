@@ -1,24 +1,39 @@
 
 #include "content/ContentProvider.h"
-#include "content/CContentProviderTransport.h"
-#include "content/CClipDescriptionHelper.h"
-#include "content/CContentResolverHelper.h"
-#include "content/res/CAssetFileDescriptor.h"
+//#include "content/CContentProviderTransport.h"
+//#include "content/CClipDescriptionHelper.h"
+//#include "content/CContentResolverHelper.h"
+//#include "content/res/CAssetFileDescriptor.h"
 #include "os/CParcelFileDescriptorHelper.h"
 #include "os/Process.h"
 #include "os/Binder.h"
+#include "os/UserHandle.h"
+#include "os/ParcelFileDescriptor.h"
 #include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Droid::Content::Res::CAssetFileDescriptor;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IComponentInfo;
+//using Elastos::Droid::Content::Res::CAssetFileDescriptor;
 using Elastos::Droid::Os::IParcelFileDescriptorHelper;
 using Elastos::Droid::Os::CParcelFileDescriptorHelper;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::Binder;
+using Elastos::Droid::Os::UserHandle;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::ParcelFileDescriptor;
+using Elastos::Droid::Os::IPatternMatcher;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Net::IUriBuilder;
 using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CString;
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
 using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::IIterator;
 
 namespace Elastos {
 namespace Droid {
@@ -42,9 +57,12 @@ ContentProvider::OpenPipeAsyncTask::OpenPipeAsyncTask(
     , mArgs(args)
 {}
 
-AutoPtr<IInterface> ContentProvider::OpenPipeAsyncTask::DoInBackground(
-    /* [in] */ ArrayOf<IInterface*>* params)
+ECode ContentProvider::OpenPipeAsyncTask::DoInBackground(
+    /* [in] */ ArrayOf<IInterface*>* params,
+    /* [out] */ IInterface** obj)
 {
+    VALIDATE_NOT_NULL(obj)
+    *obj = NULL;
     mFunc->WriteDataToPipe((*mFds)[1], mUri, mMimeType, mOpts, mArgs);
     // try {
     if (FAILED((*mFds)[1]->Close())) {
@@ -53,7 +71,7 @@ AutoPtr<IInterface> ContentProvider::OpenPipeAsyncTask::DoInBackground(
     // } catch (IOException e) {
     //     Log.w(TAG, "Failure closing pipe", e);
     // }
-    return NULL;
+    return NOERROR;
 }
 
 
@@ -69,7 +87,7 @@ CAR_INTERFACE_IMPL_3(ContentProvider, Object, IContentProvider, IComponentCallba
 
 static void ThreadDestructor(void* st)
 {
-    ICharSequence* callingPackage = static_cast<String*>(st);
+    ICharSequence* callingPackage = static_cast<ICharSequence*>(st);
     if (callingPackage) {
         REFCOUNT_RELEASE(callingPackage)
     }
@@ -80,7 +98,7 @@ static void MakeKey()
     ASSERT_TRUE(pthread_key_create(&ContentProvider::sTlsKey, ThreadDestructor) == 0);
 }
 
-String ContentProvider::GetCallingPackage()
+String ContentProvider::GetTlsCallingPackage()
 {
     pthread_once(&sKeyOnce, MakeKey);
 
@@ -97,7 +115,7 @@ String ContentProvider::GetCallingPackage()
     return value;
 }
 
-void ContentProvider::SetCallingPackage(
+void ContentProvider::SetTlsCallingPackage(
     /* [in] */ const String& pakcage)
 {
     pthread_once(&sKeyOnce, MakeKey);
@@ -127,8 +145,10 @@ ContentProvider::~ContentProvider()
 
 ECode ContentProvider::constructor()
 {
-    ASSERT_SUCCEEDED(CContentProviderTransport::New(
-            (Handle32)this, (IContentProviderTransport**)&mTransport));
+    assert(0 && "TODO");
+    return NOERROR;
+    // ASSERT_SUCCEEDED(CContentProviderTransport::New(
+    //         (Handle32)this, (IContentProviderTransport**)&mTransport));
 }
 
 ECode ContentProvider::constructor(
@@ -141,8 +161,10 @@ ECode ContentProvider::constructor(
     mReadPermission = readPermission;
     mWritePermission = writePermission;
     mPathPermissions = pathPermissions;
-    return CContentProviderTransport::New(
-            (Handle32)this, (IContentProviderTransport**)&mTransport);
+    assert(0 && "TODO");
+    // return CContentProviderTransport::New(
+    //         (Handle32)this, (IContentProviderTransport**)&mTransport);
+    return NOERROR;
 }
 
 ECode ContentProvider::ToString(
@@ -178,16 +200,18 @@ Boolean ContentProvider::CheckUser(
 {
     Int32 cuid, perm;
     context->GetUserId(&cuid);
-    context->CheckPermission(INTERACT_ACROSS_USERS, pid, uid, &perm);
+    assert(0 && "TODO");
+    //context->CheckPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS, pid, uid, &perm);
     return UserHandle::GetUserId(uid) == cuid
             || mSingleUser
-            || perm == PERMISSION_GRANTED;
+            || perm == IPackageManager::PERMISSION_GRANTED;
 }
 
 ECode ContentProvider::EnforceReadPermissionInner(
     /* [in] */ IUri* uri)
 {
-    AutoPtr<IContext> context = GetContext();
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
     Int32 pid = Binder::GetCallingPid();
     Int32 uid = Binder::GetCallingUid();
     String missingPerm;
@@ -202,7 +226,7 @@ ECode ContentProvider::EnforceReadPermissionInner(
         GetReadPermission(&componentPerm);
         if (!componentPerm.IsNull()) {
             context->CheckPermission(componentPerm, pid, uid, &checkPerm);
-            if (checkPerm == PERMISSION_GRANTED) {
+            if (checkPerm == IPackageManager::PERMISSION_GRANTED) {
                 return NOERROR;
             }
             else {
@@ -214,7 +238,8 @@ ECode ContentProvider::EnforceReadPermissionInner(
         // <path-permission> below removes this ability
         Boolean allowDefaultRead = componentPerm.IsNull();
 
-        AutoPtr<ArrayOf<IPathPermission*> > pps = GetPathPermissions();
+        AutoPtr<ArrayOf<IPathPermission*> > pps;
+        GetPathPermissions((ArrayOf<IPathPermission*>**)&pps);
         if (pps != NULL) {
             String path, pathPerm;
             Boolean match;
@@ -223,9 +248,9 @@ ECode ContentProvider::EnforceReadPermissionInner(
             for (Int32 i = 0; i < pps->GetLength(); ++i) {
                 pp = (*pps)[i];
                 pp->GetReadPermission(&pathPerm);
-                if (!pathPerm.IsNull() && (pp->Match(path, &match), match)) {
-                    context->CheckPermission(pathPerm, pid, uid, &checkPerm)
-                    if (checkPerm == PERMISSION_GRANTED) {
+                if (!pathPerm.IsNull() && (IPatternMatcher::Probe(pp)->Match(path, &match), match)) {
+                    context->CheckPermission(pathPerm, pid, uid, &checkPerm);
+                    if (checkPerm == IPackageManager::PERMISSION_GRANTED) {
                         return NOERROR;
                     }
                     else {
@@ -245,16 +270,10 @@ ECode ContentProvider::EnforceReadPermissionInner(
 
     // last chance, check against any uri grants
     context->CheckUriPermission(uri, pid, uid, IIntent::FLAG_GRANT_READ_URI_PERMISSION, &checkPerm);
-    if (checkPerm == PERMISSION_GRANTED) {
+    if (checkPerm == IPackageManager::PERMISSION_GRANTED) {
         return NOERROR;
     }
 
-    String failReason = mExported
-            ? " requires " + missingPerm + ", or grantUriPermission()"
-            : " requires the provider be exported, or grantUriPermission()";
-    throw new SecurityException("Permission Denial: reading "
-            + ContentProvider.this.getClass().getName() + " uri " + uri + " from pid=" + pid
-            + ", uid=" + uid + failReason);
     StringBuilder sb;
     sb.Append("Permission Denial: reading ");
     sb.Append(Object::ToString(this));
@@ -270,48 +289,60 @@ ECode ContentProvider::EnforceReadPermissionInner(
         sb.Append(", or grantUriPermission()");
     }
     else {
-        sb.Append( requires the provider be exported, or grantUriPermission());
+        sb.Append(" requires the provider be exported, or grantUriPermission()");
     }
-    Logger::E(TAG, sb.ToString());
+    Logger::E(TAG, sb.ToString().string());
     return E_SECURITY_EXCEPTION;
 }
 
 ECode ContentProvider::EnforceWritePermissionInner(
     /* [in] */ IUri* uri)
 {
-    AutoPtr<IContext> context = GetContext();
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
     Int32 pid = Binder::GetCallingPid();
     Int32 uid = Binder::GetCallingUid();
-    String missingPerm = NULL;
+    String missingPerm;
 
     if (UserHandle::IsSameApp(uid, mMyUid)) {
-        return;
+        return NOERROR;
     }
 
-    if (mExported && checkUser(pid, uid, context)) {
+    Int32 checkPerm;
+    if (mExported && CheckUser(pid, uid, context)) {
         String componentPerm;
         GetWritePermission(&componentPerm);
         if (componentPerm != NULL) {
-            if (context->CheckPermission(componentPerm, pid, uid) == PERMISSION_GRANTED) {
-                return;
-            } else {
+            context->CheckPermission(componentPerm, pid, uid, &checkPerm);
+            if (checkPerm == IPackageManager::PERMISSION_GRANTED) {
+                return NOERROR;
+            }
+            else {
                 missingPerm = componentPerm;
             }
         }
 
         // track if unprotected write is allowed; any denied
         // <path-permission> below removes this ability
-        Boolean allowDefaultWrite = (componentPerm == NULL);
+        Boolean allowDefaultWrite = componentPerm.IsNull();
 
-        PathPermission[] pps = getPathPermissions();
+        AutoPtr<ArrayOf<IPathPermission*> > pps;
+        GetPathPermissions((ArrayOf<IPathPermission*>**)&pps);
         if (pps != NULL) {
-            String path = uri.getPath();
-            for (PathPermission pp : pps) {
-                String pathPerm = pp.GetWritePermission();
-                if (pathPerm != NULL && pp.match(path)) {
-                    if (context->CheckPermission(pathPerm, pid, uid) == PERMISSION_GRANTED) {
-                        return;
-                    } else {
+            String path, pathPerm;
+            Boolean match;
+            uri->GetPath(&path);
+            IPathPermission* pp;
+            for (Int32 i = 0; i < pps->GetLength(); ++i) {
+                pp = (*pps)[i];
+                pp->GetWritePermission(&pathPerm);
+
+                if (!pathPerm.IsNull() && (IPatternMatcher::Probe(pp)->Match(path, &match), match)) {
+                    context->CheckPermission(pathPerm, pid, uid, &checkPerm);
+                    if (checkPerm == IPackageManager::PERMISSION_GRANTED) {
+                        return NOERROR;
+                    }
+                    else {
                         // any denied <path-permission> means we lose
                         // default <provider> access.
                         allowDefaultWrite = FALSE;
@@ -323,21 +354,35 @@ ECode ContentProvider::EnforceWritePermissionInner(
 
         // if we passed <path-permission> checks above, and no default
         // <provider> permission, then allow access.
-        if (allowDefaultWrite) return;
+        if (allowDefaultWrite) return NOERROR;
     }
 
     // last chance, check against any uri grants
-    if (context.checkUriPermission(uri, pid, uid, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-            == PERMISSION_GRANTED) {
-        return;
+    context->CheckUriPermission(uri, pid, uid,
+        IIntent::FLAG_GRANT_WRITE_URI_PERMISSION, &checkPerm);
+    if (checkPerm == IPackageManager::PERMISSION_GRANTED) {
+        return NOERROR;
     }
 
-    String failReason = mExported
-            ? " requires " + missingPerm + ", or grantUriPermission()"
-            : " requires the provider be exported, or grantUriPermission()";
-    throw new SecurityException("Permission Denial: writing "
-            + ContentProvider.this.getClass().getName() + " uri " + uri + " from pid=" + pid
-            + ", uid=" + uid + failReason);
+    StringBuilder sb;
+    sb.Append("Permission Denial: writing ");
+    sb.Append(Object::ToString(this));
+    sb.Append(" uri ");
+    sb.Append(Object::ToString(uri));
+    sb.Append(" from pid=");
+    sb.Append(pid);
+    sb.Append(", uid=");
+    sb.Append(uid);
+    if (mExported) {
+        sb.Append(" requires ");
+        sb.Append(missingPerm);
+        sb.Append(", or grantUriPermission()");
+    }
+    else {
+        sb.Append(" requires the provider be exported, or grantUriPermission()");
+    }
+    Logger::E(TAG, sb.ToString().string());
+    return E_SECURITY_EXCEPTION;
 }
 
 ECode ContentProvider::GetContext(
@@ -352,45 +397,55 @@ ECode ContentProvider::GetContext(
 String ContentProvider::SetCallingPackage(
     /* [in] */ const String& callingPackage)
 {
-    String original = mCallingPackage.get();
-    mCallingPackage.set(callingPackage);
+    String original = GetTlsCallingPackage();
+    SetTlsCallingPackage(callingPackage);
     return original;
 }
 
 ECode ContentProvider::GetCallingPackage(
     /* [out] */ String* callingPackage)
 {
-    String pkg = mCallingPackage.get();
-    if (pkg != NULL) {
-        mTransport.mAppOpsManager.checkPackage(Binder::GetCallingUid(), pkg);
+    VALIDATE_NOT_NULL(callingPackage)
+    *callingPackage = String(NULL);
+
+    String pkg = GetTlsCallingPackage();
+    if (!pkg.IsNull()) {
+        assert(0 && "TODO");
+        // CContentProviderTransport* cpt = (CContentProviderTransport*)mTransport.Get();
+        // FAIL_RETURN(cpt->mAppOpsManager->CheckPackage(Binder::GetCallingUid(), pkg));
     }
-    return pkg;
+    *callingPackage = pkg;
+    return NOERROR;
 }
 
 ECode ContentProvider::SetAuthorities(
     /* [in] */ const String& authorities)
 {
-    if (authorities != NULL) {
-        if (authorities.indexOf(';') == -1) {
+    if (!authorities.IsNull()) {
+        if (authorities.IndexOf(';') == -1) {
             mAuthority = authorities;
             mAuthorities = NULL;
-        } else {
+        }
+        else {
             mAuthority = NULL;
-            mAuthorities = authorities.split(";");
+            StringUtils::Split(authorities, ";", (ArrayOf<String>**)&mAuthorities);
         }
     }
+
+    return NOERROR;
 }
 
 Boolean ContentProvider::MatchesOurAuthorities(
     /* [in] */ const String& authority)
 {
-    if (mAuthority != NULL) {
-        return mAuthority.equals(authority);
+    if (!mAuthority.IsNull()) {
+        return mAuthority.Equals(authority);
     }
+
     if (mAuthorities != NULL) {
-        Int32 length = mAuthorities.length;
+        Int32 length = mAuthorities->GetLength();
         for (Int32 i = 0; i < length; i++) {
-            if (mAuthorities[i].equals(authority)) return true;
+            if ((*mAuthorities)[i].Equals(authority)) return TRUE;
         }
     }
     return FALSE;
@@ -438,7 +493,7 @@ ECode ContentProvider::GetPathPermissions(
 {
     VALIDATE_NOT_NULL(pathPermissions)
     *pathPermissions = mPathPermissions;
-    ARRAYOF_ADDREF(*pathPermissions);
+    REFCOUNT_ADD(*pathPermissions);
     return NOERROR;
 }
 
@@ -447,15 +502,24 @@ ECode ContentProvider::SetAppOps(
     /* [in] */ Int32 writeOp)
 {
     if (!mNoPerms) {
-        mTransport.mReadOp = readOp;
-        mTransport.mWriteOp = writeOp;
+        assert(0 && "TODO");
+        // CContentProviderTransport* cpt = (CContentProviderTransport*)mTransport.Get();
+        // cpt->mReadOp = readOp;
+        // cpt->mWriteOp = writeOp;
     }
+
+    return NOERROR;
 }
 
 ECode ContentProvider::GetAppOpsManager(
     /* [out] */ IAppOpsManager** mgr)
 {
-    return mTransport.mAppOpsManager;
+    VALIDATE_NOT_NULL(mgr)
+    assert(0 && "TODO");
+    // CContentProviderTransport* cpt = (CContentProviderTransport*)mTransport.Get();
+    // *mgr = cpt->mAppOpsManager;
+    REFCOUNT_ADD(*mgr)
+    return NOERROR;
 }
 
 ECode ContentProvider::OnConfigurationChanged(
@@ -484,16 +548,21 @@ ECode ContentProvider::RejectQuery(
     /* [in] */ ICancellationSignal* cancellationSignal,
     /* [out] */ ICursor** cursor)
 {
+    StringBuilder sb;
     // The read is not allowed...  to fake it out, we replace the given
     // selection statement with a dummy one that will always be FALSE.
     // This way we will get a cursor back that has the correct structure
     // but contains no rows.
-    if (selection == NULL || selection.isEmpty()) {
-        selection = "'A' = 'B'";
-    } else {
-        selection = "'A' = 'B' AND (" + selection + ")";
+    if (selection.IsNullOrEmpty()) {
+        sb.Append("'A' = 'B'");
     }
-    return Query(uri, projection, selection, selectionArgs, sortOrder, cancellationSignal);
+    else {
+        sb.Append("'A' = 'B' AND (");
+        sb.Append(selection);
+        sb.Append(")");
+    }
+    return Query(uri, projection, selection, selectionArgs,
+        sortOrder, cancellationSignal, cursor);
 }
 
 ECode ContentProvider::Query(
@@ -537,8 +606,10 @@ ECode ContentProvider::RejectInsert(
     // will just return the base URI with a dummy '0' tagged on to it.
     // You shouldn't be able to read if you can't write, anyway, so it
     // shouldn't matter much what is returned.
-    return uri.buildUpon().appendPath("0").build();
-    return NOERROR;
+    AutoPtr<IUriBuilder> ub;
+    uri->BuildUpon((IUriBuilder**)&ub);
+    ub->AppendPath(String("0"));
+    return ub->Build(result);
 }
 
 ECode ContentProvider::BulkInsert(
@@ -562,11 +633,8 @@ ECode ContentProvider::OpenFile(
 {
     VALIDATE_NOT_NULL(fileDescriptor)
     *fileDescriptor = NULL;
-    VALIDATE_NOT_NULL(uri);
 
-    String str;
-    uri->ToString(&str);
-    Logger::E(TAG, "No files supported by provider at %s", str.string());
+    Logger::E(TAG, "No files supported by provider at %s", Object::ToString(uri).string());
     return E_FILE_NOT_FOUND_EXCEPTION;
 }
 
@@ -589,8 +657,9 @@ ECode ContentProvider::OpenAssetFile(
 
     AutoPtr<IParcelFileDescriptor> fd;
     FAIL_RETURN(OpenFile(uri, mode, (IParcelFileDescriptor**)&fd));
+    assert(0 && "TODO");
     if (NULL != fd) {
-        return CAssetFileDescriptor::New(fd, 0, -1, fileDescriptor);
+        // return CAssetFileDescriptor::New(fd, 0, -1, fileDescriptor);
     }
     return NOERROR;
 }
@@ -612,8 +681,10 @@ ECode ContentProvider::OpenFileHelper(
     VALIDATE_NOT_NULL(fileDescriptor)
     AutoPtr< ArrayOf<String> > projection = ArrayOf<String>::Alloc(1);
     (*projection)[0] = "_data";
+
+    String nullStr;
     AutoPtr<ICursor> c;
-    FAIL_RETURN(Query(uri, projection, String(NULL), NULL, String(NULL), (ICursor**)&c));
+    FAIL_RETURN(Query(uri, projection, nullStr, NULL, nullStr, (ICursor**)&c));
     Int32 count = 0;
     if (c != NULL) {
         c->GetCount(&count);
@@ -622,18 +693,16 @@ ECode ContentProvider::OpenFileHelper(
         // If there is not exactly one result, throw an appropriate
         // exception.
         if (c != NULL) {
-            c->Close();
+            ICloseable::Probe(c)->Close();
         }
         if (count == 0) {
             //throw new FileNotFoundException("No entry for " + uri);
-            String str;
-            uri->ToString(&str);
+            String str = Object::ToString(uri);
             Logger::E(TAG, "No entry for %s", str.string());
             return E_FILE_NOT_FOUND_EXCEPTION;
         }
         //throw new FileNotFoundException("Multiple items at " + uri);
-        String str;
-        uri->ToString(&str);
+        String str = Object::ToString(uri);
         Logger::E(TAG, "Multiple items at %s", str.string());
         return E_FILE_NOT_FOUND_EXCEPTION;
     }
@@ -646,7 +715,7 @@ ECode ContentProvider::OpenFileHelper(
     if (i >= 0) {
         c->GetString(i, &path);
     }
-    c->Close();
+    ICloseable::Probe(c)->Close();
     if (path.IsNull()) {
         //throw new FileNotFoundException("Column _data not found.");
         Logger::E(TAG, "Column _data not found.");
@@ -654,14 +723,11 @@ ECode ContentProvider::OpenFileHelper(
     }
 
     Int32 modeBits = 0;
-    AutoPtr<IContentResolverHelper> resolverHelper;
-    CContentResolverHelper::AcquireSingleton((IContentResolverHelper**)&resolverHelper);
-    resolverHelper->ModeToMode(uri, mode, &modeBits);
+    ParcelFileDescriptor::ParseMode(mode, &modeBits);
+
     AutoPtr<IFile> file;
     CFile::New(path, (IFile**)&file);
-    AutoPtr<IParcelFileDescriptorHelper> parcelHelper;
-    CParcelFileDescriptorHelper::AcquireSingleton((IParcelFileDescriptorHelper**)&parcelHelper);
-    return parcelHelper->Open(file, modeBits, fileDescriptor);
+    return ParcelFileDescriptor::Open(file, modeBits, fileDescriptor);
 }
 
 ECode ContentProvider::GetStreamTypes(
@@ -683,7 +749,7 @@ ECode ContentProvider::OpenTypedAssetFile(
     VALIDATE_NOT_NULL(fileDescriptor)
     *fileDescriptor = NULL;
 
-    if (String("*/*").Equals(mimeTypeFilter)) {
+    if (mimeTypeFilter.Equals("*/*")) {
         // If they can take anything, the untyped open call is good enough.
         return OpenAssetFile(uri, String("r"), fileDescriptor);
     }
@@ -691,7 +757,8 @@ ECode ContentProvider::OpenTypedAssetFile(
     GetType(uri, &baseType);
     if (!baseType.IsNull()) {
         AutoPtr<IClipDescriptionHelper> descriptionHelper;
-        CClipDescriptionHelper::AcquireSingleton((IClipDescriptionHelper**)&descriptionHelper);
+        assert(0 && "TODO");
+        // CClipDescriptionHelper::AcquireSingleton((IClipDescriptionHelper**)&descriptionHelper);
         Boolean result = FALSE;
         descriptionHelper->CompareMimeTypes(baseType, mimeTypeFilter, &result);
         // Use old untyped open call if this provider has a type for this
@@ -699,8 +766,7 @@ ECode ContentProvider::OpenTypedAssetFile(
         if (result) return OpenAssetFile(uri, String("r"), fileDescriptor);
     }
     // throw new FileNotFoundException("Can't open " + uri + " as type " + mimeTypeFilter);
-    String str;
-    uri->ToString(&str);
+    String str = Object::ToString(uri);
     Logger::E(TAG, "Can't open %s as type %s", str.string(), mimeTypeFilter.string());
     return E_FILE_NOT_FOUND_EXCEPTION;
 }
@@ -796,10 +862,17 @@ ECode ContentProvider::AttachInfo(
      */
     if (NULL == mContext) {
         mContext = context;
+        if (context != NULL) {
+            AutoPtr<IInterface> obj;
+            context->GetSystemService(IContext::APP_OPS_SERVICE, (IInterface**)&obj);
+            assert(0 && "TODO");
+            // CContentProviderTransport* cpt = (CContentProviderTransport*)mTransport.Get();
+            // cpt->mAppOpsManager = IAppOpsManager::Probe(obj);
+        }
+
         mMyUid = Process::MyUid();
         if (NULL != info) {
-            String readPermission;
-            String writePermission;
+            String readPermission, writePermission;
             AutoPtr< ArrayOf<IPathPermission*> > permissions;
             info->GetReadPermission(&readPermission);
             SetReadPermission(readPermission);
@@ -807,7 +880,13 @@ ECode ContentProvider::AttachInfo(
             SetWritePermission(writePermission);
             info->GetPathPermissions((ArrayOf<IPathPermission*>**)&permissions);
             SetPathPermissions(permissions);
-            info->GetExported(&mExported);
+            IComponentInfo::Probe(info)->GetExported(&mExported);
+            Int32 flags;
+            info->GetFlags(&flags);
+            mSingleUser = (flags & IProviderInfo::FLAG_SINGLE_USER) != 0;
+            String authorities;
+            info->GetAuthority(&authorities);
+            SetAuthorities(authorities);
         }
         Boolean result = FALSE;
         return OnCreate(&result);
@@ -819,23 +898,26 @@ ECode ContentProvider::ApplyBatch(
     /* [in] */ IArrayList* operations,
     /* [out, callee] */ ArrayOf<IContentProviderResult*>** providerResults)
 {
-    VALIDATE_NOT_NULL(operations)
     VALIDATE_NOT_NULL(providerResults)
+    *providerResults = NULL;
+    VALIDATE_NOT_NULL(operations)
+
     Int32 i = 0;
     Int32 count = 0;
-    operations->GetObjectCount(&count);
+    operations->GetSize(&count);
     AutoPtr< ArrayOf<IContentProviderResult*> > results = ArrayOf<IContentProviderResult*>::Alloc(count);
-    AutoPtr<IObjectEnumerator> ObjEnumerator;
-    FAIL_RETURN(operations->GetObjectEnumerator((IObjectEnumerator**)&ObjEnumerator))
+    AutoPtr<IIterator> it;
+    FAIL_RETURN(operations->GetIterator((IIterator**)&it))
     Boolean hasNext = FALSE;
-    while ((ObjEnumerator->MoveNext(&hasNext), hasNext)) {
-        AutoPtr<IContentProviderOperation> operation;
-        ObjEnumerator->Current((IInterface**)&operation);
+    while ((it->HasNext(&hasNext), hasNext)) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        IContentProviderOperation* operation = IContentProviderOperation::Probe(obj);
         AutoPtr<IContentProviderResult> result;
         FAIL_RETURN(operation->Apply(this, results, i, (IContentProviderResult**)&result))
-        results->Set(i, result);
-        i++;
+        results->Set(i++, result);
     }
+
     *providerResults = results;
     REFCOUNT_ADD(*providerResults);
     return NOERROR;
@@ -863,35 +945,54 @@ ECode ContentProvider::Dump(
     /* [in] */ IPrintWriter* writer,
     /* [in] */ ArrayOf<String>* args)
 {
-    return writer->PrintStringln(String("nothing to dump"));
+    return writer->Println(String("nothing to dump"));
 }
 
 ECode ContentProvider::ValidateIncomingUri(
     /* [in] */ IUri* uri)
 {
-    String auth = uri.getAuthority();
-    Int32 userId = getUserIdFromAuthority(auth, UserHandle.USER_CURRENT);
-    if (userId != UserHandle.USER_CURRENT && userId != mContext.getUserId()) {
-        throw new SecurityException("trying to query a ContentProvider in user "
-                + mContext.getUserId() + " with a uri belonging to user " + userId);
+    String auth;
+    uri->GetAuthority(&auth);
+    Int32 userId = GetUserIdFromAuthority(auth, IUserHandle::USER_CURRENT);
+    Int32 cuid;
+    mContext->GetUserId(&cuid);
+    if (userId != IUserHandle::USER_CURRENT && userId != cuid) {
+        StringBuilder sb("trying to query a ContentProvider in user ");
+        sb.Append(cuid);
+        sb.Append(" with a uri belonging to user ");
+        sb.Append(userId);
+        Logger::E(TAG, sb.ToString().string());
+        return E_SECURITY_EXCEPTION;
     }
-    if (!matchesOurAuthorities(getAuthorityWithoutUserId(auth))) {
-        String message = "The authority of the uri " + uri + " does not match the one of the "
-                + "contentProvider: ";
-        if (mAuthority != NULL) {
-            message += mAuthority;
-        } else {
-            message += mAuthorities;
+
+    if (!MatchesOurAuthorities(GetAuthorityWithoutUserId(auth))) {
+        StringBuilder sb("The authority of the uri ");
+        sb.Append(Object::ToString(uri));
+        sb.Append(" does not match the one of the contentProvider: ");
+        if (!mAuthority.IsNull()) {
+            sb.Append(mAuthority);
         }
-        throw new SecurityException(message);
+        else if (mAuthorities != NULL) {
+            for (Int32 i = 0; i < mAuthorities->GetLength(); ++i) {
+                if (i != 0) {
+                    sb.Append(", ");
+                }
+                sb.Append((*mAuthorities)[i++]);
+            }
+        }
+
+        Logger::E(TAG, sb.ToString().string());
+        return E_SECURITY_EXCEPTION;
     }
+
+    return NOERROR;
 }
 
 Int32 ContentProvider::GetUserIdFromAuthority(
     /* [in] */ const String& auth,
     /* [in] */ Int32 defaultUserId)
 {
-    return getUserIdFromAuthority(auth, UserHandle.USER_CURRENT);
+    return GetUserIdFromAuthority(auth, IUserHandle::USER_CURRENT);
 }
 
 Int32 ContentProvider::GetUserIdFromUri(
@@ -899,38 +1000,49 @@ Int32 ContentProvider::GetUserIdFromUri(
     /* [in] */ Int32 defaultUserId)
 {
     if (uri == NULL) return defaultUserId;
-    return getUserIdFromAuthority(uri.getAuthority(), defaultUserId);
+    String authority;
+    uri->GetAuthority(&authority);
+    return GetUserIdFromAuthority(authority, defaultUserId);
 }
 
 Int32 ContentProvider::GetUserIdFromUri(
     /* [in] */ IUri* uri)
 {
-    return getUserIdFromUri(uri, UserHandle.USER_CURRENT);
+    return GetUserIdFromUri(uri, IUserHandle::USER_CURRENT);
 }
 
 String ContentProvider::GetAuthorityWithoutUserId(
     /* [in] */ const String& auth)
 {
-    if (auth == NULL) return NULL;
-    Int32 end = auth.lastIndexOf('@');
-    return auth.substring(end+1);
+    if (auth == NULL) return String(NULL);
+    Int32 end = auth.LastIndexOf('@');
+    return auth.Substring(end + 1);
 }
 
 ECode ContentProvider::GetUriWithoutUserId(
     /* [in] */ IUri* uri,
     /* [out] */ IUri** result)
 {
-    if (uri == NULL) return NULL;
-    Uri.Builder builder = uri.buildUpon();
-    builder.authority(getAuthorityWithoutUserId(uri.getAuthority()));
-    return builder.build();
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+    if (uri == NULL) return NOERROR;
+    String authority;
+    uri->GetAuthority(&authority);
+    AutoPtr<IUriBuilder> builder;
+    uri->BuildUpon((IUriBuilder**)&builder);
+    builder->Authority(GetAuthorityWithoutUserId(authority));
+    return builder->Build(result);
 }
 
 Boolean ContentProvider::UriHasUserId(
     /* [in] */ IUri* uri)
 {
     if (uri == NULL) return FALSE;
-    return !TextUtils.isEmpty(uri.getUserInfo());
+    String userInfo;
+    uri->GetUserInfo(&userInfo);
+    assert(0 && "TODO");
+    // return !TextUtils::IsEmpty(userInfo);
+    return TRUE;
 }
 
 AutoPtr<IUri> ContentProvider::MaybeAddUserId(
@@ -938,17 +1050,28 @@ AutoPtr<IUri> ContentProvider::MaybeAddUserId(
     /* [in] */ Int32 userId)
 {
     if (uri == NULL) return NULL;
-    if (userId != UserHandle.USER_CURRENT
-            && ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
-        if (!uriHasUserId(uri)) {
+    String scheme;
+    uri->GetScheme(&scheme);
+    if (userId != IUserHandle::USER_CURRENT
+            && IContentResolver::SCHEME_CONTENT.Equals(scheme)) {
+        if (!UriHasUserId(uri)) {
+            String authority;
+            uri->GetEncodedAuthority(&authority);
             //We don't add the user Id if there's already one
-            Uri.Builder builder = uri.buildUpon();
-            builder.encodedAuthority("" + userId + "@" + uri.getEncodedAuthority());
-            return builder.build();
+            AutoPtr<IUriBuilder> builder;
+            uri->BuildUpon((IUriBuilder**)&builder);
+            StringBuilder sb("");
+            sb.Append(userId);
+            sb.Append("@");
+            sb.Append(authority);
+            builder->EncodedAuthority(sb.ToString());
+            AutoPtr<IUri> result;
+            builder->Build((IUri**)&result);
+            return result;
         }
     }
+
     return uri;
-    return NOERROR;
 }
 
 } // namespace Content

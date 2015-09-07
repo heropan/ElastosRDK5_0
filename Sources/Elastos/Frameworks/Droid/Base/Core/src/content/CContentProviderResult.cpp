@@ -8,9 +8,14 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
+
 namespace Elastos {
 namespace Droid {
 namespace Content {
+
+CAR_INTERFACE_IMPL_2(CContentProviderResult, Object, IContentProviderResult, IParcelable)
+
+CAR_OBJECT_IMPL(CContentProviderResult)
 
 CContentProviderResult::CContentProviderResult()
     : mUri(NULL)
@@ -37,6 +42,18 @@ ECode CContentProviderResult::GetCount(
     return NOERROR;
 }
 
+ECode CContentProviderResult::SetUri(
+    /* [in] */ IUri* uri)
+{
+    return NOERROR;
+}
+
+ECode CContentProviderResult::SetCount(
+    /* [in] */ Int32 count)
+{
+    return NOERROR;
+}
+
 ECode CContentProviderResult::ToString(
     /* [out] */ String* result)
 {
@@ -44,9 +61,8 @@ ECode CContentProviderResult::ToString(
 
     if (NULL != mUri) {
         String str1("CContentProviderResult(uri=");
-        String str2;
+        String str2 = Object::ToString(mUri);
         String str3(")");
-        FAIL_RETURN(mUri->ToString(&str2));
         str1.Append(str2);
         str1.Append(str3);
         *result = str1;
@@ -55,7 +71,7 @@ ECode CContentProviderResult::ToString(
         String str1("ContentProviderResult(count=");
         String str2;
         String str3(")");
-        str2 = StringUtils::Int32ToString(mCount);
+        str2 = StringUtils::ToString(mCount);
         str1.Append(str2);
         str1.Append(str3);
         *result = str1;

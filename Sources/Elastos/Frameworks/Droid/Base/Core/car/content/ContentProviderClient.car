@@ -17,27 +17,17 @@ module
     namespace Content {
 
     /**
-     * The public interface object used to interact with a ContentProvider. This is
-     * obtained by calling acquireContentProviderClient(Uri). This object must be
-     * released using release() in order to indicate to the system that the
-     * ContentProvider is no longer needed and can be killed to free up resources.
+     * The public interface object used to interact with a {@link ContentProvider}. This is obtained by
+     * calling {@link ContentResolver#acquireContentProviderClient}. This object must be released
+     * using {@link #release} in order to indicate to the system that the {@link ContentProvider} is
+     * no longer needed and can be killed to free up resources.
      *
-     * @sa ContentProvider
-     * @sa acquireContentProviderClient(Uri)
-     * @sa release()
-     * @sa ContentProvider
-     * <p>
-     * Note that you should generally create a new ContentProviderClient instance for
-     * each thread that will be performing operations. Unlike ContentResolver, the
-     * methods here such as query(Uri, String[], String, String[], String) and
-     * openFile(Uri, String) are not thread safe -- you must not call release() on
-     * the ContentProviderClient those calls are made from until you are finished
-     * with the data they have returned.
-     *
-     * @sa ContentResolver
-     * @sa query(Uri, String[], String, String[], String)
-     * @sa openFile(Uri, String)
-     * @sa release()
+     * <p>Note that you should generally create a new ContentProviderClient instance
+     * for each thread that will be performing operations.  Unlike
+     * {@link ContentResolver}, the methods here such as {@link #query} and
+     * {@link #openFile} are not thread safe -- you must not call
+     * {@link #release()} on the ContentProviderClient those calls are made from
+     * until you are finished with the data they have returned.
      */
     [deprecated]
     interface IContentProviderClient {

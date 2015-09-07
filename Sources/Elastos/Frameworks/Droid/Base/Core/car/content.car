@@ -383,10 +383,86 @@ module
             interface IComponentNameHelper;
         }
 
+        singleton class CContentProviderHelper {
+            interface IContentProviderHelper;
+        }
 
-    }//namespace Elastos
-    }//namespace Droid
+        class CContentProviderTransport {
+            constructor(
+                [in] IContentProvider* owner);
+
+            interface IContentProviderTransport;
+            interface IIContentProvider;
+            interface IBinder;
+        }
+
+        /**
+         * The public interface object used to interact with a {@link ContentProvider}. This is obtained by
+         * calling {@link ContentResolver#acquireContentProviderClient}. This object must be released
+         * using {@link #release} in order to indicate to the system that the {@link ContentProvider} is
+         * no longer needed and can be killed to free up resources.
+         *
+         * <p>Note that you should generally create a new ContentProviderClient instance
+         * for each thread that will be performing operations.  Unlike
+         * {@link ContentResolver}, the methods here such as {@link #query} and
+         * {@link #openFile} are not thread safe -- you must not call
+         * {@link #release()} on the ContentProviderClient those calls are made from
+         * until you are finished with the data they have returned.
+         */
+        class CContentProviderClient {
+            /**
+             * @hide
+             */
+            constructor(
+                [in] IContentResolver* resolver,
+                [in] IIContentProvider* provider,
+                [in] Boolean stable);
+
+            interface IContentProviderClient;
+        }
+
+        class CContentProviderOperation {
+            /**
+            * Creates a {@link ContentProviderOperation} by copying the contents of a
+            * {@link Builder}.
+            */
+            constructor(
+                [in] IContentProviderOperationBuilder* operationBuilder);
+
+            constructor();
+
+            interface IContentProviderOperation;
+            interface IParcelable;
+        }
+
+        class CContentProviderOperationBuilder {
+            interface IContentProviderOperationBuilder;
+        }
+
+        singleton class CContentProviderOperationHelper {
+            interface IContentProviderOperationHelper;
+        }
+
+        /**
+         * Contains the result of the application of a {@link ContentProviderOperation}. It is guaranteed
+         * to have exactly one of {@link #uri} or {@link #count} set.
+         */
+        class CContentProviderResult {
+            constructor(
+                [in] IUri* uri);
+
+            constructor(
+                [in] Int32 count);
+
+            constructor();
+
+            interface IContentProviderResult;
+            interface IParcelable;
+        }
+
     }//namespace Content
+    }//namespace Droid
+    }//namespace Elastos
 
 //     namespace Pm {
 
@@ -1236,95 +1312,12 @@ module
 //     namespace Droid {
 //     namespace Content {
 
-
-//     singleton class CContentProviderHelper {
-
-//         interface IContentProviderHelper;
-//     }
-
-//     class CContentProviderTransport {
-//         constructor(
-//             [in] Handle32 owner);
-
-//         interface IContentProviderTransport;
-//         interface IBinder;
-//     }
-
-//     /**
-//      * The public interface object used to interact with a {@link ContentProvider}. This is obtained by
-//      * calling {@link ContentResolver#acquireContentProviderClient}. This object must be released
-//      * using {@link #release} in order to indicate to the system that the {@link ContentProvider} is
-//      * no longer needed and can be killed to free up resources.
-//      *
-//      * <p>Note that you should generally create a new ContentProviderClient instance
-//      * for each thread that will be performing operations.  Unlike
-//      * {@link ContentResolver}, the methods here such as {@link #query} and
-//      * {@link #openFile} are not thread safe -- you must not call
-//      * {@link #release()} on the ContentProviderClient those calls are made from
-//      * until you are finished with the data they have returned.
-//      */
-//     class CContentProviderClient {
-//         /**
-//          * @hide
-//          */
-//         constructor(
-//             [in] IContentResolver* resolver,
-//             [in] IIContentProvider* provider,
-//             [in] Boolean stable);
-
-//         interface IContentProviderClient;
-//     }
-
-//     class CContentProviderOperation {
-//         /**
-//         * Creates a {@link ContentProviderOperation} by copying the contents of a
-//         * {@link Builder}.
-//         */
-//         constructor(
-//             [in] IContentProviderOperationBuilder* operationBuilder);
-
-//         constructor();
-
-//         interface IContentProviderOperation;
-//         interface IParcelable;
-//     }
-
-//     class CContentProviderOperationBuilder {
-//         constructor(
-//             [in] Int32 type,
-//             [in] IUri* uri);
-
-//         interface IContentProviderOperationBuilder;
-//     }
-
-//     singleton class CContentProviderOperationHelper {
-
-//         interface IContentProviderOperationHelper;
-//     }
-
 //     class CIntegerMapWrapper {
 //         constructor(
 //             [in] Int32 key,
 //             [in] Int32 value);
 
 //         interface IIntegerMapWrapper;
-//     }
-
-//     /**
-//      * Contains the result of the application of a {@link ContentProviderOperation}. It is guaranteed
-//      * to have exactly one of {@link #uri} or {@link #count} set.
-//      */
-//     class CContentProviderResult {
-//         constructor(
-//             [in] IUri* uri);
-
-//         constructor(
-//             [in] Int32 count);
-
-//         constructor();
-
-//         interface IContentProviderResult;
-//         interface IParcelable;
 //     }
 
 //     singleton class CContentResolverHelper {

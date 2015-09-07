@@ -30,7 +30,7 @@ ECode CSettingsSecure::GetSettingsToBackup(
 {
     VALIDATE_NOT_NULL(array)
     *array = Settings::Secure::SETTINGS_TO_BACKUP;
-    ARRAYOF_ADDREF(*array)
+    REFCOUNT_ADDREF(*array)
     return NOERROR;
 }
 

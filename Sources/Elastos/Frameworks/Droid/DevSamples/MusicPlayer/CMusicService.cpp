@@ -736,7 +736,7 @@ ECode CMusicService::GetAudioList(
     // }
 
     // *result = array;
-    // ARRAYOF_ADDREF(*result);
+    // REFCOUNT_ADDREF(*result);
     // return NOERROR;
 
     AutoPtr<IContentResolver> cr;
@@ -778,7 +778,7 @@ ECode CMusicService::GetAudioList(
     }
 
     *result = array;
-    ARRAYOF_ADDREF(*result);
+    REFCOUNT_ADDREF(*result);
     return NOERROR;
 }
 

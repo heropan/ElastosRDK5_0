@@ -4,9 +4,9 @@
 
 #include "_Elastos_Droid_Content_CContentProviderOperation.h"
 #include "ext/frameworkext.h"
-#include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Object.h>
 
-using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::IHashMap;
 using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
@@ -14,11 +14,64 @@ namespace Droid {
 namespace Content {
 
 CarClass(CContentProviderOperation)
+    , public Object
+    , public IContentProviderOperation
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CContentProviderOperation();
 
-    ~CContentProviderOperation();
+    virtual ~CContentProviderOperation();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ IContentProviderOperationBuilder* operationBuilder);
+
+    /** @hide */
+    CARAPI constructor(
+        /* [in] */ IContentProviderOperation* cpo,
+        /* [in] */ Boolean removeUserIdFromUri);
+
+    /** @hide */
+    CARAPI GetWithoutUserIdInUri(
+        /* [out] */ IContentProviderOperation** op);
+
+    /**
+     * Create a {@link Builder} suitable for building an insert {@link ContentProviderOperation}.
+     * @param uri The {@link Uri} that is the target of the insert.
+     * @return a {@link Builder}
+     */
+    static AutoPtr<IContentProviderOperationBuilder> NewInsert(
+        /* [in] */ IUri* uri);
+
+    /**
+     * Create a {@link Builder} suitable for building an update {@link ContentProviderOperation}.
+     * @param uri The {@link Uri} that is the target of the update.
+     * @return a {@link Builder}
+     */
+    static AutoPtr<IContentProviderOperationBuilder> NewUpdate(
+        /* [in] */ IUri* uri);
+
+    /**
+     * Create a {@link Builder} suitable for building a delete {@link ContentProviderOperation}.
+     * @param uri The {@link Uri} that is the target of the delete.
+     * @return a {@link Builder}
+     */
+    static AutoPtr<IContentProviderOperationBuilder> NewDelete(
+        /* [in] */ IUri* uri);
+
+    /**
+     * Create a {@link Builder} suitable for building a
+     * {@link ContentProviderOperation} to assert a set of values as provided
+     * through {@link Builder#withValues(ContentValues)}.
+     */
+    static AutoPtr<IContentProviderOperationBuilder> NewAssertQuery(
+        /* [in] */ IUri* uri);
 
     CARAPI GetUri(
         /* [out] */ IUri** uri);
@@ -101,11 +154,6 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ IContentProviderOperationBuilder* operationBuilder);
-
 private:
     /**
      * Return the string representation of the requested back reference.
@@ -125,7 +173,6 @@ private:
 private:
     static const String TAG;
 
-private:
     Int32 mType;
     AutoPtr<IUri> mUri;
     String mSelection;
@@ -133,7 +180,7 @@ private:
     AutoPtr<IContentValues> mValues;
     Int32 mExpectedCount;
     AutoPtr<IContentValues> mValuesBackReferences;
-    AutoPtr<HashMap<Int32, Int32> > mSelectionArgsBackReferences;
+    AutoPtr<IHashMap> mSelectionArgsBackReferences;
     Boolean mYieldAllowed;
 
 };

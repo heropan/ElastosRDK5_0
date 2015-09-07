@@ -205,7 +205,7 @@ ECode BluetoothPan::GetConnectedDevices(
     }
     if (mPanService == NULL) Logger::W(TAG, "Proxy not attached to service");
     *devices = ArrayOf<IBluetoothDevice*>::Alloc(0);
-    ARRAYOF_ADDREF(*devices)
+    REFCOUNT_ADDREF(*devices)
     return NOERROR;
 }
 
@@ -227,7 +227,7 @@ ECode BluetoothPan::GetDevicesMatchingConnectionStates(
     }
     if (mPanService == NULL) Logger::W(TAG, "Proxy not attached to service");
     *devices = ArrayOf<IBluetoothDevice*>::Alloc(0);
-    ARRAYOF_ADDREF(*devices)
+    REFCOUNT_ADDREF(*devices)
     return NOERROR;
 }
 

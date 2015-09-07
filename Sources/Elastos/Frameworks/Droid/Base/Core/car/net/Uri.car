@@ -520,8 +520,7 @@ module
          * @param scheme name or {@code null} if this is a relative Uri
          */
         Scheme(
-            [in] String scheme,
-            [out] IUriBuilder** result);
+            [in] String scheme);
 
         /**
          * Encodes and sets the given opaque scheme-specific-part.
@@ -529,8 +528,7 @@ module
          * @param opaquePart decoded opaque part
          */
         OpaquePart(
-            [in] String opaquePart,
-            [out] IUriBuilder** result);
+            [in] String opaquePart);
 
         /**
          * Sets the previously encoded opaque scheme-specific-part.
@@ -538,22 +536,19 @@ module
          * @param opaquePart encoded opaque part
          */
         EncodedOpaquePart(
-            [in] String opaquePart,
-            [out] IUriBuilder** result);
+            [in] String opaquePart);
 
         /**
          * Encodes and sets the authority.
          */
         Authority(
-            [in] String authority,
-            [out] IUriBuilder** result);
+            [in] String authority);
 
         /**
          * Sets the previously encoded authority.
          */
         EncodedAuthority(
-            [in] String authority,
-            [out] IUriBuilder** result);
+            [in] String authority);
 
         /**
          * Sets the path. Leaves '/' characters intact but encodes others as
@@ -564,8 +559,7 @@ module
          * given path with a '/'.
          */
         Path(
-            [in] String path,
-            [out] IUriBuilder** result);
+            [in] String path);
 
         /**
          * Sets the previously encoded path.
@@ -575,50 +569,43 @@ module
          * given path with a '/'.
          */
         EncodedPath(
-            [in] String path,
-            [out] IUriBuilder** result);
+            [in] String path);
 
         /**
          * Encodes the given segment and appends it to the path.
          */
         AppendPath(
-            [in] String newSegment,
-            [out] IUriBuilder** result);
+            [in] String newSegment);
 
         /**
          * Appends the given segment to the path.
          */
         AppendEncodedPath(
-            [in] String newSegment,
-            [out] IUriBuilder** result);
+            [in] String newSegment);
 
         /**
          * Encodes and sets the query.
          */
         Query(
-            [in] String query,
-            [out] IUriBuilder** result);
+            [in] String query);
 
         /**
          * Sets the previously encoded query.
          */
         EncodedQuery(
-            [in] String query,
-            [out] IUriBuilder** result);
+            [in] String query);
 
         /**
          * Encodes and sets the fragment.
          */
         Fragment(
-            [in] String fragment,
-            [out] IUriBuilder** result);
+            [in] String fragment);
 
         /**
          * Sets the previously encoded fragment.
          */
         EncodedFragment(
-            [in] String fragment,
-            [out] IUriBuilder** result);
+            [in] String fragment);
 
         /**
          * Encodes the key and value and then appends the parameter to the
@@ -629,14 +616,12 @@ module
          */
         AppendQueryParameter(
             [in] String key,
-            [in] String value,
-            [out] IUriBuilder** result);
+            [in] String value);
 
         /**
          * Clears the the previously set query.
          */
-        ClearQuery(
-            [out] IUriBuilder** result);
+        ClearQuery();
 
         /**
          * Constructs a Uri with the current attributes.

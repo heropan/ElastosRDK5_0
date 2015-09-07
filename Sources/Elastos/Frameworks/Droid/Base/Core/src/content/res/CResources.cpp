@@ -589,7 +589,7 @@ ECode CResources::GetIntArray(
     FAIL_RETURN(mAssets->GetArrayIntResource(id, (ArrayOf<Int32>**)&temp));
     if (temp) {
         *ints = temp;
-        ARRAYOF_ADDREF(*ints);
+        REFCOUNT_ADDREF(*ints);
         return NOERROR;
     }
 

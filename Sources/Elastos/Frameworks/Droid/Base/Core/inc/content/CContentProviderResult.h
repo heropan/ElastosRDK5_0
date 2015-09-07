@@ -3,26 +3,39 @@
 #define __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERRESULT_H__
 
 #include "_Elastos_Droid_Content_CContentProviderResult.h"
-#include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
-using namespace Elastos::Droid::Net;
+using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CContentProviderResult)
+    , public Object
+    , public IContentProviderResult
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CContentProviderResult();
 
-    ~CContentProviderResult();
+    virtual ~CContentProviderResult();
 
     CARAPI GetUri(
         /* [out] */ IUri** uri);
 
     CARAPI GetCount(
         /* [out] */ Int32* count);
+
+    CARAPI SetUri(
+        /* [in] */ IUri* uri);
+
+    CARAPI SetCount(
+        /* [in] */ Int32 count);
 
     CARAPI ToString(
         /* [out] */ String* result);

@@ -445,7 +445,7 @@ ECode CNetworkStats::GetUniqueIfaces(
         (*resArray)[i] = *iter;
     }
     *result = resArray;
-    ARRAYOF_ADDREF(*result);
+    REFCOUNT_ADDREF(*result);
     return NOERROR;
 }
 
@@ -467,7 +467,7 @@ ECode CNetworkStats::GetUniqueUids(
         outputArray->Set(i, uids[i]);
     }
     *result = outputArray;
-    ARRAYOF_ADDREF(*result);
+    REFCOUNT_ADDREF(*result);
     return NOERROR;
 }
 
@@ -940,7 +940,7 @@ ECode CNetworkStats::GetIFace(
 {
     VALIDATE_NOT_NULL(face);
     *face = mIface;
-    ARRAYOF_ADDREF(*face);
+    REFCOUNT_ADDREF(*face);
     return NOERROR;
 }
 
@@ -949,7 +949,7 @@ ECode CNetworkStats::GetUid(
 {
     VALIDATE_NOT_NULL(uid);
     *uid = mUid;
-    ARRAYOF_ADDREF(*uid);
+    REFCOUNT_ADDREF(*uid);
     return NOERROR;
 }
 
@@ -958,7 +958,7 @@ ECode CNetworkStats::GetSet(
 {
     VALIDATE_NOT_NULL(set);
     *set = mSet;
-    ARRAYOF_ADDREF(*set);
+    REFCOUNT_ADDREF(*set);
     return NOERROR;
 }
 
@@ -967,7 +967,7 @@ ECode CNetworkStats::GetTag(
 {
     VALIDATE_NOT_NULL(tag);
     *tag = mTag;
-    ARRAYOF_ADDREF(*tag);
+    REFCOUNT_ADDREF(*tag);
     return NOERROR;
 }
 
@@ -976,7 +976,7 @@ ECode CNetworkStats::GetRxBytes(
 {
     VALIDATE_NOT_NULL(rxBytes);
     *rxBytes = mRxBytes;
-    ARRAYOF_ADDREF(*rxBytes);
+    REFCOUNT_ADDREF(*rxBytes);
     return NOERROR;
 }
 
@@ -985,7 +985,7 @@ ECode CNetworkStats::GetRxPackets(
 {
     VALIDATE_NOT_NULL(rxPackets);
     *rxPackets = mRxPackets;
-    ARRAYOF_ADDREF(*rxPackets);
+    REFCOUNT_ADDREF(*rxPackets);
     return NOERROR;
 }
 
@@ -994,7 +994,7 @@ ECode CNetworkStats::GetTxBytes(
 {
     VALIDATE_NOT_NULL(txBytes);
     *txBytes = mTxBytes;
-    ARRAYOF_ADDREF(*txBytes);
+    REFCOUNT_ADDREF(*txBytes);
     return NOERROR;
 }
 
@@ -1003,7 +1003,7 @@ ECode CNetworkStats::GetTxPackets(
 {
     VALIDATE_NOT_NULL(txPackets);
     *txPackets = mTxPackets;
-    ARRAYOF_ADDREF(*txPackets);
+    REFCOUNT_ADDREF(*txPackets);
     return NOERROR;
 }
 
@@ -1012,7 +1012,7 @@ ECode CNetworkStats::GetOperations(
 {
     VALIDATE_NOT_NULL(operations);
     *operations = mOperations;
-    ARRAYOF_ADDREF(*operations);
+    REFCOUNT_ADDREF(*operations);
     return NOERROR;
 }
 

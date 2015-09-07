@@ -23,6 +23,7 @@ module
     [deprecated]
     interface IIContentProvider {
         Query(
+            [in] String callingPkg,
             [in] IUri* uri,
             [in] ArrayOf<String>* projection,
             [in] String selection,
@@ -36,22 +37,26 @@ module
             [out] String* type);
 
         Insert(
+            [in] String callingPkg,
             [in] IUri* uri,
             [in] IContentValues* initialValues,
             [out] IUri** insertedUri);
 
         BulkInsert(
+            [in] String callingPkg,
             [in] IUri* uri,
             [in] ArrayOf<IContentValues*>* initialValues,
             [out] Int32* number);
 
         Delete(
+            [in] String callingPkg,
             [in] IUri* uri,
             [in] String selection,
             [in] ArrayOf<String>* selectionArgs,
             [out] Int32* rowsAffected);
 
         Update(
+            [in] String callingPkg,
             [in] IUri* uri,
             [in] IContentValues* values,
             [in] String selection,
@@ -59,20 +64,26 @@ module
             [out] Int32* rowsAffected);
 
         OpenFile(
+            [in] String callingPkg,
             [in] IUri* uri,
             [in] String mode,
+            [in] IICancellationSignal* cancellationSignal,
             [out] IParcelFileDescriptor** fileDescriptor);
 
         OpenAssetFile(
+            [in] String callingPkg,
             [in] IUri* uri,
             [in] String mode,
+            [in] IICancellationSignal* cancellationSignal,
             [out] IAssetFileDescriptor** fileDescriptor);
 
         ApplyBatch(
+            [in] String callingPkg,
             [in] IArrayList* operations,
             [out, callee] ArrayOf<IContentProviderResult*>* providerResults);
 
         Call(
+            [in] String callingPkg,
             [in] String method,
             [in] String arg,
             [in] IBundle* extras,
@@ -98,9 +109,11 @@ module
             [out, callee] ArrayOf<String>* streamTypes);
 
         OpenTypedAssetFile(
+            [in] String callingPkg,
             [in] IUri* uri,
             [in] String mimeType,
             [in] IBundle* opts,
+            [in] IICancellationSignal* cancellationSignal,
             [out] IAssetFileDescriptor** fileDescriptor);
     }
 

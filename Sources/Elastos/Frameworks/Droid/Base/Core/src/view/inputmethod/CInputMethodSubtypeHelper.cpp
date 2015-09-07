@@ -19,7 +19,7 @@ ECode CInputMethodSubtypeHelper::Sort(
 {
     if (imi == NULL) {
         *sortedSubtypeList = subtypeList;
-        ARRAYOF_ADDREF(*sortedSubtypeList);
+        REFCOUNT_ADDREF(*sortedSubtypeList);
         return NOERROR;
     }
 

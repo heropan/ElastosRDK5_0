@@ -6,9 +6,6 @@
 #include "os/AsyncTask.h"
 #include <elastos/core/Object.h>
 
-using Elastos::IO::IFileDescriptor;
-using Elastos::IO::IPrintWriter;
-
 using Elastos::Droid::Content::Pm::IProviderInfo;
 using Elastos::Droid::Content::Pm::IPathPermission;
 using Elastos::Droid::Content::Res::IConfiguration;
@@ -20,6 +17,10 @@ using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Os::AsyncTask;
 using Elastos::Droid::App::IAppOpsManager;
+
+using Elastos::IO::IFileDescriptor;
+using Elastos::IO::IPrintWriter;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -85,8 +86,9 @@ private:
             /* [in] */ IBundle* opts,
             /* [in] */ IInterface* args);
 
-        CARAPI_(AutoPtr<IInterface>) DoInBackground(
-            /* [in] */ ArrayOf<IInterface*>* params);
+        CARAPI DoInBackground(
+            /* [in] */ ArrayOf<IInterface*>* params,
+            /* [out] */ IInterface** obj);
 
     private:
         AutoPtr<IContentProviderPipeDataWriter> mFunc;
@@ -1197,10 +1199,15 @@ protected:
     static CARAPI_(Int32) GetUserIdFromUri(
         /* [in] */ IUri* uri);
 
-    CARAPI_(String) GetCallingPackage();
+    CARAPI_(String) GetTlsCallingPackage();
 
-    CARAPI_(void) SetCallingPackage(
+    CARAPI_(void) SetTlsCallingPackage(
         /* [in] */ const String& pakcage);
+
+public:
+    // ThreadLocal<String> mCallingPackage = new ThreadLocal<String>();
+    static pthread_once_t sKeyOnce;
+    static pthread_key_t sTlsKey;
 
 private:
     friend class CContentProviderTransport;
@@ -1225,10 +1232,6 @@ private:
     Boolean mExported;
     Boolean mNoPerms;
     Boolean mSingleUser;
-
-    // ThreadLocal<String> mCallingPackage = new ThreadLocal<String>();
-    static pthread_once_t sKeyOnce;
-    static pthread_key_t sTlsKey;
 
     AutoPtr<IContentProviderTransport> mTransport;
 };

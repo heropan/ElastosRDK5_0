@@ -23,16 +23,16 @@ SOURCES += CClipboardManager.cpp
 SOURCES += CComponentName.cpp
 SOURCES += CComponentNameHelper.cpp
 #SOURCES += ContentInsertHandler.cpp
-#SOURCES += ContentProvider.cpp
-#SOURCES += CContentProviderTransport.cpp
-#SOURCES += CContentProviderHelper.cpp
+SOURCES += ContentProvider.cpp
+SOURCES += CContentProviderHelper.cpp
+SOURCES += CContentProviderTransport.cpp
 #SOURCES += ContentProviderNative.cpp
-#SOURCES += CContentProviderClient.cpp
-#SOURCES += CContentProviderOperation.cpp
+SOURCES += CContentProviderClient.cpp
+SOURCES += CContentProviderOperation.cpp
+SOURCES += CContentProviderOperationBuilder.cpp
+SOURCES += CContentProviderOperationHelper.cpp
+SOURCES += CContentProviderResult.cpp
 #SOURCES += CIntegerMapWrapper.cpp
-#SOURCES += CContentProviderOperationBuilder.cpp
-#SOURCES += CContentProviderOperationHelper.cpp
-#SOURCES += CContentProviderResult.cpp
 
 
 

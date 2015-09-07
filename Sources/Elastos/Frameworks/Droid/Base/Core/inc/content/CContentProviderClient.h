@@ -4,24 +4,48 @@
 
 #include "_Elastos_Droid_Content_CContentProviderClient.h"
 #include "ext/frameworkext.h"
+#include "os/Runnable.h"
 
 using Elastos::Droid::Content::Res::IAssetFileDescriptor;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::ICancellationSignal;
 using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::Droid::Os::Runnable;
+
+using Elastos::Core::ICloseGuard;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CContentProviderClient)
+    , public Object
+    , public IContentProviderClient
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CContentProviderClient();
 
-    ~CContentProviderClient();
+    virtual ~CContentProviderClient();
+
+    /**
+     * @hide
+     */
+    CARAPI constructor(
+        /* [in] */ IContentResolver* resolver,
+        /* [in] */ IIContentProvider* provider,
+        /* [in] */ Boolean stable);
+
+    /** {@hide} */
+    CARAPI SetDetectNotResponding(
+        /* [in] */ Int64 timeoutMillis);
 
     /** See {@link ContentProvider#query ContentProvider.query} */
     CARAPI Query(
@@ -52,6 +76,16 @@ public:
         /* [in] */ IUri* uri,
         /* [in] */ const String& mimeTypeFilter,
         /* [out, callee] */ ArrayOf<String>** streamTypes);
+
+    /** See {@link ContentProvider#canonicalize} */
+    CARAPI Canonicalize(
+        /* [in] */ IUri* uri,
+        /* [out] */ IUri** result);
+
+    /** See {@link ContentProvider#uncanonicalize} */
+    CARAPI Uncanonicalize(
+        /* [in] */ IUri* uri,
+        /* [out] */ IUri** result);
 
     /** See {@link ContentProvider#insert ContentProvider.insert} */
     CARAPI Insert(
@@ -93,6 +127,19 @@ public:
         /* [out] */ IParcelFileDescriptor** fileDescriptor);
 
     /**
+     * See {@link ContentProvider#openFile ContentProvider.openFile}.  Note that
+     * this <em>does not</em>
+     * take care of non-content: URIs such as file:.  It is strongly recommended
+     * you use the {@link ContentResolver#openFileDescriptor
+     * ContentResolver.openFileDescriptor} API instead.
+     */
+    CARAPI OpenFile(
+        /* [in] */ IUri* uri,
+        /* [in] */ const String& mode,
+        /* [in] */ ICancellationSignal* cancellationSignal,
+        /* [out] */ IParcelFileDescriptor** fileDescriptor);
+
+    /**
      * See {@link ContentProvider#openAssetFile ContentProvider.openAssetFile}.
      * Note that this <em>does not</em>
      * take care of non-content: URIs such as file:.  It is strongly recommended
@@ -104,6 +151,20 @@ public:
         /* [in] */ const String& mode,
         /* [out] */ IAssetFileDescriptor** fileDescriptor);
 
+    /**
+     * See {@link ContentProvider#openAssetFile ContentProvider.openAssetFile}.
+     * Note that this <em>does not</em>
+     * take care of non-content: URIs such as file:.  It is strongly recommended
+     * you use the {@link ContentResolver#openAssetFileDescriptor
+     * ContentResolver.openAssetFileDescriptor} API instead.
+     */
+    CARAPI OpenAssetFile(
+        /* [in] */ IUri* uri,
+        /* [in] */ const String& mode,
+        /* [in] */ ICancellationSignal* cancellationSignal,
+        /* [out] */ IAssetFileDescriptor** fileDescriptor);
+
+
     /** See {@link ContentProvider#openTypedAssetFile ContentProvider.openTypedAssetFile} */
     CARAPI OpenTypedAssetFileDescriptor(
         /* [in] */ IUri* uri,
@@ -111,9 +172,18 @@ public:
         /* [in] */ IBundle* opts,
         /* [out] */ IAssetFileDescriptor** fileDescriptor);
 
+    /** See {@link ContentProvider#openTypedAssetFile ContentProvider.openTypedAssetFile} */
+    CARAPI OpenTypedAssetFileDescriptor(
+        /* [in] */ IUri* uri,
+        /* [in] */ const String& mimeType,
+        /* [in] */ IBundle* opts,
+        /* [in] */ ICancellationSignal* cancellationSignal,
+        /* [out] */ IAssetFileDescriptor** fileDescriptor);
+
+
     /** See {@link ContentProvider#applyBatch ContentProvider.applyBatch} */
     CARAPI ApplyBatch(
-        /* [in] */ IObjectContainer* operations,
+        /* [in] */ IArrayList* operations,
         /* [out, callee] */ ArrayOf<IContentProviderResult *>** providerResults);
 
     /** See {@link ContentProvider#call(String, String, Bundle)} */
@@ -143,21 +213,46 @@ public:
     CARAPI GetLocalContentProvider(
         /* [out] */ IContentProvider** localContentProvider);
 
-    /**
-     * @hide
-     */
-    CARAPI constructor(
-        /* [in] */ IContentResolver* resolver,
-        /* [in] */ IIContentProvider* provider,
-        /* [in] */ Boolean stable);
+    /** {@hide} */
+    static CARAPI ReleaseQuietly(
+        /* [in] */ IContentProviderClient* client);
 
 private:
+    CARAPI BeforeRemote();
+
+    CARAPI AfterRemote();
+
+private:
+
+    class NotRespondingRunnable : public Runnable {
+    public:
+        NotRespondingRunnable(
+            /* [in] */ IWeakReference* host);
+
+        CARAPI Run();
+    private:
+        AutoPtr<IWeakReference> mWeakHost;
+    };
+
+private:
+    friend class NotRespondingRunnable;
+
+    static const String TAG;
+
+    static AutoPtr<IHandler> sAnrHandler;
+
     AutoPtr<IIContentProvider> mContentProvider;
     AutoPtr<IContentResolver> mContentResolver;
+    String mPackageName;
     Boolean mStable;
-    Boolean mReleased;
-    Object mCContentProviderClientLock;
 
+    AutoPtr<ICloseGuard> mGuard;
+
+    Int64 mAnrTimeout;
+    AutoPtr<IRunnable> mAnrRunnable;
+
+    Boolean mReleased;
+    static Object mContentProviderClientLock;
 };
 
 }

@@ -23,7 +23,7 @@ ECode CWifiConfigurationAuthAlgorithm::GetStrings(
 {
     VALIDATE_NOT_NULL(strings);
     *strings = sStrings;
-    ARRAYOF_ADDREF(*strings);
+    REFCOUNT_ADDREF(*strings);
     return NOERROR;
 }
 

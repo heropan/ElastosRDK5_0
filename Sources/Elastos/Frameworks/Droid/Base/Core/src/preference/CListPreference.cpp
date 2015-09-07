@@ -113,7 +113,7 @@ ECode CListPreference::GetEntries(
 {
     VALIDATE_NOT_NULL(entries)
     *entries = mEntries;
-    ARRAYOF_ADDREF(*entries)
+    REFCOUNT_ADDREF(*entries)
     return NOERROR;
 }
 
@@ -141,7 +141,7 @@ ECode CListPreference::GetEntryValues(
 {
     VALIDATE_NOT_NULL(entryValues)
     *entryValues = mEntryValues;
-    ARRAYOF_ADDREF(*entryValues)
+    REFCOUNT_ADDREF(*entryValues)
     return NOERROR;
 }
 

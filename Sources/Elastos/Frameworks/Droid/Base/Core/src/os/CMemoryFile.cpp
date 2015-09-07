@@ -196,6 +196,7 @@ ECode CMemoryFile::constructor(
     else {
         mAddress = 0;
     }
+    return NOERROR;
 }
 
 ECode CMemoryFile::Close()
@@ -217,6 +218,7 @@ ECode CMemoryFile::Deactivate()
     //     Log.e(TAG, ex.toString());
     // }
     }
+    return NOERROR;
 }
 
 Boolean CMemoryFile::IsDeactivated()

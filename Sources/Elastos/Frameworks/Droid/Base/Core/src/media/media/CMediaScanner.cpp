@@ -1478,7 +1478,7 @@ done:
     // exception will have been raised. I just want to
     // return null in that case.
     *result = array;
-    ARRAYOF_ADDREF(*result);
+    REFCOUNT_ADDREF(*result);
 
     return NOERROR;
 }

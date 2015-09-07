@@ -1235,7 +1235,7 @@ ECode Preference::GetPersistedStringSet(
     Boolean shouldPersist;
     if (ShouldPersist(&shouldPersist), !shouldPersist) {
         *value = defaultReturnValue;
-        ARRAYOF_ADDREF(*value)
+        REFCOUNT_ADDREF(*value)
         return NOERROR;
     }
 

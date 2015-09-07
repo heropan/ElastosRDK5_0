@@ -1,17 +1,24 @@
 
 #include "content/CContentProviderOperationHelper.h"
-#include "content/CContentProviderOperationBuilder.h"
+#include "content/CContentProviderOperation.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
+
+CAR_INTERFACE_IMPL(CContentProviderOperationHelper, Singleton, IContentProviderOperationHelper)
+
+CAR_SINGLETON_IMPL(CContentProviderOperationHelper)
 
 ECode CContentProviderOperationHelper::NewInsert(
     /* [in] */ IUri* uri,
     /* [out] */ IContentProviderOperationBuilder** operationBuilder)
 {
     VALIDATE_NOT_NULL(operationBuilder)
-    return CContentProviderOperationBuilder::New(IContentProviderOperation::TYPE_INSERT, uri, operationBuilder);
+    AutoPtr<IContentProviderOperationBuilder> tmp = CContentProviderOperation::NewInsert(uri);
+    *operationBuilder = tmp;
+    REFCOUNT_ADD(*operationBuilder);
+    return NOERROR;
 }
 
 ECode CContentProviderOperationHelper::NewUpdate(
@@ -19,7 +26,10 @@ ECode CContentProviderOperationHelper::NewUpdate(
     /* [out] */ IContentProviderOperationBuilder** operationBuilder)
 {
     VALIDATE_NOT_NULL(operationBuilder)
-    return CContentProviderOperationBuilder::New(IContentProviderOperation::TYPE_UPDATE, uri, operationBuilder);
+    AutoPtr<IContentProviderOperationBuilder> tmp = CContentProviderOperation::NewUpdate(uri);
+    *operationBuilder = tmp;
+    REFCOUNT_ADD(*operationBuilder);
+    return NOERROR;
 }
 
 ECode CContentProviderOperationHelper::NewDelete(
@@ -27,7 +37,10 @@ ECode CContentProviderOperationHelper::NewDelete(
     /* [out] */ IContentProviderOperationBuilder** operationBuilder)
 {
     VALIDATE_NOT_NULL(operationBuilder)
-    return CContentProviderOperationBuilder::New(IContentProviderOperation::TYPE_DELETE, uri, operationBuilder);
+    AutoPtr<IContentProviderOperationBuilder> tmp = CContentProviderOperation::NewDelete(uri);
+    *operationBuilder = tmp;
+    REFCOUNT_ADD(*operationBuilder);
+    return NOERROR;
 }
 
 ECode CContentProviderOperationHelper::NewAssertQuery(
@@ -35,7 +48,10 @@ ECode CContentProviderOperationHelper::NewAssertQuery(
     /* [out] */ IContentProviderOperationBuilder** operationBuilder)
 {
     VALIDATE_NOT_NULL(operationBuilder)
-    return CContentProviderOperationBuilder::New(IContentProviderOperation::TYPE_ASSERT, uri, operationBuilder);
+    AutoPtr<IContentProviderOperationBuilder> tmp = CContentProviderOperation::NewAssertQuery(uri);
+    *operationBuilder = tmp;
+    REFCOUNT_ADD(*operationBuilder);
+    return NOERROR;
 }
 
 }

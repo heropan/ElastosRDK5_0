@@ -3,22 +3,31 @@
 #define __ELASTOS_DROID_CONTENT_CCONTENTPROVIDEROPERATIONBUILDER_H__
 
 #include "_Elastos_Droid_Content_CContentProviderOperationBuilder.h"
-#include "ext/frameworkext.h"
-#include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Object.h>
 
-using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Net::IUri;
+using Elastos::Utility::IHashMap;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CContentProviderOperationBuilder)
+    , public Object
+    , public IContentProviderOperationBuilder
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CContentProviderOperationBuilder();
 
-    ~CContentProviderOperationBuilder();
+    virtual ~CContentProviderOperationBuilder();
+
+    CARAPI constructor(
+        /* [in] */ Int32 type,
+        /* [in] */ IUri* uri);
 
     /** Create a ContentProviderOperation from this {@link Builder}. */
     CARAPI Build(
@@ -126,14 +135,10 @@ public:
         /* [out] */ IContentValues** valuesBackReferences);
 
     CARAPI GetSelectionArgsBackReferences(
-        /* [out] */ IObjectContainer** selectionArgsBackRef);
+        /* [out] */ IHashMap** selectionArgsBackRef);
 
     CARAPI GetYieldAllowed(
         /* [out] */ Boolean* yieldAllowed);
-
-    CARAPI constructor(
-        /* [in] */ Int32 type,
-        /* [in] */ IUri* uri);
 
 private:
     Int32 mType;
@@ -143,7 +148,7 @@ private:
     AutoPtr<IContentValues> mValues;
     Int32 mExpectedCount;
     AutoPtr<IContentValues> mValuesBackReferences;
-    AutoPtr<HashMap<Int32, Int32> > mSelectionArgsBackReferences;
+    AutoPtr<IHashMap> mSelectionArgsBackReferences;
     Boolean mYieldAllowed;
 
 };

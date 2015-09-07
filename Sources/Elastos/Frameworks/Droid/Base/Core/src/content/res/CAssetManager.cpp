@@ -817,7 +817,7 @@ ECode CAssetManager::AddAssetPaths(
     }
 
     *cookies = arr;
-    ARRAYOF_ADDREF(*cookies);
+    REFCOUNT_ADDREF(*cookies);
     return NOERROR;
 }
 
@@ -874,7 +874,7 @@ ECode CAssetManager::GetLocales(
     }
 
     *locales = result;
-    ARRAYOF_ADDREF(*locales);
+    REFCOUNT_ADDREF(*locales);
     return NOERROR;
 }
 
@@ -2121,7 +2121,7 @@ ECode CAssetManager::GetArrayStringResource(
         if (block == android::BAD_INDEX) {
             // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
             *result = array;
-            ARRAYOF_ADDREF(*result);
+            REFCOUNT_ADDREF(*result);
             return E_ILLEGAL_STATE_EXCEPTION;
         }
 #endif
@@ -2148,7 +2148,7 @@ ECode CAssetManager::GetArrayStringResource(
     }
     res.unlockBag(startOfBag);
     *result = array;
-    ARRAYOF_ADDREF(*result);
+    REFCOUNT_ADDREF(*result);
     return NOERROR;
 }
 
@@ -2189,7 +2189,7 @@ ECode CAssetManager::GetArrayStringInfo(
         if (stringBlock == android::BAD_INDEX) {
             // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
             *result = array;
-            ARRAYOF_ADDREF(*result);
+            REFCOUNT_ADDREF(*result);
             return E_ILLEGAL_STATE_EXCEPTION;
         }
 #endif
@@ -2203,7 +2203,7 @@ ECode CAssetManager::GetArrayStringInfo(
     }
     res.unlockBag(startOfBag);
     *result = array;
-    ARRAYOF_ADDREF(*result);
+    REFCOUNT_ADDREF(*result);
     return NOERROR;
 }
 
@@ -2268,7 +2268,7 @@ ECode CAssetManager::GetArrayIntResource(
         if (block == android::BAD_INDEX) {
             // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
             *result = array;
-            ARRAYOF_ADDREF(*result);
+            REFCOUNT_ADDREF(*result);
             return E_ILLEGAL_STATE_EXCEPTION;
         }
 #endif
@@ -2279,7 +2279,7 @@ ECode CAssetManager::GetArrayIntResource(
     }
     res.unlockBag(startOfBag);
     *result = array;
-    ARRAYOF_ADDREF(*result);
+    REFCOUNT_ADDREF(*result);
     return NOERROR;
 }
 

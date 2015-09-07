@@ -369,7 +369,7 @@ ECode CBluetoothAdapter::GetBondedDevices(
     Int32 state;
     if (GetState(&state), state != STATE_ON) {
         *device = ArrayOf<IBluetoothDevice*>::Alloc(0);
-        ARRAYOF_ADDREF(*device)
+        REFCOUNT_ADDREF(*device)
         return NOERROR;
     }
     // try {

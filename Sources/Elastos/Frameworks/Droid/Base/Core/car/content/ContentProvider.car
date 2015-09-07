@@ -996,6 +996,7 @@ module
     /**
      * @Involve
      * interface Elastos.Droid.Content.IIContentProvider
+     * interface Elastos.Droid.Os.IBinder
      */
     interface IContentProviderTransport {
         GetContentProvider(

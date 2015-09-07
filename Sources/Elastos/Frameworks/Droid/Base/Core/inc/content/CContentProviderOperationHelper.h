@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CCONTENTPROVIDEROPERATIONHELPER_H__
 
 #include "_Elastos_Droid_Content_CContentProviderOperationHelper.h"
-#include "ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Net::IUri;
 
@@ -12,8 +12,14 @@ namespace Droid {
 namespace Content {
 
 CarClass(CContentProviderOperationHelper)
+    , public Singleton
+    , public IContentProviderOperationHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Create a {@link Builder} suitable for building an insert {@link ContentProviderOperation}.
      * @param uri The {@link Uri} that is the target of the insert.

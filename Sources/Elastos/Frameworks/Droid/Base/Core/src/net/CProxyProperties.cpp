@@ -86,7 +86,7 @@ ECode CProxyProperties::GetParsedExclusionList(
 {
     VALIDATE_NOT_NULL(parsedExclusionList);
     *parsedExclusionList = mParsedExclusionList;
-    ARRAYOF_ADDREF(*parsedExclusionList);
+    REFCOUNT_ADDREF(*parsedExclusionList);
     return NOERROR;
 }
 

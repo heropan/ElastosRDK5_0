@@ -719,7 +719,7 @@ ECode CProcessStats::GetLastCpuSpeedTimes(
         }
     }
     *times = mRelCpuSpeedTimes;
-    ARRAYOF_ADDREF(*times);
+    REFCOUNT_ADDREF(*times);
     return NOERROR;
 }
 

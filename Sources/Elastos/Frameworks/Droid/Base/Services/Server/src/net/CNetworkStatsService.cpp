@@ -810,7 +810,7 @@ ECode CNetworkStatsService::GetMobileIfaces(
 {
     VALIDATE_NOT_NULL(mobileIfaces)
     *mobileIfaces = mMobileIfaces;
-    ARRAYOF_ADDREF(*mobileIfaces)
+    REFCOUNT_ADDREF(*mobileIfaces)
     return NOERROR;
 }
 

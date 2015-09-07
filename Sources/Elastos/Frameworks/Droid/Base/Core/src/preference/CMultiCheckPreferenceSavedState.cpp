@@ -33,7 +33,7 @@ ECode CMultiCheckPreferenceSavedState::GetValues(
 {
     VALIDATE_NOT_NULL(values)
     *values = mValues;
-    ARRAYOF_ADDREF(*values)
+    REFCOUNT_ADDREF(*values)
     return NOERROR;
 }
 

@@ -182,9 +182,9 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZonesWithUniqueOffsets(
         // Cache the last result
         sLastUniqueZoneOffsets = uniqueTimeZones;
         sLastUniqueCountry = country;
-
-        return sLastUniqueZoneOffsets;
     }
+
+    return sLastUniqueZoneOffsets;
 }
 
 AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZones(

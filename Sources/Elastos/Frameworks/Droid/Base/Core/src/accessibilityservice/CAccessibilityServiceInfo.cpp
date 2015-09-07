@@ -186,7 +186,7 @@ ECode CAccessibilityServiceInfo::GetPackageNames (
 {
     VALIDATE_NOT_NULL(names);
     *names = mPackageNames;
-    ARRAYOF_ADDREF(*names);
+    REFCOUNT_ADDREF(*names);
     return NOERROR;
 }
 

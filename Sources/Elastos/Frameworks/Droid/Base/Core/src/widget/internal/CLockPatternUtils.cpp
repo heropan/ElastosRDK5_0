@@ -282,7 +282,7 @@ ECode CLockPatternUtils::PasswordToHash(
     VALIDATE_NOT_NULL(hash);
     AutoPtr< ArrayOf<Byte> > temp = LockPatternUtils::PasswordToHash(password);
     *hash = temp->Clone();
-    ARRAYOF_ADDREF(*hash);
+    REFCOUNT_ADDREF(*hash);
     return NOERROR;
 }
 
@@ -420,7 +420,7 @@ ECode CLockPatternUtils::GetAppWidgets(
     VALIDATE_NOT_NULL(widgets);
     AutoPtr< ArrayOf<Int32> > temp = LockPatternUtils::GetAppWidgets();
     *widgets = temp->Clone();
-    ARRAYOF_ADDREF(*widgets);
+    REFCOUNT_ADDREF(*widgets);
     return NOERROR;
 }
 
