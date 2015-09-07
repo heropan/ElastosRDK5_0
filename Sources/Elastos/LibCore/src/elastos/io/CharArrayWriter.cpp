@@ -126,7 +126,10 @@ ECode CharArrayWriter::ToString(
 
     *result = String((char*)dst->GetPayload(), dst->GetLength());
 
-    return NOERROR;
+    if (*result == NULL)
+        return E_OUT_OF_MEMORY_ERROR;
+    else
+        return NOERROR;
 }
 
 ECode CharArrayWriter::Write(
