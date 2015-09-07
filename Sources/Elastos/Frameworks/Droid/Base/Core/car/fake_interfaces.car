@@ -52,34 +52,6 @@ module
     namespace Droid {
     namespace Media {
 
-        // interface IRouteInfo {}
-
-        // interface IAudioAttributes {}
-
-        // interface IAudioFormat{}
-
-        // interface IMediaPlayerOnInfoListener {}
-
-        // interface IMediaPlayerOnErrorListener {}
-
-        // interface IMediaPlayerOnPreparedListener {}
-
-        // interface IMediaPlayerOnCompletionListener {}
-
-        // interface IMediaFormat {}
-
-        // namespace Session {
-        //     interface IMediaController {}
-
-        //     interface IMediaSession {}
-
-        //     interface IMediaSessionToken {}
-        // }
-
-        // namespace Session {
-        // interface IMediaController{}
-        // interface IMediaSessionToken{}
-        // }
 
     namespace Tv {
             interface ITvTrackInfo{}
@@ -89,15 +61,14 @@ module
             interface ITvContentRatingSystemInfo{}
             interface ITvContentRating{}
         }
-interface IIRingtonePlayer{}
-interface IRemoteControlClient{}
-interface IIRemoteControlDisplay{}
-interface IRemoteController{}
-interface IIVolumeController{}
-interface IMediaSyncEvent{}
-interface IIAudioFocusDispatcher{}
 
-
+        interface IIRingtonePlayer{}
+        interface IRemoteControlClient{}
+        interface IIRemoteControlDisplay{}
+        interface IRemoteController{}
+        interface IIVolumeController{}
+        interface IMediaSyncEvent{}
+        interface IIAudioFocusDispatcher{}
 
         interface IAudioRecord{}
         interface IMediaDescription{}

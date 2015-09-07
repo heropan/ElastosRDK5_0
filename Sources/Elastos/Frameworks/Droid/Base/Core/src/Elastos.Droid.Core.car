@@ -48,7 +48,7 @@ module
     merge("../car/internal/widget.car");
 
     merge("../car/inputmethodservice.car");
-    //merge("../car/media.car");
+    merge("../car/media.car");
     //merge("../car/bluetooth.car");
     //merge("../car/menu1.car");
     //merge("../car/text2.car");

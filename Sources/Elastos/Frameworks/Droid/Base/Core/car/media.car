@@ -59,12 +59,12 @@ module
     merge("media/media/tv/ITvInputClient.car");
     merge("media/media/tv/ITvInputHardware.car");
     merge("media/media/tv/ITvInputHardwareCallback.car");
-    merge("media/media/tv/ITvInputManager.car");
+    //merge("media/media/tv/ITvInputManager.car");
     merge("media/media/tv/ITvInputManagerCallback.car");
-    // merge("media/media/tv/ITvInputService.car");
-    //merge("media/media/tv/ITvInputServiceCallback.car");
-    //merge("media/media/tv/ITvInputSession.car");
-    //merge("media/media/tv/ITvInputSessionCallback.car");
+    merge("media/media/tv/ITvInputService.car");
+    merge("media/media/tv/ITvInputServiceCallback.car");
+    merge("media/media/tv/ITvInputSession.car");
+    merge("media/media/tv/ITvInputSessionCallback.car");
 
     // merge("media/media/tv/ITvInputSessionWrapper.car");
     // merge("media/media/tv/TvContentRating.car");
