@@ -10,6 +10,8 @@ module
     interface Elastos.Droid.Media.Tv.IITvInputManagerCallback;
     interface Elastos.Droid.Media.Tv.IITvInputClient;
     interface Elastos.Droid.Media.Tv.ITvInputHardwareInfo;
+    interface Elastos.Droid.Media.Tv.IITvInputHardware;
+    interface Elastos.Droid.Media.Tv.ITvStreamConfig;
 
     namespace Elastos {
     namespace Droid {
@@ -122,58 +124,65 @@ module
             [in] IBundle * data,
             [in] Int32 userId);
 
+
+
         CreateOverlayView(
-            [in] IBinder * sessionToken,
-            [in] IBinder * windowToken,
-            [in] IRect * frame,
+            [in] IBinder* sessionToken,
+            [in] IBinder* windowToken,
+            [in] IRect* frame,
             [in] Int32 userId);
 
-        RelayoutOverlayView(
-            [in] IBinder * sessionToken,
-            [in] IRect * frame,
-            [in] Int32 userId);
 
-        RemoveOverlayView(
-            [in] IBinder * sessionToken,
-            [in] Int32 userId);
+        // RelayoutOverlayView(
+        //     [in] IBinder * sessionToken,
+        //     [in] IRect * frame,
+        //     [in] Int32 userId);
 
-        RequestUnblockContent(
-            [in] IBinder * sessionToken,
-            [in] String unblockedRating,
-            [in] Int32 userId);
+        // RemoveOverlayView(
+        //     [in] IBinder * sessionToken,
+        //     [in] Int32 userId);
 
-        // For TV input hardware binding
-        GetHardwareList(
-            [out, callee] ArrayOf<ITvInputHardwareInfo*> * result);
+        // RequestUnblockContent(
+        //     [in] IBinder * sessionToken,
+        //     [in] String unblockedRating,
+        //     [in] Int32 userId);
 
-        AcquireTvInputHardware(
-            [in] Int32 deviceId,
-            [in] IITvInputHardwareCallback * cb,
-            [in] ITvInputInfo * info,
-            [in] Int32 userId,
-            [out] IITvInputHardware ** result);
+        // // For TV input hardware binding
+        // GetHardwareList(
+        //     [out, callee] ArrayOf<ITvInputHardwareInfo*> * result);
 
-        ReleaseTvInputHardware(
-            [in] Int32 deviceId,
-            [in] IITvInputHardware * hardware,
-            [in] Int32 userId);
+        // AcquireTvInputHardware(
+        //     [in] Int32 deviceId,
+        //     [in] IITvInputHardwareCallback * cb,
+        //     [in] ITvInputInfo * info,
+        //     [in] Int32 userId,
+        //     [out] IITvInputHardware ** result);
 
-        // For TV input capturing
-        GetAvailableTvStreamConfigList(
-            [in] String inputId,
-            [in] Int32 userId,
-            [out, callee] ArrayOf<ITvStreamConfig*> * result);
+        // ReleaseTvInputHardware(
+        //     [in] Int32 deviceId,
+        //     [in] IITvInputHardware * hardware,
+        //     [in] Int32 userId);
 
-        CaptureFrame(
-            [in] String inputId,
-            [in] ISurface * surface,
-            [in] ITvStreamConfig * config,
-            [in] Int32 userId,
-            [out] Boolean * result);
+        // // For TV input capturing
+        // GetAvailableTvStreamConfigList(
+        //     [in] String inputId,
+        //     [in] Int32 userId,
+        //     [out, callee] ArrayOf<ITvStreamConfig*> * result);
 
-        IsSingleSessionActive(
-            [in] Int32 userId,
-            [out] Boolean * result);
+        // CaptureFrame(
+        //     [in] String inputId,
+        //     [in] ISurface * surface,
+        //     [in] ITvStreamConfig * config,
+        //     [in] Int32 userId,
+        //     [out] Boolean * result);
+
+        // IsSingleSessionActive(
+        //     [in] Int32 userId,
+        //     [out] Boolean * result);
+
+
+
+
 
     }
 
