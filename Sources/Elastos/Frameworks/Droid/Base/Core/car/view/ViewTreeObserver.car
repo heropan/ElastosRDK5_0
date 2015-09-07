@@ -459,8 +459,8 @@ module
          * Notifies registered listeners that focus has changed.
          */
         DispatchOnGlobalFocusChange(
-            /* [in] */ IView* oldFocus,
-            /* [in] */ IView* newFocus);
+            [in] IView* oldFocus,
+            [in] IView* newFocus);
 
         /**
          * Notifies registered listeners that a global layout happened. This can be called
