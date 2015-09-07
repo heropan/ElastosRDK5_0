@@ -6,6 +6,7 @@ module
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.App.IPendingIntent;
     interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.Media.IIVolumeController;
 
     namespace Elastos {
     namespace Droid {

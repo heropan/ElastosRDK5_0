@@ -7,8 +7,8 @@ module
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Media.Tv.ITvInputInfo;
     interface Elastos.Droid.Media.Tv.ITvContentRatingSystemInfo;
-    interface Elastos.Droid.Media.Tv.ITvInputManagerCallback;
-    interface Elastos.Droid.Media.Tv.ITvInputClient;
+    interface Elastos.Droid.Media.Tv.IITvInputManagerCallback;
+    interface Elastos.Droid.Media.Tv.IITvInputClient;
     interface Elastos.Droid.Media.Tv.ITvInputHardwareInfo;
 
     namespace Elastos {
@@ -36,11 +36,11 @@ module
             [out] ITvContentRatingSystemInfo ** result);
 
         RegisterCallback(
-            [in] ITvInputManagerCallback * cb,
+            [in] IITvInputManagerCallback * cb,
             [in] Int32 userId);
 
         UnregisterCallback(
-            [in] ITvInputManagerCallback * cb,
+            [in] IITvInputManagerCallback * cb,
             [in] Int32 userId);
 
         IsParentalControlsEnabled(
@@ -69,7 +69,7 @@ module
             [in] Int32 userId);
 
         CreateSession(
-            [in] ITvInputClient * client,
+            [in] IITvInputClient * client,
             [in] String inputId,
             [in] Int32 seq,
             [in] Int32 userId);

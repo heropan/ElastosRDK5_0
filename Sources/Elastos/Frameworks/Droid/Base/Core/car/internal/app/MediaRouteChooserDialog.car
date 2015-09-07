@@ -1,7 +1,7 @@
 module
 {
     interface Elastos.Droid.View.IViewOnClickListener;
-    interface Elastos.Droid.Media.IRouteInfo;
+    interface Elastos.Droid.Media.IMediaRouterRouteInfo;
 
     namespace Elastos {
     namespace Droid {
@@ -63,7 +63,7 @@ module
          * @return True if the route should be included in the chooser dialog.
          */
         OnFilterRoute(
-            [in] IRouteInfo* route,
+            [in] IMediaRouterRouteInfo* route,
             [out] Boolean* result);
 
         /**

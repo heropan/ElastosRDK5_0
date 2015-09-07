@@ -10,10 +10,10 @@ module
     interface Elastos.Droid.Media.IIRemoteControlDisplay;
     interface Elastos.Droid.Media.IRemoteController;
     interface Elastos.Droid.Media.AudioPolicy.IAudioPolicy;
-    interface IAudioPort;
-    interface IAudioPatch;
-    interface IAudioPortConfig;
-    interface IIVolumeController;
+    interface Elastos.Droid.Media.IAudioPort;
+    interface Elastos.Droid.Media.IAudioPatch;
+    interface Elastos.Droid.Media.IAudioPortConfig;
+    interface Elastos.Droid.Media.IIVolumeController;
 
     namespace Elastos {
     namespace Droid {

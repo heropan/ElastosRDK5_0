@@ -3,7 +3,8 @@ module
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.View.ISurface;
     interface Elastos.Droid.Media.IAudioRecord;
-    interface Elastos.Droid.Hardware.Display.IIVirtualDisplayCallback;
+// TODO: Need IIVirtualDisplayCallback
+    // interface Elastos.Droid.Hardware.Display.IIVirtualDisplayCallback;
     interface Elastos.Droid.Hardware.Display.IVirtualDisplay;
 
     namespace Elastos {
@@ -48,16 +49,17 @@ module
         /**
          * @hide
          */
-        CreateVirtualDisplay(
-            [in] String name,
-            [in] Int32 width,
-            [in] Int32 height,
-            [in] Int32 dpi,
-            [in] Boolean isSecure,
-            [in] ISurface * surface,
-            [in] IIVirtualDisplayCallback * cb,
-            [in] IHandler * handler,
-            [out] IVirtualDisplay ** result);
+// TODO: Need IIVirtualDisplayCallback
+        // CreateVirtualDisplay(
+        //     [in] String name,
+        //     [in] Int32 width,
+        //     [in] Int32 height,
+        //     [in] Int32 dpi,
+        //     [in] Boolean isSecure,
+        //     [in] ISurface * surface,
+        //     [in] IIVirtualDisplayCallback * cb,
+        //     [in] IHandler * handler,
+        //     [out] IVirtualDisplay ** result);
 
         /**
          * Creates a {@link android.hardware.display.VirtualDisplay} to capture the
@@ -83,16 +85,17 @@ module
          * @see android.hardware.display.DisplayManager#createVirtualDisplay(
          * String, int, int, int, int, Surface, VirtualDisplay.Callback, Handler)
          */
-        CreateVirtualDisplay(
-            [in] String name,
-            [in] Int32 width,
-            [in] Int32 height,
-            [in] Int32 dpi,
-            [in] Int32 flags,
-            [in] ISurface * surface,
-            [in] IIVirtualDisplayCallback * cb,
-            [in] IHandler * handler,
-            [out] IVirtualDisplay ** result);
+// TODO: Need IIVirtualDisplayCallback
+        // CreateVirtualDisplay(
+        //     [in] String name,
+        //     [in] Int32 width,
+        //     [in] Int32 height,
+        //     [in] Int32 dpi,
+        //     [in] Int32 flags,
+        //     [in] ISurface * surface,
+        //     [in] IIVirtualDisplayCallback * cb,
+        //     [in] IHandler * handler,
+        //     [out] IVirtualDisplay ** result);
 
         /**
          * Creates an AudioRecord to capture audio played back by the system.

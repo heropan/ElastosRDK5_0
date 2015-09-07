@@ -3,6 +3,8 @@ module
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.Media.Tv.IITvInputSession;
+    interface Elastos.Droid.Media.Tv.ITvTrackInfo;
 
     namespace Elastos {
     namespace Droid {

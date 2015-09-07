@@ -7,7 +7,7 @@ module
     interface Elastos.Droid.View.IInputEvent;
     interface Elastos.Droid.View.ISurface;
     interface Elastos.Droid.Media.Tv.ITvInputManagerSession;
-    interface Elastos.Droid.Media.Tv.ITvInputCallback;
+    interface Elastos.Droid.Media.Tv.ITvContentRating;
 
     namespace Elastos {
     namespace Droid {
@@ -563,7 +563,7 @@ module
          * @throws IllegalArgumentException if any of the arguments is {@code null}.
          */
         RegisterCallback(
-            [in] ITvInputCallback * cb,
+            [in] ITvInputManagerTvInputCallback * cb,
             [in] IHandler * handler);
 
         /**
@@ -573,7 +573,7 @@ module
          * @throws IllegalArgumentException if any of the arguments is {@code null}.
          */
         UnregisterCallback(
-            [in] ITvInputCallback * cb);
+            [in] ITvInputManagerTvInputCallback * cb);
 
         /**
          * Returns the user's parental controls enabled state.

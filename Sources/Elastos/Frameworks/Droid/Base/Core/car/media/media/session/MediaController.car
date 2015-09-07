@@ -12,13 +12,81 @@ module
     interface Elastos.Droid.Media.Session.IPlaybackState;
     interface Elastos.Droid.Media.Session.IMediaSessionQueueItem;
     interface Elastos.Droid.Media.Session.IPlaybackStateCustomAction;
-    interface Elastos.Droid.Media.Session.IPlaybackInfo;
     interface Elastos.Droid.Media.Session.IMediaSessionToken;
 
     namespace Elastos {
     namespace Droid {
     namespace Media {
     namespace Session {
+
+    /**
+     * Holds information about the current playback and how audio is handled for
+     * this session.
+     */
+    interface IMediaControllerPlaybackInfo {
+        /**
+         * The session uses remote playback.
+         */
+        const Int32 PLAYBACK_TYPE_REMOTE = 2;
+        /**
+         * The session uses local playback.
+         */
+        const Int32 PLAYBACK_TYPE_LOCAL = 1;
+
+        /**
+         * Get the type of playback which affects volume handling. One of:
+         * <ul>
+         * <li>{@link #PLAYBACK_TYPE_LOCAL}</li>
+         * <li>{@link #PLAYBACK_TYPE_REMOTE}</li>
+         * </ul>
+         *
+         * @return The type of playback this session is using.
+         */
+        GetPlaybackType(
+            [out] Int32 * result);
+
+        /**
+         * Get the audio attributes for this session. The attributes will affect
+         * volume handling for the session. When the volume type is
+         * {@link PlaybackInfo#PLAYBACK_TYPE_REMOTE} these may be ignored by the
+         * remote volume handler.
+         *
+         * @return The attributes for this session.
+         */
+        GetAudioAttributes(
+            [out] IAudioAttributes ** result);
+
+        /**
+         * Get the type of volume control that can be used. One of:
+         * <ul>
+         * <li>{@link VolumeProvider#VOLUME_CONTROL_ABSOLUTE}</li>
+         * <li>{@link VolumeProvider#VOLUME_CONTROL_RELATIVE}</li>
+         * <li>{@link VolumeProvider#VOLUME_CONTROL_FIXED}</li>
+         * </ul>
+         *
+         * @return The type of volume control that may be used with this
+         *         session.
+         */
+        GetVolumeControl(
+            [out] Int32 * result);
+
+        /**
+         * Get the maximum volume that may be set for this session.
+         *
+         * @return The maximum allowed volume where this session is playing.
+         */
+        GetMaxVolume(
+            [out] Int32 * result);
+
+        /**
+         * Get the current volume for this session.
+         *
+         * @return The current volume where this session is playing.
+         */
+        GetCurrentVolume(
+            [out] Int32 * result);
+
+    }
 
     /**
      * Callback for receiving updates on from the session. A Callback can be
@@ -96,7 +164,7 @@ module
          * @param info The current audio info for this session.
          */
         OnAudioInfoChanged(
-            [in] IPlaybackInfo * info);
+            [in] IMediaControllerPlaybackInfo * info);
     }
 
     /**
@@ -219,75 +287,6 @@ module
     }
 
     /**
-     * Holds information about the current playback and how audio is handled for
-     * this session.
-     */
-    interface IMediaControllerPlaybackInfo {
-        /**
-         * The session uses remote playback.
-         */
-        const Int32 PLAYBACK_TYPE_REMOTE = 2;
-        /**
-         * The session uses local playback.
-         */
-        const Int32 PLAYBACK_TYPE_LOCAL = 1;
-
-        /**
-         * Get the type of playback which affects volume handling. One of:
-         * <ul>
-         * <li>{@link #PLAYBACK_TYPE_LOCAL}</li>
-         * <li>{@link #PLAYBACK_TYPE_REMOTE}</li>
-         * </ul>
-         *
-         * @return The type of playback this session is using.
-         */
-        GetPlaybackType(
-            [out] Int32 * result);
-
-        /**
-         * Get the audio attributes for this session. The attributes will affect
-         * volume handling for the session. When the volume type is
-         * {@link PlaybackInfo#PLAYBACK_TYPE_REMOTE} these may be ignored by the
-         * remote volume handler.
-         *
-         * @return The attributes for this session.
-         */
-        GetAudioAttributes(
-            [out] IAudioAttributes ** result);
-
-        /**
-         * Get the type of volume control that can be used. One of:
-         * <ul>
-         * <li>{@link VolumeProvider#VOLUME_CONTROL_ABSOLUTE}</li>
-         * <li>{@link VolumeProvider#VOLUME_CONTROL_RELATIVE}</li>
-         * <li>{@link VolumeProvider#VOLUME_CONTROL_FIXED}</li>
-         * </ul>
-         *
-         * @return The type of volume control that may be used with this
-         *         session.
-         */
-        GetVolumeControl(
-            [out] Int32 * result);
-
-        /**
-         * Get the maximum volume that may be set for this session.
-         *
-         * @return The maximum allowed volume where this session is playing.
-         */
-        GetMaxVolume(
-            [out] Int32 * result);
-
-        /**
-         * Get the current volume for this session.
-         *
-         * @return The current volume where this session is playing.
-         */
-        GetCurrentVolume(
-            [out] Int32 * result);
-
-    }
-
-    /**
      * Allows an app to interact with an ongoing media session. Media buttons and
      * other commands can be sent to the session. A callback may be registered to
      * receive updates from the session, such as metadata and play state changes.
@@ -388,7 +387,7 @@ module
          * @return The current playback info or null.
          */
         GetPlaybackInfo(
-            [out] IPlaybackInfo ** result);
+            [out] IMediaControllerPlaybackInfo ** result);
 
         /**
          * Get an intent for launching UI associated with this session if one

@@ -5,7 +5,7 @@ module
     namespace Droid {
     namespace Media {
 
-    interface IIRemoteDisplayController {
+    interface IIRemoteVolumeController {
         RemoteVolumeChanged(
             [in] IISessionController * session,
             [in] Int32 flags);

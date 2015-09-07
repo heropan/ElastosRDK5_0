@@ -1,9 +1,10 @@
 module
 {
-    interface Elastos.Droid.View.IInputChannel;
-    interface Elastos.Droid.Hardware.Hdmi.IHdmiDeviceInfo;
-    interface IITvInputServiceCallback;
-    interface IITvInputSessionCallback;
+    // interface Elastos.Droid.View.IInputChannel;
+    // interface Elastos.Droid.Hardware.Hdmi.IHdmiDeviceInfo;
+    // interface Elastos.Droid.Media.Tv.IITvInputServiceCallback;
+    // interface Elastos.Droid.Media.Tv.IITvInputSessionCallback;
+    // interface Elastos.Droid.Media.Tv.ITvInputHardwareInfo;
 
     namespace Elastos {
     namespace Droid {
@@ -14,31 +15,31 @@ module
      * Top-level interface to a TV input component (implemented in a Service).
      * @hide
      */
-    [deprecated]
+    // [deprecated]
     interface IITvInputService {
-        RegisterCallback(
-            [in] IITvInputServiceCallback * cb);
+        // RegisterCallback(
+        //     [in] IITvInputServiceCallback * cb);
 
-        UnregisterCallback(
-            [in] IITvInputServiceCallback * cb);
+        // UnregisterCallback(
+        //     [in] IITvInputServiceCallback * cb);
 
-        CreateSession(
-            [in] IInputChannel * channel,
-            [in] IITvInputSessionCallback * cb,
-            [in] String inputId);
+        // CreateSession(
+        //     [in] IInputChannel * channel,
+        //     [in] IITvInputSessionCallback * cb,
+        //     [in] String inputId);
 
-        // For hardware TvInputService
-        NotifyHardwareAdded(
-            [in] ITvInputHardwareInfo * hardwareInfo);
+        // // For hardware TvInputService
+        // NotifyHardwareAdded(
+        //     [in] ITvInputHardwareInfo * hardwareInfo);
 
-        NotifyHardwareRemoved(
-            [in] ITvInputHardwareInfo * hardwareInfo);
+        // NotifyHardwareRemoved(
+        //     [in] ITvInputHardwareInfo * hardwareInfo);
 
-        NotifyHdmiDeviceAdded(
-            [in] IHdmiDeviceInfo * deviceInfo);
+        // NotifyHdmiDeviceAdded(
+        //     [in] IHdmiDeviceInfo * deviceInfo);
 
-        NotifyHdmiDeviceRemoved(
-            [in] IHdmiDeviceInfo * deviceInfo);
+        // NotifyHdmiDeviceRemoved(
+        //     [in] IHdmiDeviceInfo * deviceInfo);
 
 
     }

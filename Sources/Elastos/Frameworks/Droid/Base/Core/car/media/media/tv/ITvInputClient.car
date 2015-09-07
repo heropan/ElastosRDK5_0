@@ -4,7 +4,7 @@ module
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.View.IInputChannel;
-    interface ITvTrackInfo;
+    interface Elastos.Droid.Media.Tv.ITvTrackInfo;
 
     namespace Elastos {
     namespace Droid {

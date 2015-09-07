@@ -3,6 +3,7 @@ module
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.View.IInputEvent;
+    interface Elastos.Droid.Media.Tv.ITvContentRating;
 
     namespace Elastos {
     namespace Droid {

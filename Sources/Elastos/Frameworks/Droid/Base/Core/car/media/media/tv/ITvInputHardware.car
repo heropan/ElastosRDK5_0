@@ -2,7 +2,7 @@ module
 {
     interface Elastos.Droid.View.ISurface;
     interface Elastos.Droid.View.IKeyEvent;
-    interface ITvStreamConfig;
+    interface Elastos.Droid.Media.Tv.ITvStreamConfig;
 
     namespace Elastos {
     namespace Droid {
