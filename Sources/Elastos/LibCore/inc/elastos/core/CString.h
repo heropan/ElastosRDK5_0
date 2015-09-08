@@ -11,6 +11,8 @@ namespace Core {
 CarClass(CString)
     , public Object
     , public ICharSequence
+    , public IString
+    , public IComparable
 {
 public:
     CAR_INTERFACE_DECL()

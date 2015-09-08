@@ -134,8 +134,46 @@ module
     merge("security/ISigner.car");
     merge("security/IUnresolvedPermission.car");
 
+    interface Elastos.Utility.IList;
+    interface Elastos.Utility.IMap;
+
     namespace Elastos {
     namespace Security {
+
+    class CProviderService {
+        /**
+         * Constructs a new instance of {@code Service} with the given
+         * attributes.
+         *
+         * @param provider
+         *            the provider to which this service belongs.
+         * @param type
+         *            the type of this service (for example {@code
+         *            KeyPairGenerator}).
+         * @param algorithm
+         *            the algorithm this service implements.
+         * @param className
+         *            the name of the class implementing this service.
+         * @param aliases
+         *            {@code List} of aliases for the algorithm name, or {@code
+         *            null} if the implemented algorithm has no aliases.
+         * @param attributes
+         *            {@code Map} of additional attributes, or {@code null} if
+         *            this {@code Service} has no attributed.
+         * @throws NullPointerException
+         *             if {@code provider, type, algorithm} or {@code className}
+         *             is {@code null}.
+         */
+        constructor(
+            [in] IProvider* provider,
+            [in] String type,
+            [in] String algorithm,
+            [in] String className,
+            [in] IList* aliases,
+            [in] IMap* attributes);
+
+        interface IProviderService;
+    }
 
     singleton class CSecurity {
         interface ISecurity;

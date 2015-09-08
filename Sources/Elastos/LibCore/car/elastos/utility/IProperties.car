@@ -13,6 +13,10 @@ module
     /**
      * @Involve
      * interface IHashtable;
+     * interface IDictionary;
+     * interface IMap;
+     * interface ICloneable;
+     * interface ISerializable;
      */
     interface IProperties {
 

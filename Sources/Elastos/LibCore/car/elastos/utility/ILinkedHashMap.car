@@ -10,7 +10,6 @@ module
      * interface ISerializable;
      */
     interface ILinkedHashMap {
-
         /**
          * interfaces from IMap
          */

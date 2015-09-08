@@ -23,9 +23,11 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 #INCLUDES += $(MAKEDIR)/../../../inc/libcore/utility;
 
 SOURCES += CMessageDigestHelper.cpp
+SOURCES += CProviderService.cpp
 SOURCES += CSecurity.cpp
 SOURCES += MessageDigest.cpp
 SOURCES += MessageDigestSpi.cpp
+SOURCES += Provider.cpp
 SOURCES += Signature.cpp
 SOURCES += SignatureSpi.cpp
 #SOURCES += CAlgorithmParameterGenerator.cpp

@@ -3,12 +3,31 @@ module
 {
     interface Elastos.Utility.ISet;
     interface Elastos.Utility.IList;
+    interface Elastos.Utility.IMap;
     interface Elastos.Security.IProvider;
 
     namespace Elastos {
     namespace Security {
 
     interface IProviderService {
+        /**
+         * Adds an alias.
+         *
+         * @param alias the alias to add
+         */
+        AddAlias(
+            [in] String alias);
+
+        /**
+         * Puts a new attribute mapping.
+         *
+         * @param name the attribute name.
+         * @param value the attribute value.
+         */
+        PutAttribute(
+            [in] String name,
+            [in] String value);
+
         /**
          * Returns the type of this {@code Service}. For example {@code
          * KeyPairGenerator}.
@@ -44,6 +63,9 @@ module
         GetClassName(
             [out] String* className);
 
+        SetClassName(
+            [in] String className);
+
         /**
          * Returns the value of the attribute with the specified {@code name}.
          *
@@ -78,8 +100,8 @@ module
          *             {@code constructorParameter}.
          */
         NewInstance(
-            [in] PInterface constructorParameter,
-            [out] PInterface* instance);
+            [in] IInterface* constructorParameter,
+            [out] IInterface** instance);
 
         /**
          * Indicates whether this {@code Service} supports the specified
@@ -91,16 +113,21 @@ module
          *         constructor parameter, {@code false} otherwise.
          */
         SupportsParameter(
-            [in] PInterface parameter,
+            [in] IInterface* parameter,
             [out] Boolean* isSupported);
 
-        ToString(
-            [out] String* valInString);
+        GetAttributes(
+            [out] IMap** attributes);
     }
 
     /**
       * @Involve
       * interface Elastos.Utility.IProperties;
+      * interface IHashtable;
+      * interface IDictionary;
+      * interface IMap;
+      * interface ICloneable;
+      * interface ISerializable;
       */
     interface IProvider {
         /**
