@@ -55,7 +55,7 @@ private:
 
     int             m_cStrings;
 
-    static const int MAXNUM = 4096 * 10;
+    static const int MAXNUM = 4096 * 15;
     char            *m_ppStrings[MAXNUM];
 };
 
