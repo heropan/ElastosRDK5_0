@@ -79,6 +79,7 @@ EXPORT_HEADERS += elastos/utility/TimSort.h
 EXPORT_HEADERS += elastos/utility/TimerTask.h
 EXPORT_HEADERS += elastos/utility/AbstractCollection.h
 EXPORT_HEADERS += elastos/utility/AbstractSet.h
+EXPORT_HEADERS += elastos/utility/Observable.h
 
 EXPORT_HEADERS += elastos/utility/concurrent/FutureTask.h
 
