@@ -1697,7 +1697,7 @@ public:
          * Global to the view hierarchy used as a temporary for dealing with
          * x/y location when view is transformed.
          */
-        ArrayOf_<Float, 2> mTmpTransformLocation;// = new float[2];
+        AutoPtr< ArrayOf<Float> > mTmpTransformLocation;// = new float[2];
 
         /**
          * A Canvas used by the view hierarchy to perform bitmap caching.
@@ -1727,6 +1727,16 @@ public:
         AutoPtr<IRectF> mTmpTransformRect;
 
         /**
+         * Temporary for use in computing hit areas with transformed views
+         */
+        AutoPtr<IRectF> mTmpTransformRect1;
+
+        /**
+         * Temporary list of rectanges.
+         */
+        AutoPtr<IArrayList> mTmpRectList;
+
+        /**
          * Temporary for use in transforming invalidation rect
          */
         AutoPtr<IMatrix> mTmpMatrix;
@@ -1739,7 +1749,7 @@ public:
         /**
          * Temporary list for use in collecting focusable descendents of a view.
          */
-        List<View*> mTempArrayList;// = new ArrayList<View>(24);
+        AutoPtr<IArrayList> mTempArrayList;// = new ArrayList<View>(24);
 
         /**
          * The id of the window for accessibility purposes.
@@ -2557,7 +2567,6 @@ public:
     virtual CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
 
-
     /**
      * Returns an {@link AccessibilityNodeInfo} representing this view from the
      * point of view of an {@link android.accessibilityservice.AccessibilityService}.
@@ -2575,6 +2584,24 @@ public:
      * @see AccessibilityNodeInfo
      */
     virtual CARAPI_(AutoPtr<IAccessibilityNodeInfo>) CreateAccessibilityNodeInfo();
+
+    /**
+     * Returns an {@link AccessibilityNodeInfo} representing this view from the
+     * point of view of an {@link android.accessibilityservice.AccessibilityService}.
+     * This method is responsible for obtaining an accessibility node info from a
+     * pool of reusable instances and calling
+     * {@link #onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo)} on this view to
+     * initialize the former.
+     * <p>
+     * Note: The client is responsible for recycling the obtained instance by calling
+     *       {@link AccessibilityNodeInfo#recycle()} to minimize object creation.
+     * </p>
+     *
+     * @return A populated {@link AccessibilityNodeInfo}.
+     *
+     * @see AccessibilityNodeInfo
+     */
+    virtual CARAPI_(AutoPtr<IAccessibilityNodeInfo>) CreateAccessibilityNodeInfoInternal();
 
     /**
      * Initializes an {@link AccessibilityNodeInfo} with information about this view.
@@ -4003,6 +4030,15 @@ public:
 
     CARAPI_(void) GetHotspotBounds(
         /* [in] */ IRect* outRect);
+
+    CARAPI_(Boolean) ComputeClickPointInScreenForAccessibility(
+        /* [in] */ IRegion* interactiveRegion,
+        /* [in] */ IPoint* outPoint);
+
+    static CARAPI_(void) OffsetRects(
+        /* [in] */ IArrayList* rects,
+        /* [in] */ Float offsetX,
+        /* [in] */ Float offsetY);
 
 protected:
     virtual CARAPI_(void) InitializeFadingEdge(

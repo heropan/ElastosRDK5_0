@@ -844,6 +844,7 @@ View::AttachInfo::AttachInfo(
     ASSERT_SUCCEEDED(CMatrix::New((IMatrix**)&mTmpMatrix));
     ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mTmpTransformation));
     ASSERT_SUCCEEDED(CPaint::New((IPaint**)&mPoint));
+    CArrayList::New(24, (IArrayList**)&mTempArrayList);
 
     mTreeObserver = new ViewTreeObserver();
     mGivenInternalInsets = new ViewTreeObserver::InternalInsetsInfo();
@@ -2507,12 +2508,10 @@ void View::OnFocusChanged(
     /* [in] */ IRect* previouslyFocusedRect)
 {
     if (gainFocus) {
-        AutoPtr<IAccessibilityManager> manger;
-        CAccessibilityManager::GetInstance(mContext, (IAccessibilityManager**)&manger);
-        Boolean bval;
-        if (manger->IsEnabled(&bval),  bval) {
-            SendAccessibilityEvent(IAccessibilityEvent::TYPE_VIEW_FOCUSED);
-        }
+        SendAccessibilityEvent(IAccessibilityEvent::TYPE_VIEW_FOCUSED);
+    } else {
+        NotifyViewAccessibilityStateChangedIfNeeded(
+                    IAccessibilityEvent::CONTENT_CHANGE_TYPE_UNDEFINED);
     }
 
     AutoPtr<IInputMethodManager> imm = CInputMethodManager::PeekInstance();
@@ -2704,34 +2703,54 @@ void View::OnInitializeAccessibilityEventInternal(
     event->SetEnabled(IsEnabled());
     event->SetContentDescription(mContentDescription);
 
-    Int32 type = 0;
-    event->GetEventType(&type);
-    if (type == IAccessibilityEvent::TYPE_VIEW_FOCUSED && mAttachInfo != NULL) {
-        AutoPtr<IView> view = GetRootView();
-        AutoPtr<IObjectContainer> bc;
-        CObjectContainer::New((IObjectContainer**)&bc);
-        List<View*>::Iterator it = mAttachInfo->mTempArrayList.Begin();
-        for (; it != mAttachInfo->mTempArrayList.End(); ++it) {
-            bc->Add((*it)->Probe(EIID_IView));
-        }
-        view->AddFocusables(bc, IView::FOCUS_FORWARD, IView::FOCUSABLES_ALL);
-        event->SetItemCount(mAttachInfo->mTempArrayList.GetSize());
-
-        Int32 index = -1;
-        it = mAttachInfo->mTempArrayList.Begin();
-        for (Int32 i = 0; it != mAttachInfo->mTempArrayList.End(); ++i, ++it) {
-            if (*it == this) {
-                index = i;
-                break;
+    Int32 type;
+    switch (event->GetEventType(&type), type) {
+        case IAccessibilityEvent::TYPE_VIEW_FOCUSED:
+        {
+            AutoPtr<IArrayList> focusablesTempList;
+            if (mAttachInfo) {
+                focusablesTempList = mAttachInfo->mTempArrayList;
+            } else {
+                CArrayList::New((IArrayList**)&focusablesTempList);
             }
-        }
 
-        event->SetCurrentItemIndex(index);
-        mAttachInfo->mTempArrayList.Clear();
+            GetRootView()->AddFocusables(focusablesTempList, IView::FOCUS_FORWARD, IView::FOCUSABLES_ALL);
+            (IAccessibilityRecord::Probe(event))->SetItemCount(focusablesTempList.GetSize());
+            Int32 index;
+            temp->IndexOf(THIS_PROBE(IInterface), &index);
+            (IAccessibilityRecord::Probe(event))->SetCurrentItemIndex(index);
+
+            if (mAttachInfo) {
+                focusablesTempList->Clear();
+            }
+
+        } break;
+        case IAccessibilityEvent::TYPE_VIEW_TEXT_SELECTION_CHANGED:
+        {
+            AutoPtr<ICharSequence> text = GetIterableTextForAccessibility();
+            if (text) {
+                Int32 len;
+                text->GetLength(&len);
+                if (len > 0) {
+                    (IAccessibilityRecord::Probe(event))->SetFromIndex(GetAccessibilitySelectionStart());
+                    (IAccessibilityRecord::Probe(event))->SetToIndex(GetAccessibilitySelectionEnd());
+                    (IAccessibilityRecord::Probe(event))->SetItemCount(len);
+                }
+            }
+        } break;
     }
 }
 
 AutoPtr<IAccessibilityNodeInfo> View::CreateAccessibilityNodeInfo()
+{
+    if (mAccessibilityDelegate) {
+        return mAccessibilityDelegate->CreateAccessibilityNodeInfo(THIS_PROBE(IAccessibilityNodeInfo));
+    } else {
+        return CreateAccessibilityNodeInfoInternal();
+    }
+}
+
+AutoPtr<IAccessibilityNodeInfo> View::CreateAccessibilityNodeInfoInternal()
 {
     AutoPtr<IAccessibilityNodeInfo> info;
     AutoPtr<IAccessibilityNodeProvider> provider = GetAccessibilityNodeProvider();
@@ -2833,6 +2852,17 @@ void View::OnInitializeAccessibilityNodeInfoInternal(
         if (label != NULL) {
             info->SetLabeledBy(label);
         }
+
+        if ((mAttachInfo->mAccessibilityFetchFlags & IAccessibilityNodeInfo::FLAG_REPORT_VIEW_IDS) != 0
+               /* && Resources::ResourceHasPackage(mID)*/) {
+        //    try {
+            String viewId;
+            GetResources()->GetResourceName(mID, &viewId);
+            //info->SetViewIdResourceName(viewId);
+        //    } catch (Resources.NotFoundException nfe) {
+                /* ignore */
+        //    }
+        }
     }
 
     if (mLabelForId != IView::NO_ID) {
@@ -2866,6 +2896,7 @@ void View::OnInitializeAccessibilityNodeInfoInternal(
     info->SetAccessibilityFocused(IsAccessibilityFocused());
     info->SetSelected(IsSelected());
     info->SetLongClickable(IsLongClickable());
+    info->SetLiveRegion(GetAccessibilityLiveRegion());
 
     // TODO: These make sense only if we are in an AdapterView but all
     // views can be selected. Maybe from accessibility perspective
@@ -2897,18 +2928,20 @@ void View::OnInitializeAccessibilityNodeInfoInternal(
         info->AddAction(IAccessibilityNodeInfo::ACTION_LONG_CLICK);
     }
 
-    Int32 length = -1;
-    if (mContentDescription != NULL) {
-        mContentDescription->GetLength(&length);
-    }
-
-    if (length > 0) {
-        info->AddAction(IAccessibilityNodeInfo::ACTION_NEXT_AT_MOVEMENT_GRANULARITY);
-        info->AddAction(IAccessibilityNodeInfo::ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY);
-        info->SetMovementGranularities(
-            IAccessibilityNodeInfo::MOVEMENT_GRANULARITY_CHARACTER
-            | IAccessibilityNodeInfo::MOVEMENT_GRANULARITY_WORD
-            | IAccessibilityNodeInfo::MOVEMENT_GRANULARITY_PARAGRAPH);
+    AutoPtr<ICharSequence> text = GetIterableTextForAccessibility();
+    if (text) {
+        Int32 length;
+        text->GetLength(&length);
+        if (length > 0) {
+            info->SetTextSelection(GetAccessibilitySelectionStart(), GetAccessibilitySelectionEnd());
+            info->AddAction(IAccessibilityNodeInfo::ACTION_SET_SELECTION);
+            info->AddAction(IAccessibilityNodeInfo::ACTION_NEXT_AT_MOVEMENT_GRANULARITY);
+            info->AddAction(IAccessibilityNodeInfo::ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY);
+            info->SetMovementGranularities(
+                IAccessibilityNodeInfo::MOVEMENT_GRANULARITY_CHARACTER
+                | IAccessibilityNodeInfo::MOVEMENT_GRANULARITY_WORD
+                | IAccessibilityNodeInfo::MOVEMENT_GRANULARITY_PARAGRAPH);
+        }
     }
 }
 
@@ -2943,7 +2976,7 @@ Boolean View::IsVisibleToUser(
             View* view = VIEW_PROBE(current);
             // We have attach info so this view is attached and there is no
             // need to check whether we reach to ViewRootImpl on the way up.
-            if (view->GetAlpha() <= 0 || view->GetVisibility() != IView::VISIBLE) {
+            if (view->GetAlpha() <= 0 || view->GetTransitionAlpha() <= 0 || view->GetVisibility() != IView::VISIBLE) {
                 return FALSE;
             }
 
@@ -2970,6 +3003,181 @@ Boolean View::IsVisibleToUser(
     }
     return FALSE;
 }
+
+
+/**
+ * Computes a point on which a sequence of a down/up event can be sent to
+ * trigger clicking this view. This method is for the exclusive use by the
+ * accessibility layer to determine where to send a click event in explore
+ * by touch mode.
+ *
+ * @param interactiveRegion The interactive portion of this window.
+ * @param outPoint The point to populate.
+ * @return True of such a point exists.
+ */
+Boolean View::ComputeClickPointInScreenForAccessibility(
+    /* [in] */ IRegion* interactiveRegion,
+    /* [in] */ IPoint* outPoint)
+{
+    // Since the interactive portion of the view is a region but as a view
+    // may have a transformation matrix which cannot be applied to a
+    // region we compute the view bounds rectangle and all interactive
+    // predecessor's and sibling's (siblings of predecessors included)
+    // rectangles that intersect the view bounds. At the
+    // end if the view was partially covered by another interactive
+    // view we compute the view's interactive region and pick a point
+    // on its boundary path as regions do not offer APIs to get inner
+    // points. Note that the the code is optimized to fail early and
+    // avoid unnecessary allocations plus computations.
+
+    // The current approach has edge cases that may produce false
+    // positives or false negatives. For example, a portion of the
+    // view may be covered by an interactive descendant of a
+    // predecessor, which we do not compute. Also a view may be handling
+    // raw touch events instead registering click listeners, which
+    // we cannot compute. Despite these limitations this approach will
+    // work most of the time and it is a huge improvement over just
+    // blindly sending the down and up events in the center of the
+    // view.
+
+    // Cannot click on an unattached view.
+    if (mAttachInfo == NULL) {
+        return FALSE;
+    }
+
+    // Attached to an invisible window means this view is not visible.
+    if (mAttachInfo->mWindowVisibility != IView::VISIBLE) {
+        return FALSE;
+    }
+
+    AutoPtr<IRectF> bounds = mAttachInfo->mTmpTransformRect;
+    bounds->Set(0, 0, GetWidth(), GetHeight());
+    AutoPtr<IArrayList> intersections = mAttachInfo->mTmpRectList;
+    intersections->Clear();
+
+    if (IViewGroup::Probe(mParent)) {
+        AutoPtr<IViewGroup> parentGroup = (IViewGroup*)IViewGroup::Probe(mParent);
+
+        Boolean res;
+        parentGroup->TranslateBoundsAndIntersectionsInWindowCoordinates(THIS_PROBE(IView), bounds, intersections, &res);
+        if (!res) {
+            intersections->Clear();
+            return FALSE;
+        }
+    }
+
+    // Take into account the window location.
+    Int32 dx = mAttachInfo->mWindowLeft;
+    Int32 dy = mAttachInfo->mWindowTop;
+    bounds->Offset(dx, dy);
+    OffsetRects(intersections, dx, dy);
+
+    Boolean isEmpty;
+    intersections->IsEmpty(&isEmpty);
+    if (isEmpty && interactiveRegion) {
+        Float x, y;
+        bounds->GetCenterX(&x);
+        bounds->GetCenterY(&y);
+        outPoint->Set(x, y);
+    } else {
+        // This view is partially covered by other views, then compute
+        // the not covered region and pick a point on its boundary.
+        AutoPtr<IRegion> region;
+        CRegion::New((IRegion**)&region);
+        Float left, top, right, bottom;
+        bounds->GetLeft(&left);
+        bounds->GetTop(&top);
+        bounds->GetRight(&right);
+        bounds->GetBottom(&bottom);
+        Boolean res;
+        region->Set(left, top, right, bottom, &res);
+
+        Int32 intersectionCount =  intersections->GetSize();
+
+        for (Int32 i = intersectionCount - 1; i >= 0; i--) {
+            AutoPtr<IInterface> temp;
+            intersections->Remove(i, (IInterface**)&temp);
+            AutoPtr<IRectF> intersection = IRectF::Probe(temp);
+
+            Float rleft, rtop, rright, rbottom;
+            intersection->GetLeft(&rleft);
+            intersection->GetTop(&rtop);
+            intersection->GetRight(&rright);
+            intersection->GetBottom(&rbottom);
+            region->Op(rleft, rtop, rright, rbottom, RegionOp_DIFFERENCE, &res);
+        }
+
+        // If the view is completely covered, done.
+        if (region->IsEmpty(&res), res) {
+            return FALSE;
+        }
+
+        // Take into account the interactive portion of the window
+        // as the rest is covered by other windows. If no such a region
+        // then the whole window is interactive.
+        if (interactiveRegion) {
+            region->Op(interactiveRegion, RegionOp_INTERSECT, &res);
+        }
+
+        // If the view is completely covered, done.
+        if (region->IsEmpty(&res), res) {
+            return FALSE;
+        }
+
+        // Try a shortcut here.
+        if (region->IsRect(&res), res) {
+            AutoPtr<IRect> regionBounds = mAttachInfo->mTmpInvalRect;
+            region->GetBounds((IRect**)&regionBounds);
+            Int32 x, y;
+            regionBounds->GetCenterX(&x);
+            regionBounds->GetCenterY(&y);
+            outPoint->Set(x, y);
+            return TRUE;
+        }
+
+        // Get the a point on the region boundary path.
+        AutoPtr<IPath> path;
+        region->GetBoundaryPath((IPath**)&path);
+
+        AutoPtr<IPathMeasure> pathMeasure;
+        CPathMeasure::New(path, FALSE, (IPathMeasure**)&pathMeasure);
+
+        AutoPtr< ArrayOf<Float> > coordinates = mAttachInfo->mTmpTransformLocation;
+
+        // Without loss of generality pick a point.
+        Float p;
+        pathMeasure->GetLength(&p);
+        p *= 0.01f;
+        Boolean posTan;
+        pathMeasure->GetPosTan(p, coordinates, NULL, &posTan);
+        if (!posTan) {
+            return FALSE;
+        }
+
+        outPoint->Set(Elastos::Core::Math::Round((*coordinates)[0]), Elastos::Core::Math::Round((*coordinates)[1]));
+    }
+
+    return TRUE;
+}
+
+void View::OffsetRects(
+        /* [in] */ IArrayList* rects,
+        /* [in] */ Float offsetX,
+        /* [in] */ Float offsetY)
+{
+    Int32 rectCount;
+    rects->GetSize(&rectCount);
+    for (Int32 i = 0; i < rectCount; i++) {
+        AutoPtr<IInterface> temp;
+        rects->Get(i, (IInterface**)&temp);
+
+        AutoPtr<IRectF> intersection = IRectF::Probe(temp);
+
+        intersection->Offset(offsetX, offsetY);
+    }
+}
+
+
 
 AutoPtr<IAccessibilityDelegate> View::GetAccessibilityDelegate()
 {
@@ -3006,7 +3214,7 @@ Int32 View::GetAccessibilityViewId()
 
 Int32 View::GetAccessibilityWindowId()
 {
-    return mAttachInfo != NULL ? mAttachInfo->mAccessibilityWindowId : IView::NO_ID;
+    return mAttachInfo != NULL ? mAttachInfo->mAccessibilityWindowId : IAccessibilityNodeInfo::UNDEFINED_ITEM_ID;;
 }
 
 AutoPtr<ICharSequence> View::GetContentDescription()
@@ -3049,9 +3257,11 @@ ECode View::SetContentDescription(
     Int32 len = 0;
     Boolean nonEmptyDesc = contentDescription != NULL && (contentDescription->GetLength(&len), len) > 0;
     if (nonEmptyDesc && GetImportantForAccessibility() == IView::IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
-         SetImportantForAccessibility(IView::IMPORTANT_FOR_ACCESSIBILITY_YES);
-    }
-    NotifyAccessibilityStateChanged();
+        SetImportantForAccessibility(IView::IMPORTANT_FOR_ACCESSIBILITY_YES);
+        NotifySubtreeAccessibilityStateChangedIfNeeded();
+    } else {
+        NotifyViewAccessibilityStateChangedIfNeeded(
+                IAccessibilityEvent::CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION);
 
     return NOERROR;
 }
@@ -3371,24 +3581,31 @@ Boolean View::IsShown()
 Boolean View::FitSystemWindows(
     /* [in] */ IRect* _insets)
 {
-    assert(_insets != NULL);
-    CRect* insets = (CRect*)_insets;
-
-    if ((mViewFlags & FITS_SYSTEM_WINDOWS) == FITS_SYSTEM_WINDOWS) {
-        mUserPaddingStart = UNDEFINED_PADDING;
-        mUserPaddingEnd = UNDEFINED_PADDING;
-        if ((mViewFlags & OPTIONAL_FITS_SYSTEM_WINDOWS) == 0
-                || mAttachInfo == NULL
-                || (mAttachInfo->mSystemUiVisibility & IView::SYSTEM_UI_LAYOUT_FLAGS) == 0) {
-            InternalSetPadding(insets->mLeft, insets->mTop, insets->mRight, insets->mBottom);
-            return TRUE;
-        }
-        else {
-            InternalSetPadding(0, 0, 0, 0);
+    if ((mPrivateFlags3 & PFLAG3_APPLYING_INSETS) == 0) {
+        if (_insets == NULL) {
+            // Null insets by definition have already been consumed.
+            // This call cannot apply insets since there are none to apply,
+            // so return false.
             return FALSE;
         }
+        // If we're not in the process of dispatching the newer apply insets call,
+        // that means we're not in the compatibility path. Dispatch into the newer
+        // apply insets path and take things from there.
+        //try {
+            mPrivateFlags3 |= PFLAG3_FITTING_SYSTEM_WINDOWS;
+            AutoPtr<IWindowInsets> sets;
+            CWindowInsets::New(_insets, (IWindowInsets**)&sets);
+            Boolean res;
+            DispatchApplyWindowInsets(sets)->sConsumed(&res);
+            return res;
+        //} finally {
+            mPrivateFlags3 &= ~PFLAG3_FITTING_SYSTEM_WINDOWS;
+        //}
+    } else {
+        // We're being called from the newer apply insets path.
+        // Perform the standard fallback behavior.
+        return FitSystemWindowsInt(_insets);
     }
-    return FALSE;
 }
 
 /**
