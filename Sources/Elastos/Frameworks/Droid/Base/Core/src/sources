@@ -16,7 +16,7 @@ include $(MAKEDIR)/../../../sources.inc
 INCLUDES += $(MAKEDIR)/../inc
 // INCLUDES += $(MAKEDIR)/../inc/graphics
 // INCLUDES += $(MAKEDIR)/../inc/graphics/drawable
-// INCLUDES += $(MAKEDIR)/../inc/graphics/drawable/shapes
+INCLUDES += $(MAKEDIR)/../inc/graphics/drawable/shapes
 INCLUDES += $(MAKEDIR)/../inc/hardware
 INCLUDES += $(MAKEDIR)/../inc/hardware/display
 INCLUDES += $(MAKEDIR)/../inc/hardware/input
@@ -100,7 +100,10 @@ SOURCES += frameworkext.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
+//TODO:Graphics
 // LIBRARIES += graphics/graphics.lib
+LIBRARIES += graphics/drawable/shapes/shapes.lib
+
 LIBRARIES += content/content.lib
 LIBRARIES += os/os.lib
 // LIBRARIES += os/storage/storage.lib

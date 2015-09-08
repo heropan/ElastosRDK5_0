@@ -15,9 +15,13 @@ namespace Shapes {
  * but more graphical control is available if you instead pass
  * the PathShape to a {@link android.graphics.drawable.ShapeDrawable}.
  */
-class PathShape : public Shape
+class PathShape
+    : public Shape
+    , public IPathShape
 {
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * PathShape constructor.
      *
@@ -42,7 +46,7 @@ public:
 protected:
     PathShape();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IPath* path,
         /* [in] */ Float stdWidth,
         /* [in] */ Float stdHeight);
@@ -52,8 +56,8 @@ protected:
         /* [in] */ Float width,
         /* [in] */ Float height);
 
-    CARAPI_(void) Clone(
-        /* [in] */ PathShape* other);
+    CARAPI CloneImpl(
+        /* [in] */ IPathShape* other);
 
 private:
     AutoPtr<IPath> mPath;

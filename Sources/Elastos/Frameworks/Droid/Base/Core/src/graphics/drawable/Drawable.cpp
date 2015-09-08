@@ -61,8 +61,8 @@ AutoPtr<IRect> Init_ZERO_BOUNDS_RECT()
     return (IRect*)rect.Get();
 }
 
+CAR_INTERFACE_IMPL(Drawable, Object, IDrawable);
 AutoPtr<IRect> Drawable::ZERO_BOUNDS_RECT = Init_ZERO_BOUNDS_RECT();
-
 Drawable::Drawable()
     : mStateSet(const_cast<ArrayOf<Int32>*>(StateSet::WILD_CARD.Get()))
     , mLevel(0)
@@ -117,21 +117,25 @@ ECode Drawable::CopyBounds(
     return NOERROR;
 }
 
-AutoPtr<IRect> Drawable::CopyBounds()
+ECode Drawable::CopyBounds(
+    /* [out] */ IRect** bounds)
 {
-    AutoPtr<IRect> r;
-    ASSERT_SUCCEEDED(CRect::New(mBounds.Get(), (IRect**)&r));
-    return r;
+    VALIDATE_NOT_NULL(bounds);
+    return CRect::New(mBounds.Get(), bounds);
 }
 
-AutoPtr<IRect> Drawable::GetBounds()
+ECode Drawable::GetBounds(
+    /* [out] */ IRect** bounds)
 {
+    VALIDATE_NOT_NULL(bounds);
     if (mBounds == ZERO_BOUNDS_RECT) {
         mBounds = NULL;
         ASSERT_SUCCEEDED(CRect::New((IRect**)&mBounds));
     }
 
-    return mBounds;
+    *bounds = mBounds;
+    REFCOUNT_ADD(*bounds);
+    return NOERROR;
 }
 
 ECode Drawable::SetChangingConfigurations(
@@ -141,9 +145,12 @@ ECode Drawable::SetChangingConfigurations(
     return NOERROR;
 }
 
-Int32 Drawable::GetChangingConfigurations()
+ECode Drawable::GetChangingConfigurations(
+    /* [out] */ Int32* configs)
 {
-    return mChangingConfigurations;
+    VALIDATE_NOT_NULL(configs);
+    *configs = mChangingConfigurations;
+    return NOERROR;
 }
 
 ECode Drawable::SetDither(
@@ -171,13 +178,15 @@ ECode Drawable::SetCallback(
     return NOERROR;
 }
 
-AutoPtr<IDrawableCallback> Drawable::GetCallback()
+ECode Drawable::GetCallback(
+    /* [out] */ IDrawableCallback** callback)
 {
-    AutoPtr<IDrawableCallback> callback;
+    VALIDATE_NOT_NULL(callback);
+    *callback = NULL;
     if (mCallback != NULL) {
         mCallback->Resolve(EIID_IDrawableCallback, (IInterface**)&callback);
     }
-    return callback;
+    return NOERROR;
 }
 
 ECode Drawable::InvalidateSelf()
@@ -213,9 +222,12 @@ ECode Drawable::UnscheduleSelf(
     return NOERROR;
 }
 
-Int32 Drawable::GetLayoutDirection()
+ECode Drawable::GetLayoutDirection(
+    /* [out] */ Int32* dir)
 {
-    return mLayoutDirection;
+    VALIDATE_NOT_NULL(dir);
+    *dir = mLayoutDirection;
+    return NOERROR;
 }
 
 ECode Drawable::SetLayoutDirection(
@@ -242,14 +254,19 @@ ECode Drawable::ClearColorFilter()
     return SetColorFilter(NULL);
 }
 
-Boolean Drawable::IsStateful()
+ECode Drawable::IsStateful(
+    /* [out] */ Boolean* isStateful)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(isStateful);
+    *isStateful = FALSE;
+    return NOERROR;
 }
 
-Boolean Drawable::SetState(
-    /* [in] */ ArrayOf<Int32>* stateSet)
+ECode Drawable::SetState(
+    /* [in] */ ArrayOf<Int32>* stateSet,
+    /* [out] */ Boolean* isStateful)
 {
+    VALIDATE_NOT_NULL(isStateful);
     Boolean isEqual = TRUE;
 
     if (mStateSet.Get() == stateSet) {
@@ -270,14 +287,20 @@ Boolean Drawable::SetState(
 
     if (!isEqual) {
         mStateSet = stateSet;
-        return OnStateChange(stateSet);
+        *isStateful = OnStateChange(stateSet);
+        return NOERROR;
     }
-    return FALSE;
+    *isStateful = FALSE;
+    return NOERROR;
 }
 
-AutoPtr< ArrayOf<Int32> > Drawable::GetState()
+ECode Drawable::GetState(
+    /* [out, callee] */ ArrayOf<Int32>** stateSet)
 {
-    return mStateSet;
+    VALIDATE_NOT_NULL(stateSet);
+    *stateSet = mStateSet;
+    REFCOUNT_ADD(*stateSet);
+    return NOERROR;
 }
 
 ECode Drawable::JumpToCurrentState()
@@ -285,65 +308,93 @@ ECode Drawable::JumpToCurrentState()
     return NOERROR;
 }
 
-AutoPtr<IDrawable> Drawable::GetCurrent()
+ECode Drawable::GetCurrent(
+    /* [out] */ IDrawable** drawable)
 {
-    return (IDrawable*)this->Probe(EIID_IDrawable);
+    VALIDATE_NOT_NULL(drawable);
+    *drawable = (IDrawable*)this->Probe(EIID_IDrawable);
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
-Boolean Drawable::SetLevel(
-    /* [in] */ Int32 level)
+ECode Drawable::SetLevel(
+    /* [in] */ Int32 level,
+    /* [out] */ Boolean* change)
 {
+    VALIDATE_NOT_NULL(change);
     if (mLevel != level) {
         mLevel = level;
-        return OnLevelChange(level);
+        *change = OnLevelChange(level);
+        return NOERROR;
     }
-    return FALSE;
+
+    *change = FALSE;
+    return NOERROR;
 }
 
-Int32 Drawable::GetLevel()
+ECode Drawable::GetLevel(
+    /* [out] */ Int32* level)
 {
-    return mLevel;
+    VALIDATE_NOT_NULL(level);
+    *level = mLevel;
+    return NOERROR;
 }
 
-Boolean Drawable::SetVisible(
+ECode Drawable::SetVisible(
     /* [in] */ Boolean visible,
-    /* [in] */ Boolean restart)
+    /* [in] */ Boolean restart,
+    /* [out] */ Boolean* isDifferent)
 {
+    VALIDATE_NOT_NULL(isDifferent);
     Boolean changed = mVisible != visible;
     if (changed) {
         mVisible = visible;
         InvalidateSelf();
     }
-    return changed;
+    *isDifferent = changed;
+    return NOERROR;
 }
 
-Boolean Drawable::IsVisible()
+ECode Drawable::IsVisible(
+    /* [out] */ Boolean* visible)
 {
-    return mVisible;
+    VALIDATE_NOT_NULL(visible);
+    *visible = mVisible;
+    return NOERROR;
 }
 
-Int32 Drawable::ResolveOpacity(
+ECode Drawable::ResolveOpacity(
     /* [in] */ Int32 op1,
-    /* [in] */ Int32 op2)
+    /* [in] */ Int32 op2,
+    /* [out] */ Int32* opacity)
 {
+    VALIDATE_NOT_NULL(opacity);
     if (op1 == op2) {
-        return op1;
+        *opacity = op1;
+        return NOERROR;
     }
     if (op1 == IPixelFormat::UNKNOWN || op2 == IPixelFormat::UNKNOWN) {
-        return IPixelFormat::UNKNOWN;
+        *opacity = IPixelFormat::UNKNOWN;
+        return NOERROR;
     }
     if (op1 == IPixelFormat::TRANSLUCENT || op2 == IPixelFormat::TRANSLUCENT) {
-        return IPixelFormat::TRANSLUCENT;
+        *opacity = IPixelFormat::TRANSLUCENT;
+        return NOERROR;
     }
     if (op1 == IPixelFormat::TRANSPARENT || op2 == IPixelFormat::TRANSPARENT) {
-        return IPixelFormat::TRANSPARENT;
+        *opacity = IPixelFormat::TRANSPARENT;
+        return NOERROR;
     }
-    return IPixelFormat::OPAQUE;
+    *opacity = IPixelFormat::OPAQUE;
+    return NOERROR;
 }
 
-AutoPtr<IRegion> Drawable::GetTransparentRegion()
+ECode Drawable::GetTransparentRegion(
+    /* [out] */ IRegion** bounds)
 {
-    return NULL;
+    VALIDATE_NOT_NULL(bounds);
+    *bounds = NULL;
+    return NOERROR;
 }
 
 Boolean Drawable::OnStateChange(
@@ -363,33 +414,51 @@ void Drawable::OnBoundsChange(
 {
 }
 
-Int32 Drawable::GetIntrinsicWidth()
+ECode Drawable::GetIntrinsicWidth(
+    /* [out] */ Int32* width)
 {
-    return -1;
+    VALIDATE_NOT_NULL(width);
+    *width = -1;
+    return NOERROR;
 }
 
-Int32 Drawable::GetIntrinsicHeight()
+ECode Drawable::GetIntrinsicHeight(
+    /* [out] */ Int32* height)
 {
-    return -1;
+    VALIDATE_NOT_NULL(height);
+    *height = -1;
+    return NOERROR;
 }
 
-Int32 Drawable::GetMinimumWidth()
+ECode Drawable::GetMinimumWidth(
+    /* [out] */ Int32* width)
 {
-    Int32 intrinsicWidth = GetIntrinsicWidth();
-    return intrinsicWidth > 0 ? intrinsicWidth : 0;
+    VALIDATE_NOT_NULL(width);
+    Int32 intrinsicWidth = 0;
+    GetIntrinsicWidth(&intrinsicWidth);
+    *width = intrinsicWidth > 0 ? intrinsicWidth : 0;
+    return NOERROR;
 }
 
-Int32 Drawable::GetMinimumHeight()
+ECode Drawable::GetMinimumHeight(
+    /* [out] */ Int32* height)
 {
-    Int32 intrinsicHeight = GetIntrinsicHeight();
-    return intrinsicHeight > 0 ? intrinsicHeight : 0;
+    VALIDATE_NOT_NULL(height);
+    Int32 intrinsicHeight = 0;
+    GetIntrinsicHeight(&intrinsicHeight);
+    *height = intrinsicHeight > 0 ? intrinsicHeight : 0;
+    return NOERROR;
 }
 
-Boolean Drawable::GetPadding(
-    /* [in, out] */ IRect* padding)
+ECode Drawable::GetPadding(
+    /* [in, out] */ IRect* padding,
+    /* [out] */ Boolean* isPadding)
 {
+    assert(padding != NULL);
+    VALIDATE_NOT_NULL(isPadding);
     padding->Set(0, 0, 0, 0);
-    return FALSE;
+    *isPadding = FALSE;
+    return NOERROR;
 }
 
 AutoPtr<IInsets> Drawable::GetLayoutInsets()
@@ -397,9 +466,13 @@ AutoPtr<IInsets> Drawable::GetLayoutInsets()
     return Insets::NONE;
 }
 
-AutoPtr<IDrawable> Drawable::Mutate()
+ECode Drawable::Mutate(
+    /* [out] */ IDrawable** drawable)
 {
-    return (IDrawable*)this->Probe(EIID_IDrawable);
+    VALIDATE_NOT_NULL(drawable);
+    *drawable = (IDrawable*)this->Probe(EIID_IDrawable);
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
 ECode Drawable::CreateFromStream(
@@ -652,12 +725,13 @@ ECode Drawable::InflateWithAttributes(
     return attrs->GetBoolean(visibleAttr, mVisible, &mVisible);
 }
 
-AutoPtr<IDrawableConstantState> Drawable::GetConstantState()
+ECode Drawable::GetConstantState(
+    /* [out] */ IDrawableConstantState** state)
 {
-    return NULL;
+    VALIDATE_NOT_NULL(state);
+    *state = NULL;
+    return NOERROR;
 }
-
-/////////////////////////////////////////////////////////////////////
 
 ECode Drawable::DrawableFromBitmap(
     /* [in] */ IResources* res,
@@ -683,9 +757,12 @@ ECode Drawable::SetResId(
     return NOERROR;
 }
 
-Int32 Drawable::GetResId()
+ECode Drawable::GetResId(
+    /* [out] */ Int32* resId)
 {
-    return mResId;
+    VALIDATE_NOT_NULL(resId);
+    *resId = mResId;
+    return NOERROR;
 }
 
 } // namespace Drawable

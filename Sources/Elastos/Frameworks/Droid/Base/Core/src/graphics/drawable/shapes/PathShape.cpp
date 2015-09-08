@@ -1,5 +1,6 @@
+
 #include "graphics/drawable/shapes/PathShape.h"
-#include "graphics/CPath.h"
+// #include "graphics/CPath.h"
 
 namespace Elastos {
 namespace Droid {
@@ -7,6 +8,7 @@ namespace Graphics {
 namespace Drawable {
 namespace Shapes {
 
+CAR_INTERFACE_IMPL(PathShape, Shape, IPathShape);
 PathShape::PathShape()
     : mStdWidth(0)
     , mStdHeight(0)
@@ -14,17 +16,6 @@ PathShape::PathShape()
     , mScaleY(0)
 {}
 
-/**
- * PathShape constructor.
- *
- * @param path       a Path that defines the geometric paths for this shape
- * @param stdWidth   the standard width for the shape. Any changes to the
- *                   width with resize() will result in a width scaled based
- *                   on the new width divided by this width.
- * @param stdHeight  the standard height for the shape. Any changes to the
- *                   height with resize() will result in a height scaled based
- *                   on the new height divided by this height.
- */
 PathShape::PathShape(
     /* [in] */ IPath* path,
     /* [in] */ Float stdWidth,
@@ -34,7 +25,7 @@ PathShape::PathShape(
     , mStdHeight(stdHeight)
 {}
 
-ECode PathShape::Init(
+ECode PathShape::constructor(
     /* [in] */ IPath* path,
     /* [in] */ Float stdWidth,
     /* [in] */ Float stdHeight)
@@ -57,7 +48,6 @@ ECode PathShape::Draw(
     return NOERROR;
 }
 
-//@Override
 void PathShape::OnResize(
     /* [in] */ Float width,
     /* [in] */ Float height)
@@ -66,15 +56,18 @@ void PathShape::OnResize(
     mScaleY = height / mStdHeight;
 }
 
-void PathShape::Clone(
-    /* [in] */ PathShape* other)
+ECode PathShape::CloneImpl(
+    /* [in] */ IPathShape* _other)
 {
-    Shape::Clone((Shape*)other);
-    CPath::New(mPath, (IPath**)&other->mPath);
+    PathShape* other = (PathShape*)_other;
+    Shape::CloneImpl(IShape::Probe(other));
+    assert(0 && "TODO");
+    // CPath::New(mPath, (IPath**)&other->mPath);
     other->mStdWidth = mStdWidth;
     other->mStdHeight = mStdHeight;
     other->mScaleX = mScaleX;
     other->mScaleY = mScaleY;
+    return NOERROR;
 }
 
 } // namespace Shapes

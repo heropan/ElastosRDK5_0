@@ -17,6 +17,8 @@ module
     /**
      * @Involve
      * interface IRectShape
+     * interface IShape
+     * interface ICloneable
      */
     interface IRoundRectShape {
     }

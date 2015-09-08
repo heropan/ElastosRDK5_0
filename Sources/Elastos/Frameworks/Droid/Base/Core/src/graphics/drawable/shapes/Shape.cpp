@@ -1,42 +1,37 @@
 
 #include "graphics/drawable/shapes/Shape.h"
 
+using Elastos::Core::EIID_ICloneable;
+
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 namespace Drawable {
 namespace Shapes {
 
-
+CAR_INTERFACE_IMPL_2(Shape, Object, IShape, ICloneable);
 Shape::Shape()
     : mWidth(0)
     , mHeight(0)
 {
 }
 
- /**
- * Returns the width of the Shape.
- */
-Float Shape::GetWidth()
+ECode Shape::GetWidth(
+    /* [out] */ Float* width)
 {
-    return mWidth;
+    VALIDATE_NOT_NULL(width);
+    *width = mWidth;
+    return NOERROR;
 }
 
-/**
- * Returns the height of the Shape.
- */
-Float Shape::GetHeight()
+ECode Shape::GetHeight(
+    /* [out] */ Float* height)
 {
-    return mHeight;
+    VALIDATE_NOT_NULL(height);
+    *height = mHeight;
+    return NOERROR;
 }
 
-/**
- * Resizes the dimensions of this shape.
- * Must be called before {@link #draw(Canvas,Paint)}.
- *
- * @param width the width of the shape (in pixels)
- * @param height the height of the shape (in pixels)
- */
 ECode Shape::Resize(
     /* [in] */ Float width,
     /* [in] */ Float height)
@@ -56,33 +51,34 @@ ECode Shape::Resize(
     return NOERROR;
 }
 
-/**
- * Checks whether the Shape is opaque.
- * Default impl returns true. Override if your subclass can be opaque.
- *
- * @return true if any part of the drawable is <em>not</em> opaque.
- */
-Boolean Shape::HasAlpha()
+ECode Shape::HasAlpha(
+    /* [out] */ Boolean* has)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(has);
+    *has = TRUE;
+    return NOERROR;
 }
 
-/**
- * Callback method called when {@link #resize(float,float)} is executed.
- *
- * @param width the new width of the Shape
- * @param height the new height of the Shape
- */
 void Shape::OnResize(
     /* [in] */ Float width,
     /* [in] */ Float height)
 {}
 
-void Shape::Clone(
-    /* [in] */ Shape* other)
+// ECode Shape::Clone(
+//     /* [out] */ IInterface** other)
+// {
+//     VALIDATE_NOT_NULL(other);
+//     *other = THIS_PROBE(EIID_IInterface);
+//     REFCOUNT_ADD(*other);
+//     return NOERROR;
+// }
+
+ECode Shape::CloneImpl(
+    /* [in] */ IShape* other)
 {
-    other->mWidth = mWidth;
-    other->mHeight = mHeight;
+    ((Shape*)other)->mWidth = mWidth;
+    ((Shape*)other)->mHeight = mHeight;
+    return NOERROR;
 }
 
 } // namespace Shapes

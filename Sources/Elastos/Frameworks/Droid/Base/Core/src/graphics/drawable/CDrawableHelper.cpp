@@ -6,6 +6,17 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
+CAR_INTERFACE_IMPL(CDrawableHelper, Singleton, IDrawableHelper)
+CAR_SINGLETON_IMPL(CDrawableHelper)
+ECode CDrawableHelper::ResolveOpacity(
+    /* [in] */ Int32 op1,
+    /* [in] */ Int32 op2,
+    /* [out] */ Int32* opacity)
+{
+    VALIDATE_NOT_NULL(opacity);
+    return Drawable::ResolveOpacity(op1, op2, opacity);
+}
+
 ECode CDrawableHelper::CreateFromPath(
     /* [in] */ const String& pathName,
     /* [out] */ IDrawable** drawable)

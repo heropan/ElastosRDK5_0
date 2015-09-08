@@ -7,28 +7,15 @@ namespace Graphics {
 namespace Drawable {
 namespace Shapes {
 
-/**
- * OvalShape constructor.
- */
+CAR_INTERFACE_IMPL(OvalShape, RectShape, IOvalShape);
 OvalShape::OvalShape()
 {}
-
-ECode OvalShape::Init()
-{
-    return NOERROR;
-}
 
 ECode OvalShape::Draw(
     /* [in] */ ICanvas* canvas,
     /* [in] */ IPaint* paint)
 {
     return canvas->DrawOval(Rect().Get(), paint);
-}
-
-void OvalShape::Clone(
-    /* [in] */ OvalShape* other)
-{
-    RectShape::Clone(other);
 }
 
 } // namespace Shapes

@@ -1,4 +1,6 @@
+
 #include "graphics/drawable/shapes/RectShape.h"
+// #include "graphics/CRectF.h"
 
 namespace Elastos {
 namespace Droid {
@@ -6,17 +8,11 @@ namespace Graphics {
 namespace Drawable {
 namespace Shapes {
 
-/**
- * RectShape constructor.
- */
+CAR_INTERFACE_IMPL(RectShape, Shape, IRectShape);
 RectShape::RectShape()
 {
-    CRectF::NewByFriend((CRectF**)&mRect);
-}
-
-ECode RectShape::Init()
-{
-    return NOERROR;
+    assert(0 && "TODO");
+    // CRectF::New((IRectF**)&mRect);
 }
 
 ECode RectShape::Draw(
@@ -33,19 +29,19 @@ void RectShape::OnResize(
     mRect->Set(0, 0, width, height);
 }
 
-/**
- * Returns the RectF that defines this rectangle's bounds.
- */
-AutoPtr<CRectF> RectShape::Rect()
+AutoPtr<IRectF> RectShape::Rect()
 {
     return mRect;
 }
 
-void RectShape::Clone(
-    /* [in] */ RectShape* other)
+ECode RectShape::CloneImpl(
+    /* [in] */ IRectShape* other)
 {
-    Shape::Clone((Shape*)other);
-    CRectF::NewByFriend(mRect.Get(), (CRectF**)&other->mRect);
+    assert(other != NULL);
+    Shape::CloneImpl(IShape::Probe(other));
+    assert(0 && "TODO");
+    // return CRectF::New(mRect.Get(), (IRectF**)&((RectShape*)other)->mRect);
+    return NOERROR;
 }
 
 } // namespace Shapes

@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_ROUNDRECTSHAPE_H__
 
 #include "graphics/drawable/shapes/RectShape.h"
-#include "graphics/CRectF.h"
 
 namespace Elastos {
 namespace Droid {
@@ -17,9 +16,13 @@ namespace Shapes {
  * but more graphical control is available if you instead pass
  * the RoundRectShape to a {@link android.graphics.drawable.ShapeDrawable}.
  */
-class RoundRectShape : public RectShape
+class RoundRectShape
+    : public RectShape
+    , public IRoundRectShape
 {
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * RoundRectShape constructor.
      * Specifies an outer (round)rect and an optional inner (round)rect.
@@ -52,7 +55,7 @@ public:
 protected:
     RoundRectShape();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ArrayOf<Float>* outerRadii,
         /* [in] */ IRectF* inset,
         /* [in] */ ArrayOf<Float>* innerRadii);
@@ -62,15 +65,15 @@ protected:
         /* [in] */ Float width,
         /* [in] */ Float height);
 
-    CARAPI_(void) Clone(
-        /* [in] */ RoundRectShape* other);
+    CARAPI CloneImpl(
+        /* [in] */ IRoundRectShape* other);
 
 private:
     AutoPtr< ArrayOf<Float> > mOuterRadii;
-    AutoPtr<CRectF> mInset;
+    AutoPtr<IRectF> mInset;
     AutoPtr< ArrayOf<Float> > mInnerRadii;
 
-    AutoPtr<CRectF> mInnerRect;
+    AutoPtr<IRectF> mInnerRect;
     AutoPtr<IPath> mPath;    // this is what we actually draw
 };
 

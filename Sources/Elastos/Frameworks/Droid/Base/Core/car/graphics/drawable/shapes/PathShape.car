@@ -16,6 +16,7 @@ module
     /**
      * @Involve
      * interface IShape
+     * interface ICloneable
      */
     interface IPathShape {
     }

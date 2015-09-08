@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
 #include "graphics/drawable/shapes/RoundRectShape.h"
-#include "graphics/CPath.h"
+// #include "graphics/CPath.h"
 
 namespace Elastos {
 namespace Droid {
@@ -9,28 +9,10 @@ namespace Graphics {
 namespace Drawable {
 namespace Shapes {
 
+CAR_INTERFACE_IMPL(RoundRectShape, RectShape, IRoundRectShape);
 RoundRectShape::RoundRectShape()
 {}
 
-/**
- * RoundRectShape constructor.
- * Specifies an outer (round)rect and an optional inner (round)rect.
- *
- * @param outerRadii An array of 8 radius values, for the outer roundrect.
- *                   The first two floats are for the
- *                   top-left corner (remaining pairs correspond clockwise).
- *                   For no rounded corners on the outer rectangle,
- *                   pass null.
- * @param inset      A RectF that specifies the distance from the inner
- *                   rect to each side of the outer rect.
- *                   For no inner, pass null.
- * @param innerRadii An array of 8 radius values, for the inner roundrect.
- *                   The first two floats are for the
- *                   top-left corner (remaining pairs correspond clockwise).
- *                   For no rounded corners on the inner rectangle,
- *                   pass null.
- *                   If inset parameter is null, this parameter is ignored.
- */
 RoundRectShape::RoundRectShape(
     /* [in] */ ArrayOf<Float>* outerRadii,
     /* [in] */ IRectF* inset,
@@ -47,16 +29,16 @@ RoundRectShape::RoundRectShape(
         assert(0);
     }
     mOuterRadii = outerRadii;
-    mInset = (CRectF*)inset;
     mInnerRadii = innerRadii;
 
-    if (inset != NULL) {
-        CRectF::NewByFriend((CRectF**)&mInnerRect);
-    }
-    CPath::New((IPath**)&mPath);
+    assert(0 && "TODO");
+    // if (inset != NULL) {
+    //     CRectF::New((IRectF**)&mInnerRect);
+    // }
+    // CPath::New((IPath**)&mPath);
 }
 
-ECode RoundRectShape::Init(
+ECode RoundRectShape::constructor(
     /* [in] */ ArrayOf<Float>* outerRadii,
     /* [in] */ IRectF* inset,
     /* [in] */ ArrayOf<Float>* innerRadii)
@@ -72,13 +54,13 @@ ECode RoundRectShape::Init(
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     mOuterRadii = outerRadii;
-    mInset = (CRectF*)inset;
     mInnerRadii = innerRadii;
 
-    if (inset != NULL) {
-        CRectF::NewByFriend((CRectF**)&mInnerRect);
-    }
-    CPath::New((IPath**)&mPath);
+    assert(0 && "TODO");
+    // if (inset != NULL) {
+    //     CRectF::NewByFriend((CRectF**)&mInnerRect);
+    // }
+    // CPath::New((IPath**)&mPath);
     return NOERROR;
 }
 
@@ -95,42 +77,47 @@ void RoundRectShape::OnResize(
 {
     RectShape::OnResize(w, h);
 
-    AutoPtr<CRectF> r = Rect();
+    AutoPtr<IRectF> rf = Rect();
     mPath->Reset();
 
     if (mOuterRadii != NULL) {
-        mPath->AddRoundRect((IRectF*)r, *mOuterRadii, PathDirection_CW);
+        mPath->AddRoundRect(rf, mOuterRadii, PathDirection_CW);
     }
     else {
-        mPath->AddRect((IRectF*)r, PathDirection_CW);
+        mPath->AddRect(rf, PathDirection_CW);
     }
     if (mInnerRect != NULL) {
-        mInnerRect->Set(r->mLeft + mInset->mLeft, r->mTop + mInset->mTop,
-                        r->mRight - mInset->mRight, r->mBottom - mInset->mBottom);
+        Float l = 0.f, r = 0.f, t = 0.f, b = 0.f;
+        Float l2 = 0.f, r2 = 0.f, t2 = 0.f, b2 = 0.f;
+        rf->Get(&l, &t, &r, &b);
+        mInset->Get(&l2, &t2, &r2, &b2);
+        mInnerRect->Set(l + l2, t + t2, r - r2, b - b2);
         Float ww, hh;
         mInnerRect->GetWidth(&ww);
         mInnerRect->GetHeight(&hh);
         if (ww < w && hh < h) {
             if (mInnerRadii != NULL) {
-                mPath->AddRoundRect((IRectF*)mInnerRect, *mInnerRadii,
-                                    PathDirection_CCW);
+                mPath->AddRoundRect(mInnerRect, mInnerRadii, PathDirection_CCW);
             }
             else {
-                mPath->AddRect((IRectF*)mInnerRect, PathDirection_CCW);
+                mPath->AddRect(mInnerRect, PathDirection_CCW);
             }
         }
     }
 }
 
-void RoundRectShape::Clone(
-        /* [in] */ RoundRectShape* other)
+ECode RoundRectShape::CloneImpl(
+    /* [in] */ IRoundRectShape* _other)
 {
-    RectShape::Clone((RectShape*)other);
+    RoundRectShape* other = (RoundRectShape*)_other;
+    RectShape::CloneImpl(IRectShape::Probe(other));
     other->mOuterRadii = mOuterRadii != NULL ? mOuterRadii->Clone() : NULL;
     other->mInnerRadii = mInnerRadii != NULL ? mInnerRadii->Clone() : NULL;
-    CRectF::NewByFriend((IRectF*)mInset.Get(), (CRectF**)&other->mInset);
-    CRectF::NewByFriend((IRectF*)mInnerRect.Get(), (CRectF**)&other->mInnerRect);
-    CPath::New(mPath, (IPath**)&other->mPath);
+    assert(0 && "TODO");
+    // CRectF::New((IRectF*)mInset.Get(), (IRectF**)&other->mInset);
+    // CRectF::New((IRectF*)mInnerRect.Get(), (IRectF**)&other->mInnerRect);
+    // return CPath::New(mPath, (IPath**)&other->mPath);
+    return NOERROR;
 }
 
 } // namespace Shapes

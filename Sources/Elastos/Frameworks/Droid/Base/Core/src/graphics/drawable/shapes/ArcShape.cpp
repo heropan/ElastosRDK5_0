@@ -7,18 +7,12 @@ namespace Graphics {
 namespace Drawable {
 namespace Shapes {
 
+CAR_INTERFACE_IMPL(ArcShape, RectShape, IArcShape);
 ArcShape::ArcShape()
     : mStart(0)
     , mSweep(0)
 {}
 
-/**
- * ArcShape constructor.
- *
- * @param startAngle the angle (in degrees) where the arc begins
- * @param sweepAngle the sweep angle (in degrees). Anything equal to or
- *                   greater than 360 results in a complete circle/oval.
- */
 ArcShape::ArcShape(
     /* [in] */ Float startAngle,
     /* [in] */ Float sweepAngle)
@@ -33,7 +27,7 @@ ECode ArcShape::Draw(
     return canvas->DrawArc(Rect(), mStart, mSweep, TRUE, paint);
 }
 
-ECode ArcShape::Init(
+ECode ArcShape::constructor(
     /* [in] */ Float startAngle,
     /* [in] */ Float sweepAngle)
 {
@@ -42,12 +36,13 @@ ECode ArcShape::Init(
     return NOERROR;
 }
 
-void ArcShape::Clone(
-    /* [in] */ ArcShape* other)
+ECode ArcShape::CloneImpl(
+    /* [in] */ IArcShape* other)
 {
-    RectShape::Clone((RectShape*)other);
-    other->mStart = mStart;
-    other->mSweep = mSweep;
+    RectShape::CloneImpl(IRectShape::Probe(other));
+    ((ArcShape*)other)->mStart = mStart;
+    ((ArcShape*)other)->mSweep = mSweep;
+    return NOERROR;
 }
 
 } // namespace Shapes

@@ -20,6 +20,8 @@ namespace Graphics {
 namespace Drawable {
 
 class Drawable
+    : public Object
+    , public IDrawable
 {
 public:
     /**
@@ -42,7 +44,7 @@ public:
         , public IWeakReferenceSource
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         virtual ~ConstantState()
         {}
@@ -79,12 +81,11 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     Drawable();
 
     virtual ~Drawable();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
 
     /**
      * Draw in its bounds (set via setBounds) respecting optional effects such
@@ -131,7 +132,8 @@ public:
      *
      * @return A copy of the drawable's bounds
      */
-    CARAPI_(AutoPtr<IRect>) CopyBounds();
+    CARAPI CopyBounds(
+        /* [out] */ IRect** bounds);
 
     /**
      * Return the drawable's bounds Rect. Note: for efficiency, the returned
@@ -148,7 +150,8 @@ public:
      * @see #copyBounds()
      * @see #copyBounds(android.graphics.Rect)
      */
-    CARAPI_(AutoPtr<IRect>) GetBounds();
+    CARAPI GetBounds(
+        /* [out] */ IRect** bounds);
 
     /**
      * Set a mask of the configuration parameters for which this drawable
@@ -175,7 +178,8 @@ public:
      *
      * @see android.content.res.Configuration
      */
-    virtual CARAPI_(Int32) GetChangingConfigurations();
+    virtual CARAPI GetChangingConfigurations(
+        /* [out] */ Int32* configs);
 
     /**
      * Set to true to have the drawable dither its colors when drawn to a device
@@ -211,7 +215,8 @@ public:
      *
      * @see #setCallback(android.graphics.drawable.Drawable.Callback)
      */
-    virtual CARAPI_(AutoPtr<IDrawableCallback>) GetCallback();
+    virtual CARAPI GetCallback(
+        /* [out] */ IDrawableCallback** callback);
 
     /**
      * Use the current {@link Callback} implementation to have this Drawable
@@ -256,7 +261,8 @@ public:
      *
      * @hide
      */
-    virtual CARAPI_(Int32) GetLayoutDirection();
+    virtual CARAPI GetLayoutDirection(
+        /* [out] */ Int32* dir);
 
     /**
      * Set the layout direction for this drawable. Should be a resolved direction as the
@@ -304,7 +310,8 @@ public:
      *
      * @see #setState(int[])
      */
-    virtual CARAPI_(Boolean) IsStateful();
+    virtual CARAPI IsStateful(
+        /* [out] */ Boolean* isStateful);
 
     /**
      * Specify a set of states for the drawable. These are use-case specific,
@@ -328,8 +335,9 @@ public:
      * of the Drawable to change (hence requiring an invalidate), otherwise
      * returns false.
      */
-    virtual CARAPI_(Boolean) SetState(
-        /* [in] */ ArrayOf<Int32>* stateSet);
+    virtual CARAPI SetState(
+        /* [in] */ ArrayOf<Int32>* stateSet,
+        /* [out] */ Boolean* isStateful);
 
     /**
      * Describes the current state, as a union of primitve states, such as
@@ -338,7 +346,8 @@ public:
      * Some drawables may modify their imagery based on the selected state.
      * @return An array of resource Ids describing the current state.
      */
-    virtual CARAPI_(AutoPtr< ArrayOf<Int32> >) GetState();
+    virtual CARAPI GetState(
+        /* [out, callee] */ ArrayOf<Int32>** stateSet);
 
     /**
      * If this Drawable does transition animations between states, ask that
@@ -352,7 +361,8 @@ public:
      *         {@link StateListDrawable} and {@link LevelListDrawable} this will be the child drawable
      *         currently in use.
      */
-    virtual CARAPI_(AutoPtr<IDrawable>) GetCurrent();
+    virtual CARAPI GetCurrent(
+        /* [out] */ IDrawable** drawable);
 
     /**
      * Specify the level for the drawable.  This allows a drawable to vary its
@@ -370,15 +380,17 @@ public:
      * of the Drawable to change (hence requiring an invalidate), otherwise
      * returns false.
      */
-    CARAPI_(Boolean) SetLevel(
-        /* [in] */ Int32 level);
+    CARAPI SetLevel(
+        /* [in] */ Int32 level,
+        /* [out] */ Boolean* change);
 
     /**
      * Retrieve the current level.
      *
      * @return int Current level, from 0 (minimum) to 10000 (maximum).
      */
-    CARAPI_(Int32) GetLevel();
+    CARAPI GetLevel(
+        /* [out] */ Int32* level);
 
     /**
      * Set whether this Drawable is visible.  This generally does not impact
@@ -394,11 +406,13 @@ public:
      * @return boolean Returns true if the new visibility is different than
      *         its previous state.
      */
-    virtual CARAPI_(Boolean) SetVisible(
+    virtual CARAPI SetVisible(
         /* [in] */ Boolean visible,
-        /* [in] */ Boolean restart);
+        /* [in] */ Boolean restart,
+        /* [out] */ Boolean* isDifferent);
 
-    CARAPI_(Boolean) IsVisible();
+    CARAPI IsVisible(
+        /* [out] */ Boolean* visible);
 
     /**
      * Return the opacity/transparency of this Drawable.  The returned value is
@@ -424,7 +438,8 @@ public:
      *
      * @see android.graphics.PixelFormat
      */
-    virtual CARAPI_(Int32) GetOpacity() = 0;
+    virtual CARAPI GetOpacity(
+        /* [out] */ Int32* opacity) = 0;
 
     /**
      * Return the appropriate opacity value for two source opacities.  If
@@ -441,9 +456,10 @@ public:
      *
      * @see #getOpacity
      */
-    static CARAPI_(Int32) ResolveOpacity(
+    static CARAPI ResolveOpacity(
         /* [in] */ Int32 op1,
-        /* [in] */ Int32 op2);
+        /* [in] */ Int32 op2,
+        /* [out] */ Int32* opacity);
 
     /**
      * Returns a Region representing the part of the Drawable that is completely
@@ -458,19 +474,22 @@ public:
      * report, else a Region holding the parts of the Drawable's bounds that
      * are transparent.
      */
-    virtual CARAPI_(AutoPtr<IRegion>) GetTransparentRegion();
+    virtual CARAPI GetTransparentRegion(
+        /* [out] */ IRegion** bounds);
 
     /**
      * Return the intrinsic width of the underlying drawable object.  Returns
      * -1 if it has no intrinsic width, such as with a solid color.
      */
-    virtual CARAPI_(Int32) GetIntrinsicWidth();
+    virtual CARAPI GetIntrinsicWidth(
+        /* [out] */ Int32* width);
 
     /**
      * Return the intrinsic height of the underlying drawable object. Returns
      * -1 if it has no intrinsic height, such as with a solid color.
      */
-    virtual CARAPI_(Int32) GetIntrinsicHeight();
+    virtual CARAPI GetIntrinsicHeight(
+        /* [out] */ Int32* height);
 
     /**
      * Returns the minimum width suggested by this Drawable. If a View uses this
@@ -481,7 +500,8 @@ public:
      * @return The minimum width suggested by this Drawable. If this Drawable
      *         doesn't have a suggested minimum width, 0 is returned.
      */
-    virtual CARAPI_(Int32) GetMinimumWidth();
+    virtual CARAPI GetMinimumWidth(
+        /* [out] */ Int32* width);
 
     /**
      * Returns the minimum height suggested by this Drawable. If a View uses this
@@ -492,7 +512,8 @@ public:
      * @return The minimum height suggested by this Drawable. If this Drawable
      *         doesn't have a suggested minimum height, 0 is returned.
      */
-    virtual CARAPI_(Int32) GetMinimumHeight();
+    virtual CARAPI GetMinimumHeight(
+        /* [out] */ Int32* height);
 
     /**
      * Return in padding the insets suggested by this Drawable for placing
@@ -501,8 +522,9 @@ public:
      * actually has a padding, else false. When false is returned, the padding
      * is always set to 0.
      */
-    virtual CARAPI_(Boolean) GetPadding(
-        /* [in, out] */ IRect* padding);
+    virtual CARAPI GetPadding(
+        /* [in, out] */ IRect* padding.
+        /* [out] */ Boolean* isPadding);
 
     /**
      * Return in insets the layout insets suggested by this Drawable for use with alignment
@@ -524,7 +546,8 @@ public:
      *
      * @return This drawable.
      */
-    virtual CARAPI_(AutoPtr<IDrawable>) Mutate();
+    virtual CARAPI Mutate(
+        /* [out] */ IDrawable** drawable);
 
     /**
      * Create a drawable from an inputstream
@@ -599,9 +622,11 @@ public:
     CARAPI SetResId(
         /* [in] */ Int32 resId);
 
-    CARAPI_(Int32) GetResId();
+    CARAPI GetResId(
+        /* [out] */ Int32* resId);
 
-    virtual CARAPI_(AutoPtr<IDrawableConstantState>) GetConstantState();
+    virtual CARAPI GetConstantState(
+        /* [out] */ IDrawableConstantState** state);
 
 protected:
     /**
