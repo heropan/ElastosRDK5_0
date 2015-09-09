@@ -1811,7 +1811,7 @@ ECode DatabaseHelper::UpgradeScreenTimeoutFromNever(
         db->CompileStatement(String("INSERT OR REPLACE INTO system(name,value) VALUES(?,?);"), (ISQLiteStatement**)&stmt);
 
         // Set the timeout to 30 minutes in milliseconds
-        String str = StringUtils::Int32ToString(30 * 60 * 1000);
+        String str = StringUtils::ToString(30 * 60 * 1000);
         AutoPtr<ICharSequence> cs;
         CStringWrapper::New(str, (ICharSequence**)&cs);
         LoadSetting(stmt, ISettingsSystem::SCREEN_OFF_TIMEOUT, cs);
@@ -2008,7 +2008,7 @@ ECode DatabaseHelper::LoadBookmarks(
         values->PutString(ISettingsBookmarks::TITLE, cs2);
         values->PutString(ISettingsBookmarks::SHORTCUT, cs3);
         AutoPtr< ArrayOf<String> > args = ArrayOf<String>::Alloc(1);
-        (*args)[0] = StringUtils::Int32ToString(shortcutValue);
+        (*args)[0] = StringUtils::ToString(shortcutValue);
         Int32 v;
         db->Delete(String("bookmarks"), String("shortcut = ?"), args, &v);
         Int64 result;

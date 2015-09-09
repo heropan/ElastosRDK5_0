@@ -2,31 +2,55 @@
 #ifndef __ELASTOS_DROID_CONTENT_CONTEXT_H__
 #define __ELASTOS_DROID_CONTENT_CONTEXT_H__
 
-#include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
-using namespace Elastos;
-using namespace Elastos::Core;
-using namespace Elastos::IO;
-using namespace Elastos::Droid::Database;
-using namespace Elastos::Droid::Graphics;
-using namespace Elastos::Droid::View;
-using namespace Elastos::Droid::Os;
-using namespace Elastos::Droid::Utility;
-using namespace Elastos::Droid::Content::Pm;
-using namespace Elastos::Droid::Content::Res;
-using namespace Elastos::Droid::Database::Sqlite;
-using namespace Elastos::Droid::Graphics::Drawable;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Graphics::IDisplay;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::View::IDisplayAdjustments;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Content::Res::IAssetManager;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IResourcesTheme;
+using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Net::IUri;
+using Elastos::Droid::App::ISharedPreferences;
+using Elastos::Droid::App::IServiceConnection;
+using Elastos::Droid::Database::IDatabaseErrorHandler;
+using Elastos::Droid::Database::Sqlite::ISQLiteDatabaseCursorFactory;
+using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
+using Elastos::Droid::Utility::IAttributeSet;
+
+using Elastos::Core::ICharSequence;
+using Elastos::IO::IFile;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IFileInputStream;
+using Elastos::IO::IFileOutputStream;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
+/**
+ * Interface to global information about an application environment.  This is
+ * an abstract class whose implementation is provided by
+ * the Android system.  It
+ * allows access to application-specific resources and classes, as well as
+ * up-calls for application-level operations such as launching activities,
+ * broadcasting and receiving intents, etc.
+ */
 class Context
+    : public Object
+    , public IContext
 {
 public:
-    virtual CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid) = 0;
+    CAR_INTERFACE_DECL()
 
     /** Return an AssetManager instance for your application's package. */
     virtual CARAPI GetAssets(
@@ -91,24 +115,14 @@ public:
      * {@link ComponentCallbacks} or {@link ComponentCallbacks2} interface.
      */
     CARAPI RegisterComponentCallbacks(
-        /* [in] */ IComponentCallbacks* componentCallback)
-    {
-        AutoPtr<IContext> context;
-        FAIL_RETURN(GetApplicationContext((IContext**) &context));
-        return context->RegisterComponentCallbacks(componentCallback);
-    }
+        /* [in] */ IComponentCallbacks* componentCallback);
 
     /**
      * Remove a {@link ComponentCallbacks} objec that was previously registered
      * with {@link #registerComponentCallbacks(ComponentCallbacks)}.
      */
     CARAPI UnregisterComponentCallbacks(
-        /* [in] */ IComponentCallbacks* componentCallback)
-    {
-        AutoPtr<IContext> context;
-        FAIL_RETURN(GetApplicationContext((IContext**) &context));
-        return context->UnregisterComponentCallbacks(componentCallback);
-    }
+        /* [in] */ IComponentCallbacks* componentCallback);
 
     /**
      * Return a localized, styled CharSequence from the application's package's
@@ -118,14 +132,7 @@ public:
      */
     CARAPI GetText(
         /* [in] */ Int32 resId,
-        /* [out] */ ICharSequence** text)
-    {
-        VALIDATE_NOT_NULL(text)
-        *text = NULL;
-        AutoPtr<IResources> resources;
-        FAIL_RETURN(GetResources((IResources**) &resources));
-        return resources->GetText(resId, text);
-    }
+        /* [out] */ ICharSequence** text);
 
     /**
      * Return a localized string from the application's package's
@@ -135,14 +142,7 @@ public:
      */
     CARAPI GetString(
         /* [in] */ Int32 resId,
-        /* [out] */ String* str)
-    {
-        VALIDATE_NOT_NULL(str)
-        *str = String(NULL);
-        AutoPtr<IResources> resources;
-        FAIL_RETURN(GetResources((IResources**) &resources));
-        return resources->GetString(resId, str);
-    }
+        /* [out] */ String* str);
 
     /**
      * Return a localized formatted string from the application's package's
@@ -155,15 +155,20 @@ public:
     CARAPI GetString(
         /* [in] */ Int32 resId,
         /* [in] */ ArrayOf<IInterface*>* formatArgs,
-        /* [out] */ String* str)
-    {
-        VALIDATE_NOT_NULL(str)
-        *str = String(NULL);
-        AutoPtr<IResources> resources;
-        FAIL_RETURN(GetResources((IResources**) &resources));
-//***        return resources->GetString(resId, formatArgs, str);
-        return E_NOT_IMPLEMENTED;
-    }
+        /* [out] */ String* str);
+
+    /**
+     * Return a drawable object associated with a particular resource ID and
+     * styled for the current theme.
+     *
+     * @param id The desired resource identifier, as generated by the aapt
+     *           tool. This integer encodes the package, type, and resource
+     *           entry. The value 0 is an invalid identifier.
+     * @return Drawable An object that can be used to draw this resource.
+     */
+     CARAPI GetDrawable(
+        /* [in] */ Int32 id,
+        /* [out] */ IDrawable** drawable);
 
     /**
      * Set the base theme for this context.  Note that this should be called
@@ -182,12 +187,7 @@ public:
      * you can't assume this actually means anything.
      */
     CARAPI GetThemeResId(
-        /* [out] */ Int32* resId)
-    {
-        VALIDATE_NOT_NULL(resId)
-        *resId = 0;
-        return NOERROR;
-    }
+        /* [out] */ Int32* resId);
 
     /**
      * Return the Theme object associated with this Context.
@@ -204,14 +204,7 @@ public:
      */
     CARAPI ObtainStyledAttributes(
         /* [in] */ ArrayOf<Int32>* attrs,
-        /* [out] */ ITypedArray** styles)
-    {
-        VALIDATE_NOT_NULL(styles)
-        *styles = NULL;
-        AutoPtr<IResourcesTheme> theme;
-        FAIL_RETURN(GetTheme((IResourcesTheme**) &theme));
-        return theme->ObtainStyledAttributes(attrs, styles);
-    }
+        /* [out] */ ITypedArray** styles);
 
     /**
      * Retrieve styled attribute information in this Context's theme.  See
@@ -223,14 +216,7 @@ public:
     CARAPI ObtainStyledAttributes(
         /* [in] */ Int32 resid,
         /* [in] */ ArrayOf<Int32>* attrs,
-        /* [out] */ ITypedArray** styles)
-    {
-        VALIDATE_NOT_NULL(styles)
-        *styles = NULL;
-        AutoPtr<IResourcesTheme> theme;
-        FAIL_RETURN(GetTheme((IResourcesTheme**) &theme));
-        return theme->ObtainStyledAttributes(resid, attrs, styles);
-    }
+        /* [out] */ ITypedArray** styles);
 
     /**
      * Retrieve styled attribute information in this Context's theme.  See
@@ -242,14 +228,7 @@ public:
     CARAPI ObtainStyledAttributes(
         /* [in] */ IAttributeSet* set,
         /* [in] */ ArrayOf<Int32>* attrs,
-        /* [out] */ ITypedArray** styles)
-    {
-        VALIDATE_NOT_NULL(styles)
-        *styles = NULL;
-        AutoPtr<IResourcesTheme> theme;
-        FAIL_RETURN(GetTheme((IResourcesTheme**) &theme));
-        return theme->ObtainStyledAttributes(set, attrs, 0, 0, styles);
-    }
+        /* [out] */ ITypedArray** styles);
 
     /**
      * Retrieve styled attribute information in this Context's theme.  See
@@ -263,14 +242,7 @@ public:
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [in] */ Int32 defStyleAttr,
         /* [in] */ Int32 defStyleRes,
-        /* [out] */ ITypedArray** styles)
-    {
-        VALIDATE_NOT_NULL(styles)
-        *styles = NULL;
-        AutoPtr<IResourcesTheme> theme;
-        FAIL_RETURN(GetTheme((IResourcesTheme**) &theme));
-        return theme->ObtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes, styles);
-    }
+        /* [out] */ ITypedArray** styles);
 
     /**
      * Return a class loader you can use to retrieve classes in this package.
@@ -280,6 +252,18 @@ public:
 
     /** Return the name of this application's package. */
     virtual CARAPI GetPackageName(
+        /* [out] */ String* packageName) = 0;
+
+    /** @hide Return the name of the base context this context is derived from. */
+    virtual CARAPI GetBasePackageName(
+        /* [out] */ String* packageName) = 0;
+
+    /** @hide Return the package name that should be used for app ops calls from
+     * this context.  This is the same as {@link #getBasePackageName()} except in
+     * cases where system components are loaded into other app processes, in which
+     * case this will be the name of the primary package in that process (so that app
+     * ops uid verification will work with the name). */
+    virtual CARAPI GetOpPackageName(
         /* [out] */ String* packageName) = 0;
 
     /** Return the full application info for this context's package. */
@@ -449,6 +433,27 @@ public:
         /* [out] */ IFile** filesDir) = 0;
 
     /**
+     * Returns the absolute path to the directory on the filesystem similar to
+     * {@link #getFilesDir()}.  The difference is that files placed under this
+     * directory will be excluded from automatic backup to remote storage.  See
+     * {@link android.app.backup.BackupAgent BackupAgent} for a full discussion
+     * of the automatic backup mechanism in Android.
+     *
+     * <p>No permissions are required to read or write to the returned path, since this
+     * path is internal storage.
+     *
+     * @return The path of the directory holding application files that will not be
+     *         automatically backed up to remote storage.
+     *
+     * @see #openFileOutput
+     * @see #getFileStreamPath
+     * @see #getDir
+     * @see android.app.backup.BackupAgent
+     */
+    virtual CARAPI GetNoBackupFilesDir(
+        /* [out] */ IFile** filesDir) = 0;
+
+    /**
      * Returns the absolute path to the directory on the external filesystem
      * (that is somewhere on {@link android.os.Environment#getExternalStorageDirectory()
      * Environment.getExternalStorageDirectory()}) where the application can
@@ -527,6 +532,43 @@ public:
         /* [out] */ IFile** filesDir) = 0;
 
     /**
+     * Returns absolute paths to application-specific directories on all
+     * external storage devices where the application can place persistent files
+     * it owns. These files are internal to the application, and not typically
+     * visible to the user as media.
+     * <p>
+     * This is like {@link #getFilesDir()} in that these files will be deleted when
+     * the application is uninstalled, however there are some important differences:
+     * <ul>
+     * <li>External files are not always available: they will disappear if the
+     * user mounts the external storage on a computer or removes it.
+     * <li>There is no security enforced with these files.
+     * </ul>
+     * <p>
+     * External storage devices returned here are considered a permanent part of
+     * the device, including both emulated external storage and physical media
+     * slots, such as SD cards in a battery compartment. The returned paths do
+     * not include transient devices, such as USB flash drives.
+     * <p>
+     * An application may store data on any or all of the returned devices.  For
+     * example, an app may choose to store large files on the device with the
+     * most available space, as measured by {@link StatFs}.
+     * <p>
+     * No permissions are required to read or write to the returned paths; they
+     * are always accessible to the calling app.  Write access outside of these
+     * paths on secondary external storage devices is not available.
+     * <p>
+     * The first path returned is the same as {@link #getExternalFilesDir(String)}.
+     * Returned paths may be {@code null} if a storage device is unavailable.
+     *
+     * @see #getExternalFilesDir(String)
+     * @see Environment#getExternalStorageState(File)
+     */
+    virtual CARAPI GetExternalFilesDirs(
+        /* [in] */ const String& type,
+        /* [out, callee] */ ArrayOf<IFile*>** filesDir) = 0;
+
+    /**
      * Return the directory where this application's OBB files (if there
      * are any) can be found.  Note if the application does not have any OBB
      * files, this directory may not exist.
@@ -538,6 +580,42 @@ public:
      */
     virtual CARAPI GetObbDir(
         /* [out] */ IFile** obbDir) = 0;
+
+    /**
+     * Returns absolute paths to application-specific directories on all
+     * external storage devices where the application's OBB files (if there are
+     * any) can be found. Note if the application does not have any OBB files,
+     * these directories may not exist.
+     * <p>
+     * This is like {@link #getFilesDir()} in that these files will be deleted when
+     * the application is uninstalled, however there are some important differences:
+     * <ul>
+     * <li>External files are not always available: they will disappear if the
+     * user mounts the external storage on a computer or removes it.
+     * <li>There is no security enforced with these files.
+     * </ul>
+     * <p>
+     * External storage devices returned here are considered a permanent part of
+     * the device, including both emulated external storage and physical media
+     * slots, such as SD cards in a battery compartment. The returned paths do
+     * not include transient devices, such as USB flash drives.
+     * <p>
+     * An application may store data on any or all of the returned devices.  For
+     * example, an app may choose to store large files on the device with the
+     * most available space, as measured by {@link StatFs}.
+     * <p>
+     * No permissions are required to read or write to the returned paths; they
+     * are always accessible to the calling app.  Write access outside of these
+     * paths on secondary external storage devices is not available.
+     * <p>
+     * The first path returned is the same as {@link #getObbDir()}.
+     * Returned paths may be {@code null} if a storage device is unavailable.
+     *
+     * @see #getObbDir()
+     * @see Environment#getExternalStorageState(File)
+     */
+    virtual CARAPI GetObbDir(
+        /* [out, callee] */ ArrayOf<IFile*>** obbDir) = 0;
 
     /**
      * Returns the absolute path to the application specific cache directory
@@ -557,6 +635,23 @@ public:
      * @see #getDir
      */
     virtual CARAPI GetCacheDir(
+        /* [out] */ IFile** cacheDir) = 0;
+
+    /**
+     * Returns the absolute path to the application specific cache directory on
+     * the filesystem designed for storing cached code. The system will delete
+     * any files stored in this location both when your specific application is
+     * upgraded, and when the entire platform is upgraded.
+     * <p>
+     * This location is optimal for storing compiled or optimized code generated
+     * by your application at runtime.
+     * <p>
+     * Apps require no extra permissions to read or write to the returned path,
+     * since this path lives in their private storage.
+     *
+     * @return The path of the directory holding application code cache files.
+     */
+    virtual CARAPI GetCodeCacheDir(
         /* [out] */ IFile** cacheDir) = 0;
 
     /**
@@ -601,6 +696,78 @@ public:
      */
     virtual CARAPI GetExternalCacheDir(
         /* [out] */ IFile** externalDir) = 0;
+
+    /**
+     * Returns absolute paths to application-specific directories on all
+     * external storage devices where the application can place cache files it
+     * owns. These files are internal to the application, and not typically
+     * visible to the user as media.
+     * <p>
+     * This is like {@link #getCacheDir()} in that these files will be deleted when
+     * the application is uninstalled, however there are some important differences:
+     * <ul>
+     * <li>External files are not always available: they will disappear if the
+     * user mounts the external storage on a computer or removes it.
+     * <li>There is no security enforced with these files.
+     * </ul>
+     * <p>
+     * External storage devices returned here are considered a permanent part of
+     * the device, including both emulated external storage and physical media
+     * slots, such as SD cards in a battery compartment. The returned paths do
+     * not include transient devices, such as USB flash drives.
+     * <p>
+     * An application may store data on any or all of the returned devices.  For
+     * example, an app may choose to store large files on the device with the
+     * most available space, as measured by {@link StatFs}.
+     * <p>
+     * No permissions are required to read or write to the returned paths; they
+     * are always accessible to the calling app.  Write access outside of these
+     * paths on secondary external storage devices is not available.
+     * <p>
+     * The first path returned is the same as {@link #getExternalCacheDir()}.
+     * Returned paths may be {@code null} if a storage device is unavailable.
+     *
+     * @see #getExternalCacheDir()
+     * @see Environment#getExternalStorageState(File)
+     */
+    virtual CARAPI GetExternalCacheDirs(
+        /* [out, callee] */ ArrayOf<IFile*>** externalDir) = 0;
+
+    /**
+     * Returns absolute paths to application-specific directories on all
+     * external storage devices where the application can place media files.
+     * These files are scanned and made available to other apps through
+     * {@link MediaStore}.
+     * <p>
+     * This is like {@link #getExternalFilesDirs} in that these files will be
+     * deleted when the application is uninstalled, however there are some
+     * important differences:
+     * <ul>
+     * <li>External files are not always available: they will disappear if the
+     * user mounts the external storage on a computer or removes it.
+     * <li>There is no security enforced with these files.
+     * </ul>
+     * <p>
+     * External storage devices returned here are considered a permanent part of
+     * the device, including both emulated external storage and physical media
+     * slots, such as SD cards in a battery compartment. The returned paths do
+     * not include transient devices, such as USB flash drives.
+     * <p>
+     * An application may store data on any or all of the returned devices. For
+     * example, an app may choose to store large files on the device with the
+     * most available space, as measured by {@link StatFs}.
+     * <p>
+     * No permissions are required to read or write to the returned paths; they
+     * are always accessible to the calling app. Write access outside of these
+     * paths on secondary external storage devices is not available.
+     * <p>
+     * Returned paths may be {@code null} if a storage device is unavailable.
+     *
+     * @see Environment#getExternalStorageState(File)
+     */
+    virtual CARAPI GetExternalMediaDirs(
+        /* [out, callee] */ ArrayOf<IFile*>** externalDir) = 0;
+
 
     /**
      * Returns an array of strings naming the private files associated with
@@ -820,11 +987,7 @@ public:
      */
     CARAPI StartActivityAsUser(
         /* [in] */ IIntent* intent,
-        /* [in] */ IUserHandle* user)
-    {
-        //Not implemented. Must override in a subclass.
-        return E_RUNTIME_EXCEPTION;
-    }
+        /* [in] */ IUserHandle* user);
 
     /**
      * Launch a new activity.  You will not receive any information about when
@@ -872,11 +1035,7 @@ public:
     CARAPI StartActivityAsUser(
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options,
-        /* [in] */ IUserHandle* userId)
-    {
-        //Not implemented. Must override in a subclass.
-        return E_RUNTIME_EXCEPTION;
-    }
+        /* [in] */ IUserHandle* userId);
 
     /**
      * Same as {@link #startActivities(Intent[], Bundle)} with no options
@@ -1063,6 +1222,16 @@ public:
         /* [in] */ const String& receiverPermission) = 0;
 
     /**
+     * Like {@link #sendBroadcast(Intent, String)}, but also allows specification
+     * of an associated app op as per {@link android.app.AppOpsManager}.
+     * @hide
+     */
+    virtual CARAPI SendBroadcast(
+        /* [in] */ IIntent* intent,
+        /* [in] */ const String& receiverPermission,
+        /* [in] */ Int32 appOp) = 0;
+
+    /**
      * Broadcast the given intent to all interested BroadcastReceivers, delivering
      * them one at a time to allow more preferred receivers to consume the
      * broadcast before it is delivered to less preferred receivers.  This
@@ -1138,6 +1307,23 @@ public:
         /* [in] */ IBundle* initialExtras) = 0;
 
     /**
+     * Like {@link #sendOrderedBroadcast(Intent, String, BroadcastReceiver, android.os.Handler,
+     * int, String, android.os.Bundle)}, but also allows specification
+     * of an associated app op as per {@link android.app.AppOpsManager}.
+     * @hide
+     */
+    virtual CARAPI SendOrderedBroadcast(
+        /* [in] */ IIntent* intent,
+        /* [in] */ const String& receiverPermission,
+        /* [in] */ Int32 appOp,
+        /* [in] */ IBroadcastReceiver* resultReceiver,
+        /* [in] */ IHandler* scheduler,
+        /* [in] */ Int32 initialCode,
+        /* [in] */ const String& initialData,
+        /* [in] */ IBundle* initialExtras) = 0;
+
+
+    /**
      * Version of {@link #sendBroadcast(Intent)} that allows you to specify the
      * user the broadcast will be sent to.  This is not available to applications
      * that are not pre-installed on the system image.  Using it requires holding
@@ -1204,6 +1390,23 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ IUserHandle* user,
         /* [in] */ const String& receiverPermission,
+        /* [in] */ IBroadcastReceiver* resultReceiver,
+        /* [in] */ IHandler* scheduler,
+        /* [in] */ Int32 initialCode,
+        /* [in] */ const String& initialData,
+        /* [in] */ IBundle* initialExtras) = 0;
+
+    /**
+     * Similar to above but takes an appOp as well, to enforce restrictions.
+     * @see #sendOrderedBroadcastAsUser(Intent, UserHandle, String,
+     *       BroadcastReceiver, Handler, int, String, Bundle)
+     * @hide
+     */
+    virtual CARAPI SendOrderedBroadcastAsUser(
+        /* [in] */ IIntent* intent,
+        /* [in] */ IUserHandle* user,
+        /* [in] */ const String& receiverPermission,
+        /* [in] */ Int32 appOp,
         /* [in] */ IBroadcastReceiver* resultReceiver,
         /* [in] */ IHandler* scheduler,
         /* [in] */ Int32 initialCode,
@@ -2250,6 +2453,25 @@ public:
         /* [out] */ IContext** ctx) = 0;
 
     /**
+     * Creates a context given an {@link android.content.pm.ApplicationInfo}.
+     *
+     * @hide
+     */
+    virtual CARAPI CreateApplicationContext(
+        /* [in] */ IApplicationInfo* application,
+        /* [in] */ Int32 flags,
+        /* [out] */ IContext** ctx) = 0;
+
+    /**
+     * Get the userId associated with this context
+     * @return user id
+     *
+     * @hide
+     */
+    virtual CARAPI GetUserId(
+        /* [out] */ Int32* userId) = 0;
+
+    /**
      * Return a new Context object for the current Context but whose resources
      * are adjusted to match the given Configuration.  Each call to this method
      * returns a new instance of a Context object; Context objects are not
@@ -2291,17 +2513,17 @@ public:
         /* [out] */ IContext** ctx) = 0;
 
     /**
-     * Gets the compatibility info holder for this context.  This information
-     * is provided on a per-application basis and is used to simulate lower density
-     * display metrics for legacy applications.
+     * Gets the display adjustments holder for this context.  This information
+     * is provided on a per-application or activity basis and is used to simulate lower density
+     * display metrics for legacy applications and restricted screen sizes.
      *
      * @param displayId The display id for which to get compatibility info.
      * @return The compatibility info holder, or null if not required by the application.
      * @hide
      */
-    virtual CARAPI GetCompatibilityInfo(
+    virtual CARAPI GetDisplayAdjustments(
         /* [in] */ Int32 displayId,
-        /* [out] */ ICompatibilityInfoHolder** infoHolder) = 0;
+        /* [out] */ IDisplayAdjustments** infoHolder) = 0;
 
     /**
      * Indicates whether this Context is restricted.
@@ -2311,12 +2533,7 @@ public:
      * @see #CONTEXT_RESTRICTED
      */
     CARAPI IsRestricted(
-        /* [out] */ Boolean* isRestricted)
-    {
-        VALIDATE_NOT_NULL(isRestricted)
-        *isRestricted = FALSE;
-        return NOERROR;
-    }
+        /* [out] */ Boolean* isRestricted);
 };
 
 }

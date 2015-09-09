@@ -72,9 +72,9 @@ ECode ImageCacheService::GetImageData(
 {
     VALIDATE_NOT_NULL(bitmap);
     AutoLock lock(mLock);
-    String keyStr = StringUtils::Int32ToString(key);
+    String keyStr = StringUtils::ToString(key);
     keyStr += "_";
-    keyStr += StringUtils::Int64ToString(len);
+    keyStr += StringUtils::ToString(len);
     Logger::D(TAG, "GetImageData()-------keyStr:%s,%lld", keyStr.string(), modify);
     List<String>::Iterator it = mCachePathList.Begin();
     String fileName;
@@ -123,16 +123,16 @@ ECode ImageCacheService::PutImageData(
     /* [in] */ IBitmap* bitmap)
 {
     AutoLock lock(mLock);
-    String imgStr = StringUtils::Int32ToString(key);
+    String imgStr = StringUtils::ToString(key);
     imgStr += "_";
-    imgStr += StringUtils::Int64ToString(len);
+    imgStr += StringUtils::ToString(len);
     if (isHigh) {
         imgStr += "#"; // full image
     }
     else {
         imgStr += "$"; // thumb image
     }
-    imgStr += StringUtils::Int64ToString(modify);
+    imgStr += StringUtils::ToString(modify);
     Logger::D(TAG, "PutImageData()-------imgStr:%s", imgStr.string());
     AutoPtr<IFile> file;
     CFile::New(CACHE_PATH, imgStr, (IFile**)&file);
@@ -248,7 +248,7 @@ void ImageCacheService::CreateConfigFile(
 {
     String configFile(StringUtils::Int32ToString(w));
     configFile += "$";
-    configFile += StringUtils::Int32ToString(h);
+    configFile += StringUtils::ToString(h);
     configFile += "#";
     Logger::D(TAG, "CreateConfigFile()-------configFile:%s", configFile.string());
     AutoPtr<IFile> file;

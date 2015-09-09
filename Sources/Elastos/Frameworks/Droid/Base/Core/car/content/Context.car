@@ -1150,7 +1150,7 @@ module
          */
         GetDrawable(
             [in] Int32 resId,
-            [in] IDrawable* drawable);
+            [out] IDrawable** drawable);
 
         /**
          * Set the base theme for this context.  Note that this should be called
@@ -1234,6 +1234,10 @@ module
 
         /** Return the name of this application's package. */
         GetPackageName(
+            [out] String* packageName);
+
+        /** Return the name of this application's package. */
+        GetBasePackageName(
             [out] String* packageName);
 
         /** @hide Return the package name that should be used for app ops calls from

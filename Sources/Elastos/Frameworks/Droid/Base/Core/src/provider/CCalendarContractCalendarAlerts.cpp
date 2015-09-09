@@ -144,7 +144,7 @@ ECode CCalendarContractCalendarAlerts::FindNextAlarmTime(
     AutoPtr<ArrayOf<String> > projection = ArrayOf<String>::Alloc(1);
     (*projection)[0] = ALARM_TIME;
     AutoPtr<ArrayOf<String> > args = ArrayOf<String>::Alloc(1);
-    (*args)[0] = StringUtils::Int64ToString(millis);
+    (*args)[0] = StringUtils::ToString(millis);
     AutoPtr<IUri> uri;
     FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))
     AutoPtr<ICursor> cursor;
@@ -183,9 +183,9 @@ ECode CCalendarContractCalendarAlerts::RescheduleMissedAlarms(
     // TODO: construct an explicit SQL query so that we can add
     // "GROUPBY" instead of doing a sort and de-dup
     AutoPtr<ArrayOf<String> > args = ArrayOf<String>::Alloc(3);
-    (*args)[0] = StringUtils::Int64ToString(now);
-    (*args)[1] = StringUtils::Int64ToString(ancient);
-    (*args)[2] = StringUtils::Int64ToString(now);
+    (*args)[0] = StringUtils::ToString(now);
+    (*args)[1] = StringUtils::ToString(ancient);
+    (*args)[2] = StringUtils::ToString(now);
     AutoPtr<IUri> uri;
     FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))
     AutoPtr<ICursor> cursor;
@@ -274,9 +274,9 @@ ECode CCalendarContractCalendarAlerts::IsAlarmExists(
     AutoPtr<IUri> uri;
     FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))
     AutoPtr<ArrayOf<String> > args = ArrayOf<String>::Alloc(3);
-    (*args)[0] = StringUtils::Int64ToString(eventId);
-    (*args)[1] = StringUtils::Int64ToString(begin);
-    (*args)[2] = StringUtils::Int64ToString(alarmTime);
+    (*args)[0] = StringUtils::ToString(eventId);
+    (*args)[1] = StringUtils::ToString(begin);
+    (*args)[2] = StringUtils::ToString(alarmTime);
     AutoPtr<ICursor> cursor;
     FAIL_RETURN(cr->Query(uri, projection, WHERE_ALARM_EXISTS, args, String(NULL), (ICursor**)&cursor))
     Boolean found = FALSE;

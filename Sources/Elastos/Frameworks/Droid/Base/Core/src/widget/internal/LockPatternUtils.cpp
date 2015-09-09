@@ -1196,7 +1196,7 @@ String LockPatternUtils::CombineStrings(
 
     AutoPtr<ArrayOf<String> > stringList = ArrayOf<String>::Alloc(list->GetLength());
     for (Int32 i = 0; i < listLength; i++) {
-        (*stringList)[i] = StringUtils::Int32ToString((*list)[i]);
+        (*stringList)[i] = StringUtils::ToString((*list)[i]);
         strLength += (*stringList)[i].GetLength();
         if (i < listLength - 1) {
             strLength += separatorLength;

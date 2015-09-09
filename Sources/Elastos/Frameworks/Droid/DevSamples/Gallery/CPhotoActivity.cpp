@@ -842,8 +842,8 @@ void CPhotoActivity::MyImageLoaded(
         imageDrawable->GetIntrinsicHeight(&h);
     }
     Logger::D(TAG, "MyImageLoaded()---w:%d,h:%d", w, h);
-    (*mDetailsArray)[2] = StringUtils::Int32ToString(w);
-    (*mDetailsArray)[3] = StringUtils::Int32ToString(h);
+    (*mDetailsArray)[2] = StringUtils::ToString(w);
+    (*mDetailsArray)[3] = StringUtils::ToString(h);
     imageView->SetImageDrawable(imageDrawable);
 }
 
@@ -875,22 +875,22 @@ void CPhotoActivity::SetDetailInfo(
             if (i > 0) {
                 Float j = (((Float)(len % (1024 * 1024))) / (1024 * 1024)) * 10;
                 Int32 m = Elastos::Core::Math::Round(j);
-                sizeStr += StringUtils::Int32ToString(i);
+                sizeStr += StringUtils::ToString(i);
                 sizeStr += ".";
-                sizeStr += StringUtils::Int32ToString(m);
+                sizeStr += StringUtils::ToString(m);
                 sizeStr += "MB";
             }
             else {
                 Float j = (((Float)(len % 1024)) / 1024) * 10;
                 Int32 m = Elastos::Core::Math::Round(j);
-                sizeStr += StringUtils::Int32ToString(n);
+                sizeStr += StringUtils::ToString(n);
                 sizeStr += ".";
-                sizeStr += StringUtils::Int32ToString(m);
+                sizeStr += StringUtils::ToString(m);
                 sizeStr += "KB";
             }
         }
         else {
-            sizeStr += StringUtils::Int64ToString(len);
+            sizeStr += StringUtils::ToString(len);
             sizeStr += "B";
         }
         (*mDetailsArray)[4] = sizeStr.ToString();
@@ -916,8 +916,8 @@ void CPhotoActivity::LoadCurrentImage(
             Boolean ret = AsyncImageLoader::GetOrigionWidthAndHeight(path, &w, &h);
             if (ret) {
                 Logger::D(TAG, "LoadCurrentImage()---HighQuality---w:%d,h:%d", w, h);
-                (*mDetailsArray)[2] = StringUtils::Int32ToString(w);
-                (*mDetailsArray)[3] = StringUtils::Int32ToString(h);
+                (*mDetailsArray)[2] = StringUtils::ToString(w);
+                (*mDetailsArray)[3] = StringUtils::ToString(h);
             }
             else {
                 Logger::W(TAG, "LoadCurrentImage()---GetOrigionWidthAndHeight--failed!");
@@ -940,8 +940,8 @@ void CPhotoActivity::LoadCurrentImage(
             drawable->GetIntrinsicWidth(&w);
             drawable->GetIntrinsicHeight(&h);
             Logger::D(TAG, "LoadCurrentImage()---w:%d,h:%d", w, h);
-            (*mDetailsArray)[2] = StringUtils::Int32ToString(w);
-            (*mDetailsArray)[3] = StringUtils::Int32ToString(h);
+            (*mDetailsArray)[2] = StringUtils::ToString(w);
+            (*mDetailsArray)[3] = StringUtils::ToString(h);
         }
         else {
             SwitchDisplayView(TRUE);

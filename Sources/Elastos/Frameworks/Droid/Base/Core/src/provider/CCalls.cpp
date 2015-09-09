@@ -199,7 +199,7 @@ ECode CCalls::AddCall(
             AutoPtr<ArrayOf<String> > projection = ArrayOf<String>::Alloc(1);
             (*projection)[0] = IBaseColumns::ID;
             AutoPtr<ArrayOf<String> > selectionArgs = ArrayOf<String>::Alloc(2);
-            (*selectionArgs)[0] = StringUtils::Int64ToString(pId);
+            (*selectionArgs)[0] = StringUtils::ToString(pId);
             (*selectionArgs)[1] = normalizedPhoneNumber;
             FAIL_RETURN(resolver->Query(uri, projection,
                 IContactsContractRawContactsColumns::CONTACT_ID + String(" =? AND ") + IContactsContractCommonDataKindsPhone::NORMALIZED_NUMBER + String(" =?"),
@@ -219,7 +219,7 @@ ECode CCalls::AddCall(
             AutoPtr<ArrayOf<String> > projection = ArrayOf<String>::Alloc(1);
             (*projection)[0] = IBaseColumns::ID;
             AutoPtr<ArrayOf<String> > selectionArgs = ArrayOf<String>::Alloc(1);
-            (*selectionArgs)[0] = StringUtils::Int64ToString(pId);
+            (*selectionArgs)[0] = StringUtils::ToString(pId);
             FAIL_RETURN(resolver->Query(uri, projection, IContactsContractRawContactsColumns::CONTACT_ID + String(" =?"), selectionArgs, String(NULL), (ICursor**)&cursor))
         }
 

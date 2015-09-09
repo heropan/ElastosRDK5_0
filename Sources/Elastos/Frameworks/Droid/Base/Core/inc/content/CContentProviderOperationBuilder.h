@@ -89,6 +89,42 @@ public:
         /* [in] */ const String& key,
         /* [in] */ IInterface* value);
 
+    CARAPI WithByte(
+        /* [in] */ const String& key,
+        /* [in] */ Byte value);
+
+    CARAPI WithBoolean(
+        /* [in] */ const String& key,
+        /* [in] */ Boolean value);
+
+    CARAPI WithValue(
+        /* [in] */ const String& key,
+        /* [in] */ const String& value);
+
+    CARAPI WithValue(
+        /* [in] */ const String& key,
+        /* [in] */ Int16 value);
+
+    CARAPI WithValue(
+        /* [in] */ const String& key,
+        /* [in] */ Int32 value);
+
+    CARAPI WithValue(
+        /* [in] */ const String& key,
+        /* [in] */ Int64 value);
+
+    CARAPI WithValue(
+        /* [in] */ const String& key,
+        /* [in] */ Float value);
+
+    CARAPI WithValue(
+        /* [in] */ const String& key,
+        /* [in] */ Double value);
+
+    CARAPI WithValue(
+        /* [in] */ const String& key,
+        /* [in] */ ArrayOf<Byte>* value);
+
     /**
      * The selection and arguments to use. An occurrence of '?' in the selection will be
      * replaced with the corresponding occurence of the selection argument. Any of the
@@ -139,6 +175,9 @@ public:
 
     CARAPI GetYieldAllowed(
         /* [out] */ Boolean* yieldAllowed);
+
+private:
+    CARAPI CreateContentValueIfNull();
 
 private:
     Int32 mType;

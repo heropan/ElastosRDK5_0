@@ -265,7 +265,7 @@ ECode CGestureStore::Save(
     if (PROFILE_LOADING_SAVING) {
         Int64 end = SystemClock::GetElapsedRealtime();
         Int64 diff= end - start;
-        String tmp = StringUtils::Int64ToString(diff);
+        String tmp = StringUtils::ToString(diff);
         String log = String("Saving gestures library = ") + tmp + String(" ms");
         Logger::D(GestureConstants::LOG_TAG, log.string());
     }
@@ -317,7 +317,7 @@ ECode CGestureStore::Load(
     if (PROFILE_LOADING_SAVING) {
         Int64 end = SystemClock::GetElapsedRealtime();
         Int64 diff= end - start;
-        String tmp = StringUtils::Int64ToString(diff);
+        String tmp = StringUtils::ToString(diff);
         String log = String("Loading gestures library = ") + tmp + String(" ms");
         Logger::D(GestureConstants::LOG_TAG, log.string());
     }

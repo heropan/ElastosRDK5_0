@@ -170,7 +170,7 @@ ECode CNsdServiceInfo::ToString(
     sb += temp;
 
     sb += "port: ";
-    sb += StringUtils::Int32ToString(mPort);
+    sb += StringUtils::ToString(mPort);
     sb += "txtRecord: ";
     mTxtRecord->ToString(&temp);
     sb += temp;

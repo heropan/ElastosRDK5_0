@@ -337,7 +337,7 @@ String TransportControlView::GetMdString(
         /* [in] */ IBundle* data,
         /* [in] */ Int32 id)
 {
-    String sId = StringUtils::Int32ToString(id);
+    String sId = StringUtils::ToString(id);
     String result;
     data->GetString(sId, &result);
     return result;

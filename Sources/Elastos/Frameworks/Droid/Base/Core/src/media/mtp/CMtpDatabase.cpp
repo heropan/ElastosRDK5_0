@@ -1878,7 +1878,7 @@ Int32 CMtpDatabase::GetDeviceProperty(
             wm->GetDefaultDisplay((IDisplay**)&display);
             display->GetMaximumSizeDimension(&width);
             display->GetMaximumSizeDimension(&height);
-            imageSize = StringUtils::Int32ToString(width) + "x" +  StringUtils::Int32ToString(height);
+            imageSize = StringUtils::ToString(width) + "x" +  StringUtils::Int32ToString(height);
             CString::New(imageSize, (ICharSequence**)&csq);
             TextUtils::GetChars(csq, 0, imageSize.GetLength(), outStringValue, 0);
             outStringValue->Set(imageSize.GetLength(), 0);

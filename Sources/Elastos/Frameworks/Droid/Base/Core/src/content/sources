@@ -22,20 +22,16 @@ SOURCES += CClipDescriptionHelper.cpp
 SOURCES += CClipboardManager.cpp
 SOURCES += CComponentName.cpp
 SOURCES += CComponentNameHelper.cpp
-#SOURCES += ContentInsertHandler.cpp
 SOURCES += ContentProvider.cpp
-SOURCES += CContentProviderHelper.cpp
 SOURCES += CContentProviderTransport.cpp
-#SOURCES += ContentProviderNative.cpp
+SOURCES += CContentProviderHelper.cpp
 SOURCES += CContentProviderClient.cpp
+#SOURCES += ContentProviderNative.cpp
 SOURCES += CContentProviderOperation.cpp
 SOURCES += CContentProviderOperationBuilder.cpp
 SOURCES += CContentProviderOperationHelper.cpp
 SOURCES += CContentProviderResult.cpp
-#SOURCES += CIntegerMapWrapper.cpp
-
-
-
+#SOURCES += CContentQueryMap.cpp
 
 SOURCES += Loader.cpp
 
@@ -46,7 +42,7 @@ SOURCES += Loader.cpp
 #SOURCES += CContentResolverHelper.cpp
 #SOURCES += CContentResolverOpenResourceIdResult.cpp
 #SOURCES += CContentUris.cpp
-#SOURCES += CContentValues.cpp
+SOURCES += CContentValues.cpp
 #SOURCES += ContextWrapper.cpp
 #SOURCES += CContextWrapper.cpp
 #SOURCES += CCursorLoader.cpp
@@ -89,7 +85,6 @@ SOURCES += Loader.cpp
 #SOURCES += CMutableContextWrapper.cpp
 #SOURCES += CSyncActivityTooManyDeletes.cpp
 #SOURCES += CSearchRecentSuggestionsProvider.cpp
-#SOURCES += CContentQueryMap.cpp
 #SOURCES += AbstractThreadedSyncAdapter.cpp
 #SOURCES += CNativeLibraryHelper.cpp
 #SOURCES += CPackageHelper.cpp

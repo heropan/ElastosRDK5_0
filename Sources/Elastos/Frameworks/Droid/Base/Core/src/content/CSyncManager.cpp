@@ -1277,7 +1277,7 @@ ECode CSyncManager::SyncHandler::RunSyncFinishedOrCanceledLocked(
             FAIL_RETURN(mSyncMgr->MaybeRescheduleSync(syncResult, syncOperation))
             Int32 errorNumber = 0;
             FAIL_RETURN(SyncResultToErrorNumber(syncResult, &errorNumber))
-            historyMessage = StringUtils::Int32ToString(errorNumber);
+            historyMessage = StringUtils::ToString(errorNumber);
             // TODO: set these correctly when the SyncResult is extended to include it
             downstreamActivity = 0;
             upstreamActivity = 0;
@@ -2535,7 +2535,7 @@ ECode CSyncManager::DumpSyncState(
             Boolean ret = FALSE;
             FAIL_RETURN(mSyncStorageEngine->GetMasterSyncAutomatically(id, &ret))
             String str("u");
-            str += StringUtils::Int32ToString(id);
+            str += StringUtils::ToString(id);
             str += StringUtils::BooleanToString(ret);
             str += " ";
             pw->PrintString(str);
@@ -2602,7 +2602,7 @@ ECode CSyncManager::DumpSyncState(
 
     pw->Println();
     tmp = "Active Syncs: ";
-    tmp = StringUtils::Int32ToString(mActiveSyncContexts->GetSize());
+    tmp = StringUtils::ToString(mActiveSyncContexts->GetSize());
     pw->PrintStringln(tmp);
     List<AutoPtr<ActiveSyncContext> >::Iterator itor = mActiveSyncContexts->Begin();
     AutoPtr<ActiveSyncContext> activeSyncContext;
@@ -2692,7 +2692,7 @@ ECode CSyncManager::DumpSyncState(
             FAIL_RETURN(settings->GetDelayUntil(&delayUntil))
             if (delayUntil > now) {
                 tmp = ", delay for ";
-                tmp += StringUtils::Int64ToString((delayUntil - now) / 1000);
+                tmp += StringUtils::ToString((delayUntil - now) / 1000);
                 tmp += " sec";
                 pw->PrintString(tmp);
             }
@@ -2700,7 +2700,7 @@ ECode CSyncManager::DumpSyncState(
             FAIL_RETURN(settings->GetBackoffTime(&backoffTime))
             if (backoffTime > now) {
                 tmp = ", backoff for ";
-                tmp += StringUtils::Int64ToString((backoffTime - now) / 1000);
+                tmp += StringUtils::ToString((backoffTime - now) / 1000);
                 tmp += " sec";
                 pw->PrintString(tmp);
             }
@@ -2708,7 +2708,7 @@ ECode CSyncManager::DumpSyncState(
             FAIL_RETURN(settings->GetBackoffDelay(&backoffDelay))
             if (backoffDelay > 0) {
                 tmp = ", the backoff increment is ";
-                tmp += StringUtils::Int64ToString(backoffDelay / 1000);
+                tmp += StringUtils::ToString(backoffDelay / 1000);
                 tmp += " sec";
                 pw->PrintString(tmp);
             }
@@ -2741,7 +2741,7 @@ ECode CSyncManager::DumpSyncState(
 //                    FAIL_RETURN(bundle->ToString(&str))
                     Int64 nextPeriodicTime = lastPeriodicTime + second * 1000;
                     tmp = "      periodic period=";
-                    tmp += StringUtils::Int64ToString(second);
+                    tmp += StringUtils::ToString(second);
                     tmp += ", extras=";
 //                    tmp += str;
                     tmp += ", next=";
@@ -2826,7 +2826,7 @@ ECode CSyncManager::DumpSyncState(
                 pw->PrintString(String("      message: "));
                 FAIL_RETURN(GetLastFailureMessage(errCode, &tmp))
                 tmp += " (";
-                tmp += StringUtils::Int32ToString(errCode);
+                tmp += StringUtils::ToString(errCode);
                 tmp += ")";
                 pw->PrintStringln(tmp);
             }
@@ -3348,7 +3348,7 @@ ECode CSyncManager::DumpRecentHistory(
                 accountKey += "/";
                 accountKey += type;
                 accountKey += " u";
-                accountKey += StringUtils::Int32ToString(userId);
+                accountKey += StringUtils::ToString(userId);
             }
             else {
                 authorityName = "Unknown";
@@ -3505,7 +3505,7 @@ ECode CSyncManager::DumpRecentHistory(
         pw->Println();
         pw->PrintStringln(String("Recent Sync History"));
         String format("  %-");
-        format += StringUtils::Int32ToString(maxAccount);
+        format += StringUtils::ToString(maxAccount);
         format += "s  %s\n";
         HashMap<String, Int64> lastTimeMap;
         Int32 index = 0;
@@ -3533,7 +3533,7 @@ ECode CSyncManager::DumpRecentHistory(
                 accountKey += "/";
                 accountKey += type;
                 accountKey += " u";
-                accountKey += StringUtils::Int32ToString(userId);
+                accountKey += StringUtils::ToString(userId);
             }
             else {
                 authorityName = "Unknown";
@@ -3559,7 +3559,7 @@ ECode CSyncManager::DumpRecentHistory(
             else {
                 Int64 diff = (lastEventTime - eventTime) / 1000;
                 if (diff < 60) {
-                    diffString = StringUtils::Int64ToString(diff);
+                    diffString = StringUtils::ToString(diff);
                 }
                 else if (diff < 3600) {
 //                    diffString = String.format("%02d:%02d", diff / 60, diff % 60);

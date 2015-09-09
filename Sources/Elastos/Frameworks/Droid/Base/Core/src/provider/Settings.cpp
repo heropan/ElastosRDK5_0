@@ -2006,7 +2006,7 @@ ECode Settings::Bookmarks::GetIntentForShortcut(
 
     AutoPtr<ICursor> c;
     AutoPtr< ArrayOf<String> > selectionArgs = ArrayOf<String>::Alloc(1);
-    (*selectionArgs)[0] = StringUtils::Int32ToString((Int32)shortcut);
+    (*selectionArgs)[0] = StringUtils::ToString((Int32)shortcut);
     FAIL_RETURN(cr->Query(CONTENT_URI, sIntentProjection, sShortcutSelection,
             selectionArgs, ISettingsBookmarks::ORDERING, (ICursor**)&c))
     assert(c != NULL);
@@ -2057,7 +2057,7 @@ ECode Settings::Bookmarks::Add(
     // another bookmark, then remove the old definition.
     if (shortcut != 0) {
         AutoPtr< ArrayOf<String> > selectionArgs = ArrayOf<String>::Alloc(1);
-        (*selectionArgs)[0] = StringUtils::Int32ToString((Int32)shortcut);
+        (*selectionArgs)[0] = StringUtils::ToString((Int32)shortcut);
         Int32 rowsAffected;
         FAIL_RETURN(cr->Delete(CONTENT_URI, sShortcutSelection, selectionArgs, &rowsAffected))
     }

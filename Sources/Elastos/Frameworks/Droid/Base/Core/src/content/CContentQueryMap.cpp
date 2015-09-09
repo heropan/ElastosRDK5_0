@@ -5,24 +5,24 @@
 
 using Elastos::Droid::Os::CHandler;
 
-namespace Elastos {
-namespace Droid {
-namespace Content {
-
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::IObservable;
 using Elastos::Utility::EIID_IObservable;
-using Elastos::Utility::CObjectStringMap;
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
+
+namespace Elastos {
+namespace Droid {
+namespace Content {
 
 CContentQueryMap::KeepUpdatedContentObserver::KeepUpdatedContentObserver(
     /* [in] */ IHandler* handler,
     /* [in] */ IWeakReference* host)
-    : ContentObserver(handler)
-    , mHost(host)
+    //: ContentObserver(handler)
+    : mHost(host)
 {
+    assert(0 && "TODO");
 }
 
 // @Override
@@ -51,6 +51,10 @@ ECode CContentQueryMap::KeepUpdatedContentObserver::OnChange(
     return NOERROR;
 }
 
+CAR_INTERFACE_IMPL(CContentQueryMap, Observable, IContentQueryMap)
+
+CAR_OBJECT_IMPL(CContentQueryMap)
+
 CContentQueryMap::CContentQueryMap()
     : mKeyColumn(0)
     , mKeepUpdated(FALSE)
@@ -60,6 +64,29 @@ CContentQueryMap::CContentQueryMap()
 
 CContentQueryMap::~CContentQueryMap()
 {
+    Finalize();
+}
+
+ECode CContentQueryMap::constructor(
+    /* [in] */ ICursor* cursor,
+    /* [in] */ const String& columnNameOfKey,
+    /* [in] */ Boolean keepUpdated,
+    /* [in] */ IHandler* handlerForUpdateNotifications)
+{
+    mCursor = cursor;
+    FAIL_RETURN(mCursor->GetColumnNames((ArrayOf<String>**)&mColumnNames))
+    FAIL_RETURN(mCursor->GetColumnIndexOrThrow(columnNameOfKey, &mKeyColumn))
+    mHandlerForUpdateNotifications = handlerForUpdateNotifications;
+    FAIL_RETURN(SetKeepUpdated(keepUpdated))
+
+    // If we aren't keeping the cache updated with the current state of the cursor's
+    // ContentProvider then read it once into the cache. Otherwise the cache will be filled
+    // automatically.
+    if (!keepUpdated) {
+        FAIL_RETURN(ReadCursorIntoCache(cursor))
+    }
+
+    return Observable::constructor();
 }
 
 ECode CContentQueryMap::SetKeepUpdated(
@@ -96,19 +123,19 @@ ECode CContentQueryMap::GetValues(
     /* [in] */ const String& rowName,
     /* [out] */ IContentValues** contentValues)
 {
-    AutoLock lock(mMethodLock);
     VALIDATE_NOT_NULL(contentValues)
     *contentValues = NULL;
 
+    AutoLock lock(this);
     if (mDirty) {
         FAIL_RETURN(Requery())
     }
 
-    HashMap<String, AutoPtr<IContentValues> >::Iterator it = mValues.Find(rowName);
-    if (it != mValues.End()) {
-        *contentValues = it->mSecond;
-        REFCOUNT_ADD(*contentValues);
-    }
+    AutoPtr<IInterface> value;
+    AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(rowName);
+    mValues->Get(TO_IINTERFACE(keyObj), (IInterface**)&value);
+    *contentValues = IContentValues::Probe(value);
+    REFCOUNT_ADD(*contentValues)
     return NOERROR;
 }
 
@@ -137,59 +164,66 @@ ECode CContentQueryMap::Requery()
     return NOERROR;
 }
 
+ECode CContentQueryMap::ReadCursorIntoCache(
+    /* [in] */ ICursor* cursor)
+{
+    AutoLock lock(this);
+    // Make a new map so old values returned by getRows() are undisturbed.
+    Int32 capacity = 0;
+    if (mValues != NULL) {
+        mValues->GetSize(&capacity);
+    }
+    mValues = NULL;
+    CHashMap::New(capacity, (IMap**)&mValues);
+
+    Boolean hasNext = FALSE;
+    String columnValue, keyColumn;
+    AutoPtr<ICharSequence> key;
+
+    while ((cursor->MoveToNext(&hasNext), hasNext)) {
+        AutoPtr<IContentValues> values;
+        FAIL_RETURN(CContentValues::New((IContentValues**)&values))
+        for (Int32 i = 0; i < mColumnNames->GetLength(); i++) {
+            if (i != mKeyColumn) {
+                FAIL_RETURN(cursor->GetString(i, &columnValue))
+                FAIL_RETURN(values->Put((*mColumnNames)[i], columnValue))
+            }
+        }
+        FAIL_RETURN(cursor->GetString(mKeyColumn, &keyColumn))
+        key = CoreUtils::Convert(keyColumn);
+        mValues->Put(TO_IINTERFACE(key), TO_IINTERFACE(values));
+    }
+
+    return NOERROR;
+}
+
 ECode CContentQueryMap::GetRows(
-    /* [out] */ IObjectStringMap** rows)
+    /* [out] */ IMap** rows)
 {
     VALIDATE_NOT_NULL(rows);
     *rows = NULL;
 
-    AutoLock lock(mMethodLock);
-    VALIDATE_NOT_NULL(rows)
+    AutoLock lock(this);
     if (mDirty) {
         FAIL_RETURN(Requery())
     }
 
-    FAIL_RETURN(CObjectStringMap::New(rows))
-    HashMap<String, AutoPtr<IContentValues> >::Iterator it = mValues.Begin();
-    for (; it != mValues.End(); it++) {
-        FAIL_RETURN((*rows)->Put(it->mFirst, (IInterface*) it->mSecond))
-    }
+    *rows = mValues;
+    REFCOUNT_ADD(*rows)
 
     return NOERROR;
 }
 
 ECode CContentQueryMap::Close()
 {
-    AutoLock lock(mMethodLock);
+    AutoLock lock(this);
     if (NULL != mContentObserver) {
         FAIL_RETURN(mCursor->UnregisterContentObserver(mContentObserver))
         mContentObserver = NULL;
     }
-    FAIL_RETURN(mCursor->Close())
+    FAIL_RETURN(ICloseable(mCursor)->Close())
     mCursor = NULL;
     return NOERROR;
-}
-
-ECode CContentQueryMap::constructor(
-    /* [in] */ ICursor* cursor,
-    /* [in] */ const String& columnNameOfKey,
-    /* [in] */ Boolean keepUpdated,
-    /* [in] */ IHandler* handlerForUpdateNotifications)
-{
-    mCursor = cursor;
-    FAIL_RETURN(mCursor->GetColumnNames((ArrayOf<String>**)&mColumnNames))
-    FAIL_RETURN(mCursor->GetColumnIndexOrThrow(columnNameOfKey, &mKeyColumn))
-    mHandlerForUpdateNotifications = handlerForUpdateNotifications;
-    FAIL_RETURN(SetKeepUpdated(keepUpdated))
-
-    // If we aren't keeping the cache updated with the current state of the cursor's
-    // ContentProvider then read it once into the cache. Otherwise the cache will be filled
-    // automatically.
-    if (!keepUpdated) {
-        FAIL_RETURN(ReadCursorIntoCache(cursor))
-    }
-
-    return InitObservable();
 }
 
 ECode CContentQueryMap::Finalize()
@@ -200,131 +234,6 @@ ECode CContentQueryMap::Finalize()
 //    super.finalize();
     return NOERROR;
 }
-
-ECode CContentQueryMap::ReadCursorIntoCache(
-    /* [in] */ ICursor* cursor)
-{
-    AutoLock lock(mMethodLock);
-    // Make a new map so old values returned by getRows() are undisturbed.
-    Int32 capacity = mValues.GetSize();
-    mValues.Clear();
-    mValues.Resize(capacity);
-    Boolean hasNext = FALSE;
-    String columnValue, keyColumn;
-
-    while ((cursor->MoveToNext(&hasNext), hasNext)) {
-        AutoPtr<IContentValues> values;
-        FAIL_RETURN(CContentValues::New((IContentValues**)&values))
-        for (Int32 i = 0; i < mColumnNames->GetLength(); i++) {
-            if (i != mKeyColumn) {
-                FAIL_RETURN(cursor->GetString(i, &columnValue))
-                AutoPtr<ICharSequence> stringObj;
-                FAIL_RETURN(CString::New(columnValue, (ICharSequence**)&stringObj))
-                FAIL_RETURN(values->PutString((*mColumnNames)[i], stringObj))
-            }
-        }
-        FAIL_RETURN(cursor->GetString(mKeyColumn, &keyColumn))
-        mValues[keyColumn] = values;
-    }
-
-    return NOERROR;
-}
-
-//========================================================
-// CObservable
-//========================================================
-ECode CContentQueryMap::InitObservable()
-{
-    AutoPtr<IArrayList> outlist;
-    FAIL_RETURN(CArrayList::New((IArrayList**)&outlist));
-    mObservers = IList::Probe(outlist);
-    mChanged = FALSE;
-    return NOERROR;
-}
-
-ECode CContentQueryMap::AddObserver(
-    /* [in] */ IObserver* observer)
-{
-    if (observer == NULL) {
-        // throw new NullPointerException("observer == null");
-        return E_NULL_POINTER_EXCEPTION;
-    }
-    {
-        AutoLock lock(mLock);
-        Boolean isflag = FALSE;
-        if (!(mObservers->Contains(observer, &isflag), isflag))
-            mObservers->Add(observer, &isflag);
-    }
-    return NOERROR;
-}
-
-ECode CContentQueryMap::CountObservers(
-    /* [out] */ Int32* value)
-{
-    return mObservers->GetSize(value);
-}
-
-ECode CContentQueryMap::DeleteObserver(
-    /* [in] */ IObserver* observer)
-{
-    Boolean isflag = FALSE;
-    return mObservers->Remove(observer, &isflag);
-}
-
-ECode CContentQueryMap::DeleteObservers()
-{
-    return mObservers->Clear();
-}
-
-ECode CContentQueryMap::HasChanged(
-    /* [out] */ Boolean* value)
-{
-    VALIDATE_NOT_NULL(value)
-
-    *value = mChanged;
-    return NOERROR;
-}
-
-ECode CContentQueryMap::NotifyObservers()
-{
-    return NotifyObservers(NULL);
-}
-
-ECode CContentQueryMap::NotifyObservers(
-    /* [in] */ IInterface* data)
-{
-    Int32 size = 0;
-    AutoPtr< ArrayOf<IInterface*> > arrays;
-    {
-        AutoLock lock(mLock);
-        Boolean isflag = FALSE;
-        if (HasChanged(&isflag), isflag) {
-            ClearChanged();
-            mObservers->GetSize(&size);
-            mObservers->ToArray((ArrayOf<IInterface*>**)&arrays);
-        }
-    }
-    if (arrays != NULL) {
-        for (Int32 i = 0; i < arrays->GetLength(); i++) {
-            AutoPtr<IObserver> observer = IObserver::Probe((*arrays)[i]);
-            observer->Update(THIS_PROBE(IObservable), data);
-        }
-    }
-    return NOERROR;
-}
-
-ECode CContentQueryMap::ClearChanged()
-{
-    mChanged = FALSE;
-    return NOERROR;
-}
-
-ECode CContentQueryMap::SetChanged()
-{
-    mChanged = TRUE;
-    return NOERROR;
-}
-
 
 }
 }

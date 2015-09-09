@@ -263,7 +263,7 @@ ECode CContactsPeople::QueryGroups(
     AutoPtr<IUri> uri;
     helper->GetCONTENT_URI((IUri**)&uri);
     AutoPtr<ArrayOf<String> > args = ArrayOf<String>::Alloc(1);
-    (*args)[0] = StringUtils::Int64ToString(person);
+    (*args)[0] = StringUtils::ToString(person);
     return resolver->Query(uri, NULL, String("person=?"),
             args, IContactsGroups::DEFAULT_SORT_ORDER, cursor);
 }

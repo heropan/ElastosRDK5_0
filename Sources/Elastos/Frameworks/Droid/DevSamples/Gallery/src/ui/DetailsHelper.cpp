@@ -83,7 +83,7 @@ String DetailsHelper::GetDetailsName(
             break;
         default:
             str = "Unknown key";
-            str += StringUtils::Int32ToString(key);
+            str += StringUtils::ToString(key);
             break;
         }
     return str;

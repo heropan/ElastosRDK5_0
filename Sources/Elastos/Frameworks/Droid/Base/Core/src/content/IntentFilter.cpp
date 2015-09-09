@@ -1006,7 +1006,7 @@ ECode IntentFilter::Dump(
             *sb += "Authority: \"";
             *sb += host;
             *sb += "\": ";
-            *sb += StringUtils::Int32ToString(port);
+            *sb += StringUtils::ToString(port);
             Boolean wild = FALSE;
             ae->GetWild(&wild);
             if (wild) *sb += " WILD";
@@ -1043,7 +1043,7 @@ ECode IntentFilter::Dump(
         sb->Reset();
         *sb += prefix;
         *sb += "mPriority=";
-        *sb += StringUtils::Int32ToString(mPriority);
+        *sb += StringUtils::ToString(mPriority);
         *sb += ", mHasPartialTypes=";
         *sb += StringUtils::BooleanToString(mHasPartialTypes);
         du->Println(sb->ToString());

@@ -1141,7 +1141,7 @@ void WifiDisplayController::UpdateConnection()
         String iface;
         addr->GetHostAddress(&iface);
         iface += ":";
-        iface += StringUtils::Int32ToString(port);
+        iface += StringUtils::ToString(port);
         mRemoteDisplayInterface = iface;
 
         Slogger::I(TAG, "Listening for RTSP connection on %s"

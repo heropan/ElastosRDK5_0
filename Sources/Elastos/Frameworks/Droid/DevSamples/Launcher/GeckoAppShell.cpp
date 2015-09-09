@@ -955,7 +955,7 @@ ECode GeckoAppShell::LoadGeckoLibs(
     for (Int32 c = 1; env.IsNullOrEmpty(); c++) {
         GeckoAppShell::PutEnv(env);
         String temp("env");
-        temp += StringUtils::Int32ToString(c);
+        temp += StringUtils::ToString(c);
         ec = pIIntent->GetStringExtra(temp, &env);
         if (FAILED(ec)) return ec;
 

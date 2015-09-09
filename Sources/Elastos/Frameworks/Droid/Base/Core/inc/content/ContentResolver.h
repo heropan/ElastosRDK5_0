@@ -2,14 +2,11 @@
 #ifndef __ELASTOS_DROID_CONTENT_CONTENTRESOLVER_H__
 #define __ELASTOS_DROID_CONTENT_CONTENTRESOLVER_H__
 
-#include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
 #include "database/CrossProcessCursorWrapper.h"
 #include "os/ParcelFileDescriptor.h"
+#include <elastos/core/Object.h>
 
-using Elastos::IO::IOutputStream;
-using Elastos::IO::IInputStream;
-using Elastos::Core::IRandom;
 using Elastos::Droid::Accounts::IAccount;
 using Elastos::Droid::Content::Res::IAssetFileDescriptor;
 using Elastos::Droid::Database::ICursor;
@@ -24,14 +21,18 @@ using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Os::ParcelFileDescriptor;
 
+using Elastos::IO::IOutputStream;
+using Elastos::IO::IInputStream;
+using Elastos::Utility::IRandom;
+using Elastos::Utility::IArrayList;
+
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 class ContentResolver
-    : public ElRefBase
+    : public Object
     , public IContentResolver
-    , public IWeakReferenceSource
 {
 private:
     class CursorWrapperInner
@@ -236,15 +237,65 @@ private:
     };
 
 public:
-    ContentResolver(
-        /* [in] */ IContext* context);
+    CAR_INTERFACE_DECL()
+
+    ContentResolver();
 
     virtual ~ContentResolver();
 
-    CAR_INTERFACE_DECL()
+    CARAPI constructor(
+        /* [in] */ IContext* context);
 
-    CARAPI GetWeakReference(
-        /* [out] */ IWeakReference** weakReference);
+    /**
+     * Returns the content provider for the given content URI.
+     *
+     * @param uri The URI to a content provider
+     * @return The ContentProvider for the given URI, or null if no content provider is found.
+     * @hide
+     */
+    virtual CARAPI AcquireProvider(
+        /* [in] */ IContext* c,
+        /* [in] */ const String& name,
+        /* [out] */ IIContentProvider** contentProvider) = 0;
+
+    /**
+     * Returns the content provider for the given content URI if the process
+     * already has a reference on it.
+     *
+     * @param uri The URI to a content provider
+     * @return The ContentProvider for the given URI, or null if no content provider is found.
+     * @hide
+     */
+    CARAPI AcquireExistingProvider(
+        /* [in] */ IContext* c,
+        /* [in] */ const String& name,
+        /* [out] */ IIContentProvider** contentProvider);
+
+    /** @hide */
+    virtual CARAPI ReleaseProvider(
+        /* [in] */ IIContentProvider* icp,
+        /* [out] */ Boolean* result) = 0;
+
+    /**
+     * @hide
+     */
+    virtual CARAPI AcquireUnstableProvider(
+        /* [in] */ IContext* c,
+        /* [in] */ const String& name,
+        /* [out] */ IIContentProvider** contentProvider) = 0;
+
+    /** @hide */
+    virtual CARAPI ReleaseUnstableProvider(
+        /* [in] */ IIContentProvider* icp,
+        /* [out] */ Boolean* result) = 0;
+
+    /** @hide */
+    virtual CARAPI UnstableProviderDied(
+        /* [in] */ IIContentProvider* icp) = 0;
+
+    /** @hide */
+    CARAPI AppNotRespondingViaProvider(
+        /* [in] */ IIContentProvider* icp);
 
     /**
      * Return the MIME type of the given content URL.
@@ -364,6 +415,62 @@ public:
         /* [out] */ ICursor** cursor);
 
     /**
+     * Transform the given <var>url</var> to a canonical representation of
+     * its referenced resource, which can be used across devices, persisted,
+     * backed up and restored, etc.  The returned Uri is still a fully capable
+     * Uri for use with its content provider, allowing you to do all of the
+     * same content provider operations as with the original Uri --
+     * {@link #query}, {@link #openInputStream(android.net.Uri)}, etc.  The
+     * only difference in behavior between the original and new Uris is that
+     * the content provider may need to do some additional work at each call
+     * using it to resolve it to the correct resource, especially if the
+     * canonical Uri has been moved to a different environment.
+     *
+     * <p>If you are moving a canonical Uri between environments, you should
+     * perform another call to {@link #canonicalize} with that original Uri to
+     * re-canonicalize it for the current environment.  Alternatively, you may
+     * want to use {@link #uncanonicalize} to transform it to a non-canonical
+     * Uri that works only in the current environment but potentially more
+     * efficiently than the canonical representation.</p>
+     *
+     * @param url The {@link Uri} that is to be transformed to a canonical
+     * representation.  Like all resolver calls, the input can be either
+     * a non-canonical or canonical Uri.
+     *
+     * @return Returns the official canonical representation of <var>url</var>,
+     * or null if the content provider does not support a canonical representation
+     * of the given Uri.  Many providers may not support canonicalization of some
+     * or all of their Uris.
+     *
+     * @see #uncanonicalize
+     */
+    CARAPI Canonicalize(
+        /* [in] */ IUri* uri,
+        /* [out] */ IUri** result);
+
+    /**
+     * Given a canonical Uri previously generated by {@link #canonicalize}, convert
+     * it to its local non-canonical form.  This can be useful in some cases where
+     * you know that you will only be using the Uri in the current environment and
+     * want to avoid any possible overhead when using it with the content
+     * provider or want to verify that the referenced data exists at all in the
+     * new environment.
+     *
+     * @param url The canonical {@link Uri} that is to be convered back to its
+     * non-canonical form.
+     *
+     * @return Returns the non-canonical representation of <var>url</var>.  This will
+     * return null if data identified by the canonical Uri can not be found in
+     * the current environment; callers must always check for null and deal with
+     * that by appropriately falling back to an alternative.
+     *
+     * @see #canonicalize
+     */
+    CARAPI Uncanonicalize(
+        /* [in] */ IUri* uri,
+        /* [out] */ IUri** result);
+
+    /**
      * Open a stream on to the content associated with a content URI.  If there
      * is no data associated with the URI, FileNotFoundException is thrown.
      *
@@ -452,6 +559,12 @@ public:
         /* [in] */ const String& mode,
         /* [out] */ IParcelFileDescriptor** fileDescriptor);
 
+    CARAPI OpenFileDescriptor(
+        /* [in] */ IUri* uri,
+        /* [in] */ const String& mode,
+        /* [in] */ ICancellationSignal* signal,
+        /* [out] */ IParcelFileDescriptor** fileDescriptor);
+
     /**
      * Open a raw file descriptor to access data under a URI.  This
      * interacts with the underlying {@link ContentProvider#openAssetFile}
@@ -505,6 +618,12 @@ public:
         /* [in] */ const String& mode,
         /* [out] */ IAssetFileDescriptor** fileDescriptor);
 
+    CARAPI OpenAssetFileDescriptor(
+        /* [in] */ IUri* uri,
+        /* [in] */ const String& mode,
+        /* [in] */ ICancellationSignal* signal,
+        /* [out] */ IAssetFileDescriptor** fileDescriptor);
+
     /**
      * Open a raw file descriptor to access (potentially type transformed)
      * data from a "content:" URI.  This interacts with the underlying
@@ -539,6 +658,13 @@ public:
         /* [in] */ IBundle* opts,
         /* [out] */ IAssetFileDescriptor** fileDescriptor);
 
+    CARAPI OpenTypedAssetFileDescriptor(
+        /* [in] */ IUri* uri,
+        /* [in] */ const String& mimeType,
+        /* [in] */ IBundle* opts,
+        /* [in] */ ICancellationSignal* signal,
+        /* [out] */ IAssetFileDescriptor** fileDescriptor);
+
     /**
      * Resolves an android.resource URI to a {@link Resources} and a resource id.
      *
@@ -547,12 +673,6 @@ public:
     CARAPI GetResourceId(
         /* [in] */ IUri* uri,
         /* [out] */ IContentResolverOpenResourceIdResult** resourceIdResult);
-
-    /** @hide */
-    static CARAPI ModeToMode(
-        /* [in] */ IUri* uri,
-        /* [in] */ const String& mode,
-        /* [out] */ Int32* modeBits);
 
     /**
      * Inserts a row into a table at the given URL.
@@ -587,7 +707,7 @@ public:
      */
     CARAPI ApplyBatch(
         /* [in] */ const String& authority,
-        /* [in] */ IObjectContainer* operations,
+        /* [in] */ IArrayList* operations,
         /* [out, callee] */ ArrayOf<IContentProviderResult*>** providerResults);
 
     /**
@@ -863,6 +983,54 @@ public:
         /* [in] */ Int32 userHandle);
 
     /**
+     * Take a persistable URI permission grant that has been offered. Once
+     * taken, the permission grant will be remembered across device reboots.
+     * Only URI permissions granted with
+     * {@link Intent#FLAG_GRANT_PERSISTABLE_URI_PERMISSION} can be persisted. If
+     * the grant has already been persisted, taking it again will touch
+     * {@link UriPermission#getPersistedTime()}.
+     *
+     * @see #getPersistedUriPermissions()
+     */
+    CARAPI TakePersistableUriPermission(
+        /* [in] */ IUri* uri,
+        /* [in] */ Int32 modeFlags);
+
+    /**
+     * Relinquish a persisted URI permission grant. The URI must have been
+     * previously made persistent with
+     * {@link #takePersistableUriPermission(Uri, int)}. Any non-persistent
+     * grants to the calling package will remain intact.
+     *
+     * @see #getPersistedUriPermissions()
+     */
+    CARAPI ReleasePersistableUriPermission(
+        /* [in] */ IUri* uri,
+        /* [in] */ Int32 modeFlags);
+
+    /**
+     * Return list of all URI permission grants that have been persisted by the
+     * calling app. That is, the returned permissions have been granted
+     * <em>to</em> the calling app. Only persistable grants taken with
+     * {@link #takePersistableUriPermission(Uri, int)} are returned.
+     *
+     * @see #takePersistableUriPermission(Uri, int)
+     * @see #releasePersistableUriPermission(Uri, int)
+     */
+    CARAPI GetPersistedUriPermissions(
+        /* [out] */ IList** perms);
+
+    /**
+     * Return list of all persisted URI permission grants that are hosted by the
+     * calling app. That is, the returned permissions have been granted
+     * <em>from</em> the calling app. Only grants taken with
+     * {@link #takePersistableUriPermission(Uri, int)} are returned.
+     */
+    CARAPI GetOutgoingPersistedUriPermissions(
+        /* [out] */ IList** perms);
+
+
+    /**
      * Start an asynchronous sync operation. If you want to monitor the progress
      * of the sync you may register a SyncObserver. Only values of the following
      * types may be used in the extras bundle:
@@ -907,6 +1075,23 @@ public:
         /* [in] */ IBundle* extras);
 
     /**
+     * @see #requestSync(Account, String, Bundle)
+     * @hide
+     */
+    static CARAPI RequestSyncAsUser(
+        /* [in] */ IAccount* account,
+        /* [in] */ const String& authority,
+        /* [in] */ Int32 userId,
+        /* [in] */ IBundle* extras);
+
+    /**
+     * Register a sync with the SyncManager. These requests are built using the
+     * {@link SyncRequest.Builder}.
+     */
+    static CARAPI RequestSync(
+        /* [in] */ ISyncRequest* request);
+
+    /**
      * Check that only values of the following types are in the Bundle:
      * <ul>
      * <li>Integer</li>
@@ -946,11 +1131,29 @@ public:
         /* [in] */ const String& authority);
 
     /**
+     * @see #cancelSync(Account, String)
+     * @hide
+     */
+    static CARAPI CancelSyncAsUser(
+        /* [in] */ IAccount* account,
+        /* [in] */ const String& authority,
+        /* [in] */ Int32 userId);
+
+    /**
      * Get information about the SyncAdapters that are known to the system.
      * @return an array of SyncAdapters that have registered with the system
      */
     static CARAPI GetSyncAdapterTypes(
         /* [out, callee] */ ArrayOf<ISyncAdapterType*>** types);
+
+    /**
+     * @see #getSyncAdapterTypes()
+     * @hide
+     */
+    static CARAPI GetSyncAdapterTypesAsUser(
+        /* [in] */ Int32 userId,
+        /* [out, callee] */ ArrayOf<ISyncAdapterType*>** types);
+
 
     /**
      * Check if the provider should be synced when a network tickle is received
@@ -967,6 +1170,16 @@ public:
         /* [out] */ Boolean* isSynced);
 
     /**
+     * @see #getSyncAutomatically(Account, String)
+     * @hide
+     */
+    static CARAPI GetSyncAutomaticallyAsUser(
+        /* [in] */ IAccount* account,
+        /* [in] */ const String& authority,
+        /* [in] */ Int32 userId,
+        /* [out] */ Boolean* isSynced);
+
+    /**
      * Set whether or not the provider is synced when it receives a network tickle.
      * <p>This method requires the caller to hold the permission
      * {@link android.Manifest.permission#WRITE_SYNC_SETTINGS}.
@@ -978,6 +1191,16 @@ public:
     static CARAPI SetSyncAutomatically(
         /* [in] */ IAccount* account,
         /* [in] */ const String& authority,
+        /* [in] */ Boolean sync);
+
+    /**
+     * @see #setSyncAutomatically(Account, String, boolean)
+     * @hide
+     */
+    static CARAPI SetSyncAutomaticallyAsUser(
+        /* [in] */ IAccount* account,
+        /* [in] */ const String& authority,
+        /* [in] */ Int32 userId,
         /* [in] */ Boolean sync);
 
     /**
@@ -1014,6 +1237,18 @@ public:
         /* [in] */ Int64 pollFrequency);
 
     /**
+     * {@hide}
+     * Helper function to throw an <code>IllegalArgumentException</code> if any illegal
+     * extras were set for a periodic sync.
+     *
+     * @param extras bundle to validate.
+     */
+    static CARAPI InvalidPeriodicExtras(
+        /* [in] */ IBundle* extras,
+        /* [out] */ Boolean* result);
+
+
+    /**
      * Remove a periodic sync. Has no affect if account, authority and extras don't match
      * an existing periodic sync.
      * <p>This method requires the caller to hold the permission
@@ -1029,6 +1264,23 @@ public:
         /* [in] */ IBundle* extras);
 
     /**
+     * Remove the specified sync. This will cancel any pending or active syncs. If the request is
+     * for a periodic sync, this call will remove any future occurrences.
+     * <p>
+     *     If a periodic sync is specified, the caller must hold the permission
+     *     {@link android.Manifest.permission#WRITE_SYNC_SETTINGS}.
+     *</p>
+     * It is possible to cancel a sync using a SyncRequest object that is not the same object
+     * with which you requested the sync. Do so by building a SyncRequest with the same
+     * adapter, frequency, <b>and</b> extras bundle.
+     *
+     * @param request SyncRequest object containing information about sync to cancel.
+     */
+    static CARAPI CancelSync(
+        /* [in] */ ISyncRequest* request);
+
+
+    /**
      * Get the list of information about the periodic syncs for the given account and authority.
      * <p>This method requires the caller to hold the permission
      * {@link android.Manifest.permission#READ_SYNC_SETTINGS}.
@@ -1040,7 +1292,7 @@ public:
     static CARAPI GetPeriodicSyncs(
         /* [in] */ IAccount* account,
         /* [in] */ const String& authority,
-        /* [out] */ IObjectContainer** periodicSyncs);
+        /* [out] */ IList** periodicSyncs);
 
     /**
      * Check if this account/provider is syncable.
@@ -1051,6 +1303,16 @@ public:
     static CARAPI GetIsSyncable(
         /* [in] */ IAccount* account,
         /* [in] */ const String& authority,
+        /* [out] */ Int32* isSyncable);
+
+    /**
+     * @see #getIsSyncable(Account, String)
+     * @hide
+     */
+    static CARAPI GetIsSyncableAsUserAsUser(
+        /* [in] */ IAccount* account,
+        /* [in] */ const String& authority,
+        /* [in] */ Int32 userId，
         /* [out] */ Int32* isSyncable);
 
     /**
@@ -1076,6 +1338,14 @@ public:
         /* [out] */ Boolean* result);
 
     /**
+     * @see #getMasterSyncAutomatically()
+     * @hide
+     */
+    static CARAPI GetMasterSyncAutomaticallyAsUser(
+        /* [in] */ Int32 userId，
+        /* [out] */ Boolean* result);
+
+    /**
      * Sets the master auto-sync setting that applies to all the providers and accounts.
      * If this is false then the per-provider auto-sync setting is ignored.
      * <p>This method requires the caller to hold the permission
@@ -1084,6 +1354,14 @@ public:
      * @param sync the master auto-sync setting that applies to all the providers and accounts
      */
     static CARAPI SetMasterSyncAutomatically(
+        /* [in] */ Boolean sync);
+
+    /**
+     * @see #setMasterSyncAutomatically(boolean)
+     * @hide
+     */
+    static CARAPI SetMasterSyncAutomaticallyAsUser(
+        /* [in] */ Int32 userId，
         /* [in] */ Boolean sync);
 
     /**
@@ -1125,8 +1403,16 @@ public:
      * <p>
      * @return a List of SyncInfo objects for the currently active syncs.
      */
+    static CARAPI GetCurrentSyncsAsUser(
+        /* [in] */ Int32 userId，
+        /* [out] */ IList** syncInfoList);
+
+    /**
+     * @see #getCurrentSyncs()
+     * @hide
+     */
     static CARAPI GetCurrentSyncs(
-        /* [out] */ IObjectContainer** syncInfoList);
+        /* [out] */ IList** syncInfoList);
 
     /**
      * Returns the status that matches the authority.
@@ -1141,6 +1427,16 @@ public:
         /* [out] */ ISyncStatusInfo** syncStatusInfo);
 
     /**
+     * @see #getSyncStatus(Account, String)
+     * @hide
+     */
+    static CARAPI GetSyncStatusAsUser(
+        /* [in] */ IAccount* account,
+        /* [in] */ const String& authority,
+        /* [in] */ Int32 userId，
+        /* [out] */ ISyncStatusInfo** syncStatusInfo);
+
+    /**
      * Return true if the pending status is true of any matching authorities.
      * <p>This method requires the caller to hold the permission
      * {@link android.Manifest.permission#READ_SYNC_STATS}.
@@ -1152,6 +1448,17 @@ public:
         /* [in] */ IAccount* account,
         /* [in] */ const String& authority,
         /* [out] */ Boolean* isSyncPending);
+
+    /**
+     * @see #requestSync(Account, String, Bundle)
+     * @hide
+     */
+    static CARAPI IsSyncPendingAsUser(
+        /* [in] */ IAccount* account,
+        /* [in] */ const String& authority,
+        /* [in] */ Int32 userId,
+        /* [out] */ Boolean* isSyncPending);
+
 
     /**
      * Request notifications when the different aspects of the SyncManager change. The
@@ -1182,6 +1489,12 @@ public:
     /** @hide */
     static CARAPI GetContentService(
         /* [out] */ IContentService** contentService);
+
+    /** @hide */
+    CARAPI_(String) GetPackageName();
+
+    CARAPI_(Int32) ResolveUserId(
+        /* [in] */ IUri* uri);
 
 protected:
     /** @hide */
@@ -1227,17 +1540,19 @@ private:
         /* [in] */ const String& selection);
 
 private:
+    static const AutoPtr<ArrayOf<String> > SYNC_ERROR_NAMES;
+
     static const String TAG;
 
     // Always log queries which take 500ms+; shorter queries are
     // sampled accordingly.
-    static const Int32 SLOW_THRESHOLD_MILLIS;
+    static const Boolean ENABLE_CONTENT_SAMPLE;// = false;
+    static const Int32 SLOW_THRESHOLD_MILLIS; = 500;
     AutoPtr<IRandom> mRandom;  // guarded by itself
-    Object mRandomLock;
 
     static AutoPtr<IContentService> sContentService;
     IContext* mContext;
-    // Object mRandomLock;
+    String mPackageName;
 };
 
 } // namespace Content

@@ -418,7 +418,7 @@ void CZigbeeService::CallbackManager::NotifySensorHumidityReport(
 
     //History Record
     if (humiditySensor->GetHistorySetting()) {
-        String record = StringUtils::Int32ToString(humidity);
+        String record = StringUtils::ToString(humidity);
         AutoPtr<HistoryRecordThread> humidityHistoryRecordThread = new HistoryRecordThread(
             deviceName, deviceShortAddr, date, record, humiditySensor->GetHistoryFileName(), mHost);
         humidityHistoryRecordThread->Start();
@@ -545,7 +545,7 @@ void CZigbeeService::CallbackManager::NotifySensorTemperatureReport(
 
     //History Record
     if (tempSensor->GetHistorySetting()) {
-        String record = StringUtils::Int32ToString(temperature);
+        String record = StringUtils::ToString(temperature);
         AutoPtr<HistoryRecordThread> temperatureHistoryRecordThread = new HistoryRecordThread(
                 deviceName, deviceShortAddr, date, record, tempSensor->GetHistoryFileName(), mHost);
         temperatureHistoryRecordThread->Start();
@@ -666,7 +666,7 @@ void CZigbeeService::CallbackManager::NotifyDoorOnOffStateChanged(
 
     //History Record
     if (doorSensor->GetHistorySetting()) {
-        String record = StringUtils::Int32ToString(doorState);
+        String record = StringUtils::ToString(doorState);
         AutoPtr<HistoryRecordThread> doorStateHistoryRecordThread = new HistoryRecordThread(
             deviceName, deviceShortAddr, date, record, doorSensor->GetHistoryFileName(), mHost);
         doorStateHistoryRecordThread->Start();
@@ -5651,7 +5651,7 @@ ECode CZigbeeService::GetDoorHistoryState(
         (*state)->AddRef();
         List<Int32>::Iterator iter = intState->Begin();
         for (Int32 i = 0; iter != intState->End(); ++iter, ++i) {
-            (**state)[i] = StringUtils::Int32ToString(i);
+            (**state)[i] = StringUtils::ToString(i);
         }
         if (DBG) Slogger::D(TAG, "GetDoorHistoryState(): device \"%s\": door history state: %p", deviceName.string(), *state);
     }

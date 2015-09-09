@@ -1308,7 +1308,7 @@ AutoPtr<IFile> CThrottleService::DataRecorder::GetDataFile()
         }
     }
     else {
-       String imsiHash = StringUtils::Int32ToString(mImsi.GetHashCode());
+       String imsiHash = StringUtils::ToString(mImsi.GetHashCode());
        CFile::New(throttleDir, imsiHash, (IFile**)&dataFile);
     }
     // touch the file so it's not LRU

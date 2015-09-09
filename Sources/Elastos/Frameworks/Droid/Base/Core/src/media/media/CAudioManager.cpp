@@ -1655,7 +1655,7 @@ ECode CAudioManager::GetProperty(
         CAudioSystemHelper::AcquireSingleton((IAudioSystemHelper**)&audioSystemHelper);
         audioSystemHelper->GetPrimaryOutputSamplingRate(&outputSampleRate);
         if (outputSampleRate > 0) {
-            *result = StringUtils::Int32ToString(outputSampleRate);
+            *result = StringUtils::ToString(outputSampleRate);
         }
         return NOERROR;
     }
@@ -1665,7 +1665,7 @@ ECode CAudioManager::GetProperty(
         CAudioSystemHelper::AcquireSingleton((IAudioSystemHelper**)&audioSystemHelper);
         audioSystemHelper->GetPrimaryOutputFrameCount(&outputFramesPerBuffer);
         if (outputFramesPerBuffer > 0) {
-            *result = StringUtils::Int32ToString(outputFramesPerBuffer);
+            *result = StringUtils::ToString(outputFramesPerBuffer);
         }
         return NOERROR;
     }

@@ -187,11 +187,11 @@ void WordIterator::CheckOffsetIsValid(
                 "]");
         */
         StringBuilder sb("Invalid offset: ");
-        sb += StringUtils::Int32ToString(shiftedOffset + mOffsetShift);
+        sb += StringUtils::ToString(shiftedOffset + mOffsetShift);
         sb += ". Valid range is [";
-        sb += StringUtils::Int32ToString(mOffsetShift);
+        sb += StringUtils::ToString(mOffsetShift);
         sb += ", ";
-        sb += StringUtils::Int32ToString(mString.GetLength() + mOffsetShift);
+        sb += StringUtils::ToString(mString.GetLength() + mOffsetShift);
         sb += "]";
         Logger::E(String("WordIterator"), sb.ToString());
     }

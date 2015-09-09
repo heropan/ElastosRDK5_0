@@ -4641,7 +4641,7 @@ void CInputMethodManagerService::SaveCurrentInputMethodAndSubtypeToHistory()
     if (mCurrentSubtype != NULL) {
         Int32 hashCode = 0;
         mCurrentSubtype->GetHashCode(&hashCode);
-        subtypeId = StringUtils::Int32ToString(hashCode);
+        subtypeId = StringUtils::ToString(hashCode);
     }
     if (CanAddToLastInputMethod(mCurrentSubtype)) {
         mSettings->AddSubtypeToHistory(mCurMethodId, subtypeId);

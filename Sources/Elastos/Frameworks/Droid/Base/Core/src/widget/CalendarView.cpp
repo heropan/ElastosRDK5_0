@@ -523,7 +523,7 @@ ECode CalendarView::_WeekView::Init(
     if (mHost->mShowWeekNumber) {
         Int32 value;
         mHost->mTempDate->Get(ICalendar::WEEK_OF_YEAR, &value);
-        String sv = StringUtils::Int32ToString(value);
+        String sv = StringUtils::ToString(value);
         (*mDayNumbers)[0] = sv;
         i++;
     }
@@ -560,7 +560,7 @@ ECode CalendarView::_WeekView::Init(
 //                    mTempDate.get(Calendar.DAY_OF_MONTH));
             Int32 dayOfMonth = 0;
             mHost->mTempDate->Get(ICalendar::DAY_OF_MONTH, &dayOfMonth);
-            (*mDayNumbers)[i] = StringUtils::Int32ToString(dayOfMonth);
+            (*mDayNumbers)[i] = StringUtils::ToString(dayOfMonth);
         }
         mHost->mTempDate->Add(ICalendar::DAY_OF_MONTH, 1);
     }

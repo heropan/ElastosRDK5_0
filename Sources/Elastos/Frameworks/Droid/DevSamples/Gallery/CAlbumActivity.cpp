@@ -409,7 +409,7 @@ ECode CAlbumActivity::LoadImageInfoRunnable::Run()
             Int32 lastIndex = path.LastIndexOf(DataSourceHelper::PATH_SPLITE);
             entry->desc = path.Substring(lastIndex + 1, path.GetLength());
             Int32 size = fileList->GetSize();
-            entry->num = StringUtils::Int32ToString(size);
+            entry->num = StringUtils::ToString(size);
             mHost->mAlbumEntryList.PushBack(entry);
 
             // Logger::D(TAG, "Album %d: sourcePath:%s, desc:%s, num:%s",

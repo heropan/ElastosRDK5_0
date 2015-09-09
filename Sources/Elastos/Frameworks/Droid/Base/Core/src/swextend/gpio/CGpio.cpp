@@ -142,7 +142,7 @@ String CGpio::ComposePinPath(
     AutoPtr< ArrayOf<Char32> > strArray = ArrayOf<Char32>::Alloc(1);
     (*strArray)[0] = group;
     groupstr = String(*strArray).ToUpperCase();
-    numstr = StringUtils::Int32ToString(num);
+    numstr = StringUtils::ToString(num);
     return mPathstr + groupstr + numstr;
 }
 

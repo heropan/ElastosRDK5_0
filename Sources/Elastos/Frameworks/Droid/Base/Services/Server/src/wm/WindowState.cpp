@@ -1196,7 +1196,7 @@ List<AutoPtr<WindowState> >& WindowState::GetWindowList()
 
 String WindowState::MakeInputChannelName()
 {
-    String s = StringUtils::Int32ToString((Int32)this);
+    String s = StringUtils::ToString((Int32)this);
     s += " ";
     AutoPtr<ICharSequence> cs;
     mAttrs->GetTitle((ICharSequence**)&cs);

@@ -392,7 +392,7 @@ ECode CDeviceAdminInfo::WritePoliciesToXml(
     /* [in] */ IXmlSerializer* out)
 {
     VALIDATE_NOT_NULL(out);
-    String value = StringUtils::Int32ToString(mUsesPolicies);
+    String value = StringUtils::ToString(mUsesPolicies);
     String nullStr;
     return out->WriteAttribute(nullStr, String("flags"), value);
 }

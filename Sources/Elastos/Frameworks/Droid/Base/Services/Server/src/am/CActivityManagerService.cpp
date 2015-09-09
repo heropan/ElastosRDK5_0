@@ -10894,7 +10894,7 @@ ECode CActivityManagerService::AppendDropBoxProcessHeaders(
         process->mInfo->GetFlags(&flags);
         AutoPtr<IIPackageManager> pm = AppGlobals::GetPackageManager();
         sb.Append("Flags: 0x");
-        String fstr = StringUtils::Int32ToString(flags, 16);
+        String fstr = StringUtils::ToString(flags, 16);
         sb.Append(fstr);
         sb.Append("\n");
         HashSet<String>::Iterator it;
@@ -18880,7 +18880,7 @@ void CActivityManagerService::HandleUpdateHttpProxy(
         proxy->GetHost(&host);
         Int32 intPort;
         proxy->GetPort(&intPort);
-        port = StringUtils::Int32ToString(intPort);
+        port = StringUtils::ToString(intPort);
         proxy->GetExclusionList(&exclList);
     }
 

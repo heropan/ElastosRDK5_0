@@ -27,7 +27,7 @@ ECode CalendarContractAttendees::Query(
     /* [out] */ ICursor** cursor)
 {
     AutoPtr<ArrayOf<String> > attArgs = ArrayOf<String>::Alloc(1);
-    (*attArgs)[0] = StringUtils::Int64ToString(eventId);
+    (*attArgs)[0] = StringUtils::ToString(eventId);
     AutoPtr<IUri> _uri;
     FAIL_RETURN(GetCONTENT_URI((IUri**)&_uri))
     return cr->Query(_uri, projection, ATTENDEES_WHERE, attArgs /* selection args */, String(NULL) /* sort order */, cursor);

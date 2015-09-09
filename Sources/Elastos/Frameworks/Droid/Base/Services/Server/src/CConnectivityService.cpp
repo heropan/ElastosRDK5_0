@@ -3582,9 +3582,9 @@ void CConnectivityService::ReassessPidDns(
     // nothing found - delete
     for (Int32 i = 1; ; i++) {
         String prop("net.dns");
-        prop += StringUtils::Int32ToString(i);
+        prop += StringUtils::ToString(i);
         prop += String(".");
-        prop += StringUtils::Int32ToString(myPid);
+        prop += StringUtils::ToString(myPid);
         AutoPtr<ISystemProperties> sysProp;
         CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
         String value;
@@ -3615,9 +3615,9 @@ Boolean CConnectivityService::WritePidDns(
         String dnsString;
         dns->GetHostAddress(&dnsString);
         String prop("net.dns");
-        prop += StringUtils::Int32ToString(j);
+        prop += StringUtils::ToString(j);
         prop += String(".");
-        prop += StringUtils::Int32ToString(pid);
+        prop += StringUtils::ToString(pid);
         AutoPtr<ISystemProperties> sysProp;
         CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
         String value;
@@ -3646,7 +3646,7 @@ void CConnectivityService::BumpDns()
         n = StringUtils::ParseInt32(propVal);
     }
     String prop("");
-    prop += StringUtils::Int32ToString(n + 1);
+    prop += StringUtils::ToString(n + 1);
     sysProp->Set(String("net.dnschange"), prop);
     /*
      * Tell the VMs to toss their DNS caches
@@ -3698,7 +3698,7 @@ Boolean CConnectivityService::UpdateDns(
             AutoPtr<IInetAddress> dns = *it;
             ++last;
             String key("net.dns");
-            key += StringUtils::Int32ToString(last);
+            key += StringUtils::ToString(last);
             String value;
             dns->GetHostAddress(&value);
             String str;
@@ -3714,7 +3714,7 @@ Boolean CConnectivityService::UpdateDns(
     }
     for (Int32 i = last + 1; i <= mNumDnsEntries; ++i) {
         String key("net.dns");
-        key += StringUtils::Int32ToString(i);
+        key += StringUtils::ToString(i);
         if (VDBG) Slogger::E(TAG, "erasing %s", key.string());
         changed = TRUE;
         sysProp->Set(key, String(""));
@@ -3881,7 +3881,7 @@ void CConnectivityService::Dump(
 //    pw->IncreaseIndent();
 //
 //    for(Int32 net = 0; net < mPriorityList->GetLength(); net++) {
-//        String pidString = StringUtils::Int32ToString(net) + String(": ");
+//        String pidString = StringUtils::ToString(net) + String(": ");
 //        AutoPtr<List<Int32> > plist = (*mNetRequestersPids)[net];
 //        List<Int32>::Iterator iter;
 //        for(iter = plist->Begin(); iter != plist->End(); iter++) {
@@ -4158,7 +4158,7 @@ ECode CConnectivityService::ReportInetCondition(
 //
 //        AutoPtr<IGregorianCalendar> calendar;
 //        CGregorianCalendar::New((IGregorianCalendar**)&calendar);
-//        String s = StringUtils::Int32ToString(pid) + "(" + StringUtils::Int32ToString(uid) + ") reports inet is " +
+//        String s = StringUtils::ToString(pid) + "(" + StringUtils::Int32ToString(uid) + ") reports inet is " +
 //            (percentage > 50 ? "connected" : "disconnected") + " (" + StringUtils::Int32ToString(percentage) + ") on " +
 //            "network Type " + StringUtils::Int32ToString(networkType) + " at " + calendar->GetInstance()->GetTime();
 //        mInetLog->PushBack(s);

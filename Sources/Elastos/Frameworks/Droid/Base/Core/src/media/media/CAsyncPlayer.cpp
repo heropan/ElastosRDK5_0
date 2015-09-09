@@ -29,11 +29,11 @@ String CAsyncPlayer::Command::ToString()
     uri->ToString(&tempText);
 
     StringBuilder sb("{ code=");
-    sb += StringUtils::Int32ToString(code);
+    sb += StringUtils::ToString(code);
     sb += " looping=";
     sb += StringUtils::BooleanToString(looping);
     sb += " stream=";
-    sb += StringUtils::Int32ToString(stream);
+    sb += StringUtils::ToString(stream);
     sb += " uri=";
     sb += tempText;
     sb += " }";

@@ -891,7 +891,7 @@ ECode CDevicePolicyManager::SetGlobalProxy(
 
             StringBuilder sb(hostName);
             sb += ":";
-            sb += StringUtils::Int32ToString(port);
+            sb += StringUtils::ToString(port);
             hostSpec = sb.ToString();
             if (exclusionList == NULL) {
                 exclSpec = "";

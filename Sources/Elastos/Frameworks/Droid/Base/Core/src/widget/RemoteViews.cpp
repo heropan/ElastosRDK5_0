@@ -1077,7 +1077,7 @@ String RemoteViews::ReflectionAction::GetActionName()
 {
     String str("ReflectionAction");
     str += mMethodName;
-    str += StringUtils::Int32ToString(mType);
+    str += StringUtils::ToString(mType);
     return str;
 }
 
