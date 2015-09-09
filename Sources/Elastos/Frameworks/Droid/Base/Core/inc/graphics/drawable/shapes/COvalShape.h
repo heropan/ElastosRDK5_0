@@ -14,27 +14,12 @@ namespace Shapes {
 CarClass(COvalShape), public OvalShape
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI constructor();
 
-    CARAPI GetWidth(
-        /* [out] */ Float* width);
-
-    CARAPI GetHeight(
-        /* [out] */ Float* height);
-
-    CARAPI Draw(
-        /* [in] */ ICanvas* canvas,
-        /* [in] */ IPaint* paint);
-
-    CARAPI Resize(
-        /* [in] */ Float width,
-        /* [in] */ Float height);
-
-    CARAPI HasAlpha(
-        /* [out] */ Boolean* hasAlpha);
-
     CARAPI Clone(
-        /* [out] */ IShape** shape);
+        /* [out] */ IInterface** shape);
 };
 
 } // namespace Shapes

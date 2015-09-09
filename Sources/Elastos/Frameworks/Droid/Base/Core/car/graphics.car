@@ -96,11 +96,11 @@ module
     merge("graphics/pdf/PdfEditor.car");
     merge("graphics/pdf/PdfRenderer.car");
 
+    using interface Elastos.Core.ICloneable;
 
-
-    // namespace Elastos {
-    // namespace Droid {
-    // namespace Graphics {
+    namespace Elastos {
+    namespace Droid {
+    namespace Graphics {
 
     // class CAvoidXfermode {
     //     /** This xfermode draws, or doesn't draw, based on the destination's
@@ -1024,7 +1024,7 @@ module
     //     interface IYuvImage;
     // }
 
-    // namespace Drawable {
+    namespace Drawable {
 
     // singleton class CDrawableHelper {
     //     interface IDrawableHelper;
@@ -1428,79 +1428,92 @@ module
     //     interface IPictureDrawable;
     // }
 
+    namespace Shapes {
 
-    // namespace Shapes {
+    class CArcShape {
+        /**
+         * ArcShape constructor.
+         *
+         * @param startAngle the angle (in degrees) where the arc begins
+         * @param sweepAngle the sweep angle (in degrees). Anything equal to or
+         *                   greater than 360 results in a complete circle/oval.
+         */
+        constructor(
+            [in] Float startAngle,
+            [in] Float sweepAngle);
 
-    // class CArcShape {
-    //     /**
-    //      * ArcShape constructor.
-    //      *
-    //      * @param startAngle the angle (in degrees) where the arc begins
-    //      * @param sweepAngle the sweep angle (in degrees). Anything equal to or
-    //      *                   greater than 360 results in a complete circle/oval.
-    //      */
-    //     constructor(
-    //         [in] Float startAngle,
-    //         [in] Float sweepAngle);
+        interface IArcShape;
+        interface IRectShape;
+        interface IShape;
+        interface ICloneable;
+    }
 
-    //     interface IArcShape;
-    // }
+    class COvalShape {
+        constructor();
 
-    // class COvalShape {
-    //     constructor();
+        interface IOvalShape;
+        interface IRectShape;
+        interface IShape;
+        interface ICloneable;
+    }
 
-    //     interface IOvalShape;
-    // }
+    class CPathShape {
+        constructor(
+            [in] Elastos.Droid.Graphics.IPath* path,
+            [in] Float stdWidth,
+            [in] Float stdHeight);
 
-    // class CPathShape {
-    //     constructor(
-    //         [in] Elastos.Droid.Graphics.IPath* path,
-    //         [in] Float stdWidth,
-    //         [in] Float stdHeight);
+        interface IPathShape;
+        interface IShape;
+        interface ICloneable;
+    }
 
-    //     interface IPathShape;
-    // }
+    class CRectShape {
+        constructor();
 
-    // class CRectShape {
-    //     constructor();
+        interface IRectShape;
+        interface IShape;
+        interface ICloneable;
+    }
 
-    //     interface IRectShape;
-    // }
+    [deprecated]
+    class CRoundRectShape {
 
-    // [deprecated]
-    // class CRoundRectShape {
+        /**
+         * RoundRectShape constructor.
+         * Specifies an outer (round)rect and an optional inner (round)rect.
+         *
+         * @param outerRadii An array of 8 radius values, for the outer roundrect.
+         *                   The first two floats are for the
+         *                   top-left corner (remaining pairs correspond clockwise).
+         *                   For no rounded corners on the outer rectangle,
+         *                   pass null.
+         * @param inset      A RectF that specifies the distance from the inner
+         *                   rect to each side of the outer rect.
+         *                   For no inner, pass null.
+         * @param innerRadii An array of 8 radius values, for the inner roundrect.
+         *                   The first two floats are for the
+         *                   top-left corner (remaining pairs correspond clockwise).
+         *                   For no rounded corners on the inner rectangle,
+         *                   pass null.
+         *                   If inset parameter is null, this parameter is ignored.
+         */
+        constructor(
+            [in] ArrayOf<Float>* outerRadii,
+            [in] Elastos.Droid.Graphics.IRectF* inset,
+            [in] ArrayOf<Float>* innerRadii);
 
-    //     /**
-    //      * RoundRectShape constructor.
-    //      * Specifies an outer (round)rect and an optional inner (round)rect.
-    //      *
-    //      * @param outerRadii An array of 8 radius values, for the outer roundrect.
-    //      *                   The first two floats are for the
-    //      *                   top-left corner (remaining pairs correspond clockwise).
-    //      *                   For no rounded corners on the outer rectangle,
-    //      *                   pass null.
-    //      * @param inset      A RectF that specifies the distance from the inner
-    //      *                   rect to each side of the outer rect.
-    //      *                   For no inner, pass null.
-    //      * @param innerRadii An array of 8 radius values, for the inner roundrect.
-    //      *                   The first two floats are for the
-    //      *                   top-left corner (remaining pairs correspond clockwise).
-    //      *                   For no rounded corners on the inner rectangle,
-    //      *                   pass null.
-    //      *                   If inset parameter is null, this parameter is ignored.
-    //      */
-    //     constructor(
-    //         [in] ArrayOf<Float>* outerRadii,
-    //         [in] Elastos.Droid.Graphics.IRectF* inset,
-    //         [in] ArrayOf<Float>* innerRadii);
+        interface IRoundRectShape;
+        interface IRectShape;
+        interface IShape;
+        interface ICloneable;
+    }
 
-    //     interface IRoundRectShape;
-    // }
+    } // namespace Shapes
 
-    // } // namespace Shapes
-    // } // namespace Drawable
+    } // namespace Drawable
 
-    // } // namespace Graphics
-    // } // namepsace Droid
-    // } // namespace Elastos
+    } // namespace Graphics
+    } // namepsace Droid
+    } // namespace Elastos
 }

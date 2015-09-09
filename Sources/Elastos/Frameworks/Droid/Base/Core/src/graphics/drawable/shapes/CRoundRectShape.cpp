@@ -8,60 +8,22 @@ namespace Graphics {
 namespace Drawable {
 namespace Shapes {
 
-
+CAR_OBJECT_IMPL(CRoundRectShape);
 ECode CRoundRectShape::constructor(
     /* [in] */ ArrayOf<Float>* outerRadii,
     /* [in] */ IRectF* inset,
     /* [in] */ ArrayOf<Float>* innerRadii)
 {
-    return RoundRectShape::Init(outerRadii, inset, innerRadii);
-}
-
-ECode CRoundRectShape::GetWidth(
-    /* [out] */ Float* width)
-{
-    VALIDATE_NOT_NULL(width);
-    *width = RoundRectShape::GetWidth();
-    return NOERROR;
-}
-
-ECode CRoundRectShape::GetHeight(
-    /* [out] */ Float* height)
-{
-    VALIDATE_NOT_NULL(height);
-    *height = RoundRectShape::GetHeight();
-    return NOERROR;
-}
-
-ECode CRoundRectShape::Draw(
-    /* [in] */ ICanvas* canvas,
-    /* [in] */ IPaint* paint)
-{
-    return RoundRectShape::Draw(canvas, paint);
-}
-
-ECode CRoundRectShape::Resize(
-    /* [in] */ Float width,
-    /* [in] */ Float height)
-{
-    return RoundRectShape::Resize(width, height);
-}
-
-ECode CRoundRectShape::HasAlpha(
-    /* [out] */ Boolean* hasAlpha)
-{
-    VALIDATE_NOT_NULL(hasAlpha);
-    *hasAlpha = RoundRectShape::HasAlpha();
-    return NOERROR;
+    return RoundRectShape::constructor(outerRadii, inset, innerRadii);
 }
 
 ECode CRoundRectShape::Clone(
-    /* [out] */ IShape** shape)
+    /* [out] */ IInterface** shape)
 {
     VALIDATE_NOT_NULL(shape);
-    AutoPtr<CRoundRectShape> s;
-    CRoundRectShape::NewByFriend(NULL, NULL, NULL, (CRoundRectShape**)&s);
-    RoundRectShape::Clone((RoundRectShape*)s.Get());
+    AutoPtr<IRoundRectShape> s;
+    CRoundRectShape::New(NULL, NULL, NULL, (IRoundRectShape**)&s);
+    RoundRectShape::CloneImpl(s);
     *shape = (IShape*)s.Get();
     REFCOUNT_ADD(*shape);
     return NOERROR;

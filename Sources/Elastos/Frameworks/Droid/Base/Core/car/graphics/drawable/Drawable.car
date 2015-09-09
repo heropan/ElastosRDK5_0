@@ -540,29 +540,6 @@ module
             [out] IDrawable** drawable);
 
         /**
-         * Return the appropriate opacity value for two source opacities.  If
-         * either is UNKNOWN, that is returned; else, if either is TRANSLUCENT,
-         * that is returned; else, if either is TRANSPARENT, that is returned;
-         * else, OPAQUE is returned.
-         *
-         * <p>This is to help in implementing
-         *
-         * @sa #getOpacity
-         * .
-         *
-         * @param op1 One opacity value.
-         * @param op2 Another opacity value.
-         *
-         * @return int The combined opacity value.
-         *
-         * @see #getOpacity
-         */
-        ResolveOpacity(
-            [in] Int32 op1,
-            [in] Int32 op2,
-            [out] Int32* opacity);
-
-        /**
          * Use the current
          *
          * @sa Callback
@@ -961,6 +938,29 @@ module
     }
 
     interface IDrawableHelper {
+        /**
+         * Return the appropriate opacity value for two source opacities.  If
+         * either is UNKNOWN, that is returned; else, if either is TRANSLUCENT,
+         * that is returned; else, if either is TRANSPARENT, that is returned;
+         * else, OPAQUE is returned.
+         *
+         * <p>This is to help in implementing
+         *
+         * @sa #getOpacity
+         * .
+         *
+         * @param op1 One opacity value.
+         * @param op2 Another opacity value.
+         *
+         * @return int The combined opacity value.
+         *
+         * @see #getOpacity
+         */
+        ResolveOpacity(
+            [in] Int32 op1,
+            [in] Int32 op2,
+            [out] Int32* opacity);
+
         /**
          * Create a drawable from file path name.
          */

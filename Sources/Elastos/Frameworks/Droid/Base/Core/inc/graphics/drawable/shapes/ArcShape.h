@@ -17,9 +17,13 @@ namespace Shapes {
  * but more graphical control is available if you instead pass
  * the ArcShape to a {@link android.graphics.drawable.ShapeDrawable}.
  */
-class ArcShape : public RectShape
+class ArcShape
+    : public RectShape
+    , public IArcShape
 {
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * ArcShape constructor.
      *
@@ -39,12 +43,12 @@ public:
 protected:
     ArcShape();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Float startAngle,
         /* [in] */ Float sweepAngle);
 
-    CARAPI_(void) Clone(
-        /* [in] */ ArcShape* other);
+    CARAPI CloneImpl(
+        /* [in] */ IArcShape* other);
 
 private:
     Float mStart;

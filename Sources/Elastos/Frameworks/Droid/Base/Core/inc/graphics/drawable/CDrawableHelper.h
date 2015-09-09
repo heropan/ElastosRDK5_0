@@ -3,6 +3,9 @@
 
 #include "_Elastos_Droid_Graphics_Drawable_CDrawableHelper.h"
 #include "graphics/drawable/Drawable.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Droid {
@@ -10,8 +13,19 @@ namespace Graphics {
 namespace Drawable {
 
 CarClass(CDrawableHelper)
+    , public Singleton
+    , public IDrawableHelper
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_SINGLETON_DECL();
+
+    CARAPI ResolveOpacity(
+        /* [in] */ Int32 op1,
+        /* [in] */ Int32 op2,
+        /* [out] */ Int32* opacity);
+
     CARAPI CreateFromPath(
         /* [in] */ const String& pathName,
         /* [out] */ IDrawable** drawable);

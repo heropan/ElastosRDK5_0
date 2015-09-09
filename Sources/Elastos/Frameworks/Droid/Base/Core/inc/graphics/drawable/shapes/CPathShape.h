@@ -14,6 +14,8 @@ namespace Shapes {
 CarClass(CPathShape), public PathShape
 {
 public:
+    CAR_OBJECT_DECL();
+
     /**
      * PathShape constructor.
      *
@@ -30,25 +32,8 @@ public:
         /* [in] */ Float stdWidth,
         /* [in] */ Float stdHeight);
 
-    CARAPI GetWidth(
-        /* [out] */ Float* width);
-
-    CARAPI GetHeight(
-        /* [out] */ Float* height);
-
-    CARAPI Draw(
-        /* [in] */ ICanvas* canvas,
-        /* [in] */ IPaint* paint);
-
-    CARAPI Resize(
-        /* [in] */ Float width,
-        /* [in] */ Float height);
-
-    CARAPI HasAlpha(
-        /* [out] */ Boolean* hasAlpha);
-
     CARAPI Clone(
-        /* [out] */ IShape** shape);
+        /* [out] */ IInterface** shape);
 };
 
 } // namespace Shapes

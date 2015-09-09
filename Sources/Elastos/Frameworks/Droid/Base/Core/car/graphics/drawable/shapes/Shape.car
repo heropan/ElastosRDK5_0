@@ -62,9 +62,6 @@ module
         Resize(
             [in] Float width,
             [in] Float height);
-
-        Clone(
-            [out] IShape** shape);
     }
 
     } // namespace Shapes

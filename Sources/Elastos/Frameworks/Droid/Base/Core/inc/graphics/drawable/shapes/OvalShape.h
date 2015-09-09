@@ -16,9 +16,13 @@ namespace Shapes {
  * but more graphical control is available if you instead pass
  * the OvalShape to a {@link android.graphics.drawable.ShapeDrawable}.
  */
-class OvalShape : public RectShape
+class OvalShape
+    : public RectShape
+    , public IOvalShape
 {
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * OvalShape constructor.
      */
@@ -28,12 +32,6 @@ public:
     CARAPI Draw(
         /* [in] */ ICanvas* canvas,
         /* [in] */ IPaint* paint);
-
-protected:
-    CARAPI Init();
-
-    CARAPI_(void) Clone(
-        /* [in] */ OvalShape* other);
 };
 
 } // namespace Shapes

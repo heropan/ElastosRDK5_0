@@ -3,6 +3,10 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_SHAPE_H__
 
 #include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
+using Elastos::Core::ICloneable;
 
 namespace Elastos {
 namespace Droid {
@@ -17,19 +21,26 @@ namespace Shapes {
  * it to a {@link android.graphics.drawable.ShapeDrawable}.
  */
 class Shape
+    : public Object
+    , public IShape
+    , public ICloneable
 {
 public:
+    CAR_INTERFACE_DECL();
+
     Shape();
 
     /**
      * Returns the width of the Shape.
      */
-    CARAPI_(Float) GetWidth();
+    virtual CARAPI GetWidth(
+        /* [out] */ Float* width);
 
     /**
      * Returns the height of the Shape.
      */
-    CARAPI_(Float) GetHeight();
+    virtual CARAPI GetHeight(
+        /* [out] */ Float* height);
 
     /**
      * Draw this shape into the provided Canvas, with the provided Paint.
@@ -59,7 +70,11 @@ public:
      *
      * @return true if any part of the drawable is <em>not</em> opaque.
      */
-    virtual CARAPI_(Boolean) HasAlpha();
+    virtual CARAPI HasAlpha(
+        /* [out] */ Boolean* has);
+
+    // virtual CARAPI Clone(
+    //     /* [out] */ IInterface** other);
 
 protected:
     /**
@@ -72,8 +87,8 @@ protected:
         /* [in] */ Float width,
         /* [in] */ Float height);
 
-    virtual CARAPI_(void) Clone(
-        /* [in] */ Shape* other);
+    CARAPI CloneImpl(
+        /* [in] */ IShape* other);
 
 private:
     Float mWidth;
