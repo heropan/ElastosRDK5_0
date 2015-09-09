@@ -16,3 +16,8 @@ SOURCES = Elastos.CoreLibrary.cpp
 SOURCES += Base64Test.cpp
 SOURCES += CharArrayWriterTest.cpp
 SOURCES += DataOutputStreamTest.cpp
+SOURCES += FileDescriptorTest.cpp
+SOURCES += FileInputStreamTest.cpp
+
+SOURCES += MyThread.car
+
