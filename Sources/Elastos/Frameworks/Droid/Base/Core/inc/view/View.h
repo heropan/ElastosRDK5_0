@@ -74,6 +74,12 @@ class ViewPropertyAnimator;
 class CAccessibilityInteractionController;
 
 class View
+    : public Object
+    , public IView
+    , public IDrawableCallback
+    , public IKeyEventCallback
+    , public IAccessibilityEventSource
+
 {
     friend class ViewRootImpl;
     friend class ViewGroup;
@@ -1571,6 +1577,13 @@ public:
         Boolean mUse32BitDrawingCache;
 
         /**
+         * For windows that are full-screen but using insets to layout inside
+         * of the screen areas, these are the current insets to appear inside
+         * the overscan area of the display.
+         */
+        AutoPtr<CRect> mOverscanInsets;// = new Rect();
+
+        /**
         * For windows that are full-screen but using insets to layout inside
         * of the screen decorations, these are the current insets for the
         * content of the window.
@@ -1670,6 +1683,12 @@ public:
         Boolean mHasSystemUiListeners;
 
         /**
+         * Set if the window has requested to extend into the overscan region
+         * via WindowManager.LayoutParams.FLAG_LAYOUT_IN_OVERSCAN.
+         */
+        Boolean mOverscanRequested;
+
+        /**
         * Set if the visibility of any views has changed.
         */
         Boolean mViewVisibilityChanged;
@@ -1755,6 +1774,14 @@ public:
          * The id of the window for accessibility purposes.
          */
         Int32 mAccessibilityWindowId;
+
+        /**
+         * Flags related to accessibility processing.
+         *
+         * @see AccessibilityNodeInfo#FLAG_INCLUDE_NOT_IMPORTANT_VIEWS
+         * @see AccessibilityNodeInfo#FLAG_REPORT_VIEW_IDS
+         */
+        Int32 mAccessibilityFetchFlags;
 
         /**
          * Whether to ingore not exposed for accessibility Views when
@@ -2053,7 +2080,9 @@ private:
         {}
 
         CARAPI Run();
-
+    public:
+        Float mX;
+        Float mY;
     private:
         View* mView;
     };
@@ -2991,20 +3020,22 @@ public:
     virtual CARAPI SetImportantForAccessibility(
         /* [in] */ Int32 mode);
 
-    virtual CARAPI_(Boolean) IsImportantForAccessibility();
+    virtual CARAPI IsImportantForAccessibility(
+        /* [out] */ Boolean* isImportant);
 
     virtual CARAPI_(AutoPtr<IViewParent>) GetParentForAccessibility();
 
     virtual CARAPI AddChildrenForAccessibility(
         /* [in] */ IObjectContainer* children);
 
-    virtual CARAPI_(Boolean) IncludeForAccessibility();
+    virtual CARAPI IncludeForAccessibility(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI_(Boolean) IsActionableForAccessibility();
 
-    virtual CARAPI NotifyAccessibilityStateChanged();
+    virtual CARAPI NotifySubtreeAccessibilityStateChangedIfNeeded();
 
-    virtual CARAPI ResetAccessibilityStateChanged();
+    virtual CARAPI ResetSubtreeAccessibilityStateChanged();
 
     virtual CARAPI_(Boolean) PerformAccessibilityAction(
         /* [in] */ Int32 action,
@@ -3012,10 +3043,11 @@ public:
 
     virtual CARAPI_(AutoPtr<ICharSequence>) GetIterableTextForAccessibility();
 
-    virtual CARAPI_(Int32) GetAccessibilityCursorPosition();
+    virtual CARAPI_(Int32) GetAccessibilitySelectionStart();
 
-    virtual CARAPI SetAccessibilityCursorPosition(
-        /* [in] */ Int32 position);
+    virtual CARAPI SetAccessibilitySelection(
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 end);
 
     virtual CARAPI_(AutoPtr<ITextSegmentIterator>) GetIteratorForGranularity(
         /* [in] */ Int32 granularity);
@@ -4040,6 +4072,51 @@ public:
         /* [in] */ Float offsetX,
         /* [in] */ Float offsetY);
 
+    CARAPI_(AutoPtr<IWindowInsets>) OnApplyWindowInsets(
+        /* [in] */ IWindowInsets* insets);
+
+    CARAPI_(void) SetOnApplyWindowInsetsListener(
+        /* [in] */ IViewOnApplyWindowInsetsListener listener);
+
+    CARAPI DispatchApplyWindowInsets(
+        /* [in] */ IWindowInsets* insets,
+        /* [out] */ IWindowInsets** res);
+
+    CARAPI ComputeSystemWindowInsets(
+        /* [in] */ IWindowInsets* in,
+        /* [in] */ IRect* outLocalInsets,
+        /* [out] */ IWindowInsets** res);
+
+    CARAPI RequestApplyInsets();
+
+    CARAPI IsAttachedToWindow(
+        /* [out] */ Boolean* res);
+
+    CARAPI IsLaidOut(
+        /* [out] */ Boolean* res);
+
+    CARAPI SetAccessibilityLiveRegion(
+        /* [in] */ Int32 mode);
+
+    CARAPI GetAccessibilityLiveRegion(
+        /* [out] */ Int32* res);
+
+    CARAPI IsAccessibilitySelectionExtendable(
+        /* [out] */ Boolean* res);
+
+    CARAPI GetAccessibilitySelectionEnd(
+        /* [out] */ Int32* res);
+
+    CARAPI RequestUnbufferedDispatch(
+        /* [in] */ IMotionEvent* event);
+
+    CARAPI SetTransitionAlpha(
+        /* [in] */ Float alpha);
+
+    CARAPI GetTransitionAlpha(
+        /* [out] */ Float* alpha);
+
+
 protected:
     virtual CARAPI_(void) InitializeFadingEdge(
         /* [in] */ ITypedArray* a);
@@ -4117,8 +4194,9 @@ protected:
      * @see #setFitsSystemWindows(boolean)
      * @see #setSystemUiVisibility(int)
      */
-    virtual CARAPI_(Boolean) FitSystemWindows(
-        /* [in] */ IRect* insets);
+    virtual CARAPI FitSystemWindows(
+        /* [in] */ IRect* _insets,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI_(void) DispatchSetPressed(
         /* [in] */ Boolean pressed);
@@ -4799,6 +4877,10 @@ protected:
      */
     virtual CARAPI_(Float) GetHorizontalScrollFactor();
 
+    virtual CARAPI_(Boolean) ComputeFitSystemWindows(
+        /* [in] */ IRect* inoutInsets,
+        /* [in] */ IRect* outLocalInsets);
+
 private:
     CARAPI_(void) InitScrollCache();
 
@@ -4871,8 +4953,10 @@ private:
      */
     CARAPI_(Boolean) HasListenersForAccessibility();
 
-    CARAPI_(Boolean) NextAtGranularity(
-        /* [in] */ Int32 granularity);
+    CARAPI_(Boolean) TraverseAtGranularity(
+        /* [in] */ Int32 granularity,
+        /* [in] */ Boolean forward,
+        /* [in] */ Boolean extendSelection);
 
     CARAPI_(Boolean) PreviousAtGranularity(
         /* [in] */ Int32 granularity);
@@ -4901,20 +4985,6 @@ private:
      * {@link AccessibilityEvent#TYPE_VIEW_SCROLLED} accessibility event.
      */
     CARAPI_(void) RemoveSendViewScrolledAccessibilityEventCallback();
-
-    /**
-     * Utility function to determine if the value is far enough away from zero to be
-     * considered non-zero.
-     * @param value A floating point value to check for zero-ness
-     * @return whether the passed-in value is far enough away from zero to be considered non-zero
-     */
-    static CARAPI_(Boolean) Nonzero(
-        /* [in] */ Float value);
-
-    /**
-     * Recomputes the transform matrix if necessary.
-     */
-    CARAPI_(void) UpdateMatrix();
 
     /**
      * Utility method to determine whether the given point, in local coordinates,
@@ -5031,6 +5101,17 @@ private:
     CARAPI_(void) SaveAttributeData(
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ ITypedArray* a);
+
+    CARAPI FitSystemWindowsInt(
+        /* [in] */ IRect* insets,
+        /* [in] */ Boolean* res);
+
+    CARAPI_(void) SetPressed(
+        /* [in] */ Boolean pressed,
+        /* [in] */ Float x,
+        /* [in] */ Float y);
+
+    CARAPI_(Float) GetFinalAlpha();
 
 public:
     /**
