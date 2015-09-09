@@ -3,10 +3,14 @@ module
 {
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.View.ISurface;
     interface Elastos.Droid.View.IDisplay;
-//    interface Elastos.Droid.View.IDisplayInfo;
-//    interface Elastos.Droid.content.IContext;
-//    interface Elastos.Droid.Hardware.Display.IIVirtualDisplayCallback;
+    interface Elastos.Droid.View.IDisplayInfo;
+    interface Elastos.Droid.View.IDisplayAdjustments;
+    interface Elastos.Droid.Media.Projection.IMediaProjection;
+    interface Elastos.Droid.Hardware.Display.IVirtualDisplayCallback;
+    interface Elastos.Droid.Hardware.Display.IIVirtualDisplayCallback;
 
     namespace Elastos {
     namespace Droid {
@@ -25,9 +29,9 @@ module
          * @return Information about the specified display, or NULL if it does not exist.
          * This object belongs to an internal cache and should be treated as if it were immutable.
          */
-        // GetDisplayInfo(
-        //     [in] Int32 displayId,
-        //     [out] IDisplayInfo** displayInfo);
+        GetDisplayInfo(
+            [in] Int32 displayId,
+            [out] IDisplayInfo** displayInfo);
 
         /**
          * Gets all currently valid logical display ids.
@@ -47,10 +51,10 @@ module
          * @param cih The compatibility info, or NULL if none is required.
          * @return The display object, or NULL if there is no display with the given id.
          */
-//        GetCompatibleDisplay(
-//            [in] Int32 displayId,
-//            [in] IDisplayAdjustments* daj,
-//            [out] IDisplay** display);
+        GetCompatibleDisplay(
+            [in] Int32 displayId,
+            [in] IDisplayAdjustments* daj,
+            [out] IDisplay** display);
 
         /**
          * Gets information about a logical display without applying any compatibility metrics.
@@ -101,34 +105,34 @@ module
         ForgetWifiDisplay(
             [in] String deviceAddress);
 
-        // GetWifiDisplayStatus(
-        //     [out] IWifiDisplayStatus** status);
+        GetWifiDisplayStatus(
+            [out] IWifiDisplayStatus** status);
 
-        // CreateVirtualDisplay(
-        //     [in] IContext* context,
-        //     [in] IMediaProjection* projection,
-        //     [in] String name,
-        //     [in] Int32 width,
-        //     [in] Int32 height,
-        //     [in] Int32 densityDpi,
-        //     [in] ISurface* surface,
-        //     [in] Int32 flags,
-        //     [in] IVirtualDisplayCallback* cb,
-        //     [in] IHandler* handler,
-        //     [out] IVirtualDisplay** outvd);
+        CreateVirtualDisplay(
+            [in] IContext* context,
+            [in] IMediaProjection* projection,
+            [in] String name,
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Int32 densityDpi,
+            [in] ISurface* surface,
+            [in] Int32 flags,
+            [in] IVirtualDisplayCallback* cb,
+            [in] IHandler* handler,
+            [out] IVirtualDisplay** outvd);
 
-        // SetVirtualDisplaySurface(
-        //     [in] IVirtualDisplayCallback* token,
-        //     [in] ISurface* surface);
+        SetVirtualDisplaySurface(
+            [in] IIVirtualDisplayCallback* token,
+            [in] ISurface* surface);
 
-        // ResizeVirtualDisplay(
-        //     [in] IVirtualDisplayCallback* token,
-        //     [in] Int32 width,
-        //     [in] Int32 height,
-        //     [in] Int32 densityDpi);
+        ResizeVirtualDisplay(
+            [in] IIVirtualDisplayCallback* token,
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Int32 densityDpi);
 
-        // ReleaseVirtualDisplay(
-        //     [in] IIVirtualDisplayCallback* token);
+        ReleaseVirtualDisplay(
+            [in] IIVirtualDisplayCallback* token);
     }
 
     interface IDisplayManagerGlobalHelper {

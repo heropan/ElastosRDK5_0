@@ -1,9 +1,11 @@
 
-#include "hardware/display/CWifiDisplay.h"
+#include "hardware/display/WifiDisplay.h"
 #include "ext/frameworkext.h"
-#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
 
+using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;
 
@@ -12,38 +14,40 @@ namespace Droid {
 namespace Hardware {
 namespace Display {
 
-const AutoPtr<ArrayOf<IWifiDisplay*> > CWifiDisplay::EMPTY_ARRAY = ArrayOf<IWifiDisplay*>::Alloc(0);
+const AutoPtr<ArrayOf<IWifiDisplay*> > WifiDisplay::EMPTY_ARRAY = ArrayOf<IWifiDisplay*>::Alloc(0);
 
-ECode CWifiDisplay::constructor()
-{
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL_2(WifiDisplay, Object, IWifiDisplay, IParcelable)
 
-ECode CWifiDisplay::constructor(
+WifiDisplay::WifiDisplay()
+{}
+
+WifiDisplay::WifiDisplay(
     /* [in] */ const String& deviceAddress,
     /* [in] */ const String& deviceName,
-    /* [in] */ const String& deviceAlias)
+    /* [in] */ const String& deviceAlias,
+    /* [in] */ Boolean available,
+    /* [in] */ Boolean canConnect,
+    /* [in] */ Boolean remembered)
 {
     if (deviceAddress.IsNullOrEmpty()) {
-        Logger::E("CWifiDisplay", "deviceAddress must not be null");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        Logger::E("WifiDisplay", "deviceAddress must not be null");
     }
     if (deviceName.IsNullOrEmpty()) {
-        Logger::E("CWifiDisplay", "deviceName must not be null");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        Logger::E("WifiDisplay", "deviceName must not be null");
     }
 
     mDeviceAddress = deviceAddress;
     mDeviceName = deviceName;
     mDeviceAlias = deviceAlias;
-
-    return NOERROR;
+    mIsAvailable = available;
+    mCanConnect = canConnect;
+    mIsRemembered = remembered;
 }
 
 /**
  * Gets the MAC address of the Wifi display device.
  */
-ECode CWifiDisplay::GetDeviceAddress(
+ECode WifiDisplay::GetDeviceAddress(
     /* [out] */ String* deviceAddress)
 {
     VALIDATE_NOT_NULL(deviceAddress);
@@ -55,7 +59,7 @@ ECode CWifiDisplay::GetDeviceAddress(
 /**
  * Gets the name of the Wifi display device.
  */
-ECode CWifiDisplay::GetDeviceName(
+ECode WifiDisplay::GetDeviceName(
     /* [out] */ String* deviceName)
 {
     VALIDATE_NOT_NULL(deviceName);
@@ -71,7 +75,7 @@ ECode CWifiDisplay::GetDeviceName(
  * provided by the user when renaming the device.
  * </p>
  */
-ECode CWifiDisplay::GetDeviceAlias(
+ECode WifiDisplay::GetDeviceAlias(
     /* [out] */ String* deviceAlias)
 {
     VALIDATE_NOT_NULL(deviceAlias);
@@ -80,11 +84,38 @@ ECode CWifiDisplay::GetDeviceAlias(
     return NOERROR;
 }
 
+ECode WifiDisplay::IsAvailable(
+        /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    *result = mIsAvailable;
+    return NOERROR;
+}
+
+ECode WifiDisplay::CanConnect(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    *result = mCanConnect;
+    return NOERROR;
+}
+
+ECode WifiDisplay::IsRemembered(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    *result = mIsRemembered;
+    return NOERROR;
+}
+
 /**
  * Gets the name to show in the UI.
  * Uses the device alias if available, otherwise uses the device name.
  */
-ECode CWifiDisplay::GetFriendlyDisplayName(
+ECode WifiDisplay::GetFriendlyDisplayName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
@@ -93,13 +124,20 @@ ECode CWifiDisplay::GetFriendlyDisplayName(
     return NOERROR;
 }
 
-// //@Override
-// public boolean equals(Object o)
-// {
-//     return o instanceof WifiDisplay && equals((WifiDisplay)o);
-// }
+ECode WifiDisplay::Equals(
+    /* [in] */ IInterface* other,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
 
-ECode CWifiDisplay::Equals(
+    if (IWifiDisplay::Probe(other) != NULL) {
+        return Equals(IWifiDisplay::Probe(other), res);
+    }
+    *res = FALSE;
+    return NOERROR;
+}
+
+ECode WifiDisplay::Equals(
     /* [in] */ IWifiDisplay* other,
     /* [out] */ Boolean* res)
 {
@@ -119,16 +157,7 @@ ECode CWifiDisplay::Equals(
     return NOERROR;
 }
 
-ECode CWifiDisplay::Equals(
-    /* [in] */ IInterface* other,
-    /* [out] */ Boolean* res)
-{
-    VALIDATE_NOT_NULL(res);
-    *res = FALSE;
-    return Equals(IWifiDisplay::Probe(other), res);
-}
-
-ECode CWifiDisplay::GetHashCode(
+ECode WifiDisplay::GetHashCode(
     /* [out] */ Int32* code)
 {
     // The address on its own should be sufficiently unique for hashing purposes.
@@ -137,7 +166,7 @@ ECode CWifiDisplay::GetHashCode(
     return NOERROR;
 }
 
-ECode CWifiDisplay::HasSameAddress(
+ECode WifiDisplay::HasSameAddress(
     /* [in] */ IWifiDisplay* other,
     /* [out] */ Boolean* res)
 {
@@ -153,28 +182,34 @@ ECode CWifiDisplay::HasSameAddress(
     return NOERROR;
 }
 
-ECode CWifiDisplay::ReadFromParcel(
+ECode WifiDisplay::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     FAIL_RETURN(source->ReadString(&mDeviceAddress));
     FAIL_RETURN(source->ReadString(&mDeviceName));
     FAIL_RETURN(source->ReadString(&mDeviceAlias));
+    FAIL_RETURN(source->ReadBoolean(&mIsAvailable))
+    FAIL_RETURN(source->ReadBoolean(&mCanConnect))
+    FAIL_RETURN(source->ReadBoolean(&mIsRemembered))
 
     return NOERROR;
 }
 
 //@Override
-ECode CWifiDisplay::WriteToParcel(
+ECode WifiDisplay::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
     FAIL_RETURN(dest->WriteString(mDeviceAddress));
     FAIL_RETURN(dest->WriteString(mDeviceName));
     FAIL_RETURN(dest->WriteString(mDeviceAlias));
+    FAIL_RETURN(dest->WriteBoolean(mIsAvailable))
+    FAIL_RETURN(dest->WriteBoolean(mCanConnect))
+    FAIL_RETURN(dest->WriteBoolean(mIsRemembered))
 
     return NOERROR;
 }
 
-ECode CWifiDisplay::ToString(
+ECode WifiDisplay::ToString(
     /* [out] */ String* info)
 {
     VALIDATE_NOT_NULL(info);
@@ -188,8 +223,18 @@ ECode CWifiDisplay::ToString(
         sb += mDeviceAlias;
     }
 
-    *info = sb.ToString();
-    return NOERROR;
+    sb += ", isAvailable ";
+    String tmp;
+    tmp = StringUtils::BooleanToString(mIsAvailable);
+    sb += tmp;
+    sb += ", canConnect ";
+    tmp = StringUtils::BooleanToString(mCanConnect);
+    sb += tmp;
+    sb += ", isRemembered ";
+    tmp = StringUtils::BooleanToString(mIsRemembered);
+    sb += tmp;
+
+    return sb.ToString(info);
 }
 
 } // namespace Display

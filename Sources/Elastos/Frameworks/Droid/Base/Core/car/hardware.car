@@ -19,11 +19,16 @@ module
 
     merge("hardware/display/DisplayManager.car");
     merge("hardware/display/DisplayManagerGlobal.car");
-    merge("hardware/display/IDisplayManagerCallback.car");
+    merge("hardware/display/DisplayManagerInternal.car");
+    merge("hardware/display/DisplayViewport.car");
     merge("hardware/display/IDisplayManager.car");
-    merge("hardware/display/WifiDisplay.car");
-    merge("hardware/display/WifiDisplayStatus.car");
+    merge("hardware/display/IDisplayManagerCallback.car");
+    merge("hardware/display/IVirtualDisplayCallback.car");
     merge("hardware/display/VirtualDisplay.car");
+    merge("hardware/display/WifiDisplay.car");
+    merge("hardware/display/WifiDisplaySessionInfo.car");
+    merge("hardware/display/WifiDisplayStatus.car");
+
     merge("hardware/input/IInputManager.car");
     merge("hardware/input/IInputDevicesChangedListener.car");
     merge("hardware/input/InputDeviceIdentifier.car");
@@ -110,6 +115,10 @@ module
 
 
     // interface Elastos.Droid.View.IRotationWatcher;
+    interface Elastos.Droid.View.IDisplay;
+    interface Elastos.Droid.View.ISurface;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Os.IBinder;
 
     namespace Elastos {
     namespace Droid {
@@ -181,75 +190,52 @@ module
         }
 
     namespace Display {
-        // /**
-        //  * Manages the properties of attached displays.
-        //  * <p>
-        //  * Get an instance of this class by calling
-        //  * {@link android.content.Context#getSystemService(java.lang.String)
-        //  * Context.getSystemService()} with the argument
-        //  * {@link android.content.Context#DISPLAY_SERVICE}.
-        //  * </p>
-        //  */
-        // [local]
-        // class CDisplayManager {
-        //     constructor(
-        //         [in] IContext* ctx);
+        /**
+         * Manages the properties of attached displays.
+         * <p>
+         * Get an instance of this class by calling
+         * {@link android.content.Context#getSystemService(java.lang.String)
+         * Context.getSystemService()} with the argument
+         * {@link android.content.Context#DISPLAY_SERVICE}.
+         * </p>
+         */
+        [local]
+        class CDisplayManager {
+            constructor(
+                [in] IContext* ctx);
 
-        //     interface IDisplayManager;
-        // }
+            interface IDisplayManager;
+        }
 
-        // class CDisplayManagerCallback {
-        //     constructor(
-        //         [in] Handle32 owner);
+        class CDisplayManagerCallback {
+            constructor(
+                [in] Handle32 owner);
 
-        //     interface IDisplayManagerCallback;
-        //     interface IBinder;
-        // }
+            interface IIDisplayManagerCallback;
+        }
 
-        // /**
-        //  * Describes the properties of a Wifi display.
-        //  * <p>
-        //  * This object is immutable.
-        //  * </p>
-        //  *
-        //  * @hide
-        //  */
-        // class CWifiDisplay {
-        //     constructor();
+        class CDisplayPowerRequest {
+            constructor();
 
-        //     constructor(
-        //         [in] String deviceAddress,
-        //         [in] String deviceName,
-        //         [in] String deviceAlias);
+            constructor(
+                [in] IDisplayPowerRequest* other);
 
-        //     interface IWifiDisplay;
-        //     interface IParcelable;
-        // }
+            interface IDisplayPowerRequest;
+        }
 
-        // /**
-        //  * Describes the current global state of Wifi display connectivity, including the
-        //  * currently connected display and all available or remembered displays.
-        //  * <p>
-        //  * This object is immutable.
-        //  * </p>
-        //  *
-        //  * @hide
-        //  */
-        // [deprecated]
-        // class CWifiDisplayStatus {
-        //     constructor();
+        class CVirtualDisplay {
+            constructor(
+                [in] IDisplayManagerGlobal* global,
+                [in] IDisplay* display,
+                [in] IIVirtualDisplayCallback* token,
+                [in] ISurface* surface);
 
-        //     constructor(
-        //         [in] Int32 featureState,
-        //         [in] Int32 scanState,
-        //         [in] Int32 activeDisplayState,
-        //         [in] IWifiDisplay* activeDisplay,
-        //         [in] ArrayOf<IWifiDisplay*>* availableDisplays,
-        //         [in] ArrayOf<IWifiDisplay*>* rememberedDisplays);
+            interface IVirtualDisplay;
+        }
 
-        //     interface IWifiDisplayStatus;
-        //     interface IParcelable;
-        // }
+        class CVirtualDisplayCallback {
+            interface IVirtualDisplayCallback;
+        }
 
         singleton class CDisplayManagerGlobalHelper {
             interface IDisplayManagerGlobalHelper;

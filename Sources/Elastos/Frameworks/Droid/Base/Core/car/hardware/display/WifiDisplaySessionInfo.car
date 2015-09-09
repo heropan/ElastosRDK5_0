@@ -15,14 +15,11 @@ module
      * </p>
      *
      * @hide
-     */
-
-    /**
+     *
      * @Involve
      * interface IParcelable;
      */
     interface IWifiDisplaySessionInfo {
-
         IsClient(
             [out] Boolean* result);
 
@@ -37,10 +34,6 @@ module
 
         GetIP(
             [out] String* ip);
-
-        WriteToParcel(
-            [in] IParcel* dest,
-            [in] Int32 flags);
 
         DescribeContents(
             [out] Int32* result);

@@ -6,7 +6,7 @@ module
     namespace Hardware {
     namespace Display {
 
-    interface IDisplayManagerCallback {
+    interface IIDisplayManagerCallback {
         OnDisplayEvent(
             [in] Int32 displayId,
             [in] Int32 event);

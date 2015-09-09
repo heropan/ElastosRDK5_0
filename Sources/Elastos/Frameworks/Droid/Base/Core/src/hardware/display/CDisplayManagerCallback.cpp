@@ -9,6 +9,10 @@ namespace Droid {
 namespace Hardware {
 namespace Display {
 
+CAR_INTERFACE_IMPL(CDisplayManagerCallback, Object, IIDisplayManagerCallback)
+
+CAR_OBJECT_IMPL(CDisplayManagerCallback)
+
 ECode CDisplayManagerCallback::constructor(
     /* [in] */ Handle32 owner)
 {

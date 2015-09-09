@@ -1,8 +1,11 @@
 
-#ifndef __ELASTOS_DROID_HARDWARE_DISPLAY_CWIFIDISPLAY_H__
-#define __ELASTOS_DROID_HARDWARE_DISPLAY_CWIFIDISPLAY_H__
+#ifndef __ELASTOS_DROID_HARDWARE_DISPLAY_WIFIDISPLAY_H__
+#define __ELASTOS_DROID_HARDWARE_DISPLAY_WIFIDISPLAY_H__
 
-#include "_Elastos_Droid_Hardware_Display_CWifiDisplay.h"
+#include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -17,18 +20,23 @@ namespace Display {
  *
  * @hide
  */
-CarClass(CWifiDisplay)
+class WifiDisplay
+    : public Object
+    , public IWifiDisplay
+    , public IParcelable
 {
 public:
-    static const AutoPtr<ArrayOf<IWifiDisplay*> > EMPTY_ARRAY;
+    CAR_INTERFACE_DECL()
 
-public:
-    CARAPI constructor();
+    WifiDisplay();
 
-    CARAPI constructor(
+    WifiDisplay(
         /* [in] */ const String& deviceAddress,
         /* [in] */ const String& deviceName,
-        /* [in] */ const String& deviceAlias);
+        /* [in] */ const String& deviceAlias,
+        /* [in] */ Boolean available,
+        /* [in] */ Boolean canConnect,
+        /* [in] */ Boolean remembered);
 
     /**
      * Gets the MAC address of the Wifi display device.
@@ -53,6 +61,24 @@ public:
         /* [out] */ String* deviceAlias);
 
     /**
+     * Returns true if device is available, false otherwise.
+     */
+    CARAPI IsAvailable(
+        /* [out] */ Boolean* result);
+
+    /**
+     * Returns true if device can be connected to (not in use), false otherwise.
+     */
+    CARAPI CanConnect(
+        /* [out] */ Boolean* result);
+
+    /**
+     * Returns true if device has been remembered, false otherwise.
+     */
+    CARAPI IsRemembered(
+        /* [out] */ Boolean* result);
+
+    /**
      * Gets the name to show in the UI.
      * Uses the device alias if available, otherwise uses the device name.
      */
@@ -60,11 +86,15 @@ public:
         /* [out] */ String* name);
 
     CARAPI Equals(
-        /* [in] */ IWifiDisplay* other,
+        /* [in] */ IInterface* other,
         /* [out] */ Boolean* res);
 
+    /**
+     * Returns true if the two displays have the same identity (address, name and alias).
+     * This method does not compare the current status of the displays.
+     */
     CARAPI Equals(
-        /* [in] */ IInterface* other,
+        /* [in] */ IWifiDisplay* other,
         /* [out] */ Boolean* res);
 
     CARAPI GetHashCode(
@@ -96,10 +126,17 @@ public:
 
     CARAPI ToString(
         /* [out] */ String* info);
+
+public:
+    static const AutoPtr<ArrayOf<IWifiDisplay*> > EMPTY_ARRAY;
+
 private:
     String mDeviceAddress;
     String mDeviceName;
     String mDeviceAlias;
+    Boolean mIsAvailable;
+    Boolean mCanConnect;
+    Boolean mIsRemembered;
 };
 
 } // namespace Display
@@ -107,4 +144,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_HARDWARE_DISPLAY_CWIFIDISPLAY_H__
+#endif // __ELASTOS_DROID_HARDWARE_DISPLAY_WIFIDISPLAY_H__

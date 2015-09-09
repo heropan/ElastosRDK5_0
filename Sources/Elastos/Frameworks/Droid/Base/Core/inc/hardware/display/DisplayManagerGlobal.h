@@ -2,19 +2,23 @@
 #ifndef __ELASTOS_DROID_HARDWARE_DISPLAY_DISPLAYMANAGERGLOBAL_H__
 #define __ELASTOS_DROID_HARDWARE_DISPLAY_DISPLAYMANAGERGLOBAL_H__
 
-#include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
-#include "os/HandlerBase.h"
-#include <elastos/utility/etl/HashMap.h>
+#include "os/Handler.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::Etl::List;
-using Elastos::Droid::View::ICompatibilityInfoHolder;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::IDisplayInfo;
-using Elastos::Droid::Os::HandlerBase;
-using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::View::IDisplayAdjustments;
+using Elastos::Droid::View::ISurface;
+using Elastos::Droid::Media::Projection::IMediaProjection;
+using Elastos::Core::Object;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
@@ -28,14 +32,14 @@ namespace Display {
  * @hide
  */
 class DisplayManagerGlobal
-    : public ElRefBase
+    : public Object
     , public IDisplayManagerGlobal
 {
     friend class CDisplayManagerCallback;
 
 private:
     class DisplayListenerDelegate
-        : public HandlerBase
+        : public Handler
     {
     public:
         DisplayListenerDelegate(
@@ -53,6 +57,50 @@ private:
 
     public:
         AutoPtr<IDisplayListener> mListener;
+    };
+
+    class VirtualDisplayCallbackDelegate : public Handler
+    {
+    public:
+        VirtualDisplayCallbackDelegate(
+            /* [in] */ IVirtualDisplayCallback* callback,
+            /* [in] */ IHandler* handler);
+
+        //@Override
+        HandleMessage(
+            /* [in] */ IMessage* msg);
+
+    public:
+        static const Int32 MSG_DISPLAY_PAUSED;
+        static const Int32 MSG_DISPLAY_RESUMED;
+        static const Int32 MSG_DISPLAY_STOPPED;
+
+    private:
+        const AutoPtr<IVirtualDisplayCallback> mCallback;
+    };
+
+    class VirtualDisplayCallback
+        : public Object
+        , public IIVirtualDisplayCallback
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        VirtualDisplayCallback(
+            /* [in] */ IVirtualDisplayCallback* callback,
+            /* [in] */ IHandler* handler);
+
+        //@Override // Binder call
+        OnPaused();
+
+        //@Override // Binder call
+        OnResumed();
+
+        //@Override // Binder call
+        OnStopped();
+
+    private:
+        AutoPtr<VirtualDisplayCallbackDelegate> mDelegate;
     };
 
 private:
@@ -95,15 +143,15 @@ public:
      * Gets information about a logical display.
      *
      * The display metrics may be adjusted to provide compatibility
-     * for legacy applications.
+     * for legacy applications or limited screen areas.
      *
      * @param displayId The logical display id.
-     * @param cih The compatibility info, or NULL if none is required.
-     * @return The display object, or NULL if there is no display with the given id.
+     * @param daj The compatibility info and activityToken.
+     * @return The display object, or null if there is no display with the given id.
      */
     CARAPI GetCompatibleDisplay(
         /* [in] */ Int32 displayId,
-        /* [in] */ ICompatibilityInfoHolder* cih,
+        /* [in] */ IDisplayAdjustments* cih,
         /* [out] */ IDisplay** display);
 
     /**
@@ -116,6 +164,18 @@ public:
         /* [in] */ Int32 displayId,
         /* [out] */ IDisplay** display);
 
+    /**
+     * Gets information about a logical display without applying any compatibility metrics.
+     *
+     * @param displayId The logical display id.
+     * @param IBinder the activity token for this display.
+     * @return The display object, or null if there is no display with the given id.
+     */
+    CARAPI GetRealDisplay(
+        /* [in] */ Int32 displayId,
+        /* [in] */ IBinder* token,
+        /* [out] */ IDisplay** display);
+
     CARAPI RegisterDisplayListener(
         /* [in] */ IDisplayListener* listener,
         /* [in] */ IHandler* handler);
@@ -123,10 +183,16 @@ public:
     CARAPI UnregisterDisplayListener(
         /* [in] */ IDisplayListener* listener);
 
-    CARAPI ScanWifiDisplays();
+    CARAPI StartWifiDisplayScan();
+
+    CARAPI StopWifiDisplayScan();
 
     CARAPI ConnectWifiDisplay(
         /* [in] */ const String& deviceAddress);
+
+    CARAPI PauseWifiDisplay();
+
+    CARAPI ResumeWifiDisplay();
 
     CARAPI DisconnectWifiDisplay();
 
@@ -139,6 +205,32 @@ public:
 
     CARAPI GetWifiDisplayStatus(
         /* [out] */ IWifiDisplayStatus** status);
+
+    CARAPI CreateVirtualDisplay(
+        /* [in] */ IContext* context,
+        /* [in] */ IMediaProjection* projection,
+        /* [in] */ const String& name,
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height,
+        /* [in] */ Int32 densityDpi,
+        /* [in] */ ISurface* surface,
+        /* [in] */ Int32 flags,
+        /* [in] */ IVirtualDisplayCallback* cb,
+        /* [in] */ IHandler* handler,
+        /* [out] */ IVirtualDisplay** outvd);
+
+    CARAPI SetVirtualDisplaySurface(
+        /* [in] */ IIVirtualDisplayCallback* token,
+        /* [in] */ ISurface* surface);
+
+    CARAPI ResizeVirtualDisplay(
+        /* [in] */ IIVirtualDisplayCallback* token,
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height,
+        /* [in] */ Int32 densityDpi);
+
+    CARAPI ReleaseVirtualDisplay(
+        /* [in] */ IIVirtualDisplayCallback* token);
 
 private:
     CARAPI_(List<AutoPtr<DisplayListenerDelegate> >::Iterator) FindDisplayListenerLocked(
@@ -176,11 +268,13 @@ private:
 
     AutoPtr<IIDisplayManager> mDm;
 
-    AutoPtr<IDisplayManagerCallback> mCallback;
+    AutoPtr<IIDisplayManagerCallback> mCallback;
     List<AutoPtr<DisplayListenerDelegate> > mDisplayListeners;
 
     HashMap<Int32, AutoPtr<IDisplayInfo> > mDisplayInfoCache;
     AutoPtr<ArrayOf<Int32> > mDisplayIdCache;
+
+    Int32 mWifiDisplayScanNestCount;
 };
 
 } // namespace Display

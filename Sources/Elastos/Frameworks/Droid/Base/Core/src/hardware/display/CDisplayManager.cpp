@@ -1,6 +1,7 @@
 
 #include "hardware/display/CDisplayManager.h"
 #include "hardware/display/DisplayManagerGlobal.h"
+#include <elastos/core/AutoLock.h>
 
 namespace Elastos {
 namespace Droid {
@@ -9,6 +10,10 @@ namespace Display {
 
 const char* CDisplayManager::TAG = "DisplayManager";
 const Boolean CDisplayManager::DEBUG;
+
+CAR_INTERFACE_IMPL(CDisplayManager, Object, IDisplayManager)
+
+CAR_OBJECT_IMPL(CDisplayManager)
 
 CDisplayManager::CDisplayManager()
 {
@@ -33,11 +38,11 @@ ECode CDisplayManager::GetDisplay(
 {
     VALIDATE_NOT_NULL(display);
 
-    AutoLock lock(mLock);
-
-    AutoPtr<IDisplay> temp = GetOrCreateDisplayLocked(displayId, FALSE /*assumeValid*/);
-    *display = temp;
-    REFCOUNT_ADD(*display);
+    synchronized(mLock) {
+        AutoPtr<IDisplay> temp = GetOrCreateDisplayLocked(displayId, FALSE /*assumeValid*/);
+        *display = temp;
+        REFCOUNT_ADD(*display);
+    }
 
     return NOERROR;
 }
@@ -57,48 +62,65 @@ ECode CDisplayManager::GetDisplays(
     AutoPtr<ArrayOf<Int32> > displayIds;
     mGlobal->GetDisplayIds((ArrayOf<Int32>**)&displayIds);
 
-    AutoLock lock(mLock);
+    synchronized(mLock) {
+        //try {
+            if (category.IsNull()) {
+                AddAllDisplaysLocked(mTempDisplays, displayIds);
+            }
+            else if (category.Equals(DISPLAY_CATEGORY_PRESENTATION)) {
+                AddPresentationDisplaysLocked(mTempDisplays, displayIds, IDisplay::TYPE_WIFI);
+                AddPresentationDisplaysLocked(mTempDisplays, displayIds, IDisplay::TYPE_HDMI);
+                AddPresentationDisplaysLocked(mTempDisplays, displayIds, IDisplay::TYPE_OVERLAY);
+                AddPresentationDisplaysLocked(mTempDisplays, displayIds, IDisplay::TYPE_VIRTUAL);
+            }
+            *displays = ArrayOf<IDisplay*>::Alloc(mTempDisplays.GetSize());
+            if (*displays == NULL) {
+                mTempDisplays.Clear();
+                return E_OUT_OF_MEMORY_ERROR;
+            }
+            REFCOUNT_ADD(*displays);
+            List<AutoPtr<IDisplay> >::Iterator iter = mTempDisplays.Begin();
+            for (Int32 i = 0; iter != mTempDisplays.End(); ++iter, i++) {
+                (*displays)->Set(i, *iter);
+            }
 
-    //try {
-        if (category.IsNull()) {
-            AddMatchingDisplaysLocked(mTempDisplays, displayIds, -1);
-        }
-        else if (category.Equals(DISPLAY_CATEGORY_PRESENTATION)) {
-            AddMatchingDisplaysLocked(mTempDisplays, displayIds, IDisplay::TYPE_WIFI);
-            AddMatchingDisplaysLocked(mTempDisplays, displayIds, IDisplay::TYPE_HDMI);
-            AddMatchingDisplaysLocked(mTempDisplays, displayIds, IDisplay::TYPE_OVERLAY);
-        }
-        *displays = ArrayOf<IDisplay*>::Alloc(mTempDisplays.GetSize());
-        if (*displays == NULL) {
+        //} finally {
             mTempDisplays.Clear();
-            return E_OUT_OF_MEMORY_ERROR;
-        }
-        REFCOUNT_ADD(*displays);
-        List<AutoPtr<IDisplay> >::Iterator iter = mTempDisplays.Begin();
-        for (Int32 i = 0; iter != mTempDisplays.End(); ++iter, i++) {
-            (*displays)->Set(i, *iter);
-        }
-
-    //} finally {
-        mTempDisplays.Clear();
-    //}
+        //}
+    }
 
     return NOERROR;
 }
 
-void CDisplayManager::AddMatchingDisplaysLocked(
+void CDisplayManager::AddAllDisplaysLocked(
+    /* [in] */ List<AutoPtr<IDisplay> >& displays,
+    /* [in] */ ArrayOf<Int32>* displayIds)
+{
+    for (Int32 i = 0; i < displayIds->GetLength(); i++) {
+        AutoPtr<IDisplay> display = GetOrCreateDisplayLocked((*displayIds)[i], TRUE /*assumeValid*/);
+        if (display != NULL) {
+            displays.PushBack(display);
+        }
+    }
+}
+
+void CDisplayManager::AddPresentationDisplaysLocked(
     /* [in] */ List<AutoPtr<IDisplay> >& displays,
     /* [in] */ ArrayOf<Int32>* displayIds,
     /* [in] */ Int32 matchType)
 {
-    Int32 length = displayIds->GetLength();
-    for (Int32 i = 0; i < length; i++) {
-        AutoPtr<IDisplay> display = GetOrCreateDisplayLocked(
-            (*displayIds)[i], TRUE /*assumeValid*/);
-        Int32 type;
-        if (display != NULL && (matchType < 0
-            || (display->GetType(&type), type) == matchType)) {
-            displays.PushBack(display);
+    for (Int32 i = 0; i < displayIds->GetLength(); i++) {
+        AutoPtr<IDisplay> display = GetOrCreateDisplayLocked((*displayIds)[i], TRUE /*assumeValid*/);
+        if (display != NULL) {
+            Int32 flag;
+            display->GetFlags(&flag);
+            if (flag & IDisplay::FLAG_PRESENTATION != 0) {
+                Int32 type;
+                display->GetType(&type);
+                if (type == matchType) {
+                    displays.PushBack(display);
+                }
+            }
         }
     }
 }
@@ -113,9 +135,10 @@ AutoPtr<IDisplay> CDisplayManager::GetOrCreateDisplayLocked(
         display = iter->mSecond;
     Boolean isValid;
     if (display == NULL) {
-        AutoPtr<ICompatibilityInfoHolder> infoHolder;
-        mContext->GetCompatibilityInfo(
-            displayId, (ICompatibilityInfoHolder**)&infoHolder);
+        AutoPtr<IDisplayAdjustments> infoHolder;
+        assert(0 && "TODO GetDisplayAdjustments");
+        // mContext->GetDisplayAdjustments(
+        //     displayId, (IDisplayAdjustments**)&infoHolder);
         mGlobal->GetCompatibleDisplay(displayId, infoHolder, (IDisplay**)&display);
         if (display != NULL) {
             mDisplays[displayId] = display;
@@ -141,15 +164,30 @@ ECode CDisplayManager::UnregisterDisplayListener(
     return mGlobal->UnregisterDisplayListener(listener);
 }
 
-ECode CDisplayManager::ScanWifiDisplays()
+ECode CDisplayManager::StartWifiDisplayScan()
 {
-    return mGlobal->ScanWifiDisplays();
+    return mGlobal->StartWifiDisplayScan();
+}
+
+ECode CDisplayManager::StopWifiDisplayScan()
+{
+    return mGlobal->StopWifiDisplayScan();
 }
 
 ECode CDisplayManager::ConnectWifiDisplay(
     /* [in] */ const String& deviceAddress)
 {
     return mGlobal->ConnectWifiDisplay(deviceAddress);
+}
+
+ECode CDisplayManager::PauseWifiDisplay()
+{
+    return mGlobal->PauseWifiDisplay();
+}
+
+ECode CDisplayManager::ResumeWifiDisplay()
+{
+    return mGlobal->ResumeWifiDisplay();
 }
 
 ECode CDisplayManager::DisconnectWifiDisplay()
@@ -174,7 +212,55 @@ ECode CDisplayManager::GetWifiDisplayStatus(
     /* [out] */ IWifiDisplayStatus** status)
 {
     VALIDATE_NOT_NULL(status);
+
     return mGlobal->GetWifiDisplayStatus(status);
+}
+
+ECode CDisplayManager::CreateVirtualDisplay(
+    /* [in] */ const String& name,
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ Int32 densityDpi,
+    /* [in] */ ISurface* surface,
+    /* [in] */ Int32 flags,
+    /* [out] */ IVirtualDisplay** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    return CreateVirtualDisplay(name, width, height, densityDpi, surface, flags, NULL, NULL, result);
+}
+
+ECode CDisplayManager::CreateVirtualDisplay(
+    /* [in] */ const String& name,
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ Int32 densityDpi,
+    /* [in] */ ISurface* surface,
+    /* [in] */ Int32 flags,
+    /* [in] */ IVirtualDisplayCallback* cb,
+    /* [in] */ IHandler* handler,
+    /* [out] */ IVirtualDisplay** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    return CreateVirtualDisplay(NULL, name, width, height, densityDpi, surface, flags, cb, handler, result);
+}
+
+ECode CDisplayManager::CreateVirtualDisplay(
+    /* [in] */ IMediaProjection* projection,
+    /* [in] */ const String& name,
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ Int32 densityDpi,
+    /* [in] */ ISurface* surface,
+    /* [in] */ Int32 flags,
+    /* [in] */ IVirtualDisplayCallback* cb,
+    /* [in] */ IHandler* handler,
+    /* [out] */ IVirtualDisplay** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    return mGlobal->CreateVirtualDisplay(mContext, projection, name, width, height, densityDpi, surface, flags, cb, handler, result);
 }
 
 } // namespace Display

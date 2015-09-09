@@ -3,7 +3,11 @@ module
 {
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.View.IDisplay;
-//    interface Elastos.Droid.Hardware.Display.IWifiDisplayStatus;
+    interface Elastos.Droid.View.ISurface;
+    interface Elastos.Droid.Media.Projection.IMediaProjection;
+    interface Elastos.Droid.Hardware.Display.IVirtualDisplay;
+    interface Elastos.Droid.Hardware.Display.IWifiDisplayStatus;
+    interface Elastos.Droid.Hardware.Display.IVirtualDisplayCallback;
 
     namespace Elastos {
     namespace Droid {
@@ -75,11 +79,13 @@ module
          * Display category: Presentation displays.
          * <p>
          * This category can be used to identify secondary displays that are suitable for
-         * use as presentation displays.
+         * use as presentation displays such as HDMI or Wireless displays.  Applications
+         * may automatically project their content to presentation displays to provide
+         * richer second screen experiences.
          * </p>
          *
-         * @see android.app.Presentation for information about presenting content
-         * on secondary displays.
+         * @see android.app.Presentation
+         * @see Display#FLAG_PRESENTATION
          * @see #getDisplays(String)
          */
         const String DISPLAY_CATEGORY_PRESENTATION =
@@ -291,7 +297,7 @@ module
             [in] IHandler* handler);
 
         /**
-         * Unregisters an input device listener.
+         * Unregisters a display listener.
          *
          * @param listener The listener to unregister.
          *
@@ -324,8 +330,7 @@ module
          * Automatically remembers the display after a successful connection, if not
          * already remembered.
          * </p><p>
-         * Requires {@link android.Manifest.permission#CONFIGURE_WIFI_DISPLAY} to connect
-         * to unknown displays.  No permissions are required to connect to already known displays.
+         * Requires {@link android.Manifest.permission#CONFIGURE_WIFI_DISPLAY}.
          * </p>
          *
          * @param deviceAddress The MAC address of the device to which we should connect.
@@ -388,22 +393,22 @@ module
          * @return The current Wifi display status.
          * @hide
          */
-//        GetWifiDisplayStatus(
-//            [out] IWifiDisplayStatus** wds);
+        GetWifiDisplayStatus(
+            [out] IWifiDisplayStatus** wds);
 
         /**
          * Creates a virtual display.
          *
          * @see #createVirtualDisplay(String, int, int, int, Surface, int, VirtualDisplay.Callback)
          */
-//        CreateVirtualDisplay(
-//            [in] String name,
-//            [in] Int32 width,
-//            [in] Int32 height,
-//            [in] Int32 densityDpi,
-//            [in] ISurface* surface,
-//            [in] Int32 flags,
-//            [out] IVirtualDisplay** result);
+        CreateVirtualDisplay(
+            [in] String name,
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Int32 densityDpi,
+            [in] ISurface* surface,
+            [in] Int32 flags,
+            [out] IVirtualDisplay** result);
 
         /**
          * Creates a virtual display.
@@ -448,30 +453,29 @@ module
          * @throws SecurityException if the caller does not have permission to create
          * a virtual display with the specified flags.
          */
-//        CreateVirtualDisplay(
-//            [in] String name,
-//            [in] Int32 width,
-//            [in] Int32 height,
-//            [in] Int32 densityDpi,
-//            [in] ISurface* surface,
-//            [in] Int32 flags,
-//            [in] IIVirtualDisplayCallback* cb,
-//            [in] IHandler* handler,
-//            [out] IVirtualDisplay** result);
+        CreateVirtualDisplay(
+            [in] String name,
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Int32 densityDpi,
+            [in] ISurface* surface,
+            [in] Int32 flags,
+            [in] IVirtualDisplayCallback* cb,
+            [in] IHandler* handler,
+            [out] IVirtualDisplay** result);
 
         /** @hide */
-//        CreateVirtualDisplay(
-//            [in] IMediaProjection* projection,
-//            [in] String name,
-//            [in] Int32 width,
-//            [in] Int32 height,
-//            [in] Int32 densityDpi,
-//            [in] ISurface* surface,
-//            [in] Int32 flags,
-//            [in] IIVirtualDisplayCallback* cb,
-//            [in] IHandler* handler,
-//            [out] IVirtualDisplay** result);
-
+        CreateVirtualDisplay(
+            [in] IMediaProjection* projection,
+            [in] String name,
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Int32 densityDpi,
+            [in] ISurface* surface,
+            [in] Int32 flags,
+            [in] IVirtualDisplayCallback* cb,
+            [in] IHandler* handler,
+            [out] IVirtualDisplay** result);
     }
 
     } // namespace Display

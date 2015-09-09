@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_AccessibilityService_CUiTestAutomationBridge.h"
 #include "ext/frameworkext.h"
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;

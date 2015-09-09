@@ -1,6 +1,9 @@
 
 module
 {
+    interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.View.IDisplayInfo;
+    interface Elastos.Droid.Hardware.ISensorManager;
 
     namespace Elastos {
     namespace Droid {
@@ -97,10 +100,10 @@ module
         /**
          * Called by the power manager to initialize power management facilities.
          */
-//        InitPowerManagement(
-//            [in] IDisplayPowerCallbacks* cbs,
-//            [in] IHandler* handler,
-//            [in] ISensorManager* sensorManager);
+        InitPowerManagement(
+            [in] IDisplayPowerCallbacks* cbs,
+            [in] IHandler* handler,
+            [in] ISensorManager* sensorManager);
 
         /**
          * Called by the power manager to request a new power state.
@@ -136,9 +139,9 @@ module
          * @return The logical display info, or null if the display does not exist.  The
          * returned object must be treated as immutable.
          */
-//        GetDisplayInfo(
-//            [in] Int32 displayId,
-//            [out] IDisplayInfo** result);
+        GetDisplayInfo(
+            [in] Int32 displayId,
+            [out] IDisplayInfo** result);
 
         /**
          * Registers a display transaction listener to provide the client a chance to
@@ -171,9 +174,9 @@ module
          * @param displayId The logical display id.
          * @param info The new data to be stored.
          */
-//        SetDisplayInfoOverrideFromWindowManager(
-//            [in] Int32 displayId,
-//            [in] IDisplayInfo* info);
+        SetDisplayInfoOverrideFromWindowManager(
+            [in] Int32 displayId,
+            [in] IDisplayInfo* info);
 
         /**
          * Called by the window manager to perform traversals while holding a

@@ -7,9 +7,14 @@ include $(MAKEDIR)/../../../../../sources.inc
 INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../inc/
 
-// SOURCES = CDisplayManager.cpp
-// SOURCES += CWifiDisplay.cpp
-// SOURCES += CWifiDisplayStatus.cpp
-// SOURCES += DisplayManagerGlobal.cpp
+SOURCES = CDisplayManager.cpp
+SOURCES += WifiDisplay.cpp
+SOURCES += WifiDisplayStatus.cpp
+SOURCES += DisplayManagerGlobal.cpp
 SOURCES += CDisplayManagerGlobalHelper.cpp
-// SOURCES += CDisplayManagerCallback.cpp
+SOURCES += CDisplayManagerCallback.cpp
+SOURCES += CVirtualDisplay.cpp
+SOURCES += CVirtualDisplayCallback.cpp
+SOURCES += CDisplayPowerRequest.cpp
+SOURCES += DisplayViewport.cpp
+SOURCES += WifiDisplaySessionInfo.cpp

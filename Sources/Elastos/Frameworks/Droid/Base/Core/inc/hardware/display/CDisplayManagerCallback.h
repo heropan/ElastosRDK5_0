@@ -3,6 +3,9 @@
 
 #include "_Elastos_Droid_Hardware_Display_CDisplayManagerCallback.h"
 #include "hardware/display/DisplayManagerGlobal.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -10,8 +13,14 @@ namespace Hardware {
 namespace Display {
 
 CarClass(CDisplayManagerCallback)
+    , public Object
+    , public IIDisplayManagerCallback
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ Handle32 owner);
 
