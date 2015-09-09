@@ -16,60 +16,29 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IHandler;
-using Elastos::Core::IRandom;
-using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Droid::Os::SystemClock;
+
+using Elastos::Utility::IRandom;
+using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
-CarClass(CDnsPinger), public Handler
+CarClass(CDnsPinger)
+    , public Handler
+    , public IDnsPinger
 {
 private:
-    class ActivePing : public ElRefBase
-    {
-    public:
-        ActivePing() {
-            mStart = SystemClock::GetElapsedRealtime();
-        }
-
-    public:
-        AutoPtr<IDatagramSocket> mSocket;
-        Int32 mInternalId;
-        Int16 mPacketId;
-        Int32 mTimeout;
-        Int32 mResult;
-        Int64 mStart;// = SystemClock::GetElapsedRealtime();
-    };
-
-    /* Message argument for ACTION_PING_DNS */
-    class DnsArg
-        : public ElRefBase
-        , public IInterface
-    {
-    public:
-        CAR_INTERFACE_DECL()
-
-        DnsArg(
-          /* [in] */ IInetAddress* dns,
-          /* [in] */ Int32 seq);
-
-    public:
-        AutoPtr<IInetAddress> mDns;
-        Int32 mSeq;
-    };
+        class DnsArg;
 
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CDnsPinger();
-
-    IHANDLER_METHODS_DECL()
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI HandleMessage(
-        /* [in] */ IMessage* msg);
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -77,6 +46,9 @@ public:
         /* [in] */ ILooper* looper,
         /* [in] */ IHandler* target,
         /* [in] */ Int32 connectionType);
+
+    CARAPI HandleMessage(
+        /* [in] */ IMessage* msg);
 
     void HandleActionPingDNS(
         /* [in] */ Int32 arg1,
@@ -94,7 +66,7 @@ public:
      * @return a non-empty non-null list
      */
     CARAPI GetDnsList(
-        /* [out] */ IObjectContainer** dnslist);
+        /* [out] */ IList** dnslist);
 
     /**
      * Send a ping.  The response will come via a {@link #DNS_PING_RESULT} to the handler
@@ -112,6 +84,37 @@ public:
     CARAPI CancelPings();
 
 private:
+    class ActivePing
+        : public Object
+    {
+    public:
+        ActivePing() {
+            mStart = SystemClock::GetElapsedRealtime();
+        }
+
+    public:
+        AutoPtr<IDatagramSocket> mSocket;
+        Int32 mInternalId;
+        Int16 mPacketId;
+        Int32 mTimeout;
+        Int32 mResult;
+        Int64 mStart;// = SystemClock::GetElapsedRealtime();
+    };
+
+    /* Message argument for ACTION_PING_DNS */
+    class DnsArg
+        : public Object
+    {
+    public:
+        DnsArg(
+          /* [in] */ IInetAddress* dns,
+          /* [in] */ Int32 seq);
+
+    public:
+        AutoPtr<IInetAddress> mDns;
+        Int32 mSeq;
+    };
+
     CARAPI SendResponse(
         /* [in] */ Int32 internalId,
         /* [in] */ Int32 externalId,
@@ -123,7 +126,12 @@ private:
     CARAPI GetDefaultDns(
         /* [out] */ IInetAddress** result);
 
-private:
+    CARAPI Log(
+        /* [in] */ const String& s);
+
+    CARAPI Loge(
+        /* [in] */ const String& s);
+
     static const Boolean DBG;
 
     static const Int32 RECEIVE_POLL_INTERVAL_MS;
@@ -140,7 +148,7 @@ private:
     AutoPtr<IContext> mContext;
     Int32 mConnectionType;
     AutoPtr<IHandler> mTarget;
-    List< AutoPtr<IInetAddress> > mDefaultDns;
+    AutoPtr<IList> mDefaultDns;
     String TAG;
 
     //Invalidates old dns requests upon a cancel
@@ -155,7 +163,7 @@ private:
     static const Int32 ACTION_LISTEN_FOR_RESPONSE;
     static const Int32 ACTION_CANCEL_ALL_PINGS;
 
-    List< AutoPtr<ActivePing> > mActivePings;
+    AutoPtr<IList> mActivePings;
     Int32 mEventCounter;
 
     static const Byte mDnsQuery[];

@@ -18,7 +18,7 @@ using Elastos::Droid::Content::Pm::IIPackageManager;
 using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Widget::Internal::ILockSettings;
+using Elastos::Droid::Internal::Widget::ILockSettings;
 using Elastos::Droid::Privacy::IPrivacySettingsManager;
 
 namespace Elastos {

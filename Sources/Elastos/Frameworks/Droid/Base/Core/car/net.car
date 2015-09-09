@@ -3,11 +3,11 @@ module
     merge("net/BaseNetworkStateTracker.car");
     merge("net/ConnectivityManager.car");
     merge("net/Credentials.car");
-    merge("net/DnsPinger.car");
     merge("net/DhcpInfo.car");
     merge("net/DhcpResults.car");
-    // merge("net/DhcpStateMachine.car");
-    // merge("net/DhcpStateMachineHelper.car");
+    merge("net/DhcpStateMachine.car");
+    merge("net/DhcpStateMachineHelper.car");
+    merge("net/DnsPinger.car");
     merge("net/EthernetManager.car");
     merge("net/InterfaceConfiguration.car");
     merge("net/IEthernetManager.car");
@@ -105,6 +105,10 @@ module
     merge("net/nsd/NsdManager.car");
     merge("net/nsd/INsdManager.car");
     merge("net/nsd/DnsSdTxtRecord.car");
+
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Os.ILooper;
+    interface Elastos.Droid.Os.IHandler;
 
     namespace Elastos {
     namespace Droid {
@@ -206,6 +210,10 @@ module
 //    singleton class CNetworkStatsHelper {
 //        interface INetworkStatsHelper;
 //    }
+
+    singleton class CDhcpStateMachineHelper {
+        interface IDhcpStateMachineHelper;
+    }
 
 //    class CNetworkStatsEntry {
 //        constructor();
@@ -459,18 +467,18 @@ module
 //        interface ILinkSocket;
 //    }
 
-//    [local]
-//    class CDnsPinger {
+    [local]
+    class CDnsPinger {
 
-//        constructor(
-//            [in] IContext* ctx,
-//            [in] String tagstr,
-//            [in] ILooper* looper,
-//            [in] IHandler* target,
-//            [in] Int32 connectionType);
+        constructor(
+            [in] IContext* ctx,
+            [in] String tagstr,
+            [in] ILooper* looper,
+            [in] IHandler* target,
+            [in] Int32 connectionType);
 
-//        interface IDnsPinger;
-//    }
+        interface IDnsPinger;
+    }
 
 //    /**
 //     * A simple container for route information.

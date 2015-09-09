@@ -18,6 +18,14 @@ module
 
     }}} // Elastos.Droid.Net
 
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Utility {
+        interface IStateMachine {}
+        interface IState {}
+    }}}} // Elastos.Droid.Internal.Utility
+
 
     //
     // Elastos.Droid.Privacy

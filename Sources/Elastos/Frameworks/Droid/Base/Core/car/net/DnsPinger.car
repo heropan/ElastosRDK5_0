@@ -39,20 +39,20 @@ module
         const Int32 SOCKET_EXCEPTION =  -2;
 
         /**
-             * Returns a list of DNS addresses, coming from either the link properties of the
-             * specified connection or the default system DNS if the link properties has no dnses.
-             * @return a non-empty non-null list
-             */
+         * Returns a list of DNS addresses, coming from either the link properties of the
+         * specified connection or the default system DNS if the link properties has no dnses.
+         * @return a non-empty non-null list
+         */
         GetDnsList(
             [out] IList** result);
 
         /**
-             * Send a ping.  The response will come via a {@link #DNS_PING_RESULT} to the handler
-             * specified at creation.
-             * @param dns address of dns server to ping
-             * @param timeout timeout for ping
-             * @return an ID field, which will also be included in the {@link #DNS_PING_RESULT} message.
-             */
+         * Send a ping.  The response will come via a {@link #DNS_PING_RESULT} to the handler
+         * specified at creation.
+         * @param dns address of dns server to ping
+         * @param timeout timeout for ping
+         * @return an ID field, which will also be included in the {@link #DNS_PING_RESULT} message.
+         */
         PingDnsAsync(
             [in] IInetAddress* dns,
             [in] Int32 timeout,
