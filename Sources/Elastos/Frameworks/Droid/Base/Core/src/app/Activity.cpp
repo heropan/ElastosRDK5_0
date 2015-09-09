@@ -3357,7 +3357,7 @@ ECode Activity::OnCreateView(
     fHelper->GetDEBUG(&debug);
     if (debug) {
         StringBuilder info("onCreateView: id=0x");
-        info += StringUtils::Int32ToString(id, 16);
+        info += StringUtils::ToString(id, 16);
         info += " fname=";
         info += fname;
         info += " existing=";

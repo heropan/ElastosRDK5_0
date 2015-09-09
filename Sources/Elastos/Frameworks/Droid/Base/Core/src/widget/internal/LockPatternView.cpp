@@ -1049,8 +1049,8 @@ AutoPtr<LockPatternView::Cell> LockPatternView::Cell::Of(
 
 String LockPatternView::Cell::ToString()
 {
-    String row = StringUtils::Int32ToString(mRow);
-    String column = StringUtils::Int32ToString(mColumn);
+    String row = StringUtils::ToString(mRow);
+    String column = StringUtils::ToString(mColumn);
     return String("(row=") + row + String(",clmn=") + column + String(")");
 }
 

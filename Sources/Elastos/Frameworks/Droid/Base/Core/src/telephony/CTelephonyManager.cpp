@@ -110,7 +110,7 @@ ECode CTelephonyManager::GetDeviceId(
         mImei = String("35");
         Int32 tmp;
         for (Int32 i = 0; i < (IMEI_LEN - 2); i++)
-        mImei += StringUtils::Int32ToString((Elastos::Core::Math::Abs((value->NextInt32(&tmp), tmp)) % 10));
+        mImei += StringUtils::ToString((Elastos::Core::Math::Abs((value->NextInt32(&tmp), tmp)) % 10));
     }
     Slogger::D(TAG, "IMEI: %s", mImei.string());
     *res = mImei;

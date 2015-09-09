@@ -239,7 +239,7 @@ ECode CLinkCapabilities::ToString(
         else {
             sb += String(",");
         }
-        String key = StringUtils::Int32ToString((*keys)[i]);
+        String key = StringUtils::ToString((*keys)[i]);
         sb += key;
         sb += String(":\"");
         String value;

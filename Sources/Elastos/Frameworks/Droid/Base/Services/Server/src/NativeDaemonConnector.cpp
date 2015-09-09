@@ -517,13 +517,13 @@ ECode NativeDaemonConnector::MakeCommand(
                 AutoPtr<IInteger32> valueOfarg = IInteger32::Probe(arg);
                 Int32 num;
                 valueOfarg->GetValue(&num);
-                argString = StringUtils::Int32ToString(num);
+                argString = StringUtils::ToString(num);
             }
             else if (IInteger64::Probe(arg) != NULL) {
                 AutoPtr<IInteger64> valueOfarg = IInteger64::Probe(arg);
                 Int64 num;
                 valueOfarg->GetValue(&num);
-                argString = StringUtils::Int64ToString(num);
+                argString = StringUtils::ToString(num);
             }
             else {
                 Slogger::E(TAG, "MakeCommand: unexpected argument type!");

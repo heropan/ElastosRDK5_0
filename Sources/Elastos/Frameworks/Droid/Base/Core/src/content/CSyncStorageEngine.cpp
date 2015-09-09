@@ -328,7 +328,7 @@ ECode CSyncStorageEngine::SetIsSyncable(
     str.Append(", user ");
     str.Append(StringUtils::Int32ToString(userId));
     str.Append(" -> ");
-    String strSyncable = StringUtils::Int32ToString(syncable);
+    String strSyncable = StringUtils::ToString(syncable);
     str.Append(strSyncable);
     Logger::D(TAG, str);
 
@@ -412,10 +412,10 @@ ECode CSyncStorageEngine::SetBackoff(
         str.Append(", user ");
         str.Append(StringUtils::Int32ToString(userId));
         str.Append(" -> nextSyncTime ");
-        String strNextSyncTime = StringUtils::Int64ToString(nextSyncTime);
+        String strNextSyncTime = StringUtils::ToString(nextSyncTime);
         str.Append(strNextSyncTime);
         str.Append(", nextDelay ");
-        String strNextDelay = StringUtils::Int64ToString(nextDelay);
+        String strNextDelay = StringUtils::ToString(nextDelay);
         str.Append(strNextDelay);
         Logger::V(TAG, str);
     }
@@ -529,9 +529,9 @@ ECode CSyncStorageEngine::ClearAllBackoffs(
                             str.Append(" user:");
                             str.Append(StringUtils::Int32ToString(userId));
                             str.Append(" backoffTime was: ");
-                            String strBackoffTime = StringUtils::Int64ToString(backoffTime);
+                            String strBackoffTime = StringUtils::ToString(backoffTime);
                             str.Append(strBackoffTime);
-                            String strBackoffDelay = StringUtils::Int64ToString(backoffDelay);
+                            String strBackoffDelay = StringUtils::ToString(backoffDelay);
                             str.Append(strBackoffDelay);
                             Logger::V(TAG, str);
                         }
@@ -833,7 +833,7 @@ ECode CSyncStorageEngine::InsertIntoPending(
             AutoPtr<IBundle> extras;
             FAIL_RETURN(op->GetSyncSource(&syncSource))
             FAIL_RETURN(op->GetExtras((IBundle**)&extras))
-            String strSyncSource = StringUtils::Int32ToString(syncSource);
+            String strSyncSource = StringUtils::ToString(syncSource);
             String strExtras;
             FAIL_RETURN(extras->ToString(&strExtras))
             String str("insertIntoPending: account=");
@@ -901,7 +901,7 @@ ECode CSyncStorageEngine::DeleteFromPending(
             AutoPtr<IBundle> extras;
             FAIL_RETURN(op->GetSyncSource(&syncSource))
             FAIL_RETURN(op->GetExtras((IBundle**)&extras))
-            String strSyncSource = StringUtils::Int32ToString(syncSource);
+            String strSyncSource = StringUtils::ToString(syncSource);
             String strExtras;
             FAIL_RETURN(extras->ToString(&strExtras))
             String str("deleteFromPending: account=");
@@ -1267,7 +1267,7 @@ ECode CSyncStorageEngine::InsertStartSyncEvent(
             str.Append(" auth=");
             str.Append(authorityName);
             str.Append(" source=");
-            String strSource = StringUtils::Int32ToString(source);
+            String strSource = StringUtils::ToString(source);
             str.Append(strSource);
             Logger::V(TAG, str);
         }
@@ -1933,7 +1933,7 @@ ECode CSyncStorageEngine::UpdateOrRemovePeriodicSync(
         str.Append(", provider ");
         str.Append(providerName);
         str.Append(" -> period ");
-        String strPeriod = StringUtils::Int64ToString(period);
+        String strPeriod = StringUtils::ToString(period);
         str.Append(strPeriod);
         str.Append(", extras ");
         String tmp;

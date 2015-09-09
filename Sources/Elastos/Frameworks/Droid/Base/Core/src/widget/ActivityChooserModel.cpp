@@ -345,7 +345,7 @@ AutoPtr<IInterface> ActivityChooserModel::PersistHistoryAsyncTask::DoInBackgroun
                 goto finally;
             }
             String time, weight;
-            time = StringUtils::Int64ToString(record->mTime);
+            time = StringUtils::ToString(record->mTime);
             weight = StringUtils::FloatToString(record->mWeight);
             if (FAILED(serializer->WriteAttribute(String(NULL), ATTRIBUTE_TIME, time))) {
                 goto finally;

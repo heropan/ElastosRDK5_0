@@ -463,7 +463,7 @@ ECode CRequestHandle::ComputeCnonce(
     // nextInt = rand->NextInt();
     nextInt = (nextInt == 0x80000000/*IInteger::MIN_VALUE*/) ?
             0x7FFFFFFF/*IInteger::MAX_VALUE*/ : Elastos::Core::Math::Abs(nextInt);
-    *str = StringUtils::Int32ToString(nextInt, 16);
+    *str = StringUtils::ToString(nextInt, 16);
     return NOERROR;
 }
 

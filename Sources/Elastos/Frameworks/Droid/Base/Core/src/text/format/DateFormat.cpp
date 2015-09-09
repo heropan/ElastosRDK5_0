@@ -660,7 +660,7 @@ String DateFormat::ZeroPad(
     /* [in] */ Int32 inMinDigits)
 {
     String format("%0");
-    format += StringUtils::Int32ToString(inMinDigits) + String("d");
+    format += StringUtils::ToString(inMinDigits) + String("d");
     String value;
     value.AppendFormat(format.string(), inValue);
     return value;

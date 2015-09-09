@@ -217,7 +217,7 @@ ECode CMtpPropertyGroup::GetPropertyList(
                     case IMtpConstants::PROPERTY_ORIGINAL_RELEASE_DATE:
                         // release date is stored internally as just the year
                         c->GetInt32(column, &year);
-                        dateTime = StringUtils::Int32ToString(year) + "0101T000000";
+                        dateTime = StringUtils::ToString(year) + "0101T000000";
                         result->Append(handle, propertyCode, dateTime);
                         break;
                     case IMtpConstants::PROPERTY_PERSISTENT_UID:

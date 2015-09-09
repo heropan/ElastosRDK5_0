@@ -910,7 +910,7 @@ void PointerLocationView::LogCoords(
             prefix = String("SCROLL");
             break;
         default:
-            prefix = StringUtils::Int32ToString(action);
+            prefix = StringUtils::ToString(action);
             break;
     }
 

@@ -181,7 +181,7 @@ ECode CProxyProperties::ToString(
         sb += mHost;
         sb += String("]");
         String temp;
-        temp = StringUtils::Int32ToString(mPort);
+        temp = StringUtils::ToString(mPort);
         sb += temp;
 
         if (!mExclusionList.IsNull()) {

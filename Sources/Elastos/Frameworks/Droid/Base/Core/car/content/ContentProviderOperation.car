@@ -215,6 +215,42 @@ module
             [in] String key,
             [in] IInterface* value);
 
+        WithByte(
+            [in] String key,
+            [in] Byte value);
+
+        WithBoolean(
+            [in] String key,
+            [in] Boolean value);
+
+        WithValue(
+            [in] String key,
+            [in] String value);
+
+        WithValue(
+            [in] String key,
+            [in] Int16 value);
+
+        WithValue(
+            [in] String key,
+            [in] Int32 value);
+
+        WithValue(
+            [in] String key,
+            [in] Int64 value);
+
+        WithValue(
+            [in] String key,
+            [in] Float value);
+
+        WithValue(
+            [in] String key,
+            [in] Double value);
+
+        WithValue(
+            [in] String key,
+            [in] ArrayOf<Byte>* value);
+
         /**
          * The selection and arguments to use. An occurrence of '?' in the selection will be
          * replaced with the corresponding occurence of the selection argument. Any of the

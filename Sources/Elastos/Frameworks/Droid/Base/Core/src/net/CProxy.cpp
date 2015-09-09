@@ -336,7 +336,7 @@ ECode CProxy::SetHttpProxySystemProperty(
         proxyp->GetHost(&host);
         Int32 portNum;
         proxyp->GetPort(&portNum);
-        port = StringUtils::Int32ToString(portNum);
+        port = StringUtils::ToString(portNum);
         proxyp->GetExclusionList(&exclList);
     }
     SetHttpProxySystemProperty(host, port, exclList);

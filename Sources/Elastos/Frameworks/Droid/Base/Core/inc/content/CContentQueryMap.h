@@ -3,29 +3,47 @@
 #define __ELASTOS_DROID_CONTENT_CCONTENTQUERYMAP_H__
 
 #include "_Elastos_Droid_Content_CContentQueryMap.h"
-#include <ext/frameworkext.h>
-#include <elastos/utility/etl/HashMap.h>
-#include "database/ContentObserver.h"
+#include <elastos/core/Observable.h>
+//#include "database/ContentObserver.h"
 
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Database::IContentObserver;
-using Elastos::Droid::Database::ContentObserver;
+//using Elastos::Droid::Database::ContentObserver;
 using Elastos::Droid::Os::IHandler;
-using Elastos::Utility::IObjectStringMap;
-using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IObserver;
-using Elastos::Utility::IList;
+using Elastos::Utility::IMap;
+using Elastos::Utility::Observable;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
+/**
+ * Caches the contents of a cursor into a Map of String->ContentValues and optionally
+ * keeps the cache fresh by registering for updates on the content backing the cursor. The column of
+ * the database that is to be used as the key of the map is user-configurable, and the
+ * ContentValues contains all columns other than the one that is designated the key.
+ * <p>
+ * The cursor data is accessed by row key and column name via getValue().
+ */
 CarClass(CContentQueryMap)
+    , public Observable
+    , public IContentQueryMap
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CContentQueryMap();
 
-    ~CContentQueryMap();
+    virtual ~CContentQueryMap();
+
+    CARAPI constructor(
+        /* [in] */ ICursor* cursor,
+        /* [in] */ const String& columnNameOfKey,
+        /* [in] */ Boolean keepUpdated,
+        /* [in] */ IHandler* handlerForUpdateNotifications);
 
     /**
      * Change whether or not the ContentQueryMap will register with the cursor's ContentProvider
@@ -51,18 +69,13 @@ public:
     CARAPI Requery();
 
     CARAPI GetRows(
-        /* [out] */ IObjectStringMap** rows);
+        /* [out] */ IMap** rows);
 
     CARAPI Close();
 
-    CARAPI constructor(
-        /* [in] */ ICursor* cursor,
-        /* [in] */ const String& columnNameOfKey,
-        /* [in] */ Boolean keepUpdated,
-        /* [in] */ IHandler* handlerForUpdateNotifications);
-
+public:
     class KeepUpdatedContentObserver
-        : public ContentObserver
+        //: public ContentObserver
     {
     public:
         KeepUpdatedContentObserver(
@@ -90,103 +103,15 @@ private:
     /* volatile */ AutoPtr<ICursor> mCursor;
     AutoPtr<ArrayOf<String> > mColumnNames;
     Int32 mKeyColumn;
+
     AutoPtr<IHandler> mHandlerForUpdateNotifications;
     Boolean mKeepUpdated;
-    HashMap<String, AutoPtr<IContentValues> > mValues;
+
+    AutoPtr<IMap> mValues;
     AutoPtr<IContentObserver> mContentObserver;
 
     /** Set when a cursor change notification is received and is cleared on a call to requery(). */
     Boolean mDirty;
-    Object mMethodLock;
-
-public:
-    //========================================================
-    // CObservable
-    //========================================================
-    CARAPI InitObservable();
-
-    /**
-     * Adds the specified observer to the list of observers. If it is already
-     * registered, it is not added a second time.
-     *
-     * @param observer
-     *            the Observer to add.
-     */
-    CARAPI AddObserver(
-        /* [in] */ IObserver* observer);
-
-    /**
-     * Returns the number of observers registered to this {@code Observable}.
-     *
-     * @return the number of observers.
-     */
-    CARAPI CountObservers(
-        /* [out] */ Int32* value);
-
-    /**
-     * Removes the specified observer from the list of observers. Passing null
-     * won't do anything.
-     *
-     * @param observer
-     *            the observer to remove.
-     */
-    CARAPI DeleteObserver(
-        /* [in] */ IObserver* observer);
-
-    /**
-     * Removes all observers from the list of observers.
-     */
-    CARAPI DeleteObservers();
-
-    /**
-     * Returns the changed flag for this {@code Observable}.
-     *
-     * @return {@code true} when the changed flag for this {@code Observable} is
-     *         set, {@code false} otherwise.
-     */
-    CARAPI HasChanged(
-        /* [out] */ Boolean* value);
-
-    /**
-     * If {@code hasChanged()} returns {@code true}, calls the {@code update()}
-     * method for every observer in the list of observers using null as the
-     * argument. Afterwards, calls {@code clearChanged()}.
-     * <p>
-     * Equivalent to calling {@code notifyObservers(null)}.
-     */
-    CARAPI NotifyObservers();
-
-    /**
-     * If {@code hasChanged()} returns {@code true}, calls the {@code update()}
-     * method for every Observer in the list of observers using the specified
-     * argument. Afterwards calls {@code clearChanged()}.
-     *
-     * @param data
-     *            the argument passed to {@code update()}.
-     */
-    CARAPI NotifyObservers(
-        /* [in] */ IInterface* data);
-
-    /**
-     * Clears the changed flag for this {@code Observable}. After calling
-     * {@code clearChanged()}, {@code hasChanged()} will return {@code false}.
-     */
-    CARAPI ClearChanged();
-
-    /**
-     * Sets the changed flag for this {@code Observable}. After calling
-     * {@code setChanged()}, {@code hasChanged()} will return {@code true}.
-     */
-    CARAPI SetChanged();
-
-protected:
-
-    AutoPtr<IList> mObservers; // = new ArrayList<Observer>();
-
-    Boolean mChanged; // = false;
-
-private:
-    Object mLock;
 };
 
 }

@@ -521,7 +521,7 @@ void CAccountManagerService::PurgeOldGrants (
             continue;
         }
         Slogger::D(TAG, "deleting grants for UID %d because its package is no longer installed", uid);
-        (*ids)[0] = StringUtils::Int32ToString(uid);
+        (*ids)[0] = StringUtils::ToString(uid);
         Int32 res;
         db->Delete(TABLE_GRANTS, GRANTS_GRANTEE_UID + String("=?"), ids, &res);
     }
@@ -1366,7 +1366,7 @@ void CAccountManagerService::SetPasswordInternal(
     Int64 accountId = GetAccountIdLocked(db, account);
     if (accountId >= 0) {
         AutoPtr< ArrayOf<String> > argsAccountId = ArrayOf<String>::Alloc(1);
-        (*argsAccountId)[0] = StringUtils::Int64ToString(accountId);
+        (*argsAccountId)[0] = StringUtils::ToString(accountId);
         Int32 result;
         if (FAILED(db->Update(TABLE_ACCOUNTS, values, ACCOUNTS_ID + String("=?"),
                 argsAccountId, &result))) {
@@ -2624,7 +2624,7 @@ Boolean CAccountManagerService::HasExplicitlyGrantedPermission(
     AutoPtr<ISQLiteDatabase> db;
     accounts->mOpenHelper->GetReadableDatabase((ISQLiteDatabase**)&db);
     AutoPtr< ArrayOf<String> > args = ArrayOf<String>::Alloc(4);
-    (*args)[0] = StringUtils::Int32ToString(callerUid);
+    (*args)[0] = StringUtils::ToString(callerUid);
     (*args)[1] = authTokenType;
     account->GetName(&(*args)[2]);
     account->GetType(&(*args)[3]);
@@ -2788,9 +2788,9 @@ void CAccountManagerService::RevokeAppPermission(
     Int64 accountId = GetAccountIdLocked(db, account);
     if (accountId >= 0) {
         AutoPtr< ArrayOf<String> > args = ArrayOf<String>::Alloc(3);
-        (*args)[0] = StringUtils::Int64ToString(accountId);
+        (*args)[0] = StringUtils::ToString(accountId);
         (*args)[1] = authTokenType;
-        (*args)[2] = StringUtils::Int32ToString(uid);
+        (*args)[2] = StringUtils::ToString(uid);
         Int32 result;
         if (FAILED(db->Delete(TABLE_GRANTS, GRANTS_ACCOUNTS_ID + String("=? AND ")
                 + GRANTS_AUTH_TOKEN_TYPE + String("=? AND ")

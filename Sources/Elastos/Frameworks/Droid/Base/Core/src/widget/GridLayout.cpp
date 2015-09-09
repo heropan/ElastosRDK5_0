@@ -1851,8 +1851,8 @@ void GridLayout::Bounds::Include(
 
 String GridLayout::Bounds::ToString()
 {
-    String before = StringUtils::Int32ToString(mBefore);
-    String after = StringUtils::Int32ToString(mAfter);
+    String before = StringUtils::ToString(mBefore);
+    String after = StringUtils::ToString(mAfter);
     return String("Bounds{") + String("before=") + before + String(", after=") + after + String("}");
 }
 
@@ -1908,8 +1908,8 @@ Int32 GridLayout::Interval::GetHashCode()
 
 String GridLayout::Interval::ToString()
 {
-    String min = StringUtils::Int32ToString(mMin);
-    String max = StringUtils::Int32ToString(mMax);
+    String min = StringUtils::ToString(mMin);
+    String max = StringUtils::ToString(mMax);
     return String("[") + min + String(", ") + max + String("]");
 }
 

@@ -230,7 +230,7 @@ ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCu
 
     AutoPtr<ICursor> subCursor;
     AutoPtr<ArrayOf<String> > selectionArgs = ArrayOf<String>::Alloc(1);
-    (*selectionArgs)[0] = StringUtils::Int64ToString(eventId);
+    (*selectionArgs)[0] = StringUtils::ToString(eventId);
     AutoPtr<IUri> remindUri;
     CalendarContractReminders::GetCONTENT_URI((IUri**)&remindUri);
     if (mResolver != NULL) {

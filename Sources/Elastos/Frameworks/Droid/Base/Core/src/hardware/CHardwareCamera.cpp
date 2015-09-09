@@ -949,7 +949,7 @@ ECode CHardwareCamera::Parameters::Set(
     /* [in] */ const String& key,
     /* [in] */ Int32 value)
 {
-    mMap[key] = StringUtils::Int32ToString(value);
+    mMap[key] = StringUtils::ToString(value);
     return NOERROR;
 }
 
@@ -1006,7 +1006,7 @@ ECode CHardwareCamera::Parameters::SetPreviewSize(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    String v = StringUtils::Int32ToString(width) + String("x") + StringUtils::Int32ToString(height);
+    String v = StringUtils::ToString(width) + String("x") + StringUtils::Int32ToString(height);
     Set(KEY_PREVIEW_SIZE, v);
     return NOERROR;
 }
@@ -1244,7 +1244,7 @@ ECode CHardwareCamera::Parameters::SetPictureSize(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    String v = StringUtils::Int32ToString(width) + String("x") + StringUtils::Int32ToString(height);
+    String v = StringUtils::ToString(width) + String("x") + StringUtils::Int32ToString(height);
     return Set(KEY_PICTURE_SIZE, v);
 }
 

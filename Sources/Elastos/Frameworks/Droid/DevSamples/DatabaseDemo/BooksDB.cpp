@@ -86,7 +86,7 @@ void BooksDB::Delete(
     sb += BOOK_ID;
     sb += " = ?";
     AutoPtr<ArrayOf<String> > whereValue = ArrayOf<String>::Alloc(1);
-    (*whereValue)[0] = StringUtils::Int32ToString(id);
+    (*whereValue)[0] = StringUtils::ToString(id);
     Int32 tmp;
     db->Delete(TABLE_NAME, sb.ToString(), whereValue, &tmp);
 }
@@ -102,7 +102,7 @@ void BooksDB::Update(
     sb += BOOK_ID;
     sb += " = ?";
     AutoPtr<ArrayOf<String> > whereValue = ArrayOf<String>::Alloc(1);
-    (*whereValue)[0] = StringUtils::Int32ToString(id);
+    (*whereValue)[0] = StringUtils::ToString(id);
 
     AutoPtr<IContentValues> cv;
     CContentValues::New((IContentValues**)&cv);

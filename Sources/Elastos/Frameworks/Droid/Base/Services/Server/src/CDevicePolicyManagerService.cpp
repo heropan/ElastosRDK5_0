@@ -1325,9 +1325,9 @@ ECode CDevicePolicyManagerService::ResetPassword(
             // if (realQuality < quality && quality != IDevicePolicyManager::PASSWORD_QUALITY_COMPLEX) {
             //     StringBuffer buf;
             //     buf += "resetPassword: password quality 0x";
-            //     buf += StringUtils::Int32ToString(quality, 16);
+            //     buf += StringUtils::ToString(quality, 16);
             //     buf += " does not meet required quality 0x";
-            //     buf += StringUtils::Int32ToString(quality, 16);
+            //     buf += StringUtils::ToString(quality, 16);
             //     Slogger::W(TAG, buf.ToString());
             //     *result = FALSE;
             //     return NOERROR;
@@ -2525,9 +2525,9 @@ ECode CDevicePolicyManagerService::LoadSettingsLocked(
     if (quality < policy->mActivePasswordQuality) {
         StringBuffer buf;
         buf += "Active password quality 0x";
-        buf += StringUtils::Int32ToString(policy->mActivePasswordQuality, 16);
+        buf += StringUtils::ToString(policy->mActivePasswordQuality, 16);
         buf += " does not match actual quality 0x";
-        buf += StringUtils::Int32ToString(quality, 16);
+        buf += StringUtils::ToString(quality, 16);
         Slogger::W(TAG, buf.ToString());
 
         policy->mActivePasswordQuality = IDevicePolicyManager::PASSWORD_QUALITY_UNSPECIFIED;

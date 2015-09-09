@@ -138,7 +138,7 @@ ECode CDownloadsImpl::StatusToString(
         case STATUS_HTTP_EXCEPTION: *value = String("HTTP_EXCEPTION"); return NOERROR;
         case STATUS_TOO_MANY_REDIRECTS: *value = String("TOO_MANY_REDIRECTS"); return NOERROR;
         case STATUS_BLOCKED: *value = String("BLOCKED"); return NOERROR;
-        default: *value = StringUtils::Int32ToString(status); return NOERROR;
+        default: *value = StringUtils::ToString(status); return NOERROR;
     }
 }
 

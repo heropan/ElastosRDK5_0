@@ -217,7 +217,7 @@ void WebViewDatabaseClassic::UpgradeDatabaseFromV10ToV11()
         c->GetColumnIndex(ID_COL, &index);
         Int64 i64Value;
         c->GetInt64(index, &i64Value);
-        String urlId = StringUtils::Int64ToString(i64Value);
+        String urlId = StringUtils::ToString(i64Value);
         c->GetColumnIndex(FORMURL_URL_COL, &index);
         String url;
         c->GetString(index, &url);
@@ -795,7 +795,7 @@ AutoPtr<IArrayList> WebViewDatabaseClassic::GetFormData(
                     (*columns)[0] = ID_COL;
                     (*columns)[1] = FORMDATA_VALUE_COL;
                     AutoPtr< ArrayOf<String> > selectionArgs = ArrayOf<String>::Alloc(2);
-                    (*selectionArgs)[0] = StringUtils::Int64ToString(urlid);
+                    (*selectionArgs)[0] = StringUtils::ToString(urlid);
                     (*selectionArgs)[1] = name;
                     sDatabase->Query(
                             mTableNames[TABLE_FORMDATA_ID],

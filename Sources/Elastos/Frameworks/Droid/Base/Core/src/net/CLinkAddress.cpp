@@ -58,7 +58,7 @@ ECode CLinkAddress::ToString(
         mAddress->GetHostAddress(&addr);
         StringBuilder builder(addr);
         builder += "/";
-        builder += StringUtils::Int32ToString(mPrefixLength);
+        builder += StringUtils::ToString(mPrefixLength);
         *result = builder.ToString();
     }
     return NOERROR;

@@ -227,7 +227,7 @@ ECode Window::AdjustLayoutParamsForSubWindow(
                 title = "AtchDlg";
             }
             else {
-                title = StringUtils::Int32ToString(wp->mType);
+                title = StringUtils::ToString(wp->mType);
             }
             if (mAppName != NULL) {
                 title += String(":") + mAppName;

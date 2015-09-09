@@ -2336,7 +2336,7 @@ void Intent::ToUriInner(
                 else if (entryType == 'b') {
                     Byte val;
                     ((IByte*)value.Get())->GetValue(&val);
-                    tmp = StringUtils::Int32ToString((Int32)val);
+                    tmp = StringUtils::ToString((Int32)val);
                 }
                 else if (entryType == 'd') {
                     Double val;
@@ -2351,17 +2351,17 @@ void Intent::ToUriInner(
                 else if (entryType == 'i') {
                     Int32 val;
                     ((IInteger32*)value.Get())->GetValue(&val);
-                    tmp = StringUtils::Int32ToString(val);
+                    tmp = StringUtils::ToString(val);
                 }
                 else if (entryType == 'l') {
                     Int64 val;
                     ((IInteger64*)value.Get())->GetValue(&val);
-                    tmp = StringUtils::Int64ToString(val);
+                    tmp = StringUtils::ToString(val);
                 }
                 else if (entryType == 's') {
                     Int16 val;
                     ((IInteger16*)value.Get())->GetValue(&val);
-                    tmp = StringUtils::Int32ToString((Int32)val);
+                    tmp = StringUtils::ToString((Int32)val);
                 }
                 Uri::Encode(tmp, &s);
                 uri.AppendString(s);

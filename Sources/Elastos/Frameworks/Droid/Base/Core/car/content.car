@@ -460,11 +460,43 @@ module
             interface IParcelable;
         }
 
+        /**
+         * This class is used to store a set of values that the {@link ContentResolver}
+         * can process.
+         */
+        class CContentValues {
+            /**
+             * Creates an empty set of values using the default initial size
+             */
+            constructor();
+
+            /**
+             * Creates an empty set of values using the given initial size
+             *
+             * @param size the initial size of the set of values
+             */
+            constructor(
+                [in] Int32 size);
+
+            /**
+             * Creates a set of values copied from the given set
+             *
+             * @param from the values to copy
+             */
+            constructor(
+                [in] IContentValues* from);
+
+            interface IContentValues;
+            interface IParcelable;
+        }
+
+
+
     }//namespace Content
     }//namespace Droid
     }//namespace Elastos
 
-//     namespace Pm {
+//        namespace Pm {
 
 //     /**
 //      * Information you can retrieve about a particular application
@@ -1384,35 +1416,7 @@ module
 //         interface IContentUris;
 //     }
 
-//     /**
-//      * This class is used to store a set of values that the {@link ContentResolver}
-//      * can process.
-//      */
-//     class CContentValues {
-//         /**
-//          * Creates an empty set of values using the default initial size
-//          */
-//         constructor();
 
-//         /**
-//          * Creates an empty set of values using the given initial size
-//          *
-//          * @param size the initial size of the set of values
-//          */
-//         constructor(
-//             [in] Int32 size);
-
-//         /**
-//          * Creates a set of values copied from the given set
-//          *
-//          * @param from the values to copy
-//          */
-//         constructor(
-//             [in] IContentValues* from);
-
-//         interface IContentValues;
-//         interface IParcelable;
-//     }
 
 //     /**
 //      * Proxying implementation of Context that simply delegates all of its calls to

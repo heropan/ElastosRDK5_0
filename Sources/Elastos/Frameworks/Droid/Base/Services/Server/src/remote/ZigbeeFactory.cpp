@@ -191,7 +191,7 @@ AutoPtr<IInterface> ZigbeeFactory::SocketCmd_Task::DoInBackground(
             Int32 res;
             args->SetOutputArgumentOfInt32Ptr(outIndex, &res);
             ec = method->Invoke(zigbeeService, args);
-            resultFromService = StringUtils::Int32ToString(res);
+            resultFromService = StringUtils::ToString(res);
         }
         else if (resultType.Equals("String")) {
             String str;

@@ -286,7 +286,7 @@ void CPinyinCandidateView::OnDraw(
         Float footnoteSize = 0.f;
         String footnote;
         if (mShowFootnote) {
-            footnote = StringUtils::Int32ToString(i + 1);
+            footnote = StringUtils::ToString(i + 1);
             mFootnotePaint->MeasureText(footnote, &footnoteSize);
         }
 

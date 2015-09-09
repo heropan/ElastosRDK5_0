@@ -118,7 +118,7 @@ ECode WaveView::AddWaveRunnable::Run()
         wave->StartAnimations((IAnimatorUpdateListener*)mHost->Probe(EIID_IAnimatorUpdateListener));
 
         mHost->mCurrentWave = (mHost->mCurrentWave + 1) % mHost->mWaveCount;
-        String sWaveTimerDelay = StringUtils::Int64ToString(mHost->mWaveTimerDelay);
+        String sWaveTimerDelay = StringUtils::ToString(mHost->mWaveTimerDelay);
         if (DBG) Logger::V(TAG, String("WaveTimerDelay: start new wave in ") + sWaveTimerDelay);
     } else {
         mHost->mWaveTimerDelay += DELAY_INCREMENT2;

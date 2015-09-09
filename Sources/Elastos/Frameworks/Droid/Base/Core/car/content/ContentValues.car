@@ -1,6 +1,15 @@
 
 module
 {
+    using interface Elastos.Core.IByte;
+    using interface Elastos.Core.IInteger16;
+    using interface Elastos.Core.IInteger32;
+    using interface Elastos.Core.IInteger64;
+    using interface Elastos.Core.IFloat;
+    using interface Elastos.Core.IDouble;
+    using interface Elastos.Core.IBoolean;
+    using interface Elastos.Core.IArrayOf;
+    using interface Elastos.Core.ICharSequence;
     using interface Elastos.Utility.ISet;
 
     namespace Elastos {
@@ -35,6 +44,10 @@ module
             [in] String key,
             [in] String value);
 
+        Put(
+            [in] String key,
+            [in] ICharSequence* strVal);
+
         /**
          * Adds all values from the passed in ContentValues.
          *
@@ -53,6 +66,10 @@ module
             [in] String key,
             [in] Byte value);
 
+        Put(
+            [in] String key,
+            [in] IByte* byteVal);
+
         /**
          * Adds a value to the set.
          *
@@ -62,6 +79,10 @@ module
         Put(
             [in] String key,
             [in] Int16 value);
+
+        Put(
+            [in] String key,
+            [in] IInteger16* shortVal);
 
         /**
          * Adds a value to the set.
@@ -73,6 +94,10 @@ module
             [in] String key,
             [in] Int32 value);
 
+        Put(
+            [in] String key,
+            [in] IInteger32* intVal);
+
         /**
          * Adds a value to the set.
          *
@@ -83,6 +108,10 @@ module
             [in] String key,
             [in] Int64 value);
 
+        Put(
+            [in] String key,
+            [in] IInteger64* longVal);
+
         /**
          * Adds a value to the set.
          *
@@ -92,6 +121,11 @@ module
         Put(
             [in] String key,
             [in] Float value);
+
+        Put(
+            [in] String key,
+            [in] IFloat* fval);
+
         /**
          * Adds a value to the set.
          *
@@ -102,15 +136,23 @@ module
             [in] String key,
             [in] Double value);
 
+        Put(
+            [in] String key,
+            [in] IDouble* dval);
+
         /**
          * Adds a value to the set.
          *
          * @param key the name of the value to put
          * @param value the data for the value to put
          */
-        PutBoolean(
+        Put(
             [in] String key,
             [in] Boolean value);
+
+        Put(
+            [in] String key,
+            [in] IBoolean* bval);
 
         /**
          * Adds a value to the set.
@@ -121,6 +163,10 @@ module
         Put(
             [in] String key,
             [in] ArrayOf<Byte>* value);
+
+        Put(
+            [in] String key,
+            [in] IArrayOf* arrayOfByte);
 
         /**
          * Adds a null value to the set.

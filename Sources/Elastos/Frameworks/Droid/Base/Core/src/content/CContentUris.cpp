@@ -8,6 +8,10 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
+CAR_INTERFACE_IMPL(CContentUris, Object, IContentUris)
+
+CAR_OBJECT_IMPL(CContentUris)
+
 ECode CContentUris::ParseId(
     /* [in] */ IUri* contentUri,
     /* [out] */ Int64* id)
@@ -20,7 +24,7 @@ ECode CContentUris::ParseId(
         *id = -1;
         return NOERROR;
     }
-    return StringUtils::ParseInt64(last, id);
+    return StringUtils::Parse(last, id);
 }
 
 ECode CContentUris::AppendId(
@@ -28,7 +32,7 @@ ECode CContentUris::AppendId(
     /* [in] */ Int64 id)
 {
     VALIDATE_NOT_NULL(builder)
-    return builder->AppendEncodedPath(StringUtils::Int64ToString(id));
+    return builder->AppendEncodedPath(StringUtils::ToString(id));
 }
 
 ECode CContentUris::WithAppendedId(

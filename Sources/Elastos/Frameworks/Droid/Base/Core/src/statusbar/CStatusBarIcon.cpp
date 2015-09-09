@@ -60,7 +60,7 @@ ECode CStatusBarIcon::ToString(
     mUser->GetIdentifier(&id);
     sb += id;
     sb += ", id=0x";
-    sb += StringUtils::Int32ToString(mIconId);
+    sb += StringUtils::ToString(mIconId);
     sb += ", level=";
     sb += mIconLevel;
     sb += ", visible=";

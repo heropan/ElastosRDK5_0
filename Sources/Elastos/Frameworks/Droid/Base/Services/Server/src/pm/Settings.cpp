@@ -1666,7 +1666,7 @@ void Settings::WriteLPr()
             List< AutoPtr<IPackageCleanItem> >::Iterator it7 = mPackagesToBeCleaned.Begin();
             for (; it7 != mPackagesToBeCleaned.End(); it7++) {
                 AutoPtr<IPackageCleanItem> item = it7->Get();
-                String userStr = StringUtils::Int32ToString(item->GetUserId(&val), val);
+                String userStr = StringUtils::ToString(item->GetUserId(&val), val);
                 FAIL_GOTO(ecode = serializer->WriteStartTag(String(NULL), String("cleaning-package")), EXIT);
                 FAIL_GOTO(ecode = serializer->WriteAttribute(String(NULL), ATTR_NAME, (item->GetPackageName(&temp), temp)), EXIT);
                 FAIL_GOTO(ecode = serializer->WriteAttribute(String(NULL), ATTR_CODE, (item->GetAndCode(&result), result) ? String("true") : String("FALSE")), EXIT);

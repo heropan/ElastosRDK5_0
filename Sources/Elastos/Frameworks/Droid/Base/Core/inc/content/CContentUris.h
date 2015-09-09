@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CCONTENTURIS_H__
 
 #include "_Elastos_Droid_Content_CContentUris.h"
-#include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Net::IUriBuilder;
@@ -12,9 +12,64 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
+/**
+* Utility methods useful for working with {@link android.net.Uri} objects
+* that use the &quot;content&quot; (content://) scheme.
+*
+*<p>
+*   Content URIs have the syntax
+*</p>
+*<p>
+*   <code>content://<em>authority</em>/<em>path</em>/<em>id</em></code>
+*</p>
+*<dl>
+*   <dt>
+*       <code>content:</code>
+*   </dt>
+*   <dd>
+*       The scheme portion of the URI. This is always set to {@link
+*       android.content.ContentResolver#SCHEME_CONTENT ContentResolver.SCHEME_CONTENT} (value
+*       <code>content://</code>).
+*   </dd>
+*   <dt>
+*       <em>authority</em>
+*   </dt>
+*   <dd>
+*       A string that identifies the entire content provider. All the content URIs for the provider
+*       start with this string. To guarantee a unique authority, providers should consider
+*       using an authority that is the same as the provider class' package identifier.
+*   </dd>
+*   <dt>
+*       <em>path</em>
+*   </dt>
+*   <dd>
+*       Zero or more segments, separated by a forward slash (<code>/</code>), that identify
+*       some subset of the provider's data. Most providers use the path part to identify
+*       individual tables. Individual segments in the path are often called
+*       &quot;directories&quot; although they do not refer to file directories. The right-most
+*       segment in a path is often called a &quot;twig&quot;
+*   </dd>
+*   <dt>
+*       <em>id</em>
+*   </dt>
+*   <dd>
+*       A unique numeric identifier for a single row in the subset of data identified by the
+*       preceding path part. Most providers recognize content URIs that contain an id part
+*       and give them special handling. A table that contains a column named <code>_ID</code>
+*       often expects the id part to be a particular value for that column.
+*   </dd>
+*</dl>
+*
+*/
 CarClass(CContentUris)
+    , public Object
+    , public IContentUris
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     /**
      * Converts the last path segment to a long.
      *

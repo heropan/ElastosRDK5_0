@@ -1,4 +1,5 @@
 
+#include "ext/frameworkext.h"
 #include "content/CContentProviderOperation.h"
 #include "content/CContentProviderResult.h"
 #include "content/ContentProvider.h"
@@ -14,17 +15,18 @@
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/CoreUtils.h>
 
-using Elastos::Core::CoreUtils;
-using Elastos::Core::StringUtils;
-using Elastos::Core::CString;
-using Elastos::Core::CInteger64;
-using Elastos::Core::IInteger32;
 using Elastos::Droid::Database::ICursor;
 //using Elastos::Droid::Net::Uri;
 // using Elastos::Droid::Net::CStringUri;
 // using Elastos::Droid::Net::COpaqueUri;
 // using Elastos::Droid::Net::CHierarchicalUri;
 //using Elastos::Droid::Text::TextUtils;
+using Elastos::Core::CoreUtils;
+using Elastos::Core::StringUtils;
+using Elastos::Core::CString;
+using Elastos::Core::CInteger64;
+using Elastos::Core::IInteger32;
+using Elastos::IO::ICloseable;
 using Elastos::Utility::ISet;
 using Elastos::Utility::IMapEntry;
 using Elastos::Utility::CHashMap;
@@ -34,14 +36,6 @@ using Elastos::Utility::Logging::Logger;
 namespace Elastos {
 namespace Droid {
 namespace Content {
-
-#define FAIL_WithGoto(ecode)       \
-        do {                       \
-            ECode ec = ecode;      \
-            if (FAILED(ec)) {      \
-                goto EXIT;         \
-            }                      \
-        } while (0);
 
 const String CContentProviderOperation::TAG("CContentProviderOperation");
 
@@ -362,103 +356,112 @@ ECode CContentProviderOperation::Apply(
     *providerResult = NULL;
     VALIDATE_NOT_NULL(provider)
 
-//     AutoPtr<IContentValues> values;
-//     FAIL_RETURN(ResolveValueBackReferences(backRefs, numBackRefs, (IContentValues**)&values))
-//     AutoPtr<ArrayOf<String> > selectionArgs;
-//     FAIL_RETURN(ResolveSelectionArgsBackReferences(backRefs, numBackRefs, (ArrayOf<String>**)&selectionArgs))
+    AutoPtr<IContentValues> values;
+    FAIL_RETURN(ResolveValueBackReferences(backRefs, numBackRefs, (IContentValues**)&values))
+    AutoPtr<ArrayOf<String> > selectionArgs;
+    FAIL_RETURN(ResolveSelectionArgsBackReferences(backRefs, numBackRefs, (ArrayOf<String>**)&selectionArgs))
 
-//     if (mType == IContentProviderOperation::TYPE_INSERT) {
-//         AutoPtr<IUri> newUri;
-//         FAIL_RETURN(provider->Insert(mUri, values, (IUri**)&newUri))
-//         if (NULL == newUri) {
-//             //throw new OperationApplicationException("insert failed");
-//             return E_OPERATION_APPLICATION_EXCEPTION;
-//         }
-//         FAIL_RETURN(CContentProviderResult::New(newUri, providerResult))
-//         return NOERROR;
-//     }
+    if (mType == IContentProviderOperation::TYPE_INSERT) {
+        AutoPtr<IUri> newUri;
+        FAIL_RETURN(provider->Insert(mUri, values, (IUri**)&newUri))
+        if (NULL == newUri) {
+            //throw new OperationApplicationException("insert failed");
+            return E_OPERATION_APPLICATION_EXCEPTION;
+        }
+        FAIL_RETURN(CContentProviderResult::New(newUri, providerResult))
+        return NOERROR;
+    }
 
-//     Int32 numRows = 0;
+    Int32 numRows = 0;
 
-//     if (mType == IContentProviderOperation::TYPE_DELETE) {
-//         FAIL_RETURN(provider->Delete(mUri, mSelection, selectionArgs, &numRows))
-//     }
-//     else if (mType == IContentProviderOperation::TYPE_UPDATE) {
-//         FAIL_RETURN(provider->Update(mUri, values, mSelection, selectionArgs, &numRows))
-//     }
-//     else if (mType == IContentProviderOperation::TYPE_ASSERT) {
-//         // Assert that all rows match expected values
-//         AutoPtr<ArrayOf<String> > projection;
-//         if (NULL != values) {
-//             // Build projection map from expected values
-//             AutoPtr<IObjectStringMap> objStringMap;
-//             AutoPtr<IObjectContainer> objContainer;
-//             FAIL_RETURN(values->ValueSet((IObjectStringMap**)&objStringMap))
+    if (mType == IContentProviderOperation::TYPE_DELETE) {
+        FAIL_RETURN(provider->Delete(mUri, mSelection, selectionArgs, &numRows))
+    }
+    else if (mType == IContentProviderOperation::TYPE_UPDATE) {
+        FAIL_RETURN(provider->Update(mUri, values, mSelection, selectionArgs, &numRows))
+    }
+    else if (mType == IContentProviderOperation::TYPE_ASSERT) {
+        // Assert that all rows match expected values
+        AutoPtr<ArrayOf<String> > projection;
+        if (NULL != values) {
+            // Build projection map from expected values
+            AutoPtr<ISet> valueSet;
+            FAIL_RETURN(values->GetValueSet((ISet**)&valueSet))
+            Int32 size;
+            valueSet->GetSize(&size);
+            projection = ArrayOf<String>::Alloc(size);
+            AutoPtr<IIterator> it;
+            valueSet->GetIterator((IIterator**)&it);
+            Boolean hasNext;
+            IMapEntry* entry;
+            Int32 i = 0;
+            while (it->HasNext(&hasNext), hasNext) {
+                AutoPtr<IInterface> obj;
+                it->GetNext((IInterface**)&obj);
+                entry = IMapEntry::Probe(obj);
+                AutoPtr<IInterface> ko;
+                entry->GetKey((IInterface**)&ko);
+                projection->Set(i++, Object::ToString(ko));
+            }
+        }
 
-//             if (NULL != objStringMap) {
-//                 FAIL_RETURN(objStringMap->GetAllItems((ArrayOf<String>**)&projection, (IObjectContainer**)&objContainer))
-//             }
+        AutoPtr<ICursor> cursor;
+        String sortOrder;
+        ECode ecode = NOERROR;
+        String cursorValue, expectedValue;
+        Boolean hasNext = FALSE;
+        FAIL_RETURN(provider->Query(mUri, projection, mSelection, selectionArgs, sortOrder, (ICursor**)&cursor))
+        ecode = cursor->GetCount(&numRows);
+        FAIL_GOTO(ecode, _EXIT_)
 
-//         }
+        if (projection != NULL) {
+            while ((cursor->MoveToNext(&hasNext), hasNext)) {
+                for (Int32 i = 0; i < projection->GetLength(); ++i) {
+                    ecode = cursor->GetString(i, &cursorValue);
+                    FAIL_GOTO(ecode, _EXIT_)
 
-//         AutoPtr<ICursor> cursor;
-//         String sortOrder;
-//         ECode ecode = NOERROR;
-//         FAIL_RETURN(provider->Query(mUri, projection, mSelection, selectionArgs, sortOrder, (ICursor**)&cursor))
-//         ecode = cursor->GetCount(&numRows);
-//         FAIL_WithGoto(ecode)
-//         if (NULL != projection) {
-//             Boolean hasNext = FALSE;
-//             while ((cursor->MoveToNext(&hasNext), hasNext)) {
-//                 for (Int32 i = 0; i < projection->GetLength(); i++) {
-//                     String cursorValue;
-//                     ecode = cursor->GetString(i, &cursorValue);
-//                     FAIL_WithGoto(ecode)
-//                     String expectedValue;
-//                     ecode = values->GetAsString((*projection)[i], &expectedValue);
-//                     FAIL_WithGoto(ecode)
-//                     AutoPtr<ICharSequence> charSeq;
-//                     AutoPtr<ICharSequence> charSeq2;
-//                     ecode = CString::New(cursorValue, (ICharSequence**)&charSeq);
-//                     FAIL_WithGoto(ecode)
-//                     ecode = CString::New(expectedValue, (ICharSequence**)&charSeq2);
-//                     FAIL_WithGoto(ecode)
+                    ecode = values->GetAsString((*projection)[i], &expectedValue);
+                    FAIL_GOTO(ecode, _EXIT_)
 
-//                     if (!TextUtils::Equals(charSeq, charSeq2)) {
-//                         // Throw exception when expected values don't match
-//                         String str;
-//                         ecode = ToString(&str);
-//                         FAIL_WithGoto(ecode)
-//                         Logger::E(TAG, str);
-//                         //throw new OperationApplicationException("Found value " + cursorValue
-//                         //        + " when expected " + expectedValue + " for column "
-//                         //        + projection[i]);
-//                         return E_OPERATION_APPLICATION_EXCEPTION;
-//                     }
-//                 }
-//             }
-//         }
+                    AutoPtr<ICharSequence> charSeq = CoreUtils::Convert(cursorValue);
+                    AutoPtr<ICharSequence> charSeq2 = CoreUtils::Convert(expectedValue);
 
-// EXIT:
-//         FAIL_RETURN(ICloseable::Probe(cursor)->Close())
-//         FAIL_RETURN(ecode)
-//     }
-//     else {
-//         String str;
-//         FAIL_RETURN(ToString(&str))
-//         Logger::E(TAG, str);
-//         return E_ILLEGAL_STATE_EXCEPTION;
-//     }
+                    assert(0 && "TODO");
+                //     if (!TextUtils::Equals(charSeq, charSeq2)) {
+                //         // Throw exception when expected values don't match
+                //         String str;
+                //         ecode = ToString(&str);
+                //         FAIL_WithGoto(ecode)
+                //         Logger::E(TAG, str);
+                //         //throw new OperationApplicationException("Found value " + cursorValue
+                //         //        + " when expected " + expectedValue + " for column "
+                //         //        + projection[i]);
+                //         return E_OPERATION_APPLICATION_EXCEPTION;
+                //     }
+                }
+            }
+        }
 
-//     if (mExpectedCount != 0 && mExpectedCount != numRows) {
-//         String str;
-//         FAIL_RETURN(ToString(&str))
-//         Logger::E(TAG, str);
-//         // throw new OperationApplicationException("wrong number of rows: " + numRows);
-//         return E_OPERATION_APPLICATION_EXCEPTION;
-//     }
+_EXIT_:
+        FAIL_RETURN(ICloseable::Probe(cursor)->Close())
+        FAIL_RETURN(ecode)
+    }
+    else {
+        String str;
+        FAIL_RETURN(ToString(&str))
+        Logger::E(TAG, str);
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
 
-//     FAIL_RETURN(CContentProviderResult::New(numRows, providerResult))
+    if (mExpectedCount != 0 && mExpectedCount != numRows) {
+        String str;
+        FAIL_RETURN(ToString(&str))
+        Logger::E(TAG, str);
+        // throw new OperationApplicationException("wrong number of rows: " + numRows);
+        return E_OPERATION_APPLICATION_EXCEPTION;
+    }
+
+    FAIL_RETURN(CContentProviderResult::New(numRows, providerResult))
     return NOERROR;
 }
 
@@ -471,44 +474,49 @@ ECode CContentProviderOperation::ResolveValueBackReferences(
     *contentValues = NULL;
     VALIDATE_NOT_NULL(backRefs)
 
-    // if (NULL == mValuesBackReferences) {
-    //     *contentValues = mValues;
-    //     REFCOUNT_ADD(*contentValues);
-    //     return NOERROR;
-    // }
+    if (NULL == mValuesBackReferences) {
+        *contentValues = mValues;
+        REFCOUNT_ADD(*contentValues);
+        return NOERROR;
+    }
 
+    assert(0 && "TODO");
     // if (NULL == mValues) {
     //     FAIL_RETURN(CContentValues::New(contentValues))
     // } else {
     //     FAIL_RETURN(CContentValues::New(mValues, contentValues))
     // }
 
-    // AutoPtr<IObjectStringMap> objStringMap;
-    // AutoPtr<IObjectContainer> objContainer;
-    // FAIL_RETURN(mValuesBackReferences->ValueSet((IObjectStringMap**)&objStringMap))
+    AutoPtr<ISet> valueSet;
+    FAIL_RETURN(mValues->GetValueSet((ISet**)&valueSet))
 
-    // if (NULL != objStringMap) {
-    //     AutoPtr<ArrayOf<String> > keyArray;
-    //     FAIL_RETURN(objStringMap->GetAllItems((ArrayOf<String>**)&keyArray, (IObjectContainer**)&objContainer))
-    //     Int32 len = keyArray->GetLength();
-    //     for (Int32 i = 0; i < len; i++) {
-    //         String key = (*keyArray)[i];
-    //         Int32 backRefIndex;
-    //         FAIL_RETURN(mValuesBackReferences->GetAsInt32(key, &backRefIndex))
-    //         if (0 == backRefIndex) {
-    //             String str;
-    //             FAIL_RETURN(ToString(&str))
-    //             Logger::E(TAG, str);
-    //             // throw new IllegalArgumentException("values backref " + key + " is not an integer");
-    //             return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    //         }
-    //         Int64 backRefValue;
-    //         FAIL_RETURN(BackRefToValue(backRefs, numBackRefs, backRefIndex, &backRefValue))
-    //         AutoPtr<IInteger64> backRefValueObj;
-    //         FAIL_RETURN(CInteger64::New(backRefValue, (IInteger64**)&backRefValueObj))
-    //         FAIL_RETURN((*contentValues)->PutInt64(key, backRefValueObj))
-    //     }
-    // }
+    if (NULL != valueSet) {
+        AutoPtr<IIterator> it;
+        valueSet->GetIterator((IIterator**)&it);
+        Boolean hasNext;
+        IMapEntry* entry;
+        while (it->HasNext(&hasNext), hasNext) {
+            AutoPtr<IInterface> obj;
+            it->GetNext((IInterface**)&obj);
+            entry = IMapEntry::Probe(obj);
+            AutoPtr<IInterface> ko;
+            entry->GetKey((IInterface**)&ko);
+            String key = Object::ToString(ko);
+
+            Int32 backRefIndex;
+            FAIL_RETURN(mValuesBackReferences->GetAsInt32(key, &backRefIndex))
+            if (0 == backRefIndex) {
+                String str;
+                FAIL_RETURN(ToString(&str))
+                Logger::E(TAG, str);
+                // throw new IllegalArgumentException("values backref " + key + " is not an integer");
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
+            Int64 backRefValue;
+            FAIL_RETURN(BackRefToValue(backRefs, numBackRefs, backRefIndex, &backRefValue))
+            FAIL_RETURN((*contentValues)->Put(key, backRefValue))
+        }
+    }
 
     return NOERROR;
 }
@@ -522,26 +530,40 @@ ECode CContentProviderOperation::ResolveSelectionArgsBackReferences(
     *stringArray = NULL;
     VALIDATE_NOT_NULL(backRefs)
 
-    // if (NULL == mSelectionArgsBackReferences) {
-    //     *stringArray = mSelectionArgs;
-    //     REFCOUNT_ADD(*stringArray);
-    //     return NOERROR;
-    // }
+    if (NULL == mSelectionArgsBackReferences) {
+        *stringArray = mSelectionArgs;
+        REFCOUNT_ADD(*stringArray);
+        return NOERROR;
+    }
 
-    // AutoPtr<ArrayOf<String> > newArgs = ArrayOf<String>::Alloc(mSelectionArgs->GetLength());
-    // newArgs->Copy(mSelectionArgs);
-    // HashMap<Int32, Int32>::Iterator iter = mSelectionArgsBackReferences->Begin();
+    AutoPtr<ArrayOf<String> > newArgs = ArrayOf<String>::Alloc(mSelectionArgs->GetLength());
+    newArgs->Copy(mSelectionArgs);
 
-    // for (; iter != mSelectionArgsBackReferences->End(); ++iter) {
-    //     const Int32 selectionArgIndex = iter->mFirst;
-    //     const Int32 backRefIndex = iter->mSecond;
-    //     Int64 backRefValue = 0;
-    //     FAIL_RETURN(BackRefToValue(backRefs, numBackRefs, backRefIndex, &backRefValue))
-    //     (*newArgs)[selectionArgIndex] = StringUtils::Int64ToString(backRefValue);
-    // }
+    AutoPtr<ISet> entrySet;
+    FAIL_RETURN(mSelectionArgsBackReferences->GetEntrySet((ISet**)&entrySet))
+    if (entrySet != NULL) {
+        AutoPtr<IIterator> it;
+        entrySet->GetIterator((IIterator**)&it);
+        Boolean hasNext;
+        IMapEntry* entry;
+        Int32 selectionArgIndex, backRefIndex;
+        Int64 backRefValue = 0;
+        while (it->HasNext(&hasNext), hasNext) {
+            AutoPtr<IInterface> obj;
+            it->GetNext((IInterface**)&obj);
+            entry = IMapEntry::Probe(obj);
+            AutoPtr<IInterface> ko, vo;
+            entry->GetKey((IInterface**)&ko);
+            entry->GetValue((IInterface**)&vo);
+            IInteger32::Probe(ko)->GetValue(&selectionArgIndex);
+            IInteger32::Probe(vo)->GetValue(&backRefIndex);
+            FAIL_RETURN(BackRefToValue(backRefs, numBackRefs, backRefIndex, &backRefValue))
+            (*newArgs)[selectionArgIndex] = StringUtils::ToString(backRefValue);
+        }
+    }
 
-    // *stringArray = newArgs;
-    // REFCOUNT_ADD(*stringArray);
+    *stringArray = newArgs;
+    REFCOUNT_ADD(*stringArray);
     return NOERROR;
 }
 
@@ -549,80 +571,99 @@ ECode CContentProviderOperation::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
-    // String str1("mType: ");
-    // String strType;
-    // String strUri("null");
-    // String strExpectedCount;
-    // String strYieldAllowed;
-    // String strValues("null");
-    // String strValuesBackReferences("null");
-    // String strSelectionArgsBackReferences("null");
-    // strType = StringUtils::Int32ToString(mType);
+    String str1("mType: ");
+    String strType;
+    String strUri("null");
+    String strExpectedCount;
+    String strYieldAllowed;
+    String strValues("null");
+    String strValuesBackReferences("null");
+    String strSelectionArgsBackReferences("null");
+    strType = StringUtils::ToString(mType);
 
-    // if (NULL != mUri) {
-    //     FAIL_RETURN(mUri->ToString(&strUri));
-    // }
+    if (NULL != mUri) {
+        strUri = Object::ToString(mUri);
+    }
 
-    // strExpectedCount = StringUtils::Int32ToString(mExpectedCount);
-    // strYieldAllowed = mYieldAllowed ? String("true") : String("false");
+    strExpectedCount = StringUtils::ToString(mExpectedCount);
+    strYieldAllowed = mYieldAllowed ? String("true") : String("false");
 
-    // if (NULL != mValues) {
-    //     FAIL_RETURN(mValues->ToString(&strValues));
-    // }
+    if (NULL != mValues) {
+        strValues = Object::ToString(mValues);
+    }
 
-    // if (NULL != mValuesBackReferences) {
-    //     FAIL_RETURN(mValuesBackReferences->ToString(&strValuesBackReferences));
-    // }
+    if (NULL != mValuesBackReferences) {
+        strValuesBackReferences = Object::ToString(mValuesBackReferences);
+    }
 
-    // if (NULL != mSelectionArgsBackReferences) {
-    //     if (mSelectionArgsBackReferences->IsEmpty()) {
-    //         strSelectionArgsBackReferences = String("{}");
-    //     }
-    //     else {
-    //         String tmpStr("");
-    //         tmpStr.Append("{");
-    //         String key;
-    //         String value;
-    //         HashMap<Int32, Int32>::Iterator iter = mSelectionArgsBackReferences->Begin();
-    //         for (; iter != mSelectionArgsBackReferences->End(); ++iter) {
-    //             if (iter != mSelectionArgsBackReferences->Begin())
-    //                 tmpStr.Append(", ");
+    if (NULL != mSelectionArgsBackReferences) {
+        Boolean isEmpty;
+        mSelectionArgsBackReferences->IsEmpty(&isEmpty);
+        if (isEmpty) {
+            strSelectionArgsBackReferences = String("{}");
+        }
+        else {
+            String tmpStr("{");
+            String key;
+            String value;
 
-    //             key = StringUtils::Int32ToString(iter->mFirst);
-    //             value = StringUtils::Int32ToString(iter->mSecond);
-    //             tmpStr.Append(key);
-    //             tmpStr.Append("=");
-    //             tmpStr.Append(value);
-    //         }
+            AutoPtr<ISet> entrySet;
+            FAIL_RETURN(mSelectionArgsBackReferences->GetEntrySet((ISet**)&entrySet))
+            if (entrySet != NULL) {
+                AutoPtr<IIterator> it;
+                entrySet->GetIterator((IIterator**)&it);
+                Boolean hasNext;
+                IMapEntry* entry;
+                Int32 selectionArgIndex, backRefIndex;
+                Int32 i = 0;
+                while (it->HasNext(&hasNext), hasNext) {
+                    if (i++ != 0) {
+                        tmpStr.Append(", ");
+                    }
+                    AutoPtr<IInterface> obj;
+                    it->GetNext((IInterface**)&obj);
+                    entry = IMapEntry::Probe(obj);
+                    AutoPtr<IInterface> ko, vo;
+                    entry->GetKey((IInterface**)&ko);
+                    entry->GetValue((IInterface**)&vo);
+                    IInteger32::Probe(ko)->GetValue(&selectionArgIndex);
+                    IInteger32::Probe(vo)->GetValue(&backRefIndex);
+                    key = StringUtils::ToString(selectionArgIndex);
+                    value = StringUtils::ToString(backRefIndex);
+                    tmpStr.Append(key);
+                    tmpStr.Append("=");
+                    tmpStr.Append(value);
+                }
+            }
 
-    //         strSelectionArgsBackReferences = tmpStr;
-    //         strSelectionArgsBackReferences.Append("}");
-    //     }
-    // }
+            strSelectionArgsBackReferences = tmpStr;
+            strSelectionArgsBackReferences.Append("}");
+        }
+    }
 
-    // str1.Append(strType);
-    // str1.Append(", mUri: ");
-    // str1.Append(strUri);
-    // str1.Append(", mSelection: ");
+    str1.Append(strType);
+    str1.Append(", mUri: ");
+    str1.Append(strUri);
+    str1.Append(", mSelection: ");
 
-    // if (mSelection.IsNull()) {
-    //     str1.Append("null");
-    // }
-    // else {
-    //     str1.Append(mSelection);
-    // }
+    if (mSelection.IsNull()) {
+        str1.Append("null");
+    }
+    else {
+        str1.Append(mSelection);
+    }
 
-    // str1.Append(", mExpectedCount: ");
-    // str1.Append(strExpectedCount);
-    // str1.Append(", mYieldAllowed: ");
-    // str1.Append(strYieldAllowed);
-    // str1.Append(", mValues: ");
-    // str1.Append(strValues);
-    // str1.Append(", mValuesBackReferences: ");
-    // str1.Append(strValuesBackReferences);
-    // str1.Append(", mSelectionArgsBackReferences: ");
-    // str1.Append(strSelectionArgsBackReferences);
-    // *result = str1;
+    str1.Append(", mExpectedCount: ");
+    str1.Append(strExpectedCount);
+    str1.Append(", mYieldAllowed: ");
+    str1.Append(strYieldAllowed);
+    str1.Append(", mValues: ");
+    str1.Append(strValues);
+    str1.Append(", mValuesBackReferences: ");
+    str1.Append(strValuesBackReferences);
+    str1.Append(", mSelectionArgsBackReferences: ");
+    str1.Append(strSelectionArgsBackReferences);
+    *result = str1;
     return NOERROR;
 }
 
@@ -636,27 +677,29 @@ ECode CContentProviderOperation::BackRefToValue(
     *backRefValue = 0;
     VALIDATE_NOT_NULL(backRefs)
 
-    // if (backRefIndex >= numBackRefs) {
-    //     String str;
-    //     FAIL_RETURN(ToString(&str))
-    //     Logger::E(TAG, str);
-    //     return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    // }
+    if (backRefIndex >= numBackRefs) {
+        String str;
+        FAIL_RETURN(ToString(&str))
+        Logger::E(TAG, str);
+        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
 
-    // AutoPtr<IContentProviderResult> backRef = (*backRefs)[backRefIndex];
-    // Int64 tmpBackRefValue = 0;
-    // AutoPtr<IUri> uri;
-    // FAIL_RETURN(backRef->GetUri((IUri**)&uri));
+    AutoPtr<IContentProviderResult> backRef = (*backRefs)[backRefIndex];
+    Int64 tmpBackRefValue = 0;
+    AutoPtr<IUri> uri;
+    FAIL_RETURN(backRef->GetUri((IUri**)&uri));
 
-    // if (NULL != uri) {
-    //     AutoPtr<IContentUris> contentUris;
-    //     FAIL_RETURN(CContentUris::AcquireSingleton((IContentUris**)&contentUris))
-    //     FAIL_RETURN(contentUris->ParseId(uri, &tmpBackRefValue))
-    // } else {
-    //     FAIL_RETURN(backRef->GetCount((Int32*)&tmpBackRefValue))
-    // }
+    if (NULL != uri) {
+        AutoPtr<IContentUris> contentUris;
+        assert(0 && "TODO");
+        // FAIL_RETURN(CContentUris::AcquireSingleton((IContentUris**)&contentUris))
+        FAIL_RETURN(contentUris->ParseId(uri, &tmpBackRefValue))
+    }
+    else {
+        FAIL_RETURN(backRef->GetCount((Int32*)&tmpBackRefValue))
+    }
 
-    // *backRefValue = tmpBackRefValue;
+    *backRefValue = tmpBackRefValue;
     return NOERROR;
 }
 

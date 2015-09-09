@@ -3,11 +3,9 @@
 #define __ELASTOS_DROID_CONTENT_CCONTENTVALUES_H__
 
 #include "_Elastos_Droid_Content_CContentValues.h"
-#include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::IObjectStringMap;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IByte;
 using Elastos::Core::IInteger16;
@@ -17,18 +15,64 @@ using Elastos::Core::IFloat;
 using Elastos::Core::IDouble;
 using Elastos::Core::IBoolean;
 using Elastos::Core::IArrayOf;
+using Elastos::Utility::ISet;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
+/**
+ * This class is used to store a set of values that the {@link ContentResolver}
+ * can process.
+ */
 CarClass(CContentValues)
+    , public Object
+    , public IContentValues
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CContentValues();
 
-    ~CContentValues();
+    virtual ~CContentValues();
 
+    /**
+     * Creates an empty set of values using the default initial size
+     */
+    CARAPI constructor();
+
+    /**
+     * Creates an empty set of values using the given initial size
+     *
+     * @param size the initial size of the set of values
+     */
+    CARAPI constructor(
+        /* [in] */ Int32 size);
+
+    /**
+     * Creates a set of values copied from the given set
+     *
+     * @param from the values to copy
+     */
+    CARAPI constructor(
+        /* [in] */ IContentValues* from);
+
+private:
+
+    /**
+     * Creates a set of values copied from the given HashMap. This is used
+     * by the Parcel unmarshalling code.
+     *
+     * @param values the values to start with
+     * {@hide}
+     */
+    CARAPI constructor(
+        /* [in] */ HashMap<String, AutoPtr<IInterface> >* values);
+
+public:
     CARAPI Equals(
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* result);
@@ -42,9 +86,13 @@ public:
      * @param key the name of the value to put
      * @param value the data for the value to put
      */
-    CARAPI PutString(
+    CARAPI Put(
         /* [in] */ const String& key,
         /* [in] */ ICharSequence* value);
+
+    CARAPI Put(
+        /* [in] */ const String& key,
+        /* [in] */ const String& value);
 
     /**
      * Adds all values from the passed in ContentValues.
@@ -60,69 +108,83 @@ public:
      * @param key the name of the value to put
      * @param value the data for the value to put
      */
-    CARAPI PutByte(
+    CARAPI Put(
         /* [in] */ const String& key,
         /* [in] */ IByte* value);
 
+    CARAPI PutByte(
+        /* [in] */ const String& key,
+        /* [in] */ Byte value);
+
     /**
      * Adds a value to the set.
      *
      * @param key the name of the value to put
      * @param value the data for the value to put
      */
-    CARAPI PutInt16(
+    CARAPI Put(
         /* [in] */ const String& key,
         /* [in] */ IInteger16* value);
 
+    CARAPI Put(
+        /* [in] */ const String& key,
+        /* [in] */ Int16 value);
+
     /**
      * Adds a value to the set.
      *
      * @param key the name of the value to put
      * @param value the data for the value to put
      */
-    CARAPI PutInt32(
+    CARAPI Put(
         /* [in] */ const String& key,
         /* [in] */ IInteger32* value);
 
+    CARAPI Put(
+        /* [in] */ const String& key,
+        /* [in] */ Int32 value);
+
     /**
      * Adds a value to the set.
      *
      * @param key the name of the value to put
      * @param value the data for the value to put
      */
-    CARAPI PutInt64(
+    CARAPI Put(
         /* [in] */ const String& key,
         /* [in] */ IInteger64* value);
 
+    CARAPI Put(
+        /* [in] */ const String& key,
+        /* [in] */ Int64 value);
+
     /**
      * Adds a value to the set.
      *
      * @param key the name of the value to put
      * @param value the data for the value to put
      */
-    CARAPI PutFloat(
+    CARAPI Put(
         /* [in] */ const String& key,
         /* [in] */ IFloat* value);
 
+    CARAPI Put(
+        /* [in] */ const String& key,
+        /* [in] */ Float value);
+
     /**
      * Adds a value to the set.
      *
      * @param key the name of the value to put
      * @param value the data for the value to put
      */
-    CARAPI PutDouble(
+    CARAPI Put(
         /* [in] */ const String& key,
         /* [in] */ IDouble* value);
 
-    /**
-     * Adds a value to the set.
-     *
-     * @param key the name of the value to put
-     * @param value the data for the value to put
-     */
-    CARAPI PutBoolean(
+    CARAPI Put(
         /* [in] */ const String& key,
-        /* [in] */ IBoolean* value);
+        /* [in] */ Double value);
 
     /**
      * Adds a value to the set.
@@ -130,9 +192,27 @@ public:
      * @param key the name of the value to put
      * @param value the data for the value to put
      */
-    CARAPI PutBytes(
+    CARAPI Put(
+        /* [in] */ const String& key,
+        /* [in] */ IBoolean* value);
+
+    CARAPI Put(
+        /* [in] */ const String& key,
+        /* [in] */ Boolean value);
+
+    /**
+     * Adds a value to the set.
+     *
+     * @param key the name of the value to put
+     * @param value the data for the value to put
+     */
+    CARAPI Put(
         /* [in] */ const String& key,
         /* [in] */ IArrayOf* value);
+
+    CARAPI Put(
+        /* [in] */ const String& key,
+        /* [in] */ ArrayOf<Byte>* value);
 
     /**
      * Adds a null value to the set.
@@ -280,15 +360,18 @@ public:
      *
      * @return a set of all of the keys and values
      */
-    CARAPI ValueSet(
-        /* [out] */ IObjectStringMap** values);
+    CARAPI GetValueSet(
+        /* [out] */ ISet** values);
 
     /**
      * Returns a set of all of the keys
      *
      * @return a set of all of the keys
      */
-    CARAPI KeySet(
+    CARAPI GetKeySet(
+        /* [out] */ ISet** values);
+
+    CARAPI GetKeySet(
         /* [out, callee] */ ArrayOf<String>** value);
 
     /**
@@ -303,27 +386,6 @@ public:
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
-
-    /**
-     * Creates an empty set of values using the default initial size
-     */
-    CARAPI constructor();
-
-    /**
-     * Creates an empty set of values using the given initial size
-     *
-     * @param size the initial size of the set of values
-     */
-    CARAPI constructor(
-        /* [in] */ Int32 size);
-
-    /**
-     * Creates a set of values copied from the given set
-     *
-     * @param from the values to copy
-     */
-    CARAPI constructor(
-        /* [in] */ IContentValues* from);
 
 private:
     CARAPI WriteValue(
@@ -350,8 +412,7 @@ public:
 
 private:
     /** Holds the actual values */
-    HashMap<String, AutoPtr<IInterface> > mValues;
-
+    AutoPtr< HashMap<String, AutoPtr<IInterface> > > mValues;
 };
 
 }

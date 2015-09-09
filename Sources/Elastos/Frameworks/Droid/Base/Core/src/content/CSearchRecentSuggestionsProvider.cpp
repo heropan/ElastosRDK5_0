@@ -491,7 +491,7 @@ ECode CSearchRecentSuggestionsProvider::SetupSuggestions(
         (*mSuggestionProjection)[0] = String("0 AS ");
         (*mSuggestionProjection)[1] = ISearchManager::SUGGEST_COLUMN_FORMAT;
         (*mSuggestionProjection)[2] = String("'android.resource://system/");
-        (*mSuggestionProjection)[3] = StringUtils::Int32ToString(R::drawable::ic_menu_recent_history);
+        (*mSuggestionProjection)[3] = StringUtils::ToString(R::drawable::ic_menu_recent_history);
         (*mSuggestionProjection)[4] = String("' AS ");
         (*mSuggestionProjection)[5] = ISearchManager::SUGGEST_COLUMN_ICON_1;
         (*mSuggestionProjection)[6] = String("display1 AS ");
@@ -510,7 +510,7 @@ ECode CSearchRecentSuggestionsProvider::SetupSuggestions(
         (*mSuggestionProjection)[0] = String("0 AS ");
         (*mSuggestionProjection)[1] = ISearchManager::SUGGEST_COLUMN_FORMAT;
         (*mSuggestionProjection)[2] = String("'android.resource://system/");
-        (*mSuggestionProjection)[3] = StringUtils::Int32ToString(R::drawable::ic_menu_recent_history);
+        (*mSuggestionProjection)[3] = StringUtils::ToString(R::drawable::ic_menu_recent_history);
         (*mSuggestionProjection)[4] = String("' AS ");
         (*mSuggestionProjection)[5] = ISearchManager::SUGGEST_COLUMN_ICON_1;
         (*mSuggestionProjection)[6] = String("display1 AS ");

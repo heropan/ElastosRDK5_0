@@ -29,7 +29,7 @@ ECode CalendarContractReminders::Query(
     VALIDATE_NOT_NULL(cursor);
 
     AutoPtr<ArrayOf<String> > remArgs = ArrayOf<String>::Alloc(1);
-    (*remArgs)[0] = StringUtils::Int64ToString(eventId);
+    (*remArgs)[0] = StringUtils::ToString(eventId);
     AutoPtr<IUri> uri;
     FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))
     return cr->Query(uri, projection, REMINDERS_WHERE, remArgs /*selection args*/, String(NULL) /* sort order */, cursor);

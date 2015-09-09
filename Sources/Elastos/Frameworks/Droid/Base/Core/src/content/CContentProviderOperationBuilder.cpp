@@ -3,6 +3,8 @@
 //#include "content/CIntegerMapWrapper.h"
 #include "content/CContentProviderOperation.h"
 //#include "content/CContentValues.h"
+#include <elastos/core/CoreUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::IInteger16;
 using Elastos::Core::IInteger32;
@@ -14,6 +16,10 @@ using Elastos::Core::IFloat;
 using Elastos::Core::IDouble;
 using Elastos::Core::IBoolean;
 using Elastos::Core::IArrayOf;
+using Elastos::Core::EIID_IByte;
+using Elastos::Core::CoreUtils;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::CHashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -47,37 +53,41 @@ ECode CContentProviderOperationBuilder::Build(
     /* [out] */ IContentProviderOperation** providerOperation)
 {
     VALIDATE_NOT_NULL(providerOperation)
-    // Int32 size = 0;
 
-    // if (mType == IContentProviderOperation::TYPE_UPDATE) {
-    //     if ((NULL == mValues || (mValues->GetSize(&size), size) == 0)
-    //             && (NULL == mValuesBackReferences || (mValuesBackReferences->GetSize(&size), size) == 0)) {
-    //         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    //     }
-    // }
+    Int32 size = 0;
+    if (mType == IContentProviderOperation::TYPE_UPDATE) {
+        if ((NULL == mValues || (mValues->GetSize(&size), size) == 0)
+                && (NULL == mValuesBackReferences || (mValuesBackReferences->GetSize(&size), size) == 0)) {
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+    }
 
-    // if (mType == IContentProviderOperation::TYPE_ASSERT) {
-    //     if ((NULL == mValues || (mValues->GetSize(&size), size) == 0)
-    //             && (NULL == mValuesBackReferences || (mValuesBackReferences->GetSize(&size), size) == 0) && (mExpectedCount == 0)) {
-    //         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    //     }
-    // }
+    if (mType == IContentProviderOperation::TYPE_ASSERT) {
+        if ((NULL == mValues || (mValues->GetSize(&size), size) == 0)
+                && (NULL == mValuesBackReferences || (mValuesBackReferences->GetSize(&size), size) == 0)
+                && (mExpectedCount == 0)) {
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+    }
 
-    // FAIL_RETURN(CContentProviderOperation::New((IContentProviderOperationBuilder*) this, providerOperation))
+    FAIL_RETURN(CContentProviderOperation::New(THIS_PROBE(IContentProviderOperationBuilder), providerOperation))
     return NOERROR;
 }
+
 
 ECode CContentProviderOperationBuilder::WithValueBackReferences(
     /* [in] */ IContentValues* backReferences)
 {
     VALIDATE_NOT_NULL(backReferences)
 
-    // if (mType != IContentProviderOperation::TYPE_INSERT && mType != IContentProviderOperation::TYPE_UPDATE
-    //         && mType != IContentProviderOperation::TYPE_ASSERT) {
-    //     return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    // }
+    if (mType != IContentProviderOperation::TYPE_INSERT
+        && mType != IContentProviderOperation::TYPE_UPDATE
+        && mType != IContentProviderOperation::TYPE_ASSERT) {
+        Logger::E("CContentProviderOperationBuilder", "only inserts, updates, and asserts can have value back-references");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
-    // mValuesBackReferences = backReferences;
+    mValuesBackReferences = backReferences;
     return NOERROR;
 }
 
@@ -85,51 +95,64 @@ ECode CContentProviderOperationBuilder::WithValueBackReference(
     /* [in] */ const String& key,
     /* [in] */ Int32 previousResult)
 {
-    // if (mType != IContentProviderOperation::TYPE_INSERT && mType != IContentProviderOperation::TYPE_UPDATE
-    //         && mType != IContentProviderOperation::TYPE_ASSERT) {
-    //     return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    // }
+    if (mType != IContentProviderOperation::TYPE_INSERT
+        && mType != IContentProviderOperation::TYPE_UPDATE
+        && mType != IContentProviderOperation::TYPE_ASSERT) {
+        Logger::E("CContentProviderOperationBuilder", "only inserts, updates, and asserts can have value back-references");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
-    // if (NULL == mValuesBackReferences) {
-    //     FAIL_RETURN(CContentValues::New((IContentValues**)&mValuesBackReferences));
-    // }
+    if (NULL == mValuesBackReferences) {
+        assert(0 && "TODO");
+        // FAIL_RETURN(CContentValues::New((IContentValues**)&mValuesBackReferences));
+    }
 
-    // AutoPtr<IInteger32> previousResultObj;
-    // FAIL_RETURN(CInteger32::New(previousResult, (IInteger32**)&previousResultObj))
-    // FAIL_RETURN(mValuesBackReferences->PutInt32(key, previousResultObj))
-    return NOERROR;
+    return mValuesBackReferences->Put(key, previousResult);
 }
 
 ECode CContentProviderOperationBuilder::WithSelectionBackReference(
     /* [in] */ Int32 selectionArgIndex,
     /* [in] */ Int32 previousResult)
 {
-    // if (mType != IContentProviderOperation::TYPE_UPDATE && mType != IContentProviderOperation::TYPE_DELETE
-    //         && mType != IContentProviderOperation::TYPE_ASSERT) {
-    //     return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    // }
+    if (mType != IContentProviderOperation::TYPE_INSERT
+        && mType != IContentProviderOperation::TYPE_DELETE
+        && mType != IContentProviderOperation::TYPE_ASSERT) {
+        Logger::E("CContentProviderOperationBuilder", "only inserts, deletes, and asserts can have selection back-references");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
-    // if (NULL == mSelectionArgsBackReferences) {
-    //     mSelectionArgsBackReferences = new HashMap<Int32, Int32>();
-    // }
+    if (NULL == mSelectionArgsBackReferences) {
+        CHashMap::New((IHashMap**)&mSelectionArgsBackReferences);
+    }
 
-    // (*mSelectionArgsBackReferences)[selectionArgIndex] = previousResult;
+    AutoPtr<IInteger32> selection = CoreUtils::Convert(selectionArgIndex);
+    AutoPtr<IInteger32> previous = CoreUtils::Convert(previousResult);
+    mSelectionArgsBackReferences->Put(TO_IINTERFACE(selection), TO_IINTERFACE(previous));
+    return NOERROR;
+}
+
+ECode CContentProviderOperationBuilder::CreateContentValueIfNull()
+{
+    if (NULL == mValues) {
+        assert(0 && "TODO");
+        // FAIL_RETURN(CContentValues::New((IContentValues**)&mValues));
+    }
     return NOERROR;
 }
 
 ECode CContentProviderOperationBuilder::WithValues(
     /* [in] */ IContentValues* values)
 {
-    // if (mType != IContentProviderOperation::TYPE_INSERT && mType != IContentProviderOperation::TYPE_UPDATE
-    //         && mType != IContentProviderOperation::TYPE_ASSERT) {
-    //     return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    // }
+    if (mType != IContentProviderOperation::TYPE_INSERT
+        && mType != IContentProviderOperation::TYPE_UPDATE
+        && mType != IContentProviderOperation::TYPE_ASSERT) {
+        Logger::E("CContentProviderOperationBuilder", "only inserts, updates, and asserts can have values");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
-    // if (NULL == mValues) {
-    //     FAIL_RETURN(CContentValues::New((IContentValues**)&mValues));
-    // }
+    FAIL_RETURN(CreateContentValueIfNull())
 
-    // FAIL_RETURN(mValues->PutAll(values))
+    FAIL_RETURN(mValues->PutAll(values))
     return NOERROR;
 }
 
@@ -137,70 +160,222 @@ ECode CContentProviderOperationBuilder::WithValue(
     /* [in] */ const String& key,
     /* [in] */ IInterface* value)
 {
-    // if (mType != IContentProviderOperation::TYPE_INSERT && mType != IContentProviderOperation::TYPE_UPDATE
-    //         && mType != IContentProviderOperation::TYPE_ASSERT) {
-    //     return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    // }
+    if (mType != IContentProviderOperation::TYPE_INSERT
+        && mType != IContentProviderOperation::TYPE_UPDATE
+        && mType != IContentProviderOperation::TYPE_ASSERT) {
+        Logger::E("CContentProviderOperationBuilder", "only inserts, updates, and asserts can have values");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
-    // if (NULL == mValues) {
-    //     FAIL_RETURN(CContentValues::New((IContentValues**)&mValues));
-    // }
+    FAIL_RETURN(CreateContentValueIfNull())
 
-    // if (NULL == value) {
-    //     FAIL_RETURN(mValues->PutNull(key))
-    // }
-    // else if (ICharSequence::Probe(value) != NULL) {
-    //     FAIL_RETURN(mValues->PutString(key, (ICharSequence*)value))
-    // }
-    // else if (IByte::Probe(value) != NULL) {
-    //     FAIL_RETURN(mValues->PutByte(key, (IByte*)value))
-    // }
-    // else if (IInteger16::Probe(value) != NULL) {
-    //     FAIL_RETURN(mValues->PutInt16(key, (IInteger16*)value))
-    // }
-    // else if (IInteger32::Probe(value) != NULL) {
-    //     FAIL_RETURN(mValues->PutInt32(key, (IInteger32*)value))
-    // }
-    // else if (IInteger64::Probe(value) != NULL) {
-    //     FAIL_RETURN(mValues->PutInt64(key, (IInteger64*)value))
-    // }
-    // else if (IFloat::Probe(value) != NULL) {
-    //     FAIL_RETURN(mValues->PutFloat(key, (IFloat*)value))
-    // }
-    // else if (IDouble::Probe(value) != NULL) {
-    //     FAIL_RETURN(mValues->PutDouble(key, (IDouble*)value))
-    // }
-    // else if (IBoolean::Probe(value) != NULL) {
-    //     FAIL_RETURN(mValues->PutBoolean(key, (IBoolean*)value))
-    // }
-    // else if (IArrayOf::Probe(value) != NULL) {
-    //     FAIL_RETURN(mValues->PutBytes(key, (IArrayOf*)value))
-    // }
-    // else {
-    //     return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    // }
+    if (NULL == value) {
+        FAIL_RETURN(mValues->PutNull(key))
+    }
+    else if (ICharSequence::Probe(value) != NULL) {
+        FAIL_RETURN(mValues->Put(key, ICharSequence::Probe(value)))
+    }
+    else if (IByte::Probe(value) != NULL) {
+        FAIL_RETURN(mValues->Put(key, IByte::Probe(value)))
+    }
+    else if (IInteger16::Probe(value) != NULL) {
+        FAIL_RETURN(mValues->Put(key, IInteger16::Probe(value)))
+    }
+    else if (IInteger32::Probe(value) != NULL) {
+        FAIL_RETURN(mValues->Put(key, IInteger32::Probe(value)))
+    }
+    else if (IInteger64::Probe(value) != NULL) {
+        FAIL_RETURN(mValues->Put(key, IInteger64::Probe(value)))
+    }
+    else if (IFloat::Probe(value) != NULL) {
+        FAIL_RETURN(mValues->Put(key, IFloat::Probe(value)))
+    }
+    else if (IDouble::Probe(value) != NULL) {
+        FAIL_RETURN(mValues->Put(key, IDouble::Probe(value)))
+    }
+    else if (IBoolean::Probe(value) != NULL) {
+        FAIL_RETURN(mValues->Put(key, IBoolean::Probe(value)))
+    }
+    else if (IArrayOf::Probe(value) != NULL) {
+        InterfaceID elemType;
+        IArrayOf::Probe(value)->GetTypeId(&elemType);
+        if (elemType == EIID_IByte) {
+            FAIL_RETURN(mValues->Put(key, IArrayOf::Probe(value)))
+        }
+        else {
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+    }
+    else {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
     return NOERROR;
+}
+
+ECode CContentProviderOperationBuilder::WithByte(
+    /* [in] */ const String& key,
+    /* [in] */ Byte value)
+{
+    if (mType != IContentProviderOperation::TYPE_INSERT
+        && mType != IContentProviderOperation::TYPE_UPDATE
+        && mType != IContentProviderOperation::TYPE_ASSERT) {
+        Logger::E("CContentProviderOperationBuilder", "only inserts, updates, and asserts can have values");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    FAIL_RETURN(CreateContentValueIfNull())
+
+    return mValues->PutByte(key, value);
+}
+
+ECode CContentProviderOperationBuilder::WithBoolean(
+    /* [in] */ const String& key,
+    /* [in] */ Boolean value)
+{
+    if (mType != IContentProviderOperation::TYPE_INSERT
+        && mType != IContentProviderOperation::TYPE_UPDATE
+        && mType != IContentProviderOperation::TYPE_ASSERT) {
+        Logger::E("CContentProviderOperationBuilder", "only inserts, updates, and asserts can have values");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    FAIL_RETURN(CreateContentValueIfNull())
+
+    return mValues->Put(key, value);
+}
+
+ECode CContentProviderOperationBuilder::WithValue(
+    /* [in] */ const String& key,
+    /* [in] */ const String& value)
+{
+    if (mType != IContentProviderOperation::TYPE_INSERT
+        && mType != IContentProviderOperation::TYPE_UPDATE
+        && mType != IContentProviderOperation::TYPE_ASSERT) {
+        Logger::E("CContentProviderOperationBuilder", "only inserts, updates, and asserts can have values");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    FAIL_RETURN(CreateContentValueIfNull())
+
+    return mValues->Put(key, value);
+}
+
+ECode CContentProviderOperationBuilder::WithValue(
+    /* [in] */ const String& key,
+    /* [in] */ Int16 value)
+{
+    if (mType != IContentProviderOperation::TYPE_INSERT
+        && mType != IContentProviderOperation::TYPE_UPDATE
+        && mType != IContentProviderOperation::TYPE_ASSERT) {
+        Logger::E("CContentProviderOperationBuilder", "only inserts, updates, and asserts can have values");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    FAIL_RETURN(CreateContentValueIfNull())
+
+    return mValues->Put(key, value);
+}
+
+ECode CContentProviderOperationBuilder::WithValue(
+    /* [in] */ const String& key,
+    /* [in] */ Int32 value)
+{
+    if (mType != IContentProviderOperation::TYPE_INSERT
+        && mType != IContentProviderOperation::TYPE_UPDATE
+        && mType != IContentProviderOperation::TYPE_ASSERT) {
+        Logger::E("CContentProviderOperationBuilder", "only inserts, updates, and asserts can have values");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    FAIL_RETURN(CreateContentValueIfNull())
+
+    return mValues->Put(key, value);
+}
+
+ECode CContentProviderOperationBuilder::WithValue(
+    /* [in] */ const String& key,
+    /* [in] */ Int64 value)
+{
+    if (mType != IContentProviderOperation::TYPE_INSERT
+        && mType != IContentProviderOperation::TYPE_UPDATE
+        && mType != IContentProviderOperation::TYPE_ASSERT) {
+        Logger::E("CContentProviderOperationBuilder", "only inserts, updates, and asserts can have values");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    FAIL_RETURN(CreateContentValueIfNull())
+
+    return mValues->Put(key, value);
+}
+
+ECode CContentProviderOperationBuilder::WithValue(
+    /* [in] */ const String& key,
+    /* [in] */ Float value)
+{
+    if (mType != IContentProviderOperation::TYPE_INSERT
+        && mType != IContentProviderOperation::TYPE_UPDATE
+        && mType != IContentProviderOperation::TYPE_ASSERT) {
+        Logger::E("CContentProviderOperationBuilder", "only inserts, updates, and asserts can have values");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    FAIL_RETURN(CreateContentValueIfNull())
+
+    return mValues->Put(key, value);
+}
+
+ECode CContentProviderOperationBuilder::WithValue(
+    /* [in] */ const String& key,
+    /* [in] */ Double value)
+{
+    if (mType != IContentProviderOperation::TYPE_INSERT
+        && mType != IContentProviderOperation::TYPE_UPDATE
+        && mType != IContentProviderOperation::TYPE_ASSERT) {
+        Logger::E("CContentProviderOperationBuilder", "only inserts, updates, and asserts can have values");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    FAIL_RETURN(CreateContentValueIfNull())
+
+    return mValues->Put(key, value);
+}
+
+ECode CContentProviderOperationBuilder::WithValue(
+    /* [in] */ const String& key,
+    /* [in] */ ArrayOf<Byte>* value)
+{
+    if (mType != IContentProviderOperation::TYPE_INSERT
+        && mType != IContentProviderOperation::TYPE_UPDATE
+        && mType != IContentProviderOperation::TYPE_ASSERT) {
+        Logger::E("CContentProviderOperationBuilder", "only inserts, updates, and asserts can have values");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    FAIL_RETURN(CreateContentValueIfNull())
+
+    return mValues->Put(key, value);
 }
 
 ECode CContentProviderOperationBuilder::WithSelection(
     /* [in] */ const String& selection,
     /* [in] */ ArrayOf<String>* selectionArgs)
 {
-    // if (mType != IContentProviderOperation::TYPE_UPDATE && mType != IContentProviderOperation::TYPE_DELETE
-    //         && mType != IContentProviderOperation::TYPE_ASSERT) {
-    //     return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    // }
+    if (mType != IContentProviderOperation::TYPE_INSERT
+        && mType != IContentProviderOperation::TYPE_DELETE
+        && mType != IContentProviderOperation::TYPE_ASSERT) {
+        Logger::E("CContentProviderOperationBuilder", "only inserts, deletes, and asserts can have selections");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
-    // mSelection = selection;
-    // if (NULL == selectionArgs) {
-    //     mSelectionArgs = NULL;
-    // }
-    // else {
-    //     mSelectionArgs = ArrayOf<String>::Alloc(selectionArgs->GetLength());
-    //     //System.arraycopy(selectionArgs, 0, mSelectionArgs, 0, selectionArgs.length);
-    //     mSelectionArgs->Copy(selectionArgs);
-    // }
+    mSelection = selection;
+    if (NULL == selectionArgs) {
+        mSelectionArgs = NULL;
+    }
+    else {
+        mSelectionArgs = ArrayOf<String>::Alloc(selectionArgs->GetLength());
+        mSelectionArgs->Copy(selectionArgs);
+    }
 
     return NOERROR;
 }
@@ -208,12 +383,14 @@ ECode CContentProviderOperationBuilder::WithSelection(
 ECode CContentProviderOperationBuilder::WithExpectedCount(
     /* [in] */ Int32 count)
 {
-    // if (mType != IContentProviderOperation::TYPE_UPDATE && mType != IContentProviderOperation::TYPE_DELETE
-    //         && mType != IContentProviderOperation::TYPE_ASSERT) {
-    //     return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    // }
+    if (mType != IContentProviderOperation::TYPE_INSERT
+        && mType != IContentProviderOperation::TYPE_DELETE
+        && mType != IContentProviderOperation::TYPE_ASSERT) {
+        Logger::E("CContentProviderOperationBuilder", "only inserts, updates, and asserts can have expected counts");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
-    // mExpectedCount = count;
+    mExpectedCount = count;
     return NOERROR;
 }
 
@@ -288,18 +465,8 @@ ECode CContentProviderOperationBuilder::GetSelectionArgsBackReferences(
     /* [out] */ IHashMap** selectionArgsBackRef)
 {
     VALIDATE_NOT_NULL(selectionArgsBackRef)
-    *selectionArgsBackRef = NULL;
-
-    // if (NULL != mSelectionArgsBackReferences) {
-    //     CObjectContainer::New(selectionArgsBackRef);
-    //     HashMap<Int32, Int32>::Iterator iter = mSelectionArgsBackReferences->Begin();
-    //     for (; iter != mSelectionArgsBackReferences->End(); ++iter) {
-    //         AutoPtr<IIntegerMapWrapper> wrapper;
-    //         CIntegerMapWrapper::New(iter->mFirst, iter->mSecond, (IIntegerMapWrapper**)&wrapper);
-    //         (*selectionArgsBackRef)->Add(wrapper);
-    //     }
-    // }
-
+    *selectionArgsBackRef = mSelectionArgsBackReferences;
+    REFCOUNT_ADD(*selectionArgsBackRef)
     return NOERROR;
 }
 
