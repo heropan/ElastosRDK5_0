@@ -25,6 +25,7 @@ SOURCES += DhcpResults.cpp
 SOURCES += DhcpStateMachine.cpp
 SOURCES += CDhcpStateMachineHelper.cpp
 SOURCES += CDnsPinger.cpp
+SOURCES += EthernetManager.cpp
 #SOURCES += DummyDataStateTracker.cpp
 #SOURCES += CInterfaceConfiguration.cpp
 #SOURCES += CLinkAddress.cpp
