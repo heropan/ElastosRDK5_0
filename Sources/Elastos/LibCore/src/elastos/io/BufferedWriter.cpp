@@ -199,7 +199,7 @@ ECode BufferedWriter::Write(
 
     if (mPos == 0 && count >= mBuf->GetLength()) {
         AutoPtr< ArrayOf<Char32> > chars = str.GetChars(offset, offset + count);
-        mOut->Write(chars, 0, count);
+        FAIL_RETURN(mOut->Write(chars, 0, count));
         return NOERROR;
     }
 
@@ -222,7 +222,7 @@ ECode BufferedWriter::Write(
             available = count - available;
             if (available >= mBuf->GetLength()) {
                 AutoPtr< ArrayOf<Char32> > chars = str.GetChars(offset, offset + available);
-                mOut->Write(chars, 0, available);
+                FAIL_RETURN(mOut->Write(chars, 0, available));
                 return NOERROR;
             }
             AutoPtr< ArrayOf<Char32> > chars = str.GetChars(offset, offset + available);

@@ -201,7 +201,7 @@ ECode CChannels::OutputStreamChannel::Write(
     source->Get(buf);
     // try {
         Begin();
-        mOutputStream->Write(buf, 0, bytesRemain);
+        FAIL_RETURN(mOutputStream->Write(buf, 0, bytesRemain));
     // } finally {
         End(bytesRemain >= 0);
     // }

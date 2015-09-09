@@ -64,7 +64,7 @@ ECode OutputStream::Write(
 
     Byte* p = (Byte*)buffer->GetPayload();
     for (Int32 i = offset; i < offset + count; i++) {
-        Write((Int32)(*(p + i)));
+        FAIL_RETURN(Write((Int32)(*(p + i))));
     }
     return NOERROR;
 }

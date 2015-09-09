@@ -739,7 +739,7 @@ ECode FileChannelImpl::TransferTo(
     // try {
     FAIL_RETURN(Map(Elastos::IO::Channels::FileChannelMapMode_READ_ONLY, position, count, (IMappedByteBuffer**)&buffer));
     Int32 ouvalue = 0;
-    target->Write(IByteBuffer::Probe(buffer), &ouvalue);
+    FAIL_RETURN(target->Write(IByteBuffer::Probe(buffer), &ouvalue));
     *number = ouvalue;
     return NOERROR;
     // } finally {

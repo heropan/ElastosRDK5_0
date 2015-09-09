@@ -64,7 +64,7 @@ ECode BufferedOutputStream::Write(
     FAIL_RETURN(CheckNotClosed());
 
     if (mCount == mBuf->GetLength()) {
-        mOut->Write(mBuf, 0, mCount);
+        FAIL_RETURN(mOut->Write(mBuf, 0, mCount));
         mCount = 0;
     }
     (*mBuf)[mCount++] = (Byte)oneByte;

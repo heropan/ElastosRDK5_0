@@ -65,7 +65,7 @@ ECode FilterOutputStream::Write(
     for (Int32 i = 0; i < count; i++) {
         // Call write() instead of out.write() since subclasses could
         // override the write() method.
-        Write((Int32)(*buffer)[offset + i]);
+        FAIL_RETURN(Write((Int32)(*buffer)[offset + i]));
     }
 
     return NOERROR;
