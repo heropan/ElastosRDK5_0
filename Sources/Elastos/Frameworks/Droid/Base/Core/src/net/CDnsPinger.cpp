@@ -1,11 +1,26 @@
 
 #include "net/CDnsPinger.h"
-#include "net/NetworkUtils.h"
+// #include "net/NetworkUtils.h"
 #include "net/CConnectivityManager.h"
 #include "R.h"
-#include "provider/Settings.h"
+// #include "provider/Settings.h"
 #include "os/SystemClock.h"
+#include "CConnectivityManagerHelper.h"
+
 #include <elastos/utility/logging/Logger.h>
+// #include <CRandom.h>
+// #include <CAtomicInteger32.h>
+// #include <CArrayList.h>
+
+using Elastos::Droid::Os::SystemClock;
+// using Elastos::Droid::Net::NetworkUtils;
+using Elastos::Droid::Net::IConnectivityManager;
+using Elastos::Droid::Net::CConnectivityManager;
+// using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Provider::ISettingsGlobal;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Internal::Utility::IProtocol;
 
 using Elastos::Net::IDatagramPacket;
 using Elastos::Net::CDatagramPacket;
@@ -13,31 +28,50 @@ using Elastos::Net::CDatagramSocket;
 using Elastos::Net::INetworkInterface;
 using Elastos::Net::INetworkInterfaceHelper;
 using Elastos::Net::CNetworkInterfaceHelper;
-using Elastos::Core::CObjectContainer;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Net::NetworkUtils;
-using Elastos::Droid::Net::IConnectivityManager;
-using Elastos::Droid::Net::CConnectivityManager;
-using Elastos::Droid::Provider::Settings;
-using Elastos::Droid::Provider::ISettingsGlobal;
-using Elastos::Droid::Content::IContentResolver;
-using Elastos::Droid::Content::Res::IResources;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
+CAR_OBJECT_IMPL(CDnsPinger)
+
+CAR_INTERFACE_IMPL(CDnsPinger, Handler, IDnsPinger)
+
+AutoPtr<IRandom> CreateRandom()
+{
+    AutoPtr<IRandom> result;
+#if 0 // TODO: Waiting for CRandom
+    CRandom::New((IRandom**)&result);
+#else
+    assert(0);
+#endif
+    return result;
+}
+
+AutoPtr<IAtomicInteger32> CreateCounter()
+{
+    AutoPtr<IAtomicInteger32> result;
+#if 0 // TODO: Waiting for CAtomicInteger32
+    CAtomicInteger32::New((IAtomicInteger32**)&result);
+#else
+    assert(0);
+#endif
+    return result;
+}
+
 const Boolean CDnsPinger::DBG = FALSE;
 const Int32 CDnsPinger::RECEIVE_POLL_INTERVAL_MS = 200;
 const Int32 CDnsPinger::DNS_PORT = 53;
 const Int32 CDnsPinger::SOCKET_TIMEOUT_MS = 1;
-const Int32 CDnsPinger::BASE = 0x00050000; //Protocol.BASE_DNS_PINGER;
-const Int32 CDnsPinger::ACTION_PING_DNS = 0x00050001; // = BASE + 1;
-const Int32 CDnsPinger::ACTION_LISTEN_FOR_RESPONSE = 0x00050002; // = BASE + 2;
-const Int32 CDnsPinger::ACTION_CANCEL_ALL_PINGS = 0x00050003; // = BASE + 3;
-const AutoPtr<IRandom> CDnsPinger::sRandom = NULL;
-const AutoPtr<IAtomicInteger32> CDnsPinger::sCounter = NULL;
+const AutoPtr<IRandom> CDnsPinger::sRandom = CreateRandom();
+const AutoPtr<IAtomicInteger32> CDnsPinger::sCounter = CreateCounter();
+
+const Int32 CDnsPinger::BASE = IProtocol::BASE_DNS_PINGER; //Protocol.BASE_DNS_PINGER; 0x00050000
+const Int32 CDnsPinger::ACTION_PING_DNS = CDnsPinger::BASE + 1; //0x00050001; // = BASE + 1;
+const Int32 CDnsPinger::ACTION_LISTEN_FOR_RESPONSE = CDnsPinger::BASE + 2; //0x00050002; // = BASE + 2;
+const Int32 CDnsPinger::ACTION_CANCEL_ALL_PINGS = CDnsPinger::BASE + 3; //0x00050003; // = BASE + 3;
 const Byte CDnsPinger::mDnsQuery[] = {
     0, 0, // [0-1] is for ID (will set each time)
     1, 0, // [2-3] are flags.  Set byte[2] = 1 for recursion desired (RD) on.  Currently on.
@@ -54,8 +88,6 @@ const Byte CDnsPinger::mDnsQuery[] = {
 };
 
 
-CAR_INTERFACE_IMPL(CDnsPinger::DnsArg, IInterface)
-
 CDnsPinger::DnsArg::DnsArg(
     /* [in] */ IInetAddress* dns,
     /* [in] */ Int32 seq)
@@ -64,17 +96,20 @@ CDnsPinger::DnsArg::DnsArg(
     mSeq = seq;
 }
 
-IHANDLER_METHODS_IMPL(CDnsPinger, Handler)
-
-PInterface CDnsPinger::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CDnsPinger::Probe(riid);
-}
-
 CDnsPinger::CDnsPinger()
-    : mConnectionType(0)
 {
+#if 0 // TODO: Waiting for CAtomicInteger32
+    CAtomicInteger32::New((IAtomicInteger32**)&mCurrentToken);
+#else
+    assert(0);
+#endif
+    AutoPtr<IArrayList> temp;
+#if 0 // TODO: Waiting for CArrayList
+    CArrayList::New((IArrayList**)&temp);
+#else
+    assert(0);
+#endif
+    mActivePings = IList::Probe(temp);
 }
 
 ECode CDnsPinger::constructor(
@@ -84,14 +119,16 @@ ECode CDnsPinger::constructor(
     /* [in] */ IHandler* target,
     /* [in] */ Int32 connectionType)
 {
-    Handler::Init(looper);
+    Handler::constructor(looper);
 
     TAG = tagstr;
     mContext = context;
     mTarget = target;
     mConnectionType = connectionType;
+    AutoPtr<IConnectivityManagerHelper> connectivityManagerHelper;
+    CConnectivityManagerHelper::AcquireSingleton((IConnectivityManagerHelper**)&connectivityManagerHelper);
     Boolean isValid;
-    CConnectivityManager::IsNetworkTypeValid(connectionType, &isValid);
+    connectivityManagerHelper->IsNetworkTypeValid(connectionType, &isValid);
     if (!isValid) {
         Logger::E(TAG, "Invalid connectionType in constructor: %d", connectionType);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -99,7 +136,14 @@ ECode CDnsPinger::constructor(
 
     AutoPtr<IInetAddress> defaultDns;
     GetDefaultDns((IInetAddress**)&defaultDns);
-    mDefaultDns.PushBack(defaultDns);
+    AutoPtr<IArrayList> tmp;
+#if 0 // TODO: Waiting for CArrayList
+    CArrayList::New((IArrayList**)&tmp);
+#else
+    assert(0);
+#endif
+    mDefaultDns = IList::Probe(tmp);
+    mDefaultDns->Add(defaultDns);
     mEventCounter = 0;
     return NOERROR;
 }
@@ -107,6 +151,8 @@ ECode CDnsPinger::constructor(
 ECode CDnsPinger::HandleMessage(
     /* [in] */ IMessage* msg)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated, need check. It seems not integrated.
     Int32 what, arg1, arg2;
     msg->GetWhat(&what);
     msg->GetArg1(&arg1);
@@ -131,6 +177,21 @@ ECode CDnsPinger::HandleMessage(
     }
 
     return NOERROR;
+#endif
+}
+
+ECode CDnsPinger::Log(
+    /* [in] */ const String& s)
+{
+    Logger::D(TAG, s.string());
+    return NOERROR;
+}
+
+ECode CDnsPinger::Loge(
+    /* [in] */ const String& s)
+{
+    Logger::E(TAG, s.string());
+    return NOERROR;
 }
 
 void CDnsPinger::HandleActionPingDNS(
@@ -138,6 +199,8 @@ void CDnsPinger::HandleActionPingDNS(
     /* [in] */ Int32 arg2,
     /* [in] */ DnsArg* dnsArg)
 {
+    assert(0);
+#if 0 // TODO: Previous translated, need check.
     assert(dnsArg != NULL);
     Int32 val;
     mCurrentToken->Get(&val);
@@ -188,7 +251,7 @@ void CDnsPinger::HandleActionPingDNS(
     }
 
     newActivePing->mSocket->Send(packet);
-    mActivePings.PushBack(newActivePing);
+    mActivePings->PushBack(newActivePing);
     mEventCounter++;
 
     AutoPtr<IMessage> msg;
@@ -198,17 +261,20 @@ void CDnsPinger::HandleActionPingDNS(
 //   } catch (IOException e) {
 //   SendResponse(msg::arg1, -9999, SOCKET_EXCEPTION);
 //  }
+#endif
 }
 
 void CDnsPinger::HandleActionListenForResponse(
     /* [in] */ Int32 arg1)
 {
+    assert(0);
+#if 0 // TODO: Previous translated, need check.
     if (arg1 != mEventCounter) {
         return;
     }
 
     List< AutoPtr<ActivePing> >::Iterator iter;
-    for (iter = mActivePings.Begin(); iter != mActivePings.End(); ++iter) {
+    for (iter = mActivePings->Begin(); iter != mActivePings->End(); ++iter) {
         AutoPtr<ActivePing> curPing = *iter;
     //   try {
         /** Each socket will block for {@link #SOCKET_TIMEOUT_MS} in receive() */
@@ -242,7 +308,7 @@ void CDnsPinger::HandleActionListenForResponse(
         if (curPing->mResult != NULL) {
             SendResponse(curPing->mInternalId, curPing->mPacketId, curPing->mResult);
             curPing->mSocket->Close();
-            iter = mActivePings.Erase(iter);
+            iter = mActivePings->Erase(iter);
         } else if (SystemClock::GetElapsedRealtime() > curPing->mStart + curPing->mTimeout) {
             SendResponse(curPing->mInternalId, curPing->mPacketId, IDnsPinger::_TIMEOUT);
             curPing->mSocket->Close();
@@ -261,10 +327,13 @@ void CDnsPinger::HandleActionListenForResponse(
         SendMessageDelayed(msg, RECEIVE_POLL_INTERVAL_MS, &result);
     }
     return;
+#endif
 }
 
 void CDnsPinger::HandleActionCancelAllPings()
 {
+    assert(0);
+#if 0 // TODO: Previous translated, need check.
     List< AutoPtr<ActivePing> >::Iterator iter;
     for (iter = mActivePings.Begin(); iter != mActivePings.End(); ++iter) {
         AutoPtr<ActivePing> activePing = *iter;
@@ -272,11 +341,14 @@ void CDnsPinger::HandleActionCancelAllPings()
     }
     mActivePings.Clear();
     return;
+#endif
 }
 
 ECode CDnsPinger::GetDnsList(
-    /* [out] */ IObjectContainer** dnslist)
+    /* [out] */ IList** dnslist)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated, need check.
     VALIDATE_NOT_NULL(dnslist);
     AutoPtr<ILinkProperties> curLinkProps;
     GetCurrentLinkProperties((ILinkProperties**)&curLinkProps);
@@ -312,6 +384,7 @@ ECode CDnsPinger::GetDnsList(
     *dnslist = dnses;
     REFCOUNT_ADD(*dnslist);
     return NOERROR;
+#endif
 }
 
 /**
@@ -327,6 +400,8 @@ ECode CDnsPinger::PingDnsAsync(
     /* [in] */ Int32 delay,
     /* [out] */ Int32* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated, need check.
     VALIDATE_NOT_NULL(result);
     Int32 id;
     sCounter->IncrementAndGet(&id);
@@ -339,14 +414,18 @@ ECode CDnsPinger::PingDnsAsync(
     ObtainMessage(ACTION_PING_DNS, id, timeout, newDnsArg, (IMessage**)&msg);
     Boolean bval;
     return SendMessageDelayed(msg, delay, &bval);
+#endif
 }
 
 ECode CDnsPinger::CancelPings()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated, need check.
     Int32 num;
     mCurrentToken->IncrementAndGet(&num);
     Boolean result;
     return SendEmptyMessage(ACTION_CANCEL_ALL_PINGS, &result);
+#endif
 }
 
 ECode CDnsPinger::SendResponse(
@@ -354,6 +433,8 @@ ECode CDnsPinger::SendResponse(
     /* [in] */ Int32 externalId,
     /* [in] */ Int32 responseVal)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated, need check.
 //    if(DBG) {
 //        Logger::I("Responding to packet " + internalId +
 //                " externalId " + externalId +
@@ -364,11 +445,14 @@ ECode CDnsPinger::SendResponse(
     ObtainMessage(DNS_PING_RESULT, internalId, responseVal, (IMessage**)&msg);
     Boolean result;
     return mTarget->SendMessage(msg, &result);
+#endif
 }
 
 ECode CDnsPinger::GetCurrentLinkProperties(
     /* [out] */ ILinkProperties** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated, need check.
     VALIDATE_NOT_NULL(result);
     if (mConnectivityManager == NULL) {
         AutoPtr<IInterface> obj;
@@ -377,11 +461,14 @@ ECode CDnsPinger::GetCurrentLinkProperties(
     }
 
     return mConnectivityManager->GetLinkProperties(mConnectionType, result);
+#endif
 }
 
 ECode CDnsPinger::GetDefaultDns(
     /* [out] */ IInetAddress** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated, need check.
     VALIDATE_NOT_NULL(result);
     AutoPtr<IContentResolver> resolver;
     FAIL_RETURN(mContext->GetContentResolver((IContentResolver**)&resolver))
@@ -403,6 +490,7 @@ ECode CDnsPinger::GetDefaultDns(
     *result = addr;
     REFCOUNT_ADD(*result);
     return NOERROR;
+#endif
 }
 
 } // namespace Net

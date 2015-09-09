@@ -2,21 +2,28 @@
 #ifndef __ELASTOS_DROID_NET_DHCPSTATEMACHINE_H__
 #define __ELASTOS_DROID_NET_DHCPSTATEMACHINE_H__
 
+#include "ext/frameworkext.h"
+#if 0 // TODO: Waiting for BroadcastReceiver, State, StateMachine
 #include "content/BroadcastReceiver.h"
-#include "net/DhcpInfoInternal.h"
 #include "util/State.h"
 #include "util/StateMachine.h"
+#endif
 
 using Elastos::Droid::App::IAlarmManager;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
-using Elastos::Droid::Utility::IProtocol;
+using Elastos::Droid::Internal::Utility::IProtocol;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Internal::Utility::IStateMachine;
+using Elastos::Droid::Internal::Utility::IState;
+#if 0 // TODO: Waiting for BroadcastReceiver, State, StateMachine
+using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Internal::Utility::State;
 using Elastos::Droid::Internal::Utility::StateMachine;
+#endif
 
 namespace Elastos {
 namespace Droid {
@@ -36,8 +43,17 @@ namespace Net {
  *
  * @hide
  */
-class DhcpStateMachine : public StateMachine
+class DhcpStateMachine
+#if 0 // TODO: Waiting for StateMachine
+    : public StateMachine
+#else
+    : public Object
+#endif
+    , public IDhcpStateMachine
 {
+public:
+    CAR_INTERFACE_DECL()
+
 private:
     enum DhcpAction {
         DhcpAction_START,
@@ -45,7 +61,10 @@ private:
     };
 
 public:
-    class DefaultState : public State
+    class DefaultState
+#if 0 // TODO: Waiting for State
+        : public State
+#endif
     {
     public:
         DefaultState(
@@ -65,7 +84,10 @@ public:
         DhcpStateMachine* mOwner;
     };
 
-    class StoppedState : public State
+    class StoppedState
+#if 0 // TODO: Waiting for State
+        : public State
+#endif
     {
     public:
         StoppedState(
@@ -85,7 +107,10 @@ public:
         DhcpStateMachine* mOwner;
     };
 
-    class WaitBeforeStartState : public State
+    class WaitBeforeStartState
+#if 0 // TODO: Waiting for State
+        : public State
+#endif
     {
     public:
         WaitBeforeStartState(
@@ -105,7 +130,10 @@ public:
         DhcpStateMachine* mOwner;
     };
 
-    class RunningState : public State
+    class RunningState
+#if 0 // TODO: Waiting for State
+        : public State
+#endif
     {
     public:
         RunningState(
@@ -125,7 +153,10 @@ public:
         DhcpStateMachine* mOwner;
     };
 
-    class WaitBeforeRenewalState : public State
+    class WaitBeforeRenewalState
+#if 0 // TODO: Waiting for State
+        : public State
+#endif
     {
     public:
         WaitBeforeRenewalState(
@@ -150,7 +181,9 @@ public:
 
 private:
     class MyBroadcastReceiver
+#if 0 // TODO: Waiting for BroadcastReceiver
         : public BroadcastReceiver
+#endif
     {
     public:
         MyBroadcastReceiver(
@@ -173,14 +206,14 @@ private:
     };
 
 public:
-    static CARAPI_(AutoPtr<DhcpStateMachine>) MakeDhcpStateMachine(
+    static CARAPI_(AutoPtr<IDhcpStateMachine>) MakeDhcpStateMachine(
         /* [in] */ IContext* context,
-        /* [in] */ StateMachine* controller,
+        /* [in] */ IStateMachine* controller,
         /* [in] */ const String& intf);
 
-    CARAPI_(void) RegisterForPreDhcpNotification();
+    CARAPI RegisterForPreDhcpNotification();
 
-    CARAPI_(void) DoQuit();
+    CARAPI DoQuit();
 
 protected:
     CARAPI_(void) OnQuitting();
@@ -188,7 +221,7 @@ protected:
 private:
     DhcpStateMachine(
         /* [in] */ IContext* context,
-        /* [in] */ StateMachine* controller,
+        /* [in] */ IStateMachine* controller,
         /* [in] */ const String& intf);
 
     CARAPI_(Boolean) RunDhcp(
@@ -224,7 +257,7 @@ private:
     static const Boolean DBG;
 
     /* A StateMachine that controls the DhcpStateMachine */
-    AutoPtr<StateMachine> mController;
+    AutoPtr<IStateMachine> mController;
 
     AutoPtr<IContext> mContext;
     AutoPtr<IBroadcastReceiver> mBroadcastReceiver;
@@ -234,7 +267,7 @@ private:
     static const String WAKELOCK_TAG;
 
     //Remember DHCP configuration from first request
-    AutoPtr<DhcpInfoInternal> mDhcpInfo;
+    AutoPtr<IDhcpResults> mDhcpResults;
 
     static const Int32 DHCP_RENEW = 0;
     static const String ACTION_DHCP_RENEW;
@@ -245,11 +278,11 @@ private:
     String mInterfaceName;
     Boolean mRegisteredForPreDhcpNotification;
 
-    AutoPtr<State> mDefaultState;
-    AutoPtr<State> mStoppedState;
-    AutoPtr<State> mWaitBeforeStartState;
-    AutoPtr<State> mRunningState;
-    AutoPtr<State> mWaitBeforeRenewalState;
+    AutoPtr<IState> mDefaultState;
+    AutoPtr<IState> mStoppedState;
+    AutoPtr<IState> mWaitBeforeStartState;
+    AutoPtr<IState> mRunningState;
+    AutoPtr<IState> mWaitBeforeRenewalState;
 };
 
 } // namespace Net

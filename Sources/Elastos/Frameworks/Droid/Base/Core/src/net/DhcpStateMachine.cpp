@@ -1,23 +1,32 @@
 
 #include "net/DhcpStateMachine.h"
 #ifdef DROID_CORE
+
+#if 0 // TODO: Waiting for CPendingIntentHelper, CIntent, CIntentFilter
 #include "app/CPendingIntentHelper.h"
 #include "content/CIntent.h"
 #include "content/CIntentFilter.h"
 #endif
+
+#endif
+
+#if 0 // TODO: Waiting for NetworkUtils
 #include "net/NetworkUtils.h"
+#endif
 #include "os/SystemClock.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::App::IPendingIntentHelper;
+#if 0 // TODO: Waiting for CPendingIntentHelper, CIntent, CIntentFilter
 using Elastos::Droid::App::CPendingIntentHelper;
 using Elastos::Droid::Content::CIntent;
-using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::CIntentFilter;
+using Elastos::Droid::Net::NetworkUtils;
+#endif
+using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Os::IPowerManager;
 using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Net::NetworkUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -40,6 +49,12 @@ const Int32 DhcpStateMachine::CMD_PRE_DHCP_ACTION_COMPLETE;
 const Int32 DhcpStateMachine::DHCP_SUCCESS;
 const Int32 DhcpStateMachine::DHCP_FAILURE;
 
+#if 0 // TODO: Waiting for StateMachine
+CAR_INTERFACE_IMPL(DhcpStateMachine, StateMachine, IDhcpStateMachine)
+#else
+CAR_INTERFACE_IMPL(DhcpStateMachine, Object, IDhcpStateMachine)
+#endif
+
 //==============================================================
 // DhcpStateMachine::DefaultState
 //==============================================================
@@ -54,6 +69,8 @@ ECode DhcpStateMachine::DefaultState::ProcessMessage(
     /* [in] */ IMessage* msg,
     /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0
     // if (DBG) Log.d(TAG, getName() + message.toString() + "\n");
     if (DBG) Logger::D(TAG, "DefaultState::ProcessMessage");
     Int32 what;
@@ -68,6 +85,7 @@ ECode DhcpStateMachine::DefaultState::ProcessMessage(
             break;
     }
     return HANDLED;
+#endif
 }
 
 
@@ -85,6 +103,8 @@ ECode DhcpStateMachine::StoppedState::ProcessMessage(
     /* [in] */ IMessage* msg,
     /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0
     Boolean retValue = HANDLED;
     Int32 what;
     msg->GetWhat(&what);
@@ -111,6 +131,7 @@ ECode DhcpStateMachine::StoppedState::ProcessMessage(
     }
     *result = retValue;
     return NOERROR;
+#endif
 }
 
 
@@ -128,6 +149,8 @@ ECode DhcpStateMachine::WaitBeforeStartState::ProcessMessage(
     /* [in] */ IMessage* msg,
     /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0
     Boolean retValue = HANDLED;
     // if (DBG) Log.d(TAG, getName() + message.toString() + "\n");
     if (DBG) Logger::D(TAG, "WaitBeforeStartState::ProcessMessage");
@@ -154,6 +177,7 @@ ECode DhcpStateMachine::WaitBeforeStartState::ProcessMessage(
     }
     *result = retValue;
     return NOERROR;
+#endif
 }
 
 
@@ -171,6 +195,8 @@ ECode DhcpStateMachine::RunningState::ProcessMessage(
     /* [in] */ IMessage* msg,
     /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0
     Boolean retValue = HANDLED;
     // if (DBG) Log.d(TAG, getName() + message.toString() + "\n");
     if (DBG) Logger::D(TAG, "RunningState::ProcessMessage");
@@ -206,6 +232,7 @@ ECode DhcpStateMachine::RunningState::ProcessMessage(
     }
     *result = retValue;
     return NOERROR;
+#endif
 }
 
 
@@ -223,6 +250,8 @@ ECode DhcpStateMachine::WaitBeforeRenewalState::ProcessMessage(
     /* [in] */ IMessage* msg,
     /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0
     Boolean retValue = HANDLED;
     // if (DBG) Log.d(TAG, getName() + message.toString() + "\n");
     if (DBG) Logger::D(TAG, "WaitBeforeRenewalState::ProcessMessage");
@@ -253,6 +282,7 @@ ECode DhcpStateMachine::WaitBeforeRenewalState::ProcessMessage(
     }
     *result = retValue;
     return NOERROR;
+#endif
 }
 
 ECode DhcpStateMachine::WaitBeforeRenewalState::Exit()
@@ -275,12 +305,16 @@ ECode DhcpStateMachine::MyBroadcastReceiver::OnReceive(
    /* [in] */ IContext* ctx,
    /* [in] */ IIntent* intent)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0
+
    //DHCP renew
 //    if (DBG) Log.d(TAG, "Sending a DHCP renewal " + this);
    //Lock released after 40s in worst case scenario
    mOwner->mDhcpRenewWakeLock->AcquireLock(40000);
    mOwner->SendMessage(CMD_RENEW_DHCP);
    return NOERROR;
+#endif
 }
 
 //==============================================================
@@ -288,14 +322,19 @@ ECode DhcpStateMachine::MyBroadcastReceiver::OnReceive(
 //==============================================================
 DhcpStateMachine::DhcpStateMachine(
     /* [in] */ IContext* context,
-    /* [in] */ StateMachine* controller,
+    /* [in] */ IStateMachine* controller,
     /* [in] */ const String& intf)
+#if 0 // TODO: Waiting for StateMachine
     : StateMachine(TAG)
     , mController(controller)
+#else
+    : mController(controller)
+#endif
     , mContext(context)
     , mInterfaceName(intf)
     , mRegisteredForPreDhcpNotification(FALSE)
 {
+#if 0
     mDefaultState = new DefaultState(this);
     mStoppedState = new StoppedState(this);
     mWaitBeforeStartState = new WaitBeforeStartState(this);
@@ -327,16 +366,20 @@ DhcpStateMachine::DhcpStateMachine(
     AddState(mWaitBeforeRenewalState, mDefaultState);
 
     SetInitialState(mStoppedState);
+#endif
 }
 
-AutoPtr<DhcpStateMachine> DhcpStateMachine::MakeDhcpStateMachine(
+AutoPtr<IDhcpStateMachine> DhcpStateMachine::MakeDhcpStateMachine(
     /* [in] */ IContext* context,
-    /* [in] */ StateMachine* controller,
+    /* [in] */ IStateMachine* controller,
     /* [in] */ const String& intf)
 {
+    return NULL;
+#if 0
     AutoPtr<DhcpStateMachine> dsm = new DhcpStateMachine(context, controller, intf);
     dsm->Start();
-    return dsm;
+    return dsm->Probe(EIID_IDhcpStateMachine);
+#endif
 }
 
 /**
@@ -348,9 +391,10 @@ AutoPtr<DhcpStateMachine> DhcpStateMachine::MakeDhcpStateMachine(
 * This is used by Wifi at this time for the purpose of doing BT-Wifi coex
 * handling during Dhcp
 */
-void DhcpStateMachine::RegisterForPreDhcpNotification()
+ECode DhcpStateMachine::RegisterForPreDhcpNotification()
 {
     mRegisteredForPreDhcpNotification = TRUE;
+    return NOERROR;
 }
 
 /**
@@ -358,19 +402,26 @@ void DhcpStateMachine::RegisterForPreDhcpNotification()
 *
 * @hide
 */
-void DhcpStateMachine::DoQuit()
+ECode DhcpStateMachine::DoQuit()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0
     Quit();
+#endif
 }
 
 void DhcpStateMachine::OnQuitting()
 {
+#if 0
     mController->SendMessage(CMD_ON_QUIT);
+#endif
 }
 
 Boolean DhcpStateMachine::RunDhcp(
     /* [in] */ DhcpAction dhcpAction)
 {
+    return FALSE;
+#if 0
     Boolean success = FALSE;
     AutoPtr<DhcpInfoInternal> dhcpInfoInternal = new DhcpInfoInternal();
 
@@ -420,6 +471,7 @@ Boolean DhcpStateMachine::RunDhcp(
         mController->SendMessage(m);
     }
     return success;
+#endif
 }
 
 } // namespace Net

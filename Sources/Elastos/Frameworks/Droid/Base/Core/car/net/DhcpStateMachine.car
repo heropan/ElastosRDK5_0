@@ -33,14 +33,14 @@ module
         const Int32 CMD_PRE_DHCP_ACTION             =  0x00030004;
 
         /* Notification from DHCP state machine post DHCP discovery/renewal. Indicates
-             * success/failure */
+         * success/failure */
         const Int32 CMD_POST_DHCP_ACTION            =  0x00030005;
 
         /* Notification from DHCP state machine before quitting */
         const Int32 CMD_ON_QUIT                     =  0x00030006;
 
         /* Command from controller to indicate DHCP discovery/renewal can continue
-             * after pre DHCP action is complete */
+         * after pre DHCP action is complete */
         const Int32 CMD_PRE_DHCP_ACTION_COMPLETE    =  0x00030007;
 
         /* Message.arg1 arguments to CMD_POST_DHCP notification */
@@ -59,10 +59,10 @@ module
         RegisterForPreDhcpNotification();
 
         /**
-             * Quit the DhcpStateMachine.
-             *
-             * @hide
-             */
+         * Quit the DhcpStateMachine.
+         *
+         * @hide
+         */
         DoQuit();
 
     }
