@@ -2345,3 +2345,46 @@ EXPORTS
     _ZThn8_N7Elastos7Utility11AbstractSet6AddRefEv
     _ZThn8_N7Elastos7Utility11AbstractSet6EqualsEP10IInterfacePh
     _ZThn8_N7Elastos7Utility11AbstractSet7ReleaseEv
+
+    ;;elastos/utility/Observable
+    _ZN7Elastos7Utility10Observable10HasChangedEPh
+    _ZN7Elastos7Utility10Observable10SetChangedEv
+    _ZN7Elastos7Utility10Observable11AddObserverEPNS0_9IObserverE
+    _ZN7Elastos7Utility10Observable11constructorEv
+    _ZN7Elastos7Utility10Observable12ClearChangedEv
+    _ZN7Elastos7Utility10Observable14CountObserversEPi
+    _ZN7Elastos7Utility10Observable14DeleteObserverEPNS0_9IObserverE
+    _ZN7Elastos7Utility10Observable14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZN7Elastos7Utility10Observable15DeleteObserversEv
+    _ZN7Elastos7Utility10Observable15NotifyObserversEP10IInterface
+    _ZN7Elastos7Utility10Observable15NotifyObserversEv
+    _ZN7Elastos7Utility10Observable5ProbeERKNS_6_EMuidE
+    _ZN7Elastos7Utility10Observable6AddRefEv
+    _ZN7Elastos7Utility10Observable7ReleaseEv
+    _ZN7Elastos7Utility10ObservableC1Ev
+    _ZN7Elastos7Utility10ObservableC2Ev
+    _ZThn12_N7Elastos7Utility10Observable14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZThn12_N7Elastos7Utility10Observable5ProbeERKNS_6_EMuidE
+    _ZThn12_N7Elastos7Utility10Observable6AddRefEv
+    _ZThn12_N7Elastos7Utility10Observable7ReleaseEv
+    _ZThn16_N7Elastos7Utility10Observable14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZThn16_N7Elastos7Utility10Observable5ProbeERKNS_6_EMuidE
+    _ZThn16_N7Elastos7Utility10Observable6AddRefEv
+    _ZThn16_N7Elastos7Utility10Observable7ReleaseEv
+    _ZThn24_N7Elastos7Utility10Observable10HasChangedEPh
+    _ZThn24_N7Elastos7Utility10Observable10SetChangedEv
+    _ZThn24_N7Elastos7Utility10Observable11AddObserverEPNS0_9IObserverE
+    _ZThn24_N7Elastos7Utility10Observable12ClearChangedEv
+    _ZThn24_N7Elastos7Utility10Observable14CountObserversEPi
+    _ZThn24_N7Elastos7Utility10Observable14DeleteObserverEPNS0_9IObserverE
+    _ZThn24_N7Elastos7Utility10Observable14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZThn24_N7Elastos7Utility10Observable15DeleteObserversEv
+    _ZThn24_N7Elastos7Utility10Observable15NotifyObserversEP10IInterface
+    _ZThn24_N7Elastos7Utility10Observable15NotifyObserversEv
+    _ZThn24_N7Elastos7Utility10Observable5ProbeERKNS_6_EMuidE
+    _ZThn24_N7Elastos7Utility10Observable6AddRefEv
+    _ZThn24_N7Elastos7Utility10Observable7ReleaseEv
+    _ZThn8_N7Elastos7Utility10Observable14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZThn8_N7Elastos7Utility10Observable5ProbeERKNS_6_EMuidE
+    _ZThn8_N7Elastos7Utility10Observable6AddRefEv
+    _ZThn8_N7Elastos7Utility10Observable7ReleaseEv
