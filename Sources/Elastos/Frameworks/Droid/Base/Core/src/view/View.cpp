@@ -837,6 +837,7 @@ View::AttachInfo::AttachInfo(
     , mIncludeNotImportantViews(FALSE)
 {
     mDebugLayout = SystemProperties::GetBoolean(IView::DEBUG_LAYOUT_PROPERTY, FALSE);
+    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mOverscanInsets));
     ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mContentInsets));
     ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mVisibleInsets));
     ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mTmpInvalRect));
@@ -1138,7 +1139,7 @@ View::View()
     , mRecreateDisplayList(FALSE)
     , mID(IView::NO_ID)
     , mAccessibilityViewId(IView::NO_ID)
-    , mAccessibilityCursorPosition(ACCESSIBILITY_CURSOR_POSITION_UNDEFINED)
+    , mAccessibilityCursorPosition(IView::ACCESSIBILITY_CURSOR_POSITION_UNDEFINED)
     , mTag(NULL)
     , mOverScrollMode(0)
     , mParent(NULL)
@@ -1205,7 +1206,7 @@ View::View(
     , mRecreateDisplayList(FALSE)
     , mID(IView::NO_ID)
     , mAccessibilityViewId(IView::NO_ID)
-    , mAccessibilityCursorPosition(ACCESSIBILITY_CURSOR_POSITION_UNDEFINED)
+    , mAccessibilityCursorPosition(IView::ACCESSIBILITY_CURSOR_POSITION_UNDEFINED)
     , mOverScrollMode(0)
     , mParent(NULL)
     , mPrivateFlags(0)
@@ -1272,7 +1273,7 @@ View::View(
     , mRecreateDisplayList(FALSE)
     , mID(IView::NO_ID)
     , mAccessibilityViewId(IView::NO_ID)
-    , mAccessibilityCursorPosition(ACCESSIBILITY_CURSOR_POSITION_UNDEFINED)
+    , mAccessibilityCursorPosition(IView::ACCESSIBILITY_CURSOR_POSITION_UNDEFINED)
     , mOverScrollMode(0)
     , mParent(NULL)
     , mPrivateFlags(0)
@@ -1340,7 +1341,7 @@ View::View(
     , mRecreateDisplayList(FALSE)
     , mID(IView::NO_ID)
     , mAccessibilityViewId(IView::NO_ID)
-    , mAccessibilityCursorPosition(ACCESSIBILITY_CURSOR_POSITION_UNDEFINED)
+    , mAccessibilityCursorPosition(IView::ACCESSIBILITY_CURSOR_POSITION_UNDEFINED)
     , mOverScrollMode(0)
     , mParent(NULL)
     , mPrivateFlags(0)
@@ -1409,7 +1410,7 @@ View::View(
     , mRecreateDisplayList(FALSE)
     , mID(IView::NO_ID)
     , mAccessibilityViewId(IView::NO_ID)
-    , mAccessibilityCursorPosition(ACCESSIBILITY_CURSOR_POSITION_UNDEFINED)
+    , mAccessibilityCursorPosition(IView::ACCESSIBILITY_CURSOR_POSITION_UNDEFINED)
     , mOverScrollMode(0)
     , mParent(NULL)
     , mPrivateFlags(0)
@@ -3578,35 +3579,234 @@ Boolean View::IsShown()
     return FALSE;
 }
 
-Boolean View::FitSystemWindows(
-    /* [in] */ IRect* _insets)
+ECode View::FitSystemWindows(
+    /* [in] */ IRect* _insets,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     if ((mPrivateFlags3 & PFLAG3_APPLYING_INSETS) == 0) {
         if (_insets == NULL) {
             // Null insets by definition have already been consumed.
             // This call cannot apply insets since there are none to apply,
             // so return false.
-            return FALSE;
+            *res = FALSE;
+            return NOERROR;
         }
         // If we're not in the process of dispatching the newer apply insets call,
         // that means we're not in the compatibility path. Dispatch into the newer
         // apply insets path and take things from there.
         //try {
+            ECode ec;
             mPrivateFlags3 |= PFLAG3_FITTING_SYSTEM_WINDOWS;
             AutoPtr<IWindowInsets> sets;
             CWindowInsets::New(_insets, (IWindowInsets**)&sets);
-            Boolean res;
-            DispatchApplyWindowInsets(sets)->sConsumed(&res);
-            return res;
+            ec = DispatchApplyWindowInsets(sets)->sConsumed(res);
+            return ec;
         //} finally {
             mPrivateFlags3 &= ~PFLAG3_FITTING_SYSTEM_WINDOWS;
         //}
     } else {
         // We're being called from the newer apply insets path.
         // Perform the standard fallback behavior.
-        return FitSystemWindowsInt(_insets);
+        ec = FitSystemWindowsInt(_insets, res);
+        return ec;
     }
 }
+
+ECode View::FitSystemWindowsInt(
+        /* [in] */ IRect* insets,
+        /* [in] */ Boolean* res)
+{
+    if ((mViewFlags & FITS_SYSTEM_WINDOWS) == FITS_SYSTEM_WINDOWS) {
+        mUserPaddingStart = UNDEFINED_PADDING;
+        mUserPaddingEnd = UNDEFINED_PADDING;
+        AutoPtr<CRect> localInsets = (CRect*)pthread_getspecific(sKey);
+        if (!localInsets) {
+            CRect::NewByFriend((CRect**)&localInsets);
+            pthread_setspecific(sKey, localInsets.Get());
+        }
+
+        Boolean result = ComputeFitSystemWindows(insets, localInsets);
+        mUserPaddingLeftInitial = localInsets->mLeft;
+        mUserPaddingRightInitial = localInsets->mRight;
+        InternalSetPadding(localInsets->mLeft, localInsets->mTop,
+                localInsets->mRight, localInsets->mBottom);
+        *res = result;
+        return NOERROR;
+    }
+    *res = FALSE;
+    return NOERROR;
+}
+
+/**
+ * Called when the view should apply {@link WindowInsets} according to its internal policy.
+ *
+ * <p>This method should be overridden by views that wish to apply a policy different from or
+ * in addition to the default behavior. Clients that wish to force a view subtree
+ * to apply insets should call {@link #dispatchApplyWindowInsets(WindowInsets)}.</p>
+ *
+ * <p>Clients may supply an {@link OnApplyWindowInsetsListener} to a view. If one is set
+ * it will be called during dispatch instead of this method. The listener may optionally
+ * call this method from its own implementation if it wishes to apply the view's default
+ * insets policy in addition to its own.</p>
+ *
+ * <p>Implementations of this method should either return the insets parameter unchanged
+ * or a new {@link WindowInsets} cloned from the supplied insets with any insets consumed
+ * that this view applied itself. This allows new inset types added in future platform
+ * versions to pass through existing implementations unchanged without being erroneously
+ * consumed.</p>
+ *
+ * <p>By default if a view's {@link #setFitsSystemWindows(boolean) fitsSystemWindows}
+ * property is set then the view will consume the system window insets and apply them
+ * as padding for the view.</p>
+ *
+ * @param insets Insets to apply
+ * @return The supplied insets with any applied insets consumed
+ */
+AutoPtr<IWindowInsets> View::OnApplyWindowInsets(
+        /* [in] */ IWindowInsets* insets)
+{
+    if ((mPrivateFlags3 & PFLAG3_FITTING_SYSTEM_WINDOWS) == 0) {
+        // We weren't called from within a direct call to fitSystemWindows,
+        // call into it as a fallback in case we're in a class that overrides it
+        // and has logic to perform.
+        AutoPtr<IRect> rect;
+        insets->GetSystemWindowInsets((IRect**)&rect);
+        Boolean res;
+        FitSystemWindows(rect, &res);
+        if (res) {
+            AutoPtr<IWindowInsets> result;
+            insets->ConsumeSystemWindowInsets((IWindowInsets**)&result);
+            return result;
+        }
+    } else {
+        AutoPtr<IRect> rect;
+        insets->GetSystemWindowInsets((IRect**)&rect);
+        Boolean res;
+        FitSystemWindowsInt(rect, &res);
+        // We were called from within a direct call to fitSystemWindows.
+        if (res) {
+            AutoPtr<IWindowInsets> result;
+            insets->ConsumeSystemWindowInsets((IWindowInsets**)&result);
+            return result;
+        }
+    }
+    return insets;
+}
+
+/**
+ * Set an {@link OnApplyWindowInsetsListener} to take over the policy for applying
+ * window insets to this view. The listener's
+ * {@link OnApplyWindowInsetsListener#onApplyWindowInsets(View, WindowInsets) onApplyWindowInsets}
+ * method will be called instead of the view's
+ * {@link #onApplyWindowInsets(WindowInsets) onApplyWindowInsets} method.
+ *
+ * @param listener Listener to set
+ *
+ * @see #onApplyWindowInsets(WindowInsets)
+ */
+void View::SetOnApplyWindowInsetsListener(
+    /* [in] */ IViewOnApplyWindowInsetsListener listener)
+{
+    GetListenerInfo()->mOnApplyWindowInsetsListener = listener;
+}
+
+/**
+ * Request to apply the given window insets to this view or another view in its subtree.
+ *
+ * <p>This method should be called by clients wishing to apply insets corresponding to areas
+ * obscured by window decorations or overlays. This can include the status and navigation bars,
+ * action bars, input methods and more. New inset categories may be added in the future.
+ * The method returns the insets provided minus any that were applied by this view or its
+ * children.</p>
+ *
+ * <p>Clients wishing to provide custom behavior should override the
+ * {@link #onApplyWindowInsets(WindowInsets)} method or alternatively provide a
+ * {@link OnApplyWindowInsetsListener} via the
+ * {@link #setOnApplyWindowInsetsListener(View.OnApplyWindowInsetsListener) setOnApplyWindowInsetsListener}
+ * method.</p>
+ *
+ * <p>This method replaces the older {@link #fitSystemWindows(Rect) fitSystemWindows} method.
+ * </p>
+ *
+ * @param insets Insets to apply
+ * @return The provided insets minus the insets that were consumed
+ */
+ECode View::DispatchApplyWindowInsets(
+    /* [in] */ IWindowInsets* insets,
+    /* [out] */ IWindowInsets** res)
+{
+    //try {
+    mPrivateFlags3 |= PFLAG3_APPLYING_INSETS;
+    if (mListenerInfo != NULL && mListenerInfo->mOnApplyWindowInsetsListener != NULL) {
+        return mListenerInfo->mOnApplyWindowInsetsListener->OnApplyWindowInsets(THIS_PROBE(IView), insets);
+    } else {
+        return OnApplyWindowInsets(insets);
+    }
+    //} finally {
+    mPrivateFlags3 &= ~PFLAG3_APPLYING_INSETS;
+    //}
+}
+
+/**
+ * @hide Compute the insets that should be consumed by this view and the ones
+ * that should propagate to those under it.
+ */
+Boolean View::ComputeFitSystemWindows(
+    /* [in] */ IRect* inoutInsets,
+    /* [in] */ IRect* outLocalInsets)
+{
+    if ((mViewFlags & OPTIONAL_FITS_SYSTEM_WINDOWS) == 0
+            || mAttachInfo == NULL
+            || ((mAttachInfo->mSystemUiVisibility & SYSTEM_UI_LAYOUT_FLAGS) == 0
+                    && !mAttachInfo->mOverscanRequested)) {
+        outLocalInsets->Set(inoutInsets.Get());
+        inoutInsets->Set(0, 0, 0, 0);
+        return TRUE;
+    } else {
+        // The application wants to take care of fitting system window for
+        // the content...  however we still need to take care of any overscan here.
+        AutoPtr<CRect> overscan = mAttachInfo->mOverscanInsets;
+        outLocalInsets->Set(overscan.Get());
+        inoutInsets->SetLeft(overscan->mLeft);
+        inoutInsets->SetTop(overscan->mTop);
+        inoutInsets->SetRight(overscan->mRight);
+        inoutInsets->SetBottom(overscan->mBottom);
+        return FALSE;
+    }
+}
+
+/**
+ * Compute insets that should be consumed by this view and the ones that should propagate
+ * to those under it.
+ *
+ * @param in Insets currently being processed by this View, likely received as a parameter
+ *           to {@link #onApplyWindowInsets(WindowInsets)}.
+ * @param outLocalInsets A Rect that will receive the insets that should be consumed
+ *                       by this view
+ * @return Insets that should be passed along to views under this one
+ */
+ECode ComputeSystemWindowInsets(
+    /* [in] */ IWindowInsets* in,
+    /* [in] */ IRect* outLocalInsets,
+    /* [out] */ IWindowInsets** res)
+{
+    VALIDATE_NOT_NULL(res);
+    if ((mViewFlags & OPTIONAL_FITS_SYSTEM_WINDOWS) == 0 || mAttachInfo == NULL
+            || (mAttachInfo->mSystemUiVisibility & SYSTEM_UI_LAYOUT_FLAGS) == 0) {
+        AutoPtr<IRect> rect;
+        in->GetSystemWindowInsets((IRect**)&rect);
+        outLocalInsets->Set(rect);
+        return in->ConsumeSystemWindowInsets(res);
+    } else {
+        outLocalInsets->Set(0, 0, 0, 0);
+        *res = in;
+        REFCOUNT_ADD(*res);
+        return NOERROR;
+    }
+}
+
+
 
 /**
  * Sets whether or not this view should account for system screen decorations
@@ -3666,6 +3866,15 @@ ECode View::RequestFitSystemWindows()
     if (mParent != NULL) {
         return mParent->RequestFitSystemWindows();
     }
+    return NOERROR;
+}
+
+/**
+ * Ask that a new dispatch of {@link #onApplyWindowInsets(WindowInsets)} be performed.
+ */
+ECode View::RequestApplyInsets()
+{
+    RequestFitSystemWindows();
     return NOERROR;
 }
 
@@ -3736,6 +3945,10 @@ ECode View::SetEnabled(
     // Invalidate too, since the default behavior for views is to be
     // be drawn at 50% alpha rather than to change the drawable.
     Invalidate(TRUE);
+
+    if (!enabled) {
+        CancelPendingInputEvents();
+    }
 
     return NOERROR;
 }
@@ -3889,7 +4102,7 @@ Int32 View::GetLayoutDirection()
     info->GetTargetSdkVersion(&targetSdkVersion);
     if (targetSdkVersion < Build::VERSION_CODES::JELLY_BEAN_MR1) {
         mPrivateFlags2 |= PFLAG2_LAYOUT_DIRECTION_RESOLVED;
-        return IView::LAYOUT_DIRECTION_LTR;
+        return IView::LAYOUT_DIRECTION_RESOLVED_DEFAULT;
     }
 
     return ((mPrivateFlags2 & PFLAG2_LAYOUT_DIRECTION_RESOLVED_RTL) ==
@@ -3915,9 +4128,7 @@ ECode View::SetHasTransientState(
         mTransientStateCount = 0;
         // Log.e(VIEW_LOG_TAG, "hasTransientState decremented below 0: " +
         //         "unmatched pair of setHasTransientState calls");
-    }
-
-    if ((hasTransientState && mTransientStateCount == 1) ||
+    } else if ((hasTransientState && mTransientStateCount == 1) ||
             (!hasTransientState && mTransientStateCount == 0)) {
         // update flag if we've just incremented up from 0 or decremented down to 0
         mPrivateFlags2 = (mPrivateFlags2 & ~PFLAG2_HAS_TRANSIENT_STATE) |
@@ -3931,6 +4142,30 @@ ECode View::SetHasTransientState(
         }
     }
 
+    return NOERROR;
+}
+
+/**
+ * Returns true if this view is currently attached to a window.
+ */
+ECode View::IsAttachedToWindow(
+        /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+
+    *res = mAttachInfo != NULL;
+    return NOERROR;
+}
+
+/**
+ * Returns true if this view has been through at least one layout since it
+ * was last attached to or detached from a window.
+ */
+ECode View::IsLaidOut(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    *res = (mPrivateFlags3 & PFLAG3_IS_LAID_OUT) == PFLAG3_IS_LAID_OUT;
     return NOERROR;
 }
 
@@ -4049,6 +4284,28 @@ ECode View::SetLongClickable(
     SetFlags(longClickable ? LONG_CLICKABLE : 0, LONG_CLICKABLE);
 
     return NOERROR;
+}
+
+/**
+ * Sets the pressed state for this view and provides a touch coordinate for
+ * animation hinting.
+ *
+ * @param pressed Pass true to set the View's internal state to "pressed",
+ *            or false to reverts the View's internal state from a
+ *            previously set "pressed" state.
+ * @param x The x coordinate of the touch that caused the press
+ * @param y The y coordinate of the touch that caused the press
+ */
+void View::SetPressed(
+    /* [in] */ Boolean pressed,
+    /* [in] */ Float x,
+    /* [in] */ Float y)
+{
+    if (pressed) {
+        DrawableHotspotChanged(x, y);
+    }
+
+    SetPressed(pressed);
 }
 
 /**
@@ -4175,7 +4432,7 @@ Boolean View::GetFilterTouchesWhenObscured()
 ECode View::SetFilterTouchesWhenObscured(
     /* [in] */ Boolean enabled)
 {
-    SetFlags(enabled ? 0 : FILTER_TOUCHES_WHEN_OBSCURED,
+    SetFlags(enabled ? FILTER_TOUCHES_WHEN_OBSCURED : 0,
             FILTER_TOUCHES_WHEN_OBSCURED);
 
     return NOERROR;
@@ -4490,7 +4747,6 @@ Boolean View::RequestAccessibilityFocus()
         }
         Invalidate();
         SendAccessibilityEvent(IAccessibilityEvent::TYPE_VIEW_ACCESSIBILITY_FOCUSED);
-        NotifyAccessibilityStateChanged();
         return TRUE;
     }
     return FALSE;
@@ -4498,12 +4754,7 @@ Boolean View::RequestAccessibilityFocus()
 
 ECode View::ClearAccessibilityFocus()
 {
-    if ((mPrivateFlags2 & PFLAG2_ACCESSIBILITY_FOCUSED) != 0) {
-        mPrivateFlags2 &= ~PFLAG2_ACCESSIBILITY_FOCUSED;
-        Invalidate();
-        SendAccessibilityEvent(IAccessibilityEvent::TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
-        NotifyAccessibilityStateChanged();
-    }
+    ClearAccessibilityFocusNoCallbacks();
     // Clear the global reference of accessibility focus if this
     // view or any of its descendants had accessibility focus.
     ViewRootImpl* viewRootImpl = GetViewRootImpl();
@@ -4556,6 +4807,7 @@ void View::ClearAccessibilityFocusNoCallbacks()
     if ((mPrivateFlags2 & PFLAG2_ACCESSIBILITY_FOCUSED) != 0) {
         mPrivateFlags2 &= ~PFLAG2_ACCESSIBILITY_FOCUSED;
         Invalidate();
+        SendAccessibilityEvent(IAccessibilityEvent::TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
     }
 }
 
@@ -4692,37 +4944,162 @@ Int32 View::GetImportantForAccessibility()
             >> PFLAG2_IMPORTANT_FOR_ACCESSIBILITY_SHIFT;
 }
 
+/**
+ * Sets the live region mode for this view. This indicates to accessibility
+ * services whether they should automatically notify the user about changes
+ * to the view's content description or text, or to the content descriptions
+ * or text of the view's children (where applicable).
+ * <p>
+ * For example, in a login screen with a TextView that displays an "incorrect
+ * password" notification, that view should be marked as a live region with
+ * mode {@link #ACCESSIBILITY_LIVE_REGION_POLITE}.
+ * <p>
+ * To disable change notifications for this view, use
+ * {@link #ACCESSIBILITY_LIVE_REGION_NONE}. This is the default live region
+ * mode for most views.
+ * <p>
+ * To indicate that the user should be notified of changes, use
+ * {@link #ACCESSIBILITY_LIVE_REGION_POLITE}.
+ * <p>
+ * If the view's changes should interrupt ongoing speech and notify the user
+ * immediately, use {@link #ACCESSIBILITY_LIVE_REGION_ASSERTIVE}.
+ *
+ * @param mode The live region mode for this view, one of:
+ *        <ul>
+ *        <li>{@link #ACCESSIBILITY_LIVE_REGION_NONE}
+ *        <li>{@link #ACCESSIBILITY_LIVE_REGION_POLITE}
+ *        <li>{@link #ACCESSIBILITY_LIVE_REGION_ASSERTIVE}
+ *        </ul>
+ * @attr ref android.R.styleable#View_accessibilityLiveRegion
+ */
+ECode View::SetAccessibilityLiveRegion(
+    /* [in] */ Int32 mode)
+{
+    Int32 region;
+
+    if (mode != (GetAccessibilityLiveRegion(&region), region)) {
+        mPrivateFlags2 &= ~PFLAG2_ACCESSIBILITY_LIVE_REGION_MASK;
+        mPrivateFlags2 |= (mode << PFLAG2_ACCESSIBILITY_LIVE_REGION_SHIFT)
+                & PFLAG2_ACCESSIBILITY_LIVE_REGION_MASK;
+        NotifyViewAccessibilityStateChangedIfNeeded(
+                IAccessibilityEvent::CONTENT_CHANGE_TYPE_UNDEFINED);
+    }
+}
+
+/**
+ * Gets the live region mode for this View.
+ *
+ * @return The live region mode for the view.
+ *
+ * @attr ref android.R.styleable#View_accessibilityLiveRegion
+ *
+ * @see #setAccessibilityLiveRegion(int)
+ */
+ECode View::GetAccessibilityLiveRegion(
+    /* [out] */ Int32* res)
+{
+    VALIDATE_NOT_NULL(res)
+    *res = (mPrivateFlags2 & PFLAG2_ACCESSIBILITY_LIVE_REGION_MASK)
+            >> PFLAG2_ACCESSIBILITY_LIVE_REGION_SHIFT;
+    return NOERROR;
+}
+
 ECode View::SetImportantForAccessibility(
     /* [in] */ Int32 mode)
 {
-    if (mode != GetImportantForAccessibility()) {
+    Int32 oldMode;
+    GetImportantForAccessibility(&oldMode);
+    if (mode != oldMode) {
+        // If we're moving between AUTO and another state, we might not need
+        // to send a subtree changed notification. We'll store the computed
+        // importance, since we'll need to check it later to make sure.
+        Boolean maySkipNotify = oldMode == IView::IMPORTANT_FOR_ACCESSIBILITY_AUTO
+                || mode == IView::IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+        Boolean res;
+        IncludeForAccessibility(&res);
+        Boolean oldIncludeForAccessibility = maySkipNotify && res;
         mPrivateFlags2 &= ~PFLAG2_IMPORTANT_FOR_ACCESSIBILITY_MASK;
         mPrivateFlags2 |= (mode << PFLAG2_IMPORTANT_FOR_ACCESSIBILITY_SHIFT)
                 & PFLAG2_IMPORTANT_FOR_ACCESSIBILITY_MASK;
-        NotifyAccessibilityStateChanged();
+        if (!maySkipNotify || oldIncludeForAccessibility != res) {
+            NotifySubtreeAccessibilityStateChangedIfNeeded();
+        } else {
+            NotifyViewAccessibilityStateChangedIfNeeded(
+                    IAccessibilityEvent::CONTENT_CHANGE_TYPE_UNDEFINED);
+        }
     }
 
     return NOERROR;
 }
 
-Boolean View::IsImportantForAccessibility()
+/**
+ * Computes whether this view should be exposed for accessibility. In
+ * general, views that are interactive or provide information are exposed
+ * while views that serve only as containers are hidden.
+ * <p>
+ * If an ancestor of this view has importance
+ * {@link #IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS}, this method
+ * returns <code>false</code>.
+ * <p>
+ * Otherwise, the value is computed according to the view's
+ * {@link #getImportantForAccessibility()} value:
+ * <ol>
+ * <li>{@link #IMPORTANT_FOR_ACCESSIBILITY_NO} or
+ * {@link #IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS}, return <code>false
+ * </code>
+ * <li>{@link #IMPORTANT_FOR_ACCESSIBILITY_YES}, return <code>true</code>
+ * <li>{@link #IMPORTANT_FOR_ACCESSIBILITY_AUTO}, return <code>true</code> if
+ * view satisfies any of the following:
+ * <ul>
+ * <li>Is actionable, e.g. {@link #isClickable()},
+ * {@link #isLongClickable()}, or {@link #isFocusable()}
+ * <li>Has an {@link AccessibilityDelegate}
+ * <li>Has an interaction listener, e.g. {@link OnTouchListener},
+ * {@link OnKeyListener}, etc.
+ * <li>Is an accessibility live region, e.g.
+ * {@link #getAccessibilityLiveRegion()} is not
+ * {@link #ACCESSIBILITY_LIVE_REGION_NONE}.
+ * </ul>
+ * </ol>
+ *
+ * @return Whether the view is exposed for accessibility.
+ * @see #setImportantForAccessibility(int)
+ * @see #getImportantForAccessibility()
+ */
+ECode View::IsImportantForAccessibility(
+    /* [out] */ boolean* isImportant)
 {
+    VALIDATE_NOT_NULL(isImportant)
     const Int32 mode = (mPrivateFlags2 & PFLAG2_IMPORTANT_FOR_ACCESSIBILITY_MASK)
             >> PFLAG2_IMPORTANT_FOR_ACCESSIBILITY_SHIFT;
-    switch (mode) {
-        case IView::IMPORTANT_FOR_ACCESSIBILITY_YES:
-            return TRUE;
-        case IView::IMPORTANT_FOR_ACCESSIBILITY_NO:
-            return FALSE;
-        case IView::IMPORTANT_FOR_ACCESSIBILITY_AUTO:
-            return IsActionableForAccessibility() || HasListenersForAccessibility()
-                    || GetAccessibilityNodeProvider() != NULL;
-        default:
-            assert(0);
-            // throw new IllegalArgumentException("Unknow important for accessibility mode: "
-            //         + mode);
-            return FALSE;
+
+    if (mode == IView::IMPORTANT_FOR_ACCESSIBILITY_NO
+            || mode == IView::IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS) {
+        *isImportant = FALSE;
+        return NOERROR;
     }
+
+    // Check parent mode to ensure we're not hidden.
+    AutoPtr<IViewParent> parent = mParent;
+    while (IView::Probe(parent)) {
+        Int32 res;
+        IView::Probe(parent)->GetImportantForAccessibility(res);
+        if (res == IView::IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS) {
+            *isImportant = FALSE;
+            return NOERROR;
+        }
+        IView::Probe(parent)->GetParent((IViewParent**)&parent);
+    }
+    Boolean isActionable;
+    IsActionableForAccessibility(&isActionable);
+    AutoPtr<IAccessibilityNodeProvider> provider;
+    GetAccessibilityNodeProvider((IAccessibilityNodeProvider**)&provider);
+    Int32 region;
+    GetAccessibilityLiveRegion(&region)
+    *res = mode == IView::IMPORTANT_FOR_ACCESSIBILITY_YES || isActionable
+            || HasListenersForAccessibility() || provider != NULL
+            || region != IView::ACCESSIBILITY_LIVE_REGION_NONE;
+    return NOERROR;
 }
 
 AutoPtr<IViewParent> View::GetParentForAccessibility()
@@ -4743,19 +5120,23 @@ AutoPtr<IViewParent> View::GetParentForAccessibility()
 
 ECode View::AddChildrenForAccessibility(
     /* [in] */ IObjectContainer* children) {
-    if (IncludeForAccessibility()) {
-        children->Add(IVIEW_PROBE(this));
-    }
 
     return NOERROR;
 }
 
-Boolean View::IncludeForAccessibility()
+ECode View::IncludeForAccessibility(
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     if (mAttachInfo != NULL) {
-        return mAttachInfo->mIncludeNotImportantViews || IsImportantForAccessibility();
+        Boolean isImportant;
+        IsImportantForAccessibility(&isImportant);
+        *res = (mAttachInfo->mAccessibilityFetchFlags
+            & IAccessibilityNodeInfo::FLAG_INCLUDE_NOT_IMPORTANT_VIEWS) != 0 || isImportant;
+        return NOERROR;
     }
-    return FALSE;
+    *res = FALSE;
+    return NOERROR;
 }
 
 Boolean View::IsActionableForAccessibility()
@@ -4771,7 +5152,46 @@ Boolean View::HasListenersForAccessibility()
             || info->mOnHoverListener != NULL || info->mOnDragListener != NULL;
 }
 
-ECode View::NotifyAccessibilityStateChanged()
+/**
+ * Notifies that the accessibility state of this view changed. The change
+ * is local to this view and does not represent structural changes such
+ * as children and parent. For example, the view became focusable. The
+ * notification is at at most once every
+ * {@link ViewConfiguration#getSendRecurringAccessibilityEventsInterval()}
+ * to avoid unnecessary load to the system. Also once a view has a pending
+ * notification this method is a NOP until the notification has been sent.
+ *
+ * @hide
+ */
+ECode View::NotifyViewAccessibilityStateChangedIfNeeded(
+    /* [in] */ Int32 changeType)
+{
+    AutoPtr<IAccessibilityManager> manger;
+    AccessibilityManager::GetInstance(mContext, (IAccessibilityManager**)&manager);
+    Boolean isEnabled;
+    manager->IsEnabled(&isEnabled);
+    if (!isEnabled) {
+        return NOERROR;
+    }
+    if (mSendViewStateChangedAccessibilityEvent == NULL) {
+        mSendViewStateChangedAccessibilityEvent =
+                new SendViewStateChangedAccessibilityEvent();
+    }
+    mSendViewStateChangedAccessibilityEvent->RunOrPost(changeType);
+}
+
+/**
+ * Notifies that the accessibility state of this view changed. The change
+ * is *not* local to this view and does represent structural changes such
+ * as children and parent. For example, the view size changed. The
+ * notification is at at most once every
+ * {@link ViewConfiguration#getSendRecurringAccessibilityEventsInterval()}
+ * to avoid unnecessary load to the system. Also once a view has a pending
+ * notification this method is a NOP until the notification has been sent.
+ *
+ * @hide
+ */
+ECode View::NotifySubtreeAccessibilityStateChangedIfNeeded()
 {
     AutoPtr<IAccessibilityManager> manger;
     CAccessibilityManager::GetInstance(mContext, (IAccessibilityManager**)&manger);
@@ -4781,19 +5201,24 @@ ECode View::NotifyAccessibilityStateChanged()
         return NOERROR;
     }
 
-    if ((mPrivateFlags2 & PFLAG2_ACCESSIBILITY_STATE_CHANGED) == 0) {
-        mPrivateFlags2 |= PFLAG2_ACCESSIBILITY_STATE_CHANGED;
-        if (mParent != NULL) {
-            mParent->ChildAccessibilityStateChanged(IVIEW_PROBE(this));
-        }
+    if ((mPrivateFlags2 & PFLAG2_SUBTREE_ACCESSIBILITY_STATE_CHANGED) == 0) {
+        mPrivateFlags2 |= PFLAG2_SUBTREE_ACCESSIBILITY_STATE_CHANGED;
+        //try {
+            ECode ec = mParent->NotifySubtreeAccessibilityStateChanged(
+                    THIS_PROBE(IView), THIS_PROBE(IView), IAccessibilityEvent::CONTENT_CHANGE_TYPE_SUBTREE);
+        //} catch (AbstractMethodError e) {
+        //    Log.e(VIEW_LOG_TAG, mParent.getClass().getSimpleName() +
+        //            " does not fully implement ViewParent", e);
+        //}
+        return ec;
     }
 
     return NOERROR;
 }
 
-ECode View::ResetAccessibilityStateChanged()
+ECode View::ResetSubtreeAccessibilityStateChanged()
 {
-    mPrivateFlags2 &= ~PFLAG2_ACCESSIBILITY_STATE_CHANGED;
+    mPrivateFlags2 &= ~PFLAG2_SUBTREE_ACCESSIBILITY_STATE_CHANGED;
     return NOERROR;
 }
 
@@ -4871,7 +5296,10 @@ Boolean View::PerformAccessibilityActionInternal(
                 Int32 granularity = 0;
                 arguments->GetInt32(
                         IAccessibilityNodeInfo::ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, &granularity);
-                return NextAtGranularity(granularity);
+                Boolean extendSelection;
+                (IBaseBundle::Probe(arguments))->GetBoolean(
+                        IAccessibilityNodeInfo::ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, &extendSelection);
+                return TraverseAtGranularity(granularity, FALSE, extendSelection);
             }
         } break;
         case IAccessibilityNodeInfo::ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY: {
@@ -4879,15 +5307,44 @@ Boolean View::PerformAccessibilityActionInternal(
                 Int32 granularity = 0;
                 arguments->GetInt32(
                         IAccessibilityNodeInfo::ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, &granularity);
-                return PreviousAtGranularity(granularity);
+                Boolean extendSelection;
+                (IBaseBundle::Probe(arguments))->GetBoolean(
+                        IAccessibilityNodeInfo::ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, &extendSelection);
+                return TraverseAtGranularity(granularity, FALSE, extendSelection);
+            }
+        } break;
+        case IAccessibilityNodeInfo::ACTION_SET_SELECTION: {
+            AutoPtr<ICharSequence> text;
+            GetIterableTextForAccessibility((ICharSequence**)&text);
+            if (!text) {
+                return FALSE;
+            }
+            Int32 start = -1, end= -1;
+            if (arguments) {
+                (IBaseBundle::Probe(arguments))->GetInt(
+                        IAccessibilityNodeInfo::ACTION_ARGUMENT_SELECTION_START_INT, -1, &start);
+                (IBaseBundle::Probe(arguments))->GetInt(
+                        IAccessibilityNodeInfo::ACTION_ARGUMENT_SELECTION_END_INT, -1, &end);
+            }
+            // Only cursor position can be specified (selection length == 0)
+            Int32 tempStart, tempEnd;
+            GetAccessibilitySelectionStart(&tempStart);
+            GetAccessibilitySelectionEnd(&tempEnd);
+            if ((tempStart != start || tempEnd != end) && (start == end)) {
+                SetAccessibilitySelection(start, end);
+                NotifyViewAccessibilityStateChangedIfNeeded(
+                        IAccessibilityEvent::CONTENT_CHANGE_TYPE_UNDEFINED);
+                return true;
             }
         } break;
     }
     return FALSE;
 }
 
-Boolean View::NextAtGranularity(
-    /* [in] */ Int32 granularity)
+Boolean View::TraverseAtGranularity(
+    /* [in] */ Int32 granularity,
+    /* [in] */ Boolean forward,
+    /* [in] */ Boolean extendSelection)
 {
     AutoPtr<ICharSequence> text = GetIterableTextForAccessibility();
     Int32 len;
@@ -4899,19 +5356,41 @@ Boolean View::NextAtGranularity(
     if (iterator == NULL) {
         return FALSE;
     }
-    const Int32 current = GetAccessibilityCursorPosition();
-    AutoPtr<ArrayOf<Int32> > range;
-    iterator->Following(current, (ArrayOf<Int32>**)&range);
-    if (range == NULL) {
+    Int32 current;
+    GetAccessibilitySelectionEnd(&current);
+    if (current == IView::ACCESSIBILITY_CURSOR_POSITION_UNDEFINED) {
+        if (forward) {
+            current = 0;
+        }
+        text->GetLength(&current);
+    }
+    AutoPtr< ArrayOf<Int32> > range;
+    if (forward) {
+        iterator->Following(current, (ArrayOf<Int32>**)&range);
+    } else {
+        iterator->Preceding(current, (ArrayOf<Int32>**)&range);
+    }
+    if (!range) {
         return FALSE;
     }
-
-    const Int32 start = (*range)[0];
-    const Int32 end = (*range)[1];
-    SetAccessibilityCursorPosition(end);
-    SendViewTextTraversedAtGranularityEvent(
-            IAccessibilityNodeInfo::ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
-            granularity, start, end);
+    Int32 segmentStart = (*range)[0];
+    Int32 segmentEnd = (*range)[1];
+    Int32 selectionStart, selectionEnd;
+    Boolean extendable;
+    IsAccessibilitySelectionExtendable(&extendable);
+    if (extendSelection && extendable) {
+        GetAccessibilitySelectionStart(&selectionStart);
+        if (selectionStart == IView::ACCESSIBILITY_CURSOR_POSITION_UNDEFINED) {
+            selectionStart = forward ? segmentStart : segmentEnd;
+        }
+        selectionEnd = forward ? segmentEnd : segmentStart;
+    } else {
+        selectionStart = selectionEnd = forward ? segmentEnd : segmentStart;
+    }
+    SetAccessibilitySelection(selectionStart, selectionEnd);
+    Int32 action = forward ? IAccessibilityNodeInfo::ACTION_NEXT_AT_MOVEMENT_GRANULARITY
+            : IAccessibilityNodeInfo::ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY;
+    SendViewTextTraversedAtGranularityEvent(action, granularity, segmentStart, segmentEnd);
     return TRUE;
 }
 
@@ -4930,7 +5409,7 @@ Boolean View::PreviousAtGranularity(
     }
 
     Int32 current = GetAccessibilityCursorPosition();
-    if (current == ACCESSIBILITY_CURSOR_POSITION_UNDEFINED) {
+    if (current == IView::ACCESSIBILITY_CURSOR_POSITION_UNDEFINED) {
         text->GetLength(&current);
         SetAccessibilityCursorPosition(current);
     }
@@ -4968,15 +5447,54 @@ AutoPtr<ICharSequence> View::GetIterableTextForAccessibility()
     return GetContentDescription();
 }
 
-Int32 View::GetAccessibilityCursorPosition()
+/**
+ * Gets whether accessibility selection can be extended.
+ *
+ * @return If selection is extensible.
+ *
+ * @hide
+ */
+ECode View::IsAccessibilitySelectionExtendable(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    *res = FALSE
+    return NOERROR;
+}
+
+Int32 View::GetAccessibilitySelectionStart()
 {
     return mAccessibilityCursorPosition;
 }
 
-ECode View::SetAccessibilityCursorPosition(
-    /* [in] */ Int32 position)
+/**
+ * @hide
+ */
+ECode View::GetAccessibilitySelectionEnd(
+    /* [out] */ Int32* res)
 {
-    mAccessibilityCursorPosition = position;
+    VALIDATE_NOT_NULL(res)
+    *res = GetAccessibilitySelectionStart();
+    return NOERROR;
+}
+
+ECode View::SetAccessibilitySelection(
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end)
+{
+    if (start ==  end && end == mAccessibilityCursorPosition) {
+        return NOERROR;
+    }
+    AutoPtr<ICharSequence> csq;
+    GetIterableTextForAccessibility((ICharSequence**)&csq);
+    Int32 len;
+    csq->GetLength(&len);
+    if (start >= 0 && start == end && end <= len) {
+        mAccessibilityCursorPosition = start;
+    } else {
+        mAccessibilityCursorPosition = IView::ACCESSIBILITY_CURSOR_POSITION_UNDEFINED;
+    }
+    SendAccessibilityEvent(IAccessibilityEvent::TYPE_VIEW_TEXT_SELECTION_CHANGED);
     return NOERROR;
 }
 
@@ -5075,12 +5593,17 @@ AutoPtr<ITextSegmentIterator> View::GetIteratorForGranularity(
  */
 Boolean View::HasAncestorThatBlocksDescendantFocus()
 {
+    Boolean focusableInTouchMode;
+    IsFocusableInTouchMode(&focusableInTouchMode);
     AutoPtr<IViewParent> ancestor = mParent;
     while (ancestor != NULL && ancestor->Probe(EIID_IViewGroup) != NULL) {
         AutoPtr<IViewGroup> vgAncestor = (IViewGroup*)ancestor->Probe(EIID_IViewGroup);
         Int32 focusability;
         vgAncestor->GetDescendantFocusability(&focusability);
-        if (focusability == IViewGroup::FOCUS_BLOCK_DESCENDANTS) {
+        Boolean res;
+        vgAncestor->ShouldBlockFocusForTouchscreen(&res);
+        if (focusability == IViewGroup::FOCUS_BLOCK_DESCENDANTS
+            || (!focusableInTouchMode && res)) {
             return TRUE;
         }
         else {
@@ -5096,8 +5619,6 @@ Boolean View::HasAncestorThatBlocksDescendantFocus()
  */
 ECode View::DispatchStartTemporaryDetach()
 {
-    ClearAccessibilityFocus();
-    ClearDisplayList();
     return OnStartTemporaryDetach();
 }
 
@@ -5250,8 +5771,16 @@ Boolean View::DispatchKeyShortcutEvent(
 Boolean View::DispatchTouchEvent(
     /* [in] */ IMotionEvent* event)
 {
+    Boolean result = FALSE;
     if (mInputEventConsistencyVerifier != NULL) {
         mInputEventConsistencyVerifier->OnTouchEvent(event, 0);
+    }
+
+    Int32 actionMasked;
+    event->GetActionMasked(&actionMasked);
+    if (actionMasked == IMotionEvent::ACTION_DOWN) {
+        // Defensive cleanup for new gesture
+        StopNestedScroll();
     }
 
     if (OnFilterTouchEventForSecurity(event)) {
@@ -5260,18 +5789,28 @@ Boolean View::DispatchTouchEvent(
         Boolean result = FALSE;
         if (li != NULL && li->mOnTouchListener != NULL && (mViewFlags & ENABLED_MASK) == ENABLED
             && (li->mOnTouchListener->OnTouch(IVIEW_PROBE(this), event, &result), result)) {
-            return TRUE;
+            result = TRUE;
         }
 
-        if (OnTouchEvent(event)) {
-            return TRUE;
+        if (!result && OnTouchEvent(event)) {
+            result = TRUE;
         }
     }
 
-    if (mInputEventConsistencyVerifier != NULL) {
+    if (!result && mInputEventConsistencyVerifier != NULL) {
         mInputEventConsistencyVerifier->OnUnhandledEvent(event, 0);
     }
-    return FALSE;
+
+    // Clean up after nested scrolls if this is the end of a gesture;
+    // also cancel it if we tried an ACTION_DOWN but we didn't want the rest
+    // of the gesture.
+    if (actionMasked == IMotionEvent::ACTION_UP ||
+            actionMasked == IMotionEvent::ACTION_CANCEL ||
+            (actionMasked == IMotionEvent::ACTION_DOWN && !result)) {
+        StopNestedScroll();
+    }
+
+    return result;
 }
 
 /**
@@ -5756,32 +6295,26 @@ Boolean View::OnKeyDown(
     /* [in] */ Int32 keyCode,
     /* [in] */ IKeyEvent* event)
 {
-    switch (keyCode) {
-    case IKeyEvent::KEYCODE_DPAD_CENTER:
-    case IKeyEvent::KEYCODE_ENTER:
-        {
-            if ((mViewFlags & ENABLED_MASK) == DISABLED) {
-                return TRUE;
-            }
-
-            Int32 repeatCount;
-            event->GetRepeatCount(&repeatCount);
-            // Long clickable items don't necessarily have to be clickable
-            if (((mViewFlags & CLICKABLE) == CLICKABLE ||
-                (mViewFlags & LONG_CLICKABLE) == LONG_CLICKABLE) &&
-                (repeatCount == 0)) {
-                SetPressed(TRUE);
-
-                CheckForLongClick(0);
-                return TRUE;
-            }
+    Boolean res, result = FALSE;
+    event->IsConfirmKey(keyCode, &res);
+    if (res) {
+        if ((mViewFlags & ENABLED_MASK) == DISABLED) {
+            return TRUE;
         }
-        break;
-    default:
-        break;
-    }
 
-    return FALSE;
+        Int32 repeatCount;
+        event->GetRepeatCount(&repeatCount);
+        // Long clickable items don't necessarily have to be clickable
+        if (((mViewFlags & CLICKABLE) == CLICKABLE ||
+            (mViewFlags & LONG_CLICKABLE) == LONG_CLICKABLE) &&
+            (repeatCount == 0)) {
+            SetPressed(TRUE);
+
+            CheckForLongClick(0);
+            return TRUE;
+        }
+    }
+    return result;
 }
 
 /**
@@ -5812,30 +6345,25 @@ Boolean View::OnKeyUp(
 {
     Boolean result = FALSE;
 
-    switch (keyCode) {
-    case IKeyEvent::KEYCODE_DPAD_CENTER:
-    case IKeyEvent::KEYCODE_ENTER:
-        {
-            if ((mViewFlags & ENABLED_MASK) == DISABLED) {
-                return TRUE;
-            }
+    Boolean res;
+    event->IsConfirmKey(keyCode, &res);
+    if (res) {
+        if ((mViewFlags & ENABLED_MASK) == DISABLED) {
+            return TRUE;
+        }
 
-            if ((mViewFlags & CLICKABLE) == CLICKABLE && IsPressed()) {
-                SetPressed(FALSE);
+        if ((mViewFlags & CLICKABLE) == CLICKABLE && IsPressed()) {
+            SetPressed(FALSE);
 
-                if (!mHasPerformedLongPress) {
-                    // This is a tap, so remove the longpress check
-                    RemoveLongPressCallback();
+            if (!mHasPerformedLongPress) {
+                // This is a tap, so remove the longpress check
+                RemoveLongPressCallback();
 
-                    result = PerformClick();
-                }
+                return PerformClick();
             }
         }
-        break;
-    default:
-        break;
     }
-    return result;
+    return FALSE;
 }
 
 /**
@@ -6041,11 +6569,6 @@ Boolean View::OnHoverEvent(
                         && !PointInView(x, y))) {
             mSendingHoverAccessibilityEvents = FALSE;
             SendAccessibilityHoverEvent(IAccessibilityEvent::TYPE_VIEW_HOVER_EXIT);
-            // If the window does not have input focus we take away accessibility
-            // focus as soon as the user stop hovering over the view.
-            if (mAttachInfo != NULL && !mAttachInfo->mHasWindowFocus) {
-                GetViewRootImpl()->SetAccessibilityFocus(NULL, NULL);
-            }
         }
     }
 
@@ -6124,6 +6647,9 @@ ECode View::OnHoverChanged(
 Boolean View::OnTouchEvent(
     /* [in] */ IMotionEvent* event)
 {
+    Float x, y;
+    event->GetX(&x);
+    event->GetY(&y);
     Int32 viewFlags = mViewFlags;
 
     if ((viewFlags & ENABLED_MASK) == DISABLED) {
@@ -6168,7 +6694,7 @@ Boolean View::OnTouchEvent(
                         // showed it as pressed.  Make it show the pressed
                         // state now (before scheduling the click) to ensure
                         // the user sees it.
-                        SetPressed(TRUE);
+                        SetPressed(TRUE, x, y);
                     }
 
                     if (!mHasPerformedLongPress) {
@@ -6224,11 +6750,13 @@ Boolean View::OnTouchEvent(
                     if (mPendingCheckForTap == NULL) {
                         mPendingCheckForTap = new CheckForTap(this);
                     }
+                    event->GetX(&(mPendingCheckForTap->mX));
+                    event->GetY(&(mPendingCheckForTap->mY));
                     PostDelayed(mPendingCheckForTap.Get(), CViewConfiguration::GetTapTimeout());
                 }
                 else {
                     // Not inside a scrolling container, so show the feedback right away
-                    SetPressed(TRUE);
+                    SetPressed(TRUE, x, y);
                     CheckForLongClick(0);
                 }
             }
@@ -6242,6 +6770,7 @@ Boolean View::OnTouchEvent(
             break;
         case IMotionEvent::ACTION_MOVE:
             {
+                DrawableHotspotChanged(x, y);
                 Float fx, fy;
                 event->GetX(&fx);
                 event->GetY(&fy);
@@ -6387,6 +6916,36 @@ ECode View::GetTouchDelegate(
 }
 
 /**
+ * Request unbuffered dispatch of the given stream of MotionEvents to this View.
+ *
+ * Until this View receives a corresponding {@link MotionEvent#ACTION_UP}, ask that the input
+ * system not batch {@link MotionEvent}s but instead deliver them as soon as they're
+ * available. This method should only be called for touch events.
+ *
+ * <p class="note">This api is not intended for most applications. Buffered dispatch
+ * provides many of benefits, and just requesting unbuffered dispatch on most MotionEvent
+ * streams will not improve your input latency. Side effects include: increased latency,
+ * jittery scrolls and inability to take advantage of system resampling. Talk to your input
+ * professional to see if {@link #requestUnbufferedDispatch(MotionEvent)} is right for
+ * you.</p>
+ */
+ECode View::RequestUnbufferedDispatch(
+    /* [in] */ IMotionEvent* event)
+{
+    Int32 action;
+    event->GetAction(&action);
+    Boolean res;
+    event->IsTouchEvent(&res);
+    if (mAttachInfo == NULL
+            || action != IMotionEvent::ACTION_DOWN && action != IMotionEvent::ACTION_MOVE
+            || !res) {
+        return NOERROR;
+    }
+    mAttachInfo->mUnbufferedDispatchRequested = TRUE;
+    return NOERROR;
+}
+
+/**
  * Set flags controlling behavior of this view.
  *
  * @param flags Constant indicating the value which should be set
@@ -6396,6 +6955,13 @@ void View::SetFlags(
     /* [in] */ Int32 flags,
     /* [in] */ Int32 mask)
 {
+    AutoPtr<IAccessibilityManager> manager;
+    CAccessibilityManager::GetInstance(mContext, (IAccessibilityManager**)&manager);
+    Boolean accessibilityEnabled, accessibility;
+    manager->IsEnabled(&accessibilityEnabled);
+    IncludeForAccessibility(&accessibility);
+    Boolean oldIncludeForAccessibility = accessibilityEnabled && accessibility;
+
     Int32 old = mViewFlags;
     mViewFlags = (mViewFlags & ~mask) | (flags & mask);
 
@@ -6424,16 +6990,10 @@ void View::SetFlags(
                 mParent->FocusableViewAvailable(IVIEW_PROBE(this));
             }
         }
-
-        AutoPtr<IAccessibilityManager> manger;
-        CAccessibilityManager::GetInstance(mContext, (IAccessibilityManager**)&manger);
-        Boolean bval;
-        if (manger->IsEnabled(&bval),  bval) {
-            NotifyAccessibilityStateChanged();
-        }
     }
 
-    if ((flags & VISIBILITY_MASK) == IView::VISIBLE) {
+    Int32 newVisibility = flags & VISIBILITY_MASK;
+    if (newVisibility == IView::VISIBLE) {
         if ((changed & VISIBILITY_MASK) != 0) {
             /*
              * If this view is becoming visible, invalidate it in case it changed while
@@ -6487,10 +7047,10 @@ void View::SetFlags(
          */
         mPrivateFlags |= PFLAG_DRAWN;
 
-        if (((mViewFlags & VISIBILITY_MASK) == IView::INVISIBLE) && HasFocus()) {
+        if (((mViewFlags & VISIBILITY_MASK) == IView::INVISIBLE)) {
             // root view becoming invisible shouldn't clear focus and accessibility focus
             if (GetRootView().Get() != IVIEW_PROBE(this)) {
-                ClearFocus();
+                if (HasFocus()) ClearFocus();
                 ClearAccessibilityFocus();
             }
         }
@@ -6500,9 +7060,14 @@ void View::SetFlags(
     }
 
     if ((changed & VISIBILITY_MASK) != 0) {
+        // If the view is invisible, cleanup its display list to free up resources
+        if (newVisibility != IView::VISIBLE && mAttachInfo != NULL) {
+            CleanupDraw();
+        }
+
         if (mParent != NULL && IViewGroup::Probe(mParent) != NULL) {
             VIEWGROUP_PROBE(mParent)->OnChildVisibilityChanged(IVIEW_PROBE(this),
-                    (changed & VISIBILITY_MASK), (flags & VISIBILITY_MASK));
+                    (changed & VISIBILITY_MASK), newVisibility);
             VIEW_PROBE(mParent)->Invalidate(TRUE);
         }
         else if (mParent != NULL) {
@@ -6510,7 +7075,9 @@ void View::SetFlags(
         }
 
         DispatchVisibilityChanged(
-            IVIEW_PROBE(this), (flags & VISIBILITY_MASK));
+            IVIEW_PROBE(this), newVisibility);
+
+        NotifySubtreeAccessibilityStateChangedIfNeeded();
     }
 
     if ((changed & WILL_NOT_CACHE_DRAWING) != 0) {
@@ -6551,21 +7118,34 @@ void View::SetFlags(
         }
     }
 
-    AutoPtr<IAccessibilityManager> manger;
-    CAccessibilityManager::GetInstance(mContext, (IAccessibilityManager**)&manger);
-    Boolean bval;
-    if ((manger->IsEnabled(&bval),  bval)
-        && ((changed & FOCUSABLE) != 0 || (changed & CLICKABLE) != 0
-            || (changed & LONG_CLICKABLE) != 0
-            || (changed & ENABLED) != 0)
-    ) {
-        NotifyAccessibilityStateChanged();
+    if (accessibilityEnabled) {
+        if ((changed & FOCUSABLE_MASK) != 0 || (changed & VISIBILITY_MASK) != 0
+                || (changed & CLICKABLE) != 0 || (changed & LONG_CLICKABLE) != 0) {
+            Boolean res;
+            IncludeForAccessibility(&res);
+            if (oldIncludeForAccessibility != res) {
+                NotifySubtreeAccessibilityStateChangedIfNeeded();
+            } else {
+                NotifyViewAccessibilityStateChangedIfNeeded(
+                        IAccessibilityEvent::CONTENT_CHANGE_TYPE_UNDEFINED);
+            }
+        } else if ((changed & ENABLED_MASK) != 0) {
+            NotifyViewAccessibilityStateChangedIfNeeded(
+                    IAccessibilityEvent::CONTENT_CHANGE_TYPE_UNDEFINED);
+        }
     }
 }
 
 /**
  * Change the view's z order in the tree, so it's on top of other sibling
- * views
+ * views. This ordering change may affect layout, if the parent container
+ * uses an order-dependent layout scheme (e.g., LinearLayout). Prior
+ * to {@link android.os.Build.VERSION_CODES#KITKAT} this
+ * method should be followed by calls to {@link #requestLayout()} and
+ * {@link View#invalidate()} on the view's parent to force the parent to redraw
+ * with the new child ordering.
+ *
+ * @see ViewGroup#bringChildToFront(View)
  */
 ECode View::BringToFront()
 {
@@ -6766,26 +7346,17 @@ Int32 View::GetMeasuredState()
 
 AutoPtr<IMatrix> View::GetMatrix()
 {
-    if (mTransformationInfo != NULL) {
-        UpdateMatrix();
-        return mTransformationInfo->mMatrix;
-    }
-    return CMatrix::IDENTITY_MATRIX;
-}
-
-Boolean View::Nonzero(
-    /* [in] */ Float value)
-{
-    return (value < -NONZERO_EPSILON || value > NONZERO_EPSILON);
+    EnsureTransformationInfo();
+    AutoPtr<IMatrix> matrix = mTransformationInfo->mMatrix;
+    mRenderNode->GetMatrix((IMatrix**)&matrix);
+    return matrix;
 }
 
 Boolean View::HasIdentityMatrix()
 {
-    if (mTransformationInfo != NULL) {
-        UpdateMatrix();
-        return mTransformationInfo->mMatrixIsIdentity;
-    }
-    return TRUE;
+    Boolean res;
+    mRenderNode->HasIdentityMatrix(&res);
+    return res;
 }
 
 void View::EnsureTransformationInfo()
@@ -6795,150 +7366,66 @@ void View::EnsureTransformationInfo()
     }
 }
 
-/**
- * Recomputes the transform matrix if necessary.
- */
-void View::UpdateMatrix()
-{
-    AutoPtr<TransformationInfo> info = mTransformationInfo;
-    if (info == NULL) {
-        return;
-    }
-    if (info->mMatrixDirty) {
-        // transform-related properties have changed since the last time someone
-        // asked for the matrix; recalculate it with the current values
-
-        // Figure out if we need to update the pivot point
-        if ((mPrivateFlags & PFLAG_PIVOT_EXPLICITLY_SET) == 0) {
-            if ((mRight - mLeft) != info->mPrevWidth || (mBottom - mTop) != info->mPrevHeight) {
-                info->mPrevWidth = mRight - mLeft;
-                info->mPrevHeight = mBottom - mTop;
-                info->mPivotX = info->mPrevWidth / 2.0f;
-                info->mPivotY = info->mPrevHeight / 2.0f;
-            }
-        }
-        info->mMatrix->Reset();
-        Boolean res;
-        if (!Nonzero(info->mRotationX) && !Nonzero(info->mRotationY)) {
-            info->mMatrix->SetTranslate(info->mTranslationX, info->mTranslationY);
-            info->mMatrix->PreRotate(info->mRotation, info->mPivotX, info->mPivotY, &res);
-            info->mMatrix->PreScale(info->mScaleX, info->mScaleY, info->mPivotX, info->mPivotY, &res);
-        }
-        else {
-            if (info->mCamera == NULL) {
-                CCamera::New((ICamera**)&(info->mCamera));
-                CMatrix::New((IMatrix**)&(info->matrix3D));
-            }
-
-            info->mCamera->Save();
-            info->mMatrix->PreScale(info->mScaleX, info->mScaleY, info->mPivotX, info->mPivotY, &res);
-            info->mCamera->Rotate(info->mRotationX, info->mRotationY, -info->mRotation);
-            info->mCamera->GetMatrix(info->matrix3D);
-            info->matrix3D->PreTranslate(-info->mPivotX, -info->mPivotY, &res);
-            info->matrix3D->PostTranslate(info->mPivotX + info->mTranslationX,
-                    info->mPivotY + info->mTranslationY, &res);
-            info->mMatrix->PostConcat(info->matrix3D, &res);
-            info->mCamera->Restore();
-        }
-        info->mMatrixDirty = FALSE;
-        info->mMatrix->IsIdentity(&info->mMatrixIsIdentity);
-        info->mInverseMatrixDirty = TRUE;
-    }
-}
-
 AutoPtr<IMatrix> View::GetInverseMatrix()
 {
-    AutoPtr<TransformationInfo> info = mTransformationInfo;
-    if (info != NULL) {
-        UpdateMatrix();
-        if (info->mInverseMatrixDirty) {
-            if (info->mInverseMatrix == NULL) {
-                CMatrix::New((IMatrix**)&(info->mInverseMatrix));
-            }
-            Boolean res;
-            info->mMatrix->Invert(info->mInverseMatrix, &res);
-            info->mInverseMatrixDirty = FALSE;
-        }
-        return info->mInverseMatrix;
+    EnsureTransformationInfo();
+    if (mTransformationInfo->mInverseMatrix == NULL) {
+
+        CMatrix::New((IMatrix**)&(mTransformationInfo->mInverseMatrix));
     }
-    return CMatrix::IDENTITY_MATRIX;
+    AutoPtr<IMatrix> matrix = mTransformationInfo->mInverseMatrix;
+    mRenderNode->GetInverseMatrix((IMatrix**)&matrix);
+    return matrix;
 }
 
 Float View::GetCameraDistance()
 {
-    EnsureTransformationInfo();
-    AutoPtr<IDisplayMetrics> display;
-    mResources->GetDisplayMetrics((IDisplayMetrics**)&display);
-    assert(display != NULL);
-    Int32 densityDpi;
-    display->GetDensityDpi(&densityDpi);
-    Float dpi = densityDpi;
-    AutoPtr<TransformationInfo> info = mTransformationInfo;
-    if (info->mCamera == NULL) {
-        CCamera::New((ICamera**)&(info->mCamera));
-        CMatrix::New((IMatrix**)&(info->matrix3D));
-    }
-
-    Float z = 0.0f;
-    return -((info->mCamera->GetLocationZ(&z), z) * dpi);
+    AutoPtr<IDisplayMetrics> metrics;
+    mResources->GetDisplayMetrics((IDisplayMetrics**)&metrics);
+    Float dpi, distance;
+    metrics->GetDensityDpi(&dpi);
+    mRenderNode->GetCameraDistance(&distance);
+    return -(distance * dpi);
 }
 
 ECode View::SetCameraDistance(
     /* [in] */ Float distance)
 {
+    Float dpi;
+    AutoPtr<IDisplayMetrics> metrics;
+    mResources->GetDisplayMetrics((IDisplayMetrics**)&metrics);
+    metrics->GetDensityDpi(&dpi);
+
     InvalidateViewProperty(TRUE, FALSE);
+    Boolean res;
 
-    EnsureTransformationInfo();
-    AutoPtr<IDisplayMetrics> display;
-    mResources->GetDisplayMetrics((IDisplayMetrics**)&display);
-    assert(display != NULL);
-    Int32 densityDpi;
-    display->GetDensityDpi(&densityDpi);
-    Float dpi = densityDpi;
-    AutoPtr<TransformationInfo> info = mTransformationInfo;
-    if (info->mCamera == NULL) {
-        CCamera::New((ICamera**)&(info->mCamera));
-        CMatrix::New((IMatrix**)&(info->matrix3D));
-    }
+    mRenderNode->etCameraDistance(-Elastos::Core::Math::Abs(distance) / dpi, &res);
+    invalidateViewProperty(FALSE, FALSE);
 
-    info->mCamera->SetLocation(0.0f, 0.0f, -Elastos::Core::Math::Abs(distance) / dpi);
-    info->mMatrixDirty = TRUE;
-
-    InvalidateViewProperty(FALSE, FALSE);
-    if (mDisplayList != NULL) {
-        mDisplayList->SetCameraDistance(-Elastos::Core::Math::Abs(distance) / dpi);
-    }
-    if ((mPrivateFlags2 & PFLAG2_VIEW_QUICK_REJECTED) == PFLAG2_VIEW_QUICK_REJECTED) {
-        // View was rejected last time it was drawn by its parent; this may have changed
-        InvalidateParentIfNeeded();
-    }
+    InvalidateParentIfNeededAndWasQuickRejected();
 
     return NOERROR;
 }
 
 Float View::GetRotation()
 {
-    return mTransformationInfo != NULL ? mTransformationInfo->mRotation : 0.0f;
+    Float rotation;
+    mRenderNode->GetRotation(&rotation);
+    return rotation;
 }
 
 ECode View::SetRotation(
     /* [in] */ Float rotation)
 {
-    EnsureTransformationInfo();
-    AutoPtr<TransformationInfo> info = mTransformationInfo;
-    if (info->mRotation != rotation) {
+    if (rotation != GetRotation()) {
         // Double-invalidation is necessary to capture view's old and new areas
         InvalidateViewProperty(TRUE, FALSE);
-        info->mRotation = rotation;
-        info->mMatrixDirty = TRUE;
+        Boolean res;
+        mRenderNode->SetRotation(rotation, &res);
         InvalidateViewProperty(FALSE, TRUE);
-        if (mDisplayList != NULL) {
-            mDisplayList->SetRotation(rotation);
-        }
-        if ((mPrivateFlags2 & PFLAG2_VIEW_QUICK_REJECTED) == PFLAG2_VIEW_QUICK_REJECTED) {
-            // View was rejected last time it was drawn by its parent; this may have changed
-            InvalidateParentIfNeeded();
-        }
+
+        InvalidateParentIfNeededAndWasQuickRejected();
+        NotifySubtreeAccessibilityStateChangedIfNeeded();
     }
 
     return NOERROR;
@@ -6946,26 +7433,22 @@ ECode View::SetRotation(
 
 Float View::GetRotationY()
 {
-    return mTransformationInfo != NULL ? mTransformationInfo->mRotationY : 0.0f;
+    Float rotationY;
+    mRenderNode->GetRotationY(&rotationY);
+    return rotationY;
 }
 
 ECode View::SetRotationY(
     /* [in] */ Float rotationY)
 {
-    EnsureTransformationInfo();
-    AutoPtr<TransformationInfo> info = mTransformationInfo;
-    if (info->mRotationY != rotationY) {
+    if (rotationY != GetRotationY()) {
         InvalidateViewProperty(TRUE, FALSE);
-        info->mRotationY = rotationY;
-        info->mMatrixDirty = TRUE;
+        Boolean res;
+        mRenderNode->SetRotationY(rotationY, &res);
         InvalidateViewProperty(FALSE, TRUE);
-        if (mDisplayList != NULL) {
-            mDisplayList->SetRotationY(rotationY);
-        }
-        if ((mPrivateFlags2 & PFLAG2_VIEW_QUICK_REJECTED) == PFLAG2_VIEW_QUICK_REJECTED) {
-            // View was rejected last time it was drawn by its parent; this may have changed
-            InvalidateParentIfNeeded();
-        }
+
+        InvalidateParentIfNeededAndWasQuickRejected();
+        NotifySubtreeAccessibilityStateChangedIfNeeded();
     }
 
     return NOERROR;
@@ -6973,26 +7456,22 @@ ECode View::SetRotationY(
 
 Float View::GetRotationX()
 {
-    return mTransformationInfo != NULL ? mTransformationInfo->mRotationX : 0.0f;
+    Float rotationX;
+    mRenderNode->GetRotationX(&rotationX);
+    return rotationX;
 }
 
 ECode View::SetRotationX(
     /* [in] */ Float rotationX)
 {
-    EnsureTransformationInfo();
-    AutoPtr<TransformationInfo> info = mTransformationInfo;
-    if (info->mRotationX != rotationX) {
+    if (rotationX != GetRotationX()) {
         InvalidateViewProperty(TRUE, FALSE);
-        info->mRotationX = rotationX;
-        info->mMatrixDirty = TRUE;
+        Boolean res;
+        mRenderNode->SetRotationX(rotationX, &res);
         InvalidateViewProperty(FALSE, TRUE);
-        if (mDisplayList != NULL) {
-            mDisplayList->SetRotationX(rotationX);
-        }
-        if ((mPrivateFlags2 & PFLAG2_VIEW_QUICK_REJECTED) == PFLAG2_VIEW_QUICK_REJECTED) {
-            // View was rejected last time it was drawn by its parent; this may have changed
-            InvalidateParentIfNeeded();
-        }
+
+        InvalidateParentIfNeededAndWasQuickRejected();
+        NotifySubtreeAccessibilityStateChangedIfNeeded();
     }
 
     return NOERROR;
@@ -7000,26 +7479,22 @@ ECode View::SetRotationX(
 
 Float View::GetScaleX()
 {
-    return mTransformationInfo != NULL ? mTransformationInfo->mScaleX : 1.0f;
+    Float scaleX;
+    mRenderNode->GetScaleX(&scaleX);
+    return scaleX;
 }
 
 ECode View::SetScaleX(
     /* [in] */ Float scaleX)
 {
-    EnsureTransformationInfo();
-    AutoPtr<TransformationInfo> info = mTransformationInfo;
-    if (info->mScaleX != scaleX) {
+    if (scaleX != GetScaleX()) {
         InvalidateViewProperty(TRUE, FALSE);
-        info->mScaleX = scaleX;
-        info->mMatrixDirty = TRUE;
+        Boolean res;
+        mRenderNode->setScaleX(scaleX, &res);
         InvalidateViewProperty(FALSE, TRUE);
-        if (mDisplayList != NULL) {
-            mDisplayList->SetScaleX(scaleX);
-        }
-        if ((mPrivateFlags2 & PFLAG2_VIEW_QUICK_REJECTED) == PFLAG2_VIEW_QUICK_REJECTED) {
-            // View was rejected last time it was drawn by its parent; this may have changed
-            InvalidateParentIfNeeded();
-        }
+
+        InvalidateParentIfNeededAndWasQuickRejected();
+        NotifySubtreeAccessibilityStateChangedIfNeeded();
     }
 
     return NOERROR;
@@ -7027,26 +7502,22 @@ ECode View::SetScaleX(
 
 Float View::GetScaleY()
 {
-    return mTransformationInfo != NULL ? mTransformationInfo->mScaleY : 1.0f;
+    Float scaleY;
+    mRenderNode->GetScaleY(&scaleY);
+    return scaleY;
 }
 
 ECode View::SetScaleY(
     /* [in] */ Float scaleY)
 {
-    EnsureTransformationInfo();
-    AutoPtr<TransformationInfo> info = mTransformationInfo;
-    if (info->mScaleY != scaleY) {
+    if (scaleY != GetScaleY()) {
         InvalidateViewProperty(TRUE, FALSE);
-        info->mScaleY = scaleY;
-        info->mMatrixDirty = TRUE;
+        Boolean res;
+        mRenderNode->setScaleY(scaleY, &res);
         InvalidateViewProperty(FALSE, TRUE);
-        if (mDisplayList != NULL) {
-            mDisplayList->SetScaleY(scaleY);
-        }
-        if ((mPrivateFlags2 & PFLAG2_VIEW_QUICK_REJECTED) == PFLAG2_VIEW_QUICK_REJECTED) {
-            // View was rejected last time it was drawn by its parent; this may have changed
-            InvalidateParentIfNeeded();
-        }
+
+        InvalidateParentIfNeededAndWasQuickRejected();
+        NotifySubtreeAccessibilityStateChangedIfNeeded();
     }
 
     return NOERROR;
@@ -7054,27 +7525,23 @@ ECode View::SetScaleY(
 
 Float View::GetPivotX()
 {
-    return mTransformationInfo != NULL ? mTransformationInfo->mPivotX : 0.0f;
+    Float pivotX;
+    mRenderNode->GetPivotX(&pivotX);
+    return pivotX;
 }
 
 ECode View::SetPivotX(
     /* [in] */ Float pivotX)
 {
-    EnsureTransformationInfo();
-    mPrivateFlags |= PFLAG_PIVOT_EXPLICITLY_SET;
-    AutoPtr<TransformationInfo> info = mTransformationInfo;
-    if (info->mPivotX != pivotX) {
+    Boolean set;
+    mRenderNode->IsPivotExplicitlySet(&set);
+    if (!set || pivotX != GetPivotX()) {
         InvalidateViewProperty(TRUE, FALSE);
-        info->mPivotX = pivotX;
-        info->mMatrixDirty = TRUE;
+        Boolean res;
+        mRenderNode->SetPivotX(pivotX, &res);
         InvalidateViewProperty(FALSE, TRUE);
-        if (mDisplayList != NULL) {
-            mDisplayList->SetPivotX(pivotX);
-        }
-        if ((mPrivateFlags2 & PFLAG2_VIEW_QUICK_REJECTED) == PFLAG2_VIEW_QUICK_REJECTED) {
-            // View was rejected last time it was drawn by its parent; this may have changed
-            InvalidateParentIfNeeded();
-        }
+
+        InvalidateParentIfNeededAndWasQuickRejected();
     }
 
     return NOERROR;
@@ -7082,27 +7549,23 @@ ECode View::SetPivotX(
 
 Float View::GetPivotY()
 {
-    return mTransformationInfo != NULL ? mTransformationInfo->mPivotY : 0.0f;
+    Float pivotY;
+    mRenderNode->GetPivotY(&pivotY);
+    return pivotY;
 }
 
 ECode View::SetPivotY(
     /* [in] */ Float pivotY)
 {
-    EnsureTransformationInfo();
-    mPrivateFlags |= PFLAG_PIVOT_EXPLICITLY_SET;
-    AutoPtr<TransformationInfo> info = mTransformationInfo;
-    if (info->mPivotY != pivotY) {
+    Boolean set;
+    mRenderNode->IsPivotExplicitlySet(&set);
+    if (!set || pivotY != GetPivotY()) {
         InvalidateViewProperty(TRUE, FALSE);
-        info->mPivotY = pivotY;
-        info->mMatrixDirty = TRUE;
+        Boolean res;
+        mRenderNode->setPivotY(pivotY, &res);
         InvalidateViewProperty(FALSE, TRUE);
-        if (mDisplayList != NULL) {
-            mDisplayList->SetPivotY(pivotY);
-        }
-        if ((mPrivateFlags2 & PFLAG2_VIEW_QUICK_REJECTED) == PFLAG2_VIEW_QUICK_REJECTED) {
-            // View was rejected last time it was drawn by its parent; this may have changed
-            InvalidateParentIfNeeded();
-        }
+
+        InvalidateParentIfNeededAndWasQuickRejected();
     }
 
     return NOERROR;
@@ -7133,9 +7596,10 @@ ECode View::SetAlpha(
         else {
             mPrivateFlags &= ~PFLAG_ALPHA_SET;
             InvalidateViewProperty(TRUE, FALSE);
-            if (mDisplayList != NULL) {
-                mDisplayList->SetAlpha(alpha);
-            }
+            Boolean res;
+            mRenderNode->SetAlpha(GetFinalAlpha(), &res);
+            NotifyViewAccessibilityStateChangedIfNeeded(
+                    IAccessibilityEvent::CONTENT_CHANGE_TYPE_UNDEFINED);
         }
     }
 
@@ -7155,12 +7619,60 @@ Boolean View::SetAlphaNoInvalidation(
         }
         else {
             mPrivateFlags &= ~PFLAG_ALPHA_SET;
-            if (mDisplayList != NULL) {
-                mDisplayList->SetAlpha(alpha);
-            }
+            Boolean res;
+            mRenderNode->SetAlpha(GetFinalAlpha(), &res);
         }
     }
     return FALSE;
+}
+
+/**
+ * This property is hidden and intended only for use by the Fade transition, which
+ * animates it to produce a visual translucency that does not side-effect (or get
+ * affected by) the real alpha property. This value is composited with the other
+ * alpha value (and the AlphaAnimation value, when that is present) to produce
+ * a final visual translucency result, which is what is passed into the DisplayList.
+ *
+ * @hide
+ */
+ECode View::SetTransitionAlpha(
+    /* [in] */ Float alpha)
+{
+    EnsureTransformationInfo();
+    if (mTransformationInfo->mTransitionAlpha != alpha) {
+        mTransformationInfo->mTransitionAlpha = alpha;
+        mPrivateFlags &= ~PFLAG_ALPHA_SET;
+        InvalidateViewProperty(TRUE, FALSE);
+        Boolean res;
+        mRenderNode->SetAlpha(GetFinalAlpha(), &res);
+    }
+}
+
+/**
+ * Calculates the visual alpha of this view, which is a combination of the actual
+ * alpha value and the transitionAlpha value (if set).
+ */
+Float View::GetFinalAlpha()
+{
+    if (mTransformationInfo != NULL) {
+        return mTransformationInfo->mAlpha * mTransformationInfo->mTransitionAlpha;
+    }
+    return 1;
+}
+
+/**
+ * This property is hidden and intended only for use by the Fade transition, which
+ * animates it to produce a visual translucency that does not side-effect (or get
+ * affected by) the real alpha property. This value is composited with the other
+ * alpha value (and the AlphaAnimation value, when that is present) to produce
+ * a final visual translucency result, which is what is passed into the DisplayList.
+ *
+ * @hide
+ */
+ECode View::GetTransitionAlpha(
+    /* [out] */ Float* alpha)
+{
+    return mTransformationInfo != NULL ? mTransformationInfo->mTransitionAlpha : 1;
 }
 
 /**
