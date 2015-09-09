@@ -5,15 +5,18 @@ module
     interface Elastos.Droid.Telephony.ICellInfo;
     interface Elastos.Droid.Telephony.IServiceState;
     interface Elastos.Droid.Telephony.ISignalStrength;
+    interface Elastos.Droid.Telephony.IPreciseCallState;
+    interface Elastos.Droid.Telephony.IPreciseDataConnectionState;
+    interface Elastos.Droid.Telephony.IDataConnectionRealTimeInfo;
+    interface Elastos.Droid.Telephony.IVoLteServiceState;
 
     namespace Elastos {
     namespace Droid {
     namespace Internal {
     namespace Telephony {
 
-    [deprecated]
+    [oneway, deprecated]
     interface IIPhoneStateListener {
-
         OnServiceStateChanged(
             [in] IServiceState* serviceState);
 
@@ -50,6 +53,20 @@ module
         OnCellInfoChanged(
             [in] ArrayOf<ICellInfo*>* cellInfo);
 
+        OnPreciseCallStateChanged(
+            [in] IPreciseCallState* callState);
+
+        OnPreciseDataConnectionStateChanged(
+            [in] IPreciseDataConnectionState* dataConnectionState);
+
+        OnDataConnectionRealTimeInfoChanged(
+            [in] IDataConnectionRealTimeInfo* dcRtInfo);
+
+        OnVoLteServiceStateChanged(
+            [in] IVoLteServiceState* lteState);
+
+        OnOemHookRawEvent(
+            [in] ArrayOf<Byte>* rawData);
     }
 
     } // namespace Telephony

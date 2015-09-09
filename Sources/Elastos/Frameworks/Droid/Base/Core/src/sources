@@ -100,7 +100,6 @@ SOURCES += frameworkext.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
-//TODO:Graphics
 // LIBRARIES += graphics/graphics.lib
 LIBRARIES += graphics/drawable/shapes/shapes.lib
 

@@ -120,4 +120,6 @@ module
     const E_ACCESS_EXCEPTION                            =  0xDD020000;
     const E_PARSE_EXCEPTION                             =  0xDD030000;
     const E_TYPE_EXCEPTION                              =  0xDD040000;
+    const E_QUERY_POOL_EXCEPTION                        =  0xDD050000;
+    const E_ENCODE_EXCEPTION                            =  0xDD060000;
 }

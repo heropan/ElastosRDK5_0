@@ -18,10 +18,10 @@ module
          * ringing or waiting.</li>
          * </ul>
          */
-        enum State {
-            State_IDLE,
-            State_RINGING,
-            State_OFFHOOK
+        enum PhoneConstantsState {
+            PhoneConstantsState_IDLE,
+            PhoneConstantsState_RINGING,
+            PhoneConstantsState_OFFHOOK
         }
 
         /**
@@ -35,15 +35,20 @@ module
          *                 in 2G network</li>
          * </ul>
          */
-        enum DataState {
-            DataState_CONNECTED,
-            DataState_CONNECTING,
-            DataState_DISCONNECTED,
-            DataState_SUSPENDED
+        enum PhoneConstantsDataState {
+            PhoneConstantsDataState_CONNECTED,
+            PhoneConstantsDataState_CONNECTING,
+            PhoneConstantsDataState_DISCONNECTED,
+            PhoneConstantsDataState_SUSPENDED
+        }
+
+        enum CardUnavailableReason {
+            REASON_CARD_REMOVED,
+            REASON_RADIO_UNAVAILABLE,
+            REASON_SIM_REFRESH_RESET
         }
 
         interface IPhoneConstants {
-
             const String STATE_KEY = "state";
 
             // Radio Type
@@ -51,6 +56,8 @@ module
             const Int32 PHONE_TYPE_GSM = 1;
             const Int32 PHONE_TYPE_CDMA = 2;
             const Int32 PHONE_TYPE_SIP = 3;
+            const Int32 PHONE_TYPE_THIRD_PARTY = 4;
+            const Int32 PHONE_TYPE_IMS = 5;
 
             // Modes for LTE_ON_CDMA
             const Int32 LTE_ON_CDMA_UNKNOWN = -1; //RILConstants.LTE_ON_CDMA_UNKNOWN;
@@ -67,10 +74,12 @@ module
             const String PHONE_NAME_KEY = "phoneName";
             const String FAILURE_REASON_KEY = "reason";
             const String STATE_CHANGE_REASON_KEY = "reason";
+            const String DATA_NETWORK_TYPE_KEY = "networkType";
+            const String DATA_FAILURE_CAUSE_KEY = "failCause";
             const String DATA_APN_TYPE_KEY = "apnType";
             const String DATA_APN_KEY = "apn";
             const String DATA_LINK_PROPERTIES_KEY = "linkProperties";
-            const String DATA_LINK_CAPABILITIES_KEY = "linkCapabilities";
+            const String DATA_NETWORK_CAPABILITIES_KEY = "networkCapabilities";
 
             const String DATA_IFACE_NAME_KEY = "iface";
             const String NETWORK_UNAVAILABLE_KEY = "networkUnvailable";
@@ -78,6 +87,14 @@ module
             const String PHONE_IN_ECM_STATE = "phoneinECMState";
 
             const String REASON_LINK_PROPERTIES_CHANGED = "linkPropertiesChanged";
+
+            /**
+             * Return codes for supplyPinReturnResult and
+             * supplyPukReturnResult APIs
+             */
+            const Int32 PIN_RESULT_SUCCESS = 0;
+            const Int32 PIN_PASSWORD_INCORRECT = 1;
+            const Int32 PIN_GENERAL_FAILURE = 2;
 
             /**
              * Return codes for <code>enableApnType()</code>
@@ -113,6 +130,56 @@ module
             const String APN_TYPE_IMS = "ims";
             /** APN type for CBS */
             const String APN_TYPE_CBS = "cbs";
+
+            /** APN type for IA Initial Attach APN */
+            const String APN_TYPE_IA = "ia";
+            /** APN type for IA Emergency PDN */
+            const String APN_TYPE_EMERGENCY = "emergency";
+
+            const Int32 RIL_CARD_MAX_APPS    = 8;
+
+            const Int32 DEFAULT_CARD_INDEX   = 0;
+
+            const Int32 MAX_PHONE_COUNT_SINGLE_SIM = 1;
+
+            const Int32 MAX_PHONE_COUNT_DUAL_SIM = 2;
+
+            const Int32 MAX_PHONE_COUNT_TRI_SIM = 3;
+
+            const String PHONE_KEY = "phone";
+
+            const String SLOT_KEY  = "slot";
+
+            // FIXME: This is used to pass a subId via intents, we need to look at its usage, which is
+            // FIXME: extensive, and see if this should be an array of all active subId's or ...?
+            const String SUBSCRIPTION_KEY  = "subscription";
+
+            const String SUB_SETTING  = "subSettings";
+
+            const Int32 SUB1 = 0;
+            const Int32 SUB2 = 1;
+            const Int32 SUB3 = 2;
+
+            const Int32 EVENT_SUBSCRIPTION_ACTIVATED   = 500;
+            const Int32 EVENT_SUBSCRIPTION_DEACTIVATED = 501;
+
+            // TODO: Remove these constants and use an int instead.
+            const Int32 SIM_ID_1 = 0;
+            const Int32 SIM_ID_2 = 1;
+            const Int32 SIM_ID_3 = 2;
+            const Int32 SIM_ID_4 = 3;
+
+            // ICC SIM Application Types
+            // TODO: Replace the IccCardApplicationStatus.AppType enums with these constants
+            const Int32 APPTYPE_UNKNOWN = 0;
+            const Int32 APPTYPE_SIM = 1;
+            const Int32 APPTYPE_USIM = 2;
+            const Int32 APPTYPE_RUIM = 3;
+            const Int32 APPTYPE_CSIM = 4;
+            const Int32 APPTYPE_ISIM = 5;
+
+            // Initial MTU value.
+            const Int32 UNSET_MTU = 0;
         }
 
     } // namespace Telephony

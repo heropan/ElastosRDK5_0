@@ -143,23 +143,6 @@ module
 
     }}} // Elastos.Droid.telecom
 
-
-    namespace Elastos {
-    namespace Droid {
-    namespace Internal {
-
-        namespace Telephony {
-            interface ICallerInfo {}
-
-            interface IITelephony {}
-
-            interface IPhoneConstants {}
-        }
-
-    } // namespace Internal
-    } // namespace Droid
-    } // namespace Elastos
-
     namespace Elastos {
     namespace Droid {
     namespace Utility {
@@ -178,9 +161,27 @@ module
     namespace Droid {
     namespace Telephony {
 
+        interface ICellInfo {}
+
         interface ITelephonyManager {}
 
         interface ISignalStrength {}
+
+        interface IPreciseCallState {}
+
+        interface IPreciseDataConnectionState {}
+
+        interface IDataConnectionRealTimeInfo {}
+
+        interface IVoLteServiceState {}
+
+        interface ISubInfoRecord {}
+
+        interface IIccOpenLogicalChannelResponse {}
+
+        interface IServiceState {}
+
+        interface INeighboringCellInfo {}
 
     }}} // Elastos.Droid.Telephony
 

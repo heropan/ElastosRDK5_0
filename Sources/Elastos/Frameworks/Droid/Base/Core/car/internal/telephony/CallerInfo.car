@@ -12,12 +12,13 @@ module
     namespace Internal {
     namespace Telephony {
 
+    /**
+     * Looks up caller information for the given phone number.
+     *
+     * {@hide}
+     */
     [local]
     interface ICallerInfo {
-        const String UNKNOWN_NUMBER = "-1";
-        const String PRIVATE_NUMBER = "-2";
-        const String PAYPHONE_NUMBER = "-3";
-
         // Accessors
 
         /**
@@ -47,40 +48,6 @@ module
         UpdateGeoDescription(
             [in] IContext* ctx,
             [in] String fallbackNumber);
-
-        /**
-         * @return a string debug representation of this instance.
-         */
-        ToString(
-            [out] String* str);
-
-        /**
-         * Mark this CallerInfo as an emergency call.
-         * @param context To lookup the localized 'Emergency Number' string.
-         * @return this instance.
-         */
-        // TODO: Note we're setting the phone number here (refer to
-        // javadoc comments at the top of CallerInfo class) to a localized
-        // string 'Emergency Number'. This is pretty bad because we are
-        // making UI work here instead of just packaging the data. We
-        // should set the phone number to the dialed number and name to
-        // 'Emergency Number' and let the UI make the decision about what
-        // should be displayed.
-        MarkAsEmergency(
-            [in] IContext* ctx,
-            [out] ICallerInfo** callerInfo);
-
-        /**
-         * Mark this CallerInfo as a voicemail call. The voicemail label
-         * is obtained from the telephony manager. Caller must hold the
-         * READ_PHONE_STATE permission otherwise the phoneNumber will be
-         * set to null.
-         * @return this instance.
-         */
-        // TODO: As in the emergency number handling, we end up writing a
-        // string in the phone number field.
-        MarkAsVoiceMail(
-            [out] ICallerInfo** callerInfo);
 
         SetName(
             [in] String name);
@@ -157,11 +124,11 @@ module
         GetPhotoResource(
             [out] Int32* photoResource);
 
-        SetPerson_id(
-            [in] Int64 person_id);
+        SetContactIdOrZero(
+            [in] Int64 contactIdOrZero);
 
-        GetPerson_id(
-            [out] Int64* person_id);
+        GetContactIdOrZero(
+            [out] Int64* contactIdOrZero);
 
         GetNeedUpdate(
             [out] Boolean* needUpdate);
@@ -174,6 +141,18 @@ module
 
         GetContactRefUri(
             [out] IUri** contactRefUri);
+
+        SetLookupKey(
+            [in] String lookupKey);
+
+        GetLookupKey(
+            [out] String* lookupKey);
+
+        SetContactDisplayPhotoUri(
+            [in] IUri* contactDisplayPhotoUri);
+
+        GetContactDisplayPhotoUri(
+            [out] IUri** contactDisplayPhotoUri);
 
         // fields to hold individual contact preference data,
         // including the send to voicemail flag and the ringtone
@@ -240,6 +219,32 @@ module
 
     [local]
     interface ICallerInfoHelper {
+        /**
+         * getCallerInfo given a Cursor.
+         * @param context the context used to retrieve string constants
+         * @param contactRef the URI to attach to this CallerInfo object
+         * @param cursor the first object in the cursor is used to build the CallerInfo object.
+         * @return the CallerInfo which contains the caller id for the given
+         * number. The returned CallerInfo is null if no number is supplied.
+         */
+        GetCallerInfo(
+            [in] IContext* ctx,
+            [in] IUri* contactRef,
+            [in] ICursor* cursor,
+            [out] ICallerInfo** callerInfo);
+
+        /**
+         * getCallerInfo given a URI, look up in the call-log database
+         * for the uri unique key.
+         * @param context the context used to get the ContentResolver
+         * @param contactRef the URI used to lookup caller id
+         * @return the CallerInfo which contains the caller id for the given
+         * number. The returned CallerInfo is null if no number is supplied.
+         */
+        GetCallerInfo(
+            [in] IContext* ctx,
+            [in] IUri* contactRef,
+            [out] ICallerInfo** callerInfo);
 
         /**
          * getCallerInfo given a phone number, look up in the call-log database
@@ -257,67 +262,20 @@ module
             [out] ICallerInfo** callerInfo);
 
         /**
-         * getCallerInfo given a URI, look up in the call-log database
-         * for the uri unique key.
+         * getCallerInfo given a phone number and subscription, look up in the call-log database
+         * for the matching caller id info.
          * @param context the context used to get the ContentResolver
-         * @param contactRef the URI used to lookup caller id
+         * @param number the phone number used to lookup caller id
+         * @param subId the subscription for checking for if voice mail number or not
          * @return the CallerInfo which contains the caller id for the given
-         * number. The returned CallerInfo is null if no number is supplied.
+         * number. The returned CallerInfo is null if no number is supplied. If
+         * a matching number is not found, then a generic caller info is returned,
+         * with all relevant fields empty or null.
          */
         GetCallerInfo(
             [in] IContext* ctx,
-            [in] IUri* contactRef,
-            [out] ICallerInfo** callerInfo);
-
-        /**
-         * getCallerInfo given a Cursor.
-         * @param context the context used to retrieve string constants
-         * @param contactRef the URI to attach to this CallerInfo object
-         * @param cursor the first object in the cursor is used to build the CallerInfo object.
-         * @return the CallerInfo which contains the caller id for the given
-         * number. The returned CallerInfo is null if no number is supplied.
-         */
-        GetCallerInfo(
-            [in] IContext* ctx,
-            [in] IUri* contactRef,
-            [in] ICursor* cursor,
-            [out] ICallerInfo** callerInfo);
-
-        /**
-         * getCallerId: a convenience method to get the caller id for a given
-         * number.
-         *
-         * @param context the context used to get the ContentResolver.
-         * @param number a phone number.
-         * @return if the number belongs to a contact, the contact's name is
-         * returned; otherwise, the number itself is returned.
-         *
-         * TODO NOTE: This MAY need to refer to the Asynchronous Query API
-         * [startQuery()], instead of getCallerInfo, but since it looks like
-         * it is only being used by the provider calls in the messaging app:
-         *   1. android.provider.Telephony.Mms.getDisplayAddress()
-         *   2. android.provider.Telephony.Sms.getDisplayAddress()
-         * We may not need to make the change.
-         */
-        GetCallerId(
-            [in] IContext* ctx,
             [in] String number,
-            [out] String* str);
-
-        /**
-         * Performs another lookup if previous lookup fails and it's a SIP call
-         * and the peer's username is all numeric. Look up the username as it
-         * could be a PSTN number in the contact database.
-         *
-         * @param context the query context
-         * @param number the original phone number, could be a SIP URI
-         * @param previousResult the result of previous lookup
-         * @return previousResult if it's not the case
-         */
-        DoSecondaryLookupIfNecessary(
-            [in] IContext* ctx,
-            [in] String number,
-            [in] ICallerInfo* previousResult,
+            [in] Int64 subId,
             [out] ICallerInfo** callerInfo);
     }
 
