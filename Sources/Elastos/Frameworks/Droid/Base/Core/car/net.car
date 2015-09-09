@@ -123,6 +123,14 @@ module
         interface ICredentials;
     }
 
+    class CEthernetManager {
+        constructor(
+            [in] IContext* context,
+            [in] IIEthernetManager* service);
+
+        interface IEthernetManager;
+    }
+
 //    class CLocalSocket {
 //        constructor();
 
