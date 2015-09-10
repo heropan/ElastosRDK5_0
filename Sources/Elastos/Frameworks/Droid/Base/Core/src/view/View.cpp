@@ -340,6 +340,11 @@ Int32 View::sNextAccessibilityViewId = 0;
 Int32 View::sNextGeneratedId = 1;
 Mutex View::sNextGeneratedIdLock;
 
+const Int32 View::PROVIDER_BACKGROUND = 0;
+const Int32 View::PROVIDER_NONE = 1;
+const Int32 View::PROVIDER_BOUNDS = 2;
+const Int32 View::PROVIDER_PADDED_BOUNDS = 3;
+
 //property
 // AutoPtr<IProperty> View::ALPHA = InitProperty("alpha");
 // AutoPtr<IProperty> View::TRANSLATION_X = InitProperty("translationX");
@@ -844,6 +849,7 @@ View::AttachInfo::AttachInfo(
     ASSERT_SUCCEEDED(CRectF::New((IRectF**)&mTmpTransformRect));
     ASSERT_SUCCEEDED(CMatrix::New((IMatrix**)&mTmpMatrix));
     ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mTmpTransformation));
+    ASSERT_SUCCEEDED(COutline::New((IOutline**)&mTmpOutline));
     ASSERT_SUCCEEDED(CPaint::New((IPaint**)&mPoint));
     CArrayList::New(24, (IArrayList**)&mTempArrayList);
 
@@ -7689,9 +7695,7 @@ ECode View::SetTop(
     /* [in] */ Int32 top)
 {
     if (top != mTop) {
-        UpdateMatrix();
-        Boolean matrixIsIdentity = mTransformationInfo == NULL
-                || mTransformationInfo->mMatrixIsIdentity;
+        Boolean matrixIsIdentity = HasIdentityMatrix();
         if (matrixIsIdentity) {
             if (mAttachInfo != NULL) {
                 Int32 minTop = 0;
@@ -7716,17 +7720,12 @@ ECode View::SetTop(
         Int32 oldHeight = mBottom - mTop;
 
         mTop = top;
-        if (mDisplayList != NULL) {
-            mDisplayList->SetTop(mTop);
-        }
+        Boolean res;
+        mRenderNode->SetTop(mTop, &res);
 
-        OnSizeChanged(width, mBottom - mTop, width, oldHeight);
+        SizeChange(width, mBottom - mTop, width, oldHeight);
 
         if (!matrixIsIdentity) {
-            if ((mPrivateFlags & PFLAG_PIVOT_EXPLICITLY_SET) == 0) {
-                // A change in dimension means an auto-centered pivot point changes, too
-                mTransformationInfo->mMatrixDirty = TRUE;
-            }
             mPrivateFlags |= PFLAG_DRAWN; // force another invalidation with the new orientation
             Invalidate(TRUE);
         }
@@ -7760,9 +7759,7 @@ ECode View::SetBottom(
     /* [in] */ Int32 bottom)
 {
     if (bottom != mBottom) {
-        UpdateMatrix();
-        Boolean matrixIsIdentity = mTransformationInfo == NULL
-                || mTransformationInfo->mMatrixIsIdentity;
+        Boolean matrixIsIdentity = HasIdentityMatrix();
         if (matrixIsIdentity) {
             if (mAttachInfo != NULL) {
                 Int32 maxBottom;
@@ -7784,17 +7781,12 @@ ECode View::SetBottom(
         Int32 oldHeight = mBottom - mTop;
 
         mBottom = bottom;
-        if (mDisplayList != NULL) {
-            mDisplayList->SetBottom(mBottom);
-        }
+        Boolean res;
+        mRenderNode->SetBottom(mBottom, &res);
 
-        OnSizeChanged(width, mBottom - mTop, width, oldHeight);
+        SizeChange(width, mBottom - mTop, width, oldHeight);
 
         if (!matrixIsIdentity) {
-            if ((mPrivateFlags & PFLAG_PIVOT_EXPLICITLY_SET) == 0) {
-                // A change in dimension means an auto-centered pivot point changes, too
-                mTransformationInfo->mMatrixDirty = TRUE;
-            }
             mPrivateFlags |= PFLAG_DRAWN; // force another invalidation with the new orientation
             Invalidate(TRUE);
         }
@@ -7823,9 +7815,7 @@ ECode View::SetLeft(
     /* [in] */ Int32 left)
 {
     if (left != mLeft) {
-        UpdateMatrix();
-        Boolean matrixIsIdentity = mTransformationInfo == NULL
-                || mTransformationInfo->mMatrixIsIdentity;
+        Boolean matrixIsIdentity = HasIdentityMatrix();
         if (matrixIsIdentity) {
             if (mAttachInfo != NULL) {
                 Int32 minLeft;
@@ -7850,17 +7840,12 @@ ECode View::SetLeft(
         Int32 height = mBottom - mTop;
 
         mLeft = left;
-        if (mDisplayList != NULL) {
-            mDisplayList->SetLeft(left);
-        }
+        Boolean res;
+        mRenderNode->SetLeft(left, &res);
 
-        OnSizeChanged(mRight - mLeft, height, oldWidth, height);
+        SizeChange(mRight - mLeft, height, oldWidth, height);
 
         if (!matrixIsIdentity) {
-            if ((mPrivateFlags & PFLAG_PIVOT_EXPLICITLY_SET) == 0) {
-                // A change in dimension means an auto-centered pivot point changes, too
-                mTransformationInfo->mMatrixDirty = TRUE;
-            }
             mPrivateFlags |= PFLAG_DRAWN; // force another invalidation with the new orientation
             Invalidate(TRUE);
         }
@@ -7888,9 +7873,7 @@ ECode View::SetRight(
     /* [in] */ Int32 right)
 {
     if (right != mRight) {
-        UpdateMatrix();
-        Boolean matrixIsIdentity = mTransformationInfo == NULL
-                || mTransformationInfo->mMatrixIsIdentity;
+        Boolean matrixIsIdentity = HasIdentityMatrix();
         if (matrixIsIdentity) {
             if (mAttachInfo != NULL) {
                 Int32 maxRight;
@@ -7912,17 +7895,12 @@ ECode View::SetRight(
         Int32 height = mBottom - mTop;
 
         mRight = right;
-        if (mDisplayList != NULL) {
-            mDisplayList->SetRight(mRight);
-        }
+        Boolean res;
+        mRenderNode->SetRight(mRight, &res);
 
-        OnSizeChanged(mRight - mLeft, height, oldWidth, height);
+        SizeChange(mRight - mLeft, height, oldWidth, height);
 
         if (!matrixIsIdentity) {
-            if ((mPrivateFlags & PFLAG_PIVOT_EXPLICITLY_SET) == 0) {
-                // A change in dimension means an auto-centered pivot poInt32 changes, too
-                mTransformationInfo->mMatrixDirty = TRUE;
-            }
             mPrivateFlags |= PFLAG_DRAWN; // force another invalidation with the new orientation
             Invalidate(TRUE);
         }
@@ -7937,9 +7915,14 @@ ECode View::SetRight(
     return NOERROR;
 }
 
-Float View::GetX()
+ECode View::GetX(
+    /* [out] */ Float* x)
 {
-    return mLeft + (mTransformationInfo != NULL ? mTransformationInfo->mTranslationX : 0);
+    VALIDATE_NOT_NULL(x)
+    Float translationX;
+    GetTranslationX(&translationX);
+    *x = mLeft + translationX;
+    return NOERROR;
 }
 
 ECode View::SetX(
@@ -7949,9 +7932,14 @@ ECode View::SetX(
     return NOERROR;
 }
 
-Float View::GetY()
+ECode View::GetY(
+    /* [out] */ Float* y)
 {
-    return mTop + (mTransformationInfo != NULL ? mTransformationInfo->mTranslationY : 0);
+    VALIDATE_NOT_NULL(y)
+    Float translationY;
+    GetTranslationY(&translationY);
+    *y = mLeft + translationY;
+    return NOERROR;
 }
 
 ECode View::SetY(
@@ -7961,59 +7949,378 @@ ECode View::SetY(
     return NOERROR;
 }
 
-Float View::GetTranslationX()
+/**
+ * The visual z position of this view, in pixels. This is equivalent to the
+ * {@link #setTranslationZ(float) translationZ} property plus the current
+ * {@link #getElevation() elevation} property.
+ *
+ * @return The visual z position of this view, in pixels.
+ */
+ECode View::GetZ(
+   /* [out] */ Float* z)
 {
-    return mTransformationInfo != NULL ? mTransformationInfo->mTranslationX : 0.0f;
+    VALIDATE_NOT_NULL(z)
+    Float elevation, translationZ;
+    GetElevation(&elevation);
+    GetTranslationZ(&translationZ);
+    *z = elevation + translationZ;
+    return NOERROR;
+}
+
+/**
+ * Sets the visual z position of this view, in pixels. This is equivalent to setting the
+ * {@link #setTranslationZ(float) translationZ} property to be the difference between
+ * the x value passed in and the current {@link #getElevation() elevation} property.
+ *
+ * @param z The visual z position of this view, in pixels.
+ */
+ECode View::SetZ(
+    /* [in] */ Float z)
+{
+    Float elevation;
+    GetElevation(&elevation);
+    SetTranslationZ(z - elevation);
+}
+
+/**
+ * The base elevation of this view relative to its parent, in pixels.
+ *
+ * @return The base depth position of the view, in pixels.
+ */
+ECode View::GetElevation(
+    /* [out] */ Float* elevation)
+{
+    VALIDATE_NOT_NULL(elevation)
+    return mRenderNode->GetElevation(elevation);
+}
+
+/**
+ * Sets the base elevation of this view, in pixels.
+ *
+ * @attr ref android.R.styleable#View_elevation
+ */
+ECode View::SetElevation(
+    /* [in] */ Float elevation)
+{
+    Float res;
+    GetElevation(&res);
+    if (elevation != res) {
+        InvalidateViewProperty(TRUE, FALSE);
+        Boolean res;
+        mRenderNode->SetElevation(elevation, &res);
+        InvalidateViewProperty(FALSE, TRUE);
+
+        InvalidateParentIfNeededAndWasQuickRejected();
+    }
+}
+
+ECode View::GetTranslationX(
+    /* [out] */ Float* translationX)
+{
+    VALIDATE_NOT_NULL(translationX)
+    return mRenderNode->GetTranslationX(translationX);
 }
 
 ECode View::SetTranslationX(
     /* [in] */ Float translationX)
 {
-    EnsureTransformationInfo();
-    AutoPtr<TransformationInfo> info = mTransformationInfo;
-    if (info->mTranslationX != translationX) {
+    Float temp;
+    GetTranslationX(&temp);
+    if (translationX != temp) {
         // Double-invalidation is necessary to capture view's old and new areas
         InvalidateViewProperty(TRUE, FALSE);
-        info->mTranslationX = translationX;
-        info->mMatrixDirty = TRUE;
+        Boolean res;
+        mRenderNode->SetTranslationX(translationX, &res);
         InvalidateViewProperty(FALSE, TRUE);
-        if (mDisplayList != NULL) {
-            mDisplayList->SetTranslationX(translationX);
-        }
-        if ((mPrivateFlags2 & PFLAG2_VIEW_QUICK_REJECTED) == PFLAG2_VIEW_QUICK_REJECTED) {
-            // View was rejected last time it was drawn by its parent; this may have changed
-            InvalidateParentIfNeeded();
-        }
+
+        InvalidateParentIfNeededAndWasQuickRejected();
+        NotifySubtreeAccessibilityStateChangedIfNeeded();
     }
 
     return NOERROR;
 }
 
-Float View::GetTranslationY()
+Float View::GetTranslationY(
+    /* [out] */ Float* translationY)
 {
-    return mTransformationInfo != NULL ? mTransformationInfo->mTranslationY : 0;
+    VALIDATE_NOT_NULL(translationY)
+    return  mRenderNode->GetTranslationY(translationY);
 }
 
 ECode View::SetTranslationY(
     /* [in] */ Float translationY)
 {
-    EnsureTransformationInfo();
-    AutoPtr<TransformationInfo> info = mTransformationInfo;
-    if (info->mTranslationY != translationY) {
+    Float temp;
+    GetTranslationY(&temp)
+    if (translationY != temp) {
         InvalidateViewProperty(TRUE, FALSE);
-        info->mTranslationY = translationY;
-        info->mMatrixDirty = TRUE;
+        Boolean res;
+        mRenderNode->SetTranslationY(translationY, &res);
         InvalidateViewProperty(FALSE, TRUE);
-        if (mDisplayList != NULL) {
-            mDisplayList->SetTranslationY(translationY);
-        }
-        if ((mPrivateFlags2 & PFLAG2_VIEW_QUICK_REJECTED) == PFLAG2_VIEW_QUICK_REJECTED) {
-            // View was rejected last time it was drawn by its parent; this may have changed
-            InvalidateParentIfNeeded();
-        }
+
+        InvalidateParentIfNeededAndWasQuickRejected();
     }
 
     return NOERROR;
+}
+
+/**
+ * The depth location of this view relative to its {@link #getElevation() elevation}.
+ *
+ * @return The depth of this view relative to its elevation.
+ */
+ECode View::GetTranslationZ(
+    /* [out] */ Float* translationZ)
+{
+    VALIDATE_NOT_NULL(translationZ)
+    return mRenderNode->GetTranslationZ(translationZ);
+}
+
+/**
+ * Sets the depth location of this view relative to its {@link #getElevation() elevation}.
+ *
+ * @attr ref android.R.styleable#View_translationZ
+ */
+ECode View::SetTranslationZ(
+     /* [in] */ Float translationZ)
+{
+    Float temp;
+    GetTranslationZ(&temp);
+    if (translationZ != temp) {
+        InvalidateViewProperty(TRUE, FALSE);
+        Boolean res;
+        mRenderNode->SetTranslationZ(translationZ, &res);
+        InvalidateViewProperty(FALSE, TRUE);
+
+        InvalidateParentIfNeededAndWasQuickRejected();
+    }
+}
+
+/** @hide */
+ECode View::SetAnimationMatrix(
+    /* [in] */ IMatrix* matrix)
+{
+    InvalidateViewProperty(TRUE, FALSE);
+    Boolean res;
+    mRenderNode->SetAnimationMatrix(matrix, &res);
+    InvalidateViewProperty(FALSE, TRUE);
+
+    InvalidateParentIfNeededAndWasQuickRejected();
+}
+
+/**
+ * Returns the current StateListAnimator if exists.
+ *
+ * @return StateListAnimator or null if it does not exists
+ * @see    #setStateListAnimator(android.animation.StateListAnimator)
+ */
+ECode View::GetStateListAnimator(
+    /* [out] */ IStateListAnimator** animator)
+{
+    VALIDATE_NOT_NULL(animator)
+    *animator = mStateListAnimator;
+    REFCOUNT_ADD(*animator);
+    return NOERROR;
+}
+
+/**
+ * Attaches the provided StateListAnimator to this View.
+ * <p>
+ * Any previously attached StateListAnimator will be detached.
+ *
+ * @param stateListAnimator The StateListAnimator to update the view
+ * @see {@link android.animation.StateListAnimator}
+ */
+ECode View::SetStateListAnimator(
+    /* [in] */ IStateListAnimator* stateListAnimator)
+{
+    if (mStateListAnimator == stateListAnimator) {
+        return NOERROR;
+    }
+    if (mStateListAnimator != NULL) {
+        mStateListAnimator->SetTarget(NULL);
+    }
+    mStateListAnimator = stateListAnimator;
+    if (stateListAnimator != NULL) {
+        stateListAnimator->SetTarget(THIS_PROBE(IView));
+        Boolean res;
+        IsAttachedToWindow(&res);
+        if (res) {
+            AutoPtr<ArrayOf<Int32> > temp;
+            GetDrawableState((ArrayOf<Int32>**)&temp);
+            stateListAnimator->SetState(temp);
+        }
+    }
+    return NOERROR;
+}
+
+/**
+ * Returns whether the Outline should be used to clip the contents of the View.
+ * <p>
+ * Note that this flag will only be respected if the View's Outline returns true from
+ * {@link Outline#canClip()}.
+ *
+ * @see #setOutlineProvider(ViewOutlineProvider)
+ * @see #setClipToOutline(boolean)
+ */
+ECode View::GetClipToOutline(
+    /* [out] */ Boolean* res)
+{
+    return mRenderNode->GetClipToOutline(&res);
+}
+
+/**
+ * Sets whether the View's Outline should be used to clip the contents of the View.
+ * <p>
+ * Only a single non-rectangular clip can be applied on a View at any time.
+ * Circular clips from a {@link ViewAnimationUtils#createCircularReveal(View, int, int, float, float)
+ * circular reveal} animation take priority over Outline clipping, and
+ * child Outline clipping takes priority over Outline clipping done by a
+ * parent.
+ * <p>
+ * Note that this flag will only be respected if the View's Outline returns true from
+ * {@link Outline#canClip()}.
+ *
+ * @see #setOutlineProvider(ViewOutlineProvider)
+ * @see #getClipToOutline()
+ */
+ECode View::SetClipToOutline(
+    /* [in] */ Boolean clipToOutline)
+{
+    DamageInParent();
+    Boolean res;
+    GetClipToOutline(&res);
+    if (res != clipToOutline) {
+        mRenderNode->SetClipToOutline(clipToOutline, &res);
+    }
+    return NOERROR;
+}
+
+
+void View::SetOutlineProviderFromAttribute(
+    /* [in] */ Int32 providerInt)
+{
+    switch (providerInt) {
+        case PROVIDER_BACKGROUND:
+            SetOutlineProvider(ViewOutlineProvider::BACKGROUND);
+            break;
+        case PROVIDER_NONE:
+            SetOutlineProvider(NULL);
+            break;
+        case PROVIDER_BOUNDS:
+            SetOutlineProvider(ViewOutlineProvider::BOUNDS);
+            break;
+        case PROVIDER_PADDED_BOUNDS:
+            SetOutlineProvider(ViewOutlineProvider::PADDED_BOUNDS);
+            break;
+    }
+}
+
+/**
+ * Sets the {@link ViewOutlineProvider} of the view, which generates the Outline that defines
+ * the shape of the shadow it casts, and enables outline clipping.
+ * <p>
+ * The default ViewOutlineProvider, {@link ViewOutlineProvider#BACKGROUND}, queries the Outline
+ * from the View's background drawable, via {@link Drawable#getOutline(Outline)}. Changing the
+ * outline provider with this method allows this behavior to be overridden.
+ * <p>
+ * If the ViewOutlineProvider is null, if querying it for an outline returns false,
+ * or if the produced Outline is {@link Outline#isEmpty()}, shadows will not be cast.
+ * <p>
+ * Only outlines that return true from {@link Outline#canClip()} may be used for clipping.
+ *
+ * @see #setClipToOutline(boolean)
+ * @see #getClipToOutline()
+ * @see #getOutlineProvider()
+ */
+ECode View::SetOutlineProvider(
+    /* [in] */ IViewOutlineProvider* provider)
+{
+    mOutlineProvider = provider;
+    InvalidateOutline();
+    return NOERROR;
+}
+
+/**
+ * Returns the current {@link ViewOutlineProvider} of the view, which generates the Outline
+ * that defines the shape of the shadow it casts, and enables outline clipping.
+ *
+ * @see #setOutlineProvider(ViewOutlineProvider)
+ */
+ECode View::GetOutlineProvider(
+    /* [out] */ IViewOutlineProvider** res)
+{
+    VALIDATE_NOT_NULL(res)
+    *res = mOutlineProvider;
+    REFCOUNT_ADD(res)
+    return NOERROR;
+}
+
+/**
+ * Called to rebuild this View's Outline from its {@link ViewOutlineProvider outline provider}
+ *
+ * @see #setOutlineProvider(ViewOutlineProvider)
+ */
+ECode View::InvalidateOutline()
+{
+    mPrivateFlags3 |= PFLAG3_OUTLINE_INVALID;
+
+    NotifySubtreeAccessibilityStateChangedIfNeeded();
+    InvalidateViewProperty(FALSE, FALSE);
+}
+
+/**
+ * Internal version of {@link #invalidateOutline()} which invalidates the
+ * outline without invalidating the view itself. This is intended to be called from
+ * within methods in the View class itself which are the result of the view being
+ * invalidated already. For example, when we are drawing the background of a View,
+ * we invalidate the outline in case it changed in the meantime, but we do not
+ * need to invalidate the view because we're already drawing the background as part
+ * of drawing the view in response to an earlier invalidation of the view.
+ */
+ECode View::RebuildOutline()
+{
+    // Unattached views ignore this signal, and outline is recomputed in onAttachedToWindow()
+    if (mAttachInfo == NULL) return;
+
+    if (mOutlineProvider == NULL) {
+        Boolean res;
+        // no provider, remove outline
+        mRenderNode->SetOutline(NULL, &res);
+    } else {
+        AutoPtr<IOutline> outline = mAttachInfo->mTmpOutline;
+        outline->SetEmpty();
+        outline->SetAlpha(1.0f);
+
+        mOutlineProvider->GetOutline(this, outline);
+        Boolean res;
+        mRenderNode->SetOutline(outline, &res);
+    }
+}
+
+/**
+ * HierarchyViewer only
+ *
+ * @hide
+ */
+ECode View::HasShadow(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    return mRenderNode->HasShadow(res);
+}
+
+
+/** @hide */
+ECode View::SetRevealClip(
+    /* [in] */ Boolean shouldClip,
+    /* [in] */ Float x,
+    /* [in] */ Float y,
+    /* [in] */ Float radius)
+{
+    Boolean res;
+    mRenderNode->SetRevealClip(shouldClip, x, y, radius, &res);
+    invalidateViewProperty(FALSE, FALSE);
 }
 
 /**
@@ -8025,18 +8332,23 @@ ECode View::GetHitRect(
     /* [in, out] */ IRect* outRect)
 {
     assert(outRect != NULL);
-
-    UpdateMatrix();
-    AutoPtr<TransformationInfo> info = mTransformationInfo;
-    if (info == NULL || info->mMatrixIsIdentity || mAttachInfo == NULL) {
+    Boolean hasIdentityMatrix;
+    HasIdentityMatrix(&hasIdentityMatrix);
+    if (hasIdentityMatrix || mAttachInfo == NULL) {
         outRect->Set(mLeft, mTop, mRight, mBottom);
     }
     else {
         AutoPtr<IRectF> tmpRect = mAttachInfo->mTmpTransformRect;
-        tmpRect->Set(-info->mPivotX, -info->mPivotY,
-                GetWidth() - info->mPivotX, GetHeight() - info->mPivotY);
+        Int32 width, height;
+        GetWidth(&width);
+        GetHeight(&height);
+        tmpRect->Set(0, 0, width, height);
+
+        AutoPtr<IMatrix> matrix;
+        GetMatrix((IMatrix**)&matrix);
         Boolean res;
-        info->mMatrix->MapRect(tmpRect, &res);
+        matrix->MapRect(tmpRect, &res); // TODO: mRenderNode.mapRect(tmpRect)
+
         Float l, r, t, b;
         tmpRect->GetLeft(&l);
         tmpRect->GetRight(&r);
@@ -8049,21 +8361,24 @@ ECode View::GetHitRect(
     return NOERROR;
 }
 
-/*package*/ Boolean View::PointInView(
+Boolean View::PointInView(
     /* [in] */ Float localX,
     /* [in] */ Float localY)
 {
-    return localX >= 0 && localX < (mRight - mLeft)
+    return *res = localX >= 0 && localX < (mRight - mLeft)
             && localY >= 0 && localY < (mBottom - mTop);
 }
 
-Boolean View::PointInView(
+ECode View::PointInView(
     /* [in] */ Float localX,
     /* [in] */ Float localY,
-    /* [in] */ Float slop)
+    /* [in] */ Float slop,
+    /* [out] */ Boolean* res)
 {
-    return localX >= -slop && localY >= -slop && localX < ((mRight - mLeft) + slop) &&
+    VALIDATE_NOT_NULL(res);
+    *res = localX >= -slop && localY >= -slop && localX < ((mRight - mLeft) + slop) &&
             localY < ((mBottom - mTop) + slop);
+    return NOERROR;
 }
 
 /**
@@ -8154,11 +8469,12 @@ ECode View::OffsetTopAndBottom(
     /* [in] */ Int32 offset)
 {
     if (offset != 0) {
-        UpdateMatrix();
-        Boolean matrixIsIdentity = mTransformationInfo == NULL
-                || mTransformationInfo->mMatrixIsIdentity;
+        Boolean matrixIsIdentity;
+        HasIdentityMatrix(&matrixIsIdentity);
         if (matrixIsIdentity) {
-            if (mDisplayList != NULL) {
+            Boolean isHardwareAccelerated;
+            IsHardwareAccelerated(&isHardwareAccelerated);
+            if (isHardwareAccelerated) {
                 InvalidateViewProperty(FALSE, FALSE);
             }
             else {
@@ -8189,8 +8505,12 @@ ECode View::OffsetTopAndBottom(
 
         mTop += offset;
         mBottom += offset;
-        if (mDisplayList != NULL) {
-            mDisplayList->OffsetTopBottom(offset);
+
+        Boolean res;
+        mRenderNode->OffsetTopAndBottom(offset, &res);
+        Boolean isHardwareAccelerated;
+        IsHardwareAccelerated(&isHardwareAccelerated);
+        if (isHardwareAccelerated) {
             InvalidateViewProperty(FALSE, FALSE);
         }
         else {
@@ -8199,6 +8519,7 @@ ECode View::OffsetTopAndBottom(
             }
             InvalidateParentIfNeeded();
         }
+        NotifySubtreeAccessibilityStateChangedIfNeeded();
     }
 
     return NOERROR;
@@ -8213,11 +8534,12 @@ ECode View::OffsetLeftAndRight(
     /* [in] */ Int32 offset)
 {
     if (offset != 0) {
-        UpdateMatrix();
-        Boolean matrixIsIdentity = mTransformationInfo == NULL
-                || mTransformationInfo->mMatrixIsIdentity;
+        Boolean matrixIsIdentity;
+        HasIdentityMatrix(&matrixIsIdentity);
         if (matrixIsIdentity) {
-            if (mDisplayList != NULL) {
+            Boolean isHardwareAccelerated;
+            IsHardwareAccelerated(&isHardwareAccelerated);
+            if (isHardwareAccelerated) {
                 InvalidateViewProperty(FALSE, FALSE);
             }
             else {
@@ -8245,8 +8567,11 @@ ECode View::OffsetLeftAndRight(
 
         mLeft += offset;
         mRight += offset;
-        if (mDisplayList != NULL) {
-            mDisplayList->OffsetLeftRight(offset);
+        Boolean res;
+        mRenderNode->OffsetLeftAndRight(offset, &res);
+        Boolean isHardwareAccelerated;
+        IsHardwareAccelerated(&isHardwareAccelerated);
+        if (isHardwareAccelerated) {
             InvalidateViewProperty(FALSE, FALSE);
         }
         else {
@@ -8255,6 +8580,7 @@ ECode View::OffsetLeftAndRight(
             }
             InvalidateParentIfNeeded();
         }
+        NotifySubtreeAccessibilityStateChangedIfNeeded();
     }
 
     return NOERROR;
@@ -8532,37 +8858,11 @@ Boolean View::SkipInvalidate()
 ECode View::Invalidate(
     /* [in] */ IRect* dirty)
 {
-    if (SkipInvalidate()) {
-        return NOERROR;
-    }
-
-    if ((mPrivateFlags & (PFLAG_DRAWN | PFLAG_HAS_BOUNDS)) == (PFLAG_DRAWN | PFLAG_HAS_BOUNDS) ||
-            (mPrivateFlags & PFLAG_DRAWING_CACHE_VALID) == PFLAG_DRAWING_CACHE_VALID ||
-            (mPrivateFlags & PFLAG_INVALIDATED) != PFLAG_INVALIDATED) {
-        mPrivateFlags &= ~PFLAG_DRAWING_CACHE_VALID;
-        mPrivateFlags |= PFLAG_INVALIDATED;
-        mPrivateFlags |= PFLAG_DIRTY;
-        AutoPtr<IViewParent> p = mParent;
-        //noinspection PointlessBooleanExpression,ConstantConditions
-        // if (!HardwareRenderer::RENDER_DIRTY_REGIONS) {
-        //     if (p != NULL && mAttachInfo != NULL && mAttachInfo->mHardwareAccelerated) {
-        //         // fast-track for GL-enabled applications; just invalidate the whole hierarchy
-        //         // with a NULL dirty rect, which tells the ViewAncestor to redraw everything
-        //         p->InvalidateChild(IVIEW_PROBE(this), NULL);
-        //         return NOERROR;
-        //     }
-        // }
-
-        if (p != NULL && mAttachInfo != NULL) {
-            Int32 scrollX = mScrollX;
-            Int32 scrollY = mScrollY;
-            AutoPtr<IRect> tmpr = (IRect*)mAttachInfo->mTmpInvalRect.Get();
-            CRect* dirtyObj = (CRect*)dirty;
-            tmpr->Set(dirtyObj->mLeft - scrollX, dirtyObj->mTop - scrollY,
-                    dirtyObj->mRight - scrollX, dirtyObj->mBottom - scrollY);
-            p->InvalidateChild(IVIEW_PROBE(this), tmpr);
-        }
-    }
+    Int32 scrollX = mScrollX;
+    Int32 scrollY = mScrollY;
+    CRect* temp = (CRect*)dirty;
+    InvalidateInternal(temp->mLeft - scrollX, temp->mTop - scrollY,
+            temp->mRight - scrollX, temp->mBottom - scrollY, TRUE, FALSE);
     return NOERROR;
 }
 
@@ -8572,34 +8872,9 @@ ECode View::Invalidate(
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom)
 {
-    if (SkipInvalidate()) {
-        return NOERROR;
-    }
-    if ((mPrivateFlags & (PFLAG_DRAWN | PFLAG_HAS_BOUNDS)) == (PFLAG_DRAWN | PFLAG_HAS_BOUNDS) ||
-            (mPrivateFlags & PFLAG_DRAWING_CACHE_VALID) == PFLAG_DRAWING_CACHE_VALID ||
-            (mPrivateFlags & PFLAG_INVALIDATED) != PFLAG_INVALIDATED) {
-        mPrivateFlags &= ~PFLAG_DRAWING_CACHE_VALID;
-        mPrivateFlags |= PFLAG_INVALIDATED;
-        mPrivateFlags |= PFLAG_DIRTY;
-        AutoPtr<IViewParent> p = mParent;
-        AttachInfo* ai = mAttachInfo;
-        //noinspection PointlessBooleanExpression,ConstantConditions
-        // if (!HardwareRenderer::RENDER_DIRTY_REGIONS) {
-        //     if (p != NULL && ai != NULL && ai->mHardwareAccelerated) {
-        //         // fast-track for GL-enabled applications; just invalidate the whole hierarchy
-        //         // with a NULL dirty rect, which tells the ViewAncestor to redraw everything
-        //         p->InvalidateChild(IVIEW_PROBE(this), NULL);
-        //         return NOERROR;
-        //     }
-        // }
-        if (p != NULL && ai != NULL && left < right && top < bottom) {
-            Int32 scrollX = mScrollX;
-            Int32 scrollY = mScrollY;
-            AutoPtr<IRect> tmpr = (IRect*)ai->mTmpInvalRect.Get();
-            tmpr->Set(left - scrollX, top - scrollY, right - scrollX, bottom - scrollY);
-            p->InvalidateChild(IVIEW_PROBE(this), tmpr);
-        }
-    }
+    Int32 scrollX = mScrollX;
+    Int32 scrollY = mScrollY;
+    InvalidateInternal(left - scrollX, top - scrollY, right - scrollX, bottom - scrollY, TRUE, FALSE);
     return NOERROR;
 }
 
@@ -8612,39 +8887,114 @@ ECode View::Invalidate()
 void View::Invalidate(
     /* [in] */ Boolean invalidateCache)
 {
+    InvalidateInternal(0, 0, mRight - mLeft, mBottom - mTop, invalidateCache, TRUE);
+}
+
+void View::InvalidateInternal(
+    /* [in] */ Int32 l,
+    /* [in] */ Int32 t,
+    /* [in] */ Int32 r,
+    /* [in] */ Int32 b,
+    /* [in] */ Boolean invalidateCache,
+    /* [in] */ Boolean fullInvalidate)
+{
+    if (mGhostView != NULL) {
+        mGhostView->Invalidate(invalidateCache);
+        return;
+    }
+
     if (SkipInvalidate()) {
         return;
     }
 
-    if ((mPrivateFlags & (PFLAG_DRAWN | PFLAG_HAS_BOUNDS)) == (PFLAG_DRAWN | PFLAG_HAS_BOUNDS) ||
-            (invalidateCache && (mPrivateFlags & PFLAG_DRAWING_CACHE_VALID) == PFLAG_DRAWING_CACHE_VALID) ||
-            (mPrivateFlags & PFLAG_INVALIDATED) != PFLAG_INVALIDATED || IsOpaque() != mLastIsOpaque) {
-        mLastIsOpaque = IsOpaque();
-        mPrivateFlags &= ~PFLAG_DRAWN;
+    Boolean isOpaque;
+    IsOpaque(&isOpaque);
+    if ((mPrivateFlags & (PFLAG_DRAWN | PFLAG_HAS_BOUNDS)) == (PFLAG_DRAWN | PFLAG_HAS_BOUNDS)
+            || (invalidateCache && (mPrivateFlags & PFLAG_DRAWING_CACHE_VALID) == PFLAG_DRAWING_CACHE_VALID)
+            || (mPrivateFlags & PFLAG_INVALIDATED) != PFLAG_INVALIDATED
+            || (fullInvalidate && isOpaque != mLastIsOpaque)) {
+        if (fullInvalidate) {
+            IsOpaque(&mLastIsOpaque);
+            mPrivateFlags &= ~PFLAG_DRAWN;
+        }
+
         mPrivateFlags |= PFLAG_DIRTY;
+
         if (invalidateCache) {
             mPrivateFlags |= PFLAG_INVALIDATED;
             mPrivateFlags &= ~PFLAG_DRAWING_CACHE_VALID;
         }
 
-        AttachInfo* ai = mAttachInfo;
+        // Propagate the damage rectangle to the parent view.
+        AutoPtr<AttachInfo> ai = mAttachInfo;
         AutoPtr<IViewParent> p = mParent;
-        //noinspection PointlessBooleanExpression,ConstantConditions
-        // if (!HardwareRenderer::RENDER_DIRTY_REGIONS) {
-        //     if (p != NULL && ai != NULL && ai->mHardwareAccelerated) {
-        //         // fast-track for GL-enabled applications; just invalidate the whole hierarchy
-        //         // with a NULL dirty rect, which tells the ViewAncestor to redraw everything
-        //         p->InvalidateChild(IVIEW_PROBE(this), NULL);
-        //         return;
-        //     }
-        // }
+        if (p && ai && l < r && t < b) {
+            AutoPtr<CRect> damage = ai->mTmpInvalRect;
+            damage->Set(l, t, r, b);
+            p->InvalidateChild(THIS_PROBE(IView), (IRect*)damage);
+        }
 
-        if (p != NULL && ai != NULL) {
-            AutoPtr<IRect> r = ai->mTmpInvalRect;
-            r->Set(0, 0, mRight - mLeft, mBottom - mTop);
-            // Don't call invalidate -- we don't want to internally scroll
-            // our own bounds
-            p->InvalidateChild(IVIEW_PROBE(this), r);
+        // Damage the entire projection receiver, if necessary.
+        Boolean isProjected;
+        if (mBackground && (mBackground->IsProjected(&isProjected), isProjected)) {
+            AutoPtr<IView> receiver = GetProjectionReceiver();
+            if (receiver) {
+                receiver->DamageInParent();
+            }
+        }
+
+        // Damage the entire IsolatedZVolume receiving this view's shadow.
+        Boolean isHardwareAccelerated;
+        IsHardwareAccelerated(&isHardwareAccelerated);
+        Float z;
+        GetZ(&z);
+        if (isHardwareAccelerated && z != 0) {
+            DamageShadowReceiver();
+        }
+    }
+}
+
+/**
+ * @return this view's projection receiver, or {@code null} if none exists
+ */
+AutoPtr<IView> View::GetProjectionReceiver()
+{
+    AutoPtr<IViewParent> p;
+    GetParent((IViewParent**)&p);
+    while (p != NULL && IView::Probe(p)) {
+        AutoPtr<View> v = (View*)IView::Probe(p);
+        if (v->IsProjectionReceiver()) {
+            return v;
+        }
+        p->GetParent(&p);
+    }
+
+    return NULL;
+}
+
+/**
+ * @return whether the view is a projection receiver
+ */
+Boolean View::IsProjectionReceiver()
+{
+    return mBackground != NULL;
+}
+
+/**
+ * Damage area of the screen that can be covered by this View's shadow.
+ *
+ * This method will guarantee that any changes to shadows cast by a View
+ * are damaged on the screen for future redraw.
+ */
+void View::DamageShadowReceiver()
+{
+    AutoPtr<AttachInfo> ai = mAttachInfo;
+    if (ai != NULL) {
+        AutoPtr<IViewParent> p;
+        GetParent((IViewParent**)&p);
+        if (p != NULL && IViewGroup::Probe(p)) {
+            AutoPtr<IView> v = IView::Probe(p);
+            v->DamageInParent();
         }
     }
 }
@@ -8653,27 +9003,38 @@ void View::InvalidateViewProperty(
     /* [in] */ Boolean invalidateParent,
     /* [in] */ Boolean forceRedraw)
 {
-    if (mDisplayList == NULL || (mPrivateFlags & PFLAG_DRAW_ANIMATION) == PFLAG_DRAW_ANIMATION) {
-        if (invalidateParent) {
-            InvalidateParentCaches();
-        }
-        if (forceRedraw) {
-            mPrivateFlags |= PFLAG_DRAWN; // force another invalidation with the new orientation
-        }
-        Invalidate(FALSE);
-    }
-    else {
-        AttachInfo* ai = mAttachInfo;
-        AutoPtr<IViewParent> p = mParent;
-        if (p != NULL && ai != NULL) {
-            AutoPtr<IRect> r = ai->mTmpInvalRect;
-            r->Set(0, 0, mRight - mLeft, mBottom - mTop);
-            if (IViewGroup::Probe(mParent) != NULL) {
-                IViewGroup::Probe(mParent)->InvalidateChildFast(IVIEW_PROBE(this), r);
+    Boolean isHardwareAccelerated, isValid;
+    IsHardwareAccelerated(&isHardwareAccelerated);
+    mRenderNode->IsValid(&isValid);
+    if (!isHardwareAccelerated || !isValid || (mPrivateFlags & PFLAG_DRAW_ANIMATION) != 0) {
+            if (invalidateParent) {
+                InvalidateParentCaches();
             }
-            else {
-                mParent->InvalidateChild(IVIEW_PROBE(this), r);
+            if (forceRedraw) {
+                mPrivateFlags |= PFLAG_DRAWN; // force another invalidation with the new orientation
             }
+            Invalidate(FALSE);
+        } else {
+            DamageInParent();
+        }
+        Float z;
+        GetZ(&z);
+        if (isHardwareAccelerated && invalidateParent && z != 0) {
+            DamageShadowReceiver();
+        }
+}
+
+ECode View::DamageInParent()
+{
+    AutoPtr<AttachInfo> ai = mAttachInfo;
+    AutoPtr<IViewParent> p = mParent;
+    if (p != NULL && ai != NULL) {
+        AutoPtr<CRect> r = ai->mTmpInvalRect;
+        r->Set(0, 0, mRight - mLeft, mBottom - mTop);
+        if (IViewGroup::Probe(mParent)) {
+            (IViewGroup::Probe(mParent))->DamageChild(THIS_PROBE(IView), (IRect*)r);
+        } else {
+            mParent->InvalidateChild(THIS_PROBE(IView), (IRect*)r);
         }
     }
 }
@@ -8697,8 +9058,8 @@ void View::TransformRect(
         boundingRect->GetRight(&r);
         boundingRect->GetTop(&t);
         boundingRect->GetBottom(&b);
-        rect->Set((Int32)(l - 0.5f), (Int32)(t - 0.5f),
-                (Int32)(r + 0.5f), (Int32)(b + 0.5f));
+        rect->Set((Int32)Elastos::Core::Math::Floor(l), (Int32)Elastos::Core::Math::Floor(t),
+                (Int32)Elastos::Core::Math::Ceil(r), (Int32)Elastos::Core::Math::Ceil(b));
     }
 }
 
@@ -8716,7 +9077,16 @@ void View::InvalidateParentIfNeeded()
     }
 }
 
-
+/**
+ * @hide
+ */
+void View::InvalidateParentIfNeededAndWasQuickRejected()
+{
+    if ((mPrivateFlags2 & PFLAG2_VIEW_QUICK_REJECTED) != 0) {
+        // View was rejected last time it was drawn by its parent; this may have changed
+        InvalidateParentIfNeeded();
+    }
+}
 
 
 /**
@@ -8733,7 +9103,7 @@ void View::InvalidateParentIfNeeded()
 Boolean View::IsOpaque()
 {
     return (mPrivateFlags & PFLAG_OPAQUE_MASK) == PFLAG_OPAQUE_MASK &&
-            ((mTransformationInfo != NULL ? mTransformationInfo->mAlpha : 1.0f) >= 1.0f);
+            GetFinalAlpha() >= 1.0f;
 }
 
 void View::ComputeOpaqueFlags()
@@ -8758,7 +9128,8 @@ void View::ComputeOpaqueFlags()
 
     Int32 flags = mViewFlags;
     if (((flags & SCROLLBARS_VERTICAL) == 0 && (flags & SCROLLBARS_HORIZONTAL) == 0) ||
-            (flags & SCROLLBARS_STYLE_MASK) == IView::SCROLLBARS_INSIDE_OVERLAY) {
+            (flags & SCROLLBARS_STYLE_MASK) == IView::SCROLLBARS_INSIDE_OVERLAY) ||
+            (flags & SCROLLBARS_STYLE_MASK) == IView::SCROLLBARS_OUTSIDE_OVERLAY) {
         mPrivateFlags |= PFLAG_OPAQUE_SCROLLBARS;
     }
     else {
@@ -8901,10 +9272,8 @@ Boolean View::RemoveCallbacks(
             mAttachInfo->mViewRootImpl->mChoreographer->RemoveCallbacks(
                     IChoreographer::CALLBACK_ANIMATION, action, NULL);
         }
-        else {
-            // Assume that post will succeed later
-            ViewRootImpl::GetRunQueue()->RemoveCallbacks(action);
-        }
+        // Assume that post will succeed later
+        ViewRootImpl::GetRunQueue()->RemoveCallbacks(action);
     }
     return TRUE;
 }
@@ -8982,7 +9351,7 @@ ECode View::PostInvalidateDelayed(
     // We try only with the AttachInfo because there's no point in invalidating
     // if we are not attached to our window
     if (mAttachInfo != NULL) {
-        AutoPtr<AttachInfo::InvalidateInfo> info = AttachInfo::InvalidateInfo::Acquire();
+        AutoPtr<AttachInfo::InvalidateInfo> info = AttachInfo::InvalidateInfo::Obtain();
         info->mTarget = IVIEW_PROBE(this);
         info->mLeft = left;
         info->mTop = top;
@@ -9014,7 +9383,7 @@ ECode View::PostInvalidateOnAnimation(
     // We try only with the AttachInfo because there's no point in invalidating
     // if we are not attached to our window
     if (mAttachInfo != NULL) {
-        AutoPtr<AttachInfo::InvalidateInfo> info = AttachInfo::InvalidateInfo::Acquire();
+        AutoPtr<AttachInfo::InvalidateInfo> info = AttachInfo::InvalidateInfo::Obtain();
         info->mTarget = IVIEW_PROBE(this);
         info->mLeft = left;
         info->mTop = top;
@@ -9781,23 +10150,30 @@ ECode View::OnAttachedToWindow()
         mPrivateFlags &= ~PFLAG_AWAKEN_SCROLL_BARS_ON_ATTACH;
     }
 
+    mPrivateFlags3 &= ~PFLAG3_IS_LAID_OUT;
+
     JumpDrawablesToCurrentState();
 
-    ClearAccessibilityFocus();
+    ResetSubtreeAccessibilityStateChanged();
+
+    // rebuild, since Outline not maintained while View is detached
+    RebuildOutline();
+
     if (IsFocused()) {
         AutoPtr<IInputMethodManager> imm = CInputMethodManager::PeekInstance();
         imm->FocusIn(IVIEW_PROBE(this));
     }
-
-    if (mAttachInfo != NULL && mDisplayList != NULL) {
-        mAttachInfo->mViewRootImpl->DequeueDisplayList(mDisplayList);
-    }
     return NOERROR;
 }
 
-ECode View::ResolveRtlPropertiesIfNeeded()
+ECode View::ResolveRtlPropertiesIfNeeded(
+    /* [out] */ Boolean* res)
 {
-    if (!NeedRtlPropertiesResolution()) return NOERROR;
+    VALIDATE_NOT_NULL(res)
+    if (!NeedRtlPropertiesResolution()) {
+        *res = FALSE;
+        return NOERROR;
+    }
 
     // Order is important here: LayoutDirection MUST be resolved first
     if (!IsLayoutDirectionResolved()) {
@@ -9811,14 +10187,14 @@ ECode View::ResolveRtlPropertiesIfNeeded()
     if (!IsTextAlignmentResolved()) {
         ResolveTextAlignment();
     }
-    if (!IsPaddingResolved()) {
-        ResolvePadding();
-    }
     if (!IsDrawablesResolved()) {
         ResolveDrawables();
     }
+    if (!IsPaddingResolved()) {
+        ResolvePadding();
+    }
     OnRtlPropertiesChanged(GetLayoutDirection());
-
+    *res = TRUE;
     return NOERROR;
 }
 
@@ -10662,12 +11038,17 @@ Boolean View::CanHaveDisplayList()
     return !(mAttachInfo == NULL || mAttachInfo->mHardwareRenderer == NULL);
 }
 
-AutoPtr<HardwareRenderer> View::GetHardwareRenderer()
+ECode View::GetHardwareRenderer(
+    /* [out] */ HardwareRenderer** res);
 {
+    VALIDATE_NOT_NULL(res)
     if (mAttachInfo != NULL) {
-        return mAttachInfo->mHardwareRenderer;
+        *res = mAttachInfo->mHardwareRenderer;
+        REFCOUNT_ADD(*res)
+    return NOERROR;
     }
-    return NULL;
+    *res = NULL
+    return NOERROR;
 }
 
 AutoPtr<IDisplayList> View::GetDisplayList(
@@ -12628,17 +13009,23 @@ ECode View::RefreshDrawableState()
  * @see #drawableStateChanged
  * @see #onCreateDrawableState
  */
-AutoPtr<ArrayOf<Int32> > View::GetDrawableState()
+ECode View::GetDrawableState(
+    /* [out, callee] */ ArrayOf<Int32>** res)
 {
+    VALIDATE_NOT_NULL(res)
     if ((mDrawableState != NULL) && ((mPrivateFlags & PFLAG_DRAWABLE_STATE_DIRTY) == 0)) {
-        return mDrawableState;
+        *res = mDrawableState
+        REFCOUNT_ADD(*res)
+        return NOERROR;
     }
     else {
         AutoPtr<ArrayOf<Int32> > states;
         OnCreateDrawableState(0, (ArrayOf<Int32>**)&states);
         mDrawableState = states;
         mPrivateFlags &= ~PFLAG_DRAWABLE_STATE_DIRTY;
-        return mDrawableState;
+        *res = mDrawableState
+        REFCOUNT_ADD(*res)
+        return NOERROR;
     }
 }
 

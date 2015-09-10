@@ -7649,6 +7649,8 @@ module
 
             SetXmlPath(
                 [in] String path);
+
+            DamageInParent();
         }
 
     } // namespace View

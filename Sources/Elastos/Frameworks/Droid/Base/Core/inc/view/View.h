@@ -1542,7 +1542,7 @@ public:
 
         Boolean mHardwareAccelerated;
         Boolean mHardwareAccelerationRequested;
-        AutoPtr<HardwareRenderer> mHardwareRenderer;
+        AutoPtr<IHardwareRenderer> mHardwareRenderer;
 
         Boolean mScreenOn;
 
@@ -1764,6 +1764,11 @@ public:
          * Temporary for use in transforming invalidation rect
          */
         AutoPtr<ITransformation> mTmpTransformation;
+
+        /**
+         * Temporary for use in querying outlines from OutlineProviders
+         */
+        AutoPtr<IOutline> mTmpOutline;// = new Outline();
 
         /**
          * Temporary list for use in collecting focusable descendents of a view.
@@ -3296,12 +3301,14 @@ public:
     virtual CARAPI SetRight(
         /* [in] */ Int32 right);
 
-    virtual CARAPI_(Float) GetX();
+    virtual CARAPI GetX(
+        /* [out] */ Float* x);
 
     virtual CARAPI SetX(
         /* [in] */ Float x);
 
-    virtual CARAPI_(Float) GetY();
+    virtual CARAPI GetY(
+        /* [out] */ Float* y);
 
     virtual CARAPI SetY(
         /* [in] */ Float y);
@@ -3311,7 +3318,8 @@ public:
     virtual CARAPI SetTranslationX(
         /* [in] */ Float translationX);
 
-    virtual CARAPI_(Float) GetTranslationY();
+    virtual CARAPI GetTranslationY(
+        /* [out] */ Float* translationY);
 
     virtual CARAPI SetTranslationY(
         /* [in] */ Float translationY);
@@ -3607,7 +3615,8 @@ public:
     virtual CARAPI_(Boolean) CanScrollVertically(
         /* [in] */ Int32 direction);
 
-    virtual CARAPI ResolveRtlPropertiesIfNeeded();
+    virtual CARAPI ResolveRtlPropertiesIfNeeded(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI ResetRtlProperties();
 
@@ -3677,7 +3686,8 @@ public:
 
     virtual CARAPI_(Boolean) CanHaveDisplayList();
 
-    virtual CARAPI_(AutoPtr<HardwareRenderer>) GetHardwareRenderer();
+    virtual CARAPI GetHardwareRenderer(
+        /* [out] */ HardwareRenderer** res);
 
     virtual CARAPI_(AutoPtr<IDisplayList>) GetDisplayList();
 
@@ -3743,7 +3753,8 @@ public:
 
     virtual CARAPI RefreshDrawableState();
 
-    virtual CARAPI_(AutoPtr<ArrayOf<Int32> >) GetDrawableState();
+    virtual CARAPI GetDrawableState(
+        /* [out, callee] */ ArrayOf<Int32>** res);
 
     virtual CARAPI JumpDrawablesToCurrentState();
 
@@ -4087,35 +4098,91 @@ public:
         /* [in] */ IRect* outLocalInsets,
         /* [out] */ IWindowInsets** res);
 
-    CARAPI RequestApplyInsets();
+    virtual CARAPI RequestApplyInsets();
 
-    CARAPI IsAttachedToWindow(
+    virtual CARAPI IsAttachedToWindow(
         /* [out] */ Boolean* res);
 
-    CARAPI IsLaidOut(
+    virtual CARAPI IsLaidOut(
         /* [out] */ Boolean* res);
 
-    CARAPI SetAccessibilityLiveRegion(
+    virtual CARAPI SetAccessibilityLiveRegion(
         /* [in] */ Int32 mode);
 
-    CARAPI GetAccessibilityLiveRegion(
+    virtual CARAPI GetAccessibilityLiveRegion(
         /* [out] */ Int32* res);
 
-    CARAPI IsAccessibilitySelectionExtendable(
+    virtual CARAPI IsAccessibilitySelectionExtendable(
         /* [out] */ Boolean* res);
 
-    CARAPI GetAccessibilitySelectionEnd(
+    virtual CARAPI GetAccessibilitySelectionEnd(
         /* [out] */ Int32* res);
 
-    CARAPI RequestUnbufferedDispatch(
+    virtual CARAPI RequestUnbufferedDispatch(
         /* [in] */ IMotionEvent* event);
 
-    CARAPI SetTransitionAlpha(
+    virtual CARAPI SetTransitionAlpha(
         /* [in] */ Float alpha);
 
-    CARAPI GetTransitionAlpha(
+    virtual CARAPI GetTransitionAlpha(
         /* [out] */ Float* alpha);
 
+    virtual CARAPI GetZ(
+        /* [out] */ Float* z);
+
+    virtual CARAPI SetZ(
+        /* [in] */ Float z);
+
+    virtual CARAPI GetElevation(
+        /* [out] */ Float* elevation);
+
+    virtual CARAPI SetElevation(
+        /* [in] */ Float elevation);
+
+    virtual CARAPI GetTranslationZ(
+        /* [out] */ Float* translationZ);
+
+    virtual CARAPI SetTranslationZ(
+        /* [in] */ Float translationZ);
+
+    virtual CARAPI SetAnimationMatrix(
+        /* [in] */ IMatrix* matrix);
+
+    virtual CARAPI GetStateListAnimator(
+        /* [out] */ IStateListAnimator** animator);
+
+    virtual CARAPI SetStateListAnimator(
+        /* [in] */ IStateListAnimator* stateListAnimator);
+
+    virtual CARAPI GetClipToOutline(
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI SetClipToOutline(
+        /* [in] */ Boolean clipToOutline);
+
+    virtual CARAPI SetOutlineProvider(
+        /* [in] */ IViewOutlineProvider* provider);
+
+    virtual CARAPI GetOutlineProvider(
+        /* [out] */ IViewOutlineProvider** res);
+
+    virtual CARAPI InvalidateOutline();
+
+    virtual CARAPI HasShadow(
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI SetRevealClip(
+        /* [in] */ Boolean shouldClip,
+        /* [in] */ Float x,
+        /* [in] */ Float y,
+        /* [in] */ Float radius);
+
+    virtual CARAPI PointInView(
+        /* [in] */ Float localX,
+        /* [in] */ Float localY,
+        /* [in] */ Float slop);
+
+    virtual CARAPI DamageInParent();
 
 protected:
     virtual CARAPI_(void) InitializeFadingEdge(
@@ -4881,6 +4948,16 @@ protected:
         /* [in] */ IRect* inoutInsets,
         /* [in] */ IRect* outLocalInsets);
 
+    virtual CARAPI_(void) InvalidateInternal(
+        /* [in] */ Int32 l,
+        /* [in] */ Int32 t,
+        /* [in] */ Int32 r,
+        /* [in] */ Int32 b,
+        /* [in] */ Boolean invalidateCache,
+        /* [in] */ Boolean fullInvalidate);
+
+    virtual CARAPI_(void) InvalidateParentIfNeededAndWasQuickRejected();
+
 private:
     CARAPI_(void) InitScrollCache();
 
@@ -4985,17 +5062,6 @@ private:
      * {@link AccessibilityEvent#TYPE_VIEW_SCROLLED} accessibility event.
      */
     CARAPI_(void) RemoveSendViewScrolledAccessibilityEventCallback();
-
-    /**
-     * Utility method to determine whether the given point, in local coordinates,
-     * is inside the view, where the area of the view is expanded by the slop factor.
-     * This method is called while processing touch-move events to determine if the event
-     * is still within the view.
-     */
-    CARAPI_(Boolean) PointInView(
-        /* [in] */ Float localX,
-        /* [in] */ Float localY,
-        /* [in] */ Float slop);
 
     /**
      * Do not invalidate views which are not visible and which are not running an animation. They
@@ -5112,6 +5178,17 @@ private:
         /* [in] */ Float y);
 
     CARAPI_(Float) GetFinalAlpha();
+
+    CARAPI_(void) SetOutlineProviderFromAttribute(
+        /* [in] */ Int32 providerInt);
+
+    CARAPI_(void) RebuildOutline();
+
+    CARAPI_(AutoPtr<IView>) GetProjectionReceiver();
+
+    CARAPI_(Boolean) IsProjectionReceiver();
+
+    CARAPI_(void) DamageShadowReceiver();
 
 public:
     /**
@@ -5569,6 +5646,12 @@ private:
 
     static Int32 sNextGeneratedId;
     static Object sNextGeneratedIdLock;
+
+    // correspond to the enum values of View_outlineProvider
+    static const Int32 PROVIDER_BACKGROUND;// = 0;
+    static const Int32 PROVIDER_NONE;// = 1;
+    static const Int32 PROVIDER_BOUNDS;// = 2;
+    static const Int32 PROVIDER_PADDED_BOUNDS;// = 3;
 
 public:
     /**
