@@ -3,8 +3,9 @@ module
 {
     interface Elastos.Utility.ISet;
     interface Elastos.Core.ICharSequence;
-    interface Elastos.Droid.Media.IRating;
     interface Elastos.Droid.Graphics.IBitmap;
+    interface Elastos.Droid.Media.IRating;
+    interface Elastos.Droid.Media.IMediaDescription;
 
     namespace Elastos {
     namespace Droid {

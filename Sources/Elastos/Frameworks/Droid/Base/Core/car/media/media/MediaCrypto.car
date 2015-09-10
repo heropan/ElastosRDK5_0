@@ -1,8 +1,7 @@
 
 module
 {
-
-    using interface Elastos.Utility.IUUID;
+    interface Elastos.Utility.IUUID;
 
     namespace Elastos {
     namespace Droid {

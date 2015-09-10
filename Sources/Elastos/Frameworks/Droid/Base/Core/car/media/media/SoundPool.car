@@ -4,6 +4,7 @@ module
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.Res.IAssetFileDescriptor;
     interface Elastos.Droid.Media.ISoundPool;
+    interface Elastos.Droid.Media.IAudioAttributes;
     interface Elastos.IO.IFileDescriptor;
 
     namespace Elastos {

@@ -2,6 +2,8 @@
 module
 {
     interface Elastos.IO.IByteBuffer;
+    interface Elastos.Droid.Media.IMediaFormat;
+    interface Elastos.Droid.Media.IMediaCodecBufferInfo;
 
     namespace Elastos {
     namespace Droid {

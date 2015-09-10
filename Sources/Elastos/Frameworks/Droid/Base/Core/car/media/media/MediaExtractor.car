@@ -4,6 +4,8 @@ module
     interface Elastos.IO.IByteBuffer;
     interface Elastos.IO.IFileDescriptor;
     interface Elastos.Utility.IMap;
+    interface Elastos.Droid.Media.IMediaFormat;
+    interface Elastos.Droid.Media.IDataSource;
     interface Elastos.Droid.Media.IMediaCodecCryptoInfo;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Net.IUri;

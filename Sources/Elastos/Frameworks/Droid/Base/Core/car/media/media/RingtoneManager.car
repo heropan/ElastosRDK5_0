@@ -4,6 +4,7 @@ module
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Database.ICursor;
+    interface Elastos.Droid.Media.IRingtone;
 
     namespace Elastos {
     namespace Droid {

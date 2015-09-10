@@ -1,7 +1,7 @@
 
 module
 {
-    interface IVolumeProviderCallback;
+    interface Elastos.Droid.Media.IVolumeProviderCallback;
 
     namespace Elastos {
     namespace Droid {

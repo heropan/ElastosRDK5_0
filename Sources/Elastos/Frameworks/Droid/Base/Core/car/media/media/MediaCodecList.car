@@ -1,6 +1,9 @@
 
 module
 {
+    interface Elastos.Droid.Media.IMediaCodecInfo;
+    interface Elastos.Droid.Media.IMediaFormat;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {

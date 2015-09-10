@@ -3,9 +3,10 @@ module
 {
     interface Elastos.Droid.Utility.IRange;
     interface Elastos.Droid.Utility.ISize;
-    interface IMediaCodecInfoCodecCapabilities;
-    interface IMediaCodecInfoEncoderCapabilities;
-    interface IMediaCodecInfoVideoCapabilities;
+    interface Elastos.Droid.Media.IMediaFormat;
+    interface Elastos.Droid.Media.IMediaCodecInfoCodecCapabilities;
+    interface Elastos.Droid.Media.IMediaCodecInfoEncoderCapabilities;
+    interface Elastos.Droid.Media.IMediaCodecInfoVideoCapabilities;
 
     namespace Elastos {
     namespace Droid {
