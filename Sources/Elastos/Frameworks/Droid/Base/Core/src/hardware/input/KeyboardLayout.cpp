@@ -1,40 +1,39 @@
 
-#include "hardware/input/CKeyboardLayout.h"
+#include "hardware/input/KeyboardLayout.h"
 #include "ext/frameworkext.h"
+#include <elastos/core/StringBuilder.h>
+
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
 namespace Hardware {
 namespace Input {
 
-ECode CKeyboardLayout::constructor()
-{
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL_3(KeyboardLayout, Object, IKeyboardLayout, IComparable, IParcelable)
 
-ECode CKeyboardLayout::constructor(
+KeyboardLayout::KeyboardLayout(
     /* [in] */ const String& descriptor,
     /* [in] */ const String& label,
-    /* [in] */ const String& collection)
+    /* [in] */ const String& collection,
+    /* [in] */ Int32 priority)
+    : mDescriptor(descriptor)
+    , mLabel(label)
+    , mCollection(collection)
+    , mPriority(priority)
 {
-    mDescriptor = descriptor;
-    mLabel = label;
-    mCollection = collection;
-
-    return NOERROR;
 }
 
-ECode CKeyboardLayout::constructor(
+KeyboardLayout::KeyboardLayout(
    /* [in] */ IParcel* source)
 {
     source->ReadString(&mDescriptor);
     source->ReadString(&mLabel);
     source->ReadString(&mCollection);
-
-    return NOERROR;
+    source->ReadInt32(&mPriority);
 }
 
-ECode CKeyboardLayout::GetDescriptor(
+ECode KeyboardLayout::GetDescriptor(
     /* [out] */ String* descriptor)
 {
     VALIDATE_NOT_NULL(descriptor);
@@ -42,7 +41,7 @@ ECode CKeyboardLayout::GetDescriptor(
     return NOERROR;
 }
 
-ECode CKeyboardLayout::GetLabel(
+ECode KeyboardLayout::GetLabel(
     /* [out] */ String* label)
 {
     VALIDATE_NOT_NULL(label);
@@ -50,7 +49,7 @@ ECode CKeyboardLayout::GetLabel(
     return NOERROR;
 }
 
-ECode CKeyboardLayout::GetCollection(
+ECode KeyboardLayout::GetCollection(
     /* [out] */ String* collection)
 {
     VALIDATE_NOT_NULL(collection);
@@ -58,37 +57,45 @@ ECode CKeyboardLayout::GetCollection(
     return NOERROR;
 }
 
-ECode CKeyboardLayout::ReadFromParcel(
+ECode KeyboardLayout::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     FAIL_RETURN(source->ReadString(&mDescriptor));
     FAIL_RETURN(source->ReadString(&mLabel));
     FAIL_RETURN(source->ReadString(&mCollection));
+    FAIL_RETURN(source->ReadInt32(&mPriority));
 
     return NOERROR;
 }
 
-ECode CKeyboardLayout::WriteToParcel(
+ECode KeyboardLayout::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
     FAIL_RETURN(dest->WriteString(mDescriptor));
     FAIL_RETURN(dest->WriteString(mLabel));
     FAIL_RETURN(dest->WriteString(mCollection));
+    FAIL_RETURN(dest->WriteInt32(mPriority));
 
     return NOERROR;
 }
 
-ECode CKeyboardLayout::CompareTo(
+ECode KeyboardLayout::CompareTo(
     /* [in] */ IInterface* another,
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(another);
-    CKeyboardLayout* temp = (CKeyboardLayout*)IKeyboardLayout::Probe(another);
+    KeyboardLayout* temp = (KeyboardLayout*)IKeyboardLayout::Probe(another);
     if (!temp) {
         *result = -1;
         return NOERROR;
     }
-    *result = mLabel.CompareIgnoreCase(temp->mLabel);
+
+    // Note that these arguments are intentionally flipped since you want higher priority
+    // keyboards to be listed before lower priority keyboards.
+    if (temp->mPriority == mPriority) {
+        *result = mLabel.CompareIgnoreCase(temp->mLabel);
+    }
+
     if (*result == 0) {
         *result = mCollection.CompareIgnoreCase(temp->mCollection);
     }
@@ -96,13 +103,20 @@ ECode CKeyboardLayout::CompareTo(
     return NOERROR;
 }
 
-// //@Override
-// public String toString() {
-//     if (mCollection.isEmpty()) {
-//         return mLabel;
-//     }
-//     return mLabel + " - " + mCollection;
-// }
+ECode KeyboardLayout::ToString(
+    /* [out] */ String* str)
+{
+    if (mCollection.IsEmpty()) {
+        *str = mLabel;
+        return NOERROR;
+    }
+
+    StringBuilder sb;
+    sb += mLabel;
+    sb += " - ";
+    sb += mCollection;
+    return sb.ToString(str);
+}
 
 } // namespace Input
 } // namespace Hardware

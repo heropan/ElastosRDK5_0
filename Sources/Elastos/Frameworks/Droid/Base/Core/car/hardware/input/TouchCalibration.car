@@ -10,9 +10,7 @@ module
      * Encapsulates calibration data for input devices.
      *
      * @hide
-     */
-
-    /**
+     *
      * @Involve
      * interface IParcelable;
      */

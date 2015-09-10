@@ -7,6 +7,10 @@ namespace Droid {
 namespace Hardware {
 namespace Input {
 
+CAR_INTERFACE_IMPL(CInputManagerInputDevicesChangedListener, Object, IInputDevicesChangedListener);
+
+CAR_OBJECT_IMPL(CInputManagerInputDevicesChangedListener);
+
 ECode CInputManagerInputDevicesChangedListener::constructor(
     /* [in] */ Handle32 owner)
 {

@@ -170,7 +170,6 @@ module
 
     }}} // Elastos.Droid.Keyguard
 
-
     namespace Elastos {
     namespace Droid {
     namespace Hardware {

@@ -10,9 +10,7 @@ module
      * Wrapper for passing identifying information for input devices.
      *
      * @hide
-     */
-
-    /**
+     *
      * @Involve
      * interface IParcelable;
      */

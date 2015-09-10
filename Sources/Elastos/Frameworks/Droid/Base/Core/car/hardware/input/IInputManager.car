@@ -2,8 +2,8 @@
 module
 {
     interface Elastos.Droid.Os.IBinder;
-    // interface Elastos.Droid.View.IInputDevice;
-    // interface Elastos.Droid.View.IInputEvent;
+    interface Elastos.Droid.View.IInputDevice;
+    interface Elastos.Droid.View.IInputEvent;
     interface Elastos.Droid.Hardware.Input.IKeyboardLayout;
     interface Elastos.Droid.Hardware.Input.IInputDevicesChangedListener;
     interface Elastos.Droid.Hardware.Input.ITouchCalibration;
@@ -15,9 +15,9 @@ module
 
     interface IIInputManager {
         // Gets input device information.
-        // GetInputDevice(
-        //     [in] Int32 deviceId,
-        //     [out] IInputDevice** device);
+        GetInputDevice(
+            [in] Int32 deviceId,
+            [out] IInputDevice** device);
 
         GetInputDeviceIds(
             [out, callee] ArrayOf<Int32>* deviceIds);
@@ -36,10 +36,10 @@ module
 
         // Injects an input event into the system.  To inject into windows owned by other
         // applications, the caller must have the INJECT_EVENTS permission.
-        // InjectInputEvent(
-        //     [in] IInputEvent* ev,
-        //     [in] Int32 mode,
-        //     [out] Boolean* res);
+        InjectInputEvent(
+            [in] IInputEvent* ev,
+            [in] Int32 mode,
+            [out] Boolean* res);
 
         // Calibrate input device position
         GetTouchCalibrationForInputDevice(

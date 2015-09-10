@@ -244,32 +244,16 @@ module
 
     namespace Input {
 
-        // class CInputManagerInputDevicesChangedListener {
-        //     constructor(
-        //         [in] Handle32 inputManager);
+        class CInputManagerInputDevicesChangedListener {
+            constructor(
+                [in] Handle32 inputManager);
 
-        //     interface IInputDevicesChangedListener;
-        // }
+            interface IInputDevicesChangedListener;
+        }
 
-        // class CInputManager {
-        //     interface IInputManager;
-        // }
-
-        // class CKeyboardLayout {
-        //     constructor();
-
-        //     constructor(
-        //         [in] String descriptor,
-        //         [in] String label,
-        //         [in] String collection);
-
-        //     constructor(
-        //         [in] IParcel* source);
-
-        //     interface IKeyboardLayout;
-        //     interface IComparable;
-        //     interface IParcelable;
-        // }
+        class CInputManager {
+            interface IInputManager;
+        }
 
         singleton class CInputManagerHelper {
             interface IInputManagerHelper;

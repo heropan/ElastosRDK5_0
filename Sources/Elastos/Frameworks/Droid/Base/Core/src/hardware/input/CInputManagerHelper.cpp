@@ -1,6 +1,6 @@
 
 #include "hardware/input/CInputManagerHelper.h"
-// #include "hardware/input/CInputManager.h"
+#include "hardware/input/CInputManager.h"
 
 namespace Elastos {
 namespace Droid {
@@ -15,7 +15,7 @@ ECode CInputManagerHelper::GetInstance(
     /* [out] */ IInputManager** manager)
 {
     VALIDATE_NOT_NULL(manager)
-    // *manager = CInputManager::GetInstance();
+    *manager = CInputManager::GetInstance();
     REFCOUNT_ADD(*manager)
     return NOERROR;
 }

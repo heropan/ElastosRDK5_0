@@ -1,8 +1,14 @@
 
-#ifndef __ELASTOS_DROID_HARDWARE_INPUT_CKEYBOARDLAYOUT_H__
-#define __ELASTOS_DROID_HARDWARE_INPUT_CKEYBOARDLAYOUT_H__
+#ifndef __ELASTOS_DROID_HARDWARE_INPUT_KEYBOARDLAYOUT_H__
+#define __ELASTOS_DROID_HARDWARE_INPUT_KEYBOARDLAYOUT_H__
 
-#include "_Elastos_Droid_Hardware_Input_CKeyboardLayout.h"
+#include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Droid::Hardware::Input::IKeyboardLayout;
+using Elastos::Core::Object;
+using Elastos::Core::IComparable;
+using Elastos::Core::EIID_IComparable;
 
 namespace Elastos {
 namespace Droid {
@@ -14,17 +20,22 @@ namespace Input {
  *
  * @hide
  */
-CarClass(CKeyboardLayout)
+class KeyboardLayout
+    : public Object
+    , public IKeyboardLayout
+    , public IComparable
+    , public IParcelable
 {
 public:
-    CARAPI constructor();
+    CAR_INTERFACE_DECL()
 
-    CARAPI constructor(
+    KeyboardLayout(
         /* [in] */ const String& descriptor,
         /* [in] */ const String& label,
-        /* [in] */ const String& collection);
+        /* [in] */ const String& collection,
+        /* [in] */ Int32 priority);
 
-    CARAPI constructor(
+    KeyboardLayout(
        /* [in] */ IParcel* source);
 
     /**
@@ -65,13 +76,15 @@ public:
         /* [in] */ IInterface* another,
         /* [out] */ Int32* result);
 
-    // //@Override
-    // public String toString();
+    //@Override
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 private:
     String mDescriptor;
     String mLabel;
     String mCollection;
+    Int32 mPriority;
 
     // public static final Parcelable.Creator<KeyboardLayout> CREATOR =
     //         new Parcelable.Creator<KeyboardLayout>() {
@@ -89,4 +102,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_HARDWARE_INPUT_CKEYBOARDLAYOUT_H__
+#endif // __ELASTOS_DROID_HARDWARE_INPUT_KEYBOARDLAYOUT_H__

@@ -4,19 +4,23 @@
 
 #include "_Elastos_Droid_Hardware_Input_CInputManager.h"
 #include "ext/frameworkext.h"
-#include "os/HandlerBase.h"
+#include "os/Handler.h"
+#include "os/Vibrator.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
-#include <ext/frameworkext.h>
 
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::Vibrator;
 using Elastos::Droid::Os::IVibrator;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IInputDevice;
 using Elastos::Droid::View::IInputEvent;
+using Elastos::Droid::Media::IAudioAttributes;
+using Elastos::Core::Object;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
@@ -33,11 +37,13 @@ namespace Input {
  * </p>
  */
 CarClass(CInputManager)
+    , public Object
+    , public IInputManager
 {
     friend class CInputManagerInputDevicesChangedListener;
 private:
     class InputDeviceListenerDelegate
-        : public HandlerBase
+        : public Handler
     {
     public:
         InputDeviceListenerDelegate(
@@ -51,7 +57,8 @@ private:
         AutoPtr<IInputDeviceListener> mListener;
     };
 
-    class InputDeviceVibrator : public ElRefBase, public IVibrator
+    class InputDeviceVibrator
+        : public Vibrator
     {
     public:
         CAR_INTERFACE_DECL();
@@ -64,11 +71,17 @@ private:
             /* [out] */ Boolean* res);
 
         CARAPI Vibrate(
-            /* [in] */ Int64 milliseconds);
+            /* [in] */ Int32 uid,
+            /* [in] */ const String& opPkg,
+            /* [in] */ Int64 milliseconds,
+            /* [in] */ IAudioAttributes* attributes);
 
         CARAPI Vibrate(
+            /* [in] */ Int32 uid,
+            /* [in] */ const String& opPkg,
             /* [in] */ const ArrayOf<Int64>& pattern,
-            /* [in] */ Int32 repeat);
+            /* [in] */ Int32 repeat,
+            /* [in] */ IAudioAttributes* attributes);
 
         CARAPI Cancel();
 
@@ -89,6 +102,10 @@ public:
     static AutoPtr<IInputManager> GetInstance();
 
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL()
+
     CInputManager();
 
     ~CInputManager();
@@ -172,76 +189,109 @@ public:
         /* [out] */ IKeyboardLayout** layout);
 
     /**
-     * Gets the current keyboard layout descriptor for the specified input device.
+     * Gets the current keyboard layout descriptor for the specified input
+     * device.
      *
-     * @param inputDeviceDescriptor The input device descriptor.
-     * @return The keyboard layout descriptor, or NULL if no keyboard layout has been set.
-     *
+     * @param identifier Identifier for the input device
+     * @return The keyboard layout descriptor, or null if no keyboard layout has
+     *         been set.
      * @hide
      */
     CARAPI GetCurrentKeyboardLayoutForInputDevice(
-        /* [in] */ const String& inputDeviceDescriptor,
+        /* [in] */ IInputDeviceIdentifier* identifier,
         /* [out] */ String* keyboardLayoutDescriptor);
 
     /**
-     * Sets the current keyboard layout descriptor for the specified input device.
+     * Sets the current keyboard layout descriptor for the specified input
+     * device.
      * <p>
-     * This method may have the side-effect of causing the input device in question
-     * to be reconfigured.
+     * This method may have the side-effect of causing the input device in
+     * question to be reconfigured.
      * </p>
      *
-     * @param inputDeviceDescriptor The input device descriptor.
-     * @param keyboardLayoutDescriptor The keyboard layout descriptor to use, must not be NULL.
-     *
+     * @param identifier The identifier for the input device.
+     * @param keyboardLayoutDescriptor The keyboard layout descriptor to use,
+     *            must not be null.
      * @hide
      */
     CARAPI SetCurrentKeyboardLayoutForInputDevice(
-        /* [in] */ const String& inputDeviceDescriptor,
+        /* [in] */ IInputDeviceIdentifier* identifier,
         /* [in] */ const String& keyboardLayoutDescriptor);
 
     /**
-     * Gets all keyboard layout descriptors that are enabled for the specified input device.
+     * Gets all keyboard layout descriptors that are enabled for the specified
+     * input device.
      *
-     * @param inputDeviceDescriptor The input device descriptor.
+     * @param identifier The identifier for the input device.
      * @return The keyboard layout descriptors.
-     *
      * @hide
      */
     CARAPI GetKeyboardLayoutsForInputDevice(
-        /* [in] */ const String& inputDeviceDescriptor,
+        /* [in] */ IInputDeviceIdentifier* identifier,
         /* [out, callee] */ ArrayOf<String>** keyboardLayoutDescriptors);
 
     /**
      * Adds the keyboard layout descriptor for the specified input device.
      * <p>
-     * This method may have the side-effect of causing the input device in question
-     * to be reconfigured.
+     * This method may have the side-effect of causing the input device in
+     * question to be reconfigured.
      * </p>
      *
-     * @param inputDeviceDescriptor The input device descriptor.
-     * @param keyboardLayoutDescriptor The descriptor of the keyboard layout to add.
-     *
+     * @param identifier The identifier for the input device.
+     * @param keyboardLayoutDescriptor The descriptor of the keyboard layout to
+     *            add.
      * @hide
      */
     CARAPI AddKeyboardLayoutForInputDevice(
-        /* [in] */ const String& inputDeviceDescriptor,
+        /* [in] */ IInputDeviceIdentifier* identifier,
         /* [in] */ const String& keyboardLayoutDescriptor);
 
     /**
      * Removes the keyboard layout descriptor for the specified input device.
      * <p>
-     * This method may have the side-effect of causing the input device in question
-     * to be reconfigured.
+     * This method may have the side-effect of causing the input device in
+     * question to be reconfigured.
      * </p>
      *
-     * @param inputDeviceDescriptor The input device descriptor.
-     * @param keyboardLayoutDescriptor The descriptor of the keyboard layout to remove.
-     *
+     * @param identifier The identifier for the input device.
+     * @param keyboardLayoutDescriptor The descriptor of the keyboard layout to
+     *            remove.
      * @hide
      */
     CARAPI RemoveKeyboardLayoutForInputDevice(
-        /* [in] */ const String& inputDeviceDescriptor,
+        /* [in] */ IInputDeviceIdentifier* identifier,
         /* [in] */ const String& keyboardLayoutDescriptor);
+
+    /**
+     * Gets the TouchCalibration applied to the specified input device's coordinates.
+     *
+     * @param inputDeviceDescriptor The input device descriptor.
+     * @return The TouchCalibration currently assigned for use with the given
+     * input device. If none is set, an identity TouchCalibration is returned.
+     *
+     * @hide
+     */
+    CARAPI GetTouchCalibration(
+        /* [in] */ const String& inputDeviceDescriptor,
+        /* [in] */ Int32 surfaceRotation,
+        /* [out] */ ITouchCalibration** result);
+
+    /**
+     * Sets the TouchCalibration to apply to the specified input device's coordinates.
+     * <p>
+     * This method may have the side-effect of causing the input device in question
+     * to be reconfigured. Requires {@link android.Manifest.permissions.SET_INPUT_CALIBRATION}.
+     * </p>
+     *
+     * @param inputDeviceDescriptor The input device descriptor.
+     * @param calibration The calibration to be applied
+     *
+     * @hide
+     */
+    CARAPI SetTouchCalibration(
+        /* [in] */ const String& inputDeviceDescriptor,
+        /* [in] */ Int32 surfaceRotation,
+        /* [in] */ ITouchCalibration* calibration);
 
     /**
      * Gets the mouse pointer speed.
@@ -307,6 +357,24 @@ public:
         /* [out, callee] */ ArrayOf<Boolean>** hasKeys);
 
     /**
+     * Queries the framework about whether any physical keys exist on the
+     * any keyboard attached to the device that are capable of producing the given
+     * array of key codes.
+     *
+     * @param id The id of the device to query.
+     * @param keyCodes The array of key codes to query.
+     * @return A new array of the same size as the key codes array whose elements are set to true
+     * if the given device could produce the corresponding key code at the same index in the key
+     * codes array.
+     *
+     * @hide
+     */
+    CARAPI DeviceHasKeys(
+        /* [in] */ Int32 id,
+        /* [in] */ const ArrayOf<Int32>& keyCodes,
+        /* [out, callee] */ ArrayOf<Boolean>** result);
+
+    /**
      * Injects an input event into the event system on behalf of an application.
      * The synchronization mode determines whether the method blocks while waiting for
      * input injection to proceed.
@@ -342,6 +410,9 @@ public:
         /* [out] */ IVibrator** vibrator);
 
 private:
+    CInputManager(
+        /* [in] */ IIInputManager* im);
+
     static Boolean ContainsDeviceId(
         /* [in] */ ArrayOf<Int32>* deviceIdAndGeneration,
         /* [in] */ Int32 deviceId);
