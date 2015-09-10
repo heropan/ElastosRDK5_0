@@ -31,7 +31,9 @@ protected:
     class SelfContentObserver : public ContentObserver
     {
     public:
-        SelfContentObserver(
+        SelfContentObserver();
+
+        CARAPI constructor(
             /* [in] */ IAbstractCursor* cursor);
 
         //@Override

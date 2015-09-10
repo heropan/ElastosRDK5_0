@@ -14,6 +14,10 @@ module
      * method to indicate that the iterator is no longer needed and that its resources
      * can be released.
      */
+    /*
+     * @Involve
+     * interface IIterator
+     */
     interface IEntityIterator {
         /**
          * Returns true if there is at least one more element, false otherwise.
@@ -30,7 +34,7 @@ module
          *             if there are no more elements.
          * @see #hasNext
          */
-        Next(
+        GetNext(
             [out] IEntity** entity);
 
         /**

@@ -52,6 +52,10 @@ class Context
 public:
     CAR_INTERFACE_DECL()
 
+    Context();
+
+    virtual ~Context();
+
     /** Return an AssetManager instance for your application's package. */
     virtual CARAPI GetAssets(
         /* [out] */ IAssetManager** assetManager) = 0;
@@ -614,7 +618,7 @@ public:
      * @see #getObbDir()
      * @see Environment#getExternalStorageState(File)
      */
-    virtual CARAPI GetObbDir(
+    virtual CARAPI GetObbDirs(
         /* [out, callee] */ ArrayOf<IFile*>** obbDir) = 0;
 
     /**
@@ -1860,7 +1864,8 @@ public:
      * argument for use by system server and other multi-user aware code.
      * @hide
      */
-    CARAPI BindService(
+    //@SystemApi
+    CARAPI BindServiceAsUser(
         /* [in] */ IIntent* service,
         /* [in] */ IServiceConnection* conn,
         /* [in] */ Int32 flags,

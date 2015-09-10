@@ -18,6 +18,8 @@ class ContextWrapper
     , public IContextWrapper
 {
 public:
+    CAR_INTERFACE_DECL()
+
     ContextWrapper();
 
     virtual ~ContextWrapper();
@@ -106,7 +108,7 @@ public:
         /* [out] */ IFile** file);
 
     CARAPI GetFileList(
-        /* [out, callee] */ ArrayOf<IFile*>** filesDir);
+        /* [out, callee] */ ArrayOf<String>** filesDir);
 
     CARAPI GetFilesDir(
         /* [out] */ IFile** filesDir);
@@ -129,6 +131,9 @@ public:
         /* [out, callee] */ ArrayOf<IFile*>** filesDir);
 
     CARAPI GetCacheDir(
+        /* [out] */ IFile** cacheDir);
+
+    CARAPI GetCodeCacheDir(
         /* [out] */ IFile** cacheDir);
 
     CARAPI GetExternalCacheDir(
@@ -237,12 +242,12 @@ public:
 
     CARAPI SendBroadcast(
         /* [in] */ IIntent* intent,
-        /* [in] */ const String& receiverPermission,
-        /* [in] */ Int32 appOp);
+        /* [in] */ const String& receiverPermission);
 
     CARAPI SendBroadcast(
         /* [in] */ IIntent* intent,
-        /* [in] */ const String& receiverPermission);
+        /* [in] */ const String& receiverPermission,
+        /* [in] */ Int32 appOp);
 
     CARAPI SendOrderedBroadcast(
         /* [in] */ IIntent* intent,

@@ -1,22 +1,51 @@
 
 #include "content/CCursorLoader.h"
 #include "content/CLoaderForceLoadContentObserver.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/Arrays.h>
+
+using Elastos::Droid::Database::IContentObserver;
+
+using Elastos::Utility::Arrays;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
+CAR_INTERFACE_IMPL_3(CCursorLoader, AsyncTaskLoader, ICursorLoader, IAsyncTaskLoader, ILoader)
+
 CCursorLoader::CCursorLoader()
-    : mObserver(NULL)
-    , mUri(NULL)
-    , mProjection(NULL)
-    , mSelectionArgs(NULL)
-    , mCursor(NULL)
-    , mCancellationSignal(NULL)
 {}
 
 CCursorLoader::~CCursorLoader()
 {}
+
+ECode CCursorLoader::constructor(
+    /* [in] */ IContext* context)
+{
+    FAIL_RETURN(AsyncTaskLoader::constructor(context));
+    FAIL_RETURN(CLoaderForceLoadContentObserver::New(THIS_PROBE(ILoader), (ILoaderForceLoadContentObserver**)&mObserver));
+    return NOERROR;
+}
+
+ECode CCursorLoader::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IUri* uri,
+    /* [in] */ ArrayOf<String>* projection,
+    /* [in] */ const String& selection,
+    /* [in] */ ArrayOf<String>* selectionArgs,
+    /* [in] */ const String& sortOrder)
+{
+    FAIL_RETURN(AsyncTaskLoader::constructor(context));
+    FAIL_RETURN(CLoaderForceLoadContentObserver::New(THIS_PROBE(ILoader), (ILoaderForceLoadContentObserver**)&mObserver));
+    mUri = uri;
+    mProjection = projection;
+    mSelection = selection;
+    mSelectionArgs = selectionArgs;
+    mSortOrder = sortOrder;
+    return NOERROR;
+}
 
 ECode CCursorLoader::DeliverResult(
     /* [in] */ IInterface* data)
@@ -27,20 +56,21 @@ ECode CCursorLoader::DeliverResult(
     if ((IsReset(&isReset), isReset)) {
         // An async query came in while the loader is stopped
         if (NULL != data) {
-            FAIL_RETURN(((ICursor*)data)->Close());
+            FAIL_RETURN(ICloseable::Probe(data)->Close());
         }
         return NOERROR;
     }
 
     AutoPtr<ICursor> oldCursor = mCursor;
-    mCursor = (ICursor*)data;
+    mCursor = ICursor::Probe(data);
     Boolean isStarted = FALSE;
     if ((IsStarted(&isStarted), isStarted)) {
-        FAIL_RETURN(Loader::DeliverResult((ICursor*)data));
+        FAIL_RETURN(Loader::DeliverResult(mCursor))
     }
     Boolean isClosed = FALSE;
-    if (NULL != oldCursor && !_CObject_Compare(oldCursor, data) && !(oldCursor->IsClosed(&isClosed), isClosed)) {
-        FAIL_RETURN(oldCursor->Close());
+    if (NULL != oldCursor && !Object::Equals(oldCursor, mCursor)
+        && !(oldCursor->IsClosed(&isClosed), isClosed)) {
+        FAIL_RETURN(ICloseable::Probe(oldCursor)->Close());
     }
 
     return NOERROR;
@@ -169,27 +199,27 @@ ECode CCursorLoader::Dump(
 {
     FAIL_RETURN(AsyncTaskLoader::Dump(prefix, fd, writer, args));
 
-    writer->PrintString(prefix);
-    writer->PrintString(String("mUri="));
-    writer->PrintObjectln(mUri);
-    writer->PrintString(prefix);
-    writer->PrintString(String("mProjection="));
-//    writer->PrintStringln(Arrays.toString(mProjection));
-    writer->PrintString(prefix);
-    writer->PrintString(String("mSelection="));
-    writer->PrintStringln(mSelection);
-    writer->PrintString(prefix);
-    writer->PrintString(String("mSelectionArgs="));
-//    writer->PrintStringln(Arrays.toString(mSelectionArgs));
-    writer->PrintString(prefix);
-    writer->PrintString(String("mSortOrder="));
-    writer->PrintStringln(mSortOrder);
-    writer->PrintString(prefix);
-    writer->PrintString(String("mCursor="));
-    writer->PrintObjectln(mCursor);
-    writer->PrintString(prefix);
-    writer->PrintString(String("mContentChanged="));
-    writer->PrintBooleanln(mContentChanged);
+    writer->Print(prefix);
+    writer->Print(String("mUri="));
+    writer->Println(Object::ToString(mUri));
+    writer->Print(prefix);
+    writer->Print(String("mProjection="));
+    writer->Println(Arrays::ToString(mProjection));
+    writer->Print(prefix);
+    writer->Print(String("mSelection="));
+    writer->Println(mSelection);
+    writer->Print(prefix);
+    writer->Print(String("mSelectionArgs="));
+    writer->Println(Arrays::ToString(mSelectionArgs));
+    writer->Print(prefix);
+    writer->Print(String("mSortOrder="));
+    writer->Println(mSortOrder);
+    writer->Print(prefix);
+    writer->Print(String("mCursor="));
+    writer->Println(Object::ToString(mCursor));
+    writer->Print(prefix);
+    writer->Print(String("mContentChanged="));
+    writer->Println(mContentChanged);
 
     return NOERROR;
 }
@@ -205,8 +235,8 @@ ECode CCursorLoader::OnCanceled(
 {
     if (ICursor::Probe(data) == NULL) return E_ILLEGAL_ARGUMENT_EXCEPTION;
     Boolean isClosed = FALSE;
-    if (NULL != data && !(((ICursor*)data)->IsClosed(&isClosed), isClosed)) {
-        FAIL_RETURN(((ICursor*)data)->Close());
+    if (!(ICursor::Probe(data)->IsClosed(&isClosed), isClosed)) {
+        FAIL_RETURN(ICloseable::Probe(data)->Close());
     }
     return NOERROR;
 }
@@ -251,11 +281,14 @@ ECode CCursorLoader::LoadInBackground(
         Int32 count = 0;
         ec = cursor->GetCount(&count);
         if (FAILED(ec)) {
+            ICloseable::Probe(cursor)->Close();
             mCancellationSignal = NULL;
             return ec;
         }
-        ec = RegisterContentObserver(cursor, mObserver);
+
+        ec = cursor->RegisterContentObserver(IContentObserver::Probe(mObserver));
         if (FAILED(ec)) {
+            ICloseable::Probe(cursor)->Close();
             mCancellationSignal = NULL;
             return ec;
         }
@@ -373,36 +406,10 @@ ECode CCursorLoader::SetSortOrder(
     return NOERROR;
 }
 
-ECode CCursorLoader::constructor(
-    /* [in] */ IContext* context)
-{
-    FAIL_RETURN(Loader::Init(context));
-    FAIL_RETURN(CLoaderForceLoadContentObserver::New((ILoaderForceLoadContentObserver**)&mObserver));
-    return NOERROR;
-}
-
-ECode CCursorLoader::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IUri* uri,
-    /* [in] */ ArrayOf<String>* projection,
-    /* [in] */ const String& selection,
-    /* [in] */ ArrayOf<String>* selectionArgs,
-    /* [in] */ const String& sortOrder)
-{
-    FAIL_RETURN(Loader::Init(context));
-    FAIL_RETURN(CLoaderForceLoadContentObserver::New((ILoaderForceLoadContentObserver**)&mObserver));
-    mUri = uri;
-    mProjection = projection;
-    mSelection = selection;
-    mSelectionArgs = selectionArgs;
-    mSortOrder = sortOrder;
-    return NOERROR;
-}
-
 ECode CCursorLoader::OnStartLoading()
 {
     if (NULL != mCursor) {
-        FAIL_RETURN(DeliverResult((IInterface*) mCursor));
+        FAIL_RETURN(DeliverResult(TO_IINTERFACE(mCursor)));
     }
     Boolean ret = FALSE;
     if ((TakeContentChanged(&ret), ret) || mCursor == NULL) {
@@ -425,17 +432,10 @@ ECode CCursorLoader::OnReset()
     FAIL_RETURN(OnStopLoading());
     Boolean isClosed = FALSE;
     if (NULL != mCursor && !(mCursor->IsClosed(&isClosed), isClosed)) {
-        FAIL_RETURN(mCursor->Close());
+        FAIL_RETURN(ICloseable::Probe(mCursor)->Close());
     }
     mCursor = NULL;
     return NOERROR;
-}
-
-ECode CCursorLoader::RegisterContentObserver(
-    /* [in] */ ICursor* cursor,
-    /* [in] */ IContentObserver* observer)
-{
-    return cursor->RegisterContentObserver(mObserver);
 }
 
 }

@@ -3,25 +3,48 @@
 #define __ELASTOS_DROID_CONTENT_CCURSORLOADER_H__
 
 #include "_Elastos_Droid_Content_CCursorLoader.h"
-#include <ext/frameworkext.h>
-#include "AsyncTaskLoader.h"
+#include "content/AsyncTaskLoader.h"
 
-using namespace Elastos;
-using namespace Elastos::IO;
-using namespace Elastos::Droid::Database;
-using namespace Elastos::Droid::Net;
-using namespace Elastos::Droid::Os;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Os::ICancellationSignal;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
-CarClass(CCursorLoader), public AsyncTaskLoader
+CarClass(CCursorLoader)
+    , public AsyncTaskLoader
+    , public ICursorLoader
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CCursorLoader();
 
-    ~CCursorLoader();
+    virtual ~CCursorLoader();
+
+    /**
+     * Creates an empty unspecified CursorLoader.  You must follow this with
+     * calls to {@link #setUri(Uri)}, {@link #setSelection(String)}, etc
+     * to specify the query to perform.
+     */
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    /**
+     * Creates a fully-specified CursorLoader.  See
+     * {@link ContentResolver#query(Uri, String[], String, String[], String)
+     * ContentResolver.query()} for documentation on the meaning of the
+     * parameters.  These will be passed as-is to that call.
+     */
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IUri* uri,
+        /* [in] */ ArrayOf<String>* projection,
+        /* [in] */ const String& selection,
+        /* [in] */ ArrayOf<String>* selectionArgs,
+        /* [in] */ const String& sortOrder);
 
     CARAPI DeliverResult(
         /* [in] */ IInterface* data);
@@ -134,28 +157,6 @@ public:
     CARAPI SetSortOrder(
         /* [in] */ const String& sortOrder);
 
-    /**
-     * Creates an empty unspecified CursorLoader.  You must follow this with
-     * calls to {@link #setUri(Uri)}, {@link #setSelection(String)}, etc
-     * to specify the query to perform.
-     */
-    CARAPI constructor(
-        /* [in] */ IContext* context);
-
-    /**
-     * Creates a fully-specified CursorLoader.  See
-     * {@link ContentResolver#query(Uri, String[], String, String[], String)
-     * ContentResolver.query()} for documentation on the meaning of the
-     * parameters.  These will be passed as-is to that call.
-     */
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IUri* uri,
-        /* [in] */ ArrayOf<String>* projection,
-        /* [in] */ const String& selection,
-        /* [in] */ ArrayOf<String>* selectionArgs,
-        /* [in] */ const String& sortOrder);
-
 protected:
     CARAPI OnStartLoading();
 
@@ -165,15 +166,6 @@ protected:
     CARAPI OnStopLoading();
 
     CARAPI OnReset();
-
-private:
-    /**
-     * Registers an observer to get notifications from the content provider
-     * when the cursor needs to be refreshed.
-     */
-    CARAPI RegisterContentObserver(
-        /* [in] */ ICursor* cursor,
-        /* [in] */ IContentObserver* observer);
 
 private:
     AutoPtr<ILoaderForceLoadContentObserver> mObserver;

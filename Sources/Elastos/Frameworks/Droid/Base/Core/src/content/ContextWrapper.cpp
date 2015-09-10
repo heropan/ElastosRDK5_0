@@ -5,17 +5,19 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
+CAR_INTERFACE_IMPL(ContextWrapper, Context, IContextWrapper)
+
 ContextWrapper::ContextWrapper()
-    : mBase(NULL)
 {}
 
 ContextWrapper::~ContextWrapper()
 {}
 
-ContextWrapper::constructor(
+ECode ContextWrapper::constructor(
     /* [in] */ IContext* base)
 {
     mBase = base;
+    return NOERROR;
 }
 
 ECode ContextWrapper::AttachBaseContext(
@@ -96,13 +98,19 @@ ECode ContextWrapper::GetTheme(
 ECode ContextWrapper::GetClassLoader(
     /* [out] */ IClassLoader** loader)
 {
-    return mBase->GetClassLoader(loader);
+    return ((Context*)mBase.Get())->GetClassLoader(loader);
 }
 
 ECode ContextWrapper::GetPackageName(
     /* [out] */ String* packageName)
 {
     return mBase->GetPackageName(packageName);
+}
+
+ECode ContextWrapper::GetBasePackageName(
+    /* [out] */ String* packageName)
+{
+    return mBase->GetBasePackageName(packageName);
 }
 
 ECode ContextWrapper::GetOpPackageName(
@@ -199,9 +207,10 @@ ECode ContextWrapper::GetExternalFilesDir(
 }
 
 ECode ContextWrapper::GetExternalFilesDirs(
-    /* [out, callee] */ ArrayOf<String>** fileList)
+    /* [in] */ const String& type,
+    /* [out, callee] */ ArrayOf<IFile*>** fileList)
 {
-    return mBase->GetExternalFilesDirs(fileList);
+    return mBase->GetExternalFilesDirs(type, fileList);
 }
 
 ECode ContextWrapper::GetObbDir(
@@ -211,7 +220,7 @@ ECode ContextWrapper::GetObbDir(
 }
 
 ECode ContextWrapper::GetObbDirs(
-    /* [out, callee] */ ArrayOf<String>** fileList)
+    /* [out, callee] */ ArrayOf<IFile*>** fileList)
 {
     return mBase->GetObbDirs(fileList);
 }
@@ -235,9 +244,15 @@ ECode ContextWrapper::GetExternalCacheDir(
 }
 
 ECode ContextWrapper::GetExternalCacheDirs(
-    /* [out, callee] */ ArrayOf<String>** fileList)
+    /* [out, callee] */ ArrayOf<IFile*>** fileList)
 {
     return mBase->GetExternalCacheDirs(fileList);
+}
+
+ECode ContextWrapper::GetExternalMediaDirs(
+    /* [out, callee] */ ArrayOf<IFile*>** fileList)
+{
+    return mBase->GetExternalMediaDirs(fileList);
 }
 
 ECode ContextWrapper::GetDir(
@@ -417,7 +432,7 @@ ECode ContextWrapper::SendBroadcast(
     /* [in] */ const String& receiverPermission,
     /* [in] */ Int32 appOp)
 {
-    return mBase->SendBroadcast(intent, receiverPermission, appOp);
+    return ((Context*)mBase.Get())->SendBroadcast(intent, receiverPermission, appOp);
 }
 
 ECode ContextWrapper::SendOrderedBroadcast(
@@ -450,7 +465,7 @@ ECode ContextWrapper::SendOrderedBroadcast(
     /* [in] */ const String& initialData,
     /* [in] */ IBundle* initialExtras)
 {
-    return mBase->SendOrderedBroadcast(intent, receiverPermission, appOp, resultReceiver, scheduler,
+    return ((Context*)mBase.Get())->SendOrderedBroadcast(intent, receiverPermission, appOp, resultReceiver, scheduler,
         initialCode, initialData, initialExtras);
 }
 
@@ -494,7 +509,7 @@ ECode ContextWrapper::SendOrderedBroadcastAsUser(
     /* [in] */ const String& initialData,
     /* [in] */ IBundle* initialExtras)
 {
-    return mBase->SendOrderedBroadcastAsUser(intent, user, receiverPermission, appOp,
+    return ((Context*)mBase.Get())->SendOrderedBroadcastAsUser(intent, user, receiverPermission, appOp,
         resultReceiver, scheduler, initialCode, initialData, initialExtras);
 }
 
@@ -633,7 +648,7 @@ ECode ContextWrapper::BindServiceAsUser(
     /* [in] */ Int32 userHandle,
     /* [out] */ Boolean* succeeded)
 {
-    return mBase->BindServiceAsUser(service, conn, flags, userHandle, succeeded);
+    return ((Context*)mBase.Get())->BindServiceAsUser(service, conn, flags, userHandle, succeeded);
 }
 
 ECode ContextWrapper::UnbindService(
@@ -809,7 +824,7 @@ ECode ContextWrapper::CreatePackageContextAsUser(
     /* [in] */ IUserHandle* user,
     /* [out] */ IContext** ctx)
 {
-    return mBase->CreatePackageContextAsUser(packageName, flags, user, ctx);
+    return ((Context*)mBase.Get())->CreatePackageContextAsUser(packageName, flags, user, ctx);
 }
 
 ECode ContextWrapper::CreateApplicationContext(
@@ -817,13 +832,13 @@ ECode ContextWrapper::CreateApplicationContext(
     /* [in] */ Int32 flags,
     /* [out] */ IContext** ctx)
 {
-    return mBase->CreateApplicationContext(application, flags, ctx);
+    return ((Context*)mBase.Get())->CreateApplicationContext(application, flags, ctx);
 }
 
 ECode ContextWrapper::GetUserId(
     /* [out] */ Int32* userId)
 {
-    return mBase->GetUserId(userId);
+    return ((Context*)mBase.Get())->GetUserId(userId);
 }
 
 ECode ContextWrapper::CreateConfigurationContext(
@@ -843,7 +858,6 @@ ECode ContextWrapper::CreateDisplayContext(
 ECode ContextWrapper::IsRestricted(
     /* [out] */ Boolean* isRestricted)
 {
-    VALIDATE_NOT_NULL(isRestricted)
     return mBase->IsRestricted(isRestricted);
 }
 
@@ -851,8 +865,7 @@ ECode ContextWrapper::GetDisplayAdjustments(
     /* [in] */ Int32 displayId,
     /* [out] */ IDisplayAdjustments** da)
 {
-    VALIDATE_NOT_NULL(da)
-    return mBase->GetDisplayAdjustments(displayId, da);
+    return ((Context*)mBase.Get())->GetDisplayAdjustments(displayId, da);
 }
 
 }

@@ -3,21 +3,22 @@
 #define __ELASTOS_DROID_CONTENT_CINTENTHELPER_H__
 
 #include "_Elastos_Droid_Content_CIntentHelper.h"
-#include "Intent.h"
-
-using namespace Elastos::Core;
-using namespace Elastos::Droid::Content::Res;
-using namespace Elastos::Droid::Utility;
-using namespace Org::Xmlpull::V1;
-
+#include "content/Intent.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CIntentHelper)
+    , public Singleton
+    , public IIntentHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Convenience function for creating a {@link #ACTION_CHOOSER} Intent.
      *

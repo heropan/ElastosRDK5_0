@@ -14,16 +14,16 @@ namespace Elastos {
 namespace Droid {
 namespace Database {
 
-CAR_INTERFACE_IMPL_3(CCursorToBulkCursorAdaptor, Object, IBinder, IBulkCursor, IProxyDeathRecipient);
+CCursorToBulkCursorAdaptor::ContentObserverProxy::ContentObserverProxy()
+{}
 
-CAR_OBJECT_IMPL(CCursorToBulkCursorAdaptor)
-
-CCursorToBulkCursorAdaptor::ContentObserverProxy::ContentObserverProxy(
+ECode CCursorToBulkCursorAdaptor::ContentObserverProxy::constructor(
     /* [in] */ IIContentObserver* remoteObserver,
     /* [in] */ IProxyDeathRecipient* recipient)
-    : ContentObserver(NULL)
-    , mRemote(remoteObserver)
 {
+    FAIL_RETURN(ContentObserver::constructor(NULL))
+
+    mRemote = remoteObserver;
     // try {
     AutoPtr<IProxy> proxy = (IProxy*)mRemote->Probe(EIID_IProxy);
     if (proxy != NULL) {
@@ -32,8 +32,8 @@ CCursorToBulkCursorAdaptor::ContentObserverProxy::ContentObserverProxy(
     // } catch (RemoteException e) {
     //     // Do nothing, the far side is dead
     // }
+    return NOERROR;
 }
-
 
 ECode CCursorToBulkCursorAdaptor::ContentObserverProxy::UnlinkToDeath(
     /* [in] */ IProxyDeathRecipient* recipient,
@@ -65,6 +65,10 @@ ECode CCursorToBulkCursorAdaptor::ContentObserverProxy::OnChange(
 }
 
 const String CCursorToBulkCursorAdaptor::TAG("Cursor");
+
+CAR_INTERFACE_IMPL_3(CCursorToBulkCursorAdaptor, Object, IBinder, IBulkCursor, IProxyDeathRecipient);
+
+CAR_OBJECT_IMPL(CCursorToBulkCursorAdaptor)
 
 void CCursorToBulkCursorAdaptor::CloseFilledWindowLocked()
 {
@@ -259,7 +263,8 @@ ECode CCursorToBulkCursorAdaptor::CreateAndRegisterObserverProxyLocked(
         Slogger::E(TAG, "an observer is already registered");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
-    mObserver = new ContentObserverProxy(observer, (IProxyDeathRecipient*)this->Probe(EIID_IProxyDeathRecipient));
+    mObserver = new ContentObserverProxy();
+    mObserver->constructor(observer, THIS_PROBE(IProxyDeathRecipient));
     return ICursor::Probe(mCursor)->RegisterContentObserver((IContentObserver*)mObserver);
 }
 

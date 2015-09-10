@@ -5,22 +5,29 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
-CursorEntityIterator::CursorEntityIterator(
-    /* [in] */ ICursor* cursor)
-    : mCursor(cursor)
-    , mIsClosed(FALSE)
-{
-    Boolean succeeded = FALSE;
-    mCursor->MoveToFirst(&succeeded);
-}
+CursorEntityIterator::CursorEntityIterator()
+    : mIsClosed(FALSE)
+{}
 
 CursorEntityIterator::~CursorEntityIterator()
 {}
+
+ECode CursorEntityIterator::constructor(
+    /* [in] */ ICursor* cursor)
+{
+    VALIDATE_NOT_NULL(cursor)
+
+    mCursor = cursor;
+    Boolean succeeded = FALSE;
+    return mCursor->MoveToFirst(&succeeded);
+}
 
 ECode CursorEntityIterator::HasNext(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = FALSE;
+
     if (mIsClosed) {
         //throw new IllegalStateException("calling hasNext() when the iterator is closed");
         return E_ILLEGAL_STATE_EXCEPTION;
@@ -32,10 +39,12 @@ ECode CursorEntityIterator::HasNext(
     return NOERROR;
 }
 
-ECode CursorEntityIterator::Next(
+ECode CursorEntityIterator::GetNext(
     /* [out] */ IEntity** entity)
 {
     VALIDATE_NOT_NULL(entity)
+    *entity = NULL;
+
     if (mIsClosed) {
         //throw new IllegalStateException("calling next() when the iterator is closed");
         return E_ILLEGAL_STATE_EXCEPTION;
@@ -75,7 +84,7 @@ ECode CursorEntityIterator::Close()
     }
 
     mIsClosed = TRUE;
-    return mCursor->Close();
+    return ICloseable::Probe(mCursor)->Close();
 }
 
 } // namespace Content

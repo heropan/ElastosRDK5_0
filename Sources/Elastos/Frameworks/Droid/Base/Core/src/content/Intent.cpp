@@ -1,19 +1,30 @@
 
 #include "content/Intent.h"
-#include "net/Uri.h"
-#include "util/XmlUtils.h"
-#include "R.h"
-#include <elastos/utility/logging/Slogger.h>
-#include <elastos/core/StringUtils.h>
-
-#ifdef DROID_CORE
 #include "content/CIntent.h"
 #include "content/CClipDataItem.h"
 #include "content/CClipData.h"
 #include "content/CComponentName.h"
-#include "graphics/CRect.h"
 #include "os/CBundle.h"
-#endif
+#include "util/XmlUtils.h"
+//#include "graphics/CRect.h"
+//#include "net/Uri.h"
+#include "R.h"
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/Objects.h>
+
+
+using Elastos::Droid::Content::CClipDataItem;
+using Elastos::Droid::Content::CClipData;
+using Elastos::Droid::Content::CComponentName;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IResolveInfo;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::Res::ITypedArray;
+//using Elastos::Droid::Graphics::CRect;
+//using Elastos::Droid::Net::Uri;
+using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Utility::XmlUtils;
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::IBoolean;
@@ -24,33 +35,168 @@ using Elastos::Core::IFloat;
 using Elastos::Core::IDouble;
 using Elastos::Core::IByte;
 using Elastos::Core::IChar32;
+using Elastos::Utility::Objects;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Content::CClipDataItem;
-using Elastos::Droid::Content::CClipData;
-using Elastos::Droid::Utility::XmlUtils;
-using Elastos::Droid::Content::Pm::IPackageManager;
-using Elastos::Droid::Content::Pm::IResolveInfo;
-using Elastos::Droid::Content::Pm::IApplicationInfo;
-using Elastos::Droid::Content::Res::ITypedArray;
-using Elastos::Droid::Content::CComponentName;
-using Elastos::Droid::Graphics::CRect;
-using Elastos::Droid::Net::Uri;
-using Elastos::Droid::Os::CBundle;
-
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
+const String Intent::ATTR_ACTION("action");
+const String Intent::TAG_CATEGORIES("categories");
+const String Intent::ATTR_CATEGORY("category");
+const String Intent::TAG_EXTRA("extra");
+const String Intent::ATTR_TYPE("type");
+const String Intent::ATTR_COMPONENT("component");
+const String Intent::ATTR_DATA("data");
+const String Intent::ATTR_FLAGS("flags");
+
 const String Intent::TAG("Intent");
+
+CAR_INTERFACE_IMPL(Intent, Object, IIntent)
+
+CAR_OBJECT_IMPL(Intent)
 
 Intent::Intent()
     : mFlags(0)
+    , mContentUserHint(UserHandle::USER_CURRENT)
 {}
 
 Intent::~Intent()
 {
     mExtras = NULL;
+}
+
+ECode Intent::constructor()
+{
+    return NOERROR;
+}
+
+ECode Intent::constructor(
+    /* [in] */ IIntent* intent)
+{
+    if (intent == NULL) {
+        return constructor();
+    }
+
+    intent->GetAction(&mAction);
+    intent->GetData((IUri**)&mData);
+    intent->GetType(&mType);
+    intent->GetPackage(&mPackage);
+    intent->GetFlags(&mFlags);
+    AutoPtr<IComponentName> componentName;
+    intent->GetComponent((IComponentName**)&componentName);
+    if (componentName != NULL) {
+        String packageName;
+        String className;
+        componentName->GetPackageName(&packageName);
+        componentName->GetClassName(&className);
+        CComponentName::New(
+            packageName, className, (IComponentName**)&mComponent);
+    }
+    AutoPtr< ArrayOf<String> > categories;
+    intent->GetCategories((ArrayOf<String>**)&categories);
+    if (categories != NULL) {
+        assert(mCategories == NULL);
+        mCategories = new HashSet<String>();
+        for (Int32 i = 0; i < categories->GetLength(); ++i) {
+            mCategories->Insert((*categories)[i]);
+        }
+    }
+    AutoPtr<IBundle> extras;
+    intent->GetExtras((IBundle**)&extras);
+    if (extras != NULL) {
+        CBundle::New(extras, (IBundle**)&mExtras);
+    }
+
+    assert(0 && "TODO");
+    AutoPtr<IRect> sourceBounds;
+    intent->GetSourceBounds((IRect**)&sourceBounds);
+    if (sourceBounds != NULL) {
+        // CRect::New(sourceBounds, (IRect**)&mSourceBounds);
+    }
+    AutoPtr<IIntent> selector;
+    intent->GetSelector((IIntent**)&selector);
+    if (selector != NULL) {
+        CIntent::New(selector, (IIntent**)&mSelector);
+    }
+
+    AutoPtr<IClipData> clipData;
+    intent->GetClipData((IClipData**)&clipData);
+    if (clipData != NULL) {
+        CClipData::New(clipData, (IClipData**)&mClipData);
+    }
+
+    return NOERROR;
+}
+
+ECode Intent::constructor(
+    /* [in] */ IIntent* intent,
+    /* [in] */ Boolean all)
+{
+    if (intent == NULL) {
+        return constructor();
+    }
+
+    intent->GetAction(&mAction);
+    intent->GetData((IUri**)&mData);
+    intent->GetType(&mType);
+    intent->GetPackage(&mPackage);
+    AutoPtr<IComponentName> componentName;
+    intent->GetComponent((IComponentName**)&componentName);
+    if (componentName != NULL) {
+        String packageName;
+        String className;
+        componentName->GetPackageName(&packageName);
+        componentName->GetClassName(&className);
+        CComponentName::New(
+            packageName, className, (IComponentName**)&mComponent);
+    }
+    AutoPtr< ArrayOf<String> > categories;
+    intent->GetCategories((ArrayOf<String>**)&categories);
+    if (categories != NULL) {
+        assert(mCategories == NULL);
+        mCategories = new HashSet<String>();
+        for (Int32 i = 0; i < categories->GetLength(); ++i) {
+            mCategories->Insert((*categories)[i]);
+        }
+    }
+
+    return NOERROR;
+}
+
+ECode Intent::constructor(
+    /* [in] */ const String& action)
+{
+    return SetAction(action);
+}
+
+ECode Intent::constructor(
+    /* [in] */ const String& action,
+    /* [in] */ IUri* uri)
+{
+    FAIL_RETURN(SetAction(action));
+    mData = uri;
+    return NOERROR;
+}
+
+ECode Intent::constructor(
+    /* [in] */ IContext* packageContext,
+    /* [in] */ const ClassID& clsId)
+{
+    AutoPtr<IClassInfo> info = TransformClassInfo(clsId);
+    return CComponentName::New(packageContext, info, (IComponentName**)&mComponent);
+}
+
+ECode Intent::constructor(
+    /* [in] */ const String& action,
+    /* [in] */ IUri* uri,
+    /* [in] */ IContext* packageContext,
+    /* [in] */ IClassInfo* cls)
+{
+    FAIL_RETURN(SetAction(action));
+    mData = uri;
+    return CComponentName::New(packageContext, cls, (IComponentName**)&mComponent);
 }
 
 AutoPtr<IIntent> Intent::CreateChooser(
@@ -69,7 +215,10 @@ AutoPtr<IIntent> Intent::CreateChooser(
     Int32 flags;
     target->GetFlags(&flags);
     Int32 permFlags = flags &
-            (IIntent::FLAG_GRANT_READ_URI_PERMISSION | IIntent::FLAG_GRANT_WRITE_URI_PERMISSION);
+            (IIntent::FLAG_GRANT_READ_URI_PERMISSION
+                | IIntent::FLAG_GRANT_WRITE_URI_PERMISSION
+                | IIntent::FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                | IIntent::FLAG_GRANT_PREFIX_URI_PERMISSION);
     if (permFlags != 0) {
         AutoPtr<IClipData> targetClipData;
         target->GetClipData((IClipData**)&targetClipData);
@@ -103,9 +252,32 @@ AutoPtr<IIntent> Intent::CreateChooser(
 }
 
 ECode Intent::Clone(
-    /* [out] */ IIntent** intent)
+    /* [out] */ IInterface** obj)
 {
-    return CIntent::New(THIS_PROBE(IIntent), intent);
+    AutoPtr<IIntent> intent;
+    CIntent::New((IIntent**)&intent);
+
+    CloneImpl(intent);
+    *obj = intent.Get();
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
+ECode Intent::CloneImpl(
+    /* [in] */ IIntent* intentObj)
+{
+    VALIDATE_NOT_NULL(intentObj);
+    Intent* intent = intentObj;
+
+    intent->mAction = this->mAction;
+    intent->mData = this->mData;
+    intent->mType = this->mType;
+    intent->mPackage = this->mPackage;
+    intent->mComponent = this->mComponent;
+    if (mCategories != NULL) {
+        intent->mCategories = new HashSet<String>(mCategories);
+    }
+    return NOERROR;
 }
 
 ECode Intent::CloneFilter(
@@ -151,7 +323,6 @@ ECode Intent::GetIntent(
     /* [in] */ const String& uri,
     /* [out] */ IIntent** intent)
 {
-    VALIDATE_NOT_NULL(intent);
     return ParseUri(uri, 0, intent);
 }
 
@@ -172,10 +343,11 @@ ECode Intent::ParseUri(
             *_intent = cintent;
             REFCOUNT_ADD(*_intent);
             // try {
-            AutoPtr<IUri> data;
-            if (FAILED(Uri::Parse(uri, (IUri**)&data))) {
-                return E_URI_SYNTAX_EXCEPTION;
-            }
+            assert(0 && "TODO");
+            // AutoPtr<IUri> data;
+            // if (FAILED(Uri::Parse(uri, (IUri**)&data))) {
+            //     return E_URI_SYNTAX_EXCEPTION;
+            // }
             (*_intent)->SetData(data);
             // } catch (IllegalArgumentException e) {
             //     throw new URISyntaxException(uri, e.getMessage());
@@ -188,7 +360,8 @@ ECode Intent::ParseUri(
     i = uri.LastIndexOf("#");
     if (i == -1) {
         AutoPtr<IUri> data;
-        FAIL_RETURN(Uri::Parse(uri, (IUri**)&data));
+            assert(0 && "TODO");
+        // FAIL_RETURN(Uri::Parse(uri, (IUri**)&data));
         AutoPtr<CIntent> cintent;
         FAIL_RETURN(CIntent::NewByFriend(IIntent::ACTION_VIEW, data, (CIntent**)&cintent));
         *_intent = cintent;
@@ -219,7 +392,8 @@ ECode Intent::ParseUri(
         Int32 semi = uri.IndexOf(';', i);
         String value = String("");
         if (eq < semi) {
-            FAIL_RETURN(Uri::Decode(uri.Substring(eq + 1, semi), &value));
+            assert(0 && "TODO");
+            // FAIL_RETURN(Uri::Decode(uri.Substring(eq + 1, semi), &value));
         }
 
         // action
@@ -268,7 +442,8 @@ ECode Intent::ParseUri(
         // extra
         else {
             String key;
-            FAIL_RETURN(Uri::Decode(uri.Substring(i + 2, eq), &key));
+            assert(0 && "TODO");
+            // FAIL_RETURN(Uri::Decode(uri.Substring(i + 2, eq), &key));
             // create Bundle if it doesn't already exist
             if (intent->mExtras == NULL) {
                 CBundle::New((IBundle**)&intent->mExtras);
@@ -331,9 +506,10 @@ ECode Intent::ParseUri(
         if (!data.IsEmpty()) {
             // try {
             intent->mData = NULL;
-            if (FAILED(Uri::Parse(data, (IUri**)&intent->mData))) {
-                return E_URI_SYNTAX_EXCEPTION;
-            }
+            assert(0 && "TODO");
+            // if (FAILED(Uri::Parse(data, (IUri**)&intent->mData))) {
+            //     return E_URI_SYNTAX_EXCEPTION;
+            // }
             // } catch (IllegalArgumentException e) {
             //     throw new URISyntaxException(uri, e.getMessage());
             // }
@@ -381,7 +557,7 @@ ECode Intent::GetIntentOld(
             Int32 j = uri.IndexOf(')', i);
             while (i < j) {
                 Int32 sep = uri.IndexOf('!', i);
-                if (sep < 0) sep = j;
+                if (sep < 0 || sep > j) sep = j;
                 if (i < sep) {
                     intent->AddCategory(uri.Substring(i, sep));
                 }
@@ -466,9 +642,10 @@ ECode Intent::GetIntentOld(
                 switch (type) {
                     case 'S':
                         // CUriHelper::AcquireSingleton((IUriHelper**)&helper);
-                        if (FAILED(Uri::Decode(value, &decodeS))) {
-                            return E_URI_SYNTAX_EXCEPTION;
-                        }
+                        assert(0 && "TODO");
+                        // if (FAILED(Uri::Decode(value, &decodeS))) {
+                        //     return E_URI_SYNTAX_EXCEPTION;
+                        // }
                         intent->mExtras->PutString(key, decodeS);
                         break;
                     case 'B':
@@ -478,9 +655,10 @@ ECode Intent::GetIntentOld(
                         intent->mExtras->PutByte(key, (Byte)StringUtils::ParseInt32(value));
                         break;
                     case 'c':
-                        if (FAILED(Uri::Decode(value, &decodeS))) {
-                            return E_URI_SYNTAX_EXCEPTION;
-                        }
+                    assert(0 && "TODO");
+                        // if (FAILED(Uri::Decode(value, &decodeS))) {
+                        //     return E_URI_SYNTAX_EXCEPTION;
+                        // }
                         intent->mExtras->PutChar(key, decodeS.GetChar(0));
                         break;
                     case 'd':
@@ -519,12 +697,13 @@ ECode Intent::GetIntentOld(
         }
 
         intent->mData = NULL;
-        if (isIntentFragment) {
-            Uri::Parse(uri.Substring(0, intentFragmentStart), (IUri**)&intent->mData);
-        }
-        else {
-            Uri::Parse(uri, (IUri**)&intent->mData);
-        }
+        assert(0 && "TODO");
+        // if (isIntentFragment) {
+        //     Uri::Parse(uri.Substring(0, intentFragmentStart), (IUri**)&intent->mData);
+        // }
+        // else {
+        //     Uri::Parse(uri, (IUri**)&intent->mData);
+        // }
 
         if (intent->mAction.IsNull()) {
             // By default, if no action is specified, then use VIEW.
@@ -533,7 +712,8 @@ ECode Intent::GetIntentOld(
     }
     else {
         AutoPtr<IUri> data;
-        Uri::Parse(IIntent::ACTION_VIEW, (IUri**)&data);
+        assert(0 && "TODO");
+        // Uri::Parse(IIntent::ACTION_VIEW, (IUri**)&data);
         CIntent::NewByFriend(IIntent::ACTION_VIEW, data, (CIntent**)&intent);
     }
 
@@ -545,6 +725,7 @@ ECode Intent::GetIntentOld(
 ECode Intent::GetAction(
     /* [out] */ String* action)
 {
+    VALIDATE_NOT_NULL(action)
     *action = mAction;
     return NOERROR;
 }
@@ -552,6 +733,7 @@ ECode Intent::GetAction(
 ECode Intent::GetData(
     /* [out] */ IUri** data)
 {
+    VALIDATE_NOT_NULL(data)
     *data = mData;
     REFCOUNT_ADD(*data);
     return NOERROR;
@@ -560,6 +742,7 @@ ECode Intent::GetData(
 ECode Intent::GetDataString(
     /* [out] */ String* dataString)
 {
+    VALIDATE_NOT_NULL(dataString)
     if (mData != NULL) {
         return mData->ToString(dataString);
     }
@@ -570,6 +753,7 @@ ECode Intent::GetDataString(
 ECode Intent::GetScheme(
     /* [out] */ String* scheme)
 {
+    VALIDATE_NOT_NULL(scheme)
     if (mData != NULL) {
         return mData->GetScheme(scheme);
     }
@@ -580,6 +764,7 @@ ECode Intent::GetScheme(
 ECode Intent::GetType(
     /* [out] */ String* type)
 {
+    VALIDATE_NOT_NULL(type)
     *type = mType;
     return NOERROR;
 }
@@ -588,6 +773,7 @@ ECode Intent::ResolveType(
     /* [in] */ IContext* context,
     /* [out] */ String* type)
 {
+    VALIDATE_NOT_NULL(type)
     AutoPtr<IContentResolver> resolver;
     ASSERT_SUCCEEDED(context->GetContentResolver((IContentResolver**)&resolver));
     return ResolveType(resolver, type);
@@ -597,6 +783,7 @@ ECode Intent::ResolveType(
     /* [in] */ IContentResolver* resolver,
     /* [out] */ String* type)
 {
+    VALIDATE_NOT_NULL(type)
     if (!mType.IsNull()) {
         *type = mType;
         return NOERROR;
@@ -617,6 +804,7 @@ ECode Intent::ResolveTypeIfNeeded(
     /* [in] */ IContentResolver* resolver,
     /* [out] */ String* type)
 {
+    VALIDATE_NOT_NULL(type)
     if (mComponent != NULL) {
         *type = mType;
         return NOERROR;
@@ -629,7 +817,7 @@ ECode Intent::HasCategory(
     /* [in] */ const String& category,
     /* [out] */ Boolean* hasCategory)
 {
-    assert(hasCategory);
+    VALIDATE_NOT_NULL(hasCategory)
     *hasCategory = FALSE;
 
     if (mCategories != NULL) {
@@ -642,7 +830,7 @@ ECode Intent::HasCategory(
 ECode Intent::GetCategories(
     /* [out, callee] */ ArrayOf<String>** _categories)
 {
-    assert(_categories);
+    VALIDATE_NOT_NULL(_categories)
     *_categories = NULL;
 
     if (mCategories != NULL) {
@@ -667,6 +855,7 @@ ECode Intent::GetCategories(
 ECode Intent::GetSelector(
     /* [out] */ IIntent** intent)
 {
+    VALIDATE_NOT_NULL(intent)
     *intent = mSelector;
     REFCOUNT_ADD(*intent);
     return NOERROR;
@@ -675,8 +864,17 @@ ECode Intent::GetSelector(
 ECode Intent::GetClipData(
     /* [out] */ IClipData** clipData)
 {
+    VALIDATE_NOT_NULL(clipData)
     *clipData = mClipData;
     REFCOUNT_ADD(*clipData);
+    return NOERROR;
+}
+
+ECode Intent::GetContentUserHint(
+        /* [out] */ Int32* hint)
+{
+    VALIDATE_NOT_NULL(hint)
+    *clipData = hint;
     return NOERROR;
 }
 
@@ -1230,6 +1428,62 @@ ECode Intent::ResolveActivityInfo(
     return NOERROR;
 }
 
+ECode Intent::ResolveSystemService(
+    /* [in] */ IPackageManager* pm,
+    /* [in] */ Int32 flags,
+    /* [out] */ IComponentName** componentName)
+{
+    VALIDATE_NOT_NULL(componentName)
+    *componentName = NULL;
+
+    if (mComponent != NULL) {
+        *componentName = mComponent;
+        REFCOUNT_ADD(*componentName)
+        return NOERROR;
+    }
+
+    AutoPtr<IList> results;
+    pm->QueryIntentServices(THIS_PROBE(IIntent), flags, (IList**)&results);
+    if (results == NULL) {
+        return NOERROR;
+    }
+
+    AutoPtr<IComponentName> comp;
+    Int32 size, flags;
+    results->GetSize(&size);
+    IResolveInfo* ri;
+    String packageName, serviceName;
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> obj;
+        results->Get(i, (IInterface**)&obj);
+        ri = IResolveInfo::Probe(obj);
+
+        AutoPtr<IServiceInfo> si;
+        ri->GetServiceInfo((IServiceInfo**)&si);
+        AutoPtr<IApplicationInfo> ai;
+        si->GetApplicationInfo((IApplicationInfo**)&ai);
+        ai->GetFlags(&flags);
+        if ((flags & IApplicationInfo::FLAG_SYSTEM) == 0) {
+            continue;
+        }
+
+        ai->GetPackageName(&packageName);
+        si->GetName(&serviceName);
+        AutoPtr<IComponentName> foundComp;
+        CComponentName::New(packageName, serviceName, (IComponentName**)&foundComp);
+        if (comp != NULL) {
+            // throw new IllegalStateException("Multiple system services handle " + this
+            //         + ": " + comp + ", " + foundComp);
+            return E_ILLEGAL_STATE_EXCEPTION;
+        }
+        comp = foundComp;
+    }
+
+    *componentName = comp;
+    REFCOUNT_ADD(*componentName)
+    return NOERROR;
+}
+
 ECode Intent::SetAction(
     /* [in] */ const String& action)
 {
@@ -1333,6 +1587,13 @@ ECode Intent::SetClipData(
     /* [in] */ IClipData* clip)
 {
     mClipData = clip;
+    return NOERROR;
+}
+
+ECode Intent::SetContentUserHint(
+    /* [in] */ Int32 hint)
+{
+    mContentUserHint = hint;
     return NOERROR;
 }
 
@@ -1743,10 +2004,11 @@ ECode Intent::SetClass(
 ECode Intent::SetSourceBounds(
     /* [in] */ IRect* r)
 {
-    mSourceBounds = NULL;
-    if (r != NULL) {
-        return CRect::New(r, (IRect**)&mSourceBounds);
-    }
+    assert(0 && "TODO");
+    // mSourceBounds = NULL;
+    // if (r != NULL) {
+    //     return CRect::New(r, (IRect**)&mSourceBounds);
+    // }
     return NOERROR;
 }
 
@@ -1775,6 +2037,7 @@ ECode Intent::FillIn(
         mData = otherIntent->mData;
         mType = otherIntent->mType;
         changes |= IIntent::FILL_IN_DATA;
+        mayHaveCopiedUris = TRUE;
     }
 
     if (otherIntent->mCategories != NULL
@@ -1810,6 +2073,7 @@ ECode Intent::FillIn(
             (mClipData == NULL || (flags & IIntent::FILL_IN_CLIP_DATA) != 0)) {
         mClipData = otherIntent->mClipData;
         changes |= IIntent::FILL_IN_CLIP_DATA;
+        mayHaveCopiedUris = TRUE;
     }
 
     // Component is special: it can -only- be set if explicitly allowed,
@@ -1824,13 +2088,15 @@ ECode Intent::FillIn(
     if (otherIntent->mSourceBounds != NULL
             && (mSourceBounds == NULL || (flags & IIntent::FILL_IN_SOURCE_BOUNDS) != 0)) {
         mSourceBounds = NULL;
-        CRect::New(otherIntent->mSourceBounds, (IRect**)&mSourceBounds);
+    assert(0 && "TODO");
+        // CRect::New(otherIntent->mSourceBounds, (IRect**)&mSourceBounds);
         changes |= IIntent::FILL_IN_SOURCE_BOUNDS;
     }
 
     if (mExtras == NULL) {
         if (otherIntent->mExtras != NULL) {
             CBundle::New(otherIntent->mExtras, (IBundle**)&mExtras);
+            mayHaveCopiedUris = TRUE;
         }
     }
     else if (otherIntent->mExtras != NULL) {
@@ -1840,10 +2106,16 @@ ECode Intent::FillIn(
         ec = newb->PutAll(mExtras);
         FAIL_GOTO(ec, RUNTIME_EXCEPTION);
         mExtras = newb;
+        mayHaveCopiedUris = TRUE;
 RUNTIME_EXCEPTION:
         if (FAILED(ec)) {
             Slogger::W(TAG, "Failure filling in extras %d", ec);
         }
+    }
+
+    if (mayHaveCopiedUris && mContentUserHint == IUserHandle::USER_CURRENT
+            && otherIntent->mContentUserHint != IUserHandle::USER_CURRENT) {
+        mContentUserHint = otherIntent->mContentUserHint;
     }
 
     *result = changes;
@@ -1851,114 +2123,23 @@ RUNTIME_EXCEPTION:
 }
 
 ECode Intent::FilterEquals(
-    /* [in] */ IIntent* other,
+    /* [in] */ IIntent* otherObj,
     /* [out] */ Boolean* isEqual)
 {
-    if (other == NULL) {
-        *isEqual = FALSE;
+    VALIDATE_NOT_NULL(isEqual)
+    *isEqual = FALSE;
+
+    if (otherObj == NULL) {
         return NOERROR;
     }
-    String action;
-    other->GetAction(&action);
-    if (!mAction.IsNull()) {
-        if (!mAction.Equals(action)) {
-            *isEqual = FALSE;
-            return NOERROR;
-        }
-    }
-    else {
-        if (!action.IsNull()) {
-            *isEqual = FALSE;
-            return NOERROR;
-        }
-    }
-    AutoPtr<IUri> data;
-    other->GetData((IUri**)&data);
-    if (mData != data) {
-        Boolean ret;
-        if (mData != NULL) {
-            if (!(mData->Equals(data, &ret), ret)) {
-                *isEqual = FALSE;
-                return NOERROR;
-            }
-        }
-        else {
-            if (!(data->Equals(mData, &ret), ret)) {
-                *isEqual = FALSE;
-                return NOERROR;
-            }
-        }
-    }
-    String type;
-    other->GetType(&type);
-    if (!mType.IsNull()) {
-        if (!mType.Equals(type)) {
-            *isEqual = FALSE;
-            return NOERROR;
-        }
-    }
-    else {
-        if (!type.IsNull()) {
-            *isEqual = FALSE;
-            return NOERROR;
-        }
-    }
-    String package;
-    other->GetPackage(&package);
-    if (!mPackage.IsNull()) {
-        if (!mPackage.Equals(package)) {
-            *isEqual = FALSE;
-            return NOERROR;
-        }
-    }
-    else {
-        if (!package.IsNull()) {
-            *isEqual = FALSE;
-            return NOERROR;
-        }
-    }
-    AutoPtr<IComponentName> component;
-    other->GetComponent((IComponentName**)&component);
-    if (mComponent != component) {
-        Boolean ret;
-        if (mComponent != NULL) {
-            if (!(mComponent->Equals(component, &ret), ret)) {
-                *isEqual = FALSE;
-                return NOERROR;
-            }
-        }
-        else {
-            if (!(component->Equals(mComponent, &ret), ret)) {
-                *isEqual = FALSE;
-                return NOERROR;
-            }
-        }
-    }
-    AutoPtr< ArrayOf<String> > categories;
-    other->GetCategories((ArrayOf<String>**)&categories);
-    if (mCategories != NULL) {
-        if (categories == NULL) {
-            *isEqual = FALSE;
-            return NOERROR;
-        }
-        if (mCategories->GetSize() != categories->GetLength()) {
-            *isEqual = FALSE;
-            return NOERROR;
-        }
-        for (Int32 i = 0; i < categories->GetLength(); ++i) {
-            String s = (*categories)[i];
-            if (mCategories->Find(s) == mCategories->End()) {
-                *isEqual = FALSE;
-                return NOERROR;
-            }
-        }
-    }
-    else {
-        if (categories != NULL) {
-            *isEqual = FALSE;
-            return NOERROR;
-        }
-    }
+
+    Intent* other = (IIntent*)otherObj;
+    if (!Objects::Equals(mAction, other->mAction)) return NOERROR;
+    if (!Objects::Equals(mData, other->mData)) return NOERROR;
+    if (!Objects::Equals(mType, other->mType)) return NOERROR;
+    if (!Objects::Equals(mPackage, other->mPackage)) return NOERROR;
+    if (!Objects::Equals(mComponent, other->mComponent)) return NOERROR;
+    if (!Objects::Equals(mCategories, other->mCategories)) return NOERROR;
 
     *isEqual = TRUE;
     return NOERROR;
@@ -2159,7 +2340,14 @@ ECode Intent::ToShortString(
         first = FALSE;
         sb->AppendString(String("(has extras)"));
     }
-
+    if (mContentUserHint != IUserHandle::IUSER_CURRENT) {
+        if (!first) {
+            sb->AppendChar(' ');
+        }
+        first = FALSE;
+        sb->Append(String("u="));
+        sb->Append(mContentUserHint);
+    }
     if (mSelector != NULL) {
         sb->AppendString(String(" sel={"));
         mSelector->ToShortString(sb, secure, comp, extras, clip);
@@ -2233,149 +2421,151 @@ void Intent::ToUriInner(
     /* [in] */ const String& scheme,
     /* [in] */ Int32 flags)
 {
-    if (!scheme.IsNull()) {
-        uri.AppendCStr("scheme=");
-        uri.AppendString(scheme);
-        uri.AppendChar(';');
-    }
-    if (!mAction.IsNull()) {
-        uri.AppendCStr("action=");
-        String s;
-        Uri::Encode(mAction, &s);
-        uri.AppendString(s);
-        uri.AppendChar(';');
-    }
-    if (mCategories != NULL) {
-        HashSet<String>::Iterator it;
-        for (it = mCategories->Begin(); it != mCategories->End(); ++it) {
-            uri.AppendCStr("category=");
-            String s;
-            Uri::Encode(*it, &s);
-            uri.AppendString(s);
-            uri.AppendChar(';');
-        }
-    }
-    if (!mType.IsNull()) {
-        uri.AppendCStr("type=");
-        String s;
-        Uri::Encode(mType, String("/"), &s);
-        uri.AppendString(s);
-        uri.AppendChar(';');
-    }
-    if (mFlags != 0) {
-        uri.AppendCStr("launchFlags=0x");
-        uri.AppendString(StringUtils::Int32ToString(mFlags));
-        uri.AppendChar(';');
-    }
-    if (!mPackage.IsNull()) {
-        uri.AppendCStr("package=");
-        String s;
-        Uri::Encode(mPackage, &s);
-        uri.AppendString(s);
-        uri.AppendChar(';');
-    }
+    assert(0 && "TODO");
+    // if (!scheme.IsNull()) {
+    //     uri.AppendCStr("scheme=");
+    //     uri.AppendString(scheme);
+    //     uri.AppendChar(';');
+    // }
+    // if (!mAction.IsNull()) {
+    //     uri.AppendCStr("action=");
+    //     String s;
+    //     Uri::Encode(mAction, &s);
+    //     uri.AppendString(s);
+    //     uri.AppendChar(';');
+    // }
+    // if (mCategories != NULL) {
+    //     HashSet<String>::Iterator it;
+    //     for (it = mCategories->Begin(); it != mCategories->End(); ++it) {
+    //         uri.AppendCStr("category=");
+    //         String s;
+    //         Uri::Encode(*it, &s);
+    //         uri.AppendString(s);
+    //         uri.AppendChar(';');
+    //     }
+    // }
+    // if (!mType.IsNull()) {
+    //     uri.AppendCStr("type=");
+    //     String s;
+    //     Uri::Encode(mType, String("/"), &s);
+    //     uri.AppendString(s);
+    //     uri.AppendChar(';');
+    // }
+    // if (mFlags != 0) {
+    //     uri.AppendCStr("launchFlags=0x");
+    //     uri.AppendString(StringUtils::Int32ToString(mFlags));
+    //     uri.AppendChar(';');
+    // }
+    // if (!mPackage.IsNull()) {
+    //     uri.AppendCStr("package=");
+    //     String s;
+    //     Uri::Encode(mPackage, &s);
+    //     uri.AppendString(s);
+    //     uri.AppendChar(';');
+    // }
 
-    if (mComponent != NULL) {
-        uri.AppendCStr("component=");
-        String compS;
-        mComponent->FlattenToShortString(&compS);
-        String s;
-        Uri::Encode(compS, String("/"), &s);
-        uri.AppendString(s);
-        uri.AppendChar(';');
-    }
-    if (mSourceBounds != NULL) {
-        uri.AppendCStr("sourceBounds=");
-        String tmp;
-        mSourceBounds->FlattenToString(&tmp);
-        String s;
-        Uri::Encode(tmp, &s);
-        uri.AppendString(s);
-        uri.AppendChar(';');
-    }
-    if (mExtras != NULL) {
-        AutoPtr<IObjectContainer> objContainer;
-        mExtras->KeySet((IObjectContainer**)&objContainer);
-        AutoPtr<IObjectEnumerator> objEnumerator;
-        objContainer->GetObjectEnumerator((IObjectEnumerator**)&objEnumerator);
-        Boolean hasNext = FALSE;
-        while ((objEnumerator->MoveNext(&hasNext), hasNext)) {
-            AutoPtr<ICharSequence> obj;
-            objEnumerator->Current((IInterface**)(ICharSequence**)&obj);
-            String key;
-            obj->ToString(&key);
-            AutoPtr<IInterface> value;
-            mExtras->Get(key, (IInterface**)&value);
-            Char32 entryType =
-                    ICharSequence::Probe(value) != NULL    ? 'S' :
-                    IBoolean::Probe(value) != NULL         ? 'B' :
-                    IByte::Probe(value) != NULL            ? 'b' :
-                    IChar32::Probe(value) != NULL          ? 'c' :
-                    IDouble::Probe(value) != NULL          ? 'd' :
-                    IFloat::Probe(value) != NULL           ? 'f' :
-                    IInteger32::Probe(value) != NULL       ? 'i' :
-                    IInteger64::Probe(value) != NULL       ? 'l' :
-                    IInteger16::Probe(value) != NULL       ? 's' :
-                    '\0';
-            if (entryType != '\0') {
-                uri.AppendChar(entryType);
-                uri.AppendChar('.');
-                String s;
-                Uri::Encode(key, &s);
-                uri.AppendString(s);
-                uri.AppendChar('=');
-                String tmp;
-                if (entryType == 'S') {
-                    ((ICharSequence*)value.Get())->ToString(&tmp);
-                }
-                else if (entryType == 'B') {
-                    Boolean val;
-                    ((IBoolean*)value.Get())->GetValue(&val);
-                    tmp = StringUtils::BooleanToString(val);
-                }
-                else if (entryType == 'b') {
-                    Byte val;
-                    ((IByte*)value.Get())->GetValue(&val);
-                    tmp = StringUtils::ToString((Int32)val);
-                }
-                else if (entryType == 'd') {
-                    Double val;
-                    ((IDouble*)value.Get())->GetValue(&val);
-                    tmp = StringUtils::DoubleToString(val);
-                }
-                else if (entryType == 'f') {
-                    Float val;
-                    ((IFloat*)value.Get())->GetValue(&val);
-                    tmp = StringUtils::DoubleToString((Double)val);
-                }
-                else if (entryType == 'i') {
-                    Int32 val;
-                    ((IInteger32*)value.Get())->GetValue(&val);
-                    tmp = StringUtils::ToString(val);
-                }
-                else if (entryType == 'l') {
-                    Int64 val;
-                    ((IInteger64*)value.Get())->GetValue(&val);
-                    tmp = StringUtils::ToString(val);
-                }
-                else if (entryType == 's') {
-                    Int16 val;
-                    ((IInteger16*)value.Get())->GetValue(&val);
-                    tmp = StringUtils::ToString((Int32)val);
-                }
-                Uri::Encode(tmp, &s);
-                uri.AppendString(s);
-                uri.AppendChar(';');
-            }
-        }
-    }
+    // if (mComponent != NULL) {
+    //     uri.AppendCStr("component=");
+    //     String compS;
+    //     mComponent->FlattenToShortString(&compS);
+    //     String s;
+    //     Uri::Encode(compS, String("/"), &s);
+    //     uri.AppendString(s);
+    //     uri.AppendChar(';');
+    // }
+    // if (mSourceBounds != NULL) {
+    //     uri.AppendCStr("sourceBounds=");
+    //     String tmp;
+    //     mSourceBounds->FlattenToString(&tmp);
+    //     String s;
+    //     Uri::Encode(tmp, &s);
+    //     uri.AppendString(s);
+    //     uri.AppendChar(';');
+    // }
+    // if (mExtras != NULL) {
+    //     AutoPtr<IObjectContainer> objContainer;
+    //     mExtras->KeySet((IObjectContainer**)&objContainer);
+    //     AutoPtr<IObjectEnumerator> objEnumerator;
+    //     objContainer->GetObjectEnumerator((IObjectEnumerator**)&objEnumerator);
+    //     Boolean hasNext = FALSE;
+    //     while ((objEnumerator->MoveNext(&hasNext), hasNext)) {
+    //         AutoPtr<ICharSequence> obj;
+    //         objEnumerator->Current((IInterface**)(ICharSequence**)&obj);
+    //         String key;
+    //         obj->ToString(&key);
+    //         AutoPtr<IInterface> value;
+    //         mExtras->Get(key, (IInterface**)&value);
+    //         Char32 entryType =
+    //                 ICharSequence::Probe(value) != NULL    ? 'S' :
+    //                 IBoolean::Probe(value) != NULL         ? 'B' :
+    //                 IByte::Probe(value) != NULL            ? 'b' :
+    //                 IChar32::Probe(value) != NULL          ? 'c' :
+    //                 IDouble::Probe(value) != NULL          ? 'd' :
+    //                 IFloat::Probe(value) != NULL           ? 'f' :
+    //                 IInteger32::Probe(value) != NULL       ? 'i' :
+    //                 IInteger64::Probe(value) != NULL       ? 'l' :
+    //                 IInteger16::Probe(value) != NULL       ? 's' :
+    //                 '\0';
+    //         if (entryType != '\0') {
+    //             uri.AppendChar(entryType);
+    //             uri.AppendChar('.');
+    //             String s;
+    //             Uri::Encode(key, &s);
+    //             uri.AppendString(s);
+    //             uri.AppendChar('=');
+    //             String tmp;
+    //             if (entryType == 'S') {
+    //                 ((ICharSequence*)value.Get())->ToString(&tmp);
+    //             }
+    //             else if (entryType == 'B') {
+    //                 Boolean val;
+    //                 ((IBoolean*)value.Get())->GetValue(&val);
+    //                 tmp = StringUtils::BooleanToString(val);
+    //             }
+    //             else if (entryType == 'b') {
+    //                 Byte val;
+    //                 ((IByte*)value.Get())->GetValue(&val);
+    //                 tmp = StringUtils::ToString((Int32)val);
+    //             }
+    //             else if (entryType == 'd') {
+    //                 Double val;
+    //                 ((IDouble*)value.Get())->GetValue(&val);
+    //                 tmp = StringUtils::DoubleToString(val);
+    //             }
+    //             else if (entryType == 'f') {
+    //                 Float val;
+    //                 ((IFloat*)value.Get())->GetValue(&val);
+    //                 tmp = StringUtils::DoubleToString((Double)val);
+    //             }
+    //             else if (entryType == 'i') {
+    //                 Int32 val;
+    //                 ((IInteger32*)value.Get())->GetValue(&val);
+    //                 tmp = StringUtils::ToString(val);
+    //             }
+    //             else if (entryType == 'l') {
+    //                 Int64 val;
+    //                 ((IInteger64*)value.Get())->GetValue(&val);
+    //                 tmp = StringUtils::ToString(val);
+    //             }
+    //             else if (entryType == 's') {
+    //                 Int16 val;
+    //                 ((IInteger16*)value.Get())->GetValue(&val);
+    //                 tmp = StringUtils::ToString((Int32)val);
+    //             }
+    //             Uri::Encode(tmp, &s);
+    //             uri.AppendString(s);
+    //             uri.AppendChar(';');
+    //         }
+    //     }
+    // }
 }
 
 ECode Intent::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
+    assert(0 && "TODO");
     dest->WriteString(mAction);
-    Uri::WriteToParcel(dest, mData);
+    // Uri::WriteToParcel(dest, mData);
     dest->WriteString(mType);
     dest->WriteInt32(mFlags);
     dest->WriteString(mPackage);
@@ -2416,6 +2606,7 @@ ECode Intent::WriteToParcel(
         dest->WriteInt32(0);
     }
 
+    dest->WriteInt(mContentUserHint);
     return CBundle::WriteToParcel(mExtras, dest);
 }
 
@@ -2425,7 +2616,8 @@ ECode Intent::ReadFromParcel(
     String action;
     source->ReadString(&action);
     SetAction(action);
-    Uri::ReadFromParcel(source, (IUri**)&mData);
+    assert(0 && "TODO");
+    // Uri::ReadFromParcel(source, (IUri**)&mData);
     source->ReadString(&mType);
     source->ReadInt32(&mFlags);
     source->ReadString(&mPackage);
@@ -2465,6 +2657,7 @@ ECode Intent::ReadFromParcel(
         p->ReadFromParcel(source);
     }
 
+    source->ReadString(&mContentUserHint);
     mExtras = NULL;
     return CBundle::ReadFromParcel(source, (IBundle**)&mExtras);
 }
@@ -2494,7 +2687,8 @@ ECode Intent::ParseIntent(
     sa->GetString(R::styleable::Intent_mimeType, &mimeType);
     AutoPtr<IUri> uri;
     if (!data.IsNull()) {
-        Uri::Parse(data, (IUri**)&uri);
+        assert(0 && "TODO");
+        // Uri::Parse(data, (IUri**)&uri);
     }
     intent->SetDataAndType(uri, mimeType);
 
@@ -2520,7 +2714,7 @@ ECode Intent::ParseIntent(
 
         String nodeName;
         parser->GetName(&nodeName);
-        if (nodeName.Equals("category")) {
+        if (nodeName.Equals(TAG_CATEGORIES)) {
             size = ARRAY_SIZE(R::styleable::IntentCategory);
             layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::IntentCategory, size);
@@ -2536,11 +2730,11 @@ ECode Intent::ParseIntent(
             XmlUtils::SkipCurrentTag(parser);
 
         }
-        else if (nodeName.Equals("extra")) {
+        else if (nodeName.Equals(TAG_EXTRA)) {
             if (intent->mExtras == NULL) {
                 CBundle::New((IBundle**)&intent->mExtras);
             }
-            resources->ParseBundleExtra(String("extra"), attrs, intent->mExtras);
+            resources->ParseBundleExtra(TAG_EXTRA, attrs, intent->mExtras);
             XmlUtils::SkipCurrentTag(parser);
         }
         else {
@@ -2552,6 +2746,82 @@ ECode Intent::ParseIntent(
     REFCOUNT_ADD(*_intent);
 
     return NOERROR;
+}
+
+ECode Intent::SaveToXml(
+    /* [in] */ IXmlSerializer* out)
+{
+    assert(0 && "TODO");
+    // if (mAction != null) {
+    //     out.attribute(null, ATTR_ACTION, mAction);
+    // }
+    // if (mData != null) {
+    //     out.attribute(null, ATTR_DATA, mData.toString());
+    // }
+    // if (mType != null) {
+    //     out.attribute(null, ATTR_TYPE, mType);
+    // }
+    // if (mComponent != null) {
+    //     out.attribute(null, ATTR_COMPONENT, mComponent.flattenToShortString());
+    // }
+    // out.attribute(null, ATTR_FLAGS, Integer.toHexString(getFlags()));
+
+    // if (mCategories != null) {
+    //     out.startTag(null, TAG_CATEGORIES);
+    //     for (int categoryNdx = mCategories.size() - 1; categoryNdx >= 0; --categoryNdx) {
+    //         out.attribute(null, ATTR_CATEGORY, mCategories.valueAt(categoryNdx));
+    //     }
+    //     out.endTag(null, TAG_CATEGORIES);
+    // }
+    return NOERROR;
+}
+
+AutoPtr<IIntent> Intent::RestoreFromXml(
+    /* [in] */ IXmlPullParser* in)
+{
+    assert(0 && "TODO");
+    // Intent intent = new Intent();
+    // final int outerDepth = in.getDepth();
+
+    // int attrCount = in.getAttributeCount();
+    // for (int attrNdx = attrCount - 1; attrNdx >= 0; --attrNdx) {
+    //     final String attrName = in.getAttributeName(attrNdx);
+    //     final String attrValue = in.getAttributeValue(attrNdx);
+    //     if (ATTR_ACTION.equals(attrName)) {
+    //         intent.setAction(attrValue);
+    //     } else if (ATTR_DATA.equals(attrName)) {
+    //         intent.setData(Uri.parse(attrValue));
+    //     } else if (ATTR_TYPE.equals(attrName)) {
+    //         intent.setType(attrValue);
+    //     } else if (ATTR_COMPONENT.equals(attrName)) {
+    //         intent.setComponent(ComponentName.unflattenFromString(attrValue));
+    //     } else if (ATTR_FLAGS.equals(attrName)) {
+    //         intent.setFlags(Integer.valueOf(attrValue, 16));
+    //     } else {
+    //         Log.e("Intent", "restoreFromXml: unknown attribute=" + attrName);
+    //     }
+    // }
+
+    // int event;
+    // String name;
+    // while (((event = in.next()) != XmlPullParser.END_DOCUMENT) &&
+    //         (event != XmlPullParser.END_TAG || in.getDepth() < outerDepth)) {
+    //     if (event == XmlPullParser.START_TAG) {
+    //         name = in.getName();
+    //         if (TAG_CATEGORIES.equals(name)) {
+    //             attrCount = in.getAttributeCount();
+    //             for (int attrNdx = attrCount - 1; attrNdx >= 0; --attrNdx) {
+    //                 intent.addCategory(in.getAttributeValue(attrNdx));
+    //             }
+    //         } else {
+    //             Log.w("Intent", "restoreFromXml: unknown name=" + name);
+    //             XmlUtils.skipCurrentTag(in);
+    //         }
+    //     }
+    // }
+
+    // return intent;
+    return NULL;
 }
 
 String Intent::NormalizeMimeType(
@@ -2568,6 +2838,74 @@ String Intent::NormalizeMimeType(
     }
 
     return result;
+}
+
+ECode Intent::PrepareToLeaveProcess()
+{
+    setAllowFds(false);
+
+    if (mSelector != null) {
+        mSelector.prepareToLeaveProcess();
+    }
+    if (mClipData != null) {
+        mClipData.prepareToLeaveProcess();
+    }
+
+    if (mData != null && StrictMode.vmFileUriExposureEnabled()) {
+        // There are several ACTION_MEDIA_* broadcasts that send file://
+        // Uris, so only check common actions.
+        if (ACTION_VIEW.equals(mAction) ||
+                ACTION_EDIT.equals(mAction) ||
+                ACTION_ATTACH_DATA.equals(mAction)) {
+            mData.checkFileUriExposed("Intent.getData()");
+        }
+    }
+    return NOERROR;
+}
+
+ECode Intent::PrepareToEnterProcess()
+{
+    if (mContentUserHint != UserHandle.USER_CURRENT) {
+        fixUris(mContentUserHint);
+        mContentUserHint = UserHandle.USER_CURRENT;
+    }
+    return NOERROR;
+}
+
+ECode Intent::FixUris(
+    /* [in] */ Int32 contentUserHint)
+{
+    Uri data = getData();
+    if (data != null) {
+        mData = maybeAddUserId(data, contentUserHint);
+    }
+    if (mClipData != null) {
+        mClipData.fixUris(contentUserHint);
+    }
+    String action = getAction();
+    if (ACTION_SEND.equals(action)) {
+        final Uri stream = getParcelableExtra(EXTRA_STREAM);
+        if (stream != null) {
+            putExtra(EXTRA_STREAM, maybeAddUserId(stream, contentUserHint));
+        }
+    } else if (ACTION_SEND_MULTIPLE.equals(action)) {
+        final ArrayList<Uri> streams = getParcelableArrayListExtra(EXTRA_STREAM);
+        if (streams != null) {
+            ArrayList<Uri> newStreams = new ArrayList<Uri>();
+            for (int i = 0; i < streams.size(); i++) {
+                newStreams.add(maybeAddUserId(streams.get(i), contentUserHint));
+            }
+            putParcelableArrayListExtra(EXTRA_STREAM, newStreams);
+        }
+    } else if (MediaStore.ACTION_IMAGE_CAPTURE.equals(action)
+            || MediaStore.ACTION_IMAGE_CAPTURE_SECURE.equals(action)
+            || MediaStore.ACTION_VIDEO_CAPTURE.equals(action)) {
+        final Uri output = getParcelableExtra(MediaStore.EXTRA_OUTPUT);
+        if (output != null) {
+            putExtra(MediaStore.EXTRA_OUTPUT, maybeAddUserId(output, contentUserHint));
+        }
+    }
+    return NOERROR;
 }
 
 ECode Intent::MigrateExtraStreamToClipData(
@@ -2594,33 +2932,41 @@ ECode Intent::MigrateExtraStreamToClipData(
     GetAction(&action);
     ECode ec = NOERROR;
     if (IIntent::ACTION_CHOOSER.Equals(action)) {
+        // Inspect contained intents to see if we need to migrate extras. We
+        // don't promote ClipData to the parent, since ChooserActivity will
+        // already start the picked item as the caller, and we can't combine
+        // the flags in a safe way.
+
+        Boolean migrated = FALSE;
         // try {
-        // Inspect target intent to see if we need to migrate
-        AutoPtr<IParcelable> parcelable;
-        ec = GetParcelableExtra(IIntent::EXTRA_INTENT, (IParcelable**)&parcelable);
-        if (FAILED(ec)) {
-            *result = FALSE;
-            return ec;
-        }
-        AutoPtr<IIntent> target = (IIntent*)parcelable->Probe(EIID_IIntent);
-        if (target != NULL && (target->MigrateExtraStreamToClipData(&ret), ret)) {
-            // Since we migrated in child, we need to promote ClipData
-            // and flags to ourselves to grant.
-            target->GetClipData((IClipData**)&clipData);
-            SetClipData(clipData);
-            Int32 flags;
-            target->GetFlags(&flags);
-            AddFlags(flags & (IIntent::FLAG_GRANT_READ_URI_PERMISSION |
-                    IIntent::FLAG_GRANT_WRITE_URI_PERMISSION));
-            *result = TRUE;
-            return NOERROR;
-        }
-        else {
-            *result = FALSE;
-            return NOERROR;
+        AutoPtr<IParcelable> extras;
+        GetParcelableExtra((IParcelable**)&extras);
+        AutoPtr<IIntent> intent = IIntent::Probe(extras);
+        if (intent != NULL) {
+            Boolean bval;
+            intent->MigrateExtraStreamToClipData(&bval);
+            migrated |= bval;
         }
         // } catch (ClassCastException e) {
         // }
+        // try {
+        AutoPtr<ArrayOf<IParcelable*> > intents;
+        GetParcelableArrayExtra(EXTRA_INITIAL_INTENTS, (ArrayOf<IParcelable*>**)&intents);
+        if (intents != NULL) {
+            Boolean bval;
+            IIntent* intent;
+            for (Int32 i = 0; i < intents->GetLength(); i++) {
+                intent = IIntent::Probe((*intents)[i]);
+                if (intent != NULL) {
+                    intent->MigrateExtraStreamToClipData(&bval);
+                    migrated |= bval;
+                }
+            }
+        }
+        // } catch (ClassCastException e) {
+        // }
+        *results = migrated;
+        return NOERROR;
     }
     else if (IIntent::ACTION_SEND.Equals(action)) {
         // try {
@@ -2756,6 +3102,32 @@ ECode Intent::MigrateExtraStreamToClipData(
         // } catch (ClassCastException e) {
         // }
     }
+    else if (IMediaStore::ACTION_IMAGE_CAPTURE.Equals(action)
+        || IMediaStore::ACTION_IMAGE_CAPTURE_SECURE.Equals(action)
+        || IMediaStore::ACTION_VIDEO_CAPTURE.Equals(action)) {
+
+        // try {
+        AutoPtr<IParcelable> p;
+        GetParcelableExtra(IMediaStore::EXTRA_OUTPUT, (IParcelable**)&p);
+        AutoPtr<IUri> output = IUri::Probe(p);
+        if (output == NULL) {
+            *results = FALSE;
+            return NOERROR;
+        }
+        // } catch (ClassCastException e) {
+        //     return false;
+        // }
+
+        AutoPtr<IClipDataHelper> helper;
+        CClipDataHelper::AcquireSingleton((IClipDataHelper**)&helper);
+        AutoPtr<IClipData> cd;
+        helper->NewRawUri(String(""), output, (IClipData**)&cd);
+        SetClipData(cd);
+        AddFlags(IIntent::FLAG_GRANT_WRITE_URI_PERMISSION | IIntent::FLAG_GRANT_READ_URI_PERMISSION);
+
+        *results = TRUE;
+        return NOERROR;
+    }
 
     *result = FALSE;
     return NOERROR;
@@ -2780,139 +3152,8 @@ AutoPtr<IClipDataItem> Intent::MakeClipItem(
         htmlText = (*htmlTexts)[which];
     }
     AutoPtr<IClipDataItem> item;
-    // TODO
-    // CClipDataItem::New(text, htmlText, NULL, uri, (IClipDataItem**)&item);
+    CClipDataItem::New(text, htmlText, NULL, uri, (IClipDataItem**)&item);
     return item;
-}
-
-ECode Intent::Init()
-{
-    return NOERROR;
-}
-
-ECode Intent::Init(
-    /* [in] */ IIntent* intent)
-{
-    if (intent == NULL) {
-        return Init();
-    }
-
-    intent->GetAction(&mAction);
-    intent->GetData((IUri**)&mData);
-    intent->GetType(&mType);
-    intent->GetPackage(&mPackage);
-    intent->GetFlags(&mFlags);
-    AutoPtr<IComponentName> componentName;
-    intent->GetComponent((IComponentName**)&componentName);
-    if (componentName != NULL) {
-        String packageName;
-        String className;
-        componentName->GetPackageName(&packageName);
-        componentName->GetClassName(&className);
-        CComponentName::New(
-            packageName, className, (IComponentName**)&mComponent);
-    }
-    AutoPtr< ArrayOf<String> > categories;
-    intent->GetCategories((ArrayOf<String>**)&categories);
-    if (categories != NULL) {
-        assert(mCategories == NULL);
-        mCategories = new HashSet<String>();
-        for (Int32 i = 0; i < categories->GetLength(); ++i) {
-            mCategories->Insert((*categories)[i]);
-        }
-    }
-    AutoPtr<IBundle> extras;
-    intent->GetExtras((IBundle**)&extras);
-    if (extras != NULL) {
-        CBundle::New(extras, (IBundle**)&mExtras);
-    }
-    AutoPtr<IRect> sourceBounds;
-    intent->GetSourceBounds((IRect**)&sourceBounds);
-    if (sourceBounds != NULL) {
-        CRect::New(sourceBounds, (IRect**)&mSourceBounds);
-    }
-    AutoPtr<IIntent> selector;
-    intent->GetSelector((IIntent**)&selector);
-    if (selector != NULL) {
-        CIntent::New(selector, (IIntent**)&mSelector);
-    }
-
-    AutoPtr<IClipData> clipData;
-    intent->GetClipData((IClipData**)&clipData);
-    if (clipData != NULL) {
-        CClipData::New(clipData, (IClipData**)&mClipData);
-    }
-
-    return NOERROR;
-}
-
-ECode Intent::Init(
-    /* [in] */ IIntent* intent,
-    /* [in] */ Boolean all)
-{
-    if (intent == NULL) {
-        return Init();
-    }
-
-    intent->GetAction(&mAction);
-    intent->GetData((IUri**)&mData);
-    intent->GetType(&mType);
-    intent->GetPackage(&mPackage);
-    AutoPtr<IComponentName> componentName;
-    intent->GetComponent((IComponentName**)&componentName);
-    if (componentName != NULL) {
-        String packageName;
-        String className;
-        componentName->GetPackageName(&packageName);
-        componentName->GetClassName(&className);
-        CComponentName::New(
-            packageName, className, (IComponentName**)&mComponent);
-    }
-    AutoPtr< ArrayOf<String> > categories;
-    intent->GetCategories((ArrayOf<String>**)&categories);
-    if (categories != NULL) {
-        assert(mCategories == NULL);
-        mCategories = new HashSet<String>();
-        for (Int32 i = 0; i < categories->GetLength(); ++i) {
-            mCategories->Insert((*categories)[i]);
-        }
-    }
-
-    return NOERROR;
-}
-
-ECode Intent::Init(
-    /* [in] */ const String& action)
-{
-    return SetAction(action);
-}
-
-ECode Intent::Init(
-    /* [in] */ const String& action,
-    /* [in] */ IUri* uri)
-{
-    FAIL_RETURN(SetAction(action));
-    mData = uri;
-    return NOERROR;
-}
-
-ECode Intent::Init(
-    /* [in] */ IContext* packageContext,
-    /* [in] */ const ClassID& clsId)
-{
-    AutoPtr<IClassInfo> info = TransformClassInfo(clsId);
-    return CComponentName::New(packageContext, info, (IComponentName**)&mComponent);
-}
-
-ECode Intent::Init(
-    /* [in] */ const String& action,
-    /* [in] */ IUri* uri,
-    /* [in] */ IContext* packageContext,
-    /* [in] */ IClassInfo* cls)
-{
-    FAIL_RETURN(SetAction(action));
-    mData = uri;
-    return CComponentName::New(packageContext, cls, (IComponentName**)&mComponent);
 }
 
 AutoPtr<IClassInfo> Intent::TransformClassInfo(
@@ -2920,12 +3161,11 @@ AutoPtr<IClassInfo> Intent::TransformClassInfo(
 {
     AutoPtr<IModuleInfo> moduleInfo;
     String path(objId.pUunm);
-    ASSERT_SUCCEEDED(_CReflector_AcquireModuleInfo(
-           path, (IModuleInfo**)&moduleInfo));
+    ASSERT_SUCCEEDED(_CReflector_AcquireModuleInfo(path, (IModuleInfo**)&moduleInfo));
     Int32 clsCount;
     moduleInfo->GetClassCount(&clsCount);
-    BufferOf<IClassInfo*>* buf = BufferOf<IClassInfo*>::Alloc(clsCount);
-    moduleInfo->GetAllClassInfos(buf);
+    AutoPtr<ArrayOf<IClassInfo*> > buf = ArrayOf<IClassInfo*>::Alloc(clsCount);
+    moduleInfo->GetAllClassInfos((ArrayOf<IClassInfo*>**)&buf);
     AutoPtr<IClassInfo> info;
     ClassID id;
     id.pUunm = (char*)malloc(80);
@@ -2937,8 +3177,15 @@ AutoPtr<IClassInfo> Intent::TransformClassInfo(
         }
     }
     free(id.pUunm);
-    BufferOf<IClassInfo*>::Free(buf);
     return info;
+}
+
+ECode Intent::IsDocument(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = (mFlags & IIntent::FLAG_ACTIVITY_NEW_DOCUMENT) == IIntent::FLAG_ACTIVITY_NEW_DOCUMENT;
+    return NOERROR;
 }
 
 } // namespace Content

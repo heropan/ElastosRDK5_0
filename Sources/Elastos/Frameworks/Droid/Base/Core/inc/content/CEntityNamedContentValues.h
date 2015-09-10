@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CENTITYNAMEDCONTENTVALUES_H__
 
 #include "_Elastos_Droid_Content_CEntityNamedContentValues.h"
-#include <ext/frameworkext.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentValues;
@@ -13,21 +13,27 @@ namespace Droid {
 namespace Content {
 
 CarClass(CEntityNamedContentValues)
+    , public Object
+    , public IEntityNamedContentValues
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CEntityNamedContentValues();
 
-    ~CEntityNamedContentValues();
+    virtual ~CEntityNamedContentValues();
+
+    CARAPI constructor(
+        /* [in] */ IUri* uri,
+        /* [in] */ IContentValues* values);
 
     CARAPI GetUri(
         /* [out] */ IUri** uri);
 
     CARAPI GetValues(
         /* [out] */ IContentValues** values);
-
-    CARAPI constructor(
-        /* [in] */ IUri* uri,
-        /* [in] */ IContentValues* values);
 
 private:
     AutoPtr<IUri> mUri;

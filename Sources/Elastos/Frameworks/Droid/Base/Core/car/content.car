@@ -132,12 +132,15 @@ module
     using interface Elastos.Core.ICloneable;
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Utility.IObservable;
+    using interface Org.Xml.Sax.IContentHandler;
 
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Database.ICursor;
+    interface Elastos.Droid.Database.IContentObserver;
+    interface Elastos.Droid.Content.ILoader;
     interface Elastos.Droid.Content.Res.IResources;
 
     namespace Elastos {
@@ -529,20 +532,68 @@ module
             interface IContentResolverOpenResourceIdResult;
         }
 
+        [local]
+        class CContextWrapper {
+            constructor(
+               [in] IContext* ctx);
+
+           interface IContextWrapper;
+           interface IContext;
+        }
+
+        [local]
+        class CLoaderForceLoadContentObserver {
+            constructor(
+                [in] ILoader* loader);
+
+            interface ILoaderForceLoadContentObserver;
+            interface IContentObserver;
+        }
+
+        [deprecated]
+        class CCursorLoader {
+            constructor(
+                [in] IContext* ctx);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IUri* uri,
+                [in] ArrayOf<String>* projection,
+                [in] String selection,
+                [in] ArrayOf<String>* selectionArgs,
+                [in] String sortOrder);
+
+            interface ICursorLoader;
+            interface IAsyncTaskLoader;
+            interface ILoader;
+        }
+
+        class CDefaultDataHandler {
+            interface IContentInsertHandler;
+            interface IContentHandler;
+        }
+
         /**
-         * Proxying implementation of Context that simply delegates all of its calls to
-         * another Context.  Can be subclassed to modify behavior without changing
-         * the original Context.
+         * A representation of a item using ContentValues. It contains one top level ContentValue
+         * plus a collection of Uri, ContentValues tuples as subvalues. One example of its use
+         * is in Contacts, where the top level ContentValue contains the columns from the RawContacts
+         * table and the subvalues contain a ContentValues object for each row from the Data table that
+         * corresponds to that RawContact. The uri refers to the Data table uri for each row.
          */
-        //[local]
-        //class CContextWrapper {
-        //    constructor(
-        //        [in] IContext* ctx);
+        class CEntity {
+            constructor(
+                [in] IContentValues* values);
 
-        //    interface IContextWrapper;
-        //}
+            interface IEntity;
+        }
 
+        class CEntityNamedContentValues {
+            constructor(
+                [in] IUri* uri,
+                [in] IContentValues* values);
 
+            interface IEntityNamedContentValues;
+        }
 
     }//namespace Content
     }//namespace Droid
@@ -1395,83 +1446,6 @@ module
 //     namespace Elastos {
 //     namespace Droid {
 //     namespace Content {
-
-
-//     /**
-//      * An implementation of a ContentObserver that takes care of connecting
-//      * it to the Loader to have the loader re-load its data when the observer
-//      * is told it has changed.  You do not normally need to use this yourself;
-//      * it is used for you by {@link CursorLoader} to take care of executing
-//      * an update when the cursor's backing data changes.
-//      */
-// //    class CLoaderForceLoadContentObserver {
-// //        constructor();
-// //
-// //        interface ILoaderForceLoadContentObserver;
-// //    }
-
-//     /**
-//      * A loader that queries the {@link ContentResolver} and returns a {@link Cursor}.
-//      * This class implements the {@link Loader} protocol in a standard way for
-//      * querying cursors, building on {@link AsyncTaskLoader} to perform the cursor
-//      * query on a background thread so that it does not block the application's UI.
-//      *
-//      * <p>A CursorLoader must be built with the full information for the query to
-//      * perform, either through the
-//      * {@link #CursorLoader(Context, Uri, String[], String, String[], String)} or
-//      * creating an empty instance with {@link #CursorLoader(Context)} and filling
-//      * in the desired paramters with {@link #setUri(Uri)}, {@link #setSelection(String)},
-//      * {@link #setSelectionArgs(String[])}, {@link #setSortOrder(String)},
-//      * and {@link #setProjection(String[])}.
-//      */
-// //    [deprecated]
-// //    class CCursorLoader {
-// //        /**
-// //         * Creates an empty unspecified CursorLoader.  You must follow this with
-// //         * calls to {@link #setUri(Uri)}, {@link #setSelection(String)}, etc
-// //         * to specify the query to perform.
-// //         */
-// //        constructor(
-// //            [in] IContext* ctx);
-// //
-// //        /**
-// //         * Creates a fully-specified CursorLoader.  See
-// //         * {@link ContentResolver#query(Uri, String[], String, String[], String)
-// //         * ContentResolver.query()} for documentation on the meaning of the
-// //         * parameters.  These will be passed as-is to that call.
-// //         */
-// //        constructor(
-// //            [in] IContext* ctx,
-// //            [in] IUri* uri,
-// //            [in] ArrayOf<String>* projection,
-// //            [in] String selection,
-// //            [in] ArrayOf<String>* selectionArgs,
-// //            [in] String sortOrder);
-// //
-// //        interface ICursorLoader;
-// //    }
-
-//     /**
-//      * A representation of a item using ContentValues. It contains one top level ContentValue
-//      * plus a collection of Uri, ContentValues tuples as subvalues. One example of its use
-//      * is in Contacts, where the top level ContentValue contains the columns from the RawContacts
-//      * table and the subvalues contain a ContentValues object for each row from the Data table that
-//      * corresponds to that RawContact. The uri refers to the Data table uri for each row.
-//      */
-//     class CEntity {
-//         constructor(
-//             [in] IContentValues* values);
-
-//         interface IEntity;
-//     }
-
-//     class CEntityNamedContentValues {
-//         constructor(
-//             [in] IUri* uri,
-//             [in] IContentValues* values);
-
-//         interface IEntityNamedContentValues;
-//     }
 
 //     *
 //      * An intent is an abstract description of an operation to be performed.  It
@@ -2717,54 +2691,6 @@ module
 //         interface IUriMatcher;
 //     }
 
-//     /**
-//      * Inserts default data from InputStream, should be in XML format.
-//      * If the provider syncs data to the server, the imported data will be synced to the server.
-//      * <p>Samples:</p>
-//      * <br/>
-//      *  Insert one row:
-//      * <pre>
-//      * &lt;row uri="content://contacts/people">
-//      *  &lt;Col column = "name" value = "foo feebe "/>
-//      *  &lt;Col column = "addr" value = "Tx"/>
-//      * &lt;/row></pre>
-//      * <br/>
-//      * Delete, it must be in order of uri, select, and arg:
-//      * <pre>
-//      * &lt;del uri="content://contacts/people" select="name=? and addr=?"
-//      *  arg1 = "foo feebe" arg2 ="Tx"/></pre>
-//      * <br/>
-//      *  Use first row's uri to insert into another table,
-//      *  content://contacts/people/1/phones:
-//      * <pre>
-//      * &lt;row uri="content://contacts/people">
-//      *  &lt;col column = "name" value = "foo feebe"/>
-//      *  &lt;col column = "addr" value = "Tx"/>
-//      *  &lt;row postfix="phones">
-//      *    &lt;col column="number" value="512-514-6535"/>
-//      *  &lt;/row>
-//      *  &lt;row postfix="phones">
-//      *    &lt;col column="cell" value="512-514-6535"/>
-//      *  &lt;/row>
-//      * &lt;/row></pre>
-//      * <br/>
-//      *  Insert multiple rows in to same table and same attributes:
-//      * <pre>
-//      * &lt;row uri="content://contacts/people" >
-//      *  &lt;row>
-//      *   &lt;col column= "name" value = "foo feebe"/>
-//      *   &lt;col column= "addr" value = "Tx"/>
-//      *  &lt;/row>
-//      *  &lt;row>
-//      *  &lt;/row>
-//      * &lt;/row></pre>
-//      *
-//      * @hide
-//      */
-//     class CDefaultDataHandler {
-
-//         interface IContentInsertHandler;
-//     }
 
 //     /**
 //      * Special version of {@link ContextWrapper} that allows the base context to

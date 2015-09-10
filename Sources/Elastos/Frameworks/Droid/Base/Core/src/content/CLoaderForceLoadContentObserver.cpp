@@ -1,36 +1,49 @@
 
 #include "content/CLoaderForceLoadContentObserver.h"
+#include "os/CHandler.h"
+
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::CHandler;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
-ECode CLoaderForceLoadContentObserver::GetContentObserver(
-    /* [out] */ IIContentObserver** co)
-{
-    // TODO: Add your code here
-    return E_NOT_IMPLEMENTED;
-}
+CAR_INTERFACE_IMPL(CLoaderForceLoadContentObserver, ContentObserver, ILoaderForceLoadContentObserver)
 
-ECode CLoaderForceLoadContentObserver::ReleaseContentObserver(
-    /* [out] */ IIContentObserver** co)
+CAR_OBJECT_IMPL(CLoaderForceLoadContentObserver)
+
+ECode CLoaderForceLoadContentObserver::constructor(
+    /* [in] */ ILoader* loader)
 {
-    // TODO: Add your code here
-    return E_NOT_IMPLEMENTED;
+    AutoPtr<IHandler> handler;
+    CHandler::New((IHandler**)&handler);
+    FAIL_RETURN(ContentObserver::constructor(handler))
+
+    AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(loader);
+    wrs->GetWeakReference((IWeakReference**)&mWeakLoader);
+    return NOERROR;
 }
 
 ECode CLoaderForceLoadContentObserver::DeliverSelfNotifications(
     /* [out] */ Boolean* result)
 {
-    // TODO: Add your code here
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    return NOERROR;
 }
 
-ECode CLoaderForceLoadContentObserver::constructor()
+ECode CLoaderForceLoadContentObserver::OnChange(
+    /* [in] */ Boolean selfChange)
 {
-    // TODO: Add your code here
-    return E_NOT_IMPLEMENTED;
+    AutoPtr<ILoader> loader;
+    mWeakLoader->Resolve(EIID_ILoader, (IInterface**)&loader);
+    if (loader) {
+        return loader->OnContentChanged();
+    }
+    return NOERROR;
 }
+
 
 }
 }

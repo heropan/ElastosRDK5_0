@@ -32,7 +32,9 @@ private:
     class ContentObserverProxy : public ContentObserver
     {
     public:
-        ContentObserverProxy(
+        ContentObserverProxy();
+
+        CARAPI constructor(
             /* [in] */ IIContentObserver* remoteObserver,
             /* [in] */ IProxyDeathRecipient* recipient);
 

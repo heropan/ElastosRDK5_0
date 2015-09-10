@@ -38,19 +38,16 @@ SOURCES += CContentResolverOpenResourceIdResult.cpp
 SOURCES += CContentUris.cpp
 SOURCES += CContentValues.cpp
 SOURCES += Context.cpp
-#SOURCES += ContextWrapper.cpp
-#SOURCES += CContextWrapper.cpp
-
-
+SOURCES += ContextWrapper.cpp
+SOURCES += CursorEntityIterator.cpp
+SOURCES += CCursorLoader.cpp
+SOURCES += CDefaultDataHandler.cpp
+SOURCES += CEntity.cpp
+SOURCES += CEntityNamedContentValues.cpp
 SOURCES += Loader.cpp
-
-#SOURCES += CLoaderForceLoadContentObserver.cpp
-
+SOURCES += CLoaderForceLoadContentObserver.cpp
 
 
-#SOURCES += CCursorLoader.cpp
-#SOURCES += CEntity.cpp
-#SOURCES += CEntityNamedContentValues.cpp
 #SOURCES += Intent.cpp
 #SOURCES += CIntent.cpp
 #SOURCES += CIntentHelper.cpp
@@ -83,8 +80,6 @@ SOURCES += Loader.cpp
 #SOURCES += CSyncStorageEngineHelper.cpp
 #SOURCES += CUriMatcher.cpp
 #SOURCES += IIContentProviderConstants.cpp
-#SOURCES += CursorEntityIterator.cpp
-#SOURCES += CDefaultDataHandler.cpp
 #SOURCES += CMutableContextWrapper.cpp
 #SOURCES += CSyncActivityTooManyDeletes.cpp
 #SOURCES += CSearchRecentSuggestionsProvider.cpp

@@ -1,17 +1,35 @@
 
 #include "content/CEntity.h"
 #include "content/CEntityNamedContentValues.h"
+#include <elastos/core/StringBuilder.h>
+
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::IIterator;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
+CAR_INTERFACE_IMPL(CEntity, Object, IEntity)
+
+CAR_OBJECT_IMPL(CEntity)
+
 CEntity::CEntity()
-{}
+{
+}
 
 CEntity::~CEntity()
 {
-    mSubValues.Clear();
+    mSubValues->Clear();
+}
+
+ECode CEntity::constructor(
+    /* [in] */ IContentValues* values)
+{
+    mValues = values;
+    CArrayList::New((IArrayList**)&mSubValues);
+    return NOERROR;
 }
 
 ECode CEntity::GetEntityValues(
@@ -24,16 +42,11 @@ ECode CEntity::GetEntityValues(
 }
 
 ECode CEntity::GetSubValues(
-    /* [out] */ IObjectContainer** subValues)
+    /* [out] */ IArrayList** subValues)
 {
     VALIDATE_NOT_NULL(subValues)
-    FAIL_RETURN(CObjectContainer::New(subValues));
-
-    List<AutoPtr<IEntityNamedContentValues> >::Iterator it;
-    for (it = mSubValues.Begin(); it != mSubValues.End(); it++) {
-        FAIL_RETURN((*subValues)->Add(*it));
-    }
-
+    *subValues = mSubValues;
+    REFCOUNT_ADD(*subValues)
     return NOERROR;
 }
 
@@ -43,44 +56,41 @@ ECode CEntity::AddSubValue(
 {
     AutoPtr<IEntityNamedContentValues> entityValues;
     FAIL_RETURN(CEntityNamedContentValues::New(uri, values, (IEntityNamedContentValues**)&entityValues));
-    mSubValues.PushBack(entityValues);
-    return NOERROR;
+    return mSubValues->Add(TO_IINTERFACE(entityValues));
 }
 
 ECode CEntity::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
-    AutoPtr<IStringBuilder> sb = new StringBuilder();
-    sb->AppendString(String("Entity: "));
+    StringBuilder sb("Entity: ");
+
     AutoPtr<IContentValues> values;
     FAIL_RETURN(GetEntityValues((IContentValues**)&values));
-    sb->AppendObject(values);
-    List<AutoPtr<IEntityNamedContentValues> >::Iterator it;
-    AutoPtr<IEntityNamedContentValues> entityValues;
-    AutoPtr<IUri> uri;
-    AutoPtr<IContentValues> contentValues;
+    sb.Append(Object::ToString(values));
 
-    for (it = mSubValues.Begin(); it != mSubValues.End(); it++) {
-        sb->AppendString(String("\n  "));
-        entityValues = *it;
+    AutoPtr<IIterator> it;
+    mSubValues->GetIterator((IIterator**)&it);
+    IEntityNamedContentValues* namedValue;
+    AutoPtr<IContentValues> contentValues;
+    AutoPtr<IUri> uri;
+    Boolean next;
+    while (it->HasNext(&next), next) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        namedValue = IEntityNamedContentValues::Probe(obj);
+
+        sb.Append("\n  ");
         uri = NULL;
-        FAIL_RETURN(entityValues->GetUri((IUri**)&uri));
-        FAIL_RETURN(sb->AppendObject(uri));
-        sb->AppendString(String("\n  -> "));
+        FAIL_RETURN(namedValue->GetUri((IUri**)&uri));
+        FAIL_RETURN(sb.Append(Object::ToString(uri)));
+        sb.Append("\n  -> ");
         contentValues = NULL;
-        FAIL_RETURN(entityValues->GetValues((IContentValues**)&contentValues));
-        FAIL_RETURN(sb->AppendObject(contentValues));
+        FAIL_RETURN(namedValue->GetValues((IContentValues**)&contentValues));
+        FAIL_RETURN(sb.Append(Object::ToString(contentValues)));
     }
 
-    return sb->ToString(str);
-}
-
-ECode CEntity::constructor(
-    /* [in] */ IContentValues* values)
-{
-    mValues = values;
-    return NOERROR;
+    return sb.ToString(str);
 }
 
 }

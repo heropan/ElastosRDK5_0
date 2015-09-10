@@ -5,6 +5,16 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
+CAR_INTERFACE_IMPL(Context, Object, IContext)
+
+Context::Context()
+{
+}
+
+Context::~Context()
+{
+}
+
 ECode Context::RegisterComponentCallbacks(
     /* [in] */ IComponentCallbacks* componentCallback)
 {

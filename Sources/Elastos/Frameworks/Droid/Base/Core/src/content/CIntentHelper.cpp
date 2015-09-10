@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
+CAR_INTERFACE_IMPL(CIntentHelper, SINGLETON, IIntentHelper)
+
+CAR_SINGLETON_IMPL(CIntentHelper)
+
 ECode CIntentHelper::CreateChooser(
     /* [in] */ IIntent* target,
     /* [in] */ ICharSequence* title,

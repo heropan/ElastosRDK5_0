@@ -15,6 +15,9 @@ namespace Elastos {
 namespace Droid {
 namespace Database {
 
+//==========================================================
+// ContentObserver::NotificationRunnable
+//==========================================================
 ContentObserver::NotificationRunnable::NotificationRunnable(
     /* [in] */ Boolean selfChange,
     /* [in] */ IUri* uri,
@@ -32,19 +35,23 @@ ECode ContentObserver::NotificationRunnable::Run()
     return mOwner->OnChange(mSelfChange, mUri, mUserId);
 }
 
-ContentObserver::ContentObserver(
-    /* [in]  */ IHandler* handler)
-    : mHandler(handler)
+//==========================================================
+// ContentObserver
+//==========================================================
+CAR_INTERFACE_IMPL(ContentObserver, Object, IContentObserver)
+
+ContentObserver::ContentObserver()
 {}
 
-ECode ContentObserver::Init(
+ContentObserver::~ContentObserver()
+{}
+
+ECode ContentObserver::constructor(
     /* [in]  */ IHandler* handler)
 {
     mHandler = handler;
     return NOERROR;
 }
-
-CAR_INTERFACE_IMPL(ContentObserver, Object, IContentObserver)
 
 ECode ContentObserver::GetContentObserver(
     /* [out] */ IIContentObserver** contentObserver)

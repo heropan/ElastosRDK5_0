@@ -19,11 +19,16 @@ namespace Database {
 
 CAR_INTERFACE_IMPL_4(AbstractCursor, Object, IAbstractCursor, ICrossProcessCursor, ICursor, ICloseable);
 
-AbstractCursor::SelfContentObserver::SelfContentObserver(
+AbstractCursor::SelfContentObserver::SelfContentObserver()
+{}
+
+ECode AbstractCursor::SelfContentObserver::constructor(
     /* [in] */ IAbstractCursor* cursor)
-    : ContentObserver(NULL)
 {
+    FAIL_RETURN(ContentObserver::constructor(NULL))
+
     IWeakReferenceSource::Probe(cursor)->GetWeakReference((IWeakReference**)&mCursor);
+    return NOERROR;
 }
 
 ECode AbstractCursor::SelfContentObserver::DeliverSelfNotifications(
@@ -44,7 +49,6 @@ ECode AbstractCursor::SelfContentObserver::OnChange(
     }
     return NOERROR;
 }
-
 
 const String AbstractCursor::TAG("Cursor");
 
@@ -452,7 +456,9 @@ ECode AbstractCursor::SetNotificationUri(
         if (mSelfObserver != NULL) {
             mContentResolver->UnregisterContentObserver(mSelfObserver);
         }
-        mSelfObserver = new SelfContentObserver(((IAbstractCursor*)this->Probe(EIID_IAbstractCursor)));
+        AutoPtr<SelfContentObserver> sco = new SelfContentObserver();
+        sco->constructor(THIS_PROBE(IAbstractCursor));
+        mSelfObserver = sco.Get();
         mContentResolver->RegisterContentObserver(mNotifyUri, TRUE, mSelfObserver);
         mSelfObserverRegistered = TRUE;
     }

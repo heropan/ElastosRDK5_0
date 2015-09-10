@@ -3,15 +3,10 @@
 #define __ELASTOS_DROID_CONTENT_INTENT_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/utility/etl/HashSet.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/Object.h>
+#include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Utility::Etl::HashSet;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::IStringBuilder;
-using Elastos::Core::IClassLoader;
-using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Graphics::IRect;
@@ -19,22 +14,56 @@ using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Utility::IAttributeSet;
-using Elastos::Utility::IObjectStringMap;
+
+using Elastos::Core::StringBuilder;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IStringBuilder;
+using Elastos::Core::IClassLoader;
+using Elastos::Utility::Etl::HashSet;
+using Org::Xmlpull::V1::IXmlPullParser;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 class Intent
+    : public Object
+    , public IIntent
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     Intent();
 
     virtual ~Intent();
 
-    virtual CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid) = 0;
+    CARAPI constructor();
 
+    CARAPI constructor(
+        /* [in] */ IIntent* intent);
+
+    CARAPI constructor(
+        /* [in] */ IIntent* intent,
+        /* [in] */ Boolean all);
+
+    CARAPI constructor(
+        /* [in] */ const String& action);
+
+    CARAPI constructor(
+        /* [in] */ const String& action,
+        /* [in] */ IUri* uri);
+
+    CARAPI constructor(
+        /* [in] */ IContext* packageContext,
+        /* [in] */ const ClassID& clsId);
+
+    CARAPI constructor(
+        /* [in] */ const String& action,
+        /* [in] */ IUri* uri,
+        /* [in] */ IContext* packageContext,
+        /* [in] */ IClassInfo* cls);
     /**
      * Convenience function for creating a {@link #ACTION_CHOOSER} Intent.
      *
@@ -58,7 +87,10 @@ public:
         /* [in] */ ICharSequence* title);
 
     CARAPI Clone(
-        /* [out] */ IIntent** intent);
+        /* [out] */ IInterface** intent);
+
+    CARAPI CloneImpl(
+        /* [in] */ IIntent* intent);
 
     CARAPI CloneFilter(
         /* [out] */ IIntent** intent);
@@ -206,6 +238,9 @@ public:
 
     CARAPI GetClipData(
         /* [out] */ IClipData** clipData);
+
+    CARAPI GetContentUserHint(
+        /* [out] */ Int32* hint);
 
     CARAPI SetExtrasClassLoader(
         /* [in] */ IClassLoader* loader);
@@ -376,6 +411,18 @@ public:
         /* [in] */ Int32 flags,
         /* [out] */ IActivityInfo** result);
 
+    /**
+     * Special function for use by the system to resolve service
+     * intents to system apps.  Throws an exception if there are
+     * multiple potential matches to the Intent.  Returns null if
+     * there are no matches.
+     * @hide
+     */
+    CARAPI ResolveSystemService(
+        /* [in] */ IPackageManager* pm,
+        /* [in] */ Int32 flags,
+        /* [out] */ IComponentName** componentName);
+
     CARAPI SetAction(
         /* [in] */ const String& action);
 
@@ -410,6 +457,15 @@ public:
 
     CARAPI SetClipData(
         /* [in] */ IClipData* clip);
+
+    /**
+     * This is NOT a secure mechanism to identify the user who sent the intent.
+     * When the intent is sent to a different user, it is used to fix uris by adding the userId
+     * who sent the intent.
+     * @hide
+     */
+    CARAPI SetContentUserHint(
+        /* [in] */ Int32 hint);
 
     CARAPI PutBooleanExtra(
         /* [in] */ const String& name,
@@ -619,44 +675,43 @@ public:
         /* [in] */ IAttributeSet* attrs,
         /* [out] */ IIntent** intent);
 
+    CARAPI SaveToXml(
+        /* [in] */ IXmlSerializer* out);
+
+    static AutoPtr<IIntent> RestoreFromXml(
+        /* [in] */ IXmlPullParser* in);
+
     static CARAPI_(String) NormalizeMimeType(
         /* [in] */ const String& type);
 
+    /**
+     * Prepare this {@link Intent} to leave an app process.
+     *
+     * @hide
+     */
+    CARAPI PrepareToLeaveProcess();
+
+    /**
+     * @hide
+     */
+    CARAPI PrepareToEnterProcess();
+
+    /**
+     * @hide
+     */
+    CARAPI FixUris(
+        /* [in] */ Int32 contentUserHint);
+
     CARAPI MigrateExtraStreamToClipData(
         /* [out] */ Boolean* result);
-
-protected:
-    CARAPI Init();
-
-    CARAPI Init(
-        /* [in] */ IIntent* intent);
-
-    CARAPI Init(
-        /* [in] */ IIntent* intent,
-        /* [in] */ Boolean all);
-
-    CARAPI Init(
-        /* [in] */ const String& action);
-
-    CARAPI Init(
-        /* [in] */ const String& action,
-        /* [in] */ IUri* uri);
-
-    CARAPI Init(
-        /* [in] */ IContext* packageContext,
-        /* [in] */ const ClassID& clsId);
-
-    CARAPI Init(
-        /* [in] */ const String& action,
-        /* [in] */ IUri* uri,
-        /* [in] */ IContext* packageContext,
-        /* [in] */ IClassInfo* cls);
 
     CARAPI_(void) ToUriInner(
         /* [in] */ StringBuilder& uri,
         /* [in] */ const String& scheme,
         /* [in] */ Int32 flags);
 
+    CARAPI IsDocument(
+        /* [out] */ Boolean* result);
 private:
     static CARAPI_(AutoPtr<IClipDataItem>) MakeClipItem(
         /* [in] */ ArrayOf<IUri*>* streams,
@@ -666,6 +721,17 @@ private:
 
     CARAPI_(AutoPtr<IClassInfo>) TransformClassInfo(
         /* [in] */ const ClassID& objId);
+
+private:
+    static const String ATTR_ACTION = "action";
+    static const String TAG_CATEGORIES = "categories";
+    static const String ATTR_CATEGORY = "category";
+    static const String TAG_EXTRA = "extra";
+    static const String ATTR_TYPE = "type";
+    static const String ATTR_COMPONENT = "component";
+    static const String ATTR_DATA = "data";
+    static const String ATTR_FLAGS = "flags";
+
 private:
     static const String TAG;
 
@@ -675,11 +741,12 @@ private:
     String mPackage;
     AutoPtr<IComponentName> mComponent;
     Int32 mFlags;
-    AutoPtr<HashSet<String> > mCategories;
+    AutoPtr<HashSet<String> > mCategories;//ArraySet
     AutoPtr<IBundle> mExtras;
     AutoPtr<IRect> mSourceBounds;
     AutoPtr<IIntent> mSelector;
     AutoPtr<IClipData> mClipData;
+    Int32 mContentUserHint;
 };
 
 } // Content

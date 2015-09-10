@@ -22,7 +22,8 @@ class ContentObserver
     , public IContentObserver
 {
 private:
-    class NotificationRunnable : public Runnable
+    class NotificationRunnable
+        : public Runnable
     {
     public:
         NotificationRunnable(
@@ -41,15 +42,19 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    ContentObserver();
+
+    virtual ~ContentObserver();
+
     /**
      * Creates a content observer.
      *
      * @param handler The handler to run {@link #onChange} on, or null if none.
      */
-    ContentObserver(
+    CARAPI constructor(
         /* [in]  */ IHandler* handler);
-
-    CAR_INTERFACE_DECL()
 
     /**
      * Gets access to the binder transport object. Not for public consumption.
@@ -191,12 +196,6 @@ public:
         /* [in] */ Boolean selfChange,
         /* [in] */ IUri* uri,
         /* [in] */ Int32 userId);
-
-protected:
-    ContentObserver() {}
-
-    CARAPI Init(
-        /* [in]  */ IHandler* handler);
 
 protected:
     Object mLock;

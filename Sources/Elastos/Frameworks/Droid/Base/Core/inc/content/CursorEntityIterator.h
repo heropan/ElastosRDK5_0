@@ -1,27 +1,34 @@
 #ifndef __ELASTOS_DROID_CONTENT_CURSORENTITYITERATOR_H__
 #define __ELASTOS_DROID_CONTENT_CURSORENTITYITERATOR_H__
 
-#include <ext/frameworkext.h>
+#include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
-using namespace Elastos;
-using namespace Elastos::Droid::Database;
+using Elastos::Droid::Database::ICursor;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
-class CursorEntityIterator : public ICursorEntityIterator
+class CursorEntityIterator
+    : public Object
+    , public ICursorEntityIterator
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CursorEntityIterator();
+
+    virtual ~CursorEntityIterator();
+
     /**
      * Constructor that makes initializes the cursor such that the iterator points to the
      * first Entity, if there are any.
      * @param cursor the cursor that contains the rows that make up the entities
      */
-    CursorEntityIterator(
+    CARAPI constructor(
         /* [in] */ ICursor* cursor);
-
-    virtual ~CursorEntityIterator();
 
     /**
      * Returns true if there is at least one more element, false otherwise.
@@ -38,7 +45,7 @@ public:
      *             if there are no more elements.
      * @see #hasNext
      */
-    CARAPI Next(
+    CARAPI GetNext(
         /* [out] */ IEntity** entity);
 
     /**
