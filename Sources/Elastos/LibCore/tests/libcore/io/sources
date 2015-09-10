@@ -18,6 +18,8 @@ SOURCES += CharArrayWriterTest.cpp
 SOURCES += DataOutputStreamTest.cpp
 SOURCES += FileDescriptorTest.cpp
 SOURCES += FileInputStreamTest.cpp
+SOURCES += FileOutputStreamTest.cpp
+SOURCES += FileTest.cpp
 
 SOURCES += MyThread.car
 
