@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CCONTENTURIS_H__
 
 #include "_Elastos_Droid_Content_CContentUris.h"
-#include <elastos/core/Object.h>
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Net::IUriBuilder;
@@ -62,13 +62,13 @@ namespace Content {
 *
 */
 CarClass(CContentUris)
-    , public Object
+    , public Singleton
     , public IContentUris
 {
 public:
     CAR_INTERFACE_DECL()
 
-    CAR_OBJECT_DECL()
+    CAR_SINGLETON_DECL()
 
     /**
      * Converts the last path segment to a long.
@@ -110,9 +110,6 @@ public:
         /* [in] */ IUri* contentUri,
         /* [in] */ Int64 id,
         /* [out] */ IUri** newUri);
-
-private:
-    // TODO: Add your private member variables here.
 };
 
 }

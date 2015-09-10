@@ -131,10 +131,14 @@ module
     using interface Elastos.Core.IComparable;
     using interface Elastos.Core.ICloneable;
     using interface Elastos.Core.ICharSequence;
+    using interface Elastos.Utility.IObservable;
 
     interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.Database.ICursor;
+    interface Elastos.Droid.Content.Res.IResources;
 
     namespace Elastos {
     namespace Droid {
@@ -312,7 +316,6 @@ module
             interface IClipDescriptionHelper;
         }
 
-
         [local]
         class CClipboardManager {
             /** {@hide} */
@@ -461,6 +464,26 @@ module
         }
 
         /**
+         * Caches the contents of a cursor into a Map of String->ContentValues and optionally
+         * keeps the cache fresh by registering for updates on the content backing the cursor. The column of
+         * the database that is to be used as the key of the map is user-configurable, and the
+         * ContentValues contains all columns other than the one that is designated the key.
+         * <p>
+         * The cursor data is accessed by row key and column name via getValue().
+         */
+        class CContentQueryMap {
+
+            constructor(
+                [in] ICursor* cursor,
+                [in] String columnNameOfKey,
+                [in] Boolean keepUpdated,
+                [in] IHandler* handlerForUpdateNotifications);
+
+            interface IContentQueryMap;
+            interface IObservable;
+        }
+
+        /**
          * This class is used to store a set of values that the {@link ContentResolver}
          * can process.
          */
@@ -489,6 +512,35 @@ module
             interface IContentValues;
             interface IParcelable;
         }
+
+        singleton class CContentUris {
+            interface IContentUris;
+        }
+
+        singleton class CContentResolverHelper {
+            interface IContentResolverHelper;
+        }
+
+        class CContentResolverOpenResourceIdResult {
+            constructor(
+                [in] IResources* res,
+                [in] Int32 id);
+
+            interface IContentResolverOpenResourceIdResult;
+        }
+
+        /**
+         * Proxying implementation of Context that simply delegates all of its calls to
+         * another Context.  Can be subclassed to modify behavior without changing
+         * the original Context.
+         */
+        //[local]
+        //class CContextWrapper {
+        //    constructor(
+        //        [in] IContext* ctx);
+
+        //    interface IContextWrapper;
+        //}
 
 
 
@@ -1343,93 +1395,6 @@ module
 //     namespace Elastos {
 //     namespace Droid {
 //     namespace Content {
-
-//     class CIntegerMapWrapper {
-//         constructor(
-//             [in] Int32 key,
-//             [in] Int32 value);
-
-//         interface IIntegerMapWrapper;
-//     }
-
-//     singleton class CContentResolverHelper {
-
-//         interface IContentResolverHelper;
-//     }
-
-//     class CContentResolverOpenResourceIdResult {
-
-//         interface IContentResolverOpenResourceIdResult;
-//     }
-
-//     /**
-//      * Utility methods useful for working with {@link android.net.Uri} objects
-//      * that use the &quot;content&quot; (content://) scheme.
-//      *
-//      *<p>
-//      *   Content URIs have the syntax
-//      *</p>
-//      *<p>
-//      *   <code>content://<em>authority</em>/<em>path</em>/<em>id</em></code>
-//      *</p>
-//      *<dl>
-//      *   <dt>
-//      *       <code>content:</code>
-//      *   </dt>
-//      *   <dd>
-//      *       The scheme portion of the URI. This is always set to {@link
-//      *       android.content.ContentResolver#SCHEME_CONTENT ContentResolver.SCHEME_CONTENT} (value
-//      *       <code>content://</code>).
-//      *   </dd>
-//      *   <dt>
-//      *       <em>authority</em>
-//      *   </dt>
-//      *   <dd>
-//      *       A string that identifies the entire content provider. All the content URIs for the provider
-//      *       start with this string. To guarantee a unique authority, providers should consider
-//      *       using an authority that is the same as the provider class' package identifier.
-//      *   </dd>
-//      *   <dt>
-//      *       <em>path</em>
-//      *   </dt>
-//      *   <dd>
-//      *       Zero or more segments, separated by a forward slash (<code>/</code>), that identify
-//      *       some subset of the provider's data. Most providers use the path part to identify
-//      *       individual tables. Individual segments in the path are often called
-//      *       &quot;directories&quot; although they do not refer to file directories. The right-most
-//      *       segment in a path is often called a &quot;twig&quot;
-//      *   </dd>
-//      *   <dt>
-//      *       <em>id</em>
-//      *   </dt>
-//      *   <dd>
-//      *       A unique numeric identifier for a single row in the subset of data identified by the
-//      *       preceding path part. Most providers recognize content URIs that contain an id part
-//      *       and give them special handling. A table that contains a column named <code>_ID</code>
-//      *       often expects the id part to be a particular value for that column.
-//      *   </dd>
-//      *</dl>
-//      *
-//      */
-//     singleton class CContentUris {
-
-//         interface IContentUris;
-//     }
-
-
-
-//     /**
-//      * Proxying implementation of Context that simply delegates all of its calls to
-//      * another Context.  Can be subclassed to modify behavior without changing
-//      * the original Context.
-//      */
-//     [local]
-//     class CContextWrapper {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IContextWrapper;
-//     }
 
 
 //     /**
@@ -2864,36 +2829,6 @@ module
 //         interface IContentProvider;
 //     }
 
-//     /**
-//      * Caches the contents of a cursor into a Map of String->ContentValues and optionally
-//      * keeps the cache fresh by registering for updates on the content backing the cursor. The column of
-//      * the database that is to be used as the key of the map is user-configurable, and the
-//      * ContentValues contains all columns other than the one that is designated the key.
-//      * <p>
-//      * The cursor data is accessed by row key and column name via getValue().
-//      */
-//     class CContentQueryMap {
-//         /**
-//          * Creates a ContentQueryMap that caches the content backing the cursor
-//          *
-//          * @param cursor the cursor whose contents should be cached
-//          * @param columnNameOfKey the column that is to be used as the key of the values map
-//          * @param keepUpdated true if the cursor's ContentProvider should be monitored for changes and
-//          * the map updated when changes do occur
-//          * @param handlerForUpdateNotifications the Handler that should be used to receive
-//          *  notifications of changes (if requested). Normally you pass null here, but if
-//          *  you know that the thread that is creating this isn't a thread that can receive
-//          *  messages then you can create your own handler and use that here.
-//          */
-//         constructor(
-//             [in] ICursor* cursor,
-//             [in] String columnNameOfKey,
-//             [in] Boolean keepUpdated,
-//             [in] IHandler* handlerForUpdateNotifications);
-
-//         interface IContentQueryMap;
-//         interface IObservable;
-//     }
 
 //     } // namespace Content
 //     } // namespace Droid

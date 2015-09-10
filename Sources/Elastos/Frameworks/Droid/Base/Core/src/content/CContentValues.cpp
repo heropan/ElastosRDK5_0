@@ -2,6 +2,7 @@
 #include "content/CContentValues.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/core/CoreUtils.h>
 
 using Elastos::Core::StringUtils;
@@ -17,8 +18,13 @@ using Elastos::Core::CBoolean;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::EIID_IByte;
 using Elastos::Core::CoreUtils;
-using Elastos::Utility::IHashMap;
+using Elastos::Core::StringUtils;
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::CHashMap;
+using Elastos::Utility::IMap;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::IMapEntry;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -35,6 +41,7 @@ const Int32 CContentValues::VAL_FLOAT;
 const Int32 CContentValues::VAL_DOUBLE;
 const Int32 CContentValues::VAL_BOOLEAN;
 const Int32 CContentValues::VAL_ARRAYOF;
+const Int32 CContentValues::VAL_ARRAYLIST;
 
 const String CContentValues::TAG("CContentValues");
 
@@ -53,7 +60,7 @@ ECode CContentValues::constructor()
 {
     // Choosing a default size of 8 based on analysis of typical
     // consumption by applications.
-    mValues = new HashMap<String, AutoPtr<IInterface> >(8);
+    CHashMap::New(8, (IHashMap**)&mValues);
     return NOERROR;
 }
 
@@ -63,7 +70,8 @@ ECode CContentValues::constructor(
     if (size < 0) {
         return E_INVALID_ARGUMENT;
     }
-    mValues = new HashMap<String, AutoPtr<IInterface> >(size);
+
+    CHashMap::New(size, (IHashMap**)&mValues);
     return NOERROR;
 }
 
@@ -74,19 +82,12 @@ ECode CContentValues::constructor(
     Int32 size = 0;
     FAIL_RETURN(from->GetSize(&size))
     if (size > 0) {
-        mValues = new HashMap<String, AutoPtr<IInterface> >(size);
+        CHashMap::New(size, (IHashMap**)&mValues);
     }
     else {
-        mValues = new HashMap<String, AutoPtr<IInterface> >(8);
+        CHashMap::New(8, (IHashMap**)&mValues);
     }
     FAIL_RETURN(PutAll(from))
-    return NOERROR;
-}
-
-ECode CContentValues::constructor(
-    /* [in] */ HashMap<String, AutoPtr<IInterface> >* values)
-{
-    mValues = values;
     return NOERROR;
 }
 
@@ -104,35 +105,7 @@ ECode CContentValues::Equals(
 
     if (IContentValues::Probe(object) != NULL) {
         CContentValues* other = (CContentValues*)IContentValues::Probe(object);
-        if (other->mValues.Get() == mValues.Get()) {
-            *result = TRUE;
-            return NOERROR;
-        }
-
-        if (other->mValues->GetSize() != mValues->GetSize()) {
-            return NOERROR;
-        }
-
-        String key;
-        AutoPtr<IInterface> value;
-        HashMap<String, AutoPtr<IInterface> >::Iterator it, otherIt;
-
-        for (it = mValues->Begin(); it != mValues->End(); ++it) {
-            key = it->mFirst;
-            value = it->mSecond;
-
-            otherIt = other->mValues->Find(key);
-            if (otherIt == other->mValues->End()) {
-                return NOERROR;
-            }
-
-            if (!Object::Equals(value, otherIt->mSecond)) {
-                return NOERROR;
-            }
-        }
-
-        *result = TRUE;
-        return NOERROR;
+        *result = Object::Equals(mValues, other->mValues);
     }
 
     return NOERROR;
@@ -143,17 +116,7 @@ ECode CContentValues::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashcode)
 
-    Int32 result = 0;
-    String key;
-    AutoPtr<IInterface> value;
-    HashMap<String, AutoPtr<IInterface> >::Iterator it;
-    for (it = mValues->Begin(); it != mValues->End(); ++it) {
-        key = it->mFirst;
-        value = it->mSecond;
-        result += (key.GetHashCode() ^ Object::GetHashCode(value));
-    }
-
-    *hashcode = result;
+    *hashcode = Object::GetHashCode(mValues);
     return NOERROR;
 }
 
@@ -162,37 +125,26 @@ ECode CContentValues::Put(
     /* [in] */ ICharSequence* value)
 {
     if (key.IsNull()) return E_INVALID_ARGUMENT;
-    (*mValues)[key] = value;
-    return NOERROR;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+    return mValues->Put(TO_IINTERFACE(ko), TO_IINTERFACE(value));
 }
 
 ECode CContentValues::Put(
     /* [in] */ const String& key,
     /* [in] */ const String& value)
 {
-    return Put(key, CoreUtils::Convert(value));
+    if (key.IsNull()) return E_INVALID_ARGUMENT;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+    AutoPtr<ICharSequence> vo = CoreUtils::Convert(value);
+    return mValues->Put(TO_IINTERFACE(ko), TO_IINTERFACE(vo));
 }
 
 ECode CContentValues::PutAll(
     /* [in] */ IContentValues* contentvalues)
 {
     VALIDATE_NOT_NULL(contentvalues)
-
-    AutoPtr<ISet> keyset;
-    FAIL_RETURN(contentvalues->GetKeySet((ISet**)&keyset))
-
-    // if (NULL != keyset) {
-    //     String key;
-    //     AutoPtr<IInterface> value;
-    //     for (Int32 i = 0; i < keyArray->GetLength(); i++) {
-    //         key = (*keyArray)[i];
-    //         value = NULL;
-    //         FAIL_RETURN(contentvalues->Get(key, (IInterface**)&value))
-    //         (*mValues)[key] = value;
-    //     }
-    // }
-
-    return NOERROR;
+    CContentValues* other = (CContentValues*)contentvalues;
+    return mValues->PutAll(IMap::Probe(other->mValues));
 }
 
 ECode CContentValues::Put(
@@ -200,8 +152,8 @@ ECode CContentValues::Put(
     /* [in] */ IByte* value)
 {
     if (key.IsNull()) return E_INVALID_ARGUMENT;
-    (*mValues)[key] = value;
-    return NOERROR;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+    return mValues->Put(TO_IINTERFACE(ko), TO_IINTERFACE(value));
 }
 
 ECode CContentValues::PutByte(
@@ -216,8 +168,8 @@ ECode CContentValues::Put(
     /* [in] */ IInteger16* value)
 {
     if (key.IsNull()) return E_INVALID_ARGUMENT;
-    (*mValues)[key] = value;
-    return NOERROR;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+    return mValues->Put(TO_IINTERFACE(ko), TO_IINTERFACE(value));
 }
 
 ECode CContentValues::Put(
@@ -232,8 +184,8 @@ ECode CContentValues::Put(
     /* [in] */ IInteger32* value)
 {
     if (key.IsNull()) return E_INVALID_ARGUMENT;
-    (*mValues)[key] = value;
-    return NOERROR;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+    return mValues->Put(TO_IINTERFACE(ko), TO_IINTERFACE(value));
 }
 
 ECode CContentValues::Put(
@@ -248,8 +200,8 @@ ECode CContentValues::Put(
     /* [in] */ IInteger64* value)
 {
     if (key.IsNull()) return E_INVALID_ARGUMENT;
-    (*mValues)[key] = value;
-    return NOERROR;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+    return mValues->Put(TO_IINTERFACE(ko), TO_IINTERFACE(value));
 }
 
 ECode CContentValues::Put(
@@ -264,8 +216,8 @@ ECode CContentValues::Put(
     /* [in] */ IFloat* value)
 {
     if (key.IsNull()) return E_INVALID_ARGUMENT;
-    (*mValues)[key] = value;
-    return NOERROR;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+    return mValues->Put(TO_IINTERFACE(ko), TO_IINTERFACE(value));
 }
 
 ECode CContentValues::Put(
@@ -280,8 +232,8 @@ ECode CContentValues::Put(
     /* [in] */ IDouble* value)
 {
     if (key.IsNull()) return E_INVALID_ARGUMENT;
-    (*mValues)[key] = value;
-    return NOERROR;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+    return mValues->Put(TO_IINTERFACE(ko), TO_IINTERFACE(value));
 }
 
 ECode CContentValues::Put(
@@ -296,8 +248,8 @@ ECode CContentValues::Put(
     /* [in] */ IBoolean* value)
 {
     if (key.IsNull()) return E_INVALID_ARGUMENT;
-    (*mValues)[key] = value;
-    return NOERROR;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+    return mValues->Put(TO_IINTERFACE(ko), TO_IINTERFACE(value));
 }
 
 ECode CContentValues::Put(
@@ -312,10 +264,9 @@ ECode CContentValues::Put(
     /* [in] */ IArrayOf* value)
 {
     if (key.IsNull()) return E_INVALID_ARGUMENT;
-    (*mValues)[key] = value;
-    return NOERROR;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+    return mValues->Put(TO_IINTERFACE(ko), TO_IINTERFACE(value));
 }
-
 
 ECode CContentValues::Put(
     /* [in] */ const String& key,
@@ -327,43 +278,40 @@ ECode CContentValues::Put(
         Int32 length = value->GetLength();
         AutoPtr<IArrayOf> array;
         CArrayOf::New(EIID_IByte, length,(IArrayOf**)&array);
+        AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+        return mValues->Put(TO_IINTERFACE(ko), TO_IINTERFACE(array));
     }
     else {
-        (*mValues)[key] = (IInterface*)NULL;
+        AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+        return mValues->Put(TO_IINTERFACE(ko), NULL);
     }
-    return NOERROR;
 }
 
 ECode CContentValues::PutNull(
     /* [in] */ const String& key)
 {
     if (key.IsNull()) return E_INVALID_ARGUMENT;
-    (*mValues)[key] = (IInterface*)NULL;
-    return NOERROR;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+    return mValues->Put(TO_IINTERFACE(ko), NULL);
 }
 
 ECode CContentValues::GetSize(
     /* [out] */ Int32* size)
 {
     VALIDATE_NOT_NULL(size)
-    *size = mValues->GetSize();
-    return NOERROR;
+    return mValues->GetSize(size);
 }
 
 ECode CContentValues::Remove(
     /* [in] */ const String& key)
 {
-    if (key.IsNull()) return E_INVALID_ARGUMENT;
-    HashMap<String, AutoPtr<IInterface> >::Iterator it = mValues->Find(key);
-    if (it == mValues->End()) return NOERROR;
-    mValues->Erase(it);
-    return NOERROR;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+    return mValues->Remove(ko);
 }
 
 ECode CContentValues::Clear()
 {
-    mValues->Clear();
-    return NOERROR;
+    return mValues->Clear();
 }
 
 ECode CContentValues::ContainsKey(
@@ -374,9 +322,8 @@ ECode CContentValues::ContainsKey(
     *result =  FALSE;
     if (key.IsNull()) return E_INVALID_ARGUMENT;
 
-    HashMap<String, AutoPtr<IInterface> >::Iterator it = mValues->Find(key);
-    *result = (it != mValues->End());
-    return NOERROR;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+    return mValues->ContainsKey(ko, result);
 }
 
 ECode CContentValues::Get(
@@ -386,14 +333,9 @@ ECode CContentValues::Get(
     VALIDATE_NOT_NULL(value)
     *value = NULL;
     if (key.IsNull()) return E_INVALID_ARGUMENT;
-    HashMap<String, AutoPtr<IInterface> >::Iterator it = mValues->Find(key);
-    if (it == mValues->End()) {
-        return NOERROR;
-    }
 
-    *value = it->mSecond;
-    REFCOUNT_ADD(*value);
-    return NOERROR;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+    return mValues->Get(ko, value);
 }
 
 ECode CContentValues::GetAsString(
@@ -403,12 +345,11 @@ ECode CContentValues::GetAsString(
     VALIDATE_NOT_NULL(value)
     *value = String(NULL);
     if (key.IsNull()) return E_INVALID_ARGUMENT;
-    HashMap<String, AutoPtr<IInterface> >::Iterator it = mValues->Find(key);
-    if (it == mValues->End()) {
-        return NOERROR;
-    }
 
-    AutoPtr<IInterface> obj = it->mSecond;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+    AutoPtr<IInterface> obj;
+    mValues->Get(ko, (IInterface**)&obj);
+
     *value = obj ? Object::ToString(obj) : String(NULL);
     return NOERROR;
 }
@@ -419,8 +360,10 @@ ECode CContentValues::GetAsInt64(
 {
     VALIDATE_NOT_NULL(value)
     *value = 0;
+    if (key.IsNull()) return E_INVALID_ARGUMENT;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
     AutoPtr<IInterface> obj;
-    FAIL_RETURN(Get(key, (IInterface**)&obj))
+    mValues->Get(ko, (IInterface**)&obj);
 
     if (NULL != obj) {
         if (INumber::Probe(obj) != NULL) {
@@ -448,8 +391,10 @@ ECode CContentValues::GetAsInt32(
 {
     VALIDATE_NOT_NULL(value)
     *value = 0;
+    if (key.IsNull()) return E_INVALID_ARGUMENT;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
     AutoPtr<IInterface> obj;
-    FAIL_RETURN(Get(key, (IInterface**)&obj))
+    mValues->Get(ko, (IInterface**)&obj);
 
     if (NULL != obj) {
         if (INumber::Probe(obj) != NULL) {
@@ -477,8 +422,10 @@ ECode CContentValues::GetAsInt16(
 {
     VALIDATE_NOT_NULL(value)
     *value = 0;
+    if (key.IsNull()) return E_INVALID_ARGUMENT;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
     AutoPtr<IInterface> obj;
-    FAIL_RETURN(Get(key, (IInterface**)&obj))
+    mValues->Get(ko, (IInterface**)&obj);
 
     if (NULL != obj) {
         if (INumber::Probe(obj) != NULL) {
@@ -506,8 +453,10 @@ ECode CContentValues::GetAsByte(
 {
     VALIDATE_NOT_NULL(value)
     *value = 0;
+    if (key.IsNull()) return E_INVALID_ARGUMENT;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
     AutoPtr<IInterface> obj;
-    FAIL_RETURN(Get(key, (IInterface**)&obj))
+    mValues->Get(ko, (IInterface**)&obj);
 
     if (NULL != obj) {
         if (INumber::Probe(obj) != NULL) {
@@ -537,8 +486,10 @@ ECode CContentValues::GetAsDouble(
 {
     VALIDATE_NOT_NULL(value)
     *value = 0.0;
+    if (key.IsNull()) return E_INVALID_ARGUMENT;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
     AutoPtr<IInterface> obj;
-    FAIL_RETURN(Get(key, (IInterface**)&obj))
+    mValues->Get(ko, (IInterface**)&obj);
 
     if (NULL != obj) {
         if (INumber::Probe(obj) != NULL) {
@@ -566,8 +517,10 @@ ECode CContentValues::GetAsFloat(
 {
     VALIDATE_NOT_NULL(value)
     *value = 0.0;
+    if (key.IsNull()) return E_INVALID_ARGUMENT;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
     AutoPtr<IInterface> obj;
-    FAIL_RETURN(Get(key, (IInterface**)&obj))
+    mValues->Get(ko, (IInterface**)&obj);
 
     if (NULL != obj) {
         if (INumber::Probe(obj) != NULL) {
@@ -595,8 +548,10 @@ ECode CContentValues::GetAsBoolean(
 {
     VALIDATE_NOT_NULL(value)
     *value = FALSE;
+    if (key.IsNull()) return E_INVALID_ARGUMENT;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
     AutoPtr<IInterface> obj;
-    FAIL_RETURN(Get(key, (IInterface**)&obj))
+    mValues->Get(ko, (IInterface**)&obj);
 
     if (NULL != obj) {
         if (IBoolean::Probe(obj) != NULL) {
@@ -630,8 +585,10 @@ ECode CContentValues::GetAsByteArray(
 {
     VALIDATE_NOT_NULL(value)
     *value = NULL;
+    if (key.IsNull()) return E_INVALID_ARGUMENT;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
     AutoPtr<IInterface> obj;
-    FAIL_RETURN(Get(key, (IInterface**)&obj))
+    mValues->Get(ko, (IInterface**)&obj);
 
     if (NULL != obj) {
         AutoPtr<IArrayOf> array = IArrayOf::Probe(obj);
@@ -659,43 +616,37 @@ ECode CContentValues::GetAsByteArray(
 ECode CContentValues::GetValueSet(
     /* [out] */ ISet** values)
 {
-    VALIDATE_NOT_NULL(values)
-    *values = NULL;
-
-    AutoPtr<IHashMap> map;
-    CHashMap::New((IHashMap**)&map);
-
-    HashMap<String, AutoPtr<IInterface> >::Iterator it;
-    for (it = mValues->Begin(); it != mValues->End(); ++it) {
-        AutoPtr<ICharSequence> seq = CoreUtils::Convert(it->mFirst);
-        map->Put(TO_IINTERFACE(seq), it->mSecond);
-    }
-
-    return map->GetEntrySet(values);
+    return mValues->GetEntrySet(values);
 }
 
 ECode CContentValues::GetKeySet(
     /* [out] */ ISet** values)
 {
-    return NOERROR;
+    return mValues->GetKeySet(values);
 }
 
-ECode CContentValues::GetKeySet(
-    /* [out, callee] */ ArrayOf<String>** value)
+ECode CContentValues::PutStringArrayList(
+    /* [in] */ const String& key,
+    /* [in] */ IArrayList* value)
+{
+    if (key.IsNull()) return E_INVALID_ARGUMENT;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+    return mValues->Put(TO_IINTERFACE(ko), TO_IINTERFACE(value));
+}
+
+ECode CContentValues::GetStringArrayList(
+    /* [in] */ const String& key,
+    /* [out] */ IArrayList** value)
 {
     VALIDATE_NOT_NULL(value)
-    Int32 len = mValues->GetSize();
-    Int32 i = 0;
-    AutoPtr<ArrayOf<String> > strArray = ArrayOf<String>::Alloc(len);
-    HashMap<String, AutoPtr<IInterface> >::Iterator it;
+    *value = NULL;
 
-    for (it = mValues->Begin(); it != mValues->End(); ++it) {
-        (*strArray)[i] = it->mFirst;
-        i++;
-    }
-
-    *value = strArray;
-    REFCOUNT_ADD(*value);
+    if (key.IsNull()) return E_INVALID_ARGUMENT;
+    AutoPtr<ICharSequence> ko = CoreUtils::Convert(key);
+    AutoPtr<IInterface> obj;
+    mValues->Get(ko, (IInterface**)&obj);
+    *value = IArrayList::Probe(obj);
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -703,22 +654,30 @@ ECode CContentValues::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
-    String strTmp("");
-    HashMap<String, AutoPtr<IInterface> >::Iterator it;
 
-    for (it = mValues->Begin(); it != mValues->End(); ++it) {
-        if (it != mValues->Begin())
-            strTmp.Append(" ");
+    AutoPtr<ISet> entrySet;
+    mValues->GetEntrySet((ISet**)&entrySet);
+    AutoPtr<IIterator> it;
+    entrySet->GetIterator((IIterator**)&it);
+    Boolean hasNext;
+    IMapEntry* entry;
+    StringBuilder sb("{");
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        entry = IMapEntry::Probe(obj);
+        AutoPtr<IInterface> ko, vo;
+        entry->GetKey((IInterface**)&ko);
+        entry->GetValue((IInterface**)&vo);
 
-        String key = it->mFirst;
-        String value;
-        FAIL_RETURN(GetAsString(key, &value))
-        strTmp.Append(key);
-        strTmp.Append("=");
-        strTmp.Append(value);
+        sb.Append(Object::ToString(ko));
+        sb.Append("=");
+        sb.Append(Object::ToString(vo));
+        sb.Append(";");
     }
 
-    *str = strTmp;
+    sb.Append("}");
+    *str = sb.ToString();
     return NOERROR;
 }
 
@@ -732,11 +691,14 @@ ECode CContentValues::ReadFromParcel(
         return NOERROR;
     }
 
+    String key;
+    AutoPtr<IInterface> value;
+    AutoPtr<ICharSequence> ko;
     while (size > 0) {
-        String key;
         source->ReadString(&key);
-        AutoPtr<IInterface> value = ReadValue(source);
-        (*mValues)[key] = value;
+        value = ReadValue(source);
+        ko = CoreUtils::Convert(key);
+        mValues->Put(TO_IINTERFACE(ko), value);
         size--;
     }
 
@@ -750,21 +712,22 @@ AutoPtr<IInterface> CContentValues::ReadValue(
     source->ReadInt32(&type);
 
     switch (type) {
-    case VAL_NULL:
+    case VAL_NULL: {
         return NULL;
+    }
     case VAL_BYTE: {
         Int32 v;
         source->ReadInt32(&v);
         AutoPtr<IByte> obj;
         CByte::New((Byte)v, (IByte**)&obj);
-        return obj;
+        return TO_IINTERFACE(obj);
     }
     case VAL_STRING: {
         String v;
         source->ReadString(&v);
         AutoPtr<ICharSequence> obj;
         CString::New(v, (ICharSequence**)&obj);
-        return obj;
+        return TO_IINTERFACE(obj);
     }
     case VAL_INTEGER16: {
         Int32 v;
@@ -772,42 +735,42 @@ AutoPtr<IInterface> CContentValues::ReadValue(
         Int16 sv = (Int16)v;
         AutoPtr<IInteger16> obj;
         CInteger16::New(sv, (IInteger16**)&obj);
-        return obj;
+        return TO_IINTERFACE(obj);
     }
     case VAL_INTEGER32: {
         Int32 v;
         source->ReadInt32(&v);
         AutoPtr<IInteger32> obj;
         CInteger32::New(v, (IInteger32**)&obj);
-        return obj;
+        return TO_IINTERFACE(obj);
     }
     case VAL_INTEGER64: {
         Int64 v;
         source->ReadInt64(&v);
         AutoPtr<IInteger64> obj;
         CInteger64::New(v, (IInteger64**)&obj);
-        return obj;
+        return TO_IINTERFACE(obj);
     }
     case VAL_FLOAT: {
         Float v;
         source->ReadFloat(&v);
         AutoPtr<IFloat> obj;
         CFloat::New(v, (IFloat**)&obj);
-        return obj;
+        return TO_IINTERFACE(obj);
     }
     case VAL_DOUBLE: {
         Double v;
         source->ReadDouble(&v);
         AutoPtr<IDouble> obj;
         CDouble::New(v, (IDouble**)&obj);
-        return obj;
+        return TO_IINTERFACE(obj);
     }
     case VAL_BOOLEAN: {
         Int32 v;
         source->ReadInt32(&v);
         AutoPtr<IBoolean> obj;
         CBoolean::New(v == 1, (IBoolean**)&obj);
-        return obj;
+        return TO_IINTERFACE(obj);
     }
     case VAL_ARRAYOF: {
         AutoPtr<IArrayOf> array;
@@ -820,7 +783,18 @@ AutoPtr<IInterface> CContentValues::ReadValue(
             AutoPtr<IInterface> elem = ReadValue(source);
             array->Set(i, elem);
         }
-        return array;
+        return TO_IINTERFACE(array);
+    }
+    case VAL_ARRAYLIST: {
+        AutoPtr<IArrayList> list;
+        CArrayList::New((IArrayList**)&list);
+        Int32 size = 0;
+        source->ReadInt32(&size);
+        for (Int32 i = 0; i < size; ++i) {
+            AutoPtr<IInterface> elem = ReadValue(source);
+            list->Add(i, elem);
+        }
+        return TO_IINTERFACE(list);
     }
     default:
         Logger::D("CContentValues", "- Unmarshalling unknown type code %d", type);
@@ -832,17 +806,35 @@ AutoPtr<IInterface> CContentValues::ReadValue(
 ECode CContentValues::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    if (mValues->IsEmpty()) {
+    Boolean isEmpty;
+    if (mValues->IsEmpty(&isEmpty), isEmpty) {
         dest->WriteInt32(-1);
         return NOERROR;
     }
 
-    dest->WriteInt32(mValues->GetSize());
-    HashMap<String, AutoPtr<IInterface> >::Iterator it;
-    for (it = mValues->Begin(); it != mValues->End(); ++it) {
-        dest->WriteString(it->mFirst);
-        WriteValue(dest, it->mSecond);
+    Int32 size;
+    mValues->GetSize(&size);
+    dest->WriteInt32(size);
+
+
+    AutoPtr<ISet> entrySet;
+    mValues->GetEntrySet((ISet**)&entrySet);
+    AutoPtr<IIterator> it;
+    entrySet->GetIterator((IIterator**)&it);
+    Boolean hasNext;
+    IMapEntry* entry;
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        entry = IMapEntry::Probe(obj);
+        AutoPtr<IInterface> ko, vo;
+        entry->GetKey((IInterface**)&ko);
+        entry->GetValue((IInterface**)&vo);
+
+        dest->WriteString(Object::ToString(ko));
+        WriteValue(dest, vo);
     }
+
     return NOERROR;
 }
 
@@ -909,6 +901,18 @@ ECode CContentValues::WriteValue(
         InterfaceID iid;
         array->GetTypeId(&iid);
         dest->WriteEMuid(iid);
+        dest->WriteInt32(size);
+        for (Int32 i = 0; i < size; ++i) {
+            AutoPtr<IInterface> elem;
+            array->Get(i, (IInterface**)&elem);
+            WriteValue(dest, elem);
+        }
+    }
+    else if (IArrayList::Probe(obj) != NULL) {
+        AutoPtr<IArrayOf> array = IArrayOf::Probe(obj);
+        Int32 size = 0;
+        array->GetLength(&size);
+        dest->WriteInt32(VAL_ARRAYLIST);
         dest->WriteInt32(size);
         for (Int32 i = 0; i < size; ++i) {
             AutoPtr<IInterface> elem;

@@ -15,7 +15,7 @@ module
     namespace Content {
 
     [deprecated]
-    interface IContentService {
+    interface IIContentService {
         UnregisterContentObserver(
             [in] IIContentObserver* observer);
 
@@ -51,9 +51,30 @@ module
             [in] String authority,
             [in] IBundle* extras);
 
+        /**
+         * Start a sync given a request.
+         */
+        Sync(
+            [in] ISyncRequest* request);
+
+        SyncAsUser(
+            [in] ISyncRequest* request,
+            [in] Int32 userId);
+
         CancelSync(
             [in] IAccount* account,
-            [in] String authority);
+            [in] String authority,
+            [in] IComponentName* cname);
+
+        CancelSyncAsUser(
+            [in] IAccount* account,
+            [in] String authority,
+            [in] IComponentName* cname,
+            [in] Int32 userId);
+
+        /** Cancel a sync, providing information about the sync to be cancelled. */
+         CancelRequest(
+            [in] ISyncRequest* request);
 
         /**
          * Check if the provider should be synced when a network tickle is received
@@ -214,11 +235,13 @@ module
         IsSyncPending(
             [in] IAccount* account,
             [in] String authority,
+            [in] IComponentName* name,
             [out] Boolean* isPending);
 
-        IsSyncPending(
+        IsSyncPendingAsUser(
             [in] IAccount* account,
             [in] String authority,
+            [in] IComponentName* name,
             [in] Int32 userId,
             [out] Boolean* isPending);
 

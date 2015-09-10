@@ -12,6 +12,10 @@ Observable::Observable()
     : mChanged(FALSE)
 {}
 
+Observable::~Observable()
+{
+}
+
 ECode Observable::constructor()
 {
     AutoPtr<IArrayList> outlist;

@@ -8,7 +8,7 @@
 using Elastos::IO::IDataOutputStream;
 using Elastos::IO::IDataInputStream;
 using Elastos::Core::IRandom;
-using Elastos::Core::CRandom;
+using Elastos::Utility::CRandom;
 using Elastos::Droid::Internal::Utility::IIndentingPrintWriter;
 
 namespace Elastos {

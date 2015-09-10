@@ -580,7 +580,7 @@ module
             [in] Int32 modeFlags,
             [in] Int32 userId);
 
-        RleasePersistableUriPermission(
+        ReleasePersistableUriPermission(
             [in] IUri* uri,
             [in] Int32 modeFlags,
             [in] Int32 userId);

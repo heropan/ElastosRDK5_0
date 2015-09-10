@@ -2363,6 +2363,9 @@ EXPORTS
     _ZN7Elastos7Utility10Observable7ReleaseEv
     _ZN7Elastos7Utility10ObservableC1Ev
     _ZN7Elastos7Utility10ObservableC2Ev
+    _ZN7Elastos7Utility10ObservableD0Ev
+    _ZN7Elastos7Utility10ObservableD1Ev
+    _ZN7Elastos7Utility10ObservableD2Ev
     _ZThn12_N7Elastos7Utility10Observable14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
     _ZThn12_N7Elastos7Utility10Observable5ProbeERKNS_6_EMuidE
     _ZThn12_N7Elastos7Utility10Observable6AddRefEv

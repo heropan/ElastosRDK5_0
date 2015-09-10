@@ -6,13 +6,23 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
+CAR_INTERFACE_IMPL(CContentResolverOpenResourceIdResult, Object, IContentResolverOpenResourceIdResult)
+
+CAR_OBJECT_IMPL(CContentResolverOpenResourceIdResult)
+
 CContentResolverOpenResourceIdResult::CContentResolverOpenResourceIdResult()
     : mRes(NULL)
     , mId(0)
 {}
 
-CContentResolverOpenResourceIdResult::~CContentResolverOpenResourceIdResult()
-{}
+ECode CContentResolverOpenResourceIdResult::constructor(
+    /* [in] */ IResources* res,
+    /* [in] */ Int32 id)
+{
+    mRes = res;
+    mId = id;
+    return NOERROR;
+}
 
 ECode CContentResolverOpenResourceIdResult::GetResources(
     /* [out] */ IResources** resources)

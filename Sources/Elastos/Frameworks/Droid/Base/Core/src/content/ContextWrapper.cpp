@@ -9,13 +9,26 @@ ContextWrapper::ContextWrapper()
     : mBase(NULL)
 {}
 
-ContextWrapper::ContextWrapper(
-    /* [in] */ IContext* base)
-    : mBase(NULL)
-{}
-
 ContextWrapper::~ContextWrapper()
 {}
+
+ContextWrapper::constructor(
+    /* [in] */ IContext* base)
+{
+    mBase = base;
+}
+
+ECode ContextWrapper::AttachBaseContext(
+    /* [in] */ IContext* base)
+{
+    if (NULL != mBase) {
+        //throw new IllegalStateException("Base context already set");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+
+    mBase = base;
+    return NOERROR;
+}
 
 ECode ContextWrapper::GetBaseContext(
     /* [out] */ IContext** context)
@@ -29,42 +42,36 @@ ECode ContextWrapper::GetBaseContext(
 ECode ContextWrapper::GetAssets(
     /* [out] */ IAssetManager** assetManager)
 {
-    VALIDATE_NOT_NULL(assetManager)
     return mBase->GetAssets(assetManager);
 }
 
 ECode ContextWrapper::GetResources(
     /* [out] */ IResources** resources)
 {
-    VALIDATE_NOT_NULL(resources)
     return mBase->GetResources(resources);
 }
 
 ECode ContextWrapper::GetPackageManager(
     /* [out] */ IPackageManager** packageManager)
 {
-    VALIDATE_NOT_NULL(packageManager)
     return mBase->GetPackageManager(packageManager);
 }
 
 ECode ContextWrapper::GetContentResolver(
     /* [out] */ IContentResolver** resolver)
 {
-    VALIDATE_NOT_NULL(resolver)
     return mBase->GetContentResolver(resolver);
 }
 
 ECode ContextWrapper::GetMainLooper(
     /* [out] */ ILooper** looper)
 {
-    VALIDATE_NOT_NULL(looper)
     return mBase->GetMainLooper(looper);
 }
 
 ECode ContextWrapper::GetApplicationContext(
     /* [out] */ IContext** ctx)
 {
-    VALIDATE_NOT_NULL(ctx)
     return mBase->GetApplicationContext(ctx);
 }
 
@@ -77,49 +84,48 @@ ECode ContextWrapper::SetTheme(
 ECode ContextWrapper::GetThemeResId(
     /* [out] */ Int32* resId)
 {
-    VALIDATE_NOT_NULL(resId)
     return mBase->GetThemeResId(resId);
 }
 
 ECode ContextWrapper::GetTheme(
     /* [out] */ IResourcesTheme** theme)
 {
-    VALIDATE_NOT_NULL(theme)
     return mBase->GetTheme(theme);
 }
 
 ECode ContextWrapper::GetClassLoader(
     /* [out] */ IClassLoader** loader)
 {
-    VALIDATE_NOT_NULL(loader)
     return mBase->GetClassLoader(loader);
 }
 
 ECode ContextWrapper::GetPackageName(
     /* [out] */ String* packageName)
 {
-    VALIDATE_NOT_NULL(packageName)
     return mBase->GetPackageName(packageName);
+}
+
+ECode ContextWrapper::GetOpPackageName(
+    /* [out] */ String* packageName)
+{
+    return mBase->GetOpPackageName(packageName);
 }
 
 ECode ContextWrapper::GetApplicationInfo(
     /* [out] */ IApplicationInfo** info)
 {
-    VALIDATE_NOT_NULL(info)
     return mBase->GetApplicationInfo(info);
 }
 
 ECode ContextWrapper::GetPackageResourcePath(
     /* [out] */ String* path)
 {
-    VALIDATE_NOT_NULL(path)
     return mBase->GetPackageResourcePath(path);
 }
 
 ECode ContextWrapper::GetPackageCodePath(
     /* [out] */ String* codePath)
 {
-    VALIDATE_NOT_NULL(codePath)
     return mBase->GetPackageCodePath(codePath);
 }
 
@@ -127,7 +133,6 @@ ECode ContextWrapper::GetSharedPrefsFile(
     /* [in] */ const String& name,
     /* [out] */IFile** file)
 {
-    VALIDATE_NOT_NULL(file)
     return mBase->GetSharedPrefsFile(name, file);
 }
 
@@ -136,7 +141,6 @@ ECode ContextWrapper::GetSharedPreferences(
     /* [in] */ Int32 mode,
     /* [out] */ ISharedPreferences** prefs)
 {
-    VALIDATE_NOT_NULL(prefs)
     return mBase->GetSharedPreferences(name, mode, prefs);
 }
 
@@ -144,7 +148,6 @@ ECode ContextWrapper::OpenFileInput(
     /* [in] */ const String& name,
     /* [out] */ IFileInputStream** fileInputStream)
 {
-    VALIDATE_NOT_NULL(fileInputStream)
     return mBase->OpenFileInput(name, fileInputStream);
 }
 
@@ -153,7 +156,6 @@ ECode ContextWrapper::OpenFileOutput(
     /* [in] */ Int32 mode,
     /* [out] */ IFileOutputStream** fileOutputStream)
 {
-    VALIDATE_NOT_NULL(fileOutputStream)
     return mBase->OpenFileOutput(name, mode, fileOutputStream);
 }
 
@@ -161,7 +163,6 @@ ECode ContextWrapper::DeleteFile(
     /* [in] */ const String& name,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded)
     return mBase->DeleteFile(name, succeeded);
 }
 
@@ -169,51 +170,74 @@ ECode ContextWrapper::GetFileStreamPath(
     /* [in] */ const String& name,
     /* [out] */ IFile** file)
 {
-    VALIDATE_NOT_NULL(file)
     return mBase->GetFileStreamPath(name, file);
+}
+
+ECode ContextWrapper::GetFileList(
+    /* [out, callee] */ ArrayOf<String>** fileList)
+{
+    return mBase->GetFileList(fileList);
 }
 
 ECode ContextWrapper::GetFilesDir(
     /* [out] */ IFile** filesDir)
 {
-    VALIDATE_NOT_NULL(filesDir)
     return mBase->GetFilesDir(filesDir);
+}
+
+ECode ContextWrapper::GetNoBackupFilesDir(
+    /* [out] */ IFile** filesDir)
+{
+    return mBase->GetNoBackupFilesDir(filesDir);
 }
 
 ECode ContextWrapper::GetExternalFilesDir(
     /* [in] */ const String& type,
     /* [out] */ IFile** filesDir)
 {
-    VALIDATE_NOT_NULL(filesDir)
     return mBase->GetExternalFilesDir(type, filesDir);
+}
+
+ECode ContextWrapper::GetExternalFilesDirs(
+    /* [out, callee] */ ArrayOf<String>** fileList)
+{
+    return mBase->GetExternalFilesDirs(fileList);
 }
 
 ECode ContextWrapper::GetObbDir(
     /* [out] */ IFile** obbDir)
 {
-    VALIDATE_NOT_NULL(obbDir)
     return mBase->GetObbDir(obbDir);
+}
+
+ECode ContextWrapper::GetObbDirs(
+    /* [out, callee] */ ArrayOf<String>** fileList)
+{
+    return mBase->GetObbDirs(fileList);
 }
 
 ECode ContextWrapper::GetCacheDir(
     /* [out] */ IFile** cacheDir)
 {
-    VALIDATE_NOT_NULL(cacheDir)
     return mBase->GetCacheDir(cacheDir);
+}
+
+ECode ContextWrapper::GetCodeCacheDir(
+    /* [out] */ IFile** cacheDir)
+{
+    return mBase->GetCodeCacheDir(cacheDir);
 }
 
 ECode ContextWrapper::GetExternalCacheDir(
     /* [out] */ IFile** externalDir)
 {
-    VALIDATE_NOT_NULL(externalDir)
     return mBase->GetExternalCacheDir(externalDir);
 }
 
-ECode ContextWrapper::GetFileList(
+ECode ContextWrapper::GetExternalCacheDirs(
     /* [out, callee] */ ArrayOf<String>** fileList)
 {
-    VALIDATE_NOT_NULL(fileList)
-    return mBase->GetFileList(fileList);
+    return mBase->GetExternalCacheDirs(fileList);
 }
 
 ECode ContextWrapper::GetDir(
@@ -231,7 +255,6 @@ ECode ContextWrapper::OpenOrCreateDatabase(
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
     /* [out] */ ISQLiteDatabase** sqliteDB)
 {
-    VALIDATE_NOT_NULL(sqliteDB)
     return mBase->OpenOrCreateDatabase(name, mode, factory, sqliteDB);
 }
 
@@ -242,7 +265,6 @@ ECode ContextWrapper::OpenOrCreateDatabase(
     /* [in] */ IDatabaseErrorHandler* errorHandler,
     /* [out] */ ISQLiteDatabase** sqliteDB)
 {
-    VALIDATE_NOT_NULL(sqliteDB)
     return mBase->OpenOrCreateDatabase(name, mode, factory, errorHandler, sqliteDB);
 }
 
@@ -250,7 +272,6 @@ ECode ContextWrapper::DeleteDatabase(
     /* [in] */ const String& name,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded)
     return mBase->DeleteDatabase(name, succeeded);
 }
 
@@ -258,42 +279,36 @@ ECode ContextWrapper::GetDatabasePath(
     /* [in] */ const String& name,
     /* [out] */ IFile** path)
 {
-    VALIDATE_NOT_NULL(path)
     return mBase->GetDatabasePath(name, path);
 }
 
 ECode ContextWrapper::GetDatabaseList(
     /* [out, callee] */ ArrayOf<String>** databaseList)
 {
-    VALIDATE_NOT_NULL(databaseList)
     return mBase->GetDatabaseList(databaseList);
 }
 
 ECode ContextWrapper::GetWallpaper(
     /* [out] */ IDrawable** drawable)
 {
-    VALIDATE_NOT_NULL(drawable)
     return mBase->GetWallpaper(drawable);
 }
 
 ECode ContextWrapper::PeekWallpaper(
     /* [out] */ IDrawable** drawable)
 {
-    VALIDATE_NOT_NULL(drawable)
     return mBase->PeekWallpaper(drawable);
 }
 
 ECode ContextWrapper::GetWallpaperDesiredMinimumWidth(
     /* [out] */ Int32* minWidth)
 {
-    VALIDATE_NOT_NULL(minWidth)
     return mBase->GetWallpaperDesiredMinimumWidth(minWidth);
 }
 
 ECode ContextWrapper::GetWallpaperDesiredMinimumHeight(
     /* [out] */ Int32* minHeight)
 {
-    VALIDATE_NOT_NULL(minHeight)
     return mBase->GetWallpaperDesiredMinimumHeight(minHeight);
 }
 
@@ -397,6 +412,14 @@ ECode ContextWrapper::SendBroadcast(
     return mBase->SendBroadcast(intent, receiverPermission);
 }
 
+ECode ContextWrapper::SendBroadcast(
+    /* [in] */ IIntent* intent,
+    /* [in] */ const String& receiverPermission,
+    /* [in] */ Int32 appOp)
+{
+    return mBase->SendBroadcast(intent, receiverPermission, appOp);
+}
+
 ECode ContextWrapper::SendOrderedBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission)
@@ -414,6 +437,20 @@ ECode ContextWrapper::SendOrderedBroadcast(
     /* [in] */ IBundle* initialExtras)
 {
     return mBase->SendOrderedBroadcast(intent, receiverPermission, resultReceiver, scheduler,
+        initialCode, initialData, initialExtras);
+}
+
+ECode ContextWrapper::SendOrderedBroadcast(
+    /* [in] */ IIntent* intent,
+    /* [in] */ const String& receiverPermission,
+    /* [in] */ Int32 appOp,
+    /* [in] */ IBroadcastReceiver* resultReceiver,
+    /* [in] */ IHandler* scheduler,
+    /* [in] */ Int32 initialCode,
+    /* [in] */ const String& initialData,
+    /* [in] */ IBundle* initialExtras)
+{
+    return mBase->SendOrderedBroadcast(intent, receiverPermission, appOp, resultReceiver, scheduler,
         initialCode, initialData, initialExtras);
 }
 
@@ -444,6 +481,21 @@ ECode ContextWrapper::SendOrderedBroadcastAsUser(
 {
     return mBase->SendOrderedBroadcastAsUser(intent, user, receiverPermission, resultReceiver, scheduler,
         initialCode, initialData, initialExtras);
+}
+
+ECode ContextWrapper::SendOrderedBroadcastAsUser(
+    /* [in] */ IIntent* intent,
+    /* [in] */ IUserHandle* user,
+    /* [in] */ const String& receiverPermission,
+    /* [in] */ Int32 appOp,
+    /* [in] */ IBroadcastReceiver* resultReceiver,
+    /* [in] */ IHandler* scheduler,
+    /* [in] */ Int32 initialCode,
+    /* [in] */ const String& initialData,
+    /* [in] */ IBundle* initialExtras)
+{
+    return mBase->SendOrderedBroadcastAsUser(intent, user, receiverPermission, appOp,
+        resultReceiver, scheduler, initialCode, initialData, initialExtras);
 }
 
 ECode ContextWrapper::SendStickyBroadcast(
@@ -539,7 +591,6 @@ ECode ContextWrapper::StartService(
     /* [in] */ IIntent* service,
     /* [out] */ IComponentName** name)
 {
-    VALIDATE_NOT_NULL(name)
     return mBase->StartService(service, name);
 }
 
@@ -547,7 +598,6 @@ ECode ContextWrapper::StopService(
     /* [in] */ IIntent* service,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded)
     return mBase->StopService(service, succeeded);
 }
 
@@ -556,7 +606,6 @@ ECode ContextWrapper::StartServiceAsUser(
     /* [in] */ IUserHandle* user,
     /* [out] */ IComponentName** name)
 {
-    VALIDATE_NOT_NULL(name)
     return mBase->StartServiceAsUser(service, user, name);
 }
 
@@ -565,7 +614,6 @@ ECode ContextWrapper::StopServiceAsUser(
     /* [in] */ IUserHandle* user,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded)
     return mBase->StopServiceAsUser(service, user, succeeded);
 }
 
@@ -575,19 +623,17 @@ ECode ContextWrapper::BindService(
     /* [in] */ Int32 flags,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded)
     return mBase->BindService(service, conn, flags, succeeded);
 }
 
-ECode ContextWrapper::BindService(
+ECode ContextWrapper::BindServiceAsUser(
     /* [in] */ IIntent* service,
     /* [in] */ IServiceConnection* conn,
     /* [in] */ Int32 flags,
     /* [in] */ Int32 userHandle,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded)
-    return mBase->BindService(service, conn, flags, userHandle, succeeded);
+    return mBase->BindServiceAsUser(service, conn, flags, userHandle, succeeded);
 }
 
 ECode ContextWrapper::UnbindService(
@@ -602,7 +648,6 @@ ECode ContextWrapper::StartInstrumentation(
     /* [in] */ IBundle* arguments,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded)
     return mBase->StartInstrumentation(className, profileFile, arguments, succeeded);
 }
 
@@ -610,7 +655,6 @@ ECode ContextWrapper::GetSystemService(
     /* [in] */ const String& name,
     /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(object)
     return mBase->GetSystemService(name, object);
 }
 
@@ -620,7 +664,6 @@ ECode ContextWrapper::CheckPermission(
     /* [in] */ Int32 uid,
     /* [out] */ Int32* permissionId)
 {
-    VALIDATE_NOT_NULL(permissionId)
     return mBase->CheckPermission(permission, pid, uid, permissionId);
 }
 
@@ -628,7 +671,6 @@ ECode ContextWrapper::CheckCallingPermission(
     /* [in] */ const String& permission,
     /* [out] */ Int32* permissionId)
 {
-    VALIDATE_NOT_NULL(permissionId)
     return mBase->CheckCallingPermission(permission, permissionId);
 }
 
@@ -636,7 +678,6 @@ ECode ContextWrapper::CheckCallingOrSelfPermission(
     /* [in] */ const String& permission,
     /* [out] */ Int32* permissionId)
 {
-    VALIDATE_NOT_NULL(permissionId)
     return mBase->CheckCallingOrSelfPermission(permission, permissionId);
 }
 
@@ -685,7 +726,6 @@ ECode ContextWrapper::CheckUriPermission(
     /* [in] */ Int32 modeFlags,
     /* [out] */ Int32* permissionId)
 {
-    VALIDATE_NOT_NULL(permissionId)
     return mBase->CheckUriPermission(uri, pid, uid, modeFlags, permissionId);
 }
 
@@ -694,7 +734,6 @@ ECode ContextWrapper::CheckCallingUriPermission(
     /* [in] */ Int32 modeFlags,
     /* [out] */ Int32* permissionId)
 {
-    VALIDATE_NOT_NULL(permissionId)
     return mBase->CheckCallingUriPermission(uri, modeFlags, permissionId);
 }
 
@@ -703,7 +742,6 @@ ECode ContextWrapper::CheckCallingOrSelfUriPermission(
     /* [in] */ Int32 modeFlags,
     /* [out] */ Int32* permissionId)
 {
-    VALIDATE_NOT_NULL(permissionId)
     return mBase->CheckCallingOrSelfUriPermission(uri, modeFlags, permissionId);
 }
 
@@ -716,7 +754,6 @@ ECode ContextWrapper::CheckUriPermission(
     /* [in] */ Int32 modeFlags,
     /* [out] */ Int32* permissionId)
 {
-    VALIDATE_NOT_NULL(permissionId)
     return mBase->CheckUriPermission(uri, readPermission, writePermission, pid, uid, modeFlags, permissionId);
 }
 
@@ -763,7 +800,6 @@ ECode ContextWrapper::CreatePackageContext(
     /* [in] */ Int32 flags,
     /* [out] */ IContext** ctx)
 {
-    VALIDATE_NOT_NULL(ctx)
     return mBase->CreatePackageContext(packageName, flags, ctx);
 }
 
@@ -773,15 +809,27 @@ ECode ContextWrapper::CreatePackageContextAsUser(
     /* [in] */ IUserHandle* user,
     /* [out] */ IContext** ctx)
 {
-    VALIDATE_NOT_NULL(ctx)
     return mBase->CreatePackageContextAsUser(packageName, flags, user, ctx);
+}
+
+ECode ContextWrapper::CreateApplicationContext(
+    /* [in] */ IApplicationInfo* application,
+    /* [in] */ Int32 flags,
+    /* [out] */ IContext** ctx)
+{
+    return mBase->CreateApplicationContext(application, flags, ctx);
+}
+
+ECode ContextWrapper::GetUserId(
+    /* [out] */ Int32* userId)
+{
+    return mBase->GetUserId(userId);
 }
 
 ECode ContextWrapper::CreateConfigurationContext(
     /* [in] */ IConfiguration* overrideConfiguration,
     /* [out] */ IContext** ctx)
 {
-    VALIDATE_NOT_NULL(ctx)
     return mBase->CreateConfigurationContext(overrideConfiguration, ctx);
 }
 
@@ -789,16 +837,7 @@ ECode ContextWrapper::CreateDisplayContext(
     /* [in] */ IDisplay* display,
     /* [out] */ IContext** ctx)
 {
-    VALIDATE_NOT_NULL(ctx)
     return mBase->CreateDisplayContext(display, ctx);
-}
-
-ECode ContextWrapper::GetCompatibilityInfo(
-    /* [in] */ Int32 displayId,
-    /* [out] */ ICompatibilityInfoHolder** infoHolder)
-{
-    VALIDATE_NOT_NULL(infoHolder)
-    return mBase->GetCompatibilityInfo(displayId, infoHolder);
 }
 
 ECode ContextWrapper::IsRestricted(
@@ -808,23 +847,12 @@ ECode ContextWrapper::IsRestricted(
     return mBase->IsRestricted(isRestricted);
 }
 
-ECode ContextWrapper::Init(
-    /* [in] */ IContext* context)
+ECode ContextWrapper::GetDisplayAdjustments(
+    /* [in] */ Int32 displayId,
+    /* [out] */ IDisplayAdjustments** da)
 {
-    mBase = context;
-    return NOERROR;
-}
-
-ECode ContextWrapper::AttachBaseContext(
-    /* [in] */ IContext* base)
-{
-    if (NULL != mBase) {
-        //throw new IllegalStateException("Base context already set");
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    mBase = base;
-    return NOERROR;
+    VALIDATE_NOT_NULL(da)
+    return mBase->GetDisplayAdjustments(displayId, da);
 }
 
 }

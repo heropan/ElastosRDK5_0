@@ -1,17 +1,14 @@
 
 #include "content/CContentResolverHelper.h"
+#include "content/ContentResolver.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
-ECode CContentResolverHelper::ModeToMode(
-    /* [in] */ IUri* uri,
-    /* [in] */ const String& mode,
-    /* [out] */ Int32* modeBits)
-{
-    return ContentResolver::ModeToMode(uri, mode, modeBits);
-}
+CAR_INTERFACE_IMPL(CContentResolverHelper, Singleton, IContentResolverHelper)
+
+CAR_SINGLETON_IMPL(CContentResolverHelper)
 
 ECode CContentResolverHelper::RequestSync(
     /* [in] */ IAccount* account,
@@ -19,6 +16,12 @@ ECode CContentResolverHelper::RequestSync(
     /* [in] */ IBundle* extras)
 {
     return ContentResolver::RequestSync(account, authority, extras);
+}
+
+ECode CContentResolverHelper::RequestSync(
+    /* [in] */ ISyncRequest* request)
+{
+    return ContentResolver::RequestSync(request);
 }
 
 ECode CContentResolverHelper::ValidateSyncExtrasBundle(
@@ -65,6 +68,12 @@ ECode CContentResolverHelper::AddPeriodicSync(
     return ContentResolver::AddPeriodicSync(account, authority, extras, pollFrequency);
 }
 
+ECode CContentResolverHelper::CancelSync(
+    /* [in] */ ISyncRequest* request)
+{
+    return ContentResolver::CancelSync(request);
+}
+
 ECode CContentResolverHelper::RemovePeriodicSync(
     /* [in] */ IAccount* account,
     /* [in] */ const String& authority,
@@ -76,7 +85,7 @@ ECode CContentResolverHelper::RemovePeriodicSync(
 ECode CContentResolverHelper::GetPeriodicSyncs(
     /* [in] */ IAccount* account,
     /* [in] */ const String& authority,
-    /* [out] */ IObjectContainer** periodicSyncs)
+    /* [out] */ IList** periodicSyncs)
 {
     return ContentResolver::GetPeriodicSyncs(account, authority, periodicSyncs);
 }
@@ -124,7 +133,7 @@ ECode CContentResolverHelper::GetCurrentSync(
 }
 
 ECode CContentResolverHelper::GetCurrentSyncs(
-    /* [out] */ IObjectContainer** syncInfoList)
+    /* [out] */ IList** syncInfoList)
 {
     return ContentResolver::GetCurrentSyncs(syncInfoList);
 }
@@ -160,7 +169,7 @@ ECode CContentResolverHelper::RemoveStatusChangeListener(
 }
 
 ECode CContentResolverHelper::GetContentService(
-    /* [out] */ IContentService** contentService)
+    /* [out] */ IIContentService** contentService)
 {
     return ContentResolver::GetContentService(contentService);
 }

@@ -10,14 +10,16 @@ namespace Content {
 
 CAR_INTERFACE_IMPL(CContentUris, Object, IContentUris)
 
-CAR_OBJECT_IMPL(CContentUris)
+CAR_SINGLETON_IMPL(CContentUris)
 
 ECode CContentUris::ParseId(
     /* [in] */ IUri* contentUri,
     /* [out] */ Int64* id)
 {
-    VALIDATE_NOT_NULL(contentUri)
     VALIDATE_NOT_NULL(id)
+    *id = -1;
+    VALIDATE_NOT_NULL(contentUri)
+
     String last;
     FAIL_RETURN(contentUri->GetLastPathSegment(&last));
     if (last.IsNull()) {

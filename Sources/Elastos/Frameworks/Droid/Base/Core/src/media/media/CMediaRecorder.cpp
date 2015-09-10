@@ -36,7 +36,7 @@ using Elastos::IO::CFileOutputStream;
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
 using Elastos::Core::IRandom;
-using Elastos::Core::CRandom;
+using Elastos::Utility::CRandom;
 using Elastos::Core::StringBuilder;
 
 namespace Elastos {

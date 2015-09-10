@@ -3,28 +3,33 @@
 #define __ELASTOS_DROID_CONTENT_CCONTENTRESOLVERHELPER_H__
 
 #include "_Elastos_Droid_Content_CContentResolverHelper.h"
-#include "ContentResolver.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Accounts::IAccount;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CContentResolverHelper)
+    , public Singleton
+    , public IContentResolverHelper
 {
 public:
-    CARAPI ModeToMode(
-        /* [in] */ IUri* uri,
-        /* [in] */ const String& mode,
-        /* [out] */ Int32* modeBits);
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     CARAPI RequestSync(
         /* [in] */ IAccount* account,
         /* [in] */ const String& authority,
         /* [in] */ IBundle* extras);
+
+    CARAPI RequestSync(
+        /* [in] */ ISyncRequest* request);
 
     CARAPI ValidateSyncExtrasBundle(
         /* [in] */ IBundle* extras);
@@ -57,10 +62,13 @@ public:
         /* [in] */ const String& authority,
         /* [in] */ IBundle* extras);
 
+    CARAPI CancelSync(
+        /* [in] */  ISyncRequest* request);
+
     CARAPI GetPeriodicSyncs(
         /* [in] */ IAccount* account,
         /* [in] */ const String& authority,
-        /* [out] */ IObjectContainer** periodicSyncs);
+        /* [out] */ IList** periodicSyncs);
 
     CARAPI GetIsSyncable(
         /* [in] */ IAccount* account,
@@ -87,7 +95,7 @@ public:
         /* [out] */ ISyncInfo** syncInfo);
 
     CARAPI GetCurrentSyncs(
-        /* [out] */ IObjectContainer** syncInfoList);
+        /* [out] */ IList** syncInfoList);
 
     CARAPI GetSyncStatus(
         /* [in] */ IAccount* account,
@@ -108,10 +116,7 @@ public:
         /* [in] */ IInterface* handle);
 
     CARAPI GetContentService(
-        /* [out] */ IContentService** contentService);
-
-private:
-    // TODO: Add your private member variables here.
+        /* [out] */ IIContentService** contentService);
 };
 
 }

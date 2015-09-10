@@ -2,20 +2,28 @@
 #include "content/CContentQueryMap.h"
 #include "content/CContentValues.h"
 #include "os/CHandler.h"
+#include <elastos/core/CoreUtils.h>
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Os::CHandler;
 
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
+using Elastos::Utility::CHashMap;
 using Elastos::Utility::IObservable;
 using Elastos::Utility::EIID_IObservable;
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
+using Elastos::Core::CoreUtils;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
+//=========================================================================
+// CContentQueryMap::KeepUpdatedContentObserver
+//=========================================================================
 CContentQueryMap::KeepUpdatedContentObserver::KeepUpdatedContentObserver(
     /* [in] */ IHandler* handler,
     /* [in] */ IWeakReference* host)
@@ -51,6 +59,9 @@ ECode CContentQueryMap::KeepUpdatedContentObserver::OnChange(
     return NOERROR;
 }
 
+//=========================================================================
+// CContentQueryMap
+//=========================================================================
 CAR_INTERFACE_IMPL(CContentQueryMap, Observable, IContentQueryMap)
 
 CAR_OBJECT_IMPL(CContentQueryMap)
@@ -59,7 +70,6 @@ CContentQueryMap::CContentQueryMap()
     : mKeyColumn(0)
     , mKeepUpdated(FALSE)
     , mDirty(FALSE)
-    , mChanged(FALSE)
 {}
 
 CContentQueryMap::~CContentQueryMap()
@@ -107,8 +117,9 @@ ECode CContentQueryMap::SetKeepUpdated(
         if (NULL == mContentObserver) {
             AutoPtr<IWeakReference> wr;
             GetWeakReference((IWeakReference**)&wr);
-            mContentObserver = new KeepUpdatedContentObserver(
-                mHandlerForUpdateNotifications, wr);
+            assert(0 && "TODO");
+            // mContentObserver = new KeepUpdatedContentObserver(
+            //     mHandlerForUpdateNotifications, wr);
         }
         FAIL_RETURN(mCursor->RegisterContentObserver(mContentObserver))
         // mark dirty, since it is possible the cursor's backing data had changed before we
@@ -221,7 +232,7 @@ ECode CContentQueryMap::Close()
         FAIL_RETURN(mCursor->UnregisterContentObserver(mContentObserver))
         mContentObserver = NULL;
     }
-    FAIL_RETURN(ICloseable(mCursor)->Close())
+    FAIL_RETURN(ICloseable::Probe(mCursor)->Close())
     mCursor = NULL;
     return NOERROR;
 }

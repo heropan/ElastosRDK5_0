@@ -4,7 +4,6 @@
 
 #include "_Elastos_Droid_Content_CContentValues.h"
 #include <elastos/core/Object.h>
-#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IByte;
@@ -16,7 +15,8 @@ using Elastos::Core::IDouble;
 using Elastos::Core::IBoolean;
 using Elastos::Core::IArrayOf;
 using Elastos::Utility::ISet;
-using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -59,18 +59,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ IContentValues* from);
-
-private:
-
-    /**
-     * Creates a set of values copied from the given HashMap. This is used
-     * by the Parcel unmarshalling code.
-     *
-     * @param values the values to start with
-     * {@hide}
-     */
-    CARAPI constructor(
-        /* [in] */ HashMap<String, AutoPtr<IInterface> >* values);
 
 public:
     CARAPI Equals(
@@ -371,8 +359,23 @@ public:
     CARAPI GetKeySet(
         /* [out] */ ISet** values);
 
-    CARAPI GetKeySet(
-        /* [out, callee] */ ArrayOf<String>** value);
+    /**
+     * Unsupported, here until we get proper bulk insert APIs.
+     * {@hide}
+     */
+    CARAPI PutStringArrayList(
+        /* [in] */ const String& key,
+        /* [in] */ IArrayList* value);
+
+    /**
+     * Unsupported, here until we get proper bulk insert APIs.
+     * {@hide}
+     */
+    //@SuppressWarnings("unchecked")
+    //@Deprecated
+    CARAPI GetStringArrayList(
+        /* [in] */ const String& key,
+        /* [out] */ IArrayList** value);
 
     /**
      * Returns a string containing a concise, human-readable description of this object.
@@ -406,13 +409,15 @@ private:
     static const Int32 VAL_DOUBLE = 6;
     static const Int32 VAL_BOOLEAN = 7;
     static const Int32 VAL_ARRAYOF = 8;
+    static const Int32 VAL_ARRAYLIST = 9;
 
 public:
     static const String TAG;
 
 private:
     /** Holds the actual values */
-    AutoPtr< HashMap<String, AutoPtr<IInterface> > > mValues;
+    //AutoPtr< HashMap<String, AutoPtr<IInterface> > > mValues;
+    AutoPtr<IHashMap> mValues;
 };
 
 }

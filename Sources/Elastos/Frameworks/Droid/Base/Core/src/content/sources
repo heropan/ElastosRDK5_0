@@ -31,20 +31,23 @@ SOURCES += CContentProviderOperation.cpp
 SOURCES += CContentProviderOperationBuilder.cpp
 SOURCES += CContentProviderOperationHelper.cpp
 SOURCES += CContentProviderResult.cpp
-#SOURCES += CContentQueryMap.cpp
+SOURCES += CContentQueryMap.cpp
+SOURCES += ContentResolver.cpp
+SOURCES += CContentResolverHelper.cpp
+SOURCES += CContentResolverOpenResourceIdResult.cpp
+SOURCES += CContentUris.cpp
+SOURCES += CContentValues.cpp
+SOURCES += Context.cpp
+#SOURCES += ContextWrapper.cpp
+#SOURCES += CContextWrapper.cpp
+
 
 SOURCES += Loader.cpp
 
 #SOURCES += CLoaderForceLoadContentObserver.cpp
 
 
-#SOURCES += ContentResolver.cpp
-#SOURCES += CContentResolverHelper.cpp
-#SOURCES += CContentResolverOpenResourceIdResult.cpp
-#SOURCES += CContentUris.cpp
-SOURCES += CContentValues.cpp
-#SOURCES += ContextWrapper.cpp
-#SOURCES += CContextWrapper.cpp
+
 #SOURCES += CCursorLoader.cpp
 #SOURCES += CEntity.cpp
 #SOURCES += CEntityNamedContentValues.cpp

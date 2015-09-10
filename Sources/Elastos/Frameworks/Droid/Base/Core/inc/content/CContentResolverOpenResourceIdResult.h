@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CCONTENTRESOLVEROPENRESOURCEIDRESULT_H__
 
 #include "_Elastos_Droid_Content_CContentResolverOpenResourceIdResult.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::Res::IResources;
 
@@ -11,11 +12,19 @@ namespace Droid {
 namespace Content {
 
 CarClass(CContentResolverOpenResourceIdResult)
+    , public Object
+    , public IContentResolverOpenResourceIdResult
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CContentResolverOpenResourceIdResult();
 
-    ~CContentResolverOpenResourceIdResult();
+    CARAPI constructor(
+        /* [in] */ IResources* res,
+        /* [in] */ Int32 id);
 
     CARAPI GetResources(
         /* [out] */ IResources** resources);

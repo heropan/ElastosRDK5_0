@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CCONTENTQUERYMAP_H__
 
 #include "_Elastos_Droid_Content_CContentQueryMap.h"
-#include <elastos/core/Observable.h>
+#include <elastos/utility/Observable.h>
 //#include "database/ContentObserver.h"
 
 using Elastos::Droid::Database::ICursor;
@@ -75,6 +75,7 @@ public:
 
 public:
     class KeepUpdatedContentObserver
+        : public Object
         //: public ContentObserver
     {
     public:

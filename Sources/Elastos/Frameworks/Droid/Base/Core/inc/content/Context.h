@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CONTEXT_H__
 #define __ELASTOS_DROID_CONTENT_CONTEXT_H__
 
+#include "ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::ILooper;
@@ -9,8 +10,8 @@ using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Graphics::IBitmap;
-using Elastos::Droid::Graphics::IDisplay;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::IDisplayAdjustments;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Content::Res::IAssetManager;
@@ -20,14 +21,13 @@ using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Net::IUri;
-using Elastos::Droid::App::ISharedPreferences;
-using Elastos::Droid::App::IServiceConnection;
 using Elastos::Droid::Database::IDatabaseErrorHandler;
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabaseCursorFactory;
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
 using Elastos::Droid::Utility::IAttributeSet;
 
 using Elastos::Core::ICharSequence;
+using Elastos::Core::IClassLoader;
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IFileInputStream;

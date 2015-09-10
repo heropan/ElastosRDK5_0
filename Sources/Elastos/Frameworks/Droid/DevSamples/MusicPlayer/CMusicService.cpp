@@ -21,7 +21,7 @@
 #include <elastos/core/StringBuilder.h>
 #include <dirent.h>
 
-using Elastos::Core::CRandom;
+using Elastos::Utility::CRandom;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::IRandom;

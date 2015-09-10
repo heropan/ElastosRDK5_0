@@ -20,7 +20,7 @@ using Elastos::IO::CFileWriter;
 using Elastos::IO::IBufferedReader;
 using Elastos::IO::IFileReader;
 using Elastos::Core::ISystem;
-using Elastos::Core::CRandom;
+using Elastos::Utility::CRandom;
 using Elastos::Core::Math;
 using Elastos::Core::CObjectContainer;
 using Elastos::Core::StringBuilder;

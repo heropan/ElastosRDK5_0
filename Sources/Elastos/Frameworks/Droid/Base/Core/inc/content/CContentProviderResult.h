@@ -25,6 +25,18 @@ public:
 
     virtual ~CContentProviderResult();
 
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ IUri* uri);
+
+    CARAPI constructor(
+        /* [in] */ Int32 count);
+
+    CARAPI constructor(
+        /* [in] */ IContentProviderResult* cpr,
+        /* [in] */ Int32 userId);
+
     CARAPI GetUri(
         /* [out] */ IUri** uri);
 
@@ -45,15 +57,6 @@ public:
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ IUri* uri);
-
-    CARAPI constructor(
-        /* [in] */ Int32 count);
-
 private:
     AutoPtr<IUri> mUri;
     Int32 mCount;

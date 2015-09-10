@@ -9,7 +9,7 @@
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/Math.h>
 
-using Elastos::Core::CRandom;
+using Elastos::Utility::CRandom;
 using Elastos::Core::IRandom;
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Content::IContext;

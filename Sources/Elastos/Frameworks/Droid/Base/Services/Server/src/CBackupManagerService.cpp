@@ -14,7 +14,7 @@
 #include <elastos/core/StringUtils.h>
 #include "CActiveRestoreSession.h"
 
-using Elastos::Core::CRandom;
+using Elastos::Utility::CRandom;
 using Elastos::Core::IStringBuilder;
 using Elastos::Core::EIID_IStringBuilder;
 using Elastos::Core::StringBuilder;

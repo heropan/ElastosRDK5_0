@@ -1102,6 +1102,17 @@ public:
         /* [in] */ IUri* uri,
         /* [in] */ Int32 userId);
 
+    static CARAPI_(Int32) GetUserIdFromAuthority(
+        /* [in] */ const String& auth,
+        /* [in] */ Int32 defaultUserId);
+
+    static CARAPI_(Int32) GetUserIdFromUri(
+        /* [in] */ IUri* uri,
+        /* [in] */ Int32 defaultUserId);
+
+    static CARAPI_(Int32) GetUserIdFromUri(
+        /* [in] */ IUri* uri);
+
 protected:
 
     /** {@hide} */
@@ -1186,17 +1197,6 @@ protected:
         /* [in] */ Boolean fortesting);
 
     CARAPI ValidateIncomingUri(
-        /* [in] */ IUri* uri);
-
-    static CARAPI_(Int32) GetUserIdFromAuthority(
-        /* [in] */ const String& auth,
-        /* [in] */ Int32 defaultUserId);
-
-    static CARAPI_(Int32) GetUserIdFromUri(
-        /* [in] */ IUri* uri,
-        /* [in] */ Int32 defaultUserId);
-
-    static CARAPI_(Int32) GetUserIdFromUri(
         /* [in] */ IUri* uri);
 
     CARAPI_(String) GetTlsCallingPackage();

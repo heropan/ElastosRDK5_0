@@ -2,35 +2,28 @@
 #ifndef __ELASTOS_DROID_CONTENT_CONTEXTWRAPPER_H__
 #define __ELASTOS_DROID_CONTENT_CONTEXTWRAPPER_H__
 
-#include "ext/frameworkdef.h"
-#include "Context.h"
-
-using Elastos::Core::IClassLoader;
-using namespace Elastos::IO;
-using namespace Elastos::Droid::Database;
-using namespace Elastos::Droid::Graphics;
-using namespace Elastos::Droid::View;
-using namespace Elastos::Droid::Os;
-using namespace Elastos::Droid::Utility;
-using namespace Elastos::Droid::Content::Pm;
-using namespace Elastos::Droid::Content::Res;
-using namespace Elastos::Droid::Database::Sqlite;
-using namespace Elastos::Droid::Graphics::Drawable;
+#include "content/Context.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
-class ContextWrapper: public Context
+/**
+ * Proxying implementation of Context that simply delegates all of its calls to
+ * another Context.  Can be subclassed to modify behavior without changing
+ * the original Context.
+ */
+class ContextWrapper
+    : public Context
+    , public IContextWrapper
 {
-
 public:
     ContextWrapper();
 
-    ContextWrapper(
-        /* [in] */ IContext* base);
+    virtual ~ContextWrapper();
 
-    ~ContextWrapper();
+    CARAPI constructor(
+        /* [in] */ IContext* base);
 
     /**
      * @return the base context as set by the constructor or setBaseContext
@@ -71,6 +64,12 @@ public:
     CARAPI GetPackageName(
         /* [out] */ String* packageName);
 
+    CARAPI GetBasePackageName(
+        /* [out] */ String* packageName);
+
+    CARAPI GetOpPackageName(
+        /* [out] */ String* packageName);
+
     CARAPI GetApplicationInfo(
         /* [out] */ IApplicationInfo** info);
 
@@ -106,15 +105,28 @@ public:
         /* [in] */ const String& name,
         /* [out] */ IFile** file);
 
+    CARAPI GetFileList(
+        /* [out, callee] */ ArrayOf<IFile*>** filesDir);
+
     CARAPI GetFilesDir(
+        /* [out] */ IFile** filesDir);
+
+    CARAPI GetNoBackupFilesDir(
         /* [out] */ IFile** filesDir);
 
     CARAPI GetExternalFilesDir(
         /* [in] */ const String& type,
         /* [out] */ IFile** filesDir);
 
+    CARAPI GetExternalFilesDirs(
+        /* [in] */ const String& type,
+        /* [out, callee] */ ArrayOf<IFile*>** filesDir);
+
     CARAPI GetObbDir(
         /* [out] */ IFile** obbDir);
+
+    CARAPI GetObbDirs(
+        /* [out, callee] */ ArrayOf<IFile*>** filesDir);
 
     CARAPI GetCacheDir(
         /* [out] */ IFile** cacheDir);
@@ -122,8 +134,11 @@ public:
     CARAPI GetExternalCacheDir(
         /* [out] */ IFile** externalDir);
 
-    CARAPI GetFileList(
-        /* [out, callee] */ ArrayOf<String>** fileList);
+    CARAPI GetExternalCacheDirs(
+        /* [out, callee] */ ArrayOf<IFile*>** filesDir);
+
+    CARAPI GetExternalMediaDirs(
+        /* [out, callee] */ ArrayOf<IFile*>** filesDir);
 
     CARAPI GetDir(
         /* [in] */ const String& name,
@@ -222,6 +237,11 @@ public:
 
     CARAPI SendBroadcast(
         /* [in] */ IIntent* intent,
+        /* [in] */ const String& receiverPermission,
+        /* [in] */ Int32 appOp);
+
+    CARAPI SendBroadcast(
+        /* [in] */ IIntent* intent,
         /* [in] */ const String& receiverPermission);
 
     CARAPI SendOrderedBroadcast(
@@ -231,6 +251,16 @@ public:
     CARAPI SendOrderedBroadcast(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& receiverPermission,
+        /* [in] */ IBroadcastReceiver* resultReceiver,
+        /* [in] */ IHandler* scheduler,
+        /* [in] */ Int32 initialCode,
+        /* [in] */ const String& initialData,
+        /* [in] */ IBundle* initialExtras);
+
+    CARAPI SendOrderedBroadcast(
+        /* [in] */ IIntent* intent,
+        /* [in] */ const String& receiverPermission,
+        /* [in] */ Int32 appOp,
         /* [in] */ IBroadcastReceiver* resultReceiver,
         /* [in] */ IHandler* scheduler,
         /* [in] */ Int32 initialCode,
@@ -250,6 +280,17 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ IUserHandle* user,
         /* [in] */ const String& receiverPermission,
+        /* [in] */ IBroadcastReceiver* resultReceiver,
+        /* [in] */ IHandler* scheduler,
+        /* [in] */ Int32 initialCode,
+        /* [in] */ const String& initialData,
+        /* [in] */ IBundle* initialExtras);
+
+    CARAPI SendOrderedBroadcastAsUser(
+        /* [in] */ IIntent* intent,
+        /* [in] */ IUserHandle* user,
+        /* [in] */ const String& receiverPermission,
+        /* [in] */ Int32 appOp,
         /* [in] */ IBroadcastReceiver* resultReceiver,
         /* [in] */ IHandler* scheduler,
         /* [in] */ Int32 initialCode,
@@ -334,7 +375,7 @@ public:
         /* [in] */ Int32 flags,
         /* [out] */ Boolean* succeeded);
 
-    CARAPI BindService(
+    CARAPI BindServiceAsUser(
         /* [in] */ IIntent* service,
         /* [in] */ IServiceConnection* conn,
         /* [in] */ Int32 flags,
@@ -454,6 +495,14 @@ public:
         /* [in] */ IUserHandle* user,
         /* [out] */ IContext** ctx);
 
+    CARAPI CreateApplicationContext(
+        /* [in] */ IApplicationInfo* application,
+        /* [in] */ Int32 flags,
+        /* [out] */ IContext** ctx);
+
+    CARAPI GetUserId(
+        /* [out] */ Int32* userId);
+
     CARAPI CreateConfigurationContext(
         /* [in] */ IConfiguration* overrideConfiguration,
         /* [out] */ IContext** ctx);
@@ -462,17 +511,14 @@ public:
         /* [in] */ IDisplay* display,
         /* [out] */ IContext** ctx);
 
-    CARAPI GetCompatibilityInfo(
-        /* [in] */ Int32 displayId,
-        /* [out] */ ICompatibilityInfoHolder** infoHolder);
-
     CARAPI IsRestricted(
         /* [out] */ Boolean* isRestricted);
 
-protected:
-    CARAPI Init(
-        /* [in] */ IContext* context);
+    CARAPI GetDisplayAdjustments(
+        /* [in] */ Int32 displayId,
+        /* [out] */ IDisplayAdjustments** da);
 
+protected:
     /**
      * Set the base context for this ContextWrapper.  All calls will then be
      * delegated to the base context.  Throws
@@ -485,7 +531,6 @@ protected:
 
 protected:
     AutoPtr<IContext> mBase;
-
 };
 
 }

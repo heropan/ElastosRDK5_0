@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CONTENTRESOLVER_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include "database/CrossProcessCursorWrapper.h"
+//#include "database/CrossProcessCursorWrapper.h"
 #include "os/ParcelFileDescriptor.h"
 #include <elastos/core/Object.h>
 
@@ -12,7 +12,7 @@ using Elastos::Droid::Content::Res::IAssetFileDescriptor;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::Database::ICrossProcessCursorWrapper;
-using Elastos::Droid::Database::CrossProcessCursorWrapper;
+//using Elastos::Droid::Database::CrossProcessCursorWrapper;
 using Elastos::Droid::Database::ICharArrayBuffer;
 using Elastos::Droid::Database::IDataSetObserver;
 using Elastos::Droid::Net::IUri;
@@ -24,21 +24,30 @@ using Elastos::Droid::Os::ParcelFileDescriptor;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IInputStream;
 using Elastos::Utility::IRandom;
+using Elastos::Utility::IList;
 using Elastos::Utility::IArrayList;
+using Elastos::Core::ICloseGuard;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
+/**
+ * This class provides applications access to the content model.
+ *
+ * <div class="special reference">
+ * <h3>Developer Guides</h3>
+ * <p>For more information about using a ContentResolver with content providers, read the
+ * <a href="{@docRoot}guide/topics/providers/content-providers.html">Content Providers</a>
+ * developer guide.</p>
+ */
 class ContentResolver
     : public Object
     , public IContentResolver
 {
 private:
     class CursorWrapperInner
-        : public ElRefBase
-        , public CrossProcessCursorWrapper
-        , public ICrossProcessCursorWrapper
+        : public Object /*CrossProcessCursorWrapper*/
     {
     public:
         CursorWrapperInner(
@@ -48,191 +57,34 @@ private:
 
         ~CursorWrapperInner();
 
-        CAR_INTERFACE_DECL()
-
         CARAPI Close();
 
-        CARAPI GetCount(
-            /* [out] */ Int32* count);
-
-        CARAPI GetPosition(
-            /*[out]*/ Int32* position);
-
-        CARAPI Move(
-            /* [in] */ Int32 offset,
-            /* [out] */ Boolean* succeeded);
-
-        CARAPI MoveToPosition(
-            /* [in] */ Int32 position,
-            /* [out] */ Boolean* succeeded);
-
-        CARAPI MoveToFirst(
-            /* [out] */ Boolean* succeeded);
-
-        CARAPI MoveToLast(
-            /* [out] */ Boolean* succeeded);
-
-        CARAPI MoveToNext(
-            /* [out] */ Boolean* succeeded);
-
-        CARAPI MoveToPrevious(
-            /* [out] */ Boolean* succeeded);
-
-        CARAPI IsFirst(
-            /* [out] */ Boolean* result);
-
-        CARAPI IsLast(
-            /* [out] */ Boolean* result);
-
-        CARAPI IsBeforeFirst(
-            /* [out] */ Boolean* result);
-
-        CARAPI IsAfterLast(
-            /* [out] */ Boolean* result);
-
-        CARAPI GetColumnIndex(
-            /* [in] */ const String& columnName,
-            /* [out] */ Int32* index);
-
-        CARAPI GetColumnIndexOrThrow(
-            /* [in] */  const String& columnName,
-            /* [out] */ Int32* columnIndex);
-
-        CARAPI GetColumnName(
-            /* [in] */ Int32 columnIndex,
-            /* [out] */ String* name);
-
-        CARAPI GetColumnNames(
-            /* [out, callee] */ ArrayOf<String>** columnNames);
-
-        CARAPI GetColumnCount(
-            /* [out] */ Int32* count);
-
-        CARAPI GetBlob(
-            /* [in] */  Int32 columnIndex,
-            /* [out,callee] */ ArrayOf<Byte>** blob);
-
-        CARAPI GetString(
-            /* [in] */ Int32 columnIndex,
-            /* [out] */ String* value);
-
-        CARAPI CopyStringToBuffer(
-            /* [in] */ Int32 columnIndex,
-            /* [in] */ ICharArrayBuffer* buffer);
-
-        CARAPI GetInt32(
-            /* [in] */ Int32 columnIndex,
-            /* [out] */ Int32* value);
-
-        CARAPI GetInt64(
-            /* [in] */ Int32 columnIndex,
-            /* [out] */ Int64* value);
-
-        CARAPI GetInt16(
-            /* [in] */ Int32 columnIndex,
-            /* [out] */ Int16* value);
-
-        CARAPI GetDouble(
-            /* [in] */ Int32 columnIndex,
-            /* [out] */ Double* value);
-
-        CARAPI GetFloat(
-            /* [in] */ Int32 columnIndex,
-            /* [out] */ Float* value);
-
-        CARAPI GetExtras(
-            /* [out] */ IBundle** extras);
-
-        CARAPI GetType(
-            /* [in] */ Int32 columnIndex,
-            /* [out] */ Int32* type);
-
-        CARAPI IsNull(
-            /* [in] */ Int32 columnIndex,
-            /* [out] */ Boolean* result);
-
-        CARAPI RegisterContentObserver(
-            /* [in] */ IContentObserver* observer);
-
-        CARAPI RegisterDataSetObserver(
-            /* [in] */IDataSetObserver* observer);
-
-        CARAPI Requery(
-            /* [out] */ Boolean* succeeded);
-
-        CARAPI Respond(
-            /* [in] */ IBundle* extras,
-            /* [out] */ IBundle** bundle);
-
-        CARAPI SetNotificationUri(
-            /* [in] */ IContentResolver* cr,
-            /* [in] */ IUri* uri);
-
-        CARAPI UnregisterContentObserver(
-            /* [in] */ IContentObserver* observer);
-
-        CARAPI UnregisterDataSetObserver(
-            /* [in] */ IDataSetObserver* observer);
-
-        CARAPI IsClosed(
-            /* [out] */ Boolean* isClosed);
-
-        CARAPI Deactivate();
-
-        CARAPI GetWantsAllOnMoveCalls(
-            /* [out] */ Boolean* value);
-
-        CARAPI GetWrappedCursor(
-            /* [out] */ ICursor** cursor);
+        CARAPI Finalize();
 
     private:
         static const String TAG;
         AutoPtr<IIContentProvider> mContentProvider;
-//        private final CloseGuard mCloseGuard = CloseGuard.get();
+        AutoPtr<ICloseGuard> mCloseGuard;
         Boolean mProviderReleased;
         ContentResolver* mContentResolver;
     };
 
     class ParcelFileDescriptorInner
-        : public ElRefBase
-        , public IParcelFileDescriptor
-        , public IParcelable
-        , public ParcelFileDescriptor
+        : public ParcelFileDescriptor
     {
     public:
-        ParcelFileDescriptorInner(
+        ParcelFileDescriptorInner();
+
+        CARAPI constructor(
             /* [in] */ IParcelFileDescriptor* pfd,
             /* [in] */ IIContentProvider* icp,
             /* [in] */ ContentResolver* contentResolver);
 
-        ~ParcelFileDescriptorInner();
-
-        CAR_INTERFACE_DECL()
-
-        CARAPI Close();
-
-        CARAPI GetFileDescriptor(
-            /* [out] */ IFileDescriptor** des);
-
-        CARAPI GetStatSize(
-            /* [out] */ Int64* len);
-
-        CARAPI SeekTo(
-            /* [in] */ Int64 startOffset,
-            /* [out] */ Int64* toOffset);
-
-        CARAPI GetFd(
-            /* [out] */ Int32* fd);
-
-        CARAPI ReadFromParcel(
-            /* [in] */ IParcel* source);
-
-        CARAPI WriteToParcel(
-            /* [in] */ IParcel* dest);
+        CARAPI ReleaseResources();
 
     private:
         AutoPtr<IIContentProvider> mContentProvider;
-        Boolean mReleaseProviderFlag;
+        Boolean mProviderReleased;
         ContentResolver* mContentResolver;
     };
 
@@ -246,43 +98,18 @@ public:
     CARAPI constructor(
         /* [in] */ IContext* context);
 
-    /**
-     * Returns the content provider for the given content URI.
-     *
-     * @param uri The URI to a content provider
-     * @return The ContentProvider for the given URI, or null if no content provider is found.
-     * @hide
-     */
-    virtual CARAPI AcquireProvider(
-        /* [in] */ IContext* c,
-        /* [in] */ const String& name,
-        /* [out] */ IIContentProvider** contentProvider) = 0;
+    /** @hide */
+    static CARAPI_(String) SyncErrorToString(
+        /* [in] */ Int32 error);
 
-    /**
-     * Returns the content provider for the given content URI if the process
-     * already has a reference on it.
-     *
-     * @param uri The URI to a content provider
-     * @return The ContentProvider for the given URI, or null if no content provider is found.
-     * @hide
-     */
-    CARAPI AcquireExistingProvider(
-        /* [in] */ IContext* c,
-        /* [in] */ const String& name,
-        /* [out] */ IIContentProvider** contentProvider);
+    /** @hide */
+    static CARAPI_(Int32) SyncErrorStringToInt(
+        /* [in] */ const String& error);
 
     /** @hide */
     virtual CARAPI ReleaseProvider(
         /* [in] */ IIContentProvider* icp,
         /* [out] */ Boolean* result) = 0;
-
-    /**
-     * @hide
-     */
-    virtual CARAPI AcquireUnstableProvider(
-        /* [in] */ IContext* c,
-        /* [in] */ const String& name,
-        /* [out] */ IIContentProvider** contentProvider) = 0;
 
     /** @hide */
     virtual CARAPI ReleaseUnstableProvider(
@@ -1309,10 +1136,10 @@ public:
      * @see #getIsSyncable(Account, String)
      * @hide
      */
-    static CARAPI GetIsSyncableAsUserAsUser(
+    static CARAPI GetIsSyncableAsUser(
         /* [in] */ IAccount* account,
         /* [in] */ const String& authority,
-        /* [in] */ Int32 userId，
+        /* [in] */ Int32 userId,
         /* [out] */ Int32* isSyncable);
 
     /**
@@ -1342,7 +1169,7 @@ public:
      * @hide
      */
     static CARAPI GetMasterSyncAutomaticallyAsUser(
-        /* [in] */ Int32 userId，
+        /* [in] */ Int32 userId,
         /* [out] */ Boolean* result);
 
     /**
@@ -1361,7 +1188,7 @@ public:
      * @hide
      */
     static CARAPI SetMasterSyncAutomaticallyAsUser(
-        /* [in] */ Int32 userId，
+        /* [in] */ Int32 userId,
         /* [in] */ Boolean sync);
 
     /**
@@ -1404,7 +1231,7 @@ public:
      * @return a List of SyncInfo objects for the currently active syncs.
      */
     static CARAPI GetCurrentSyncsAsUser(
-        /* [in] */ Int32 userId，
+        /* [in] */ Int32 userId,
         /* [out] */ IList** syncInfoList);
 
     /**
@@ -1433,7 +1260,7 @@ public:
     static CARAPI GetSyncStatusAsUser(
         /* [in] */ IAccount* account,
         /* [in] */ const String& authority,
-        /* [in] */ Int32 userId，
+        /* [in] */ Int32 userId,
         /* [out] */ ISyncStatusInfo** syncStatusInfo);
 
     /**
@@ -1488,7 +1315,7 @@ public:
 
     /** @hide */
     static CARAPI GetContentService(
-        /* [out] */ IContentService** contentService);
+        /* [out] */ IIContentService** contentService);
 
     /** @hide */
     CARAPI_(String) GetPackageName();
@@ -1509,7 +1336,7 @@ protected:
     virtual CARAPI AcquireExistingProvider(
         /* [in] */ IContext* c,
         /* [in] */ const String& name,
-        /* [out] */ IIContentProvider** contentProvider);
+        /* [out] */ IIContentProvider** contentProvider) = 0;
 
     /** @hide */
     virtual CARAPI AcquireUnstableProvider(
@@ -1547,10 +1374,10 @@ private:
     // Always log queries which take 500ms+; shorter queries are
     // sampled accordingly.
     static const Boolean ENABLE_CONTENT_SAMPLE;// = false;
-    static const Int32 SLOW_THRESHOLD_MILLIS; = 500;
+    static const Int32 SLOW_THRESHOLD_MILLIS;// = 500;
     AutoPtr<IRandom> mRandom;  // guarded by itself
 
-    static AutoPtr<IContentService> sContentService;
+    static AutoPtr<IIContentService> sContentService;
     IContext* mContext;
     String mPackageName;
 };

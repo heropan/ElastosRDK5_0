@@ -1,48 +1,35 @@
 
-#include "accounts/CAccount.h"
-#include "app/ActivityManagerNative.h"
-#include "app/AppGlobals.h"
+
 #include "content/ContentResolver.h"
 #include "content/CContentResolverOpenResourceIdResult.h"
 #include "content/CContentProviderClient.h"
-#include "content/res/CAssetFileDescriptor.h"
+#include "content/ContentProvider.h"
+//#include "content/res/CAssetFileDescriptor.h"
+//#include "accounts/CAccount.h"
+//#include "app/ActivityManagerNative.h"
+//#include "app/AppGlobals.h"
 #include "os/UserHandle.h"
 #include "os/ServiceManager.h"
 #include "os/SystemClock.h"
-#include "privacy/surrogate/PrivacyContentResolver.h"
-#include "text/TextUtils.h"
+//#include "privacy/surrogate/PrivacyContentResolver.h"
+//#include "text/TextUtils.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
 
 // BEGIN privacy-added
-#include "privacy/surrogate/PrivacyContentResolver.h"
+//#include "privacy/surrogate/PrivacyContentResolver.h"
 // END privacy-added
 
-using Elastos::Core::StringUtils;
-using Elastos::Core::IInteger32;
-using Elastos::Core::IInteger64;
-using Elastos::Core::IBoolean;
-using Elastos::Core::IFloat;
-using Elastos::Core::IDouble;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::CString;
-using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
-using Elastos::IO::IFile;
-using Elastos::IO::CFile;
-using Elastos::IO::IFileInputStream;
-using Elastos::IO::CFileInputStream;
-using Elastos::IO::IFileOutputStream;
-using Elastos::Core::CRandom;
-using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Accounts::CAccount;
-using Elastos::Droid::App::ActivityManagerNative;
-using Elastos::Droid::App::AppGlobals;
+//using Elastos::Droid::Accounts::CAccount;
+//using Elastos::Droid::App::ActivityManagerNative;
+//using Elastos::Droid::App::AppGlobals;
 using Elastos::Droid::App::IIActivityManager;
 using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IParceledListSlice;
 using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Content::Res::CAssetFileDescriptor;
+//using Elastos::Droid::Content::Res::CAssetFileDescriptor;
 using Elastos::Droid::Database::IIContentObserver;
 using Elastos::Droid::Database::EIID_ICrossProcessCursorWrapper;
 using Elastos::Droid::Database::EIID_ICursorWrapper;
@@ -52,18 +39,37 @@ using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Os::IBinderHelper;
 using Elastos::Droid::Os::UserHandle;
-using Elastos::Droid::Privacy::Surrogate::PrivacyContentResolver;
-using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Os::IBaseBundle;
+//using Elastos::Droid::Privacy::Surrogate::PrivacyContentResolver;
+//using Elastos::Droid::Text::TextUtils;
+using Elastos::Core::StringUtils;
+using Elastos::Core::IInteger32;
+using Elastos::Core::IInteger64;
+using Elastos::Core::IBoolean;
+using Elastos::Core::IFloat;
+using Elastos::Core::IDouble;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
+using Elastos::IO::IFile;
+using Elastos::IO::CFile;
+using Elastos::IO::IFileInputStream;
+using Elastos::IO::CFileInputStream;
+using Elastos::IO::IFileOutputStream;
+using Elastos::Utility::CRandom;
+using Elastos::Utility::ISet;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
-const String ContentResolver::TAG("ContentResolver");
-const Int32 ContentResolver::SLOW_THRESHOLD_MILLIS = 500;
-const String ContentResolver::CursorWrapperInner::TAG("CursorWrapperInner");
-AutoPtr<IContentService> ContentResolver::sContentService;
-
+//=========================================================================
+// ContentResolver::ParcelFileDescriptorInner
+//=========================================================================
 ContentResolver::CursorWrapperInner::CursorWrapperInner(
     /* [in] */ ICursor* cursor,
     /* [in] */ IIContentProvider* icp,
@@ -72,397 +78,61 @@ ContentResolver::CursorWrapperInner::CursorWrapperInner(
     , mProviderReleased(FALSE)
     , mContentResolver(contentResolver)
 {
-    Init(cursor);
-//    mCloseGuard.open("close");
+    assert(0 && "TODO init parent class");
+    //Init(cursor);
+    mCloseGuard->Open(String("close"));
 }
 
 ContentResolver::CursorWrapperInner::~CursorWrapperInner()
 {
-// try {
-//        if (mCloseGuard != null) {
-//            mCloseGuard.warnIfOpen();
-//        }
-
-    if (!mProviderReleased && NULL != mContentProvider) {
-        // Even though we are using CloseGuard, log this anyway so that
-        // application developers always see the message in the log.
-        Logger::W(TAG, "Cursor finalized without prior close()");
-        Boolean result = FALSE;
-        mContentResolver->ReleaseProvider(mContentProvider, &result);
-    }
-    // } finally {
-//        super.finalize();
-    // }
+    Finalize();
 }
-
-CAR_INTERFACE_IMPL_2(ContentResolver::CursorWrapperInner, ICrossProcessCursorWrapper, ICursorWrapper)
 
 ECode ContentResolver::CursorWrapperInner::Close()
 {
-    CrossProcessCursorWrapper::Close();
+    //FAIL_RETURN(CrossProcessCursorWrapper::Close())
+
     Boolean result = FALSE;
     mContentResolver->ReleaseProvider(mContentProvider, &result);
     mProviderReleased = TRUE;
 
-//    if (mCloseGuard != null) {
-//        mCloseGuard.close();
-//    }
+    if (mCloseGuard != NULL) {
+        mCloseGuard->WarnIfOpen();
+    }
     return NOERROR;
 }
 
-ECode ContentResolver::CursorWrapperInner::GetCount(
-    /* [out] */ Int32* count)
+ECode ContentResolver::CursorWrapperInner::Finalize()
 {
-    VALIDATE_NOT_NULL(count);
-    return CrossProcessCursorWrapper::GetCount(count);
+    return NOERROR;
 }
 
-ECode ContentResolver::CursorWrapperInner::GetPosition(
-    /*[out]*/ Int32* position)
-{
-    VALIDATE_NOT_NULL(position);
-    return CrossProcessCursorWrapper::GetPosition(position);
-}
+//=========================================================================
+// ContentResolver::ParcelFileDescriptorInner
+//=========================================================================
+ContentResolver::ParcelFileDescriptorInner::ParcelFileDescriptorInner()
+    :  mProviderReleased(FALSE)
+{}
 
-ECode ContentResolver::CursorWrapperInner::Move(
-    /* [in] */ Int32 offset,
-    /* [out] */ Boolean* succeeded)
-{
-    VALIDATE_NOT_NULL(succeeded);
-    return CrossProcessCursorWrapper::Move(offset, succeeded);
-}
-
-ECode ContentResolver::CursorWrapperInner::MoveToPosition(
-    /* [in] */ Int32 position,
-    /* [out] */ Boolean* succeeded)
-{
-    VALIDATE_NOT_NULL(succeeded);
-    return CrossProcessCursorWrapper::MoveToPosition(position, succeeded);
-}
-
-ECode ContentResolver::CursorWrapperInner::MoveToFirst(
-    /* [out] */ Boolean* succeeded)
-{
-    VALIDATE_NOT_NULL(succeeded);
-    return CrossProcessCursorWrapper::MoveToFirst(succeeded);
-}
-
-ECode ContentResolver::CursorWrapperInner::MoveToLast(
-    /* [out] */ Boolean* succeeded)
-{
-    VALIDATE_NOT_NULL(succeeded);
-    return CrossProcessCursorWrapper::MoveToLast(succeeded);
-}
-
-ECode ContentResolver::CursorWrapperInner::MoveToNext(
-    /* [out] */ Boolean* succeeded)
-{
-    VALIDATE_NOT_NULL(succeeded);
-    return CrossProcessCursorWrapper::MoveToNext(succeeded);
-}
-
-ECode ContentResolver::CursorWrapperInner::MoveToPrevious(
-    /* [out] */ Boolean* succeeded)
-{
-    VALIDATE_NOT_NULL(succeeded);
-    return CrossProcessCursorWrapper::MoveToPrevious(succeeded);
-}
-
-ECode ContentResolver::CursorWrapperInner::IsFirst(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return CrossProcessCursorWrapper::IsFirst(result);
-}
-
-ECode ContentResolver::CursorWrapperInner::IsLast(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return CrossProcessCursorWrapper::IsLast(result);
-}
-
-ECode ContentResolver::CursorWrapperInner::IsBeforeFirst(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return CrossProcessCursorWrapper::IsBeforeFirst(result);
-}
-
-ECode ContentResolver::CursorWrapperInner::IsAfterLast(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return CrossProcessCursorWrapper::IsAfterLast(result);
-}
-
-ECode ContentResolver::CursorWrapperInner::GetColumnIndex(
-    /* [in] */ const String& columnName,
-    /* [out] */ Int32* index)
-{
-    VALIDATE_NOT_NULL(index);
-    return CrossProcessCursorWrapper::GetColumnIndex(columnName, index);
-}
-
-ECode ContentResolver::CursorWrapperInner::GetColumnIndexOrThrow(
-    /* [in] */  const String& columnName,
-    /* [out] */ Int32* columnIndex)
-{
-    VALIDATE_NOT_NULL(columnIndex);
-    return CrossProcessCursorWrapper::GetColumnIndexOrThrow(columnName, columnIndex);
-}
-
-ECode ContentResolver::CursorWrapperInner::GetColumnName(
-    /* [in] */ Int32 columnIndex,
-    /* [out] */ String* name)
-{
-    VALIDATE_NOT_NULL(name);
-    return CrossProcessCursorWrapper::GetColumnName(columnIndex, name);
-}
-
-ECode ContentResolver::CursorWrapperInner::GetColumnNames(
-    /* [out, callee] */ ArrayOf<String>** columnNames)
-{
-    VALIDATE_NOT_NULL(columnNames);
-    return CrossProcessCursorWrapper::GetColumnNames(columnNames);
-}
-
-ECode ContentResolver::CursorWrapperInner::GetColumnCount(
-    /* [out] */ Int32* count)
-{
-    VALIDATE_NOT_NULL(count);
-    return CrossProcessCursorWrapper::GetColumnCount(count);
-}
-
-ECode ContentResolver::CursorWrapperInner::GetBlob(
-    /* [in] */  Int32 columnIndex,
-    /* [out,callee] */ ArrayOf<Byte>** blob)
-{
-    VALIDATE_NOT_NULL(blob);
-    return CrossProcessCursorWrapper::GetBlob(columnIndex, blob);
-}
-
-ECode ContentResolver::CursorWrapperInner::GetString(
-    /* [in] */ Int32 columnIndex,
-    /* [out] */ String* value)
-{
-    VALIDATE_NOT_NULL(value);
-    return CrossProcessCursorWrapper::GetString(columnIndex, value);
-}
-
-ECode ContentResolver::CursorWrapperInner::CopyStringToBuffer(
-    /* [in] */ Int32 columnIndex,
-    /* [in] */ ICharArrayBuffer* buffer)
-{
-    return CrossProcessCursorWrapper::CopyStringToBuffer(columnIndex, buffer);
-}
-
-ECode ContentResolver::CursorWrapperInner::GetInt32(
-    /* [in] */ Int32 columnIndex,
-    /* [out] */ Int32* value)
-{
-    VALIDATE_NOT_NULL(value);
-    return CrossProcessCursorWrapper::GetInt32(columnIndex, value);
-}
-
-ECode ContentResolver::CursorWrapperInner::GetInt64(
-    /* [in] */ Int32 columnIndex,
-    /* [out] */ Int64* value)
-{
-    VALIDATE_NOT_NULL(value);
-    return CrossProcessCursorWrapper::GetInt64(columnIndex, value);
-}
-
-ECode ContentResolver::CursorWrapperInner::GetInt16(
-    /* [in] */ Int32 columnIndex,
-    /* [out] */ Int16* value)
-{
-    VALIDATE_NOT_NULL(value);
-    return CrossProcessCursorWrapper::GetInt16(columnIndex, value);
-}
-
-ECode ContentResolver::CursorWrapperInner::GetDouble(
-    /* [in] */ Int32 columnIndex,
-    /* [out] */ Double* value)
-{
-    VALIDATE_NOT_NULL(value);
-    return CrossProcessCursorWrapper::GetDouble(columnIndex, value);
-}
-
-ECode ContentResolver::CursorWrapperInner::GetFloat(
-    /* [in] */ Int32 columnIndex,
-    /* [out] */ Float* value)
-{
-    VALIDATE_NOT_NULL(value);
-    return CrossProcessCursorWrapper::GetFloat(columnIndex, value);
-}
-
-ECode ContentResolver::CursorWrapperInner::GetExtras(
-    /* [out] */ IBundle** extras)
-{
-    VALIDATE_NOT_NULL(extras);
-    return CrossProcessCursorWrapper::GetExtras(extras);
-}
-
-ECode ContentResolver::CursorWrapperInner::GetType(
-    /* [in] */ Int32 columnIndex,
-    /* [out] */ Int32* type)
-{
-    VALIDATE_NOT_NULL(type);
-    return CrossProcessCursorWrapper::GetType(columnIndex, type);
-}
-
-ECode ContentResolver::CursorWrapperInner::IsNull(
-    /* [in] */ Int32 columnIndex,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return CrossProcessCursorWrapper::IsNull(columnIndex, result);
-}
-
-ECode ContentResolver::CursorWrapperInner::RegisterContentObserver(
-    /* [in] */ IContentObserver* observer)
-{
-    return CrossProcessCursorWrapper::RegisterContentObserver(observer);
-}
-
-ECode ContentResolver::CursorWrapperInner::RegisterDataSetObserver(
-    /* [in] */IDataSetObserver* observer)
-{
-    return CrossProcessCursorWrapper::RegisterDataSetObserver(observer);
-}
-
-ECode ContentResolver::CursorWrapperInner::Requery(
-    /* [out] */ Boolean* succeeded)
-{
-    VALIDATE_NOT_NULL(succeeded);
-    return CrossProcessCursorWrapper::Requery(succeeded);
-}
-
-ECode ContentResolver::CursorWrapperInner::Respond(
-    /* [in] */ IBundle* extras,
-    /* [out] */ IBundle** bundle)
-{
-    VALIDATE_NOT_NULL(bundle);
-    return CrossProcessCursorWrapper::Respond(extras, bundle);
-}
-
-ECode ContentResolver::CursorWrapperInner::SetNotificationUri(
-    /* [in] */ IContentResolver* cr,
-    /* [in] */ IUri* uri)
-{
-    return CrossProcessCursorWrapper::SetNotificationUri(cr, uri);
-}
-
-ECode ContentResolver::CursorWrapperInner::UnregisterContentObserver(
-    /* [in] */ IContentObserver* observer)
-{
-    return CrossProcessCursorWrapper::UnregisterContentObserver(observer);
-}
-
-ECode ContentResolver::CursorWrapperInner::UnregisterDataSetObserver(
-    /* [in] */ IDataSetObserver* observer)
-{
-    return CrossProcessCursorWrapper::UnregisterDataSetObserver(observer);
-}
-
-ECode ContentResolver::CursorWrapperInner::IsClosed(
-    /* [out] */ Boolean* isClosed)
-{
-    VALIDATE_NOT_NULL(isClosed);
-    return CrossProcessCursorWrapper::IsClosed(isClosed);
-}
-
-ECode ContentResolver::CursorWrapperInner::Deactivate()
-{
-    return CrossProcessCursorWrapper::Deactivate();
-}
-
-ECode ContentResolver::CursorWrapperInner::GetWantsAllOnMoveCalls(
-    /* [out] */ Boolean* value)
-{
-    VALIDATE_NOT_NULL(value);
-    return CrossProcessCursorWrapper::GetWantsAllOnMoveCalls(value);
-}
-
-ECode ContentResolver::CursorWrapperInner::GetWrappedCursor(
-    /* [out] */ ICursor** cursor)
-{
-    VALIDATE_NOT_NULL(cursor);
-    return CrossProcessCursorWrapper::GetWrappedCursor(cursor);
-}
-
-
-ContentResolver::ParcelFileDescriptorInner::ParcelFileDescriptorInner(
+ECode ContentResolver::ParcelFileDescriptorInner::constructor(
     /* [in] */ IParcelFileDescriptor* pfd,
     /* [in] */ IIContentProvider* icp,
     /* [in] */ ContentResolver* contentResolver)
-    : ParcelFileDescriptor(pfd)
-    , mContentProvider(icp)
-    , mReleaseProviderFlag(FALSE)
-    , mContentResolver(contentResolver)
 {
-}
-
-ContentResolver::ParcelFileDescriptorInner::~ParcelFileDescriptorInner()
-{
-    if (!mReleaseProviderFlag) {
-        Close();
-    }
-}
-
-CAR_INTERFACE_IMPL_2(ContentResolver::ParcelFileDescriptorInner, IParcelFileDescriptor, IParcelable)
-
-ECode ContentResolver::ParcelFileDescriptorInner::Close()
-{
-    if (!mReleaseProviderFlag) {
-        ParcelFileDescriptor::Close();
-        Boolean result = FALSE;
-        mContentResolver->ReleaseProvider(mContentProvider, &result);
-        mReleaseProviderFlag = TRUE;
-    }
+    FAIL_RETURN(ParcelFileDescriptor::constructor(pfd))
+    mContentProvider = icp;
+    mContentResolver = contentResolver;
     return NOERROR;
 }
 
-ECode ContentResolver::ParcelFileDescriptorInner::GetFileDescriptor(
-    /* [out] */ IFileDescriptor** des)
+ECode ContentResolver::ParcelFileDescriptorInner::ReleaseResources()
 {
-    VALIDATE_NOT_NULL(des);
-    return ParcelFileDescriptor::GetFileDescriptor(des);
-}
-
-ECode ContentResolver::ParcelFileDescriptorInner::GetStatSize(
-    /* [out] */ Int64* len)
-{
-    VALIDATE_NOT_NULL(len);
-    return ParcelFileDescriptor::GetStatSize(len);
-}
-
-ECode ContentResolver::ParcelFileDescriptorInner::SeekTo(
-    /* [in] */ Int64 startOffset,
-    /* [out] */ Int64* toOffset)
-{
-    VALIDATE_NOT_NULL(toOffset);
-    return ParcelFileDescriptor::SeekTo(startOffset, toOffset);
-}
-
-ECode ContentResolver::ParcelFileDescriptorInner::GetFd(
-    /* [out] */ Int32* fd)
-{
-    VALIDATE_NOT_NULL(fd);
-    return ParcelFileDescriptor::GetFd(fd);
-}
-
-ECode ContentResolver::ParcelFileDescriptorInner::ReadFromParcel(
-    /* [in] */ IParcel* source)
-{
-    return ParcelFileDescriptor::ReadFromParcel(source);
-}
-
-ECode ContentResolver::ParcelFileDescriptorInner::WriteToParcel(
-    /* [in] */ IParcel* dest)
-{
-    return ParcelFileDescriptor::WriteToParcel(dest);
+    if (!mProviderReleased) {
+        Boolean result;
+        mContentResolver->ReleaseProvider(mContentProvider, &result);
+        mProviderReleased = TRUE;
+    }
+    return NOERROR;
 }
 
 //========================================================================
@@ -472,14 +142,14 @@ static AutoPtr<ArrayOf<String> > InitSYNC_ERROR_NAMES()
 {
     AutoPtr<ArrayOf<String> > array = ArrayOf<String>::Alloc(8);
 
-    array->Set(0, "already-in-progress");
-    array->Set(1, "authentication-error");
-    array->Set(2, "io-error");
-    array->Set(3, "parse-error");
-    array->Set(4, "conflict");
-    array->Set(5, "too-many-deletions");
-    array->Set(6, "too-many-retries");
-    array->Set(7, "internal-error");
+    array->Set(0, String("already-in-progress"));
+    array->Set(1, String("authentication-error"));
+    array->Set(2, String("io-error"));
+    array->Set(3, String("parse-error"));
+    array->Set(4, String("conflict"));
+    array->Set(5, String("too-many-deletions"));
+    array->Set(6, String("too-many-retries"));
+    array->Set(7, String("internal-error"));
     return array;
 }
 
@@ -492,8 +162,7 @@ const String ContentResolver::TAG("ContentResolver");
 const Boolean ContentResolver::ENABLE_CONTENT_SAMPLE = FALSE;
 const Int32 ContentResolver::SLOW_THRESHOLD_MILLIS = 500;
 
-
-AutoPtr<IContentService> ContentResolver::sContentService;
+AutoPtr<IIContentService> ContentResolver::sContentService;
 
 CAR_INTERFACE_IMPL(ContentResolver, Object, IContentResolver)
 
@@ -511,15 +180,40 @@ ECode ContentResolver::constructor(
 {
     CRandom::New((IRandom**)&mRandom);
 
+    assert(0 && "TODO");
     if (context != NULL) {
         mContext = context;
     }
     else {
-        mContext = ActivityThread::CurrentApplication();
+        // mContext = ActivityThread::CurrentApplication();
     }
 
     mContext->GetOpPackageName(&mPackageName);
     return NOERROR;
+}
+
+String ContentResolver::SyncErrorToString(
+    /* [in] */ Int32 error)
+{
+    if (error < 1 || error > SYNC_ERROR_NAMES->GetLength()) {
+        return StringUtils::ToString(error);
+    }
+    return (*SYNC_ERROR_NAMES)[error - 1];
+}
+
+Int32 ContentResolver::SyncErrorStringToInt(
+    /* [in] */ const String& error)
+{
+    for (Int32 i = 0, n = SYNC_ERROR_NAMES->GetLength(); i < n; i++) {
+        if ((*SYNC_ERROR_NAMES)[i].Equals(error)) {
+            return i + 1;
+        }
+    }
+    if (!error.IsNull()) {
+        return StringUtils::ParseInt32(error);
+    }
+
+    return 0;
 }
 
 ECode ContentResolver::AcquireExistingProvider(
@@ -562,7 +256,7 @@ ECode ContentResolver::GetType(
 
     String scheme;
     FAIL_RETURN(uri->GetScheme(&scheme))
-    if (IContentResolver::SCHEME_CONTENT.Equals(scheme)) {
+    if (!IContentResolver::SCHEME_CONTENT.Equals(scheme)) {
         return NOERROR;
     }
 
@@ -570,7 +264,9 @@ ECode ContentResolver::GetType(
     AutoPtr<IUri> newUri;
     ContentProvider::GetUriWithoutUserId(uri, (IUri**)&newUri);
     Int32 userId = ResolveUserId(uri);
-    return ActivityManagerNative::GetDefault()->GetProviderMimeType(newUri, userId, type);
+    assert(0 && "TODO");
+    AutoPtr<IIActivityManager> am;// = ActivityManagerNative::GetDefault();
+    return am->GetProviderMimeType(newUri, userId, type);
 //    } catch (RemoteException e) {
 //        // Arbitrary and not worth documenting, as Activity
 //        // Manager will kill this process shortly anyway.
@@ -655,7 +351,7 @@ ECode ContentResolver::Query(
 
     AutoPtr<ICursor> qCursor, temp;
     // try {
-    ECode ec = unstableProvider->Query(uri, projection,
+    ECode ec = unstableProvider->Query(mPackageName, uri, projection,
             selection, selectionArgs, sortOrder, remoteCancellationSignal, (ICursor**)&temp);
 
     if (ec == (ECode)E_DEAD_OBJECT_EXCEPTION) {
@@ -670,7 +366,7 @@ ECode ContentResolver::Query(
         }
 
         temp = NULL;
-        ec = stableProvider->Query(uri, projection, selection, selectionArgs,
+        ec = stableProvider->Query(mPackageName, uri, projection, selection, selectionArgs,
             sortOrder, remoteCancellationSignal, (ICursor**)&temp);
         FAIL_GOTO(ec, __EXIT__)
     }
@@ -694,7 +390,8 @@ ECode ContentResolver::Query(
         ec = AcquireProvider(uri, (IIContentProvider**)&stableProvider);
         FAIL_GOTO(ec, __EXIT__)
     }
-    wrapper = new CursorWrapperInner(qCursor, stableProvider, this);
+    assert(0 && "TODO");
+    //wrapper = new CursorWrapperInner(qCursor, stableProvider, this);
     stableProvider = NULL;
     qCursor = NULL;
     goto __EXIT__;
@@ -721,7 +418,7 @@ __EXIT__:
         ReleaseProvider(stableProvider, &isRelease);
     }
 //    }
-    *cursor = wrapper.Get();
+    *cursor = ICursor::Probe(wrapper);
     REFCOUNT_ADD(*cursor);
     return ec;
 }
@@ -734,19 +431,20 @@ ECode ContentResolver::Canonicalize(
     *result = NULL;
 
     AutoPtr<IIContentProvider> provider;
-    AcquireProvider(url, (IIContentProvider**)&provider);
+    AcquireProvider(uri, (IIContentProvider**)&provider);
     if (provider == NULL) {
         return NOERROR;
     }
 
     // try {
-    ECode ec = provider->Canonicalize(mPackageName, url, result);
+    ECode ec = provider->Canonicalize(mPackageName, uri, result);
     // } catch (RemoteException e) {
     //     // Arbitrary and not worth documenting, as Activity
     //     // Manager will kill this process shortly anyway.
     //     return null;
     // } finally {
-    ReleaseProvider(provider);
+    Boolean bval;
+    ReleaseProvider(provider, &bval);
     // }
 
     return ec;
@@ -760,19 +458,20 @@ ECode ContentResolver::Uncanonicalize(
     *result = NULL;
 
     AutoPtr<IIContentProvider> provider;
-    AcquireProvider(url, (IIContentProvider**)&provider);
+    AcquireProvider(uri, (IIContentProvider**)&provider);
     if (provider == NULL) {
         return NOERROR;
     }
 
     // try {
-    ECode ec = provider->Uncanonicalize(mPackageName, url, result);
+    ECode ec = provider->Uncanonicalize(mPackageName, uri, result);
     // } catch (RemoteException e) {
     //     // Arbitrary and not worth documenting, as Activity
     //     // Manager will kill this process shortly anyway.
     //     return null;
     // } finally {
-    ReleaseProvider(provider);
+    Boolean bval;
+    ReleaseProvider(provider, &bval);
     // }
 
     return ec;
@@ -946,13 +645,18 @@ ECode ContentResolver::OpenAssetFileDescriptor(
         Int32 nMode;
         FAIL_RETURN(ParcelFileDescriptor::ParseMode(mode, &nMode));
         FAIL_RETURN(ParcelFileDescriptor::Open(file, nMode, (IParcelFileDescriptor**)&pfd));
-        return CAssetFileDescriptor::New(pfd, 0, -1, fileDescriptor);
+        assert(0 && "TODO");
+        // return CAssetFileDescriptor::New(pfd, 0, -1, fileDescriptor);
     }
     else {
         if (mode.Equals("r")) {
             return OpenTypedAssetFileDescriptor(uri, String("*/*"), NULL, cancellationSignal, fileDescriptor);
         }
         else {
+            AutoPtr<ParcelFileDescriptorInner> pfdi;
+            AutoPtr<IParcelFileDescriptor> pfd, pfd2;
+            Int64 startOffset = 0, length = 0;
+
             AutoPtr<IIContentProvider> unstableProvider;
             FAIL_RETURN(AcquireUnstableProvider(uri, (IIContentProvider**)&unstableProvider));
             if (NULL == unstableProvider) {
@@ -971,7 +675,7 @@ ECode ContentResolver::OpenAssetFileDescriptor(
                 FAIL_RETURN(cancellationSignal->SetRemote(remoteCancellationSignal))
             }
 //                try {
-            ECode ec = unstableProvider->OpenAssetFile(uri, mode, remoteCancellationSignal, (IAssetFileDescriptor**)&fd);
+            ECode ec = unstableProvider->OpenAssetFile(mPackageName, uri, mode, remoteCancellationSignal, (IAssetFileDescriptor**)&fd);
             if (ec == (ECode)E_DEAD_OBJECT_EXCEPTION) {
                 // The remote process has died...  but we only hold an unstable
                 // reference though, so we might recover!!!  Let's try!!!!
@@ -1010,17 +714,16 @@ ECode ContentResolver::OpenAssetFileDescriptor(
             }
 
             ReleaseUnstableProvider(unstableProvider, &isRelease);
-            AutoPtr<IParcelFileDescriptor> pfd2;
+
             fd->GetParcelFileDescriptor((IParcelFileDescriptor**)&pfd2);
-            AutoPtr<IParcelFileDescriptor> pfd;
-            pfd = new ParcelFileDescriptorInner(pfd2, stableProvider, this);
+            pfdi = new ParcelFileDescriptorInner();
+            pfdi->constructor(pfd2, stableProvider, this);
+            pfd = IParcelFileDescriptor::Probe(pfdi);
 
             // Success!  Don't release the provider when exiting, let
             // ParcelFileDescriptorInner do that when it is closed.
             stableProvider = NULL;
 
-            Int64 startOffset = 0;
-            Int64 length = 0;
             fd->GetStartOffset(&startOffset);
             fd->GetDeclaredLength(&length);
 //            } catch (RemoteException e) {
@@ -1041,7 +744,8 @@ __EXIT__:
 
             FAIL_RETURN(ec)
 //            }
-            return CAssetFileDescriptor::New(pfd, startOffset, length, fileDescriptor);
+            assert(0 && "TODO");
+            // return CAssetFileDescriptor::New(pfd, startOffset, length, fileDescriptor);
 
 __RETURN__:
             if (NULL != stableProvider) {
@@ -1054,7 +758,6 @@ __RETURN__:
         }
     }
 }
-
 
 ECode ContentResolver::OpenTypedAssetFileDescriptor(
     /* [in] */ IUri* uri,
@@ -1084,8 +787,8 @@ ECode ContentResolver::OpenTypedAssetFileDescriptor(
     AutoPtr<IIContentProvider> stableProvider;
     AutoPtr<IAssetFileDescriptor> fd;
     Boolean isRelease = FALSE;
-    AutoPtr<IParcelFileDescriptor> pfd;
-    AutoPtr<IParcelFileDescriptor> pfd2;
+    AutoPtr<ParcelFileDescriptorInner> pfdi;
+    AutoPtr<IParcelFileDescriptor> pfd, pfd2;
     Int64 startOffset = 0;
     Int64 length = 0;
 
@@ -1097,24 +800,26 @@ ECode ContentResolver::OpenTypedAssetFileDescriptor(
         FAIL_RETURN(cancellationSignal->SetRemote(remoteCancellationSignal))
     }
  //       try {
-    ECode ec = unstableProvider->OpenTypedAssetFile(uri, mimeType, opts, (IAssetFileDescriptor**)&fd);
+    ECode ec = unstableProvider->OpenTypedAssetFile(mPackageName, uri, mimeType, opts,
+        remoteCancellationSignal, (IAssetFileDescriptor**)&fd);
     if (ec == (ECode)E_DEAD_OBJECT_EXCEPTION) {
-       // The remote process has died...  but we only hold an unstable
-       // reference though, so we might recover!!!  Let's try!!!!
-       // This is exciting!!1!!1!!!!1
-       UnstableProviderDied(unstableProvider);
-       stableProvider = NULL;
-       AcquireProvider(uri, (IIContentProvider**)&stableProvider);
-       if (stableProvider == NULL) {
-           // throw new FileNotFoundException("No content provider: " + uri);
+        // The remote process has died...  but we only hold an unstable
+        // reference though, so we might recover!!!  Let's try!!!!
+        // This is exciting!!1!!1!!!!1
+        UnstableProviderDied(unstableProvider);
+        stableProvider = NULL;
+        AcquireProvider(uri, (IIContentProvider**)&stableProvider);
+        if (stableProvider == NULL) {
+            // throw new FileNotFoundException("No content provider: " + uri);
             ec = E_FILE_NOT_FOUND_EXCEPTION;
             goto __EXIT__;
-       }
-       stableProvider->OpenTypedAssetFile(uri, mimeType, opts, (IAssetFileDescriptor**)&fd);
-       if (fd == NULL) {
-           // The provider will be released by the finally{} clause
-           goto __RETURN__;
-       }
+        }
+        stableProvider->OpenTypedAssetFile(mPackageName,uri, mimeType, opts,
+            remoteCancellationSignal, (IAssetFileDescriptor**)&fd);
+        if (fd == NULL) {
+            // The provider will be released by the finally{} clause
+            goto __RETURN__;
+        }
     }
     else if (FAILED(ec)) {
         goto __EXIT__;
@@ -1131,7 +836,9 @@ ECode ContentResolver::OpenTypedAssetFileDescriptor(
     ReleaseUnstableProvider(unstableProvider, &isRelease);
     fd->GetParcelFileDescriptor((IParcelFileDescriptor**)&pfd2);
 
-    pfd = new ParcelFileDescriptorInner(pfd2, stableProvider, this);
+    pfdi = new ParcelFileDescriptorInner();
+    pfdi->constructor(pfd2, stableProvider, this);
+    pfd = IParcelFileDescriptor::Probe(pfdi);
 
     // Success!  Don't release the provider when exiting, let
     // ParcelFileDescriptorInner do that when it is closed.
@@ -1148,11 +855,12 @@ ECode ContentResolver::OpenTypedAssetFileDescriptor(
 //    } finally {
 
 __EXIT__:
+    assert(0 && "TODO");
     if (FAILED(ec)) {
         ec = E_FILE_NOT_FOUND_EXCEPTION;
     }
     else {
-        ec = CAssetFileDescriptor::New(pfd, startOffset, length, fileDescriptor);
+        // ec = CAssetFileDescriptor::New(pfd, startOffset, length, fileDescriptor);
     }
 
     if (NULL != stableProvider) {
@@ -1197,23 +905,32 @@ ECode ContentResolver::GetResourceId(
             return E_FILE_NOT_FOUND_EXCEPTION;
         }
     }
-    AutoPtr<ArrayOf<String> > path;
-    FAIL_RETURN(uri->GetPathSegments((ArrayOf<String>**)&path))
+    AutoPtr<IList> path;
+    FAIL_RETURN(uri->GetPathSegments((IList**)&path))
     if (NULL == path) {
         // throw new FileNotFoundException("No path: " + uri);
         return E_FILE_NOT_FOUND_EXCEPTION;
     }
-    Int32 len = path->GetLength();
+    Int32 len;
+    path->GetSize(&len);
     Int32 id = 0;
     if (len == 1) {
+        AutoPtr<IInterface> obj;
+        path->Get(0, (IInterface**)&obj);
+        String str = Object::ToString(obj);
         // try {
-        id = StringUtils::ParseInt32((*path)[0]);
+        id = StringUtils::ParseInt32(str);
         // } catch (NumberFormatException e) {
         //     throw new FileNotFoundException("Single path segment is not a resource ID: " + uri);
         // }
     }
     else if (len == 2) {
-        FAIL_RETURN(r->GetIdentifier((*path)[1], (*path)[0], authority, &id));
+        AutoPtr<IInterface> obj0, obj1;
+        path->Get(0, (IInterface**)&obj0);
+        path->Get(1, (IInterface**)&obj1);
+        String str0 = Object::ToString(obj0);
+        String str1 = Object::ToString(obj1);
+        FAIL_RETURN(r->GetIdentifier(str0, str1, authority, &id));
     }
     else {
         // throw new FileNotFoundException("More than two path segments: " + uri);
@@ -1225,9 +942,8 @@ ECode ContentResolver::GetResourceId(
     }
 
     AutoPtr<IContentResolverOpenResourceIdResult> res;
-    FAIL_RETURN(CContentResolverOpenResourceIdResult::New((IContentResolverOpenResourceIdResult**)&res));
-    FAIL_RETURN(res->SetResources(r))
-    FAIL_RETURN(res->SetResourceId(id))
+    FAIL_RETURN(CContentResolverOpenResourceIdResult::New(
+        r, id, (IContentResolverOpenResourceIdResult**)&res));
     *resourceIdResult = res;
     REFCOUNT_ADD(*resourceIdResult)
     return NOERROR;
@@ -1239,6 +955,8 @@ ECode ContentResolver::Insert(
     /* [out] */ IUri** insertedUri)
 {
     VALIDATE_NOT_NULL(insertedUri)
+    *insertedUri = NULL;
+
     AutoPtr<IIContentProvider> provider;
     FAIL_RETURN(AcquireProvider(uri, (IIContentProvider**)&provider))
     if (NULL == provider) {
@@ -1248,7 +966,7 @@ ECode ContentResolver::Insert(
 //    try {
     Int64 startTime = SystemClock::GetUptimeMillis();
     AutoPtr<IUri> createdRow;
-    ECode ec = provider->Insert(uri, values, (IUri**)&createdRow);
+    ECode ec = provider->Insert(mPackageName, uri, values, (IUri**)&createdRow);
     if (SUCCEEDED(ec)) {
         Int64 durationMillis = SystemClock::GetUptimeMillis() - startTime;
         MaybeLogUpdateToEventLog(durationMillis, uri, String("insert"), String(NULL) /* where */);
@@ -1305,7 +1023,7 @@ ECode ContentResolver::BulkInsert(
 //    try {
     Int64 startTime = SystemClock::GetUptimeMillis();
     Int32 rowsCreated = 0;
-    provider->BulkInsert(url, values, &rowsCreated);
+    provider->BulkInsert(mPackageName, url, values, &rowsCreated);
     Int64 durationMillis = SystemClock::GetUptimeMillis() - startTime;
     MaybeLogUpdateToEventLog(durationMillis, url, String("bulkinsert"), String(NULL) /* where */);
     *number = rowsCreated;
@@ -1339,15 +1057,13 @@ ECode ContentResolver::Delete(
 //    try {
     Int64 startTime = SystemClock::GetUptimeMillis();
     Int32 rowsDeleted = 0;
-    ECode ec = provider->Delete(uri, where, selectionArgs, &rowsDeleted);
+    ECode ec = provider->Delete(mPackageName, uri, where, selectionArgs, &rowsDeleted);
     if (SUCCEEDED(ec)) {
         Int64 durationMillis = SystemClock::GetUptimeMillis() - startTime;
         MaybeLogUpdateToEventLog(durationMillis, uri, String("delete"), where);
         *rowsAffected = rowsDeleted;
     }
-    else {
-        *rowsAffected = -1;
-    }
+
     Boolean isRelease = FALSE;
     ReleaseProvider(provider, &isRelease);
     return (ec == (ECode)E_REMOTE_EXCEPTION) ? NOERROR : ec;
@@ -1379,7 +1095,7 @@ ECode ContentResolver::Update(
 //    try {
     Int64 startTime = SystemClock::GetUptimeMillis();
     Int32 rowsUpdated = 0;
-    ECode ec = provider->Update(uri, values, where, selectionArgs, &rowsUpdated);
+    ECode ec = provider->Update(mPackageName, uri, values, where, selectionArgs, &rowsUpdated);
     if (SUCCEEDED(ec)) {
         Int64 durationMillis = SystemClock::GetUptimeMillis() - startTime;
         MaybeLogUpdateToEventLog(durationMillis, uri, String("update"), where);
@@ -1425,7 +1141,7 @@ ECode ContentResolver::Call(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 //    try {
-    ECode ec = provider->Call(method, arg, extras, bundle);
+    ECode ec = provider->Call(mPackageName, method, arg, extras, bundle);
     Boolean isRelease = FALSE;
     ReleaseProvider(provider, &isRelease);
 //    } catch (RemoteException e) {
@@ -1487,9 +1203,9 @@ ECode ContentResolver::AcquireProvider(
     /* [out] */ IIContentProvider** contentProvider)
 {
     VALIDATE_NOT_NULL(contentProvider)
+    *contentProvider = NULL;
 
     if (name.IsNull()) {
-        *contentProvider = NULL;
         return NOERROR;
     }
     return AcquireProvider(mContext, name, contentProvider);
@@ -1534,13 +1250,14 @@ ECode ContentResolver::AcquireContentProviderClient(
     /* [out] */ IContentProviderClient** client)
 {
     VALIDATE_NOT_NULL(client)
+    *client = NULL;
+
     AutoPtr<IIContentProvider> provider;
     FAIL_RETURN(AcquireProvider(uri, (IIContentProvider**)&provider))
     if (NULL != provider) {
         return CContentProviderClient::New(THIS_PROBE(IContentResolver), provider, TRUE, client);
     }
 
-    *client = NULL;
     return NOERROR;
 }
 
@@ -1549,13 +1266,14 @@ ECode ContentResolver::AcquireContentProviderClient(
     /* [out] */ IContentProviderClient** client)
 {
     VALIDATE_NOT_NULL(client)
+    *client = NULL;
+
     AutoPtr<IIContentProvider> provider;
     FAIL_RETURN(AcquireProvider(name, (IIContentProvider**)&provider))
     if (NULL != provider) {
         return CContentProviderClient::New(THIS_PROBE(IContentResolver), provider, TRUE, client);
     }
 
-    *client = NULL;
     return NOERROR;
 }
 
@@ -1564,13 +1282,14 @@ ECode ContentResolver::AcquireUnstableContentProviderClient(
     /* [out] */ IContentProviderClient** client)
 {
     VALIDATE_NOT_NULL(client)
+    *client = NULL;
+
     AutoPtr<IIContentProvider> provider;
     FAIL_RETURN(AcquireUnstableProvider(uri, (IIContentProvider**)&provider))
     if (NULL != provider) {
         return CContentProviderClient::New(THIS_PROBE(IContentResolver), provider, FALSE, client);
     }
 
-    *client = NULL;
     return NOERROR;
 }
 
@@ -1579,13 +1298,14 @@ ECode ContentResolver::AcquireUnstableContentProviderClient(
     /* [out] */ IContentProviderClient** client)
 {
     VALIDATE_NOT_NULL(client);
+    *client = NULL;
+
     AutoPtr<IIContentProvider> provider;
     FAIL_RETURN(AcquireUnstableProvider(name, (IIContentProvider**)&provider))
     if (NULL != provider) {
         return CContentProviderClient::New(THIS_PROBE(IContentResolver), provider, FALSE, client);
     }
 
-    *client = NULL;
     return NOERROR;
 }
 
@@ -1604,8 +1324,8 @@ ECode ContentResolver::RegisterContentObserver(
     /* [in] */ Int32 userHandle)
 {
     VALIDATE_NOT_NULL(observer)
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService));
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService));
     assert(contentService != NULL && "Error: Content Service not started.");
     AutoPtr<IIContentObserver> contentObserver;
     FAIL_RETURN(observer->GetContentObserver((IIContentObserver**)&contentObserver));
@@ -1620,8 +1340,8 @@ ECode ContentResolver::UnregisterContentObserver(
     AutoPtr<IIContentObserver> contentObserver;
     FAIL_RETURN(observer->ReleaseContentObserver((IIContentObserver**)&contentObserver));
     if (NULL != contentObserver) {
-        AutoPtr<IContentService> contentService;
-        FAIL_RETURN(GetContentService((IContentService**)&contentService))
+        AutoPtr<IIContentService> contentService;
+        FAIL_RETURN(GetContentService((IIContentService**)&contentService))
         return contentService->UnregisterContentObserver(contentObserver);
     }
     return NOERROR;
@@ -1648,8 +1368,8 @@ ECode ContentResolver::NotifyChange(
     /* [in] */ Boolean syncToNetwork,
     /* [in] */ Int32 userHandle)
 {
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
     AutoPtr<IIContentObserver> contentObserver;
     Boolean deliverSelfNotification = FALSE;
     if (NULL != observer) {
@@ -1664,48 +1384,65 @@ ECode ContentResolver::TakePersistableUriPermission(
     /* [in] */ IUri* uri,
     /* [in] */ Int32 modeFlags)
 {
-    try {
-        ActivityManagerNative.getDefault().takePersistableUriPermission(
-                ContentProvider.getUriWithoutUserId(uri), modeFlags, resolveUserId(uri));
-    } catch (RemoteException e) {
-    }
-    return NOERROR;
+    AutoPtr<IIActivityManager> am;
+    assert(0 && "TODO");
+    // am = ActivityManagerNative::GetDefault();
+    // try {
+    AutoPtr<IUri> newUri;
+    ContentProvider::GetUriWithoutUserId(uri, (IUri**)&newUri);
+    return am->TakePersistableUriPermission(newUri, modeFlags, ResolveUserId(uri));
+    // } catch (RemoteException e) {
+    // }
 }
 
 ECode ContentResolver::ReleasePersistableUriPermission(
     /* [in] */ IUri* uri,
     /* [in] */ Int32 modeFlags)
 {
-    try {
-        ActivityManagerNative.getDefault().releasePersistableUriPermission(
-                ContentProvider.getUriWithoutUserId(uri), modeFlags, resolveUserId(uri));
-    } catch (RemoteException e) {
-    }
+    AutoPtr<IIActivityManager> am;
+    assert(0 && "TODO");
+    // am = ActivityManagerNative::GetDefault();
+    // try {
+    AutoPtr<IUri> newUri;
+    ContentProvider::GetUriWithoutUserId(uri, (IUri**)&newUri);
+    return am->ReleasePersistableUriPermission(newUri, modeFlags, ResolveUserId(uri));
+    // } catch (RemoteException e) {
+    // }
     return NOERROR;
 }
 
 ECode ContentResolver::GetPersistedUriPermissions(
     /* [out] */ IList** perms)
 {
-    try {
-        return ActivityManagerNative.getDefault()
-                .getPersistedUriPermissions(mPackageName, true).getList();
-    } catch (RemoteException e) {
-        throw new RuntimeException("Activity manager has died", e);
-    }
-    return NOERROR;
+    AutoPtr<IIActivityManager> am;
+    assert(0 && "TODO");
+    // am = ActivityManagerNative::GetDefault();
+    // try {
+    AutoPtr<IParceledListSlice> pls;
+    FAIL_RETURN(am->GetPersistedUriPermissions(mPackageName, TRUE, (IParceledListSlice**)&pls))
+    return pls->GetList(perms);
+    // } catch (RemoteException e) {
+    //     throw new RuntimeException("Activity manager has died", e);
+    // }
 }
 
 ECode ContentResolver::GetOutgoingPersistedUriPermissions(
     /* [out] */ IList** perms)
 {
-    try {
-        return ActivityManagerNative.getDefault()
-                .getPersistedUriPermissions(mPackageName, false).getList();
-    } catch (RemoteException e) {
-        throw new RuntimeException("Activity manager has died", e);
-    }
-    return NOERROR;
+    VALIDATE_NOT_NULL(perms)
+    *perms = NULL;
+
+    AutoPtr<IIActivityManager> am;
+    assert(0 && "TODO");
+    // am = ActivityManagerNative::GetDefault();
+    // try {
+    AutoPtr<IParceledListSlice> pls;
+    FAIL_RETURN(am->GetPersistedUriPermissions(mPackageName, FALSE, (IParceledListSlice**)&pls))
+    return pls->GetList(perms);
+    // } catch (RemoteException e) {
+    //     throw new RuntimeException("Activity manager has died", e);
+    // }
+    // return NOERROR;
 }
 
 ECode ContentResolver::StartSync(
@@ -1715,11 +1452,12 @@ ECode ContentResolver::StartSync(
     AutoPtr<IAccount> account;
     if (NULL != extras) {
         String accountName;
-        FAIL_RETURN(extras->GetString(IContentResolver::SYNC_EXTRAS_ACCOUNT, &accountName))
+        FAIL_RETURN(IBaseBundle::Probe(extras)->GetString(IContentResolver::SYNC_EXTRAS_ACCOUNT, &accountName))
         if (!accountName.IsNullOrEmpty()) {
-            CAccount::New(accountName, String("com.google"), (IAccount**)&account);
+            assert(0 && "TODO");
+            //CAccount::New(accountName, String("com.google"), (IAccount**)&account);
         }
-        FAIL_RETURN(extras->Remove(IContentResolver::SYNC_EXTRAS_ACCOUNT))
+        FAIL_RETURN(IBaseBundle::Probe(extras)->Remove(IContentResolver::SYNC_EXTRAS_ACCOUNT))
     }
     String authority;
     if (NULL != uri) {
@@ -1734,8 +1472,8 @@ ECode ContentResolver::RequestSync(
     /* [in] */ IBundle* extras)
 {
     FAIL_RETURN(ValidateSyncExtrasBundle(extras))
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
     return contentService->RequestSync(account, authority, extras);
 }
 
@@ -1745,31 +1483,36 @@ ECode ContentResolver::RequestSyncAsUser(
     /* [in] */ Int32 userId,
     /* [in] */ IBundle* extras)
 {
-    if (extras == null) {
-        throw new IllegalArgumentException("Must specify extras.");
-    }
-    SyncRequest request =
-        new SyncRequest.Builder()
-            .setSyncAdapter(account, authority)
-            .setExtras(extras)
-            .syncOnce()     // Immediate sync.
-            .build();
-    try {
-        getContentService().syncAsUser(request, userId);
-    } catch(RemoteException e) {
-        // Shouldn't happen.
-    }
-    return NOERROR;
+    VALIDATE_NOT_NULL(extras)
+
+    assert(0 && "TODO");
+    AutoPtr<ISyncRequestBuilder> builder;
+    // CSyncRequestBuilder::New((ISyncRequestBuilder**)&builder);
+    builder->SetSyncAdapter(account, authority);
+    builder->SetExtras(extras);
+    builder->SyncOnce();
+    AutoPtr<ISyncRequest> request;
+    builder->Build((ISyncRequest**)&request);
+
+    // try {
+    AutoPtr<IIContentService> cs;
+    GetContentService((IIContentService**)&cs);
+    return cs->SyncAsUser(request, userId);
+    // } catch(RemoteException e) {
+    //     // Shouldn't happen.
+    // }
 }
 
 ECode ContentResolver::RequestSync(
     /* [in] */ ISyncRequest* request)
 {
-    try {
-        getContentService().sync(request);
-    } catch(RemoteException e) {
-        // Shouldn't happen.
-    }
+    // try {
+    AutoPtr<IIContentService> cs;
+    GetContentService((IIContentService**)&cs);
+    return cs->Sync(request);
+    // } catch(RemoteException e) {
+    //     // Shouldn't happen.
+    // }
 }
 
 ECode ContentResolver::ValidateSyncExtrasBundle(
@@ -1777,19 +1520,18 @@ ECode ContentResolver::ValidateSyncExtrasBundle(
 {
     VALIDATE_NOT_NULL(extras)
     // try {
-    AutoPtr<IObjectContainer> ObjContainer;
-    FAIL_RETURN(extras->KeySet((IObjectContainer**)&ObjContainer))
-    if (NULL != ObjContainer) {
-        AutoPtr<IObjectEnumerator> ObjEnumerator;
-        ObjContainer->GetObjectEnumerator((IObjectEnumerator**)&ObjEnumerator);
+    AutoPtr<ISet> keySet;
+    FAIL_RETURN(IBaseBundle::Probe(extras)->GetKeySet((ISet**)&keySet))
+    if (NULL != keySet) {
+        AutoPtr<IIterator> it;
+        keySet->GetIterator((IIterator**)&it);
         Boolean hasNext = FALSE;
-        while ((ObjEnumerator->MoveNext(&hasNext), hasNext)) {
-            AutoPtr<ICharSequence> keyObj;
-            ObjEnumerator->Current((IInterface**)&keyObj);
-            String key;
-            keyObj->ToString(&key);
+        while ((it->HasNext(&hasNext), hasNext)) {
+            AutoPtr<IInterface> obj;
+            it->GetNext((IInterface**)&obj);
+            String key = Object::ToString(obj);
             AutoPtr<IInterface> valueObj;
-            FAIL_RETURN(extras->Get(key, (IInterface**)&valueObj))
+            FAIL_RETURN(IBaseBundle::Probe(extras)->Get(key, (IInterface**)&valueObj))
             if (NULL == valueObj) continue;
             if (IInteger64::Probe(valueObj) != NULL) continue;
             if (IInteger32::Probe(valueObj) != NULL) continue;
@@ -1823,8 +1565,8 @@ ECode ContentResolver::CancelSync(
     /* [in] */ IAccount* account,
     /* [in] */ const String& authority)
 {
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
     return contentService->CancelSync(account, authority, NULL);
 }
 
@@ -1833,18 +1575,20 @@ ECode ContentResolver::CancelSyncAsUser(
     /* [in] */ const String& authority,
     /* [in] */ Int32 userId)
 {
-    try {
-        getContentService().cancelSyncAsUser(account, authority, null, userId);
-    } catch (RemoteException e) {
-    }
+    // try {
+    AutoPtr<IIContentService> cs;
+    FAIL_RETURN(GetContentService((IIContentService**)&cs))
+    return cs->CancelSyncAsUser(account, authority, NULL, userId);
+    // } catch (RemoteException e) {
+    // }
 }
 
 ECode ContentResolver::GetSyncAdapterTypes(
     /* [out, callee] */ ArrayOf<ISyncAdapterType*>** types)
 {
     VALIDATE_NOT_NULL(types)
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
     return contentService->GetSyncAdapterTypes(types);
 }
 
@@ -1853,11 +1597,14 @@ ECode ContentResolver::GetSyncAdapterTypesAsUser(
     /* [out, callee] */ ArrayOf<ISyncAdapterType*>** types)
 {
     VALIDATE_NOT_NULL(types)
-    try {
-        return getContentService().getSyncAdapterTypesAsUser(userId);
-    } catch (RemoteException e) {
-        throw new RuntimeException("the ContentService should always be reachable", e);
-    }
+    *types = NULL;
+    // try {
+    AutoPtr<IIContentService> cs;
+    FAIL_RETURN(GetContentService((IIContentService**)&cs))
+    return cs->GetSyncAdapterTypesAsUser(userId, types);
+    // } catch (RemoteException e) {
+    //     throw new RuntimeException("the ContentService should always be reachable", e);
+    // }
     return NOERROR;
 }
 
@@ -1867,8 +1614,8 @@ ECode ContentResolver::GetSyncAutomatically(
     /* [out] */ Boolean* isSynced)
 {
     VALIDATE_NOT_NULL(isSynced)
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
     return contentService->GetSyncAutomatically(account, authority, isSynced);
 }
 
@@ -1878,12 +1625,14 @@ ECode ContentResolver::GetSyncAutomaticallyAsUser(
     /* [in] */ Int32 userId,
     /* [out] */ Boolean* isSynced)
 {
-    try {
-        return getContentService().getSyncAutomaticallyAsUser(account, authority, userId);
-    } catch (RemoteException e) {
-        throw new RuntimeException("the ContentService should always be reachable", e);
-    }
-    return NOERROR;
+    VALIDATE_NOT_NULL(isSynced)
+    // try {
+    AutoPtr<IIContentService> cs;
+    FAIL_RETURN(GetContentService((IIContentService**)&cs))
+    return cs->GetSyncAutomaticallyAsUser(account, authority, userId, isSynced);
+    // } catch (RemoteException e) {
+    //     throw new RuntimeException("the ContentService should always be reachable", e);
+    // }
 }
 
 ECode ContentResolver::SetSyncAutomatically(
@@ -1891,8 +1640,8 @@ ECode ContentResolver::SetSyncAutomatically(
     /* [in] */ const String& authority,
     /* [in] */ Boolean sync)
 {
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
     return contentService->SetSyncAutomatically(account, authority, sync);
 }
 
@@ -1902,13 +1651,14 @@ ECode ContentResolver::SetSyncAutomaticallyAsUser(
     /* [in] */ Int32 userId,
     /* [in] */ Boolean sync)
 {
-    try {
-        getContentService().setSyncAutomaticallyAsUser(account, authority, sync, userId);
-    } catch (RemoteException e) {
-        // exception ignored; if this is thrown then it means the runtime is in the midst of
-        // being restarted
-    }
-    return NOERROR;
+    // try {
+    AutoPtr<IIContentService> cs;
+    FAIL_RETURN(GetContentService((IIContentService**)&cs))
+    return cs->SetSyncAutomaticallyAsUser(account, authority, sync, userId);
+    // } catch (RemoteException e) {
+    //     // exception ignored; if this is thrown then it means the runtime is in the midst of
+    //     // being restarted
+    // }
 }
 
 ECode ContentResolver::AddPeriodicSync(
@@ -1927,18 +1677,18 @@ ECode ContentResolver::AddPeriodicSync(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Boolean value = FALSE;
-    if ((extras->GetBoolean(IContentResolver::SYNC_EXTRAS_MANUAL, FALSE, &value), value)
-            || (extras->GetBoolean(IContentResolver::SYNC_EXTRAS_DO_NOT_RETRY, FALSE, &value), value)
-            || (extras->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_BACKOFF, FALSE, &value), value)
-            || (extras->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_SETTINGS, FALSE, &value), value)
-            || (extras->GetBoolean(IContentResolver::SYNC_EXTRAS_INITIALIZE, FALSE, &value), value)
-            || (extras->GetBoolean(IContentResolver::SYNC_EXTRAS_FORCE, FALSE, &value), value)
-            || (extras->GetBoolean(IContentResolver::SYNC_EXTRAS_EXPEDITED, FALSE, &value), value)) {
+    if ((IBaseBundle::Probe(extras)->GetBoolean(IContentResolver::SYNC_EXTRAS_MANUAL, FALSE, &value), value)
+        || (IBaseBundle::Probe(extras)->GetBoolean(IContentResolver::SYNC_EXTRAS_DO_NOT_RETRY, FALSE, &value), value)
+        || (IBaseBundle::Probe(extras)->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_BACKOFF, FALSE, &value), value)
+        || (IBaseBundle::Probe(extras)->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_SETTINGS, FALSE, &value), value)
+        || (IBaseBundle::Probe(extras)->GetBoolean(IContentResolver::SYNC_EXTRAS_INITIALIZE, FALSE, &value), value)
+        || (IBaseBundle::Probe(extras)->GetBoolean(IContentResolver::SYNC_EXTRAS_FORCE, FALSE, &value), value)
+        || (IBaseBundle::Probe(extras)->GetBoolean(IContentResolver::SYNC_EXTRAS_EXPEDITED, FALSE, &value), value)) {
         //throw new IllegalArgumentException("illegal extras were set");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
     return contentService->AddPeriodicSync(account, authority, extras, pollFrequency);
 }
 
@@ -1946,16 +1696,21 @@ ECode ContentResolver::InvalidPeriodicExtras(
     /* [in] */ IBundle* extras,
     /* [out] */ Boolean* result)
 {
-    if (extras.getBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, false)
-            || extras.getBoolean(ContentResolver.SYNC_EXTRAS_DO_NOT_RETRY, false)
-            || extras.getBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_BACKOFF, false)
-            || extras.getBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, false)
-            || extras.getBoolean(ContentResolver.SYNC_EXTRAS_INITIALIZE, false)
-            || extras.getBoolean(ContentResolver.SYNC_EXTRAS_FORCE, false)
-            || extras.getBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, false)) {
-        return true;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    Boolean value;
+    if ((IBaseBundle::Probe(extras)->GetBoolean(IContentResolver::SYNC_EXTRAS_MANUAL, FALSE, &value), value)
+        || (IBaseBundle::Probe(extras)->GetBoolean(IContentResolver::SYNC_EXTRAS_DO_NOT_RETRY, FALSE, &value), value)
+        || (IBaseBundle::Probe(extras)->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_BACKOFF, FALSE, &value), value)
+        || (IBaseBundle::Probe(extras)->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_SETTINGS, FALSE, &value), value)
+        || (IBaseBundle::Probe(extras)->GetBoolean(IContentResolver::SYNC_EXTRAS_INITIALIZE, FALSE, &value), value)
+        || (IBaseBundle::Probe(extras)->GetBoolean(IContentResolver::SYNC_EXTRAS_FORCE, FALSE, &value), value)
+        || (IBaseBundle::Probe(extras)->GetBoolean(IContentResolver::SYNC_EXTRAS_EXPEDITED, FALSE, &value), value)) {
+        *result = TRUE;
     }
-    return false;
+
+    return NOERROR;
 }
 
 ECode ContentResolver::RemovePeriodicSync(
@@ -1972,24 +1727,24 @@ ECode ContentResolver::RemovePeriodicSync(
         //throw new IllegalArgumentException("authority must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
     return contentService->RemovePeriodicSync(account, authority, extras);
 }
 
 ECode ContentResolver::CancelSync(
     /* [in] */ ISyncRequest* request)
 {
-    if (request == null) {
-        throw new IllegalArgumentException("request cannot be null");
-    }
-    try {
-        getContentService().cancelRequest(request);
-    } catch (RemoteException e) {
-        // exception ignored; if this is thrown then it means the runtime is in the midst of
-        // being restarted
-    }
-    return NOERROR;
+    VALIDATE_NOT_NULL(request)
+
+    // try {
+    AutoPtr<IIContentService> cs;
+    FAIL_RETURN(GetContentService((IIContentService**)&cs))
+    return cs->CancelRequest(request);
+    // } catch (RemoteException e) {
+    //     // exception ignored; if this is thrown then it means the runtime is in the midst of
+    //     // being restarted
+    // }
 }
 
 ECode ContentResolver::GetPeriodicSyncs(
@@ -1997,6 +1752,9 @@ ECode ContentResolver::GetPeriodicSyncs(
     /* [in] */ const String& authority,
     /* [out] */ IList** periodicSyncs)
 {
+    VALIDATE_NOT_NULL(periodicSyncs)
+    *periodicSyncs = NULL;
+
     if (NULL == account) {
         // throw new IllegalArgumentException("account must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -2005,8 +1763,8 @@ ECode ContentResolver::GetPeriodicSyncs(
         // throw new IllegalArgumentException("authority must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
     return contentService->GetPeriodicSyncs(account, authority, periodicSyncs);
 }
 
@@ -2015,22 +1773,30 @@ ECode ContentResolver::GetIsSyncable(
     /* [in] */ const String& authority,
     /* [out] */ Int32* isSyncable)
 {
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
+    VALIDATE_NOT_NULL(isSyncable)
+    *isSyncable = 0;
+
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
     return contentService->GetIsSyncable(account, authority, isSyncable);
 }
 
 ECode ContentResolver::GetIsSyncableAsUser(
     /* [in] */ IAccount* account,
     /* [in] */ const String& authority,
-    /* [in] */ Int32 userId，
+    /* [in] */ Int32 userId,
     /* [out] */ Int32* isSyncable)
 {
-    try {
-        return getContentService().getIsSyncableAsUser(account, authority, userId);
-    } catch (RemoteException e) {
-        throw new RuntimeException("the ContentService should always be reachable", e);
-    }
+    VALIDATE_NOT_NULL(isSyncable)
+    *isSyncable = 0;
+
+    // try {
+    AutoPtr<IIContentService> cs;
+    FAIL_RETURN(GetContentService((IIContentService**)&cs))
+    return cs->GetIsSyncableAsUser(account, authority, userId, isSyncable);
+    // } catch (RemoteException e) {
+    //     throw new RuntimeException("the ContentService should always be reachable", e);
+    // }
 }
 
 ECode ContentResolver::SetIsSyncable(
@@ -2038,48 +1804,54 @@ ECode ContentResolver::SetIsSyncable(
     /* [in] */ const String& authority,
     /* [in] */ Int32 syncable)
 {
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
     return contentService->SetIsSyncable(account, authority, syncable);
 }
 
 ECode ContentResolver::GetMasterSyncAutomatically(
     /* [out] */ Boolean* result)
 {
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
     return contentService->GetMasterSyncAutomatically(result);
 }
 
 ECode ContentResolver::GetMasterSyncAutomaticallyAsUser(
-    /* [in] */ Int32 userId，
+    /* [in] */ Int32 userId,
     /* [out] */ Boolean* result)
 {
-    try {
-        return getContentService().getMasterSyncAutomaticallyAsUser(userId);
-    } catch (RemoteException e) {
-        throw new RuntimeException("the ContentService should always be reachable", e);
-    }
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    // try {
+    AutoPtr<IIContentService> cs;
+    FAIL_RETURN(GetContentService((IIContentService**)&cs))
+    return cs->GetMasterSyncAutomaticallyAsUser(userId, result);
+    // } catch (RemoteException e) {
+    //     throw new RuntimeException("the ContentService should always be reachable", e);
+    // }
 }
 
 ECode ContentResolver::SetMasterSyncAutomatically(
     /* [in] */ Boolean sync)
 {
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
     return contentService->SetMasterSyncAutomatically(sync);
 }
 
 ECode ContentResolver::SetMasterSyncAutomaticallyAsUser(
-    /* [in] */ Int32 userId，
+    /* [in] */ Int32 userId,
     /* [in] */ Boolean sync)
 {
-    try {
-        getContentService().setMasterSyncAutomaticallyAsUser(sync, userId);
-    } catch (RemoteException e) {
-        // exception ignored; if this is thrown then it means the runtime is in the midst of
-        // being restarted
-    }
+    // try {
+    AutoPtr<IIContentService> cs;
+    FAIL_RETURN(GetContentService((IIContentService**)&cs))
+    return cs->SetMasterSyncAutomaticallyAsUser(sync, userId);
+    // } catch (RemoteException e) {
+    //     // exception ignored; if this is thrown then it means the runtime is in the midst of
+    //     // being restarted
+    // }
 }
 
 ECode ContentResolver::IsSyncActive(
@@ -2087,31 +1859,37 @@ ECode ContentResolver::IsSyncActive(
     /* [in] */ const String& authority,
     /* [out] */ Boolean* isSyncActive)
 {
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
+    VALIDATE_NOT_NULL(isSyncActive)
+    *isSyncActive = FALSE;
+
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
     return contentService->IsSyncActive(account, authority, isSyncActive);
 }
 
 ECode ContentResolver::GetCurrentSync(
     /* [out] */ ISyncInfo** syncInfo)
 {
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
-    AutoPtr<IObjectContainer> syncInfoList;
-    FAIL_RETURN(contentService->GetCurrentSyncs((IObjectContainer**)&syncInfoList))
+    VALIDATE_NOT_NULL(syncInfo)
+    *syncInfo = NULL;
+
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
+    AutoPtr<IList> syncInfoList;
+    FAIL_RETURN(contentService->GetCurrentSyncs((IList**)&syncInfoList))
     Int32 count = 0;
-    syncInfoList->GetObjectCount(&count);
+    syncInfoList->GetSize(&count);
     if (0 == count) {
         *syncInfo = NULL;
         return NOERROR;
     }
-    AutoPtr<IObjectEnumerator> ObjEnumerator;
-    syncInfoList->GetObjectEnumerator((IObjectEnumerator**)&ObjEnumerator);
+    AutoPtr<IIterator> it;
+    syncInfoList->GetIterator((IIterator**)&it);
     Boolean hasNext = FALSE;
-    while ((ObjEnumerator->MoveNext(&hasNext), hasNext)) {
-        AutoPtr<ISyncInfo> valueObj;
-        ObjEnumerator->Current((IInterface**)&valueObj);
-        *syncInfo = valueObj;
+    while ((it->HasNext(&hasNext), hasNext)) {
+        AutoPtr<IInterface> valueObj;
+        it->GetNext((IInterface**)&valueObj);
+        *syncInfo = ISyncInfo::Probe(valueObj);
         REFCOUNT_ADD(*syncInfo);
         break;
     }
@@ -2121,20 +1899,28 @@ ECode ContentResolver::GetCurrentSync(
 ECode ContentResolver::GetCurrentSyncs(
     /* [out] */ IList** syncInfoList)
 {
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
+    VALIDATE_NOT_NULL(syncInfoList)
+    *syncInfoList = NULL;
+
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
     return contentService->GetCurrentSyncs(syncInfoList);
 }
 
 ECode ContentResolver::GetCurrentSyncsAsUser(
-    /* [in] */ Int32 userId，
+    /* [in] */ Int32 userId,
     /* [out] */ IList** syncInfoList)
 {
-    try {
-        return getContentService().getCurrentSyncsAsUser(userId);
-    } catch (RemoteException e) {
-        throw new RuntimeException("the ContentService should always be reachable", e);
-    }
+    VALIDATE_NOT_NULL(syncInfoList)
+    *syncInfoList = NULL;
+
+    AutoPtr<IIContentService> cs;
+    FAIL_RETURN(GetContentService((IIContentService**)&cs))
+    // try {
+    return cs->GetCurrentSyncsAsUser(userId, syncInfoList);
+    // } catch (RemoteException e) {
+    //     throw new RuntimeException("the ContentService should always be reachable", e);
+    // }
 }
 
 ECode ContentResolver::GetSyncStatus(
@@ -2142,22 +1928,26 @@ ECode ContentResolver::GetSyncStatus(
     /* [in] */ const String& authority,
     /* [out] */ ISyncStatusInfo** syncStatusInfo)
 {
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
-    return contentService->GetSyncStatus(account, authority, syncStatusInfo);
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
+    return contentService->GetSyncStatus(account, authority, NULL, syncStatusInfo);
 }
 
 ECode ContentResolver::GetSyncStatusAsUser(
     /* [in] */ IAccount* account,
     /* [in] */ const String& authority,
-    /* [in] */ Int32 userId，
+    /* [in] */ Int32 userId,
     /* [out] */ ISyncStatusInfo** syncStatusInfo)
 {
-    try {
-        return getContentService().getSyncStatusAsUser(account, authority, null, userId);
-    } catch (RemoteException e) {
-        throw new RuntimeException("the ContentService should always be reachable", e);
-    }
+    VALIDATE_NOT_NULL(syncStatusInfo)
+    *syncStatusInfo = NULL;
+    // try {
+    AutoPtr<IIContentService> cs;
+    FAIL_RETURN(GetContentService((IIContentService**)&cs))
+    return cs->GetSyncStatusAsUser(account, authority, NULL, userId, syncStatusInfo);
+    // } catch (RemoteException e) {
+    //     throw new RuntimeException("the ContentService should always be reachable", e);
+    // }
 }
 
 ECode ContentResolver::IsSyncPending(
@@ -2165,9 +1955,7 @@ ECode ContentResolver::IsSyncPending(
     /* [in] */ const String& authority,
     /* [out] */ Boolean* isSyncPending)
 {
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
-    return contentService->IsSyncPending(account, authority, isSyncPending);
+    return IsSyncPendingAsUser(account, authority, UserHandle::GetMyUserId(), isSyncPending);
 }
 
 ECode ContentResolver::IsSyncPendingAsUser(
@@ -2176,11 +1964,16 @@ ECode ContentResolver::IsSyncPendingAsUser(
     /* [in] */ Int32 userId,
     /* [out] */ Boolean* isSyncPending)
 {
-    try {
-        return getContentService().isSyncPendingAsUser(account, authority, null, userId);
-    } catch (RemoteException e) {
-        throw new RuntimeException("the ContentService should always be reachable", e);
-    }
+    VALIDATE_NOT_NULL(isSyncPending)
+    *isSyncPending = FALSE;
+
+    // try {
+    AutoPtr<IIContentService> cs;
+    FAIL_RETURN(GetContentService((IIContentService**)&cs))
+    return cs->IsSyncPendingAsUser(account, authority, NULL, userId, isSyncPending);
+    // } catch (RemoteException e) {
+    //     throw new RuntimeException("the ContentService should always be reachable", e);
+    // }
 }
 
 ECode ContentResolver::AddStatusChangeListener(
@@ -2188,6 +1981,9 @@ ECode ContentResolver::AddStatusChangeListener(
     /* [in] */ ISyncStatusObserver* observerCallback,
     /* [out] */ IInterface** item)
 {
+    VALIDATE_NOT_NULL(item)
+    *item = NULL;
+
     if (NULL == observerCallback) {
         //throw new IllegalArgumentException("you passed in a null callback");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -2215,8 +2011,8 @@ ECode ContentResolver::RemoveStatusChangeListener(
         //throw new IllegalArgumentException("you passed in a null handle");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AutoPtr<IContentService> contentService;
-    FAIL_RETURN(GetContentService((IContentService**)&contentService))
+    AutoPtr<IIContentService> contentService;
+    FAIL_RETURN(GetContentService((IIContentService**)&contentService))
     return contentService->RemoveStatusChangeListener(IISyncStatusObserver::Probe(handle));
 }
 
@@ -2238,14 +2034,12 @@ ECode ContentResolver::MaybeLogQueryToEventLog(
 {
     Int32 samplePercent = SamplePercentForDuration(durationMillis);
     if (samplePercent < 100) {
-        {
-            AutoLock lock(mRandomLock);
+        AutoLock lock(ISynchronize::Probe(mRandom));
 
-            Int32 rando;
-            mRandom->NextInt32(100, &rando);
-            if (rando >= samplePercent) {
-                return NOERROR;
-            }
+        Int32 rando;
+        mRandom->NextInt32(100, &rando);
+        if (rando >= samplePercent) {
+            return NOERROR;
         }
     }
 
@@ -2264,7 +2058,7 @@ ECode ContentResolver::MaybeLogQueryToEventLog(
     // ActivityThread.currentPackageName() only returns non-null if the
     // current thread is an application main thread.  This parameter tells
     // us whether an event loop is blocked, and if so, which app it is.
-    String blockingPackage = AppGlobals::GetInitialPackage();
+    // String blockingPackage = AppGlobals::GetInitialPackage();
 
     // TODO:
 //    EventLog.writeEvent(
@@ -2287,17 +2081,15 @@ ECode ContentResolver::MaybeLogUpdateToEventLog(
 {
     Int32 samplePercent = SamplePercentForDuration(durationMillis);
     if (samplePercent < 100) {
-        {
-            AutoLock lock(mRandomLock);
+        AutoLock lock(ISynchronize::Probe(mRandom));
 
-            Int32 rando;
-            mRandom->NextInt32(100, &rando);
-            if (rando >= samplePercent) {
-                return NOERROR;
-            }
+        Int32 rando;
+        mRandom->NextInt32(100, &rando);
+        if (rando >= samplePercent) {
+            return NOERROR;
         }
     }
-    String blockingPackage = AppGlobals::GetInitialPackage();
+    // String blockingPackage = AppGlobals::GetInitialPackage();
 
     //TODO:
 //    EventLog.writeEvent(
@@ -2312,17 +2104,14 @@ ECode ContentResolver::MaybeLogUpdateToEventLog(
 }
 
 ECode ContentResolver::GetContentService(
-    /* [out] */ IContentService** contentService)
+    /* [out] */ IIContentService** contentService)
 {
     VALIDATE_NOT_NULL(contentService)
 
-    if (NULL != sContentService) {
-        *contentService = sContentService;
-        REFCOUNT_ADD(*contentService);
-        return NOERROR;
+    if (NULL == sContentService) {
+        sContentService = IIContentService::Probe(ServiceManager::GetService(IContentResolver::CONTENT_SERVICE_NAME));
     }
 
-    sContentService = (IContentService*)ServiceManager::GetService(IContentResolver::CONTENT_SERVICE_NAME).Get();
     // if (false) Log.v("ContentService", "default service binder = " + b);
     *contentService = sContentService;
     // if (false) Log.v("ContentService", "default service = " + sContentService);
@@ -2338,7 +2127,9 @@ String ContentResolver::GetPackageName()
 Int32 ContentResolver::ResolveUserId(
     /* [in] */ IUri* uri)
 {
-    return ContentProvider.getUserIdFromUri(uri, mContext.getUserId());
+    Int32 userId;
+    mContext->GetUserId(&userId);
+    return ContentProvider::GetUserIdFromUri(uri, userId);
 }
 
 } // namespace Content

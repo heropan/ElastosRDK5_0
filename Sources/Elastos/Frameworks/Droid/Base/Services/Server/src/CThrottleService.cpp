@@ -54,7 +54,7 @@ using Elastos::IO::ICloseable;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
 using Elastos::Core::IRandom;
-using Elastos::Core::CRandom;
+using Elastos::Utility::CRandom;
 using Elastos::Utility::ICalendarHelper;
 using Elastos::Utility::CCalendarHelper;
 using Elastos::Utility::IGregorianCalendar;

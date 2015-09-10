@@ -1,10 +1,13 @@
 
 #include "content/CContentProviderResult.h"
+#include "content/ContentProvider.h"
 //#include "net/Uri.h"
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 
 //using Elastos::Droid::Net::Uri;
 using Elastos::Core::StringUtils;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
@@ -21,12 +24,16 @@ CContentProviderResult::CContentProviderResult()
 CContentProviderResult::~CContentProviderResult()
 {}
 
+ECode CContentProviderResult::constructor()
+{
+    return NOERROR;
+}
+
 ECode CContentProviderResult::constructor(
     /* [in] */ IUri* uri)
 {
     VALIDATE_NOT_NULL(uri)
     mUri = uri;
-    mCount = 0;
     return NOERROR;
 }
 
@@ -34,12 +41,16 @@ ECode CContentProviderResult::constructor(
     /* [in] */ Int32 count)
 {
     mCount = count;
-    mUri = NULL;
     return NOERROR;
 }
 
-ECode CContentProviderResult::constructor()
+ECode CContentProviderResult::constructor(
+    /* [in] */ IContentProviderResult* cpr,
+    /* [in] */ Int32 userId)
 {
+    VALIDATE_NOT_NULL(cpr)
+    CContentProviderResult* obj = (CContentProviderResult*)cpr;
+    mUri = ContentProvider::MaybeAddUserId(obj->mUri, userId);
     return NOERROR;
 }
 
@@ -80,21 +91,16 @@ ECode CContentProviderResult::ToString(
     VALIDATE_NOT_NULL(result)
 
     if (NULL != mUri) {
-        String str1("CContentProviderResult(uri=");
-        String str2 = Object::ToString(mUri);
-        String str3(")");
-        str1.Append(str2);
-        str1.Append(str3);
-        *result = str1;
+        StringBuilder sb("CContentProviderResult(uri=");
+        sb.Append(Object::ToString(mUri));
+        sb.Append(")");
+        *result = sb.ToString();
     }
     else {
-        String str1("ContentProviderResult(count=");
-        String str2;
-        String str3(")");
-        str2 = StringUtils::ToString(mCount);
-        str1.Append(str2);
-        str1.Append(str3);
-        *result = str1;
+        StringBuilder sb("ContentProviderResult(count=");
+        sb.Append(StringUtils::ToString(mCount));
+        sb.Append(")");
+        *result = sb.ToString();
     }
 
     return NOERROR;

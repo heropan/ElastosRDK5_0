@@ -16,6 +16,8 @@ public:
 
     Observable();
 
+    virtual ~Observable();
+
     CARAPI constructor();
 
     /**

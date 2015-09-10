@@ -10,7 +10,7 @@ using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Location::CLocation;
 //using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Core::IRandom;
-using Elastos::Core::CRandom;
+using Elastos::Utility::CRandom;
 using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Droid::Provider::CSettingsSecure;
 
