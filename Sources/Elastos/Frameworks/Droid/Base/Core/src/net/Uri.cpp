@@ -1,538 +1,76 @@
 
+#include "Uri.h"
 
-#include "net/Uri.h"
-#include <elastos/utility/logging/Slogger.h>
-#include <elastos/utility/etl/Set.h>
-#include <elastos/utility/etl/List.h>
-#include <elastos/core/StringBuilder.h>
-#include <elastos/core/StringUtils.h>
-#include <Elastos.CoreLibrary.h>
-#ifdef DROID_CORE
-#include "os/CEnvironment.h"
-#include "net/CStringUri.h"
-#include "net/CHierarchicalUri.h"
-#include "net/COpaqueUri.h"
-#include "net/CUriBuilder.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
-
-using Elastos::Core::StringUtils;
-using Elastos::Utility::Set;
-using Elastos::Core::StringBuilder;
-using Elastos::Utility::Etl::List;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::CString;
-using Elastos::IO::CFile;
-using Elastos::IO::Charset::ICharset;
-using Elastos::IO::Charset::ICharsets;
-using Elastos::IO::Charset::CCharsets;
-using Elastos::IO::Charset::ICharsetHelper;
-using Elastos::IO::Charset::CCharsetHelper;
-using Elastos::Net::IURLEncoder;
-using Elastos::Net::CURLEncoder;
-using Elastos::Net::IUriCodecHelper;
-using Elastos::Net::CUriCodecHelper;
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Net::Uri;
-using Elastos::Droid::Net::IUriBuilder;
-using Elastos::Droid::Os::IEnvironment;
-using Elastos::Droid::Os::CEnvironment;
+using Elastos::Core::EIID_IComparable;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
 //====================================================================================
-//              Uri::PathSegments
-//====================================================================================
-AutoPtr<Uri::PathSegments> Uri::PathSegments::sEMPTY = new Uri::PathSegments(ArrayOf<String>::Alloc(0), 0);
-
-Uri::PathSegments::PathSegments(
-    /* [in] */ ArrayOf<String>* segments,
-    /* [in] */ Int32 size)
-    : mSegments(segments)
-    , mSize(size)
-{}
-
-ECode Uri::PathSegments::Get(
-    /* [in] */ Int32 index,
-    /* [out] */ String* encoded)
-{
-    VALIDATE_NOT_NULL(encoded);
-
-    if (index >= mSize) {
-        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-
-    *encoded = (*mSegments)[index];
-    return NOERROR;
-}
-
-Int32 Uri::PathSegments::Size()
-{
-    return mSize;
-}
-
-//====================================================================================
-//              Uri::PathSegmentsBuilder
-//====================================================================================
-
-Uri::PathSegmentsBuilder::PathSegmentsBuilder()
-    : mSize(0)
-{
-}
-
-ECode Uri::PathSegmentsBuilder::Add(
-    /* [in] */ const String& segment)
-{
-    mSegments.PushBack(segment);
-    mSize++;
-
-    return NOERROR;
-}
-
-AutoPtr<Uri::PathSegments> Uri::PathSegmentsBuilder::Build()
-{
-    if (mSegments.IsEmpty()) {
-        return Uri::PathSegments::sEMPTY;
-    }
-
-    // try {
-    AutoPtr<ArrayOf<String> > segments = ArrayOf<String>::Alloc(mSegments.GetSize());
-    if (!segments) {
-        return Uri::PathSegments::sEMPTY;
-    }
-
-    List<String>::Iterator itor;
-    Int32 i = 0;
-    for (itor = mSegments.Begin(); itor != mSegments.End(); ++itor, ++i) {
-        (*segments)[i] = *itor;
-    }
-
-    AutoPtr<Uri::PathSegments> pathSegments = new Uri::PathSegments(segments, mSize);
-
-    // } finally {
-    // Makes sure this doesn't get reused.
-    mSegments.Clear();
-    mSize = 0;
-    // }
-
-    return pathSegments;
-}
-
-//====================================================================================
-//              Uri::AbstractPart
-//====================================================================================
-Uri::AbstractPart::AbstractPart(
-    /* [in] */ const String& encoded,
-    /* [in] */ const String& decoded)
-    : mEncoded(encoded)
-    , mDecoded(decoded)
-{}
-
-String Uri::AbstractPart::GetDecoded()
-{
-    // @SuppressWarnings("StringEquality")
-    if (Uri::NOT_CACHED.Equals(mDecoded)) {
-        Uri::Decode(mEncoded, &mDecoded);
-    }
-    return mDecoded;
-}
-
-ECode Uri::AbstractPart::WriteTo(
-    /* [in] */ IParcel* parcel)
-{
-    // @SuppressWarnings("StringEquality")
-    Boolean hasEncoded = !Uri::NOT_CACHED.Equals(mEncoded);
-
-    // @SuppressWarnings("StringEquality")
-    Boolean hasDecoded = !Uri::NOT_CACHED.Equals(mDecoded);
-
-    if (hasEncoded && hasDecoded) {
-        parcel->WriteInt32(Representation::BOTH);
-        parcel->WriteString(mEncoded);
-        parcel->WriteString(mDecoded);
-    }
-    else if (hasEncoded) {
-        parcel->WriteInt32(Representation::ENCODED);
-        parcel->WriteString(mEncoded);
-    }
-    else if (hasDecoded) {
-        parcel->WriteInt32(Representation::DECODED);
-        parcel->WriteString(mDecoded);
-    }
-    else {
-        // throw new IllegalArgumentException("Neither encoded nor decoded");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
-
-//====================================================================================
-//              Uri::Part
-//====================================================================================
-
-const AutoPtr<Uri::Part> Uri::Part::sNULL = new EmptyPart(String(NULL));
-const AutoPtr<Uri::Part> Uri::Part::sEMPTY = new EmptyPart(String(""));
-
-Uri::Part::Part(
-    /* [in] */ const String& encoded,
-    /* [in] */ const String& decoded)
-    : AbstractPart(encoded, decoded)
-{}
-
-Boolean Uri::Part::IsEmpty()
-{
-    return FALSE;
-}
-
-String Uri::Part::GetEncoded()
-{
-    // @SuppressWarnings("StringEquality")
-    if (Uri::NOT_CACHED.Equals(mEncoded)) {
-        Uri::Encode(mDecoded, &mEncoded);
-    }
-    return mEncoded;
-}
-
-ECode Uri::Part::ReadFrom(
-    /* [in] */ IParcel* parcel,
-    /* [out] */ Part** part)
-{
-    VALIDATE_NOT_NULL(part);
-    *part = NULL;
-    VALIDATE_NOT_NULL(parcel);
-
-    AutoPtr<Part> result;
-    Int32 representation;
-    parcel->ReadInt32(&representation);
-    String str1, str2;
-    switch (representation) {
-        case Representation::BOTH:
-            parcel->ReadString(&str1);
-            parcel->ReadString(&str2);
-            result = From(str1, str2);
-            break;
-
-        case Representation::ENCODED:
-            parcel->ReadString(&str1);
-            result = FromEncoded(str1);
-            break;
-
-        case Representation::DECODED:
-            parcel->ReadString(&str1);
-            result = FromDecoded(str1);
-            break;
-        default:
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
-            // throw new IllegalArgumentException("Unknown representation: "
-            //         + representation);
-    }
-
-    *part = result;
-    REFCOUNT_ADD(*part);
-    return NOERROR;
-}
-
-AutoPtr<Uri::Part> Uri::Part::NonNull(
-    /* [in] */ Part* part)
-{
-    return part == NULL ? sNULL.Get() : part;
-}
-
-/**
- * Creates a part from the encoded string.
- *
- * @param encoded part string
- */
-AutoPtr<Uri::Part> Uri::Part::FromEncoded(
-    /* [in] */ const String& encoded)
-{
-    return From(encoded, NOT_CACHED);
-}
-
-/**
- * Creates a part from the decoded string.
- *
- * @param decoded part string
- */
-AutoPtr<Uri::Part> Uri::Part::FromDecoded(
-    /* [in] */ const String& decoded)
-{
-    return From(NOT_CACHED, decoded);
-}
-
-AutoPtr<Uri::Part> Uri::Part::From(
-    /* [in] */ const String& encoded,
-    /* [in] */ const String& decoded)
-{
-    // We have to check both encoded and decoded in case one is
-    // NOT_CACHED.
-
-    if (encoded.IsNull()) {
-        return sNULL;
-    }
-    if (encoded.IsEmpty()) {
-        return sEMPTY;
-    }
-
-    if (decoded.IsNull()) {
-        return sNULL;
-    }
-    if (decoded.IsEmpty()) {
-        return sEMPTY;
-    }
-
-    AutoPtr<Part> p = new Part(encoded, decoded);
-    return p;
-}
-
-//====================================================================================
-//              Uri::PathPart
-//====================================================================================
-const AutoPtr<Uri::PathPart> Uri::PathPart::sNULL = new PathPart(String(NULL), String(NULL));
-const AutoPtr<Uri::PathPart> Uri::PathPart::sEMPTY = new PathPart(String(""), String(""));
-
-Uri::PathPart::PathPart(
-    /* [in] */ const String& encoded,
-    /* [in] */ const String& decoded)
-    : AbstractPart(encoded, decoded)
-{}
-
-String Uri::PathPart::GetEncoded()
-{
-    // @SuppressWarnings("StringEquality")
-    if (Uri::NOT_CACHED.Equals(mEncoded)) {
-        // Uri::Encode(mDecoded, &mEncoded);
-        Encode(mDecoded, String("/"), &mEncoded);
-    }
-
-    return mEncoded;
-}
-
-AutoPtr<Uri::PathSegments> Uri::PathPart::GetPathSegments()
-{
-    if (mPathSegments != NULL) {
-        return mPathSegments;
-    }
-
-    String path = GetEncoded();
-    if (path.IsNull()) {
-        mPathSegments = PathSegments::sEMPTY;
-        return mPathSegments;
-    }
-
-    AutoPtr<Uri::PathSegmentsBuilder> segmentBuilder = new Uri::PathSegmentsBuilder();
-
-    Int32 previous = 0;
-    Int32 current;
-    while ((current = path.IndexOf('/', previous)) > -1) {
-        // This check keeps us from adding a segment if the path starts
-        // '/' and an empty segment for "//".
-
-        if (previous < current) {
-            String decodedSegment;
-            Uri::Decode(path.Substring(previous, current), &decodedSegment);
-            segmentBuilder->Add(decodedSegment);
-        }
-        previous = current + 1;
-    }
-
-    // Add in the final path segment.
-    if (previous < (Int32)path.GetLength()) {
-        String decoded;
-        Uri::Decode(path.Substring(previous), &decoded);
-        segmentBuilder->Add(decoded);
-    }
-
-    mPathSegments = segmentBuilder->Build();
-    return mPathSegments;
-}
-
-AutoPtr<Uri::PathPart> Uri::PathPart::AppendEncodedSegment(
-    /* [in] */ Uri::PathPart* oldPart,
-    /* [in] */ const String& newSegment)
-{
-    if (oldPart == NULL) {
-        // No old path.
-        return FromEncoded(String("/") + newSegment);
-    }
-
-    String oldPath = oldPart->GetEncoded();
-    if (oldPath.IsNull()) {
-        oldPath = String("");
-    }
-
-    UInt32 oldPathLength = oldPath.GetLength();
-    String newPath;
-    if (oldPathLength == 0) {
-        // No old path.
-        newPath = String("/") + newSegment;
-    } else if (oldPath[(oldPathLength - 1)] == '/') {
-        newPath = oldPath + newSegment;
-    } else {
-        newPath = oldPath + String("/") + newSegment;
-    }
-
-    return FromEncoded(newPath);
-}
-
-AutoPtr<Uri::PathPart> Uri::PathPart::AppendDecodedSegment(
-    /* [in] */ Uri::PathPart* oldPart,
-    /* [in] */ const String& decoded)
-{
-    String encoded;
-    Uri::Encode(decoded, &encoded);
-
-    // TODO: Should we reuse old PathSegments? Probably not.
-    return AppendEncodedSegment(oldPart, encoded);
-}
-
-ECode Uri::PathPart::ReadFrom(
-    /* [in] */ IParcel* parcel,
-    /* [out] */ Uri::PathPart** result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = NULL;
-
-    Int32 representation;
-    parcel->ReadInt32(&representation);
-
-    AutoPtr<PathPart> part;
-    String str1, str2;
-    switch (representation) {
-        case AbstractPart::Representation::BOTH: {
-            parcel->ReadString(&str1);
-            parcel->ReadString(&str2);
-            part = From(str1, str2);
-            break;
-        }
-        case AbstractPart::Representation::ENCODED: {
-            parcel->ReadString(&str1);
-            part = FromEncoded(str1);
-            break;
-        }
-        case AbstractPart::Representation::DECODED: {
-            parcel->ReadString(&str1);
-            part = FromDecoded(str1);
-            break;
-        }
-        default: {
-            // throw new AssertionError();
-            return E_ASSERTION_ERROR;
-        }
-    }
-
-    *result = part;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
-}
-
-AutoPtr<Uri::PathPart> Uri::PathPart::FromEncoded(
-    /* [in] */ const String& encoded)
-{
-    return From(encoded, NOT_CACHED);
-}
-
-AutoPtr<Uri::PathPart> Uri::PathPart::FromDecoded(
-    /* [in] */ const String& decoded)
-{
-    return From(NOT_CACHED, decoded);
-}
-
-AutoPtr<Uri::PathPart> Uri::PathPart::From(
-    /* [in] */ const String& encoded,
-    /* [in] */ const String& decoded)
-{
-    if (encoded.IsNull()) {
-        return sNULL;
-    }
-
-    if (encoded.IsEmpty()) {
-        return sEMPTY;
-    }
-
-    return new PathPart(encoded, decoded);
-}
-
-/**
- * Prepends path values with "/" if they're present, not empty, and
- * they don't already start with "/".
- */
-AutoPtr<Uri::PathPart> Uri::PathPart::MakeAbsolute(
-    /* [in] */ Uri::PathPart* oldPart)
-{
-    // @SuppressWarnings("StringEquality")
-    Boolean encodedCached = !oldPart->mEncoded.Equals(Uri::NOT_CACHED);
-
-    // We don't care which version we use, and we don't want to force
-    // unneccessary encoding/decoding.
-    String oldPath = encodedCached ? oldPart->mEncoded : oldPart->mDecoded;
-    if (oldPath.IsNullOrEmpty() || oldPath.StartWith("/")) {
-        return oldPart;
-    }
-
-    // Prepend encoded string if present.
-    String newEncoded = encodedCached ? String("/") + oldPart->mEncoded : Uri::NOT_CACHED;
-
-    // Prepend decoded string if present.
-    // @SuppressWarnings("StringEquality")
-    Boolean decodedCached = !oldPart->mDecoded.Equals(
-        Uri::NOT_CACHED);
-    String newDecoded = decodedCached ? String("/") + oldPart->mDecoded : Uri::NOT_CACHED;
-
-    return new PathPart(newEncoded, newDecoded);
-}
-
-//====================================================================================
 //              Uri
 //====================================================================================
-const String Uri::TAG("Uri");
-const Char8 Uri::HEX_DIGITS[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+CAR_INTERFACE_IMPL_3(Uri, Object, IParcelable, IComparable, IUri)
 
-
-// const String LOG = String("Uri"); // Uri.class.getSimpleName();
-const String Uri::NOT_CACHED= String("NOT CACHED");
-const String Uri::NOT_HIERARCHICAL = String("This isn't a hierarchical URI.");
-const String Uri::DEFAULT_ENCODING = String("UTF-8");
-
-AutoPtr<IUri> Uri::EMPTY;
-
-AutoPtr<IUri> Uri::GetEMPTY()
+String GetUriName()
 {
-    if (EMPTY == NULL) {
+    return String("Uri"); // Uri.class.getSimpleName();
+}
+const String Uri::sLOG = GetUriName();
+const String Uri::sNOT_CACHED = String("NOT CACHED");
+const Char32 Uri::sHEX_DIGITS[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+const Int32 Uri::sNOT_FOUND = -1;
+const Int32 Uri::sNOT_CALCULATED = -2;
+const String Uri::sNOT_HIERARCHICAL = String("This isn't a hierarchical URI.");
+const String Uri::sDEFAULT_ENCODING = String("UTF-8");
+const Int32 Uri::sNULL_TYPE_ID = 0;
+AutoPtr<IUri> CreateEmpty()
+{
+    AutoPtr<IUri> result;
+#if 0 // TODO: Waiting for CHierarchicalUri
 #ifdef DROID_CORE
-        AutoPtr<CHierarchicalUri> obj;
-        CHierarchicalUri::NewByFriend(
-            String(NULL),
-            (Handle32)Uri::Part::sNULL.Get(),
-            (Handle32)Uri::PathPart::sEMPTY.Get(),
-            (Handle32)Uri::Part::sNULL.Get(),
-            (Handle32)Uri::Part::sNULL.Get(),
-            (CHierarchicalUri**)&obj);
-        EMPTY = (IUri*)obj->Probe(EIID_IUri);
+    AutoPtr<CHierarchicalUri> obj;
+    CHierarchicalUri::NewByFriend(
+        String(NULL),
+        (Handle32)Uri::Part::sNULL.Get(),
+        (Handle32)Uri::PathPart::sEMPTY.Get(),
+        (Handle32)Uri::Part::sNULL.Get(),
+        (Handle32)Uri::Part::sNULL.Get(),
+        (CHierarchicalUri**)&obj);
+    result = (IUri*)obj->Probe(EIID_IUri);
 #else
-        CHierarchicalUri::New(
-            String(NULL),
-            (Handle32)Uri::Part::sNULL.Get(),
-            (Handle32)Uri::PathPart::sEMPTY.Get(),
-            (Handle32)Uri::Part::sNULL.Get(),
-            (Handle32)Uri::Part::sNULL.Get(),
-            (IUri**)&EMPTY);
+    CHierarchicalUri::New(
+        String(NULL),
+        (Handle32)Uri::Part::sNULL.Get(),
+        (Handle32)Uri::PathPart::sEMPTY.Get(),
+        (Handle32)Uri::Part::sNULL.Get(),
+        (Handle32)Uri::Part::sNULL.Get(),
+        (IUri**)&result);
 #endif
-    }
-    return EMPTY;
+#endif
+    return result;
+}
+const AutoPtr<IUri> Uri::sEMPTY = CreateEmpty();
+
+ECode Uri::GetEmpty(
+    /* [out] */ IUri** result)
+{
+    VALIDATE_NOT_NULL(*result)
+    *result = sEMPTY;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
+
 ECode Uri::IsOpaque(
-    /* [out] */ Boolean* isOpaque)
+    /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(isOpaque);
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
 
     Boolean isHierachical;
     IsHierarchical(&isHierachical);
-    *isOpaque = !isHierachical;
+    *result = !isHierachical;
     return NOERROR;
 }
 
@@ -548,1164 +86,499 @@ ECode Uri::IsAbsolute(
 }
 
 ECode Uri::Equals(
-    /* [in] */ IUri* other,
-    /* [out] */ Boolean* isEqual)
+    /* [in] */ IInterface* o,
+    /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(isEqual);
-    *isEqual = FALSE;
-
-    if (IUri::Probe(other) == NULL) {
-        return NOERROR;
-    }
-
-    String str1, str2;
-    FAIL_RETURN(ToString(&str1));
-    FAIL_RETURN(other->ToString(&str2));
-    *isEqual = str1.Equals(str2);
-    return NOERROR;
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (!(o instanceof Uri)) {
+            return false;
+        }
+        Uri other = (Uri) o;
+        return toString().equals(other.toString());
+#endif
 }
 
 ECode Uri::GetHashCode(
-    /* [out] */ Int32* hashCode)
+    /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(hashCode);
-    *hashCode = 0;
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return toString().hashCode();
 
-    String str1;
-    FAIL_RETURN(ToString(&str1));
-
-    *hashCode = str1.GetHashCode();
-    return NOERROR;
+#endif
 }
 
 ECode Uri::CompareTo(
     /* [in] */ IUri* other,
     /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = 1;
-    VALIDATE_NOT_NULL(other);
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return toString().compareTo(other.toString());
 
-    String str1, str2;
-    FAIL_RETURN(ToString(&str1));
-    FAIL_RETURN(other->ToString(&str2));
-
-    *result = str1.Compare(str2);
-    return NOERROR;
+#endif
 }
 
 ECode Uri::ToSafeString(
     /* [out] */ String* result)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = NULL;
-
-    String scheme, ssp;
-    GetScheme(&scheme);
-    GetSchemeSpecificPart(&ssp);
-
-    StringBuilder builder(64);
-    if (!scheme.IsNull()){
-        if (scheme.EqualsIgnoreCase("tel")
-            || scheme.EqualsIgnoreCase("sip")
-            || scheme.EqualsIgnoreCase("sms")
-            || scheme.EqualsIgnoreCase("smsto")
-            || scheme.EqualsIgnoreCase("mailto")) {
-
-            builder += scheme;
-            builder += ":";
-            if (!ssp.IsNull()) {
-                AutoPtr<ArrayOf<Char32> > charArray = ssp.GetChars();
-                Char32 c;
-                for (Int32 i = 0; i < charArray->GetLength(); i++) {
-                    c = (*charArray)[i];
-                    if (c == '-' || c == '@' || c == '.') {
-                        builder += c;
-                    } else {
-                        builder += "x";
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        String scheme = getScheme();
+        String ssp = getSchemeSpecificPart();
+        if (scheme != null) {
+            if (scheme.equalsIgnoreCase("tel") || scheme.equalsIgnoreCase("sip")
+                    || scheme.equalsIgnoreCase("sms") || scheme.equalsIgnoreCase("smsto")
+                    || scheme.equalsIgnoreCase("mailto")) {
+                StringBuilder builder = new StringBuilder(64);
+                builder.append(scheme);
+                builder.append(':');
+                if (ssp != null) {
+                    for (int i=0; i<ssp.length(); i++) {
+                        char c = ssp.charAt(i);
+                        if (c == '-' || c == '@' || c == '.') {
+                            builder.append(c);
+                        } else {
+                            builder.append('x');
+                        }
                     }
                 }
+                return builder.toString();
             }
-            builder.ToString(result);
-            return NOERROR;
         }
-    }
+        // Not a sensitive scheme, but let's still be conservative about
+        // the data we include -- only the ssp, not the query params or
+        // fragment, because those can often have sensitive info.
+        StringBuilder builder = new StringBuilder(64);
+        if (scheme != null) {
+            builder.append(scheme);
+            builder.append(':');
+        }
+        if (ssp != null) {
+            builder.append(ssp);
+        }
+        return builder.toString();
 
-    // Not a sensitive scheme, but let's still be conservative about
-    // the data we include -- only the ssp, not the query params or
-    // fragment, because those can often have sensitive info.
-    if (!scheme.IsNull()) {
-        builder += scheme;
-        builder += ":";
-    }
-
-    if (!ssp.IsNull()) {
-        builder += ssp;
-    }
-
-    builder.ToString(result);
-    return NOERROR;
+#endif
 }
 
 ECode Uri::Parse(
     /* [in] */ const String& uriString,
-    /* [out] */ IUri** uri)
+    /* [out] */ IUri** result)
 {
-    VALIDATE_NOT_NULL(uri);
-    *uri = NULL;
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return new StringUri(uriString);
 
-#ifdef DROID_CORE
-    AutoPtr<CStringUri> curi;
-    FAIL_RETURN(CStringUri::NewByFriend(uriString, (CStringUri**)&curi));
-#else
-    AutoPtr<IUri> curi;
-    FAIL_RETURN(CStringUri::New(uriString, (IUri**)&curi));
 #endif
-
-    *uri = (IUri*)curi.Get();
-    REFCOUNT_ADD(*uri);
-    return NOERROR;
 }
 
 ECode Uri::FromFile(
     /* [in] */ IFile* file,
-    /* [out] */ IUri** uri)
+    /* [out] */ IUri** result)
 {
-    VALIDATE_NOT_NULL(uri);
-    *uri = NULL;
-    VALIDATE_NOT_NULL(file);
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (file == null) {
+            throw new NullPointerException("file");
+        }
+        PathPart path = PathPart.fromDecoded(file.getAbsolutePath());
+        return new HierarchicalUri(
+                "file", Part.EMPTY, path, Part.NULL, Part.NULL);
 
-    String str;
-    FAIL_RETURN(file->GetAbsolutePath(&str));
-
-    AutoPtr<PathPart> path;
-    path = PathPart::FromDecoded(str);
-
-    String fileStr("file");
-
-#ifdef DROID_CORE
-    AutoPtr<CHierarchicalUri> curi;
-    FAIL_RETURN(CHierarchicalUri::NewByFriend(fileStr,
-        (Handle32)Part::sEMPTY.Get(),
-        (Handle32)path.Get(),
-        (Handle32)Part::sNULL.Get(),
-        (Handle32)Part::sNULL.Get(),
-        (CHierarchicalUri**)&curi));
-#else
-    AutoPtr<IUri> curi;
-    FAIL_RETURN(CHierarchicalUri::New(fileStr,
-        (Handle32)Part::sEMPTY.Get(),
-        (Handle32)path.Get(),
-        (Handle32)Part::sNULL.Get(),
-        (Handle32)Part::sNULL.Get(),
-        (IUri**)&curi));
 #endif
-
-    *uri = (IUri*)curi.Get();
-    REFCOUNT_ADD(*uri);
-    return NOERROR;
 }
 
 ECode Uri::FromParts(
     /* [in] */ const String& scheme,
     /* [in] */ const String& ssp,
     /* [in] */ const String& fragment,
-    /* [out] */ IUri** uri)
+    /* [out] */ IUri** result)
 {
-    VALIDATE_NOT_NULL(uri);
-    *uri = NULL;
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (scheme == null) {
+            throw new NullPointerException("scheme");
+        }
+        if (ssp == null) {
+            throw new NullPointerException("ssp");
+        }
+        return new OpaqueUri(scheme, Part.fromDecoded(ssp),
+                Part.fromDecoded(fragment));
 
-    if (scheme.IsNull()) {
-        Slogger::E(TAG, "scheme==NULL");
-        return E_NULL_POINTER_EXCEPTION;
-    }
-
-    if (ssp.IsNull()) {
-        Slogger::E(TAG, "ssp==NULL");
-        return E_NULL_POINTER_EXCEPTION;
-    }
-
-    AutoPtr<Part> part1 = Part::FromDecoded(ssp);
-    AutoPtr<Part> part2 = Part::FromDecoded(fragment);
-
-#ifdef DROID_CORE
-    AutoPtr<COpaqueUri> curi;
-    FAIL_RETURN(COpaqueUri::NewByFriend(scheme, (Handle32)part1.Get(),
-        (Handle32)part2.Get(), (COpaqueUri**)&curi));
-#else
-    AutoPtr<IUri> curi;
-    FAIL_RETURN(COpaqueUri::New(scheme, (Handle32)part1.Get(),
-        (Handle32)part2.Get(), (IUri**)&curi));
 #endif
-
-    *uri = (IUri*)curi.Get();
-    REFCOUNT_ADD(*uri);
-    return NOERROR;
 }
 
-//@return a set of decoded names
 ECode Uri::GetQueryParameterNames(
-    /* [out, callee] */ ArrayOf<String>** names)
+    /* [out] */ ISet** result)
 {
-    VALIDATE_NOT_NULL(names)
-    *names = NULL;
-
-    Boolean isOpaque;
-    IsOpaque(&isOpaque);
-    if (isOpaque) {
-        Slogger::E(TAG, NOT_HIERARCHICAL.string());
-        return E_RUNTIME_EXCEPTION;
-    }
-
-    String query;
-    GetEncodedQuery(&query);
-    if (query.IsNull()) {
-        return NOERROR;
-    }
-
-    Set<String> sets;
-    Int32 start = 0, end, next, separator;
-    Int32 queryLength = query.GetLength();
-    String name, decodeString;
-    do {
-        next = query.IndexOf('&', start);
-        end = (next == -1) ? queryLength : next;
-
-        separator = query.IndexOf('=', start);
-        if (separator > end || separator == -1) {
-            separator = end;
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (isOpaque()) {
+            throw new UnsupportedOperationException(NOT_HIERARCHICAL);
         }
+        String query = getEncodedQuery();
+        if (query == null) {
+            return Collections.emptySet();
+        }
+        Set<String> names = new LinkedHashSet<String>();
+        int start = 0;
+        do {
+            int next = query.indexOf('&', start);
+            int end = (next == -1) ? query.length() : next;
+            int separator = query.indexOf('=', start);
+            if (separator > end || separator == -1) {
+                separator = end;
+            }
+            String name = query.substring(start, separator);
+            names.add(decode(name));
+            // Move start to end of name.
+            start = end + 1;
+        } while (start < query.length());
+        return Collections.unmodifiableSet(names);
 
-        name = query.Substring(start, separator);
-        Decode(name, &decodeString);
-        sets.Insert(decodeString);
-
-        // Move start to end of name.
-        start = end + 1;
-
-    } while (start < queryLength);
-
-
-    Int32 count = sets.GetSize();
-    AutoPtr<ArrayOf<String> > array = ArrayOf<String>::Alloc(count);
-
-    Set<String>::Iterator it;
-    for (start = 0, it = sets.Begin(); it!= sets.End(); ++it, ++start) {
-        array->Set(start, *it);
-    }
-
-    *names = array;
-    REFCOUNT_ADD(*names);
-    return NOERROR;
+#endif
 }
 
-//@return a list of decoded values
 ECode Uri::GetQueryParameters(
-    /* [in] */ const String& key,
-    /* [out, callee] */ ArrayOf<String>**  params)
+    /* [in] */ String key,
+    /* [out] */ IList** result)
 {
-    VALIDATE_NOT_NULL(params);
-    *params = NULL;
-
-    Boolean isOpaque;
-    IsOpaque(&isOpaque);
-    if (isOpaque) {
-        Slogger::E(TAG, NOT_HIERARCHICAL);
-        return E_RUNTIME_EXCEPTION;
-    }
-
-    if (key == NULL) {
-        Slogger::E(TAG, "key");
-        return E_RUNTIME_EXCEPTION;
-    }
-
-    String query;
-    GetEncodedQuery(&query);
-    if (query.IsNull()) {
-        return NOERROR;
-    }
-
-    AutoPtr<IURLEncoder> urlEncoderhelper;
-    CURLEncoder::AcquireSingleton((IURLEncoder**)&urlEncoderhelper);
-    AutoPtr<ICharsetHelper> charsetHelper;
-    CCharsetHelper::AcquireSingleton((ICharsetHelper**)&charsetHelper);
-
-    AutoPtr<ICharset> charset;
-    charsetHelper->ForName(DEFAULT_ENCODING, (ICharset**)&charset);
-
-    String encodedKey;
-    urlEncoderhelper->Encode(key, DEFAULT_ENCODING, &encodedKey);
-    Int32 encodedKeyLength = encodedKey.GetLength();
-
-    List<String> values;
-    Int32 start = 0, end, nextAmpersand, separator;
-    String emptyStr(""), decodeString;
-
-    do {
-        nextAmpersand = query.IndexOf('&', start);
-        end = nextAmpersand != -1 ? nextAmpersand : query.GetLength();
-
-        separator = query.IndexOf('=', start);
-        if (separator > end || separator == -1) {
-            separator = end;
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (isOpaque()) {
+            throw new UnsupportedOperationException(NOT_HIERARCHICAL);
         }
-
-        if (separator - start == encodedKeyLength
-                && query.RegionMatches(start, encodedKey, 0, encodedKeyLength)) {
-            if (separator == end) {
-                values.PushBack(emptyStr);
+        if (key == null) {
+          throw new NullPointerException("key");
+        }
+        String query = getEncodedQuery();
+        if (query == null) {
+            return Collections.emptyList();
+        }
+        String encodedKey;
+        try {
+            encodedKey = URLEncoder.encode(key, DEFAULT_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            throw new AssertionError(e);
+        }
+        ArrayList<String> values = new ArrayList<String>();
+        int start = 0;
+        do {
+            int nextAmpersand = query.indexOf('&', start);
+            int end = nextAmpersand != -1 ? nextAmpersand : query.length();
+            int separator = query.indexOf('=', start);
+            if (separator > end || separator == -1) {
+                separator = end;
             }
-            else {
-              Decode(query.Substring(separator + 1, end), &decodeString);
-              values.PushBack(decodeString);
+            if (separator - start == encodedKey.length()
+                    && query.regionMatches(start, encodedKey, 0, encodedKey.length())) {
+                if (separator == end) {
+                  values.add("");
+                } else {
+                  values.add(decode(query.substring(separator + 1, end)));
+                }
             }
-        }
+            // Move start to end of name.
+            if (nextAmpersand != -1) {
+                start = nextAmpersand + 1;
+            } else {
+                break;
+            }
+        } while (true);
+        return Collections.unmodifiableList(values);
 
-        // Move start to end of name.
-        if (nextAmpersand != -1) {
-            start = nextAmpersand + 1;
-        }
-        else {
-            break;
-        }
-    } while (TRUE);
-
-
-    Int32 count = values.GetSize();
-    AutoPtr<ArrayOf<String> > array = ArrayOf<String>::Alloc(count);
-    List<String>::Iterator it;
-    for (start = 0, it = values.Begin(); it != values.End(); ++it, ++start) {
-        array->Set(start, *it);
-    }
-
-    *params = array;
-    REFCOUNT_ADD(*params);
-    return NOERROR;
+#endif
 }
 
 ECode Uri::GetQueryParameter(
-    /* [in] */ const String& key,
+    /* [in] */ String key,
     /* [out] */ String* result)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = NULL;
-
-    Boolean isOpaque;
-    IsOpaque(&isOpaque);
-
-    if (key.IsNull()) {
-        Slogger::E(TAG, "key");
-        return E_RUNTIME_EXCEPTION;
-    }
-
-    String query;
-    GetEncodedQuery(&query);
-    if (query.IsNull()) {
-        return NOERROR;
-    }
-
-    String encodedKey;
-    Encode(key, String(), &encodedKey);
-    Int32 encodedKeyLength = encodedKey.GetLength();
-
-    Int32 length = query.GetLength();
-    Int32 start = 0, end, nextAmpersand, separator;
-    String encodedValue, decodedValue;
-
-    AutoPtr<IUriCodecHelper> urlCodechelper;
-    CUriCodecHelper::AcquireSingleton((IUriCodecHelper**)&urlCodechelper);
-    AutoPtr<ICharset> charset;
-    AutoPtr<ICharsets> charsetHelper;
-    CCharsets::AcquireSingleton((ICharsets**)&charsetHelper );
-    charsetHelper->GetUTF_8((ICharset**)&charset);
-
-    do {
-        nextAmpersand = query.IndexOf('&', start);
-        end = nextAmpersand != -1 ? nextAmpersand : length;
-
-        separator = query.IndexOf('=', start);
-        if (separator > end || separator == -1) {
-            separator = end;
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (isOpaque()) {
+            throw new UnsupportedOperationException(NOT_HIERARCHICAL);
         }
-
-        if (separator - start == encodedKeyLength
-                && query.RegionMatches(start, encodedKey, 0, encodedKeyLength)) {
-            if (separator == end) {
-                *result = String("");
-                return E_NULL_POINTER_EXCEPTION;
+        if (key == null) {
+            throw new NullPointerException("key");
+        }
+        final String query = getEncodedQuery();
+        if (query == null) {
+            return null;
+        }
+        final String encodedKey = encode(key, null);
+        final int length = query.length();
+        int start = 0;
+        do {
+            int nextAmpersand = query.indexOf('&', start);
+            int end = nextAmpersand != -1 ? nextAmpersand : length;
+            int separator = query.indexOf('=', start);
+            if (separator > end || separator == -1) {
+                separator = end;
             }
-            else {
-                encodedValue = query.Substring(separator + 1, end);
-                return urlCodechelper->Decode(encodedValue, TRUE, charset, FALSE, result);
+            if (separator - start == encodedKey.length()
+                    && query.regionMatches(start, encodedKey, 0, encodedKey.length())) {
+                if (separator == end) {
+                    return "";
+                } else {
+                    String encodedValue = query.substring(separator + 1, end);
+                    return UriCodec.decode(encodedValue, true, StandardCharsets.UTF_8, false);
+                }
             }
-        }
+            // Move start to end of name.
+            if (nextAmpersand != -1) {
+                start = nextAmpersand + 1;
+            } else {
+                break;
+            }
+        } while (true);
+        return null;
 
-        // Move start to end of name.
-        if (nextAmpersand != -1) {
-            start = nextAmpersand + 1;
-        }
-        else {
-            break;
-        }
-    } while (true);
-
-    return NOERROR;
+#endif
 }
 
 ECode Uri::GetBooleanQueryParameter(
-    /* [in] */ const String& key,
+    /* [in] */ String key,
     /* [in] */ Boolean defaultValue,
-    /* [out] */ Boolean* value)
+    /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(value);
-    *value = defaultValue;
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        String flag = getQueryParameter(key);
+        if (flag == null) {
+            return defaultValue;
+        }
+        flag = flag.toLowerCase(Locale.ROOT);
+        return (!"false".equals(flag) && !"0".equals(flag));
 
-    String flag;
-    GetQueryParameter(key, &flag);
-    if (flag.IsNull()) {
-        return NOERROR;
-    }
-
-    flag = flag.ToLowerCase();
-    *value = !flag.Equals("false") && !flag.Equals("0");
-    return NOERROR;
+#endif
 }
 
 ECode Uri::NormalizeScheme(
     /* [out] */ IUri** result)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = NULL;
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        String scheme = getScheme();
+        if (scheme == null) return this;  // give up
+        String lowerScheme = scheme.toLowerCase(Locale.ROOT);
+        if (scheme.equals(lowerScheme)) return this;  // no change
+        return buildUpon().scheme(lowerScheme).build();
 
-    String scheme;
-    GetScheme(&scheme);
-    if (scheme.IsNull()) {
-        *result = THIS_PROBE(IUri);
-        REFCOUNT_ADD(*result);
-        return NOERROR;
-    }
-
-    String lowerScheme = scheme.ToLowerCase();
-
-    if (scheme.Equals(lowerScheme)) {
-        *result = THIS_PROBE(IUri);
-        REFCOUNT_ADD(*result);
-        return NOERROR;
-    }
-
-    AutoPtr<IUriBuilder> builder;
-    BuildUpon((IUriBuilder**)&builder);
-    FAIL_RETURN(builder->Scheme(lowerScheme));
-    FAIL_RETURN(builder->Build(result));
-    return NOERROR;
-}
-
-ECode Uri::ReadFromParcel(
-   /* [in] */ IParcel* parcel,
-   /* [out] */ IUri** uri)
-{
-    VALIDATE_NOT_NULL(uri);
-    *uri = NULL;
-
-   Int32 type;
-   parcel->ReadInt32(&type);
-
-   // if (type != NULL_TYPE_ID) {
-   //      Int32 pos;
-   //      parcel->GetDataPosition(&pos);
-   //      parcel->SetDataPosition(pos - sizeof(Int32));
-   // }
-
-   switch (type) {
-       case NULL_TYPE_ID: return NOERROR;
-       case StringUri::TYPE_ID: return StringUri::ReadFrom(parcel, uri);
-       case OpaqueUri::TYPE_ID: return OpaqueUri::ReadFrom(parcel, uri);
-       case HierarchicalUri::TYPE_ID: return HierarchicalUri::ReadFrom(parcel, uri);
-   }
-
-    return E_ILLEGAL_ARGUMENT_EXCEPTION;
+#endif
 }
 
 ECode Uri::WriteToParcel(
-    /* [in] */ IParcel* out,
-    /* [in] */ IUri* uri)
+    /* [in] */ IParcel* out)
 {
-    if (uri == NULL) {
-        out->WriteInt32(NULL_TYPE_ID);
-    }
-    else {
-        IParcelable* p = IParcelable::Probe(uri);
-        assert(p != NULL);
-        p->WriteToParcel(out);
-    }
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (uri == null) {
+            out.writeInt(NULL_TYPE_ID);
+        } else {
+            uri.writeToParcel(out, 0);
+        }
 
-    return NOERROR;
+#endif
 }
 
 ECode Uri::Encode(
-    /* [in] */ const String& s,
-    /* [out] */ String* encoded)
-{
-    return Encode(s, String(NULL), encoded);
-}
-
-ECode Uri::Encode(
-    /* [in] */ const String& s,
-    /* [in] */ const String& allow,
+    /* [in] */ String s,
     /* [out] */ String* result)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = NULL;
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return encode(s, null);
 
-    if (s.IsNull()) {
-        return NOERROR;
-    }
-
-    // Lazily-initialized buffers.
-    StringBuilder encoded;
-    Int32 oldLength = s.GetLength();
-    String subStr, toEncode;
-
-    // This loop alternates between copying over allowed characters and
-    // encoding in chunks. This results in fewer method calls and
-    // allocations than encoding one character at a time.
-    Int32 current = 0, nextToEncode, end, nextAllowed;
-    Char32 c;
-    while (current < oldLength) {
-        // Start in "copying" mode where we copy over allowed chars.
-
-        // Find the next character which needs to be encoded.
-        nextToEncode = current;
-        while (nextToEncode < oldLength && IsAllowed(s.GetChar(nextToEncode), allow)) {
-            nextToEncode++;
-        }
-
-        // If there's nothing more to encode...
-        if (nextToEncode == oldLength) {
-            if (current == 0) {
-                // We didn't need to encode anything!
-                *result = s;
-                return NOERROR;
-            } else {
-                // Presumably, we've already done some encoding.
-                end = (current + oldLength);
-                if (end > oldLength) {
-                    end = oldLength;
-                }
-                subStr = s.Substring(current, end);
-                encoded += subStr;
-                *result = encoded.ToString();
-                return NOERROR;
-            }
-        }
-
-        if (nextToEncode > current) {
-            // Append allowed characters leading up to this point.
-            end = (current + nextToEncode);
-            if (end > oldLength) {
-                end = oldLength;
-            }
-            subStr = s.Substring(current, end);
-            encoded += subStr;
-        } else {
-            // assert nextToEncode == current
-        }
-
-        // Switch to "encoding" mode.
-
-        // Find the next allowed character.
-        current = nextToEncode;
-        nextAllowed = current + 1;
-        while (nextAllowed < oldLength && !IsAllowed(s.GetChar(nextAllowed), allow)) {
-            nextAllowed++;
-        }
-
-        // Convert the substring to bytes and encode the bytes as
-        // '%'-escaped octets.
-        toEncode = s.Substring(current, nextAllowed);
-        // try {
-            // TODO: ALEX fix getBytes
-            // byte[] bytes = toEncode.getBytes(DEFAULT_ENCODING);
-            // int bytesLength = bytes.length;
-            Int32 bytesLength = toEncode.GetLength();
-            for (Int32 i = 0; i < bytesLength; i++) {
-                encoded += "%";
-                encoded.AppendChar(HEX_DIGITS[(toEncode[i] & 0xf0) >> 4]);
-                encoded.AppendChar(HEX_DIGITS[toEncode[i] & 0xf]);
-            }
-        // } catch (UnsupportedEncodingException e) {
-        //     throw new AssertionError(e);
-//             }
-
-        current = nextAllowed;
-    }
-
-    // Encoded could still be null at this point if s is empty.
-    String encodedStr = encoded.ToString();
-    *result = encodedStr.IsNull() ? s : encodedStr;
-    return NOERROR;
+#endif
 }
 
-Boolean Uri::IsAllowed(
-    /* [in] */ Char32 c,
-    /* [in] */ const String& allow)
+ECode Uri::Encode(
+    /* [in] */ String s,
+    /* [in] */ String allow,
+    /* [out] */ String* result)
 {
-    String pattern("_-!.~'()*");
-    return (c >= 'A' && c <= 'Z')
-            || (c >= 'a' && c <= 'z')
-            || (c >= '0' && c <= '9')
-            || pattern.IndexOf(c) != NOT_FOUND
-            || (!allow.IsNull() && allow.IndexOf(c) != NOT_FOUND);
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (s == null) {
+            return null;
+        }
+        // Lazily-initialized buffers.
+        StringBuilder encoded = null;
+        int oldLength = s.length();
+        // This loop alternates between copying over allowed characters and
+        // encoding in chunks. This results in fewer method calls and
+        // allocations than encoding one character at a time.
+        int current = 0;
+        while (current < oldLength) {
+            // Start in "copying" mode where we copy over allowed chars.
+            // Find the next character which needs to be encoded.
+            int nextToEncode = current;
+            while (nextToEncode < oldLength
+                    && isAllowed(s.charAt(nextToEncode), allow)) {
+                nextToEncode++;
+            }
+            // If there's nothing more to encode...
+            if (nextToEncode == oldLength) {
+                if (current == 0) {
+                    // We didn't need to encode anything!
+                    return s;
+                } else {
+                    // Presumably, we've already done some encoding.
+                    encoded.append(s, current, oldLength);
+                    return encoded.toString();
+                }
+            }
+            if (encoded == null) {
+                encoded = new StringBuilder();
+            }
+            if (nextToEncode > current) {
+                // Append allowed characters leading up to this point.
+                encoded.append(s, current, nextToEncode);
+            } else {
+                // assert nextToEncode == current
+            }
+            // Switch to "encoding" mode.
+            // Find the next allowed character.
+            current = nextToEncode;
+            int nextAllowed = current + 1;
+            while (nextAllowed < oldLength
+                    && !isAllowed(s.charAt(nextAllowed), allow)) {
+                nextAllowed++;
+            }
+            // Convert the substring to bytes and encode the bytes as
+            // '%'-escaped octets.
+            String toEncode = s.substring(current, nextAllowed);
+            try {
+                byte[] bytes = toEncode.getBytes(DEFAULT_ENCODING);
+                int bytesLength = bytes.length;
+                for (int i = 0; i < bytesLength; i++) {
+                    encoded.append('%');
+                    encoded.append(HEX_DIGITS[(bytes[i] & 0xf0) >> 4]);
+                    encoded.append(HEX_DIGITS[bytes[i] & 0xf]);
+                }
+            } catch (UnsupportedEncodingException e) {
+                throw new AssertionError(e);
+            }
+            current = nextAllowed;
+        }
+        // Encoded could still be null at this point if s is empty.
+        return encoded == null ? s : encoded.toString();
+
+#endif
+}
+
+ECode Uri::IsAllowed(
+    /* [in] */ Char32 c,
+    /* [in] */ const String& allow,
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return (c >= 'A' && c <= 'Z')
+                || (c >= 'a' && c <= 'z')
+                || (c >= '0' && c <= '9')
+                || "_-!.~'()*".indexOf(c) != NOT_FOUND
+                || (allow != null && allow.indexOf(c) != NOT_FOUND);
+
+#endif
 }
 
 ECode Uri::Decode(
-    /* [in] */ const String& s,
+    /* [in] */ String s,
     /* [out] */ String* result)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = NULL;
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (s == null) {
+            return null;
+        }
+        return UriCodec.decode(s, false, StandardCharsets.UTF_8, false);
 
-    if (s.IsNull()) {
-        return NOERROR;
-    }
-
-    AutoPtr<ICharsets> charsetsHelper;
-    CCharsets::AcquireSingleton((ICharsets**)&charsetsHelper);
-    AutoPtr<ICharset> charset;
-    charsetsHelper->GetUTF_8((ICharset**)&charset);
-
-    AutoPtr<IUriCodecHelper> uriCodecHelper;
-    CUriCodecHelper::AcquireSingleton((IUriCodecHelper**)&uriCodecHelper);
-    return uriCodecHelper->Decode(s, FALSE, charset, FALSE, result);
+#endif
 }
 
 ECode Uri::WithAppendedPath(
     /* [in] */ IUri* baseUri,
-    /* [in] */ const String& pathSegment,
-    /* [out] */ IUri** uri)
+    /* [in] */ String pathSegment,
+    /* [out] */ IUri** result)
 {
-    VALIDATE_NOT_NULL(uri);
-    *uri = NULL;
-    assert(baseUri);
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        Builder builder = baseUri.buildUpon();
+        builder = builder.appendEncodedPath(pathSegment);
+        return builder.build();
 
-    AutoPtr<IUriBuilder> builder;
-    baseUri->BuildUpon((IUriBuilder**)&builder);
-    builder->AppendEncodedPath(pathSegment);
-    return builder->Build(uri);
+#endif
 }
 
 ECode Uri::GetCanonicalUri(
-    /* [out] */ IUri** uri)
-{
-    VALIDATE_NOT_NULL(uri);
-    *uri = NULL;
-
-    String scheme;
-    GetScheme(&scheme);
-    if (!scheme.IsNull() && scheme.Equals("file")) {
-        String path;
-        GetPath(&path);
-
-        String canonicalPath;
-        AutoPtr<IFile> file, tmpFile;
-        ECode ec = CFile::New(path, (IFile**)&file);
-        if (FAILED(ec)) goto _Exit_;
-        ec = file->GetCanonicalPath(&canonicalPath);
-        if (FAILED(ec)) goto _Exit_;
-
-        AutoPtr<IEnvironment> env;
-        CEnvironment::AcquireSingleton((IEnvironment**)&env);
-        Boolean isEmulated;
-        if (env->IsExternalStorageEmulated(&isEmulated), isEmulated) {
-            AutoPtr<IFile> dirFile;
-            env->GetLegacyExternalStorageDirectory((IFile**)&dirFile);
-            assert(dirFile != NULL);
-            String legacyPath;
-            dirFile->ToString(&legacyPath);
-
-            // Splice in user-specific path when legacy path is found
-            if (!canonicalPath.IsNull() && canonicalPath.StartWith(legacyPath)) {
-                dirFile = NULL;
-                env->GetExternalStorageDirectory((IFile**)&dirFile);
-                assert(dirFile != NULL);
-                String dirPath, mode;
-                dirFile->ToString(&dirPath);
-                mode = canonicalPath.Substring(legacyPath.GetLength() + 1);
-                CFile::New(dirPath, mode, (IFile**)&tmpFile);
-                return Uri::FromFile(tmpFile, uri);
-            }
-        }
-
-        CFile::New(canonicalPath, (IFile**)&tmpFile);
-        return Uri::FromFile(tmpFile, uri);
-    }
-
-_Exit_:
-    *uri = THIS_PROBE(IUri);
-    REFCOUNT_ADD(*uri)
-    return NOERROR;
-}
-
-//====================================================================
-//                    AbstractHierarchicalUri
-//====================================================================
-AbstractHierarchicalUri::AbstractHierarchicalUri()
-    : mHost(NOT_CACHED)
-    , mPort(NOT_CALCULATED)
-{
-}
-
-ECode AbstractHierarchicalUri::GetLastPathSegment(
-    /* [out] */ String* pathSegment)
-{
-    VALIDATE_NOT_NULL(pathSegment);
-    *pathSegment = NULL;
-
-    AutoPtr<ArrayOf<String> > segments;
-    GetPathSegments((ArrayOf<String>**)&segments);
-    if (segments == NULL || segments->GetLength() == 0) {
-        return NOERROR;
-    }
-
-    Int32 size = segments->GetLength();
-    *pathSegment = (*segments)[size - 1];
-    return NOERROR;
-}
-
-AutoPtr<Uri::Part> AbstractHierarchicalUri::GetUserInfoPart()
-{
-    if (mUserInfo == NULL) {
-        String result = ParseUserInfo();
-        mUserInfo = Uri::Part::FromEncoded(result);
-    }
-
-    return mUserInfo;
-}
-
-ECode AbstractHierarchicalUri::GetEncodedUserInfo(
-    /* [out] */ String* userInfo)
-{
-    VALIDATE_NOT_NULL(userInfo);
-    *userInfo = GetUserInfoPart()->GetEncoded();
-    return NOERROR;
-}
-
-String AbstractHierarchicalUri::ParseUserInfo()
-{
-    String authority;
-    GetEncodedAuthority(&authority);
-    if (authority.IsNull()) {
-        return String(NULL);
-    }
-
-    Int32 end = authority.IndexOf('@');
-    if (end == Uri::NOT_FOUND) {
-        return String(NULL);
-    }
-    else {
-        return authority.Substring(0, end);
-    }
-}
-
-ECode AbstractHierarchicalUri::GetUserInfo(
-    /* [out] */ String* userInfo)
-{
-    VALIDATE_NOT_NULL(userInfo);
-    *userInfo = GetUserInfoPart()->GetDecoded();
-    return NOERROR;
-}
-
-ECode AbstractHierarchicalUri::GetHost(
-    /* [out] */ String* host)
-{
-    VALIDATE_NOT_NULL(host);
-    Boolean cached = !mHost.Equals(Uri::NOT_CACHED);
-
-    if (!cached) {
-        mHost = ParseHost();
-    }
-
-    *host = mHost;
-    return NOERROR;
-}
-
-String AbstractHierarchicalUri::ParseHost()
-{
-    String authority;
-    GetEncodedAuthority(&authority);
-    if (authority.IsNull()) {
-        return String(NULL);
-
-    }
-
-    // Parse out user info and then port.
-    Int32 userInfoSeparator = authority.IndexOf('@');
-    Int32 portSeparator = authority.IndexOf(':', userInfoSeparator);
-
-    String encodedHost = portSeparator == Uri::NOT_FOUND
-        ? authority.Substring(userInfoSeparator + 1)
-        : authority.Substring(userInfoSeparator + 1, portSeparator);
-
-    String result;
-    Decode(encodedHost, &result);
-    return result;
-}
-
-ECode AbstractHierarchicalUri::GetPort(
-    /* [out] */ Int32* port)
-{
-    VALIDATE_NOT_NULL(port);
-    if (mPort == Uri::NOT_CALCULATED) {
-        mPort = ParsePort();
-    }
-    *port = mPort;
-    return NOERROR;
-}
-
-Int32 AbstractHierarchicalUri::ParsePort()
-{
-    String authority;
-    GetEncodedAuthority(&authority);
-    if (authority.IsNull()) {
-        return -1;
-    }
-
-    // Make sure we look for the port separtor *after* the user info
-    // separator. We have URLs with a ':' in the user info.
-    Int32 userInfoSeparator = authority.IndexOf('@');
-    Int32 portSeparator = authority.IndexOf(':', userInfoSeparator);
-
-    if (portSeparator == Uri::NOT_FOUND) {
-        return -1;
-    }
-
-    String portString;
-    Decode(authority.Substring(portSeparator + 1), &portString);
-
-    Int32 result;
-    result = StringUtils::ParseInt32(portString);
-    return result;
-}
-
-//====================================================================
-//                      HierarchicalUri
-//====================================================================
-HierarchicalUri::HierarchicalUri()
-{
-    mUriString = Uri::NOT_CACHED;
-}
-
-HierarchicalUri::HierarchicalUri(
-    /* [in] */ const String& scheme,
-    /* [in] */ Uri::Part* authority,
-    /* [in] */ Uri::PathPart* path,
-    /* [in] */ Uri::Part* query,
-    /* [in] */ Uri::Part* fragment)
-    : mScheme(scheme)
-    , mAuthority(authority)
-    , mPath(path)
-    , mQuery(query)
-    , mFragment(fragment)
-{
-}
-
-ECode HierarchicalUri::Init(
-    /* [in] */ const String& scheme,
-    /* [in] */ Handle32 authority,  //Part*
-    /* [in] */ Handle32 path,       //PathPart*
-    /* [in] */ Handle32 query,      //Part*
-    /* [in] */ Handle32 fragment)   //Part*
-{
-    mScheme = scheme;
-    mAuthority = (Uri::Part*)authority;
-    mPath = (Uri::PathPart*)path;
-    mQuery = (Uri::Part*)query;
-    mFragment = (Uri::Part*)fragment;
-    return NOERROR;
-}
-
-ECode HierarchicalUri::ReadFrom(
-    /* [in] */ IParcel* parcel,
     /* [out] */ IUri** result)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = NULL;
-    VALIDATE_NOT_NULL(parcel);
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if ("file".equals(getScheme())) {
+            final String canonicalPath;
+            try {
+                canonicalPath = new File(getPath()).getCanonicalPath();
+            } catch (IOException e) {
+                return this;
+            }
+            if (Environment.isExternalStorageEmulated()) {
+                final String legacyPath = Environment.getLegacyExternalStorageDirectory()
+                        .toString();
+                // Splice in user-specific path when legacy path is found
+                if (canonicalPath.startsWith(legacyPath)) {
+                    return Uri.fromFile(new File(
+                            Environment.getExternalStorageDirectory().toString(),
+                            canonicalPath.substring(legacyPath.length() + 1)));
+                }
+            }
+            return Uri.fromFile(new File(canonicalPath));
+        } else {
+            return this;
+        }
 
-    String str;
-    parcel->ReadString(&str);
-
-    AutoPtr<Uri::Part> p1, p3, p4;
-    AutoPtr<Uri::PathPart> p2;
-    Uri::Part::ReadFrom(parcel, (Uri::Part**)&p1);
-    Uri::PathPart::ReadFrom(parcel, (Uri::PathPart**)&p2);
-    Uri::Part::ReadFrom(parcel, (Uri::Part**)&p3);
-    Uri::Part::ReadFrom(parcel, (Uri::Part**)&p4);
-
-#ifdef DROID_CORE
-    AutoPtr<CHierarchicalUri> curi;
-    FAIL_RETURN(CHierarchicalUri::NewByFriend(str,
-        (Handle32)p1.Get(), (Handle32)p2.Get(),
-        (Handle32)p3.Get(), (Handle32)p4.Get(),
-        (CHierarchicalUri**)&curi));
-#else
-    AutoPtr<IUri> curi;
-    FAIL_RETURN(CHierarchicalUri::New(str,
-        (Handle32)p1.Get(), (Handle32)p2.Get(),
-        (Handle32)p3.Get(), (Handle32)p4.Get(),
-        (IUri**)&curi));
 #endif
-
-    *result = (IUri*)curi.Get();
-    REFCOUNT_ADD(*result);
-    return NOERROR;
 }
 
-ECode HierarchicalUri::ReadFromParcel(
-    /* [in] */ IParcel* parcel)
+ECode Uri::CheckFileUriExposed(
+    /* [in] */ String location)
 {
-    VALIDATE_NOT_NULL(parcel);
-    Int32 id;
-    parcel->ReadInt32(&id);
-    parcel->ReadString(&mScheme);
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if ("file".equals(getScheme())) {
+            StrictMode.onFileUriExposed(location);
+        }
 
-    mAuthority = NULL;
-    Uri::Part::ReadFrom(parcel, (Uri::Part**)&mAuthority);
-
-    mPath = NULL;
-    Uri::PathPart::ReadFrom(parcel, (Uri::PathPart**)&mPath);
-
-    mQuery = NULL;
-    Uri::Part::ReadFrom(parcel, (Uri::Part**)&mQuery);
-
-    mFragment = NULL;
-    Uri::Part::ReadFrom(parcel, (Uri::Part**)&mFragment);
-    return NOERROR;
-}
-
-ECode HierarchicalUri::WriteToParcel(
-    /* [in] */ IParcel* parcel)
-{
-    VALIDATE_NOT_NULL(parcel);
-    parcel->WriteInt32(TYPE_ID);
-    parcel->WriteString(mScheme);
-    mAuthority->WriteTo(parcel);
-    mPath->WriteTo(parcel);
-    mQuery->WriteTo(parcel);
-    mFragment->WriteTo(parcel);
-    return NOERROR;
-}
-
-ECode HierarchicalUri::IsHierarchical(
-    /* [out] */ Boolean* isHierarchical)
-{
-    VALIDATE_NOT_NULL(isHierarchical);
-    return TRUE;
-}
-
-ECode HierarchicalUri::IsRelative(
-    /* [out] */ Boolean* isRelative)
-{
-    VALIDATE_NOT_NULL(isRelative);
-    return !mScheme.IsNull();
-}
-
-ECode HierarchicalUri::GetScheme(
-    /* [out] */ String* scheme)
-{
-    VALIDATE_NOT_NULL(scheme);
-    *scheme = mScheme;
-    return NOERROR;
-}
-
-AutoPtr<Uri::Part> HierarchicalUri::GetSsp()
-{
-    if (mSsp == NULL) {
-        mSsp = Uri::Part::FromEncoded(MakeSchemeSpecificPart());
-    }
-    return mSsp;
-}
-
-ECode HierarchicalUri::GetEncodedSchemeSpecificPart(
-    /* [out] */ String* result)
-{
-    VALIDATE_NOT_NULL(result);
-    AutoPtr<Part> part = GetSsp();
-    *result = part->GetEncoded();
-    return NOERROR;
-}
-
-ECode HierarchicalUri::GetSchemeSpecificPart(
-    /* [out] */ String* result)
-{
-    VALIDATE_NOT_NULL(result);
-    AutoPtr<Part> part = GetSsp();
-    *result = part->GetDecoded();
-    return NOERROR;
-}
-
-String HierarchicalUri::MakeSchemeSpecificPart()
-{
-    StringBuilder builder;
-    AppendSspTo(builder);
-    return builder.ToString();
-}
-
-ECode HierarchicalUri::AppendSspTo(
-    /* [in] */ StringBuilder& builder)
-{
-    String encodedAuthority = mAuthority->GetEncoded();
-    if (!encodedAuthority.IsNull()) {
-        // Even if the authority is "", we still want to append "//".
-        builder += ("//");
-        builder += encodedAuthority;
-    }
-
-    String encodedPath = mPath->GetEncoded();
-    if (!encodedPath.IsNull()) {
-        builder += encodedPath;
-    }
-
-    if (!mQuery->IsEmpty()) {
-        builder += ('?');
-        builder += mQuery->GetEncoded();
-    }
-    return NOERROR;
-}
-
-
-ECode HierarchicalUri::GetAuthority(
-    /* [out] */ String* authority)
-{
-    VALIDATE_NOT_NULL(authority);
-    *authority = mAuthority->GetDecoded();
-    return NOERROR;
-}
-
-ECode HierarchicalUri::GetEncodedAuthority(
-    /* [out] */ String* authority)
-{
-    VALIDATE_NOT_NULL(authority);
-    *authority = mAuthority->GetEncoded();
-    return NOERROR;
-}
-
-ECode HierarchicalUri::GetEncodedPath(
-    /* [out] */ String* path)
-{
-    VALIDATE_NOT_NULL(path);
-    *path = mPath->GetEncoded();
-    return NOERROR;
-}
-
-ECode HierarchicalUri::GetPath(
-    /* [out] */ String* path)
-{
-    VALIDATE_NOT_NULL(path);
-    *path = mPath->GetDecoded();
-    return NOERROR;
-}
-
-ECode HierarchicalUri::GetQuery(
-    /* [out] */ String* query)
-{
-    VALIDATE_NOT_NULL(query);
-    *query = mPath->GetDecoded();
-    return NOERROR;
-}
-
-ECode HierarchicalUri::GetEncodedQuery(
-    /* [out] */ String* query)
-{
-    VALIDATE_NOT_NULL(query);
-    *query = mPath->GetEncoded();
-    return NOERROR;
-}
-
-ECode HierarchicalUri::GetFragment(
-    /* [out] */ String* fragment)
-{
-    VALIDATE_NOT_NULL(fragment);
-    *fragment = mPath->GetEncoded();
-    return NOERROR;
-}
-
-ECode HierarchicalUri::GetEncodedFragment(
-    /* [out] */ String* fragment)
-{
-    VALIDATE_NOT_NULL(fragment);
-    *fragment = mPath->GetEncoded();
-    return NOERROR;
-}
-
-// return a list of string
-ECode HierarchicalUri::GetPathSegments(
-    /* [out, callee] */ ArrayOf<String>** segments)
-{
-    VALIDATE_NOT_NULL(segments);
-    *segments = NULL;
-
-    AutoPtr<Uri::PathSegments> pathSegments = mPath->GetPathSegments();
-    if (pathSegments != NULL) {
-        *segments = pathSegments->mSegments;
-        REFCOUNT_ADD(*segments);
-    }
-    return NOERROR;
-}
-
-ECode HierarchicalUri::ToString(
-    /* [out] */ String* info)
-{
-    VALIDATE_NOT_NULL(info);
-    Boolean cached = !mUriString.Equals(Uri::NOT_CACHED);
-    *info = cached ? mUriString
-            : (mUriString = MakeUriString());
-    return NOERROR;
-}
-
-String HierarchicalUri::MakeUriString()
-{
-    StringBuilder builder;
-
-    if (!mScheme.IsNull()) {
-        builder += mScheme;
-        builder.AppendChar(':');
-    }
-
-    AppendSspTo(builder);
-
-    if (!mFragment->IsEmpty()) {
-        builder.AppendChar('#');
-        builder += mFragment->GetEncoded();
-    }
-
-    return builder.ToString();
-}
-
-ECode HierarchicalUri::BuildUpon(
-    /* [out] */ IUriBuilder** result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = NULL;
-
-#ifdef DROID_CORE
-    AutoPtr<CUriBuilder> builder;
-    FAIL_RETURN(CUriBuilder::NewByFriend((CUriBuilder**)&builder));
-#else
-    AutoPtr<IUriBuilder> builder;
-    FAIL_RETURN(CUriBuilder::New((IUriBuilder**)&builder));
 #endif
-
-    FAIL_RETURN(builder->Scheme(mScheme));
-    FAIL_RETURN(builder->Authority((Handle32)mAuthority.Get()));
-    FAIL_RETURN(builder->Path((Handle32)mPath.Get()));
-    FAIL_RETURN(builder->Query((Handle32)mQuery.Get()));
-    FAIL_RETURN(builder->Fragment((Handle32)mFragment.Get()));
-    *result = (IUriBuilder*)builder.Get();
-    REFCOUNT_ADD(*result);
-    return NOERROR;
 }
 
+ECode Uri::IsPathPrefixMatch(
+    /* [in] */ IUri* prefix,
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (!Objects.equals(getScheme(), prefix.getScheme())) return false;
+        if (!Objects.equals(getAuthority(), prefix.getAuthority())) return false;
+        List<String> seg = getPathSegments();
+        List<String> prefixSeg = prefix.getPathSegments();
+        final int prefixSize = prefixSeg.size();
+        if (seg.size() < prefixSize) return false;
+        for (int i = 0; i < prefixSize; i++) {
+            if (!Objects.equals(seg.get(i), prefixSeg.get(i))) {
+                return false;
+            }
+        }
+        return true;
+
+#endif
+}
+
+#if 0 // TODO: Translated before. Need check.
 //====================================================================
 //                    StringUri
 //====================================================================
@@ -2212,7 +1085,9 @@ ECode StringUri::BuildUpon(
     REFCOUNT_ADD(*result);
     return NOERROR;
 }
+#endif
 
+#if 0 // TODO: Translated before. Need check.
 //====================================================================
 //                    OpaqueUri
 //====================================================================
@@ -2499,8 +1374,1025 @@ ECode OpaqueUri::BuildUpon(
     REFCOUNT_ADD(*result);
     return NOERROR;
 }
+#endif
+#if 0 // TODO: Translated before. Need check.
+//====================================================================================
+//              Uri::PathSegments
+//====================================================================================
+AutoPtr<Uri::PathSegments> Uri::PathSegments::sEMPTY = new Uri::PathSegments(ArrayOf<String>::Alloc(0), 0);
+
+Uri::PathSegments::PathSegments(
+    /* [in] */ ArrayOf<String>* segments,
+    /* [in] */ Int32 size)
+    : mSegments(segments)
+    , mSize(size)
+{}
+
+ECode Uri::PathSegments::Get(
+    /* [in] */ Int32 index,
+    /* [out] */ String* encoded)
+{
+    VALIDATE_NOT_NULL(encoded);
+
+    if (index >= mSize) {
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    *encoded = (*mSegments)[index];
+    return NOERROR;
+}
+
+Int32 Uri::PathSegments::Size()
+{
+    return mSize;
+}
+#endif
+#if 0 // TODO: Translated before. Need check.
+//====================================================================================
+//              Uri::PathSegmentsBuilder
+//====================================================================================
+
+Uri::PathSegmentsBuilder::PathSegmentsBuilder()
+    : mSize(0)
+{
+}
+
+ECode Uri::PathSegmentsBuilder::Add(
+    /* [in] */ const String& segment)
+{
+    mSegments.PushBack(segment);
+    mSize++;
+
+    return NOERROR;
+}
+
+AutoPtr<Uri::PathSegments> Uri::PathSegmentsBuilder::Build()
+{
+    if (mSegments.IsEmpty()) {
+        return Uri::PathSegments::sEMPTY;
+    }
+
+    // try {
+    AutoPtr<ArrayOf<String> > segments = ArrayOf<String>::Alloc(mSegments.GetSize());
+    if (!segments) {
+        return Uri::PathSegments::sEMPTY;
+    }
+
+    List<String>::Iterator itor;
+    Int32 i = 0;
+    for (itor = mSegments.Begin(); itor != mSegments.End(); ++itor, ++i) {
+        (*segments)[i] = *itor;
+    }
+
+    AutoPtr<Uri::PathSegments> pathSegments = new Uri::PathSegments(segments, mSize);
+
+    // } finally {
+    // Makes sure this doesn't get reused.
+    mSegments.Clear();
+    mSize = 0;
+    // }
+
+    return pathSegments;
+}
+#endif
+
+#if 0 // TODO: Translated before. Need check.
+//====================================================================
+//                    AbstractHierarchicalUri
+//====================================================================
+AbstractHierarchicalUri::AbstractHierarchicalUri()
+    : mHost(NOT_CACHED)
+    , mPort(NOT_CALCULATED)
+{
+}
+
+ECode AbstractHierarchicalUri::GetLastPathSegment(
+    /* [out] */ String* pathSegment)
+{
+    VALIDATE_NOT_NULL(pathSegment);
+    *pathSegment = NULL;
+
+    AutoPtr<ArrayOf<String> > segments;
+    GetPathSegments((ArrayOf<String>**)&segments);
+    if (segments == NULL || segments->GetLength() == 0) {
+        return NOERROR;
+    }
+
+    Int32 size = segments->GetLength();
+    *pathSegment = (*segments)[size - 1];
+    return NOERROR;
+}
+
+AutoPtr<Uri::Part> AbstractHierarchicalUri::GetUserInfoPart()
+{
+    if (mUserInfo == NULL) {
+        String result = ParseUserInfo();
+        mUserInfo = Uri::Part::FromEncoded(result);
+    }
+
+    return mUserInfo;
+}
+
+ECode AbstractHierarchicalUri::GetEncodedUserInfo(
+    /* [out] */ String* userInfo)
+{
+    VALIDATE_NOT_NULL(userInfo);
+    *userInfo = GetUserInfoPart()->GetEncoded();
+    return NOERROR;
+}
+
+String AbstractHierarchicalUri::ParseUserInfo()
+{
+    String authority;
+    GetEncodedAuthority(&authority);
+    if (authority.IsNull()) {
+        return String(NULL);
+    }
+
+    Int32 end = authority.IndexOf('@');
+    if (end == Uri::NOT_FOUND) {
+        return String(NULL);
+    }
+    else {
+        return authority.Substring(0, end);
+    }
+}
+
+ECode AbstractHierarchicalUri::GetUserInfo(
+    /* [out] */ String* userInfo)
+{
+    VALIDATE_NOT_NULL(userInfo);
+    *userInfo = GetUserInfoPart()->GetDecoded();
+    return NOERROR;
+}
+
+ECode AbstractHierarchicalUri::GetHost(
+    /* [out] */ String* host)
+{
+    VALIDATE_NOT_NULL(host);
+    Boolean cached = !mHost.Equals(Uri::NOT_CACHED);
+
+    if (!cached) {
+        mHost = ParseHost();
+    }
+
+    *host = mHost;
+    return NOERROR;
+}
+
+String AbstractHierarchicalUri::ParseHost()
+{
+    String authority;
+    GetEncodedAuthority(&authority);
+    if (authority.IsNull()) {
+        return String(NULL);
+
+    }
+
+    // Parse out user info and then port.
+    Int32 userInfoSeparator = authority.IndexOf('@');
+    Int32 portSeparator = authority.IndexOf(':', userInfoSeparator);
+
+    String encodedHost = portSeparator == Uri::NOT_FOUND
+        ? authority.Substring(userInfoSeparator + 1)
+        : authority.Substring(userInfoSeparator + 1, portSeparator);
+
+    String result;
+    Decode(encodedHost, &result);
+    return result;
+}
+
+ECode AbstractHierarchicalUri::GetPort(
+    /* [out] */ Int32* port)
+{
+    VALIDATE_NOT_NULL(port);
+    if (mPort == Uri::NOT_CALCULATED) {
+        mPort = ParsePort();
+    }
+    *port = mPort;
+    return NOERROR;
+}
+
+Int32 AbstractHierarchicalUri::ParsePort()
+{
+    String authority;
+    GetEncodedAuthority(&authority);
+    if (authority.IsNull()) {
+        return -1;
+    }
+
+    // Make sure we look for the port separtor *after* the user info
+    // separator. We have URLs with a ':' in the user info.
+    Int32 userInfoSeparator = authority.IndexOf('@');
+    Int32 portSeparator = authority.IndexOf(':', userInfoSeparator);
+
+    if (portSeparator == Uri::NOT_FOUND) {
+        return -1;
+    }
+
+    String portString;
+    Decode(authority.Substring(portSeparator + 1), &portString);
+
+    Int32 result;
+    result = StringUtils::ParseInt32(portString);
+    return result;
+}
+#endif
+
+#if 0 // TODO: Translated before. Need check.
+//====================================================================
+//                      HierarchicalUri
+//====================================================================
+HierarchicalUri::HierarchicalUri()
+{
+    mUriString = Uri::NOT_CACHED;
+}
+
+HierarchicalUri::HierarchicalUri(
+    /* [in] */ const String& scheme,
+    /* [in] */ Uri::Part* authority,
+    /* [in] */ Uri::PathPart* path,
+    /* [in] */ Uri::Part* query,
+    /* [in] */ Uri::Part* fragment)
+    : mScheme(scheme)
+    , mAuthority(authority)
+    , mPath(path)
+    , mQuery(query)
+    , mFragment(fragment)
+{
+}
+
+ECode HierarchicalUri::Init(
+    /* [in] */ const String& scheme,
+    /* [in] */ Handle32 authority,  //Part*
+    /* [in] */ Handle32 path,       //PathPart*
+    /* [in] */ Handle32 query,      //Part*
+    /* [in] */ Handle32 fragment)   //Part*
+{
+    mScheme = scheme;
+    mAuthority = (Uri::Part*)authority;
+    mPath = (Uri::PathPart*)path;
+    mQuery = (Uri::Part*)query;
+    mFragment = (Uri::Part*)fragment;
+    return NOERROR;
+}
+
+ECode HierarchicalUri::ReadFrom(
+    /* [in] */ IParcel* parcel,
+    /* [out] */ IUri** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = NULL;
+    VALIDATE_NOT_NULL(parcel);
+
+    String str;
+    parcel->ReadString(&str);
+
+    AutoPtr<Uri::Part> p1, p3, p4;
+    AutoPtr<Uri::PathPart> p2;
+    Uri::Part::ReadFrom(parcel, (Uri::Part**)&p1);
+    Uri::PathPart::ReadFrom(parcel, (Uri::PathPart**)&p2);
+    Uri::Part::ReadFrom(parcel, (Uri::Part**)&p3);
+    Uri::Part::ReadFrom(parcel, (Uri::Part**)&p4);
+
+#ifdef DROID_CORE
+    AutoPtr<CHierarchicalUri> curi;
+    FAIL_RETURN(CHierarchicalUri::NewByFriend(str,
+        (Handle32)p1.Get(), (Handle32)p2.Get(),
+        (Handle32)p3.Get(), (Handle32)p4.Get(),
+        (CHierarchicalUri**)&curi));
+#else
+    AutoPtr<IUri> curi;
+    FAIL_RETURN(CHierarchicalUri::New(str,
+        (Handle32)p1.Get(), (Handle32)p2.Get(),
+        (Handle32)p3.Get(), (Handle32)p4.Get(),
+        (IUri**)&curi));
+#endif
+
+    *result = (IUri*)curi.Get();
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode HierarchicalUri::ReadFromParcel(
+    /* [in] */ IParcel* parcel)
+{
+    VALIDATE_NOT_NULL(parcel);
+    Int32 id;
+    parcel->ReadInt32(&id);
+    parcel->ReadString(&mScheme);
+
+    mAuthority = NULL;
+    Uri::Part::ReadFrom(parcel, (Uri::Part**)&mAuthority);
+
+    mPath = NULL;
+    Uri::PathPart::ReadFrom(parcel, (Uri::PathPart**)&mPath);
+
+    mQuery = NULL;
+    Uri::Part::ReadFrom(parcel, (Uri::Part**)&mQuery);
+
+    mFragment = NULL;
+    Uri::Part::ReadFrom(parcel, (Uri::Part**)&mFragment);
+    return NOERROR;
+}
+
+ECode HierarchicalUri::WriteToParcel(
+    /* [in] */ IParcel* parcel)
+{
+    VALIDATE_NOT_NULL(parcel);
+    parcel->WriteInt32(TYPE_ID);
+    parcel->WriteString(mScheme);
+    mAuthority->WriteTo(parcel);
+    mPath->WriteTo(parcel);
+    mQuery->WriteTo(parcel);
+    mFragment->WriteTo(parcel);
+    return NOERROR;
+}
+
+ECode HierarchicalUri::IsHierarchical(
+    /* [out] */ Boolean* isHierarchical)
+{
+    VALIDATE_NOT_NULL(isHierarchical);
+    return TRUE;
+}
+
+ECode HierarchicalUri::IsRelative(
+    /* [out] */ Boolean* isRelative)
+{
+    VALIDATE_NOT_NULL(isRelative);
+    return !mScheme.IsNull();
+}
+
+ECode HierarchicalUri::GetScheme(
+    /* [out] */ String* scheme)
+{
+    VALIDATE_NOT_NULL(scheme);
+    *scheme = mScheme;
+    return NOERROR;
+}
+
+AutoPtr<Uri::Part> HierarchicalUri::GetSsp()
+{
+    if (mSsp == NULL) {
+        mSsp = Uri::Part::FromEncoded(MakeSchemeSpecificPart());
+    }
+    return mSsp;
+}
+
+ECode HierarchicalUri::GetEncodedSchemeSpecificPart(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+    AutoPtr<Part> part = GetSsp();
+    *result = part->GetEncoded();
+    return NOERROR;
+}
+
+ECode HierarchicalUri::GetSchemeSpecificPart(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+    AutoPtr<Part> part = GetSsp();
+    *result = part->GetDecoded();
+    return NOERROR;
+}
+
+String HierarchicalUri::MakeSchemeSpecificPart()
+{
+    StringBuilder builder;
+    AppendSspTo(builder);
+    return builder.ToString();
+}
+
+ECode HierarchicalUri::AppendSspTo(
+    /* [in] */ StringBuilder& builder)
+{
+    String encodedAuthority = mAuthority->GetEncoded();
+    if (!encodedAuthority.IsNull()) {
+        // Even if the authority is "", we still want to append "//".
+        builder += ("//");
+        builder += encodedAuthority;
+    }
+
+    String encodedPath = mPath->GetEncoded();
+    if (!encodedPath.IsNull()) {
+        builder += encodedPath;
+    }
+
+    if (!mQuery->IsEmpty()) {
+        builder += ('?');
+        builder += mQuery->GetEncoded();
+    }
+    return NOERROR;
+}
 
 
+ECode HierarchicalUri::GetAuthority(
+    /* [out] */ String* authority)
+{
+    VALIDATE_NOT_NULL(authority);
+    *authority = mAuthority->GetDecoded();
+    return NOERROR;
+}
+
+ECode HierarchicalUri::GetEncodedAuthority(
+    /* [out] */ String* authority)
+{
+    VALIDATE_NOT_NULL(authority);
+    *authority = mAuthority->GetEncoded();
+    return NOERROR;
+}
+
+ECode HierarchicalUri::GetEncodedPath(
+    /* [out] */ String* path)
+{
+    VALIDATE_NOT_NULL(path);
+    *path = mPath->GetEncoded();
+    return NOERROR;
+}
+
+ECode HierarchicalUri::GetPath(
+    /* [out] */ String* path)
+{
+    VALIDATE_NOT_NULL(path);
+    *path = mPath->GetDecoded();
+    return NOERROR;
+}
+
+ECode HierarchicalUri::GetQuery(
+    /* [out] */ String* query)
+{
+    VALIDATE_NOT_NULL(query);
+    *query = mPath->GetDecoded();
+    return NOERROR;
+}
+
+ECode HierarchicalUri::GetEncodedQuery(
+    /* [out] */ String* query)
+{
+    VALIDATE_NOT_NULL(query);
+    *query = mPath->GetEncoded();
+    return NOERROR;
+}
+
+ECode HierarchicalUri::GetFragment(
+    /* [out] */ String* fragment)
+{
+    VALIDATE_NOT_NULL(fragment);
+    *fragment = mPath->GetEncoded();
+    return NOERROR;
+}
+
+ECode HierarchicalUri::GetEncodedFragment(
+    /* [out] */ String* fragment)
+{
+    VALIDATE_NOT_NULL(fragment);
+    *fragment = mPath->GetEncoded();
+    return NOERROR;
+}
+
+// return a list of string
+ECode HierarchicalUri::GetPathSegments(
+    /* [out, callee] */ ArrayOf<String>** segments)
+{
+    VALIDATE_NOT_NULL(segments);
+    *segments = NULL;
+
+    AutoPtr<Uri::PathSegments> pathSegments = mPath->GetPathSegments();
+    if (pathSegments != NULL) {
+        *segments = pathSegments->mSegments;
+        REFCOUNT_ADD(*segments);
+    }
+    return NOERROR;
+}
+
+ECode HierarchicalUri::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    Boolean cached = !mUriString.Equals(Uri::NOT_CACHED);
+    *info = cached ? mUriString
+            : (mUriString = MakeUriString());
+    return NOERROR;
+}
+
+String HierarchicalUri::MakeUriString()
+{
+    StringBuilder builder;
+
+    if (!mScheme.IsNull()) {
+        builder += mScheme;
+        builder.AppendChar(':');
+    }
+
+    AppendSspTo(builder);
+
+    if (!mFragment->IsEmpty()) {
+        builder.AppendChar('#');
+        builder += mFragment->GetEncoded();
+    }
+
+    return builder.ToString();
+}
+
+ECode HierarchicalUri::BuildUpon(
+    /* [out] */ IUriBuilder** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = NULL;
+
+#ifdef DROID_CORE
+    AutoPtr<CUriBuilder> builder;
+    FAIL_RETURN(CUriBuilder::NewByFriend((CUriBuilder**)&builder));
+#else
+    AutoPtr<IUriBuilder> builder;
+    FAIL_RETURN(CUriBuilder::New((IUriBuilder**)&builder));
+#endif
+
+    FAIL_RETURN(builder->Scheme(mScheme));
+    FAIL_RETURN(builder->Authority((Handle32)mAuthority.Get()));
+    FAIL_RETURN(builder->Path((Handle32)mPath.Get()));
+    FAIL_RETURN(builder->Query((Handle32)mQuery.Get()));
+    FAIL_RETURN(builder->Fragment((Handle32)mFragment.Get()));
+    *result = (IUriBuilder*)builder.Get();
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+#endif
+
+//====================================================================
+//                      UriBuilder
+//====================================================================
+CAR_INTERFACE_IMPL(UriBuilder, Object, IUriBuilder)
+
+ECode UriBuilder::Scheme(
+    /* [in] */ String scheme,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                this.scheme = scheme;
+                return this;
+
+#endif
+}
+
+ECode UriBuilder::OpaquePart(
+    /* [in] */ Uri::Part* opaquePart,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                this.opaquePart = opaquePart;
+                return this;
+
+#endif
+}
+
+ECode UriBuilder::OpaquePart(
+    /* [in] */ String opaquePart,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                return opaquePart(Part.fromDecoded(opaquePart));
+
+#endif
+}
+
+ECode UriBuilder::EncodedOpaquePart(
+    /* [in] */ String opaquePart,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                return opaquePart(Part.fromEncoded(opaquePart));
+
+#endif
+}
+
+ECode UriBuilder::Authority(
+    /* [in] */ Uri::Part* authority,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                // This URI will be hierarchical.
+                this.opaquePart = null;
+                this.authority = authority;
+                return this;
+
+#endif
+}
+
+ECode UriBuilder::Authority(
+    /* [in] */ String authority,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                return authority(Part.fromDecoded(authority));
+
+#endif
+}
+
+ECode UriBuilder::EncodedAuthority(
+    /* [in] */ String authority,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                return authority(Part.fromEncoded(authority));
+
+#endif
+}
+
+ECode UriBuilder::Path(
+    /* [in] */ Uri::PathPart* path,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                // This URI will be hierarchical.
+                this.opaquePart = null;
+                this.path = path;
+                return this;
+
+#endif
+}
+
+ECode UriBuilder::Path(
+    /* [in] */ String path,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                return path(PathPart.fromDecoded(path));
+
+#endif
+}
+
+ECode UriBuilder::EncodedPath(
+    /* [in] */ String path,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                return path(PathPart.fromEncoded(path));
+
+#endif
+}
+
+ECode UriBuilder::AppendPath(
+    /* [in] */ String newSegment,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                return path(PathPart.appendDecodedSegment(path, newSegment));
+
+#endif
+}
+
+ECode UriBuilder::AppendEncodedPath(
+    /* [in] */ String newSegment,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                return path(PathPart.appendEncodedSegment(path, newSegment));
+
+#endif
+}
+
+ECode UriBuilder::Query(
+    /* [in] */ Uri::Part* query,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                // This URI will be hierarchical.
+                this.opaquePart = null;
+                this.query = query;
+                return this;
+
+#endif
+}
+
+ECode UriBuilder::Query(
+    /* [in] */ String query,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                return query(Part.fromDecoded(query));
+
+#endif
+}
+
+ECode UriBuilder::EncodedQuery(
+    /* [in] */ String query,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                return query(Part.fromEncoded(query));
+
+#endif
+}
+
+ECode UriBuilder::Fragment(
+    /* [in] */ Uri::Part* fragment,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                this.fragment = fragment;
+                return this;
+
+#endif
+}
+
+ECode UriBuilder::Fragment(
+    /* [in] */ String fragment,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                return fragment(Part.fromDecoded(fragment));
+
+#endif
+}
+
+ECode UriBuilder::EncodedFragment(
+    /* [in] */ String fragment,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                return fragment(Part.fromEncoded(fragment));
+
+#endif
+}
+
+ECode UriBuilder::AppendQueryParameter(
+    /* [in] */ String key,
+    /* [in] */ String value,
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                // This URI will be hierarchical.
+                this.opaquePart = null;
+                String encodedParameter = encode(key, null) + "="
+                        + encode(value, null);
+                if (query == null) {
+                    query = Part.fromEncoded(encodedParameter);
+                    return this;
+                }
+                String oldQuery = query.getEncoded();
+                if (oldQuery == null || oldQuery.length() == 0) {
+                    query = Part.fromEncoded(encodedParameter);
+                } else {
+                    query = Part.fromEncoded(oldQuery + "&" + encodedParameter);
+                }
+                return this;
+
+#endif
+}
+
+ECode UriBuilder::ClearQuery(
+    /* [out] */ IUriBuilder** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+              return query((Part) null);
+
+#endif
+}
+
+ECode UriBuilder::Build(
+    /* [out] */ IUri** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                if (opaquePart != null) {
+                    if (this.scheme == null) {
+                        throw new UnsupportedOperationException(
+                                "An opaque URI must have a scheme.");
+                    }
+                    return new OpaqueUri(scheme, opaquePart, fragment);
+                } else {
+                    // Hierarchical URIs should not return null for getPath().
+                    PathPart path = this.path;
+                    if (path == null || path == PathPart.NULL) {
+                        path = PathPart.EMPTY;
+                    } else {
+                        // If we have a scheme and/or authority, the path must
+                        // be absolute. Prepend it with a '/' if necessary.
+                        if (hasSchemeOrAuthority()) {
+                            path = PathPart.makeAbsolute(path);
+                        }
+                    }
+                    return new HierarchicalUri(
+                            scheme, authority, path, query, fragment);
+                }
+
+#endif
+}
+
+ECode UriBuilder::HasSchemeOrAuthority(
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                return scheme != null
+                        || (authority != null && authority != Part.NULL);
+
+#endif
+}
+
+ECode UriBuilder::ToString(
+    /* [out] */ String* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                return build().toString();
+
+#endif
+}
+
+#if 0 // TODO: Translated before. Need check.
+//====================================================================================
+//              Uri::AbstractPart
+//====================================================================================
+Uri::AbstractPart::AbstractPart(
+    /* [in] */ const String& encoded,
+    /* [in] */ const String& decoded)
+    : mEncoded(encoded)
+    , mDecoded(decoded)
+{}
+
+String Uri::AbstractPart::GetDecoded()
+{
+    // @SuppressWarnings("StringEquality")
+    if (Uri::NOT_CACHED.Equals(mDecoded)) {
+        Uri::Decode(mEncoded, &mDecoded);
+    }
+    return mDecoded;
+}
+
+ECode Uri::AbstractPart::WriteTo(
+    /* [in] */ IParcel* parcel)
+{
+    // @SuppressWarnings("StringEquality")
+    Boolean hasEncoded = !Uri::NOT_CACHED.Equals(mEncoded);
+
+    // @SuppressWarnings("StringEquality")
+    Boolean hasDecoded = !Uri::NOT_CACHED.Equals(mDecoded);
+
+    if (hasEncoded && hasDecoded) {
+        parcel->WriteInt32(Representation::BOTH);
+        parcel->WriteString(mEncoded);
+        parcel->WriteString(mDecoded);
+    }
+    else if (hasEncoded) {
+        parcel->WriteInt32(Representation::ENCODED);
+        parcel->WriteString(mEncoded);
+    }
+    else if (hasDecoded) {
+        parcel->WriteInt32(Representation::DECODED);
+        parcel->WriteString(mDecoded);
+    }
+    else {
+        // throw new IllegalArgumentException("Neither encoded nor decoded");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    return NOERROR;
+}
+#endif
+
+#if 0 // TODO: Translated before. Need check.
+
+//====================================================================================
+//              Uri::Part
+//====================================================================================
+
+const AutoPtr<Uri::Part> Uri::Part::sNULL = new EmptyPart(String(NULL));
+const AutoPtr<Uri::Part> Uri::Part::sEMPTY = new EmptyPart(String(""));
+
+Uri::Part::Part(
+    /* [in] */ const String& encoded,
+    /* [in] */ const String& decoded)
+    : AbstractPart(encoded, decoded)
+{}
+
+Boolean Uri::Part::IsEmpty()
+{
+    return FALSE;
+}
+
+String Uri::Part::GetEncoded()
+{
+    // @SuppressWarnings("StringEquality")
+    if (Uri::NOT_CACHED.Equals(mEncoded)) {
+        Uri::Encode(mDecoded, &mEncoded);
+    }
+    return mEncoded;
+}
+
+ECode Uri::Part::ReadFrom(
+    /* [in] */ IParcel* parcel,
+    /* [out] */ Part** part)
+{
+    VALIDATE_NOT_NULL(part);
+    *part = NULL;
+    VALIDATE_NOT_NULL(parcel);
+
+    AutoPtr<Part> result;
+    Int32 representation;
+    parcel->ReadInt32(&representation);
+    String str1, str2;
+    switch (representation) {
+        case Representation::BOTH:
+            parcel->ReadString(&str1);
+            parcel->ReadString(&str2);
+            result = From(str1, str2);
+            break;
+
+        case Representation::ENCODED:
+            parcel->ReadString(&str1);
+            result = FromEncoded(str1);
+            break;
+
+        case Representation::DECODED:
+            parcel->ReadString(&str1);
+            result = FromDecoded(str1);
+            break;
+        default:
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            // throw new IllegalArgumentException("Unknown representation: "
+            //         + representation);
+    }
+
+    *part = result;
+    REFCOUNT_ADD(*part);
+    return NOERROR;
+}
+
+AutoPtr<Uri::Part> Uri::Part::NonNull(
+    /* [in] */ Part* part)
+{
+    return part == NULL ? sNULL.Get() : part;
+}
+
+/**
+ * Creates a part from the encoded string.
+ *
+ * @param encoded part string
+ */
+AutoPtr<Uri::Part> Uri::Part::FromEncoded(
+    /* [in] */ const String& encoded)
+{
+    return From(encoded, NOT_CACHED);
+}
+
+/**
+ * Creates a part from the decoded string.
+ *
+ * @param decoded part string
+ */
+AutoPtr<Uri::Part> Uri::Part::FromDecoded(
+    /* [in] */ const String& decoded)
+{
+    return From(NOT_CACHED, decoded);
+}
+
+AutoPtr<Uri::Part> Uri::Part::From(
+    /* [in] */ const String& encoded,
+    /* [in] */ const String& decoded)
+{
+    // We have to check both encoded and decoded in case one is
+    // NOT_CACHED.
+
+    if (encoded.IsNull()) {
+        return sNULL;
+    }
+    if (encoded.IsEmpty()) {
+        return sEMPTY;
+    }
+
+    if (decoded.IsNull()) {
+        return sNULL;
+    }
+    if (decoded.IsEmpty()) {
+        return sEMPTY;
+    }
+
+    AutoPtr<Part> p = new Part(encoded, decoded);
+    return p;
+}
+#endif
 } // namespace Net
 } // namespace Droid
 } // namespace Elastos

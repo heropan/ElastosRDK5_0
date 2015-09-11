@@ -17,7 +17,6 @@ ECode EthernetManager::constructor(
 #if 0 // TODO: Translate codes below
         mContext = context;
         mService = service;
-
 #endif
 }
 

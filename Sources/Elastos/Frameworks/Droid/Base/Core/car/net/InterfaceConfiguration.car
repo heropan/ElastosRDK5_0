@@ -33,13 +33,13 @@ module
             [in] String flag);
 
         /**
-             * Set flags to mark interface as up.
-             */
+         * Set flags to mark interface as up.
+         */
         SetInterfaceUp();
 
         /**
-             * Set flags to mark interface as down.
-             */
+         * Set flags to mark interface as down.
+         */
         SetInterfaceDown();
 
         GetLinkAddress(
@@ -55,23 +55,18 @@ module
             [in] String hwAddr);
 
         /**
-             * This function determines if the interface is up and has a valid IP
-             * configuration (IP address has a non zero octet).
-             *
-             * Note: It is supposed to be quick and hence should not initiate
-             * any network activity
-             */
+         * This function determines if the interface is up and has a valid IP
+         * configuration (IP address has a non zero octet).
+         *
+         * Note: It is supposed to be quick and hence should not initiate
+         * any network activity
+         */
         IsActive(
             [out] Boolean* result);
 
         /** {@inheritDoc} */
         DescribeContents(
             [out] Int32* result);
-
-        /** {@inheritDoc} */
-        WriteToParcel(
-            [in] IParcel* dest,
-            [in] Int32 flags);
 
     }
 

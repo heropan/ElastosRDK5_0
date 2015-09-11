@@ -3,25 +3,100 @@
 #define __ELASTOS_DROID_NET_URI_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/core/StringBuilder.h>
-#include <elastos/utility/etl/List.h>
 
-using Elastos::Core::StringBuilder;
-using Elastos::Utility::Etl::List;
+using Elastos::Core::IComparable;
 using Elastos::IO::IFile;
+using Elastos::Utility::IList;
+using Elastos::Utility::ISet;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
+/**
+ * Immutable URI reference. A URI reference includes a URI and a fragment, the
+ * component of the URI following a '#'. Builds and parses URI references
+ * which conform to
+ * <a href="http://www.faqs.org/rfcs/rfc2396.html">RFC 2396</a>.
+ *
+ * <p>In the interest of performance, this class performs little to no
+ * validation. Behavior is undefined for invalid input. This class is very
+ * forgiving--in the face of invalid input, it will return garbage
+ * rather than throw an exception unless otherwise specified.
+ */
 class Uri
+    : public Object
+    , public IParcelable
+    , public IComparable
+    , public IUri
 {
+    /*
+
+    This class aims to do as little up front work as possible. To accomplish
+    that, we vary the implementation depending on what the user passes in.
+    For example, we have one implementation if the user passes in a
+    URI string (StringUri) and another if the user passes in the
+    individual components (OpaqueUri).
+
+    *Concurrency notes*: Like any truly immutable object, this class is safe
+    for concurrent use. This class uses a caching pattern in some places where
+    it doesn't use volatile or synchronized. This is safe to do with ints
+    because getting or setting an int is atomic. It's safe to do with a String
+    because the internal fields are final and the memory model guarantees other
+    threads won't see a partially initialized instance. We are not guaranteed
+    that some threads will immediately see changes from other threads on
+    certain platforms, but we don't mind if those threads reconstruct the
+    cached result. As a result, we get thread safe caching with no concurrency
+    overhead, which means the most common case, access from a single thread,
+    is as fast as possible.
+
+    From the Java Language spec.:
+
+    "17.5 Final Field Semantics
+
+    ... when the object is seen by another thread, that thread will always
+    see the correctly constructed version of that object's final fields.
+    It will also see versions of any object or array referenced by
+    those final fields that are at least as up-to-date as the final fields
+    are."
+
+    In that same vein, all non-transient fields within Uri
+    implementations should be final and immutable so as to ensure true
+    immutability for clients even when they don't use proper concurrency
+    control.
+
+    For reference, from RFC 2396:
+
+    "4.3. Parsing a URI Reference
+
+       A URI reference is typically parsed according to the four main
+       components and fragment identifier in order to determine what
+       components are present and whether the reference is relative or
+       absolute.  The individual components are then parsed for their
+       subparts and, if not opaque, to verify their validity.
+
+       Although the BNF defines what is allowed in each component, it is
+       ambiguous in terms of differentiating between an authority component
+       and a path component that begins with two slash characters.  The
+       greedy algorithm is used for disambiguation: the left-most matching
+       rule soaks up as much of the URI reference string as it is capable of
+       matching.  In other words, the authority component wins."
+
+    The "four main components" of a hierarchical URI consist of
+    <scheme>://<authority><path>?<query>
+
+    */
 public:
+    CAR_INTERFACE_DECL()
+
+
     /**
      * Wrapper for path segment array.
      */
-    class PathSegments : public ElRefBase
+    class PathSegments
+        : public Object
     {
+#if 0 // TODO: Translated before. Need check.
     public:
         PathSegments(
             /* [in] */ ArrayOf<String>* segments,
@@ -38,13 +113,15 @@ public:
 
         AutoPtr< ArrayOf<String> > mSegments;
         Int32 mSize;
+#endif
     };
 
     /**
      * Builds PathSegments.
      */
-    class PathSegmentsBuilder : public ElRefBase
+    class PathSegmentsBuilder : public Object
     {
+#if 0 // TODO: Translated before. Need check.
     public:
         PathSegmentsBuilder();
 
@@ -55,13 +132,16 @@ public:
     private:
         List<String> mSegments;
         Int32 mSize;
+#endif
     };
 
     /**
      * Support for part implementations.
      */
-    class AbstractPart : public ElRefBase
+    class AbstractPart
+        : public Object
     {
+#if 0 // TODO: Translated before. Need check.
     public:
         /**
          * Enum which indicates which representation of a given part we have.
@@ -89,14 +169,17 @@ public:
     public:
         /* volatile */ String mEncoded;
         /* volatile */ String mDecoded;
+#endif
     };
 
     /**
      * Immutable wrapper of encoded and decoded versions of a URI part. Lazily
      * creates the encoded or decoded version from the other.
      */
-    class Part : public AbstractPart
+    class Part
+        : public AbstractPart
     {
+#if 0 // TODO: Translated before. Need check.
     protected:
         Part(
             /* [in] */ const String& encoded,
@@ -149,21 +232,7 @@ public:
 
         /** A part with empty strings for values. */
         static const AutoPtr<Part> sEMPTY;
-    };
-
-    class EmptyPart : public Part
-    {
-    public:
-        EmptyPart(
-            /* [in] */ const String& value)
-            : Part(value, value)
-        {}
-
-        // @Override
-        virtual CARAPI_(Boolean) IsEmpty()
-        {
-            return TRUE;
-        }
+#endif
     };
 
     /**
@@ -172,6 +241,7 @@ public:
      */
     class PathPart : public AbstractPart
     {
+#if 0 // TODO: Translated before. Need check.
     protected:
         PathPart(
             /* [in] */ const String& encoded,
@@ -245,75 +315,209 @@ public:
          * care if other threads see the result.
          */
         AutoPtr<PathSegments> mPathSegments;
+#endif
     };
 
-public:
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
-
+    /**
+     * Returns true if this URI is hierarchical like "http://google.com".
+     * Absolute URIs are hierarchical if the scheme-specific part starts with
+     * a '/'. Relative URIs are always hierarchical.
+     */
     virtual CARAPI IsHierarchical(
-        /* [out] */ Boolean* isHierarchical) = 0;
+        /* [out] */ Boolean* result) = 0;
 
-    virtual CARAPI IsOpaque(
-        /* [out] */ Boolean* isOpaque);
+    /**
+     * Returns true if this URI is opaque like "mailto:nobody@google.com". The
+     * scheme-specific part of an opaque URI cannot start with a '/'.
+     */
+    CARAPI IsOpaque(
+        /* [out] */ Boolean* result);
 
+    /**
+     * Returns true if this URI is relative, i.e.&nbsp;if it doesn't contain an
+     * explicit scheme.
+     *
+     * @return true if this URI is relative, false if it's absolute
+     */
     virtual CARAPI IsRelative(
-        /* [out] */ Boolean* isRelative) = 0;
+        /* [out] */ Boolean* result) = 0;
 
+    /**
+     * Returns true if this URI is absolute, i.e.&nbsp;if it contains an
+     * explicit scheme.
+     *
+     * @return true if this URI is absolute, false if it's relative
+     */
     CARAPI IsAbsolute(
-        /* [out] */ Boolean* isAbsolute);
+        /* [out] */ Boolean* result);
 
+    /**
+     * Gets the scheme of this URI. Example: "http"
+     *
+     * @return the scheme or null if this is a relative URI
+     */
     virtual CARAPI GetScheme(
-        /* [out] */ String* scheme) = 0;
+        /* [out] */ String* result) = 0;
 
+    /**
+     * Gets the scheme-specific part of this URI, i.e.&nbsp;everything between
+     * the scheme separator ':' and the fragment separator '#'. If this is a
+     * relative URI, this method returns the entire URI. Decodes escaped octets.
+     *
+     * <p>Example: "//www.google.com/search?q=android"
+     *
+     * @return the decoded scheme-specific-part
+     */
     virtual CARAPI GetSchemeSpecificPart(
-        /* [out] */ String* ssp) = 0;
+        /* [out] */ String* result) = 0;
 
+    /**
+     * Gets the scheme-specific part of this URI, i.e.&nbsp;everything between
+     * the scheme separator ':' and the fragment separator '#'. If this is a
+     * relative URI, this method returns the entire URI. Leaves escaped octets
+     * intact.
+     *
+     * <p>Example: "//www.google.com/search?q=android"
+     *
+     * @return the decoded scheme-specific-part
+     */
     virtual CARAPI GetEncodedSchemeSpecificPart(
-        /* [out] */ String* essp) = 0;
+        /* [out] */ String* result) = 0;
 
+    /**
+     * Gets the decoded authority part of this URI. For
+     * server addresses, the authority is structured as follows:
+     * {@code [ userinfo '@' ] host [ ':' port ]}
+     *
+     * <p>Examples: "google.com", "bob@google.com:80"
+     *
+     * @return the authority for this URI or null if not present
+     */
     virtual CARAPI GetAuthority(
-        /* [out] */ String* authority) = 0;
+        /* [out] */ String* result) = 0;
 
+    /**
+     * Gets the encoded authority part of this URI. For
+     * server addresses, the authority is structured as follows:
+     * {@code [ userinfo '@' ] host [ ':' port ]}
+     *
+     * <p>Examples: "google.com", "bob@google.com:80"
+     *
+     * @return the authority for this URI or null if not present
+     */
     virtual CARAPI GetEncodedAuthority(
-        /* [out] */ String* authority) = 0;
+        /* [out] */ String* result) = 0;
 
+    /**
+     * Gets the decoded user information from the authority.
+     * For example, if the authority is "nobody@google.com", this method will
+     * return "nobody".
+     *
+     * @return the user info for this URI or null if not present
+     */
     virtual CARAPI GetUserInfo(
-        /* [out] */ String* userInfo) = 0;
+        /* [out] */ String* result) = 0;
 
+    /**
+     * Gets the encoded user information from the authority.
+     * For example, if the authority is "nobody@google.com", this method will
+     * return "nobody".
+     *
+     * @return the user info for this URI or null if not present
+     */
     virtual CARAPI GetEncodedUserInfo(
-        /* [out] */ String* userInfo) = 0;
+        /* [out] */ String* result) = 0;
 
+    /**
+     * Gets the encoded host from the authority for this URI. For example,
+     * if the authority is "bob@google.com", this method will return
+     * "google.com".
+     *
+     * @return the host for this URI or null if not present
+     */
     virtual CARAPI GetHost(
-        /* [out] */ String* host) = 0;
+        /* [out] */ String* result) = 0;
 
+    /**
+     * Gets the port from the authority for this URI. For example,
+     * if the authority is "google.com:80", this method will return 80.
+     *
+     * @return the port for this URI or -1 if invalid or not present
+     */
     virtual CARAPI GetPort(
-        /* [out] */ Int32* port) = 0;
+        /* [out] */ Int32* result) = 0;
 
+    /**
+     * Gets the decoded path.
+     *
+     * @return the decoded path, or null if this is not a hierarchical URI
+     * (like "mailto:nobody@google.com") or the URI is invalid
+     */
     virtual CARAPI GetPath(
-        /* [out] */ String* path) = 0;
+        /* [out] */ String* result) = 0;
 
+    /**
+     * Gets the encoded path.
+     *
+     * @return the encoded path, or null if this is not a hierarchical URI
+     * (like "mailto:nobody@google.com") or the URI is invalid
+     */
     virtual CARAPI GetEncodedPath(
-        /* [out] */ String* path) = 0;
+        /* [out] */ String* result) = 0;
 
+    /**
+     * Gets the decoded query component from this URI. The query comes after
+     * the query separator ('?') and before the fragment separator ('#'). This
+     * method would return "q=android" for
+     * "http://www.google.com/search?q=android".
+     *
+     * @return the decoded query or null if there isn't one
+     */
     virtual CARAPI GetQuery(
-        /* [out] */ String* query) = 0;
+        /* [out] */ String* result) = 0;
 
+    /**
+     * Gets the encoded query component from this URI. The query comes after
+     * the query separator ('?') and before the fragment separator ('#'). This
+     * method would return "q=android" for
+     * "http://www.google.com/search?q=android".
+     *
+     * @return the encoded query or null if there isn't one
+     */
     virtual CARAPI GetEncodedQuery(
-        /* [out] */ String* query) = 0;
+        /* [out] */ String* result) = 0;
 
+    /**
+     * Gets the decoded fragment part of this URI, everything after the '#'.
+     *
+     * @return the decoded fragment or null if there isn't one
+     */
     virtual CARAPI GetFragment(
-        /* [out] */ String* fragment) = 0;
+        /* [out] */ String* result) = 0;
 
+    /**
+     * Gets the encoded fragment part of this URI, everything after the '#'.
+     *
+     * @return the encoded fragment or null if there isn't one
+     */
     virtual CARAPI GetEncodedFragment(
-        /* [out] */ String* fragment) = 0;
+        /* [out] */ String* result) = 0;
 
-    //anthony check
+    /**
+     * Gets the decoded path segments.
+     *
+     * @return decoded path segments, each without a leading or trailing '/'
+     */
     virtual CARAPI GetPathSegments(
-        /* [out, callee] */ ArrayOf<String>** pathSegments) = 0;
+        /* [out] */ IList** result) = 0;
 
+    /**
+     * Gets the decoded last segment in the path.
+     *
+     * @return the decoded last segment or null if the path is empty
+     */
     virtual CARAPI GetLastPathSegment(
-        /* [out] */ String* pathSegment) = 0;
+        /* [out] */ String* result) = 0;
 
     /**
      * Compares this Uri to another object for equality. Returns true if the
@@ -323,15 +527,15 @@ public:
      * be considered equal.
      */
     CARAPI Equals(
-        /* [in] */ IUri* other,
-        /* [out] */ Boolean* isEqual);
+        /* [in] */ IInterface* o,
+        /* [out] */ Boolean* result);
 
     /**
      * Hashes the encoded string represention of this Uri consistently with
      * {@link #equals(Object)}.
      */
     CARAPI GetHashCode(
-        /* [out] */ Int32* hashCode);
+        /* [out] */ Int32* result);
 
     /**
      * Compares the string representation of this Uri with that of
@@ -341,6 +545,10 @@ public:
         /* [in] */ IUri* other,
         /* [out] */ Int32* result);
 
+    /**
+     * Returns the encoded string representation of this URI.
+     * Example: "http://google.com/"
+     */
     virtual CARAPI ToString(
         /* [out] */ String* result) = 0;
 
@@ -352,12 +560,22 @@ public:
     CARAPI ToSafeString(
         /* [out] */ String* result);
 
+    /**
+     * Constructs a new builder, copying the attributes from this Uri.
+     */
     virtual CARAPI BuildUpon(
         /* [out] */ IUriBuilder** result) = 0;
 
+    /**
+     * Creates a Uri which parses the given encoded URI string.
+     *
+     * @param uriString an RFC 2396-compliant, encoded URI
+     * @throws NullPointerException if uriString is null
+     * @return Uri for this given uri string
+     */
     static CARAPI Parse(
         /* [in] */ const String& uriString,
-        /* [out] */ IUri** uri);
+        /* [out] */ IUri** result);
 
     /**
      * Creates a Uri from a file. The URI has the form
@@ -371,7 +589,7 @@ public:
      */
     static CARAPI FromFile(
         /* [in] */ IFile* file,
-        /* [out] */ IUri** uri);
+        /* [out] */ IUri** result);
 
     /**
      * Creates an opaque Uri from the given components. Encodes the ssp
@@ -393,7 +611,7 @@ public:
         /* [in] */ const String& scheme,
         /* [in] */ const String& ssp,
         /* [in] */ const String& fragment,
-        /* [out] */ IUri** uri);
+        /* [out] */ IUri** result);
 
     /**
      * Returns a set of the unique names of all query parameters. Iterating
@@ -403,8 +621,8 @@ public:
      *
      * @return a set of decoded names
      */
-    virtual CARAPI GetQueryParameterNames(
-        /* [out, callee] */ ArrayOf<String>** names);
+    CARAPI GetQueryParameterNames(
+        /* [out] */ ISet** result);
 
     /**
      * Searches the query string for parameter values with the given key.
@@ -415,9 +633,9 @@ public:
      * @throws NullPointerException if key is null
      * @return a list of decoded values
      */
-    virtual CARAPI GetQueryParameters(
-        /* [in] */ const String& key,
-        /* [out, callee] */ ArrayOf<String>** values);
+    CARAPI GetQueryParameters(
+        /* [in] */ String key,
+        /* [out] */ IList** result);
 
     /**
      * Searches the query string for the first value with the given key.
@@ -430,9 +648,9 @@ public:
      * @throws NullPointerException if key is null
      * @return the decoded value or null if no parameter is found
      */
-    virtual CARAPI GetQueryParameter(
-        /* [in] */ const String& key,
-        /* [out] */ String* value);
+    CARAPI GetQueryParameter(
+        /* [in] */ String key,
+        /* [out] */ String* result);
 
     /**
      * Searches the query string for the first value with the given key and interprets it
@@ -443,10 +661,10 @@ public:
      * @param defaultValue the default value to return if there is no query parameter for key
      * @return the boolean interpretation of the query parameter key
      */
-    virtual CARAPI GetBooleanQueryParameter(
-        /* [in] */ const String& key,
+    CARAPI GetBooleanQueryParameter(
+        /* [in] */ String key,
         /* [in] */ Boolean defaultValue,
-        /* [out] */ Boolean* value);
+        /* [out] */ Boolean* result);
 
     /**
      * Return an equivalent URI with a lowercase scheme component.
@@ -469,36 +687,83 @@ public:
      * @see {@link android.content.Intent#setData}
      * @see {@link #setNormalizedData}
      */
-    virtual CARAPI NormalizeScheme(
+    CARAPI NormalizeScheme(
         /* [out] */ IUri** result);
 
-    static CARAPI ReadFromParcel(
-       /* [in] */ IParcel* parcel,
-       /* [out] */ IUri** uri);
+    /**
+     * Reads Uris from Parcels.
+     */
+    CARAPI ReadFromParcel(
+        /* [in] */ IParcel* parcel);
 
-    static CARAPI WriteToParcel(
-        /* [in] */ IParcel* out,
-        /* [in] */ IUri* uri);
+    /**
+     * Writes a Uri to a Parcel.
+     *
+     * @param out parcel to write to
+     * @param uri to write, can be null
+     */
+    CARAPI WriteToParcel(
+        /* [in] */ IParcel* out);
 
+    /**
+     * Encodes characters in the given string as '%'-escaped octets
+     * using the UTF-8 scheme. Leaves letters ("A-Z", "a-z"), numbers
+     * ("0-9"), and unreserved characters ("_-!.~'()*") intact. Encodes
+     * all other characters.
+     *
+     * @param s string to encode
+     * @return an encoded version of s suitable for use as a URI component,
+     *  or null if s is null
+     */
     static CARAPI Encode(
-        /* [in] */ const String& s,
-        /* [out] */ String* encoded);
-
-    //anthony check
-    //Modify it will change other code
-    static CARAPI Encode(
-        /* [in] */ const String& s,
-        /* [in] */ const String& allow,
+        /* [in] */ String s,
         /* [out] */ String* result);
 
-    static CARAPI Decode(
-        /* [in] */ const String& s,
-        /* [out] */ String* decode);
+    /**
+     * Encodes characters in the given string as '%'-escaped octets
+     * using the UTF-8 scheme. Leaves letters ("A-Z", "a-z"), numbers
+     * ("0-9"), and unreserved characters ("_-!.~'()*") intact. Encodes
+     * all other characters with the exception of those specified in the
+     * allow argument.
+     *
+     * @param s string to encode
+     * @param allow set of additional characters to allow in the encoded form,
+     *  null if no characters should be skipped
+     * @return an encoded version of s suitable for use as a URI component,
+     *  or null if s is null
+     */
+    static CARAPI Encode(
+        /* [in] */ String s,
+        /* [in] */ String allow,
+        /* [out] */ String* result);
 
+    /**
+     * Decodes '%'-escaped octets in the given string using the UTF-8 scheme.
+     * Replaces invalid octets with the unicode replacement character
+     * ("\\uFFFD").
+     *
+     * @param s encoded string to decode
+     * @return the given string with escaped octets decoded, or null if
+     *  s is null
+     */
+    static CARAPI Decode(
+        /* [in] */ String s,
+        /* [out] */ String* result);
+
+    /**
+     * Creates a new Uri by appending an already-encoded path segment to a
+     * base Uri.
+     *
+     * @param baseUri Uri to append path segment to
+     * @param pathSegment encoded path segment to append
+     * @return a new Uri based on baseUri with the given segment appended to
+     *  the path
+     * @throws NullPointerException if baseUri is null
+     */
     static CARAPI WithAppendedPath(
         /* [in] */ IUri* baseUri,
-        /* [in] */ const String& pathSegment,
-        /* [out] */ IUri** uri);
+        /* [in] */ String pathSegment,
+        /* [out] */ IUri** result);
 
     /**
      * If this {@link Uri} is {@code file://}, then resolve and return its
@@ -508,12 +773,42 @@ public:
      *
      * @hide
      */
-    virtual CARAPI GetCanonicalUri(
-        /* [out] */ IUri** uri);
+    CARAPI GetCanonicalUri(
+        /* [out] */ IUri** result);
 
-    static CARAPI_(AutoPtr<IUri>) GetEMPTY();
+    /**
+     * If this is a {@code file://} Uri, it will be reported to
+     * {@link StrictMode}.
+     *
+     * @hide
+     */
+    CARAPI CheckFileUriExposed(
+        /* [in] */ String location);
+
+    /**
+     * Test if this is a path prefix match against the given Uri. Verifies that
+     * scheme, authority, and atomic path segments match.
+     *
+     * @hide
+     */
+    CARAPI IsPathPrefixMatch(
+        /* [in] */ IUri* prefix,
+        /* [out] */ Boolean* result);
+
+    static CARAPI GetEmpty(
+            /* [out] */ IUri** result);
 
 private:
+    /** Log tag. */
+    static const String sLOG;
+
+    /**
+     * Prevents external subclassing.
+     */
+    Uri(){}
+
+    static const Char32 sHEX_DIGITS[];
+
     /**
      * Returns true if the given character is allowed.
      *
@@ -522,21 +817,10 @@ private:
      * @return true if the character is allowed or false if it should be
      *  encoded
      */
-    static CARAPI_(Boolean) IsAllowed(
+    static CARAPI IsAllowed(
         /* [in] */ Char32 c,
-        /* [in] */ const String& allow);
-
-private:
-    /**
-     * The empty URI, equivalent to "".
-     */
-    static AutoPtr<IUri> EMPTY;// = new HierarchicalUri(null, Part.NULL,
-//            PathPart.EMPTY, Part.NULL, Part.NULL);
-public:
-
-    /** Log tag. */
-    static const String LOG;
-    static const String TAG;
+        /* [in] */ const String& allow,
+        /* [out] */ Boolean* result);
 
     /**
      * NOTE: EMPTY accesses this field during its own initialization, so this
@@ -547,27 +831,31 @@ public:
      * compare its identity and there is no chance we will confuse it with
      * user data.
      */
-    static const String NOT_CACHED;
+    // @SuppressWarnings("RedundantStringConstructorCall")
+    static const String sNOT_CACHED;
+
+    /**
+     * The empty URI, equivalent to "".
+     */
+    static const AutoPtr<IUri> sEMPTY;
 
     /** Index of a component which was not found. */
-    static const Int32 NOT_FOUND = -1;
+    static const Int32 sNOT_FOUND;
 
     /** Placeholder value for an index which hasn't been calculated yet. */
-    static const Int32 NOT_CALCULATED = -2;
+    static const Int32 sNOT_CALCULATED;
 
     /**
      * Error message presented when a user tries to treat an opaque URI as
      * hierarchical.
      */
-    static const String NOT_HIERARCHICAL;
+     static const String sNOT_HIERARCHICAL;
 
     /** Default encoding. */
-    static const String DEFAULT_ENCODING;
+     static const String sDEFAULT_ENCODING;
 
     /** Identifies a null parcelled Uri. */
-    static const Int32 NULL_TYPE_ID = 0;
-
-    static const Char8 HEX_DIGITS[];// = "0123456789ABCDEF";
+     static const Int32 sNULL_TYPE_ID;
 };
 
 /**
@@ -575,6 +863,7 @@ public:
  */
 class AbstractHierarchicalUri : public Uri
 {
+#if 0 // TODO: Translated before. Need check.
 public:
     AbstractHierarchicalUri();
 
@@ -606,110 +895,7 @@ private:
     AutoPtr<Uri::Part> mUserInfo;
     String mHost;
     Int32 mPort;
-};
-
-class HierarchicalUri : public AbstractHierarchicalUri {
-public:
-    HierarchicalUri();
-
-    HierarchicalUri(
-        /* [in] */ const String& scheme,
-        /* [in] */ Uri::Part* authority,
-        /* [in] */ Uri::PathPart* path,
-        /* [in] */ Uri::Part* query,
-        /* [in] */ Uri::Part* fragment);
-
-    CARAPI Init(
-        /* [in] */ const String& scheme,
-        /* [in] */ Handle32 authority,  //Part*
-        /* [in] */ Handle32 path,       //PathPart*
-        /* [in] */ Handle32 query,      //Part*
-        /* [in] */ Handle32 fragment);  //Part*
-
-    static CARAPI ReadFrom(
-        /* [in] */ IParcel* parcel,
-        /* [out] */ IUri** result);
-
-    virtual CARAPI ReadFromParcel(
-        /* [in] */ IParcel* parcel);
-
-    virtual CARAPI WriteToParcel(
-        /* [in] */ IParcel* parcel);
-
-    virtual CARAPI IsHierarchical(
-        /* [out] */ Boolean* isHierarchical);
-
-    virtual CARAPI IsRelative(
-        /* [out] */ Boolean* isRelative);
-
-    virtual CARAPI GetScheme(
-        /* [out] */ String* scheme);
-
-    virtual CARAPI GetEncodedSchemeSpecificPart(
-        /* [out] */ String* part);
-
-    virtual CARAPI GetSchemeSpecificPart(
-        /* [out] */ String* part);
-
-    virtual CARAPI GetAuthority(
-        /* [out] */ String* authority);
-
-    virtual CARAPI GetEncodedAuthority(
-        /* [out] */ String* authority);
-
-    virtual CARAPI GetEncodedPath(
-        /* [out] */ String* path);
-
-    virtual CARAPI GetPath(
-        /* [out] */ String* path);
-
-    virtual CARAPI GetQuery(
-        /* [out] */ String* query);
-
-    virtual CARAPI GetEncodedQuery(
-        /* [out] */ String* query);
-
-    virtual CARAPI GetFragment(
-        /* [out] */ String* fragment);
-
-    virtual CARAPI GetEncodedFragment(
-        /* [out] */ String* fragment);
-
-    // return a list of string
-    virtual CARAPI GetPathSegments(
-        /* [out, callee] */ ArrayOf<String>** segments);
-
-    virtual CARAPI ToString(
-        /* [out] */ String* info);
-
-    virtual CARAPI BuildUpon(
-        /* [out] */ IUriBuilder** builder);
-
-private:
-    CARAPI_(AutoPtr<Part>) GetSsp();
-
-    /**
-     * Creates the encoded scheme-specific part from its sub parts.
-     */
-    CARAPI_(String) MakeSchemeSpecificPart();
-
-    CARAPI AppendSspTo(StringBuilder& builder);
-
-    CARAPI_(String) MakeUriString();
-
-public:
-    /** Used in parcelling. */
-    static const Int32 TYPE_ID = 3;
-
-private:
-    String mScheme; // can be null
-    AutoPtr<Uri::Part> mAuthority;
-    AutoPtr<Uri::PathPart> mPath;
-    AutoPtr<Uri::Part> mQuery;
-    AutoPtr<Uri::Part> mFragment;
-
-    AutoPtr<Uri::Part> mSsp;
-    String mUriString;// = NOT_CACHED;;
+#endif
 };
 
 /**
@@ -717,8 +903,10 @@ private:
  * hierarchical, but we extend AbstractHierarchicalUri in case we need
  * the hierarchical functionality.
  */
-class StringUri : public AbstractHierarchicalUri
+class StringUri
+    : public AbstractHierarchicalUri
 {
+#if 0 // TODO: Translated before. Need check.
 protected:
     StringUri();
 
@@ -855,10 +1043,12 @@ protected:
     AutoPtr<Uri::PathPart> mPath;
     AutoPtr<Uri::Part> mQuery;
     AutoPtr<Uri::Part> mFragment;
+#endif
 };
 
 class OpaqueUri : public Uri
 {
+#if 0 // TODO: Translated before. Need check.
 protected:
     OpaqueUri();
 
@@ -950,11 +1140,316 @@ private:
     AutoPtr<Uri::Part> mSsp;
     AutoPtr<Uri::Part> mFragment;
     String mCachedString;
+#endif
 };
 
+class HierarchicalUri
+    : public AbstractHierarchicalUri
+{
+#if 0 // TODO: Translated before. Need check.
+public:
+    HierarchicalUri();
+
+    HierarchicalUri(
+        /* [in] */ const String& scheme,
+        /* [in] */ Uri::Part* authority,
+        /* [in] */ Uri::PathPart* path,
+        /* [in] */ Uri::Part* query,
+        /* [in] */ Uri::Part* fragment);
+
+    CARAPI Init(
+        /* [in] */ const String& scheme,
+        /* [in] */ Handle32 authority,  //Part*
+        /* [in] */ Handle32 path,       //PathPart*
+        /* [in] */ Handle32 query,      //Part*
+        /* [in] */ Handle32 fragment);  //Part*
+
+    static CARAPI ReadFrom(
+        /* [in] */ IParcel* parcel,
+        /* [out] */ IUri** result);
+
+    virtual CARAPI ReadFromParcel(
+        /* [in] */ IParcel* parcel);
+
+    virtual CARAPI WriteToParcel(
+        /* [in] */ IParcel* parcel);
+
+    virtual CARAPI IsHierarchical(
+        /* [out] */ Boolean* isHierarchical);
+
+    virtual CARAPI IsRelative(
+        /* [out] */ Boolean* isRelative);
+
+    virtual CARAPI GetScheme(
+        /* [out] */ String* scheme);
+
+    virtual CARAPI GetEncodedSchemeSpecificPart(
+        /* [out] */ String* part);
+
+    virtual CARAPI GetSchemeSpecificPart(
+        /* [out] */ String* part);
+
+    virtual CARAPI GetAuthority(
+        /* [out] */ String* authority);
+
+    virtual CARAPI GetEncodedAuthority(
+        /* [out] */ String* authority);
+
+    virtual CARAPI GetEncodedPath(
+        /* [out] */ String* path);
+
+    virtual CARAPI GetPath(
+        /* [out] */ String* path);
+
+    virtual CARAPI GetQuery(
+        /* [out] */ String* query);
+
+    virtual CARAPI GetEncodedQuery(
+        /* [out] */ String* query);
+
+    virtual CARAPI GetFragment(
+        /* [out] */ String* fragment);
+
+    virtual CARAPI GetEncodedFragment(
+        /* [out] */ String* fragment);
+
+    // return a list of string
+    virtual CARAPI GetPathSegments(
+        /* [out, callee] */ ArrayOf<String>** segments);
+
+    virtual CARAPI ToString(
+        /* [out] */ String* info);
+
+    virtual CARAPI BuildUpon(
+        /* [out] */ IUriBuilder** builder);
+
+private:
+    CARAPI_(AutoPtr<Part>) GetSsp();
+
+    /**
+     * Creates the encoded scheme-specific part from its sub parts.
+     */
+    CARAPI_(String) MakeSchemeSpecificPart();
+
+    CARAPI AppendSspTo(StringBuilder& builder);
+
+    CARAPI_(String) MakeUriString();
+
+public:
+    /** Used in parcelling. */
+    static const Int32 TYPE_ID = 3;
+
+private:
+    String mScheme; // can be null
+    AutoPtr<Uri::Part> mAuthority;
+    AutoPtr<Uri::PathPart> mPath;
+    AutoPtr<Uri::Part> mQuery;
+    AutoPtr<Uri::Part> mFragment;
+
+    AutoPtr<Uri::Part> mSsp;
+    String mUriString;// = NOT_CACHED;;
+#endif
+};
+
+/**
+ * Helper class for building or manipulating URI references. Not safe for
+ * concurrent use.
+ *
+ * <p>An absolute hierarchical URI reference follows the pattern:
+ * {@code <scheme>://<authority><absolute path>?<query>#<fragment>}
+ *
+ * <p>Relative URI references (which are always hierarchical) follow one
+ * of two patterns: {@code <relative or absolute path>?<query>#<fragment>}
+ * or {@code //<authority><absolute path>?<query>#<fragment>}
+ *
+ * <p>An opaque URI follows this pattern:
+ * {@code <scheme>:<opaque part>#<fragment>}
+ *
+ * <p>Use {@link Uri#buildUpon()} to obtain a builder representing an existing URI.
+ */
+class UriBuilder
+    : public Object
+    , public IUriBuilder
+{
+public:
+    CAR_INTERFACE_DECL()
+
+public:
+    /**
+     * Constructs a new Builder.
+     */
+    UriBuilder() {}
+
+    /**
+     * Sets the scheme.
+     *
+     * @param scheme name or {@code null} if this is a relative Uri
+     */
+    CARAPI Scheme(
+        /* [in] */ String scheme,
+        /* [out] */ IUriBuilder** result);
+
+    CARAPI OpaquePart(
+        /* [in] */ Uri::Part* opaquePart,
+        /* [out] */ IUriBuilder** result);
+
+    /**
+     * Encodes and sets the given opaque scheme-specific-part.
+     *
+     * @param opaquePart decoded opaque part
+     */
+    CARAPI OpaquePart(
+        /* [in] */ String opaquePart,
+        /* [out] */ IUriBuilder** result);
+
+    /**
+     * Sets the previously encoded opaque scheme-specific-part.
+     *
+     * @param opaquePart encoded opaque part
+     */
+    CARAPI EncodedOpaquePart(
+        /* [in] */ String opaquePart,
+        /* [out] */ IUriBuilder** result);
+
+    CARAPI Authority(
+        /* [in] */ Uri::Part* authority,
+        /* [out] */ IUriBuilder** result);
+
+    /**
+     * Encodes and sets the authority.
+     */
+    CARAPI Authority(
+        /* [in] */ String authority,
+        /* [out] */ IUriBuilder** result);
+
+    /**
+     * Sets the previously encoded authority.
+     */
+    CARAPI EncodedAuthority(
+        /* [in] */ String authority,
+        /* [out] */ IUriBuilder** result);
+
+    CARAPI Path(
+        /* [in] */ Uri::PathPart* path,
+        /* [out] */ IUriBuilder** result);
+
+    /**
+     * Sets the path. Leaves '/' characters intact but encodes others as
+     * necessary.
+     *
+     * <p>If the path is not null and doesn't start with a '/', and if
+     * you specify a scheme and/or authority, the builder will prepend the
+     * given path with a '/'.
+     */
+    CARAPI Path(
+        /* [in] */ String path,
+        /* [out] */ IUriBuilder** result);
+
+    /**
+     * Sets the previously encoded path.
+     *
+     * <p>If the path is not null and doesn't start with a '/', and if
+     * you specify a scheme and/or authority, the builder will prepend the
+     * given path with a '/'.
+     */
+    CARAPI EncodedPath(
+        /* [in] */ String path,
+        /* [out] */ IUriBuilder** result);
+
+    /**
+     * Encodes the given segment and appends it to the path.
+     */
+    CARAPI AppendPath(
+        /* [in] */ String newSegment,
+        /* [out] */ IUriBuilder** result);
+
+    /**
+     * Appends the given segment to the path.
+     */
+    CARAPI AppendEncodedPath(
+        /* [in] */ String newSegment,
+        /* [out] */ IUriBuilder** result);
+
+    CARAPI Query(
+        /* [in] */ Uri::Part* query,
+        /* [out] */ IUriBuilder** result);
+
+    /**
+     * Encodes and sets the query.
+     */
+    CARAPI Query(
+        /* [in] */ String query,
+        /* [out] */ IUriBuilder** result);
+
+    /**
+     * Sets the previously encoded query.
+     */
+    CARAPI EncodedQuery(
+        /* [in] */ String query,
+        /* [out] */ IUriBuilder** result);
+
+    CARAPI Fragment(
+        /* [in] */ Uri::Part* fragment,
+        /* [out] */ IUriBuilder** result);
+
+    /**
+     * Encodes and sets the fragment.
+     */
+    CARAPI Fragment(
+        /* [in] */ String fragment,
+        /* [out] */ IUriBuilder** result);
+
+    /**
+     * Sets the previously encoded fragment.
+     */
+    CARAPI EncodedFragment(
+        /* [in] */ String fragment,
+        /* [out] */ IUriBuilder** result);
+
+    /**
+     * Encodes the key and value and then appends the parameter to the
+     * query string.
+     *
+     * @param key which will be encoded
+     * @param value which will be encoded
+     */
+    CARAPI AppendQueryParameter(
+        /* [in] */ String key,
+        /* [in] */ String value,
+        /* [out] */ IUriBuilder** result);
+
+    /**
+     * Clears the the previously set query.
+     */
+    CARAPI ClearQuery(
+        /* [out] */ IUriBuilder** result);
+
+    /**
+     * Constructs a Uri with the current attributes.
+     *
+     * @throws UnsupportedOperationException if the URI is opaque and the
+     *  scheme is null
+     */
+    CARAPI Build(
+        /* [out] */ IUri** result);
+
+    // @Override
+    CARAPI ToString(
+        /* [out] */ String* result);
+
+private:
+    CARAPI HasSchemeOrAuthority(
+        /* [out] */ Boolean* result);
+
+    String mScheme;
+    AutoPtr<Uri::Part> mOpaquePart;
+    AutoPtr<Uri::Part> mAuthority;
+    AutoPtr<Uri::PathPart> mPath;
+    AutoPtr<Uri::Part> mQuery;
+    AutoPtr<Uri::Part> mFragment;
+};
 
 } // namespace Net
 } // namespace Droid
 } // namespace Elastos
-
-#endif //__ELASTOS_DROID_NET_URI_H__
+#endif // __ELASTOS_DROID_NET_URI_H__
