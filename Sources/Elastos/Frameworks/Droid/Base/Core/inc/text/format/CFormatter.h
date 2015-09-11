@@ -14,9 +14,10 @@ namespace Format {
 
 CarClass(CFormatter)
     , public Singleton
-    , public Formatter
+    , public IFormatter
 {
 public:
+    CAR_INTERFACE_DECL()
     CAR_SINGLETON_DECL()
 
     CARAPI FormatFileSize(
@@ -32,6 +33,11 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ Int64 number,
         /* [out] */ String* ret);
+
+    CARAPI FormatShortElapsedTime(
+         /* [in] */ IContext* context,
+         /* [in] */ Int64 millis,
+         /* [out] */ String* ret);
 };
 
 } // namespace Format

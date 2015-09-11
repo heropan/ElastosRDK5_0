@@ -25,6 +25,15 @@ ECode CTimeHelper::GetCurrentTimezone(
     return NOERROR;
 }
 
+ECode CTimeHelper::IsEpoch(
+    /* [in] */ ITime* time,
+    /* [out] */ Boolean * ret)
+{
+    VALIDATE_NOT_NULL(ret);
+    *ret = CTime::IsEpoch(time);
+    return NOERROR;
+}
+
 ECode CTimeHelper::GetJulianDay(
     /* [in] */ Int64 millis,
     /* [in] */ Int64 gmtoff,
@@ -32,15 +41,6 @@ ECode CTimeHelper::GetJulianDay(
 {
     VALIDATE_NOT_NULL(ret);
     *ret = CTime::GetJulianDay(millis, gmtoff);
-    return NOERROR;
-}
-
-ECode CTimeHelper::GetJulianMondayFromWeeksSinceEpoch(
-    /* [in] */ Int32 week,
-    /* [out] */ Int32* ret)
-{
-    VALIDATE_NOT_NULL(ret);
-    *ret = CTime::GetJulianMondayFromWeeksSinceEpoch(week);
     return NOERROR;
 }
 
@@ -54,14 +54,18 @@ ECode CTimeHelper::GetWeeksSinceEpochFromJulianDay(
     return NOERROR;
 }
 
-ECode CTimeHelper::IsEpoch(
-    /* [in] */ ITime* time,
-    /* [out] */ Boolean * ret)
+ECode CTimeHelper::GetJulianMondayFromWeeksSinceEpoch(
+    /* [in] */ Int32 week,
+    /* [out] */ Int32* ret)
 {
     VALIDATE_NOT_NULL(ret);
-    *ret = CTime::IsEpoch(time);
+    *ret = CTime::GetJulianMondayFromWeeksSinceEpoch(week);
     return NOERROR;
 }
+
+
+
+
 
 } // namespace Format
 } // namespace Text

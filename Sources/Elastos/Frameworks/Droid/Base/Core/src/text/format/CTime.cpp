@@ -5,9 +5,16 @@
 #include "content/res/CResources.h"
 #include "R.h"
 #include <elastos/core/Math.h>
+#include <elastos/core/System.h>
 #include <cutils/tztime.h>
-#include <utils/String8.h>
 
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::CResources;
+using Elastos::Core::Character;
+using Elastos::Core::System;
+using Elastos::Utility::CTimeZoneHelper;
+using Elastos::Utility::ITimeZoneHelper;
+using Elastos::Utility::ITimeZone;
 using Libcore::ICU::ILocale;
 using Libcore::ICU::ILocaleHelper;
 using Libcore::ICU::ILocaleData;
@@ -15,11 +22,7 @@ using Libcore::ICU::ILocaleDataHelper;
 using Libcore::ICU::CLocale;
 using Libcore::ICU::CLocaleHelper;
 using Libcore::ICU::CLocaleDataHelper;
-using Elastos::Utility::CTimeZoneHelper;
-using Elastos::Utility::ITimeZoneHelper;
-using Elastos::Utility::ITimeZone;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Content::Res::CResources;
+
 
 namespace Elastos {
 namespace Droid {
@@ -30,25 +33,6 @@ const String CTime::Y_M_D_T_H_M_S_000("%Y-%m-%dT%H:%M:%S.000");
 const String CTime::Y_M_D_T_H_M_S_000_Z("%Y-%m-%dT%H:%M:%S.000Z");
 const String CTime::Y_M_D("%Y-%m-%d");
 
-/*
- * The Locale for which date formatting strings have been loaded.
- */
-AutoPtr<ILocale> CTime::sLocale;
-AutoPtr< ArrayOf<String> > CTime::sShortMonths;
-AutoPtr< ArrayOf<String> > CTime::sLongMonths;
-AutoPtr< ArrayOf<String> > CTime::sLongStandaloneMonths;
-AutoPtr< ArrayOf<String> > CTime::sShortWeekdays;
-AutoPtr< ArrayOf<String> > CTime::sLongWeekdays;
-String CTime::sTimeOnlyFormat;
-String CTime::sDateOnlyFormat;
-String CTime::sDateTimeFormat;
-String CTime::sAm;
-String CTime::sPm;
-Char32 CTime::sZeroDigit;
-
-// Referenced by native code.
-String CTime::sDateCommand("%a %b %e %H:%M:%S %Z %Y");
-
 const Int32 CTime::DAYS_PER_MONTH[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 /**
@@ -58,105 +42,26 @@ const Int32 CTime::DAYS_PER_MONTH[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 3
  */
 const Int32 CTime::sThursdayOffset[] = {-3, 3, 2, 1, 0, -1, -2};
 
-Mutex CTime::sTimeClassLock;
+const Int32 CTime::SECOND = 1;
+const Int32 CTime::MINUTE = 2;
+const Int32 CTime::HOUR = 3;
+const Int32 CTime::MONTH_DAY = 4;
+const Int32 CTime::MONTH = 5;
+const Int32 CTime::YEAR = 6;
+const Int32 CTime::WEEK_DAY = 7;
+const Int32 CTime::YEAR_DAY = 8;
+const Int32 CTime::WEEK_NUM = 9;
 
-char tochar(Int32 n)
-{
-    return (n >= 0 && n <= 9) ? ('0'+ n) : ' ';
-}
+const Int32 CTime::SUNDAY = 0;
+const Int32 CTime::MONDAY = 1;
+const Int32 CTime::TUESDAY = 2;
+const Int32 CTime::WEDNESDAY = 3;
+const Int32 CTime::THURSDAY = 4;
+const Int32 CTime::FRIDAY = 5;
+const Int32 CTime::SATURDAY = 6;
 
-char next_char(Int32 *m, Int32 k)
-{
-    Int32 n = *m / k;
-    *m = *m % k;
-    return tochar(n);
-}
-
-String format_ex(const char* format, const struct strftime_locale *locale, struct tm* t)
-{
-    char buf[257];
-    int n = strftime_tz(buf, 257, format, t, locale);
-    if (n > 0) {
-        return String(buf);
-    }
-    else {
-        return String("");
-    }
-}
-
-Boolean ctime2tm(CTime* time, struct tm* tm)
-{
-    tm->tm_sec = time->mSecond;
-    tm->tm_min = time->mMinute;
-    tm->tm_hour = time->mHour;
-    tm->tm_mday = time->mMonthDay;
-    tm->tm_mon = time->mMonth;
-    tm->tm_year = time->mYear - 1900;
-    tm->tm_wday = time->mWeekDay;
-    tm->tm_yday = time->mYearDay;
-    tm->tm_isdst = time->mIsDst;
-    tm->tm_gmtoff = time->mGmtoff;
-    Boolean allDay = time->mAllDay;
-    if (allDay &&
-        ((tm->tm_sec != 0) || (tm->tm_min != 0) || (tm->tm_hour != 0))) {
-        // jniThrowException(env, "java/lang/IllegalArgumentException",
-        //                   "allDay is true but sec, min, hour are not 0.");
-        return FALSE;
-    }
-    return TRUE;
-}
-
-void tm2ctime(const struct tm* tm, CTime* time)
-{
-    time->mSecond = tm->tm_sec;
-    time->mMinute = tm->tm_min;
-    time->mHour = tm->tm_hour;
-    time->mMonthDay = tm->tm_mday;
-    time->mMonth = tm->tm_mon;
-    time->mYear = tm->tm_year + 1900;
-    time->mWeekDay = tm->tm_wday;
-    time->mYearDay = tm->tm_yday;
-    time->mIsDst = tm->tm_isdst;
-    time->mGmtoff = tm->tm_gmtoff;
-}
-
-void format2445_ex(char* buf, Boolean hasTime, struct tm* tm, const String& timezone)
-{
-    Int32 n;
-
-    n = tm->tm_year + 1900;
-    buf[0] = next_char(&n, 1000);
-    buf[1] = next_char(&n, 100);
-    buf[2] = next_char(&n, 10);
-    buf[3] = tochar(n);
-
-    n = tm->tm_mon + 1;
-    buf[4] = next_char(&n, 10);
-    buf[5] = tochar(n);
-
-    n = tm->tm_mday;
-    buf[6] = next_char(&n, 10);
-    buf[7] = tochar(n);
-
-    if (hasTime) {
-        buf[8] = 'T';
-
-        n = tm->tm_hour;
-        buf[9] = next_char(&n, 10);
-        buf[10] = tochar(n);
-
-        n = tm->tm_min;
-        buf[11] = next_char(&n, 10);
-        buf[12] = tochar(n);
-
-        n = tm->tm_sec;
-        buf[13] = next_char(&n, 10);
-        buf[14] = tochar(n);
-        if (timezone.Equals("UTC")) {
-            buf[15] = 'Z';
-        }
-    }
-}
+CAR_INTERFACE_IMPL(CTime, Object, ITime)
+CAR_OBJECT_IMPL(CTime)
 
 CTime::CTime()
     : mAllDay(FALSE)
@@ -179,70 +84,63 @@ ECode CTime::constructor()
     CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&tzh);
     AutoPtr<ITimeZone> tz;
     tzh->GetDefault((ITimeZone**)&tz);
-    String strId;
-    tz->GetID(&strId);
-    return constructor(strId);
+    String timezoneId;
+    tz->GetID(&timezoneId);
+    return Initialize(timezoneId);
 }
 
 ECode CTime::constructor(
-    /* [in] */ const String& timezone)
+    /* [in] */ const String& timezoneId)
 {
-    if (timezone.IsNull()) {
-       // throw new NullPointerException("timezone is null!");
+    if (timezoneId.IsNull()) {
+       // throw new NullPointerException("timezoneId is null!");
         return E_NULL_POINTER_EXCEPTION;
     }
-    mTimezone = timezone;
-    mYear = 1970;
-    mMonthDay = 1;
-    // Set the daylight-saving indicator to the unknown value -1 so that
-    // it will be recomputed.
-    mIsDst = -1;
-    return NOERROR;
+    return Initialize(timezoneId);
 }
 
 ECode CTime::constructor(
     /* [in] */ ITime* other)
 {
+    CTime* other_ = (CTime*)other;
+    Initialize(other_->mTimeZone);
     return Set(other);
+}
+
+/** Initialize the Time to 00:00:00 1/1/1970 in the specified timezone. */
+ECode CTime::Initialize(
+    /* [in] */ String timezoneId)
+{
+    mTimeZone = timezoneId;
+    mYear = 1970;
+    mMonthDay = 1;
+    // Set the daylight-saving indicator to the unknown value -1 so that
+    // it will be recomputed.
+    mIsDst = -1;
+
+    // A reusable object that performs the date/time calculations.
+    mCalculator = new TimeCalculator(timezoneId);
 }
 
 ECode CTime::Normalize(
     /* [in] */ Boolean ignoreDst,
     /* [out] */ Int64* ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    struct tm t;
-    if (!ctime2tm(this, &t)) {
-        *ret = 0;
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    if (ignoreDst) {
-        t.tm_isdst = -1;
-    }
-    int64_t r = mktime_tz(&t, mTimezone.string());
-    if (r == -1) {
-        *ret = -1;
-        return NOERROR;
-    }
-    *ret = r * 1000;
-
-    tm2ctime(&t, this);
+    VALIDATE_NOT_NULL(ret)
+    mCalculator->CopyFieldsFromTime(THIS_PROBE(ITime));
+    Int64 timeInMillis = mCalculator->ToMillis(ignoreDst);
+    mCalculator->CopyFieldsToTime(THIS_PROBE(ITime));
+    *ret = timeInMillis;
     return NOERROR;
 }
 
 ECode CTime::SwitchTimezone(
     /* [in] */ const String& timezone)
 {
-    struct tm t;
-    if (!ctime2tm(this, &t)) return E_ILLEGAL_ARGUMENT_EXCEPTION;
-
-    time_t seconds = mktime_tz(&t, mTimezone.string());
-    localtime_tz(&seconds, &t, timezone.string());
-
-    tm2ctime(&t, this);
-
-    mTimezone = timezone;
+    mCalculator->CopyFieldsFromTime(THIS_PROBE(ITime));
+    mCalculator->SwitchTimezone(timezone);
+    mCalculator->CopyFieldsToTime(THIS_PROBE(ITime));
+    mTimeZone = timezone;
     return NOERROR;
 }
 
@@ -305,7 +203,7 @@ ECode CTime::Clear(
         //throw new NullPointerException("timezone is null!");
         return E_NULL_POINTER_EXCEPTION;
     }
-    mTimezone = timezone;
+    mTimeZone = timezone;
     mAllDay = FALSE;
     mSecond = 0;
     mMinute = 0;
@@ -334,193 +232,34 @@ ECode CTime::Compare(
         //throw new NullPointerException("b == null");
         return E_NULL_POINTER_EXCEPTION;
     }
-    *result = NativeCompare(a, b);
+    AutoPtr<TimeCalculator> aCalculator = (CTime*)a->mCalculator;
+    AutoPtr<TimeCalculator> bCalculator = (CTime*)b->mCalculator;
+    aCalculator->CopyFieldsFromTime(a);
+    bCalculator->CopyFieldsFromTime(b);
+
+    *result = TimeCalculator::Compare(aCalculator, bCalculator);
     return NOERROR;
-}
-
-#define COMPARE_FIELD(field) do { \
-        Int32 diff = aObj->field - bObj->field; \
-        if (diff != 0) return diff; \
-    } while(0)
-
-Int32 CTime::NativeCompare(
-    /* [in] */ ITime* a,
-    /* [in] */ ITime* b)
-{
-    CTime* aObj = (CTime*)a;
-    CTime* bObj = (CTime*)b;
-    if (aObj->mTimezone.Equals(bObj->mTimezone)) {
-        // if the timezones are the same, we can easily compare the two
-        // times.  Otherwise, convert to milliseconds and compare that.
-        // This requires that object be normalized.
-        COMPARE_FIELD(mYear);
-        COMPARE_FIELD(mMonth);
-        COMPARE_FIELD(mMonthDay);
-        COMPARE_FIELD(mHour);
-        COMPARE_FIELD(mMinute);
-        COMPARE_FIELD(mSecond);
-        return 0;
-    }
-    else {
-        Int64 am;
-        a->ToMillis(FALSE, &am /* use isDst */);
-        Int64 bm;
-        b->ToMillis(FALSE, &bm /* use isDst */);
-        Int64 diff = am - bm;
-        return (diff < 0) ? -1 : ((diff > 0) ? 1 : 0);
-    }
 }
 
 ECode CTime::Format(
     /* [in] */ const String& format,
     /* [out] */ String* ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    AutoLock lock(sTimeClassLock);
-
-    AutoPtr<ILocaleHelper> localeHelp;
-    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelp);
-    AutoPtr<ILocale> locale;
-    localeHelp->GetDefault((ILocale**)&locale);
-
-    Boolean isEquals;
-    if (sLocale == NULL || locale == NULL || (locale->Equals(sLocale, &isEquals), !isEquals)) {
-        AutoPtr<ILocaleDataHelper> ldh;
-        CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&ldh);
-        AutoPtr<ILocaleData> localeData;
-        ldh->Get(locale, (ILocaleData**)&localeData);
-
-        AutoPtr< ArrayOf<String> > amPm;
-        localeData->GetAmPm((ArrayOf<String>**)&amPm);
-        sAm = (*amPm)[0];
-        sPm = (*amPm)[1];
-        localeData->GetZeroDigit(&sZeroDigit);
-
-        sShortMonths = NULL;
-        sLongMonths = NULL;
-        sLongStandaloneMonths = NULL;
-        sShortWeekdays = NULL;
-        sLongWeekdays = NULL;
-        localeData->GetShortMonthNames((ArrayOf<String>**)&sShortMonths);
-        localeData->GetLongMonthNames((ArrayOf<String>**)&sLongMonths);
-        localeData->GetLongStandAloneMonthNames((ArrayOf<String>**)&sLongStandaloneMonths);
-        localeData->GetShortWeekdayNames((ArrayOf<String>**)&sShortWeekdays);
-        localeData->GetLongWeekdayNames((ArrayOf<String>**)&sLongWeekdays);
-
-        AutoPtr<IResources> r = CResources::GetSystem();
-        r->GetString(R::string::time_of_day, &sTimeOnlyFormat);
-        r->GetString(R::string::month_day_year, &sDateOnlyFormat);
-        r->GetString(R::string::date_and_time, &sDateTimeFormat);
-
-        sLocale = locale;
-    }
-
-    String result;
-    FAIL_RETURN(Format1(format, &result));
-    if (sZeroDigit != '0') {
-        result = LocalizeDigits(result);
-    }
-    *ret  = result;
+    VALIDATE_NOT_NULL(ret)
+    mCalculator->CopyFieldsFromTime(THIS_PROBE(ITime));
+    *ret = mCalculator->Format(format);
     return NOERROR;
-}
-
-ECode CTime::Format1(
-    /* [in] */ const String& format,
-    /* [out] */ String* result)
-{
-    // We only teardown and setup our 'locale' struct and other state
-    // when the Java-side locale changed.  This is safe to do here
-    // without locking because we're always called from Java code
-    // synchronized on the class instance.
-    VALIDATE_NOT_NULL(result);
-    struct tm t;
-    if (!ctime2tm(this, &t)) {
-        *result = "";
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    AutoPtr<ILocaleHelper> localeHelp;
-    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelp);
-    AutoPtr<ILocale> tmp_locale;
-    localeHelp->GetDefault((ILocale**)&tmp_locale);
-    AutoPtr<ILocaleDataHelper> ldh;
-    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&ldh);
-    AutoPtr<ILocaleData> localeData;
-    ldh->Get(tmp_locale, (ILocaleData**)&localeData);
-
-    static AutoPtr<ILocale> localePrevious;
-    static struct strftime_locale locale;
-    if (localePrevious != sLocale) {
-        localePrevious = sLocale;
-
-        for (Int32 i = 0; i < 12; i++) {
-            //Calendar.JANUARY == 0
-            locale.mon[i] = (*sShortMonths)[i].string();
-            locale.month[i] = (*sLongMonths)[i].string();
-            locale.standalone_month[i] = (*sLongStandaloneMonths)[i].string();
-        }
-
-        for (Int32 i = 0; i < 7; ++i) {
-            // Calendar.SUNDAY == 1, and there's an empty string in element 0.
-            locale.wday[i] = (*sShortWeekdays)[i].string();
-            locale.weekday[i] = (*sLongWeekdays)[i].string();
-        }
-
-        locale.X_fmt = sTimeOnlyFormat.string();
-        locale.x_fmt = sDateOnlyFormat.string();
-        locale.c_fmt = sDateTimeFormat.string();
-
-        locale.am = sAm.string();
-        locale.pm = sPm.string();
-
-        locale.date_fmt = sDateCommand.string();
-    }
-
-    *result = format_ex(format.string(), &locale, &t);
-    return NOERROR;
-}
-
-String CTime::LocalizeDigits(
-    /* [in] */ const String& s)
-{
-    AutoPtr<ArrayOf<Char32> > chars = s.GetChars();
-    Int32 charCount = chars->GetLength();
-    Char32 ch;
-    Int32 offsetToLocalizedDigits = sZeroDigit - '0';
-    StringBuilder result;
-    for (Int32 i = 0; i < charCount; ++i) {
-        ch = (*chars)[i];
-        if (ch >= '0' && ch <= '9') {
-            ch += offsetToLocalizedDigits;
-        }
-        result.AppendChar(ch);
-    }
-    return result.ToString();
 }
 
 ECode CTime::ToString(
     /* [out] */ String* ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    struct tm t;
-    if (!ctime2tm(this, &t)) {
-        *ret = "";
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    char s[150];
-#ifdef HAVE_TM_GMTOFF
-    Int64 tm_gmtoff = t.tm_gmtoff;
-#else
-    Int64 tm_gmtoff = 0;
-#endif
-    int64_t r = mktime_tz(&t, mTimezone.string());
-    if (r != -1) r *= 1000;
-    sprintf(s, "%04d%02d%02dT%02d%02d%02d%s(%d,%d,%lld,%d,%d)",
-            t.tm_year + 1900, t.tm_mon + 1, t.tm_mday, t.tm_hour, t.tm_min,
-            t.tm_sec, mTimezone.string(), t.tm_wday, t.tm_yday, tm_gmtoff, t.tm_isdst,
-            (int)(r / 1000));
-    *ret = s;
+    VALIDATE_NOT_NULL(ret)
+    // toString() uses its own TimeCalculator rather than the shared one. Otherwise crazy stuff
+    // happens during debugging when the debugger calls toString().
+    AutoPtr<TimeCalculator> timeCalculator = new TimeCalculator(mTimeZone);
+    mCalculator->CopyFieldsFromTime(THIS_PROBE(ITime));
+    *ret = mCalculator->ToStringInternal();
     return NOERROR;
 }
 
@@ -528,140 +267,84 @@ ECode CTime::Parse(
     /* [in] */ const String& s,
     /* [out] */ Boolean* ret)
 {
-    VALIDATE_NOT_NULL(ret);
+    VALIDATE_NOT_NULL(ret)
     if (s.IsNull()) {
         //throw new NullPointerException("time string is null");
         *ret = FALSE;
         return  E_NULL_POINTER_EXCEPTION;
     }
-    FAIL_RETURN(NativeParse(s, ret));
-    if (*ret) {
-        mTimezone = ITime::TIMEZONE_UTC;
-    }
-    return NOERROR;
-}
-
-// ============================================================================
-// Just do this here because it's not worth recreating the strings
-Int32 get_char(const String& s, Char32 c, Int32 mul, Boolean* thrown)
-{
-    if (c >= '0' && c <= '9') {
-        return (c - '0') * mul;
-    }
-    else {
-        if (!*thrown) {
-           // jniThrowExceptionFmt(env, "android/util/TimeFormatException",
-           //                       "Parse error at pos=%d", spos);
-            *thrown = TRUE;
+    if (ParseInternal(s)) {
+            mTimeZone = ITime::TIMEZONE_UTC;
+            *ret = TRUE;
+            return NOERROR;
         }
-        return 0;
-    }
+        *ret = FALSE;
+        return NOERROR;
 }
 
-Boolean check_char(const String& s, Char32 c, Char32 expected)
+Boolean CTime::ParseInternal(
+    /* [in] */ String s)
 {
-    if (c != expected) {
-        // jniThrowExceptionFmt(env, "android/util/TimeFormatException",
-        //                      "Unexpected character 0x%02x at pos=%d.  Expected %c.",
-        //                      c, spos, expected);
-        return FALSE;
-    }
-    return TRUE;
-}
-
-ECode CTime::NativeParse(
-    /* [in] */ const String& s,
-    /* [out] */ Boolean* result)
-{
-    AutoPtr<ArrayOf<Char32> > chars = s.GetChars();
-    UInt32 len = chars->GetLength();
+    Int32 len = s.GetLength();
     if (len < 8) {
-        // jniThrowException(env, "android/util/TimeFormatException",
-        //                   "String too short -- expected at least 8 characters.");
-        *result = FALSE;
+        // throw new TimeFormatException("String is too short: \"" + s +
+        //             "\" Expected at least 8 characters.");
         return E_TIME_FORMAT_EXCEPTION;
     }
 
     Boolean inUtc = FALSE;
 
-    // year
-    Int32 n;
-    Boolean thrown = FALSE;
-    n = get_char(s, (*chars)[0], 1000, &thrown);
-    n += get_char(s, (*chars)[1], 100, &thrown);
-    n += get_char(s, (*chars)[2], 10, &thrown);
-    n += get_char(s, (*chars)[3], 1, &thrown);
-    if (thrown) {
-        *result = FALSE;
-        return E_TIME_FORMAT_EXCEPTION;
-    }
+    //year
+    Int32 n = GetChar(s, 0, 1000);
+    n += GetChar(s, 1, 100);
+    n += GetChar(s, 2, 10);
+    n += GetChar(s, 3, 1);
     mYear = n;
 
-    // month
-    n = get_char(s, (*chars)[4], 10, &thrown);
-    n += get_char(s, (*chars)[5], 1, &thrown);
+    //month
+    n = GetChar(s, 4, 10);
+    n += GetChar(s, 5, 1);
     n--;
-    if (thrown) {
-        *result = FALSE;
-        return E_TIME_FORMAT_EXCEPTION;
-    }
     mMonth = n;
 
-    //day of month
-    n = get_char(s, (*chars)[6], 10, &thrown);
-    n += get_char(s, (*chars)[7], 1, &thrown);
-    if (thrown) {
-        *result = FALSE;
-        return E_TIME_FORMAT_EXCEPTION;
-    }
+    // day of month
+    n = GetChar(s, 6, 10);
+    n += GetChar(s, 7, 1);
     mMonthDay = n;
 
     if (len > 8) {
-        // T
-        if (!check_char(s, (*chars)[8], 'T')) {
-            *result = FALSE;
+        if (len < 15) {
+            // throw new TimeFormatException(
+            //         "String is too short: \"" + s
+            //                 + "\" If there are more than 8 characters there must be at least"
+            //                 + " 15.");
             return E_TIME_FORMAT_EXCEPTION;
         }
+        CheckChar(s, 8, 'T');
         mAllDay = FALSE;
 
-        //hour
-        n = get_char(s, (*chars)[9], 10, &thrown);
-        n += get_char(s, (*chars)[10], 1, &thrown);
-        if (thrown) {
-            *result = FALSE;
-            return E_TIME_FORMAT_EXCEPTION;
-        }
+        // hour
+        n = GetChar(s, 9, 10);
+        n += GetChar(s, 10, 1);
         mHour = n;
 
         // min
-        n = get_char(s, (*chars)[11], 10, &thrown);
-        n = get_char(s, (*chars)[12], 1, &thrown);
-        if (thrown) {
-            *result = FALSE;
-            return E_TIME_FORMAT_EXCEPTION;
-        }
+        n = GetChar(s, 11, 10);
+        n += GetChar(s, 12, 1);
         mMinute = n;
 
-        //sec
-        n = get_char(s, (*chars)[13], 10, &thrown);
-        n += get_char(s, (*chars)[14], 1, &thrown);
-        if (thrown) {
-            *result = FALSE;
-            return E_TIME_FORMAT_EXCEPTION;
-        }
+        // sec
+        n = GetChar(s, 13, 10);
+        n += GetChar(s, 14, 1);
         mSecond = n;
 
         if (len > 15) {
             // Z
-            if (!check_char(s, (*chars)[15], 'Z')) {
-                *result = FALSE;
-                return E_TIME_FORMAT_EXCEPTION;
-            }
+            CheckChar(s, 15, 'Z');
             inUtc = TRUE;
         }
-    }
-    else {
-        mAllDay = FALSE;
+    } else {
+        mAllDay = TRUE;
         mHour = 0;
         mMinute = 0;
         mSecond = 0;
@@ -671,9 +354,35 @@ ECode CTime::NativeParse(
     mYearDay = 0;
     mIsDst = -1;
     mGmtoff = 0;
+    return inUtc;
+}
 
-    *result = inUtc;
-    return NOERROR;
+ECode CTime::CheckChar(
+    /* [in] */ String s,
+    /* [in] */ Int32 spos,
+    /* [in] */ Char32 expected)
+{
+    Char32 c = s.GetChar(spos);
+    if (c != expected) {
+        // throw new TimeFormatException(String.format(
+        //             "Unexpected character 0x%02d at pos=%d.  Expected 0x%02d (\'%c\').",
+        //             (int) c, spos, (int) expected, expected));
+        return E_TIME_FORMAT_EXCEPTION;
+    }
+}
+
+Int32 CTime::GetChar(
+    /* [in] */ String s,
+    /* [in] */ Int32 spos,
+    /* [in] */ Int32 mul)
+{
+    Char32 c = s.GetChar(spos);
+    if (Character::IsDigit(c)) {
+        return Character::GetNumericValue(c) * mul
+    } else {
+        // throw new TimeFormatException("Parse error at pos=" + spos);
+        return E_TIME_FORMAT_EXCEPTION;
+    }
 }
 
 ECode CTime::Parse3339(
@@ -686,215 +395,147 @@ ECode CTime::Parse3339(
         *ret = FALSE;
         return E_NULL_POINTER_EXCEPTION;
     }
-    FAIL_RETURN(NativeParse3339(s, ret));
-    if (*ret) {
-        mTimezone = ITime::TIMEZONE_UTC;
-    }
+    if (Parse3339Internal(s)) {
+        mTimeZone = ITime::TIMEZONE_UTC;
+        *ret = TRUE;
+        return NOERROR;
+     }
+    *ret = FALSE;
     return NOERROR;
 }
 
-ECode CTime::NativeParse3339(
-    /* [in] */ const String& s,
-    /* [out] */ Boolean* result)
+Boolean CTime::Parse3339Internal(
+    /* [in] */ String s)
 {
-    AutoPtr<ArrayOf<Char32> > chars = s.GetChars();
-    UInt32 len = chars->GetLength();
+    Int32 len = s.GetLength();
     if (len < 10) {
-        // jniThrowException(env, "android/util/TimeFormatException",
-        //                   "String too short --- expected at least 10 characters.");
-        *result = FALSE;
+        // throw new TimeFormatException("String too short --- expected at least 10 characters.");
         return E_TIME_FORMAT_EXCEPTION;
     }
-
     Boolean inUtc = FALSE;
 
     // year
-    Int32 n;
-    Boolean thrown = FALSE;
-    n = get_char(s, (*chars)[0], 1000, &thrown);
-    n += get_char(s, (*chars)[1], 100, &thrown);
-    n += get_char(s, (*chars)[2], 10, &thrown);
-    n += get_char(s, (*chars)[3], 1, &thrown);
-    if (thrown) {
-        *result = FALSE;
-        return E_TIME_FORMAT_EXCEPTION;
-    }
+    Int32 n = GetChar(s, 0, 1000);
+    n += GetChar(s, 1, 100);
+    n += GetChar(s, 2, 10);
+    n += GetChar(s, 3, 1);
     mYear = n;
 
-    // -
-    if (!check_char(s, (*chars)[4], '-')) {
-        *result = FALSE;
-        return E_TIME_FORMAT_EXCEPTION;
-    }
+    CheckChar(s, 4, '-');
 
     // month
-    n = get_char(s, (*chars)[5], 10, &thrown);
-    n += get_char(s, (*chars)[6], 1, &thrown);
+    n = GetChar(s, 5, 10);
+    n += GetChar(s, 6, 1);
     --n;
-    if (thrown) {
-        *result = FALSE;
-        return E_TIME_FORMAT_EXCEPTION;
-    }
     mMonth = n;
 
-    // -
-    if (!check_char(s, (*chars)[7], '-')) {
-        *result = FALSE;
-        return E_TIME_FORMAT_EXCEPTION;
-    }
+    CheckChar(s, 7, '-');
 
-    //day
-    n = get_char(s, (*chars)[8], 10, &thrown);
-    n += get_char(s, (*chars)[9], 1, &thrown);
-    if (thrown) {
-        *result = FALSE;
-        return E_TIME_FORMAT_EXCEPTION;
-    }
+    // day
+    n = GetChar(s, 8, 10);
+    n += GetChar(s, 9, 1);
     mMonthDay = n;
 
     if (len >= 19) {
         // T
-        if (!check_char(s, (*chars)[10], 'T')) {
-            *result = FALSE;
-            return E_TIME_FORMAT_EXCEPTION;
-        }
-
+        CheckChar(s, 10, 'T');
         mAllDay = FALSE;
-        //hour
-        n = get_char(s, (*chars)[11], 10, &thrown);
-        n += get_char(s, (*chars)[12], 1, &thrown);
-        if (thrown) {
-            *result = FALSE;
-            return E_TIME_FORMAT_EXCEPTION;
-        }
+
+        // hour
+        n = GetChar(s, 11, 10);
+        n += GetChar(s, 12, 1);
+
+        // Note that this.hour is not set here. It is set later.
         Int32 hour = n;
 
-        // :
-        if (!check_char(s, (*chars)[13], ':')) {
-            *result = FALSE;
-            return E_TIME_FORMAT_EXCEPTION;
-        }
+        CheckChar(s, 13, ':');
 
         // minute
-        n = get_char(s, (*chars)[14], 10, &thrown);
-        n += get_char(s, (*chars)[15], 1, &thrown);
-        if (thrown) {
-            *result = FALSE;
-            return E_TIME_FORMAT_EXCEPTION;
-        }
+        n = GetChar(s, 14, 10);
+        n += GetChar(s, 15, 1);
+        // Note that this.minute is not set here. It is set later.
         Int32 minute = n;
 
-        // :
-        if (!check_char(s, (*chars)[16], ':')) {
-            *result = FALSE;
-            return E_TIME_FORMAT_EXCEPTION;
-        }
+        CheckChar(s, 16, ':');
 
-        //second
-        n = get_char(s, (*chars)[17], 10, &thrown);
-        n += get_char(s, (*chars)[18], 1, &thrown);
-        if (thrown) {
-            *result = FALSE;
-            return E_TIME_FORMAT_EXCEPTION;
-        }
+        // second
+        n = GetChar(s, 17, 10);
+        n += GetChar(s, 18, 1);
         mSecond = n;
 
         // skip the '.XYZ' -- we don't care about subsecond precision.
-        Int32 tz_index = 19;
-        if (tz_index < len && (*chars)[tz_index] == '.') {
-            do {
-                 tz_index++;
-            } while(tz_index < len
-                 && (*chars)[tz_index] >= '0'
-                 && (*chars)[tz_index] <= '9');
+
+        Int32 tzIndex = 19;
+        if (tzIndex < len && s.GetChar(tzIndex) == '.') {
+         do {
+             tzIndex++;
+         } while (tzIndex < len && Character::IsDigit(s.GetChar(tzIndex)));
         }
 
         Int32 offset = 0;
-        if (len > tz_index) {
-            Char32 c = (*chars)[tz_index];
-
+        if (len > tzIndex) {
+            Char32 c = s.GetChar(tzIndex);
             // NOTE: the offset is meant to be subtracted to get from local time
             // to UTC.  we therefore use 1 for '-' and -1 for '+'.
             switch (c) {
-            case 'Z':
-                // Zulu time -- UTC
-                offset = 0;
-                break;
-            case '-':
-                offset = 1;
-                break;
-            case '+':
-                offset = -1;
-                break;
-            default:
-                // jniThrowExceptionFmt(env, "android/util/TimeFormatException",
-                //                      "Unexpected character 0x%02x at position %d.  Expected + or -",
-                //                      c, tz_index);
-                *result = FALSE;
+                case 'Z':
+                    // Zulu time -- UTC
+                    offset = 0;
+                    break;
+                case '-':
+                    offset = 1;
+                    break;
+                case '+':
+                    offset = -1;
+                    break;
+                default:
+                    // throw new TimeFormatException(String.format(
+                    //      "Unexpected character 0x%02d at position %d.  Expected + or -",
+                    //      (int) c, tzIndex));
+                    return E_TIME_FORMAT_EXCEPTION;
+         }
+         inUtc = TRUE;
+
+         if (offset != 0) {
+             if (len < tzIndex + 6) {
+                 // throw new TimeFormatException(
+                 //         String.format("Unexpected length; should be %d characters",
+                 //                 tzIndex + 6));
                 return E_TIME_FORMAT_EXCEPTION;
-           }
-           inUtc = TRUE;
+             }
 
-           if (offset != 0) {
-                if (len < tz_index + 6) {
-                     // jniThrowExceptionFmt(env, "android/util/TimeFormatException",
-                     //                     "Unexpected length; should be %d characters",
-                     //                     tz_index + 6);
-                    *result = FALSE;
-                    return E_TIME_FORMAT_EXCEPTION;
-                }
+             // hour
+             n = GetChar(s, tzIndex + 1, 10);
+             n += GetChar(s, tzIndex + 2, 1);
+             n *= offset;
+             hour += n;
 
-                //hour
-                n = get_char(s, (*chars)[tz_index + 1], 10, &thrown);
-                n += get_char(s, (*chars)[tz_index + 2], 1, &thrown);
-                if (thrown) {
-                    *result = FALSE;
-                    return E_TIME_FORMAT_EXCEPTION;
-                }
-                n *= offset;
-                hour += n;
-
-                // :
-                if (!check_char(s, (*chars)[tz_index + 3], ':')) {
-                    *result = FALSE;
-                    return E_TIME_FORMAT_EXCEPTION;
-                }
-
-                //minute
-                n = get_char(s, (*chars)[tz_index + 4], 10, &thrown);
-                n += get_char(s, (*chars)[tz_index + 5], 1, &thrown);
-                if (thrown) {
-                    *result = FALSE;
-                    return E_TIME_FORMAT_EXCEPTION;
-                }
-                n *= offset;
-                minute += n;
+             // minute
+             n = GetChar(s, tzIndex + 4, 10);
+             n += GetChar(s, tzIndex + 5, 1);
+             n *= offset;
+             minute += n;
             }
         }
         mHour = hour;
         mMinute = minute;
 
         if (offset != 0) {
-            // we need to normalize after applying the hour and minute offsets
-            Int64 itmp;
-            Normalize(FALSE, &itmp/* use isdst */);
-            // The timezone is set to UTC in the calling Java code.
+            Int32 ret;
+            Normalize(FALSE, &ret);
         }
-    }
-    else {
-        mAllDay = FALSE;
-        mHour = 0;
-        mMinute = 0;
-        mSecond = 0;
+    } else {
+     mAllDay = TRUE;
+     mHour = 0;
+     mMinute = 0;
+     mSecond = 0;
     }
 
     mWeekDay = 0;
     mYearDay = 0;
     mIsDst = -1;
     mGmtoff = 0;
-
-    *result = inUtc;
-    return NOERROR;
+    return inUtc;
 }
 
 String CTime::GetCurrentTimezone()
@@ -910,35 +551,16 @@ String CTime::GetCurrentTimezone()
 
 ECode CTime::SetToNow()
 {
-    mAllDay = FALSE;
-    struct tm t;
-    time_t seconds;
-    time(&seconds);
-    localtime_tz(&seconds, &t, mTimezone.string());
-
-    tm2ctime(&t,this);
-    return NOERROR;
+    Int64 millis;
+    return Set((CSystem::GetCurrentTimeMillis(&millis), millis));
 }
 
 ECode CTime::ToMillis(
     /* [in] */ Boolean ignoreDst,
     /* [out] */ Int64* ret)
 {
-    struct tm t;
-    if (!ctime2tm(this, &t)) {
-        *ret = 0;
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    if (ignoreDst) {
-        t.tm_isdst = -1;
-    }
-    int64_t r = mktime_tz(&t, mTimezone.string());
-    if (r == -1) {
-        *ret = - 1;
-        return NOERROR;
-    }
-    *ret = r * 1000;
+    mCalculator->CopyFieldsFromTime(THIS_PROBE(ITime));
+    *ret = mCalculator->ToMillis(ignoreDst);
     return NOERROR;
 }
 
@@ -946,52 +568,26 @@ ECode CTime::Set(
     /* [in] */ Int64 millis)
 {
     mAllDay = FALSE;
-    struct tm t;
-
-    time_t seconds = millis / 1000;
-    localtime_tz(&seconds, &t, mTimezone);
-
-    tm2ctime(&t, this);
+    mCalculator->mTimeZone = mTimeZone;
+    mCalculator->SetTimeInMillis(millis);
+    mCalculator->CopyFieldsToTime(THIS_PROBE(ITime));
     return NOERROR;
 }
 
 ECode CTime::Format2445(
     /* [out] */ String* ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    struct tm t;
-    if (!ctime2tm(this, &t)) {
-        *ret = "";
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    };
-
-    if (!mAllDay) {
-        char buf[16];
-        format2445_ex(buf, TRUE, &t, mTimezone);
-        if (mTimezone.Equals("UTC")) {
-            // The letter 'Z' is appended to the end so allow for one
-            // more character in the buffer.
-            *ret = String(buf, 16);
-            return NOERROR;
-        }
-        else {
-            *ret = String(buf, 15);
-            return NOERROR;
-        }
-    }
-    else {
-        char buf[8];
-        format2445_ex(buf, FALSE, &t, mTimezone);
-        *ret = String(buf, 8);
-        return NOERROR;
-    }
+    VALIDATE_NOT_NULL(ret)
+    mCalculator->CopyFieldsFromTime(THIS_PROBE(ITime));
+    *ret = mCalculator->Format2445(!mAllDay);
+    return NOERROR;
 }
 
 ECode CTime::Set(
     /* [in] */ ITime* that)
 {
     CTime* thatTime = (CTime*)that;
-    mTimezone = thatTime->mTimezone;
+    mTimeZone = thatTime->mTimeZone;
     mAllDay = thatTime->mAllDay;
     mSecond = thatTime->mSecond;
     mMinute = thatTime->mMinute;
@@ -1006,7 +602,7 @@ ECode CTime::Set(
     return NOERROR;
 }
 
-CTime::Set(
+ECod CTime::Set(
     /* [in] */ Int32 second,
     /* [in] */ Int32 minute,
     /* [in] */ Int32 hour,
@@ -1051,7 +647,7 @@ ECode CTime::Before(
     /* [in] */ ITime* that,
     /* [out] */ Boolean* ret)
 {
-    VALIDATE_NOT_NULL(ret);
+    VALIDATE_NOT_NULL(ret)
     Int32 result;
     FAIL_RETURN(Compare(this, that, &result));
     *ret = result < 0;
@@ -1062,7 +658,7 @@ ECode CTime::After(
     /* [in] */ ITime* that,
     /* [out] */ Boolean* ret)
 {
-    VALIDATE_NOT_NULL(ret);
+    VALIDATE_NOT_NULL(ret)
     Int32 result;
     FAIL_RETURN(Compare(this, that, &result));
     *ret = result > 0;
@@ -1072,7 +668,7 @@ ECode CTime::After(
 ECode CTime::GetWeekNumber(
     /* [out] */ Int32* ret)
 {
-    VALIDATE_NOT_NULL(ret);
+    VALIDATE_NOT_NULL(ret)
     // Get the year day for the closest Thursday
     Int32 closestThursday = mYearDay + sThursdayOffset[mWeekDay];
 
@@ -1097,10 +693,10 @@ ECode CTime::Format3339(
     /* [out] */ String* ret)
 {
     VALIDATE_NOT_NULL(ret);
-    if (allDay) {
+    if (mAllDay) {
         return Format(Y_M_D, ret);
     }
-    else if ((ITime::TIMEZONE_UTC).Equals(mTimezone)) {
+    else if ((ITime::TIMEZONE_UTC).Equals(mTimeZone)) {
         return Format(Y_M_D_T_H_M_S_000_Z, ret);
     }
     else {
@@ -1111,7 +707,7 @@ ECode CTime::Format3339(
         Int32 minutes = (offset % 3600) / 60;
         Int32 hours = offset / 3600;
 
-        assert(0);
+        assert(0 && "TODO");
         //Java:    return String.format(Locale.US, "%s%s%02d:%02d", base, sign, hours, minutes);
         // String ret;
         // ret = String.format(Locale.US, "%s%s%02d:%02d", base, sign, hours, minutes);
@@ -1346,7 +942,7 @@ ECode CTime::GetGmtoff(
 ECode CTime::SetTimeZone(
     /* [in] */ const String& timezone)
 {
-    mTimezone = timezone;
+    mTimeZone = timezone;
     return NOERROR;
 }
 
@@ -1354,8 +950,302 @@ ECode CTime::GetTimeZone(
     /* [out] */ String* timezone)
 {
     VALIDATE_NOT_NULL(timezone);
-    *timezone = mTimezone;
+    *timezone = mTimeZone;
     return NOERROR;
+}
+
+CTime::TimeCalculator::TimeCalculator(
+    /* [in] */ String timezonId)
+{
+    mZoneInfo = LookupZoneInfo(timezoneId);
+    CZoneInfoWallTime::New((IZoneInfoWallTime**)&mWallTime);
+}
+
+Int64 CTime::TimeCalculator::ToMillis(
+    /* [in] */ Boolean ignoreDst)
+{
+    if (ignoreDst) {
+        mWallTime->SetIsDst(-1);
+    }
+
+    Int32 r = mWallTime->MkTime(mZoneInfo);
+    if (r == -1) {
+        return -1;
+    }
+    return r * 1000L;
+}
+
+ECode CTime::TimeCalculator::SetTimeInMillis(
+    /* [in] */ Int64 millis)
+{
+   // Preserve old 32-bit Android behavior.
+    Int32 intSeconds = (Int32) (millis / 1000);
+
+    UpdateZoneInfoFromTimeZone();
+    return mWallTime->LocalTime(intSeconds, mZoneInfo);
+}
+
+String CTime::TimeCalculator::Format(
+    /* [in] */ String format)
+{
+    if (format.IsNull())
+    {
+        format = "%c";
+    }
+    AutoPtr<ITimeFormatter> formatter;
+    CTimeFormatter::New((ITimeFormatter**)&formatter);
+    assert(0 && "TODO");
+    return formatter->Format(format, mWallTime, mZoneInfo);
+}
+
+ECode CTime::TimeCalculator::UpdateZoneInfoFromTimeZone()
+{
+    String zoneInfoID = mZoneInfo->GetID();
+    Boolean isEquals = FALSE;
+    if (!(zoneInfoID->Equals(mTimeZone,&isEquals), isEquals))
+    {
+        mZoneInfo = LookupZoneInfo(mTimeZone);
+    }
+    return NOERROR;
+}
+
+ECode CTime::TimeCalculator::LookupZoneInfo(
+    /* [in] */ String timezoneId ,
+    /* [out] */ ZoneInfo** ret)
+{
+    VALIDATE_NOT_NULL(ret)
+    // try {
+    AutoPtr<IZoneInfo> zoneInfo;
+    AutoPtr<TzData> tzdata = CZoneInfoDB::GetInstance();
+    tzdata->MakeTimeZone(timezoneId, &zoneInfo);
+    if (zoneInfo == NULL)
+    {
+        tzdata->MakeTimeZone("GMT", &zoneInfo);
+    }
+    if (zoneInfo == NULL)
+    {
+        // throw new AssertionError("GMT not found: \"" + timezoneId + "\"");
+        return E_ASSERTION_ERROR;
+    }
+    *ret = zoneInfo;
+    REFCOUNT_ADD()
+    return NOERROR;
+    // } catch (IOException e) {
+    // This should not ever be thrown.
+        // throw new AssertionError("Error loading timezone: \"" + timezoneId + "\"", e);
+    // }
+}
+
+ECode CTime::TimeCalculator::SwitchTimezone(
+    /* [in] */ String timezone)
+{
+    Int32 seconds;
+    mWallTime->Mktime(zoneInfo, &seconds);
+    mTimeZone = timezone;
+    UpdateZoneInfoFromTimeZone();
+    return mWallTime->Localtime(seconds, zoneInfo)
+}
+
+String CTime::TimeCalculator::Format2445(
+    /* [in] */ Boolean hasTime)
+{
+    AutoPtr<ArrayOf<Char32> > buf = new Char32[hasTime ? 16 : 8];
+    Int32 n;
+    mWallTime->GetYear(&n);
+
+    buf[0] = ToChar(n / 1000);
+    n %= 1000;
+    buf[1] = ToChar(n / 100);
+    n %= 100;
+    buf[2] = ToChar(n / 10);
+    n %= 10;
+    buf[3] = ToChar(n);
+
+    Int32 n1;
+    mWallTime->GetMonth(&n1);
+    n = n1 + 1;
+    buf[4] = ToChar(n / 10);
+    buf[5] = ToChar(n % 10);
+
+    mWallTime->GetMonthDay(&n);
+    buf[6] = ToChar(n / 10);
+    buf[7] = ToChar(n % 10);
+
+    if (!hasTime) {
+        assert(0 && "TODO");
+        // return new String(buf, 0, 8);
+    }
+
+    buf[8] = 'T';
+
+    mWallTime->GetHour(&n);
+    buf[9] = ToChar(n / 10);
+    buf[10] = ToChar(n % 10);
+
+    mWallTime->GetMinute(&n);
+    buf[11] = ToChar(n / 10);
+    buf[12] = ToChar(n % 10);
+
+    mWallTime->GetSecond(&n);
+    buf[13] = ToChar(n / 10);
+    buf[14] = ToChar(n % 10);
+
+    if (ITime::TIMEZONE_UTC.Equals(mTimeZone))
+    {
+        // The letter 'Z' is appended to the end.
+        buf[15] = 'Z';
+        assert(0 && "TODO");
+        // return new String(buf, 0, 16);
+    } else {
+        assert(0 && "TODO");
+        // return new String(buf, 0, 15);
+    }
+}
+
+Char32 CTime::TimeCalculator::ToChar(
+    /* [in] */ Int32 n)
+{
+    return (n >= 0 && n <= 9) ? (Char32)(n + '0') : ' ';
+}
+
+String CTime::TimeCalculator::ToStringInternal()
+{
+    // This implementation possibly displays the un-normalized fields because that is
+    // what it has always done.
+    assert(0 && "TODO");
+    // return String.format("%04d%02d%02dT%02d%02d%02d%s(%d,%d,%d,%d,%d)",
+    //                 wallTime.getYear(),
+    //                 wallTime.getMonth() + 1,
+    //                 wallTime.getMonthDay(),
+    //                 wallTime.getHour(),
+    //                 wallTime.getMinute(),
+    //                 wallTime.getSecond(),
+    //                 timezone,
+    //                 wallTime.getWeekDay(),
+    //                 wallTime.getYearDay(),
+    //                 wallTime.getGmtOffset(),
+    //                 wallTime.getIsDst(),
+    //                 toMillis(false /* use isDst */) / 1000
+    //         );
+
+}
+
+Int32 CTime::TimeCalculator::Compare(
+    /* [in] */ AutoPtr<TimeCalculator> aObject,
+    /* [in] */ AutoPtr<TimeCalculator> bObject)
+{
+    if((aObject->mTimeZone).Equals(bObject->mTimeZone)) {
+        // If the timezones are the same, we can easily compare the two times.
+        AutoPtr<IZoneInfoWallTime> awallTime = aObject->mWallTime;
+        AutoPtr<IZoneInfoWallTime> bwallTime = bObject->mWallTime;
+        Int32 aYear;
+        Int32 bYear;
+        awallTime->GetYear(&aYear);
+        bwallTime->GetYear(&bYear);
+        Int32 diff = aYear - bYear;
+        if (diff != 0) {
+            return diff;
+        }
+
+        Int32 aMonth;
+        Int32 bMonth;
+        awallTime->GetMonth(&aMonth);
+        bwallTime->GetMonth(&bMonth);
+        diff = aMonth - bMonth;
+        if (diff != 0 ) {
+            return diff;
+        }
+
+        Int32 aMonthDay;
+        Int32 bMonthDay;
+        awallTime->GetMonthDay(&aMonthDay);
+        bwallTime->GetMonthDay(&bMonthDay);
+        diff = aMonthDay - bMonthDay;
+        if (diff != 0) {
+            return diff;
+        }
+
+        Int32 aHour;
+        Int32 bHour;
+        awallTime->GetHour(&aHour);
+        bwallTime->GetHour(&bHour);
+        diff = aHour - bHour;
+        if (diff != 0) {
+            return diff;
+        }
+
+        Int32 aMinute;
+        Int32 bMinute;
+        awallTime->GetMinute(&aMinute);
+        bwallTime->GetMinute(&bMinute);
+        diff = aMinute - bMinute;
+        if (diff != 0) {
+            return diff;
+        }
+
+        Int32 aSecond;
+        Int32 bSecond;
+        awallTime->GetMinute(&aSecond);
+        bwallTime->GetMinute(&bSecond);
+        diff = aSecond - bSecond;
+        if (diff != 0) {
+            return diff;
+        }
+
+        return 0;
+    } else {
+        // Otherwise, convert to milliseconds and compare that. This requires that object be
+        // normalized. Note: For dates that do not exist: toMillis() can return -1, which
+        // can be confused with a valid time.
+        Int64 am = aObject->ToMillis(FALSE);
+        Int64 bm = bObject->ToMillis(FALSE);
+        Int64 diff = am - bm;
+        return (diff < 0) ? -1 : ((diff > 0) ? 1 : 0);
+    }
+}
+
+ECode CTime::TimeCalculator::CopyFieldsToTime(
+    /* [in] */ ITime* time)
+{
+    CTime* tm = (CTime*)time;
+    mWallTime->GetSecond(&tm->mSecond);
+    mWallTime->GetMinute(&tm->mMinute);
+    mWallTime->GetHour(&tm->mHour);
+    mWallTime->GetMonthDay(&tm->mMonthDay);
+    mWallTime->GetMonth(&tm->mMonth);
+    mWallTime->GetYear(&tm->mYear);
+
+    // Read-only fields that are derived from other information above.
+    mWallTime->GetWeekDay(&tm->mWeekDay);
+    mWallTime->GetYearDay(&tm->mYearDay);
+
+    // < 0: DST status unknown, 0: is not in DST, 1: is in DST
+    mWallTime->GetIsDst(&tm->mIsDst);
+    // This is in seconds and includes any DST offset too.
+    return mWallTime->GetGmtOffset(&tm->mGmtoff);
+}
+
+ECode CTime::TimeCalculator::CopyFieldsFromTime(
+    /* [in] */ ITime* time)
+{
+    CTime* tm = (CTime*)time;
+    mWallTime->SetSecond(tm->mSecond);
+    mWallTime->SetMinute(tm->mMinute);
+    mWallTime->SetHour(tm->mHour);
+    mWallTime->SetMonthDay(tm->mMonthDay);
+    mWallTime->SetMonth(tm->mMonth);
+    mWallTime->SetYear(tm->mYear);
+    mWallTime->SetWeekDay(tm->mWeekDay);
+    mWallTime->SetYearDay(tm->mYearDay);
+    mWallTime->SetIsDst(tm->mIsDst);
+    mWallTime->SetGmtOffset(tm->mGmtoff);
+
+    if (tm->mAllDay && (tm->mSecond != 0 || tm->mMinute != 0 || tm->mHour != 0)) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    mTimeZone = tm->mTimeZone;
+    return UpdateZoneInfoFromTimeZone();
 }
 
 } // namespace Format

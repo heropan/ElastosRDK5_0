@@ -20,21 +20,13 @@ namespace Droid {
 namespace Text {
 namespace Format {
 
-extern "C" const InterfaceID EIID_DateUtils;
-
 /**
  * This class contains various date-related utilities for creating text for things like
  * elapsed time and date ranges, strings for days of the week and months, and AM/PM text etc.
  */
 class DateUtils
-    : public Object
-    , public IDateUtils
 {
 public:
-    CAR_INTERFACE_DECL();
-
-    CARAPI_(String) ToString();
-
     /**
      * Return a string for the day of the week.
      * @param dayOfWeek One of {@link Calendar#SUNDAY Calendar.SUNDAY},
@@ -539,14 +531,12 @@ public:
         /* [in] */ IContext* c,
         /* [in] */ Int64 millis);
 
-    static CARAPI_(AutoPtr< ArrayOf<Int32> >) GetSameMonthTable();
-
-    static CARAPI_(AutoPtr< ArrayOf<Int32> >) GetSameYearTable();
-
     static CARAPI_(AutoPtr<ICharSequence>) FormatDuration(
         /* [in] */ Int64 millis);
 
 private:
+    DateUtils();
+
     /**
      * Returns a string describing a day relative to the current day. For example if the day is
      * today this function returns "Today", if the day was a week ago it returns "7 days ago", and
@@ -579,30 +569,7 @@ public:
     // {showTime, showYear, showWeekDay}.  For example, if showYear and
     // showWeekDay are both true, then the index would be 3.
     /** @deprecated do not use. */
-    static const Int32 sSameYearTable[];
-    /*
-     =
-    {
-        R::string::same_year_md1_md2,
-        R::string::same_year_wday1_md1_wday2_md2,
-        R::string::same_year_mdy1_mdy2,
-        R::string::same_year_wday1_mdy1_wday2_mdy2,
-        R::string::same_year_md1_time1_md2_time2,
-        R::string::same_year_wday1_md1_time1_wday2_md2_time2,
-        R::string::same_year_mdy1_time1_mdy2_time2,
-        R::string::same_year_wday1_mdy1_time1_wday2_mdy2_time2,
-
-        // Numeric date strings
-        R::string::numeric_md1_md2,
-        R::string::numeric_wday1_md1_wday2_md2,
-        R::string::numeric_mdy1_mdy2,
-        R::string::numeric_wday1_mdy1_wday2_mdy2,
-        R::string::numeric_md1_time1_md2_time2,
-        R::string::numeric_wday1_md1_time1_wday2_md2_time2,
-        R::string::numeric_mdy1_time1_mdy2_time2,
-        R::string::numeric_wday1_mdy1_time1_wday2_mdy2_time2,
-    };
-    */
+    static const AutoPtr<ArrayOf<Int32> > sSameYearTable;
 
     // This table is used to lookup the resource string id of a format string
     // used for formatting a start and end date that fall in the same month.
@@ -610,29 +577,7 @@ public:
     // {showTime, showYear, showWeekDay}.  For example, if showYear and
     // showWeekDay are both true, then the index would be 3.
     /** @deprecated do not use. */
-    static const Int32 sSameMonthTable[];
-    /*
-     =
-    {
-        R::string::same_month_md1_md2,
-        R::string::same_month_wday1_md1_wday2_md2,
-        R::string::same_month_mdy1_mdy2,
-        R::string::same_month_wday1_mdy1_wday2_mdy2,
-        R::string::same_month_md1_time1_md2_time2,
-        R::string::same_month_wday1_md1_time1_wday2_md2_time2,
-        R::string::same_month_mdy1_time1_mdy2_time2,
-        R::string::same_month_wday1_mdy1_time1_wday2_mdy2_time2,
-
-        R::string::numeric_md1_md2,
-        R::string::numeric_wday1_md1_wday2_md2,
-        R::string::numeric_mdy1_mdy2,
-        R::string::numeric_wday1_mdy1_wday2_mdy2,
-        R::string::numeric_md1_time1_md2_time2,
-        R::string::numeric_wday1_md1_time1_wday2_md2_time2,
-        R::string::numeric_mdy1_time1_mdy2_time2,
-        R::string::numeric_wday1_mdy1_time1_wday2_mdy2_time2,
-    };
-    */
+    static const AutoPtr<ArrayOf<Int32> > sSameMonthTable;
 
 private:
     static Object sLock;

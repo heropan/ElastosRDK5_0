@@ -20,13 +20,13 @@ public:
     CARAPI GetCurrentTimezone(
         /* [out] */ String* ret);
 
+    CARAPI IsEpoch(
+        /* [in] */ ITime* time,
+        /* [out] */ Boolean* ret);
+
     CARAPI GetJulianDay(
         /* [in] */ Int64 millis,
         /* [in] */ Int64 gmtoff,
-        /* [out] */ Int32* ret);
-
-    CARAPI GetJulianMondayFromWeeksSinceEpoch(
-        /* [in] */ Int32 week,
         /* [out] */ Int32* ret);
 
     CARAPI GetWeeksSinceEpochFromJulianDay(
@@ -34,9 +34,9 @@ public:
         /* [in] */ Int32 firstDayOfWeek,
         /* [out] */ Int32* ret);
 
-    CARAPI IsEpoch(
-        /* [in] */ ITime* time,
-        /* [out] */ Boolean* ret);
+    CARAPI GetJulianMondayFromWeeksSinceEpoch(
+        /* [in] */ Int32 week,
+        /* [out] */ Int32* ret);
 };
 
 } // namespace Format

@@ -18,7 +18,7 @@ namespace Format {
 
 CarClass(CDateUtils)
     , public Singleton
-    , public DateUtils
+    , public IDateUtils
 {
 public:
     CAR_INTERFACE_DECL()

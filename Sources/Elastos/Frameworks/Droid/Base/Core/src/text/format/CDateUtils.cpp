@@ -8,6 +8,8 @@ namespace Droid {
 namespace Text {
 namespace Format {
 
+CAR_INTERFACE_DECL(CDateUtils, Singleton, IDateUtils)
+
 CAR_SINGLETON_IMPL(CDateUtils)
 
 ECode CDateUtils::FormatDateRange(
@@ -69,7 +71,7 @@ ECode CDateUtils::FormatDateTime(
     /* [out] */ String* ret)
 {
     VALIDATE_NOT_NULL(ret);
-    *ret=(DateUtils::FormatDateTime(context, millis, flags));
+    *ret = (DateUtils::FormatDateTime(context, millis, flags));
     return NOERROR;
 }
 
@@ -78,7 +80,7 @@ ECode CDateUtils::FormatElapsedTime(
     /* [out] */ String* ret)
 {
     VALIDATE_NOT_NULL(ret);
-    *ret=(DateUtils::FormatElapsedTime(elapsedSeconds));
+    *ret = (DateUtils::FormatElapsedTime(elapsedSeconds));
     return NOERROR;
 }
 
@@ -88,7 +90,7 @@ ECode CDateUtils::FormatElapsedTime(
     /* [out] */ String* ret)
 {
     VALIDATE_NOT_NULL(ret);
-    *ret=(DateUtils::FormatElapsedTime(recycle, elapsedSeconds));
+    *ret = (DateUtils::FormatElapsedTime(recycle, elapsedSeconds));
     return NOERROR;
 }
 
@@ -111,7 +113,7 @@ ECode CDateUtils::GetAMPMString(
     /* [out] */ String* ret)
 {
     VALIDATE_NOT_NULL(ret);
-    *ret=(DateUtils::GetAMPMString(ampm));
+    *ret = (DateUtils::GetAMPMString(ampm));
     return NOERROR;
 }
 
@@ -121,7 +123,7 @@ ECode CDateUtils::GetDayOfWeekString(
     /* [out] */ String* ret)
 {
     VALIDATE_NOT_NULL(ret);
-    *ret=(DateUtils::GetDayOfWeekString(dayOfWeek, abbrev));
+    *ret = (DateUtils::GetDayOfWeekString(dayOfWeek, abbrev));
     return NOERROR;
 }
 
@@ -131,7 +133,7 @@ ECode CDateUtils::GetMonthString(
     /* [out] */ String* ret)
 {
     VALIDATE_NOT_NULL(ret);
-    *ret=(DateUtils::GetMonthString(month, abbrev));
+    *ret = (DateUtils::GetMonthString(month, abbrev));
     return NOERROR;
 }
 
@@ -239,7 +241,7 @@ ECode CDateUtils::GetStandaloneMonthString(
     /* [out] */ String* ret)
 {
     VALIDATE_NOT_NULL(ret);
-    *ret=(DateUtils::GetStandaloneMonthString(month, abbrev));
+    *ret = (DateUtils::GetStandaloneMonthString(month, abbrev));
     return NOERROR;
 }
 
@@ -248,7 +250,7 @@ ECode CDateUtils::IsToday(
     /* [out] */ Boolean* ret)
 {
     VALIDATE_NOT_NULL(ret);
-    *ret=(DateUtils::IsToday(when));
+    *ret = (DateUtils::IsToday(when));
     return NOERROR;
 }
 

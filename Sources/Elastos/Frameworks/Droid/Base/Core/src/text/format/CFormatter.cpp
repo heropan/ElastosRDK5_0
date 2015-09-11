@@ -8,6 +8,7 @@ namespace Droid {
 namespace Text {
 namespace Format {
 
+CAR_INTERFACE_DECL(CFormatter, Singleton, IFormatter)
 CAR_SINGLETON_IMPL(CFormatter)
 
 ECode CFormatter::FormatFileSize(
@@ -36,6 +37,16 @@ ECode CFormatter::FormatShortFileSize(
 {
     VALIDATE_NOT_NULL(ret);
     *ret = Formatter::FormatShortFileSize(context, number);
+    return NOERROR;
+}
+
+ECode CFormatter::FormatShortElapsedTime(
+     /* [in] */ IContext* context,
+     /* [in] */ Int64 millis,
+     /* [out] */ String* ret)
+{
+    VALIDATE_NOT_NULL(ret)
+    *ret = Formatter::FormatShortElapsedTime(context, millis, ret);
     return NOERROR;
 }
 
