@@ -154,12 +154,12 @@ module
 //        interface ILocalSocketAddress;
 //    }
 
-//    class CInterfaceConfiguration {
-//        constructor();
+    class CInterfaceConfiguration {
+        constructor();
 
-//        interface IInterfaceConfiguration;
-//        interface IParcelable;
-//    }
+        interface IInterfaceConfiguration;
+        interface IParcelable;
+    }
 
 //    class CLinkAddress {
 //        constructor();

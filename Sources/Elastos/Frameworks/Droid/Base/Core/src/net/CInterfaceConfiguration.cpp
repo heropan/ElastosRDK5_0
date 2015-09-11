@@ -8,8 +8,23 @@ namespace Elastos {
 namespace Droid {
 namespace Net {
 
+CAR_OBJECT_IMPL(CInterfaceConfiguration)
+
+CAR_INTERFACE_IMPL_2(CInterfaceConfiguration, Object, IParcelable, IInterfaceConfiguration)
+
 const String CInterfaceConfiguration::FLAG_UP("up");
 const String CInterfaceConfiguration::FLAG_DOWN("down");
+
+CInterfaceConfiguration::CInterfaceConfiguration()
+{
+    AutoPtr<ISets> tmp;
+#if 0 // TODO: Wait for CSets, ISets
+    CSets::AcquireSingleton((ISets**)&tmp);
+    tmp->NewHashSet((IHashSet**)&mFlags);
+#else
+    assert(0);
+#endif
+}
 
 ECode CInterfaceConfiguration::constructor()
 {
@@ -19,6 +34,8 @@ ECode CInterfaceConfiguration::constructor()
 ECode CInterfaceConfiguration::ToString(
     /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated. Need check.
     VALIDATE_NOT_NULL(result);
 
     StringBuilder builder;
@@ -37,11 +54,14 @@ ECode CInterfaceConfiguration::ToString(
     }
     *result = builder.ToString();
     return NOERROR;
+#endif
 }
 
 ECode CInterfaceConfiguration::GetFlags(
-    /* [out, callee] */ ArrayOf<String>** result)
+    /* [out] */ IIterable** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated. Need check.
     VALIDATE_NOT_NULL(result);
 
     AutoPtr< ArrayOf<String> > resArray = ArrayOf<String>::Alloc(mFlags.GetSize());
@@ -52,84 +72,114 @@ ECode CInterfaceConfiguration::GetFlags(
     *result = resArray;
     REFCOUNT_ADD(*result);
     return NOERROR;
+#endif
 }
 
 ECode CInterfaceConfiguration::HasFlag(
     /* [in] */ const String& flag,
     /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated. Need check.
     VALIDATE_NOT_NULL(result);
 
     FAIL_RETURN(ValidateFlag(flag));
     HashSet<String>::Iterator iter = mFlags.Find(flag);
     *result = iter != mFlags.End();
     return NOERROR;
+#endif
 }
 
 ECode CInterfaceConfiguration::ClearFlag(
     /* [in] */ const String& flag)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated. Need check.
     FAIL_RETURN(ValidateFlag(flag));
     mFlags.Erase(flag);
     return NOERROR;
+#endif
 }
 
 ECode CInterfaceConfiguration::SetFlag(
     /* [in] */ const String& flag)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated. Need check.
     FAIL_RETURN(ValidateFlag(flag));
     mFlags.Insert(flag);
     return NOERROR;
+#endif
 }
 
 ECode CInterfaceConfiguration::SetInterfaceUp()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated. Need check.
     mFlags.Erase(FLAG_DOWN);
     mFlags.Insert(FLAG_UP);
     return NOERROR;
+#endif
 }
 
 ECode CInterfaceConfiguration::SetInterfaceDown()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated. Need check.
     mFlags.Erase(FLAG_UP);
     mFlags.Insert(FLAG_DOWN);
     return NOERROR;
+#endif
 }
 
 ECode CInterfaceConfiguration::GetLinkAddress(
     /* [out] */ ILinkAddress** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated. Need check.
     VALIDATE_NOT_NULL(result);
     *result = mAddr;
     REFCOUNT_ADD(*result);
     return NOERROR;
+#endif
 }
 
 ECode CInterfaceConfiguration::SetLinkAddress(
     /* [in] */ ILinkAddress* addr)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated. Need check.
     mAddr = addr;
     return NOERROR;
+#endif
 }
 
 ECode CInterfaceConfiguration::GetHardwareAddress(
     /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated. Need check.
     VALIDATE_NOT_NULL(result);
     *result = mHwAddr;
     return NOERROR;
+#endif
 }
 
 ECode CInterfaceConfiguration::SetHardwareAddress(
     /* [in] */ const String& hwAddr)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated. Need check.
     mHwAddr = hwAddr;
     return NOERROR;
+#endif
 }
 
 ECode CInterfaceConfiguration::IsActive(
     /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated. Need check.
     VALIDATE_NOT_NULL(result);
     // try {
     Boolean hasFlag;
@@ -151,11 +201,14 @@ ECode CInterfaceConfiguration::IsActive(
     // }
     *result = FALSE;
     return NOERROR;
+#endif
 }
 
 ECode CInterfaceConfiguration::ReadFromParcel(
     /* [in] */ IParcel* src)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated. Need check.
     src->ReadString(&mHwAddr);
     Byte bv;
     src->ReadByte(&bv);
@@ -172,11 +225,14 @@ ECode CInterfaceConfiguration::ReadFromParcel(
         mFlags.Insert(flag);
     }
     return NOERROR;
+#endif
 }
 
 ECode CInterfaceConfiguration::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated. Need check.
     dest->WriteString(mHwAddr);
     if (mAddr != NULL) {
         dest->WriteByte(1);
@@ -191,15 +247,27 @@ ECode CInterfaceConfiguration::WriteToParcel(
         dest->WriteString(*iter);
     }
     return NOERROR;
+#endif
 }
 
 ECode CInterfaceConfiguration::ValidateFlag(
         /* [in] */ const String& flag)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Previous translated. Need check.
     if (flag.IndexOf(' ') >= 0) {
         // throw new IllegalArgumentException("flag contains space: " + flag);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    return NOERROR;
+#endif
+}
+
+ECode CInterfaceConfiguration::DescribeContents(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
     return NOERROR;
 }
 

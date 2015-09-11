@@ -1,6 +1,9 @@
 
 module
 {
+    //
+    // Elastos.Droid.Net
+    //
     namespace Elastos {
     namespace Droid {
     namespace Net {
@@ -18,14 +21,30 @@ module
 
     }}} // Elastos.Droid.Net
 
+    //
+    // Elastos.Droid.Internal.Utility
+    //
     namespace Elastos {
     namespace Droid {
     namespace Internal {
     namespace Utility {
+
         interface IStateMachine {}
+
         interface IState {}
+
     }}}} // Elastos.Droid.Internal.Utility
 
+    //
+    // Elastos.Droid.Collect
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Collect {
+
+        interface ISets {}
+
+    }}} // Elastos.Droid.Collect
 
     //
     // Elastos.Droid.Privacy

@@ -5,24 +5,37 @@
 #include "ext/frameworkdef.h"
 #include "_Elastos_Droid_Net_CInterfaceConfiguration.h"
 #include <elastos/utility/etl/HashSet.h>
+#include <elastos/core/Object.h>
 
-using Elastos::Utility::Etl::HashSet;
+using Elastos::Droid::Collect::ISets;
+using Elastos::Core::Object;
 using Elastos::Net::IInetAddress;
+using Elastos::Utility::IHashSet;
+using Elastos::Utility::IIterable;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
 CarClass(CInterfaceConfiguration)
+    , public Object
+    , public IParcelable
+    , public IInterfaceConfiguration
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
+    CInterfaceConfiguration();
+
     CARAPI constructor();
 
     CARAPI ToString(
         /* [out] */ String* result);
 
     CARAPI GetFlags(
-        /* [out, callee] */ ArrayOf<String>** result);
+        /* [out] */ IIterable** result);
 
     CARAPI HasFlag(
         /* [in] */ const String& flag,
@@ -72,6 +85,10 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
+    /** {@inheritDoc} */
+    CARAPI DescribeContents(
+        /* [out] */ Int32* result);
+
 private:
     static CARAPI ValidateFlag(
         /* [in] */ const String& flag);
@@ -79,7 +96,7 @@ private:
 private:
     String mHwAddr;
     AutoPtr<ILinkAddress> mAddr;
-    HashSet<String> mFlags;
+    AutoPtr<IHashSet> mFlags;
 
     static const String FLAG_UP;
     static const String FLAG_DOWN;
