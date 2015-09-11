@@ -1,6 +1,7 @@
 
 #include "AuthParams.h"
-#include <elastos/Logger.h>
+#include "CString.h"
+#include "Logger.h"
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
@@ -27,10 +28,10 @@ ECode AuthParams::GetCredentialCharset(
         Logger::E("AuthParams", "HTTP parameters may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AutoPtr<IObject> o;
-    params->GetParameter(IAuthPNames::CREDENTIAL_CHARSET, (IObject**)&o);
+    AutoPtr<IInterface> o;
+    params->GetParameter(IAuthPNames::CREDENTIAL_CHARSET, (IInterface**)&o);
     String cs;
-    o->ToString(&cs);
+    IObject::Probe(o)->ToString(&cs);
     //@@@ TODO: inconsistent with JavaDoc in AuthPNames,
     //@@@ TODO: check HTTP_ELEMENT_CHARSET first, or fix JavaDocs
     if (cs.IsNull()) {
@@ -50,7 +51,8 @@ ECode AuthParams::SetCredentialCharset(
     }
     AutoPtr<ICharSequence> cs;
     CString::New(charset, (ICharSequence**)&cs);
-    return params->SetParameter(IAuthPNames::CREDENTIAL_CHARSET, cs);
+    AutoPtr<IHttpParams> p;
+    return params->SetParameter(IAuthPNames::CREDENTIAL_CHARSET, cs, (IHttpParams**)&p);
 }
 
 } // namespace Params

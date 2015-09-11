@@ -1,6 +1,6 @@
 
 #include "HttpEntityEnclosingRequestBase.h"
-#include "utils/CloneUtils.h"
+#include "CloneUtils.h"
 
 using Org::Apache::Http::IHeader;
 using Org::Apache::Http::Client::Utils::CloneUtils;
@@ -42,7 +42,7 @@ ECode HttpEntityEnclosingRequestBase::ExpectContinue(
     GetFirstHeader(IHTTP::EXPECT_DIRECTIVE, (IHeader**)&expect);
     if (expect != NULL) {
         String value;
-        expect->getValue(&value);
+        expect->GetValue(&value);
         *result = IHTTP::EXPECT_CONTINUE.EqualsIgnoreCase(value);
     }
     else {
@@ -52,10 +52,9 @@ ECode HttpEntityEnclosingRequestBase::ExpectContinue(
 }
 
 ECode HttpEntityEnclosingRequestBase::CloneImpl(
-    /* [in] */ IInterface* dst)
+    /* [in] */ HttpEntityEnclosingRequestBase* clone)
 {
-    HttpRequestBase::CloneImpl(src);
-    AutoPtr<HttpEntityEnclosingRequestBase> clone = (HttpEntityEnclosingRequestBase*)src.Get();
+    HttpRequestBase::CloneImpl(clone);
     if (mEntity != NULL) {
         AutoPtr<IObject> o;
         CloneUtils::Clone(IObject::Probe(mEntity), (IObject**)&o);

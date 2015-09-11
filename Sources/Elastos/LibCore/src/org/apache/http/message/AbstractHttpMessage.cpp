@@ -17,7 +17,7 @@ AbstractHttpMessage::AbstractHttpMessage()
     Init(NULL);
 }
 
-CAR_INTERFACE_IMPL_2(AbstractHttpMessage, Object, IHttpMessage, ICloneable)
+CAR_INTERFACE_IMPL(AbstractHttpMessage, Object, IHttpMessage)
 
 void AbstractHttpMessage::Init(
     /* [in] */ IHttpParams* params)
@@ -42,7 +42,7 @@ ECode AbstractHttpMessage::ContainsHeader(
 
 ECode AbstractHttpMessage::GetHeaders(
     /* [in] */ const String& name,
-    /* [out, callee] */ ArrayOf<IHeader*>* headers)
+    /* [out, callee] */ ArrayOf<IHeader*>** headers)
 {
     VALIDATE_NOT_NULL(headers)
     return mHeadergroup->GetHeaders(name, headers);
@@ -65,7 +65,7 @@ ECode AbstractHttpMessage::GetLastHeader(
 }
 
 ECode AbstractHttpMessage::GetAllHeaders(
-    /* [out, callee] */ ArrayOf<IHeader*>* allHeaders)
+    /* [out, callee] */ ArrayOf<IHeader*>** allHeaders)
 {
     VALIDATE_NOT_NULL(allHeaders)
     return mHeadergroup->GetAllHeaders(allHeaders);
@@ -181,13 +181,6 @@ ECode AbstractHttpMessage::SetParams(
     }
     mParams = params;
     return NOERROR;
-}
-
-void AbstractHttpMessage::CloneImpl(
-    /* [in] */ AbstractHttpMessage* obj)
-{
-    obj->mParams = mParams;
-    obj->mHeadergroup = mHeadergroup;
 }
 
 } // namespace Message

@@ -1,14 +1,17 @@
 
 #include "CHttpOptions.h"
-#include <elastos/Logger.h>
+#include "CURI.h"
+#include "CHashSet.h"
+#include "CString.h"
+#include "Logger.h"
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::ISet;
 using Elastos::Utility::CHashSet;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Net::IURIHelper;
-using Elastos::Net::CURIHelper;
+using Elastos::Net::CURI;
+using Org::Apache::Http::IHttpMessage;
 using Org::Apache::Http::IHeaderIterator;
 using Org::Apache::Http::IHeader;
 using Org::Apache::Http::IHeaderElement;
@@ -26,7 +29,7 @@ CAR_OBJECT_IMPL(CHttpOptions)
 ECode CHttpOptions::GetMethod(
     /* [out] */ String* method)
 {
-    VALIDATE_NOT_NULL(result)
+    VALIDATE_NOT_NULL(method)
     *method = METHOD_NAME;
     return NOERROR;
 }
@@ -43,8 +46,9 @@ ECode CHttpOptions::GetAllowedMethods(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
+    AutoPtr<IHttpMessage> message = IHttpMessage::Probe(response);
     AutoPtr<IHeaderIterator> it;
-    response->HeaderIterator(String("Allow"), (IHeaderIterator**)&it);
+    message->GetHeaderIterator(String("Allow"), (IHeaderIterator**)&it);
     AutoPtr<ISet> _methods;
     CHashSet::New((ISet**)&_methods);
     AutoPtr<ICollection> col = ICollection::Probe(_methods);
@@ -73,15 +77,15 @@ ECode CHttpOptions::Clone(
 {
     VALIDATE_NOT_NULL(obj)
 
-    AutoPtr<IHttpOptions> httpOptions;
-    CHttpOptions::New((IHttpOptions**)&httpOptions);
-    HttpRequestBase::CloneImpl(IHttpUriRequest::Probe(httpOptions));
+    AutoPtr<CHttpOptions> httpOptions;
+    CHttpOptions::NewByFriend((CHttpOptions**)&httpOptions);
+    HttpRequestBase::CloneImpl((HttpRequestBase*)httpOptions);
     *obj = httpOptions->Probe(EIID_IInterface);
     REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
-ECode CHttpOptions::constructor();
+ECode CHttpOptions::constructor()
 {
     return NOERROR;
 }
@@ -95,10 +99,8 @@ ECode CHttpOptions::constructor(
 ECode CHttpOptions::constructor(
     /* [in] */ const String& uri)
 {
-    AutoPtr<IURIHelper> helper;
-    CURIHelper::AcquireSingleton((IURIHelper**)&helper);
     AutoPtr<IURI> iuri;
-    helper->Create(uri, (IURI**)&iuri);
+    CURI::Create(uri, (IURI**)&iuri);
     return SetURI(iuri);
 }
 

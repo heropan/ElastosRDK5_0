@@ -2,14 +2,14 @@
 #ifndef __ORG_APACHE_HTTP_PARAMS_HTTPABSTRACTPARAMBEAN_H_
 #define __ORG_APACHE_HTTP_PARAMS_HTTPABSTRACTPARAMBEAN_H_
 
-#include <Org.Apache.Http_server.h>
+#include "Object.h"
 
 namespace Org {
 namespace Apache {
 namespace Http {
 namespace Params {
 
-class HttpAbstractParamBean
+class HttpAbstractParamBean : public Object
 {
 public:
     virtual ~HttpAbstractParamBean() = 0;

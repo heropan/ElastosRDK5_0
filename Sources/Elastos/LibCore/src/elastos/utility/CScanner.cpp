@@ -842,6 +842,13 @@ ECode CScanner::GetMatch(
 }
 
 ECode CScanner::Next(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    return Next(ANY_PATTERN, str);
+}
+
+ECode CScanner::Next(
     /* [in] */ IPattern* pattern,
     /* [out] */ String* str)
 {

@@ -2,7 +2,6 @@
 #ifndef __ORG_APACHE_HTTP_UTILITY_ENTITYUTILS_H_
 #define __ORG_APACHE_HTTP_UTILITY_ENTITYUTILS_H_
 
-#include <Org.Apache.Http_server.h>
 #include <elastos/core/Object.h>
 
 using Org::Apache::Http::IHttpEntity;

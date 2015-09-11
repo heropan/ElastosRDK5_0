@@ -1,12 +1,14 @@
 
 #include "CRequestDefaultHeaders.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::ICollection;
-using Elastos::Utility::IIterable;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeader;
+using Org::Apache::Http::IHttpMessage;
+using Org::Apache::Http::Client::Params::IClientPNames;
+using Org::Apache::Http::Params::IHttpParams;
 
 namespace Org {
 namespace Apache {
@@ -27,20 +29,20 @@ ECode CRequestDefaultHeaders::Process(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     // Add default headers
+    AutoPtr<IHttpMessage> message = IHttpMessage::Probe(request);
     AutoPtr<IHttpParams> params;
-    request->GetParams((IHttpParams**)&params);
-    AutoPtr<IObject> o;
-    params->GetParameter(IClientPNames::DEFAULT_HEADERS, (IObject**)&o);
+    message->GetParams((IHttpParams**)&params);
+    AutoPtr<IInterface> o;
+    params->GetParameter(IClientPNames::DEFAULT_HEADERS, (IInterface**)&o);
     AutoPtr<ICollection> defHeaders = ICollection::Probe(o);
     if (defHeaders != NULL) {
-        AutoPtr<IIterable> iterable = IIterable::Probe(defHeaders);
         AutoPtr<IIterator> it;
-        iterable->GetIterator((IIterator**)&it);
+        defHeaders->GetIterator((IIterator**)&it);
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
-            AutoPtr<IObject> defHeader;
+            AutoPtr<IInterface> defHeader;
             it->GetNext((IInterface**)&defHeader);
-            request->AddHeader(IHeader::Probe(defHeader));
+            message->AddHeader(IHeader::Probe(defHeader));
         }
     }
     return NOERROR;

@@ -1,13 +1,13 @@
 
 #include "CRequestTargetAuthentication.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeader;
 using Org::Apache::Http::Auth::IAUTH;
+using Org::Apache::Http::Auth::IAuthScope;
 using Org::Apache::Http::Auth::IAuthScheme;
 using Org::Apache::Http::Auth::IAuthState;
-using Org::Apache::Http::Auth::IAuthenticationException;
 using Org::Apache::Http::Auth::ICredentials;
 
 namespace Org {
@@ -22,7 +22,7 @@ CAR_OBJECT_IMPL(CRequestTargetAuthentication)
 
 ECode CRequestTargetAuthentication::Process(
     /* [in] */ IHttpRequest* request,
-    /* [in] */ IHttpContext* contexT)
+    /* [in] */ IHttpContext* context)
 {
     if (request == NULL) {
         Logger::E("CRequestTargetAuthentication", "HTTP request may not be null");
@@ -33,14 +33,15 @@ ECode CRequestTargetAuthentication::Process(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
+    AutoPtr<IHttpMessage> message = IHttpMessage::Probe(request);
     Boolean isContains;
-    if (request->ContainsHeader(IAUTH::WWW_AUTH_RESP, &isContains), isContains) {
+    if (message->ContainsHeader(IAUTH::WWW_AUTH_RESP, &isContains), isContains) {
         return NOERROR;
     }
 
     // Obtain authentication state
-    AutoPtr<IObject> o;
-    context->GetAttribute(IClientContext::TARGET_AUTH_STATE, (IObject**)&o);
+    AutoPtr<IInterface> o;
+    context->GetAttribute(IClientContext::TARGET_AUTH_STATE, (IInterface**)&o);
     AutoPtr<IAuthState> authState = IAuthState::Probe(o);
     if (authState == NULL) {
         return NOERROR;
@@ -70,7 +71,7 @@ ECode CRequestTargetAuthentication::Process(
             Logger::E("CRequestTargetAuthentication", "Authentication error: 0x%08x", ec);
             return NOERROR;
         }
-        request->AddHeader(header);
+        message->AddHeader(header);
         // } catch (AuthenticationException ex) {
         //     if (this.log.isErrorEnabled()) {
         //         this.log.error("Authentication error: " + ex.getMessage());

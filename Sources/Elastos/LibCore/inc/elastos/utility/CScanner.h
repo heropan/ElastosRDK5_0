@@ -555,6 +555,20 @@ public:
         /* [out] */ IMatchResult** outmatch);
 
     /**
+     * Returns the next token. The token will be both prefixed and suffixed by
+     * the delimiter that is currently being used (or a string that matches the
+     * delimiter pattern). This method will block if input is being read.
+     *
+     * @return the next complete token.
+     * @throws IllegalStateException
+     *             if this {@code Scanner} has been closed.
+     * @throws NoSuchElementException
+     *             if input has been exhausted.
+     */
+    CARAPI Next(
+        /* [out] */ String* str);
+
+    /**
      * Returns the next token if it matches the specified pattern. The token
      * will be both prefixed and postfixed by the delimiter that is currently
      * being used (or a string that matches the delimiter pattern). This method will block

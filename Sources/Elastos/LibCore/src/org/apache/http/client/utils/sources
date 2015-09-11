@@ -2,9 +2,21 @@
 TARGET_NAME= utils
 TARGET_TYPE= lib
 
-INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/client/utils
-INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/message
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/net
+C_DEFINES += -DELASTOS_CORELIBRARY
+
+include $(MAKEDIR)/../../../../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += ../../../../../corelibrary
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/core;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/net;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/utility;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/utility/logging;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/libcore/net;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/client/utils;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/client/params;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/message;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/util;
 
 SOURCES = CloneUtils.cpp
 SOURCES += URIUtils.cpp

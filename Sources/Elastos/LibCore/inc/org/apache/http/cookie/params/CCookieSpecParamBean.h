@@ -18,7 +18,6 @@ namespace Cookie {
 namespace Params {
 
 CarClass(CCookieSpecParamBean)
-    , public Object
     , public ICookieSpecParamBean
     , public HttpAbstractParamBean
 {

@@ -2,7 +2,14 @@
 TARGET_NAME= entity
 TARGET_TYPE= lib
 
-INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/client/entity
-INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/entity
+C_DEFINES += -DELASTOS_CORELIBRARY
+
+include $(MAKEDIR)/../../../../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += ../../../../../corelibrary
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/client/entity
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/client/utils
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/entity
 
 SOURCES = CUrlEncodedFormEntity.cpp

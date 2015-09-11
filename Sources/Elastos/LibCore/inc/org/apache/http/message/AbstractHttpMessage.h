@@ -2,8 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_ABSTRACTHTTPMESSAGE_H_
 #define __ORG_APACHE_HTTP_MESSAGE_ABSTRACTHTTPMESSAGE_H_
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "elastos/core/Object.h"
 
 using Elastos::Core::IArrayOf;
 using Org::Apache::Http::IHttpMessage;
@@ -28,7 +27,6 @@ namespace Message {
 class AbstractHttpMessage
     : public Object
     , public IHttpMessage
-    , public ICloneable
 {
 public:
     CAR_INTERFACE_DECL()
@@ -56,7 +54,7 @@ public:
      */
     CARAPI GetHeaders(
         /* [in] */ const String& name,
-        /* [out, callee] */ ArrayOf<IHeader*>* headers);
+        /* [out, callee] */ ArrayOf<IHeader*>** headers);
 
     /**
      * Returns the first header with a specified name of this message. Header
@@ -94,7 +92,7 @@ public:
      * @return all the headers of this message
      */
     CARAPI GetAllHeaders(
-        /* [out, callee] */ ArrayOf<IHeader*>* allHeaders);
+        /* [out, callee] */ ArrayOf<IHeader*>** allHeaders);
 
     /**
      * Adds a header to this message. The header will be appended to the end of
@@ -166,7 +164,7 @@ public:
      * @return Iterator that returns Header objects in the sequence they are
      *         sent over a connection.
      */
-    CARAPI HeaderIterator(
+    CARAPI GetHeaderIterator(
         /* [out] */ IHeaderIterator** headerIterator);
 
 
@@ -179,7 +177,7 @@ public:
      * @return Iterator that returns Header objects with the argument name
      *         in the sequence they are sent over a connection.
      */
-    CARAPI HeaderIterator(
+    CARAPI GetHeaderIterator(
         /* [in] */ const String& name,
         /* [out] */ IHeaderIterator** headerIterator);
 
@@ -204,9 +202,6 @@ protected:
         /* [in] */ IHttpParams* params);
 
     CARAPI_(void) Init();
-
-    CARAPI_(void) CloneImpl(
-        /* [in] */ AbstractHttpMessage* obj);
 
 protected:
     AutoPtr<IHeaderGroup> mHeadergroup;

@@ -2,7 +2,12 @@
 #ifndef __ORG_APACHE_HTTP_CLIENT_UTILS_CLONEUTILS_H__
 #define __ORG_APACHE_HTTP_CLIENT_UTILS_CLONEUTILS_H__
 
-#include <Org.Apache.Http_server.h>
+#ifdef ELASTOS_CORELIBRARY
+#include "Elastos.CoreLibrary_server.h"
+#else
+#include "Elastos.CoreLibrary.h"
+#endif
+#include <elastos/coredef.h>
 
 namespace Org {
 namespace Apache {

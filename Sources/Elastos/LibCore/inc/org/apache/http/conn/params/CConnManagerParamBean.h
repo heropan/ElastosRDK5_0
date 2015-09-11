@@ -21,7 +21,6 @@ namespace Params {
  * are type-safe.
  */
 CarClass(CConnManagerParamBean)
-    , public Object
     , public IConnManagerParamBean
     , public HttpAbstractParamBean
 {

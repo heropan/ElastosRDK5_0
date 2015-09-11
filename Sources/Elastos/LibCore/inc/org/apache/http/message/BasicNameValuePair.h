@@ -2,9 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICNAMEVALUEPAIR_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICNAMEVALUEPAIR_H_
 
-#include <Org.Apache.Http_server.h>
 #include <elastos/core/Object.h>
 
+using Elastos::Core::ICloneable;
 using Org::Apache::Http::INameValuePair;
 
 namespace Org {
@@ -81,7 +81,7 @@ namespace Message {
  *
  */
 class BasicNameValuePair
-    , public Object
+    : public Object
     , public INameValuePair
     , public ICloneable
 {

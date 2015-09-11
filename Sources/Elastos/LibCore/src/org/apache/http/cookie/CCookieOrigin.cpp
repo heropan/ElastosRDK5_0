@@ -1,11 +1,12 @@
 
 #include "CCookieOrigin.h"
-#include "elastos/core/StringBuilder.h"
-#include <elastos/core/StringUtils.h>
-#include <elastos/Logger.h>
+#include "StringBuilder.h"
+#include "StringUtils.h"
+#include "Logger.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
+using Elastos::Utility::ILocale;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
@@ -94,7 +95,7 @@ ECode CCookieOrigin::constructor(
         Logger::E("CCookieOrigin", "Path of origin may not be null.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mHost = host.ToLowerCase(ILocale::ENGLISH);
+    mHost = host.ToLowerCase(/*ILocale::ENGLISH*/);
     mPort = port;
     if (path.Trim().GetLength() != 0) {
         mPath = path;

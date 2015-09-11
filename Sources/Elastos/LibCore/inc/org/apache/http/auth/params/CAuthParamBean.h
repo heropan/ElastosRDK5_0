@@ -4,7 +4,7 @@
 
 #include "_Org_Apache_Http_Auth_Params_CAuthParamBean.h"
 #include "HttpAbstractParamBean.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Org::Apache::Http::Params::HttpAbstractParamBean;
 using Org::Apache::Http::Params::IHttpParams;
@@ -16,7 +16,6 @@ namespace Auth {
 namespace Params {
 
 CarClass(CAuthParamBean)
-    , public Object
     , public IAuthParamBean
     , public HttpAbstractParamBean
 {

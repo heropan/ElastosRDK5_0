@@ -42,8 +42,8 @@ public:
         /* [out] */ Boolean* result);
 
 protected:
-    virtual CARAPI CloneImpl(
-        /* [in] */ IHttpEntityEnclosingRequest* dst);
+    CARAPI CloneImpl(
+        /* [in] */ HttpEntityEnclosingRequestBase* dst);
 
 private:
     AutoPtr<IHttpEntity> mEntity;

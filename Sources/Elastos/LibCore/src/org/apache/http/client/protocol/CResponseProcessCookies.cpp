@@ -1,13 +1,12 @@
 
 #include "CResponseProcessCookies.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
-using Elastos::Utility::ICollection;
-using Elastos::Utility::IIterable;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IList;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeader;
+using Org::Apache::Http::IHttpMessage;
 using Org::Apache::Http::Cookie::ISM;
 
 namespace Org {
@@ -22,7 +21,7 @@ CAR_OBJECT_IMPL(CResponseProcessCookies)
 
 ECode CResponseProcessCookies::Process(
     /* [in] */ IHttpResponse* response,
-    /* [in] */ IHttpContext* contexT)
+    /* [in] */ IHttpContext* context)
 {
     if (response == NULL) {
         Logger::E("CResponseProcessCookies", "HTTP response may not be null");
@@ -33,34 +32,36 @@ ECode CResponseProcessCookies::Process(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     // Obtain cookie store
-    AutoPtr<IObject> o;
-    context->GetAttribute(IClientContext::COOKIE_STORE, (IObject**)&o);
-    AutoPtr<ICookieStore> cookieStore = ICookieStore::Probe(o);
+    AutoPtr<IInterface> o1;
+    context->GetAttribute(IClientContext::COOKIE_STORE, (IInterface**)&o1);
+    AutoPtr<ICookieStore> cookieStore = ICookieStore::Probe(o1);
     if (cookieStore == NULL) {
         Logger::E("CResponseProcessCookies", "Cookie store not available in HTTP context");
         // this.log.info("Cookie store not available in HTTP context");
         return NOERROR;
     }
     // Obtain actual CookieSpec instance
-    AutoPtr<IObject> o;
-    context->GetAttribute(IClientContext::COOKIE_SPEC, (IObject**)&o);
-    AutoPtr<ICookieSpec> cookieSpec = ICookieSpec::Probe(o);
+    AutoPtr<IInterface> o2;
+    context->GetAttribute(IClientContext::COOKIE_SPEC, (IInterface**)&o2);
+    AutoPtr<ICookieSpec> cookieSpec = ICookieSpec::Probe(o2);
     if (cookieSpec == NULL) {
         Logger::E("CResponseProcessCookies", "CookieSpec not available in HTTP context");
         // this.log.info("CookieSpec not available in HTTP context");
         return NOERROR;
     }
     // Obtain actual CookieOrigin instance
-    AutoPtr<IObject> o;
-    context->GetAttribute(IClientContext::COOKIE_ORIGIN, (IObject**)&o);
-    AutoPtr<ICookieOrigin> cookieOrigin = ICookieOrigin::Probe(o);
+    AutoPtr<IInterface> o3;
+    context->GetAttribute(IClientContext::COOKIE_ORIGIN, (IInterface**)&o3);
+    AutoPtr<ICookieOrigin> cookieOrigin = ICookieOrigin::Probe(o3);
     if (cookieOrigin == NULL) {
         Logger::E("CResponseProcessCookies", "CookieOrigin not available in HTTP context");
         // this.log.info("CookieOrigin not available in HTTP context");
         return NOERROR;
     }
+
+    AutoPtr<IHttpMessage> message = IHttpMessage::Probe(response);
     AutoPtr<IHeaderIterator> it;
-    response->HeaderIterator(ISM::SET_COOKIE, (IHeaderIterator**)&it);
+    message->GetHeaderIterator(ISM::SET_COOKIE, (IHeaderIterator**)&it);
     ProcessCookies(it, cookieSpec, cookieOrigin, cookieStore);
 
     // see if the cookie spec supports cookie versioning.
@@ -69,7 +70,7 @@ ECode CResponseProcessCookies::Process(
         // process set-cookie2 headers.
         // Cookie2 will replace equivalent Cookie instances
         it = NULL;
-        response->HeaderIterator(ISM::SET_COOKIE2, (IHeaderIterator**)&it);
+        message->GetHeaderIterator(ISM::SET_COOKIE2, (IHeaderIterator**)&it);
         ProcessCookies(it, cookieSpec, cookieOrigin, cookieStore);
     }
     return NOERROR;
@@ -88,17 +89,16 @@ void CResponseProcessCookies::ProcessCookies(
         // try {
         AutoPtr<IList> cookies;
         cookieSpec->Parse(header, cookieOrigin, (IList**)&cookies);
-        AutoPtr<IIterable> iterable = IIterable::Probe(cookies);
         AutoPtr<IIterator> it;
-        iterable->GetIterator((IIterator**)&it);
+        cookies->GetIterator((IIterator**)&it);
         Boolean result;
         while(it->HasNext(&result), result) {
             AutoPtr<ICookie> cookie;
             it->GetNext((IInterface**)&cookie);
             // try {
-            if (FAILED(cookieSpec->Validate(cookie, cookieOrigin))) {
+            ECode ec = cookieSpec->Validate(cookie, cookieOrigin);
+            if (FAILED(ec)) {
                 Logger::E("CResponseProcessCookies", "Cookie rejected: ");
-                return NOERROR;
             }
             cookieStore->AddCookie(cookie);
 

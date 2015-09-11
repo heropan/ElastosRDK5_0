@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CLIENT_PROTOCOL_CREQUESTDEFAULTHEADERS_H_
 
 #include "_Org_Apache_Http_Client_Protocol_CRequestDefaultHeaders.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Org::Apache::Http::IHttpRequest;
 using Org::Apache::Http::IHttpRequestInterceptor;

@@ -2,7 +2,6 @@
 #ifndef __ORG_APACHE_HTTP_CLIENT_METHODS_HTTPREQUESTBASE_H__
 #define __ORG_APACHE_HTTP_CLIENT_METHODS_HTTPREQUESTBASE_H__
 
-#include <Org.Apache.Http_server.h>
 #include "AbstractHttpMessage.h"
 
 using Elastos::Core::ICloneable;
@@ -67,12 +66,9 @@ public:
     CARAPI IsAborted(
         /* [out] */ Boolean* isAborted);
 
-    CARAPI Clone(
-        /* [out] */ IInterface** result) = 0;
-
 protected:
     virtual CARAPI CloneImpl(
-        /* [in] */ IHttpUriRequest* dst);
+        /* [in] */ HttpRequestBase* clone);
 
 private:
     AutoPtr<ILock> mAbortLock;

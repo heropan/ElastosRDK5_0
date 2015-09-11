@@ -1,8 +1,10 @@
 
 #include "CRequestAddCookies.h"
 #include "CCookieOrigin.h"
-#include "params/HttpClientParams.h"
-#include <elastos/Logger.h>
+#include "HttpClientParams.h"
+#include "CArrayList.h"
+#include "CURI.h"
+#include "Logger.h"
 
 using Elastos::Net::IURI;
 using Elastos::Net::CURI;
@@ -10,11 +12,11 @@ using Elastos::Utility::ICollection;
 using Elastos::Utility::IList;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::IArrayList;
-using Elastos::Utility::IIterable;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeader;
 using Org::Apache::Http::IHttpHost;
+using Org::Apache::Http::IHttpMessage;
 using Org::Apache::Http::Client::ICookieStore;
 using Org::Apache::Http::Client::Methods::IHttpUriRequest;
 using Org::Apache::Http::Client::Params::HttpClientParams;
@@ -38,7 +40,7 @@ CAR_OBJECT_IMPL(CRequestAddCookies)
 
 ECode CRequestAddCookies::Process(
     /* [in] */ IHttpRequest* request,
-    /* [in] */ IHttpContext* contexT)
+    /* [in] */ IHttpContext* context)
 {
     if (request == NULL) {
         Logger::E("CRequestAddCookies", "HTTP request may not be null");
@@ -50,8 +52,8 @@ ECode CRequestAddCookies::Process(
     }
 
     // Obtain cookie store
-    AutoPtr<IObject> o;
-    context->GetAttribute(IClientContext::COOKIE_STORE, (IObject**)&o);
+    AutoPtr<IInterface> o;
+    context->GetAttribute(IClientContext::COOKIE_STORE, (IInterface**)&o);
     AutoPtr<ICookieStore> cookieStore = ICookieStore::Probe(o);
     if (cookieStore == NULL) {
         Logger::E("CRequestAddCookies", "Cookie store not available in HTTP context");
@@ -61,7 +63,7 @@ ECode CRequestAddCookies::Process(
 
     // Obtain the registry of cookie specs
     o = NULL;
-    context->GetAttribute(IClientContext::COOKIESPEC_REGISTRY, (IObject**)&o);
+    context->GetAttribute(IClientContext::COOKIESPEC_REGISTRY, (IInterface**)&o);
     AutoPtr<ICookieSpecRegistry> registry = ICookieSpecRegistry::Probe(o);
     if (registry == NULL) {
         Logger::E("CRequestAddCookies", "CookieSpec registry not available in HTTP context");
@@ -71,7 +73,7 @@ ECode CRequestAddCookies::Process(
 
     // Obtain the target host (required)
     o = NULL;
-    context->GetAttribute(IClientContext::HTTP_TARGET_HOST, (IObject**)&o);
+    context->GetAttribute(IExecutionContext::HTTP_TARGET_HOST, (IInterface**)&o);
     AutoPtr<IHttpHost> targetHost = IHttpHost::Probe(o);
     if (targetHost == NULL) {
         Logger::E("CRequestAddCookies", "Target host not specified in HTTP context");
@@ -80,15 +82,16 @@ ECode CRequestAddCookies::Process(
 
     // Obtain the client connection (required)
     o = NULL;
-    context->GetAttribute(IClientContext::HTTP_CONNECTION, (IObject**)&o);
+    context->GetAttribute(IExecutionContext::HTTP_CONNECTION, (IInterface**)&o);
     AutoPtr<IManagedClientConnection> conn = IManagedClientConnection::Probe(o);
     if (conn == NULL) {
         Logger::E("CRequestAddCookies", "Client connection not specified in HTTP context");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
+    AutoPtr<IHttpMessage> message = IHttpMessage::Probe(request);
     AutoPtr<IHttpParams> params;
-    request->GetParams((IHttpParams**)&params);
+    message->GetParams((IHttpParams**)&params);
     String policy;
     HttpClientParams::GetCookiePolicy(params, &policy);
     // if (this.log.isDebugEnabled()) {
@@ -120,7 +123,7 @@ ECode CRequestAddCookies::Process(
     Int32 port;
     targetHost->GetPort(&port);
     if (port < 0) {
-        conn->GetRemotePort(&port);
+        IHttpInetConnection::Probe(conn)->GetRemotePort(&port);
     }
 
     String path;
@@ -132,7 +135,7 @@ ECode CRequestAddCookies::Process(
 
     // Get an instance of the selected cookie policy
     AutoPtr<IHttpParams> p;
-    request->GetParams((IHttpParams**)&p);
+    message->GetParams((IHttpParams**)&p);
     AutoPtr<ICookieSpec> cookieSpec;
     registry->GetCookieSpec(policy, p, (ICookieSpec**)&cookieSpec);
 
@@ -146,10 +149,8 @@ ECode CRequestAddCookies::Process(
     AutoPtr<IArrayList> matchedCookies;
     CArrayList::New((IArrayList**)&matchedCookies);
     AutoPtr<ICollection> matchedCol = ICollection::Probe(matchedCookies);
-
-    AutoPtr<IIterable> iterable = IIterable::Probe(cookies);
     AutoPtr<IIterator> it;
-    iterable->GetIterator((IIterator**)&it);
+    cookies->GetIterator((IIterator**)&it);
     Boolean hasNext;
     while(it->HasNext(&hasNext), hasNext) {
         AutoPtr<ICookie> cookie;
@@ -166,14 +167,14 @@ ECode CRequestAddCookies::Process(
     Boolean isEmpty;
     if (matchedCol->IsEmpty(&isEmpty), !isEmpty) {
         AutoPtr<IList> headers;
-        cookieSpec->FormatCookies(matchedCookies, (IList**)&headers);
-        AutoPtr<IIterable> able = IIterable::Probe(headers);
+        AutoPtr<IList> matchedCookiesList = IList::Probe(matchedCookies);
+        cookieSpec->FormatCookies(matchedCookiesList, (IList**)&headers);
         AutoPtr<IIterator> headersIt;
-        able->GetIterator((IIterator**)&headersIt);
+        headers->GetIterator((IIterator**)&headersIt);
         while(headersIt->HasNext(&hasNext), hasNext) {
             AutoPtr<IHeader> header;
-            headersIt->Next((IInterface**)&header);
-            request->AddHeader(header);
+            headersIt->GetNext((IInterface**)&header);
+            message->AddHeader(header);
         }
     }
 
@@ -181,12 +182,11 @@ ECode CRequestAddCookies::Process(
     cookieSpec->GetVersion(&ver);
     if (ver > 0) {
         Boolean needVersionHeader = FALSE;
-        AutoPtr<IIterable> able = IIterable::Probe(matchedCookies);
         AutoPtr<IIterator> matchedIt;
-        able->GetIterator((IIterator**)&matchedIt);
+        matchedCookies->GetIterator((IIterator**)&matchedIt);
         while(matchedIt->HasNext(&hasNext), hasNext) {
             AutoPtr<ICookie> cookie;
-            matchedIt->Next((IInterface**)&cookie);
+            matchedIt->GetNext((IInterface**)&cookie);
             Int32 cookieVer;
             if (cookie->GetVersion(&cookieVer), ver != cookieVer) {
                 needVersionHeader = TRUE;
@@ -198,7 +198,7 @@ ECode CRequestAddCookies::Process(
             cookieSpec->GetVersionHeader((IHeader**)&header);
             if (header != NULL) {
                 // Advertise cookie version support
-                request->AddHeader(header);
+                message->AddHeader(header);
             }
         }
     }

@@ -65,7 +65,7 @@ module
           * @throws MalformedCookieException if the cookie is invalid
           */
         Validate(
-            [in] IHeader* header,
+            [in] ICookie* cookie,
             [in] ICookieOrigin* origin);
 
         /**

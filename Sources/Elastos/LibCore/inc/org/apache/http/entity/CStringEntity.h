@@ -3,8 +3,9 @@
 #define __ORG_APACHE_HTTP_ENTITY_CSTRINGENTITY_H_
 
 #include "_Org_Apache_Http_Entity_CStringEntity.h"
-#include "AbstractHttpEntity.h"
+#include "StringEntity.h"
 
+using Elastos::Core::ICloneable;
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
@@ -24,28 +25,13 @@ namespace Entity {
  * @since 4.0
  */
 CarClass(CStringEntity)
-    , public AbstractHttpEntity
+    , public StringEntity
     , public ICloneable
 {
 public:
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
-
-    CARAPI IsRepeatable(
-        /* [out] */ Boolean* isRepeatable);
-
-    CARAPI GetContentLength(
-        /* [out] */ Int64* length);
-
-    CARAPI GetContent(
-        /* [out] */ IInputStream** inputStream);
-
-    CARAPI WriteTo(
-        /* [in] */ IOutputStream* outstream);
-
-    CARAPI IsStreaming(
-        /* [out] */ Boolean* isStreaming);
 
     CARAPI Clone(
         /* [out] */ IInterface** o);
@@ -58,9 +44,6 @@ public:
         /* [in] */ const String& s);
 
     CARAPI constructor();
-
-protected:
-    AutoPtr< ArrayOf<Byte> > mContent;
 };
 
 } // namespace Entity

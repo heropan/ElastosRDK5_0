@@ -1,8 +1,9 @@
 
 #include "BasicRequestLine.h"
 #include "BasicLineFormatter.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Utility::ICharArrayBuffer;
 
@@ -66,8 +67,9 @@ ECode BasicRequestLine::ToString(
 {
     VALIDATE_NOT_NULL(str)
     // no need for non-default formatting in toString()
+    AutoPtr<ILineFormatter> formatter = ILineFormatter::Probe(BasicLineFormatter::DEFAULT);
     AutoPtr<ICharArrayBuffer> buf;
-    BasicLineFormatter::DEFAULT->FormatRequestLine(NULL, (IRequestLine*)this, (ICharArrayBuffer**)&buf);
+    formatter->FormatRequestLine(NULL, (IRequestLine*)this, (ICharArrayBuffer**)&buf);
     return IObject::Probe(buf)->ToString(str);
 }
 

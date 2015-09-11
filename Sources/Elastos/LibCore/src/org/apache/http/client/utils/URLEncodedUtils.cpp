@@ -1,27 +1,38 @@
 
 #include "URLEncodedUtils.h"
 #include "CBasicNameValuePair.h"
-#include "params/HttpClientParams.h"
+#include "HttpClientParams.h"
+#include "EntityUtils.h"
 #include "URLDecoder.h"
+#include "CURI.h"
+#include "URLDecoder.h"
+#include "CURLEncoder.h"
+#include "CCollections.h"
+#include "CScanner.h"
+#include "CArrayList.h"
 #include "StringUtils.h"
-#include <StringBuilder.h>
-#include <elastos/Logger.h>
+#include "StringBuilder.h"
+#include "Logger.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Net::CURI;
+using Elastos::Net::URLDecoder;
+using Elastos::Net::IURLEncoder;
+using Elastos::Net::CURLEncoder;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::CCollections;
 using Elastos::Utility::ICollections;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::IArrayList;
-using Elastos::Utility::IIterable;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::CScanner;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeader;
 using Org::Apache::Http::INameValuePair;
 using Org::Apache::Http::Message::CBasicNameValuePair;
+using Org::Apache::Http::Protocol::IHTTP;
+using Org::Apache::Http::Utility::EntityUtils;
 
 namespace Org {
 namespace Apache {
@@ -40,10 +51,10 @@ AutoPtr<IList> URLEncodedUtils::Parse(
     AutoPtr<ICollections> col;
     CCollections::AcquireSingleton((ICollections**)&col);
     AutoPtr<IList> result;
-    col->EmptyList((IList**)&result);
+    col->GetEmptyList((IList**)&result);
     String query;
     uri->GetRawQuery(&query);
-    if (!query.IsNull() && query->GetLength() > 0) {
+    if (!query.IsNull() && query.GetLength() > 0) {
         AutoPtr<IArrayList> alist;
         CArrayList::New((IArrayList**)&alist);
         result = IList::Probe(alist);
@@ -60,13 +71,13 @@ AutoPtr<IList> URLEncodedUtils::Parse(
     AutoPtr<ICollections> col;
     CCollections::AcquireSingleton((ICollections**)&col);
     AutoPtr<IList> result;
-    col->EmptyList((IList**)&result);
+    col->GetEmptyList((IList**)&result);
     if (IsEncoded(entity)) {
         String content;
         EntityUtils::ToString(entity, &content);
         AutoPtr<IHeader> encoding;
         entity->GetContentEncoding((IHeader**)&encoding);
-        if (!content.IsNull() && content->GetLength() > 0) {
+        if (!content.IsNull() && content.GetLength() > 0) {
             AutoPtr<IArrayList> alist;
             CArrayList::New((IArrayList**)&alist);
             result = IList::Probe(alist);
@@ -100,7 +111,8 @@ ECode URLEncodedUtils::Parse(
     /* [in] */ IScanner* scanner,
     /* [in] */ const String& encoding)
 {
-    scanner->UseDelimiter(PARAMETER_SEPARATOR);
+    AutoPtr<IScanner> s;
+    scanner->UseDelimiter(PARAMETER_SEPARATOR, (IScanner**)&s);
     AutoPtr<ICollection> col = ICollection::Probe(parameters);
     Boolean hasNext;
     while(scanner->HasNext(&hasNext), hasNext) {
@@ -123,6 +135,7 @@ ECode URLEncodedUtils::Parse(
         CBasicNameValuePair::New(name, value, (INameValuePair**)&pair);
         col->Add(pair);
     }
+    return NOERROR;
 }
 
 String URLEncodedUtils::Format(
@@ -130,12 +143,12 @@ String URLEncodedUtils::Format(
     /* [in] */ const String& encoding)
 {
     StringBuilder result;
-    AutoPtr<IIterable> iterable = IIterable::Probe(parameters);
-    AutoPtr<IIterator> it = iterable->GetIterator((IIterator**)&it);
+    AutoPtr<IIterator> it;
+    parameters->GetIterator((IIterator**)&it);
     Boolean hasNext;
     while(it->HasNext(&hasNext), hasNext) {
         AutoPtr<INameValuePair> parameter;
-        it->Next((IInterface**)&parameter);
+        it->GetNext((IInterface**)&parameter);
         String name;
         parameter->GetName(&name);
         String encodedName;
@@ -179,7 +192,9 @@ ECode URLEncodedUtils::Encode(
 {
     VALIDATE_NOT_NULL(value)
     // try {
-    if (FAILED(URLDecoder::Encode(content,
+    AutoPtr<IURLEncoder> encoder;
+    CURLEncoder::AcquireSingleton((IURLEncoder**)&encoder);
+    if (FAILED(encoder->Encode(content,
             !encoding.IsNull() ? encoding : IHTTP::DEFAULT_CONTENT_CHARSET, value))) {
         *value = String(NULL);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -187,6 +202,7 @@ ECode URLEncodedUtils::Encode(
     // } catch (UnsupportedEncodingException problem) {
     //     throw new IllegalArgumentException(problem);
     // }
+    return NOERROR;
 }
 
 } // namespace Utils

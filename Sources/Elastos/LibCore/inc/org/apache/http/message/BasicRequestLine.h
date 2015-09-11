@@ -2,9 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICREQUESTLINE_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICREQUESTLINE_H_
 
-#include <Org.Apache.Http_server.h>
 #include <elastos/core/Object.h>
 
+using Elastos::Core::ICloneable;
 using Org::Apache::Http::IRequestLine;
 using Org::Apache::Http::IProtocolVersion;
 
@@ -27,8 +27,8 @@ namespace Message {
  * @since 4.0
  */
 class BasicRequestLine
-    , public Object
-    , publid IRequestLine
+    : public Object
+    , public IRequestLine
     , public ICloneable
 {
 public:

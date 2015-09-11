@@ -2,10 +2,13 @@
 #include "HttpRequestBase.h"
 #include "HttpProtocolParams.h"
 #include "CBasicRequestLine.h"
-#include "utils/CloneUtils.h"
-#include <elastos/Logger.h>
+#include "CloneUtils.h"
+#include "CReentrantLock.h"
+#include "Logger.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::Concurrent::Locks::CReentrantLock;
+using Elastos::Utility::Concurrent::Locks::IReentrantLock;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IProtocolVersion;
 using Org::Apache::Http::IRequestLine;
@@ -84,7 +87,7 @@ ECode HttpRequestBase::SetConnectionRequest(
     // try {
     if (mAborted) {
         Logger::E("HttpRequestBase", "Request already aborted");
-        mAbortLock->Unlock();
+        mAbortLock->UnLock();
         return E_IO_EXCEPTION;
     }
 
@@ -93,7 +96,7 @@ ECode HttpRequestBase::SetConnectionRequest(
     // } finally {
     //     this.abortLock.unlock();
     // }
-    mAbortLock->Unlock();
+    mAbortLock->UnLock();
     return NOERROR;
 }
 
@@ -104,7 +107,7 @@ ECode HttpRequestBase::SetReleaseTrigger(
     // try {
     if (mAborted) {
         Logger::E("HttpRequestBase", "Request already aborted");
-        mAbortLock->Unlock();
+        mAbortLock->UnLock();
         return E_IO_EXCEPTION;
     }
 
@@ -113,7 +116,7 @@ ECode HttpRequestBase::SetReleaseTrigger(
     // } finally {
     //     this.abortLock.unlock();
     // }
-    mAbortLock->Unlock();
+    mAbortLock->UnLock();
     return NOERROR;
 }
 
@@ -125,14 +128,14 @@ ECode HttpRequestBase::Abort()
     mAbortLock->Lock();
     // try {
     if (mAborted) {
-        mAbortLock->Unlock();
+        mAbortLock->UnLock();
         return NOERROR;
     }
     mAborted = TRUE;
 
     localRequest = mConnRequest;
     localTrigger = mReleaseTrigger;
-    mAbortLock->Unlock();
+    mAbortLock->UnLock();
     // } finally {
     //     this.abortLock.unlock();
     // }
@@ -163,10 +166,8 @@ ECode HttpRequestBase::IsAborted(
 }
 
 ECode HttpRequestBase::CloneImpl(
-    /* [in] */ IHttpUriRequest* dst)
+    /* [in] */ HttpRequestBase* clone)
 {
-    assert(src);
-    AutoPtr<HttpRequestBase> clone = (HttpRequestBase*)dst.Get();
     AutoPtr<IReentrantLock> l;
     CReentrantLock::New((IReentrantLock**)&l);
     clone->mAbortLock = ILock::Probe(l);
@@ -177,8 +178,8 @@ ECode HttpRequestBase::CloneImpl(
     CloneUtils::Clone(IObject::Probe(mHeadergroup), (IObject**)&o);
     clone->mHeadergroup = IHeaderGroup::Probe(o);
     o = NULL;
-    CloneUtils::Clone(IObject::Probe(mparams), (IObject**)&o);
-    clone->mparams = IHttpParams::Probe(o);
+    CloneUtils::Clone(IObject::Probe(mParams), (IObject**)&o);
+    clone->mParams = IHttpParams::Probe(o);
     return NOERROR;
 }
 

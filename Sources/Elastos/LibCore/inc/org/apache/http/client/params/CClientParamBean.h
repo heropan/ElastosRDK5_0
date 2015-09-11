@@ -20,7 +20,6 @@ namespace Client {
 namespace Params {
 
 CarClass(CClientParamBean)
-    , public Object
     , public HttpAbstractParamBean
     , public IClientParamBean
 {
@@ -33,7 +32,7 @@ public:
         /* [in] */ const String& factory);
 
     CARAPI SetConnectionManagerFactory(
-        /* [in] */ IClientConnectionManagerFactory factory);
+        /* [in] */ IClientConnectionManagerFactory* factory);
 
     CARAPI SetHandleRedirects(
         /* [in] */ Boolean handle);
@@ -51,7 +50,7 @@ public:
         /* [in] */ Boolean handle);
 
     CARAPI SetCookiePolicy(
-        /* [in] */ String policy);
+        /* [in] */ const String& policy);
 
     CARAPI SetVirtualHost(
         /* [in] */ IHttpHost* host);

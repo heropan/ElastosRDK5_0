@@ -2,7 +2,11 @@
 #ifndef __ORG_APACHE_HTTP_CLIENT_PARAMS_HTTPCLIENTPARAMS_H__
 #define __ORG_APACHE_HTTP_CLIENT_PARAMS_HTTPCLIENTPARAMS_H__
 
-#include <Org.Apache.Http_server.h>
+#ifdef ELASTOS_CORELIBRARY
+#include "Elastos.CoreLibrary_server.h"
+#else
+#include "Elastos.CoreLibrary.h"
+#endif
 
 using Org::Apache::Http::Params::IHttpParams;
 

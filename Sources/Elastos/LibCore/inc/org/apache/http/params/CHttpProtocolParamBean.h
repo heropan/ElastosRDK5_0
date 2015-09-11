@@ -14,7 +14,6 @@ namespace Http {
 namespace Params {
 
 CarClass(CHttpProtocolParamBean)
-    , public Object
     , public IHttpProtocolParamBean
     , public HttpAbstractParamBean
 {

@@ -5,6 +5,7 @@
 #include "_Org_Apache_Http_Client_Params_CHttpClientParams.h"
 #include "Singleton.h"
 
+using Org::Apache::Http::Params::IHttpParams;
 
 namespace Org {
 namespace Apache {

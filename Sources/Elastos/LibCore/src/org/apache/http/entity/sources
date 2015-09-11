@@ -2,9 +2,17 @@
 TARGET_NAME= entity
 TARGET_TYPE= lib
 
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/http/entity
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/http/message
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/http/util
+C_DEFINES += -DELASTOS_CORELIBRARY
+
+include $(MAKEDIR)/../../../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys
+INCLUDES += ../../../../corelibrary
+INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/core
+INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/utility/logging;
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/entity
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/message
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/util
 
 SOURCES = AbstractHttpEntity.cpp
 SOURCES += HttpEntityWrapper.cpp
@@ -15,4 +23,5 @@ SOURCES += CEntityTemplate.cpp
 SOURCES += CFileEntity.cpp
 SOURCES += CInputStreamEntity.cpp
 SOURCES += CSerializableEntity.cpp
+SOURCES += StringEntity.cpp
 SOURCES += CStringEntity.cpp

@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CLIENT_PROTOCOL_CRESPONSEPROCESSCOOKIES_H_
 
 #include "_Org_Apache_Http_Client_Protocol_CResponseProcessCookies.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Org::Apache::Http::IHeaderIterator;
 using Org::Apache::Http::IHttpResponse;

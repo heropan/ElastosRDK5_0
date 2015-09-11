@@ -1,8 +1,8 @@
 
 #include "CHttpDelete.h"
+#include "CURI.h"
 
-using Elastos::Net::IURIHelper;
-using Elastos::Net::CURIHelper;
+using Elastos::Net::CURI;
 
 namespace Org {
 namespace Apache {
@@ -17,7 +17,7 @@ CAR_OBJECT_IMPL(CHttpDelete)
 ECode CHttpDelete::GetMethod(
     /* [out] */ String* method)
 {
-    VALIDATE_NOT_NULL(result)
+    VALIDATE_NOT_NULL(method)
     *method = METHOD_NAME;
     return NOERROR;
 }
@@ -27,15 +27,15 @@ ECode CHttpDelete::Clone(
 {
     VALIDATE_NOT_NULL(obj)
 
-    AutoPtr<IHttpDelete> httpDelete;
-    CHttpDelete::New((IHttpDelete**)&httpDelete);
-    HttpRequestBase::CloneImpl(IHttpUriRequest::Probe(httpDelete));
+    AutoPtr<CHttpDelete> httpDelete;
+    CHttpDelete::NewByFriend((CHttpDelete**)&httpDelete);
+    HttpRequestBase::CloneImpl((HttpRequestBase*)httpDelete);
     *obj = httpDelete->Probe(EIID_IInterface);
     REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
-ECode CHttpDelete::constructor();
+ECode CHttpDelete::constructor()
 {
     return NOERROR;
 }
@@ -49,10 +49,8 @@ ECode CHttpDelete::constructor(
 ECode CHttpDelete::constructor(
     /* [in] */ const String& uri)
 {
-    AutoPtr<IURIHelper> helper;
-    CURIHelper::AcquireSingleton((IURIHelper**)&helper);
     AutoPtr<IURI> iuri;
-    helper->Create(uri, (IURI**)&iuri);
+    CURI::Create(uri, (IURI**)&iuri);
     return SetURI(iuri);
 }
 

@@ -1,8 +1,8 @@
 
 #include "CHttpPut.h"
+#include "CURI.h"
 
-using Elastos::Net::IURIHelper;
-using Elastos::Net::CURIHelper;
+using Elastos::Net::CURI;
 
 namespace Org {
 namespace Apache {
@@ -17,7 +17,7 @@ CAR_OBJECT_IMPL(CHttpPut)
 ECode CHttpPut::GetMethod(
     /* [out] */ String* method)
 {
-    VALIDATE_NOT_NULL(result)
+    VALIDATE_NOT_NULL(method)
     *method = METHOD_NAME;
     return NOERROR;
 }
@@ -27,15 +27,15 @@ ECode CHttpPut::Clone(
 {
     VALIDATE_NOT_NULL(obj)
 
-    AutoPtr<IHttpPut> httpPut;
-    CHttpPut::New((IHttpPut**)&httpPut);
-    HttpEntityEnclosingRequestBase::CloneImpl(IHttpEntityEnclosingRequest::Probe(httpPut));
+    AutoPtr<CHttpPut> httpPut;
+    CHttpPut::NewByFriend((CHttpPut**)&httpPut);
+    HttpEntityEnclosingRequestBase::CloneImpl((HttpEntityEnclosingRequestBase*)httpPut);
     *obj = httpPut->Probe(EIID_IInterface);
     REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
-ECode CHttpPut::constructor();
+ECode CHttpPut::constructor()
 {
     return NOERROR;
 }
@@ -49,10 +49,8 @@ ECode CHttpPut::constructor(
 ECode CHttpPut::constructor(
     /* [in] */ const String& uri)
 {
-    AutoPtr<IURIHelper> helper;
-    CURIHelper::AcquireSingleton((IURIHelper**)&helper);
     AutoPtr<IURI> iuri;
-    helper->Create(uri, (IURI**)&iuri);
+    CURI::Create(uri, (IURI**)&iuri);
     return SetURI(iuri);
 }
 

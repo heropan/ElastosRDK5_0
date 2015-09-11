@@ -2,8 +2,6 @@
 #ifndef __ORG_APACHE_HTTP_PARAMS_HTTPPROTOCOLPARAMS_H_
 #define __ORG_APACHE_HTTP_PARAMS_HTTPPROTOCOLPARAMS_H_
 
-#include <Org.Apache.Http_server.h>
-
 using Org::Apache::Http::IProtocolVersion;
 
 namespace Org {

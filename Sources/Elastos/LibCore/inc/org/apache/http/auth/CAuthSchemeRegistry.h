@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_AUTH_CAUTHSCHEMEREGISTRY_H_
 
 #include "_Org_Apache_Http_Auth_CAuthSchemeRegistry.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Utility::IMap;
 using Elastos::Utility::IList;

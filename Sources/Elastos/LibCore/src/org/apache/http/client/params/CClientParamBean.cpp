@@ -1,5 +1,6 @@
 
 #include "CClientParamBean.h"
+#include "CString.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
@@ -25,7 +26,7 @@ ECode CClientParamBean::SetConnectionManagerFactoryClassName(
 }
 
 ECode CClientParamBean::SetConnectionManagerFactory(
-    /* [in] */ IClientConnectionManagerFactory factory)
+    /* [in] */ IClientConnectionManagerFactory* factory)
 {
     AutoPtr<IHttpParams> params;
     return mParams->SetParameter(IClientPNames::CONNECTION_MANAGER_FACTORY, factory,
@@ -73,10 +74,10 @@ ECode CClientParamBean::SetHandleAuthentication(
 }
 
 ECode CClientParamBean::SetCookiePolicy(
-    /* [in] */ String policy)
+    /* [in] */ const String& policy)
 {
     AutoPtr<ICharSequence> cs;
-    CString::New(factory, (ICharSequence**)&cs);
+    CString::New(policy, (ICharSequence**)&cs);
     AutoPtr<IHttpParams> params;
     return mParams->SetParameter(IClientPNames::COOKIE_POLICY, cs,
             (IHttpParams**)&params);

@@ -1,8 +1,8 @@
 
 #include "CHttpGet.h"
+#include "CURI.h"
 
-using Elastos::Net::IURIHelper;
-using Elastos::Net::CURIHelper;
+using Elastos::Net::CURI;
 
 namespace Org {
 namespace Apache {
@@ -17,7 +17,7 @@ CAR_OBJECT_IMPL(CHttpGet)
 ECode CHttpGet::GetMethod(
     /* [out] */ String* method)
 {
-    VALIDATE_NOT_NULL(result)
+    VALIDATE_NOT_NULL(method)
     *method = METHOD_NAME;
     return NOERROR;
 }
@@ -27,15 +27,15 @@ ECode CHttpGet::Clone(
 {
     VALIDATE_NOT_NULL(obj)
 
-    AutoPtr<IHttpGet> httpGet;
-    CHttpGet::New((IHttpGet**)&httpGet);
-    HttpRequestBase::CloneImpl(IHttpUriRequest::Probe(httpGet));
+    AutoPtr<CHttpGet> httpGet;
+    CHttpGet::NewByFriend((CHttpGet**)&httpGet);
+    HttpRequestBase::CloneImpl((HttpRequestBase*)httpGet);
     *obj = httpGet->Probe(EIID_IInterface);
     REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
-ECode CHttpGet::constructor();
+ECode CHttpGet::constructor()
 {
     return NOERROR;
 }
@@ -49,10 +49,8 @@ ECode CHttpGet::constructor(
 ECode CHttpGet::constructor(
     /* [in] */ const String& uri)
 {
-    AutoPtr<IURIHelper> helper;
-    CURIHelper::AcquireSingleton((IURIHelper**)&helper);
     AutoPtr<IURI> iuri;
-    helper->Create(uri, (IURI**)&iuri);
+    CURI::Create(uri, (IURI**)&iuri);
     return SetURI(iuri);
 }
 

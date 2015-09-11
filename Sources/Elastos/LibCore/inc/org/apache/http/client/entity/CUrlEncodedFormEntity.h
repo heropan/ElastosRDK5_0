@@ -2,9 +2,10 @@
 #ifndef __ORG_APACHE_HTTP_CLIENT_ENTITY_CURLENCODEDFORMENTITY_H_
 #define __ORG_APACHE_HTTP_CLIENT_ENTITY_CURLENCODEDFORMENTITY_H_
 
-#include "_Org_Apache_Http_Client_Entity_Org_Apache_Http_Auth_CUrlEncodedFormEntity.h"
+#include "_Org_Apache_Http_Client_Entity_CUrlEncodedFormEntity.h"
 #include "StringEntity.h"
 
+using Elastos::Core::ICloneable;
 using Elastos::Utility::IList;
 using Org::Apache::Http::Entity::StringEntity;
 
@@ -16,8 +17,11 @@ namespace Entity {
 
 CarClass(CUrlEncodedFormEntity)
     , public StringEntity
+    , public ICloneable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CAR_OBJECT_DECL()
 
     CARAPI Clone(

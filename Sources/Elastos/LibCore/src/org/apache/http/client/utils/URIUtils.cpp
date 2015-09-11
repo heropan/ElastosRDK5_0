@@ -1,12 +1,11 @@
 
 #include "URIUtils.h"
-#include <StringBuilder.h>
-#include <elastos/Logger.h>
+#include "StringBuilder.h"
+#include "CURI.h"
+#include "Logger.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Net::CURI;
-using Elastos::Net::IURIHelper;
-using Elastos::Net::CURIHelper;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
@@ -38,7 +37,7 @@ ECode URIUtils::CreateURI(
             buffer.Append(port);
         }
     }
-    if (path.IsNull() || !path.StartsWith("/")) {
+    if (path.IsNull() || !path.StartWith("/")) {
         buffer.AppendChar('/');
     }
     if (!path.IsNull()) {
@@ -70,7 +69,7 @@ ECode URIUtils::RewriteURI(
         String schemeName, hostName, path, query;
         target->GetSchemeName(&schemeName);
         target->GetHostName(&hostName);
-        inUri->GetRawPaht(&path);
+        inUri->GetRawPath(&path);
         inUri->GetRawQuery(&query);
         Int32 port;
         target->GetPort(&port);
@@ -82,7 +81,7 @@ ECode URIUtils::RewriteURI(
     }
     else {
         String path, query;
-        inUri->GetRawPaht(&path);
+        inUri->GetRawPath(&path);
         inUri->GetRawQuery(&query);
         String fragment(NULL);
         if (!dropFragment) {
@@ -107,10 +106,8 @@ ECode URIUtils::Resolve(
     /* [out] */ IURI** uri)
 {
     VALIDATE_NOT_NULL(uri)
-    AutoPtr<IURIHelper> helper;
-    CURIHelper::AcquireSingleton((IURIHelper**)&helper);
     AutoPtr<IURI> iuri;
-    helper->Create(reference, (IURI**)&iuri);
+    CURI::Create(reference, (IURI**)&iuri);
     return Resolve(baseURI, iuri, uri);
 }
 
@@ -132,20 +129,16 @@ ECode URIUtils::Resolve(
     IObject::Probe(reference)->ToString(&referenceStr);
     Boolean emptyReference = referenceStr.GetLength() == 0;
     if (emptyReference) {
-        AutoPtr<IURIHelper> helper;
-        CURIHelper::AcquireSingleton((IURIHelper**)&helper);
         reference = NULL;
-        helper->Create(String("#"), (IURI**)&reference);
+        CURI::Create(String("#"), (IURI**)&reference);
     }
     AutoPtr<IURI> resolved;
     baseURI->Resolve(reference, (IURI**)&resolved);
     if (emptyReference) {
         String resolvedString;
         IObject::Probe(resolved)->ToString(&resolvedString);
-        AutoPtr<IURIHelper> helper;
-        CURIHelper::AcquireSingleton((IURIHelper**)&helper);
         resolved = NULL;
-        helper->Create(resolvedString.Substring(0, resolvedString.IndexOf('#')), (IURI**)&resolved);
+        CURI::Create(resolvedString.Substring(0, resolvedString.IndexOf('#')), (IURI**)&resolved);
     }
     *uri = resolved;
     REFCOUNT_ADD(*uri)

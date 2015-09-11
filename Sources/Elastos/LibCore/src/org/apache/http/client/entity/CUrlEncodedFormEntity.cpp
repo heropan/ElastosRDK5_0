@@ -1,9 +1,9 @@
 
 #include "CUrlEncodedFormEntity.h"
-#include "utils/URLEncodedUtils.h"
+#include "URLEncodedUtils.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Org::Apache::Http::Client::Utils::URLEncodedUtils;
-using Org::Apache::Http::Client::Utils::IURLEncodedUtils;
 using Org::Apache::Http::Protocol::IHTTP;
 
 namespace Org {
@@ -12,16 +12,18 @@ namespace Http {
 namespace Client {
 namespace Entity {
 
+CAR_INTERFACE_IMPL(CUrlEncodedFormEntity, StringEntity, ICloneable)
+
 CAR_OBJECT_IMPL(CUrlEncodedFormEntity)
 
-ECode CProtocolVersion::Clone(
+ECode CUrlEncodedFormEntity::Clone(
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj)
 
-    AutoPtr<IStringEntity> ver;
-    CUrlEncodedFormEntity::New((IStringEntity**)&ver);
-    StringEntity::CloneImpl(ver);
+    AutoPtr<CUrlEncodedFormEntity> ver;
+    CUrlEncodedFormEntity::NewByFriend((CUrlEncodedFormEntity**)&ver);
+    CloneImpl((StringEntity*)ver);
     *obj = ver->Probe(EIID_IInterface);
     REFCOUNT_ADD(*obj)
     return NOERROR;
@@ -32,14 +34,14 @@ ECode CUrlEncodedFormEntity::constructor(
     /* [in] */ const String& encoding)
 {
     FAIL_RETURN(Init(URLEncodedUtils::Format(parameters, encoding), encoding))
-    return SetContentType(IURLEncodedUtils::CONTENT_TYPE);
+    return SetContentType(URLEncodedUtils::CONTENT_TYPE);
 }
 
 ECode CUrlEncodedFormEntity::constructor(
     /* [in] */ IList* parameters)
 {
     FAIL_RETURN(Init(URLEncodedUtils::Format(parameters, IHTTP::DEFAULT_CONTENT_CHARSET), IHTTP::DEFAULT_CONTENT_CHARSET))
-    return SetContentType(IURLEncodedUtils::CONTENT_TYPE);
+    return SetContentType(URLEncodedUtils::CONTENT_TYPE);
 }
 
 ECode CUrlEncodedFormEntity::constructor()

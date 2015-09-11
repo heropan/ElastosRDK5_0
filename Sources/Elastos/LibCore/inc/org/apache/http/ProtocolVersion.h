@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_PROTOCOLVERSION_H__
 #define __ORG_APACHE_HTTP_PROTOCOLVERSION_H__
 
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::ICloneable;
 

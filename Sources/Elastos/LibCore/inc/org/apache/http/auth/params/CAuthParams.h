@@ -2,9 +2,10 @@
 #ifndef __ORG_APACHE_HTTP_AUTH_PARAMS_CAUTHPARAMS_H_
 #define __ORG_APACHE_HTTP_AUTH_PARAMS_CAUTHPARAMS_H_
 
-#include "_Org_Apache_Http_Auth_Params_Org_Apache_Http_Auth_CAuthParams.h"
+#include "_Org_Apache_Http_Auth_Params_CAuthParams.h"
 #include "Singleton.h"
 
+using Org::Apache::Http::Params::IHttpParams;
 
 namespace Org {
 namespace Apache {

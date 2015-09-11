@@ -1,6 +1,7 @@
 
 #include "HttpClientParams.h"
-#include <elastos/Logger.h>
+#include "CString.h"
+#include "Logger.h"
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;

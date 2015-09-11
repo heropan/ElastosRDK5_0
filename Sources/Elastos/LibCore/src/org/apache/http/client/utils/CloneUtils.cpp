@@ -1,11 +1,8 @@
 
 #include "CloneUtils.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Core::ICloneable;
-using Elastos::Net::CURI;
-using Elastos::Net::IURIHelper;
-using Elastos::Net::CURIHelper;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
