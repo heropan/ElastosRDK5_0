@@ -2,6 +2,7 @@
 module
 {
     using interface Elastos.IO.IFile;
+    interface Elastos.Droid.Content.Pm.IPackageLite;
 
     namespace Elastos {
     namespace Droid {
@@ -9,11 +10,33 @@ module
     namespace Content {
 
     /**
+     * A handle to an opened package, consisting of one or more APKs. Used as
+     * input to the various NativeLibraryHelper methods. Allows us to scan and
+     * parse the APKs exactly once instead of doing it multiple times.
+     *
+     * @hide
+     */
+    /**
      * @Involve
      * interface ICloseable
      */
     [local]
     interface INativeLibraryHelperHandle {
+    }
+
+    [local]
+    interface INativeLibraryHelperHandleHelper {
+        Create(
+            [in] IFile* packageFile,
+            [out] INativeLibraryHelperHandle** handle);
+
+        Create(
+            [in] Handle32 pkg, //PackageParser.Package*
+            [out] INativeLibraryHelperHandle** handle);
+
+        Create(
+            [in] IPackageLite* lite, //PackageParser.PackageLite*
+            [out] INativeLibraryHelperHandle** handle);
     }
 
     /**
@@ -23,6 +46,13 @@ module
      */
     [local, deprecated]
     interface INativeLibraryHelper {
+        const String LIB_DIR_NAME = "lib";
+        const String LIB64_DIR_NAME = "lib64";
+
+        // Special value for {@code PackageParser.Package#cpuAbiOverride} to indicate
+        // that the cpuAbiOverride must be clear.
+        const String CLEAR_ABI_OVERRIDE = "-";
+
         /**
          * Copies native binaries to a shared library directory.
          *
@@ -53,10 +83,12 @@ module
         RemoveNativeBinariesLI(
             [in] String nativeLibraryPath);
 
-        // Remove the native binaries of a given package. This simply
-        // gets rid of the files in the 'lib' sub-directory.
+        /**
+         * Remove the native binaries of a given package. This deletes the files
+         */
         RemoveNativeBinariesFromDirLI(
-            [in] IFile* nativeLibraryDir);
+            [in] IFile* nativeLibraryDir,
+            [in] Boolean deleteRootDir);
 
         CopyNativeBinariesForSupportedAbi(
             [in] INativeLibraryHelperHandle* handle,

@@ -1,16 +1,20 @@
 
-#include "content/PackageMonitor.h"
+#include "internal/content/PackageMonitor.h"
 #ifdef DROID_CORE
-#include "content/CIntentFilter.h"
+// #include "content/CIntentFilter.h"
+#include "os/CHandler.h"
 #endif
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::App::IActivity;
-using Elastos::Droid::Content::CIntentFilter;
+// using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::EIID_IBroadcastReceiver;
 using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Core::AutoLock;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -20,13 +24,14 @@ namespace Content {
 static AutoPtr<IIntentFilter> InitPackageFilt()
 {
     AutoPtr<IIntentFilter> filter;
-#ifdef DROID_CORE
-    AutoPtr<CIntentFilter> cfilter;
-    ASSERT_SUCCEEDED(CIntentFilter::NewByFriend((CIntentFilter**)&cfilter))
-    filter = cfilter;
-#else
-    ASSERT_SUCCEEDED(CIntentFilter::New((IIntentFilter**)&filter))
-#endif
+    assert(0 && "CIntentFilter is not implemented!");
+// #ifdef DROID_CORE
+//     AutoPtr<CIntentFilter> cfilter;
+//     ASSERT_SUCCEEDED(CIntentFilter::NewByFriend((CIntentFilter**)&cfilter))
+//     filter = cfilter;
+// #else
+//     ASSERT_SUCCEEDED(CIntentFilter::New((IIntentFilter**)&filter))
+// #endif
 
     ASSERT_SUCCEEDED(filter->AddAction(
         String("android.intent.action.PACKAGE_ADDED")/*IIntent::ACTION_PACKAGE_ADDED*/))
@@ -47,13 +52,14 @@ static AutoPtr<IIntentFilter> InitPackageFilt()
 static AutoPtr<IIntentFilter> InitNonDataFilt()
 {
     AutoPtr<IIntentFilter> filter;
-#ifdef DROID_CORE
-    AutoPtr<CIntentFilter> cfilter;
-    ASSERT_SUCCEEDED(CIntentFilter::NewByFriend((CIntentFilter**)&cfilter))
-    filter = cfilter;
-#else
-    ASSERT_SUCCEEDED(CIntentFilter::New((IIntentFilter**)&filter))
-#endif
+    assert(0 && "CIntentFilter is not implemented!");
+// #ifdef DROID_CORE
+//     AutoPtr<CIntentFilter> cfilter;
+//     ASSERT_SUCCEEDED(CIntentFilter::NewByFriend((CIntentFilter**)&cfilter))
+//     filter = cfilter;
+// #else
+//     ASSERT_SUCCEEDED(CIntentFilter::New((IIntentFilter**)&filter))
+// #endif
 
     ASSERT_SUCCEEDED(filter->AddAction(
         String("android.intent.action.UID_REMOVED")/*IIntent::ACTION_UID_REMOVED*/))
@@ -65,13 +71,14 @@ static AutoPtr<IIntentFilter> InitNonDataFilt()
 static AutoPtr<IIntentFilter> InitExternalFilt()
 {
     AutoPtr<IIntentFilter> filter;
-#ifdef DROID_CORE
-    AutoPtr<CIntentFilter> cfilter;
-    ASSERT_SUCCEEDED(CIntentFilter::NewByFriend((CIntentFilter**)&cfilter))
-    filter = cfilter;
-#else
-    ASSERT_SUCCEEDED(CIntentFilter::New((IIntentFilter**)&filter))
-#endif
+    assert(0 && "CIntentFilter is not implemented!");
+// #ifdef DROID_CORE
+//     AutoPtr<CIntentFilter> cfilter;
+//     ASSERT_SUCCEEDED(CIntentFilter::NewByFriend((CIntentFilter**)&cfilter))
+//     filter = cfilter;
+// #else
+//     ASSERT_SUCCEEDED(CIntentFilter::New((IIntentFilter**)&filter))
+// #endif
 
     ASSERT_SUCCEEDED(filter->AddAction(
         String("android.intent.action.EXTERNAL_APPLICATIONS_AVAILABLE")
@@ -85,9 +92,6 @@ static AutoPtr<IIntentFilter> InitExternalFilt()
 AutoPtr<IIntentFilter> PackageMonitor::sPackageFilt = InitPackageFilt();
 AutoPtr<IIntentFilter> PackageMonitor::sNonDataFilt = InitNonDataFilt();
 AutoPtr<IIntentFilter> PackageMonitor::sExternalFilt = InitExternalFilt();
-Mutex PackageMonitor::sLock;
-AutoPtr<IHandlerThread> PackageMonitor::sBackgroundThread;
-AutoPtr<IHandler> PackageMonitor::sBackgroundHandler;
 
 PackageMonitor::PackageMonitor()
     : mChangeType(0)
@@ -101,164 +105,7 @@ PackageMonitor::~PackageMonitor()
 {
 }
 
-PInterface PackageMonitor::Probe(
-    /* [in] */ REIID riid)
-{
-    if ( riid == EIID_IInterface) {
-        return (IInterface*)(IPackageMonitor *)this;
-    }
-    else if ( riid == EIID_IPackageMonitor ) {
-        return (IPackageMonitor *)this;
-    }
-    return BroadcastReceiver::Probe(riid);
-}
-
-ECode PackageMonitor::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    VALIDATE_NOT_NULL(iid)
-    if (object == (IInterface*)(IPackageMonitor *)this) {
-        *iid = EIID_IPackageMonitor;
-    }
-    else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return BroadcastReceiver::GetInterfaceID(object, iid);
-}
-
-UInt32 PackageMonitor::AddRef()
-{
-    return BroadcastReceiver::AddRef();
-}
-
-UInt32 PackageMonitor::Release()
-{
-    return BroadcastReceiver::Release();
-}
-
-ECode PackageMonitor::GoAsync(
-    /* [out] */ IPendingResult** pendingResult)
-{
-    return BroadcastReceiver::GoAsync(pendingResult);
-}
-
-ECode PackageMonitor::PeekService(
-    /* [in] */ IContext* myContext,
-    /* [in] */ IIntent* service,
-    /* [out] */ IBinder** binder)
-{
-    return BroadcastReceiver::PeekService(myContext, service, binder);
-}
-
-ECode PackageMonitor::SetResultCode(
-    /* [in] */ Int32 code)
-{
-    return BroadcastReceiver::SetResultCode(code);
-}
-
-ECode PackageMonitor::GetResultCode(
-    /* [out] */ Int32* code)
-{
-    return BroadcastReceiver::GetResultCode(code);
-}
-
-ECode PackageMonitor::SetResultData(
-    /* [in] */ const String& data)
-{
-    return BroadcastReceiver::SetResultData(data);
-}
-
-ECode PackageMonitor::GetResultData(
-    /* [out] */ String* data)
-{
-    return BroadcastReceiver::GetResultData(data);
-}
-
-ECode PackageMonitor::SetResultExtras(
-    /* [in] */ IBundle* extras)
-{
-    return BroadcastReceiver::SetResultExtras(extras);
-}
-
-ECode PackageMonitor::GetResultExtras(
-    /* [in] */ Boolean makeMap,
-    /* [out] */ IBundle** extras)
-{
-    return BroadcastReceiver::GetResultExtras(makeMap, extras);
-}
-
-ECode PackageMonitor::SetResult(
-    /* [in] */ Int32 code,
-    /* [in] */ const String& data,
-    /* [in] */ IBundle* extras)
-{
-    return BroadcastReceiver::SetResult(code, data, extras);
-}
-
-ECode PackageMonitor::GetAbortBroadcast(
-    /* [out] */ Boolean* isAborted)
-{
-    return BroadcastReceiver::GetAbortBroadcast(isAborted);
-}
-
-ECode PackageMonitor::AbortBroadcast()
-{
-    return BroadcastReceiver::AbortBroadcast();
-}
-
-ECode PackageMonitor::ClearAbortBroadcast()
-{
-    return BroadcastReceiver::ClearAbortBroadcast();
-}
-
-ECode PackageMonitor::IsOrderedBroadcast(
-    /* [out] */ Boolean* isOrdered)
-{
-    return BroadcastReceiver::IsOrderedBroadcast(isOrdered);
-}
-
-ECode PackageMonitor::IsInitialStickyBroadcast(
-    /* [out] */ Boolean* isInitial)
-{
-    return BroadcastReceiver::IsInitialStickyBroadcast(isInitial);
-}
-
-ECode PackageMonitor::SetOrderedHint(
-    /* [in] */ Boolean isOrdered)
-{
-    return BroadcastReceiver::SetOrderedHint(isOrdered);
-}
-
-ECode PackageMonitor::SetPendingResult(
-    /* [in] */ IPendingResult* result)
-{
-    return BroadcastReceiver::SetPendingResult(result);
-}
-
-ECode PackageMonitor::GetPendingResult(
-    /* [out] */ IPendingResult** pendingResult)
-{
-    return BroadcastReceiver::GetPendingResult(pendingResult);
-}
-
-ECode PackageMonitor::GetSendingUserId(
-    /* [out] */ Int32* userId)
-{
-    return BroadcastReceiver::GetSendingUserId(userId);
-}
-
-ECode PackageMonitor::SetDebugUnregister(
-    /* [in] */ Boolean debug)
-{
-    return BroadcastReceiver::SetDebugUnregister(debug);
-}
-
-ECode PackageMonitor::GetDebugUnregister(
-    /* [out] */ Boolean* debugUnregister)
-{
-    return BroadcastReceiver::GetDebugUnregister(debugUnregister);
-}
+CAR_INTERFACE_IMPL(PackageMonitor, BroadcastReceiver, IPackageMonitor)
 
 ECode PackageMonitor::Register(
     /* [in] */ IContext* context,
@@ -280,20 +127,13 @@ ECode PackageMonitor::Register(
     }
 
     mRegisteredContext = context;
+    mRegisteredHandler = NULL;
     if (NULL == thread) {
-        {
-            AutoLock lock(sLock);
-            if (NULL == sBackgroundThread) {
-//                FAIL_RETURN(CHandlerThread::New("PackageMonitor", IProcess::THREAD_PRIORITY_BACKGROUND,
-//                        (IHandlerThread**)&sBackgroundThread))
-//                FAIL_RETURN(sBackgroundThread->Start())
-//                sBackgroundHandler = new Handler(sBackgroundThread.getLooper());
-            }
-            mRegisteredHandler = sBackgroundHandler;
-        }
+        assert(0 && "BackgroundThread is not implemented!");
+        // BackgroundThread::GetHandler((IHandler**)&mRegisteredHandler);
     }
     else {
-//        mRegisteredHandler = new Handler(thread);
+        CHandler::New(thread, (IHandler**)&mRegisteredHandler);
     }
 
     AutoPtr<IIntent> intent;
@@ -345,6 +185,17 @@ ECode PackageMonitor::Unregister()
     return NOERROR;
 }
 
+Boolean PackageMonitor::IsPackageUpdating(
+    /* [in] */ const String& packageName)
+{
+    AutoLock lock(mUpdatingPackagesLock);
+    HashSet<String>::Iterator it = mUpdatingPackages.Find(packageName);
+    if (it != mUpdatingPackages.End()) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
 ECode PackageMonitor::OnBeginPackageChanges()
 {
     return NOERROR;
@@ -388,8 +239,20 @@ ECode PackageMonitor::OnPackageUpdateFinished(
 ECode PackageMonitor::OnPackageChanged(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 uid,
-    /* [in] */ ArrayOf<String>* components)
+    /* [in] */ ArrayOf<String>* components,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    if (components != NULL) {
+        for (Int32 i = 0; i < components->GetLength(); i++) {
+            String name = (*components)[i];
+            if (packageName.Equals(name)) {
+                *result = TRUE;
+                return NOERROR;
+            }
+        }
+    }
+    *result = FALSE;
     return NOERROR;
 }
 
@@ -508,6 +371,14 @@ ECode PackageMonitor::AnyPackagesDisappearing(
     return NOERROR;
 }
 
+ECode PackageMonitor::IsReplacing(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mChangeType == PACKAGE_UPDATING;
+    return NOERROR;
+}
+
 ECode PackageMonitor::IsPackageModified(
     /* [in] */ const String& packageName,
     /* [out] */ Boolean* isModified)
@@ -560,8 +431,7 @@ ECode PackageMonitor::OnReceive(
     String action;
     FAIL_RETURN(intent->GetAction(&action))
     if (IIntent::ACTION_PACKAGE_ADDED.Equals(action)) {
-        String pkg;
-        FAIL_RETURN(GetPackageName(intent, &pkg))
+        String pkg = GetPackageName(intent);
         Int32 uid = 0;
         FAIL_RETURN(intent->GetInt32Extra(IIntent::EXTRA_UID, 0, &uid))
         // We consider something to have changed regardless of whether
@@ -593,8 +463,7 @@ ECode PackageMonitor::OnReceive(
         }
     }
     else if (IIntent::ACTION_PACKAGE_REMOVED.Equals(action)) {
-        String pkg;
-        FAIL_RETURN(GetPackageName(intent, &pkg))
+        String pkg = GetPackageName(intent);
         Int32 uid = 0;
         FAIL_RETURN(intent->GetInt32Extra(IIntent::EXTRA_UID, 0, &uid))
         if (!pkg.IsNull()) {
@@ -627,8 +496,7 @@ ECode PackageMonitor::OnReceive(
         }
     }
     else if (IIntent::ACTION_PACKAGE_CHANGED.Equals(action)) {
-        String pkg;
-        FAIL_RETURN(GetPackageName(intent, &pkg))
+        String pkg = GetPackageName(intent);
         Int32 uid = 0;
         FAIL_RETURN(intent->GetInt32Extra(IIntent::EXTRA_UID, 0, &uid))
         AutoPtr<ArrayOf<String> > components;
@@ -637,9 +505,12 @@ ECode PackageMonitor::OnReceive(
         if (!pkg.IsNull()) {
             mModifiedPackages = mTempArray;
             (*mTempArray)[0] = pkg;
-            FAIL_RETURN(OnPackageChanged(pkg, uid, components))
-            // XXX Don't want this to always cause mSomePackagesChanged,
-            // since it can happen a fair amount.
+            mChangeType = PACKAGE_PERMANENT_CHANGE;
+            Boolean res;
+            OnPackageChanged(pkg, uid, components, &res);
+            if (res) {
+                mSomePackagesChanged = TRUE;
+            }
             FAIL_RETURN(OnPackageModified(pkg))
         }
     }
@@ -657,8 +528,7 @@ ECode PackageMonitor::OnReceive(
     }
     else if (IIntent::ACTION_PACKAGE_RESTARTED.Equals(action)) {
         mDisappearingPackages = ArrayOf<String>::Alloc(1);
-        String pkg;
-        FAIL_RETURN(GetPackageName(intent, &pkg))
+        String pkg = GetPackageName(intent);
         (*mDisappearingPackages)[0] = pkg;
         mChangeType = IPackageMonitor::PACKAGE_TEMPORARY_CHANGE;
         Int32 uid = 0;
@@ -683,12 +553,14 @@ ECode PackageMonitor::OnReceive(
         AutoPtr<ArrayOf<String> > pkgList;
         FAIL_RETURN(intent->GetStringArrayExtra(IIntent::EXTRA_CHANGED_PACKAGE_LIST, (ArrayOf<String>**)&pkgList))
         mAppearingPackages = pkgList;
-        mChangeType = IPackageMonitor::PACKAGE_TEMPORARY_CHANGE;
+        Boolean res;
+        intent->GetBooleanExtra(IIntent::EXTRA_REPLACING, FALSE, &res);
+        mChangeType = res ? PACKAGE_UPDATING : PACKAGE_TEMPORARY_CHANGE;
         mSomePackagesChanged = TRUE;
         if (NULL != pkgList) {
             FAIL_RETURN(OnPackagesAvailable(pkgList))
             for (Int32 i = 0; i < pkgList->GetLength(); i++) {
-                FAIL_RETURN(OnPackageAppeared((*pkgList)[i], IPackageMonitor::PACKAGE_TEMPORARY_CHANGE))
+                FAIL_RETURN(OnPackageAppeared((*pkgList)[i], mChangeType))
             }
         }
     }
@@ -696,12 +568,14 @@ ECode PackageMonitor::OnReceive(
         AutoPtr<ArrayOf<String> > pkgList;
         FAIL_RETURN(intent->GetStringArrayExtra(IIntent::EXTRA_CHANGED_PACKAGE_LIST, (ArrayOf<String>**)&pkgList))
         mDisappearingPackages = pkgList;
-        mChangeType =IPackageMonitor:: PACKAGE_TEMPORARY_CHANGE;
+        Boolean res;
+        intent->GetBooleanExtra(IIntent::EXTRA_REPLACING, FALSE, &res);
+        mChangeType = res ? PACKAGE_UPDATING : PACKAGE_TEMPORARY_CHANGE;
         mSomePackagesChanged = TRUE;
         if (NULL != pkgList) {
             FAIL_RETURN(OnPackagesUnavailable(pkgList))
             for (Int32 i = 0; i < pkgList->GetLength(); i++) {
-                FAIL_RETURN(OnPackageDisappeared((*pkgList)[i], IPackageMonitor::PACKAGE_TEMPORARY_CHANGE))
+                FAIL_RETURN(OnPackageDisappeared((*pkgList)[i], mChangeType))
             }
         }
     }
@@ -715,33 +589,24 @@ ECode PackageMonitor::OnReceive(
     return NOERROR;
 }
 
-ECode PackageMonitor::IsPackageUpdating(
-    /* [in] */ const String& packageName,
-    /* [out] */ Boolean* result)
+String PackageMonitor::GetPackageName(
+    /* [in] */ IIntent* intent)
 {
-    VALIDATE_NOT_NULL(result)
-    *result = FALSE;
-    AutoLock lock(mUpdatingPackagesLock);
-    HashSet<String>::Iterator it = mUpdatingPackages.Find(packageName);
-    if (it != mUpdatingPackages.End()) {
-        *result = TRUE;
+    String pkgName;
+    AutoPtr<IUri> uri;
+    intent->GetData((IUri**)&uri);
+    if (NULL != uri) {
+        uri->GetSchemeSpecificPart(&pkgName);
     }
-    return NOERROR;
+    return pkgName;
 }
 
-ECode PackageMonitor::GetPackageName(
-    /* [in] */ IIntent* intent,
-    /* [out] */ String* pkgName)
+ECode PackageMonitor::ToString(
+    /* [out] */ String* info)
 {
-    VALIDATE_NOT_NULL(pkgName)
-    AutoPtr<IUri> uri;
-    FAIL_RETURN(intent->GetData((IUri**)&uri))
-    if (NULL != uri) {
-        FAIL_RETURN(uri->GetSchemeSpecificPart(pkgName))
-    }
-    else {
-        *pkgName = String(NULL);
-    }
+    VALIDATE_NOT_NULL(info);
+    *info = String("PackageMonitor:");
+    (*info).AppendFormat("%p", this);
     return NOERROR;
 }
 

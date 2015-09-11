@@ -35,3 +35,4 @@ DIRS += database
 #DIRS += inputmethods
 #DIRS += swextend
 #DIRS += sax
+DIRS += internal

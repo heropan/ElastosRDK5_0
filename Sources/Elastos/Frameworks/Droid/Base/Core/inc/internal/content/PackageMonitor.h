@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_CONTENT_PACKAGEMONITOR_H__
 #define __ELASTOS_DROID_INTERNAL_CONTENT_PACKAGEMONITOR_H__
 
-#include "BroadcastReceiver.h"
+#include "content/BroadcastReceiver.h"
 
 #include <ext/frameworkext.h>
 #include <elastos/utility/etl/HashSet.h>
@@ -38,27 +38,7 @@ public:
 
     ~PackageMonitor();
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface* object,
-        /* [out] */ InterfaceID* iid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    IBROADCASTRECEIVER_METHODS_DECL();
-
-    CARAPI ToString(
-        /* [out] */ String* info)
-    {
-        VALIDATE_NOT_NULL(info);
-        *info = String("PackageMonitor:");
-        (*info).AppendFormat("%p", this);
-        return NOERROR;
-    }
+    CAR_INTERFACE_DECL()
 
     CARAPI Register(
         /* [in] */ IContext* context,
@@ -76,19 +56,19 @@ public:
 
     CARAPI Unregister();
 
-    virtual CARAPI OnBeginPackageChanges();
+    CARAPI OnBeginPackageChanges();
 
     /**
      * Called when a package is really added (and not replaced).
      */
-    virtual CARAPI OnPackageAdded(
+    CARAPI OnPackageAdded(
         /* [in] */ const String& packageName,
         /* [in] */ Int32 uid);
 
     /**
      * Called when a package is really removed (and not replaced).
      */
-    virtual CARAPI OnPackageRemoved(
+    CARAPI OnPackageRemoved(
         /* [in] */ const String& packageName,
         /* [in] */ Int32 uid);
 
@@ -96,61 +76,62 @@ public:
      * Called when a package is really removed (and not replaced) for
      * all users on the device.
      */
-    virtual CARAPI OnPackageRemovedAllUsers(
+    CARAPI OnPackageRemovedAllUsers(
         /* [in] */ const String& packageName,
         /* [in] */ Int32 uid);
 
-    virtual CARAPI OnPackageUpdateStarted(
+    CARAPI OnPackageUpdateStarted(
         /* [in] */ const String& packageName,
         /* [in] */ Int32 uid);
 
-    virtual CARAPI OnPackageUpdateFinished(
+    CARAPI OnPackageUpdateFinished(
         /* [in] */ const String& packageName,
         /* [in] */ Int32 uid);
 
-    virtual CARAPI OnPackageChanged(
+    CARAPI OnPackageChanged(
         /* [in] */ const String& packageName,
         /* [in] */ Int32 uid,
-        /* [in] */ ArrayOf<String>* components);
+        /* [in] */ ArrayOf<String>* components,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI OnHandleForceStop(
+    CARAPI OnHandleForceStop(
         /* [in] */ IIntent* intent,
         /* [in] */ ArrayOf<String>* packages,
         /* [in] */ Int32 uid,
         /* [in] */ Boolean doit,
         /* [out] */ Boolean* result);
 
-    virtual CARAPI OnHandleUserStop(
+    CARAPI OnHandleUserStop(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 userHandle);
 
-    virtual CARAPI OnUidRemoved(
+    CARAPI OnUidRemoved(
         /* [in] */ Int32 uid);
 
-    virtual CARAPI OnPackagesAvailable(
+    CARAPI OnPackagesAvailable(
         /* [in] */ ArrayOf<String>* packages);
 
-    virtual CARAPI OnPackagesUnavailable(
+    CARAPI OnPackagesUnavailable(
         /* [in] */ ArrayOf<String>* packages);
 
     /**
      * Called when a package disappears for any reason.
      */
-    virtual CARAPI OnPackageDisappeared(
+    CARAPI OnPackageDisappeared(
         /* [in] */ const String& packageName,
         /* [in] */ Int32 reason);
 
     /**
      * Called when a package appears for any reason.
      */
-    virtual CARAPI OnPackageAppeared(
+    CARAPI OnPackageAppeared(
         /* [in] */ const String& packageName,
         /* [in] */ Int32 reason);
 
-    virtual CARAPI OnPackageModified(
+    CARAPI OnPackageModified(
         /* [in] */ const String& packageName);
 
-    virtual CARAPI DidSomePackagesChange(
+    CARAPI DidSomePackagesChange(
         /* [out] */ Boolean* isChanged);
 
     CARAPI IsPackageAppearing(
@@ -167,6 +148,9 @@ public:
     CARAPI AnyPackagesDisappearing(
         /* [out] */ Boolean* result);
 
+    CARAPI IsReplacing(
+        /* [out] */ Boolean* result);
+
     CARAPI IsPackageModified(
         /* [in] */ const String& packageName,
         /* [out] */ Boolean* isModified);
@@ -178,23 +162,25 @@ public:
     CARAPI GetChangingUserId(
         /* [out] */ Int32* userId);
 
+    CARAPI OnReceive(
+        /* [in] */ IContext* context,
+        /* [in] */ IIntent* intent);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
+
 private:
     //not yet implemented
-    CARAPI IsPackageUpdating(
-        /* [in] */ const String& packageName,
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) IsPackageUpdating(
+        /* [in] */ const String& packageName);
 
-    CARAPI GetPackageName(
-        /* [in] */ IIntent* intent,
-        /* [out] */ String* pkgName);
+    CARAPI_(String) GetPackageName(
+        /* [in] */ IIntent* intent);
 
 private:
     static AutoPtr<IIntentFilter> sPackageFilt;
     static AutoPtr<IIntentFilter> sNonDataFilt;
     static AutoPtr<IIntentFilter> sExternalFilt;
-    static Object sLock;
-    static AutoPtr<IHandlerThread> sBackgroundThread;
-    static AutoPtr<IHandler> sBackgroundHandler;
 
 private:
     HashSet<String> mUpdatingPackages;

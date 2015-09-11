@@ -92,6 +92,7 @@ INCLUDES += $(MAKEDIR)/../inc/util
 // INCLUDES += $(MAKEDIR)/../inc/swextend/gpio
 // INCLUDES += $(MAKEDIR)/../inc/telephony
 // INCLUDES += $(MAKEDIR)/../inc/sax
+INCLUDES += $(MAKEDIR)/../inc/internal/content
 
 SOURCES = Elastos.Droid.Core.car
 SOURCES += R.cpp
@@ -159,6 +160,7 @@ LIBRARIES += database/database.lib
 // LIBRARIES += swextend/gpio/gpio.lib
 // LIBRARIES += telephony/telephony.lib
 // LIBRARIES += sax/sax.lib
+LIBRARIES += internal/internal.lib
 
 LIBRARIES += $(XDK_USER_LIB)/DroidRuntime.lib
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
@@ -169,6 +171,6 @@ LIBRARIES += $(PREBUILD_LIB)/libxml2.a
 LIBRARIES += $(PREBUILD_LIB)/libstdc++.a
 LIBRARIES += $(PREBUILD_LIB)/cxx-stl/gnu-libstdc++/armeabi/libstdc++.a
 LIBRARIES += $(PREBUILD_LIB)/libstagefright_amrnbenc.a
-LIBRARIES += -licuuc -licui18n -lbinder -lutils -lcutils -lsqlite -lskia -landroidfw
+LIBRARIES += -licuuc -licui18n -lbinder -lutils -lcutils -lsqlite -lskia -landroidfw -lselinux -lz
 
 //LIBRARIES += -licuuc -licui18n -lbinder -lutils -lcutils -lsqlite -lskia -lgui -lui -lhwui -landroidfw -lharfbuzz -ljpeg -lz -lmedia -lhardware_legacy -lstagefright -lstagefright_foundation -lstagefright_amrnb_common -lsqlite -lcamera_client -lnetutils -lusbhost -lselinux -lgpioservice -lelwebcore -lelchromium_net -lcrypto -lstlport -lEGL -lGLESv1_CM -lETC1 -lGLESv2 -ldrm1 -lmtp -lexif
