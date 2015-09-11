@@ -952,7 +952,7 @@ void UsbSettingsManager::DeviceAttached(
 {
     AutoPtr<IIntent> intent;
     CIntent::New(IUsbManager::ACTION_USB_DEVICE_ATTACHED, (IIntent**)&intent);
-    intent->PutParcelableExtra(IUsbManager::EXTRA_DEVICE, IParcelable::Probe(device));
+    intent->PutExtra(IUsbManager::EXTRA_DEVICE, IParcelable::Probe(device));
     intent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
 
     AutoPtr<List<AutoPtr<IResolveInfo> > > matches;
@@ -987,7 +987,7 @@ void UsbSettingsManager::DeviceDetached(
 
     AutoPtr<IIntent> intent;
     CIntent::New(IUsbManager::ACTION_USB_DEVICE_DETACHED, (IIntent**)&intent);
-    intent->PutParcelableExtra(IUsbManager::EXTRA_DEVICE, IParcelable::Probe(device));
+    intent->PutExtra(IUsbManager::EXTRA_DEVICE, IParcelable::Probe(device));
     if (DEBUG) Slogger::D(TAG, "usbDeviceRemoved, sending %p", intent.Get());
     mContext->SendBroadcastAsUser(intent, UserHandle::ALL);
 }
@@ -997,7 +997,7 @@ void UsbSettingsManager::AccessoryAttached(
 {
     AutoPtr<IIntent> intent;
     CIntent::New(IUsbManager::ACTION_USB_ACCESSORY_ATTACHED, (IIntent**)&intent);
-    intent->PutParcelableExtra(IUsbManager::EXTRA_ACCESSORY, IParcelable::Probe(accessory));
+    intent->PutExtra(IUsbManager::EXTRA_ACCESSORY, IParcelable::Probe(accessory));
     intent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
 
     AutoPtr<List<AutoPtr<IResolveInfo> > > matches;
@@ -1028,7 +1028,7 @@ void UsbSettingsManager::AccessoryDetached(
 
     AutoPtr<IIntent> intent;
     CIntent::New(IUsbManager::ACTION_USB_ACCESSORY_DETACHED, (IIntent**)&intent);
-    intent->PutParcelableExtra(IUsbManager::EXTRA_ACCESSORY, IParcelable::Probe(accessory));
+    intent->PutExtra(IUsbManager::EXTRA_ACCESSORY, IParcelable::Probe(accessory));
     mContext->SendBroadcastAsUser(intent, UserHandle::ALL);
 }
 
@@ -1051,8 +1051,8 @@ void UsbSettingsManager::ResolveActivity(
                 CIntent::New((IIntent**)&dialogIntent);
                 dialogIntent->SetClassName(String("com.android.systemui"), String("com.android.systemui.usb.UsbAccessoryUriActivity"));
                 dialogIntent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
-                dialogIntent->PutParcelableExtra(IUsbManager::EXTRA_ACCESSORY, IParcelable::Probe(accessory));
-                dialogIntent->PutStringExtra(String("uri"), uri);
+                dialogIntent->PutExtra(IUsbManager::EXTRA_ACCESSORY, IParcelable::Probe(accessory));
+                dialogIntent->PutExtra(String("uri"), uri);
                 // try {
                 if (FAILED(mUserContext->StartActivityAsUser(dialogIntent, mUser))) {
                     Slogger::E(TAG, "unable to start UsbAccessoryUriActivity");
@@ -1155,13 +1155,13 @@ void UsbSettingsManager::ResolveActivity(
             resolverIntent->SetClassName(String("com.android.systemui"), String("com.android.systemui.usb.UsbConfirmActivity"));
 
             AutoPtr<IResolveInfo> info = *matches->Begin();
-            resolverIntent->PutParcelableExtra(String("rinfo"), IParcelable::Probe(info));\
+            resolverIntent->PutExtra(String("rinfo"), IParcelable::Probe(info));\
 
             if (device != NULL) {
-                resolverIntent->PutParcelableExtra(IUsbManager::EXTRA_DEVICE, IParcelable::Probe(device));
+                resolverIntent->PutExtra(IUsbManager::EXTRA_DEVICE, IParcelable::Probe(device));
             }
             else {
-                resolverIntent->PutParcelableExtra(IUsbManager::EXTRA_ACCESSORY, IParcelable::Probe(accessory));
+                resolverIntent->PutExtra(IUsbManager::EXTRA_ACCESSORY, IParcelable::Probe(accessory));
             }
         }
         else {
@@ -1173,8 +1173,8 @@ void UsbSettingsManager::ResolveActivity(
                 AutoPtr<IParcelable> parcel = IParcelable::Probe((*it).Get());
                 matchesArray->Set(i, parcel);
             }
-            resolverIntent->PutParcelableArrayExtra(String("rlist"), matchesArray);
-            resolverIntent->PutParcelableExtra(IIntent::EXTRA_INTENT, IParcelable::Probe(intent));
+            resolverIntent->PutExtra(String("rlist"), matchesArray);
+            resolverIntent->PutExtra(IIntent::EXTRA_INTENT, IParcelable::Probe(intent));
         }
         // try {
         if (FAILED(mUserContext->StartActivityAsUser(resolverIntent, mUser))) {
@@ -1449,9 +1449,9 @@ ECode UsbSettingsManager::RequestPermissionDialog(
     Int64 identity = Binder::ClearCallingIdentity();
     intent->SetClassName(String("com.android.systemui"), String("com.android.systemui.usb.UsbPermissionActivity"));
     intent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
-    intent->PutParcelableExtra(IIntent::EXTRA_INTENT, IParcelable::Probe(pi));
-    intent->PutStringExtra(String("package"), packageName);
-    intent->PutInt32Extra(IIntent::EXTRA_UID, uid);
+    intent->PutExtra(IIntent::EXTRA_INTENT, IParcelable::Probe(pi));
+    intent->PutExtra(String("package"), packageName);
+    intent->PutExtra(IIntent::EXTRA_UID, uid);
     // try {
     ec = mUserContext->StartActivityAsUser(intent, mUser);
     if (FAILED(ec)) {
@@ -1475,7 +1475,7 @@ ECode UsbSettingsManager::RequestPermission(
 
     // respond immediately if permission has already been granted
     if (HasPermission(device)) {
-        intent->PutParcelableExtra(IUsbManager::EXTRA_DEVICE, IParcelable::Probe(device));
+        intent->PutExtra(IUsbManager::EXTRA_DEVICE, IParcelable::Probe(device));
         intent->PutBooleanExtra(IUsbManager::EXTRA_PERMISSION_GRANTED, TRUE);
         // try {
         ECode ec = pi->Send(mUserContext, 0, intent);
@@ -1489,7 +1489,7 @@ ECode UsbSettingsManager::RequestPermission(
     }
 
     // start UsbPermissionActivity so user can choose an activity
-    intent->PutParcelableExtra(IUsbManager::EXTRA_DEVICE, IParcelable::Probe(device));
+    intent->PutExtra(IUsbManager::EXTRA_DEVICE, IParcelable::Probe(device));
     return RequestPermissionDialog(intent, packageName, pi);
 }
 
@@ -1503,7 +1503,7 @@ ECode UsbSettingsManager::RequestPermission(
 
     // respond immediately if permission has already been granted
     if (HasPermission(accessory)) {
-        intent->PutParcelableExtra(IUsbManager::EXTRA_ACCESSORY, IParcelable::Probe(accessory));
+        intent->PutExtra(IUsbManager::EXTRA_ACCESSORY, IParcelable::Probe(accessory));
         intent->PutBooleanExtra(IUsbManager::EXTRA_PERMISSION_GRANTED, TRUE);
         // try {
         ECode ec = pi->Send(mUserContext, 0, intent);
@@ -1516,7 +1516,7 @@ ECode UsbSettingsManager::RequestPermission(
         return NOERROR;
     }
 
-    intent->PutParcelableExtra(IUsbManager::EXTRA_ACCESSORY, IParcelable::Probe(accessory));
+    intent->PutExtra(IUsbManager::EXTRA_ACCESSORY, IParcelable::Probe(accessory));
     return RequestPermissionDialog(intent, packageName, pi);
 }
 

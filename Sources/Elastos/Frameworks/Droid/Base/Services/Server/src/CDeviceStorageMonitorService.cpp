@@ -452,7 +452,7 @@ void CDeviceStorageMonitorService::SendNotification()
             ? ISettings::ACTION_INTERNAL_STORAGE_SETTINGS
             : IIntent::ACTION_MANAGE_PACKAGE_STORAGE, (IIntent**)&lowMemIntent);
 
-    lowMemIntent->PutInt64Extra(String("memory"), mFreeMem);
+    lowMemIntent->PutExtra(String("memory"), mFreeMem);
     lowMemIntent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
     AutoPtr<INotificationManager> mNotificationMgr;
     mContext->GetSystemService(

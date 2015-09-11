@@ -1851,7 +1851,7 @@ void CMountService::SendStorageIntent(
     CUriHelper::AcquireSingleton((IUriHelper**)&helper);
     ASSERT_SUCCEEDED(helper->Parse(String("file://") + path, (IUri**)&uri));
     ASSERT_SUCCEEDED(CIntent::New(action, uri, (IIntent**)&intent));
-    intent->PutParcelableExtra(String("storage_volume")/*CStorageVolume::EXTRA_STORAGE_VOLUME*/, IParcelable::Probe(volume));
+    intent->PutExtra(String("storage_volume")/*CStorageVolume::EXTRA_STORAGE_VOLUME*/, IParcelable::Probe(volume));
 
     Slogger::D(TAG, "sendStorageIntent %p to %p", intent.Get(), user);
     mContext->SendBroadcastAsUser(intent, user);

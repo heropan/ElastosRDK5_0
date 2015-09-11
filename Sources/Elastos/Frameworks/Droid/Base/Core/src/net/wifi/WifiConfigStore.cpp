@@ -852,8 +852,8 @@ void WifiConfigStore::SendConfiguredNetworksChangedBroadcast(
     CIntent::New(IWifiManager::CONFIGURED_NETWORKS_CHANGED_ACTION, (IIntent**)&intent);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
     intent->PutBooleanExtra(IWifiManager::EXTRA_MULTIPLE_NETWORKS_CHANGED, FALSE);
-    intent->PutParcelableExtra(IWifiManager::EXTRA_WIFI_CONFIGURATION, IParcelable::Probe(network));
-    intent->PutInt32Extra(IWifiManager::EXTRA_CHANGE_REASON, reason);
+    intent->PutExtra(IWifiManager::EXTRA_WIFI_CONFIGURATION, IParcelable::Probe(network));
+    intent->PutExtra(IWifiManager::EXTRA_CHANGE_REASON, reason);
 
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);

@@ -47,7 +47,6 @@ public:
         /* [in] */ Elastos::IO::IOutputStream* output);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 } // namespace Opengl

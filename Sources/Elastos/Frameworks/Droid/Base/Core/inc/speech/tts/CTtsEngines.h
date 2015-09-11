@@ -48,7 +48,6 @@ public:
         /* [in] */ IContext * pCtx);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }//namespace Tts

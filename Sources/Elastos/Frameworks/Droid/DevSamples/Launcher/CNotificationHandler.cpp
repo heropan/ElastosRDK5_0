@@ -78,7 +78,7 @@ ECode CNotificationHandler::HandleIntent(
         if (!alertCookie.IsNullOrEmpty()) {
             args += alertCookie + "#";
         }
-        pAppIntent->PutStringExtra(String("args"), args);
+        pAppIntent->PutExtra(String("args"), args);
         //try {
             //Log.i("GeckoAppJava", "startActivity with intent: Action='" + appIntent.getAction() + "'" +
             //      ", args='" + appIntent.getStringExtra("args") + "'" );

@@ -30,7 +30,6 @@ public:
         /* [out] */ Boolean* res);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

@@ -26,7 +26,6 @@ public:
         /* [out] */ IIntentShortcutIconResource** shortcutIconRes);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

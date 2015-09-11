@@ -49,7 +49,6 @@ public:
         /* [in] */ Int32 size);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 #endif // __CPATHSEGMENTS_H__

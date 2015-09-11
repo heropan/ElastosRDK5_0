@@ -38,7 +38,6 @@ public:
 
     CARAPI WaitForCompletion();
 private:
-    // TODO: Add your private member variables here.
     Boolean mDone;
     AutoPtr<ArrayOf<IRestoreSet*> > mSet;
     Object mRestoreObserverlock;

@@ -42,7 +42,6 @@ public:
         /* [out] */ Boolean* isEqual);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

@@ -33,7 +33,6 @@ public:
         /* [in] */ ITypeAliasInfo * pPTypeAliasInfo);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

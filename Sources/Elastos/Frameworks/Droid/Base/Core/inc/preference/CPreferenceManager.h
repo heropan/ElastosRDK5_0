@@ -229,7 +229,6 @@ private:
     CARAPI_(void) DismissAllScreens();
 
 private:
-    // TODO: Add your private member variables here.
     static const String TAG;
 
     /**

@@ -119,7 +119,8 @@ public:
      */
     CARAPI_(void) Unparcel();
 
-    CARAPI_(Boolean) IsParceled();
+    CARAPI IsParcelled(
+        /* [out] */ Boolean* result);
 
     CARAPI GetSize(
         /* [out] */ Int32 * size);

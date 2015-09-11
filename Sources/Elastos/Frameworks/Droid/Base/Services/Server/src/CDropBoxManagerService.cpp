@@ -480,8 +480,8 @@ ECode CDropBoxManagerService::Add(
 
        const AutoPtr<IIntent> dropboxIntent;
        CIntent::New(IDropBoxManager::ACTION_DROPBOX_ENTRY_ADDED, (IIntent**)&dropboxIntent);
-       dropboxIntent->PutStringExtra(IDropBoxManager::EXTRA_TAG, tag);
-       dropboxIntent->PutInt64Extra(IDropBoxManager::EXTRA_TIME, time);
+       dropboxIntent->PutExtra(IDropBoxManager::EXTRA_TAG, tag);
+       dropboxIntent->PutExtra(IDropBoxManager::EXTRA_TIME, time);
        if (!mBooted) {
            dropboxIntent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY);
        }

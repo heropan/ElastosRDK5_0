@@ -46,16 +46,14 @@ SOURCES += CEntity.cpp
 SOURCES += CEntityNamedContentValues.cpp
 SOURCES += Loader.cpp
 SOURCES += CLoaderForceLoadContentObserver.cpp
+SOURCES += Intent.cpp
+SOURCES += CIntentHelper.cpp
+#SOURCES += IntentFilter.cpp
+#SOURCES += CIntentFilterHelper.cpp
 
-
-#SOURCES += Intent.cpp
-#SOURCES += CIntent.cpp
-#SOURCES += CIntentHelper.cpp
 #SOURCES += CIntentShortcutIconResource.cpp
 #SOURCES += CIntentShortcutIconResourceHelper.cpp
-#SOURCES += CIntentFilter.cpp
 #SOURCES += CIntentFilterComparison.cpp
-#SOURCES += CIntentFilterHelper.cpp
 #SOURCES += CIntentFilterAuthorityEntry.cpp
 #SOURCES += CIntentSender.cpp
 #SOURCES += CIntentSenderHelper.cpp
@@ -89,7 +87,7 @@ SOURCES += CLoaderForceLoadContentObserver.cpp
 #SOURCES += PackageHelper.cpp
 #SOURCES += PackageMonitor.cpp
 #SOURCES += CSelectionBuilder.cpp
-#SOURCES += IntentFilter.cpp
+
 
 #LIBRARIES += pm/pm.lib
 #LIBRARIES += res/res.lib

@@ -156,7 +156,7 @@ void UsbDeviceManager::MyUEventObserver::OnUEvent(
         AutoPtr<IIntent> intent;
         CIntent::New(String("android.hardware.usb.action.USB_PORT_STATE"), (IIntent**)&intent);
         intent->AddFlags(IIntent::FLAG_RECEIVER_REPLACE_PENDING);
-        intent->PutStringExtra(String("USB_PORT_STATE"), port_state);
+        intent->PutExtra(String("USB_PORT_STATE"), port_state);
         mHost->mContext->SendStickyBroadcast(intent);
 
     }
@@ -609,7 +609,7 @@ void UsbDeviceManager::UsbHandler::UpdateAudioSourceFunction()
         CIntent::New(IIntent::ACTION_USB_AUDIO_ACCESSORY_PLUG,(IIntent**)&intent);
         intent->AddFlags(IIntent::FLAG_RECEIVER_REPLACE_PENDING);
         intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY);
-        intent->PutInt32Extra(String("state"), enabled ? 1 : 0);
+        intent->PutExtra(String("state"), enabled ? 1 : 0);
         if (enabled) {
             AutoPtr<IFile> file;
             ECode ec = CFile::New(AUDIO_SOURCE_PCM_PATH, (IFile**)&file);
@@ -641,15 +641,15 @@ void UsbDeviceManager::UsbHandler::UpdateAudioSourceFunction()
             }
             device = StringUtils::ParseInt32((*tok)[1]);
 
-            intent->PutInt32Extra(String("card"), card);
-            intent->PutInt32Extra(String("device"), device);
+            intent->PutExtra(String("card"), card);
+            intent->PutExtra(String("device"), device);
             /*
             try {
                 Scanner scanner = new Scanner(new File(AUDIO_SOURCE_PCM_PATH));
                 int card = scanner.nextInt();
                 int device = scanner.nextInt();
-                intent->PutInt32Extra("card", card);
-                intent->PutInt32Extra("device", device);
+                intent->PutExtra("card", card);
+                intent->PutExtra("device", device);
             } catch (FileNotFoundException e) {
                 Slog.e(TAG, "could not open audio source PCM file", e);
             }*/
@@ -763,7 +763,7 @@ void UsbDeviceManager::UsbHandler::HandleMsgBootCompleted()
         AutoPtr<IIntent> intent;
         CIntent::New(String("android.hardware.usb.action.USB_PORT_STATE"), (IIntent**)&intent);
         intent->AddFlags(IIntent::FLAG_RECEIVER_REPLACE_PENDING);
-        intent->PutStringExtra(String("USB_PORT_STATE"), port_state);
+        intent->PutExtra(String("USB_PORT_STATE"), port_state);
         mHost->mContext->SendStickyBroadcast(intent);
     }
     // }catch (Exception e) {

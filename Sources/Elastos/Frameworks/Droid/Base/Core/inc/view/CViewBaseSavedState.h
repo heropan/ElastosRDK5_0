@@ -30,7 +30,6 @@ public:
     CARAPI constructor();
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }// namespace View

@@ -4,29 +4,39 @@
 #include "content/CClipDataItem.h"
 #include "content/CClipData.h"
 #include "content/CComponentName.h"
+#include "content/ContentProvider.h"
+#include "content/CClipDataHelper.h"
 #include "os/CBundle.h"
-#include "util/XmlUtils.h"
+#include "os/UserHandle.h"
+//#include "internal/util/XmlUtils.h"
 //#include "graphics/CRect.h"
 //#include "net/Uri.h"
 #include "R.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/CoreUtils.h>
 #include <elastos/utility/Objects.h>
-
 
 using Elastos::Droid::Content::CClipDataItem;
 using Elastos::Droid::Content::CClipData;
 using Elastos::Droid::Content::CComponentName;
 using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
 using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::Pm::IServiceInfo;
+using Elastos::Droid::Content::Pm::IComponentInfo;
 using Elastos::Droid::Content::Res::ITypedArray;
 //using Elastos::Droid::Graphics::CRect;
 //using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Os::CBundle;
-using Elastos::Droid::Utility::XmlUtils;
+using Elastos::Droid::Os::UserHandle;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Provider::IMediaStore;
+//using Elastos::Droid::Internal::Utility::XmlUtils;
 
 using Elastos::Core::StringUtils;
+using Elastos::Core::CoreUtils;
 using Elastos::Core::IBoolean;
 using Elastos::Core::IInteger32;
 using Elastos::Core::IInteger64;
@@ -35,7 +45,11 @@ using Elastos::Core::IFloat;
 using Elastos::Core::IDouble;
 using Elastos::Core::IByte;
 using Elastos::Core::IChar32;
+using Elastos::Core::ICloneable;
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::Objects;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -53,9 +67,7 @@ const String Intent::ATTR_FLAGS("flags");
 
 const String Intent::TAG("Intent");
 
-CAR_INTERFACE_IMPL(Intent, Object, IIntent)
-
-CAR_OBJECT_IMPL(Intent)
+CAR_INTERFACE_IMPL_3(Intent, Object, IIntent, IParcelable, ICloneable)
 
 Intent::Intent()
     : mFlags(0)
@@ -206,9 +218,9 @@ AutoPtr<IIntent> Intent::CreateChooser(
     AutoPtr<CIntent> intent;
     ASSERT_SUCCEEDED(CIntent::NewByFriend(IIntent::ACTION_CHOOSER, (CIntent**)&intent));
     AutoPtr<IParcelable> parcelable = (IParcelable*)target->Probe(EIID_IParcelable);
-    intent->PutParcelableExtra(IIntent::EXTRA_INTENT, parcelable);
+    intent->PutExtra(IIntent::EXTRA_INTENT, parcelable);
     if (title != NULL) {
-        intent->PutCharSequenceExtra(IIntent::EXTRA_TITLE, title);
+        intent->PutExtra(IIntent::EXTRA_TITLE, title);
     }
 
     // Migrate any clip data and flags from target.
@@ -267,7 +279,7 @@ ECode Intent::CloneImpl(
     /* [in] */ IIntent* intentObj)
 {
     VALIDATE_NOT_NULL(intentObj);
-    Intent* intent = intentObj;
+    Intent* intent = (Intent*)intentObj;
 
     intent->mAction = this->mAction;
     intent->mData = this->mData;
@@ -275,7 +287,11 @@ ECode Intent::CloneImpl(
     intent->mPackage = this->mPackage;
     intent->mComponent = this->mComponent;
     if (mCategories != NULL) {
-        intent->mCategories = new HashSet<String>(mCategories);
+        intent->mCategories = new HashSet<String>(mCategories->GetSize());
+        HashSet<String>::Iterator it;
+        for (it = mCategories->Begin(); it != mCategories->End(); ++it) {
+            intent->mCategories->Insert(*it);
+        }
     }
     return NOERROR;
 }
@@ -344,7 +360,7 @@ ECode Intent::ParseUri(
             REFCOUNT_ADD(*_intent);
             // try {
             assert(0 && "TODO");
-            // AutoPtr<IUri> data;
+            AutoPtr<IUri> data;
             // if (FAILED(Uri::Parse(uri, (IUri**)&data))) {
             //     return E_URI_SYNTAX_EXCEPTION;
             // }
@@ -744,7 +760,8 @@ ECode Intent::GetDataString(
 {
     VALIDATE_NOT_NULL(dataString)
     if (mData != NULL) {
-        return mData->ToString(dataString);
+        *dataString = Object::ToString(mData);
+        return NOERROR;
     }
     *dataString = NULL;
     return NOERROR;
@@ -874,14 +891,16 @@ ECode Intent::GetContentUserHint(
         /* [out] */ Int32* hint)
 {
     VALIDATE_NOT_NULL(hint)
-    *clipData = hint;
+    *hint = mContentUserHint;
     return NOERROR;
 }
 
 ECode Intent::SetExtrasClassLoader(
     /* [in] */ IClassLoader* loader)
 {
-    //TODO
+    if (mExtras != NULL) {
+        mExtras->SetClassLoader(loader);
+    }
     return NOERROR;
 }
 
@@ -916,7 +935,8 @@ ECode Intent::SetAllowFds(
     /* [in] */ Boolean allowFds)
 {
     if (mExtras != NULL){
-        return mExtras->SetAllowFds(allowFds);
+        Boolean result;
+        return mExtras->SetAllowFds(allowFds, &result);
     }
     return NOERROR;
 }
@@ -1079,19 +1099,6 @@ ECode Intent::GetParcelableExtra(
     }
 }
 
-ECode Intent::GetObjectStringMapExtra(
-    /* [in] */ const String& name,
-    /* [out] */ IObjectStringMap** value)
-{
-    if (mExtras == NULL) {
-        *value = NULL;
-        return NOERROR;
-    }
-    else {
-        return mExtras->GetObjectStringMap(name, value);
-    }
-}
-
 ECode Intent::GetParcelableArrayExtra(
     /* [in] */ const String& name,
     /* [out, callee] */ ArrayOf<IParcelable*>** value)
@@ -1107,7 +1114,7 @@ ECode Intent::GetParcelableArrayExtra(
 
 ECode Intent::GetParcelableArrayListExtra(
     /* [in] */ const String& name,
-    /* [out] */ IObjectContainer** value)
+    /* [out] */ IArrayList** value)
 {
     if (mExtras == NULL) {
         *value = NULL;
@@ -1118,9 +1125,22 @@ ECode Intent::GetParcelableArrayListExtra(
     }
 }
 
-ECode Intent::GetIntegerArrayListExtra(
+ECode Intent::GetSerializableExtra(
     /* [in] */ const String& name,
-    /* [out] */ IObjectContainer** value)
+    /* [out] */ ISerializable** value)
+{
+    if (mExtras == NULL) {
+        *value = NULL;
+        return NOERROR;
+    }
+    else {
+        return mExtras->GetSerializable(name, value);
+    }
+}
+
+ECode Intent::GetInteger32ArrayListExtra(
+    /* [in] */ const String& name,
+    /* [out] */ IArrayList** value)
 {
     if (mExtras == NULL) {
         *value = NULL;
@@ -1133,7 +1153,7 @@ ECode Intent::GetIntegerArrayListExtra(
 
 ECode Intent::GetStringArrayListExtra(
     /* [in] */ const String& name,
-    /* [out] */ IObjectContainer** value)
+    /* [out] */ IArrayList** value)
 {
     if (mExtras == NULL) {
         *value = NULL;
@@ -1146,7 +1166,7 @@ ECode Intent::GetStringArrayListExtra(
 
 ECode Intent::GetCharSequenceArrayListExtra(
     /* [in] */ const String& name,
-    /* [out] */ IObjectContainer** value)
+    /* [out] */ IArrayList** value)
 {
     if (mExtras == NULL) {
         *value = NULL;
@@ -1389,11 +1409,11 @@ ECode Intent::ResolveActivity(
         AutoPtr<IActivityInfo> activityInfo;
         FAIL_RETURN(info->GetActivityInfo((IActivityInfo**)&activityInfo));
         AutoPtr<IApplicationInfo> applicationInfo;
-        FAIL_RETURN(activityInfo->GetApplicationInfo((IApplicationInfo**)&applicationInfo));
+        FAIL_RETURN(IComponentInfo::Probe(activityInfo)->GetApplicationInfo((IApplicationInfo**)&applicationInfo));
         String packageName;
-        FAIL_RETURN(applicationInfo->GetPackageName(&packageName));
+        FAIL_RETURN(IPackageItemInfo::Probe(applicationInfo)->GetPackageName(&packageName));
         String name;
-        FAIL_RETURN(activityInfo->GetName(&name));
+        FAIL_RETURN(IPackageItemInfo::Probe(activityInfo)->GetName(&name));
         return CComponentName::New(packageName, name, componentName);
     }
 
@@ -1449,7 +1469,7 @@ ECode Intent::ResolveSystemService(
     }
 
     AutoPtr<IComponentName> comp;
-    Int32 size, flags;
+    Int32 size, f;
     results->GetSize(&size);
     IResolveInfo* ri;
     String packageName, serviceName;
@@ -1461,14 +1481,14 @@ ECode Intent::ResolveSystemService(
         AutoPtr<IServiceInfo> si;
         ri->GetServiceInfo((IServiceInfo**)&si);
         AutoPtr<IApplicationInfo> ai;
-        si->GetApplicationInfo((IApplicationInfo**)&ai);
-        ai->GetFlags(&flags);
-        if ((flags & IApplicationInfo::FLAG_SYSTEM) == 0) {
+        IComponentInfo::Probe(si)->GetApplicationInfo((IApplicationInfo**)&ai);
+        ai->GetFlags(&f);
+        if ((f & IApplicationInfo::FLAG_SYSTEM) == 0) {
             continue;
         }
 
-        ai->GetPackageName(&packageName);
-        si->GetName(&serviceName);
+        IPackageItemInfo::Probe(ai)->GetPackageName(&packageName);
+        IPackageItemInfo::Probe(si)->GetName(&serviceName);
         AutoPtr<IComponentName> foundComp;
         CComponentName::New(packageName, serviceName, (IComponentName**)&foundComp);
         if (comp != NULL) {
@@ -1627,7 +1647,7 @@ ECode Intent::PutCharExtra(
     return mExtras->PutChar(name, value);
 }
 
-ECode Intent::PutInt16Extra(
+ECode Intent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ Int16 value)
 {
@@ -1637,7 +1657,7 @@ ECode Intent::PutInt16Extra(
     return mExtras->PutInt16(name, value);
 }
 
-ECode Intent::PutInt32Extra(
+ECode Intent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ Int32 value)
 {
@@ -1647,7 +1667,7 @@ ECode Intent::PutInt32Extra(
     return mExtras->PutInt32(name, value);
 }
 
-ECode Intent::PutInt64Extra(
+ECode Intent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ Int64 value)
 {
@@ -1657,7 +1677,7 @@ ECode Intent::PutInt64Extra(
     return mExtras->PutInt64(name, value);
 }
 
-ECode Intent::PutFloatExtra(
+ECode Intent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ Float value)
 {
@@ -1668,7 +1688,7 @@ ECode Intent::PutFloatExtra(
     return NOERROR;
 }
 
-ECode Intent::PutDoubleExtra(
+ECode Intent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ Double value)
 {
@@ -1678,7 +1698,7 @@ ECode Intent::PutDoubleExtra(
     return mExtras->PutDouble(name, value);
 }
 
-ECode Intent::PutStringExtra(
+ECode Intent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ const String& value)
 {
@@ -1689,7 +1709,7 @@ ECode Intent::PutStringExtra(
     return NOERROR;
 }
 
-ECode Intent::PutCharSequenceExtra(
+ECode Intent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ ICharSequence* value)
 {
@@ -1699,7 +1719,7 @@ ECode Intent::PutCharSequenceExtra(
     return mExtras->PutCharSequence(name, value);
 }
 
-ECode Intent::PutParcelableExtra(
+ECode Intent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ IParcelable* value)
 {
@@ -1709,17 +1729,7 @@ ECode Intent::PutParcelableExtra(
     return mExtras->PutParcelable(name, value);
 }
 
-ECode Intent::PutObjectStringMapExtra(
-    /* [in] */ const String& name,
-    /* [in] */ IObjectStringMap* value)
-{
-    if (mExtras == NULL) {
-        ASSERT_SUCCEEDED(CBundle::New((IBundle**)&mExtras));
-    }
-    return mExtras->PutObjectStringMap(name, value);
-}
-
-ECode Intent::PutParcelableArrayExtra(
+ECode Intent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ ArrayOf<IParcelable*>* value)
 {
@@ -1731,7 +1741,7 @@ ECode Intent::PutParcelableArrayExtra(
 
 ECode Intent::PutParcelableArrayListExtra(
     /* [in] */ const String& name,
-    /* [in] */ IObjectContainer* value)
+    /* [in] */ IArrayList* value)
 {
     if (mExtras == NULL) {
         ASSERT_SUCCEEDED(CBundle::New((IBundle**)&mExtras));
@@ -1739,9 +1749,9 @@ ECode Intent::PutParcelableArrayListExtra(
     return mExtras->PutParcelableArrayList(name, value);
 }
 
-ECode Intent::PutIntegerArrayListExtra(
+ECode Intent::PutInteger32ArrayListExtra(
     /* [in] */ const String& name,
-    /* [in] */ IObjectContainer* value)
+    /* [in] */ IArrayList* value)
 {
     if (mExtras == NULL) {
         ASSERT_SUCCEEDED(CBundle::New((IBundle**)&mExtras));
@@ -1751,7 +1761,7 @@ ECode Intent::PutIntegerArrayListExtra(
 
 ECode Intent::PutStringArrayListExtra(
     /* [in] */ const String& name,
-    /* [in] */ IObjectContainer* value)
+    /* [in] */ IArrayList* value)
 {
     if (mExtras == NULL) {
         ASSERT_SUCCEEDED(CBundle::New((IBundle**)&mExtras));
@@ -1761,12 +1771,23 @@ ECode Intent::PutStringArrayListExtra(
 
 ECode Intent::PutCharSequenceArrayListExtra(
     /* [in] */ const String& name,
-    /* [in] */ IObjectContainer* value)
+    /* [in] */ IArrayList* value)
 {
     if (mExtras == NULL) {
         ASSERT_SUCCEEDED(CBundle::New((IBundle**)&mExtras));
     }
     return mExtras->PutCharSequenceArrayList(name, value);
+}
+
+ECode Intent::PutExtra(
+    /* [in] */ const String& name,
+    /* [in] */ ISerializable* value)
+{
+    VALIDATE_NOT_NULL(value)
+    if (mExtras == NULL) {
+        ASSERT_SUCCEEDED(CBundle::New((IBundle**)&mExtras));
+    }
+    return mExtras->PutSerializable(name, value);
 }
 
 ECode Intent::PutBooleanArrayExtra(
@@ -1789,7 +1810,7 @@ ECode Intent::PutByteArrayExtra(
     return mExtras->PutByteArray(name, value);
 }
 
-ECode Intent::PutInt16ArrayExtra(
+ECode Intent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ ArrayOf<Int16>* value)
 {
@@ -1809,7 +1830,7 @@ ECode Intent::PutCharArrayExtra(
     return mExtras->PutCharArray(name, value);
 }
 
-ECode Intent::PutInt32ArrayExtra(
+ECode Intent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ ArrayOf<Int32>* value)
 {
@@ -1819,7 +1840,7 @@ ECode Intent::PutInt32ArrayExtra(
     return mExtras->PutInt32Array(name, value);
 }
 
-ECode Intent::PutInt64ArrayExtra(
+ECode Intent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ ArrayOf<Int64>* value)
 {
@@ -1829,7 +1850,7 @@ ECode Intent::PutInt64ArrayExtra(
     return mExtras->PutInt64Array(name, value);
 }
 
-ECode Intent::PutFloatArrayExtra(
+ECode Intent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ ArrayOf<Float>* value)
 {
@@ -1839,7 +1860,7 @@ ECode Intent::PutFloatArrayExtra(
     return mExtras->PutFloatArray(name, value);
 }
 
-ECode Intent::PutDoubleArrayExtra(
+ECode Intent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ ArrayOf<Double>* value)
 {
@@ -1849,7 +1870,7 @@ ECode Intent::PutDoubleArrayExtra(
     return mExtras->PutDoubleArray(name, value);
 }
 
-ECode Intent::PutStringArrayExtra(
+ECode Intent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ ArrayOf<String>* value)
 {
@@ -1859,7 +1880,7 @@ ECode Intent::PutStringArrayExtra(
     return mExtras->PutStringArray(name, value);
 }
 
-ECode Intent::PutCharSequenceArrayExtra(
+ECode Intent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ ArrayOf<ICharSequence*>* value)
 {
@@ -1869,7 +1890,7 @@ ECode Intent::PutCharSequenceArrayExtra(
     return mExtras->PutCharSequenceArray(name, value);
 }
 
-ECode Intent::PutBundleExtra(
+ECode Intent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ IBundle* value)
 {
@@ -2024,6 +2045,7 @@ ECode Intent::FillIn(
     AutoPtr<CIntent> otherIntent = (CIntent*)other;
     assert(otherIntent != NULL);
     Int32 changes = 0;
+    Boolean mayHaveCopiedUris = FALSE;
 
     if (!otherIntent->mAction.IsNull() &&
             (mAction.IsNull() || (flags & IIntent::FILL_IN_ACTION) != 0)) {
@@ -2133,13 +2155,34 @@ ECode Intent::FilterEquals(
         return NOERROR;
     }
 
-    Intent* other = (IIntent*)otherObj;
-    if (!Objects::Equals(mAction, other->mAction)) return NOERROR;
+    Intent* other = (Intent*)otherObj;
+    if (!mAction.Equals(other->mAction)) return NOERROR;
     if (!Objects::Equals(mData, other->mData)) return NOERROR;
-    if (!Objects::Equals(mType, other->mType)) return NOERROR;
-    if (!Objects::Equals(mPackage, other->mPackage)) return NOERROR;
+    if (!mType.Equals(other->mType)) return NOERROR;
+    if (!mPackage.Equals(other->mPackage)) return NOERROR;
     if (!Objects::Equals(mComponent, other->mComponent)) return NOERROR;
-    if (!Objects::Equals(mCategories, other->mCategories)) return NOERROR;
+
+    AutoPtr< ArrayOf<String> > categories;
+    other->GetCategories((ArrayOf<String>**)&categories);
+    if (mCategories != NULL) {
+        if (categories == NULL) {
+            return NOERROR;
+        }
+        if (mCategories->GetSize() != categories->GetLength()) {
+            return NOERROR;
+        }
+        for (Int32 i = 0; i < categories->GetLength(); ++i) {
+            String s = (*categories)[i];
+            if (mCategories->Find(s) == mCategories->End()) {
+                return NOERROR;
+            }
+        }
+    }
+    else {
+        if (categories != NULL) {
+            return NOERROR;
+        }
+    }
 
     *isEqual = TRUE;
     return NOERROR;
@@ -2167,9 +2210,7 @@ ECode Intent::FilterHashCode(
         code += mAction.GetHashCode();
     }
     if (mData != NULL) {
-        Int32 uriHashCode;
-        mData->GetHashCode(&uriHashCode);
-        code += uriHashCode;
+        code += Object::GetHashCode(mData);
     }
     if (!mType.IsNull()) {
         code += mType.GetHashCode();
@@ -2178,9 +2219,7 @@ ECode Intent::FilterHashCode(
         code += mPackage.GetHashCode();
     }
     if (mComponent != NULL) {
-        Int32 hashCode;
-        mComponent->GetHashCode(&hashCode);
-        code += hashCode;
+        code += Object::GetHashCode(mComponent);
     }
     if (mCategories != NULL) {
         code += GetSetHashCode(*mCategories);
@@ -2193,9 +2232,9 @@ ECode Intent::ToString(
     /* [out] */ String* str)
 {
     StringBuilder b(128);
-    b.AppendCStr("Intent { ");
+    b.Append("Intent { ");
     ToShortString((IStringBuilder*)&b, TRUE, TRUE, TRUE, FALSE);
-    b.AppendCStr(" }");
+    b.Append(" }");
     return b.ToString(str);
 }
 
@@ -2203,9 +2242,9 @@ ECode Intent::ToInsecureString(
     /* [out] */ String* str)
 {
     StringBuilder b(128);
-    b.AppendCStr("Intent { ");
+    b.Append("Intent { ");
     ToShortString((IStringBuilder*)&b, FALSE, TRUE, TRUE, FALSE);
-    b.AppendCStr(" }");
+    b.Append(" }");
     return b.ToString(str);
 }
 
@@ -2213,9 +2252,9 @@ ECode Intent::ToInsecureStringWithClip(
     /* [out] */ String* str)
 {
     StringBuilder b(128);
-    b.AppendCStr("Intent { ");
+    b.Append("Intent { ");
     ToShortString((IStringBuilder*)&b, FALSE, TRUE, TRUE, TRUE);
-    b.AppendCStr(" }");
+    b.Append(" }");
     return b.ToString(str);
 }
 
@@ -2240,8 +2279,8 @@ ECode Intent::ToShortString(
 {
     Boolean first = TRUE;
     if (!mAction.IsNull()) {
-        sb->AppendString(String("act="));
-        sb->AppendString(mAction);
+        sb->Append(String("act="));
+        sb->Append(mAction);
         first = FALSE;
     }
     if (mCategories != NULL) {
@@ -2249,75 +2288,77 @@ ECode Intent::ToShortString(
             sb->AppendChar(' ');
         }
         first = FALSE;
-        sb->AppendString(String("cat=["));
+        sb->Append(String("cat=["));
         Boolean didone = FALSE;
         HashSet<String>::Iterator it;
         for (it = mCategories->Begin(); it != mCategories->End(); ++it) {
-            if (didone) sb->AppendString(String(","));
+            if (didone) sb->Append(String(","));
             didone = TRUE;
-            sb->AppendString(*it);
+            sb->Append(*it);
         }
-        sb->AppendString(String("]"));
+        sb->Append(String("]"));
     }
     if (mData != NULL) {
         if (!first) {
             sb->AppendChar(' ');
         }
         first = FALSE;
-        sb->AppendString(String("dat="));
-        String dataStr;
-        mData->ToString(&dataStr);
-        // if (secure) {
-        //     b.append(mData.toSafeString());
-        // } else {
-        //     b.append(mData);
-        // }
-        sb->AppendString(dataStr);
+        sb->Append(String("dat="));
+
+        if (secure) {
+            String dataStr;
+            mData->ToSafeString(&dataStr);
+            sb->Append(dataStr);
+        }
+        else {
+            String dataStr = Object::ToString(mData);
+            sb->Append(dataStr);
+        }
     }
     if (!mType.IsNull()) {
         if (!first) {
             sb->AppendChar(' ');
         }
         first = FALSE;
-        sb->AppendString(String("typ="));
-        sb->AppendString(mType);
+        sb->Append(String("typ="));
+        sb->Append(mType);
     }
     if (mFlags != 0) {
         if (!first) {
             sb->AppendChar(' ');
         }
         first = FALSE;
-        sb->AppendString(String("flg=0x"));
+        sb->Append(String("flg=0x"));
 //        Integer.toHexString(mFlags)
-        sb->AppendString(StringUtils::Int32ToString(mFlags));
+        sb->Append(StringUtils::ToHexString(mFlags));
     }
     if (!mPackage.IsNull()) {
         if (!first) {
             sb->AppendChar(' ');
         }
         first = FALSE;
-        sb->AppendString(String("pkg="));
-        sb->AppendString(mPackage);
+        sb->Append(String("pkg="));
+        sb->Append(mPackage);
     }
     if (comp && mComponent != NULL) {
         if (!first) {
             sb->AppendChar(' ');
         }
         first = FALSE;
-        sb->AppendString(String("cmp="));
+        sb->Append(String("cmp="));
         String s;
         mComponent->FlattenToShortString(&s);
-        sb->AppendString(s);
+        sb->Append(s);
     }
     if (mSourceBounds != NULL) {
         if (!first) {
             sb->AppendChar(' ');
         }
         first = FALSE;
-        sb->AppendString(String("bnds="));
+        sb->Append(String("bnds="));
         String s;
         mSourceBounds->ToShortString(&s);
-        sb->AppendString(s);
+        sb->Append(s);
     }
     if (mClipData != NULL) {
         if (!first) {
@@ -2325,12 +2366,12 @@ ECode Intent::ToShortString(
         }
         first = FALSE;
         if (clip) {
-            sb->AppendString(String("clip={"));
+            sb->Append(String("clip={"));
             mClipData->ToShortString(sb);
             sb->AppendChar('}');
         }
         else {
-            sb->AppendString(String("(has clip)"));
+            sb->Append(String("(has clip)"));
         }
     }
     if (extras && mExtras != NULL) {
@@ -2338,9 +2379,9 @@ ECode Intent::ToShortString(
             sb->AppendChar(' ');
         }
         first = FALSE;
-        sb->AppendString(String("(has extras)"));
+        sb->Append(String("(has extras)"));
     }
-    if (mContentUserHint != IUserHandle::IUSER_CURRENT) {
+    if (mContentUserHint != IUserHandle::USER_CURRENT) {
         if (!first) {
             sb->AppendChar(' ');
         }
@@ -2349,9 +2390,9 @@ ECode Intent::ToShortString(
         sb->Append(mContentUserHint);
     }
     if (mSelector != NULL) {
-        sb->AppendString(String(" sel={"));
+        sb->Append(String(" sel={"));
         mSelector->ToShortString(sb, secure, comp, extras, clip);
-        sb->AppendString(String("}"));
+        sb->Append(String("}"));
     }
 
     return NOERROR;
@@ -2370,8 +2411,7 @@ ECode Intent::ToUri(
     StringBuilder uri(128);
     String scheme(NULL);
     if (mData != NULL) {
-        String data;
-        mData->ToString(&data);
+        String data = Object::ToString(mData);
         if ((flags & IIntent::URI_INTENT_SCHEME) != 0) {
             AutoPtr<ArrayOf<Char32> > charArray = data.GetChars();
             Char32 c;
@@ -2385,7 +2425,7 @@ ECode Intent::ToUri(
                 if (c == ':' && i > 0) {
                     // Valid scheme.
                     scheme = data.Substring(0, i);
-                    uri.AppendCStr("intent:");
+                    uri.Append("intent:");
                     data = data.Substring(i+1);
                     break;
                 }
@@ -2394,25 +2434,25 @@ ECode Intent::ToUri(
                 break;
             }
         }
-        uri.AppendString(data);
+        uri.Append(data);
     }
     else if ((flags & IIntent::URI_INTENT_SCHEME) != 0) {
-        uri.AppendCStr("intent:");
+        uri.Append("intent:");
     }
 
-    uri.AppendCStr("#Intent;");
+    uri.Append("#Intent;");
 
     ToUriInner(uri, scheme, flags);
 
     if (mSelector != NULL) {
-        uri.AppendCStr("SEL;");
+        uri.Append("SEL;");
         // Note that for now we are not going to try to handle the
         // data part; not clear how to represent this as a URI, and
         // not much utility in it.
         ((CIntent*)mSelector.Get())->ToUriInner(uri, String(NULL), flags);
     }
 
-    uri.AppendCStr("end");
+    uri.Append("end");
     return uri.ToString(str);
 }
 
@@ -2423,68 +2463,68 @@ void Intent::ToUriInner(
 {
     assert(0 && "TODO");
     // if (!scheme.IsNull()) {
-    //     uri.AppendCStr("scheme=");
-    //     uri.AppendString(scheme);
+    //     uri.Append("scheme=");
+    //     uri.Append(scheme);
     //     uri.AppendChar(';');
     // }
     // if (!mAction.IsNull()) {
-    //     uri.AppendCStr("action=");
+    //     uri.Append("action=");
     //     String s;
     //     Uri::Encode(mAction, &s);
-    //     uri.AppendString(s);
+    //     uri.Append(s);
     //     uri.AppendChar(';');
     // }
     // if (mCategories != NULL) {
     //     HashSet<String>::Iterator it;
     //     for (it = mCategories->Begin(); it != mCategories->End(); ++it) {
-    //         uri.AppendCStr("category=");
+    //         uri.Append("category=");
     //         String s;
     //         Uri::Encode(*it, &s);
-    //         uri.AppendString(s);
+    //         uri.Append(s);
     //         uri.AppendChar(';');
     //     }
     // }
     // if (!mType.IsNull()) {
-    //     uri.AppendCStr("type=");
+    //     uri.Append("type=");
     //     String s;
     //     Uri::Encode(mType, String("/"), &s);
-    //     uri.AppendString(s);
+    //     uri.Append(s);
     //     uri.AppendChar(';');
     // }
     // if (mFlags != 0) {
-    //     uri.AppendCStr("launchFlags=0x");
-    //     uri.AppendString(StringUtils::Int32ToString(mFlags));
+    //     uri.Append("launchFlags=0x");
+    //     uri.Append(StringUtils::ToString(mFlags));
     //     uri.AppendChar(';');
     // }
     // if (!mPackage.IsNull()) {
-    //     uri.AppendCStr("package=");
+    //     uri.Append("package=");
     //     String s;
     //     Uri::Encode(mPackage, &s);
-    //     uri.AppendString(s);
+    //     uri.Append(s);
     //     uri.AppendChar(';');
     // }
 
     // if (mComponent != NULL) {
-    //     uri.AppendCStr("component=");
+    //     uri.Append("component=");
     //     String compS;
     //     mComponent->FlattenToShortString(&compS);
     //     String s;
     //     Uri::Encode(compS, String("/"), &s);
-    //     uri.AppendString(s);
+    //     uri.Append(s);
     //     uri.AppendChar(';');
     // }
     // if (mSourceBounds != NULL) {
-    //     uri.AppendCStr("sourceBounds=");
+    //     uri.Append("sourceBounds=");
     //     String tmp;
     //     mSourceBounds->FlattenToString(&tmp);
     //     String s;
     //     Uri::Encode(tmp, &s);
-    //     uri.AppendString(s);
+    //     uri.Append(s);
     //     uri.AppendChar(';');
     // }
     // if (mExtras != NULL) {
-    //     AutoPtr<IObjectContainer> objContainer;
-    //     mExtras->KeySet((IObjectContainer**)&objContainer);
+    //     AutoPtr<IArrayList> objContainer;
+    //     mExtras->KeySet((IArrayList**)&objContainer);
     //     AutoPtr<IObjectEnumerator> objEnumerator;
     //     objContainer->GetObjectEnumerator((IObjectEnumerator**)&objEnumerator);
     //     Boolean hasNext = FALSE;
@@ -2511,7 +2551,7 @@ void Intent::ToUriInner(
     //             uri.AppendChar('.');
     //             String s;
     //             Uri::Encode(key, &s);
-    //             uri.AppendString(s);
+    //             uri.Append(s);
     //             uri.AppendChar('=');
     //             String tmp;
     //             if (entryType == 'S') {
@@ -2553,7 +2593,7 @@ void Intent::ToUriInner(
     //                 tmp = StringUtils::ToString((Int32)val);
     //             }
     //             Uri::Encode(tmp, &s);
-    //             uri.AppendString(s);
+    //             uri.Append(s);
     //             uri.AppendChar(';');
     //         }
     //     }
@@ -2606,8 +2646,17 @@ ECode Intent::WriteToParcel(
         dest->WriteInt32(0);
     }
 
-    dest->WriteInt(mContentUserHint);
-    return CBundle::WriteToParcel(mExtras, dest);
+    dest->WriteInt32(mContentUserHint);
+
+    if (mExtras != NULL) {
+        dest->WriteInt32(1);
+        IParcelable::Probe(mExtras)->WriteToParcel(dest);
+    }
+    else {
+        dest->WriteInt32(0);
+    }
+
+    return NOERROR;
 }
 
 ECode Intent::ReadFromParcel(
@@ -2657,9 +2706,18 @@ ECode Intent::ReadFromParcel(
         p->ReadFromParcel(source);
     }
 
-    source->ReadString(&mContentUserHint);
-    mExtras = NULL;
-    return CBundle::ReadFromParcel(source, (IBundle**)&mExtras);
+
+    source->ReadInt32(&mContentUserHint);
+
+    source->ReadInt32(&value);
+    if (value != 0) {
+        mExtras = NULL;
+        CBundle::New((IBundle**)&mExtras);
+        IParcelable * p = IParcelable::Probe(mExtras);
+        p->ReadFromParcel(source);
+    }
+
+    return NOERROR;
 }
 
 ECode Intent::ParseIntent(
@@ -2727,7 +2785,8 @@ ECode Intent::ParseIntent(
             if (!cat.IsNull()) {
                 intent->AddCategory(cat);
             }
-            XmlUtils::SkipCurrentTag(parser);
+            assert(0 && "TODO");
+            // XmlUtils::SkipCurrentTag(parser);
 
         }
         else if (nodeName.Equals(TAG_EXTRA)) {
@@ -2735,10 +2794,12 @@ ECode Intent::ParseIntent(
                 CBundle::New((IBundle**)&intent->mExtras);
             }
             resources->ParseBundleExtra(TAG_EXTRA, attrs, intent->mExtras);
-            XmlUtils::SkipCurrentTag(parser);
+            assert(0 && "TODO");
+            // XmlUtils::SkipCurrentTag(parser);
         }
         else {
-            XmlUtils::SkipCurrentTag(parser);
+            assert(0 && "TODO");
+            // XmlUtils::SkipCurrentTag(parser);
         }
     }
 
@@ -2752,26 +2813,26 @@ ECode Intent::SaveToXml(
     /* [in] */ IXmlSerializer* out)
 {
     assert(0 && "TODO");
-    // if (mAction != null) {
-    //     out.attribute(null, ATTR_ACTION, mAction);
+    // if (mAction != NULL) {
+    //     out.attribute(NULL, ATTR_ACTION, mAction);
     // }
-    // if (mData != null) {
-    //     out.attribute(null, ATTR_DATA, mData.toString());
+    // if (mData != NULL) {
+    //     out.attribute(NULL, ATTR_DATA, mData.toString());
     // }
-    // if (mType != null) {
-    //     out.attribute(null, ATTR_TYPE, mType);
+    // if (mType != NULL) {
+    //     out.attribute(NULL, ATTR_TYPE, mType);
     // }
-    // if (mComponent != null) {
-    //     out.attribute(null, ATTR_COMPONENT, mComponent.flattenToShortString());
+    // if (mComponent != NULL) {
+    //     out.attribute(NULL, ATTR_COMPONENT, mComponent.flattenToShortString());
     // }
-    // out.attribute(null, ATTR_FLAGS, Integer.toHexString(getFlags()));
+    // out.attribute(NULL, ATTR_FLAGS, Integer.toHexString(getFlags()));
 
-    // if (mCategories != null) {
-    //     out.startTag(null, TAG_CATEGORIES);
+    // if (mCategories != NULL) {
+    //     out.startTag(NULL, TAG_CATEGORIES);
     //     for (int categoryNdx = mCategories.size() - 1; categoryNdx >= 0; --categoryNdx) {
-    //         out.attribute(null, ATTR_CATEGORY, mCategories.valueAt(categoryNdx));
+    //         out.attribute(NULL, ATTR_CATEGORY, mCategories.valueAt(categoryNdx));
     //     }
-    //     out.endTag(null, TAG_CATEGORIES);
+    //     out.endTag(NULL, TAG_CATEGORIES);
     // }
     return NOERROR;
 }
@@ -2787,15 +2848,15 @@ AutoPtr<IIntent> Intent::RestoreFromXml(
     // for (int attrNdx = attrCount - 1; attrNdx >= 0; --attrNdx) {
     //     final String attrName = in.getAttributeName(attrNdx);
     //     final String attrValue = in.getAttributeValue(attrNdx);
-    //     if (ATTR_ACTION.equals(attrName)) {
+    //     if (ATTR_ACTION.Equals(attrName)) {
     //         intent.setAction(attrValue);
-    //     } else if (ATTR_DATA.equals(attrName)) {
+    //     } else if (ATTR_DATA.Equals(attrName)) {
     //         intent.setData(Uri.parse(attrValue));
-    //     } else if (ATTR_TYPE.equals(attrName)) {
+    //     } else if (ATTR_TYPE.Equals(attrName)) {
     //         intent.setType(attrValue);
-    //     } else if (ATTR_COMPONENT.equals(attrName)) {
+    //     } else if (ATTR_COMPONENT.Equals(attrName)) {
     //         intent.setComponent(ComponentName.unflattenFromString(attrValue));
-    //     } else if (ATTR_FLAGS.equals(attrName)) {
+    //     } else if (ATTR_FLAGS.Equals(attrName)) {
     //         intent.setFlags(Integer.valueOf(attrValue, 16));
     //     } else {
     //         Log.e("Intent", "restoreFromXml: unknown attribute=" + attrName);
@@ -2808,7 +2869,7 @@ AutoPtr<IIntent> Intent::RestoreFromXml(
     //         (event != XmlPullParser.END_TAG || in.getDepth() < outerDepth)) {
     //     if (event == XmlPullParser.START_TAG) {
     //         name = in.getName();
-    //         if (TAG_CATEGORIES.equals(name)) {
+    //         if (TAG_CATEGORIES.Equals(name)) {
     //             attrCount = in.getAttributeCount();
     //             for (int attrNdx = attrCount - 1; attrNdx >= 0; --attrNdx) {
     //                 intent.addCategory(in.getAttributeValue(attrNdx));
@@ -2842,22 +2903,22 @@ String Intent::NormalizeMimeType(
 
 ECode Intent::PrepareToLeaveProcess()
 {
-    setAllowFds(false);
+    SetAllowFds(FALSE);
 
-    if (mSelector != null) {
-        mSelector.prepareToLeaveProcess();
+    if (mSelector != NULL) {
+        mSelector->PrepareToLeaveProcess();
     }
-    if (mClipData != null) {
-        mClipData.prepareToLeaveProcess();
+    if (mClipData != NULL) {
+        mClipData->PrepareToLeaveProcess();
     }
 
-    if (mData != null && StrictMode.vmFileUriExposureEnabled()) {
+    if (mData != NULL /*&& StrictMode::VmFileUriExposureEnabled()*/) {
         // There are several ACTION_MEDIA_* broadcasts that send file://
         // Uris, so only check common actions.
-        if (ACTION_VIEW.equals(mAction) ||
-                ACTION_EDIT.equals(mAction) ||
-                ACTION_ATTACH_DATA.equals(mAction)) {
-            mData.checkFileUriExposed("Intent.getData()");
+        if (IIntent::ACTION_VIEW.Equals(mAction) ||
+            IIntent::ACTION_EDIT.Equals(mAction) ||
+            IIntent::ACTION_ATTACH_DATA.Equals(mAction)) {
+            mData->CheckFileUriExposed(String("Intent.getData()"));
         }
     }
     return NOERROR;
@@ -2865,9 +2926,9 @@ ECode Intent::PrepareToLeaveProcess()
 
 ECode Intent::PrepareToEnterProcess()
 {
-    if (mContentUserHint != UserHandle.USER_CURRENT) {
-        fixUris(mContentUserHint);
-        mContentUserHint = UserHandle.USER_CURRENT;
+    if (mContentUserHint != IUserHandle::USER_CURRENT) {
+        FixUris(mContentUserHint);
+        mContentUserHint = IUserHandle::USER_CURRENT;
     }
     return NOERROR;
 }
@@ -2875,34 +2936,48 @@ ECode Intent::PrepareToEnterProcess()
 ECode Intent::FixUris(
     /* [in] */ Int32 contentUserHint)
 {
-    Uri data = getData();
-    if (data != null) {
-        mData = maybeAddUserId(data, contentUserHint);
+    AutoPtr<IUri> data;
+    GetData((IUri**)&data);
+    if (data != NULL) {
+        mData = ContentProvider::MaybeAddUserId(data, contentUserHint);
     }
-    if (mClipData != null) {
-        mClipData.fixUris(contentUserHint);
+    if (mClipData != NULL) {
+        mClipData->FixUris(contentUserHint);
     }
-    String action = getAction();
-    if (ACTION_SEND.equals(action)) {
-        final Uri stream = getParcelableExtra(EXTRA_STREAM);
-        if (stream != null) {
-            putExtra(EXTRA_STREAM, maybeAddUserId(stream, contentUserHint));
+    String action;
+    GetAction(&action);
+    if (IIntent::ACTION_SEND.Equals(action)) {
+        AutoPtr<IParcelable> stream;
+        GetParcelableExtra(IIntent::EXTRA_STREAM, (IParcelable**)&stream);
+        if (stream != NULL) {
+            AutoPtr<IUri> uri = ContentProvider::MaybeAddUserId(IUri::Probe(stream), mContentUserHint);
+            PutExtra(IIntent::EXTRA_STREAM, IParcelable::Probe(uri));
         }
-    } else if (ACTION_SEND_MULTIPLE.equals(action)) {
-        final ArrayList<Uri> streams = getParcelableArrayListExtra(EXTRA_STREAM);
-        if (streams != null) {
-            ArrayList<Uri> newStreams = new ArrayList<Uri>();
-            for (int i = 0; i < streams.size(); i++) {
-                newStreams.add(maybeAddUserId(streams.get(i), contentUserHint));
+    }
+    else if (IIntent::ACTION_SEND_MULTIPLE.Equals(action)) {
+        AutoPtr<IArrayList> streams;
+        GetParcelableArrayListExtra(IIntent::EXTRA_STREAM, (IArrayList**)&streams);
+        if (streams != NULL) {
+            AutoPtr<IArrayList> newStreams;
+            CArrayList::New((IArrayList**)&newStreams);
+            Int32 size = 0;
+            streams->GetSize(&size);
+            for (Int32 i = 0; i < size; i++) {
+                AutoPtr<IInterface> obj;
+                streams->Get(i, (IInterface**)&obj);
+                newStreams->Add(ContentProvider::MaybeAddUserId(IUri::Probe(obj), mContentUserHint));
             }
-            putParcelableArrayListExtra(EXTRA_STREAM, newStreams);
+            PutParcelableArrayListExtra(IIntent::EXTRA_STREAM, newStreams);
         }
-    } else if (MediaStore.ACTION_IMAGE_CAPTURE.equals(action)
-            || MediaStore.ACTION_IMAGE_CAPTURE_SECURE.equals(action)
-            || MediaStore.ACTION_VIDEO_CAPTURE.equals(action)) {
-        final Uri output = getParcelableExtra(MediaStore.EXTRA_OUTPUT);
-        if (output != null) {
-            putExtra(MediaStore.EXTRA_OUTPUT, maybeAddUserId(output, contentUserHint));
+    }
+    else if (IMediaStore::ACTION_IMAGE_CAPTURE.Equals(action)
+            || IMediaStore::ACTION_IMAGE_CAPTURE_SECURE.Equals(action)
+            || IMediaStore::ACTION_VIDEO_CAPTURE.Equals(action)) {
+        AutoPtr<IParcelable> output;
+        GetParcelableExtra(IMediaStore::EXTRA_OUTPUT, (IParcelable**)&output);
+        if (output != NULL) {
+            AutoPtr<IUri> uri = ContentProvider::MaybeAddUserId(IUri::Probe(output), mContentUserHint);
+            PutExtra(IMediaStore::EXTRA_OUTPUT, IParcelable::Probe(uri));
         }
     }
     return NOERROR;
@@ -2940,7 +3015,7 @@ ECode Intent::MigrateExtraStreamToClipData(
         Boolean migrated = FALSE;
         // try {
         AutoPtr<IParcelable> extras;
-        GetParcelableExtra((IParcelable**)&extras);
+        GetParcelableExtra(IIntent::EXTRA_INTENT, (IParcelable**)&extras);
         AutoPtr<IIntent> intent = IIntent::Probe(extras);
         if (intent != NULL) {
             Boolean bval;
@@ -2951,7 +3026,7 @@ ECode Intent::MigrateExtraStreamToClipData(
         // }
         // try {
         AutoPtr<ArrayOf<IParcelable*> > intents;
-        GetParcelableArrayExtra(EXTRA_INITIAL_INTENTS, (ArrayOf<IParcelable*>**)&intents);
+        GetParcelableArrayExtra(IIntent::EXTRA_INITIAL_INTENTS, (ArrayOf<IParcelable*>**)&intents);
         if (intents != NULL) {
             Boolean bval;
             IIntent* intent;
@@ -2965,7 +3040,7 @@ ECode Intent::MigrateExtraStreamToClipData(
         }
         // } catch (ClassCastException e) {
         // }
-        *results = migrated;
+        *result = migrated;
         return NOERROR;
     }
     else if (IIntent::ACTION_SEND.Equals(action)) {
@@ -3002,7 +3077,7 @@ ECode Intent::MigrateExtraStreamToClipData(
                 *result = FALSE;
                 return NOERROR;
             }
-            SetClipData((IClipData*)newClipData);
+            SetClipData(newClipData);
             AddFlags(IIntent::FLAG_GRANT_READ_URI_PERMISSION);
             *result = TRUE;
             return NOERROR;
@@ -3012,90 +3087,96 @@ ECode Intent::MigrateExtraStreamToClipData(
     }
     else if (IIntent::ACTION_SEND_MULTIPLE.Equals(action)) {
         // try {
-        AutoPtr<IObjectContainer> streams, texts, htmlTexts;
-        GetParcelableArrayListExtra(IIntent::EXTRA_STREAM, (IObjectContainer**)&streams);
-        GetCharSequenceArrayListExtra(IIntent::EXTRA_TEXT, (IObjectContainer**)&texts);
-        GetStringArrayListExtra(IIntent::EXTRA_HTML_TEXT, (IObjectContainer**)&htmlTexts);
+        AutoPtr<IArrayList> streams, texts, htmlTexts;
+        GetParcelableArrayListExtra(IIntent::EXTRA_STREAM, (IArrayList**)&streams);
+        GetCharSequenceArrayListExtra(IIntent::EXTRA_TEXT, (IArrayList**)&texts);
+        GetStringArrayListExtra(IIntent::EXTRA_HTML_TEXT, (IArrayList**)&htmlTexts);
         Int32 num = -1;
         AutoPtr< ArrayOf<IUri*> > streamsArray;
         AutoPtr< ArrayOf<ICharSequence*> > textsArray;
         AutoPtr< ArrayOf<String> > htmlTextsArray;
         if (streams != NULL) {
-            streams->GetObjectCount(&num);
+            streams->GetSize(&num);
             streamsArray = ArrayOf<IUri*>::Alloc(num);
-            AutoPtr<IObjectEnumerator> objEnum;
-            streams->GetObjectEnumerator((IObjectEnumerator**)&objEnum);
+            AutoPtr<IIterator> it;
+            streams->GetIterator((IIterator**)&it);
             Boolean hasNext;
             Int32 i = 0;
-            while (objEnum->MoveNext(&hasNext), hasNext) {
-                AutoPtr<IUri> obj;
-                objEnum->Current((IInterface**)(IUri**)&obj);
-                streamsArray->Set(i, obj);
+            IUri* uri;
+            while (it->HasNext(&hasNext), hasNext) {
+                AutoPtr<IInterface> obj;
+                it->GetNext((IInterface**)&obj);
+                uri = IUri::Probe(obj);
+                streamsArray->Set(i, uri);
                 i++;
             }
         }
         if (texts != NULL) {
             Int32 textsNum;
-            texts->GetObjectCount(&textsNum);
+            texts->GetSize(&textsNum);
             if (num >= 0 && num != textsNum) {
                 // Wha...!  F- you.
                 return FALSE;
             }
             num = textsNum;
             textsArray = ArrayOf<ICharSequence*>::Alloc(num);
-            AutoPtr<IObjectEnumerator> objEnum;
-            texts->GetObjectEnumerator((IObjectEnumerator**)&objEnum);
+            AutoPtr<IIterator> it;
+            texts->GetIterator((IIterator**)&it);
             Boolean hasNext;
             Int32 i = 0;
-            while (objEnum->MoveNext(&hasNext), hasNext) {
-                AutoPtr<ICharSequence> obj;
-                objEnum->Current((IInterface**)(ICharSequence**)&obj);
-                textsArray->Set(i, obj);
+            ICharSequence* seq;
+            while (it->HasNext(&hasNext), hasNext) {
+                AutoPtr<IInterface> obj;
+                it->GetNext((IInterface**)&obj);
+                seq = ICharSequence::Probe(obj);
+                textsArray->Set(i, seq);
                 i++;
             }
         }
         if (htmlTexts != NULL) {
             Int32 htmlTextsNum;
-            htmlTexts->GetObjectCount(&htmlTextsNum);
+            htmlTexts->GetSize(&htmlTextsNum);
             if (num >= 0 && num != htmlTextsNum) {
                 // Wha...!  F- you.
                 return FALSE;
             }
             num = htmlTextsNum;
             htmlTextsArray = ArrayOf<String>::Alloc(num);
-            AutoPtr<IObjectEnumerator> objEnum;
-            htmlTexts->GetObjectEnumerator((IObjectEnumerator**)&objEnum);
+            AutoPtr<IIterator> it;
+            htmlTexts->GetIterator((IIterator**)&it);
             Boolean hasNext;
             Int32 i = 0;
-            while (objEnum->MoveNext(&hasNext), hasNext) {
-                AutoPtr<ICharSequence> obj;
-                objEnum->Current((IInterface**)(ICharSequence**)&obj);
-                String s;
-                obj->ToString(&s);
-                (*htmlTextsArray)[i] = s;
+            ICharSequence* seq;
+            while (it->HasNext(&hasNext), hasNext) {
+                AutoPtr<IInterface> obj;
+                it->GetNext((IInterface**)&obj);
+                seq = ICharSequence::Probe(obj);
+                (*htmlTextsArray)[i] = Object::ToString(seq);
                 i++;
             }
         }
+
         if (num > 0) {
-            AutoPtr< ArrayOf<String> > types = ArrayOf<String>::Alloc(1);
             String t;
             GetType(&t);
+            AutoPtr< ArrayOf<String> > types = ArrayOf<String>::Alloc(1);
             (*types)[0] = t;
-            assert(0);
-            // AutoPtr<CClipData> clipData;
-            // ec = CClipData::NewByFriend(NULL, types,
-            //         MakeClipItem(streamsArray, textsArray, htmlTextsArray, 0),
-            //         (CClipData**)&clipData);
-            // if (FAILED(ec)) {
-            //     *result = FALSE;
-            //     return NOERROR;
-            // }
 
-            // for (Int32 i = 1; i < num; i++) {
-            //     clipData->AddItem(MakeClipItem(streamsArray, textsArray, htmlTextsArray, i));
-            // }
+            AutoPtr<IClipDataItem> cpi = MakeClipItem(streamsArray, textsArray, htmlTextsArray, 0);
 
-            // SetClipData((IClipData*)clipData);
+            AutoPtr<CClipData> clipData;
+            ec = CClipData::NewByFriend(NULL, types, cpi, (CClipData**)&clipData);
+            if (FAILED(ec)) {
+                *result = FALSE;
+                return NOERROR;
+            }
+
+            for (Int32 i = 1; i < num; i++) {
+                cpi = MakeClipItem(streamsArray, textsArray, htmlTextsArray, i);
+                clipData->AddItem(cpi);
+            }
+
+            SetClipData((IClipData*)clipData.Get());
             AddFlags(IIntent::FLAG_GRANT_READ_URI_PERMISSION);
             return TRUE;
         }
@@ -3111,21 +3192,22 @@ ECode Intent::MigrateExtraStreamToClipData(
         GetParcelableExtra(IMediaStore::EXTRA_OUTPUT, (IParcelable**)&p);
         AutoPtr<IUri> output = IUri::Probe(p);
         if (output == NULL) {
-            *results = FALSE;
+            *result = FALSE;
             return NOERROR;
         }
         // } catch (ClassCastException e) {
-        //     return false;
+        //     return FALSE;
         // }
 
         AutoPtr<IClipDataHelper> helper;
         CClipDataHelper::AcquireSingleton((IClipDataHelper**)&helper);
+        AutoPtr<ICharSequence> seq = CoreUtils::Convert(String(""));
         AutoPtr<IClipData> cd;
-        helper->NewRawUri(String(""), output, (IClipData**)&cd);
+        helper->NewRawUri(seq, output, (IClipData**)&cd);
         SetClipData(cd);
         AddFlags(IIntent::FLAG_GRANT_WRITE_URI_PERMISSION | IIntent::FLAG_GRANT_READ_URI_PERMISSION);
 
-        *results = TRUE;
+        *result = TRUE;
         return NOERROR;
     }
 
@@ -3160,15 +3242,15 @@ AutoPtr<IClassInfo> Intent::TransformClassInfo(
     /* [in] */ const ClassID& objId)
 {
     AutoPtr<IModuleInfo> moduleInfo;
-    String path(objId.pUunm);
+    String path(objId.mUunm);
     ASSERT_SUCCEEDED(_CReflector_AcquireModuleInfo(path, (IModuleInfo**)&moduleInfo));
     Int32 clsCount;
     moduleInfo->GetClassCount(&clsCount);
     AutoPtr<ArrayOf<IClassInfo*> > buf = ArrayOf<IClassInfo*>::Alloc(clsCount);
-    moduleInfo->GetAllClassInfos((ArrayOf<IClassInfo*>**)&buf);
+    moduleInfo->GetAllClassInfos(buf.Get());
     AutoPtr<IClassInfo> info;
     ClassID id;
-    id.pUunm = (char*)malloc(80);
+    id.mUunm = (char*)malloc(80);
     for (Int32 i = 0; i < clsCount; i++) {
         (*buf)[i]->GetId(&id);
         if (id == objId) {
@@ -3176,7 +3258,7 @@ AutoPtr<IClassInfo> Intent::TransformClassInfo(
            break;
         }
     }
-    free(id.pUunm);
+    free(id.mUunm);
     return info;
 }
 

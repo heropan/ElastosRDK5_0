@@ -102,7 +102,6 @@ public:
         /* [in] */ const String& decoded);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 #endif // __CPART_H__

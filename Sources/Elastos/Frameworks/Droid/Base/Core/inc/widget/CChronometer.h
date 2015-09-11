@@ -68,7 +68,6 @@ public:
         /* [in] */ Int32 defStyle);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }// namespace Elastos

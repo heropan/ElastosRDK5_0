@@ -5836,7 +5836,7 @@ Boolean CBackupManagerService::StartConfirmationUi(
     CIntent::New(action, (IIntent**)&confIntent);
 
     confIntent->SetClassName(String("com.android.backupconfirm"), String("com.android.backupconfirm.BackupRestoreConfirmation"));
-    confIntent->PutInt32Extra(IFullBackup::CONF_TOKEN_INTENT_EXTRA, token);
+    confIntent->PutExtra(IFullBackup::CONF_TOKEN_INTENT_EXTRA, token);
     confIntent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
     ECode ec = mContext->StartActivity(confIntent);
     if (ec == (ECode)E_ACTIVITY_NOT_FOUND_EXCEPTION) {

@@ -862,10 +862,10 @@ ECode PreferenceActivity::OnBuildStartFragmentIntent(
     ClassID id;
     GetClassID(&id);
     intent->SetClass(THIS_PROBE(IContext), id);
-    intent->PutStringExtra(EXTRA_SHOW_FRAGMENT, fragmentName);
-    intent->PutBundleExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
-    intent->PutInt32Extra(EXTRA_SHOW_FRAGMENT_TITLE, titleRes);
-    intent->PutInt32Extra(EXTRA_SHOW_FRAGMENT_SHORT_TITLE, shortTitleRes);
+    intent->PutExtra(EXTRA_SHOW_FRAGMENT, fragmentName);
+    intent->PutExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
+    intent->PutExtra(EXTRA_SHOW_FRAGMENT_TITLE, titleRes);
+    intent->PutExtra(EXTRA_SHOW_FRAGMENT_SHORT_TITLE, shortTitleRes);
     intent->PutBooleanExtra(EXTRA_NO_HEADERS, TRUE);
 
     *_intent = intent;

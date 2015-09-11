@@ -1753,12 +1753,12 @@ AutoPtr<IIntent> CAccountManagerService::NewGrantCredentialsPermissionIntent(
     GetCredentialPermissionNotificationId(account, authTokenType, uid)->ToString(&s);
     intent->AddCategory(s);
 
-    intent->PutParcelableExtra(GrantCredentialsPermissionActivity::EXTRAS_ACCOUNT,
+    intent->PutExtra(GrantCredentialsPermissionActivity::EXTRAS_ACCOUNT,
             (IParcelable*)account->Probe(EIID_IParcelable));
-    intent->PutStringExtra(GrantCredentialsPermissionActivity::EXTRAS_AUTH_TOKEN_TYPE, authTokenType);
-    intent->PutParcelableExtra(GrantCredentialsPermissionActivity::EXTRAS_RESPONSE,
+    intent->PutExtra(GrantCredentialsPermissionActivity::EXTRAS_AUTH_TOKEN_TYPE, authTokenType);
+    intent->PutExtra(GrantCredentialsPermissionActivity::EXTRAS_RESPONSE,
             (IParcelable*)response->Probe(EIID_IParcelable));
-    intent->PutInt32Extra(GrantCredentialsPermissionActivity::EXTRAS_REQUESTING_UID, uid);
+    intent->PutExtra(GrantCredentialsPermissionActivity::EXTRAS_REQUESTING_UID, uid);
 
     return intent;
 }

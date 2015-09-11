@@ -28,7 +28,6 @@ public:
         /* [out] */ String* header);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

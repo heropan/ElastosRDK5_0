@@ -34,7 +34,6 @@ protected:
         /* [out] */ Boolean* succeeded);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 } // namespace ServiceDemo

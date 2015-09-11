@@ -77,7 +77,6 @@ public:
         /* [out] */ String* result);
 
 private:
-    // TODO: Add your private member variables here.
     AutoPtr<IIThrottleManager> mService;
 };
 

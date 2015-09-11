@@ -12,7 +12,6 @@ CarClass(CNoCopySpan)
 {
 public:
 private:
-    // TODO: Add your private member variables here.
 };
 
 } // namespace Text

@@ -21,7 +21,6 @@ public:
         /* [in] */ IIActivityManager* activityManagerService);
 
 private:
-    // TODO: Add your private member variables here.
     IIActivityManager* mActivityManagerService;
 };
 

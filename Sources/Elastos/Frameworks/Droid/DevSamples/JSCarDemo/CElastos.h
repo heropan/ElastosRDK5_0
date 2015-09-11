@@ -17,7 +17,6 @@ public:
     CARAPI test_02();
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

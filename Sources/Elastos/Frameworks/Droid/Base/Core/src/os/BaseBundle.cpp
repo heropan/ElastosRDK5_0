@@ -233,9 +233,12 @@ void BaseBundle::Unparcel()
     if (DEBUG) Logger::D(TAG, "Unparcel %p: final map: %p", this, mMap.Get());
 }
 
-Boolean BaseBundle::IsParceled()
+ECode BaseBundle::IsParcelled(
+    /* [out] */ Boolean* result)
 {
-    return mParcelledData != NULL;
+    VALIDATE_NOT_NULL(result)
+    *result = mParcelledData != NULL;
+    return NOERROR;
 }
 
 ECode BaseBundle::GetSize(

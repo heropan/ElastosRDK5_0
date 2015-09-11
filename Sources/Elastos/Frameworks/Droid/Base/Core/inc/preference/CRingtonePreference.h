@@ -83,7 +83,6 @@ protected:
 
 private:
     static const String TAG;
-    // TODO: Add your private member variables here.
     Int32 mRingtoneType;
     Boolean mShowDefault;
     Boolean mShowSilent;

@@ -139,7 +139,7 @@ ECode CRingtonePreference::OnPrepareRingtonePickerIntent(
 {
     AutoPtr<IUri> uri;
     OnRestoreRingtone((IUri**)&uri);
-    ringtonePickerIntent->PutParcelableExtra(IRingtoneManager::EXTRA_RINGTONE_EXISTING_URI,
+    ringtonePickerIntent->PutExtra(IRingtoneManager::EXTRA_RINGTONE_EXISTING_URI,
             IParcelable::Probe(uri));
     ringtonePickerIntent->PutBooleanExtra(IRingtoneManager::EXTRA_RINGTONE_SHOW_DEFAULT, mShowDefault);
     if (mShowDefault) {
@@ -149,12 +149,12 @@ ECode CRingtonePreference::OnPrepareRingtonePickerIntent(
         AutoPtr<IRingtoneManagerHelper> helper;
         CRingtoneManagerHelper::AcquireSingleton((IRingtoneManagerHelper**)&helper);
         helper->GetDefaultUri(type, (IUri**)&defaultUri);
-        ringtonePickerIntent->PutParcelableExtra(IRingtoneManager::EXTRA_RINGTONE_DEFAULT_URI,
+        ringtonePickerIntent->PutExtra(IRingtoneManager::EXTRA_RINGTONE_DEFAULT_URI,
                 IParcelable::Probe(defaultUri));
     }
 
     ringtonePickerIntent->PutBooleanExtra(IRingtoneManager::EXTRA_RINGTONE_SHOW_SILENT, mShowSilent);
-    ringtonePickerIntent->PutInt32Extra(IRingtoneManager::EXTRA_RINGTONE_TYPE, mRingtoneType);
+    ringtonePickerIntent->PutExtra(IRingtoneManager::EXTRA_RINGTONE_TYPE, mRingtoneType);
     AutoPtr<ICharSequence> cs;
     GetTitle((ICharSequence**)&cs);
     ringtonePickerIntent->PutCharSequenceExtra(IRingtoneManager::EXTRA_RINGTONE_TITLE, cs);

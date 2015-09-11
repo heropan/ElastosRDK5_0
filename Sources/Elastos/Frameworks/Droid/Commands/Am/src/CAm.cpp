@@ -229,18 +229,18 @@ ECode CAm::MakeIntent(
             String key, value;
             NextArgRequired(&key);
             NextArgRequired(&value);
-            intent->PutStringExtra(key, value);
+            intent->PutExtra(key, value);
         }
         else if (opt.Equals("--esn")) {
             String key;
             NextArgRequired(&key);
-            intent->PutStringExtra(key, String());
+            intent->PutExtra(key, String());
         }
         else if (opt.Equals("--ei")) {
             String key, value;
             NextArgRequired(&key);
             NextArgRequired(&value);
-            intent->PutInt32Extra(key, StringUtils::ParseInt32(value));
+            intent->PutExtra(key, StringUtils::ParseInt32(value));
         }
         else if (opt.Equals("--eu")) {
             String key, value;
@@ -249,7 +249,7 @@ ECode CAm::MakeIntent(
 
             AutoPtr<IUri> uri;
             urlHelper->Parse(value, (IUri**)&uri);
-            intent->PutParcelableExtra(key, IParcelable::Probe(uri));
+            intent->PutExtra(key, IParcelable::Probe(uri));
         }
         else if (opt.Equals("--ecn")) {
             String key, value;
@@ -261,7 +261,7 @@ ECode CAm::MakeIntent(
                 Logger::E(String("COMMAND_AM"), "Bad component name: %s", value.string());
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
-            intent->PutParcelableExtra(key, IParcelable::Probe(cn));
+            intent->PutExtra(key, IParcelable::Probe(cn));
         }
         else if (opt.Equals("--eia")) {
             String key, value;
@@ -277,13 +277,13 @@ ECode CAm::MakeIntent(
             for (Int32 i = 0; i < count; ++i) {
                 (*list)[i] = StringUtils::ParseInt32(strings[i]);
             }
-            intent->PutInt32ArrayExtra(key, list);
+            intent->PutExtra(key, list);
         }
         else if (opt.Equals("--el")) {
             String key, value;
             NextArgRequired(&key);
             NextArgRequired(&value);
-            intent->PutInt64Extra(key, StringUtils::ParseInt64(value));
+            intent->PutExtra(key, StringUtils::ParseInt64(value));
         }
         else if (opt.Equals("--ela")) {
             String key, value;
@@ -299,14 +299,14 @@ ECode CAm::MakeIntent(
             for (Int32 i = 0; i < count; ++i) {
                 (*list)[i] = StringUtils::ParseInt64(strings[i]);
             }
-            intent->PutInt64ArrayExtra(key, list);
+            intent->PutExtra(key, list);
             hasIntentInfo = TRUE;
         }
         else if (opt.Equals("--ef")) {
             String key, value;
             NextArgRequired(&key);
             NextArgRequired(&value);
-            intent->PutFloatExtra(key, StringUtils::ParseFloat(value));
+            intent->PutExtra(key, StringUtils::ParseFloat(value));
             hasIntentInfo = TRUE;
         }
         else if (opt.Equals("--efa")) {
@@ -323,7 +323,7 @@ ECode CAm::MakeIntent(
             for (Int32 i = 0; i < count; ++i) {
                 (*list)[i] = StringUtils::ParseFloat(strings[i]);
             }
-            intent->PutFloatArrayExtra(key, list);
+            intent->PutExtra(key, list);
             hasIntentInfo = TRUE;
         }
         else if (opt.Equals("--ez")) {

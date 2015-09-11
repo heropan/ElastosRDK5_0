@@ -81,7 +81,6 @@ module
     using interface Elastos.Core.ICloneable;
     using interface Elastos.Core.IThread;
     using interface Elastos.Core.IRunnable;
-    using interface Elastos.IO.IParcelable;
     using interface Elastos.IO.IFileDescriptor;
     // using interface Elastos.IO.IFile;
     using interface Elastos.IO.ICloseable;

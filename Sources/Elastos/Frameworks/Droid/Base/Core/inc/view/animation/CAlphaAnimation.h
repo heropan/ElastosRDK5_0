@@ -27,7 +27,6 @@ public:
         /* [in] */ Float toAlpha);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }// namespace Animation

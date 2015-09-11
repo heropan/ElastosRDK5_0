@@ -320,7 +320,6 @@ public:
 
 
 private:
-    // TODO: Add your private member variables here.
 
     //anthony check
     HashMap<String, AutoPtr<IValueSanitizer> > mSanitizers;
@@ -438,7 +437,6 @@ public:
        /* [out] */ String* result);
 
 private:
-    // TODO: Add your private member variables here.
     const static String JAVASCRIPT_PREFIX = "javascript:";
     const static String VBSCRIPT_PREFIX = "vbscript:";
     const static int MIN_SCRIPT_PREFIX_LENGTH;

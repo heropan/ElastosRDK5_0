@@ -517,7 +517,7 @@ void VideoView::OpenVideo()
     AutoPtr<IIntent> i;
     ASSERT_SUCCEEDED(CIntent::New(
         String("com.android.music.musicservicecommand"), (IIntent**)&i));
-    i->PutStringExtra(String("command"), String("pause"));
+    i->PutExtra(String("command"), String("pause"));
     mContext->SendBroadcast(i);
 
     // we shouldn't clear the target state, because somebody might have

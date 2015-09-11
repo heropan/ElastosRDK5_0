@@ -364,10 +364,10 @@ void SupplicantStateTracker::SendSupplicantStateChangedBroadcast(
 
     AutoPtr<ISupplicantState> iss;
     CSupplicantState::New(state, (ISupplicantState**)&iss);
-    intent->PutParcelableExtra(IWifiManager::EXTRA_NEW_STATE, IParcelable::Probe(iss.Get()));
+    intent->PutExtra(IWifiManager::EXTRA_NEW_STATE, IParcelable::Probe(iss.Get()));
 
     if (failedAuth) {
-        intent->PutInt32Extra(
+        intent->PutExtra(
             IWifiManager::EXTRA_SUPPLICANT_ERROR,
             IWifiManager::ERROR_AUTHENTICATING);
     }

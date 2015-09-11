@@ -235,8 +235,8 @@ ECode CBrowserActivity::MyListener::OnTouch(
             AutoPtr<IIntent> intent;
             CIntent::New((IIntent**)&intent);
             intent->SetClassName(String("Gallery"), String("Gallery.CPhotoActivity"));
-            intent->PutStringExtra(DataSourceHelper::SOURCE_PATH, entry->sourcePath);
-            intent->PutInt32Extra(DataSourceHelper::SOURCE_INDEX, index);
+            intent->PutExtra(DataSourceHelper::SOURCE_PATH, entry->sourcePath);
+            intent->PutExtra(DataSourceHelper::SOURCE_INDEX, index);
             if (FAILED(mHost->StartActivity(intent))) {
                 Logger::E(TAG, "onTouch()--StartActivity CPhotoActivity failed!");
             }

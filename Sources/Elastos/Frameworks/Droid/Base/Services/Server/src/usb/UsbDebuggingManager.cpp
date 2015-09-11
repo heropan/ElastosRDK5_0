@@ -399,8 +399,8 @@ void UsbDebuggingManager::ShowConfirmationDialog(
     dialogIntent->SetClassName(String("com.android.systemui"),
         String("com.android.systemui.usb.UsbDebuggingActivity"));
     dialogIntent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
-    dialogIntent->PutStringExtra(String("key"), key);
-    dialogIntent->PutStringExtra(String("fingerprints"), fingerprints);
+    dialogIntent->PutExtra(String("key"), key);
+    dialogIntent->PutExtra(String("fingerprints"), fingerprints);
 
     ECode ec = mContext->StartActivity(dialogIntent);
 

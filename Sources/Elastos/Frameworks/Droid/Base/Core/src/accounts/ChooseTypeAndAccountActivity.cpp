@@ -445,19 +445,19 @@ void ChooseTypeAndAccountActivity::StartChooseAccountTypeActivity()
     AutoPtr< ArrayOf<String> > stringArray;
     i->GetStringArrayExtra(EXTRA_ALLOWABLE_ACCOUNT_TYPES_STRING_ARRAY,
             (ArrayOf<String>**)&stringArray);
-    intent->PutStringArrayExtra(EXTRA_ALLOWABLE_ACCOUNT_TYPES_STRING_ARRAY,
+    intent->PutExtra(EXTRA_ALLOWABLE_ACCOUNT_TYPES_STRING_ARRAY,
             stringArray);
     AutoPtr<IBundle> bundle;
     i->GetBundleExtra(EXTRA_ADD_ACCOUNT_OPTIONS_BUNDLE, (IBundle**)&bundle);
-    intent->PutBundleExtra(EXTRA_ADD_ACCOUNT_OPTIONS_BUNDLE, bundle);
+    intent->PutExtra(EXTRA_ADD_ACCOUNT_OPTIONS_BUNDLE, bundle);
     stringArray = NULL;
     i->GetStringArrayExtra(EXTRA_ADD_ACCOUNT_REQUIRED_FEATURES_STRING_ARRAY,
             (ArrayOf<String>**)&stringArray);
-    intent->PutStringArrayExtra(EXTRA_ADD_ACCOUNT_REQUIRED_FEATURES_STRING_ARRAY,
+    intent->PutExtra(EXTRA_ADD_ACCOUNT_REQUIRED_FEATURES_STRING_ARRAY,
             stringArray);
     String str;
     i->GetStringExtra(EXTRA_ADD_ACCOUNT_AUTH_TOKEN_TYPE_STRING, &str);
-    intent->PutStringExtra(EXTRA_ADD_ACCOUNT_AUTH_TOKEN_TYPE_STRING, str);
+    intent->PutExtra(EXTRA_ADD_ACCOUNT_AUTH_TOKEN_TYPE_STRING, str);
     StartActivityForResult(intent, REQUEST_CHOOSE_TYPE);
     mPendingRequest = REQUEST_CHOOSE_TYPE;
 }

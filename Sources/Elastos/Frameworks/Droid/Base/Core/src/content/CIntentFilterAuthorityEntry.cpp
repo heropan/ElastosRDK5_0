@@ -11,6 +11,10 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
+CAR_INTERFACE_IMPL(CIntentFilterAuthorityEntry, Object, IIntentFilterAuthorityEntry)
+
+CAR_OBJECT_IMPL(CIntentFilterAuthorityEntry)
+
 CIntentFilterAuthorityEntry::CIntentFilterAuthorityEntry()
     : mWild(FALSE)
     , mPort(0)
@@ -18,6 +22,22 @@ CIntentFilterAuthorityEntry::CIntentFilterAuthorityEntry()
 
 CIntentFilterAuthorityEntry::~CIntentFilterAuthorityEntry()
 {}
+
+ECode CIntentFilterAuthorityEntry::constructor()
+{
+    return NOERROR;
+}
+
+ECode CIntentFilterAuthorityEntry::constructor(
+    /* [in] */ const String& host,
+    /* [in] */ const String& port)
+{
+    mOrigHost = host;
+    mWild = !host.IsNullOrEmpty() && host.GetChar(0) == '*';
+    mHost = mWild ? host.Substring(1) : host;
+    mPort = !port.IsNull() ? StringUtils::ParseInt32(port) : -1;
+    return NOERROR;
+}
 
 ECode CIntentFilterAuthorityEntry::GetHost(
     /* [out] */ String* host)
@@ -104,22 +124,6 @@ ECode CIntentFilterAuthorityEntry::WriteToParcel(
     FAIL_RETURN(dest->WriteString(mHost))
     FAIL_RETURN(dest->WriteBoolean(mWild))
     FAIL_RETURN(dest->WriteInt32(mPort))
-    return NOERROR;
-}
-
-ECode CIntentFilterAuthorityEntry::constructor()
-{
-    return NOERROR;
-}
-
-ECode CIntentFilterAuthorityEntry::constructor(
-    /* [in] */ const String& host,
-    /* [in] */ const String& port)
-{
-    mOrigHost = host;
-    mWild = !host.IsNullOrEmpty() && host.GetChar(0) == '*';
-    mHost = mWild ? host.Substring(1) : host;
-    mPort = !port.IsNull() ? StringUtils::ParseInt32(port) : -1;
     return NOERROR;
 }
 

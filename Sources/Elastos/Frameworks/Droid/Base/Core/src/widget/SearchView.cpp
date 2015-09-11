@@ -194,7 +194,7 @@ ECode SearchView::Init(
 
     CIntent::New(IRecognizerIntent::ACTION_WEB_SEARCH, (IIntent**)&mVoiceWebSearchIntent);
     mVoiceWebSearchIntent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
-    mVoiceWebSearchIntent->PutStringExtra(IRecognizerIntent::EXTRA_LANGUAGE_MODEL, IRecognizerIntent::LANGUAGE_MODEL_WEB_SEARCH);
+    mVoiceWebSearchIntent->PutExtra(IRecognizerIntent::EXTRA_LANGUAGE_MODEL, IRecognizerIntent::LANGUAGE_MODEL_WEB_SEARCH);
 
     CIntent::New(IRecognizerIntent::ACTION_RECOGNIZE_SPEECH, (IIntent**)&mVoiceAppSearchIntent);
     mVoiceAppSearchIntent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
@@ -1226,17 +1226,17 @@ AutoPtr<IIntent> SearchView::CreateIntent(
     }
     intent->PutCharSequenceExtra(ISearchManager::USER_QUERY, mUserQuery);
     if (query != NULL) {
-        intent->PutStringExtra(ISearchManager::QUERY, query);
+        intent->PutExtra(ISearchManager::QUERY, query);
     }
     if (extraData != NULL) {
-        intent->PutStringExtra(ISearchManager::EXTRA_DATA_KEY, extraData);
+        intent->PutExtra(ISearchManager::EXTRA_DATA_KEY, extraData);
     }
     if (mAppSearchData != NULL) {
-        intent->PutBundleExtra(ISearchManager::APP_DATA, mAppSearchData);
+        intent->PutExtra(ISearchManager::APP_DATA, mAppSearchData);
     }
     if (actionKey != IKeyEvent::KEYCODE_UNKNOWN) {
-        intent->PutInt32Extra(ISearchManager::ACTION_KEY, actionKey);
-        intent->PutStringExtra(ISearchManager::ACTION_MSG, actionMsg);
+        intent->PutExtra(ISearchManager::ACTION_KEY, actionKey);
+        intent->PutExtra(ISearchManager::ACTION_MSG, actionMsg);
     }
     AutoPtr<IComponentName> name;
     mSearchable->GetSearchActivity((IComponentName**)&name);
@@ -1257,7 +1257,7 @@ AutoPtr<IIntent> SearchView::CreateVoiceWebSearchIntent(
     {
         searchActivity->FlattenToShortString(&temp);
     }
-    voiceIntent->PutStringExtra(IRecognizerIntent::EXTRA_CALLING_PACKAGE, temp);
+    voiceIntent->PutExtra(IRecognizerIntent::EXTRA_CALLING_PACKAGE, temp);
     return voiceIntent;
 }
 
@@ -1315,20 +1315,20 @@ AutoPtr<IIntent> SearchView::CreateVoiceAppSearchIntent(
     if ((searchable->GetVoiceMaxResults(&idTemp), idTemp) != 0) {
         searchable->GetVoiceMaxResults(&maxResults);
     }
-    voiceIntent->PutStringExtra(IRecognizerIntent::EXTRA_LANGUAGE_MODEL, languageModel);
-    voiceIntent->PutStringExtra(IRecognizerIntent::EXTRA_PROMPT, prompt);
-    voiceIntent->PutStringExtra(IRecognizerIntent::EXTRA_LANGUAGE, language);
-    voiceIntent->PutInt32Extra(IRecognizerIntent::EXTRA_MAX_RESULTS, maxResults);
+    voiceIntent->PutExtra(IRecognizerIntent::EXTRA_LANGUAGE_MODEL, languageModel);
+    voiceIntent->PutExtra(IRecognizerIntent::EXTRA_PROMPT, prompt);
+    voiceIntent->PutExtra(IRecognizerIntent::EXTRA_LANGUAGE, language);
+    voiceIntent->PutExtra(IRecognizerIntent::EXTRA_MAX_RESULTS, maxResults);
     String sTemp(NULL);
     if(searchActivity != NULL)
     {
         searchActivity->FlattenToShortString(&sTemp);
     }
-    voiceIntent->PutStringExtra(IRecognizerIntent::EXTRA_CALLING_PACKAGE, sTemp);
+    voiceIntent->PutExtra(IRecognizerIntent::EXTRA_CALLING_PACKAGE, sTemp);
 
     // Add the values that configure forwarding the results
-    voiceIntent->PutParcelableExtra(IRecognizerIntent::EXTRA_RESULTS_PENDINGINTENT, IParcelable::Probe(pending));
-    voiceIntent->PutParcelableExtra(IRecognizerIntent::EXTRA_RESULTS_PENDINGINTENT_BUNDLE, IParcelable::Probe(queryExtras));
+    voiceIntent->PutExtra(IRecognizerIntent::EXTRA_RESULTS_PENDINGINTENT, IParcelable::Probe(pending));
+    voiceIntent->PutExtra(IRecognizerIntent::EXTRA_RESULTS_PENDINGINTENT_BUNDLE, IParcelable::Probe(queryExtras));
 
     return voiceIntent;
 }

@@ -1,38 +1,39 @@
 
 #include "content/IntentFilter.h"
-#ifdef DROID_CORE
 #include "content/CIntentFilter.h"
 #include "content/CIntentFilterAuthorityEntry.h"
 #include "os/CPatternMatcher.h"
-#endif
-#include "util/XmlUtils.h"
+//#include "internal/util/XmlUtils.h"
 #include <elastos/utility/etl/Algorithm.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
+using Elastos::Droid::Os::CPatternMatcher;
+//using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
-using Elastos::Droid::Os::CPatternMatcher;
-using Elastos::Droid::Utility::XmlUtils;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
-const String IntentFilter::SGLOB_STR = String("sglob");
-const String IntentFilter::PREFIX_STR = String("prefix");
-const String IntentFilter::LITERAL_STR = String("literal");
-const String IntentFilter::PATH_STR = String("path");
-const String IntentFilter::PORT_STR = String("port");
-const String IntentFilter::HOST_STR = String("host");
-const String IntentFilter::AUTH_STR = String("auth");
-const String IntentFilter::SCHEME_STR = String("scheme");
-const String IntentFilter::TYPE_STR = String("type");
-const String IntentFilter::CAT_STR = String("cat");
-const String IntentFilter::NAME_STR = String("name");
-const String IntentFilter::ACTION_STR = String("action");
+const String IntentFilter::SGLOB_STR("sglob");
+const String IntentFilter::PREFIX_STR("prefix");
+const String IntentFilter::LITERAL_STR("literal");
+const String IntentFilter::PATH_STR("path");
+const String IntentFilter::PORT_STR("port");
+const String IntentFilter::HOST_STR("host");
+const String IntentFilter::AUTH_STR("auth");
+const String IntentFilter::SSP_STR("ssp");
+const String IntentFilter::SCHEME_STR("scheme");
+const String IntentFilter::TYPE_STR("type");
+const String IntentFilter::CAT_STR("cat");
+const String IntentFilter::NAME_STR("name");
+const String IntentFilter::ACTION_STR("action");
+
+CAR_INTERFACE_IMPL(IntentFilter, Object, IIntentFilter)
 
 IntentFilter::IntentFilter()
     : mPriority(0)
@@ -69,24 +70,25 @@ IntentFilter::~IntentFilter()
     mActions.Clear();
     mCategories = NULL;
     mDataSchemes = NULL;
+    mDataSchemeSpecificParts = NULL;
     mDataAuthorities = NULL;
     mDataPaths = NULL;
     mDataTypes = NULL;
 }
 
-ECode IntentFilter::Init()
+ECode IntentFilter::constructor()
 {
     return NOERROR;
 }
 
-ECode IntentFilter::Init(
+ECode IntentFilter::constructor(
     /* [in] */ const String& action)
 {
     AddAction(action);
     return NOERROR;
 }
 
-ECode IntentFilter::Init(
+ECode IntentFilter::constructor(
     /* [in] */ const String& action,
     /* [in] */ const String& dataType)
 {
@@ -95,7 +97,7 @@ ECode IntentFilter::Init(
     return NOERROR;
 }
 
-ECode IntentFilter::Init(
+ECode IntentFilter::constructor(
     /* [in] */ IIntentFilter* other)
 {
     other->GetPriority(&mPriority);
@@ -131,6 +133,15 @@ ECode IntentFilter::Init(
         Int32 len = schemes->GetLength();
         for (Int32 i = 0; i != len; i++) {
             mDataSchemes->PushBack((*schemes)[i]);
+        }
+    }
+    AutoPtr< ArrayOf<String> > specificParts;
+    other->GetSchemeSpecificParts((ArrayOf<String>**)&specificParts);
+    if (NULL != specificParts) {
+        mDataSchemeSpecificParts = new List<String>();
+        Int32 len = specificParts->GetLength();
+        for (Int32 i = 0; i != len; i++) {
+            mDataSchemeSpecificParts->PushBack((*specificParts)[i]);
         }
     }
     AutoPtr< ArrayOf<IIntentFilterAuthorityEntry*> > authorities;
@@ -431,6 +442,70 @@ AutoPtr< ArrayOf<String> > IntentFilter::GetSchemes()
     }
     return schemes;
 }
+
+ECode IntentFilter::GetSchemes(
+    /* [out, callee] */ ArrayOf<String>** schemes)
+{
+    VALIDATE_NOT_NULL(schemes)
+    AutoPtr< ArrayOf<String> > tmp = GetSchemes();
+    *schemes = tmp;
+    REFCOUNT_ADD(*schemes);
+    return NOERROR;
+}
+
+ECode IntentFilter::AddDataSchemeSpecificPart(
+    /* [in] */ const String& ssp,
+    /* [in] */ Int32 type)
+{
+
+}
+
+ECode IntentFilter::AddDataSchemeSpecificPart(
+    /* [in] */ IPatternMatcher* ssp)
+{
+
+}
+
+
+ECode IntentFilter::CountDataSchemeSpecificParts(
+    /* [out] */ Int32* result)
+{
+
+}
+
+ECode IntentFilter::GetDataSchemeSpecificPart(
+    /* [in] */ Int32 index,
+    /* [out] */ IPatternMatcher** ssp)
+{
+
+}
+
+ECode IntentFilter::HasDataSchemeSpecificPart(
+    /* [in] */ const String& data,
+    /* [out] */ Boolean* result)
+{
+
+}
+
+ECode IntentFilter::HasDataSchemeSpecificPart(
+    /* [in] */ IPatternMatcher* data,
+    /* [out] */ Boolean* result)
+{
+
+}
+
+AutoPtr< ArrayOf<IPatternMatcher*> > IntentFilter::GetSchemeSpecificParts()
+{
+
+}
+
+ECode IntentFilter::GetSchemeSpecificParts(
+    /* [out, callee] */ ArrayOf<IPatternMatcher*>** array)
+{
+
+}
+
+
 
 ECode IntentFilter::AddDataAuthority(
     /* [in] */ const String& host,
@@ -950,7 +1025,8 @@ ECode IntentFilter::ReadFromXml(
         else {
             Logger::W("IntentFilter", String("Unknown tag parsing IntentFilter: ") + tagName);
         }
-        XmlUtils::SkipCurrentTag(parser);
+        assert(0 && "TODO");
+        //XmlUtils::SkipCurrentTag(parser);
     }
     return NOERROR;
 }

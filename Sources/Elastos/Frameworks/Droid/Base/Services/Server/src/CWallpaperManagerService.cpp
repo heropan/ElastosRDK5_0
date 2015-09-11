@@ -1020,7 +1020,7 @@ Boolean CWallpaperManagerService::BindWallpaperComponentLocked(
         CWMSWallpaperConnection::NewByFriend(
             wi, (Handle32)wallpaper, (Handle32)this, (CWMSWallpaperConnection**)&newConn);
         intent->SetComponent(componentName);
-        intent->PutInt32Extra(
+        intent->PutExtra(
             IIntent::EXTRA_CLIENT_LABEL, R::string::wallpaper_binding_label);
 
         AutoPtr<IIntent> tempIntent;
@@ -1039,7 +1039,7 @@ Boolean CWallpaperManagerService::BindWallpaperComponentLocked(
         AutoPtr<IPendingIntent> pendingIntent;
         piHelper->GetActivityAsUser(
             mContext, 0, chooser, 0 , NULL, userHandle, (IPendingIntent**)&pendingIntent);
-        intent->PutParcelableExtra(
+        intent->PutExtra(
             IIntent::EXTRA_CLIENT_INTENT, IParcelable::Probe(pendingIntent));
 
         Boolean res;

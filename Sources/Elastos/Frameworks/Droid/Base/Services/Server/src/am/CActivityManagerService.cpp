@@ -4345,7 +4345,7 @@ ECode CActivityManagerService::ClearApplicationUserData(
     AutoPtr<IIntent> intent;
     CIntent::New(IIntent::ACTION_PACKAGE_DATA_CLEARED,
             uri, (IIntent**)&intent);
-    intent->PutInt32Extra(IIntent::EXTRA_UID, pkgUid);
+    intent->PutExtra(IIntent::EXTRA_UID, pkgUid);
     Int32 value;
     BroadcastIntentInPackage(String("android"), IProcess::SYSTEM_UID, intent,
             nullStr, NULL, 0, nullStr, NULL, nullStr, FALSE, FALSE, userId, &value);
@@ -4590,7 +4590,7 @@ ECode CActivityManagerService::CloseSystemDialogsLocked(
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
             | IIntent::FLAG_RECEIVER_FOREGROUND);
     if (reason != NULL) {
-        intent->PutStringExtra(String("reason"), reason);
+        intent->PutExtra(String("reason"), reason);
     }
     mWindowManager->CloseSystemDialogs(reason);
 
@@ -4703,8 +4703,8 @@ ECode CActivityManagerService::ForceStopPackageLocked(
         intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
                 | IIntent::FLAG_RECEIVER_FOREGROUND);
     }
-    intent->PutInt32Extra(IIntent::EXTRA_UID, uid);
-    intent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, UserHandle::GetUserId(uid));
+    intent->PutExtra(IIntent::EXTRA_UID, uid);
+    intent->PutExtra(IIntent::EXTRA_USER_HANDLE, UserHandle::GetUserId(uid));
     Int32 result;
     return BroadcastIntentLocked(NULL, String(NULL), intent,
         String(NULL), NULL, 0, String(NULL), NULL, String(NULL),
@@ -4720,7 +4720,7 @@ ECode CActivityManagerService::ForceStopUserLocked(
     CIntent::New(IIntent::ACTION_USER_STOPPED, (IIntent**)&intent);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
             | IIntent::FLAG_RECEIVER_FOREGROUND);
-    intent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, userId);
+    intent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId);
     Int32 result;
     BroadcastIntentLocked(NULL, String(NULL), intent,
         String(NULL), NULL, 0, String(NULL), NULL, String(NULL),
@@ -5548,7 +5548,7 @@ ECode CActivityManagerService::FinishBooting()
                     userId = it->mFirst;
                     AutoPtr<IIntent> intent;
                     CIntent::New(IIntent::ACTION_BOOT_COMPLETED, NULL, (IIntent**)&intent);
-                    intent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, userId);
+                    intent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId);
                     BroadcastIntentLocked(NULL, nullStr, intent,
                         nullStr, NULL, 0, nullStr, NULL,
                         Elastos::Droid::Manifest::Permission::RECEIVE_BOOT_COMPLETED,
@@ -5602,7 +5602,7 @@ ECode CActivityManagerService::SendBootFastComplete()
                     const Int32 userId = it->mFirst;
                     AutoPtr<IIntent> intent;
                     CIntent::New(IIntent::ACTION_BOOT_COMPLETED, NULL, (IIntent**)&intent);
-                    FAIL_RETURN(intent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, userId));
+                    FAIL_RETURN(intent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId));
                     Int32 result;
                     FAIL_RETURN(BroadcastIntentLocked(NULL, nullStr, intent,
                            nullStr, NULL, 0, nullStr, NULL,
@@ -10269,7 +10269,7 @@ ECode CActivityManagerService::SystemReady(
         CIntent::New(IIntent::ACTION_USER_STARTED, (IIntent**)&intent);
         intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
                     | IIntent::FLAG_RECEIVER_FOREGROUND);
-        intent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, mCurrentUserId);
+        intent->PutExtra(IIntent::EXTRA_USER_HANDLE, mCurrentUserId);
         Int32 result;
 
         BroadcastIntentLocked(NULL, String(NULL), intent,
@@ -10279,7 +10279,7 @@ ECode CActivityManagerService::SystemReady(
         AutoPtr<IIntent> newIntent;
         CIntent::New(IIntent::ACTION_USER_STARTING, (IIntent**)&newIntent);
         newIntent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY);
-        newIntent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, mCurrentUserId);
+        newIntent->PutExtra(IIntent::EXTRA_USER_HANDLE, mCurrentUserId);
         //TODO
         AutoPtr<IIntentReceiver> receiver;
         // AutoPtr<IIntentReceiver> receiver = new SystemBroadcastReceiver();
@@ -11132,7 +11132,7 @@ AutoPtr<IIntent> CActivityManagerService::CreateAppErrorIntentLocked(
     AutoPtr<IIntent> result;
     CIntent::New(IIntent::ACTION_APP_ERROR, (IIntent**)&result);
     result->SetComponent(r->mErrorReportReceiver);
-    result->PutParcelableExtra(IIntent::EXTRA_BUG_REPORT, IParcelable::Probe(report));
+    result->PutExtra(IIntent::EXTRA_BUG_REPORT, IParcelable::Probe(report));
     result->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
     return result;
 }
@@ -17947,7 +17947,7 @@ ECode CActivityManagerService::SwitchUser(
                 CIntent::New(IIntent::ACTION_USER_STARTED, (IIntent**)&intent);
                 intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
                         | IIntent::FLAG_RECEIVER_FOREGROUND);
-                intent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, userId);
+                intent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId);
                 Int32 bValue;
                 BroadcastIntentLocked(NULL, String(NULL), intent,
                     String(NULL), NULL, 0, String(NULL), NULL, String(NULL),
@@ -17985,7 +17985,7 @@ ECode CActivityManagerService::SwitchUser(
                 AutoPtr<IIntent> intent;
                 CIntent::New(IIntent::ACTION_USER_STARTING, (IIntent**)&intent);
                 intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY);
-                intent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, userId);
+                intent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId);
                 AutoPtr<IIntentReceiver> receiver = new NeedStartIntentReceiver();
                 Int32 bValue;
                 BroadcastIntentLocked(NULL, String(NULL), intent,
@@ -18014,7 +18014,7 @@ ECode CActivityManagerService::SendUserSwitchBroadcastsLocked(
         CIntent::New(IIntent::ACTION_USER_BACKGROUND, (IIntent**)&intent);
         intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
                 | IIntent::FLAG_RECEIVER_FOREGROUND);
-        intent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, oldUserId);
+        intent->PutExtra(IIntent::EXTRA_USER_HANDLE, oldUserId);
         Int32 result;
         BroadcastIntentLocked(NULL, nullStr, intent,
             nullStr, NULL, 0, nullStr, NULL, nullStr,
@@ -18025,7 +18025,7 @@ ECode CActivityManagerService::SendUserSwitchBroadcastsLocked(
         CIntent::New(IIntent::ACTION_USER_FOREGROUND, (IIntent**)&intent);
         intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
                 | IIntent::FLAG_RECEIVER_FOREGROUND);
-        intent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, newUserId);
+        intent->PutExtra(IIntent::EXTRA_USER_HANDLE, newUserId);
         Int32 result;
         BroadcastIntentLocked(NULL, nullStr, intent,
             nullStr, NULL, 0, nullStr, NULL, nullStr,
@@ -18034,7 +18034,7 @@ ECode CActivityManagerService::SendUserSwitchBroadcastsLocked(
         CIntent::New(IIntent::ACTION_USER_SWITCHED, (IIntent**)&intent);
         intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
             | IIntent::FLAG_RECEIVER_FOREGROUND);
-        intent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, newUserId);
+        intent->PutExtra(IIntent::EXTRA_USER_HANDLE, newUserId);
 
         BroadcastIntentLocked(NULL, nullStr, intent,
                 nullStr, NULL, 0, nullStr, NULL,
@@ -18180,7 +18180,7 @@ ECode CActivityManagerService::FinishUserSwitch(
         uss->mHandle->GetIdentifier(&userId);
         AutoPtr<IIntent> intent;
         CIntent::New(IIntent::ACTION_BOOT_COMPLETED, NULL, (IIntent**)&intent);
-        intent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, userId);
+        intent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId);
         Int32 result;
         String nullStr;
         BroadcastIntentLocked(NULL, nullStr, intent,
@@ -18292,7 +18292,7 @@ Int32 CActivityManagerService::StopUserLocked(
             AutoPtr<IIntent> stoppingIntent;
             CIntent::New(IIntent::ACTION_USER_STOPPING, (IIntent**)&stoppingIntent);
             stoppingIntent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY);
-            stoppingIntent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, userId);
+            stoppingIntent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId);
             AutoPtr<IIntent> shutdownIntent;
             CIntent::New(IIntent::ACTION_SHUTDOWN, (IIntent**)&shutdownIntent);
 

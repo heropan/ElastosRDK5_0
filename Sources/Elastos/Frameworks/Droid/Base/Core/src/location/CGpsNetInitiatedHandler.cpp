@@ -405,11 +405,11 @@ AutoPtr<IIntent> CGpsNetInitiatedHandler::GetDlgIntent(
     notif->GetNotificationId(&notificationId);
     notif->GetTimeOut(&timeout);
     notif->GetDefaultResponse(&defaultResponse);
-    intent->PutInt32Extra(NI_INTENT_KEY_NOTIF_ID, notificationId);
-    intent->PutStringExtra(NI_INTENT_KEY_TITLE, title);
-    intent->PutStringExtra(NI_INTENT_KEY_MESSAGE, message);
-    intent->PutInt32Extra(NI_INTENT_KEY_TIMEOUT, timeout);
-    intent->PutInt32Extra(NI_INTENT_KEY_DEFAULT_RESPONSE, defaultResponse);
+    intent->PutExtra(NI_INTENT_KEY_NOTIF_ID, notificationId);
+    intent->PutExtra(NI_INTENT_KEY_TITLE, title);
+    intent->PutExtra(NI_INTENT_KEY_MESSAGE, message);
+    intent->PutExtra(NI_INTENT_KEY_TIMEOUT, timeout);
+    intent->PutExtra(NI_INTENT_KEY_DEFAULT_RESPONSE, defaultResponse);
 
 //    if (DEBUG) Log.d(TAG, "generateIntent, title: " + title + ", message: " + message +
 //            ", timeout: " + notif.timeout);

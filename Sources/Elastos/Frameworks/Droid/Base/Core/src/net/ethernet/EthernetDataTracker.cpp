@@ -405,13 +405,13 @@ void EthernetDataTracker::SendStateBroadcast(
     intent->AddFlags(
         IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT
         | IIntent::FLAG_RECEIVER_REPLACE_PENDING);
-    intent->PutParcelableExtra(
+    intent->PutExtra(
         IEthernetManager::EXTRA_NETWORK_INFO, IParcelable::Probe(mNetworkInfo));
     AutoPtr<ILinkProperties> lp;
     CLinkProperties::New(mLinkProperties, (ILinkProperties**)&lp);
-    intent->PutParcelableExtra(
+    intent->PutExtra(
         IEthernetManager::EXTRA_LINK_PROPERTIES, IParcelable::Probe(lp));
-    intent->PutInt32Extra(IEthernetManager::EXTRA_ETHERNET_STATE, event);
+    intent->PutExtra(IEthernetManager::EXTRA_ETHERNET_STATE, event);
     mContext->SendStickyBroadcast(intent);
 }
 

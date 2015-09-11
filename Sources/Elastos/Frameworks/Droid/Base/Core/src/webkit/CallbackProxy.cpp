@@ -420,7 +420,7 @@ Boolean CallbackProxy::UiOverrideUrlLoading(
         Logger::V(LOGTAG, "TODO no implementation Uri CallbackProxy::UiOverrideUrlLoading, uri:%s, pkgName:%s",
                 overrideUrl.string(), pkgName.string());
         //return override;//just return
-        intent->PutStringExtra(String("com.android.browser.application_id"),//IBrowser::EXTRA_APPLICATION_ID,//TODO no implementation,just hardcode
+        intent->PutExtra(String("com.android.browser.application_id"),//IBrowser::EXTRA_APPLICATION_ID,//TODO no implementation,just hardcode
                 pkgName);
         //try {
             ECode result = mContext->StartActivity(intent);

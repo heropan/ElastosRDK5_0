@@ -56,7 +56,6 @@ protected:
     CARAPI OnDestroy();
 
 public:
-    // TODO: Add your private member variables here.
     AutoPtr<IServiceConnection> mConn;
 };
 

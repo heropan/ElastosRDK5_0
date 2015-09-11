@@ -33,7 +33,6 @@ public:
         /* [out] */ ISslCertificate** certificate);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

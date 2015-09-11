@@ -17,7 +17,6 @@ public:
         /* [out] */ ISyncAdapterType** syncAdapterType);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

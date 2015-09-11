@@ -48,7 +48,7 @@ ECode CLauncherHelper::StartVideoViewDemo(
     if (FAILED(ec)) return ec;
     intent->SetPackage(String("VideoViewDemo"));
     intent->SetAction(String("android.intent.action.MAIN"));
-    intent->PutStringExtra(String(IIntent::EXTRA_STREAM), path);
+    intent->PutExtra(String(IIntent::EXTRA_STREAM), path);
 
     return LaunchApp(intent);
 }

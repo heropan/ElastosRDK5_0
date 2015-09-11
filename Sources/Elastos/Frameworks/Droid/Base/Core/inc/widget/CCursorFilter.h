@@ -30,7 +30,6 @@ public:
         /* [in] */ ICursorFilterClient * pClient);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }// namespace Elastos

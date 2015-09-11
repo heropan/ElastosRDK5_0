@@ -1455,7 +1455,7 @@ ECode WifiStateMachine::DriverStartedState::ProcessMessage(
                 /* send regular delayed shut down */
                 AutoPtr<IIntent> driverStopIntent;
                 CIntent::New(ACTION_DELAYED_DRIVER_STOP, NULL, (IIntent**)&driverStopIntent);
-                driverStopIntent->PutInt32Extra(DELAYED_STOP_COUNTER, mOwner->mDelayedStopCounter);
+                driverStopIntent->PutExtra(DELAYED_STOP_COUNTER, mOwner->mDelayedStopCounter);
                 AutoPtr<IPendingIntentHelper> helper;
                 CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&helper);
                 mOwner->mDriverStopIntent = NULL;
@@ -4393,8 +4393,8 @@ void WifiStateMachine::SetWifiState(
     AutoPtr<IIntent> intent;
     CIntent::New(IWifiManager::WIFI_STATE_CHANGED_ACTION, (IIntent**)&intent);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
-    intent->PutInt32Extra(IWifiManager::EXTRA_WIFI_STATE, wifiState);
-    intent->PutInt32Extra(IWifiManager::EXTRA_PREVIOUS_WIFI_STATE, previousWifiState);
+    intent->PutExtra(IWifiManager::EXTRA_WIFI_STATE, wifiState);
+    intent->PutExtra(IWifiManager::EXTRA_PREVIOUS_WIFI_STATE, previousWifiState);
     mContext->SendStickyBroadcastAsUser(intent, UserHandle::ALL);
 }
 
@@ -4425,8 +4425,8 @@ void WifiStateMachine::SetWifiApState(
     AutoPtr<IIntent> intent;
     CIntent::New(IWifiManager::WIFI_AP_STATE_CHANGED_ACTION, (IIntent**)&intent);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
-    intent->PutInt32Extra(IWifiManager::EXTRA_WIFI_AP_STATE, wifiApState);
-    intent->PutInt32Extra(IWifiManager::EXTRA_PREVIOUS_WIFI_AP_STATE, previousWifiApState);
+    intent->PutExtra(IWifiManager::EXTRA_WIFI_AP_STATE, wifiApState);
+    intent->PutExtra(IWifiManager::EXTRA_PREVIOUS_WIFI_AP_STATE, previousWifiApState);
     mContext->SendStickyBroadcastAsUser(intent, UserHandle::ALL);
 }
 
@@ -4671,7 +4671,7 @@ void WifiStateMachine::SendRssiChangeBroadcast(
     AutoPtr<IIntent> intent;
     CIntent::New(IWifiManager::RSSI_CHANGED_ACTION, (IIntent**)&intent);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
-    intent->PutInt32Extra(IWifiManager::EXTRA_NEW_RSSI, newRssi);
+    intent->PutExtra(IWifiManager::EXTRA_NEW_RSSI, newRssi);
     mContext->SendStickyBroadcastAsUser(intent, UserHandle::ALL);
 }
 
@@ -4688,16 +4688,16 @@ void WifiStateMachine::SendNetworkStateChangeBroadcast(
     AutoPtr<IIntent> intent;
     CIntent::New(IWifiManager::NETWORK_STATE_CHANGED_ACTION, (IIntent**)&intent);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
-    intent->PutParcelableExtra(IWifiManager::EXTRA_NETWORK_INFO, IParcelable::Probe(networkInfo.Get()));
-    intent->PutParcelableExtra(IWifiManager::EXTRA_LINK_PROPERTIES, IParcelable::Probe(linkProps.Get()));
+    intent->PutExtra(IWifiManager::EXTRA_NETWORK_INFO, IParcelable::Probe(networkInfo.Get()));
+    intent->PutExtra(IWifiManager::EXTRA_LINK_PROPERTIES, IParcelable::Probe(linkProps.Get()));
     if (!bssid.IsNull())
-        intent->PutStringExtra(IWifiManager::EXTRA_BSSID, bssid);
+        intent->PutExtra(IWifiManager::EXTRA_BSSID, bssid);
 
     NetworkInfoDetailedState state;
     mNetworkInfo->GetDetailedState(&state);
     if (state == NetworkInfoDetailedState_VERIFYING_POOR_LINK
         || state == NetworkInfoDetailedState_CONNECTED) {
-        intent->PutParcelableExtra(IWifiManager::EXTRA_WIFI_INFO, IParcelable::Probe(wifiInfo.Get()));
+        intent->PutExtra(IWifiManager::EXTRA_WIFI_INFO, IParcelable::Probe(wifiInfo.Get()));
     }
 
     Boolean isWifiConnected;
@@ -4713,7 +4713,7 @@ void WifiStateMachine::SendLinkConfigurationChangedBroadcast()
     AutoPtr<IIntent> intent;
     CIntent::New(IWifiManager::LINK_CONFIGURATION_CHANGED_ACTION, (IIntent**)&intent);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
-    intent->PutParcelableExtra(IWifiManager::EXTRA_LINK_PROPERTIES, IParcelable::Probe(linkProps.Get()));
+    intent->PutExtra(IWifiManager::EXTRA_LINK_PROPERTIES, IParcelable::Probe(linkProps.Get()));
     mContext->SendStickyBroadcastAsUser(intent, UserHandle::ALL);
 }
 

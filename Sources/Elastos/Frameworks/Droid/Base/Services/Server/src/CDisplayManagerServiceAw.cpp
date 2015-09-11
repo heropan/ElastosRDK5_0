@@ -571,7 +571,7 @@ void CDisplayManagerServiceAw::SendHdmiIntent()
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
             | IIntent::FLAG_RECEIVER_REPLACE_PENDING);
 
-    intent->PutInt32Extra(IDisplayManagerAw::EXTRA_HDMISTATUS, mHdmiPlugin);
+    intent->PutExtra(IDisplayManagerAw::EXTRA_HDMISTATUS, mHdmiPlugin);
 
     ActivityManagerNative::BroadcastStickyIntent(intent, String(NULL), IUserHandle::USER_ALL);
 }
@@ -584,7 +584,7 @@ void CDisplayManagerServiceAw::SendTvDacIntent()
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
             | IIntent::FLAG_RECEIVER_REPLACE_PENDING);
 
-    intent->PutInt32Extra(IDisplayManagerAw::EXTRA_TVSTATUS, mTvDacPlugin);
+    intent->PutExtra(IDisplayManagerAw::EXTRA_TVSTATUS, mTvDacPlugin);
 
     ActivityManagerNative::BroadcastStickyIntent(intent, String(NULL), IUserHandle::USER_ALL);
 }
@@ -596,8 +596,8 @@ void CDisplayManagerServiceAw::SendOutputChangedIntent()
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
             | IIntent::FLAG_RECEIVER_REPLACE_PENDING);
 
-    intent->PutInt32Extra(IDisplayManagerAw::EXTRA_DISPLAY_TYPE, mCurrentType);
-    intent->PutInt32Extra(IDisplayManagerAw::EXTRA_DISPLAY_MODE, mCurrentMode);
+    intent->PutExtra(IDisplayManagerAw::EXTRA_DISPLAY_TYPE, mCurrentType);
+    intent->PutExtra(IDisplayManagerAw::EXTRA_DISPLAY_MODE, mCurrentMode);
 
     ActivityManagerNative::BroadcastStickyIntent(intent, String(NULL), IUserHandle::USER_ALL);
 }

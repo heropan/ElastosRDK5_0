@@ -21,7 +21,6 @@ public:
         /* [in] */ CString newState);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 } // namespace Storage

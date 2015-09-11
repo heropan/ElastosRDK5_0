@@ -115,10 +115,10 @@ namespace AccountsAndSyncSettings {
                 String("elastos.accounts.ChooseAccountActivity"));
 
         if (authorities != NULL) {
-            intent2->PutStringArrayExtra(String("authorities"), authorities);
+            intent2->PutExtra(String("authorities"), authorities);
         }
         if (accountTypes != NULL) {
-            intent2->PutStringArrayExtra(String("account_types"), accountTypes);
+            intent2->PutExtra(String("account_types"), accountTypes);
         }
 
         StartActivityForResult(intent2, CHOOSE_ACCOUNT_REQUEST);

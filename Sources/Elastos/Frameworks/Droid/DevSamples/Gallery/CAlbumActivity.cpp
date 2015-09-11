@@ -307,8 +307,8 @@ ECode CAlbumActivity::MyListener::OnTouch(
             AutoPtr<IIntent> intent;
             CIntent::New((IIntent**)&intent);
             intent->SetClassName(String("Gallery"), String("Gallery.CBrowserActivity"));
-            intent->PutStringExtra(DataSourceHelper::SOURCE_PATH, folderPath);
-            intent->PutStringExtra(DataSourceHelper::SOURCE_DESC, entry->desc);
+            intent->PutExtra(DataSourceHelper::SOURCE_PATH, folderPath);
+            intent->PutExtra(DataSourceHelper::SOURCE_DESC, entry->desc);
             if (FAILED(mHost->StartActivity(intent))) {
                 Logger::E(TAG, "OnClick()---StartActivity CBrowserActivity failed!");
             }

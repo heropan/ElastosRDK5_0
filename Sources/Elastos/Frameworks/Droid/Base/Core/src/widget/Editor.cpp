@@ -1166,8 +1166,8 @@ ECode SuggestionsPopupWindow::OnItemClick(
         locale->ToString(&localeStr);
         AutoPtr<IIntent> intent;
         CIntent::New(ISettings::ACTION_USER_DICTIONARY_INSERT, (IIntent**)&intent);
-        intent->PutStringExtra(String("word"), originalText);
-        intent->PutStringExtra(String("locale"), localeStr);
+        intent->PutExtra(String("word"), originalText);
+        intent->PutExtra(String("locale"), localeStr);
         // Put a listener to replace the original text with a word which the user
         // modified in a user dictionary dialog.
         AutoPtr<ITextView> itv = (ITextView*)(mEditor->mTextView->Probe(EIID_ITextView));
@@ -1175,7 +1175,7 @@ ECode SuggestionsPopupWindow::OnItemClick(
                 itv, originalText, spanStart, spanEnd);
         AutoPtr<IMessenger> msger;
         CMessenger::New(mEditor->mUserDictionaryListener, (IMessenger**)&msger);
-        intent->PutParcelableExtra(String("listener"), IParcelable::Probe(msger));
+        intent->PutExtra(String("listener"), IParcelable::Probe(msger));
         Int32 flags;
         intent->GetFlags(&flags);
         intent->SetFlags(flags | IIntent::FLAG_ACTIVITY_NEW_TASK);

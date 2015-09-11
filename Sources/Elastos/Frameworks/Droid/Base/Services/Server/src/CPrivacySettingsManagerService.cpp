@@ -90,11 +90,11 @@ ECode CPrivacySettingsManagerService::Notification(
         AutoPtr<IIntent> intent;
         CIntent::New((IIntent**)&intent);
         intent->SetAction(IPrivacySettingsManager::ACTION_PRIVACY_NOTIFICATION);
-        intent->PutStringExtra(String("packageName"), packageName);
-        intent->PutInt32Extra(String("uid"), IPrivacyPersistenceAdapter::DUMMY_UID);
+        intent->PutExtra(String("packageName"), packageName);
+        intent->PutExtra(String("uid"), IPrivacyPersistenceAdapter::DUMMY_UID);
         intent->PutByteExtra(String("accessMode"), accessMode);
-        intent->PutStringExtra(String("dataType"), dataType);
-        intent->PutStringExtra(String("output"), output);
+        intent->PutExtra(String("dataType"), dataType);
+        intent->PutExtra(String("output"), output);
         mContext->SendBroadcast(intent);
         return NOERROR;
     }

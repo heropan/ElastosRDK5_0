@@ -57,7 +57,6 @@ public:
         /* [out] */ IContentProviderOperationBuilder** operationBuilder);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

@@ -43,7 +43,6 @@ public:
         /* [in] */ const String& value);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 #endif // __CEMPTYPART_H__

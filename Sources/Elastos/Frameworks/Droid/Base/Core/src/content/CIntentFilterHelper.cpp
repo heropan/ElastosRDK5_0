@@ -1,9 +1,14 @@
 
 #include "content/CIntentFilterHelper.h"
+#include "content/IntentFilter.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
+
+CAR_INTERFACE_IMPL(CIntentFilterHelper, Object, IIntentFilterHelper)
+
+CAR_SINGLETON_IMPL(CIntentFilterHelper)
 
 ECode CIntentFilterHelper::Create(
     /* [in] */ const String& action,

@@ -24,7 +24,6 @@ public:
         /* [out] */ Int32* index);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

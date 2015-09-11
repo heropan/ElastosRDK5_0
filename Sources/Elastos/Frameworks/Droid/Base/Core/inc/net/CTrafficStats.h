@@ -460,7 +460,6 @@ public:
 
 
 private:
-    // TODO: Add your private member variables here.
 
     static Object sProfilingLock;
     static AutoPtr<INetworkStatsService> sStatsService;

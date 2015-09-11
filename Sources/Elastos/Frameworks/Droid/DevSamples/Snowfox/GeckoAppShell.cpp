@@ -1595,10 +1595,10 @@ ECode GeckoAppShell::CreateShortcut(
 
     if (aType.EqualsIgnoreCase("webapp")) {
         pShortcutIntent->SetAction(String("org.mozilla.gecko.WEBAPP"));
-        pShortcutIntent->PutStringExtra(String("args"), String("--webapp=") + aURI);
+        pShortcutIntent->PutExtra(String("args"), String("--webapp=") + aURI);
     } else {
         pShortcutIntent->SetAction(String("org.mozilla.gecko.BOOKMARK"));
-        pShortcutIntent->PutStringExtra(String("args"),  String("--url=") + aURI);
+        pShortcutIntent->PutExtra(String("args"),  String("--url=") + aURI);
     }
 
     String packageName;
@@ -1609,7 +1609,7 @@ ECode GeckoAppShell::CreateShortcut(
 
     String args("--webapp=");
     args.Append(aURI);
-    ec = pShortcutIntent->PutStringExtra(String("args"), args);
+    ec = pShortcutIntent->PutExtra(String("args"), args);
     if (FAILED(ec)) return ec;
 
     AutoPtr<IIntent> pIIntent;
@@ -1618,7 +1618,7 @@ ECode GeckoAppShell::CreateShortcut(
 
     //ec = pIIntent->PutExtra(Intent_EXTRA_SHORTCUT_INTENT, pShortcutIntent);
     if (FAILED(ec)) return ec;
-    //ec = pIIntent->PutStringExtra(Intent_EXTRA_SHORTCUT_NAME, aTitle);
+    //ec = pIIntent->PutExtra(Intent_EXTRA_SHORTCUT_NAME, aTitle);
     //if (FAILED(ec)) return ec;
 
 //    AutoPtr<IBase64> base64;
@@ -1925,9 +1925,9 @@ ECode GeckoAppShell::OpenUriExternal(
     }
 
     if (0) {//aAction.EqualsIgnoreCase(Intent_ACTION_SEND)) {
-        ec = pIIntent->PutStringExtra(String(IIntent::EXTRA_TEXT), aUriSpec);
+        ec = pIIntent->PutExtra(String(IIntent::EXTRA_TEXT), aUriSpec);
         if (FAILED(ec)) return ec;
-        ec = pIIntent->PutStringExtra(String(IIntent::EXTRA_SUBJECT), aTitle);
+        ec = pIIntent->PutExtra(String(IIntent::EXTRA_SUBJECT), aTitle);
         if (FAILED(ec)) return ec;
         if (!aMimeType.IsNullOrEmpty()) {
             ec = pIIntent->SetType(aMimeType);
@@ -1984,7 +1984,7 @@ ECode GeckoAppShell::OpenUriExternal(
                     if (field.GetLength() > 5 && field.Substring(0, 5).Equals("body=")) {
                         String body;
                         //Uri::Decode(field.Substring(5), &body);
-                        pIIntent->PutStringExtra(String("sms_body"), body);
+                        pIIntent->PutExtra(String("sms_body"), body);
                         foundBody = TRUE;
                     }
                     else {

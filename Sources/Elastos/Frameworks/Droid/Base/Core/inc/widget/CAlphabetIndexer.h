@@ -40,7 +40,6 @@ public:
         /* [in] */ ICharSequence * pAlphabet);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }// namespace Widget

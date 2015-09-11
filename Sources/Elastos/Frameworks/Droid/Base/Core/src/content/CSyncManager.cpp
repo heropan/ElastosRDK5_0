@@ -199,7 +199,7 @@ ECode CSyncManager::ActiveSyncContext::BindToSyncAdapter(
     AutoPtr<IComponentName> component;
     component = info->mComponentName;
     FAIL_RETURN(intent->SetComponent(component))
-//    intent->PutInt32Extra(IIntent::EXTRA_CLIENT_LABEL, R::string::sync_binding_label);
+//    intent->PutExtra(IIntent::EXTRA_CLIENT_LABEL, R::string::sync_binding_label);
 
     AutoPtr<IPendingIntentHelper> pendingHelper;
 //***    FAIL_RETURN(CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&pendingHelper))
@@ -211,7 +211,7 @@ ECode CSyncManager::ActiveSyncContext::BindToSyncAdapter(
     FAIL_RETURN(pendingHelper->GetActivityAsUser(mSyncMgr->mContext, 0, tmpIntent, 0, (IBundle*) NULL,
             userHandle, (IPendingIntent**)&pengdingIntent))
     AutoPtr<IParcelable> parcelable = (IParcelable*) pengdingIntent->Probe(EIID_IParcelable);
-    FAIL_RETURN(intent->PutParcelableExtra(IIntent::EXTRA_CLIENT_INTENT, parcelable))
+    FAIL_RETURN(intent->PutExtra(IIntent::EXTRA_CLIENT_INTENT, parcelable))
     mBound = TRUE;
     Boolean bindResult = FALSE;
     AutoPtr<IServiceConnection> serviceConn = (IServiceConnection*) this->Probe(EIID_IServiceConnection);
@@ -1630,12 +1630,12 @@ ECode CSyncManager::SyncHandler::InstallHandleTooManyDeletesNotification(
     AutoPtr<IIntent> clickIntent;
 //    CIntent::New(mSyncMgr->mContext, SyncActivityTooManyDeletes.class);
     AutoPtr<IParcelable> parcelable = (IParcelable*) account->Probe(EIID_IParcelable);
-    FAIL_RETURN(clickIntent->PutParcelableExtra(String("account"), parcelable))
-    FAIL_RETURN(clickIntent->PutStringExtra(String("authority"), authority))
+    FAIL_RETURN(clickIntent->PutExtra(String("account"), parcelable))
+    FAIL_RETURN(clickIntent->PutExtra(String("authority"), authority))
     String str;
     FAIL_RETURN(authorityName->ToString(&str))
-    FAIL_RETURN(clickIntent->PutStringExtra(String("provider"), str))
-    FAIL_RETURN(clickIntent->PutInt64Extra(String("numDeletes"), numDeletes))
+    FAIL_RETURN(clickIntent->PutExtra(String("provider"), str))
+    FAIL_RETURN(clickIntent->PutExtra(String("numDeletes"), numDeletes))
 
     Boolean ret = FALSE;
     FAIL_RETURN(IsActivityAvailable(clickIntent, &ret))

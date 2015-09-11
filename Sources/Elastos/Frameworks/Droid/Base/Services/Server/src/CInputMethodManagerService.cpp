@@ -2717,7 +2717,7 @@ ECode CInputMethodManagerService::StartInputInnerLocked(
     AutoPtr<IComponentName> component;
     info->GetComponent((IComponentName**)&component);
     mCurIntent->SetComponent(component);
-    mCurIntent->PutInt32Extra(IIntent::EXTRA_CLIENT_LABEL, R::string::input_method_binding_label);
+    mCurIntent->PutExtra(IIntent::EXTRA_CLIENT_LABEL, R::string::input_method_binding_label);
     AutoPtr<IIntent> intentPara;
     CIntent::New(ISettings::ACTION_INPUT_METHOD_SETTINGS, (IIntent**)&intentPara);
     AutoPtr<IPendingIntent> pIntentPara;
@@ -2726,7 +2726,7 @@ ECode CInputMethodManagerService::StartInputInnerLocked(
     helper->GetActivity(mContext, 0, intentPara, 0, (IPendingIntent**)&pIntentPara);
     AutoPtr<IParcelable> p = IParcelable::Probe(pIntentPara);
 
-    mCurIntent->PutParcelableExtra(IIntent::EXTRA_CLIENT_INTENT, p);
+    mCurIntent->PutExtra(IIntent::EXTRA_CLIENT_INTENT, p);
     if (BindCurrentInputMethodService(mCurIntent, this, IContext::BIND_AUTO_CREATE | IContext::BIND_NOT_VISIBLE)) {
         mLastBindTime = SystemClock::GetUptimeMillis();
         mHaveConnection = TRUE;
@@ -3238,11 +3238,11 @@ ECode CInputMethodManagerService::NotifySuggestionPicked(
             targetImi->GetPackageName(&pNname);
             intent->SetClassName(pNname, className);
             intent->SetAction(ISuggestionSpan::ACTION_SUGGESTION_PICKED);
-            intent->PutStringExtra(ISuggestionSpan::SUGGESTION_SPAN_PICKED_BEFORE, originalString);
-            intent->PutStringExtra(ISuggestionSpan::SUGGESTION_SPAN_PICKED_AFTER, (*suggestions)[index]);
+            intent->PutExtra(ISuggestionSpan::SUGGESTION_SPAN_PICKED_BEFORE, originalString);
+            intent->PutExtra(ISuggestionSpan::SUGGESTION_SPAN_PICKED_AFTER, (*suggestions)[index]);
             Int32 code = 0;
             span->GetHashCode(&code);
-            intent->PutInt32Extra(ISuggestionSpan::SUGGESTION_SPAN_PICKED_HASHCODE, code);
+            intent->PutExtra(ISuggestionSpan::SUGGESTION_SPAN_PICKED_HASHCODE, code);
             Int64 ident = Binder::ClearCallingIdentity();
             // try {
             mContext->SendBroadcastAsUser(intent, UserHandle::CURRENT);
@@ -3354,7 +3354,7 @@ ECode CInputMethodManagerService::SetInputMethodLocked(
         AutoPtr<IIntent> intent;
         CIntent::New(IIntent::ACTION_INPUT_METHOD_CHANGED, (IIntent**)&intent);
         intent->AddFlags(IIntent::FLAG_RECEIVER_REPLACE_PENDING);
-        intent->PutStringExtra(String("input_method_id"), id);
+        intent->PutExtra(String("input_method_id"), id);
         AutoPtr<IUserHandleHelper> userHandleHelper;
         CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&userHandleHelper);
         AutoPtr<IUserHandle> CURRENT;
@@ -4352,7 +4352,7 @@ void CInputMethodManagerService::ShowInputMethodAndSubtypeEnabler(
             | IIntent::FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
             | IIntent::FLAG_ACTIVITY_CLEAR_TOP);
     if (!TextUtils::IsEmpty(inputMethodId)) {
-        intent->PutStringExtra(ISettings::EXTRA_INPUT_METHOD_ID, inputMethodId);
+        intent->PutExtra(ISettings::EXTRA_INPUT_METHOD_ID, inputMethodId);
     }
     AutoPtr<IUserHandleHelper> userHandleHelper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&userHandleHelper);

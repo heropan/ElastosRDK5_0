@@ -438,8 +438,8 @@ ECode CPppoeStateTracker::PostNotification(
     AutoPtr<IIntent> intent;
     FAIL_RETURN(CIntent::New(IPppoeManager::PPPOE_STATE_CHANGED_ACTION, (IIntent**)&intent));
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
-    intent->PutInt32Extra(IPppoeManager::EXTRA_PPPOE_STATE, event);
-    intent->PutStringExtra(IPppoeManager::EXTRA_PPPOE_ERRCODE, errcode);
+    intent->PutExtra(IPppoeManager::EXTRA_PPPOE_STATE, event);
+    intent->PutExtra(IPppoeManager::EXTRA_PPPOE_ERRCODE, errcode);
     mContext->SendBroadcast(intent);
 
     Slogger::D(TAG, "Send PPPOE_STATE_CHANGED_ACTION");

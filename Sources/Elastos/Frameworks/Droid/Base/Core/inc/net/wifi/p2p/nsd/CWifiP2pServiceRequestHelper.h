@@ -24,7 +24,6 @@ public:
         /* [out] */ IWifiP2pServiceRequest** instance);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

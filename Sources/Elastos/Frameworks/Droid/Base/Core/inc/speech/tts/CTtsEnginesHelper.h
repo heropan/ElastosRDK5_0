@@ -17,7 +17,6 @@ public:
         /* [out, callee] */ ArrayOf<String> ** ppRet);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }//namespace Tts

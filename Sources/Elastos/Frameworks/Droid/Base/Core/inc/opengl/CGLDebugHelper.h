@@ -27,7 +27,6 @@ public:
         /* [out] */ IEGL** eglInterface);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 } // namespace Opengl

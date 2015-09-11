@@ -27,7 +27,6 @@ public:
         /* [out] */ IHttpResponseCache** cache);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

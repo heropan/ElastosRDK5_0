@@ -2092,7 +2092,7 @@ ECode CAudioService::AudioServiceBroadcastReceiver::OnReceive(
             AutoPtr<IIntent> newIntent;
             CIntent::New(IAudioManager::ACTION_SCO_AUDIO_STATE_CHANGED,(IIntent**)&newIntent);
 
-            newIntent->PutInt32Extra(IAudioManager::EXTRA_SCO_AUDIO_STATE, scoAudioState);
+            newIntent->PutExtra(IAudioManager::EXTRA_SCO_AUDIO_STATE, scoAudioState);
             mAudioService->SendStickyBroadcastToAll(newIntent);
         }
     }
@@ -3478,9 +3478,9 @@ void CAudioService::SendVolumeUpdate(
 
         AutoPtr<IIntent> intent;
         CIntent::New(IAudioManager::VOLUME_CHANGED_ACTION, (IIntent**)&intent);
-        intent->PutInt32Extra(IAudioManager::EXTRA_VOLUME_STREAM_TYPE, streamType);
-        intent->PutInt32Extra(IAudioManager::EXTRA_VOLUME_STREAM_VALUE, index);
-        intent->PutInt32Extra(IAudioManager::EXTRA_PREV_VOLUME_STREAM_VALUE, oldIndex);
+        intent->PutExtra(IAudioManager::EXTRA_VOLUME_STREAM_TYPE, streamType);
+        intent->PutExtra(IAudioManager::EXTRA_VOLUME_STREAM_VALUE, index);
+        intent->PutExtra(IAudioManager::EXTRA_PREV_VOLUME_STREAM_VALUE, oldIndex);
         SendBroadcastToAll(intent);
     }
 }
@@ -3496,8 +3496,8 @@ void CAudioService::SendMasterVolumeUpdate(
 
     AutoPtr<IIntent> intent;
     CIntent::New(IAudioManager::MASTER_VOLUME_CHANGED_ACTION, (IIntent**)&intent);
-    intent->PutInt32Extra(IAudioManager::EXTRA_PREV_MASTER_VOLUME_VALUE, oldVolume);
-    intent->PutInt32Extra(IAudioManager::EXTRA_MASTER_VOLUME_VALUE, newVolume);
+    intent->PutExtra(IAudioManager::EXTRA_PREV_MASTER_VOLUME_VALUE, oldVolume);
+    intent->PutExtra(IAudioManager::EXTRA_MASTER_VOLUME_VALUE, newVolume);
     SendBroadcastToAll(intent);
 }
 
@@ -3518,7 +3518,7 @@ void CAudioService::BroadcastMasterMuteStatus(
     AutoPtr<IIntent> intent;
     CIntent::New(IAudioManager::MASTER_MUTE_CHANGED_ACTION, (IIntent**)&intent);
 
-    intent->PutInt32Extra(IAudioManager::EXTRA_MASTER_VOLUME_MUTED, muted);
+    intent->PutExtra(IAudioManager::EXTRA_MASTER_VOLUME_MUTED, muted);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT
         | IIntent::FLAG_RECEIVER_REPLACE_PENDING);
     SendStickyBroadcastToAll(intent);
@@ -4623,8 +4623,8 @@ void CAudioService::BroadcastScoConnectionState(
     if (state != mScoConnectionState) {
         AutoPtr<IIntent> newIntent;
         CIntent::New(IAudioManager::ACTION_SCO_AUDIO_STATE_UPDATED, (IIntent**)&newIntent);
-        newIntent->PutInt32Extra(IAudioManager::EXTRA_SCO_AUDIO_STATE, state);
-        newIntent->PutInt32Extra(IAudioManager::EXTRA_SCO_AUDIO_PREVIOUS_STATE,
+        newIntent->PutExtra(IAudioManager::EXTRA_SCO_AUDIO_STATE, state);
+        newIntent->PutExtra(IAudioManager::EXTRA_SCO_AUDIO_PREVIOUS_STATE,
             mScoConnectionState);
         SendStickyBroadcastToAll(newIntent);
         mScoConnectionState = state;
@@ -5000,7 +5000,7 @@ void CAudioService::BroadcastRingerMode(
     // Send sticky broadcast
     AutoPtr<IIntent> broadcast;
     CIntent::New(IAudioManager::RINGER_MODE_CHANGED_ACTION, (IIntent**)&broadcast);
-    broadcast->PutInt32Extra(IAudioManager::EXTRA_RINGER_MODE, mRingerMode);
+    broadcast->PutExtra(IAudioManager::EXTRA_RINGER_MODE, mRingerMode);
     broadcast->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT
             | IIntent::FLAG_RECEIVER_REPLACE_PENDING);
     SendStickyBroadcastToAll(broadcast);
@@ -5014,7 +5014,7 @@ void CAudioService::BroadcastVibrateSetting(
 //    if (ActivityManagerNative::IsSystemReady()) {
 //        AutoPtr<IIntent> broadcast;
 //        CIIntent::New(IAudioManager::VIBRATE_SETTING_CHANGED_ACTION, (IIntent**)&broadcast);
-//        broadcast->PutInt32Extra(IAudioManager::EXTRA_VIBRATE_TYPE, vibrateType);
+//        broadcast->PutExtra(IAudioManager::EXTRA_VIBRATE_TYPE, vibrateType);
 //        Boolean tempState;
 //        GetVibrateSetting(vibrateType, &tempState);
 //        broadcast->PutBooleanExtra(IAudioManager::EXTRA_VIBRATE_SETTING, tempState);
@@ -5387,8 +5387,8 @@ void CAudioService::SendDeviceConnectionIntent(
     AutoPtr<IIntent> intent;
     CIntent::New((IIntent**)&intent);
 
-    intent->PutInt32Extra(String("state"), state);
-    intent->PutStringExtra(String("name"), name);
+    intent->PutExtra(String("state"), state);
+    intent->PutExtra(String("name"), name);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY);
 
     Int32 connType = 0;
@@ -5396,13 +5396,13 @@ void CAudioService::SendDeviceConnectionIntent(
     if (device == IAudioSystem::DEVICE_OUT_WIRED_HEADSET) {
         connType = CAudioRoutesInfo::MAIN_HEADSET;
         intent->SetAction(IIntent::ACTION_HEADSET_PLUG);
-        intent->PutInt32Extra(String("microphone"), 1);
+        intent->PutExtra(String("microphone"), 1);
 
     }
     else if (device == IAudioSystem::DEVICE_OUT_WIRED_HEADPHONE) {
         connType = CAudioRoutesInfo::MAIN_HEADPHONES;
         intent->SetAction(IIntent::ACTION_HEADSET_PLUG);
-        intent->PutInt32Extra(String("microphone"), 0);
+        intent->PutExtra(String("microphone"), 0);
 
     }
     else if (device == IAudioSystem::DEVICE_OUT_ANLG_DOCK_HEADSET) {
@@ -5813,13 +5813,13 @@ void CAudioService::DispatchMediaKeyEventForCalls(
 {
     AutoPtr<IIntent> keyIntent;
     CIntent::New(IIntent::ACTION_MEDIA_BUTTON, NULL, (IIntent**)&keyIntent);
-    keyIntent->PutParcelableExtra(IIntent::EXTRA_KEY_EVENT, (IParcelable*)keyEvent);
+    keyIntent->PutExtra(IIntent::EXTRA_KEY_EVENT, (IParcelable*)keyEvent);
     String tempText;
     mMediaReceiverForCalls->GetPackageName(&tempText);
     keyIntent->SetPackage(tempText);
     if (needWakeLock) {
         mMediaEventWakeLock->AcquireLock();
-        keyIntent->PutInt32Extra(EXTRA_WAKELOCK_ACQUIRED, WAKELOCK_RELEASE_ON_FINISHED);
+        keyIntent->PutExtra(EXTRA_WAKELOCK_ACQUIRED, WAKELOCK_RELEASE_ON_FINISHED);
     }
     AutoPtr<IBinderHelper> binderHelper;
     Int64 tempValue;
@@ -5846,7 +5846,7 @@ void CAudioService::DispatchMediaKeyEvent(
 
     AutoPtr<IIntent> keyIntent;
     CIntent::New(IIntent::ACTION_MEDIA_BUTTON, NULL, (IIntent**)&keyIntent);
-    keyIntent->PutParcelableExtra(IIntent::EXTRA_KEY_EVENT, (IParcelable*)keyEvent);
+    keyIntent->PutExtra(IIntent::EXTRA_KEY_EVENT, (IParcelable*)keyEvent);
 
     {
         // AutoLock lock(mRCStackLock);
@@ -5865,7 +5865,7 @@ void CAudioService::DispatchMediaKeyEvent(
         //    // legacy behavior when nobody registered their media button event receiver
         //    //    through AudioManager
         //    if (needWakeLock) {
-        //        keyIntent->PutInt32Extra(EXTRA_WAKELOCK_ACQUIRED, WAKELOCK_RELEASE_ON_FINISHED);
+        //        keyIntent->PutExtra(EXTRA_WAKELOCK_ACQUIRED, WAKELOCK_RELEASE_ON_FINISHED);
         //    }
         //    const Int64 ident = Binder->ClearCallingIdentity();
         //    try {
@@ -7137,7 +7137,7 @@ void CAudioService::HandleBootCompleted(
         AutoPtr<IIntent> newIntent;
         CIntent::New(IAudioManager::ACTION_SCO_AUDIO_STATE_CHANGED,(IIntent**)&newIntent);
 
-        newIntent->PutInt32Extra(IAudioManager::EXTRA_SCO_AUDIO_STATE,
+        newIntent->PutExtra(IAudioManager::EXTRA_SCO_AUDIO_STATE,
             IAudioManager::SCO_AUDIO_STATE_DISCONNECTED);
         SendStickyBroadcastToAll(newIntent);
 

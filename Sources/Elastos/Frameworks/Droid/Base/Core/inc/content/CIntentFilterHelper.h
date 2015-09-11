@@ -3,15 +3,21 @@
 #define __ELASTOS_DROID_CONTENT_CINTENTFILTERHELPER_H__
 
 #include "_Elastos_Droid_Content_CIntentFilterHelper.h"
-#include "IntentFilter.h"
+#include <elastos/core/Singelton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CIntentFilterHelper)
+    , public Singleton
+    , public IIntentFilterHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Create a new IntentFilter instance with a specified action and MIME
      * type, where you know the MIME type is correctly formatted.  This catches
@@ -31,7 +37,6 @@ public:
         /* [out] */ IIntentFilter** intentFilter);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

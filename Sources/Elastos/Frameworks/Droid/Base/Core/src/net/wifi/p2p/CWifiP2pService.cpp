@@ -401,10 +401,10 @@ ECode CWifiP2pService::P2pStateMachine::SendP2pStateChangedBroadcast(
     CIntent::New(IWifiP2pManager::WIFI_P2P_STATE_CHANGED_ACTION, (IIntent**)&intent);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
     if (enabled) {
-        intent->PutInt32Extra(IWifiP2pManager::EXTRA_WIFI_STATE,
+        intent->PutExtra(IWifiP2pManager::EXTRA_WIFI_STATE,
             IWifiP2pManager::WIFI_P2P_STATE_ENABLED);
     } else {
-        intent->PutInt32Extra(IWifiP2pManager::EXTRA_WIFI_STATE,
+        intent->PutExtra(IWifiP2pManager::EXTRA_WIFI_STATE,
             IWifiP2pManager::WIFI_P2P_STATE_DISABLED);
     }
     return mHost->mContext->SendStickyBroadcastAsUser(intent, UserHandle::ALL);
@@ -422,7 +422,7 @@ ECode CWifiP2pService::P2pStateMachine::SendP2pDiscoveryChangedBroadcast(
     AutoPtr<IIntent> intent;
     CIntent::New(IWifiP2pManager::WIFI_P2P_DISCOVERY_CHANGED_ACTION, (IIntent**)&intent);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
-    intent->PutInt32Extra(IWifiP2pManager::EXTRA_DISCOVERY_STATE, started ?
+    intent->PutExtra(IWifiP2pManager::EXTRA_DISCOVERY_STATE, started ?
         IWifiP2pManager::WIFI_P2P_DISCOVERY_STARTED : IWifiP2pManager::WIFI_P2P_DISCOVERY_STOPPED);
     return mHost->mContext->SendStickyBroadcastAsUser(intent, UserHandle::ALL);
 }
@@ -434,7 +434,7 @@ ECode CWifiP2pService::P2pStateMachine::SendThisDeviceChangedBroadcast()
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
     AutoPtr<IWifiP2pDevice> device;
     CWifiP2pDevice::New(mHost->mThisDevice, (IWifiP2pDevice**)&device);
-    intent->PutParcelableExtra(
+    intent->PutExtra(
         IWifiP2pManager::EXTRA_WIFI_P2P_DEVICE,
         IParcelable::Probe(device.Get()));
     return mHost->mContext->SendStickyBroadcastAsUser(intent, UserHandle::ALL);
@@ -457,13 +457,13 @@ ECode CWifiP2pService::P2pStateMachine::SendP2pConnectionChangedBroadcast()
         | IIntent::FLAG_RECEIVER_REPLACE_PENDING);
     AutoPtr<IWifiP2pInfo> wifiInfo;
     CWifiP2pInfo::New(mWifiP2pInfo, (IWifiP2pInfo**)&wifiInfo);
-    intent->PutParcelableExtra(
+    intent->PutExtra(
         IWifiP2pManager::EXTRA_WIFI_P2P_INFO,
         IParcelable::Probe(wifiInfo.Get()));
 
     AutoPtr<INetworkInfo> netInfo;
     CNetworkInfo::New(mHost->mNetworkInfo, (INetworkInfo**)&netInfo);
-    intent->PutParcelableExtra(
+    intent->PutExtra(
         IWifiP2pManager::EXTRA_NETWORK_INFO,
         IParcelable::Probe(netInfo.Get()));
 
@@ -474,7 +474,7 @@ ECode CWifiP2pService::P2pStateMachine::SendP2pConnectionChangedBroadcast()
     else {
         CWifiP2pDevice::New((IWifiP2pDevice**)&device);
     }
-    intent->PutParcelableExtra(
+    intent->PutExtra(
         IWifiP2pManager::EXTRA_WIFI_P2P_DEVICE,
         IParcelable::Probe(device.Get()));
 

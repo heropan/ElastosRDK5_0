@@ -808,7 +808,7 @@ void WifiDisplayAdapter::HandleSendStatusChangeBroadcast()
             (IIntent**)&intent);
         intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY);
         AutoPtr<IWifiDisplayStatus> status = GetWifiDisplayStatusLocked();
-        intent->PutParcelableExtra(IDisplayManager::EXTRA_WIFI_DISPLAY_STATUS,
+        intent->PutExtra(IDisplayManager::EXTRA_WIFI_DISPLAY_STATUS,
             status != NULL ? IParcelable::Probe(status) : NULL);
     }
 

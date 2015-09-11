@@ -85,8 +85,8 @@ AutoPtr<IBundle> CBundle::ForPair(
 {
     AutoPtr<CBundle> b;
     CBundle::NewByFriend(1, (CBundle**)&b);
-    b->PutString(key, value);
     AutoPtr<IBundle> ib = (IBundle*)b.Get();
+    ib->PutString(key, value);
     return ib;
 }
 
@@ -590,6 +590,490 @@ ECode CBundle::ToString(
     *str = sb.ToString();
     return NOERROR;
 }
+
+//
+// From IBaseBundle
+//
+
+ECode CBundle::SetClassLoader(
+    /* [in] */ IClassLoader* loader)
+{
+    return BaseBundle::SetClassLoader(loader);
+}
+
+ECode CBundle::GetClassLoader(
+    /* [out] */ IClassLoader** loader)
+{
+    return BaseBundle::GetClassLoader(loader);
+}
+
+ECode CBundle::IsParcelled(
+    /* [out] */ Boolean* empty)
+{
+    return BaseBundle::IsParcelled(empty);
+}
+
+ECode CBundle::GetSize(
+    /* [out] */ Int32 * size)
+{
+    return BaseBundle::GetSize(size);
+}
+
+ECode CBundle::IsEmpty(
+    /* [out] */ Boolean* empty)
+{
+    return BaseBundle::IsEmpty(empty);
+}
+
+ECode CBundle::ContainsKey(
+    /* [in] */ const String& key,
+    /* [out] */ Boolean* result)
+{
+    return BaseBundle::ContainsKey(key, result);
+}
+
+ECode CBundle::Get(
+    /* [in] */ const String& key,
+    /* [out] */ IInterface** obj)
+{
+    return BaseBundle::Get(key, obj);
+}
+
+ECode CBundle::Remove(
+    /* [in] */ const String& key)
+{
+    return BaseBundle::Remove(key);
+}
+
+ECode CBundle::PutAll(
+    /* [in] */ IPersistableBundle* bundle)
+{
+    return BaseBundle::PutAll(bundle);
+}
+
+ECode CBundle::GetKeySet(
+    /* [out] */ ISet** set)
+{
+    return BaseBundle::GetKeySet(set);
+}
+
+ECode CBundle::PutBoolean(
+    /* [in] */ const String& key,
+    /* [in] */ Boolean value)
+{
+    return BaseBundle::PutBoolean(key, value);
+}
+
+ECode CBundle::PutByte(
+    /* [in] */ const String& key,
+    /* [in] */ Byte value)
+{
+    return BaseBundle::PutByte(key, value);
+}
+
+ECode CBundle::PutChar(
+    /* [in] */ const String& key,
+    /* [in] */ Char32 value)
+{
+    return BaseBundle::PutChar(key, value);
+}
+
+ECode CBundle::PutInt16(
+    /* [in] */ const String& key,
+    /* [in] */ Int16 value)
+{
+    return BaseBundle::PutInt16(key, value);
+}
+
+ECode CBundle::PutInt32(
+    /* [in] */ const String& key,
+    /* [in] */ Int32 value)
+{
+    return BaseBundle::PutInt32(key, value);
+}
+
+ECode CBundle::PutInt64(
+    /* [in] */ const String& key,
+    /* [in] */ Int64 value)
+{
+    return BaseBundle::PutInt64(key, value);
+}
+
+ECode CBundle::PutFloat(
+    /* [in] */ const String& key,
+    /* [in] */ Float value)
+{
+    return BaseBundle::PutFloat(key, value);
+}
+
+ECode CBundle::PutDouble(
+    /* [in] */ const String& key,
+    /* [in] */ Double value)
+{
+    return BaseBundle::PutDouble(key, value);
+}
+
+ECode CBundle::PutString(
+    /* [in] */ const String& key,
+    /* [in] */ const String& value)
+{
+    return BaseBundle::PutString(key, value);
+}
+
+ECode CBundle::PutCharSequence(
+    /* [in] */ const String& key,
+    /* [in] */ ICharSequence* value)
+{
+    return BaseBundle::PutCharSequence(key, value);
+}
+
+ECode CBundle::PutIntegerArrayList(
+    /* [in] */ const String& key,
+    /* [in] */ IArrayList* value)
+{
+    return BaseBundle::PutIntegerArrayList(key, value);
+}
+
+ECode CBundle::PutStringArrayList(
+    /* [in] */ const String& key,
+    /* [in] */ IArrayList* value)
+{
+    return BaseBundle::PutStringArrayList(key, value);
+}
+
+ECode CBundle::PutCharSequenceArrayList(
+    /* [in] */ const String& key,
+    /* [in] */ IArrayList* value)
+{
+    return BaseBundle::PutCharSequenceArrayList(key, value);
+}
+
+ECode CBundle::PutSerializable(
+    /* [in] */ const String& key,
+    /* [in] */ ISerializable* value)
+{
+    return BaseBundle::PutSerializable(key, value);
+}
+
+ECode CBundle::PutBooleanArray(
+    /* [in] */ const String& key,
+    /* [in] */ ArrayOf<Boolean>* value)
+{
+    return BaseBundle::PutBooleanArray(key, value);
+}
+
+ECode CBundle::PutByteArray(
+    /* [in] */ const String& key,
+    /* [in] */ ArrayOf<Byte>* value)
+{
+    return BaseBundle::PutByteArray(key, value);
+}
+
+ECode CBundle::PutCharArray(
+    /* [in] */ const String& key,
+    /* [in] */ ArrayOf<Char32>* value)
+{
+    return BaseBundle::PutCharArray(key, value);
+}
+
+ECode CBundle::PutInt16Array(
+    /* [in] */ const String& key,
+    /* [in] */ ArrayOf<Int16>* value)
+{
+    return BaseBundle::PutInt16Array(key, value);
+}
+
+ECode CBundle::PutInt32Array(
+    /* [in] */ const String& key,
+    /* [in] */ ArrayOf<Int32>* value)
+{
+    return BaseBundle::PutInt32Array(key, value);
+}
+
+ECode CBundle::PutInt64Array(
+    /* [in] */ const String& key,
+    /* [in] */ ArrayOf<Int64>* value)
+{
+    return BaseBundle::PutInt64Array(key, value);
+}
+
+ECode CBundle::PutFloatArray(
+    /* [in] */ const String& key,
+    /* [in] */ ArrayOf<Float>* value)
+{
+    return BaseBundle::PutFloatArray(key, value);
+}
+
+ECode CBundle::PutDoubleArray(
+    /* [in] */ const String& key,
+    /* [in] */ ArrayOf<Double>* value)
+{
+    return BaseBundle::PutDoubleArray(key, value);
+}
+
+ECode CBundle::PutStringArray(
+    /* [in] */ const String& key,
+    /* [in] */ ArrayOf<String>* value)
+{
+    return BaseBundle::PutStringArray(key, value);
+}
+
+ECode CBundle::PutCharSequenceArray(
+    /* [in] */ const String& key,
+    /* [in] */ ArrayOf<ICharSequence*>* value)
+{
+    return BaseBundle::PutCharSequenceArray(key, value);
+}
+
+ECode CBundle::GetBoolean(
+    /* [in] */ const String& key,
+    /* [out] */ Boolean* value)
+{
+    return BaseBundle::GetBoolean(key, value);
+}
+
+ECode CBundle::GetBoolean(
+    /* [in] */ const String& key,
+    /* [in] */ Boolean defaultValue,
+    /* [out] */ Boolean* value)
+{
+    return BaseBundle::GetBoolean(key, defaultValue, value);
+}
+
+ECode CBundle::GetByte(
+    /* [in] */ const String& key,
+    /* [out] */ Byte* value)
+{
+    return BaseBundle::GetByte(key, value);
+}
+
+ECode CBundle::GetByte(
+    /* [in] */ const String& key,
+    /* [in] */ Byte defaultValue,
+    /* [out] */ Byte* value)
+{
+    return BaseBundle::GetByte(key, defaultValue, value);
+}
+
+ECode CBundle::GetChar(
+    /* [in] */ const String& key,
+    /* [out] */ Char32* value)
+{
+    return BaseBundle::GetChar(key, value);
+}
+
+ECode CBundle::GetChar(
+    /* [in] */ const String& key,
+    /* [in] */ Char32 defaultValue,
+    /* [out] */ Char32* value)
+{
+    return BaseBundle::GetChar(key, defaultValue, value);
+}
+
+ECode CBundle::GetInt16(
+    /* [in] */ const String& key,
+    /* [out] */ Int16* value)
+{
+    return BaseBundle::GetInt16(key, value);
+}
+
+ECode CBundle::GetInt16(
+    /* [in] */ const String& key,
+    /* [in] */ Int16 defaultValue,
+    /* [out] */ Int16* value)
+{
+    return BaseBundle::GetInt16(key, defaultValue, value);
+}
+
+ECode CBundle::GetInt32(
+    /* [in] */ const String& key,
+    /* [out] */ Int32* value)
+{
+    return BaseBundle::GetInt32(key, value);
+}
+
+ECode CBundle::GetInt32(
+    /* [in] */ const String& key,
+    /* [in] */ Int32 defaultValue,
+    /* [out] */ Int32* value)
+{
+    return BaseBundle::GetInt32(key, defaultValue, value);
+}
+
+ECode CBundle::GetInt64(
+    /* [in] */ const String& key,
+    /* [out] */ Int64* value)
+{
+    return BaseBundle::GetInt64(key, value);
+}
+
+ECode CBundle::GetInt64(
+    /* [in] */ const String& key,
+    /* [in] */ Int64 defaultValue,
+    /* [out] */ Int64* value)
+{
+    return BaseBundle::GetInt64(key, defaultValue, value);
+}
+
+ECode CBundle::GetFloat(
+    /* [in] */ const String& key,
+    /* [out] */ Float* value)
+{
+    return BaseBundle::GetFloat(key, value);
+}
+
+ECode CBundle::GetFloat(
+    /* [in] */ const String& key,
+    /* [in] */ Float defaultValue,
+    /* [out] */ Float* value)
+{
+    return BaseBundle::GetFloat(key, defaultValue, value);
+}
+
+ECode CBundle::GetDouble(
+    /* [in] */ const String& key,
+    /* [out] */ Double* value)
+{
+    return BaseBundle::GetDouble(key, value);
+}
+
+ECode CBundle::GetDouble(
+    /* [in] */ const String& key,
+    /* [in] */ Double defaultValue,
+    /* [out] */ Double* value)
+{
+    return BaseBundle::GetDouble(key, defaultValue, value);
+}
+
+ECode CBundle::GetString(
+    /* [in] */ const String& key,
+    /* [out] */ String* value)
+{
+    return BaseBundle::GetString(key, value);
+}
+
+ECode CBundle::GetString(
+    /* [in] */ const String& key,
+    /* [in] */ const String& defaultValue,
+    /* [out] */ String* value)
+{
+    return BaseBundle::GetString(key, defaultValue, value);
+}
+
+ECode CBundle::GetCharSequence(
+    /* [in] */ const String& key,
+    /* [out] */ ICharSequence** value)
+{
+    return BaseBundle::GetCharSequence(key, value);
+}
+
+ECode CBundle::GetCharSequence(
+    /* [in] */ const String& key,
+    /* [in] */ ICharSequence* defaultValue,
+    /* [out] */ ICharSequence** value)
+{
+    return BaseBundle::GetCharSequence(key, defaultValue, value);
+}
+
+ECode CBundle::GetSerializable(
+    /* [in] */ const String& key,
+    /* [out] */ ISerializable** value)
+{
+    return BaseBundle::GetSerializable(key, value);
+}
+
+ECode CBundle::GetIntegerArrayList(
+    /* [in] */ const String& key,
+    /* [out] */ IArrayList** value)
+{
+    return BaseBundle::GetIntegerArrayList(key, value);
+}
+
+ECode CBundle::GetStringArrayList(
+    /* [in] */ const String& key,
+    /* [out] */ IArrayList** value)
+{
+    return BaseBundle::GetStringArrayList(key, value);
+}
+
+ECode CBundle::GetCharSequenceArrayList(
+    /* [in] */ const String& key,
+    /* [out] */ IArrayList** value)
+{
+    return BaseBundle::GetCharSequenceArrayList(key, value);
+}
+
+ECode CBundle::GetBooleanArray(
+    /* [in] */ const String& key,
+    /* [out, callee] */ ArrayOf<Boolean>** value)
+{
+    return BaseBundle::GetBooleanArray(key, value);
+}
+
+ECode CBundle::GetByteArray(
+    /* [in] */ const String& key,
+    /* [out, callee] */ ArrayOf<Byte>** value)
+{
+    return BaseBundle::GetByteArray(key, value);
+}
+
+ECode CBundle::GetInt16Array(
+    /* [in] */ const String& key,
+    /* [out, callee] */ ArrayOf<Int16>** value)
+{
+    return BaseBundle::GetInt16Array(key, value);
+}
+
+ECode CBundle::GetCharArray(
+    /* [in] */ const String& key,
+    /* [out, callee] */ ArrayOf<Char32>** value)
+{
+    return BaseBundle::GetCharArray(key, value);
+}
+
+ECode CBundle::GetInt32Array(
+    /* [in] */ const String& key,
+    /* [out, callee] */ ArrayOf<Int32>** value)
+{
+    return BaseBundle::GetInt32Array(key, value);
+}
+
+ECode CBundle::GetInt64Array(
+    /* [in] */ const String& key,
+    /* [out, callee] */ ArrayOf<Int64>** value)
+{
+    return BaseBundle::GetInt64Array(key, value);
+}
+
+ECode CBundle::GetFloatArray(
+    /* [in] */ const String& key,
+    /* [out, callee] */ ArrayOf<Float>** value)
+{
+    return BaseBundle::GetFloatArray(key, value);
+}
+
+ECode CBundle::GetDoubleArray(
+    /* [in] */ const String& key,
+    /* [out, callee] */ ArrayOf<Double>** value)
+{
+    return BaseBundle::GetDoubleArray(key, value);
+}
+
+ECode CBundle::GetStringArray(
+    /* [in] */ const String& key,
+    /* [out, callee] */ ArrayOf<String>** value)
+{
+    return BaseBundle::GetStringArray(key, value);
+}
+
+ECode CBundle::GetCharSequenceArray(
+    /* [in] */ const String& key,
+    /* [out, callee] */ ArrayOf<ICharSequence*>** value)
+{
+    return BaseBundle::GetCharSequenceArray(key, value);
+}
+
+
 
 } // namespace Os
 } // namespace Droid

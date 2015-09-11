@@ -78,7 +78,7 @@ ECode URLSpan::OnClick(
     AutoPtr<IIntent> intent;
     CIntent::New(IIntent::ACTION_VIEW, uri, (IIntent**)&intent);
     String strPackageName;
-    intent->/*PutExtra*/PutStringExtra(/*IBrowser::EXTRA_APPLICATION_ID*/String("com.android.browser.application_id"), (context->GetPackageName(&strPackageName), strPackageName));
+    intent->/*PutExtra*/PutExtra(/*IBrowser::EXTRA_APPLICATION_ID*/String("com.android.browser.application_id"), (context->GetPackageName(&strPackageName), strPackageName));
     context->StartActivity(intent);
     return NOERROR;
 }

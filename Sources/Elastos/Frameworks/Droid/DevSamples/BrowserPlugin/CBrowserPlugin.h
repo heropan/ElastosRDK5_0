@@ -20,7 +20,6 @@ public:
     CAR_INTERFACE_DECL();
     ECode OnBind(IIntent* intent, IBinder** binder);
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

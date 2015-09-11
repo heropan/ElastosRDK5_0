@@ -36,7 +36,6 @@ private:
         /* [out] */ Boolean* isDriverActive);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

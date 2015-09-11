@@ -656,7 +656,7 @@ void AppWidgetServiceImpl::DeleteAppWidgetLocked(
             AutoPtr<IComponentName> cn;
             p->mInfo->GetProvider((IComponentName**)&cn);
             intent->SetComponent(cn);
-            intent->PutInt32Extra(IAppWidgetManager::EXTRA_APPWIDGET_ID, id->mAppWidgetId);
+            intent->PutExtra(IAppWidgetManager::EXTRA_APPWIDGET_ID, id->mAppWidgetId);
             AutoPtr<IUserHandle> userhandle;
             CUserHandle::New(mUserId, (IUserHandle**)&userhandle);
             mContext->SendBroadcastAsUser(intent, userhandle);
@@ -1182,8 +1182,8 @@ ECode AppWidgetServiceImpl::UpdateAppWidgetOptions(
     AutoPtr<IComponentName> pv;
     p->mInfo->GetProvider((IComponentName**)&pv);
     intent->SetComponent(pv);
-    intent->PutInt32Extra(IAppWidgetManager::EXTRA_APPWIDGET_ID, id->mAppWidgetId);
-    intent->PutBundleExtra(IAppWidgetManager::EXTRA_APPWIDGET_OPTIONS, id->mOptions);
+    intent->PutExtra(IAppWidgetManager::EXTRA_APPWIDGET_ID, id->mAppWidgetId);
+    intent->PutExtra(IAppWidgetManager::EXTRA_APPWIDGET_OPTIONS, id->mOptions);
     AutoPtr<IUserHandle> userhandle;
     CUserHandle::New(mUserId, (IUserHandle**)&userhandle);
     mContext->SendBroadcastAsUser(intent, userhandle);
@@ -1668,7 +1668,7 @@ void AppWidgetServiceImpl::SendUpdateIntentLocked(
     if (appWidgetIds != NULL && appWidgetIds->GetLength() > 0) {
         AutoPtr<IIntent> intent;
         CIntent::New(IAppWidgetManager::ACTION_APPWIDGET_UPDATE, (IIntent**)&intent);
-        intent->PutInt32ArrayExtra(IAppWidgetManager::EXTRA_APPWIDGET_IDS, appWidgetIds);
+        intent->PutExtra(IAppWidgetManager::EXTRA_APPWIDGET_IDS, appWidgetIds);
         AutoPtr<IComponentName> pv;
         p->mInfo->GetProvider((IComponentName**)&pv);
         intent->SetComponent(pv);
@@ -1691,7 +1691,7 @@ void AppWidgetServiceImpl::RegisterForBroadcastsLocked(
         Boolean alreadyRegistered = p->mBroadcast != NULL;
         AutoPtr<IIntent> intent;
         CIntent::New(IAppWidgetManager::ACTION_APPWIDGET_UPDATE, (IIntent**)&intent);
-        intent->PutInt32ArrayExtra(IAppWidgetManager::EXTRA_APPWIDGET_IDS, appWidgetIds);
+        intent->PutExtra(IAppWidgetManager::EXTRA_APPWIDGET_IDS, appWidgetIds);
         AutoPtr<IComponentName> pv;
         p->mInfo->GetProvider((IComponentName**)&pv);
         intent->SetComponent(pv);

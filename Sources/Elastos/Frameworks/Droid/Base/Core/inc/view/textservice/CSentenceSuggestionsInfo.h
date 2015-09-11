@@ -75,7 +75,6 @@ public:
         /* [out] */ Int32* length);
 
 private:
-    // TODO: Add your private member variables here.
     AutoPtr<ArrayOf<ISuggestionsInfo> > mSuggestionsInfos;
     AutoPtr<ArrayOf<Int32> > mOffsets;
     AutoPtr<ArrayOf<Int32> > mLengths;

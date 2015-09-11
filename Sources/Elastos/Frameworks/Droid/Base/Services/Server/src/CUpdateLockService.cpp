@@ -78,7 +78,7 @@ ECode CUpdateLockService::SendLockChangedBroadcast(
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
     Int64 millis;
     system->GetCurrentTimeMillis(&millis);
-    intent->PutInt64Extra(IUpdateLock::TIMESTAMP, millis);
+    intent->PutExtra(IUpdateLock::TIMESTAMP, millis);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
 
     AutoPtr<IUserHandleHelper> helper;

@@ -69,7 +69,7 @@ ECode CActivityOne::MyListener::OnClick(
         AutoPtr<IIntent> sendIntent;
         CIntent::New((IIntent**)&sendIntent);
         sendIntent->SetAction(IIntent::ACTION_SEND);
-        sendIntent->PutStringExtra(IIntent::EXTRA_TEXT, String("This is my text to send from Sharing app."));
+        sendIntent->PutExtra(IIntent::EXTRA_TEXT, String("This is my text to send from Sharing app."));
         sendIntent->SetType(String("text/plain"));
         mHost->StartActivity(sendIntent);
     }

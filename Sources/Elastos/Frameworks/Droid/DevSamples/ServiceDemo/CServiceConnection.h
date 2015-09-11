@@ -20,7 +20,6 @@ public:
         /* [in] */ Elastos::Droid::Content::IComponentName * pName);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

@@ -210,7 +210,6 @@ private:
 
         ChangeNotification(Int32 start, Int32 end);
     };
-    // TODO: Add your private member variables here.
         // Is a composition active?
     Boolean mComposing;
     // Composition text when a composition is active

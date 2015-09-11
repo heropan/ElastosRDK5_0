@@ -379,9 +379,9 @@ void CEthernetService::SendChangedBroadcast(
     intent->AddFlags(
         IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT
         | IIntent::FLAG_RECEIVER_REPLACE_PENDING);
-    intent->PutParcelableExtra(
+    intent->PutExtra(
         IEthernetManager::EXTRA_ETHERNET_INFO, IParcelable::Probe(info));
-    intent->PutInt32Extra(IEthernetManager::EXTRA_ETHERNET_STATE, event);
+    intent->PutExtra(IEthernetManager::EXTRA_ETHERNET_STATE, event);
     mContext->SendStickyBroadcast(intent);
 }
 

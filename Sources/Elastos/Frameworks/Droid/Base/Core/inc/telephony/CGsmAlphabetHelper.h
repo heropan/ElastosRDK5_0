@@ -145,7 +145,6 @@ public:
         /* [out, callee] */ ArrayOf<Int32>** res);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

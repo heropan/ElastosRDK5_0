@@ -427,12 +427,12 @@ ECode CLabeledIntent::GetParcelableArrayListExtra(
     return Intent::GetParcelableArrayListExtra(name, value);
 }
 
-ECode CLabeledIntent::GetIntegerArrayListExtra(
+ECode CLabeledIntent::GetInteger32ArrayListExtra(
     /* [in] */ const String& name,
     /* [out] */ IObjectContainer** value)
 {
     VALIDATE_NOT_NULL(value);
-    return Intent::GetIntegerArrayListExtra(name, value);
+    return Intent::GetInteger32ArrayListExtra(name, value);
 }
 
 ECode CLabeledIntent::GetStringArrayListExtra(
@@ -696,46 +696,46 @@ ECode CLabeledIntent::PutCharExtra(
     return Intent::PutCharExtra(name, value);
 }
 
-ECode CLabeledIntent::PutInt16Extra(
+ECode CLabeledIntent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ Int16 value)
 {
-    return Intent::PutInt16Extra(name, value);
+    return Intent::PutExtra(name, value);
 }
 
-ECode CLabeledIntent::PutInt32Extra(
+ECode CLabeledIntent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ Int32 value)
 {
-    return Intent::PutInt32Extra(name, value);
+    return Intent::PutExtra(name, value);
 }
 
-ECode CLabeledIntent::PutInt64Extra(
+ECode CLabeledIntent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ Int64 value)
 {
-    return Intent::PutInt64Extra(name, value);
+    return Intent::PutExtra(name, value);
 }
 
-ECode CLabeledIntent::PutFloatExtra(
+ECode CLabeledIntent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ Float value)
 {
-    return Intent::PutFloatExtra(name, value);
+    return Intent::PutExtra(name, value);
 }
 
-ECode CLabeledIntent::PutDoubleExtra(
+ECode CLabeledIntent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ Double value)
 {
-    return Intent::PutDoubleExtra(name, value);
+    return Intent::PutExtra(name, value);
 }
 
-ECode CLabeledIntent::PutStringExtra(
+ECode CLabeledIntent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ const String& value)
 {
-    return Intent::PutStringExtra(name, value);
+    return Intent::PutExtra(name, value);
 }
 
 ECode CLabeledIntent::PutCharSequenceExtra(
@@ -745,11 +745,11 @@ ECode CLabeledIntent::PutCharSequenceExtra(
     return Intent::PutCharSequenceExtra(name, value);
 }
 
-ECode CLabeledIntent::PutParcelableExtra(
+ECode CLabeledIntent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ IParcelable* value)
 {
-    return Intent::PutParcelableExtra(name, value);
+    return Intent::PutExtra(name, value);
 }
 
 ECode CLabeledIntent::PutObjectStringMapExtra(
@@ -759,11 +759,11 @@ ECode CLabeledIntent::PutObjectStringMapExtra(
     return Intent::PutObjectStringMapExtra(name, value);
 }
 
-ECode CLabeledIntent::PutParcelableArrayExtra(
+ECode CLabeledIntent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ ArrayOf<IParcelable *>* value)
 {
-    return Intent::PutParcelableArrayExtra(name, value);
+    return Intent::PutExtra(name, value);
 }
 
 ECode CLabeledIntent::PutParcelableArrayListExtra(
@@ -773,11 +773,11 @@ ECode CLabeledIntent::PutParcelableArrayListExtra(
     return Intent::PutParcelableArrayListExtra(name, value);
 }
 
-ECode CLabeledIntent::PutIntegerArrayListExtra(
+ECode CLabeledIntent::PutInteger32ArrayListExtra(
     /* [in] */ const String& name,
     /* [in] */ IObjectContainer* value)
 {
-    return Intent::PutIntegerArrayListExtra(name, value);
+    return Intent::PutInteger32ArrayListExtra(name, value);
 }
 
 ECode CLabeledIntent::PutStringArrayListExtra(
@@ -808,11 +808,11 @@ ECode CLabeledIntent::PutByteArrayExtra(
     return Intent::PutByteArrayExtra(name, value);
 }
 
-ECode CLabeledIntent::PutInt16ArrayExtra(
+ECode CLabeledIntent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ ArrayOf<Int16>* value)
 {
-    return Intent::PutInt16ArrayExtra(name, value);
+    return Intent::PutExtra(name, value);
 }
 
 ECode CLabeledIntent::PutCharArrayExtra(
@@ -822,53 +822,53 @@ ECode CLabeledIntent::PutCharArrayExtra(
     return Intent::PutCharArrayExtra(name, value);
 }
 
-ECode CLabeledIntent::PutInt32ArrayExtra(
+ECode CLabeledIntent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ ArrayOf<Int32>* value)
 {
-    return Intent::PutInt32ArrayExtra(name, value);
+    return Intent::PutExtra(name, value);
 }
 
-ECode CLabeledIntent::PutInt64ArrayExtra(
+ECode CLabeledIntent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ ArrayOf<Int64>* value)
 {
-    return Intent::PutInt64ArrayExtra(name, value);
+    return Intent::PutExtra(name, value);
 }
 
-ECode CLabeledIntent::PutFloatArrayExtra(
+ECode CLabeledIntent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ ArrayOf<Float>* value)
 {
-    return Intent::PutFloatArrayExtra(name, value);
+    return Intent::PutExtra(name, value);
 }
 
-ECode CLabeledIntent::PutDoubleArrayExtra(
+ECode CLabeledIntent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ ArrayOf<Double>* value)
 {
-    return Intent::PutDoubleArrayExtra(name, value);
+    return Intent::PutExtra(name, value);
 }
 
-ECode CLabeledIntent::PutStringArrayExtra(
+ECode CLabeledIntent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ ArrayOf<String>* value)
 {
-    return Intent::PutStringArrayExtra(name, value);
+    return Intent::PutExtra(name, value);
 }
 
-ECode CLabeledIntent::PutCharSequenceArrayExtra(
+ECode CLabeledIntent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ ArrayOf<ICharSequence *>* value)
 {
-    return Intent::PutCharSequenceArrayExtra(name, value);
+    return Intent::PutExtra(name, value);
 }
 
-ECode CLabeledIntent::PutBundleExtra(
+ECode CLabeledIntent::PutExtra(
     /* [in] */ const String& name,
     /* [in] */ IBundle* value)
 {
-    return Intent::PutBundleExtra(name, value);
+    return Intent::PutExtra(name, value);
 }
 
 ECode CLabeledIntent::PutExtras(

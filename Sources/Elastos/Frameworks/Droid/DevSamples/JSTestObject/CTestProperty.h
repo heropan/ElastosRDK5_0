@@ -26,7 +26,6 @@ public:
         /* [in] */ IInterface * pProperty);
 
 private:
-    // TODO: Add your private member variables here.
     StructTestProperty* mProperty;
 };
 

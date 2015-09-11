@@ -82,7 +82,6 @@ public:
         /* [out] */ String* str);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

@@ -35,7 +35,6 @@ public:
         /* [out] */ IPathSegments** pathSegments);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 #endif // __CPATHSEGMENTSBUILDER_H__

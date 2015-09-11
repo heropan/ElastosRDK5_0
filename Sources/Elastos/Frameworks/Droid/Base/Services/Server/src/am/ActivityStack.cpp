@@ -3779,21 +3779,21 @@ ECode ActivityStack::StartActivityMayWait(
                         }
                         AutoPtr<IParcelable> is;
                         CIntentSender::New(target.Get(), (IParcelable**)&is);
-                        newIntent->PutParcelableExtra(
+                        newIntent->PutExtra(
                                 IHeavyWeightSwitcherActivity::KEY_INTENT,
                                 is.Get());
                         if (mService->mHeavyWeightProcess->mActivities.IsEmpty() == FALSE) {
                             AutoPtr<ActivityRecord> hist = mService->mHeavyWeightProcess->mActivities.GetFront();
-                            newIntent->PutStringExtra(
+                            newIntent->PutExtra(
                                     IHeavyWeightSwitcherActivity::KEY_CUR_APP,
                                     hist->mPackageName);
-                            newIntent->PutInt32Extra(
+                            newIntent->PutExtra(
                                     IHeavyWeightSwitcherActivity::KEY_CUR_TASK,
                                     hist->mTask->mTaskId);
                         }
                         String acname;
                         aInfo->GetPackageName(&acname);
-                        newIntent->PutStringExtra(
+                        newIntent->PutExtra(
                                 IHeavyWeightSwitcherActivity::KEY_NEW_APP,
                                 acname);
                         Int32 flags;

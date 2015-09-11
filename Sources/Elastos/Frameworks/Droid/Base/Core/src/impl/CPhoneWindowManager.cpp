@@ -3928,7 +3928,7 @@ Int64 CPhoneWindowManager::InnerInterceptKeyBeforeDispatching(
                     String("com.softwinner.TvdFileManager.MainUI"),
                     (IComponentName**)&componentName);
             intent->SetComponent(componentName);
-            intent->PutStringExtra(String("media_type"), String("MEDIA_TYPE_VIDEO"));
+            intent->PutExtra(String("media_type"), String("MEDIA_TYPE_VIDEO"));
             intent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
             mContext->StartActivity(intent);
         }

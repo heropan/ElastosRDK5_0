@@ -2,22 +2,39 @@
 #define __ELASTOS_DROID_CONTENT_HH_INTENTFILTER_H__
 
 #include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::Etl::List;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IPatternMatcher;
 using Elastos::Droid::Utility::IPrinter;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Org::Xmlpull::V1::IXmlSerializer;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 class IntentFilter
+    : public Object
+    , public IIntentFilter
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ const String& action);
+
+    CARAPI constructor(
+        /* [in] */ const String& action,
+        /* [in] */ const String& dataType);
+
+    CARAPI constructor(
+        /* [in] */ IIntentFilter* o);
+
     /**
      * Create a new IntentFilter instance with a specified action and MIME
      * type, where you know the MIME type is correctly formatted.  This catches
@@ -196,6 +213,82 @@ public:
         /* [in] */ const String& scheme);
 
     CARAPI_(AutoPtr< ArrayOf<String> >) GetSchemes();
+
+    CARAPI GetSchemes(
+        /* [out, callee] */ ArrayOf<String>** schemes);
+
+    /**
+     * Add a new Intent data "scheme specific part" to match against.  The filter must
+     * include one or more schemes (via {@link #addDataScheme}) for the
+     * scheme specific part to be considered.  If any scheme specific parts are
+     * included in the filter, then an Intent's data must match one of
+     * them.  If no scheme specific parts are included, then only the scheme must match.
+     *
+     * <p>The "scheme specific part" that this matches against is the string returned
+     * by {@link android.net.Uri#getSchemeSpecificPart() Uri.getSchemeSpecificPart}.
+     * For Uris that contain a path, this kind of matching is not generally of interest,
+     * since {@link #addDataAuthority(String, String)} and
+     * {@link #addDataPath(String, int)} can provide a better mechanism for matching
+     * them.  However, for Uris that do not contain a path, the authority and path
+     * are empty, so this is the only way to match against the non-scheme part.</p>
+     *
+     * @param ssp Either a raw string that must exactly match the scheme specific part
+     * path, or a simple pattern, depending on <var>type</var>.
+     * @param type Determines how <var>ssp</var> will be compared to
+     * determine a match: either {@link PatternMatcher#PATTERN_LITERAL},
+     * {@link PatternMatcher#PATTERN_PREFIX}, or
+     * {@link PatternMatcher#PATTERN_SIMPLE_GLOB}.
+     *
+     * @see #matchData
+     * @see #addDataScheme
+     */
+    CARAPI AddDataSchemeSpecificPart(
+        /* [in] */ const String& ssp,
+        /* [in] */ Int32 type);
+
+    /** @hide */
+    CARAPI AddDataSchemeSpecificPart(
+        /* [in] */ IPatternMatcher* ssp);
+
+    /**
+     * Return the number of data scheme specific parts in the filter.
+     */
+    CARAPI CountDataSchemeSpecificParts(
+        /* [out] */ Int32* result);
+
+    /**
+     * Return a data scheme specific part in the filter.
+     */
+    CARAPI GetDataSchemeSpecificPart(
+        /* [in] */ Int32 index,
+        /* [out] */ IPatternMatcher** ssp);
+
+    /**
+     * Is the given data scheme specific part included in the filter?  Note that if the
+     * filter does not include any scheme specific parts, false will <em>always</em> be
+     * returned.
+     *
+     * @param data The scheme specific part that is being looked for.
+     *
+     * @return Returns true if the data string matches a scheme specific part listed in the
+     *         filter.
+     */
+    CARAPI HasDataSchemeSpecificPart(
+        /* [in] */ const String& data,
+        /* [out] */ Boolean* result);
+
+    /** @hide */
+    CARAPI HasDataSchemeSpecificPart(
+        /* [in] */ IPatternMatcher* data,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Return an iterator over the filter's data scheme specific parts.
+     */
+    CARAPI_(AutoPtr< ArrayOf<IPatternMatcher*> >) GetSchemeSpecificParts();
+
+    CARAPI GetSchemeSpecificParts(
+        /* [out, callee] */ ArrayOf<IPatternMatcher*>** array);
 
     /**
      * Add a new Intent data authority to match against.  The filter must
@@ -547,18 +640,6 @@ protected:
 
     virtual ~IntentFilter();
 
-    CARAPI Init();
-
-    CARAPI Init(
-        /* [in] */ const String& action);
-
-    CARAPI Init(
-        /* [in] */ const String& action,
-        /* [in] */ const String& dataType);
-
-    CARAPI Init(
-        /* [in] */ IIntentFilter* o);
-
 private:
     static CARAPI_(Int32) FindStringInSet(
         /* [in] */ ArrayOf<String>* set,
@@ -589,6 +670,7 @@ protected:
     static const String PORT_STR;
     static const String HOST_STR;
     static const String AUTH_STR;
+    static const String SSP_STR;
     static const String SCHEME_STR;
     static const String TYPE_STR;
     static const String CAT_STR;
@@ -599,6 +681,7 @@ protected:
     List<String> mActions;
     AutoPtr<List<String> > mCategories;
     AutoPtr<List<String> > mDataSchemes;
+    AutoPtr< List< AutoPtr<IPatternMatcher> > > mDataSchemeSpecificParts;
     AutoPtr< List< AutoPtr<IIntentFilterAuthorityEntry> > > mDataAuthorities;
     AutoPtr< List< AutoPtr<IPatternMatcher> > > mDataPaths;
     AutoPtr<List<String> > mDataTypes;

@@ -23,7 +23,6 @@ public:
     CARAPI Bar4();
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 

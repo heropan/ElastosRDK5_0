@@ -257,6 +257,11 @@ module
             [in] String type,
             [out] Boolean* hasDataType);
 
+        /** @hide */
+        HasExactDataType(
+            [in] String type,
+            [out] Boolean* hasDataType);
+
         /**
          * Return the number of data types in the filter.
          */

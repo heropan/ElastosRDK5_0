@@ -3311,7 +3311,7 @@ module
          * @see #addCategory
          */
         GetCategories(
-            [out] ISet** categories);
+            [out, callee] ArrayOf<String>* categories);
 
         /**
          * Return the specific selector associated with this Intent.  If there is
@@ -4551,8 +4551,7 @@ module
          */
         PutExtra(
             [in] String name,
-            [in] ISerializable* value,
-            [out] IIntent** result);
+            [in] ISerializable* value);
 
         /**
          * Add extended data to the intent.  The name must include a package

@@ -147,7 +147,6 @@ public:
         /* [in] */ IClassInfo * pPClassInfo);
 
 private:
-    // TODO: Add your private member variables here.
     IClassInfo* classInfo;
 };
 

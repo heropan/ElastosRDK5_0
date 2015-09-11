@@ -43,7 +43,6 @@ public:
         /* [out] */ IContext** context);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

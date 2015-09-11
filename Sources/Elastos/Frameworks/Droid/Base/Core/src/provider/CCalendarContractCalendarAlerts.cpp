@@ -249,7 +249,7 @@ ECode CCalendarContractCalendarAlerts::ScheduleAlarm(
     AutoPtr<IUri> newUri;
     FAIL_RETURN(urihelper->WithAppendedId(_uri, alarmTime, (IUri**)&newUri))
     FAIL_RETURN(intent->SetData(newUri))
-    FAIL_RETURN(intent->PutInt64Extra(ALARM_TIME, alarmTime))
+    FAIL_RETURN(intent->PutExtra(ALARM_TIME, alarmTime))
     AutoPtr<IPendingIntentHelper> intenthelper;
     FAIL_RETURN(CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&intenthelper))
     AutoPtr<IPendingIntent> pi;

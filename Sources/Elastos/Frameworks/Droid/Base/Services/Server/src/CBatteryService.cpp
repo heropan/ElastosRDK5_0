@@ -992,17 +992,17 @@ void CBatteryService::SendIntentLocked()
 
     Int32 icon = GetIconLocked(mBatteryLevel);
 
-    intent->PutInt32Extra(IBatteryManager::EXTRA_STATUS, mBatteryStatus);
-    intent->PutInt32Extra(IBatteryManager::EXTRA_HEALTH, mBatteryHealth);
+    intent->PutExtra(IBatteryManager::EXTRA_STATUS, mBatteryStatus);
+    intent->PutExtra(IBatteryManager::EXTRA_HEALTH, mBatteryHealth);
     intent->PutBooleanExtra(IBatteryManager::EXTRA_PRESENT, mBatteryPresent);
-    intent->PutInt32Extra(IBatteryManager::EXTRA_LEVEL, mBatteryLevel);
-    intent->PutInt32Extra(IBatteryManager::EXTRA_SCALE, BATTERY_SCALE);
-    intent->PutInt32Extra(IBatteryManager::EXTRA_ICON_SMALL, icon);
-    intent->PutInt32Extra(IBatteryManager::EXTRA_PLUGGED, mPlugType);
-    intent->PutInt32Extra(IBatteryManager::EXTRA_VOLTAGE, mBatteryVoltage);
-    intent->PutInt32Extra(IBatteryManager::EXTRA_TEMPERATURE, mBatteryTemperature);
-    intent->PutStringExtra(IBatteryManager::EXTRA_TECHNOLOGY, mBatteryTechnology);
-    intent->PutInt32Extra(IBatteryManager::EXTRA_INVALID_CHARGER, mInvalidCharger);
+    intent->PutExtra(IBatteryManager::EXTRA_LEVEL, mBatteryLevel);
+    intent->PutExtra(IBatteryManager::EXTRA_SCALE, BATTERY_SCALE);
+    intent->PutExtra(IBatteryManager::EXTRA_ICON_SMALL, icon);
+    intent->PutExtra(IBatteryManager::EXTRA_PLUGGED, mPlugType);
+    intent->PutExtra(IBatteryManager::EXTRA_VOLTAGE, mBatteryVoltage);
+    intent->PutExtra(IBatteryManager::EXTRA_TEMPERATURE, mBatteryTemperature);
+    intent->PutExtra(IBatteryManager::EXTRA_TECHNOLOGY, mBatteryTechnology);
+    intent->PutExtra(IBatteryManager::EXTRA_INVALID_CHARGER, mInvalidCharger);
 
     if (DEBUG) {
         StringBuilder sb("Sending ACTION_BATTERY_CHANGED.  level:");

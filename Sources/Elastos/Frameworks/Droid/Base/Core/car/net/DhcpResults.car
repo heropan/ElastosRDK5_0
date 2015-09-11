@@ -3,7 +3,7 @@ module
 {
 
     interface Elastos.Droid.Net.INetworkUtils;
-    interface Elastos.Droid.Os.IParcelable;
+
     interface Elastos.Droid.Os.IParcel;
     interface Elastos.Droid.Text.ITextUtils;
 

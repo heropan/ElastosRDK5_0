@@ -188,7 +188,7 @@ int LaunchApp(void *handle, char *appName)
     intent->SetPackage(String(appName));
     intent->SetAction(String("android.intent.action.MAIN"));
     if (option != 0){
-        intent->PutInt32Extra(String("ARG"), option);
+        intent->PutExtra(String("ARG"), option);
     }
     Int32 status;
     if (FAILED(activityManager->StartActivity(NULL, intent, String(NULL),

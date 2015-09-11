@@ -268,7 +268,7 @@ public:
         /* [in] */ const String& name,
         /* [out] */ IObjectContainer** value);
 
-    CARAPI GetIntegerArrayListExtra(
+    CARAPI GetInteger32ArrayListExtra(
         /* [in] */ const String& name,
         /* [out] */ IObjectContainer** value);
 
@@ -447,7 +447,7 @@ public:
         /* [in] */ const String& name,
         /* [in] */ IObjectContainer* value);
 
-    CARAPI PutIntegerArrayListExtra(
+    CARAPI PutInteger32ArrayListExtra(
         /* [in] */ const String& name,
         /* [in] */ IObjectContainer* value);
 
@@ -467,7 +467,7 @@ public:
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<Byte>* value);
 
-    CARAPI PutInt16ArrayExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<Int16>* value);
 
@@ -475,31 +475,31 @@ public:
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<Char32>* value);
 
-    CARAPI PutInt32ArrayExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<Int32>* value);
 
-    CARAPI PutInt64ArrayExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<Int64>* value);
 
-    CARAPI PutFloatArrayExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<Float>* value);
 
-    CARAPI PutDoubleArrayExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<Double>* value);
 
-    CARAPI PutStringArrayExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<String>* value);
 
-    CARAPI PutCharSequenceArrayExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<ICharSequence *>* value);
 
-    CARAPI PutBundleExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ IBundle* value);
 

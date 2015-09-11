@@ -186,7 +186,7 @@ ERROR_PROCESS:
                     // Broadcast an intent that the Camera button was longpressed
                     AutoPtr<IIntent> intent;
                     CIntent::New(IIntent::ACTION_CAMERA_BUTTON, NULL, (IIntent**)&intent);
-                    intent->PutParcelableExtra(IIntent::EXTRA_KEY_EVENT, IParcelable::Probe(event));
+                    intent->PutExtra(IIntent::EXTRA_KEY_EVENT, IParcelable::Probe(event));
                     mContext->SendOrderedBroadcastAsUser(intent, UserHandle::CURRENT_OR_SELF,
                         String(), NULL, NULL, 0, String(), NULL);
                 }

@@ -264,7 +264,7 @@ ECode CVpnConfig::GetIntentForStatusPanel(
     AutoPtr<IIntent> newintent;
     CIntent::New((IIntent**)&newintent);
     newintent->SetClassName(IVpnConfig::DIALOGS_PACKAGE, IVpnConfig::DIALOGS_PACKAGE + ".ManageDialog");
-    newintent->PutParcelableExtra(String("config"), IParcelable::Probe(config));
+    newintent->PutExtra(String("config"), IParcelable::Probe(config));
     newintent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK | IIntent::FLAG_ACTIVITY_NO_HISTORY |
             IIntent::FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
     AutoPtr<IPendingIntentHelper> helper;

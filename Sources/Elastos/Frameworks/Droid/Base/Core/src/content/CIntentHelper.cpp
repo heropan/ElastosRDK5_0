@@ -6,7 +6,7 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
-CAR_INTERFACE_IMPL(CIntentHelper, SINGLETON, IIntentHelper)
+CAR_INTERFACE_IMPL(CIntentHelper, Singleton, IIntentHelper)
 
 CAR_SINGLETON_IMPL(CIntentHelper)
 

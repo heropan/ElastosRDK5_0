@@ -103,7 +103,6 @@ public:
         /* [out] */ Int32 * pCount);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 #endif // __CBASEEXPANDABLELISTADAPTER_H__

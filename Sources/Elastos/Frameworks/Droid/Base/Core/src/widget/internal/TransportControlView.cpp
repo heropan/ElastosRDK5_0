@@ -573,7 +573,7 @@ void TransportControlView::SendMediaButtonClick(
 
     AutoPtr<IIntent> intent;
     CIntent::New(IIntent::ACTION_MEDIA_BUTTON, (IIntent**)&intent);
-    intent->PutParcelableExtra(IIntent::EXTRA_KEY_EVENT, (IParcelable*)keyEvent->Probe(EIID_IParcelable));
+    intent->PutExtra(IIntent::EXTRA_KEY_EVENT, (IParcelable*)keyEvent->Probe(EIID_IParcelable));
 
     //try {
     mClientIntent->Send(GetContext(), 0, intent);
@@ -587,7 +587,7 @@ void TransportControlView::SendMediaButtonClick(
     CKeyEvent::New(IKeyEvent::ACTION_UP, keyCode, (IKeyEvent**)&keyEvent);
     intent = NULL;
     CIntent::New(IIntent::ACTION_MEDIA_BUTTON, (IIntent**)&intent);
-    intent->PutParcelableExtra(IIntent::EXTRA_KEY_EVENT, (IParcelable*)keyEvent->Probe(EIID_IParcelable));
+    intent->PutExtra(IIntent::EXTRA_KEY_EVENT, (IParcelable*)keyEvent->Probe(EIID_IParcelable));
     //try {
     mClientIntent->Send(GetContext(), 0, intent);
     /*} catch (CanceledException e)

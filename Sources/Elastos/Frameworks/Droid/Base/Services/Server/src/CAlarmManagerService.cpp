@@ -294,7 +294,7 @@ ECode CAlarmManagerService::AlarmThread::Run()
             for (; it != triggerList.End(); ++it) {
                 AutoPtr<Alarm> alarm = *it;
                 //if (localLOGV) Slog.v(TAG, "sending alarm " + alarm);
-                mHost->mBackgroundIntent->PutInt32Extra(IIntent::EXTRA_ALARM_COUNT, alarm->mCount);
+                mHost->mBackgroundIntent->PutExtra(IIntent::EXTRA_ALARM_COUNT, alarm->mCount);
 
                 ECode ec = alarm->mOperation->Send(mHost->mContext, 0, mHost->mBackgroundIntent, mHost->mResultReceiver, mHost->mHandler);
 
@@ -1005,7 +1005,7 @@ ECode CAlarmManagerService::SetTimeZone(
         AutoPtr<IIntent> intent;
         CIntent::New(IIntent::ACTION_TIMEZONE_CHANGED, (IIntent**)&intent);
         intent->AddFlags(IIntent::FLAG_RECEIVER_REPLACE_PENDING);
-        intent->PutStringExtra(String("time-zone"), id);
+        intent->PutExtra(String("time-zone"), id);
         AutoPtr<IUserHandleHelper> handleHelper;
         ASSERT_SUCCEEDED(CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&handleHelper));
         AutoPtr<IUserHandle> userAll;

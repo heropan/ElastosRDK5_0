@@ -86,7 +86,6 @@ protected:
     CARAPI OnDestroy();
 
 private:
-    // TODO: Add your private member variables here.
     AutoPtr<IButton> mRecordButton;
     AutoPtr<IButton> mStopButton;
     AutoPtr<IMediaRecorder> mMediaRecorder;

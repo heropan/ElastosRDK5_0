@@ -437,7 +437,7 @@ void Notifier::SendBootFastWake()
     AutoPtr<IIntent> intent;
     CIntent::New(IIntent::ACTION_BOOT_FAST, (IIntent**)&intent);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY | IIntent::FLAG_RECEIVER_REPLACE_PENDING);
-    intent->PutInt32Extra(IIntent::EXTRA_BOOT_FAST, 1);
+    intent->PutExtra(IIntent::EXTRA_BOOT_FAST, 1);
 
     ActivityManagerNative::BroadcastStickyIntent(intent, String(NULL), IUserHandle::USER_ALL);
     AutoPtr<MobileDirectController> controller = MobileDirectController::GetInstance();
@@ -460,7 +460,7 @@ void Notifier::SendBootFastSleep()
     AutoPtr<IIntent> intent;
     CIntent::New(IIntent::ACTION_BOOT_FAST, (IIntent**)&intent);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY | IIntent::FLAG_RECEIVER_REPLACE_PENDING);
-    intent->PutInt32Extra(IIntent::EXTRA_BOOT_FAST, 0);
+    intent->PutExtra(IIntent::EXTRA_BOOT_FAST, 0);
     ActivityManagerNative::BroadcastStickyIntent(intent, String(NULL), IUserHandle::USER_ALL);
 
     mPolicy->ScreenTurnedOff(0);

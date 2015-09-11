@@ -235,7 +235,6 @@ public:
         /* [out] */ IInterface ** ppOutObject);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

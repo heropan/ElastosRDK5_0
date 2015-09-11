@@ -421,7 +421,7 @@ Boolean CLocationManagerService::Receiver::CallStatusChangedLocked(
         AutoPtr<IBundle> bundle;
         CBundle::New(extras, (IBundle**)&bundle);
         statusChanged->PutExtras(bundle);
-        statusChanged->PutInt32Extra(ILocationManager::KEY_STATUS_CHANGED, status);
+        statusChanged->PutExtra(ILocationManager::KEY_STATUS_CHANGED, status);
 //        try {
         AutoLock lock(mLock);
         // synchronize to ensure incrementPendingBroadcastsLocked()
@@ -463,7 +463,7 @@ Boolean CLocationManagerService::Receiver::CallLocationChangedLocked(
     else {
         AutoPtr<IIntent> locationChanged;
         CIntent::New((IIntent**)&locationChanged);
-        locationChanged->PutParcelableExtra(ILocationManager::KEY_LOCATION_CHANGED,
+        locationChanged->PutExtra(ILocationManager::KEY_LOCATION_CHANGED,
                 IParcelable::Probe(l));
         // try {
         AutoLock lock(mLock);

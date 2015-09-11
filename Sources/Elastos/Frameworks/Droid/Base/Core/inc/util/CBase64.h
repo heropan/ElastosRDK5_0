@@ -171,7 +171,6 @@ public:
         /* [out, callee] */ ArrayOf<Byte>** result);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

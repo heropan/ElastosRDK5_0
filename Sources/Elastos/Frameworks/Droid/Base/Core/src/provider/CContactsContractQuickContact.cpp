@@ -79,8 +79,8 @@ ECode CContactsContractQuickContact::ComposeQuickContactsIntent(
 
     FAIL_RETURN(_intent->SetData(lookupUri))
     FAIL_RETURN(_intent->SetSourceBounds(target))
-    FAIL_RETURN(_intent->PutInt32Extra(IContactsContractQuickContact::EXTRA_MODE, mode))
-    FAIL_RETURN(_intent->PutStringArrayExtra(IContactsContractQuickContact::EXTRA_EXCLUDE_MIMES, excludeMimes))
+    FAIL_RETURN(_intent->PutExtra(IContactsContractQuickContact::EXTRA_MODE, mode))
+    FAIL_RETURN(_intent->PutExtra(IContactsContractQuickContact::EXTRA_EXCLUDE_MIMES, excludeMimes))
     *intent =  _intent;
     REFCOUNT_ADD(*intent);
     return NOERROR;

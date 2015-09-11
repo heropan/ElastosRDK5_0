@@ -198,7 +198,6 @@ public:
         /* [out] */ String* mimeType);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

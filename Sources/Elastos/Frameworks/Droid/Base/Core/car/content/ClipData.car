@@ -461,8 +461,19 @@ module
           */
           PrepareToLeaveProcess();
 
+          /** @hide */
+          FixUris(
+               [in] Int32 contentUserHint);
+
+         /**
+          * Only fixing the data field of the intents
+          * @hide
+          */
+          FixUrisLight(
+               [in] Int32 contentUserHint);
+
           ToString(
-            [out] String* str);
+               [out] String* str);
 
           /** @hide */
           ToShortString(

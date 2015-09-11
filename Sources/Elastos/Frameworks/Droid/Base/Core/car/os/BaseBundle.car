@@ -20,6 +20,9 @@ module
         GetClassLoader(
             [out] IClassLoader** loader);
 
+        IsParcelled(
+            [out] Boolean* result);
+
         GetSize(
             [out] Int32 * size);
 

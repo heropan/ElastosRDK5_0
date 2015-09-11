@@ -118,7 +118,7 @@ ECode CAccessibilityServiceConnection::constructor(
             (flags & IAccessibilityServiceInfo::FLAG_REQUEST_TOUCH_EXPLORATION_MODE) != 0;
         ASSERT_SUCCEEDED(CIntent::New((IIntent**)&mIntent));
         mIntent->SetComponent(mComponentName);
-        mIntent->PutInt32Extra(IIntent::EXTRA_CLIENT_LABEL,
+        mIntent->PutExtra(IIntent::EXTRA_CLIENT_LABEL,
             R::string::accessibility_binding_label);
         AutoPtr<IIntent> i;
         CIntent::New(ISettings::ACTION_ACCESSIBILITY_SETTINGS, (IIntent**)&i);
@@ -127,7 +127,7 @@ ECode CAccessibilityServiceConnection::constructor(
             (IPendingIntentHelper**)&helper));
         AutoPtr<IPendingIntent> pendingI;
         helper->GetActivity(service->mContext, 0, i, 0, (IPendingIntent**)&pendingI);
-        ASSERT_SUCCEEDED(mIntent->PutParcelableExtra(IIntent::EXTRA_CLIENT_INTENT,
+        ASSERT_SUCCEEDED(mIntent->PutExtra(IIntent::EXTRA_CLIENT_INTENT,
             IParcelable::Probe(pendingI)));
     }
     else {

@@ -78,7 +78,6 @@ public:
 
 
 private:
-    // TODO: Add your private member variables here.
     AutoPtr <HashMap<String, String>> mHeaders;
     static const String TO = "to";
     static const String BODY = "body";

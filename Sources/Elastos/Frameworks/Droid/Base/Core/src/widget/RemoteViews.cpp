@@ -466,7 +466,7 @@ void RemoteViews::SetRemoteViewsAdapterIntent::Apply(
     AutoPtr<IAppWidgetHostView> host = IAppWidgetHostView::Probe(rootParent);
     Int32 hostId = 0;
     host->GetAppWidgetId(&hostId);
-    mIntent->PutInt32Extra(EXTRA_REMOTEADAPTER_APPWIDGET_ID, hostId);
+    mIntent->PutExtra(EXTRA_REMOTEADAPTER_APPWIDGET_ID, hostId);
     AutoPtr<IAbsListView> absListView = IAbsListView::Probe(target);
     AutoPtr<IAdapterViewAnimator> viewAnimator = IAdapterViewAnimator::Probe(target);
     if (absListView) {

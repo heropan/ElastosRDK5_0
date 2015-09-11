@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CINTENTFILTERAUTHORITYENTRY_H__
 
 #include "_Elastos_Droid_Content_CIntentFilterAuthorityEntry.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Net::IUri;
 
@@ -11,11 +12,17 @@ namespace Droid {
 namespace Content {
 
 CarClass(CIntentFilterAuthorityEntry)
+    , public Object
+    , public IIntentFilterAuthorityEntry
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CIntentFilterAuthorityEntry();
 
-    ~CIntentFilterAuthorityEntry();
+    virtual ~CIntentFilterAuthorityEntry();
 
     CARAPI GetHost(
         /* [out] */ String* host);
@@ -25,6 +32,10 @@ public:
 
     CARAPI GetWild(
         /* [out] */ Boolean* wild);
+
+    CARAPI Match(
+        /* [in] */ IIntentFilterAuthorityEntry* other,
+        /* [out] */ Boolean* result);
 
     /**
      * Determine whether this AuthorityEntry matches the given data Uri.

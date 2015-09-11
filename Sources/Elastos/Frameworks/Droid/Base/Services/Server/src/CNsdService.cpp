@@ -203,10 +203,10 @@ void CNsdService::SendNsdStateChangeBroadcast(
     CIntent::New(INsdManager::ACTION_NSD_STATE_CHANGED, (IIntent**)&intent);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
     if (enabled) {
-        intent->PutInt32Extra(INsdManager::EXTRA_NSD_STATE, INsdManager::NSD_STATE_ENABLED);
+        intent->PutExtra(INsdManager::EXTRA_NSD_STATE, INsdManager::NSD_STATE_ENABLED);
     }
     else {
-        intent->PutInt32Extra(INsdManager::EXTRA_NSD_STATE, INsdManager::NSD_STATE_DISABLED);
+        intent->PutExtra(INsdManager::EXTRA_NSD_STATE, INsdManager::NSD_STATE_DISABLED);
     }
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);

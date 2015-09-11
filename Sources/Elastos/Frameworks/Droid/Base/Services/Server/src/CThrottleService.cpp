@@ -815,14 +815,14 @@ ECode CThrottleService::MyHandler::OnPollAlarm()
 
     AutoPtr<IIntent> broadcast;
     CIntent::New(IThrottleManager::THROTTLE_POLL_ACTION, (IIntent**)&broadcast);
-    broadcast->PutInt64Extra(IThrottleManager::EXTRA_CYCLE_READ, periodRx);
-    broadcast->PutInt64Extra(IThrottleManager::EXTRA_CYCLE_WRITE, periodTx);
+    broadcast->PutExtra(IThrottleManager::EXTRA_CYCLE_READ, periodRx);
+    broadcast->PutExtra(IThrottleManager::EXTRA_CYCLE_WRITE, periodTx);
     Int64 periodStartTime;
     FAIL_RETURN(mHost->GetPeriodStartTime(mHost->mIface, &periodStartTime));
-    broadcast->PutInt64Extra(IThrottleManager::EXTRA_CYCLE_START, periodStartTime);
+    broadcast->PutExtra(IThrottleManager::EXTRA_CYCLE_START, periodStartTime);
     Int64 resetTime;
     FAIL_RETURN(mHost->GetResetTime(mHost->mIface, &resetTime));
-    broadcast->PutInt64Extra(IThrottleManager::EXTRA_CYCLE_END, resetTime);
+    broadcast->PutExtra(IThrottleManager::EXTRA_CYCLE_END, resetTime);
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     AutoPtr<IUserHandle> all;
@@ -898,7 +898,7 @@ void CThrottleService::MyHandler::CheckThrottleAndPostNotification(
 
             AutoPtr<IIntent> broadcast;
             CIntent::New(IThrottleManager::THROTTLE_ACTION, (IIntent**)&broadcast);
-            broadcast->PutInt32Extra(IThrottleManager::EXTRA_THROTTLE_LEVEL, policyThrottleValue);
+            broadcast->PutExtra(IThrottleManager::EXTRA_THROTTLE_LEVEL, policyThrottleValue);
             AutoPtr<IUserHandleHelper> helper;
             CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
             AutoPtr<IUserHandle> all;
@@ -1016,7 +1016,7 @@ void CThrottleService::MyHandler::ClearThrottleAndNotification()
         // }
         AutoPtr<IIntent> broadcast;
         CIntent::New(IThrottleManager::THROTTLE_ACTION,(IIntent**)&broadcast);
-        broadcast->PutInt32Extra(IThrottleManager::EXTRA_THROTTLE_LEVEL, -1);
+        broadcast->PutExtra(IThrottleManager::EXTRA_THROTTLE_LEVEL, -1);
         AutoPtr<IUserHandleHelper> userHandleHelper;
         CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&userHandleHelper);
         AutoPtr<IUserHandle> all;

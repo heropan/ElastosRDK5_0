@@ -65,7 +65,7 @@ ECode CMainActivity::ItemOnClickListener::OnItemClick(
 {
     AutoPtr<IIntent> intent;
     CIntent::New((IIntent**)&intent);
-    intent->PutInt32Extra(String("position"), position);
+    intent->PutExtra(String("position"), position);
     intent->SetClassName(mActivity, String("VideoPlayerDemo.CPlayActivity"));
     mActivity->StartActivity(intent);
 

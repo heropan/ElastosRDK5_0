@@ -384,7 +384,7 @@ void CUserManagerService::SendUserInfoChangedBroadcast(
 {
     AutoPtr<IIntent> changedIntent;
     CIntent::New(IIntent::ACTION_USER_INFO_CHANGED, (IIntent**)&changedIntent);
-    changedIntent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, userId);
+    changedIntent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId);
     changedIntent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY);
     AutoPtr<IUserHandle> uHandle;
     CUserHandle::New(userId, (IUserHandle**)&uHandle);
@@ -1026,7 +1026,7 @@ ECode CUserManagerService::CreateUser(
             CIntent::New(IIntent::ACTION_USER_ADDED, (IIntent**)&addedIntent);
             Int32 id;
             userInfo->GetId(&id);
-            addedIntent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, id);
+            addedIntent->PutExtra(IIntent::EXTRA_USER_HANDLE, id);
             mContext->SendBroadcastAsUser(addedIntent, UserHandle::ALL,
                     Elastos::Droid::Manifest::Permission::MANAGE_USERS);
         }
@@ -1088,7 +1088,7 @@ void CUserManagerService::FinishRemoveUser(
     // try {
     AutoPtr<IIntent> addedIntent;
     CIntent::New(IIntent::ACTION_USER_REMOVED, (IIntent**)&addedIntent);
-    addedIntent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, userHandle);
+    addedIntent->PutExtra(IIntent::EXTRA_USER_HANDLE, userHandle);
     AutoPtr<IBroadcastReceiver> receiver = new FinishBroadcastReceiver(this, userHandle);
     mContext->SendOrderedBroadcastAsUser(addedIntent, UserHandle::ALL,
             Elastos::Droid::Manifest::Permission::MANAGE_USERS, receiver,

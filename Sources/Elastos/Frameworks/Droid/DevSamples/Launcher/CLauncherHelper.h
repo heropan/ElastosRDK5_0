@@ -27,7 +27,6 @@ public:
         /* [in] */ const String& path);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 } // namespace Launcher

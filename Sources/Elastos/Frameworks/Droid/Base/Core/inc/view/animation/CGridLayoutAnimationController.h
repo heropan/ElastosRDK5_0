@@ -30,7 +30,6 @@ public:
         /* [in] */ Float rowDelay);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }   //namespace Animation

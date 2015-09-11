@@ -51,7 +51,6 @@ public:
         /* [in] */ IContext* base);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

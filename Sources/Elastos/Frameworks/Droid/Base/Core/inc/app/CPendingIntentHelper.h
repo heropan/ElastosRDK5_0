@@ -295,7 +295,6 @@ public:
          /* [out] */ IPendingIntent** messenger);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 } // namespace App

@@ -32,7 +32,6 @@ public:
 public:
     static const String TAG;
 private:
-    // TODO: Add your private member variables here.
 };
 
 } // Pppoe

@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_CONTENT_INTENT_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/core/StringBuilder.h>
 #include <elastos/core/Object.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Droid::Net::IUri;
@@ -19,8 +19,10 @@ using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IStringBuilder;
 using Elastos::Core::IClassLoader;
+using Elastos::Utility::IArrayList;
 using Elastos::Utility::Etl::HashSet;
 using Org::Xmlpull::V1::IXmlPullParser;
+using Org::Xmlpull::V1::IXmlSerializer;
 
 namespace Elastos {
 namespace Droid {
@@ -32,8 +34,6 @@ class Intent
 {
 public:
     CAR_INTERFACE_DECL()
-
-    CAR_OBJECT_DECL()
 
     Intent();
 
@@ -311,29 +311,29 @@ public:
         /* [in] */ const String& name,
         /* [out] */ IParcelable** value);
 
-    CARAPI GetObjectStringMapExtra(
-        /* [in] */ const String& name,
-        /* [out] */ IObjectStringMap** value);
-
     CARAPI GetParcelableArrayExtra(
         /* [in] */ const String& name,
         /* [out, callee] */ ArrayOf<IParcelable*>** value);
 
     CARAPI GetParcelableArrayListExtra(
         /* [in] */ const String& name,
-        /* [out] */ IObjectContainer** value);
+        /* [out] */ IArrayList** value);
 
-    CARAPI GetIntegerArrayListExtra(
+    CARAPI GetSerializableExtra(
         /* [in] */ const String& name,
-        /* [out] */ IObjectContainer** value);
+        /* [out] */ ISerializable** value);
+
+    CARAPI GetInteger32ArrayListExtra(
+        /* [in] */ const String& name,
+        /* [out] */ IArrayList** value);
 
     CARAPI GetStringArrayListExtra(
         /* [in] */ const String& name,
-        /* [out] */ IObjectContainer** value);
+        /* [out] */ IArrayList** value);
 
     CARAPI GetCharSequenceArrayListExtra(
         /* [in] */ const String& name,
-        /* [out] */ IObjectContainer** value);
+        /* [out] */ IArrayList** value);
 
     CARAPI GetBooleanArrayExtra(
         /* [in] */ const String& name,
@@ -479,61 +479,61 @@ public:
         /* [in] */ const String& name,
         /* [in] */ Char32 value);
 
-    CARAPI PutInt16Extra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ Int16 value);
 
-    CARAPI PutInt32Extra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ Int32 value);
 
-    CARAPI PutInt64Extra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ Int64 value);
 
-    CARAPI PutFloatExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ Float value);
 
-    CARAPI PutDoubleExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ Double value);
 
-    CARAPI PutStringExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ const String& value);
 
-    CARAPI PutCharSequenceExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ ICharSequence* value);
 
-    CARAPI PutParcelableExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ IParcelable* value);
 
-    CARAPI PutObjectStringMapExtra(
-        /* [in] */ const String& name,
-        /* [in] */ IObjectStringMap* value);
-
-    CARAPI PutParcelableArrayExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<IParcelable*>* value);
 
     CARAPI PutParcelableArrayListExtra(
         /* [in] */ const String& name,
-        /* [in] */ IObjectContainer* value);
+        /* [in] */ IArrayList* value);
 
-    CARAPI PutIntegerArrayListExtra(
+    CARAPI PutInteger32ArrayListExtra(
         /* [in] */ const String& name,
-        /* [in] */ IObjectContainer* value);
+        /* [in] */ IArrayList* value);
 
     CARAPI PutStringArrayListExtra(
         /* [in] */ const String& name,
-        /* [in] */ IObjectContainer* value);
+        /* [in] */ IArrayList* value);
 
     CARAPI PutCharSequenceArrayListExtra(
         /* [in] */ const String& name,
-        /* [in] */ IObjectContainer* value);
+        /* [in] */ IArrayList* value);
+
+    CARAPI PutExtra(
+        /* [in] */ const String& name,
+        /* [in] */ ISerializable* value);
 
     CARAPI PutBooleanArrayExtra(
         /* [in] */ const String& name,
@@ -543,7 +543,7 @@ public:
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<Byte>* value);
 
-    CARAPI PutInt16ArrayExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<Int16>* value);
 
@@ -551,31 +551,31 @@ public:
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<Char32>* value);
 
-    CARAPI PutInt32ArrayExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<Int32>* value);
 
-    CARAPI PutInt64ArrayExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<Int64>* value);
 
-    CARAPI PutFloatArrayExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<Float>* value);
 
-    CARAPI PutDoubleArrayExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<Double>* value);
 
-    CARAPI PutStringArrayExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<String>* value);
 
-    CARAPI PutCharSequenceArrayExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<ICharSequence*>* value);
 
-    CARAPI PutBundleExtra(
+    CARAPI PutExtra(
         /* [in] */ const String& name,
         /* [in] */ IBundle* value);
 
@@ -723,14 +723,14 @@ private:
         /* [in] */ const ClassID& objId);
 
 private:
-    static const String ATTR_ACTION = "action";
-    static const String TAG_CATEGORIES = "categories";
-    static const String ATTR_CATEGORY = "category";
-    static const String TAG_EXTRA = "extra";
-    static const String ATTR_TYPE = "type";
-    static const String ATTR_COMPONENT = "component";
-    static const String ATTR_DATA = "data";
-    static const String ATTR_FLAGS = "flags";
+    static const String ATTR_ACTION;// = "action";
+    static const String TAG_CATEGORIES;// = "categories";
+    static const String ATTR_CATEGORY;// = "category";
+    static const String TAG_EXTRA;// = "extra";
+    static const String ATTR_TYPE;// = "type";
+    static const String ATTR_COMPONENT;// = "component";
+    static const String ATTR_DATA;// = "data";
+    static const String ATTR_FLAGS;// = "flags";
 
 private:
     static const String TAG;

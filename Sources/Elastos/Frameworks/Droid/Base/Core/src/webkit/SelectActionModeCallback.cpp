@@ -165,7 +165,7 @@ ECode SelectActionModeCallback::OnActionItemClicked(
                 AutoPtr<IIntent> i;
                 CIntent::New(IIntent::ACTION_WEB_SEARCH, (IIntent**)&i);
                 i->PutBooleanExtra(ISearchManager::EXTRA_NEW_SEARCH, TRUE);
-                i->PutStringExtra(ISearchManager::QUERY, mWebView->GetSelection());
+                i->PutExtra(ISearchManager::QUERY, mWebView->GetSelection());
                 AutoPtr<IContext> context = mWebView->GetContext();
                 if (context->Probe(EIID_IActivity) == NULL) {
                     i->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);

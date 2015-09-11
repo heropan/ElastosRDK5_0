@@ -87,7 +87,6 @@ protected:
     CARAPI OnDestroy();
 
 private:
-    // TODO: Add your private member variables here.
     AutoPtr<IButton> mPlayButton;
     AutoPtr<IButton> mStopButton;
     AutoPtr<ISoundPool> mSoundPool;

@@ -2962,7 +2962,7 @@ void CDevicePolicyManagerService::SendAdminCommandLocked(
 
 
     if (action.Equals(IDeviceAdminReceiver::ACTION_PASSWORD_EXPIRING)) {
-        intent->PutInt64Extra(String("expiration"), admin->mPasswordExpirationDate);
+        intent->PutExtra(String("expiration"), admin->mPasswordExpirationDate);
     }
 
     if (result != NULL) {

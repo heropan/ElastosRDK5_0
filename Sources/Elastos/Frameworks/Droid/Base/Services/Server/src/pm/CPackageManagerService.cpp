@@ -1503,52 +1503,52 @@ ECode CPackageManagerService::InstallParams::HandleStartCopy()
 
             const Int32 verificationId = mHost->mPendingVerificationToken++;
 
-            verification->PutInt32Extra(IPackageManager::EXTRA_VERIFICATION_ID, verificationId);
+            verification->PutExtra(IPackageManager::EXTRA_VERIFICATION_ID, verificationId);
 
-            verification->PutStringExtra(IPackageManager::EXTRA_VERIFICATION_INSTALLER_PACKAGE,
+            verification->PutExtra(IPackageManager::EXTRA_VERIFICATION_INSTALLER_PACKAGE,
                     mInstallerPackageName);
 
-            verification->PutInt32Extra(IPackageManager::EXTRA_VERIFICATION_INSTALL_FLAGS, mFlags);
+            verification->PutExtra(IPackageManager::EXTRA_VERIFICATION_INSTALL_FLAGS, mFlags);
 
             String pkgName;
             pkgLite->GetPackageName(&pkgName);
-            verification->PutStringExtra(IPackageManager::EXTRA_VERIFICATION_PACKAGE_NAME,
+            verification->PutExtra(IPackageManager::EXTRA_VERIFICATION_PACKAGE_NAME,
                     pkgName);
 
             Int32 vCode;
             pkgLite->GetVersionCode(&vCode);
-            verification->PutInt32Extra(IPackageManager::EXTRA_VERIFICATION_VERSION_CODE,
+            verification->PutExtra(IPackageManager::EXTRA_VERIFICATION_VERSION_CODE,
                     vCode);
 
             if (mVerificationParams != NULL) {
                 AutoPtr<IUri> uri;
                 mVerificationParams->GetVerificationURI((IUri**)&uri);
                 if (uri != NULL) {
-                    verification->PutParcelableExtra(IPackageManager::EXTRA_VERIFICATION_URI,
+                    verification->PutExtra(IPackageManager::EXTRA_VERIFICATION_URI,
                         IParcelable::Probe(uri));
                 }
                 uri = NULL;
                 mVerificationParams->GetOriginatingURI((IUri**)&uri);
                 if (uri != NULL) {
-                    verification->PutParcelableExtra(IIntent::EXTRA_ORIGINATING_URI,
+                    verification->PutExtra(IIntent::EXTRA_ORIGINATING_URI,
                             IParcelable::Probe(uri));
                 }
                 uri = NULL;
                 mVerificationParams->GetReferrer((IUri**)&uri);
                 if (uri != NULL) {
-                    verification->PutParcelableExtra(IIntent::EXTRA_REFERRER,
+                    verification->PutExtra(IIntent::EXTRA_REFERRER,
                             IParcelable::Probe(uri));
                 }
                 Int32 uid = 0;
                 mVerificationParams->GetOriginatingUid(&uid);
                 if (uid >= 0) {
-                    verification->PutInt32Extra(IIntent::EXTRA_ORIGINATING_UID,
+                    verification->PutExtra(IIntent::EXTRA_ORIGINATING_UID,
                             uid);
                 }
                 uid = 0;
                 mVerificationParams->GetInstallerUid(&uid);
                 if (uid >= 0) {
-                    verification->PutInt32Extra(IPackageManager::EXTRA_VERIFICATION_INSTALLER_UID,
+                    verification->PutExtra(IPackageManager::EXTRA_VERIFICATION_INSTALLER_UID,
                             uid);
                 }
             }
@@ -9074,9 +9074,9 @@ void CPackageManagerService::SendPackageBroadcast(
             intent->GetInt32Extra(IIntent::EXTRA_UID, -1, &uid);
             if (uid > 0 && UserHandle::GetUserId(uid) != id) {
                 uid = UserHandle::GetUid(id, UserHandle::GetAppId(uid));
-                intent->PutInt32Extra(IIntent::EXTRA_UID, uid);
+                intent->PutExtra(IIntent::EXTRA_UID, uid);
             }
-            intent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, id);
+            intent->PutExtra(IIntent::EXTRA_USER_HANDLE, id);
             intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
             // if (DEBUG_BROADCASTS) {
             //     RuntimeException here = new RuntimeException("here");
@@ -9421,8 +9421,8 @@ ECode CPackageManagerService::BroadcastPackageVerified(
     CIntent::New(IIntent::ACTION_PACKAGE_VERIFIED, (IIntent**)&intent);
     intent->SetDataAndType(packageUri, PACKAGE_MIME_TYPE);
     intent->AddFlags(IIntent::FLAG_GRANT_READ_URI_PERMISSION);
-    intent->PutInt32Extra(IPackageManager::EXTRA_VERIFICATION_ID, verificationId);
-    intent->PutInt32Extra(IPackageManager::EXTRA_VERIFICATION_RESULT, verificationCode);
+    intent->PutExtra(IPackageManager::EXTRA_VERIFICATION_ID, verificationId);
+    intent->PutExtra(IPackageManager::EXTRA_VERIFICATION_RESULT, verificationCode);
 
     mContext->SendBroadcastAsUser(intent, user,
             Elastos::Droid::Manifest::Permission::PACKAGE_VERIFICATION_AGENT);

@@ -3,7 +3,7 @@ module
 {
 
     interface Elastos.Droid.Os.IParcel;
-    interface Elastos.Droid.Os.IParcelable;
+
 
 
     namespace Elastos {

@@ -45,7 +45,6 @@ public:
         /* [in] */ IParamInfo * pPParamInfo);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

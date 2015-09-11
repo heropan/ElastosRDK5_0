@@ -109,8 +109,8 @@ ECode CActivityTwo::OnBackPressed()
 {
     AutoPtr<IIntent> data;
     CIntent::New((IIntent**)&data);
-    data->PutStringExtra(String("Interacting.at.key1"), String("elastos"));
-    data->PutStringExtra(String("Interacting.at.key2"), String("elastos.org"));
+    data->PutExtra(String("Interacting.at.key1"), String("elastos"));
+    data->PutExtra(String("Interacting.at.key2"), String("elastos.org"));
 
     SetResult(10, data);
     return Activity::OnBackPressed();

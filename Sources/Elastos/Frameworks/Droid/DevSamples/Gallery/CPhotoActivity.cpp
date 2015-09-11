@@ -226,7 +226,7 @@ ECode CPhotoActivity::MyListener::OnClick(
             AutoPtr<IIntent> intent;
             CIntent::New((IIntent**)&intent);
             intent->SetClassName(String("Gallery"), String("Gallery.CEditActivity"));
-            intent->PutStringExtra(DataSourceHelper::SOURCE_PATH, entry->sourcePath);
+            intent->PutExtra(DataSourceHelper::SOURCE_PATH, entry->sourcePath);
             if (FAILED(mHost->StartActivity(intent))) {
                 Logger::E(TAG, "OnClick()---StartActivity CEditActivity failed!");
             }
@@ -244,7 +244,7 @@ ECode CPhotoActivity::MyListener::OnClick(
             AutoPtr<IIntent> intent;
             CIntent::New((IIntent**)&intent);
             intent->SetClassName(String("Gallery"), String("Gallery.CWallpaperActivity"));
-            intent->PutStringExtra(DataSourceHelper::SOURCE_PATH, entry->sourcePath);
+            intent->PutExtra(DataSourceHelper::SOURCE_PATH, entry->sourcePath);
             if (FAILED(mHost->StartActivity(intent))) {
                 Logger::E(TAG, "OnClick()---StartActivity CWallpaperActivity failed!");
             }

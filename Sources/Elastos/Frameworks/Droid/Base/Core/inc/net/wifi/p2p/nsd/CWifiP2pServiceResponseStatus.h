@@ -19,7 +19,6 @@ public:
         /* [out] */ String * pString);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

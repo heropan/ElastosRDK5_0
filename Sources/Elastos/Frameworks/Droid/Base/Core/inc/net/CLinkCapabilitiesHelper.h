@@ -16,7 +16,6 @@ public:
         /* [out] */ ILinkCapabilities** result);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 } // namespace Net

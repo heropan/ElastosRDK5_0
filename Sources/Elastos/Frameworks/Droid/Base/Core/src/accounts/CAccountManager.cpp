@@ -527,10 +527,10 @@ ECode CAccountManager::GetAuthTokenByTypeAndFeaturesTask::GetAccountsCallback::R
                 FAIL_RETURN(CIntent::New((IIntent**)&intent));
                 intent->SetClassName(String("elastos"),
                         String("elastos.accounts.ChooseAccountActivity"));
-                intent->PutInt32Extra(IAccountManager::KEY_ACCOUNTS, (Int32)accounts.Get());
+                intent->PutExtra(IAccountManager::KEY_ACCOUNTS, (Int32)accounts.Get());
                 AutoPtr<AccountManagerResponse> response = new AccountManagerResponse(
                         chooseResponse);
-                intent->PutParcelableExtra(IAccountManager::KEY_ACCOUNT_MANAGER_RESPONSE,
+                intent->PutExtra(IAccountManager::KEY_ACCOUNT_MANAGER_RESPONSE,
                         (IParcelable*)response->Probe(EIID_IParcelable));
                 mHost->mActivity->StartActivity(intent);
                 // the result will arrive via the IAccountManagerResponse
@@ -1731,21 +1731,21 @@ ECode CAccountManager::NewChooseAccountIntent(
         AutoPtr<IParcelable> p = (IParcelable*)allowableAccounts[i]->Probe(EIID_IParcelable);
         parcelables->Set(i, p);
     }
-    intent->PutParcelableArrayExtra(ChooseTypeAndAccountActivity::EXTRA_ALLOWABLE_ACCOUNTS_ARRAYLIST,
+    intent->PutExtra(ChooseTypeAndAccountActivity::EXTRA_ALLOWABLE_ACCOUNTS_ARRAYLIST,
             parcelables);
-    intent->PutStringArrayExtra(ChooseTypeAndAccountActivity::EXTRA_ALLOWABLE_ACCOUNT_TYPES_STRING_ARRAY,
+    intent->PutExtra(ChooseTypeAndAccountActivity::EXTRA_ALLOWABLE_ACCOUNT_TYPES_STRING_ARRAY,
             const_cast<ArrayOf<String>*>(&allowableAccountTypes));
-    intent->PutBundleExtra(ChooseTypeAndAccountActivity::EXTRA_ADD_ACCOUNT_OPTIONS_BUNDLE,
+    intent->PutExtra(ChooseTypeAndAccountActivity::EXTRA_ADD_ACCOUNT_OPTIONS_BUNDLE,
             addAccountOptions);
-    intent->PutInt32Extra(ChooseTypeAndAccountActivity::EXTRA_SELECTED_ACCOUNT,
+    intent->PutExtra(ChooseTypeAndAccountActivity::EXTRA_SELECTED_ACCOUNT,
             (Int32)selectedAccount);
     intent->PutBooleanExtra(ChooseTypeAndAccountActivity::EXTRA_ALWAYS_PROMPT_FOR_ACCOUNT,
             alwaysPromptForAccount);
-    intent->PutStringExtra(ChooseTypeAndAccountActivity::EXTRA_DESCRIPTION_TEXT_OVERRIDE,
+    intent->PutExtra(ChooseTypeAndAccountActivity::EXTRA_DESCRIPTION_TEXT_OVERRIDE,
             descriptionOverrideText);
-    intent->PutStringExtra(ChooseTypeAndAccountActivity::EXTRA_ADD_ACCOUNT_AUTH_TOKEN_TYPE_STRING,
+    intent->PutExtra(ChooseTypeAndAccountActivity::EXTRA_ADD_ACCOUNT_AUTH_TOKEN_TYPE_STRING,
             addAccountAuthTokenType);
-    intent->PutStringArrayExtra(
+    intent->PutExtra(
             ChooseTypeAndAccountActivity::EXTRA_ADD_ACCOUNT_REQUIRED_FEATURES_STRING_ARRAY,
             const_cast<ArrayOf<String>*>(&addAccountRequiredFeatures));
     *_intent = intent;

@@ -2668,7 +2668,7 @@ AutoPtr<IIntent> CNetworkPolicyManagerService::BuildSnoozeWarningIntent(
 {
     AutoPtr<IIntent> intent;
     CIntent::New(ACTION_SNOOZE_WARNING, (IIntent**)&intent);
-    intent->PutParcelableExtra(INetworkPolicyManager::EXTRA_NETWORK_TEMPLATE, IParcelable::Probe(templ));
+    intent->PutExtra(INetworkPolicyManager::EXTRA_NETWORK_TEMPLATE, IParcelable::Probe(templ));
     return intent;
 }
 
@@ -2682,7 +2682,7 @@ AutoPtr<IIntent> CNetworkPolicyManagerService::BuildNetworkOverLimitIntent(
             String("com.android.systemui.net.NetworkOverLimitActivity"), (IComponentName**)&component);
     intent->SetComponent(component);
     intent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
-    intent->PutParcelableExtra(INetworkPolicyManager::EXTRA_NETWORK_TEMPLATE, IParcelable::Probe(templ));
+    intent->PutExtra(INetworkPolicyManager::EXTRA_NETWORK_TEMPLATE, IParcelable::Probe(templ));
     return intent;
 }
 
@@ -2696,7 +2696,7 @@ AutoPtr<IIntent> CNetworkPolicyManagerService::BuildViewDataUsageIntent(
             String("com.android.settings.Settings$DataUsageSummaryActivity"), (IComponentName**)&component);
     intent->SetComponent(component);
     intent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
-    intent->PutParcelableExtra(INetworkPolicyManager::EXTRA_NETWORK_TEMPLATE, IParcelable::Probe(templ));
+    intent->PutExtra(INetworkPolicyManager::EXTRA_NETWORK_TEMPLATE, IParcelable::Probe(templ));
     return intent;
 }
 

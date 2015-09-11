@@ -93,7 +93,6 @@ public:
         /* [in] */ IModuleInfo* pModuleInfo);
 
 private:
-    // TODO: Add your private member variables here.
     IModuleInfo* moduleInfo;
 };
 

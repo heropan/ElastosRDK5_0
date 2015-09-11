@@ -512,8 +512,8 @@ ECode CUiModeManagerService::UpdateLocked(
         // placed into a dock.
         AutoPtr<IIntent> intent;
         CIntent::New(action, (IIntent**)&intent);
-        intent->PutInt32Extra(String("enableFlags"), enableFlags);
-        intent->PutInt32Extra(String("disableFlags"), disableFlags);
+        intent->PutExtra(String("enableFlags"), enableFlags);
+        intent->PutExtra(String("disableFlags"), disableFlags);
         mContext->SendOrderedBroadcastAsUser(intent, CURRENT, String(NULL),
                 mResultReceiver, NULL, IActivity::RESULT_OK, String(NULL), NULL);
 

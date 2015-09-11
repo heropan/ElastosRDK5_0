@@ -30,7 +30,7 @@ public:
 
     CBundle();
 
-    ~CBundle();
+    virtual ~CBundle();
 
     CARAPI constructor();
 
@@ -323,6 +323,283 @@ public:
 
     CARAPI ToString(
         /* [out] */ String* str);
+
+    //
+    // From IBaseBundle
+    //
+    CARAPI SetClassLoader(
+        /* [in] */ IClassLoader* loader);
+
+    CARAPI GetClassLoader(
+        /* [out] */ IClassLoader** loader);
+
+    CARAPI IsParcelled(
+        /* [out] */ Boolean* empty);
+
+    CARAPI GetSize(
+        /* [out] */ Int32 * size);
+
+    CARAPI IsEmpty(
+        /* [out] */ Boolean* empty);
+
+    CARAPI ContainsKey(
+        /* [in] */ const String& key,
+        /* [out] */ Boolean* result);
+
+    CARAPI Get(
+        /* [in] */ const String& key,
+        /* [out] */ IInterface** obj);
+
+    CARAPI Remove(
+        /* [in] */ const String& key);
+
+    CARAPI PutAll(
+        /* [in] */ IPersistableBundle* bundle);
+
+    CARAPI GetKeySet(
+        /* [out] */ ISet** set);
+
+    CARAPI PutBoolean(
+        /* [in] */ const String& key,
+        /* [in] */ Boolean value);
+
+    CARAPI PutByte(
+        /* [in] */ const String& key,
+        /* [in] */ Byte value);
+
+    CARAPI PutChar(
+        /* [in] */ const String& key,
+        /* [in] */ Char32 value);
+
+    CARAPI PutInt16(
+        /* [in] */ const String& key,
+        /* [in] */ Int16 value);
+
+    CARAPI PutInt32(
+        /* [in] */ const String& key,
+        /* [in] */ Int32 value);
+
+    CARAPI PutInt64(
+        /* [in] */ const String& key,
+        /* [in] */ Int64 value);
+
+    CARAPI PutFloat(
+        /* [in] */ const String& key,
+        /* [in] */ Float value);
+
+    CARAPI PutDouble(
+        /* [in] */ const String& key,
+        /* [in] */ Double value);
+
+    CARAPI PutString(
+        /* [in] */ const String& key,
+        /* [in] */ const String& value);
+
+    CARAPI PutCharSequence(
+        /* [in] */ const String& key,
+        /* [in] */ ICharSequence* value);
+
+    CARAPI PutIntegerArrayList(
+        /* [in] */ const String& key,
+        /* [in] */ IArrayList* value);
+
+    CARAPI PutStringArrayList(
+        /* [in] */ const String& key,
+        /* [in] */ IArrayList* value);
+
+    CARAPI PutCharSequenceArrayList(
+        /* [in] */ const String& key,
+        /* [in] */ IArrayList* value);
+
+    CARAPI PutSerializable(
+        /* [in] */ const String& key,
+        /* [in] */ ISerializable* value);
+
+    CARAPI PutBooleanArray(
+        /* [in] */ const String& key,
+        /* [in] */ ArrayOf<Boolean>* value);
+
+    CARAPI PutByteArray(
+        /* [in] */ const String& key,
+        /* [in] */ ArrayOf<Byte>* value);
+
+    CARAPI PutCharArray(
+        /* [in] */ const String& key,
+        /* [in] */ ArrayOf<Char32>* value);
+
+    CARAPI PutInt16Array(
+        /* [in] */ const String& key,
+        /* [in] */ ArrayOf<Int16>* value);
+
+    CARAPI PutInt32Array(
+        /* [in] */ const String& key,
+        /* [in] */ ArrayOf<Int32>* value);
+
+    CARAPI PutInt64Array(
+        /* [in] */ const String& key,
+        /* [in] */ ArrayOf<Int64>* value);
+
+    CARAPI PutFloatArray(
+        /* [in] */ const String& key,
+        /* [in] */ ArrayOf<Float>* value);
+
+    CARAPI PutDoubleArray(
+        /* [in] */ const String& key,
+        /* [in] */ ArrayOf<Double>* value);
+
+    CARAPI PutStringArray(
+        /* [in] */ const String& key,
+        /* [in] */ ArrayOf<String>* value);
+
+    CARAPI PutCharSequenceArray(
+        /* [in] */ const String& key,
+        /* [in] */ ArrayOf<ICharSequence*>* value);
+
+    CARAPI GetBoolean(
+        /* [in] */ const String& key,
+        /* [out] */ Boolean* value);
+
+    CARAPI GetBoolean(
+        /* [in] */ const String& key,
+        /* [in] */ Boolean defaultValue,
+        /* [out] */ Boolean* value);
+
+    CARAPI GetByte(
+        /* [in] */ const String& key,
+        /* [out] */ Byte* value);
+
+    CARAPI GetByte(
+        /* [in] */ const String& key,
+        /* [in] */ Byte defaultValue,
+        /* [out] */ Byte* value);
+
+    CARAPI GetChar(
+        /* [in] */ const String& key,
+        /* [out] */ Char32* value);
+
+    CARAPI GetChar(
+        /* [in] */ const String& key,
+        /* [in] */ Char32 defaultValue,
+        /* [out] */ Char32* value);
+
+    CARAPI GetInt16(
+        /* [in] */ const String& key,
+        /* [out] */ Int16* value);
+
+    CARAPI GetInt16(
+        /* [in] */ const String& key,
+        /* [in] */ Int16 defaultValue,
+        /* [out] */ Int16* value);
+
+    CARAPI GetInt32(
+        /* [in] */ const String& key,
+        /* [out] */ Int32* value);
+
+    CARAPI GetInt32(
+        /* [in] */ const String& key,
+        /* [in] */ Int32 defaultValue,
+        /* [out] */ Int32* value);
+
+    CARAPI GetInt64(
+        /* [in] */ const String& key,
+        /* [out] */ Int64* value);
+
+    CARAPI GetInt64(
+        /* [in] */ const String& key,
+        /* [in] */ Int64 defaultValue,
+        /* [out] */ Int64* value);
+
+    CARAPI GetFloat(
+        /* [in] */ const String& key,
+        /* [out] */ Float* value);
+
+    CARAPI GetFloat(
+        /* [in] */ const String& key,
+        /* [in] */ Float defaultValue,
+        /* [out] */ Float* value);
+
+    CARAPI GetDouble(
+        /* [in] */ const String& key,
+        /* [out] */ Double* value);
+
+    CARAPI GetDouble(
+        /* [in] */ const String& key,
+        /* [in] */ Double defaultValue,
+        /* [out] */ Double* value);
+
+    CARAPI GetString(
+        /* [in] */ const String& key,
+        /* [out] */ String* value);
+
+    CARAPI GetString(
+        /* [in] */ const String& key,
+        /* [in] */ const String& defaultValue,
+        /* [out] */ String* value);
+
+    CARAPI GetCharSequence(
+        /* [in] */ const String& key,
+        /* [out] */ ICharSequence** value);
+
+    CARAPI GetCharSequence(
+        /* [in] */ const String& key,
+        /* [in] */ ICharSequence* defaultValue,
+        /* [out] */ ICharSequence** value);
+
+    CARAPI GetSerializable(
+        /* [in] */ const String& key,
+        /* [out] */ ISerializable** value);
+
+    CARAPI GetIntegerArrayList(
+        /* [in] */ const String& key,
+        /* [out] */ IArrayList** value);
+
+    CARAPI GetStringArrayList(
+        /* [in] */ const String& key,
+        /* [out] */ IArrayList** value);
+
+    CARAPI GetCharSequenceArrayList(
+        /* [in] */ const String& key,
+        /* [out] */ IArrayList** value);
+
+    CARAPI GetBooleanArray(
+        /* [in] */ const String& key,
+        /* [out, callee] */ ArrayOf<Boolean>** value);
+
+    CARAPI GetByteArray(
+        /* [in] */ const String& key,
+        /* [out, callee] */ ArrayOf<Byte>** value);
+
+    CARAPI GetInt16Array(
+        /* [in] */ const String& key,
+        /* [out, callee] */ ArrayOf<Int16>** value);
+
+    CARAPI GetCharArray(
+        /* [in] */ const String& key,
+        /* [out, callee] */ ArrayOf<Char32>** value);
+
+    CARAPI GetInt32Array(
+        /* [in] */ const String& key,
+        /* [out, callee] */ ArrayOf<Int32>** value);
+
+    CARAPI GetInt64Array(
+        /* [in] */ const String& key,
+        /* [out, callee] */ ArrayOf<Int64>** value);
+
+    CARAPI GetFloatArray(
+        /* [in] */ const String& key,
+        /* [out, callee] */ ArrayOf<Float>** value);
+
+    CARAPI GetDoubleArray(
+        /* [in] */ const String& key,
+        /* [out, callee] */ ArrayOf<Double>** value);
+
+    CARAPI GetStringArray(
+        /* [in] */ const String& key,
+        /* [out, callee] */ ArrayOf<String>** value);
+
+    CARAPI GetCharSequenceArray(
+        /* [in] */ const String& key,
+        /* [out, callee] */ ArrayOf<ICharSequence*>** value);
 
 public:
     static AutoPtr<IBundle> EMPTY;

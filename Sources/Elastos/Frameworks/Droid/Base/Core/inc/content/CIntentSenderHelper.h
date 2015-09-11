@@ -42,7 +42,6 @@ public:
         /* [out] */ IIntentSender** intentSender);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }

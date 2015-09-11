@@ -2489,10 +2489,10 @@ void CConnectivityService::HandleDisconnect(
     CIntent::New(IConnectivityManager::CONNECTIVITY_ACTION, (IIntent**)&intent);
     AutoPtr<INetworkInfo> newInfo;
     CNetworkInfo::New(info, (INetworkInfo**)&newInfo);
-    intent->PutParcelableExtra(IConnectivityManager::EXTRA_NETWORK_INFO, IParcelable::Probe(newInfo));
+    intent->PutExtra(IConnectivityManager::EXTRA_NETWORK_INFO, IParcelable::Probe(newInfo));
     Int32 nowNetType;
     info->GetType(&nowNetType);
-    intent->PutInt32Extra(IConnectivityManager::EXTRA_NETWORK_TYPE, nowNetType);
+    intent->PutExtra(IConnectivityManager::EXTRA_NETWORK_TYPE, nowNetType);
 
     Boolean fallOver;
     if ((info->IsFailover(&fallOver), fallOver)) {
@@ -2501,11 +2501,11 @@ void CConnectivityService::HandleDisconnect(
     }
     String reason;
     if (info->GetReason(&reason), !reason.IsNull()) {
-        intent->PutStringExtra(IConnectivityManager::EXTRA_REASON, reason);
+        intent->PutExtra(IConnectivityManager::EXTRA_REASON, reason);
     }
     String extraInfo;
     if (info->GetExtraInfo(&extraInfo), !extraInfo.IsNull()) {
-        intent->PutStringExtra(IConnectivityManager::EXTRA_EXTRA_INFO, extraInfo);
+        intent->PutExtra(IConnectivityManager::EXTRA_EXTRA_INFO, extraInfo);
     }
 
     if (((*mNetConfigs)[prevNetType]->IsDefault(&isdefault), isdefault)) {
@@ -2513,14 +2513,14 @@ void CConnectivityService::HandleDisconnect(
         if (mActiveDefaultNetwork != -1) {
             AutoPtr<INetworkInfo> switchTo;
             (*mNetTrackers)[mActiveDefaultNetwork]->GetNetworkInfo((INetworkInfo**)&switchTo);
-            intent->PutParcelableExtra(IConnectivityManager::EXTRA_OTHER_NETWORK_INFO, IParcelable::Probe(switchTo));
+            intent->PutExtra(IConnectivityManager::EXTRA_OTHER_NETWORK_INFO, IParcelable::Probe(switchTo));
         }
         else {
             mDefaultInetConditionPublished = 0; // we're not connected anymore
             intent->PutBooleanExtra(IConnectivityManager::EXTRA_NO_CONNECTIVITY, TRUE);
         }
     }
-    intent->PutInt32Extra(IConnectivityManager::EXTRA_INET_CONDITION, mDefaultInetConditionPublished);
+    intent->PutExtra(IConnectivityManager::EXTRA_INET_CONDITION, mDefaultInetConditionPublished);
 
     // Reset interface if no other connections are using the same interface
     Boolean doReset = TRUE;
@@ -2670,10 +2670,10 @@ AutoPtr<IIntent> CConnectivityService::MakeGeneralIntent(
     CIntent::New(bcastType, (IIntent**)&intent);
     AutoPtr<INetworkInfo> infoNew;
     CNetworkInfo::New(egressInfo, (INetworkInfo**)&infoNew);
-    intent->PutParcelableExtra(IConnectivityManager::EXTRA_NETWORK_INFO, IParcelable::Probe(infoNew));
+    intent->PutExtra(IConnectivityManager::EXTRA_NETWORK_INFO, IParcelable::Probe(infoNew));
     Int32 type;
     egressInfo->GetType(&type);
-    intent->PutInt32Extra(IConnectivityManager::EXTRA_NETWORK_TYPE, type);
+    intent->PutExtra(IConnectivityManager::EXTRA_NETWORK_TYPE, type);
 
     Boolean failover;
     if ((egressInfo->IsFailover(&failover), failover)) {
@@ -2682,13 +2682,13 @@ AutoPtr<IIntent> CConnectivityService::MakeGeneralIntent(
     }
     String reason;
     if (egressInfo->GetReason(&reason), !reason.IsNull()) {
-        intent->PutStringExtra(IConnectivityManager::EXTRA_REASON, reason);
+        intent->PutExtra(IConnectivityManager::EXTRA_REASON, reason);
     }
     String extraInfo;
     if (egressInfo->GetExtraInfo(&extraInfo), !extraInfo.IsNull()) {
-        intent->PutStringExtra(IConnectivityManager::EXTRA_EXTRA_INFO, extraInfo);
+        intent->PutExtra(IConnectivityManager::EXTRA_EXTRA_INFO, extraInfo);
     }
-    intent->PutInt32Extra(IConnectivityManager::EXTRA_INET_CONDITION, mDefaultInetConditionPublished);
+    intent->PutExtra(IConnectivityManager::EXTRA_INET_CONDITION, mDefaultInetConditionPublished);
     return intent;
 }
 
@@ -2715,7 +2715,7 @@ void CConnectivityService::SendDataActivityBroadcast(
 {
     AutoPtr<IIntent> intent;
     CIntent::New(IConnectivityManager::ACTION_DATA_ACTIVITY_CHANGE, (IIntent**)&intent);
-    intent->PutInt32Extra(IConnectivityManager::EXTRA_DEVICE_TYPE, deviceType);
+    intent->PutExtra(IConnectivityManager::EXTRA_DEVICE_TYPE, deviceType);
     intent->PutBooleanExtra(IConnectivityManager::EXTRA_IS_ACTIVE, active);
     Int64 ident = Binder::ClearCallingIdentity();
     AutoPtr<IUserHandleHelper> helper;
@@ -2761,10 +2761,10 @@ void CConnectivityService::HandleConnectionFailure(
     CIntent::New(IConnectivityManager::CONNECTIVITY_ACTION, (IIntent**)&intent);
     AutoPtr<INetworkInfo> infoNew;
     CNetworkInfo::New(info, (INetworkInfo**)&infoNew);
-    intent->PutParcelableExtra(IConnectivityManager::EXTRA_NETWORK_INFO, IParcelable::Probe(infoNew));
+    intent->PutExtra(IConnectivityManager::EXTRA_NETWORK_INFO, IParcelable::Probe(infoNew));
     Int32 typeNow;
     info->GetType(&typeNow);
-    intent->PutInt32Extra(IConnectivityManager::EXTRA_NETWORK_TYPE, typeNow);
+    intent->PutExtra(IConnectivityManager::EXTRA_NETWORK_TYPE, typeNow);
 
     AutoPtr<INetworkInfo> actNetInfo;
     GetActiveNetworkInfo((INetworkInfo**)&actNetInfo);
@@ -2772,10 +2772,10 @@ void CConnectivityService::HandleConnectionFailure(
         intent->PutBooleanExtra(IConnectivityManager::EXTRA_NO_CONNECTIVITY, TRUE);
     }
     if (!reason.IsNull()) {
-        intent->PutStringExtra(IConnectivityManager::EXTRA_REASON, reason);
+        intent->PutExtra(IConnectivityManager::EXTRA_REASON, reason);
     }
     if (!extraInfo.IsNull()) {
-        intent->PutStringExtra(IConnectivityManager::EXTRA_EXTRA_INFO, extraInfo);
+        intent->PutExtra(IConnectivityManager::EXTRA_EXTRA_INFO, extraInfo);
     }
     Boolean failOver;
     if ((info->IsFailover(&failOver), failOver)) {
@@ -2791,7 +2791,7 @@ void CConnectivityService::HandleConnectionFailure(
         if (mActiveDefaultNetwork != -1) {
             AutoPtr<INetworkInfo> switchTo;
             (*mNetTrackers)[mActiveDefaultNetwork]->GetNetworkInfo((INetworkInfo**)&switchTo);
-            intent->PutParcelableExtra(IConnectivityManager::EXTRA_OTHER_NETWORK_INFO, IParcelable::Probe(switchTo));
+            intent->PutExtra(IConnectivityManager::EXTRA_OTHER_NETWORK_INFO, IParcelable::Probe(switchTo));
         }
         else {
             mDefaultInetConditionPublished = 0;
@@ -2799,7 +2799,7 @@ void CConnectivityService::HandleConnectionFailure(
         }
     }
 
-    intent->PutInt32Extra(IConnectivityManager::EXTRA_INET_CONDITION, mDefaultInetConditionPublished);
+    intent->PutExtra(IConnectivityManager::EXTRA_INET_CONDITION, mDefaultInetConditionPublished);
 
     AutoPtr<IIntent> immediateIntent;
     CIntent::New(intent, (IIntent**)&immediateIntent);
@@ -4420,7 +4420,7 @@ void CConnectivityService::SendProxyBroadcast(
     CIntent::New(Elastos::Droid::Net::IProxy::PROXY_CHANGE_ACTION, (IIntent**)&intent);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REPLACE_PENDING |
         IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
-    intent->PutParcelableExtra(Elastos::Droid::Net::IProxy::EXTRA_PROXY_INFO, IParcelable::Probe(proxyProp));
+    intent->PutExtra(Elastos::Droid::Net::IProxy::EXTRA_PROXY_INFO, IParcelable::Probe(proxyProp));
     Int64 ident = Binder::ClearCallingIdentity();
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);

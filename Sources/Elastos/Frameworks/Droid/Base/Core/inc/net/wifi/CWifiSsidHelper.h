@@ -21,7 +21,6 @@ public:
         /* [out] */ IWifiSsid** wifiSsid);
 
 private:
-    // TODO: Add your private member variables here.
 };
 
 }
