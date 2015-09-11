@@ -43,34 +43,13 @@ namespace Droid {
 namespace Text {
 namespace Format {
 
-extern "C" const InterfaceID EIID_DateUtils =
-        { 0xef2a207c, 0x55b9, 0x4bd1, { 0xb2, 0xf9, 0x73, 0x6c, 0xab, 0x05, 0x25, 0x1c } };
-
 // This table is used to lookup the resource string id of a format string
 // used for formatting a start and end date that fall in the same year.
 // The index is constructed from a bit-wise OR of the boolean values:
 // {showTime, showYear, showWeekDay}.  For example, if showYear and
 // showWeekDay are both true, then the index would be 3.
 /** @deprecated do not use. */
-const Int32 DateUtils::sSameYearTable[] = {
-        R::string::same_year_md1_md2,
-        R::string::same_year_wday1_md1_wday2_md2,
-        R::string::same_year_mdy1_mdy2,
-        R::string::same_year_wday1_mdy1_wday2_mdy2,
-        R::string::same_year_md1_time1_md2_time2,
-        R::string::same_year_wday1_md1_time1_wday2_md2_time2,
-        R::string::same_year_mdy1_time1_mdy2_time2,
-        R::string::same_year_wday1_mdy1_time1_wday2_mdy2_time2,
-        // Numeric date strings
-        R::string::numeric_md1_md2,
-        R::string::numeric_wday1_md1_wday2_md2,
-        R::string::numeric_mdy1_mdy2,
-        R::string::numeric_wday1_mdy1_wday2_mdy2,
-        R::string::numeric_md1_time1_md2_time2,
-        R::string::numeric_wday1_md1_time1_wday2_md2_time2,
-        R::string::numeric_mdy1_time1_mdy2_time2,
-        R::string::numeric_wday1_mdy1_time1_wday2_mdy2_time2,
-    };
+const Int32 DateUtils::sSameYearTable = NULL;
 
 // This table is used to lookup the resource string id of a format string
 // used for formatting a start and end date that fall in the same month.
@@ -78,27 +57,9 @@ const Int32 DateUtils::sSameYearTable[] = {
 // {showTime, showYear, showWeekDay}.  For example, if showYear and
 // showWeekDay are both true, then the index would be 3.
 /** @deprecated do not use. */
-const Int32 DateUtils::sSameMonthTable[] = {
-        R::string::same_month_md1_md2,
-        R::string::same_month_wday1_md1_wday2_md2,
-        R::string::same_month_mdy1_mdy2,
-        R::string::same_month_wday1_mdy1_wday2_mdy2,
-        R::string::same_month_md1_time1_md2_time2,
-        R::string::same_month_wday1_md1_time1_wday2_md2_time2,
-        R::string::same_month_mdy1_time1_mdy2_time2,
-        R::string::same_month_wday1_mdy1_time1_wday2_mdy2_time2,
+const Int32 DateUtils::sSameMonthTable = NULL;
 
-        R::string::numeric_md1_md2,
-        R::string::numeric_wday1_md1_wday2_md2,
-        R::string::numeric_mdy1_mdy2,
-        R::string::numeric_wday1_mdy1_wday2_mdy2,
-        R::string::numeric_md1_time1_md2_time2,
-        R::string::numeric_wday1_md1_time1_wday2_md2_time2,
-        R::string::numeric_mdy1_time1_mdy2_time2,
-        R::string::numeric_wday1_mdy1_time1_wday2_mdy2_time2,
-    };
-
-Mutex DateUtils::sLock;
+Object DateUtils::sLock;
 AutoPtr<IConfiguration> DateUtils::sLastConfig = NULL;
 AutoPtr<Elastos::Text::IDateFormat> DateUtils::sStatusTimeFormat = NULL;
 String DateUtils::sElapsedFormatMMSS = String(NULL);
@@ -829,8 +790,9 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeTimeSpanString(
     Int64 now;
     system->GetCurrentTimeMillis(&now);
     Int64 span = Elastos::Core::Math::Abs(now - millis);
+
+    synchronized(sLockDateUtilsClass)
     {
-        AutoLock lock(sLockDateUtilsClass);
         if (sNowTime == NULL) {
             CTime::New( (ITime**)&sNowTime );
         }
@@ -874,11 +836,11 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeTimeSpanString(
             c->GetResources((IResources**)&res);
             String raw;
             res->GetString(prepositionId, &raw);
-            String strTemp;
-//            strTemp = String.format(raw, result);
-            result = strTemp;
+            result = raw;
         }
+
     }
+
     AutoPtr<ICharSequence> cs;
     CString::New(result, (ICharSequence**)&cs);
     return cs;
@@ -888,27 +850,8 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeTimeSpanString(
     /* [in] */ IContext* c,
     /* [in] */ Int64 millis)
 {
-    return GetRelativeTimeSpanString(c, millis, false /* no preposition */);
+    return GetRelativeTimeSpanString(c, millis, FALSE /* no preposition */);
 }
-
-AutoPtr< ArrayOf<Int32> > DateUtils::GetSameMonthTable()
-{
-    AutoPtr< ArrayOf<Int32> > sameMt = ArrayOf<Int32>::Alloc(16);
-    for(Int32 i=0; i<16; i++){
-        (*sameMt)[i] = sSameMonthTable[i];
-    }
-    return sameMt;
-}
-
-AutoPtr< ArrayOf<Int32> > DateUtils::GetSameYearTable()
-{
-    AutoPtr< ArrayOf<Int32> > sameYt = ArrayOf<Int32>::Alloc(16);
-    for(Int32 i=0; i<16; i++){
-        (*sameYt)[i] = sSameYearTable[i];
-    }
-    return sameYt;
-}
-
 
 } // namespace Format
 } // namespace Text

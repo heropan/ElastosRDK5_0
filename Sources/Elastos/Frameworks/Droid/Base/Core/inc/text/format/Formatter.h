@@ -11,22 +11,13 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Format {
-
-extern "C" const InterfaceID EIID_Formatter;
-
 /**
  * Utility class to aid in formatting common values that are not covered
  * by the {@link java.util.Formatter} class in {@link java.util}
  */
 class Formatter
-    : public Object
-    , public IDateUtils
 {
 public:
-    CAR_INTERFACE_DECL();
-
-    CARAPI_(String) ToString();
-
     /**
      * Formats a content size to be in the form of bytes, kilobytes, megabytes, etc
      *
@@ -75,15 +66,17 @@ public:
             /* [in] */ Int64 millis);
 
 private:
-    static const Int32 SECONDS_PER_MINUTE;
-    static const Int32 SECONDS_PER_HOUR;
-    static const Int32 SECONDS_PER_DAY;
+    Formatter();
 
     static CARAPI_(String) FormatFileSize(
         /* [in] */ IContext* context,
         /* [in] */ Int64 number,
         /* [in] */ Boolean shorter);
 
+private:
+    static const Int32 SECONDS_PER_MINUTE;
+    static const Int32 SECONDS_PER_HOUR;
+    static const Int32 SECONDS_PER_DAY;
 };
 
 

@@ -20,8 +20,66 @@ namespace Format {
  * functionality.
  */
 CarClass(CTime)
+    , public Object
+    , public ITime
 {
+private:
+    static class TimeCalculator {
+        public:
+            TimeCalculator(String timezoneId);
+
+            CARAPI_(Int64) ToMillis(
+                /* [in] */ Boolean ignoreDst);
+
+            CARAPI SetTimeInMillis(
+                /* [in] */ Int64 millis);
+
+            CARAPI_(String) Format(
+                /* [in] */ String format);
+
+            CARAPI SwitchTimezone(
+                /* [in] */ String timezone);
+
+            CARAPI_(String) Format2445(
+                /* [in] */ Boolean hasTime);
+
+            CARAPI_(String) ToStringInternal();
+
+            static CARAPI_(Int32) Compare(
+                /* [in] */ AutoPtr<TimeCalculator> aObject,
+                /* [in] */ AutoPtr<TimeCalculator> bObject);
+
+            CARAPI CopyFieldsToTime(
+                /* [in] */ ITime* time);
+
+            CARAPI CopyFieldsFromTime(
+                /* [in] */ ITime* time);
+
+        private:
+            CARAPI UpdateZoneInfoFromTimeZone();
+
+            CARAPI LookupZoneInfo(
+                /* [in] */ String timezoneId,
+                /* [out] */ ZoneInfo** ret);
+
+            CARAPI_(Char32) ToChar(
+                /* [in] */ Int32 n);
+
+        public:
+            assert(0 && "TODO");
+            //public final ZoneInfo.WallTime wallTime;
+            const AutoPtr<IZoneInfoWallTime> mWallTime;
+            String mTimeZone;
+
+        private:
+            // Information about the current timezone.
+            AutoPtr<IZoneInfo> mZoneInfo;
+        };
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CTime();
 
     CARAPI constructor();
@@ -506,27 +564,27 @@ public:
         /* [out] */ String* timezone);
 
 private:
-    static CARAPI_(Int32) NativeCompare(
-        /* [in] */ ITime* a,
-        /* [in] */ ITime* b);
-
-    CARAPI Format1(
-        /* [in] */ const String& format,
-        /* [out] */ String* result);
-
-    CARAPI_(String) LocalizeDigits(
-        /* [in] */ const String& s);
+    CARAPI Initialize(
+        /* [in] */ String timezoneId);
 
     /**
      * Parse a time in the current zone in YYYYMMDDTHHMMSS format.
      */
-    CARAPI NativeParse(
-        /* [in] */ const String& s,
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) ParseInternal(
+        /* [in] */ String s);
 
-    CARAPI NativeParse3339(
-        /* [in] */ const String& s,
-        /* [out] */ Boolean* result);
+    CARAPI CheckChar(
+        /* [in] */ String s,
+        /* [in] */ Int32 spos,
+        /* [in] */ Char32 expected);
+
+    static CARAPI_(Int32) GetChar(
+        /* [in] */ String s,
+        /* [in] */ Int32 spos,
+        /* [in] */ Int32 mul);
+
+    CARAPI_(Boolean) Parse3339Internal(
+        /* [in] */ String s);
 
 public:
     /**
@@ -586,7 +644,7 @@ public:
     Int32 mIsDst;
 
     /**
-     * Offset from UTC (in seconds).
+     * Offset in seconds from UTC including any DST offset.
      */
     Int64 mGmtoff;
 
@@ -595,30 +653,31 @@ public:
      */
     String mTimezone;
 
+public:
+    static const Int32 SECOND;
+    static const Int32 MINUTE;
+    static const Int32 HOUR;
+    static const Int32 MONTH_DAY;
+    static const Int32 MONTH;
+    static const Int32 YEAR;
+    static const Int32 WEEK_DAY;
+    static const Int32 YEAR_DAY;
+    static const Int32 WEEK_NUM;
+
+    static const Int32 SUNDAY;
+    static const Int32 MONDAY;
+    static const Int32 TUESDAY;
+    static const Int32 WEDNESDAY;
+    static const Int32 THURSDAY;
+    static const Int32 FRIDAY;
+    static const Int32 SATURDAY;
+
 private:
     static const String Y_M_D_T_H_M_S_000;
     static const String Y_M_D_T_H_M_S_000_Z;
     static const String Y_M_D;
 
-    /*
-     * The Locale for which date formatting strings have been loaded.
-     */
-    static AutoPtr<ILocale> sLocale;
-    static AutoPtr< ArrayOf<String> > sShortMonths;
-    static AutoPtr< ArrayOf<String> > sLongMonths;
-    static AutoPtr< ArrayOf<String> > sLongStandaloneMonths;
-    static AutoPtr< ArrayOf<String> > sShortWeekdays;
-    static AutoPtr< ArrayOf<String> > sLongWeekdays;
-    static String sTimeOnlyFormat;
-    static String sDateOnlyFormat;
-    static String sDateTimeFormat;
-    static String sAm;
-    static String sPm;
-    static Char32 sZeroDigit;
-
-    // Referenced by native code.
-    static String sDateCommand;
-
+    AutoPtr<TimeCalculator> mCalculator;
     static const Int32 DAYS_PER_MONTH[];
 
     /**
@@ -629,6 +688,7 @@ private:
     static const Int32 sThursdayOffset[];
 
     static Object sTimeClassLock;
+
 };
 
 } // namespace Format

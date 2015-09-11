@@ -11,19 +11,9 @@ namespace Droid {
 namespace Text {
 namespace Format {
 
-extern "C" const InterfaceID EIID_Formatter =
-        { 0xe9643e63, 0x5ece, 0x4a47, { 0xb9, 0x39, 0x95, 0x45, 0xd6, 0x48, 0x2d, 0x9f } };
-
 Int32 Format::SECONDS_PER_MINUTE = 60;
 Int32 Format::SECONDS_PER_HOUR = 60 * 60;
 Int32 Format::SECONDS_PER_DAY = 24 * 60 * 60;
-
-CAR_INTERFACE_IMPL_2(Formatter, Object, IFormatter);
-
-String Formatter::ToString()
-{
-    return String("Formatter");
-}
 
 String Formatter::FormatFileSize(
     /* [in] */ IContext* context,
@@ -143,6 +133,7 @@ String FormatShortElapsedTime(
 
     if (days >= 2) {
         days += (hours + 12) / 24;
+        assert(0 && "TODO");
         // return context.getString(com.android.internal.R.string.durationDays, days);
         return String("");
     } else if (days > 0) {
