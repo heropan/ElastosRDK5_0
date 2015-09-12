@@ -665,7 +665,27 @@ ECode CClassInfo::GetInterfaceInfo(
     String strName = fullName.Substring(start >= 0 ? start + 1 : 0, end > 0 ?
             end : fullName.GetLength()).Replace('/', '.');
     return mInterfaceList->AcquireObjByName(strName,
-            (IInterface **)interfaceInfo);
+            (IInterface**)interfaceInfo);
+}
+
+ECode CClassInfo::HasInterfaceInfo(
+    /* [in] */ IInterfaceInfo* interfaceInfo,
+    /* [out] */ Boolean* result)
+{
+    if (!result) {
+        return E_INVALID_ARGUMENT;
+    }
+
+    for (Int32 i = 0; i < mIFCount; i++) {
+        AutoPtr<IInterfaceInfo> itfInfo;
+        mInterfaceList->AcquireObjByIndex(i, (IInterface**)&itfInfo);
+        if (interfaceInfo == itfInfo.Get()) {
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode CClassInfo::GetCallbackInterfaceCount(
