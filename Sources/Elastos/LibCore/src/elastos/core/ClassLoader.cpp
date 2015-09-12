@@ -47,5 +47,12 @@ AutoPtr<IClassLoader> ClassLoader::GetSystemClassLoader()
     return SystemClassLoader::sLoader;
 }
 
+AutoPtr<IClassLoader> ClassLoader::GetClassLoader(
+    /* [in] */ IClassInfo* clsInfo)
+{
+    assert(0);
+    return NULL;
+}
+
 }
 }

@@ -1091,6 +1091,10 @@ library
             [in] String fullName,
             [out] IInterfaceInfo** interfaceInfo);
 
+        HasInterfaceInfo(
+            [in] IInterfaceInfo* interfaceInfo,
+            [out] Boolean* result);
+
         GetCallbackInterfaceCount(
             [out] Int32* count);
 

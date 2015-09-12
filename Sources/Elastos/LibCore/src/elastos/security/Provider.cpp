@@ -29,6 +29,7 @@ using Elastos::Utility::ICollections;
 using Elastos::Utility::CCollections;
 using Elastos::Utility::CLinkedHashMap;
 using Elastos::Utility::CLinkedHashSet;
+using Elastos::Utility::IEnumeration;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Harmony::Security::Fortress::IServices;
 using Org::Apache::Harmony::Security::Fortress::CServices;
@@ -763,7 +764,6 @@ void Provider::RemoveFromPropertyServiceTable(
 
 void Provider::UpdatePropertyServiceTable()
 {
-
     AutoPtr<IProviderService> s;
     String serviceName;
     String algorithm;
@@ -936,6 +936,93 @@ void Provider::UpdatePropertyServiceTable()
             }
         }
     }
+    ServicesChanged();
+    mChangedProperties = NULL;
+}
+
+void Provider::ServicesChanged()
+{
+    mLastServicesByType = NULL;
+    mLastServiceName = NULL;
+    mLastServicesSet = NULL;
+}
+
+void Provider::PutProviderInfo()
+{
+    AutoPtr<ICharSequence> keyObj, valueObj;
+    CString::New(String("Provider.id name"), (ICharSequence**)&keyObj);
+    if (!mName.IsNull()) {
+        CString::New(mName, (ICharSequence**)&valueObj);
+    }
+    else {
+        CString::New(String("null"), (ICharSequence**)&valueObj);
+    }
+    Properties::Put(keyObj, valueObj);
+    keyObj = NULL;
+    CString::New(String("Provider.id version"), (ICharSequence**)&keyObj);
+    valueObj = NULL;
+    CString::New(mVersionString, (ICharSequence**)&valueObj);
+    Properties::Put(keyObj, valueObj);
+    keyObj = NULL;
+    CString::New(String("Provider.id info"), (ICharSequence**)&keyObj);
+    valueObj = NULL;
+    if (!mInfo.IsNull()) {
+        CString::New(mInfo, (ICharSequence**)&valueObj);
+    }
+    else {
+        CString::New(String("null"), (ICharSequence**)&valueObj);
+    }
+    Properties::Put(keyObj, valueObj);
+    keyObj = NULL;
+    CString::New(String("Provider.id className"), (ICharSequence**)&keyObj);
+    valueObj = NULL;
+    AutoPtr<IClassInfo> clsInfo;
+    CObject::ReflectClassInfo(Probe(EIID_IInterface), (IClassInfo**)&clsInfo);
+    String name, ns;
+    clsInfo->GetName(&name);
+    clsInfo->GetNamespace(&ns);
+    CString::New(name + ns, (ICharSequence**)&valueObj);
+    Properties::Put(keyObj, valueObj);
+}
+
+String Provider::GetPropertyIgnoreCase(
+    /* [in] */ const String& key)
+{
+    String res;
+    GetProperty(key, &res);
+    if (!res.IsNull()) {
+        return res;
+    }
+    AutoPtr<IEnumeration> names;
+    PropertyNames((IEnumeration**)&names);
+    Boolean hasMore;
+    while (names->HasMoreElements(&hasMore), hasMore) {
+        AutoPtr<IInterface> nameObj;
+        names->GetNextElement((IInterface**)&nameObj);
+        String propertyName;
+        ICharSequence::Probe(nameObj)->ToString(&propertyName);
+        if (key.EqualsIgnoreCase(propertyName)) {
+            GetProperty(propertyName, &res);
+            return res;
+        }
+    }
+    return String(NULL);
+}
+
+String Provider::Key(
+    /* [in] */ const String& type,
+    /* [in] */ const String& algorithm)
+{
+    return type + String(".") + algorithm.ToUpperCase(/*Locale.US*/);
+}
+
+ECode Provider::ReadObject(
+    /* [in] */ IObjectInputStream* in)
+{
+    FAIL_RETURN(in->DefaultReadObject())
+    mVersionString = StringUtils::ToString(mVersion);
+    mProviderNumber = -1;
+    return NOERROR;
 }
 
 } // namespace Security

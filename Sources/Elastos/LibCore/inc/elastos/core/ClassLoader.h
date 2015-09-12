@@ -41,6 +41,9 @@ public:
      */
     static CARAPI_(AutoPtr<IClassLoader>) GetSystemClassLoader();
 
+    static CARAPI_(AutoPtr<IClassLoader>) GetClassLoader(
+        /* [in] */ IClassInfo* clsInfo);
+
 private:
     /**
      * Create the system class loader. Note this is NOT the bootstrap class

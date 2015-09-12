@@ -130,6 +130,10 @@ public:
         /* [in] */ const String& fullName,
         /* [out] */ IInterfaceInfo** interfaceInfo);
 
+    CARAPI HasInterfaceInfo(
+        /* [in] */ IInterfaceInfo* interfaceInfo,
+        /* [out] */ Boolean* result);
+
     CARAPI GetCallbackInterfaceCount(
         /* [out] */ Int32* count);
 
