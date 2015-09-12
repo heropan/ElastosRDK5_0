@@ -570,10 +570,16 @@ AutoPtr<IInterfaceInfo> CProviderService::ToInterfaceInfo(
     String keyInterfaceName;
     Int32 index = keyClassName.LastIndexOf(".");
     if (index <= 0) {
-        keyInterfaceName = String("I") + keyClassName.Substring(1);
+        keyInterfaceName = String("LI") + keyClassName.Substring(1) + String(";");
     }
     else {
-        keyInterfaceName = keyClassName.Substring(0, index) + String("I") + keyClassName.Substring(index + 1);
+        StringBuilder sb;
+        sb += "L";
+        sb += keyClassName.Substring(0, index);
+        sb += "I";
+        sb += keyClassName.Substring(index + 1);
+        sb += ";";
+        keyInterfaceName = sb.ToString().Replace('/', '.');
     }
     AutoPtr<IInterfaceInfo> keyInterface;
     keyClass->GetInterfaceInfo(keyInterfaceName, (IInterfaceInfo**)&keyInterface);
