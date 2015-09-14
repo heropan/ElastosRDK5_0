@@ -10,6 +10,22 @@ module
     namespace Hardware {
     namespace Usb {
 
+    /**
+     * This class allows you to access the state of USB and communicate with USB devices.
+     * Currently only host mode is supported in the public API.
+     *
+     * <p>You can obtain an instance of this class by calling
+     * {@link android.content.Context#getSystemService(java.lang.String) Context.getSystemService()}.
+     *
+     * {@samplecode
+     * UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);}
+     *
+     * <div class="special reference">
+     * <h3>Developer Guides</h3>
+     * <p>For more information about communicating with USB hardware, read the
+     * <a href="{@docRoot}guide/topics/usb/index.html">USB</a> developer guide.</p>
+     * </div>
+     */
     interface IUsbManager {
         /**
          * Broadcast Action:  A sticky broadcast for USB state change events when in device mode.

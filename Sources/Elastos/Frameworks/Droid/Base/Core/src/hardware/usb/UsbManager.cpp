@@ -1,20 +1,27 @@
 
-#include "hardware/usb/CUsbManager.h"
+#include "hardware/usb/UsbManager.h"
 #include "hardware/usb/CUsbDeviceConnection.h"
-#include <elastos/core/Character.h>
+#include "util/CArrayMap.h"
 #include "os/CSystemProperties.h"
+#include <elastos/core/Character.h>
 
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IBaseBundle;
 using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::CSystemProperties;
+using Elastos::Droid::Utility::CArrayMap;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace Hardware {
 namespace Usb {
 
-const String CUsbManager::TAG("UsbManager");
+const String UsbManager::TAG("UsbManager");
 
-ECode CUsbManager::constructor(
+CAR_INTERFACE_IMPL(UsbManager, Object, IUsbManager);
+
+ECode UsbManager::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IIUsbManager* service)
 {
@@ -24,43 +31,48 @@ ECode CUsbManager::constructor(
     return NOERROR;
 }
 
-ECode CUsbManager::GetDeviceList(
-    /* [out] */ IObjectStringMap** list)
+ECode UsbManager::GetDeviceList(
+    /* [out] */ IMap** list)
 {
     VALIDATE_NOT_NULL(list);
 
     AutoPtr<IBundle> bundle;
     FAIL_RETURN(mService->GetDeviceList((IBundle**)&bundle));
 
-    AutoPtr<IObjectContainer> keySet;
-    FAIL_RETURN(bundle->KeySet((IObjectContainer**)&keySet));
+    AutoPtr<ISet> keySet;
+    FAIL_RETURN(IBaseBundle::Probe(bundle)->GetKeySet((ISet**)&keySet));
 
     if (keySet == NULL) {
         *list = NULL;
         return NOERROR;
     }
 
-    AutoPtr<IObjectEnumerator> iter;
-    FAIL_RETURN(keySet->GetObjectEnumerator((IObjectEnumerator**)&iter));
-    Boolean hasNext;
+    AutoPtr<IMap> result;
+    CArrayMap::New((IMap**)&result);
 
-    CObjectStringMap::New(list);
-    while (iter->MoveNext(&hasNext), hasNext) {
-        AutoPtr<ICharSequence> chars;
-        FAIL_RETURN(iter->Current((IInterface**)&chars));
+    AutoPtr<IIterator> it;
+    keySet->GetIterator((IIterator**)&it);
+    Boolean hasNext = FALSE;
+    String name;
+    while ((it->HasNext(&hasNext), hasNext)) {
+        AutoPtr<IInterface> outface;
+        FAIL_RETURN(it->GetNext((IInterface**)&outface))
+        AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
+        AutoPtr<IInterface> obj;
+        FAIL_RETURN(entry->GetKey((IInterface**)&obj))
+        assert(ICharSequence::Probe(obj) != NULL);
+        ICharSequence::Probe(obj)->ToString(&name);
 
-        String name;
-        chars->ToString(&name);
+        AutoPtr<IInterface> valueObj;
+        FAIL_RETURN(IBaseBundle::Probe(bundle)->Get(name, (IInterface**)&valueObj))
 
-        AutoPtr<IUsbDevice> dev;
-        FAIL_RETURN(bundle->Get(name, (IInterface**)&dev));
-        (*list)->Put(name, dev);
+        result->Put(obj, valueObj);
     }
 
     return NOERROR;
 }
 
-ECode CUsbManager::OpenDevice(
+ECode UsbManager::OpenDevice(
     /* [in] */ IUsbDevice* device,
     /* [out] */ IUsbDeviceConnection** connection)
 {
@@ -93,7 +105,7 @@ ECode CUsbManager::OpenDevice(
     return NOERROR;
 }
 
-ECode CUsbManager::GetAccessoryList(
+ECode UsbManager::GetAccessoryList(
     /* [out, callee] */ ArrayOf<IUsbAccessory*>** list)
 {
     VALIDATE_NOT_NULL(list);
@@ -115,7 +127,7 @@ ECode CUsbManager::GetAccessoryList(
     return NOERROR;
 }
 
-ECode CUsbManager::OpenAccessory(
+ECode UsbManager::OpenAccessory(
     /* [in] */ IUsbAccessory* accessory,
     /* [out] */ IParcelFileDescriptor** descriptor)
 {
@@ -124,7 +136,7 @@ ECode CUsbManager::OpenAccessory(
     return NOERROR;
 }
 
-ECode CUsbManager::HasDevicePermission(
+ECode UsbManager::HasDevicePermission(
     /* [in] */ IUsbDevice* device,
     /* [out] */ Boolean* result)
 {
@@ -133,7 +145,7 @@ ECode CUsbManager::HasDevicePermission(
     return NOERROR;
 }
 
-ECode CUsbManager::HasAccessoryPermission(
+ECode UsbManager::HasAccessoryPermission(
     /* [in] */ IUsbAccessory* accessory,
     /* [out] */ Boolean* result)
 {
@@ -142,7 +154,7 @@ ECode CUsbManager::HasAccessoryPermission(
     return NOERROR;
 }
 
-ECode CUsbManager::RequestDevicePermission(
+ECode UsbManager::RequestDevicePermission(
     /* [in] */ IUsbDevice* device,
     /* [in] */ IPendingIntent* pi)
 {
@@ -152,7 +164,7 @@ ECode CUsbManager::RequestDevicePermission(
     return NOERROR;
 }
 
-ECode CUsbManager::RequestAccessoryPermission(
+ECode UsbManager::RequestAccessoryPermission(
     /* [in] */ IUsbAccessory* accessory,
     /* [in] */ IPendingIntent* pi)
 {
@@ -162,7 +174,7 @@ ECode CUsbManager::RequestAccessoryPermission(
     return NOERROR;
 }
 
-ECode CUsbManager::IsFunctionEnabled(
+ECode UsbManager::IsFunctionEnabled(
     /* [in] */ const String& function,
     /* [out] */ Boolean* result)
 {
@@ -173,7 +185,7 @@ ECode CUsbManager::IsFunctionEnabled(
     return NOERROR;
 }
 
-ECode CUsbManager::GetDefaultFunction(
+ECode UsbManager::GetDefaultFunction(
     /* [out] */ String* function)
 {
     VALIDATE_NOT_NULL(function);
@@ -193,7 +205,7 @@ ECode CUsbManager::GetDefaultFunction(
     return NOERROR;
 }
 
-ECode CUsbManager::SetCurrentFunction(
+ECode UsbManager::SetCurrentFunction(
     /* [in] */ const String& function,
     /* [in] */ Boolean makeDefault)
 {
@@ -201,14 +213,14 @@ ECode CUsbManager::SetCurrentFunction(
     return NOERROR;
 }
 
-ECode CUsbManager::SetMassStorageBackingFile(
+ECode UsbManager::SetMassStorageBackingFile(
     /* [in] */ const String& path)
 {
     FAIL_RETURN(mService->SetMassStorageBackingFile(path));
     return NOERROR;
 }
 
-Boolean CUsbManager::PropertyContainsFunction(
+Boolean UsbManager::PropertyContainsFunction(
     /* [in] */ const String& property,
     /* [in] */ const String& function)
 {

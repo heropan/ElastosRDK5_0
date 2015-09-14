@@ -153,10 +153,10 @@ CInputManager::~CInputManager()
 
 AutoPtr<IInputManager> CInputManager::GetInstance()
 {
-    AutoLock lock(sInstanceLock);
-
-    if (sInstance == NULL) {
-        ASSERT_SUCCEEDED(CInputManager::New((IInputManager**)&sInstance));
+    synchronized(sInstanceLock) {
+        if (sInstance == NULL) {
+            ASSERT_SUCCEEDED(CInputManager::New((IInputManager**)&sInstance));
+        }
     }
 
     return sInstance;
@@ -168,30 +168,30 @@ ECode CInputManager::GetInputDevice(
 {
     VALIDATE_NOT_NULL(device);
 
-    AutoLock lock(mInputDevicesLock);
-    FAIL_RETURN(PopulateInputDevicesLocked());
+    synchronized(mInputDevicesLock) {
+        FAIL_RETURN(PopulateInputDevicesLocked());
 
-    HashMap<Int32, AutoPtr<IInputDevice> >::Iterator find = mInputDevices->Find(id);
-    if (find == mInputDevices->End()) {
-        *device = NULL;
-        return NOERROR;
-    }
-
-    AutoPtr<IInputDevice> inputDevice = find->mSecond;
-    if (inputDevice == NULL) {
-        if (FAILED(mIm->GetInputDevice(id, (IInputDevice**)&inputDevice))) {
-            Logger::D(TAG, "Could not get input device information.");
-            return E_RUNTIME_EXCEPTION;
+        HashMap<Int32, AutoPtr<IInputDevice> >::Iterator find = mInputDevices->Find(id);
+        if (find == mInputDevices->End()) {
+            *device = NULL;
+            return NOERROR;
         }
-        if (inputDevice != NULL) {
-            find->mSecond = inputDevice;
+
+        AutoPtr<IInputDevice> inputDevice = find->mSecond;
+        if (inputDevice == NULL) {
+            if (FAILED(mIm->GetInputDevice(id, (IInputDevice**)&inputDevice))) {
+                Logger::D(TAG, "Could not get input device information.");
+                return E_RUNTIME_EXCEPTION;
+            }
+            if (inputDevice != NULL) {
+                find->mSecond = inputDevice;
+            }
         }
+
+        assert(inputDevice != NULL);
+        *device = inputDevice;
+        REFCOUNT_ADD(*device);
     }
-
-    assert(inputDevice != NULL);
-    *device = inputDevice;
-    REFCOUNT_ADD(*device);
-
     return NOERROR;
 }
 
@@ -206,36 +206,36 @@ ECode CInputManager::GetInputDeviceByDescriptor(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoLock lock(mInputDevicesLock);
+    synchronized(mInputDevicesLock) {
+        PopulateInputDevicesLocked();
 
-    PopulateInputDevicesLocked();
-
-    HashMap<Int32, AutoPtr<IInputDevice> >::Iterator iter = mInputDevices->Begin();
-    for (; iter != mInputDevices->End(); ++iter) {
-        AutoPtr<IInputDevice> inputDevice = iter->mSecond;
-        if (inputDevice == NULL) {
-            Int32 id = iter->mFirst;
-            if (FAILED(mIm->GetInputDevice(id, (IInputDevice**)&inputDevice))); {
-                return E_REMOTE_EXCEPTION;
-            }
-
+        HashMap<Int32, AutoPtr<IInputDevice> >::Iterator iter = mInputDevices->Begin();
+        for (; iter != mInputDevices->End(); ++iter) {
+            AutoPtr<IInputDevice> inputDevice = iter->mSecond;
             if (inputDevice == NULL) {
-                continue;
+                Int32 id = iter->mFirst;
+                if (FAILED(mIm->GetInputDevice(id, (IInputDevice**)&inputDevice))); {
+                    return E_REMOTE_EXCEPTION;
+                }
+
+                if (inputDevice == NULL) {
+                    continue;
+                }
+
+                assert(inputDevice != NULL);
+                iter->mSecond = inputDevice;
             }
 
-            assert(inputDevice != NULL);
-            iter->mSecond = inputDevice;
+            String descriptor2;
+            inputDevice->GetDescriptor(&descriptor2);
+            if (descriptor.Equals(descriptor2)) {
+                *device = inputDevice;
+                REFCOUNT_ADD(*device);
+                return NOERROR;
+            }
         }
-
-        String descriptor2;
-        inputDevice->GetDescriptor(&descriptor2);
-        if (descriptor.Equals(descriptor2)) {
-            *device = inputDevice;
-            REFCOUNT_ADD(*device);
-            return NOERROR;
-        }
+        *device = NULL;
     }
-    *device = NULL;
 
     return NOERROR;
 }
@@ -245,19 +245,20 @@ ECode CInputManager::GetInputDeviceIds(
 {
     VALIDATE_NOT_NULL(deviceIds);
 
-    AutoLock lock(mInputDevicesLock);
-    FAIL_RETURN(PopulateInputDevicesLocked());
+    synchronized(mInputDevicesLock) {
+        FAIL_RETURN(PopulateInputDevicesLocked());
 
-    Int32 count = mInputDevices->GetSize();
-    *deviceIds = ArrayOf<Int32>::Alloc(count);
-    if (*deviceIds != NULL)
-        return E_OUT_OF_MEMORY_ERROR;
+        Int32 count = mInputDevices->GetSize();
+        *deviceIds = ArrayOf<Int32>::Alloc(count);
+        if (*deviceIds != NULL)
+            return E_OUT_OF_MEMORY_ERROR;
 
-    REFCOUNT_ADD(*deviceIds);
+        REFCOUNT_ADD(*deviceIds);
 
-    HashMap<Int32, AutoPtr<IInputDevice> >::Iterator iter = mInputDevices->Begin();
-    for (Int32 i = 0; iter != mInputDevices->End(); ++iter, ++i) {
-        (**deviceIds)[i] = iter->mFirst;
+        HashMap<Int32, AutoPtr<IInputDevice> >::Iterator iter = mInputDevices->Begin();
+        for (Int32 i = 0; iter != mInputDevices->End(); ++iter, ++i) {
+            (**deviceIds)[i] = iter->mFirst;
+        }
     }
 
     return NOERROR;
@@ -280,12 +281,13 @@ ECode CInputManager::RegisterInputDeviceListener(
         handler->GetLooper((ILooper**)&looper);
     }
 
-    AutoLock lock(mInputDevicesLock);
-    List<AutoPtr<InputDeviceListenerDelegate> >::Iterator find =
-        FindInputDeviceListenerLocked(listener);
-    if (find == mInputDeviceListeners.End()) {
-        AutoPtr<InputDeviceListenerDelegate> delegate = new InputDeviceListenerDelegate(listener, looper);
-        mInputDeviceListeners.PushBack(delegate);
+    synchronized(mInputDevicesLock) {
+        List<AutoPtr<InputDeviceListenerDelegate> >::Iterator find =
+            FindInputDeviceListenerLocked(listener);
+        if (find == mInputDeviceListeners.End()) {
+            AutoPtr<InputDeviceListenerDelegate> delegate = new InputDeviceListenerDelegate(listener, looper);
+            mInputDeviceListeners.PushBack(delegate);
+        }
     }
 
     return NOERROR;
@@ -299,14 +301,14 @@ ECode CInputManager::UnregisterInputDeviceListener(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoLock lock(mInputDevicesLock);
-    List<AutoPtr<InputDeviceListenerDelegate> >::Iterator find =
-        FindInputDeviceListenerLocked(listener);
-    if (find != mInputDeviceListeners.End()) {
-        (*find)->RemoveCallbacksAndMessages(NULL);
-        mInputDeviceListeners.Erase(find);
+    synchronized(mInputDevicesLock) {
+        List<AutoPtr<InputDeviceListenerDelegate> >::Iterator find =
+            FindInputDeviceListenerLocked(listener);
+        if (find != mInputDeviceListeners.End()) {
+            (*find)->RemoveCallbacksAndMessages(NULL);
+            mInputDeviceListeners.Erase(find);
+        }
     }
-
     return NOERROR;
 }
 
@@ -629,51 +631,52 @@ void CInputManager::OnInputDevicesChanged(
         Logger::D(TAG, "Received input devices changed.");
     }
 
-    AutoLock lock(mInputDevicesLock);
-    //TODO: from size - 1 to 0
-    //
-    HashMap<Int32, AutoPtr<IInputDevice> >::Iterator iter = mInputDevices->Begin();
-    for (; iter != mInputDevices->End();) {
-        Int32 deviceId = iter->mFirst;
-        if (!ContainsDeviceId(deviceIdAndGeneration, deviceId)) {
-            if (DEBUG) {
-                Logger::D(TAG, "Device removed: %d", deviceId);
+    synchronized(mInputDevicesLock) {
+        //TODO: from size - 1 to 0
+        //
+        HashMap<Int32, AutoPtr<IInputDevice> >::Iterator iter = mInputDevices->Begin();
+        for (; iter != mInputDevices->End();) {
+            Int32 deviceId = iter->mFirst;
+            if (!ContainsDeviceId(deviceIdAndGeneration, deviceId)) {
+                if (DEBUG) {
+                    Logger::D(TAG, "Device removed: %d", deviceId);
+                }
+
+                mInputDevices->Erase(iter++);
+                SendMessageToInputDeviceListenersLocked(MSG_DEVICE_REMOVED, deviceId);
             }
-
-            mInputDevices->Erase(iter++);
-            SendMessageToInputDeviceListenersLocked(MSG_DEVICE_REMOVED, deviceId);
+            else {
+                ++iter;
+            }
         }
-        else {
-            ++iter;
-        }
-    }
 
-    Int32 length = deviceIdAndGeneration->GetLength();
-    for (Int32 i = 0; i < length; i += 2) {
-        Int32 deviceId = (*deviceIdAndGeneration)[i];
-        HashMap<Int32, AutoPtr<IInputDevice> >::Iterator find
-            = mInputDevices->Find(deviceId);
-        if (iter != mInputDevices->End()) {
-            AutoPtr<IInputDevice> device = find->mSecond;
-            if (device != NULL) {
-                Int32 generation = (*deviceIdAndGeneration)[i + 1];
-                Int32 generation2;
-                device->GetGeneration(&generation2);
-                if (generation2 != generation) {
-                    if (DEBUG) {
-                        Logger::D(TAG, "Device changed: %d", deviceId);
+        Int32 length = deviceIdAndGeneration->GetLength();
+        for (Int32 i = 0; i < length; i += 2) {
+            Int32 deviceId = (*deviceIdAndGeneration)[i];
+            HashMap<Int32, AutoPtr<IInputDevice> >::Iterator find
+                = mInputDevices->Find(deviceId);
+            if (iter != mInputDevices->End()) {
+                AutoPtr<IInputDevice> device = find->mSecond;
+                if (device != NULL) {
+                    Int32 generation = (*deviceIdAndGeneration)[i + 1];
+                    Int32 generation2;
+                    device->GetGeneration(&generation2);
+                    if (generation2 != generation) {
+                        if (DEBUG) {
+                            Logger::D(TAG, "Device changed: %d", deviceId);
+                        }
+                        find->mSecond = NULL;
+                        SendMessageToInputDeviceListenersLocked(MSG_DEVICE_CHANGED, deviceId);
                     }
-                    find->mSecond = NULL;
-                    SendMessageToInputDeviceListenersLocked(MSG_DEVICE_CHANGED, deviceId);
                 }
             }
-        }
-        else {
-            if (DEBUG) {
-                Logger::D(TAG, "Device added: %d" + deviceId);
+            else {
+                if (DEBUG) {
+                    Logger::D(TAG, "Device added: %d" + deviceId);
+                }
+                (*mInputDevices)[deviceId] = NULL;
+                SendMessageToInputDeviceListenersLocked(MSG_DEVICE_ADDED, deviceId);
             }
-            (*mInputDevices)[deviceId] = NULL;
-            SendMessageToInputDeviceListenersLocked(MSG_DEVICE_ADDED, deviceId);
         }
     }
 }

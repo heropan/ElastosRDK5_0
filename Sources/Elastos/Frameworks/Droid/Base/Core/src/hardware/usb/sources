@@ -7,12 +7,13 @@ include $(MAKEDIR)/../../../../../sources.inc
 INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../inc/
 
-// SOURCES = CUsbAccessory.cpp
-// SOURCES += CUsbDevice.cpp
+SOURCES =  UsbAccessory.cpp
+SOURCES += UsbConfiguration.cpp
+SOURCES += UsbDevice.cpp
 SOURCES += CUsbDeviceHelper.cpp
-// SOURCES += CUsbDeviceConnection.cpp
-// SOURCES += CUsbEndpoint.cpp
-// SOURCES += CUsbInterface.cpp
-// SOURCES += CUsbManager.cpp
-// SOURCES += CUsbRequest.cpp
-// SOURCES += UsbDevice.cpp
+SOURCES += UsbDeviceConnection.cpp
+SOURCES += UsbEndpoint.cpp
+SOURCES += UsbInterface.cpp
+SOURCES += UsbManager.cpp
+SOURCES += UsbRequest.cpp
+SOURCES += usb.cpp

@@ -1,22 +1,24 @@
 
-#include "hardware/usb/CUsbAccessory.h"
+#include "hardware/usb/UsbAccessory.h"
 #include <elastos/core/StringBuffer.h>
 
-using Elastos::Droid::Hardware::Usb::EIID_IUsbAccessory;
+using Elastos::Core::StringBuffer;
 
 namespace Elastos {
 namespace Droid {
 namespace Hardware {
 namespace Usb {
 
-const String CUsbAccessory::TAG("UsbAccessory");
+CAR_INTERFACE_IMPL_2(UsbAccessory, Object, IUsbAccessory, IParcelable);
 
-ECode CUsbAccessory::constructor()
+const String UsbAccessory::TAG("UsbAccessory");
+
+ECode UsbAccessory::constructor()
 {
     return NOERROR;
 }
 
-ECode CUsbAccessory::constructor(
+ECode UsbAccessory::constructor(
     /* [in] */ const String& manufacturer,
     /* [in] */ const String& model,
     /* [in] */ const String& description,
@@ -34,7 +36,7 @@ ECode CUsbAccessory::constructor(
     return NOERROR;
 }
 
-ECode CUsbAccessory::constructor(
+ECode UsbAccessory::constructor(
     /* [in] */ const ArrayOf<String>& strings)
 {
     mManufacturer = strings[IUsbAccessory::MANUFACTURER_STRING];
@@ -47,7 +49,7 @@ ECode CUsbAccessory::constructor(
     return NOERROR;
 }
 
-ECode CUsbAccessory::GetManufacturer(
+ECode UsbAccessory::GetManufacturer(
     /* [out] */ String* manufacturer)
 {
     VALIDATE_NOT_NULL(manufacturer);
@@ -56,7 +58,7 @@ ECode CUsbAccessory::GetManufacturer(
     return NOERROR;
 }
 
-ECode CUsbAccessory::GetModel(
+ECode UsbAccessory::GetModel(
     /* [out] */ String* model)
 {
     VALIDATE_NOT_NULL(model);
@@ -65,7 +67,7 @@ ECode CUsbAccessory::GetModel(
     return NOERROR;
 }
 
-ECode CUsbAccessory::GetDescription(
+ECode UsbAccessory::GetDescription(
     /* [out] */ String* description)
 {
     VALIDATE_NOT_NULL(description);
@@ -74,7 +76,7 @@ ECode CUsbAccessory::GetDescription(
     return NOERROR;
 }
 
-ECode CUsbAccessory::GetVersion(
+ECode UsbAccessory::GetVersion(
     /* [out] */ String* ver)
 {
     VALIDATE_NOT_NULL(ver);
@@ -83,7 +85,7 @@ ECode CUsbAccessory::GetVersion(
     return NOERROR;
 }
 
-ECode CUsbAccessory::GetUri(
+ECode UsbAccessory::GetUri(
     /* [out] */ String* uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -92,7 +94,7 @@ ECode CUsbAccessory::GetUri(
     return NOERROR;
 }
 
-ECode CUsbAccessory::GetSerial(
+ECode UsbAccessory::GetSerial(
     /* [out] */ String* serial)
 {
     VALIDATE_NOT_NULL(serial);
@@ -101,7 +103,7 @@ ECode CUsbAccessory::GetSerial(
     return NOERROR;
 }
 
-ECode CUsbAccessory::Equals(
+ECode UsbAccessory::Equals(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
 {
@@ -155,7 +157,7 @@ ECode CUsbAccessory::Equals(
     return NOERROR;
 }
 
-ECode CUsbAccessory::GetHashCode(
+ECode UsbAccessory::GetHashCode(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -173,7 +175,7 @@ ECode CUsbAccessory::GetHashCode(
     return NOERROR;
 }
 
-ECode CUsbAccessory::ToString(
+ECode UsbAccessory::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
@@ -202,7 +204,7 @@ ECode CUsbAccessory::ToString(
     return NOERROR;
 }
 
-ECode CUsbAccessory::CompareTo(
+ECode UsbAccessory::CompareTo(
     /* [in] */ IUsbAccessory* accessory,
     /* [out] */ Boolean* result)
 {
@@ -260,7 +262,7 @@ ECode CUsbAccessory::CompareTo(
     return NOERROR;
 }
 
-ECode CUsbAccessory::DescribeContents(
+ECode UsbAccessory::DescribeContents(
     /* [out] */ Int32* contents)
 {
     VALIDATE_NOT_NULL(contents);
@@ -269,35 +271,35 @@ ECode CUsbAccessory::DescribeContents(
     return NOERROR;
 }
 
-ECode CUsbAccessory::ReadFromParcel(
+ECode UsbAccessory::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    source->ReadString(&mManufacturer);
-    source->ReadString(&mModel);
-    source->ReadString(&mDescription);
-    source->ReadString(&mVersion);
-    source->ReadString(&mUri);
-    source->ReadString(&mSerial);
+    FAIL_RETURN(source->ReadString(&mManufacturer))
+    FAIL_RETURN(source->ReadString(&mModel))
+    FAIL_RETURN(source->ReadString(&mDescription))
+    FAIL_RETURN(source->ReadString(&mVersion))
+    FAIL_RETURN(source->ReadString(&mUri))
+    FAIL_RETURN(source->ReadString(&mSerial))
 
     return NOERROR;
 }
 
-ECode CUsbAccessory::WriteToParcel(
+ECode UsbAccessory::WriteToParcel(
     /* [out] */ IParcel* dest)
 {
     VALIDATE_NOT_NULL(dest);
 
-    dest->WriteString(mManufacturer);
-    dest->WriteString(mModel);
-    dest->WriteString(mDescription);
-    dest->WriteString(mVersion);
-    dest->WriteString(mUri);
-    dest->WriteString(mSerial);
+    FAIL_RETURN(dest->WriteString(mManufacturer))
+    FAIL_RETURN(dest->WriteString(mModel))
+    FAIL_RETURN(dest->WriteString(mDescription))
+    FAIL_RETURN(dest->WriteString(mVersion))
+    FAIL_RETURN(dest->WriteString(mUri))
+    FAIL_RETURN(dest->WriteString(mSerial))
 
     return NOERROR;
 }
 
-Boolean CUsbAccessory::Compare(
+Boolean UsbAccessory::Compare(
     /* [in] */ const String& s1,
     /* [in] */ const String& s2)
 {

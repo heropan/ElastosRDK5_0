@@ -5,6 +5,7 @@ module
     namespace Droid {
     namespace Hardware {
     namespace Usb {
+
     /**
      * A class representing a configuration on a {@link UsbDevice}.
      * A USB configuration can have one or more interfaces, each one providing a different
@@ -17,9 +18,9 @@ module
      * <p>For more information about communicating with USB hardware, read the
      * <a href="{@docRoot}guide/topics/usb/index.html">USB</a> developer guide.</p>
      * </div>
-     */
-     /*
-     * invoke IParcelable
+     *
+     * @Involve
+     * interface IParcelable;
      */
     interface IUsbConfiguration {
 

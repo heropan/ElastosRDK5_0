@@ -263,118 +263,136 @@ module
 
     namespace Usb {
 
-    // class CUsbAccessory {
-    //     constructor();
+    class CUsbAccessory {
+        constructor();
 
-    //     /**
-    //      * UsbAccessory should only be instantiated by UsbService implementation
-    //      * @hide
-    //      */
-    //     constructor(
-    //         [in] String manufacturer,
-    //         [in] String model,
-    //         [in] String description,
-    //         [in] String ver,
-    //         [in] String uri,
-    //         [in] String serial);
+        /**
+         * UsbAccessory should only be instantiated by UsbService implementation
+         * @hide
+         */
+        constructor(
+            [in] String manufacturer,
+            [in] String model,
+            [in] String description,
+            [in] String ver,
+            [in] String uri,
+            [in] String serial);
 
-    //     /**
-    //      * UsbAccessory should only be instantiated by UsbService implementation
-    //      * @hide
-    //      */
-    //     constructor(
-    //         [in] ArrayOf<String> strings);
+        /**
+         * UsbAccessory should only be instantiated by UsbService implementation
+         * @hide
+         */
+        constructor(
+            [in] ArrayOf<String> strings);
 
-    //     interface IUsbAccessory;
-    //     interface IParcelable;
-    // }
+        interface IUsbAccessory;
+        interface IParcelable;
+    }
 
-    // [deprecated]
-    // class CUsbDevice {
-    //     constructor();
+    class CUsbConfiguration {
+        constructor();
 
-    //     /**
-    //      * UsbDevice should only be instantiated by UsbService implementation
-    //      * @hide
-    //      */
-    //     constructor(
-    //         [in] String name,
-    //         [in] Int32 vendorId,
-    //         [in] Int32 productId,
-    //         [in] Int32 cls,
-    //         [in] Int32 subCls,
-    //         [in] Int32 protocol,
-    //         [in] ArrayOf<IParcelable*>* interfaces);
+        /**
+         * UsbConfiguration should only be instantiated by UsbService implementation
+         * @hide
+         */
+        constructor(
+            [in] Int32 id,
+            [in] String name,
+            [in] Int32 attributes,
+            [in] Int32 maxPower);
 
-    //     interface IUsbDevice;
-    //     interface IParcelable;
-    // }
+        interface IUsbConfiguration;
+        interface IParcelable;
+    }
 
-    // class CUsbDeviceConnection {
-    //     /**
-    //      * UsbDevice should only be instantiated by UsbService implementation
-    //      * @hide
-    //      */
-    //     constructor(
-    //         [in] IUsbDevice* device);
+    [deprecated]
+    class CUsbDevice {
+        constructor();
 
-    //     interface IUsbDeviceConnection;
-    // }
+        /**
+         * UsbDevice should only be instantiated by UsbService implementation
+         * @hide
+         */
+        constructor(
+            [in] String name,
+            [in] Int32 vendorId,
+            [in] Int32 productId,
+            [in] Int32 cls,
+            [in] Int32 subCls,
+            [in] Int32 protocol,
+            [in] String manufacturerName,
+            [in] String productName,
+            [in] String serialNumber);
 
-    // class CUsbEndpoint {
+        interface IUsbDevice;
+        interface IParcelable;
+    }
 
-    //     constructor();
+    class CUsbDeviceConnection {
+        /**
+         * UsbDevice should only be instantiated by UsbService implementation
+         * @hide
+         */
+        constructor(
+            [in] IUsbDevice* device);
 
-    //     /**
-    //      * UsbEndpoint should only be instantiated by UsbService implementation
-    //      * @hide
-    //      */
-    //     constructor(
-    //         [in] Int32 address,
-    //         [in] Int32 attributes,
-    //         [in] Int32 size,
-    //         [in] Int32 interval);
+        interface IUsbDeviceConnection;
+    }
 
-    //     interface IUsbEndpoint;
-    //     interface IParcelable;
-    // }
+    class CUsbEndpoint {
+        constructor();
 
-    // class CUsbInterface {
+        /**
+         * UsbEndpoint should only be instantiated by UsbService implementation
+         * @hide
+         */
+        constructor(
+            [in] Int32 address,
+            [in] Int32 attributes,
+            [in] Int32 size,
+            [in] Int32 interval);
 
-    //     constructor();
+        interface IUsbEndpoint;
+        interface IParcelable;
+    }
 
-    //     /**
-    //      * UsbInterface should only be instantiated by UsbService implementation
-    //      * @hide
-    //      */
-    //     constructor(
-    //         [in] Int32 id,
-    //         [in] Int32 cls,
-    //         [in] Int32 subCls,
-    //         [in] Int32 protocol,
-    //         [in] ArrayOf<IParcelable*> endpoints);
+    class CUsbInterface {
+        constructor();
 
-    //     interface IUsbInterface;
-    //     interface IParcelable;
-    // }
+        /**
+         * UsbInterface should only be instantiated by UsbService implementation
+         * @hide
+         */
+        constructor(
+            [in] Int32 id,
+            [in] Int32 alternateSetting,
+            [in] String name,
+            [in] Int32 Class,
+            [in] Int32 subClass,
+            [in] Int32 protocol);
 
-    // [local]
-    // class CUsbManager {
-    //     /**
-    //      * {@hide}
-    //      */
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IIUsbManager* service);
+        interface IUsbInterface;
+        interface IParcelable;
+    }
 
-    //     interface IUsbManager;
-    // }
+    [local]
+    class CUsbManager {
+        /**
+         * {@hide}
+         */
+        constructor(
+            [in] IContext* ctx,
+            [in] IIUsbManager* service);
 
-    // class CUsbRequest {
-    //     constructor();
+        interface IUsbManager;
+    }
 
-    //     interface IUsbRequest;
-    // }
+    class CUsbRequest {
+        constructor();
+
+        interface IUsbRequest;
+    }
 
     singleton class CUsbDeviceHelper {
         interface IUsbDeviceHelper;

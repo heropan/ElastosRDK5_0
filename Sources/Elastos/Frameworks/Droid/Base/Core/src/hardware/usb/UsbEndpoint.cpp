@@ -1,18 +1,22 @@
 
-#include "hardware/usb/CUsbEndpoint.h"
+#include "hardware/usb/UsbEndpoint.h"
 #include <elastos/core/StringBuffer.h>
+
+using Elastos::Core::StringBuffer;
 
 namespace Elastos {
 namespace Droid {
 namespace Hardware {
 namespace Usb {
 
-ECode CUsbEndpoint::constructor()
+CAR_INTERFACE_IMPL_2(UsbEndpoint, Object, IUsbEndpoint, IParcelable);
+
+ECode UsbEndpoint::constructor()
 {
     return NOERROR;
 }
 
-ECode CUsbEndpoint::constructor(
+ECode UsbEndpoint::constructor(
     /* [in] */ Int32 address,
     /* [in] */ Int32 attributes,
     /* [in] */ Int32 size,
@@ -26,7 +30,7 @@ ECode CUsbEndpoint::constructor(
     return NOERROR;
 }
 
-ECode CUsbEndpoint::GetAddress(
+ECode UsbEndpoint::GetAddress(
     /* [out] */ Int32* address)
 {
     VALIDATE_NOT_NULL(address);
@@ -35,7 +39,7 @@ ECode CUsbEndpoint::GetAddress(
     return NOERROR;
 }
 
-ECode CUsbEndpoint::GetEndpointNumber(
+ECode UsbEndpoint::GetEndpointNumber(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
@@ -44,7 +48,7 @@ ECode CUsbEndpoint::GetEndpointNumber(
     return NOERROR;
 }
 
-ECode CUsbEndpoint::GetDirection(
+ECode UsbEndpoint::GetDirection(
     /* [out] */ Int32* direction)
 {
     VALIDATE_NOT_NULL(direction);
@@ -53,7 +57,7 @@ ECode CUsbEndpoint::GetDirection(
     return NOERROR;
 }
 
-ECode CUsbEndpoint::GetAttributes(
+ECode UsbEndpoint::GetAttributes(
     /* [out] */ Int32* attributes)
 {
     VALIDATE_NOT_NULL(attributes);
@@ -62,7 +66,7 @@ ECode CUsbEndpoint::GetAttributes(
     return NOERROR;
 }
 
-ECode CUsbEndpoint::GetType(
+ECode UsbEndpoint::GetType(
     /* [out] */ Int32* type)
 {
     VALIDATE_NOT_NULL(type);
@@ -71,7 +75,7 @@ ECode CUsbEndpoint::GetType(
     return NOERROR;
 }
 
-ECode CUsbEndpoint::GetMaxPacketSize(
+ECode UsbEndpoint::GetMaxPacketSize(
     /* [out] */ Int32* size)
 {
     VALIDATE_NOT_NULL(size);
@@ -80,7 +84,7 @@ ECode CUsbEndpoint::GetMaxPacketSize(
     return NOERROR;
 }
 
-ECode CUsbEndpoint::GetInterval(
+ECode UsbEndpoint::GetInterval(
     /* [out] */ Int32* interval)
 {
     VALIDATE_NOT_NULL(interval);
@@ -89,7 +93,7 @@ ECode CUsbEndpoint::GetInterval(
     return NOERROR;
 }
 
-ECode CUsbEndpoint::ToString(
+ECode UsbEndpoint::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
@@ -112,7 +116,7 @@ ECode CUsbEndpoint::ToString(
     return NOERROR;
 }
 
-ECode CUsbEndpoint::DescribeContents(
+ECode UsbEndpoint::DescribeContents(
     /* [out] */ Int32* contents)
 {
     VALIDATE_NOT_NULL(contents);
@@ -121,7 +125,7 @@ ECode CUsbEndpoint::DescribeContents(
     return NOERROR;
 }
 
-ECode CUsbEndpoint::ReadFromParcel(
+ECode UsbEndpoint::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     source->ReadInt32(&mAddress);
@@ -132,7 +136,7 @@ ECode CUsbEndpoint::ReadFromParcel(
     return NOERROR;
 }
 
-ECode CUsbEndpoint::WriteToParcel(
+ECode UsbEndpoint::WriteToParcel(
     /* [out] */ IParcel* dest)
 {
     VALIDATE_NOT_NULL(dest);

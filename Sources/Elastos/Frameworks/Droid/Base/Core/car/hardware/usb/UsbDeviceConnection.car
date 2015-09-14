@@ -11,12 +11,16 @@ module
     namespace Hardware {
     namespace Usb {
 
+    /**
+     * This class is used for sending and receiving data and control messages to a USB device.
+     * Instances of this class are created by {@link UsbManager#openDevice}.
+     */
     interface IUsbDeviceConnection {
         Open(
             [in] String name,
             [in] IParcelFileDescriptor* pfd,
             [out] Boolean* result);
-        
+
         /**
          * Releases all system resources related to the device.
          * Once the object is closed it cannot be used again.
@@ -117,7 +121,7 @@ module
 
         /**
          * Waits for the result of a {@link android.hardware.usb.UsbRequest#queue} operation
-         * Note that this may return requests queued on multiple 
+         * Note that this may return requests queued on multiple
          * {@link android.hardware.usb.UsbEndpoint}s.
          * When multiple endpoints are in use, {@link android.hardware.usb.UsbRequest#getEndpoint} and
          * {@link android.hardware.usb.UsbRequest#getClientData} can be useful in determining

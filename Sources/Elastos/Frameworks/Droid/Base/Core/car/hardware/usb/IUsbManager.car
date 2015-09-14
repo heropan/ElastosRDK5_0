@@ -7,14 +7,12 @@ module
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IParcelFileDescriptor;
 
-    interface Elastos.Droid.Hardware.Usb.IUsbAccessory;
-    interface Elastos.Droid.Hardware.Usb.IUsbDevice;
-
     namespace Elastos {
     namespace Droid {
     namespace Hardware {
     namespace Usb {
 
+    /** @hide */
     interface IIUsbManager {
         /* Returns a list of all currently attached USB devices */
         GetDeviceList(
