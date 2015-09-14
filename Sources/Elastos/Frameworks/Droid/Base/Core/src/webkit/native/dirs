@@ -1,2 +1,7 @@
-
-DIRS = corelibrary
+DIRS = ui
+DIRS += components
+DIRS += content
+DIRS += base
+DIRS += android_webview
+DIRS += net
+DIRS += media
