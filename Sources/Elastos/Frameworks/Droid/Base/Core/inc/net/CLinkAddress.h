@@ -3,66 +3,36 @@
 #define __ELASTOS_DROID_NET_CLINKADDRESS_H__
 
 #include "_Elastos_Droid_Net_CLinkAddress.h"
-
-using Elastos::Net::IInetAddress;
-using Elastos::Net::IInterfaceAddress;
+#include "LinkAddress.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
+/**
+ * Identifies an IP address on a network link.
+ *
+ * A {@code LinkAddress} consists of:
+ * <ul>
+ * <li>An IP address and prefix length (e.g., {@code 2001:db8::1/64} or {@code 192.0.2.1/24}).
+ * The address must be unicast, as multicast addresses cannot be assigned to interfaces.
+ * <li>Address flags: A bitmask of {@code OsConstants.IFA_F_*} values representing properties
+ * of the address (e.g., {@code android.system.OsConstants.IFA_F_OPTIMISTIC}).
+ * <li>Address scope: One of the {@code OsConstants.IFA_F_*} values; defines the scope in which
+ * the address is unique (e.g.,
+ * {@code android.system.OsConstants.RT_SCOPE_LINK} or
+ * {@code android.system.OsConstants.RT_SCOPE_UNIVERSE}).
+ * </ul>
+ */
 CarClass(CLinkAddress)
+    , public LinkAddress
 {
 public:
-    CARAPI constructor();
+    CAR_OBJECT_DECL()
 
-    CARAPI constructor(
-        /* [in] */ IInetAddress* address,
-        /* [in] */ Int32 prefixLength);
-
-    CARAPI constructor(
-        /* [in] */ IInterfaceAddress* interfaceAddress);
-
-    CARAPI ToString(
-        /* [out] */ String* result);
-
-    CARAPI Equals(
-        /* [in] */ ILinkAddress* obj,
-        /* [out] */ Boolean* result);
-
-    CARAPI Equals(
-        /* [in] */ IInterface* obj,
-        /* [out] */ Boolean* result);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* result);
-
-    CARAPI GetAddress(
-        /* [out] */ IInetAddress** result);
-
-    CARAPI GetNetworkPrefixLength(
-        /* [out] */ Int32* result);
-
-    CARAPI ReadFromParcel(
-        /* [in] */ IParcel* source);
-
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest);
-
-private:
-    /**
-     * IPv4 or IPv6 address.
-     */
-    AutoPtr<IInetAddress> mAddress;
-
-    /**
-     * Network prefix length
-     */
-    Int32 mPrefixLength;
 };
 
 } // namespace Net
-} // namepsace Droid
+} // namespace Droid
 } // namespace Elastos
-
-#endif //__ELASTOS_DROID_NET_CLINKADDRESS_H__
+#endif // __ELASTOS_DROID_NET_CLINKADDRESS_H__

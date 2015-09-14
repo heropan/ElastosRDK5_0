@@ -319,28 +319,11 @@ public:
     };
 
     /**
-     * Returns true if this URI is hierarchical like "http://google.com".
-     * Absolute URIs are hierarchical if the scheme-specific part starts with
-     * a '/'. Relative URIs are always hierarchical.
-     */
-    virtual CARAPI IsHierarchical(
-        /* [out] */ Boolean* result) = 0;
-
-    /**
      * Returns true if this URI is opaque like "mailto:nobody@google.com". The
      * scheme-specific part of an opaque URI cannot start with a '/'.
      */
     CARAPI IsOpaque(
         /* [out] */ Boolean* result);
-
-    /**
-     * Returns true if this URI is relative, i.e.&nbsp;if it doesn't contain an
-     * explicit scheme.
-     *
-     * @return true if this URI is relative, false if it's absolute
-     */
-    virtual CARAPI IsRelative(
-        /* [out] */ Boolean* result) = 0;
 
     /**
      * Returns true if this URI is absolute, i.e.&nbsp;if it contains an
@@ -350,174 +333,6 @@ public:
      */
     CARAPI IsAbsolute(
         /* [out] */ Boolean* result);
-
-    /**
-     * Gets the scheme of this URI. Example: "http"
-     *
-     * @return the scheme or null if this is a relative URI
-     */
-    virtual CARAPI GetScheme(
-        /* [out] */ String* result) = 0;
-
-    /**
-     * Gets the scheme-specific part of this URI, i.e.&nbsp;everything between
-     * the scheme separator ':' and the fragment separator '#'. If this is a
-     * relative URI, this method returns the entire URI. Decodes escaped octets.
-     *
-     * <p>Example: "//www.google.com/search?q=android"
-     *
-     * @return the decoded scheme-specific-part
-     */
-    virtual CARAPI GetSchemeSpecificPart(
-        /* [out] */ String* result) = 0;
-
-    /**
-     * Gets the scheme-specific part of this URI, i.e.&nbsp;everything between
-     * the scheme separator ':' and the fragment separator '#'. If this is a
-     * relative URI, this method returns the entire URI. Leaves escaped octets
-     * intact.
-     *
-     * <p>Example: "//www.google.com/search?q=android"
-     *
-     * @return the decoded scheme-specific-part
-     */
-    virtual CARAPI GetEncodedSchemeSpecificPart(
-        /* [out] */ String* result) = 0;
-
-    /**
-     * Gets the decoded authority part of this URI. For
-     * server addresses, the authority is structured as follows:
-     * {@code [ userinfo '@' ] host [ ':' port ]}
-     *
-     * <p>Examples: "google.com", "bob@google.com:80"
-     *
-     * @return the authority for this URI or null if not present
-     */
-    virtual CARAPI GetAuthority(
-        /* [out] */ String* result) = 0;
-
-    /**
-     * Gets the encoded authority part of this URI. For
-     * server addresses, the authority is structured as follows:
-     * {@code [ userinfo '@' ] host [ ':' port ]}
-     *
-     * <p>Examples: "google.com", "bob@google.com:80"
-     *
-     * @return the authority for this URI or null if not present
-     */
-    virtual CARAPI GetEncodedAuthority(
-        /* [out] */ String* result) = 0;
-
-    /**
-     * Gets the decoded user information from the authority.
-     * For example, if the authority is "nobody@google.com", this method will
-     * return "nobody".
-     *
-     * @return the user info for this URI or null if not present
-     */
-    virtual CARAPI GetUserInfo(
-        /* [out] */ String* result) = 0;
-
-    /**
-     * Gets the encoded user information from the authority.
-     * For example, if the authority is "nobody@google.com", this method will
-     * return "nobody".
-     *
-     * @return the user info for this URI or null if not present
-     */
-    virtual CARAPI GetEncodedUserInfo(
-        /* [out] */ String* result) = 0;
-
-    /**
-     * Gets the encoded host from the authority for this URI. For example,
-     * if the authority is "bob@google.com", this method will return
-     * "google.com".
-     *
-     * @return the host for this URI or null if not present
-     */
-    virtual CARAPI GetHost(
-        /* [out] */ String* result) = 0;
-
-    /**
-     * Gets the port from the authority for this URI. For example,
-     * if the authority is "google.com:80", this method will return 80.
-     *
-     * @return the port for this URI or -1 if invalid or not present
-     */
-    virtual CARAPI GetPort(
-        /* [out] */ Int32* result) = 0;
-
-    /**
-     * Gets the decoded path.
-     *
-     * @return the decoded path, or null if this is not a hierarchical URI
-     * (like "mailto:nobody@google.com") or the URI is invalid
-     */
-    virtual CARAPI GetPath(
-        /* [out] */ String* result) = 0;
-
-    /**
-     * Gets the encoded path.
-     *
-     * @return the encoded path, or null if this is not a hierarchical URI
-     * (like "mailto:nobody@google.com") or the URI is invalid
-     */
-    virtual CARAPI GetEncodedPath(
-        /* [out] */ String* result) = 0;
-
-    /**
-     * Gets the decoded query component from this URI. The query comes after
-     * the query separator ('?') and before the fragment separator ('#'). This
-     * method would return "q=android" for
-     * "http://www.google.com/search?q=android".
-     *
-     * @return the decoded query or null if there isn't one
-     */
-    virtual CARAPI GetQuery(
-        /* [out] */ String* result) = 0;
-
-    /**
-     * Gets the encoded query component from this URI. The query comes after
-     * the query separator ('?') and before the fragment separator ('#'). This
-     * method would return "q=android" for
-     * "http://www.google.com/search?q=android".
-     *
-     * @return the encoded query or null if there isn't one
-     */
-    virtual CARAPI GetEncodedQuery(
-        /* [out] */ String* result) = 0;
-
-    /**
-     * Gets the decoded fragment part of this URI, everything after the '#'.
-     *
-     * @return the decoded fragment or null if there isn't one
-     */
-    virtual CARAPI GetFragment(
-        /* [out] */ String* result) = 0;
-
-    /**
-     * Gets the encoded fragment part of this URI, everything after the '#'.
-     *
-     * @return the encoded fragment or null if there isn't one
-     */
-    virtual CARAPI GetEncodedFragment(
-        /* [out] */ String* result) = 0;
-
-    /**
-     * Gets the decoded path segments.
-     *
-     * @return decoded path segments, each without a leading or trailing '/'
-     */
-    virtual CARAPI GetPathSegments(
-        /* [out] */ IList** result) = 0;
-
-    /**
-     * Gets the decoded last segment in the path.
-     *
-     * @return the decoded last segment or null if the path is empty
-     */
-    virtual CARAPI GetLastPathSegment(
-        /* [out] */ String* result) = 0;
 
     /**
      * Compares this Uri to another object for equality. Returns true if the
@@ -546,25 +361,12 @@ public:
         /* [out] */ Int32* result);
 
     /**
-     * Returns the encoded string representation of this URI.
-     * Example: "http://google.com/"
-     */
-    virtual CARAPI ToString(
-        /* [out] */ String* result) = 0;
-
-    /**
      * Return a string representation of the URI that is safe to print
      * to logs and other places where PII should be avoided.
      * @hide
      */
     CARAPI ToSafeString(
         /* [out] */ String* result);
-
-    /**
-     * Constructs a new builder, copying the attributes from this Uri.
-     */
-    virtual CARAPI BuildUpon(
-        /* [out] */ IUriBuilder** result) = 0;
 
     /**
      * Creates a Uri which parses the given encoded URI string.

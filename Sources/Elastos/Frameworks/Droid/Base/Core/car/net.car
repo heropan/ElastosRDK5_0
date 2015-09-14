@@ -111,6 +111,7 @@ module
     interface Elastos.Droid.Os.IHandler;
 
     using interface Elastos.Net.IInetAddress;
+    using interface Elastos.Net.IInterfaceAddress;
 
     namespace Elastos {
     namespace Droid {
@@ -165,6 +166,7 @@ module
         interface IParcelable;
         interface IIpPrefix;
     }
+
 //    class CLocalSocket {
 //        constructor();
 
@@ -195,19 +197,31 @@ module
         interface IParcelable;
     }
 
-//    class CLinkAddress {
-//        constructor();
+    class CLinkAddress {
+        constructor(
+            [in] IInetAddress* address,
+            [in] Int32 prefixLength,
+            [in] Int32 flags,
+            [in] Int32 scope);
 
-//        constructor(
-//            [in] IInetAddress* address,
-//            [in] Int32 prefixLength);
+        constructor(
+            [in] IInetAddress* address,
+            [in] Int32 prefixLength);
 
-//        constructor(
-//            [in] IInterfaceAddress* interfaceAddress);
+        constructor(
+            [in] IInterfaceAddress* interfaceAddress);
 
-//        interface ILinkAddress;
-//        interface IParcelable;
-//    }
+        constructor(
+            [in] String address);
+
+        constructor(
+            [in] String address,
+            [in] Int32 flags,
+            [in] Int32 scope);
+
+        interface ILinkAddress;
+        interface IParcelable;
+    }
 
 //    class CLocalServerSocket {
 //        constructor(
