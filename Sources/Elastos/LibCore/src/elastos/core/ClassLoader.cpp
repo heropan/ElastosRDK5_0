@@ -1,6 +1,11 @@
 
 #include "ClassLoader.h"
 #include "CSystem.h"
+#include "Globals.h"
+#include "io/CFile.h"
+
+using Elastos::IO::CFile;
+using Elastos::IO::IFile;
 
 namespace Elastos {
 namespace Core {
@@ -14,6 +19,8 @@ AutoPtr<IClassLoader> ClassLoader::SystemClassLoader::sLoader;
 //--------------------------------------------
 //  ClassLoader
 //--------------------------------------------
+CAR_INTERFACE_IMPL(ClassLoader, Object, IClassLoader)
+
 AutoPtr<IClassLoader> ClassLoader::CreateSystemClassLoader()
 {
     AutoPtr<CSystem> system;
@@ -47,11 +54,131 @@ AutoPtr<IClassLoader> ClassLoader::GetSystemClassLoader()
     return SystemClassLoader::sLoader;
 }
 
+ECode ClassLoader::FindClass(
+    /* [in] */ const String& className,
+    /* [out] */ IClassInfo** klass)
+{
+    return E_CLASS_NOT_FOUND_EXCEPTION;
+}
+
+AutoPtr<IClassInfo> ClassLoader::FindLoadedClass(
+    /* [in] */ const String& className)
+{
+    AutoPtr<IClassInfo> klass;
+    HashMap<String, IClassInfo*>::Iterator it = mClassTable.Find(DotToDescriptor(className));
+    if (it != mClassTable.End()) {
+        klass = it->mSecond;
+    }
+    return klass;
+}
+
+ECode ClassLoader::LoadClass(
+    /* [in] */ const String& className,
+    /* [out] */ IClassInfo** klass)
+{
+    VALIDATE_NOT_NULL(klass);
+    return LoadClass(className, FALSE, klass);
+}
+
+ECode ClassLoader::LoadClass(
+    /* [in] */ const String& className,
+    /* [in] */ Boolean resolve,
+    /* [out] */ IClassInfo** klass)
+{
+    *klass = NULL;
+    AutoPtr<IClassInfo> clazz = FindLoadedClass(className);
+
+    if (clazz == NULL) {
+        mParent->LoadClass(className, FALSE, (IClassInfo**)&clazz);
+
+        if (clazz == NULL) {
+            FAIL_RETURN(FindClass(className, (IClassInfo**)&clazz));
+        }
+    }
+
+    *klass = clazz;
+    REFCOUNT_ADD(*klass);
+    return NOERROR;
+}
+
 AutoPtr<IClassLoader> ClassLoader::GetClassLoader(
     /* [in] */ IClassInfo* clsInfo)
 {
-    assert(0);
-    return NULL;
+    AutoPtr<IInterface> obj;
+    clsInfo->GetClassLoader((IInterface**)&obj);
+    AutoPtr<IClassLoader> loader = IClassLoader::Probe(obj);
+    if (loader == NULL) {
+        loader = BootClassLoader::GetInstance();
+    }
+    return loader;
+}
+
+String ClassLoader::DotToDescriptor(
+    /* [in] */ const String& name)
+{
+    String descriptor = String("L") + name.Replace('.', '/') + String(";");
+    return descriptor;
+}
+
+
+//-------------------------------------------------------
+//  BootClassLoader
+//-------------------------------------------------------
+AutoPtr<BootClassLoader> BootClassLoader::sInstance;
+
+AutoPtr<BootClassLoader> BootClassLoader::GetInstance()
+{
+    if (sInstance == NULL) {
+        sInstance = new BootClassLoader();
+    }
+
+    return sInstance;
+}
+
+ECode BootClassLoader::FindClass(
+    /* [in] */ const String& className,
+    /* [out] */ IClassInfo** klass)
+{
+    String bootClassPath(gCore.mBootClassPathStr);
+
+    AutoPtr< ArrayOf<String> > paths;
+    if (bootClassPath.Equals(".")) {
+        AutoPtr<IFile> dir;
+        CFile::New(bootClassPath, (IFile**)&dir);
+        dir->List((ArrayOf<String>**)&paths);
+    }
+    else {
+        StringUtils::Split(bootClassPath, ":", (ArrayOf<String>**)&paths);
+    }
+
+    for (Int32 i = 0; i < paths->GetLength(); i++) {
+        String path = (*paths)[i];
+        AutoPtr<IModuleInfo> module;
+        ECode ec = CReflector::AcquireModuleInfo(path, (IModuleInfo**)&module);
+        if (FAILED(ec) || module == NULL) continue;
+        ec = module->GetClassInfo(DotToDescriptor(className), klass);
+        if (SUCCEEDED(ec)) return NOERROR;
+    }
+
+    *klass = NULL;
+    return NOERROR;
+}
+
+ECode BootClassLoader::LoadClass(
+    /* [in] */ const String& className,
+    /* [in] */ Boolean resolve,
+    /* [out] */ IClassInfo** klass)
+{
+    *klass = NULL;
+    AutoPtr<IClassInfo> clazz = FindLoadedClass(className);
+
+    if (clazz == NULL) {
+        FAIL_RETURN(FindClass(className, (IClassInfo**)&clazz));
+    }
+
+    *klass = clazz;
+    REFCOUNT_ADD(*klass);
+    return NOERROR;
 }
 
 }

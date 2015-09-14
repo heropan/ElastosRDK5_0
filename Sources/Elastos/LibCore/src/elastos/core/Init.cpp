@@ -1,4 +1,5 @@
 
+#include "stdlib.h"
 #include "coredef.h"
 #include "Globals.h"
 #include "NativeThread.h"
@@ -23,18 +24,20 @@ struct CoreGlobals gCore;
  */
 ELAPI_(void) SetCommandLineDefaults()
 {
-    // const char* envStr;
+    const char* envStr;
 
     // envStr = getenv("CLASSPATH");
     // if (envStr != NULL)
     //     gDvm.classPathStr = strdup(envStr);
     // else
     //     gDvm.classPathStr = strdup(".");
-    // envStr = getenv("BOOTCLASSPATH");
-    // if (envStr != NULL)
-    //     gDvm.bootClassPathStr = strdup(envStr);
-    // else
-    //     gDvm.bootClassPathStr = strdup(".");
+    envStr = getenv("ELBOOTCLASSPATH");
+    if (envStr != NULL) {
+        gCore.mBootClassPathStr = strdup(envStr);
+    }
+    else {
+        gCore.mBootClassPathStr = strdup(".");
+    }
 
     /* Defaults overridden by -Xms and -Xmx.
      * TODO: base these on a system or application-specific default

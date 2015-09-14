@@ -1011,6 +1011,12 @@ library
         GetModuleInfo(
             [out] IModuleInfo** moduleInfo);
 
+        GetClassLoader(
+            [out] IInterface** loader);
+
+        SetClassLoader(
+            [in] IInterface* loader);
+
         IsSingleton(
             [out] Boolean* isSingleton);
 

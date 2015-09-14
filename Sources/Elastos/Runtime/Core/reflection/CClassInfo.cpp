@@ -124,6 +124,26 @@ ECode CClassInfo::GetModuleInfo(
     return mClsModule->GetModuleInfo(moduleInfo);
 }
 
+ECode CClassInfo::GetClassLoader(
+    /* [out] */ IInterface** loader)
+{
+    if (!loader) {
+        return E_INVALID_ARGUMENT;
+    }
+
+    *loader = mClassLoader;
+    REFCOUNT_ADD(*loader);
+
+    return NOERROR;
+}
+
+ECode CClassInfo::SetClassLoader(
+    /* [in] */ IInterface* loader)
+{
+    mClassLoader = loader;
+    return NOERROR;
+}
+
 ECode CClassInfo::IsSingleton(
     /* [out] */ Boolean* isSingleton)
 {

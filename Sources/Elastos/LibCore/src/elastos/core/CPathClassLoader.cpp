@@ -47,7 +47,9 @@ ECode CPathClassLoader::LoadClass(
         FAIL_RETURN(CReflector::AcquireModuleInfo(mPath, (IModuleInfo**)&moduleInfo));
     }
 
-    return moduleInfo->GetClassInfo(sname, klass);
+    FAIL_RETURN(moduleInfo->GetClassInfo(sname, klass));
+    (*klass)->SetClassLoader((IClassLoader*)this);
+    return NOERROR;
 }
 
 } // namespace Core

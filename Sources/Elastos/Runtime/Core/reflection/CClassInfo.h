@@ -50,6 +50,12 @@ public:
     CARAPI GetModuleInfo(
         /* [out] */ IModuleInfo** moduleInfo);
 
+    CARAPI GetClassLoader(
+        /* [out] */ IInterface** loader);
+
+    CARAPI SetClassLoader(
+        /* [in] */ IInterface* loader);
+
     CARAPI IsSingleton(
         /* [out] */ Boolean* isSingleton);
 
@@ -232,6 +238,7 @@ private:
 
     AutoPtr<CClassInfo> mCtorClassInfo;
     AutoPtr<IClassInfo> mGenericInfo;
+    AutoPtr<IInterface> mClassLoader;
 };
 
 #endif // __CCLASSINFO_H__

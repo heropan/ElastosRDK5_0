@@ -76,7 +76,7 @@ struct CoreGlobals
 //    /*
 //     * Some options from the command line or environment.
 //     */
-//    char*       bootClassPathStr;
+    char* mBootClassPathStr;
 //    char*       classPathStr;
 
     UInt32 mHeapSizeStart;
