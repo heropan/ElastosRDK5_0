@@ -6,12 +6,12 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
-CIntentFilterComparison::CIntentFilterComparison()
-    : mIntent(NULL)
-    , mHashCode(0)
-{}
+CAR_INTERFACE_IMPL(CIntentFilterComparison, Object, IIntentFilterComparison)
 
-CIntentFilterComparison::~CIntentFilterComparison()
+CAR_OBJECT_IMPL(CIntentFilterComparison)
+
+CIntentFilterComparison::CIntentFilterComparison()
+    : mHashCode(0)
 {}
 
 ECode CIntentFilterComparison::GetIntent(

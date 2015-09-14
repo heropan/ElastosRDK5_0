@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CINTENTFILTERHELPER_H__
 
 #include "_Elastos_Droid_Content_CIntentFilterHelper.h"
-#include <elastos/core/Singelton.h>
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
@@ -35,8 +35,6 @@ public:
         /* [in] */ const String& action,
         /* [in] */ const String& dataType,
         /* [out] */ IIntentFilter** intentFilter);
-
-private:
 };
 
 }

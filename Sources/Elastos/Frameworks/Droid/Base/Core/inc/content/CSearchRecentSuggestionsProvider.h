@@ -3,8 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CSEARCHRECENTSUGGESTIONSPROVIDER_H__
 
 #include "_Elastos_Droid_Content_CSearchRecentSuggestionsProvider.h"
-#include <ext/frameworkext.h>
-#include "ContentProvider.h"
+#include "contentContentProvider.h"
 
 using Elastos::Droid::Content::Pm::IPathPermission;
 using Elastos::Droid::Content::Pm::IProviderInfo;
@@ -24,7 +23,9 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
-class CSearchRecentSuggestionsProvider : public ContentProvider
+class CSearchRecentSuggestionsProvider
+    : public ContentProvider
+    , public ISearchRecentSuggestionsProvider
 {
     /**
      * Builds the database.  This version has extra support for using the version field
@@ -57,9 +58,13 @@ class CSearchRecentSuggestionsProvider : public ContentProvider
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CSearchRecentSuggestionsProvider();
 
-    ~CSearchRecentSuggestionsProvider();
+    virtual ~CSearchRecentSuggestionsProvider();
 
     CARAPI OnConfigurationChanged(
         /* [in] */ IConfiguration* newConfig);

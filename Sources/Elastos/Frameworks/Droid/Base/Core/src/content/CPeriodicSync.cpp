@@ -1,23 +1,62 @@
 
 #include "content/CPeriodicSync.h"
-#include "content/CSyncStorageEngineHelper.h"
 #include "os/CBundle.h"
-#include <ext/frameworkext.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Droid::Os::CBundle;
+using Elastos::Utility::ISet;
+using Elastos::Utility::IIterator;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
+CAR_INTERFACE_IMPL_2(CPeriodicSync, Object, IPeriodicSync, IParcelable)
+
+CAR_OBJECT_IMPL(CPeriodicSync)
+
 CPeriodicSync::CPeriodicSync()
-    : mAccount(NULL)
-    , mExtras(NULL)
-    , mPeriod(0)
+    : mPeriod(0)
+    , mFlexTime(0)
 {}
 
 CPeriodicSync::~CPeriodicSync()
 {}
+
+ECode CPeriodicSync::constructor()
+{
+    return NOERROR;
+}
+
+ECode CPeriodicSync::constructor(
+    /* [in] */ IAccount* account,
+    /* [in] */ const String& authority,
+    /* [in] */ IBundle* extras,
+    /* [in] */ Int64 period)
+{
+    mAccount = account;
+    mAuthority = authority;
+    FAIL_RETURN(CBundle::New(extras, (IBundle**)&mExtras))
+    mPeriod = period;
+    return NOERROR;
+}
+
+ECode CPeriodicSync::constructor(
+    /* [in] */ IPeriodicSync* other)
+{
+    return NOERROR;
+}
+
+ECode CPeriodicSync::constructor(
+    /* [in] */ IAccount* account,
+    /* [in] */ const String& authority,
+    /* [in] */ IBundle* extras,
+    /* [in] */ Int64 periodInSeconds,
+    /* [in] */ Int64 flexTime)
+{
+    return NOERROR;
+}
 
 ECode CPeriodicSync::GetAccount(
     /* [out] */ IAccount** account)
@@ -58,18 +97,18 @@ ECode CPeriodicSync::Equals(
     /* [out] */ Boolean* isEqual)
 {
     VALIDATE_NOT_NULL(isEqual)
+    *isEqual = FALSE;
 
-    if (_CObject_Compare(obj, (IPeriodicSync*) this)) {
+    if (IPeriodicSync::Probe(obj) == NULL) {
+        return NOERROR;
+    }
+
+    AutoPtr<IPeriodicSync> other = IPeriodicSync::Probe(obj);
+    if (obj == THIS_PROBE(IPeriodicSync)) {
         *isEqual = TRUE;
         return NOERROR;
     }
 
-    if (!(IPeriodicSync::Probe(obj) != NULL)) {
-        *isEqual = FALSE;
-        return NOERROR;
-    }
-
-    AutoPtr<IPeriodicSync> other = (IPeriodicSync*) obj;
     AutoPtr<IAccount> account;
     AutoPtr<IBundle> extras;
     String authority;
@@ -78,57 +117,101 @@ ECode CPeriodicSync::Equals(
     FAIL_RETURN(other->GetExtras((IBundle**)&extras))
     FAIL_RETURN(other->GetAuthority(&authority))
     FAIL_RETURN(other->GetPeriod(&period))
-    Boolean ret = FALSE;
-    AutoPtr<ISyncStorageEngineHelper> engineHelper;
-    FAIL_RETURN(CSyncStorageEngineHelper::AcquireSingleton((ISyncStorageEngineHelper**)&engineHelper))
-    FAIL_RETURN(engineHelper->Equals(mExtras, extras, &ret))
 
-    *isEqual = _CObject_Compare(mAccount, account)
+    *isEqual = Object::Equals(mAccount, account)
             && mAuthority.Equals(authority)
             && mPeriod == period
-            && ret;
+            && SyncExtrasEquals(extras, extras);
 
+    return NOERROR;
+}
+
+Boolean CPeriodicSync::SyncExtrasEquals(
+    /* [in] */ IBundle* b1,
+    /* [in] */ IBundle* b2)
+{
+    if (b1 == b2) {
+        return TRUE;
+    }
+
+    Int32 size1, size2;
+    b1->GetSize(&size1);
+    b2->GetSize(&size2);
+    if (size2 != size2) {
+        return FALSE;
+    }
+
+    Boolean isEmpty;
+    b1->IsEmpty(&isEmpty);
+    if (isEmpty) {
+        return TRUE;
+    }
+
+    AutoPtr<ISet> keyset;
+    b1->GetKeySet((ISet**)&keyset);
+    AutoPtr<IIterator> it;
+    keyset->GetIterator((IIterator**)&it);
+    Boolean hasNext, contains;
+    String key;
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> keyObj;
+        it->GetNext((IInterface**)&keyObj);
+        key = Object::ToString(keyObj);
+        b2->ContainsKey(key, &contains);
+        if (!contains) {
+            return FALSE;
+        }
+
+        AutoPtr<IInterface> v1, v2;
+        b1->Get(key, (IInterface**)&v1);
+        b2->Get(key, (IInterface**)&v2);
+        if (!Object::Equals(v1, v2)) {
+            return FALSE;
+        }
+    }
+
+    return TRUE;
+}
+
+ECode CPeriodicSync::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    StringBuilder sb("account: ");
+    sb += Object::ToString(mAccount);
+    sb += ", authority: ";
+    sb += mAuthority;
+    sb += ". period: ";
+    sb += mPeriod;
+    sb += "s ";
+    sb += ", flex: ";
+    sb += mFlexTime;
+    *str = sb.ToString();
     return NOERROR;
 }
 
 ECode CPeriodicSync::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
+    assert(0 && "TODO");
 //***    FAIL_RETURN(CAccount::New(String("null"), String("null"), (IAccount*)&mAccount))
-    AutoPtr<IParcelable> parcelable = (IParcelable*) mAccount->Probe(EIID_IParcelable);
-    FAIL_RETURN(parcelable->ReadFromParcel(source))
+    FAIL_RETURN(IParcelable::Probe(mAccount)->ReadFromParcel(source))
     source->ReadString(&mAuthority);
     source->ReadInterfacePtr((Handle32*)&mExtras);
     source->ReadInt64(&mPeriod);
+    source->ReadInt64(&mFlexTime);
     return NOERROR;
 }
 
 ECode CPeriodicSync::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    AutoPtr<IParcelable> parcelable = (IParcelable*) mAccount->Probe(EIID_IParcelable);
+    AutoPtr<IParcelable> parcelable = IParcelable::Probe(mAccount);
     FAIL_RETURN(parcelable->WriteToParcel(dest))
     dest->WriteString(mAuthority);
     dest->WriteInterfacePtr(mExtras);
     dest->WriteInt64(mPeriod);
-    return NOERROR;
-}
-
-ECode CPeriodicSync::constructor()
-{
-    return NOERROR;
-}
-
-ECode CPeriodicSync::constructor(
-    /* [in] */ IAccount* account,
-    /* [in] */ const String& authority,
-    /* [in] */ IBundle* extras,
-    /* [in] */ Int64 period)
-{
-    mAccount = account;
-    mAuthority = authority;
-    FAIL_RETURN(CBundle::New(extras, (IBundle**)&mExtras))
-    mPeriod = period;
+    dest->WriteInt64(mFlexTime);
     return NOERROR;
 }
 

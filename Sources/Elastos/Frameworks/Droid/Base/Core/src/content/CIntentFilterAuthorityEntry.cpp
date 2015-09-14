@@ -64,6 +64,28 @@ ECode CIntentFilterAuthorityEntry::GetWild(
 }
 
 ECode CIntentFilterAuthorityEntry::Match(
+    /* [in] */ IIntentFilterAuthorityEntry* otherObj,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    CIntentFilterAuthorityEntry* other = (CIntentFilterAuthorityEntry*)otherObj;
+    if (mWild != other->mWild) {
+        return NOERROR;
+    }
+    if (!mHost.Equals(other->mHost)) {
+        return NOERROR;
+    }
+    if (mPort != other->mPort) {
+        return NOERROR;
+    }
+
+    *result = TRUE;
+    return NOERROR;
+}
+
+ECode CIntentFilterAuthorityEntry::Match(
     /* [in] */ IUri* data,
     /* [out] */ Int32* result)
 {

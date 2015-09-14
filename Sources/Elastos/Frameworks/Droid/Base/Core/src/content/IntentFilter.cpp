@@ -45,7 +45,7 @@ IntentFilter::IntentFilter(
     : mPriority(0)
     , mHasPartialTypes(FALSE)
 {
-    Init(action);
+    constructor(action);
 }
 
 IntentFilter::IntentFilter(
@@ -54,7 +54,7 @@ IntentFilter::IntentFilter(
     : mPriority(0)
     , mHasPartialTypes(FALSE)
 {
-    Init(action, dataType);
+    constructor(action, dataType);
 }
 
 IntentFilter::IntentFilter(
@@ -62,7 +62,7 @@ IntentFilter::IntentFilter(
     : mPriority(0)
     , mHasPartialTypes(FALSE)
 {
-    Init(o);
+    constructor(o);
 }
 
 IntentFilter::~IntentFilter()
@@ -135,10 +135,10 @@ ECode IntentFilter::constructor(
             mDataSchemes->PushBack((*schemes)[i]);
         }
     }
-    AutoPtr< ArrayOf<String> > specificParts;
-    other->GetSchemeSpecificParts((ArrayOf<String>**)&specificParts);
+    AutoPtr< ArrayOf<IPatternMatcher*> > specificParts;
+    other->GetSchemeSpecificParts((ArrayOf<IPatternMatcher*>**)&specificParts);
     if (NULL != specificParts) {
-        mDataSchemeSpecificParts = new List<String>();
+        mDataSchemeSpecificParts = new List<AutoPtr<IPatternMatcher> >();
         Int32 len = specificParts->GetLength();
         for (Int32 i = 0; i != len; i++) {
             mDataSchemeSpecificParts->PushBack((*specificParts)[i]);
@@ -275,6 +275,14 @@ Int32 IntentFilter::GetPriority()
     return mPriority;
 }
 
+ECode IntentFilter::GetPriority(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mPriority;
+    return NOERROR;
+}
+
 ECode IntentFilter::AddAction(
     /* [in] */ const String& action)
 {
@@ -296,11 +304,28 @@ Int32 IntentFilter::CountActions()
     return mActions.GetSize();
 }
 
+ECode IntentFilter::CountActions(
+    /* [out] */ Int32* count)
+{
+    VALIDATE_NOT_NULL(count)
+    *count = CountActions();
+    return NOERROR;
+}
+
 String IntentFilter::GetAction(
     /* [in] */ Int32 index)
 {
     if (index < 0) return String(NULL);
     return mActions[index];
+}
+
+ECode IntentFilter::GetAction(
+    /* [in] */ Int32 index,
+    /* [out] */ String* action)
+{
+    VALIDATE_NOT_NULL(action)
+    *action = GetAction(index);
+    return NOERROR;
 }
 
 Boolean IntentFilter::HasAction(
@@ -310,10 +335,28 @@ Boolean IntentFilter::HasAction(
         Find(mActions.Begin(), mActions.End(), action) != mActions.End();
 }
 
+ECode IntentFilter::HasAction(
+    /* [in] */ const String& action,
+    /* [out] */ Boolean* has)
+{
+    VALIDATE_NOT_NULL(has)
+    *has = HasAction(action);
+    return NOERROR;
+}
+
 Boolean IntentFilter::MatchAction(
     /* [in] */ const String& action)
 {
     return HasAction(action);
+}
+
+ECode IntentFilter::MatchAction(
+    /* [in] */ const String& action,
+    /* [out] */ Boolean* match)
+{
+    VALIDATE_NOT_NULL(match)
+    *match = MatchAction(action);
+    return NOERROR;
 }
 
 AutoPtr< ArrayOf<String> > IntentFilter::GetActions()
@@ -326,6 +369,16 @@ AutoPtr< ArrayOf<String> > IntentFilter::GetActions()
         (*actions)[i] = *it;
     }
     return actions;
+}
+
+ECode IntentFilter::GetActions(
+    /* [out, callee] */ ArrayOf<String>** actions)
+{
+    VALIDATE_NOT_NULL(actions)
+    AutoPtr<ArrayOf<String> > array = GetActions();
+    *actions = array;
+    REFCOUNT_ADD(*actions)
+    return NOERROR;
 }
 
 ECode IntentFilter::AddDataType(
@@ -360,9 +413,46 @@ Boolean IntentFilter::HasDataType(
     return mDataTypes != NULL && FindMimeType(type);
 }
 
+ECode IntentFilter::HasDataType(
+    /* [in] */ const String& type,
+    /* [out] */ Boolean* has)
+{
+    VALIDATE_NOT_NULL(has)
+    *has = HasDataType(type);
+    return NOERROR;
+}
+
+ECode IntentFilter::HasExactDataType(
+    /* [in] */ const String& type,
+    /* [out] */ Boolean* has)
+{
+    VALIDATE_NOT_NULL(has)
+    *has = FALSE;
+    if (mDataTypes != NULL) {
+        *has = Find(mDataTypes->Begin(), mDataTypes->End(), type) != mDataTypes->End();
+    }
+    return NOERROR;
+}
+
+ECode IntentFilter::HasPartialTypes(
+    /* [out] */ Boolean* has)
+{
+    VALIDATE_NOT_NULL(has)
+    *has = mHasPartialTypes;
+    return NOERROR;
+}
+
 Int32 IntentFilter::CountDataTypes()
 {
     return mDataTypes != NULL ? mDataTypes->GetSize() : 0;
+}
+
+ECode IntentFilter::CountDataTypes(
+    /* [out] */ Int32* count)
+{
+    VALIDATE_NOT_NULL(count)
+    *count = CountDataTypes();
+    return NOERROR;
 }
 
 String IntentFilter::GetDataType(
@@ -379,6 +469,15 @@ String IntentFilter::GetDataType(
     return String(NULL);
 }
 
+ECode IntentFilter::GetDataType(
+    /* [in] */ Int32 index,
+    /* [out] */ String* type)
+{
+    VALIDATE_NOT_NULL(type)
+    *type = GetDataType(index);
+    return NOERROR;
+}
+
 AutoPtr< ArrayOf<String> > IntentFilter::GetTypes()
 {
     if (mDataTypes == NULL) return NULL;
@@ -391,6 +490,16 @@ AutoPtr< ArrayOf<String> > IntentFilter::GetTypes()
         (*types)[i] = *it;
     }
     return types;
+}
+
+ECode IntentFilter::GetTypes(
+    /* [out, callee] */ ArrayOf<String>** types)
+{
+    VALIDATE_NOT_NULL(types)
+    AutoPtr<ArrayOf<String> > array = GetTypes();
+    *types = array;
+    REFCOUNT_ADD(*types)
+    return NOERROR;
 }
 
 ECode IntentFilter::AddDataScheme(
@@ -408,6 +517,14 @@ Int32 IntentFilter::CountDataSchemes()
     return mDataSchemes != NULL ? mDataSchemes->GetSize() : 0;
 }
 
+ECode IntentFilter::CountDataSchemes(
+    /* [out] */ Int32* count)
+{
+    VALIDATE_NOT_NULL(count)
+    *count = CountDataSchemes();
+    return NOERROR;
+}
+
 String IntentFilter::GetDataScheme(
     /* [in] */ Int32 index)
 {
@@ -422,11 +539,29 @@ String IntentFilter::GetDataScheme(
     return String(NULL);
 }
 
+ECode IntentFilter::GetDataScheme(
+    /* [in] */ Int32 index,
+    /* [out] */ String* scheme)
+{
+    VALIDATE_NOT_NULL(scheme)
+    *scheme = GetDataScheme(index);
+    return NOERROR;
+}
+
 Boolean IntentFilter::HasDataScheme(
     /* [in] */ const String& scheme)
 {
     return mDataSchemes != NULL && Find(mDataSchemes->Begin(),
             mDataSchemes->End(), scheme) != mDataSchemes->End();
+}
+
+ECode IntentFilter::HasDataScheme(
+    /* [in] */ const String& scheme,
+    /* [out] */ Boolean* has)
+{
+    VALIDATE_NOT_NULL(has)
+    *has = HasDataScheme(scheme);
+    return NOERROR;
 }
 
 AutoPtr< ArrayOf<String> > IntentFilter::GetSchemes()
@@ -447,9 +582,9 @@ ECode IntentFilter::GetSchemes(
     /* [out, callee] */ ArrayOf<String>** schemes)
 {
     VALIDATE_NOT_NULL(schemes)
-    AutoPtr< ArrayOf<String> > tmp = GetSchemes();
-    *schemes = tmp;
-    REFCOUNT_ADD(*schemes);
+    AutoPtr< ArrayOf<String> > array = GetSchemes();
+    *schemes = array;
+    REFCOUNT_ADD(*schemes)
     return NOERROR;
 }
 
@@ -457,72 +592,145 @@ ECode IntentFilter::AddDataSchemeSpecificPart(
     /* [in] */ const String& ssp,
     /* [in] */ Int32 type)
 {
-
+    AutoPtr<IPatternMatcher> pm;
+    CPatternMatcher::New(ssp, type, (IPatternMatcher**)&pm);
+    return AddDataSchemeSpecificPart(pm);
 }
 
 ECode IntentFilter::AddDataSchemeSpecificPart(
     /* [in] */ IPatternMatcher* ssp)
 {
-
+    if (mDataSchemeSpecificParts == NULL) {
+        mDataSchemeSpecificParts = new List<AutoPtr<IPatternMatcher> >();
+    }
+    mDataSchemeSpecificParts->PushBack(ssp);
+    return NOERROR;
 }
-
 
 ECode IntentFilter::CountDataSchemeSpecificParts(
     /* [out] */ Int32* result)
 {
-
+    VALIDATE_NOT_NULL(result)
+    *result = mDataSchemeSpecificParts != NULL ? mDataSchemeSpecificParts->GetSize() : 0;
+    return NOERROR;
 }
 
 ECode IntentFilter::GetDataSchemeSpecificPart(
     /* [in] */ Int32 index,
     /* [out] */ IPatternMatcher** ssp)
 {
-
+    VALIDATE_NOT_NULL(ssp)
+    *ssp = (*mDataSchemeSpecificParts)[index];
+    REFCOUNT_ADD(*ssp)
+    return NOERROR;
 }
 
 ECode IntentFilter::HasDataSchemeSpecificPart(
     /* [in] */ const String& data,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
 
+    if (mDataSchemeSpecificParts == NULL) {
+        return NOERROR;
+    }
+    Boolean match;
+    List< AutoPtr<IPatternMatcher> >::Iterator it = mDataSchemeSpecificParts->Begin();
+    Int32 numDataSchemeSpecificParts = mDataSchemeSpecificParts->GetSize();
+    for (; it != mDataSchemeSpecificParts->End(); ++it) {
+        IPatternMatcher* pe = *it;
+        if (pe->Match(data, &match), match) {
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+    return NOERROR;
 }
 
 ECode IntentFilter::HasDataSchemeSpecificPart(
-    /* [in] */ IPatternMatcher* data,
+    /* [in] */ IPatternMatcher* ssp,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
 
+    if (mDataSchemeSpecificParts == NULL) {
+        return NOERROR;
+    }
+
+    Int32 type, otype;
+    ssp->GetType(&type);
+    String path, opath;
+    ssp->GetPath(&path);
+
+    List< AutoPtr<IPatternMatcher> >::Iterator it = mDataSchemeSpecificParts->Begin();
+    for (; it != mDataSchemeSpecificParts->End(); ++it) {
+        IPatternMatcher* pe = *it;
+        pe->GetType(&otype);
+        pe->GetPath(&opath);
+        if (type == otype && path.Equals(opath)) {
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+    return NOERROR;
 }
 
 AutoPtr< ArrayOf<IPatternMatcher*> > IntentFilter::GetSchemeSpecificParts()
 {
-
+    AutoPtr<ArrayOf<IPatternMatcher*> > array;
+    if (mDataSchemeSpecificParts != NULL) {
+        array = ArrayOf<IPatternMatcher*>::Alloc(mDataSchemeSpecificParts->GetSize());
+        List< AutoPtr<IPatternMatcher> >::Iterator it = mDataSchemeSpecificParts->Begin();
+        for (Int32 i = 0; it != mDataSchemeSpecificParts->End(); ++it) {
+            IPatternMatcher* pe = *it;
+            array->Set(i++, pe);
+        }
+    }
+    return array;
 }
 
 ECode IntentFilter::GetSchemeSpecificParts(
-    /* [out, callee] */ ArrayOf<IPatternMatcher*>** array)
+    /* [out, callee] */ ArrayOf<IPatternMatcher*>** result)
 {
-
+    VALIDATE_NOT_NULL(result)
+    AutoPtr< ArrayOf<IPatternMatcher*> > array = GetSchemeSpecificParts();
+    *result = array;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
-
-
 
 ECode IntentFilter::AddDataAuthority(
     /* [in] */ const String& host,
     /* [in] */ const String& port)
 {
+    AutoPtr<IIntentFilterAuthorityEntry> authEntry;
+    FAIL_RETURN(CIntentFilterAuthorityEntry::New(host, port, (IIntentFilterAuthorityEntry**)&authEntry))
+    return AddDataAuthority(authEntry);
+}
+
+ECode IntentFilter::AddDataAuthority(
+    /* [in] */ IIntentFilterAuthorityEntry* authority)
+{
     if (mDataAuthorities == NULL) {
         mDataAuthorities = new List< AutoPtr<IIntentFilterAuthorityEntry> >();
     }
-    AutoPtr<IIntentFilterAuthorityEntry> authEntry;
-    FAIL_RETURN(CIntentFilterAuthorityEntry::New(host, port, (IIntentFilterAuthorityEntry**)&authEntry))
-    mDataAuthorities->PushBack(authEntry);
+    mDataAuthorities->PushBack(authority);
     return NOERROR;
 }
 
 Int32 IntentFilter::CountDataAuthorities()
 {
     return mDataAuthorities != NULL ? mDataAuthorities->GetSize() : 0;
+}
+
+ECode IntentFilter::CountDataAuthorities(
+    /* [out] */ Int32* count)
+{
+    VALIDATE_NOT_NULL(count)
+    *count = CountDataAuthorities();
+    return NOERROR;
 }
 
 AutoPtr<IIntentFilterAuthorityEntry> IntentFilter::GetDataAuthority(
@@ -539,10 +747,46 @@ AutoPtr<IIntentFilterAuthorityEntry> IntentFilter::GetDataAuthority(
     return NULL;
 }
 
-Boolean IntentFilter::HasDataAuthority(
-    /* [in] */ IUri* data)
+ECode IntentFilter::GetDataAuthority(
+    /* [in] */ Int32 index,
+    /* [out] */ IIntentFilterAuthorityEntry** authority)
 {
-    return MatchDataAuthority(data) >= 0;
+    VALIDATE_NOT_NULL(authority)
+    AutoPtr<IIntentFilterAuthorityEntry> ae = GetDataAuthority(index);
+    *authority = ae;
+    REFCOUNT_ADD(*authority)
+    return NOERROR;
+}
+
+ECode IntentFilter::HasDataAuthority(
+    /* [in] */ IUri* data,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = MatchDataAuthority(data) >= 0;
+    return NOERROR;
+}
+
+ECode IntentFilter::HasDataAuthority(
+    /* [in] */ IIntentFilterAuthorityEntry* auth,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    if (mDataAuthorities == NULL) {
+        return NOERROR;
+    }
+
+    Boolean match;
+    List< AutoPtr<IIntentFilterAuthorityEntry> >::Iterator it = mDataAuthorities->Begin();
+    for (; it != mDataAuthorities->End(); ++it) {
+        if ((*it)->Match(auth, &match), match) {
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+    return NOERROR;
 }
 
 AutoPtr< ArrayOf<IIntentFilterAuthorityEntry*> > IntentFilter::GetAuthorities()
@@ -560,22 +804,47 @@ AutoPtr< ArrayOf<IIntentFilterAuthorityEntry*> > IntentFilter::GetAuthorities()
     return authorities;
 }
 
+ECode IntentFilter::GetAuthorities(
+    /* [out, callee] */ ArrayOf<IIntentFilterAuthorityEntry*>** authorities)
+{
+    VALIDATE_NOT_NULL(authorities)
+    AutoPtr< ArrayOf<IIntentFilterAuthorityEntry*> > array = GetAuthorities();
+    *authorities = array;
+    REFCOUNT_ADD(*authorities)
+    return NOERROR;
+}
+
 ECode IntentFilter::AddDataPath(
     /* [in] */ const String& path,
     /* [in] */ Int32 type)
 {
+    AutoPtr<IPatternMatcher> pm;
+    CPatternMatcher::New(path, type, (IPatternMatcher**)&pm);
+    return AddDataPath(pm);
+}
+
+ECode IntentFilter::AddDataPath(
+    /* [in] */ IPatternMatcher* pm)
+{
     if (mDataPaths == NULL) {
         mDataPaths = new List< AutoPtr<IPatternMatcher> >();
     }
-    AutoPtr<IPatternMatcher> pm;
-    CPatternMatcher::New(path, type, (IPatternMatcher**)&pm);
-    mDataPaths->PushBack(pm);
-    return NOERROR;
+
+     mDataPaths->PushBack(pm);
+     return NOERROR;
 }
 
 Int32 IntentFilter::CountDataPaths()
 {
     return mDataPaths != NULL ? mDataPaths->GetSize() : 0;
+}
+
+ECode IntentFilter::CountDataPaths(
+    /* [out] */ Int32* count)
+{
+    VALIDATE_NOT_NULL(count)
+    *count = CountCategories();
+    return NOERROR;
 }
 
 AutoPtr<IPatternMatcher> IntentFilter::GetDataPath(
@@ -592,11 +861,26 @@ AutoPtr<IPatternMatcher> IntentFilter::GetDataPath(
     return NULL;
 }
 
-Boolean IntentFilter::HasDataPath(
-    /* [in] */ const String& data)
+ECode IntentFilter::GetDataPath(
+    /* [in] */ Int32 index,
+    /* [out] */ IPatternMatcher** pm)
 {
+    VALIDATE_NOT_NULL(pm)
+    AutoPtr<IPatternMatcher> path = GetDataPath(index);
+    *pm = path;
+    REFCOUNT_ADD(*pm)
+    return NOERROR;
+}
+
+ECode IntentFilter::HasDataPath(
+    /* [in] */ const String& data,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     if (mDataPaths == NULL) {
-        return FALSE;
+        return NOERROR;
     }
     Boolean isMatched;
     List< AutoPtr<IPatternMatcher> >::Iterator it = mDataPaths->Begin();
@@ -604,11 +888,45 @@ Boolean IntentFilter::HasDataPath(
         AutoPtr<IPatternMatcher> pe = *it;
         pe->Match(data, &isMatched);
         if (isMatched) {
-            return TRUE;
+            *result = TRUE;
+            return NOERROR;
         }
         ++it;
     }
-    return FALSE;
+
+    return NOERROR;
+}
+
+ECode IntentFilter::HasDataPath(
+    /* [in] */ IPatternMatcher* pm,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    if (mDataPaths == NULL) {
+        return NOERROR;
+    }
+
+    Int32 type, otype;
+    String path, opath;
+    pm->GetType(&type);
+    pm->GetPath(&path);
+
+    Boolean isMatched;
+    List< AutoPtr<IPatternMatcher> >::Iterator it = mDataPaths->Begin();
+    while (it != mDataPaths->End()) {
+        AutoPtr<IPatternMatcher> pe = *it;
+        pe->GetType(&otype);
+        pe->GetPath(&opath);
+        if (type == otype && path.Equals(opath)) {
+            *result = TRUE;
+            return NOERROR;
+        }
+        ++it;
+    }
+
+    return NOERROR;
 }
 
 AutoPtr< ArrayOf<IPatternMatcher*> > IntentFilter::GetPaths()
@@ -623,6 +941,16 @@ AutoPtr< ArrayOf<IPatternMatcher*> > IntentFilter::GetPaths()
         paths->Set(i, *it);
     }
     return paths;
+}
+
+ECode IntentFilter::GetPaths(
+    /* [out, callee] */ ArrayOf<IPatternMatcher*>** paths)
+{
+    VALIDATE_NOT_NULL(paths)
+    AutoPtr<ArrayOf<IPatternMatcher*> > array = GetPaths();
+    *paths = array;
+    REFCOUNT_ADD(*paths)
+    return NOERROR;
 }
 
 Int32 IntentFilter::MatchDataAuthority(
@@ -644,6 +972,15 @@ Int32 IntentFilter::MatchDataAuthority(
     return IIntentFilter::NO_MATCH_DATA;
 }
 
+ECode IntentFilter::MatchDataAuthority(
+    /* [in] */ IUri* data,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = MatchDataAuthority(data);
+    return NOERROR;
+}
+
 Int32 IntentFilter::MatchData(
     /* [in] */ const String& type,
     /* [in] */ const String& scheme,
@@ -651,8 +988,7 @@ Int32 IntentFilter::MatchData(
 {
     AutoPtr< List<String> > types = mDataTypes;
     AutoPtr< List<String> > schemes = mDataSchemes;
-    AutoPtr< List< AutoPtr<IIntentFilterAuthorityEntry> > > authorities = mDataAuthorities;
-    AutoPtr< List< AutoPtr<IPatternMatcher> > > paths = mDataPaths;
+
 
     Int32 match = IIntentFilter::MATCH_CATEGORY_EMPTY;
 
@@ -671,15 +1007,33 @@ Int32 IntentFilter::MatchData(
             return IIntentFilter::NO_MATCH_DATA;
         }
 
-        if (authorities != NULL) {
-            Int32 authMatch = MatchDataAuthority(data);
-            if (authMatch >= 0) {
-                String path;
-                if (paths == NULL) {
-                    match = authMatch;
-                }
-                else if (data->GetPath(&path), HasDataPath(path)) {
-                    match = IIntentFilter::MATCH_CATEGORY_PATH;
+        AutoPtr<List<AutoPtr<IPatternMatcher> > > schemeSpecificParts = mDataSchemeSpecificParts;
+        if (schemeSpecificParts != NULL) {
+            String part;
+            data->GetSchemeSpecificPart(&part);
+            Boolean has;
+            HasDataSchemeSpecificPart(part, &has);
+            match = has ? IIntentFilter::MATCH_CATEGORY_SCHEME_SPECIFIC_PART : IIntentFilter::NO_MATCH_DATA;
+        }
+        if (match != IIntentFilter::MATCH_CATEGORY_SCHEME_SPECIFIC_PART) {
+            // If there isn't any matching ssp, we need to match an authority.
+            AutoPtr< List< AutoPtr<IIntentFilterAuthorityEntry> > > authorities = mDataAuthorities;
+            if (authorities != NULL) {
+                Int32 authMatch = MatchDataAuthority(data);
+                if (authMatch >= 0) {
+                    String path;
+                    data->GetPath(&path);
+                    Boolean has;
+                    AutoPtr< List< AutoPtr<IPatternMatcher> > > paths = mDataPaths;
+                    if (paths == NULL) {
+                        match = authMatch;
+                    }
+                    else if (HasDataPath(path, &has), has) {
+                        match = IIntentFilter::MATCH_CATEGORY_PATH;
+                    }
+                    else {
+                        return IIntentFilter::NO_MATCH_DATA;
+                    }
                 }
                 else {
                     return IIntentFilter::NO_MATCH_DATA;
@@ -688,6 +1042,11 @@ Int32 IntentFilter::MatchData(
             else {
                 return IIntentFilter::NO_MATCH_DATA;
             }
+        }
+
+        // If neither an ssp nor an authority matched, we're done.
+        if (match == NO_MATCH_DATA) {
+            return IIntentFilter::NO_MATCH_DATA;
         }
     }
     else {
@@ -722,6 +1081,17 @@ Int32 IntentFilter::MatchData(
     return match + IIntentFilter::MATCH_ADJUSTMENT_NORMAL;
 }
 
+ECode IntentFilter::MatchData(
+    /* [in] */ const String& type,
+    /* [in] */ const String& scheme,
+    /* [in] */ IUri* data,
+    /* [out] */ Int32* match)
+{
+    VALIDATE_NOT_NULL(match)
+    *match = MatchData(type, scheme, data);
+    return NOERROR;
+}
+
 ECode IntentFilter::AddCategory(
     /* [in] */ const String& category)
 {
@@ -739,6 +1109,14 @@ Int32 IntentFilter::CountCategories()
     return mCategories != NULL ? mCategories->GetSize() : 0;
 }
 
+ECode IntentFilter::CountCategories(
+    /* [out] */ Int32* count)
+{
+    VALIDATE_NOT_NULL(count)
+    *count = CountCategories();
+    return NOERROR;
+}
+
 String IntentFilter::GetCategory(
     /* [in] */ Int32 index)
 {
@@ -753,11 +1131,29 @@ String IntentFilter::GetCategory(
     return String(NULL);
 }
 
+ECode IntentFilter::GetCategory(
+    /* [in] */ Int32 index,
+    /* [out] */ String* category)
+{
+    VALIDATE_NOT_NULL(category)
+    *category = GetCategory(index);
+    return NOERROR;
+}
+
 Boolean IntentFilter::HasCategory(
     /* [in] */ const String& category)
 {
     return mCategories != NULL && Find(mCategories->Begin(),
             mCategories->End(), category) != mCategories->End();
+}
+
+ECode IntentFilter::HasCategory(
+    /* [in] */ const String& category,
+    /* [out] */ Boolean* has)
+{
+    VALIDATE_NOT_NULL(has)
+    *has = HasCategory(category);
+    return NOERROR;
 }
 
 AutoPtr< ArrayOf<String> > IntentFilter::GetCategories()
@@ -772,6 +1168,16 @@ AutoPtr< ArrayOf<String> > IntentFilter::GetCategories()
         (*categories)[i] = *it;
     }
     return categories;
+}
+
+ECode IntentFilter::GetCategories(
+    /* [out, callee] */ ArrayOf<String>** categories)
+{
+    VALIDATE_NOT_NULL(categories)
+    AutoPtr< ArrayOf<String> > array = GetCategories();
+    *categories = array;
+    REFCOUNT_ADD(*categories)
+    return NOERROR;
 }
 
 String IntentFilter::MatchCategories(
@@ -796,6 +1202,15 @@ String IntentFilter::MatchCategories(
     return String(NULL);
 }
 
+ECode IntentFilter::MatchCategories(
+    /* [in] */ ArrayOf<String>* categories,
+    /* [out] */ String* match)
+{
+    VALIDATE_NOT_NULL(match)
+    *match = MatchCategories(categories);
+    return NOERROR;
+}
+
 Int32 IntentFilter::Match(
     /* [in] */ IContentResolver* resolver,
     /* [in] */ IIntent* intent,
@@ -818,6 +1233,18 @@ Int32 IntentFilter::Match(
     return Match(action, type, scheme, data, categories, logTag);
 }
 
+ECode IntentFilter::Match(
+    /* [in] */ IContentResolver* resolver,
+    /* [in] */ IIntent* intent,
+    /* [in] */ Boolean resolve,
+    /* [in] */ const String& logTag,
+    /* [out] */ Int32* match)
+{
+    VALIDATE_NOT_NULL(match)
+    *match = Match(resolver, intent, resolve, logTag);
+    return NOERROR;
+}
+
 Int32 IntentFilter::Match(
     /* [in] */ const String& action,
     /* [in] */ const String& type,
@@ -836,14 +1263,11 @@ Int32 IntentFilter::Match(
     if (dataMatch < 0) {
         if (FALSE) {
             if (dataMatch == IIntentFilter::NO_MATCH_TYPE) {
-                Logger::V(logTag, String("No matching type ") + type
-                        + String(" for ") + String("this IntentFilter") /* this ToString() ? */);
+                Logger::V(logTag, "No matching type %s for this IntentFilter" /* this ToString() ? */, type.string());
             }
             if (dataMatch == IIntentFilter::NO_MATCH_DATA) {
-                String str;
-                data->ToString(&str);
-                Logger::V(logTag, String("No matching scheme/path ") + str
-                        + String(" for ") + String("this IntentFilter") /* this ToString() ? */);
+                String str = Object::ToString(data);
+                Logger::V(logTag, "No matching scheme/path %s for this IntentFilter", str.string() /* this ToString() ? */);
             }
         }
         return dataMatch;
@@ -851,8 +1275,7 @@ Int32 IntentFilter::Match(
 
     String categoryMatch = MatchCategories(categories);
     if (!categoryMatch.IsNull()) {
-        if (FALSE) Logger::V(logTag, String("No matching category ")
-                + categoryMatch + String(" for ") + String("this IntentFilter") /* this ToString() ? */);
+        if (FALSE) Logger::V(logTag, "No matching category %s for this IntentFilter", categoryMatch.string() /* this ToString() ? */);
         return IIntentFilter::NO_MATCH_CATEGORY;
     }
 
@@ -865,6 +1288,20 @@ Int32 IntentFilter::Match(
     }
 
     return dataMatch;
+}
+
+ECode IntentFilter::Match(
+    /* [in] */ const String& action,
+    /* [in] */ const String& type,
+    /* [in] */ const String& scheme,
+    /* [in] */ IUri* data,
+    /* [in] */ ArrayOf<String>* categories,
+    /* [in] */ const String& logTag,
+    /* [out] */ Int32* match)
+{
+    VALIDATE_NOT_NULL(match)
+    *match = Match(action, type, scheme, data, categories, logTag);
+    return NOERROR;
 }
 
 ECode IntentFilter::WriteToXml(
@@ -903,6 +1340,30 @@ ECode IntentFilter::WriteToXml(
         }
     }
 
+    if (mDataSchemeSpecificParts != NULL) {
+        List< AutoPtr<IPatternMatcher> >::Iterator daIt;
+        for (daIt = mDataSchemeSpecificParts->Begin(); daIt != mDataSchemeSpecificParts->End(); ++daIt) {
+            FAIL_RETURN(serializer->WriteStartTag(String(NULL), SSP_STR));
+            AutoPtr<IPatternMatcher> ae = *daIt;
+            Int32 type;
+            ae->GetType(&type);
+            String path;
+            ae->GetPath(&path);
+            switch (type) {
+                case IPatternMatcher::PATTERN_LITERAL:
+                    FAIL_RETURN(serializer->WriteAttribute(String(NULL), LITERAL_STR, path));
+                    break;
+                case IPatternMatcher::PATTERN_PREFIX:
+                    FAIL_RETURN(serializer->WriteAttribute(String(NULL), PREFIX_STR, path));
+                    break;
+                case IPatternMatcher::PATTERN_SIMPLE_GLOB:
+                    FAIL_RETURN(serializer->WriteAttribute(String(NULL), SGLOB_STR, path));
+                    break;
+            }
+            FAIL_RETURN(serializer->WriteEndTag(String(NULL), PATH_STR));
+        }
+    }
+
     if (mDataAuthorities != NULL) {
         List< AutoPtr<IIntentFilterAuthorityEntry> >::Iterator daIt;
         for (daIt = mDataAuthorities->Begin(); daIt != mDataAuthorities->End(); ++daIt) {
@@ -914,7 +1375,7 @@ ECode IntentFilter::WriteToXml(
             ae->GetPort(&port);
             FAIL_RETURN(serializer->WriteAttribute(String(NULL), HOST_STR, host));
             if (port >= 0) {
-                FAIL_RETURN(serializer->WriteAttribute(String(NULL), PORT_STR, StringUtils::Int32ToString(port)));
+                FAIL_RETURN(serializer->WriteAttribute(String(NULL), PORT_STR, StringUtils::ToString(port)));
             }
             FAIL_RETURN(serializer->WriteEndTag(String(String(NULL)), AUTH_STR));
         }
@@ -928,17 +1389,15 @@ ECode IntentFilter::WriteToXml(
             Int32 type;
             pe->GetType(&type);
             String path;
+            pe->GetPath(&path);
             switch (type) {
                 case IPatternMatcher::PATTERN_LITERAL:
-                    pe->GetPath(&path);
                     FAIL_RETURN(serializer->WriteAttribute(String(NULL), LITERAL_STR, path));
                     break;
                 case IPatternMatcher::PATTERN_PREFIX:
-                    pe->GetPath(&path);
                     FAIL_RETURN(serializer->WriteAttribute(String(NULL), PREFIX_STR, path));
                     break;
                 case IPatternMatcher::PATTERN_SIMPLE_GLOB:
-                    pe->GetPath(&path);
                     FAIL_RETURN(serializer->WriteAttribute(String(NULL), SGLOB_STR, path));
                     break;
             }
@@ -993,6 +1452,25 @@ ECode IntentFilter::ReadFromXml(
             FAIL_RETURN(parser->GetAttributeValue(String(NULL), NAME_STR, &name));
             if (!name.IsNull()) {
                 AddDataScheme(name);
+            }
+        }
+        else if (tagName.Equals(SSP_STR)) {
+            String path;
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), LITERAL_STR, &path));
+            if (!path.IsNull()) {
+                AddDataSchemeSpecificPart(path, IPatternMatcher::PATTERN_LITERAL);
+            }
+            else {
+                FAIL_RETURN(parser->GetAttributeValue(String(NULL), PREFIX_STR, &path));
+                if (!path.IsNull()) {
+                    AddDataSchemeSpecificPart(path, IPatternMatcher::PATTERN_PREFIX);
+                }
+                else {
+                    FAIL_RETURN(parser->GetAttributeValue(String(NULL), SGLOB_STR, &path));
+                    if (!path.IsNull()) {
+                        AddDataSchemeSpecificPart(path, IPatternMatcher::PATTERN_SIMPLE_GLOB);
+                    }
+                }
             }
         }
         else if (tagName.Equals(AUTH_STR)) {
@@ -1144,7 +1622,7 @@ ECode IntentFilter::ReadFromParcel(
     source->ReadInt32(&count);
     if(count > 0){
         if (mCategories == NULL) {
-            mCategories = new List<String>();
+            mCategories = new List<String>(count);
         }
 
         for(Int32 i = 0; i < count; i++){
@@ -1156,7 +1634,7 @@ ECode IntentFilter::ReadFromParcel(
     source->ReadInt32(&count);
     if(count > 0){
         if (mDataSchemes == NULL) {
-            mDataSchemes = new List<String>();
+            mDataSchemes = new List<String>(count);
         }
 
         for(Int32 i = 0; i < count; i++){
@@ -1168,7 +1646,7 @@ ECode IntentFilter::ReadFromParcel(
     source->ReadInt32(&count);
     if(count > 0){
         if (mDataTypes == NULL) {
-            mDataTypes = new List<String>();
+            mDataTypes = new List<String>(count);
         }
 
         for(Int32 i = 0; i < count; i++){
@@ -1179,8 +1657,21 @@ ECode IntentFilter::ReadFromParcel(
 
     source->ReadInt32(&count);
     if(count > 0){
+        if (mDataSchemeSpecificParts == NULL) {
+            mDataSchemeSpecificParts = new List<AutoPtr<IPatternMatcher> >(count);
+        }
+
+        for(Int32 i = 0; i < count; i++){
+            AutoPtr<IPatternMatcher> pm;
+            source->ReadInterfacePtr((Handle32*)&pm);
+            mDataSchemeSpecificParts->PushBack(pm);
+        }
+    }
+
+    source->ReadInt32(&count);
+    if(count > 0){
         if (mDataAuthorities == NULL) {
-            mDataAuthorities = new List<AutoPtr<IIntentFilterAuthorityEntry> >();
+            mDataAuthorities = new List<AutoPtr<IIntentFilterAuthorityEntry> >(count);
         }
 
         for(Int32 i = 0; i < count; i++){
@@ -1193,7 +1684,7 @@ ECode IntentFilter::ReadFromParcel(
     source->ReadInt32(&count);
     if(count > 0){
         if (mDataPaths == NULL) {
-            mDataPaths = new List<AutoPtr<IPatternMatcher> >();
+            mDataPaths = new List<AutoPtr<IPatternMatcher> >(count);
         }
 
         for(Int32 i = 0; i < count; i++){
@@ -1242,6 +1733,15 @@ ECode IntentFilter::WriteToParcel(
         List<String>::Iterator it = mDataTypes->Begin();
         for (; it != mDataTypes->End(); ++it) {
             dest->WriteString(*it);
+        }
+    }
+
+    CountDataSchemeSpecificParts(&count);
+    dest->WriteInt32(count);
+    if(count > 0){
+        List< AutoPtr<IPatternMatcher> >::Iterator it = mDataSchemeSpecificParts->Begin();
+        for (; it != mDataSchemeSpecificParts->End(); ++it) {
+            dest->WriteInterfacePtr(*it);
         }
     }
 

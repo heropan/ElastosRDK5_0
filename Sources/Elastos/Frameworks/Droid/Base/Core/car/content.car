@@ -61,12 +61,6 @@ module
     merge("content/UndoOperation.car");
     merge("content/UndoManager.car");
 
-
-//     merge("content/SyncManager.car");
-//     merge("content/SyncOperation.car");
-//     merge("content/SyncQueue.car");
-//     merge("content/SyncStorageEngine.car");
-
     merge("content/pm/ActivityInfo.car");
     merge("content/pm/ApplicationInfo.car");
     merge("content/pm/ComponentInfo.car");
@@ -140,6 +134,7 @@ module
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Database.ICursor;
     interface Elastos.Droid.Database.IContentObserver;
+    interface Elastos.Droid.Accounts.IAccount;
     interface Elastos.Droid.Content.ILoader;
     interface Elastos.Droid.Content.Res.IResources;
 
@@ -630,6 +625,102 @@ module
 
         singleton class CIntentHelper {
             interface IIntentHelper;
+        }
+
+        class CIntentFilterComparison {
+            constructor(
+                [in] IIntent* intent);
+
+            interface IIntentFilterComparison;
+        }
+
+        class CIntentFilter {
+            constructor();
+
+            constructor(
+                [in] String action);
+
+            constructor(
+                [in] String action,
+                [in] String dataType);
+
+            constructor(
+                [in] IIntentFilter* o);
+
+            interface IIntentFilter;
+            interface IParcelable;
+        }
+
+        singleton class CIntentFilterHelper {
+            interface IIntentFilterHelper;
+        }
+
+        class CIntentFilterAuthorityEntry {
+            constructor();
+
+            constructor(
+                [in] String host,
+                [in] String port);
+
+            interface IIntentFilterAuthorityEntry;
+            interface IParcelable;
+        }
+
+        /**
+         * Represents a shortcut/live folder icon resource.
+         *
+         * @see Intent#ACTION_CREATE_SHORTCUT
+         * @see Intent#EXTRA_SHORTCUT_ICON_RESOURCE
+         * @see android.provider.LiveFolders#ACTION_CREATE_LIVE_FOLDER
+         * @see android.provider.LiveFolders#EXTRA_LIVE_FOLDER_ICON
+         */
+        class CIntentShortcutIconResource {
+            constructor();
+
+            interface IIntentShortcutIconResource;
+            interface IParcelable;
+        }
+
+        singleton class CIntentShortcutIconResourceHelper {
+            interface IIntentShortcutIconResourceHelper;
+        }
+
+        class CIntentSender {
+            constructor();
+
+            interface IIntentSender;
+            interface IParcelable;
+        }
+
+        singleton class CIntentSenderHelper {
+            interface IIntentSenderHelper;
+        }
+
+        /**
+         * Special version of {@link ContextWrapper} that allows the base context to
+         * be modified after it is initially set.
+         */
+        [local]
+        class CMutableContextWrapper {
+            constructor(
+                [in] IContext* base);
+
+            interface IMutableContextWrapper;
+            interface IContextWrapper;
+            interface IContext;
+        }
+
+        class CPeriodicSync {
+            constructor();
+
+            constructor(
+                [in] IAccount* account,
+                [in] String authority,
+                [in] IBundle* extras,
+                [in] Int64 period);
+
+            interface IPeriodicSync;
+            interface IParcelable;
         }
 
     }//namespace Content
@@ -1484,261 +1575,6 @@ module
 //     namespace Droid {
 //     namespace Content {
 
-
-//     /**
-//      * Represents a shortcut/live folder icon resource.
-//      *
-//      * @see Intent#ACTION_CREATE_SHORTCUT
-//      * @see Intent#EXTRA_SHORTCUT_ICON_RESOURCE
-//      * @see android.provider.LiveFolders#ACTION_CREATE_LIVE_FOLDER
-//      * @see android.provider.LiveFolders#EXTRA_LIVE_FOLDER_ICON
-//      */
-//     class CIntentShortcutIconResource {
-//         constructor();
-
-//         interface IIntentShortcutIconResource;
-//         interface IParcelable;
-//     }
-
-//     singleton class CIntentShortcutIconResourceHelper {
-
-//         interface IIntentShortcutIconResourceHelper;
-//     }
-
-//     /**
-//      * Wrapper class holding an Intent and implementing comparisons on it for
-//      * the purpose of filtering.  The class implements its
-//      * {@link #equals equals()} and {@link #hashCode hashCode()} methods as
-//      * simple calls to {@link Intent#filterEquals(Intent)}  filterEquals()} and
-//      * {@link android.content.Intent#filterHashCode()}  filterHashCode()}
-//      * on the wrapped Intent.
-//      */
-//     class CIntentFilterComparison {
-//         constructor(
-//             [in] IIntent* intent);
-
-//         interface IIntentFilterComparison;
-//     }
-
-//     /**
-//      * Structured description of Intent values to be matched.  An IntentFilter can
-//      * match against actions, categories, and data (either via its type, scheme,
-//      * and/or path) in an Intent.  It also includes a "priority" value which is
-//      * used to order multiple matching filters.
-//      *
-//      * <p>IntentFilter objects are often created in XML as part of a package's
-//      * {@link android.R.styleable#AndroidManifest AndroidManifest.xml} file,
-//      * using {@link android.R.styleable#AndroidManifestIntentFilter intent-filter}
-//      * tags.
-//      *
-//      * <p>There are three Intent characteristics you can filter on: the
-//      * <em>action</em>, <em>data</em>, and <em>categories</em>.  For each of these
-//      * characteristics you can provide
-//      * multiple possible matching values (via {@link #addAction},
-//      * {@link #addDataType}, {@link #addDataScheme} {@link #addDataAuthority},
-//      * {@link #addDataPath}, and {@link #addCategory}, respectively).
-//      * For actions, the field
-//      * will not be tested if no values have been given (treating it as a wildcard);
-//      * if no data characteristics are specified, however, then the filter will
-//      * only match intents that contain no data.
-//      *
-//      * <p>The data characteristic is
-//      * itself divided into three attributes: type, scheme, authority, and path.
-//      * Any that are
-//      * specified must match the contents of the Intent.  If you specify a scheme
-//      * but no type, only Intent that does not have a type (such as mailto:) will
-//      * match; a content: URI will never match because they always have a MIME type
-//      * that is supplied by their content provider.  Specifying a type with no scheme
-//      * has somewhat special meaning: it will match either an Intent with no URI
-//      * field, or an Intent with a content: or file: URI.  If you specify neither,
-//      * then only an Intent with no data or type will match.  To specify an authority,
-//      * you must also specify one or more schemes that it is associated with.
-//      * To specify a path, you also must specify both one or more authorities and
-//      * one or more schemes it is associated with.
-//      *
-//      * <div class="special reference">
-//      * <h3>Developer Guides</h3>
-//      * <p>For information about how to create and resolve intents, read the
-//      * <a href="{@docRoot}guide/topics/intents/intents-filters.html">Intents and Intent Filters</a>
-//      * developer guide.</p>
-//      * </div>
-//      *
-//      * <h3>Filter Rules</h3>
-//      * <p>A match is based on the following rules.  Note that
-//      * for an IntentFilter to match an Intent, three conditions must hold:
-//      * the <strong>action</strong> and <strong>category</strong> must match, and
-//      * the data (both the <strong>data type</strong> and
-//      * <strong>data scheme+authority+path</strong> if specified) must match.
-//      *
-//      * <p><strong>Action</strong> matches if any of the given values match the
-//      * Intent action, <em>or</em> if no actions were specified in the filter.
-//      *
-//      * <p><strong>Data Type</strong> matches if any of the given values match the
-//      * Intent type.  The Intent
-//      * type is determined by calling {@link Intent#resolveType}.  A wildcard can be
-//      * used for the MIME sub-type, in both the Intent and IntentFilter, so that the
-//      * type "audio/*" will match "audio/mpeg", "audio/aiff", "audio/*", etc.
-//      * <em>Note that MIME type matching here is <b>case sensitive</b>, unlike
-//      * formal RFC MIME types!</em>  You should thus always use lower case letters
-//      * for your MIME types.
-//      *
-//      * <p><strong>Data Scheme</strong> matches if any of the given values match the
-//      * Intent data's scheme.
-//      * The Intent scheme is determined by calling {@link Intent#getData}
-//      * and {@link android.net.Uri#getScheme} on that URI.
-//      * <em>Note that scheme matching here is <b>case sensitive</b>, unlike
-//      * formal RFC schemes!</em>  You should thus always use lower case letters
-//      * for your schemes.
-//      *
-//      * <p><strong>Data Authority</strong> matches if any of the given values match
-//      * the Intent's data authority <em>and</em> one of the data scheme's in the filter
-//      * has matched the Intent, <em>or</em> no authories were supplied in the filter.
-//      * The Intent authority is determined by calling
-//      * {@link Intent#getData} and {@link android.net.Uri#getAuthority} on that URI.
-//      * <em>Note that authority matching here is <b>case sensitive</b>, unlike
-//      * formal RFC host names!</em>  You should thus always use lower case letters
-//      * for your authority.
-//      *
-//      * <p><strong>Data Path</strong> matches if any of the given values match the
-//      * Intent's data path <em>and</em> both a scheme and authority in the filter
-//      * has matched against the Intent, <em>or</em> no paths were supplied in the
-//      * filter.  The Intent authority is determined by calling
-//      * {@link Intent#getData} and {@link android.net.Uri#getPath} on that URI.
-//      *
-//      * <p><strong>Categories</strong> match if <em>all</em> of the categories in
-//      * the Intent match categories given in the filter.  Extra categories in the
-//      * filter that are not in the Intent will not cause the match to fail.  Note
-//      * that unlike the action, an IntentFilter with no categories
-//      * will only match an Intent that does not have any categories.
-//      */
-//     class CIntentFilter {
-//         /**
-//          * New empty IntentFilter.
-//          */
-//         constructor();
-
-//         /**
-//          * New IntentFilter that matches a single action with no data.  If
-//          * no data characteristics are subsequently specified, then the
-//          * filter will only match intents that contain no data.
-//          *
-//          * @param action The action to match, i.e. Intent.ACTION_MAIN.
-//          */
-//         constructor(
-//             [in] String action);
-
-//         /**
-//          * New IntentFilter that matches a single action and data type.
-//          *
-//          * <p><em>Note: MIME type matching in the Android framework is
-//          * case-sensitive, unlike formal RFC MIME types.  As a result,
-//          * you should always write your MIME types with lower case letters,
-//          * and any MIME types you receive from outside of Android should be
-//          * converted to lower case before supplying them here.</em></p>
-//          *
-//          * <p>Throws {@link MalformedMimeTypeException} if the given MIME type is
-//          * not syntactically correct.
-//          *
-//          * @param action The action to match, i.e. Intent.ACTION_VIEW.
-//          * @param dataType The type to match, i.e. "vnd.android.cursor.dir/person".
-//          *
-//          */
-//         constructor(
-//             [in] String action,
-//             [in] String dataType);
-
-//         /**
-//          * New IntentFilter containing a copy of an existing filter.
-//          *
-//          * @param o The original filter to copy.
-//          */
-//         constructor(
-//             [in] IIntentFilter* o);
-
-//         interface IIntentFilter;
-//         interface IParcelable;
-//     }
-
-//     singleton class CIntentFilterHelper {
-
-//         interface IIntentFilterHelper;
-//     }
-
-//     /**
-//      * This is an entry for a single authority in the Iterator returned by
-//      * {@link #authoritiesIterator()}.
-//      */
-//     class CIntentFilterAuthorityEntry {
-//         constructor();
-
-//         constructor(
-//             [in] String host,
-//             [in] String port);
-
-//         interface IIntentFilterAuthorityEntry;
-//         interface IParcelable;
-//     }
-
-//     /**
-//      * A description of an Intent and target action to perform with it.
-//      * The returned object can be
-//      * handed to other applications so that they can perform the action you
-//      * described on your behalf at a later time.
-//      *
-//      * <p>By giving a IntentSender to another application,
-//      * you are granting it the right to perform the operation you have specified
-//      * as if the other application was yourself (with the same permissions and
-//      * identity).  As such, you should be careful about how you build the IntentSender:
-//      * often, for example, the base Intent you supply will have the component
-//      * name explicitly set to one of your own components, to ensure it is ultimately
-//      * sent there and nowhere else.
-//      *
-//      * <p>A IntentSender itself is simply a reference to a token maintained by
-//      * the system describing the original data used to retrieve it.  This means
-//      * that, even if its owning application's process is killed, the
-//      * IntentSender itself will remain usable from other processes that
-//      * have been given it.  If the creating application later re-retrieves the
-//      * same kind of IntentSender (same operation, same Intent action, data,
-//      * categories, and components, and same flags), it will receive a IntentSender
-//      * representing the same token if that is still valid.
-//      *
-//      * <p>Instances of this class can not be made directly, but rather must be
-//      * created from an existing {@link android.app.PendingIntent} with
-//      * {@link android.app.PendingIntent#getIntentSender() PendingIntent.getIntentSender()}.
-//      */
-//     class CIntentSender {
-//         constructor();
-
-//         /** @hide */
-//         constructor(
-//             [in] IIIntentSender* target);
-
-//         interface IIntentSender;
-//         interface IParcelable;
-//     }
-
-//     singleton class CIntentSenderHelper {
-//         interface IIntentSenderHelper;
-//     }
-
-//     /**
-//      * Value type that contains information about a periodic sync. Is parcelable, making it suitable
-//      * for passing in an IPC.
-//      */
-//     class CPeriodicSync {
-//         constructor();
-
-//         /** Creates a new PeriodicSync, copying the Bundle */
-//         constructor(
-//             [in] IAccount* account,
-//             [in] String authority,
-//             [in] IBundle* extras,
-//             [in] Int64 period);
-
-//         interface IPeriodicSync;
-//         interface IParcelable;
-//     }
-
 //     /**
 //      * Value type that represents a SyncAdapterType. This object overrides {@link #equals} and
 //      * {@link #hashCode}, making it suitable for use as the key of a {@link java.util.Map}
@@ -2074,18 +1910,6 @@ module
 //         interface IUriMatcher;
 //     }
 
-
-//     /**
-//      * Special version of {@link ContextWrapper} that allows the base context to
-//      * be modified after it is initially set.
-//      */
-//     [local]
-//     class CMutableContextWrapper {
-//         constructor(
-//             [in] IContext* base);
-
-//         interface IMutableContextWrapper;
-//     }
 
 //     /**
 //      * This superclass can be used to create a simple search suggestions provider for your application.

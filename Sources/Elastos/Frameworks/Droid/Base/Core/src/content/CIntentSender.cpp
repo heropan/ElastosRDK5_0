@@ -1,10 +1,10 @@
 
 #include "content/CIntentSender.h"
-#include <elastos/core/StringBuilder.h>
 #include "app/ActivityManagerNative.h"
 #include "os/UserHandle.h"
 #include "os/CUserHandle.h"
 #include "os/CUserHandleHelper.h"
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::EIID_IRunnable;
@@ -27,71 +27,7 @@ namespace Content {
 //============================================================================
 //              CIntentSender::FinishedDispatcher
 //============================================================================
-PInterface CIntentSender::FinishedDispatcher::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IRunnable*)this;
-    }
-    else if (riid == EIID_IRunnable) {
-        return (IRunnable*)this;
-    }
-    else if (riid == EIID_IBinder) {
-        return (IBinder*)this;
-    }
-    else if (riid == EIID_IIntentReceiver) {
-        return (IIntentReceiver*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 CIntentSender::FinishedDispatcher::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CIntentSender::FinishedDispatcher::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CIntentSender::FinishedDispatcher::GetInterfaceID(
-    /* [in] */ IInterface* pObject,
-    /* [out] */ InterfaceID* pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(IRunnable*)this) {
-        *pIID = EIID_IRunnable;
-    }
-    else if (pObject == (IInterface*)(IBinder*)this) {
-        *pIID = EIID_IBinder;
-    }
-    else if (pObject == (IInterface*)(IIntentReceiver*)this) {
-        *pIID = EIID_IIntentReceiver;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
-
-ECode CIntentSender::FinishedDispatcher::GetHashCode(
-     /* [out] */ Int32* hash)
-{
-    VALIDATE_NOT_NULL(hash);
-    *hash = (Int32)this;
-    return NOERROR;
-}
-
-ECode CIntentSender::FinishedDispatcher::ToString(
-     /* [out] */ String* description)
-{
-    VALIDATE_NOT_NULL(description);
-    *description = String("CIntentSender::FinishedDispatcher");
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL_2(CIntentSender::FinishedDispatcher, Runnable, IIntentReceiver, IBinder)
 
 CIntentSender::FinishedDispatcher::FinishedDispatcher(
     /* [in] */ CIntentSender* pi,
@@ -125,7 +61,7 @@ ECode CIntentSender::FinishedDispatcher::PerformReceive(
     }
     else {
         Boolean result;
-        return mHandler->Post((IRunnable*)this, &result);
+        return mHandler->Post(THIS_PROBE(IRunnable), &result);
     }
 }
 
@@ -135,16 +71,46 @@ ECode CIntentSender::FinishedDispatcher::Run()
         mIntentSender, mIntent, mResultCode, mResultData, mResultExtras);
 }
 
+ECode CIntentSender::FinishedDispatcher::ToString(
+     /* [out] */ String* description)
+{
+    VALIDATE_NOT_NULL(description);
+    *description = String("CIntentSender::FinishedDispatcher");
+    return NOERROR;
+}
+
 //============================================================================
 //              CIntentSender
 //============================================================================
 
+CAR_INTERFACE_IMPL_2(CIntentSender, Object, IIntentSender, IParcelable)
+
+CAR_OBJECT_IMPL(CIntentSender)
+
 CIntentSender::CIntentSender()
-    : mTarget(NULL)
 {}
 
 CIntentSender::~CIntentSender()
 {}
+
+ECode CIntentSender::constructor()
+{
+    return NOERROR;
+}
+
+ECode CIntentSender::constructor(
+    /* [in] */ IIIntentSender* target)
+{
+    mTarget = target;
+    return NOERROR;
+}
+
+ECode CIntentSender::constructor(
+    /* [in] */ IBinder* target)
+{
+    mTarget = IIIntentSender::Probe(target);
+    return NOERROR;
+}
 
 ECode CIntentSender::SendIntent(
     /* [in] */ IContext* context,
@@ -164,7 +130,6 @@ ECode CIntentSender::SendIntent(
     /* [in] */ IHandler* handler,
     /* [in] */ const String& requiredPermission)
 {
-    PEL("CIntentSender::SendIntentEx")
     String resolvedType;
     if (NULL != intent) {
         AutoPtr<IContentResolver> resolver;
@@ -176,10 +141,7 @@ ECode CIntentSender::SendIntent(
         dispatcher = new FinishedDispatcher(this, onFinished, handler);
     }
 
-    String targetStr;
-    if (IBinder::Probe(mTarget))
-        IBinder::Probe(mTarget)->ToString(&targetStr);
-    PFL_EX(" == target: [%s]", targetStr.string())
+    String targetStr = Object::ToString(mTarget);
 
     Int32 res = 0;
     FAIL_RETURN(mTarget->Send(code, intent, resolvedType, dispatcher, requiredPermission, &res));
@@ -196,21 +158,27 @@ ECode CIntentSender::GetTargetPackage(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
-    return ActivityManagerNative::GetDefault()->GetPackageForIntentSender(mTarget, str);
+    // return ActivityManagerNative::GetDefault()->GetPackageForIntentSender(mTarget, str);
+    assert(0 && "TODO");
+    return NOERROR;
 }
 
 ECode CIntentSender::GetCreatorPackage(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
-    return ActivityManagerNative::GetDefault()->GetPackageForIntentSender(mTarget, str);
+    // return ActivityManagerNative::GetDefault()->GetPackageForIntentSender(mTarget, str);
+    assert(0 && "TODO");
+    return NOERROR;
 }
 
 ECode CIntentSender::GetCreatorUid(
     /* [out] */ Int32* uid)
 {
     VALIDATE_NOT_NULL(uid)
-    return ActivityManagerNative::GetDefault()->GetUidForIntentSender(mTarget, uid);
+    // return ActivityManagerNative::GetDefault()->GetUidForIntentSender(mTarget, uid);
+    assert(0 && "TODO");
+    return NOERROR;
 }
 
 ECode CIntentSender::GetCreatorUserHandle(
@@ -218,7 +186,7 @@ ECode CIntentSender::GetCreatorUserHandle(
 {
     VALIDATE_NOT_NULL(userHandle)
     Int32 uid = 0;
-    FAIL_RETURN(ActivityManagerNative::GetDefault()->GetUidForIntentSender(mTarget, &uid));
+    // FAIL_RETURN(ActivityManagerNative::GetDefault()->GetUidForIntentSender(mTarget, &uid));
     AutoPtr<IUserHandle> handle;
 
     if (uid > 0) {
@@ -244,7 +212,7 @@ ECode CIntentSender::Equals(
         //mTarget.asBinder().equals(((IntentSender)otherObj).mTarget.asBinder());
         AutoPtr<IIIntentSender> otherTarget;
         FAIL_RETURN(IIntentSender::Probe(otherObj)->GetTarget((IIIntentSender**)&otherTarget));
-        *isEqual = _CObject_Compare(mTarget, otherTarget);
+        *isEqual = Object::Equals(mTarget, otherTarget);
         return NOERROR;
     }
 
@@ -268,7 +236,7 @@ ECode CIntentSender::ToString(
     sb += "IntentSender{";
 //    sb.append(Integer.toHexString(System.identityHashCode(this)));
     sb += ": ";
-//    sb.append(mTarget != null ? mTarget.asBinder() : null);
+    sb += Object::ToString(mTarget);
     sb += '}';
     return sb.ToString(str);
 }
@@ -296,18 +264,6 @@ ECode CIntentSender::WriteToParcel(
 {
     IBinder* binder = IBinder::Probe(mTarget.Get());
     return dest->WriteInterfacePtr((IInterface*)binder);
-}
-
-ECode CIntentSender::constructor()
-{
-    return NOERROR;
-}
-
-ECode CIntentSender::constructor(
-    /* [in] */ IIIntentSender* target)
-{
-    mTarget = target;
-    return NOERROR;
 }
 
 }

@@ -66,7 +66,7 @@ public:
      * @see #SYSTEM_LOW_PRIORITY
      * @see #SYSTEM_HIGH_PRIORITY
      */
-    virtual CARAPI SetPriority(
+    CARAPI SetPriority(
         /* [in] */ Int32 priority);
 
     /**
@@ -78,6 +78,9 @@ public:
      */
     CARAPI_(Int32) GetPriority();
 
+    CARAPI GetPriority(
+        /* [out] */ Int32* result);
+
     /**
      * Add a new Intent action to match against.  If any actions are included
      * in the filter, then an Intent's action must be one of those values for
@@ -85,7 +88,7 @@ public:
      *
      * @param action Name of the action to match, i.e. Intent.ACTION_VIEW.
      */
-    virtual CARAPI AddAction(
+    CARAPI AddAction(
         /* [in] */ const String& action);
 
     /**
@@ -93,11 +96,18 @@ public:
      */
     CARAPI_(Int32) CountActions();
 
+    CARAPI CountActions(
+        /* [out] */ Int32* result);
+
     /**
      * Return an action in the filter.
      */
     CARAPI_(String) GetAction(
         /* [in] */ Int32 index);
+
+    CARAPI GetAction(
+        /* [in] */ Int32 index,
+        /* [out] */ String* action);
 
     /**
      * Is the given action included in the filter?  Note that if the filter
@@ -109,6 +119,10 @@ public:
      */
     CARAPI_(Boolean) HasAction(
         /* [in] */ const String& action);
+
+    CARAPI HasAction(
+        /* [in] */ const String& action,
+        /* [out] */ Boolean* has);
 
     /**
      * Match this filter against an Intent's action.  If the filter does not
@@ -122,7 +136,14 @@ public:
     CARAPI_(Boolean) MatchAction(
         /* [in] */ const String& action);
 
+    CARAPI MatchAction(
+        /* [in] */ const String& action,
+        /* [out] */ Boolean* has);
+
     CARAPI_(AutoPtr< ArrayOf<String> >) GetActions();
+
+    CARAPI GetActions(
+        /* [out, callee] */ ArrayOf<String>** actions);
 
     /**
      * Add a new Intent data type to match against.  If any types are
@@ -143,7 +164,7 @@ public:
      *
      * @see #matchData
      */
-    virtual CARAPI AddDataType(
+    CARAPI AddDataType(
         /* [in] */ const String& type);
 
     /**
@@ -157,10 +178,24 @@ public:
     CARAPI_(Boolean) HasDataType(
         /* [in] */ const String& type);
 
+    CARAPI HasDataType(
+        /* [in] */ const String& type,
+        /* [out] */ Boolean* has);
+
+    CARAPI HasExactDataType(
+        /* [in] */ const String& type,
+        /* [out] */ Boolean* has);
+
+    CARAPI HasPartialTypes(
+        /* [out] */ Boolean* has);
+
     /**
      * Return the number of data types in the filter.
      */
     CARAPI_(Int32) CountDataTypes();
+
+    CARAPI CountDataTypes(
+        /* [out] */ Int32* result);
 
     /**
      * Return a data type in the filter.
@@ -168,7 +203,14 @@ public:
     CARAPI_(String) GetDataType(
         /* [in] */ Int32 index);
 
+    CARAPI GetDataType(
+        /* [in] */ Int32 index,
+        /* [out] */ String* type);
+
     CARAPI_(AutoPtr< ArrayOf<String> >) GetTypes();
+
+    CARAPI GetTypes(
+        /* [out, callee] */ ArrayOf<String>** types);
 
     /**
      * Add a new Intent data scheme to match against.  If any schemes are
@@ -186,7 +228,7 @@ public:
      *
      * @see #matchData
      */
-    virtual CARAPI AddDataScheme(
+    CARAPI AddDataScheme(
         /* [in] */ const String& scheme);
 
     /**
@@ -194,11 +236,18 @@ public:
      */
     CARAPI_(Int32) CountDataSchemes();
 
+    CARAPI CountDataSchemes(
+        /* [out] */ Int32* result);
+
      /**
      * Return a data scheme in the filter.
      */
     CARAPI_(String) GetDataScheme(
         /* [in] */ Int32 index);
+
+    CARAPI GetDataScheme(
+        /* [in] */ Int32 index,
+        /* [out] */ String* scheme);
 
     /**
      * Is the given data scheme included in the filter?  Note that if the
@@ -211,6 +260,10 @@ public:
      */
     CARAPI_(Boolean) HasDataScheme(
         /* [in] */ const String& scheme);
+
+    CARAPI HasDataScheme(
+        /* [in] */ const String& scheme,
+        /* [out] */ Boolean* has);
 
     CARAPI_(AutoPtr< ArrayOf<String> >) GetSchemes();
 
@@ -311,20 +364,30 @@ public:
      * @see #matchData
      * @see #addDataScheme
      */
-    virtual CARAPI AddDataAuthority(
+    CARAPI AddDataAuthority(
         /* [in] */ const String& host,
         /* [in] */ const String& port);
+
+    CARAPI AddDataAuthority(
+        /* [in] */ IIntentFilterAuthorityEntry* authority);
 
     /**
      * Return the number of data authorities in the filter.
      */
     CARAPI_(Int32) CountDataAuthorities();
 
+    CARAPI CountDataAuthorities(
+        /* [out] */ Int32* result);
+
     /**
      * Return a data authority in the filter.
      */
     CARAPI_(AutoPtr<IIntentFilterAuthorityEntry>) GetDataAuthority(
         /* [in] */ Int32 index);
+
+    CARAPI GetDataAuthority(
+        /* [in] */ Int32 index,
+        /* [out] */ IIntentFilterAuthorityEntry** authority);
 
     /**
      * Is the given data authority included in the filter?  Note that if the
@@ -336,13 +399,21 @@ public:
      * @return Returns true if the data string matches an authority listed in the
      *         filter.
      */
-    CARAPI_(Boolean) HasDataAuthority(
-        /* [in] */ IUri* data);
+    CARAPI HasDataAuthority(
+        /* [in] */ IUri* data,
+        /* [out] */ Boolean* result);
+
+    CARAPI HasDataAuthority(
+        /* [in] */ IIntentFilterAuthorityEntry* data,
+        /* [out] */ Boolean* result);
 
     /**
      * Return an iterator over the filter's data authorities.
      */
     CARAPI_(AutoPtr< ArrayOf<IIntentFilterAuthorityEntry*> >) GetAuthorities();
+
+    CARAPI GetAuthorities(
+        /* [out, callee] */ ArrayOf<IIntentFilterAuthorityEntry*>** authorities);
 
     /**
      * Add a new Intent data oath to match against.  The filter must
@@ -370,20 +441,30 @@ public:
      * @see #addDataScheme
      * @see #addDataAuthority
      */
-    virtual CARAPI AddDataPath(
+    CARAPI AddDataPath(
         /* [in] */ const String& path,
         /* [in] */ Int32 type);
+
+    CARAPI AddDataPath(
+        /* [in] */ IPatternMatcher* pm);
 
     /**
      * Return the number of data paths in the filter.
      */
     CARAPI_(Int32) CountDataPaths();
 
+    CARAPI CountDataPaths(
+        /* [out] */ Int32* result);
+
     /**
      * Return a data path in the filter.
      */
     CARAPI_(AutoPtr<IPatternMatcher>) GetDataPath(
         /* [in] */ Int32 index);
+
+    CARAPI GetDataPath(
+        /* [in] */ Int32 index,
+        /* [out] */ IPatternMatcher** pm);
 
     /**
      * Is the given data path included in the filter?  Note that if the
@@ -396,10 +477,18 @@ public:
      * @return True if the data string matches a path listed in the
      *         filter.
      */
-    CARAPI_(Boolean) HasDataPath(
-        /* [in] */ const String& data);
+    CARAPI HasDataPath(
+        /* [in] */ const String& data,
+        /* [out] */ Boolean* result);
+
+    CARAPI HasDataPath(
+        /* [in] */ IPatternMatcher* pm,
+        /* [out] */ Boolean* result);
 
     CARAPI_(AutoPtr< ArrayOf<IPatternMatcher*> >) GetPaths();
+
+    CARAPI GetPaths(
+        /* [out, callee] */ ArrayOf<IPatternMatcher*>** paths);
 
     /**
      * Match this intent filter against the given Intent data.  This ignores
@@ -413,6 +502,10 @@ public:
      */
     CARAPI_(Int32) MatchDataAuthority(
         /* [in] */ IUri* data);
+
+    CARAPI MatchDataAuthority(
+        /* [in] */ IUri* data,
+        /* [out] */ Int32* match);
 
     /**
      * Match this filter against an Intent's data (type, scheme and path). If
@@ -453,6 +546,12 @@ public:
         /* [in] */ const String& scheme,
         /* [in] */ IUri* data);
 
+    CARAPI MatchData(
+        /* [in] */ const String& type,
+        /* [in] */ const String& scheme,
+        /* [in] */ IUri* data,
+        /* [out] */  Int32* match);
+
     /**
      * Add a new Intent category to match against.  The semantics of
      * categories is the opposite of actions -- an Intent includes the
@@ -463,7 +562,7 @@ public:
      *
      * @param category Name of category to match, i.e. Intent.CATEGORY_EMBED.
      */
-    virtual CARAPI AddCategory(
+    CARAPI AddCategory(
         /* [in] */ const String& category);
 
     /**
@@ -471,11 +570,18 @@ public:
      */
     CARAPI_(Int32) CountCategories();
 
+    CARAPI CountCategories(
+        /* [out] */ Int32* count);
+
     /**
      * Return a category in the filter.
      */
     CARAPI_(String) GetCategory(
         /* [in] */ Int32 index);
+
+    CARAPI GetCategory(
+        /* [in] */ Int32 index,
+        /* [out] */ String* category);
 
     /**
      * Is the given category included in the filter?
@@ -487,7 +593,14 @@ public:
     CARAPI_(Boolean) HasCategory(
         /* [in] */ const String& category);
 
+    CARAPI HasCategory(
+        /* [in] */ const String& category,
+        /* [out] */ Boolean* has);
+
     CARAPI_(AutoPtr< ArrayOf<String> >) GetCategories();
+
+    CARAPI GetCategories(
+        /* [out] */ ArrayOf<String>** categories);
 
     /**
      * Match this filter against an Intent's categories.  Each category in
@@ -502,6 +615,10 @@ public:
      */
     CARAPI_(String) MatchCategories(
         /* [in] */ ArrayOf<String>* categories);
+
+    CARAPI MatchCategories(
+        /* [in] */ ArrayOf<String>* categories,
+        /* [out] */ String* match);
 
     /**
      * Test whether this filter matches the given <var>intent</var>.
@@ -530,6 +647,13 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ Boolean resolve,
         /* [in] */ const String& logTag);
+
+    CARAPI Match(
+        /* [in] */ IContentResolver* resolver,
+        /* [in] */ IIntent* intent,
+        /* [in] */ Boolean resolve,
+        /* [in] */ const String& logTag,
+        /* [out] */ Int32* match);
 
     /**
      * Test whether this filter matches the given intent data.  A match is
@@ -566,6 +690,15 @@ public:
         /* [in] */ IUri* data,
         /* [in] */ ArrayOf<String>* categories,
         /* [in] */ const String& logTag);
+
+    CARAPI Match(
+        /* [in] */ const String& action,
+        /* [in] */ const String& type,
+        /* [in] */ const String& scheme,
+        /* [in] */ IUri* data,
+        /* [in] */ ArrayOf<String>* categories,
+        /* [in] */ const String& logTag,
+        /* [out] */ Int32* match);
 
     /**
      * Write the contents of the IntentFilter as an XML stream.

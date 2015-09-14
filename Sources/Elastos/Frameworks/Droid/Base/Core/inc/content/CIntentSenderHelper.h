@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CINTENTSENDERHELPER_H__
 
 #include "_Elastos_Droid_Content_CIntentSenderHelper.h"
-#include <ext/frameworkext.h>
+#include <elastos/core/Singleton.h>
 
 using namespace Elastos;
 using namespace Elastos::Core;
@@ -13,8 +13,14 @@ namespace Droid {
 namespace Content {
 
 CarClass(CIntentSenderHelper)
+    , public Singleton
+    , public IIntentSenderHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Convenience function for writing either a IntentSender or null pointer to
      * a Parcel.  You must use this with {@link #readIntentSenderOrNullFromParcel}
@@ -41,11 +47,10 @@ public:
         /* [in] */ IParcel* parcel,
         /* [out] */ IIntentSender** intentSender);
 
-private:
 };
 
-}
-}
-}
+} // Content
+} // Droid
+} // Elastos
 
 #endif // __ELASTOS_DROID_CONTENT_CINTENTSENDERHELPER_H__

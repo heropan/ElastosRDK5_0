@@ -18,13 +18,16 @@ namespace Content {
 const Int32 CSearchRecentSuggestionsProvider::DATABASE_MODE_QUERIES;
 const Int32 CSearchRecentSuggestionsProvider::DATABASE_MODE_2LINES;
 const String CSearchRecentSuggestionsProvider::TAG("SuggestionsProvider");
-const String CSearchRecentSuggestionsProvider::sDatabaseName = String("suggestions.db");
-const String CSearchRecentSuggestionsProvider::sSuggestions = String("suggestions");
-const String CSearchRecentSuggestionsProvider::ORDER_BY = String("date DESC");
-const String CSearchRecentSuggestionsProvider::NULL_COLUMN = String("query");
+const String CSearchRecentSuggestionsProvider::sDatabaseName("suggestions.db");
+const String CSearchRecentSuggestionsProvider::sSuggestions("suggestions");
+const String CSearchRecentSuggestionsProvider::ORDER_BY("date DESC");
+const String CSearchRecentSuggestionsProvider::NULL_COLUMN("query");
 const Int32 CSearchRecentSuggestionsProvider::DATABASE_VERSION;
 const Int32 CSearchRecentSuggestionsProvider::URI_MATCH_SUGGEST;
 
+//==============================================================
+// CSearchRecentSuggestionsProvider::DatabaseHelper
+//==============================================================
 CSearchRecentSuggestionsProvider::DatabaseHelper::DatabaseHelper(
     /*[in]*/ IContext* context,
     /*[in]*/ Int32 newVersion)
@@ -65,13 +68,17 @@ ECode CSearchRecentSuggestionsProvider::DatabaseHelper::OnUpgrade(
     return NOERROR;
 }
 
+//==============================================================
+// CSearchRecentSuggestionsProvider
+//==============================================================
+
+CAR_INTERFACE_IMPL(CSearchRecentSuggestionsProvider, ContentProvider, ISearchRecentSuggestionsProvider)
+
+CAR_OBJECT_IMPL(CSearchRecentSuggestionsProvider)
+
 CSearchRecentSuggestionsProvider::CSearchRecentSuggestionsProvider()
     : mMode(0)
     , mTwoLineDisplay(FALSE)
-    , mOpenHelper(NULL)
-    , mSuggestionsUri(NULL)
-    , mUriMatcher(NULL)
-    , mSuggestionProjection(NULL)
 {}
 
 CSearchRecentSuggestionsProvider::~CSearchRecentSuggestionsProvider()

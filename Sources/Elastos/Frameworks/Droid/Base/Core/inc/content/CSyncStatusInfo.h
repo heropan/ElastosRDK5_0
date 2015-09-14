@@ -3,18 +3,24 @@
 #define __ELASTOS_DROID_CONTENT_CSYNCSTATUSINFO_H__
 
 #include "_Elastos_Droid_Content_CSyncStatusInfo.h"
-#include <ext/frameworkext.h>
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CSyncStatusInfo)
+    , public ISyncStatusInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CSyncStatusInfo();
 
-    ~CSyncStatusInfo();
+    virtual ~CSyncStatusInfo();
 
     CARAPI GetAuthorityId(
         /* [out] */ Int32* authorityId);

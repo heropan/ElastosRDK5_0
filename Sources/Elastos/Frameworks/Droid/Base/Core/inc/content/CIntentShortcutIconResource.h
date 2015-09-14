@@ -3,14 +3,22 @@
 #define __ELASTOS_DROID_CONTENT_CINTENTSHORTCUTICONRESOURCE_H__
 
 #include "_Elastos_Droid_Content_CIntentShortcutIconResource.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CIntentShortcutIconResource)
+    , public Object
+    , public IIntentShortcutIconResource
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     CARAPI GetPackageName(

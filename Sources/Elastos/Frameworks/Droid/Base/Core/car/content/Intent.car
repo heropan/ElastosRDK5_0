@@ -5372,9 +5372,6 @@ module
 
         SetResourceName(
             [in] String resourceName);
-
-        ToString(
-            [out] String* str);
     }
 
     [local]

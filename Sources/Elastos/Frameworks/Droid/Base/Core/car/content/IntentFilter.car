@@ -37,6 +37,10 @@ module
         Match(
             [in] IUri* data,
             [out] Int32* result);
+
+        Match(
+            [in] IIntentFilterAuthorityEntry* data,
+            [out] Boolean* result);
     }
 
     /**

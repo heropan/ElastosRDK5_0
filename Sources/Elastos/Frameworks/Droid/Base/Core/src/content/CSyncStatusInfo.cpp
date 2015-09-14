@@ -13,6 +13,10 @@ namespace Content {
 const String CSyncStatusInfo::TAG("Sync");
 const Int32 CSyncStatusInfo::VERSION;
 
+CAR_INTERFACE_IMPL_2(CSyncStatusInfo, Object, ISyncStatusInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CSyncStatusInfo)
+
 CSyncStatusInfo::CSyncStatusInfo()
     : mAuthorityId(0)
     , mTotalElapsedTime(0)
@@ -29,7 +33,6 @@ CSyncStatusInfo::CSyncStatusInfo()
     , mInitialFailureTime(0)
     , mPending(FALSE)
     , mInitialize(FALSE)
-    , mPeriodicSyncTimes(NULL)
 {}
 
 CSyncStatusInfo::~CSyncStatusInfo()

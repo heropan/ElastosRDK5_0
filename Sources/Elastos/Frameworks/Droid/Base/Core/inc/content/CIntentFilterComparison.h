@@ -3,17 +3,22 @@
 #define __ELASTOS_DROID_CONTENT_CINTENTFILTERCOMPARISON_H__
 
 #include "_Elastos_Droid_Content_CIntentFilterComparison.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CIntentFilterComparison)
+    , public Object
+    , public IIntentFilterComparison
 {
 public:
-    CIntentFilterComparison();
+    CAR_INTERFACE_DECL()
 
-    ~CIntentFilterComparison();
+    CAR_OBJECT_DECL()
+
+    CIntentFilterComparison();
 
     /**
      * Return the Intent that this FilterComparison represents.

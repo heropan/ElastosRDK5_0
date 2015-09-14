@@ -10,6 +10,7 @@ module
     /**
      * @Involve
      * interface IContextWrapper
+     * interface IContext
      */
     [local]
     interface IMutableContextWrapper {

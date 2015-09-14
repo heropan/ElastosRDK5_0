@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
+CAR_INTERFACE_IMPL_2(CIntentShortcutIconResource, Object, IIntentShortcutIconResource, IParcelable)
+
+CAR_OBJECT_IMPL(CIntentShortcutIconResource)
+
 ECode CIntentShortcutIconResource::constructor()
 {
     return NOERROR;

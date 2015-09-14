@@ -1,13 +1,16 @@
 
 #include "content/CIntentShortcutIconResourceHelper.h"
 #include "content/CIntentShortcutIconResource.h"
-#include <ext/frameworkdef.h>
 
 using Elastos::Droid::Content::Res::IResources;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
+
+CAR_INTERFACE_IMPL(CIntentShortcutIconResourceHelper, Singleton, IIntentShortcutIconResourceHelper)
+
+CAR_SINGLETON_IMPL(CIntentShortcutIconResourceHelper)
 
 ECode CIntentShortcutIconResourceHelper::FromContext(
     /* [in] */ IContext* context,
@@ -18,8 +21,8 @@ ECode CIntentShortcutIconResourceHelper::FromContext(
     *shortcutIconRes = NULL;
     VALIDATE_NOT_NULL(context)
 
-    AutoPtr<IIntentShortcutIconResource> icon;
-    FAIL_RETURN(CIntentShortcutIconResource::New((IIntentShortcutIconResource**)&icon))
+    AutoPtr<CIntentShortcutIconResource> icon;
+    FAIL_RETURN(CIntentShortcutIconResource::NewByFriend((CIntentShortcutIconResource**)&icon))
     String packageName;
     FAIL_RETURN(context->GetPackageName(&packageName))
     FAIL_RETURN(icon->SetPackageName(packageName))
@@ -28,7 +31,7 @@ ECode CIntentShortcutIconResourceHelper::FromContext(
     String resourceName;
     FAIL_RETURN(res->GetResourceName(resourceId, &resourceName))
     FAIL_RETURN(icon->SetResourceName(resourceName))
-    *shortcutIconRes = icon;
+    *shortcutIconRes = (IIntentShortcutIconResource*)icon.Get();
     REFCOUNT_ADD(*shortcutIconRes)
     return NOERROR;
 }

@@ -3,9 +3,10 @@
 #include "internal/content/CNativeLibraryHelperHandle.h"
 #include "os/Build.h"
 #include "os/SELinux.h"
-#include <ext/frameworkext.h>
 #include <elastos/droid/system/OsConstants.h>
 #include <elastos/utility/logging/Slogger.h>
+#include <ext/frameworkext.h>
+
 #include <androidfw/ZipFileRO.h>
 #include <androidfw/ZipUtils.h>
 #include <utils/UniquePtr.h>

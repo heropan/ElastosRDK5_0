@@ -3,17 +3,24 @@
 #define __ELASTOS_DROID_CONTENT_CSYNCSTATS_H__
 
 #include "_Elastos_Droid_Content_CSyncStats.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CSyncStats)
+    , public ISyncStats
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CSyncStats();
 
-    ~CSyncStats();
+    virtual ~CSyncStats();
 
     /**
      * The SyncAdapter was unable to authenticate the {@link android.accounts.Account}

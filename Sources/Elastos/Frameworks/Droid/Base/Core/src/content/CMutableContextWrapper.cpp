@@ -1,18 +1,13 @@
 
 #include "content/CMutableContextWrapper.h"
-#include <ext/frameworkext.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
-ICONTEXT_METHODS_IMPL(CMutableContextWrapper, ContextWrapper)
+CAR_INTERFACE_IMPL(CMutableContextWrapper, ContextWrapper, IMutableContextWrapper)
 
-PInterface CMutableContextWrapper::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CMutableContextWrapper::Probe(riid);
-}
+CAR_OBJECT_IMPL(CMutableContextWrapper)
 
 ECode CMutableContextWrapper::GetBaseContext(
     /* [out] */ IContext** context)
@@ -23,13 +18,14 @@ ECode CMutableContextWrapper::GetBaseContext(
 ECode CMutableContextWrapper::SetBaseContext(
     /* [in] */ IContext* base)
 {
-    return ContextWrapper::Init(base);
+    mBase = base;
+    return NOERROR;
 }
 
 ECode CMutableContextWrapper::constructor(
     /* [in] */ IContext* base)
 {
-    return ContextWrapper::Init(base);
+    return ContextWrapper::constructor(base);
 }
 
 }

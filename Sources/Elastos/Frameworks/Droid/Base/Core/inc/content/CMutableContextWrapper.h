@@ -5,34 +5,18 @@
 #include "_Elastos_Droid_Content_CMutableContextWrapper.h"
 #include "ContextWrapper.h"
 
-using namespace Elastos::IO;
-using namespace Elastos::Droid::App;
-using namespace Elastos::Droid::Content::Res;
-using namespace Elastos::Droid::Content::Pm;
-using namespace Elastos::Droid::Os;
-using namespace Elastos::Droid::View;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::IClassLoader;
-using Elastos::Droid::Graphics::Drawable::IDrawable;
-using Elastos::Droid::Database::IDatabaseErrorHandler;
-using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
-using Elastos::Droid::Database::Sqlite::ISQLiteDatabaseCursorFactory;
-using Elastos::Droid::Graphics::IBitmap;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Utility::IAttributeSet;
-
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CMutableContextWrapper)
     , public ContextWrapper
+    , public IMutableContextWrapper
 {
 public:
-    ICONTEXT_METHODS_DECL()
+    CAR_INTERFACE_DECL()
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CAR_OBJECT_DECL()
 
     CARAPI GetBaseContext(
         /* [out] */ IContext** context);

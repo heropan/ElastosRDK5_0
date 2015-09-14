@@ -3,30 +3,34 @@
 #define __ELASTOS_DROID_CONTENT_CINTENTSENDER_H__
 
 #include "_Elastos_Droid_Content_CIntentSender.h"
-#include <ext/frameworkext.h>
+#include <elastos/core/Object.h>
+#include "os/Runnable.h"
 
-using Elastos::Core::IRunnable;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentSender;
 using Elastos::Droid::Content::IIIntentSender;
 using Elastos::Droid::Content::IIntentReceiver;
+using Elastos::Core::IRunnable;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CIntentSender)
+    , public Object
+    , public IIntentSender
+    , public IParcelable
 {
 private:
     class FinishedDispatcher
-        : public ElRefBase
+        : public Runnable
         , public IIntentReceiver
-        , public IRunnable
         , public IBinder
     {
     public:
@@ -37,7 +41,7 @@ private:
             /* [in] */ IIntentSenderOnFinished* who,
             /* [in] */ IHandler* handler);
 
-        ~FinishedDispatcher();
+        virtual ~FinishedDispatcher();
 
         CARAPI PerformReceive(
             /* [in] */ IIntent* intent,
@@ -49,9 +53,6 @@ private:
             /* [in] */ Int32 sendingUser);
 
         CARAPI Run();
-
-        CARAPI GetHashCode(
-             /* [out] */ Int32* hashCode);
 
         CARAPI ToString(
             /* [out] */ String* description);
@@ -68,9 +69,13 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CIntentSender();
 
-    ~CIntentSender();
+    virtual ~CIntentSender();
 
     /**
      * Perform the operation associated with this IntentSender, allowing the
@@ -207,6 +212,9 @@ public:
 
     CARAPI constructor(
         /* [in] */ IIIntentSender* target);
+
+    CARAPI constructor(
+        /* [in] */ IBinder* target);
 
 private:
     AutoPtr<IIIntentSender> mTarget;
