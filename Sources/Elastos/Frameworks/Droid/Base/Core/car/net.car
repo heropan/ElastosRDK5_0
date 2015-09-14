@@ -110,6 +110,8 @@ module
     interface Elastos.Droid.Os.ILooper;
     interface Elastos.Droid.Os.IHandler;
 
+    using interface Elastos.Net.IInetAddress;
+
     namespace Elastos {
     namespace Droid {
     namespace Net {
@@ -131,6 +133,38 @@ module
         interface IEthernetManager;
     }
 
+    class CIpConfiguration {
+        constructor();
+
+        constructor(
+            [in] IpAssignment ipAssignment,
+            [in] ProxySettings proxySettings,
+            [in] IStaticIpConfiguration* staticIpConfiguration,
+            [in] IProxyInfo* httpProxy);
+
+        constructor(
+            [in] IIpConfiguration* source);
+
+        interface IIpConfiguration;
+        interface IParcelable;
+    }
+
+    [deprecated]
+    class CIpPrefix {
+        constructor(
+            [in] ArrayOf<Byte>* address1,
+            [in] Int32 prefixLength);
+
+        constructor(
+            [in] IInetAddress* address2,
+            [in] Int32 prefixLength);
+
+        constructor(
+            [in] String prefix);
+
+        interface IParcelable;
+        interface IIpPrefix;
+    }
 //    class CLocalSocket {
 //        constructor();
 

@@ -27,6 +27,7 @@ SOURCES += CDhcpStateMachineHelper.cpp
 SOURCES += CDnsPinger.cpp
 SOURCES += EthernetManager.cpp
 SOURCES += CInterfaceConfiguration.cpp
+SOURCES += IpConfiguration.cpp
 #SOURCES += DummyDataStateTracker.cpp
 #SOURCES += CLinkAddress.cpp
 #SOURCES += CLinkCapabilities.cpp
