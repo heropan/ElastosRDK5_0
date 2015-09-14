@@ -1,27 +1,31 @@
 
-#include "hardware/usb/CUsbRequest.h"
+#include "hardware/usb/UsbRequest.h"
 #include "hardware/usb/CUsbDeviceConnection.h"
 #include <elastos/core/Math.h>
 #include <usbhost/usbhost.h>
+
+using Elastos::IO::IBuffer;
 
 namespace Elastos {
 namespace Droid {
 namespace Hardware {
 namespace Usb {
 
-const String CUsbRequest::TAG("UsbRequest");
+CAR_INTERFACE_IMPL(UsbRequest, Object, IUsbRequest);
 
-CUsbRequest::~CUsbRequest()
+const String UsbRequest::TAG("UsbRequest");
+
+UsbRequest::~UsbRequest()
 {
     Finalize();
 }
 
-ECode CUsbRequest::constructor()
+ECode UsbRequest::constructor()
 {
     return NOERROR;
 }
 
-ECode CUsbRequest::Initialize(
+ECode UsbRequest::Initialize(
     /* [in] */ IUsbDeviceConnection* connection,
     /* [in] */ IUsbEndpoint* endpoint,
     /* [out] */ Boolean* result)
@@ -45,39 +49,41 @@ ECode CUsbRequest::Initialize(
     return NOERROR;
 }
 
-ECode CUsbRequest::Close()
+ECode UsbRequest::Close()
 {
     mEndpoint = NULL;
     NativeClose();
     return NOERROR;
 }
 
-ECode CUsbRequest::GetEndpoint(
+ECode UsbRequest::GetEndpoint(
     /* [out] */ IUsbEndpoint** endpoint)
 {
     VALIDATE_NOT_NULL(endpoint);
+
     *endpoint = mEndpoint;
     REFCOUNT_ADD(*endpoint);
     return NOERROR;
 }
 
-ECode CUsbRequest::GetClientData(
+ECode UsbRequest::GetClientData(
     /* [out] */ IInterface** data)
 {
     VALIDATE_NOT_NULL(data);
+
     *data = mClientData;
     REFCOUNT_ADD(*data);
     return NOERROR;
 }
 
-ECode CUsbRequest::SetClientData(
+ECode UsbRequest::SetClientData(
     /* [in] */ IInterface* data)
 {
     mClientData = data;
     return NOERROR;
 }
 
-ECode CUsbRequest::Queue(
+ECode UsbRequest::Queue(
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 length,
     /* [out] */ Boolean* result)
@@ -85,10 +91,10 @@ ECode CUsbRequest::Queue(
     VALIDATE_NOT_NULL(result);
 
     Boolean isDirectSpecified;
-    FAIL_RETURN(buffer->IsDirect(&isDirectSpecified));
+    FAIL_RETURN(IBuffer::Probe(buffer)->IsDirect(&isDirectSpecified));
 
     Boolean hasArraySpecified;
-    FAIL_RETURN(buffer->HasArray(&hasArraySpecified));
+    FAIL_RETURN(IBuffer::Probe(buffer)->HasArray(&hasArraySpecified));
 
     Int32 direction;
     FAIL_RETURN(mEndpoint->GetDirection(&direction));
@@ -103,7 +109,7 @@ ECode CUsbRequest::Queue(
         *result = NativeQueueArray(array, length, endpointOutDirection);
     }
     else {
-        Logger::E(CUsbRequest::TAG,"buffer is not direct and has no array");
+        Logger::E(UsbRequest::TAG,"buffer is not direct and has no array");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -116,10 +122,10 @@ ECode CUsbRequest::Queue(
     return NOERROR;
 }
 
-ECode CUsbRequest::Dequeue()
+ECode UsbRequest::Dequeue()
 {
     Boolean isOutDirect;
-    ((IBuffer*)mBuffer)->IsDirect(&isOutDirect);
+    IBuffer::Probe(mBuffer)->IsDirect(&isOutDirect);
 
     Int32 bytesRead;
 
@@ -137,7 +143,7 @@ ECode CUsbRequest::Dequeue()
     }
 
     if (bytesRead >= 0) {
-        FAIL_RETURN(mBuffer->SetPosition(Elastos::Core::Math::Min(bytesRead, mLength)));
+        FAIL_RETURN(IBuffer::Probe(mBuffer)->SetPosition(Elastos::Core::Math::Min(bytesRead, mLength)));
     }
 
     mBuffer = NULL;
@@ -146,7 +152,7 @@ ECode CUsbRequest::Dequeue()
     return NOERROR;
 }
 
-ECode CUsbRequest::Cancel(
+ECode UsbRequest::Cancel(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -154,7 +160,7 @@ ECode CUsbRequest::Cancel(
     return NOERROR;
 }
 
-void CUsbRequest::Finalize()
+void UsbRequest::Finalize()
 {
     if (mEndpoint == NULL) {
         return;
@@ -164,7 +170,7 @@ void CUsbRequest::Finalize()
      * Log.v(TAG, "endpoint still open in finalize(): " + this);
      * close();
      */
-    Logger::V(CUsbRequest::TAG, "endpoint still open in finalize().");
+    Logger::V(UsbRequest::TAG, "endpoint still open in finalize().");
     Close();
 }
 
@@ -175,10 +181,10 @@ struct usb_device* Get_device_from_object(IUsbDeviceConnection* connection)
 
 struct usb_request* Get_request_from_object(IUsbRequest* java_request)
 {
-    return (struct usb_request*)(((CUsbRequest*)java_request)->mNativeContext);
+    return (struct usb_request*)(((UsbRequest*)java_request)->mNativeContext);
 }
 
-Boolean CUsbRequest::NativeInit(
+Boolean UsbRequest::NativeInit(
     /* [in] */ IUsbDeviceConnection* connection,
     /* [in] */ Int32 ep_address,
     /* [in] */ Int32 ep_attributes,
@@ -186,12 +192,12 @@ Boolean CUsbRequest::NativeInit(
     /* [in] */ Int32 ep_interval)
 {
     //ALOGD("init\n");
-    Logger::D(CUsbRequest::TAG, "init\n");
+    Logger::D(UsbRequest::TAG, "init\n");
 
     struct usb_device* device = Get_device_from_object(connection);
     if (!device) {
         //ALOGE("device null in native_init");
-        Logger::D(CUsbRequest::TAG, "device null in native_init");
+        Logger::D(UsbRequest::TAG, "device null in native_init");
         return FALSE;
     }
 
@@ -206,16 +212,16 @@ Boolean CUsbRequest::NativeInit(
 
     struct usb_request* request = usb_request_new(device, &desc);
     if (request){
-        (((CUsbDeviceConnection*)connection)->mNativeContext) = (Int32)request;
+        (((CUsbDeviceConnection*)connection)->mNativeContext) = (Int64)request;
     }
 
     return (request != NULL);
 }
 
-void CUsbRequest::NativeClose()
+void UsbRequest::NativeClose()
 {
     //ALOGD("close\n");
-    Logger::D(CUsbRequest::TAG, "close\n");
+    Logger::D(UsbRequest::TAG, "close\n");
     struct usb_request* request = Get_request_from_object((IUsbRequest*)this);
     if (request) {
         usb_request_free(request);
@@ -223,7 +229,7 @@ void CUsbRequest::NativeClose()
     }
 }
 
-Boolean CUsbRequest::NativeQueueArray(
+Boolean UsbRequest::NativeQueueArray(
     /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 length,
     /* [in] */ Boolean out)
@@ -231,7 +237,7 @@ Boolean CUsbRequest::NativeQueueArray(
     struct usb_request* request = Get_request_from_object((IUsbRequest*)this);
     if (!request) {
         //ALOGE("request is closed in native_queue");
-        Logger::E(CUsbRequest::TAG, "request is closed in native_queue");
+        Logger::E(UsbRequest::TAG, "request is closed in native_queue");
         return FALSE;
     }
 
@@ -255,22 +261,21 @@ Boolean CUsbRequest::NativeQueueArray(
 
     request->buffer_length = length;
 
+    // save a reference to ourselves so UsbDeviceConnection.waitRequest() can find us
+    request->client_data = (void *)this;
+
     if (usb_request_queue(request)) {
         if (request->buffer) {
             // free our buffer if usb_request_queue fails
             free(request->buffer);
             request->buffer = NULL;
         }
-
         return FALSE;
-    } else {
-        // save a reference to ourselves so UsbDeviceConnection.waitRequest() can find us
-        request->client_data = (void *)this;
-        return TRUE;
     }
+    return TRUE;
 }
 
-Int32 CUsbRequest::NativeDequeueArray(
+Int32 UsbRequest::NativeDequeueArray(
     /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 length,
     /* [in] */ Boolean out)
@@ -279,7 +284,7 @@ Int32 CUsbRequest::NativeDequeueArray(
 
     if (!request) {
         //ALOGE("request is closed in native_dequeue");
-        Logger::E(CUsbRequest::TAG, "request is closed in native_dequeue");
+        Logger::E(UsbRequest::TAG, "request is closed in native_dequeue");
         return -1;
     }
 
@@ -296,7 +301,7 @@ Int32 CUsbRequest::NativeDequeueArray(
     return request->actual_length;
 }
 
-Boolean CUsbRequest::NativeQueueDirect(
+Boolean UsbRequest::NativeQueueDirect(
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 length,
     /* [in] */ Boolean out)
@@ -304,7 +309,7 @@ Boolean CUsbRequest::NativeQueueDirect(
     struct usb_request* request = Get_request_from_object((IUsbRequest*)this);
     if (!request) {
         //ALOGE("request is closed in native_queue");
-        Logger::E(CUsbRequest::TAG, "request is closed in native_queue");
+        Logger::E(UsbRequest::TAG, "request is closed in native_queue");
         return FALSE;
     }
 
@@ -320,24 +325,24 @@ Boolean CUsbRequest::NativeQueueDirect(
 
     request->buffer_length = length;
 
+    // save a reference to ourselves so UsbDeviceConnection.waitRequest() can find us
+    // we also need this to make sure our native buffer is not deallocated
+    // while IO is active
+    request->client_data = (void *)this;
+
     if (usb_request_queue(request)) {
         request->buffer = NULL;
         return FALSE;
-    } else {
-        // save a reference to ourselves so UsbDeviceConnection.waitRequest() can find us
-        // we also need this to make sure our native buffer is not deallocated
-        // while IO is active
-        request->client_data = (void *)this;
-        return TRUE;
     }
+    return TRUE;
 }
 
-Int32 CUsbRequest::NativeDequeueDirect()
+Int32 UsbRequest::NativeDequeueDirect()
 {
     struct usb_request* request = Get_request_from_object((IUsbRequest*)this);
     if (!request) {
         //ALOGE("request is closed in native_dequeue");
-        Logger::E(CUsbRequest::TAG, "request is closed in native_dequeue");
+        Logger::E(UsbRequest::TAG, "request is closed in native_dequeue");
         return -1;
     }
 
@@ -345,12 +350,12 @@ Int32 CUsbRequest::NativeDequeueDirect()
     return request->actual_length;
 }
 
-Boolean CUsbRequest::NativeCancel()
+Boolean UsbRequest::NativeCancel()
 {
     struct usb_request* request = Get_request_from_object((IUsbRequest*)this);
     if (!request) {
         //ALOGE("request is closed in native_cancel");
-        Logger::E(CUsbRequest::TAG, "request is closed in native_cancel");
+        Logger::E(UsbRequest::TAG, "request is closed in native_cancel");
         return FALSE;
     }
 

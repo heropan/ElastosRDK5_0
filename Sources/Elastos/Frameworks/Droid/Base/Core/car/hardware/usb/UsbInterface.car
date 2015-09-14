@@ -8,6 +8,23 @@ module
     namespace Hardware {
     namespace Usb {
 
+    /**
+     * A class representing an interface on a {@link UsbDevice}.
+     * USB devices can have one or more interfaces, each one providing a different
+     * piece of functionality, separate from the other interfaces.
+     * An interface will have one or more {@link UsbEndpoint}s, which are the
+     * channels by which the host transfers data with the device.
+     *
+     * <div class="special reference">
+     * <h3>Developer Guides</h3>
+     * <p>For more information about communicating with USB hardware, read the
+     * <a href="{@docRoot}guide/topics/usb/index.html">USB</a> developer guide.</p>
+     * </div>
+     *
+     * @Involve
+     * interface IParcelable;
+     */
+    [deprecated]
     interface IUsbInterface {
         /**
          * Returns the interface's ID field.
@@ -17,6 +34,26 @@ module
          */
         GetId(
             [out] Int32* id);
+
+        /**
+         * Returns the interface's bAlternateSetting field.
+         * This is an integer that along with the ID uniquely identifies
+         * the interface on the device.
+         * {@link UsbDeviceConnection#setInterface} can be used to switch between
+         * two interfaces with the same ID but different alternate setting.
+         *
+         * @return the interface's alternate setting
+         */
+        GetAlternateSetting(
+            [out] Int32* setting);
+
+        /**
+         * Returns the interface's name.
+         *
+         * @return the interface's name
+         */
+        GetName(
+            [out] String* name);
 
         /**
          * Returns the interface's class field.
@@ -60,8 +97,18 @@ module
             [in] Int32 index,
             [out] IUsbEndpoint** endpoint);
 
+        /**
+         * Only used by UsbService implementation
+         * @hide
+         */
+        SetEndpoints(
+            [in] ArrayOf<IParcelable*>* endpoints);
+
         ToString(
             [out] String* str);
+
+        DescribeContents(
+            [out] Int32* contents);
     }
 
     } // namespace Usb

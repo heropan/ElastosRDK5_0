@@ -11,6 +11,18 @@ module
     namespace Hardware {
     namespace Usb {
 
+    /**
+     * A class representing USB request packet.
+     * This can be used for both reading and writing data to or from a
+     * {@link android.hardware.usb.UsbDeviceConnection}.
+     * UsbRequests can be used to transfer data on bulk and interrupt endpoints.
+     * Requests on bulk endpoints can be sent synchronously via {@link UsbDeviceConnection#bulkTransfer}
+     * or asynchronously via {@link #queue} and {@link UsbDeviceConnection#requestWait}.
+     * Requests on interrupt endpoints are only send and received asynchronously.
+     *
+     * <p>Requests on endpoint zero are not supported by this class;
+     * use {@link UsbDeviceConnection#controlTransfer} for endpoint zero requests instead.
+     */
     interface IUsbRequest {
         /**
          * Initializes the request so it can read or write data on the given endpoint.

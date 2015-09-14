@@ -6,6 +6,10 @@ module
     namespace Hardware {
     namespace Usb {
 
+    /**
+     * Contains constants for the USB protocol.
+     * These constants correspond to definitions in linux/usb/ch9.h in the linux kernel.
+     */
     interface IUsbConstants {
         /**
          * Bitmask used for extracting the {@link UsbEndpoint} direction from its address field.

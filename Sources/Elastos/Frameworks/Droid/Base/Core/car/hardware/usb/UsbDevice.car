@@ -8,6 +8,27 @@ module
     namespace Hardware {
     namespace Usb {
 
+    /**
+     * This class represents a USB device attached to the android device with the android device
+     * acting as the USB host.
+     * Each device contains one or more {@link UsbInterface}s, each of which contains a number of
+     * {@link UsbEndpoint}s (the channels via which data is transmitted over USB).
+     *
+     * <p> This class contains information (along with {@link UsbInterface} and {@link UsbEndpoint})
+     * that describes the capabilities of the USB device.
+     * To communicate with the device, you open a {@link UsbDeviceConnection} for the device
+     * and use {@link UsbRequest} to send and receive data on an endpoint.
+     * {@link UsbDeviceConnection#controlTransfer} is used for control requests on endpoint zero.
+     *
+     * <div class="special reference">
+     * <h3>Developer Guides</h3>
+     * <p>For more information about communicating with USB hardware, read the
+     * <a href="{@docRoot}guide/topics/usb/index.html">USB</a> developer guide.</p>
+     * </div>
+     *
+     * @Involve
+     * interface IParcelable;
+     */
     interface IUsbDevice {
         /**
          * Returns the name of the device.
