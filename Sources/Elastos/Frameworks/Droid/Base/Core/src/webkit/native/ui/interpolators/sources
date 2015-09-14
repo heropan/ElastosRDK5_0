@@ -1,4 +1,4 @@
-TARGET_NAME = elastos.droid.webkit.ui.interpolators
+TARGET_NAME = interpolators
 TARGET_TYPE = lib
 
 include $(MAKEDIR)/../../../../../../../sources.inc
