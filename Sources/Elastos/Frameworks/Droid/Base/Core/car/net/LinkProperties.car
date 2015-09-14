@@ -534,6 +534,9 @@ module
             [in] IParcel* dest,
             [in] Int32 flags);
 
+    }
+
+   interface ILinkPropertiesHelper {
         /**
          * Check the valid MTU range based on IPv4 or IPv6.
          * @hide
@@ -549,8 +552,14 @@ module
         GetRemoved(
             [out] IList** result);
 
+        SetRemoved(
+            [in] IList* removed);
+
         GetAdded(
             [out] IList** result);
+
+        SetAdded(
+            [in] IList* added);
     }
 
     } // namespace Net

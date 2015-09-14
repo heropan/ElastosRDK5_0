@@ -350,21 +350,21 @@ module
         interface IParcelable;
     }
 
-//    class CLinkProperties {
-//        constructor();
+    class CLinkProperties {
+        constructor();
 
-//        constructor(
-//            [in] ILinkProperties* source);
+        constructor(
+            [in] ILinkProperties* source);
 
-//        interface ILinkProperties;
-//        interface IParcelable;
-//    }
+        interface ILinkProperties;
+        interface IParcelable;
+    }
 
-//    class CCompareResult {
-//        constructor();
+    class CLinkPropertiesCompareResult {
+        constructor();
 
-//        interface ICompareResult;
-//    }
+        interface ILinkPropertiesCompareResult;
+    }
 
 //    class CNetworkConfig {
 //        constructor(

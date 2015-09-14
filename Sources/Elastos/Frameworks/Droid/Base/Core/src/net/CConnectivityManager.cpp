@@ -108,19 +108,19 @@ ECode CConnectivityManager::GetNetworkTypeName(
 
     switch (type) {
         case TYPE_MOBILE:
-            *result = "MOBILE";
+            *result = String("MOBILE");
             break;
         case TYPE_WIFI:
-            *result = "WIFI";
+            *result = String("WIFI");
             break;
         case TYPE_MOBILE_MMS:
-            *result = "MOBILE_MMS";
+            *result = String("MOBILE_MMS");
             break;
         case TYPE_MOBILE_SUPL:
-            *result = "MOBILE_SUPL";
+            *result = String("MOBILE_SUPL");
             break;
         case TYPE_MOBILE_DUN:
-            *result = "MOBILE_DUN";
+            *result = String("MOBILE_DUN");
             break;
         case TYPE_MOBILE_HIPRI:
             *result = String("MOBILE_HIPRI");

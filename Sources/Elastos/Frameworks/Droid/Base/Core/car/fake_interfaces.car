@@ -221,4 +221,9 @@ module
     namespace Bluetooth {
         interface IBluetoothHeadset {}
     }}} // Elastos.Droid.Bluetooth
+
+    namespace Elastos {
+    namespace Utility {
+        interface IHashtable {}
+    }}  // Elastos.Utility
 }

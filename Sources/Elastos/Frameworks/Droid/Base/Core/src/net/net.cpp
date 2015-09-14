@@ -4,6 +4,8 @@
 #include "CIpConfiguration.h"
 #include "CIpPrefix.h"
 #include "CLinkAddress.h"
+#include "CLinkProperties.h"
+#include "CLinkPropertiesCompareResult.h"
 
 namespace Elastos {
 namespace Droid {
@@ -18,6 +20,10 @@ CAR_OBJECT_IMPL(CIpConfiguration)
 CAR_OBJECT_IMPL(CIpPrefix)
 
 CAR_OBJECT_IMPL(CLinkAddress)
+
+CAR_OBJECT_IMPL(CLinkProperties)
+
+CAR_OBJECT_IMPL(CLinkPropertiesCompareResult)
 
 } // namespace Net
 } // namespace Droid

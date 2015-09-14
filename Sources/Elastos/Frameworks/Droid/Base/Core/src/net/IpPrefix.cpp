@@ -107,7 +107,7 @@ ECode IpPrefix::GetAddress(
 }
 
 ECode IpPrefix::GetRawAddress(
-    /* [out, callee] */ ArrayOf<Byte>* result)
+    /* [out, callee] */ ArrayOf<Byte>** result)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below

@@ -331,6 +331,7 @@ ECode BaseNetworkStateTracker::GetNetwork(
     VALIDATE_NOT_NULL(*result)
 
     *result = mNetwork;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 

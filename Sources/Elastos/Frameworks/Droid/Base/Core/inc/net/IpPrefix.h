@@ -4,6 +4,8 @@
 
 #include "ext/frameworkext.h"
 
+using Elastos::Net::IInetAddress;
+
 namespace Elastos {
 namespace Droid {
 namespace Net {
@@ -112,7 +114,7 @@ public:
      * @return the address in the form of a byte array.
      */
     CARAPI GetRawAddress(
-        /* [out, callee] */ ArrayOf<Byte>* result);
+        /* [out, callee] */ ArrayOf<Byte>** result);
 
     /**
      * Returns the prefix length of this {@code IpPrefix}.
@@ -158,7 +160,7 @@ private:
     AutoPtr<ArrayOf<Byte> > mAddress;
 
     // network byte order
-    const Int32 mPrefixLength;
+    Int32 mPrefixLength;
 };
 
 } // namespace Net
