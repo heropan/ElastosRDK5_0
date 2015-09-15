@@ -1,0 +1,26 @@
+
+module
+{
+    importlib("Elastos.CoreLibrary.eco");
+
+    merge("../car/INativeCrypto.car");
+    merge("../car/IOpenSSLBIOInputStream.car");
+    merge("../car/IOpenSSLDigestContext.car");
+
+    using interface Elastos.Security.IProvider;
+
+    namespace Org {
+    namespace Conscrypt {
+
+    class COpenSSLProvider {
+        constructor();
+
+        constructor(
+            [in] String providerName);
+
+        interface IProvider;
+    }
+
+    } // namespace Conscrypt
+    } // namespace Org
+}

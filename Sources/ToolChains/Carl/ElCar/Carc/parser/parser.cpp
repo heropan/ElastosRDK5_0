@@ -2340,6 +2340,7 @@ int P_MergeLibrary()
 #define OPKIND_LSHIFT 4
 #define OPKIND_RSHIFT 5
 #define OPKIND_MULTIP 6
+#define OPKIND_ADD 7
 
 int P_Boolean(InterfaceDescriptor* pInterface, InterfaceConstDescriptor *pDesc, int opKind)
 {
@@ -2502,6 +2503,9 @@ int P_Byte(InterfaceDescriptor* pInterface, InterfaceConstDescriptor *pDesc, int
                 else if (opKind == OPKIND_MULTIP) {
                     pDesc->mV.mInt32Value.mValue *= doNot ? ~v : v;
                 }
+                else if (opKind == OPKIND_ADD) {
+                    pDesc->mV.mInt32Value.mValue += doNot ? ~v : v;
+                }
                 break;
             }
 
@@ -2551,6 +2555,9 @@ int P_Byte(InterfaceDescriptor* pInterface, InterfaceConstDescriptor *pDesc, int
                 }
                 else if (opKind == OPKIND_MULTIP) {
                     pDesc->mV.mInt32Value.mValue *= doNot ? ~v : v;
+                }
+                else if (opKind == OPKIND_ADD) {
+                    pDesc->mV.mInt32Value.mValue += doNot ? ~v : v;
                 }
                 pDesc->mV.mInt32Value.mFormat = format;
                 break;
@@ -2606,6 +2613,9 @@ int P_Integer16(InterfaceDescriptor* pInterface, InterfaceConstDescriptor *pDesc
                 else if (opKind == OPKIND_MULTIP) {
                     pDesc->mV.mInt32Value.mValue *= doNot ? ~v : v;
                 }
+                else if (opKind == OPKIND_ADD) {
+                    pDesc->mV.mInt32Value.mValue += doNot ? ~v : v;
+                }
                 break;
             }
 
@@ -2655,6 +2665,9 @@ int P_Integer16(InterfaceDescriptor* pInterface, InterfaceConstDescriptor *pDesc
                 }
                 else if (opKind == OPKIND_MULTIP) {
                     pDesc->mV.mInt32Value.mValue *= doNot ? ~v : v;
+                }
+                else if (opKind == OPKIND_ADD) {
+                    pDesc->mV.mInt32Value.mValue += doNot ? ~v : v;
                 }
                 pDesc->mV.mInt32Value.mFormat = format;
                 break;
@@ -2710,6 +2723,9 @@ int P_Integer32(InterfaceDescriptor* pInterface, InterfaceConstDescriptor *pDesc
                 else if (opKind == OPKIND_MULTIP) {
                     pDesc->mV.mInt32Value.mValue *= doNot ? ~v : v;
                 }
+                else if (opKind == OPKIND_ADD) {
+                    pDesc->mV.mInt32Value.mValue += doNot ? ~v : v;
+                }
                 break;
             }
 
@@ -2759,6 +2775,9 @@ int P_Integer32(InterfaceDescriptor* pInterface, InterfaceConstDescriptor *pDesc
                 }
                 else if (opKind == OPKIND_MULTIP) {
                     pDesc->mV.mInt32Value.mValue *= doNot ? ~v : v;
+                }
+                else if (opKind = OPKIND_ADD) {
+                    pDesc->mV.mInt32Value.mValue += doNot ? ~v : v;
                 }
                 pDesc->mV.mInt32Value.mFormat = format;
                 break;
@@ -2814,6 +2833,9 @@ int P_Integer64(InterfaceDescriptor* pInterface, InterfaceConstDescriptor *pDesc
                 else if (opKind == OPKIND_MULTIP) {
                     pDesc->mV.mInt64Value.mValue *= doNot ? ~v : v;
                 }
+                else if (opKind == OPKIND_ADD) {
+                    pDesc->mV.mInt64Value.mValue += doNot ? ~v : v;
+                }
                 break;
             }
 
@@ -2863,6 +2885,9 @@ int P_Integer64(InterfaceDescriptor* pInterface, InterfaceConstDescriptor *pDesc
                 }
                 else if (opKind == OPKIND_MULTIP) {
                     pDesc->mV.mInt64Value.mValue *= doNot ? ~v : v;
+                }
+                else if (opKind == OPKIND_ADD) {
+                    pDesc->mV.mInt64Value.mValue += doNot ? ~v : v;
                 }
                 pDesc->mV.mInt64Value.mFormat = format;
                 break;
@@ -3087,6 +3112,12 @@ int P_InterfaceConstByte(InterfaceDescriptor *pDesc)
                 return Ret_AbortOnError;
             }
         }
+        else if (token == Token_S_add) {
+            GetToken(s_pFile);
+            if (P_Byte(pDesc, pDesc->mConsts[r], OPKIND_ADD) == Ret_AbortOnError) {
+                return Ret_AbortOnError;
+            }
+        }
         else {
             ErrorReport(CAR_E_ExpectSymbol, ";");
             return Ret_AbortOnError;
@@ -3169,6 +3200,12 @@ int P_InterfaceConstInt16(InterfaceDescriptor *pDesc)
         else if (token == Token_S_star) {
             GetToken(s_pFile);
             if (P_Integer16(pDesc, pDesc->mConsts[r], OPKIND_MULTIP) == Ret_AbortOnError) {
+                return Ret_AbortOnError;
+            }
+        }
+        else if (token == Token_S_add) {
+            GetToken(s_pFile);
+            if (P_Integer16(pDesc, pDesc->mConsts[r], OPKIND_ADD) == Ret_AbortOnError) {
                 return Ret_AbortOnError;
             }
         }
@@ -3257,6 +3294,12 @@ int P_InterfaceConstInt32(InterfaceDescriptor *pDesc)
                 return Ret_AbortOnError;
             }
         }
+        else if (token == Token_S_add) {
+            GetToken(s_pFile);
+            if (P_Integer32(pDesc, pDesc->mConsts[r], OPKIND_ADD) == Ret_AbortOnError) {
+                return Ret_AbortOnError;
+            }
+        }
         else {
             ErrorReport(CAR_E_ExpectSymbol, ";");
             return Ret_AbortOnError;
@@ -3319,6 +3362,12 @@ int P_InterfaceConstInt64(InterfaceDescriptor *pDesc)
         else if (token == Token_S_star) {
             GetToken(s_pFile);
             if (P_Integer64(pDesc, pDesc->mConsts[r], OPKIND_MULTIP) == Ret_AbortOnError) {
+                return Ret_AbortOnError;
+            }
+        }
+        else if (token == Token_S_add) {
+            GetToken(s_pFile);
+            if (P_Integer64(pDesc, pDesc->mConsts[r], OPKIND_ADD) == Ret_AbortOnError) {
                 return Ret_AbortOnError;
             }
         }

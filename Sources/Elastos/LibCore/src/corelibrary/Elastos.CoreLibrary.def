@@ -2131,6 +2131,7 @@ EXPORTS
     _ZN7Elastos8Security8Provider10PutServiceEPNS0_16IProviderServiceE
     _ZN7Elastos8Security8Provider11GetEntrySetEPPNS_7Utility4ISetE
     _ZN7Elastos8Security8Provider11GetServicesEPPNS_7Utility4ISetE
+    _ZN7Elastos8Security8Provider11constructorERKNS_6StringEdS4_
     _ZN7Elastos8Security8Provider13ImplementsAlgERKNS_6StringES4_S4_S4_Ph
     _ZN7Elastos8Security8Provider13RemoveServiceEPNS0_16IProviderServiceE
     _ZN7Elastos8Security8Provider14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
