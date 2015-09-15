@@ -117,6 +117,18 @@ module
     namespace Droid {
     namespace Net {
 
+    [deprecated, local]
+    class CConnectivityManager {
+        constructor(
+            [in] IIConnectivityManager* service);
+
+        interface IConnectivityManager;
+    }
+
+    singleton class CConnectivityManagerHelper {
+        interface IConnectivityManagerHelper;
+    }
+
     class CCredentials {
         constructor(
             [in] Int32 pid,
@@ -126,12 +138,60 @@ module
         interface ICredentials;
     }
 
+    class CDhcpInfo {
+        constructor();
+
+        constructor(
+            [in] IDhcpInfo* service);
+
+        interface IDhcpInfo;
+        interface IParcelable;
+    }
+
+    class CDhcpResults {
+        constructor();
+
+        constructor(
+            [in] IStaticIpConfiguration* staticIpConfigruation);
+
+        constructor(
+            [in] IDhcpResults* dhcpResults);
+
+        interface IDhcpResults;
+        interface IStaticIpConfiguration;
+        interface IParcelable;
+    }
+
+    singleton class CDhcpStateMachineHelper {
+        interface IDhcpStateMachineHelper;
+    }
+
+    [local]
+    class CDnsPinger {
+
+        constructor(
+            [in] IContext* ctx,
+            [in] String tagstr,
+            [in] ILooper* looper,
+            [in] IHandler* target,
+            [in] Int32 connectionType);
+
+        interface IDnsPinger;
+    }
+
     class CEthernetManager {
         constructor(
             [in] IContext* context,
             [in] IIEthernetManager* service);
 
         interface IEthernetManager;
+    }
+
+    class CInterfaceConfiguration {
+        constructor();
+
+        interface IInterfaceConfiguration;
+        interface IParcelable;
     }
 
     class CIpConfiguration {
@@ -167,36 +227,6 @@ module
         interface IIpPrefix;
     }
 
-//    class CLocalSocket {
-//        constructor();
-
-//        constructor(
-//            [in] IFileDescriptor* fd);
-
-//        constructor(
-//            [in] Handle32 impl);
-
-//        interface ILocalSocket;
-//    }
-
-//    class CLocalSocketAddress {
-//        constructor(
-//            [in] String name,
-//            [in] LocalSocketAddressNamespace ns);
-
-//        constructor(
-//            [in] String name);
-
-//        interface ILocalSocketAddress;
-//    }
-
-    class CInterfaceConfiguration {
-        constructor();
-
-        interface IInterfaceConfiguration;
-        interface IParcelable;
-    }
-
     class CLinkAddress {
         constructor(
             [in] IInetAddress* address,
@@ -223,133 +253,6 @@ module
         interface IParcelable;
     }
 
-//    class CLocalServerSocket {
-//        constructor(
-//            [in] String name);
-
-//        constructor(
-//            [in] IFileDescriptor* fd);
-
-//        interface ILocalServerSocket;
-//    }
-
-//    class CNetworkInfo {
-//        constructor();
-
-//        constructor(
-//            [in] Int32 type);
-
-//        constructor(
-//            [in] Int32 type,
-//            [in] Int32 subtype,
-//            [in] String typeName,
-//            [in] String subtypeName);
-
-//        constructor(
-//            [in] INetworkInfo* source);
-
-//        interface INetworkInfo;
-//        interface IParcelable;
-//    }
-
-//    class CNetworkStats {
-//        constructor();
-
-//        constructor(
-//            [in] Int64 elapsedRealtime,
-//            [in] Int32 initialSize);
-
-//        interface INetworkStats;
-//        interface IParcelable;
-//    }
-
-//    singleton class CNetworkStatsHelper {
-//        interface INetworkStatsHelper;
-//    }
-
-    singleton class CDhcpStateMachineHelper {
-        interface IDhcpStateMachineHelper;
-    }
-
-//    class CNetworkStatsEntry {
-//        constructor();
-
-//        constructor(
-//            [in] Int64 rxBytes,
-//            [in] Int64 rxPackets,
-//            [in] Int64 txBytes,
-//            [in] Int64 txPackets,
-//            [in] Int64 operations);
-
-//        constructor(
-//            [in] String iface,
-//            [in] Int32 uid,
-//            [in] Int32 set,
-//            [in] Int32 tag,
-//            [in] Int64 rxBytes,
-//            [in] Int64 rxPackets,
-//            [in] Int64 txBytes,
-//            [in] Int64 txPackets,
-//            [in] Int64 operations);
-
-//        interface INetworkStatsEntry;
-//    }
-
-    [deprecated, local]
-    class CConnectivityManager {
-        constructor(
-            [in] IIConnectivityManager* service);
-
-        interface IConnectivityManager;
-    }
-
-    singleton class CConnectivityManagerHelper {
-        interface IConnectivityManagerHelper;
-    }
-
-    class CDhcpResults {
-        constructor();
-
-        constructor(
-            [in] IStaticIpConfiguration* staticIpConfigruation);
-
-        constructor(
-            [in] IDhcpResults* dhcpResults);
-
-        interface IDhcpResults;
-        interface IStaticIpConfiguration;
-        interface IParcelable;
-    }
-
-//    singleton class CProxy {
-//        interface IProxy;
-//    }
-
-//    class CProxyProperties {
-//        constructor();
-
-//        constructor(
-//            [in] String host,
-//            [in] Int32 port,
-//            [in] String exclList);
-
-//        constructor(
-//            [in] IProxyProperties* source);
-
-//        interface IProxyProperties;
-//        interface IParcelable;
-//    }
-
-    class CDhcpInfo {
-        constructor();
-
-        constructor(
-            [in] IDhcpInfo* service);
-
-        interface IDhcpInfo;
-        interface IParcelable;
-    }
-
     class CLinkProperties {
         constructor();
 
@@ -366,269 +269,12 @@ module
         interface ILinkPropertiesCompareResult;
     }
 
-//    class CNetworkConfig {
-//        constructor(
-//            [in] String init);
+    class CLinkQualityInfo {
+        constructor();
 
-//        interface INetworkConfig;
-//    }
-
-//    class CNetworkIdentity {
-//        constructor(
-//            [in] Int32 type,
-//            [in] Int32 subType,
-//            [in] String subscriberId,
-//            [in] String networkId,
-//            [in] Boolean roaming);
-
-//        interface INetworkIdentity;
-//    }
-
-//    [local]
-//    singleton class CNetworkIdentityHelper {
-//        interface INetworkIdentityHelper;
-//    }
-
-//    class CNetworkQuotaInfo {
-//        constructor();
-
-//        constructor(
-//            [in] Int64 estimatedBytes,
-//            [in] Int64 softLimitBytes,
-//            [in] Int64 hardLimitBytes);
-
-//        interface INetworkQuotaInfo;
-//        interface IParcelable;
-//    }
-
-//    class CNetworkTemplate {
-//        constructor();
-
-//        constructor(
-//            [in] Int32 matchRule,
-//            [in] String subscriberId,
-//            [in] String networkId);
-
-//        interface INetworkTemplate;
-//        interface IParcelable;
-//    }
-
-//    singleton class CNetworkTemplateHelper {
-//        interface INetworkTemplateHelper;
-//    }
-
-//    class CNetworkPolicy {
-//        constructor();
-
-//        constructor(
-//            [in] INetworkTemplate* temp,
-//            [in] Int32 cycleDay,
-//            [in] String cycleTimezone,
-//            [in] Int64 warningBytes,
-//            [in] Int64 limitBytes,
-//            [in] Boolean metered);
-
-//        constructor(
-//            [in] INetworkTemplate* temp,
-//            [in] Int32 cycleDay,
-//            [in] String cycleTimezone,
-//            [in] Int64 warningBytes,
-//            [in] Int64 limitBytes,
-//            [in] Int64 lastWarningSnooze,
-//            [in] Int64 lastLimitSnooze,
-//            [in] Boolean metered,
-//            [in] Boolean inferred);
-
-//        interface INetworkPolicy;
-//        interface IParcelable;
-//    }
-
-//    class CNetworkPolicyManager {
-//        constructor(
-//            [in] IINetworkPolicyManager* service);
-
-//        interface INetworkPolicyManager;
-//    }
-
-//    singleton class CNetworkPolicyManagerHelper {
-//        interface INetworkPolicyManagerHelper;
-//    }
-
-//    [local]
-//    class CNetworkState {
-//        constructor();
-
-//        constructor(
-//            [in] INetworkInfo* networkInfo,
-//            [in] ILinkProperties* linkProperties,
-//            [in] ILinkCapabilities* linkCapabilities);
-
-//        constructor(
-//            [in] INetworkInfo* networkInfo,
-//            [in] ILinkProperties* linkProperties,
-//            [in] ILinkCapabilities* linkCapabilities,
-//            [in] String subscriberId,
-//            [in] String networkId);
-
-//        interface INetworkState;
-//        interface IParcelable;
-//    }
-
-//    class CNetworkStatsHistory {
-//        constructor();
-
-//        constructor(
-//            [in] Int64 bucketDuration);
-
-//        constructor(
-//            [in] Int64 bucketDuration,
-//            [in] Int32 initialSize);
-
-//        constructor(
-//            [in] Int64 bucketDuration,
-//            [in] Int32 initialSize,
-//            [in] Int32 fields);
-
-//        constructor(
-//            [in] INetworkStatsHistory* existing,
-//            [in] Int64 bucketDuration);
-
-//        constructor(
-//            [in] IDataInputStream* input);
-
-//        interface INetworkStatsHistory;
-//        interface IParcelable;
-//    }
-
-//    singleton class CNetworkStatsHistoryHelper {
-//        interface INetworkStatsHistoryHelper;
-//    }
-
-//    class CNetworkStatsHistoryEntry {
-//        interface INetworkStatsHistoryEntry;
-//    }
-
-//    [local]
-//    class CLinkSocket {
-
-//        constructor();
-
-//        constructor(
-//            [in] ILinkSocketNotifier* notifier);
-
-//        constructor(
-//            [in] ILinkSocketNotifier* notifier,
-//            [in] IProxy* proxy);
-
-//        interface ILinkSocket;
-//    }
-
-    [local]
-    class CDnsPinger {
-
-        constructor(
-            [in] IContext* ctx,
-            [in] String tagstr,
-            [in] ILooper* looper,
-            [in] IHandler* target,
-            [in] Int32 connectionType);
-
-        interface IDnsPinger;
+        interface IParcelable;
+        interface ILinkQualityInfo;
     }
-
-//    /**
-//     * A simple container for route information.
-//     *
-//     * @hide
-//     */
-//    class CRouteInfo {
-//        constructor();
-
-//        constructor(
-//            [in] ILinkAddress* destination,
-//            [in] IInetAddress* gateway);
-
-//        constructor(
-//            [in] IInetAddress* gateway);
-
-//        interface IRouteInfo;
-//        interface IParcelable;
-//    }
-
-//    singleton class CRouteInfoHelper {
-//        interface IRouteInfoHelper;
-//    }
-
-//    class CHierarchicalUri {
-//        constructor();
-
-//        constructor(
-//            [in] String scheme,
-//            [in] Handle32 authorityPart,
-//            [in] Handle32 patPart,
-//            [in] Handle32 queryPart,
-//            [in] Handle32 fragmentPart);
-
-//        interface IUri;
-//        interface IParcelable;
-//    }
-
-//    class CStringUri {
-//        constructor();
-
-//        constructor(
-//            [in] String uriString);
-
-//        interface IUri;
-//        interface IParcelable;
-//    }
-
-//     class COpaqueUri {
-//        constructor();
-
-//        constructor(
-//            [in] String scheme,
-//            [in] Handle32 sspPart,
-//            [in] Handle32 fragmentPart);
-
-//        interface IUri;
-//        interface IParcelable;
-//    }
-
-//    class CUriBuilder{
-//        interface IUriBuilder;
-//    }
-
-//    singleton class CUriHelper {
-//        interface IUriHelper;
-//    }
-
-//    singleton class CTrafficStats {
-//        interface ITrafficStats;
-//    }
-
-//    /**
-//      * {@hide}
-//      *
-//      * Simple SNTP client class for retrieving network time.
-//      *
-//      * Sample usage:
-//      * <pre>SntpClient client = new SntpClient();
-//      * if (client.requestTime("time.foo.com")) {
-//      *     long now = client.getNtpTime() + SystemClock.elapsedRealtime() - client.getNtpTimeReference();
-//      * }
-//      * </pre>
-//      */
-//    class CSntpClient {
-//        interface ISntpClient;
-//    }
-
-//    class CThrottleManager{
-//        constructor(
-//            [in] IIThrottleManager* service);
-
-//        interface IThrottleManager;
-//    }
 
     } // namespace Net
     } // namespace Droid

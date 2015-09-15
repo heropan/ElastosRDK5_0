@@ -6,6 +6,7 @@
 #include "CLinkAddress.h"
 #include "CLinkProperties.h"
 #include "CLinkPropertiesCompareResult.h"
+#include "CLinkQualityInfo.h"
 
 namespace Elastos {
 namespace Droid {
@@ -24,6 +25,8 @@ CAR_OBJECT_IMPL(CLinkAddress)
 CAR_OBJECT_IMPL(CLinkProperties)
 
 CAR_OBJECT_IMPL(CLinkPropertiesCompareResult)
+
+CAR_OBJECT_IMPL(CLinkQualityInfo)
 
 } // namespace Net
 } // namespace Droid
