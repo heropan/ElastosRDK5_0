@@ -1,0 +1,12 @@
+
+module
+{
+    namespace Org {
+    namespace Conscrypt {
+
+    interface IOpenSSLDigestContext {
+    }
+
+    } // namespace Conscrypt
+    } // namespace Org
+}

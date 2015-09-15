@@ -1,0 +1,12 @@
+
+module
+{
+    namespace Org {
+    namespace Conscrypt {
+
+    interface IOpenSSLBIOInputStream {
+    }
+
+    } // namespace Conscrypt
+    } // namespace Org
+}
