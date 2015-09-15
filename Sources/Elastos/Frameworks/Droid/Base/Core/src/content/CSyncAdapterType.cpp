@@ -1,6 +1,5 @@
 
 #include "content/CSyncAdapterType.h"
-#include <ext/frameworkext.h>
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
@@ -8,6 +7,10 @@ using Elastos::Core::StringUtils;
 namespace Elastos {
 namespace Droid {
 namespace Content {
+
+CAR_INTERFACE_IMPL_2(CSyncAdapterType, Object, ISyncAdapterType, IParcelable)
+
+CAR_OBJECT_IMPL(CSyncAdapterType)
 
 CSyncAdapterType::CSyncAdapterType()
     : mIsKey(FALSE)
@@ -28,11 +31,32 @@ ECode CSyncAdapterType::GetAuthority(
     return NOERROR;
 }
 
+ECode CSyncAdapterType::SetAuthority(
+    /* [in] */ const String& authority)
+{
+    mAuthority = authority;
+    return NOERROR;
+}
+
 ECode CSyncAdapterType::GetAccountType(
     /* [out] */ String* accountType)
 {
     VALIDATE_NOT_NULL(accountType)
     *accountType = mAccountType;
+    return NOERROR;
+}
+
+ECode CSyncAdapterType::SetAccountType(
+    /* [in] */ const String&  accountType)
+{
+    mAccountType = accountType;
+    return NOERROR;
+}
+
+ECode CSyncAdapterType::SetKey(
+    /* [in] */ Boolean isKey)
+{
+    mIsKey = isKey;
     return NOERROR;
 }
 

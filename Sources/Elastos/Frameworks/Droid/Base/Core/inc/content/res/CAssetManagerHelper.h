@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_RES_CASSETMANAGERHELPER_H__
 
 #include "_Elastos_Droid_Content_Res_CAssetManagerHelper.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -10,8 +11,14 @@ namespace Content {
 namespace Res {
 
 CarClass(CAssetManagerHelper)
+    , public Singleton
+    , public IAssetManagerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Return a global shared asset manager that provides access to only
      * system assets (no application assets).

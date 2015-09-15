@@ -1,8 +1,10 @@
 
 module
 {
+    using interface Elastos.Core.ICharSequence;
 
-    interface Elastos.Core.ICharSequence;
+    interface Elastos.Droid.Content.IUndoOwner;
+    interface Elastos.Droid.Content.IUndoOperation;
 
     namespace Elastos {
     namespace Droid {

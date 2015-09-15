@@ -2,11 +2,8 @@
 module
 {
 
-    interface Elastos.Droid.Os.IParcel;
 
 
-    using interface Elastos.Utility.IObjects;
-    using interface Elastos.Utility.Regex.IPattern;
 
     namespace Elastos {
     namespace Droid {

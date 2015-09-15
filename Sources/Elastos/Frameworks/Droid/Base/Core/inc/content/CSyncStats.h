@@ -10,6 +10,7 @@ namespace Droid {
 namespace Content {
 
 CarClass(CSyncStats)
+    , public Object
     , public ISyncStats
     , public IParcelable
 {

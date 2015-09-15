@@ -56,10 +56,12 @@ module
     merge("content/SyncStats.car");
     merge("content/SyncStatusInfo.car");
     merge("content/SyncStatusObserver.car");
-    merge("content/UriMatcher.car");
-    merge("content/UndoOwner.car");
-    merge("content/UndoOperation.car");
     merge("content/UndoManager.car");
+    merge("content/UndoOperation.car");
+    merge("content/UndoOwner.car");
+    merge("content/UriMatcher.car");
+    merge("content/UriPermission.car");
+
 
     merge("content/pm/ActivityInfo.car");
     merge("content/pm/ApplicationInfo.car");
@@ -721,6 +723,136 @@ module
 
             interface IPeriodicSync;
             interface IParcelable;
+        }
+
+        [deprecated]
+        class CRestrictionEntry {
+            constructor();
+
+            constructor(
+                [in] Int32 type,
+                [in] String key);
+
+            constructor(
+                [in] String key,
+                [in] String selectedString);
+
+            constructor(
+                [in] String key,
+                [in] Boolean selectedState);
+
+            constructor(
+                [in] String key,
+                [in] ArrayOf<String>* selectedStrings);
+
+            constructor(
+                [in] String key,
+                [in] Int32 selectedInt);
+
+            interface IRestrictionEntry;
+            interface IParcelable;
+        }
+
+        class CSyncAdapterType {
+            constructor();
+
+            constructor(
+                [in] String authority,
+                [in] String accountType,
+                [in] Boolean userVisible,
+                [in] Boolean supportsUploading);
+
+            interface ISyncAdapterType;
+            interface IParcelable;
+        }
+
+        singleton class CSyncAdapterTypeHelper {
+            interface ISyncAdapterTypeHelper;
+        }
+
+        class CSyncContext {
+            interface ISyncContext;
+        }
+
+        class CSyncInfo {
+            constructor();
+
+            /** @hide */
+            constructor(
+                [in] Int32 authorityId,
+                [in] IAccount* account,
+                [in] String authority,
+                [in] Int64 startTime);
+
+            interface ISyncInfo;
+            interface IParcelable;
+        }
+
+        class CSyncRequest {
+            constructor();
+
+            interface ISyncRequest;
+            interface IParcelable;
+        }
+
+        class CSyncRequestBuilder {
+            constructor();
+
+            interface ISyncRequestBuilder;
+        }
+
+        class CSyncResult {
+            constructor();
+
+            constructor(
+                [in] Boolean syncAlreadyInProgress);
+
+            interface ISyncResult;
+            interface IParcelable;
+        }
+
+        singleton class CSyncResultHelper {
+
+            interface ISyncResultHelper;
+        }
+
+        class CSyncStats {
+            constructor();
+
+            interface ISyncStats;
+            interface IParcelable;
+        }
+
+        /** @hide */
+        class CSyncStatusInfo {
+            constructor();
+
+            constructor(
+                [in] Int32 authorityId);
+
+            constructor(
+                [in] ISyncStatusInfo* other);
+
+            interface ISyncStatusInfo;
+            interface IParcelable;
+        }
+
+        class CUriMatcher {
+            constructor(
+                [in] Int32 code);
+
+            interface IUriMatcher;
+        }
+
+        class CUriPermission {
+            constructor();
+
+            interface IUriPermission;
+            interface IParcelable;
+        }
+
+        class CSearchRecentSuggestionsProvider {
+            interface IContentProvider;
         }
 
     }//namespace Content
@@ -1562,410 +1694,6 @@ module
 //     } // namepsace Droid
 //     } // namespace Elastos
 
-
-//     // using interface Elastos.Core.ICharSequence;
-//     using interface Elastos.IO.IFile;
-//     interface Elastos.Droid.Os.IBundle;
-//     interface Elastos.Droid.Os.IBinder;
-//     interface Elastos.Droid.Accounts.IAccount;
-//     interface Elastos.Droid.Database.ICursor;
-//     interface Elastos.Droid.Os.IHandler;
-
-//     namespace Elastos {
-//     namespace Droid {
-//     namespace Content {
-
-//     /**
-//      * Value type that represents a SyncAdapterType. This object overrides {@link #equals} and
-//      * {@link #hashCode}, making it suitable for use as the key of a {@link java.util.Map}
-//      */
-//     class CSyncAdapterType {
-//         constructor();
-
-//         constructor(
-//             [in] String authority,
-//             [in] String accountType,
-//             [in] Boolean userVisible,
-//             [in] Boolean supportsUploading);
-
-//         /** @hide */
-//         constructor(
-//             [in] String authority,
-//             [in] String accountType,
-//             [in] Boolean userVisible,
-//             [in] Boolean supportsUploading,
-//             [in] Boolean isAlwaysSyncable,
-//             [in] Boolean allowParallelSyncs,
-//             [in] String settingsActivity);
-
-//         constructor(
-//             [in] String authority,
-//             [in] String accountType);
-
-//         interface ISyncAdapterType;
-//         interface IParcelable;
-//     }
-
-//     singleton class CSyncAdapterTypeHelper {
-
-//         interface ISyncAdapterTypeHelper;
-//     }
-
-//     class CSyncContext {
-//         /**
-//          * @hide
-//          */
-//         constructor(
-//             [in] IISyncContext* syncContextInterface);
-
-//         interface ISyncContext;
-//     }
-
-//     /**
-//      * Information about the sync operation that is currently underway.
-//      */
-//     class CSyncInfo {
-//         constructor();
-
-//         /** @hide */
-//         constructor(
-//             [in] Int32 authorityId,
-//             [in] IAccount* account,
-//             [in] String authority,
-//             [in] Int64 startTime);
-
-//         interface ISyncInfo;
-//         interface IParcelable;
-//     }
-
-//     /**
-//      * @hide
-//      */
-//     [local]
-//     class CSyncManager {
-//         /**
-//          * Should only be created after {@link ContentService#systemReady()} so that
-//          * {@link PackageManager} is ready to query.
-//          */
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Boolean factoryTest);
-
-//         interface ISyncManager;
-//     }
-
-//     /**
-//      * Value type that represents a sync operation.
-//      * @hide
-//      */
-//     class CSyncOperation {
-//         constructor(
-//             [in] ISyncOperation* other);
-
-//         constructor(
-//             [in] IAccount* account,
-//             [in] Int32 userId,
-//             [in] Int32 source,
-//             [in] String authority,
-//             [in] IBundle* extras,
-//             [in] Int64 delayInMs,
-//             [in] Int64 backoff,
-//             [in] Int64 delayUntil,
-//             [in] Boolean allowParallelSyncs);
-
-//         interface ISyncOperation;
-//     }
-
-//     /**
-//      * This class is used to communicate the results of a sync operation to the SyncManager.
-//      * Based on the values here the SyncManager will determine the disposition of the
-//      * sync and whether or not a new sync operation needs to be scheduled in the future.
-//      *
-//      */
-//     class CSyncResult {
-//         /**
-//          * Create a "clean" SyncResult. If this is returned without any changes then the
-//          * SyncManager will consider the sync to have completed successfully. The various fields
-//          * can be set by the SyncAdapter in order to give the SyncManager more information as to
-//          * the disposition of the sync.
-//          * <p>
-//          * The errors are classified into two broad categories: hard errors and soft errors.
-//          * Soft errors are retried with exponential backoff. Hard errors are not retried (except
-//          * when the hard error is for a {@link ContentResolver#SYNC_EXTRAS_UPLOAD} request,
-//          * in which the request is retryed without the {@link ContentResolver#SYNC_EXTRAS_UPLOAD}
-//          * extra set). The SyncManager checks the type of error by calling
-//          * {@link SyncResult#hasHardError()} and  {@link SyncResult#hasSoftError()}. If both are
-//          * true then the SyncManager treats it as a hard error, not a soft error.
-//          */
-//         constructor();
-
-//         /**
-//          * Internal helper for creating a clean SyncResult or one that indicated that
-//          * a sync is already in progress.
-//          * @param syncAlreadyInProgress if true then set the {@link #syncAlreadyInProgress} flag
-//          */
-//         constructor(
-//             [in] Boolean syncAlreadyInProgress);
-
-//         interface ISyncResult;
-//         interface IParcelable;
-//     }
-
-//     singleton class CSyncResultHelper {
-
-//         interface ISyncResultHelper;
-//     }
-
-//     /**
-//      * Used to record various statistics about the result of a sync operation. The SyncManager
-//      * gets access to these via a {@link SyncResult} and uses some of them to determine the
-//      * disposition of the sync. See {@link SyncResult} for further dicussion on how the
-//      * SyncManager uses these values.
-//      */
-//     class CSyncStats {
-//         constructor();
-
-//         interface ISyncStats;
-//         interface IParcelable;
-//     }
-
-//     /** @hide */
-//     class CSyncStatusInfo {
-//         constructor();
-
-//         constructor(
-//             [in] Int32 authorityId);
-
-//         interface ISyncStatusInfo;
-//         interface IParcelable;
-//     }
-
-//     /**
-//      * Singleton that tracks the sync data and overall sync
-//      * history on the device.
-//      *
-//      * @hide
-//      */
-//     [local]
-//     class CSyncStorageEngine {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IFile* dataDir);
-
-//         interface ISyncStorageEngine;
-//     }
-
-//     class CSyncStorageEnginePendingOperation {
-//         constructor(
-//             [in] IAccount* account,
-//             [in] Int32 userId,
-//             [in] Int32 source,
-//             [in] String authority,
-//             [in] IBundle* extras,
-//             [in] Boolean expedited);
-
-//         constructor(
-//             [in] ISyncStorageEnginePendingOperation* other);
-
-//         interface ISyncStorageEnginePendingOperation;
-//     }
-
-//     class CSyncStorageEngineAuthorityInfo {
-//         /**
-//          * Copy constructor for making deep-ish copies. Only the bundles stored
-//          * in periodic syncs can make unexpected changes.
-//          *
-//          * @param toCopy AuthorityInfo to be copied.
-//          */
-//         constructor(
-//             [in] ISyncStorageEngineAuthorityInfo* toCopy);
-
-//         constructor(
-//             [in] IAccount* account,
-//             [in] Int32 userId,
-//             [in] String authority,
-//             [in] Int32 ident);
-
-//         interface ISyncStorageEngineAuthorityInfo;
-//     }
-
-//     class CSyncStorageEngineSyncHistoryItem {
-
-//         interface ISyncStorageEngineSyncHistoryItem;
-//     }
-
-//     class CSyncStorageEngineDayStats {
-//         constructor(
-//             [in] Int32 day);
-
-//         interface ISyncStorageEngineDayStats;
-//     }
-
-//     singleton class CSyncStorageEngineHelper {
-
-//         interface ISyncStorageEngineHelper;
-//     }
-
-//     /***
-//      * Utility class to aid in matching URIs in content providers.
-//      *
-//      * <p>To use this class, build up a tree of <code>UriMatcher</code> objects.
-//      * For example:
-//      * <pre>
-//      *     private static final int PEOPLE = 1;
-//      *     private static final int PEOPLE_ID = 2;
-//      *     private static final int PEOPLE_PHONES = 3;
-//      *     private static final int PEOPLE_PHONES_ID = 4;
-//      *     private static final int PEOPLE_CONTACTMETHODS = 7;
-//      *     private static final int PEOPLE_CONTACTMETHODS_ID = 8;
-//      *
-//      *     private static final int DELETED_PEOPLE = 20;
-//      *
-//      *     private static final int PHONES = 9;
-//      *     private static final int PHONES_ID = 10;
-//      *     private static final int PHONES_FILTER = 14;
-//      *
-//      *     private static final int CONTACTMETHODS = 18;
-//      *     private static final int CONTACTMETHODS_ID = 19;
-//      *
-//      *     private static final int CALLS = 11;
-//      *     private static final int CALLS_ID = 12;
-//      *     private static final int CALLS_FILTER = 15;
-//      *
-//      *     private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-//      *
-//      *     static
-//      *     {
-//      *         sURIMatcher.addURI("contacts", "people", PEOPLE);
-//      *         sURIMatcher.addURI("contacts", "people/#", PEOPLE_ID);
-//      *         sURIMatcher.addURI("contacts", "people/#/phones", PEOPLE_PHONES);
-//      *         sURIMatcher.addURI("contacts", "people/#/phones/#", PEOPLE_PHONES_ID);
-//      *         sURIMatcher.addURI("contacts", "people/#/contact_methods", PEOPLE_CONTACTMETHODS);
-//      *         sURIMatcher.addURI("contacts", "people/#/contact_methods/#", PEOPLE_CONTACTMETHODS_ID);
-//      *         sURIMatcher.addURI("contacts", "deleted_people", DELETED_PEOPLE);
-//      *         sURIMatcher.addURI("contacts", "phones", PHONES);
-//      *         sURIMatcher.addURI("contacts", "phones/filter/*", PHONES_FILTER);
-//      *         sURIMatcher.addURI("contacts", "phones/#", PHONES_ID);
-//      *         sURIMatcher.addURI("contacts", "contact_methods", CONTACTMETHODS);
-//      *         sURIMatcher.addURI("contacts", "contact_methods/#", CONTACTMETHODS_ID);
-//      *         sURIMatcher.addURI("call_log", "calls", CALLS);
-//      *         sURIMatcher.addURI("call_log", "calls/filter/*", CALLS_FILTER);
-//      *         sURIMatcher.addURI("call_log", "calls/#", CALLS_ID);
-//      *     }
-//      * </pre>
-//      * <p>Then when you need to match against a URI, call {@link #match}, providing
-//      * the URL that you have been given.  You can use the result to build a query,
-//      * return a type, insert or delete a row, or whatever you need, without duplicating
-//      * all of the if-else logic that you would otherwise need.  For example:
-//      * <pre>
-//      *     public String getType(Uri url)
-//      *     {
-//      *         int match = sURIMatcher.match(url);
-//      *         switch (match)
-//      *         {
-//      *             case PEOPLE:
-//      *                 return "vnd.android.cursor.dir/person";
-//      *             case PEOPLE_ID:
-//      *                 return "vnd.android.cursor.item/person";
-//      * ... snip ...
-//      *                 return "vnd.android.cursor.dir/snail-mail";
-//      *             case PEOPLE_ADDRESS_ID:
-//      *                 return "vnd.android.cursor.item/snail-mail";
-//      *             default:
-//      *                 return null;
-//      *         }
-//      *     }
-//      * </pre>
-//      * instead of:
-//      * <pre>
-//      *     public String getType(Uri url)
-//      *     {
-//      *         List<String> pathSegments = url.getPathSegments();
-//      *         if (pathSegments.size() >= 2) {
-//      *             if ("people".equals(pathSegments.get(1))) {
-//      *                 if (pathSegments.size() == 2) {
-//      *                     return "vnd.android.cursor.dir/person";
-//      *                 } else if (pathSegments.size() == 3) {
-//      *                     return "vnd.android.cursor.item/person";
-//      * ... snip ...
-//      *                     return "vnd.android.cursor.dir/snail-mail";
-//      *                 } else if (pathSegments.size() == 3) {
-//      *                     return "vnd.android.cursor.item/snail-mail";
-//      *                 }
-//      *             }
-//      *         }
-//      *         return null;
-//      *     }
-//      * </pre>
-//      */
-//     class CUriMatcher {
-//         /**
-//          * Creates the root node of the URI tree.
-//          *
-//          * @param code the code to match for the root URI
-//          */
-//         constructor(
-//             [in] Int32 code);
-
-//         interface IUriMatcher;
-//     }
-
-
-//     /**
-//      * This superclass can be used to create a simple search suggestions provider for your application.
-//      * It creates suggestions (as the user types) based on recent queries and/or recent views.
-//      *
-//      * <p>In order to use this class, you must do the following.
-//      *
-//      * <ul>
-//      * <li>Implement and test query search, as described in {@link android.app.SearchManager}.  (This
-//      * provider will send any suggested queries via the standard
-//      * {@link android.content.Intent#ACTION_SEARCH ACTION_SEARCH} Intent, which you'll already
-//      * support once you have implemented and tested basic searchability.)</li>
-//      * <li>Create a Content Provider within your application by extending
-//      * {@link android.content.SearchRecentSuggestionsProvider}.  The class you create will be
-//      * very simple - typically, it will have only a constructor.  But the constructor has a very
-//      * important responsibility:  When it calls {@link #setupSuggestions(String, int)}, it
-//      * <i>configures</i> the provider to match the requirements of your searchable activity.</li>
-//      * <li>Create a manifest entry describing your provider.  Typically this would be as simple
-//      * as adding the following lines:
-//      * <pre class="prettyprint">
-//      *     &lt;!-- Content provider for search suggestions --&gt;
-//      *     &lt;provider android:name="YourSuggestionProviderClass"
-//      *               android:authorities="your.suggestion.authority" /&gt;</pre>
-//      * </li>
-//      * <li>Please note that you <i>do not</i> instantiate this content provider directly from within
-//      * your code.  This is done automatically by the system Content Resolver, when the search dialog
-//      * looks for suggestions.</li>
-//      * <li>In order for the Content Resolver to do this, you must update your searchable activity's
-//      * XML configuration file with information about your content provider.  The following additions
-//      * are usually sufficient:
-//      * <pre class="prettyprint">
-//      *     android:searchSuggestAuthority="your.suggestion.authority"
-//      *     android:searchSuggestSelection=" ? "</pre>
-//      * </li>
-//      * <li>In your searchable activities, capture any user-generated queries and record them
-//      * for future searches by calling {@link android.provider.SearchRecentSuggestions#saveRecentQuery
-//      * SearchRecentSuggestions.saveRecentQuery()}.</li>
-//      * </ul>
-//      *
-//      * <div class="special reference">
-//      * <h3>Developer Guides</h3>
-//      * <p>For information about using search suggestions in your application, read the
-//      * <a href="{@docRoot}guide/topics/search/index.html">Search</a> developer guide.</p>
-//      * </div>
-//      *
-//      * @see android.provider.SearchRecentSuggestions
-//      */
-//     class CSearchRecentSuggestionsProvider {
-
-//         interface IContentProvider;
-//     }
-
-
-//     } // namespace Content
-//     } // namespace Droid
-//     } // namespace Elastos
 
 //     namespace Elastos {
 //     namespace Droid {

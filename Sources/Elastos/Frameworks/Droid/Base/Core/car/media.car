@@ -172,23 +172,6 @@ module
     merge("media/media/ToneGenerator.car");
     merge("media/media/VolumeProvider.car");
 
-    interface Elastos.Droid.Net.IUri;
-    interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Content.IContentProvider;
-    interface Elastos.Droid.Content.IIContentProvider;
-    interface Elastos.Droid.Os.Storage.IStorageVolume;
-    interface Elastos.Droid.Os.ILooper;
-    interface Elastos.Droid.Os.IHandler;
-    interface Elastos.Droid.App.IActivity;
-    interface Elastos.Droid.App.IPendingIntent;
-    interface Elastos.Droid.App.IPendingIntentOnFinished;
-    interface Elastos.Droid.Graphics.IRect;
-    interface Elastos.Droid.Graphics.IBitmap;
-    interface Elastos.Droid.Hardware.Usb.IUsbDevice;
-    interface Elastos.Utility.IUUID;
-    interface Elastos.IO.IInputStream;
-    interface Elastos.Core.ICharSequence;
-    interface Elastos.Core.IRunnable;
 
 //    namespace Elastos {
 //    namespace Droid {

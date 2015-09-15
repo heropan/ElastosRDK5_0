@@ -28,7 +28,11 @@ static AutoPtr< ArrayOf<Int32Array > > InitEMPTY()
 const String CColorStateList::TAG("CColorStateList");
 AutoPtr< ArrayOf<Int32Array > > CColorStateList::EMPTY = InitEMPTY();
 HashMap<Int32, AutoPtr<IWeakReference> > CColorStateList::sCache;
-Mutex CColorStateList::sCacheLock;
+Object CColorStateList::sCacheLock;
+
+CAR_INTERFACE_IMPL(CColorStateList, Object, IColorStateList)
+
+CAR_OBJECT_IMPL(CColorStateList)
 
 CColorStateList::CColorStateList()
     : mDefaultColor(0xffff0000)
@@ -119,7 +123,7 @@ ECode CColorStateList::CreateFromXmlInner(
         String pos;
         parser->GetPositionDescription(&pos);
         Slogger::E(TAG, "CColorStateList%s : invalid drawable tag %s",
-                (const char*)pos, (const char*)name);
+            pos.string(), name.string());
         return E_XML_PULL_PARSER_EXCEPTION;
     }
 

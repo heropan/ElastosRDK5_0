@@ -2,8 +2,6 @@
 module
 {
 
-    interface Elastos.Droid.Os.IUserHandle;
-    interface Elastos.Droid.Os.IParcel;
 
 
     namespace Elastos {

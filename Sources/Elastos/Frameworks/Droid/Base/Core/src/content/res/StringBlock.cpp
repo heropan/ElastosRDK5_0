@@ -57,6 +57,8 @@ StringBlock::StyleIDs::StyleIDs()
 
 Float StringBlock::Height::sProportion = 0.0;
 
+CAR_INTERFACE_IMPL(StringBlock::Height, Object, ILineHeightSpanWithDensity)
+
 StringBlock::Height::Height(
     /* [in] */ Int32 size)
     : mSize(size)
@@ -73,36 +75,6 @@ PInterface StringBlock::Height::Probe(
     }
 
     return NULL;
-}
-
-UInt32 StringBlock::Height::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 StringBlock::Height::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode StringBlock::Height::GetInterfaceID(
-    /* [in] */ IInterface* pObject,
-    /* [in] */ InterfaceID* pIID)
-{
-    assert(0);
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode StringBlock::Height::ChooseHeight(
-    /* [in] */ ICharSequence* text,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [in] */ Int32 spanstartv,
-    /* [in] */ Int32 v,
-    /* [in] */ IPaintFontMetricsInt* fm)
-{
-    // Should not get called, at least not by StaticLayout.
-    return ChooseHeight(text, start, end, spanstartv, v, fm, NULL);
 }
 
 ECode StringBlock::Height::ChooseHeight(

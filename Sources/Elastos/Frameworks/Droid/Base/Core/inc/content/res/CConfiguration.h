@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_RES_CCONFIGURATION_H__
 
 #include "_Elastos_Droid_Content_Res_CConfiguration.h"
+#include <elastos/core/Object.h>
 
 using Libcore::ICU::ILocale;
 
@@ -22,8 +23,14 @@ namespace Res {
  * <pre>Configuration config = getResources().getConfiguration();</pre>
  */
 CarClass(CConfiguration)
+    , public Object
+    , public IConfiguration
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CConfiguration();
 
     /** @hide */

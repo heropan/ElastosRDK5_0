@@ -1,14 +1,16 @@
 
 #include "content/CSearchRecentSuggestionsProvider.h"
-#include <elastos/core/StringBuilder.h>
-#include <elastos/utility/logging/Logger.h>
-//***#include "content/CUriMatcher.h"
+#include "content/CUriMatcher.h"
+#include "content/ContentProvider.h"
 #include "R.h"
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::App::ISearchManager;
+using Elastos::Utility::IList;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -28,31 +30,36 @@ const Int32 CSearchRecentSuggestionsProvider::URI_MATCH_SUGGEST;
 //==============================================================
 // CSearchRecentSuggestionsProvider::DatabaseHelper
 //==============================================================
-CSearchRecentSuggestionsProvider::DatabaseHelper::DatabaseHelper(
-    /*[in]*/ IContext* context,
-    /*[in]*/ Int32 newVersion)
-    : mNewVersion(newVersion)
-{
-//    super(context, sDatabaseName, null, newVersion);
-}
+CSearchRecentSuggestionsProvider::DatabaseHelper::DatabaseHelper()
+    : mNewVersion(0)
+{}
 
 CSearchRecentSuggestionsProvider::DatabaseHelper::~DatabaseHelper()
 {}
 
+ECode CSearchRecentSuggestionsProvider::DatabaseHelper::constructor(
+    /*[in]*/ IContext* context,
+    /*[in]*/ Int32 newVersion)
+{
+    FAIL_RETURN(SQLiteOpenHelper::constructor(context, sDatabaseName, NULL, newVersion))
+    mNewVersion = newVersion;
+    return NOERROR;
+}
+
 ECode CSearchRecentSuggestionsProvider::DatabaseHelper::OnCreate(
     /*[in]*/ ISQLiteDatabase* db)
 {
-    AutoPtr<StringBuilder> builder = new StringBuilder();
-    *builder += "CREATE TABLE suggestions (";
-    *builder += "_id INTEGER PRIMARY KEY";
-    *builder += ",display1 TEXT UNIQUE ON CONFLICT REPLACE";
+    StringBuilder sb;
+    sb += "CREATE TABLE suggestions (";
+    sb += "_id INTEGER PRIMARY KEY";
+    sb += ",display1 TEXT UNIQUE ON CONFLICT REPLACE";
     if (0 != (mNewVersion & DATABASE_MODE_2LINES)) {
-        *builder += ",display2 TEXT";
+        sb += ",display2 TEXT";
     }
-    *builder += ",query TEXT";
-    *builder += ",date LONG";
-    *builder += ");";
-    FAIL_RETURN(db->ExecSQL(builder->ToString()))
+    sb += ",query TEXT";
+    sb += ",date LONG";
+    sb += ");";
+    FAIL_RETURN(db->ExecSQL(sb.ToString()))
     return NOERROR;
 }
 
@@ -61,8 +68,8 @@ ECode CSearchRecentSuggestionsProvider::DatabaseHelper::OnUpgrade(
     /*[in]*/ Int32 oldVersion,
     /*[in]*/ Int32 newVersion)
 {
-    Logger::W(TAG, String("Upgrading database from version ") + StringUtils::Int32ToString(oldVersion) + String(" to ")
-            + StringUtils::Int32ToString(newVersion) + String(", which will destroy all old data"));
+    Logger::W("CSearchRecentSuggestionsProvider::DatabaseHelper", "Upgrading database from version %s to %s, which will destroy all old data",
+            StringUtils::ToString(oldVersion).string(), StringUtils::ToString(newVersion).string());
     FAIL_RETURN(db->ExecSQL(String("DROP TABLE IF EXISTS suggestions")))
     FAIL_RETURN(OnCreate(db))
     return NOERROR;
@@ -84,46 +91,130 @@ CSearchRecentSuggestionsProvider::CSearchRecentSuggestionsProvider()
 CSearchRecentSuggestionsProvider::~CSearchRecentSuggestionsProvider()
 {}
 
-ECode CSearchRecentSuggestionsProvider::OnConfigurationChanged(
-    /* [in] */ IConfiguration* newConfig)
+ECode CSearchRecentSuggestionsProvider::Delete(
+    /* [in] */ IUri* uri,
+    /* [in] */ const String& selection,
+    /* [in] */ ArrayOf<String>* selectionArgs,
+    /* [out] */ Int32* rowsAffected)
 {
-    return ContentProvider::OnConfigurationChanged(newConfig);
+    VALIDATE_NOT_NULL(rowsAffected)
+    *rowsAffected = 0;
+    AutoPtr<ISQLiteDatabase> db;
+    FAIL_RETURN(mOpenHelper->GetWritableDatabase((ISQLiteDatabase**)&db))
+    AutoPtr<IList> segmentsArray;
+    FAIL_RETURN(uri->GetPathSegments((IList**)&segmentsArray))
+    Int32 length;
+    segmentsArray->GetSize(&length);
+
+    if (length != 1) {
+        //throw new IllegalArgumentException("Unknown Uri");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    AutoPtr<IInterface> obj;
+    segmentsArray->Get(0, (IInterface**)&obj);
+    String base = Object::ToString(obj);
+    if (base.Equals(sSuggestions)) {
+        FAIL_RETURN(db->Delete(sSuggestions, selection, selectionArgs, rowsAffected))
+    }
+    else {
+        // throw new IllegalArgumentException("Unknown Uri");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    AutoPtr<IContext> context;
+    FAIL_RETURN(ContentProvider::GetContext((IContext**)&context))
+    AutoPtr<IContentResolver> contentResolver;
+    FAIL_RETURN(context->GetContentResolver((IContentResolver**)&contentResolver))
+    FAIL_RETURN(contentResolver->NotifyChange(uri, NULL))
+    return NOERROR;
 }
 
-ECode CSearchRecentSuggestionsProvider::OnLowMemory()
+ECode CSearchRecentSuggestionsProvider::GetType(
+    /* [in] */ IUri* uri,
+    /* [out] */ String* type)
 {
-    return ContentProvider::OnLowMemory();
+    VALIDATE_NOT_NULL(type)
+    Int32 matchCode = 0;
+    FAIL_RETURN(mUriMatcher->Match(uri, &matchCode))
+
+    if (URI_MATCH_SUGGEST == matchCode) {
+        *type = ISearchManager::SUGGEST_MIME_TYPE;
+        return NOERROR;
+    }
+
+    AutoPtr<IList> segmentsArray;
+    FAIL_RETURN(uri->GetPathSegments((IList**)&segmentsArray))
+    Int32 length;
+    segmentsArray->GetSize(&length);
+    if (length >= 1) {
+        AutoPtr<IInterface> obj;
+        segmentsArray->Get(0, (IInterface**)&obj);
+        String base = Object::ToString(obj);
+        if (base.Equals(sSuggestions)) {
+            if (1 == length) {
+                *type = "vnd.android.cursor.dir/suggestion";
+                return NOERROR;
+            }
+            else if (2 == length) {
+                *type = "vnd.android.cursor.item/suggestion";
+                return NOERROR;
+            }
+        }
+    }
+    // throw new IllegalArgumentException("Unknown Uri");
+    return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
-ECode CSearchRecentSuggestionsProvider::OnTrimMemory(
-    /* [in] */ Int32 level)
+ECode CSearchRecentSuggestionsProvider::Insert(
+    /* [in] */ IUri* uri,
+    /* [in] */ IContentValues* values,
+    /* [out] */ IUri** insertedUri)
 {
-    return ContentProvider::OnTrimMemory(level);
+    VALIDATE_NOT_NULL(insertedUri)
+    *insertedUri = NULL;
+
+    AutoPtr<ISQLiteDatabase> db;
+    FAIL_RETURN(mOpenHelper->GetWritableDatabase((ISQLiteDatabase**)&db))
+    AutoPtr<IList> segmentsArray;
+    FAIL_RETURN(uri->GetPathSegments((IList**)&segmentsArray))
+    Int32 length;
+    segmentsArray->GetSize(&length);
+
+    if (length < 1) {
+        // throw new IllegalArgumentException("Unknown Uri");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    // Note:  This table has on-conflict-replace semantics, so insert() may actually replace()
+    Int64 rowID = -1;
+    AutoPtr<IInterface> obj;
+    segmentsArray->Get(0, (IInterface**)&obj);
+    String base = Object::ToString(obj);
+
+    if (base.Equals(sSuggestions)) {
+        if (length == 1) {
+            FAIL_RETURN(db->Insert(sSuggestions, NULL_COLUMN, values, &rowID))
+            if (rowID > 0) {
+//***                AutoPtr<IUriBuilder> builder;
+//***                FAIL_RETURN(mSuggestionsUri->BuildUpon((IUriBuilder**)&builder))
+//***                FAIL_RETURN(builder->AppendEncodedPath(StringUtils::Int64ToString(rowID)))
+//***                FAIL_RETURN(builder->Build(insertedUri))
+            }
+        }
+    }
+    if (rowID < 0) {
+        // throw new IllegalArgumentException("Unknown Uri");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    AutoPtr<IContext> context;
+    // FAIL_RETURN(ContentProvider::GetContext((IContext**)&context))
+    AutoPtr<IContentResolver> contentResolver;
+    FAIL_RETURN(context->GetContentResolver((IContentResolver**)&contentResolver))
+    FAIL_RETURN(contentResolver->NotifyChange(*insertedUri, NULL))
+    return NOERROR;
 }
 
-ECode CSearchRecentSuggestionsProvider::GetContext(
-    /* [out] */ IContext** context)
-{
-    return ContentProvider::GetContext(context);
-}
-
-ECode CSearchRecentSuggestionsProvider::GetReadPermission(
-    /* [out] */ String* permissionName)
-{
-    return ContentProvider::GetReadPermission(permissionName);
-}
-
-ECode CSearchRecentSuggestionsProvider::GetWritePermission(
-    /* [out] */ String* permissionName)
-{
-    return ContentProvider::GetWritePermission(permissionName);
-}
-
-ECode CSearchRecentSuggestionsProvider::GetPathPermissions(
-    /* [out, callee] */ ArrayOf<IPathPermission *>** pathPermissions)
-{
-    return ContentProvider::GetPathPermissions(pathPermissions);
-}
 
 ECode CSearchRecentSuggestionsProvider::OnCreate(
     /* [out] */ Boolean* succeeded)
@@ -192,15 +283,18 @@ ECode CSearchRecentSuggestionsProvider::Query(
     }
 
     // otherwise process arguments and perform a standard query
-    AutoPtr<ArrayOf<String> > segmentsArray;
-    FAIL_RETURN(uri->GetPathSegments((ArrayOf<String>**)&segmentsArray))
-    Int32 length = segmentsArray->GetLength();
+    AutoPtr<IList> segmentsArray;
+    FAIL_RETURN(uri->GetPathSegments((IList**)&segmentsArray))
+    Int32 length;
+    segmentsArray->GetSize(&length);
     if (length != 1 && length != 2) {
         // throw new IllegalArgumentException("Unknown Uri");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    String base = (*segmentsArray)[0];
+    AutoPtr<IInterface> obj;
+    segmentsArray->Get(0, (IInterface**)&obj);
+    String base = Object::ToString(obj);
     if (!base.Equals(sSuggestions)) {
         // throw new IllegalArgumentException("Unknown Uri");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -215,8 +309,11 @@ ECode CSearchRecentSuggestionsProvider::Query(
 
     StringBuilder whereClause(256);
     if (2 == length) {
+        obj = NULL;
+        segmentsArray->Get(1, (IInterface**)&obj);
+
         whereClause += "(_id = ";
-        whereClause += (*segmentsArray)[1];
+        whereClause += Object::ToString(obj);
         whereClause += ")";
     }
 
@@ -238,141 +335,6 @@ ECode CSearchRecentSuggestionsProvider::Query(
     return NOERROR;
 }
 
-ECode CSearchRecentSuggestionsProvider::Query(
-    /* [in] */ IUri* uri,
-    /* [in] */ ArrayOf<String>* projection,
-    /* [in] */ const String& selection,
-    /* [in] */ ArrayOf<String>* selectionArgs,
-    /* [in] */ const String& sortOrder,
-    /* [in] */ ICancellationSignal* cancellationSignal,
-    /* [out] */ ICursor** cursor)
-{
-    return ContentProvider::Query(uri, projection, selection, selectionArgs, sortOrder, cancellationSignal, cursor);
-}
-
-ECode CSearchRecentSuggestionsProvider::GetType(
-    /* [in] */ IUri* uri,
-    /* [out] */ String* type)
-{
-    VALIDATE_NOT_NULL(type)
-    Int32 matchCode = 0;
-    FAIL_RETURN(mUriMatcher->Match(uri, &matchCode))
-
-    if (URI_MATCH_SUGGEST == matchCode) {
-        *type = ISearchManager::SUGGEST_MIME_TYPE;
-        return NOERROR;
-    }
-
-    AutoPtr<ArrayOf<String> > segmentsArray;
-    FAIL_RETURN(uri->GetPathSegments((ArrayOf<String>**)&segmentsArray))
-    Int32 length = segmentsArray->GetLength();
-    if (length >= 1) {
-        String base = (*segmentsArray)[0];
-        if (base.Equals(sSuggestions)) {
-            if (1 == length) {
-                *type = "vnd.android.cursor.dir/suggestion";
-                return NOERROR;
-            }
-            else if (2 == length) {
-                *type = "vnd.android.cursor.item/suggestion";
-                return NOERROR;
-            }
-        }
-    }
-    // throw new IllegalArgumentException("Unknown Uri");
-    return E_ILLEGAL_ARGUMENT_EXCEPTION;
-}
-
-ECode CSearchRecentSuggestionsProvider::Insert(
-    /* [in] */ IUri* uri,
-    /* [in] */ IContentValues* values,
-    /* [out] */ IUri** insertedUri)
-{
-    VALIDATE_NOT_NULL(insertedUri)
-    *insertedUri = NULL;
-
-    AutoPtr<ISQLiteDatabase> db;
-    FAIL_RETURN(mOpenHelper->GetWritableDatabase((ISQLiteDatabase**)&db))
-    AutoPtr<ArrayOf<String> > segmentsArray;
-    FAIL_RETURN(uri->GetPathSegments((ArrayOf<String>**)&segmentsArray))
-    Int32 length = segmentsArray->GetLength();
-
-    if (length < 1) {
-        // throw new IllegalArgumentException("Unknown Uri");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    // Note:  This table has on-conflict-replace semantics, so insert() may actually replace()
-    Int64 rowID = -1;
-    String base = (*segmentsArray)[0];
-
-    if (base.Equals(sSuggestions)) {
-        if (length == 1) {
-            FAIL_RETURN(db->Insert(sSuggestions, NULL_COLUMN, values, &rowID))
-            if (rowID > 0) {
-//***                AutoPtr<IUriBuilder> builder;
-//***                FAIL_RETURN(mSuggestionsUri->BuildUpon((IUriBuilder**)&builder))
-//***                FAIL_RETURN(builder->AppendEncodedPath(StringUtils::Int64ToString(rowID)))
-//***                FAIL_RETURN(builder->Build(insertedUri))
-            }
-        }
-    }
-    if (rowID < 0) {
-        // throw new IllegalArgumentException("Unknown Uri");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    AutoPtr<IContext> context;
-    // FAIL_RETURN(ContentProvider::GetContext((IContext**)&context))
-    AutoPtr<IContentResolver> contentResolver;
-    FAIL_RETURN(context->GetContentResolver((IContentResolver**)&contentResolver))
-    FAIL_RETURN(contentResolver->NotifyChange(*insertedUri, NULL))
-    return NOERROR;
-}
-
-ECode CSearchRecentSuggestionsProvider::BulkInsert(
-    /* [in] */ IUri* uri,
-    /* [in] */ ArrayOf<IContentValues *>* values,
-    /* [out] */ Int32* number)
-{
-    return ContentProvider::BulkInsert(uri, values, number);
-}
-
-ECode CSearchRecentSuggestionsProvider::Delete(
-    /* [in] */ IUri* uri,
-    /* [in] */ const String& selection,
-    /* [in] */ ArrayOf<String>* selectionArgs,
-    /* [out] */ Int32* rowsAffected)
-{
-    VALIDATE_NOT_NULL(rowsAffected)
-    *rowsAffected = 0;
-    AutoPtr<ISQLiteDatabase> db;
-    FAIL_RETURN(mOpenHelper->GetWritableDatabase((ISQLiteDatabase**)&db))
-    AutoPtr<ArrayOf<String> > segmentsArray;
-    FAIL_RETURN(uri->GetPathSegments((ArrayOf<String>**)&segmentsArray))
-    const Int32 length = segmentsArray->GetLength();
-
-    if (length != 1) {
-        //throw new IllegalArgumentException("Unknown Uri");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    String base = (*segmentsArray)[0];
-    if (base.Equals(sSuggestions)) {
-        FAIL_RETURN(db->Delete(sSuggestions, selection, selectionArgs, rowsAffected))
-    }
-    else {
-        // throw new IllegalArgumentException("Unknown Uri");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    AutoPtr<IContext> context;
-    // FAIL_RETURN(ContentProvider::GetContext((IContext**)&context))
-    AutoPtr<IContentResolver> contentResolver;
-    FAIL_RETURN(context->GetContentResolver((IContentResolver**)&contentResolver))
-    FAIL_RETURN(contentResolver->NotifyChange(uri, NULL))
-    return NOERROR;
-}
-
 ECode CSearchRecentSuggestionsProvider::Update(
     /* [in] */ IUri* uri,
     /* [in] */ IContentValues* values,
@@ -382,92 +344,6 @@ ECode CSearchRecentSuggestionsProvider::Update(
 {
     // throw new UnsupportedOperationException("Not implemented");
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
-ECode CSearchRecentSuggestionsProvider::OpenFile(
-    /* [in] */ IUri* uri,
-    /* [in] */ const String& mode,
-    /* [out] */ IParcelFileDescriptor** fileDescriptor)
-{
-    return ContentProvider::OpenFile(uri, mode, fileDescriptor);
-}
-
-ECode CSearchRecentSuggestionsProvider::OpenAssetFile(
-    /* [in] */ IUri* uri,
-    /* [in] */ const String& mode,
-    /* [out] */ IAssetFileDescriptor** fileDescriptor)
-{
-    return ContentProvider::OpenAssetFile(uri, mode, fileDescriptor);
-}
-
-ECode CSearchRecentSuggestionsProvider::GetStreamTypes(
-    /* [in] */ IUri* uri,
-    /* [in] */ const String& mimeTypeFilter,
-    /* [out, callee] */ ArrayOf<String>** streamTypes)
-{
-    return ContentProvider::GetStreamTypes(uri, mimeTypeFilter, streamTypes);
-}
-
-ECode CSearchRecentSuggestionsProvider::OpenTypedAssetFile(
-    /* [in] */ IUri* uri,
-    /* [in] */ const String& mimeTypeFilter,
-    /* [in] */ IBundle* opts,
-    /* [out] */ IAssetFileDescriptor** fileDescriptor)
-{
-    return ContentProvider::OpenTypedAssetFile(uri, mimeTypeFilter, opts, fileDescriptor);
-}
-
-ECode CSearchRecentSuggestionsProvider::OpenPipeHelper(
-    /* [in] */ IUri* uri,
-    /* [in] */ const String& mimeType,
-    /* [in] */ IBundle* opts,
-    /* [in] */ IInterface* args,
-    /* [in] */ IContentProviderPipeDataWriter* func,
-    /* [out] */ IParcelFileDescriptor** fileDescriptor)
-{
-    return ContentProvider::OpenPipeHelper(uri, mimeType, opts, args, func, fileDescriptor);
-}
-
-ECode CSearchRecentSuggestionsProvider::GetIContentProvider(
-    /* [out] */ IIContentProvider** contentProvider)
-{
-    return ContentProvider::GetIContentProvider(contentProvider);
-}
-
-ECode CSearchRecentSuggestionsProvider::AttachInfo(
-    /* [in] */ IContext* context,
-    /* [in] */ IProviderInfo* info)
-{
-    return ContentProvider::AttachInfo(context, info);
-}
-
-ECode CSearchRecentSuggestionsProvider::ApplyBatch(
-    /* [in] */ IObjectContainer* operations,
-    /* [out, callee] */ ArrayOf<IContentProviderResult *>** providerResults)
-{
-    return ContentProvider::ApplyBatch(operations, providerResults);
-}
-
-ECode CSearchRecentSuggestionsProvider::Call(
-    /* [in] */ const String& method,
-    /* [in] */ const String& arg,
-    /* [in] */ IBundle* extras,
-    /* [out] */ IBundle** bundle)
-{
-    return ContentProvider::Call(method, arg, extras, bundle);
-}
-
-ECode CSearchRecentSuggestionsProvider::Shutdown()
-{
-    return ContentProvider::Shutdown();
-}
-
-ECode CSearchRecentSuggestionsProvider::Dump(
-    /* [in] */ IFileDescriptor* fd,
-    /* [in] */ IPrintWriter* writer,
-    /* [in] */ ArrayOf<String>* args)
-{
-    return ContentProvider::Dump(fd, writer, args);
 }
 
 ECode CSearchRecentSuggestionsProvider::SetupSuggestions(
@@ -487,8 +363,9 @@ ECode CSearchRecentSuggestionsProvider::SetupSuggestions(
     mMode = mode;
 
     // derived values
+    assert(0 && "TODO");
 //***    FAIL_RETURN(CStringUri::New(String("content://") + mAuthority + String("/suggestions"), (IUri**)&mSuggestionsUri))
-//***    FAIL_RETURN(CUriMatcher::New(IUriMatcher::NO_MATCH, (IUriMatcher**)&mUriMatcher))
+    FAIL_RETURN(CUriMatcher::New(IUriMatcher::NO_MATCH, (IUriMatcher**)&mUriMatcher))
     FAIL_RETURN(mUriMatcher->AddURI(mAuthority, ISearchManager::SUGGEST_URI_PATH_QUERY, URI_MATCH_SUGGEST))
 
     if (mTwoLineDisplay) {

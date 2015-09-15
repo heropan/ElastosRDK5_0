@@ -22,6 +22,11 @@ namespace Droid {
 namespace Content {
 namespace Res {
 
+//=================================================================================
+// XmlBlock::Parser
+//=================================================================================
+CAR_INTERFACE_IMPL_2(XmlBlock::Parser, Object, IXmlResourceParser, IAttributeSet)
+
 XmlBlock::Parser::Parser(
     /* [in]  */ Int32 parseState,
     /* [in]  */ XmlBlock* block,
@@ -41,55 +46,6 @@ XmlBlock::Parser::Parser(
 XmlBlock::Parser::~Parser()
 {
     Close();
-}
-
-UInt32 XmlBlock::Parser::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 XmlBlock::Parser::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface XmlBlock::Parser::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IXmlResourceParser*)this;
-    }
-    else if (riid == EIID_IXmlResourceParser) {
-        return (IXmlResourceParser*)this;
-    }
-    else if (riid == Org::Xmlpull::V1::EIID_IXmlPullParser) {
-        return (IXmlPullParser*)this;
-    }
-    else if (riid == Elastos::Droid::Utility::EIID_IAttributeSet) {
-        return (IAttributeSet*)this;
-    }
-    return NULL;
-}
-
-ECode XmlBlock::Parser::GetInterfaceID(
-    /* [in] */ IInterface* pObject,
-    /* [out] */ InterfaceID* pIID)
-{
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
-
-    if (pObject == (IInterface*)(IXmlResourceParser*)this) {
-        *pIID = EIID_IXmlResourceParser;
-    }
-    else if (pObject == (IInterface*)(IXmlPullParser*)this) {
-        *pIID = Org::Xmlpull::V1::EIID_IXmlPullParser;
-    }
-    else if (pObject == (IInterface*)(IAttributeSet*)this) {
-        *pIID = Elastos::Droid::Utility::EIID_IAttributeSet;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
 }
 
 ECode XmlBlock::Parser::SetFeature(
@@ -880,7 +836,9 @@ ECode XmlBlock::Parser::GetPooledString(
     return NOERROR;
 }
 
-
+//=================================================================================
+// XmlBlock
+//=================================================================================
 const String XmlBlock::TAG("XmlBlock");
 const Boolean XmlBlock::DEBUG = FALSE;
 

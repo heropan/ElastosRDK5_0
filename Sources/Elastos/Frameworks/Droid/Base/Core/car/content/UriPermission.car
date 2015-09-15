@@ -20,6 +20,10 @@ module
      * interface IParcelable
      */
     interface IUriPermission {
+        /**
+         * Value returned when a permission has not been persisted.
+         */
+        const Int64 INVALID_TIME = 0x8000000000000000;//Long.MIN_VALUE;
 
         /**
          * Return the Uri this permission pertains to.

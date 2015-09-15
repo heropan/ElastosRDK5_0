@@ -2,6 +2,7 @@
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
+using Elastos::Droid::Content::Res::IResources;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 
@@ -9,10 +10,15 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
+CAR_INTERFACE_IMPL_2(RestrictionEntry, Object, IRestrictionEntry, IParcelable)
+
 RestrictionEntry::RestrictionEntry()
     : mType(0)
 {
 }
+
+RestrictionEntry::~RestrictionEntry()
+{}
 
 ECode RestrictionEntry::constructor()
 {
@@ -103,7 +109,9 @@ ECode RestrictionEntry::GetAllSelectedStrings(
 ECode RestrictionEntry::GetSelectedState(
     /* [out] */ Boolean* state)
 {
-    return StringUtils::Parse(mCurrentValue, state);
+    VALIDATE_NOT_NULL(state)
+    *state = mCurrentValue.Equals("TRUE") || mCurrentValue.Equals("true");
+    return NOERROR;
 }
 
 ECode RestrictionEntry::GetInt32Value(
@@ -115,7 +123,8 @@ ECode RestrictionEntry::GetInt32Value(
 ECode RestrictionEntry::SetInt32Value(
     /* [in] */ Int32 value)
 {
-    return StringUtils::ToString(value, &mCurrentValue);
+    mCurrentValue = StringUtils::ToString(value);
+    return NOERROR;
 }
 
 ECode RestrictionEntry::SetSelectedString(
@@ -128,7 +137,8 @@ ECode RestrictionEntry::SetSelectedString(
 ECode RestrictionEntry::SetSelectedState(
     /* [in] */ Boolean state)
 {
-    return StringUtils::BooleanToString(state, &mCurrentValue);
+    mCurrentValue = StringUtils::BooleanToString(state);
+    return NOERROR;
 }
 
 ECode RestrictionEntry::SetAllSelectedStrings(
@@ -230,35 +240,41 @@ ECode RestrictionEntry::Equals(
     /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)
 {
-    if (o == this) return true;
-    if (!(o instanceof RestrictionEntry)) return false;
-    final RestrictionEntry other = (RestrictionEntry) o;
-    // Make sure that either currentValue matches or currentValues matches.
-    return mType == other->mType && mKey.equals(other->mKey)
-            &&
-            ((mCurrentValues == null && other->mCurrentValues == null
-              && mCurrentValue != null && mCurrentValue.equals(other->mCurrentValue))
-             ||
-             (mCurrentValue == null && other->mCurrentValue == null
-              && mCurrentValues != null && equalArrays(mCurrentValues, other->mCurrentValues)));
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    if (o == TO_IINTERFACE(this)) {
+        *result = TRUE;
+        return NOERROR;
+    }
+    // if (!(o instanceof RestrictionEntry)) return false;
+    // final RestrictionEntry other = (RestrictionEntry) o;
+    // // Make sure that either currentValue matches or currentValues matches.
+    // return mType == other->mType && mKey.equals(other->mKey)
+    //         &&
+    //         ((mCurrentValues == null && other->mCurrentValues == null
+    //           && mCurrentValue != null && mCurrentValue.equals(other->mCurrentValue))
+    //          ||
+    //          (mCurrentValue == null && other->mCurrentValue == null
+    //           && mCurrentValues != null && equalArrays(mCurrentValues, other->mCurrentValues)));
     return NOERROR;
 }
 
 ECode RestrictionEntry::GetHashCode(
     /* [out] */ Int32* code)
 {
-    int result = 17;
-    result = 31 * result + mKey.hashCode();
-    if (mCurrentValue != null) {
-        result = 31 * result + mCurrentValue.hashCode();
-    } else if (mCurrentValues != null) {
-        for (String value : mCurrentValues) {
-            if (value != null) {
-                result = 31 * result + value.hashCode();
-            }
-        }
-    }
-    return result;
+    // int result = 17;
+    // result = 31 * result + mKey.hashCode();
+    // if (mCurrentValue != null) {
+    //     result = 31 * result + mCurrentValue.hashCode();
+    // } else if (mCurrentValues != null) {
+    //     for (String value : mCurrentValues) {
+    //         if (value != null) {
+    //             result = 31 * result + value.hashCode();
+    //         }
+    //     }
+    // }
+    // return result;
     return NOERROR;
 }
 
@@ -299,7 +315,7 @@ ECode RestrictionEntry::ReadFromParcel(
     in->ReadString(&mDescription);
     mChoiceEntries = ReadArray(in);
     mChoiceValues = ReadArray(in);
-    mCurrentValue = in->ReadString(&);
+    in->ReadString(&mCurrentValue);
     mCurrentValues = ReadArray(in);
     return NOERROR;
 }
@@ -332,7 +348,7 @@ ECode RestrictionEntry::WriteArray(
     /* [in] */ ArrayOf<String>* values)
 {
     if (values == NULL) {
-        dest->WriteInt(0);
+        dest->WriteInt32(0);
     } else {
         dest->WriteInt32(values->GetLength());
         for (Int32 i = 0; i < values->GetLength(); i++) {

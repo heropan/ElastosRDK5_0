@@ -6,10 +6,7 @@ module
 
 
     using interface Elastos.Net.IInetAddress;
-    using interface Elastos.Net.IInet4Address;
-    using interface Elastos.Net.IInet6Address;
     using interface Elastos.Utility.ICollection;
-    using interface Elastos.Utility.IObjects;
 
     namespace Elastos {
     namespace Droid {

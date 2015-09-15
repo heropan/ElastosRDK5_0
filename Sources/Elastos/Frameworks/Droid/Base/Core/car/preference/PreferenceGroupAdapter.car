@@ -4,10 +4,6 @@ module
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IViewGroup;
-    interface Elastos.Droid.Widget.IAdapter;
-    interface Elastos.Droid.Widget.IBaseAdapter;
-    interface Elastos.Droid.Widget.IFrameLayout;
-    interface Elastos.Droid.Widget.IListView;
 
     namespace Elastos {
     namespace Droid {

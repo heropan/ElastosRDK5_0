@@ -1,4 +1,10 @@
 #include "content/CSyncRequest.h"
+#include "content/CSyncRequestBuilder.h"
+//#include "accounts/CAccount.h"
+#include "os/CBundle.h"
+
+//using Elastos::Droid::Accounts::CAccount;
+using Elastos::Droid::Os::CBundle;
 
 namespace Elastos {
 namespace Droid {
@@ -26,18 +32,20 @@ ECode CSyncRequest:: constructor()
 ECode CSyncRequest:: constructor(
     /* [in] */ ISyncRequestBuilder* b)
 {
-    mSyncFlexTimeSecs = b.mSyncFlexTimeSecs;
-    mSyncRunTimeSecs = b.mSyncRunTimeSecs;
-    mAccountToSync = b.mAccount;
-    mAuthority = b.mAuthority;
-    mIsPeriodic = (b.mSyncType == Builder.SYNC_TYPE_PERIODIC);
-    mIsAuthority = (b.mSyncTarget == Builder.SYNC_TARGET_ADAPTER);
-    mIsExpedited = b.mExpedited;
-    mExtras = new Bundle(b.mCustomExtras);
+    CSyncRequestBuilder* crb = (CSyncRequestBuilder*)b;
+
+    mSyncFlexTimeSecs = crb->mSyncFlexTimeSecs;
+    mSyncRunTimeSecs = crb->mSyncRunTimeSecs;
+    mAccountToSync = crb->mAccount;
+    mAuthority = crb->mAuthority;
+    mIsPeriodic = (crb->mSyncType == CSyncRequestBuilder::SYNC_TYPE_PERIODIC);
+    mIsAuthority = (crb->mSyncTarget == CSyncRequestBuilder::SYNC_TARGET_ADAPTER);
+    mIsExpedited = crb->mExpedited;
+    CBundle::New(crb->mCustomExtras, (IBundle**)&mExtras);
     // For now we merge the sync config extras & the custom extras into one bundle.
     // TODO: pass the configuration extras through separately.
-    mExtras.putAll(b.mSyncConfigExtras);
-    mDisallowMetered = b.mDisallowMetered;
+    mExtras->PutAll(crb->mSyncConfigExtras);
+    mDisallowMetered = crb->mDisallowMetered;
     return NOERROR;
 }
 
@@ -61,7 +69,7 @@ ECode CSyncRequest:: GetAccount(
     /* [out] */ IAccount** account)
 {
     VALIDATE_NOT_NULL(account)
-    *account = mAccount;
+    *account = mAccountToSync;
     REFCOUNT_ADD(*account)
     return NOERROR;
 }
@@ -102,7 +110,7 @@ ECode CSyncRequest:: GetSyncRunTime(
 ECode CSyncRequest:: WriteToParcel(
     /* [in] */ IParcel* parcel)
 {
-    parcel->WriteBundle(mExtras);
+    parcel->WriteInterfacePtr(TO_IINTERFACE(mExtras));
     parcel->WriteInt64(mSyncFlexTimeSecs);
     parcel->WriteInt64(mSyncRunTimeSecs);
     parcel->WriteInt32((mIsPeriodic ? 1 : 0));
@@ -116,19 +124,26 @@ ECode CSyncRequest:: WriteToParcel(
 }
 
 ECode CSyncRequest:: ReadFromParcel(
-    /* [in] */ IParcel* parcel)
+    /* [in] */ IParcel* in)
 {
     AutoPtr<IInterface> obj;
-    mExtras = in.readBundle();
-    mSyncFlexTimeSecs = in.readLong();
-    mSyncRunTimeSecs = in.readLong();
-    mIsPeriodic = (in.readInt() != 0);
-    mDisallowMetered = (in.readInt() != 0);
-    mIsAuthority = (in.readInt() != 0);
-    mIsExpedited = (in.readInt() != 0);
-    CAccount::New((IAccount**)&mAccountToSync);
-    IParcelable::Probe(mAccountToSync)->ReadFromParcel(parcel);
-    mAuthority = in.readString();
+    in->ReadInterfacePtr((Handle32*)&obj);
+    mExtras = IBundle::Probe(obj);
+    in->ReadInt64(&mSyncFlexTimeSecs);
+    in->ReadInt64(&mSyncRunTimeSecs);
+    Int32 ival;
+    in->ReadInt32(&ival);
+    mIsPeriodic = (ival != 0);
+    in->ReadInt32(&ival);
+    mDisallowMetered = (ival != 0);
+    in->ReadInt32(&ival);
+    mIsAuthority = (ival != 0);
+    in->ReadInt32(&ival);
+    mIsExpedited = (ival != 0);
+    assert(0 && "TODO");
+    // CAccount::New((IAccount**)&mAccountToSync);
+    IParcelable::Probe(mAccountToSync)->ReadFromParcel(in);
+    in->ReadString(&mAuthority);
     return NOERROR;
 }
 

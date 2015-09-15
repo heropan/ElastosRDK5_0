@@ -3,10 +3,6 @@ module
 {
 
     interface Elastos.Droid.Net.ISamplingDataTrackerSamplingSnapshot;
-    interface Elastos.Droid.Utility.ISlog;
-    using interface Elastos.IO.IBufferedReader;
-    using interface Elastos.IO.IFileReader;
-    using interface Elastos.Utility.IIterator;
     using interface Elastos.Utility.IMap;
 
     namespace Elastos {

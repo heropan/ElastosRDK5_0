@@ -22,6 +22,10 @@ namespace Droid {
 namespace Content {
 namespace Res {
 
+CAR_INTERFACE_IMPL(CAssetFileDescriptor, Object, IAssetFileDescriptor)
+
+CAR_OBJECT_IMPL(CAssetFileDescriptor)
+
 CAssetFileDescriptor::CAssetFileDescriptor()
     : mStartOffset(0)
     , mLength(0)

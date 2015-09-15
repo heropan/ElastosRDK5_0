@@ -1,6 +1,5 @@
 module
 {
-    using interface Elastos.IO.IFile;
     using interface Elastos.Core.ICharSequence;
 
     interface Elastos.Droid.Os.IBundle;

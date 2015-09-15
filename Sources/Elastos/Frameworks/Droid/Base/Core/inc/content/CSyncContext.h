@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CSYNCCONTEXT_H__
 
 #include "_Elastos_Droid_Content_CSyncContext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IBinder;
 
@@ -11,11 +12,23 @@ namespace Droid {
 namespace Content {
 
 CarClass(CSyncContext)
+    , public Object
+    , public ISyncContext
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CSyncContext();
 
     ~CSyncContext();
+
+    /**
+     * @hide
+     */
+    CARAPI constructor(
+        /* [in] */ IISyncContext* syncContextInterface);
 
     /**
      * Call to update the status text for this sync. This internally invokes
@@ -34,12 +47,6 @@ public:
     CARAPI GetSyncContextBinder(
         /* [out] */ IBinder** binder);
 
-    /**
-     * @hide
-     */
-    CARAPI constructor(
-        /* [in] */ IISyncContext* syncContextInterface);
-
 private:
     /**
      * Call to indicate that the SyncAdapter is making progress. E.g., if this SyncAdapter
@@ -54,7 +61,6 @@ private:
 private:
     AutoPtr<IISyncContext> mSyncContext;
     Int64 mLastHeartbeatSendTime;
-
 };
 
 }

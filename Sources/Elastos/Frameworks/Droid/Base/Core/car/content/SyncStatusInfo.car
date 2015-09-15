@@ -104,12 +104,6 @@ module
         SetInitialize(
             [in] Boolean initialize);
 
-        GetperiodicSyncTimes(
-            [out, callee] ArrayOf<Int64>* periodicSyncTimes);
-
-        SetperiodicSyncTimes(
-            [in] ArrayOf<Int64>* periodicSyncTimes);
-
         GetLastFailureMesgAsInt(
             [in] Int32 def,
             [out] Int32* msg);

@@ -11,6 +11,8 @@ namespace Droid {
 namespace Content {
 namespace Res {
 
+CAR_OBJECT_IMPL(CAssetFileDescriptorAutoCloseOutputStream)
+
 CAssetFileDescriptorAutoCloseOutputStream::CAssetFileDescriptorAutoCloseOutputStream()
     : mRemaining(0)
 {}

@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.Os.IPersistableBundle;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IBinder;
 

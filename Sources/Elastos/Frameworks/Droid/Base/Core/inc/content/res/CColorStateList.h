@@ -5,10 +5,11 @@
 #include "_Elastos_Droid_Content_Res_CColorStateList.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Utility::Etl::HashMap;
 using Org::Xmlpull::V1::IXmlPullParser;
-using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
@@ -43,11 +44,17 @@ namespace Res {
  * List Resource</a>.</p>
  */
 CarClass(CColorStateList)
+    , public Object
+    , public IColorStateList
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CColorStateList();
 
-    ~CColorStateList();
+    virtual ~CColorStateList();
 
     /**
      * Creates or retrieves a ColorStateList that always returns a single color.

@@ -8,6 +8,10 @@ namespace Droid {
 namespace Content {
 namespace Res {
 
+CAR_INTERFACE_IMPL(CResourcesHelper, Singleton, IResourcesHelper)
+
+CAR_SINGLETON_IMPL(CResourcesHelper)
+
 ECode CResourcesHelper::SelectDefaultTheme(
     /* [in] */ Int32 curTheme,
     /* [in] */ Int32 targetSdkVersion,

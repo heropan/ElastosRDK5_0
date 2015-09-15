@@ -498,6 +498,10 @@ public:
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* parcel);
 
+    static CARAPI ReadFromParcel(
+        /* [in] */ IParcel* parcel,
+        /* [out] */ IUri** uri);
+
     /**
      * Writes a Uri to a Parcel.
      *

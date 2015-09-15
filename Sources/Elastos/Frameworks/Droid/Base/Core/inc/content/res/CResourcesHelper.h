@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_RES_CRESOURCESHELPER_H__
 
 #include "_Elastos_Droid_Content_Res_CResourcesHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Utility::IDisplayMetrics;
 
@@ -12,8 +13,14 @@ namespace Content {
 namespace Res {
 
 CarClass(CResourcesHelper)
+    , public Singleton
+    , public IResourcesHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI SelectDefaultTheme(
         /* [in] */ Int32 curTheme,
         /* [in] */ Int32 targetSdkVersion,

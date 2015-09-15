@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_DROID_OS_HANDLER_CALLER_H__
-#define __ELASTOS_DROID_OS_HANDLER_CALLER_H__
+#ifndef __ELASTOS_DROID_INTERNAL_OS_HANDLER_CALLER_H__
+#define __ELASTOS_DROID_INTERNAL_OS_HANDLER_CALLER_H__
 
 #include "os/Handler.h"
 
@@ -221,4 +221,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_OS_HANDLER_CALLER_H__
+#endif //__ELASTOS_DROID_INTERNAL_OS_HANDLER_CALLER_H__

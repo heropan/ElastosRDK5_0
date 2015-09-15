@@ -3,7 +3,6 @@ module
 {
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.SystemUI.Qs.IQSTileHost;
-    interface Elastos.Droid.SystemUI.Qs.IQSTileDetailAdapter;
 
     namespace Elastos {
     namespace Droid {

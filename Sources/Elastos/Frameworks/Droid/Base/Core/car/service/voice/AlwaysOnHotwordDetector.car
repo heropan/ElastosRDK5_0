@@ -4,7 +4,6 @@ module
 
     interface Elastos.Droid.Media.IAudioFormat;
     interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.Os.IPersistableBundle;
 
     namespace Elastos {
     namespace Droid {

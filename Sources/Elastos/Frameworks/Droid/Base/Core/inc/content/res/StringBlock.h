@@ -3,16 +3,16 @@
 #define __ELASTOS_DROID_CONTENT_RES_STRINGBLOCK_H__
 
 #include "ext/frameworkext.h"
-#include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 
-
-using Elastos::Core::ICharSequence;
-using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Graphics::IPaintFontMetricsInt;
 using Elastos::Droid::Text::ITextPaint;
 using Elastos::Droid::Text::ISpannable;
 using Elastos::Droid::Text::Style::ILineHeightSpanWithDensity;
+
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -24,10 +24,10 @@ namespace Res {
  *
  * {@hide}
  */
-class StringBlock : public ElRefBase
+class StringBlock : public Object
 {
 public:
-    class StyleIDs : public ElRefBase
+    class StyleIDs : public Object
     {
     public:
         StyleIDs();
@@ -47,23 +47,14 @@ public:
     };
 
     class Height
-        : public ElRefBase
+        : public Object
         , public ILineHeightSpanWithDensity
     {
     public:
+        CAR_INTERFACE_DECL()
+
         Height(
             /* [in] */ Int32 size);
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* pObject,
-            /* [in] */ InterfaceID* pIID);
 
         CARAPI ChooseHeight(
             /* [in] */ ICharSequence* text,

@@ -2,28 +2,14 @@
 module
 {
 
-    interface Elastos.Droid.App.IActivity;
     interface Elastos.Droid.App.IPendingIntent;
-    interface Elastos.Droid.App.IService;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.Content.Pm.IIPackageManager;
-    interface Elastos.Droid.Content.Pm.IPackageManager;
-    interface Elastos.Droid.Net.INetworkUtils;
-    interface Elastos.Droid.Os.IBinder;
-    interface Elastos.Droid.Os.IParcel;
     interface Elastos.Droid.Os.IParcelFileDescriptor;
-    interface Elastos.Droid.Os.IServiceManager;
-    interface Elastos.Droid.Os.IUserHandle;
-    interface Elastos.Droid.Internal.Net.IVpnConfig;
 
     using interface Elastos.Net.IDatagramSocket;
-    using interface Elastos.Net.IInet4Address;
-    using interface Elastos.Net.IInet6Address;
     using interface Elastos.Net.IInetAddress;
     using interface Elastos.Net.ISocket;
-    using interface Elastos.Utility.IArrayList;
-    using interface Elastos.Utility.IList;
 
     namespace Elastos {
     namespace Droid {

@@ -6,6 +6,7 @@
 #include "content/res/StringBlock.h"
 #include "content/res/XmlBlock.h"
 #include <elastos/io/InputStream.h>
+#include <elastos/core/Object.h>
 
 using Elastos::IO::InputStream;
 using Elastos::Droid::Os::IParcelFileDescriptor;
@@ -24,12 +25,13 @@ namespace Res {
  * bytes.
  */
 CarClass(CAssetManager)
+    , public Object
+    , public IAcssertManager
 {
 public:
     class AssetInputStream
-        : public ElRefBase
+        : public InputStream
         , public IAssetInputStream
-        , public InputStream
     {
     public:
         AssetInputStream(
@@ -37,17 +39,6 @@ public:
             /* [in] */ Int32 asset);
 
         ~AssetInputStream();
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
 
         CARAPI Available(
             /* [out] */ Int32* bytes);
@@ -92,6 +83,10 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CAssetManager();
 
     ~CAssetManager();

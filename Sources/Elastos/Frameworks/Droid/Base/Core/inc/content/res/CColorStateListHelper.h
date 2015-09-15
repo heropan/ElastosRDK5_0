@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Content_Res_CColorStateListHelper.h"
 #include "content/res/CColorStateList.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::Res::IColorStateList;
 using Elastos::Droid::Content::Res::IResources;
@@ -16,8 +17,14 @@ namespace Content {
 namespace Res {
 
 CarClass(CColorStateListHelper)
+    , public Singleton
+    , public IColorStateListHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI ValueOf(
         /* [in] */ Int32 color,
         /* [out] */ IColorStateList** ppList);

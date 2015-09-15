@@ -26,6 +26,8 @@ namespace Droid {
 namespace Content {
 namespace Res {
 
+CAR_INTERFACE_IMPL(CAssetManager::AssetInputStream, InputStream, IAssetInputStream)
+
 CAssetManager::AssetInputStream::AssetInputStream(
     /* [in] */ CAssetManager* assetManager,
     /* [in] */ Int32 asset)
@@ -39,43 +41,6 @@ CAssetManager::AssetInputStream::AssetInputStream(
 CAssetManager::AssetInputStream::~AssetInputStream()
 {
     Close();
-}
-
-PInterface CAssetManager::AssetInputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IAssetInputStream*)this;
-    }
-    else if (riid == EIID_IAssetInputStream) {
-        return (IAssetInputStream*)this;
-    }
-    else if (riid == EIID_IInputStream) {
-        return (IInputStream*)this;
-    }
-    else if (riid == EIID_ICloseable) {
-        return (ICloseable*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 CAssetManager::AssetInputStream::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CAssetManager::AssetInputStream::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CAssetManager::AssetInputStream::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    assert(0);
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode CAssetManager::AssetInputStream::GetAssetInt32(
@@ -203,7 +168,11 @@ const Int32 CAssetManager::STYLE_DENSITY;
 const String CAssetManager::TAG("CAssetManager");
 const Boolean CAssetManager::LocalLOGV = FALSE || FALSE;
 const Boolean CAssetManager::DEBUG_REFS = TRUE;
-Mutex CAssetManager::sSync;
+Object CAssetManager::sSync;
+
+CAR_INTERFACE_IMPL(CAssetManager, Object, IAssetManager)
+
+CAR_OBJECT_IMPL(CAssetManager)
 
 CAssetManager::CAssetManager()
     : mObject(0)

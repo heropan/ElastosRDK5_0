@@ -24,7 +24,7 @@ class SyncAdaptersCache
 {
 public:
     class MySerializer
-        : public ElRefBase
+        : public Object
         , public IXmlSerializerAndParser
     {
     public:
@@ -44,7 +44,7 @@ public:
     SyncAdaptersCache(
         /* [in] */ IContext* context);
 
-    ~SyncAdaptersCache();
+    virtual ~SyncAdaptersCache();
 
     CARAPI ParseServiceAttributes(
         /* [in] */ IResources* res,

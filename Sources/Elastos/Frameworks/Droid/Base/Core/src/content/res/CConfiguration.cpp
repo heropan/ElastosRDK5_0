@@ -25,6 +25,10 @@ static AutoPtr<IConfiguration> InitEmpty()
 
 const AutoPtr<IConfiguration> CConfiguration::EMPTY = InitEmpty();
 
+CAR_INTERFACE_IMPL(CConfiguration, Object, IConfiguration)
+
+CAR_OBJECT_IMPL(CConfiguration)
+
 CConfiguration::CConfiguration()
     : mFontScale(0.0f)
     , mMcc(0)

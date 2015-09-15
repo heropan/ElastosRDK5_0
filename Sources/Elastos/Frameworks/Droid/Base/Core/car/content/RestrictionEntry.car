@@ -106,7 +106,7 @@ module
          * @return the current selected state of the entry.
          */
         GetSelectedState(
-            [out] String* str);
+            [out] Boolean* str);
 
         /**
          * Returns the value of the entry as an integer when the type is {@link #TYPE_INTEGER}.
@@ -160,7 +160,7 @@ module
          * @see #getAllSelectedStrings()
          */
         SetChoiceValues(
-            [in] ArrayOf<String> choiceValues);
+            [in] ArrayOf<String>* choiceValues);
 
         /**
          * Sets a list of string values that can be selected by the user, similar to

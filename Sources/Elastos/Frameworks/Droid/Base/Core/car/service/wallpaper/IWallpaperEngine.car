@@ -2,8 +2,6 @@ module
 {
     interface Elastos.Droid.View.IMotionEvent;
     interface Elastos.Droid.Os.IBundle;
-    interface Elastos.Droid.Os.IBinder;
-    interface Elastos.Droid.Internal.Os.IHandlerCaller;
     interface Elastos.Droid.Graphics.IRect;
 
     namespace Elastos {

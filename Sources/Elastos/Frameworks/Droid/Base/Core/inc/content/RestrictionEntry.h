@@ -24,7 +24,11 @@ class RestrictionEntry
     , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     RestrictionEntry();
+
+    virtual ~RestrictionEntry();
 
     CARAPI constructor();
 

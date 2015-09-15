@@ -58,36 +58,26 @@ SOURCES += Loader.cpp
 SOURCES += CLoaderForceLoadContentObserver.cpp
 SOURCES += CMutableContextWrapper.cpp
 SOURCES += CPeriodicSync.cpp
-#SOURCES += RestrictionEntry.cpp
+SOURCES += RestrictionEntry.cpp
 #SOURCES += CRestrictionsManager.cpp
-#SOURCES += CSearchRecentSuggestionsProvider.cpp
+SOURCES += CSearchRecentSuggestionsProvider.cpp
 #SOURCES += CSyncActivityTooManyDeletes.cpp
-#SOURCES += CSyncAdapterType.cpp
-#SOURCES += CSyncAdapterTypeHelper.cpp
+SOURCES += CSyncAdapterType.cpp
+SOURCES += CSyncAdapterTypeHelper.cpp
 #SOURCES += SyncAdaptersCache.cpp
-#SOURCES += CSyncContext.cpp
-#SOURCES += CSyncInfo.cpp
-#SOURCES += CSyncRequest.cpp
-#SOURCES += CSyncResult.cpp
-#SOURCES += CSyncResultHelper.cpp
-#SOURCES += CSyncStats.cpp
-#SOURCES += CSyncStatusInfo.cpp
+SOURCES += CSyncContext.cpp
+SOURCES += CSyncInfo.cpp
+SOURCES += CSyncRequest.cpp
+SOURCES += CSyncRequestBuilder.cpp
+SOURCES += CSyncResult.cpp
+SOURCES += CSyncResultHelper.cpp
+SOURCES += CSyncStats.cpp
+SOURCES += CSyncStatusInfo.cpp
 #SOURCES += CUndoManager.cpp
 #SOURCES += UndoOperation.cpp
 #SOURCES += UndoOwner.cpp
-#SOURCES += CUriMatcher.cpp
-#SOURCES += CUriPermission.cpp
-
-
-#SOURCES += IIContentProviderConstants.cpp
-
-#SOURCES += AbstractThreadedSyncAdapter.cpp
-#SOURCES += CNativeLibraryHelper.cpp
-#SOURCES += CPackageHelper.cpp
-#SOURCES += PackageHelper.cpp
-#SOURCES += PackageMonitor.cpp
-#SOURCES += CSelectionBuilder.cpp
-
+SOURCES += CUriMatcher.cpp
+SOURCES += CUriPermission.cpp
 
 #LIBRARIES += pm/pm.lib
 #LIBRARIES += res/res.lib

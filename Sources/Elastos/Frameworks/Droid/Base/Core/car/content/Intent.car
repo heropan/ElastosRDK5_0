@@ -5,7 +5,6 @@ module
     using interface Elastos.Core.IStringBuilder;
     using interface Elastos.IO.ISerializable;
     using interface Elastos.Utility.IArrayList;
-    using interface Elastos.Utility.ISet;
     using interface Org.Xmlpull.V1.IXmlPullParser;
 
     interface Elastos.Droid.Content.IClipData;

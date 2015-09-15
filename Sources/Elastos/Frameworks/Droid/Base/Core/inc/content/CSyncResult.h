@@ -3,17 +3,22 @@
 #define __ELASTOS_DROID_CONTENT_CSYNCRESULT_H__
 
 #include "_Elastos_Droid_Content_CSyncResult.h"
-
-using namespace Elastos::Core;
-//using Elastos::Core::IStringBuilder;
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CSyncResult)
+    , public Object
+    , public ISyncResult
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CSyncResult();
 
     ~CSyncResult();
@@ -209,6 +214,9 @@ public:
      */
     CARAPI constructor(
         /* [in] */ Boolean syncAlreadyInProgress);
+
+public:
+    static const AutoPtr<ISyncResult> ALREADY_IN_PROGRESS;
 
 private:
     /**

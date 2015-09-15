@@ -8,6 +8,10 @@ namespace Droid {
 namespace Content {
 namespace Res {
 
+CAR_INTERFACE_IMPL(CAssetManagerHelper, Singleton, IAssetManagerHelper)
+
+CAR_SINGLETON_IMPL(CAssetManagerHelper)
+
 ECode CAssetManagerHelper::GetSystem(
     /* [out] */ IAssetManager** am)
 {

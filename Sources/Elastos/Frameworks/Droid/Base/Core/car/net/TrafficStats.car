@@ -2,12 +2,8 @@
 module
 {
 
-    interface Elastos.Droid.App.IDownloadManager;
-    interface Elastos.Droid.App.Backup.IBackupManager;
     interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Os.IServiceManager;
 
-    using interface Libcore.IO.ISocketTagger;
     using interface Elastos.Net.ISocket;
 
     namespace Elastos {

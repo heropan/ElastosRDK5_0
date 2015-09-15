@@ -1,7 +1,6 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
-    using interface Elastos.Utility.ICalendar;
     using interface Elastos.Utility.IFormatter;
 
     interface Elastos.Droid.Content.IContext;

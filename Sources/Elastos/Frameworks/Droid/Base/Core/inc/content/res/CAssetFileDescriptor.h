@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_RES_CASSETFILEDESCRIPTOR_H__
 
 #include "_Elastos_Droid_Content_Res_CAssetFileDescriptor.h"
+#include <elastos/core/Object.h>
 
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IFileInputStream;
@@ -21,11 +22,17 @@ namespace Res {
  * offset and length of that entry's data in the file.
  */
 CarClass(CAssetFileDescriptor)
+    , public Object
+    , public IAssetFileDescriptor
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CAssetFileDescriptor();
 
-    ~CAssetFileDescriptor();
+    virtual ~CAssetFileDescriptor();
 
     /**
      * Create an empty surface, which will later be filled in by

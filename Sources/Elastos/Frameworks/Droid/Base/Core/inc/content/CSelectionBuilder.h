@@ -6,6 +6,7 @@
 #include <ext/frameworkext.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Etl::List;
@@ -21,6 +22,10 @@ namespace Content {
 CarClass(CSelectionBuilder)
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CSelectionBuilder();
 
     ~CSelectionBuilder();

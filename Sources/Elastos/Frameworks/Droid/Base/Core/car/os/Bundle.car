@@ -4,7 +4,6 @@ module
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.IO.ISerializable;
     using interface Elastos.Utility.ISet;
-    using interface Elastos.Utility.IMap;
     using interface Elastos.Utility.IArrayList;
 
     interface Elastos.Droid.Os.IBinder;

@@ -2,9 +2,6 @@
 module
 {
 
-    using interface Elastos.Utility.ILocale;
-    using interface Elastos.Utility.Regex.IMatcher;
-    using interface Elastos.Utility.Regex.IPattern;
 
     namespace Elastos {
     namespace Droid {

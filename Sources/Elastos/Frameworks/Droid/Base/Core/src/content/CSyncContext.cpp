@@ -11,9 +11,12 @@ namespace Content {
 
 const Int64 CSyncContext::HEARTBEAT_SEND_INTERVAL_IN_MS;
 
+CAR_INTERFACE_IMPL(CSyncContext, Object, ISyncContext)
+
+CAR_OBJECT_IMPL(CSyncContext)
+
 CSyncContext::CSyncContext()
-    : mSyncContext(NULL)
-    , mLastHeartbeatSendTime(0)
+    : mLastHeartbeatSendTime(0)
 {}
 
 CSyncContext::~CSyncContext()
@@ -39,13 +42,7 @@ ECode CSyncContext::GetSyncContextBinder(
     /* [out] */ IBinder** binder)
 {
     VALIDATE_NOT_NULL(binder)
-    if (NULL == mSyncContext) {
-        *binder = NULL;
-    }
-    else {
-//        *binder = mSyncContext.asBinder();
-    }
-
+    *binder = IBinder::Probe(mSyncContext);
     return NOERROR;
 }
 

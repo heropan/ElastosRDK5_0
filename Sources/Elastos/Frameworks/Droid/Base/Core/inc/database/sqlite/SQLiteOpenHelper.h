@@ -1,11 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITEOPENHELPER_H__
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITEOPENHELPER_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
+#include "ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
@@ -49,7 +45,7 @@ public:
      * @param version number of the database (starting at 1); if the database is older,
      *     {@link #onUpgrade} will be used to upgrade the database
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ const String& name,
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,
@@ -72,7 +68,7 @@ public:
      * @param errorHandler the {@link DatabaseErrorHandler} to be used when sqlite reports database
      * corruption, or null to use the default error handler.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ const String& name,
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,

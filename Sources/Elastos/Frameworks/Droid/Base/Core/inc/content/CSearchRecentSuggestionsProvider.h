@@ -3,21 +3,13 @@
 #define __ELASTOS_DROID_CONTENT_CSEARCHRECENTSUGGESTIONSPROVIDER_H__
 
 #include "_Elastos_Droid_Content_CSearchRecentSuggestionsProvider.h"
-#include "contentContentProvider.h"
+#include "content/ContentProvider.h"
+#include "database/sqlite/SQLiteOpenHelper.h"
 
-using Elastos::Droid::Content::Pm::IPathPermission;
-using Elastos::Droid::Content::Pm::IProviderInfo;
-using Elastos::Droid::Content::Res::IConfiguration;
-using Elastos::Droid::Content::Res::IAssetFileDescriptor;
 using Elastos::Droid::Database::ICursor;
-using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
+using Elastos::Droid::Database::Sqlite::SQLiteOpenHelper;
 using Elastos::Droid::Database::Sqlite::ISQLiteOpenHelper;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::ICancellationSignal;
-using Elastos::Droid::Os::IParcelFileDescriptor;
-using Elastos::IO::IFileDescriptor;
-using Elastos::IO::IPrintWriter;
+using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
 
 namespace Elastos {
 namespace Droid {
@@ -35,14 +27,16 @@ class CSearchRecentSuggestionsProvider
      * @hide
      */
     class DatabaseHelper
-        // : public SQLiteOpenHelper
+        : public SQLiteOpenHelper
     {
     public:
-        DatabaseHelper(
+        DatabaseHelper();
+
+        CARAPI constructor(
             /*[in]*/ IContext* context,
             /*[in]*/ Int32 newVersion);
 
-        ~DatabaseHelper();
+        virtual ~DatabaseHelper();
 
         CARAPI OnCreate(
             /*[in]*/ ISQLiteDatabase* db);
@@ -54,7 +48,6 @@ class CSearchRecentSuggestionsProvider
 
     private:
         Int32 mNewVersion;
-
     };
 
 public:
@@ -66,25 +59,32 @@ public:
 
     virtual ~CSearchRecentSuggestionsProvider();
 
-    CARAPI OnConfigurationChanged(
-        /* [in] */ IConfiguration* newConfig);
+    /**
+     * This method is provided for use by the ContentResolver.  Do not override, or directly
+     * call from your own code.
+     */
+    CARAPI Delete(
+        /* [in] */ IUri* uri,
+        /* [in] */ const String& selection,
+        /* [in] */ ArrayOf<String>* selectionArgs,
+        /* [out] */ Int32* rowsAffected);
 
-    CARAPI OnLowMemory();
+    /**
+     * This method is provided for use by the ContentResolver.  Do not override, or directly
+     * call from your own code.
+     */
+    CARAPI GetType(
+        /* [in] */ IUri* uri,
+        /* [out] */ String* type);
 
-    CARAPI OnTrimMemory(
-        /* [in] */ Int32 level);
-
-    CARAPI GetContext(
-        /* [out] */ IContext** context);
-
-    CARAPI GetReadPermission(
-        /* [out] */ String* permissionName);
-
-    CARAPI GetWritePermission(
-        /* [out] */ String* permissionName);
-
-    CARAPI GetPathPermissions(
-        /* [out, callee] */ ArrayOf<IPathPermission *>** pathPermissions);
+    /**
+     * This method is provided for use by the ContentResolver.  Do not override, or directly
+     * call from your own code.
+     */
+    CARAPI Insert(
+        /* [in] */ IUri* uri,
+        /* [in] */ IContentValues* values,
+        /* [out] */ IUri** insertedUri);
 
     /**
      * This method is provided for use by the ContentResolver.  Do not override, or directly
@@ -108,114 +108,17 @@ public:
         /* [in] */ const String& sortOrder,
         /* [out] */ ICursor** cursor);
 
-    CARAPI Query(
-        /* [in] */ IUri* uri,
-        /* [in] */ ArrayOf<String>* projection,
-        /* [in] */ const String& selection,
-        /* [in] */ ArrayOf<String>* selectionArgs,
-        /* [in] */ const String& sortOrder,
-        /* [in] */ ICancellationSignal* cancellationSignal,
-        /* [out] */ ICursor** cursor);
-
     /**
      * This method is provided for use by the ContentResolver.  Do not override, or directly
      * call from your own code.
      */
-    // @Override
-    CARAPI GetType(
-        /* [in] */ IUri* uri,
-        /* [out] */ String* type);
-
-    /**
-     * This method is provided for use by the ContentResolver.  Do not override, or directly
-     * call from your own code.
-     */
-    // @Override
-    CARAPI Insert(
-        /* [in] */ IUri* uri,
-        /* [in] */ IContentValues* values,
-        /* [out] */ IUri** insertedUri);
-
-    CARAPI BulkInsert(
-        /* [in] */ IUri* uri,
-        /* [in] */ ArrayOf<IContentValues *>* values,
-        /* [out] */ Int32* number);
-
-    /**
-     * This method is provided for use by the ContentResolver.  Do not override, or directly
-     * call from your own code.
-     */
-    // @Override
-    CARAPI Delete(
-        /* [in] */ IUri* uri,
-        /* [in] */ const String& selection,
-        /* [in] */ ArrayOf<String>* selectionArgs,
-        /* [out] */ Int32* rowsAffected);
-
-    /**
-     * This method is provided for use by the ContentResolver.  Do not override, or directly
-     * call from your own code.
-     */
-    // @Override
+    // TODO: Confirm no injection attacks here, or rewrite.
     CARAPI Update(
         /* [in] */ IUri* uri,
         /* [in] */ IContentValues* values,
         /* [in] */ const String& selection,
         /* [in] */ ArrayOf<String>* selectionArgs,
         /* [out] */ Int32* rowsAffected);
-
-    CARAPI OpenFile(
-        /* [in] */ IUri* uri,
-        /* [in] */ const String& mode,
-        /* [out] */ IParcelFileDescriptor** fileDescriptor);
-
-    CARAPI OpenAssetFile(
-        /* [in] */ IUri* uri,
-        /* [in] */ const String& mode,
-        /* [out] */ IAssetFileDescriptor** fileDescriptor);
-
-    CARAPI GetStreamTypes(
-        /* [in] */ IUri* uri,
-        /* [in] */ const String& mimeTypeFilter,
-        /* [out, callee] */ ArrayOf<String>** streamTypes);
-
-    CARAPI OpenTypedAssetFile(
-        /* [in] */ IUri* uri,
-        /* [in] */ const String& mimeTypeFilter,
-        /* [in] */ IBundle* opts,
-        /* [out] */ IAssetFileDescriptor** fileDescriptor);
-
-    CARAPI OpenPipeHelper(
-        /* [in] */ IUri* uri,
-        /* [in] */ const String& mimeType,
-        /* [in] */ IBundle* opts,
-        /* [in] */ IInterface* args,
-        /* [in] */ IContentProviderPipeDataWriter* func,
-        /* [out] */ IParcelFileDescriptor** fileDescriptor);
-
-    CARAPI GetIContentProvider(
-        /* [out] */ IIContentProvider** contentProvider);
-
-    CARAPI AttachInfo(
-        /* [in] */ IContext* context,
-        /* [in] */ IProviderInfo* info);
-
-    CARAPI ApplyBatch(
-        /* [in] */ IObjectContainer* operations,
-        /* [out, callee] */ ArrayOf<IContentProviderResult *>** providerResults);
-
-    CARAPI Call(
-        /* [in] */ const String& method,
-        /* [in] */ const String& arg,
-        /* [in] */ IBundle* extras,
-        /* [out] */ IBundle** bundle);
-
-    CARAPI Shutdown();
-
-    CARAPI Dump(
-        /* [in] */ IFileDescriptor* fd,
-        /* [in] */ IPrintWriter* writer,
-        /* [in] */ ArrayOf<String>* args);
 
 protected:
     /**

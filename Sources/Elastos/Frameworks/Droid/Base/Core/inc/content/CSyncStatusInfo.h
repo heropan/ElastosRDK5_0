@@ -10,6 +10,7 @@ namespace Droid {
 namespace Content {
 
 CarClass(CSyncStatusInfo)
+    , public Object
     , public ISyncStatusInfo
     , public IParcelable
 {
@@ -21,6 +22,14 @@ public:
     CSyncStatusInfo();
 
     virtual ~CSyncStatusInfo();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ Int32 authorityId);
+
+    CARAPI constructor(
+        /* [in] */ ISyncStatusInfo* other);
 
     CARAPI GetAuthorityId(
         /* [out] */ Int32* authorityId);
@@ -115,12 +124,6 @@ public:
     CARAPI SetInitialize(
         /* [in] */ Boolean initialize);
 
-    CARAPI GetperiodicSyncTimes(
-        /* [out, callee] */ ArrayOf<Int64>** periodicSyncTimes);
-
-    CARAPI SetperiodicSyncTimes(
-        /* [in] */ ArrayOf<Int64>* periodicSyncTimes);
-
     CARAPI GetLastFailureMesgAsInt(
         /* [in] */ Int32 def,
         /* [out] */ Int32* msg);
@@ -141,11 +144,6 @@ public:
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ Int32 authorityId);
 
 private:
     CARAPI EnsurePeriodicSyncTimeSize(
@@ -172,6 +170,9 @@ private:
     Int64 mInitialFailureTime;
     Boolean mPending;
     Boolean mInitialize;
+
+    // Warning: It is up to the external caller to ensure there are
+    // no race conditions when accessing this list
     AutoPtr<ArrayOf<Int64> > mPeriodicSyncTimes;
 
 };

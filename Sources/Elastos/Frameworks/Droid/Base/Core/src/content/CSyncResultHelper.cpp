@@ -1,17 +1,22 @@
 
 #include "content/CSyncResultHelper.h"
 #include "content/CSyncResult.h"
-#include <ext/frameworkext.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
+CAR_INTERFACE_IMPL(CSyncResultHelper, Singleton, ISyncResultHelper)
+
+CAR_SINGLETON_IMPL(CSyncResultHelper)
+
 ECode CSyncResultHelper::GetALREADY_IN_PROGRESS(
     /* [out] */ ISyncResult** syncResult)
 {
     VALIDATE_NOT_NULL(syncResult)
-    return CSyncResult::New(TRUE, syncResult);
+    *syncResult = CSyncResult::ALREADY_IN_PROGRESS;
+    REFCOUNT_ADD(*syncResult)
+    return NOERROR;
 }
 
 }

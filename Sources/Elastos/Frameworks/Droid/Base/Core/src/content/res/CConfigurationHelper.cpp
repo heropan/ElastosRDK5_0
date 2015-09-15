@@ -8,6 +8,10 @@ namespace Droid {
 namespace Content {
 namespace Res {
 
+CAR_INTERFACE_IMPL(CConfigurationHelper, Object, IConfigurationHelper)
+
+CAR_SINGLETON_IMPL(CConfigurationHelper)
+
 ECode CConfigurationHelper::ResetScreenLayout(
     /* [in] */ Int32 curLayout,
     /* [out] */ Int32* layout)

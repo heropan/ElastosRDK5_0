@@ -1,6 +1,7 @@
 
 #include "content/CUriMatcher.h"
 
+using Elastos::Utility::IList;
 using Elastos::Utility::Regex::IPatternHelper;
 using Elastos::Utility::Regex::CPatternHelper;
 using Elastos::Utility::Regex::IPattern;
@@ -10,6 +11,10 @@ namespace Droid {
 namespace Content {
 
 AutoPtr<IPattern> CUriMatcher::PATH_SPLIT_PATTERN;
+
+CAR_INTERFACE_IMPL(CUriMatcher, Object, IUriMatcher)
+
+CAR_OBJECT_IMPL(CUriMatcher)
 
 AutoPtr<IPattern> CUriMatcher::GetSplitPattern()
 {
@@ -44,9 +49,13 @@ ECode CUriMatcher::AddURI(
     }
 
     AutoPtr<ArrayOf<String> > tokens;
-
     if (!path.IsNull()) {
-        FAIL_RETURN(GetSplitPattern()->Split(path, (ArrayOf<String>**)&tokens))
+        String newPath = path;
+        // Strip leading slash if present.
+        if (!path.IsEmpty() && path.GetChar(0) == '/') {
+            newPath = path.Substring(1);
+        }
+        FAIL_RETURN(GetSplitPattern()->Split(newPath, (ArrayOf<String>**)&tokens))
     }
 
     Int32 numTokens = tokens != NULL ? tokens->GetLength() : 0;
@@ -104,12 +113,13 @@ ECode CUriMatcher::Match(
     /* [out] */ Int32* matchCode)
 {
     VALIDATE_NOT_NULL(matchCode)
-    *matchCode = NULL;
+    *matchCode = 0;
     VALIDATE_NOT_NULL(uri)
 
-    AutoPtr<ArrayOf<String> > pathSegments;
-    FAIL_RETURN(uri->GetPathSegments((ArrayOf<String>**)&pathSegments))
-    Int32 length = pathSegments->GetLength();
+    AutoPtr<IList> pathSegments;
+    FAIL_RETURN(uri->GetPathSegments((IList**)&pathSegments))
+    Int32 length;
+    pathSegments->GetSize(&length);
     AutoPtr<CUriMatcher> node = this;
     String authority;
     FAIL_RETURN(uri->GetAuthority(&authority))
@@ -123,7 +133,14 @@ ECode CUriMatcher::Match(
     Char32 c;
     AutoPtr<ArrayOf<Char32> > chars;
     for (Int32 i = -1; i < length; i++) {
-        u = i < 0 ? authority : (*pathSegments)[i];
+        if (i < 0) {
+            u = authority;
+        }
+        else {
+            AutoPtr<IInterface> obj;
+            pathSegments->Get(i, (IInterface**)&obj);
+            u = Object::ToString(obj);
+        }
 
         List<AutoPtr<CUriMatcher> >& list = node->mChildren;
         if (list.IsEmpty()) break;

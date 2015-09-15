@@ -1,7 +1,5 @@
 module
 {
-    using interface Elastos.IO.IInputStream;
-    using interface Elastos.IO.IOutputStream;
 
     namespace Elastos {
     namespace Droid {

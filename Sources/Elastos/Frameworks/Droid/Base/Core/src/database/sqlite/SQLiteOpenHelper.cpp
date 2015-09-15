@@ -27,16 +27,16 @@ SQLiteOpenHelper::SQLiteOpenHelper()
     , mEnableWriteAheadLogging(FALSE)
 {}
 
-ECode SQLiteOpenHelper::Init(
+ECode SQLiteOpenHelper::constructor(
     /*[in]*/ IContext* context,
     /*[in]*/ const String& name,
     /*[in]*/ ISQLiteDatabaseCursorFactory* factory,
     /*[in]*/ Int32 version)
 {
-    return Init(context, name, factory, version, NULL);
+    return constructor(context, name, factory, version, NULL);
 }
 
-ECode SQLiteOpenHelper::Init(
+ECode SQLiteOpenHelper::constructor(
     /*[in]*/ IContext* context,
     /*[in]*/ const String& name,
     /*[in]*/ ISQLiteDatabaseCursorFactory* factory,

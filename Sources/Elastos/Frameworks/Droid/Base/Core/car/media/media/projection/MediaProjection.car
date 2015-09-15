@@ -1,11 +1,9 @@
 module
 {
     interface Elastos.Droid.Os.IHandler;
-    interface Elastos.Droid.View.ISurface;
     interface Elastos.Droid.Media.IAudioRecord;
 // TODO: Need IIVirtualDisplayCallback
     // interface Elastos.Droid.Hardware.Display.IIVirtualDisplayCallback;
-    interface Elastos.Droid.Hardware.Display.IVirtualDisplay;
 
     namespace Elastos {
     namespace Droid {

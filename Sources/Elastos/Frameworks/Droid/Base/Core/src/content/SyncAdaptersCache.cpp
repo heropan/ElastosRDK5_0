@@ -11,9 +11,9 @@ namespace Droid {
 namespace Content {
 
 const String SyncAdaptersCache::TAG("Account");
-const String SyncAdaptersCache::SERVICE_INTERFACE = String("android.content.SyncAdapter");
-const String SyncAdaptersCache::SERVICE_META_DATA = String("android.content.SyncAdapter");
-const String SyncAdaptersCache::ATTRIBUTES_NAME = String("sync-adapter");
+const String SyncAdaptersCache::SERVICE_INTERFACE("android.content.SyncAdapter");
+const String SyncAdaptersCache::SERVICE_META_DATA("android.content.SyncAdapter");
+const String SyncAdaptersCache::ATTRIBUTES_NAME("sync-adapter");
 const AutoPtr<SyncAdaptersCache::MySerializer> SyncAdaptersCache::sSerializer = new SyncAdaptersCache::MySerializer();
 
 CAR_INTERFACE_IMPL(SyncAdaptersCache::MySerializer, IXmlSerializerAndParser)
@@ -52,7 +52,7 @@ ECode SyncAdaptersCache::MySerializer::CreateFromXml(
 
 SyncAdaptersCache::SyncAdaptersCache(
     /* [in] */ IContext *context)
-    : RegisteredServicesCache(context, String(), String(), String(), sSerializer.Get())
+    : RegisteredServicesCache(context, String(NULL), String(NULL), String(NULL), sSerializer.Get())
 {}
 
 SyncAdaptersCache::~SyncAdaptersCache()
@@ -65,6 +65,8 @@ ECode SyncAdaptersCache::ParseServiceAttributes(
     /* [out] */ IInterface** syncAdapterType)
 {
     VALIDATE_NOT_NULL(syncAdapterType)
+    *syncAdapterType = NULL;
+
     AutoPtr<ITypedArray> sa;
     AutoPtr<ArrayOf<Int32> > syncAdapterArray = ArrayOf<Int32>::Alloc(7);
     (*syncAdapterArray)[0] = 0x01010225;

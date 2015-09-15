@@ -41,6 +41,8 @@ namespace Droid {
 namespace Content {
 namespace Res {
 
+CAR_INTERFACE_IMPL(CResources::Theme, Object, IResourcesTheme)
+
 CResources::Theme::Theme(
     /* [in] */ CResources* host)
     : mHost(host)
@@ -52,35 +54,6 @@ CResources::Theme::Theme(
 CResources::Theme::~Theme()
 {
     mAssets->ReleaseTheme(mTheme);
-}
-
-PInterface CResources::Theme::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IResourcesTheme*)this;
-    }
-    else if (riid == EIID_IResourcesTheme) {
-        return (IResourcesTheme*)this;
-    }
-    return NULL;
-}
-
-UInt32 CResources::Theme::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CResources::Theme::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CResources::Theme::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode CResources::Theme::ApplyStyle(
@@ -268,7 +241,11 @@ CResources::DrawableMap CResources::sPreloadedColorDrawables;
 Boolean CResources::sPreloaded = FALSE;
 Int32 CResources::sPreloadedDensity = 0;
 
-Mutex CResources::mSyncLock;
+Object CResources::mSyncLock;
+
+CAR_INTERFACE_IMPL(CResources, Object, IResources)
+
+CAR_OJBECT_IMPL(CResources)
 
 CResources::CResources()
     : mPreloading(FALSE)

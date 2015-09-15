@@ -18,9 +18,12 @@ namespace Res {
  * take care of calling {@link ParcelFileDescriptor#close
  * ParcelFileDescritor.close()} for you when the stream is closed.
  */
-CarClass(CAssetFileDescriptorAutoCloseOutputStream) , public ParcelFileDescriptor::AutoCloseOutputStream
+CarClass(CAssetFileDescriptorAutoCloseOutputStream)
+    , public ParcelFileDescriptor::AutoCloseOutputStream
 {
 public:
+    CAR_OBJECT_DECL()
+
     CAssetFileDescriptorAutoCloseOutputStream();
 
     CARAPI constructor(

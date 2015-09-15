@@ -4,7 +4,6 @@ module
 
     interface Elastos.Droid.Net.IWifiKey;
 
-    interface Elastos.Droid.Os.IParcel;
 
 
     namespace Elastos {

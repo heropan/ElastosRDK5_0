@@ -51,28 +51,19 @@ namespace Res {
  * href="{@docRoot}guide/topics/resources/index.html">Application Resources</a>.</p>
  */
 CarClass(CResources)
+    , public Object
+    , public IResources
 {
 public:
     class Theme
-        : public ElRefBase
+        : public Object
         , public IResourcesTheme
     {
     public:
         Theme(
             /* [in] */ CResources* host);
 
-        ~Theme();
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
+        virtual ~Theme();
 
         CARAPI ApplyStyle(
             /* [in] */ Int32 resid,
@@ -117,7 +108,7 @@ public:
 public:
     CResources();
 
-    ~CResources();
+    virtual ~CResources();
 
     static CARAPI_(Int32) SelectDefaultTheme(
         /* [in] */ Int32 curTheme,

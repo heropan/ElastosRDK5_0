@@ -5,9 +5,25 @@
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringBuffer.h>
 
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringBuffer;
+
 namespace Elastos {
 namespace Droid {
 namespace Content {
+
+static AutoPtr<ISyncResult> InitALREADY_IN_PROGRESS()
+{
+    AutoPtr<CSyncResult> cr;
+    CSyncResult::NewByFriend(TRUE, (CSyncResult**)&cr);
+    return (ISyncResult*)cr.Get();
+}
+
+const AutoPtr<ISyncResult> CSyncResult::ALREADY_IN_PROGRESS = InitALREADY_IN_PROGRESS();
+
+CAR_INTERFACE_IMPL_2(CSyncResult, Object, ISyncResult, IParcelable)
+
+CAR_OBJECT_IMPL(CSyncResult)
 
 CSyncResult::CSyncResult()
     : mSyncAlreadyInProgress(FALSE)
@@ -18,7 +34,6 @@ CSyncResult::CSyncResult()
     , mPartialSyncUnavailable(FALSE)
     , mMoreRecordsToGet(FALSE)
     , mDelayUntil(0)
-    , mStats(NULL)
 {}
 
 CSyncResult::~CSyncResult()
@@ -233,44 +248,44 @@ ECode CSyncResult::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
-    AutoPtr<IStringBuilder> sb = new StringBuilder();
-    sb->AppendString(String("SyncResult:"));
+    StringBuilder sb;
+    sb.Append("SyncResult:");
 
     if (mSyncAlreadyInProgress) {
-        sb->AppendString(String(" syncAlreadyInProgress: "));
-        sb->AppendBoolean(mSyncAlreadyInProgress);
+        sb.Append(" syncAlreadyInProgress: ");
+        sb.Append(mSyncAlreadyInProgress);
     }
     if (mTooManyDeletions) {
-        sb->AppendString(String(" tooManyDeletions: "));
-        sb->AppendBoolean(mTooManyDeletions);
+        sb.Append(" tooManyDeletions: ");
+        sb.Append(mTooManyDeletions);
     }
     if (mTooManyRetries) {
-        sb->AppendString(String(" tooManyRetries: "));
-        sb->AppendBoolean(mTooManyRetries);
+        sb.Append(" tooManyRetries: ");
+        sb.Append(mTooManyRetries);
     }
     if (mDatabaseError) {
-        sb->AppendString(String(" databaseError: "));
-        sb->AppendBoolean(mDatabaseError);
+        sb.Append(" databaseError: ");
+        sb.Append(mDatabaseError);
     }
     if (mFullSyncRequested) {
-        sb->AppendString(String(" fullSyncRequested: "));
-        sb->AppendBoolean(mFullSyncRequested);
+        sb.Append(" fullSyncRequested: ");
+        sb.Append(mFullSyncRequested);
     }
     if (mPartialSyncUnavailable) {
-        sb->AppendString(String(" partialSyncUnavailable: "));
-        sb->AppendBoolean(mPartialSyncUnavailable);
+        sb.Append(" partialSyncUnavailable: ");
+        sb.Append(mPartialSyncUnavailable);
     }
     if (mMoreRecordsToGet) {
-        sb->AppendString(String(" moreRecordsToGet: "));
-        sb->AppendBoolean(mMoreRecordsToGet);
+        sb.Append(" moreRecordsToGet: ");
+        sb.Append(mMoreRecordsToGet);
     }
     if (mDelayUntil > 0) {
-        sb->AppendString(String(" delayUntil: "));
-        sb->AppendInt64(mDelayUntil);
+        sb.Append(" delayUntil: ");
+        sb.Append(mDelayUntil);
     }
 
-    sb->AppendObject(mStats);
-    return sb->ToString(str);
+    sb.Append(Object::ToString(mStats));
+    return sb.ToString(str);
 }
 
 ECode CSyncResult::ToDebugString(
@@ -282,54 +297,54 @@ ECode CSyncResult::ToDebugString(
     Int64 numConflictDetectedExceptions = 0;
     Int64 numAuthExceptions = 0;
     Int64 numIoExceptions = 0;
-    AutoPtr<IStringBuffer> sb = new StringBuffer();
+    StringBuffer sb;
     FAIL_RETURN(mStats->GetNumParseExceptions(&numParseExceptions))
     FAIL_RETURN(mStats->GetNumConflictDetectedExceptions(&numConflictDetectedExceptions))
     FAIL_RETURN(mStats->GetNumAuthExceptions(&numAuthExceptions))
     FAIL_RETURN(mStats->GetNumIoExceptions(&numIoExceptions))
 
     if (mFullSyncRequested) {
-        sb->AppendString(String("f1"));
+        sb.Append("f1");
     }
     if (mPartialSyncUnavailable) {
-        sb->AppendString(String("r1"));
+        sb.Append("r1");
     }
     if ((HasHardError(&ret), ret)) {
-        sb->AppendString(String("X1"));
+        sb.Append("X1");
     }
     if (numParseExceptions > 0) {
-        sb->AppendString(String("e"));
-        sb->AppendInt64(numParseExceptions);
+        sb.Append("e");
+        sb.Append(numParseExceptions);
     }
     if (numConflictDetectedExceptions > 0) {
-        sb->AppendString(String("c"));
-        sb->AppendInt64(numConflictDetectedExceptions);
+        sb.Append("c");
+        sb.Append(numConflictDetectedExceptions);
     }
     if (numAuthExceptions > 0) {
-        sb->AppendString(String("a"));
-        sb->AppendInt64(numAuthExceptions);
+        sb.Append("a");
+        sb.Append(numAuthExceptions);
     }
     if (mTooManyDeletions) {
-        sb->AppendString(String("D1"));
+        sb.Append("D1");
     }
     if (mTooManyRetries) {
-        sb->AppendString(String("R1"));
+        sb.Append("R1");
     }
     if (mDatabaseError) {
-        sb->AppendString(String("b1"));
+        sb.Append("b1");
     }
     if ((HasSoftError(&ret), ret)) {
-        sb->AppendString(String("x1"));
+        sb.Append("x1");
     }
     if (mSyncAlreadyInProgress) {
-        sb->AppendString(String("l1"));
+        sb.Append("l1");
     }
     if (numIoExceptions > 0) {
-        sb->AppendString(String("I"));
-        sb->AppendInt64(numIoExceptions);
+        sb.Append("I");
+        sb.Append(numIoExceptions);
     }
 
-    return sb->ToString(str);
+    return sb.ToString(str);
 }
 
 ECode CSyncResult::ReadFromParcel(
@@ -347,7 +362,7 @@ ECode CSyncResult::ReadFromParcel(
     if (NULL == mStats) {
         FAIL_RETURN(CSyncStats::New((ISyncStats**)&mStats))
     }
-    AutoPtr<IParcelable> parcelable = (IParcelable*) mStats->Probe(EIID_IParcelable);
+    AutoPtr<IParcelable> parcelable = IParcelable::Probe(mStats);
     FAIL_RETURN(parcelable->ReadFromParcel(source))
     return NOERROR;
 }
@@ -363,7 +378,7 @@ ECode CSyncResult::WriteToParcel(
     dest->WriteInt32(mPartialSyncUnavailable ? 1 : 0);
     dest->WriteInt32(mMoreRecordsToGet ? 1 : 0);
     dest->WriteInt64(mDelayUntil);
-    AutoPtr<IParcelable> parcelable = (IParcelable*) mStats->Probe(EIID_IParcelable);
+    AutoPtr<IParcelable> parcelable = IParcelable::Probe(mStats);
     FAIL_RETURN(parcelable->WriteToParcel(dest))
     return NOERROR;
 }

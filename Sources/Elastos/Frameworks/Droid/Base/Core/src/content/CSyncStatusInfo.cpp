@@ -1,5 +1,6 @@
 
 #include "content/CSyncStatusInfo.h"
+#include "content/ContentResolver.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 
@@ -37,6 +38,47 @@ CSyncStatusInfo::CSyncStatusInfo()
 
 CSyncStatusInfo::~CSyncStatusInfo()
 {}
+
+
+ECode CSyncStatusInfo::constructor()
+{
+    return NOERROR;
+}
+
+ECode CSyncStatusInfo::constructor(
+    /* [in] */ Int32 authorityId)
+{
+    mAuthorityId = authorityId;
+    return NOERROR;
+}
+
+ECode CSyncStatusInfo::constructor(
+    /* [in] */ ISyncStatusInfo* other)
+{
+    VALIDATE_NOT_NULL(other)
+    CSyncStatusInfo* ssi = (CSyncStatusInfo*)other;
+
+    mAuthorityId = ssi->mAuthorityId;
+    mTotalElapsedTime = ssi->mTotalElapsedTime;
+    mNumSyncs = ssi->mNumSyncs;
+    mNumSourcePoll = ssi->mNumSourcePoll;
+    mNumSourceServer = ssi->mNumSourceServer;
+    mNumSourceLocal = ssi->mNumSourceLocal;
+    mNumSourceUser = ssi->mNumSourceUser;
+    mNumSourcePeriodic = ssi->mNumSourcePeriodic;
+    mLastSuccessTime = ssi->mLastSuccessTime;
+    mLastSuccessSource = ssi->mLastSuccessSource;
+    mLastFailureTime = ssi->mLastFailureTime;
+    mLastFailureSource = ssi->mLastFailureSource;
+    mLastFailureMesg = ssi->mLastFailureMesg;
+    mInitialFailureTime = ssi->mInitialFailureTime;
+    mPending = ssi->mPending;
+    mInitialize = ssi->mInitialize;
+    if (ssi->mPeriodicSyncTimes != NULL) {
+        mPeriodicSyncTimes = ssi->mPeriodicSyncTimes->Clone();
+    }
+    return NOERROR;
+}
 
 ECode CSyncStatusInfo::GetAuthorityId(
     /* [out] */ Int32* authorityId)
@@ -271,36 +313,20 @@ ECode CSyncStatusInfo::SetInitialize(
     return NOERROR;
 }
 
-ECode CSyncStatusInfo::GetperiodicSyncTimes(
-    /* [out, callee] */ ArrayOf<Int64>** periodicSyncTimes)
-{
-    VALIDATE_NOT_NULL(periodicSyncTimes)
-    *periodicSyncTimes = mPeriodicSyncTimes;
-    REFCOUNT_ADD(*periodicSyncTimes);
-    return NOERROR;
-}
-
-ECode CSyncStatusInfo::SetperiodicSyncTimes(
-    /* [in] */ ArrayOf<Int64>* periodicSyncTimes)
-{
-    mPeriodicSyncTimes = periodicSyncTimes;
-    return NOERROR;
-}
-
 ECode CSyncStatusInfo::GetLastFailureMesgAsInt(
     /* [in] */ Int32 def,
     /* [out] */ Int32* msg)
 {
     VALIDATE_NOT_NULL(msg)
-//    try {
-        if (!mLastFailureMesg.IsNull()) {
-            *msg = StringUtils::ParseInt32(mLastFailureMesg);
-            return NOERROR;
-        }
-//    } catch (NumberFormatException e) {
-//        Log.d(TAG, "error parsing lastFailureMesg of " + lastFailureMesg, e);
-//    }
-    *msg = def;
+
+    Int32 i = ContentResolver::SyncErrorStringToInt(mLastFailureMesg);
+    if (i > 0) {
+        *msg = i;
+    }
+    else {
+        Logger::D(TAG, "Unknown lastFailureMesg:%s", mLastFailureMesg.string());
+        *msg = def;
+    }
     return NOERROR;
 }
 
@@ -308,6 +334,8 @@ ECode CSyncStatusInfo::SetPeriodicSyncTime(
     /* [in] */ Int32 index,
     /* [in] */ Int64 when)
 {
+    // The list is initialized lazily when scheduling occurs so we need to make sure
+    // we initialize elements < index to zero (zero is ignore for scheduling purposes)
     FAIL_RETURN(EnsurePeriodicSyncTimeSize(index))
     (*mPeriodicSyncTimes)[index] = when;
     return NOERROR;
@@ -318,28 +346,20 @@ ECode CSyncStatusInfo::GetPeriodicSyncTime(
     /* [out] */ Int64* time)
 {
     VALIDATE_NOT_NULL(time)
+    *time = 0;
 
-    if (NULL == mPeriodicSyncTimes || mPeriodicSyncTimes->GetLength() < (index + 1)) {
-        *time = 0;
-        return NOERROR;
+    if (NULL != mPeriodicSyncTimes && index < mPeriodicSyncTimes->GetLength()) {
+        *time = (*mPeriodicSyncTimes)[index];
     }
-
-    *time = (*mPeriodicSyncTimes)[index];
     return NOERROR;
 }
 
 ECode CSyncStatusInfo::RemovePeriodicSyncTime(
     /* [in] */ Int32 index)
 {
-    Int32 length = mPeriodicSyncTimes->GetLength();
+    if (mPeriodicSyncTimes != NULL && index < mPeriodicSyncTimes->GetLength()) {
+        Int32 length = mPeriodicSyncTimes->GetLength();
 
-    if (length == index) {
-        return NOERROR;
-    }
-    else if (index > length) {
-        FAIL_RETURN(EnsurePeriodicSyncTimeSize(index - 1))
-    }
-    else {
         Int32 newSize = length - 1;
         if (newSize < 0) newSize = 0;
 
@@ -366,7 +386,7 @@ ECode CSyncStatusInfo::ReadFromParcel(
     Int32 value = 0;
     source->ReadInt32(&version);
     if (version != VERSION && version != 1) {
-        Logger::W("SyncStatusInfo", String("Unknown version: ") + StringUtils::Int32ToString(version));
+        Logger::W("SyncStatusInfo", "Unknown version: %s", StringUtils::ToString(version).string());
     }
 
     source->ReadInt32(&mAuthorityId);
@@ -440,18 +460,6 @@ ECode CSyncStatusInfo::WriteToParcel(
         dest->WriteInt32(-1);
     }
 
-    return NOERROR;
-}
-
-ECode CSyncStatusInfo::constructor()
-{
-    return NOERROR;
-}
-
-ECode CSyncStatusInfo::constructor(
-    /* [in] */ Int32 authorityId)
-{
-    mAuthorityId = authorityId;
     return NOERROR;
 }
 

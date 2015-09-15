@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_RES_CCONFIGURATIONHELPER_H__
 
 #include "_Elastos_Droid_Content_Res_CConfigurationHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
@@ -10,8 +11,14 @@ namespace Content {
 namespace Res {
 
 CarClass(CConfigurationHelper)
+    , public Singleton
+    , public IConfigurationHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI ResetScreenLayout(
         /* [in] */ Int32 curLayout,
         /* [out] */ Int32* layout);

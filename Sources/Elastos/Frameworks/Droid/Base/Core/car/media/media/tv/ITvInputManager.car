@@ -9,9 +9,6 @@ module
     interface Elastos.Droid.Media.Tv.ITvContentRatingSystemInfo;
     interface Elastos.Droid.Media.Tv.IITvInputManagerCallback;
     interface Elastos.Droid.Media.Tv.IITvInputClient;
-    interface Elastos.Droid.Media.Tv.ITvInputHardwareInfo;
-    interface Elastos.Droid.Media.Tv.IITvInputHardware;
-    interface Elastos.Droid.Media.Tv.ITvStreamConfig;
 
     namespace Elastos {
     namespace Droid {

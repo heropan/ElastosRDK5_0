@@ -5,6 +5,7 @@
 #include "_Elastos_Droid_Content_CUriMatcher.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::Net::IUri;
@@ -15,11 +16,25 @@ namespace Droid {
 namespace Content {
 
 CarClass(CUriMatcher)
+    , public Object
+    , public IUriMatcher
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CUriMatcher();
 
-    ~CUriMatcher();
+    virtual ~CUriMatcher();
+
+    /**
+     * Creates the root node of the URI tree.
+     *
+     * @param code the code to match for the root URI
+     */
+    CARAPI constructor(
+        /* [in] */ Int32 code);
 
     /**
      * Add a URI to match, and the code to return when this URI is
@@ -50,13 +65,6 @@ public:
         /* [in] */ IUri* uri,
         /* [out] */ Int32* matchCode);
 
-    /**
-     * Creates the root node of the URI tree.
-     *
-     * @param code the code to match for the root URI
-     */
-    CARAPI constructor(
-        /* [in] */ Int32 code);
 public:
     static AutoPtr<IPattern> GetSplitPattern();
 

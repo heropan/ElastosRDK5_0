@@ -2,7 +2,6 @@ module
 {
     using interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.Os.IBinder;
-    interface Elastos.Droid.Os.IPersistableBundle;
 
     namespace Elastos {
     namespace Droid {

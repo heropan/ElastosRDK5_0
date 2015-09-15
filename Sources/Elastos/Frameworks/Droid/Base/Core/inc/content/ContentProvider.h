@@ -584,8 +584,7 @@ public:
      */
     virtual CARAPI Delete(
         /* [in] */ IUri* uri,
-        /* [in] */ IContentValues* values,
-        /* [in] */ String selection,
+        /* [in] */ const String& selection,
         /* [in] */ ArrayOf<String>* selectionArgs,
         /* [out] */ Int32* rowsAffected) = 0;
 
@@ -608,7 +607,8 @@ public:
      */
     virtual CARAPI Update(
         /* [in] */ IUri* uri,
-        /* [in] */ String selection,
+        /* [in] */ IContentValues* values,
+        /* [in] */ const String& selection,
         /* [in] */ ArrayOf<String>* selectionArgs,
         /* [out] */ Int32* rowsAffected) = 0;
 

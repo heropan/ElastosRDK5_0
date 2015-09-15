@@ -1,11 +1,7 @@
 
 module
 {
-    interface Elastos.Droid.Utility.ILog;
 
-    using interface Elastos.Net.IDatagramPacket;
-    using interface Elastos.Net.IDatagramSocket;
-    using interface Elastos.Net.IInetAddress;
 
     namespace Elastos {
     namespace Droid {

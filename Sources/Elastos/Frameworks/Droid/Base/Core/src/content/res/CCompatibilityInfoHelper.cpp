@@ -8,6 +8,10 @@ namespace Droid {
 namespace Content {
 namespace Res {
 
+CAR_INTERFACE_IMPL(CCompatibilityInfoHelper, Singletonm, ICompatibilityInfoHelper)
+
+CAR_SINGLETON_IMPL(CCompatibilityInfoHelper)
+
 ECode CCompatibilityInfoHelper::ComputeCompatibleScaling(
     /* [in] */ IDisplayMetrics* dm,
     /* [in] */ IDisplayMetrics* outDm,

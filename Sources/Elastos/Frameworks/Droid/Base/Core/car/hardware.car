@@ -118,7 +118,6 @@ module
     interface Elastos.Droid.View.IDisplay;
     interface Elastos.Droid.View.ISurface;
     interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Os.IBinder;
 
     namespace Elastos {
     namespace Droid {

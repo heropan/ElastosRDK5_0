@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_RES_CCOMPATIBILITYINFOHELPER_H__
 
 #include "_Elastos_Droid_Content_Res_CCompatibilityInfoHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Utility::IDisplayMetrics;
 
@@ -12,8 +13,14 @@ namespace Content {
 namespace Res {
 
 CarClass(CCompatibilityInfoHelper)
+    , public Singleton
+    , public ICompatibilityInfoHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Compute the frame Rect for applications runs under compatibility mode.
      *

@@ -26,6 +26,8 @@ namespace Res {
  *  {@hide}
  */
 CarClass(CCompatibilityInfo)
+    , public object
+    , public ICompatibilityInfo
 {
 public:
     /**
@@ -33,26 +35,17 @@ public:
     * @hide
     */
     class Translator
-        : public ElRefBase
+        : public Object
         , public ICompatibilityInfoTranslator
     {
     public:
+        CAR_INTERFACE_DECL()
+
         Translator(
             /* [in] */ Float applicationScale,
             /* [in] */ Float applicationInvertedScale);
 
         Translator();
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
 
         CARAPI TranslateRectInScreenToAppWinFrame(
             /* [in] */ IRect* rect);
@@ -115,6 +108,10 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CCompatibilityInfo();
 
     /**

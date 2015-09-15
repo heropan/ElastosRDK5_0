@@ -3,23 +3,63 @@
 #define __ELASTOS_DROID_CONTENT_CSYNCADAPTERTYPE_H__
 
 #include "_Elastos_Droid_Content_CSyncAdapterType.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
 CarClass(CSyncAdapterType)
+    , public Object
+    , public ISyncAdapterType
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CSyncAdapterType();
 
-    ~CSyncAdapterType();
+    virtual ~CSyncAdapterType();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ const String& authority,
+        /* [in] */ const String& accountType,
+        /* [in] */ Boolean userVisible,
+        /* [in] */ Boolean supportsUploading);
+
+    /** @hide */
+    CARAPI constructor(
+        /* [in] */ const String& authority,
+        /* [in] */ const String& accountType,
+        /* [in] */ Boolean userVisible,
+        /* [in] */ Boolean supportsUploading,
+        /* [in] */ Boolean isAlwaysSyncable,
+        /* [in] */ Boolean allowParallelSyncs,
+        /* [in] */ const String& settingsActivity);
+
+    /** @hide */
+    CARAPI constructor(
+        /* [in] */ const String& authority,
+        /* [in] */ const String& accountType);
 
     CARAPI GetAuthority(
         /* [out] */ String* authority);
 
+    CARAPI SetAuthority(
+        /* [in] */ const String& authority);
+
     CARAPI GetAccountType(
         /* [out] */ String* accountType);
+
+    CARAPI SetAccountType(
+        /* [in] */ const String&  accountType);
+
+    CARAPI SetKey(
+        /* [in] */ Boolean isKey);
 
     CARAPI IsKey(
         /* [out] */ Boolean* isKey);
@@ -71,28 +111,6 @@ public:
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ const String& authority,
-        /* [in] */ const String& accountType,
-        /* [in] */ Boolean userVisible,
-        /* [in] */ Boolean supportsUploading);
-
-    /** @hide */
-    CARAPI constructor(
-        /* [in] */ const String& authority,
-        /* [in] */ const String& accountType,
-        /* [in] */ Boolean userVisible,
-        /* [in] */ Boolean supportsUploading,
-        /* [in] */ Boolean isAlwaysSyncable,
-        /* [in] */ Boolean allowParallelSyncs,
-        /* [in] */ const String& settingsActivity);
-
-    CARAPI constructor(
-        /* [in] */ const String& authority,
-        /* [in] */ const String& accountType);
 
 private:
     String mAuthority;

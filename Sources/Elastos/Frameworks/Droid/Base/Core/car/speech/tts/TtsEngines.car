@@ -4,7 +4,6 @@ module
     using interface Elastos.Utility.ILocale;
 
     interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Speech.Tts.ITextToSpeechEngineInfo;
 
     namespace Elastos {

@@ -384,6 +384,22 @@ ECode Uri::WriteToParcel(
 #endif
 }
 
+ECode Uri::ReadFromParcel(
+    /* [in] */ IParcel* parcel)
+{
+    assert(0 && "TODO");
+    return NOERROR;
+}
+
+ECode Uri::ReadFromParcel(
+    /* [in] */ IParcel* parcel,
+    /* [out] */ IUri** uri)
+{
+    VALIDATE_NOT_NULL(uri)
+    assert(0 && "TODO");
+    return NOERROR;
+}
+
 ECode Uri::Encode(
     /* [in] */ String s,
     /* [out] */ String* result)

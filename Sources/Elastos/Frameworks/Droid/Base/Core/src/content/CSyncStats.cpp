@@ -3,7 +3,6 @@
 #include <ext/frameworkext.h>
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::IStringBuilder;
 using Elastos::Core::StringBuilder;
 
 namespace Elastos {
@@ -28,6 +27,11 @@ CSyncStats::CSyncStats()
 
 CSyncStats::~CSyncStats()
 {}
+
+ECode CSyncStats::constructor()
+{
+    return NOERROR;
+}
 
 ECode CSyncStats::GetNumAuthExceptions(
     /* [out] */ Int64* numAuthExceptions)
@@ -168,48 +172,48 @@ ECode CSyncStats::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
-    AutoPtr<IStringBuilder> sb = new StringBuilder();
-    sb->AppendString(String(" stats ["));
+    StringBuilder sb;
+    sb.Append((" stats ["));
 
     if (mNumAuthExceptions > 0) {
-        sb->AppendString(String(" numAuthExceptions: "));
-        sb->AppendInt64(mNumAuthExceptions);
+        sb.Append((" numAuthExceptions: "));
+        sb.Append(mNumAuthExceptions);
     }
     if (mNumIoExceptions > 0) {
-        sb->AppendString(String(" numIoExceptions: "));
-        sb->AppendInt64(mNumIoExceptions);
+        sb.Append((" numIoExceptions: "));
+        sb.Append(mNumIoExceptions);
     }
     if (mNumParseExceptions > 0) {
-        sb->AppendString(String(" numParseExceptions: "));
-        sb->AppendInt64(mNumParseExceptions);
+        sb.Append((" numParseExceptions: "));
+        sb.Append(mNumParseExceptions);
     }
     if (mNumConflictDetectedExceptions > 0) {
-        sb->AppendString(String(" numConflictDetectedExceptions: "));
-        sb->AppendInt64(mNumConflictDetectedExceptions);
+        sb.Append((" numConflictDetectedExceptions: "));
+        sb.Append(mNumConflictDetectedExceptions);
     }
     if (mNumInserts > 0) {
-        sb->AppendString(String(" numInserts: "));
-        sb->AppendInt64(mNumInserts);
+        sb.Append((" numInserts: "));
+        sb.Append(mNumInserts);
     }
     if (mNumUpdates > 0) {
-        sb->AppendString(String(" numUpdates: "));
-        sb->AppendInt64(mNumUpdates);
+        sb.Append((" numUpdates: "));
+        sb.Append(mNumUpdates);
     }
     if (mNumDeletes > 0) {
-        sb->AppendString(String(" numDeletes: "));
-        sb->AppendInt64(mNumDeletes);
+        sb.Append((" numDeletes: "));
+        sb.Append(mNumDeletes);
     }
     if (mNumEntries > 0) {
-        sb->AppendString(String(" numEntries: "));
-        sb->AppendInt64(mNumEntries);
+        sb.Append((" numEntries: "));
+        sb.Append(mNumEntries);
     }
     if (mNumSkippedEntries > 0) {
-        sb->AppendString(String(" numSkippedEntries: "));
-        sb->AppendInt64(mNumSkippedEntries);
+        sb.Append((" numSkippedEntries: "));
+        sb.Append(mNumSkippedEntries);
     }
 
-    sb->AppendString(String("]"));
-    return sb->ToString(str);
+    sb.Append(("]"));
+    return sb.ToString(str);
 }
 
 ECode CSyncStats::Clear()
@@ -253,20 +257,6 @@ ECode CSyncStats::WriteToParcel(
     dest->WriteInt64(mNumDeletes);
     dest->WriteInt64(mNumEntries);
     dest->WriteInt64(mNumSkippedEntries);
-    return NOERROR;
-}
-
-ECode CSyncStats::constructor()
-{
-    mNumAuthExceptions = 0;
-    mNumIoExceptions = 0;
-    mNumParseExceptions = 0;
-    mNumConflictDetectedExceptions = 0;
-    mNumInserts = 0;
-    mNumUpdates = 0;
-    mNumDeletes = 0;
-    mNumEntries = 0;
-    mNumSkippedEntries = 0;
     return NOERROR;
 }
 

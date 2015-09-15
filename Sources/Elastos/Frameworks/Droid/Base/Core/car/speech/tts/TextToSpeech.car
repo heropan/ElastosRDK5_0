@@ -6,9 +6,7 @@ module
     using interface Elastos.Utility.ILocale;
     using interface Elastos.Utility.IList;
     using interface Elastos.Utility.IHashMap;
-    using interface Elastos.Utility.IObjectStringMap;
 
-    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Media.IAudioAttributes;
     interface Elastos.Droid.Speech.Tts.ITextToSpeechOnUtteranceCompletedListener;
