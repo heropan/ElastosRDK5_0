@@ -6,6 +6,18 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_PEPPERPLUGINMANAGER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_PEPPERPLUGINMANAGER_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/Context.h"
+#include "content/Intent.h"
+#include "content/pm/CApplicationInfo.h"
+#include "content/pm/CPackageInfo.h"
+#include "content/pm/PackageManager.h"
+#include "content/pm/CResolveInfo.h"
+#include "content/pm/CServiceInfo.h"
+#include "os/CBundle.h"
+
 // package org.chromium.content.browser;
 // import android.content.Context;
 // import android.content.Intent;
@@ -18,6 +30,16 @@
 // import android.os.Bundle;
 // import android.util.Log;
 // import java.util.List;
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::Pm::IPackageInfo;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IResolveInfo;
+using Elastos::Droid::Content::Pm::IServiceInfo;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Util::ILog;
 
 namespace Elastos {
 namespace Droid {
@@ -39,8 +61,8 @@ public:
       * @param context Android context
       * @return        Description string for plugins
       */
-    static const CARAPI_(String) GetPlugins(
-        /* [in] */ IContext* context);
+    static CARAPI_(String) GetPlugins(
+        /* [in] */ const IContext* context);
 
 private:
     static CARAPI_(String) GetPluginDescription(

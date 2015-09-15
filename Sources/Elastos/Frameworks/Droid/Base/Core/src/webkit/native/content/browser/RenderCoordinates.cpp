@@ -1,5 +1,7 @@
 // wuweizuo automatic build .cpp file from .java file.
 
+#include "RenderCoordinates.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -11,49 +13,49 @@ namespace Browser {
 //=====================================================================
 Float RenderCoordinates::NormalizedPoint::GetXAbsoluteCss()
 {
-    /*
-    return mXAbsoluteCss;
-    */
+    // ==================before translated======================
+    // return mXAbsoluteCss;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::NormalizedPoint::GetYAbsoluteCss()
 {
-    /*
-    return mYAbsoluteCss;
-    */
+    // ==================before translated======================
+    // return mYAbsoluteCss;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::NormalizedPoint::GetXLocalDip()
 {
-    /*
-    return (mXAbsoluteCss - mScrollXCss) * mPageScaleFactor;
-    */
+    // ==================before translated======================
+    // return (mXAbsoluteCss - mScrollXCss) * mPageScaleFactor;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::NormalizedPoint::GetYLocalDip()
 {
-    /*
-    return (mYAbsoluteCss - mScrollYCss) * mPageScaleFactor;
-    */
+    // ==================before translated======================
+    // return (mYAbsoluteCss - mScrollYCss) * mPageScaleFactor;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::NormalizedPoint::GetXPix()
 {
-    /*
-    return getXLocalDip() * mDeviceScaleFactor;
-    */
+    // ==================before translated======================
+    // return getXLocalDip() * mDeviceScaleFactor;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::NormalizedPoint::GetYPix()
 {
-    /*
-    return getYLocalDip() * mDeviceScaleFactor + mContentOffsetYPix;
-    */
+    // ==================before translated======================
+    // return getYLocalDip() * mDeviceScaleFactor + mContentOffsetYPix;
+    assert(0);
     return 0.0f;
 }
 
@@ -61,10 +63,10 @@ ECode RenderCoordinates::NormalizedPoint::SetAbsoluteCss(
     /* [in] */ Float xCss,
     /* [in] */ Float yCss)
 {
-    /*
-    mXAbsoluteCss = xCss;
-    mYAbsoluteCss = yCss;
-    */
+    // ==================before translated======================
+    // mXAbsoluteCss = xCss;
+    // mYAbsoluteCss = yCss;
+    assert(0);
     return NOERROR;
 }
 
@@ -72,11 +74,11 @@ ECode RenderCoordinates::NormalizedPoint::SetLocalDip(
     /* [in] */ Float xDip,
     /* [in] */ Float yDip)
 {
-    /*
-    setAbsoluteCss(
-            xDip / mPageScaleFactor + mScrollXCss,
-            yDip / mPageScaleFactor + mScrollYCss);
-    */
+    // ==================before translated======================
+    // setAbsoluteCss(
+    //         xDip / mPageScaleFactor + mScrollXCss,
+    //         yDip / mPageScaleFactor + mScrollYCss);
+    assert(0);
     return NOERROR;
 }
 
@@ -84,9 +86,9 @@ ECode RenderCoordinates::NormalizedPoint::SetScreen(
     /* [in] */ Float xPix,
     /* [in] */ Float yPix)
 {
-    /*
-    setLocalDip(xPix / mDeviceScaleFactor, yPix / mDeviceScaleFactor);
-    */
+    // ==================before translated======================
+    // setLocalDip(xPix / mDeviceScaleFactor, yPix / mDeviceScaleFactor);
+    assert(0);
     return NOERROR;
 }
 
@@ -99,10 +101,10 @@ RenderCoordinates::NormalizedPoint::NormalizedPoint()
 //=====================================================================
 ECode RenderCoordinates::Reset()
 {
-    /*
-    mScrollXCss = mScrollYCss = 0;
-    mPageScaleFactor = 1.0f;
-    */
+    // ==================before translated======================
+    // mScrollXCss = mScrollYCss = 0;
+    // mPageScaleFactor = 1.0f;
+    assert(0);
     return NOERROR;
 }
 
@@ -110,19 +112,19 @@ ECode RenderCoordinates::UpdateContentSizeCss(
     /* [in] */ Float contentWidthCss,
     /* [in] */ Float contentHeightCss)
 {
-    /*
-    mContentWidthCss = contentWidthCss;
-    mContentHeightCss = contentHeightCss;
-    */
+    // ==================before translated======================
+    // mContentWidthCss = contentWidthCss;
+    // mContentHeightCss = contentHeightCss;
+    assert(0);
     return NOERROR;
 }
 
 ECode RenderCoordinates::SetDeviceScaleFactor(
     /* [in] */ Float deviceScaleFactor)
 {
-    /*
-    mDeviceScaleFactor = deviceScaleFactor;
-    */
+    // ==================before translated======================
+    // mDeviceScaleFactor = deviceScaleFactor;
+    assert(0);
     return NOERROR;
 }
 
@@ -138,279 +140,279 @@ ECode RenderCoordinates::UpdateFrameInfo(
     /* [in] */ Float maxPageScaleFactor,
     /* [in] */ Float contentOffsetYPix)
 {
-    /*
-    mScrollXCss = scrollXCss;
-    mScrollYCss = scrollYCss;
-    mPageScaleFactor = pageScaleFactor;
-    mMinPageScaleFactor = minPageScaleFactor;
-    mMaxPageScaleFactor = maxPageScaleFactor;
-    mContentOffsetYPix = contentOffsetYPix;
-
-
-    updateContentSizeCss(contentWidthCss, contentHeightCss);
-    mLastFrameViewportWidthCss = viewportWidthCss;
-    mLastFrameViewportHeightCss = viewportHeightCss;
-    */
+    // ==================before translated======================
+    // mScrollXCss = scrollXCss;
+    // mScrollYCss = scrollYCss;
+    // mPageScaleFactor = pageScaleFactor;
+    // mMinPageScaleFactor = minPageScaleFactor;
+    // mMaxPageScaleFactor = maxPageScaleFactor;
+    // mContentOffsetYPix = contentOffsetYPix;
+    //
+    // updateContentSizeCss(contentWidthCss, contentHeightCss);
+    // mLastFrameViewportWidthCss = viewportWidthCss;
+    // mLastFrameViewportHeightCss = viewportHeightCss;
+    assert(0);
     return NOERROR;
 }
 
 AutoPtr<NormalizedPoint> RenderCoordinates::CreateNormalizedPoint()
 {
-    /*
-    return new NormalizedPoint();
-    */
-    return AutoPtr<NormalizedPoint>(this);
+    // ==================before translated======================
+    // return new NormalizedPoint();
+    assert(0);
+    AutoPtr<NormalizedPoint> empty;
+    return empty;
 }
 
 Float RenderCoordinates::GetScrollX()
 {
-    /*
-    return mScrollXCss;
-    */
+    // ==================before translated======================
+    // return mScrollXCss;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::GetScrollY()
 {
-    /*
-    return mScrollYCss;
-    */
+    // ==================before translated======================
+    // return mScrollYCss;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::GetScrollXPix()
 {
-    /*
-    return fromLocalCssToPix(mScrollXCss);
-    */
+    // ==================before translated======================
+    // return fromLocalCssToPix(mScrollXCss);
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::GetScrollYPix()
 {
-    /*
-    return fromLocalCssToPix(mScrollYCss);
-    */
+    // ==================before translated======================
+    // return fromLocalCssToPix(mScrollYCss);
+    assert(0);
     return 0.0f;
 }
 
 Int32 RenderCoordinates::GetScrollXPixInt()
 {
-    /*
-    return (int) Math.floor(getScrollXPix());
-    */
+    // ==================before translated======================
+    // return (int) Math.floor(getScrollXPix());
+    assert(0);
     return 0;
 }
 
 Int32 RenderCoordinates::GetScrollYPixInt()
 {
-    /*
-    return (int) Math.floor(getScrollYPix());
-    */
+    // ==================before translated======================
+    // return (int) Math.floor(getScrollYPix());
+    assert(0);
     return 0;
 }
 
 Float RenderCoordinates::GetContentWidthCss()
 {
-    /*
-    return mContentWidthCss;
-    */
+    // ==================before translated======================
+    // return mContentWidthCss;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::GetContentHeightCss()
 {
-    /*
-    return mContentHeightCss;
-    */
+    // ==================before translated======================
+    // return mContentHeightCss;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::GetContentWidthPix()
 {
-    /*
-    return fromLocalCssToPix(mContentWidthCss);
-    */
+    // ==================before translated======================
+    // return fromLocalCssToPix(mContentWidthCss);
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::GetContentHeightPix()
 {
-    /*
-    return fromLocalCssToPix(mContentHeightCss);
-    */
+    // ==================before translated======================
+    // return fromLocalCssToPix(mContentHeightCss);
+    assert(0);
     return 0.0f;
 }
 
 Int32 RenderCoordinates::GetContentWidthPixInt()
 {
-    /*
-    return (int) Math.ceil(getContentWidthPix());
-    */
+    // ==================before translated======================
+    // return (int) Math.ceil(getContentWidthPix());
+    assert(0);
     return 0;
 }
 
 Int32 RenderCoordinates::GetContentHeightPixInt()
 {
-    /*
-    return (int) Math.ceil(getContentHeightPix());
-    */
+    // ==================before translated======================
+    // return (int) Math.ceil(getContentHeightPix());
+    assert(0);
     return 0;
 }
 
 Float RenderCoordinates::GetLastFrameViewportWidthCss()
 {
-    /*
-    return mLastFrameViewportWidthCss;
-    */
+    // ==================before translated======================
+    // return mLastFrameViewportWidthCss;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::GetLastFrameViewportHeightCss()
 {
-    /*
-    return mLastFrameViewportHeightCss;
-    */
+    // ==================before translated======================
+    // return mLastFrameViewportHeightCss;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::GetLastFrameViewportWidthPix()
 {
-    /*
-    return fromLocalCssToPix(mLastFrameViewportWidthCss);
-    */
+    // ==================before translated======================
+    // return fromLocalCssToPix(mLastFrameViewportWidthCss);
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::GetLastFrameViewportHeightPix()
 {
-    /*
-    return fromLocalCssToPix(mLastFrameViewportHeightCss);
-    */
+    // ==================before translated======================
+    // return fromLocalCssToPix(mLastFrameViewportHeightCss);
+    assert(0);
     return 0.0f;
 }
 
 Int32 RenderCoordinates::GetLastFrameViewportWidthPixInt()
 {
-    /*
-    return (int) Math.ceil(getLastFrameViewportWidthPix());
-    */
+    // ==================before translated======================
+    // return (int) Math.ceil(getLastFrameViewportWidthPix());
+    assert(0);
     return 0;
 }
 
 Int32 RenderCoordinates::GetLastFrameViewportHeightPixInt()
 {
-    /*
-    return (int) Math.ceil(getLastFrameViewportHeightPix());
-    */
+    // ==================before translated======================
+    // return (int) Math.ceil(getLastFrameViewportHeightPix());
+    assert(0);
     return 0;
 }
 
 Float RenderCoordinates::GetContentOffsetYPix()
 {
-    /*
-    return mContentOffsetYPix;
-    */
+    // ==================before translated======================
+    // return mContentOffsetYPix;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::GetPageScaleFactor()
 {
-    /*
-    return mPageScaleFactor;
-    */
+    // ==================before translated======================
+    // return mPageScaleFactor;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::GetMinPageScaleFactor()
 {
-    /*
-    return mMinPageScaleFactor;
-    */
+    // ==================before translated======================
+    // return mMinPageScaleFactor;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::GetMaxPageScaleFactor()
 {
-    /*
-    return mMaxPageScaleFactor;
-    */
+    // ==================before translated======================
+    // return mMaxPageScaleFactor;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::GetDeviceScaleFactor()
 {
-    /*
-    return mDeviceScaleFactor;
-    */
+    // ==================before translated======================
+    // return mDeviceScaleFactor;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::GetMaxHorizontalScrollPix()
 {
-    /*
-    return getContentWidthPix() - getLastFrameViewportWidthPix();
-    */
+    // ==================before translated======================
+    // return getContentWidthPix() - getLastFrameViewportWidthPix();
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::GetMaxVerticalScrollPix()
 {
-    /*
-    return getContentHeightPix() - getLastFrameViewportHeightPix();
-    */
+    // ==================before translated======================
+    // return getContentHeightPix() - getLastFrameViewportHeightPix();
+    assert(0);
     return 0.0f;
 }
 
 Int32 RenderCoordinates::GetMaxHorizontalScrollPixInt()
 {
-    /*
-    return (int) Math.floor(getMaxHorizontalScrollPix());
-    */
+    // ==================before translated======================
+    // return (int) Math.floor(getMaxHorizontalScrollPix());
+    assert(0);
     return 0;
 }
 
 Int32 RenderCoordinates::GetMaxVerticalScrollPixInt()
 {
-    /*
-    return (int) Math.floor(getMaxVerticalScrollPix());
-    */
+    // ==================before translated======================
+    // return (int) Math.floor(getMaxVerticalScrollPix());
+    assert(0);
     return 0;
 }
 
 Float RenderCoordinates::FromPixToDip(
     /* [in] */ Float pix)
 {
-    /*
-    return pix / mDeviceScaleFactor;
-    */
+    // ==================before translated======================
+    // return pix / mDeviceScaleFactor;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::FromDipToPix(
     /* [in] */ Float dip)
 {
-    /*
-    return dip * mDeviceScaleFactor;
-    */
+    // ==================before translated======================
+    // return dip * mDeviceScaleFactor;
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::FromPixToLocalCss(
     /* [in] */ Float pix)
 {
-    /*
-    return pix / (mDeviceScaleFactor * mPageScaleFactor);
-    */
+    // ==================before translated======================
+    // return pix / (mDeviceScaleFactor * mPageScaleFactor);
+    assert(0);
     return 0.0f;
 }
 
 Float RenderCoordinates::FromLocalCssToPix(
     /* [in] */ Float css)
 {
-    /*
-    return css * mPageScaleFactor * mDeviceScaleFactor;
-    */
+    // ==================before translated======================
+    // return css * mPageScaleFactor * mDeviceScaleFactor;
+    assert(0);
     return 0.0f;
 }
 

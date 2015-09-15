@@ -41,6 +41,7 @@ AutoPtr<ValidationMessageBubble> ValidationMessageBubble::CreateAndShow(
     // final RectF anchorPixInScreen = makePixRectInScreen(
     //         contentViewCore, anchorX, anchorY, anchorWidth, anchorHeight);
     // return new ValidationMessageBubble(contentViewCore, anchorPixInScreen, mainText, subText);
+    assert(0);
     AutoPtr<ValidationMessageBubble> empty;
     return empty;
 }
@@ -51,6 +52,7 @@ ECode ValidationMessageBubble::Close()
     // if (mPopup == null) return;
     // mPopup.dismiss();
     // mPopup = null;
+    assert(0);
     return NOERROR;
 }
 
@@ -68,6 +70,7 @@ ECode ValidationMessageBubble::SetPositionRelativeToAnchor(
     // Point origin = adjustWindowPosition(
     //         contentViewCore, (int) (anchor.centerX() - getAnchorOffset()), (int) anchor.bottom);
     // mPopup.update(origin.x, origin.y, mPopup.getWidth(), mPopup.getHeight());
+    assert(0);
     return NOERROR;
 }
 
@@ -86,6 +89,7 @@ AutoPtr<IRectF> ValidationMessageBubble::MakePixRectInScreen(
     //         coordinates.fromLocalCssToPix(anchorY) + yOffset,
     //         coordinates.fromLocalCssToPix(anchorX + anchorWidth),
     //         coordinates.fromLocalCssToPix(anchorY + anchorHeight) + yOffset);
+    assert(0);
     AutoPtr<IRectF> empty;
     return empty;
 }
@@ -97,6 +101,7 @@ Float ValidationMessageBubble::GetWebViewOffsetYPixInScreen(
     // int[] location = new int[2];
     // contentViewCore.getContainerView().getLocationOnScreen(location);
     // return location[1] + contentViewCore.getRenderCoordinates().getContentOffsetYPix();
+    assert(0);
     return 0.0f;
 }
 
@@ -114,6 +119,7 @@ ECode ValidationMessageBubble::UpdateTextViews(
     // } else {
     //     ((ViewGroup) subTextView.getParent()).removeView(subTextView);
     // }
+    assert(0);
     return NOERROR;
 }
 
@@ -133,6 +139,7 @@ ECode ValidationMessageBubble::Measure(
     //                 View.MeasureSpec.AT_MOST),
     //         View.MeasureSpec.makeMeasureSpec(coordinates.getLastFrameViewportHeightPixInt(),
     //                 View.MeasureSpec.AT_MOST));
+    assert(0);
     return NOERROR;
 }
 
@@ -144,6 +151,7 @@ Float ValidationMessageBubble::GetAnchorOffset()
     // final int arrowWidth = root.findViewById(R.id.arrow_image).getMeasuredWidth();
     // return ApiCompatibilityUtils.isLayoutRtl(root) ?
     //         (width * 3 / 4 - arrowWidth / 2) : (width / 4 + arrowWidth / 2);
+    assert(0);
     return 0.0f;
 }
 
@@ -168,6 +176,7 @@ AutoPtr<IPoint> ValidationMessageBubble::AdjustWindowPosition(
     //     y = viewBottom - height;
     // }
     // return new Point(x, y);
+    assert(0);
     AutoPtr<IPoint> empty;
     return empty;
 }

@@ -1,5 +1,7 @@
 // wuweizuo automatic build .cpp file from .java file.
 
+#include "JellyBeanContentView.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -13,37 +15,36 @@ JellyBeanContentView::JellyBeanContentView(
     /* [in] */ IContext* context,
     /* [in] */ ContentViewCore* cvc)
 {
-    /*
-    super(context, cvc);
-    */
+    // ==================before translated======================
+    // super(context, cvc);
 }
 
 Boolean JellyBeanContentView::PerformAccessibilityAction(
     /* [in] */ Int32 action,
     /* [in] */ IBundle* arguments)
 {
-    /*
-    if (mContentViewCore.supportsAccessibilityAction(action)) {
-        return mContentViewCore.performAccessibilityAction(action, arguments);
-    }
-
-
-    return super.performAccessibilityAction(action, arguments);
-    */
+    // ==================before translated======================
+    // if (mContentViewCore.supportsAccessibilityAction(action)) {
+    //     return mContentViewCore.performAccessibilityAction(action, arguments);
+    // }
+    //
+    // return super.performAccessibilityAction(action, arguments);
+    assert(0);
     return FALSE;
 }
 
 AutoPtr<IAccessibilityNodeProvider> JellyBeanContentView::GetAccessibilityNodeProvider()
 {
-    /*
-    AccessibilityNodeProvider provider = mContentViewCore.getAccessibilityNodeProvider();
-    if (provider != null) {
-        return provider;
-    } else {
-        return super.getAccessibilityNodeProvider();
-    }
-    */
-    return AutoPtr<IAccessibilityNodeProvider>(this);
+    // ==================before translated======================
+    // AccessibilityNodeProvider provider = mContentViewCore.getAccessibilityNodeProvider();
+    // if (provider != null) {
+    //     return provider;
+    // } else {
+    //     return super.getAccessibilityNodeProvider();
+    // }
+    assert(0);
+    AutoPtr<IAccessibilityNodeProvider> empty;
+    return empty;
 }
 
 } // namespace Browser

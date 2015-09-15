@@ -6,9 +6,16 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_GL_SURFACETEXTURELISTENER_H_
 #define _ELASTOS_DROID_WEBKIT_UI_GL_SURFACETEXTURELISTENER_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "graphics/CSurfaceTexture.h"
+
 // package org.chromium.ui.gl;
 // import android.graphics.SurfaceTexture;
 // import org.chromium.base.JNINamespace;
+
+using Elastos::Droid::Graphics::ISurfaceTexture;
 
 namespace Elastos {
 namespace Droid {
@@ -17,10 +24,12 @@ namespace Ui {
 namespace Gl {
 
 /**
- * Listener to an android SurfaceTexture object for frame availability.
- */
+  * Listener to an android SurfaceTexture object for frame availability.
+  */
 // @JNINamespace("gfx")
-class SurfaceTextureListener : public SurfaceTexture::OnFrameAvailableListener
+class SurfaceTextureListener
+    : public Object
+    , public SurfaceTexture::OnFrameAvailableListener
 {
 public:
     SurfaceTextureListener(
@@ -43,7 +52,7 @@ private:
 
 private:
     // Used to determine the class instance to dispatch the native call to.
-    Int64 mNativeSurfaceTextureListener;
+    /*const*/ Int64 mNativeSurfaceTextureListener;
 };
 
 } // namespace Gl

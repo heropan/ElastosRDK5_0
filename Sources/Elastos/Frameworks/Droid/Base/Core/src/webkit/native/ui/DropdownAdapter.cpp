@@ -1,144 +1,135 @@
+// wuweizuo automatic build .cpp file from .java file.
+
+#include "DropdownAdapter.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
 
-AutoPtr<IContext> DropdownAdapter::mContext;
-AutoPtr< ISet<IInteger32> > DropdownAdapter::mSeparators;
-Boolean DropdownAdapter::mAreAllItemsEnabled;
-
+//=====================================================================
+//                           DropdownAdapter
+//=====================================================================
 DropdownAdapter::DropdownAdapter(
-    /* in */ IContext* context,
-    /* in */ IList< AutoPtr<DropdownItem> >* items,
-    /* in */ ISet<IInteger32>* separators)
-    : ArrayAdapter<DropdownItem*>(context, R::layout::dropdown_item, items)
-    , mSeparators(separators)
-    , mContext(context)
-    , mAreAllItemsEnabled(FALSE)
+    /* [in] */ IContext* context,
+    /* [in] */ IList<DropdownItem*>* items,
+    /* [in] */ ISet<Integer*>* separators)
 {
-    mAreAllItemsEnabled = CheckAreAllItemsEnabled();
+    // ==================before translated======================
+    // super(context, R.layout.dropdown_item, items);
+    // mSeparators = separators;
+    // mContext = context;
+    // mAreAllItemsEnabled = checkAreAllItemsEnabled();
 }
 
 DropdownAdapter::DropdownAdapter(
-    /* in */ IContext* context,
-    /* in */ ArrayOf< AutoPtr<DropdownItem> >* items,
-    /* in */ ISet<IInteger32>* separators)
-    : ArrayAdapter<DropdownItem*>(context, R::layout::dropdown_item, items)
-    , mSeparators(separators)
-    , mContext(context)
+    /* [in] */ IContext* context,
+    /* [in] */ ArrayOf<DropdownItem>* items,
+    /* [in] */ ISet<Integer*>* separators)
 {
-    mAreAllItemsEnabled = CheckAreAllItemsEnabled();
+    // ==================before translated======================
+    // super(context, R.layout.dropdown_item, items);
+    // mSeparators = separators;
+    // mContext = context;
+    // mAreAllItemsEnabled = checkAreAllItemsEnabled();
 }
 
-//@Override
 AutoPtr<IView> DropdownAdapter::GetView(
-    /* in */ Int32 position,
-    /* in */ IView* convertView,
-    /* in */ IViewGroup* parent)
+    /* [in] */ Int32 position,
+    /* [in] */ IView* convertView,
+    /* [in] */ IViewGroup* parent)
 {
-    AutoPtr<IView> layout = convertView;
-    if (NULL == convertView) {
-        AutoPtr<ILayoutInflater> inflater;
-        mContext->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (ILayoutInflater**)&inflater);
-        inflater->Inflate(R::layout::dropdown_item, NULL, (IView**)&layout);
-        AutoPtr<DropdownDividerDrawable> drawable = new DropdownDividerDrawable();
-        ApiCompatibilityUtils::SetBackgroundForView(layout, drawable);
-    }
-
-    AutoPtr<DropdownItem> item = GetItem(position);
-    AutoPtr<ITextView> labelView;
-    layout->FindViewById(R::id::dropdown_label, (ITextView**)&labelView);
-    labelView->SetText(item->GetLabel());
-    labelView->SetEnabled(item->IsEnabled());
-    if (item->IsGroupHeader()) {
-        labelView->SetTypeface(NULL, ITypeface::BOLD);
-    }
-    else {
-        labelView->SetTypeface(NULL, ITypeface::NORMAL);
-    }
-
-    AutoPtr<DropdownDividerDrawable> divider = layout->GetBackground();
-    Int32 height = 0;
-    AutoPtr<IResources> resources;
-    CResources::New((IResources**)&resources);
-    mContext->GetResources((IResources**)&resources);
-    resources->GetDimensionPixelSize(R::dimen::dropdown_item_height, &height);
-    if (position == 0) {
-        divider->SetColor(IColor::TRANSPARENT);
-    }
-    else {
-        Int32 dividerHeight;
-        AutoPtr<IResources> resources;
-        CResources::New((IResources**)&resources);
-        mContext->GetResources((IResources**)&resources);
-        resources->GetDimensionPixelSize(R::dimen::dropdown_item_divider_height, &dividerHeight);
-        height += dividerHeight;
-        divider->SetHeight(dividerHeight);
-
-        Boolean contain = FALSE;
-        mSeparators->Contains(position, &contain);
-
-        Int32 color;
-        AutoPtr<IResources> res;
-        CResources::New((IResources**)&res);
-        mContext->GetResources((IResources**)&res);
-        if (NULL != mSeparators && contain) {
-            res->GetColor(R::color::dropdown_dark_divider_color, &color);
-            divider->SetColor(color);
-        }
-        else {
-            res->GetColor(R::color::dropdown_divider_color, &color);
-            divider->SetColor(color);
-        }
-    }
-
-    AutoPtr<ILayoutParams> params;
-    CLayoutParams::New(ILayoutParams::MATCH_PARENT, height, (ILayoutParams**)&params);
-    layout->SetLayoutParams(params);
-
-    AutoPtr<ITextView> sublabelView;
-    layout->FindViewById(R::id::dropdown_sublabel, &sublabelView);
-    AutoPtr<ICharSequence> sublabel = item->GetSublabel();
-    if (ITextUtils:IsEmpty(sublabel)) {
-        sublabelView->SetVisibility(IView::GONE);
-    }
-    else {
-        sublabelView->SetText(sublabel);
-        sublabelView->SetVisibility(IView::VISIBLE);
-    }
-
-    return layout;
+    // ==================before translated======================
+    // View layout = convertView;
+    // if (convertView == null) {
+    //     LayoutInflater inflater =
+    //             (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    //     layout = inflater.inflate(R.layout.dropdown_item, null);
+    //     ApiCompatibilityUtils.setBackgroundForView(layout, new DropdownDividerDrawable());
+    // }
+    //
+    // DropdownItem item = getItem(position);
+    //
+    // TextView labelView = (TextView) layout.findViewById(R.id.dropdown_label);
+    // labelView.setText(item.getLabel());
+    //
+    // labelView.setEnabled(item.isEnabled());
+    // if (item.isGroupHeader()) {
+    //     labelView.setTypeface(null, Typeface.BOLD);
+    // } else {
+    //     labelView.setTypeface(null, Typeface.NORMAL);
+    // }
+    //
+    // DropdownDividerDrawable divider = (DropdownDividerDrawable) layout.getBackground();
+    // int height = mContext.getResources().getDimensionPixelSize(R.dimen.dropdown_item_height);
+    // if (position == 0) {
+    //     divider.setColor(Color.TRANSPARENT);
+    // } else {
+    //     int dividerHeight = mContext.getResources().getDimensionPixelSize(
+    //             R.dimen.dropdown_item_divider_height);
+    //     height += dividerHeight;
+    //     divider.setHeight(dividerHeight);
+    //     if (mSeparators != null && mSeparators.contains(position)) {
+    //         divider.setColor(mContext.getResources().getColor(
+    //                          R.color.dropdown_dark_divider_color));
+    //     } else {
+    //         divider.setColor(mContext.getResources().getColor(
+    //                          R.color.dropdown_divider_color));
+    //     }
+    // }
+    // layout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, height));
+    //
+    // TextView sublabelView = (TextView) layout.findViewById(R.id.dropdown_sublabel);
+    // CharSequence sublabel = item.getSublabel();
+    // if (TextUtils.isEmpty(sublabel)) {
+    //     sublabelView.setVisibility(View.GONE);
+    // } else {
+    //     sublabelView.setText(sublabel);
+    //     sublabelView.setVisibility(View.VISIBLE);
+    // }
+    //
+    // return layout;
+    assert(0);
+    AutoPtr<IView> empty;
+    return empty;
 }
 
-//@Override
 Boolean DropdownAdapter::AreAllItemsEnabled()
 {
-    return mAreAllItemsEnabled;
+    // ==================before translated======================
+    // return mAreAllItemsEnabled;
+    assert(0);
+    return FALSE;
 }
 
-//@Override
 Boolean DropdownAdapter::IsEnabled(
-    /* in */ Int32 position)
+    /* [in] */ Int32 position)
 {
-    if (position < 0 || position >= GetCount())
-        return FALSE;
-    AutoPtr<DropdownItem> item = GetItem(position);
-    return item->IsEnabled() && !item->IsGroupHeader();
+    // ==================before translated======================
+    // if (position < 0 || position >= getCount()) return false;
+    // DropdownItem item = getItem(position);
+    // return item.isEnabled() && !item.isGroupHeader();
+    assert(0);
+    return FALSE;
 }
 
 Boolean DropdownAdapter::CheckAreAllItemsEnabled()
 {
-    for (Int32 i = 0; i < GetCount(); ++i) {
-        AutoPtr<DropdownItem> item = GetItem(i);
-        if (item->IsEnabled() && !item->IsGroupHeader()) {
-            return FALSE;
-        }
-    }
-    return TRUE;
+    // ==================before translated======================
+    // for (int i = 0; i < getCount(); i++) {
+    //     DropdownItem item = getItem(i);
+    //     if (item.isEnabled() && !item.isGroupHeader()) {
+    //         return false;
+    //     }
+    // }
+    // return true;
+    assert(0);
+    return FALSE;
 }
 
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
+

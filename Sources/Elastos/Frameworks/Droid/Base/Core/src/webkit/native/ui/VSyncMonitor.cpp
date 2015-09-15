@@ -1,240 +1,280 @@
+// wuweizuo automatic build .cpp file from .java file.
+
+#include "VSyncMonitor.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
 
+//=====================================================================
+//            VSyncMonitor::InnerChoreographerFrameCallback
+//=====================================================================
+VSyncMonitor::InnerChoreographerFrameCallback::InnerChoreographerFrameCallback(
+    /* [in] */ VSyncMonitor* owner)
+    : mOwner(owner)
+{
+    // ==================before translated======================
+    // mOwner = owner;
+}
+
+ECode VSyncMonitor::InnerChoreographerFrameCallback::DoFrame(
+    /* [in] */ Int64 frameTimeNanos)
+{
+    // ==================before translated======================
+    // TraceEvent.begin("VSync");
+    // mGoodStartingPointNano = frameTimeNanos;
+    // onVSyncCallback(frameTimeNanos, getCurrentNanoTime());
+    // TraceEvent.end("VSync");
+    assert(0);
+    return NOERROR;
+}
+
+//=====================================================================
+//                     VSyncMonitor::InnerRunnable
+//=====================================================================
+VSyncMonitor::InnerRunnable::InnerRunnable(
+    /* [in] */ VSyncMonitor* owner)
+    : mOwner(owner)
+{
+    // ==================before translated======================
+    // mOwner = owner;
+}
+
+ECode VSyncMonitor::InnerRunnable::Run()
+{
+    // ==================before translated======================
+    // TraceEvent.begin("VSyncTimer");
+    // final long currentTime = getCurrentNanoTime();
+    // onVSyncCallback(currentTime, currentTime);
+    // TraceEvent.end("VSyncTimer");
+    assert(0);
+    return NOERROR;
+}
+
+//=====================================================================
+//                     VSyncMonitor::InnerRunnable
+//=====================================================================
+VSyncMonitor::InnerRunnable::InnerRunnable(
+    /* [in] */ VSyncMonitor* owner)
+    : mOwner(owner)
+{
+    // ==================before translated======================
+    // mOwner = owner;
+}
+
+ECode VSyncMonitor::InnerRunnable::Run()
+{
+    // ==================before translated======================
+    // TraceEvent.begin("VSyncSynthetic");
+    // final long currentTime = getCurrentNanoTime();
+    // onVSyncCallback(estimateLastVSyncTime(currentTime), currentTime);
+    // TraceEvent.end("VSyncSynthetic");
+    assert(0);
+    return NOERROR;
+}
+
+//=====================================================================
+//                             VSyncMonitor
+//=====================================================================
 const Int32 VSyncMonitor::MAX_AUTO_ONVSYNC_COUNT;
 const Int64 VSyncMonitor::NANOSECONDS_PER_SECOND;
 const Int64 VSyncMonitor::NANOSECONDS_PER_MILLISECOND;
 const Int64 VSyncMonitor::NANOSECONDS_PER_MICROSECOND;
 
-//===============================================================
-//         VSyncMonitor::InnerChoreographerFrameCallback
-//===============================================================
-VSyncMonitor::InnerChoreographerFrameCallback::InnerChoreographerFrameCallback(
-    /* in */ VSyncMonitor* owner)
-    : mOwner(owner)
-{
-}
-
-//@Override
-ECode VSyncMonitor::InnerChoreographerFrameCallback::DoFrame(
-    /* in */ Int64 frameTimeNanos)
-{
-    CTraceEvent::Begin("VSync");
-    mGoodStartingPointNano = frameTimeNanos;
-    mOwner->OnVSyncCallback(frameTimeNanos, mOwner->GetCurrentNanoTime());
-    CTraceEvent::End("VSync");
-    return NOERROR;
-}
-
-//===============================================================
-//                     VSyncMonitor::InnerVSyncRunnable
-//===============================================================
-VSyncMonitor::InnerVSyncRunnable::InnerVSyncRunnable(
-    /* in */ VSyncMonitor* owner)
-    : mOwner(owner)
-{
-}
-
-//@Override
-ECode VSyncMonitor::InnerVSyncRunnable::Run()
-{
-    CTraceEvent::Begin("VSyncTimer");
-    const Int64 currentTime = mOwner->GetCurrentNanoTime();
-    mOwner->OnVSyncCallback(currentTime, currentTime);
-    CTraceEvent::End("VSyncTimer");
-    return NOERROR;
-}
-
-//===============================================================
-//                     VSyncMonitor::SyntheticVSyncRunnable
-//===============================================================
-VSyncMonitor::SyntheticVSyncRunnable::SyntheticVSyncRunnable(
-    /* in */ VSyncMonitor* owner)
-    : mOwner(owner)
-{
-}
-
-//@Override
-ECode VSyncMonitor::SyntheticVSyncRunnable::Run()
-{
-    CTraceEvent::Begin("VSyncSynthetic");
-    const Int64 currentTime = mOwner->GetCurrentNanoTime();
-    mOwner->OnVSyncCallback(mOwner->EstimateLastVSyncTime(currentTime), currentTime);
-    CTraceEvent::End("VSyncSynthetic");
-    return NOERROR;
-}
-
-//===============================================================
-//                             VSyncMonitor
-//===============================================================
 VSyncMonitor::VSyncMonitor(
-    /* in */ IContext* context,
-    /* in */ VSyncMonitor::Listener* listener)
+    /* [in] */ IContext* context,
+    /* [in] */  VSyncMonitor)
 {
-    VSyncMonitor(context, listener, TRUE);
+    // ==================before translated======================
+    // this(context, listener, true);
 }
 
 VSyncMonitor::VSyncMonitor(
-    /* in */ IContext* context,
-    /* in */ VSyncMonitor::Listener* listener,
-    /* in */ Boolean enableJBVSync)
-    : mListener(listener)
-    , mHandler(new Handler())
-    , mRefreshPeriodNano(0)
-    , mHaveRequestInFlight(FALSE)
-    , mTriggerNextVSyncCount(0)
-    , mGoodStartingPointNano(0)
-    , mLastPostedNano(0)
-    , mLastVSyncCpuTimeNano(0)
+    /* [in] */ IContext* context,
+    /* [in] */ VSyncMonitor* ::Listener* listener,
+    /* [in] */ Boolean enableJBVSync)
 {
-    AutoPtr<IWindowManager> winManager;
-    context->GetSystemService(IContext::WINDOW_SERVICE, (IWindowManager**)&winManager);
-    AutoPtr<IDisplay> defaultDisplay;
-    winManager->GetDefaultDisplay((IDisplay**)&defaultDisplay);
-    Float refreshRate;
-    defaultDisplay->GetRefreshRate(&refreshRate);
-
-    if (refreshRate <= 0)
-        refreshRate = 60;
-
-    mRefreshPeriodNano = (Int64) (NANOSECONDS_PER_SECOND / refreshRate);
-    mTriggerNextVSyncCount = 0;
-
-    if (enableJBVSync && IBuild::VERSION::SDK_INT >= IBuild::VERSION_CODES::JELLY_BEAN) {
-        // Use Choreographer on JB+ to get notified of vsync.
-        CChoreographer::New((IChoreographer**)&mChoreographer);
-        CChoreographer::New((IChoreographer::IFrameCallback**)&mChoreographer);
-
-        mVSyncFrameCallback = new VSyncMonitor::InnerChoreographerFrameCallback(this);
-        mVSyncRunnableCallback = NULL;
-    }
-    else {
-        // On ICS we just hope that running tasks is relatively predictable.
-        mChoreographer = NULL;
-        mVSyncFrameCallback = NULL;
-        mVSyncRunnableCallback = new InnerVSyncRunnable(this);
-        mLastPostedNano = 0;
-    }
-    mSyntheticVSyncRunnable = new SyntheticVSyncRunnable(this);
-    mGoodStartingPointNano = GetCurrentNanoTime();
+    // ==================before translated======================
+    // mListener = listener;
+    // float refreshRate = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+    //         .getDefaultDisplay().getRefreshRate();
+    // if (refreshRate <= 0) refreshRate = 60;
+    // mRefreshPeriodNano = (long) (NANOSECONDS_PER_SECOND / refreshRate);
+    // mTriggerNextVSyncCount = 0;
+    //
+    // if (enableJBVSync && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+    //     // Use Choreographer on JB+ to get notified of vsync.
+    //     mChoreographer = Choreographer.getInstance();
+    //     mVSyncFrameCallback = new Choreographer.FrameCallback() {
+    //         @Override
+    //         public void doFrame(long frameTimeNanos) {
+    //             TraceEvent.begin("VSync");
+    //             mGoodStartingPointNano = frameTimeNanos;
+    //             onVSyncCallback(frameTimeNanos, getCurrentNanoTime());
+    //             TraceEvent.end("VSync");
+    //         }
+    //     };
+    //     mVSyncRunnableCallback = null;
+    // } else {
+    //     // On ICS we just hope that running tasks is relatively predictable.
+    //     mChoreographer = null;
+    //     mVSyncFrameCallback = null;
+    //     mVSyncRunnableCallback = new Runnable() {
+    //         @Override
+    //         public void run() {
+    //             TraceEvent.begin("VSyncTimer");
+    //             final long currentTime = getCurrentNanoTime();
+    //             onVSyncCallback(currentTime, currentTime);
+    //             TraceEvent.end("VSyncTimer");
+    //         }
+    //     };
+    //     mLastPostedNano = 0;
+    // }
+    // mSyntheticVSyncRunnable = new Runnable() {
+    //     @Override
+    //     public void run() {
+    //         TraceEvent.begin("VSyncSynthetic");
+    //         final long currentTime = getCurrentNanoTime();
+    //         onVSyncCallback(estimateLastVSyncTime(currentTime), currentTime);
+    //         TraceEvent.end("VSyncSynthetic");
+    //     }
+    // };
+    // mGoodStartingPointNano = getCurrentNanoTime();
 }
 
 Int64 VSyncMonitor::GetVSyncPeriodInMicroseconds()
 {
-    return mRefreshPeriodNano / NANOSECONDS_PER_MICROSECOND;
+    // ==================before translated======================
+    // return mRefreshPeriodNano / NANOSECONDS_PER_MICROSECOND;
+    assert(0);
+    return 0;
 }
 
 ECode VSyncMonitor::Stop()
 {
-    mTriggerNextVSyncCount = 0;
+    // ==================before translated======================
+    // mTriggerNextVSyncCount = 0;
+    assert(0);
     return NOERROR;
 }
 
 ECode VSyncMonitor::RequestUpdate()
 {
-    mTriggerNextVSyncCount = MAX_AUTO_ONVSYNC_COUNT;
-    PostCallback();
+    // ==================before translated======================
+    // mTriggerNextVSyncCount = MAX_AUTO_ONVSYNC_COUNT;
+    // postCallback();
+    assert(0);
     return NOERROR;
 }
 
 ECode VSyncMonitor::SetVSyncPointForICS(
-    /* in */ Int64 goodStartingPointNano)
+    /* [in] */ Int64 goodStartingPointNano)
 {
-    mGoodStartingPointNano = goodStartingPointNano;
+    // ==================before translated======================
+    // mGoodStartingPointNano = goodStartingPointNano;
+    assert(0);
     return NOERROR;
 }
 
 Boolean VSyncMonitor::IsVSyncSignalAvailable()
 {
-    return (Boolean)(mChoreographer != NULL);
+    // ==================before translated======================
+    // return mChoreographer != null;
+    assert(0);
+    return FALSE;
 }
 
 Int64 VSyncMonitor::GetCurrentNanoTime()
 {
-    return System::NanoTime();
+    // ==================before translated======================
+    // return System.nanoTime();
+    assert(0);
+    return 0;
 }
 
 ECode VSyncMonitor::OnVSyncCallback(
-    /* in */ Int64 frameTimeNanos,
-    /* in */ Int64 currentTimeNanos)
+    /* [in] */ Int64 frameTimeNanos,
+    /* [in] */ Int64 currentTimeNanos)
 {
-    assert (mHaveRequestInFlight);
-    mHaveRequestInFlight = FALSE;
-    mLastVSyncCpuTimeNano = currentTimeNanos;
-    if (mTriggerNextVSyncCount >= 0) {
-        mTriggerNextVSyncCount--;
-        PostCallback();
-    }
-    if (mListener != NULL) {
-        mListener->OnVSync(this, frameTimeNanos / NANOSECONDS_PER_MICROSECOND);
-    }
+    // ==================before translated======================
+    // assert mHaveRequestInFlight;
+    // mHaveRequestInFlight = false;
+    // mLastVSyncCpuTimeNano = currentTimeNanos;
+    // if (mTriggerNextVSyncCount >= 0) {
+    //     mTriggerNextVSyncCount--;
+    //     postCallback();
+    // }
+    // if (mListener != null) {
+    //     mListener.onVSync(this, frameTimeNanos / NANOSECONDS_PER_MICROSECOND);
+    // }
+    assert(0);
     return NOERROR;
 }
 
 ECode VSyncMonitor::PostCallback()
 {
-    if (mHaveRequestInFlight)
-        return NOERROR;
-
-    mHaveRequestInFlight = TRUE;
-    if (postSyntheticVSync())
-        return NOERROR;
-
-    if (IsVSyncSignalAvailable()) {
-        mChoreographer->PostFrameCallback(mVSyncFrameCallback);
-    }
-    else {
-        PostRunnableCallback();
-    }
+    // ==================before translated======================
+    // if (mHaveRequestInFlight) return;
+    // mHaveRequestInFlight = true;
+    // if (postSyntheticVSync()) return;
+    // if (isVSyncSignalAvailable()) {
+    //     mChoreographer.postFrameCallback(mVSyncFrameCallback);
+    // } else {
+    //     postRunnableCallback();
+    // }
+    assert(0);
     return NOERROR;
 }
 
 Boolean VSyncMonitor::PostSyntheticVSync()
 {
-    const Int64 currentTime = GetCurrentNanoTime();
-    // Only trigger a synthetic vsync if we've been idle for long enough and the upcoming real
-    // vsync is more than half a frame away.
-    if (currentTime - mLastVSyncCpuTimeNano < 2 * mRefreshPeriodNano) return FALSE;
-    if (currentTime - EstimateLastVSyncTime(currentTime) > mRefreshPeriodNano / 2) return FALSE;
-    mHandler->Post(mSyntheticVSyncRunnable);
-    return TRUE;
+    // ==================before translated======================
+    // final long currentTime = getCurrentNanoTime();
+    // // Only trigger a synthetic vsync if we've been idle for long enough and the upcoming real
+    // // vsync is more than half a frame away.
+    // if (currentTime - mLastVSyncCpuTimeNano < 2 * mRefreshPeriodNano) return false;
+    // if (currentTime - estimateLastVSyncTime(currentTime) > mRefreshPeriodNano / 2) return false;
+    // mHandler.post(mSyntheticVSyncRunnable);
+    // return true;
+    assert(0);
+    return FALSE;
 }
 
 Int64 VSyncMonitor::EstimateLastVSyncTime(
-    /* in */ Int64 currentTime)
+    /* [in] */ Int64 currentTime)
 {
-    const Int64 lastRefreshTime = mGoodStartingPointNano +
-            ((currentTime - mGoodStartingPointNano) / mRefreshPeriodNano) * mRefreshPeriodNano;
-    return lastRefreshTime;
+    // ==================before translated======================
+    // final long lastRefreshTime = mGoodStartingPointNano +
+    //         ((currentTime - mGoodStartingPointNano) / mRefreshPeriodNano) * mRefreshPeriodNano;
+    // return lastRefreshTime;
+    assert(0);
+    return 0;
 }
 
 ECode VSyncMonitor::PostRunnableCallback()
 {
-    assert (!IsVSyncSignalAvailable());
-    const Int64 currentTime = GetCurrentNanoTime();
-    const Int64 lastRefreshTime = EstimateLastVSyncTime(currentTime);
-    Int64 delay = (lastRefreshTime + mRefreshPeriodNano) - currentTime;
-    assert (delay > 0 && delay <= mRefreshPeriodNano);
-
-    if (currentTime + delay <= mLastPostedNano + mRefreshPeriodNano / 2) {
-        delay += mRefreshPeriodNano;
-    }
-
-    mLastPostedNano = currentTime + delay;
-    if (delay == 0)
-        mHandler->Post(mVSyncRunnableCallback);
-    else
-        mHandler->PostDelayed(mVSyncRunnableCallback, delay / NANOSECONDS_PER_MILLISECOND);
-
+    // ==================before translated======================
+    // assert !isVSyncSignalAvailable();
+    // final long currentTime = getCurrentNanoTime();
+    // final long lastRefreshTime = estimateLastVSyncTime(currentTime);
+    // long delay = (lastRefreshTime + mRefreshPeriodNano) - currentTime;
+    // assert delay > 0 && delay <= mRefreshPeriodNano;
+    //
+    // if (currentTime + delay <= mLastPostedNano + mRefreshPeriodNano / 2) {
+    //     delay += mRefreshPeriodNano;
+    // }
+    //
+    // mLastPostedNano = currentTime + delay;
+    // if (delay == 0) mHandler.post(mVSyncRunnableCallback);
+    // else mHandler.postDelayed(mVSyncRunnableCallback, delay / NANOSECONDS_PER_MILLISECOND);
+    assert(0);
     return NOERROR;
 }
-
 
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
 

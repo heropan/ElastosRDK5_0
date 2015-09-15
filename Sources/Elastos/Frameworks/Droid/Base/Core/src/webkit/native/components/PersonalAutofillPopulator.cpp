@@ -8,6 +8,23 @@ namespace Webkit {
 namespace Components {
 
 //=====================================================================
+//               PersonalAutofillPopulator::ProfileQuery
+//=====================================================================
+AutoPtr<IUri> PersonalAutofillPopulator::ProfileQuery::profileDataUri = PersonalAutofillPopulator::ProfileQuery::MiddleInitProfiledatauri();
+
+AutoPtr<IUri> PersonalAutofillPopulator::ProfileQuery::MiddleInitProfiledatauri()
+{
+    // ==================before translated======================
+    // ->WWZ_SIGN: FUNC_CALL_START {
+    // ContactsContract.Profile.CONTENT_URI,
+    //                  ContactsContract.Contacts.Data.CONTENT_DIRECTORY
+    // ->WWZ_SIGN: FUNC_CALL_END }
+    assert(0);
+    AutoPtr<IUri> empty;
+    return empty;
+}
+
+//=====================================================================
 //             PersonalAutofillPopulator::EmailProfileQuery
 //=====================================================================
 const Int32 PersonalAutofillPopulator::EmailProfileQuery::EMAIL_ADDRESS;
@@ -18,6 +35,7 @@ AutoPtr< ArrayOf<String> > PersonalAutofillPopulator::EmailProfileQuery::Project
     // return new String[] {
     //     ContactsContract.CommonDataKinds.Email.ADDRESS,
     // };
+    assert(0);
     AutoPtr< ArrayOf<String> > empty;
     return empty;
 }
@@ -26,6 +44,7 @@ String PersonalAutofillPopulator::EmailProfileQuery::MimeType()
 {
     // ==================before translated======================
     // return ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE;
+    assert(0);
     return String("");
 }
 
@@ -40,6 +59,7 @@ AutoPtr< ArrayOf<String> > PersonalAutofillPopulator::PhoneProfileQuery::Project
     // return new String[] {
     //     ContactsContract.CommonDataKinds.Phone.NUMBER,
     // };
+    assert(0);
     AutoPtr< ArrayOf<String> > empty;
     return empty;
 }
@@ -48,6 +68,7 @@ String PersonalAutofillPopulator::PhoneProfileQuery::MimeType()
 {
     // ==================before translated======================
     // return ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE;
+    assert(0);
     return String("");
 }
 
@@ -74,6 +95,7 @@ AutoPtr< ArrayOf<String> > PersonalAutofillPopulator::AddressProfileQuery::Proje
     //         ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE,
     //         ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY,
     // };
+    assert(0);
     AutoPtr< ArrayOf<String> > empty;
     return empty;
 }
@@ -82,6 +104,7 @@ String PersonalAutofillPopulator::AddressProfileQuery::MimeType()
 {
     // ==================before translated======================
     // return ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE;
+    assert(0);
     return String("");
 }
 
@@ -102,6 +125,7 @@ AutoPtr< ArrayOf<String> > PersonalAutofillPopulator::NameProfileQuery::Projecti
     //         ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME,
     //         ContactsContract.CommonDataKinds.StructuredName.SUFFIX
     // };
+    assert(0);
     AutoPtr< ArrayOf<String> > empty;
     return empty;
 }
@@ -110,6 +134,7 @@ String PersonalAutofillPopulator::NameProfileQuery::MimeType()
 {
     // ==================before translated======================
     // return ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE;
+    assert(0);
     return String("");
 }
 
@@ -135,6 +160,7 @@ AutoPtr<PersonalAutofillPopulator> PersonalAutofillPopulator::Create(
 {
     // ==================before translated======================
     // return new PersonalAutofillPopulator(context);
+    assert(0);
     AutoPtr<PersonalAutofillPopulator> empty;
     return empty;
 }
@@ -152,6 +178,7 @@ AutoPtr<ICursor> PersonalAutofillPopulator::CursorFromProfileQuery(
     //         new String[]{query.mimeType()},
     //         sortDescriptor
     //         );
+    assert(0);
     AutoPtr<ICursor> empty;
     return empty;
 }
@@ -169,6 +196,7 @@ Boolean PersonalAutofillPopulator::HasPermissions(
     //     if (res != PackageManager.PERMISSION_GRANTED) return false;
     // }
     // return true;
+    assert(0);
     return FALSE;
 }
 
@@ -186,6 +214,7 @@ ECode PersonalAutofillPopulator::PopulateName(
     //     mSuffix = nameCursor.getString(nameProfileQuery.SUFFIX);
     // }
     // nameCursor.close();
+    assert(0);
     return NOERROR;
 }
 
@@ -201,6 +230,7 @@ ECode PersonalAutofillPopulator::PopulateEmail(
     //     mEmailAddresses[i] = emailCursor.getString(emailProfileQuery.EMAIL_ADDRESS);
     // }
     // emailCursor.close();
+    assert(0);
     return NOERROR;
 }
 
@@ -221,6 +251,7 @@ ECode PersonalAutofillPopulator::PopulateAddress(
     //     mCountry = addressCursor.getString(addressProfileQuery.COUNTRY);
     // }
     // addressCursor.close();
+    assert(0);
     return NOERROR;
 }
 
@@ -236,6 +267,7 @@ ECode PersonalAutofillPopulator::PopulatePhone(
     //     mPhoneNumbers[i] = phoneCursor.getString(phoneProfileQuery.NUMBER);
     // }
     // phoneCursor.close();
+    assert(0);
     return NOERROR;
 }
 
@@ -243,6 +275,7 @@ String PersonalAutofillPopulator::GetFirstName()
 {
     // ==================before translated======================
     // return mGivenName;
+    assert(0);
     return String("");
 }
 
@@ -250,6 +283,7 @@ String PersonalAutofillPopulator::GetLastName()
 {
     // ==================before translated======================
     // return mFamilyName;
+    assert(0);
     return String("");
 }
 
@@ -257,6 +291,7 @@ String PersonalAutofillPopulator::GetMiddleName()
 {
     // ==================before translated======================
     // return mMiddleName;
+    assert(0);
     return String("");
 }
 
@@ -264,6 +299,7 @@ String PersonalAutofillPopulator::GetSuffix()
 {
     // ==================before translated======================
     // return mSuffix;
+    assert(0);
     return String("");
 }
 
@@ -271,6 +307,7 @@ AutoPtr< ArrayOf<String> > PersonalAutofillPopulator::GetEmailAddresses()
 {
     // ==================before translated======================
     // return mEmailAddresses;
+    assert(0);
     AutoPtr< ArrayOf<String> > empty;
     return empty;
 }
@@ -279,6 +316,7 @@ String PersonalAutofillPopulator::GetStreet()
 {
     // ==================before translated======================
     // return mStreet;
+    assert(0);
     return String("");
 }
 
@@ -286,6 +324,7 @@ String PersonalAutofillPopulator::GetPobox()
 {
     // ==================before translated======================
     // return mPobox;
+    assert(0);
     return String("");
 }
 
@@ -293,6 +332,7 @@ String PersonalAutofillPopulator::GetNeighborhood()
 {
     // ==================before translated======================
     // return mNeighborhood;
+    assert(0);
     return String("");
 }
 
@@ -300,6 +340,7 @@ String PersonalAutofillPopulator::GetCity()
 {
     // ==================before translated======================
     // return mCity;
+    assert(0);
     return String("");
 }
 
@@ -307,6 +348,7 @@ String PersonalAutofillPopulator::GetRegion()
 {
     // ==================before translated======================
     // return mRegion;
+    assert(0);
     return String("");
 }
 
@@ -314,6 +356,7 @@ String PersonalAutofillPopulator::GetPostalCode()
 {
     // ==================before translated======================
     // return mPostalCode;
+    assert(0);
     return String("");
 }
 
@@ -321,6 +364,7 @@ String PersonalAutofillPopulator::GetCountry()
 {
     // ==================before translated======================
     // return mCountry;
+    assert(0);
     return String("");
 }
 
@@ -328,6 +372,7 @@ AutoPtr< ArrayOf<String> > PersonalAutofillPopulator::GetPhoneNumbers()
 {
     // ==================before translated======================
     // return mPhoneNumbers;
+    assert(0);
     AutoPtr< ArrayOf<String> > empty;
     return empty;
 }
@@ -336,6 +381,7 @@ Boolean PersonalAutofillPopulator::GetHasPermissions()
 {
     // ==================before translated======================
     // return mHasPermissions;
+    assert(0);
     return FALSE;
 }
 

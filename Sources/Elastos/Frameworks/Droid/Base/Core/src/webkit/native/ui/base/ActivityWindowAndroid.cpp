@@ -1,3 +1,6 @@
+// wuweizuo automatic build .cpp file from .java file.
+
+#include "ActivityWindowAndroid.h"
 
 namespace Elastos {
 namespace Droid {
@@ -5,137 +8,134 @@ namespace Webkit {
 namespace Ui {
 namespace Base {
 
+//=====================================================================
+//                        ActivityWindowAndroid
+//=====================================================================
 const Int32 ActivityWindowAndroid::REQUEST_CODE_PREFIX;
 const Int32 ActivityWindowAndroid::REQUEST_CODE_RANGE_SIZE;
 const String ActivityWindowAndroid::TAG("ActivityWindowAndroid");
 
 ActivityWindowAndroid::ActivityWindowAndroid(
-    /* in */ IActivity* activity)
-    : mNextRequestCode(0)
+    /* [in] */ IActivity* activity)
 {
-    activity->GetApplicationContext();
-    mActivityRef = new WeakReference<Activity>(activity);
+    // ==================before translated======================
+    // super(activity.getApplicationContext());
+    // mActivityRef = new WeakReference<Activity>(activity);
 }
 
-//@Override
 Int32 ActivityWindowAndroid::ShowCancelableIntent(
-    /* in */ IPendingIntent* intent,
-    /* in */ IIntentCallback* callback,
-    /* in */ Int32 errorId)
+    /* [in] */ IPendingIntent* intent,
+    /* [in] */ IntentCallback* callback,
+    /* [in] */ Int32 errorId)
 {
-    AutoPtr<IActivity> activity;
-    mActivityRef->Get((IActivity**)&activity);
-    if (NULL == activity)
-        return START_INTENT_FAILURE;
-
-    Int32 requestCode = GenerateNextRequestCode();
-
-    //try {
-        AutoPtr<IIntentSender> sender;
-        intent->GetIntentSender((IIntentSender**)&sender);
-        AutoPtr<IIntent> newIntent;
-        CIntent::New((IIntent**)&newIntent);
-        activity->StartIntentSenderForResult(sender, requestCode, newIntent, 0, 0, 0);
-    //} catch (SendIntentException e) {
-    //    return START_INTENT_FAILURE;
-    //}
-
-    StoreCallbackData(requestCode, callback, errorId);
-    return requestCode;
+    // ==================before translated======================
+    // Activity activity = mActivityRef.get();
+    // if (activity == null) return START_INTENT_FAILURE;
+    //
+    // int requestCode = generateNextRequestCode();
+    //
+    // try {
+    //     activity.startIntentSenderForResult(
+    //             intent.getIntentSender(), requestCode, new Intent(), 0, 0, 0);
+    // } catch (SendIntentException e) {
+    //     return START_INTENT_FAILURE;
+    // }
+    //
+    // storeCallbackData(requestCode, callback, errorId);
+    // return requestCode;
+    assert(0);
+    return 0;
 }
 
-//@Override
 Int32 ActivityWindowAndroid::ShowCancelableIntent(
-    /* in */ IIntent* intent,
-    /* in */ IIntentCallback* callback,
-    /* in */ Int32 errorId)
+    /* [in] */ IIntent* intent,
+    /* [in] */ IntentCallback* callback,
+    /* [in] */ Int32 errorId)
 {
-    AutoPtr<IActivity> activity;
-    mActivityRef->Get((IActivity**)&activity);
-
-    if (NULL == activity)
-        return START_INTENT_FAILURE;
-
-    Int32 requestCode = GenerateNextRequestCode();
-
-    //try {
-        activity->StartActivityForResult(intent, requestCode);
-    //} catch (ActivityNotFoundException e) {
-    //    return START_INTENT_FAILURE;
-    //}
-
-    StoreCallbackData(requestCode, callback, errorId);
-    return requestCode;
+    // ==================before translated======================
+    // Activity activity = mActivityRef.get();
+    // if (activity == null) return START_INTENT_FAILURE;
+    //
+    // int requestCode = generateNextRequestCode();
+    //
+    // try {
+    //     activity.startActivityForResult(intent, requestCode);
+    // } catch (ActivityNotFoundException e) {
+    //     return START_INTENT_FAILURE;
+    // }
+    //
+    // storeCallbackData(requestCode, callback, errorId);
+    // return requestCode;
+    assert(0);
+    return 0;
 }
 
-//@Override
 ECode ActivityWindowAndroid::CancelIntent(
-    /* in */ Int32 requestCode)
+    /* [in] */ Int32 requestCode)
 {
-    AutoPtr<IActivity> activity;
-    mActivityRef->Get((IActivity**)&activity);
-
-    if (NULL == activity)
-        return NOERROR;
-    activity->FinishActivity(requestCode);
+    // ==================before translated======================
+    // Activity activity = mActivityRef.get();
+    // if (activity == null) return;
+    // activity.finishActivity(requestCode);
+    assert(0);
     return NOERROR;
 }
 
-//@Override
 Boolean ActivityWindowAndroid::OnActivityResult(
-    /* in */ Int32 requestCode,
-    /* in */ Int32 resultCode,
-    /* in */ IIntent* data)
+    /* [in] */ Int32 requestCode,
+    /* [in] */ Int32 resultCode,
+    /* [in] */ IIntent* data)
 {
-    AutoPtr<IIntentCallback> callback;
-    mOutstandingIntents->Get(requestCode, (IIntentCallback**)&callback);
-    mOutstandingIntents->Delete(requestCode);
-    String errorMessage;
-    mIntentErrors->Remove(requestCode, &errorMessage);
-
-    if (NULL != callback) {
-        AutoPtr<IContextResolver> contextResolver;
-        mApplicationContext->GetContentResolver((IContextResolver**)&contextResolver);
-        callback->OnIntentCompleted(this, resultCode, contextResolver, data);
-        return TRUE;
-    }
-    else {
-        if (NULL != errorMessage) {
-            ShowCallbackNonExistentError(errorMessage);
-            return TRUE;
-        }
-    }
+    // ==================before translated======================
+    // IntentCallback callback = mOutstandingIntents.get(requestCode);
+    // mOutstandingIntents.delete(requestCode);
+    // String errorMessage = mIntentErrors.remove(requestCode);
+    //
+    // if (callback != null) {
+    //     callback.onIntentCompleted(this, resultCode,
+    //             mApplicationContext.getContentResolver(), data);
+    //     return true;
+    // } else {
+    //     if (errorMessage != null) {
+    //         showCallbackNonExistentError(errorMessage);
+    //         return true;
+    //     }
+    // }
+    // return false;
+    assert(0);
     return FALSE;
 }
 
-//@Override
-AutoPtr< IWeakReference<Activity> > ActivityWindowAndroid::GetActivity()
+AutoPtr< IWeakReference< AutoPtr<IActivity> > > ActivityWindowAndroid::GetActivity()
 {
-    // Return a new WeakReference to prevent clients from releasing our internal WeakReference.
-    AutoPtr<IActivity> activity;
-    mActivityRef->Get((IActivity**)&activity);
-
-    AutoPtr< IWeakReference<Activity> > result = new WeakReference<IActivity>(activity);
-    return result;
+    // ==================before translated======================
+    // // Return a new WeakReference to prevent clients from releasing our internal WeakReference.
+    // return new WeakReference<Activity>(mActivityRef.get());
+    assert(0);
+    AutoPtr< IWeakReference< AutoPtr<IActivity> > > empty;
+    return empty;
 }
 
 Int32 ActivityWindowAndroid::GenerateNextRequestCode()
 {
-    Int32 requestCode = REQUEST_CODE_PREFIX + mNextRequestCode;
-    mNextRequestCode = (mNextRequestCode + 1) % REQUEST_CODE_RANGE_SIZE;
-    return requestCode;
+    // ==================before translated======================
+    // int requestCode = REQUEST_CODE_PREFIX + mNextRequestCode;
+    // mNextRequestCode = (mNextRequestCode + 1) % REQUEST_CODE_RANGE_SIZE;
+    // return requestCode;
+    assert(0);
+    return 0;
 }
 
 ECode ActivityWindowAndroid::StoreCallbackData(
-    /* in */ Int32 requestCode,
-    /* in */ IIntentCallback* callback,
-    /* in */ Int32 errorId)
+    /* [in] */ Int32 requestCode,
+    /* [in] */ IntentCallback* callback,
+    /* [in] */ Int32 errorId)
 {
     VALIDATE_NOT_NULL(callback);
-    String errorStr;
-    mApplicationContext->GetString(errorId, &errorStr);
-    mOutstandingIntents->Put(requestCode, callback);
-    mIntentErrors->Put(requestCode, errorStr);
+    // ==================before translated======================
+    // mOutstandingIntents.put(requestCode, callback);
+    // mIntentErrors.put(requestCode, mApplicationContext.getString(errorId));
+    assert(0);
     return NOERROR;
 }
 
@@ -144,4 +144,5 @@ ECode ActivityWindowAndroid::StoreCallbackData(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
 

@@ -1,71 +1,91 @@
 // wuweizuo automatic build .cpp file from .java file.
 
+#include "ViewAndroid.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
 namespace Base {
 
+//=====================================================================
+//                             ViewAndroid
+//=====================================================================
 ViewAndroid::ViewAndroid(
-    /* in */ WindowAndroid* nativeWindow,
-    /* in */ ViewAndroidDelegate* viewAndroidDelegate)
-    : mWindowAndroid(nativeWindow)
-    , mViewAndroidDelegate(viewAndroidDelegate)
-    , mNativeViewAndroid(0)
-    , mKeepScreenOnCount(0)
+    /* [in] */ WindowAndroid* nativeWindow,
+    /* [in] */ ViewAndroidDelegate* viewAndroidDelegate)
 {
-    mNativeViewAndroid = NativeInit(mWindowAndroid->GetNativePointer());
+    // ==================before translated======================
+    // mWindowAndroid = nativeWindow;
+    // mViewAndroidDelegate = viewAndroidDelegate;
+    // mNativeViewAndroid = nativeInit(mWindowAndroid.getNativePointer());
 }
 
 AutoPtr<ViewAndroidDelegate> ViewAndroid::GetViewAndroidDelegate()
 {
-    return mViewAndroidDelegate;
+    // ==================before translated======================
+    // return mViewAndroidDelegate;
+    assert(0);
+    AutoPtr<ViewAndroidDelegate> empty;
+    return empty;
 }
 
 ECode ViewAndroid::Destroy()
 {
-    if (mNativeViewAndroid != 0) {
-        NativeDestroy(mNativeViewAndroid);
-        mNativeViewAndroid = 0;
-    }
+    // ==================before translated======================
+    // if (mNativeViewAndroid != 0) {
+    //     nativeDestroy(mNativeViewAndroid);
+    //     mNativeViewAndroid = 0;
+    // }
+    assert(0);
     return NOERROR;
 }
 
 Int64 ViewAndroid::GetNativePointer()
 {
-    return mNativeViewAndroid;
+    // ==================before translated======================
+    // return mNativeViewAndroid;
+    assert(0);
+    return 0;
 }
 
 ECode ViewAndroid::IncrementKeepScreenOnCount()
 {
-    mKeepScreenOnCount++;
-    if (mKeepScreenOnCount == 1) {
-        mKeepScreenOnView = mViewAndroidDelegate->AcquireAnchorView();
-        mViewAndroidDelegate->SetAnchorViewPosition(mKeepScreenOnView, 0, 0, 0, 0);
-        mKeepScreenOnView->SetKeepScreenOn(TRUE);
-    }
+    // ==================before translated======================
+    // mKeepScreenOnCount++;
+    // if (mKeepScreenOnCount == 1) {
+    //     mKeepScreenOnView = mViewAndroidDelegate.acquireAnchorView();
+    //     mViewAndroidDelegate.setAnchorViewPosition(mKeepScreenOnView, 0, 0, 0, 0);
+    //     mKeepScreenOnView.setKeepScreenOn(true);
+    // }
+    assert(0);
     return NOERROR;
 }
 
 ECode ViewAndroid::DecrementKeepScreenOnCount()
 {
-    assert (mKeepScreenOnCount > 0);
-    mKeepScreenOnCount--;
-    if (mKeepScreenOnCount == 0) {
-        mViewAndroidDelegate->ReleaseAnchorView(mKeepScreenOnView);
-        mKeepScreenOnView = NULL;
-    }
+    // ==================before translated======================
+    // assert mKeepScreenOnCount > 0;
+    // mKeepScreenOnCount--;
+    // if (mKeepScreenOnCount == 0) {
+    //     mViewAndroidDelegate.releaseAnchorView(mKeepScreenOnView);
+    //     mKeepScreenOnView = null;
+    // }
+    assert(0);
     return NOERROR;
 }
 
 Int64 ViewAndroid::NativeInit(
-    /* in */ Int64 windowPtr)
+    /* [in] */ Int64 windowPtr)
 {
+    assert(0);
+    return 0;
 }
 
 ECode ViewAndroid::NativeDestroy(
-    /* in */ Int64 nativeViewAndroid)
+    /* [in] */ Int64 nativeViewAndroid)
 {
+    assert(0);
     return NOERROR;
 }
 
@@ -74,4 +94,5 @@ ECode ViewAndroid::NativeDestroy(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
 

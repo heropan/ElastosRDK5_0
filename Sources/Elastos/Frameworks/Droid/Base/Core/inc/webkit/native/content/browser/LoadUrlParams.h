@@ -6,12 +6,19 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOADURLPARAMS_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOADURLPARAMS_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "elastos/utility/CLocale.h"
+
 // package org.chromium.content.browser;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 // import org.chromium.content_public.Referrer;
 // import java.util.Locale;
 // import java.util.Map;
+
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Droid {
@@ -25,7 +32,7 @@ namespace Browser {
   * values.
   */
 // @JNINamespace("content")
-class LoadUrlParams
+class LoadUrlParams : public Object
 {
 public:
     /**
@@ -318,7 +325,8 @@ public:
     Boolean mIsRendererInitiated;
 
 private:
-    AutoPtr< IMap<String, String> > mExtraHeaders;
+     Map<String;
+     String> mExtraHeaders;
     String mVerbatimHeaders;
 };
 

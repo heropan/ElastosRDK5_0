@@ -6,6 +6,15 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_GFX_VIEWCONFIGURATIONHELPER_H_
 #define _ELASTOS_DROID_WEBKIT_UI_GFX_VIEWCONFIGURATIONHELPER_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/Context.h"
+#include "content/res/CConfiguration.h"
+#include "content/res/CResources.h"
+#include "util/CTypedValue.h"
+#include "view/CViewConfiguration.h"
+
 // package org.chromium.ui.gfx;
 // import android.content.ComponentCallbacks;
 // import android.content.Context;
@@ -17,6 +26,13 @@
 // import org.chromium.base.JNINamespace;
 // import org.chromium.ui.R;
 
+using Elastos::Droid::Content::IComponentCallbacks;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Util::ITypedValue;
+using Elastos::Droid::View::IViewConfiguration;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -24,25 +40,27 @@ namespace Ui {
 namespace Gfx {
 
 /**
- * This class facilitates access to ViewConfiguration-related properties, also
- * providing native-code notifications when such properties have changed.
- *
- */
+  * This class facilitates access to ViewConfiguration-related properties, also
+  * providing native-code notifications when such properties have changed.
+  *
+  */
 // @JNINamespace("gfx")
-class ViewConfigurationHelper
+class ViewConfigurationHelper : public Object
 {
-private:
-    class InnerComponentCallbacks : public ComponentCallbacks
+public:
+    class InnerComponentCallbacks
+        : public Object
+        , public ComponentCallbacks
     {
     public:
         InnerComponentCallbacks(
-               /* [in] */ ViewConfigurationHelper* owner);
+            /* [in] */ ViewConfigurationHelper* owner);
 
-        //@Override
+        // @Override
         CARAPI OnConfigurationChanged(
             /* [in] */ IConfiguration* configuration);
 
-        //@Override
+        // @Override
         CARAPI OnLowMemory();
 
     private:
@@ -104,7 +122,7 @@ private:
     // ui/android/java/res/values/dimens.xml.
     static const Float MIN_SCALING_SPAN_MM;
     static const Float MIN_SCALING_TOUCH_MAJOR_DIP;
-    AutoPtr<IContext> mAppContext;
+    /*const*/ AutoPtr<IContext> mAppContext;
     AutoPtr<IViewConfiguration> mViewConfiguration;
 };
 

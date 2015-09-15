@@ -1,5 +1,7 @@
 // wuweizuo automatic build .cpp file from .java file.
 
+#include "PowerSaveBlocker.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -13,9 +15,9 @@ ECode PowerSaveBlocker::ApplyBlock(
     /* [in] */ ViewAndroid* view)
 {
     VALIDATE_NOT_NULL(view);
-    /*
-    view.incrementKeepScreenOnCount();
-    */
+    // ==================before translated======================
+    // view.incrementKeepScreenOnCount();
+    assert(0);
     return NOERROR;
 }
 
@@ -23,9 +25,9 @@ ECode PowerSaveBlocker::RemoveBlock(
     /* [in] */ ViewAndroid* view)
 {
     VALIDATE_NOT_NULL(view);
-    /*
-    view.decrementKeepScreenOnCount();
-    */
+    // ==================before translated======================
+    // view.decrementKeepScreenOnCount();
+    assert(0);
     return NOERROR;
 }
 

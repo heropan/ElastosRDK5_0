@@ -6,12 +6,23 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOCATIONPROVIDERADAPTER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOCATIONPROVIDERADAPTER_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/Context.h"
+#include "webkit/native/base/ThreadUtils.h"
+#include "elastos/utility/concurrent/FutureTask.h"
+
 // package org.chromium.content.browser;
 // import android.content.Context;
 // import com.google.common.annotations.VisibleForTesting;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.ThreadUtils;
 // import java.util.concurrent.FutureTask;
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+using Elastos::Utility::Concurrent::IFutureTask;
 
 namespace Elastos {
 namespace Droid {
@@ -28,10 +39,12 @@ namespace Browser {
   * Based on android.webkit.GeolocationService.java
   */
 // @VisibleForTesting
-class LocationProviderAdapter
+class LocationProviderAdapter : public Object
 {
 public:
-    class InnerRunnable : public Runnable
+    class InnerRunnable
+        : public Object
+        , public Runnable
     {
     public:
         InnerRunnable(
@@ -44,7 +57,9 @@ public:
         LocationProviderAdapter* mOwner;
     };
 
-    class InnerRunnable : public Runnable
+    class InnerRunnable
+        : public Object
+        , public Runnable
     {
     public:
         InnerRunnable(
@@ -68,8 +83,8 @@ public:
       * @param gpsEnabled Whether or not we're interested in high accuracy GPS.
       */
     // @CalledByNative
-    virtual const CARAPI_(Boolean) Start(
-        /* [in] */ Boolean gpsEnabled);
+    virtual CARAPI_(Boolean) Start(
+        /* [in] */ const Boolean& gpsEnabled);
 
     /**
       * Stop listening for location updates. May be called in any thread.

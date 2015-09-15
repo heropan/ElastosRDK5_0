@@ -1,3 +1,4 @@
+// wuweizuo automatic build .h file from .java file.
 // Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -5,22 +6,37 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_PROXYCHANGELISTENER_H_
 #define _ELASTOS_DROID_WEBKIT_NET_PROXYCHANGELISTENER_H_
 
-//package org.chromium.net;
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/BroadcastReceiver.h"
+#include "content/Context.h"
+#include "content/Intent.h"
+#include "content/IntentFilter.h"
+#include "net/CProxy.h"
+#include "os/Build.h"
 
-//import android.content.BroadcastReceiver;
-//import android.content.Context;
-//import android.content.Intent;
-//import android.content.IntentFilter;
-//import android.net.Proxy;
-//import android.os.Build;
-//import android.util.Log;
+// package org.chromium.net;
+// import android.content.BroadcastReceiver;
+// import android.content.Context;
+// import android.content.Intent;
+// import android.content.IntentFilter;
+// import android.net.Proxy;
+// import android.os.Build;
+// import android.util.Log;
+// import org.chromium.base.CalledByNative;
+// import org.chromium.base.JNINamespace;
+// import org.chromium.base.NativeClassQualifiedName;
+// import java.lang.reflect.InvocationTargetException;
+// import java.lang.reflect.Method;
 
-//import org.chromium.base.CalledByNative;
-//import org.chromium.base.JNINamespace;
-//import org.chromium.base.NativeClassQualifiedName;
-
-//import java.lang.reflect.InvocationTargetException;
-//import java.lang.reflect.Method;
+using Elastos::Droid::Content::IBroadcastReceiver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Net::IProxy;
+using Elastos::Droid::Os::IBuild;
+using Elastos::Droid::Util::ILog;
 
 namespace Elastos {
 namespace Droid {
@@ -28,11 +44,11 @@ namespace Webkit {
 namespace Net {
 
 /**
- * This class partners with native ProxyConfigServiceAndroid to listen for
- * proxy change notifications from Android.
- */
-//@JNINamespace("net")
-class ProxyChangeListener
+  * This class partners with native ProxyConfigServiceAndroid to listen for
+  * proxy change notifications from Android.
+  */
+// @JNINamespace("net")
+class ProxyChangeListener : public Object
 {
 public:
     class Delegate
@@ -42,7 +58,7 @@ public:
     };
 
 private:
-    class ProxyConfig
+    class ProxyConfig : public Object
     {
     public:
         ProxyConfig(
@@ -50,25 +66,27 @@ private:
             /* [in] */ Int32 port);
 
     public:
-        const String mHost;
-        const Int32 mPort;
+        /*const*/ String mHost;
+        /*const*/ Int32 mPort;
     };
 
-    class ProxyReceiver : public BroadcastReceiver
+    class ProxyReceiver
+        : public Object
+        , public BroadcastReceiver
     {
     public:
-        //@Override
+        // @Override
         CARAPI OnReceive(
             /* [in] */ IContext* context,
             /* [in] */ IIntent* intent);
 
+    private:
         // Extract a ProxyConfig object from the supplied Intent's extra data
         // bundle. The android.net.ProxyProperties class is not exported from
         // tne Android SDK, so we have to use reflection to get at it and invoke
         // methods on it. If we fail, return an empty proxy config (meaning
         // 'direct').
         // TODO(sgurun): once android.net.ProxyInfo is public, rewrite this.
-    private:
         CARAPI_(AutoPtr<ProxyConfig>) ExtractNewProxy(
             /* [in] */ IIntent* intent);
     };
@@ -80,19 +98,19 @@ public:
     virtual CARAPI SetDelegateForTesting(
         /* [in] */ Delegate* delegate);
 
-    //@CalledByNative
+    // @CalledByNative
     static CARAPI_(AutoPtr<ProxyChangeListener>) Create(
         /* [in] */ IContext* context);
 
-    //@CalledByNative
+    // @CalledByNative
     static CARAPI_(String) GetProperty(
         /* [in] */ String property);
 
-    //@CalledByNative
+    // @CalledByNative
     virtual CARAPI Start(
         /* [in] */ Int64 nativePtr);
 
-    //@CalledByNative
+    // @CalledByNative
     virtual CARAPI Stop();
 
 private:
@@ -106,21 +124,16 @@ private:
 
     CARAPI UnregisterReceiver();
 
-    // question: native function
     /**
-     * See net/proxy/proxy_config_service_android.cc
-     */
-    //@NativeClassQualifiedName("ProxyConfigServiceAndroid::JNIDelegate")
-    //private native void nativeProxySettingsChangedTo(long nativePtr,
-    //                                                 String host,
-    //                                                 int port);
+      * See net/proxy/proxy_config_service_android.cc
+      */
+    // @NativeClassQualifiedName("ProxyConfigServiceAndroid::JNIDelegate")
     CARAPI NativeProxySettingsChangedTo(
         /* [in] */ Int64 nativePtr,
         /* [in] */ String host,
         /* [in] */ Int32 port);
 
-    //@NativeClassQualifiedName("ProxyConfigServiceAndroid::JNIDelegate")
-    //private native void nativeProxySettingsChanged(long nativePtr);
+    // @NativeClassQualifiedName("ProxyConfigServiceAndroid::JNIDelegate")
     CARAPI NativeProxySettingsChanged(
         /* [in] */ Int64 nativePtr);
 

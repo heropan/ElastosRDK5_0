@@ -1,167 +1,206 @@
 // wuweizuo automatic build .cpp file from .java file.
 
+#include "DeviceDisplayInfo.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
 namespace Gfx {
 
-DeviceDisplayInfo::DeviceDisplayInfo(
-    /* in */ IContext* context)
-{
-    AutoPtr<IContext> applicationContext;
-    context->GetApplicationContext((IContext**)&applicationContext);
-    mAppContext = applicationContext;
-    mAppContext->GetSystemService(IContext::WINDOW_SERVICE, (IWindowManager**)&mWinManager);
-}
-
+//=====================================================================
+//                          DeviceDisplayInfo
+//=====================================================================
 Int32 DeviceDisplayInfo::GetDisplayHeight()
 {
-    GetDisplay()->GetSize(mTempPoint);
-    return mTempPoint->y;
+    // ==================before translated======================
+    // getDisplay().getSize(mTempPoint);
+    // return mTempPoint.y;
+    assert(0);
+    return 0;
 }
 
 Int32 DeviceDisplayInfo::GetDisplayWidth()
 {
-    GetDisplay()->GetSize(mTempPoint);
-    return mTempPoint-x;
+    // ==================before translated======================
+    // getDisplay().getSize(mTempPoint);
+    // return mTempPoint.x;
+    assert(0);
+    return 0;
 }
 
 Int32 DeviceDisplayInfo::GetPhysicalDisplayHeight()
 {
-    if (IBuild::VERSION::SDK_INT < IBuild::VERSION_CODES::JELLY_BEAN_MR1) {
-        return 0;
-    }
-    GetDisplay()->GetRealSize(mTempPoint);
-    return mTempPoint->y;
+    // ==================before translated======================
+    // if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    //     return 0;
+    // }
+    // getDisplay().getRealSize(mTempPoint);
+    // return mTempPoint.y;
+    assert(0);
+    return 0;
 }
 
 Int32 DeviceDisplayInfo::GetPhysicalDisplayWidth()
 {
-    if (IBuild::VERSION::SDK_INT < IBuild::VERSION_CODES::JELLY_BEAN_MR1) {
-        return 0;
-    }
-    GetDisplay()->GetRealSize(mTempPoint);
-    return mTempPoint->x;
+    // ==================before translated======================
+    // if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    //     return 0;
+    // }
+    // getDisplay().getRealSize(mTempPoint);
+    // return mTempPoint.x;
+    assert(0);
+    return 0;
 }
 
 Int32 DeviceDisplayInfo::GetBitsPerPixel()
 {
-    Int32 format = GetPixelFormat();
-    AutoPtr<IPixelFormat> info;
-    CPixelFormat::New((IPixelFormat**)&info);
-    CPixelFormat::GetPixelFormatInfo(format, &info);
-    return info->bitsPerPixel;
+    // ==================before translated======================
+    // int format = getPixelFormat();
+    // PixelFormat info = new PixelFormat();
+    // PixelFormat.getPixelFormatInfo(format, info);
+    // return info.bitsPerPixel;
+    assert(0);
+    return 0;
 }
 
 Int32 DeviceDisplayInfo::GetBitsPerComponent()
 {
-    Int32 format = GetPixelFormat();
-    switch (format) {
-        case IPixelFormat::RGBA_4444:
-            return 4;
-        case IPixelFormat::RGBA_5551:
-            return 5;
-        case IPixelFormat::RGBA_8888:
-        case IPixelFormat::RGBA_8888:
-        case IPixelFormat::RGBX_8888:
-        case IPixelFormat::RGBA_8888:
-        case IPixelFormat::RGBA_8888:
-        case IPixelFormat::RGBX_8888:
-        case IPixelFormat::RGB_888:
-            return 8;
-        case IPixelFormat::RGB_332:
-            return 2;
-        case IPixelFormat::RGB_565:
-            return 5;
-        case IPixelFormat::A_8:
-        case IPixelFormat::A_8:
-        case IPixelFormat::LA_88:
-        case IPixelFormat::A_8:
-        case IPixelFormat::A_8:
-        case IPixelFormat::LA_88:
-        case IPixelFormat::L_8:
-            return 0;
-        default:
-            return 8;
-    }
+    // ==================before translated======================
+    // int format = getPixelFormat();
+    // switch (format) {
+    //     case PixelFormat.RGBA_4444:
+    //         return 4;
+    //
+    //     case PixelFormat.RGBA_5551:
+    //         return 5;
+    //
+    //     case PixelFormat.RGBA_8888:
+    //     case PixelFormat.RGBX_8888:
+    //     case PixelFormat.RGB_888:
+    //         return 8;
+    //
+    //     case PixelFormat.RGB_332:
+    //         return 2;
+    //
+    //     case PixelFormat.RGB_565:
+    //         return 5;
+    //
+    //     // Non-RGB formats.
+    //     case PixelFormat.A_8:
+    //     case PixelFormat.LA_88:
+    //     case PixelFormat.L_8:
+    //         return 0;
+    //
+    //     // Unknown format. Use 8 as a sensible default.
+    //     default:
+    //         return 8;
+    // }
+    assert(0);
+    return 0;
 }
 
 Double DeviceDisplayInfo::GetDIPScale()
 {
-    GetDisplay()->GetMetrics(&mTempMetrics);
-    return mTempMetrics->density;
+    // ==================before translated======================
+    // getDisplay().getMetrics(mTempMetrics);
+    // return mTempMetrics.density;
+    assert(0);
+    return 0.0f;
 }
 
 ECode DeviceDisplayInfo::UpdateNativeSharedDisplayInfo()
 {
-    NativeUpdateSharedDeviceDisplayInfo(
-                GetDisplayHeight(), GetDisplayWidth(),
-                GetPhysicalDisplayHeight(), GetPhysicalDisplayWidth(),
-                GetBitsPerPixel(), GetBitsPerComponent(),
-                GetDIPScale(), GetSmallestDIPWidth(), GetRotationDegrees());
+    // ==================before translated======================
+    // nativeUpdateSharedDeviceDisplayInfo(
+    //         getDisplayHeight(), getDisplayWidth(),
+    //         getPhysicalDisplayHeight(), getPhysicalDisplayWidth(),
+    //         getBitsPerPixel(), getBitsPerComponent(),
+    //         getDIPScale(), getSmallestDIPWidth(), getRotationDegrees());
+    assert(0);
     return NOERROR;
 }
 
 AutoPtr<DeviceDisplayInfo> DeviceDisplayInfo::Create(
-    /* in */ IContext* context)
+    /* [in] */ IContext* context)
 {
-    AutoPtr<DeviceDisplayInfo> deviceDisplayInfo = new DeviceDisplayInfo(context);
-    return deviceDisplayInfo;
+    // ==================before translated======================
+    // return new DeviceDisplayInfo(context);
+    assert(0);
+    AutoPtr<DeviceDisplayInfo> empty;
+    return empty;
+}
+
+DeviceDisplayInfo::DeviceDisplayInfo(
+    /* [in] */ IContext* context)
+{
+    // ==================before translated======================
+    // mAppContext = context.getApplicationContext();
+    // mWinManager = (WindowManager) mAppContext.getSystemService(Context.WINDOW_SERVICE);
 }
 
 Int32 DeviceDisplayInfo::GetPixelFormat()
 {
-    if (IBuild::VERSION::SDK_INT < IBuild::VERSION_CODES::JELLY_BEAN_MR1) {
-        return GetDisplay()->GetPixelFormat();
-    }
-    return IPixelFormat::RGBA_8888;
+    // ==================before translated======================
+    // if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    //     return getDisplay().getPixelFormat();
+    // }
+    // // JellyBean MR1 and later always uses RGBA_8888.
+    // return PixelFormat.RGBA_8888;
+    assert(0);
+    return 0;
 }
 
 Int32 DeviceDisplayInfo::GetSmallestDIPWidth()
 {
-    AutoPtr<IResources> resources;
-    mAppContext->GetResources((IResources**)&resources);
-
-    AutoPtr<IConfiguration> configuration;
-    resources->GetConfiguration((IConfiguration**)&configuration);
-    return configuration->smallestScreenWidthDp;
+    // ==================before translated======================
+    // return mAppContext.getResources().getConfiguration().smallestScreenWidthDp;
+    assert(0);
+    return 0;
 }
 
 Int32 DeviceDisplayInfo::GetRotationDegrees()
 {
-    switch (GetDisplay()->GetRotation()) {
-        case ISurface::ROTATION_0:
-            return 0;
-        case ISurface::ROTATION_90:
-            return 90;
-        case ISurface::ROTATION_180:
-            return 180;
-        case ISurface::ROTATION_270:
-            return 270;
-    }
-    assert (FALSE);
+    // ==================before translated======================
+    // switch (getDisplay().getRotation()) {
+    //     case Surface.ROTATION_0:
+    //         return 0;
+    //     case Surface.ROTATION_90:
+    //         return 90;
+    //     case Surface.ROTATION_180:
+    //         return 180;
+    //     case Surface.ROTATION_270:
+    //         return 270;
+    // }
+    //
+    // // This should not happen.
+    // assert false;
+    // return 0;
+    assert(0);
     return 0;
 }
 
 AutoPtr<IDisplay> DeviceDisplayInfo::GetDisplay()
 {
-    AutoPtr<IDisplay> display;
-    mWinManager->GetDefaultDisplay((IDisplay**)&display);
-    return display;
+    // ==================before translated======================
+    // return mWinManager.getDefaultDisplay();
+    assert(0);
+    AutoPtr<IDisplay> empty;
+    return empty;
 }
 
 ECode DeviceDisplayInfo::NativeUpdateSharedDeviceDisplayInfo(
-    /* in */ Int32 displayHeight,
-    /* in */ Int32 displayWidth,
-    /* in */ Int32 physicalDisplayHeight,
-    /* in */ Int32 physicalDisplayWidth,
-    /* in */ Int32 bitsPerPixel,
-    /* in */ Int32 bitsPerComponent,
-    /* in */ Double dipScale,
-    /* in */ Int32 smallestDIPWidth,
-    /* in */ Int32 rotationDegrees)
+    /* [in] */ Int32 displayHeight,
+    /* [in] */ Int32 displayWidth,
+    /* [in] */ Int32 physicalDisplayHeight,
+    /* [in] */ Int32 physicalDisplayWidth,
+    /* [in] */ Int32 bitsPerPixel,
+    /* [in] */ Int32 bitsPerComponent,
+    /* [in] */ Double dipScale,
+    /* [in] */ Int32 smallestDIPWidth,
+    /* [in] */ Int32 rotationDegrees)
 {
+    assert(0);
     return NOERROR;
 }
 
@@ -170,4 +209,5 @@ ECode DeviceDisplayInfo::NativeUpdateSharedDeviceDisplayInfo(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
 

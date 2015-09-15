@@ -1,5 +1,7 @@
 // wuweizuo automatic build .cpp file from .java file.
 
+#include "InterstitialPageDelegateAndroid.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -12,74 +14,79 @@ namespace Browser {
 InterstitialPageDelegateAndroid::InterstitialPageDelegateAndroid(
     /* [in] */ String htmlContent)
 {
-    /*
-    mNativePtr = nativeInit(htmlContent);
-    */
+    // ==================before translated======================
+    // mNativePtr = nativeInit(htmlContent);
 }
 
 Int64 InterstitialPageDelegateAndroid::GetNative()
 {
-    /*
-    return mNativePtr;
-    */
+    // ==================before translated======================
+    // return mNativePtr;
+    assert(0);
     return 0;
 }
 
 ECode InterstitialPageDelegateAndroid::OnProceed()
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode InterstitialPageDelegateAndroid::OnDontProceed()
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode InterstitialPageDelegateAndroid::CommandReceived(
     /* [in] */ String command)
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode InterstitialPageDelegateAndroid::Proceed()
 {
-    /*
-    if (mNativePtr != 0) nativeProceed(mNativePtr);
-    */
+    // ==================before translated======================
+    // if (mNativePtr != 0) nativeProceed(mNativePtr);
+    assert(0);
     return NOERROR;
 }
 
 ECode InterstitialPageDelegateAndroid::DontProceed()
 {
-    /*
-    if (mNativePtr != 0) nativeDontProceed(mNativePtr);
-    */
+    // ==================before translated======================
+    // if (mNativePtr != 0) nativeDontProceed(mNativePtr);
+    assert(0);
     return NOERROR;
 }
 
 ECode InterstitialPageDelegateAndroid::OnNativeDestroyed()
 {
-    /*
-    mNativePtr = 0;
-    */
+    // ==================before translated======================
+    // mNativePtr = 0;
+    assert(0);
     return NOERROR;
 }
 
 Int64 InterstitialPageDelegateAndroid::NativeInit(
     /* [in] */ String htmlContent)
 {
+    assert(0);
     return 0;
 }
 
 ECode InterstitialPageDelegateAndroid::NativeProceed(
     /* [in] */ Int64 nativeInterstitialPageDelegateAndroid)
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode InterstitialPageDelegateAndroid::NativeDontProceed(
     /* [in] */ Int64 nativeInterstitialPageDelegateAndroid)
 {
+    assert(0);
     return NOERROR;
 }
 

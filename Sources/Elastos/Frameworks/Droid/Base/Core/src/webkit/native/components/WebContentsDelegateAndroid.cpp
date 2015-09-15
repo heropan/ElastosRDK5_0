@@ -24,6 +24,7 @@ Int32 WebContentsDelegateAndroid::GetMostRecentProgress()
 {
     // ==================before translated======================
     // return mMostRecentProgress;
+    assert(0);
     return 0;
 }
 
@@ -35,59 +36,70 @@ ECode WebContentsDelegateAndroid::OpenNewTab(
     /* [in] */ Boolean isRendererInitiated)
 {
     VALIDATE_NOT_NULL(postData);
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsDelegateAndroid::ActivateContents()
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsDelegateAndroid::CloseContents()
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsDelegateAndroid::OnLoadStarted()
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsDelegateAndroid::OnLoadStopped()
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsDelegateAndroid::NavigationStateChanged(
     /* [in] */ Int32 flags)
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsDelegateAndroid::VisibleSSLStateChanged()
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsDelegateAndroid::OnLoadProgressChanged(
     /* [in] */ Int32 progress)
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsDelegateAndroid::RendererUnresponsive()
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsDelegateAndroid::RendererResponsive()
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsDelegateAndroid::OnUpdateUrl(
     /* [in] */ String url)
 {
+    assert(0);
     return NOERROR;
 }
 
@@ -96,6 +108,7 @@ Boolean WebContentsDelegateAndroid::TakeFocus(
 {
     // ==================before translated======================
     // return false;
+    assert(0);
     return FALSE;
 }
 
@@ -106,6 +119,7 @@ ECode WebContentsDelegateAndroid::HandleKeyboardEvent(
     // ==================before translated======================
     // // TODO(bulach): we probably want to re-inject the KeyEvent back into
     // // the system. Investigate if this is at all possible.
+    assert(0);
     return NOERROR;
 }
 
@@ -117,6 +131,7 @@ Boolean WebContentsDelegateAndroid::AddMessageToConsole(
 {
     // ==================before translated======================
     // return false;
+    assert(0);
     return FALSE;
 }
 
@@ -124,12 +139,14 @@ ECode WebContentsDelegateAndroid::ShowRepostFormWarningDialog(
     /* [in] */ ContentViewCore* contentViewCore)
 {
     VALIDATE_NOT_NULL(contentViewCore);
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsDelegateAndroid::ToggleFullscreenModeForTab(
     /* [in] */ Boolean enterFullscreen)
 {
+    assert(0);
     return NOERROR;
 }
 
@@ -137,6 +154,7 @@ Boolean WebContentsDelegateAndroid::IsFullscreenForTabOrPending()
 {
     // ==================before translated======================
     // return false;
+    assert(0);
     return FALSE;
 }
 
@@ -146,6 +164,7 @@ const ECode WebContentsDelegateAndroid::NotifyLoadProgressChanged(
     // ==================before translated======================
     // mMostRecentProgress = (int) (100.0 * progress);
     // onLoadProgressChanged(mMostRecentProgress);
+    assert(0);
     return NOERROR;
 }
 

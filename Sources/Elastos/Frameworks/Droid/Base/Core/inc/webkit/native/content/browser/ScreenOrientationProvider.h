@@ -6,6 +6,14 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SCREENORIENTATIONPROVIDER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SCREENORIENTATIONPROVIDER_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "app/Activity.h"
+#include "content/pm/CActivityInfo.h"
+#include "webkit/native/base/ApplicationStatus.h"
+#include "webkit/native/content/common/ScreenOrientationValues.h"
+
 // package org.chromium.content.browser;
 // import android.app.Activity;
 // import android.content.pm.ActivityInfo;
@@ -15,6 +23,11 @@
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 // import org.chromium.content.common.ScreenOrientationValues;
+
+using Elastos::Droid::App::IActivity;
+using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Util::ILog;
+using Elastos::Droid::Webkit::Base::ApplicationStatus;
 
 namespace Elastos {
 namespace Droid {
@@ -26,7 +39,7 @@ namespace Browser {
   * This is the implementation of the C++ counterpart ScreenOrientationProvider.
   */
 // @JNINamespace("content")
-class ScreenOrientationProvider
+class ScreenOrientationProvider : public Object
 {
 public:
     // @VisibleForTesting

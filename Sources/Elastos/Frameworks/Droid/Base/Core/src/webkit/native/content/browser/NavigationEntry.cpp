@@ -1,5 +1,7 @@
 // wuweizuo automatic build .cpp file from .java file.
 
+#include "NavigationEntry.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -11,59 +13,60 @@ namespace Browser {
 //=====================================================================
 Int32 NavigationEntry::GetIndex()
 {
-    /*
-    return mIndex;
-    */
+    // ==================before translated======================
+    // return mIndex;
+    assert(0);
     return 0;
 }
 
 String NavigationEntry::GetUrl()
 {
-    /*
-    return mUrl;
-    */
+    // ==================before translated======================
+    // return mUrl;
+    assert(0);
     return String("");
 }
 
 String NavigationEntry::GetVirtualUrl()
 {
-    /*
-    return mVirtualUrl;
-    */
+    // ==================before translated======================
+    // return mVirtualUrl;
+    assert(0);
     return String("");
 }
 
 String NavigationEntry::GetOriginalUrl()
 {
-    /*
-    return mOriginalUrl;
-    */
+    // ==================before translated======================
+    // return mOriginalUrl;
+    assert(0);
     return String("");
 }
 
 String NavigationEntry::GetTitle()
 {
-    /*
-    return mTitle;
-    */
+    // ==================before translated======================
+    // return mTitle;
+    assert(0);
     return String("");
 }
 
 AutoPtr<IBitmap> NavigationEntry::GetFavicon()
 {
-    /*
-    return mFavicon;
-    */
-    return AutoPtr<IBitmap>(this);
+    // ==================before translated======================
+    // return mFavicon;
+    assert(0);
+    AutoPtr<IBitmap> empty;
+    return empty;
 }
 
 ECode NavigationEntry::UpdateFavicon(
     /* [in] */ IBitmap* favicon)
 {
     VALIDATE_NOT_NULL(favicon);
-    /*
-    mFavicon = favicon;
-    */
+    // ==================before translated======================
+    // mFavicon = favicon;
+    assert(0);
     return NOERROR;
 }
 
@@ -75,14 +78,13 @@ NavigationEntry::NavigationEntry(
     /* [in] */ String title,
     /* [in] */ IBitmap* favicon)
 {
-    /*
-    mIndex = index;
-    mUrl = url;
-    mVirtualUrl = virtualUrl;
-    mOriginalUrl = originalUrl;
-    mTitle = title;
-    mFavicon = favicon;
-    */
+    // ==================before translated======================
+    // mIndex = index;
+    // mUrl = url;
+    // mVirtualUrl = virtualUrl;
+    // mOriginalUrl = originalUrl;
+    // mTitle = title;
+    // mFavicon = favicon;
 }
 
 } // namespace Browser

@@ -3,6 +3,10 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_WINDOWOPENDISPOSITION_H_
 #define _ELASTOS_DROID_WEBKIT_UI_WINDOWOPENDISPOSITION_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+
 // package org.chromium.ui;
 
 namespace Elastos {

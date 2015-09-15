@@ -1,5 +1,7 @@
 // wuweizuo automatic build .cpp file from .java file.
 
+#include "TimeZoneMonitor.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -13,9 +15,8 @@ TimeZoneMonitor::InnerBroadcastReceiver::InnerBroadcastReceiver(
     /* [in] */ TimeZoneMonitor* owner)
     : mOwner(owner)
 {
-    /*
-    mOwner = owner;
-    */
+    // ==================before translated======================
+    // mOwner = owner;
 }
 
 ECode TimeZoneMonitor::InnerBroadcastReceiver::OnReceive(
@@ -24,15 +25,14 @@ ECode TimeZoneMonitor::InnerBroadcastReceiver::OnReceive(
 {
     VALIDATE_NOT_NULL(context);
     VALIDATE_NOT_NULL(intent);
-    /*
-    if (!intent.getAction().equals(Intent.ACTION_TIMEZONE_CHANGED)) {
-        Log.e(TAG, "unexpected intent");
-        return;
-    }
-
-
-    nativeTimeZoneChangedFromJava(mNativePtr);
-    */
+    // ==================before translated======================
+    // if (!intent.getAction().equals(Intent.ACTION_TIMEZONE_CHANGED)) {
+    //     Log.e(TAG, "unexpected intent");
+    //     return;
+    // }
+    //
+    // nativeTimeZoneChangedFromJava(mNativePtr);
+    assert(0);
     return NOERROR;
 }
 
@@ -45,18 +45,19 @@ AutoPtr<TimeZoneMonitor> TimeZoneMonitor::GetInstance(
     /* [in] */ IContext* context,
     /* [in] */ Int64 nativePtr)
 {
-    /*
-    return new TimeZoneMonitor(context, nativePtr);
-    */
-    return AutoPtr<TimeZoneMonitor>(this);
+    // ==================before translated======================
+    // return new TimeZoneMonitor(context, nativePtr);
+    assert(0);
+    AutoPtr<TimeZoneMonitor> empty;
+    return empty;
 }
 
 ECode TimeZoneMonitor::Stop()
 {
-    /*
-    mAppContext.unregisterReceiver(mBroadcastReceiver);
-    mNativePtr = 0;
-    */
+    // ==================before translated======================
+    // mAppContext.unregisterReceiver(mBroadcastReceiver);
+    // mNativePtr = 0;
+    assert(0);
     return NOERROR;
 }
 
@@ -64,16 +65,16 @@ TimeZoneMonitor::TimeZoneMonitor(
     /* [in] */ IContext* context,
     /* [in] */ Int64 nativePtr)
 {
-    /*
-    mAppContext = context.getApplicationContext();
-    mNativePtr = nativePtr;
-    mAppContext.registerReceiver(mBroadcastReceiver, mFilter);
-    */
+    // ==================before translated======================
+    // mAppContext = context.getApplicationContext();
+    // mNativePtr = nativePtr;
+    // mAppContext.registerReceiver(mBroadcastReceiver, mFilter);
 }
 
 ECode TimeZoneMonitor::NativeTimeZoneChangedFromJava(
     /* [in] */ Int64 nativeTimeZoneMonitorAndroid)
 {
+    assert(0);
     return NOERROR;
 }
 

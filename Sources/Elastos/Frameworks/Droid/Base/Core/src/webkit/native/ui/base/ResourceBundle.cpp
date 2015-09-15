@@ -1,3 +1,6 @@
+// wuweizuo automatic build .cpp file from .java file.
+
+#include "ResourceBundle.h"
 
 namespace Elastos {
 namespace Droid {
@@ -5,21 +8,24 @@ namespace Webkit {
 namespace Ui {
 namespace Base {
 
-//@CalledByNative
+//=====================================================================
+//                            ResourceBundle
+//=====================================================================
 Boolean ResourceBundle::AssetContainedInApk(
-    /* in */ IContext* ctx,
-    /* in */ String filename)
+    /* [in] */ IContext* ctx,
+    /* [in] */ String filename)
 {
-    //try {
-        AutoPtr<IAssetManager> am;
-        ctx->GetAssets((IAssetManager**)&am);
-        AutoPtr<IAssetFileDescriptor> afd;
-        am->OpenFd(filename, (IAssetFileDescriptor**)&afd);
-        afd->Close();
-        return TRUE;
-    //} catch (IOException e) {
-    //    return false;
-    //}
+    // ==================before translated======================
+    // try {
+    //     AssetManager am = ctx.getAssets();
+    //     AssetFileDescriptor afd = am.openFd(filename);
+    //     afd.close();
+    //     return true;
+    // } catch (IOException e) {
+    //     return false;
+    // }
+    assert(0);
+    return FALSE;
 }
 
 } // namespace Base
@@ -27,4 +33,5 @@ Boolean ResourceBundle::AssetContainedInApk(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
 

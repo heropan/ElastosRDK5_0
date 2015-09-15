@@ -1,33 +1,44 @@
+// wuweizuo automatic build .cpp file from .java file.
+
+#include "GURLUtils.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Net {
 
+//=====================================================================
+//                              GURLUtils
+//=====================================================================
 String GURLUtils::GetOrigin(
     /* [in] */ String url)
 {
-    return NativeGetOrigin(url);
+    // ==================before translated======================
+    // return nativeGetOrigin(url);
+    assert(0);
+    return String("");
 }
 
 String GURLUtils::GetScheme(
     /* [in] */ String url)
 {
-    return NativeGetScheme(url);
-}
-
-// question: how to translate a native function.
-//private static native String nativeGetOrigin(String url);
-String GURLUtils::NativeGetOrigin(
-    /* [in] */ String url)
-{
+    // ==================before translated======================
+    // return nativeGetScheme(url);
+    assert(0);
     return String("");
 }
 
-//private static native String nativeGetScheme(String url);
+String GURLUtils::NativeGetOrigin(
+    /* [in] */ String url)
+{
+    assert(0);
+    return String("");
+}
+
 String GURLUtils::NativeGetScheme(
     /* [in] */ String url)
 {
+    assert(0);
     return String("");
 }
 
@@ -35,3 +46,5 @@ String GURLUtils::NativeGetScheme(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
+

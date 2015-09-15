@@ -6,6 +6,16 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOCATIONPROVIDERFACTORY_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOCATIONPROVIDERFACTORY_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/Context.h"
+#include "location/CCriteria.h"
+#include "location/CLocation.h"
+#include "location/LocationManager.h"
+#include "os/CBundle.h"
+#include "webkit/native/base/ThreadUtils.h"
+
 // package org.chromium.content.browser;
 // import android.content.Context;
 // import android.location.Criteria;
@@ -18,6 +28,15 @@
 // import org.chromium.base.ThreadUtils;
 // import java.util.List;
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Location::ICriteria;
+using Elastos::Droid::Location::ILocation;
+using Elastos::Droid::Location::ILocationListener;
+using Elastos::Droid::Location::ILocationManager;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Util::ILog;
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -28,7 +47,7 @@ namespace Browser {
   * Factory to create a LocationProvider to allow us to inject
   * a mock for tests.
   */
-class LocationProviderFactory
+class LocationProviderFactory : public Object
 {
 public:
     /**
@@ -45,13 +64,30 @@ public:
         virtual CARAPI_(Boolean) IsRunning() = 0;
     };
 
+    class InnerRunnable
+        : public Object
+        , public Runnable
+    {
+    public:
+        InnerRunnable(
+            /* [in] */ LocationProviderFactory* owner);
+
+        // @Override
+        CARAPI Run();
+
+    private:
+        LocationProviderFactory* mOwner;
+    };
+
+private:
     /**
       * This is the core of android location provider. It is a separate class for clarity
       * so that it can manage all processing completely in the UI thread. The container class
       * ensures that the start/stop calls into this class are done in the UI thread.
       */
     class LocationProviderImpl
-        : public LocationListener
+        : public Object
+        , public LocationListener
         , public LocationProviderFactory::LocationProvider
     {
     public:
@@ -127,19 +163,6 @@ public:
         AutoPtr<IContext> mContext;
         AutoPtr<ILocationManager> mLocationManager;
         Boolean mIsRunning;
-    };
-
-    class InnerRunnable : public Runnable
-    {
-    public:
-        InnerRunnable(
-            /* [in] */ LocationProviderFactory* owner);
-
-        // @Override
-        CARAPI Run();
-
-    private:
-        LocationProviderFactory* mOwner;
     };
 
 public:

@@ -6,6 +6,28 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_POPUPZOOMER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_POPUPZOOMER_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/Context.h"
+#include "content/res/CResources.h"
+#include "graphics/CBitmap.h"
+#include "graphics/Canvas.h"
+#include "graphics/CColor.h"
+#include "graphics/Paint.h"
+#include "graphics/CPath.h"
+#include "graphics/CPointF.h"
+#include "graphics/CPorterDuffXfermode.h"
+#include "graphics/CRect.h"
+#include "graphics/CRectF.h"
+#include "graphics/drawable/ColorDrawable.h"
+#include "graphics/drawable/Drawable.h"
+#include "os/SystemClock.h"
+#include "view/CGestureDetector.h"
+#include "view/CMotionEvent.h"
+#include "view/View.h"
+#include "view/animation/COvershootInterpolator.h"
+
 // package org.chromium.content.browser;
 // import android.content.Context;
 // import android.content.res.Resources;
@@ -32,6 +54,26 @@
 // import android.view.animation.OvershootInterpolator;
 // import org.chromium.content.R;
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IColor;
+using Elastos::Droid::Graphics::IPaint;
+using Elastos::Droid::Graphics::IPath;
+using Elastos::Droid::Graphics::IPointF;
+using Elastos::Droid::Graphics::IPorterDuffXfermode;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Graphics::IRectF;
+using Elastos::Droid::Graphics::Drawable::IColorDrawable;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::Os::ISystemClock;
+using Elastos::Droid::Util::ILog;
+using Elastos::Droid::View::IGestureDetector;
+using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::Animation::IOvershootInterpolator;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -42,10 +84,43 @@ namespace Browser {
   * PopupZoomer is used to show the on-demand link zooming popup. It handles manipulation of the
   * canvas and touch events to display the on-demand zoom magnifier.
   */
-class PopupZoomer : public View
+class PopupZoomer
+    : public Object
+    , public View
 {
 public:
-    class InnerGestureDetectorSimpleOnGestureListener : public GestureDetector::SimpleOnGestureListener
+    /**
+      * Interface to be implemented to listen for touch events inside the zoomed area.
+      * The MotionEvent coordinates correspond to original unzoomed view.
+      */
+    class OnTapListener
+    {
+    public:
+        virtual CARAPI_(Boolean) OnSingleTap(
+            /* [in] */ IView* v,
+            /* [in] */ IMotionEvent* event) = 0;
+
+        virtual CARAPI_(Boolean) OnLongPress(
+            /* [in] */ IView* v,
+            /* [in] */ IMotionEvent* event) = 0;
+    };
+
+    /**
+      * Interface to be implemented to add and remove PopupZoomer to/from the view hierarchy.
+      */
+    class OnVisibilityChangedListener
+    {
+    public:
+        virtual CARAPI OnPopupZoomerShown(
+            /* [in] */ PopupZoomer* zoomer) = 0;
+
+        virtual CARAPI OnPopupZoomerHidden(
+            /* [in] */ PopupZoomer* zoomer) = 0;
+    };
+
+    class InnerGestureDetectorSimpleOnGestureListener
+        : public Object
+        , public GestureDetector::SimpleOnGestureListener
     {
     public:
         InnerGestureDetectorSimpleOnGestureListener(
@@ -75,7 +150,10 @@ public:
         PopupZoomer* mOwner;
     };
 
-    class ReverseInterpolator : public Interpolator
+private:
+    class ReverseInterpolator
+        : public Object
+        , public Interpolator
     {
     public:
         ReverseInterpolator(
@@ -86,7 +164,7 @@ public:
             /* [in] */ Float input);
 
     private:
-        const AutoPtr<IInterpolator> mInterpolator;
+        /*const*/ AutoPtr<IInterpolator> mInterpolator;
     };
 
 public:
@@ -223,8 +301,8 @@ private:
     static AutoPtr<IRect> sOverlayPadding;
     // The radius of the overlay bubble, used for rounding the bitmap to draw underneath it.
     static Float sOverlayCornerRadius;
-    const AutoPtr<IInterpolator> mShowInterpolator;
-    const AutoPtr<IInterpolator> mHideInterpolator;
+    /*const*/ AutoPtr<IInterpolator> mShowInterpolator;
+    /*const*/ AutoPtr<IInterpolator> mHideInterpolator;
     Boolean mAnimating;
     Boolean mShowing;
     Int64 mAnimationStartTime;
@@ -242,7 +320,7 @@ private:
     AutoPtr<IBitmap> mZoomedBitmap;
     // How far to shift the canvas after all zooming is done, to keep it inside the bounds of the
     // view (including margin).
-    AutoPtr<float mShiftX = 0,> AutoPtr<float mShiftX = 0,> AutoPtr<float mShiftX = 0,> mShiftY;
+    Float mShiftX;
     // The magnification factor of the popup. It is recomputed once we have mTargetBounds and
     // mZoomedBitmap.
     Float mScale;
@@ -250,15 +328,21 @@ private:
     AutoPtr<IRectF> mClipRect;
     // The extrusion values are how far the zoomed area (mClipRect) extends from the touch point.
     // These values to used to animate the popup.
-    AutoPtr<float mLeftExtrusion, mTopExtrusion, mRightExtrusion,> AutoPtr<float mLeftExtrusion, mTopExtrusion, mRightExtrusion,> AutoPtr<float mLeftExtrusion, mTopExtrusion, mRightExtrusion,> AutoPtr<float mLeftExtrusion, mTopExtrusion, mRightExtrusion,> mBottomExtrusion;
+    Float mLeftExtrusion;
+    Float mTopExtrusion;
+    Float mRightExtrusion;
+    Float mBottomExtrusion;
     // The last touch point, where the animation will start from.
-    const AutoPtr<IPointF> mTouch;
+    /*const*/ AutoPtr<IPointF> mTouch;
     // Since we sometimes overflow the bounds of the mViewClipRect, we need to allow scrolling.
     // Current scroll position.
-    AutoPtr<float mPopupScrollX,> AutoPtr<float mPopupScrollX,> mPopupScrollY;
+    Float mPopupScrollX;
+    Float mPopupScrollY;
     // Scroll bounds.
-    AutoPtr<float mMinScrollX,> AutoPtr<float mMinScrollX,> mMaxScrollX;
-    AutoPtr<float mMinScrollY,> AutoPtr<float mMinScrollY,> mMaxScrollY;
+    Float mMinScrollX;
+    Float mMaxScrollX;
+    Float mMinScrollY;
+    Float mMaxScrollY;
     AutoPtr<IGestureDetector> mGestureDetector;
 };
 

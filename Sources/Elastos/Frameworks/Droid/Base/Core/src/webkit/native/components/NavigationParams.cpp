@@ -35,6 +35,7 @@ AutoPtr<NavigationParams> NavigationParams::Create(
     // ==================before translated======================
     // return new NavigationParams(url, isPost, hasUserGesture, pageTransitionType,
     //         isRedirect);
+    assert(0);
     AutoPtr<NavigationParams> empty;
     return empty;
 }

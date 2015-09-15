@@ -3,6 +3,10 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_CERTIFICATEMIMETYPE_H_
 #define _ELASTOS_DROID_WEBKIT_NET_CERTIFICATEMIMETYPE_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+
 // package org.chromium.net;
 
 namespace Elastos {

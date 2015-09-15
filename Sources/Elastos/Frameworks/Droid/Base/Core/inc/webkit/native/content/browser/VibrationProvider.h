@@ -6,6 +6,13 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_VIBRATIONPROVIDER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_VIBRATIONPROVIDER_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/Context.h"
+#include "content/pm/PackageManager.h"
+#include "os/Vibrator.h"
+
 // package org.chromium.content.browser;
 // import android.content.Context;
 // import android.content.pm.PackageManager;
@@ -14,6 +21,12 @@
 // import android.util.Log;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Media::IAudioManager;
+using Elastos::Droid::Os::IVibrator;
+using Elastos::Droid::Util::ILog;
 
 namespace Elastos {
 namespace Droid {
@@ -25,7 +38,7 @@ namespace Browser {
   * This is the implementation of the C++ counterpart VibrationProvider.
   */
 // @JNINamespace("content")
-class VibrationProvider
+class VibrationProvider : public Object
 {
 private:
     VibrationProvider(
@@ -44,9 +57,9 @@ private:
 
 private:
     static const String TAG;
-    const AutoPtr<IAudioManager> mAudioManager;
-    const AutoPtr<IVibrator> mVibrator;
-    const Boolean mHasVibratePermission;
+    /*const*/ AutoPtr<IAudioManager> mAudioManager;
+    /*const*/ AutoPtr<IVibrator> mVibrator;
+    /*const*/ Boolean mHasVibratePermission;
 };
 
 } // namespace Browser

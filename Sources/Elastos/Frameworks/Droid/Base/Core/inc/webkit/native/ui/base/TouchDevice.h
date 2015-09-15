@@ -6,11 +6,20 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_BASE_TOUCHDEVICE_H_
 #define _ELASTOS_DROID_WEBKIT_UI_BASE_TOUCHDEVICE_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/Context.h"
+#include "content/pm/PackageManager.h"
+
 // package org.chromium.ui.base;
 // import android.content.Context;
 // import android.content.pm.PackageManager;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Pm::IPackageManager;
 
 namespace Elastos {
 namespace Droid {
@@ -19,22 +28,22 @@ namespace Ui {
 namespace Base {
 
 /**
- * Simple proxy to let us query the touch device from C++
- */
+  * Simple proxy to let us query the touch device from C++
+  */
 // @JNINamespace("ui")
-class TouchDevice
+class TouchDevice : public Object
 {
 private:
     /**
-     * Static methods only so make constructor private.
-     */
+      * Static methods only so make constructor private.
+      */
     TouchDevice();
 
     /**
-     * Returns the number of supported touch points.
-     *
-     * @return Maximum supported touch points.
-     */
+      * Returns the number of supported touch points.
+      *
+      * @return Maximum supported touch points.
+      */
     // @CalledByNative
     static CARAPI_(Int32) MaxTouchPoints(
         /* [in] */ IContext* context);

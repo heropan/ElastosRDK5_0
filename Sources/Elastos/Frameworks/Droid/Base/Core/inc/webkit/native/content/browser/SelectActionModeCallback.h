@@ -6,6 +6,13 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SELECTACTIONMODECALLBACK_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SELECTACTIONMODECALLBACK_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/CClipboardManager.h"
+#include "content/Context.h"
+#include "view/ActionMode.h"
+
 // package org.chromium.content.browser;
 // import android.content.ClipboardManager;
 // import android.content.Context;
@@ -13,6 +20,12 @@
 // import android.view.Menu;
 // import android.view.MenuItem;
 // import org.chromium.content.R;
+
+using Elastos::Droid::Content::IClipboardManager;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::View::IActionMode;
+using Elastos::Droid::View::IMenu;
+using Elastos::Droid::View::IMenuItem;
 
 namespace Elastos {
 namespace Droid {
@@ -24,7 +37,9 @@ namespace Browser {
   * An ActionMode.Callback for in-page selection. This class handles both the editable and
   * non-editable cases.
   */
-class SelectActionModeCallback : public ActionMode::Callback
+class SelectActionModeCallback
+    : public Object
+    , public ActionMode::Callback
 {
 public:
     /**
@@ -126,9 +141,9 @@ private:
     CARAPI_(Boolean) CanPaste();
 
 private:
-    const AutoPtr<IContext> mContext;
-    const AutoPtr<ActionHandler> mActionHandler;
-    const Boolean mIncognito;
+    /*const*/ AutoPtr<IContext> mContext;
+    /*const*/ AutoPtr<ActionHandler> mActionHandler;
+    /*const*/ Boolean mIncognito;
     Boolean mEditable;
     Boolean mIsPasswordType;
 };
