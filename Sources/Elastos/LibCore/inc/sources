@@ -68,20 +68,23 @@ EXPORT_HEADERS += elastos/utility/etl/Stack.h
 EXPORT_HEADERS += elastos/utility/etl/Queue.h
 EXPORT_HEADERS += elastos/utility/etl/BlockingQueue.h
 
+EXPORT_HEADERS += elastos/utility/concurrent/FutureTask.h
+
 EXPORT_HEADERS += elastos/utility/logging/Logger.h
 EXPORT_HEADERS += elastos/utility/logging/Slogger.h
 
-EXPORT_HEADERS += elastos/utility/Arrays.h
-EXPORT_HEADERS += elastos/utility/Objects.h
-EXPORT_HEADERS += elastos/utility/DualPivotQuicksort.h
-EXPORT_HEADERS += elastos/utility/ComparableTimSort.h
-EXPORT_HEADERS += elastos/utility/TimSort.h
-EXPORT_HEADERS += elastos/utility/TimerTask.h
 EXPORT_HEADERS += elastos/utility/AbstractCollection.h
 EXPORT_HEADERS += elastos/utility/AbstractSet.h
+EXPORT_HEADERS += elastos/utility/Arrays.h
+EXPORT_HEADERS += elastos/utility/ComparableTimSort.h
+EXPORT_HEADERS += elastos/utility/DualPivotQuicksort.h
+EXPORT_HEADERS += elastos/utility/HashTable.h
+EXPORT_HEADERS += elastos/utility/Objects.h
 EXPORT_HEADERS += elastos/utility/Observable.h
+EXPORT_HEADERS += elastos/utility/Properties.h
+EXPORT_HEADERS += elastos/utility/TimSort.h
+EXPORT_HEADERS += elastos/utility/TimerTask.h
 
-EXPORT_HEADERS += elastos/utility/concurrent/FutureTask.h
 
 EXPORT_HEADERS += elastos/io/InputStream.h
 EXPORT_HEADERS += elastos/io/OutputStream.h
@@ -92,6 +95,7 @@ EXPORT_HEADERS += elastos/io/FileOutputStream.h
 //EXPORT_HEADERS += elastos/io/PrintWriter.h
 //EXPORT_HEADERS += elastos/io/Writer.h
 
+EXPORT_HEADERS += elastos/security/Provider.h
 
 EXPORT_HEADERS += libcore/utility/EmptyArray.h
 

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_UTILITY_HASHTABLE_H__
 #define __ELASTOS_UTILITY_HASHTABLE_H__
 
-#include "AbstractSet.h"
+#include "elastos/utility/AbstractSet.h"
 
 using Elastos::Core::ICloneable;
 using Elastos::IO::IObjectInputStream;
