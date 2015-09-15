@@ -2123,6 +2123,100 @@ EXPORTS
     _ZN7Elastos5Droid6System11OsConstants9_S_IFSOCKE
     _ZN7Elastos5Droid6System11OsConstants9_WSTOPPEDE
 
+    ;;elastos/security/Provider
+    _ZTVN7Elastos8Security8ProviderE
+    _ZN7Elastos8Security8Provider10GetServiceERKNS_6StringEPPNS0_16IProviderServiceE
+    _ZN7Elastos8Security8Provider10GetServiceERKNS_6StringES4_PPNS0_16IProviderServiceE
+    _ZN7Elastos8Security8Provider10GetVersionEPd
+    _ZN7Elastos8Security8Provider10PutServiceEPNS0_16IProviderServiceE
+    _ZN7Elastos8Security8Provider11GetEntrySetEPPNS_7Utility4ISetE
+    _ZN7Elastos8Security8Provider11GetServicesEPPNS_7Utility4ISetE
+    _ZN7Elastos8Security8Provider13ImplementsAlgERKNS_6StringES4_S4_S4_Ph
+    _ZN7Elastos8Security8Provider13RemoveServiceEPNS0_16IProviderServiceE
+    _ZN7Elastos8Security8Provider14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZN7Elastos8Security8Provider17GetProviderNumberEPi
+    _ZN7Elastos8Security8Provider17SetProviderNumberEi
+    _ZN7Elastos8Security8Provider3PutEP10IInterfaceS3_PS3_
+    _ZN7Elastos8Security8Provider4LoadEPNS_2IO12IInputStreamE
+    _ZN7Elastos8Security8Provider5ClearEv
+    _ZN7Elastos8Security8Provider5ProbeERKNS_6_EMuidE
+    _ZN7Elastos8Security8Provider6AddRefEv
+    _ZN7Elastos8Security8Provider6PutAllEPNS_7Utility4IMapE
+    _ZN7Elastos8Security8Provider6RemoveEP10IInterfacePS3_
+    _ZN7Elastos8Security8Provider7GetInfoEPNS_6StringE
+    _ZN7Elastos8Security8Provider7GetNameEPNS_6StringE
+    _ZN7Elastos8Security8Provider7ReleaseEv
+    _ZN7Elastos8Security8Provider8ToStringEPNS_6StringE
+    _ZN7Elastos8Security8Provider9GetKeySetEPPNS_7Utility4ISetE
+    _ZN7Elastos8Security8Provider9GetValuesEPPNS_7Utility11ICollectionE
+    _ZThn8_N7Elastos8Security8Provider8ToStringEPNS_6StringE
+    _ZThn12_N7Elastos8Security8Provider14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZThn12_N7Elastos8Security8Provider5ProbeERKNS_6_EMuidE
+    _ZThn12_N7Elastos8Security8Provider6AddRefEv
+    _ZThn12_N7Elastos8Security8Provider7ReleaseEv
+    _ZThn16_N7Elastos8Security8Provider14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZThn16_N7Elastos8Security8Provider5ProbeERKNS_6_EMuidE
+    _ZThn16_N7Elastos8Security8Provider6AddRefEv
+    _ZThn16_N7Elastos8Security8Provider7ReleaseEv
+    _ZThn24_N7Elastos8Security8Provider11GetEntrySetEPPNS_7Utility4ISetE
+    _ZThn24_N7Elastos8Security8Provider14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZThn24_N7Elastos8Security8Provider3PutEP10IInterfaceS3_PS3_
+    _ZThn24_N7Elastos8Security8Provider5ClearEv
+    _ZThn24_N7Elastos8Security8Provider5ProbeERKNS_6_EMuidE
+    _ZThn24_N7Elastos8Security8Provider6AddRefEv
+    _ZThn24_N7Elastos8Security8Provider6PutAllEPNS_7Utility4IMapE
+    _ZThn24_N7Elastos8Security8Provider6RemoveEP10IInterfacePS3_
+    _ZThn24_N7Elastos8Security8Provider7ReleaseEv
+    _ZThn24_N7Elastos8Security8Provider9GetKeySetEPPNS_7Utility4ISetE
+    _ZThn24_N7Elastos8Security8Provider9GetValuesEPPNS_7Utility11ICollectionE
+    _ZThn28_N7Elastos8Security8Provider14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZThn28_N7Elastos8Security8Provider3PutEP10IInterfaceS3_PS3_
+    _ZThn28_N7Elastos8Security8Provider5ProbeERKNS_6_EMuidE
+    _ZThn28_N7Elastos8Security8Provider6AddRefEv
+    _ZThn28_N7Elastos8Security8Provider6RemoveEP10IInterfacePS3_
+    _ZThn28_N7Elastos8Security8Provider7ReleaseEv
+    _ZThn32_N7Elastos8Security8Provider11GetEntrySetEPPNS_7Utility4ISetE
+    _ZThn32_N7Elastos8Security8Provider14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZThn32_N7Elastos8Security8Provider3PutEP10IInterfaceS3_PS3_
+    _ZThn32_N7Elastos8Security8Provider5ClearEv
+    _ZThn32_N7Elastos8Security8Provider5ProbeERKNS_6_EMuidE
+    _ZThn32_N7Elastos8Security8Provider6AddRefEv
+    _ZThn32_N7Elastos8Security8Provider6PutAllEPNS_7Utility4IMapE
+    _ZThn32_N7Elastos8Security8Provider6RemoveEP10IInterfacePS3_
+    _ZThn32_N7Elastos8Security8Provider7ReleaseEv
+    _ZThn32_N7Elastos8Security8Provider9GetKeySetEPPNS_7Utility4ISetE
+    _ZThn32_N7Elastos8Security8Provider9GetValuesEPPNS_7Utility11ICollectionE
+    _ZThn36_N7Elastos8Security8Provider14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZThn36_N7Elastos8Security8Provider5ProbeERKNS_6_EMuidE
+    _ZThn36_N7Elastos8Security8Provider6AddRefEv
+    _ZThn36_N7Elastos8Security8Provider7ReleaseEv
+    _ZThn40_N7Elastos8Security8Provider14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZThn40_N7Elastos8Security8Provider5ProbeERKNS_6_EMuidE
+    _ZThn40_N7Elastos8Security8Provider6AddRefEv
+    _ZThn40_N7Elastos8Security8Provider7ReleaseEv
+    _ZThn72_N7Elastos8Security8Provider14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZThn72_N7Elastos8Security8Provider4LoadEPNS_2IO12IInputStreamE
+    _ZThn72_N7Elastos8Security8Provider5ProbeERKNS_6_EMuidE
+    _ZThn72_N7Elastos8Security8Provider6AddRefEv
+    _ZThn72_N7Elastos8Security8Provider7ReleaseEv
+    _ZThn80_N7Elastos8Security8Provider10GetServiceERKNS_6StringEPPNS0_16IProviderServiceE
+    _ZThn80_N7Elastos8Security8Provider10GetServiceERKNS_6StringES4_PPNS0_16IProviderServiceE
+    _ZThn80_N7Elastos8Security8Provider10GetVersionEPd
+    _ZThn80_N7Elastos8Security8Provider11GetServicesEPPNS_7Utility4ISetE
+    _ZThn80_N7Elastos8Security8Provider13ImplementsAlgERKNS_6StringES4_S4_S4_Ph
+    _ZThn80_N7Elastos8Security8Provider14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZThn80_N7Elastos8Security8Provider17GetProviderNumberEPi
+    _ZThn80_N7Elastos8Security8Provider17SetProviderNumberEi
+    _ZThn80_N7Elastos8Security8Provider5ProbeERKNS_6_EMuidE
+    _ZThn80_N7Elastos8Security8Provider6AddRefEv
+    _ZThn80_N7Elastos8Security8Provider7GetInfoEPNS_6StringE
+    _ZThn80_N7Elastos8Security8Provider7GetNameEPNS_6StringE
+    _ZThn80_N7Elastos8Security8Provider7ReleaseEv
+    _ZThn8_N7Elastos8Security8Provider14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
+    _ZThn8_N7Elastos8Security8Provider5ProbeERKNS_6_EMuidE
+    _ZThn8_N7Elastos8Security8Provider6AddRefEv
+    _ZThn8_N7Elastos8Security8Provider7ReleaseEv
+
     ;;elastos/utility/concurrent/FutureTask
 
     _ZN7Elastos7Utility10Concurrent10FutureTask11IsCancelledEPh
@@ -2346,6 +2440,53 @@ EXPORTS
     _ZThn8_N7Elastos7Utility11AbstractSet6EqualsEP10IInterfacePh
     _ZThn8_N7Elastos7Utility11AbstractSet7ReleaseEv
 
+    ;;elastos/utility/HashTable
+    _ZTVN7Elastos7Utility9HashTableE
+    _ZN7Elastos7Utility9HashTable11ContainsKeyEP10IInterfacePh
+    _ZN7Elastos7Utility9HashTable11GetElementsEPPNS0_12IEnumerationE
+    _ZN7Elastos7Utility9HashTable11GetHashCodeEPi
+    _ZN7Elastos7Utility9HashTable13ContainsValueEP10IInterfacePh
+    _ZN7Elastos7Utility9HashTable3GetEP10IInterfacePS3_
+    _ZN7Elastos7Utility9HashTable3PutEP10IInterfaceS3_
+    _ZN7Elastos7Utility9HashTable5CloneEPP10IInterface
+    _ZN7Elastos7Utility9HashTable6EqualsEP10IInterfacePh
+    _ZN7Elastos7Utility9HashTable6RehashEv
+    _ZN7Elastos7Utility9HashTable6RemoveEP10IInterface
+    _ZN7Elastos7Utility9HashTable7GetKeysEPPNS0_12IEnumerationE
+    _ZN7Elastos7Utility9HashTable7GetSizeEPi
+    _ZN7Elastos7Utility9HashTable7IsEmptyEPh
+    _ZN7Elastos7Utility9HashTable8ContainsEP10IInterfacePh
+    _ZThn24_N7Elastos7Utility9HashTable11ContainsKeyEP10IInterfacePh
+    _ZThn24_N7Elastos7Utility9HashTable11GetElementsEPPNS0_12IEnumerationE
+    _ZThn24_N7Elastos7Utility9HashTable11GetHashCodeEPi
+    _ZThn24_N7Elastos7Utility9HashTable13ContainsValueEP10IInterfacePh
+    _ZThn24_N7Elastos7Utility9HashTable3GetEP10IInterfacePS3_
+    _ZThn24_N7Elastos7Utility9HashTable3PutEP10IInterfaceS3_
+    _ZThn24_N7Elastos7Utility9HashTable6EqualsEP10IInterfacePh
+    _ZThn24_N7Elastos7Utility9HashTable6RemoveEP10IInterface
+    _ZThn24_N7Elastos7Utility9HashTable7GetKeysEPPNS0_12IEnumerationE
+    _ZThn24_N7Elastos7Utility9HashTable7GetSizeEPi
+    _ZThn24_N7Elastos7Utility9HashTable7IsEmptyEPh
+    _ZThn28_N7Elastos7Utility9HashTable11GetElementsEPPNS0_12IEnumerationE
+    _ZThn28_N7Elastos7Utility9HashTable3GetEP10IInterfacePS3_
+    _ZThn28_N7Elastos7Utility9HashTable3PutEP10IInterfaceS3_
+    _ZThn28_N7Elastos7Utility9HashTable6RemoveEP10IInterface
+    _ZThn28_N7Elastos7Utility9HashTable7GetKeysEPPNS0_12IEnumerationE
+    _ZThn28_N7Elastos7Utility9HashTable7GetSizeEPi
+    _ZThn28_N7Elastos7Utility9HashTable7IsEmptyEPh
+    _ZThn32_N7Elastos7Utility9HashTable11ContainsKeyEP10IInterfacePh
+    _ZThn32_N7Elastos7Utility9HashTable11GetHashCodeEPi
+    _ZThn32_N7Elastos7Utility9HashTable13ContainsValueEP10IInterfacePh
+    _ZThn32_N7Elastos7Utility9HashTable3GetEP10IInterfacePS3_
+    _ZThn32_N7Elastos7Utility9HashTable3PutEP10IInterfaceS3_
+    _ZThn32_N7Elastos7Utility9HashTable6EqualsEP10IInterfacePh
+    _ZThn32_N7Elastos7Utility9HashTable6RemoveEP10IInterface
+    _ZThn32_N7Elastos7Utility9HashTable7GetSizeEPi
+    _ZThn32_N7Elastos7Utility9HashTable7IsEmptyEPh
+    _ZThn36_N7Elastos7Utility9HashTable5CloneEPP10IInterface
+    _ZThn8_N7Elastos7Utility9HashTable11GetHashCodeEPi
+    _ZThn8_N7Elastos7Utility9HashTable6EqualsEP10IInterfacePh
+
     ;;elastos/utility/Observable
     _ZN7Elastos7Utility10Observable10HasChangedEPh
     _ZN7Elastos7Utility10Observable10SetChangedEv
@@ -2391,3 +2532,35 @@ EXPORTS
     _ZThn8_N7Elastos7Utility10Observable5ProbeERKNS_6_EMuidE
     _ZThn8_N7Elastos7Utility10Observable6AddRefEv
     _ZThn8_N7Elastos7Utility10Observable7ReleaseEv
+
+    ;;elastos/utility/Properties
+    _ZTVN7Elastos7Utility10PropertiesE
+    _ZN7Elastos7Utility10PropertiesC2Ev
+    _ZN7Elastos7Utility10Properties10StoreToXMLEPNS_2IO13IOutputStreamERKNS_6StringE
+    _ZN7Elastos7Utility10Properties10StoreToXMLEPNS_2IO13IOutputStreamERKNS_6StringES7_
+    _ZN7Elastos7Utility10Properties11GetPropertyERKNS_6StringEPS2_
+    _ZN7Elastos7Utility10Properties11GetPropertyERKNS_6StringES4_PS2_
+    _ZN7Elastos7Utility10Properties11LoadFromXMLEPNS_2IO12IInputStreamE
+    _ZN7Elastos7Utility10Properties11SetPropertyERKNS_6StringES4_PS2_
+    _ZN7Elastos7Utility10Properties13PropertyNamesEPPNS0_12IEnumerationE
+    _ZN7Elastos7Utility10Properties19StringPropertyNamesEPPNS0_4ISetE
+    _ZN7Elastos7Utility10Properties4ListEPNS_2IO12IPrintStreamE
+    _ZN7Elastos7Utility10Properties4ListEPNS_2IO12IPrintWriterE
+    _ZN7Elastos7Utility10Properties4LoadEPNS_2IO7IReaderE
+    _ZN7Elastos7Utility10Properties4SaveEPNS_2IO13IOutputStreamERKNS_6StringE
+    _ZN7Elastos7Utility10Properties5StoreEPNS_2IO13IOutputStreamERKNS_6StringE
+    _ZN7Elastos7Utility10Properties5StoreEPNS_2IO7IWriterERKNS_6StringE
+    _ZThn72_N7Elastos7Utility10Properties10StoreToXMLEPNS_2IO13IOutputStreamERKNS_6StringE
+    _ZThn72_N7Elastos7Utility10Properties10StoreToXMLEPNS_2IO13IOutputStreamERKNS_6StringES7_
+    _ZThn72_N7Elastos7Utility10Properties11GetPropertyERKNS_6StringEPS2_
+    _ZThn72_N7Elastos7Utility10Properties11GetPropertyERKNS_6StringES4_PS2_
+    _ZThn72_N7Elastos7Utility10Properties11LoadFromXMLEPNS_2IO12IInputStreamE
+    _ZThn72_N7Elastos7Utility10Properties11SetPropertyERKNS_6StringES4_PS2_
+    _ZThn72_N7Elastos7Utility10Properties13PropertyNamesEPPNS0_12IEnumerationE
+    _ZThn72_N7Elastos7Utility10Properties19StringPropertyNamesEPPNS0_4ISetE
+    _ZThn72_N7Elastos7Utility10Properties4ListEPNS_2IO12IPrintStreamE
+    _ZThn72_N7Elastos7Utility10Properties4ListEPNS_2IO12IPrintWriterE
+    _ZThn72_N7Elastos7Utility10Properties4LoadEPNS_2IO7IReaderE
+    _ZThn72_N7Elastos7Utility10Properties4SaveEPNS_2IO13IOutputStreamERKNS_6StringE
+    _ZThn72_N7Elastos7Utility10Properties5StoreEPNS_2IO13IOutputStreamERKNS_6StringE
+    _ZThn72_N7Elastos7Utility10Properties5StoreEPNS_2IO7IWriterERKNS_6StringE

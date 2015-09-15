@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_UTILITY_PROPERTIES_H__
 #define __ELASTOS_UTILITY_PROPERTIES_H__
 
-#include "HashTable.h"
+#include "elastos/utility/HashTable.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
@@ -12,8 +12,8 @@ using Elastos::IO::IWriter;
 using Elastos::Core::IAppendable;
 using Elastos::Core::IStringBuilder;
 
-namespace Elastos{
-namespace Utility{
+namespace Elastos {
+namespace Utility {
 
 class Properties
     : public HashTable

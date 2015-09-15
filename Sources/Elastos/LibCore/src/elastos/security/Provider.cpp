@@ -37,6 +37,8 @@ using Org::Apache::Harmony::Security::Fortress::CServices;
 namespace Elastos {
 namespace Security {
 
+CAR_INTERFACE_IMPL(Provider, Properties, IProvider)
+
 ECode Provider::constructor(
     /* [in] */ const String& name,
     /* [in] */ Double version,
