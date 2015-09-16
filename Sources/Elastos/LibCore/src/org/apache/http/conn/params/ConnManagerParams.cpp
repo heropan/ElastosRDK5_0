@@ -1,6 +1,6 @@
 
 #include "ConnManagerParams.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 
@@ -16,8 +16,6 @@ namespace Params {
 
 CAR_INTERFACE_IMPL(ConnManagerParams::DefaultConnPerRoute, Object, IConnPerRoute)
 
-CAR_OBJECT_IMPL(ConnManagerParams::DefaultConnPerRoute)
-
 ECode ConnManagerParams::DefaultConnPerRoute::GetMaxForRoute(
     /* [in] */ IHttpRoute* route,
     /* [out] */ Int32* max)
@@ -32,16 +30,14 @@ ECode ConnManagerParams::DefaultConnPerRoute::GetMaxForRoute(
 // ConnManagerParams
 /////////////////////////////////////////////////////
 
-static AutoPtr<IConnPerRoute> InitDefaultRoute()
+AutoPtr<IConnPerRoute> ConnManagerParams::InitDefaultRoute()
 {
     AutoPtr<IConnPerRoute> route = (IConnPerRoute*)new ConnManagerParams::DefaultConnPerRoute();
     return route;
 }
-const AutoPtr<IConnPerRoute> ConnManagerParams::DEFAULT_CONN_PER_ROUTE = InitDefaultRoute();
+const AutoPtr<IConnPerRoute> ConnManagerParams::DEFAULT_CONN_PER_ROUTE = ConnManagerParams::InitDefaultRoute();
 
 CAR_INTERFACE_IMPL(ConnManagerParams, Object, IConnManagerPNames)
-
-CAR_OBJECT_IMPL(ConnManagerParams)
 
 ECode ConnManagerParams::GetTimeout(
     /* [in] */ IHttpParams* params,
@@ -53,7 +49,7 @@ ECode ConnManagerParams::GetTimeout(
         Logger::E("ConnManagerParams", "HTTP parameters may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return params->GetLongParameter(TIMEOUT, 0, timeout);
+    return params->GetInt64Parameter(TIMEOUT, 0, timeout);
 }
 
 ECode ConnManagerParams::SetTimeout(
@@ -80,6 +76,7 @@ ECode ConnManagerParams::SetMaxConnectionsPerRoute(
     AutoPtr<IHttpParams> p;
     params->SetParameter(MAX_CONNECTIONS_PER_ROUTE, connPerRoute,
             (IHttpParams**)&p);
+    return NOERROR;
 }
 
 ECode ConnManagerParams::GetMaxConnectionsPerRoute(
@@ -114,6 +111,7 @@ ECode ConnManagerParams::SetMaxTotalConnections(
     AutoPtr<IHttpParams> p;
     params->SetInt32Parameter(MAX_TOTAL_CONNECTIONS, maxTotalConnections,
             (IHttpParams**)&p);
+    return NOERROR;
 }
 
 ECode ConnManagerParams::GetMaxTotalConnections(
@@ -125,7 +123,7 @@ ECode ConnManagerParams::GetMaxTotalConnections(
         Logger::E("ConnManagerParams", "HTTP parameters may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return params->GetInt32Parameter(MAX_TOTAL_CONNECTIONS, DEFAULT_MAX_TOTAL_CONNECTIONS, number);
+    return params->GetInt32Parameter(MAX_TOTAL_CONNECTIONS, IConnManagerParams::DEFAULT_MAX_TOTAL_CONNECTIONS, number);
 }
 
 } // namespace Params

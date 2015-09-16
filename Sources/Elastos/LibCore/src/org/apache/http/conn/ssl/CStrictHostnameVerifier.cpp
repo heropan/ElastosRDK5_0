@@ -12,7 +12,8 @@ CAR_OBJECT_IMPL(CStrictHostnameVerifier)
 ECode CStrictHostnameVerifier::Verify(
     /* [in] */ const String& host,
     /* [in] */ ArrayOf<String>* cns,
-    /* [in] */ ArrayOf<String>* subjectAlts)
+    /* [in] */ ArrayOf<String>* subjectAlts,
+    /* [in] */ Boolean strictWithSubDomains)
 {
     return Verify(host, cns, subjectAlts, TRUE);
 }

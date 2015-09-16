@@ -2,8 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_CONN_PARAMS_CONNMANAGERPARAMS_H__
 #define __ORG_APACHE_HTTP_CONN_PARAMS_CONNMANAGERPARAMS_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Org::Apache::Http::Conn::Routing::IHttpRoute;
 using Org::Apache::Http::Params::IHttpParams;
@@ -40,8 +39,6 @@ private:
     public:
         CAR_INTERFACE_DECL()
 
-        CAR_OBJECT_DECL()
-
         CARAPI GetMaxForRoute(
             /* [in] */ IHttpRoute* route,
             /* [out] */ Int32* max);
@@ -49,8 +46,6 @@ private:
 
 public:
     CAR_INTERFACE_DECL()
-
-    CAR_OBJECT_DECL()
 
     /**
      * Returns the timeout in milliseconds used when retrieving a
@@ -124,6 +119,9 @@ public:
     static CARAPI GetMaxTotalConnections(
         /* [in] */ IHttpParams* params,
         /* [out] */ Int32* number);
+
+private:
+    static CARAPI_(AutoPtr<IConnPerRoute>) InitDefaultRoute();
 
 private:
     /** The default maximum number of connections allowed per host */

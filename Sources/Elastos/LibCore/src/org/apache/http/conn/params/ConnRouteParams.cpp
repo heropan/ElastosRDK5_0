@@ -1,8 +1,8 @@
 
 #include "ConnRouteParams.h"
 #include "CHttpHost.h"
-#include "routing/CHttpRoute.h"
-#include <elastos/Logger.h>
+#include "CHttpRoute.h"
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::CHttpHost;
@@ -32,8 +32,6 @@ const AutoPtr<IHttpRoute> ConnRouteParams::NO_ROUTE = InitHttpRoute();
 
 CAR_INTERFACE_IMPL(ConnRouteParams, Object, IConnRoutePNames)
 
-CAR_OBJECT_IMPL(ConnRouteParams)
-
 ECode ConnRouteParams::GetDefaultProxy(
     /* [in] */ IHttpParams* params,
     /* [out] */ IHttpHost** proxy)
@@ -48,7 +46,8 @@ ECode ConnRouteParams::GetDefaultProxy(
     AutoPtr<IInterface> o;
     params->GetParameter(DEFAULT_PROXY, (IInterface**)&o);
     AutoPtr<IHttpHost> host = IHttpHost::Probe(o);
-    if ((host != NULL) && NO_HOST->Equals(host)) {
+    Boolean result;
+    if ((host != NULL) && (IObject::Probe(NO_HOST)->Equals(host, &result), result)) {
         // value is explicitly unset
         host = NULL;
     }
@@ -83,7 +82,8 @@ ECode ConnRouteParams::GetForcedRoute(
     AutoPtr<IInterface> o;
     params->GetParameter(FORCED_ROUTE, (IInterface**)&o);
     AutoPtr<IHttpRoute> httpRoute = IHttpRoute::Probe(o);
-    if ((httpRoute != NULL) && NO_ROUTE->Equals(httpRoute)) {
+    Boolean result;
+    if ((httpRoute != NULL) && (IObject::Probe(NO_ROUTE)->Equals(httpRoute, &result), result)) {
         // value is explicitly unset
         httpRoute = NULL;
     }

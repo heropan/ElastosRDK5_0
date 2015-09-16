@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CONN_CBASICEOFSENSORWATCHER_H_
 
 #include "_Org_Apache_Http_Conn_CBasicEofSensorWatcher.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::IO::IInputStream;
 

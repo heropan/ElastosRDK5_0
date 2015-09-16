@@ -3,13 +3,16 @@
 #define __ORG_APACHE_HTTP_CONN_PARAMS_CCONNPERROUTEBEANS_H_
 
 #include "_Org_Apache_Http_Conn_Params_CConnPerRouteBean.h"
-#include <elastos/HashMap.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Core::IInteger32;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::IMap;
 using Org::Apache::Http::Conn::Routing::IHttpRoute;
 using Org::Apache::Http::Params::IHttpParams;
+
+DEFINE_OBJECT_HASH_FUNC_FOR(Org::Apache::Http::Conn::Routing::IHttpRoute)
 
 namespace Org {
 namespace Apache {
@@ -57,9 +60,6 @@ public:
 
     CARAPI SetMaxForRoutes(
         /* [in] */ IMap* map);
-
-    CARAPI constructor(
-        /* [in] */ Int32 defaultMax);
 
     CARAPI constructor(
         /* [in] */ Int32 defaultMax);

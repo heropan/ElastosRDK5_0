@@ -1,8 +1,9 @@
 
 #include "CHttpRoute.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include "Logger.h"
+#include "StringBuilder.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;
 
@@ -75,7 +76,7 @@ ECode CHttpRoute::GetTargetHost(
 }
 
 ECode CHttpRoute::GetLocalAddress(
-    /* [out] */ IInetAddress** addr);
+    /* [out] */ IInetAddress** addr)
 {
     VALIDATE_NOT_NULL(addr)
     *addr = mLocalAddress;
@@ -121,7 +122,7 @@ ECode CHttpRoute::GetProxyHost(
     /* [out] */ IHttpHost** proxy)
 {
     VALIDATE_NOT_NULL(proxy)
-    *proxy = (mProxyChain == NULL) ? NULL : (mProxyChain)[0];
+    *proxy = (mProxyChain == NULL) ? NULL : (*mProxyChain)[0];
     REFCOUNT_ADD(*proxy)
     return NOERROR;
 }
@@ -171,7 +172,7 @@ ECode CHttpRoute::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    if (other == this) {
+    if (other == this->Probe(EIID_IInterface)) {
         *result = TRUE;
         return NOERROR;
     }
@@ -245,10 +246,10 @@ ECode CHttpRoute::ToString(
     GetHopCount(&count);
     StringBuilder cab(50 + count * 30);
 
-    cab.AppendCStr("HttpRoute[");
+    cab.Append("HttpRoute[");
     if (mLocalAddress != NULL) {
-        cab.append(mLocalAddress);
-        cab.append("->");
+        cab.Append(mLocalAddress);
+        cab.Append("->");
     }
     cab.AppendChar('{');
     if (mTunnelled == TunnelType_TUNNELLED) cab.AppendChar('t');
@@ -369,6 +370,7 @@ ECode CHttpRoute::constructor(
         Logger::E("CHttpRoute", "Proxy host may not be null.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    return NOERROR;
 }
 
 } // namespace Routing

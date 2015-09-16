@@ -3,14 +3,14 @@
 #define __ORG_APACHE_HTTP_CONN_SSL_CSSLSOCKETFACTORY_H_
 
 #include "_Org_Apache_Http_Conn_SSL_CSSLSocketFactory.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Net::IInetAddress;
 using Elastos::Net::ISocket;
+using Elastos::Security::IKeyStore;
+using Elastos::Security::ISecureRandom;
 using Elastosx::Net::Ssl::IKeyManager;
 using Elastosx::Net::Ssl::ITrustManager;
-using Elastosx::Net::Ssl::IKeyStore;
 using Elastosx::Net::Ssl::ISSLContext;
 using Org::Apache::Http::Conn::Scheme::IHostNameResolver;
 using Org::Apache::Http::Conn::Scheme::ILayeredSocketFactory;
@@ -127,7 +127,7 @@ public:
 
     CARAPI ConnectSocket(
         /* [in] */ ISocket* sock,
-        /* [in] */ String host,
+        /* [in] */ const String& host,
         /* [in] */ Int32 port,
         /* [in] */ IInetAddress* localAddress,
         /* [in] */ Int32 localPort,
@@ -140,7 +140,7 @@ public:
 
     CARAPI CreateSocket(
         /* [in] */ ISocket* sock,
-        /* [in] */ String host,
+        /* [in] */ const String& host,
         /* [in] */ Int32 port,
         /* [in] */ Boolean autoClose,
         /* [out] */ ISocket** socket);
@@ -161,12 +161,12 @@ public:
 
     CARAPI constructor(
         /* [in] */ IKeyStore* keystore,
-        /* [in] */ String keystorePassword,
+        /* [in] */ const String& keystorePassword,
         /* [in] */ IKeyStore* truststore);
 
     CARAPI constructor(
         /* [in] */ IKeyStore* keystore,
-        /* [in] */ String keystorePassword);
+        /* [in] */ const String& keystorePassword);
 
     CARAPI constructor(
         /* [in] */ IKeyStore* truststore);
@@ -179,7 +179,7 @@ public:
 private:
     static CARAPI CreateKeyManagers(
         /* [in] */ IKeyStore* keystore,
-        /* [in] */ const String& password
+        /* [in] */ const String& password,
         /* [out] */ ArrayOf<IKeyManager*>** managers);
 
     static CARAPI CreateTrustManagers(

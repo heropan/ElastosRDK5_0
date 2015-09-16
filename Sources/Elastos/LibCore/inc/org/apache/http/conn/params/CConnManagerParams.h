@@ -5,6 +5,7 @@
 #include "_Org_Apache_Http_Conn_Params_CConnManagerParams.h"
 #include "Singleton.h"
 
+using Org::Apache::Http::Params::IHttpParams;
 
 namespace Org {
 namespace Apache {
@@ -13,7 +14,7 @@ namespace Conn {
 namespace Params {
 
 CarClass(CConnManagerParams)
-    , public Object
+    , public Singleton
     , public IConnManagerParams
     , public IConnManagerPNames
 {

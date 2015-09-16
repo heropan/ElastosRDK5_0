@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CONN_SCHEME_CSCHEME_H_
 
 #include "_Org_Apache_Http_Conn_Scheme_CScheme.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Net::ISocket;

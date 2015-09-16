@@ -4,8 +4,10 @@
 
 #include "_Org_Apache_Http_Conn_Params_CConnRouteParamBean.h"
 #include "HttpAbstractParamBean.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
+using Elastos::Net::IInetAddress;
+using Org::Apache::Http::Conn::Routing::IHttpRoute;
 using Org::Apache::Http::Params::HttpAbstractParamBean;
 using Org::Apache::Http::Params::IHttpParams;
 

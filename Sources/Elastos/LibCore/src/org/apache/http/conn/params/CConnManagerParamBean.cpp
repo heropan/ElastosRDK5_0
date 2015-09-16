@@ -15,7 +15,7 @@ ECode CConnManagerParamBean::SetTimeout(
     /* [in] */ Int64 timeout)
 {
     AutoPtr<IHttpParams> p;
-    return params->SetInt64Parameter(IConnManagerPNames::TIMEOUT, timeout,
+    return mParams->SetInt64Parameter(IConnManagerPNames::TIMEOUT, timeout,
             (IHttpParams**)&p);
 }
 
@@ -23,7 +23,7 @@ ECode CConnManagerParamBean::SetMaxTotalConnections(
     /* [in] */ Int32 maxConnections)
 {
     AutoPtr<IHttpParams> p;
-    return params->SetInt32Parameter(IConnManagerPNames::MAX_TOTAL_CONNECTIONS, maxConnections,
+    return mParams->SetInt32Parameter(IConnManagerPNames::MAX_TOTAL_CONNECTIONS, maxConnections,
             (IHttpParams**)&p);
 }
 
@@ -31,14 +31,14 @@ ECode CConnManagerParamBean::SetConnectionsPerRoute(
     /* [in] */ IConnPerRouteBean* connPerRoute)
 {
     AutoPtr<IHttpParams> p;
-    return params->SetParameter(IConnManagerPNames::MAX_CONNECTIONS_PER_ROUTE, connPerRoute,
+    return mParams->SetParameter(IConnManagerPNames::MAX_CONNECTIONS_PER_ROUTE, connPerRoute,
             (IHttpParams**)&p);
 }
 
 ECode CConnManagerParamBean::constructor(
     /* [in] */ IHttpParams* params)
 {
-    return Init(params);
+    return Init(mParams);
 }
 
 } // namespace Params

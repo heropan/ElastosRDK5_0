@@ -2,10 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_CONN_SSL_CSSLSOCKETFACTORYHELPER_H_
 #define __ORG_APACHE_HTTP_CONN_SSL_CSSLSOCKETFACTORYHELPER_H_
 
-#include "_Org_Apache_Http_Conn_SSL_Org_Apache_Http_Auth_CSSLSocketFactoryHelper.h"
-#include <elastos/core/Singleton.h>
-
-using Elastos::Core::Singleton;
+#include "_Org_Apache_Http_Conn_SSL_CSSLSocketFactoryHelper.h"
+#include "Singleton.h"
 
 namespace Org {
 namespace Apache {
@@ -14,7 +12,7 @@ namespace Conn {
 namespace SSL {
 
 CarClass(CSSLSocketFactoryHelper)
-    , public Object
+    , public Singleton
     , public ISSLSocketFactoryHelper
 {
 public:
@@ -33,7 +31,6 @@ public:
 
     CARAPI GetSocketFactory(
         /* [out] */ ISSLSocketFactory** factory);
-
 };
 
 } // namespace SSL

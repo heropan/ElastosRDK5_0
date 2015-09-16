@@ -1,9 +1,10 @@
 
 #include "CRouteTracker.h"
 #include "CHttpRoute.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include "Logger.h"
+#include "StringBuilder.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;
 
@@ -88,7 +89,7 @@ ECode CRouteTracker::TunnelProxy(
 
     // prepare an extended proxy chain
     AutoPtr< ArrayOf<IHttpHost*> > proxies = ArrayOf<IHttpHost*>::Alloc(mProxyChain->GetLength() + 1);
-    proxies->Copy(0, mProxyChain, 0, mProxyChain->GetLength())
+    proxies->Copy(0, mProxyChain, 0, mProxyChain->GetLength());
     // System.arraycopy(this.proxyChain, 0,
     //                  proxies, 0, this.proxyChain.length);
     proxies->Set(proxies->GetLength() - 1, proxy);
@@ -121,7 +122,7 @@ ECode CRouteTracker::GetTargetHost(
 }
 
 ECode CRouteTracker::GetLocalAddress(
-    /* [out] */ IInetAddress** addr);
+    /* [out] */ IInetAddress** addr)
 {
     VALIDATE_NOT_NULL(addr)
     *addr = mLocalAddress;
@@ -174,7 +175,7 @@ ECode CRouteTracker::GetProxyHost(
     /* [out] */ IHttpHost** proxy)
 {
     VALIDATE_NOT_NULL(proxy)
-    *proxy = (mProxyChain == NULL) ? NULL : (mProxyChain)[0];
+    *proxy = (mProxyChain == NULL) ? NULL : (*mProxyChain)[0];
     REFCOUNT_ADD(*proxy)
     return NOERROR;
 }
@@ -246,7 +247,7 @@ ECode CRouteTracker::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    if (other == this) {
+    if (other == this->Probe(EIID_IInterface)) {
         *result = TRUE;
         return NOERROR;
     }
@@ -322,10 +323,10 @@ ECode CRouteTracker::ToString(
     GetHopCount(&count);
     StringBuilder cab(50 + count * 30);
 
-    cab.AppendCStr("RouteTracker[");
+    cab.Append("RouteTracker[");
     if (mLocalAddress != NULL) {
-        cab.append(mLocalAddress);
-        cab.append("->");
+        cab.Append(mLocalAddress);
+        cab.Append("->");
     }
     cab.AppendChar('{');
     if (mConnected) cab.AppendChar('c');
@@ -378,9 +379,9 @@ ECode CRouteTracker::constructor(
     /* [in] */ IHttpRoute* route)
 {
     AutoPtr<IHttpHost> host;
-    route->GetTargetHost((IHttpHost**)&host);
+    IRouteInfo::Probe(route)->GetTargetHost((IHttpHost**)&host);
     AutoPtr<IInetAddress> addr;
-    route->GetLocalAddress((IInetAddress**)&addr);
+    IRouteInfo::Probe(route)->GetLocalAddress((IInetAddress**)&addr);
     return constructor(host, addr);
 }
 

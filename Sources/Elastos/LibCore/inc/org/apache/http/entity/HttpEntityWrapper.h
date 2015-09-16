@@ -2,13 +2,12 @@
 #ifndef __ORG_APACHE_HTTP_ENTITY_HTTPENTITYWRAPPER_H__
 #define __ORG_APACHE_HTTP_ENTITY_HTTPENTITYWRAPPER_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
-using Org::Apache::Http::Entity::IHeader;
+using Org::Apache::Http::IHeader;
 
 namespace Org {
 namespace Apache {
@@ -65,7 +64,7 @@ protected:
 
 protected:
     /** The wrapped entity. */
-    AutoPtr<IHttpEntity> wrappedEntity;
+    AutoPtr<IHttpEntity> mWrappedEntity;
 };
 
 } // namespace Entity

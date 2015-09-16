@@ -3,10 +3,12 @@
 #define __ORG_APACHE_HTTP_CONN_SCHEME_CSCHEMEREGISTRY_H_
 
 #include "_Org_Apache_Http_Conn_Scheme_CSchemeRegistry.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Net::ISocket;
+using Elastos::Utility::IList;
+using Elastos::Utility::IMap;
 using Org::Apache::Http::Params::IHttpParams;
 
 namespace Org {

@@ -6,8 +6,9 @@ namespace Org {
 namespace Apache {
 namespace Http {
 namespace Conn {
+namespace Params {
 
-CAR_INTERFACE_IMPL_2(CConnRouteParams, Object, IConnRouteParams, IConnRoutePNames)
+CAR_INTERFACE_IMPL_2(CConnRouteParams, Singleton, IConnRouteParams, IConnRoutePNames)
 
 CAR_SINGLETON_IMPL(CConnRouteParams)
 
@@ -63,7 +64,7 @@ ECode CConnRouteParams::GetNoHost(
 }
 
 ECode CConnRouteParams::GetNoRoute(
-    /* [out] */ IHttpRoute* route)
+    /* [out] */ IHttpRoute** route)
 {
     VALIDATE_NOT_NULL(route)
     *route = ConnRouteParams::NO_ROUTE;
@@ -71,6 +72,7 @@ ECode CConnRouteParams::GetNoRoute(
     return NOERROR;
 }
 
+} // namespace Params
 } // namespace Conn
 } // namespace Http
 } // namespace Apache

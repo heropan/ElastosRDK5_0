@@ -6,6 +6,7 @@
 #include "HttpEntityWrapper.h"
 
 using Elastos::IO::IInputStream;
+using Org::Apache::Http::Entity::HttpEntityWrapper;
 
 namespace Org {
 namespace Apache {

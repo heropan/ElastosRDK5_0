@@ -1,6 +1,7 @@
 
 #include "CConnPerRouteBean.h"
-#include <elastos/Logger.h>
+#include "CInteger32.h"
+#include "Logger.h"
 
 using Elastos::Core::CInteger32;
 using Elastos::Utility::IIterable;
@@ -90,14 +91,13 @@ ECode CConnPerRouteBean::SetMaxForRoutes(
     }
     mMaxPerHostMap.Clear();
     AutoPtr<ISet> keys;
-    map->KeySet((ISet**)&keys);
-    AutoPtr<IIterable> iterable = IIterable::Probe(keys);
+    map->GetKeySet((ISet**)&keys);
     AutoPtr<IIterator> it;
-    iterable->GetIterator((IIterator**)&it);
+    keys->GetIterator((IIterator**)&it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IHttpRoute> key;
-        it->Next((IInterface**)&key);
+        it->GetNext((IInterface**)&key);
         AutoPtr<IInteger32> value;
         map->Get(key, (IInterface**)&value);
         mMaxPerHostMap[key] = value;

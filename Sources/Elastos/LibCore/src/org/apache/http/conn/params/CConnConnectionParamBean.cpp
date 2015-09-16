@@ -14,13 +14,15 @@ CAR_OBJECT_IMPL(CConnConnectionParamBean)
 ECode CConnConnectionParamBean::SetMaxStatusLineGarbage(
     /* [in] */ Int32 maxStatusLineGarbage)
 {
-    return mParams->SetInt32Parameter(IConnConnectionPNames::MAX_STATUS_LINE_GARBAGE, maxStatusLineGarbage);
+    AutoPtr<IHttpParams> p;
+    return mParams->SetInt32Parameter(IConnConnectionPNames::MAX_STATUS_LINE_GARBAGE,
+            maxStatusLineGarbage, (IHttpParams**)&p);
 }
 
 ECode CConnConnectionParamBean::constructor(
     /* [in] */ IHttpParams* params)
 {
-    return Init(params);
+    return Init(mParams);
 }
 
 } // namespace Params

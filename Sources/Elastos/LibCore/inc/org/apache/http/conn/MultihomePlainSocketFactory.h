@@ -2,10 +2,11 @@
 #ifndef __ORG_APACHE_HTTP_CONN_MULTIHOMEPLAINSOCKETFACTORY_H__
 #define __ORG_APACHE_HTTP_CONN_MULTIHOMEPLAINSOCKETFACTORY_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Net::ISocket;
+using Elastos::Net::IInetAddress;
+using Org::Apache::Http::Params::IHttpParams;
 using Org::Apache::Http::Conn::Scheme::ISocketFactory;
 
 namespace Org {
@@ -81,7 +82,7 @@ public:
      */
     CARAPI IsSecure(
         /* [in] */ ISocket* sock,
-        /* [out] */ Boolean isSecure);
+        /* [out] */ Boolean* isSecure);
 
     CARAPI Equals(
         /* [in] */ IInterface* other,
@@ -91,7 +92,7 @@ public:
         /* [out] */ Int32* hashCode);
 
 private:
-    CARAPI_(AutoPtr<IMultihomePlainSocketFactory>) InitSocketFactory();
+    static CARAPI_(AutoPtr<IMultihomePlainSocketFactory>) InitSocketFactory();
 
 private:
     /**

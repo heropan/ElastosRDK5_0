@@ -4,10 +4,28 @@
 #include "CBrowserCompatHostnameVerifier.h"
 #include "CStrictHostnameVerifier.h"
 #include "HttpConnectionParams.h"
-#include <elastos/Logger.h>
+#include "CInetSocketAddress.h"
+#include "elastosx/net/ssl/CTrustManagerFactoryHelper.h"
+#include "elastosx/net/ssl/CKeyManagerFactoryHelper.h"
+#include "elastosx/net/ssl/CSSLContextHelper.h"
+#include "elastosx/net/ssl/HttpsURLConnection.h"
+#include "Logger.h"
 
 using Elastos::Net::CInetSocketAddress;
+using Elastos::Net::ISocketAddress;
 using Elastos::Utility::Logging::Logger;
+using Elastosx::Net::Ssl::IKeyManagerFactory;
+using Elastosx::Net::Ssl::ITrustManagerFactoryHelper;
+using Elastosx::Net::Ssl::CTrustManagerFactoryHelper;
+using Elastosx::Net::Ssl::IKeyManagerFactory;
+using Elastosx::Net::Ssl::ITrustManagerFactory;
+using Elastosx::Net::Ssl::IKeyManagerFactoryHelper;
+using Elastosx::Net::Ssl::CKeyManagerFactoryHelper;
+using Elastosx::Net::Ssl::ISSLContextHelper;
+using Elastosx::Net::Ssl::CSSLContextHelper;
+using Elastosx::Net::Ssl::HttpsURLConnection;
+using Org::Apache::Http::Conn::Scheme::EIID_ILayeredSocketFactory;
+using Org::Apache::Http::Conn::Scheme::EIID_ISocketFactory;
 using Org::Apache::Http::Params::HttpConnectionParams;
 
 namespace Org {
@@ -43,7 +61,7 @@ static AutoPtr<IX509HostnameVerifier> InitStrictHostnameVerifier()
 const AutoPtr<IX509HostnameVerifier> CSSLSocketFactory::STRICT_HOSTNAME_VERIFIER
         = InitStrictHostnameVerifier();
 
-static AutoPtr<ISSLSocketFactory> CSSLSocketFactory::InitSSLSocketFactory()
+static AutoPtr<ISSLSocketFactory> InitSSLSocketFactory()
 {
     AutoPtr<CSSLSocketFactory> factory;
     CSSLSocketFactory::NewByFriend((CSSLSocketFactory**)&factory);
@@ -68,12 +86,12 @@ AutoPtr<ISSLSocketFactory> CSSLSocketFactory::GetSocketFactory()
 
 ECode CSSLSocketFactory::CreateKeyManagers(
     /* [in] */ IKeyStore* keystore,
-    /* [in] */ const String& password
+    /* [in] */ const String& password,
     /* [out] */ ArrayOf<IKeyManager*>** managers)
 {
     VALIDATE_NOT_NULL(managers)
     if (keystore == NULL) {
-        Logger::("CSSLSocketFactory", "Keystore may not be null");
+        Logger::E("CSSLSocketFactory", "Keystore may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<IKeyManagerFactoryHelper> helper;
@@ -82,7 +100,7 @@ ECode CSSLSocketFactory::CreateKeyManagers(
     helper->GetDefaultAlgorithm(&algorithm);
     AutoPtr<IKeyManagerFactory> kmfactory;
     helper->GetInstance(algorithm, (IKeyManagerFactory**)&kmfactory);
-    kmfactory->Init(keystore, !password.IsNull() ? password.string(): NULL);
+    kmfactory->Init(keystore, !password.IsNull() ? password.GetChars(): NULL);
     return kmfactory->GetKeyManagers(managers);
 }
 
@@ -92,7 +110,7 @@ ECode CSSLSocketFactory::CreateTrustManagers(
 {
     VALIDATE_NOT_NULL(managers)
     if (keystore == NULL) {
-        Logger::("CSSLSocketFactory", "Keystore may not be null");
+        Logger::E("CSSLSocketFactory", "Keystore may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<ITrustManagerFactoryHelper> helper;
@@ -100,7 +118,7 @@ ECode CSSLSocketFactory::CreateTrustManagers(
     String algorithm;
     helper->GetDefaultAlgorithm(&algorithm);
     AutoPtr<ITrustManagerFactory> tmfactory;
-    helper->GetInstance(algorithm, (IKeyManagerFactory**)&tmfactory);
+    helper->GetInstance(algorithm, (ITrustManagerFactory**)&tmfactory);
     tmfactory->Init(keystore);
     return tmfactory->GetTrustManagers(managers);
 }
@@ -110,12 +128,12 @@ ECode CSSLSocketFactory::CreateSocket(
 {
     VALIDATE_NOT_NULL(socket)
     // the cast makes sure that the factory is working as expected
-    return mSocketfactory->CreateSocket(socket);
+    return ISocketFactory::Probe(mSocketfactory)->CreateSocket(socket);
 }
 
 ECode CSSLSocketFactory::ConnectSocket(
     /* [in] */ ISocket* sock,
-    /* [in] */ String host,
+    /* [in] */ const String& host,
     /* [in] */ Int32 port,
     /* [in] */ IInetAddress* localAddress,
     /* [in] */ Int32 localPort,
@@ -125,12 +143,12 @@ ECode CSSLSocketFactory::ConnectSocket(
     VALIDATE_NOT_NULL(socket)
     *socket = NULL;
 
-    if (host.IsNull) {
-        Logger::("CSSLSocketFactory", "Target host may not be null.");
+    if (host.IsNull()) {
+        Logger::E("CSSLSocketFactory", "Target host may not be null.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (params == NULL) {
-        Logger::("CSSLSocketFactory", "Parameters may not be null.");
+        Logger::E("CSSLSocketFactory", "Parameters may not be null.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -150,8 +168,9 @@ ECode CSSLSocketFactory::ConnectSocket(
             localPort = 0; // indicates "any"
 
         AutoPtr<IInetSocketAddress> isa;
-        CInetSocketAddress::New(localAddress, localPort, (IInetAddress**)&isa);
-        sslsock->Bind(isa);
+        CInetSocketAddress::New(localAddress, localPort, (IInetSocketAddress**)&isa);
+        AutoPtr<ISocketAddress> sa = ISocketAddress::Probe(isa);
+        ISocket::Probe(sslsock)->Bind(sa);
     }
 
     Int32 connTimeout, soTimeout;
@@ -161,20 +180,21 @@ ECode CSSLSocketFactory::ConnectSocket(
     AutoPtr<IInetSocketAddress> remoteAddress;
     if (mNameResolver != NULL) {
         AutoPtr<IInetAddress> addr;
-        mNameResolver->Resolve((IInetAddress**)&addr);
+        mNameResolver->Resolve(host, (IInetAddress**)&addr);
         CInetSocketAddress::New(addr, port, (IInetSocketAddress**)&remoteAddress);
     }
     else {
         CInetSocketAddress::New(host, port, (IInetSocketAddress**)&remoteAddress);
     }
 
-    sslsock->Connect(remoteAddress, connTimeout);
+    AutoPtr<ISocketAddress> sa = ISocketAddress::Probe(remoteAddress);
+    ISocket::Probe(sslsock)->Connect(sa, connTimeout);
 
-    sslsock->SetSoTimeout(soTimeout);
+    ISocket::Probe(sslsock)->SetSoTimeout(soTimeout);
     // try {
     ECode ec = mHostnameVerifier->Verify(host, sslsock);
     if (FAILED(ec)) {
-        sslsock->Close();
+        ISocket::Probe(sslsock)->Close();
         return ec;
     }
         // verifyHostName() didn't blowup - good!
@@ -197,18 +217,18 @@ ECode CSSLSocketFactory::IsSecure(
     *isSecure = FALSE;
 
     if (sock == NULL) {
-        Logger::("CSSLSocketFactory", "Socket may not be null.");
+        Logger::E("CSSLSocketFactory", "Socket may not be null.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     // This instanceof check is in line with createSocket() above.
     if (ISSLSocket::Probe(sock) == NULL) {
-        Logger::("CSSLSocketFactory", "Socket not created by this factory.");
+        Logger::E("CSSLSocketFactory", "Socket not created by this factory.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     // This check is performed last since it calls the argument object.
     Boolean isClosed;
     if (sock->IsClosed(&isClosed), isClosed) {
-        Logger::("CSSLSocketFactory", "Socket is closed.");
+        Logger::E("CSSLSocketFactory", "Socket is closed.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -218,15 +238,15 @@ ECode CSSLSocketFactory::IsSecure(
 
 ECode CSSLSocketFactory::CreateSocket(
     /* [in] */ ISocket* sock,
-    /* [in] */ String host,
+    /* [in] */ const String& host,
     /* [in] */ Int32 port,
     /* [in] */ Boolean autoClose,
     /* [out] */ ISocket** socket)
 {
     VALIDATE_NOT_NULL(socket)
     AutoPtr<ISocket> _sock;
-    mSocketfactory->CreateSocket(socket, host, port, autoClose, (ISocket**)&_sock);
-    AutoPtr<ISSLSocket> sslSocket = ISSLSocket::Probe(_sock)
+    mSocketfactory->CreateSocket(sock, host, port, autoClose, (ISocket**)&_sock);
+    AutoPtr<ISSLSocket> sslSocket = ISSLSocket::Probe(_sock);
     mHostnameVerifier->Verify(host, sslSocket);
     // verifyHostName() didn't blowup - good!
     *socket = _sock;
@@ -238,7 +258,7 @@ ECode CSSLSocketFactory::SetHostnameVerifier(
     /* [in] */ IX509HostnameVerifier* hostnameVerifier)
 {
     if (hostnameVerifier == NULL) {
-        Logger::("CSSLSocketFactory", "Hostname verifier may not be null.");
+        Logger::E("CSSLSocketFactory", "Hostname verifier may not be null.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mHostnameVerifier = hostnameVerifier;
@@ -255,13 +275,14 @@ ECode CSSLSocketFactory::GetHostnameVerifier(
 }
 
 ECode CSSLSocketFactory::constructor(
-    /* [in] */ const String& algorithm,
+    /* [in] */ const String& _algorithm,
     /* [in] */ IKeyStore* keystore,
     /* [in] */ const String& keystorePassword,
     /* [in] */ IKeyStore* truststore,
     /* [in] */ ISecureRandom* random,
     /* [in] */ IHostNameResolver* nameResolver)
 {
+    String algorithm = _algorithm;
     if (algorithm.IsNull()) {
         algorithm = TLS;
     }
@@ -275,8 +296,10 @@ ECode CSSLSocketFactory::constructor(
     }
     AutoPtr<ISSLContextHelper> helper;
     CSSLContextHelper::AcquireSingleton((ISSLContextHelper**)&helper);
-    helper->GetInstance((ISSLContext**)&mSslcontext);
+    mSslcontext = NULL;
+    helper->GetInstance(algorithm, (ISSLContext**)&mSslcontext);
     mSslcontext->Init(keymanagers, trustmanagers, random);
+    mSocketfactory = NULL;
     mSslcontext->GetSocketFactory((Elastosx::Net::Ssl::ISSLSocketFactory**)&mSocketfactory);
     mNameResolver = nameResolver;
 
@@ -285,7 +308,7 @@ ECode CSSLSocketFactory::constructor(
 
 ECode CSSLSocketFactory::constructor(
     /* [in] */ IKeyStore* keystore,
-    /* [in] */ String keystorePassword,
+    /* [in] */ const String& keystorePassword,
     /* [in] */ IKeyStore* truststore)
 {
     return constructor(TLS, keystore, keystorePassword, truststore, NULL, NULL);
@@ -293,7 +316,7 @@ ECode CSSLSocketFactory::constructor(
 
 ECode CSSLSocketFactory::constructor(
     /* [in] */ IKeyStore* keystore,
-    /* [in] */ String keystorePassword)
+    /* [in] */ const String& keystorePassword)
 {
     return constructor(TLS, keystore, keystorePassword, NULL, NULL, NULL);
 }
@@ -301,11 +324,11 @@ ECode CSSLSocketFactory::constructor(
 ECode CSSLSocketFactory::constructor(
     /* [in] */ IKeyStore* truststore)
 {
-    return constructor(TLS, NULL, NULL, truststore, NULL, NULL);
+    return constructor(TLS, NULL, String(NULL), truststore, NULL, NULL);
 }
 
 ECode CSSLSocketFactory::constructor(
-    /* [in] */ ISSLSocketFactory* socketfactory)
+    /* [in] */ Elastosx::Net::Ssl::ISSLSocketFactory* socketfactory)
 {
     mSslcontext = NULL;
     mSocketfactory = socketfactory;
@@ -316,9 +339,7 @@ ECode CSSLSocketFactory::constructor(
 ECode CSSLSocketFactory::constructor()
 {
     mSslcontext = NULL;
-    AutoPtr<IHttpsURLConnectionHelper> helper;
-    CHttpsURLConnectionHelper::AcquireSingleton((IHttpsURLConnectionHelper**)&helper);
-    helper->GetDefaultSSLSocketFactory((Elastosx::Net::Ssl::ISSLSocketFactory**)&mSocketfactory);
+    HttpsURLConnection::GetDefaultSSLSocketFactory((Elastosx::Net::Ssl::ISSLSocketFactory**)&mSocketfactory);
     mNameResolver = NULL;
     return NOERROR;
 }

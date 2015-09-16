@@ -2,7 +2,11 @@
 #ifndef __ORG_APACHE_HTTP_PARAMS_HTTPCONNECTIONPARAMS_H_
 #define __ORG_APACHE_HTTP_PARAMS_HTTPCONNECTIONPARAMS_H_
 
-#include <Org.Apache.Http_server.h>
+#ifdef ELASTOS_CORELIBRARY
+#include "Elastos.CoreLibrary_server.h"
+#else
+#include "Elastos.CoreLibrary.h"
+#endif
 
 namespace Org {
 namespace Apache {

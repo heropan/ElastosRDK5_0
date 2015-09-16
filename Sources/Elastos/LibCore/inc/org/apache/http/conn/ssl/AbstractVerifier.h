@@ -2,13 +2,13 @@
 #ifndef __ORG_APACHE_HTTP_CONN_SSL_ABSTRACTVERIFIER_H__
 #define __ORG_APACHE_HTTP_CONN_SSL_ABSTRACTVERIFIER_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
+using Elastos::Core::ICharSequence;
 using Elastos::Security::Cert::IX509Certificate;
 using Elastosx::Net::Ssl::ISSLSession;
 using Elastosx::Net::Ssl::ISSLSocket;
+using Elastosx::Net::Ssl::IHostnameVerifier;
 
 namespace Org {
 namespace Apache {
@@ -47,6 +47,11 @@ public:
     CARAPI Verify(
         /* [in] */ const String& host,
         /* [in] */ IX509Certificate* cert);
+
+    virtual CARAPI Verify(
+        /* [in] */ const String& host,
+        /* [in] */ ArrayOf<String>* cns,
+        /* [in] */ ArrayOf<String>* subjectAlts) = 0;
 
     CARAPI Verify(
         /* [in] */ const String& host,
@@ -97,9 +102,7 @@ private:
      * Looks like we're the only implementation guarding against this.
      * Firefox, Curl, Sun Java 1.4, 5, 6 don't bother with this check.
      */
-    static const AutoPtr< ArrayOf<String> > BAD_COUNTRY_2LDS =
-          { "ac", "co", "com", "ed", "edu", "go", "gouv", "gov", "info",
-            "lg", "ne", "net", "or", "org" };
+    static const AutoPtr< ArrayOf<ICharSequence*> > BAD_COUNTRY_2LDS;
 
 };
 

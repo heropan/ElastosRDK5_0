@@ -2,7 +2,12 @@
 #ifndef __ORG_APACHE_HTTP_CONN_UTIL_INETADDRESSUTILS_H__
 #define __ORG_APACHE_HTTP_CONN_UTIL_INETADDRESSUTILS_H__
 
-#include <Org.Apache.Http_server.h>
+#ifdef ELASTOS_CORELIBRARY
+#include "Elastos.CoreLibrary_server.h"
+#else
+#include "Elastos.CoreLibrary.h"
+#endif
+#include <elastos/coredef.h>
 
 using Elastos::Utility::Regex::IPattern;
 
@@ -21,19 +26,19 @@ private:
     InetAddressUtils() {}
 
 public:
-    CARAPI IsIPv4Address(
+    static CARAPI IsIPv4Address(
         /* [in] */ const String& input,
         /* [out] */ Boolean* result);
 
-    CARAPI IsIPv6StdAddress(
+    static CARAPI IsIPv6StdAddress(
         /* [in] */ const String& input,
         /* [out] */ Boolean* result);
 
-    CARAPI IsIPv6HexCompressedAddress(
+    static CARAPI IsIPv6HexCompressedAddress(
         /* [in] */ const String& input,
         /* [out] */ Boolean* result);
 
-    CARAPI IsIPv6Address(
+    static CARAPI IsIPv6Address(
         /* [in] */ const String& input,
         /* [out] */ Boolean* result);
 

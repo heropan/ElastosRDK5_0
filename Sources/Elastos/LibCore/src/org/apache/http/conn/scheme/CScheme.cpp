@@ -1,8 +1,8 @@
 
 #include "CScheme.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include "Logger.h"
+#include "StringBuilder.h"
+#include "StringUtils.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -89,7 +89,7 @@ ECode CScheme::Equals(
         *result = FALSE;
         return NOERROR;
     }
-    if (this == other) {
+    if (this->Probe(EIID_IInterface) == other) {
         *result = TRUE;
         return NOERROR;
     }
@@ -99,10 +99,11 @@ ECode CScheme::Equals(
     }
 
     AutoPtr<CScheme> s = (CScheme*)IScheme::Probe(other);
+    Boolean isEquals;
     *result = (mName.Equals(s->mName) &&
             mDefaultPort == s->mDefaultPort &&
             mLayered == s->mLayered &&
-            IObject::Probe(mSocketFactory)->Equals(s->mSocketFactory));
+            (IObject::Probe(mSocketFactory)->Equals(s->mSocketFactory, &isEquals), isEquals));
     return NOERROR;
 }
 
@@ -138,7 +139,7 @@ ECode CScheme::constructor(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    mName = name.ToLowerCase(ILocale::ENGLISH);
+    mName = name.ToLowerCase(/*ILocale::ENGLISH*/);
     mSocketFactory = factory;
     mDefaultPort = port;
     mLayered = (ILayeredSocketFactory::Probe(factory) != NULL);

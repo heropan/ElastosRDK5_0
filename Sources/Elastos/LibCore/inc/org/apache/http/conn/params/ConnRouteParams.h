@@ -2,9 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_CONN_PARAMS_CONNROUTEPARAMS_H__
 #define __ORG_APACHE_HTTP_CONN_PARAMS_CONNROUTEPARAMS_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
+using Elastos::Net::IInetAddress;
 using Org::Apache::Http::IHttpHost;
 using Org::Apache::Http::Conn::Routing::IHttpRoute;
 using Org::Apache::Http::Params::IHttpParams;
@@ -35,8 +35,6 @@ private:
 
 public:
     CAR_INTERFACE_DECL()
-
-    CAR_OBJECT_DECL()
 
     /**
      * Obtains the {@link ConnRoutePNames#DEFAULT_PROXY DEFAULT_PROXY}

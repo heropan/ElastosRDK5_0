@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CONN_ROUTING_CBASICROUTEDIRECTOR_H_
 
 #include "_Org_Apache_Http_Conn_Routing_CBasicRouteDirector.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Org::Apache::Http::Params::IHttpParams;
 

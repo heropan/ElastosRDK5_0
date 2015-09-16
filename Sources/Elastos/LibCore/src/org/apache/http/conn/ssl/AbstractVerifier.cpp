@@ -1,10 +1,16 @@
 
 #include "AbstractVerifier.h"
-#include <elastos/Logger.h>
-#include <elastos/utility/Arrays.h>
+#include "InetAddressUtils.h"
+#include "Logger.h"
+#include "Arrays.h"
+#include "CString.h"
+#include "CLinkedList.h"
+#include "elastosx/net/ssl/CDistinguishedNameParser.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
+using Elastos::Core::IInteger32;
+using Elastos::Security::Cert::ICertificate;
 using Elastos::Utility::Arrays;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IIterable;
@@ -12,7 +18,13 @@ using Elastos::Utility::IIterator;
 using Elastos::Utility::IList;
 using Elastos::Utility::ILinkedList;
 using Elastos::Utility::CLinkedList;
+using Elastos::Utility::ILocale;
 using Elastos::Utility::Logging::Logger;
+using Elastosx::Net::Ssl::EIID_IHostnameVerifier;
+using Elastosx::Net::Ssl::CDistinguishedNameParser;
+using Elastosx::Net::Ssl::IDistinguishedNameParser;
+using Elastosx::Security::Auth::X500::IX500Principal;
+using Org::Apache::Http::Conn::Util::InetAddressUtils;
 
 namespace Org {
 namespace Apache {
@@ -20,28 +32,28 @@ namespace Http {
 namespace Conn {
 namespace SSL {
 
-static AutoPtr< ArrayOf<String> > InitBadCountry2lds()
+static AutoPtr< ArrayOf<ICharSequence*> > InitBadCountry2lds()
 {
-    AutoPtr< ArrayOf<String> > stringArray = ArrayOf<String>::Alloc(14);
-    (*stringArray)[0]("ac");
-    (*stringArray)[1]("co");
-    (*stringArray)[2]("com");
-    (*stringArray)[3]("ed");
-    (*stringArray)[4]("edu");
-    (*stringArray)[5]("go");
-    (*stringArray)[6]("gouv");
-    (*stringArray)[7]("gov");
-    (*stringArray)[8]("info");
-    (*stringArray)[9]("lg");
-    (*stringArray)[10]("ne");
-    (*stringArray)[11]("net");
-    (*stringArray)[12]("or");
-    (*stringArray)[13]("org");
-    Arrays::Sort(stringArray);
+    AutoPtr< ArrayOf<ICharSequence*> > stringArray = ArrayOf<ICharSequence*>::Alloc(14);
+    CString::New(String("ac"), (ICharSequence**)&(*stringArray)[0]);
+    CString::New(String("co"), (ICharSequence**)&(*stringArray)[1]);
+    CString::New(String("com"), (ICharSequence**)&(*stringArray)[2]);
+    CString::New(String("ed"), (ICharSequence**)&(*stringArray)[3]);
+    CString::New(String("edu"), (ICharSequence**)&(*stringArray)[4]);
+    CString::New(String("go"), (ICharSequence**)&(*stringArray)[5]);
+    CString::New(String("gouv"), (ICharSequence**)&(*stringArray)[6]);
+    CString::New(String("gov"), (ICharSequence**)&(*stringArray)[7]);
+    CString::New(String("info"), (ICharSequence**)&(*stringArray)[8]);
+    CString::New(String("lg"), (ICharSequence**)&(*stringArray)[9]);
+    CString::New(String("ne"), (ICharSequence**)&(*stringArray)[10]);
+    CString::New(String("net"), (ICharSequence**)&(*stringArray)[11]);
+    CString::New(String("or"), (ICharSequence**)&(*stringArray)[12]);
+    CString::New(String("org"), (ICharSequence**)&(*stringArray)[13]);
+    Arrays::Sort(stringArray.Get());
     return stringArray;
 
 }
-const AutoPtr< ArrayOf<String> > AbstractVerifier::BAD_COUNTRY_2LDS = InitBadCountry2lds();
+const AutoPtr< ArrayOf<ICharSequence*> > AbstractVerifier::BAD_COUNTRY_2LDS = InitBadCountry2lds();
 
 CAR_INTERFACE_IMPL_3(AbstractVerifier, Object, IAbstractVerifier, IX509HostnameVerifier, IHostnameVerifier)
 
@@ -131,18 +143,17 @@ ECode AbstractVerifier::Verify(
 
     // We're can be case-insensitive when comparing the host we used to
     // establish the socket to the hostname in the certificate.
-    String hostName = host.Trim().ToLowerCase(ILocale::ENGLISH);
+    String hostName = host.Trim().ToLowerCase(/*ILocale::ENGLISH*/);
     Boolean match = FALSE;
-    AutoPtr<IIterable> iterable = IIterable::Probe(names);
     AutoPtr<IIterator> it;
-    iterable->GetIterator((IIterator**)&it);
+    names->GetIterator((IIterator**)&it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<ICharSequence> cs;
         it->GetNext((IInterface**)&cs);
         String cn;
         cs->ToString(&cn);
-        cn = cn.ToLowerCase(ILocale::ENGLISH);
+        cn = cn.ToLowerCase(/*ILocale::ENGLISH*/);
         // Store CN in StringBuffer in case we need to report an error.
         buf.Append(" <");
         buf.Append(cn);
@@ -155,13 +166,14 @@ ECode AbstractVerifier::Verify(
         // The CN better have at least two dots if it wants wildcard
         // action.  It also can't be [*.co.uk] or [*.co.jp] or
         // [*.org.uk], etc...
-        Boolean doWildcard = cn.StartsWith("*.") &&
-                             cn.IndexOf('.', 2) != -1 &&
-                             AcceptableCountryWildcard(cn) &&
-                             !InetAddressUtils::IsIPv4Address(host);
+        Boolean isipv4;
+        Boolean doWildcard = cn.StartWith("*.") &&
+                cn.IndexOf('.', 2) != -1 &&
+                AcceptableCountryWildcard(cn) &&
+                (InetAddressUtils::IsIPv4Address(host, &isipv4), !isipv4);
 
         if(doWildcard) {
-            match = hostName.EndsWith(cn.Substring(1));
+            match = hostName.EndWith(cn.Substring(1));
             if(match && strictWithSubDomains) {
                 // If we're in strict mode, then [*.foo.com] is not
                 // allowed to match [a.b.foo.com]
@@ -185,15 +197,17 @@ ECode AbstractVerifier::Verify(
 Boolean AbstractVerifier::AcceptableCountryWildcard(
     /* [in] */ const String& cn)
 {
-    Int32 cnLen = cn->GetLength();
+    Int32 cnLen = cn.GetLength();
     if(cnLen >= 7 && cnLen <= 9) {
         // Look for the '.' in the 3rd-last position:
         if(cn.GetChar(cnLen - 3) == '.') {
             // Trim off the [*.] and the [.XX].
             String s = cn.Substring(2, cnLen - 3);
+            AutoPtr<ICharSequence> cs;
+            CString::New(s, (ICharSequence**)&cs);
             // And test against the sorted array of bad 2lds:
             Int32 x;
-            Arrays::BinarySearch(BAD_COUNTRY_2LDS, s, &x);
+            Arrays::BinarySearch(BAD_COUNTRY_2LDS.Get(), cs.Get(), &x);
             return x < 0;
         }
     }
@@ -205,8 +219,8 @@ AutoPtr< ArrayOf<String> > AbstractVerifier::GetCNs(
 {
     AutoPtr<IX500Principal> principal;
     cert->GetSubjectX500Principal((IX500Principal**)&principal);
-    AutoPtr<CDistinguishedNameParser> dnParser;
-    CDistinguishedNameParser::NewByFrind(principal, (CDistinguishedNameParser**)&dnParser);
+    AutoPtr<IDistinguishedNameParser> dnParser;
+    CDistinguishedNameParser::New(principal, (IDistinguishedNameParser**)&dnParser);
     AutoPtr<IList> cnList;
     dnParser->GetAllMostSpecificFirst(String("cn"), (IList**)&cnList);
 
@@ -227,7 +241,7 @@ AutoPtr< ArrayOf<String> > AbstractVerifier::GetCNs(
         return cns;
     }
     else {
-        return null;
+        return NULL;
     }
 }
 

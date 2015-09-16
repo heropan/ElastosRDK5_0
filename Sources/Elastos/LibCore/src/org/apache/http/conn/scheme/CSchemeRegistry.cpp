@@ -1,14 +1,20 @@
 
 #include "CSchemeRegistry.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include "Logger.h"
+#include "StringBuilder.h"
+#include "StringUtils.h"
+#include "CLinkedHashMap.h"
+#include "CArrayList.h"
+#include "CString.h"
+#include "AutoLock.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::CLinkedHashMap;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
@@ -44,7 +50,7 @@ ECode CSchemeRegistry::GetScheme(
 
 ECode CSchemeRegistry::GetScheme(
     /* [in] */ IHttpHost* host,
-    /* [out] */ IScheme** scheme);
+    /* [out] */ IScheme** scheme)
 {
     VALIDATE_NOT_NULL(scheme)
     synchronized(this) {
@@ -101,8 +107,7 @@ ECode CSchemeRegistry::Register(
         AutoPtr<ICharSequence> cs;
         CString::New(name, (ICharSequence**)&cs);
         AutoPtr<IInterface> old;
-        mRegisteredSchemes->(cs, (IInterface**)&old);
-        mRegisteredSchemes->Put(cs, sch);
+        mRegisteredSchemes->Put(cs, sch, (IInterface**)&old);
         *scheme = IScheme::Probe(old);
         REFCOUNT_ADD(*scheme)
     }
@@ -159,6 +164,7 @@ ECode CSchemeRegistry::SetItems(
         mRegisteredSchemes->Clear();
         mRegisteredSchemes->PutAll(map);
     }
+    return NOERROR;
 }
 
 ECode CSchemeRegistry::constructor()
