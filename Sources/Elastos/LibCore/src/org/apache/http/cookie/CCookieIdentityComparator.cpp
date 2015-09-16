@@ -1,6 +1,9 @@
 
 #include "CCookieIdentityComparator.h"
 
+using Elastos::Core::EIID_IComparator;
+using Elastos::IO::EIID_ISerializable;
+
 namespace Org {
 namespace Apache {
 namespace Http {
@@ -23,7 +26,7 @@ ECode CCookieIdentityComparator::Compare(
     String c1Name, c2Name;
     c1->GetName(&c1Name);
     c2->GetName(&c2Name);
-    Int32 res = c1Name.CompareTo(c2Name);
+    Int32 res = c1Name.Compare(c2Name);
     if (res == 0) {
         // do not differentiate empty and null domains
         String d1;

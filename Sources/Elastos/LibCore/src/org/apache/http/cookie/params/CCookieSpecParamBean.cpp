@@ -5,7 +5,7 @@
 namespace Org {
 namespace Apache {
 namespace Http {
-namespace Auth {
+namespace Cookie {
 namespace Params {
 
 CAR_INTERFACE_IMPL(CCookieSpecParamBean, Object, ICookieSpecParamBean)
@@ -33,7 +33,7 @@ ECode CCookieSpecParamBean::constructor(
 }
 
 } // namespace Params
-} // namespace Auth
+} // namespace Cookie
 } // namespace Http
 } // namespace Apache
 } // namespace Org

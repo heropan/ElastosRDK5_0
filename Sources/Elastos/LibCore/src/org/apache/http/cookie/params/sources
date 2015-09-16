@@ -2,7 +2,15 @@
 TARGET_NAME= params
 TARGET_TYPE= lib
 
-INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/cookie
-INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/params
+C_DEFINES += -DELASTOS_CORELIBRARY
+
+include $(MAKEDIR)/../../../../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += ../../../../../corelibrary
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/core;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/cookie/params;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/auth/params;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/params;
 
 SOURCES = CCookieSpecParamBean.cpp
