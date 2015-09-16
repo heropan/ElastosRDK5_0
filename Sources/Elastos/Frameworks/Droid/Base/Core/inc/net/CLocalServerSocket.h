@@ -3,44 +3,29 @@
 #define __ELASTOS_DROID_NET_CLOCALSERVERSOCKET_H__
 
 #include "_Elastos_Droid_Net_CLocalServerSocket.h"
-#include "net/LocalSocketImpl.h"
-
-using Elastos::IO::IFileDescriptor;
+#include "LocalServerSocket.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
+/**
+ * non-standard class for creating inbound UNIX-domain socket
+ * on the Android platform, this is created in the Linux non-filesystem
+ * namespace.
+ *
+ * On simulator platforms, this may be created in a temporary directory on
+ * the filesystem
+ */
 CarClass(CLocalServerSocket)
+    , public LocalServerSocket
 {
 public:
-    CARAPI constructor(
-        /* [in] */ const String& name);
+    CAR_OBJECT_DECL()
 
-    CARAPI constructor(
-        /* [in] */ IFileDescriptor* fd);
-
-    CARAPI GetLocalSocketAddress(
-        /* [out] */ ILocalSocketAddress** result);
-
-    CARAPI Accept(
-        /* [out] */ ILocalSocket** result);
-
-    CARAPI GetFileDescriptor(
-        /* [out] */ IFileDescriptor** result);
-
-    CARAPI Close();
-
-private:
-    AutoPtr<LocalSocketImpl> mImpl;
-    AutoPtr<ILocalSocketAddress> mLocalAddress;
-
-    /** 50 seems a bit much, but it's what was here */
-    static const Int32 LISTEN_BACKLOG = 50;
 };
 
 } // namespace Net
-} // namepsace Droid
+} // namespace Droid
 } // namespace Elastos
-
-#endif //__ELASTOS_DROID_NET_CLOCALSERVERSOCKET_H__
+#endif // __ELASTOS_DROID_NET_CLOCALSERVERSOCKET_H__

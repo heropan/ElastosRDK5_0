@@ -110,6 +110,7 @@ module
     interface Elastos.Droid.Os.ILooper;
     interface Elastos.Droid.Os.IHandler;
 
+    using interface Elastos.IO.IFileDescriptor;
     using interface Elastos.Net.IInetAddress;
     using interface Elastos.Net.IInterfaceAddress;
 
@@ -274,6 +275,51 @@ module
 
         interface IParcelable;
         interface ILinkQualityInfo;
+    }
+
+    class CLocalServerSocket {
+        constructor(
+            [in] String name);
+
+        constructor(
+            [in] IFileDescriptor* fd);
+
+        interface ILocalServerSocket;
+    }
+
+    class CLocalSocket {
+        constructor();
+
+        constructor(
+            [in] Int32 sockType);
+
+        constructor(
+            [in] IFileDescriptor* fd);
+
+        constructor(
+            [in] ILocalSocketImpl* impl,
+            [in] Int32 sockType);
+
+        interface Elastos.IO.ICloseable;
+        interface ILocalSocket;
+    }
+
+    class CLocalSocketAddress {
+        constructor(
+            [in] String name,
+            [in] ILocalSocketAddressNamespace* ns);
+
+        constructor(
+            [in] String name);
+
+        interface ILocalSocketAddress;
+    }
+
+    class CLocalSocketAddressNamespace {
+        constructor(
+            [in] Int32 id);
+
+        interface ILocalSocketAddressNamespace;
     }
 
     } // namespace Net
