@@ -547,15 +547,6 @@ module
          */
         ToShortString(
             [in] IStringBuilder* sb);
-
-        /**
-         * Postconcats the matrix with the specified matrix.
-         * M' = other * M
-         */
-        PostConcat(
-            [in] IMatrix* other,
-            [out] Boolean* res);
-
     }
 
     } // namespace Graphics

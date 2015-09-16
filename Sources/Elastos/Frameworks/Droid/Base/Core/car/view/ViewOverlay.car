@@ -2,6 +2,7 @@
 module
 {
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
+    interface Elastos.Droid.View.IViewGroup;
 
     namespace Elastos {
     namespace Droid {
@@ -20,6 +21,7 @@ module
      * @see ViewGroup#getOverlay() ViewGroup.getOverlay()
      * @see ViewGroupOverlay
      */
+    [local]
     interface IViewOverlay {
 
         /**
@@ -52,7 +54,7 @@ module
             [out] Boolean* isEmpty);
 
         GetOverlayView(
-            [out] IViewGroup** group);
+            [out] IViewGroup** res);
     }
 
     } // namespace View
