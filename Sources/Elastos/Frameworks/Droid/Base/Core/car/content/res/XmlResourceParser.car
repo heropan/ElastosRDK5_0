@@ -27,9 +27,6 @@ module
          * longer value after this call.
          */
         Close();
-
-        GetXmlPath(
-            [out] String* path);
     }
 
     } // namespace Res

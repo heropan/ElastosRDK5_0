@@ -46,22 +46,11 @@ module
             [in] IInterface* data,
             [out] IUndoOwner** owner);
 
-        RemoveOwner(
-            [in] IUndoOwner* owner);
-
         SaveInstanceState(
             [out] IParcelable** p);
 
-        SaveOwner(
-            [in] IUndoOwner* owner,
-            [in] IParcel* p);
-
         RestoreInstanceState(
             [in] IParcelable* p);
-
-        RestoreOwner(
-            [in] IParcel* p,
-            [out] IUndoOwner** owner);
 
         SetHistorySize(
             [in] Int32 size);

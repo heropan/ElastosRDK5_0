@@ -1,12 +1,14 @@
 
 #include "ext/frameworkext.h"
 #include "content/res/CAssetFileDescriptor.h"
+#include "content/res/CAssetFileDescriptorAutoCloseInputStream.h"
+#include "content/res/CAssetFileDescriptorAutoCloseOutputStream.h"
+#include "os/CBundle.h"
 #include "os/CParcelFileDescriptor.h"
 #include "os/CParcelFileDescriptorAutoCloseInputStream.h"
 #include "os/CParcelFileDescriptorAutoCloseOutputStream.h"
-#include "content/res/CAssetFileDescriptorAutoCloseInputStream.h"
-#include "content/res/CAssetFileDescriptorAutoCloseOutputStream.h"
 
+using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::IParcelFileDescriptorAutoCloseInputStream;
 using Elastos::Droid::Os::IParcelFileDescriptorAutoCloseOutputStream;
 using Elastos::Droid::Os::CParcelFileDescriptor;
@@ -17,12 +19,14 @@ using Elastos::Droid::Content::Res::IAssetFileDescriptorAutoCloseOutputStream;
 using Elastos::Droid::Content::Res::CAssetFileDescriptorAutoCloseInputStream;
 using Elastos::Droid::Content::Res::CAssetFileDescriptorAutoCloseOutputStream;
 
+using Elastos::IO::EIID_ICloseable;
+
 namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Res {
 
-CAR_INTERFACE_IMPL(CAssetFileDescriptor, Object, IAssetFileDescriptor)
+CAR_INTERFACE_IMPL_3(CAssetFileDescriptor, Object, IAssetFileDescriptor, ICloseable, IParcelable)
 
 CAR_OBJECT_IMPL(CAssetFileDescriptor)
 
@@ -44,6 +48,15 @@ ECode CAssetFileDescriptor::constructor(
     /* [in] */ Int64 startOffset,
     /* [in] */ Int64 length)
 {
+    return constructor(fd, startOffset, length, NULL);
+}
+
+ECode CAssetFileDescriptor::constructor(
+    /* [in] */ IParcelFileDescriptor* fd,
+    /* [in] */ Int64 startOffset,
+    /* [in] */ Int64 length,
+    /* [in] */ IBundle* extras)
+{
     if (fd == NULL) {
         //throw new IllegalArgumentException("fd must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -56,6 +69,7 @@ ECode CAssetFileDescriptor::constructor(
     mFd = fd;
     mStartOffset = startOffset;
     mLength = length;
+    mExtras = extras;
     return NOERROR;
 }
 
@@ -80,6 +94,15 @@ ECode CAssetFileDescriptor::GetStartOffset(
 {
     VALIDATE_NOT_NULL(startOffset);
     *startOffset = mStartOffset;
+    return NOERROR;
+}
+
+ECode CAssetFileDescriptor::GetExtras(
+    /* [out] */ IBundle** extras)
+{
+    VALIDATE_NOT_NULL(extras)
+    *extras = mExtras;
+    REFCOUNT_ADD(*extras)
     return NOERROR;
 }
 
@@ -153,6 +176,15 @@ ECode CAssetFileDescriptor::ReadFromParcel(
     IParcelable::Probe(mFd)->ReadFromParcel(source);
     FAIL_RETURN(source->ReadInt64(&mStartOffset));
     FAIL_RETURN(source->ReadInt64(&mLength));
+    Int32 ival;
+    source->ReadInt32(&ival);
+    if (ival != 0) {
+        CBundle::New((IBundle**)&mExtras);
+        IParcelable::Probe(mExtras)->ReadFromParcel(source);
+    }
+    else {
+        mExtras = NULL;
+    }
     return NOERROR;
 }
 
@@ -162,6 +194,13 @@ ECode CAssetFileDescriptor::WriteToParcel(
     IParcelable::Probe(mFd)->WriteToParcel(dest);
     FAIL_RETURN(dest->WriteInt64(mStartOffset));
     FAIL_RETURN(dest->WriteInt64(mLength));
+    if (mExtras != NULL) {
+        dest->WriteInt32(1);
+        IParcelable::Probe(mExtras)->WriteToParcel(dest);
+    }
+    else {
+        dest->WriteInt32(0);
+    }
     return NOERROR;
 }
 

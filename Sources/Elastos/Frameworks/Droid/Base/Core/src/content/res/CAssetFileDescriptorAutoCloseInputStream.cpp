@@ -1,6 +1,7 @@
 
 #include "ext/frameworkext.h"
 #include "content/res/CAssetFileDescriptorAutoCloseInputStream.h"
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Os::IParcelFileDescriptor;
 
@@ -20,11 +21,10 @@ ECode CAssetFileDescriptorAutoCloseInputStream::constructor(
 {
     AutoPtr<IParcelFileDescriptor> pfd;
     fd->GetParcelFileDescriptor((IParcelFileDescriptor**)&pfd);
-    FAIL_RETURN(ParcelFileDescriptor::AutoCloseInputStream::Init(pfd));
+    FAIL_RETURN(ParcelFileDescriptor::AutoCloseInputStream::constructor(pfd));
 
-    Int64 startOffset = 0;
+    Int64 startOffset = 0, result;
     fd->GetStartOffset(&startOffset);
-    Int64 result;
     FAIL_RETURN(ParcelFileDescriptor::AutoCloseInputStream::Skip(startOffset, &result));
     fd->GetLength(&mRemaining);
     return NOERROR;
@@ -51,12 +51,12 @@ ECode CAssetFileDescriptorAutoCloseInputStream::Read(
 
     Int32 res = 0;
     AutoPtr< ArrayOf<Byte> > buffer = ArrayOf<Byte> ::Alloc(1);
-    FAIL_RETURN(ReadBytes(buffer, 0, 1, &res));
+    FAIL_RETURN(Read(buffer, 0, 1, &res));
     *result = res == -1 ? -1 : (*buffer)[0] & 0xff;
     return NOERROR;
 }
 
-ECode CAssetFileDescriptorAutoCloseInputStream::ReadBytes(
+ECode CAssetFileDescriptorAutoCloseInputStream::Read(
     /* [in] */ ArrayOf<Byte> * buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,
@@ -72,23 +72,21 @@ ECode CAssetFileDescriptorAutoCloseInputStream::ReadBytes(
         if (count > mRemaining) {
             count = (Int32)mRemaining;
         }
-        FAIL_RETURN(ParcelFileDescriptor::AutoCloseInputStream::ReadBytes(buffer, offset, count, result));
+        FAIL_RETURN(ParcelFileDescriptor::AutoCloseInputStream::Read(buffer, offset, count, result));
         if (*result >= 0) {
             mRemaining -= *result;
         }
         return NOERROR;
     }
 
-    return ParcelFileDescriptor::AutoCloseInputStream::ReadBytes(buffer, offset, count, result);
+    return ParcelFileDescriptor::AutoCloseInputStream::Read(buffer, offset, count, result);
 }
 
-ECode CAssetFileDescriptorAutoCloseInputStream::ReadBytes(
+ECode CAssetFileDescriptorAutoCloseInputStream::Read(
     /* [in] */ ArrayOf<Byte> * buffer,
     /* [out] */ Int32 * result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    return ReadBytes(buffer, 0, buffer->GetLength(), result);
+    return Read(buffer, 0, buffer->GetLength(), result);
 }
 
 ECode CAssetFileDescriptorAutoCloseInputStream::Skip(
@@ -139,43 +137,13 @@ ECode CAssetFileDescriptorAutoCloseInputStream::IsMarkSupported(
 
 ECode CAssetFileDescriptorAutoCloseInputStream::Reset()
 {
-    AutoLock lock(mLock);
+    AutoLock lock(this);
 
     if (mRemaining >= 0) {
         // Not supported.
         return NOERROR;
     }
     return ParcelFileDescriptor::AutoCloseInputStream::Reset();
-}
-
-ECode CAssetFileDescriptorAutoCloseInputStream::Close()
-{
-    return ParcelFileDescriptor::AutoCloseInputStream::Close();
-}
-
-ECode CAssetFileDescriptorAutoCloseInputStream::GetFD(
-    /* [out] */ IFileDescriptor** fd)
-{
-    VALIDATE_NOT_NULL(fd);
-
-    return ParcelFileDescriptor::AutoCloseInputStream::GetFD(fd);
-}
-
-PInterface CAssetFileDescriptorAutoCloseInputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CAssetFileDescriptorAutoCloseInputStream::Probe(riid);
-}
-
-ECode CAssetFileDescriptorAutoCloseInputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = ParcelFileDescriptor::AutoCloseInputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
-    return NOERROR;
 }
 
 }

@@ -1,21 +1,24 @@
 
 #include "content/res/XmlBlock.h"
-#include "content/res/CAssetManager.h"
+//#include "content/res/CAssetManager.h"
 #include "util/CTypedValue.h"
-#include "util/XmlUtils.h"
+//#include "internal/util/XmlUtils.h"
 #include <elastos/core/Math.h>
-#include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/Character.h>
-#include <androidfw/ResourceTypes.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <androidfw/ResourceTypes.h>
 
-using Elastos::Core::StringUtils;
-using Elastos::Core::Character;
-using Elastos::Utility::Logging::Slogger;
-using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Utility::CTypedValue;
-using Elastos::Droid::Utility::XmlUtils;
+//using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Droid::Utility::EIID_IAttributeSet;
+using Elastos::Core::StringUtils;
+using Elastos::Core::Character;
+using Elastos::IO::EIID_ICloseable;
+using Elastos::Utility::Logging::Slogger;
+using Org::Xmlpull::V1::EIID_IXmlPullParser;
 
 namespace Elastos {
 namespace Droid {
@@ -25,19 +28,17 @@ namespace Res {
 //=================================================================================
 // XmlBlock::Parser
 //=================================================================================
-CAR_INTERFACE_IMPL_2(XmlBlock::Parser, Object, IXmlResourceParser, IAttributeSet)
+CAR_INTERFACE_IMPL_4(XmlBlock::Parser, Object, IXmlResourceParser, IXmlPullParser, IAttributeSet, ICloseable)
 
 XmlBlock::Parser::Parser(
-    /* [in]  */ Int32 parseState,
-    /* [in]  */ XmlBlock* block,
-    /* [in] */ const String& path)
+    /* [in] */ Int64 parseState,
+    /* [in] */ XmlBlock* block)
     : mParseState(parseState)
     , mHost(block)
     , mStarted(FALSE)
     , mDecNextDepth(FALSE)
     , mDepth(0)
     , mEventType(START_DOCUMENT)
-    , mXmlPath(path)
 {
     assert(block);
     block->mOpenCount++;
@@ -158,7 +159,7 @@ ECode XmlBlock::Parser::GetPositionDescription(
     VALIDATE_NOT_NULL(des);
     Int32 line = 0;
     GetLineNumber(&line);
-    *des = String("Binary XML file line #") + StringUtils::Int32ToString(line);
+    *des = String("Binary XML file line #") + StringUtils::ToString(line);
     return NOERROR;
 }
 
@@ -237,8 +238,9 @@ ECode XmlBlock::Parser::GetTextCharacters(
     /* [out] */ ArrayOf<Int32>* holderForStartAndLength,
     /* [out, callee] */ ArrayOf<Char32>** textChars)
 {
-    VALIDATE_NOT_NULL(holderForStartAndLength);
-    VALIDATE_NOT_NULL(textChars);
+    VALIDATE_NOT_NULL(textChars)
+    *textChars = NULL;
+    VALIDATE_NOT_NULL(holderForStartAndLength)
 
     String txt;
     GetText(&txt);
@@ -280,14 +282,6 @@ ECode XmlBlock::Parser::GetName(
         return cs->ToString(name);
     }
 
-    return NOERROR;
-}
-
-ECode XmlBlock::Parser::GetXmlPath(
-    /* [out] */ String* path)
-{
-    VALIDATE_NOT_NULL(path);
-    *path = mXmlPath;
     return NOERROR;
 }
 
@@ -559,7 +553,7 @@ ECode XmlBlock::Parser::GetAttributeNameResource(
 ECode XmlBlock::Parser::GetAttributeListValue(
     /* [in] */ const String& ns,
     /* [in] */ const String& attribute,
-    /* [in] */ const ArrayOf<String>& options,
+    /* [in] */ ArrayOf<String>* options,
     /* [in] */ Int32 defaultValue,
     /* [out] */ Int32* value)
 {
@@ -655,7 +649,7 @@ ECode XmlBlock::Parser::GetAttributeFloatValue(
 
 ECode XmlBlock::Parser::GetAttributeListValue(
     /* [in] */ Int32 idx,
-    /* [in] */ const ArrayOf<String>& options,
+    /* [in] */ ArrayOf<String>* options,
     /* [in] */ Int32 defaultValue,
     /* [out] */ Int32* value)
 {
@@ -665,7 +659,8 @@ ECode XmlBlock::Parser::GetAttributeListValue(
     Int32 v = mHost->NativeGetAttributeData(mParseState, idx);
     if (t == ITypedValue::TYPE_STRING) {
         AutoPtr<ICharSequence> csq = mHost->mStrings->Get(v);
-        *value = XmlUtils::ConvertValueToList(csq, options, defaultValue);
+        assert(0 && "TODO");
+        // *value = XmlUtils::ConvertValueToList(csq, options, defaultValue);
         return NOERROR;
     }
     *value = v;
@@ -844,8 +839,8 @@ const Boolean XmlBlock::DEBUG = FALSE;
 
 XmlBlock::XmlBlock(
     /* [in] */ const ArrayOf<Byte>& data)
-    : mOpen(TRUE)
-    , mOpenCount(1)
+    : mOpenCount(1)
+    , mOpen(TRUE)
 {
     mNative = NativeCreate(data, 0, data.GetLength());
     mStrings = new StringBlock(NativeGetStringBlock(mNative), FALSE);
@@ -855,8 +850,8 @@ XmlBlock::XmlBlock(
     /* [in] */ const ArrayOf<Byte>& data,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 size)
-    : mOpen(TRUE)
-    , mOpenCount(1)
+    : mOpenCount(1)
+    , mOpen(TRUE)
 {
     mNative = NativeCreate(data, offset, size);
     mStrings = new StringBlock(NativeGetStringBlock(mNative), FALSE);
@@ -864,11 +859,11 @@ XmlBlock::XmlBlock(
 
 XmlBlock::XmlBlock(
     /* [in] */ IAssetManager* assets,
-    /* [in] */ Int32 xmlBlock)
+    /* [in] */ Int64 xmlBlock)
     : mAssets(assets)
     , mNative(xmlBlock)
-    , mOpen(TRUE)
     , mOpenCount(1)
+    , mOpen(TRUE)
 {
     mStrings = new StringBlock(NativeGetStringBlock(xmlBlock), FALSE);
 }
@@ -891,6 +886,7 @@ void XmlBlock::Close()
 
 void XmlBlock::DecOpenCountLocked()
 {
+    assert(0 && "TODO");
     mOpenCount--;
     if (mOpenCount == 0) {
         if (mNative != 0) {
@@ -899,24 +895,23 @@ void XmlBlock::DecOpenCountLocked()
         }
 
         if (mAssets != NULL) {
-            ((CAssetManager*)mAssets.Get())->XmlBlockGone(GetHashCode());
+            // ((CAssetManager*)mAssets.Get())->XmlBlockGone(GetHashCode());
             mAssets = NULL;
         }
     }
 }
 
-AutoPtr<IXmlResourceParser> XmlBlock::NewParser(
-    /* [in] */ const String& path)
+AutoPtr<IXmlResourceParser> XmlBlock::NewParser()
 {
     AutoLock lock(mSyncLock);
 
     if (mNative != 0) {
-        return (IXmlResourceParser*)new Parser(NativeCreateParseState(mNative), this, path);
+        return (IXmlResourceParser*)new Parser(NativeCreateParseState(mNative), this);
     }
     return NULL;
 }
 
-Int32 XmlBlock::NativeCreate(
+Int64 XmlBlock::NativeCreate(
     /* [in] */ const ArrayOf<Byte>& data,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 size)
@@ -928,26 +923,28 @@ Int32 XmlBlock::NativeCreate(
         return 0;
     }
 
-    android::ResXMLTree* osb = new android::ResXMLTree(data.GetPayload() + offset, size, TRUE);
-
+    android::ResXMLTree* osb = new android::ResXMLTree();
+    if (osb) {
+        osb->setTo(data.GetPayload() + offset, size, TRUE);
+    }
     if (osb == NULL || osb->getError() != android::NO_ERROR) {
         // doThrow(env, "java/lang/IllegalArgumentException");
         assert(0);
         return 0;
     }
 
-    return (Int32)osb;
+    return (Int64)osb;
 }
 
-Int32 XmlBlock::NativeGetStringBlock(
-    /* [in] */ Int32 xmlTree)
+Int64 XmlBlock::NativeGetStringBlock(
+    /* [in] */ Int64 xmlTree)
 {
     assert(xmlTree);
-    return (Int32)&((android::ResXMLTree*)xmlTree)->getStrings();
+    return (Int64)&((android::ResXMLTree*)xmlTree)->getStrings();
 }
 
-Int32 XmlBlock::NativeCreateParseState(
-    /* [in] */ Int32 xmlTree)
+Int64 XmlBlock::NativeCreateParseState(
+    /* [in] */ Int64 xmlTree)
 {
     assert(xmlTree);
 
@@ -957,11 +954,11 @@ Int32 XmlBlock::NativeCreateParseState(
 
     st->restart();
 
-    return (Int32)st;
+    return (Int64)st;
 }
 
 Int32 XmlBlock::NativeNext(
-    /* [in] */ Int32 parser)
+    /* [in] */ Int64 parser)
 {
     android::ResXMLParser* st = (android::ResXMLParser*)parser;
     if (st == NULL) {
@@ -994,7 +991,7 @@ bad:
 }
 
 Int32 XmlBlock::NativeGetNamespace(
-    /* [in] */ Int32 parser)
+    /* [in] */ Int64 parser)
 {
     android::ResXMLParser* st = (android::ResXMLParser*)parser;
     if (st == NULL) {
@@ -1005,7 +1002,7 @@ Int32 XmlBlock::NativeGetNamespace(
 }
 
 Int32 XmlBlock::NativeGetName(
-    /* [in] */ Int32 parser)
+    /* [in] */ Int64 parser)
 {
     android::ResXMLParser* st = (android::ResXMLParser*)parser;
     if (st == NULL) {
@@ -1016,7 +1013,7 @@ Int32 XmlBlock::NativeGetName(
 }
 
 Int32 XmlBlock::NativeGetText(
-    /* [in] */ Int32 parser)
+    /* [in] */ Int64 parser)
 {
     android::ResXMLParser* st = (android::ResXMLParser*)parser;
     if (st == NULL) {
@@ -1027,21 +1024,21 @@ Int32 XmlBlock::NativeGetText(
 }
 
 Int32 XmlBlock::NativeGetLineNumber(
-    /* [in] */ Int32 parser)
+    /* [in] */ Int64 parser)
 {
     assert(parser);
     return (Int32)((android::ResXMLParser*)parser)->getLineNumber();
 }
 
 Int32 XmlBlock::NativeGetAttributeCount(
-    /* [in] */ Int32 parser)
+    /* [in] */ Int64 parser)
 {
     assert(parser);
     return (Int32)((android::ResXMLParser*)parser)->getAttributeCount();
 }
 
 Int32 XmlBlock::NativeGetAttributeNamespace(
-    /* [in] */ Int32 parser,
+    /* [in] */ Int64 parser,
     /* [in] */ Int32 idx)
 {
     assert(parser);
@@ -1049,7 +1046,7 @@ Int32 XmlBlock::NativeGetAttributeNamespace(
 }
 
 Int32 XmlBlock::NativeGetAttributeName(
-    /* [in] */ Int32 parser,
+    /* [in] */ Int64 parser,
     /* [in] */ Int32 idx)
 {
     assert(parser);
@@ -1057,7 +1054,7 @@ Int32 XmlBlock::NativeGetAttributeName(
 }
 
 Int32 XmlBlock::NativeGetAttributeResource(
-    /* [in] */ Int32 parser,
+    /* [in] */ Int64 parser,
     /* [in] */ Int32 idx)
 {
     assert(parser);
@@ -1065,7 +1062,7 @@ Int32 XmlBlock::NativeGetAttributeResource(
 }
 
 Int32 XmlBlock::NativeGetAttributeDataType(
-    /* [in] */ Int32 parser,
+    /* [in] */ Int64 parser,
     /* [in] */ Int32 idx)
 {
     assert(parser);
@@ -1073,7 +1070,7 @@ Int32 XmlBlock::NativeGetAttributeDataType(
 }
 
 Int32 XmlBlock::NativeGetAttributeData(
-    /* [in] */ Int32 parser,
+    /* [in] */ Int64 parser,
     /* [in] */ Int32 idx)
 {
     assert(parser);
@@ -1081,7 +1078,7 @@ Int32 XmlBlock::NativeGetAttributeData(
 }
 
 Int32 XmlBlock::NativeGetAttributeStringValue(
-    /* [in] */ Int32 parser,
+    /* [in] */ Int64 parser,
     /* [in] */ Int32 idx)
 {
     assert(parser);
@@ -1089,7 +1086,7 @@ Int32 XmlBlock::NativeGetAttributeStringValue(
 }
 
 Int32 XmlBlock::NativeGetIdAttribute(
-    /* [in] */ Int32 parser)
+    /* [in] */ Int64 parser)
 {
     assert(parser);
     android::ResXMLParser* st = (android::ResXMLParser*)parser;
@@ -1098,7 +1095,7 @@ Int32 XmlBlock::NativeGetIdAttribute(
 }
 
 Int32 XmlBlock::NativeGetClassAttribute(
-    /* [in] */ Int32 parser)
+    /* [in] */ Int64 parser)
 {
     assert(parser);
     android::ResXMLParser* st = (android::ResXMLParser*)parser;
@@ -1107,7 +1104,7 @@ Int32 XmlBlock::NativeGetClassAttribute(
 }
 
 Int32 XmlBlock::NativeGetStyleAttribute(
-    /* [in] */ Int32 parser)
+    /* [in] */ Int64 parser)
 {
     assert(parser);
 
@@ -1128,7 +1125,7 @@ Int32 XmlBlock::NativeGetStyleAttribute(
 }
 
 Int32 XmlBlock::NativeGetAttributeIndex(
-    /* [in] */ Int32 parser,
+    /* [in] */ Int64 parser,
     /* [in] */ const String& ns,
     /* [in] */ const String& name)
 {
@@ -1139,22 +1136,25 @@ Int32 XmlBlock::NativeGetAttributeIndex(
 }
 
 void XmlBlock::NativeDestroyParseState(
-    /* [in] */ Int32 parser)
+    /* [in] */ Int64 parser)
 {
     assert(parser);
     delete (android::ResXMLParser*)parser;
 }
 
 void XmlBlock::NativeDestroy(
-    /* [in] */ Int32 xmlTree)
+    /* [in] */ Int64 xmlTree)
 {
     assert(xmlTree);
     delete (android::ResXMLTree*)xmlTree;
 }
 
-Int32 XmlBlock::GetHashCode()
+ECode XmlBlock::GetHashCode(
+    /* [out] */ Int32* hash)
 {
-    return (Int32)this;
+    VALIDATE_NOT_NULL(hash)
+    *hash = (Int32)this;
+    return NOERROR;
 }
 
 } // namespace Res

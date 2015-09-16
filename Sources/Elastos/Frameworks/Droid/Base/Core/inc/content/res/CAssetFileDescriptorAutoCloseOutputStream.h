@@ -32,29 +32,13 @@ public:
     CARAPI Write(
         /* [in] */ Int32 oneByte);
 
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer);
+    CARAPI Write(
+        /* [in] */ ArrayOf<Byte>* buffer);
 
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer,
+    CARAPI Write(
+        /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
-
-    CARAPI Flush();
-
-    CARAPI Close();
-
-    CARAPI CheckError(
-        /* [out] */ Boolean* hasError);
-
-    CARAPI GetFD(
-        /* [out] */ IFileDescriptor** fd);
-
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
 private:
     Int64 mRemaining;

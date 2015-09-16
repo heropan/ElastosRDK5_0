@@ -1,18 +1,22 @@
 
 #include "content/res/CTypedArray.h"
 #include "content/res/CAssetManager.h"
-#include "util/XmlUtils.h"
+//#include "internal/util/XmlUtils.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <stdlib.h>
 
+//using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Utility::XmlUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Res {
+
+CAR_INTERFACE_IMPL(CTypedArray, Object, ITypedArray)
+
+CAR_OBJECT_IMPL(CTypedArray)
 
 CTypedArray::CTypedArray()
     : mLength(0)
@@ -20,6 +24,9 @@ CTypedArray::CTypedArray()
 {
     ASSERT_SUCCEEDED(CTypedValue::NewByFriend((CTypedValue**)&mValue));
 }
+
+CTypedArray::~CTypedArray()
+{}
 
 ECode CTypedArray::Length(
     /* [out] */ Int32* len)
@@ -196,12 +203,13 @@ ECode CTypedArray::GetBoolean(
         return NOERROR;
     }
 
+    assert(0 && "TODO");
     AutoPtr<CTypedValue> v = mValue;
     if (GetValueAt(index, v)) {
         Slogger::W(CResources::TAG, "Converting to boolean: %p", v.Get());
         AutoPtr<ICharSequence> csq;
         v->CoerceToString((ICharSequence**)&csq);
-        *value = XmlUtils::ConvertValueToBoolean(csq, defValue);
+        // *value = XmlUtils::ConvertValueToBoolean(csq, defValue);
         return NOERROR;
     }
     Slogger::W(CResources::TAG, "getBoolean of bad type: 0x%08x", type);
@@ -228,12 +236,13 @@ ECode CTypedArray::GetInt32(
         return NOERROR;
     }
 
+    assert(0 && "TODO");
     AutoPtr<CTypedValue> v = mValue;
     if (GetValueAt(index, v)) {
         Slogger::W(CResources::TAG, "Converting to int: %p", v.Get());
         AutoPtr<ICharSequence> csq;
-        v->CoerceToString((ICharSequence**)&csq);
-        *value = XmlUtils::ConvertValueToInt32(csq, defValue);
+        v->CoerceToString((ICharSequence**)&csq);3
+        // *value = XmlUtils::ConvertValueToInt32(csq, defValue);
         return NOERROR;
     }
     Slogger::W(CResources::TAG, "getInt of bad type: 0x%08x", type);

@@ -35,13 +35,13 @@ public:
     CARAPI Read(
         /* [out] */ Int32* result);
 
-    CARAPI ReadBytes(
+    CARAPI Read(
         /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [out] */ Int32* result);
 
-    CARAPI ReadBytes(
+    CARAPI Read(
         /* [in] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32* result);
 
@@ -56,17 +56,6 @@ public:
         /* [out] */ Boolean* result);
 
     CARAPI Reset();
-
-    CARAPI Close();
-
-    CARAPI GetFD(
-        /* [out] */ IFileDescriptor** fd);
-
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
 private:
     Int64 mRemaining;

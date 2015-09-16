@@ -4,9 +4,12 @@
 
 #include "content/res/StringBlock.h"
 
+using Elastos::Droid::Utility::IAttributeSet;
+
 using Elastos::IO::IInputStream;
 using Elastos::IO::IReader;
-using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::IO::ICloseable;
+using Org::Xmlpull::V1::IXmlPullParser;
 
 namespace Elastos {
 namespace Droid {
@@ -22,18 +25,19 @@ class XmlBlock
     : public Object
 {
 public:
-    class Parser :
-        public Object,
-        public IXmlResourceParser,
-        public IAttributeSet
+    class Parser
+        : public Object
+        , public IXmlResourceParser
+        , public IXmlPullParser
+        , public IAttributeSet
+        , public ICloseable
     {
     public:
         CAR_INTERFACE_DECL()
 
         Parser(
-            /* [in] */ Int32 parseState,
-            /* [in] */ XmlBlock* block,
-            /* [in] */ const String& path);
+            /* [in] */ Int64 parseState,
+            /* [in] */ XmlBlock* block);
 
         virtual ~Parser();
 
@@ -117,9 +121,6 @@ public:
         CARAPI GetName(
             /* [out] */ String* name);
 
-        CARAPI GetXmlPath(
-            /* [out] */ String* name);
-
         CARAPI GetAttributeNamespace(
             /* [in] */ Int32 index,
             /* [out] */ String* attrNamespace);
@@ -179,7 +180,7 @@ public:
         CARAPI GetAttributeListValue(
             /* [in] */ const String& ns,
             /* [in] */ const String& attribute,
-            /* [in] */ const ArrayOf<String>& options,
+            /* [in] */ ArrayOf<String>* options,
             /* [in] */ Int32 defaultValue,
             /* [out] */ Int32* value);
 
@@ -215,7 +216,7 @@ public:
 
         CARAPI GetAttributeListValue(
             /* [in] */ Int32 idx,
-            /* [in] */ const ArrayOf<String>& options,
+            /* [in] */ ArrayOf<String>* options,
             /* [in] */ Int32 defaultValue,
             /* [out] */ Int32* value);
 
@@ -264,7 +265,7 @@ public:
             /* [out] */ ICharSequence** csq);
 
     public:
-        Int32 mParseState;
+        Int64 mParseState;
 
     private:
         AutoPtr<XmlBlock> mHost;
@@ -272,7 +273,6 @@ public:
         Boolean mDecNextDepth;
         Int32 mDepth;
         Int32 mEventType;
-        String mXmlPath;
     };
 
 public:
@@ -292,92 +292,92 @@ public:
      */
     XmlBlock(
         /* [in] */ IAssetManager* assets,
-        /* [in] */ Int32 xmlBlock);
+        /* [in] */ Int64 xmlBlock);
 
     ~XmlBlock();
 
     CARAPI_(void) Close();
 
-    CARAPI_(AutoPtr<IXmlResourceParser>) NewParser(
-        /* [in] */ const String& filename);
+    CARAPI_(AutoPtr<IXmlResourceParser>) NewParser();
 
-    CARAPI_(Int32) GetHashCode();
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hash);
 
     static CARAPI_(Int32) NativeNext(
-        /* [in] */ Int32 parser);
+        /* [in] */ Int64 parser);
 
     static CARAPI_(Int32) NativeGetName(
-        /* [in] */ Int32 parser);
+        /* [in] */ Int64 parser);
 
 private:
     CARAPI_(void) DecOpenCountLocked();
 
-    static CARAPI_(Int32) NativeCreate(
+    static CARAPI_(Int64) NativeCreate(
         /* [in] */ const ArrayOf<Byte>& data,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 size);
 
-    static CARAPI_(Int32) NativeGetStringBlock(
-        /* [in] */ Int32 xmlTree);
+    static CARAPI_(Int64) NativeGetStringBlock(
+        /* [in] */ Int64 xmlTree);
 
-    static CARAPI_(Int32) NativeCreateParseState(
-        /* [in] */ Int32 xmlTree);
+    static CARAPI_(Int64) NativeCreateParseState(
+        /* [in] */ Int64 xmlTree);
 
     static CARAPI_(Int32) NativeGetNamespace(
-        /* [in] */ Int32 parser);
+        /* [in] */ Int64 parser);
 
     static CARAPI_(Int32) NativeGetText(
-        /* [in] */ Int32 parser);
+        /* [in] */ Int64 parser);
 
     static CARAPI_(Int32) NativeGetLineNumber(
-        /* [in] */ Int32 parser);
+        /* [in] */ Int64 parser);
 
     static CARAPI_(Int32) NativeGetAttributeCount(
-        /* [in] */ Int32 parsere);
+        /* [in] */ Int64 parsere);
 
     static CARAPI_(Int32) NativeGetAttributeNamespace(
-        /* [in] */ Int32 parser,
+        /* [in] */ Int64 parser,
         /* [in] */ Int32 idx);
 
     static CARAPI_(Int32) NativeGetAttributeName(
-        /* [in] */ Int32 parser,
+        /* [in] */ Int64 parser,
         /* [in] */ Int32 idx);
 
     static CARAPI_(Int32) NativeGetAttributeResource(
-        /* [in] */ Int32 parser,
+        /* [in] */ Int64 parser,
         /* [in] */ Int32 idx);
 
     static CARAPI_(Int32) NativeGetAttributeDataType(
-        /* [in] */ Int32 parser,
+        /* [in] */ Int64 parser,
         /* [in] */ Int32 idx);
 
     static CARAPI_(Int32) NativeGetAttributeData(
-        /* [in] */ Int32 parser,
+        /* [in] */ Int64 parser,
         /* [in] */ Int32 idx);
 
     static CARAPI_(Int32) NativeGetAttributeStringValue(
-        /* [in] */ Int32 parser,
+        /* [in] */ Int64 parser,
         /* [in] */ Int32 idx);
 
     static CARAPI_(Int32) NativeGetIdAttribute(
-        /* [in] */ Int32 parser);
+        /* [in] */ Int64 parser);
 
     static CARAPI_(Int32) NativeGetClassAttribute(
-        /* [in] */ Int32 parser);
+        /* [in] */ Int64 parser);
 
     static CARAPI_(Int32) NativeGetStyleAttribute(
-        /* [in] */ Int32 parser);
+        /* [in] */ Int64 parser);
 
     static CARAPI_(Int32) NativeGetAttributeIndex(
-        /* [in] */ Int32 parser,
+        /* [in] */ Int64 parser,
         /* [in] */ const String& ns,
         /* [in] */ const String& name);
 
     static CARAPI_(void) NativeDestroyParseState(
-        /* [in] */ Int32 parser);
+        /* [in] */ Int64 parser);
 
     static CARAPI_(void) NativeDestroy(
-        /* [in] */ Int32 obj);
+        /* [in] */ Int64 obj);
 
 protected:
     AutoPtr<StringBlock> mStrings;
@@ -387,7 +387,7 @@ private:
     static const Boolean DEBUG;
 
     AutoPtr<IAssetManager> mAssets;
-    Int32 mNative;
+    Int64 mNative;
     Int32 mOpenCount;
     Object mSyncLock;
     Boolean mOpen;

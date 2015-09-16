@@ -177,6 +177,8 @@ public:
         /* [in] */ Int64 count,
         /* [out] */ Int64* number);
 
+    using InputStream::Read;
+
 protected:
     FileInputStream();
 

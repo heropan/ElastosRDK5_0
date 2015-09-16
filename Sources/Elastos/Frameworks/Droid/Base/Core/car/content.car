@@ -121,18 +121,26 @@ module
     merge("content/res/ObbInfo.car");
     merge("content/res/ObbScanner.car");
     merge("content/res/Resources.car");
+    merge("content/res/ResourcesKey.car");
     merge("content/res/TypedArray.car");
     merge("content/res/XmlResourceParser.car");
 
     using interface Elastos.Core.IComparable;
     using interface Elastos.Core.ICloneable;
     using interface Elastos.Core.ICharSequence;
+    using interface Elastos.IO.ICloseable;
+    using interface Elastos.IO.IFileInputStream;
+    using interface Elastos.IO.IFileOutputStream;
+    using interface Elastos.IO.IOutputStream;
+    using interface Elastos.IO.IInputStream;
+    using interface Elastos.IO.IFlushable;
     using interface Elastos.Utility.IObservable;
     using interface Org.Xml.Sax.IContentHandler;
 
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IParcelFileDescriptor;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Database.ICursor;
     interface Elastos.Droid.Database.IContentObserver;
@@ -1487,53 +1495,55 @@ module
 //     } // namespace Droid
 //     } // namespace Elastos
 
-//     interface Elastos.Droid.Os.IParcelFileDescriptor;
-//     interface Elastos.Droid.Content.Pm.IApplicationInfo;
-//     interface Elastos.Droid.Utility.IDisplayMetrics;
+    namespace Elastos {
+    namespace Droid {
+    namespace Content {
+    namespace Res{
 
-//     namespace Elastos {
-//     namespace Droid {
-//     namespace Content {
-//     namespace Res{
+    class CAssetFileDescriptor {
 
-//     class CAssetFileDescriptor {
-//         /**
-//          * Create a new AssetFileDescriptor from the given values.
-//          * @param fd The underlying file descriptor.
-//          * @param startOffset The location within the file that the asset starts.
-//          * This must be 0 if length is UNKNOWN_LENGTH.
-//          * @param length The number of bytes of the asset, or
-//          * {@link #UNKNOWN_LENGTH} if it extends to the end of the file.
-//          */
-//         constructor(
-//             [in] IParcelFileDescriptor* fd,
-//             [in] Int64 startOffset,
-//             [in] Int64 length);
+        constructor(
+            [in] IParcelFileDescriptor* fd,
+            [in] Int64 startOffset,
+            [in] Int64 length);
 
-//         /**
-//         * Create an empty surface, which will later be filled in by
-//         * readFromParcel().
-//         */
-//         constructor();
+        constructor(
+            [in] IParcelFileDescriptor* fd,
+            [in] Int64 startOffset,
+            [in] Int64 length,
+            [in] IBundle* extras);
 
-//         interface IAssetFileDescriptor;
-//         interface IParcelable;
-//     }
+        /**
+        * Create an empty surface, which will later be filled in by
+        * readFromParcel().
+        */
+        constructor();
 
-//     class CAssetFileDescriptorAutoCloseInputStream {
-//         constructor(
-//             [in] IAssetFileDescriptor* fd);
+        interface IAssetFileDescriptor;
+        interface IParcelable;
+        interface ICloseable;
+    }
 
-//         interface IAssetFileDescriptorAutoCloseInputStream;
-//     }
+    class CAssetFileDescriptorAutoCloseInputStream {
+        constructor(
+            [in] IAssetFileDescriptor* fd);
 
-//     class CAssetFileDescriptorAutoCloseOutputStream {
-//         constructor(
-//             [in] IAssetFileDescriptor* fd);
+        interface IAssetFileDescriptorAutoCloseInputStream;
+        interface IFileInputStream;
+        interface IInputStream;
+        interface ICloseable;
+    }
 
-//         interface IAssetFileDescriptorAutoCloseOutputStream;
-//         interface IFlushable;
-//     }
+    class CAssetFileDescriptorAutoCloseOutputStream {
+        constructor(
+            [in] IAssetFileDescriptor* fd);
+
+        interface IAssetFileDescriptorAutoCloseOutputStream;
+        interface IFileOutputStream;
+        interface IOutputStream;
+        interface ICloseable;
+        interface IFlushable;
+    }
 
 //     class CAssetManager {
 
@@ -1689,10 +1699,10 @@ module
 //         interface ITypedArray;
 //     }
 
-//     } // namespace Res
-//     } // namespace Content
-//     } // namepsace Droid
-//     } // namespace Elastos
+    } // namespace Res
+    } // namespace Content
+    } // namepsace Droid
+    } // namespace Elastos
 
 
 //     namespace Elastos {

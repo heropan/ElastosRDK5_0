@@ -10,6 +10,7 @@ using Elastos::Droid::Graphics::IPaintFontMetricsInt;
 using Elastos::Droid::Text::ITextPaint;
 using Elastos::Droid::Text::ISpannable;
 using Elastos::Droid::Text::Style::ILineHeightSpanWithDensity;
+using Elastos::Droid::Text::Style::ICharacterStyle;
 
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Etl::HashMap;
@@ -95,10 +96,10 @@ public:
      *  of this newly creating StringBlock.
      */
     StringBlock(
-        /* [in] */ Int32 obj,
+        /* [in] */ Handle64 obj,
         /* [in] */ Boolean useSparse);
 
-    ~StringBlock();
+    virtual ~StringBlock();
 
     CARAPI_(AutoPtr<ICharSequence>) Get(
         /* [in] */ Int32 idx);
@@ -124,30 +125,48 @@ private:
             /* [in] */ const String& full,
             /* [in] */ const String& attribute);
 
-    static CARAPI_(Int32) NativeCreate(
+    static CARAPI_(Handle64) NativeCreate(
         /* [in] */ const ArrayOf<Byte>& data,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 size);
 
     static CARAPI_(Int32) NativeGetSize(
-        /* [in] */ Int32 obj);
+        /* [in] */ Handle64 obj);
 
     static CARAPI_(String) NativeGetString(
-        /* [in] */ Int32 obj,
+        /* [in] */ Handle64 obj,
         /* [in] */ Int32 idx);
 
     static CARAPI_(AutoPtr< ArrayOf<Int32> >) NativeGetStyle(
-        /* [in] */ Int32 obj,
+        /* [in] */ Handle64 obj,
         /* [in] */ Int32 idx);
 
     static CARAPI_(void) NativeDestroy(
-        /* [in] */ Int32 obj);
+        /* [in] */ Handle64 obj);
+
+    /**
+     * Returns a span for the specified color string representation.
+     * If the specified string does not represent a color (null, empty, etc.)
+     * the color black is returned instead.
+     *
+     * @param color The color as a string. Can be a resource reference,
+     *              HTML hexadecimal, octal or a name
+     * @param foreground True if the color will be used as the foreground color,
+     *                   false otherwise
+     *
+     * @return A CharacterStyle
+     *
+     * @see Color#getHtmlColor(String)
+     */
+    static CARAPI_(AutoPtr<ICharacterStyle>) GetColor(
+        /* [in] */ const String& color,
+        /* [in] */ Boolean foreground);
 
 private:
     static const String TAG;
     static const Boolean sLocalLOGV;
 
-    Int32 mNative;
+    Handle64 mNative;
     AutoPtr< ArrayOf<ICharSequence*> > mStrings;
     AutoPtr< HashMap<Int32, AutoPtr<ICharSequence> > > mSparseStrings;
     AutoPtr<StyleIDs> mStyleIDs;

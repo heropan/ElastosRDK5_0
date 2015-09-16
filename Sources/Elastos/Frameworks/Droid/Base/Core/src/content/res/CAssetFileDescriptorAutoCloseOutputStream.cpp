@@ -22,7 +22,7 @@ ECode CAssetFileDescriptorAutoCloseOutputStream::constructor(
 {
     AutoPtr<IParcelFileDescriptor> pfd;
     fd->GetParcelFileDescriptor((IParcelFileDescriptor**)&pfd);
-    ParcelFileDescriptor::AutoCloseOutputStream::Init(pfd);
+    ParcelFileDescriptor::AutoCloseOutputStream::constructor(pfd);
 
     Int64 startOffset = 0;
     fd->GetStartOffset(&startOffset);
@@ -37,35 +37,35 @@ ECode CAssetFileDescriptorAutoCloseOutputStream::constructor(
     return NOERROR;
 }
 
-ECode CAssetFileDescriptorAutoCloseOutputStream::WriteBytes(
-    /* [in] */ const ArrayOf<Byte>& buffer,
+ECode CAssetFileDescriptorAutoCloseOutputStream::Write(
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
     if (mRemaining >= 0) {
         if (mRemaining == 0) return NOERROR;
         if (count > mRemaining) count = (Int32)mRemaining;
-        FAIL_RETURN(ParcelFileDescriptor::AutoCloseOutputStream::WriteBytes(buffer, offset, count));
+        FAIL_RETURN(ParcelFileDescriptor::AutoCloseOutputStream::Write(buffer, offset, count));
         mRemaining -= count;
         return NOERROR;
     }
 
-    return ParcelFileDescriptor::AutoCloseOutputStream::WriteBytes(buffer, offset, count);
+    return ParcelFileDescriptor::AutoCloseOutputStream::Write(buffer, offset, count);
 }
 
-ECode CAssetFileDescriptorAutoCloseOutputStream::WriteBytes(
-    /* [in] */ const ArrayOf<Byte>& buffer)
+ECode CAssetFileDescriptorAutoCloseOutputStream::Write(
+    /* [in] */ ArrayOf<Byte>* buffer)
 {
     if (mRemaining >= 0) {
         if (mRemaining == 0) return NOERROR;
-        Int32 count = buffer.GetLength();
+        Int32 count = buffer->GetLength();
         if (count > mRemaining) count = (Int32)mRemaining;
-        FAIL_RETURN(ParcelFileDescriptor::AutoCloseOutputStream::WriteBytes(buffer));
+        FAIL_RETURN(ParcelFileDescriptor::AutoCloseOutputStream::Write(buffer));
         mRemaining -= count;
         return NOERROR;
     }
 
-    return ParcelFileDescriptor::AutoCloseOutputStream::WriteBytes(buffer);
+    return ParcelFileDescriptor::AutoCloseOutputStream::Write(buffer);
 }
 
 ECode CAssetFileDescriptorAutoCloseOutputStream::Write(
@@ -79,49 +79,6 @@ ECode CAssetFileDescriptorAutoCloseOutputStream::Write(
     }
 
     return ParcelFileDescriptor::AutoCloseOutputStream::Write(oneByte);
-}
-
-ECode CAssetFileDescriptorAutoCloseOutputStream::Flush()
-{
-    return ParcelFileDescriptor::AutoCloseOutputStream::Flush();
-}
-
-ECode CAssetFileDescriptorAutoCloseOutputStream::Close()
-{
-    return ParcelFileDescriptor::AutoCloseOutputStream::Close();
-}
-
-ECode CAssetFileDescriptorAutoCloseOutputStream::CheckError(
-    /* [out] */ Boolean* hasError)
-{
-    VALIDATE_NOT_NULL(hasError);
-
-    return ParcelFileDescriptor::AutoCloseOutputStream::CheckError(hasError);
-}
-
-ECode CAssetFileDescriptorAutoCloseOutputStream::GetFD(
-    /* [out] */ IFileDescriptor** fd)
-{
-    VALIDATE_NOT_NULL(fd);
-
-    return ParcelFileDescriptor::AutoCloseOutputStream::GetFD(fd);
-}
-
-PInterface CAssetFileDescriptorAutoCloseOutputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CAssetFileDescriptorAutoCloseOutputStream::Probe(riid);
-}
-
-ECode CAssetFileDescriptorAutoCloseOutputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = ParcelFileDescriptor::AutoCloseOutputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
-    return NOERROR;
 }
 
 }

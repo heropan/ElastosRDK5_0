@@ -6,8 +6,8 @@
 #include "content/res/StringBlock.h"
 #include "content/res/XmlBlock.h"
 #include <elastos/io/InputStream.h>
-#include <elastos/core/Object.h>
 
+using Elastos::IO::ICloseable;
 using Elastos::IO::InputStream;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Utility::ITypedValue;
@@ -27,6 +27,7 @@ namespace Res {
 CarClass(CAssetManager)
     , public Object
     , public IAcssertManager
+    , public ICloseable
 {
 public:
     class AssetInputStream
@@ -34,9 +35,11 @@ public:
         , public IAssetInputStream
     {
     public:
+        CAR_INTERFACE_DECL()
+
         AssetInputStream(
             /* [in] */ CAssetManager* assetManager,
-            /* [in] */ Int32 asset);
+            /* [in] */ Int64 asset);
 
         ~AssetInputStream();
 
@@ -70,14 +73,21 @@ public:
             /* [in] */ Int64 count,
             /* [out] */ Int64* number);
 
+        /**
+         * @hide
+         */
         CARAPI GetAssetInt32(
             /* [out] */ Int32* value);
 
-        CARAPI GetLock(
-            /* [out] */ IInterface** lockobj);
+        /**
+         * @hide
+         */
+        CARAPI GetNativeAsset(
+            /* [out] */ Int64* value);
+
     private:
         AutoPtr<CAssetManager> mAssetManager;
-        Int32 mAsset;
+        Int64 mAsset;
         Int64 mLength;
         Int64 mMarkPos;
     };
@@ -89,7 +99,7 @@ public:
 
     CAssetManager();
 
-    ~CAssetManager();
+    virtual ~CAssetManager();
 
     CARAPI constructor();
 
@@ -162,7 +172,7 @@ public:
 
     /*package*/
     CARAPI_(void) MakeStringBlocks(
-        /* [in] */ Boolean copyFromSystem);
+        /* [in] */ ArrayOf<StringBlock*>* seed);
 
     /*package*/
     CARAPI_(AutoPtr<ICharSequence>) GetPooledString(
@@ -340,11 +350,11 @@ public:
 
     /*package*/
     CARAPI CreateTheme(
-        /* [out] */ Int32* res);
+        /* [out] */ Int64* res);
 
     /*package*/
     CARAPI ReleaseTheme(
-        /* [in] */ Int32 theme);
+        /* [in] */ Int64 theme);
 
     /**
      * Add an additional set of assets to the asset manager.  This can be
@@ -436,10 +446,21 @@ public:
 
     /*package*/
     static CARAPI ApplyStyle(
-        /* [in] */ Int32 theme,
+        /* [in] */ Int64 theme,
         /* [in] */ Int32 defStyleAttr,
         /* [in] */ Int32 defStyleRes,
-        /* [in] */ Int32 xmlParser,
+        /* [in] */ Int64 xmlParser,
+        /* [in] */ const ArrayOf<Int32>& inAttrs,
+        /* [in] */ ArrayOf<Int32>* outValues,
+        /* [in] */ ArrayOf<Int32>* outIndices,
+        /* [out] */ Boolean* result);
+
+    /*package*/
+    static CARAPI ResolveAttrs(
+        /* [in] */ Int64 theme,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes,
+        /* [in] */ const ArrayOf<Int32>& inValues,
         /* [in] */ const ArrayOf<Int32>& inAttrs,
         /* [in] */ ArrayOf<Int32>* outValues,
         /* [in] */ ArrayOf<Int32>* outIndices,
@@ -447,7 +468,7 @@ public:
 
     /*package*/
     CARAPI RetrieveAttributes(
-        /* [in] */ Int32 xmlParser,
+        /* [in] */ Int64 xmlParser,
         /* [in] */ const ArrayOf<Int32>& inAttrs,
         /* [in] */ ArrayOf<Int32>* outValues,
         /* [in] */ ArrayOf<Int32>* outIndices,
@@ -529,7 +550,7 @@ private:
     CARAPI OpenAsset(
         /* [in] */ const String& fileName,
         /* [in] */ Int32 accessMode,
-        /* [out] */ Int32* asset);
+        /* [out] */ Int64* asset);
 
     CARAPI_(AutoPtr<IParcelFileDescriptor>) OpenAssetFd(
         /* [in] */ const String& fileName,
@@ -539,7 +560,7 @@ private:
         /* [in] */ Int32 cookie,
         /* [in] */ const String& fileName,
         /* [in] */ Int32 accessMode,
-        /* [out] */ Int32* value);
+        /* [out] */ Int64* value);
 
     CARAPI_(AutoPtr<IParcelFileDescriptor>) OpenNonAssetFdNative(
         /* [in] */ Int32 cookie,
@@ -547,29 +568,29 @@ private:
         /* [in] */ ArrayOf<Int64>* outOffsets);
 
     CARAPI_(void) DestroyAsset(
-            /* [in] */ Int32 asset);
+            /* [in] */ Int64 asset);
 
     CARAPI ReadAssetChar(
-        /* [in] */ Int32 asset,
+        /* [in] */ Int64 asset,
         /* [out] */ Int32* value);
 
     CARAPI ReadAsset(
-        /* [in] */ Int32 asset,
+        /* [in] */ Int64 asset,
         /* [out] */ ArrayOf<Byte>* b,
         /* [in] */ Int32 off,
         /* [in] */ Int32 len,
         /* [out] */ Int32* number);
 
     CARAPI_(Int64) SeekAsset(
-        /* [in] */ Int32 asset,
+        /* [in] */ Int64 asset,
         /* [in] */ Int64 offset,
         /* [in] */ Int32 whence);
 
     CARAPI_(Int64) GetAssetLength(
-        /* [in] */ Int32 asset);
+        /* [in] */ Int64 asset);
 
     CARAPI_(Int64) GetAssetRemainingLength(
-        /* [in] */ Int32 asset);
+        /* [in] */ Int64 asset);
 
     /** Returns true if the resource was found, filling in mRetStringBlock and
      *  mRetData. */
@@ -591,7 +612,7 @@ private:
 
     CARAPI_(Int32) GetStringBlockCount();
 
-    CARAPI_(Int32) GetNativeStringBlock(
+    CARAPI_(Int64) GetNativeStringBlock(
         /* [in] */ Int32 block);
 
     CARAPI_(Int32) NewTheme();
@@ -602,7 +623,7 @@ private:
     CARAPI OpenXmlAssetNative(
         /* [in] */ Int32 cookie,
         /* [in] */ const String& fileName,
-        /* [out] */ Int32* result);
+        /* [out] */ Int64* result);
 
     CARAPI GetArrayStringResource(
         /* [in] */ Int32 arrayRes,
@@ -646,11 +667,10 @@ private:
     AutoPtr< ArrayOf<Int64> > mOffsets;
 
     // For communication with native code.
-    Int32 mObject;
-    Int32 mNObject;  // used by the NDK
+    Int64 mObject;
 
     AutoPtr< ArrayOf<StringBlock*> > mStringBlocks;
-    HashMap<Int32, String> mRefStacks;
+    HashMap<Int64, String> mRefStacks;
     Int32 mNumRefs;
     Boolean mOpen;
 //  HashMap< Int32, AutoPtr<IRuntimeException> > mRefStacks;

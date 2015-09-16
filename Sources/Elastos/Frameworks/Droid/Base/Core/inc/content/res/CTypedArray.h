@@ -26,9 +26,17 @@ namespace Res {
  * the positions of the attributes given to obtainStyledAttributes.
  */
 CarClass(CTypedArray)
+    , public Object
+    , public ITypedArray
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CTypedArray();
+
+    virtual ~CTypedArray();
 
     /**
      * Return the number of values in this array.

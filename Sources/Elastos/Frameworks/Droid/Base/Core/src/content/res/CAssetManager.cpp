@@ -6,20 +6,21 @@
 #include "util/CTypedValue.h"
 #include "os/CParcelFileDescriptor.h"
 #include <elastos/core/Math.h>
-#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <androidfw/AssetManager.h>
 #include <androidfw/ResourceTypes.h>
 
+using Elastos::Droid::Utility::CTypedValue;
+using Elastos::Droid::Os::CParcelFileDescriptor;
+
+using Elastos::Core::StringBuilder;
 using Elastos::IO::ICloseable;
 using Elastos::IO::EIID_ICloseable;
 using Elastos::IO::EIID_IInputStream;
-using Elastos::Core::StringBuilder;
 using Elastos::IO::CFileDescriptor;
 using Elastos::Utility::Logging::Slogger;
-
-using Elastos::Droid::Utility::CTypedValue;
-using Elastos::Droid::Os::CParcelFileDescriptor;
 
 namespace Elastos {
 namespace Droid {
@@ -30,7 +31,7 @@ CAR_INTERFACE_IMPL(CAssetManager::AssetInputStream, InputStream, IAssetInputStre
 
 CAssetManager::AssetInputStream::AssetInputStream(
     /* [in] */ CAssetManager* assetManager,
-    /* [in] */ Int32 asset)
+    /* [in] */ Int64 asset)
     : mAssetManager(assetManager)
     , mAsset(asset)
 {
@@ -46,17 +47,20 @@ CAssetManager::AssetInputStream::~AssetInputStream()
 ECode CAssetManager::AssetInputStream::GetAssetInt32(
     /* [out] */ Int32* value)
 {
-    VALIDATE_NOT_NULL(value);
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
 
-    *value = (Int32)mAsset;
+ECode CAssetManager::AssetInputStream::GetNativeAsset(
+    /* [out] */ Int64* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mAsset;
     return NOERROR;
 }
 
 ECode CAssetManager::AssetInputStream::Read(
     /* [out] */ Int32* value)
 {
-    VALIDATE_NOT_NULL(value);
-
     return mAssetManager->ReadAssetChar(mAsset, value);
 }
 
@@ -94,23 +98,18 @@ ECode CAssetManager::AssetInputStream::Close()
 ECode CAssetManager::AssetInputStream::Mark(
     /* [in] */ Int32 readLimit)
 {
-    mMarkPos = mAssetManager->SeekAsset(mAsset, 0, 0);
-    return NOERROR;
+    return mMarkPos = mAssetManager->SeekAsset(mAsset, 0, 0);
 }
 
 ECode CAssetManager::AssetInputStream::Reset()
 {
-    mAssetManager->SeekAsset(mAsset, mMarkPos, -1);
-    return NOERROR;
+    return mAssetManager->SeekAsset(mAsset, mMarkPos, -1);
 }
 
 ECode CAssetManager::AssetInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buffer);
-    VALIDATE_NOT_NULL(number);
-
     return mAssetManager->ReadAsset(mAsset, buffer,
         0, buffer->GetLength(), number);
 }
@@ -121,9 +120,6 @@ ECode CAssetManager::AssetInputStream::ReadBytes(
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buffer);
-    VALIDATE_NOT_NULL(number);
-
     return mAssetManager->ReadAsset(mAsset, buffer,
             offset, length, number);
 }
@@ -145,17 +141,6 @@ ECode CAssetManager::AssetInputStream::Skip(
     return NOERROR;
 }
 
-ECode CAssetManager::AssetInputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = InputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
-    return NOERROR;
-}
-
 AutoPtr<CAssetManager> CAssetManager::sSystem;
 const Int32 CAssetManager::STYLE_NUM_ENTRIES;
 const Int32 CAssetManager::STYLE_TYPE;
@@ -170,7 +155,7 @@ const Boolean CAssetManager::LocalLOGV = FALSE || FALSE;
 const Boolean CAssetManager::DEBUG_REFS = TRUE;
 Object CAssetManager::sSync;
 
-CAR_INTERFACE_IMPL(CAssetManager, Object, IAssetManager)
+CAR_INTERFACE_IMPL_2(CAssetManager, Object, IAssetManager, ICloseable)
 
 CAR_OBJECT_IMPL(CAssetManager)
 
@@ -209,7 +194,7 @@ ECode CAssetManager::constructor()
         IncRefsLocked(GetHashCode(), "AssetManager::constructor()");
     }
 
-    Init();
+    Init(FALSE);
     if (LocalLOGV) Slogger::V(TAG, "New asset manager: %p", this);
     return EnsureSystemAssets();
 }
@@ -224,7 +209,7 @@ ECode CAssetManager::constructor(
         IncRefsLocked(GetHashCode(), "AssetManager::constructor()");
     }
 
-    Init();
+    Init(TRUE);
     if (LocalLOGV) Slogger::V(TAG, "New asset manager: %p", this);
     return NOERROR;
 }
@@ -236,7 +221,7 @@ ECode CAssetManager::EnsureSystemAssets()
     if (sSystem == NULL) {
         AutoPtr<CAssetManager> system;
         FAIL_RETURN(CAssetManager::NewByFriend(TRUE, (CAssetManager**)&system));
-        system->MakeStringBlocks(FALSE);
+        system->MakeStringBlocks(NULL);
         sSystem = system;
 
         if (LocalLOGV) Slogger::V(TAG, "EnsureSystemAssets: %p", system->Probe(EIID_IAssetManager));
@@ -360,7 +345,7 @@ AutoPtr< ArrayOf<ICharSequence*> > CAssetManager::GetResourceTextArray(
 }
 
 Boolean CAssetManager::GetThemeValue(
-    /* [in] */ Int32 theme,
+    /* [in] */ Int64 theme,
     /* [in] */ Int32 ident,
     /* [in] */ ITypedValue* outValue,
     /* [in] */ Boolean resolveRefs)
@@ -393,15 +378,15 @@ void CAssetManager::EnsureStringBlocks()
         AutoLock lock(_m_syncLock);
 
         if (mStringBlocks == NULL) {
-            MakeStringBlocks(TRUE);
+            MakeStringBlocks(sSystem->mStringBlocks);
         }
     }
 }
 
 void CAssetManager::MakeStringBlocks(
-    /* [in] */ Boolean copyFromSystem)
+    /* [in] */ ArrayOf<StringBlock*>* seed)
 {
-    const Int32 sysNum = copyFromSystem ? sSystem->mStringBlocks->GetLength() : 0;
+    const Int32 seedNum = seed ? seed->GetLength() : 0;
     Int32 num = GetStringBlockCount();
     mStringBlocks = ArrayOf<StringBlock*>::Alloc(num);
     if (LocalLOGV) {
@@ -410,8 +395,8 @@ void CAssetManager::MakeStringBlocks(
     }
 
     for (Int32 i = 0; i < num; i++) {
-        if (i < sysNum) {
-            mStringBlocks->Set(i, (*sSystem->mStringBlocks)[i]);
+        if (i < seedNum) {
+            mStringBlocks->Set(i, (*seed)[i]);
         }
         else {
             AutoPtr<StringBlock> block = new StringBlock(GetNativeStringBlock(i), TRUE);
@@ -421,10 +406,11 @@ void CAssetManager::MakeStringBlocks(
 }
 
 AutoPtr<ICharSequence> CAssetManager::GetPooledString(
-    /* [in] */ Int32 block,
+    /* [in] */ Int32 cookie,
     /* [in] */ Int32 id)
 {
-    return (*mStringBlocks)[block - 1]->Get(id);
+    // Cookies map to string blocks starting at 1.
+    return (*mStringBlocks)[cookie - 1]->Get(id);
 }
 
 ECode CAssetManager::Open(
@@ -449,7 +435,7 @@ ECode CAssetManager::Open(
         return E_RUNTIME_EXCEPTION;
     }
 
-    Int32 asset;
+    Int64 asset;
     ECode ec = OpenAsset(fileName, accessMode, &asset);
     if (SUCCEEDED(ec) && asset != 0) {
         *stream = new AssetInputStream(this, asset);
@@ -566,7 +552,7 @@ ECode CAssetManager::OpenNonAsset(
             return E_RUNTIME_EXCEPTION;
         }
 
-        Int32 asset;
+        Int64 asset;
         FAIL_RETURN(OpenNonAssetNative(cookie, fileName, accessMode, &asset));
         if (asset != 0) {
             *stream = new AssetInputStream(this, asset);
@@ -630,23 +616,7 @@ ECode CAssetManager::OpenXmlResourceParser(
     AutoPtr<XmlBlock> block;
     FAIL_RETURN(OpenXmlBlockAsset(cookie, fileName, (XmlBlock**)&block));
 
-    AutoPtr<IXmlResourceParser> rp;
-    String name;
-    ECode ec = GetCookieName(cookie, &name);
-    if (FAILED(ec)) {
-        name = NULL;
-    }
-
-    if (!name.IsNull()) {
-        StringBuilder sb(name);
-        sb += IResources::path_separate;
-        sb += fileName;
-        rp = block->NewParser(sb.ToString());
-    }
-    else {
-        rp = block->NewParser(fileName);
-    }
-
+    AutoPtr<IXmlResourceParser> rp = block->NewParser();
     block->Close();
     *parser = rp;
     REFCOUNT_ADD(*parser);
@@ -675,7 +645,7 @@ ECode CAssetManager::OpenXmlBlockAsset(
         return E_RUNTIME_EXCEPTION;
     }
 
-    Int32 xmlBlock;
+    Int64 xmlBlock;
     FAIL_RETURN(OpenXmlAssetNative(cookie, fileName, &xmlBlock));
     if (xmlBlock != 0) {
         *res = new XmlBlock(this, xmlBlock);
@@ -696,7 +666,7 @@ void CAssetManager::XmlBlockGone(
 }
 
 ECode CAssetManager::CreateTheme(
-    /* [out] */ Int32* res)
+    /* [out] */ Int64* res)
 {
     VALIDATE_NOT_NULL(res);
     *res = 0;
@@ -716,7 +686,7 @@ ECode CAssetManager::CreateTheme(
 }
 
 ECode CAssetManager::ReleaseTheme(
-    /* [in] */ Int32 theme)
+    /* [in] */ Int64 theme)
 {
     AutoLock lock(_m_syncLock);
 
@@ -748,21 +718,23 @@ ECode CAssetManager::AddAssetPath(
     /* [out] */ Int32* cookie)
 {
     VALIDATE_NOT_NULL(cookie);
+    *cookie = 0;
+
+    AutoLock lock(this);
 
     if (path.IsNull()) {
-        *cookie = 0;
         return NOERROR;
     }
 
     android::AssetManager* am = (android::AssetManager*)mObject;
     if (am == NULL) {
-        *cookie = 0;
         return NOERROR;
     }
 
     void* c = NULL;
     bool res = am->addAssetPath(android::String8(path.string()), &c);
 
+    MakeStringBlocks(mStringBlocks);
     *cookie = (res) ? (Int32)c : 0;
     return NOERROR;
 }
@@ -1047,7 +1019,7 @@ String CAssetManager::GetResourceEntryName(
 ECode CAssetManager::OpenAsset(
     /* [in] */ const String& fileName,
     /* [in] */ Int32 accessMode,
-    /* [out] */ Int32* asset)
+    /* [out] */ Int64* asset)
 {
     VALIDATE_NOT_NULL(asset);
     android::AssetManager* am = (android::AssetManager*)mObject;
@@ -1145,7 +1117,7 @@ ECode CAssetManager::OpenNonAssetNative(
     /* [in] */ Int32 cookie,
     /* [in] */ const String& fileName,
     /* [in] */ Int32 accessMode,
-    /* [out] */ Int32* value)
+    /* [out] */ Int64* value)
 {
     android::AssetManager* am = (android::AssetManager*)mObject;
     if (am == NULL) {
@@ -1214,7 +1186,7 @@ AutoPtr<IParcelFileDescriptor> CAssetManager::OpenNonAssetFdNative(
 }
 
 void CAssetManager::DestroyAsset(
-    /* [in] */ Int32 asset)
+    /* [in] */ Int64 asset)
 {
     android::Asset* a = (android::Asset*)asset;
 
@@ -1229,7 +1201,7 @@ void CAssetManager::DestroyAsset(
 }
 
 ECode CAssetManager::ReadAssetChar(
-    /* [in] */ Int32 asset,
+    /* [in] */ Int64 asset,
     /* [out] */ Int32* value)
 {
     android::Asset* a = (android::Asset*)asset;
@@ -1246,7 +1218,7 @@ ECode CAssetManager::ReadAssetChar(
 }
 
 ECode CAssetManager::ReadAsset(
-    /* [in] */ Int32 asset,
+    /* [in] */ Int64 asset,
     /* [in] */ ArrayOf<Byte>* b,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len,
@@ -1283,7 +1255,7 @@ ECode CAssetManager::ReadAsset(
 }
 
 Int64 CAssetManager::SeekAsset(
-    /* [in] */ Int32 asset,
+    /* [in] */ Int64 asset,
     /* [in] */ Int64 offset,
     /* [in] */ Int32 whence)
 {
@@ -1299,7 +1271,7 @@ Int64 CAssetManager::SeekAsset(
 }
 
 Int64 CAssetManager::GetAssetLength(
-    /* [in] */ Int32 asset)
+    /* [in] */ Int64 asset)
 {
     android::Asset* a = (android::Asset*)asset;
 
@@ -1312,7 +1284,7 @@ Int64 CAssetManager::GetAssetLength(
 }
 
 Int64 CAssetManager::GetAssetRemainingLength(
-    /* [in] */ Int32 asset)
+    /* [in] */ Int64 asset)
 {
     android::Asset* a = (android::Asset*)asset;
 
@@ -1436,23 +1408,24 @@ ECode CAssetManager::LoadResourceBagValue(
 }
 
 ECode CAssetManager::ApplyStyle(
-    /* [in] */ Int32 themeToken,
+    /* [in] */ Int64 themeToken,
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes,
-    /* [in] */ Int32 xmlParserToken,
+    /* [in] */ Int64 xmlParserToken,
     /* [in] */ const ArrayOf<Int32>& inAttrs,
     /* [in] */ ArrayOf<Int32>* outValues,
     /* [in] */ ArrayOf<Int32>* outIndices,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     if (themeToken == 0) {
         // jniThrowNullPointerException(env, "theme token");
-        *result = FALSE;
         return E_NULL_POINTER_EXCEPTION;
     }
     if (outValues == NULL) {
         // jniThrowNullPointerException(env, "out values");
-        *result = FALSE;
         return E_NULL_POINTER_EXCEPTION;
     }
 
@@ -1683,13 +1656,209 @@ ECode CAssetManager::ApplyStyle(
     return NOERROR;
 }
 
+ECode CAssetManager::ResolveAttrs(
+    /* [in] */ Int64 themeToken,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes,
+    /* [in] */ const ArrayOf<Int32>& inValues,
+    /* [in] */ const ArrayOf<Int32>& attrs,
+    /* [in] */ ArrayOf<Int32>* outValues,
+    /* [in] */ ArrayOf<Int32>* outIndices,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    if (themeToken == 0) {
+        // jniThrowNullPointerException(env, "theme token");
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    if (attrs == NULL) {
+        // jniThrowNullPointerException(env, "attrs");
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    if (outValues == NULL) {
+        // jniThrowNullPointerException(env, "out values");
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+//     DEBUG_STYLES(ALOGI("APPLY STYLE: theme=0x%x defStyleAttr=0x%x defStyleRes=0x%x",
+//         themeToken, defStyleAttr, defStyleRes));
+
+    ResTable::Theme* theme = reinterpret_cast<ResTable::Theme*>(themeToken);
+    const ResTable& res = theme->getResTable();
+    ResTable_config config;
+    Res_value value;
+
+    const Int32 NI = attrs.GetLength();
+    const Int32 NV = outValues->GetLength();
+    if (NV < (NI*STYLE_NUM_ENTRIES)) {
+        // jniThrowException(env, "java/lang/IndexOutOfBoundsException", "out values too small");
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    Int32* src = attrs.GetPayload();
+    if (src == NULL) {
+        return NOERROR;
+    }
+
+    Int32* srcValues = inValues.GetPayload();
+    const Int32 NSV = srcValues == NULL ? 0 : inValues.GetLength();
+
+    Int32* baseDest = outValues->GetPayload();
+    Int32* dest = baseDest;
+    if (dest == NULL) {
+        return NOERROR;
+    }
+
+    Int32* indices = NULL;
+    Int32 indicesIdx = 0;
+    if (outIndices != NULL) {
+        if (outIndices->GetLength() > NI) {
+            indices = outIndices->GetPayload();
+        }
+    }
+
+    // Load default style from attribute, if specified...
+    uint32_t defStyleBagTypeSetFlags = 0;
+    if (defStyleAttr != 0) {
+        Res_value value;
+        if (theme->getAttribute(defStyleAttr, &value, &defStyleBagTypeSetFlags) >= 0) {
+            if (value.dataType == Res_value::TYPE_REFERENCE) {
+                defStyleRes = value.data;
+            }
+        }
+    }
+
+    // Now lock down the resource object and start pulling stuff from it.
+    res.lock();
+
+    // Retrieve the default style bag, if requested.
+    const ResTable::bag_entry* defStyleEnt = NULL;
+    uint32_t defStyleTypeSetFlags = 0;
+    ssize_t bagOff = defStyleRes != 0
+            ? res.getBagLocked(defStyleRes, &defStyleEnt, &defStyleTypeSetFlags) : -1;
+    defStyleTypeSetFlags |= defStyleBagTypeSetFlags;
+    const ResTable::bag_entry* endDefStyleEnt = defStyleEnt +
+        (bagOff >= 0 ? bagOff : 0);;
+
+    // Now iterate through all of the attributes that the client has requested,
+    // filling in each with whatever data we can find.
+    ssize_t block = 0;
+    uint32_t typeSetFlags;
+    for (Int32 ii=0; ii<NI; ii++) {
+        const uint32_t curIdent = (uint32_t)src[ii];
+
+//         DEBUG_STYLES(ALOGI("RETRIEVING ATTR 0x%08x...", curIdent));
+
+        // Try to find a value for this attribute...  we prioritize values
+        // coming from, first XML attributes, then XML style, then default
+        // style, and finally the theme.
+        value.dataType = Res_value::TYPE_NULL;
+        value.data = 0;
+        typeSetFlags = 0;
+        config.density = 0;
+
+        // Retrieve the current input value if available.
+        if (NSV > 0 && srcValues[ii] != 0) {
+            block = -1;
+            value.dataType = Res_value::TYPE_ATTRIBUTE;
+            value.data = srcValues[ii];
+            // DEBUG_STYLES(ALOGI("-> From values: type=0x%x, data=0x%08x",
+            //         value.dataType, value.data));
+        }
+
+        // Skip through the default style values until the end or the next possible match.
+        while (defStyleEnt < endDefStyleEnt && curIdent > defStyleEnt->map.name.ident) {
+            defStyleEnt++;
+        }
+        // Retrieve the current default style attribute if it matches, and step to next.
+        if (defStyleEnt < endDefStyleEnt && curIdent == defStyleEnt->map.name.ident) {
+            if (value.dataType == Res_value::TYPE_NULL) {
+                block = defStyleEnt->stringBlock;
+                typeSetFlags = defStyleTypeSetFlags;
+                value = defStyleEnt->map.value;
+                DEBUG_STYLES(ALOGI("-> From def style: type=0x%x, data=0x%08x",
+                        value.dataType, value.data));
+            }
+            defStyleEnt++;
+        }
+
+        uint32_t resid = 0;
+        if (value.dataType != Res_value::TYPE_NULL) {
+            // Take care of resolving the found resource to its final value.
+            ssize_t newBlock = theme->resolveAttributeReference(&value, block,
+                    &resid, &typeSetFlags, &config);
+            if (newBlock >= 0) block = newBlock;
+            // DEBUG_STYLES(ALOGI("-> Resolved attr: type=0x%x, data=0x%08x",
+            //         value.dataType, value.data));
+        } else {
+            // If we still don't have a value for this attribute, try to find
+            // it in the theme!
+            ssize_t newBlock = theme->getAttribute(curIdent, &value, &typeSetFlags);
+            if (newBlock >= 0) {
+                // DEBUG_STYLES(ALOGI("-> From theme: type=0x%x, data=0x%08x",
+                //         value.dataType, value.data));
+                newBlock = res.resolveReference(&value, block, &resid,
+                        &typeSetFlags, &config);
+#if THROW_ON_BAD_ID
+                if (newBlock == BAD_INDEX) {
+                    // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
+                    return E_ILLEGAL_STATE_EXCEPTION;
+                }
+#endif
+                if (newBlock >= 0) block = newBlock;
+                // DEBUG_STYLES(ALOGI("-> Resolved theme: type=0x%x, data=0x%08x",
+                //         value.dataType, value.data));
+            }
+        }
+
+        // Deal with the special @null value -- it turns back to TYPE_NULL.
+        if (value.dataType == Res_value::TYPE_REFERENCE && value.data == 0) {
+            // DEBUG_STYLES(ALOGI("-> Setting to @null!"));
+            value.dataType = Res_value::TYPE_NULL;
+            block = -1;
+        }
+
+//         DEBUG_STYLES(ALOGI("Attribute 0x%08x: type=0x%x, data=0x%08x",
+//                 curIdent, value.dataType, value.data));
+
+        // Write the final value back to Java.
+        dest[STYLE_TYPE] = value.dataType;
+        dest[STYLE_DATA] = value.data;
+        dest[STYLE_ASSET_COOKIE] =
+            block != -1 ? reinterpret_cast<jint>(res.getTableCookie(block)) : (jint)-1;
+        dest[STYLE_RESOURCE_ID] = resid;
+        dest[STYLE_CHANGING_CONFIGURATIONS] = typeSetFlags;
+        dest[STYLE_DENSITY] = config.density;
+
+        if (indices != NULL && value.dataType != Res_value::TYPE_NULL) {
+            indicesIdx++;
+            indices[indicesIdx] = ii;
+        }
+
+        dest += STYLE_NUM_ENTRIES;
+    }
+
+    res.unlock();
+
+    if (indices != NULL) {
+        indices[0] = indicesIdx;
+    }
+
+    return NOERROR;
+}
+
 ECode CAssetManager::RetrieveAttributes(
-    /* [in] */ Int32 xmlParserToken,
+    /* [in] */ Int64 xmlParserToken,
     /* [in] */ const ArrayOf<Int32>& inAttrs,
     /* [in] */ ArrayOf<Int32>* outValues,
     /* [in] */ ArrayOf<Int32>* outIndices,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     if (xmlParserToken == 0) {
         // jniThrowNullPointerException(env, "xmlParserToken");
         *result = FALSE;
@@ -1946,7 +2115,7 @@ Int32 CAssetManager::GetStringBlockCount()
     return am->getResources().getTableCount();
 }
 
-Int32 CAssetManager::GetNativeStringBlock(
+Int64 CAssetManager::GetNativeStringBlock(
     /* [in] */ Int32 block)
 {
     android::AssetManager* am = (android::AssetManager*)mObject;

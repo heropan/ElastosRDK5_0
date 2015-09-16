@@ -1,7 +1,8 @@
 
 #include "content/res/StringBlock.h"
-#include "graphics/CPaint.h"
-#include "graphics/CRect.h"
+//#include "graphics/CPaint.h"
+//#include "graphics/CRect.h"
+//#include "graphics/CColor.h"
 // #include "text/CStyleSpan.h"
 // #include "text/CSpannableString.h"
 // #include "text/CUnderlineSpan.h"
@@ -17,23 +18,26 @@
 // #include "text/CURLSpan.h"
 // #include "text/CAnnotation.h"
 // #include "utils/XmlUtils.h"
-#include <elastos/core/Math.h>
 // #include <string.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <androidfw/ResourceTypes.h>
-#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::CString;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Graphics::CPaint;
+//using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Graphics::IPaint;
-using Elastos::Droid::Graphics::CRect;
+//using Elastos::Droid::Graphics::CRect;
+//using Elastos::Droid::Graphics::CColor;
 using Elastos::Droid::Graphics::IRect;
 // using Elastos::Droid::Text::TextUtilsTruncateAt;
 // using Elastos::Droid::Text::CAnnotation;
 // using Elastos::Droid::Text::IAnnotation;
 // using Elastos::Droid::Text::ISpanned;
+using Elastos::Droid::Text::Style::EIID_ILineHeightSpanWithDensity;
 
 namespace Elastos {
 namespace Droid {
@@ -64,19 +68,6 @@ StringBlock::Height::Height(
     : mSize(size)
 {}
 
-PInterface StringBlock::Height::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(ILineHeightSpanWithDensity*)this;
-    }
-    else if (riid == Elastos::Droid::Text::Style::EIID_ILineHeightSpanWithDensity) {
-        return (ILineHeightSpanWithDensity*)this;
-    }
-
-    return NULL;
-}
-
 ECode StringBlock::Height::ChooseHeight(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
@@ -93,9 +84,8 @@ ECode StringBlock::Height::ChooseHeight(
         size *= density;
     }
 
-    Int32 bottom;
+    Int32 bottom, top;
     fm->GetBottom(&bottom);
-    Int32 top;
     fm->GetTop(&top);
     if (bottom - top < size) {
         fm->SetTop(bottom - size);
@@ -111,17 +101,16 @@ ECode StringBlock::Height::ChooseHeight(
              * so that we won't reduce the ascent to less than
              * that unless we absolutely have to.
              */
-
             AutoPtr<IPaint> p;
-            CPaint::New((IPaint**)&p);
+            // CPaint::New((IPaint**)&p);
             p->SetTextSize(100);
             AutoPtr<IRect> r;
-            CRect::New((IRect**)&r);
+            // CRect::New((IRect**)&r);
             p->GetTextBounds(String("ABCDEFG"), 0, 7, r);
 
             Float paintAscent;
             p->Ascent(&paintAscent);
-            sProportion = ((CRect*)r.Get())->mTop / paintAscent;
+            // sProportion = ((CRect*)r.Get())->mTop / paintAscent;
         }
 
         fm->GetTop(&top);
@@ -187,7 +176,7 @@ StringBlock::StringBlock(
 }
 
 StringBlock::StringBlock(
-    /* [in] */ Int32 obj,
+    /* [in] */ Handle64 obj,
     /* [in] */ Boolean useSparse)
     : mNative(obj)
     , mUseSparse(useSparse)
@@ -330,10 +319,7 @@ AutoPtr<ICharSequence> StringBlock::ApplyStyles(
         return cs;
     }
 
-    //TODO:
-    //
-    return NULL;
-
+    assert(0 && "TODO");
     AutoPtr<ISpannable> buffer;
     // CSpannableString(str, (ISpannable**)&buffer);
     Int32 i=0;
@@ -427,7 +413,7 @@ AutoPtr<ICharSequence> StringBlock::ApplyStyles(
                 if (!sub.IsNull()) {
                     Int32 size = StringUtils::ParseInt32(sub);
                     AutoPtr<Height> h = new Height(size);
-                    AddParagraphSpan(buffer, h, (*style)[i + 1], (*style)[i + 2] + 1);
+                    AddParagraphSpan(buffer, TO_IINTERFACE(h), (*style)[i + 1], (*style)[i + 2] + 1);
                 }
 
                 sub = Subtag(tag, String(";size="));
@@ -443,21 +429,37 @@ AutoPtr<ICharSequence> StringBlock::ApplyStyles(
                 sub = Subtag(tag, String(";fgcolor="));
                 if (!sub.IsNull()) {
                     assert(0);
-                    // Int32 color = XmlUtils::ConvertValueToUnsignedInt(sub, -1);
-                    // AutoPtr<IForegroundColorSpan> span;
-                    // CForegroundColorSpan::New(color, (IForegroundColorSpan**)&span);
-                    // buffer->SetSpan(span, (*style)[i + 1], (*style)[i + 2] + 1,
-                    //         ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
+                    // AutoPtr<ICharacterStyle> color = GetColor(sub, TRUE);
+                    // buffer->SetSpan(color,
+                    //    (*style)[i + 1], (*style)[i + 2] + 1,
+                    //    ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+
+                sub = Subtag(tag, String(";color="));
+                if (!sub.IsNull()) {
+                    assert(0);
+                    // AutoPtr<ICharacterStyle> color = GetColor(sub, TRUE);
+                    // buffer->SetSpan(color,
+                    //    (*style)[i + 1], (*style)[i + 2] + 1,
+                    //    ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
 
                 sub = Subtag(tag, String(";bgcolor="));
                 if (!sub.IsNull()) {
                     assert(0);
-                    // Int32 color = XmlUtils::ConvertValueToUnsignedInt(sub, -1);
-                    // AutoPtr<IBackgroundColorSpan> span;
-                    // CBackgroundColorSpan::New(color, (IBackgroundColorSpan**)&span);
-                    // buffer->SetSpan(span, (*style)[i + 1], (*style)[i + 2] + 1,
-                    //         ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
+                    // AutoPtr<ICharacterStyle> color = GetColor(sub, FALSE);
+                    // buffer->SetSpan(color,
+                    //    (*style)[i + 1], (*style)[i + 2] + 1,
+                    //    ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+                sub = Subtag(tag, String(";face="));
+                if (!sub.IsNull()) {
+                    assert(0);
+                    // AutoPtr<ITypefaceSpan> span;
+                    // CTypefaceSpan::New(sub, (ITypefaceSpan**)&span);
+                    // buffer->SetSpan(span,
+                    //    (*style)[i + 1], (*style)[i + 2] + 1,
+                    //    ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
             }
             else if (tag.StartWith("a;")) {
@@ -504,6 +506,48 @@ AutoPtr<ICharSequence> StringBlock::ApplyStyles(
     // CSpannableString(buffer, (ISpannable**)&result);
     assert(0);
     return NULL;
+}
+
+AutoPtr<ICharacterStyle> StringBlock::GetColor(
+    /* [in] */ const String& color,
+    /* [in] */ Boolean foreground)
+{
+    Int32 c = 0xff000000;
+
+    assert(0 && "TODO");
+    // if (!TextUtils::IsEmpty(color)) {
+    //     if (color.StartWith("@")) {
+    //         AutoPtr<IResources> res = CResources::GetSystem();
+    //         String name = color.Substring(1);
+    //         Int32 colorRes;
+    //         res->GetIdentifier(name, String("color"), String("android"), &colorRes);
+    //         if (colorRes != 0) {
+    //             AutoPtr<IColorStateList> colors;
+    //             res->GetColorStateList(colorRes, (IColorStateList**)&colors);
+    //             if (foreground) {
+    //                 AutoPtr<ICharacterStyle> style;
+    //                 CTextAppearanceSpan::New(String(NULL), 0, 0, colors, NULL, (ICharacterStyle**)&style);
+    //                 return style;
+    //             }
+    //             else {
+    //                 colors->GetDefaultColor(&c);
+    //             }
+    //         }
+    //     }
+    //     else {
+    //         //CColor::GetHtmlColor(color, &c);
+    //     }
+    // }
+
+    AutoPtr<ICharacterStyle> style;
+    // if (foreground) {
+    //     CForegroundColorSpan::New(c, (ICharacterStyle**)&style);
+    //     return NOERROR;
+    // }
+    // else {
+    //     CBackgroundColorSpan::New(c, (ICharacterStyle**)&style);
+    // }
+    return style;
 }
 
 void StringBlock::AddParagraphSpan(
@@ -559,7 +603,7 @@ String StringBlock::Subtag(
     }
 }
 
-Int32 StringBlock::NativeCreate(
+Handle64 StringBlock::NativeCreate(
     /* [in] */ const ArrayOf<Byte>& data,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 size)
@@ -580,18 +624,18 @@ Int32 StringBlock::NativeCreate(
         return 0;
     }
 
-    return (Int32)osb;
+    return (Handle64)osb;
 }
 
 Int32 StringBlock::NativeGetSize(
-    /* [in] */ Int32 pool)
+    /* [in] */ Handle64 pool)
 {
     assert(pool);
     return ((android::ResStringPool*)pool)->size();
 }
 
 String StringBlock::NativeGetString(
-    /* [in] */ Int32 pool,
+    /* [in] */ Handle64 pool,
     /* [in] */ Int32 idx)
 {
     assert(pool);
@@ -614,7 +658,7 @@ String StringBlock::NativeGetString(
 }
 
 AutoPtr<ArrayOf<Int32> > StringBlock::NativeGetStyle(
-    /* [in] */ Int32 pool,
+    /* [in] */ Handle64 pool,
     /* [in] */ Int32 idx)
 {
     assert(pool);
@@ -653,7 +697,7 @@ AutoPtr<ArrayOf<Int32> > StringBlock::NativeGetStyle(
 }
 
 void StringBlock::NativeDestroy(
-    /* [in] */ Int32 pool)
+    /* [in] */ Handle64 pool)
 {
     assert(pool);
     delete (android::ResStringPool*)pool;

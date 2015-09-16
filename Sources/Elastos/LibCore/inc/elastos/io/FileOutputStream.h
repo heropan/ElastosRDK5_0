@@ -203,6 +203,8 @@ public:
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount);
 
+    using OutputStream::Write;
+
 protected:
     FileOutputStream();
 

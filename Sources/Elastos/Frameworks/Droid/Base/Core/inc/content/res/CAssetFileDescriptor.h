@@ -5,11 +5,13 @@
 #include "_Elastos_Droid_Content_Res_CAssetFileDescriptor.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IParcelFileDescriptor;
+
+using Elastos::IO::ICloseable;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::IFileOutputStream;
-
-using Elastos::Droid::Os::IParcelFileDescriptor;
 
 namespace Elastos {
 namespace Droid {
@@ -24,6 +26,8 @@ namespace Res {
 CarClass(CAssetFileDescriptor)
     , public Object
     , public IAssetFileDescriptor
+    , public ICloseable
+    , public IParcelable
 {
 public:
     CAR_INTERFACE_DECL()
@@ -42,17 +46,34 @@ public:
 
     /**
      * Create a new AssetFileDescriptor from the given values.
+     *
      * @param fd The underlying file descriptor.
      * @param startOffset The location within the file that the asset starts.
-     * This must be 0 if length is UNKNOWN_LENGTH.
+     *            This must be 0 if length is UNKNOWN_LENGTH.
      * @param length The number of bytes of the asset, or
-     * {@link #UNKNOWN_LENGTH} if it extends to the end of the file.
+     *            {@link #UNKNOWN_LENGTH} if it extends to the end of the file.
      */
-
     CARAPI constructor(
         /* [in] */ IParcelFileDescriptor* fd,
         /* [in] */ Int64 startOffset,
         /* [in] */ Int64 length);
+
+    /**
+     * Create a new AssetFileDescriptor from the given values.
+     *
+     * @param fd The underlying file descriptor.
+     * @param startOffset The location within the file that the asset starts.
+     *            This must be 0 if length is UNKNOWN_LENGTH.
+     * @param length The number of bytes of the asset, or
+     *            {@link #UNKNOWN_LENGTH} if it extends to the end of the file.
+     * @param extras additional details that can be used to interpret the
+     *            underlying file descriptor. May be null.
+     */
+    CARAPI constructor(
+        /* [in] */ IParcelFileDescriptor* fd,
+        /* [in] */ Int64 startOffset,
+        /* [in] */ Int64 length,
+        /* [in] */ IBundle* extras);
 
     /**
      * The AssetFileDescriptor contains its own ParcelFileDescriptor, which
@@ -74,6 +95,13 @@ public:
      */
     CARAPI GetStartOffset(
         /* [out] */ Int64* startOffset);
+
+    /**
+     * Returns any additional details that can be used to interpret the
+     * underlying file descriptor. May be null.
+     */
+    CARAPI GetExtras(
+        /* [out] */ IBundle** extras);
 
     /**
      * Returns the total number of bytes of this asset entry's data.  May be
@@ -137,6 +165,7 @@ private:
     AutoPtr<IParcelFileDescriptor> mFd;
     Int64 mStartOffset;
     Int64 mLength;
+    AutoPtr<IBundle> mExtras;
 };
 
 } // namespace Res
