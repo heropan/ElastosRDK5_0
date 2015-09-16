@@ -2,7 +2,6 @@
 #include "CUrlEncodedFormEntity.h"
 #include "URLEncodedUtils.h"
 
-using Elastos::Core::EIID_ICloneable;
 using Org::Apache::Http::Client::Utils::URLEncodedUtils;
 using Org::Apache::Http::Protocol::IHTTP;
 
@@ -11,8 +10,6 @@ namespace Apache {
 namespace Http {
 namespace Client {
 namespace Entity {
-
-CAR_INTERFACE_IMPL(CUrlEncodedFormEntity, StringEntity, ICloneable)
 
 CAR_OBJECT_IMPL(CUrlEncodedFormEntity)
 

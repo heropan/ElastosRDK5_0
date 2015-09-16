@@ -2,9 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICHEADER_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICHEADER_H_
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
+using Elastos::Core::ICloneable;
 using Org::Apache::Http::IHeader;
 
 namespace Org {
@@ -41,7 +41,7 @@ namespace Message {
  * @since 4.0
  */
 class BasicHeader
-    , public Object
+    : public Object
     , public IHeader
     , public ICloneable
 {

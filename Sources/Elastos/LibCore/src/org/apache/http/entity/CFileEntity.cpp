@@ -1,10 +1,12 @@
 
 #include "CFileEntity.h"
-#include <elastos/Logger.h>
+#include "CFileInputStream.h"
+#include "Logger.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
-using Elastos::IO::IFlush;
+using Elastos::IO::IFlushable;
 using Elastos::IO::ICloseable;
 using Elastos::Utility::Logging::Logger;
 
@@ -59,7 +61,7 @@ ECode CFileEntity::WriteTo(
     while (instream->Read(tmp, &l), l != -1) {
         outstream->Write(tmp, 0, l);
     }
-    IFlush::Probe(outstream)->Flush();
+    IFlushable::Probe(outstream)->Flush();
     ICloseable::Probe(instream)->Close();
     // } finally {
     //     instream.close();

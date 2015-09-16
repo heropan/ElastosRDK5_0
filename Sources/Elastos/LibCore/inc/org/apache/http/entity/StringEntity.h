@@ -4,6 +4,7 @@
 
 #include "AbstractHttpEntity.h"
 
+using Elastos::Core::ICloneable;
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
@@ -24,8 +25,11 @@ namespace Entity {
  */
 class StringEntity
     : public AbstractHttpEntity
+    , public ICloneable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI IsRepeatable(
         /* [out] */ Boolean* isRepeatable);
 

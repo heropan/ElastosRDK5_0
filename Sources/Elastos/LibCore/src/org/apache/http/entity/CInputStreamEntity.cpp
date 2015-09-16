@@ -1,9 +1,13 @@
 
 #include "CInputStreamEntity.h"
-#include <elastos/Logger.h>
+#include "CByteArrayInputStream.h"
+#include "Math.h"
+#include "Logger.h"
 
+using Elastos::Core::Math;
 using Elastos::IO::IByteArrayInputStream;
 using Elastos::IO::CByteArrayInputStream;
+using Elastos::IO::ICloseable;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
@@ -53,7 +57,7 @@ ECode CInputStreamEntity::WriteTo(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<IInputStream> instream = mContent;
-    AutoPtr< ArrayOf<Byte> > buffer = ArrayOf<Byte>(BUFFER_SIZE);
+    AutoPtr< ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(BUFFER_SIZE);
     Int32 l;
     if (mLength < 0) {
         // consume until EOF
@@ -65,7 +69,7 @@ ECode CInputStreamEntity::WriteTo(
         // consume no more than length
         Int64 remaining = mLength;
         while (remaining > 0) {
-            instream->Read(buffer, 0, (Int32)Math::Min(BUFFER_SIZE, remaining), &l);
+            instream->Read(buffer, 0, (Int32)Elastos::Core::Math::Min((Int64)BUFFER_SIZE, remaining), &l);
             if (l == -1) {
                 break;
             }

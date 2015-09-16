@@ -1,9 +1,12 @@
 
 #include "CByteArrayEntity.h"
-#include <elastos/Logger.h>
+#include "CByteArrayInputStream.h"
+#include "Logger.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::IO::IByteArrayInputStream;
 using Elastos::IO::CByteArrayInputStream;
+using Elastos::IO::IFlushable;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
@@ -36,7 +39,7 @@ ECode CByteArrayEntity::GetContent(
 {
     VALIDATE_NOT_NULL(inputStream)
     AutoPtr<IByteArrayInputStream> stream;
-    CByteArrayInputStream::New(mBuffer, (IByteArrayInputStream**)&stream);
+    CByteArrayInputStream::New(mContent, (IByteArrayInputStream**)&stream);
     *inputStream = IInputStream::Probe(stream);
     REFCOUNT_ADD(*inputStream)
     return NOERROR;

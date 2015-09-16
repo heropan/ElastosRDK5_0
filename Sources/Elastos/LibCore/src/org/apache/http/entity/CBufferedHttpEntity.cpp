@@ -1,7 +1,8 @@
 
 #include "CBufferedHttpEntity.h"
 #include "EntityUtils.h"
-#include <elastos/Logger.h>
+#include "CByteArrayInputStream.h"
+#include "Logger.h"
 
 using Elastos::IO::IByteArrayInputStream;
 using Elastos::IO::CByteArrayInputStream;
