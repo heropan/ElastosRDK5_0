@@ -1,17 +1,17 @@
 
 #include "ext/frameworkdef.h"
 #include "inputmethodservice/CIInputMethodSessionWrapper.h"
-#include "os/HandlerCaller.h"
-#include "os/SomeArgs.h"
+#include "internal/os/CHandlerCaller.h"
+#include "internal/os/SomeArgs.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CString;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::IArrayOf;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Os::SomeArgs;
 using Elastos::Droid::Os::EIID_IBinder;
-using Elastos::Droid::Internal::Os::HandlerCaller;
+using Elastos::Droid::Internal::Os::SomeArgs;
+using Elastos::Droid::Internal::Os::CHandlerCaller;
 using Elastos::Droid::Internal::Os::EIID_IHandlerCallerCallback;
 using Elastos::Droid::Internal::View::EIID_IIInputMethodSession;
 using Elastos::Droid::View::IInputDevice;
@@ -100,8 +100,8 @@ ECode CIInputMethodSessionWrapper::constructor(
     /* [in] */ IInputMethodSession* inputMethodSession,
     /* [in] */ IInputChannel* channel)
 {
-    assert(0 && "TODO");
-    // mCaller = new HandlerCaller(context, NULL, THIS_PROBE(IHandlerCallerCallback), TRUE /*asyncHandler*/);
+    CHandlerCaller::New(context, NULL, THIS_PROBE(IHandlerCallerCallback),
+        TRUE /*asyncHandler*/, FALSE, (IHandlerCaller**)&mCaller);
     mInputMethodSession = inputMethodSession;
     mChannel = channel;
     if (channel != NULL) {

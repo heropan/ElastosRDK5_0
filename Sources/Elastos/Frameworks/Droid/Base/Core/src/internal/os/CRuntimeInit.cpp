@@ -1,5 +1,5 @@
 
-#include "os/CRuntimeInit.h"
+#include "internal/os/CRuntimeInit.h"
 
 namespace Elastos {
 namespace Droid {

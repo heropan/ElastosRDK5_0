@@ -1,10 +1,10 @@
 
 #include "service/wallpaper/CWallpaperEngineWrapper.h"
 #include <elastos/utility/logging/Logger.h>
-#include "os/HandlerCaller.h"
+#include "internal/os/CHandlerCaller.h"
 
 using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Os::HandlerCaller;
+using Elastos::Droid::Os::CHandlerCaller;
 using Elastos::Droid::Content::EIID_IContext;
 
 namespace Elastos {
@@ -56,8 +56,8 @@ ECode CWallpaperEngineWrapper::constructor(
         mOwner->GetMainLooper((ILooper**)&looper);
     }
 
-    mCaller = new HandlerCaller((IContext*)(mOwner->Probe(EIID_IContext)),
-        looper, THIS_PROBE(IHandlerCallerCallback), FALSE);
+    CHandlerCaller::New((IContext*)(mOwner->Probe(EIID_IContext)),
+        looper, THIS_PROBE(IHandlerCallerCallback), TRUE, FALSE, (IHandlerCaller**)&mCaller);
 
     AutoPtr<IMessage> msg;
     mCaller->ObtainMessage(DO_ATTACH, (IMessage**)&msg);

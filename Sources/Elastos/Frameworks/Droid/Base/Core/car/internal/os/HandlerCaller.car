@@ -34,7 +34,7 @@ module
         RemoveMessages(
             [in] Int32 what);
 
-        RemoveMessagesEx(
+        RemoveMessages(
             [in] Int32 what,
             [in] IInterface* obj);
 
@@ -150,15 +150,6 @@ module
             [in] Int32 arg2,
             [in] Int32 arg3,
             [in] Int32 arg4,
-            [out] IMessage** msg);
-
-        ObtainMessageIIIII(
-            [in] Int32 what,
-            [in] Int32 arg1,
-            [in] Int32 arg2,
-            [in] Int32 arg3,
-            [in] Int32 arg4,
-            [in] Int32 arg5,
             [out] IMessage** msg);
 
         ObtainMessageIIIIII(

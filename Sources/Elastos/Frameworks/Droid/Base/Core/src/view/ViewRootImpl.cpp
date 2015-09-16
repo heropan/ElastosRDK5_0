@@ -33,7 +33,7 @@
 #include "os/CSystemProperties.h"
 #include "os/Process.h"
 #include "os/Binder.h"
-#include "os/SomeArgs.h"
+#include "internal/os/SomeArgs.h"
 #include "util/CTypedValue.h"
 #include <elastos/core/Thread.h>
 #include <elastos/core/Math.h>
@@ -76,7 +76,7 @@ using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::CSystemProperties;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::Process;
-using Elastos::Droid::Os::SomeArgs;
+using Elastos::Droid::Internal::Os::SomeArgs;
 using Elastos::Droid::Internal::Policy::IPolicyManager;
 using Elastos::Droid::Internal::Policy::CPolicyManager;
 using Elastos::Droid::Utility::CTypedValue;

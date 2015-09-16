@@ -1,9 +1,11 @@
-#include "os/HandlerCaller.h"
+#include "internal/os/CHandlerCaller.h"
 #include "os/Looper.h"
-#include "os/SomeArgs.h"
+#include "internal/os/SomeArgs.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Droid::Os::SomeArgs;
 using Elastos::Droid::Os::Looper;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -11,23 +13,24 @@ namespace Internal {
 namespace Os {
 
 //==========================================================================
-// HandlerCaller::MyHandler
+// CHandlerCaller::MyHandler
 //==========================================================================
-HandlerCaller::MyHandler::MyHandler(
+CHandlerCaller::MyHandler::MyHandler(
     /* [in] */ ILooper* looper,
+    /* [in] */ Boolean async,
     /* [in] */ IWeakReference* host)
-    : Handler(looper)
+    : Handler(looper, NULL, async)
     , mWeakHost(host)
 {
 }
 
-ECode HandlerCaller::MyHandler::HandleMessage(
+ECode CHandlerCaller::MyHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
     AutoPtr<IWeakReferenceSource> wrs;
     mWeakHost->Resolve(EIID_IWeakReferenceSource, (IInterface**)&wrs);
     if (wrs != NULL) {
-        HandlerCaller* hc = (HandlerCaller*)wrs.Get();
+        CHandlerCaller* hc = (CHandlerCaller*)wrs.Get();
         AutoPtr<IHandlerCallerCallback> cb = hc->GetCallback();
         if (cb) {
             return cb->ExecuteMessage(msg);
@@ -38,49 +41,25 @@ ECode HandlerCaller::MyHandler::HandleMessage(
 }
 
 //==========================================================================
-// HandlerCaller
+// CHandlerCaller
 //==========================================================================
-CAR_INTERFACE_IMPL(HandlerCaller, Object, IHandlerCaller)
+CAR_INTERFACE_IMPL(CHandlerCaller, Object, IHandlerCaller)
 
-ECode HandlerCaller::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(
-        (IInterface*)(IWeakReferenceSource*)this, CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
-    return NOERROR;
-}
-
-HandlerCaller::HandlerCaller(
-    /* [in] */ IContext* context,
-    /* [in] */ IHandlerCallerCallback* callback,
-    /* [in] */ Boolean isStrong)
-    : mContext(context)
-{
-    constructor(context, callback, isStrong);
-}
-
-HandlerCaller::HandlerCaller(
+ECode CHandlerCaller::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ILooper* looper,
     /* [in] */ IHandlerCallerCallback* callback,
+    /* [in] */ Boolean asyncHandler,
     /* [in] */ Boolean isStrong)
-    : mContext(context)
 {
-    constructor(context, looper, callback, isStrong);
-}
+    if (looper != NULL)
+        mMainLooper = looper;
+    else
+        context->GetMainLooper((ILooper**)&mMainLooper);
+    AutoPtr<IWeakReference> weakReference;
+    GetWeakReference((IWeakReference**)&weakReference);
+    mH = new MyHandler(mMainLooper, asyncHandler, weakReference);
 
-HandlerCaller::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IHandlerCallerCallback* callback,
-    /* [in] */ Boolean isStrong)
-{
-    assert(context != NULL);
-    context->GetMainLooper((ILooper**)&mMainLooper);
-    AutoPtr<IWeakReference> weakReference = new WeakReferenceImpl(
-        (IInterface*)(IWeakReferenceSource*)this, CreateWeak(this));
-    mH = new MyHandler(mMainLooper, weakReference);
     if (isStrong) {
         mCallback = callback;
     }
@@ -94,46 +73,7 @@ HandlerCaller::constructor(
     return NOERROR;
 }
 
-ECode HandlerCaller::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ ILooper* looper,
-    /* [in] */ IHandlerCallerCallback* callback,
-    /* [in] */ Boolean isStrong)
-{
-    mMainLooper = looper;
-    AutoPtr<IWeakReference> weakReference = new WeakReferenceImpl(
-        (IInterface*)(IWeakReferenceSource*)this, CreateWeak(this));
-    mH = new MyHandler(mMainLooper, weakReference);
-    if (isStrong) {
-        mCallback = callback;
-    }
-    else if (IWeakReferenceSource::Probe(callback) != NULL) {
-        IWeakReferenceSource::Probe(callback)->GetWeakReference((IWeakReference**)&mWeakCallback);
-    }
-    else {
-        assert(0 && "IWeakReferenceSource::Probe(callback) == NULL");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
-
-ECode HandlerCaller::GetContext(
-    /* [out] */ IContext** ctx)
-{
-    VALIDATE_NOT_NULL(ctx);
-    *ctx = mContext;
-    REFCOUNT_ADD(*ctx);
-    return NOERROR;
-}
-
-ECode HandlerCaller::SetContext(
-    /* [in] */ IContext* ctx)
-{
-    mContext = ctx;
-    return NOERROR;
-}
-
-ECode HandlerCaller::ExecuteOrSendMessage(
+ECode CHandlerCaller::ExecuteOrSendMessage(
     /* [in] */ IMessage* msg)
 {
     // If we are calling this from the main thread, then we can call
@@ -155,56 +95,89 @@ ECode HandlerCaller::ExecuteOrSendMessage(
     return mH->SendMessage(msg, &result);
 }
 
-ECode HandlerCaller::HasMessages(
+ECode CHandlerCaller::SendMessageDelayed(
+    /* [in] */ IMessage* msg,
+    /* [in] */ Int64 delayMillis)
+{
+    Boolean res;
+    return mH->SendMessageDelayed(msg, delayMillis, &res);
+}
+
+ECode CHandlerCaller::HasMessages(
     /* [in] */ Int32 what,
     /* [out] */ Boolean* result)
 {
     return mH->HasMessages(what, result);
 }
 
-ECode HandlerCaller::RemoveMessages(
+ECode CHandlerCaller::RemoveMessages(
     /* [in] */ Int32 what)
 {
     return mH->RemoveMessages(what);
 }
 
-ECode HandlerCaller::RemoveMessages(
+ECode CHandlerCaller::RemoveMessages(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* obj)
 {
     return mH->RemoveMessages(what, obj);
 }
 
-ECode HandlerCaller::SendMessage(
+ECode CHandlerCaller::SendMessage(
     /* [in] */ IMessage* msg)
 {
     Boolean result;
     return mH->SendMessage(msg, &result);
 }
 
-ECode HandlerCaller::ObtainMessage(
-    /* [in] */ Int32 what,
-    /* [out] */ IMessage** msg)
+ECode CHandlerCaller::SendMessageAndWait(
+    /* [in] */ IMessage* msg,
+    /* [out] */ ISomeArgs** rargs)
 {
-    VALIDATE_NOT_NULL(msg);
-
-    AutoPtr<IMessage> message;
-    mH->ObtainMessage(what, (IMessage**)&message);
-    *msg = message;
-    REFCOUNT_ADD(*msg);
+    AutoPtr<ILooper> looper;
+    mH->GetLooper((ILooper**)&looper);
+    if (Looper::GetMyLooper() == looper) {
+        Logger::E("CHandlerCaller", "Can't wait on same thread as looper");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    AutoPtr<IInterface> obj;
+    msg->GetObj((IInterface**)&obj);
+    AutoPtr<SomeArgs> args = (SomeArgs*)ISomeArgs::Probe(obj);
+    args->mWaitState = SomeArgs::WAIT_WAITING;
+    Boolean res;
+    mH->SendMessage(msg, &res);
+    {
+        AutoLock lock(args);
+        while (args->mWaitState == SomeArgs::WAIT_WAITING) {
+            if (args->Wait() == (ECode)E_INTERRUPTED_EXCEPTION) {
+                *rargs = NULL;
+                return NOERROR;
+            }
+        }
+    }
+    args->mWaitState = SomeArgs::WAIT_NONE;
+    *rargs = args;
+    (*rargs)->AddRef();
     return NOERROR;
 }
 
-ECode HandlerCaller::ObtainMessage(
+ECode CHandlerCaller::ObtainMessage(
+    /* [in] */ Int32 what,
+    /* [out] */ IMessage** msg)
+{
+    return mH->ObtainMessage(what, msg);
+}
+
+ECode CHandlerCaller::ObtainMessageBO(
     /* [in] */ Int32 what,
     /* [in] */ Boolean arg1,
     /* [in] */ IInterface* arg2,
     /* [out] */ IMessage** msg)
 {
-    return ObtainMessage(what, arg1 ? 1 : 0, 0, arg2, msg);
+    return mH->ObtainMessage(what, arg1 ? 1 : 0, 0, arg2, msg);
 }
 
-ECode HandlerCaller::ObtainMessage(
+ECode CHandlerCaller::ObtainMessageBOO(
     /* [in] */ Int32 what,
     /* [in] */ Boolean arg1,
     /* [in] */ IInterface* arg2,
@@ -217,60 +190,54 @@ ECode HandlerCaller::ObtainMessage(
     args->mArg1 = arg2;
     args->mArg2 = arg3;
 
-    return ObtainMessage(what, arg1 ? 1 : 0, 0, TO_IINTERFACE(args), msg);
+    return mH->ObtainMessage(what, arg1 ? 1 : 0, 0, TO_IINTERFACE(args), msg);
 }
 
-ECode HandlerCaller::ObtainMessage(
+ECode CHandlerCaller::ObtainMessageO(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* arg1,
     /* [out] */ IMessage** msg)
 {
-    return ObtainMessage(what, 0, 0, arg1, msg);
+    return mH->ObtainMessage(what, 0, 0, arg1, msg);
 }
 
-ECode HandlerCaller::ObtainMessage(
+ECode CHandlerCaller::ObtainMessageI(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [out] */ IMessage** msg)
 {
-    return ObtainMessage(what, arg1, 0, NULL, msg);
+    return mH->ObtainMessage(what, arg1, 0, NULL, msg);
 }
 
-ECode HandlerCaller::ObtainMessage(
+ECode CHandlerCaller::ObtainMessageII(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
     /* [out] */ IMessage** msg)
 {
-    return ObtainMessage(what, arg1, arg2, NULL, msg);
+    return mH->ObtainMessage(what, arg1, arg2, NULL, msg);
 }
 
-ECode HandlerCaller::ObtainMessage(
+ECode CHandlerCaller::ObtainMessageIO(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ IInterface* arg2,
     /* [out] */ IMessage** msg)
 {
-    return ObtainMessage(what, arg1, 0, arg2, msg);
+    return mH->ObtainMessage(what, arg1, 0, arg2, msg);
 }
 
-ECode HandlerCaller::ObtainMessage(
+ECode CHandlerCaller::ObtainMessageIIO(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
     /* [in] */ IInterface* arg3,
     /* [out] */ IMessage** msg)
 {
-    VALIDATE_NOT_NULL(msg);
-
-    AutoPtr<IMessage> message;
-    mH->ObtainMessage(what, arg1, arg2, arg3, (IMessage**)&message);
-    *msg = message;
-    REFCOUNT_ADD(*msg);
-    return NOERROR;
+    return mH->ObtainMessage(what, arg1, arg2, arg3, msg);
 }
 
-ECode HandlerCaller::ObtainMessage(
+ECode CHandlerCaller::ObtainMessageIIOO(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
@@ -284,10 +251,10 @@ ECode HandlerCaller::ObtainMessage(
     args->mArg1 = arg3;
     args->mArg2 = arg4;
 
-    return ObtainMessage(what, arg1, arg2, TO_IINTERFACE(args), msg);
+    return mH->ObtainMessage(what, arg1, arg2, TO_IINTERFACE(args), msg);
 }
 
-ECode HandlerCaller::ObtainMessage(
+ECode CHandlerCaller::ObtainMessageIOO(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ IInterface* arg2,
@@ -300,10 +267,28 @@ ECode HandlerCaller::ObtainMessage(
     args->mArg1 = arg2;
     args->mArg2 = arg3;
 
-    return ObtainMessage(what, arg1, 0, TO_IINTERFACE(args), msg);
+    return mH->ObtainMessage(what, arg1, 0, TO_IINTERFACE(args), msg);
 }
 
-ECode HandlerCaller::ObtainMessage(
+ECode CHandlerCaller::ObtainMessageIOOO(
+    /* [in] */ Int32 what,
+    /* [in] */ Int32 arg1,
+    /* [in] */ IInterface* arg2,
+    /* [in] */ IInterface* arg3,
+    /* [in] */ IInterface* arg4,
+    /* [out] */ IMessage** msg)
+{
+    VALIDATE_NOT_NULL(msg);
+
+    AutoPtr<SomeArgs> args = SomeArgs::Obtain();
+    args->mArg1 = arg2;
+    args->mArg2 = arg3;
+    args->mArg3 = arg4;
+
+    return mH->ObtainMessage(what, arg1, 0, TO_IINTERFACE(args), msg);
+}
+
+ECode CHandlerCaller::ObtainMessageOO(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* arg1,
     /* [in] */ IInterface* arg2,
@@ -315,10 +300,10 @@ ECode HandlerCaller::ObtainMessage(
     args->mArg1 = arg1;
     args->mArg2 = arg2;
 
-    return ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
+    return mH->ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
 }
 
-ECode HandlerCaller::ObtainMessage(
+ECode CHandlerCaller::ObtainMessageOOO(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* arg1,
     /* [in] */ IInterface* arg2,
@@ -332,10 +317,10 @@ ECode HandlerCaller::ObtainMessage(
     args->mArg2 = arg2;
     args->mArg3 = arg3;
 
-    return ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
+    return mH->ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
 }
 
-ECode HandlerCaller::ObtainMessage(
+ECode CHandlerCaller::ObtainMessageOOOO(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* arg1,
     /* [in] */ IInterface* arg2,
@@ -351,10 +336,31 @@ ECode HandlerCaller::ObtainMessage(
     args->mArg3 = arg3;
     args->mArg4 = arg4;
 
-    return ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
+    return mH->ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
 }
 
-ECode HandlerCaller::ObtainMessage(
+ECode CHandlerCaller::ObtainMessageOOOOO(
+    /* [in] */ Int32 what,
+    /* [in] */ IInterface* arg1,
+    /* [in] */ IInterface* arg2,
+    /* [in] */ IInterface* arg3,
+    /* [in] */ IInterface* arg4,
+    /* [in] */ IInterface* arg5,
+    /* [out] */ IMessage** msg)
+{
+    VALIDATE_NOT_NULL(msg);
+
+    AutoPtr<SomeArgs> args = SomeArgs::Obtain();
+    args->mArg1 = arg1;
+    args->mArg2 = arg2;
+    args->mArg3 = arg3;
+    args->mArg4 = arg4;
+    args->mArg5 = arg5;
+
+    return mH->ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
+}
+
+ECode CHandlerCaller::ObtainMessageIIII(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
@@ -370,31 +376,10 @@ ECode HandlerCaller::ObtainMessage(
     args->mArgi3 = arg3;
     args->mArgi4 = arg4;
 
-    return ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
+    return mH->ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
 }
 
-ECode HandlerCaller::ObtainMessage(
-    /* [in] */ Int32 what,
-    /* [in] */ Int32 arg1,
-    /* [in] */ Int32 arg2,
-    /* [in] */ Int32 arg3,
-    /* [in] */ Int32 arg4,
-    /* [in] */ Int32 arg5,
-    /* [out] */ IMessage** msg)
-{
-    VALIDATE_NOT_NULL(msg);
-
-    AutoPtr<SomeArgs> args = SomeArgs::Obtain();
-    args->mArgi1 = arg1;
-    args->mArgi2 = arg2;
-    args->mArgi3 = arg3;
-    args->mArgi4 = arg4;
-    args->mArgi5 = arg5;
-
-    return ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
-}
-
-ECode HandlerCaller::ObtainMessage(
+ECode CHandlerCaller::ObtainMessageIIIIII(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
@@ -414,10 +399,10 @@ ECode HandlerCaller::ObtainMessage(
     args->mArgi5 = arg5;
     args->mArgi6 = arg6;
 
-    return ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
+    return mH->ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
 }
 
-ECode HandlerCaller::ObtainMessage(
+ECode CHandlerCaller::ObtainMessageIIIIO(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
@@ -435,10 +420,10 @@ ECode HandlerCaller::ObtainMessage(
     args->mArgi4 = arg4;
     args->mArg1 = arg5;
 
-    return ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
+    return mH->ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
 }
 
-AutoPtr<IHandlerCallerCallback> HandlerCaller::GetCallback()
+AutoPtr<IHandlerCallerCallback> CHandlerCaller::GetCallback()
 {
     if (mCallback != NULL)
         return mCallback;

@@ -3,8 +3,8 @@
 #include "inputmethodservice/CIInputMethodSessionWrapper.h"
 #include "view/LocalInputConnectionWrapper.h"
 // #include "view/inputmethod/CInputBinding.h"
-#include "os/SomeArgs.h"
-#include "os/HandlerCaller.h"
+#include "internal/os/SomeArgs.h"
+#include "internal/os/CHandlerCaller.h"
 #include <elastos/utility/logging/Logger.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -15,8 +15,8 @@ using Elastos::Droid::InputMethodService::CIInputMethodSessionWrapper;
 using Elastos::Droid::Internal::View::LocalInputConnectionWrapper;
 using Elastos::Droid::Internal::View::EIID_IIInputMethod;
 using Elastos::Droid::Internal::Os::EIID_IHandlerCallerCallback;
-using Elastos::Droid::Internal::Os::HandlerCaller;
-using Elastos::Droid::Os::SomeArgs;
+using Elastos::Droid::Internal::Os::CHandlerCaller;
+using Elastos::Droid::Internal::Os::SomeArgs;
 using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Internal::View::IIInputMethodSession;
 using Elastos::Droid::View::InputMethod::IInputMethod;
@@ -85,8 +85,8 @@ ECode CIInputMethodWrapper::constructor(
     if (wrs) wrs->GetWeakReference((IWeakReference**)&mInputMethod);
 
     IContext::Probe(context)->GetApplicationContext((IContext**)&mContext);
-    assert(0 && "TODO");
-    // mCaller = new HandlerCaller(mContext, NULL, THIS_PROBE(IHandlerCallerCallback), TRUE /*asyncHandler*/);
+    CHandlerCaller::New(mContext, NULL, THIS_PROBE(IHandlerCallerCallback),
+        TRUE /*asyncHandler*/, FALSE, (IHandlerCaller**)&mCaller);
     AutoPtr<IApplicationInfo> appInfo;
     IContext::Probe(context)->GetApplicationInfo((IApplicationInfo**)&appInfo);
     assert(appInfo != NULL);

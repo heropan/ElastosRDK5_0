@@ -4,7 +4,7 @@
 #include "view/accessibility/CAccessibilityNodeInfoHelper.h"
 #include "view/accessibility/CAccessibilityInteractionClientHelper.h"
 #include "os/Process.h"
-#include "os/SomeArgs.h"
+#include "internal/os/SomeArgs.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
@@ -12,7 +12,7 @@ using Elastos::Core::IInteger64;
 using Elastos::Core::CObjectContainer;
 using Elastos::Core::CString;
 using Elastos::Droid::Os::Process;
-using Elastos::Droid::Os::SomeArgs;
+using Elastos::Droid::Internal::Os::SomeArgs;
 using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfoHelper;
 using Elastos::Droid::View::Accessibility::CAccessibilityNodeInfoHelper;

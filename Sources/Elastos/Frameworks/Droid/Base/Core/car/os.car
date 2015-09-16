@@ -98,10 +98,6 @@ module
     namespace Os {
 
     // namespace Storage {
-    //     //class CStorageEventListener {
-    //     //  interface IStorageEventListener;
-    //     //}
-
     //     class CStorageManager {
     //         constructor(
     //             [in] ILooper* tgtLooper);

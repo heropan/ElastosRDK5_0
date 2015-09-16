@@ -1,9 +1,9 @@
 #include "CAccessibilityServiceClientWrapper.h"
-#include "os/HandlerCaller.h"
+#include "internal/os/CHandlerCaller.h"
 #include "view/accessibility/CAccessibilityInteractionClientHelper.h"
 
-using Elastos::Droid::Os::HandlerCaller;
-using Elastos::Droid::Os::EIID_IHandlerCallerCallback;
+using Elastos::Droid::Internal::Os::EIID_IHandlerCallerCallback;
+using Elastos::Droid::Internal::Os::CHandlerCaller;
 using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
 using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClientHelper;
 using Elastos::Droid::View::Accessibility::CAccessibilityInteractionClientHelper;
@@ -23,7 +23,7 @@ ECode CAccessibilityServiceClientWrapper::constructor(
     /* [in] */ IAccessibilityServiceCallbacks* callback)
 {
     mCallback = callback;
-    mCaller = new HandlerCaller(context, looper, THIS_PROBE(IHandlerCallerCallback), FALSE);
+    CHandlerCaller::New(context, looper, THIS_PROBE(IHandlerCallerCallback), TRUE, FALSE, (IHandlerCaller**)mCaller);
     return NOERROR;
 }
 
