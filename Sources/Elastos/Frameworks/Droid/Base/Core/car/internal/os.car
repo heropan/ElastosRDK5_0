@@ -20,10 +20,33 @@ module
     merge("os/TransferPipe.car");
     merge("os/ZygoteInit.car");
 
+    using interface Elastos.IO.IFile;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Os.ILooper;
+
     namespace Elastos {
     namespace Droid {
     namespace Internal {
     namespace Os {
+
+    // class CAtomicFile {
+    //     constructor(
+    //         [in] IFile* baseName);
+
+    //     interface IAtomicFile;
+    // }
+
+    [local]
+    class CHandlerCaller {
+        constructor(
+            [in] IContext* ctx,
+            [in] ILooper* looper,
+            [in] IHandlerCallerCallback* cbk,
+            [in] Boolean asyncHandler,
+            [in] Boolean isStrong);
+
+        interface IHandlerCaller;
+    }
 
     //singleton class CZygoteInit {
     //    interface IZygoteInit;
@@ -31,6 +54,10 @@ module
 
     singleton class CRuntimeInit {
         interface IRuntimeInit;
+    }
+
+    singleton class CSomeArgsHelper {
+        interface ISomeArgsHelper;
     }
 
     } // namespace Os

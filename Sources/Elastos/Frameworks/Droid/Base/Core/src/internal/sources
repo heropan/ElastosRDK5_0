@@ -9,3 +9,4 @@ INCLUDES += ../
 C_DEFINES += -DDROID_CORE
 
 LIBRARIES += content/content.lib
+LIBRARIES += os/os.lib

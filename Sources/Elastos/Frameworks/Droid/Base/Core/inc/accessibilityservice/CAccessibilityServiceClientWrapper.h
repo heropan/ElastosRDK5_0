@@ -6,7 +6,7 @@
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessage;
-using Elastos::Droid::Os::IHandlerCaller;
+using Elastos::Droid::Internal::Os::IHandlerCaller;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 
 

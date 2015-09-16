@@ -1,6 +1,6 @@
 
 #include "ext/frameworkdef.h"
-#include "os/RuntimeInit.h"
+#include "internal/os/RuntimeInit.h"
 //#include "os/CZygoteInit.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <DroidRuntime.h>

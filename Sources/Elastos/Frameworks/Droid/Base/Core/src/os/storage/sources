@@ -8,7 +8,7 @@ INCLUDES += $(MAKEDIR)/../../../inc
 INCLUDES += $(MAKEDIR)/../../../inc/os/storage
 
 #SOURCES = COnObbStateChangeListener.cpp
-#SOURCES += CStorageEventListener.cpp
+SOURCES += StorageEventListener.cpp
 SOURCES += CMountServiceBinderListener.cpp
 SOURCES += CObbActionListener.cpp
 SOURCES += CStorageManager.cpp

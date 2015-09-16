@@ -1,0 +1,18 @@
+TARGET_NAME = os
+TARGET_TYPE = lib
+
+include $(MAKEDIR)/../../../../../sources.inc
+
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../inc/
+
+C_DEFINES += -DDROID_CORE
+
+#SOURCES += storage/CExternalStorageFormatter.cpp
+#SOURCES += CZygoteInit.cpp
+SOURCES += CHandlerCaller.cpp
+SOURCES += RuntimeInit.cpp
+SOURCES += CRuntimeInit.cpp
+SOURCES += SomeArgs.cpp
+SOURCES += CSomeArgsHelper.cpp
+SOURCES += invokeCallback_gnuc.S

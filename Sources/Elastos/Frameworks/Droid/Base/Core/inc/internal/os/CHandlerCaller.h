@@ -1,6 +1,7 @@
-#ifndef __ELASTOS_DROID_INTERNAL_OS_HANDLER_CALLER_H__
-#define __ELASTOS_DROID_INTERNAL_OS_HANDLER_CALLER_H__
+#ifndef __ELASTOS_DROID_INTERNAL_OS_CHANDLERCALLER_H__
+#define __ELASTOS_DROID_INTERNAL_OS_CHANDLERCALLER_H__
 
+#include "_Elastos_Droid_Internal_Os_CHandlerCaller.h"
 #include "os/Handler.h"
 
 using Elastos::Droid::Content::IContext;
@@ -11,8 +12,8 @@ namespace Droid {
 namespace Internal {
 namespace Os {
 
-class HandlerCaller
-    : public Object
+CarClass(CHandlerCaller)
+    , public Object
     , public IHandlerCaller
 {
 private:
@@ -22,6 +23,7 @@ private:
     public:
         MyHandler(
             /* [in] */ ILooper* looper,
+            /* [in] */ Boolean async,
             /* [in] */ IWeakReference* host);
 
         CARAPI HandleMessage(
@@ -31,45 +33,23 @@ private:
         AutoPtr<IWeakReference> mWeakHost;
     };
 
-protected:
-    HandlerCaller();
-
 public:
     CAR_INTERFACE_DECL()
 
-    CARAPI GetWeakReference(
-        /* [out] */ IWeakReference** weakReference);
-
-    HandlerCaller(
-        /* [in] */ IContext* context,
-        /* [in] */ IHandlerCallerCallback* callback,
-        /* [in] */ Boolean isStrong);
-
-    HandlerCaller(
+    // if callback has this's reference,isStrong must be FLASE
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ ILooper* looper,
         /* [in] */ IHandlerCallerCallback* callback,
+        /* [in] */ Boolean asyncHandler,
         /* [in] */ Boolean isStrong);
-
-    constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IHandlerCallerCallback* callback,
-        /* [in] */ Boolean isStrong);
-
-    constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ ILooper* looper,
-        /* [in] */ IHandlerCallerCallback* callback,
-        /* [in] */ Boolean isStrong);
-
-    CARAPI GetContext(
-        /* [out] */ IContext** ctx);
-
-    CARAPI SetContext(
-        /* [in] */ IContext* ctx);
 
     CARAPI ExecuteOrSendMessage(
         /* [in] */ IMessage* msg);
+
+    CARAPI SendMessageDelayed(
+        /* [in] */ IMessage* msg,
+        /* [in] */ Int64 delayMillis);
 
     CARAPI HasMessages(
         /* [in] */ Int32 what,
@@ -85,53 +65,57 @@ public:
     CARAPI SendMessage(
         /* [in] */ IMessage* msg);
 
+    CARAPI SendMessageAndWait(
+        /* [in] */ IMessage* msg,
+        /* [out] */ ISomeArgs** rargs);
+
     CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessage(
+    CARAPI ObtainMessageBO(
         /* [in] */ Int32 what,
         /* [in] */ Boolean arg1,
         /* [in] */ IInterface* arg2,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessage(
+    CARAPI ObtainMessageBOO(
         /* [in] */ Int32 what,
         /* [in] */ Boolean arg1,
         /* [in] */ IInterface* arg2,
         /* [in] */ IInterface* arg3,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessage(
+    CARAPI ObtainMessageO(
         /* [in] */ Int32 what,
         /* [in] */ IInterface* arg1,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessage(
+    CARAPI ObtainMessageI(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessage(
+    CARAPI ObtainMessageII(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessage(
+    CARAPI ObtainMessageIO(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ IInterface* arg2,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessage(
+    CARAPI ObtainMessageIIO(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
         /* [in] */ IInterface* arg3,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessage(
+    CARAPI ObtainMessageIIOO(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
@@ -139,27 +123,35 @@ public:
         /* [in] */ IInterface* arg4,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessage(
+    CARAPI ObtainMessageIOO(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ IInterface* arg2,
         /* [in] */ IInterface* arg3,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessage(
+    CARAPI ObtainMessageIOOO(
+        /* [in] */ Int32 what,
+        /* [in] */ Int32 arg1,
+        /* [in] */ IInterface* arg2,
+        /* [in] */ IInterface* arg3,
+        /* [in] */ IInterface* arg4,
+        /* [out] */ IMessage** msg);
+
+    CARAPI ObtainMessageOO(
         /* [in] */ Int32 what,
         /* [in] */ IInterface* arg1,
         /* [in] */ IInterface* arg2,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessage(
+    CARAPI ObtainMessageOOO(
         /* [in] */ Int32 what,
         /* [in] */ IInterface* arg1,
         /* [in] */ IInterface* arg2,
         /* [in] */ IInterface* arg3,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessage(
+    CARAPI ObtainMessageOOOO(
         /* [in] */ Int32 what,
         /* [in] */ IInterface* arg1,
         /* [in] */ IInterface* arg2,
@@ -167,7 +159,16 @@ public:
         /* [in] */ IInterface* arg4,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessage(
+    CARAPI ObtainMessageOOOOO(
+        /* [in] */ Int32 what,
+        /* [in] */ IInterface* arg1,
+        /* [in] */ IInterface* arg2,
+        /* [in] */ IInterface* arg3,
+        /* [in] */ IInterface* arg4,
+        /* [in] */ IInterface* arg5,
+        /* [out] */ IMessage** msg);
+
+    CARAPI ObtainMessageIIII(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
@@ -175,16 +176,7 @@ public:
         /* [in] */ Int32 arg4,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessage(
-        /* [in] */ Int32 what,
-        /* [in] */ Int32 arg1,
-        /* [in] */ Int32 arg2,
-        /* [in] */ Int32 arg3,
-        /* [in] */ Int32 arg4,
-        /* [in] */ Int32 arg5,
-        /* [out] */ IMessage** msg);
-
-    CARAPI ObtainMessage(
+    CARAPI ObtainMessageIIIIII(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
@@ -194,7 +186,7 @@ public:
         /* [in] */ Int32 arg6,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessage(
+    CARAPI ObtainMessageIIIIO(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
@@ -207,8 +199,6 @@ private:
     AutoPtr<IHandlerCallerCallback> GetCallback();
 
 private:
-    AutoPtr<IContext> mContext;
-
     AutoPtr<ILooper> mMainLooper;
     AutoPtr<MyHandler> mH;
 
@@ -221,4 +211,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_INTERNAL_OS_HANDLER_CALLER_H__
+#endif //__ELASTOS_DROID_INTERNAL_OS_CHANDLERCALLER_H__

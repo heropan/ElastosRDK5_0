@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "util/CAtomicFile.h"
+#include "internal/os/CAtomicFile.h"
+#include "ext/frameworkdef.h"
 #include "os/FileUtils.h"
 
 using Elastos::IO::CFile;
@@ -10,19 +10,12 @@ using Elastos::Droid::Os::FileUtils;
 
 namespace Elastos {
 namespace Droid {
-namespace Utility {
+namespace Internal {
+namespace Os {
 
 CAR_INTERFACE_IMPL(CAtomicFile, Object, IAtomicFile)
 
 CAR_OBJECT_IMPL(CAtomicFile)
-
-CAtomicFile::CAtomicFile()
-{
-}
-
-CAtomicFile::~CAtomicFile()
-{
-}
 
 ECode CAtomicFile::constructor(
     /* [in] */ IFile* baseName)
@@ -36,10 +29,6 @@ ECode CAtomicFile::constructor(
     return CFile::New(name, (IFile**)&mBackupName);
 }
 
-/**
- * Return the path to the base file.  You should not generally use this,
- * as the data at that path may not be valid.
- */
 ECode CAtomicFile::GetBaseFile(
     /* [out] */ IFile** file)
 {
@@ -49,35 +38,6 @@ ECode CAtomicFile::GetBaseFile(
     return NOERROR;
 }
 
-/**
- * Delete the atomic file.  This deletes both the base and backup files.
- */
-ECode CAtomicFile::Delete()
-{
-    Boolean result;
-    if (mBaseName != NULL) {
-        mBaseName->Delete(&result);
-    }
-    if (mBackupName != NULL) {
-        mBackupName->Delete(&result);
-    }
-    return NOERROR;
-}
-
-/**
- * Start a new write operation on the file.  This returns a FileOutputStream
- * to which you can write the new file data.  The existing file is replaced
- * with the new data.  You <em>must not</em> directly close the given
- * FileOutputStream; instead call either {@link #finishWrite(FileOutputStream)}
- * or {@link #failWrite(FileOutputStream)}.
- *
- * <p>Note that if another thread is currently performing
- * a write, this will simply replace whatever that thread is writing
- * with the new file being written by this thread, and when the other
- * thread finishes the write the new write operation will no longer be
- * safe (or will be lost).  You must do your own threading protection for
- * access to AtomicFile.
- */
 ECode CAtomicFile::StartWrite(
     /* [out] */ IFileOutputStream** stream)
 {
@@ -95,12 +55,12 @@ ECode CAtomicFile::StartWrite(
                 //Log.w("AtomicFile", "Couldn't rename file " + mBaseName
                 //        + " to backup file " + mBackupName);
             }
-        } else {
+        }
+        else {
             Boolean result;
             mBaseName->Delete(&result);
         }
     }
-
     if (CFileOutputStream::New(mBaseName, stream) == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
         AutoPtr<IFile> parent;
         mBaseName->GetParentFile((IFile**)&parent);
@@ -122,12 +82,6 @@ ECode CAtomicFile::StartWrite(
     return NOERROR;
 }
 
-/**
- * Call when you have successfully finished writing to the stream
- * returned by {@link #startWrite()}.  This will close, sync, and
- * commit the new data.  The next attempt to read the atomic file
- * will return the new file stream.
- */
 ECode CAtomicFile::FinishWrite(
     /* [in] */ IFileOutputStream* str)
 {
@@ -136,7 +90,7 @@ ECode CAtomicFile::FinishWrite(
         FileUtils::Sync(str);
         //try {
             ICloseable::Probe(str)->Close();
-            return mBackupName->Delete(&result);
+            mBackupName->Delete(&result);
         //} catch (IOException e) {
         //    Log.w("AtomicFile", "finishWrite: Got exception:", e);
         //}
@@ -144,11 +98,6 @@ ECode CAtomicFile::FinishWrite(
     return NOERROR;
 }
 
-/**
- * Call when you have failed for some reason at writing to the stream
- * returned by {@link #startWrite()}.  This will close the current
- * write stream, and roll back to the previous state of the file.
- */
 ECode CAtomicFile::FailWrite(
     /* [in] */ IFileOutputStream* str)
 {
@@ -166,9 +115,17 @@ ECode CAtomicFile::FailWrite(
     return NOERROR;
 }
 
-/** @hide
- * @deprecated This is not safe.
- */
+ECode CAtomicFile::OpenAppend(
+    /* [out] */ IFileOutputStream** stream)
+{
+    VALIDATE_NOT_NULL(stream);
+    //try {
+    return CFileOutputStream::New(mBaseName, TRUE, stream);
+    //} catch (FileNotFoundException e) {
+    //    throw new IOException("Couldn't append " + mBaseName);
+    //}
+}
+
 ECode CAtomicFile::Truncate()
 {
     //try {
@@ -184,32 +141,27 @@ ECode CAtomicFile::Truncate()
     return NOERROR;
 }
 
-/** @hide
- * @deprecated This is not safe.
- */
-ECode CAtomicFile::OpenAppend(
-    /* [out] */ IFileOutputStream** stream)
+ECode CAtomicFile::Exists(
+    /* [out] */ Boolean* exists)
 {
-    VALIDATE_NOT_NULL(stream);
-    //try {
-    return CFileOutputStream::New(mBaseName, TRUE, stream);
-    //} catch (FileNotFoundException e) {
-    //    throw new IOException("Couldn't append " + mBaseName);
-    //}
+    VALIDATE_NOT_NULL(exists)
+    Boolean e1, e2;
+    *exists = (mBaseName->Exists(&e1), e1) || (mBackupName->Exists(&e2), e2);
+    return NOERROR;
 }
 
-/**
- * Open the atomic file for reading.  If there previously was an
- * incomplete write, this will roll back to the last good data before
- * opening for read.  You should call close() on the FileInputStream when
- * you are done reading from it.
- *
- * <p>Note that if another thread is currently performing
- * a write, this will incorrectly consider it to be in the state of a bad
- * write and roll back, causing the new data currently being written to
- * be dropped.  You must do your own threading protection for access to
- * AtomicFile.
- */
+ECode CAtomicFile::Delete()
+{
+    Boolean result;
+    if (mBaseName != NULL) {
+        mBaseName->Delete(&result);
+    }
+    if (mBackupName != NULL) {
+        mBackupName->Delete(&result);
+    }
+    return NOERROR;
+}
+
 ECode CAtomicFile::OpenRead(
     /* [out] */ IFileInputStream** stream)
 {
@@ -223,23 +175,6 @@ ECode CAtomicFile::OpenRead(
     return CFileInputStream::New(mBaseName, stream);
 }
 
-ECode CAtomicFile::GetLastModifiedTime(
-    /* [out] */ Int64* time)
-{
-    VALIDATE_NOT_NULL(time)
-
-    Boolean result;
-    mBackupName->Exists(&result);
-    if (result) {
-        return mBackupName->GetLastModified(time);
-    }
-    return mBaseName->GetLastModified(time);
-}
-
-/**
- * A convenience for {@link #openRead()} that also reads all of the
- * file contents into a byte array which is returned.
- */
 ECode CAtomicFile::ReadFully(
     /* [out] */ ArrayOf<Byte>** result)
 {
@@ -284,6 +219,7 @@ _EXIT_:
     return NOERROR;
 }
 
+}
 }
 }
 }

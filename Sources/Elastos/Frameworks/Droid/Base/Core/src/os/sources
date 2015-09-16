@@ -96,14 +96,6 @@ SOURCES += CUserManagerHelper.cpp
 SOURCES += Vibrator.cpp
 SOURCES += CWorkSource.cpp
 
-# move to internal/os
-#SOURCES += CZygoteInit.cpp
-SOURCES += RuntimeInit.cpp
-SOURCES += CRuntimeInit.cpp
-SOURCES += SomeArgs.cpp
-SOURCES += invokeCallback_gnuc.S
-
-#SOURCES += HandlerCaller.cpp
 #SOURCES += BinderProxy.cpp
 #SOURCES += CBinderDeathRecipient.cpp
 #SOURCES += NativeBinder.cpp

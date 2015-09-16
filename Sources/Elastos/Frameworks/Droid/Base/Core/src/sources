@@ -93,6 +93,7 @@ INCLUDES += $(MAKEDIR)/../inc/util
 // INCLUDES += $(MAKEDIR)/../inc/telephony
 // INCLUDES += $(MAKEDIR)/../inc/sax
 INCLUDES += $(MAKEDIR)/../inc/internal/content
+INCLUDES += $(MAKEDIR)/../inc/internal/os
 
 SOURCES = Elastos.Droid.Core.car
 SOURCES += R.cpp
