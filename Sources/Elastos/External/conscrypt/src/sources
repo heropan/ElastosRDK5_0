@@ -8,6 +8,7 @@ INCLUDES += $(MAKEDIR)/../inc
 
 SOURCES = Org.Conscrypt.car
 SOURCES += COpenSSLProvider.cpp
+SOURCES += NativeCrypto.cpp
 SOURCES += Platform.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 
@@ -16,4 +17,4 @@ LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib
 
-LIBRARIES += -llog
+LIBRARIES += -llog -lssl -lcrypto
