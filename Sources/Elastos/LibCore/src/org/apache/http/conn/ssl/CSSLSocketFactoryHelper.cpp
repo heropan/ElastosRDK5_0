@@ -8,7 +8,7 @@ namespace Http {
 namespace Conn {
 namespace SSL {
 
-CAR_INTERFACE_IMPL(CSSLSocketFactoryHelper, Object, ISSLSocketFactoryHelper)
+CAR_INTERFACE_IMPL(CSSLSocketFactoryHelper, Singleton, ISSLSocketFactoryHelper)
 
 CAR_SINGLETON_IMPL(CSSLSocketFactoryHelper)
 
@@ -42,9 +42,9 @@ ECode CSSLSocketFactoryHelper::GetStrictHostnameVerifier(
 ECode CSSLSocketFactoryHelper::GetSocketFactory(
     /* [out] */ ISSLSocketFactory** factory)
 {
-    VALIDATE_NOT_NULL(verifier)
-    *verifier = CSSLSocketFactory::GetSocketFactory();
-    REFCOUNT_ADD(*verifier)
+    VALIDATE_NOT_NULL(factory)
+    *factory = CSSLSocketFactory::GetSocketFactory();
+    REFCOUNT_ADD(*factory)
     return NOERROR;
 }
 

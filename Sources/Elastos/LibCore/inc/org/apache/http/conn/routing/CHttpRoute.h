@@ -3,8 +3,9 @@
 #define __ORG_APACHE_HTTP_CONN_ROUTING_CHttpRoute_H_
 
 #include "_Org_Apache_Http_Conn_Routing_CHttpRoute.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
+using Elastos::Core::ICloneable;
 using Elastos::Net::IInetAddress;
 using Org::Apache::Http::IHttpHost;
 

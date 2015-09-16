@@ -1,7 +1,12 @@
 
 #include "MultihomePlainSocketFactory.h"
 #include "HttpConnectionParams.h"
-#include <elastos/Logger.h>
+#include "CInetAddressHelper.h"
+#include "CInetSocketAddress.h"
+#include "CSocket.h"
+#include "CCollections.h"
+#include "CArrayList.h"
+#include "Logger.h"
 
 using Elastos::Core::ICloneable;
 using Elastos::Net::IInetAddress;
@@ -10,14 +15,17 @@ using Elastos::Net::CInetAddressHelper;
 using Elastos::Net::IInetSocketAddress;
 using Elastos::Net::CInetSocketAddress;
 using Elastos::Net::CSocket;
+using Elastos::Net::ISocketAddress;
+using Elastos::Net::ECLSID_CSocket;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::CCollections;
 using Elastos::Utility::ICollections;
-using Elastos::Utility::IIterable;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Conn::Scheme::EIID_ISocketFactory;
+using Org::Apache::Http::Params::HttpConnectionParams;
 
 namespace Org {
 namespace Apache {
@@ -79,7 +87,8 @@ ECode MultihomePlainSocketFactory::ConnectSocket(
 
         AutoPtr<IInetSocketAddress> isa;
         CInetSocketAddress::New(localAddress, localPort, (IInetSocketAddress**)&isa);
-        sock->Bind(isa);
+        AutoPtr<ISocketAddress> sa = ISocketAddress::Probe(isa);
+        sock->Bind(sa);
     }
 
     Int32 timeout;
@@ -101,21 +110,22 @@ ECode MultihomePlainSocketFactory::ConnectSocket(
     cols->Shuffle(IList::Probe(addresses));
 
     // IOException lastEx = null;
-    AutoPtr<IIterable> iterable = IIterable::Probe(addresses);
-    AutoPtr<IIterator> it = iterable->GetIterator((IIterator**)&it);
+    AutoPtr<IIterator> it;
+    addresses->GetIterator((IIterator**)&it);
     ECode ec = NOERROR;
     Boolean hasNext;
     while(it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInetAddress> address;
-        it->Next((IInterface**)&address);
+        it->GetNext((IInterface**)&address);
         // try {
         AutoPtr<IInetSocketAddress> insa;
         CInetSocketAddress::New(address, port, (IInetSocketAddress**)&insa);
-        ec = sock->Connect(insa, timeout);
+        AutoPtr<ISocketAddress> sa = ISocketAddress::Probe(insa);
+        ec = sock->Connect(sa, timeout);
         if (ec == (ECode)E_SOCKET_TIMEOUT_EXCEPTION) {
             return ec;
         }
-        else if (ec = E_IO_EXCEPTION) {
+        else if (ec == (ECode)E_IO_EXCEPTION) {
             sock = NULL;
             CSocket::New((ISocket**)&sock);
             continue;
@@ -141,7 +151,7 @@ ECode MultihomePlainSocketFactory::ConnectSocket(
 
 ECode MultihomePlainSocketFactory::IsSecure(
     /* [in] */ ISocket* sock,
-    /* [out] */ Boolean isSecure)
+    /* [out] */ Boolean* isSecure)
 {
     VALIDATE_NOT_NULL(isSecure)
     *isSecure = FALSE;
@@ -154,7 +164,7 @@ ECode MultihomePlainSocketFactory::IsSecure(
     // directly. If it was using javax.net.SocketFactory, we couldn't make
     // an assumption about the socket class here.
     ClassID clsid;
-    if (sock->GetClassID(&clsid), clsid != ECLSID_CSocket) {
+    if (IObject::Probe(sock)->GetClassID(&clsid), clsid != ECLSID_CSocket) {
         Logger::E("MultihomePlainSocketFactory", "Socket not created by this factory.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -174,7 +184,7 @@ ECode MultihomePlainSocketFactory::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = (other == (IInterface*)this);
+    *result = (other == this->Probe(EIID_IInterface));
     return NOERROR;
 }
 
@@ -183,8 +193,8 @@ ECode MultihomePlainSocketFactory::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode)
     ClassID clsid;
-    GetClassID(&clsid);
-    *hashCode = clsid.clsid.Data1;
+    ((IObject*)this->Probe(EIID_IObject))->GetClassID(&clsid);
+    *hashCode = clsid.mClsid.mData1;
     return NOERROR;
 }
 

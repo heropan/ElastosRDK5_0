@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CONN_SCHEME_CPLAINSOCKETFACTORY_H_
 
 #include "_Org_Apache_Http_Conn_Scheme_CPlainSocketFactory.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Net::ISocket;

@@ -1,6 +1,6 @@
 
 #include "CBasicRouteDirector.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Utility::Logging::Logger;
@@ -24,7 +24,7 @@ ECode CBasicRouteDirector::NextStep(
     VALIDATE_NOT_NULL(step)
     *step = UNREACHABLE;
     if (plan == NULL) {
-        Logger::e("CBasicRouteDirector", "Planned route may not be null.");
+        Logger::E("CBasicRouteDirector", "Planned route may not be null.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -134,8 +134,8 @@ ECode CBasicRouteDirector::ProxiedStep(
 
     for (Int32 i = 0; i < fhc - 1; i++) {
         AutoPtr<IHttpHost> pht, fht;
-        plan->GetHopTarget((IHttpHost**)&pht);
-        fact->GetHopTarget((IHttpHost**)&fht);
+        plan->GetHopTarget(i, (IHttpHost**)&pht);
+        fact->GetHopTarget(i, (IHttpHost**)&fht);
         if (IObject::Probe(pht)->Equals(fht, &isEquals), !isEquals) {
             *step = UNREACHABLE;
             return NOERROR;

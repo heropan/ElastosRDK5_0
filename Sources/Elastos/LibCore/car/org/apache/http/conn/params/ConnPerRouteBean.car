@@ -30,6 +30,9 @@ module
      */
     interface IConnPerRouteBean {
 
+        /** The default maximum number of connections allowed per host */
+        const Int32 DEFAULT_MAX_CONNECTIONS_PER_ROUTE = 2;   // Per RFC 2616 sec 8.1.4
+
         GetDefaultMax(
             [out] Int32* max);
 

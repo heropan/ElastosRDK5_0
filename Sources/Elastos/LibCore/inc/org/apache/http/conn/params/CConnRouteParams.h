@@ -5,6 +5,10 @@
 #include "_Org_Apache_Http_Conn_Params_CConnRouteParams.h"
 #include "Singleton.h"
 
+using Elastos::Net::IInetAddress;
+using Org::Apache::Http::Conn::Routing::IHttpRoute;
+using Org::Apache::Http::Params::IHttpParams;
+
 namespace Org {
 namespace Apache {
 namespace Http {
@@ -12,7 +16,7 @@ namespace Conn {
 namespace Params {
 
 CarClass(CConnRouteParams)
-    , public Object
+    , public Singleton
     , public IConnRouteParams
     , public IConnRoutePNames
 {
@@ -110,7 +114,7 @@ public:
         /* [out] */ IHttpHost** host);
 
     CARAPI GetNoRoute(
-        /* [out] */ IHttpRoute* route);
+        /* [out] */ IHttpRoute** route);
 };
 
 } // namespace Params

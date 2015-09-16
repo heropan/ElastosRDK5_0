@@ -1,8 +1,9 @@
 
 #include "CBasicManagedEntity.h"
 #include "CEofSensorInputStream.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
+using Elastos::IO::ICloseable;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
@@ -26,10 +27,10 @@ ECode CBasicManagedEntity::GetContent(
     /* [out] */ IInputStream** inputStream)
 {
     VALIDATE_NOT_NULL(inputStream)
-    AutoPtr<IInputStream> inputStream;
-    mWrappedEntity->GetContent((IInputStream**)&inputStream);
+    AutoPtr<IInputStream> ins;
+    mWrappedEntity->GetContent((IInputStream**)&ins);
     AutoPtr<IEofSensorInputStream> eofInputStream;
-    CEofSensorInputStream::New(inputStream, (IEofSensorWatcher*)this, (IEofSensorInputStream**)&eofInputStream);
+    CEofSensorInputStream::New(ins, (IEofSensorWatcher*)this, (IEofSensorInputStream**)&eofInputStream);
     *inputStream = IInputStream::Probe(eofInputStream);
     REFCOUNT_ADD(*inputStream)
     return NOERROR;
@@ -66,9 +67,9 @@ ECode CBasicManagedEntity::ReleaseConnection()
 
 ECode CBasicManagedEntity::AbortConnection()
 {
-    if (managedConn != NULL) {
+    if (mManagedConn != NULL) {
         // try {
-        mManagedConn->AbortConnection();
+        IConnectionReleaseTrigger::Probe(mManagedConn)->AbortConnection();
         // } finally {
         //     managedConn = null;
         // }
@@ -123,7 +124,7 @@ ECode CBasicManagedEntity::StreamAbort(
 {
     VALIDATE_NOT_NULL(result)
     if (mManagedConn != NULL) {
-        mManagedConn->AbortConnection();
+        IConnectionReleaseTrigger::Probe(mManagedConn)->AbortConnection();
     }
     *result = FALSE;
     return NOERROR;
@@ -133,7 +134,7 @@ ECode CBasicManagedEntity::ReleaseManagedConnection()
 {
     if (mManagedConn != NULL) {
         // try {
-        mManagedConn->ReleaseConnection();
+        IConnectionReleaseTrigger::Probe(mManagedConn)->AbortConnection();
         // } finally {
         //     managedConn = null;
         // }

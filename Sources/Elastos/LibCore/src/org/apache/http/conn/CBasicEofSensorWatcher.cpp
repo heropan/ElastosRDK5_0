@@ -1,7 +1,8 @@
 
 #include "CBasicEofSensorWatcher.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
+using Elastos::IO::ICloseable;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
@@ -28,7 +29,7 @@ ECode CBasicEofSensorWatcher::EofDetected(
     // } finally {
     //     managedConn.releaseConnection();
     // }
-    mManagedConn->ReleaseConnection();
+    IConnectionReleaseTrigger::Probe(mManagedConn)->ReleaseConnection();
     *result = FALSE;
     return NOERROR;
 }
@@ -39,7 +40,7 @@ ECode CBasicEofSensorWatcher::StreamClosed(
 {
     VALIDATE_NOT_NULL(result)
     // try {
-    if (attemptReuse) {
+    if (mAttemptReuse) {
         // this assumes that closing the stream will
         // consume the remainder of the response body:
         ICloseable::Probe(wrapped)->Close();
@@ -48,7 +49,7 @@ ECode CBasicEofSensorWatcher::StreamClosed(
     // } finally {
     //     managedConn.releaseConnection();
     // }
-    mManagedConn->ReleaseConnection();
+    IConnectionReleaseTrigger::Probe(mManagedConn)->ReleaseConnection();
     *result = FALSE;
     return NOERROR;
 }
@@ -58,7 +59,7 @@ ECode CBasicEofSensorWatcher::StreamAbort(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    mManagedConn->AbortConnection();
+    IConnectionReleaseTrigger::Probe(mManagedConn)->AbortConnection();
     *result = FALSE;
     return NOERROR;
 }

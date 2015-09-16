@@ -6,6 +6,7 @@ namespace Org {
 namespace Apache {
 namespace Http {
 namespace Conn {
+namespace Params {
 
 CAR_INTERFACE_IMPL_2(CConnManagerParams, Object, IConnManagerParams, IConnManagerPNames)
 
@@ -53,6 +54,7 @@ ECode CConnManagerParams::GetMaxTotalConnections(
     return ConnManagerParams::GetMaxTotalConnections(params, number);
 }
 
+} // namespace Params
 } // namespace Conn
 } // namespace Http
 } // namespace Apache

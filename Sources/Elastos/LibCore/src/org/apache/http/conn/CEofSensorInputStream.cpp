@@ -1,6 +1,6 @@
 
 #include "CEofSensorInputStream.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 
@@ -37,12 +37,12 @@ ECode CEofSensorInputStream::Read(
     if (IsReadAllowed(&isReadAllowed), isReadAllowed) {
         // try {
         ECode ec = mWrappedStream->Read(&l);
-        if (FAILED(EC)) {
+        if (FAILED(ec)) {
             CheckAbort();
             return ec;
         }
         ec = CheckEOF(l);
-        if (FAILED(EC)) {
+        if (FAILED(ec)) {
             CheckAbort();
             return ec;
         }
@@ -70,12 +70,12 @@ ECode CEofSensorInputStream::Read(
     if (IsReadAllowed(&isReadAllowed), isReadAllowed) {
         // try {
         ECode ec = mWrappedStream->Read(buffer, offset, length, &l);
-        if (FAILED(EC)) {
+        if (FAILED(ec)) {
             CheckAbort();
             return ec;
         }
         ec = CheckEOF(l);
-        if (FAILED(EC)) {
+        if (FAILED(ec)) {
             CheckAbort();
             return ec;
         }
@@ -101,12 +101,12 @@ ECode CEofSensorInputStream::Read(
     if (IsReadAllowed(&isReadAllowed), isReadAllowed) {
         // try {
         ECode ec = mWrappedStream->Read(buffer, &l);
-        if (FAILED(EC)) {
+        if (FAILED(ec)) {
             CheckAbort();
             return ec;
         }
         ec = CheckEOF(l);
-        if (FAILED(EC)) {
+        if (FAILED(ec)) {
             CheckAbort();
             return ec;
         }
@@ -131,7 +131,7 @@ ECode CEofSensorInputStream::Available(
     if (IsReadAllowed(&isReadAllowed), isReadAllowed) {
         // try {
         ECode ec = mWrappedStream->Available(&a);
-        if (FAILED(EC)) {
+        if (FAILED(ec)) {
             CheckAbort();
             return ec;
         }
@@ -174,7 +174,7 @@ ECode CEofSensorInputStream::CheckClose()
     if (mWrappedStream != NULL) {
         // try {
         Boolean scws = TRUE; // should close wrapped stream?
-        if (mEofWatcher != null) mEofWatcher->StreamClosed(mWrappedStream, &scws);
+        if (mEofWatcher != NULL) mEofWatcher->StreamClosed(mWrappedStream, &scws);
         if (scws) ICloseable::Probe(mWrappedStream)->Close();
         // } finally {
         //     wrappedStream = null;
@@ -189,7 +189,7 @@ ECode CEofSensorInputStream::CheckAbort()
     if (mWrappedStream != NULL) {
         // try {
         Boolean scws = TRUE; // should close wrapped stream?
-        if (mEofWatcher != null) mEofWatcher->StreamAbort(mWrappedStream, &scws);
+        if (mEofWatcher != NULL) mEofWatcher->StreamAbort(mWrappedStream, &scws);
         if (scws) ICloseable::Probe(mWrappedStream)->Close();
         // } finally {
         //     wrappedStream = null;

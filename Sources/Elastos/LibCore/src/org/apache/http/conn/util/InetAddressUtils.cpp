@@ -1,5 +1,6 @@
 
 #include "InetAddressUtils.h"
+#include "CPatternHelper.h"
 
 using Elastos::Utility::Regex::CPatternHelper;
 using Elastos::Utility::Regex::IMatcher;

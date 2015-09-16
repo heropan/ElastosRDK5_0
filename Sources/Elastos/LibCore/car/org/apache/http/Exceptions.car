@@ -22,7 +22,7 @@ module
     const E_HTTP_RESPONSE_EXCEPTION                         = 0xB10C0000;
     const E_NON_REPEATABLE_REQUEST_EXCEPTION                = 0xB10D0000;
     const E_CONNECTION_POOL_TIMEOUT_EXCEPTION               = 0xB10E0000;
-    const E_CONNEC_TIMEOUT_EXCEPTION                        = 0xB10F0000;
+    const E_CONNECT_TIMEOUT_EXCEPTION                        = 0xB10F0000;
     const E_HTTP_HOST_CONNECT_EXCEPTION                     = 0xB2010000;
     const E_MALFORMED_COOKIE_EXCEPTION                      = 0xB2020000;
     const E_NTLM_ENGINE_EXCEPTION                           = 0xB2030000;

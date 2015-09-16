@@ -1,12 +1,17 @@
 
 #include "CPlainSocketFactory.h"
 #include "HttpConnectionParams.h"
-#include <elastos/Logger.h>
+#include "CInetSocketAddress.h"
+#include "CSocket.h"
+#include "Logger.h"
 
 using Elastos::Net::CSocket;
 using Elastos::Net::IInetSocketAddress;
 using Elastos::Net::CInetSocketAddress;
+using Elastos::Net::ISocketAddress;
+using Elastos::Net::ECLSID_CSocket;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Params::HttpConnectionParams;
 
 namespace Org {
 namespace Apache {
@@ -71,7 +76,8 @@ ECode CPlainSocketFactory::ConnectSocket(
 
         AutoPtr<IInetSocketAddress> isa;
         CInetSocketAddress::New(localAddress, localPort, (IInetSocketAddress**)&isa);
-        sock->Bind(isa);
+        AutoPtr<ISocketAddress> sa = ISocketAddress::Probe(isa);
+        sock->Bind(sa);
     }
 
     Int32 timeout;
@@ -80,14 +86,15 @@ ECode CPlainSocketFactory::ConnectSocket(
     AutoPtr<IInetSocketAddress> remoteAddress;
     if (mNameResolver != NULL) {
         AutoPtr<IInetAddress> addr;
-        mNameResolver->Resolve((IInetAddress**)&addr);
+        mNameResolver->Resolve(host, (IInetAddress**)&addr);
         CInetSocketAddress::New(addr, port, (IInetSocketAddress**)&remoteAddress);
     }
     else {
         CInetSocketAddress::New(host, port, (IInetSocketAddress**)&remoteAddress);
     }
     // try {
-    ECode ec = sock->Connect(remoteAddress, timeout);
+    AutoPtr<ISocketAddress> sa = ISocketAddress::Probe(remoteAddress);
+    ECode ec = sock->Connect(sa, timeout);
     if (ec == (ECode)E_SOCKET_TIMEOUT_EXCEPTION) {
         Logger::E("CPlainSocketFactory", "Connect to %p timed out", remoteAddress.Get());
         return E_CONNECT_TIMEOUT_EXCEPTION;
@@ -115,7 +122,7 @@ ECode CPlainSocketFactory::IsSecure(
     // directly. If it was using javax.net.SocketFactory, we couldn't make
     // an assumption about the socket class here.
     ClassID clsid;
-    if (sock->GetClassID(&clsid), clsid != ECLSID_CSocket) {
+    if (IObject::Probe(sock)->GetClassID(&clsid), clsid != ECLSID_CSocket) {
         Logger::E("MultihomePlainSocketFactory", "Socket not created by this factory.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -136,7 +143,7 @@ ECode CPlainSocketFactory::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = (obj == this);
+    *result = (other == this->Probe(EIID_IInterface));
     return NOERROR;
 }
 
@@ -146,7 +153,7 @@ ECode CPlainSocketFactory::GetHashCode(
     VALIDATE_NOT_NULL(hashCode)
     ClassID clsid;
     GetClassID(&clsid);
-    *hashCode = clsid.clsid.Data1;
+    *hashCode = clsid.mClsid.mData1;
     return NOERROR;
 }
 
