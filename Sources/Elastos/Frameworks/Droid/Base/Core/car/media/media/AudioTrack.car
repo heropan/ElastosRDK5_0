@@ -3,7 +3,7 @@ module
 {
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.IO.IByteBuffer;
-    interface IAudioTrack;
+    interface Elastos.Droid.Media.IAudioTrack;
 
     namespace Elastos {
     namespace Droid {
