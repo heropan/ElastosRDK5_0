@@ -730,68 +730,77 @@ public:
 
     static const Int32 DRAG_MASK;
 
-    // //
-    // // Properties
-    // //
-    // /**
-    //  * A Property wrapper around the <code>alpha</code> functionality handled by the
-    //  * {@link View#setAlpha(float)} and {@link View#getAlpha()} methods.
-    //  */
-    // static AutoPtr<IProperty> ALPHA;
+    /**
+     * A Property wrapper around the <code>alpha</code> functionality handled by the
+     * {@link View#setAlpha(float)} and {@link View#getAlpha()} methods.
+     */
+    static const AutoPtr<IProperty> ALPHA;
 
-    // /**
-    //  * A Property wrapper around the <code>translationX</code> functionality handled by the
-    //  * {@link View#setTranslationX(float)} and {@link View#getTranslationX()} methods.
-    //  */
-    // static AutoPtr<IProperty> TRANSLATION_X;
+    /**
+     * A Property wrapper around the <code>translationX</code> functionality handled by the
+     * {@link View#setTranslationX(float)} and {@link View#getTranslationX()} methods.
+     */
+    static const AutoPtr<IProperty> TRANSLATION_X;
 
-    // /**
-    //  * A Property wrapper around the <code>translationY</code> functionality handled by the
-    //  * {@link View#setTranslationY(float)} and {@link View#getTranslationY()} methods.
-    //  */
-    // static AutoPtr<IProperty> TRANSLATION_Y;
+    /**
+     * A Property wrapper around the <code>translationY</code> functionality handled by the
+     * {@link View#setTranslationY(float)} and {@link View#getTranslationY()} methods.
+     */
+    static const AutoPtr<IProperty> TRANSLATION_Y;
 
-    // /**
-    //  * A Property wrapper around the <code>x</code> functionality handled by the
-    //  * {@link View#setX(float)} and {@link View#getX()} methods.
-    //  */
-    // static AutoPtr<IProperty> X;
+    /**
+    * A Property wrapper around the <code>translationZ</code> functionality handled by the
+    * {@link View#setTranslationZ(float)} and {@link View#getTranslationZ()} methods.
+    */
+    static const AutoPtr<IProperty> TRANSLATION_Z;
 
-    // /**
-    //  * A Property wrapper around the <code>y</code> functionality handled by the
-    //  * {@link View#setY(float)} and {@link View#getY()} methods.
-    //  */
-    // static AutoPtr<IProperty> Y;
+    /**
+     * A Property wrapper around the <code>x</code> functionality handled by the
+     * {@link View#setX(float)} and {@link View#getX()} methods.
+     */
+    static const AutoPtr<IProperty> X;
 
-    // /**
-    //  * A Property wrapper around the <code>rotation</code> functionality handled by the
-    //  * {@link View#setRotation(float)} and {@link View#getRotation()} methods.
-    //  */
-    // static AutoPtr<IProperty> ROTATION;
+    /**
+     * A Property wrapper around the <code>y</code> functionality handled by the
+     * {@link View#setY(float)} and {@link View#getY()} methods.
+     */
+    static const AutoPtr<IProperty> Y;
 
-    // /**
-    //  * A Property wrapper around the <code>rotationX</code> functionality handled by the
-    //  * {@link View#setRotationX(float)} and {@link View#getRotationX()} methods.
-    //  */
-    // static AutoPtr<IProperty> ROTATION_X;
+    /**
+     * A Property wrapper around the <code>z</code> functionality handled by the
+     * {@link View#setZ(float)} and {@link View#getZ()} methods.
+     */
+    static const AutoPtr<IProperty> Z;
 
-    // /**
-    //  * A Property wrapper around the <code>rotationY</code> functionality handled by the
-    //  * {@link View#setRotationY(float)} and {@link View#getRotationY()} methods.
-    //  */
-    // static AutoPtr<IProperty> ROTATION_Y;
+    /**
+     * A Property wrapper around the <code>rotation</code> functionality handled by the
+     * {@link View#setRotation(float)} and {@link View#getRotation()} methods.
+     */
+    static const AutoPtr<IProperty> ROTATION;
 
-    // /**
-    //  * A Property wrapper around the <code>scaleX</code> functionality handled by the
-    //  * {@link View#setScaleX(float)} and {@link View#getScaleX()} methods.
-    //  */
-    // static AutoPtr<IProperty> SCALE_X;
+    /**
+     * A Property wrapper around the <code>rotationX</code> functionality handled by the
+     * {@link View#setRotationX(float)} and {@link View#getRotationX()} methods.
+     */
+    static const AutoPtr<IProperty> ROTATION_X;
 
-    // /**
-    //  * A Property wrapper around the <code>scaleY</code> functionality handled by the
-    //  * {@link View#setScaleY(float)} and {@link View#getScaleY()} methods.
-    //  */
-    // static AutoPtr<IProperty> SCALE_Y;
+    /**
+     * A Property wrapper around the <code>rotationY</code> functionality handled by the
+     * {@link View#setRotationY(float)} and {@link View#getRotationY()} methods.
+     */
+    static const AutoPtr<IProperty> ROTATION_Y;
+
+    /**
+     * A Property wrapper around the <code>scaleX</code> functionality handled by the
+     * {@link View#setScaleX(float)} and {@link View#getScaleX()} methods.
+     */
+    static const AutoPtr<IProperty> SCALE_X;
+
+    /**
+     * A Property wrapper around the <code>scaleY</code> functionality handled by the
+     * {@link View#setScaleY(float)} and {@link View#getScaleY()} methods.
+     */
+    static const AutoPtr<IProperty> SCALE_Y;
 
     // static CARAPI_(AutoPtr<IFloatProperty>) InitProperty(
     //     /* [in] */ const String& name);
@@ -1302,6 +1311,186 @@ protected:
     };
 
 public:
+    class AlpahFloatProperty
+        : public FloatProperty
+    {
+    public:
+        AlpahFloatProperty();
+
+        CARAPI SetValue(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Float value);
+
+        CARAPI Get(
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** rst);
+    };
+
+    class TranslationXFloatProperty
+        : public FloatProperty
+    {
+    public:
+        TranslationXFloatProperty();
+
+        CARAPI SetValue(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Float value);
+
+        CARAPI Get(
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** rst);
+    };
+
+    class TranslationYFloatProperty
+        : public FloatProperty
+    {
+    public:
+        TranslationYFloatProperty();
+
+        CARAPI SetValue(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Float value);
+
+        CARAPI Get(
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** rst);
+    };
+
+    class TranslationZFloatProperty
+        : public FloatProperty
+    {
+    public:
+        TranslationZFloatProperty();
+
+        CARAPI SetValue(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Float value);
+
+        CARAPI Get(
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** rst);
+    };
+
+    class XFloatProperty
+        : public FloatProperty
+    {
+    public:
+        XFloatProperty();
+
+        CARAPI SetValue(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Float value);
+
+        CARAPI Get(
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** rst);
+    };
+
+    class YFloatProperty
+        : public FloatProperty
+    {
+    public:
+        YFloatProperty();
+
+        CARAPI SetValue(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Float value);
+
+        CARAPI Get(
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** rst);
+    };
+
+    class ZFloatProperty
+        : public FloatProperty
+    {
+    public:
+        ZFloatProperty();
+
+        CARAPI SetValue(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Float value);
+
+        CARAPI Get(
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** rst);
+    };
+
+    class RotationFloatProperty
+        : public FloatProperty
+    {
+    public:
+        RotationFloatProperty();
+
+        CARAPI SetValue(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Float value);
+
+        CARAPI Get(
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** rst);
+    };
+
+    class RotationXFloatProperty
+        : public FloatProperty
+    {
+    public:
+        RotationXFloatProperty();
+
+        CARAPI SetValue(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Float value);
+
+        CARAPI Get(
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** rst);
+    };
+
+    class RotationYFloatProperty
+        : public FloatProperty
+    {
+    public:
+        RotationYFloatProperty();
+
+        CARAPI SetValue(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Float value);
+
+        CARAPI Get(
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** rst);
+    };
+
+    class ScaleXFloatProperty
+        : public FloatProperty
+    {
+    public:
+        ScaleXFloatProperty();
+
+        CARAPI SetValue(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Float value);
+
+        CARAPI Get(
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** rst);
+    };
+
+    class ScaleYFloatProperty
+        : public FloatProperty
+    {
+    public:
+        ScaleYFloatProperty();
+
+        CARAPI SetValue(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Float value);
+
+        CARAPI Get(
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** rst);
+    };
+
     /**
      * A MeasureSpec encapsulates the layout requirements passed from parent to child.
      * Each MeasureSpec represents a requirement for either the width or the height.
@@ -1394,6 +1583,10 @@ public:
         static CARAPI_(Int32) GetSize(
             /* [in] */ Int32 measureSpec);
 
+        static CARAPI_(Int32) Adjust(
+            /* [in] */ Int32 measureSpec,
+            /* [in] */ Int32 delta);
+
         /**
          * Returns a String representation of the specified measure
          * specification.
@@ -1449,47 +1642,13 @@ public:
          * POOL_LIMIT objects that get reused. This reduces memory allocations
          * whenever possible.
          */
-        class InvalidateInfo :
-            public ElRefBase,
-            public IPoolable
+        class InvalidateInfo
+            : public Object
         {
-        private:
-            class InvalidateInfoManager :
-                public ElRefBase,
-                public IPoolableManager
-            {
-            public:
-                CAR_INTERFACE_DECL();
-
-                CARAPI NewInstance(
-                    /* [out] */ IPoolable** element);
-
-                CARAPI OnAcquired(
-                    /* [in] */ IPoolable* element);
-
-                CARAPI OnReleased(
-                    /* [in] */ IPoolable* element);
-            };
-
         public:
-            CAR_INTERFACE_DECL();
+            static CARAPI_(AutoPtr<InvalidateInfo>) Obtain();
 
-            static CARAPI_(AutoPtr<InvalidateInfo>) Acquire();
-
-            CARAPI SetNextPoolable(
-                /* [in] */ IPoolable* element);
-
-            CARAPI GetNextPoolable(
-                /* [out] */ IPoolable** element);
-
-            //Release->ReleaseInfo
-            CARAPI ReleaseInfo();
-
-            CARAPI IsPooled(
-                /* [out] */ Boolean* isPooled);
-
-            CARAPI SetPooled(
-                /* [in] */ Boolean isPooled);
+            CARAPI Recycle();
 
         public:
             AutoPtr<IView> mTarget;
@@ -1500,11 +1659,8 @@ public:
             Int32 mBottom;
 
         private:
-            static const Int32 POOL_LIMIT = 10;
-            static AutoPtr<IPool> sPool ;
-
-            AutoPtr<IPoolable> mNext;
-            Boolean mIsPooled;
+            static const Int32 POOL_LIMIT;
+            static AutoPtr<SynchronizedPool<InvalidateInfo> > sPool ;
         };
 
     public:
@@ -1530,7 +1686,8 @@ public:
 
         Callbacks* mRootCallbacks;
 
-        AutoPtr<IHardwareCanvas> mHardwareCanvas;
+        AutoPtr<IIWindowId> mIWindowId;
+        AutoPtr<IWindowId> mWindowId;
         /**
         * The top view of the hierarchy.
         */
@@ -1544,7 +1701,16 @@ public:
         Boolean mHardwareAccelerationRequested;
         AutoPtr<IHardwareRenderer> mHardwareRenderer;
 
-        Boolean mScreenOn;
+        AutoPtr<IList> mPendingAnimatingRenderNodes;
+
+        /**
+         * The state of the display to which the window is attached, as reported
+         * by {@link Display#getState()}.  Note that the display state constants
+         * declared by {@link Display} do not exactly line up with the screen state
+         * constants declared by {@link View} (there are more display states than
+         * screen states).
+         */
+        Int32 mDisplayState;// = Display.STATE_UNKNOWN;
 
         /**
         * Scale factor used by the compatibility mode
@@ -1598,6 +1764,13 @@ public:
         AutoPtr<CRect> mVisibleInsets;
 
         /**
+         * For windows that are full-screen but using insets to layout inside
+         * of the screen decorations, these are the current insets for the
+         * stable system windows.
+         */
+        AutoPtr<CRect> mStableInsets;// = new Rect();
+
+        /**
          * The internal insets given by this window.  This value is
          * supplied by the client (through
          * {@link ViewTreeObserver.OnComputeInternalInsetsListener}) and will
@@ -1605,6 +1778,11 @@ public:
          * out windows behind it.
          */
         AutoPtr<IInternalInsetsInfo> mGivenInternalInsets;
+
+        /**
+         * Set to true when mGivenInternalInsets is non-empty.
+         */
+        Boolean mHasNonEmptyGivenInternalInsets;
 
         /**
          * All views in the window's hierarchy that serve as scroll containers,
@@ -1644,6 +1822,12 @@ public:
         * Indicates whether the view's window is currently in touch mode.
         */
         Boolean mInTouchMode;
+
+        /**
+         * Indicates whether the view has requested unbuffered input dispatching for the current
+         * event stream.
+         */
+        Boolean mUnbufferedDispatchRequested;
 
         /**
         * Indicates that ViewAncestor should trigger a global layout change
@@ -1698,6 +1882,11 @@ public:
         */
         Boolean mViewScrollChanged;
 
+        /**
+         * Set to true if high contrast mode enabled
+         */
+        Boolean mHighContrastText;
+
         AutoPtr<IViewTreeObserver> mTreeObserver;
 
         /**
@@ -1711,6 +1900,12 @@ public:
          * x/y points in the ViewGroup.invalidateChild implementation.
          */
         Int32 mInvalidateChildLocation[2];
+
+        /**
+         * Global to the view hierarchy used as a temporary for dealng with
+         * computing absolute on-screen location.
+         */
+        AutoPtr< ArrayOf<Int32> > mTmpLocation;
 
         /**
          * Global to the view hierarchy used as a temporary for dealing with
@@ -1789,12 +1984,6 @@ public:
         Int32 mAccessibilityFetchFlags;
 
         /**
-         * Whether to ingore not exposed for accessibility Views when
-         * reporting the view tree to accessibility services.
-         */
-        Boolean mIncludeNotImportantViews;
-
-        /**
          * The drawable for highlighting accessibility focus.
          */
         AutoPtr<IDrawable> mAccessibilityFocusDrawable;
@@ -1802,12 +1991,24 @@ public:
         /**
          * Show where the margins, bounds and layout bounds are for each view.
          */
-        Boolean mDebugLayout;;
+        Boolean mDebugLayout;
+
+        /**
+         * Used to track which View originated a requestLayout() call, used when
+         * requestLayout() is called during layout.
+         */
+        AutoPtr<IView> mViewRequestingLayout;
 
         /**
          * Point used to compute visible regions.
          */
         AutoPtr<IPoint> mPoint;
+
+        /**
+         * Used to track which View originated a requestLayout() call, used when
+         * requestLayout() is called during layout.
+         */
+        AutoPtr<IView> mViewRequestingLayout;
     };
 
 public:
@@ -2063,6 +2264,33 @@ public:
         CARAPI GetAccessibilityNodeProvider(
             /* [in] */ IView* host,
             /* [out] */ IAccessibilityNodeProvider** anp);
+
+        /**
+         * Returns an {@link AccessibilityNodeInfo} representing the host view from the
+         * point of view of an {@link android.accessibilityservice.AccessibilityService}.
+         * This method is responsible for obtaining an accessibility node info from a
+         * pool of reusable instances and calling
+         * {@link #onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo)} on the host
+         * view to initialize the former.
+         * <p>
+         * <strong>Note:</strong> The client is responsible for recycling the obtained
+         * instance by calling {@link AccessibilityNodeInfo#recycle()} to minimize object
+         * creation.
+         * </p>
+         * <p>
+         * The default implementation behaves as
+         * {@link View#createAccessibilityNodeInfo() View#createAccessibilityNodeInfo()} for
+         * the case of no accessibility delegate been set.
+         * </p>
+         * @return A populated {@link AccessibilityNodeInfo}.
+         *
+         * @see AccessibilityNodeInfo
+         *
+         * @hide
+         */
+        CARAPI CreateAccessibilityNodeInfo(
+            /* [in] */ IView* host,
+            /* [out] */ IAccessibilityNodeInfo** res);
     };
 
 private:
@@ -2206,30 +2434,6 @@ private:
         Int32 mId;
     };
 
-    // class _FloatProperty
-    //     : public ElRefBase
-    //     : public IFloatProperty
-    // {
-    // public:
-    //     _FloatProperty(
-    //         /* [in] */ const String& name);
-
-    //     CARAPI_(UInt32) AddRef();
-
-    //     CARAPI_(UInt32) Release();
-
-    //     CARAPI SetValue(
-    //         /* [in] */ IView* object,
-    //         /* [in] */ Float value);
-
-    //     CARAPI Get(
-    //         /* [in] */ IView* object,
-    //         /* [out] */ Float* value);
-
-    // private:
-    //     String  mName;
-    // };
-
     /**
      * Resuable callback for sending
      * {@link AccessibilityEvent#TYPE_VIEW_SCROLLED} accessibility event.
@@ -2284,6 +2488,26 @@ private:
 
     public:
         Int32 mLabeledId;
+    };
+
+    class SendViewStateChangedAccessibilityEvent
+        : public Runnable
+    {
+    public:
+        SendViewStateChangedAccessibilityEvent(
+            /* [in] */ View* host);
+
+        CARAPI Run();
+
+        CARAPI RunOrPost(
+            /* [in] */ Int32 changeType);
+
+    private:
+        View* mHost;
+        Int32 mChangeTypes = 0;
+        Boolean mPosted;
+        Boolean mPostedWithDelay;
+        Int64 mLastEventTimeMillis;
     };
 
 public:
@@ -3626,9 +3850,11 @@ public:
     virtual CARAPI OnRtlPropertiesChanged(
         /* [in] */ Int32 layoutDirection);
 
-    virtual CARAPI_(Boolean) ResolveLayoutDirection();
+    virtual CARAPI ResolveLayoutDirection(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) CanResolveLayoutDirection();
+    virtual CARAPI CanResolveLayoutDirection(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI ResetResolvedLayoutDirection();
 
@@ -3689,7 +3915,8 @@ public:
     virtual CARAPI GetHardwareRenderer(
         /* [out] */ HardwareRenderer** res);
 
-    virtual CARAPI_(AutoPtr<IDisplayList>) GetDisplayList();
+    virtual CARAPI GetDisplayList(
+        /* [out] */ IRenderNode** node);
 
     virtual CARAPI_(AutoPtr<IBitmap>) GetDrawingCache();
 
@@ -3802,8 +4029,8 @@ public:
 
     virtual CARAPI_(AutoPtr<IInsets>) GetOpticalInsets();
 
-    virtual CARAPI SetLayoutInsets(
-        /* [in] */ IInsets* layoutInsets);
+    virtual CARAPI SetOpticalInsets(
+        /* [in] */ IInsets* insets);
 
     virtual CARAPI SetSelected(
         /* [in] */ Boolean selected);
@@ -3820,12 +4047,10 @@ public:
     virtual CARAPI_(AutoPtr<IView>) GetRootView();
 
     virtual CARAPI GetLocationOnScreen(
-        /* [out] */ Int32* x,
-        /* [out] */ Int32* y);
+        /* [in] */ ArrayOf<Int32>* location);
 
     virtual CARAPI GetLocationInWindow(
-        /* [out] */ Int32* x,
-        /* [out] */ Int32* y);
+        /* [in] */ ArrayOf<Int32>* location);
 
     CARAPI_(AutoPtr<IView>) FindViewById(
         /* [in] */ Int32 id);
@@ -4015,7 +4240,8 @@ public:
 
     virtual CARAPI_(Int32) GetTextDirection();
 
-    virtual CARAPI_(Boolean) ResolveTextDirection();
+    virtual CARAPI ResolveTextDirection(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI ResetResolvedTextDirection();
 
@@ -4028,13 +4254,15 @@ public:
 
     virtual CARAPI_(Int32) GetTextAlignment();
 
-    virtual CARAPI_(Boolean) ResolveTextAlignment();
+    virtual CARAPI ResolveTextAlignment(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI ResetResolvedTextAlignment();
 
     virtual CARAPI_(Boolean) IsTextAlignmentInherited();
 
-    virtual CARAPI_(AutoPtr<ViewRootImpl>) GetViewRootImpl();
+    virtual CARAPI GetViewRootImpl(
+        /* [out] */ ViewRootImpl** impl);
 
     /**
      * Merge two states as returned by {@link #getMeasuredState()}.
@@ -4183,6 +4411,168 @@ public:
         /* [in] */ Float slop);
 
     virtual CARAPI DamageInParent();
+
+        /**
+     * @return true if layout direction has been resolved.
+     */
+    virtual CARAPI IsLayoutDirectionResolved(
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI GetWindowId(
+        /* [out] */ IWindowId** id);
+
+    virtual CARAPI CancelPendingInputEvents();
+
+    virtual CARAPI OnCancelPendingInputEvents();
+
+    virtual CARAPI SetClipBounds(
+        /* [in] */ IRect* clipBounds);
+
+    virtual CARAPI GetClipBounds(
+        /* [out] */ IRect** clipBounds);
+
+    virtual CARAPI GetOverlay(
+        /* [out] */ IViewOverlay** clipBounds);
+
+    static CARAPI_(Boolean) IsLayoutModeOptical(
+        /* [in] */ IInterface* o);
+
+    virtual CARAPI DrawableHotspotChanged(
+        /* [in] */ Float x,
+        /* [in] */ Float y);
+
+    virtual CARAPI SetBackgroundTintList(
+        /* [in] */ IColorStateList tint);
+
+    virtual CARAPI GetBackgroundTintList(
+        /* [out] */ IColorStateList** res);
+
+    virtual CARAPI SetBackgroundTintMode(
+         /* [in] */ PorterDuffMode tintMode);
+
+    virtual CARAPI GetBackgroundTintMode(
+        /* [out] */ PorterDuffMode* res);
+
+    virtual CARAPI ComputeOpticalInsets(
+        /* [out] */ Insets** res);
+
+    virtual CARAPI ToGlobalMotionEvent(
+        /* [in] */ IMotionEvent* ev,
+        /* [out] */ Boolean res);
+
+    virtual CARAPI ToLocalMotionEvent(
+        /* [in] */ IMotionEvent* ev,
+        /* [out] */ Boolean res);
+
+    virtual CARAPI TransformMatrixToGlobal(
+        /* [in] */ IMatrix* m);
+
+    virtual CARAPI TransformMatrixToLocal(
+        /* [in] */ IMatrix* m);
+
+    virtual CARAPI GetLocationOnScreen(
+        /* [out, callee] */ ArrayOf<Int32>** res);
+
+    /**
+     * Performs the traversal to find a view by its unuque and stable accessibility id.
+     *
+     * <strong>Note:</strong>This method does not stop at the root namespace
+     * boundary since the user can touch the screen at an arbitrary location
+     * potentially crossing the root namespace bounday which will send an
+     * accessibility event to accessibility services and they should be able
+     * to obtain the event source. Also accessibility ids are guaranteed to be
+     * unique in the window.
+     *
+     * @param accessibilityId The accessibility id.
+     * @return The found view.
+     */
+    virtual CARAPI FindViewByAccessibilityIdTraversal(
+        /* [in] */ Int32 accessibilityId,
+        /* [out] */ IView** res);
+
+    virtual CARAPI IsInLayout(
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI SetNestedScrollingEnabled(
+        /* [in] */ Boolean enabled);
+
+    virtual CARAPI IsNestedScrollingEnabled(
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI StartNestedScroll(
+        /* [in] */ Int32 axes,
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI StopNestedScroll();
+
+    virtual CARAPI HasNestedScrollingParent(
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI DispatchNestedScroll(
+        /* [in] */ Int32 dxConsumed,
+        /* [in] */ Int32 dyConsumed,
+        /* [in] */ Int32 dxUnconsumed,
+        /* [in] */ Int32 dyUnconsumed,
+        /* [in] */ ArrayOf<Int32>* offsetInWindow,
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI DispatchNestedPreScroll(
+        /* [in] */ Int32 dx,
+        /* [in] */ Int32 dy,
+        /* [in] */ ArrayOf<Int32>* consumed,
+        /* [in] */ ArrayOf<Int32>* offsetInWindow,
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI DispatchNestedFling(
+        /* [in] */ Float velocityX,
+        /* [in] */ Float velocityY,
+        /* [in] */ boolean consumed,
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI DispatchNestedPreFling(
+        /* [in] */ Float velocityX,
+        /* [in] */ Float velocityY,
+        /* [out] */ Boolean* res);
+
+    /**
+     * Check if text direction resolution can be done.
+     *
+     * @return true if text direction resolution can be done otherwise return false.
+     */
+    virtual CARAPI CanResolveTextDirection(
+        /* [out] */ Boolean* res);
+
+    /**
+     * @return true if text direction is resolved.
+     */
+    virtual CARAPI IsTextDirectionResolved(
+        /* [out] */ Boolean* res);
+
+    /**
+     * Check if text alignment resolution can be done.
+     *
+     * @return true if text alignment resolution can be done otherwise return false.
+     */
+    virtual CARAPI CanResolveTextAlignment(
+        /* [out] */ Boolean* res);
+
+    /**
+     * @return true if text alignment is resolved.
+     */
+    virtual CARAPI IsTextAlignmentResolved(
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI CaptureTransitioningViews(
+        /* [in] */ IList* transitioningViews);
+
+    virtual CARAPI FindNamedViews(
+        /* [in] */ IMap* namedElements);
+
+    virtual CARAPI SetTransitionName(
+        /* [in] */ String transitionName);
+
+    virtual CARAPI GetTransitionName(
+        /* [out] */ String* name);
 
 protected:
     virtual CARAPI_(void) InitializeFadingEdge(
@@ -4367,6 +4757,8 @@ protected:
     virtual CARAPI OnAttachedToWindow();
 
     virtual CARAPI OnDetachedFromWindow();
+
+    virtual CARAPI OnDetachedFromWindowInternal();
 
     virtual CARAPI_(Int32) GetWindowAttachCount();
 
@@ -4787,17 +5179,6 @@ protected:
     virtual CARAPI_(AutoPtr<IHardwareLayer>) GetHardwareLayer();
 
     /**
-     * Destroys this View's hardware layer if possible.
-     *
-     * @return True if the layer was destroyed, false otherwise.
-     *
-     * @see #setLayerType(int, android.graphics.Paint)
-     * @see #LAYER_TYPE_HARDWARE
-     */
-    virtual CARAPI_(Boolean) DestroyLayer(
-        /* [in] */ Boolean valid);
-
-    /**
      * Destroys all hardware rendering resources. This method is invoked
      * when the system needs to reclaim resources. Upon execution of this
      * method, you should free any OpenGL resources created by the view.
@@ -4841,7 +5222,7 @@ protected:
      * previously-set transform values
      */
     virtual CARAPI_(void) SetDisplayListProperties(
-        /* [in] */ IDisplayList* displayList);
+        /* [in] */ IRenderNode* renderNode);
 
     /**
      * This method is called by ViewGroup.drawChild() to have each child view draw itself.
@@ -4904,22 +5285,6 @@ protected:
      * @return The found view.
      */
     virtual CARAPI_(AutoPtr<IView>) FindViewByAccessibilityId(
-        /* [in] */ Int32 accessibilityId);
-
-    /**
-     * Performs the traversal to find a view by its unuque and stable accessibility id.
-     *
-     * <strong>Note:</strong>This method does not stop at the root namespace
-     * boundary since the user can touch the screen at an arbitrary location
-     * potentially crossing the root namespace bounday which will send an
-     * accessibility event to accessibility services and they should be able
-     * to obtain the event source. Also accessibility ids are guaranteed to be
-     * unique in the window.
-     *
-     * @param accessibilityId The accessibility id.
-     * @return The found view.
-     */
-    virtual CARAPI_(AutoPtr<IView>) FindViewByAccessibilityIdTraversal(
         /* [in] */ Int32 accessibilityId);
 
     virtual CARAPI_(Boolean) UpdateLocalSystemUiVisibility(
@@ -5093,11 +5458,6 @@ private:
     CARAPI_(Boolean)  NeedRtlPropertiesResolution();
 
     /**
-     * @return true if layout direction has been resolved.
-     */
-    CARAPI_(Boolean) IsLayoutDirectionResolved();
-
-    /**
      * Returns a DisplayList. If the incoming displayList is null, one will be created.
      * Otherwise, the same display list will be returned (after having been rendered into
      * along the way, depending on the invalidation state of the view).
@@ -5111,16 +5471,7 @@ private:
         /* [in] */ IDisplayList* displayList,
         /* [in] */ Boolean isLayer);
 
-    /**
-     * Get the DisplayList for the HardwareLayer
-     *
-     * @param layer The HardwareLayer whose DisplayList we want
-     * @return A DisplayList fopr the specified HardwareLayer
-     */
-    CARAPI_(AutoPtr<IDisplayList>) GetHardwareLayerDisplayList(
-        /* [in] */ IHardwareLayer* layer);
-
-    CARAPI_(void) ClearDisplayList();
+    CARAPI_(void) ResetDisplayList();
 
     /**
      * Utility function, called by draw(canvas, parent, drawingTime) to handle the less common
@@ -5137,30 +5488,6 @@ private:
     CARAPI_(void) SetKeyedTag(
         /* [in] */ Int32 key,
         /* [in] */ IInterface* tag);
-
-    /**
-     * Check if text direction resolution can be done.
-     *
-     * @return true if text direction resolution can be done otherwise return false.
-     */
-    CARAPI_(Boolean) CanResolveTextDirection();
-
-    /**
-     * @return true if text direction is resolved.
-     */
-    CARAPI_(Boolean) IsTextDirectionResolved();
-
-    /**
-     * Check if text alignment resolution can be done.
-     *
-     * @return true if text alignment resolution can be done otherwise return false.
-     */
-    CARAPI_(Boolean) CanResolveTextAlignment();
-
-    /**
-     * @return true if text alignment is resolved.
-     */
-    CARAPI_(Boolean) IsTextAlignmentResolved();
 
     CARAPI_(HashMap<String, AutoPtr<IInterface> >) GetAttributeMap();
 
@@ -5189,6 +5516,48 @@ private:
     CARAPI_(Boolean) IsProjectionReceiver();
 
     CARAPI_(void) DamageShadowReceiver();
+
+    CARAPI_(void) CleanupDraw();
+
+    CARAPI_(void) InvalidateInheritedLayoutMode(
+        /* [in] */ Int32 layoutModeOfRoot);
+
+    CARAPI DispatchCancelPendingInputEvents();
+
+    CARAPI UpdateDisplayListIfDirty();
+
+    CARAPI_(void) DrawAccessibilityFocus(
+        /* [in] */ ICanvas* canvas);
+
+    CARAPI_(void) DrawBackground(
+        /* [in] */ ICanvas* canvas);
+
+    CARAPI_(void) SetBackgroundDisplayListProperties(
+        /* [in] */ IRenderNode* displayList);
+
+    CARAPI_(AutoPtr<IRenderNode>) GetDrawableRenderNode(
+        /* [in] */ IDrawable* drawable,
+        /* [in] */ IRenderNode* renderNode);
+
+    CARAPI_(Boolean) SetOpticalFrame(
+        /* [in] */ Int32 left,
+        /* [in] */ Int32 top,
+        /* [in] */ Int32 right,
+        /* [in] */ Int32 bottom);
+
+    CARAPI SizeChange(
+        /* [in] */ Int32 newWidth,
+        /* [in] */ Int32 newHeight,
+        /* [in] */ Int32 oldWidth,
+        /* [in] */ Int32 oldHeight);
+
+    CARAPI ApplyBackgroundTint();
+
+    CARAPI SetMeasuredDimensionRaw(
+        /* [in] */ Int32 measuredWidth,
+        /* [in] */ Int32 measuredHeight);
+
+    CARAPI_(Boolean) InLiveRegion();
 
 public:
     /**
@@ -5327,7 +5696,7 @@ protected:
 
     Boolean mLastIsOpaque;
 
-    AutoPtr<IRect> mClipBounds;
+    AutoPtr<CRect> mClipBounds;
 
     /**
      * The distance in pixels from the left edge of this view's parent

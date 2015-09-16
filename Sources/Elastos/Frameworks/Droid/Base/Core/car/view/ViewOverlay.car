@@ -47,6 +47,12 @@ module
          * Removes all content from the overlay.
          */
         Clear();
+
+        IsEmpty(
+            [out] Boolean* isEmpty);
+
+        GetOverlayView(
+            [out] IViewGroup** group);
     }
 
     } // namespace View

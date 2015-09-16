@@ -1497,6 +1497,9 @@ module
             [in] Int32 width,
             [in] Int32 height);
 
+        SetHighContrastText(
+            [in] Boolean highContrastText);
+
         /**
          * Preconcat the current matrix with the specified skew.
          *

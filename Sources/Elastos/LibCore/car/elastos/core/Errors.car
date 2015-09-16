@@ -14,4 +14,5 @@ module
     const E_ILLEGAL_ACCESS_ERROR                        = 0xA1040000;
     const E_VERIFY_ERROR                                = 0xA1050000;
     const E_UNKNOWN_ERROR                               = 0xA1060000;
+    const E_ABSTRACET_METHOD_ERROR                      = 0xA1070000;
 }

@@ -578,7 +578,8 @@ module
                 [in] IView* target,
                 [in] Float velocityX,
                 [in] Float velocityY,
-                [in] Boolean consumed);
+                [in] Boolean consumed,
+                [out] Boolean* res);
 
             /**
              * React to a nested fling before the target view consumes it.
