@@ -14,6 +14,6 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/utility/logging;
 INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/cookie
 
 SOURCES = CCookieOrigin.cpp
-#SOURCES += CCookieIdentityComparator.cpp
-#SOURCES += CCookiePathComparator.cpp
-#SOURCES += CCookieSpecRegistry.cpp
+SOURCES += CCookieIdentityComparator.cpp
+SOURCES += CCookiePathComparator.cpp
+SOURCES += CCookieSpecRegistry.cpp

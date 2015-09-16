@@ -3,19 +3,10 @@
 #define __ORG_APACHE_HTTP_COOKIE_CCOOKIEIDENTITYCOMPARATOR_H_
 
 #include "_Org_Apache_Http_Cookie_CCookieIdentityComparator.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
-using Elastos::Net::IInetAddress;
-using Elastos::Net::ISocket;
-using Elastosx::Net::Ssl::IKeyManager;
-using Elastosx::Net::Ssl::ITrustManager;
-using Elastosx::Net::Ssl::IKeyStore;
-using Elastosx::Net::Ssl::ISSLContext;
-using Org::Apache::Http::Conn::Scheme::IHostNameResolver;
-using Org::Apache::Http::Conn::Scheme::ILayeredSocketFactory;
-using Org::Apache::Http::Conn::Scheme::ISocketFactory;
-using Org::Apache::Http::Params::IHttpParams;
+using Elastos::Core::IComparator;
+using Elastos::IO::ISerializable;
 
 namespace Org {
 namespace Apache {

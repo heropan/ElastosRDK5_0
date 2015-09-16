@@ -4,9 +4,7 @@
 
 #include "_Org_Apache_Http_Cookie_Params_CCookieSpecParamBean.h"
 #include "HttpAbstractParamBean.h"
-#include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::ICollection;
 using Org::Apache::Http::Params::HttpAbstractParamBean;
 using Org::Apache::Http::Params::IHttpParams;
@@ -34,7 +32,6 @@ public:
 
     CARAPI constructor(
         /* [in] */ IHttpParams* params);
-
 };
 
 } // namespace Params

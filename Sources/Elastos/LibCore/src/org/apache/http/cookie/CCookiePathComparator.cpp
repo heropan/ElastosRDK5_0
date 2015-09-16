@@ -1,6 +1,9 @@
 
 #include "CCookiePathComparator.h"
 
+using Elastos::Core::EIID_IComparator;
+using Elastos::IO::EIID_ISerializable;
+
 namespace Org {
 namespace Apache {
 namespace Http {
@@ -20,7 +23,7 @@ String CCookiePathComparator::NormalizePath(
     if (path.IsNull()) {
         path = String("/");
     }
-    if (!path.EndsWith("/")) {
+    if (!path.EndWith("/")) {
         path = path + String("/");
     }
     return path;
@@ -39,10 +42,10 @@ ECode CCookiePathComparator::Compare(
     if (path1.Equals(path2)) {
         *result = 0;
     }
-    else if (path1.StartsWith(path2)) {
+    else if (path1.StartWith(path2)) {
         *result = -1;
     }
-    else if (path2.StartsWith(path1)) {
+    else if (path2.StartWith(path1)) {
         *result = 1;
     }
     else {

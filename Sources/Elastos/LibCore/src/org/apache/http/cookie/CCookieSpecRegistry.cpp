@@ -1,17 +1,24 @@
 
 #include "CCookieSpecRegistry.h"
-#include "elastos/core/StringBuilder.h"
-#include <elastos/core/StringUtils.h>
-#include <elastos/Logger.h>
+#include "StringBuilder.h"
+#include "StringUtils.h"
+#include "CArrayList.h"
+#include "CLinkedHashMap.h"
+#include "CString.h"
+#include "AutoLock.h"
+#include "Logger.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::ISet;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::ICollection;
+using Elastos::Utility::CLinkedHashMap;
 
 namespace Org {
 namespace Apache {
@@ -36,9 +43,10 @@ ECode CCookieSpecRegistry::Register(
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         AutoPtr<ICharSequence> cs;
-        CString::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+        CString::New(name.ToLowerCase(/*ILocale::ENGLISH*/), (ICharSequence**)&cs);
         mRegisteredSpecs->Put(cs, factory);
     }
+    return NOERROR;
 }
 
 ECode CCookieSpecRegistry::Unregister(
@@ -50,9 +58,10 @@ ECode CCookieSpecRegistry::Unregister(
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         AutoPtr<ICharSequence> cs;
-        CString::New(id.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+        CString::New(id.ToLowerCase(/*ILocale::ENGLISH*/), (ICharSequence**)&cs);
         mRegisteredSpecs->Remove(cs);
     }
+    return NOERROR;
 }
 
 ECode CCookieSpecRegistry::GetCookieSpec(
@@ -69,7 +78,7 @@ ECode CCookieSpecRegistry::GetCookieSpec(
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         AutoPtr<ICharSequence> cs;
-        CString::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+        CString::New(name.ToLowerCase(/*ILocale::ENGLISH*/), (ICharSequence**)&cs);
         AutoPtr<IInterface> temp;
         mRegisteredSpecs->Get(cs, (IInterface**)&temp);
         AutoPtr<ICookieSpecFactory> factory = ICookieSpecFactory::Probe(temp);
@@ -81,6 +90,7 @@ ECode CCookieSpecRegistry::GetCookieSpec(
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
     }
+    return NOERROR;
 }
 
 ECode CCookieSpecRegistry::GetCookieSpec(
@@ -104,8 +114,8 @@ ECode CCookieSpecRegistry::GetSpecNames(
         AutoPtr<ICollection> col = ICollection::Probe(keySet);
         AutoPtr<IArrayList> al;
         CArrayList::New(col, (IArrayList**)&al);
-        *names = Ilist::Probe(al);
-        REFCOUNT_ADD(*name)
+        *names = IList::Probe(al);
+        REFCOUNT_ADD(*names)
     }
     return NOERROR;
 }
@@ -120,6 +130,7 @@ ECode CCookieSpecRegistry::SetItems(
         mRegisteredSpecs->Clear();
         mRegisteredSpecs->PutAll(map);
     }
+    return NOERROR;
 }
 
 ECode CCookieSpecRegistry::constructor()
