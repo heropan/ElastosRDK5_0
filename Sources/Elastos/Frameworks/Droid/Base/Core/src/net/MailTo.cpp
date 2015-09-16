@@ -1,9 +1,5 @@
 
-#include "net/CMailTo.h"
-#include "net/Uri.h"
-#include <errno.h>
-#include <elastos/core/StringUtils.h>
-#include <Elastos.CoreLibrary.h>
+#include "MailTo.h"
 
 using Elastos::Core::StringUtils;
 
@@ -11,22 +7,34 @@ namespace Elastos {
 namespace Droid {
 namespace Net {
 
-ECode CCMailTo::IsMailTo(
+CAR_INTERFACE_IMPL(MailTo, Object, IMailTo)
+
+const String MailTo::TO = String("to");
+const String MailTo::BODY = String("body");
+const String MailTo::CC = String("cc");
+const String MailTo::SUBJECT = String("subject");
+
+ECode MailTo::IsMailTo(
     /* [in] */ const String& url,
     /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     if (url != null && url.startsWith(MAILTO_SCHEME)) {
         result = TRUE;
         return NOERROR;
     }
     result = FALSE;
     return NOERROR;
+#endif
 }
 
-ECode CCMailTo::Parse(
+ECode MailTo::Parse(
     /* [in] */ const String& url,
     /* [out] */ IMailTo** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
@@ -74,11 +82,11 @@ ECode CCMailTo::Parse(
             {
                 String s2;
                 Uri::Decode(nameval[1], &s2);
-                m->mHeaders.Insert(s1.toLowerCase(), s2);
+                m->mHeaders.Insert(s1.toLowerCase(ILocale::ROOT), s2);
             }
             else
             {
-                m->mHeaders.Insert(s1.toLowerCase(), NULL);
+                m->mHeaders.Insert(s1.toLowerCase(ILocale::ROOT), NULL);
             }
         }
     }
@@ -101,52 +109,67 @@ ECode CCMailTo::Parse(
     *result = m;
     REFCOUNT_ADD(*result);
     return NOERROR;
+#endif
 }
 
 
-ECode CCMailTo::GetTo(
+ECode MailTo::GetTo(
     /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     HashMap<String, String>::Iterator iter = mHeaders.Find(TO);
     if (iter != mHeaders.End())
         result = iter->mSecond;
 
     return NOERROR;
+#endif
 }
 
-ECode CCMailTo::GetCc(
+ECode MailTo::GetCc(
     /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     HashMap<String, String>::Iterator iter = mHeaders.Find(CC);
     if (iter != mHeaders.End())
         result = iter->mSecond;
 
     return NOERROR;
+#endif
 }
 
-ECode CCMailTo::GetSubject(
+ECode MailTo::GetSubject(
     /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     HashMap<String, String>::Iterator iter = mHeaders.Find(SUBJECT);
     if (iter != mHeaders.End())
         result = iter->mSecond;
 
     return NOERROR;
+#endif
 }
 
-ECode CCMailTo::GetBody(
+ECode MailTo::GetBody(
     /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     HashMap<String, String>::Iterator iter = mHeaders.Find(BODY);
     if (iter != mHeaders.End())
         result = iter->mSecond;
 
     return NOERROR;
+#endif
 }
 
-ECode CCMailTo::ToString(
+ECode MailTo::ToString(
     /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     StringBuilder sb(MAILTO_SCHEME);
     sb.AppendChar('?');
 
@@ -168,11 +191,14 @@ ECode CCMailTo::ToString(
 
     *result = sb.ToString();
     return NOERROR;
+#endif
 }
 
-ECode CCMailTo::GetHeaders(
-    /* [out, callee] */ IObjectStringMap** rethashmap)
+ECode MailTo::GetHeaders(
+    /* [out] */ IMap** rethashmap)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(rethashmap);
     CObjectStringMap::New(rethashmap);
 
@@ -188,11 +214,14 @@ ECode CCMailTo::GetHeaders(
         rethashmap->Put(tempkey,tempcharsequence);
     }
     return NOERROR;
+#endif
 }
 
-ECode CCMailTo::CCMailTo()
+MailTo::MailTo()
 {
+#if 0 // TODO: Translated before. Need check.
     return NOERROR;
+#endif
 }
 
 

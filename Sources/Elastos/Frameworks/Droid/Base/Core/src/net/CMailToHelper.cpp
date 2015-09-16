@@ -1,23 +1,28 @@
 
-#include "net/CMailToHelper.h"
-#include "net/Uri.h"
+#include "ext/frameworkdef.h"
+#include "CMailToHelper.h"
+#include "MailTo.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
-ECode CCMailToHelper::IsMailTo(
-        /* [in] */ const String& url,
-        /* [out] */ Boolean* result);
+CAR_SINGLETON_IMPL(CMailToHelper)
+
+CAR_INTERFACE_IMPL(CMailToHelper, Singleton, IMailToHelper)
+
+ECode CMailToHelper::IsMailTo(
+    /* [in] */ const String& url,
+    /* [out] */ Boolean* result)
 {
-    return CCMailTo::IsMailTo(url, result);
+    return MailTo::IsMailTo(url, result);
 }
 
-ECode CCMailToHelper::Parse(
+ECode CMailToHelper::Parse(
     /* [in] */ const String& url,
     /* [out] */ IMailTo** result)
 {
-    return CCMailTo::Parse(url, result);
+    return MailTo::Parse(url, result);
 }
 
 } // namespace Net

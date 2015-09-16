@@ -1,359 +1,44 @@
 
-#include "ext/frameworkdef.h"
-#include "net/LocalSocketImpl.h"
-#include "net/CCredentials.h"
-#include <elastos/core/Math.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <sys/un.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <errno.h>
-#include <unistd.h>
-#include <cutils/sockets.h>
-
-
-using Elastos::Core::IInteger32;
-using Elastos::Core::CInteger32;
-using Elastos::Core::IBoolean;
-using Elastos::IO::CFileDescriptor;
-using Elastos::Net::ISocketOptions;
-using Elastos::Droid::Net::CCredentials;
+#include "LocalSocketImpl.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
-LocalSocketImpl::SocketInputStream::SocketInputStream(
-    /* [in] */ LocalSocketImpl* owner)
-    : mOwner(owner)
-{}
+CAR_INTERFACE_IMPL(LocalSocketImpl, Object, ILocalSocketImpl)
 
-PInterface LocalSocketImpl::SocketInputStream::Probe(
-    /* [in] */ REIID riid)
+#if 0 // TODO: Translated before. Need check.
+static Boolean droid_opt_to_real(Int32 optID, int* opt, int* level)
 {
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IInputStream*)this;
+    switch (optID)
+    {
+        case 4098:
+            *opt = SO_RCVBUF;
+            *level = SOL_SOCKET;
+            return TRUE;
+        case 4097:
+            *opt = SO_SNDBUF;
+            *level = SOL_SOCKET;
+            return TRUE;
+        case 4102:
+            *opt = SO_SNDTIMEO;
+            *level = SOL_SOCKET;
+            return TRUE;
+        case 128:
+            *opt = SO_LINGER;
+            *level = SOL_SOCKET;
+            return TRUE;
+        case 1:
+            *opt = TCP_NODELAY;
+            *level = IPPROTO_TCP;
+            return TRUE;
+        case 4:
+            *opt = SO_REUSEADDR;
+            *level = SOL_SOCKET;
+            return TRUE;
+
     }
-    else if (riid == Elastos::IO::EIID_IInputStream) {
-        return (IInputStream*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 LocalSocketImpl::SocketInputStream::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 LocalSocketImpl::SocketInputStream::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode LocalSocketImpl::SocketInputStream::GetInterfaceID(
-    /* [in] */ IInterface* pObject,
-    /* [in] */ InterfaceID* pIID)
-{
-    assert(0);
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode LocalSocketImpl::SocketInputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = InputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
-    return NOERROR;
-}
-
-/**
- * An input stream for local sockets. Needed because we may
- * need to read ancillary data.
- */
-ECode LocalSocketImpl::SocketInputStream::Available(
-    /* [out] */ Int32* result)
-{
-    return mOwner->NativeAvailable(mOwner->mFd, result);
-}
-
-ECode LocalSocketImpl::SocketInputStream::Close()
-{
-    return mOwner->Close();
-}
-
-ECode LocalSocketImpl::SocketInputStream::Read(
-    /* [out] */ Int32* result)
-{
-    AutoLock lock(mOwner->mReadMonitor);
-
-    AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
-    if (myFd == NULL) {
-        // throw new IOException("socket closed");
-        return E_IO_EXCEPTION;
-    }
-
-    return mOwner->NativeRead(myFd, result);
-}
-
-ECode LocalSocketImpl::SocketInputStream::ReadBytes(
-    /* [out] */ ArrayOf<Byte>* b,
-    /* [out] */ Int32* result)
-{
-    assert(b != NULL);
-    return ReadBytes(b, 0, b->GetLength(), result);
-}
-
-ECode LocalSocketImpl::SocketInputStream::ReadBytes(
-    /* [out] */ ArrayOf<Byte>* b,
-    /* [in] */ Int32 off,
-    /* [in] */ Int32 len,
-    /* [out] */ Int32* result)
-{
-    AutoLock lock(mOwner->mReadMonitor);
-
-    AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
-    if (myFd == NULL) {
-        // throw new IOException("socket closed");
-        return E_IO_EXCEPTION;
-    }
-
-    if (off < 0 || len < 0 || (off + len) > b->GetLength()) {
-//        throw new ArrayIndexOutOfBoundsException();
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-
-    return mOwner->NativeReadba(b, off, len, myFd, result);
-}
-
-ECode LocalSocketImpl::SocketInputStream::Mark(
-    /* [in] */ Int32 readLimit)
-{
-    return InputStream::Mark(readLimit);
-}
-
-ECode LocalSocketImpl::SocketInputStream::IsMarkSupported(
-    /* [out] */ Boolean* supported)
-{
-    return InputStream::IsMarkSupported(supported);
-}
-
-ECode LocalSocketImpl::SocketInputStream::Reset()
-{
-    return InputStream::Reset();
-}
-
-ECode LocalSocketImpl::SocketInputStream::Skip(
-    /* [in] */ Int64 byteCount,
-    /* [out] */ Int64* number)
-{
-    VALIDATE_NOT_NULL(number);
-
-    AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(4096);
-
-    Int64 skipped = 0;
-    while (skipped < byteCount) {
-        Int32 toRead = (Int32)Elastos::Core::Math::Min(byteCount - skipped, (Int64)buffer->GetLength());
-        Int32 read = 0;
-        FAIL_RETURN(ReadBytes(buffer.Get(), 0, toRead, &read));
-        if (read == -1) {
-            break;
-        }
-        skipped += read;
-        if (read < toRead) {
-            break;
-        }
-    }
-
-    *number = skipped;
-
-    return NOERROR;
-}
-
-
-LocalSocketImpl::SocketOutputStream::SocketOutputStream(
-    /* [in] */ LocalSocketImpl* owner)
-    : mOwner(owner)
-{}
-
-PInterface LocalSocketImpl::SocketOutputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IOutputStream*)this;
-    }
-    else if (riid == Elastos::IO::EIID_IOutputStream) {
-        return (IOutputStream*)this;
-    }
-    else if (riid == Elastos::IO::EIID_IFlushable) {
-        return (IFlushable*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 LocalSocketImpl::SocketOutputStream::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 LocalSocketImpl::SocketOutputStream::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode LocalSocketImpl::SocketOutputStream::GetInterfaceID(
-    /* [in] */ IInterface* pObject,
-    /* [in] */ InterfaceID* pIID)
-{
-    assert(0);
-    return E_NOT_IMPLEMENTED;
-}
-
-/**
- * An output stream for local sockets. Needed because we may
- * need to read ancillary data.
- */
-ECode LocalSocketImpl::SocketOutputStream::Close()
-{
-    return mOwner->Close();
-}
-
-ECode LocalSocketImpl::SocketOutputStream::Write (
-    /* [in] */ Int32 b)
-{
-    AutoLock lock(mOwner->mWriteMonitor);
-
-    AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
-    if (myFd == NULL) {
-        // throw new IOException("socket closed");
-        return E_IO_EXCEPTION;
-    }
-
-    return mOwner->NativeWrite(b, myFd);
-}
-
-ECode LocalSocketImpl::SocketOutputStream::WriteBytes (
-    /* [in] */ const ArrayOf<Byte>& b)
-{
-    return WriteBytes(b, 0, b.GetLength());
-}
-
-ECode LocalSocketImpl::SocketOutputStream::WriteBytesEx (
-    /* [in] */ const ArrayOf<Byte>& b,
-    /* [in] */ Int32 off,
-    /* [in] */ Int32 len)
-{
-    AutoLock lock(mOwner->mWriteMonitor);
-
-    AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
-    if (myFd == NULL) {
-        // throw new IOException("socket closed");
-        return E_IO_EXCEPTION;
-    }
-
-    if (off < 0 || len < 0 || (off + len) > b.GetLength()) {
-//        throw new ArrayIndexOutOfBoundsException();
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-    return mOwner->NativeWriteba(b, off, len, myFd);
-}
-
-ECode LocalSocketImpl::SocketOutputStream::CheckError(
-    /* [out] */ Boolean* hasError)
-{
-    VALIDATE_NOT_NULL(hasError);
-    *hasError = FALSE;
-    return NOERROR;
-}
-
-ECode LocalSocketImpl::SocketOutputStream::Flush()
-{
-    return NOERROR;
-}
-
-ECode LocalSocketImpl::SocketOutputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = OutputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
-    return NOERROR;
-}
-
-/**
- * Create a new instance.
- */
-LocalSocketImpl::LocalSocketImpl()
-{}
-
-/**
- * Create a new instance from a file descriptor representing
- * a bound socket. The state of the file descriptor is not checked here
- *  but the caller can verify socket state by calling listen().
- *
- * @param fd non-NULL; bound file descriptor
- */
-LocalSocketImpl::LocalSocketImpl(
-    /* [in] */ IFileDescriptor* fd)
-    : mFd(fd)
-{}
-
-LocalSocketImpl::~LocalSocketImpl()
-{
-    Close();
-}
-
-ECode LocalSocketImpl::NativeAvailable(
-    /* [in] */ IFileDescriptor* fileDescriptor,
-    /* [out] */ Int32* size)
-{
-    Int32 fd;
-
-    fileDescriptor->GetDescriptor(&fd);
-
-    int avail;
-    int ret = ioctl(fd, FIONREAD, &avail);
-
-    // If this were a non-socket fd, there would be other cases to worry
-    // about...
-
-    if (ret < 0) {
-        //jniThrowIOException(env, errno);
-        *size = 0;
-        return E_IO_EXCEPTION;
-    }
-
-    *size = avail;
-    return NOERROR;
-}
-
-ECode LocalSocketImpl::NativeClose(
-    /* [in] */ IFileDescriptor* fileDescriptor)
-{
-    Int32 fd;
-    Int32 err;
-
-    if (fileDescriptor == NULL) {
-        return E_NULL_POINTER_EXCEPTION;
-    }
-
-    fileDescriptor->GetDescriptor(&fd);
-
-    do {
-        err = close(fd);
-    } while (err < 0 && errno == EINTR);
-
-    if (err < 0) {
-        return E_IO_EXCEPTION;
-    }
-    return NOERROR;
+    return FALSE;
 }
 
 /**
@@ -382,6 +67,7 @@ static int socket_process_cmsg(
 
             if (count < 0) {
 //                jniThrowException(env, "java/io/IOException", "invalid cmsg length");
+                return -1;
             }
 
             AutoPtr< ArrayOf<IFileDescriptor*> > fdArray = ArrayOf<IFileDescriptor*>::Alloc(count);
@@ -538,11 +224,71 @@ static Int32 socket_write_all(
 
     return 0;
 }
+#endif
 
-ECode LocalSocketImpl::NativeRead(
-    /* [in] */ IFileDescriptor* fileDescriptor,
+ECode LocalSocketImpl::Pending_native(
+    /* [in] */ IFileDescriptor* fd,
     /* [out] */ Int32* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    int fd;
+
+    fd = jniGetFDFromFileDescriptor(env, fileDescriptor);
+
+    if (env->ExceptionOccurred() != NULL) {
+        return (jint)-1;
+    }
+
+    int pending;
+    int ret = ioctl(fd, TIOCOUTQ, &pending);
+
+    // If this were a non-socket fd, there would be other cases to worry
+    // about...
+
+    //ALOGD("socket_pending, ioctl ret:%d, pending:%d", ret, pending);
+    if (ret < 0) {
+        jniThrowIOException(env, errno);
+        return (jint) 0;
+    }
+
+    return (jint)pending;
+#endif
+}
+
+ECode LocalSocketImpl::Available_native(
+    /* [in] */ IFileDescriptor* fd,
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    Int32 fd;
+
+    fileDescriptor->GetDescriptor(&fd);
+
+    int avail;
+    int ret = ioctl(fd, FIONREAD, &avail);
+
+    // If this were a non-socket fd, there would be other cases to worry
+    // about...
+
+    if (ret < 0) {
+        //jniThrowIOException(env, errno);
+        *size = 0;
+        return E_IO_EXCEPTION;
+    }
+
+    *size = avail;
+    return NOERROR;
+#endif
+}
+
+ECode LocalSocketImpl::Read_native(
+    /* [in] */ IFileDescriptor* fd,
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Int32 fd;
     Int32 err;
 
@@ -569,15 +315,18 @@ ECode LocalSocketImpl::NativeRead(
 
     *result = (Int32)buf;
     return NOERROR;
+#endif
 }
 
-ECode LocalSocketImpl::NativeReadba(
-    /* [out] */ ArrayOf<Byte>* buffer,
+ECode LocalSocketImpl::Readba_native(
+    /* [in] */ ArrayOf<Byte>* b,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len,
-    /* [in] */ IFileDescriptor* fileDescriptor,
+    /* [in] */ IFileDescriptor* fd,
     /* [out] */ Int32* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Int32 fd;
     Byte* byteBuffer;
     int ret;
@@ -607,14 +356,17 @@ ECode LocalSocketImpl::NativeReadba(
 
     *result = ((ret == 0) ? -1 : ret);
     return NOERROR;
+#endif
 }
 
-ECode LocalSocketImpl::NativeWriteba(
-    /* [in] */ const ArrayOf<Byte>& buffer,
+ECode LocalSocketImpl::Writeba_native(
+    /* [in] */ ArrayOf<Byte>* b,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len,
-    /* [in] */ IFileDescriptor* fileDescriptor)
+    /* [in] */ IFileDescriptor* fd)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Int32 fd;
     int err;
     Byte* byteBuffer;
@@ -640,12 +392,15 @@ ECode LocalSocketImpl::NativeWriteba(
     // A return of -1 above means an exception is pending
     if (err < 0) return E_IO_EXCEPTION;
     return NOERROR;
+#endif
 }
 
-ECode LocalSocketImpl::NativeWrite(
+ECode LocalSocketImpl::Write_native(
     /* [in] */ Int32 b,
-    /* [in] */ IFileDescriptor* fileDescriptor)
+    /* [in] */ IFileDescriptor* fd)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Int32 fd;
     int err;
 
@@ -660,6 +415,937 @@ ECode LocalSocketImpl::NativeWrite(
 
     // A return of -1 above means an exception is pending
     if (err < 0) return E_IO_EXCEPTION;
+    return NOERROR;
+#endif
+}
+
+ECode LocalSocketImpl::ConnectLocal(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ String name,
+    /* [in] */ Int32 ns)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+#endif
+}
+
+ECode LocalSocketImpl::BindLocal(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ String name,
+    /* [in] */ Int32 ns)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+#endif
+}
+
+ECode LocalSocketImpl::Listen_native(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ Int32 backlog)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    int ret;
+    Int32 fd;
+
+    fileDescriptor->GetDescriptor(&fd);
+
+    ret = listen(fd, backlog);
+
+    if (ret < 0) {
+        return E_IO_EXCEPTION;
+    }
+    return NOERROR;
+#endif
+}
+
+ECode LocalSocketImpl::Shutdown(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ Boolean shutdownInput)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    int ret;
+    Int32 fd;
+
+    fileDescriptor->GetDescriptor(&fd);
+
+    ret = shutdown(fd, shutdownInput ? SHUT_RD : SHUT_WR);
+
+    if (ret < 0) {
+        return E_IO_EXCEPTION;
+    }
+    return NOERROR;
+#endif
+}
+
+ECode LocalSocketImpl::GetPeerCredentials_native(
+    /* [in] */ IFileDescriptor* fd,
+    /* [out] */ ICredentials** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    int err;
+    Int32 fd;
+
+    if (fileDescriptor == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    fileDescriptor->GetDescriptor(&fd);
+
+    struct ucred creds;
+
+    memset(&creds, 0, sizeof(creds));
+    socklen_t szCreds = sizeof(creds);
+
+    err = getsockopt(fd, SOL_SOCKET, SO_PEERCRED, &creds, &szCreds);
+
+    if (err < 0) {
+        *credentials = NULL;
+        return E_IO_EXCEPTION;
+    }
+
+    if (szCreds == 0) {
+        *credentials = NULL;
+        return NOERROR;
+    }
+    AutoPtr<ICredentials>  crden;
+    CCredentials::New(creds.pid, creds.uid, creds.gid, (ICredentials**)&crden);
+    *credentials = crden;
+    REFCOUNT_ADD(*credentials);
+    return NOERROR;
+#endif
+}
+
+ECode LocalSocketImpl::GetOption_native(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ Int32 optID,
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    Int32 ret, value;
+    int opt, level;
+    Int32 fd;
+
+    socklen_t size = sizeof(int);
+
+    if (!droid_opt_to_real(optID, &opt, &level)) {
+        *option = 0;
+        return E_IO_EXCEPTION;
+    }
+
+    fileDescriptor->GetDescriptor(&fd);
+
+    switch (opt)
+    {
+        case SO_LINGER:
+        {
+            struct linger lingr;
+            size = sizeof(lingr);
+            ret = getsockopt(fd, level, opt, &lingr, &size);
+            if (!lingr.l_onoff) {
+                value = -1;
+            } else {
+                value = lingr.l_linger;
+            }
+            break;
+        }
+        default:
+            ret = getsockopt(fd, level, opt, &value, &size);
+            break;
+    }
+
+
+    if (ret != 0) {
+        *option = 0;
+        return E_IO_EXCEPTION;
+    }
+
+    *option = value;
+    return NOERROR;
+#endif
+}
+
+ECode LocalSocketImpl::SetOption_native(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ Int32 optID,
+    /* [in] */ Int32 b,
+    /* [in] */ Int32 value)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    Int32 ret;
+    Int32 optname;
+    Int32 level;
+    Int32 fd;
+
+    if (!droid_opt_to_real(optID, &optname, &level)) {
+        return E_IO_EXCEPTION;
+    }
+
+    fileDescriptor->GetDescriptor(&fd);
+
+    switch (optname) {
+        case SO_LINGER: {
+            /*
+             * SO_LINGER is special because it needs to use a special
+             * "linger" struct as well as use the incoming boolean
+             * argument specially.
+             */
+            struct linger lingr;
+            lingr.l_onoff = boolValue ? 1 : 0; // Force it to be 0 or 1.
+            lingr.l_linger = intValue;
+            ret = setsockopt(fd, level, optname, &lingr, sizeof(lingr));
+            break;
+        }
+        case SO_SNDTIMEO: {
+            /*
+             * SO_TIMEOUT from the core library gets converted to
+             * SO_SNDTIMEO, but the option is supposed to set both
+             * send and receive timeouts. Note: The incoming timeout
+             * value is in milliseconds.
+             */
+            struct timeval timeout;
+            timeout.tv_sec = intValue / 1000;
+            timeout.tv_usec = (intValue % 1000) * 1000;
+
+            ret = setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO,
+                    (void *)&timeout, sizeof(timeout));
+
+            if (ret == 0) {
+                ret = setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO,
+                        (void *)&timeout, sizeof(timeout));
+            }
+
+            break;
+        }
+        default: {
+            /*
+             * In all other cases, the translated option level and
+             * optname may be used directly for a call to setsockopt().
+             */
+            ret = setsockopt(fd, level, optname, &intValue, sizeof(intValue));
+            break;
+        }
+    }
+
+    if (ret != 0) {
+        return E_IO_EXCEPTION;
+    }
+    return NOERROR;
+#endif
+}
+
+ECode LocalSocketImpl::Accept(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ ILocalSocketImpl* s,
+    /* [out] */ IFileDescriptor** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    union {
+        struct sockaddr address;
+        struct sockaddr_un un_address;
+    } sa;
+
+    int ret;
+    Int32 retFD;
+    Int32 fd;
+    socklen_t addrlen;
+
+    if (s == NULL) {
+//        jniThrowNullPointerException(env, NULL);
+        *fdObj = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    fileDescriptor->GetDescriptor(&fd);
+
+    do {
+        addrlen = sizeof(sa);
+        ret = accept(fd, &(sa.address), &addrlen);
+    } while (ret < 0 && errno == EINTR);
+
+    if (ret < 0) {
+        *fdObj = NULL;
+        return E_IO_EXCEPTION;
+    }
+
+    retFD = ret;
+
+    CFileDescriptor::New(fdObj);
+    (*fdObj)->SetDescriptor(retFD);
+    return NOERROR;
+#endif
+}
+
+ECode LocalSocketImpl::constructor()
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+
+#endif
+}
+
+ECode LocalSocketImpl::constructor(
+    /* [in] */ IFileDescriptor* fd)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        this.fd = fd;
+
+#endif
+}
+
+ECode LocalSocketImpl::ToString(
+    /* [out] */ String* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    assert(0);
+    return String(NULL);
+#endif
+}
+
+ECode LocalSocketImpl::Create(
+    /* [in] */ Int32 sockType)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        // no error if socket already created
+        // need this for LocalServerSocket.accept()
+        if (fd == null) {
+            int osType;
+            switch (sockType) {
+                case LocalSocket.SOCKET_DGRAM:
+                    osType = OsConstants.SOCK_DGRAM;
+                    break;
+                case LocalSocket.SOCKET_STREAM:
+                    osType = OsConstants.SOCK_STREAM;
+                    break;
+                case LocalSocket.SOCKET_SEQPACKET:
+                    osType = OsConstants.SOCK_SEQPACKET;
+                    break;
+                default:
+                    throw new IllegalStateException("unknown sockType");
+            }
+            try {
+                fd = Os.socket(OsConstants.AF_UNIX, osType, 0);
+                mFdCreatedInternally = true;
+            } catch (ErrnoException e) {
+                e.rethrowAsIOException();
+            }
+        }
+
+#endif
+}
+
+ECode LocalSocketImpl::Close()
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (LocalSocketImpl.this) {
+            if ((fd == null) || (mFdCreatedInternally == false)) {
+                fd = null;
+                return;
+            }
+            try {
+                Os.close(fd);
+            } catch (ErrnoException e) {
+                e.rethrowAsIOException();
+            }
+            fd = null;
+        }
+
+#endif
+}
+
+ECode LocalSocketImpl::Connect(
+    /* [in] */ ILocalSocketAddress* address,
+    /* [in] */ Int32 timeout)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    if (mFd == NULL) {
+//        throw new IOException("socket not created");
+        return E_IO_EXCEPTION;
+    }
+
+    String name;
+    address->GetName(&name);
+    LocalSocketAddressNamespace ns;
+    address->GetNamespace(&ns);
+    return ConnectLocal(mFd, name, (Int32)ns);
+#endif
+}
+
+ECode LocalSocketImpl::Bind(
+    /* [in] */ ILocalSocketAddress* endpoint)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    if (mFd == NULL) {
+//        throw new IOException("socket not created");
+        return E_IO_EXCEPTION;
+    }
+
+    String name;
+    endpoint->GetName(&name);
+    LocalSocketAddressNamespace ns;
+    endpoint->GetNamespace(&ns);
+    return BindLocal(mFd, name, (Int32)ns);
+#endif
+}
+
+ECode LocalSocketImpl::Listen(
+    /* [in] */ Int32 backlog)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    if (mFd == NULL) {
+//        throw new IOException("socket not created");
+        return E_IO_EXCEPTION;
+    }
+
+    return NativeListen(mFd, backlog);
+#endif
+}
+
+ECode LocalSocketImpl::Accept(
+    /* [in] */ ILocalSocketImpl* s)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    if (mFd == NULL) {
+//        throw new IOException("socket not created");
+        return E_IO_EXCEPTION;
+    }
+
+    s->mFd = NULL;
+    s->mFdCreatedInternally = TRUE;
+    return NativeAccept(mFd, s, (IFileDescriptor**)&s->mFd);
+#endif
+}
+
+ECode LocalSocketImpl::GetInputStream(
+    /* [out] */ IInputStream** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    VALIDATE_NOT_NULL(is);
+
+    if (mFd == NULL) {
+//        throw new IOException("socket not created");
+        return E_IO_EXCEPTION;
+    }
+
+    {
+        AutoLock lock(mLock);
+
+        if (mFis == NULL) {
+            mFis = new SocketInputStream(this);
+        }
+
+        *is = mFis;
+        REFCOUNT_ADD(*is);
+        return NOERROR;
+    }
+#endif
+}
+
+ECode LocalSocketImpl::GetOutputStream(
+    /* [out] */ IOutputStream** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    VALIDATE_NOT_NULL(os);
+
+    if (mFd == NULL) {
+//        throw new IOException("socket not created");
+        return E_IO_EXCEPTION;
+    }
+
+    {
+        AutoLock lock(mLock);
+
+        if (mFos == NULL) {
+            mFos = new SocketOutputStream(this);
+        }
+
+        *os = mFos;
+        REFCOUNT_ADD(*os);
+        return NOERROR;
+    }
+#endif
+}
+
+ECode LocalSocketImpl::Available(
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    VALIDATE_NOT_NULL(avail);
+
+    AutoPtr<IInputStream> is;
+    FAIL_RETURN(GetInputStream((IInputStream**)&is));
+    return is->Available(avail);
+#endif
+}
+
+ECode LocalSocketImpl::ShutdownInput()
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    if (mFd == NULL) {
+//        throw new IOException("socket not created");
+        return E_IO_EXCEPTION;
+    }
+
+    return Shutdown(mFd, TRUE);
+#endif
+}
+
+ECode LocalSocketImpl::ShutdownOutput()
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    if (mFd == NULL) {
+//        throw new IOException("socket not created");
+        return E_IO_EXCEPTION;
+    }
+
+    return Shutdown(mFd, FALSE);
+#endif
+}
+
+ECode LocalSocketImpl::GetFileDescriptor(
+    /* [out] */ IFileDescriptor** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return fd;
+
+#endif
+}
+
+ECode LocalSocketImpl::SupportsUrgentData(
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return false;
+
+#endif
+}
+
+ECode LocalSocketImpl::SendUrgentData(
+    /* [in] */ Int32 data)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+//    throw new RuntimeException ("not impled");
+    return E_RUNTIME_EXCEPTION;
+#endif
+}
+
+ECode LocalSocketImpl::GetOption(
+    /* [in] */ Int32 optID,
+    /* [out] */ IObject** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    if (mFd == NULL) {
+//        throw new IOException("socket not created");
+        return E_IO_EXCEPTION;
+    }
+
+    if (optID == ISocketOptions::SO_TIMEOUT) {
+        *result = 0;
+        return NOERROR;
+    }
+
+    Int32 value;
+    FAIL_RETURN(NativeGetOption(mFd, optID, &value));
+    switch (optID) {
+        case 4098 /*ISocketOptions::SO_RCVBUF*/:
+        case 4097/*ISocketOptions::SO_SNDBUF*/:
+            return CInteger32::New(value, (IInteger32**)result);
+        case 4/*ISocketOptions::SO_REUSEADDR*/:
+        default:
+            return CInteger32::New(value, (IInteger32**)result);
+    }
+#endif
+}
+
+ECode LocalSocketImpl::SetOption(
+    /* [in] */ Int32 optID,
+    /* [in] */ IObject* value)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    /*
+     * Boolean.FALSE is used to disable some options, so it
+     * is important to distinguish between FALSE and unset.
+     * We define it here that -1 is unset, 0 is FALSE, and 1
+     * is TRUE.
+     */
+    Int32 boolValue = -1;
+    Int32 intValue = 0;
+
+    if (mFd == NULL) {
+//        throw new IOException("socket not created");
+        return E_IO_EXCEPTION;
+    }
+
+    if (IInteger32::Probe(value) != NULL) {
+        IInteger32::Probe(value)->GetValue(&intValue);
+    }
+    else if (IBoolean::Probe(value) != NULL) {
+        Boolean bv;
+        IBoolean::Probe(value)->GetValue(&bv);
+        boolValue = bv? 1 : 0;
+    }
+    else {
+//        throw new IOException("bad value: " + value);
+        return E_IO_EXCEPTION;
+    }
+
+    return NativeSetOption(mFd, optID, boolValue, intValue);
+#endif
+}
+
+ECode LocalSocketImpl::SetFileDescriptorsForSend(
+    /* [in] */ ArrayOf<IFileDescriptor*>* fds)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    AutoLock lock(mWriteMonitor);
+
+    mOutboundFileDescriptors = fds;
+#endif
+}
+
+ECode LocalSocketImpl::GetAncillaryFileDescriptors(
+    /* [out, callee] */ ArrayOf<IFileDescriptor*>** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    AutoLock lock(mReadMonitor);
+
+    AutoPtr< ArrayOf<IFileDescriptor*> > result = mInboundFileDescriptors;
+
+    mInboundFileDescriptors = NULL;
+    return result;
+#endif
+}
+
+ECode LocalSocketImpl::GetPeerCredentials(
+    /* [out] */ ICredentials** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    VALIDATE_NOT_NULL(result);
+    return NativeGetPeerCredentials(mFd, result);
+#endif
+}
+
+ECode LocalSocketImpl::GetSockAddress(
+    /* [out] */ ILocalSocketAddress** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    VALIDATE_NOT_NULL(result);
+    *result = NULL;
+    return NOERROR;
+    //TODO implement this
+    //return getSockName_native(fd);
+#endif
+}
+
+ECode LocalSocketImpl::Finalize()
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        close();
+
+#endif
+}
+
+//====================================================================================
+//              LocalSocketImpl::SocketInputStream
+//====================================================================================
+ECode LocalSocketImpl::SocketInputStream::Available(
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                FileDescriptor myFd = fd;
+                if (myFd == null) throw new IOException("socket closed");
+                return available_native(myFd);
+
+#endif
+}
+
+ECode LocalSocketImpl::SocketInputStream::Close()
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    return mOwner->Close();
+#endif
+}
+
+ECode LocalSocketImpl::SocketInputStream::Read(
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    AutoLock lock(mOwner->mReadMonitor);
+
+    AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
+    if (myFd == NULL) {
+        // throw new IOException("socket closed");
+        return E_IO_EXCEPTION;
+    }
+
+    return mOwner->NativeRead(myFd, result);
+#endif
+}
+
+ECode LocalSocketImpl::SocketInputStream::Read(
+    /* [in] */ ArrayOf<Byte>* b,
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    assert(b != NULL);
+    return ReadBytes(b, 0, b->GetLength(), result);
+#endif
+}
+
+ECode LocalSocketImpl::SocketInputStream::Read(
+    /* [in] */ ArrayOf<Byte>* b,
+    /* [in] */ Int32 off,
+    /* [in] */ Int32 len,
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    AutoLock lock(mOwner->mReadMonitor);
+
+    AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
+    if (myFd == NULL) {
+        // throw new IOException("socket closed");
+        return E_IO_EXCEPTION;
+    }
+
+    if (off < 0 || len < 0 || (off + len) > b->GetLength()) {
+//        throw new ArrayIndexOutOfBoundsException();
+        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    return mOwner->NativeReadba(b, off, len, myFd, result);
+#endif
+}
+
+//====================================================================================
+//              LocalSocketImpl::SocketOutputStream
+//====================================================================================
+
+ECode LocalSocketImpl::SocketOutputStream::Close()
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    return mOwner->Close();
+#endif
+}
+
+ECode LocalSocketImpl::SocketOutputStream::Write(
+    /* [in] */ ArrayOf<Byte>* b)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    return WriteBytes(b, 0, b.GetLength());
+#endif
+}
+
+ECode LocalSocketImpl::SocketOutputStream::Write(
+    /* [in] */ ArrayOf<Byte>* b,
+    /* [in] */ Int32 off,
+    /* [in] */ Int32 len)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    AutoLock lock(mOwner->mWriteMonitor);
+
+    AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
+    if (myFd == NULL) {
+        // throw new IOException("socket closed");
+        return E_IO_EXCEPTION;
+    }
+
+    if (off < 0 || len < 0 || (off + len) > b.GetLength()) {
+//        throw new ArrayIndexOutOfBoundsException();
+        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+    return mOwner->NativeWriteba(b, off, len, myFd);
+#endif
+}
+
+ECode LocalSocketImpl::SocketOutputStream::Write(
+    /* [in] */ Int32 b)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    AutoLock lock(mOwner->mWriteMonitor);
+
+    AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
+    if (myFd == NULL) {
+        // throw new IOException("socket closed");
+        return E_IO_EXCEPTION;
+    }
+
+    return mOwner->NativeWrite(b, myFd);
+#endif
+}
+
+ECode LocalSocketImpl::SocketOutputStream::Flush()
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                FileDescriptor myFd = fd;
+                if (myFd == null) throw new IOException("socket closed");
+                while(pending_native(myFd) > 0) {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException ie) {
+                        return;
+                    }
+                }
+
+#endif
+}
+
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
+
+#if 0 // Reserve old LocalSocketImpl.cpp temporarily for probably use.
+LocalSocketImpl::SocketInputStream::SocketInputStream(
+    /* [in] */ LocalSocketImpl* owner)
+    : mOwner(owner)
+{}
+
+/**
+ * An input stream for local sockets. Needed because we may
+ * need to read ancillary data.
+ */
+ECode LocalSocketImpl::SocketInputStream::Available(
+    /* [out] */ Int32* result)
+{
+    return mOwner->NativeAvailable(mOwner->mFd, result);
+}
+
+ECode LocalSocketImpl::SocketInputStream::Mark(
+    /* [in] */ Int32 readLimit)
+{
+    return InputStream::Mark(readLimit);
+}
+
+ECode LocalSocketImpl::SocketInputStream::IsMarkSupported(
+    /* [out] */ Boolean* supported)
+{
+    return InputStream::IsMarkSupported(supported);
+}
+
+ECode LocalSocketImpl::SocketInputStream::Reset()
+{
+    return InputStream::Reset();
+}
+
+ECode LocalSocketImpl::SocketInputStream::Skip(
+    /* [in] */ Int64 byteCount,
+    /* [out] */ Int64* number)
+{
+    VALIDATE_NOT_NULL(number);
+
+    AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(4096);
+
+    Int64 skipped = 0;
+    while (skipped < byteCount) {
+        Int32 toRead = (Int32)Elastos::Core::Math::Min(byteCount - skipped, (Int64)buffer->GetLength());
+        Int32 read = 0;
+        FAIL_RETURN(ReadBytes(buffer.Get(), 0, toRead, &read));
+        if (read == -1) {
+            break;
+        }
+        skipped += read;
+        if (read < toRead) {
+            break;
+        }
+    }
+
+    *number = skipped;
+
+    return NOERROR;
+}
+
+
+LocalSocketImpl::SocketOutputStream::SocketOutputStream(
+    /* [in] */ LocalSocketImpl* owner)
+    : mOwner(owner)
+{}
+
+ECode LocalSocketImpl::SocketOutputStream::CheckError(
+    /* [out] */ Boolean* hasError)
+{
+    VALIDATE_NOT_NULL(hasError);
+    *hasError = FALSE;
+    return NOERROR;
+}
+
+ECode LocalSocketImpl::SocketOutputStream::Flush()
+{
+    return NOERROR;
+}
+
+/**
+ * Create a new instance from a file descriptor representing
+ * a bound socket. The state of the file descriptor is not checked here
+ *  but the caller can verify socket state by calling listen().
+ *
+ * @param fd non-NULL; bound file descriptor
+ */
+LocalSocketImpl::LocalSocketImpl(
+    /* [in] */ IFileDescriptor* fd)
+    : mFd(fd)
+{}
+
+LocalSocketImpl::~LocalSocketImpl()
+{
+    Close();
+}
+
+ECode LocalSocketImpl::NativeClose(
+    /* [in] */ IFileDescriptor* fileDescriptor)
+{
+    Int32 fd;
+    Int32 err;
+
+    if (fileDescriptor == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    fileDescriptor->GetDescriptor(&fd);
+
+    do {
+        err = close(fd);
+    } while (err < 0 && errno == EINTR);
+
+    if (err < 0) {
+        return E_IO_EXCEPTION;
+    }
     return NOERROR;
 }
 
@@ -732,277 +1418,6 @@ ECode LocalSocketImpl::NativeCreate(
     return NOERROR;
 }
 
-ECode LocalSocketImpl::NativeListen(
-    /* [in] */ IFileDescriptor* fileDescriptor,
-    /* [in] */ Int32 backlog)
-{
-    int ret;
-    Int32 fd;
-
-    fileDescriptor->GetDescriptor(&fd);
-
-    ret = listen(fd, backlog);
-
-    if (ret < 0) {
-        return E_IO_EXCEPTION;
-    }
-    return NOERROR;
-}
-
-ECode LocalSocketImpl::Shutdown(
-    /* [in] */ IFileDescriptor* fileDescriptor,
-    /* [in] */ Boolean shutdownInput)
-{
-    int ret;
-    Int32 fd;
-
-    fileDescriptor->GetDescriptor(&fd);
-
-    ret = shutdown(fd, shutdownInput ? SHUT_RD : SHUT_WR);
-
-    if (ret < 0) {
-        return E_IO_EXCEPTION;
-    }
-    return NOERROR;
-}
-
-ECode LocalSocketImpl::NativeGetPeerCredentials(
-    /* [in] */ IFileDescriptor* fileDescriptor,
-    /* [out] */ ICredentials** credentials)
-{
-    int err;
-    Int32 fd;
-
-    if (fileDescriptor == NULL) {
-        return E_NULL_POINTER_EXCEPTION;
-    }
-
-    fileDescriptor->GetDescriptor(&fd);
-
-    struct ucred creds;
-
-    memset(&creds, 0, sizeof(creds));
-    socklen_t szCreds = sizeof(creds);
-
-    err = getsockopt(fd, SOL_SOCKET, SO_PEERCRED, &creds, &szCreds);
-
-    if (err < 0) {
-        *credentials = NULL;
-        return E_IO_EXCEPTION;
-    }
-
-    if (szCreds == 0) {
-        *credentials = NULL;
-        return NOERROR;
-    }
-    AutoPtr<ICredentials>  crden;
-    CCredentials::New(creds.pid, creds.uid, creds.gid, (ICredentials**)&crden);
-    *credentials = crden;
-    REFCOUNT_ADD(*credentials);
-    return NOERROR;
-}
-
-static Boolean
-droid_opt_to_real(Int32 optID, int* opt, int* level)
-{
-    switch (optID)
-    {
-        case 4098:
-            *opt = SO_RCVBUF;
-            *level = SOL_SOCKET;
-            return TRUE;
-        case 4097:
-            *opt = SO_SNDBUF;
-            *level = SOL_SOCKET;
-            return TRUE;
-        case 4102:
-            *opt = SO_SNDTIMEO;
-            *level = SOL_SOCKET;
-            return TRUE;
-        case 128:
-            *opt = SO_LINGER;
-            *level = SOL_SOCKET;
-            return TRUE;
-        case 1:
-            *opt = TCP_NODELAY;
-            *level = IPPROTO_TCP;
-            return TRUE;
-        case 4:
-            *opt = SO_REUSEADDR;
-            *level = SOL_SOCKET;
-            return TRUE;
-
-    }
-    return FALSE;
-}
-
-ECode LocalSocketImpl::NativeGetOption(
-    /* [in] */ IFileDescriptor* fileDescriptor,
-    /* [in] */ Int32 optID,
-    /* [out] */ Int32* option)
-{
-    Int32 ret, value;
-    int opt, level;
-    Int32 fd;
-
-    socklen_t size = sizeof(int);
-
-    if (!droid_opt_to_real(optID, &opt, &level)) {
-        *option = 0;
-        return E_IO_EXCEPTION;
-    }
-
-    fileDescriptor->GetDescriptor(&fd);
-
-    switch (opt)
-    {
-        case SO_LINGER:
-        {
-            struct linger lingr;
-            size = sizeof(lingr);
-            ret = getsockopt(fd, level, opt, &lingr, &size);
-            if (!lingr.l_onoff) {
-                value = -1;
-            } else {
-                value = lingr.l_linger;
-            }
-            break;
-        }
-        default:
-            ret = getsockopt(fd, level, opt, &value, &size);
-            break;
-    }
-
-
-    if (ret != 0) {
-        *option = 0;
-        return E_IO_EXCEPTION;
-    }
-
-    *option = value;
-    return NOERROR;
-}
-
-ECode LocalSocketImpl::NativeSetOption(
-    /* [in] */ IFileDescriptor* fileDescriptor,
-    /* [in] */ Int32 optID,
-    /* [in] */ Int32 boolValue,
-    /* [in] */ Int32 intValue)
-{
-    Int32 ret;
-    Int32 optname;
-    Int32 level;
-    Int32 fd;
-
-    if (!droid_opt_to_real(optID, &optname, &level)) {
-        return E_IO_EXCEPTION;
-    }
-
-    fileDescriptor->GetDescriptor(&fd);
-
-    switch (optname) {
-        case SO_LINGER: {
-            /*
-             * SO_LINGER is special because it needs to use a special
-             * "linger" struct as well as use the incoming boolean
-             * argument specially.
-             */
-            struct linger lingr;
-            lingr.l_onoff = boolValue ? 1 : 0; // Force it to be 0 or 1.
-            lingr.l_linger = intValue;
-            ret = setsockopt(fd, level, optname, &lingr, sizeof(lingr));
-            break;
-        }
-        case SO_SNDTIMEO: {
-            /*
-             * SO_TIMEOUT from the core library gets converted to
-             * SO_SNDTIMEO, but the option is supposed to set both
-             * send and receive timeouts. Note: The incoming timeout
-             * value is in milliseconds.
-             */
-            struct timeval timeout;
-            timeout.tv_sec = intValue / 1000;
-            timeout.tv_usec = (intValue % 1000) * 1000;
-
-            ret = setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO,
-                    (void *)&timeout, sizeof(timeout));
-
-            if (ret == 0) {
-                ret = setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO,
-                        (void *)&timeout, sizeof(timeout));
-            }
-
-            break;
-        }
-        default: {
-            /*
-             * In all other cases, the translated option level and
-             * optname may be used directly for a call to setsockopt().
-             */
-            ret = setsockopt(fd, level, optname, &intValue, sizeof(intValue));
-            break;
-        }
-    }
-
-    if (ret != 0) {
-        return E_IO_EXCEPTION;
-    }
-    return NOERROR;
-}
-
-/**
- * Accepts a connection on a server socket.
- *
- * @param fd file descriptor of server socket
- * @param s socket implementation that will become the new socket
- * @return file descriptor of new socket
- */
-ECode LocalSocketImpl::NativeAccept(
-    /* [in] */ IFileDescriptor* fileDescriptor,
-    /* [in] */ LocalSocketImpl* s,
-    /* [out] */ IFileDescriptor** fdObj)
-{
-    union {
-        struct sockaddr address;
-        struct sockaddr_un un_address;
-    } sa;
-
-    int ret;
-    Int32 retFD;
-    Int32 fd;
-    socklen_t addrlen;
-
-    if (s == NULL) {
-//        jniThrowNullPointerException(env, NULL);
-        *fdObj = NULL;
-        return E_NULL_POINTER_EXCEPTION;
-    }
-
-    fileDescriptor->GetDescriptor(&fd);
-
-    do {
-        addrlen = sizeof(sa);
-        ret = accept(fd, &(sa.address), &addrlen);
-    } while (ret < 0 && errno == EINTR);
-
-    if (ret < 0) {
-        *fdObj = NULL;
-        return E_IO_EXCEPTION;
-    }
-
-    retFD = ret;
-
-    CFileDescriptor::New(fdObj);
-    (*fdObj)->SetDescriptor(retFD);
-    return NOERROR;
-}
-
-String LocalSocketImpl::ToString()
-{
-    assert(0);
-    return String(NULL);
-}
-
 /**
  * Creates a socket in the underlying OS.
  *
@@ -1035,325 +1450,4 @@ ECode LocalSocketImpl::Close()
     mFd = NULL;
     return NOERROR;
 }
-
-/** note timeout presently ignored */
-ECode LocalSocketImpl::Connect(
-    /* [in] */ ILocalSocketAddress* address,
-    /* [in] */ Int32 timeout)
-{
-    if (mFd == NULL) {
-//        throw new IOException("socket not created");
-        return E_IO_EXCEPTION;
-    }
-
-    String name;
-    address->GetName(&name);
-    LocalSocketAddressNamespace ns;
-    address->GetNamespace(&ns);
-    return ConnectLocal(mFd, name, (Int32)ns);
-}
-
-/**
- * Binds this socket to an endpoint name. May only be called on an instance
- * that has not yet been bound.
- *
- * @param endpoint endpoint address
- * @throws IOException
- */
-ECode LocalSocketImpl::Bind(
-    /* [in] */ ILocalSocketAddress* endpoint)
-{
-    if (mFd == NULL) {
-//        throw new IOException("socket not created");
-        return E_IO_EXCEPTION;
-    }
-
-    String name;
-    endpoint->GetName(&name);
-    LocalSocketAddressNamespace ns;
-    endpoint->GetNamespace(&ns);
-    return BindLocal(mFd, name, (Int32)ns);
-}
-
-ECode LocalSocketImpl::Listen(
-    /* [in] */ Int32 backlog)
-{
-    if (mFd == NULL) {
-//        throw new IOException("socket not created");
-        return E_IO_EXCEPTION;
-    }
-
-    return NativeListen(mFd, backlog);
-}
-
-/**
- * Accepts a new connection to the socket. Blocks until a new
- * connection arrives.
- *
- * @param s a socket that will be used to represent the new connection.
- * @throws IOException
- */
-ECode LocalSocketImpl::Accept(
-    /* [in] */ LocalSocketImpl* s)
-{
-    if (mFd == NULL) {
-//        throw new IOException("socket not created");
-        return E_IO_EXCEPTION;
-    }
-
-    s->mFd = NULL;
-    return NativeAccept(mFd, s, (IFileDescriptor**)&s->mFd);
-}
-
-/**
- * Retrieves the input stream for this instance.
- *
- * @return input stream
- * @throws IOException if socket has been Closed or cannot be created.
- */
-ECode LocalSocketImpl::GetInputStream(
-    /* [out] */ IInputStream** is)
-{
-    VALIDATE_NOT_NULL(is);
-
-    if (mFd == NULL) {
-//        throw new IOException("socket not created");
-        return E_IO_EXCEPTION;
-    }
-
-    {
-        AutoLock lock(mLock);
-
-        if (mFis == NULL) {
-            mFis = new SocketInputStream(this);
-        }
-
-        *is = mFis;
-        REFCOUNT_ADD(*is);
-        return NOERROR;
-    }
-}
-
-/**
- * Retrieves the output stream for this instance.
- *
- * @return output stream
- * @throws IOException if socket has been Closed or cannot be created.
- */
-ECode LocalSocketImpl::GetOutputStream(
-    /* [out] */ IOutputStream** os)
-{
-    VALIDATE_NOT_NULL(os);
-
-    if (mFd == NULL) {
-//        throw new IOException("socket not created");
-        return E_IO_EXCEPTION;
-    }
-
-    {
-        AutoLock lock(mLock);
-
-        if (mFos == NULL) {
-            mFos = new SocketOutputStream(this);
-        }
-
-        *os = mFos;
-        REFCOUNT_ADD(*os);
-        return NOERROR;
-    }
-}
-
-/**
- * Returns the number of bytes available for reading without blocking.
- *
- * @return >= 0 count bytes available
- * @throws IOException
- */
-ECode LocalSocketImpl::Available(
-    /* [out] */ Int32* avail)
-{
-    VALIDATE_NOT_NULL(avail);
-
-    AutoPtr<IInputStream> is;
-    FAIL_RETURN(GetInputStream((IInputStream**)&is));
-    return is->Available(avail);
-}
-
-/**
- * Shuts down the input side of the socket.
- *
- * @throws IOException
- */
-ECode LocalSocketImpl::ShutdownInput()
-{
-    if (mFd == NULL) {
-//        throw new IOException("socket not created");
-        return E_IO_EXCEPTION;
-    }
-
-    return Shutdown(mFd, TRUE);
-}
-
-/**
- * Shuts down the output side of the socket.
- *
- * @throws IOException
- */
-ECode LocalSocketImpl::ShutdownOutput()
-{
-    if (mFd == NULL) {
-//        throw new IOException("socket not created");
-        return E_IO_EXCEPTION;
-    }
-
-    return Shutdown(mFd, FALSE);
-}
-
-AutoPtr<IFileDescriptor> LocalSocketImpl::GetFileDescriptor()
-{
-    return mFd;
-}
-
-Boolean LocalSocketImpl::SupportsUrgentData()
-{
-    return FALSE;
-}
-
-ECode LocalSocketImpl::SendUrgentData(
-    /* [in] */ Int32 data)
-{
-//    throw new RuntimeException ("not impled");
-    return E_RUNTIME_EXCEPTION;
-}
-
-ECode LocalSocketImpl::GetOption(
-    /* [in] */ Int32 optID,
-    /* [out] */ IInterface** result)
-{
-    if (mFd == NULL) {
-//        throw new IOException("socket not created");
-        return E_IO_EXCEPTION;
-    }
-
-    if (optID == ISocketOptions::SO_TIMEOUT) {
-        *result = 0;
-        return NOERROR;
-    }
-
-    Int32 value;
-    FAIL_RETURN(NativeGetOption(mFd, optID, &value));
-    switch (optID) {
-        case 4098 /*ISocketOptions::SO_RCVBUF*/:
-        case 4097/*ISocketOptions::SO_SNDBUF*/:
-            return CInteger32::New(value, (IInteger32**)result);
-        case 4/*ISocketOptions::SO_REUSEADDR*/:
-        default:
-            return CInteger32::New(value, (IInteger32**)result);
-    }
-}
-
-ECode LocalSocketImpl::SetOption(
-    /* [in] */ Int32 optID,
-    /* [in] */ IInterface* value)
-{
-    /*
-     * Boolean.FALSE is used to disable some options, so it
-     * is important to distinguish between FALSE and unset.
-     * We define it here that -1 is unset, 0 is FALSE, and 1
-     * is TRUE.
-     */
-    Int32 boolValue = -1;
-    Int32 intValue = 0;
-
-    if (mFd == NULL) {
-//        throw new IOException("socket not created");
-        return E_IO_EXCEPTION;
-    }
-
-    if (IInteger32::Probe(value) != NULL) {
-        IInteger32::Probe(value)->GetValue(&intValue);
-    }
-    else if (IBoolean::Probe(value) != NULL) {
-        Boolean bv;
-        IBoolean::Probe(value)->GetValue(&bv);
-        boolValue = bv? 1 : 0;
-    }
-    else {
-//        throw new IOException("bad value: " + value);
-        return E_IO_EXCEPTION;
-    }
-
-    return NativeSetOption(mFd, optID, boolValue, intValue);
-}
-
-/**
- * Enqueues a set of file descriptors to send to the peer. The queue
- * is one deep. The file descriptors will be sent with the next write
- * of normal data, and will be delivered in a single ancillary message.
- * See "man 7 unix" SCM_RIGHTS on a desktop Linux machine.
- *
- * @param fds non-NULL; file descriptors to send.
- * @throws IOException
- */
-void LocalSocketImpl::SetFileDescriptorsForSend(
-    /* [in] */ ArrayOf<IFileDescriptor*>* fds)
-{
-    AutoLock lock(mWriteMonitor);
-
-    mOutboundFileDescriptors = fds;
-}
-
-/**
- * Retrieves a set of file descriptors that a peer has sent through
- * an ancillary message. This method retrieves the most recent set sent,
- * and then returns NULL until a new set arrives.
- * File descriptors may only be passed along with regular data, so this
- * method can only return a non-NULL after a read operation.
- *
- * @return NULL or file descriptor array
- * @throws IOException
- */
-AutoPtr< ArrayOf<IFileDescriptor*> > LocalSocketImpl::GetAncillaryFileDescriptors()
-{
-    AutoLock lock(mReadMonitor);
-
-    AutoPtr< ArrayOf<IFileDescriptor*> > result = mInboundFileDescriptors;
-
-    mInboundFileDescriptors = NULL;
-    return result;
-}
-
-/**
- * Retrieves the credentials of this socket's peer. Only valid on
- * connected sockets.
- *
- * @return non-NULL; peer credentials
- * @throws IOException
- */
-ECode LocalSocketImpl::GetPeerCredentials(
-    /* [out] */ ICredentials** result)
-{
-    VALIDATE_NOT_NULL(result);
-    return NativeGetPeerCredentials(mFd, result);
-}
-
-/**
- * Retrieves the socket name from the OS.
- *
- * @return non-NULL; socket name
- * @throws IOException on failure
- */
-ECode LocalSocketImpl::GetSockAddress(
-    /* [out] */ ILocalSocketAddress** result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = NULL;
-    return NOERROR;
-    //TODO implement this
-    //return getSockName_native(fd);
-}
-
-} // namespace Net
-} // namepsace Droid
-} // namespace Elastos
-
+#endif

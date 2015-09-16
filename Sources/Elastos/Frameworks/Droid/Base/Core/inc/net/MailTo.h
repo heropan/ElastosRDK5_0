@@ -1,23 +1,29 @@
 
-#ifndef __ELASTOS_DROID_NET_CCMailTo_H__
-#define __ELASTOS_DROID_NET_CCMailTo_H__
+#ifndef __ELASTOS_DROID_NET_MAILTO_H__
+#define __ELASTOS_DROID_NET_MAILTO_H__
 
-#include "_Elastos_Droid_Net_CCMailTo.h"
-#include "elautptr.h"
+#include "ext/frameworkext.h"
+
+using Elastos::Utility::IMap;
+using Elastos::Utility::IHashMap;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
-CarClass(CCMailTo)
+class MailTo
+    : public Object
+    , public IMailTo
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Test to see if the given string is a mailto URL
      * @param url string to be tested
      * @return true if the string is a mailto URL
      */
-    CARAPI IsMailTo(
+    static CARAPI IsMailTo(
         /* [in] */ const String& url,
         /* [out] */ Boolean* result);
 
@@ -28,7 +34,7 @@ public:
      * @return MailTo object
      * @exception ParseException if the scheme is not a mailto URL
      */
-    CARAPI Parse(
+    static CARAPI Parse(
         /* [in] */ const String& url,
         /* [out] */ IMailTo** result);
 
@@ -66,6 +72,7 @@ public:
     CARAPI GetBody(
         /* [out] */ String* result);
 
+    // @Override
     CARAPI ToString(
         /* [out] */ String* result);
 
@@ -74,17 +81,18 @@ public:
      * @return map containing all parsed values
      */
     CARAPI GetHeaders(
-        /* [out, callee] */ IObjectStringMap** rethashmap);
-
+        /* [out] */ IMap** rethashmap);
 
 private:
-    AutoPtr <HashMap<String, String>> mHeaders;
-    static const String TO = "to";
-    static const String BODY = "body";
-    static const String CC = "cc";
-    static const String SUBJECT = "subject";
+    AutoPtr <IHashMap> mHeaders;
 
-    CCMailTo();
+    // Well known headers
+    static const String TO;
+    static const String BODY;
+    static const String CC;
+    static const String SUBJECT;
+
+    MailTo();
 };
 
 } // namespace Net
@@ -92,4 +100,4 @@ private:
 } // namespace Elastos
 
 
-#endif // __CMailTo_H__
+#endif // __ELASTOS_DROID_NET_MAILTO_H__

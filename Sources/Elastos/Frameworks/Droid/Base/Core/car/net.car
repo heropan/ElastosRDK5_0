@@ -322,6 +322,10 @@ module
         interface ILocalSocketAddressNamespace;
     }
 
+    singleton class CMailToHelper {
+        interface IMailToHelper;
+    }
+
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos

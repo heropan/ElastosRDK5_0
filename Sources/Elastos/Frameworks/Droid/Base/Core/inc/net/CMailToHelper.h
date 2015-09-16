@@ -1,18 +1,23 @@
 
-#ifndef __ELASTOS_DROID_NET_CCMailToHelper_H__
-#define __ELASTOS_DROID_NET_CCMailToHelper_H__
+#ifndef __ELASTOS_DROID_NET_CMAILTOHELPER_H__
+#define __ELASTOS_DROID_NET_CMAILTOHELPER_H__
 
-#include "_Elastos_Droid_Net_CCMailTo.h"
-#include "net/CMailTo.h"
-#include "elautptr.h"
+#include "_Elastos_Droid_Net_CMailToHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
-CarClass(CCMailToHelper)
+CarClass(CMailToHelper)
+    , public Singleton
+    , public IMailToHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Test to see if the given string is a mailto URL
      * @param url string to be tested
@@ -39,4 +44,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_NET_CCMailToHelper_H__
+#endif // __ELASTOS_DROID_NET_CMAILTOHELPER_H__
