@@ -1,218 +1,276 @@
 // wuweizuo automatic build .cpp file from .java file.
 
+#include "WindowAndroid.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
 namespace Base {
 
-const String WindowAndroid::TAG("WindowAndroid");
-const String WindowAndroid::WINDOW_CALLBACK_ERRORS("window_callback_errors");
-const Int32 WindowAndroid::START_INTENT_FAILURE;
-
-//===============================================================
-//           WindowAndroid::InnerVSyncMonitorListener
-//===============================================================
+//=====================================================================
+//               WindowAndroid::InnerVSyncMonitorListener
+//=====================================================================
 WindowAndroid::InnerVSyncMonitorListener::InnerVSyncMonitorListener(
-    /* in */ WindowAndroid* owner)
+    /* [in] */ WindowAndroid* owner)
     : mOwner(owner)
 {
+    // ==================before translated======================
+    // mOwner = owner;
 }
 
 ECode WindowAndroid::InnerVSyncMonitorListener::OnVSync(
-    /* in */ VSyncMonitor* monitor,
-    /* in */ Int64 vsyncTimeMicros)
+    /* [in] */ VSyncMonitor* monitor,
+    /* [in] */ Int64 vsyncTimeMicros)
 {
     VALIDATE_NOT_NULL(monitor);
-    if (mOwner->mNativeWindowAndroid != 0) {
-        mOwner->NativeOnVSync(mOwner->mNativeWindowAndroid, vsyncTimeMicros);
-    }
+    // ==================before translated======================
+    // if (mNativeWindowAndroid != 0) {
+    //     nativeOnVSync(mNativeWindowAndroid, vsyncTimeMicros);
+    // }
+    assert(0);
     return NOERROR;
 }
 
-//===============================================================
-//                       WindowAndroid
-//===============================================================
+//=====================================================================
+//                            WindowAndroid
+//=====================================================================
+const String WindowAndroid::WINDOW_CALLBACK_ERRORS("window_callback_errors");
+const Int32 WindowAndroid::START_INTENT_FAILURE;
+const String WindowAndroid::TAG("WindowAndroid");
+
 WindowAndroid::WindowAndroid(
-    /* in */ IContext* context)
+    /* [in] */ IContext* context)
 {
-    AutoPtr<IContext> applicationContext;
-    context->GetApplicationContext((IContext**)&applicationContext);
-    assert (context == applicationContext);
-    mApplicationContext = context;
-    mOutstandingIntents = SparseArray<IntentCallback>::Alloc(1);
-    mIntentErrors = new HashMap<IInteger32, String>();
-    mVSyncMonitor = new VSyncMonitor(context, mVSyncListener);
+    // ==================before translated======================
+    // assert context == context.getApplicationContext();
+    // mApplicationContext = context;
+    // mOutstandingIntents = new SparseArray<IntentCallback>();
+    // mIntentErrors = new HashMap<Integer, String>();
+    // mVSyncMonitor = new VSyncMonitor(context, mVSyncListener);
 }
 
 Boolean WindowAndroid::ShowIntent(
-    /* in */ IPendingIntent* intent,
-    /* in */ IntentCallback* callback,
-    /* in */ Int32 errorId)
+    /* [in] */ IPendingIntent* intent,
+    /* [in] */ IntentCallback* callback,
+    /* [in] */ Int32 errorId)
 {
-    return ShowCancelableIntent(intent, callback, errorId) >= 0;
+    // ==================before translated======================
+    // return showCancelableIntent(intent, callback, errorId) >= 0;
+    assert(0);
+    return FALSE;
 }
 
 Boolean WindowAndroid::ShowIntent(
-    /* in */ IIntent* intent,
-    /* in */ IntentCallback* callback,
-    /* in */ Int32 errorId)
+    /* [in] */ IIntent* intent,
+    /* [in] */ IntentCallback* callback,
+    /* [in] */ Int32 errorId)
 {
-    return ShowCancelableIntent(intent, callback, errorId) >= 0;
+    // ==================before translated======================
+    // return showCancelableIntent(intent, callback, errorId) >= 0;
+    assert(0);
+    return FALSE;
 }
 
 Int32 WindowAndroid::ShowCancelableIntent(
-    /* in */ IPendingIntent* intent,
-    /* in */ IntentCallback* callback,
-    /* in */ Int32 errorId)
+    /* [in] */ IPendingIntent* intent,
+    /* [in] */ IntentCallback* callback,
+    /* [in] */ Int32 errorId)
 {
-    //Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
-    return START_INTENT_FAILURE;
+    // ==================before translated======================
+    // Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
+    // return START_INTENT_FAILURE;
+    assert(0);
+    return 0;
 }
 
 Int32 WindowAndroid::ShowCancelableIntent(
-    /* in */ IIntent* intent,
-    /* in */ IntentCallback* callback,
-    /* in */ Int32 errorId)
+    /* [in] */ IIntent* intent,
+    /* [in] */ IntentCallback* callback,
+    /* [in] */ Int32 errorId)
 {
-    //Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
-    return START_INTENT_FAILURE;
+    // ==================before translated======================
+    // Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
+    // return START_INTENT_FAILURE;
+    assert(0);
+    return 0;
 }
 
 ECode WindowAndroid::CancelIntent(
-    /* in */ Int32 requestCode)
+    /* [in] */ Int32 requestCode)
 {
-    //Log.d(TAG, "Can't cancel intent as context is not an Activity: " + requestCode);
+    // ==================before translated======================
+    // Log.d(TAG, "Can't cancel intent as context is not an Activity: " + requestCode);
+    assert(0);
     return NOERROR;
 }
 
 Boolean WindowAndroid::RemoveIntentCallback(
-    /* in */ IntentCallback* callback)
+    /* [in] */ IntentCallback* callback)
 {
-    Int32 requestCode = mOutstandingIntents->IndexOfValue(callback);
-    if (requestCode < 0) return FALSE;
-    mOutstandingIntents->Remove(requestCode);
-    mIntentErrors->Remove(requestCode);
-    return TRUE;
+    // ==================before translated======================
+    // int requestCode = mOutstandingIntents.indexOfValue(callback);
+    // if (requestCode < 0) return false;
+    // mOutstandingIntents.remove(requestCode);
+    // mIntentErrors.remove(requestCode);
+    // return true;
+    assert(0);
+    return FALSE;
 }
 
 ECode WindowAndroid::ShowError(
-    /* in */ String error)
+    /* [in] */ String error)
 {
-    if (!error.IsEmpty()) {
-        Toast::MakeText(mApplicationContext, error, Toast::LENGTH_SHORT)->Show();
-    }
+    // ==================before translated======================
+    // if (error != null) {
+    //     Toast.makeText(mApplicationContext, error, Toast.LENGTH_SHORT).show();
+    // }
+    assert(0);
     return NOERROR;
 }
 
 ECode WindowAndroid::ShowError(
-    /* in */ Int32 resId)
+    /* [in] */ Int32 resId)
 {
-    String str;
-    mApplicationContext->GetString(resId, &str);
-    ShowError(str);
+    // ==================before translated======================
+    // showError(mApplicationContext.getString(resId));
+    assert(0);
     return NOERROR;
 }
 
 ECode WindowAndroid::SendBroadcast(
-    /* in */ IIntent* intent)
+    /* [in] */ IIntent* intent)
 {
     VALIDATE_NOT_NULL(intent);
-    mApplicationContext->SendBroadcast(intent);
+    // ==================before translated======================
+    // mApplicationContext.sendBroadcast(intent);
+    assert(0);
     return NOERROR;
+}
+
+AutoPtr< IWeakReference< AutoPtr<IActivity> > > WindowAndroid::GetActivity()
+{
+    // ==================before translated======================
+    // return new WeakReference<Activity>(null);
+    assert(0);
+    AutoPtr< IWeakReference< AutoPtr<IActivity> > > empty;
+    return empty;
 }
 
 AutoPtr<IContext> WindowAndroid::GetApplicationContext()
 {
-    return mApplicationContext;
+    // ==================before translated======================
+    // return mApplicationContext;
+    assert(0);
+    AutoPtr<IContext> empty;
+    return empty;
 }
 
 ECode WindowAndroid::SaveInstanceState(
-    /* in */ IBundle* bundle)
+    /* [in] */ IBundle* bundle)
 {
     VALIDATE_NOT_NULL(bundle);
-    bundle->PutSerializable(WINDOW_CALLBACK_ERRORS, mIntentErrors);
+    // ==================before translated======================
+    // bundle.putSerializable(WINDOW_CALLBACK_ERRORS, mIntentErrors);
+    assert(0);
     return NOERROR;
 }
 
 ECode WindowAndroid::RestoreInstanceState(
-    /* in */ IBundle* bundle)
+    /* [in] */ IBundle* bundle)
 {
     VALIDATE_NOT_NULL(bundle);
-    if (bundle == NULL) return NOERROR;
-    AutoPtr<Object> errors;
-    bundle->GetSerializable(WINDOW_CALLBACK_ERRORS, (Object**)&errors);
-    AutoPtr<IHashMap> hashMap = errors->Probe(EIID_IHashMap);
-    if (hashMap = != NULL) {
-        mIntentErrors = hashMap;
-    }
+    // ==================before translated======================
+    // if (bundle == null) return;
+    //
+    // Object errors = bundle.getSerializable(WINDOW_CALLBACK_ERRORS);
+    // if (errors instanceof HashMap) {
+    //     @SuppressWarnings("unchecked")
+    //     HashMap<Integer, String> intentErrors = (HashMap<Integer, String>) errors;
+    //     mIntentErrors = intentErrors;
+    // }
+    assert(0);
     return NOERROR;
 }
 
 Boolean WindowAndroid::OnActivityResult(
-    /* in */ Int32 requestCode,
-    /* in */ Int32 resultCode,
-    /* in */ IIntent* data)
+    /* [in] */ Int32 requestCode,
+    /* [in] */ Int32 resultCode,
+    /* [in] */ IIntent* data)
 {
+    // ==================before translated======================
+    // return false;
+    assert(0);
     return FALSE;
 }
 
 Boolean WindowAndroid::CanResolveActivity(
-    /* in */ IIntent* intent)
+    /* [in] */ IIntent* intent)
 {
-    AutoPtr<IPackageManager> packageManager;
-    mApplicationContext->GetPackageManager((IPackageManager**)&packageManager);
-
-    AutoPtr<IResolveInfo> resolveInfo;
-    packageManager->ResolveActivity(intent, 0, (IResolveInfo**)&resolveInfo);
-    return resolveInfo != NULL;
+    // ==================before translated======================
+    // return mApplicationContext.getPackageManager().resolveActivity(intent, 0) != null;
+    assert(0);
+    return FALSE;
 }
 
 ECode WindowAndroid::Destroy()
 {
-    if (mNativeWindowAndroid != 0) {
-        NativeDestroy(mNativeWindowAndroid);
-        mNativeWindowAndroid = 0;
-    }
+    // ==================before translated======================
+    // if (mNativeWindowAndroid != 0) {
+    //     nativeDestroy(mNativeWindowAndroid);
+    //     mNativeWindowAndroid = 0;
+    // }
+    assert(0);
     return NOERROR;
 }
 
 Int64 WindowAndroid::GetNativePointer()
 {
-    if (mNativeWindowAndroid == 0) {
-        mNativeWindowAndroid = NativeInit(mVSyncMonitor.getVSyncPeriodInMicroseconds());
-    }
-    return mNativeWindowAndroid;
+    // ==================before translated======================
+    // if (mNativeWindowAndroid == 0) {
+    //     mNativeWindowAndroid = nativeInit(mVSyncMonitor.getVSyncPeriodInMicroseconds());
+    // }
+    // return mNativeWindowAndroid;
+    assert(0);
+    return 0;
 }
 
 ECode WindowAndroid::ShowCallbackNonExistentError(
-    /* in */ String error)
+    /* [in] */ String error)
 {
-    ShowError(error);
+    // ==================before translated======================
+    // showError(error);
+    assert(0);
     return NOERROR;
 }
 
 ECode WindowAndroid::RequestVSyncUpdate()
 {
-       mVSyncMonitor->RequestUpdate();
+    // ==================before translated======================
+    // mVSyncMonitor.requestUpdate();
+    assert(0);
     return NOERROR;
 }
 
 Int64 WindowAndroid::NativeInit(
-    /* in */ Int64 vsyncPeriod)
+    /* [in] */ Int64 vsyncPeriod)
 {
+    assert(0);
+    return 0;
 }
 
 ECode WindowAndroid::NativeOnVSync(
-    /* in */ Int64 nativeWindowAndroid,
-    /* in */ Int64 vsyncTimeMicros)
+    /* [in] */ Int64 nativeWindowAndroid,
+    /* [in] */ Int64 vsyncTimeMicros)
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WindowAndroid::NativeDestroy(
-    /* in */ Int64 nativeWindowAndroid)
+    /* [in] */ Int64 nativeWindowAndroid)
 {
+    assert(0);
     return NOERROR;
 }
 
@@ -221,4 +279,5 @@ ECode WindowAndroid::NativeDestroy(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
 

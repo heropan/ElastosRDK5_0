@@ -6,8 +6,15 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SMARTCLIPPROVIDER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SMARTCLIPPROVIDER_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "os/Handler.h"
+
 // package org.chromium.content.browser;
 // import android.os.Handler;
+
+using Elastos::Droid::Os::IHandler;
 
 namespace Elastos {
 namespace Droid {
@@ -38,8 +45,8 @@ public:
     /**
       * Register a handler to handle smart clip data once extraction is done.
       */
-    virtual const CARAPI SetSmartClipResultHandler(
-        /* [in] */ IHandler* resultHandler) = 0;
+    virtual CARAPI SetSmartClipResultHandler(
+        /* [in] */ const IHandler* resultHandler) = 0;
 };
 
 } // namespace Browser

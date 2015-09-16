@@ -1,3 +1,4 @@
+// wuweizuo automatic build .h file from .java file.
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -5,16 +6,33 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_COLORPICKERADVANCED_H_
 #define _ELASTOS_DROID_WEBKIT_UI_COLORPICKERADVANCED_H_
 
-//package org.chromium.ui;
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/Context.h"
+#include "graphics/CColor.h"
+#include "view/LayoutInflater.h"
+#include "view/View.h"
+#include "widget/LinearLayout.h"
+#include "widget/SeekBar.h"
 
-//import android.content.Context;
-//import android.graphics.Color;
-//import android.util.AttributeSet;
-//import android.view.LayoutInflater;
-//import android.view.View;
-//import android.widget.LinearLayout;
-//import android.widget.SeekBar;
-//import android.widget.SeekBar.OnSeekBarChangeListener;
+// package org.chromium.ui;
+// import android.content.Context;
+// import android.graphics.Color;
+// import android.util.AttributeSet;
+// import android.view.LayoutInflater;
+// import android.view.View;
+// import android.widget.LinearLayout;
+// import android.widget.SeekBar;
+// import android.widget.SeekBar.OnSeekBarChangeListener;
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::IColor;
+using Elastos::Droid::Util::IAttributeSet;
+using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::Widget::ILinearLayout;
+using Elastos::Droid::Widget::ISeekBar;
 
 namespace Elastos {
 namespace Droid {
@@ -22,12 +40,13 @@ namespace Webkit {
 namespace Ui {
 
 /**
- * Represents a more advanced way for the user to choose a color, based on selecting each of
- * the Hue, Saturation and Value attributes.
- */
+  * Represents a more advanced way for the user to choose a color, based on selecting each of
+  * the Hue, Saturation and Value attributes.
+  */
 class ColorPickerAdvanced
-    : public LinearLayout
-    , public IOnSeekBarChangeListener
+    : public Object
+    , public LinearLayout
+    , public OnSeekBarChangeListener
 {
 public:
     ColorPickerAdvanced(
@@ -43,96 +62,103 @@ public:
         /* [in] */ IContext* context);
 
     /**
-     * Creates a new GradientDetails object from the parameters provided, initializes it,
-     * and adds it to this advanced view.
-     *
-     * @param textResourceId The text to display for the label.
-     * @param seekBarMax The maximum value of the seek bar for the gradient.
-     * @param seekBarListener Object listening to when the user changes the seek bar.
-     *
-     * @return A new GradientDetails object initialized with the given parameters.
-     */
+      * Creates a new GradientDetails object from the parameters provided, initializes it,
+      * and adds it to this advanced view.
+      *
+      * @param textResourceId The text to display for the label.
+      * @param seekBarMax The maximum value of the seek bar for the gradient.
+      * @param seekBarListener Object listening to when the user changes the seek bar.
+      *
+      * @return A new GradientDetails object initialized with the given parameters.
+      */
     virtual CARAPI_(AutoPtr<ColorPickerAdvancedComponent>) CreateAndAddNewGradient(
         /* [in] */ Int32 textResourceId,
         /* [in] */ Int32 seekBarMax,
         /* [in] */ IOnSeekBarChangeListener* seekBarListener);
 
     /**
-     * Sets the listener for when the user changes the color.
-     *
-     * @param onColorChangedListener The object listening for the change in color.
-     */
+      * Sets the listener for when the user changes the color.
+      *
+      * @param onColorChangedListener The object listening for the change in color.
+      */
     virtual CARAPI SetListener(
         /* [in] */ OnColorChangedListener* onColorChangedListener);
 
     /**
-     * @return The color the user has currently chosen.
-     */
+      * @return The color the user has currently chosen.
+      */
     virtual CARAPI_(Int32) GetColor();
 
     /**
-     * Sets the color that the user has currently chosen.
-     *
-     * @param color The currently chosen color.
-     */
+      * Sets the color that the user has currently chosen.
+      *
+      * @param color The currently chosen color.
+      */
     virtual CARAPI SetColor(
         /* [in] */ Int32 color);
 
     /**
-     * Callback for when a slider is updated on the advanced view.
-     *
-     * @param seekBar The color slider that was updated.
-     * @param progress The new value of the color slider.
-     * @param fromUser Whether it was the user the changed the value, or whether
-     *            we were setting it up.
-     */
-    //@Override
+      * Callback for when a slider is updated on the advanced view.
+      *
+      * @param seekBar The color slider that was updated.
+      * @param progress The new value of the color slider.
+      * @param fromUser Whether it was the user the changed the value, or whether
+      *            we were setting it up.
+      */
+    // @Override
     CARAPI OnProgressChanged(
         /* [in] */ ISeekBar* seekBar,
         /* [in] */ Int32 progress,
         /* [in] */ Boolean fromUser);
 
-    //@Override
+    // @Override
     CARAPI OnStartTrackingTouch(
         /* [in] */ ISeekBar* seekBar);
 
-    //@Override
+    // @Override
     CARAPI OnStopTrackingTouch(
         /* [in] */ ISeekBar* seekBar);
 
 private:
+    CARAPI_(AutoPtr< ArrayOf<Float> >) MiddleInitMcurrenthsvvalues();
+
     /**
-     * Initializes all the views and variables in the advanced view.
-     */
+      * Initializes all the views and variables in the advanced view.
+      */
     CARAPI Init();
 
     /**
-     * Notifies the listener, if there is one, of a change in the selected color.
-     */
+      * Notifies the listener, if there is one, of a change in the selected color.
+      */
     CARAPI NotifyColorChanged();
 
     /**
-     * Updates only the hue gradient display with the hue value for the
-     * currently selected color.
-     */
+      * Updates only the hue gradient display with the hue value for the
+      * currently selected color.
+      */
     CARAPI UpdateHueGradient();
 
     /**
-     * Updates only the saturation gradient display with the saturation value
-     * for the currently selected color.
-     */
+      * Updates only the saturation gradient display with the saturation value
+      * for the currently selected color.
+      */
     CARAPI UpdateSaturationGradient();
 
     /**
-     * Updates only the Value gradient display with the Value amount for
-     * the currently selected color.
-     */
+      * Updates only the Value gradient display with the Value amount for
+      * the currently selected color.
+      */
     CARAPI UpdateValueGradient();
 
     /**
-     * Updates all the gradient displays to show the currently selected color.
-     */
+      * Updates all the gradient displays to show the currently selected color.
+      */
     CARAPI RefreshGradientComponents();
+
+public:
+    AutoPtr<ColorPickerAdvancedComponent> mHueDetails;
+    AutoPtr<ColorPickerAdvancedComponent> mSaturationDetails;
+    AutoPtr<ColorPickerAdvancedComponent> mValueDetails;
 
 private:
     static const Int32 HUE_SEEK_BAR_MAX = 360;
@@ -141,12 +167,9 @@ private:
     static const Int32 SATURATION_COLOR_COUNT = 2;
     static const Int32 VALUE_SEEK_BAR_MAX = 100;
     static const Int32 VALUE_COLOR_COUNT = 2;
-    AutoPtr<ColorPickerAdvancedComponent> mHueDetails;
-    AutoPtr<ColorPickerAdvancedComponent> mSaturationDetails;
-    AutoPtr<ColorPickerAdvancedComponent> mValueDetails;
     AutoPtr<OnColorChangedListener> mOnColorChangedListener;
     Int32 mCurrentColor;
-    const AutoPtr< ArrayOf<Float> > mCurrentHsvValues;
+    AutoPtr< ArrayOf<Float> > mCurrentHsvValues;
 };
 
 } // namespace Ui

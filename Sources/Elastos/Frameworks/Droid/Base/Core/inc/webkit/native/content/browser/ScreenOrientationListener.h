@@ -6,6 +6,18 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SCREENORIENTATIONLISTENER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SCREENORIENTATIONLISTENER_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/Context.h"
+#include "content/res/CConfiguration.h"
+#include "hardware/display/CDisplayManager.h"
+#include "os/Build.h"
+#include "view/CSurface.h"
+#include "webkit/native/base/ObserverList.h"
+#include "webkit/native/base/ThreadUtils.h"
+#include "webkit/native/ui/gfx/DeviceDisplayInfo.h"
+
 // package org.chromium.content.browser;
 // import android.annotation.SuppressLint;
 // import android.content.ComponentCallbacks;
@@ -22,6 +34,18 @@
 // import org.chromium.base.ThreadUtils;
 // import org.chromium.ui.gfx.DeviceDisplayInfo;
 
+using Elastos::Droid::Annotation::ISuppressLint;
+using Elastos::Droid::Content::IComponentCallbacks;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Hardware::Display::IDisplayManager;
+using Elastos::Droid::Os::IBuild;
+using Elastos::Droid::Util::ILog;
+using Elastos::Droid::View::ISurface;
+using Elastos::Droid::View::IWindowManager;
+using Elastos::Droid::Webkit::Base::ObserverList;
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -33,7 +57,7 @@ namespace Browser {
   * screen orientation changes.
   */
 // @VisibleForTesting
-class ScreenOrientationListener
+class ScreenOrientationListener : public Object
 {
 public:
     /**
@@ -51,7 +75,9 @@ public:
             /* [in] */ Int32 orientation) = 0;
     };
 
-    class InnerRunnable : public Runnable
+    class InnerRunnable
+        : public Object
+        , public Runnable
     {
     public:
         InnerRunnable(
@@ -97,7 +123,8 @@ private:
       * is the only method that will work before API Level 17 (excluding polling).
       */
     class ScreenOrientationConfigurationListener
-        : public ScreenOrientationListenerBackend
+        : public Object
+        , public ScreenOrientationListenerBackend
         , public ComponentCallbacks
     {
     public:
@@ -125,7 +152,8 @@ private:
       */
     // @SuppressLint("NewApi")
     class ScreenOrientationDisplayListener
-        : public ScreenOrientationListenerBackend
+        : public Object
+        , public ScreenOrientationListenerBackend
         , public DisplayListener
     {
     public:
@@ -202,7 +230,7 @@ private:
 private:
     static const String TAG;
     // List of observers to notify when the screen orientation changes.
-    const AutoPtr< ObserverList<ScreenOrientationObserver> > mObservers;
+    /*const*/ AutoPtr< ObserverList<ScreenOrientationObserver> > mObservers;
     // mOrientation will be updated every time the orientation changes. When not
     // listening for changes, the value will be invalid and will be updated when
     // starting to listen again.

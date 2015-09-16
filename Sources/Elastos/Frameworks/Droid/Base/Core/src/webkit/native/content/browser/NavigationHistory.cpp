@@ -1,5 +1,7 @@
 // wuweizuo automatic build .cpp file from .java file.
 
+#include "NavigationHistory.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -12,34 +14,35 @@ namespace Browser {
 ECode NavigationHistory::SetCurrentEntryIndex(
     /* [in] */ Int32 currentEntryIndex)
 {
-    /*
-    mCurrentEntryIndex = currentEntryIndex;
-    */
+    // ==================before translated======================
+    // mCurrentEntryIndex = currentEntryIndex;
+    assert(0);
     return NOERROR;
 }
 
 Int32 NavigationHistory::GetEntryCount()
 {
-    /*
-    return mEntries.size();
-    */
+    // ==================before translated======================
+    // return mEntries.size();
+    assert(0);
     return 0;
 }
 
 AutoPtr<NavigationEntry> NavigationHistory::GetEntryAtIndex(
     /* [in] */ Int32 index)
 {
-    /*
-    return mEntries.get(index);
-    */
-    return AutoPtr<NavigationEntry>(this);
+    // ==================before translated======================
+    // return mEntries.get(index);
+    assert(0);
+    AutoPtr<NavigationEntry> empty;
+    return empty;
 }
 
 Int32 NavigationHistory::GetCurrentEntryIndex()
 {
-    /*
-    return mCurrentEntryIndex;
-    */
+    // ==================before translated======================
+    // return mCurrentEntryIndex;
+    assert(0);
     return 0;
 }
 
@@ -47,9 +50,9 @@ ECode NavigationHistory::AddEntry(
     /* [in] */ NavigationEntry* entry)
 {
     VALIDATE_NOT_NULL(entry);
-    /*
-    mEntries.add(entry);
-    */
+    // ==================before translated======================
+    // mEntries.add(entry);
+    assert(0);
     return NOERROR;
 }
 

@@ -1,249 +1,227 @@
+// wuweizuo automatic build .cpp file from .java file.
+
+#include "ProxyChangeListener.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Net {
 
-//===============================================================
-//                 ProxyChangeListener::ProxyConfig
-//===============================================================
+//=====================================================================
+//                   ProxyChangeListener::ProxyConfig
+//=====================================================================
 ProxyChangeListener::ProxyConfig::ProxyConfig(
     /* [in] */ String host,
     /* [in] */ Int32 port)
-    : mHost(host)
-    , mPort(port)
 {
+    // ==================before translated======================
+    // mHost = host;
+    // mPort = port;
 }
 
-//===============================================================
-//                 ProxyChangeListener::ProxyReceiver
-//===============================================================
-//@Override
+//=====================================================================
+//                  ProxyChangeListener::ProxyReceiver
+//=====================================================================
 ECode ProxyChangeListener::ProxyReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
     VALIDATE_NOT_NULL(context);
     VALIDATE_NOT_NULL(intent);
-
-    String action;
-    intent->GetAction(&action);
-    if (action.Equals(IProxy::PROXY_CHANGE_ACTION)) {
-        ProxySettingsChanged(ExtractNewProxy(intent));
-    }
+    // ==================before translated======================
+    // if (intent.getAction().equals(Proxy.PROXY_CHANGE_ACTION)) {
+    //     proxySettingsChanged(extractNewProxy(intent));
+    // }
+    assert(0);
     return NOERROR;
 }
 
-// Extract a ProxyConfig object from the supplied Intent's extra data
-// bundle. The android.net.ProxyProperties class is not exported from
-// tne Android SDK, so we have to use reflection to get at it and invoke
-// methods on it. If we fail, return an empty proxy config (meaning
-// 'direct').
-// TODO(sgurun): once android.net.ProxyInfo is public, rewrite this.
 AutoPtr<ProxyConfig> ProxyChangeListener::ProxyReceiver::ExtractNewProxy(
     /* [in] */ IIntent* intent)
 {
-    //try {
-        const String GET_HOST_NAME("getHost");
-        const String GET_PORT_NAME("getPort");
-        String className;
-        String proxyInfo;
-        if (IBuild::VERSION::SDK_INT <= IBuild::VERSION_CODES::KITKAT) {
-            className = "android.net.ProxyProperties";
-            proxyInfo = "proxy";
-        }
-        else {
-            className = "android.net.ProxyInfo";
-            proxyInfo = "android.intent.extra.PROXY_INFO";
-        }
-
-        // question: reflection
-        AutoPtr<Object> props;
-        AutoPtr<IExtras> extras;
-        intent->GetExtras((IExtras**)&extras);
-        extras->Get(proxyInfo, (Object**)&props);
-        if (NULL == props) {
-            AutoPtr<ProxyConfig> ret = NULL;
-            return ret;
-        }
-
-        // question: reflection
-        AutoPtr<IProxyProperties> proxyProper;
-        AutoPtr<IProxyInfo> proxyInfo;
-        AutoPtr<IMethod> getHostMethod;
-        AutoPtr<IMethod> getPortMethod;
-
-        if (IBuild::VERSION::SDK_INT <= IBuild::VERSION_CODES::KITKAT) {
-            CProxyProper::New((IProxyProperties**)&proxyProper);
-            proxyProper->GetDeclaredMethod(GET_HOST_NAME, (IMethod**)&getHostMethod);
-            proxyProper->GetDeclaredMethod(GET_PORT_NAME, (IMethod**)&getPortMethod);
-        }
-        else {
-            CProxyInfo::New((IProxyInfo**)&proxyInfo);
-            proxyInfo->GetDeclaredMethod(GET_HOST_NAME, (IMethod**)&getHostMethod);
-            proxyInfo->GetDeclaredMethod(GET_PORT_NAME, (IMethod**)&getPortMethod);
-        }
-
-        String host;
-        Int32 port;
-        getHostMethod->Invoke(props, &host);
-        getPortMethod->Invoke(props, &port);
-
-        AutoPtr<ProxyConfig> result = new ProxyConfig(host, port);
-        return result;
-    //} catch (ClassNotFoundException ex) {
-    //    Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
-    //    return null;
-    //} catch (NoSuchMethodException ex) {
-    //    Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
-    //    return null;
-    //} catch (IllegalAccessException ex) {
-    //    Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
-    //    return null;
-    //} catch (InvocationTargetException ex) {
-    //    Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
-    //    return null;
-    //} catch (NullPointerException ex) {
-    //    Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
-    //    return null;
-    //}
+    // ==================before translated======================
+    // try {
+    //     final String GET_HOST_NAME = "getHost";
+    //     final String GET_PORT_NAME = "getPort";
+    //     String className;
+    //     String proxyInfo;
+    //     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+    //         className = "android.net.ProxyProperties";
+    //         proxyInfo = "proxy";
+    //     } else {
+    //         className = "android.net.ProxyInfo";
+    //         proxyInfo = "android.intent.extra.PROXY_INFO";
+    //     }
+    //
+    //     Object props = intent.getExtras().get(proxyInfo);
+    //     if (props == null) {
+    //         return null;
+    //     }
+    //
+    //     Class<?> cls = Class.forName(className);
+    //     Method getHostMethod = cls.getDeclaredMethod(GET_HOST_NAME);
+    //     Method getPortMethod = cls.getDeclaredMethod(GET_PORT_NAME);
+    //
+    //     String host = (String) getHostMethod.invoke(props);
+    //     int port = (Integer) getPortMethod.invoke(props);
+    //
+    //     return new ProxyConfig(host, port);
+    // } catch (ClassNotFoundException ex) {
+    //     Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
+    //     return null;
+    // } catch (NoSuchMethodException ex) {
+    //     Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
+    //     return null;
+    // } catch (IllegalAccessException ex) {
+    //     Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
+    //     return null;
+    // } catch (InvocationTargetException ex) {
+    //     Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
+    //     return null;
+    // } catch (NullPointerException ex) {
+    //     Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
+    //     return null;
+    // }
+    assert(0);
+    AutoPtr<ProxyConfig> empty;
+    return empty;
 }
 
-//===============================================================
-//                     ProxyChangeListener
-//===============================================================
+//=====================================================================
+//                         ProxyChangeListener
+//=====================================================================
 const String ProxyChangeListener::TAG("ProxyChangeListener");
-Boolean ProxyChangeListener::sEnabled = TRUE;
-
-ProxyChangeListener::ProxyChangeListener(
-    /* [in] */ IContext* context)
-    : mContext(context)
-    , mNativePtr(0)
-{
-}
+Boolean ProxyChangeListener::sEnabled = true;
 
 ECode ProxyChangeListener::SetEnabled(
     /* [in] */ Boolean enabled)
 {
-    sEnabled = enabled;
+    // ==================before translated======================
+    // sEnabled = enabled;
+    assert(0);
     return NOERROR;
 }
 
 ECode ProxyChangeListener::SetDelegateForTesting(
-    /* [in] */ IDelegate* delegate)
+    /* [in] */ Delegate* delegate)
 {
     VALIDATE_NOT_NULL(delegate);
-    mDelegate = delegate;
+    // ==================before translated======================
+    // mDelegate = delegate;
+    assert(0);
     return NOERROR;
 }
 
-//@CalledByNative
 AutoPtr<ProxyChangeListener> ProxyChangeListener::Create(
     /* [in] */ IContext* context)
 {
-    AutoPtr<ProxyChangeListener> ret = new ProxyChangeListener(context);
-    return ret;
+    // ==================before translated======================
+    // return new ProxyChangeListener(context);
+    assert(0);
+    AutoPtr<ProxyChangeListener> empty;
+    return empty;
 }
 
-//@CalledByNative
 String ProxyChangeListener::GetProperty(
     /* [in] */ String property)
 {
-    String result;
-    ISystem::GetProperty(property, &result);
-    return result;
+    // ==================before translated======================
+    // return System.getProperty(property);
+    assert(0);
+    return String("");
 }
 
-//@CalledByNative
 ECode ProxyChangeListener::Start(
     /* [in] */ Int64 nativePtr)
 {
-    assert(0 == mNativePtr);
-    mNativePtr = nativePtr;
-    RegisterReceiver();
+    // ==================before translated======================
+    // assert mNativePtr == 0;
+    // mNativePtr = nativePtr;
+    // registerReceiver();
+    assert(0);
     return NOERROR;
 }
 
-//@CalledByNative
 ECode ProxyChangeListener::Stop()
 {
-    mNativePtr = 0;
-    UnregisterReceiver();
+    // ==================before translated======================
+    // mNativePtr = 0;
+    // unregisterReceiver();
+    assert(0);
     return NOERROR;
+}
+
+ProxyChangeListener::ProxyChangeListener(
+    /* [in] */ IContext* context)
+{
+    // ==================before translated======================
+    // mContext = context;
 }
 
 ECode ProxyChangeListener::ProxySettingsChanged(
     /* [in] */ ProxyConfig* cfg)
 {
     VALIDATE_NOT_NULL(cfg);
-
-    // question: return ECode what value is, return NOERROR temporarily
-    if (!sEnabled) {
-        return NOERROR;
-    }
-    if (mDelegate != NULL) {
-        mDelegate->ProxySettingsChanged();
-    }
-    if (0 == mNativePtr) {
-        return NOERROR;
-    }
-    // Note that this code currently runs on a MESSAGE_LOOP_UI thread, but
-    // the C++ code must run the callbacks on the network thread.
-    if (cfg != NULL) {
-        NativeProxySettingsChangedTo(mNativePtr, cfg.mHost, cfg.mPort);
-    }
-    else {
-        NativeProxySettingsChanged(mNativePtr);
-    }
+    // ==================before translated======================
+    // if (!sEnabled) {
+    //     return;
+    // }
+    // if (mDelegate != null) {
+    //     mDelegate.proxySettingsChanged();
+    // }
+    // if (mNativePtr == 0) {
+    //     return;
+    // }
+    // // Note that this code currently runs on a MESSAGE_LOOP_UI thread, but
+    // // the C++ code must run the callbacks on the network thread.
+    // if (cfg != null) {
+    //     nativeProxySettingsChangedTo(mNativePtr, cfg.mHost, cfg.mPort);
+    // } else {
+    //     nativeProxySettingsChanged(mNativePtr);
+    // }
+    assert(0);
     return NOERROR;
 }
 
 ECode ProxyChangeListener::RegisterReceiver()
 {
-    // question: return ECode what value is, return NOERROR temporarily
-    if (mProxyReceiver != NULL) {
-        return NOERROR;
-    }
-    AutoPtr<IntentFilter> filter = new IntentFilter();
-    filter->AddAction(IProxy::PROXY_CHANGE_ACTION);
-    mProxyReceiver = new ProxyReceiver();
-    AutoPtr<IContext> context;
-    mContext->GetApplicationContext(&context);
-    context->RegisterReceiver(mProxyReceiver, filter);
+    // ==================before translated======================
+    // if (mProxyReceiver != null) {
+    //     return;
+    // }
+    // IntentFilter filter = new IntentFilter();
+    // filter.addAction(Proxy.PROXY_CHANGE_ACTION);
+    // mProxyReceiver = new ProxyReceiver();
+    // mContext.getApplicationContext().registerReceiver(mProxyReceiver, filter);
+    assert(0);
     return NOERROR;
 }
 
 ECode ProxyChangeListener::UnregisterReceiver()
 {
-    // question: return ECode what value is, return NOERROR temporarily
-    if (mProxyReceiver == NULL) {
-        return NOERROR;
-    }
-    mContext->UnregisterReceiver(mProxyReceiver);
-    mProxyReceiver = NULL;
+    // ==================before translated======================
+    // if (mProxyReceiver == null) {
+    //     return;
+    // }
+    // mContext.unregisterReceiver(mProxyReceiver);
+    // mProxyReceiver = null;
+    assert(0);
     return NOERROR;
 }
 
-/**
- * See net/proxy/proxy_config_service_android.cc
- */
-//@NativeClassQualifiedName("ProxyConfigServiceAndroid::JNIDelegate")
-//private native void nativeProxySettingsChangedTo(long nativePtr,
-//                                                 String host,
-//                                                 int port);
 ECode ProxyChangeListener::NativeProxySettingsChangedTo(
     /* [in] */ Int64 nativePtr,
     /* [in] */ String host,
     /* [in] */ Int32 port)
 {
+    assert(0);
     return NOERROR;
 }
 
-//@NativeClassQualifiedName("ProxyConfigServiceAndroid::JNIDelegate")
-//private native void nativeProxySettingsChanged(long nativePtr);
 ECode ProxyChangeListener::NativeProxySettingsChanged(
     /* [in] */ Int64 nativePtr)
 {
+    assert(0);
     return NOERROR;
 }
 
@@ -251,3 +229,5 @@ ECode ProxyChangeListener::NativeProxySettingsChanged(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
+

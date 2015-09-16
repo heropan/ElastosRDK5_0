@@ -6,6 +6,10 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_RENDERCOORDINATES_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_RENDERCOORDINATES_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+
 // package org.chromium.content.browser;
 
 namespace Elastos {
@@ -22,14 +26,14 @@ namespace Browser {
   *
   * Unless stated otherwise, all coordinates are in CSS (document) coordinate space.
   */
-class RenderCoordinates
+class RenderCoordinates : public Object
 {
 public:
     /**
       * Handles conversion of a point from window-relative-local-dip or screen-pix
       * to document-absolute-CSS space and vice versa.
       */
-    class NormalizedPoint
+    class NormalizedPoint : public Object
     {
     public:
         /**
@@ -87,7 +91,8 @@ public:
         NormalizedPoint();
 
     private:
-        AutoPtr<float mXAbsoluteCss,> AutoPtr<float mXAbsoluteCss,> mYAbsoluteCss;
+        Float mXAbsoluteCss;
+        Float mYAbsoluteCss;
     };
 
 public:

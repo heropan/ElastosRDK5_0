@@ -10,8 +10,6 @@
 #include "elautoptr.h"
 #include "ext/frameworkext.h"
 #include "content/Context.h"
-// #include "webkit/native/base/CalledByNative.h"
-// #include "webkit/native/base/JNINamespace.h"
 #include "webkit/native/content/browser/ContentViewCore.h"
 #include "webkit/native/ui/ColorPickerDialog.h"
 #include "webkit/native/ui/ColorSuggestion.h"
@@ -27,8 +25,6 @@
 // import org.chromium.ui.OnColorChangedListener;
 
 using Elastos::Droid::Content::IContext;
-// using Elastos::Droid::Webkit::Base::CalledByNative;
-// using Elastos::Droid::Webkit::Base::JNINamespace;
 using Elastos::Droid::Webkit::Ui::ColorPickerDialog;
 using Elastos::Droid::Webkit::Ui::ColorSuggestion;
 using Elastos::Droid::Webkit::Ui::OnColorChangedListener;

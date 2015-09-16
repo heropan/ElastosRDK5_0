@@ -9,12 +9,9 @@
 #include "elatypes.h"
 #include "elautoptr.h"
 #include "ext/frameworkext.h"
-// #include "webkit/native/base/CalledByNative.h"
 
 // package org.chromium.components.navigation_interception;
 // import org.chromium.base.CalledByNative;
-
-// using Elastos::Droid::Webkit::Base::CalledByNative;
 
 namespace Elastos {
 namespace Droid {

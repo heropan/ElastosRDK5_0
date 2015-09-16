@@ -1,68 +1,86 @@
+// wuweizuo automatic build .cpp file from .java file.
+
+#include "DropdownDividerDrawable.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
 
+//=====================================================================
+//                       DropdownDividerDrawable
+//=====================================================================
 DropdownDividerDrawable::DropdownDividerDrawable()
 {
-    CPaint::New((IPaint**)&mPaint);
-    CRect::New((IRect**)&mDividerRect);
+    // ==================before translated======================
+    // mPaint = new Paint();
+    // mDividerRect = new Rect();
 }
 
-//@Override
 ECode DropdownDividerDrawable::Draw(
-    /* in */ ICanvas* canvas)
+    /* [in] */ ICanvas* canvas)
 {
     VALIDATE_NOT_NULL(canvas);
-    canvas->DrawRect(mDividerRect, mPaint);
+    // ==================before translated======================
+    // canvas.drawRect(mDividerRect, mPaint);
+    assert(0);
     return NOERROR;
 }
 
 ECode DropdownDividerDrawable::OnBoundsChange(
-    /* in */ IRect* bounds)
+    /* [in] */ IRect* bounds)
 {
     VALIDATE_NOT_NULL(bounds);
-    mDividerRect->Set(0, 0, bounds->Width(), mDividerRect->Height());
+    // ==================before translated======================
+    // mDividerRect.set(0, 0, bounds.width(), mDividerRect.height());
+    assert(0);
     return NOERROR;
 }
 
 ECode DropdownDividerDrawable::SetHeight(
-    /* in */ Int32 height)
+    /* [in] */ Int32 height)
 {
-    mDividerRect->Set(0, 0, mDividerRect->Right(), height);
+    // ==================before translated======================
+    // mDividerRect.set(0, 0, mDividerRect.right, height);
+    assert(0);
     return NOERROR;
 }
 
 ECode DropdownDividerDrawable::SetColor(
-    /* in */ Int32 color)
+    /* [in] */ Int32 color)
 {
-    mPaint->SetColor(color);
+    // ==================before translated======================
+    // mPaint.setColor(color);
+    assert(0);
     return NOERROR;
 }
 
-//@Override
 ECode DropdownDividerDrawable::SetAlpha(
-    /* in */ Int32 alpha)
+    /* [in] */ Int32 alpha)
 {
+    assert(0);
     return NOERROR;
 }
 
-//@Override
 ECode DropdownDividerDrawable::SetColorFilter(
-    /* in */ IColorFilter* cf)
+    /* [in] */ IColorFilter* cf)
 {
     VALIDATE_NOT_NULL(cf);
+    assert(0);
     return NOERROR;
 }
 
-//@Override
 Int32 DropdownDividerDrawable::GetOpacity()
 {
-    return IPixelFormat::OPAQUE;
+    // ==================before translated======================
+    // return PixelFormat.OPAQUE;
+    assert(0);
+    return 0;
 }
 
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
+

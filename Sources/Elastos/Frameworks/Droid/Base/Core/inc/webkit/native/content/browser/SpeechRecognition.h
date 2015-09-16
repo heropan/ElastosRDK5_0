@@ -6,6 +6,21 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SPEECHRECOGNITION_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SPEECHRECOGNITION_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/CComponentName.h"
+#include "content/Context.h"
+#include "content/Intent.h"
+#include "content/pm/PackageManager.h"
+#include "content/pm/CResolveInfo.h"
+#include "content/pm/CServiceInfo.h"
+#include "os/CBundle.h"
+#include "speech/RecognitionService.h"
+#include "speech/RecognizerIntent.h"
+#include "speech/SpeechRecognizer.h"
+#include "elastos/utility/CArrayList.h"
+
 // package org.chromium.content.browser;
 // import android.content.ComponentName;
 // import android.content.Context;
@@ -24,6 +39,19 @@
 // import java.util.ArrayList;
 // import java.util.List;
 
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IResolveInfo;
+using Elastos::Droid::Content::Pm::IServiceInfo;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Speech::IRecognitionListener;
+using Elastos::Droid::Speech::IRecognitionService;
+using Elastos::Droid::Speech::IRecognizerIntent;
+using Elastos::Droid::Speech::ISpeechRecognizer;
+using Elastos::Utility::IArrayList;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -36,11 +64,13 @@ namespace Browser {
   * good local fallback when no data connection is available.
   */
 // @JNINamespace("content")
-class SpeechRecognition
+class SpeechRecognition : public Object
 {
 public:
     // Internal class to handle events from Android's SpeechRecognizer and route them to native.
-    class Listener : public RecognitionListener
+    class Listener
+        : public Object
+        , public RecognitionListener
     {
     public:
         // @Override
@@ -94,8 +124,8 @@ public:
         /* [in] */ IContext* context);
 
 private:
-    const SpeechRecognition(
-        /* [in] */ IContext* context,
+    SpeechRecognition(
+        /* [in] */ const IContext* context,
         /* [in] */ Int64 nativeSpeechRecognizerImplAndroid);
 
     // This function destroys everything when recognition is done, taking care to properly tear
@@ -161,9 +191,9 @@ private:
     // The speech recognition provider (if any) matching PROVIDER_PACKAGE_NAME and
     // PROVIDER_MIN_VERSION as selected by initialize().
     static AutoPtr<IComponentName> sRecognitionProvider;
-    const AutoPtr<IContext> mContext;
-    const AutoPtr<IIntent> mIntent;
-    const AutoPtr<IRecognitionListener> mListener;
+    /*const*/ AutoPtr<IContext> mContext;
+    /*const*/ AutoPtr<IIntent> mIntent;
+    /*const*/ AutoPtr<IRecognitionListener> mListener;
     AutoPtr<ISpeechRecognizer> mRecognizer;
     // Native pointer to C++ SpeechRecognizerImplAndroid.
     Int64 mNativeSpeechRecognizerImplAndroid;

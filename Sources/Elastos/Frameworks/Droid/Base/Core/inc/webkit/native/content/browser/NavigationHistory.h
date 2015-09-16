@@ -6,8 +6,15 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_NAVIGATIONHISTORY_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_NAVIGATIONHISTORY_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "elastos/utility/CArrayList.h"
+
 // package org.chromium.content.browser;
 // import java.util.ArrayList;
+
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -20,7 +27,7 @@ namespace Browser {
   * {@link ContentViewCore}. It is a copy and will not be updated as navigation
   * occurs on the source {@link ContentViewCore}.
   */
-class NavigationHistory
+class NavigationHistory : public Object
 {
 public:
     /* package */
@@ -49,7 +56,7 @@ protected:
         /* [in] */ NavigationEntry* entry);
 
 private:
-    const AutoPtr< IArrayList<NavigationEntry> > mEntries;
+    /*const*/ AutoPtr< IArrayList<NavigationEntry> > mEntries;
     Int32 mCurrentEntryIndex;
 };
 

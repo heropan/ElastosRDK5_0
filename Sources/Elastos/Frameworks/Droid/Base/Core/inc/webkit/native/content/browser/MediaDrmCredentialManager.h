@@ -6,6 +6,10 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_MEDIADRMCREDENTIALMANAGER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_MEDIADRMCREDENTIALMANAGER_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+
 // package org.chromium.content.browser;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
@@ -20,7 +24,7 @@ namespace Browser {
   * A wrapper of the android MediaDrmCredentialManager
   */
 // @JNINamespace("content")
-class MediaDrmCredentialManager
+class MediaDrmCredentialManager : public Object
 {
 public:
     /**

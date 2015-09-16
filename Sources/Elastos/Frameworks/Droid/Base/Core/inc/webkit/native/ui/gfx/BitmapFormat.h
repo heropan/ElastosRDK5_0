@@ -3,6 +3,10 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_GFX_BITMAPFORMAT_H_
 #define _ELASTOS_DROID_WEBKIT_UI_GFX_BITMAPFORMAT_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+
 // package org.chromium.ui.gfx;
 
 namespace Elastos {
@@ -14,11 +18,11 @@ namespace Gfx {
 class BitmapFormat
 {
 public:
-    const Int32 FORMAT_NO_CONFIG;
-    const Int32 FORMAT_ALPHA_8;
-    const Int32 FORMAT_ARGB_4444;
-    const Int32 FORMAT_ARGB_8888;
-    const Int32 FORMAT_RGB_565;
+    /*const*/ Int32 FORMAT_NO_CONFIG;
+    /*const*/ Int32 FORMAT_ALPHA_8;
+    /*const*/ Int32 FORMAT_ARGB_4444;
+    /*const*/ Int32 FORMAT_ARGB_8888;
+    /*const*/ Int32 FORMAT_RGB_565;
 };
 
 } // namespace Gfx

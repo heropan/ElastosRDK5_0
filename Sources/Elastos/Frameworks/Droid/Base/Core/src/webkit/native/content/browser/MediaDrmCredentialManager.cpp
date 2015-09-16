@@ -1,5 +1,7 @@
 // wuweizuo automatic build .cpp file from .java file.
 
+#include "MediaDrmCredentialManager.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -13,9 +15,9 @@ ECode MediaDrmCredentialManager::ResetCredentials(
     /* [in] */ MediaDrmCredentialManagerCallback* callback)
 {
     VALIDATE_NOT_NULL(callback);
-    /*
-    nativeResetCredentials(callback);
-    */
+    // ==================before translated======================
+    // nativeResetCredentials(callback);
+    assert(0);
     return NOERROR;
 }
 
@@ -23,6 +25,7 @@ ECode MediaDrmCredentialManager::NativeResetCredentials(
     /* [in] */ MediaDrmCredentialManagerCallback* callback)
 {
     VALIDATE_NOT_NULL(callback);
+    assert(0);
     return NOERROR;
 }
 

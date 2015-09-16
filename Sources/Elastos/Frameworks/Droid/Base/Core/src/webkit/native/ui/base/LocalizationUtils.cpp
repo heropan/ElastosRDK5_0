@@ -1,108 +1,118 @@
 // wuweizuo automatic build .cpp file from .java file.
 
+#include "LocalizationUtils.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
 namespace Base {
 
+//=====================================================================
+//                          LocalizationUtils
+//=====================================================================
 const Int32 LocalizationUtils::UNKNOWN_DIRECTION;
 const Int32 LocalizationUtils::RIGHT_TO_LEFT;
 const Int32 LocalizationUtils::LEFT_TO_RIGHT;
-Boolean LocalizationUtils::sIsLayoutRtl = FALSE;
+AutoPtr<Boolean> LocalizationUtils::sIsLayoutRtl;
 
 String LocalizationUtils::GetDefaultLocale()
 {
-    AutoPtr<ILocale> locale;
-    CLocale::GetDefault((ILocale**)&locale);
-    String language;
-    String country;
-    locale->GetLanguage(&language);
-    locale->GetCountry(&country);
-
-    // Android uses deprecated lanuages codes for Hebrew and Indonesian but Chromium uses the
-    // updated codes. Also, Android uses "tl" while Chromium uses "fil" for Tagalog/Filipino.
-    // So apply a mapping.
-    // See http://developer.android.com/reference/java/util/Locale.html
-    if (String("iw".) == language) {
-        language = String("he");
-    }
-    else if (String("in") == language) {
-        language = String("id");
-    }
-    else if (String("tl") == language) {
-        language = String("fil");
-    }
-    return country.IsEmpty() ? language : language + String("-") + country;
+    // ==================before translated======================
+    // Locale locale = Locale.getDefault();
+    // String language = locale.getLanguage();
+    // String country = locale.getCountry();
+    //
+    // // Android uses deprecated lanuages codes for Hebrew and Indonesian but Chromium uses the
+    // // updated codes. Also, Android uses "tl" while Chromium uses "fil" for Tagalog/Filipino.
+    // // So apply a mapping.
+    // // See http://developer.android.com/reference/java/util/Locale.html
+    // if ("iw".equals(language)) {
+    //     language = "he";
+    // } else if ("in".equals(language)) {
+    //     language = "id";
+    // } else if ("tl".equals(language)) {
+    //     language = "fil";
+    // }
+    // return country.isEmpty() ? language : language + "-" + country;
+    assert(0);
+    return String("");
 }
 
-//@CalledByNative
 Boolean LocalizationUtils::IsLayoutRtl()
 {
-    if (FALSE == sIsLayoutRtl) {
-        AutoPtr<IContext> context;
-        ApplicationStatus::GetApplicationContext((IContext**)&context);
-
-        AutoPtr<IResources> resources;
-        context->GetResources((IResources**)&resources);
-
-        AutoPtr<IConfiguration> configuration;
-        resources->GetConfiguration((IConfiguration**)&configuration);
-
-        Int32 layoutDirect;
-        ApiCompatibilityUtils::GetLayoutDirection(configuration, &layoutDirect);
-
-        sIsLayoutRtl = (Boolean)(layoutDirect == IView::LAYOUT_DIRECTION_RTL);
-    }
-
-    return sIsLayoutRtl;
+    // ==================before translated======================
+    // if (sIsLayoutRtl == null) {
+    //     Configuration configuration =
+    //             ApplicationStatus.getApplicationContext().getResources().getConfiguration();
+    //     sIsLayoutRtl = Boolean.valueOf(
+    //             ApiCompatibilityUtils.getLayoutDirection(configuration) ==
+    //             View.LAYOUT_DIRECTION_RTL);
+    // }
+    //
+    // return sIsLayoutRtl.booleanValue();
+    assert(0);
+    return FALSE;
 }
 
 Int32 LocalizationUtils::GetFirstStrongCharacterDirection(
-    /* in */ String str)
+    /* [in] */ String string)
 {
-    return NativeGetFirstStrongCharacterDirection(str);
+    // ==================before translated======================
+    // return nativeGetFirstStrongCharacterDirection(string);
+    assert(0);
+    return 0;
 }
 
 String LocalizationUtils::GetDurationString(
-    /* in */ Int64 timeInMillis)
+    /* [in] */ Int64 timeInMillis)
 {
-    return NativeGetDurationString(timeInMillis);
+    // ==================before translated======================
+    // return nativeGetDurationString(timeInMillis);
+    assert(0);
+    return String("");
 }
 
 LocalizationUtils::LocalizationUtils()
 {
+    // ==================before translated======================
+    // /* cannot be instantiated */
 }
 
-//@CalledByNative
 AutoPtr<ILocale> LocalizationUtils::GetJavaLocale(
-    /* in */ String language,
-    /* in */ String country,
-    /* in */ String variant)
+    /* [in] */ String language,
+    /* [in] */ String country,
+    /* [in] */ String variant)
 {
-    AutoPtr<ILocale> locale;
-    CLocale::New(language, country, variant, (ILocale**)&locale);
-    return locale;
+    // ==================before translated======================
+    // return new Locale(language, country, variant);
+    assert(0);
+    AutoPtr<ILocale> empty;
+    return empty;
 }
 
-//@CalledByNative
 String LocalizationUtils::GetDisplayNameForLocale(
-    /* in */ ILocale* locale,
-    /* in */ ILocale* displayLocale)
+    /* [in] */ ILocale* locale,
+    /* [in] */ ILocale* displayLocale)
 {
-    String result;
-    locale->GetDisplayName(displayLocale, &String);
-    return result;
+    // ==================before translated======================
+    // return locale.getDisplayName(displayLocale);
+    assert(0);
+    return String("");
 }
 
 Int32 LocalizationUtils::NativeGetFirstStrongCharacterDirection(
-    /* in */ String str)
+    /* [in] */ String string)
 {
+    assert(0);
+    return 0;
 }
 
 String LocalizationUtils::NativeGetDurationString(
-    /* in */ Int64 timeInMillis)
+    /* [in] */ Int64 timeInMillis)
 {
+    assert(0);
+    return String("");
 }
 
 } // namespace Base
@@ -110,4 +120,5 @@ String LocalizationUtils::NativeGetDurationString(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
 

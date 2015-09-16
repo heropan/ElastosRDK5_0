@@ -6,6 +6,21 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_MEDIARESOURCEGETTER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_MEDIARESOURCEGETTER_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/Context.h"
+#include "content/pm/PackageManager.h"
+#include "net/CConnectivityManager.h"
+#include "net/CNetworkInfo.h"
+#include "os/ParcelFileDescriptor.h"
+#include "text/TextUtils.h"
+#include "webkit/native/base/PathUtils.h"
+#include "elastos/io/File.h"
+#include "elastos/net/CURI.h"
+#include "elastos/utility/CArrayList.h"
+#include "elastos/utility/HashMap.h"
+
 // package org.chromium.content.browser;
 // import android.content.Context;
 // import android.content.pm.PackageManager;
@@ -27,6 +42,20 @@
 // import java.util.List;
 // import java.util.Map;
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Media::IMediaMetadataRetriever;
+using Elastos::Droid::Net::IConnectivityManager;
+using Elastos::Droid::Net::INetworkInfo;
+using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::Droid::Text::ITextUtils;
+using Elastos::Droid::Util::ILog;
+using Elastos::Droid::Webkit::Base::PathUtils;
+using Elastos::Io::IFile;
+using Elastos::Net::IURI;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::IHashMap;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -37,11 +66,11 @@ namespace Browser {
   * Java counterpart of android MediaResourceGetter.
   */
 // @JNINamespace("content")
-class MediaResourceGetter
+class MediaResourceGetter : public Object
 {
 public:
     // @VisibleForTesting
-    class MediaMetadata
+    class MediaMetadata : public Object
     {
     public:
         MediaMetadata(
@@ -76,10 +105,10 @@ public:
             /* [in] */ Object* obj);
 
     private:
-        const Int32 mDurationInMilliseconds;
-        const Int32 mWidth;
-        const Int32 mHeight;
-        const Boolean mSuccess;
+        /*const*/ Int32 mDurationInMilliseconds;
+        /*const*/ Int32 mWidth;
+        /*const*/ Int32 mHeight;
+        /*const*/ Boolean mSuccess;
     };
 
 public:
@@ -90,11 +119,11 @@ public:
         /* [in] */ Int64 length);
 
     // @VisibleForTesting
-    virtual const CARAPI_(AutoPtr<MediaMetadata>) Extract(
-        /* [in] */ IContext* context,
-        /* [in] */ final String* final String* url,
-        /* [in] */ final String* final String* cookies,
-        /* [in] */ final String* final String* userAgent);
+    virtual CARAPI_(AutoPtr<MediaMetadata>) Extract(
+        /* [in] */ const IContext* context,
+        /* [in] */ const String& url,
+        /* [in] */ const String& cookies,
+        /* [in] */ const String& userAgent);
 
     // @VisibleForTesting
     virtual CARAPI_(Boolean) Configure(
@@ -128,9 +157,9 @@ public:
       * @return true if the device can be used correctly, otherwise false
       */
     // @VisibleForTesting
-    static const CARAPI_(Boolean) AndroidDeviceOk(
-        /* [in] */ String model,
-        /* [in] */ final int* final int* sdkVersion);
+    static CARAPI_(Boolean) AndroidDeviceOk(
+        /* [in] */ const String& model,
+        /* [in] */ const Int32& sdkVersion);
 
     // The methods below can be used by unit tests to fake functionality.
     // @VisibleForTesting
@@ -165,11 +194,11 @@ public:
 
 private:
     // @CalledByNative
-    static const CARAPI_(AutoPtr<MediaMetadata>) ExtractMediaMetadata(
-        /* [in] */ IContext* context,
-        /* [in] */ final String* final String* url,
-        /* [in] */ final String* final String* cookies,
-        /* [in] */ final String* final String* userAgent);
+    static CARAPI_(AutoPtr<MediaMetadata>) ExtractMediaMetadata(
+        /* [in] */ const IContext* context,
+        /* [in] */ const String& url,
+        /* [in] */ const String& cookies,
+        /* [in] */ const String& userAgent);
 
     // @CalledByNative
     static CARAPI_(AutoPtr<MediaMetadata>) ExtractMediaMetadataFromFd(
@@ -191,8 +220,8 @@ private:
 
 private:
     static const String TAG;
-    const AutoPtr<MediaMetadata> EMPTY_METADATA;
-    const AutoPtr<IMediaMetadataRetriever> mRetriever;
+    /*const*/ AutoPtr<MediaMetadata> EMPTY_METADATA;
+    /*const*/ AutoPtr<IMediaMetadataRetriever> mRetriever;
 };
 
 } // namespace Browser

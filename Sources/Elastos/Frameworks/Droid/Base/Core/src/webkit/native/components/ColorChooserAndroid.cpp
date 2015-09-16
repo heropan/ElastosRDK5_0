@@ -24,6 +24,7 @@ ECode ColorChooserAndroid::InnerOnColorChangedListener::OnColorChanged(
     // ==================before translated======================
     // mDialog.dismiss();
     // nativeOnColorChosen(mNativeColorChooserAndroid, color);
+    assert(0);
     return NOERROR;
 }
 
@@ -34,6 +35,7 @@ ECode ColorChooserAndroid::CloseColorChooser()
 {
     // ==================before translated======================
     // mDialog.dismiss();
+    assert(0);
     return NOERROR;
 }
 
@@ -48,6 +50,7 @@ AutoPtr<ColorChooserAndroid> ColorChooserAndroid::CreateColorChooserAndroid(
     //     contentViewCore.getContext(), initialColor, suggestions);
     // chooser.openColorChooser();
     // return chooser;
+    assert(0);
     AutoPtr<ColorChooserAndroid> empty;
     return empty;
 }
@@ -66,7 +69,7 @@ ColorChooserAndroid::ColorChooserAndroid(
     //       nativeOnColorChosen(mNativeColorChooserAndroid, color);
     //   }
     // };
-    // 
+    //
     // mNativeColorChooserAndroid = nativeColorChooserAndroid;
     // mDialog = new ColorPickerDialog(context, listener, initialColor, suggestions);
 }
@@ -75,6 +78,7 @@ ECode ColorChooserAndroid::OpenColorChooser()
 {
     // ==================before translated======================
     // mDialog.show();
+    assert(0);
     return NOERROR;
 }
 
@@ -83,6 +87,7 @@ AutoPtr< ArrayOf<ColorSuggestion> > ColorChooserAndroid::CreateColorSuggestionAr
 {
     // ==================before translated======================
     // return new ColorSuggestion[size];
+    assert(0);
     AutoPtr< ArrayOf<ColorSuggestion> > empty;
     return empty;
 }
@@ -96,6 +101,7 @@ ECode ColorChooserAndroid::AddToColorSuggestionArray(
     VALIDATE_NOT_NULL(array);
     // ==================before translated======================
     // array[index] = new ColorSuggestion(color, label);
+    assert(0);
     return NOERROR;
 }
 
@@ -103,6 +109,7 @@ ECode ColorChooserAndroid::NativeOnColorChosen(
     /* [in] */ Int64 nativeColorChooserAndroid,
     /* [in] */ Int32 color)
 {
+    assert(0);
     return NOERROR;
 }
 

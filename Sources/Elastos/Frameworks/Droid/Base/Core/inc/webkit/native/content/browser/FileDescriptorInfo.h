@@ -6,6 +6,10 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_FILEDESCRIPTORINFO_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_FILEDESCRIPTORINFO_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+
 // package org.chromium.content.browser;
 
 namespace Elastos {
@@ -14,7 +18,7 @@ namespace Webkit {
 namespace Content {
 namespace Browser {
 
-class FileDescriptorInfo
+class FileDescriptorInfo : public Object
 {
 public:
     FileDescriptorInfo(

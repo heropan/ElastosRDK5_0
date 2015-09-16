@@ -10,8 +10,6 @@
 #include "elautoptr.h"
 #include "ext/frameworkext.h"
 #include "view/CKeyEvent.h"
-// #include "webkit/native/base/CalledByNative.h"
-// #include "webkit/native/base/JNINamespace.h"
 #include "webkit/native/content/browser/ContentViewCore.h"
 
 // package org.chromium.components.web_contents_delegate_android;
@@ -21,8 +19,6 @@
 // import org.chromium.content.browser.ContentViewCore;
 
 using Elastos::Droid::View::IKeyEvent;
-// using Elastos::Droid::Webkit::Base::CalledByNative;
-// using Elastos::Droid::Webkit::Base::JNINamespace;
 
 namespace Elastos {
 namespace Droid {

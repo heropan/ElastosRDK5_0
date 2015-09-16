@@ -6,10 +6,21 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_VIEWPOSITIONOBSERVER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_VIEWPOSITIONOBSERVER_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "view/View.h"
+#include "view/ViewTreeObserver.h"
+#include "elastos/utility/CArrayList.h"
+
 // package org.chromium.content.browser;
 // import android.view.View;
 // import android.view.ViewTreeObserver;
 // import java.util.ArrayList;
+
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewTreeObserver;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -20,10 +31,14 @@ namespace Browser {
 /**
   * Used to register listeners that can be notified of changes to the position of a view.
   */
-class ViewPositionObserver : public PositionObserver
+class ViewPositionObserver
+    : public Object
+    , public PositionObserver
 {
 public:
-    class InnerViewTreeObserverOnPreDrawListener : public ViewTreeObserver::OnPreDrawListener
+    class InnerViewTreeObserverOnPreDrawListener
+        : public Object
+        , public ViewTreeObserver::OnPreDrawListener
     {
     public:
         InnerViewTreeObserverOnPreDrawListener(
@@ -70,6 +85,8 @@ public:
         /* [in] */ Listener* listener);
 
 private:
+    CARAPI_(AutoPtr< ArrayOf<Int32> >) MiddleInitMposition();
+
     CARAPI NotifyListeners();
 
     CARAPI UpdatePosition();
@@ -77,8 +94,8 @@ private:
 private:
     AutoPtr<IView> mView;
     // Absolute position of the container view relative to its parent window.
-    const AutoPtr< ArrayOf<Int32> > mPosition;
-    const AutoPtr< IArrayList<Listener> > mListeners;
+    AutoPtr< ArrayOf<Int32> > mPosition;
+    /*const*/ AutoPtr< IArrayList<Listener> > mListeners;
     AutoPtr<ViewTreeObserver::OnPreDrawListener> mPreDrawListener;
 };
 

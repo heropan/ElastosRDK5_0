@@ -1,3 +1,6 @@
+// wuweizuo automatic build .cpp file from .java file.
+
+#include "Clipboard.h"
 
 namespace Elastos {
 namespace Droid {
@@ -5,123 +8,120 @@ namespace Webkit {
 namespace Ui {
 namespace Base {
 
+//=====================================================================
+//                              Clipboard
+//=====================================================================
 Clipboard::Clipboard(
-    /* in */ const IContext* context)
-    : mContext(context)
+    /* [in] */ const IContext* context)
 {
-    context->GetSystemService(IContext::CLIPBOARD_SERVICE, (IClipboardManager**)&mClipboardManager);
+    // ==================before translated======================
+    // mContext = context;
+    // mClipboardManager = (ClipboardManager)
+    //         context.getSystemService(Context.CLIPBOARD_SERVICE);
 }
 
 ECode Clipboard::SetText(
-    /* in */ const String& label,
-    /* in */ const String& text)
+    /* [in] */ const String& label,
+    /* [in] */ const String& text)
 {
-    AutoPtr<IPlainText> plainText;
-    CClipData::New(label, text, (IPlainText**)&plainText);
-    SetPrimaryClipNoException(plainText);
+    // ==================before translated======================
+    // setPrimaryClipNoException(ClipData.newPlainText(label, text));
+    assert(0);
     return NOERROR;
 }
 
-//@CalledByNative
 ECode Clipboard::SetText(
-    /* in */ const String& text)
+    /* [in] */ const String& text)
 {
-    return SetText(String(""), text);
-}
-
-ECode Clipboard::SetHTMLText(
-    /* in */ const String& html,
-    /* in */ const String& label,
-    /* in */ const String& text)
-{
-    if (IsHTMLClipboardSupported()) {
-        AutoPtr<IHtmlText> htmlText;
-        CClipData::New(label, text, html, (IHtmlText**)&htmlText);
-        SetPrimaryClipNoException(htmlText);
-    }
+    // ==================before translated======================
+    // setText(null, text);
+    assert(0);
     return NOERROR;
 }
 
-//@CalledByNative
 ECode Clipboard::SetHTMLText(
-    /* in */ const String& html,
-    /* in */ const String& text)
+    /* [in] */ const String& html,
+    /* [in] */ const String& label,
+    /* [in] */ const String& text)
 {
-    return setHTMLText(html, String(""), text);
+    // ==================before translated======================
+    // if (isHTMLClipboardSupported()) {
+    //     setPrimaryClipNoException(ClipData.newHtmlText(label, text, html));
+    // }
+    assert(0);
+    return NOERROR;
 }
 
-//@CalledByNative
-AutoPtr<IClipboard> Clipboard::Create(
-    /* in */ const IContext* context)
+ECode Clipboard::SetHTMLText(
+    /* [in] */ const String& html,
+    /* [in] */ const String& text)
 {
-    AutoPtr<IClipBoard> clipBoard;
-    CClipBoard::New(context, (IClipBoard**)&clipBoard);
-    return clipBoard;
+    // ==================before translated======================
+    // setHTMLText(html, null, text);
+    assert(0);
+    return NOERROR;
 }
 
-//@SuppressWarnings("javadoc")
-//@CalledByNative
+AutoPtr<Clipboard> Clipboard::Create(
+    /* [in] */ const IContext* context)
+{
+    // ==================before translated======================
+    // return new Clipboard(context);
+    assert(0);
+    AutoPtr<Clipboard> empty;
+    return empty;
+}
+
 String Clipboard::GetCoercedText()
 {
-    AutoPtr<IClipData> clip;
-    mClipboardManager->GetPrimaryClip((IClipData**)&clip);
-    Int32 itemCount;
-    clip->GetItemCount(&itemCount);
-    if (clip != NULL && itemCount > 0) {
-        AutoPtr<IClipDataItem> clipDataItem;
-        clip->GetItemAt(0, (IClipDataItem**)&clipDataItem);
-
-        AutoPtr<ICharSequence> sequence;
-        clipDataItem->CoerceToText(mContext, (ICharSequence**)&sequence);
-        if (sequence != NULL) {
-            String result;
-            sequence->ToString(&result);
-            return result;
-        }
-    }
+    // ==================before translated======================
+    // final ClipData clip = mClipboardManager.getPrimaryClip();
+    // if (clip != null && clip.getItemCount() > 0) {
+    //     final CharSequence sequence = clip.getItemAt(0).coerceToText(mContext);
+    //     if (sequence != null) {
+    //         return sequence.toString();
+    //     }
+    // }
+    // return null;
+    assert(0);
     return String("");
 }
 
-//@CalledByNative
 String Clipboard::GetHTMLText()
 {
-    if (IsHTMLClipboardSupported()) {
-        AutoPtr<IClipData> clip;
-        mClipboardManager->GetPrimaryClip((IClipData**)&clip);
-        Int32 itemCount;
-        clip->GetItemCount(&itemCount);
-        if (clip != NULL && itemCount > 0) {
-            AutoPtr<IClipDataItem> clipDataItem;
-            clip->GetItemAt(0, (IClipDataItem**)&clipDataItem);
-
-            AutoPtr<ICharSequence> sequence;
-            clipDataItem->GetHtmlText(mContext, (ICharSequence**)&sequence);
-            String result;
-            sequence->ToString(&result);
-c
-            return result;
-        }
-    }
+    // ==================before translated======================
+    // if (isHTMLClipboardSupported()) {
+    //     final ClipData clip = mClipboardManager.getPrimaryClip();
+    //     if (clip != null && clip.getItemCount() > 0) {
+    //         return clip.getItemAt(0).getHtmlText();
+    //     }
+    // }
+    // return null;
+    assert(0);
     return String("");
 }
 
-//@CalledByNative
 Boolean Clipboard::IsHTMLClipboardSupported()
 {
-    return ApiCompatibilityUtils::IsHTMLClipboardSupported();
+    // ==================before translated======================
+    // return ApiCompatibilityUtils.isHTMLClipboardSupported();
+    assert(0);
+    return FALSE;
 }
 
 ECode Clipboard::SetPrimaryClipNoException(
-    /* in */ IClipData* clip)
+    /* [in] */ IClipData* clip)
 {
     VALIDATE_NOT_NULL(clip);
-    //try {
-        mClipboardManager->SetPrimaryClip(clip);
-    //} catch (Exception ex) {
-        // Ignore any exceptions here as certain devices have bugs and will fail.
-    //    String text = mContext.getString(R.string.copy_to_clipboard_failure_message);
-    //    Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show();
-    //}
+    // ==================before translated======================
+    // try {
+    //     mClipboardManager.setPrimaryClip(clip);
+    // } catch (Exception ex) {
+    //     // Ignore any exceptions here as certain devices have bugs and will fail.
+    //     String text = mContext.getString(R.string.copy_to_clipboard_failure_message);
+    //     Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show();
+    // }
+    assert(0);
     return NOERROR;
 }
 
@@ -130,4 +130,5 @@ ECode Clipboard::SetPrimaryClipNoException(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
 

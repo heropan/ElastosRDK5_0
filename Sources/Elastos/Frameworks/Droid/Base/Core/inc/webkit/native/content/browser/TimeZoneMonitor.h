@@ -6,6 +6,14 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_TIMEZONEMONITOR_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_TIMEZONEMONITOR_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/BroadcastReceiver.h"
+#include "content/Context.h"
+#include "content/Intent.h"
+#include "content/IntentFilter.h"
+
 // package org.chromium.content.browser;
 // import android.content.BroadcastReceiver;
 // import android.content.Context;
@@ -14,6 +22,12 @@
 // import android.util.Log;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
+
+using Elastos::Droid::Content::IBroadcastReceiver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Util::ILog;
 
 namespace Elastos {
 namespace Droid {
@@ -25,10 +39,12 @@ namespace Browser {
   * Android implementation details for content::TimeZoneMonitorAndroid.
   */
 // @JNINamespace("content")
-class TimeZoneMonitor
+class TimeZoneMonitor : public Object
 {
 public:
-    class InnerBroadcastReceiver : public BroadcastReceiver
+    class InnerBroadcastReceiver
+        : public Object
+        , public BroadcastReceiver
     {
     public:
         InnerBroadcastReceiver(
@@ -73,9 +89,9 @@ private:
 
 private:
     static const String TAG;
-    const AutoPtr<IContext> mAppContext;
-    const AutoPtr<IIntentFilter> mFilter;
-    const AutoPtr<IBroadcastReceiver> mBroadcastReceiver;
+    /*const*/ AutoPtr<IContext> mAppContext;
+    /*const*/ AutoPtr<IIntentFilter> mFilter;
+    /*const*/ AutoPtr<IBroadcastReceiver> mBroadcastReceiver;
     Int64 mNativePtr;
 };
 

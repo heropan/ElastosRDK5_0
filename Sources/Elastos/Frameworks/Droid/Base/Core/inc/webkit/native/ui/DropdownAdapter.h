@@ -1,3 +1,4 @@
+// wuweizuo automatic build .h file from .java file.
 // Copyright 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -5,23 +6,46 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_DROPDOWNADAPTER_H_
 #define _ELASTOS_DROID_WEBKIT_UI_DROPDOWNADAPTER_H_
 
-//package org.chromium.ui;
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/Context.h"
+#include "graphics/CColor.h"
+#include "graphics/Typeface.h"
+#include "text/TextUtils.h"
+#include "view/LayoutInflater.h"
+#include "view/View.h"
+#include "view/ViewGroup.h"
+#include "widget/ArrayAdapter.h"
+#include "widget/TextView.h"
+#include "webkit/native/base/ApiCompatibilityUtils.h"
 
-//import android.content.Context;
-//import android.graphics.Color;
-//import android.graphics.Typeface;
-//import android.text.TextUtils;
-//import android.view.LayoutInflater;
-//import android.view.View;
-//import android.view.ViewGroup;
-//import android.widget.AbsListView.LayoutParams;
-//import android.widget.ArrayAdapter;
-//import android.widget.TextView;
+// package org.chromium.ui;
+// import android.content.Context;
+// import android.graphics.Color;
+// import android.graphics.Typeface;
+// import android.text.TextUtils;
+// import android.view.LayoutInflater;
+// import android.view.View;
+// import android.view.ViewGroup;
+// import android.widget.AbsListView.LayoutParams;
+// import android.widget.ArrayAdapter;
+// import android.widget.TextView;
+// import org.chromium.base.ApiCompatibilityUtils;
+// import java.util.List;
+// import java.util.Set;
 
-//import org.chromium.base.ApiCompatibilityUtils;
-
-//import java.util.List;
-//import java.util.Set;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::IColor;
+using Elastos::Droid::Graphics::ITypeface;
+using Elastos::Droid::Text::ITextUtils;
+using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::Widget::IAbsListViewLayoutParams;
+using Elastos::Droid::Widget::IArrayAdapter;
+using Elastos::Droid::Widget::ITextView;
+using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -29,25 +53,33 @@ namespace Webkit {
 namespace Ui {
 
 /**
- * Dropdown item adapter for DropdownPopupWindow.
- */
-class DropdownAdapter : public ArrayAdapter<DropdownItem*>
+  * Dropdown item adapter for DropdownPopupWindow.
+  */
+class DropdownAdapter
+    : public Object
+    , public ArrayAdapter<DropdownItem>
 {
 public:
     DropdownAdapter(
         /* [in] */ IContext* context,
-        /* [in] */ IList< AutoPtr<DropdownItem> >* items,
-        /* [in] */ ISet<IInteger32>* separators);
+        /* [in] */ IList<DropdownItem*>* items,
+        /* [in] */ ISet<Integer*>* separators);
 
     DropdownAdapter(
         /* [in] */ IContext* context,
-        /* [in] */ ArrayOf< AutoPtr<DropdownItem> >* items,
-        /* [in] */ ISet<IInteger32>* separators);
+        /* [in] */ ArrayOf<DropdownItem>* items,
+        /* [in] */ ISet<Integer*>* separators);
 
-    //@Override
+    // @Override
+    CARAPI_(AutoPtr<IView>) GetView(
+        /* [in] */ Int32 position,
+        /* [in] */ IView* convertView,
+        /* [in] */ IViewGroup* parent);
+
+    // @Override
     CARAPI_(Boolean) AreAllItemsEnabled();
 
-    //@Override
+    // @Override
     CARAPI_(Boolean) IsEnabled(
         /* [in] */ Int32 position);
 
@@ -56,7 +88,7 @@ private:
 
 private:
     AutoPtr<IContext> mContext;
-    AutoPtr< ISet<IInteger32> > mSeparators;
+    AutoPtr< ISet<Integer> > mSeparators;
     Boolean mAreAllItemsEnabled;
 };
 

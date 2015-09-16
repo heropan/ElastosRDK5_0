@@ -6,6 +6,22 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_TRACINGCONTROLLERANDROID_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_TRACINGCONTROLLERANDROID_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/BroadcastReceiver.h"
+#include "content/Context.h"
+#include "content/Intent.h"
+#include "content/IntentFilter.h"
+#include "os/Environment.h"
+#include "text/TextUtils.h"
+#include "widget/Toast.h"
+#include "elastos/io/File.h"
+#include "elastos/text/SimpleDateFormat.h"
+#include "elastos/utility/Date.h"
+#include "elastos/utility/CLocale.h"
+#include "elastos/utility/TimeZone.h"
+
 // package org.chromium.content.browser;
 // import android.content.BroadcastReceiver;
 // import android.content.Context;
@@ -23,6 +39,20 @@
 // import java.util.Date;
 // import java.util.Locale;
 // import java.util.TimeZone;
+
+using Elastos::Droid::Content::IBroadcastReceiver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Os::IEnvironment;
+using Elastos::Droid::Text::ITextUtils;
+using Elastos::Droid::Util::ILog;
+using Elastos::Droid::Widget::IToast;
+using Elastos::Io::IFile;
+using Elastos::Text::ISimpleDateFormat;
+using Elastos::Utility::IDate;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::ITimeZone;
 
 namespace Elastos {
 namespace Droid {
@@ -47,23 +77,28 @@ namespace Browser {
   * is being traced, but the general form is [app package name].GPU_PROFILER_{START,STOP}.
   */
 // @JNINamespace("content")
-class TracingControllerAndroid
+class TracingControllerAndroid : public Object
 {
 public:
-    class TracingIntentFilter : public IntentFilter
-    {
-    public:
-        TracingIntentFilter(
-            /* [in] */ IContext* context);
-    };
-
-    class TracingBroadcastReceiver : public BroadcastReceiver
+    class TracingBroadcastReceiver
+        : public Object
+        , public BroadcastReceiver
     {
     public:
         // @Override
         CARAPI OnReceive(
             /* [in] */ IContext* context,
             /* [in] */ IIntent* intent);
+    };
+
+private:
+    class TracingIntentFilter
+        : public Object
+        , public IntentFilter
+    {
+    public:
+        TracingIntentFilter(
+            /* [in] */ IContext* context);
     };
 
 public:
@@ -206,9 +241,9 @@ private:
     // These strings must match the ones expected by adb_profile_chrome.
     static const String PROFILER_STARTED_FMT;
     static const String PROFILER_FINISHED_FMT;
-    const AutoPtr<IContext> mContext;
-    const AutoPtr<TracingBroadcastReceiver> mBroadcastReceiver;
-    const AutoPtr<TracingIntentFilter> mIntentFilter;
+    /*const*/ AutoPtr<IContext> mContext;
+    /*const*/ AutoPtr<TracingBroadcastReceiver> mBroadcastReceiver;
+    /*const*/ AutoPtr<TracingIntentFilter> mIntentFilter;
     Boolean mIsTracing;
     // We might not want to always show toasts when we start the profiler, especially if
     // showing the toast impacts performance.  This gives us the chance to disable them.

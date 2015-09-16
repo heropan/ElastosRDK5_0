@@ -6,8 +6,15 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_BASE_VIEWANDROIDDELEGATE_H_
 #define _ELASTOS_DROID_WEBKIT_UI_BASE_VIEWANDROIDDELEGATE_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "view/View.h"
+
 // package org.chromium.ui.base;
 // import android.view.View;
+
+using Elastos::Droid::View::IView;
 
 namespace Elastos {
 namespace Droid {
@@ -16,24 +23,24 @@ namespace Ui {
 namespace Base {
 
 /**
- * Interface to acquire and release anchor views from the implementing View.
- */
+  * Interface to acquire and release anchor views from the implementing View.
+  */
 class ViewAndroidDelegate
 {
 public:
     /**
-     * @return An anchor view that can be used to anchor decoration views like Autofill popup.
-     */
+      * @return An anchor view that can be used to anchor decoration views like Autofill popup.
+      */
     virtual CARAPI_(AutoPtr<IView>) AcquireAnchorView() = 0;
 
     /**
-     * Set the anchor view to specified position and width (all units in dp).
-     * @param view The anchor view that needs to be positioned.
-     * @param x X coordinate of the top left corner of the anchor view.
-     * @param y Y coordinate of the top left corner of the anchor view.
-     * @param width The width of the anchor view.
-     * @param height The height of the anchor view.
-     */
+      * Set the anchor view to specified position and width (all units in dp).
+      * @param view The anchor view that needs to be positioned.
+      * @param x X coordinate of the top left corner of the anchor view.
+      * @param y Y coordinate of the top left corner of the anchor view.
+      * @param width The width of the anchor view.
+      * @param height The height of the anchor view.
+      */
     virtual CARAPI SetAnchorViewPosition(
         /* [in] */ IView* view,
         /* [in] */ Float x,
@@ -42,9 +49,9 @@ public:
         /* [in] */ Float height) = 0;
 
     /**
-     * Release given anchor view.
-     * @param anchorView The anchor view that needs to be released.
-     */
+      * Release given anchor view.
+      * @param anchorView The anchor view that needs to be released.
+      */
     virtual CARAPI ReleaseAnchorView(
         /* [in] */ IView* anchorView) = 0;
 };

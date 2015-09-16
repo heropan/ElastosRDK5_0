@@ -6,11 +6,18 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_WEBCONTENTSOBSERVERANDROID_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_WEBCONTENTSOBSERVERANDROID_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "webkit/native/base/ThreadUtils.h"
+
 // package org.chromium.content.browser;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 // import org.chromium.base.ThreadUtils;
 // import org.chromium.content_public.browser.WebContents;
+
+using Elastos::Droid::Webkit::Base::ThreadUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -23,7 +30,7 @@ namespace Browser {
   * to loading a url. A single web contents can have multiple WebContentObserverAndroids.
   */
 // @JNINamespace("content")
-class WebContentsObserverAndroid
+class WebContentsObserverAndroid : public Object
 {
 public:
     // TODO(yfriedman): Switch everyone to use the WebContents constructor.

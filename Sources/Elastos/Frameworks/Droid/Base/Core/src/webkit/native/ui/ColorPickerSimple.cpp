@@ -1,125 +1,116 @@
+// wuweizuo automatic build .cpp file from .java file.
+
+#include "ColorPickerSimple.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
 
-const AutoPtr< ArrayOf<Int32> > ColorPickerSimple::DEFAULT_COLORS = ColorPickerSimple::InitDefaultColors();
-const AutoPtr< ArrayOf<Int32> > ColorPickerSimple::DEFAULT_COLOR_LABEL_IDS = ColorPickerSimple::InitDefaultColorLabelIds();
+//=====================================================================
+//                          ColorPickerSimple
+//=====================================================================
+AutoPtr< ArrayOf<Int32> > ColorPickerSimple::DEFAULT_COLORS = ColorPickerSimple::MiddleInitDefaultColors();
+AutoPtr< ArrayOf<Int32> > ColorPickerSimple::DEFAULT_COLOR_LABEL_IDS = ColorPickerSimple::MiddleInitDefaultColorLabelIds();
 
 ColorPickerSimple::ColorPickerSimple(
-    /* in */ IContext* context)
-    : ListView(context)
-    , mOnColorChangedListener(NULL)
+    /* [in] */ IContext* context)
 {
+    // ==================before translated======================
+    // super(context);
 }
 
 ColorPickerSimple::ColorPickerSimple(
-    /* in */ IContext* context,
-    /* in */ IAttributeSet* attrs)
-    : ListView(context, attrs)
-    , mOnColorChangedListener(NULL)
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
 {
+    // ==================before translated======================
+    // super(context, attrs);
 }
 
 ColorPickerSimple::ColorPickerSimple(
-    /* in */ IContext* context,
-    /* in */ IAttributeSet* attrs,
-    /* in */ Int32 defStyle)
-    : ListView(context, attrs, defStyle)
-    , mOnColorChangedListener(NULL)
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyle)
 {
+    // ==================before translated======================
+    // super(context, attrs, defStyle);
 }
 
-/**
- * Initializes the listener and sets the adapter for the given list of suggestions. If the
- * suggestions is null a default set of colors will be used.
- *
- * @param suggestions The list of suggestions that should be displayed.
- * @param onColorChangedListener The listener that gets notified when the user touches
- *                               a color.
- */
 ECode ColorPickerSimple::Init(
-    /* in */ ArrayOf< AutoPtr<ColorSuggestion> >* suggestions,
-    /* in */ OnColorChangedListener* onColorChangedListener)
+    /* [in] */ ArrayOf<ColorSuggestion>* suggestions,
+    /* [in] */ OnColorChangedListener* onColorChangedListener)
 {
     VALIDATE_NOT_NULL(suggestions);
     VALIDATE_NOT_NULL(onColorChangedListener);
-
-    mOnColorChangedListener = onColorChangedListener;
-    AutoPtr<IContext> context;
-    GetContext(&context);
-
-    if (NULL == suggestions) {
-        suggestions = ArrayOf< AutoPtr<ColorSuggestion> >::Alloc(sizeof(DEFAULT_COLORS) / sizeof(DEFAULT_COLORS[0]));
-        String idsTemp;
-        for (Int32 i = 0; i < suggestions->GetLength(); ++i) {
-            context->GetString(DEFAULT_COLOR_LABEL_IDS[i], &idsTemp);
-            (*suggestions)[i] = new ColorSuggestion(DEFAULT_COLORS[i], idsTemp);
-        }
-    }
-
-    AutoPtr<ColorSuggestionListAdapter> adapter = new ColorSuggestionListAdapter(context, suggestions);
-    adapter->SetOnColorSuggestionClickListener(this);
-    SetAdapter(adapter);
+    // ==================before translated======================
+    // mOnColorChangedListener = onColorChangedListener;
+    //
+    // if (suggestions == null) {
+    //     suggestions = new ColorSuggestion[DEFAULT_COLORS.length];
+    //     for (int i = 0; i < suggestions.length; ++i) {
+    //         suggestions[i] = new ColorSuggestion(DEFAULT_COLORS[i],
+    //                 getContext().getString(DEFAULT_COLOR_LABEL_IDS[i]));
+    //     }
+    // }
+    //
+    // ColorSuggestionListAdapter adapter = new ColorSuggestionListAdapter(
+    //         getContext(), suggestions);
+    // adapter.setOnColorSuggestionClickListener(this);
+    // setAdapter(adapter);
+    assert(0);
     return NOERROR;
 }
 
-//@Override
 ECode ColorPickerSimple::OnColorSuggestionClick(
-    /* in */ ColorSuggestion* suggestion)
+    /* [in] */ ColorSuggestion* suggestion)
 {
     VALIDATE_NOT_NULL(suggestion);
-    mOnColorChangedListener->OnColorChanged(suggestion->mColor);
+    // ==================before translated======================
+    // mOnColorChangedListener.onColorChanged(suggestion.mColor);
+    assert(0);
     return NOERROR;
 }
 
-AutoPtr< ArrayOf<Int32> > ColorPickerSimple::InitDefaultColors()
+AutoPtr< ArrayOf<Int32> > ColorPickerSimple::MiddleInitDefaultColors()
 {
-    Int32 tmps[] = {
-        IColor::RED,
-        IColor::CYAN,
-        IColor::BLUE,
-        IColor::GREEN,
-        IColor::MAGENTA,
-        IColor::YELLOW,
-        IColor::BLACK,
-        IColor::WHITE
-    };
-
-    Int32 count = sizeof(tmps) / sizeof(tmps[0]);
-    AutoPtr< ArrayOf<Int32> > result = ArrayOf<Int32>::Alloc(count);
-    for (Int32 i=0; i<count; ++i) {
-        result->Set(i, tmps[i]);
-    }
-
-    return result;
+    // ==================before translated======================
+    // ->WWZ_SIGN: ARRAY_INIT_START {
+    // Color.RED,
+    //          Color.CYAN,
+    //          Color.BLUE,
+    //          Color.GREEN,
+    //          Color.MAGENTA,
+    //          Color.YELLOW,
+    //          Color.BLACK,
+    //          Color.WHITE
+    // ->WWZ_SIGN: ARRAY_INIT_END }
+    assert(0);
+    AutoPtr< ArrayOf<Int32> > empty;
+    return empty;
 }
 
-AutoPtr< ArrayOf<Int32> > ColorPickerSimple::InitDefaultColorLabelIds()
+AutoPtr< ArrayOf<Int32> > ColorPickerSimple::MiddleInitDefaultColorLabelIds()
 {
-    Int32 tmps[] = {
-        R::string::color_picker_button_red,
-        R::string::color_picker_button_cyan,
-        R::string::color_picker_button_blue,
-        R::string::color_picker_button_green,
-        R::string::color_picker_button_magenta,
-        R::string::color_picker_button_yellow,
-        R::string::color_picker_button_black,
-        R::string::color_picker_button_white
-    };
-
-    Int32 count = sizeof(tmps) / sizeof(tmps[0]);
-    AutoPtr< ArrayOf<Int32> > result = ArrayOf<Int32>::Alloc(count);
-    for (Int32 i=0; i<count; ++i) {
-        result->Set(i, tmps[i]);
-    }
-
-    return result;
+    // ==================before translated======================
+    // ->WWZ_SIGN: ARRAY_INIT_START {
+    // R.string.color_picker_button_red,
+    //          R.string.color_picker_button_cyan,
+    //          R.string.color_picker_button_blue,
+    //          R.string.color_picker_button_green,
+    //          R.string.color_picker_button_magenta,
+    //          R.string.color_picker_button_yellow,
+    //          R.string.color_picker_button_black,
+    //          R.string.color_picker_button_white
+    // ->WWZ_SIGN: ARRAY_INIT_END }
+    assert(0);
+    AutoPtr< ArrayOf<Int32> > empty;
+    return empty;
 }
 
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
 

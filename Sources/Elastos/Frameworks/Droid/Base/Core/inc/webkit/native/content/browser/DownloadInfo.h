@@ -6,6 +6,10 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DOWNLOADINFO_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DOWNLOADINFO_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+
 // package org.chromium.content.browser;
 
 namespace Elastos {
@@ -17,10 +21,10 @@ namespace Browser {
 /**
   * Class representing the state of a single download.
   */
-class DownloadInfo
+class DownloadInfo : public Object
 {
 public:
-    class Builder
+    class Builder : public Object
     {
     public:
         virtual CARAPI_(AutoPtr<Builder>) SetUrl(
@@ -78,8 +82,8 @@ public:
           * @param downloadInfo DownloadInfo object from which builder fields are populated.
           * @return A builder initialized with fields from downloadInfo object.
           */
-        static const CARAPI_(AutoPtr<Builder>) FromDownloadInfo(
-            /* [in] */ DownloadInfo* downloadInfo);
+        static CARAPI_(AutoPtr<Builder>) FromDownloadInfo(
+            /* [in] */ const DownloadInfo* downloadInfo);
 
     private:
         String mUrl;
@@ -141,22 +145,22 @@ private:
         /* [in] */ Builder* builder);
 
 private:
-    const String mUrl;
-    const String mUserAgent;
-    const String mMimeType;
-    const String mCookie;
-    const String mFileName;
-    const String mDescription;
-    const String mFilePath;
-    const String mReferer;
-    const Int64 mContentLength;
-    const Boolean mHasDownloadId;
-    const Int32 mDownloadId;
-    const String mContentDisposition;
-    const Boolean mIsGETRequest;
-    const Boolean mIsSuccessful;
-    const Int32 mPercentCompleted;
-    const Int64 mTimeRemainingInMillis;
+    /*const*/ String mUrl;
+    /*const*/ String mUserAgent;
+    /*const*/ String mMimeType;
+    /*const*/ String mCookie;
+    /*const*/ String mFileName;
+    /*const*/ String mDescription;
+    /*const*/ String mFilePath;
+    /*const*/ String mReferer;
+    /*const*/ Int64 mContentLength;
+    /*const*/ Boolean mHasDownloadId;
+    /*const*/ Int32 mDownloadId;
+    /*const*/ String mContentDisposition;
+    /*const*/ Boolean mIsGETRequest;
+    /*const*/ Boolean mIsSuccessful;
+    /*const*/ Int32 mPercentCompleted;
+    /*const*/ Int64 mTimeRemainingInMillis;
 };
 
 } // namespace Browser

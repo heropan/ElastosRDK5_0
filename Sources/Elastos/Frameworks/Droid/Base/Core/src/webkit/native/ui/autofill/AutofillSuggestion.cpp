@@ -1,3 +1,6 @@
+// wuweizuo automatic build .cpp file from .java file.
+
+#include "AutofillSuggestion.h"
 
 namespace Elastos {
 namespace Droid {
@@ -5,43 +8,58 @@ namespace Webkit {
 namespace Ui {
 namespace Autofill {
 
+//=====================================================================
+//                          AutofillSuggestion
+//=====================================================================
 AutofillSuggestion::AutofillSuggestion(
-    /* in */ String name,
-    /* in */ String label,
-    /* in */ Int32 uniqueId)
-    : mLabel(name)
-    , mSublabel(label)
-    , mUniqueId(uniqueId)
+    /* [in] */ String name,
+    /* [in] */ String label,
+    /* [in] */ Int32 uniqueId)
 {
+    // ==================before translated======================
+    // mLabel = name;
+    // mSublabel = label;
+    // mUniqueId = uniqueId;
 }
 
-//@Override
 String AutofillSuggestion::GetLabel()
 {
-    return mLabel;
+    // ==================before translated======================
+    // return mLabel;
+    assert(0);
+    return String("");
 }
 
-//@Override
 String AutofillSuggestion::GetSublabel()
 {
-    return mSublabel;
+    // ==================before translated======================
+    // return mSublabel;
+    assert(0);
+    return String("");
 }
 
-//@Override
 Boolean AutofillSuggestion::IsEnabled()
 {
-    return TRUE;
+    // ==================before translated======================
+    // return true;
+    assert(0);
+    return FALSE;
 }
 
-//@Override
 Boolean AutofillSuggestion::IsGroupHeader()
 {
+    // ==================before translated======================
+    // return false;
+    assert(0);
     return FALSE;
 }
 
 Int32 AutofillSuggestion::GetUniqueId()
 {
-    return mUniqueId;
+    // ==================before translated======================
+    // return mUniqueId;
+    assert(0);
+    return 0;
 }
 
 } // namespace Autofill
@@ -49,4 +67,5 @@ Int32 AutofillSuggestion::GetUniqueId()
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
 

@@ -6,12 +6,22 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_GL_SURFACETEXTUREPLATFORMWRAPPER_H_
 #define _ELASTOS_DROID_WEBKIT_UI_GL_SURFACETEXTUREPLATFORMWRAPPER_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "graphics/CSurfaceTexture.h"
+#include "os/Build.h"
+
 // package org.chromium.ui.gl;
 // import android.graphics.SurfaceTexture;
 // import android.os.Build;
 // import android.util.Log;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
+
+using Elastos::Droid::Graphics::ISurfaceTexture;
+using Elastos::Droid::Os::IBuild;
+using Elastos::Droid::Util::ILog;
 
 namespace Elastos {
 namespace Droid {
@@ -20,9 +30,9 @@ namespace Ui {
 namespace Gl {
 
 /**
- * Wrapper class for the underlying platform's SurfaceTexture in order to
- * provide a stable JNI API.
- */
+  * Wrapper class for the underlying platform's SurfaceTexture in order to
+  * provide a stable JNI API.
+  */
 // @JNINamespace("gfx")
 class SurfaceTexturePlatformWrapper
 {

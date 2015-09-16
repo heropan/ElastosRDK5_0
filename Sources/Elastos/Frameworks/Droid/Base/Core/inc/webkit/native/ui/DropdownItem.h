@@ -1,3 +1,4 @@
+// wuweizuo automatic build .h file from .java file.
 // Copyright 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -5,7 +6,11 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_DROPDOWNITEM_H_
 #define _ELASTOS_DROID_WEBKIT_UI_DROPDOWNITEM_H_
 
-//package org.chromium.ui;
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+
+// package org.chromium.ui;
 
 namespace Elastos {
 namespace Droid {
@@ -13,26 +18,29 @@ namespace Webkit {
 namespace Ui {
 
 /**
- * Dropdown item interface used to access all the information needed to show the item.
- */
+  * Dropdown item interface used to access all the information needed to show the item.
+  */
 class DropdownItem
 {
 public:
     /**
-     * Returns the label that should be shown in the dropdown.
-     */
+      * Returns the label that should be shown in the dropdown.
+      */
     virtual CARAPI_(String) GetLabel() = 0;
+
     /**
-     * Returns the sublabel that should be shown in the dropdown.
-     */
+      * Returns the sublabel that should be shown in the dropdown.
+      */
     virtual CARAPI_(String) GetSublabel() = 0;
+
     /**
-     * Returns true if the item should be enabled in the dropdown.
-     */
+      * Returns true if the item should be enabled in the dropdown.
+      */
     virtual CARAPI_(Boolean) IsEnabled() = 0;
+
     /**
-     * Returns true if the item should be a group header in the dropdown.
-     */
+      * Returns true if the item should be a group header in the dropdown.
+      */
     virtual CARAPI_(Boolean) IsGroupHeader() = 0;
 };
 

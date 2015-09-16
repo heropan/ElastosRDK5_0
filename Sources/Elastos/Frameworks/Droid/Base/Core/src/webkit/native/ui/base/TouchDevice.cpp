@@ -1,48 +1,45 @@
 // wuweizuo automatic build .cpp file from .java file.
 
+#include "TouchDevice.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
 namespace Base {
 
+//=====================================================================
+//                             TouchDevice
+//=====================================================================
 TouchDevice::TouchDevice()
 {
 }
 
 Int32 TouchDevice::MaxTouchPoints(
-    /* in */ IContext* context)
+    /* [in] */ IContext* context)
 {
-    AutoPtr<IPackageManager> packageManager;
-    context->GetPackageManager((IPackageManager**)&packageManager);
-
-    Boolean hasSystemFeature;
-    packageManager->HasSystemFeature(IPackageManager::FEATURE_TOUCHSCREEN_MULTITOUCH_JAZZHAND, &hasSystemFeature);
-
-    Boolean hasSystemFeature1;
-    packageManager->HasSystemFeature(IPackageManager::FEATURE_TOUCHSCREEN_MULTITOUCH_DISTINCT, &hasSystemFeature1);
-
-    Boolean hasSystemFeature2;
-    packageManager->HasSystemFeature(IPackageManager::FEATURE_TOUCHSCREEN_MULTITOUCH, &hasSystemFeature2);
-
-    Boolean hasSystemFeature3;
-    packageManager->HasSystemFeature(IPackageManager::FEATURE_TOUCHSCREEN, &hasSystemFeature3);
-
-    if (hasSystemFeature) {
-        return 5;
-    }
-     else if (hasSystemFeature1) {
-        return 2;
-    }
-     else if (hasSystemFeature2) {
-        return 2;
-    }
-     else if (hasSystemFeature3) {
-        return 1;
-    }
-    else {
-        return 0;
-    }
+    // ==================before translated======================
+    // // Android only tells us if the device belongs to a "Touchscreen Class"
+    // // which only guarantees a minimum number of touch points. Be
+    // // conservative and return the minimum, checking membership from the
+    // // highest class down.
+    // if (context.getPackageManager().hasSystemFeature(
+    //         PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_JAZZHAND)) {
+    //     return 5;
+    // } else if (context.getPackageManager().hasSystemFeature(
+    //         PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_DISTINCT)) {
+    //     return 2;
+    // } else if (context.getPackageManager().hasSystemFeature(
+    //         PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH)) {
+    //     return 2;
+    // } else if (context.getPackageManager().hasSystemFeature(
+    //         PackageManager.FEATURE_TOUCHSCREEN)) {
+    //     return 1;
+    // } else {
+    //     return 0;
+    // }
+    assert(0);
+    return 0;
 }
 
 } // namespace Base
@@ -50,4 +47,5 @@ Int32 TouchDevice::MaxTouchPoints(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
 

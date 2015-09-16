@@ -6,6 +6,10 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INTERSTITIALPAGEDELEGATEANDROID_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INTERSTITIALPAGEDELEGATEANDROID_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+
 // package org.chromium.content.browser;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
@@ -20,7 +24,7 @@ namespace Browser {
   * Allows the specification and handling of Interstitial pages in java.
   */
 // @JNINamespace("content")
-class InterstitialPageDelegateAndroid
+class InterstitialPageDelegateAndroid : public Object
 {
 public:
     /**

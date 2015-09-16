@@ -6,6 +6,10 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_JAVASCRIPTINTERFACE_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_JAVASCRIPTINTERFACE_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+
 // package org.chromium.content.browser;
 // import java.lang.annotation.ElementType;
 // import java.lang.annotation.Retention;

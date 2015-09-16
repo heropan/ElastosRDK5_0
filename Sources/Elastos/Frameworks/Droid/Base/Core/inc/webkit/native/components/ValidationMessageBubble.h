@@ -19,8 +19,6 @@
 #include "widget/RelativeLayout.h"
 #include "widget/TextView.h"
 #include "webkit/native/base/ApiCompatibilityUtils.h"
-// #include "webkit/native/base/CalledByNative.h"
-// #include "webkit/native/content/R.h"
 #include "webkit/native/content/browser/ContentViewCore.h"
 #include "webkit/native/content/browser/RenderCoordinates.h"
 
@@ -50,8 +48,6 @@ using Elastos::Droid::Widget::IPopupWindow;
 using Elastos::Droid::Widget::IRelativeLayout;
 using Elastos::Droid::Widget::ITextView;
 using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
-// using Elastos::Droid::Webkit::Base::CalledByNative;
-// using Elastos::Droid::Webkit::Content::R;
 
 namespace Elastos {
 namespace Droid {

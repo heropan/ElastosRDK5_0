@@ -1,29 +1,35 @@
+// wuweizuo automatic build .cpp file from .java file.
+
+#include "NetworkChangeNotifier.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Net {
 
-//===============================================================
-//             NetworkChangeNotifier::InnerObserver
-//===============================================================
-NetworkChangeNotifier::InnerObserver::InnerObserver(
+//=====================================================================
+// NetworkChangeNotifier::InnerNetworkChangeNotifierAutoDetectObserver
+//=====================================================================
+NetworkChangeNotifier::InnerNetworkChangeNotifierAutoDetectObserver::InnerNetworkChangeNotifierAutoDetectObserver(
     /* [in] */ NetworkChangeNotifier* owner)
     : mOwner(owner)
 {
+    // ==================before translated======================
+    // mOwner = owner;
 }
 
-ECode NetworkChangeNotifier::InnerObserver::OnConnectionTypeChanged(
+ECode NetworkChangeNotifier::InnerNetworkChangeNotifierAutoDetectObserver::OnConnectionTypeChanged(
     /* [in] */ Int32 newConnectionType)
 {
-    assert(NULL == mOwner);
-    mOwner->UpdateCurrentConnectionType(newConnectionType);
+    // ==================before translated======================
+    // updateCurrentConnectionType(newConnectionType);
+    assert(0);
     return NOERROR;
 }
 
-//===============================================================
-//                     NetworkChangeNotifier
-//===============================================================
+//=====================================================================
+//                        NetworkChangeNotifier
+//=====================================================================
 const Int32 NetworkChangeNotifier::CONNECTION_UNKNOWN;
 const Int32 NetworkChangeNotifier::CONNECTION_ETHERNET;
 const Int32 NetworkChangeNotifier::CONNECTION_WIFI;
@@ -34,79 +40,103 @@ const Int32 NetworkChangeNotifier::CONNECTION_NONE;
 const Int32 NetworkChangeNotifier::CONNECTION_BLUETOOTH;
 AutoPtr<NetworkChangeNotifier> NetworkChangeNotifier::sInstance;
 
-//@CalledByNative
 AutoPtr<NetworkChangeNotifier> NetworkChangeNotifier::Init(
     /* [in] */ IContext* context)
 {
-    if (sInstance == NULL) {
-        sInstance = new NetworkChangeNotifier(context);
-    }
-    return sInstance;
+    // ==================before translated======================
+    // if (sInstance == null) {
+    //     sInstance = new NetworkChangeNotifier(context);
+    // }
+    // return sInstance;
+    assert(0);
+    AutoPtr<NetworkChangeNotifier> empty;
+    return empty;
 }
 
 Boolean NetworkChangeNotifier::IsInitialized()
 {
-    return Boolean(sInstance != NULL);
+    // ==================before translated======================
+    // return sInstance != null;
+    assert(0);
+    return FALSE;
 }
 
-//@CalledByNative
+ECode NetworkChangeNotifier::ResetInstanceForTests(
+    /* [in] */ IContext* context)
+{
+    VALIDATE_NOT_NULL(context);
+    // ==================before translated======================
+    // sInstance = new NetworkChangeNotifier(context);
+    assert(0);
+    return NOERROR;
+}
+
 Int32 NetworkChangeNotifier::GetCurrentConnectionType()
 {
-    return mCurrentConnectionType;
+    // ==================before translated======================
+    // return mCurrentConnectionType;
+    assert(0);
+    return 0;
 }
 
-/**
- * Adds a native-side observer.
- */
-//@CalledByNative
 ECode NetworkChangeNotifier::AddNativeObserver(
     /* [in] */ Int64 nativeChangeNotifier)
 {
-    mNativeChangeNotifiers->Append(nativeChangeNotifier);
+    // ==================before translated======================
+    // mNativeChangeNotifiers.add(nativeChangeNotifier);
+    assert(0);
     return NOERROR;
 }
 
-/**
- * Removes a native-side observer.
- */
-//@CalledByNative
 ECode NetworkChangeNotifier::RemoveNativeObserver(
     /* [in] */ Int64 nativeChangeNotifier)
 {
-    mNativeChangeNotifiers->Remove(nativeChangeNotifier);
+    // ==================before translated======================
+    // mNativeChangeNotifiers.remove(nativeChangeNotifier);
+    assert(0);
     return NOERROR;
 }
 
-/**
- * Returns the singleton instance.
- */
 AutoPtr<NetworkChangeNotifier> NetworkChangeNotifier::GetInstance()
 {
-    assert (NULL == sInstance);
-    return sInstance;
+    // ==================before translated======================
+    // assert sInstance != null;
+    // return sInstance;
+    assert(0);
+    AutoPtr<NetworkChangeNotifier> empty;
+    return empty;
 }
 
-/**
- * Enables auto detection of the current network state based on notifications from the system.
- * Note that passing true here requires the embedding app have the platform ACCESS_NETWORK_STATE
- * permission.
- *
- * @param shouldAutoDetect true if the NetworkChangeNotifier should listen for system changes in
- *    network connectivity.
- */
 ECode NetworkChangeNotifier::SetAutoDetectConnectivityState(
     /* [in] */ Boolean shouldAutoDetect)
 {
-    GetInstance()->SetAutoDetectConnectivityStateInternal(shouldAutoDetect);
+    // ==================before translated======================
+    // getInstance().setAutoDetectConnectivityStateInternal(shouldAutoDetect);
+    assert(0);
     return NOERROR;
 }
 
-//@CalledByNative
 ECode NetworkChangeNotifier::ForceConnectivityState(
     /* [in] */ Boolean networkAvailable)
 {
-    SetAutoDetectConnectivityState(FALSEx);
-    GetInstance()->ForceConnectivityStateInternal(networkAvailable);
+    // ==================before translated======================
+    // setAutoDetectConnectivityState(false);
+    // getInstance().forceConnectivityStateInternal(networkAvailable);
+    assert(0);
+    return NOERROR;
+}
+
+ECode NetworkChangeNotifier::NotifyObserversOfConnectionTypeChange(
+    /* [in] */ Int32 newConnectionType)
+{
+    // ==================before translated======================
+    // for (Long nativeChangeNotifier : mNativeChangeNotifiers) {
+    //     nativeNotifyConnectionTypeChanged(nativeChangeNotifier, newConnectionType);
+    // }
+    // for (ConnectionTypeObserver observer : mConnectionTypeObservers) {
+    //     observer.onConnectionTypeChanged(newConnectionType);
+    // }
+    assert(0);
     return NOERROR;
 }
 
@@ -114,7 +144,9 @@ ECode NetworkChangeNotifier::AddConnectionTypeObserver(
     /* [in] */ ConnectionTypeObserver* observer)
 {
     VALIDATE_NOT_NULL(observer);
-    GetInstance()->AddConnectionTypeObserverInternal(observer);
+    // ==================before translated======================
+    // getInstance().addConnectionTypeObserverInternal(observer);
+    assert(0);
     return NOERROR;
 }
 
@@ -122,144 +154,120 @@ ECode NetworkChangeNotifier::RemoveConnectionTypeObserver(
     /* [in] */ ConnectionTypeObserver* observer)
 {
     VALIDATE_NOT_NULL(observer);
-    GetInstance()->RemoveConnectionTypeObserverInternal(observer);
+    // ==================before translated======================
+    // getInstance().removeConnectionTypeObserverInternal(observer);
+    assert(0);
     return NOERROR;
 }
 
-// For testing only.
 AutoPtr<NetworkChangeNotifierAutoDetect> NetworkChangeNotifier::GetAutoDetectorForTest()
 {
-    return GetInstance()->mAutoDetector;
+    // ==================before translated======================
+    // return getInstance().mAutoDetector;
+    assert(0);
+    AutoPtr<NetworkChangeNotifierAutoDetect> empty;
+    return empty;
 }
 
-/**
- * Checks if there currently is connectivity.
- */
 Boolean NetworkChangeNotifier::IsOnline()
 {
-    Int32 connectionType = GetInstance()->GetCurrentConnectionType();
-    return Boolean(connectionType != CONNECTION_UNKNOWN && connectionType != CONNECTION_NONE);
+    // ==================before translated======================
+    // int connectionType = getInstance().getCurrentConnectionType();
+    // return connectionType != CONNECTION_UNKNOWN && connectionType != CONNECTION_NONE;
+    assert(0);
+    return FALSE;
 }
 
 NetworkChangeNotifier::NetworkChangeNotifier(
     /* [in] */ IContext* context)
-    : mCurrentConnectionType(CONNECTION_UNKNOWN)
 {
-    context->GetApplicationContext(&mContext);
-    mNativeChangeNotifiers = ArrayOf<Int64>::Alloc(sizeof(Int64));;
-    mConnectionTypeObservers = new ObserverList<ConnectionTypeObserver*>();
-}
-
-ECode NetworkChangeNotifier::ResetInstanceForTests(
-    /* [in] */ IContext* context)
-{
-    VALIDATE_NOT_NULL(context);
-    sInstance = new NetworkChangeNotifier(context);
-    return NOERROR;
+    // ==================before translated======================
+    // mContext = context.getApplicationContext();
+    // mNativeChangeNotifiers = new ArrayList<Long>();
+    // mConnectionTypeObservers = new ObserverList<ConnectionTypeObserver>();
 }
 
 ECode NetworkChangeNotifier::DestroyAutoDetector()
 {
-    if (mAutoDetector != NULL) {
-        mAutoDetector->Destroy();
-        mAutoDetector = NULL;
-    }
+    // ==================before translated======================
+    // if (mAutoDetector != null) {
+    //     mAutoDetector.destroy();
+    //     mAutoDetector = null;
+    // }
+    assert(0);
     return NOERROR;
 }
 
 ECode NetworkChangeNotifier::SetAutoDetectConnectivityStateInternal(
     /* [in] */ Boolean shouldAutoDetect)
 {
-    if (shouldAutoDetect) {
-
-        // question: how to translate a function in funciton
-        if (NULL == mAutoDetector) {
-            mAutoDetector = new NetworkChangeNotifierAutoDetect(new InnerObserver(this), mContext);
-            UpdateCurrentConnectionType(mAutoDetector->GetCurrentConnectionType());
-        }
-    }
-    else {
-        DestroyAutoDetector();
-    }
+    // ==================before translated======================
+    // if (shouldAutoDetect) {
+    //     if (mAutoDetector == null) {
+    //         mAutoDetector = new NetworkChangeNotifierAutoDetect(
+    //             new NetworkChangeNotifierAutoDetect.Observer() {
+    //                 @Override
+    //                 public void onConnectionTypeChanged(int newConnectionType) {
+    //                     updateCurrentConnectionType(newConnectionType);
+    //                 }
+    //             },
+    //             mContext);
+    //         updateCurrentConnectionType(mAutoDetector.getCurrentConnectionType());
+    //     }
+    // } else {
+    //     destroyAutoDetector();
+    // }
+    assert(0);
     return NOERROR;
 }
 
-/**
- * Updates the perceived network state when not auto-detecting changes to connectivity.
- *
- * @param networkAvailable True if the NetworkChangeNotifier should perceive a "connected"
- *    state, false implies "disconnected".
- */
 ECode NetworkChangeNotifier::ForceConnectivityStateInternal(
     /* [in] */ Boolean forceOnline)
 {
-    Boolean connectionCurrentlyExists = Boolean(mCurrentConnectionType != CONNECTION_NONE);
-    if (connectionCurrentlyExists != forceOnline) {
-        UpdateCurrentConnectionType(forceOnline ? CONNECTION_UNKNOWN : CONNECTION_NONE);
-    }
+    // ==================before translated======================
+    // boolean connectionCurrentlyExists = mCurrentConnectionType != CONNECTION_NONE;
+    // if (connectionCurrentlyExists != forceOnline) {
+    //     updateCurrentConnectionType(forceOnline ? CONNECTION_UNKNOWN : CONNECTION_NONE);
+    // }
+    assert(0);
     return NOERROR;
 }
 
 ECode NetworkChangeNotifier::UpdateCurrentConnectionType(
     /* [in] */ Int32 newConnectionType)
 {
-    mCurrentConnectionType = newConnectionType;
-    NotifyObserversOfConnectionTypeChange(newConnectionType);
+    // ==================before translated======================
+    // mCurrentConnectionType = newConnectionType;
+    // notifyObserversOfConnectionTypeChange(newConnectionType);
+    assert(0);
     return NOERROR;
 }
 
-/**
- * Alerts all observers of a connection change.
- */
-ECode NetworkChangeNotifier::NotifyObserversOfConnectionTypeChange(
-    /* [in] */ Int32 newConnectionType)
-{
-    Int64 nativeChangeNotifier;
-    for (Int32 i=0; i<mNativeChangeNotifiers->GetLength(); ++i)
-    {
-        nativeChangeNotifier = (*mNativeChangeNotifiers)[i];
-        NativeNotifyConnectionTypeChanged(nativeChangeNotifier, newConnectionType);
-    }
-
-    for (Int32 i=0; i<mConnectionTypeObservers->GetLength(); ++i)
-    {
-        AutoPtr<ConnectionTypeObserver> observer = (*mConnectionTypeObservers)[i];
-        observer->OnConnectionTypeChanged(newConnectionType);
-    }
-    return NOERROR;
-}
-
-/**
- * Adds an observer for any connection type changes.
- */
 ECode NetworkChangeNotifier::AddConnectionTypeObserverInternal(
     /* [in] */ ConnectionTypeObserver* observer)
 {
     VALIDATE_NOT_NULL(observer);
-    mConnectionTypeObservers->AddObserver(observer);
+    // ==================before translated======================
+    // mConnectionTypeObservers.addObserver(observer);
+    assert(0);
     return NOERROR;
 }
 
-/**
- * Removes an observer for any connection type changes.
- */
 ECode NetworkChangeNotifier::RemoveConnectionTypeObserverInternal(
     /* [in] */ ConnectionTypeObserver* observer)
 {
     VALIDATE_NOT_NULL(observer);
-    mConnectionTypeObservers->RemoveObserver(observer);
+    // ==================before translated======================
+    // mConnectionTypeObservers.removeObserver(observer);
+    assert(0);
     return NOERROR;
 }
 
-//@NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
-/*
-* native function
-*/
-//native void nativeNotifyConnectionTypeChanged(long nativePtr, int newConnectionType);
 ECode NetworkChangeNotifier::NativeNotifyConnectionTypeChanged(
     /* [in] */ Int64 nativePtr,
     /* [in] */ Int32 newConnectionType)
 {
+    assert(0);
     return NOERROR;
 }
 
@@ -267,3 +275,5 @@ ECode NetworkChangeNotifier::NativeNotifyConnectionTypeChanged(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
+

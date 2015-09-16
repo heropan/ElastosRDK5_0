@@ -13,11 +13,8 @@
 #include "content/ContentResolver.h"
 #include "content/Context.h"
 #include "content/pm/PackageManager.h"
-// #include "database/Cursor.h"
 #include "net/Uri.h"
 #include "provider/ContactsContract.h"
-// #include "webkit/native/base/CalledByNative.h"
-// #include "webkit/native/base/JNINamespace.h"
 
 // package org.chromium.components.browser.autofill;
 // import android.content.ContentResolver;
@@ -35,8 +32,6 @@ using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Provider::IContactsContract;
-// using Elastos::Droid::Webkit::Base::CalledByNative;
-// using Elastos::Droid::Webkit::Base::JNINamespace;
 
 namespace Elastos {
 namespace Droid {
@@ -61,8 +56,11 @@ private:
 
         virtual CARAPI_(String) MimeType() = 0;
 
+    private:
+        static CARAPI_(AutoPtr<IUri>) MiddleInitProfiledatauri();
+
     public:
-        AutoPtr<IUri> profileDataUri;
+        static AutoPtr<IUri> profileDataUri;
     };
 
     class EmailProfileQuery

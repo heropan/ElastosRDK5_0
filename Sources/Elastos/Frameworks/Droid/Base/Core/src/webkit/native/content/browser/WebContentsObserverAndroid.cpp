@@ -1,5 +1,7 @@
 // wuweizuo automatic build .cpp file from .java file.
 
+#include "WebContentsObserverAndroid.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -12,35 +14,36 @@ namespace Browser {
 WebContentsObserverAndroid::WebContentsObserverAndroid(
     /* [in] */ ContentViewCore* contentViewCore)
 {
-    /*
-    this(contentViewCore.getWebContents());
-    */
+    // ==================before translated======================
+    // this(contentViewCore.getWebContents());
 }
 
 WebContentsObserverAndroid::WebContentsObserverAndroid(
     /* [in] */ WebContents* webContents)
 {
-    /*
-    ThreadUtils.assertOnUiThread();
-    mNativeWebContentsObserverAndroid = nativeInit(webContents);
-    */
+    // ==================before translated======================
+    // ThreadUtils.assertOnUiThread();
+    // mNativeWebContentsObserverAndroid = nativeInit(webContents);
 }
 
 ECode WebContentsObserverAndroid::RenderProcessGone(
     /* [in] */ Boolean wasOomProtected)
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DidStartLoading(
     /* [in] */ String url)
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DidStopLoading(
     /* [in] */ String url)
 {
+    assert(0);
     return NOERROR;
 }
 
@@ -51,6 +54,7 @@ ECode WebContentsObserverAndroid::DidFailLoad(
     /* [in] */ String description,
     /* [in] */ String failingUrl)
 {
+    assert(0);
     return NOERROR;
 }
 
@@ -60,11 +64,13 @@ ECode WebContentsObserverAndroid::DidNavigateMainFrame(
     /* [in] */ Boolean isNavigationToDifferentPage,
     /* [in] */ Boolean isFragmentNavigation)
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DidFirstVisuallyNonEmptyPaint()
 {
+    assert(0);
     return NOERROR;
 }
 
@@ -73,6 +79,7 @@ ECode WebContentsObserverAndroid::DidNavigateAnyFrame(
     /* [in] */ String baseUrl,
     /* [in] */ Boolean isReload)
 {
+    assert(0);
     return NOERROR;
 }
 
@@ -84,6 +91,7 @@ ECode WebContentsObserverAndroid::DidStartProvisionalLoadForFrame(
     /* [in] */ Boolean isErrorPage,
     /* [in] */ Boolean isIframeSrcdoc)
 {
+    assert(0);
     return NOERROR;
 }
 
@@ -93,6 +101,7 @@ ECode WebContentsObserverAndroid::DidCommitProvisionalLoadForFrame(
     /* [in] */ String url,
     /* [in] */ Int32 transitionType)
 {
+    assert(0);
     return NOERROR;
 }
 
@@ -101,56 +110,64 @@ ECode WebContentsObserverAndroid::DidFinishLoad(
     /* [in] */ String validatedUrl,
     /* [in] */ Boolean isMainFrame)
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DocumentLoadedInFrame(
     /* [in] */ Int64 frameId)
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::NavigationEntryCommitted()
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DidAttachInterstitialPage()
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DidDetachInterstitialPage()
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DidChangeThemeColor(
     /* [in] */ Int32 color)
 {
+    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DetachFromWebContents()
 {
-    /*
-    if (mNativeWebContentsObserverAndroid != 0) {
-        nativeDestroy(mNativeWebContentsObserverAndroid);
-        mNativeWebContentsObserverAndroid = 0;
-    }
-    */
+    // ==================before translated======================
+    // if (mNativeWebContentsObserverAndroid != 0) {
+    //     nativeDestroy(mNativeWebContentsObserverAndroid);
+    //     mNativeWebContentsObserverAndroid = 0;
+    // }
+    assert(0);
     return NOERROR;
 }
 
 Int64 WebContentsObserverAndroid::NativeInit(
     /* [in] */ WebContents* webContents)
 {
+    assert(0);
     return 0;
 }
 
 ECode WebContentsObserverAndroid::NativeDestroy(
     /* [in] */ Int64 nativeWebContentsObserverAndroid)
 {
+    assert(0);
     return NOERROR;
 }
 
