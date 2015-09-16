@@ -51,7 +51,7 @@ using Elastos::Utility::Logging::Logger;
 //using Elastos::Droid::Net::CLocalSocket;
 using Elastos::Droid::Net::ILocalSocketAddress;
 //using Elastos::Droid::Net::CLocalSocketAddress;
-using Elastos::Droid::Net::LocalSocketAddressNamespace_RESERVED;
+//using Elastos::Droid::Net::ILocalSocketAddressNamespace::LocalSocketAddressNamespace_RESERVED;
 
 namespace Elastos {
 namespace Droid {

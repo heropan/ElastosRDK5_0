@@ -7,6 +7,10 @@
 #include "CLinkProperties.h"
 #include "CLinkPropertiesCompareResult.h"
 #include "CLinkQualityInfo.h"
+#include "CLocalServerSocket.h"
+#include "CLocalSocket.h"
+#include "CLocalSocketAddress.h"
+#include "CLocalSocketAddressNamespace.h"
 
 namespace Elastos {
 namespace Droid {
@@ -27,6 +31,14 @@ CAR_OBJECT_IMPL(CLinkProperties)
 CAR_OBJECT_IMPL(CLinkPropertiesCompareResult)
 
 CAR_OBJECT_IMPL(CLinkQualityInfo)
+
+CAR_OBJECT_IMPL(CLocalServerSocket)
+
+CAR_OBJECT_IMPL(CLocalSocket)
+
+CAR_OBJECT_IMPL(CLocalSocketAddress)
+
+CAR_OBJECT_IMPL(CLocalSocketAddressNamespace)
 
 } // namespace Net
 } // namespace Droid
