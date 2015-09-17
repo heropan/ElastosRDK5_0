@@ -172,11 +172,39 @@ module
     merge("media/media/ToneGenerator.car");
     merge("media/media/VolumeProvider.car");
 
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.App.IService;
 
-//    namespace Elastos {
-//    namespace Droid {
-//    namespace Media {
-//
+    namespace Elastos {
+    namespace Droid {
+    namespace Service {
+    namespace Media {
+
+        class CMediaBrowserServiceBrowserRoot {
+            constructor(
+                [in] String rootId,
+                [in] IBundle * extras);
+
+            interface IMediaBrowserServiceBrowserRoot;
+        }
+
+        class CMediaBrowserServiceResult {
+            constructor(
+                [in] IInterface * debug);
+
+            interface IMediaBrowserServiceResult;
+        }
+
+        class CMediaBrowserService {
+            interface IMediaBrowserService;
+            interface IService;
+        }
+
+    } // namespace Media
+    } // namespace Service
+    } // namepsace Droid
+    } // namespace Elastos
+
 //        // media/media/AmrInputStream
 //        class CAmrInputStream {
 //            constructor(
@@ -970,8 +998,8 @@ module
 //        class CMtpStorageInfo {
 //            interface IMtpStorageInfo;
 //        }
-//
-//    } // namespace mtp
-//    } // namespace Droid
-//    } // namespace Elastos
+
+   } // namespace mtp
+   } // namespace Droid
+   } // namespace Elastos
 }
