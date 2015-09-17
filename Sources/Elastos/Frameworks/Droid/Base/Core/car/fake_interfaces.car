@@ -33,6 +33,8 @@ module
 
         interface IState {}
 
+        interface IAsyncChannel {}
+
     }}}} // Elastos.Droid.Internal.Utility
 
     //
@@ -164,6 +166,8 @@ module
 
         interface INeighboringCellInfo {}
 
+        interface IPhoneStateListener {}
+
     }}} // Elastos.Droid.Telephony
 
 
@@ -226,4 +230,6 @@ module
     namespace Utility {
         interface IHashtable {}
     }}  // Elastos.Utility
+
+
 }

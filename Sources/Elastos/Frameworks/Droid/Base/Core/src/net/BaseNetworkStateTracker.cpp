@@ -335,6 +335,19 @@ ECode BaseNetworkStateTracker::GetNetwork(
     return NOERROR;
 }
 
+ECode BaseNetworkStateTracker::GetNetworkCapabilities(
+    /* [out] */ INetworkCapabilities** result)
+{
+    VALIDATE_NOT_NULL(*result)
+    *result = NULL;
+
+#if 0 // TODO: Waiting for CNetworkCapabilities
+    CNetworkCapabilities::New(mNetworkCapabilities, result);
+#else
+    assert(0);
+#endif
+    return NOERROR;
+}
 
 
 } // namespace Net

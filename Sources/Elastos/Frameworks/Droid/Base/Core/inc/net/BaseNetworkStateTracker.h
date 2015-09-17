@@ -40,6 +40,10 @@ public:
     virtual CARAPI GetLinkProperties(
         /* [out] */ ILinkProperties** result);
 
+    // @Override
+    CARAPI GetNetworkCapabilities(
+        /* [out] */ INetworkCapabilities** result);
+
     virtual CARAPI GetLinkCapabilities(
         /* [out] */ ILinkCapabilities** result);
 

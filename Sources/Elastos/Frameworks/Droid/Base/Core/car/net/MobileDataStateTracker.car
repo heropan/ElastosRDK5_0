@@ -144,19 +144,11 @@ module
 
     }
 
-    /**
-     * @Involved
-     * interface IHandler;
-     */
-    [deprecated]
-    interface IMdstHandler {
-    }
+    interface IMobileDataStateTrackerHelper {
+        NetworkTypeToApnType(
+            [in] Int32 netType,
+            [out] String* result);
 
-    /**
-     * @Involved
-     * interface IBroadcastReceiver;
-     */
-    interface IMobileDataStateReceiver {
     }
 
     } // namespace Net
