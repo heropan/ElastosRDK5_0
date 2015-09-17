@@ -1,13 +1,14 @@
 
 #include "CSerializableEntity.h"
-#include <elastos/Logger.h>
+#include "CByteArrayInputStream.h"
+#include "CByteArrayOutputStream.h"
+#include "Logger.h"
 
 using Elastos::IO::IByteArrayInputStream;
 using Elastos::IO::CByteArrayInputStream;
 using Elastos::IO::IByteArrayOutputStream;
 using Elastos::IO::CByteArrayOutputStream;
-using Elastos::IO::IObjectOutputStream;
-using Elastos::IO::CObjectOutputStream;
+using Elastos::IO::IFlushable;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
@@ -22,10 +23,12 @@ ECode CSerializableEntity::CreateBytes(
 {
     AutoPtr<IByteArrayOutputStream> baos;
     CByteArrayOutputStream::New((IByteArrayOutputStream**)&baos);
-    AutoPtr<IObjectOutputStream> out;
-    CObjectOutputStream::New(IOutputStream::Probe(baos), (IObjectOutputStream**)&out);
-    out->WriteObject(IObject::Probe(ser));
-    IFlush::Probe(out)->Flush();
+    Logger::E("CSerializableEntity", "CObjectOutputStream has not been implemented");
+    assert(0);
+    // AutoPtr<IObjectOutputStream> out;
+    // CObjectOutputStream::New(IOutputStream::Probe(baos), (IObjectOutputStream**)&out);
+    // out->WriteObject(IObject::Probe(ser));
+    // IFlushable::Probe(out)->Flush();
     return baos->ToByteArray((ArrayOf<Byte>**)&mObjSer);
 }
 
@@ -81,14 +84,16 @@ ECode CSerializableEntity::WriteTo(
     }
 
     if (mObjSer == NULL) {
-        AutoPtr<IObjectOutputStream> out;
-        CObjectOutputStream::New(outstream, (IObjectOutputStream**)&out);
-        out->WriteObject(IObject::Probe(mObjRef));
-        IFlush::Probe(out)->Flush();
+        Logger::E("CSerializableEntity", "CObjectOutputStream has not been implemented");
+        assert(0);
+        // AutoPtr<IObjectOutputStream> out;
+        // CObjectOutputStream::New(outstream, (IObjectOutputStream**)&out);
+        // out->WriteObject(IObject::Probe(mObjRef));
+        // IFlushable::Probe(out)->Flush();
     }
     else {
         outstream->Write(mObjSer);
-        IFlush::Probe(outstream)->Flush();
+        IFlushable::Probe(outstream)->Flush();
     }
     return NOERROR;
 }

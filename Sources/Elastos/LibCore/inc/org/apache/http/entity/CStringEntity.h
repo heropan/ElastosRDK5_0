@@ -5,7 +5,6 @@
 #include "_Org_Apache_Http_Entity_CStringEntity.h"
 #include "StringEntity.h"
 
-using Elastos::Core::ICloneable;
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
@@ -26,11 +25,8 @@ namespace Entity {
  */
 CarClass(CStringEntity)
     , public StringEntity
-    , public ICloneable
 {
 public:
-    CAR_INTERFACE_DECL()
-
     CAR_OBJECT_DECL()
 
     CARAPI Clone(

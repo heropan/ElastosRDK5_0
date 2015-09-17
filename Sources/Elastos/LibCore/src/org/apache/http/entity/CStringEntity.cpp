@@ -1,21 +1,10 @@
 
 #include "CStringEntity.h"
-#include "Logger.h"
-
-using Elastos::Core::EIID_ICloneable;
-using Elastos::IO::IFileInputStream;
-using Elastos::IO::CFileInputStream;
-using Elastos::IO::IFlush;
-using Elastos::IO::ICloseable;
-using Elastos::Utility::Logging::Logger;
-using Org::Apache::Http::Protocol::IHTTP;
 
 namespace Org {
 namespace Apache {
 namespace Http {
 namespace Entity {
-
-CAR_INTERFACE_IMPL(CStringEntity, StringEntity, ICloneable)
 
 CAR_OBJECT_IMPL(CStringEntity)
 

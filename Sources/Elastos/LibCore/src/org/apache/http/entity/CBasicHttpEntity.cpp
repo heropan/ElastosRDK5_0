@@ -1,6 +1,6 @@
 
 #include "CBasicHttpEntity.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 
@@ -95,8 +95,8 @@ ECode CBasicHttpEntity::IsStreaming(
 
 ECode CBasicHttpEntity::ConsumeContent()
 {
-    if (content != NULL) {
-        content->Close(); // reads to the end of the entity
+    if (mContent != NULL) {
+        mContent->Close(); // reads to the end of the entity
     }
     return NOERROR;
 }

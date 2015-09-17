@@ -72,7 +72,7 @@ ECode HttpEntityWrapper::ConsumeContent()
 }
 
 ECode HttpEntityWrapper::Init(
-    /* [in] */ IHttpEntity* entity)
+    /* [in] */ IHttpEntity* wrapped)
 {
     if (wrapped == NULL) {
         Logger::E("HttpEntityWrapper", "wrapped entity must not be null");

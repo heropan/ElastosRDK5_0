@@ -1,11 +1,16 @@
 
 #include "StringEntity.h"
+#include "CFileInputStream.h"
+#include "CByteArrayInputStream.h"
 #include "Logger.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
-using Elastos::IO::IFlush;
+using Elastos::IO::IFlushable;
 using Elastos::IO::ICloseable;
+using Elastos::IO::IByteArrayInputStream;
+using Elastos::IO::CByteArrayInputStream;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Protocol::IHTTP;
 
@@ -51,7 +56,7 @@ ECode StringEntity::WriteTo(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     outstream->Write(mContent);
-    IFlush::Probe(outstream)->Flush();
+    IFlushable::Probe(outstream)->Flush();
     return NOERROR;
 }
 
@@ -74,8 +79,9 @@ void StringEntity::CloneImpl(
 
 ECode StringEntity::Init(
     /* [in] */ const String& s,
-    /* [in] */ const String& charset)
+    /* [in] */ const String& _charset)
 {
+    String charset = _charset;
     if (s.IsNull()) {
         Logger::E("StringEntity", "Source string may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;

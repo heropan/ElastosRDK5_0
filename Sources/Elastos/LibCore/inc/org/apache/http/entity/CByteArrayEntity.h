@@ -5,6 +5,7 @@
 #include "_Org_Apache_Http_Entity_CByteArrayEntity.h"
 #include "AbstractHttpEntity.h"
 
+using Elastos::Core::ICloneable;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
 
