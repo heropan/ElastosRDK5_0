@@ -57,6 +57,7 @@ INCLUDES += $(MAKEDIR)/../inc/content/res
 // INCLUDES += $(MAKEDIR)/../inc/media/media
 // INCLUDES += $(MAKEDIR)/../inc/media/media/audiofx
 // INCLUDES += $(MAKEDIR)/../inc/media/media/videoeditor
+INCLUDES += $(MAKEDIR)/../inc/media/service/media
 INCLUDES += $(MAKEDIR)/../inc/database/
 INCLUDES += $(MAKEDIR)/../inc/database/sqlite
 
@@ -148,6 +149,7 @@ LIBRARIES += hardware/usb/usb.lib
 // LIBRARIES += media/media/media.lib
 // LIBRARIES += media/media/audiofx/audiofx.lib
 // LIBRARIES += media/media/videoeditor/videoeditor.lib
+LIBRARIES += media/service/media/service.lib
 // LIBRARIES += privacy/privacy.lib
 // LIBRARIES += provider/provider.lib
 // LIBRARIES += accessibilityservice/accessibilityservice.lib
