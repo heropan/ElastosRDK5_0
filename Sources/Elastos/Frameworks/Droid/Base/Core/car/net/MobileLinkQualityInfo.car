@@ -187,6 +187,16 @@ module
 
     }
 
+    interface IMobileLinkQualityInfoHelper {
+        /**
+         * @hide
+         */
+        CreateFromParcelBody(
+            [in] IParcel* parcel,
+            [out] IMobileLinkQualityInfo** result);
+
+    }
+
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos
