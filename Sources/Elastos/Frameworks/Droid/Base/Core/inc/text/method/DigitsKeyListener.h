@@ -24,12 +24,14 @@ public:
      */
     DigitsKeyListener();
 
+    virtual ~DigitsKeyListener();
+
     /**
      * Allocates a DigitsKeyListener that accepts the digits 0 through 9,
      * plus the minus sign (only at the beginning) and/or decimal point
      * (only one per field) if specified.
      */
-    DigitsKeyListener(
+    constructor(
         /* [in] */ Boolean sign,
         /* [in] */ Boolean decimal);
 
@@ -42,9 +44,9 @@ public:
     static CARAPI_(AutoPtr<IDigitsKeyListener>) GetInstance(
         /* [in] */ const String& accepted);
 
-    CARAPI_(void) Init();
+    CARAPI_(void) constructor();
 
-    CARAPI_(void) Init(
+    CARAPI_(void) constructor(
         /* [in] */ Boolean sign,
         /* [in] */ Boolean decimal);
 
@@ -74,6 +76,14 @@ protected:
      * @see #getAcceptedChars
      */
     AutoPtr< ArrayOf<Char32> > mAccepted;
+
+private:
+    static CARAPI_(Boolean) IsSignChar(
+        /* [in] */ const Char32 c);
+
+    static CARAPI_(Boolean) IsDecimalPointChar(
+        /* [in] */ const Char32 c);
+
 private:
     Boolean mSign;
     Boolean mDecimal;

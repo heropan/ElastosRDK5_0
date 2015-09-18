@@ -24,6 +24,10 @@ namespace Method {
 
 const AutoPtr<IInterface> ArrowKeyMovementMethod::LAST_TAP_DOWN/* = (IInterface*)(new Object())*/;// = new ElObject();
 
+CAR_INTERFACE_IMPL_3(ArrowKeyMovementMethod, Object, IArrowKeyMovementMethod, IBaseMovementMethod, IMovementMethod)
+
+ArrowKeyMovementMethod::~ArrowKeyMovementMethod(){}
+
 Boolean ArrowKeyMovementMethod::IsSelecting(
     /* [in] */ ISpannable* buffer)
 {
@@ -288,6 +292,14 @@ Boolean ArrowKeyMovementMethod::End(
     return LineEnd(widget, buffer);
 }
 
+
+Boolean ArrowKeyMovementMethod::IsTouchSelecting(
+    /* [in] */ Boolean isMouse,
+    /* [in] */ ISpannable* buffer)
+{
+    return isMouse ? Touch::IsActivelySelecting(buffer) : IsSelecting(buffer);
+}
+
 Boolean ArrowKeyMovementMethod::OnTouchEvent(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* buffer,
@@ -297,6 +309,8 @@ Boolean ArrowKeyMovementMethod::OnTouchEvent(
     Int32 initialScrollY = -1;
     Int32 action;
     event->GetAction(&action);
+    Boolean isMouse;
+    IInputEvent::Probe(event)->IsFromSource(IInputDevice::SOURCE_MOUSE, &isMouse);
 
     if (action == IMotionEvent::ACTION_UP) {
         initialScrollX = Touch::GetInitialScrollX(widget, buffer);
@@ -307,18 +321,22 @@ Boolean ArrowKeyMovementMethod::OnTouchEvent(
     handled = Touch::OnTouchEvent(widget, buffer, event);
 
     Boolean bIsFocused, bDidTouchFocusSelect;
+
     if ((widget->IsFocused(&bIsFocused), bIsFocused) && !(widget->DidTouchFocusSelect(&bDidTouchFocusSelect), bDidTouchFocusSelect)) {
         Float x = 0.f, y = 0.f;
         event->GetX(&x);
         event->GetY(&y);
 
         if (action == IMotionEvent::ACTION_DOWN) {
-            if (IsSelecting(buffer)) {
+            // Capture the mouse pointer down location to ensure selection starts
+            // right under the mouse (and is not influenced by cursor location).
+            // The code below needs to run for mouse events.
+            // For touch events, the code should run only when selection is active.
+            if (isMouse || IsTouchSelecting(isMouse, buffer)) {
                 Int32 offset;
                 widget->GetOffsetForPosition(x, y, &offset);
 
-                buffer->SetSpan(LAST_TAP_DOWN, offset, offset, ISpannable::SPAN_POINT_POINT/*Spannable.SPAN_POINT_POINT*/);
-
+                buffer->SetSpan(LAST_TAP_DOWN, offset, offset, ISpanned::SPAN_POINT_POINT/*Spannable.SPAN_POINT_POINT*/);
                 // Disallow intercepting of the touch events, so that
                 // users can scroll and select at the same time.
                 // without this, users would get booted out of select
@@ -328,9 +346,18 @@ Boolean ArrowKeyMovementMethod::OnTouchEvent(
                 assert(parent != NULL);
                 parent->RequestDisallowInterceptTouchEvent(TRUE);
             }
-        }
-        else if (action == IMotionEvent::ACTION_MOVE) {
-            if (IsSelecting(buffer) && handled) {
+        } else if (action == IMotionEvent::ACTION_MOVE) {
+
+            // Cursor can be active at any location in the text while mouse pointer can start
+            // selection from a totally different location. Use LAST_TAP_DOWN span to ensure
+            // text selection will start from mouse pointer location.
+            if (isMouse && Touch::IsSelectionStarted(buffer)) {
+                Int32 offset;
+                ISpanned::Probe(buffer)->GetSpanStart(LAST_TAP_DOWN, &offset);
+                Selection::SetSelection(buffer, offset);
+            }
+
+            if (IsTouchSelecting(isMouse, buffer) && handled) {
                 // Before selecting, make sure we've moved out of the "slop".
                 // handled will be true, if we're in select mode AND we're
                 // OUT of the slop
@@ -364,7 +391,7 @@ Boolean ArrowKeyMovementMethod::OnTouchEvent(
 
             Int32 offset = 0;
             widget->GetOffsetForPosition(x, y, &offset);
-            if (IsSelecting(buffer)) {
+            if (IsTouchSelecting(isMouse, buffer)) {
                 buffer->RemoveSpan(LAST_TAP_DOWN);
                 Selection::ExtendSelection(buffer, offset);
             }
@@ -375,7 +402,6 @@ Boolean ArrowKeyMovementMethod::OnTouchEvent(
             return TRUE;
         }
     }
-
     return handled;
 }
 

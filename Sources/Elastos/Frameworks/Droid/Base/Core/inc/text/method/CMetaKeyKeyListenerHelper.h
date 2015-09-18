@@ -14,8 +14,13 @@ namespace Text {
 namespace Method {
 
 CarClass(CMetaKeyKeyListenerHelper)
+    , public Singleton
+    , public IMetaKeyKeyListenerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+    CAR_SINGLETON_DECL()
+
     CARAPI ResetMetaState(
         /* [in] */ ISpannable* text);
 
@@ -25,17 +30,28 @@ public:
 
     CARAPI GetMetaState(
         /* [in] */ ICharSequence* text,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Int32* ret);
+
+    CARAPI GetMetaState(
+        /* [in] */ ICharSequence* text,
         /* [in] */ Int32 meta,
         /* [out] */ Int32* state);
 
     CARAPI GetMetaState(
-        /* [in] */ Int64 state,
+        /* [in] */ ICharSequence* text,
+        /* [in] */ Int32 meta,
+        /* [in] */ IKeyEvent* event,
         /* [out] */ Int32* ret);
 
     CARAPI GetMetaState(
         /* [in] */ Int64 state,
+        /* [out] */ Int32* result);
+
+    CARAPI GetMetaState(
+        /* [in] */ Int64 state,
         /* [in] */ Int32 meta,
-        /* [out] */ Int32* ret);
+        /* [out] */ Int32* result);
 
     CARAPI AdjustMetaAfterKeypress(
         /* [in] */ ISpannable* content);
@@ -66,14 +82,7 @@ public:
         /* [in] */ Int64 state,
         /* [out] */ Int64* meta);
 
-    CARAPI GetMetaState(
-        /* [in] */ Int64 state,
-        /* [out] */ Int32* result);
 
-    CARAPI GetMetaState(
-        /* [in] */ Int64 state,
-        /* [in] */ Int32 meta,
-        /* [out] */ Int32* result);
 
     CARAPI AdjustMetaAfterKeypress(
         /* [in] */ Int64 state,

@@ -228,7 +228,7 @@ Boolean QwertyKeyListener::OnKeyDown(
 
     Int32 eMetaState;
     Int32 i;
-    event->GetUnicodeChar((event->GetMetaState(&eMetaState), eMetaState)|GetMetaState(content), &i);
+    event->GetUnicodeChar(THIS_PROBE(IMetaKeyKeyListener)->GetMetaState(ICharSequence::Probe(content), event, &i));
 
     if (!mFullKeyboard) {
         Int32 count;
@@ -237,7 +237,7 @@ Boolean QwertyKeyListener::OnKeyDown(
             Char32 c;
             content->GetCharAt(selStart - 1, &c);
 
-            if (c == i || c == Character::ToUpperCase(i) && view != NULL) {
+            if ((c == i || c == Character::ToUpperCase(i)) && view != NULL) {
                 if (ShowCharacterPicker(view, content, c, FALSE, count)) {
                     ResetMetaState(content);
                     return TRUE;
@@ -305,6 +305,7 @@ Boolean QwertyKeyListener::OnKeyDown(
                 if (composed != 0) {
                     i = composed;
                     replace = TRUE;
+                    dead = FALSE;
                 }
             }
 

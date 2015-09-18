@@ -11,8 +11,12 @@ namespace Text {
 namespace Method {
 
 CarClass(CTouch)
+    , public Touch
 {
 public:
+    CAR_INTERFACE_DECL()
+    CAR_OBJECT_DECL()
+
     CARAPI ScrollTo(
         /* [in] */ ITextView* widget,
         /* [in] */ ILayout* layout,
@@ -34,6 +38,14 @@ public:
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* buffer,
         /* [out] */ Int32* ret);
+
+    CARAPI IsActivelySelecting(
+        /* [in] */ ISpannable* buffer,
+        /* [out] */ Boolean* ret);
+
+    CARAPI IsSelectionStarted(
+        /* [in] */ ISpannable* buffer,
+        /* [out] */ Boolean* ret);
 };
 
 } // namespace Method

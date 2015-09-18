@@ -15,9 +15,9 @@ extern "C" const InterfaceID EIID_DigitsKeyListener =
         { 0xf51e1ea9, 0x7721, 0x4c12, { 0x9c, 0x44, 0x0a, 0x6b, 0xcd, 0x10, 0xb9, 0xc1 } };
 
 const Char32 DigitsKeyListener::CHARACTERS0[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-const Char32 DigitsKeyListener::CHARACTERS1[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-' };
+const Char32 DigitsKeyListener::CHARACTERS1[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '+' };
 const Char32 DigitsKeyListener::CHARACTERS2[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' };
-const Char32 DigitsKeyListener::CHARACTERS3[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '.' };
+const Char32 DigitsKeyListener::CHARACTERS3[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '+', '.' };
 const Char32* DigitsKeyListener::CHARACTERS[] ={(Char32*)CHARACTERS0, (Char32*)CHARACTERS1, (Char32*)CHARACTERS2, (Char32*)CHARACTERS3};
 const Int32 DigitsKeyListener::SIGN = 1;
 const Int32 DigitsKeyListener::DECIMAL = 2;
@@ -35,21 +35,42 @@ AutoPtr< ArrayOf<Char32> > DigitsKeyListener::GetAcceptedChars()
 }
 
 DigitsKeyListener::DigitsKeyListener()
+    : mSign(FALSE)
+    , mDecimal(FALSE)
+{}
+
+DigitsKeyListener::~DigitsKeyListener()
+{}
+
+void DigitsKeyListener::constructor()
 {
-    Init();
+    constructor(FALSE, FALSE);
 }
 
-void DigitsKeyListener::Init()
-{
-    Init(FALSE, FALSE);
-}
-
-DigitsKeyListener::DigitsKeyListener(
+void DigitsKeyListener::constructor(
     /* [in] */ Boolean sign,
     /* [in] */ Boolean decimal)
 {
-    Init(sign, decimal);
+    mSign = sign;
+    mDecimal = decimal;
 
+    Int32 kind = (sign ? SIGN : 0) | (decimal ? DECIMAL : 0);
+    if( 0>kind && kind>3 ) {
+        return;
+    }
+    Int32 acceptedLen = 10;
+    if(kind == 3) {
+        acceptedLen = 12;
+    }
+    if( kind==1 && kind==2 ) {
+        acceptedLen = 11;
+    }
+
+    AutoPtr< ArrayOf<Char32> > charactersR = ArrayOf<Char32>::Alloc(acceptedLen);
+    for(Int32 i=0; i<acceptedLen; i++){
+        (*charactersR)[i]=CHARACTERS[kind][i];
+    }
+    mAccepted = charactersR;
 }
 
 AutoPtr<IDigitsKeyListener> DigitsKeyListener::GetInstance()
@@ -80,32 +101,6 @@ AutoPtr<IDigitsKeyListener> DigitsKeyListener::GetInstance(
     digits->mAccepted = accepted.GetChars(0, accepted.GetLength());
 
     return dim;
-}
-
-void DigitsKeyListener::Init(
-    /* [in] */ Boolean sign,
-    /* [in] */ Boolean decimal)
-{
-    mSign = sign;
-    mDecimal = decimal;
-
-    Int32 kind = (sign ? SIGN : 0) | (decimal ? DECIMAL : 0);
-    if( 0>kind && kind>3 ) {
-        return;
-    }
-    Int32 acceptedLen = 10;
-    if(kind == 3) {
-        acceptedLen = 12;
-    }
-    if( kind==1 && kind==2 ) {
-        acceptedLen = 11;
-    }
-
-    AutoPtr< ArrayOf<Char32> > charactersR = ArrayOf<Char32>::Alloc(acceptedLen);
-    for(Int32 i=0; i<acceptedLen; i++){
-        (*charactersR)[i]=CHARACTERS[kind][i];
-    }
-    mAccepted = charactersR;
 }
 
 Int32 DigitsKeyListener::GetInputType()
@@ -145,17 +140,17 @@ AutoPtr<ICharSequence> DigitsKeyListener::Filter(
     Int32 dlen;
     dest->GetLength(&dlen);
     /*
-     * Find out if the existing text has '-' or '.' characters.
+     * Find out if the existing text has a sign or decimal point characters.
      */
 
     for (Int32 i = 0; i < dstart; i++) {
         Char32 c;
         dest->GetCharAt(i, &c);
 
-        if (c == '-') {
+        if (IsSignChar(c)) {
             sign = i;
         }
-        else if (c == '.') {
+        else if (IsDecimalPointChar(c)) {
             decimal = i;
         }
     }
@@ -163,17 +158,17 @@ AutoPtr<ICharSequence> DigitsKeyListener::Filter(
         Char32 c;
         dest->GetCharAt(i, &c);
 
-        if (c == '-') {
+        if (IsSignChar(c)) {
             return NULL;    // Nothing can be inserted in front of a '-'.
         }
-        else if (c == '.') {
+        else if (IsDecimalPointChar(c)) {
             decimal = i;
         }
     }
 
     /*
      * If it does, we must strip them out from the source.
-     * In addition, '-' must be the very first character,
+     * In addition, a sign character must be the very first character,
      * and nothing can be inserted before an existing '-'.
      * Go in reverse order so the offsets are stable.
      */
@@ -184,7 +179,7 @@ AutoPtr<ICharSequence> DigitsKeyListener::Filter(
         Char32 c;
         source->GetCharAt(i, &c);
         Boolean strip = FALSE;
-        if (c == '-') {
+        if (IsSignChar(c)) {
             if (i != start || dstart != 0) {
                 strip = TRUE;
             }
@@ -195,7 +190,7 @@ AutoPtr<ICharSequence> DigitsKeyListener::Filter(
                 sign = i;
             }
         }
-        else if (c == '.') {
+        else if (IsDecimalPointChar(c)) {
             if (decimal >= 0) {
                 strip = TRUE;
             }
@@ -226,6 +221,19 @@ AutoPtr<ICharSequence> DigitsKeyListener::Filter(
     else {
         return NULL;
     }
+}
+
+Boolean DigitsKeyListener::IsSignChar(
+    /* [in] */ const Char32 c)
+{
+    return c == '-' || c == '+';
+}
+
+ // TODO: Needs internationalization
+Boolean DigitsKeyListener::IsDecimalPointChar(
+    /* [in] */ const Char32 c)
+{
+    return c == '.';
 }
 
 
