@@ -3,7 +3,6 @@ module
 {
     interface Elastos.Droid.Hardware.ISerialPort;
 
-
     namespace Elastos {
     namespace Droid {
     namespace Hardware {

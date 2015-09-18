@@ -1,15 +1,26 @@
 
-#include "hardware/CSerialManager.h"
-#include "hardware/CSerialPort.h"
-#include "ext/frameworkext.h"
+#include "hardware/SerialManager.h"
+#include "hardware/SerialPort.h"
+
+using Elastos::Droid::Os::IParcelFileDescriptor;
 
 namespace Elastos {
 namespace Droid {
 namespace Hardware {
 
-String CSerialManager::TAG("SerialManager");
+const String SerialManager::TAG("SerialManager");
 
-ECode CSerialManager::constructor(
+CAR_INTERFACE_IMPL(SerialManager, Object, ISerialManager)
+
+SerialManager::SerialManager()
+{
+}
+
+SerialManager::~SerialManager()
+{
+}
+
+ECode SerialManager::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IISerialManager* service)
 {
@@ -18,7 +29,7 @@ ECode CSerialManager::constructor(
     return NOERROR;
 }
 
-ECode CSerialManager::GetSerialPorts(
+ECode SerialManager::GetSerialPorts(
     /* [out, callee] */ ArrayOf<String>** ports)
 {
     // try {
@@ -29,17 +40,21 @@ ECode CSerialManager::GetSerialPorts(
     // }
 }
 
-ECode CSerialManager::OpenSerialPort(
+ECode SerialManager::OpenSerialPort(
     /* [in] */ const String& name,
     /* [in] */ Int32 speed,
     /* [out] */ ISerialPort** port)
 {
-    assert(port != NULL);
+    VALIDATE_NOT_NULL(port);
+
     // try {
     AutoPtr<IParcelFileDescriptor> pfd;
     FAIL_RETURN(mService->OpenSerialPort(name, (IParcelFileDescriptor**)&pfd));
     if (pfd != NULL) {
-        CSerialPort::New(name, port);
+        AutoPtr<SerialPort> _port = new SerialPort();
+        _port->constructor(name);
+        *port = _port;
+        REFCOUNT_ADD(*port);
         (*port)->Open(pfd, speed);
         return NOERROR;
     } else {

@@ -3,16 +3,24 @@
 #define  __ELASTOS_DROID_HARDWARE_CSENSOREVENT_H__
 
 #include "_Elastos_Droid_Hardware_CSensorEvent.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace Hardware {
 
 CarClass(CSensorEvent)
+    , public Object
+    , public ISensorEvent
 {
 public:
     CSensorEvent();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI SetValues(
         /* [in] */ ArrayOf<Float>* values);
@@ -61,7 +69,6 @@ public:
      */
     Int64 mTimestamp;
 };
-
 
 } // namespace Hardware
 } // namespace Droid

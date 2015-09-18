@@ -1,24 +1,30 @@
 
-#ifndef __ELASTOS_DROID_HARDWARE_CSERIALPORT_H__
-#define  __ELASTOS_DROID_HARDWARE_CSERIALPORT_H__
+#ifndef __ELASTOS_DROID_HARDWARE_SERIALPORT_H__
+#define __ELASTOS_DROID_HARDWARE_SERIALPORT_H__
 
-#include "_Elastos_Droid_Hardware_CSerialPort.h"
+#include "Elastos.Droid.Core_server.h"
+#include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::Core::Object;
 using Elastos::IO::IByteBuffer;
 using Elastos::IO::IFileDescriptor;
-using Elastos::Droid::Os::IParcelFileDescriptor;
-
 
 namespace Elastos {
 namespace Droid {
 namespace Hardware {
 
-CarClass(CSerialPort)
+class SerialPort
+    : public Object
+    , public ISerialPort
 {
 public:
-    CSerialPort();
+    CAR_INTERFACE_DECL()
 
-    ~CSerialPort();
+    SerialPort();
+
+    ~SerialPort();
 
     /**
      * SerialPort should only be instantiated by SerialManager
@@ -53,7 +59,9 @@ public:
         /* [out] */ String* name);
 
     /**
-     * Reads data into the provided buffer
+     * Reads data into the provided buffer.
+     * Note that the value returned by {@link java.nio.Buffer#position()} on this buffer is
+     * unchanged after a call to this method.
      *
      * @param buffer to read into
      * @return number of bytes read
@@ -63,7 +71,9 @@ public:
         /* [out] */ Int32* num);
 
     /**
-     * Writes data from provided buffer
+     * Writes data from provided buffer.
+     * Note that the value returned by {@link java.nio.Buffer#position()} on this buffer is
+     * unchanged after a call to this method.
      *
      * @param buffer to write
      * @param length number of bytes to write
@@ -117,4 +127,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__ELASTOS_DROID_HARDWARE_CSERIALPORT_H__
+#endif  //__ELASTOS_DROID_HARDWARE_SERIALPORT_H__

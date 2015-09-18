@@ -1,35 +1,38 @@
 
-#include "hardware/CSerialPort.h"
+#include "hardware/SerialPort.h"
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <termios.h>
 
+using Elastos::IO::IBuffer;
+
 namespace Elastos {
 namespace Droid {
 namespace Hardware {
 
-String CSerialPort::TAG("SerialPort");
+String SerialPort::TAG("SerialPort");
 
-CSerialPort::CSerialPort()
+CAR_INTERFACE_IMPL(SerialPort, Object, ISerialPort)
+
+SerialPort::SerialPort()
     : mNativeContext(0)
 {
 }
 
-CSerialPort::~CSerialPort()
+SerialPort::~SerialPort()
 {
-
 }
 
-ECode CSerialPort::constructor(
+ECode SerialPort::constructor(
     /* [in] */ const String& name)
 {
     mName = name;
     return NOERROR;
 }
 
-ECode CSerialPort::Open(
+ECode SerialPort::Open(
     /* [in] */ IParcelFileDescriptor* pfd,
     /* [in] */ Int32 speed)
 {
@@ -40,7 +43,7 @@ ECode CSerialPort::Open(
     return NOERROR;
 }
 
-ECode CSerialPort::Close()
+ECode SerialPort::Close()
 {
     if (mFileDescriptor != NULL) {
         mFileDescriptor->Close();
@@ -50,65 +53,69 @@ ECode CSerialPort::Close()
     return NOERROR;
 }
 
-ECode CSerialPort::GetName(
+ECode SerialPort::GetName(
     /* [out] */ String* name)
 {
-    assert(name != NULL);
+    VALIDATE_NOT_NULL(name);
+
     *name = mName;
     return NOERROR;
 }
 
-ECode CSerialPort::Read(
+ECode SerialPort::Read(
     /* [in] */ IByteBuffer* buffer,
     /* [out] */ Int32* num)
 {
-    assert(buffer != NULL && num != NULL);
+    VALIDATE_NOT_NULL(buffer);
+    VALIDATE_NOT_NULL(num);
+
     Boolean isDirect = FALSE, hasArray = FALSE;
 
     Int32 remaining = 0;
-    buffer->GetRemaining(&remaining);
-    if (buffer->IsDirect(&isDirect), isDirect) {
+    IBuffer::Probe(buffer)->GetRemaining(&remaining);
+    if (IBuffer::Probe(buffer)->IsDirect(&isDirect), isDirect) {
         *num = native_read_direct(buffer, remaining);
-    } else if (buffer->HasArray(&hasArray), hasArray) {
+    } else if (IBuffer::Probe(buffer)->HasArray(&hasArray), hasArray) {
         AutoPtr<ArrayOf<Byte> > array;
         buffer->GetArray((ArrayOf<Byte>**)&array);
         *num = native_read_array(array, remaining);
     } else {
-        assert(0);
         // throw new IllegalArgumentException("buffer is not direct and has no array");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     return NOERROR;
 }
 
-ECode CSerialPort::Write(
+ECode SerialPort::Write(
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 length)
 {
-    assert(buffer != NULL);
+    VALIDATE_NOT_NULL(buffer);
+
     Boolean isDirect = FALSE, hasArray = FALSE;
 
-    if (buffer->IsDirect(&isDirect), isDirect) {
+    if (IBuffer::Probe(buffer)->IsDirect(&isDirect), isDirect) {
         native_write_direct(buffer, length);
-    } else if (buffer->HasArray(&hasArray), hasArray) {
+    } else if (IBuffer::Probe(buffer)->HasArray(&hasArray), hasArray) {
         AutoPtr<ArrayOf<Byte> > array;
         buffer->GetArray((ArrayOf<Byte>**)&array);
         native_write_array(array, length);
     } else {
-        assert(0);
         // throw new IllegalArgumentException("buffer is not direct and has no array");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     return NOERROR;
 }
 
-ECode CSerialPort::SendBreak()
+ECode SerialPort::SendBreak()
 {
     native_send_break();
     return NOERROR;
 }
 
-void CSerialPort::native_open(
+void SerialPort::native_open(
     /* [in] */ IFileDescriptor* fileDescriptor,
     /* [in] */ Int32 speed)
 {
@@ -242,13 +249,13 @@ void CSerialPort::native_open(
     tcflush(fd, TCIFLUSH);
 }
 
-void CSerialPort::native_close()
+void SerialPort::native_close()
 {
     close(mNativeContext);
     mNativeContext = -1;
 }
 
-Int32 CSerialPort::native_read_array(
+Int32 SerialPort::native_read_array(
     /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 length)
 {
@@ -276,7 +283,7 @@ Int32 CSerialPort::native_read_array(
     return ret;
 }
 
-Int32 CSerialPort::native_read_direct(
+Int32 SerialPort::native_read_direct(
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 length)
 {
@@ -299,7 +306,7 @@ Int32 CSerialPort::native_read_direct(
     return ret;
 }
 
-void CSerialPort::native_write_array(
+void SerialPort::native_write_array(
     /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 length)
 {
@@ -322,7 +329,7 @@ void CSerialPort::native_write_array(
     }
 }
 
-void CSerialPort::native_write_direct(
+void SerialPort::native_write_direct(
     /* [in] */ IByteBuffer* buffer,
     /* [in] */ Int32 length)
 {
@@ -342,7 +349,7 @@ void CSerialPort::native_write_direct(
     }
 }
 
-void CSerialPort::native_send_break()
+void SerialPort::native_send_break()
 {
     Int32 fd = mNativeContext;
     tcsendbreak(fd, 0);

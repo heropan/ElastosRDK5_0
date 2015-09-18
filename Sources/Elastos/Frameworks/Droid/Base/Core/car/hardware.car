@@ -113,8 +113,6 @@ module
     merge("hardware/camera2/utils/TaskSingleDrainer.car");
     merge("hardware/camera2/utils/TypeReference.car");
 
-
-    // interface Elastos.Droid.View.IRotationWatcher;
     interface Elastos.Droid.View.IDisplay;
     interface Elastos.Droid.View.ISurface;
     interface Elastos.Droid.Content.IContext;
@@ -123,50 +121,46 @@ module
     namespace Droid {
     namespace Hardware {
 
-        // class CSerialPort {
+        // class CConsumerIrManager {
         //     constructor(
-        //         [in] String name);
+        //         [in] IContext* context);
 
-        //     interface ISerialPort;
+        //     interface IConsumerIrManager;
         // }
 
-        // [local]
-        // class CSerialManager {
+        // class CCarrierFrequencyRange {
         //     constructor(
-        //         [in] IContext* ctx,
-        //         [in] IISerialManager* service);
+        //         [in] Int32 min,
+        //         [in] Int32 max);
 
-        //     interface ISerialManager;
+        //     interface ICarrierFrequencyRange;
         // }
 
-        // class CSensorEvent {
+        // class CGeomagneticField {
         //     constructor(
-        //         [in] Int32 size);
+        //         [in] Float gdLatitudeDeg,
+        //         [in] Float gdLongitudeDeg,
+        //         [in] Float altitudeMeters,
+        //         [in] Int64 timeMillis);
 
-        //     interface ISensorEvent;
+        //     interface IGeomagneticField;
         // }
 
-        // class CSensor {
-        //     constructor();
+        class CSensorEvent {
+            constructor(
+                [in] Int32 size);
 
-        //     interface ISensor;
-        // }
+            interface ISensorEvent;
+        }
 
-        // class CSensorManager {
-        //     interface ISensorManager;
-        // }
+        class CSensor {
+            constructor();
+
+            interface ISensor;
+        }
 
         // singleton class CSensorManagerHelper {
         //     interface ISensorManagerHelper;
-        // }
-
-        // [local]
-        // class CSystemSensorManager {
-        //     constructor(
-        //         [in] IContext* ctx,
-        //         [in] ILooper* mainLooper);
-
-        //     interface ISystemSensorManager;
         // }
 
         // class CHardwareCamera {
@@ -178,15 +172,16 @@ module
         //     interface IHardwareCamera;
         // }
 
-        // class CLegacySensorManagerRotationWatcher {
-        //     constructor();
-
-        //     interface IRotationWatcher;
-        // }
-
         singleton class CHardwareCameraHelper {
             interface IHardwareCameraHelper;
         }
+
+        // class CTriggerEvent {
+        //     constructor(
+        //         [in] Int32 size);
+
+        //     interface ITriggerEvent;
+        // }
 
     namespace Display {
         /**

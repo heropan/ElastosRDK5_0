@@ -1,19 +1,29 @@
 
-#ifndef __ELASTOS_DROID_HARDWARE_CSERIALMANAGER_H__
-#define  __ELASTOS_DROID_HARDWARE_CSERIALMANAGER_H__
+#ifndef __ELASTOS_DROID_HARDWARE_SERIALMANAGER_H__
+#define __ELASTOS_DROID_HARDWARE_SERIALMANAGER_H__
 
-#include "_Elastos_Droid_Hardware_CSerialManager.h"
+#include "Elastos.Droid.Core_server.h"
+#include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace Hardware {
 
-CarClass(CSerialManager)
+class SerialManager
+    : public Object
+    , public ISerialManager
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    SerialManager();
+
+    ~SerialManager();
+
     /**
      * {@hide}
      */
@@ -46,7 +56,7 @@ public:
         /* [out] */ ISerialPort** port);
 
 private:
-    static String TAG;
+    static const String TAG;
 
     AutoPtr<IContext> mContext;
     AutoPtr<IISerialManager> mService;
@@ -56,4 +66,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__ELASTOS_DROID_HARDWARE_CSERIALMANAGER_H__
+#endif  //__ELASTOS_DROID_HARDWARE_SERIALMANAGER_H__

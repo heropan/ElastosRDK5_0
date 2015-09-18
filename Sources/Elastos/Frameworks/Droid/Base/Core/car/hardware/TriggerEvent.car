@@ -21,8 +21,25 @@ module
      * @see android.hardware.TriggerEvent
      * @see android.hardware.Sensor
      */
-
+    [deprecated]
     interface ITriggerEvent {
+        SetValues(
+            [in] ArrayOf<Float>* values);
+
+        SetSensor(
+            [in] ISensor* sensor);
+
+        SetTimestamp(
+            [in] Int64 timestamp);
+
+        GetValues(
+            [out, callee] ArrayOf<Float>* values);
+
+        GetSensor(
+            [out] ISensor** sensor);
+
+        GetTimestamp(
+            [out] Int64* timestamp);
     }
 
     } // namespace Hardware

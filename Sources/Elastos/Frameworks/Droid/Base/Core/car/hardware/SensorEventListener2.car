@@ -7,10 +7,10 @@ module
 
     /**
      * Used for receiving a notification when a flush() has been successfully completed.
+     *
+     * @invoke
+     * interface ISensorEventListener
      */
-    /*
-    * invoke ISensorEventListener
-    */
     interface ISensorEventListener2 {
         /**
          * Called after flush() is completed. All the events in the batch at the point when

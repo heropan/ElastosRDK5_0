@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Hardware {
 
+CAR_INTERFACE_IMPL(CSensorEvent, Object, ISensorEvent)
+
+CAR_OBJECT_IMPL(CSensorEvent)
+
 CSensorEvent::CSensorEvent()
     : mAccuracy(0)
     , mTimestamp(0)
