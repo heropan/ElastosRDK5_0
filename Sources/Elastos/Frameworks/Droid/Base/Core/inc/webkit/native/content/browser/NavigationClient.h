@@ -6,11 +6,8 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_NAVIGATIONCLIENT_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_NAVIGATIONCLIENT_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-
-// package org.chromium.content.browser;
+#include "webkit/native/content/browser/NavigationHistory.h"
 
 namespace Elastos {
 namespace Droid {
@@ -50,4 +47,3 @@ public:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_NAVIGATIONCLIENT_H_
-

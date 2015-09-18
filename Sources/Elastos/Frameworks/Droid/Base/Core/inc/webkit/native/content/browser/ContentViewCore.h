@@ -2,49 +2,89 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWCORE_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWCORE_H__
 
+#include "ext/frameworkext.h"
+#include "os/Build.h"
+#include "os/SystemClock.h"
+//#include "text/TextUtils.h"
+#include "webkit/native/content/browser/ContentSettings.h"
+#include "webkit/native/content/browser/ContentViewClient.h"
+#include "webkit/native/content/browser/ContentViewDownloadDelegate.h"
+#include "webkit/native/content/browser/InterstitialPageDelegateAndroid.h"
+#include "webkit/native/content/browser/LoadUrlParams.h"
+#include "webkit/native/content/browser/NavigationClient.h"
+#include "webkit/native/content/browser/PopupZoomer.h"
+#include "webkit/native/content/browser/PositionObserver.h"
+#include "webkit/native/content/browser/RenderCoordinates.h"
+#include "webkit/native/content/browser/SelectActionModeCallback.h"
+#include "webkit/native/content/browser/ScreenOrientationListener.h"
+#include "webkit/native/content/browser/TouchEventSynthesizer.h"
+#include "webkit/native/content/browser/WebContentsObserverAndroid.h"
+#include "webkit/native/content/browser/accessibility/AccessibilityInjector.h"
+#include "webkit/native/content/browser/accessibility/BrowserAccessibilityManager.h"
+#include "webkit/native/content/browser/input/AdapterInputConnection.h"
+#include "webkit/native/content/browser/input/ImeAdapter.h"
+#include "webkit/native/content/browser/input/InsertionHandleController.h"
+#include "webkit/native/content/browser/input/InputMethodManagerWrapper.h"
+#include "webkit/native/content/browser/input/SelectPopup.h"
+#include "webkit/native/content/browser/input/SelectionHandleController.h"
+#include "webkit/native/content_public/browser/GestureStateListener.h"
+#include "webkit/native/ui/base/ViewAndroidDelegate.h"
+
 // import android.annotation.SuppressLint;
-// import android.app.Activity;
-// import android.app.SearchManager;
-// import android.content.ContentResolver;
-// import android.content.Context;
-// import android.content.Intent;
-// import android.content.pm.FeatureInfo;
-// import android.content.pm.PackageManager;
-// import android.content.res.Configuration;
-// import android.database.ContentObserver;
-// import android.graphics.Bitmap;
-// import android.graphics.Canvas;
-// import android.graphics.Color;
-// import android.graphics.Rect;
-// import android.net.Uri;
-// import android.os.Build;
-// import android.os.Bundle;
-// import android.os.Handler;
-// import android.os.ResultReceiver;
-// import android.os.SystemClock;
-// import android.provider.Browser;
-// import android.provider.Settings;
-// import android.text.Editable;
-// import android.text.Selection;
-// import android.text.TextUtils;
+using Elastos::Droid::App::IActivity;
+using Elastos::Droid::App::ISearchManager;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::Pm::IFeatureInfo;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Database::IContentObserver;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IColor;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IResultReceiver;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Provider::IBrowser;
+using Elastos::Droid::Provider::ISettings;
+using Elastos::Droid::Text::IEditable;
+using Elastos::Droid::Text::ISelection;
+using Elastos::Droid::Text::IAnnotation;
+//using Elastos::Droid::Text::TextUtils;
 // import android.util.Log;
 // import android.util.Pair;
-// import android.view.ActionMode;
-// import android.view.HapticFeedbackConstants;
-// import android.view.InputDevice;
-// import android.view.KeyEvent;
-// import android.view.MotionEvent;
-// import android.view.View;
-// import android.view.ViewGroup;
-// import android.view.accessibility.AccessibilityEvent;
-// import android.view.accessibility.AccessibilityManager;
-// import android.view.accessibility.AccessibilityManager.AccessibilityStateChangeListener;
-// import android.view.accessibility.AccessibilityNodeInfo;
-// import android.view.accessibility.AccessibilityNodeProvider;
-// import android.view.inputmethod.EditorInfo;
-// import android.view.inputmethod.InputConnection;
-// import android.view.inputmethod.InputMethodManager;
-// import android.widget.FrameLayout;
+using Elastos::Droid::View::IActionMode;
+using Elastos::Droid::View::IHapticFeedbackConstants;
+using Elastos::Droid::View::IInputDevice;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
+using Elastos::Droid::View::Accessibility::IAccessibilityManager;
+using Elastos::Droid::View::Accessibility::IAccessibilityStateChangeListener;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeProvider;
+using Elastos::Droid::View::InputMethod::IEditorInfo;
+using Elastos::Droid::View::InputMethod::IInputConnection;
+using Elastos::Droid::View::InputMethod::IInputMethodManager;
+using Elastos::Droid::Widget::IFrameLayout;
+
+using Elastos::Droid::Webkit::Ui::Base::ViewAndroidDelegate;
+using Elastos::Droid::Webkit::Content::Browser::Accessibility::AccessibilityInjector;
+using Elastos::Droid::Webkit::Content::Browser::Accessibility::BrowserAccessibilityManager;
+using Elastos::Droid::Webkit::Content::Browser::Input::AdapterInputConnection;
+using Elastos::Droid::Webkit::Content::Browser::Input::ImeAdapter;
+using Elastos::Droid::Webkit::Content::Browser::Input::InputMethodManagerWrapper;
+using Elastos::Droid::Webkit::Content::Browser::Input::InsertionHandleController;
+using Elastos::Droid::Webkit::Content::Browser::Input::SelectPopup;
+using Elastos::Droid::Webkit::Content::Browser::Input::SelectionHandleController;
+using Elastos::Droid::Webkit::Content_Public::Browser::GestureStateListener;
 
 // import com.google.common.annotations.VisibleForTesting;
 
@@ -102,7 +142,7 @@ namespace Browser {
 class ContentViewCore
     : public NavigationClient
     , public IAccessibilityStateChangeListener
-    , public IScreenOrientationObserver
+    , public ScreenOrientationListener::ScreenOrientationObserver
 {
 public:
     /**
@@ -235,7 +275,7 @@ private:
 
         //@Override
         //@SuppressWarnings("deprecation")  // AbsoluteLayout
-        CARAPI_(void) SetAnchorViewPosition(
+        CARAPI SetAnchorViewPosition(
             /* [in] */ IView* view,
             /* [in] */ Float x,
             /* [in] */ Float y,
@@ -243,7 +283,7 @@ private:
             /* [in] */ Float height);
 
         //@Override
-        CARAPI_(void) ReleaseAnchorView(
+        CARAPI ReleaseAnchorView(
             /* [in] */ IView* anchorView);
 
     private:
@@ -304,7 +344,7 @@ private:
         InnerListener(
             /* [in] */ ContentViewCore* owner);
 
-        CARAPI_(void) OnPositionChanged(
+        CARAPI OnPositionChanged(
             /* [in] */ Int32 x,
             /* [in] */ Int32 y);
 
@@ -331,7 +371,7 @@ private:
 
     private:
         ContentViewCore* mOwner;
-    }
+    };
 
     class InnerWebContentsObserverAndroid
         : public Object
@@ -342,14 +382,14 @@ private:
             /* [in] */ ContentViewCore* owner);
 
         //@Override
-        CARAPI_(void) DidNavigateMainFrame(
+        CARAPI DidNavigateMainFrame(
             /* [in] */ String url,
             /* [in] */ String baseUrl,
             /* [in] */ Boolean isNavigationToDifferentPage,
             /* [in] */ Boolean isFragmentNavigation);
 
         //@Override
-        CARAPI_(void) RenderProcessGone(
+        CARAPI RenderProcessGone(
             /* [in] */ Boolean wasOomProtected);
 
     private:
@@ -449,16 +489,18 @@ private:
 
     private:
         ContentViewCore* mOwner;
-        IMotionEvent* mEventFakeMouseMove
+        IMotionEvent* mEventFakeMouseMove;
     };
 
     class InnerSelectionHandleController
         : public Object
-        : public SelectionHandleController
+        , public SelectionHandleController
     {
     public:
         InnerSelectionHandleController(
-            /* [in] */ ContentViewCore* owner);
+            /* [in] */ ContentViewCore* owner,
+            /* [in] */ IView* parent,
+            /* [in] */ PositionObserver* positionObserver);
 
         //@Override
         CARAPI_(void) SelectBetweenCoordinates(
@@ -482,7 +524,9 @@ private:
     {
     public:
         InnerInsertionHandleController(
-            /* [in] */ ContentViewCore* owner);
+            /* [in] */ ContentViewCore* owner,
+            /* [in] */ IView* parent,
+            /* [in] */ PositionObserver* positionObserver);
 
         //@Override
         CARAPI_(void) SetCursorPosition(int x, int y);
@@ -510,37 +554,41 @@ private:
             /* [in] */ ContentViewCore* owner);
 
         //@Override
-        CARAPI_(void) SelectAll();
+        CARAPI SelectAll();
 
         //@Override
-        CARAPI_(void) Cut();
+        CARAPI Cut();
 
         //@Override
-        CARAPI_(void) Copy();
+        CARAPI Copy();
 
         //@Override
-        CARAPI_(void) Paste();
+        CARAPI Paste();
 
         //@Override
-        CARAPI_(void) Share();
+        CARAPI Share();
 
         //@Override
-        CARAPI_(void) Search();
+        CARAPI Search();
 
         //@Override
-        CARAPI_(Boolean) IsSelectionPassword();
+        CARAPI IsSelectionPassword(
+            /* [out] */ Boolean* result);
 
         //@Override
-        CARAPI_(Boolean) IsSelectionEditable();
+        CARAPI IsSelectionEditable(
+            /* [out] */ Boolean* result);
 
         //@Override
-        CARAPI_(void) OnDestroyActionMode();
+        CARAPI OnDestroyActionMode();
 
         //@Override
-        CARAPI_(Boolean) IsShareAvailable();
+        CARAPI IsShareAvailable(
+            /* [out] */ Boolean* result);
 
         //@Override
-        CARAPI_(Boolean) IsWebSearchAvailable();
+        CARAPI IsWebSearchAvailable(
+            /* [out] */ Boolean* result);
 
     private:
         ContentViewCore* mOwner;
@@ -570,7 +618,7 @@ private:
 
         CARAPI OnChange(
             /* [in] */ Boolean selfChange,
-            /* [in] */ IUri* uri)
+            /* [in] */ IUri* uri);
 
     private:
         ContentViewCore* mOwner;
@@ -635,7 +683,7 @@ public:
 
     //@VisibleForTesting
     CARAPI_(void) SetAdapterInputConnectionFactory(
-        /* [in] */ AdapterInputConnectionFactory* factory);
+        /* [in] */ ImeAdapter::AdapterInputConnectionFactory* factory);
 
     //@VisibleForTesting
     CARAPI_(void) SetInputMethodManagerWrapperForTest(
@@ -661,11 +709,11 @@ public:
     // to set the private browsing mode at a later point for the WebView implementation.
     // Note that the caller remains the owner of the nativeWebContents and is responsible for
     // deleting it after destroying the ContentViewCore.
-    CARAPI_(void) Initialize(
-        /* [in] */ IViewGroup* containerView,
-        /* [in] */ InternalAccessDelegate* internalDispatcher,
-        /* [in] */ Int64 nativeWebContents,
-        /* [in] */ WindowAndroid* windowAndroid);
+//    CARAPI_(void) Initialize(
+//        /* [in] */ IViewGroup* containerView,
+//        /* [in] */ InternalAccessDelegate* internalDispatcher,
+//        /* [in] */ Int64 nativeWebContents,
+//        /* [in] */ WindowAndroid* windowAndroid);
 
     /**
      * Sets a new container view for this {@link ContentViewCore}.
@@ -854,7 +902,7 @@ public:
         /* [in] */ Int32 offset);
 
     //@Override
-    CARAPI_(void) GoToNavigationIndex(
+    CARAPI GoToNavigationIndex(
         /* [in] */ Int32 index);
 
     /**
@@ -1409,7 +1457,7 @@ public:
      *
      * @return the mapping of names to interface objects and corresponding annotation classes
      */
-    CARAPI_(Map<String, Pair<Object, Class>>) GetJavascriptInterfaces();
+//    CARAPI_(Map<String, Pair<Object, Class>>) GetJavascriptInterfaces();
 
     /**
      * This will mimic {@link #addPossiblyUnsafeJavascriptInterface(Object, String, Class)}
@@ -1493,7 +1541,7 @@ public:
     CARAPI_(Boolean) IsReady();
 
     //@Override
-    CARAPI_(void) OnAccessibilityStateChanged(
+    CARAPI OnAccessibilityStateChanged(
         /* [in] */ Boolean enabled);
 
     /**
@@ -1542,7 +1590,7 @@ public:
      * Lazily initializes native accessibility here if it's allowed.
      * @return The AccessibilityNodeProvider, if available, or null otherwise.
      */
-    CARAPI_(AutoPtr<AccessibilityNodeProvider>) GetAccessibilityNodeProvider();
+    CARAPI_(AutoPtr<IAccessibilityNodeProvider>) GetAccessibilityNodeProvider();
 
     /**
      * @see View#onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo)
@@ -1669,7 +1717,7 @@ public:
         /* [in] */ Boolean opaque);
 
     //@Override
-    CARAPI_(void) OnScreenOrientationChanged(
+    CARAPI OnScreenOrientationChanged(
         /* [in] */ Int32 orientation);
 
 public:
@@ -1936,11 +1984,11 @@ private:
      */
     CARAPI_(void) ResetScrollInProgress();
 
-    CARAPI_(Int64) NativeInit(
-        /* [in] */ Int64 webContentsPtr,
-        /* [in] */ Int64 viewAndroidPtr,
-        /* [in] */ Int64 windowAndroidPtr,
-        /* [in] */ HashSet<Object> retainedObjectSet);
+//    CARAPI_(Int64) NativeInit(
+//        /* [in] */ Int64 webContentsPtr,
+//        /* [in] */ Int64 viewAndroidPtr,
+//        /* [in] */ Int64 windowAndroidPtr,
+//        /* [in] */ HashSet<Object> retainedObjectSet);
 
     //@CalledByNative
     CARAPI_(AutoPtr<ContentVideoViewClient>) GetContentVideoViewClient();
@@ -2198,7 +2246,7 @@ private:
         /* [in] */ Int64 nativeContentViewCoreImpl,
         /* [in] */ IInterface* object,
         /* [in] */ String name,
-        /* [in] */ Class requiredAnnotation);
+        /* [in] */ IInterface* requiredAnnotation);
 
     CARAPI_(void) NativeRemoveJavascriptInterface(
         /* [in] */ Int64 nativeContentViewCoreImpl,
@@ -2285,8 +2333,8 @@ private:
     // and remove from it in removeJavaScriptInterface(). The annotation class is stored for
     // the purpose of migrating injected objects from one instance of CVC to another, which
     // is used by Android WebView to support WebChromeClient.onCreateWindow scenario.
-    const Map<String, Pair<Object, Class>> mJavaScriptInterfaces =
-            new HashMap<String, Pair<Object, Class>>();
+//    const Map<String, Pair<Object, Class>> mJavaScriptInterfaces =
+//            new HashMap<String, Pair<Object, Class>>();
 
     // Additionally, we keep track of all Java bound JS objects that are in use on the
     // current page to ensure that they are not garbage collected until the page is
@@ -2294,7 +2342,7 @@ private:
     // via the removeJavaScriptInterface API and transient objects returned from methods
     // on the interface object. Note we use HashSet rather than Set as the native side
     // expects HashSet (no bindings for interfaces).
-    const HashSet<Object> mRetainedJavaScriptObjects = new HashSet<Object>();
+//    const HashSet<Object> mRetainedJavaScriptObjects = new HashSet<Object>();
 
     const AutoPtr<IContext> mContext;
     AutoPtr<IViewGroup> mContainerView;
@@ -2309,8 +2357,8 @@ private:
     // Native pointer to C++ ContentViewCoreImpl object which will be set by nativeInit().
     Int64 mNativeContentViewCore;
 
-    const ObserverList<GestureStateListener> mGestureStateListeners;
-    const RewindableIterator<GestureStateListener> mGestureStateListenersIterator;
+//    const ObserverList<GestureStateListener> mGestureStateListeners;
+//    const RewindableIterator<GestureStateListener> mGestureStateListenersIterator;
     AutoPtr<ZoomControlsDelegate> mZoomControlsDelegate;
 
     AutoPtr<PopupZoomer> mPopupZoomer;
@@ -2342,18 +2390,18 @@ private:
     Int32 mViewportSizeOffsetHeightPix;
 
     // Cached copy of all positions and scales as reported by the renderer.
-    const AutoPtr<RenderCoordinates> mRenderCoordinates;
+    /*const*/ AutoPtr<RenderCoordinates> mRenderCoordinates;
 
-    const AutoPtr<RenderCoordinates::NormalizedPoint> mStartHandlePoint;
-    const AutoPtr<RenderCoordinates::NormalizedPoint> mEndHandlePoint;
-    const AutoPtr<RenderCoordinates::NormalizedPoint> mInsertionHandlePoint;
+    /*const*/ AutoPtr<RenderCoordinates::NormalizedPoint> mStartHandlePoint;
+    /*const*/ AutoPtr<RenderCoordinates::NormalizedPoint> mEndHandlePoint;
+    /*const*/ AutoPtr<RenderCoordinates::NormalizedPoint> mInsertionHandlePoint;
 
     // Tracks whether a selection is currently active.  When applied to selected text, indicates
     // whether the last selected text is still highlighted.
     Boolean mHasSelection;
     String mLastSelectedText;
     Boolean mSelectionEditable;
-    AutoPtr<ActionMode> mActionMode;
+    AutoPtr<IActionMode> mActionMode;
     Boolean mUnselectAllOnActionModeDismiss;
 
     // Delegate that will handle GET downloads, and be notified of completion of POST downloads.
@@ -2403,7 +2451,7 @@ private:
     // onNativeFlingStopped() is called asynchronously.
     Int32 mPotentiallyActiveFlingCount;
 
-    AutoPtr<ViewAndroid> mViewAndroid;
+//    AutoPtr<ViewAndroid> mViewAndroid;
 
     AutoPtr<SmartClipDataListener> mSmartClipDataListener;
 

@@ -2,7 +2,9 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIDEOVIEWCLIENT_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIDEOVIEWCLIENT_H__
 
-// import android.view.View;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::View::IView;
 
 namespace Elastos {
 namespace Droid {
@@ -21,7 +23,7 @@ namespace Browser {
  *  The implementer is responsible for displaying the Android view when
  *  {@link #onShowCustomView(View)} is called.
  */
-class ContentVideoViewClient
+class ContentVideoViewClient : public Object
 {
 public:
     /**

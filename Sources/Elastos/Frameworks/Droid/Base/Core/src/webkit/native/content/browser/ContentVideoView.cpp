@@ -1,4 +1,10 @@
 
+#include "webkit/native/content/browser/ContentVideoView.h"
+
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Droid::View::EIID_ISurfaceView;
+using Elastos::Droid::Widget::EIID_ILinearLayout;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -14,31 +20,36 @@ ContentVideoView::VideoSurfaceView::VideoSurfaceView(
     /* [in] */ IContext* context)
     : mOwner(owner)
 {
-    super(context);
+    assert(0);
+//    super(context);
 }
+
+CAR_INTERFACE_IMPL(ContentVideoView::VideoSurfaceView, Object, ISurfaceView);
 
 //@Override
 ECode ContentVideoView::VideoSurfaceView::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
+    assert(0);
+#if 0
     // set the default surface view size to (1, 1) so that it won't block
     // the infobar. (0, 0) is not a valid size for surface view.
     Int32 width = 1;
     Int32 height = 1;
-    if (mVideoWidth > 0 && mVideoHeight > 0) {
-        width = GetDefaultSize(mVideoWidth, widthMeasureSpec);
-        height = GetDefaultSize(mVideoHeight, heightMeasureSpec);
-        if (mVideoWidth * height  > width * mVideoHeight) {
-            height = width * mVideoHeight / mVideoWidth;
+    if (mOwner->mVideoWidth > 0 && mOwner->mVideoHeight > 0) {
+        width = GetDefaultSize(mOwner->mVideoWidth, widthMeasureSpec);
+        height = GetDefaultSize(mOwner->mVideoHeight, heightMeasureSpec);
+        if (mOwner->mVideoWidth * height  > width * mOwner->mVideoHeight) {
+            height = width * mOwner->mVideoHeight / mOwner->mVideoWidth;
         }
-        else if (mVideoWidth * height  < width * mVideoHeight) {
-            width = height * mVideoWidth / mVideoHeight;
+        else if (mOwner->mVideoWidth * height  < width * mOwner->mVideoHeight) {
+            width = height * mOwner->mVideoWidth / mOwner->mVideoHeight;
         }
     }
 
     SetMeasuredDimension(width, height);
-
+#endif
     return NOERROR;
 }
 
@@ -50,8 +61,10 @@ ContentVideoView::ProgressView::ProgressView(
     /* [in] */ IContext* context,
     /* [in] */ String videoLoadingText)
 {
+    assert(0);
+#if 0
     super(context);
-    SetOrientation(LinearLayout.VERTICAL);
+    SetOrientation(ILinearLayout::VERTICAL);
     AutoPtr<ILinearLayoutLayoutParams> params;
     CLinearLayoutLayoutParams::New(
             ILinearLayoutLayoutParams::WRAP_CONTENT,
@@ -64,7 +77,10 @@ ContentVideoView::ProgressView::ProgressView(
     mTextView->SetText(videoLoadingText);
     AddView(mProgressBar);
     AddView(mTextView);
+#endif
 }
+
+CAR_INTERFACE_IMPL(ContentVideoView::ProgressView, Object, ILinearLayout);
 
 //===============================================================
 //               ContentVideoView::InnerRunnable
@@ -75,6 +91,8 @@ ContentVideoView::InnerRunnable::InnerRunnable(
     : mOwner(owner)
 {
 }
+
+CAR_INTERFACE_IMPL(ContentVideoView::InnerRunnable, Runnable, IRunnable);
 
 ECode ContentVideoView::InnerRunnable::Run()
 {
@@ -123,6 +141,8 @@ ContentVideoView::ContentVideoView(
     , mDuration(0)
     , mCurrentState(0)
 {
+    assert(0);
+#if 0
     super(context);
     mExitFullscreenRunnable = new InnerRunnable(this);
     mNativeContentVideoView = nativeContentVideoView;
@@ -132,6 +152,7 @@ ContentVideoView::ContentVideoView(
     mVideoSurfaceView = new VideoSurfaceView(context);
     showContentVideoView();
     setVisibility(View.VISIBLE);
+#endif
 }
 
 AutoPtr<ContentVideoViewClient> ContentVideoView::GetContentVideoViewClient()
@@ -142,6 +163,8 @@ AutoPtr<ContentVideoViewClient> ContentVideoView::GetContentVideoViewClient()
 void ContentVideoView::InitResources(
     /* [in] */ IContext* context)
 {
+    assert(0);
+#if 0
     if (mPlaybackErrorText != null) return;
     mPlaybackErrorText = context.getString(
             org.chromium.content.R.string.media_player_error_text_invalid_progressive_playback);
@@ -153,10 +176,13 @@ void ContentVideoView::InitResources(
             org.chromium.content.R.string.media_player_error_title);
     mVideoLoadingText = context.getString(
             org.chromium.content.R.string.media_player_loading_video);
+#endif
 }
 
 void ContentVideoView::ShowContentVideoView()
 {
+    assert(0);
+#if 0
     mVideoSurfaceView.getHolder().addCallback(this);
     this.addView(mVideoSurfaceView, new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -171,6 +197,7 @@ void ContentVideoView::ShowContentVideoView()
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT,
             Gravity.CENTER));
+#endif
 }
 
 AutoPtr<ISurfaceView> ContentVideoView::GetSurfaceView()
@@ -182,6 +209,8 @@ AutoPtr<ISurfaceView> ContentVideoView::GetSurfaceView()
 void ContentVideoView::OnMediaPlayerError(
     /* [in] */ Int32 errorType)
 {
+    assert(0);
+#if 0
     Log.d(TAG, "OnMediaPlayerError: " + errorType);
     if (mCurrentState == STATE_ERROR || mCurrentState == STATE_PLAYBACK_COMPLETED) {
         return;
@@ -230,6 +259,7 @@ void ContentVideoView::OnMediaPlayerError(
             Log.e(TAG, "Cannot show the alert dialog, error message: " + message, e);
         }
     }
+#endif
 }
 
 //@CalledByNative
@@ -237,10 +267,13 @@ void ContentVideoView::OnVideoSizeChanged(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
+    assert(0);
+#if 0
     mVideoWidth = width;
     mVideoHeight = height;
     // This will trigger the SurfaceView.onMeasure() call.
     mVideoSurfaceView.getHolder().setFixedSize(mVideoWidth, mVideoHeight);
+#endif
 }
 
 //@CalledByNative
@@ -265,48 +298,56 @@ void ContentVideoView::OnUpdateMediaMetadata(
     /* [in] */ Boolean canSeekForward)
 {
     mDuration = duration;
-    mProgressView.setVisibility(View.GONE);
-    mCurrentState = isPlaying() ? STATE_PLAYING : STATE_PAUSED;
-    onVideoSizeChanged(videoWidth, videoHeight);
+    mProgressView->SetVisibility(IView::GONE);
+    mCurrentState = IsPlaying() ? STATE_PLAYING : STATE_PAUSED;
+    OnVideoSizeChanged(videoWidth, videoHeight);
 }
 
 //@Override
-void ContentVideoView::SurfaceChanged(
+ECode ContentVideoView::SurfaceChanged(
     /* [in] */ ISurfaceHolder* holder,
     /* [in] */ Int32 format,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
+    return NOERROR;
 }
 
 //@Override
-void ContentVideoView::SurfaceCreated(
+ECode ContentVideoView::SurfaceCreated(
     /* [in] */ ISurfaceHolder* holder)
 {
     mSurfaceHolder = holder;
-    openVideo();
+    OpenVideo();
+    return NOERROR;
 }
 
 //@Override
-void ContentVideoView::SurfaceDestroyed(
+ECode ContentVideoView::SurfaceDestroyed(
     /* [in] */ ISurfaceHolder* holder)
 {
     if (mNativeContentVideoView != 0) {
-        nativeSetSurface(mNativeContentVideoView, null);
+        NativeSetSurface(mNativeContentVideoView, NULL);
     }
-    mSurfaceHolder = null;
-    post(mExitFullscreenRunnable);
+
+    mSurfaceHolder = NULL;
+    assert(0);
+//    Post(mExitFullscreenRunnable);
+
+    return NOERROR;
 }
 
 //@CalledByNative
 void ContentVideoView::OpenVideo()
 {
-    if (mSurfaceHolder != null) {
+    if (mSurfaceHolder != NULL) {
         mCurrentState = STATE_IDLE;
         if (mNativeContentVideoView != 0) {
-            nativeRequestMediaMetadata(mNativeContentVideoView);
-            nativeSetSurface(mNativeContentVideoView,
-                    mSurfaceHolder.getSurface());
+            NativeRequestMediaMetadata(mNativeContentVideoView);
+            AutoPtr<ISurface> surface;
+            mSurfaceHolder->GetSurface((ISurface**)&surface);
+            NativeSetSurface(mNativeContentVideoView,
+                    surface);
         }
     }
 }
@@ -323,9 +364,9 @@ Boolean ContentVideoView::IsInPlaybackState()
 
 void ContentVideoView::Start()
 {
-    if (isInPlaybackState()) {
+    if (IsInPlaybackState()) {
         if (mNativeContentVideoView != 0) {
-            nativePlay(mNativeContentVideoView);
+            NativePlay(mNativeContentVideoView);
         }
         mCurrentState = STATE_PLAYING;
     }
@@ -333,10 +374,10 @@ void ContentVideoView::Start()
 
 void ContentVideoView::Pause()
 {
-    if (isInPlaybackState()) {
-        if (isPlaying()) {
+    if (IsInPlaybackState()) {
+        if (IsPlaying()) {
             if (mNativeContentVideoView != 0) {
-                nativePause(mNativeContentVideoView);
+                NativePause(mNativeContentVideoView);
             }
             mCurrentState = STATE_PAUSED;
         }
@@ -346,26 +387,31 @@ void ContentVideoView::Pause()
 // cache duration as mDuration for faster access
 Int32 ContentVideoView::GetDuration()
 {
-    if (isInPlaybackState()) {
+    if (IsInPlaybackState()) {
         if (mDuration > 0) {
             return mDuration;
         }
+
         if (mNativeContentVideoView != 0) {
-            mDuration = nativeGetDurationInMilliSeconds(mNativeContentVideoView);
-        } else {
+            mDuration = NativeGetDurationInMilliSeconds(mNativeContentVideoView);
+        }
+        else {
             mDuration = 0;
         }
+
         return mDuration;
     }
+
     mDuration = -1;
     return mDuration;
 }
 
 Int32 ContentVideoView::GetCurrentPosition()
 {
-    if (isInPlaybackState() && mNativeContentVideoView != 0) {
-        return nativeGetCurrentPosition(mNativeContentVideoView);
+    if (IsInPlaybackState() && mNativeContentVideoView != 0) {
+        return NativeGetCurrentPosition(mNativeContentVideoView);
     }
+
     return 0;
 }
 
@@ -373,13 +419,13 @@ void ContentVideoView::SeekTo(
     /* [in] */ Int32 msec)
 {
     if (mNativeContentVideoView != 0) {
-        nativeSeekTo(mNativeContentVideoView, msec);
+        NativeSeekTo(mNativeContentVideoView, msec);
     }
 }
 
 Boolean ContentVideoView::IsPlaying()
 {
-    return mNativeContentVideoView != 0 && nativeIsPlaying(mNativeContentVideoView);
+    return mNativeContentVideoView != 0 && NativeIsPlaying(mNativeContentVideoView);
 }
 
 //@CalledByNative
@@ -389,7 +435,9 @@ AutoPtr<ContentVideoView> ContentVideoView::CreateContentVideoView(
     /* [in] */ ContentVideoViewClient* client,
     /* [in] */ Boolean legacy)
 {
-    ThreadUtils.assertOnUiThread();
+    assert(0);
+#if 0
+    ThreadUtils::AssertOnUiThread();
     // The context needs be Activity to create the ContentVideoView correctly.
     if (!isActivityContext(context)) {
         Log.e(TAG, "Wrong type of context, can't create fullscreen video");
@@ -406,33 +454,41 @@ AutoPtr<ContentVideoView> ContentVideoView::CreateContentVideoView(
         return videoView;
     }
     return null;
+#endif
+    return NULL;
 }
 
 Boolean ContentVideoView::IsActivityContext(
     /* [in] */ IContext* context)
 {
+    assert(0);
+#if 0
     // Only retrieve the base context if the supplied context is a ContextWrapper but not
     // an Activity, given that Activity is already a subclass of ContextWrapper.
     if (context instanceof ContextWrapper && !(context instanceof Activity)) {
         context = ((ContextWrapper) context).getBaseContext();
     }
     return context instanceof Activity;
+#endif
+
+    return FALSE;
 }
 
 void ContentVideoView::RemoveSurfaceView()
 {
-    removeView(mVideoSurfaceView);
-    removeView(mProgressView);
-    mVideoSurfaceView = null;
-    mProgressView = null;
+    assert(0);
+//    RemoveView(mVideoSurfaceView);
+//    RemoveView(mProgressView);
+    mVideoSurfaceView = NULL;
+    mProgressView = NULL;
 }
 
 void ContentVideoView::ExitFullscreen(
     /* [in] */ Boolean relaseMediaPlayer)
 {
-    destroyContentVideoView(false);
+    DestroyContentVideoView(FALSE);
     if (mNativeContentVideoView != 0) {
-        nativeExitFullscreen(mNativeContentVideoView, relaseMediaPlayer);
+        NativeExitFullscreen(mNativeContentVideoView, relaseMediaPlayer);
         mNativeContentVideoView = 0;
     }
 }
@@ -440,7 +496,7 @@ void ContentVideoView::ExitFullscreen(
 //@CalledByNative
 void ContentVideoView::OnExitFullscreen()
 {
-    exitFullscreen(false);
+    ExitFullscreen(FALSE);
 }
 
 /**
@@ -451,13 +507,15 @@ void ContentVideoView::OnExitFullscreen()
 void ContentVideoView::DestroyContentVideoView(
     /* [in] */ Boolean nativeViewDestroyed)
 {
-    if (mVideoSurfaceView != null) {
-        removeSurfaceView();
-        setVisibility(View.GONE);
+    if (mVideoSurfaceView != NULL) {
+        RemoveSurfaceView();
+        assert(0);
+//        SetVisibility(IView::GONE);
 
         // To prevent re-entrance, call this after removeSurfaceView.
-        mClient.onDestroyContentVideoView();
+        mClient->OnDestroyContentVideoView();
     }
+
     if (nativeViewDestroyed) {
         mNativeContentVideoView = 0;
     }
@@ -465,51 +523,68 @@ void ContentVideoView::DestroyContentVideoView(
 
 AutoPtr<ContentVideoView> ContentVideoView::GetContentVideoView()
 {
-    return nativeGetSingletonJavaContentVideoView();
+    return NativeGetSingletonJavaContentVideoView();
 }
 
 //@Override
-Boolean ContentVideoView::OnKeyUp(
+ECode ContentVideoView::OnKeyUp(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
-    if (keyCode == KeyEvent.KEYCODE_BACK) {
-        exitFullscreen(false);
-        return true;
+    assert(0);
+#if 0
+    if (keyCode == IKeyEvent::KEYCODE_BACK) {
+        ExitFullscreen(FALSE);
+        return TRUE;
     }
     return super.onKeyUp(keyCode, event);
+#endif
+
+    return NOERROR;
 }
 
 //@Override
-AutoPtr<IView> ContentVideoView::AcquireAnchorView()
+ECode ContentVideoView::AcquireAnchorView(
+    /* [out] */ IView** view)
 {
+    assert(0);
+#if 0
     View anchorView = new View(getContext());
     addView(anchorView);
     return anchorView;
+#endif
+
+    return NOERROR;
 }
 
 //@Override
-void ContentVideoView::SetAnchorViewPosition(
+ECode ContentVideoView::SetAnchorViewPosition(
     /* [in] */ IView* view,
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float width,
     /* [in] */ Float height)
 {
-    Log.e(TAG, "setAnchorViewPosition isn't implemented");
+//    Log.e(TAG, "setAnchorViewPosition isn't implemented");
+    return NOERROR;
 }
 
 //@Override
-void ContentVideoView::ReleaseAnchorView(
+ECode ContentVideoView::ReleaseAnchorView(
     /* [in] */ IView* anchorView)
 {
-    removeView(anchorView);
+    assert(0);
+//    RemoveView(anchorView);
+    return NOERROR;
 }
 
 //@CalledByNative
 Int64 ContentVideoView::GetNativeViewAndroid()
 {
-    return mViewAndroid.getNativePointer();
+    assert(0);
+//    return mViewAndroid->GetNativePointer();
+    return -1;
 }
 
 AutoPtr<ContentVideoView> ContentVideoView::NativeGetSingletonJavaContentVideoView()

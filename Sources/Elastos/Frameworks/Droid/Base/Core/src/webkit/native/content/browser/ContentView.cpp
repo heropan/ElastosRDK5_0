@@ -1,4 +1,10 @@
 
+#include "webkit/native/content/browser/ContentView.h"
+#include "webkit/native/content/browser/JellyBeanContentView.h"
+#include "os/CBundle.h"
+
+using Elastos::Droid::Os::CBundle;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -22,6 +28,8 @@ void ContentView::InnerSmartClipDataListener::OnSmartClipDataExtracted(
     /* [in] */ String html,
     /* [in] */ IRect* clipRect)
 {
+    assert(0);
+#if 0
     AutoPtr<IBundle> bundle;
     CBundle::New((IBundle**)&bundle);
     bundle->PutString(String("url"), mContentViewCore->GetWebContents()->GetVisibleUrl());
@@ -39,6 +47,7 @@ void ContentView::InnerSmartClipDataListener::OnSmartClipDataExtracted(
     // } catch (Exception e) {
     //     Log.e(TAG, "Error calling handler for smart clip data: ", e);
     // }
+#endif
 }
 
 //===============================================================
@@ -51,6 +60,8 @@ ContentView::ContentView(
     /* [in] */ IContext* context,
     /* [in] */ ContentViewCore* cvc)
 {
+    assert(0);
+#if 0
     super(context, NULL, android::R::attr::webViewStyle);
 
     if (GetScrollBarStyle() == IView::SCROLLBARS_INSIDE_OVERLAY) {
@@ -62,6 +73,7 @@ ContentView::ContentView(
     SetFocusableInTouchMode(TRUE);
 
     mContentViewCore = cvc;
+#endif
 }
 
 /**
@@ -75,7 +87,7 @@ AutoPtr<ContentView> ContentView::NewInstance(
     /* [in] */ IContext* context,
     /* [in] */ ContentViewCore* cvc)
 {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+    if (Build::VERSION::SDK_INT < Build::VERSION_CODES::JELLY_BEAN) {
         return new ContentView(context, cvc);
     }
     else {
@@ -90,7 +102,9 @@ Boolean ContentView::DrawChild(
     /* [in] */ IView* child,
     /* [in] */ Int64 drawingTime)
 {
-    return super.drawChild(canvas, child, drawingTime);
+    assert(0);
+//    return super.drawChild(canvas, child, drawingTime);
+    return FALSE;
 }
 
 // Needed by ContentViewCore.InternalAccessDelegate
@@ -101,7 +115,8 @@ void ContentView::OnScrollChanged(
     /* [in] */ Int32 oldl,
     /* [in] */ Int32 oldt)
 {
-    super.onScrollChanged(l, t, oldl, oldt);
+    assert(0);
+//    super.onScrollChanged(l, t, oldl, oldt);
 }
 
 //@Override
@@ -111,10 +126,13 @@ void ContentView::OnSizeChanged(
     /* [in] */ Int32 ow,
     /* [in] */ Int32 oh)
 {
+    assert(0);
+#if 0
     TraceEvent::Begin();
     super.onSizeChanged(w, h, ow, oh);
     mContentViewCore->OnSizeChanged(w, h, ow, oh);
     TraceEvent::End();
+#endif
 }
 
 //@Override
@@ -136,18 +154,24 @@ void ContentView::OnFocusChanged(
     /* [in] */ Int32 direction,
     /* [in] */ IRect* previouslyFocusedRect)
 {
+    assert(0);
+#if 0
     TraceEvent::Begin();
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
     mContentViewCore->OnFocusChanged(gainFocus);
     TraceEvent::End();
+#endif
 }
 
 //@Override
 void ContentView::OnWindowFocusChanged(
     /* [in] */ Boolean hasWindowFocus)
 {
+    assert(0);
+#if 0
     super.onWindowFocusChanged(hasWindowFocus);
     mContentViewCore->OnWindowFocusChanged(hasWindowFocus);
+#endif
 }
 
 //@Override
@@ -169,12 +193,17 @@ Boolean ContentView::DispatchKeyEventPreIme(
 Boolean ContentView::DispatchKeyEvent(
     /* [in] */ IKeyEvent* event)
 {
+    assert(0);
+#if 0
     if (IsFocused()) {
         return mContentViewCore->DispatchKeyEvent(event);
     }
     else {
         return super.dispatchKeyEvent(event);
     }
+#endif
+
+    return FALSE;
 }
 
 //@Override
@@ -195,7 +224,8 @@ Boolean ContentView::OnHoverEvent(
 {
     Boolean consumed = mContentViewCore->OnHoverEvent(event);
     if (!mContentViewCore->IsTouchExplorationEnabled()) {
-        super.onHoverEvent(event);
+        assert(0);
+//        super.onHoverEvent(event);
     }
     return consumed;
 }
@@ -293,15 +323,18 @@ Boolean ContentView::AwakenScrollBars(
 //@Override
 Boolean ContentView::AwakenScrollBars()
 {
-    return super.awakenScrollBars();
+    assert(0);
+//    return super.awakenScrollBars();
+    return FALSE;
 }
 
 //@Override
 void ContentView::OnInitializeAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info)
 {
-    super.onInitializeAccessibilityNodeInfo(info);
-    mContentViewCore->OnInitializeAccessibilityNodeInfo(info);
+    assert(0);
+//    super.onInitializeAccessibilityNodeInfo(info);
+//    mContentViewCore->OnInitializeAccessibilityNodeInfo(info);
 }
 
 /**
@@ -312,22 +345,25 @@ void ContentView::OnInitializeAccessibilityNodeInfo(
 void ContentView::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
-    super.onInitializeAccessibilityEvent(event);
-    mContentViewCore->OnInitializeAccessibilityEvent(event);
+    assert(0);
+//    super.onInitializeAccessibilityEvent(event);
+//    mContentViewCore->OnInitializeAccessibilityEvent(event);
 }
 
 //@Override
 void ContentView::OnAttachedToWindow()
 {
-    super.onAttachedToWindow();
-    mContentViewCore->OnAttachedToWindow();
+    assert(0);
+//    super.onAttachedToWindow();
+//    mContentViewCore->OnAttachedToWindow();
 }
 
 //@Override
 void ContentView::OnDetachedFromWindow()
 {
-    super.onDetachedFromWindow();
-    mContentViewCore->OnDetachedFromWindow();
+    assert(0);
+//    super.onDetachedFromWindow();
+//    mContentViewCore->OnDetachedFromWindow();
 }
 
 //@Override
@@ -335,33 +371,37 @@ void ContentView::OnVisibilityChanged(
     /* [in] */ IView* changedView,
     /* [in] */ Int32 visibility)
 {
-    super.onVisibilityChanged(changedView, visibility);
-    mContentViewCore->OnVisibilityChanged(changedView, visibility);
+    assert(0);
+//    super.onVisibilityChanged(changedView, visibility);
+//    mContentViewCore->OnVisibilityChanged(changedView, visibility);
 }
 
 // Implements SmartClipProvider
 //@Override
-void ContentView::ExtractSmartClipData(
+ECode ContentView::ExtractSmartClipData(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
     mContentViewCore->ExtractSmartClipData(x, y, width, height);
+    return NOERROR;
 }
 
 // Implements SmartClipProvider
 //@Override
-void ContentView::SetSmartClipResultHandler(
+ECode ContentView::SetSmartClipResultHandler(
     /* [in] */ const IHandler* resultHandler)
 {
     if (resultHandler == NULL) {
         mContentViewCore->SetSmartClipDataListener(NULL);
-        return;
+        return NOERROR;
     }
 
     AutoPtr<ContentViewCore::SmartClipDataListener> listener = new InnerSmartClipDataListener(this, resultHandler);
     mContentViewCore->SetSmartClipDataListener(listener);
+
+    return NOERROR;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -373,35 +413,44 @@ Boolean ContentView::Super_onKeyUp(
     /* [in] */ Int32 keyCode,
     /* [in] */ IKeyEvent* event)
 {
-    return super.onKeyUp(keyCode, event);
+    assert(0);
+//    return super.onKeyUp(keyCode, event);
+    return FALSE;
 }
 
 //@Override
 Boolean ContentView::Super_dispatchKeyEventPreIme(
     /* [in] */ IKeyEvent* event)
 {
-    return super.dispatchKeyEventPreIme(event);
+    assert(0);
+//    return super.dispatchKeyEventPreIme(event);
+    return FALSE;
 }
 
 //@Override
 Boolean ContentView::Super_dispatchKeyEvent(
     /* [in] */ IKeyEvent* event)
 {
-    return super.dispatchKeyEvent(event);
+    assert(0);
+//    return super.dispatchKeyEvent(event);
+    return FALSE;
 }
 
 //@Override
 Boolean ContentView::Super_onGenericMotionEvent(
     /* [in] */ IMotionEvent* event)
 {
-    return super.onGenericMotionEvent(event);
+    assert(0);
+//    return super.onGenericMotionEvent(event);
+    return FALSE;
 }
 
 //@Override
 void ContentView::Super_onConfigurationChanged(
     /* [in] */ IConfiguration* newConfig)
 {
-    super.onConfigurationChanged(newConfig);
+    assert(0);
+//    super.onConfigurationChanged(newConfig);
 }
 
 //@Override
@@ -409,7 +458,9 @@ Boolean ContentView::Super_awakenScrollBars(
     /* [in] */ Int32 startDelay,
     /* [in] */ Boolean invalidate)
 {
-    return super.awakenScrollBars(startDelay, invalidate);
+    assert(0);
+//    return super.awakenScrollBars(startDelay, invalidate);
+    return FALSE;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////

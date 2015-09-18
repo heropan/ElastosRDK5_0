@@ -2,23 +2,29 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIDEOVIEW_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIDEOVIEW_H__
 
-// import android.app.Activity;
-// import android.app.AlertDialog;
-// import android.content.Context;
-// import android.content.ContextWrapper;
-// import android.content.DialogInterface;
+#include "ext/frameworkext.h"
+#include "webkit/native/content/browser/ContentVideoViewClient.h"
+#include "os/Runnable.h"
+
+using Elastos::Core::IRunnable;
+using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::App::IActivity;
+using Elastos::Droid::App::IAlertDialog;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IContextWrapper;
+using Elastos::Droid::Content::IDialogInterface;
 // import android.util.Log;
-// import android.view.Gravity;
-// import android.view.KeyEvent;
-// import android.view.Surface;
-// import android.view.SurfaceHolder;
-// import android.view.SurfaceView;
-// import android.view.View;
-// import android.view.ViewGroup;
-// import android.widget.FrameLayout;
-// import android.widget.LinearLayout;
-// import android.widget.ProgressBar;
-// import android.widget.TextView;
+using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::ISurface;
+using Elastos::Droid::View::ISurfaceHolder;
+using Elastos::Droid::View::ISurfaceView;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::Widget::IFrameLayout;
+using Elastos::Droid::Widget::ILinearLayout;
+using Elastos::Droid::Widget::IProgressBar;
+using Elastos::Droid::Widget::ITextView;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
@@ -37,19 +43,22 @@ namespace Browser {
  * This class implements accelerated fullscreen video playback using surface view.
  */
 //@JNINamespace("content")
-class ContentVideoView
-    : public FrameLayout
-    , public ISurfaceHolderCallback
-    , public ViewAndroidDelegate
+class ContentVideoView : public Object
+//    : public FrameLayout
+//    , public ISurfaceHolderCallback
+//    , public ViewAndroidDelegate
 {
 private:
     class VideoSurfaceView
-        : public ISurfaceView
+        : public Object
+        , public ISurfaceView
     {
     public:
         VideoSurfaceView(
             /* [in] */ ContentVideoView* owner,
             /* [in] */ IContext* context);
+
+        CAR_INTERFACE_DECL()
 
     protected:
         //@Override
@@ -62,25 +71,28 @@ private:
     };
 
     class ProgressView
-        : public ILinearLayout
+        : public Object
+        , public ILinearLayout
     {
     public:
         ProgressView(
             /* [in] */ IContext* context,
             /* [in] */ String videoLoadingText);
 
+        CAR_INTERFACE_DECL()
+
     private:
         const AutoPtr<IProgressBar> mProgressBar;
         const AutoPtr<ITextView> mTextView;
     };
 
-    class InnerRunnable
-        : public Object
-        , public IRunnable
+    class InnerRunnable : public Runnable
     {
     public:
         InnerRunnable(
             /* [in] */ ContentVideoView* owner);
+
+        CAR_INTERFACE_DECL()
 
         CARAPI Run();
 
@@ -90,7 +102,7 @@ private:
 
 public:
     //@CalledByNative
-    CARAPI_(void) OnMediaPlayerError(
+    virtual CARAPI_(void) OnMediaPlayerError(
         /* [in] */ Int32 errorType);
 
     //@Override
@@ -108,11 +120,11 @@ public:
     CARAPI SurfaceDestroyed(
         /* [in] */ ISurfaceHolder* holder);
 
-    CARAPI_(Boolean) IsPlaying();
+    virtual CARAPI_(Boolean) IsPlaying();
 
-    CARAPI_(void) RemoveSurfaceView();
+    virtual CARAPI_(void) RemoveSurfaceView();
 
-    CARAPI_(void) ExitFullscreen(
+    virtual CARAPI_(void) ExitFullscreen(
         /* [in] */ Boolean relaseMediaPlayer);
 
     static CARAPI_(AutoPtr<ContentVideoView>) GetContentVideoView();
@@ -145,18 +157,18 @@ protected:
         /* [in] */ Int64 nativeContentVideoView,
         /* [in] */ ContentVideoViewClient* client);
 
-    CARAPI_(AutoPtr<ContentVideoViewClient>) GetContentVideoViewClient();
+    virtual CARAPI_(AutoPtr<ContentVideoViewClient>) GetContentVideoViewClient();
 
-    CARAPI_(void) ShowContentVideoView();
+    virtual CARAPI_(void) ShowContentVideoView();
 
-    CARAPI_(AutoPtr<ISurfaceView>) GetSurfaceView();
+    virtual CARAPI_(AutoPtr<ISurfaceView>) GetSurfaceView();
 
     //@CalledByNative
-    CARAPI_(void) OnBufferingUpdate(
+    virtual CARAPI_(void) OnBufferingUpdate(
         /* [in] */ Int32 percent);
 
     //@CalledByNative
-    CARAPI_(void) OnUpdateMediaMetadata(
+    virtual CARAPI_(void) OnUpdateMediaMetadata(
         /* [in] */ Int32 videoWidth,
         /* [in] */ Int32 videoHeight,
         /* [in] */ Int32 duration,
@@ -166,22 +178,22 @@ protected:
 
 
     //@CalledByNative
-    CARAPI_(void) OpenVideo();
+    virtual CARAPI_(void) OpenVideo();
 
-    CARAPI_(void) OnCompletion();
+    virtual CARAPI_(void) OnCompletion();
 
-    CARAPI_(Boolean) IsInPlaybackState();
+    virtual CARAPI_(Boolean) IsInPlaybackState();
 
-    CARAPI_(void) Start();
+    virtual CARAPI_(void) Start();
 
-    CARAPI_(void) Pause();
+    virtual CARAPI_(void) Pause();
 
     // cache duration as mDuration for faster access
-    CARAPI_(Int32) GetDuration();
+    virtual CARAPI_(Int32) GetDuration();
 
-    CARAPI_(Int32) GetCurrentPosition();
+    virtual CARAPI_(Int32) GetCurrentPosition();
 
-    CARAPI_(void) SeekTo(
+    virtual CARAPI_(void) SeekTo(
         /* [in] */ Int32 msec);
 
     /**
@@ -189,7 +201,7 @@ protected:
      * To exit fullscreen, use exitFullscreen in Java.
      */
     //@CalledByNative
-    CARAPI_(void) DestroyContentVideoView(
+    virtual CARAPI_(void) DestroyContentVideoView(
         /* [in] */ Boolean nativeViewDestroyed);
 
 private:
@@ -258,6 +270,9 @@ private:
         /* [in] */ Int64 nativeContentVideoView,
         /* [in] */ ISurface* surface);
 
+protected:
+    static const Int32 MEDIA_ERROR_INVALID_CODE = 3;
+
 private:
     static const String TAG;
 
@@ -278,7 +293,6 @@ private:
      * MediaPlayerListener.java.
      */
     static const Int32 MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK = 2;
-    static const Int32 MEDIA_ERROR_INVALID_CODE = 3;
 
     // all possible internal states
     static const Int32 STATE_ERROR              = -1;
@@ -312,12 +326,12 @@ private:
     AutoPtr<IView> mProgressView;
 
     // The ViewAndroid is used to keep screen on during video playback.
-    AutoPtr<ViewAndroid> mViewAndroid;
+//    AutoPtr<ViewAndroid> mViewAndroid;
 
     const AutoPtr<ContentVideoViewClient> mClient;
 
     const AutoPtr<IRunnable> mExitFullscreenRunnable;
-}
+};
 
 } // namespace Browser
 } // namespace Content

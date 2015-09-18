@@ -2,18 +2,23 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_IMEADAPTER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_IMEADAPTER_H__
 
-// import android.os.Handler;
-// import android.os.ResultReceiver;
-// import android.os.SystemClock;
-// import android.text.Editable;
-// import android.text.SpannableString;
-// import android.text.style.BackgroundColorSpan;
-// import android.text.style.CharacterStyle;
-// import android.text.style.UnderlineSpan;
-// import android.view.KeyCharacterMap;
-// import android.view.KeyEvent;
-// import android.view.View;
-// import android.view.inputmethod.EditorInfo;
+#include "ext/frameworkext.h"
+
+#include "os/SystemClock.h"
+#include "webkit/native/content/browser/input/AdapterInputConnection.h"
+
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IResultReceiver;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Text::IEditable;
+using Elastos::Droid::Text::ISpannableString;
+using Elastos::Droid::Text::Style::IBackgroundColorSpan;
+using Elastos::Droid::Text::Style::ICharacterStyle;
+using Elastos::Droid::Text::Style::IUnderlineSpan;
+using Elastos::Droid::View::IKeyCharacterMap;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::InputMethod::IEditorInfo;
 
 // import com.google.common.annotations.VisibleForTesting;
 
@@ -87,7 +92,8 @@ public:
      */
     class AdapterInputConnectionFactory
     {
-        CARAPI_(AutoPtr<AdapterInputConnection>) Get(
+    public:
+        virtual CARAPI_(AutoPtr<AdapterInputConnection>) Get(
             /* [in] */ IView* view,
             /* [in] */ ImeAdapter* imeAdapter,
             /* [in] */ IEditable* editable,
@@ -96,8 +102,8 @@ public:
 
 private:
     class DelayedDismissInput
-        : public Object
-        , public IRunnable
+        //: public Object
+        : public IRunnable
     {
     public:
         DelayedDismissInput(

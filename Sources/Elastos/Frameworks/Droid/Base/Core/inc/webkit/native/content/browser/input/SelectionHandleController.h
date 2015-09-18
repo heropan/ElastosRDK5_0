@@ -2,7 +2,11 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTIONHANDLECONTROLLER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTIONHANDLECONTROLLER_H__
 
-// import android.view.View;
+#include "ext/frameworkext.h"
+#include "webkit/native/content/browser/input/CursorController.h"
+#include "webkit/native/content/browser/input/HandleView.h"
+
+using Elastos::Droid::View::IView;
 
 // import com.google.common.annotations.VisibleForTesting;
 
@@ -19,8 +23,8 @@ namespace Input {
  * CursorController for selecting a range of text.
  */
 class SelectionHandleController
-    : public Object
-    , public CursorController
+    //: public Object
+    : public CursorController
 {
 public:
     SelectionHandleController(
@@ -34,10 +38,11 @@ public:
     CARAPI_(void) HideAndDisallowAutomaticShowing();
 
     //@Override
-    CARAPI_(Boolean) IsShowing();
+    CARAPI IsShowing(
+        /* [out] */ Boolean* result);
 
     //@Override
-    CARAPI_(void) Hide();
+    CARAPI Hide();
 
     CARAPI_(void) CancelFadeOutAnimation();
 
@@ -49,13 +54,13 @@ public:
      * actual coordinates later via set[Start|End]HandlePosition.
      */
     //@Override
-    CARAPI_(void) UpdatePosition(
+    CARAPI UpdatePosition(
         /* [in] */ HandleView* handle,
         /* [in] */ Int32 x,
         /* [in] */ Int32 y);
 
     //@Override
-    CARAPI_(void) BeforeStartUpdatingPosition(
+    CARAPI BeforeStartUpdatingPosition(
         /* [in] */ HandleView* handle);
 
     /**
@@ -69,11 +74,11 @@ public:
     CARAPI_(Boolean) IsDragging();
 
     //@Override
-    CARAPI_(void) OnTouchModeChanged(
+    CARAPI OnTouchModeChanged(
         /* [in] */ Boolean isInTouchMode);
 
     //@Override
-    CARAPI_(void) OnDetached();
+    CARAPI OnDetached();
 
     /**
      * Moves the start handle so that it points at the given coordinates.

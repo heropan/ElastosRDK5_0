@@ -6,15 +6,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOCATIONPROVIDERFACTORY_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOCATIONPROVIDERFACTORY_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "location/CCriteria.h"
-#include "location/CLocation.h"
-#include "location/LocationManager.h"
-#include "os/CBundle.h"
-#include "webkit/native/base/ThreadUtils.h"
 
 // package org.chromium.content.browser;
 // import android.content.Context;
@@ -187,4 +179,3 @@ private:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOCATIONPROVIDERFACTORY_H_
-

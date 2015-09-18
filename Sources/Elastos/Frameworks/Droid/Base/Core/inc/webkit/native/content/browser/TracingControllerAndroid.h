@@ -6,21 +6,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_TRACINGCONTROLLERANDROID_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_TRACINGCONTROLLERANDROID_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/BroadcastReceiver.h"
-#include "content/Context.h"
-#include "content/Intent.h"
-#include "content/IntentFilter.h"
-#include "os/Environment.h"
-#include "text/TextUtils.h"
-#include "widget/Toast.h"
-#include "elastos/io/File.h"
-#include "elastos/text/SimpleDateFormat.h"
-#include "elastos/utility/Date.h"
-#include "elastos/utility/CLocale.h"
-#include "elastos/utility/TimeZone.h"
 
 // package org.chromium.content.browser;
 // import android.content.BroadcastReceiver;
@@ -259,4 +245,3 @@ private:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_TRACINGCONTROLLERANDROID_H_
-

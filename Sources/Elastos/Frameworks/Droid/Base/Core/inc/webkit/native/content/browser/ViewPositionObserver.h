@@ -6,17 +6,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_VIEWPOSITIONOBSERVER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_VIEWPOSITIONOBSERVER_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "view/View.h"
-#include "view/ViewTreeObserver.h"
-#include "elastos/utility/CArrayList.h"
-
-// package org.chromium.content.browser;
-// import android.view.View;
-// import android.view.ViewTreeObserver;
-// import java.util.ArrayList;
 
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewTreeObserver;
@@ -106,4 +96,3 @@ private:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_VIEWPOSITIONOBSERVER_H_
-

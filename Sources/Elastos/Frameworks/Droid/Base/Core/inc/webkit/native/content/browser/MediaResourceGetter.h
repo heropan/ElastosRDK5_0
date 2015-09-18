@@ -6,20 +6,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_MEDIARESOURCEGETTER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_MEDIARESOURCEGETTER_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "content/pm/PackageManager.h"
-#include "net/CConnectivityManager.h"
-#include "net/CNetworkInfo.h"
-#include "os/ParcelFileDescriptor.h"
-#include "text/TextUtils.h"
-#include "webkit/native/base/PathUtils.h"
-#include "elastos/io/File.h"
-#include "elastos/net/CURI.h"
-#include "elastos/utility/CArrayList.h"
-#include "elastos/utility/HashMap.h"
 
 // package org.chromium.content.browser;
 // import android.content.Context;
@@ -231,4 +218,3 @@ private:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_MEDIARESOURCEGETTER_H_
-

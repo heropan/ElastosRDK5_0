@@ -2,18 +2,25 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_ADAPTERINPUTCONNECTION_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_ADAPTERINPUTCONNECTION_H__
 
-// import android.os.SystemClock;
-// import android.text.Editable;
-// import android.text.InputType;
-// import android.text.Selection;
-// import android.text.TextUtils;
+#include "ext/frameworkext.h"
+
+#include "os/SystemClock.h"
+//#include "webkit/native/content/browser/input/ImeAdapter.h"
+#include "webkit/native/content/browser/input/InputMethodManagerWrapper.h"
+
+using Elastos::Core::ICharSequence;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Text::IEditable;
+using Elastos::Droid::Text::IInputType;
+using Elastos::Droid::Text::ISelection;
+using Elastos::Droid::Text::ITextUtils;
 // import android.util.Log;
-// import android.view.KeyEvent;
-// import android.view.View;
-// import android.view.inputmethod.BaseInputConnection;
-// import android.view.inputmethod.EditorInfo;
-// import android.view.inputmethod.ExtractedText;
-// import android.view.inputmethod.ExtractedTextRequest;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::InputMethod::IBaseInputConnection;
+using Elastos::Droid::View::InputMethod::IEditorInfo;
+using Elastos::Droid::View::InputMethod::IExtractedText;
+using Elastos::Droid::View::InputMethod::IExtractedTextRequest;
 
 // import com.google.common.annotations.VisibleForTesting;
 
@@ -24,12 +31,14 @@ namespace Content {
 namespace Browser {
 namespace Input {
 
+class ImeAdapter;
+
 /**
  * InputConnection is created by ContentView.onCreateInputConnection.
  * It then adapts android's IME to chrome's RenderWidgetHostView using the
  * native ImeAdapterAndroid via the class ImeAdapter.
  */
-class AdapterInputConnection : public BaseInputConnection
+class AdapterInputConnection : public IBaseInputConnection
 {
 public:
     //@VisibleForTesting
@@ -96,87 +105,99 @@ public:
      * @return Editable object which contains the state of current focused editable element.
      */
     //@Override
-    CARAPI_(AutoPtr<IEditable>) GetEditable();
+    CARAPI GetEditable(
+        /* [out] */ IEditable** editable);
 
     /**
      * @see BaseInputConnection#setComposingText(java.lang.CharSequence, int)
      */
     //@Override
-    CARAPI_(Boolean) SetComposingText(
+    CARAPI SetComposingText(
         /* [in] */ ICharSequence* text,
-        /* [in] */ Int32 newCursorPosition);
+        /* [in] */ Int32 newCursorPosition,
+        /* [out] */ Boolean* result);
 
     /**
      * @see BaseInputConnection#commitText(java.lang.CharSequence, int)
      */
     //@Override
-    CARAPI_(Boolean) CommitText(
+    CARAPI CommitText(
         /* [in] */ ICharSequence* text,
-        /* [in] */ Int32 newCursorPosition);
+        /* [in] */ Int32 newCursorPosition,
+        /* [out] */ Boolean* result);
 
     /**
      * @see BaseInputConnection#performEditorAction(int)
      */
     //@Override
-    CARAPI_(Boolean) PerformEditorAction(
-        /* [in] */ Int32 actionCode);
+    CARAPI PerformEditorAction(
+        /* [in] */ Int32 actionCode,
+        /* [out] */ Boolean* result);
 
     /**
      * @see BaseInputConnection#performContextMenuAction(int)
      */
     //@Override
-    CARAPI_(Boolean) PerformContextMenuAction(
-        /* [in] */ Int32 id);
+    CARAPI PerformContextMenuAction(
+        /* [in] */ Int32 id,
+        /* [out] */ Boolean* result);
 
     /**
      * @see BaseInputConnection#getExtractedText(android.view.inputmethod.ExtractedTextRequest,
      *                                           int)
      */
     //@Override
-    CARAPI_(AutoPtr<IExtractedText>) GetExtractedText(
+    CARAPI GetExtractedText(
         /* [in] */ IExtractedTextRequest* request,
-        /* [in] */ Int32 flags);
+        /* [in] */ Int32 flags,
+        /* [out] */ IExtractedText** text);
 
     /**
      * @see BaseInputConnection#beginBatchEdit()
      */
     //@Override
-    CARAPI_(Boolean) BeginBatchEdit();
+    CARAPI BeginBatchEdit(
+        /* [out] */ Boolean* result);
 
     /**
      * @see BaseInputConnection#endBatchEdit()
      */
     //@Override
-    CARAPI_(Boolean) EndBatchEdit();
+    CARAPI EndBatchEdit(
+        /* [out] */ Boolean* result);
 
     /**
      * @see BaseInputConnection#deleteSurroundingText(int, int)
      */
     //@Override
-    CARAPI_(Boolean) DeleteSurroundingText(
+    CARAPI DeleteSurroundingText(
         /* [in] */ Int32 beforeLength,
-        /* [in] */ Int32 afterLength);
+        /* [in] */ Int32 afterLength,
+        /* [out] */ Boolean* result);
 
     /**
      * @see BaseInputConnection#sendKeyEvent(android.view.KeyEvent)
      */
     //@Override
-    CARAPI_(Boolean) SendKeyEvent(
-        /* [in] */ IKeyEvent* event);
+    CARAPI SendKeyEvent(
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
     /**
      * @see BaseInputConnection#finishComposingText()
      */
     //@Override
-    CARAPI_(Boolean) FinishComposingText();
+    CARAPI FinishComposingText(
+        /* [out] */ Boolean* result);
 
     /**
      * @see BaseInputConnection#setSelection(int, int)
      */
     //@Override
-    CARAPI_(Boolean) SetSelection(
+    CARAPI SetSelection(
         /* [in] */ Int32 start,
-        /* [in] */ Int32 end);
+        /* [in] */ Int32 end,
+        /* [out] */ Boolean* result);
 
     /**
      * Informs the InputMethodManager and InputMethodSession (i.e. the IME) that the text
@@ -188,9 +209,10 @@ public:
      * @see BaseInputConnection#setComposingRegion(int, int)
      */
     //@Override
-    CARAPI_(Boolean) SetComposingRegion(
+    CARAPI SetComposingRegion(
         /* [in] */ Int32 start,
-        /* [in] */ Int32 end);
+        /* [in] */ Int32 end,
+        /* [out] */ Boolean* result);
 
     CARAPI_(Boolean) IsActive();
 

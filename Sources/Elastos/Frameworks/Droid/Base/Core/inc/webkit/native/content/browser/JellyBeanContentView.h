@@ -6,17 +6,9 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_JELLYBEANCONTENTVIEW_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_JELLYBEANCONTENTVIEW_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
-#include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "os/CBundle.h"
-#include "view/accessibility/AccessibilityNodeProvider.h"
+#include "webkit/native/content/browser/ContentView.h"
 
-// package org.chromium.content.browser;
-// import android.content.Context;
-// import android.os.Bundle;
-// import android.view.accessibility.AccessibilityNodeProvider;
+#include "ext/frameworkext.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IBundle;
@@ -27,6 +19,8 @@ namespace Droid {
 namespace Webkit {
 namespace Content {
 namespace Browser {
+
+class ContentViewCore;
 
 /**
   * A version of {@link ContentView} that supports JellyBean features.
@@ -56,4 +50,3 @@ public:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_JELLYBEANCONTENTVIEW_H_
-

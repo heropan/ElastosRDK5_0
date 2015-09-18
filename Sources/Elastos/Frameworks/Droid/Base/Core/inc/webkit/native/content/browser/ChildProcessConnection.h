@@ -2,7 +2,9 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CHILDPROCESSCONNECTION_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CHILDPROCESSCONNECTION_H__
 
-// import android.os.Bundle;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::Os::IBundle;
 
 // import org.chromium.content.common.IChildProcessCallback;
 // import org.chromium.content.common.IChildProcessService;
@@ -19,7 +21,7 @@ namespace Browser {
  * bindings held onto the service (addStrongBinding(), removeStrongBinding(),
  * removeInitialBinding()).
  */
-class ChildProcessConnection
+class ChildProcessConnection : public ElRefBase
 {
 public:
     /**
@@ -27,7 +29,7 @@ public:
      * earlier than ConnectionCallbacks below, as a child process might die before the connection is
      * fully set up.
      */
-    class DeathCallback
+    class DeathCallback : public Object
     {
     public:
         virtual CARAPI_(void) OnChildProcessDied(
@@ -37,7 +39,7 @@ public:
     /**
      * Used to notify the consumer about the connection being established.
      */
-    class ConnectionCallback
+    class ConnectionCallback : public Object
     {
     public:
         /**
@@ -69,7 +71,7 @@ public:
 
     virtual CARAPI_(Boolean) IsInSandbox() = 0;
 
-    virtual CARAPI_(AutoPtr<IChildProcessService>) GetService() = 0;
+//    virtual CARAPI_(AutoPtr<IChildProcessService>) GetService() = 0;
 
     /**
      * @return the connection pid, or 0 if not yet connected
@@ -95,12 +97,12 @@ public:
      * @param connectionCallback will be called exactly once after the connection is set up or the
      *                           setup fails
      */
-    virtual CARAPI_(void) SetupConnection(
-        /* [in] */ ArrayOf<String>* commandLine,
-        /* [in] */ ArrayOf<FileDescriptorInfo>* filesToBeMapped,
-        /* [in] */ IChildProcessCallback* processCallback,
-        /* [in] */ ConnectionCallback* connectionCallback,
-        /* [in] */ IBundle* sharedRelros) = 0;
+    // virtual CARAPI_(void) SetupConnection(
+    //     /* [in] */ ArrayOf<String>* commandLine,
+    //     /* [in] */ ArrayOf<FileDescriptorInfo>* filesToBeMapped,
+    //     /* [in] */ IChildProcessCallback* processCallback,
+    //     /* [in] */ ConnectionCallback* connectionCallback,
+    //     /* [in] */ IBundle* sharedRelros) = 0;
 
     /**
      * Terminates the connection to IChildProcessService, closing all bindings. It is safe to call

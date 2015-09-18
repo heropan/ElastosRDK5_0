@@ -1,4 +1,37 @@
 
+#include "webkit/native/content/browser/ContentViewCore.h"
+#include "webkit/native/content/common/ContentSwitches.h"
+#include "webkit/native/base/CommandLine.h"
+//TODO #include "content/CIntent.h"
+//TODO #include "content/CIntentHelper.h"
+#include "os/CHandler.h"
+#include "text/TextUtils.h"
+//TODO #include "text/CEditableFactory.h"
+//TODO #include "text/CSelection.h"
+//TODO #include "widget/CView.h"
+
+#include <elastos/core/StringUtils.h>
+
+using Elastos::Core::StringUtils;
+using Elastos::Core::CStringWrapper;
+using Elastos::Utility::IList;
+using Elastos::Droid::App::EIID_IActivity;
+using Elastos::Droid::App::ISearchManager;
+//TODO using Elastos::Droid::Content::CIntent;
+//TODO using Elastos::Droid::Content::CIntentHelper;
+using Elastos::Droid::Content::IIntentHelper;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Text::TextUtils;
+//TODO using Elastos::Droid::Text::CSelection;
+using Elastos::Droid::Text::ISelection;
+//TODO using Elastos::Droid::Text::CEditableFactory;
+using Elastos::Droid::Text::IEditableFactory;
+//TODO using Elastos::Droid::Widget::CView;
+using Elastos::Droid::Utility::IDisplayMetrics;
+
+using Elastos::Droid::Webkit::Content::Common::ContentSwitches;
+using Elastos::Droid::Webkit::Base::CommandLine;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -19,27 +52,34 @@ ContentViewCore::InnerViewAndroidDelegate::InnerViewAndroidDelegate(
 //@Override
 AutoPtr<IView> ContentViewCore::InnerViewAndroidDelegate::AcquireAnchorView()
 {
+    assert(0);
+#if 0
     AutoPtr<IView> anchorView;
     CView::New(mOwner->mContext, (IView**)&anchorView);
     mContainerViewAtCreation->AddView(anchorView);
     return anchorView;
+#endif
+
+    return NULL;
 }
 
 //@Override
 //@SuppressWarnings("deprecation")  // AbsoluteLayout
-void ContentViewCore::InnerViewAndroidDelegate::SetAnchorViewPosition(
+ECode ContentViewCore::InnerViewAndroidDelegate::SetAnchorViewPosition(
     /* [in] */ IView* view,
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float width,
     /* [in] */ Float height)
 {
+    assert(0);
+#if 0
     AutoPtr<IViewParent> viewParent;
     view->GetParent((IViewParent**)&viewParent);
     if (viewParent == NULL) {
         // Ignore. setAnchorViewPosition has been called after the anchor view has
         // already been released.
-        return;
+        return NOERROR;
     }
     assert(viewParent == mContainerViewAtCreation);
 
@@ -90,13 +130,17 @@ void ContentViewCore::InnerViewAndroidDelegate::SetAnchorViewPosition(
     else {
 //        Log.e(TAG, "Unknown layout " + mContainerViewAtCreation.getClass().getName());
     }
+#endif
+    return NOERROR;
 }
 
 //@Override
-void ContentViewCore::InnerViewAndroidDelegate::ReleaseAnchorView(
+ECode ContentViewCore::InnerViewAndroidDelegate::ReleaseAnchorView(
     /* [in] */ IView* anchorView)
 {
-    mContainerViewAtCreation->RemoveView(anchorView);
+    assert(0);
+//    mContainerViewAtCreation->RemoveView(anchorView);
+    return NOERROR;
 }
 
 //===============================================================
@@ -113,22 +157,22 @@ ContentViewCore::InnerImeAdapterDelegate::InnerImeAdapterDelegate(
 void ContentViewCore::InnerImeAdapterDelegate::OnImeEvent(
     /* [in] */ Boolean isFinish)
 {
-    GetContentViewClient()->OnImeEvent();
+    mOwner->GetContentViewClient()->OnImeEvent();
     if (!isFinish) {
-        HideHandles();
+        mOwner->HideHandles();
     }
 }
 
 //@Override
 void ContentViewCore::InnerImeAdapterDelegate::OnDismissInput()
 {
-    GetContentViewClient()->OnImeStateChangeRequested(FALSE);
+    mOwner->GetContentViewClient()->OnImeStateChangeRequested(FALSE);
 }
 
 //@Override
 AutoPtr<IView> ContentViewCore::InnerImeAdapterDelegate::GetAttachedView()
 {
-    return mContainerView;
+    return mOwner->mContainerView;
 }
 
 //@Override
@@ -136,7 +180,8 @@ AutoPtr<IResultReceiver> ContentViewCore::InnerImeAdapterDelegate::GetNewShowKey
 {
     AutoPtr<IHandler> handler;
     CHandler::New((IHandler**)&handler);
-    AutoPtr<IResultReceiver> receiver = new InnerResultReceiver(this, handler);
+    assert(0);
+    AutoPtr<IResultReceiver> receiver;// = new InnerResultReceiver(this, handler);
     return receiver;
 }
 
@@ -154,22 +199,23 @@ ECode ContentViewCore::InnerImeAdapterDelegate::InnerResultReceiver::OnReceiveRe
     /* [in] */ Int32 resultCode,
     /* [in] */ IBundle* resultData)
 {
-    GetContentViewClient()->OnImeStateChangeRequested(
-            resultCode == InputMethodManager::RESULT_SHOWN ||
-            resultCode == InputMethodManager::RESULT_UNCHANGED_SHOWN);
-    if (resultCode == InputMethodManager::RESULT_SHOWN) {
+    mOwner->mOwner->GetContentViewClient()->OnImeStateChangeRequested(
+            resultCode == IInputMethodManager::RESULT_SHOWN ||
+            resultCode == IInputMethodManager::RESULT_UNCHANGED_SHOWN);
+    if (resultCode == IInputMethodManager::RESULT_SHOWN) {
         // If OSK is newly shown, delay the form focus until
         // the onSizeChanged (in order to adjust relative to the
         // new size).
         // TODO(jdduke): We should not assume that onSizeChanged will
         // always be called, crbug.com/294908.
-        GetContainerView()->GetWindowVisibleDisplayFrame(
-                mFocusPreOSKViewportRect);
+        assert(0);
+//        mOwner->mOwner->GetContainerView()->GetWindowVisibleDisplayFrame(
+//                mFocusPreOSKViewportRect);
     }
-    else if (HasFocus() && resultCode ==
-            InputMethodManager::RESULT_UNCHANGED_SHOWN) {
+    else if (mOwner->mOwner->HasFocus() && resultCode ==
+            IInputMethodManager::RESULT_UNCHANGED_SHOWN) {
         // If the OSK was already there, focus the form immediately.
-        ScrollFocusedEditableNodeIntoView();
+        mOwner->mOwner->ScrollFocusedEditableNodeIntoView();
     }
 
     return NOERROR;
@@ -185,13 +231,15 @@ ContentViewCore::InnerListener::InnerListener(
 {
 }
 
-void ContentViewCore::InnerListener::OnPositionChanged(
+ECode ContentViewCore::InnerListener::OnPositionChanged(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
-    if (IsSelectionHandleShowing() || IsInsertionHandleShowing()) {
-        TemporarilyHideTextHandles();
+    if (mOwner->IsSelectionHandleShowing() || mOwner->IsInsertionHandleShowing()) {
+        mOwner->TemporarilyHideTextHandles();
     }
+
+    return NOERROR;
 }
 
 //===============================================================
@@ -225,34 +273,39 @@ void ContentViewCore::InnerZoomControlsDelegate::UpdateZoomControls()
 
 ContentViewCore::InnerWebContentsObserverAndroid::InnerWebContentsObserverAndroid(
     /* [in] */ ContentViewCore* owner)
-    : mOwner(owner)
+    : WebContentsObserverAndroid(owner)
+    , mOwner(owner)
 {
 }
 
 //@Override
-void ContentViewCore::InnerWebContentsObserverAndroid::DidNavigateMainFrame(
+ECode ContentViewCore::InnerWebContentsObserverAndroid::DidNavigateMainFrame(
     /* [in] */ String url,
     /* [in] */ String baseUrl,
     /* [in] */ Boolean isNavigationToDifferentPage,
     /* [in] */ Boolean isFragmentNavigation)
 {
     if (!isNavigationToDifferentPage) {
-        return;
+        return NOERROR;
     }
 
-    HidePopups();
-    ResetScrollInProgress();
-    ResetGestureDetection();
+    mOwner->HidePopups();
+    mOwner->ResetScrollInProgress();
+    mOwner->ResetGestureDetection();
+
+    return NOERROR;
 }
 
 //@Override
-void ContentViewCore::InnerWebContentsObserverAndroid::RenderProcessGone(
+ECode ContentViewCore::InnerWebContentsObserverAndroid::RenderProcessGone(
     /* [in] */ Boolean wasOomProtected)
 {
-    HidePopups();
-    ResetScrollInProgress();
+    mOwner->HidePopups();
+    mOwner->ResetScrollInProgress();
     // No need to reset gesture detection as the detector will have
     // been destroyed in the RenderWidgetHostView.
+
+    return NOERROR;
 }
 
 //===============================================================
@@ -269,16 +322,18 @@ ContentViewCore::InnerOnVisibilityChangedListener::InnerOnVisibilityChangedListe
 void ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerShown(
     /* [in] */ const PopupZoomer* zoomer)
 {
-    AutoPtr<IRunnable> runnable = new OnPopupZoomerShownRunnable(this, zoomer);
-    mContainerViewAtCreation->Post(runnable);
+    assert(0);
+//    AutoPtr<IRunnable> runnable = new OnPopupZoomerShownRunnable(this, zoomer);
+//    mContainerViewAtCreation->Post(runnable);
 }
 
 //@Override
 void ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerHidden(
     /* [in] */ const PopupZoomer* zoomer)
 {
-    AutoPtr<IRunnable> runnable = new OnPopupZoomerHiddenRunnable(this, zoomer);
-    mContainerViewAtCreation->Post(runnable);
+    assert(0);
+//    AutoPtr<IRunnable> runnable = new OnPopupZoomerHiddenRunnable(this, zoomer);
+//    mContainerViewAtCreation->Post(runnable);
 }
 
 //===========================================================================================
@@ -295,12 +350,16 @@ ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerShownRunnable::O
 
 ECode ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerShownRunnable::Run()
 {
+    assert(0);
+#if 0
     if (mContainerViewAtCreation->IndexOfChild(mZoomer) == -1) {
         mContainerViewAtCreation->AddView(mZoomer);
     }
     else {
-        assert false : "PopupZoomer should never be shown without being hidden";
+        assert(0);
+//        assert false : "PopupZoomer should never be shown without being hidden";
     }
+#endif
 
     return NOERROR;
 }
@@ -319,13 +378,17 @@ ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerHiddenRunnable::
 
 ECode ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerHiddenRunnable::Run()
 {
+    assert(0);
+#if 0
     if (mContainerViewAtCreation->IndexOfChild(zoomer) != -1) {
         mContainerViewAtCreation->RemoveView(zoomer);
         mContainerViewAtCreation->Invalidate();
     }
     else {
-        assert false : "PopupZoomer should never be hidden without being shown";
+        assert(0);
+//        assert false : "PopupZoomer should never be hidden without being shown";
     }
+#endif
 
     return NOERROR;
 }
@@ -347,15 +410,18 @@ Boolean ContentViewCore::InnerOnTapListener::OnSingleTap(
     /* [in] */ IView* v,
     /* [in] */ IMotionEvent* e)
 {
+    assert(0);
+#if 0
     mContainerViewAtCreation->RequestFocus();
-    if (mNativeContentViewCore != 0) {
+    if (mOwner->mNativeContentViewCore != 0) {
         Int64 time;
-        Int32 x, y;
+        Float x, y;
         e->GetEventTime(&time);
         e->GetX(&x);
         e->GetY(&y);
-        NativeSingleTap(mNativeContentViewCore, time, x, y);
+        if (mOwner->NativeSingleTap(mNativeContentViewCore, time, x, y);
     }
+#endif
 
     return TRUE;
 }
@@ -365,14 +431,17 @@ Boolean ContentViewCore::InnerOnTapListener::OnLongPress(
     /* [in] */ IView* v,
     /* [in] */ IMotionEvent* e)
 {
-    if (mNativeContentViewCore != 0) {
+    assert(0);
+#if 0
+    if (mOwner->mNativeContentViewCore != 0) {
         Int64 time;
         Int32 x, y;
         e->GetEventTime(&time);
         e->GetX(&x);
         e->GetY(&y);
-        NativeLongPress(mNativeContentViewCore, time, x, y);
+        mOwner->NativeLongPress(mOwner->mNativeContentViewCore, time, x, y);
     }
+#endif
 
     return TRUE;
 }
@@ -391,8 +460,9 @@ ContentViewCore::FakeMouseMoveRunnable::FakeMouseMoveRunnable(
 
 ECode ContentViewCore::FakeMouseMoveRunnable::Run()
 {
-    mOwner->OnHoverEvent(eventFakeMouseMove);
-    mEventFakeMouseMove->Recycle();
+    mOwner->OnHoverEvent(mEventFakeMouseMove);
+    assert(0);
+//    mEventFakeMouseMove->Recycle();
     return NOERROR;
 }
 
@@ -401,8 +471,11 @@ ECode ContentViewCore::FakeMouseMoveRunnable::Run()
 //===============================================================
 
 ContentViewCore::InnerSelectionHandleController::InnerSelectionHandleController(
-    /* [in] */ ContentViewCore* owner)
-    : mOwner(owner)
+    /* [in] */ ContentViewCore* owner,
+    /* [in] */ IView* parent,
+    /* [in] */ PositionObserver* positionObserver)
+    : SelectionHandleController(parent, positionObserver)
+    , mOwner(owner)
 {
 }
 
@@ -413,10 +486,10 @@ void ContentViewCore::InnerSelectionHandleController::SelectBetweenCoordinates(
     /* [in] */ Int32 x2,
     /* [in] */ Int32 y2)
 {
-    if (mNativeContentViewCore != 0 && !(x1 == x2 && y1 == y2)) {
-        NativeSelectBetweenCoordinates(mNativeContentViewCore,
-                x1, y1 - mRenderCoordinates->GetContentOffsetYPix(),
-                x2, y2 - mRenderCoordinates->GetContentOffsetYPix());
+    if (mOwner->mNativeContentViewCore != 0 && !(x1 == x2 && y1 == y2)) {
+        mOwner->NativeSelectBetweenCoordinates(mOwner->mNativeContentViewCore,
+                x1, y1 - mOwner->mRenderCoordinates->GetContentOffsetYPix(),
+                x2, y2 - mOwner->mRenderCoordinates->GetContentOffsetYPix());
     }
 }
 
@@ -425,10 +498,11 @@ void ContentViewCore::InnerSelectionHandleController::ShowHandles(
     /* [in] */ Int32 startDir,
     /* [in] */ Int32 endDir)
 {
-    const Boolean wasShowing = IsShowing();
-    super.showHandles(startDir, endDir);
-    if (!wasShowing || mActionMode == NULL) {
-        ShowSelectActionBar();
+    Boolean wasShowing;
+    IsShowing(&wasShowing);
+    SelectionHandleController::ShowHandles(startDir, endDir);
+    if (!wasShowing || mOwner->mActionMode == NULL) {
+        mOwner->ShowSelectActionBar();
     }
 }
 
@@ -439,8 +513,11 @@ void ContentViewCore::InnerSelectionHandleController::ShowHandles(
 const Int32 ContentViewCore::InnerInsertionHandleController::AVERAGE_LINE_HEIGHT;
 
 ContentViewCore::InnerInsertionHandleController::InnerInsertionHandleController(
-    /* [in] */ ContentViewCore* owner)
-    : mOwner(owner)
+    /* [in] */ ContentViewCore* owner,
+    /* [in] */ IView* parent,
+    /* [in] */ PositionObserver* positionObserver)
+    : InsertionHandleController(parent, positionObserver)
+    , mOwner(owner)
 {
 }
 
@@ -449,30 +526,32 @@ void ContentViewCore::InnerInsertionHandleController::SetCursorPosition(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
-    if (mNativeContentViewCore != 0) {
-        NativeMoveCaret(mNativeContentViewCore,
-                x, y - mRenderCoordinates->GetContentOffsetYPix());
+    if (mOwner->mNativeContentViewCore != 0) {
+        mOwner->NativeMoveCaret(mOwner->mNativeContentViewCore,
+                x, y - mOwner->mRenderCoordinates->GetContentOffsetYPix());
     }
 }
 
 //@Override
 void ContentViewCore::InnerInsertionHandleController::Paste()
 {
-    mImeAdapter->Paste();
-    HideHandles();
+    mOwner->mImeAdapter->Paste();
+    mOwner->HideHandles();
 }
 
 //@Override
 Int32 ContentViewCore::InnerInsertionHandleController::GetLineHeight()
 {
-    return (Int32) Math::Ceil(
-        mRenderCoordinates->FromLocalCssToPix(AVERAGE_LINE_HEIGHT));
+    assert(0);
+//    return (Int32) Math::Ceil(
+//        mRenderCoordinates->FromLocalCssToPix(AVERAGE_LINE_HEIGHT));
+    return 0;
 }
 
 //@Override
 void ContentViewCore::InnerInsertionHandleController::ShowHandle()
 {
-    super.showHandle();
+    InsertionHandleController::ShowHandle();
 }
 
 //===============================================================
@@ -486,118 +565,143 @@ ContentViewCore::InnerActionHandler::InnerActionHandler(
 }
 
 //@Override
-void ContentViewCore::InnerActionHandler::SelectAll()
+ECode ContentViewCore::InnerActionHandler::SelectAll()
 {
-    mImeAdapter->SelectAll();
+    mOwner->mImeAdapter->SelectAll();
+    return NOERROR;
 }
 
 //@Override
-void ContentViewCore::InnerActionHandler::Cut()
+ECode ContentViewCore::InnerActionHandler::Cut()
 {
-    mImeAdapter->Cut();
+    mOwner->mImeAdapter->Cut();
+    return NOERROR;
 }
 
 //@Override
-void ContentViewCore::InnerActionHandler::Copy()
+ECode ContentViewCore::InnerActionHandler::Copy()
 {
-    mImeAdapter->Copy();
+    mOwner->mImeAdapter->Copy();
+    return NOERROR;
 }
 
 //@Override
-void ContentViewCore::InnerActionHandler::Paste()
+ECode ContentViewCore::InnerActionHandler::Paste()
 {
-    mImeAdapter->Paste();
+    mOwner->mImeAdapter->Paste();
+    return NOERROR;
 }
 
 //@Override
-void ContentViewCore::InnerActionHandler::Share()
+ECode ContentViewCore::InnerActionHandler::Share()
 {
-    const String query = GetSelectedText();
+    const String query = mOwner->GetSelectedText();
     if (TextUtils::IsEmpty(query)) {
-        return;
+        return NOERROR;
     }
 
     AutoPtr<IIntent> send;
-    CIntent::New(IIntent::ACTION_SEND, (IIntent**)&send);
+    // TODO
+//    CIntent::New(IIntent::ACTION_SEND, (IIntent**)&send);
     send->SetType(String("text/plain"));
     send->PutExtra(IIntent::EXTRA_TEXT, query);
     // try {
         AutoPtr<IIntentHelper> helper;
-        CIntentHelper::AcquireSingleton((IIntentHelper**)&helper);
-        AutoPtr<Intent> i;
+        // TODO
+        //CIntentHelper::AcquireSingleton((IIntentHelper**)&helper);
+        AutoPtr<IIntent> i;
         String str;
-        GetContext()->GetString(R::string::actionbar_share, &str);
-        helper->CreateChooser(send, str, (IIntent**)&i);
+        //TODO
+        assert(0);
+//        mOwner->GetContext()->GetString(R::string::actionbar_share, &str);
+//        helper->CreateChooser(send, str, (IIntent**)&i);
         i->SetFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
-        GetContext()->StartActivity(i);
+        mOwner->GetContext()->StartActivity(i);
     // } catch (android.content.ActivityNotFoundException ex) {
     //     // If no app handles it, do nothing.
     // }
+
+    return NOERROR;
 }
 
 //@Override
-void ContentViewCore::InnerActionHandler::Search()
+ECode ContentViewCore::InnerActionHandler::Search()
 {
-    const String query = GetSelectedText();
+    const String query = mOwner->GetSelectedText();
     if (TextUtils::IsEmpty(query)) {
-        return;
+        return NOERROR;
     }
 
     // See if ContentViewClient wants to override
-    if (GetContentViewClient()->DoesPerformWebSearch()) {
-        GetContentViewClient()->PerformWebSearch(query);
-        return;
+    if (mOwner->GetContentViewClient()->DoesPerformWebSearch()) {
+        mOwner->GetContentViewClient()->PerformWebSearch(query);
+        return NOERROR;
     }
 
     AutoPtr<IIntent> i;
-    CIntent::New(IIntent::ACTION_WEB_SEARCH, (IIntent**)&i);
-    i->PutExtra(SearchManager::EXTRA_NEW_SEARCH, TRUE);
-    i->PutExtra(SearchManager::QUERY, query);
+    // TODO
+//    CIntent::New(IIntent::ACTION_WEB_SEARCH, (IIntent**)&i);
+    i->PutExtra(ISearchManager::EXTRA_NEW_SEARCH, TRUE);
+    i->PutExtra(ISearchManager::QUERY, query);
     String name;
-    GetContext()->GetPackageName(&name);
+    mOwner->GetContext()->GetPackageName(&name);
     i->PutExtra(IBrowser::EXTRA_APPLICATION_ID, name);
-    if (GetContext()->Probe(EIID_IActivity) == NULL) {
+    if (mOwner->GetContext()->Probe(EIID_IActivity) == NULL) {
         i->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
     }
 
     // try {
-        GetContext()->StartActivity(i);
+        mOwner->GetContext()->StartActivity(i);
     // } catch (android.content.ActivityNotFoundException ex) {
     //     // If no app handles it, do nothing.
     // }
+
+    return NOERROR;
 }
 
 //@Override
-Boolean ContentViewCore::InnerActionHandler::IsSelectionPassword()
+ECode ContentViewCore::InnerActionHandler::IsSelectionPassword(
+    /* [out] */ Boolean* result)
 {
-    return mImeAdapter->IsSelectionPassword();
+    VALIDATE_NOT_NULL(result);
+    *result = mOwner->mImeAdapter->IsSelectionPassword();
+    return NOERROR;
 }
 
 //@Override
-Boolean ContentViewCore::InnerActionHandler::IsSelectionEditable()
+ECode ContentViewCore::InnerActionHandler::IsSelectionEditable(
+    /* [out] */ Boolean* result)
 {
-    return mSelectionEditable;
+    VALIDATE_NOT_NULL(result)
+    *result = mOwner->mSelectionEditable;
+    return NOERROR;
 }
 
 //@Override
-void ContentViewCore::InnerActionHandler::OnDestroyActionMode()
+ECode ContentViewCore::InnerActionHandler::OnDestroyActionMode()
 {
-    mActionMode = NULL;
-    if (mUnselectAllOnActionModeDismiss) {
-        mImeAdapter->Unselect();
+    mOwner->mActionMode = NULL;
+    if (mOwner->mUnselectAllOnActionModeDismiss) {
+        mOwner->mImeAdapter->Unselect();
     }
 
-    GetContentViewClient()->OnContextualActionBarHidden();
+    mOwner->GetContentViewClient()->OnContextualActionBarHidden();
+
+    return NOERROR;
 }
 
 //@Override
-Boolean ContentViewCore::InnerActionHandler::IsShareAvailable()
+ECode ContentViewCore::InnerActionHandler::IsShareAvailable(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
+
     AutoPtr<IIntent> intent;
-    CIntent::New(IIntent::ACTION_SEND, (IIntent**)&intent);
+    // TODO
+    //CIntent::New(IIntent::ACTION_SEND, (IIntent**)&intent);
     intent->SetType(String("text/plain"));
     AutoPtr<IPackageManager> pm;
-    GetContext()->GetPackageManager((IPackageManager**)&pm);
+    mOwner->GetContext()->GetPackageManager((IPackageManager**)&pm);
     AutoPtr<IList> resolves;
     pm->QueryIntentActivities(intent,
             IPackageManager::MATCH_DEFAULT_ONLY,
@@ -605,21 +709,28 @@ Boolean ContentViewCore::InnerActionHandler::IsShareAvailable()
     Int32 size;
     resolves->GetSize(&size);
 
-    return size > 0;
+    *result = size > 0;
+
+    return NOERROR;
 }
 
 //@Override
-Boolean ContentViewCore::InnerActionHandler::IsWebSearchAvailable()
+ECode ContentViewCore::InnerActionHandler::IsWebSearchAvailable(
+    /* [out] */ Boolean* result)
 {
-    if (GetContentViewClient()->DoesPerformWebSearch()) {
-        return TRUE;
+    VALIDATE_NOT_NULL(result);
+
+    if (mOwner->GetContentViewClient()->DoesPerformWebSearch()) {
+        *result = TRUE;
+        return NOERROR;
     }
 
     AutoPtr<IIntent> intent;
-    CIntent::New(IIntent::ACTION_WEB_SEARCH, (IIntent**)&intent);
-    intent->PutExtra(SearchManager::EXTRA_NEW_SEARCH, TRUE);
+    // TODO
+    //CIntent::New(IIntent::ACTION_WEB_SEARCH, (IIntent**)&intent);
+    intent->PutExtra(ISearchManager::EXTRA_NEW_SEARCH, TRUE);
     AutoPtr<IPackageManager> pm;
-    GetContext()->GetPackageManager((IPackageManager**)&pm);
+    mOwner->GetContext()->GetPackageManager((IPackageManager**)&pm);
     AutoPtr<IList> resolves;
     pm->QueryIntentActivities(intent,
             IPackageManager::MATCH_DEFAULT_ONLY,
@@ -627,7 +738,9 @@ Boolean ContentViewCore::InnerActionHandler::IsWebSearchAvailable()
     Int32 size;
     resolves->GetSize(&size);
 
-    return size > 0;
+    *result = size > 0;
+
+    return NOERROR;
 }
 
 //===============================================================
@@ -652,7 +765,7 @@ ECode ContentViewCore::DeferredHandleFadeInRunnable::Run()
         }
 
         if (mOwner->IsInsertionHandleShowing()) {
-            mInsertionHandleController->BeginHandleFadeIn();
+            mOwner->mInsertionHandleController->BeginHandleFadeIn();
         }
     }
 
@@ -673,7 +786,9 @@ ECode ContentViewCore::InnerContentObserver::OnChange(
     /* [in] */ Boolean selfChange,
     /* [in] */ IUri* uri)
 {
-    mOwner->SetAccessibilityState(mOwner->mAccessibilityManager->IsEnabled());
+    Boolean isEnabled = FALSE;
+    mOwner->mAccessibilityManager->IsEnabled(&isEnabled);
+    mOwner->SetAccessibilityState(isEnabled);
     return NOERROR;
 }
 
@@ -681,7 +796,7 @@ ECode ContentViewCore::InnerContentObserver::OnChange(
 //                    ContentViewCore
 //===============================================================
 
-const ContentViewCore::String TAG("ContentViewCore");
+const String ContentViewCore::TAG("ContentViewCore");
 
 // Used to avoid enabling zooming in / out if resulting zooming will
 // produce little visible difference.
@@ -743,7 +858,7 @@ ContentViewCore::ContentViewCore(
     , mSmartClipOffsetY(0)
     , mContext(context)
 {
-    mAdapterInputConnectionFactory = new AdapterInputConnectionFactory();
+    mAdapterInputConnectionFactory = new ImeAdapter::AdapterInputConnectionFactory();
     mInputMethodManagerWrapper = new InputMethodManagerWrapper(mContext);
 
     mRenderCoordinates = new RenderCoordinates();
@@ -756,21 +871,24 @@ ContentViewCore::ContentViewCore(
     String forceScaleFactor = CommandLine::GetInstance()->GetSwitchValue(
             ContentSwitches::FORCE_DEVICE_SCALE_FACTOR);
     if (forceScaleFactor != NULL) {
-        deviceScaleFactor = Float.valueOf(forceScaleFactor);
+        deviceScaleFactor = StringUtils::ParseFloat(forceScaleFactor);
     }
     mRenderCoordinates->SetDeviceScaleFactor(deviceScaleFactor);
     mStartHandlePoint = mRenderCoordinates->CreateNormalizedPoint();
     mEndHandlePoint = mRenderCoordinates->CreateNormalizedPoint();
     mInsertionHandlePoint = mRenderCoordinates->CreateNormalizedPoint();
     GetContext()->GetSystemService(IContext::ACCESSIBILITY_SERVICE, (IInterface**)&mAccessibilityManager);
-    mGestureStateListeners = new ObserverList<GestureStateListener>();
-    mGestureStateListenersIterator = mGestureStateListeners->RewindableIterator();
+    // TODO
+    //mGestureStateListeners = new ObserverList<GestureStateListener>();
+    //mGestureStateListenersIterator = mGestureStateListeners->RewindableIterator();
 
     AutoPtr<IEditableFactory> factory;
-    CEditableFactory::AcquireSingleton((IEditableFactory**)&factory);
+    // TODO
+    //CEditableFactory::AcquireSingleton((IEditableFactory**)&factory);
     factory->GetInstance(String(""), (IEditable**)&mEditable);
     AutoPtr<ISelection> select;
-    CSelection::AcquireSingleton((ISelection**)&select);
+    // TODO
+    //CSelection::AcquireSingleton((ISelection**)&select);
     select->SetSelection(mEditable, 0);
 }
 
@@ -2619,7 +2737,7 @@ AutoPtr<ContentViewDownloadDelegate> ContentViewCore::GetDownloadDelegate()
 AutoPtr<SelectionHandleController> ContentViewCore::GetSelectionHandleController()
 {
     if (mSelectionHandleController == NULL) {
-        mSelectionHandleController = new InnerSelectionHandleController(
+        mSelectionHandleController = new InnerSelectionHandleController(this,
                 GetContainerView(), mPositionObserver);
 
     return mSelectionHandleController;
@@ -2628,7 +2746,7 @@ AutoPtr<SelectionHandleController> ContentViewCore::GetSelectionHandleController
 AutoPtr<InsertionHandleController> ContentViewCore::GetInsertionHandleController()
 {
     if (mInsertionHandleController == NULL) {
-        mInsertionHandleController = new InnerInsertionHandleController(
+        mInsertionHandleController = new InnerInsertionHandleController(this,
                 GetContainerView(), mPositionObserver);
 
         mInsertionHandleController->HideAndDisallowAutomaticShowing();

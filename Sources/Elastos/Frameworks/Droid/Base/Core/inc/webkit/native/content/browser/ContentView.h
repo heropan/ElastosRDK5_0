@@ -2,23 +2,28 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEW_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEW_H__
 
-// import android.content.Context;
-// import android.content.res.Configuration;
-// import android.graphics.Canvas;
-// import android.graphics.Rect;
-// import android.os.Build;
-// import android.os.Bundle;
-// import android.os.Handler;
-// import android.os.Message;
+#include "ext/frameworkext.h"
+#include "os/Build.h"
+#include "webkit/native/content/browser/ContentViewCore.h"
+#include "webkit/native/content/browser/SmartClipProvider.h"
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IMessage;
 // import android.util.Log;
-// import android.view.KeyEvent;
-// import android.view.MotionEvent;
-// import android.view.View;
-// import android.view.accessibility.AccessibilityEvent;
-// import android.view.accessibility.AccessibilityNodeInfo;
-// import android.view.inputmethod.EditorInfo;
-// import android.view.inputmethod.InputConnection;
-// import android.widget.FrameLayout;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
+using Elastos::Droid::View::InputMethod::IEditorInfo;
+using Elastos::Droid::View::InputMethod::IInputConnection;
+using Elastos::Droid::Widget::IFrameLayout;
 
 // import org.chromium.base.TraceEvent;
 

@@ -6,13 +6,8 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_NAVIGATIONHISTORY_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_NAVIGATIONHISTORY_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "elastos/utility/CArrayList.h"
-
-// package org.chromium.content.browser;
-// import java.util.ArrayList;
+#include "webkit/native/content/browser/NavigationEntry.h"
 
 using Elastos::Utility::IArrayList;
 
@@ -56,7 +51,8 @@ protected:
         /* [in] */ NavigationEntry* entry);
 
 private:
-    /*const*/ AutoPtr< IArrayList<NavigationEntry> > mEntries;
+    ///*const*/ AutoPtr< IArrayList<NavigationEntry> > mEntries;
+    AutoPtr<IArrayList> mEntries;
     Int32 mCurrentEntryIndex;
 };
 
@@ -67,4 +63,3 @@ private:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_NAVIGATIONHISTORY_H_
-

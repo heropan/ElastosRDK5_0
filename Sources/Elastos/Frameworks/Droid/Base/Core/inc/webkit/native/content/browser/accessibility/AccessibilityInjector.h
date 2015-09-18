@@ -2,17 +2,20 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITYINJECTOR_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITYINJECTOR_H__
 
-// import android.accessibilityservice.AccessibilityServiceInfo;
-// import android.content.Context;
-// import android.content.pm.PackageManager;
-// import android.os.Build;
-// import android.os.Bundle;
-// import android.os.Vibrator;
-// import android.speech.tts.TextToSpeech;
+#include "ext/frameworkext.h"
+#include "os/Build.h"
+
+//using Elastos::Droid::Accessibilityservice::IAccessibilityServiceInfo;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IVibrator;
+using Elastos::Droid::Speech::Tts::ITextToSpeech;
 // import android.util.Log;
-// import android.view.View;
-// import android.view.accessibility.AccessibilityManager;
-// import android.view.accessibility.AccessibilityNodeInfo;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::Accessibility::IAccessibilityManager;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
 
 // import com.googlecode.eyesfree.braille.selfbraille.SelfBrailleClient;
 // import com.googlecode.eyesfree.braille.selfbraille.WriteData;
@@ -38,6 +41,9 @@ namespace Droid {
 namespace Webkit {
 namespace Content {
 namespace Browser {
+
+class ContentViewCore;
+
 namespace Accessibility {
 
 /**
@@ -119,7 +125,7 @@ private:
 
     private:
         AutoPtr<ITextToSpeech> mTextToSpeech;
-        AutoPtr<SelfBrailleClient> mSelfBrailleClient;
+//        AutoPtr<SelfBrailleClient> mSelfBrailleClient;
         AutoPtr<IView> mView;
     };
 
@@ -130,7 +136,7 @@ public:
      * @return An instance of a {@link AccessibilityInjector}.
      */
     static CARAPI_(AutoPtr<AccessibilityInjector>) NewInstance(
-        /* [in] */ IContentViewCore* view);
+        /* [in] */ ContentViewCore* view);
 
     /**
      * Injects a <script> tag into the current web site that pulls in the ChromeVox script for
@@ -174,11 +180,11 @@ public:
      * accessibility gesture events.
      */
     //@Override
-    CARAPI_(void) DidStartLoading(
+    CARAPI DidStartLoading(
         /* [in] */ String url);
 
     //@Override
-    CARAPI_(void) DidStopLoading(
+    CARAPI DidStopLoading(
         /* [in] */ String url);
 
     /**

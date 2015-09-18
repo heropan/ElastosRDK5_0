@@ -6,53 +6,9 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_POPUPZOOMER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_POPUPZOOMER_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "content/res/CResources.h"
-#include "graphics/CBitmap.h"
-#include "graphics/Canvas.h"
-#include "graphics/CColor.h"
-#include "graphics/Paint.h"
-#include "graphics/CPath.h"
-#include "graphics/CPointF.h"
-#include "graphics/CPorterDuffXfermode.h"
-#include "graphics/CRect.h"
-#include "graphics/CRectF.h"
-#include "graphics/drawable/ColorDrawable.h"
-#include "graphics/drawable/Drawable.h"
 #include "os/SystemClock.h"
-#include "view/CGestureDetector.h"
-#include "view/CMotionEvent.h"
-#include "view/View.h"
-#include "view/animation/COvershootInterpolator.h"
-
-// package org.chromium.content.browser;
-// import android.content.Context;
-// import android.content.res.Resources;
-// import android.graphics.Bitmap;
-// import android.graphics.Canvas;
-// import android.graphics.Color;
-// import android.graphics.Paint;
-// import android.graphics.Path;
-// import android.graphics.Path.Direction;
-// import android.graphics.PointF;
-// import android.graphics.PorterDuff.Mode;
-// import android.graphics.PorterDuffXfermode;
-// import android.graphics.Rect;
-// import android.graphics.RectF;
-// import android.graphics.Region.Op;
-// import android.graphics.drawable.ColorDrawable;
-// import android.graphics.drawable.Drawable;
-// import android.os.SystemClock;
-// import android.util.Log;
-// import android.view.GestureDetector;
-// import android.view.MotionEvent;
-// import android.view.View;
-// import android.view.animation.Interpolator;
-// import android.view.animation.OvershootInterpolator;
-// import org.chromium.content.R;
+#include "view/SimpleOnGestureListener.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
@@ -67,11 +23,12 @@ using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::IRectF;
 using Elastos::Droid::Graphics::Drawable::IColorDrawable;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
-using Elastos::Droid::Os::ISystemClock;
-using Elastos::Droid::Util::ILog;
+using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::View::IGestureDetector;
 using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::SimpleOnGestureListener;
 using Elastos::Droid::View::IView;
+using Elastos::Droid::View::Animation::IInterpolator;
 using Elastos::Droid::View::Animation::IOvershootInterpolator;
 
 namespace Elastos {
@@ -86,7 +43,7 @@ namespace Browser {
   */
 class PopupZoomer
     : public Object
-    , public View
+    //, public View
 {
 public:
     /**
@@ -119,23 +76,24 @@ public:
     };
 
     class InnerGestureDetectorSimpleOnGestureListener
-        : public Object
-        , public GestureDetector::SimpleOnGestureListener
+        : public SimpleOnGestureListener
     {
     public:
         InnerGestureDetectorSimpleOnGestureListener(
             /* [in] */ PopupZoomer* owner);
 
         // @Override
-        CARAPI_(Boolean) OnScroll(
+        CARAPI OnScroll(
             /* [in] */ IMotionEvent* e1,
             /* [in] */ IMotionEvent* e2,
             /* [in] */ Float distanceX,
-            /* [in] */ Float distanceY);
+            /* [in] */ Float distanceY,
+            /* [out] */ Boolean* result);
 
         // @Override
-        CARAPI_(Boolean) OnSingleTapUp(
-            /* [in] */ IMotionEvent* e);
+        CARAPI OnSingleTapUp(
+            /* [in] */ IMotionEvent* e,
+            /* [out] */ Boolean* result);
 
         // @Override
         CARAPI OnLongPress(
@@ -153,15 +111,16 @@ public:
 private:
     class ReverseInterpolator
         : public Object
-        , public Interpolator
+        , public IInterpolator
     {
     public:
         ReverseInterpolator(
             /* [in] */ IInterpolator* i);
 
         // @Override
-        CARAPI_(Float) GetInterpolation(
-            /* [in] */ Float input);
+        CARAPI GetInterpolation(
+            /* [in] */ Float input,
+            /* [out] */ Float* interpolation);
 
     private:
         /*const*/ AutoPtr<IInterpolator> mInterpolator;
@@ -353,4 +312,3 @@ private:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_POPUPZOOMER_H_
-

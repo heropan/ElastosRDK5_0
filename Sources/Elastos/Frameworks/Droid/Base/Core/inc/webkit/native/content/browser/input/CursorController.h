@@ -2,7 +2,9 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_CURSORCONTROLLER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_CURSORCONTROLLER_H__
 
-// import android.view.ViewTreeObserver;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::View::IOnTouchModeChangeListener;
 
 namespace Elastos {
 namespace Droid {
@@ -10,6 +12,8 @@ namespace Webkit {
 namespace Content {
 namespace Browser {
 namespace Input {
+
+class HandleView;
 
 /**
  * A CursorController instance can be used to control a cursor in the text.

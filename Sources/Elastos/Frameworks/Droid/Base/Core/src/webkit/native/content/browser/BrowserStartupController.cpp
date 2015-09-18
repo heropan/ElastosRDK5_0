@@ -1,3 +1,18 @@
+
+#include "webkit/native/content/browser/BrowserStartupController.h"
+#include "webkit/native/content/browser/ResourceExtractor.h"
+#include "webkit/native/content/browser/DeviceUtils.h"
+#include "webkit/native/content/browser/PepperPluginManager.h"
+#include "webkit/native/content/app/ContentMain.h"
+#include "webkit/native/base/ThreadUtils.h"
+
+#include "os/CHandler.h"
+
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+using Elastos::Droid::Webkit::Content::App::ContentMain;
+
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -19,6 +34,8 @@ BrowserStartupController::PostStartupCompletedRunnable::PostStartupCompletedRunn
     , mCallback(callback)
 {
 }
+
+CAR_INTERFACE_IMPL(BrowserStartupController::PostStartupCompletedRunnable, Runnable, IRunnable);
 
 ECode BrowserStartupController::PostStartupCompletedRunnable::Run()
 {
@@ -45,6 +62,8 @@ BrowserStartupController::EnqueueCallbackExecutionRunnable::EnqueueCallbackExecu
     , mAlreadyStarted(alreadyStarted)
 {
 }
+
+CAR_INTERFACE_IMPL(BrowserStartupController::EnqueueCallbackExecutionRunnable, Runnable, IRunnable);
 
 ECode BrowserStartupController::EnqueueCallbackExecutionRunnable::Run()
 {
@@ -92,7 +111,8 @@ BrowserStartupController::BrowserStartupController(
     , mStartupDone(FALSE)
     , mContext(context)
 {
-    mAsyncStartupCallbacks = new ArrayList<StartupCallback>();
+    assert(0);
+//    mAsyncStartupCallbacks = new ArrayList<StartupCallback>();
 }
 
 void BrowserStartupController::SetAsynchronousStartup(
@@ -160,8 +180,9 @@ void BrowserStartupController::StartBrowserProcessesAsync(
         return;
     }
 
+    assert(0);
     // Browser process has not been fully started yet, so we defer executing the callback.
-    mAsyncStartupCallbacks->Add(callback);
+//    mAsyncStartupCallbacks->Add(callback);
 
     if (!mHasStartedInitializingBrowserProcess) {
         // This is the first time we have been asked to start the browser process. We set the
@@ -219,7 +240,7 @@ void BrowserStartupController::StartBrowserProcessesSync(
 //@VisibleForTesting
 Int32 BrowserStartupController::ContentStart()
 {
-    return ContentMain.start();
+    return ContentMain::Start();
 }
 
 void BrowserStartupController::AddStartupCompletedObserver(
@@ -230,7 +251,8 @@ void BrowserStartupController::AddStartupCompletedObserver(
         PostStartupCompleted(callback);
     }
     else {
-        mAsyncStartupCallbacks->Add(callback);
+        assert(0);
+//        mAsyncStartupCallbacks->Add(callback);
     }
 }
 
@@ -238,6 +260,8 @@ void BrowserStartupController::ExecuteEnqueuedCallbacks(
     /* [in] */ Int32 startupResult,
     /* [in] */ Boolean alreadyStarted)
 {
+    assert(0);
+#if 0
 //    assert ThreadUtils.runningOnUiThread() : "Callback from browser startup from wrong thread.";
     mStartupDone = TRUE;
     mStartupSuccess = (startupResult <= 0);
@@ -251,6 +275,7 @@ void BrowserStartupController::ExecuteEnqueuedCallbacks(
     }
     // We don't want to hold on to any objects after we do not need them anymore.
     mAsyncStartupCallbacks->Clear();
+#endif
 }
 
 // Queue the callbacks to run. Since running the callbacks clears the list it is safe to call
@@ -262,7 +287,8 @@ void BrowserStartupController::EnqueueCallbackExecution(
     AutoPtr<IHandler> handler;
     CHandler::New((IHandler**)&handler);
     AutoPtr<IRunnable> runnable = new EnqueueCallbackExecutionRunnable(this, startupFailure, alreadyStarted);
-    handler->Post(runnable);
+    Boolean result;
+    handler->Post(runnable, &result);
 }
 
 void BrowserStartupController::PostStartupCompleted(
@@ -271,7 +297,8 @@ void BrowserStartupController::PostStartupCompleted(
     AutoPtr<IHandler> handler;
     CHandler::New((IHandler**)&handler);
     AutoPtr<IRunnable> runnable = new PostStartupCompletedRunnable(this, callback);
-    handler->Post(runnable);
+    Boolean result;
+    handler->Post(runnable, &result);
 }
 
 //@VisibleForTesting
@@ -288,7 +315,8 @@ void BrowserStartupController::PrepareToStartBrowserProcess(
 
     // Normally Main.java will have already loaded the library asynchronously, we only need
     // to load it here if we arrived via another flow, e.g. bookmark access & sync setup.
-    LibraryLoader::EnsureInitialized(mContext, TRUE);
+    assert(0);
+//    LibraryLoader::EnsureInitialized(mContext, TRUE);
 
     // TODO(yfriedman): Remove dependency on a command line flag for this.
     DeviceUtils::AddDeviceSpecificUserAgentSwitch(mContext);
@@ -299,7 +327,7 @@ void BrowserStartupController::PrepareToStartBrowserProcess(
     resourceExtractor->WaitForCompletion();
 
     NativeSetCommandLineFlags(maxRendererProcesses,
-            NativeIsPluginEnabled() ? GetPlugins() : NULL);
+            NativeIsPluginEnabled() ? GetPlugins() : String(NULL));
     ContentMain::InitApplicationContext(appContext);
 }
 
@@ -314,7 +342,7 @@ void BrowserStartupController::InitChromiumBrowserProcessForTests()
 
     // Having a single renderer should be sufficient for tests. We can't have more than
     // MAX_RENDERERS_LIMIT.
-    NativeSetCommandLineFlags(1 /* maxRenderers */, NULL);
+    NativeSetCommandLineFlags(1 /* maxRenderers */, String(NULL));
 }
 
 String BrowserStartupController::GetPlugins()

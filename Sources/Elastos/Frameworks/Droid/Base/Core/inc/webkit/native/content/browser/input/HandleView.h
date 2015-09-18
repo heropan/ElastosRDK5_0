@@ -2,21 +2,27 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_HANDLEVIEW_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_HANDLEVIEW_H__
 
-// import android.content.Context;
-// import android.content.res.TypedArray;
-// import android.graphics.Canvas;
-// import android.graphics.Rect;
-// import android.graphics.drawable.Drawable;
-// import android.os.SystemClock;
-// import android.util.TypedValue;
-// import android.view.MotionEvent;
-// import android.view.View;
-// import android.view.ViewConfiguration;
-// import android.view.ViewParent;
-// import android.view.animation.AnimationUtils;
-// import android.widget.PopupWindow;
+#include "ext/frameworkext.h"
+#include "os/SystemClock.h"
+#include "webkit/native/content/browser/PositionObserver.h"
+#include "webkit/native/content/browser/input/CursorController.h"
+#include "webkit/native/content/browser/input/InsertionHandleController.h"
 
-// import org.chromium.content.browser.PositionObserver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::Os::SystemClock;
+// import android.util.TypedValue;
+using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewConfiguration;
+using Elastos::Droid::View::IViewParent;
+using Elastos::Droid::View::Animation::IAnimationUtils;
+using Elastos::Droid::Widget::IPopupWindow;
+
+using Elastos::Droid::Webkit::Content::Browser::PositionObserver;
 
 namespace Elastos {
 namespace Droid {
@@ -32,19 +38,19 @@ namespace Input {
  * hierarchy.
  *
  */
-class HandleView : public View
+class HandleView //: public View
 {
 private:
     class InnerListener
-        : public Object
-        , public PositionObserver::Listener
+        //: public Object
+        : public PositionObserver::Listener
     {
     public:
         InnerListener(
             /* [in] */ HandleView* owner);
 
         //@Override
-        CARAPI_(void) OnPositionChanged(
+        CARAPI OnPositionChanged(
             /* [in] */ Int32 x,
             /* [in] */ Int32 y);
 
@@ -58,10 +64,14 @@ public:
     static const Int32 RIGHT = 2;
 
 public:
-    HandleView(CursorController controller, int pos, View parent,
-            PositionObserver parentPositionObserver);
+    HandleView(
+        /* [in] */ CursorController* controller,
+        /* [in] */ Int32 pos,
+        /* [in] */ IView* parent,
+        /* [in] */ PositionObserver* parentPositionObserver);
 
-    CARAPI_(void) SetOrientation(int pos);
+    CARAPI_(void) SetOrientation(
+        /* [in] */ Int32 pos);
 
     CARAPI_(void) Show();
 
@@ -70,13 +80,16 @@ public:
     CARAPI_(Boolean) IsShowing();
 
     // x and y are in physical pixels.
-    CARAPI_(void) MoveTo(int x, int y);
+    CARAPI_(void) MoveTo(
+        /* [in] */ Int32 x,
+        /* [in] */ Int32 y);
 
     //@Override
-    CARAPI OnTouchEvent(MotionEvent ev,
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* ev,
         /* [out] */ Boolean* result);
 
-    CARAPI_(boolean) IsDragging();
+    CARAPI_(Boolean) IsDragging();
 
     /**
      * @return Returns the x position of the handle
@@ -89,7 +102,9 @@ public:
     CARAPI_(Int32) GetPositionY();
 
     // x and y are in physical pixels.
-    CARAPI_(void) PositionAt(int x, int y);
+    CARAPI_(void) PositionAt(
+        /* [in] */ Int32 x,
+        /* [in] */ Int32 y);
 
     // Returns the x coordinate of the position that the handle appears to be pointing to relative
     // to the handles "parent" view.
@@ -124,19 +139,26 @@ public:
 
 protected:
     //@Override
-    CARAPI OnMeasure(int widthMeasureSpec, int heightMeasureSpec);
+    CARAPI OnMeasure(
+        /* [in] */ Int32 widthMeasureSpec,
+        /* [in] */ Int32 heightMeasureSpec);
 
     //@Override
-    CARAPI OnDraw(Canvas c);
+    CARAPI OnDraw(
+        /* [in] */ ICanvas* c);
 
 private:
     CARAPI_(Boolean) IsPositionVisible();
 
-    CARAPI_(void) UpdatePosition(float rawX, float rawY);
+    CARAPI_(void) UpdatePosition(
+        /* [in] */ Float rawX,
+        /* [in] */ Float rawY);
 
     CARAPI_(void) UpdateAlpha();
 
-    CARAPI_(void) UpdateParentPosition(int parentPositionX, int parentPositionY);
+    CARAPI_(void) UpdateParentPosition(
+        /* [in] */ Int32 parentPositionX,
+        /* [in] */ Int32 parentPositionY);
 
     CARAPI_(Int32) GetContainerPositionX();
 

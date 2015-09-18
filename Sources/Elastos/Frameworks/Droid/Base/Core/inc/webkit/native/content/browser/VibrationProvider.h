@@ -6,12 +6,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_VIBRATIONPROVIDER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_VIBRATIONPROVIDER_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "content/pm/PackageManager.h"
-#include "os/Vibrator.h"
 
 // package org.chromium.content.browser;
 // import android.content.Context;
@@ -69,4 +64,3 @@ private:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_VIBRATIONPROVIDER_H_
-

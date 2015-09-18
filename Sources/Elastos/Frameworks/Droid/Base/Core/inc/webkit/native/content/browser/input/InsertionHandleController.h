@@ -2,17 +2,20 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_INSERTIONHANDLECONTROLLER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_INSERTIONHANDLECONTROLLER_H__
 
-// import android.content.ClipboardManager;
-// import android.content.Context;
-// import android.content.res.TypedArray;
-// import android.graphics.drawable.Drawable;
-// import android.view.Gravity;
-// import android.view.LayoutInflater;
-// import android.view.View;
-// import android.view.View.OnClickListener;
-// import android.view.ViewGroup;
-// import android.view.ViewGroup.LayoutParams;
-// import android.widget.PopupWindow;
+#include "ext/frameworkext.h"
+#include "webkit/native/content/browser/input/CursorController.h"
+
+using Elastos::Droid::Content::IClipboardManager;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewOnClickListener;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::IViewGroupLayoutParams;
+using Elastos::Droid::Widget::IPopupWindow;
 
 // import com.google.common.annotations.VisibleForTesting;
 
@@ -35,8 +38,8 @@ public:
      * This class is based on TextView.PastePopupMenu.
      */
     class PastePopupMenu
-        : public Object
-        , public OnClickListener
+        //: public Object
+        : public IViewOnClickListener
     {
     public:
         PastePopupMenu();
@@ -124,27 +127,28 @@ public:
     CARAPI_(AutoPtr<HandleView>) GetHandleViewForTest();
 
     //@Override
-    CARAPI_(void) OnTouchModeChanged(
+    CARAPI OnTouchModeChanged(
         /* [in] */ Boolean isInTouchMode);
 
     //@Override
-    CARAPI_(void) Hide();
+    CARAPI Hide();
 
     //@Override
-    CARAPI_(Boolean) IsShowing();
+    CARAPI IsShowing(
+        /* [out] */ Boolean* result);
 
     //@Override
-    CARAPI_(void) BeforeStartUpdatingPosition(
+    CARAPI BeforeStartUpdatingPosition(
         /* [in] */ HandleView* handle);
 
     //@Override
-    CARAPI_(void) UpdatePosition(
+    CARAPI UpdatePosition(
         /* [in] */ HandleView* handle,
         /* [in] */ Int32 x,
         /* [in] */ Int32 y);
 
     //@Override
-    CARAPI_(void) OnDetached();
+    CARAPI OnDetached();
 
     CARAPI_(Boolean) CanPaste();
 

@@ -6,13 +6,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SMARTCLIPPROVIDER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SMARTCLIPPROVIDER_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "os/Handler.h"
-
-// package org.chromium.content.browser;
-// import android.os.Handler;
 
 using Elastos::Droid::Os::IHandler;
 
@@ -56,4 +50,3 @@ public:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SMARTCLIPPROVIDER_H_
-

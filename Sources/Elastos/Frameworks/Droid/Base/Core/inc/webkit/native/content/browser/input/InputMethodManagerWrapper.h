@@ -2,11 +2,13 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_INPUTMETHODMANAGERWRAPPER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_INPUTMETHODMANAGERWRAPPER_H__
 
-// import android.content.Context;
-// import android.os.IBinder;
-// import android.os.ResultReceiver;
-// import android.view.View;
-// import android.view.inputmethod.InputMethodManager;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IResultReceiver;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::InputMethod::IInputMethodManager;
 
 namespace Elastos {
 namespace Droid {

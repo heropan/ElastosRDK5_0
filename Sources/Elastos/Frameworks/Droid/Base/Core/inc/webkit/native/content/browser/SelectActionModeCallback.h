@@ -6,26 +6,15 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SELECTACTIONMODECALLBACK_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SELECTACTIONMODECALLBACK_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/CClipboardManager.h"
-#include "content/Context.h"
-#include "view/ActionMode.h"
-
-// package org.chromium.content.browser;
-// import android.content.ClipboardManager;
-// import android.content.Context;
-// import android.view.ActionMode;
-// import android.view.Menu;
-// import android.view.MenuItem;
-// import org.chromium.content.R;
 
 using Elastos::Droid::Content::IClipboardManager;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IActionMode;
+using Elastos::Droid::View::IActionModeCallback;
 using Elastos::Droid::View::IMenu;
 using Elastos::Droid::View::IMenuItem;
+// import org.chromium.content.R;
 
 namespace Elastos {
 namespace Droid {
@@ -39,7 +28,7 @@ namespace Browser {
   */
 class SelectActionModeCallback
     : public Object
-    , public ActionMode::Callback
+    , public IActionModeCallback
 {
 public:
     /**
@@ -106,20 +95,25 @@ public:
     };
 
 public:
-    // @Override
-    CARAPI_(Boolean) OnCreateActionMode(
-        /* [in] */ IActionMode* mode,
-        /* [in] */ IMenu* menu);
+    CAR_INTERFACE_DECL()
 
     // @Override
-    CARAPI_(Boolean) OnPrepareActionMode(
+    CARAPI OnCreateActionMode(
         /* [in] */ IActionMode* mode,
-        /* [in] */ IMenu* menu);
+        /* [in] */ IMenu* menu,
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) OnActionItemClicked(
+    CARAPI OnPrepareActionMode(
         /* [in] */ IActionMode* mode,
-        /* [in] */ IMenuItem* item);
+        /* [in] */ IMenu* menu,
+        /* [out] */ Boolean* result);
+
+    // @Override
+    CARAPI OnActionItemClicked(
+        /* [in] */ IActionMode* mode,
+        /* [in] */ IMenuItem* item,
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI OnDestroyActionMode(
@@ -155,4 +149,3 @@ private:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SELECTACTIONMODECALLBACK_H_
-

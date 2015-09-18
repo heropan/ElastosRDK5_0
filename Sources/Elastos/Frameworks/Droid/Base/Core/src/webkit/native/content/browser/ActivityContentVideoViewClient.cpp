@@ -1,4 +1,14 @@
 
+#include "webkit/native/content/browser/ActivityContentVideoViewClient.h"
+#include "os/Build.h"
+//#include "widget/CFrameLayoutLayoutParams.h"
+
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::View::IWindow;
+using Elastos::Droid::View::EIID_IView;
+//using Elastos::Droid::Widget::CFrameLayoutLayoutParams;
+using Elastos::Droid::Widget::IFrameLayoutLayoutParams;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -15,18 +25,20 @@ ActivityContentVideoViewClient::ActivityContentVideoViewClient(
 Boolean ActivityContentVideoViewClient::OnShowCustomView(
     /* [in] */ IView* view)
 {
-    AutoPtr<IWindowManager> wm;
-    mActivity->GetWindow((IWindowManager**)&wm);
+    AutoPtr<IWindow> window;
+    mActivity->GetWindow((IWindow**)&window);
     AutoPtr<IFrameLayout> decor;
-    wm->GetDecorView((IFrameLayout**)&decor);
+    window->GetDecorView((IView**)&decor);
     AutoPtr<IFrameLayoutLayoutParams> params;
-    CFrameLayoutLayoutParams::New(
-        IViewGroupLayoutParams::MATCH_PARENT,
-        IViewGroupLayoutParams::MATCH_PARENT,
-        IGravity::CENTER,
-        (IFrameLayoutLayoutParams**)&params);
-    decor->AddView(view, 0, params);
-    SetSystemUiVisibility(decor, TRUE);
+    assert(0);
+    // CFrameLayoutLayoutParams::New(
+    //     IViewGroupLayoutParams::MATCH_PARENT,
+    //     IViewGroupLayoutParams::MATCH_PARENT,
+    //     IGravity::CENTER,
+    //     (IFrameLayoutLayoutParams**)&params);
+    AutoPtr<IView> decorView = (IView*)decor->Probe(EIID_IView);
+    // decor->AddView(view, 0, params);
+    SetSystemUiVisibility(decorView, TRUE);
     mView = view;
     return TRUE;
 }
@@ -34,12 +46,13 @@ Boolean ActivityContentVideoViewClient::OnShowCustomView(
 //@Override
 void ActivityContentVideoViewClient::OnDestroyContentVideoView()
 {
-    AutoPtr<IWindowManager> wm;
-    mActivity->GetWindow((IWindowManager**)&wm);
+    AutoPtr<IWindow> window;
+    mActivity->GetWindow((IWindow**)&window);
     AutoPtr<IFrameLayout> decor;
-    wm->GetDecorView((IFrameLayout**)&decor);
-    decor->RemoveView(mView);
-    SetSystemUiVisibility(decor, FALSE);
+    window->GetDecorView((IView**)&decor);
+    assert(0);
+//    decor->RemoveView(mView);
+//    SetSystemUiVisibility(decor, FALSE);
     mView = NULL;
 }
 
@@ -59,18 +72,19 @@ void ActivityContentVideoViewClient::SetSystemUiVisibility(
     /* [in] */ IView* view,
     /* [in] */ Boolean enterFullscreen)
 {
-    AutoPtr<IWindowManager> wm;
-    mActivity->GetWindow((IWindowManager**)&wm);
-    if (enterFullscreen) {
-        wm->SetFlags(
-                IWindowManagerLayoutParams::FLAG_FULLSCREEN,
-                IWindowManagerLayoutParams::FLAG_FULLSCREEN);
-    }
-    else {
-        wm->ClearFlags(IWindowManagerLayoutParams::FLAG_FULLSCREEN);
-    }
+    AutoPtr<IWindow> window;
+    mActivity->GetWindow((IWindow**)&window);
+    assert(0);
+    // if (enterFullscreen) {
+    //     window->SetFlags(
+    //             IWindowManagerLayoutParams::FLAG_FULLSCREEN,
+    //             IWindowManagerLayoutParams::FLAG_FULLSCREEN);
+    // }
+    // else {
+    //     window->ClearFlags(IWindowManagerLayoutParams::FLAG_FULLSCREEN);
+    // }
 
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+    if (Build::VERSION::SDK_INT < Build::VERSION_CODES::KITKAT) {
         return;
     }
 

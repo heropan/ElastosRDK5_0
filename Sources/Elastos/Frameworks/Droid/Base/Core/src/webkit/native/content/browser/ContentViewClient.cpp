@@ -1,4 +1,10 @@
 
+#include "webkit/native/content/browser/ContentViewClient.h"
+#include "webkit/native/content/browser/SelectActionModeCallback.h"
+//#include "content/CIntentHelper.h"
+
+//using Elastos::Droid::Content::CIntentHelper;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -80,10 +86,12 @@ void ContentViewClient::OnImeStateChangeRequested(
  */
 AutoPtr<IActionModeCallback> ContentViewClient::GetSelectActionModeCallback(
     /* [in] */ IContext* context,
-    /* [in] */ IActionHandler* actionHandler,
+    /* [in] */ SelectActionModeCallback::ActionHandler* actionHandler,
     /* [in] */ Boolean incognito)
 {
-    return new SelectActionModeCallback(context, actionHandler, incognito);
+    assert(0);
+//    return new SelectActionModeCallback(context, actionHandler, incognito);
+    return NULL;
 }
 
 /**
@@ -137,6 +145,8 @@ void ContentViewClient::OnStartContentIntent(
     /* [in] */ IContext* context,
     /* [in] */ String intentUrl)
 {
+    assert(0);
+#if 0
     AutoPtr<IIntent> intent;
     // Perform generic parsing of the URI to turn it into an Intent.
     // try {
@@ -153,6 +163,7 @@ void ContentViewClient::OnStartContentIntent(
     // } catch (ActivityNotFoundException ex) {
     //     Log.w(TAG, "No application can handle " + intentUrl);
     // }
+#endif
 }
 
 AutoPtr<ContentVideoViewClient> ContentViewClient::GetContentVideoViewClient()

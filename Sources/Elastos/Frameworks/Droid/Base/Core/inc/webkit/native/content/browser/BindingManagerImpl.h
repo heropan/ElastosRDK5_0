@@ -2,6 +2,12 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BINDINGMANAGERIMPL_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BINDINGMANAGERIMPL_H__
 
+#include "ext/frameworkext.h"
+#include "os/Runnable.h"
+#include "webkit/native/content/browser/BindingManager.h"
+
+using Elastos::Droid::Os::Runnable;
+
 // import android.util.Log;
 // import android.util.SparseArray;
 
@@ -19,9 +25,7 @@ namespace Browser {
 /**
  * Manages oom bindings used to bound child services.
  */
-class BindingManagerImpl
-    : public Object
-    , public BindingManager
+class BindingManagerImpl : public BindingManager
 {
 private:
     /**
@@ -30,17 +34,18 @@ private:
      * connection goes away, but ManagedConnection itself is kept (until overwritten by a new entry
      * for the same pid).
      */
-    class ManagedConnection
+    class ManagedConnection : public Object
     {
     private:
         class DelayedRunnable
-            : public Object
-            , public IRunnable
+            : public Runnable
         {
         public:
             DelayedRunnable(
                 /* [in] */ ManagedConnection* owner,
                 /* [in] */ ChildProcessConnection* connection);
+
+            CAR_INTERFACE_DECL()
 
             CARAPI Run();
 
@@ -50,13 +55,14 @@ private:
         };
 
         class DoUnbindRunnable
-            : public Object
-            , public IRunnable
+            : public Runnable
         {
         public:
             DoUnbindRunnable(
                 /* [in] */ ManagedConnection* owner,
                 /* [in] */ ChildProcessConnection* connection);
+
+            CAR_INTERFACE_DECL()
 
             CARAPI Run();
 
@@ -69,6 +75,8 @@ private:
         ManagedConnection(
             /* [in] */ BindingManagerImpl* owner,
             /* [in] */ ChildProcessConnection* connection);
+
+        CAR_INTERFACE_DECL()
 
         /**
          * Sets the visibility of the service, adding or removing the strong binding as needed. This
@@ -193,7 +201,7 @@ private:
     const Boolean mIsLowMemoryDevice;
 
     // This can be manipulated on different threads, synchronize access on mManagedConnections.
-    const SparseArray<ManagedConnection> mManagedConnections;
+//    const SparseArray<ManagedConnection> mManagedConnections;
 
     // The connection that was most recently set as foreground (using setInForeground()). This is
     // used to add additional binding on it when the embedder goes to background. On low-end, this

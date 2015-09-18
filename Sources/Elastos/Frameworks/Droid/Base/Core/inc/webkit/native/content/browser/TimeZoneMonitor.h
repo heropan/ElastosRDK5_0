@@ -6,13 +6,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_TIMEZONEMONITOR_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_TIMEZONEMONITOR_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/BroadcastReceiver.h"
-#include "content/Context.h"
-#include "content/Intent.h"
-#include "content/IntentFilter.h"
 
 // package org.chromium.content.browser;
 // import android.content.BroadcastReceiver;
@@ -102,4 +96,3 @@ private:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_TIMEZONEMONITOR_H_
-
