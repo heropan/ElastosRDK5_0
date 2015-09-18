@@ -54,11 +54,13 @@ CMtpPropertyGroup::CMtpPropertyGroup()
 ECode CMtpPropertyGroup::constructor(
     /* [in] */ IMtpDatabase* database,
     /* [in] */ IIContentProvider* provider,
+    /* [in] */ const String& packageName,
     /* [in] */ const String& volume,
     /* [in] */ ArrayOf<Int32>* properties)
 {
     mDatabase = database;
     mProvider = provider;
+    mPackageName = packageName;
     mVolumeName = volume;
     AutoPtr<IMediaStoreFiles> files;
     CMediaStoreFiles::AcquireSingleton((IMediaStoreFiles**)&files);
@@ -135,7 +137,7 @@ ECode CMtpPropertyGroup::GetPropertyList(
     //try {
         // don't query if not necessary
         if (depth > 0 || handle == 0xFFFFFFFF || mColumns->GetLength() > 1) {
-            mProvider->Query(mUri, mColumns, where, whereArgs, String(NULL), NULL, (ICursor**)&c);
+            mProvider->Query(mPackageName, mUri, mColumns, where, whereArgs, String(NULL), NULL, (ICursor**)&c);
             if (c == NULL) {
                 return CMtpPropertyList::New(0, IMtpConstants::RESPONSE_INVALID_OBJECT_HANDLE, (IMtpPropertyList**)&list);
             }
@@ -392,7 +394,7 @@ String CMtpPropertyGroup::QueryString(
         s1->Set(1, column);
         AutoPtr<ArrayOf<String> > s2 = ArrayOf<String>::Alloc(1);
         s1->Set(0, StringUtils::Int32ToString(id));
-        mProvider->Query(mUri, s1, ID_WHERE, s2, String(NULL), NULL, (ICursor**)&c);
+        mProvider->Query(mPackageName, mUri, s1, ID_WHERE, s2, String(NULL), NULL, (ICursor**)&c);
         Boolean b;
         if (c != NULL && (c->MoveToNext(&b),b)) {
             String s;
@@ -426,7 +428,7 @@ String CMtpPropertyGroup::QueryAudio(
         CMediaStoreAudioMedia::AcquireSingleton((IMediaStoreAudioMedia**)&am);
         AutoPtr<IUri> uri;
         am->GetContentUri(mVolumeName, (IUri**)&uri);
-        mProvider->Query(uri, s1, ID_WHERE, s2, String(NULL), NULL, (ICursor**)&c);
+        mProvider->Query(mPackageName, uri, s1, ID_WHERE, s2, String(NULL), NULL, (ICursor**)&c);
         Boolean b;
         if (c != NULL && (c->MoveToNext(&b),b)) {
             String s;
@@ -457,7 +459,7 @@ String CMtpPropertyGroup::QueryGenre(
         AutoPtr<ArrayOf<String> > s1 = ArrayOf<String>::Alloc(2);
         s1->Set(0, IMediaStoreFilesFileColumns::ID);
         s1->Set(1, IMediaStoreAudioGenresColumns::NAME);
-        mProvider->Query(uri, s1, String(NULL), NULL, String(NULL), NULL, (ICursor**)&c);
+        mProvider->Query(mPackageName, uri, s1, String(NULL), NULL, String(NULL), NULL, (ICursor**)&c);
         Boolean b;
         if (c != NULL && (c->MoveToNext(&b),b)) {
             String s;
@@ -489,7 +491,7 @@ Int64 CMtpPropertyGroup::QueryInt64(
         s1->Set(1, column);
         AutoPtr<ArrayOf<String> > s2 = ArrayOf<String>::Alloc(1);
         s1->Set(0, StringUtils::Int32ToString(id));
-        mProvider->Query(mUri, s1, ID_WHERE, s2, String(NULL), NULL, (ICursor**)&c);
+        mProvider->Query(mPackageName, mUri, s1, ID_WHERE, s2, String(NULL), NULL, (ICursor**)&c);
         Boolean b;
         if (c != NULL && (c->MoveToNext(&b),b)) {
             Int64 value;

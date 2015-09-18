@@ -172,8 +172,13 @@ module
     merge("media/media/ToneGenerator.car");
     merge("media/media/VolumeProvider.car");
 
+    interface Elastos.Core.IRunnable;
     interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.Storage.IStorageVolume;
     interface Elastos.Droid.App.IService;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IIContentProvider;
+    interface Elastos.Droid.Hardware.Usb.IUsbDevice;
 
     namespace Elastos {
     namespace Droid {
@@ -923,81 +928,82 @@ module
 //    } // namespace media
 //    } // namespace Droid
 //    } // namespace Elastos
-//
-//    namespace Elastos {
-//    namespace Droid {
-//    namespace Mtp {
-//
-//        singleton class CMtpConstants {
-//            interface IMtpConstants;
-//        }
-//
-//        [local, deprecated]
-//        class CMtpDatabase {
-//            constructor(
-//                [in] IContext* ctx,
-//                [in] String volumeName,
-//                [in] String storagePath,
-//                [in] ArrayOf<String>* subDirectories);
-//
-//            interface IMtpDatabase;
-//        }
-//
-//        class CMtpDevice {
-//            constructor(
-//                [in] IUsbDevice* device);
-//
-//            interface IMtpDevice;
-//        }
-//
-//        class CMtpDeviceInfo {
-//            interface IMtpDeviceInfo;
-//        }
-//
-//        class CMtpObjectInfo {
-//            interface IMtpObjectInfo;
-//        }
-//
-//        [deprecated]
-//        class CMtpPropertyGroup {
-//            constructor(
-//                [in] IMtpDatabase* database,
-//                [in] IIContentProvider* provider,
-//                [in] String volume,
-//                [in] ArrayOf<Int32>* properties);
-//
-//            interface IMtpPropertyGroup;
-//        }
-//
-//        class CMtpPropertyList {
-//            constructor(
-//                [in] Int32 maxCount,
-//                [in] Int32 result);
-//
-//            interface IMtpPropertyList;
-//        }
-//
-//        class CMtpServer {
-//            constructor(
-//                [in] IMtpDatabase* database,
-//                [in] Boolean usePtp);
-//
-//            interface IMtpServer;
-//            interface IRunnable;
-//        }
-//
-//        [local]
-//        class CMtpStorage {
-//            constructor(
-//                [in] IStorageVolume* volume,
-//                [in] IContext* ctx);
-//
-//            interface IMtpStorage;
-//        }
-//
-//        class CMtpStorageInfo {
-//            interface IMtpStorageInfo;
-//        }
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Mtp {
+
+        singleton class CMtpConstants {
+            interface IMtpConstants;
+        }
+
+        [local, deprecated]
+        class CMtpDatabase {
+            constructor(
+                [in] IContext* ctx,
+                [in] String volumeName,
+                [in] String storagePath,
+                [in] ArrayOf<String>* subDirectories);
+
+            interface IMtpDatabase;
+        }
+
+        class CMtpDevice {
+            constructor(
+                [in] IUsbDevice* device);
+
+            interface IMtpDevice;
+        }
+
+        class CMtpDeviceInfo {
+            interface IMtpDeviceInfo;
+        }
+
+        class CMtpObjectInfo {
+            interface IMtpObjectInfo;
+        }
+
+        [deprecated]
+        class CMtpPropertyGroup {
+            constructor(
+                [in] IMtpDatabase* database,
+                [in] IIContentProvider* provider,
+                [in] String packageName,
+                [in] String volume,
+                [in] ArrayOf<Int32>* properties);
+
+            interface IMtpPropertyGroup;
+        }
+
+        class CMtpPropertyList {
+            constructor(
+                [in] Int32 maxCount,
+                [in] Int32 result);
+
+            interface IMtpPropertyList;
+        }
+
+        class CMtpServer {
+            constructor(
+                [in] IMtpDatabase* database,
+                [in] Boolean usePtp);
+
+            interface IMtpServer;
+            interface IRunnable;
+        }
+
+        [local]
+        class CMtpStorage {
+            constructor(
+                [in] IStorageVolume* volume,
+                [in] IContext* ctx);
+
+            interface IMtpStorage;
+        }
+
+        class CMtpStorageInfo {
+            interface IMtpStorageInfo;
+        }
 
    } // namespace mtp
    } // namespace Droid

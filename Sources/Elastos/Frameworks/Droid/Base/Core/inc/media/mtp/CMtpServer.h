@@ -27,6 +27,9 @@ public:
     CARAPI SendObjectRemoved(
         /* [in] */ Int32 handle);
 
+    CARAPI SendDevicePropertyChanged(
+        /* [in] */ Int32 property);
+
     CARAPI AddStorage(
         /* [in] */ IMtpStorage* storage);
 
@@ -48,6 +51,9 @@ private:
     CARAPI_(void) NativeSendObjectRemoved(
         /* [in] */ Int32 handle);
 
+    CARAPI_(void) NativeSendDevicePropertyChanged(
+        /* [in] */ Int32 property);
+
     CARAPI_(void) NativeAddStorage(
         /* [in] */ IMtpStorage* storage);
 
@@ -55,7 +61,7 @@ private:
         /* [in] */ Int32 storageId);
 
 private:
-    Int32 mNativeContext;
+    Int64 mNativeContext;
 
     Object mutex;
 };

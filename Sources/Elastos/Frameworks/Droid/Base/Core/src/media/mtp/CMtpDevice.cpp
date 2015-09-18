@@ -587,10 +587,11 @@ Boolean CMtpDevice::NativeDeleteObject(
     /* [in] */ Int32 objectHandle)
 {
     MtpDevice* device = (MtpDevice*)mNativeContext;
-    if (device)
-        return device->deleteObject(objectHandle);
-    else
-        return NULL;
+    if (device && device->deleteObject(objectHandle)) {
+        return TRUE;
+    } else {
+        return FALSE;
+    }
 }
 
 Int64 CMtpDevice::NativeGetParent(

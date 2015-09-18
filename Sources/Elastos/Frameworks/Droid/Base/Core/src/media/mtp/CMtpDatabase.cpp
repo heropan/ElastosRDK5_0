@@ -3,7 +3,8 @@
 #include "CMtpDatabase.h"
 #include <elastos/core/StringUtils.h>
 #include "text/TextUtils.h"
-#include "media/media/CMediaScanner.h"
+// TODO: Need CMediaScanner
+// #include "media/media/CMediaScanner.h"
 #include "content/CIntent.h"
 #include "content/CContentValues.h"
 #include "media/mtp/CMtpPropertyList.h"
@@ -19,7 +20,10 @@
 #include "provider/CMediaStoreAudioPlaylists.h"
 
 extern "C" {
-#include "jhead.h"
+#include "libexif/exif-content.h"
+#include "libexif/exif-data.h"
+#include "libexif/exif-tag.h"
+#include "libexif/exif-utils.h"
 }
 
 using namespace android;
@@ -37,7 +41,8 @@ using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Text::TextUtils;
-using Elastos::Droid::Media::CMediaScanner;
+// TODO: Need CMediaScanner
+// using Elastos::Droid::Media::CMediaScanner;
 using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::IWindowManager;
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
@@ -357,11 +362,13 @@ MtpResponseCode MyMtpDatabase::getObjectPropertyValue(
             case MTP_TYPE_STR:
             {
                 String stringValue = (*stringValuesArray)[0];
+                const char* str;
+                if(!stringValue.IsNull()) {
+                    str = stringValue.string();
+                } else {
+                    str = NULL;
+                }
                 if (stringValue) {
-                    const char* str = stringValue.string();
-                    if (str == NULL) {
-                        return MTP_RESPONSE_GENERAL_ERROR;
-                    }
                     packet.putString(str);
                 } else {
                     packet.putEmptyString();
@@ -426,7 +433,7 @@ MtpResponseCode MyMtpDatabase::setObjectPropertyValue(
             break;
          }
         default:
-            // ALOGE("unsupported type in getObjectPropertyValue\n");
+            // ALOGE("unsupported type in setObjectPropertyValue\n");
             return MTP_RESPONSE_INVALID_OBJECT_PROP_FORMAT;
     }
 
@@ -440,63 +447,69 @@ MtpResponseCode MyMtpDatabase::getDevicePropertyValue(
     MtpDeviceProperty property,
     MtpDataPacket& packet)
 {
-    int type;
+    if (property == MTP_DEVICE_PROPERTY_BATTERY_LEVEL) {
+        // special case - implemented here instead of Java
+        packet.putUInt8((uint8_t)mBatteryLevel);
+        return MTP_RESPONSE_OK;
+    } else {
+        int type;
 
-    if (!getDevicePropertyInfo(property, type))
-        return MTP_RESPONSE_DEVICE_PROP_NOT_SUPPORTED;
+        if (!getDevicePropertyInfo(property, type))
+            return MTP_RESPONSE_DEVICE_PROP_NOT_SUPPORTED;
 
-    Int32 result = mDatabase->GetDeviceProperty((Int32)property, mLongBuffer, mStringBuffer);
-    if (result != MTP_RESPONSE_OK) {
+        Int32 result = mDatabase->GetDeviceProperty((Int32)property, mLongBuffer, mStringBuffer);
+        if (result != MTP_RESPONSE_OK) {
+            // checkAndClearExceptionFromCallback(env, __FUNCTION__);
+            return result;
+        }
+
+        Int64 longValue = (*mLongBuffer)[0];
+
+        switch (type) {
+            case MTP_TYPE_INT8:
+                packet.putInt8(longValue);
+                break;
+            case MTP_TYPE_UINT8:
+                packet.putUInt8(longValue);
+                break;
+            case MTP_TYPE_INT16:
+                packet.putInt16(longValue);
+                break;
+            case MTP_TYPE_UINT16:
+                packet.putUInt16(longValue);
+                break;
+            case MTP_TYPE_INT32:
+                packet.putInt32(longValue);
+                break;
+            case MTP_TYPE_UINT32:
+                packet.putUInt32(longValue);
+                break;
+            case MTP_TYPE_INT64:
+                packet.putInt64(longValue);
+                break;
+            case MTP_TYPE_UINT64:
+                packet.putUInt64(longValue);
+                break;
+            case MTP_TYPE_INT128:
+                packet.putInt128(longValue);
+                break;
+            case MTP_TYPE_UINT128:
+                packet.putInt128(longValue);
+                break;
+            case MTP_TYPE_STR:
+            {
+                String str = String(*mStringBuffer.Get());
+                packet.putString(str.string());
+                break;
+             }
+            default:
+                // ALOGE("unsupported type in getDevicePropertyValue\n");
+                return MTP_RESPONSE_INVALID_DEVICE_PROP_FORMAT;
+        }
+
         // checkAndClearExceptionFromCallback(env, __FUNCTION__);
-        return result;
+        return MTP_RESPONSE_OK;
     }
-
-    Int64 longValue = (*mLongBuffer)[0];
-
-    switch (type) {
-        case MTP_TYPE_INT8:
-            packet.putInt8(longValue);
-            break;
-        case MTP_TYPE_UINT8:
-            packet.putUInt8(longValue);
-            break;
-        case MTP_TYPE_INT16:
-            packet.putInt16(longValue);
-            break;
-        case MTP_TYPE_UINT16:
-            packet.putUInt16(longValue);
-            break;
-        case MTP_TYPE_INT32:
-            packet.putInt32(longValue);
-            break;
-        case MTP_TYPE_UINT32:
-            packet.putUInt32(longValue);
-            break;
-        case MTP_TYPE_INT64:
-            packet.putInt64(longValue);
-            break;
-        case MTP_TYPE_UINT64:
-            packet.putUInt64(longValue);
-            break;
-        case MTP_TYPE_INT128:
-            packet.putInt128(longValue);
-            break;
-        case MTP_TYPE_UINT128:
-            packet.putInt128(longValue);
-            break;
-        case MTP_TYPE_STR:
-        {
-            String str = String(*mStringBuffer.Get());
-            packet.putString(str.string());
-            break;
-         }
-        default:
-            // ALOGE("unsupported type in getDevicePropertyValue\n");
-            return MTP_RESPONSE_INVALID_DEVICE_PROP_FORMAT;
-    }
-
-    // checkAndClearExceptionFromCallback(env, __FUNCTION__);
-    return MTP_RESPONSE_OK;
 }
 
 MtpResponseCode MyMtpDatabase::setDevicePropertyValue(
@@ -642,6 +655,22 @@ MtpResponseCode MyMtpDatabase::getObjectPropertyList(
     return result;
 }
 
+static void foreachentry(ExifEntry *entry, void *user) {
+    char buf[1024];
+    ALOGI("entry %x, format %d, size %d: %s",
+            entry->tag, entry->format, entry->size, exif_entry_get_value(entry, buf, sizeof(buf)));
+}
+
+static void foreachcontent(ExifContent *content, void *user) {
+    ALOGI("content %d", exif_content_get_ifd(content));
+    exif_content_foreach_entry(content, foreachentry, user);
+}
+
+static long getLongFromExifEntry(ExifEntry *e) {
+    ExifByteOrder o = exif_data_get_byte_order(e->parent->parent);
+    return exif_get_long(e->data, o);
+}
+
 MtpResponseCode MyMtpDatabase::getObjectInfo(
     MtpObjectHandle handle,
     MtpObjectInfo& info)
@@ -666,7 +695,8 @@ MtpResponseCode MyMtpDatabase::getObjectInfo(
     info.mFormat = (*mIntBuffer)[1];
     info.mParent = (*mIntBuffer)[2];
 
-    info.mDateModified = (*mLongBuffer)[0];
+    info.mDateCreated = (*mLongBuffer)[0];
+    info.mDateModified = (*mLongBuffer)[1];
 
    // info.mAssociationType = (format == MTP_FORMAT_ASSOCIATION ?
    //                         MTP_ASSOCIATION_TYPE_GENERIC_FOLDER :
@@ -679,23 +709,22 @@ MtpResponseCode MyMtpDatabase::getObjectInfo(
 
     // read EXIF data for thumbnail information
     if (info.mFormat == MTP_FORMAT_EXIF_JPEG || info.mFormat == MTP_FORMAT_JFIF) {
-        ResetJpgfile();
-         // Start with an empty image information structure.
-        memset(&ImageInfo, 0, sizeof(ImageInfo));
-        ImageInfo.FlashUsed = -1;
-        ImageInfo.MeteringMode = -1;
-        ImageInfo.Whitebalance = -1;
-        strncpy(ImageInfo.FileName, (const char *)path, PATH_MAX);
-        if (ReadJpegFile((const char*)path, READ_METADATA)) {
-            Section_t* section = FindSection(M_EXIF);
-            if (section) {
-                info.mThumbCompressedSize = ImageInfo.ThumbnailSize;
-                info.mThumbFormat = MTP_FORMAT_EXIF_JPEG;
-                info.mImagePixWidth = ImageInfo.Width;
-                info.mImagePixHeight = ImageInfo.Height;
-            }
+
+        ExifData *exifdata = exif_data_new_from_file(path);
+        if (exifdata) {
+            //exif_data_foreach_content(exifdata, foreachcontent, NULL);
+
+            // XXX get this from exif, or parse jpeg header instead?
+            ExifEntry *w = exif_content_get_entry(
+                    exifdata->ifd[EXIF_IFD_EXIF], EXIF_TAG_PIXEL_X_DIMENSION);
+            ExifEntry *h = exif_content_get_entry(
+                    exifdata->ifd[EXIF_IFD_EXIF], EXIF_TAG_PIXEL_Y_DIMENSION);
+            info.mThumbCompressedSize = exifdata->data ? exifdata->size : 0;
+            info.mThumbFormat = MTP_FORMAT_EXIF_JPEG;
+            info.mImagePixWidth = w ? getLongFromExifEntry(w) : 0;
+            info.mImagePixHeight = h ? getLongFromExifEntry(h) : 0;
+            exif_data_unref(exifdata);
         }
-        DiscardData();
     }
 
     // checkAndClearExceptionFromCallback(env, __FUNCTION__);
@@ -714,22 +743,16 @@ void* MyMtpDatabase::getThumbnail(
 
     if (getObjectFilePath(handle, path, length, format) == MTP_RESPONSE_OK
             && (format == MTP_FORMAT_EXIF_JPEG || format == MTP_FORMAT_JFIF)) {
-        ResetJpgfile();
-         // Start with an empty image information structure.
-        memset(&ImageInfo, 0, sizeof(ImageInfo));
-        ImageInfo.FlashUsed = -1;
-        ImageInfo.MeteringMode = -1;
-        ImageInfo.Whitebalance = -1;
-        strncpy(ImageInfo.FileName, (const char *)path, PATH_MAX);
-        if (ReadJpegFile((const char*)path, READ_METADATA)) {
-            Section_t* section = FindSection(M_EXIF);
-            if (section) {
-                outThumbSize = ImageInfo.ThumbnailSize;
-                result = malloc(outThumbSize);
-                if (result)
-                    memcpy(result, section->Data + ImageInfo.ThumbnailOffset + 8, outThumbSize);
+        ExifData *exifdata = exif_data_new_from_file(path);
+        if (exifdata) {
+            if (exifdata->data) {
+                result = malloc(exifdata->size);
+                if (result) {
+                    memcpy(result, exifdata->data, exifdata->size);
+                    outThumbSize = exifdata->size;
+                }
             }
-            DiscardData();
+            exif_data_unref(exifdata);
         }
     }
 
@@ -798,6 +821,7 @@ static const PropertyTableEntry   kDevicePropertyTable[] = {
     {   MTP_DEVICE_PROPERTY_SYNCHRONIZATION_PARTNER,    MTP_TYPE_STR },
     {   MTP_DEVICE_PROPERTY_DEVICE_FRIENDLY_NAME,       MTP_TYPE_STR },
     {   MTP_DEVICE_PROPERTY_IMAGE_SIZE,                 MTP_TYPE_STR },
+    {   MTP_DEVICE_PROPERTY_BATTERY_LEVEL,              MTP_TYPE_UINT8 },
 };
 
 Boolean MyMtpDatabase::getObjectPropertyInfo(
@@ -867,6 +891,22 @@ MtpProperty* MyMtpDatabase::getObjectPropertyDesc(
     MtpObjectProperty property,
     MtpObjectFormat format)
 {
+    static const int channelEnum[] = {
+                                        1,  // mono
+                                        2,  // stereo
+                                        3,  // 2.1
+                                        4,  // 3
+                                        5,  // 3.1
+                                        6,  // 4
+                                        7,  // 4.1
+                                        8,  // 5
+                                        9,  // 5.1
+                                    };
+    static const int bitrateEnum[] = {
+                                        1,  // fixed rate
+                                        2,  // variable rate
+                                     };
+
     MtpProperty* result = NULL;
     switch (property) {
         case MTP_PROPERTY_OBJECT_FORMAT:
@@ -880,6 +920,7 @@ MtpProperty* MyMtpDatabase::getObjectPropertyDesc(
         case MTP_PROPERTY_STORAGE_ID:
         case MTP_PROPERTY_PARENT_OBJECT:
         case MTP_PROPERTY_DURATION:
+        case MTP_PROPERTY_AUDIO_WAVE_CODEC:
             result = new MtpProperty(property, MTP_TYPE_UINT32);
             break;
         case MTP_PROPERTY_OBJECT_SIZE:
@@ -908,6 +949,22 @@ MtpProperty* MyMtpDatabase::getObjectPropertyDesc(
             // We allow renaming files and folders
             result = new MtpProperty(property, MTP_TYPE_STR, TRUE);
             break;
+        case MTP_PROPERTY_BITRATE_TYPE:
+             result = new MtpProperty(property, MTP_TYPE_UINT16);
+            result->setFormEnum(bitrateEnum, sizeof(bitrateEnum)/sizeof(bitrateEnum[0]));
+            break;
+        case MTP_PROPERTY_AUDIO_BITRATE:
+            result = new MtpProperty(property, MTP_TYPE_UINT32);
+            result->setFormRange(1, 1536000, 1);
+            break;
+        case MTP_PROPERTY_NUMBER_OF_CHANNELS:
+            result = new MtpProperty(property, MTP_TYPE_UINT16);
+            result->setFormEnum(channelEnum, sizeof(channelEnum)/sizeof(channelEnum[0]));
+            break;
+        case MTP_PROPERTY_SAMPLE_RATE:
+            result = new MtpProperty(property, MTP_TYPE_UINT32);
+            result->setFormRange(8000, 48000, 1);
+            break;
     }
 
     return result;
@@ -924,7 +981,7 @@ MtpProperty* MyMtpDatabase::getDevicePropertyDesc(
         case MTP_DEVICE_PROPERTY_DEVICE_FRIENDLY_NAME:
             writable = TRUE;
             // fall through
-        case MTP_DEVICE_PROPERTY_IMAGE_SIZE:
+        case MTP_DEVICE_PROPERTY_IMAGE_SIZE: {
             result = new MtpProperty(property, MTP_TYPE_STR, writable);
 
             // get current value
@@ -940,6 +997,12 @@ MtpProperty* MyMtpDatabase::getDevicePropertyDesc(
             } else {
                 // ALOGE("unable to read device property, response: %04X", ret);
             }
+            break;
+        }
+        case MTP_DEVICE_PROPERTY_BATTERY_LEVEL:
+            result = new MtpProperty(property, MTP_TYPE_UINT8);
+            result->setFormRange(0, mBatteryScale, 1);
+            result->mCurrentValue.u.u8 = (uint8_t)mBatteryLevel;
             break;
     }
 
@@ -982,6 +1045,34 @@ const String CMtpDatabase::STORAGE_PARENT_WHERE = CMtpDatabase::STORAGE_WHERE + 
 const String CMtpDatabase::FORMAT_PARENT_WHERE = CMtpDatabase::FORMAT_WHERE + " AND " + IMediaStoreFilesFileColumns::PARENT + "=?";
 const String CMtpDatabase::STORAGE_FORMAT_PARENT_WHERE = CMtpDatabase::STORAGE_FORMAT_WHERE + " AND " + IMediaStoreFilesFileColumns::PARENT + "=?";
 
+CMtpDatabase::BatteryReceiver::BatteryReceiver(
+    /* [in] */ CMtpDatabase* host)
+    : mHost(host)
+{
+}
+
+ECode CMtpDatabase::BatteryReceiver::OnReceive(
+    /* [in] */ IContext* context,
+    /* [in] */ IIntent* intent)
+{
+    String action;
+    intent->GetAction(&action);
+    if (action.Equals(IIntent::ACTION_BATTERY_CHANGED)) {
+        intent->GetIntExtra(IBatteryManager::EXTRA_SCALE, 0, &mHost->mBatteryScale);
+        Int32 newLevel;
+        intent->GetIntExtra(IBatteryManager::EXTRA_LEVEL, 0, &newLevel);
+        if (newLevel != mHost->mBatteryLevel) {
+            mHost->mBatteryLevel = newLevel;
+            if (mHost->mServer != NULL) {
+                // send device property changed event
+                mHost->mServer->SendDevicePropertyChanged(
+                        IMtpConstants::DEVICE_PROPERTY_BATTERY_LEVEL);
+            }
+        }
+    }
+    return NOERROR;
+}
+
 CMtpDatabase::CMtpDatabase()
     : mMediaStoragePath(NULL)
     , mSubDirectoriesWhere(NULL)
@@ -1006,7 +1097,8 @@ CMtpDatabase::CMtpDatabase()
     OBJECT_INFO_PROJECTION->Set(2, IMediaStoreFilesFileColumns::FORMAT);
     OBJECT_INFO_PROJECTION->Set(3, IMediaStoreFilesFileColumns::PARENT);
     OBJECT_INFO_PROJECTION->Set(4, IMediaStoreFilesFileColumns::DATA);
-    OBJECT_INFO_PROJECTION->Set(5, IMediaStoreFilesFileColumns::DATE_MODIFIED);
+    OBJECT_INFO_PROJECTION->Set(5, IMediaStoreFilesFileColumns::DATE_ADDED);
+    OBJECT_INFO_PROJECTION->Set(6, IMediaStoreFilesFileColumns::DATE_MODIFIED);
 
     FILE_PROPERTIES = ArrayOf<Int32>::Alloc(10);
             // NOTE must match beginning of AUDIO_PROPERTIES, VIDEO_PROPERTIES
@@ -1044,6 +1136,11 @@ CMtpDatabase::CMtpDatabase()
     AUDIO_PROPERTIES->Set(16, IMtpConstants::PROPERTY_DURATION);
     AUDIO_PROPERTIES->Set(17, IMtpConstants::PROPERTY_GENRE);
     AUDIO_PROPERTIES->Set(18, IMtpConstants::PROPERTY_COMPOSER);
+    AUDIO_PROPERTIES->Set(19, IMtpConstants::PROPERTY_AUDIO_WAVE_CODEC);
+    AUDIO_PROPERTIES->Set(20, IMtpConstants::PROPERTY_BITRATE_TYPE);
+    AUDIO_PROPERTIES->Set(21, IMtpConstants::PROPERTY_AUDIO_BITRATE);
+    AUDIO_PROPERTIES->Set(22, IMtpConstants::PROPERTY_NUMBER_OF_CHANNELS);
+    AUDIO_PROPERTIES->Set(23, IMtpConstants::PROPERTY_SAMPLE_RATE);
 
     VIDEO_PROPERTIES = ArrayOf<Int32>::Alloc(15);
             // NOTE must match FILE_PROPERTIES above
@@ -1112,6 +1209,7 @@ CMtpDatabase::CMtpDatabase()
             // image specific properties
     ALL_PROPERTIES->Set(24, IMtpConstants::PROPERTY_DESCRIPTION);
 
+    mBatteryReceiver = new BatteryReceiver(this);
 }
 
 ECode CMtpDatabase::constructor(
@@ -1123,6 +1221,7 @@ ECode CMtpDatabase::constructor(
     NativeSetup();
 
     mContext = context;
+    context->GetPackageName(&mPackageName);
     AutoPtr<IContentResolver> cr;
     context->GetContentResolver((IContentResolver**)&cr);
     cr->AcquireProvider(String("media"), (IIContentProvider**)&mMediaProvider);
@@ -1131,7 +1230,8 @@ ECode CMtpDatabase::constructor(
     AutoPtr<IMediaStoreFiles> files;
     CMediaStoreFiles::AcquireSingleton((IMediaStoreFiles**)&files);
     files->GetMtpObjectsUri(volumeName, (IUri**)&mObjectsUri);
-    CMediaScanner::New(context, (IMediaScanner**)&mMediaScanner);
+// TODO: Need CMediaScanner
+    // CMediaScanner::New(context, (IMediaScanner**)&mMediaScanner);
 
     mSubDirectories = subDirectories;
     if (subDirectories != NULL) {
@@ -1185,6 +1285,27 @@ ECode CMtpDatabase::constructor(
 void CMtpDatabase::Finalize()
 {
     NativeFinalize();
+}
+
+ECode CMtpDatabase::SetServer(
+    /* [in] */ IMtpServer* server)
+{
+    mServer = server;
+
+    // always unregister before registering
+    // try {
+        mContext->UnregisterReceiver(mBatteryReceiver);
+    // } catch (IllegalArgumentException e) {
+    //     // wasn't previously registered, ignore
+    // }
+
+    // register for battery notifications when we are connected
+    if (server != NULL) {
+        AutoPtr<IIntentFilter> filter;
+        CIntentFilter::New(IIntent::ACTION_BATTERY_CHANGED, (IIntentFilter**)&filter);
+        mContext->RegisterReceiver(mBatteryReceiver, filter);
+    }
+    return NOERROR;
 }
 
 ECode CMtpDatabase::AddStorage(
@@ -1258,8 +1379,7 @@ void CMtpDatabase::InitDeviceProperties(
             if (c != NULL) c->Close();
             if (db != NULL) db->Close();
         //}
-        Boolean isDeleted;
-        databaseFile->Delete(&isDeleted);
+        context->DeleteDatabase(devicePropertiesName);
     }
 }
 
@@ -1299,6 +1419,26 @@ Boolean CMtpDatabase::IsStorageSubDirectory(
     return FALSE;
 }
 
+// returns true if the path is in the storage root
+Boolean CMtpDatabase::InStorageRoot(
+    /* [in] */ const String& path)
+{
+    // try {
+        AutoPtr<IFile> f;
+        CFile::New(path);
+        String canonical;
+        f->GetCanonicalPath(&canonical);
+        for (String root: mStorageMap.keySet()) {
+            if (canonical.startsWith(root)) {
+                return TRUE;
+            }
+        }
+    // } catch (IOException e) {
+    //     // ignore
+    // }
+    return FALSE;
+}
+
 Int32 CMtpDatabase::BeginSendObject(
     /* [in] */ const String& path,
     /* [in] */ Int32 format,
@@ -1307,6 +1447,11 @@ Int32 CMtpDatabase::BeginSendObject(
     /* [in] */ Int64 size,
     /* [in] */ Int64 modified)
 {
+    // if the path is outside of the storage root, do not allow access
+    if (!InStorageRoot(path)) {
+        Logger::E(TAG, String("attempt to put file outside of storage area: ") + path);
+        return -1;
+    }
     // if mSubDirectories is not null, do not allow copying files to any other locations
     if (!InStorageSubDirectory(path)) return -1;
 
@@ -1316,7 +1461,7 @@ Int32 CMtpDatabase::BeginSendObject(
         //try {
         AutoPtr<ArrayOf<String> > s = ArrayOf<String>::Alloc(1);
         s->Set(0, path);
-        mMediaProvider->Query(mObjectsUri, ID_PROJECTION, PATH_WHERE, s, String(NULL), NULL, (ICursor**)&c);
+        mMediaProvider->Query(mPackageName, mObjectsUri, ID_PROJECTION, PATH_WHERE, s, String(NULL), NULL, (ICursor**)&c);
         Int32 count;
         if (c != NULL) {
             Int32 count;
@@ -1359,7 +1504,7 @@ Int32 CMtpDatabase::BeginSendObject(
 
     //try {
         AutoPtr<IUri> uri;
-        mMediaProvider->Insert(mObjectsUri, values, (IUri**)&uri);
+        mMediaProvider->Insert(mPackageName, mObjectsUri, values, (IUri**)&uri);
         if (uri != NULL) {
             AutoPtr<ArrayOf<String> > s;
             uri->GetPathSegments((ArrayOf<String>**)&s);
@@ -1424,7 +1569,7 @@ void CMtpDatabase::EndSendObject(
                 CMediaStoreAudioPlaylists::AcquireSingleton((IMediaStoreAudioPlaylists**)&list);
                 AutoPtr<IUri> extUri;
                 list->GetEXTERNAL_CONTENT_URI((IUri**)&extUri);
-                mMediaProvider->Insert(extUri, values, (IUri**)&uri);
+                mMediaProvider->Insert(mPackageName, extUri, values, (IUri**)&uri);
             //} catch (RemoteException e) {
             //    Log->E(TAG, "RemoteException in endSendObject", e);
             //}
@@ -1551,7 +1696,7 @@ AutoPtr<ICursor> CMtpDatabase::CreateObjectQuery(
     }
 
     AutoPtr<ICursor> cur;
-    mMediaProvider->Query(mObjectsUri, ID_PROJECTION, where, whereArgs, String(NULL), NULL, (ICursor**)&cur);
+    mMediaProvider->Query(mPackageName, mObjectsUri, ID_PROJECTION, where, whereArgs, String(NULL), NULL, (ICursor**)&cur);
     return cur;
 }
 
@@ -1682,6 +1827,7 @@ AutoPtr<ArrayOf<Int32> > CMtpDatabase::GetSupportedDeviceProperties()
     array->Set(0, IMtpConstants::DEVICE_PROPERTY_SYNCHRONIZATION_PARTNER);
     array->Set(1, IMtpConstants::DEVICE_PROPERTY_DEVICE_FRIENDLY_NAME);
     array->Set(2, IMtpConstants::DEVICE_PROPERTY_IMAGE_SIZE);
+    array->Set(3, IMtpConstants::DEVICE_PROPERTY_BATTERY_LEVEL);
     return array;
 }
 
@@ -1706,7 +1852,7 @@ AutoPtr<IMtpPropertyList> CMtpDatabase::GetObjectPropertyList(
         HashMap<AutoPtr<IInteger32>, AutoPtr<IMtpPropertyGroup> >::Iterator it = mPropertyGroupsByFormat.Find(iFormat);
         if (it == mPropertyGroupsByFormat.End()) {
             AutoPtr<ArrayOf<Int32> > propertyList = GetSupportedObjectProperties(format);
-            CMtpPropertyGroup::New(this, mMediaProvider, mVolumeName, propertyList, (IMtpPropertyGroup**)&propertyGroup);
+            CMtpPropertyGroup::New(this, mMediaProvider, mPackageName, mVolumeName, propertyList, (IMtpPropertyGroup**)&propertyGroup);
             mPropertyGroupsByFormat[iFormat] = propertyGroup;
         }
     } else {
@@ -1716,7 +1862,7 @@ AutoPtr<IMtpPropertyList> CMtpDatabase::GetObjectPropertyList(
         if (it == mPropertyGroupsByProperty.End()) {
             AutoPtr<ArrayOf<Int32> > propertyList = ArrayOf<Int32>::Alloc(1);
             propertyList->Set(0, (Int32)property);
-            CMtpPropertyGroup::New(this, mMediaProvider, mVolumeName, propertyList, (IMtpPropertyGroup**)&propertyGroup);
+            CMtpPropertyGroup::New(this, mMediaProvider, mPackageName, mVolumeName, propertyList, (IMtpPropertyGroup**)&propertyGroup);
             mPropertyGroupsByProperty[iProperty] = propertyGroup;
         }
     }
@@ -1737,7 +1883,7 @@ Int32 CMtpDatabase::RenameFile(
     AutoPtr<ArrayOf<String> > whereArgs = ArrayOf<String>::Alloc(1);
     whereArgs->Set(0, StringUtils::Int32ToString(handle));
     //try {
-        mMediaProvider->Query(mObjectsUri, PATH_PROJECTION, ID_WHERE, whereArgs, String(NULL), NULL, (ICursor**)&c);
+        mMediaProvider->Query(mPackageName, mObjectsUri, PATH_PROJECTION, ID_WHERE, whereArgs, String(NULL), NULL, (ICursor**)&c);
         Boolean b;
         if (c != NULL && (c->MoveToNext(&b), b)) {
             c->GetString(1, &path);
@@ -1786,7 +1932,7 @@ Int32 CMtpDatabase::RenameFile(
     //try {
         // note - we are relying on a special case in MediaProvider->Update() to update
         // the paths for all children in the case where this is a directory.
-        mMediaProvider->Update(mObjectsUri, values, ID_WHERE, whereArgs, &updated);
+        mMediaProvider->Update(mPackageName, mObjectsUri, values, ID_WHERE, whereArgs, &updated);
     //} catch (RemoteException e) {
     //    Log->E(TAG, "RemoteException in mMediaProvider->Update", e);
     //}
@@ -1807,7 +1953,7 @@ Int32 CMtpDatabase::RenameFile(
             // directory was unhidden
             //try {
                 AutoPtr<IBundle> bundle;
-                mMediaProvider->Call(IMediaStore::UNHIDE_CALL, newPath, NULL, (IBundle**)&bundle);
+                mMediaProvider->Call(mPackageName, IMediaStore::UNHIDE_CALL, newPath, NULL, (IBundle**)&bundle);
             //} catch (RemoteException e) {
             //    Log->E(TAG, "failed to unhide/rescan for " + newPath);
             //}
@@ -1820,7 +1966,7 @@ Int32 CMtpDatabase::RenameFile(
                 String parent;
                 oldFile->GetParent(&parent);
                 AutoPtr<IBundle> bundle;
-                mMediaProvider->Call(IMediaStore::UNHIDE_CALL, parent, NULL, (IBundle**)&bundle);
+                mMediaProvider->Call(mPackageName, IMediaStore::UNHIDE_CALL, parent, NULL, (IBundle**)&bundle);
             //} catch (RemoteException e) {
             //    Log->E(TAG, "failed to unhide/rescan for " + newPath);
             //}
@@ -1884,6 +2030,8 @@ Int32 CMtpDatabase::GetDeviceProperty(
             outStringValue->Set(imageSize.GetLength(), 0);
             return IMtpConstants::RESPONSE_OK;
 
+            // DEVICE_PROPERTY_BATTERY_LEVEL is implemented in the JNI code
+
         default:
             return IMtpConstants::RESPONSE_DEVICE_PROP_NOT_SUPPORTED;
     }
@@ -1914,13 +2062,13 @@ Boolean CMtpDatabase::GetObjectInfo(
     /* [in] */ Int32 handle,
     /* [in] */ ArrayOf<Int32>* outStorageFormatParent,
     /* [in] */ ArrayOf<Char32>* outName,
-    /* [in] */ ArrayOf<Int64>* outModified)
+    /* [in] */ ArrayOf<Int64>* outCreatedModified)
 {
     AutoPtr<ICursor> c;
     //try {
         AutoPtr<ArrayOf<String> > array = ArrayOf<String>::Alloc(1);
         array->Set(0, StringUtils::Int32ToString(handle));
-        mMediaProvider->Query(mObjectsUri, OBJECT_INFO_PROJECTION,
+        mMediaProvider->Query(mPackageName, mObjectsUri, OBJECT_INFO_PROJECTION,
                         ID_WHERE, array, String(NULL), NULL, (ICursor**)&c);
         Boolean b;
         if (c != NULL && (c->MoveToNext(&b),b)) {
@@ -1948,7 +2096,14 @@ Boolean CMtpDatabase::GetObjectInfo(
 
             Int64 value;
             c->GetInt64(5, &value);
-            outModified->Set(0, value);
+            outCreatedModified->Set(0, value);
+            c->GetInt64(6, &value);
+            outCreatedModified->Set(1, value);
+
+            // use modification date as creation date if date added is not set
+            if ((*outCreatedModified)[0] == 0) {
+                (*outCreatedModified)[0] = (*outCreatedModified)[1];
+            }
             return TRUE;
         }
     //} catch (RemoteException e) {
@@ -1980,7 +2135,7 @@ Int32 CMtpDatabase::GetObjectFilePath(
     //try {
         AutoPtr<ArrayOf<String> > array = ArrayOf<String>::Alloc(1);
         array->Set(0, StringUtils::Int32ToString(handle));
-        mMediaProvider->Query(mObjectsUri, PATH_FORMAT_PROJECTION,
+        mMediaProvider->Query(mPackageName, mObjectsUri, PATH_FORMAT_PROJECTION,
                         ID_WHERE, array, String(NULL), NULL, (ICursor**)&c);
         Boolean b;
         if (c != NULL && (c->MoveToNext(&b),b)) {
@@ -2027,7 +2182,7 @@ Int32 CMtpDatabase::DeleteFile(
     //try {
         AutoPtr<ArrayOf<String> > array = ArrayOf<String>::Alloc(1);
         array->Set(0, StringUtils::Int32ToString(handle));
-        mMediaProvider->Query(mObjectsUri, PATH_FORMAT_PROJECTION,
+        mMediaProvider->Query(mPackageName, mObjectsUri, PATH_FORMAT_PROJECTION,
                         ID_WHERE, array, String(NULL), NULL, (ICursor**)&c);
         Boolean b;
         if (c != NULL && (c->MoveToNext(&b),b)) {
@@ -2062,7 +2217,7 @@ Int32 CMtpDatabase::DeleteFile(
             ss->Set(0, path + "/%");
             ss->Set(1, StringUtils::Int32ToString(len));
             ss->Set(2, path + "/%");
-            mMediaProvider->Delete(uri,
+            mMediaProvider->Delete(mPackageName, uri,
                 // the 'like' makes it use the index, the 'lower()' makes it correct
                 // when the path contains sqlite wildcard characters
                 String("_data LIKE ?1 AND lower(substr(_data,1,?2))=lower(?3)"), ss, &count);
@@ -2073,14 +2228,14 @@ Int32 CMtpDatabase::DeleteFile(
         CMediaStoreFiles::AcquireSingleton((IMediaStoreFiles**)&files);
         files->GetMtpObjectsUri(mVolumeName, handle, (IUri**)&uri);
         Int32 v;
-        mMediaProvider->Delete(uri, String(NULL), NULL, &v);
+        mMediaProvider->Delete(mPackageName, uri, String(NULL), NULL, &v);
         if (v > 0) {
             if (format != IMtpConstants::FORMAT_ASSOCIATION
                     && path.ToLowerCase(/*Locale->US*/).EndWith("/.nomedia")) {
                 //try {
                     String parentPath = path.Substring(0, path.LastIndexOf("/"));
                     AutoPtr<IBundle> bundle;
-                    mMediaProvider->Call(IMediaStore::UNHIDE_CALL, parentPath, NULL, (IBundle**)&bundle);
+                    mMediaProvider->Call(mPackageName, IMediaStore::UNHIDE_CALL, parentPath, NULL, (IBundle**)&bundle);
                 //} catch (RemoteException e) {
                 //    Log->E(TAG, "failed to unhide/rescan for " + path);
                 //}
@@ -2108,7 +2263,7 @@ AutoPtr<ArrayOf<Int32> > CMtpDatabase::GetObjectReferences(
     files->GetMtpReferencesUri(mVolumeName, handle, (IUri**)&uri);
     AutoPtr<ICursor> c;
     //try {
-        mMediaProvider->Query(uri, ID_PROJECTION, String(NULL), NULL, String(NULL), NULL, (ICursor**)&c);
+        mMediaProvider->Query(mPackageName, uri, ID_PROJECTION, String(NULL), NULL, String(NULL), NULL, (ICursor**)&c);
         if (c == NULL) {
             return NULL;
         }
@@ -2156,7 +2311,7 @@ Int32 CMtpDatabase::SetObjectReferences(
     }
     //try {
         Int32 c;
-        mMediaProvider->BulkInsert(uri, valuesList, &c);
+        mMediaProvider->BulkInsert(mPackageName, uri, valuesList, &c);
         if (c > 0) {
             return IMtpConstants::RESPONSE_OK;
         }
@@ -2184,7 +2339,7 @@ void CMtpDatabase::SessionEnded()
 void CMtpDatabase::NativeSetup()
 {
     MyMtpDatabase* database = new MyMtpDatabase(this);
-    mNativeContext = (Int32)database;
+    mNativeContext = (Int64)database;
     // checkAndClearExceptionFromCallback(env, __FUNCTION__);
 }
 

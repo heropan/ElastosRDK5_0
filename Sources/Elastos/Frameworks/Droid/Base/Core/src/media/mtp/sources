@@ -12,12 +12,12 @@ INCLUDES += $(MAKEDIR)/../../../inc/media/mtp
 INCLUDES += $(PREBUILD_INC)/MediaMtp
 
 SOURCES = CMtpConstants.cpp
-SOURCES += CMtpDatabase.cpp
+#SOURCES += CMtpDatabase.cpp
 SOURCES += CMtpDevice.cpp
 SOURCES += CMtpDeviceInfo.cpp
 SOURCES += CMtpObjectInfo.cpp
-SOURCES += CMtpPropertyGroup.cpp
+#SOURCES += CMtpPropertyGroup.cpp
 SOURCES += CMtpPropertyList.cpp
-SOURCES += CMtpServer.cpp
+#SOURCES += CMtpServer.cpp
 SOURCES += CMtpStorage.cpp
 SOURCES += CMtpStorageInfo.cpp

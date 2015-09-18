@@ -8,7 +8,8 @@
 #include <fcntl.h>
 
 using namespace android;
-using Elastos::Core::Thread;
+using Elastos::Core::IThread;
+using Elastos::Core::CThread;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -24,6 +25,7 @@ ECode CMtpServer::constructor(
     /* [in] */ Boolean usePtp)
 {
     NativeSetup(database, usePtp);
+    database->SetServer(IMtpServer::Probe(this));
     return NOERROR;
 }
 
@@ -55,6 +57,14 @@ ECode CMtpServer::SendObjectRemoved(
     /* [in] */ Int32 handle)
 {
     NativeSendObjectRemoved(handle);
+
+    return NOERROR;
+}
+
+ECode CMtpServer::SendDevicePropertyChanged(
+    /* [in] */ Int32 property)
+{
+    NativeSendDevicePropertyChanged(property);
 
     return NOERROR;
 }
@@ -140,6 +150,19 @@ void CMtpServer::NativeSendObjectRemoved(
     MtpServer* server = (MtpServer*)mNativeContext;
     if (server)
         server->sendObjectRemoved(handle);
+    else {
+        //ALOGE("server is null in send_object_removed");
+    }
+}
+
+void CMtpServer::NativeSendDevicePropertyChanged(
+    /* [in] */ Int32 property)
+{
+    Elastos::Core::AutoLock autoLock(mutex);
+
+    MtpServer* server = (MtpServer*)mNativeContext;
+    if (server)
+        server->sendDevicePropertyChanged(property);
     else {
         //ALOGE("server is null in send_object_removed");
     }

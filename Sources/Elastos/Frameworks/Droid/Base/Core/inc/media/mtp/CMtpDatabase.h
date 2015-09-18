@@ -22,6 +22,23 @@ namespace Mtp {
 
 CarClass(CMtpDatabase)
 {
+private:
+    class BatteryReceiver
+        : public BroadcastReceiver
+    {
+    public:
+        BatteryReceiver(
+            /* [in] */ CMtpDatabase* host);
+
+        // @Override
+        CARAPI OnReceive(
+            /* [in] */ IContext* context,
+            /* [in] */ IIntent* intent);
+
+    private:
+        CMtpDatabase* mHost;
+    };
+
 public:
     CMtpDatabase();
 
@@ -30,6 +47,9 @@ public:
         /* [in] */ const String& volumeName,
         /* [in] */ const String& storagePath,
         /* [in] */ ArrayOf<String>* subDirectories);
+
+    CARAPI SetServer(
+        /* [in] */ IMtpServer * server);
 
     CARAPI AddStorage(
         /* [in] */ IMtpStorage* storage);
@@ -51,6 +71,10 @@ public:
         /* [in] */ const String& path);
 
     CARAPI_(Boolean) IsStorageSubDirectory(
+        /* [in] */ const String& path);
+
+    // returns true if the path is in the storage root
+    CARAPI_(Boolean) InStorageRoot(
         /* [in] */ const String& path);
 
     CARAPI_(Int32) BeginSendObject(
@@ -151,6 +175,7 @@ private:
     static const String TAG;
 
     AutoPtr<IContext> mContext;
+    String mPackageName;
     AutoPtr<IIContentProvider> mMediaProvider;
     String mVolumeName;
     AutoPtr<IUri> mObjectsUri;
@@ -203,8 +228,16 @@ private:
 
     AutoPtr<IMediaScanner> mMediaScanner;
 
+    AutoPtr<IMtpServer> mServer;
+
+    // read from native code
+    Int32 mBatteryLevel;
+    Int32 mBatteryScale;
+
+    AutoPtr<IBroadcastReceiver> mBatteryReceiver;
+
     // used by the JNI code
-    Int32 mNativeContext;
+    Int64 mNativeContext;
 };
 
 } // namespace Mtp

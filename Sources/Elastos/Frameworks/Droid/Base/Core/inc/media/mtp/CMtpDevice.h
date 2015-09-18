@@ -128,7 +128,7 @@ private:
 private:
     static const String TAG;
     AutoPtr<IUsbDevice> mDevice;
-    Int32 mNativeContext;
+    Int64 mNativeContext;
 
 };
 

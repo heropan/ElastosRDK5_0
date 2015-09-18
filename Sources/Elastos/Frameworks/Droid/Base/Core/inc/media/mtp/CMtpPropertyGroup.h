@@ -24,6 +24,7 @@ public:
     CARAPI constructor(
         /* [in] */ IMtpDatabase* database,
         /* [in] */ IIContentProvider* provider,
+        /* [in] */ const String& packageName,
         /* [in] */ const String& volume,
         /* [in] */ ArrayOf<Int32>* properties);
 
@@ -80,6 +81,7 @@ private:
 private:
     AutoPtr<IMtpDatabase> mDatabase;
     AutoPtr<IIContentProvider> mProvider;
+    String mPackageName;
     String mVolumeName;
     AutoPtr<IUri> mUri;
 

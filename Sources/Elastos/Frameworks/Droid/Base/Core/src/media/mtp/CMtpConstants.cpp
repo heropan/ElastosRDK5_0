@@ -10,15 +10,15 @@ ECode CMtpConstants::IsAbstractObject(
         /* [out] */ Boolean* result)
 {
     switch (format) {
-        case FORMAT_ABSTRACT_MULTIMEDIA_ALBUM:
-        case FORMAT_ABSTRACT_IMAGE_ALBUM:
-        case FORMAT_ABSTRACT_AUDIO_ALBUM:
-        case FORMAT_ABSTRACT_VIDEO_ALBUM:
-        case FORMAT_ABSTRACT_AV_PLAYLIST:
-        case FORMAT_ABSTRACT_AUDIO_PLAYLIST:
-        case FORMAT_ABSTRACT_VIDEO_PLAYLIST:
-        case FORMAT_ABSTRACT_MEDIACAST:
-        case FORMAT_ABSTRACT_DOCUMENT:
+        case IMtpConstants::FORMAT_ABSTRACT_MULTIMEDIA_ALBUM:
+        case IMtpConstants::FORMAT_ABSTRACT_IMAGE_ALBUM:
+        case IMtpConstants::FORMAT_ABSTRACT_AUDIO_ALBUM:
+        case IMtpConstants::FORMAT_ABSTRACT_VIDEO_ALBUM:
+        case IMtpConstants::FORMAT_ABSTRACT_AV_PLAYLIST:
+        case IMtpConstants::FORMAT_ABSTRACT_AUDIO_PLAYLIST:
+        case IMtpConstants::FORMAT_ABSTRACT_VIDEO_PLAYLIST:
+        case IMtpConstants::FORMAT_ABSTRACT_MEDIACAST:
+        case IMtpConstants::FORMAT_ABSTRACT_DOCUMENT:
             *result = TRUE;
         default:
             *result = FALSE;
