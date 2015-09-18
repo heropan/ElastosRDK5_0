@@ -3,6 +3,7 @@
 #include "internal/content/CNativeLibraryHelperHandle.h"
 #include "os/Build.h"
 #include "os/SELinux.h"
+#include <elastos/droid/system/Os.h>
 #include <elastos/droid/system/OsConstants.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <ext/frameworkext.h>
@@ -45,9 +46,6 @@ using Elastos::Droid::Os::SELinux;
 using Elastos::Droid::System::OsConstants;
 using Elastos::IO::CFile;
 using Elastos::Utility::Logging::Slogger;
-using Libcore::IO::CLibcore;
-using Libcore::IO::ILibcore;
-using Libcore::IO::IOs;
 
 namespace Elastos {
 namespace Droid {
@@ -262,11 +260,7 @@ ECode CNativeLibraryHelper::CreateNativeLibrarySubdir(
             return E_IO_EXCEPTION;
         }
 
-        AutoPtr<ILibcore> libcore;
-        CLibcore::AcquireSingleton((ILibcore**)&libcore);
-        AutoPtr<IOs> os;
-        libcore->GetOs((IOs**)&os);
-        if (os->Chmod(strPath, OsConstants::_S_IRWXU | OsConstants::_S_IRGRP | OsConstants::_S_IXGRP
+        if (Elastos::Droid::System::Os::Chmod(strPath, OsConstants::_S_IRWXU | OsConstants::_S_IRGRP | OsConstants::_S_IXGRP
             | OsConstants::_S_IROTH | OsConstants::_S_IXOTH) == (ECode)E_ERRNO_EXCEPTION) {
             Slogger::E(TAG, "Cannot chmod native library directory %s", strPath.string());
             return E_IO_EXCEPTION;

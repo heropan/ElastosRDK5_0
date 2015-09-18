@@ -1,37 +1,47 @@
 
 #include "ext/frameworkdef.h"
-#include "os/ZygoteConnection.h"
-#include "os/CZygoteInit.h"
+#include "internal/os/ZygoteConnection.h"
+#include "internal/os/CZygoteInit.h"
+#include "internal/os/RuntimeInit.h"
+#include "internal/os/Zygote.h"
 #include "os/SELinux.h"
 #include "os/Process.h"
-#include "os/RuntimeInit.h"
+#include "os/SystemClock.h"
 #include <Elastos.CoreLibrary.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/droid/system/Os.h>
+#include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Os::SELinux;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::IO::ICloseable;
+using Elastos::IO::IReader;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IInputStreamReader;
 using Elastos::IO::CInputStreamReader;
 using Elastos::IO::CDataOutputStream;
 using Elastos::IO::CBufferedReader;
-using Elastos::IO::IIoUtils;
-using Elastos::IO::CIoUtils;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
+using Elastos::IO::IFileOutputStream;
+using Elastos::IO::CFileOutputStream;
 using Elastos::IO::CDataInputStream;
 using Elastos::IO::IDataInput;
 using Elastos::IO::IDataOutput;
+using Elastos::IO::CPrintStream;
 using Elastos::Core::StringUtils;
-using Elastos::Droid::System::IZygote;
-using Elastos::Droid::System::CZygote;
-using Elastos::Droid::Os::SELinux;
-using Elastos::Droid::Os::Process;
+using Elastos::Utility::Logging::Logger;
+using Libcore::IO::IIoUtils;
+using Libcore::IO::CIoUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace Os {
 
+const String ZygoteConnection::TAG("Zygote");
 const Int32 ZygoteConnection::CONNECTION_TIMEOUT_MILLIS;
 const Int32 ZygoteConnection::MAX_ZYGOTE_ARGC;
 AutoPtr<ILocalSocket> ZygoteConnection::sPeerWaitSocket;
@@ -42,7 +52,6 @@ ZygoteConnection::Arguments::Arguments(
     , mUidSpecified(FALSE)
     , mGid(0)
     , mGidSpecified(FALSE)
-    , mPeerWait(FALSE)
     , mDebugFlags(0)
     , mMountExternal(IZygote::MOUNT_EXTERNAL_NONE)
     , mTargetSdkVersion(0)
@@ -52,6 +61,7 @@ ZygoteConnection::Arguments::Arguments(
     , mPermittedCapabilities(0)
     , mEffectiveCapabilities(0)
     , mSeInfoSpecified(FALSE)
+    , mAbiListQuery(FALSE)
 {
     ASSERT_SUCCEEDED(ParseArgs(args));
 }
@@ -70,8 +80,7 @@ ECode ZygoteConnection::Arguments::ParseArgs(
         }
         else if (arg.StartWith("--setuid=")) {
             if (mUidSpecified) {
-                // throw new IllegalArgumentException(
-                //         "Duplicate arg specified");
+                Logger::E(TAG, "Duplicate arg specified");
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
             mUidSpecified = TRUE;
@@ -79,8 +88,7 @@ ECode ZygoteConnection::Arguments::ParseArgs(
         }
         else if (arg.StartWith("--setgid=")) {
             if (mGidSpecified) {
-                // throw new IllegalArgumentException(
-                //         "Duplicate arg specified");
+                Logger::E(TAG, "Duplicate arg specified");
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
             mGidSpecified = TRUE;
@@ -96,35 +104,26 @@ ECode ZygoteConnection::Arguments::ParseArgs(
             mTargetSdkVersion = StringUtils::ParseInt32(arg.Substring(arg.IndexOf('=') + 1));
         }
         else if (arg.Equals("--enable-debugger")) {
-        //     debugFlags |= Zygote.DEBUG_ENABLE_DEBUGGER;
-            assert(0);
+            mDebugFlags |= IZygote::DEBUG_ENABLE_DEBUGGER;
         }
         else if (arg.Equals("--enable-safemode")) {
-        //     debugFlags |= Zygote.DEBUG_ENABLE_SAFEMODE;
-            assert(0);
+            mDebugFlags |= IZygote::DEBUG_ENABLE_SAFEMODE;
         }
         else if (arg.Equals("--enable-checkjni")) {
-        //     debugFlags |= Zygote.DEBUG_ENABLE_CHECKJNI;
-            assert(0);
+            mDebugFlags |= IZygote::DEBUG_ENABLE_CHECKJNI;
         }
         else if (arg.Equals("--enable-jni-logging")) {
-        //     debugFlags |= Zygote.DEBUG_ENABLE_JNI_LOGGING;
-            assert(0);
+            mDebugFlags |= IZygote::DEBUG_ENABLE_JNI_LOGGING;
         }
         else if (arg.Equals("--enable-assert")) {
-        //     debugFlags |= Zygote.DEBUG_ENABLE_ASSERT;
-            assert(0);
-        }
-        else if (arg.Equals("--peer-wait")) {
-            mPeerWait = TRUE;
+            mDebugFlags |= IZygote::DEBUG_ENABLE_ASSERT;
         }
         else if (arg.Equals("--runtime-init")) {
             mRuntimeInit = TRUE;
         }
         else if (arg.StartWith("--seinfo=")) {
             if (mSeInfoSpecified) {
-                // throw new IllegalArgumentException(
-                //         "Duplicate arg specified");
+                Logger::E(TAG, "Duplicate arg specified");
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
             mSeInfoSpecified = TRUE;
@@ -132,8 +131,7 @@ ECode ZygoteConnection::Arguments::ParseArgs(
         }
         else if (arg.StartWith("--capabilities=")) {
             if (mCapabilitiesSpecified) {
-                // throw new IllegalArgumentException(
-                //         "Duplicate arg specified");
+                Logger::E(TAG, "Duplicate arg specified");
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
             mCapabilitiesSpecified = TRUE;
@@ -153,41 +151,40 @@ ECode ZygoteConnection::Arguments::ParseArgs(
         }
         else if (arg.StartWith("--rlimit=")) {
             // Duplicate --rlimit arguments are specifically allowed.
-            // String[] limitStrings
-            //         = arg.substring(arg.indexOf('=')+1).split(",");
+            AutoPtr<ArrayOf<String> > limitStrings;
+            StringUtils::Split(arg.Substring(arg.IndexOf('=') + 1), String(","),
+                (ArrayOf<String>**)&limitStrings);
 
-            // if (limitStrings.length != 3) {
-            //     throw new IllegalArgumentException(
-            //             "--rlimit= should have 3 comma-delimited ints");
-            // }
-            // int[] rlimitTuple = new int[limitStrings.length];
+            Int32 len = limitStrings->GetLength();
+            if (len != 3) {
+                Logger::E(TAG, "--rlimit= should have 3 comma-delimited ints");
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
+            AutoPtr<ArrayOf<Int32> > rlimitTuple = ArrayOf<Int32>::Alloc(len);
+            for (Int32 i = 0; i < len; i++) {
+                (*rlimitTuple)[i] = StringUtils::ParseInt32((*limitStrings)[i]);
+            }
 
-            // for(int i=0; i < limitStrings.length; i++) {
-            //     rlimitTuple[i] = Integer.parseInt(limitStrings[i]);
-            // }
+            if (mRlimits == NULL) {
+                mRlimits = new List<AutoPtr<ArrayOf<Int32> > >();
+            }
 
-            // if (rlimits == null) {
-            //     rlimits = new ArrayList();
-            // }
-
-            // rlimits.add(rlimitTuple);
+            mRlimits->PushBack(rlimitTuple);
         }
         else if (arg.Equals("-classpath")) {
-            // if (classpath != null) {
-            //     throw new IllegalArgumentException(
-            //             "Duplicate arg specified");
-            // }
-            // try {
-            //     classpath = args[++curArg];
-            // } catch (IndexOutOfBoundsException ex) {
-            //     throw new IllegalArgumentException(
-            //             "-classpath requires argument");
-            // }
+            if (mClasspath != NULL) {
+                Logger::E(TAG, "Duplicate arg specified");
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
+            if (curArg + 1 == args.GetLength()) {
+                Logger::E(TAG, "-classpath requires argument");
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
+            mClasspath = args[++curArg];
         }
         else if (arg.StartWith("--setgroups=")) {
             if (mGids != NULL) {
-                // throw new IllegalArgumentException(
-                //         "Duplicate arg specified");
+                Logger::E(TAG, "Duplicate arg specified");
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
 
@@ -203,8 +200,7 @@ ECode ZygoteConnection::Arguments::ParseArgs(
         }
         else if (arg.Equals("--invoke-with")) {
             if (!mInvokeWith.IsNull()) {
-                // throw new IllegalArgumentException(
-                //         "Duplicate arg specified");
+                Logger::E(TAG, "Duplicate arg specified");
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
             // try {
@@ -216,8 +212,7 @@ ECode ZygoteConnection::Arguments::ParseArgs(
         }
         else if (arg.StartWith("--nice-name=")) {
             if (!mNiceName.IsNull()) {
-                // throw new IllegalArgumentException(
-                //         "Duplicate arg specified");
+                Logger::E(TAG, "Duplicate arg specified");
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
             mNiceName = arg.Substring(arg.IndexOf('=') + 1);
@@ -227,6 +222,15 @@ ECode ZygoteConnection::Arguments::ParseArgs(
         }
         else if (arg.Equals("--mount-external-multiuser-all")) {
             mMountExternal = IZygote::MOUNT_EXTERNAL_MULTIUSER_ALL;
+        }
+        else if (arg.Equals("--query-abi-list")) {
+            mAbiListQuery = TRUE;
+        }
+        else if (arg.StartWith("--instruction-set=")) {
+            mInstructionSet = arg.Substring(arg.IndexOf('=') + 1);
+        }
+        else if (arg.StartWith("--app-data-dir=")) {
+            mAppDataDir = arg.Substring(arg.IndexOf('=') + 1);
         }
         else {
             break;
@@ -247,8 +251,10 @@ ECode ZygoteConnection::Arguments::ParseArgs(
 }
 
 ZygoteConnection::ZygoteConnection(
-    /* [in] */ ILocalSocket* socket)
+    /* [in] */ ILocalSocket* socket,
+    /* [in] */ const String& abiList)
     : mSocket(socket)
+    , mAbiList(abiList)
 {
     AutoPtr<IOutputStream> out;
     socket->GetOutputStream((IOutputStream**)&out);
@@ -258,7 +264,7 @@ ZygoteConnection::ZygoteConnection(
     socket->GetInputStream((IInputStream**)&in);
     AutoPtr<IInputStreamReader> reader;
     CInputStreamReader::New(in, (IInputStreamReader**)&reader);
-    CBufferedReader::New(reader, 256, (IBufferedReader**)&mSocketReader);
+    // CBufferedReader::New(IReader::Probe(reader), 256, (IBufferedReader**)&mSocketReader);
 
     mSocket->SetSoTimeout(CONNECTION_TIMEOUT_MILLIS);
 
@@ -274,6 +280,17 @@ ZygoteConnection::ZygoteConnection(
     mPeerSecurityContext = SELinux::GetPeerContext(fd);
 }
 
+void ZygoteConnection::CheckTime(
+    /* [in] */ Int64 startTime,
+    /* [in] */ const String& where)
+{
+    Int64 now = SystemClock::GetElapsedRealtime();
+    if ((now - startTime) > 1000) {
+        // If we are taking more than a second, log about it.
+        Logger::W(TAG, "Slow operation: %lldms so far, now at %s", (now - startTime), where.string());
+    }
+}
+
 ECode ZygoteConnection::GetFileDescriptor(
     /* [out] */ IFileDescriptor** fd)
 {
@@ -283,22 +300,27 @@ ECode ZygoteConnection::GetFileDescriptor(
 Boolean ZygoteConnection::RunOnce(
     /* [out] */ IRunnable** task)
 {
+    *task = NULL;
     AutoPtr< ArrayOf<String> > args;
     AutoPtr<Arguments> parsedArgs;
     AutoPtr< ArrayOf<IFileDescriptor*> > descriptors;
 
+    Int64 startTime = SystemClock::GetElapsedRealtime();
+
 //    try {
-    ECode ec = ReadArgumentList((ArrayOf<String>**)&args);
+    ECode ec = NOERROR;
+    do {
+        ec = ReadArgumentList((ArrayOf<String>**)&args);
+        if (FAILED(ec))
+            break;
+        ec = mSocket->GetAncillaryFileDescriptors((ArrayOf<IFileDescriptor*>**)&descriptors);
+    } while (0);
+
     if (ec == (ECode)E_IO_EXCEPTION) {
+        Logger::W(TAG, "IOException on command socket ");
         CloseSocket();
         return TRUE;
     }
-    mSocket->GetAncillaryFileDescriptors((ArrayOf<IFileDescriptor*>**)&descriptors);
-//    } catch (IOException ex) {
-//        Log.w(TAG, "IOException on command socket " + ex.getMessage());
-//        closeSocket();
-//        return true;
-//    }
 
     if (args == NULL) {
         // EOF reached.
@@ -308,66 +330,126 @@ Boolean ZygoteConnection::RunOnce(
 
     /** the stderr of the most recent request, if avail */
     AutoPtr<IPrintStream> newStderr;
-//
-//    if (descriptors != null && descriptors.length >= 3) {
-//        newStderr = new PrintStream(
-//                new FileOutputStream(descriptors[2]));
-//    }
+
+    if (descriptors != NULL && descriptors->GetLength() >= 3) {
+        AutoPtr<IFileOutputStream> fops;
+        CFileOutputStream::New((*descriptors)[2], (IFileOutputStream**)&fops);
+        CPrintStream::New(IOutputStream::Probe(fops), (IPrintStream**)&newStderr);
+    }
 
     Int32 pid = -1;
     AutoPtr<IFileDescriptor> childPipeFd;
     AutoPtr<IFileDescriptor> serverPipeFd;
 
-//    try {
-    parsedArgs = new Arguments(*args);
+    ec = NOERROR;
+    do {
+        parsedArgs = new Arguments(*args);
+        if (parsedArgs->mAbiListQuery) {
+            return HandleAbiListQuery();
+        }
 
-    FAIL_RETURN(ApplyUidSecurityPolicy(parsedArgs, mPeer, mPeerSecurityContext));
-    FAIL_RETURN(ApplyRlimitSecurityPolicy(parsedArgs, mPeer, mPeerSecurityContext));
-    FAIL_RETURN(ApplyCapabilitiesSecurityPolicy(parsedArgs, mPeer, mPeerSecurityContext));
-    FAIL_RETURN(ApplyInvokeWithSecurityPolicy(parsedArgs, mPeer, mPeerSecurityContext));
-    FAIL_RETURN(ApplyseInfoSecurityPolicy(parsedArgs, mPeer, mPeerSecurityContext));
+        if (parsedArgs->mPermittedCapabilities != 0 || parsedArgs->mEffectiveCapabilities != 0) {
+            Logger::E(TAG, "Client may not specify capabilities: permitted=0x%x, effective=0x%x",
+                parsedArgs->mPermittedCapabilities, parsedArgs->mEffectiveCapabilities);
+            ec = E_ZYGOTE_SECURITY_EXCEPTION;
+            break;
+        }
 
-    ApplyDebuggerSystemProperty(parsedArgs);
-    ApplyInvokeWithSystemProperty(parsedArgs);
+        ec = ApplyUidSecurityPolicy(parsedArgs, mPeer, mPeerSecurityContext);
+        if (FAILED(ec))
+            break;
+        ec = ApplyRlimitSecurityPolicy(parsedArgs, mPeer, mPeerSecurityContext);
+        if (FAILED(ec))
+            break;
+        ec = ApplyInvokeWithSecurityPolicy(parsedArgs, mPeer, mPeerSecurityContext);
+        if (FAILED(ec))
+            break;
+        ec = ApplyseInfoSecurityPolicy(parsedArgs, mPeer, mPeerSecurityContext);
+        if (FAILED(ec))
+            break;
 
-    AutoPtr<ArrayOf<Int32*> > rlimits;
+        CheckTime(startTime, String("zygoteConnection.runOnce: apply security policies"));
 
-//        if (parsedArgs.rlimits != null) {
-//            rlimits = parsedArgs.rlimits.toArray(intArray2d);
-//        }
-//
-//        if (parsedArgs.runtimeInit && parsedArgs.invokeWith != null) {
-//            FileDescriptor[] pipeFds = Libcore.os.pipe();
-//            childPipeFd = pipeFds[1];
-//            serverPipeFd = pipeFds[0];
-//            ZygoteInit.setCloseOnExec(serverPipeFd, true);
-//        }
-//
-    AutoPtr<IZygote> zygote;
-    CZygote::AcquireSingleton((IZygote**)&zygote);
-    zygote->ForkAndSpecialize(parsedArgs->mUid, parsedArgs->mGid, parsedArgs->mGids,
-            parsedArgs->mDebugFlags, rlimits, parsedArgs->mMountExternal, parsedArgs->mSeInfo,
-            parsedArgs->mNiceName, &pid);
-//    } catch (IOException ex) {
-//        logAndPrintError(newStderr, "Exception creating pipe", ex);
-//    } catch (ErrnoException ex) {
-//        logAndPrintError(newStderr, "Exception creating pipe", ex);
-//    } catch (IllegalArgumentException ex) {
-//        logAndPrintError(newStderr, "Invalid zygote arguments", ex);
-//    } catch (ZygoteSecurityException ex) {
-//        logAndPrintError(newStderr,
-//                "Zygote security policy prevents request: ", ex);
-//    }
+        ApplyDebuggerSystemProperty(parsedArgs);
+        ApplyInvokeWithSystemProperty(parsedArgs);
+
+        CheckTime(startTime, String("zygoteConnection.runOnce: apply security policies"));
+
+        AutoPtr<ArrayOf<Int32*> > rlimits;
+
+    //        if (parsedArgs->mRlimits != NULL) {
+    //            rlimits = parsedArgs->mRlimits.toArray(intArray2d);
+    //        }
+    //
+        if (parsedArgs->mRuntimeInit && parsedArgs->mInvokeWith != NULL) {
+            AutoPtr<ArrayOf<IFileDescriptor*> > pipeFds;
+            ec = Elastos::Droid::System::Os::Pipe((ArrayOf<IFileDescriptor*>**)&pipeFds);
+            if (FAILED(ec))
+                break;
+            childPipeFd = (*pipeFds)[1];
+            serverPipeFd = (*pipeFds)[0];
+            ec = CZygoteInit::SetCloseOnExec(serverPipeFd, TRUE);
+            if (FAILED(ec))
+                break;
+        }
+
+        /**
+         * In order to avoid leaking descriptors to the Zygote child,
+         * the native code must close the two Zygote socket descriptors
+         * in the child process before it switches from Zygote-root to
+         * the UID and privileges of the application being launched.
+         *
+         * In order to avoid "bad file descriptor" errors when the
+         * two LocalSocket objects are closed, the Posix file
+         * descriptors are released via a dup2() call which closes
+         * the socket and substitutes an open descriptor to /dev/null.
+         */
+        AutoPtr<ArrayOf<Int32> > fdsToClose = ArrayOf<Int32>::Alloc(2);
+        (*fdsToClose)[0] = -1;
+        (*fdsToClose)[1] = -1;
+
+        AutoPtr<IFileDescriptor> fd;
+        mSocket->GetFileDescriptor((IFileDescriptor**)&fd);
+
+        if (fd != NULL) {
+            Int32 ifd;
+            fd->GetDescriptor(&ifd);
+            (*fdsToClose)[0] = ifd;
+        }
+
+        fd = CZygoteInit::GetServerSocketFileDescriptor();
+        if (fd != NULL) {
+            Int32 ifd;
+            fd->GetDescriptor(&ifd);
+            (*fdsToClose)[1] = ifd;
+        }
+
+        fd = NULL;
+
+        CheckTime(startTime, String("zygoteConnection.runOnce: preForkAndSpecialize"));
+
+        pid = Zygote::ForkAndSpecialize(parsedArgs->mUid, parsedArgs->mGid, parsedArgs->mGids,
+                parsedArgs->mDebugFlags, rlimits, parsedArgs->mMountExternal, parsedArgs->mSeInfo,
+                parsedArgs->mNiceName, fdsToClose, parsedArgs->mInstructionSet, parsedArgs->mAppDataDir);
+    } while (0);
+
+    if (ec == (ECode)E_IO_EXCEPTION)
+        LogAndPrintError(newStderr, String("Exception creating pipe"));
+    else if (ec == (ECode)E_ERRNO_EXCEPTION)
+        LogAndPrintError(newStderr, String("Exception creating pipe"));
+    else if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION)
+        LogAndPrintError(newStderr, String("Invalid zygote arguments"));
+    else if (ec == (ECode)E_ZYGOTE_SECURITY_EXCEPTION)
+        LogAndPrintError(newStderr, String("Zygote security policy prevents request: "));
 
     AutoPtr<IIoUtils> ioUtils;
     CIoUtils::AcquireSingleton((IIoUtils**)&ioUtils);
-//    try {
+
     if (pid == 0) {
         // in child
         ioUtils->CloseQuietly(serverPipeFd);
         serverPipeFd = NULL;
         HandleChildProc(parsedArgs, descriptors, childPipeFd, newStderr, task);
-        return TRUE;
         // should never get here, the child is expected to either
         // throw ZygoteInit.MethodAndArgsCaller or exec().
         ioUtils->CloseQuietly(childPipeFd);
@@ -381,16 +463,32 @@ Boolean ZygoteConnection::RunOnce(
         ioUtils->CloseQuietly(serverPipeFd);
         return ret;
     }
-//    } finally {
-//        IoUtils.closeQuietly(childPipeFd);
-//        IoUtils.closeQuietly(serverPipeFd);
-//    }
 }
+
+Boolean ZygoteConnection::HandleAbiListQuery()
+{
+    ECode ec = NOERROR;
+    do {
+        // final byte[] abiListBytes = abiList.getBytes(StandardCharsets.US_ASCII);
+        AutoPtr<ArrayOf<Byte> > abiListBytes = mAbiList.GetBytes();
+        ec = IDataOutput::Probe(mSocketOutStream)->WriteInt32(abiListBytes->GetLength());
+        if (FAILED(ec))
+            break;
+        ec = IOutputStream::Probe(mSocketOutStream)->Write(abiListBytes);
+    } while (0);
+
+    if (ec = (ECode)E_IO_EXCEPTION) {
+        Logger::E(TAG, "Error writing to command socket");
+        return TRUE;
+    }
+    return FALSE;
+}
+
 
 void ZygoteConnection::CloseSocket()
 {
     // try {
-    mSocket->Close();
+    ICloseable::Probe(mSocket)->Close();
     // } catch (IOException ex) {
     //     Log.e(TAG, "Exception while closing command "
     //             + "socket in parent", ex);
@@ -514,7 +612,7 @@ void ZygoteConnection::ApplyDebuggerSystemProperty(
     /* [in] */ Arguments* args)
 {
 //    if ("1".equals(SystemProperties.get("ro.debuggable"))) {
-//        args.debugFlags |= Zygote.DEBUG_ENABLE_DEBUGGER;
+//        args.mDebugFlags |= Zygote.DEBUG_ENABLE_DEBUGGER;
 //    }
 }
 
@@ -543,63 +641,6 @@ ECode ZygoteConnection::ApplyRlimitSecurityPolicy(
 //                    "Peer may not specify rlimits");
 //        }
 //     }
-    return NOERROR;
-}
-
-ECode ZygoteConnection::ApplyCapabilitiesSecurityPolicy(
-    /* [in] */ Arguments* args,
-    /* [in] */ ICredentials* peer,
-    /* [in] */ const String& peerSecurityContext)
-{
-//    if (args.permittedCapabilities == 0
-//            && args.effectiveCapabilities == 0) {
-//        // nothing to check
-//        return;
-//    }
-//
-//    boolean allowed = SELinux.checkSELinuxAccess(peerSecurityContext,
-//                                                 peerSecurityContext,
-//                                                 "zygote",
-//                                                 "specifycapabilities");
-//    if (!allowed) {
-//        throw new ZygoteSecurityException(
-//                "Peer may not specify capabilities");
-//    }
-//
-//    if (peer.getUid() == 0) {
-//        // root may specify anything
-//        return;
-//    }
-//
-//    long permittedCaps;
-//
-//    try {
-//        permittedCaps = ZygoteInit.capgetPermitted(peer.getPid());
-//    } catch (IOException ex) {
-//        throw new ZygoteSecurityException(
-//                "Error retrieving peer's capabilities.");
-//    }
-//
-//    /*
-//     * Ensure that the client did not specify an effective set larger
-//     * than the permitted set. The kernel will enforce this too, but we
-//     * do it here to make the following check easier.
-//     */
-//    if (((~args.permittedCapabilities) & args.effectiveCapabilities) != 0) {
-//        throw new ZygoteSecurityException(
-//                "Effective capabilities cannot be superset of "
-//                        + " permitted capabilities" );
-//    }
-//
-//    /*
-//     * Ensure that the new permitted (and thus the new effective) set is
-//     * a subset of the peer process's permitted set
-//     */
-//
-//    if (((~permittedCaps) & args.permittedCapabilities) != 0) {
-//        throw new ZygoteSecurityException(
-//                "Peer specified unpermitted capabilities" );
-//    }
     return NOERROR;
 }
 
@@ -643,7 +684,7 @@ ECode ZygoteConnection::ApplyseInfoSecurityPolicy(
 //    if (!(peerUid == 0 || peerUid == Process.SYSTEM_UID)) {
 //        // All peers with UID other than root or SYSTEM_UID
 //        throw new ZygoteSecurityException(
-//                "This UID may not specify SEAndroid info.");
+//                "This UID may not specify SELinux info.");
 //    }
 //
 //    boolean allowed = SELinux.checkSELinuxAccess(peerSecurityContext,
@@ -652,7 +693,7 @@ ECode ZygoteConnection::ApplyseInfoSecurityPolicy(
 //                                                 "specifyseinfo");
 //    if (!allowed) {
 //        throw new ZygoteSecurityException(
-//                "Peer may not specify SEAndroid info");
+//                "Peer may not specify SELinux info");
 //    }
 //
 //    return;
@@ -683,26 +724,13 @@ ECode ZygoteConnection::HandleChildProc(
     /* [in] */ IPrintStream* newStderr,
     /* [out] */ IRunnable** task)
 {
-    /*
-     * Close the socket, unless we're in "peer wait" mode, in which
-     * case it's used to track the liveness of this process.
+    /**
+     * By the time we get here, the native code has closed the two actual Zygote
+     * socket connections, and substituted /dev/null in their place.  The LocalSocket
+     * objects still need to be closed properly.
      */
-
-    if (parsedArgs->mPeerWait) {
-        // try {
-        AutoPtr<IFileDescriptor> fd;
-        mSocket->GetFileDescriptor((IFileDescriptor**)&fd);
-        CZygoteInit::SetCloseOnExec(fd, TRUE);
-        sPeerWaitSocket = mSocket;
-        // } catch (IOException ex) {
-        //     Log.e(TAG, "Zygote Child: error setting peer wait "
-        //             + "socket to be close-on-exec", ex);
-        // }
-    }
-    else {
-        CloseSocket();
-        CZygoteInit::CloseServerSocket();
-    }
+    CloseSocket();
+    CZygoteInit::CloseServerSocket();
 
     if (descriptors != NULL) {
         // try {
@@ -808,7 +836,7 @@ Boolean ZygoteConnection::HandleParentProc(
         //     Log.w(TAG, "Error reading pid from wrapped process, child may have died", ex);
         // } finally {
         //     try {
-        is->Close();
+        ICloseable::Probe(is)->Close();
         //     } catch (IOException ex) {
         //     }
         // }
@@ -841,18 +869,6 @@ Boolean ZygoteConnection::HandleParentProc(
     //     return true;
     // }
 
-    /*
-     * If the peer wants to use the socket to wait on the
-     * newly spawned process, then we're all done.
-     */
-    if (parsedArgs->mPeerWait) {
-        // try {
-        mSocket->Close();
-        // } catch (IOException ex) {
-        //     Log.e(TAG, "Zygote: error closing sockets", ex);
-        // }
-        return TRUE;
-    }
     return FALSE;
 }
 
@@ -874,6 +890,24 @@ void ZygoteConnection::SetChildPgid(
 //        Log.i(TAG, "Zygote: setpgid failed. This is "
 //            + "normal if peer is not in our session");
 //    }
+}
+
+/**
+ * Logs an error message and prints it to the specified stream, if
+ * provided
+ *
+ * @param newStderr null-ok; a standard error stream
+ * @param message non-null; error message
+ * @param ex null-ok an exception
+ */
+void ZygoteConnection::LogAndPrintError (
+    /* [in] */ IPrintStream* newStderr,
+    /* [in] */ const String& message)
+{
+    Logger::E(TAG, message);
+    if (newStderr != NULL) {
+        newStderr->Println(message);
+    }
 }
 
 } // namespace Os

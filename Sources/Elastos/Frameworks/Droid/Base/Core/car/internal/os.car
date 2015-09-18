@@ -18,6 +18,7 @@ module
     merge("os/SamplingProfilerIntegration.car");
     merge("os/SomeArgs.car");
     merge("os/TransferPipe.car");
+    merge("os/Zygote.car");
     merge("os/ZygoteInit.car");
 
     using interface Elastos.IO.IFile;
@@ -48,9 +49,9 @@ module
         interface IHandlerCaller;
     }
 
-    //singleton class CZygoteInit {
-    //    interface IZygoteInit;
-    //}
+    singleton class CZygoteInit {
+        interface IZygoteInit;
+    }
 
     singleton class CRuntimeInit {
         interface IRuntimeInit;

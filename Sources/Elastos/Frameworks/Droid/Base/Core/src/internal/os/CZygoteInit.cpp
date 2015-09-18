@@ -1,9 +1,11 @@
 
 #include "ext/frameworkdef.h"
-#include "os/CZygoteInit.h"
+#include "internal/os/CZygoteInit.h"
+#include "internal/os/RuntimeInit.h"
+#include "internal/os/Zygote.h"
 #include "os/Process.h"
-#include "os/RuntimeInit.h"
-//#include "net/CLocalServerSocket.h"
+#include "os/SystemProperties.h"
+#include "net/CLocalServerSocket.h"
 #include <Elastos.CoreLibrary.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/etl/Vector.h>
@@ -12,21 +14,22 @@
 #include <errno.h>
 #include <sys/select.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/Thread.h>
+#include <elastos/droid/system/Os.h>
+#include <elastos/droid/system/OsConstants.h>
 
+using Elastos::Droid::Net::CLocalServerSocket;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::SystemProperties;
+using Elastos::Droid::System::OsConstants;
 using Elastos::Core::StringUtils;
-using Elastos::Utility::Etl::Vector;
-using Elastos::Utility::Logging::Logger;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::Thread;
 using Elastos::IO::CFileDescriptor;
 using Elastos::IO::IFileDescriptor;
-using Libcore::IO::CLibcore;
-using Libcore::IO::COsConstants;
-using Libcore::IO::ILibcore;
-using Libcore::IO::IOs;
-using Libcore::IO::IOsConstants;
-//using Elastos::Droid::Net::CLocalServerSocket;
-using Elastos::Droid::Os::Process;
-using Elastos::Droid::System::CZygote;
-using Elastos::Droid::System::IZygote;
+using Elastos::Utility::Etl::Vector;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -34,8 +37,19 @@ namespace Internal {
 namespace Os {
 
 const String CZygoteInit::TAG("zygote");
+const String CZygoteInit::PROPERTY_DISABLE_OPENGL_PRELOADING("ro.zygote.disable_gl_preload");
+const String CZygoteInit::ANDROID_SOCKET_PREFIX("ANDROID_SOCKET_");
+const Int32 CZygoteInit::LOG_BOOT_PROGRESS_PRELOAD_START = 3020;
+const Int32 CZygoteInit::LOG_BOOT_PROGRESS_PRELOAD_END = 3030;
+/** when preloading, GC after allocating this many bytes */
+const Int32 CZygoteInit::PRELOAD_GC_THRESHOLD = 50000;
+const String CZygoteInit::ABI_LIST_ARG("--abi-list=");
+const String CZygoteInit::SOCKET_NAME_ARG("--socket-name=");
 AutoPtr<ILocalServerSocket> CZygoteInit::sServerSocket;
-const Boolean CZygoteInit::ZYGOTE_FORK_MODE;
+AutoPtr<IResources> CZygoteInit::mResources;
+const Int32 CZygoteInit::GC_LOOP_COUNT;
+const String CZygoteInit::PRELOADED_CLASSES("preloaded-classes");
+const Boolean CZygoteInit::PRELOAD_RESOURCES = TRUE;
 
 CZygoteInit::MethodAndArgsCaller::MethodAndArgsCaller(
     /* [in] */ IInterface* object,
@@ -65,29 +79,22 @@ ECode CZygoteInit::MethodAndArgsCaller::Run()
     return ec;
 }
 
-void CZygoteInit::Preload()
-{
-    ALOGD(TAG, "begin preload");
-    // preloadClasses();
-    // preloadResources();
-    // preloadOpenGL();
-    // preloadSharedLibraries();
-    // Ask the WebViewFactory to do any initialization that must run in the zygote process,
-    // for memory sharing purposes.
-    //WebViewFactory.prepareWebViewInZygote();
-    ALOGD(TAG, "end preload");
-}
+CAR_INTERFACE_IMPL(CZygoteInit, Singleton, IZygoteInit)
 
-ECode CZygoteInit::RegisterZygoteSocket()
+CAR_SINGLETON_IMPL(CZygoteInit)
+
+ECode CZygoteInit::RegisterZygoteSocket(
+    /* [in] */ const String& socketName)
 {
     if (sServerSocket == NULL) {
+        String fullSocketName = ANDROID_SOCKET_PREFIX + socketName;
         AutoPtr<Elastos::Core::ISystem> system;
         Elastos::Core::CSystem::AcquireSingleton((Elastos::Core::ISystem**)&system);
 
         Int32 fd;
         // try {
         String env;
-        system->GetEnv(String("ANDROID_SOCKET_elzygote"), &env);
+        system->GetEnv(fullSocketName, &env);
         if (env.IsNull()) {
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
@@ -114,12 +121,13 @@ ECode CZygoteInit::RegisterZygoteSocket()
 }
 
 ECode CZygoteInit::AcceptCommandPeer(
+    /* [in] */ const String& abiList,
     /* [out] */ ZygoteConnection** peer)
 {
     // try {
     AutoPtr<ILocalSocket> socket;
     FAIL_RETURN(sServerSocket->Accept((ILocalSocket**)&socket));
-    *peer = new ZygoteConnection(socket);
+    *peer = new ZygoteConnection(socket, abiList);
     REFCOUNT_ADD(*peer);
     return NOERROR;
     // } catch (IOException ex) {
@@ -128,26 +136,52 @@ ECode CZygoteInit::AcceptCommandPeer(
     // }
 }
 
-AutoPtr<IFileDescriptor> CZygoteInit::CreateFileDescriptor(
-    /* [in] */ Int32 fd)
-{
-    AutoPtr<IFileDescriptor> fileDesc;
-    CFileDescriptor::New((IFileDescriptor**)&fileDesc);
-    fileDesc->SetDescriptor(fd);
-    return fileDesc;
-}
-
 void CZygoteInit::CloseServerSocket()
 {
-//    try {
-    if (sServerSocket != NULL) {
-        sServerSocket->Close();
+    ECode ec = NOERROR;
+    do {
+        if (sServerSocket != NULL) {
+            AutoPtr<IFileDescriptor> fd;
+            ec = sServerSocket->GetFileDescriptor((IFileDescriptor**)&fd);
+            if (FAILED(ec))
+                break;
+            ec = sServerSocket->Close();
+            if (FAILED(ec))
+                break;
+            if (fd != NULL) {
+                ec = Elastos::Droid::System::Os::Close(fd);
+            }
+        }
+    } while (0);
+
+    if (ec == (ECode)E_IO_EXCEPTION) {
+        Logger::E(TAG, "Zygote:  error closing sockets");
     }
-//    } catch (IOException ex) {
-//        Log.e(TAG, "Zygote:  error closing sockets", ex);
-//    }
-//
+    else if (ec == (ECode)E_ERRNO_EXCEPTION) {
+        Logger::E(TAG, "Zygote:  error closing descriptor");
+    }
+
     sServerSocket = NULL;
+}
+
+AutoPtr<IFileDescriptor> CZygoteInit::GetServerSocketFileDescriptor()
+{
+    AutoPtr<IFileDescriptor> fd;
+    sServerSocket->GetFileDescriptor((IFileDescriptor**)&fd);
+    return fd;
+}
+
+void CZygoteInit::Preload()
+{
+    Logger::D(TAG, "begin preload");
+    // preloadClasses();
+    // preloadResources();
+    // preloadOpenGL();
+    // preloadSharedLibraries();
+    // Ask the WebViewFactory to do any initialization that must run in the zygote process,
+    // for memory sharing purposes.
+    //WebViewFactory.prepareWebViewInZygote();
+    Logger::D(TAG, "end preload");
 }
 
 ECode CZygoteInit::HandleSystemServerProcess(
@@ -157,81 +191,120 @@ ECode CZygoteInit::HandleSystemServerProcess(
     CloseServerSocket();
 
     // set umask to 0077 so new files and directories will default to owner-only permissions.
-    AutoPtr<ILibcore> libcore;
-    CLibcore::AcquireSingleton((ILibcore**)&libcore);
-    AutoPtr<IOs> os;
-    libcore->GetOs((IOs**)&os);
-    AutoPtr<IOsConstants> osConsts;
-    COsConstants::AcquireSingleton((IOsConstants**)&osConsts);
-    Int32 v1, v2;
-    osConsts->GetOsConstant(String("S_IRWXG"), &v1);
-    osConsts->GetOsConstant(String("S_IRWXO"), &v2);
     Int32 result;
-    os->Umask(v1 | v2, &result);
+    Elastos::Droid::System::Os::Umask(OsConstants::_S_IRWXG | OsConstants::_S_IRWXO, &result);
 
     if (!parsedArgs->mNiceName.IsNull()) {
         Process::SetArgV0(parsedArgs->mNiceName);
     }
 
-   if (!parsedArgs->mInvokeWith.IsNull()) {
-//        WrapperInit.execApplication(parsedArgs.invokeWith,
-//                parsedArgs.niceName, parsedArgs.targetSdkVersion,
-//                null, parsedArgs.remainingArgs);
+    // String systemServerClasspath = Elastos::Droid::System::Os::Getenv("SYSTEMSERVERCLASSPATH");
+    // if (systemServerClasspath != NULL) {
+    //     PerformSystemServerDexOpt(systemServerClasspath);
+    // }
+
+    if (!parsedArgs->mInvokeWith.IsNull()) {
+        // String[] args = parsedArgs.remainingArgs;
+        // // If we have a non-null system server class path, we'll have to duplicate the
+        // // existing arguments and append the classpath to it. ART will handle the classpath
+        // // correctly when we exec a new process.
+        // if (systemServerClasspath != null) {
+        //     String[] amendedArgs = new String[args.length + 2];
+        //     amendedArgs[0] = "-cp";
+        //     amendedArgs[1] = systemServerClasspath;
+        //     System.arraycopy(parsedArgs.remainingArgs, 0, amendedArgs, 2, parsedArgs.remainingArgs.length);
+        // }
+
+        // WrapperInit.execApplication(parsedArgs.invokeWith,
+        //         parsedArgs.niceName, parsedArgs.targetSdkVersion,
+        //         null, args);
         return NOERROR;
-   }
-   else {
+    }
+    else {
+        // ClassLoader cl = null;
+        // if (systemServerClasspath != null) {
+        //     cl = new PathClassLoader(systemServerClasspath, ClassLoader.getSystemClassLoader());
+        //     Thread.currentThread().setContextClassLoader(cl);
+        // }
         /*
          * Pass the remaining arguments to SystemServer.
          */
         return RuntimeInit::ZygoteInit(parsedArgs->mTargetSdkVersion, parsedArgs->mRemainingArgs, task);
-   }
+    }
 }
 
 /**
  * Prepare the arguments and fork for the system server process.
  */
 ECode CZygoteInit::StartSystemServer(
+    /* [in] */ const String& abiList,
+    /* [in] */ const String& socketName,
     /* [out] */ IRunnable** task)
 {
     VALIDATE_NOT_NULL(task);
     *task = NULL;
 
+    AutoPtr<ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(11);
+    (*array)[0] = OsConstants::_CAP_BLOCK_SUSPEND;
+    (*array)[1] = OsConstants::_CAP_KILL;
+    (*array)[2] = OsConstants::_CAP_NET_ADMIN;
+    (*array)[3] = OsConstants::_CAP_NET_BIND_SERVICE;
+    (*array)[4] = OsConstants::_CAP_NET_BROADCAST;
+    (*array)[5] = OsConstants::_CAP_NET_RAW;
+    (*array)[6] = OsConstants::_CAP_SYS_MODULE;
+    (*array)[7] = OsConstants::_CAP_SYS_NICE;
+    (*array)[8] = OsConstants::_CAP_SYS_RESOURCE;
+    (*array)[9] = OsConstants::_CAP_SYS_TIME;
+    (*array)[10] = OsConstants::_CAP_SYS_TTY_CONFIG;
+    Int64 capabilities = 0;
+    for (Int32 i = 0; i < array->GetLength(); i++) {
+        Int32 capability = (*array)[i];
+        if ((capability < 0) || (capability > OsConstants::_CAP_LAST_CAP)) {
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        capabilities |= (1LL << capability);
+    }
+
 //    /* Hardcoded command line to start the system server */
-    ArrayOf_<String, 8> args;
-    args[0] = "--setuid=1000";
-    args[1] = "--setgid=1000";
-    args[2] = "--setgroups=1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1018,3001,3002,3003,3006,3007";
-    args[3] = "--capabilities=130104352,130104352";
-    args[4] = "--runtime-init";
-    args[5] = "--nice-name=elsystemserver";
-    args[6] = "Elastos.Droid.Server.eco";
-    args[7] = "CSystemServer";
+    AutoPtr<ArrayOf<String> > args = ArrayOf<String>::Alloc(8);
+    (*args)[0] = "--setuid=1000";
+    (*args)[1] = "--setgid=1000";
+    (*args)[2] = "--setgroups=1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1018,1032,3001,3002,3003,3006,3007";
+    StringBuilder sb("--capabilities=");
+    sb += capabilities;
+    sb += ",";
+    sb += capabilities;
+    (*args)[3] = sb.ToString();
+    (*args)[4] = "--runtime-init";
+    (*args)[5] = "--nice-name=elsystemserver";
+    (*args)[6] = "Elastos.Droid.Server.eco";
+    (*args)[7] = "CSystemServer";
     AutoPtr<ZygoteConnection::Arguments> parsedArgs;
 
     Int32 pid;
 
 //    try {
-    parsedArgs = new ZygoteConnection::Arguments(args);
+    parsedArgs = new ZygoteConnection::Arguments(*args);
     ZygoteConnection::ApplyDebuggerSystemProperty(parsedArgs);
     ZygoteConnection::ApplyInvokeWithSystemProperty(parsedArgs);
 
     /* Request to fork the system server process */
-    AutoPtr<IZygote> zygote;
-    CZygote::AcquireSingleton((IZygote**)&zygote);
-    zygote->ForkSystemServer(
+    pid = Zygote::ForkSystemServer(
             parsedArgs->mUid, parsedArgs->mGid,
             parsedArgs->mGids,
             parsedArgs->mDebugFlags,
             NULL,
             parsedArgs->mPermittedCapabilities,
-            parsedArgs->mEffectiveCapabilities,
-            &pid);
+            parsedArgs->mEffectiveCapabilities);
 //    } catch (IllegalArgumentException ex) {
 //        throw new RuntimeException(ex);
 //    }
 //
     /* For child process */
     if (pid == 0) {
+        if (HasSecondZygote(abiList)) {
+            WaitForSecondaryZygote(socketName);
+        }
         HandleSystemServerProcess(parsedArgs, task);
     }
 
@@ -247,20 +320,20 @@ ECode CZygoteInit::Main(
 
         AutoPtr<IRunnable> task;
         Boolean startSystemServer = FALSE;
-        String socketName("zygote");
+        String socketName("elzygote");
         String abiList;
         for (Int32 i = 1; i < argv.GetLength(); i++) {
             if (argv[i].Equals("start-system-server")) {
-                startSystemServer = true;
+                startSystemServer = TRUE;
             }
-            else if (argv[i].startsWith(ABI_LIST_ARG)) {
+            else if (argv[i].StartWith(ABI_LIST_ARG)) {
                 abiList = argv[i].Substring(ABI_LIST_ARG.GetLength());
             }
-            else if (argv[i].startsWith(SOCKET_NAME_ARG)) {
+            else if (argv[i].StartWith(SOCKET_NAME_ARG)) {
                 socketName = argv[i].Substring(SOCKET_NAME_ARG.GetLength());
             }
             else {
-                ALOGE(TAG, "Unknown command line argument: %s", argv[i].string());
+                Logger::E(TAG, "Unknown command line argument: %s", argv[i].string());
                 goto _RUNTIME_EXCEPTION_EXIT_;
                 //throw new RuntimeException("Unknown command line argument: " + argv[i]);
             }
@@ -290,14 +363,14 @@ ECode CZygoteInit::Main(
         //Trace.setTracingEnabled(false);
 
         if (startSystemServer) {
-            StartSystemServer(abiList, socketName, (IRunnable**)&task));
-            if (task != NULL) goto RUN_TASK;
+            StartSystemServer(abiList, socketName, (IRunnable**)&task);
+            if (task != NULL) goto _RUN_TASK_;
         }
 
-        ALOGV(TAG, "Accepting command socket connections");
+        Logger::V(TAG, "Accepting command socket connections");
         task = NULL;
         RunSelectLoop(abiList, (IRunnable**)&task);
-        if (task != NULL) goto RUN_TASK;
+        if (task != NULL) goto _RUN_TASK_;
 
         CloseServerSocket();
         return NOERROR;
@@ -310,47 +383,47 @@ _RUN_TASK_:
     //    caller.run();
     // } catch (RuntimeException ex) {
 _RUNTIME_EXCEPTION_EXIT_:
-        ALOGE(TAG, "Zygote died with runtime exception");
+        Logger::E(TAG, "Zygote died with runtime exception");
         CloseServerSocket();
         //throw ex;
         return E_RUNTIME_EXCEPTION;
     // }
 }
 
-ECode CZygoteInit::RunForkMode()
+/**
+ * Return {@code true} if this device configuration has another zygote.
+ *
+ * We determine this by comparing the device ABI list with this zygotes
+ * list. If this zygote supports all ABIs this device supports, there won't
+ * be another zygote.
+ */
+Boolean CZygoteInit::HasSecondZygote(
+    /* [in] */ const String& abiList)
 {
-    assert(0);
-//    while (true) {
-//        ZygoteConnection peer = acceptCommandPeer();
-//
-//        int pid;
-//
-//        pid = Zygote.fork();
-//
-//        if (pid == 0) {
-//            // The child process should handle the peer requests
-//
-//            // The child does not accept any more connections
-//            try {
-//                sServerSocket.close();
-//            } catch (IOException ex) {
-//                Log.e(TAG, "Zygote Child: error closing sockets", ex);
-//            } finally {
-//                sServerSocket = null;
-//            }
-//
-//            peer.run();
-//            break;
-//        } else if (pid > 0) {
-//            peer.closeSocket();
-//        } else {
-//            throw new RuntimeException("Error invoking fork()");
-//        }
-//    }
-    return E_NOT_IMPLEMENTED;
+    String prop;
+    SystemProperties::Get(String("ro.product.cpu.abilist"), &prop);
+    return !prop.Equals(abiList);
 }
 
-ECode CZygoteInit::RunSelectLoopMode(
+void CZygoteInit::WaitForSecondaryZygote(
+    /* [in] */ const String& socketName)
+{
+    String otherZygoteName = Process::ZYGOTE_SOCKET.Equals(socketName) ?
+            Process::SECONDARY_ZYGOTE_SOCKET : Process::ZYGOTE_SOCKET;
+    while (TRUE) {
+        AutoPtr<Process::ZygoteState> zs;
+        if (Process::ZygoteState::Connect(otherZygoteName, (Process::ZygoteState**)&zs) == (ECode)E_IO_EXCEPTION)
+            Logger::W(TAG, "Got error connecting to zygote, retrying. msg= " /*+ ioe.getMessage()*/);
+        else
+            zs->Close();
+        break;
+
+        Thread::Sleep(1000);
+    }
+}
+
+ECode CZygoteInit::RunSelectLoop(
+    /* [in] */ const String& abiList,
     /* [in] */ IRunnable** task)
 {
     Vector< AutoPtr<IFileDescriptor> > fds;
@@ -377,9 +450,6 @@ ECode CZygoteInit::RunSelectLoopMode(
         if (ec == (ECode)E_IO_EXCEPTION) {
             return E_RUNTIME_EXCEPTION;
         }
-        // } catch (IOException ex) {
-        //     throw new RuntimeException("Error in select()", ex);
-        // }
 
         if (index < 0) {
             // throw new RuntimeException("Error in select()");
@@ -387,7 +457,7 @@ ECode CZygoteInit::RunSelectLoopMode(
         }
         else if (index == 0) {
             AutoPtr<ZygoteConnection> newPeer;
-            FAIL_RETURN(AcceptCommandPeer((ZygoteConnection**)&newPeer));
+            FAIL_RETURN(AcceptCommandPeer(abiList, (ZygoteConnection**)&newPeer));
             peers.PushBack(newPeer);
             AutoPtr<IFileDescriptor> fd;
             newPeer->GetFileDescriptor((IFileDescriptor**)&fd);
@@ -569,6 +639,15 @@ ECode CZygoteInit::SelectReadable(
     }
     *index = -1;
     return NOERROR;
+}
+
+AutoPtr<IFileDescriptor> CZygoteInit::CreateFileDescriptor(
+    /* [in] */ Int32 fd)
+{
+    AutoPtr<IFileDescriptor> fileDesc;
+    CFileDescriptor::New((IFileDescriptor**)&fileDesc);
+    fileDesc->SetDescriptor(fd);
+    return fileDesc;
 }
 
 } // namespace Os

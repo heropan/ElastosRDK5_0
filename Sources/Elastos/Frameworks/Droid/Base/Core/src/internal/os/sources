@@ -9,10 +9,12 @@ INCLUDES += $(MAKEDIR)/../../../inc/
 C_DEFINES += -DDROID_CORE
 
 #SOURCES += storage/CExternalStorageFormatter.cpp
-#SOURCES += CZygoteInit.cpp
+SOURCES += CZygoteInit.cpp
 SOURCES += CHandlerCaller.cpp
 SOURCES += RuntimeInit.cpp
 SOURCES += CRuntimeInit.cpp
 SOURCES += SomeArgs.cpp
 SOURCES += CSomeArgsHelper.cpp
 SOURCES += invokeCallback_gnuc.S
+SOURCES += ZygoteConnection.cpp
+SOURCES += Zygote.cpp

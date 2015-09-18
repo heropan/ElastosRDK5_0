@@ -1,6 +1,5 @@
 module
 {
-    merge("droid/system/IZygote.car");
     merge("droid/system/IStructAddrinfo.car");
     merge("droid/system/IStructFlock.car");
     merge("droid/system/IStructGroupReq.car");
@@ -13,16 +12,13 @@ module
     merge("droid/system/IStructTimeval.car");
     merge("droid/system/IStructUcred.car");
     merge("droid/system/IStructUtsname.car");
+    merge("droid/system/IZygoteHooks.car");
 
     interface Elastos.Net.IInetAddress;
 
     namespace Elastos {
     namespace Droid {
     namespace System {
-
-    singleton class CZygote {
-        interface IZygote;
-    }
 
     class CStructAddrinfo {
         interface IStructAddrinfo;
@@ -134,6 +130,10 @@ module
             [in] IInetAddress* source);
 
         interface IStructGroupSourceReq;
+    }
+
+    class CZygoteHooks {
+        interface IZygoteHooks;
     }
 
     } // namespace System

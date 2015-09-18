@@ -3,8 +3,9 @@
 #define __ELASTOS_DROID_INTERNAL_OS_ELASTOS_DROID_INTERNAL_RUNTIMEINIT_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/core/Object.h>
+#include <elastos/core/Singleton.h>
 
+using Elastos::Core::Singleton;
 using Elastos::Core::IRunnable;
 
 namespace Elastos {
@@ -13,7 +14,7 @@ namespace Internal {
 namespace Os {
 
 class RuntimeInit
-    : public Object
+    : public Singleton
 {
 public:
     /**

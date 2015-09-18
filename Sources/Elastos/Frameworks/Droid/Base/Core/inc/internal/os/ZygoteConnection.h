@@ -3,21 +3,25 @@
 #define __ELASTOS_DROID_INTERNAL_OS_ZYGOTECONNECTION_H__
 
 #include "Elastos.Droid.Core_server.h"
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Droid::Net::ILocalSocket;
+using Elastos::Droid::Net::ICredentials;
+using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IDataOutputStream;
 using Elastos::IO::IBufferedReader;
 using Elastos::IO::IPrintStream;
-using Elastos::Droid::Net::ILocalSocket;
-using Elastos::Droid::Net::ICredentials;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace Os {
 
-class ZygoteConnection : public ElRefBase
+class ZygoteConnection : public Object
 {
 public:
     /**
@@ -38,11 +42,6 @@ public:
      *   <li> --rlimit=r,c,m<i>tuple of values for setrlimit() call.
      *    <code>r</code> is the resource, <code>c</code> and <code>m</code>
      *    are the settings for current and max value.</i>
-     *   <li> --peer-wait indicates that the command socket should
-     * be inherited by (and set to close-on-exec in) the spawned process
-     * and used to track the lifetime of that process. The spawning process
-     * then exits. Without this flag, it is retained by the spawning process
-     * (and closed in the child) in expectation of a new spawn request.
      *   <li> --classpath=<i>colon-separated classpath</i> indicates
      * that the specified class (which must b first non-flag argument) should
      * be loaded from jar files in the specified classpath. Incompatible with
@@ -56,9 +55,10 @@ public:
      *      [--] &lt;args for RuntimeInit &gt;
      *   <li> If <code>--runtime-init</code> is absent:
      *      [--] &lt;classname&gt; [args...]
+     *   <li> --instruction-set=<i>instruction-set-string</i> which instruction set to use/emulate.
      * </ul>
      */
-    class Arguments : public ElRefBase
+    class Arguments : public Object
     {
     public:
         Arguments(
@@ -87,9 +87,6 @@ public:
 
         /** from --setgroups */
         AutoPtr< ArrayOf<Int32> > mGids;
-
-        /** from --peer-wait */
-        Boolean mPeerWait;
 
         /**
          * From --enable-debugger, --enable-checkjni, --enable-assert,
@@ -123,7 +120,7 @@ public:
         String mSeInfo;
 
         /** from all --rlimit=r,c,m */
-        // ArrayList<int[]> rlimits;
+        AutoPtr<List<AutoPtr<ArrayOf<Int32> > > > mRlimits;
 
         /** from --invoke-with */
         String mInvokeWith;
@@ -133,6 +130,22 @@ public:
          * (or after a '--')
          */
         AutoPtr< ArrayOf<String> > mRemainingArgs;
+
+        /**
+         * Whether the current arguments constitute an ABI list query.
+         */
+        Boolean mAbiListQuery;
+
+        /**
+         * The instruction set to use, or null when not important.
+         */
+        String mInstructionSet;
+
+        /**
+         * The app data directory. May be null, e.g., for the system server. Note that this might
+         * not be reliable in the case of process-sharing apps.
+         */
+        String mAppDataDir;
     };
 
 public:
@@ -143,7 +156,8 @@ public:
      * @throws IOException
      */
     ZygoteConnection(
-        /* [in] */ ILocalSocket* socket);
+        /* [in] */ ILocalSocket* socket,
+        /* [in] */ const String& abiList);
 
     /**
      * Returns the file descriptor of the associated socket.
@@ -197,14 +211,6 @@ public:
 
 private:
     /**
-     * Reads an argument list from the command socket/
-     * @return Argument list or null if EOF is reached
-     * @throws IOException passed straight through
-     */
-    CARAPI ReadArgumentList(
-        /* [out] */ ArrayOf<String>** args);
-
-    /**
      * Applies zygote security policy per bugs #875058 and #1082165.
      * Based on the credentials of the process issuing a zygote command:
      * <ol>
@@ -243,21 +249,6 @@ private:
         /* [in] */ const String& peerSecurityContext);
 
     /**
-     * Applies zygote security policy per bug #1042973. A root peer may
-     * spawn an instance with any capabilities. All other uids may spawn
-     * instances with any of the capabilities in the peer's permitted set
-     * but no more.
-     *
-     * @param args non-null; zygote spawner arguments
-     * @param peer non-null; peer credentials
-     * @throws ZygoteSecurityException
-     */
-    static CARAPI ApplyCapabilitiesSecurityPolicy(
-        /* [in] */ Arguments* args,
-        /* [in] */ ICredentials* peer,
-        /* [in] */ const String& peerSecurityContext);
-
-    /**
      * Applies zygote security policy.
      * Based on the credentials of the process issuing a zygote command:
      * <ol>
@@ -276,7 +267,7 @@ private:
         /* [in] */ const String& peerSecurityContext);
 
     /**
-     * Applies zygote security policy for SEAndroid information.
+     * Applies zygote security policy for SELinux information.
      *
      * @param args non-null; zygote spawner arguments
      * @param peer non-null; peer credentials
@@ -286,6 +277,36 @@ private:
         /* [in] */ Arguments* args,
         /* [in] */ ICredentials* peer,
         /* [in] */ const String& peerSecurityContext);
+
+    /**
+     * Logs an error message and prints it to the specified stream, if
+     * provided
+     *
+     * @param newStderr null-ok; a standard error stream
+     * @param message non-null; error message
+     * @param ex null-ok an exception
+     */
+    static void LogAndPrintError (
+        /* [in] */ IPrintStream* newStderr,
+        /* [in] */ const String& message);
+
+    /**
+     * Temporary hack: check time since start time and log if over a fixed threshold.
+     *
+     */
+    CARAPI_(void) CheckTime(
+        /* [in] */ Int64 startTime,
+        /* [in] */ const String& where);
+
+    CARAPI_(Boolean) HandleAbiListQuery();
+
+    /**
+     * Reads an argument list from the command socket/
+     * @return Argument list or null if EOF is reached
+     * @throws IOException passed straight through
+     */
+    CARAPI ReadArgumentList(
+        /* [out] */ ArrayOf<String>** args);
 
     /**
      * Handles post-fork setup of child proc, closing sockets as appropriate,
@@ -330,6 +351,8 @@ private:
         /* [in] */ Int32 pid);
 
 private:
+    static const String TAG;
+
     /**
      * {@link android.net.LocalSocket#setSoTimeout} value for connections.
      * Effectively, the amount of time a requestor has between the start of
@@ -354,6 +377,7 @@ private:
     AutoPtr<IBufferedReader> mSocketReader;
     AutoPtr<ICredentials> mPeer;
     String mPeerSecurityContext;
+    String mAbiList;
 
     /**
      * A long-lived reference to the original command socket used to launch

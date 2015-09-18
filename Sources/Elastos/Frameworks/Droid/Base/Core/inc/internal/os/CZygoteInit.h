@@ -1,13 +1,16 @@
 
-#ifndef __ELASTOS_DROID_INTERNAL_OS_ELASTOS_DROID_INTZERNAL_CZYGOTEINIT_H__
-#define __ELASTOS_DROID_INTERNAL_OS_ELASTOS_DROID_INTZERNAL_CZYGOTEINIT_H__
+#ifndef __ELASTOS_DROID_INTERNAL_OS_CZYGOTEINIT_H__
+#define __ELASTOS_DROID_INTERNAL_OS_CZYGOTEINIT_H__
 
 #include "_Elastos_Droid_Internal_Os_CZygoteInit.h"
 #include "os/Runnable.h"
-#include "os/ZygoteConnection.h"
+#include "internal/os/ZygoteConnection.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Core::IRunnable;
+using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Net::ILocalServerSocket;
+using Elastos::Droid::Os::Runnable;
+using Elastos::Core::Singleton;
 using Elastos::IO::IFileDescriptor;
 
 namespace Elastos {
@@ -16,7 +19,7 @@ namespace Internal {
 namespace Os {
 
 CarClass(CZygoteInit)
-    , public Object
+    , public Singleton
     , public IZygoteInit
 {
 public:
@@ -43,11 +46,22 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Close and clean up zygote sockets. Called on shutdown and on the
      * child's exit path.
      */
     static CARAPI_(void) CloseServerSocket();
+
+    /**
+     * Return the server socket's underlying file descriptor, so that
+     * ZygoteConnection can pass it to the native code for proper
+     * closure after a child process is forked off.
+     */
+    static CARAPI_(AutoPtr<IFileDescriptor>) GetServerSocketFileDescriptor();
 
     /**
     * Creates a file descriptor from an int fd.
@@ -146,13 +160,15 @@ private:
      *
      * @throws RuntimeException when open fails
      */
-    static CARAPI RegisterZygoteSocket();
+    static CARAPI RegisterZygoteSocket(
+        /* [in] */ const String& socketName);
 
     /**
      * Waits for and accepts a single command connection. Throws
      * RuntimeException on failure.
      */
     static CARAPI AcceptCommandPeer(
+        /* [in] */ const String& abiList,
         /* [out] */ ZygoteConnection** peer);
 
     /**
@@ -166,17 +182,22 @@ private:
      * Prepare the arguments and fork for the system server process.
      */
     static CARAPI StartSystemServer(
+        /* [in] */ const String& abiList,
+        /* [in] */ const String& socketName,
         /* [out] */ IRunnable** task);
 
     /**
-     * Runs the zygote in accept-and-fork mode. In this mode, each peer
-     * gets its own zygote spawner process. This code is retained for
-     * reference only.
+     * Return {@code true} if this device configuration has another zygote.
      *
-     * @throws MethodAndArgsCaller in a child process when a main() should
-     * be executed.
+     * We determine this by comparing the device ABI list with this zygotes
+     * list. If this zygote supports all ABIs this device supports, there won't
+     * be another zygote.
      */
-    static CARAPI RunForkMode();
+    static CARAPI_(Boolean) HasSecondZygote(
+        /* [in] */ const String& abiList);
+
+    static CARAPI_(void) WaitForSecondaryZygote(
+        /* [in] */ const String& socketName);
 
     /**
      * Runs the zygote process's select loop. Accepts new connections as
@@ -186,21 +207,51 @@ private:
      * @throws MethodAndArgsCaller in a child process when a main() should
      * be executed.
      */
-    static CARAPI RunSelectLoopMode(
+    static CARAPI RunSelectLoop(
+        /* [in] */ const String& abiList,
         /* [in] */ IRunnable** task);
 
     static CARAPI_(void) Preload();
 
+public:
+    /**
+     * The number of times that the main Zygote loop
+     * should run before calling gc() again.
+     */
+    static const Int32 GC_LOOP_COUNT = 10;
+
 private:
     static const String TAG;
+
+    static const String PROPERTY_DISABLE_OPENGL_PRELOADING;
+
+    static const String ANDROID_SOCKET_PREFIX;
+
+    static const Int32 LOG_BOOT_PROGRESS_PRELOAD_START;
+    static const Int32 LOG_BOOT_PROGRESS_PRELOAD_END;
+
+    /** when preloading, GC after allocating this many bytes */
+    static const Int32 PRELOAD_GC_THRESHOLD;
+
+    static const String ABI_LIST_ARG;
+
+    static const String SOCKET_NAME_ARG;
 
     static AutoPtr<ILocalServerSocket> sServerSocket;
 
     /**
-     * If true, zygote forks for each peer. If false, a select loop is used
-     * inside a single process. The latter is preferred.
+     * Used to pre-load resources.  We hold a global reference on it so it
+     * never gets destroyed.
      */
-    static const Boolean ZYGOTE_FORK_MODE = FALSE;
+    static AutoPtr<IResources> mResources;
+
+    /**
+     * The name of a resource file that contains classes to preload.
+     */
+    static const String PRELOADED_CLASSES;
+
+    /** Controls whether we should preload resources during zygote init. */
+    static const Boolean PRELOAD_RESOURCES;
 };
 
 } // namespace Os
@@ -208,4 +259,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CZYGOTEINIT_H__
+#endif //__ELASTOS_DROID_INTERNAL_OS_CZYGOTEINIT_H__

@@ -17,7 +17,7 @@ CarClass(CRuntimeInit)
 public:
     CAR_INTERFACE_DECL()
 
-    CAR_OBJECT_DECL()
+    CAR_SINGLETON_DECL()
 
     CARAPI Main(
         /* [in] */ const ArrayOf<String>& args);
