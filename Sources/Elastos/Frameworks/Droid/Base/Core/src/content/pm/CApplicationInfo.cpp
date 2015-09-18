@@ -12,6 +12,11 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
+
+CAR_INTRFACE_IMPL(CApplicationInfo, PackageItemInfo, IApplicationInfo)
+
+CAR_OBJECT_IMPL(CApplicationInfo)
+
 CApplicationInfo::CApplicationInfo()
     : mDescriptionRes(0)
     , mTheme(0)
@@ -20,10 +25,10 @@ CApplicationInfo::CApplicationInfo()
     , mRequiresSmallestWidthDp(0)
     , mCompatibleWidthLimitDp(0)
     , mLargestWidthLimitDp(0)
-    , mResourceDirs(NULL)
-    , mSharedLibraryFiles(NULL)
+    , mNativeLibraryRootRequiresIsa(FALSE)
     , mUid(0)
     , mTargetSdkVersion(0)
+    , mVersionCode(0)
     , mEnabled(TRUE)
     , mEnabledSetting(IPackageManager::COMPONENT_ENABLED_STATE_DEFAULT)
     , mInstallLocation(IPackageInfo::INSTALL_LOCATION_UNSPECIFIED)
@@ -38,35 +43,38 @@ ECode CApplicationInfo::constructor()
 }
 
 ECode CApplicationInfo::constructor(
-    /* [in] */ IApplicationInfo* orig)
+    /* [in] */ IApplicationInfo* other)
 {
-    assert(orig != NULL);
+    VALIDATE_NOT_NULL(other)
 
-    PackageItemInfo::constructor((IPackageItemInfo*)orig);
-    orig->GetTaskAffinity(&mTaskAffinity);
-    orig->GetPermission(&mPermission);
-    orig->GetProcessName(&mProcessName);
-    orig->GetClassName(&mClassName);
-    orig->GetTheme(&mTheme);
-    orig->GetFlags(&mFlags);
-    orig->GetRequiresSmallestWidthDp(&mRequiresSmallestWidthDp);
-    orig->GetCompatibleWidthLimitDp(&mCompatibleWidthLimitDp);
-    orig->GetLargestWidthLimitDp(&mLargestWidthLimitDp);
-    orig->GetSourceDir(&mSourceDir);
-    orig->GetPublicSourceDir(&mPublicSourceDir);
-    orig->GetNativeLibraryDir(&mNativeLibraryDir);
-    orig->GetResourceDirs((ArrayOf<String>**)&mResourceDirs);
-    orig->GetSharedLibraryFiles((ArrayOf<String>**)&mSharedLibraryFiles);
-    orig->GetDataDir(&mDataDir);
-    orig->GetUid(&mUid);
-    orig->GetTargetSdkVersion(&mTargetSdkVersion);
-    orig->GetEnabled(&mEnabled);
-    orig->GetEnabledSetting(&mEnabledSetting);
-    orig->GetInstallLocation(&mInstallLocation);
-    orig->GetManageSpaceActivityName(&mManageSpaceActivityName);
-    orig->GetDescriptionRes(&mDescriptionRes);
-    orig->GetUiOptions(&mUiOptions);
-    orig->GetBackupAgentName(&mBackupAgentName);
+    PackageItemInfo::constructor(IPackageItemInfo::Probe(other));
+
+    CApplicationInfo* orig = (CApplicationInfo*)other;
+
+    mTaskAffinity = orig->mTaskAffinity;
+    mPermission = orig->mPermission;
+    mProcessName = orig->mProcessName;
+    mClassName = orig->mClassName;
+    mTheme = orig->mTheme;
+    mFlags = orig->mFlags;
+    mRequiresSmallestWidthDp = orig->mRequiresSmallestWidthDp;
+    mCompatibleWidthLimitDp = orig->mCompatibleWidthLimitDp;
+    mLargestWidthLimitDp = orig->mLargestWidthLimitDp;
+    mSourceDir = orig->mSourceDir;
+    mPublicSourceDir = orig->mPublicSourceDir;
+    mNativeLibraryDir = orig->mNativeLibraryDir;
+    mResourceDirs = orig->mResourceDirs;
+    mSharedLibraryFiles = orig->mSharedLibraryFiles;
+    mDataDir = orig->mDataDir;
+    mUid = orig->mUid;
+    mTargetSdkVersion = orig->mTargetSdkVersion;
+    mEnabled = orig->mEnabled;
+    mEnabledSetting = orig->mEnabledSetting;
+    mInstallLocation = orig->mInstallLocation;
+    mManageSpaceActivityName = orig->mManageSpaceActivityName;
+    mDescriptionRes = orig->mDescriptionRes;
+    mUiOptions = orig->mUiOptions;
+    mBackupAgentName = orig->mBackupAgentName;
     return NOERROR;
 }
 
@@ -166,17 +174,36 @@ ECode CApplicationInfo::ReadFromParcel(
     source->ReadInt32(&mRequiresSmallestWidthDp);
     source->ReadInt32(&mCompatibleWidthLimitDp);
     source->ReadInt32(&mLargestWidthLimitDp);
+
+    source->ReadString(&mScanSourceDir);
+    source->ReadString(&mScanPublicSourceDir);
     source->ReadString(&mSourceDir);
     source->ReadString(&mPublicSourceDir);
+    source->ReadArrayOfString((ArrayOf<String>**)&mSplitSourceDirs);
+    source->ReadArrayOfString((ArrayOf<String>**)&mSplitPublicSourceDirs);
+    source->ReadString(&mNativeLibraryDir);
+    source->ReadString(&mSecondaryNativeLibraryDir);
+    source->ReadString(&mNativeLibraryRootDir);
+    Int32 ival;
+    source->ReadInt32(&ival);
+    mNativeLibraryRootRequiresIsa = ival != 0;
+    source->ReadString(&mPrimaryCpuAbi);
+    source->ReadString(&mSecondaryCpuAbi);
     source->ReadArrayOfString((ArrayOf<String>**)&mResourceDirs);
+    source->ReadString(&mSeinfo);
     source->ReadArrayOfString((ArrayOf<String>**)&mSharedLibraryFiles);
     source->ReadString(&mDataDir);
-    source->ReadString(&mNativeLibraryDir);
     source->ReadInt32(&mUid);
     source->ReadInt32(&mTargetSdkVersion);
-    source->ReadBoolean(&mEnabled);
+    source->ReadInt32(&mVersionCode);
+    source->ReadInt32(&ival);
+    mEnabled = ival != 0;
     source->ReadInt32(&mEnabledSetting);
     source->ReadInt32(&mInstallLocation);
+    source->ReadString(&mManageSpaceActivityName);
+    source->ReadString(&mBackupAgentName);
+    source->ReadInt32(&mDescriptionRes);
+    source->ReadInt32(&mUiOptions);
     return NOERROR;
 }
 
@@ -199,17 +226,32 @@ ECode CApplicationInfo::WriteToParcel(
     dest->WriteInt32(mRequiresSmallestWidthDp);
     dest->WriteInt32(mCompatibleWidthLimitDp);
     dest->WriteInt32(mLargestWidthLimitDp);
+    dest->WriteString(mScanSourceDir);
+    dest->WriteString(mScanPublicSourceDir);
     dest->WriteString(mSourceDir);
     dest->WriteString(mPublicSourceDir);
-    dest->WriteArrayOfString(mResourceDirs.Get());
-    dest->WriteArrayOfString(mSharedLibraryFiles.Get());
-    dest->WriteString(mDataDir);
+    dest->WriteArrayOfString(mSplitSourceDirs);
+    dest->WriteArrayOfString(mSplitPublicSourceDirs);
     dest->WriteString(mNativeLibraryDir);
+    dest->WriteString(mSecondaryNativeLibraryDir);
+    dest->WriteString(mNativeLibraryRootDir);
+    dest->WriteInt32(mNativeLibraryRootRequiresIsa ? 1 : 0);
+    dest->WriteString(mPrimaryCpuAbi);
+    dest->WriteString(mSecondaryCpuAbi);
+    dest->WriteArrayOfString(mResourceDirs);
+    dest->WriteString(mSeinfo);
+    dest->WriteArrayOfString(mSharedLibraryFiles);
+    dest->WriteString(mDataDir);
     dest->WriteInt32(mUid);
     dest->WriteInt32(mTargetSdkVersion);
-    dest->WriteBoolean(mEnabled);
+    dest->WriteInt32(mVersionCode);
+    dest->WriteInt32(mEnabled ? 1 : 0);
     dest->WriteInt32(mEnabledSetting);
     dest->WriteInt32(mInstallLocation);
+    dest->WriteString(mManageSpaceActivityName);
+    dest->WriteString(mBackupAgentName);
+    dest->WriteInt32(mDescriptionRes);
+    dest->WriteInt32(mUiOptions);
     return NOERROR;
 }
 
@@ -752,6 +794,99 @@ ECode CApplicationInfo::SetInstallLocation(
     /* [in] */ Int32 location)
 {
     mInstallLocation = location;
+    return NOERROR;
+}
+
+
+ECode CApplicationInfo::SetCodePath(
+    /* [in] */ const String& codePath)
+{
+    mScanSourceDir = codePath;
+    return NOERROR;
+}
+
+ECode CApplicationInfo::SetBaseCodePath(
+    /* [in] */ const String& baseCodePath)
+{
+    mSourceDir = baseCodePath;
+    return NOERROR;
+}
+
+ECode CApplicationInfo::SetSplitCodePaths(
+    /* [in] */ ArrayOf<String>* splitCodePaths)
+{
+    mSplitSourceDirs = splitCodePaths;
+    return NOERROR;
+}
+
+ECode CApplicationInfo::SetResourcePath(
+    /* [in] */ const String& resourcePath)
+{
+    mScanPublicSourceDir = resourcePath;
+    return NOERROR;
+}
+
+ECode CApplicationInfo::SetBaseResourcePath(
+    /* [in] */ const String& baseResourcePath)
+{
+    mPublicSourceDir = baseResourcePath;
+    return NOERROR;
+}
+
+ECode CApplicationInfo::SetSplitResourcePaths(
+    /* [in] */ ArrayOf<String>* splitResourcePaths)
+{
+    mSplitPublicSourceDirs = splitResourcePaths;
+    return NOERROR;
+}
+
+ECode CApplicationInfo::GetCodePath(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mScanSourceDir;
+    return NOERROR;
+}
+
+ECode CApplicationInfo::GetBaseCodePath(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mSourceDir;
+    return NOERROR;
+}
+
+ECode CApplicationInfo::GetSplitCodePaths(
+    /* [out, callee] */ ArrayOf<String>** result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mSplitSourceDirs;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
+}
+
+ECode CApplicationInfo::GetResourcePath(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mScanPublicSourceDir;
+    return NOERROR;
+}
+
+ECode CApplicationInfo::GetBaseResourcePath(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mPublicSourceDir;
+    return NOERROR;
+}
+
+ECode CApplicationInfo::GetSplitResourcePaths(
+    /* [out, callee] */ ArrayOf<String>* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mSplitPublicSourceDirs;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 

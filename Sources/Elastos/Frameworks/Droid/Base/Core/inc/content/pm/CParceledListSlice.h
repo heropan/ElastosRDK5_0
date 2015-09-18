@@ -10,11 +10,9 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
-
 /**
- * Builds up a parcel that is discarded when written to another parcel or
- * written to a list. This is useful for API that sends huge lists across a
- * Binder that may be larger than the IPC limit.
+ * Transfer a large list of Parcelable objects across an IPC.  Splits into
+ * multiple transactions if needed.
  *
  * @hide
  */
@@ -32,6 +30,9 @@ public:
     CARAPI constructor();
 
     CARAPI constructor(
+        /* [in] */ IList* list);
+
+    CARAPI constructor(
         /* [in] */ IParcel* p,
         /* [in] */ Int32 numItems,
         /* [in] */ Boolean lastSlice);
@@ -47,33 +48,27 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    CARAPI Append(
-        /* [in] */ IParcelable* item,
-        /* [out] */ Boolean* result);
-
-    CARAPI PopulateList(
-        /* [in, out] */ IObjectContainer* list,
-        /* [in] */ const ClassID& clsid,
-        /* [out] */ IInterface** obj);
-
-    CARAPI SetLastSlice(
-        /* [in] */ Boolean lastSlice);
-
-    CARAPI IsLastSlice(
-        /* [out] */ Boolean* result);
+    CARAPI GetList(
+        /* [out] */ IList** list);
 
 private:
+    static String TAG;// = "ParceledListSlice";
+    static Boolean DEBUG;// = FALSE;
+
     /*
      * TODO get this number from somewhere else. For now set it to a quarter of
      * the 1MB limit.
      */
-    static const Int32 MAX_IPC_SIZE = 256 * 1024;
+    static const Int32 MAX_IPC_SIZE;// = 256 * 1024;
+    static const Int32 MAX_FIRST_IPC_SIZE;// = MAX_IPC_SIZE / 2;
 
     AutoPtr<IParcel> mParcel;
 
     Int32 mNumItems;
 
     Boolean mIsLastSlice;
+
+    AutoPtr<IList> mList;
 };
 
 } // namespace Pm

@@ -249,41 +249,6 @@ PackageParser::Package::~Package()
     mReqFeatures = NULL;
 }
 
-PInterface PackageParser::Package::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)this;
-    }
-    return NULL;
-}
-
-UInt32 PackageParser::Package::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 PackageParser::Package::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode PackageParser::Package::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)this) {
-        *pIID = EIID_IInterface;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
-}
-
 void PackageParser::Package::SetPackageName(
     /* [in] */ const String& newName)
 {
@@ -718,37 +683,6 @@ PackageParser::IntentInfo::IntentInfo()
     , mLogo(0)
 {
     IntentFilter::Init();
-}
-
-PInterface PackageParser::IntentInfo::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IIntentFilter*)this;
-    }
-    else if (riid == Elastos::Droid::Content::EIID_IIntentFilter) {
-        return (IIntentFilter*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 PackageParser::IntentInfo::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 PackageParser::IntentInfo::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode PackageParser::IntentInfo::GetInterfaceID(
-    /* [in] */ IInterface* pObject,
-    /* [in] */ InterfaceID* pIID)
-{
-    assert(0);
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode PackageParser::IntentInfo::SetPriority(

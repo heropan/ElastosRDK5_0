@@ -31,8 +31,11 @@ public:
     Boolean mStopped;
     Boolean mNotLaunched;
     Boolean mInstalled;
+    Boolean mHidden; // Is the app restricted by owner / admin
     Int32 mEnabled;
+    Boolean mBlockUninstall;
 
+    String mLastDisableAppCaller;
     AutoPtr<HashSet<String> > mDisabledComponents;
     AutoPtr<HashSet<String> > mEnabledComponents;
 };

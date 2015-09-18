@@ -15,7 +15,9 @@ PackageUserState::PackageUserState()
     : mStopped(FALSE)
     , mNotLaunched(FALSE)
     , mInstalled(TRUE)
+    , mHidden(FALSE)
     , mEnabled(IPackageManager::COMPONENT_ENABLED_STATE_DEFAULT)
+    , mBlockUninstall(FALSE)
 {}
 
 PackageUserState::PackageUserState(
@@ -26,6 +28,8 @@ PackageUserState::PackageUserState(
     mNotLaunched = orig->mNotLaunched;
     mInstalled = orig->mInstalled;
     mEnabled = orig->mEnabled;
+    mHidden = orig->mHidden;
+    mLastDisableAppCaller = o->mLastDisableAppCaller;
 
     if (orig->mDisabledComponents != NULL) {
         mDisabledComponents = new HashSet<String>(orig->mDisabledComponents->Begin(),
@@ -36,6 +40,8 @@ PackageUserState::PackageUserState(
         mEnabledComponents = new HashSet<String>(orig->mEnabledComponents->Begin(),
             orig->mEnabledComponents->End());
     }
+
+    mBlockUninstall = o->mBlockUninstall;
 }
 
 PackageUserState::~PackageUserState()

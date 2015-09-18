@@ -66,7 +66,7 @@ ECode RegisteredServicesCache::PackageReceiver::OnReceive(
     Int32 uid;
     intent->GetInt32Extra(IIntent::EXTRA_UID, -1, &uid);
     if (uid != -1) {
-        mParent->GenerateServicesMap(UserHandle::GetUserId(uid));
+        mParent->HandlePackageEvent(UserHandle::GetUserId(uid));
     }
 
     return NOERROR;
@@ -83,7 +83,7 @@ ECode RegisteredServicesCache::ExternalReceiver::OnReceive(
     /* [in] */ IIntent* intent)
 {
     // External apps can't coexist with multi-user, so scan owner
-    mParent->GenerateServicesMap(IUserHandle::USER_OWNER);
+    mParent->HandlePackageEvent(IUserHandle::USER_OWNER);
     return NOERROR;
 }
 
@@ -171,6 +171,30 @@ RegisteredServicesCache::RegisteredServicesCache(
     sdFilter->AddAction(IIntent::ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE);
     intent = NULL;
     mContext->RegisterReceiver(mExternalReceiver, sdFilter, (IIntent**)&intent);
+}
+
+ECode RegisteredServicesCache::HandlePackageEvent(
+    /* [in] */ IIntent* intent,
+    /* [in] */ Int32 userId)
+{
+        // Don't regenerate the services map when the package is removed or its
+        // ASEC container unmounted as a step in replacement.  The subsequent
+        // _ADDED / _AVAILABLE call will regenerate the map in the final state.
+        final String action = intent.getAction();
+        // it's a new-component action if it isn't some sort of removal
+        final boolean isRemoval = Intent.ACTION_PACKAGE_REMOVED.equals(action)
+                || Intent.ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE.equals(action);
+        // if it's a removal, is it part of an update-in-place step?
+        final boolean replacing = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false);
+
+        if (isRemoval && replacing) {
+            // package is going away, but it's the middle of an upgrade: keep the current
+            // state and do nothing here.  This clause is intentionally empty.
+        } else {
+            // either we're adding/changing, or it's a removal without replacement, so
+            // we need to recalculate the set of available services
+            generateServicesMap(userId);
+        }
 }
 
 AutoPtr<RegisteredServicesCache::UserServices> RegisteredServicesCache::FindOrCreateUserLocked(
@@ -667,7 +691,8 @@ void RegisteredServicesCache::ReadPersistentServicesLocked()
         }
         return;
     }
-    while (eventType != IXmlPullParser::START_TAG) {
+    while (eventType != IXmlPullParser::START_TAG
+        && eventType != IXmlPullParser::END_DOCUMENT) {
         if (FAILED(parser->Next(&eventType))) {
             Slogger::W(TAG, "Error reading persistent services, starting from scratch");
             if (fis != NULL) {

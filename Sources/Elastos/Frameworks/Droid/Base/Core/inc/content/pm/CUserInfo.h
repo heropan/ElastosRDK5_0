@@ -127,9 +127,11 @@ public:
     Int32 mFlags;
     Int64 mCreationTime;
     Int64 mLastLoggedInTime;
+    Int32 mProfileGroupId;
 
     /** User is only partially created. */
     Boolean mPartial;
+    Boolean mGuestToRemove;
 };
 
 } // namespace Pm

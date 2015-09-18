@@ -9,8 +9,8 @@ module
     namespace Pm {
 
     interface IUserInfo {
-        /** 6 bits for user type */
-        const Int32 FLAG_MASK_USER_TYPE = 0x0000003F;
+        /** 8 bits for user type */
+        const Int32 FLAG_MASK_USER_TYPE = 0x000000FF;
 
         /**
          * *************************** NOTE ***************************
@@ -45,6 +45,19 @@ module
          * Indicates that this user has gone through its first-time initialization.
          */
         const Int32 FLAG_INITIALIZED = 0x00000010;
+
+        /**
+         * Indicates that this user is a profile of another user, for example holding a users
+         * corporate data.
+         */
+        const Int32 FLAG_MANAGED_PROFILE = 0x00000020;
+
+        /**
+         * Indicates that this user is disabled.
+         */
+        const Int32 FLAG_DISABLED = 0x00000040;
+
+        const Int32 NO_PROFILE_GROUP_ID = -1;
 
         IsPrimary(
             [out] Boolean* isPrimary);

@@ -9,6 +9,7 @@ namespace Pm {
 
 CPackageInfoLite::CPackageInfoLite()
     : mVersionCode(0)
+    , mMultiArch(FALSE)
     , mRecommendedInstallLocation(0)
     , mInstallLocation(0)
 {}
@@ -40,12 +41,15 @@ ECode CPackageInfoLite::ReadFromParcel(
     source->ReadInt32(&mVersionCode);
     source->ReadInt32(&mRecommendedInstallLocation);
     source->ReadInt32(&mInstallLocation);
-    Int32 verifiersLength;
-    source->ReadInt32(&verifiersLength);
-    if (verifiersLength == 0) {
+    Int32 ival;
+    source->ReadInt32(&ival);
+    mMultiArch = ival != 0;
+
+    source->ReadInt32(&ival);
+    if (ival == 0) {
         mVerifiers = ArrayOf<IVerifierInfo*>::Alloc(0);
     }
-    else if (verifiersLength != 0) {
+    else {
         source->ReadArrayOf((Handle32*)&mVerifiers);
     }
     return NOERROR;
@@ -59,6 +63,8 @@ ECode CPackageInfoLite::WriteToParcel(
     dest->WriteInt32(mVersionCode);
     dest->WriteInt32(mRecommendedInstallLocation);
     dest->WriteInt32(mInstallLocation);
+    dest->WriteInt32(mMultiArch ? 1 : 0);
+
     if (mVerifiers == NULL || mVerifiers->GetLength() == 0) {
         dest->WriteInt32(0);
     }

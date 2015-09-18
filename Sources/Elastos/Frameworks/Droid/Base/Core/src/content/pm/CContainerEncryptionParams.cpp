@@ -7,7 +7,7 @@ namespace Content {
 namespace Pm {
 
 
-const String TO_STRING_PREFIX = String("ContainerEncryptionParams{");
+const String TO_STRING_PREFIX("ContainerEncryptionParams{");
 
 const Int32 CContainerEncryptionParams::ENC_PARAMS_IV_PARAMETERS = 1;
 
@@ -27,7 +27,7 @@ ECode CContainerEncryptionParams::constructor(
     /* [in] */ Elastos::Security::Spec::IAlgorithmParameterSpec* encryptionSpec,
     /* [in] */ Elastos::Crypto::ISecretKey* encryptionKey)
 {
-    return Init(encryptionAlgorithm, encryptionSpec, encryptionKey,
+    return constructor(encryptionAlgorithm, encryptionSpec, encryptionKey,
                  String(NULL), NULL, NULL, NULL, -1, -1, -1);;
 }
 
@@ -43,7 +43,7 @@ ECode CContainerEncryptionParams::constructor(
     /* [in] */ Int64 encryptedDataStart,
     /* [in] */ Int64 dataEnd)
 {
-    return Init(encryptionAlgorithm, encryptionSpec, encryptionKey, macAlgorithm,
+    return constructor(encryptionAlgorithm, encryptionSpec, encryptionKey, macAlgorithm,
                  macSpec, macKey, macTag, authenticatedDataStart, encryptedDataStart, dataEnd);
 }
 
@@ -128,6 +128,7 @@ ECode CContainerEncryptionParams::GetMacSpec(
 {
     VALIDATE_NOT_NULL(spec);
     *spec = mMacSpec;
+    REFCOUNT_ADD(*spec)
     return NOERROR;
 }
 
@@ -136,6 +137,7 @@ ECode CContainerEncryptionParams::GetMacKey(
 {
     VALIDATE_NOT_NULL(key);
     *key = mMacKey;
+    REFCOUNT_ADD(*key)
     return NOERROR;
 }
 
@@ -176,8 +178,9 @@ ECode CContainerEncryptionParams::Equals(
     /* [in] */ IInterface* o,
     /* [out] */ Boolean* isEquals)
 {
-    VALIDATE_NOT_NULL(o);
     VALIDATE_NOT_NULL(isEquals);
+    *isEquals = FALSE;
+    VALIDATE_NOT_NULL(o);
     return E_NOT_IMPLEMENTED;
 }
 
@@ -199,6 +202,7 @@ ECode CContainerEncryptionParams::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     VALIDATE_NOT_NULL(source);
+    assert(0 && "TODO");
     return E_NOT_IMPLEMENTED;
 }
 

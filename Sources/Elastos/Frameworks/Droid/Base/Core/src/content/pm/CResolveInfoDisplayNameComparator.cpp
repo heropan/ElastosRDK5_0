@@ -17,6 +17,7 @@ CResolveInfoDisplayNameComparator::CResolveInfoDisplayNameComparator()
     AutoPtr<ICollatorHelper> helper;
     CCollatorHelper::AcquireSingleton((ICollatorHelper**)&helper);
     helper->GetInstance((ICollator**)&mCollator);
+    mCollator->SetStrength(ICollator::PRIMARY);
 }
 
 ECode CResolveInfoDisplayNameComparator::constructor(
@@ -32,6 +33,14 @@ ECode CResolveInfoDisplayNameComparator::Compare(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
+
+    // We want to put the one targeted to another user at the end of the dialog.
+    if (a.targetUserId != UserHandle::USER_CURRENT) {
+        return 1;
+    }
+    if (b.targetUserId != UserHandle::USER_CURRENT) {
+        return -1;
+    }
 
     String aStr;
     AutoPtr<ICharSequence> sa;

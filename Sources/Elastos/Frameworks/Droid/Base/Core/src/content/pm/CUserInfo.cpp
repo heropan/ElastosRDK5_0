@@ -17,7 +17,10 @@ CUserInfo::CUserInfo()
     , mCreationTime(0)
     , mLastLoggedInTime(0)
     , mPartial(FALSE)
-{}
+    , mGuestToRemove(FALSE)
+{
+    mProfileGroupId = NO_PROFILE_GROUP_ID;
+}
 
 CUserInfo::~CUserInfo()
 {}
@@ -28,17 +31,22 @@ ECode CUserInfo::constructor()
 }
 
 ECode CUserInfo::constructor(
-    /* [in] */ IUserInfo* orig)
+    /* [in] */ IUserInfo* other)
 {
-    assert(orig != NULL);
-    orig->GetId(&mId);
-    orig->GetSerialNumber(&mSerialNumber);
-    orig->GetName(&mName);
-    orig->GetIconPath(&mIconPath);
-    orig->GetFlags(&mFlags);
-    orig->GetCreationTime(&mCreationTime);
-    orig->GetLastLoggedInTime(&mLastLoggedInTime);
-    orig->GetPartial(&mPartial);
+    VALIDATE_NOT_NULL(other)
+    UserInfo* orig = (UserInfo*)other;
+
+    mName = orig->mName;
+    mIconPath = orig->mIconPath;
+    mId = orig->mId;
+    mFlags = orig->mFlags;
+    mSerialNumber = orig->mSerialNumber;
+    mCreationTime = orig->mCreationTime;
+    mLastLoggedInTime = orig->mLastLoggedInTime;
+    mPartial = orig->mPartial;
+    mProfileGroupId = orig->mProfileGroupId;
+    mGuestToRemove = orig->mGuestToRemove;
+
     return NOERROR;
 }
 
@@ -124,6 +132,10 @@ ECode CUserInfo::ReadFromParcel(
     source->ReadInt64(&mLastLoggedInTime);
     source->ReadString(&mIconPath);
     source->ReadBoolean(&mPartial);
+    source->ReadInt32(&mProfileGroupId);
+    Int32 ival;
+    source->ReadInt32(&ival);
+    mGuestToRemove = ival != 0;
     return NOERROR;
 }
 
@@ -139,6 +151,8 @@ ECode CUserInfo::WriteToParcel(
     dest->WriteInt64(mLastLoggedInTime);
     dest->WriteString(mIconPath);
     dest->WriteBoolean(mPartial);
+    dest->WriteInt32(mProfileGroupId);
+    dest->WriteInt32(mGuestToRemove ? 1 : 0);
     return NOERROR;
 }
 

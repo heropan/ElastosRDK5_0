@@ -48,6 +48,16 @@ ECode CSignature::constructor(
     return E_NOT_IMPLEMENTED;
 }
 
+
+ECode CSignature::constructor(
+    /* [in] */ ArrayOf<ICertificate*>* certificateChain)
+{
+    mSignature = certificateChain[0].getEncoded();
+    if (certificateChain.length > 1) {
+        mCertificateChain = Arrays.copyOfRange(certificateChain, 1, certificateChain.length);
+    }
+}
+
 ECode CSignature::ParseHexDigit(
     /* [in] */ Int32 nibble,
     /* [out] */ Int32* digit)
@@ -135,15 +145,37 @@ ECode CSignature::GetPublicKey(
     return E_NOT_IMPLEMENTED;
 }
 
+
+ECode CSignature::GetChainSignatures(
+    /* [out, callee] */ ArrayOf<ISignature*>** result)
+{
+    // if (mCertificateChain == null) {
+    //     return new Signature[] { this };
+    // }
+
+    // Signature[] chain = new Signature[1 + mCertificateChain.length];
+    // chain[0] = this;
+
+    // int i = 1;
+    // for (Certificate c : mCertificateChain) {
+    //     chain[i++] = new Signature(c.getEncoded());
+    // }
+
+    // return chain;
+    return NOERROR;
+}
+
 ECode CSignature::Equals(
-    /* [in] */ ISignature* obj,
+    /* [in] */ IInterface* obj,
     /* [out] */ Boolean* isEqual)
 {
     VALIDATE_NOT_NULL(isEqual);
 
+    ISignature* sg = ISignature::Probe(obj);
+
 //    try {
-    if (obj != NULL) {
-        CSignature* other = (CSignature*)obj;
+    if (sg != NULL) {
+        CSignature* other = (CSignature*)sg;
         if (this == other) {
             *isEqual = TRUE;
             return NOERROR;
@@ -188,6 +220,49 @@ ECode CSignature::WriteToParcel(
 {
     dest->WriteArrayOf((Handle32)mSignature.Get());
     return NOERROR;
+}
+
+Boolean CSignature::AreExactMatch(
+    /* [in] */ ArrayOf<ISignature*>* a,
+    /* [in] */ ArrayOf<ISignature*>* b)
+{
+    return (a.length == b.length) && ArrayUtils.containsAll(a, b)
+            && ArrayUtils.containsAll(b, a);
+}
+
+Boolean CSignature::AreEffectiveMatch(
+    /* [in] */ ArrayOf<ISignature*>* a,
+    /* [in] */ ArrayOf<ISignature*>* b)
+{
+    final CertificateFactory cf = CertificateFactory.getInstance("X.509");
+
+    final Signature[] aPrime = new Signature[a.length];
+    for (int i = 0; i < a.length; i++) {
+        aPrime[i] = bounce(cf, a[i]);
+    }
+    final Signature[] bPrime = new Signature[b.length];
+    for (int i = 0; i < b.length; i++) {
+        bPrime[i] = bounce(cf, b[i]);
+    }
+
+    return areExactMatch(aPrime, bPrime);
+}
+
+ECode CSignature::Bounce(
+    /* [in] */ ICertificateFactory* cf,
+    /* [in] */ ISignature* s,
+    /* [out] */ ISignature** sig)
+{
+    final InputStream is = new ByteArrayInputStream(s.mSignature);
+    final X509Certificate cert = (X509Certificate) cf.generateCertificate(is);
+    final Signature sPrime = new Signature(cert.getEncoded());
+
+    if (Math.abs(sPrime.mSignature.length - s.mSignature.length) > 2) {
+        throw new CertificateException("Bounced cert length looks fishy; before "
+                + s.mSignature.length + ", after " + sPrime.mSignature.length);
+    }
+
+    return sPrime;
 }
 
 } // namespace Pm
