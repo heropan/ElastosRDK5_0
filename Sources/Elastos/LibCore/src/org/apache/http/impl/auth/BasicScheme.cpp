@@ -3,14 +3,14 @@
 #include "EncodingUtils.h"
 #include "CCharArrayBuffer.h"
 #include "CBufferedHeader.h"
-#include "params/AuthParams.h"
-#include <elastos/Logger.h>
-#include <elastos/core/StringBuilder.h>
+#include "AuthParams.h"
+#include "Logger.h"
+#include "StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Security::IPrincipal;
 using Elastos::Utility::Logging::Logger;
-using Org::Apache::Http::AuthParams;
+using Org::Apache::Http::IHttpMessage;
 using Org::Apache::Http::Auth::IAUTH;
 using Org::Apache::Http::Auth::Params::AuthParams;
 using Org::Apache::Http::Message::CBufferedHeader;
@@ -50,14 +50,14 @@ ECode BasicScheme::IsComplete(
 {
     VALIDATE_NOT_NULL(isComplete)
     *isComplete = mComplete;
-    return NOERROR
+    return NOERROR;
 }
 
 ECode BasicScheme::IsConnectionBased(
     /* [out] */ Boolean* connectionBased)
 {
     VALIDATE_NOT_NULL(connectionBased)
-    *IsConnectionBased = FALSE;
+    *connectionBased = FALSE;
     return NOERROR;
 }
 
@@ -79,17 +79,15 @@ ECode BasicScheme::Authenticate(
     }
 
     AutoPtr<IHttpParams> params;
-    request->GetParams((IHttpParams**)&params);
+    IHttpMessage::Probe(request)->GetParams((IHttpParams**)&params);
     String charset;
-    AuthParams::GetCredentialCharset(params);
-    Boolean isProxy;
-    IsProxy(&isProxy);
-    return Authenticate(credentials, charset, isProxy, header);
+    AuthParams::GetCredentialCharset(params, &charset);
+    return Authenticate(credentials, charset, IsProxy(), header);
 }
 
 ECode BasicScheme::Authenticate(
     /* [in] */ ICredentials* credentials,
-    /* [in] */ IHttpRequest* request,
+    /* [in] */ const String& charset,
     /* [in] */ Boolean proxy,
     /* [out] */ IHeader** header)
 {
@@ -100,8 +98,8 @@ ECode BasicScheme::Authenticate(
         Logger::E("BasicScheme", "Credentials may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    if (request == NULL) {
-        Logger::E("BasicScheme", "HTTP request may not be null");
+    if (charset.IsNull()) {
+        Logger::E("BasicScheme", "charset may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -118,7 +116,10 @@ ECode BasicScheme::Authenticate(
 
     AutoPtr< ArrayOf<Byte> > bytes;
     EncodingUtils::GetBytes(tmp.ToString(), charset, (ArrayOf<Byte>**)&bytes);
-    AutoPtr< ArrayOf<Byte> > base64password = Base64::EncodeBase64(bytes);
+    AutoPtr< ArrayOf<Byte> > base64password;
+    assert(0);
+    Logger::E("BasicScheme", "Base64 has not been implemented!");
+    // AutoPtr< ArrayOf<Byte> > base64password = Base64::EncodeBase64(bytes);
 
     AutoPtr<ICharArrayBuffer> buffer;
     CCharArrayBuffer::New(32, (ICharArrayBuffer**)&buffer);

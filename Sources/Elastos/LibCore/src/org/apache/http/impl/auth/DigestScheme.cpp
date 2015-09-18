@@ -3,28 +3,39 @@
 #include "EncodingUtils.h"
 #include "CCharArrayBuffer.h"
 #include "CBufferedHeader.h"
-#include "BasicNameValuePair.h"
+#include "CBasicNameValuePair.h"
 #include "BasicHeaderValueFormatter.h"
-#include "params/AuthParams.h"
-#include <elastos/Logger.h>
-#include <elastos/core/StringUtils.h>
+#include "AuthParams.h"
+#include "Logger.h"
+#include "CSystem.h"
+#include "CString.h"
+#include "CMessageDigestHelper.h"
+#include "CStringTokenizer.h"
+#include "StringBuilder.h"
+#include "StringUtils.h"
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CString;
+using Elastos::Core::StringBuilder;
 using Elastos::Security::IMessageDigestHelper;
 using Elastos::Security::CMessageDigestHelper;
 using Elastos::Security::IPrincipal;
 using Elastos::Utility::IStringTokenizer;
 using Elastos::Utility::CStringTokenizer;
 using Elastos::Utility::Logging::Logger;
-using Org::Apache::Http::AuthParams;
+using Elastos::Utility::Etl::List;
 using Org::Apache::Http::IRequestLine;
 using Org::Apache::Http::Auth::IAUTH;
 using Org::Apache::Http::Auth::Params::AuthParams;
 using Org::Apache::Http::Message::CBufferedHeader;
-using Org::Apache::Http::Message::BasicNameValuePair;
+using Org::Apache::Http::Message::IBasicNameValuePair;
+using Org::Apache::Http::Message::CBasicNameValuePair;
 using Org::Apache::Http::Message::BasicHeaderValueFormatter;
+using Org::Apache::Http::Message::IHeaderValueFormatter;
 using Org::Apache::Http::Auth::Params::AuthParams;
 using Org::Apache::Http::Utility::ICharArrayBuffer;
 using Org::Apache::Http::Utility::CCharArrayBuffer;
@@ -114,6 +125,7 @@ ECode DigestScheme::ProcessChallenge(
     // Reset cnonce
     mCnonce = NULL;
     mComplete = TRUE;
+    return NOERROR;
 }
 
 ECode DigestScheme::IsComplete(
@@ -155,7 +167,6 @@ void DigestScheme::OverrideParamter(
     CString::New(name, (ICharSequence**)&cs1);
     CString::New(value, (ICharSequence**)&cs2);
     GetParameters()->Put(cs1, cs2);
-    return NOERROR;
 }
 
 String DigestScheme::GetCnonce()
@@ -210,7 +221,7 @@ ECode DigestScheme::Authenticate(
         GetParameters()->Put(cs5, cs6);
     }
     String digest;
-    createDigest(credentials, &digest);
+    CreateDigest(credentials, &digest);
     return CreateDigestHeader(credentials, digest, header);
 }
 
@@ -226,7 +237,7 @@ ECode DigestScheme::CreateMessageDigest(
     if (FAILED(ec)) {
         *digest = NULL;
         Logger::E("DigestScheme", "Unsupported algorithm in HTTP Digest authentication: %s", digAlg.string());
-        return E_UNSUPPORTED_ALGORITHM_IN_HTTP_DIGEST_AUTHENTICATION;
+        return E_UNSUPPORTED_DIGEST_ALGORITHM_EXCEPTION;
     }
     return NOERROR;
     // } catch (Exception e) {
@@ -237,7 +248,7 @@ ECode DigestScheme::CreateMessageDigest(
 }
 
 ECode DigestScheme::CreateDigest(
-    /* [in] */ ICredentials* credentials
+    /* [in] */ ICredentials* credentials,
     /* [out] */ String* digest)
 {
     VALIDATE_NOT_NULL(digest)
@@ -279,12 +290,12 @@ ECode DigestScheme::CreateDigest(
     }
 
     AutoPtr<IMessageDigest> md5Helper;
-    CreateMessageDigest("MD5", (IMessageDigest**)&md5Helper);
+    CreateMessageDigest(String("MD5"), (IMessageDigest**)&md5Helper);
 
     AutoPtr<IPrincipal> principal;
     credentials->GetUserPrincipal((IPrincipal**)&principal);
     String uname;
-    principal->GetName&uname();
+    principal->GetName(&uname);
     String pwd;
     credentials->GetPassword(&pwd);
 
@@ -307,7 +318,7 @@ ECode DigestScheme::CreateDigest(
         String cnonce = GetCnonce();
 
         AutoPtr< ArrayOf<Byte> > bytes;
-        EncodingUtils::GetAsciiBytes(a1, charset, (ArrayOf<Byte>**)&bytes);
+        EncodingUtils::GetBytes(a1, charset, (ArrayOf<Byte>**)&bytes);
         AutoPtr< ArrayOf<Byte> > binaryData;
         md5Helper->Digest(bytes, (ArrayOf<Byte>**)&binaryData);
         String tmp2 = Encode(binaryData);
@@ -324,7 +335,7 @@ ECode DigestScheme::CreateDigest(
         return E_AUTHENTICATION_EXCEPTION;
     }
     AutoPtr< ArrayOf<Byte> > bytes;
-    EncodingUtils::GetAsciiBytes(a1, charset, (ArrayOf<Byte>**)&bytes);
+    EncodingUtils::GetBytes(a1, charset, (ArrayOf<Byte>**)&bytes);
     AutoPtr< ArrayOf<Byte> > binaryData;
     md5Helper->Digest(bytes, (ArrayOf<Byte>**)&binaryData);
     String md5a1 = Encode(binaryData);
@@ -393,14 +404,13 @@ ECode DigestScheme::CreateDigestHeader(
     VALIDATE_NOT_NULL(header)
     AutoPtr<ICharArrayBuffer> buffer;
     CCharArrayBuffer::New(128, (ICharArrayBuffer**)&buffer);
-    Boolean isProxy;
-    if (IsProxy(&isProxy), isProxy) {
-        buffer.Append(IAUTH::PROXY_AUTH_RESP);
+    if (IsProxy()) {
+        buffer->Append(IAUTH::PROXY_AUTH_RESP);
     }
     else {
-        buffer.Append(IAUTH::WWW_AUTH_RESP);
+        buffer->Append(IAUTH::WWW_AUTH_RESP);
     }
-    buffer.Append(": Digest ");
+    buffer->Append(String(": Digest "));
 
     String uri, realm, nonce, opaque, algorithm;
     GetParameter(String("uri"), &uri);
@@ -415,35 +425,57 @@ ECode DigestScheme::CreateDigestHeader(
     String uname;
     principal->GetName(&uname);
 
-    AutoPtr< List<AutoPtr<BasicNameValuePair> > > params = new List<AutoPtr<BasicNameValuePair> >(20);
-    params->Insert(new BasicNameValuePair(String("username"), uname));
-    params->Insert(new BasicNameValuePair(String("realm"), realm));
-    params->Insert(new BasicNameValuePair(String("nonce"), nonce));
-    params->Insert(new BasicNameValuePair(String("uri"), uri));
-    params->Insert(new BasicNameValuePair(String("response"), response));
+    AutoPtr< List<AutoPtr<IBasicNameValuePair> > > params = new List<AutoPtr<IBasicNameValuePair> >(20);
+    AutoPtr<IBasicNameValuePair> unameP;
+    CBasicNameValuePair::New(String("username"), uname, (IBasicNameValuePair**)&unameP);
+    params->PushBack(unameP);
+    AutoPtr<IBasicNameValuePair> realmP;
+    CBasicNameValuePair::New(String("realm"), realm, (IBasicNameValuePair**)&realmP);
+    params->PushBack(realmP);
+    AutoPtr<IBasicNameValuePair> nonceP;
+    CBasicNameValuePair::New(String("nonce"), nonce, (IBasicNameValuePair**)&nonceP);
+    params->PushBack(nonceP);
+    AutoPtr<IBasicNameValuePair> uriP;
+    CBasicNameValuePair::New(String("uri"), uri, (IBasicNameValuePair**)&uriP);
+    params->PushBack(uriP);
+    AutoPtr<IBasicNameValuePair> responseP;
+    CBasicNameValuePair::New(String("response"), response, (IBasicNameValuePair**)&responseP);
+    params->PushBack(responseP);
 
     if (mQopVariant != QOP_MISSING) {
-        params->Insert(new BasicNameValuePair(String("qop"), GetQopVariantString()));
-        params->Insert(new BasicNameValuePair(String("nc"), NC));
-        params->Insert(new BasicNameValuePair(String("cnonce"), GetCnonce()));
+        AutoPtr<IBasicNameValuePair> qopP;
+        CBasicNameValuePair::New(String("qop"), GetQopVariantString(), (IBasicNameValuePair**)&qopP);
+        params->PushBack(qopP);
+        AutoPtr<IBasicNameValuePair> ncP;
+        CBasicNameValuePair::New(String("nc"), NC, (IBasicNameValuePair**)&ncP);
+        params->PushBack(ncP);
+        AutoPtr<IBasicNameValuePair> cnonceP;
+        CBasicNameValuePair::New(String("cnonce"), GetCnonce(), (IBasicNameValuePair**)&cnonceP);
+        params->PushBack(cnonceP);
     }
     if (!algorithm.IsNull()) {
-        params->Insert(new BasicNameValuePair(String("algorithm"), algorithm));
+        AutoPtr<IBasicNameValuePair> algorithmP;
+        CBasicNameValuePair::New(String("algorithm"), algorithm, (IBasicNameValuePair**)&algorithmP);
+        params->PushBack(algorithmP);
     }
     if (!opaque.IsNull()) {
-        params->Insert(new BasicNameValuePair(String("opaque"), opaque));
+        AutoPtr<IBasicNameValuePair> opaqueP;
+        CBasicNameValuePair::New(String("opaque"), opaque, (IBasicNameValuePair**)&opaqueP);
+        params->PushBack(opaqueP);
     }
 
-    List<AutoPtr<BasicNameValuePair> >::Iterator it = params->Begin();
+    List<AutoPtr<IBasicNameValuePair> >::Iterator it = params->Begin();
     for (; it != params->End(); ++it) {
-        AutoPtr<BasicNameValuePair> param = *it;
+        AutoPtr<IBasicNameValuePair> param = *it;
         if (it != params->Begin()) {
-            buffer.Append(", ");
+            buffer->Append(String(", "));
         }
         String name;
-        param->GetName(&name);
+        INameValuePair::Probe(param)->GetName(&name);
         Boolean noQuotes = String("nc").Equals(name) || String("qop").Equals(name);
-        BasicHeaderValueFormatter::DEFAULT->FormatNameValuePair(buffer, param, !noQuotes);
+        AutoPtr<ICharArrayBuffer> b;
+        IHeaderValueFormatter::Probe(BasicHeaderValueFormatter::DEFAULT)->FormatNameValuePair(
+                buffer, INameValuePair::Probe(param), !noQuotes, (ICharArrayBuffer**)&b);
     }
     return CBufferedHeader::New(buffer, header);
 }
@@ -452,12 +484,12 @@ String DigestScheme::GetQopVariantString()
 {
     String qopOption;
     if (mQopVariant == QOP_AUTH_INT) {
-        mQopOption = String("auth-int");
+        qopOption = String("auth-int");
     }
     else {
-        mQopOption = String("auth");
+        qopOption = String("auth");
     }
-    return mQopOption;
+    return qopOption;
 }
 
 String DigestScheme::Encode(
@@ -489,7 +521,7 @@ String DigestScheme::CreateCnonce()
     CSystem::AcquireSingleton((ISystem**)&system);
     Int64 millis;
     system->GetCurrentTimeMillis(&millis);
-    cnonce = StringUtil::ToString(millis);
+    cnonce = StringUtils::ToString(millis);
     AutoPtr< ArrayOf<Byte> > bytes;
     EncodingUtils::GetAsciiBytes(cnonce, (ArrayOf<Byte>**)&bytes);
     AutoPtr< ArrayOf<Byte> > binaryData;

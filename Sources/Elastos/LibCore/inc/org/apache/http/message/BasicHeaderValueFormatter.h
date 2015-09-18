@@ -2,8 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICHEADERVALUEFORMATTER_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICHEADERVALUEFORMATTER_H_
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Utility::IIterator;
 using Org::Apache::Http::IHeaderElement;
@@ -24,7 +23,7 @@ namespace Message {
  * @version $Revision: 602520 $
  */
 class BasicHeaderValueFormatter
-    , public Object
+    : public Object
     , public IBasicHeaderValueFormatter
     , public IHeaderValueFormatter
 {

@@ -2,11 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_ENGLISHREASONPHRASECATALOG_H__
 #define __ORG_APACHE_HTTP_IMPL_ENGLISHREASONPHRASECATALOG_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::IArrayOf;
-using Elastos::Core::Object;
 using Elastos::Utility::ILocale;
 using Org::Apache::Http::IReasonPhraseCatalog;
 
@@ -31,8 +29,6 @@ class EnglishReasonPhraseCatalog
     , public IReasonPhraseCatalog
 {
 public:
-    EnglishReasonPhraseCatalog();
-
     CAR_INTERFACE_DECL()
 
     CARAPI GetReason(
@@ -57,7 +53,7 @@ private:
         /* [in] */ Int32 status,
         /* [in] */ const String& reason);
 
-    static CARAPI_(AutoPtr< ArrayOf<IArrayOf*> >) InitReasonPhrases()
+    static CARAPI_(AutoPtr< ArrayOf<IArrayOf*> >) InitReasonPhrases();
 
 public:
     // static array with english reason phrases defined below

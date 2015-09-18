@@ -2,7 +2,9 @@
 #include "RFC2617Scheme.h"
 #include "BasicHeaderValueParser.h"
 #include "CParserCursor.h"
-#include <elastos/Logger.h>
+#include "CHashMap.h"
+#include "CString.h"
+#include "Logger.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
@@ -10,6 +12,7 @@ using Elastos::Utility::IHashMap;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeaderElement;
+using Org::Apache::Http::Message::IHeaderValueParser;
 using Org::Apache::Http::Message::BasicHeaderValueParser;
 using Org::Apache::Http::Message::CParserCursor;
 using Org::Apache::Http::Message::IParserCursor;
@@ -29,11 +32,11 @@ ECode RFC2617Scheme::ParseChallenge(
     /* [in] */ Int32 pos,
     /* [in] */ Int32 len)
 {
-    AutoPtr<IHeaderValueParser> parser = BasicHeaderValueParser::DEFAULT;
-    Int32 len;
-    buffer->GetLength(&len);
+    AutoPtr<IHeaderValueParser> parser = IHeaderValueParser::Probe(BasicHeaderValueParser::DEFAULT);
+    Int32 length;
+    buffer->GetLength(&length);
     AutoPtr<IParserCursor> cursor;
-    CParserCursor::New(pos, len, (IParserCursor**)&cursor);
+    CParserCursor::New(pos, length, (IParserCursor**)&cursor);
     AutoPtr< ArrayOf<IHeaderElement*> > elements;
     parser->ParseElements(buffer, cursor, (ArrayOf<IHeaderElement*>**)&elements);
     if (elements->GetLength() == 0) {
@@ -44,7 +47,7 @@ ECode RFC2617Scheme::ParseChallenge(
     AutoPtr<IHashMap> hm;
     CHashMap::New(elements->GetLength(), (IHashMap**)&hm);
     mParams = IMap::Probe(hm);
-    for (Int32 i = 0; i < elements->GetLength(), ++i) {
+    for (Int32 i = 0; i < elements->GetLength(); ++i) {
         AutoPtr<IHeaderElement> element = (*elements)[i];
         String name, value;
         element->GetName(&name);
@@ -81,7 +84,7 @@ ECode RFC2617Scheme::GetParameter(
         return NOERROR;
     }
     AutoPtr<ICharSequence> cs;
-    CString::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+    CString::New(name.ToLowerCase(/*ILocale::ENGLISH*/), (ICharSequence**)&cs);
     AutoPtr<IInterface> value;
     mParams->Get(cs, (IInterface**)&value);
     ICharSequence::Probe(value)->ToString(param);

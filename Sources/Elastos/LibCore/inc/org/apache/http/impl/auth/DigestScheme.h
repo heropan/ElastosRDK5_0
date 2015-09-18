@@ -2,7 +2,6 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_AUTH_DIGESTSCHEME_H__
 #define __ORG_APACHE_HTTP_IMPL_AUTH_DIGESTSCHEME_H__
 
-#include <Org.Apache.Http_server.h>
 #include "RFC2617Scheme.h"
 
 using Elastos::Security::IMessageDigest;
@@ -129,7 +128,7 @@ private:
      * @throws AuthenticationException when MD5 is an unsupported algorithm
      */
     CARAPI CreateDigest(
-        /* [in] */ ICredentials* credentials
+        /* [in] */ ICredentials* credentials,
         /* [out] */ String* digest);
 
     /**

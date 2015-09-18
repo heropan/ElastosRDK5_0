@@ -263,7 +263,7 @@ ECode SingleClientConnManager::ReleaseConnection(
 {
     FAIL_RETURN(AssertStillUp())
 
-    AutoPtr<ConnAdapter> sca = conn->Probe(EIID_ConnAdapter);
+    AutoPtr<ConnAdapter> sca = reinterpret_cast<ConnAdapter*>(conn->Probe(EIID_ConnAdapter));
     if (sca == NULL) {
         Logger::E("SingleClientConnManager", "Connection class mismatch, connection not obtained from this manager.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;

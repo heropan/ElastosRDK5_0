@@ -1,13 +1,14 @@
 
 #include "AbstractHttpClient.h"
-#include "DefaultedHttpContext.h"
+#include "CDefaultedHttpContext.h"
 #include "DefaultRequestDirector.h"
 #include "ClientParamsStack.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Net::IURI;
-using Org::Apache::Http::Protocol::DefaultedHttpContext;
+using Org::Apache::Http::Protocol::IDefaultedHttpContext;
+using Org::Apache::Http::Protocol::CDefaultedHttpContext;
 
 namespace Org {
 namespace Apache {
@@ -567,8 +568,9 @@ ECode AbstractHttpClient::Execute(
             execContext = defaultContext;
         }
         else {
-            execContext = (IHttpContext*)new DefaultedHttpContext(
-                    context, defaultContext, (IHttpContext**)&execContext);
+            AutoPtr<IDefaultedHttpContext> defaultContext;
+            CDefaultedHttpContext::New(context, defaultContext, (IHttpContext**)&defaultContext);
+            execContext = IHttpContext::Probe(defaultContext);
         }
         // Create a director for this request
         AutoPtr<IHttpRequestExecutor> executor;

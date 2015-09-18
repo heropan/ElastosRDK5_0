@@ -2,10 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_IO_ABSTRACTMESSAGEPARSER_H__
 #define __ORG_APACHE_HTTP_IMPL_IO_ABSTRACTMESSAGEPARSER_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Org::Apache::Http::IHeader;
 using Org::Apache::Http::IHttpMessage;
 using Org::Apache::Http::Message::ILineParser;

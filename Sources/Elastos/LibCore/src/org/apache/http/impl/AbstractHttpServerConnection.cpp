@@ -1,11 +1,11 @@
 
 #include "AbstractHttpServerConnection.h"
 #include "DefaultHttpRequestFactory.h"
-#include "entity/LaxContentLengthStrategy.h"
-#include "entity/StrictContentLengthStrategy.h"
-#include "io/HttpRequestParser.h"
-#include "io/HttpResponseWriter.h"
-#include <elastos/Logger.h>
+#include "LaxContentLengthStrategy.h"
+#include "StrictContentLengthStrategy.h"
+#include "HttpRequestParser.h"
+#include "HttpResponseWriter.h"
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpMessage;
@@ -60,7 +60,7 @@ AutoPtr<IHttpMessageParser> AbstractHttpServerConnection::CreateRequestParser(
     return parser;
 }
 
-AutoPtr<IHttpMessageWriter> AbstractHttpServerConnection::CreateRequestWriter(
+AutoPtr<IHttpMessageWriter> AbstractHttpServerConnection::CreateResponseWriter(
     /* [in] */ ISessionOutputBuffer* buffer,
     /* [in] */ IHttpParams* params)
 {
@@ -87,7 +87,7 @@ ECode AbstractHttpServerConnection::Init(
     mOutbuffer = outbuffer;
     AutoPtr<IHttpRequestFactory> factory = CreateHttpRequestFactory();
     mRequestParser = CreateRequestParser(inbuffer, factory, params);
-    mReponseWriter = CreateResponseWriter(outbuffer, params);
+    mResponseWriter = CreateResponseWriter(outbuffer, params);
     AutoPtr<IHttpTransportMetrics> inMetrics, outMetrics;
     inbuffer->GetMetrics((IHttpTransportMetrics**)&inMetrics);
     outbuffer->GetMetrics((IHttpTransportMetrics**)&outMetrics);

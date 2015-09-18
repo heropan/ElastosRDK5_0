@@ -2,10 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_ABSTRACTHTTPCLIENT_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_ABSTRACTHTTPCLIENT_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Utility::IMap;
 using Elastos::Utility::IList;
 using Org::Apache::Http::IConnectionReuseStrategy;

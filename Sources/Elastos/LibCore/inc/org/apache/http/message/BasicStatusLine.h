@@ -2,9 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICSTATUSLINE_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICSTATUSLINE_H_
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
+using Elastos::Core::ICloneable;
 using Org::Apache::Http::IStatusLine;
 using Org::Apache::Http::IProtocolVersion;
 
@@ -27,8 +27,8 @@ namespace Message {
  * @since 4.0
  */
 class BasicStatusLine
-    , public Object
-    , publid IStatusLine
+    : public Object
+    , public IStatusLine
     , public ICloneable
 {
 public:

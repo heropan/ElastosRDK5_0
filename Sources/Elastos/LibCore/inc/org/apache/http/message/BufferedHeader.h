@@ -2,9 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BUFFEREDHEADER_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BUFFEREDHEADER_H_
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
+using Elastos::Core::ICloneable;
 using Org::Apache::Http::IHeader;
 using Org::Apache::Http::IFormattedHeader;
 using Org::Apache::Http::Utility::ICharArrayBuffer;
@@ -25,8 +25,8 @@ namespace Message {
  * @version $Revision: 604625 $ $Date: 2007-12-16 06:11:11 -0800 (Sun, 16 Dec 2007) $
  */
 class BufferedHeader
-    , public Object
-    , publid IFormattedHeader
+    : public Object
+    , public IFormattedHeader
     , public IHeader
     , public ICloneable
 {

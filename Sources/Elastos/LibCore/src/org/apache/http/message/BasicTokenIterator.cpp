@@ -1,11 +1,12 @@
 
 #include "BasicTokenIterator.h"
-#include <elastos/Logger.h>
-#include <elastos/core/Character.h>
+#include "Logger.h"
+#include "Character.h"
+#include "CString.h"
 
 using Elastos::Core::Character;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeader;
 
@@ -66,7 +67,7 @@ ECode BasicTokenIterator::GetNext(
     String elem;
     NextToken(&elem);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(elem, (ICharSequence**)&cs);
+    CString::New(elem, (ICharSequence**)&cs);
     *object = cs->Probe(EIID_IInterface);
     REFCOUNT_ADD(*object)
     return NOERROR;

@@ -70,13 +70,13 @@ protected:
     CARAPI CreateHttpDataReceiver(
         /* [in] */ ISocket* socket,
         /* [in] */ Int32 buffersize,
-        /* [in] */ IHttpParams* params
+        /* [in] */ IHttpParams* params,
         /* [out] */ ISessionInputBuffer** inputBuffer);
 
     CARAPI CreateHttpDataTransmitter(
         /* [in] */ ISocket* socket,
         /* [in] */ Int32 buffersize,
-        /* [in] */ IHttpParams* params
+        /* [in] */ IHttpParams* params,
         /* [out] */ ISessionOutputBuffer** outputBuffer);
 
     CARAPI Bind(

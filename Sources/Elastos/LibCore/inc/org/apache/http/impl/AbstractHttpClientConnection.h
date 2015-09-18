@@ -2,13 +2,11 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_ABSTRACTHTTPCLIENTCONNECTION_H__
 #define __ORG_APACHE_HTTP_IMPL_ABSTRACTHTTPCLIENTCONNECTION_H__
 
-#include <Org.Apache.Http_server.h>
 #include "HttpConnectionMetricsImpl.h"
-#include "entity/EntityDeserializer.h"
-#include "entity/EntitySerializer.h"
-#include <elastos/core/Object.h>
+#include "EntityDeserializer.h"
+#include "EntitySerializer.h"
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Org::Apache::Http::IHttpClientConnection;
 using Org::Apache::Http::IHttpConnection;
 using Org::Apache::Http::IHttpResponseFactory;
@@ -44,7 +42,7 @@ class AbstractHttpClientConnection
 public:
     AbstractHttpClientConnection();
 
-    virtual AbstractHttpClientConnection() = 0;
+    virtual ~AbstractHttpClientConnection() = 0;
 
     CAR_INTERFACE_DECL()
 

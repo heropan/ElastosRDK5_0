@@ -1,16 +1,15 @@
 
 #include "EnglishReasonPhraseCatalog.h"
-#include <elastos/Logger.h>
+#include "CString.h"
+#include "CArrayOf.h"
+#include "Logger.h"
 
+using Elastos::Core::EIID_ICharSequence;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
+using Elastos::Core::CArrayOf;
 using Elastos::Utility::Logging::Logger;
-using Org::Apache::Http::IHttpEntity;
-using Org::Apache::Http::IHttpVersion;
-using Org::Apache::Http::IProtocolVersion;
-using Org::Apache::Http::IStatusLine;
 using Org::Apache::Http::Protocol::IHTTP;
-using Org::Apache::Http::Protocol::IExecutionContext;
 
 namespace Org {
 namespace Apache {
@@ -28,6 +27,7 @@ CAR_INTERFACE_IMPL(EnglishReasonPhraseCatalog, Object, IReasonPhraseCatalog)
 AutoPtr<IReasonPhraseCatalog> EnglishReasonPhraseCatalog::InitInstance()
 {
     AutoPtr<IReasonPhraseCatalog> instance = new EnglishReasonPhraseCatalog();
+    return instance;
 }
 
 void EnglishReasonPhraseCatalog::SetReason(
@@ -46,11 +46,11 @@ AutoPtr< ArrayOf<IArrayOf*> > EnglishReasonPhraseCatalog::InitReasonPhrases()
     AutoPtr< ArrayOf<IArrayOf*> > phrases = ArrayOf<IArrayOf*>::Alloc(6);
     phrases->Set(0, NULL);
     AutoPtr<IArrayOf> array1, array2, array3, array4, array5;
-    CArrayOf::New(3, (IArrayOf**)&array1);
-    CArrayOf::New(8, (IArrayOf**)&array2);
-    CArrayOf::New(8, (IArrayOf**)&array3);
-    CArrayOf::New(25, (IArrayOf**)&array4);
-    CArrayOf::New(8, (IArrayOf**)&array5);
+    CArrayOf::New(EIID_ICharSequence, 3, (IArrayOf**)&array1);
+    CArrayOf::New(EIID_ICharSequence, 8, (IArrayOf**)&array2);
+    CArrayOf::New(EIID_ICharSequence, 8, (IArrayOf**)&array3);
+    CArrayOf::New(EIID_ICharSequence, 25, (IArrayOf**)&array4);
+    CArrayOf::New(EIID_ICharSequence, 8, (IArrayOf**)&array5);
     phrases->Set(1, array1);
     phrases->Set(2, array2);
     phrases->Set(3, array3);
@@ -104,13 +104,15 @@ AutoPtr< ArrayOf<IArrayOf*> > EnglishReasonPhraseCatalog::InitReasonPhrases()
 
     // WebDAV Server-specific status codes
     SetReason(IHttpStatus::SC_PROCESSING, String("Processing"));
-    SetReason(IHttpStatus::SC_MULTI_STATUS, String("Multi-Status");
+    SetReason(IHttpStatus::SC_MULTI_STATUS, String("Multi-Status"));
     SetReason(IHttpStatus::SC_UNPROCESSABLE_ENTITY, String("Unprocessable Entity"));
     SetReason(IHttpStatus::SC_INSUFFICIENT_SPACE_ON_RESOURCE, String("Insufficient Space On Resource"));
     SetReason(IHttpStatus::SC_METHOD_FAILURE, String("Method Failure"));
     SetReason(IHttpStatus::SC_LOCKED, String("Locked"));
     SetReason(IHttpStatus::SC_INSUFFICIENT_STORAGE, String("Insufficient Storage"));
     SetReason(IHttpStatus::SC_FAILED_DEPENDENCY, String("Failed Dependency"));
+
+    return NOERROR;
 }
 
 ECode EnglishReasonPhraseCatalog::GetReason(
@@ -132,7 +134,7 @@ ECode EnglishReasonPhraseCatalog::GetReason(
     if ((*REASON_PHRASES)[category]->GetLength(&len), len > subcode) {
         AutoPtr<ICharSequence> cs;
         (*REASON_PHRASES)[category]->Get(subcode, (IInterface**)&cs);
-        cs->ToString(reason);
+        cs->ToString(&reason);
     }
     *_reason = reason;
     return NOERROR;

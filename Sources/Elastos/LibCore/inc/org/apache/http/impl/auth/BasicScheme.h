@@ -2,11 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_AUTH_BASICSCHEME_H__
 #define __ORG_APACHE_HTTP_IMPL_AUTH_BASICSCHEME_H__
 
-#include <Org.Apache.Http_server.h>
 #include "RFC2617Scheme.h"
 
 using Elastos::Utility::IMap;
-using Org::Apache::Http::IHeader;
 using Org::Apache::Http::IHeader;
 using Org::Apache::Http::IHttpRequest;
 using Org::Apache::Http::Auth::ICredentials;
@@ -102,7 +100,7 @@ public:
      */
     static CARAPI Authenticate(
         /* [in] */ ICredentials* credentials,
-        /* [in] */ IHttpRequest* request,
+        /* [in] */ const String& charset,
         /* [in] */ Boolean proxy,
         /* [out] */ IHeader** header);
 

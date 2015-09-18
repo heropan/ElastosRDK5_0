@@ -1,7 +1,9 @@
 
 #include "HttpConnectionMetricsImpl.h"
-#include <elastos/core/CInteger64.h>
-#include <elastos/Logger.h>
+#include "CString.h"
+#include "CHashMap.h"
+#include "CInteger64.h"
+#include "Logger.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
@@ -10,22 +12,16 @@ using Elastos::Core::CInteger64;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::IMap;
 using Elastos::Utility::Logging::Logger;
-using Org::Apache::Http::IHttpEntity;
-using Org::Apache::Http::IHttpVersion;
-using Org::Apache::Http::IProtocolVersion;
-using Org::Apache::Http::IStatusLine;
-using Org::Apache::Http::Protocol::IHTTP;
-using Org::Apache::Http::Protocol::IExecutionContext;
 
 namespace Org {
 namespace Apache {
 namespace Http {
 namespace Impl {
 
-const String HttpConnectionMetricsImpl::REQUEST_COUNT = String("http.request-count");
-const String HttpConnectionMetricsImpl::RESPONSE_COUNT = String("http.response-count");
-const String HttpConnectionMetricsImpl::SENT_BYTES_COUNT = String("http.sent-bytes-count");
-const String HttpConnectionMetricsImpl::RECEIVED_BYTES_COUNT = String("http.received-bytes-count");
+const String HttpConnectionMetricsImpl::REQUEST_COUNT("http.request-count");
+const String HttpConnectionMetricsImpl::RESPONSE_COUNT("http.response-count");
+const String HttpConnectionMetricsImpl::SENT_BYTES_COUNT("http.sent-bytes-count");
+const String HttpConnectionMetricsImpl::RECEIVED_BYTES_COUNT("http.received-bytes-count");
 
 HttpConnectionMetricsImpl::HttpConnectionMetricsImpl(
     /* [in] */ IHttpTransportMetrics* inTransportMetric,
@@ -100,9 +96,9 @@ ECode HttpConnectionMetricsImpl::GetMetric(
         AutoPtr<ICharSequence> cs;
         CString::New(metricName, (ICharSequence**)&cs);
         AutoPtr<IMap> map = IMap::Probe(mMetricsCache);
-        AutoPtr<IInterface> interface;
-        map->Get(cs, (IInterface**)&interface);
-        *metric = IObject::Probe(interface);
+        AutoPtr<IInterface> i;
+        map->Get(cs, (IInterface**)&i);
+        *metric = IObject::Probe(i);
     }
     if (*metric == NULL) {
         if (REQUEST_COUNT.Equals(metricName)) {

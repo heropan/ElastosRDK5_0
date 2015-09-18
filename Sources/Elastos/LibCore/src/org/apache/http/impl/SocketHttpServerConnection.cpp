@@ -1,9 +1,9 @@
 
 #include "SocketHttpServerConnection.h"
 #include "HttpConnectionParams.h"
-#include "io/SocketInputBuffer.h"
-#include "io/SocketOutputBuffer.h"
-#include <elastos/Logger.h>
+#include "SocketInputBuffer.h"
+#include "SocketOutputBuffer.h"
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpMessage;
@@ -44,7 +44,7 @@ ECode SocketHttpServerConnection::AssertOpen()
 ECode SocketHttpServerConnection::CreateHttpDataReceiver(
     /* [in] */ ISocket* socket,
     /* [in] */ Int32 buffersize,
-    /* [in] */ IHttpParams* params
+    /* [in] */ IHttpParams* params,
     /* [out] */ ISessionInputBuffer** inputBuffer)
 {
     VALIDATE_NOT_NULL(inputBuffer)
@@ -58,7 +58,7 @@ ECode SocketHttpServerConnection::CreateHttpDataReceiver(
 ECode SocketHttpServerConnection::CreateHttpDataTransmitter(
     /* [in] */ ISocket* socket,
     /* [in] */ Int32 buffersize,
-    /* [in] */ IHttpParams* params
+    /* [in] */ IHttpParams* params,
     /* [out] */ ISessionOutputBuffer** outputBuffer)
 {
     VALIDATE_NOT_NULL(outputBuffer)
@@ -86,9 +86,11 @@ ECode SocketHttpServerConnection::Bind(
     Int32 buffersize;
     HttpConnectionParams::GetSocketBufferSize(params, &buffersize);
 
-    Init(CreateHttpDataReceiver(socket, buffersize, params),
-            CreateHttpDataTransmitter(socket, buffersize, params),
-            params);
+    AutoPtr<ISessionInputBuffer> in;
+    CreateHttpDataReceiver(socket, buffersize, params, (ISessionInputBuffer**)&in);
+    AutoPtr<ISessionOutputBuffer> out;
+    CreateHttpDataTransmitter(socket, buffersize, params, (ISessionOutputBuffer**)&out);
+    Init(in, out, params);
 
     mOpen = TRUE;
     return NOERROR;
@@ -183,7 +185,7 @@ ECode SocketHttpServerConnection::GetSocketTimeout(
         // try {
         Int32 result;
         ECode ec = mSocket->GetSoTimeout(&result);
-        if (ec == (ECode)E_SOCKET_EXCETION) {
+        if (ec == (ECode)E_SOCKET_EXCEPTION) {
             *timeout = -1;
             return NOERROR;
         }

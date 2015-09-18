@@ -46,7 +46,7 @@ protected:
 
     CARAPI Init(
         /* [in] */ const String& method,
-        /* [in] */ const String& uri
+        /* [in] */ const String& uri,
         /* [in] */ IProtocolVersion* ver);
 
     CARAPI Init(
