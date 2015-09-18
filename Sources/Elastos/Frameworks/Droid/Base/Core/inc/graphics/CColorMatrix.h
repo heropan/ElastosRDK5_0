@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_GRAPHICS_CCOLORMATRIX_H__
 
 #include "_Elastos_Droid_Graphics_CColorMatrix.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -24,8 +27,14 @@ namespace Graphics {
  *   A' = p*R + q*G + r*B + s*A + t;
  */
 CarClass(CColorMatrix)
+    , public Object
+    , public IColorMatrix
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     CColorMatrix();
 
     ~CColorMatrix();

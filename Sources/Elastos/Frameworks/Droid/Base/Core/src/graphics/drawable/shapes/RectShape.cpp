@@ -1,6 +1,7 @@
 
 #include "graphics/drawable/shapes/RectShape.h"
-// #include "graphics/CRectF.h"
+#include "graphics/CRectF.h"
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace Droid {
@@ -11,8 +12,7 @@ namespace Shapes {
 CAR_INTERFACE_IMPL(RectShape, Shape, IRectShape);
 RectShape::RectShape()
 {
-    assert(0 && "TODO");
-    // CRectF::New((IRectF**)&mRect);
+    CRectF::New((IRectF**)&mRect);
 }
 
 ECode RectShape::Draw(
@@ -20,6 +20,16 @@ ECode RectShape::Draw(
     /* [in] */ IPaint* paint)
 {
     return canvas->DrawRect(mRect.Get(), paint);
+}
+
+ECode RectShape::GetOutline(
+    /* [in] */ IOutline* outline)
+{
+    AutoPtr<IRectF> rect = Rect();
+    Float left = 0.f, top = 0.f, right = 0.f, bottom = 0.f;
+    rect->Get(&left, &top, &right, &bottom);
+    return outline->SetRect((Int32) Elastos::Core::Math::Ceil(left), (Int32) Elastos::Core::Math::Ceil(top),
+            (Int32) Elastos::Core::Math::Floor(right), (Int32) Elastos::Core::Math::Floor(bottom));
 }
 
 void RectShape::OnResize(
@@ -39,9 +49,7 @@ ECode RectShape::CloneImpl(
 {
     assert(other != NULL);
     Shape::CloneImpl(IShape::Probe(other));
-    assert(0 && "TODO");
-    // return CRectF::New(mRect.Get(), (IRectF**)&((RectShape*)other)->mRect);
-    return NOERROR;
+    return CRectF::New(mRect.Get(), (IRectF**)&((RectShape*)other)->mRect);
 }
 
 } // namespace Shapes

@@ -2,13 +2,13 @@
 #include "ext/frameworkext.h"
 #include "graphics/drawable/GradientDrawable.h"
 #include "graphics/drawable/CGradientDrawable.h"
-#include "graphics/CPaint.h"
-#include "graphics/CPath.h"
+// #include "graphics/CPaint.h"
+// #include "graphics/CPath.h"
 #include "graphics/CRectF.h"
-#include "graphics/CDashPathEffect.h"
-#include "graphics/CLinearGradient.h"
-#include "graphics/CRadialGradient.h"
-#include "graphics/CSweepGradient.h"
+// #include "graphics/CDashPathEffect.h"
+// #include "graphics/CLinearGradient.h"
+// #include "graphics/CRadialGradient.h"
+// #include "graphics/CSweepGradient.h"
 #include "R.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
@@ -256,6 +256,7 @@ void GradientDrawable::GradientState::SetGradientRadius(
 }
 
 
+CAR_INTERFACE_IMPL(GradientDrawable, Drawable, IGradientDrawable)
 GradientDrawable::GradientDrawable()
     : mAlpha(0xFF)
     , mDither(FALSE)
@@ -263,15 +264,12 @@ GradientDrawable::GradientDrawable()
     , mMutated(FALSE)
     , mPathIsDirty(TRUE)
 {
-    CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mFillPaint);
-    CPath::New((IPath**)&mPath);
+    assert(0 && "TODO");
+    // CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mFillPaint);
+    // CPath::New((IPath**)&mPath);
     CRectF::New((IRectF**)&mRect);
 }
 
-/**
- * Create a new gradient drawable given an orientation and an array
- * of colors for the gradient.
- */
 GradientDrawable::GradientDrawable(
     /* [in] */ GradientDrawableOrientation orientation,
     /* [in] */ ArrayOf<Int32>* colors)
@@ -281,24 +279,25 @@ GradientDrawable::GradientDrawable(
     , mMutated(FALSE)
     , mPathIsDirty(TRUE)
 {
-    CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mFillPaint);
-    CPath::New((IPath**)&mPath);
+    assert(0 && "TODO");
+    // CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mFillPaint);
+    // CPath::New((IPath**)&mPath);
     CRectF::NewByFriend((CRectF**)&mRect);
     AutoPtr<GradientState> state = new GradientState(orientation, colors);
-    Init(state);
+    constructor(state);
 }
 
-//@Override
-Boolean GradientDrawable::GetPadding(
-    /* [in] */ IRect* padding)
+ECode GradientDrawable::GetPadding(
+    /* [in] */ IRect* padding,
+    /* [out] */ Boolean* isPadding)
 {
+    VALIDATE_NOT_NULL(isPadding);
     if (mPadding != NULL) {
         padding->Set((IRect*)mPadding.Get());
-        return TRUE;
+        *isPadding = TRUE;
+        return NOERROR;
     }
-    else {
-        return Drawable::GetPadding(padding);
-    }
+    return  Drawable::GetPadding(padding, isPadding);
 }
 
 ECode GradientDrawable::SetCornerRadii(
@@ -333,7 +332,8 @@ ECode GradientDrawable::SetStroke(
     mGradientState->SetStroke(width, color, dashWidth, dashGap);
 
     if (mStrokePaint == NULL)  {
-        CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mStrokePaint);
+        assert(0 && "TODO");
+        // CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mStrokePaint);
         mStrokePaint->SetStyle(PaintStyle_STROKE);
     }
     mStrokePaint->SetStrokeWidth(width);
@@ -341,13 +341,34 @@ ECode GradientDrawable::SetStroke(
 
     AutoPtr<IPathEffect> e;
     if (dashWidth > 0) {
-        ArrayOf_<Float, 2> intervals;
-        intervals[0] = dashWidth;
-        intervals[1] = dashGap;
-        CDashPathEffect::New(intervals, 0, (IDashPathEffect**)&e);
+        AutoPtr<ArrayOf<Float> > intervals = ArrayOf<Float>::Alloc(2);
+        (*intervals)[0] = dashWidth;
+        (*intervals)[1] = dashGap;
+        assert(0 && "TODO");
+        // CDashPathEffect::New(*intervals, 0, (IDashPathEffect**)&e);
     }
     mStrokePaint->SetPathEffect(e);
     return InvalidateSelf();;
+}
+
+ECode GradientDrawable::SetStroke(
+    /* [in] */ Int32 width,
+    /* [in] */ IColorStateList* colorStateList,
+    /* [in] */ Float dashWidth,
+    /* [in] */ Float dashGap)
+{
+    assert(0 && "TODO");
+    //not merge from android5.x
+    return NOERROR;
+}
+
+ECode GradientDrawable::SetStroke(
+    /* [in] */ Int32 width,
+    /* [in] */ IColorStateList* colorStateList)
+{
+    assert(0 && "TODO");
+    //not merge from android5.x
+    return NOERROR;
 }
 
 ECode GradientDrawable::SetSize(
@@ -391,6 +412,19 @@ ECode GradientDrawable::SetGradientRadius(
     mGradientState->SetGradientRadius(gradientRadius);
     mRectIsDirty = TRUE;
     return InvalidateSelf();
+}
+
+ECode GradientDrawable::GetGradientRadius(
+    /* [out] */ Float* gradientRadius)
+{
+    assert(0 && "TODO");
+    // if (mGradientState.mGradient != RADIAL_GRADIENT) {
+    //     return 0;
+    // }
+
+    // ensureValidRect();
+    // return mGradientRadius;
+    return NOERROR;
 }
 
 ECode GradientDrawable::SetUseLevel(
@@ -471,7 +505,8 @@ ECode GradientDrawable::Draw(
     */
     if (useLayer) {
         if (mLayerPaint == NULL) {
-            CPaint::New((IPaint**)&mLayerPaint);
+            assert(0 && "TODO");
+            // CPaint::New((IPaint**)&mLayerPaint);
         }
         mLayerPaint->SetDither(mDither);
         mLayerPaint->SetAlpha(mAlpha);
@@ -511,7 +546,7 @@ ECode GradientDrawable::Draw(
             if (st->mRadiusArray != NULL) {
                 if (mPathIsDirty || mRectIsDirty) {
                     mPath->Reset();
-                    mPath->AddRoundRect((IRectF*)mRect.Get(), *st->mRadiusArray,
+                    mPath->AddRoundRect((IRectF*)mRect.Get(), st->mRadiusArray,
                             PathDirection_CW);
                     mPathIsDirty = mRectIsDirty = FALSE;
                 }
@@ -591,7 +626,9 @@ AutoPtr<IPath> GradientDrawable::BuildRing(
     if (mRingPath != NULL && (!st->mUseLevelForShape || !mPathIsDirty)) return mRingPath;
     mPathIsDirty = FALSE;
 
-    Float sweep = st->mUseLevelForShape ? (360.0f * GetLevel() / 10000.0f) : 360.0f;
+    Int32 level = 0;
+    GetLevel(&level);
+    Float sweep = st->mUseLevelForShape ? (360.0f * level / 10000.0f) : 360.0f;
 
     AutoPtr<IRectF> bounds;
     CRectF::New((IRectF*)mRect.Get(), (IRectF**)&bounds);
@@ -617,7 +654,8 @@ AutoPtr<IPath> GradientDrawable::BuildRing(
     bounds->Inset(-thickness, -thickness);
 
     if (mRingPath == NULL) {
-        CPath::New((IPath**)&mRingPath);
+        assert(0 && "TODO");
+        // CPath::New((IPath**)&mRingPath);
     }
     else {
         mRingPath->Reset();
@@ -655,10 +693,31 @@ ECode GradientDrawable::SetColor(
     return InvalidateSelf();
 }
 
-Int32 GradientDrawable::GetChangingConfigurations()
+ECode GradientDrawable::SetColor(
+    /* [in] */ IColorStateList* colorStateList)
 {
-    return Drawable::GetChangingConfigurations()
+    assert(0 && "TODO");
+    // mGradientState.setColorStateList(colorStateList);
+    // final int color;
+    // if (colorStateList == null) {
+    //     color = Color.TRANSPARENT;
+    // } else {
+    //     final int[] stateSet = getState();
+    //     color = colorStateList.getColorForState(stateSet, 0);
+    // }
+    // mFillPaint.setColor(color);
+    // invalidateSelf();
+    return NOERROR;
+}
+
+ECode GradientDrawable::GetChangingConfigurations(
+    /* [out] */ Int32* configuration)
+{
+    VALIDATE_NOT_NULL(configuration);
+    Drawable::GetChangingConfigurations(configuration);
+    *configuration = (*configuration)
             | mGradientState->mChangingConfigurations;
+    return NOERROR;
 }
 
 ECode GradientDrawable::SetAlpha(
@@ -691,9 +750,12 @@ ECode GradientDrawable::SetColorFilter(
     return NOERROR;
 }
 
-Int32 GradientDrawable::GetOpacity()
+ECode GradientDrawable::GetOpacity(
+    /* [out] */ Int32* opacity)
 {
-    return mGradientState->mOpaque ? IPixelFormat::OPAQUE : IPixelFormat::TRANSLUCENT;
+    VALIDATE_NOT_NULL(opacity);
+    *opacity = mGradientState->mOpaque ? IPixelFormat::OPAQUE : IPixelFormat::TRANSLUCENT;
+    return NOERROR;
 }
 
 void GradientDrawable::OnBoundsChange(
@@ -720,7 +782,9 @@ Boolean GradientDrawable::EnsureValidRect()
     if (mRectIsDirty) {
         mRectIsDirty = FALSE;
 
-        AutoPtr<CRect> bounds = (CRect*)GetBounds().Get();
+        AutoPtr<IRect> rect;
+        GetBounds((IRect**)&rect);
+        AutoPtr<CRect> bounds = (CRect*)rect.Get();
         Float inset = 0;
 
         if (mStrokePaint != NULL) {
@@ -739,7 +803,9 @@ Boolean GradientDrawable::EnsureValidRect()
             Float x0, x1, y0, y1;
 
             if (st->mGradient == IGradientDrawable::LINEAR_GRADIENT) {
-                Float level = st->mUseLevel ? (Float)GetLevel() / 10000.0f : 1.0f;
+                Int32 tmp = 0;
+                GetLevel(&tmp);
+                Float level = st->mUseLevel ? (Float)tmp / 10000.0f : 1.0f;
                 switch (st->mOrientation) {
                 case GradientDrawableOrientation_TOP_BOTTOM:
                     x0 = r->mLeft;          y0 = r->mTop;
@@ -776,8 +842,9 @@ Boolean GradientDrawable::EnsureValidRect()
                 }
 
                 AutoPtr<IShader> shader;
-                CLinearGradient::New(x0, y0, x1, y1, *colors,
-                        st->mPositions, ShaderTileMode_CLAMP, (ILinearGradient**)&shader);
+                assert(0 && "TODO");
+                // CLinearGradient::New(x0, y0, x1, y1, *colors,
+                //         st->mPositions, ShaderTileMode_CLAMP, (ILinearGradient**)&shader);
                 mFillPaint->SetShader(shader);
                 if (!mGradientState->mHasSolidColor) {
                     mFillPaint->SetColor(mAlpha << 24);
@@ -787,12 +854,15 @@ Boolean GradientDrawable::EnsureValidRect()
                 x0 = r->mLeft + (r->mRight - r->mLeft) * st->mCenterX;
                 y0 = r->mTop + (r->mBottom - r->mTop) * st->mCenterY;
 
-                Float level = st->mUseLevel ? (Float)GetLevel() / 10000.0f : 1.0f;
+                Int32 tmp = 0;
+                GetLevel(&tmp);
+                Float level = st->mUseLevel ? (Float)tmp / 10000.0f : 1.0f;
 
                 AutoPtr<IShader> shader;
-                CRadialGradient::New(x0, y0,
-                        level * st->mGradientRadius, *colors, NULL,
-                        ShaderTileMode_CLAMP, (IRadialGradient**)&shader);
+                assert(0 && "TODO");
+                // CRadialGradient::New(x0, y0,
+                //         level * st->mGradientRadius, *colors, NULL,
+                //         ShaderTileMode_CLAMP, (IRadialGradient**)&shader);
                 mFillPaint->SetShader(shader);
                 if (!mGradientState->mHasSolidColor) {
                     mFillPaint->SetColor(mAlpha << 24);
@@ -820,7 +890,9 @@ Boolean GradientDrawable::EnsureValidRect()
                         tempPositions = st->mTempPositions = ArrayOf<Float>::Alloc(length + 1);
                     }
 
-                    Float level = (Float)GetLevel() / 10000.0f;
+                    Int32 tmp = 0;
+                    GetLevel(&tmp);
+                    Float level = (Float)tmp / 10000.0f;
                     for (Int32 i = 0; i < length; i++) {
                         (*tempPositions)[i] = i * fraction * level;
                     }
@@ -828,7 +900,8 @@ Boolean GradientDrawable::EnsureValidRect()
 
                 }
                 AutoPtr<IShader> shader;
-                CSweepGradient::New(x0, y0, *tempColors, tempPositions, (ISweepGradient**)&shader);
+                assert(0 && "TODO");
+                // CSweepGradient::New(x0, y0, *tempColors, tempPositions, (ISweepGradient**)&shader);
                 mFillPaint->SetShader(shader);
                 if (!mGradientState->mHasSolidColor) {
                     mFillPaint->SetColor(mAlpha << 24);
@@ -1123,30 +1196,45 @@ Float GradientDrawable::GetFloatOrFraction(
     return v;
 }
 
-Int32 GradientDrawable::GetIntrinsicWidth()
+ECode GradientDrawable::GetIntrinsicWidth(
+    /* [out] */ Int32* width)
 {
-    return mGradientState->mWidth;
+    VALIDATE_NOT_NULL(width);
+    *width = mGradientState->mWidth;
+    return NOERROR;
 }
 
-Int32 GradientDrawable::GetIntrinsicHeight()
+ECode GradientDrawable::GetIntrinsicHeight(
+    /* [out] */ Int32* height)
 {
-    return mGradientState->mHeight;
+    VALIDATE_NOT_NULL(height);
+    *height = mGradientState->mHeight;
+    return NOERROR;
 }
 
-AutoPtr<IDrawableConstantState> GradientDrawable::GetConstantState()
+ECode GradientDrawable::GetConstantState(
+    /* [out] */ IDrawableConstantState** state)
 {
-    mGradientState->mChangingConfigurations = GetChangingConfigurations();
-    return (IDrawableConstantState*)mGradientState.Get();
+    VALIDATE_NOT_NULL(state);
+    GetChangingConfigurations(&mGradientState->mChangingConfigurations);
+    *state = (IDrawableConstantState*)mGradientState.Get();
+    REFCOUNT_ADD(*state);
+    return NOERROR;
 }
 
-AutoPtr<IDrawable> GradientDrawable::Mutate()
+ECode GradientDrawable::Mutate(
+    /* [out] */ IDrawable** drawable)
 {
-    if (!mMutated && Drawable::Mutate().Get() == (IDrawable*)this->Probe(EIID_IDrawable)) {
+    VALIDATE_NOT_NULL(drawable);
+    AutoPtr<IDrawable> tmp;
+    if (!mMutated && (Drawable::Mutate((IDrawable**)&tmp), tmp.Get()) == (IDrawable*)this->Probe(EIID_IDrawable)) {
         mGradientState = new GradientState(mGradientState);
         InitializeWithState(mGradientState);
         mMutated = TRUE;
     }
-    return (IDrawable*)this->Probe(EIID_IDrawable);
+    *drawable = (IDrawable*)this->Probe(EIID_IDrawable);
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
 GradientDrawable::GradientDrawable(
@@ -1157,7 +1245,7 @@ GradientDrawable::GradientDrawable(
     , mMutated(FALSE)
     , mPathIsDirty(TRUE)
 {
-    Init(state);
+    constructor(state);
 }
 
 void GradientDrawable::InitializeWithState(
@@ -1175,37 +1263,39 @@ void GradientDrawable::InitializeWithState(
     mPadding = state->mPadding;
     if (state->mStrokeWidth >= 0) {
         mStrokePaint = NULL;
-        CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mStrokePaint);
+        assert(0 && "TODO");
+        // CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mStrokePaint);
         mStrokePaint->SetStyle(PaintStyle_STROKE);
         mStrokePaint->SetStrokeWidth(state->mStrokeWidth);
         mStrokePaint->SetColor(state->mStrokeColor);
 
         if (state->mStrokeDashWidth != 0.0f) {
             AutoPtr<IDashPathEffect> e;
-            ArrayOf_<Float, 2> intervals;
-            intervals[0] = state->mStrokeDashWidth;
-            intervals[1] = state->mStrokeDashGap;
-            CDashPathEffect::New(intervals, 0, (IDashPathEffect**)&e);
+            AutoPtr<ArrayOf<Float> > intervals = ArrayOf<Float>::Alloc(2);
+            (*intervals)[0] = state->mStrokeDashWidth;
+            (*intervals)[1] = state->mStrokeDashGap;
+            assert(0 && "TODO");
+            // CDashPathEffect::New(*intervals, 0, (IDashPathEffect**)&e);
             mStrokePaint->SetPathEffect((IPathEffect*)e.Get());
         }
     }
 }
 
-ECode GradientDrawable::Init()
+ECode GradientDrawable::constructor()
 {
     AutoPtr<GradientState> state = new GradientState(GradientDrawableOrientation_TOP_BOTTOM, NULL);
-    return Init(state);
+    return constructor(state);
 }
 
-ECode GradientDrawable::Init(
+ECode GradientDrawable::constructor(
     /* [in] */ GradientDrawableOrientation orientation,
     /* [in] */ ArrayOf<Int32>* colors)
 {
     AutoPtr<GradientState> state = new GradientState(orientation, colors);
-    return Init(state);
+    return constructor(state);
 }
 
-ECode GradientDrawable::Init(
+ECode GradientDrawable::constructor(
     /* [in] */ GradientState* state)
 {
     mGradientState = state;

@@ -6,6 +6,7 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CDiscretePathEffect);
 ECode CDiscretePathEffect::constructor(
     /* [in] */ Float segmentLength,
     /* [in] */ Float deviation)
@@ -22,7 +23,10 @@ PInterface CDiscretePathEffect::Probe(
     if (riid == EIID_PathEffect) {
         return reinterpret_cast<PInterface>((PathEffect*)this);
     }
-    return _CDiscretePathEffect::Probe(riid);
+    else if (riid == EIID_IDiscretePathEffect) {
+        return (IDiscretePathEffect*)this;
+    }
+    return PathEffect::Probe(riid);
 }
 
 Int32 CDiscretePathEffect::NativeCreate(

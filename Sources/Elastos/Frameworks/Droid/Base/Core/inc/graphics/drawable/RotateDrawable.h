@@ -9,7 +9,10 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-class RotateDrawable : public Drawable
+class RotateDrawable
+    : public Drawable
+    , public IRotateDrawable
+    , public IDrawableCallback
 {
 public:
     /**
@@ -59,6 +62,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * <p>Create a new rotating drawable with an empty state.</p>
      */
@@ -70,10 +75,12 @@ public:
     /**
      * Returns the drawable rotated by this RotateDrawable.
      */
-    virtual CARAPI_(AutoPtr<IDrawable>) GetDrawable();
+    virtual CARAPI GetDrawable(
+        /* [out] */ IDrawable** drawable);
 
     //@Override
-    CARAPI_(Int32) GetChangingConfigurations();
+    CARAPI GetChangingConfigurations(
+        /* [out] */ Int32* configuration);
 
     CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
@@ -81,7 +88,8 @@ public:
     CARAPI SetColorFilter(
         /* [in] */ IColorFilter* cf);
 
-    CARAPI_(Int32) GetOpacity();
+    CARAPI GetOpacity(
+        /* [out] */ Int32* opacity);
 
     CARAPI InvalidateDrawable(
         /* [in] */ IDrawable* who);
@@ -96,25 +104,31 @@ public:
         /* [in] */ IRunnable* what);
 
     //@Override
-    CARAPI_(Boolean) GetPadding(
-        /* [in] */ IRect* padding);
+    CARAPI GetPadding(
+        /* [in] */ IRect* padding,
+        /* [out] */ Boolean* isPadding);
 
     //@Override
-    CARAPI_(Boolean) SetVisible(
+    CARAPI SetVisible(
         /* [in] */ Boolean visible,
-        /* [in] */ Boolean restart);
+        /* [in] */ Boolean restart,
+        /* [out] */ Boolean* isDifferent);
 
     //@Override
-    CARAPI_(Boolean) IsStateful();
+    CARAPI IsStateful(
+        /* [out] */ Boolean* isStateful);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicWidth();
+    CARAPI GetIntrinsicWidth(
+        /* [out] */ Int32* width);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicHeight();
+    CARAPI GetIntrinsicHeight(
+        /* [out] */ Int32* height);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawableConstantState>) GetConstantState();
+    CARAPI GetConstantState(
+        /* [out] */ IDrawableConstantState** state);
 
     //@Override
     CARAPI Inflate(
@@ -123,12 +137,52 @@ public:
         /* [in] */ IAttributeSet* attrs);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawable>) Mutate();
+    CARAPI Mutate(
+        /* [out] */ IDrawable** drawable);
+
+    virtual CARAPI SetDrawable(
+        /* [in] */ IDrawable* drawable);
+
+    virtual CARAPI SetFromDegrees(
+        /* [in] */ Float degrees);
+
+    virtual CARAPI GetFromDegrees(
+        /* [in] */ Float* degrees);
+
+    virtual CARAPI SetToDegrees(
+        /* [in] */ Float degrees);
+
+    virtual CARAPI GetToDegrees(
+        /* [in] */ Float* degrees);
+
+    virtual CARAPI SetPivotX(
+        /* [in] */ Float pivotX);
+
+    virtual CARAPI GetPivotX(
+        /* [in] */ Float* pivotX);
+
+    virtual CARAPI SetPivotXRelative(
+        /* [in] */ Boolean pivotX);
+
+    virtual CARAPI IsPivotXRelative(
+        /* [in] */ Boolean* pivotX);
+
+    virtual CARAPI SetPivotY(
+        /* [in] */ Float pivotY);
+
+    virtual CARAPI GetPivotY(
+        /* [in] */ Float* pivotY);
+
+    virtual CARAPI SetPivotYRelative(
+        /* [in] */ Boolean pivotY);
+
+    virtual CARAPI IsPivotYRelative(
+        /* [in] */ Boolean* pivotY);
 
 protected:
-    CARAPI Init();
+    CARAPI constructor();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ RotateState* rotateState,
         /* [in] */ IResources* res);
 

@@ -7,6 +7,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CBitmapFactoryOptions);
+CAR_INTERFACE_IMPL(CBitmapFactoryOptions, Object, IBitmapFactoryOptions);
 CBitmapFactoryOptions::CBitmapFactoryOptions()
     : mInMutable(FALSE)
     , mInJustDecodeBounds(FALSE)

@@ -1,13 +1,12 @@
 
-#include "ext/frameworkext.h"
 #include "graphics/drawable/NinePatchDrawable.h"
 #include "graphics/drawable/CNinePatchDrawable.h"
-#include "graphics/CBitmap.h"
+// #include "graphics/CBitmap.h"
 #include "graphics/CRect.h"
-#include "graphics/CPaint.h"
-#include "graphics/CNinePatch.h"
-#include "graphics/CBitmapFactoryOptions.h"
-#include "graphics/CBitmapFactory.h"
+// #include "graphics/CPaint.h"
+// #include "graphics/CNinePatch.h"
+// #include "graphics/CBitmapFactoryOptions.h"
+// #include "graphics/CBitmapFactory.h"
 #include "util/CTypedValue.h"
 #include "R.h"
 
@@ -30,7 +29,7 @@ NinePatchDrawable::NinePatchState::NinePatchState(
 {
     AutoPtr<IRect> rect;
     CRect::New((IRect**)&rect);
-    Init(ninePatch, padding, rect, DEFAULT_DITHER);
+    constructor(ninePatch, padding, rect, DEFAULT_DITHER);
 }
 
 NinePatchDrawable::NinePatchState::NinePatchState(
@@ -41,7 +40,7 @@ NinePatchDrawable::NinePatchState::NinePatchState(
     , mChangingConfigurations(0)
     , mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
 {
-    Init(ninePatch, padding, layoutInsets, DEFAULT_DITHER);
+    constructor(ninePatch, padding, layoutInsets, DEFAULT_DITHER);
 }
 
 NinePatchDrawable::NinePatchState::NinePatchState(
@@ -53,7 +52,7 @@ NinePatchDrawable::NinePatchState::NinePatchState(
     , mChangingConfigurations(0)
     , mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
 {
-    Init(ninePatch, rect, layoutInsets, dither);
+    constructor(ninePatch, rect, layoutInsets, dither);
 }
 
 NinePatchDrawable::NinePatchState::NinePatchState(
@@ -62,7 +61,8 @@ NinePatchDrawable::NinePatchState::NinePatchState(
     , mChangingConfigurations(0)
     , mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
 {
-    ASSERT_SUCCEEDED(CNinePatch::New(state->mNinePatch, (INinePatch**)&mNinePatch));
+    assert(0 && "TODO");
+    // ASSERT_SUCCEEDED(CNinePatch::New(state->mNinePatch, (INinePatch**)&mNinePatch));
     // Note we don't copy the padding because it is immutable.
     mPadding = state->mPadding;
     mLayoutInsets = state->mLayoutInsets;
@@ -94,7 +94,7 @@ ECode NinePatchDrawable::NinePatchState::GetChangingConfigurations(
     return NOERROR;
 }
 
-void NinePatchDrawable::NinePatchState::Init(
+void NinePatchDrawable::NinePatchState::constructor(
     /* [in] */ INinePatch* ninePatch,
     /* [in] */ IRect* rect,
     /* [in] */ IRect* layoutInsets,
@@ -102,22 +102,24 @@ void NinePatchDrawable::NinePatchState::Init(
 {
     mNinePatch = ninePatch;
     mPadding = rect;
-    mLayoutInsets = Insets::Of(layoutInsets);
+    assert(0 && "TODO");
+    // mLayoutInsets = Insets::Of(layoutInsets);
     mDither = dither;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // NinePatchDrawable
+CAR_INTERFACE_IMPL(NinePatchDrawable, Drawable, INinePatchDrawable)
 
 const Boolean NinePatchDrawable::DEFAULT_DITHER;
-
 NinePatchDrawable::NinePatchDrawable()
-    : mLayoutInsets(Insets::NONE)
-    , mMutated(FALSE)
+    : mMutated(FALSE)
     , mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
     , mBitmapWidth(0)
     , mBitmapHeight(0)
 {
+    assert(0 && "TODO");
+    // mLayoutInsets = Insets::NONE;
 }
 
 NinePatchDrawable::NinePatchDrawable(
@@ -125,13 +127,14 @@ NinePatchDrawable::NinePatchDrawable(
     /* [in] */ ArrayOf<Byte>* chunk,
     /* [in] */ IRect* padding,
     /* [in] */ const String& srcName)
-    : mLayoutInsets(Insets::NONE)
-    , mMutated(FALSE)
+    : mMutated(FALSE)
     , mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
     , mBitmapWidth(0)
     , mBitmapHeight(0)
 {
-    Init(bitmap, chunk, padding, srcName);
+    assert(0 && "TODO");
+    // mLayoutInsets = Insets::NONE;
+    constructor(bitmap, chunk, padding, srcName);
 }
 
 NinePatchDrawable::NinePatchDrawable(
@@ -140,13 +143,14 @@ NinePatchDrawable::NinePatchDrawable(
     /* [in] */ ArrayOf<Byte>* chunk,
     /* [in] */ IRect* padding,
     /* [in] */ const String& srcName)
-    : mLayoutInsets(Insets::NONE)
-    , mMutated(FALSE)
+    : mMutated(FALSE)
     , mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
     , mBitmapWidth(0)
     , mBitmapHeight(0)
 {
-    Init(res, bitmap, chunk, padding, srcName);
+    assert(0 && "TODO");
+    // mLayoutInsets = Insets::NONE;
+    constructor(res, bitmap, chunk, padding, srcName);
 }
 
 NinePatchDrawable::NinePatchDrawable(
@@ -156,48 +160,52 @@ NinePatchDrawable::NinePatchDrawable(
     /* [in] */ IRect* padding,
     /* [in] */ IRect* layoutInsets,
     /* [in] */ const String& srcName)
-    : mLayoutInsets(Insets::NONE)
-    , mMutated(FALSE)
+    : mMutated(FALSE)
     , mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
     , mBitmapWidth(0)
     , mBitmapHeight(0)
 {
-    Init(res, bitmap, chunk, padding, layoutInsets, srcName);
+    assert(0 && "TODO");
+    // mLayoutInsets = Insets::NONE;
+    constructor(res, bitmap, chunk, padding, layoutInsets, srcName);
 }
 
 NinePatchDrawable::NinePatchDrawable(
     /* [in] */ INinePatch* patch)
-    : mLayoutInsets(Insets::NONE)
-    , mMutated(FALSE)
+    : mMutated(FALSE)
     , mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
     , mBitmapWidth(0)
     , mBitmapHeight(0)
 {
-    Init(patch);
+    assert(0 && "TODO");
+    // mLayoutInsets = Insets::NONE;
+    constructor(patch);
 }
 
 NinePatchDrawable::NinePatchDrawable(
     /* [in] */ IResources* res,
     /* [in] */ INinePatch* patch)
-    : mLayoutInsets(Insets::NONE)
-    , mMutated(FALSE)
+    : mMutated(FALSE)
     , mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
     , mBitmapWidth(0)
     , mBitmapHeight(0)
 {
-    Init(res, patch);
+    assert(0 && "TODO");
+    // mLayoutInsets = Insets::NONE;
+    constructor(res, patch);
 }
 
 NinePatchDrawable::NinePatchDrawable(
     /* [in] */ NinePatchState* state,
     /* [in] */ IResources* res)
-    : mLayoutInsets(Insets::NONE)
-    , mMutated(FALSE)
+    : mMutated(FALSE)
     , mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
     , mBitmapWidth(0)
     , mBitmapHeight(0)
 {
-    Init(state, res);
+    assert(0 && "TODO");
+    // mLayoutInsets = Insets::NONE;
+    constructor(state, res);
 }
 
 void NinePatchDrawable::SetNinePatchState(
@@ -278,11 +286,13 @@ AutoPtr<Insets> NinePatchDrawable::ScaleFromDensity(
     /* [in] */ Int32 sdensity,
     /* [in] */ Int32 tdensity)
 {
-    Int32 left = CBitmap::ScaleFromDensity(insets->mLeft, sdensity, tdensity);
-    Int32 top = CBitmap::ScaleFromDensity(insets->mTop, sdensity, tdensity);
-    Int32 right = CBitmap::ScaleFromDensity(insets->mRight, sdensity, tdensity);
-    Int32 bottom = CBitmap::ScaleFromDensity(insets->mBottom, sdensity, tdensity);
-    return Insets::Of(left, top, right, bottom);
+    assert(0 && "TODO");
+    // Int32 left = CBitmap::ScaleFromDensity(insets->mLeft, sdensity, tdensity);
+    // Int32 top = CBitmap::ScaleFromDensity(insets->mTop, sdensity, tdensity);
+    // Int32 right = CBitmap::ScaleFromDensity(insets->mRight, sdensity, tdensity);
+    // Int32 bottom = CBitmap::ScaleFromDensity(insets->mBottom, sdensity, tdensity);
+    // return Insets::Of(left, top, right, bottom);
+    return NULL;
 }
 
 void NinePatchDrawable::ComputeBitmapSize()
@@ -299,23 +309,24 @@ void NinePatchDrawable::ComputeBitmapSize()
         Int32 width = 0, height = 0;
         mNinePatch->GetWidth(&width);
         mNinePatch->GetHeight(&height);
-        mBitmapWidth = CBitmap::ScaleFromDensity(width, sdensity, tdensity);
-        mBitmapHeight = CBitmap::ScaleFromDensity(height, sdensity, tdensity);
-        if (mNinePatchState->mPadding != NULL && mPadding != NULL) {
-            AutoPtr<IRect> dest = mPadding;
-            AutoPtr<IRect> src = mNinePatchState->mPadding;
-            if (dest == src) {
-                mPadding = NULL;
-                CRect::New(src, (IRect**)&mPadding);
-                dest = mPadding;
-            }
-            CRect* csrc = (CRect*)src.Get();
-            CRect* cdest = (CRect*)dest.Get();
-            cdest->mLeft = CBitmap::ScaleFromDensity(csrc->mLeft, sdensity, tdensity);
-            cdest->mTop = CBitmap::ScaleFromDensity(csrc->mTop, sdensity, tdensity);
-            cdest->mRight = CBitmap::ScaleFromDensity(csrc->mRight, sdensity, tdensity);
-            cdest->mBottom = CBitmap::ScaleFromDensity(csrc->mBottom, sdensity, tdensity);
-        }
+        assert(0 && "TODO");
+        // mBitmapWidth = CBitmap::ScaleFromDensity(width, sdensity, tdensity);
+        // mBitmapHeight = CBitmap::ScaleFromDensity(height, sdensity, tdensity);
+        // if (mNinePatchState->mPadding != NULL && mPadding != NULL) {
+        //     AutoPtr<IRect> dest = mPadding;
+        //     AutoPtr<IRect> src = mNinePatchState->mPadding;
+        //     if (dest == src) {
+        //         mPadding = NULL;
+        //         CRect::New(src, (IRect**)&mPadding);
+        //         dest = mPadding;
+        //     }
+        //     CRect* csrc = (CRect*)src.Get();
+        //     CRect* cdest = (CRect*)dest.Get();
+        //     cdest->mLeft = CBitmap::ScaleFromDensity(csrc->mLeft, sdensity, tdensity);
+        //     cdest->mTop = CBitmap::ScaleFromDensity(csrc->mTop, sdensity, tdensity);
+        //     cdest->mRight = CBitmap::ScaleFromDensity(csrc->mRight, sdensity, tdensity);
+        //     cdest->mBottom = CBitmap::ScaleFromDensity(csrc->mBottom, sdensity, tdensity);
+        // }
         mLayoutInsets = ScaleFromDensity(mNinePatchState->mLayoutInsets, sdensity, tdensity);
     }
 }
@@ -323,21 +334,31 @@ void NinePatchDrawable::ComputeBitmapSize()
 ECode NinePatchDrawable::Draw(
     /* [in] */ ICanvas* canvas)
 {
-    return mNinePatch->Draw(canvas, GetBounds(), mPaint);
+    AutoPtr<IRect> rect;
+    GetBounds((IRect**)&rect);
+    return mNinePatch->Draw(canvas, rect, mPaint);
 }
 
-Int32 NinePatchDrawable::GetChangingConfigurations()
+ECode NinePatchDrawable::GetChangingConfigurations(
+    /* [out] */ Int32* configuration)
 {
-    return Drawable::GetChangingConfigurations()
+    VALIDATE_NOT_NULL(configuration);
+    Drawable::GetChangingConfigurations(configuration);
+    *configuration = (*configuration)
         | mNinePatchState->mChangingConfigurations;
+
+    return NOERROR;
 }
 
-Boolean NinePatchDrawable::GetPadding(
-    /* [in] */ IRect* padding)
+ECode NinePatchDrawable::GetPadding(
+    /* [in] */ IRect* padding,
+    /* [out] */ Boolean* isPadding)
 {
+    VALIDATE_NOT_NULL(isPadding);
     assert(padding != NULL);
     padding->Set(mPadding);
-    return TRUE;
+    *isPadding = TRUE;
+    return NOERROR;
 }
 
 AutoPtr<IInsets> NinePatchDrawable::GetLayoutInsets()
@@ -352,7 +373,9 @@ ECode NinePatchDrawable::SetAlpha(
         // Fast common case -- leave at normal alpha.
         return NOERROR;
     }
-    GetPaint()->SetAlpha(alpha);
+    AutoPtr<IPaint> paint;
+    GetPaint((IPaint**)&paint);
+    paint->SetAlpha(alpha);
     return InvalidateSelf();
 }
 
@@ -363,7 +386,9 @@ ECode NinePatchDrawable::SetColorFilter(
         // Fast common case -- leave at no color filter.
         return NOERROR;
     }
-    return GetPaint()->SetColorFilter(cf);
+    AutoPtr<IPaint> paint;
+    GetPaint((IPaint**)&paint);
+    return paint->SetColorFilter(cf);
 }
 
 ECode NinePatchDrawable::SetDither(
@@ -373,14 +398,18 @@ ECode NinePatchDrawable::SetDither(
         // Fast common case -- leave at default dither.
         return NOERROR;
     }
-    GetPaint()->SetDither(dither);
+    AutoPtr<IPaint> paint;
+    GetPaint((IPaint**)&paint);
+    paint->SetDither(dither);
     return InvalidateSelf();
 }
 
 ECode NinePatchDrawable::SetFilterBitmap(
     /* [in] */ Boolean filter)
 {
-    GetPaint()->SetFilterBitmap(filter);
+    AutoPtr<IPaint> paint;
+    GetPaint((IPaint**)&paint);
+    paint->SetFilterBitmap(filter);
     return InvalidateSelf();
 }
 
@@ -409,29 +438,31 @@ ECode NinePatchDrawable::Inflate(
     Boolean dither;
     a->GetBoolean(R::styleable::NinePatchDrawable_dither,
             DEFAULT_DITHER, &dither);
-    AutoPtr<CBitmapFactoryOptions> options;
-    CBitmapFactoryOptions::NewByFriend((CBitmapFactoryOptions**)&options);
-    if (dither) {
-        options->mInDither = FALSE;
-    }
-    AutoPtr<IDisplayMetrics> dis;
-    r->GetDisplayMetrics((IDisplayMetrics**)&dis);
-    dis->GetNoncompatDensityDpi(&options->mInScreenDensity);
+
+    assert(0 && "TODO");
+//     AutoPtr<CBitmapFactoryOptions> options;
+//     CBitmapFactoryOptions::NewByFriend((CBitmapFactoryOptions**)&options);
+//     if (dither) {
+//         options->mInDither = FALSE;
+//     }
+//     AutoPtr<IDisplayMetrics> dis;
+//     r->GetDisplayMetrics((IDisplayMetrics**)&dis);
+//     dis->GetNoncompatDensityDpi(&options->mInScreenDensity);
 
     AutoPtr<IRect> padding, layoutInsets;
-    CRect::New((IRect**)&padding);
-    CRect::New((IRect**)&layoutInsets);
+//     CRect::New((IRect**)&padding);
+//     CRect::New((IRect**)&layoutInsets);
     AutoPtr<IBitmap> bitmap;
 
-//    try {
-    AutoPtr<ITypedValue> value;
-    CTypedValue::New((ITypedValue**)&value);
+// //    try {
+//     AutoPtr<ITypedValue> value;
+//     CTypedValue::New((ITypedValue**)&value);
     AutoPtr<IInputStream> is;
-    r->OpenRawResource(id, value, (IInputStream**)&is);
+//     r->OpenRawResource(id, value, (IInputStream**)&is);
 
-    AutoPtr<IBitmapFactory> bmFactory;
-    CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bmFactory);
-    bmFactory->DecodeResourceStream(r, value, is, padding, options, (IBitmap**)&bitmap);
+//     AutoPtr<IBitmapFactory> bmFactory;
+//     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bmFactory);
+//     bmFactory->DecodeResourceStream(r, value, is, padding, options, (IBitmap**)&bitmap);
 
     is->Close();
 //    } catch (IOException e) {
@@ -455,7 +486,8 @@ ECode NinePatchDrawable::Inflate(
     }
 
     AutoPtr<INinePatch> np;
-    CNinePatch::New(bitmap, data, String("XML 9-patch"), (INinePatch**)&np);
+    assert(0 && "TODO");
+    // CNinePatch::New(bitmap, data, String("XML 9-patch"), (INinePatch**)&np);
     AutoPtr<NinePatchState> state = new NinePatchState(np, padding, layoutInsets, dither);
     SetNinePatchState(state, r);
     mNinePatchState->mTargetDensity = mTargetDensity;
@@ -464,95 +496,114 @@ ECode NinePatchDrawable::Inflate(
     return NOERROR;
 }
 
-AutoPtr<IPaint> NinePatchDrawable::GetPaint()
+ECode NinePatchDrawable::GetPaint(
+    /* [out] */ IPaint** paint)
 {
+    VALIDATE_NOT_NULL(paint);
+    VALIDATE_NOT_NULL(paint);
     if (mPaint == NULL) {
-        ASSERT_SUCCEEDED(CPaint::New((IPaint**)&mPaint));
+        assert(0 && "TODO");
+        // ASSERT_SUCCEEDED(CPaint::New((IPaint**)&mPaint));
         mPaint->SetDither(DEFAULT_DITHER);
     }
-    return mPaint;
+    *paint = mPaint;
+    REFCOUNT_ADD(*paint);
+    return NOERROR;
 }
 
-/**
- * Retrieves the width of the source .png file (before resizing).
- */
-//@Override
-Int32 NinePatchDrawable::GetIntrinsicWidth()
+Int32 NinePatchDrawable::GetIntrinsicWidth(
+    /* [out] */ Int32* width)
 {
-    return mBitmapWidth;
+    VALIDATE_NOT_NULL(width);
+    *width = mBitmapWidth;
+    return NOERROR;;
 }
 
-/**
- * Retrieves the height of the source .png file (before resizing).
- */
-//@Override
-Int32 NinePatchDrawable::GetIntrinsicHeight()
+Int32 NinePatchDrawable::GetIntrinsicHeight(
+    /* [out] */ Int32* height)
 {
-    return mBitmapHeight;
+    VALIDATE_NOT_NULL(height);
+    *height = mBitmapHeight;
+    return NOERROR;;
 }
 
-//@Override
-Int32 NinePatchDrawable::GetMinimumWidth()
+ECode NinePatchDrawable::GetMinimumWidth(
+    /* [out] */ Int32* width)
 {
-    return mBitmapWidth;
+    VALIDATE_NOT_NULL(width);
+    *width = mBitmapWidth;
+    return NOERROR;
 }
 
-//@Override
-Int32 NinePatchDrawable::GetMinimumHeight()
+ECode NinePatchDrawable::GetMinimumHeight(
+    /* [out] */ Int32* height)
 {
-    return mBitmapHeight;
+    VALIDATE_NOT_NULL(height);
+    *height = mBitmapHeight;
+    return NOERROR;
 }
 
-//@Override
-Int32 NinePatchDrawable::GetOpacity()
+ECode NinePatchDrawable::GetOpacity(
+    /* [out] */ Int32* opacity)
 {
+    VALIDATE_NOT_NULL(opacity);
     Boolean hasAlpha;
     Int32 alpha;
     mNinePatch->HasAlpha(&hasAlpha);
-    return (hasAlpha || (mPaint != NULL && (mPaint->GetAlpha(&alpha), alpha < 255))) ?
+    *opacity = (hasAlpha || (mPaint != NULL && (mPaint->GetAlpha(&alpha), alpha < 255))) ?
            IPixelFormat::TRANSLUCENT : IPixelFormat::OPAQUE;
+    return NOERROR;
 }
 
-//@Override
-AutoPtr<IRegion> NinePatchDrawable::GetTransparentRegion()
+ECode NinePatchDrawable::GetTransparentRegion(
+    /* [out] */ IRegion** bounds)
 {
-    AutoPtr<IRegion> region;
-    mNinePatch->GetTransparentRegion(GetBounds(), (IRegion**)&region);
-    return region;
+    VALIDATE_NOT_NULL(bounds);
+    AutoPtr<IRect> tmp;
+    GetBounds((IRect**)&tmp);
+    return mNinePatch->GetTransparentRegion(tmp, bounds);
 }
 
-//@Override
-AutoPtr<IDrawableConstantState> NinePatchDrawable::GetConstantState()
+ECode NinePatchDrawable::GetConstantState(
+    /* [out] */ IDrawableConstantState** state)
 {
-    mNinePatchState->mChangingConfigurations = GetChangingConfigurations();
-    return (IDrawableConstantState*)mNinePatchState.Get();
+    VALIDATE_NOT_NULL(state);
+    GetChangingConfigurations(&mNinePatchState->mChangingConfigurations);
+    *state = (IDrawableConstantState*)mNinePatchState.Get();
+    REFCOUNT_ADD(*state);
+    return NOERROR;
 }
 
-//@Override
-AutoPtr<IDrawable> NinePatchDrawable::Mutate()
+ECode NinePatchDrawable::Mutate(
+    /* [out] */ IDrawable** drawable)
 {
-    if (!mMutated && Drawable::Mutate().Get()
+    VALIDATE_NOT_NULL(drawable);
+    AutoPtr<IDrawable> tmp;
+    if (!mMutated && (Drawable::Mutate((IDrawable**)&tmp), tmp.Get())
         == (IDrawable*)this->Probe(EIID_IDrawable)) {
         mNinePatchState = new NinePatchState(mNinePatchState);
         mNinePatch = mNinePatchState->mNinePatch;
         mMutated = TRUE;
     }
-    return (IDrawable*)this->Probe(EIID_IDrawable);
+    *drawable = (IDrawable*)this->Probe(EIID_IDrawable);
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
-ECode NinePatchDrawable::Init(
+ECode NinePatchDrawable::constructor(
     /* [in] */ IBitmap* bitmap,
     /* [in] */ ArrayOf<Byte>* chunk,
     /* [in] */ IRect* padding,
     /* [in] */ const String& srcName)
 {
     AutoPtr<INinePatch> patch;
-    FAIL_RETURN(CNinePatch::New(bitmap, chunk, srcName, (INinePatch**)&patch));
+    assert(0 && "TODO");
+    // FAIL_RETURN(CNinePatch::New(bitmap, chunk, srcName, (INinePatch**)&patch));
     AutoPtr<NinePatchState> state = new NinePatchState(patch, padding);
-    return Init(state, NULL);
+    return constructor(state, NULL);
 }
 
-ECode NinePatchDrawable::Init(
+ECode NinePatchDrawable::constructor(
     /* [in] */ IResources* res,
     /* [in] */ IBitmap* bitmap,
     /* [in] */ ArrayOf<Byte>* chunk,
@@ -560,14 +611,15 @@ ECode NinePatchDrawable::Init(
     /* [in] */ const String& srcName)
 {
     AutoPtr<INinePatch> patch;
-    FAIL_RETURN(CNinePatch::New(bitmap, chunk, srcName, (INinePatch**)&patch));
+    assert(0 && "TODO");
+    // FAIL_RETURN(CNinePatch::New(bitmap, chunk, srcName, (INinePatch**)&patch));
     AutoPtr<NinePatchState> state = new NinePatchState(patch, padding);
-    FAIL_RETURN(Init(state, res));
+    FAIL_RETURN(constructor(state, res));
     mNinePatchState->mTargetDensity = mTargetDensity;
     return NOERROR;
 }
 
-ECode NinePatchDrawable::Init(
+ECode NinePatchDrawable::constructor(
     /* [in] */ IResources* res,
     /* [in] */ IBitmap* bitmap,
     /* [in] */ ArrayOf<Byte>* chunk,
@@ -576,35 +628,36 @@ ECode NinePatchDrawable::Init(
     /* [in] */ const String& srcName)
 {
     AutoPtr<INinePatch> ninePatch;
-    FAIL_RETURN(CNinePatch::New(bitmap, chunk, srcName, (INinePatch**)&ninePatch));
+    assert(0 && "TODO");
+    // FAIL_RETURN(CNinePatch::New(bitmap, chunk, srcName, (INinePatch**)&ninePatch));
     AutoPtr<NinePatchState> state = new NinePatchState(ninePatch, padding, layoutInsets);
-    FAIL_RETURN(Init(state, res));
+    FAIL_RETURN(constructor(state, res));
     mNinePatchState->mTargetDensity = mTargetDensity;
     return NOERROR;
 }
 
-ECode NinePatchDrawable::Init(
+ECode NinePatchDrawable::constructor(
     /* [in] */ INinePatch* patch)
 {
     AutoPtr<IRect> rect;
     FAIL_RETURN(CRect::New((IRect**)&rect));
     AutoPtr<NinePatchState> state = new NinePatchState(patch, rect);
-    return Init(state, NULL);
+    return constructor(state, NULL);
 }
 
-ECode NinePatchDrawable::Init(
+ECode NinePatchDrawable::constructor(
     /* [in] */ IResources* res,
     /* [in] */ INinePatch* patch)
 {
     AutoPtr<IRect> rect;
     FAIL_RETURN(CRect::New((IRect**)&rect));
     AutoPtr<NinePatchState> state = new NinePatchState(patch, rect);
-    FAIL_RETURN(Init(state, res));
+    FAIL_RETURN(constructor(state, res));
     mNinePatchState->mTargetDensity = mTargetDensity;
     return NOERROR;
 }
 
-ECode NinePatchDrawable::Init(
+ECode NinePatchDrawable::constructor(
     /* [in] */ NinePatchState* state,
     /* [in] */ IResources* res)
 {

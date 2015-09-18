@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_GRAPHICS_CRECT_H__
 
 #include "_Elastos_Droid_Graphics_CRect.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -16,8 +19,15 @@ namespace Graphics {
  * the coordinates are sorted correctly (i.e. left <= right and top <= bottom).
  */
 CarClass(CRect)
+    , public Object
+    , public IRect
+    , public IParcelable
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     /**
      * Create a new empty Rect. All coordinates are initialized to 0.
      */

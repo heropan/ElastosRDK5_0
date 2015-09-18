@@ -52,6 +52,10 @@ public:
         /* [in] */ ICanvas* canvas,
         /* [in] */ IPaint* paint);
 
+    // @Override
+    CARAPI GetOutline(
+        /* [in] */ IOutline* outline);
+
 protected:
     RoundRectShape();
 

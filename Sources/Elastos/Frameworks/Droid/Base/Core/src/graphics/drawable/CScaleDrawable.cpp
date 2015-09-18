@@ -7,9 +7,10 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
+CAR_OBJECT_IMPL(CScaleDrawable);
 ECode CScaleDrawable::constructor()
 {
-    return ScaleDrawable::Init();
+    return ScaleDrawable::constructor();
 }
 
 ECode CScaleDrawable::constructor(
@@ -18,7 +19,7 @@ ECode CScaleDrawable::constructor(
     /* [in] */ Float scaleWidth,
     /* [in] */ Float scaleHeight)
 {
-    return ScaleDrawable::Init(
+    return ScaleDrawable::constructor(
             drawable, gravity, scaleWidth, scaleHeight);
 }
 
@@ -26,32 +27,7 @@ ECode CScaleDrawable::constructor(
     /* [in] */ Handle32 state,
     /* [in] */ IResources* res)
 {
-    return ScaleDrawable::Init((ScaleState*)state, res);
-}
-
-PInterface CScaleDrawable::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CScaleDrawable::Probe(riid);
-}
-
-IDRAWABLE_METHODS_IMPL(
-    CScaleDrawable, ScaleDrawable);
-
-IDRAWABLECALLBACK_METHODS_IMPL(
-    CScaleDrawable, ScaleDrawable);
-
-/**
- * Returns the drawable scaled by this ScaleDrawable.
- */
-ECode CScaleDrawable::GetDrawable(
-    /* [out] */ IDrawable** drawable)
-{
-    VALIDATE_NOT_NULL(drawable);
-    AutoPtr<IDrawable> d = ScaleDrawable::GetDrawable();
-    *drawable = d;
-    REFCOUNT_ADD(*drawable);
-    return NOERROR;
+    return ScaleDrawable::constructor((ScaleState*)state, res);
 }
 
 } // namespace Drawable

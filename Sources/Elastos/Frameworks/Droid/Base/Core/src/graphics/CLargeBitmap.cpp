@@ -16,6 +16,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CLargeBitmap);
+CAR_INTERFACE_IMPL(CLargeBitmap, Object, ILargeBitmap);
 CLargeBitmap::CLargeBitmap()
     : mNativeLargeBitmap(0)
     , mRecycled(FALSE)

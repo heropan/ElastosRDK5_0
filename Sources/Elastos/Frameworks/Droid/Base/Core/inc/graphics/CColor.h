@@ -4,8 +4,10 @@
 
 #include "ext/frameworkext.h"
 #include "_Elastos_Droid_Graphics_CColor.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 
+using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
@@ -25,8 +27,14 @@ namespace Graphics {
  * 0xFFFFFFFF
  */
 CarClass(CColor)
+    , public Object
+    , public IColor
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     /**
      * Returns the brightness component of a color int.
      *

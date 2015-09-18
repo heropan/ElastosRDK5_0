@@ -44,6 +44,8 @@ struct ElaBitmapCallback Init_BitmapCallback()
 }
 struct ElaBitmapCallback sElaBitmapCallback = Init_BitmapCallback();
 
+CAR_OBJECT_IMPL(CBitmap);
+CAR_INTERFACE_IMPL_2(CBitmap, Object, IBitmap, IParcelable);
 CBitmap::CBitmap()
     : mNativeBitmap(0)
     , mDensity(GetDefaultDensity())

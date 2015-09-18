@@ -9,9 +9,13 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CarClass(CEmbossMaskFilter), public MaskFilter
+CarClass(CEmbossMaskFilter)
+    , public MaskFilter
+    , public IEmbossMaskFilter
 {
 public:
+    CAR_OBJECT_DECL();
+
     /**
      * Create an emboss maskfilter
      *

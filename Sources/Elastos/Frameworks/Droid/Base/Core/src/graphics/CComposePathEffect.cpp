@@ -6,6 +6,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CComposePathEffect);
+CAR_INTERFACE_IMPL(CComposePathEffect, PathEffect, IComposePathEffect);
 ECode CComposePathEffect::constructor(
     /* [in] */ IPathEffect* outerpe,
     /* [in] */ IPathEffect* innerpe)

@@ -5,7 +5,6 @@
 #include "_Elastos_Droid_Graphics_Drawable_CBitmapDrawable.h"
 #include "graphics/drawable/BitmapDrawable.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
@@ -14,6 +13,8 @@ namespace Drawable {
 CarClass(CBitmapDrawable), public BitmapDrawable
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI constructor();
 
     CARAPI constructor(
@@ -41,53 +42,9 @@ public:
         /* [in] */ IInputStream* is);
 
     CARAPI constructor(
-        /* [in] */ Handle32 state,
-        /* [in] */ IResources* res);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    IDRAWABLE_METHODS_DECL()
-
-    CARAPI GetPaint(
-        /* [out] */ IPaint** paint);
-
-    CARAPI GetBitmap(
-        /* [out] */ IBitmap** bitmap);
-
-    CARAPI SetTargetDensity(
-        /* [in] */ ICanvas* canvas);
-
-    CARAPI SetTargetDensity(
-        /* [in] */ IDisplayMetrics* metrics);
-
-    CARAPI SetTargetDensity(
-        /* [in] */ Int32 density);
-
-    CARAPI GetGravity(
-        /* [out] */ Int32* gravity);
-
-    CARAPI SetGravity(
-        /* [in] */ Int32 gravity);
-
-    CARAPI SetAntiAlias(
-        /* [in] */ Boolean aa);
-
-    CARAPI GetTileModeX(
-        /* [out] */ ShaderTileMode* tileModeX);
-
-    CARAPI GetTileModeY(
-        /* [out] */ ShaderTileMode* tileModeY);
-
-    CARAPI SetTileModeX(
-        /* [in] */ ShaderTileMode mode);
-
-    CARAPI SetTileModeY(
-        /* [in] */ ShaderTileMode mode);
-
-    CARAPI SetTileModeXY(
-        /* [in] */ ShaderTileMode xmode,
-        /* [in] */ ShaderTileMode ymode);
+        /* [in] */ IDrawableConstantState* state,
+        /* [in] */ IResources* res,
+        /* [in] */ IResourcesTheme* theme);
 };
 
 } // namespace Drawable

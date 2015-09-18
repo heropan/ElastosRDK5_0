@@ -27,7 +27,7 @@ AnimationDrawable::AnimationState::AnimationState(
         mOneShot = orig->mOneShot;
     }
     else {
-        mDurations = ArrayOf<Int32>::Alloc(GetChildren()->GetLength());
+        mDurations = ArrayOf<Int32>::Alloc(GetCapacity());
         mOneShot = TRUE;
     }
 }
@@ -69,32 +69,42 @@ void AnimationDrawable::AnimationState::GrowArray(
     mDurations = newDurations;
 }
 
-
+CAR_INTERFACE_IMPL_3(AnimationDrawable, DrawableContainer, IAnimationDrawable, IRunnable, IAnimatable);
 AnimationDrawable::AnimationDrawable()
     : mCurFrame(-1)
+    , mRunning(FALSE)
+    , mAnimating(FALSE)
     , mMutated(FALSE)
 {
 }
 
-Boolean AnimationDrawable::SetVisible(
+ECode AnimationDrawable::SetVisible(
     /* [in] */ Boolean visible,
-    /* [in] */ Boolean restart)
+    /* [in] */ Boolean restart,
+    /* [out] */ Boolean* isDifferent)
 {
-    Boolean changed = DrawableContainer::SetVisible(visible, restart);
+    VALIDATE_NOT_NULL(isDifferent);
+    Boolean changed = FALSE;
+    DrawableContainer::SetVisible(visible, restart, &changed);
     if (visible) {
-        if (changed || restart) {
-            SetFrame(0, TRUE, TRUE);
+        if (restart || changed) {
+            Boolean startFromZero = restart || mCurFrame < 0 ||
+                    mCurFrame >= mAnimationState->GetChildCount();
+            SetFrame(startFromZero ? 0 : mCurFrame, TRUE, mAnimating);
         }
     }
     else {
         UnscheduleSelf((IRunnable*)this->Probe(EIID_IRunnable));
     }
-    return changed;
+    *isDifferent = changed;
+    return NOERROR;
 }
 
 ECode AnimationDrawable::Start()
 {
-    if (!IsRunning()) {
+    mAnimating = TRUE;
+    Boolean running = FALSE;
+    if (!(IsRunning(&running), running)) {
         return Run();
     }
     return NOERROR;
@@ -102,15 +112,20 @@ ECode AnimationDrawable::Start()
 
 ECode AnimationDrawable::Stop()
 {
-    if (IsRunning()) {
+    mAnimating = FALSE;
+    Boolean running = FALSE;
+    if (IsRunning(&running), running) {
         return UnscheduleSelf((IRunnable*)this->Probe(EIID_IRunnable));
     }
     return NOERROR;
 }
 
-Boolean AnimationDrawable::IsRunning()
+ECode AnimationDrawable::IsRunning(
+    /* [out] */ Boolean* running)
 {
-    return mCurFrame > -1;
+    VALIDATE_NOT_NULL(running);
+    *running = mRunning;
+    return NOERROR;
 }
 
 ECode AnimationDrawable::Run()
@@ -122,29 +137,43 @@ ECode AnimationDrawable::UnscheduleSelf(
     /* [in] */ IRunnable* what)
 {
     mCurFrame = -1;
+    mRunning = FALSE;
     return DrawableContainer::UnscheduleSelf(what);
 }
 
-Int32 AnimationDrawable::GetNumberOfFrames()
+ECode AnimationDrawable::GetNumberOfFrames(
+    /* [out] */ Int32* number)
 {
-    return mAnimationState->GetChildCount();
+    VALIDATE_NOT_NULL(number);
+    *number = mAnimationState->GetChildCount();
+    return NOERROR;
 }
 
-AutoPtr<IDrawable> AnimationDrawable::GetFrame(
-    /* [in] */ Int32 index)
+ECode AnimationDrawable::GetFrame(
+    /* [in] */ Int32 index,
+    /* [out] */ IDrawable** drawable)
 {
-    return (*mAnimationState->GetChildren())[index];
+    VALIDATE_NOT_NULL(drawable);
+    *drawable = mAnimationState->GetChild(index);
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
-Int32 AnimationDrawable::GetDuration(
-    /* [in] */ Int32 i)
+ECode AnimationDrawable::GetDuration(
+    /* [in] */ Int32 i,
+    /* [out] */ Int32* duration)
 {
-    return (*mAnimationState->mDurations)[i];
+    VALIDATE_NOT_NULL(duration);
+    *duration = (*mAnimationState->mDurations)[i];
+    return NOERROR;
 }
 
-Boolean AnimationDrawable::IsOneShot()
+ECode AnimationDrawable::IsOneShot(
+    /* [out] */ Boolean* result)
 {
-    return mAnimationState->mOneShot;
+    VALIDATE_NOT_NULL(result);
+    *result = mAnimationState->mOneShot;
+    return NOERROR;
 }
 
 ECode AnimationDrawable::SetOneShot(
@@ -184,14 +213,17 @@ ECode AnimationDrawable::SetFrame(
     if (frame >= mAnimationState->GetChildCount()) {
         return NOERROR;
     }
+    mAnimating = animate;
     mCurFrame = frame;
-    SelectDrawable(frame);
-    if (unschedule) {
+    Boolean res = FALSE;
+    SelectDrawable(frame, &res);
+    if (unschedule || animate) {
         FAIL_RETURN(UnscheduleSelf((IRunnable*)this->Probe(EIID_IRunnable)));
     }
     if (animate) {
         // Unscheduling may have clobbered this value; restore it to record that we're animating
         mCurFrame = frame;
+        mRunning = TRUE;
         FAIL_RETURN(ScheduleSelf((IRunnable*)this->Probe(EIID_IRunnable),
                 SystemClock::GetUptimeMillis() + (*mAnimationState->mDurations)[frame]));
     }
@@ -201,15 +233,15 @@ ECode AnimationDrawable::SetFrame(
 ECode AnimationDrawable::Inflate(
     /* [in] */ IResources* r,
     /* [in] */ IXmlPullParser* parser,
-    /* [in] */ IAttributeSet* attrs)
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme)
 {
     Int32 size = ARRAY_SIZE(R::styleable::AnimationDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::AnimationDrawable, size);
 
     AutoPtr<ITypedArray> a;
-    r->ObtainAttributes(attrs, layout,
-            (ITypedArray**)&a);
+    FAIL_RETURN(ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a));
 
     FAIL_RETURN(DrawableContainer::InflateWithAttributes(r, parser, a,
             R::styleable::AnimationDrawable_visible));
@@ -245,7 +277,7 @@ ECode AnimationDrawable::Inflate(
         layout = ArrayOf<Int32>::Alloc(size);
         layout->Copy(R::styleable::AnimationDrawableItem, size);
 
-        r->ObtainAttributes(attrs, layout, (ITypedArray**)&a);
+        FAIL_RETURN(ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a));
         Int32 duration;
         a->GetInt32(
                 R::styleable::AnimationDrawableItem_duration, -1, &duration);
@@ -263,7 +295,7 @@ ECode AnimationDrawable::Inflate(
 
         AutoPtr<IDrawable> dr;
         if (drawableRes != 0) {
-            r->GetDrawable(drawableRes, (IDrawable**)&dr);
+            r->GetDrawable(drawableRes, theme, (IDrawable**)&dr);
         }
         else {
             while (parser->Next(&type), type == IXmlPullParser::TEXT) {
@@ -275,7 +307,7 @@ ECode AnimationDrawable::Inflate(
 //                        " defining a drawable");
                 return E_XML_PULL_PARSER_EXCEPTION;
             }
-            Drawable::CreateFromXmlInner(r, parser, attrs, (IDrawable**)&dr);
+            Drawable::CreateFromXmlInner(r, parser, attrs, theme, (IDrawable**)&dr);
         }
 
         mAnimationState->AddFrame(dr, duration);
@@ -287,24 +319,29 @@ ECode AnimationDrawable::Inflate(
     return SetFrame(0, TRUE, FALSE);
 }
 
-AutoPtr<IDrawable> AnimationDrawable::Mutate()
+ECode AnimationDrawable::Mutate(
+    /* [out] */ IDrawable** drawable)
 {
-    if (!mMutated && DrawableContainer::Mutate().Get() ==
+    VALIDATE_NOT_NULL(drawable);
+    AutoPtr<IDrawable> tmp;
+    if (!mMutated && (DrawableContainer::Mutate((IDrawable**)&tmp), tmp.Get()) ==
             (IDrawable*)this->Probe(EIID_IDrawable)) {
         mAnimationState->mDurations = mAnimationState->mDurations->Clone();
         mMutated = TRUE;
     }
-    return (IDrawable*)this->Probe(EIID_IDrawable);
+    *drawable = (IDrawable*)this->Probe(EIID_IDrawable);
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
 AnimationDrawable::AnimationDrawable(
     /* [in] */ AnimationState* state,
     /* [in] */ IResources* res)
 {
-    ASSERT_SUCCEEDED(Init(state, res));
+    ASSERT_SUCCEEDED(constructor(state, res));
 }
 
-ECode AnimationDrawable::Init(
+ECode AnimationDrawable::constructor(
     /* [in] */ AnimationState* state,
     /* [in] */ IResources* res)
 {

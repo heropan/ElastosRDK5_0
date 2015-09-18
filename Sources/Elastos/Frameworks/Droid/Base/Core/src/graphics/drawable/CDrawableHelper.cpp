@@ -63,7 +63,17 @@ ECode CDrawableHelper::CreateFromXml(
     /* [out] */ IDrawable** draw)
 {
     VALIDATE_NOT_NULL(draw);
-    return Drawable::CreateFromXml(r, parser, draw);
+    return CreateFromXml(r, parser, NULL, draw);
+}
+
+ECode CDrawableHelper::CreateFromXml(
+    /* [in] */ IResources* r,
+    /* [in] */ IXmlPullParser* parser,
+    /* [in] */ IResourcesTheme* theme,
+    /* [out] */ IDrawable** draw)
+{
+    VALIDATE_NOT_NULL(draw);
+    return Drawable::CreateFromXml(r, parser, theme, draw);
 }
 
 ECode CDrawableHelper::CreateFromXmlInner(
@@ -72,10 +82,27 @@ ECode CDrawableHelper::CreateFromXmlInner(
     /* [in] */ IAttributeSet* attrs,
     /* [out] */ IDrawable** draw)
 {
-    VALIDATE_NOT_NULL(draw);
-    return Drawable::CreateFromXmlInner(r, parser, attrs, draw);
+    return CreateFromXmlInner(r, parser, attrs, NULL, draw);
 }
 
+ECode CDrawableHelper::CreateFromXmlInner(
+    /* [in] */ IResources* r,
+    /* [in] */ IXmlPullParser* parser,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme,
+    /* [out] */ IDrawable** draw)
+{
+    VALIDATE_NOT_NULL(draw);
+    return Drawable::CreateFromXmlInner(r, parser, attrs, theme, draw);
+}
+
+ECode CDrawableHelper::ParseTintMode(
+    /* [in] */ Int32 value,
+    /* [in] */ PorterDuffMode defaultMode,
+    /* [out] */ PorterDuffMode* mode)
+{
+    return Drawable::ParseTintMode(value, defaultMode, mode);
+}
 
 } // namespace Drawable
 } // namespace Graphics

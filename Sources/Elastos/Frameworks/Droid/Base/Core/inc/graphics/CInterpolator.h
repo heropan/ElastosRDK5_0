@@ -9,8 +9,14 @@ namespace Droid {
 namespace Graphics {
 
 CarClass(CInterpolator)
+    , public Object
+    , public IInterpolator
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     CARAPI constructor(
         /* [in] */ Int32 valueCount);
 

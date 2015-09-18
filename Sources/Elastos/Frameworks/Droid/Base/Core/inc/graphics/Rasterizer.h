@@ -13,6 +13,8 @@ namespace Graphics {
 extern const InterfaceID EIID_Rasterizer;
 
 class Rasterizer
+    : public Object
+    , public IRasterizer
 {
     friend class Paint;
 

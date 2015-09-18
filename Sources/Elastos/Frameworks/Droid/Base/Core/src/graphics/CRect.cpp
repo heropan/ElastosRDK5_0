@@ -10,6 +10,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CRect);
+CAR_INTERFACE_IMPL_2(CRect, Object, IRect, IParcelable);
 ECode CRect::constructor()
 {
     mLeft = mRight = mTop = mBottom = 0;

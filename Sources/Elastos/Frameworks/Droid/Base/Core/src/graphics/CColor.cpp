@@ -31,6 +31,8 @@ static AutoPtr<HashMap<String, Int32> > InitColorNameMap()
 
 AutoPtr<HashMap<String, Int32> > CColor::sColorNameMap = InitColorNameMap();
 
+CAR_OBJECT_IMPL(CColor);
+CAR_INTERFACE_IMPL(CColor, Object, IColor);
 ECode CColor::Alpha(
     /* [in] */ Int32 color,
     /* [out] */ Int32* alpha)

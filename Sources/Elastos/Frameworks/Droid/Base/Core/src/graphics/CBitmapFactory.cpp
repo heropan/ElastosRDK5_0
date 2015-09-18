@@ -40,7 +40,10 @@ namespace Graphics {
 // CBitmapFactory
 
 static const String TAG = String("CBitmapFactory");
+const Int32 CBitmapFactory::DECODE_BUFFER_SIZE = 16 * 1024;
 
+CAR_SINGLETON_IMPL(CBitmapFactory);
+CAR_INTERFACE_IMPL(CBitmapFactory, Singleton, IBitmapFactory);
 ECode CBitmapFactory::SetDefaultDensity(
     /* [in] */ Int32 density)
 {

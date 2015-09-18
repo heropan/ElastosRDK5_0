@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_GRAPHICS_XFERMODE_H__
 
 #include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -18,18 +21,22 @@ extern const InterfaceID EIID_Xfermode;
  * objects drawn with that paint have the xfermode applied.
  */
 class Xfermode
+    : public Object
+    , public IXfermode
 {
     friend class Paint;
 
 public:
+    CAR_INTERFACE_DECL();
+
     virtual ~Xfermode();
 
 private:
     static CARAPI_(void) Finalizer(
-        /* [in] */ Int32 nativeInstance);
+        /* [in] */ Int64 nativeInstance);
 
 public:
-    Int32 mNativeInstance;
+    Int64 mNativeInstance;
 };
 
 } // namespace Graphics

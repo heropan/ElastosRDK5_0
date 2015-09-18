@@ -2,6 +2,7 @@
 #include "ext/frameworkext.h"
 #include "graphics/drawable/shapes/RoundRectShape.h"
 // #include "graphics/CPath.h"
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace Droid {
@@ -69,6 +70,31 @@ ECode RoundRectShape::Draw(
     /* [in] */ IPaint* paint)
 {
     return canvas->DrawPath(mPath, paint);
+}
+
+ECode RoundRectShape::GetOutline(
+    /* [in] */ IOutline* outline)
+{
+    if (mInnerRect != NULL) return NOERROR; // have a hole, can't produce valid outline
+
+    Float radius = 0;
+    if (mOuterRadii != NULL) {
+        radius = (*mOuterRadii)[0];
+        for (Int32 i = 1; i < 8; i++) {
+            if ((*mOuterRadii)[i] != radius) {
+                // can't call simple constructors, use path
+                outline->SetConvexPath(mPath);
+                return NOERROR;
+            }
+        }
+    }
+
+    AutoPtr<IRectF> rect = Rect();
+    Float left = 0.f, top = 0.f, right = 0.f, bottom = 0.f;
+    rect->Get(&left, &top, &right, &bottom);
+    return outline->SetRoundRect((Int32) Elastos::Core::Math::Ceil(left), (Int32) Elastos::Core::Math::Ceil(top),
+            (Int32) Elastos::Core::Math::Floor(right), (Int32) Elastos::Core::Math::Floor(bottom),
+            radius);
 }
 
 void RoundRectShape::OnResize(

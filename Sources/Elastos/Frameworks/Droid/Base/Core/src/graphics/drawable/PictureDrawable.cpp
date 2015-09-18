@@ -2,12 +2,12 @@
 #include "graphics/drawable/PictureDrawable.h"
 #include "graphics/CRect.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
+CAR_INTERFACE_IMPL(PictureDrawable, Drawable, IPictureDrawable);
 PictureDrawable::PictureDrawable()
 {}
 
@@ -16,9 +16,13 @@ PictureDrawable::PictureDrawable(
     : mPicture(picture)
 {}
 
-AutoPtr<IPicture> PictureDrawable::GetPicture()
+ECode PictureDrawable::GetPicture(
+    /* [out] */ IPicture** picture)
 {
-    return mPicture;
+    VALIDATE_NOT_NULL(picture);
+    *picture = mPicture;
+    REFCOUNT_ADD(*picture);
+    return NOERROR;
 }
 
 ECode PictureDrawable::SetPicture(
@@ -32,7 +36,8 @@ ECode PictureDrawable::Draw(
     /* [in] */ ICanvas* canvas)
 {
     if (mPicture != NULL) {
-        AutoPtr<IRect> bounds = GetBounds();
+        AutoPtr<IRect> bounds;
+        GetBounds((IRect**)&bounds);
         Int32 count;
         canvas->Save(&count);
         Boolean isNotEmpty;
@@ -45,24 +50,31 @@ ECode PictureDrawable::Draw(
     return NOERROR;
 }
 
-Int32 PictureDrawable::GetIntrinsicWidth()
+ECode PictureDrawable::GetIntrinsicWidth(
+    /* [out] */ Int32* width)
 {
-    Int32 width = -1;
-    if (mPicture != NULL) mPicture->GetWidth(&width);
-    return width;
+    VALIDATE_NOT_NULL(width);
+    *width = -1;
+    if (mPicture != NULL) mPicture->GetWidth(width);
+    return NOERROR;
 }
 
-Int32 PictureDrawable::GetIntrinsicHeight()
+ECode PictureDrawable::GetIntrinsicHeight(
+    /* [out] */ Int32* height)
 {
-    Int32 height = -1;
-    if (mPicture != NULL) mPicture->GetHeight(&height);
-    return height;
+    VALIDATE_NOT_NULL(height);
+    *height = -1;
+    if (mPicture != NULL) mPicture->GetHeight(height);
+    return NOERROR;
 }
 
-Int32 PictureDrawable::GetOpacity()
+ECode PictureDrawable::GetOpacity(
+    /* [out] */ Int32* opacity)
 {
+    VALIDATE_NOT_NULL(opacity);
     // not sure, so be safe
-    return IPixelFormat::TRANSLUCENT;
+    *opacity = IPixelFormat::TRANSLUCENT;
+    return NOERROR;
 }
 
 ECode PictureDrawable::SetFilterBitmap(
@@ -89,7 +101,7 @@ ECode PictureDrawable::SetAlpha(
     return NOERROR;
 }
 
-ECode PictureDrawable::Init(
+ECode PictureDrawable::constructor(
     /* [in] */ IPicture* picture)
 {
     mPicture = picture;

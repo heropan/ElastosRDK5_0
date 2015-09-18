@@ -27,7 +27,10 @@ PInterface CEmbossMaskFilter::Probe(
     if (riid == EIID_MaskFilter) {
         return reinterpret_cast<PInterface>((MaskFilter*)this);
     }
-    return _CEmbossMaskFilter::Probe(riid);
+    else if (riid == EIID_IEmbossMaskFilter) {
+        return (IEmbossMaskFilter*)this;
+    }
+    return MaskFilter::Probe(riid);
 }
 
 Int32 CEmbossMaskFilter::NativeConstructor(

@@ -7,50 +7,24 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-IDRAWABLE_METHODS_IMPL(CColorDrawable, ColorDrawable);
-
+CAR_OBJECT_IMPL(CColorDrawable);
 ECode CColorDrawable::constructor()
 {
-    return ColorDrawable::Init((ColorState*)NULL);
+    return ColorDrawable::constructor();
 }
 
 ECode CColorDrawable::constructor(
     /* [in] */ Int32 color)
 {
-    return ColorDrawable::Init(color);
+    return ColorDrawable::constructor(color);
 }
 
 ECode CColorDrawable::constructor(
-    /* [in] */ IDrawableConstantState* state)
+    /* [in] */ IDrawableConstantState* state,
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme)
 {
-    return ColorDrawable::Init((ColorState*)state);
-}
-
-PInterface CColorDrawable::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CColorDrawable::Probe(riid);
-}
-
-ECode CColorDrawable::GetColor(
-    /* [out] */ Int32* color)
-{
-    return ColorDrawable::GetColor(color);
-}
-
-ECode CColorDrawable::SetColor(
-    /* [in] */ Int32 color)
-{
-    return ColorDrawable::SetColor(color);
-}
-
-ECode CColorDrawable::GetAlpha(
-    /* [out] */ Int32* alpha)
-{
-    VALIDATE_NOT_NULL(alpha);
-    *alpha = ColorDrawable::GetAlpha();
-
-    return NOERROR;
+    return ColorDrawable::constructor(state, res, theme);
 }
 
 } // namespace Drawable

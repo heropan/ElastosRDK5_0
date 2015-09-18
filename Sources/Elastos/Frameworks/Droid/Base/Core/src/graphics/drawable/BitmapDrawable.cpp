@@ -1,19 +1,19 @@
 
 #include "graphics/drawable/BitmapDrawable.h"
 #include "graphics/drawable/CBitmapDrawable.h"
-#include "graphics/CPaint.h"
-#include "graphics/CBitmapFactory.h"
+// #include "graphics/CPaint.h"
+// #include "graphics/CBitmapFactory.h"
 #include "graphics/CRect.h"
-#include "graphics/CBitmapShader.h"
-#include "view/CGravity.h"
+// #include "graphics/CBitmapShader.h"
+// #include "view/CGravity.h"
 #include "R.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::Logging::Logger;
-
 using Elastos::Droid::View::IGravity;
-using Elastos::Droid::View::CGravity;
+// using Elastos::Droid::View::CGravity;
+using Elastos::Droid::Utility::ILayoutDirection;
 using Elastos::Droid::R;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -23,39 +23,70 @@ namespace Drawable {
 BitmapDrawable::BitmapState::BitmapState(
     /* [in] */ IBitmap* bitmap)
     : mBitmap(bitmap)
-    , mChangingConfigurations(0)
+    , mTintMode(Drawable::DEFAULT_TINT_MODE)
     , mGravity(IGravity::FILL)
+    , mBaseAlpha(1.0)
     , mTileModeX(-1)
     , mTileModeY(-1)
     , mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
+    , mAutoMirrored(FALSE)
+    , mChangingConfigurations(0)
     , mRebuildShader(FALSE)
 {
-    ASSERT_SUCCEEDED(CPaint::New(DEFAULT_PAINT_FLAGS, (IPaint**)&mPaint));
+    assert(0 && "TODO");
+    // ASSERT_SUCCEEDED(CPaint::New(DEFAULT_PAINT_FLAGS, (IPaint**)&mPaint));
 }
 
 BitmapDrawable::BitmapState::BitmapState(
     /* [in] */ BitmapState* state)
-    : mGravity(IGravity::FILL)
+    : mTintMode(Drawable::DEFAULT_TINT_MODE)
+    , mGravity(IGravity::FILL)
+    , mBaseAlpha(1.0)
     , mTileModeX(-1)
     , mTileModeY(-1)
     , mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
+    , mAutoMirrored(FALSE)
+    , mChangingConfigurations(0)
+    , mRebuildShader(FALSE)
 {
     mBitmap = state->mBitmap;
+    mTint = state->mTint;
+    mTintMode = state->mTintMode;
+    mThemeAttrs = state->mThemeAttrs;
     mChangingConfigurations = state->mChangingConfigurations;
     mGravity = state->mGravity;
     mTileModeX = state->mTileModeX;
     mTileModeY = state->mTileModeY;
     mTargetDensity = state->mTargetDensity;
+    mBaseAlpha = state->mBaseAlpha;
+    assert(0 && "TODO");
+    // ASSERT_SUCCEEDED(CPaint::New(state->mPaint, (IPaint**)&mPaint));
     mRebuildShader = state->mRebuildShader;
-    ASSERT_SUCCEEDED(CPaint::New(state->mPaint, (IPaint**)&mPaint));
-    mRebuildShader = state->mRebuildShader;
+    mAutoMirrored = state->mAutoMirrored;
+}
+
+ECode BitmapDrawable::BitmapState::CanApplyTheme(
+    /* [out] */ Boolean* can)
+{
+    VALIDATE_NOT_NULL(can);
+    *can = mThemeAttrs != NULL;
+    return NOERROR;
+}
+
+ECode BitmapDrawable::BitmapState::GetBitmap(
+    /* [out] */ IBitmap** bitmap)
+{
+    VALIDATE_NOT_NULL(bitmap);
+    *bitmap = mBitmap;
+    REFCOUNT_ADD(*bitmap);
+    return NOERROR;
 }
 
 ECode BitmapDrawable::BitmapState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
-    return CBitmapDrawable::New((Handle32)this, NULL, (IBitmapDrawable**)drawable);
+    return CBitmapDrawable::New(this, NULL, NULL, (IBitmapDrawable**)drawable);
 }
 
 ECode BitmapDrawable::BitmapState::NewDrawable(
@@ -63,7 +94,16 @@ ECode BitmapDrawable::BitmapState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
-    return CBitmapDrawable::New((Handle32)this, res, (IBitmapDrawable**)drawable);
+    return CBitmapDrawable::New(this, res, NULL, (IBitmapDrawable**)drawable);
+}
+
+ECode BitmapDrawable::BitmapState::NewDrawable(
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme,
+    /* [out] */ IDrawable** drawable)
+{
+    VALIDATE_NOT_NULL(drawable);
+    return CBitmapDrawable::New(this, res, theme, (IBitmapDrawable**)drawable);
 }
 
 ECode BitmapDrawable::BitmapState::GetChangingConfigurations(
@@ -75,134 +115,151 @@ ECode BitmapDrawable::BitmapState::GetChangingConfigurations(
 }
 
 //////////////////////////////////////////////////////////////////////
+CAR_INTERFACE_IMPL(BitmapDrawable, Drawable, IBitmapDrawable);
+
 const Int32 BitmapDrawable::DEFAULT_PAINT_FLAGS =
         IPaint::FILTER_BITMAP_FLAG | IPaint::DITHER_FLAG;
+const Int32 BitmapDrawable::TILE_MODE_UNDEFINED = -2;
+const Int32 BitmapDrawable::TILE_MODE_DISABLED = -1;
+const Int32 BitmapDrawable::TILE_MODE_CLAMP = 0;
+const Int32 BitmapDrawable::TILE_MODE_REPEAT = 1;
+const Int32 BitmapDrawable::TILE_MODE_MIRROR = 2;
 
 BitmapDrawable::BitmapDrawable()
-    : mTargetDensity(0)
-    , mApplyGravity(FALSE)
+    : mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
+    , mDstRectAndInsetsDirty(TRUE)
     , mMutated(FALSE)
     , mBitmapWidth(0)
     , mBitmapHeight(0)
 {
     CRect::New((IRect**)&mDstRect);
-    Init();
+    assert(0 && "TODO");
+    // mOpticalInsets = Insets::NONE;
+    constructor();
 }
 
 BitmapDrawable::BitmapDrawable(
     /* [in] */ IResources* res)
-    : mTargetDensity(0)
-    , mApplyGravity(FALSE)
+    : mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
+    , mDstRectAndInsetsDirty(TRUE)
     , mMutated(FALSE)
     , mBitmapWidth(0)
     , mBitmapHeight(0)
 {
     CRect::New((IRect**)&mDstRect);
-    Init(res);
+    constructor(res);
 }
 
 BitmapDrawable::BitmapDrawable(
     /* [in] */ IBitmap* bitmap)
-    : mTargetDensity(0)
-    , mApplyGravity(FALSE)
+    : mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
+    , mDstRectAndInsetsDirty(TRUE)
     , mMutated(FALSE)
     , mBitmapWidth(0)
     , mBitmapHeight(0)
 {
     CRect::New((IRect**)&mDstRect);
-    Init(bitmap);
+    constructor(bitmap);
 }
 
 BitmapDrawable::BitmapDrawable(
     /* [in] */ IResources* res,
     /* [in] */ IBitmap* bitmap)
-    : mTargetDensity(0)
-    , mApplyGravity(FALSE)
+    : mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
+    , mDstRectAndInsetsDirty(TRUE)
     , mMutated(FALSE)
     , mBitmapWidth(0)
     , mBitmapHeight(0)
 {
     CRect::New((IRect**)&mDstRect);
-    Init(res, bitmap);
+    constructor(res, bitmap);
 }
 
 BitmapDrawable::BitmapDrawable(
     /* [in] */ const String& filepath)
-    : mTargetDensity(0)
-    , mApplyGravity(FALSE)
+    : mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
+    , mDstRectAndInsetsDirty(TRUE)
     , mMutated(FALSE)
     , mBitmapWidth(0)
     , mBitmapHeight(0)
 {
     CRect::New((IRect**)&mDstRect);
-    Init(filepath);
+    constructor(filepath);
 }
 
 BitmapDrawable::BitmapDrawable(
     /* [in] */ IResources* res,
     /* [in] */ const String& filepath)
-    : mTargetDensity(0)
-    , mApplyGravity(FALSE)
+    : mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
+    , mDstRectAndInsetsDirty(TRUE)
     , mMutated(FALSE)
     , mBitmapWidth(0)
     , mBitmapHeight(0)
 {
     CRect::New((IRect**)&mDstRect);
-    Init(res, filepath);
+    constructor(res, filepath);
 }
 
 BitmapDrawable::BitmapDrawable(
     /* [in] */ IInputStream* is)
-    : mTargetDensity(0)
-    , mApplyGravity(FALSE)
+    : mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
+    , mDstRectAndInsetsDirty(TRUE)
     , mMutated(FALSE)
     , mBitmapWidth(0)
     , mBitmapHeight(0)
 {
     CRect::New((IRect**)&mDstRect);
-    Init(is);
+    constructor(is);
 }
 
 BitmapDrawable::BitmapDrawable(
     /* [in] */ IResources* res,
     /* [in] */ IInputStream* is)
-    : mTargetDensity(0)
-    , mApplyGravity(FALSE)
+    : mTargetDensity(IDisplayMetrics::DENSITY_DEFAULT)
+    , mDstRectAndInsetsDirty(TRUE)
     , mMutated(FALSE)
     , mBitmapWidth(0)
     , mBitmapHeight(0)
 {
     CRect::New((IRect**)&mDstRect);
-    Init(res, is);
+    constructor(res, is);
 }
 
-AutoPtr<IPaint> BitmapDrawable::GetPaint()
+ECode BitmapDrawable::GetPaint(
+    /* [out] */ IPaint** paint)
 {
-    return mBitmapState->mPaint;
+    VALIDATE_NOT_NULL(paint);
+    *paint = mBitmapState->mPaint;
+    REFCOUNT_ADD(*paint);
+    return NOERROR;
 }
 
-AutoPtr<IBitmap> BitmapDrawable::GetBitmap()
+ECode BitmapDrawable::GetBitmap(
+    /* [out] */ IBitmap** bitmap)
 {
-    return mBitmap;
+    VALIDATE_NOT_NULL(bitmap);
+    *bitmap = mBitmapState->mBitmap;
+    REFCOUNT_ADD(*bitmap);
+    return NOERROR;
 }
 
 void BitmapDrawable::ComputeBitmapSize()
 {
-    mBitmap->GetScaledWidth(mTargetDensity, &mBitmapWidth);
-    mBitmap->GetScaledHeight(mTargetDensity, &mBitmapHeight);
+    AutoPtr<IBitmap> bitmap = mBitmapState->mBitmap;
+    if (bitmap != NULL) {
+        bitmap->GetScaledWidth(mTargetDensity, &mBitmapWidth);
+        bitmap->GetScaledHeight(mTargetDensity, &mBitmapHeight);
+    } else {
+        mBitmapWidth = mBitmapHeight = -1;
+    }
 }
 
 void BitmapDrawable::SetBitmap(
     /* [in] */ IBitmap* bitmap)
 {
-    if (bitmap != mBitmap.Get()) {
-        mBitmap = bitmap;
-        if (bitmap != NULL) {
-            ComputeBitmapSize();
-        }
-        else {
-            mBitmapWidth = mBitmapHeight = -1;
-        }
+    if (mBitmapState->mBitmap.Get() != bitmap) {
+        mBitmapState->mBitmap = bitmap;
+        ComputeBitmapSize();
         InvalidateSelf();
     }
 }
@@ -228,7 +285,7 @@ ECode BitmapDrawable::SetTargetDensity(
 {
     if (mTargetDensity != density) {
         mTargetDensity = density == 0 ? IDisplayMetrics::DENSITY_DEFAULT : density;
-        if (mBitmap != NULL) {
+        if (mBitmapState->mBitmap != NULL) {
             ComputeBitmapSize();
         }
         InvalidateSelf();
@@ -236,9 +293,12 @@ ECode BitmapDrawable::SetTargetDensity(
     return NOERROR;
 }
 
-Int32 BitmapDrawable::GetGravity()
+ECode BitmapDrawable::GetGravity(
+    /* [out] */ Int32* gravity)
 {
-    return mBitmapState->mGravity;
+    VALIDATE_NOT_NULL(gravity);
+    *gravity = mBitmapState->mGravity;
+    return NOERROR;
 }
 
 ECode BitmapDrawable::SetGravity(
@@ -246,9 +306,28 @@ ECode BitmapDrawable::SetGravity(
 {
     if (mBitmapState->mGravity != gravity) {
         mBitmapState->mGravity = gravity;
-        mApplyGravity = TRUE;
+        mDstRectAndInsetsDirty = TRUE;
         InvalidateSelf();
     }
+    return NOERROR;
+}
+
+ECode BitmapDrawable::SetMipMap(
+    /* [in] */ Boolean mipMap)
+{
+    if (mBitmapState->mBitmap != NULL) {
+        mBitmapState->mBitmap->SetHasMipMap(mipMap);
+        InvalidateSelf();
+    }
+    return NOERROR;
+}
+
+ECode BitmapDrawable::HasMipMap(
+    /* [out] */ Boolean* has)
+{
+    VALIDATE_NOT_NULL(has);
+    mBitmapState->mBitmap->HasMipMap(has);
+    *has = mBitmapState->mBitmap != NULL && (*has);
     return NOERROR;
 }
 
@@ -257,6 +336,13 @@ ECode BitmapDrawable::SetAntiAlias(
 {
     mBitmapState->mPaint->SetAntiAlias(aa);
     return InvalidateSelf();
+}
+
+ECode BitmapDrawable::HasAntiAlias(
+    /* [out] */ Boolean* has)
+{
+    VALIDATE_NOT_NULL(has);
+    return mBitmapState->mPaint->IsAntiAlias(has);
 }
 
 ECode BitmapDrawable::SetFilterBitmap(
@@ -273,14 +359,20 @@ ECode BitmapDrawable::SetDither(
     return InvalidateSelf();
 }
 
-ShaderTileMode BitmapDrawable::GetTileModeX()
+ECode BitmapDrawable::GetTileModeX(
+    /* [out] */ ShaderTileMode* tileModeX)
 {
-    return mBitmapState->mTileModeX;
+    VALIDATE_NOT_NULL(tileModeX)
+    *tileModeX = mBitmapState->mTileModeX;
+    return NOERROR;
 }
 
-ShaderTileMode BitmapDrawable::GetTileModeY()
+ECode BitmapDrawable::GetTileModeY(
+    /* [out] */ ShaderTileMode* tileModeY)
 {
-    return mBitmapState->mTileModeY;
+    VALIDATE_NOT_NULL(tileModeY);
+    *tileModeY = mBitmapState->mTileModeY;
+    return NOERROR;
 }
 
 ECode BitmapDrawable::SetTileModeX(
@@ -304,71 +396,240 @@ ECode BitmapDrawable::SetTileModeXY(
         state->mTileModeX = xmode;
         state->mTileModeY = ymode;
         state->mRebuildShader = TRUE;
+        mDstRectAndInsetsDirty = TRUE;
         InvalidateSelf();
     }
     return NOERROR;
 }
 
-Int32 BitmapDrawable::GetChangingConfigurations()
+ECode BitmapDrawable::SetAutoMirrored(
+    /* [in] */ Boolean mirrored)
 {
-    return Drawable::GetChangingConfigurations()
+    if (mBitmapState->mAutoMirrored != mirrored) {
+        mBitmapState->mAutoMirrored = mirrored;
+        InvalidateSelf();
+    }
+    return NOERROR;
+}
+
+ECode BitmapDrawable::IsAutoMirrored(
+    /* [out] */ Boolean* mirrored)
+{
+    VALIDATE_NOT_NULL(mirrored);
+    *mirrored = mBitmapState->mAutoMirrored;
+    return NOERROR;
+}
+
+ECode BitmapDrawable::GetChangingConfigurations(
+    /* [out] */ Int32* configuration)
+{
+    VALIDATE_NOT_NULL(configuration);
+    Drawable::GetChangingConfigurations(configuration);
+    *configuration = (*configuration)
         | mBitmapState->mChangingConfigurations;
+    return NOERROR;
+}
+
+Boolean BitmapDrawable::NeedMirroring()
+{
+    Int32 dir = 0;
+    Boolean mirrored = FALSE;
+    return (IsAutoMirrored(&mirrored), mirrored) && (GetLayoutDirection(&dir), dir) == ILayoutDirection::RTL;
+}
+
+void BitmapDrawable::UpdateMirrorMatrix(
+    /* [in] */ Float dx)
+{
+    if (mMirrorMatrix == NULL) {
+        assert(0 && "TODO");
+        // mMirrorMatrix = new Matrix();
+    }
+    mMirrorMatrix->SetTranslate(dx, 0);
+    Boolean res = FALSE;
+    mMirrorMatrix->PreScale(-1.0, 1.0, &res);
 }
 
 void BitmapDrawable::OnBoundsChange(
     /* [in] */ IRect* bounds)
 {
-    Drawable::OnBoundsChange(bounds);
-    mApplyGravity = TRUE;
+    mDstRectAndInsetsDirty = TRUE;
+
+    AutoPtr<IShader> shader;
+    mBitmapState->mPaint->GetShader((IShader**)&shader);
+    if (shader != NULL) {
+        if (NeedMirroring()) {
+            Int32 left = 0, right = 0;
+            bounds->GetLeft(&left);
+            bounds->GetRight(&right);
+            UpdateMirrorMatrix(right - left);
+            shader->SetLocalMatrix(mMirrorMatrix);
+            mBitmapState->mPaint->SetShader(shader);
+        } else {
+            if (mMirrorMatrix != NULL) {
+                mMirrorMatrix = NULL;
+                assert(0 && "TODO");
+                // shader->SetLocalMatrix(CMatrix::IDENTITY_MATRIX);
+                mBitmapState->mPaint->SetShader(shader);
+            }
+        }
+    }
 }
 
 ECode BitmapDrawable::Draw(
     /* [in] */ ICanvas* canvas)
 {
-    AutoPtr<IBitmap> bitmap = mBitmap;
-    if (bitmap != NULL) {
-        BitmapState* state = mBitmapState;
-        assert(state != NULL);
-        if (state->mRebuildShader) {
-            ShaderTileMode tmx = state->mTileModeX;
-            ShaderTileMode tmy = state->mTileModeY;
+    AutoPtr<IBitmap> bitmap = mBitmapState->mBitmap;
+    if (bitmap == NULL) {
+        return NOERROR;
+    }
 
-            if (tmx == -1 && tmy == -1) {
-                state->mPaint->SetShader(NULL);
-            }
-            else {
-                AutoPtr<IBitmapShader> s;
-                CBitmapShader::New(bitmap,
-                        tmx == -1 ? ShaderTileMode_CLAMP : tmx,
-                        tmy == -1 ? ShaderTileMode_CLAMP : tmy, (IBitmapShader**)&s);
-                state->mPaint->SetShader(s);
-            }
-            state->mRebuildShader = FALSE;
-            CopyBounds(mDstRect);
+    AutoPtr<BitmapState> state = mBitmapState;
+    AutoPtr<IPaint> paint = state->mPaint;
+    if (state->mRebuildShader) {
+        ShaderTileMode tmx = state->mTileModeX;
+        ShaderTileMode tmy = state->mTileModeY;
+        if (tmx == -1 && tmy == -1) {
+            paint->SetShader(NULL);
+        } else {
+            AutoPtr<IBitmapShader> s;
+            assert(0 && "TODO");
+            // CBitmapShader::New(bitmap,
+            //         tmx == -1 ? ShaderTileMode_CLAMP : tmx,
+            //         tmy == -1 ? ShaderTileMode_CLAMP : tmy, (IBitmapShader**)&s);
+            state->mPaint->SetShader(IShader::Probe(s));
         }
 
-        AutoPtr<IShader> shader;
-        state->mPaint->GetShader((IShader**)&shader);
-        if (shader == NULL) {
-            if (mApplyGravity) {
-                Int32 layoutDirection = GetLayoutDirection();
-                AutoPtr<IGravity> gravity;
-                CGravity::AcquireSingleton((IGravity**)&gravity);
-                gravity->Apply(state->mGravity, mBitmapWidth, mBitmapHeight,
-                        GetBounds(), mDstRect, layoutDirection);
-                mApplyGravity = FALSE;
-            }
-            canvas->DrawBitmap(bitmap, NULL, mDstRect, state->mPaint);
+        state->mRebuildShader = FALSE;
+    }
+
+    Int32 restoreAlpha = 0;
+    if (state->mBaseAlpha != 1.0) {
+        AutoPtr<IPaint> p;
+        GetPaint((IPaint**)&p);
+        p->GetAlpha(&restoreAlpha);
+        p->SetAlpha((Int32) (restoreAlpha * state->mBaseAlpha + 0.5));
+    } else {
+        restoreAlpha = -1;
+    }
+
+    Boolean clearColorFilter = FALSE;
+    AutoPtr<IColorFilter> cf;
+    if (mTintFilter != NULL && (paint->GetColorFilter((IColorFilter**)&cf), cf.Get()) == NULL) {
+        paint->SetColorFilter(IColorFilter::Probe(mTintFilter));
+        clearColorFilter = TRUE;
+    } else {
+        clearColorFilter = FALSE;
+    }
+
+    UpdateDstRectAndInsetsIfDirty();
+    AutoPtr<IShader> shader;
+    paint->GetShader((IShader**)&shader);
+    Boolean needMirroring = NeedMirroring();
+    if (shader == NULL) {
+        if (needMirroring) {
+            Int32 value = 0;
+            canvas->Save(&value);
+            // Mirror the bitmap
+            Int32 left = 0, right = 0;
+            mDstRect->GetLeft(&left);
+            mDstRect->GetRight(&right);
+            canvas->Translate(right - left, 0);
+            canvas->Scale(-1.0, 1.0);
         }
-        else {
-            if (mApplyGravity) {
-                CopyBounds(mDstRect);
-                mApplyGravity = FALSE;
-            }
-            canvas->DrawRect(mDstRect, state->mPaint);
+
+        canvas->DrawBitmap(bitmap, NULL, mDstRect, paint);
+
+        if (needMirroring) {
+            canvas->Restore();
         }
+    } else {
+        if (needMirroring) {
+            // Mirror the bitmap
+            Int32 left = 0, right = 0;
+            mDstRect->GetLeft(&left);
+            mDstRect->GetRight(&right);
+            UpdateMirrorMatrix(right - left);
+            shader->SetLocalMatrix(mMirrorMatrix);
+            paint->SetShader(shader);
+        } else {
+            if (mMirrorMatrix != NULL) {
+                mMirrorMatrix = NULL;
+                assert(0 && "TODO");
+                // shader->SetLocalMatrix(CMatrix::IDENTITY_MATRIX);
+                paint->SetShader(shader);
+            }
+        }
+
+        canvas->DrawRect(mDstRect, paint);
+    }
+
+    if (clearColorFilter) {
+        paint->SetColorFilter(NULL);
+    }
+
+    if (restoreAlpha >= 0) {
+        paint->SetAlpha(restoreAlpha);
     }
     return NOERROR;
+}
+
+void BitmapDrawable::UpdateDstRectAndInsetsIfDirty()
+{
+    if (mDstRectAndInsetsDirty) {
+        if (mBitmapState->mTileModeX == -1 && mBitmapState->mTileModeY == -1) {
+            AutoPtr<IRect> bounds;
+            GetBounds((IRect**)&bounds);
+            Int32 layoutDirection = 0;
+            GetLayoutDirection(&layoutDirection);
+
+            AutoPtr<IGravity> gravity;
+            assert(0 && "TODO");
+            // CGravity::AcquireSingleton((IGravity**)&gravity);
+            gravity->Apply(mBitmapState->mGravity, mBitmapWidth, mBitmapHeight,
+                    bounds, mDstRect, layoutDirection);
+
+            CRect* dr = (CRect*)mDstRect.Get();
+            CRect* bd = (CRect*)bounds.Get();
+            Int32 left = dr->mLeft - bd->mLeft;
+            Int32 top = dr->mTop - bd->mTop;
+            Int32 right = bd->mRight - dr->mRight;
+            Int32 bottom = bd->mBottom - dr->mBottom;
+            assert(0 && "TODO");
+            // mOpticalInsets = Insets::Of(left, top, right, bottom);
+        } else {
+            CopyBounds(mDstRect);
+            assert(0 && "TODO");
+            // mOpticalInsets = Insets::NONE;
+        }
+    }
+    mDstRectAndInsetsDirty = FALSE;
+}
+
+ECode BitmapDrawable::GetOpticalInsets(
+    /* [out] */ IInsets** sets)
+{
+    VALIDATE_NOT_NULL(sets);
+    UpdateDstRectAndInsetsIfDirty();
+    *sets = mOpticalInsets;
+    REFCOUNT_ADD(*sets);
+    return NOERROR;
+}
+
+ECode BitmapDrawable::GetOutline(
+    /* [in] */ /*@NonNull*/ IOutline* outline)
+{
+    UpdateDstRectAndInsetsIfDirty();
+    outline->SetRect(mDstRect);
+
+    // Only opaque Bitmaps can report a non-0 alpha,
+    // since only they are guaranteed to fill their bounds
+    Boolean has = FALSE;
+    Boolean opaqueOverShape = mBitmapState->mBitmap != NULL
+            && !(mBitmapState->mBitmap->HasAlpha(&has), has);
+
+    Int32 alpha = 0;
+    GetAlpha(&alpha);
+    return outline->SetAlpha(opaqueOverShape ? alpha / 255.0f : 0.0f);
 }
 
 ECode BitmapDrawable::SetAlpha(
@@ -383,6 +644,12 @@ ECode BitmapDrawable::SetAlpha(
     return NOERROR;
 }
 
+ECode BitmapDrawable::GetAlpha(
+    /* [out] */ Int32* alpha)
+{
+    return mBitmapState->mPaint->GetAlpha(alpha);
+}
+
 ECode BitmapDrawable::SetColorFilter(
     /* [in] */ IColorFilter* cf)
 {
@@ -390,20 +657,92 @@ ECode BitmapDrawable::SetColorFilter(
     return InvalidateSelf();
 }
 
-AutoPtr<IDrawable> BitmapDrawable::Mutate()
+ECode BitmapDrawable::GetColorFilter(
+    /* [out] */ IColorFilter** filter)
 {
-    if (!mMutated && Drawable::Mutate().Get()
+    return mBitmapState->mPaint->GetColorFilter(filter);
+}
+
+ECode BitmapDrawable::SetTintList(
+    /* [in] */ IColorStateList* tint)
+{
+    mBitmapState->mTint = tint;
+    mTintFilter = UpdateTintFilter(mTintFilter, tint, mBitmapState->mTintMode);
+    return InvalidateSelf();
+}
+
+ECode BitmapDrawable::SetTintMode(
+    /* [in] */ PorterDuffMode tintMode)
+{
+    mBitmapState->mTintMode = tintMode;
+    mTintFilter = UpdateTintFilter(mTintFilter, mBitmapState->mTint, tintMode);
+    return InvalidateSelf();
+}
+
+ECode BitmapDrawable::GetTint(
+    /* [out] */ IColorStateList** list)
+{
+    VALIDATE_NOT_NULL(list);
+    *list = mBitmapState->mTint;
+    REFCOUNT_ADD(*list);
+    return NOERROR;
+}
+
+ECode BitmapDrawable::GetTintMode(
+    /* [out] */ PorterDuffMode* mode)
+{
+    VALIDATE_NOT_NULL(mode);
+    *mode = mBitmapState->mTintMode;
+    return NOERROR;
+}
+
+ECode BitmapDrawable::SetXfermode(
+    /* [in] */ IXfermode* xfermode)
+{
+    mBitmapState->mPaint->SetXfermode(xfermode);
+    return InvalidateSelf();
+}
+
+ECode BitmapDrawable::Mutate(
+    /* [out] */ IDrawable** drawable)
+{
+    VALIDATE_NOT_NULL(drawable);
+    AutoPtr<IDrawable> tmp;
+    if (!mMutated && (Drawable::Mutate((IDrawable**)&tmp), tmp.Get())
         == (IDrawable*)this->Probe(EIID_IDrawable)) {
         mBitmapState = new BitmapState(mBitmapState);
         mMutated = TRUE;
     }
-    return (IDrawable*)this->Probe(EIID_IDrawable);
+    *drawable = (IDrawable*)this->Probe(EIID_IDrawable);
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
+}
+
+Boolean BitmapDrawable::OnStateChange(
+    /* [in] */ const ArrayOf<Int32>* stateSet)
+{
+    assert(0 && "TODO");
+    // final BitmapState state = mBitmapState;
+    // if (state.mTint != null && state.mTintMode != null) {
+    //     mTintFilter = updateTintFilter(mTintFilter, state.mTint, state.mTintMode);
+    //     return true;
+    // }
+    return FALSE;
+}
+
+ECode BitmapDrawable::IsStateful(
+    /* [out] */ Boolean* is)
+{
+    AutoPtr<BitmapState> s = mBitmapState;
+    Boolean value = FALSE;
+    return (Drawable::IsStateful(&value), value) || (s->mTint != NULL && (s->mTint->IsStateful(&value), value));
 }
 
 ECode BitmapDrawable::Inflate(
     /* [in] */ IResources* r,
     /* [in] */ IXmlPullParser* parser,
-    /* [in] */ IAttributeSet* attrs)
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme)
 {
     FAIL_RETURN(Drawable::Inflate(r, parser, attrs));
 
@@ -412,217 +751,362 @@ ECode BitmapDrawable::Inflate(
     layout->Copy(R::styleable::BitmapDrawable, size);
 
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(r->ObtainAttributes(attrs, layout, (ITypedArray**)&a));
+    FAIL_RETURN(ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a));
 
-    Int32 id;
-    a->GetResourceId(R::styleable::BitmapDrawable_src, 0, &id);
-    if (id == 0) {
-        String str;
-        parser->GetPositionDescription(&str);
-        Logger::E("BitmapDrawable", "%s : <bitmap> requires a valid src attribute", str.string());
-        return E_XML_PULL_PARSER_EXCEPTION;
-    }
-    AutoPtr<IBitmapFactory> bmFactory;
-    CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bmFactory);
-    AutoPtr<IBitmap> bitmap;
-    bmFactory->DecodeResource(r, id, (IBitmap**)&bitmap);
-    if (bitmap == NULL) {
-        String str;
-        parser->GetPositionDescription(&str);
-        Logger::E("BitmapDrawable", "%s : <bitmap> requires a valid src attribute", str.string());
-        return E_XML_PULL_PARSER_EXCEPTION;
-    }
-    mBitmapState->mBitmap = bitmap;
-    SetBitmap(bitmap);
-    AutoPtr<IDisplayMetrics> metrics;
-    r->GetDisplayMetrics((IDisplayMetrics**)&metrics);
-    SetTargetDensity(metrics);
-
-    AutoPtr<IPaint> paint = mBitmapState->mPaint;
-    Boolean newValue, oldValue;
-    paint->IsAntiAlias(&oldValue);
-    a->GetBoolean(R::styleable::BitmapDrawable_antialias, oldValue, &newValue);
-    paint->SetAntiAlias(newValue);
-
-    paint->IsFilterBitmap(&oldValue);
-    a->GetBoolean(R::styleable::BitmapDrawable_filter, oldValue, &newValue);
-    paint->SetFilterBitmap(newValue);
-
-    paint->IsDither(&oldValue);
-    a->GetBoolean(R::styleable::BitmapDrawable_dither, oldValue, &newValue);
-    paint->SetDither(newValue);
-
-    Int32 gravity;
-    a->GetInt32(R::styleable::BitmapDrawable_gravity, IGravity::FILL, &gravity);
-    SetGravity(gravity);
-
-    Int32 tileMode;
-    a->GetInt32(R::styleable::BitmapDrawable_tileMode, -1, &tileMode);
-    if (tileMode != -1) {
-        switch (tileMode) {
-        case 0:
-            SetTileModeXY(ShaderTileMode_CLAMP, ShaderTileMode_CLAMP);
-            break;
-        case 1:
-            SetTileModeXY(ShaderTileMode_REPEAT, ShaderTileMode_REPEAT);
-            break;
-        case 2:
-            SetTileModeXY(ShaderTileMode_MIRROR, ShaderTileMode_MIRROR);
-            break;
-        }
-    }
-
+    FAIL_RETURN(UpdateStateFromTypedArray(a));
+    FAIL_RETURN(VerifyState(a));
     return a->Recycle();
 }
 
-Int32 BitmapDrawable::GetIntrinsicWidth()
+ECode BitmapDrawable::VerifyState(
+    /* [in] */ ITypedArray* a) /*throws XmlPullParserException*/
 {
-    return mBitmapWidth;
+    AutoPtr<BitmapState> state = mBitmapState;
+    if (state->mBitmap == NULL) {
+        return E_XML_PULL_PARSER_EXCEPTION;
+        // throw new XmlPullParserException(a.getPositionDescription() +
+        //         ": <bitmap> requires a valid src attribute");
+    }
+    return NOERROR;
 }
 
-Int32 BitmapDrawable::GetIntrinsicHeight()
+ECode BitmapDrawable::UpdateStateFromTypedArray(
+    /* [in] */ ITypedArray* a) /*throws XmlPullParserException*/
 {
-    return mBitmapHeight;
+    AutoPtr<IResources> r;
+    a->GetResources((IResources**)&r);
+    AutoPtr<BitmapState> state = mBitmapState;
+
+    // Account for any configuration changes.
+    Int32 config = 0;
+    state->mChangingConfigurations |= (a->GetChangingConfigurations(&config), config);
+
+    // Extract the theme attributes, if any.
+    assert(0 && "TODO");
+    // FAIL_RETURN(a->ExtractThemeAttrs((ITypedArray**)&state->mThemeAttrs));
+
+    Int32 srcResId = 0;
+    FAIL_RETURN(a->GetResourceId(R::styleable::BitmapDrawable_src, 0, &srcResId));
+    if (srcResId != 0) {
+        AutoPtr<IBitmapFactory> bmFactory;
+        assert(0 && "TODO");
+        // CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bmFactory);
+        AutoPtr<IBitmap> bitmap;
+        bmFactory->DecodeResource(r, srcResId, (IBitmap**)&bitmap);
+        if (bitmap == NULL) {
+            // throw new XmlPullParserException(a.getPositionDescription() +
+            //         ": <bitmap> requires a valid src attribute");
+            return E_XML_PULL_PARSER_EXCEPTION;
+        }
+
+        state->mBitmap = bitmap;
+    }
+
+    AutoPtr<IDisplayMetrics> metrics;
+    r->GetDisplayMetrics((IDisplayMetrics**)&metrics);
+    metrics->GetDensityDpi(&state->mTargetDensity);
+
+    Boolean value = FALSE;
+    Boolean defMipMap = state->mBitmap != NULL ? (state->mBitmap->HasMipMap(&value), value) : FALSE;
+    assert(0 && "TODO");
+    // FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_mipMap, defMipMap, &value));
+    SetMipMap(value);
+
+    assert(0 && "TODO");
+    // FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_autoMirrored, state->mAutoMirrored, &state->mAutoMirrored));
+    // FAIL_RETURN(a->GetFloat(R::styleable::BitmapDrawable_alpha, state->mBaseAlphai, &state->mBaseAlpha));
+
+    Int32 tintMode = 0;
+    assert(0 && "TODO");
+    // FAIL_RETURN(a->GetInt32(R::styleable::BitmapDrawable_tintMode, -1, &tintMode));
+    if (tintMode != -1) {
+        Drawable::ParseTintMode(tintMode, PorterDuffMode_SRC_IN, &state->mTintMode);
+    }
+
+    AutoPtr<IColorStateList> tint;
+    assert(0 && "TODO");
+    // FAIL_RETURN(a->GetColorStateList(R::styleable::BitmapDrawable_tint, (IColorStateList**)&tint));
+    if (tint != NULL) {
+        state->mTint = tint;
+    }
+
+    AutoPtr<IPaint> paint = mBitmapState->mPaint;
+    Boolean res = FALSE;
+    paint->IsAntiAlias(&res);
+    assert(0 && "TODO");
+    // FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_antialias, res, &value));
+    // paint->SetAntiAlias(value);
+    // paint->IsFilterBitmap(&res);
+    // FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_filter, res, &value));
+    // paint->SetFilterBitmap(value);
+    // paint->IsDither(&res);
+    // FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_dither, res, &value));
+    // paint->SetDither(value);
+
+    Int32 gravity = 0;
+    FAIL_RETURN(a->GetInt32(R::styleable::BitmapDrawable_gravity, state->mGravity, &gravity));
+    SetGravity(gravity);
+
+    Int32 tileMode = 0;
+    FAIL_RETURN(a->GetInt32(R::styleable::BitmapDrawable_tileMode, TILE_MODE_UNDEFINED, &tileMode));
+    if (tileMode != TILE_MODE_UNDEFINED) {
+        ShaderTileMode mode = ParseTileMode(tileMode);
+        SetTileModeXY(mode, mode);
+    }
+
+    Int32 tileModeX = 0;
+    assert(0 && "TODO");
+    // FAIL_RETURN(a->GetInt32(R::styleable::BitmapDrawable_tileModeX, TILE_MODE_UNDEFINED, &tileModeX));
+    if (tileModeX != TILE_MODE_UNDEFINED) {
+        SetTileModeX(ParseTileMode(tileModeX));
+    }
+
+    Int32 tileModeY = 0;
+    assert(0 && "TODO");
+    // FAIL_RETURN(a->GetInt32(R::styleable::BitmapDrawable_tileModeY, TILE_MODE_UNDEFINED, &tileModeY));
+    if (tileModeY != TILE_MODE_UNDEFINED) {
+        SetTileModeY(ParseTileMode(tileModeY));
+    }
+
+    // Update local properties.
+    return InitializeWithState(state, r);
 }
 
-Int32 BitmapDrawable::GetOpacity()
+ECode BitmapDrawable::ApplyTheme(
+    /* [in] */ IResourcesTheme* t)
 {
+    Drawable::ApplyTheme(t);
+
+    AutoPtr<BitmapState> state = mBitmapState;
+    if (state == NULL || state->mThemeAttrs == NULL) {
+        return NOERROR;
+    }
+
+    Int32 size = ARRAY_SIZE(R::styleable::BitmapDrawable);
+    AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+    layout->Copy(R::styleable::BitmapDrawable, size);
+
+    AutoPtr<ITypedArray> a;
+    assert(0 && "TODO");
+    // t->ResolveAttributes(state->mThemeAttrs, layout, (ITypedArray**)&a);
+    // try {
+    if (UpdateStateFromTypedArray(a) == E_XML_PULL_PARSER_EXCEPTION) {
+        a->Recycle();
+        return E_ANDROID_RUNTIME_EXCEPTION;
+    }
+    // } catch (XmlPullParserException e) {
+    //     throw new RuntimeException(e);
+    // } finally {
+        // a.recycle();
+    // }
+    return NOERROR;
+}
+
+ShaderTileMode BitmapDrawable::ParseTileMode(
+    /* [in] */ Int32 tileMode)
+{
+    switch (tileMode) {
+        case TILE_MODE_CLAMP:
+            return ShaderTileMode_CLAMP;
+        case TILE_MODE_REPEAT:
+            return ShaderTileMode_REPEAT;
+        case TILE_MODE_MIRROR:
+            return ShaderTileMode_MIRROR;
+        default:
+            return -1;
+    }
+    return -1;
+}
+
+ECode BitmapDrawable::CanApplyTheme(
+    /* [out] */ Boolean* can)
+{
+    VALIDATE_NOT_NULL(can);
+    *can = mBitmapState != NULL && mBitmapState->mThemeAttrs != NULL;
+}
+
+ECode BitmapDrawable::GetIntrinsicWidth(
+    /* [out] */ Int32* width)
+{
+    VALIDATE_NOT_NULL(width);
+    *width = mBitmapWidth;
+    return NOERROR;
+}
+
+ECode BitmapDrawable::GetIntrinsicHeight(
+    /* [out] */ Int32* height)
+{
+    VALIDATE_NOT_NULL(height);
+    *height = mBitmapHeight;
+    return NOERROR;
+}
+
+ECode BitmapDrawable::GetOpacity(
+    /* [out] */ Int32* opacity)
+{
+    VALIDATE_NOT_NULL(opacity);
     if (mBitmapState->mGravity != IGravity::FILL) {
-        return IPixelFormat::TRANSLUCENT;
+        *opacity = IPixelFormat::TRANSLUCENT;
+        return NOERROR;
     }
 
     Boolean bmHasAlpha = FALSE;
-    if (mBitmap != NULL) {
-        mBitmap->HasAlpha(&bmHasAlpha);
+    if (mBitmapState->mBitmap != NULL) {
+        mBitmapState->mBitmap->HasAlpha(&bmHasAlpha);
     }
 
     Int32 alpha;
     mBitmapState->mPaint->GetAlpha(&alpha);
 
-    return (bmHasAlpha || alpha < 255) ?
+    *opacity = (bmHasAlpha || alpha < 255) ?
             IPixelFormat::TRANSLUCENT : IPixelFormat::OPAQUE;
+    return NOERROR;
 }
 
-//@Override
-AutoPtr<IDrawableConstantState> BitmapDrawable::GetConstantState()
+ECode BitmapDrawable::GetConstantState(
+    /* [out] */ IDrawableConstantState** state)
 {
-    mBitmapState->mChangingConfigurations = GetChangingConfigurations();
-    return mBitmapState;
+    VALIDATE_NOT_NULL(state);
+    GetChangingConfigurations(&mBitmapState->mChangingConfigurations);
+    *state = mBitmapState;
+    REFCOUNT_ADD(*state);
+    return NOERROR;
 }
 
-ECode BitmapDrawable::Init(
+ECode BitmapDrawable::constructor(
+    /* [in] */ IDrawableConstantState* state,
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme)
+{
+    Boolean can = FALSE;
+    if (theme != NULL && (state->CanApplyTheme(&can), can)) {
+        // If we need to apply a theme, implicitly mutate.
+        mBitmapState = new BitmapState((BitmapState*)state);
+        ApplyTheme(theme);
+    } else {
+        mBitmapState = (BitmapState*)state;
+    }
+
+    return InitializeWithState((BitmapState*)state, res);
+}
+
+ECode BitmapDrawable::constructor()
+{
+    mBitmapState = new BitmapState((IBitmap*)NULL);
+    return NOERROR;
+}
+
+ECode BitmapDrawable::constructor(
+    /* [in] */ IResources* res)
+{
+    mBitmapState = new BitmapState((IBitmap*)NULL);
+    mBitmapState->mTargetDensity = mTargetDensity;
+    return NOERROR;
+}
+
+ECode BitmapDrawable::constructor(
+    /* [in] */ IBitmap* bitmap)
+{
+    AutoPtr<BitmapState> state = new BitmapState(bitmap);
+    return constructor(state, NULL, NULL);
+}
+
+ECode BitmapDrawable::constructor(
+    /* [in] */ IResources* res,
+    /* [in] */ IBitmap* bitmap)
+{
+    AutoPtr<BitmapState> state = new BitmapState(bitmap);
+    constructor(state, res, NULL);
+    mBitmapState->mTargetDensity = mTargetDensity;
+    return NOERROR;
+}
+
+ECode BitmapDrawable::constructor(
+    /* [in] */ const String& filepath)
+{
+    AutoPtr<IBitmapFactory> factory;
+    AutoPtr<IBitmap> bitmap;
+    assert(0 && "TODO");
+    // FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
+    FAIL_RETURN(factory->DecodeFile(filepath, (IBitmap**)&bitmap));
+
+    AutoPtr<BitmapState> state = new BitmapState(bitmap);
+    constructor(state, NULL, NULL);
+    if (mBitmapState->mBitmap == NULL) {
+        Logger::W("BitmapDrawable", "BitmapDrawable cannot decode %s", filepath.string());
+    }
+    return NOERROR;
+}
+
+ECode BitmapDrawable::constructor(
+    /* [in] */ IResources* res,
+    /* [in] */ const String& filepath)
+{
+    AutoPtr<IBitmapFactory> factory;
+    AutoPtr<IBitmap> bitmap;
+    assert(0 && "TODO");
+    // FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
+    FAIL_RETURN(factory->DecodeFile(filepath, (IBitmap**)&bitmap));
+
+    AutoPtr<BitmapState> state = new BitmapState(bitmap);
+    constructor(state, NULL, NULL);
+    mBitmapState->mTargetDensity = mTargetDensity;
+    if (mBitmapState->mBitmap == NULL) {
+        Logger::W("BitmapDrawable", "BitmapDrawable cannot decode %s", filepath.string());
+    }
+    return NOERROR;
+}
+
+ECode BitmapDrawable::constructor(
+    /* [in] */ IInputStream* is)
+{
+    AutoPtr<IBitmapFactory> factory;
+    AutoPtr<IBitmap> bitmap;
+    assert(0 && "TODO");
+    // FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
+    FAIL_RETURN(factory->DecodeStream(is, (IBitmap**)&bitmap));
+
+    AutoPtr<BitmapState> state = new BitmapState(bitmap);
+    constructor(state, NULL, NULL);
+    if (mBitmapState->mBitmap == NULL) {
+        Logger::W("BitmapDrawable", "BitmapDrawable cannot decode"/*is*/);
+    }
+    return NOERROR;
+}
+
+ECode BitmapDrawable::constructor(
+    /* [in] */ IResources* res,
+    /* [in] */ IInputStream* is)
+{
+    AutoPtr<IBitmapFactory> factory;
+    AutoPtr<IBitmap> bitmap;
+    assert(0 && "TODO");
+    // FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
+    FAIL_RETURN(factory->DecodeStream(is, (IBitmap**)&bitmap));
+
+    AutoPtr<BitmapState> state = new BitmapState(bitmap);
+    constructor((IDrawableConstantState*)state->Probe(EIID_IDrawableConstantState), NULL, NULL);
+    mBitmapState->mTargetDensity = mTargetDensity;
+    if (mBitmapState->mBitmap == NULL) {
+        Logger::W("BitmapDrawable", "BitmapDrawable cannot decode"/*is*/);
+    }
+    return NOERROR;
+}
+
+ECode BitmapDrawable::InitializeWithState(
     /* [in] */ BitmapState* state,
     /* [in] */ IResources* res)
 {
-    mBitmapState = state;
     if (res != NULL) {
         AutoPtr<IDisplayMetrics> metrics;
         res->GetDisplayMetrics((IDisplayMetrics**)&metrics);
         metrics->GetDensityDpi(&mTargetDensity);
-    }
-    else {
+    } else {
         mTargetDensity = state->mTargetDensity;
     }
-    SetBitmap(state != NULL ? state->mBitmap : NULL);
-    return NOERROR;
-}
 
-ECode BitmapDrawable::Init()
-{
-    mBitmapState = new BitmapState((IBitmap*)NULL);
-    return NOERROR;
-}
-
-ECode BitmapDrawable::Init(
-    /* [in] */ IResources* res)
-{
-    mBitmapState = new BitmapState((IBitmap*)NULL);
-    mBitmapState->mTargetDensity = mTargetDensity;
-    return NOERROR;
-}
-
-ECode BitmapDrawable::Init(
-    /* [in] */ IBitmap* bitmap)
-{
-    AutoPtr<BitmapState> state = new BitmapState(bitmap);
-    return Init(state, NULL);
-}
-
-ECode BitmapDrawable::Init(
-    /* [in] */ IResources* res,
-    /* [in] */ IBitmap* bitmap)
-{
-    AutoPtr<BitmapState> state = new BitmapState(bitmap);
-    Init(state, res);
-    mBitmapState->mTargetDensity = mTargetDensity;
-    return NOERROR;
-}
-
-ECode BitmapDrawable::Init(
-    /* [in] */ const String& filepath)
-{
-    AutoPtr<IBitmapFactory> factory;
-    AutoPtr<IBitmap> bitmap;
-    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
-    FAIL_RETURN(factory->DecodeFile(filepath, (IBitmap**)&bitmap));
-
-    AutoPtr<BitmapState> state = new BitmapState(bitmap);
-    Init(state, NULL);
-    if (mBitmap == NULL) {
-        Logger::W("BitmapDrawable", "BitmapDrawable cannot decode %s", filepath.string());
-    }
-    return NOERROR;
-}
-
-ECode BitmapDrawable::Init(
-    /* [in] */ IResources* res,
-    /* [in] */ const String& filepath)
-{
-    AutoPtr<IBitmapFactory> factory;
-    AutoPtr<IBitmap> bitmap;
-    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
-    FAIL_RETURN(factory->DecodeFile(filepath, (IBitmap**)&bitmap));
-
-    AutoPtr<BitmapState> state = new BitmapState(bitmap);
-    Init(state, NULL);
-    mBitmapState->mTargetDensity = mTargetDensity;
-    if (mBitmap == NULL) {
-        Logger::W("BitmapDrawable", "BitmapDrawable cannot decode %s", filepath.string());
-    }
-    return NOERROR;
-}
-
-ECode BitmapDrawable::Init(
-    /* [in] */ IInputStream* is)
-{
-    AutoPtr<IBitmapFactory> factory;
-    AutoPtr<IBitmap> bitmap;
-    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
-    FAIL_RETURN(factory->DecodeStream(is, (IBitmap**)&bitmap));
-
-    AutoPtr<BitmapState> state = new BitmapState(bitmap);
-    Init(state, NULL);
-    if (mBitmap == NULL) {
-        Logger::W("BitmapDrawable", "BitmapDrawable cannot decode"/*is*/);
-    }
-    return NOERROR;
-}
-
-ECode BitmapDrawable::Init(
-    /* [in] */ IResources* res,
-    /* [in] */ IInputStream* is)
-{
-    AutoPtr<IBitmapFactory> factory;
-    AutoPtr<IBitmap> bitmap;
-    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
-    FAIL_RETURN(factory->DecodeStream(is, (IBitmap**)&bitmap));
-
-    AutoPtr<BitmapState> state = new BitmapState(bitmap);
-    Init(state, NULL);
-    mBitmapState->mTargetDensity = mTargetDensity;
-    if (mBitmap == NULL) {
-        Logger::W("BitmapDrawable", "BitmapDrawable cannot decode"/*is*/);
-    }
+    mTintFilter = UpdateTintFilter(mTintFilter, state->mTint, state->mTintMode);
+    ComputeBitmapSize();
     return NOERROR;
 }
 

@@ -14,6 +14,8 @@ namespace Drawable {
 CarClass(CClipDrawable), public ClipDrawable
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI constructor();
 
     /**
@@ -27,14 +29,6 @@ public:
     CARAPI constructor(
         /* [in] */ IDrawableConstantState* state,
         /* [in] */ IResources* res);
-
-    //@Override
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    IDRAWABLE_METHODS_DECL()
-
-    IDRAWABLECALLBACK_METHODS_DECL()
 };
 
 } // namespace Drawable

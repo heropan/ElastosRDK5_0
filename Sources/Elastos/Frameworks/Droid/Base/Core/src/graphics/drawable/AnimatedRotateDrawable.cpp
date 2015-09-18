@@ -20,7 +20,7 @@ namespace Graphics {
 namespace Drawable {
 
 AnimatedRotateDrawable::AnimatedRotateState::AnimatedRotateState(
-    /* [in] */ AnimatedRotateState* source,
+    /* [in] */ AnimatedRotateState* orig,
     /* [in] */ AnimatedRotateDrawable* owner,
     /* [in] */ IResources* res)
     : mChangingConfigurations(0)
@@ -33,9 +33,9 @@ AnimatedRotateDrawable::AnimatedRotateState::AnimatedRotateState(
     , mCanConstantState(FALSE)
     , mCheckedConstantState(FALSE)
 {
-    if (source != NULL) {
+    if (orig != NULL) {
         AutoPtr<IDrawableConstantState> state;
-        source->mDrawable->GetConstantState((IDrawableConstantState**)&state);
+        orig->mDrawable->GetConstantState((IDrawableConstantState**)&state);
         if (res != NULL) {
             state->NewDrawable(res, (IDrawable**)&mDrawable);
         }
@@ -44,12 +44,22 @@ AnimatedRotateDrawable::AnimatedRotateState::AnimatedRotateState(
         }
         mDrawable->SetCallback(
             owner != NULL ? (IDrawableCallback*)owner->Probe(EIID_IDrawableCallback) : NULL);
-        mPivotXRel = source->mPivotXRel;
-        mPivotX = source->mPivotX;
-        mPivotYRel = source->mPivotYRel;
-        mPivotY = source->mPivotY;
-        mFramesCount = source->mFramesCount;
-        mFrameDuration = source->mFrameDuration;
+
+        Int32 value = 0;
+        orig->mDrawable->GetLayoutDirection(&value);
+        mDrawable->SetLayoutDirection(value);
+        AutoPtr<IRect> bounds;
+        orig->mDrawable->GetBounds((IRect**)&bounds);
+        mDrawable->SetBounds(bounds);
+        orig->mDrawable->GetLevel(&value);
+        Boolean res = FALSE;
+        mDrawable->SetLevel(value, &res);
+        mPivotXRel = orig->mPivotXRel;
+        mPivotX = orig->mPivotX;
+        mPivotYRel = orig->mPivotYRel;
+        mPivotY = orig->mPivotY;
+        mFramesCount = orig->mFramesCount;
+        mFrameDuration = orig->mFrameDuration;
         mCanConstantState = mCheckedConstantState = TRUE;
     }
 }
@@ -89,7 +99,7 @@ Boolean AnimatedRotateDrawable::AnimatedRotateState::CanConstantState()
     return mCanConstantState;
 }
 
-
+CAR_INTERFACE_IMPL_4(AnimatedRotateDrawable, Drawable, IAnimatedRotateDrawable, IDrawableCallback, IRunnable, IAnimatable)
 AnimatedRotateDrawable::AnimatedRotateDrawable(
     /* [in] */ AnimatedRotateState* rotateState,
     /* [in] */ IResources* res)
@@ -98,10 +108,10 @@ AnimatedRotateDrawable::AnimatedRotateDrawable(
     , mIncrement(0)
     , mRunning(FALSE)
 {
-    Init(rotateState, res);
+    constructor(rotateState, res);
 }
 
-void AnimatedRotateDrawable::InitInternal()
+void AnimatedRotateDrawable::Init()
 {
     AnimatedRotateState* state = mState;
     mIncrement = 360.0f / state->mFramesCount;
@@ -114,7 +124,6 @@ void AnimatedRotateDrawable::InitInternal()
     }
 }
 
-//@Override
 ECode AnimatedRotateDrawable::Draw(
     /* [in] */ ICanvas* canvas)
 {
@@ -157,9 +166,12 @@ ECode AnimatedRotateDrawable::Stop()
     return NOERROR;
 }
 
-Boolean AnimatedRotateDrawable::IsRunning()
+ECode AnimatedRotateDrawable::IsRunning(
+    /* [out] */ Boolean* running)
 {
-    return mRunning;
+    VALIDATE_NOT_NULL(running);
+    *running = mRunning;
+    return NOERROR;
 }
 
 void AnimatedRotateDrawable::NextFrame()
@@ -182,14 +194,16 @@ ECode AnimatedRotateDrawable::Run()
     return NOERROR;
 }
 
-//@Override
-Boolean AnimatedRotateDrawable::SetVisible(
+ECode AnimatedRotateDrawable::SetVisible(
     /* [in] */ Boolean visible,
-    /* [in] */ Boolean restart)
+    /* [in] */ Boolean restart,
+    /* [out] */ Boolean* isDifferent)
 {
+    VALIDATE_NOT_NULL(isDifferent);
     Boolean res;
     mState->mDrawable->SetVisible(visible, restart, &res);
-    Boolean changed = Drawable::SetVisible(visible, restart);
+    Boolean changed = FALSE;
+    Drawable::SetVisible(visible, restart, &changed);
     if (visible) {
         if (changed || restart) {
             mCurrentDegrees = 0.0f;
@@ -199,24 +213,29 @@ Boolean AnimatedRotateDrawable::SetVisible(
     else {
         UnscheduleSelf((IRunnable*)this->Probe(EIID_IRunnable));
     }
-    return changed;
+    *isDifferent = changed;
+    return NOERROR;
 }
 
-/**
- * Returns the drawable rotated by this RotateDrawable.
- */
-AutoPtr<IDrawable> AnimatedRotateDrawable::GetDrawable()
+ECode AnimatedRotateDrawable::GetDrawable(
+    /* [out] */ IDrawable** drawable)
 {
-    return mState->mDrawable;
+    VALIDATE_NOT_NULL(drawable);
+    *drawable = mState->mDrawable;
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
-//@Override
-Int32 AnimatedRotateDrawable::GetChangingConfigurations()
+ECode AnimatedRotateDrawable::GetChangingConfigurations(
+    /* [out] */ Int32* configuration)
 {
-    Int32 drawableConfig;
-    return Drawable::GetChangingConfigurations()
+    VALIDATE_NOT_NULL(configuration);
+    Drawable::GetChangingConfigurations(configuration);
+    Int32 drawableConfig = 0;
+    *configuration = (*configuration)
         | mState->mChangingConfigurations
         | (mState->mDrawable->GetChangingConfigurations(&drawableConfig), drawableConfig);
+    return NOERROR;
 }
 
 ECode AnimatedRotateDrawable::SetAlpha(
@@ -225,23 +244,41 @@ ECode AnimatedRotateDrawable::SetAlpha(
     return mState->mDrawable->SetAlpha(alpha);
 }
 
+ECode AnimatedRotateDrawable::GetAlpha(
+    /* [out] */ Int32* alpha)
+{
+    return mState->mDrawable->GetAlpha(alpha);
+}
+
 ECode AnimatedRotateDrawable::SetColorFilter(
     /* [in] */ IColorFilter* cf)
 {
     return mState->mDrawable->SetColorFilter(cf);
 }
 
-Int32 AnimatedRotateDrawable::GetOpacity()
+ECode AnimatedRotateDrawable::SetTintList(
+    /* [in] */ IColorStateList* tint)
 {
-    Int32 opacity;
-    mState->mDrawable->GetOpacity(&opacity);
-    return opacity;
+    return mState->mDrawable->SetTintList(tint);
+}
+
+ECode AnimatedRotateDrawable::SetTintMode(
+    /* [in] */ PorterDuffMode tintMode)
+{
+    return mState->mDrawable->SetTintMode(tintMode);
+}
+
+ECode AnimatedRotateDrawable::GetOpacity(
+    /* [out] */ Int32* opacity)
+{
+    return mState->mDrawable->GetOpacity(opacity);
 }
 
 ECode AnimatedRotateDrawable::InvalidateDrawable(
     /* [in] */ IDrawable* who)
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->InvalidateDrawable((IDrawable*)this->Probe(EIID_IDrawable));
     }
@@ -253,7 +290,8 @@ ECode AnimatedRotateDrawable::ScheduleDrawable(
     /* [in] */ IRunnable* what,
     /* [in] */ Int64 when)
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->ScheduleDrawable((IDrawable*)this->Probe(EIID_IDrawable), what, when);
     }
@@ -264,31 +302,27 @@ ECode AnimatedRotateDrawable::UnscheduleDrawable(
     /* [in] */ IDrawable* who,
     /* [in] */ IRunnable* what)
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->UnscheduleDrawable((IDrawable*)this->Probe(EIID_IDrawable), what);
     }
     return NOERROR;
 }
 
-//@Override
-Boolean AnimatedRotateDrawable::GetPadding(
-    /* [in] */ IRect* padding)
+ECode AnimatedRotateDrawable::GetPadding(
+    /* [in] */ IRect* padding,
+    /* [out] */ Boolean* isPadding)
 {
-    Boolean res;
-    mState->mDrawable->GetPadding(padding, &res);
-    return res;
+    return mState->mDrawable->GetPadding(padding, isPadding);
 }
 
-//@Override
-Boolean AnimatedRotateDrawable::IsStateful()
+ECode AnimatedRotateDrawable::IsStateful(
+    /* [out] */ Boolean* isStateful)
 {
-    Boolean res;
-    mState->mDrawable->IsStateful(&res);
-    return res;
+    return mState->mDrawable->IsStateful(isStateful);
 }
 
-//@Override
 void AnimatedRotateDrawable::OnBoundsChange(
     /* [in] */ IRect* bounds)
 {
@@ -297,43 +331,61 @@ void AnimatedRotateDrawable::OnBoundsChange(
         temp->mLeft, temp->mTop, temp->mRight, temp->mBottom);
 }
 
-//@Override
-Int32 AnimatedRotateDrawable::GetIntrinsicWidth()
+Boolean AnimatedRotateDrawable::OnLevelChange(
+    /* [in] */ Int32 level)
 {
-    Int32 width;
-    mState->mDrawable->GetIntrinsicWidth(&width);
-    return width;
+    Boolean res = FALSE;
+    mState->mDrawable->SetLevel(level, &res);
+    return res;
 }
 
-//@Override
-Int32 AnimatedRotateDrawable::GetIntrinsicHeight()
+Boolean AnimatedRotateDrawable::OnStateChange(
+    /* [in] */ const ArrayOf<Int32>* state)
 {
-    Int32 height;
-    mState->mDrawable->GetIntrinsicHeight(&height);
-    return height;
+    Boolean isStateful = FALSE;
+    mState->mDrawable->SetState(const_cast<ArrayOf<Int32>*>(state), &isStateful);
+    return isStateful;
 }
 
-//@Override
-AutoPtr<IDrawableConstantState> AnimatedRotateDrawable::GetConstantState()
+ECode AnimatedRotateDrawable::GetIntrinsicWidth(
+    /* [out] */ Int32* width)
 {
+    VALIDATE_NOT_NULL(width);
+    return mState->mDrawable->GetIntrinsicWidth(width);
+}
+
+ECode AnimatedRotateDrawable::GetIntrinsicHeight(
+    /* [out] */ Int32* height)
+{
+    VALIDATE_NOT_NULL(height);
+    return mState->mDrawable->GetIntrinsicHeight(height);
+}
+
+ECode AnimatedRotateDrawable::GetConstantState(
+    /* [out] */ IDrawableConstantState** state)
+{
+    VALIDATE_NOT_NULL(state);
     if (mState->CanConstantState()) {
-        mState->mChangingConfigurations = GetChangingConfigurations();
-        return mState;
+        GetChangingConfigurations(&mState->mChangingConfigurations);
+        *state = mState;
+        REFCOUNT_ADD(*state);
     }
-    return NULL;
+    *state = NULL;
+    return NOERROR;
 }
 
 ECode AnimatedRotateDrawable::Inflate(
     /* [in] */ IResources* r,
     /* [in] */ IXmlPullParser* parser,
-    /* [in] */ IAttributeSet* attrs)
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme)
 {
     Int32 size = ARRAY_SIZE(R::styleable::AnimatedRotateDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::AnimatedRotateDrawable, size);
 
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(r->ObtainAttributes(attrs, layout, (ITypedArray**)&a));
+    FAIL_RETURN(ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a));
 
     FAIL_RETURN(Drawable::InflateWithAttributes(
             r, parser, a, R::styleable::AnimatedRotateDrawable_visible));
@@ -365,7 +417,7 @@ ECode AnimatedRotateDrawable::Inflate(
     a->GetResourceId(R::styleable::AnimatedRotateDrawable_drawable, 0, &res);
     AutoPtr<IDrawable> drawable;
     if (res > 0) {
-        r->GetDrawable(res, (IDrawable**)&drawable);
+        r->GetDrawable(res, theme, (IDrawable**)&drawable);
     }
 
     a->Recycle();
@@ -381,7 +433,7 @@ ECode AnimatedRotateDrawable::Inflate(
         }
 
         drawable = NULL;
-        Drawable::CreateFromXmlInner(r, parser, attrs, (IDrawable**)&drawable);
+        Drawable::CreateFromXmlInner(r, parser, attrs, theme, (IDrawable**)&drawable);
         if (drawable == NULL) {
             String name;
             parser->GetName(&name);
@@ -399,7 +451,7 @@ ECode AnimatedRotateDrawable::Inflate(
     mState->mPivotYRel = pivotYRel;
     mState->mPivotY = pivotY;
 
-    InitInternal();
+    Init();
 
     if (drawable != NULL) {
         drawable->SetCallback((IDrawableCallback*)this->Probe(EIID_IDrawableCallback));
@@ -422,24 +474,28 @@ CARAPI AnimatedRotateDrawable::SetFramesDuration(
     return NOERROR;
 }
 
-//@Override
-AutoPtr<IDrawable> AnimatedRotateDrawable::Mutate()
+ECode AnimatedRotateDrawable::Mutate(
+    /* [out] */ IDrawable** drawable)
 {
-    if (!mMutated && Drawable::Mutate().Get()
+    VALIDATE_NOT_NULL(drawable);
+    AutoPtr<IDrawable> tmp;
+    if (!mMutated && (Drawable::Mutate((IDrawable**)&tmp), tmp.Get())
         == (IDrawable*)this->Probe(EIID_IDrawable)) {
         AutoPtr<IDrawable> temp;
         mState->mDrawable->Mutate((IDrawable**)&temp);
         mMutated = TRUE;
     }
-    return (IDrawable*)this->Probe(EIID_IDrawable);
+    *drawable = (IDrawable*)this->Probe(EIID_IDrawable);
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
-ECode AnimatedRotateDrawable::Init(
+ECode AnimatedRotateDrawable::constructor(
     /* [in] */ AnimatedRotateState* rotateState,
     /* [in] */ IResources* res)
 {
     mState = new AnimatedRotateState(rotateState, this, res);
-    InitInternal();
+    Init();
 
     return NOERROR;
 }

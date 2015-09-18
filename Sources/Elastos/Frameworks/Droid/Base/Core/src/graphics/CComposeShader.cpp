@@ -8,6 +8,7 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CComposeShader);
 ECode CComposeShader::constructor(
     /* [in] */ IShader* shaderA,
     /* [in] */ IShader* shaderB,
@@ -60,7 +61,10 @@ PInterface CComposeShader::Probe(
     if (riid == EIID_Shader) {
         return reinterpret_cast<PInterface>((Shader*)this);
     }
-    return _CComposeShader::Probe(riid);
+    else if (riid == EIID_IComposeShader) {
+        return (IComposeShader*)this;
+    }
+    return Shader::Probe(riid);
 }
 
 ECode CComposeShader::GetLocalMatrix(

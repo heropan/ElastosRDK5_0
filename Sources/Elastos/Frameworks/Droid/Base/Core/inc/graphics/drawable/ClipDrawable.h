@@ -28,7 +28,10 @@ namespace Drawable {
  * @attr ref android.R.styleable#ClipDrawable_gravity
  * @attr ref android.R.styleable#ClipDrawable_drawable
  */
-class ClipDrawable : public Drawable
+class ClipDrawable
+    : public Drawable
+    , public IClipDrawable
+    , public IDrawableCallback
 {
 protected:
     class ClipState
@@ -64,6 +67,8 @@ protected:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * @param orientation Bitwise-or of {@link #HORIZONTAL} and/or {@link #VERTICAL}
      */
@@ -76,7 +81,8 @@ public:
     CARAPI Inflate(
         /* [in] */ IResources* r,
         /* [in] */ IXmlPullParser* parser,
-        /* [in] */ IAttributeSet* attrs);
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ IResourcesTheme* theme);
 
     // overrides from Drawable.Callback
 
@@ -95,43 +101,62 @@ public:
     // overrides from Drawable
 
     //@Override
-    CARAPI_(Int32) GetChangingConfigurations();
+    CARAPI GetChangingConfigurations(
+        /* [out] */ Int32* configuration);
 
     //@Override
-    CARAPI_(Boolean) GetPadding(
-        /* [in] */ IRect* padding);
+    CARAPI GetPadding(
+        /* [in] */ IRect* padding,
+        /* [out] */ Boolean* isPadding);
 
     //@Override
-    CARAPI_(Boolean) SetVisible(
+    CARAPI SetVisible(
         /* [in] */ Boolean visible,
-        /* [in] */ Boolean restart);
+        /* [in] */ Boolean restart,
+        /* [out] */ Boolean* isDifferent);
 
     //@Override
     CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
+
+    CARAPI GetAlpha(
+        /* [out] */ Int32* alpha);
+
+    // @Override
+    CARAPI SetTintList(
+        /* [in] */ IColorStateList* tint);
+
+    // @Override
+    CARAPI SetTintMode(
+        /* [in] */ PorterDuffMode tintMode);
 
     //@Override
     CARAPI SetColorFilter(
         /* [in] */ IColorFilter* cf);
 
     //@Override
-    CARAPI_(Int32) GetOpacity();
+    CARAPI GetOpacity(
+        /* [out] */ Int32* opacity);
 
     //@Override
-    CARAPI_(Boolean) IsStateful();
+    CARAPI IsStateful(
+        /* [out] */ Boolean* isStateful);
 
     //@Override
     CARAPI Draw(
         /* [in] */ ICanvas* canvas);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicWidth();
+    CARAPI GetIntrinsicWidth(
+        /* [out] */ Int32* width);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicHeight();
+    CARAPI GetIntrinsicHeight(
+        /* [out] */ Int32* height);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawableConstantState>) GetConstantState();
+    CARAPI GetConstantState(
+        /* [out] */ IDrawableConstantState** state);
 
     /** @hide */
     //@Override
@@ -153,12 +178,12 @@ protected:
     CARAPI_(void) OnBoundsChange(
         /* [in] */ IRect* bounds);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IDrawable* drawable,
         /* [in] */ Int32 gravity,
         /* [in] */ Int32 orientation);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ClipState* state = NULL,
         /* [in] */ IResources* res = NULL);
 

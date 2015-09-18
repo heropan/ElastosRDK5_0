@@ -1,26 +1,26 @@
 
-#include "ext/frameworkext.h"
 #include "graphics/CCanvas.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CCanvas);
 ECode CCanvas::constructor()
 {
-    return Canvas::Init();
+    return Canvas::constructor();
 }
 
 ECode CCanvas::constructor(
     /* [in] */ IBitmap* bitmap)
 {
-    return Canvas::Init(bitmap);
+    return Canvas::constructor(bitmap);
 }
 
 ECode CCanvas::constructor(
     /* [in] */ Int32 nativeCanvas)
 {
-    return Canvas::Init(nativeCanvas);
+    return Canvas::constructor(nativeCanvas);
 }
 
 PInterface CCanvas::Probe(
@@ -29,10 +29,8 @@ PInterface CCanvas::Probe(
     if (riid == EIID_Canvas) {
         return reinterpret_cast<PInterface>((Canvas*)this);
     }
-    return _CCanvas::Probe(riid);
+    return Canvas::Probe(riid);
 }
-
-ICANVAS_METHODS_IMPL(CCanvas, Canvas);
 
 } // namespace Graphics
 } // namepsace Droid

@@ -11,7 +11,10 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-class InsetDrawable : public Drawable
+class InsetDrawable
+    : public Drawable
+    , public IInsetDrawable
+    , public IDrawableCallback
 {
 public:
     class InsetState
@@ -49,7 +52,9 @@ public:
     };
 
 public:
-    /*package*/ InsetDrawable();
+    CAR_INTERFACE_DECL();
+
+    InsetDrawable();
 
     InsetDrawable(
         /* [in] */ IDrawable* drawable,
@@ -85,16 +90,19 @@ public:
         /* [in] */ ICanvas* canvas);
 
     //@Override
-    CARAPI_(Int32) GetChangingConfigurations();
+    CARAPI GetChangingConfigurations(
+        /* [out] */ Int32* configuration);
 
     //@Override
-    CARAPI_(Boolean) GetPadding(
-        /* [in] */ IRect* padding);
+    CARAPI GetPadding(
+        /* [in] */ IRect* padding,
+        /* [out] */ Boolean* isPadding);
 
     //@Override
-    CARAPI_(Boolean) SetVisible(
+    CARAPI SetVisible(
         /* [in] */ Boolean visible,
-        /* [in] */ Boolean restart);
+        /* [in] */ Boolean restart,
+        /* [out] */ Boolean* isDifferent);
 
     CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
@@ -102,38 +110,47 @@ public:
     CARAPI SetColorFilter(
         /* [in] */ IColorFilter* cf);
 
-    CARAPI_(Int32) GetOpacity();
+    CARAPI GetOpacity(
+        /* [out] */ Int32* opacity);
 
     //@Override
-    CARAPI_(Boolean) IsStateful();
+    CARAPI IsStateful(
+        /* [out] */ Boolean* isStateful);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicWidth();
+    CARAPI GetIntrinsicWidth(
+        /* [out] */ Int32* width);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicHeight();
+    CARAPI GetIntrinsicHeight(
+        /* [out] */ Int32* height);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawableConstantState>) GetConstantState();
+    CARAPI GetConstantState(
+        /* [out] */ IDrawableConstantState** state);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawable>) Mutate();
+    CARAPI Mutate(
+        /* [out] */ IDrawable** drawable);
+
+    virtual CARAPI GetDrawable(
+        /* [out] */ IDrawable** drawable);
 
 protected:
-    CARAPI Init();
+    CARAPI constructor();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IDrawable* drawable,
         /* [in] */ Int32 inset);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IDrawable* drawable,
         /* [in] */ Int32 insetLeft,
         /* [in] */ Int32 insetTop,
         /* [in] */ Int32 insetRight,
         /* [in] */ Int32 insetBottom);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ InsetState* state,
         /* [in] */ IResources* res);
 

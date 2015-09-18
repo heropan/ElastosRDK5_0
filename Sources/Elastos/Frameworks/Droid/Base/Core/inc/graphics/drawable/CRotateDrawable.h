@@ -5,7 +5,6 @@
 #include "_Elastos_Droid_Graphics_Drawable_CRotateDrawable.h"
 #include "graphics/drawable/RotateDrawable.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
@@ -14,6 +13,8 @@ namespace Drawable {
 CarClass(CRotateDrawable), public RotateDrawable
 {
 public:
+    CAR_OBJECT_DECL();
+
     /**
      * <p>Create a new rotating drawable with an empty state.</p>
      */
@@ -29,19 +30,6 @@ public:
     CARAPI constructor(
         /* [in] */ Handle32 state,
         /* [in] */ IResources* res);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    IDRAWABLE_METHODS_DECL()
-
-    IDRAWABLECALLBACK_METHODS_DECL()
-
-    /**
-     * Returns the drawable rotated by this RotateDrawable.
-     */
-    CARAPI GetDrawable(
-        /* [out] */ IDrawable** drawable);
 };
 
 } // namespace Drawable

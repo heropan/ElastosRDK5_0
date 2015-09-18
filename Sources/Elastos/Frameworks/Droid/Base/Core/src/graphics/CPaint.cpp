@@ -5,21 +5,22 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CPaint);
 ECode CPaint::constructor()
 {
-    return Paint::Init();
+    return Paint::constructor();
 }
 
 ECode CPaint::constructor(
     /* [in] */ Int32 flags)
 {
-    return Paint::Init(flags);
+    return Paint::constructor(flags);
 }
 
 ECode CPaint::constructor(
     /* [in] */ IPaint* paint)
 {
-    return Paint::Init(paint);
+    return Paint::constructor(paint);
 }
 
 PInterface CPaint::Probe(
@@ -28,7 +29,7 @@ PInterface CPaint::Probe(
     if (riid == EIID_Paint) {
         return reinterpret_cast<PInterface>((Paint*)this);
     }
-    return _CPaint::Probe(riid);
+    return Paint::Probe(riid);
 }
 
 ECode CPaint::Reset()

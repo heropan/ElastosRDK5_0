@@ -18,10 +18,14 @@ extern const InterfaceID EIID_PathEffect;
  * canvas' matrix and drawn.
  */
 class PathEffect
+    : public Object
+    , public IPathEffect
 {
     friend class Paint;
 
 public:
+    CAR_INTERFACE_DECL();
+
     virtual ~PathEffect();
 
 private:

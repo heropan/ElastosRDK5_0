@@ -9,6 +9,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CColorMatrix);
+CAR_INTERFACE_IMPL(CColorMatrix, Object, IColorMatrix);
 CColorMatrix::CColorMatrix()
 {
     mArray = ArrayOf<Float>::Alloc(20);

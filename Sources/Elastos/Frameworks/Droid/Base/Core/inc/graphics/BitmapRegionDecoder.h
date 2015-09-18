@@ -13,24 +13,15 @@ namespace Droid {
 namespace Graphics {
 
 class BitmapRegionDecoder
-    : public ElRefBase
+    : public Object
     , public IBitmapRegionDecoder
 {
     friend class GraphicsNative;
 
 public:
+    CAR_INTERFACE_DECL();
+
     ~BitmapRegionDecoder();
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface* pObject,
-        /* [in] */ InterfaceID* pIID);
 
     /**
      * Create a BitmapRegionDecoder from the specified byte array.

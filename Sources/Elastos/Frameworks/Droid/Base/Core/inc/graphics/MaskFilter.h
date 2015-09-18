@@ -1,9 +1,10 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_MASKFILTER_H__
 #define __ELASTOS_DROID_GRAPHICS_MASKFILTER_H__
 
-#include <elastos.h>
+#include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
-using namespace Elastos;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -17,10 +18,14 @@ extern const InterfaceID EIID_MaskFilter;
  * installed into a Paint. Blur and emboss are implemented as subclasses of MaskFilter.
  */
 class MaskFilter
+    : public Object
+    , public IMaskFilter
 {
     friend class Paint;
 
 public:
+    CAR_INTERFACE_DECL();
+
     virtual ~MaskFilter();
 
 private:

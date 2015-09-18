@@ -3,24 +3,25 @@
 #include "graphics/drawable/shapes/CRoundRectShape.h"
 #include "R.h"
 
-
 using Elastos::Droid::Graphics::Drawable::Shapes::IRoundRectShape;
 using Elastos::Droid::Graphics::Drawable::Shapes::CRoundRectShape;
 using Elastos::Droid::R;
-
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
+CAR_INTERFACE_IMPL(PaintDrawable, ShapeDrawable, IPaintDrawable);
 PaintDrawable::PaintDrawable()
 {}
 
 PaintDrawable::PaintDrawable(
     /* [in] */ Int32 color)
 {
-    GetPaint()->SetColor(color);
+    AutoPtr<IPaint> paint;
+    GetPaint((IPaint**)&paint);
+    paint->SetColor(color);
 }
 
 ECode PaintDrawable::SetCornerRadius(
@@ -41,7 +42,8 @@ ECode PaintDrawable::SetCornerRadii(
     /* [in] */ ArrayOf<Float>* radii)
 {
     if (radii == NULL) {
-        if (GetShape() != NULL) {
+        AutoPtr<IShape> shape;
+        if ((GetShape((IShape**)&shape), shape.Get()) != NULL) {
             SetShape(NULL);
         }
     }
@@ -97,16 +99,17 @@ Boolean PaintDrawable::InflateTag(
     return ShapeDrawable::InflateTag(name, r, parser, attrs);
 }
 
-ECode PaintDrawable::Init()
+ECode PaintDrawable::constructor()
 {
-    return ShapeDrawable::Init();
+    return ShapeDrawable::constructor();
 }
 
-ECode PaintDrawable::Init(
+ECode PaintDrawable::constructor(
     /* [in] */ Int32 color)
 {
-    GetPaint()->SetColor(color);
-    return NOERROR;
+    AutoPtr<IPaint> paint;
+    GetPaint((IPaint**)&paint);
+    return paint->SetColor(color);
 }
 
 } // namespace Drawable

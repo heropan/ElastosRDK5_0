@@ -17,6 +17,7 @@ const Boolean StateListDrawable::DEFAULT_DITHER;
 Boolean StateListDrawable::DEBUG = FALSE;
 String StateListDrawable::TAG("StateListDrawable");
 
+CAR_INTERFACE_IMPL(StateListDrawable, DrawableContainer, IStateListDrawable)
 StateListDrawable::StateListDrawable()
     : mMutated(FALSE)
 {
@@ -27,41 +28,42 @@ StateListDrawable::StateListDrawable(
     /* [in] */ IResources* res)
     : mMutated(FALSE)
 {
-    Init(state, res);
+    constructor(state, res);
 }
 
-ECode StateListDrawable::Init(
+ECode StateListDrawable::constructor(
     /* [in] */ StateListState* state,
     /* [in] */ IResources* res)
 {
     mStateListState = new StateListState(state, this, res);
     SetConstantState(mStateListState);
-    OnStateChange(GetState());
+
+    AutoPtr<ArrayOf<Int32> > states;
+    GetState((ArrayOf<Int32>**)&states);
+    OnStateChange(states);
     return NOERROR;
 }
 
-/**
- * Add a new image/string ID to the set of images.
- *
- * @param stateSet - An array of resource Ids to associate with the image.
- *                 Switch to this image by calling setState().
- * @param drawable -The image to show.
- */
 ECode StateListDrawable::AddState(
-    /* [in] */ const ArrayOf<Int32>& stateSet,
+    /* [in] */ ArrayOf<Int32>* stateSet,
     /* [in] */ IDrawable* drawable)
 {
     if (drawable != NULL) {
-        mStateListState->AddStateSet(&stateSet, drawable);
+        mStateListState->AddStateSet(stateSet, drawable);
         // in case the new state matches our current state...
-        OnStateChange(GetState());
+        AutoPtr<ArrayOf<Int32> > states;
+        GetState((ArrayOf<Int32>**)&states);
+        OnStateChange(states);
     }
     return NOERROR;
 }
 
-Boolean StateListDrawable::IsStateful()
+ECode StateListDrawable::IsStateful(
+    /* [out] */ Boolean* isStateful)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(isStateful);
+    *isStateful = TRUE;
+    return NOERROR;
 }
 
 Boolean StateListDrawable::OnStateChange(
@@ -73,7 +75,9 @@ Boolean StateListDrawable::OnStateChange(
     if (idx < 0) {
         idx = mStateListState->IndexOfStateSet(const_cast<ArrayOf<Int32>*>(StateSet::WILD_CARD.Get()));
     }
-    if (SelectDrawable(idx)) {
+
+    Boolean res = FALSE;
+    if (SelectDrawable(idx, &res), res) {
         return TRUE;
     }
     return DrawableContainer::OnStateChange(stateSet);
@@ -166,7 +170,9 @@ ECode StateListDrawable::Inflate(
         mStateListState->AddStateSet(states, dr);
     }
 
-    OnStateChange(GetState());
+    AutoPtr<ArrayOf<Int32> > states;
+    GetState((ArrayOf<Int32>**)&states);
+    OnStateChange(states);
     return NOERROR;
 }
 
@@ -175,67 +181,49 @@ AutoPtr<StateListDrawable::StateListState> StateListDrawable::GetStateListState(
     return mStateListState;
 }
 
-/**
- * Gets the number of states contained in this drawable.
- *
- * @return The number of states contained in this drawable.
- * @hide pending API council
- * @see #getStateSet(Int32)
- * @see #getStateDrawable(Int32)
- */
-Int32 StateListDrawable::GetStateCount()
+ECode StateListDrawable::GetStateCount(
+    /* [out] */ Int32* count)
 {
-    return mStateListState->GetChildCount();
+    VALIDATE_NOT_NULL(count);
+    *count = mStateListState->GetChildCount();
+    return NOERROR;
 }
 
-/**
- * Gets the state set at an index.
- *
- * @param index The index of the state set.
- * @return The state set at the index.
- * @hide pending API council
- * @see #getStateCount()
- * @see #getStateDrawable(Int32)
- */
-AutoPtr< ArrayOf<Int32> > StateListDrawable::GetStateSet(
-    /* [in] */ Int32 index)
+ECode StateListDrawable::GetStateSet(
+    /* [in] */ Int32 index,
+    /* [out, callee] */ ArrayOf<Int32>** stateSet)
 {
-    return (*mStateListState->mStateSets)[index];
+    VALIDATE_NOT_NULL(stateSet);
+    *stateSet = (*mStateListState->mStateSets)[index];
+    REFCOUNT_ADD(*stateSet);
+    return NOERROR;
 }
 
-/**
- * Gets the drawable at an index.
- *
- * @param index The index of the drawable.
- * @return The drawable at the index.
- * @hide pending API council
- * @see #getStateCount()
- * @see #getStateSet(Int32)
- */
-AutoPtr<IDrawable> StateListDrawable::GetStateDrawable(
-    /* [in] */ Int32 index)
+ECode StateListDrawable::GetStateDrawable(
+    /* [in] */ Int32 index,
+    /* [out] */ IDrawable** drawable)
 {
-    return (*mStateListState->GetChildren())[index];
+    VALIDATE_NOT_NULL(drawable);
+    *drawable = (*mStateListState->GetChildren())[index];
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
-/**
- * Gets the index of the drawable with the provided state set.
- *
- * @param stateSet the state set to look up
- * @return the index of the provided state set, or -1 if not found
- * @hide pending API council
- * @see #getStateDrawable(Int32)
- * @see #getStateSet(Int32)
- */
-Int32 StateListDrawable::GetStateDrawableIndex(
-    /* [in] */ const ArrayOf<Int32>& stateSet)
+ECode StateListDrawable::GetStateDrawableIndex(
+    /* [in] */ ArrayOf<Int32>* stateSet,
+    /* [out] */ Int32* index)
 {
-    return mStateListState->IndexOfStateSet((ArrayOf<Int32>*)&stateSet);
+    VALIDATE_NOT_NULL(index);
+    *index = mStateListState->IndexOfStateSet((ArrayOf<Int32>*)&stateSet);
+    return NOERROR;
 }
 
-AutoPtr<IDrawable> StateListDrawable::Mutate()
+ECode StateListDrawable::Mutate(
+    /* [out] */ IDrawable** drawable)
 {
-    if (!mMutated && DrawableContainer::Mutate().Get() == (IDrawable*)this->Probe(EIID_IDrawable)) {
+    VALIDATE_NOT_NULL(drawable);
+    AutoPtr<IDrawable> tmp;
+    if (!mMutated && (DrawableContainer::Mutate((IDrawable**)&tmp), tmp.Get()) == (IDrawable*)this->Probe(EIID_IDrawable)) {
         AutoPtr<ArrayOf< AutoPtr<ArrayOf<Int32> > > > sets = mStateListState->mStateSets;
         Int32 count = sets->GetLength();
         mStateListState->mStateSets = ArrayOf< AutoPtr<ArrayOf<Int32> > >::Alloc(count);
@@ -248,15 +236,20 @@ AutoPtr<IDrawable> StateListDrawable::Mutate()
         }
         mMutated = TRUE;
     }
-    return (IDrawable*)this->Probe(EIID_IDrawable);
+    *drawable = (IDrawable*)this->Probe(EIID_IDrawable);
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
 ECode StateListDrawable::SetLayoutDirection(
     /* [in] */ Int32 layoutDirection)
 {
-    const Int32 numStates = GetStateCount();
+    Int32 numStates = 0;
+    GetStateCount(&numStates);
     for (Int32 i = 0; i < numStates; i++) {
-        GetStateDrawable(i)->SetLayoutDirection(layoutDirection);
+        AutoPtr<IDrawable> drawable;
+        GetStateDrawable(i, (IDrawable**)&drawable);
+        drawable->SetLayoutDirection(layoutDirection);
     }
     return Drawable::SetLayoutDirection(layoutDirection);
 }

@@ -96,7 +96,11 @@ module
     merge("graphics/pdf/PdfEditor.car");
     merge("graphics/pdf/PdfRenderer.car");
 
+    interface Elastos.Droid.Content.Res.IResources;
+    interface Elastos.Droid.Content.Res.IResourcesTheme;
+    interface Elastos.Droid.Graphics.Drawable.Shapes.IShape;
     using interface Elastos.Core.ICloneable;
+    using interface Elastos.IO.IInputStream;
 
     namespace Elastos {
     namespace Droid {
@@ -124,6 +128,7 @@ module
     //         [in] AvoidXfermodeMode mode);
 
     //     interface IAvoidXfermode;
+    //     interface IXfermode;
     // }
 
     // [deprecated]
@@ -186,6 +191,7 @@ module
     //         [in] ShaderTileMode tileX,
     //         [in] ShaderTileMode tileY);
 
+    //     interface IShader;
     //     interface IBitmapShader;
     // }
 
@@ -202,6 +208,7 @@ module
     //         [in] BlurMaskFilterBlur style);
 
     //     interface IBlurMaskFilter;
+    //     interface IMaskFilter;
     // }
 
     // class CCamera {
@@ -283,6 +290,7 @@ module
     //         [in] ArrayOf<Float> array);
 
     //     interface IColorMatrixColorFilter;
+    //     interface IColorFilter;
     // }
 
     // class CComposePathEffect {
@@ -295,6 +303,7 @@ module
     //         [in] IPathEffect* innerpe);
 
     //     interface IComposePathEffect;
+    //     interface IPathEffect;
     // }
 
     // class CComposeShader {
@@ -328,6 +337,7 @@ module
     //         [in] PorterDuffMode mode1);
 
     //     interface IComposeShader;
+    //     interface IShader;
     // }
 
     // class CCornerPathEffect {
@@ -341,6 +351,7 @@ module
     //         [in] Float radius);
 
     //     interface ICornerPathEffect;
+    //     interface IPathEffect;
     // }
 
     // class CDashPathEffect {
@@ -362,6 +373,7 @@ module
     //         [in] Float phase);
 
     //     interface IDashPathEffect;
+    //     interface IPathEffect;
     // }
 
     // class CDiscretePathEffect {
@@ -374,6 +386,7 @@ module
     //         [in] Float deviation);
 
     //     interface IDiscretePathEffect;
+    //     interface IPathEffect;
     // }
 
     // class CEmbossMaskFilter {
@@ -393,6 +406,7 @@ module
     //         [in] Float blurRadius);
 
     //     interface IEmbossMaskFilter;
+    //     interface IMaskFilter;
     // }
 
     // singleton class CImageFormat {
@@ -425,6 +439,7 @@ module
     //     constructor();
 
     //     interface ILayerRasterizer;
+    //     interface IRasterizer;
     // }
 
     // class CLightingColorFilter {
@@ -772,80 +787,80 @@ module
     //     interface IRadialGradient;
     // }
 
-    // class CRect{
-    //     /**
-    //      * Create a new empty Rect. All coordinates are initialized to 0.
-    //      */
-    //     constructor();
+    class CRect{
+        /**
+         * Create a new empty Rect. All coordinates are initialized to 0.
+         */
+        constructor();
 
-    //     /**
-    //      * Create a new rectangle with the specified coordinates. Note: no range
-    //      * checking is performed, so the caller must ensure that left <= right and
-    //      * top <= bottom.
-    //      *
-    //      * @param left   The X coordinate of the left side of the rectangle
-    //      * @param top    The Y coordinate of the top of the rectangle
-    //      * @param right  The X coordinate of the right side of the rectangle
-    //      * @param bottom The Y coordinate of the bottom of the rectangle
-    //      */
-    //     constructor(
-    //         [in] Int32 left,
-    //         [in] Int32 top,
-    //         [in] Int32 right,
-    //         [in] Int32 bottom);
+        /**
+         * Create a new rectangle with the specified coordinates. Note: no range
+         * checking is performed, so the caller must ensure that left <= right and
+         * top <= bottom.
+         *
+         * @param left   The X coordinate of the left side of the rectangle
+         * @param top    The Y coordinate of the top of the rectangle
+         * @param right  The X coordinate of the right side of the rectangle
+         * @param bottom The Y coordinate of the bottom of the rectangle
+         */
+        constructor(
+            [in] Int32 left,
+            [in] Int32 top,
+            [in] Int32 right,
+            [in] Int32 bottom);
 
-    //     /**
-    //      * Create a new rectangle, initialized with the values in the specified
-    //      * rectangle (which is left unmodified).
-    //      *
-    //      * @param r The rectangle whose coordinates are copied into the new
-    //      *          rectangle.
-    //      */
-    //     constructor(
-    //         [in] IRect* r);
+        /**
+         * Create a new rectangle, initialized with the values in the specified
+         * rectangle (which is left unmodified).
+         *
+         * @param r The rectangle whose coordinates are copied into the new
+         *          rectangle.
+         */
+        constructor(
+            [in] IRect* r);
 
-    //     interface IRect;
-    //     interface IParcelable;
-    // }
+        interface IRect;
+        interface IParcelable;
+    }
 
-    // class CRectF {
-    //     /**
-    //      * Create a new empty RectF. All coordinates are initialized to 0.
-    //      */
-    //     constructor();
+    class CRectF {
+        /**
+         * Create a new empty RectF. All coordinates are initialized to 0.
+         */
+        constructor();
 
-    //     /**
-    //      * Create a new rectangle with the specified coordinates. Note: no range
-    //      * checking is performed, so the caller must ensure that left <= right and
-    //      * top <= bottom.
-    //      *
-    //      * @param left   The X coordinate of the left side of the rectangle
-    //      * @param top    The Y coordinate of the top of the rectangle
-    //      * @param right  The X coordinate of the right side of the rectangle
-    //      * @param bottom The Y coordinate of the bottom of the rectangle
-    //      */
-    //     constructor(
-    //         [in] Float left,
-    //         [in] Float top,
-    //         [in] Float right,
-    //         [in] Float bottom);
+        /**
+         * Create a new rectangle with the specified coordinates. Note: no range
+         * checking is performed, so the caller must ensure that left <= right and
+         * top <= bottom.
+         *
+         * @param left   The X coordinate of the left side of the rectangle
+         * @param top    The Y coordinate of the top of the rectangle
+         * @param right  The X coordinate of the right side of the rectangle
+         * @param bottom The Y coordinate of the bottom of the rectangle
+         */
+        constructor(
+            [in] Float left,
+            [in] Float top,
+            [in] Float right,
+            [in] Float bottom);
 
-    //     /**
-    //      * Create a new rectangle, initialized with the values in the specified
-    //      * rectangle (which is left unmodified).
-    //      *
-    //      * @param r The rectangle whose coordinates are copied into the new
-    //      *          rectangle.
-    //      */
-    //     constructor(
-    //         [in] IRectF* rf);
+        /**
+         * Create a new rectangle, initialized with the values in the specified
+         * rectangle (which is left unmodified).
+         *
+         * @param r The rectangle whose coordinates are copied into the new
+         *          rectangle.
+         */
+        constructor(
+            [in] IRectF* rf);
 
-    //     constructor(
-    //         [in] IRect* r);
+        constructor(
+            [in] IRect* r);
 
-    //     interface IRectF;
-    //     interface IParcelable;
-    // }
+        interface IRectF;
+        interface IParcelable;
+    }
 
     // class CRegion {
     //     /**
@@ -1026,407 +1041,433 @@ module
 
     namespace Drawable {
 
-    // singleton class CDrawableHelper {
-    //     interface IDrawableHelper;
-    // }
-
-    // class CAnimationDrawable {
-    //     constructor();
-
-    //     /*private*/ constructor(
-    //         [in] Handle32 state,
-    //         [in] IResources* res);
-
-    //     interface IAnimationDrawable;
-    //     interface IDrawableCallback;
-    //     interface Elastos.Core.IRunnable;
-    //     interface IAnimatable;
-    // }
-
-    // class CBitmapDrawable {
-    //     /**
-    //      * Create an empty drawable, not dealing with density.
-    //      * @deprecated Use {@link #BitmapDrawable(Resources)} to ensure
-    //      * that the drawable has correctly set its target density.
-    //      */
-    //     constructor();
-
-    //     /**
-    //      * Create an empty drawable, setting initial target density based on
-    //      * the display metrics of the resources.
-    //      */
-    //     constructor(
-    //         [in] IResources* res);
-
-    //     /**
-    //      * Create drawable from a bitmap, not dealing with density.
-    //      * @deprecated Use {@link #BitmapDrawable(Resources, Bitmap)} to ensure
-    //      * that the drawable has correctly set its target density.
-    //      */
-    //     constructor(
-    //         [in] Elastos.Droid.Graphics.IBitmap* bitmap);
-
-    //     /**
-    //      * Create drawable from a bitmap, setting initial target density based on
-    //      * the display metrics of the resources.
-    //      */
-    //     constructor(
-    //         [in] IResources* res,
-    //         [in] Elastos.Droid.Graphics.IBitmap* bitmap);
-
-    //     /**
-    //      * Create a drawable by opening a given file path and decoding the bitmap.
-    //      * @deprecated Use {@link #BitmapDrawable(Resources, String)} to ensure
-    //      * that the drawable has correctly set its target density.
-    //      */
-    //     constructor(
-    //         [in] String filepath);
-
-    //     /**
-    //      * Create a drawable by opening a given file path and decoding the bitmap.
-    //      */
-    //     constructor(
-    //         [in] IResources* res,
-    //         [in] String filepath);
-
-    //     /**
-    //      * Create a drawable by decoding a bitmap from the given input stream.
-    //      * @deprecated Use {@link #BitmapDrawable(Resources, java.io.InputStream)} to ensure
-    //      * that the drawable has correctly set its target density.
-    //      */
-    //     constructor(
-    //         [in] IInputStream* is);
-
-    //     /**
-    //      * Create a drawable by decoding a bitmap from the given input stream.
-    //      */
-    //     constructor(
-    //         [in] IResources* res,
-    //         [in] IInputStream* is);
-
-    //     constructor(
-    //         [in] Handle32 state,
-    //         [in] IResources* res);
-
-    //     interface IBitmapDrawable;
-    // }
-
-    // [deprecated]
-    // class CNinePatchDrawable {
-    //     constructor();
-
-    //     /**
-    //      * Create drawable from raw nine-patch data, not dealing with density.
-    //      * @deprecated Use {@link #NinePatchDrawable(Resources, Bitmap, byte[], Rect, String)}
-    //      * to ensure that the drawable has correctly set its target density.
-    //      */
-    //     constructor(
-    //         [in] Elastos.Droid.Graphics.IBitmap* bitmap,
-    //         [in] ArrayOf<Byte>* chunk,
-    //         [in] Elastos.Droid.Graphics.IRect* padding,
-    //         [in] String srcName);
-
-    //     /**
-    //      * Create drawable from raw nine-patch data, setting initial target density
-    //      * based on the display metrics of the resources.
-    //      */
-    //     constructor(
-    //         [in] IResources* res,
-    //         [in] Elastos.Droid.Graphics.IBitmap* bitmap,
-    //         [in] ArrayOf<Byte>* chunk,
-    //         [in] Elastos.Droid.Graphics.IRect* padding,
-    //         [in] String srcName);
-
-    //     /**
-    //      * Create drawable from raw nine-patch data, setting initial target density
-    //      * based on the display metrics of the resources.
-    //      *
-    //      * @hide
-    //      */
-    //     constructor(
-    //         [in] IResources* res,
-    //         [in] Elastos.Droid.Graphics.IBitmap* bitmap,
-    //         [in] ArrayOf<Byte>* chunk,
-    //         [in] Elastos.Droid.Graphics.IRect* padding,
-    //         [in] Elastos.Droid.Graphics.IRect* layoutInsets,
-    //         [in] String srcName);
-
-    //     /**
-    //      * Create drawable from existing nine-patch, not dealing with density.
-    //      * @deprecated Use {@link #NinePatchDrawable(Resources, NinePatch)}
-    //      * to ensure that the drawable has correctly set its target density.
-    //      */
-    //     constructor(
-    //         [in] Elastos.Droid.Graphics.INinePatch* patch);
-
-    //     /**
-    //      * Create drawable from existing nine-patch, setting initial target density
-    //      * based on the display metrics of the resources.
-    //      */
-    //     constructor(
-    //         [in] IResources* res,
-    //         [in] Elastos.Droid.Graphics.INinePatch* patch);
-
-    //     constructor(
-    //         [in] Handle32 state,
-    //         [in] IResources* res);
-
-    //     interface INinePatchDrawable;
-    // }
-
-    // class CClipDrawable {
-    //     constructor();
-
-    //     /**
-    //      * @param orientation Bitwise-or of {@link #HORIZONTAL} and/or {@link #VERTICAL}
-    //      */
-    //     constructor(
-    //         [in] IDrawable* drawable,
-    //         [in] Int32 gravity,
-    //         [in] Int32 orientation);
-
-    //     constructor(
-    //         [in] IDrawableConstantState* state,
-    //         [in] IResources* res);
-
-    //     interface IClipDrawable;
-    //     interface IDrawableCallback;
-    // }
-
-    // class CColorDrawable {
-    //     /**
-    //      * Creates a new black ColorDrawable.
-    //      */
-    //     constructor();
-
-    //     /**
-    //      * Creates a new ColorDrawable with the specified color.
-    //      *
-    //      * @param color The color to draw.
-    //      */
-    //     constructor(
-    //         [in] Int32 color);
-
-    //     /*private*/ constructor(
-    //         [in] IDrawableConstantState* state);
-
-    //     interface IColorDrawable;
-    // }
-
-    // [deprecated]
-    // class CLayerDrawable {
-    //     constructor();
-
-    //     /**
-    //      * Create a new layer drawable with the list of specified layers.
-    //      *
-    //      * @param layers A list of drawables to use as layers in this new drawable.
-    //      */
-    //     constructor(
-    //         [in] ArrayOf<IDrawable*>* layers);
-
-    //     /**
-    //      * Create a new layer drawable with the specified list of layers and the specified
-    //      * constant state.
-    //      *
-    //      * @param layers The list of layers to add to this drawable.
-    //      * @param state The constant drawable state.
-    //      */
-    //     constructor(
-    //         [in] ArrayOf<IDrawable*>* layers,
-    //         [in] IDrawableConstantState* state);
-
-    //     constructor(
-    //         [in] IDrawableConstantState* state,
-    //         [in] IResources* res);
-
-    //     interface ILayerDrawable;
-    //     interface IDrawableCallback;
-    // }
-
-    // [deprecated]
-    // class CGradientDrawable {
-    //     constructor();
-
-    //     /**
-    //      * Create a new gradient drawable given an orientation and an array
-    //      * of colors for the gradient.
-    //      */
-    //     constructor(
-    //         [in] GradientDrawableOrientation orientation,
-    //         [in] ArrayOf<Int32>* colors);
-
-    //     constructor(
-    //         [in] IDrawableConstantState* state);
-
-    //     interface IGradientDrawable;
-    // }
-
-    // class CShapeDrawable {
-    //     /**
-    //      * ShapeDrawable constructor.
-    //      */
-    //     constructor();
-
-    //     /**
-    //      * Creates a ShapeDrawable with a specified Shape.
-    //      *
-    //      * @param s the Shape that this ShapeDrawable should be
-    //      */
-    //     constructor(
-    //         [in] IShape* s);
-
-    //     /*private*/ constructor(
-    //         [in] Handle32 state);
-
-    //     interface IShapeDrawable;
-    // }
-
-    // class CRotateDrawable {
-    //     /**
-    //      * <p>Create a new rotating drawable with an empty state.</p>
-    //      */
-    //     constructor();
-
-    //     /**
-    //      * <p>Create a new rotating drawable with the specified state. A copy of
-    //      * this state is used as the internal state for the newly created
-    //      * drawable.</p>
-    //      *
-    //      * @param rotateState the state for this drawable
-    //      */
-    //     constructor(
-    //         [in] Handle32 state,
-    //         [in] IResources* res);
-
-    //     interface IRotateDrawable;
-    //     interface IDrawableCallback;
-    // }
-
-    // class CInsetDrawable {
-    //     /*package*/ constructor();
-
-    //     constructor(
-    //         [in] IDrawable* drawable,
-    //         [in] Int32 inset);
-
-    //     constructor(
-    //         [in] IDrawable* drawable,
-    //         [in] Int32 insetLeft,
-    //         [in] Int32 insetTop,
-    //         [in] Int32 insetRight,
-    //         [in] Int32 insetBottom);
-
-    //     constructor(
-    //         [in] Handle32 state,
-    //         [in] IResources* res);
-
-    //     interface IInsetDrawable;
-    //     interface IDrawableCallback;
-    // }
-
-    // class CStateListDrawable {
-    //     constructor();
-
-    //     /*private*/ constructor(
-    //         [in] Handle32 state,
-    //         [in] IResources* res);
-
-    //     interface IStateListDrawable;
-    //     interface IDrawableCallback;
-    // }
-
-    // class CAnimatedRotateDrawable {
-    //     constructor();
-
-    //     constructor(
-    //         [in] IDrawableConstantState* state,
-    //         [in] IResources* res);
-
-    //     interface IAnimatedRotateDrawable;
-    //     interface IDrawableCallback;
-    //     interface Elastos.Core.IRunnable;
-    //     interface IAnimatable;
-    // }
-
-    // class CScaleDrawable {
-    //     constructor();
-
-    //     constructor(
-    //         [in] IDrawable* drawable,
-    //         [in] Int32 gravity,
-    //         [in] Float scaleWidth,
-    //         [in] Float scaleHeight);
-
-    //     constructor(
-    //         [in] Handle32 state,
-    //         [in] IResources* res);
-
-    //     interface IScaleDrawable;
-    //     interface IDrawableCallback;
-    // }
-
-    // [deprecated]
-    // class CTransitionDrawable {
-    //     /**
-    //      * Create a new transition drawable with the specified list of layers. At least
-    //      * 2 layers are required for this drawable to work properly.
-    //      */
-    //     constructor(
-    //         [in] ArrayOf<IDrawable*>* layers);
-
-    //     /**
-    //      * Create a new transition drawable with no layer. To work correctly, at least 2
-    //      * layers must be added to this drawable.
-    //      *
-    //      * @see #TransitionDrawable(Drawable[])
-    //      */
-    //     constructor();
-
-    //     constructor(
-    //         [in] Handle32 state,
-    //         [in] IResources* res);
-
-    //     constructor(
-    //         [in] Handle32 state,
-    //         [in] ArrayOf<IDrawable*>* layers);
-
-    //     interface ITransitionDrawable;
-    //     interface IDrawableCallback;
-    // }
-
-    // class CLevelListDrawable {
-    //     constructor();
-
-    //     constructor(
-    //         [in] Handle32 state,
-    //         [in] IResources* res);
-
-    //     interface ILevelListDrawable;
-    //     interface IDrawableCallback;
-    // }
-
-    // class CPaintDrawable {
-    //     constructor();
-
-    //     constructor(
-    //         [in] Int32 color);
-
-    //     interface IPaintDrawable;
-    // }
-
-    // class CPictureDrawable {
-    //     /**
-    //      * Construct a new drawable referencing the specified picture. The picture
-    //      * may be null.
-    //      *
-    //      * @param picture The picture to associate with the drawable. May be null.
-    //      */
-    //     constructor(
-    //         [in] Elastos.Droid.Graphics.IPicture* picture);
-
-    //     interface IPictureDrawable;
-    // }
+
+    singleton class CDrawableHelper {
+        interface IDrawableHelper;
+    }
+
+    class CAnimationDrawable {
+        constructor();
+
+        /*private*/ constructor(
+            [in] Handle32 state,
+            [in] IResources* res);
+
+        interface IAnimationDrawable;
+        interface IDrawableContainer;
+        interface IDrawable;
+        interface IDrawableCallback;
+        interface Elastos.Core.IRunnable;
+        interface IAnimatable;
+    }
+
+    class CBitmapDrawable {
+        /**
+         * Create an empty drawable, not dealing with density.
+         * @deprecated Use {@link #BitmapDrawable(Resources)} to ensure
+         * that the drawable has correctly set its target density.
+         */
+        constructor();
+
+        /**
+         * Create an empty drawable, setting initial target density based on
+         * the display metrics of the resources.
+         */
+        constructor(
+            [in] IResources* res);
+
+        /**
+         * Create drawable from a bitmap, not dealing with density.
+         * @deprecated Use {@link #BitmapDrawable(Resources, Bitmap)} to ensure
+         * that the drawable has correctly set its target density.
+         */
+        constructor(
+            [in] Elastos.Droid.Graphics.IBitmap* bitmap);
+
+        /**
+         * Create drawable from a bitmap, setting initial target density based on
+         * the display metrics of the resources.
+         */
+        constructor(
+            [in] IResources* res,
+            [in] Elastos.Droid.Graphics.IBitmap* bitmap);
+
+        /**
+         * Create a drawable by opening a given file path and decoding the bitmap.
+         * @deprecated Use {@link #BitmapDrawable(Resources, String)} to ensure
+         * that the drawable has correctly set its target density.
+         */
+        constructor(
+            [in] String filepath);
+
+        /**
+         * Create a drawable by opening a given file path and decoding the bitmap.
+         */
+        constructor(
+            [in] IResources* res,
+            [in] String filepath);
+
+        /**
+         * Create a drawable by decoding a bitmap from the given input stream.
+         * @deprecated Use {@link #BitmapDrawable(Resources, java.io.InputStream)} to ensure
+         * that the drawable has correctly set its target density.
+         */
+        constructor(
+            [in] IInputStream* is);
+
+        /**
+         * Create a drawable by decoding a bitmap from the given input stream.
+         */
+        constructor(
+            [in] IResources* res,
+            [in] IInputStream* is);
+
+        constructor(
+            [in] IDrawableConstantState* state,
+            [in] IResources* res,
+            [in] IResourcesTheme* theme);
+
+        interface IBitmapDrawable;
+        interface IDrawable;
+    }
+
+    [deprecated]
+    class CNinePatchDrawable {
+        constructor();
+
+        /**
+         * Create drawable from raw nine-patch data, not dealing with density.
+         * @deprecated Use {@link #NinePatchDrawable(Resources, Bitmap, byte[], Rect, String)}
+         * to ensure that the drawable has correctly set its target density.
+         */
+        constructor(
+            [in] Elastos.Droid.Graphics.IBitmap* bitmap,
+            [in] ArrayOf<Byte>* chunk,
+            [in] Elastos.Droid.Graphics.IRect* padding,
+            [in] String srcName);
+
+        /**
+         * Create drawable from raw nine-patch data, setting initial target density
+         * based on the display metrics of the resources.
+         */
+        constructor(
+            [in] IResources* res,
+            [in] Elastos.Droid.Graphics.IBitmap* bitmap,
+            [in] ArrayOf<Byte>* chunk,
+            [in] Elastos.Droid.Graphics.IRect* padding,
+            [in] String srcName);
+
+        /**
+         * Create drawable from raw nine-patch data, setting initial target density
+         * based on the display metrics of the resources.
+         *
+         * @hide
+         */
+        constructor(
+            [in] IResources* res,
+            [in] Elastos.Droid.Graphics.IBitmap* bitmap,
+            [in] ArrayOf<Byte>* chunk,
+            [in] Elastos.Droid.Graphics.IRect* padding,
+            [in] Elastos.Droid.Graphics.IRect* layoutInsets,
+            [in] String srcName);
+
+        /**
+         * Create drawable from existing nine-patch, not dealing with density.
+         * @deprecated Use {@link #NinePatchDrawable(Resources, NinePatch)}
+         * to ensure that the drawable has correctly set its target density.
+         */
+        constructor(
+            [in] Elastos.Droid.Graphics.INinePatch* patch);
+
+        /**
+         * Create drawable from existing nine-patch, setting initial target density
+         * based on the display metrics of the resources.
+         */
+        constructor(
+            [in] IResources* res,
+            [in] Elastos.Droid.Graphics.INinePatch* patch);
+
+        constructor(
+            [in] Handle32 state,
+            [in] IResources* res);
+
+        interface INinePatchDrawable;
+        interface IDrawable;
+    }
+
+    class CClipDrawable {
+        constructor();
+
+        /**
+         * @param orientation Bitwise-or of {@link #HORIZONTAL} and/or {@link #VERTICAL}
+         */
+        constructor(
+            [in] IDrawable* drawable,
+            [in] Int32 gravity,
+            [in] Int32 orientation);
+
+        constructor(
+            [in] IDrawableConstantState* state,
+            [in] IResources* res);
+
+        interface IClipDrawable;
+        interface IDrawable;
+        interface IDrawableCallback;
+    }
+
+    class CColorDrawable {
+        /**
+         * Creates a new black ColorDrawable.
+         */
+        constructor();
+
+        /**
+         * Creates a new ColorDrawable with the specified color.
+         *
+         * @param color The color to draw.
+         */
+        constructor(
+            [in] Int32 color);
+
+        /*private*/ constructor(
+            [in] IDrawableConstantState* state,
+            [in] IResources* res,
+            [in] IResourcesTheme* theme);
+
+        interface IColorDrawable;
+        interface IDrawable;
+    }
+
+    [deprecated]
+    class CLayerDrawable {
+        constructor();
+
+        /**
+         * Create a new layer drawable with the list of specified layers.
+         *
+         * @param layers A list of drawables to use as layers in this new drawable.
+         */
+        constructor(
+            [in] ArrayOf<IDrawable*>* layers);
+
+        /**
+         * Create a new layer drawable with the specified list of layers and the specified
+         * constant state.
+         *
+         * @param layers The list of layers to add to this drawable.
+         * @param state The constant drawable state.
+         */
+        constructor(
+            [in] ArrayOf<IDrawable*>* layers,
+            [in] IDrawableConstantState* state);
+
+        constructor(
+            [in] IDrawableConstantState* state,
+            [in] IResources* res);
+
+        interface ILayerDrawable;
+        interface IDrawable;
+        interface IDrawableCallback;
+    }
+
+    [deprecated]
+    class CGradientDrawable {
+        constructor();
+
+        /**
+         * Create a new gradient drawable given an orientation and an array
+         * of colors for the gradient.
+         */
+        constructor(
+            [in] GradientDrawableOrientation orientation,
+            [in] ArrayOf<Int32>* colors);
+
+        constructor(
+            [in] IDrawableConstantState* state);
+
+        interface IGradientDrawable;
+        interface IDrawable;
+    }
+
+    class CShapeDrawable {
+        /**
+         * ShapeDrawable constructor.
+         */
+        constructor();
+
+        /**
+         * Creates a ShapeDrawable with a specified Shape.
+         *
+         * @param s the Shape that this ShapeDrawable should be
+         */
+        constructor(
+            [in] IShape* s);
+
+        /*private*/ constructor(
+            [in] Handle32 state);
+
+        interface IShapeDrawable;
+        interface IDrawable;
+    }
+
+    class CRotateDrawable {
+        /**
+         * <p>Create a new rotating drawable with an empty state.</p>
+         */
+        constructor();
+
+        /**
+         * <p>Create a new rotating drawable with the specified state. A copy of
+         * this state is used as the internal state for the newly created
+         * drawable.</p>
+         *
+         * @param rotateState the state for this drawable
+         */
+        constructor(
+            [in] Handle32 state,
+            [in] IResources* res);
+
+        interface IRotateDrawable;
+        interface IDrawable;
+        interface IDrawableCallback;
+    }
+
+    class CInsetDrawable {
+        /*package*/ constructor();
+
+        constructor(
+            [in] IDrawable* drawable,
+            [in] Int32 inset);
+
+        constructor(
+            [in] IDrawable* drawable,
+            [in] Int32 insetLeft,
+            [in] Int32 insetTop,
+            [in] Int32 insetRight,
+            [in] Int32 insetBottom);
+
+        constructor(
+            [in] Handle32 state,
+            [in] IResources* res);
+
+        interface IInsetDrawable;
+        interface IDrawable;
+        interface IDrawableCallback;
+    }
+
+    class CStateListDrawable {
+        constructor();
+
+        /*private*/ constructor(
+            [in] Handle32 state,
+            [in] IResources* res);
+
+        interface IStateListDrawable;
+        interface IDrawableContainer;
+        interface IDrawableCallback;
+        interface IDrawable;
+    }
+
+    class CAnimatedRotateDrawable {
+        constructor();
+
+        constructor(
+            [in] IDrawableConstantState* state,
+            [in] IResources* res);
+
+        interface IAnimatedRotateDrawable;
+        interface IDrawable;
+        interface IDrawableCallback;
+        interface Elastos.Core.IRunnable;
+        interface IAnimatable;
+    }
+
+    class CScaleDrawable {
+        constructor();
+
+        constructor(
+            [in] IDrawable* drawable,
+            [in] Int32 gravity,
+            [in] Float scaleWidth,
+            [in] Float scaleHeight);
+
+        constructor(
+            [in] Handle32 state,
+            [in] IResources* res);
+
+        interface IScaleDrawable;
+        interface IDrawable;
+        interface IDrawableCallback;
+    }
+
+    [deprecated]
+    class CTransitionDrawable {
+        /**
+         * Create a new transition drawable with the specified list of layers. At least
+         * 2 layers are required for this drawable to work properly.
+         */
+        constructor(
+            [in] ArrayOf<IDrawable*>* layers);
+
+        /**
+         * Create a new transition drawable with no layer. To work correctly, at least 2
+         * layers must be added to this drawable.
+         *
+         * @see #TransitionDrawable(Drawable[])
+         */
+        constructor();
+
+        constructor(
+            [in] Handle32 state,
+            [in] IResources* res);
+
+        constructor(
+            [in] Handle32 state,
+            [in] ArrayOf<IDrawable*>* layers);
+
+        interface ITransitionDrawable;
+        interface ILayerDrawable;
+        interface IDrawable;
+        interface IDrawableCallback;
+    }
+
+    class CLevelListDrawable {
+        constructor();
+
+        constructor(
+            [in] Handle32 state,
+            [in] IResources* res);
+
+        interface ILevelListDrawable;
+        interface IDrawableContainer;
+        interface IDrawable;
+        interface IDrawableCallback;
+    }
+
+    class CPaintDrawable {
+        constructor();
+
+        constructor(
+            [in] Int32 color);
+
+        interface IPaintDrawable;
+        interface IShapeDrawable;
+        interface IDrawable;
+    }
+
+    class CPictureDrawable {
+        /**
+         * Construct a new drawable referencing the specified picture. The picture
+         * may be null.
+         *
+         * @param picture The picture to associate with the drawable. May be null.
+         */
+        constructor(
+            [in] Elastos.Droid.Graphics.IPicture* picture);
+
+        interface IPictureDrawable;
+        interface IDrawable;
+    }
 
     namespace Shapes {
 

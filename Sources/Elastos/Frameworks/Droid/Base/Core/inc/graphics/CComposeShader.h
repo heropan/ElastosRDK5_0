@@ -9,9 +9,13 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CarClass(CComposeShader), public Shader
+CarClass(CComposeShader)
+    , public Shader
+    , public IComposeShader
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI_(PInterface) Probe(
             /* [in]  */ REIID riid);
 

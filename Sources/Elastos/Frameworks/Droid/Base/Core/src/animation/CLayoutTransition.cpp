@@ -323,6 +323,7 @@ ECode CLayoutTransition::ViewOnLayoutChangeListener::OnLayoutChange(
     return NOERROR;
 }
 
+CAR_OBJECT_IMPL(CLayoutTransition);
 CAR_INTERFACE_IMPL(CLayoutTransition, Object, ILayoutTransition);
 CLayoutTransition::CLayoutTransition()
     : mChangingAppearingDuration(DEFAULT_DURATION)

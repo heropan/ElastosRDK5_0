@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_H_H__
-#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_H_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_NINEPATCHDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_NINEPATCHDRAWABLE_H__
 
 #include "graphics/drawable/Drawable.h"
 #include "graphics/Insets.h"
@@ -12,7 +12,9 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-class NinePatchDrawable : public Drawable
+class NinePatchDrawable
+    : public Drawable
+    , public INinePatchDrawable
 {
 public:
     class NinePatchState
@@ -49,7 +51,7 @@ public:
             /* [out] */ Int32* config);
 
     private:
-        CARAPI_(void) Init(
+        CARAPI_(void) constructor(
             /* [in] */ INinePatch* ninePatch,
             /* [in] */ IRect* rect,
             /* [in] */ IRect* layoutInsets,
@@ -65,6 +67,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     NinePatchDrawable();
 
     NinePatchDrawable(
@@ -119,11 +123,13 @@ public:
         /* [in] */ ICanvas* canvas);
 
     //@Override
-    CARAPI_(Int32) GetChangingConfigurations();
+    CARAPI GetChangingConfigurations(
+        /* [out] */ Int32* configuration);
 
     //@Override
-    CARAPI_(Boolean) GetPadding(
-        /* [in] */ IRect* padding);
+    CARAPI GetPadding(
+        /* [in] */ IRect* padding,
+        /* [out] */ Boolean* isPadding);
 
     /**
      * @hide
@@ -153,47 +159,56 @@ public:
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IAttributeSet* attrs);
 
-    virtual CARAPI_(AutoPtr<IPaint>) GetPaint();
+    virtual CARAPI GetPaint(
+        /* [out] */ IPaint** paint);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicWidth();
+    CARAPI GetIntrinsicWidth(
+        /* [out] */ Int32* width);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicHeight();
+    CARAPI GetIntrinsicHeight(
+        /* [out] */ Int32* height);
 
     //@Override
-    CARAPI_(Int32) GetMinimumWidth();
+    CARAPI GetMinimumWidth(
+        /* [out] */ Int32* width);
 
     //@Override
-    CARAPI_(Int32) GetMinimumHeight();
+    CARAPI GetMinimumHeight(
+        /* [out] */ Int32* height);
 
     //@Override
-    CARAPI_(Int32) GetOpacity();
+    CARAPI GetOpacity(
+        /* [out] */ Int32* opacity);
 
     //@Override
-    CARAPI_(AutoPtr<IRegion>) GetTransparentRegion();
+    CARAPI GetTransparentRegion(
+        /* [out] */ IRegion** bounds);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawableConstantState>) GetConstantState();
+    CARAPI GetConstantState(
+        /* [out] */ IDrawableConstantState** state);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawable>) Mutate();
+    CARAPI Mutate(
+        /* [out] */ IDrawable** drawable);
 
 protected:
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IBitmap* bitmap,
         /* [in] */ ArrayOf<Byte>* chunk,
         /* [in] */ IRect* padding,
         /* [in] */ const String& srcName);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IResources* res,
         /* [in] */ IBitmap* bitmap,
         /* [in] */ ArrayOf<Byte>* chunk,
         /* [in] */ IRect* padding,
         /* [in] */ const String& srcName);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IResources* res,
         /* [in] */ IBitmap* bitmap,
         /* [in] */ ArrayOf<Byte>* chunk,
@@ -201,14 +216,14 @@ protected:
         /* [in] */ IRect* layoutInsets,
         /* [in] */ const String& srcName);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ INinePatch* patch);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IResources* res,
         /* [in] */ INinePatch* patch);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ NinePatchState* state,
         /* [in] */ IResources* res);
 
@@ -246,4 +261,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_GRAPHICS_DRAWABLE_H_H__
+#endif // __ELASTOS_DROID_GRAPHICS_DRAWABLE_NINEPATCHDRAWABLE_H__

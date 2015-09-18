@@ -6,38 +6,17 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
+CAR_OBJECT_IMPL(CRotateDrawable);
 ECode CRotateDrawable::constructor()
 {
-    return RotateDrawable::Init();
+    return RotateDrawable::constructor();
 }
 
 ECode CRotateDrawable::constructor(
     /* [in] */ Handle32 state,
     /* [in] */ IResources* res)
 {
-    return RotateDrawable::Init((RotateState*)state, res);
-}
-
-PInterface CRotateDrawable::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CRotateDrawable::Probe(riid);
-}
-
-IDRAWABLE_METHODS_IMPL(
-    CRotateDrawable, RotateDrawable);
-
-IDRAWABLECALLBACK_METHODS_IMPL(
-    CRotateDrawable, RotateDrawable);
-
-ECode CRotateDrawable::GetDrawable(
-    /* [out] */ IDrawable** drawable)
-{
-    VALIDATE_NOT_NULL(drawable);
-    AutoPtr<IDrawable> d = RotateDrawable::GetDrawable();
-    *drawable = d;
-    REFCOUNT_ADD(*drawable);
-    return NOERROR;
+    return RotateDrawable::constructor((RotateState*)state, res);
 }
 
 } // namespace Drawable

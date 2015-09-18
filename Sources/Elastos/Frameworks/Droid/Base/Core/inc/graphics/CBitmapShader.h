@@ -9,9 +9,15 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CarClass(CBitmapShader), public Shader
+CarClass(CBitmapShader)
+    , public Shader
+    , public IBitmapShader
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     CARAPI constructor(
         /* [in] */ IBitmap* bitmap,
         /* [in] */ ShaderTileMode tileX,

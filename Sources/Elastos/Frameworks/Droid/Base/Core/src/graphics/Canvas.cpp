@@ -40,6 +40,7 @@ namespace Graphics {
 extern const InterfaceID EIID_Canvas =
     { 0xcc4fb366, 0x48f0, 0x48ff, { 0xa6, 0xb6, 0x67, 0xe, 0x64, 0xf4, 0x6a, 0x7b } };
 
+CAR_INTERFACE_IMPL(Canvas, Object, ICanvas);
 Canvas::Canvas()
     : mDensity(IBitmap::DENSITY_NONE)
     , mScreenDensity(IBitmap::DENSITY_NONE)
@@ -55,14 +56,14 @@ Canvas::~Canvas()
     }
 }
 
-ECode Canvas::Init()
+ECode Canvas::constructor()
 {
     // 0 means no native bitmap
     mNativeCanvas = InitRaster(0);
     return NOERROR;
 }
 
-ECode Canvas::Init(
+ECode Canvas::constructor(
     /* [in] */ IBitmap* bitmap)
 {
     Boolean isMutable = FALSE;
@@ -77,7 +78,7 @@ ECode Canvas::Init(
     return NOERROR;
 }
 
-ECode Canvas::Init(
+ECode Canvas::constructor(
     /* [in] */ Int32 nativeCanvas)
 {
     if (nativeCanvas == 0) {

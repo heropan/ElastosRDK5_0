@@ -2,7 +2,7 @@
 #include "ext/frameworkext.h"
 #include "graphics/drawable/ColorDrawable.h"
 #include "graphics/drawable/CColorDrawable.h"
-#include "graphics/CPaint.h"
+// #include "graphics/CPaint.h"
 #include "R.h"
 
 using Elastos::Droid::R;
@@ -12,30 +12,59 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
+ColorDrawable::ColorState::ColorState()
+    : mBaseColor(0)
+    , mUseColor(0)
+    , mChangingConfigurations(0)
+    , mTintMode(DEFAULT_TINT_MODE)
+{
+    // Empty constructor.
+}
+
 ColorDrawable::ColorState::ColorState(
     /* [in] */ ColorState* state)
     : mBaseColor(0)
     , mUseColor(0)
     , mChangingConfigurations(0)
+    , mTintMode(DEFAULT_TINT_MODE)
 {
     if (state != NULL) {
+        mThemeAttrs = state->mThemeAttrs;
         mBaseColor = state->mBaseColor;
         mUseColor = state->mUseColor;
         mChangingConfigurations = state->mChangingConfigurations;
+        mTint = state->mTint;
+        mTintMode = state->mTintMode;
     }
+}
+
+ECode ColorDrawable::ColorState::CanApplyTheme(
+    /* [out] */ Boolean* can)
+{
+    VALIDATE_NOT_NULL(can);
+    *can = mThemeAttrs != NULL;
+    return NOERROR;
 }
 
 ECode ColorDrawable::ColorState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
-    return CColorDrawable::New(this, (IColorDrawable**)drawable);
+    return CColorDrawable::New(THIS_PROBE(IDrawableConstantState), NULL, NULL, (IColorDrawable**)drawable);
 }
 
 ECode ColorDrawable::ColorState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
-    return CColorDrawable::New(this, (IColorDrawable**)drawable);
+    return CColorDrawable::New(THIS_PROBE(IDrawableConstantState), res, NULL, (IColorDrawable**)drawable);
+}
+
+ECode ColorDrawable::ColorState::NewDrawable(
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme,
+    /* [out] */ IDrawable** drawable)
+{
+    return CColorDrawable::New(THIS_PROBE(IDrawableConstantState), res, theme, (IColorDrawable**)drawable);
 }
 
 ECode ColorDrawable::ColorState::GetChangingConfigurations(
@@ -46,52 +75,71 @@ ECode ColorDrawable::ColorState::GetChangingConfigurations(
     return NOERROR;
 }
 
-
+CAR_INTERFACE_IMPL(ColorDrawable, Drawable, IColorDrawable)
 ColorDrawable::ColorDrawable()
     : mMutated(FALSE)
 {
-    CPaint::New((IPaint**)&mPaint);
-    Init((ColorState*)NULL);
+    constructor();
 }
 
 ColorDrawable::ColorDrawable(
     /* [in] */ Int32 color)
     : mMutated(FALSE)
 {
-    CPaint::New((IPaint**)&mPaint);
-    Init((ColorState*)NULL);
-    SetColor(color);
+    constructor(color);
 }
 
 ColorDrawable::ColorDrawable(
-    /* [in] */ ColorState* state)
+    /* [in] */ IDrawableConstantState* state,
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme)
     : mMutated(FALSE)
 {
-    CPaint::New((IPaint**)&mPaint);
-    Init(state);
+    constructor(state, res, theme);
 }
 
-Int32 ColorDrawable::GetChangingConfigurations()
+ECode ColorDrawable::GetChangingConfigurations(
+    /* [out] */ Int32* configuration)
 {
-    return Drawable::GetChangingConfigurations() | mState->mChangingConfigurations;
+    VALIDATE_NOT_NULL(configuration);
+    Drawable::GetChangingConfigurations(configuration);
+    *configuration = (*configuration) | mColorState->mChangingConfigurations;
+    return NOERROR;
 }
 
-AutoPtr<IDrawable> ColorDrawable::Mutate()
+ECode ColorDrawable::Mutate(
+    /* [out] */ IDrawable** drawable)
 {
-    if (!mMutated && Drawable::Mutate().Get() == (IDrawable*)this->Probe(EIID_IDrawable)) {
-        mState = new ColorState(mState);
+    VALIDATE_NOT_NULL(drawable);
+    AutoPtr<IDrawable> tmp;
+    if (!mMutated && (Drawable::Mutate((IDrawable**)&tmp), tmp.Get()) == (IDrawable*)this->Probe(EIID_IDrawable)) {
+        mColorState = new ColorState(mColorState);
         mMutated = TRUE;
     }
-    return (IDrawable*)this->Probe(EIID_IDrawable);
+    *drawable = (IDrawable*)this->Probe(EIID_IDrawable);
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
 ECode ColorDrawable::Draw(
     /* [in] */ ICanvas* canvas)
 {
-    if (((mState->mUseColor >> 24) & 0xFF) != 0) {
-        mPaint->SetColor(mState->mUseColor);
-        canvas->DrawRect(GetBounds(), mPaint);
+    AutoPtr<IColorFilter> colorFilter;
+    mPaint->GetColorFilter((IColorFilter**)&colorFilter);
+    if (((mColorState->mUseColor >> 24) & 0xFF) != 0 || colorFilter != NULL || mTintFilter != NULL) {
+        if (colorFilter == NULL) {
+            mPaint->SetColorFilter(IColorFilter::Probe(mTintFilter));
+        }
+
+        mPaint->SetColor(mColorState->mUseColor);
+        AutoPtr<IRect> bounds;
+        GetBounds((IRect**)&bounds);
+        canvas->DrawRect(bounds, mPaint);
+
+        // Restore original color filter.
+        mPaint->SetColorFilter(colorFilter);
     }
+
     return NOERROR;
 }
 
@@ -99,34 +147,37 @@ ECode ColorDrawable::GetColor(
     /* [out] */ Int32* color)
 {
     assert(color != NULL);
-    *color = mState->mUseColor;
+    *color = mColorState->mUseColor;
     return NOERROR;
 }
 
 ECode ColorDrawable::SetColor(
     /* [in] */ Int32 color)
 {
-    if (mState->mBaseColor != color || mState->mUseColor != color) {
+    if (mColorState->mBaseColor != color || mColorState->mUseColor != color) {
+        mColorState->mBaseColor = mColorState->mUseColor = color;
         InvalidateSelf();
-        mState->mBaseColor = mState->mUseColor = color;
     }
     return NOERROR;
 }
 
-Int32 ColorDrawable::GetAlpha()
+ECode ColorDrawable::GetAlpha(
+    /* [out] */ Int32* alpha)
 {
-    return (mState->mUseColor >> 24) & 0xFF;
+    VALIDATE_NOT_NULL(alpha);
+    *alpha = (mColorState->mUseColor >> 24) & 0xFF;
+    return NOERROR;
 }
 
 ECode ColorDrawable::SetAlpha(
     /* [in] */ Int32 alpha)
 {
     alpha += alpha >> 7;   // make it 0..256
-    Int32 baseAlpha = (mState->mBaseColor >> 24) & 0xFF;
+    Int32 baseAlpha = (mColorState->mBaseColor >> 24) & 0xFF;
     Int32 useAlpha = baseAlpha * alpha >> 8;
-    Int32 oldUseColor = mState->mUseColor;
-    mState->mUseColor = (mState->mBaseColor & 0x00FFFFFF) | (useAlpha << 24);
-    if (oldUseColor != mState->mUseColor) {
+    Int32 useColor = (mColorState->mBaseColor & 0x00FFFFFF) | (useAlpha << 24);
+    if (mColorState->mUseColor != useColor) {
+        mColorState->mUseColor = useColor;
         InvalidateSelf();
     }
     return NOERROR;
@@ -135,61 +186,179 @@ ECode ColorDrawable::SetAlpha(
 ECode ColorDrawable::SetColorFilter(
     /* [in] */ IColorFilter* colorFilter)
 {
+    return mPaint->SetColorFilter(colorFilter);
+}
+
+ECode ColorDrawable::SetTintList(
+    /* [in] */ IColorStateList* tint)
+{
+    mColorState->mTint = tint;
+    mTintFilter = UpdateTintFilter(mTintFilter, tint, mColorState->mTintMode);
+    return InvalidateSelf();
+}
+
+ECode ColorDrawable::SetTintMode(
+    /* [in] */ PorterDuffMode tintMode)
+{
+    mColorState->mTintMode = tintMode;
+    mTintFilter = UpdateTintFilter(mTintFilter, mColorState->mTint, tintMode);
+    return InvalidateSelf();
+}
+
+Boolean ColorDrawable::OnStateChange(
+    /* [in] */ const ArrayOf<Int32>* stateSet)
+{
+    AutoPtr<ColorState> state = mColorState;
+    if (state->mTint.Get() != NULL && state->mTintMode != -1) {
+        mTintFilter = UpdateTintFilter(mTintFilter, state->mTint, state->mTintMode);
+        return TRUE;
+    }
+    return FALSE;
+}
+
+ECode ColorDrawable::IsStateful(
+    /* [out] */ Boolean* state)
+{
+    VALIDATE_NOT_NULL(state);
+    *state = mColorState->mTint != NULL && (mColorState->mTint->IsStateful(state), *state);
     return NOERROR;
 }
 
-Int32 ColorDrawable::GetOpacity()
+ECode ColorDrawable::GetOpacity(
+    /* [out] */ Int32* opacity)
 {
-    switch ((mState->mUseColor >> 24) & 0xFF) {
-        case 255:
-            return IPixelFormat::OPAQUE;
-        case 0:
-            return IPixelFormat::TRANSPARENT;
+    VALIDATE_NOT_NULL(opacity);
+    AutoPtr<IColorFilter> cf;
+    if (mTintFilter != NULL || (mPaint->GetColorFilter((IColorFilter**)&cf), cf.Get()) != NULL) {
+        *opacity = IPixelFormat::TRANSLUCENT;
+        return NOERROR;
     }
 
-    return IPixelFormat::TRANSLUCENT;
+    switch ((mColorState->mUseColor >> 24) & 0xFF) {
+        case 255:
+            *opacity = IPixelFormat::OPAQUE;
+            return NOERROR;
+        case 0:
+            *opacity = IPixelFormat::TRANSPARENT;
+            return NOERROR;
+    }
+
+    *opacity = IPixelFormat::TRANSLUCENT;
+    return NOERROR;
+}
+
+ECode ColorDrawable::GetOutline(
+    /* [in] */ /*@NonNull*/ IOutline* outline)
+{
+    AutoPtr<IRect> bounds;
+    GetBounds((IRect**)&bounds);
+    outline->SetRect(bounds);
+    Int32 alpha = 0;
+    GetAlpha(&alpha);
+    return outline->SetAlpha(alpha / 255.0f);
 }
 
 ECode ColorDrawable::Inflate(
     /* [in] */ IResources* r,
     /* [in] */ IXmlPullParser* parser,
-    /* [in] */ IAttributeSet* attrs)
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme)
 {
-    FAIL_RETURN(Drawable::Inflate(r, parser, attrs));
+    FAIL_RETURN(Drawable::Inflate(r, parser, attrs, theme));
 
     Int32 size = ARRAY_SIZE(R::styleable::ColorDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::ColorDrawable, size);
 
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(r->ObtainAttributes(attrs, layout, (ITypedArray**)&a));
+    FAIL_RETURN(ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a));
 
-    Int32 color = mState->mBaseColor;
-    FAIL_RETURN(a->GetColor(R::styleable::ColorDrawable_color, color, &color));
-    mState->mBaseColor = mState->mUseColor = color;
-
+    UpdateStateFromTypedArray(a);
     a->Recycle();
     return NOERROR;
 }
 
-AutoPtr<IDrawableConstantState> ColorDrawable::GetConstantState()
+void ColorDrawable::UpdateStateFromTypedArray(
+    /* [in] */ ITypedArray* a)
 {
-    mState->mChangingConfigurations = GetChangingConfigurations();
-    return (IDrawableConstantState*)mState->Probe(EIID_IDrawableConstantState);
+    AutoPtr<ColorState> state = mColorState;
+
+    // Account for any configuration changes.
+    Int32 value = 0;
+    state->mChangingConfigurations |= (a->GetChangingConfigurations(&value), value);
+
+    // Extract the theme attributes, if any.
+    assert(0 && "TODO");
+    // a->ExtractThemeAttrs((ArrayOf<Int32>**)&state->mThemeAttrs);
+
+    state->mBaseColor = (a->GetColor(R::styleable::ColorDrawable_color, state->mBaseColor, &value), value);
+    state->mUseColor = state->mBaseColor;
 }
 
-ECode ColorDrawable::Init(
+ECode ColorDrawable::ApplyTheme(
+    /* [in] */ IResourcesTheme* t)
+{
+    Drawable::ApplyTheme(t);
+
+    AutoPtr<ColorState> state = mColorState;
+    if (state == NULL || state->mThemeAttrs == NULL) {
+        return NOERROR;
+    }
+
+    AutoPtr<ITypedArray> a;
+    Int32 size = ARRAY_SIZE(R::styleable::ColorDrawable);
+    AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+    layout->Copy(R::styleable::ColorDrawable, size);
+
+    assert(0 && "TODO");
+    // t->ResolveAttributes(state->mThemeAttrs, layout, (ITypedArray**)&a));
+    UpdateStateFromTypedArray(a);
+    return a->Recycle();
+}
+
+ECode ColorDrawable::GetConstantState(
+    /* [out] */ IDrawableConstantState** state)
+{
+    VALIDATE_NOT_NULL(state);
+    *state = (IDrawableConstantState*)mColorState->Probe(EIID_IDrawableConstantState);
+    REFCOUNT_ADD(*state);
+    return NOERROR;
+}
+
+ECode ColorDrawable::constructor()
+{
+    assert(0 && "TODO");
+    // CPaint::New((IPaint**)&mPaint);
+    mColorState = new ColorState();
+    return NOERROR;
+}
+
+ECode ColorDrawable::constructor(
     /* [in] */ Int32 color)
 {
-    Init((ColorState*)NULL);
+    assert(0 && "TODO");
+    // CPaint::New((IPaint**)&mPaint);
+    mColorState = new ColorState();
     SetColor(color);
     return NOERROR;
 }
 
-ECode ColorDrawable::Init(
-    /* [in] */ ColorState* state)
+ECode ColorDrawable::constructor(
+    /* [in] */ IDrawableConstantState* state,
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme)
 {
-    mState = new ColorState(state);
+    assert(0 && "TODO");
+    // CPaint::New((IPaint**)&mPaint);
+    Boolean can = FALSE;
+    if (theme != NULL && (state->CanApplyTheme(&can), can)) {
+        mColorState = new ColorState((ColorState*)state);
+        ApplyTheme(theme);
+    } else {
+        mColorState = (ColorState*)state;
+    }
+
+    mTintFilter = UpdateTintFilter(mTintFilter, ((ColorState*)state)->mTint, ((ColorState*)state)->mTintMode);
     return NOERROR;
 }
 

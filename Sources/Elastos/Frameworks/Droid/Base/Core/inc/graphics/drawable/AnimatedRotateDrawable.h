@@ -4,12 +4,19 @@
 
 #include "graphics/drawable/Drawable.h"
 
+using Elastos::Core::IRunnable;
+
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-class AnimatedRotateDrawable : public Drawable
+class AnimatedRotateDrawable
+    : public Drawable
+    , public IAnimatedRotateDrawable
+    , public IDrawableCallback
+    , public IRunnable
+    , public IAnimatable
 {
 public:
     class AnimatedRotateState
@@ -51,6 +58,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     AnimatedRotateDrawable(
         /* [in] */ AnimatedRotateState* rotateState = NULL,
         /* [in] */ IResources* res = NULL);
@@ -62,25 +71,41 @@ public:
 
     CARAPI Stop();
 
-    CARAPI_(Boolean) IsRunning();
+    CARAPI IsRunning(
+        /* [out] */ Boolean* running);
 
     CARAPI Run();
 
-    CARAPI_(Boolean) SetVisible(
+    CARAPI SetVisible(
         /* [in] */ Boolean visible,
-        /* [in] */ Boolean restart);
+        /* [in] */ Boolean restart,
+        /* [out] */ Boolean* isDifferent);
 
-    CARAPI_(AutoPtr<IDrawable>) GetDrawable();
+    virtual CARAPI GetDrawable(
+        /* [out] */ IDrawable** drawable);
 
-    CARAPI_(Int32) GetChangingConfigurations();
+    CARAPI GetChangingConfigurations(
+        /* [out] */ Int32* configuration);
 
     CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
 
+    CARAPI GetAlpha(
+        /* [out] */ Int32* alpha);
+
     CARAPI SetColorFilter(
         /* [in] */ IColorFilter* cf);
 
-    CARAPI_(Int32) GetOpacity();
+    // @Override
+    CARAPI SetTintList(
+        /* [in] */ IColorStateList* tint);
+
+    // @Override
+    CARAPI SetTintMode(
+        /* [in] */ PorterDuffMode tintMode);
+
+    CARAPI GetOpacity(
+        /* [out] */ Int32* opacity);
 
     CARAPI InvalidateDrawable(
         /* [in] */ IDrawable* who);
@@ -94,21 +119,27 @@ public:
         /* [in] */ IDrawable* who,
         /* [in] */ IRunnable* what);
 
-    CARAPI_(Boolean) GetPadding(
-        /* [in] */ IRect* padding);
+    CARAPI GetPadding(
+        /* [in] */ IRect* padding,
+        /* [out] */ Boolean* isPadding);
 
-    CARAPI_(Boolean) IsStateful();
+    CARAPI IsStateful(
+        /* [out] */ Boolean* isStateful);
 
-    CARAPI_(Int32) GetIntrinsicWidth();
+    CARAPI GetIntrinsicWidth(
+        /* [out] */ Int32* width);
 
-    CARAPI_(Int32) GetIntrinsicHeight();
+    CARAPI GetIntrinsicHeight(
+        /* [out] */ Int32* height);
 
-    CARAPI_(AutoPtr<IDrawableConstantState>) GetConstantState();
+    CARAPI GetConstantState(
+        /* [out] */ IDrawableConstantState** state);
 
     CARAPI Inflate(
         /* [in] */ IResources* r,
         /* [in] */ IXmlPullParser* parser,
-        /* [in] */ IAttributeSet* attrs);
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ IResourcesTheme* theme);
 
     CARAPI SetFramesCount(
         /* [in] */ Int32 framesCount);
@@ -116,18 +147,27 @@ public:
     CARAPI SetFramesDuration(
         /* [in] */ Int32 framesDuration);
 
-    AutoPtr<IDrawable> Mutate();
+    CARAPI Mutate(
+        /* [out] */ IDrawable** drawable);
 
 protected:
     CARAPI_(void) OnBoundsChange(
         /* [in] */ IRect* bounds);
 
-    CARAPI Init(
+    // @Override
+    virtual CARAPI_(Boolean) OnLevelChange(
+        /* [in] */ Int32 level);
+
+    // @Override
+    virtual CARAPI_(Boolean) OnStateChange(
+        /* [in] */ const ArrayOf<Int32>* state);
+
+    CARAPI constructor(
         /* [in] */ AnimatedRotateState* rotateState,
         /* [in] */ IResources*);
 
 private:
-    CARAPI_(void) InitInternal();
+    CARAPI_(void) Init();
 
     CARAPI_(void) NextFrame();
 

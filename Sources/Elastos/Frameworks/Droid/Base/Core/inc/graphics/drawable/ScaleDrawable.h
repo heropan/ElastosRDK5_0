@@ -11,7 +11,10 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-class ScaleDrawable : public Drawable
+class ScaleDrawable
+    : public Drawable
+    , public IScaleDrawable
+    , public IDrawableCallback
 {
 public:
     class ScaleState
@@ -49,6 +52,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     ScaleDrawable();
 
     ScaleDrawable(
@@ -60,7 +65,8 @@ public:
     /**
      * Returns the drawable scaled by this ScaleDrawable.
      */
-    virtual CARAPI_(AutoPtr<IDrawable>) GetDrawable();
+    virtual CARAPI GetDrawable(
+        /* [out] */ IDrawable** drawable);
 
     //@Override
     CARAPI Inflate(
@@ -85,16 +91,19 @@ public:
         /* [in] */ ICanvas* canvas);
 
     //@Override
-    CARAPI_(Int32) GetChangingConfigurations();
+    CARAPI GetChangingConfigurations(
+        /* [out] */ Int32* configuration);
 
     //@Override
-    CARAPI_(Boolean) GetPadding(
-        /* [in] */ IRect* padding);
+    CARAPI GetPadding(
+        /* [in] */ IRect* padding,
+        /* [out] */ Boolean* isPadding);
 
     //@Override
-    CARAPI_(Boolean) SetVisible(
+    CARAPI SetVisible(
         /* [in] */ Boolean visible,
-        /* [in] */ Boolean restart);
+        /* [in] */ Boolean restart,
+        /* [out] */ Boolean* isDifferent);
 
     //@Override
     CARAPI SetAlpha(
@@ -105,33 +114,39 @@ public:
         /* [in] */ IColorFilter* cf);
 
     //@Override
-    CARAPI_(Int32) GetOpacity();
+    CARAPI GetOpacity(
+        /* [out] */ Int32* opacity);
 
     //@Override
-    CARAPI_(Boolean) IsStateful();
+    CARAPI IsStateful(
+        /* [out] */ Boolean* isStateful);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicWidth();
+    CARAPI GetIntrinsicWidth(
+        /* [out] */ Int32* width);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicHeight();
+    CARAPI GetIntrinsicHeight(
+        /* [out] */ Int32* height);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawableConstantState>) GetConstantState();
+    CARAPI GetConstantState(
+        /* [out] */ IDrawableConstantState** state);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawable>) Mutate();
+    CARAPI Mutate(
+        /* [out] */ IDrawable** drawable);
 
 protected:
-    CARAPI Init();
+    CARAPI constructor();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IDrawable* drawable,
         /* [in] */ Int32 gravity,
         /* [in] */ Float scaleWidth,
         /* [in] */ Float scaleHeight);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ScaleState* state,
         /* [in] */ IResources* res);
 

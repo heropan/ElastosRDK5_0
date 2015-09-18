@@ -10,7 +10,9 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-class StateListDrawable : public DrawableContainer
+class StateListDrawable
+    : public DrawableContainer
+    , public IStateListDrawable
 {
 public:
     class StateListState : public DrawableContainer::DrawableContainerState
@@ -49,6 +51,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     StateListDrawable();
 
     StateListDrawable(
@@ -63,11 +67,12 @@ public:
      * @param drawable -The image to show.
      */
     virtual CARAPI AddState(
-        /* [in] */ const ArrayOf<Int32>& stateSet,
+        /* [in] */ ArrayOf<Int32>* stateSet,
         /* [in] */ IDrawable* drawable);
 
     //@Override
-    CARAPI_(Boolean) IsStateful();
+    CARAPI IsStateful(
+        /* [out] */ Boolean* isStateful);
 
     //@Override
     CARAPI Inflate(
@@ -85,7 +90,8 @@ public:
      * @see #getStateSet(int)
      * @see #getStateDrawable(int)
      */
-    virtual CARAPI_(Int32) GetStateCount();
+    virtual CARAPI GetStateCount(
+        /* [out] */ Int32* count);
 
     /**
      * Gets the state set at an index.
@@ -96,8 +102,9 @@ public:
      * @see #getStateCount()
      * @see #getStateDrawable(int)
      */
-    virtual CARAPI_(AutoPtr< ArrayOf<Int32> >) GetStateSet(
-        /* [in] */ Int32 index);
+    virtual CARAPI GetStateSet(
+        /* [in] */ Int32 index,
+        /* [out, callee] */ ArrayOf<Int32>** stateSet);
 
     /**
      * Gets the drawable at an index.
@@ -108,8 +115,9 @@ public:
      * @see #getStateCount()
      * @see #getStateSet(int)
      */
-    virtual CARAPI_(AutoPtr<IDrawable>) GetStateDrawable(
-        /* [in] */ Int32 index);
+    virtual CARAPI GetStateDrawable(
+        /* [in] */ Int32 index,
+        /* [out] */ IDrawable** drawable);
 
     /**
      * Gets the index of the drawable with the provided state set.
@@ -120,11 +128,13 @@ public:
      * @see #getStateDrawable(int)
      * @see #getStateSet(int)
      */
-    virtual CARAPI_(Int32) GetStateDrawableIndex(
-        /* [in] */ const ArrayOf<Int32>& stateSet);
+    virtual CARAPI GetStateDrawableIndex(
+        /* [in] */ ArrayOf<Int32>* stateSet,
+        /* [out] */ Int32* index);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawable>) Mutate();
+    CARAPI Mutate(
+        /* [out] */ IDrawable** drawable);
 
     /** @hide */
     //@Override
@@ -136,7 +146,7 @@ protected:
     CARAPI_(Boolean) OnStateChange(
         /* [in] */ const ArrayOf<Int32>* stateSet);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ StateListState* state,
         /* [in] */ IResources* res);
 
