@@ -230,7 +230,7 @@ ECode BluetoothHeadset::GetConnectedDevices(
     }
     if (mService == NULL) Logger::W(TAG, "Proxy not attached to service");
     *devices = ArrayOf<IBluetoothDevice*>::Alloc(0);
-    REFCOUNT_ADDREF(*devices);
+    REFCOUNT_ADD(*devices);
     return NOERROR;
 }
 
@@ -250,7 +250,7 @@ ECode BluetoothHeadset::GetDevicesMatchingConnectionStates(
     }
     if (mService == NULL) Logger::W(TAG, "Proxy not attached to service");
     *devices = ArrayOf<IBluetoothDevice*>::Alloc(0);
-    REFCOUNT_ADDREF(*devices);
+    REFCOUNT_ADD(*devices);
     return NOERROR;
 }
 

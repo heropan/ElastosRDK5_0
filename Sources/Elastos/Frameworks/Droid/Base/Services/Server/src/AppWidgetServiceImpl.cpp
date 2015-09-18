@@ -1438,7 +1438,7 @@ ECode AppWidgetServiceImpl::StartListening(
     host->mCallbacks = callbacks;
 
     *updatedIds = ArrayOf<Int32>::Alloc(host->mInstances.GetSize());
-    REFCOUNT_ADDREF(*updatedIds);
+    REFCOUNT_ADD(*updatedIds);
     CParcelableObjectContainer::New(updatedViews);
     Int32 i = 0;
     List<AutoPtr<AppWidgetId> >::Iterator iter;

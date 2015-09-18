@@ -1,5 +1,4 @@
 
-#include "ext/frameworkext.h"
 #include "content/res/CAssetManagerHelper.h"
 #include "content/res/CAssetManager.h"
 

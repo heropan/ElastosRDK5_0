@@ -16,9 +16,13 @@ namespace Pm {
  * implement Parcelable, but does provide convenience methods to assist
  * in the implementation of Parcelable in subclasses.
  */
-class ComponentInfo : public PackageItemInfo
+class ComponentInfo
+    : public PackageItemInfo
+    , public IComponentInfo
 {
 public:
+    CAR_INTERFACE_DECL()
+
     ComponentInfo();
 
     virtual ~ComponentInfo();
@@ -47,6 +51,26 @@ public:
      * @return The icon associated with this component.
      */
     CARAPI GetIconResource(
+        /* [out] */ Int32* icon);
+
+    /**
+     * Return the logo resource identifier to use for this component.  If
+     * the component defines a logo, that is used; else, the application
+     * logo is used.
+     *
+     * @return The logo associated with this component.
+     */
+    CARAPI GetLogoResource(
+        /* [out] */ Int32* icon);
+
+    /**
+     * Return the banner resource identifier to use for this component. If the
+     * component defines a banner, that is used; else, the application banner is
+     * used.
+     *
+     * @return The banner associated with this component.
+     */
+    CARAPI GetBannerResource(
         /* [out] */ Int32* icon);
 
     CARAPI WriteToParcel(
@@ -99,6 +123,14 @@ protected:
      */
     // @override
     CARAPI LoadDefaultIcon(
+        /* [in] */ IPackageManager* pm,
+        /* [out] */ IDrawable** icon);
+
+    /**
+     * @hide
+     */
+    // @override
+    CARAPI LoadDefaultBanner(
         /* [in] */ IPackageManager* pm,
         /* [out] */ IDrawable** icon);
 

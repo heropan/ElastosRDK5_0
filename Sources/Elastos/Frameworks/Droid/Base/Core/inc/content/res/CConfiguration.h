@@ -5,7 +5,9 @@
 #include "_Elastos_Droid_Content_Res_CConfiguration.h"
 #include <elastos/core/Object.h>
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
+using Org::Xmlpull::V1::IXmlPullParser;
+using Org::Xmlpull::V1::IXmlSerializer;
 
 namespace Elastos {
 namespace Droid {
@@ -331,6 +333,23 @@ public:
     CARAPI constructor(
         /* [in] */ IConfiguration* config);
 
+    static CARAPI_(String) LocaleToResourceQualifier(
+        /* [in] */ ILocale* locale);
+
+    static CARAPI_(String) ResourceQualifierString(
+        /* [in] */ IConfiguration* config);
+
+    static CARAPI_(AutoPtr<IConfiguration>) GenerateDelta(
+        /* [in] */ IConfiguration* base,
+        /* [in] */ IConfiguration* change);
+
+    static CARAPI ReadXmlAttrs(
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ IConfiguration* configOut);
+
+    static CARAPI WriteXmlAttrs(
+        /* [in] */ IXmlSerializer* xml,
+        /* [in] */ IConfiguration* config);
 
 private:
     static CARAPI_(Int32) GetScreenLayoutNoDirection(
@@ -511,6 +530,57 @@ public:
      * @hide Internal book-keeping.
      */
     Int32 mSeq;
+
+    /** @hide Native-specific bit mask for MCC config; DO NOT USE UNLESS YOU ARE SURE. */
+    static const Int32 NATIVE_CONFIG_MCC;// = 0x0001;
+    /** @hide Native-specific bit mask for MNC config; DO NOT USE UNLESS YOU ARE SURE. */
+    static const Int32 NATIVE_CONFIG_MNC;// = 0x0002;
+    /** @hide Native-specific bit mask for LOCALE config; DO NOT USE UNLESS YOU ARE SURE. */
+    static const Int32 NATIVE_CONFIG_LOCALE;// = 0x0004;
+    /** @hide Native-specific bit mask for TOUCHSCREEN config; DO NOT USE UNLESS YOU ARE SURE. */
+    static const Int32 NATIVE_CONFIG_TOUCHSCREEN;// = 0x0008;
+    /** @hide Native-specific bit mask for KEYBOARD config; DO NOT USE UNLESS YOU ARE SURE. */
+    static const Int32 NATIVE_CONFIG_KEYBOARD;// = 0x0010;
+    /** @hide Native-specific bit mask for KEYBOARD_HIDDEN config; DO NOT USE UNLESS YOU
+     * ARE SURE. */
+    static const Int32 NATIVE_CONFIG_KEYBOARD_HIDDEN;// = 0x0020;
+    /** @hide Native-specific bit mask for NAVIGATION config; DO NOT USE UNLESS YOU ARE SURE. */
+    static const Int32 NATIVE_CONFIG_NAVIGATION;// = 0x0040;
+    /** @hide Native-specific bit mask for ORIENTATION config; DO NOT USE UNLESS YOU ARE SURE. */
+    static const Int32 NATIVE_CONFIG_ORIENTATION;// = 0x0080;
+    /** @hide Native-specific bit mask for DENSITY config; DO NOT USE UNLESS YOU ARE SURE. */
+    static const Int32 NATIVE_CONFIG_DENSITY;// = 0x0100;
+    /** @hide Native-specific bit mask for SCREEN_SIZE config; DO NOT USE UNLESS YOU ARE SURE. */
+    static const Int32 NATIVE_CONFIG_SCREEN_SIZE;// = 0x0200;
+    /** @hide Native-specific bit mask for VERSION config; DO NOT USE UNLESS YOU ARE SURE. */
+    static const Int32 NATIVE_CONFIG_VERSION;// = 0x0400;
+    /** @hide Native-specific bit mask for SCREEN_LAYOUT config; DO NOT USE UNLESS YOU ARE SURE. */
+    static const Int32 NATIVE_CONFIG_SCREEN_LAYOUT;// = 0x0800;
+    /** @hide Native-specific bit mask for UI_MODE config; DO NOT USE UNLESS YOU ARE SURE. */
+    static const Int32 NATIVE_CONFIG_UI_MODE;// = 0x1000;
+    /** @hide Native-specific bit mask for SMALLEST_SCREEN_SIZE config; DO NOT USE UNLESS YOU
+     * ARE SURE. */
+    static const Int32 NATIVE_CONFIG_SMALLEST_SCREEN_SIZE;// = 0x2000;
+    /** @hide Native-specific bit mask for LAYOUTDIR config ; DO NOT USE UNLESS YOU ARE SURE.*/
+    static const Int32 NATIVE_CONFIG_LAYOUTDIR;// = 0x4000;
+
+    static const String XML_ATTR_FONT_SCALE; // = "fs";
+    static const String XML_ATTR_MCC; // = "mcc";
+    static const String XML_ATTR_MNC; // = "mnc";
+    static const String XML_ATTR_LOCALE; // = "locale";
+    static const String XML_ATTR_TOUCHSCREEN; // = "touch";
+    static const String XML_ATTR_KEYBOARD; // = "key";
+    static const String XML_ATTR_KEYBOARD_HIDDEN; // = "keyHid";
+    static const String XML_ATTR_HARD_KEYBOARD_HIDDEN; // = "hardKeyHid";
+    static const String XML_ATTR_NAVIGATION; // = "nav";
+    static const String XML_ATTR_NAVIGATION_HIDDEN; // = "navHid";
+    static const String XML_ATTR_ORIENTATION; // = "ori";
+    static const String XML_ATTR_SCREEN_LAYOUT; // = "scrLay";
+    static const String XML_ATTR_UI_MODE; // = "ui";
+    static const String XML_ATTR_SCREEN_WIDTH; // = "width";
+    static const String XML_ATTR_SCREEN_HEIGHT; // = "height";
+    static const String XML_ATTR_SMALLEST_WIDTH; // = "sw";
+    static const String XML_ATTR_DENSITY; // = "density";
 };
 
 } // namespace Res

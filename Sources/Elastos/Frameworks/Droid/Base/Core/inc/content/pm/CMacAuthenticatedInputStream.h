@@ -24,6 +24,10 @@ namespace Pm {
 CarClass(CMacAuthenticatedInputStream), public FilterInputStream
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CMacAuthenticatedInputStream();
 
     ~CMacAuthenticatedInputStream();

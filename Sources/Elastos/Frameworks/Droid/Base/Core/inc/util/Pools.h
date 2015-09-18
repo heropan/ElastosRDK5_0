@@ -4,6 +4,7 @@
 
 #include "ext/frameworkext.h"
 #include <elastos/core/Object.h>
+#include <elastos/core/AutoLock.h>
 
 namespace Elastos {
 namespace Droid {
@@ -23,7 +24,7 @@ public:
         /**
          * @return An instance from the pool if such, null otherwise.
          */
-        virtual AutoPtr<T> Acquire() = 0;
+        virtual AutoPtr<T> AcquireItem() = 0;
 
         /**
          * Release an instance to the pool.
@@ -33,7 +34,7 @@ public:
          *
          * @throws IllegalStateException If the instance is already in the pool.
          */
-        virtual Boolean Release(
+        virtual Boolean ReleaseItem(
             /* [in] */ T* instance) = 0;
     };
 
@@ -61,7 +62,7 @@ public:
             mPool = ArrayOf<T*>::Alloc(maxPoolSize);
         }
 
-        AutoPtr<T> Acquire()
+        AutoPtr<T> AcquireItem()
         {
             if (mPoolSize > 0) {
                 Int32 lastPooledIndex = mPoolSize - 1;
@@ -73,7 +74,7 @@ public:
             return NULL;
         }
 
-        Boolean Release(
+        Boolean ReleaseItem(
             /* [in] */ T* instance)
         {
             if (IsInPool(instance)) {
@@ -127,17 +128,17 @@ public:
             : SimplePool<T>(maxPoolSize)
         {}
 
-        AutoPtr<T> Acquire()
+        AutoPtr<T> AcquireItem()
         {
             AutoLock lock(mLock);
-            return SimplePool<T>::Acquire();
+            return SimplePool<T>::AcquireItem();
         }
 
-        Boolean Release(
+        Boolean ReleaseItem(
             /* [in] */ T* instance)
         {
             AutoLock lock(mLock);
-            return SimplePool<T>::Release(instance);
+            return SimplePool<T>::ReleaseItem(instance);
         }
 
     private:

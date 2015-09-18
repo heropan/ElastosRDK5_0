@@ -15,23 +15,28 @@ namespace Pm {
 static AutoPtr< ArrayOf<Int32> > Init_CONFIG_NATIVE_BITS()
 {
     AutoPtr< ArrayOf<Int32> > int32Array = ArrayOf<Int32>::Alloc(14);
-    (*int32Array)[0]  = 0x0001; // MNC
-    (*int32Array)[1]  = 0x0002; // MCC
-    (*int32Array)[2]  = 0x0004; // LOCALE
-    (*int32Array)[3]  = 0x0008; // TOUCH SCREEN
-    (*int32Array)[4]  = 0x0010; // KEYBOARD
-    (*int32Array)[5]  = 0x0020; // KEYBOARD HIDDEN
-    (*int32Array)[6]  = 0x0040; // NAVIGATION
-    (*int32Array)[7]  = 0x0080; // ORIENTATION
-    (*int32Array)[8]  = 0x1000; // UI MODE
-    (*int32Array)[9]  = 0x0200; // SCREEN SIZE
-    (*int32Array)[10] = 0x2000; // SMALLEST SCREEN SIZE
-    (*int32Array)[11] = 0x0100; // DENSITY
-    (*int32Array)[12] = 0x4000; // LAYOUT DIRECTION
+    (*int32Array)[0] = CConfiguration::NATIVE_CONFIG_MNC;//,                    // MNC
+    (*int32Array)[1] = CConfiguration::NATIVE_CONFIG_MCC;//,                    // MCC
+    (*int32Array)[2] = CConfiguration::NATIVE_CONFIG_LOCALE;//,                 // LOCALE
+    (*int32Array)[3] = CConfiguration::NATIVE_CONFIG_TOUCHSCREEN;//,            // TOUCH SCREEN
+    (*int32Array)[4] = CConfiguration::NATIVE_CONFIG_KEYBOARD;//,               // KEYBOARD
+    (*int32Array)[5] = CConfiguration::NATIVE_CONFIG_KEYBOARD_HIDDEN;//,        // KEYBOARD HIDDEN
+    (*int32Array)[6] = CConfiguration::NATIVE_CONFIG_NAVIGATION;//,             // NAVIGATION
+    (*int32Array)[7] = CConfiguration::NATIVE_CONFIG_ORIENTATION;//,            // ORIENTATION
+    (*int32Array)[8] = CConfiguration::NATIVE_CONFIG_SCREEN_LAYOUT;//,          // SCREEN LAYOUT
+    (*int32Array)[9] = CConfiguration::NATIVE_CONFIG_UI_MODE;//,                // UI MODE
+    (*int32Array)[10] = CConfiguration::NATIVE_CONFIG_SCREEN_SIZE;//,            // SCREEN SIZE
+    (*int32Array)[11] = CConfiguration::NATIVE_CONFIG_SMALLEST_SCREEN_SIZE,   // SMALLEST SCREEN SIZE
+    (*int32Array)[12] = CConfiguration::NATIVE_CONFIG_DENSITY;//,                // DENSITY
+    (*int32Array)[13] = CConfiguration::NATIVE_CONFIG_LAYOUTDIR;//,              // LAYOUT DIRECTION
     return int32Array;
 }
 
 AutoPtr< ArrayOf<Int32> > CActivityInfo::CONFIG_NATIVE_BITS = Init_CONFIG_NATIVE_BITS();
+
+CAR_INTERFACE_IMPL(CActivityInfo, ComponentInfo, IActivityInfo)
+
+CAR_OBJECT_IMPL(CActivityInfo)
 
 CActivityInfo::CActivityInfo()
     : mTheme(0)
@@ -41,6 +46,8 @@ CActivityInfo::CActivityInfo()
     , mConfigChanges(0)
     , mSoftInputMode(0)
     , mUiOptions(0)
+    , mPersistableMode(0)
+    , mMaxRecents(0)
 {}
 
 CActivityInfo::~CActivityInfo()
@@ -68,6 +75,7 @@ ECode CActivityInfo::constructor(
     orig->GetSoftInputMode(&mSoftInputMode);
     orig->GetUiOptions(&mUiOptions);
     orig->GetParentActivityName(&mParentActivityName);
+    orig->GetMaxRecents(&mMaxRecents);
     return NOERROR;
 }
 
@@ -113,6 +121,20 @@ ECode CActivityInfo::GetThemeResource(
         mApplicationInfo->GetTheme(theme);
     }
     return NOERROR;
+}
+
+String CActivityInfo::PersistableModeToString()
+{
+    switch(mPersistableMode) {
+        case PERSIST_ROOT_ONLY: return String("PERSIST_ROOT_ONLY");
+        case PERSIST_NEVER: return String("PERSIST_NEVER");
+        case PERSIST_ACROSS_REBOOTS: return String("PERSIST_ACROSS_REBOOTS");
+        default: {
+            StringBuilder sb("UNKNOWN");
+            sb += mPersistableMode;
+            return sb.ToString();
+        }
+    }
 }
 
 ECode CActivityInfo::Dump(
@@ -171,6 +193,8 @@ ECode CActivityInfo::ReadFromParcel(
     source->ReadInt32(&mSoftInputMode);
     source->ReadInt32(&mUiOptions);
     source->ReadString(&mParentActivityName);
+    source->ReadInt32(&mPersistableMode);
+    source->ReadInt32(&mMaxRecents);
     return NOERROR;
 }
 
@@ -189,6 +213,8 @@ ECode CActivityInfo::WriteToParcel(
     dest->WriteInt32(mSoftInputMode);
     dest->WriteInt32(mUiOptions);
     dest->WriteString(mParentActivityName);
+    dest->WriteInt32(mPersistableMode);
+    dest->WriteInt32(mMaxRecents);
     return NOERROR;
 }
 

@@ -6,11 +6,13 @@
 #include "content/res/StringBlock.h"
 #include "content/res/XmlBlock.h"
 #include <elastos/io/InputStream.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::IO::ICloseable;
-using Elastos::IO::InputStream;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Utility::ITypedValue;
+using Elastos::IO::ICloseable;
+using Elastos::IO::InputStream;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -26,7 +28,7 @@ namespace Res {
  */
 CarClass(CAssetManager)
     , public Object
-    , public IAcssertManager
+    , public IAssetManager
     , public ICloseable
 {
 public:
@@ -41,7 +43,7 @@ public:
             /* [in] */ CAssetManager* assetManager,
             /* [in] */ Int64 asset);
 
-        ~AssetInputStream();
+        virtual ~AssetInputStream();
 
         CARAPI Available(
             /* [out] */ Int32* bytes);
@@ -162,7 +164,7 @@ public:
 
     /*package*/
     CARAPI_(Boolean) GetThemeValue(
-        /* [in] */ Int32 theme,
+        /* [in] */ Int64 theme,
         /* [in] */ Int32 ident,
         /* [in] */ ITypedValue* outValue,
         /* [in] */ Boolean resolveRefs);
@@ -175,7 +177,7 @@ public:
         /* [in] */ ArrayOf<StringBlock*>* seed);
 
     /*package*/
-    CARAPI_(AutoPtr<ICharSequence>) GetPooledString(
+    CARAPI_(AutoPtr<ICharSequence>) GetPooledStringForCookie(
         /* [in] */ Int32 block,
         /* [in] */ Int32 id);
 
@@ -484,9 +486,18 @@ public:
         /* [in] */ ArrayOf<Int32>* outValues,
         /* [out] */ Int32* result);
 
+    /**
+     * {@hide}
+     */
     CARAPI GetCookieName(
         /* [in] */ Int32 cookie,
         /* [out] */ String* name);
+
+    /**
+     * {@hide}
+     */
+    AutoPtr<HashMap<Int32, String> > GetAssignedPackageIdentifiers();
+
 
     CARAPI GetNativeAssetManager(
         /* [out] */ Int32* assetMgr);
@@ -508,18 +519,18 @@ public:
 
     /*package*/
     static CARAPI_(void) ApplyThemeStyle(
-            /* [in] */ Int32 theme,
+            /* [in] */ Int64 theme,
             /* [in] */ Int32 styleRes,
             /* [in] */ Boolean force);
 
     /*package*/
     static CARAPI_(void) CopyTheme(
-        /* [in] */ Int32 dest,
-        /* [in] */ Int32 source);
+        /* [in] */ Int64 dest,
+        /* [in] */ Int64 source);
 
     /*package*/
     static CARAPI LoadThemeAttributeValue(
-        /* [in] */ Int32 theme,
+        /* [in] */ Int64 theme,
         /* [in] */ Int32 ident,
         /* [in] */ ITypedValue* outValue,
         /* [in] */ Boolean resolve,
@@ -527,13 +538,17 @@ public:
 
     /*package*/
     static CARAPI_(void) DumpTheme(
-        /* [in] */ Int32 theme,
+        /* [in] */ Int64 theme,
         /* [in] */ Int32 priority,
         /* [in] */ const String& tag,
         /* [in] */ const String& prefix);
 
     /*package*/
     CARAPI GetArrayIntResource(
+        /* [in] */ Int32 arrayRes,
+        /* [out] */ ArrayOf<Int32>** result);
+
+    CARAPI GetStyleAttributes(
         /* [in] */ Int32 arrayRes,
         /* [out] */ ArrayOf<Int32>** result);
 
@@ -615,10 +630,10 @@ private:
     CARAPI_(Int64) GetNativeStringBlock(
         /* [in] */ Int32 block);
 
-    CARAPI_(Int32) NewTheme();
+    CARAPI_(Int64) NewTheme();
 
     CARAPI_(void) DeleteTheme(
-            /* [in] */ Int32 theme);
+            /* [in] */ Int64 theme);
 
     CARAPI OpenXmlAssetNative(
         /* [in] */ Int32 cookie,
@@ -633,16 +648,17 @@ private:
         /* [in] */ Int32 arrayRes,
         /* [out] */ ArrayOf<Int32>** result);
 
-    CARAPI Init();
+    CARAPI Init(
+        /* [in] */ Boolean isSystem);
 
     CARAPI_(void) Destroy();
 
     CARAPI_(void) IncRefsLocked(
-        /* [in] */ Int32 id,
+        /* [in] */ Int64 id,
         /* [in] */ const char* info);
 
     CARAPI_(void) DecRefsLocked(
-        /* [in] */ Int32 id,
+        /* [in] */ Int64 id,
         /* [in] */ const char* info);
 
 public:

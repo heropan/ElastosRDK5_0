@@ -23,6 +23,9 @@ ECode CObbScanner::GetObbInfo(
     /* [in] */ const String& filePath,
     /* [out] */ IObbInfo** obbInfo)
 {
+    VALIDATE_NOT_NULL(obbInfo)
+    *obbInfo = NULL;
+
     if (filePath.IsNull()) {
         Slogger::E(TAG, "file path cannot be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -52,6 +55,8 @@ ECode CObbScanner::NativeGetObbInfo(
     /* [in] */ const String& filePath,
     /* [in, out] */ IObbInfo* obbInfo)
 {
+    assert(obbInfo != NULL);
+
     android::sp<android::ObbFile> obb = new android::ObbFile();
     if (!obb->readFrom(filePath.string())) {
         Slogger::E(TAG, "Could not read OBB file");

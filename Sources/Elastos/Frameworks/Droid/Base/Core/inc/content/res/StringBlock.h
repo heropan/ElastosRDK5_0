@@ -180,4 +180,6 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
+DEFINE_CONVERSION_FOR(Elastos::Droid::Content::Res::StringBlock, IInterface)
+
 #endif // __ELASTOS_DROID_CONTENT_RES_STRINGBLOCK_H__

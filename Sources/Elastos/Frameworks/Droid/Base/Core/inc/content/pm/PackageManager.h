@@ -2,11 +2,8 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_PACKAGEMANAGER_H__
 #define __ELASTOS_DROID_CONTENT_PM_PACKAGEMANAGER_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
+#include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IIntentFilter;
 

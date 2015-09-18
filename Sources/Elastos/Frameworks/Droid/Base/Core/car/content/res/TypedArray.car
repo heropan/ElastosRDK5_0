@@ -386,7 +386,8 @@ module
          * @return Attribute type.
          */
         GetType(
-            [in] Int32 index);
+            [in] Int32 index,
+            [out] Int32* type);
 
         /**
          * Determines whether there is an attribute at <var>index</var>.

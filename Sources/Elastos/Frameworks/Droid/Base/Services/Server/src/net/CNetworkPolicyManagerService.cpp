@@ -1880,7 +1880,7 @@ ECode CNetworkPolicyManagerService::GetUidsWithPolicy(
         }
     }
     *_uids = uids;
-    REFCOUNT_ADDREF(*_uids);
+    REFCOUNT_ADD(*_uids);
     return NOERROR;
 }
 

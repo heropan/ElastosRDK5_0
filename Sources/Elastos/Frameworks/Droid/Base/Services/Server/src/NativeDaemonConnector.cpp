@@ -735,7 +735,7 @@ ECode NativeDaemonConnector::Execute(
         Slogger::D(TAG, "Execute: NativeDaemonArgumentException -> [%s]", logCmd.string());
 //        throw new NativeDaemonArgumentException(logCmd, event);
         *eventsArray = ArrayOf<NativeDaemonEvent*>::Alloc(1);
-        REFCOUNT_ADDREF(*eventsArray);
+        REFCOUNT_ADD(*eventsArray);
         (*eventsArray)->Set(0, event);
         return E_NATIVE_DAEMON_ARGUMENT_EXCEPTION;
     }
@@ -744,7 +744,7 @@ ECode NativeDaemonConnector::Execute(
         Slogger::D(TAG, "Execute: NativeDaemonFailureException -> [%s]", logCmd.string());
 //        throw new NativeDaemonFailureException(logCmd, event);
         *eventsArray = ArrayOf<NativeDaemonEvent*>::Alloc(1);
-        REFCOUNT_ADDREF(*eventsArray);
+        REFCOUNT_ADD(*eventsArray);
         (*eventsArray)->Set(0, event);
         return E_NATIVE_DAEMON_FAILURE_EXCEPTION;
     }

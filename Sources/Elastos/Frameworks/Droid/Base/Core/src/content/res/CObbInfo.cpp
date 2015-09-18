@@ -13,6 +13,10 @@ namespace Droid {
 namespace Content {
 namespace Res {
 
+CAR_INTERFACE_IMPL_2(CObbInfo, Object, IObbInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CObbInfo)
+
 CObbInfo::CObbInfo()
     : mVersion(0)
     , mFlags(0)
@@ -124,10 +128,10 @@ ECode CObbInfo::ToString(
     Int32 hash;
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-    system->IdentityHashCode(Probe(EIID_IInterface), &hash);
+    system->IdentityHashCode(TO_IINTERFACE(this), &hash);
     StringBuilder sb;
     sb.Append("ObbInfo{");
-    sb.Append(StringUtils::Int32ToHexString(hash));
+    sb.Append(StringUtils::ToHexString(hash));
     sb.Append(" packageName=");
     sb.Append(mPackageName);
     sb.Append(",version=");

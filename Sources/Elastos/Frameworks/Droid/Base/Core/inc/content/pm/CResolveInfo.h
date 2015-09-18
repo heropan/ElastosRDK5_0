@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CRESOLVEINFO_H__
 
 #include "_Elastos_Droid_Content_Pm_CResolveInfo.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 
@@ -24,6 +25,10 @@ namespace Pm {
 CarClass(CResolveInfo)
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CResolveInfo();
 
     ~CResolveInfo();

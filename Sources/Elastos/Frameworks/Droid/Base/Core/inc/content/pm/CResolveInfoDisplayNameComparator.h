@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CRESOLVEINFODISPLAYNAMECOMPARATOR_H__
 
 #include "_Elastos_Droid_Content_Pm_CResolveInfoDisplayNameComparator.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Text::ICollator;
 
@@ -14,6 +15,10 @@ namespace Pm {
 CarClass(CResolveInfoDisplayNameComparator)
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CResolveInfoDisplayNameComparator();
 
     CARAPI constructor(

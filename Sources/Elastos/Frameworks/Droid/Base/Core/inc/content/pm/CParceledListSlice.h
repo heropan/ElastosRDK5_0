@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CPARCELEDLISTSLICE_H__
 
 #include "_Elastos_Droid_Content_Pm_CParceledListSlice.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -20,6 +21,10 @@ namespace Pm {
 CarClass(CParceledListSlice)
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CParceledListSlice();
 
     ~CParceledListSlice();

@@ -23,12 +23,18 @@ namespace Pm {
  * from the AndroidManifest.xml's &lt;activity&gt; and
  * &lt;receiver&gt; tags.
  */
-CarClass(CActivityInfo), public ComponentInfo
+CarClass(CActivityInfo)
+    , public ComponentInfo
+    , public IActivityInfo
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CActivityInfo();
 
-    ~CActivityInfo();
+    virtual ~CActivityInfo();
 
     CARAPI constructor();
 
@@ -236,6 +242,9 @@ public:
     CARAPI SetParentActivityName(
         /* [in] */ const String& parentActivityName);
 
+private:
+    CARAPI_(String) PersistableModeToString();
+
 public:
     /** @hide
      * Unfortunately the constants for config changes in native code are
@@ -345,6 +354,19 @@ public:
      * If defined, the activity named here is the logical parent of this activity.
      */
     String mParentActivityName;
+
+    /**
+     * Value indicating how this activity is to be persisted across
+     * reboots for restoring in the Recents list.
+     * {@link android.R.attr#persistableMode}
+     */
+    Int32 mPersistableMode;
+
+    /**
+     * The maximum number of tasks rooted at this activity that can be in the recent task list.
+     * Refer to {@link android.R.attr#maxRecents}.
+     */
+    Int32 mMaxRecents;
 };
 
 } // namespace Pm

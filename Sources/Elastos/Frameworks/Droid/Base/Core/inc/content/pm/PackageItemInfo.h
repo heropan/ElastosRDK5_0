@@ -2,15 +2,15 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_PACKAGEITEMINFO_H__
 #define __ELASTOS_DROID_CONTENT_PM_PACKAGEITEMINFO_H__
 
-#include "Elastos.Droid.Core_server.h"
-#include <Elastos.CoreLibrary.h>
-
-using Elastos::Core::ICharSequence;
+#include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Utility::IPrinter;
+
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -27,8 +27,12 @@ namespace Pm {
  * in the implementation of Parcelable in subclasses.
  */
 class PackageItemInfo
+    : public Object
+    , public IPackageItemInfo
 {
 public:
+    CAR_INTERFACE_DECL()
+
     PackageItemInfo();
 
     virtual ~PackageItemInfo();
@@ -66,6 +70,21 @@ public:
      * such as the default activity icon.
      */
     virtual CARAPI LoadIcon(
+        /* [in] */ IPackageManager* pm,
+        /* [out] */ IDrawable** icon);
+
+    /**
+     * Retrieve the current graphical banner associated with this item.  This
+     * will call back on the given PackageManager to load the banner from
+     * the application.
+     *
+     * @param pm A PackageManager from which the banner can be loaded; usually
+     * the PackageManager from which you originally retrieved this item.
+     *
+     * @return Returns a Drawable containing the item's banner.  If the item
+     * does not have a banner, this method will return null.
+     */
+    virtual CARAPI LoadBanner(
         /* [in] */ IPackageManager* pm,
         /* [out] */ IDrawable** icon);
 
@@ -150,7 +169,6 @@ public:
     CARAPI SetMetaData(
         /* [in] */ IBundle* metaData);
 
-protected:
     /**
      * Retrieve the default graphical icon associated with this item.
      *
@@ -166,7 +184,23 @@ protected:
         /* [in] */ IPackageManager* pm,
         /* [out] */ IDrawable** icon);
 
-        /**
+protected:
+    /**
+     * Retrieve the default graphical banner associated with this item.
+     *
+     * @param pm A PackageManager from which the banner can be loaded; usually
+     * the PackageManager from which you originally retrieved this item.
+     *
+     * @return Returns a Drawable containing the item's default banner
+     * or null if no default logo is available.
+     *
+     * @hide
+     */
+    virtual CARAPI LoadDefaultBanner(
+        /* [in] */ IPackageManager* pm,
+        /* [out] */ IDrawable** icon);
+
+    /**
      * Retrieve the default graphical logo associated with this item.
      *
      * @param pm A PackageManager from which the logo can be loaded; usually
@@ -231,6 +265,12 @@ public:
 
     /**
      * A drawable resource identifier (in the package's resources) of this
+     * component's banner.  From the "banner" attribute or, if not set, 0.
+     */
+    Int32 mBanner;
+
+    /**
+     * A drawable resource identifier (in the package's resources) of this
      * component's logo. Logos may be larger/wider than icons and are
      * displayed by certain UI elements in place of a name or name/icon
      * combination. From the "logo" attribute or, if not set, 0.
@@ -243,6 +283,13 @@ public:
      * {@link PackageManager#GET_META_DATA} flag when requesting the info.
      */
     AutoPtr<IBundle> mMetaData;
+
+    /**
+     * If different of UserHandle.USER_NULL, The icon of this item will be the one of that user.
+     * @hide
+     */
+    Int32 mShowUserIcon;
+
 };
 
 } // namespace Pm

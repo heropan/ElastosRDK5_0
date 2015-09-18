@@ -829,6 +829,13 @@ module
          */
         GetUS(
             [out] ILocale** locale);
+
+        /**
+         * @hide for internal use only.
+         */
+        AdjustLanguageCode(
+            [in] String languageCode,
+            [out] String* result);
     }
 
     /**

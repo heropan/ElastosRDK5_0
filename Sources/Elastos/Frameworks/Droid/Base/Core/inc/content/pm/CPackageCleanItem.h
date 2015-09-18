@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CPACKAGECLEANITEM_H__
 
 #include "_Elastos_Droid_Content_Pm_CPackageCleanItem.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -13,6 +14,10 @@ namespace Pm {
 CarClass(CPackageCleanItem)
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CPackageCleanItem();
 
     ~CPackageCleanItem();

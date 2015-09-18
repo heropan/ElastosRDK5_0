@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_RES_COBBINFO_H__
 
 #include "_Elastos_Droid_Content_Res_CObbInfo.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -10,8 +11,15 @@ namespace Content {
 namespace Res {
 
 CarClass(CObbInfo)
+    , public Object
+    , public IObbInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CObbInfo();
 
     CARAPI GetFilename(

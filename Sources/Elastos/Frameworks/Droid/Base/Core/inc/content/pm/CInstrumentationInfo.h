@@ -15,9 +15,15 @@ namespace Pm {
  * instrumentation.  This corresponds to information collected
  * from the AndroidManifest.xml's &lt;instrumentation&gt; tag.
  */
-CarClass(CInstrumentationInfo), public PackageItemInfo
+CarClass(CInstrumentationInfo)
+    , public PackageItemInfo
+    , public IInstrumentationInfo
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CInstrumentationInfo();
 
     ~CInstrumentationInfo();

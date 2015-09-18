@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CFEATUREINFO_H__
 
 #include "_Elastos_Droid_Content_Pm_CFeatureInfo.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -15,8 +16,15 @@ namespace Pm {
  * AndroidManifest.xml's &lt;uses-feature&gt; tag.
  */
 CarClass(CFeatureInfo)
+    , public Object
+    , public IFeatureInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CFeatureInfo();
 
     ~CFeatureInfo();

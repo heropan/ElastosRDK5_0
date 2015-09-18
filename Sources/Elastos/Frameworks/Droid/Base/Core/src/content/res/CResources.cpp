@@ -2,39 +2,45 @@
 #include "content/res/CResources.h"
 #include "content/res/CColorStateList.h"
 #include "content/res/XmlBlock.h"
-#include "graphics/Movie.h"
-#include "util/XmlUtils.h"
-#include "graphics/drawable/CColorDrawable.h"
-#include "graphics/drawable/Drawable.h"
-#include "content/pm/CActivityInfoHelper.h"
+//#include "content/pm/CActivityInfo.h"
+//#include "content/pm/CActivityInfoHelper.h"
+//#include "graphics/Movie.h"
+//#include "internal/util/XmlUtils.h"
+//#include "graphics/drawable/CColorDrawable.h"
+//#include "graphics/drawable/Drawable.h"
 #include "os/Build.h"
 #include "R.h"
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
+
+//using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Droid::Os::Build;
+//using Elastos::Droid::Graphics::Movie;
+//using Elastos::Droid::Graphics::Drawable::CColorDrawable;
+using Elastos::Droid::Graphics::Drawable::IColorDrawable;
+//using Elastos::Droid::Graphics::Drawable::Drawable;
+using Elastos::Droid::Graphics::Drawable::EIID_IDrawableConstantState;
+using Elastos::Droid::Content::Pm::IActivityInfoHelper;
+//using Elastos::Droid::Content::Pm::CActivityInfoHelper;
+using Elastos::Droid::Content::Pm::IActivityInfo;
+//using Elastos::Droid::Content::Pm::CActivityInfo;
 
 using Libcore::ICU::INativePluralRulesHelper;
 using Libcore::ICU::CNativePluralRulesHelper;
 using Libcore::ICU::INativePluralRules;
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
-using Libcore::ICU::ILocale;
 using Elastos::Core::StringUtils;
 using Elastos::Core::IAppendable;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::IFormatter;
 using Elastos::Utility::CFormatter;
+using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Utility::XmlUtils;
-using Elastos::Droid::Os::Build;
-using Elastos::Droid::Graphics::Movie;
-using Elastos::Droid::Graphics::Drawable::CColorDrawable;
-using Elastos::Droid::Graphics::Drawable::IColorDrawable;
-using Elastos::Droid::Graphics::Drawable::Drawable;
-using Elastos::Droid::Graphics::Drawable::EIID_IDrawableConstantState;
-using Elastos::Droid::Content::Pm::IActivityInfoHelper;
-using Elastos::Droid::Content::Pm::CActivityInfoHelper;
-using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Droid {
@@ -47,6 +53,8 @@ CResources::Theme::Theme(
     /* [in] */ CResources* host)
     : mHost(host)
     , mAssets(host->mAssets)
+    , mTheme(0)
+    , mThemeResId(0)
 {
     mAssets->CreateTheme(&mTheme);
 }
@@ -57,17 +65,28 @@ CResources::Theme::~Theme()
 }
 
 ECode CResources::Theme::ApplyStyle(
-    /* [in] */ Int32 resid,
+    /* [in] */ Int32 resId,
     /* [in] */ Boolean force)
 {
-    CAssetManager::ApplyThemeStyle(mTheme, resid, force);
+    CAssetManager::ApplyThemeStyle(mTheme, resId, force);
+
+    mThemeResId = resId;
+
+    StringBuilder sb(mKey);
+    sb += StringUtils::ToHexString(resId);
+    sb += (force ? "! " : " ");
+    mKey = sb.ToString();
     return NOERROR;
 }
 
 ECode CResources::Theme::SetTo(
     /* [in] */ IResourcesTheme* other)
 {
-    CAssetManager::CopyTheme(mTheme, ((Theme*)other)->mTheme);
+    Theme* o = (Theme*)other;
+    CAssetManager::CopyTheme(mTheme, o->mTheme);
+
+    mThemeResId = o->mThemeResId;
+    mKey = o->mKey;
     return NOERROR;
 }
 
@@ -76,15 +95,17 @@ ECode CResources::Theme::ObtainStyledAttributes(
     /* [out] */ ITypedArray** styles)
 {
     VALIDATE_NOT_NULL(styles);
+    *styles = NULL;
 
     Int32 len = attrs->GetLength();
-    AutoPtr<CTypedArray> array = mHost->GetCachedStyledAttributes(len);
+    AutoPtr<ITypedArray> ta = CTypedArray::Obtain(IResources::Probe(mHost), len);;
+    CTypedArray* array = (CTypedArray*)ta.Get();
     assert(array);
-    array->mRsrcs = attrs;
+    array->mTheme = THIS_PROBE(IResourcesTheme);
     Boolean result;
     FAIL_RETURN(CAssetManager::ApplyStyle(mTheme, 0, 0, 0, *attrs,
             array->mData, array->mIndices, &result));
-    *styles = (ITypedArray*)array;
+    *styles = ta;
     REFCOUNT_ADD(*styles);
     return NOERROR;
 }
@@ -97,22 +118,23 @@ ECode CResources::Theme::ObtainStyledAttributes(
     VALIDATE_NOT_NULL(styles);
 
     Int32 len = attrs->GetLength();
-    AutoPtr<CTypedArray> array = mHost->GetCachedStyledAttributes(len);
+    AutoPtr<ITypedArray> ta = CTypedArray::Obtain(IResources::Probe(mHost), len);;
+    CTypedArray* array = (CTypedArray*)ta.Get();
     assert(array);
-    array->mRsrcs = attrs;
+    array->mTheme = THIS_PROBE(IResourcesTheme);
 
     Boolean result;
     FAIL_RETURN(CAssetManager::ApplyStyle(mTheme, 0, resid, 0, *attrs,
             array->mData, array->mIndices, &result));
     // if (false) {
-    //     int[] data = array.mData;
+    //     Int32[] data = array.mData;
 
     //     System.out.println("**********************************************************");
     //     System.out.println("**********************************************************");
     //     System.out.println("**********************************************************");
     //     System.out.println("Attributes:");
     //     String s = "  Attrs:";
-    //     int i;
+    //     Int32 i;
     //     for (i=0; i<attrs.length; i++) {
     //         s = s + " 0x" + Integer.toHexString(attrs[i]);
     //     }
@@ -120,7 +142,7 @@ ECode CResources::Theme::ObtainStyledAttributes(
     //     s = "  Found:";
     //     TypedValue value = new TypedValue();
     //     for (i=0; i<attrs.length; i++) {
-    //         int d = i*AssetManager.STYLE_NUM_ENTRIES;
+    //         Int32 d = i*AssetManager.STYLE_NUM_ENTRIES;
     //         value.type = data[d+AssetManager.STYLE_TYPE];
     //         value.data = data[d+AssetManager.STYLE_DATA];
     //         value.assetCookie = data[d+AssetManager.STYLE_ASSET_COOKIE];
@@ -143,10 +165,12 @@ ECode CResources::Theme::ObtainStyledAttributes(
     /* [out] */ ITypedArray** styles)
 {
     VALIDATE_NOT_NULL(styles);
+    *styles = NULL;
     VALIDATE_NOT_NULL(attrs);
 
     Int32 len = attrs->GetLength();
-    AutoPtr<CTypedArray> array = mHost->GetCachedStyledAttributes(len);
+    AutoPtr<ITypedArray> ta = CTypedArray::Obtain(IResources::Probe(mHost), len);;
+    CTypedArray* array = (CTypedArray*)ta.Get();
     assert(array);
 
     // XXX note that for now we only work with compiled XML files.
@@ -161,18 +185,18 @@ ECode CResources::Theme::ObtainStyledAttributes(
         parser != NULL ? parser->mParseState : 0, *attrs,
                 array->mData, array->mIndices, &result));
 
-    array->mRsrcs = attrs;
+    array->mTheme = THIS_PROBE(IResourcesTheme);
     array->mXml = parser;
 
     // if (false) {
-    //     int[] data = array.mData;
+    //     Int32[] data = array.mData;
 
     //     System.out.println("Attributes:");
     //     String s = "  Attrs:";
-    //     int i;
+    //     Int32 i;
     //     for (i=0; i<set.getAttributeCount(); i++) {
     //         s = s + " " + set.getAttributeName(i);
-    //         int id = set.getAttributeNameResource(i);
+    //         Int32 id = set.getAttributeNameResource(i);
     //         if (id != 0) {
     //             s = s + "(0x" + Integer.toHexString(id) + ")";
     //         }
@@ -182,7 +206,7 @@ ECode CResources::Theme::ObtainStyledAttributes(
     //     s = "  Found:";
     //     TypedValue value = new TypedValue();
     //     for (i=0; i<attrs.length; i++) {
-    //         int d = i*AssetManager.STYLE_NUM_ENTRIES;
+    //         Int32 d = i*AssetManager.STYLE_NUM_ENTRIES;
     //         value.type = data[d+AssetManager.STYLE_TYPE];
     //         value.data = data[d+AssetManager.STYLE_DATA];
     //         value.assetCookie = data[d+AssetManager.STYLE_ASSET_COOKIE];
@@ -194,6 +218,35 @@ ECode CResources::Theme::ObtainStyledAttributes(
     // }
     *styles = (ITypedArray*)array;
     REFCOUNT_ADD(*styles);
+    return NOERROR;
+}
+
+ECode CResources::Theme::ResolveAttribute(
+    /* [in] */ ArrayOf<Int32>* values,
+    /* [in] */ ArrayOf<Int32>* attrs,
+    /* [out] */ ITypedArray** result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
+    Int32 len = attrs->GetLength();
+    if (values != NULL && len != values->GetLength()) {
+        // throw new IllegalArgumentException(
+        //         "Base attribute values must be null or the same length as attrs");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+
+    AutoPtr<ITypedArray> ta = CTypedArray::Obtain(IResources::Probe(mHost), len);
+    CTypedArray* array = (CTypedArray*)ta.Get();
+    Boolean bval;
+    CAssetManager::ResolveAttrs(mTheme, 0, 0, *values, *attrs, array->mData, array->mIndices, &bval);
+
+    array->mTheme = THIS_PROBE(IResourcesTheme);
+    array->mXml = NULL;
+
+    *result = array;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -215,6 +268,28 @@ ECode CResources::Theme::ResolveAttribute(
     return NOERROR;
 }
 
+ECode CResources::Theme::GetAllAttributes(
+    /* [out, callee] */ ArrayOf<Int32>** attrs)
+{
+    return mAssets->GetStyleAttributes(GetAppliedStyleResId(), attrs);
+}
+
+ECode CResources::Theme::GetResources(
+    /* [out] */ IResources** res)
+{
+    VALIDATE_NOT_NULL(res)
+    *res = IResources::Probe(mHost);
+    REFCOUNT_ADD(*res)
+    return NOERROR;
+}
+
+ECode CResources::Theme::GetDrawable(
+    /* [in] */ Int32 id,
+    /* [out] */ IDrawable** drawable)
+{
+    return IResources::Probe(mHost)->GetDrawable(id, THIS_PROBE(IResourcesTheme), drawable);
+}
+
 ECode CResources::Theme::Dump(
     /* [in] */ Int32 priority,
     /* [in] */ const String& tag,
@@ -224,28 +299,84 @@ ECode CResources::Theme::Dump(
     return NOERROR;
 }
 
+// Needed by layoutlib.
+/*package*/ Int64 CResources::Theme::GetNativeTheme()
+{
+    return mTheme;
+}
+
+/*package*/ Int32 CResources::Theme::GetAppliedStyleResId()
+{
+    return mThemeResId;
+}
+
+/*package*/ String CResources::Theme::GetKey()
+{
+    return mKey;
+}
+
+String CResources::Theme::GetResourceNameFromHexString(
+    /* [in] */ const String& hexString)
+{
+    String str;
+    Int32 value;
+    StringUtils::Parse(hexString, 16, &value);
+    mHost->GetResourceName(value, &str);
+    return str;
+}
+
+ECode CResources::Theme::GetTheme(
+    /* [out, callee] */ ArrayOf<String>** result)
+{
+    VALIDATE_NOT_NULL(result)
+    AutoPtr<ArrayOf<String> > themeData;
+    StringUtils::Split(mKey, " ", (ArrayOf<String>**)&themeData);
+
+    AutoPtr<ArrayOf<String> > themes = ArrayOf<String>::Alloc(themeData->GetLength() * 2);
+    String theme;
+    Boolean forced;
+
+    for (Int32 i = 0, j = themeData->GetLength() - 1; i < themes->GetLength(); i += 2, --j) {
+        theme = (*themeData)[j];
+        forced = theme.EndWith("!");
+        (*themes)[i] = forced ?
+            GetResourceNameFromHexString(theme.Substring(0, theme.GetLength() - 1)) :
+            GetResourceNameFromHexString(theme);
+        (*themes)[i + 1] = forced ? String("forced") : String("not forced");
+    }
+
+    *result = themes;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
+}
+
+static Int32 InitLAYOUT_DIR_CONFIG()
+{
+    assert(0 && "TODO");
+    //return CActivityInfo::ActivityInfoConfigToNative(IActivityInfo::CONFIG_LAYOUT_DIRECTION);
+    return 0;
+}
 
 const String CResources::TAG("CResources");
-const String CResources::WIDGET_SUFFIX("widget_preview");
 const Boolean CResources::DEBUG_LOAD = FALSE;
 const Boolean CResources::DEBUG_CONFIG = FALSE;
-const Boolean CResources::DEBUG_ATTRIBUTES_CACHE = FALSE;
 const Boolean CResources::TRACE_FOR_PRELOAD = FALSE;
 const Boolean CResources::TRACE_FOR_MISS_PRELOAD = FALSE;
 const Int32 CResources::ID_OTHER = 0x01000004;
+const Int32 CResources::LAYOUT_DIR_CONFIG = InitLAYOUT_DIR_CONFIG();
+const String CResources::WIDGET_SUFFIX("widget_preview");
 
 AutoPtr<IResources> CResources::mSystem;
-CResources::DrawableMap CResources::sPreloadedDrawables;
+List< AutoPtr<CResources::ConstantStateMap> > CResources::sPreloadedDrawables;
+CResources::ConstantStateMap CResources::sPreloadedColorDrawables;
 CResources::ColorStateMap CResources::sPreloadedColorStateLists;
-CResources::DrawableMap CResources::sPreloadedColorDrawables;
 Boolean CResources::sPreloaded = FALSE;
 Int32 CResources::sPreloadedDensity = 0;
-
-Object CResources::mSyncLock;
+Object CResources::sSync;
 
 CAR_INTERFACE_IMPL(CResources, Object, IResources)
 
-CAR_OJBECT_IMPL(CResources)
+CAR_OBJECT_IMPL(CResources)
 
 CResources::CResources()
     : mPreloading(FALSE)
@@ -259,6 +390,8 @@ CResources::CResources()
 
     ASSERT_SUCCEEDED(CConfiguration::NewByFriend((CConfiguration**)&mConfiguration));
     ASSERT_SUCCEEDED(CDisplayMetrics::NewByFriend((CDisplayMetrics**)&mMetrics));
+
+    mCompatibilityInfo = CCompatibilityInfo::DEFAULT_COMPATIBILITY_INFO;
 }
 
 CResources::~CResources()
@@ -267,12 +400,58 @@ CResources::~CResources()
     mCachedXmlBlocks = NULL;
 }
 
+ECode CResources::constructor()
+{
+    mAssets = CAssetManager::GetSystem();
+    // NOTE: Intentionally leaving this uninitialized (all values set
+    // to zero), so that anyone who tries to do something that requires
+    // metrics will get a very wrong value.
+    mConfiguration->SetToDefaults();
+    mMetrics->SetToDefaults();
+    UpdateConfiguration(NULL, NULL);
+    mAssets->EnsureStringBlocks();
+    return NOERROR;
+}
+
+ECode CResources::constructor(
+    /* [in] */ IAssetManager* assets,
+    /* [in] */ IDisplayMetrics* metrics,
+    /* [in] */ IConfiguration* config)
+{
+    return constructor(assets, metrics, config, CCompatibilityInfo::DEFAULT_COMPATIBILITY_INFO, NULL);
+}
+
+ECode CResources::constructor(
+    /* [in] */ IAssetManager* assets,
+    /* [in] */ IDisplayMetrics* metrics,
+    /* [in] */ IConfiguration* config,
+    /* [in] */ ICompatibilityInfo* compInfo,
+    /* [in] */ IBinder* token)
+{
+    if (!assets) {
+        return E_INVALID_ARGUMENT;
+    }
+    mAssets = (CAssetManager*)assets;
+    mMetrics->SetToDefaults();
+    if (compInfo != NULL) {
+        mCompatibilityInfo = compInfo;
+    }
+    UpdateConfiguration(config, metrics);
+    mAssets->EnsureStringBlocks();
+    IWeakReferenceSource* wrs = IWeakReferenceSource::Probe(token);
+    wrs->GetWeakReference((IWeakReference**)&mToken);
+    return NOERROR;
+}
+
 Int32 CResources::SelectDefaultTheme(
     /* [in] */ Int32 curTheme,
     /* [in] */ Int32 targetSdkVersion)
 {
     return SelectSystemTheme(curTheme, targetSdkVersion,
-            R::style::Theme, R::style::Theme_Holo, R::style::Theme_DeviceDefault);
+            R::style::Theme,
+            R::style::Theme_Holo,
+            R::style::Theme_DeviceDefault,
+            R::style::Theme_DeviceDefault_Light_DarkActionBar);
 }
 
 Int32 CResources::SelectSystemTheme(
@@ -280,6 +459,7 @@ Int32 CResources::SelectSystemTheme(
     /* [in] */ Int32 targetSdkVersion,
     /* [in] */ Int32 orig,
     /* [in] */ Int32 holo,
+    /* [in] */ Int32 dark,
     /* [in] */ Int32 deviceDefault)
 {
     if (curTheme != 0) {
@@ -291,12 +471,15 @@ Int32 CResources::SelectSystemTheme(
     if (targetSdkVersion < Build::VERSION_CODES::ICE_CREAM_SANDWICH) {
         return holo;
     }
+    if (targetSdkVersion < Build::VERSION_CODES::CUR_DEVELOPMENT) {
+        return dark;
+    }
     return deviceDefault;
 }
 
 AutoPtr<IResources> CResources::GetSystem()
 {
-    AutoLock lock(mSyncLock);
+    AutoLock lock(sSync);
 
     AutoPtr<IResources> ret = mSystem;
     if (ret == NULL) {
@@ -362,7 +545,7 @@ ECode CResources::GetQuantityText(
 
 // AutoPtr<NativePluralRules> CResources::GetPluralRule()
 // {
-//     AutoLock lock(_m_syncLock);
+//     AutoLock lock(this);
 //     if (mPluralRule == NULL) {
 //         mPluralRule = NativePluralRules::ForLocale(mConfiguration->mLocale);
 //     }
@@ -566,7 +749,7 @@ ECode CResources::GetIntArray(
     FAIL_RETURN(mAssets->GetArrayIntResource(id, (ArrayOf<Int32>**)&temp));
     if (temp) {
         *ints = temp;
-        REFCOUNT_ADDREF(*ints);
+        REFCOUNT_ADD(*ints);
         return NOERROR;
     }
 
@@ -587,11 +770,12 @@ ECode CResources::ObtainTypedArray(
         return E_NOT_FOUND_EXCEPTION;
     }
 
-    AutoPtr<CTypedArray> temp = GetCachedStyledAttributes(len);
+    AutoPtr<ITypedArray> ta = CTypedArray::Obtain(THIS_PROBE(IResources), len);
+    CTypedArray* temp = (CTypedArray*)ta.Get();
     FAIL_RETURN(mAssets->RetrieveArray(id, temp->mData, &temp->mLength))
     (*temp->mIndices)[0] = 0;
 
-    *array = (ITypedArray*)temp.Get();
+    *array = ta;
     REFCOUNT_ADD(*array);
     return NOERROR;
 }
@@ -602,9 +786,15 @@ ECode CResources::GetDimension(
 {
     VALIDATE_NOT_NULL(dim);
 
-    AutoLock lock(mTmpValueLock);
+    AutoLock lock(mAccessLock);
 
-    FAIL_RETURN(GetValue(id, (ITypedValue*)mTmpValue.Get(), TRUE))
+    ITypedValue* value = (ITypedValue*)mTmpValue.Get();
+    if (value == NULL) {
+        CTypedValue::NewByFriend((CTypedValue**)&mTmpValue);
+        value = (ITypedValue*)mTmpValue.Get();
+    }
+
+    FAIL_RETURN(GetValue(id, value, TRUE))
     if (mTmpValue->mType == ITypedValue::TYPE_DIMENSION) {
         *dim = CTypedValue::ComplexToDimension(mTmpValue->mData,
                 (IDisplayMetrics*)mMetrics.Get());
@@ -622,9 +812,14 @@ ECode CResources::GetDimensionPixelOffset(
 {
     VALIDATE_NOT_NULL(offset);
 
-    AutoLock lock(mTmpValueLock);
+    AutoLock lock(mAccessLock);
 
-    AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
+    ITypedValue* value = (ITypedValue*)mTmpValue.Get();
+    if (value == NULL) {
+        CTypedValue::NewByFriend((CTypedValue**)&mTmpValue);
+        value = (ITypedValue*)mTmpValue.Get();
+    }
+
     FAIL_RETURN(GetValue(id, value, TRUE))
     if (mTmpValue->mType == ITypedValue::TYPE_DIMENSION) {
         *offset = CTypedValue::ComplexToDimensionPixelOffset(
@@ -644,9 +839,14 @@ ECode CResources::GetDimensionPixelSize(
 {
     VALIDATE_NOT_NULL(size);
 
-    AutoLock lock(mTmpValueLock);
+    AutoLock lock(mAccessLock);
 
-    AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
+    ITypedValue* value = (ITypedValue*)mTmpValue.Get();
+    if (value == NULL) {
+        CTypedValue::NewByFriend((CTypedValue**)&mTmpValue);
+        value = (ITypedValue*)mTmpValue.Get();
+    }
+
     FAIL_RETURN(GetValue(id, value, TRUE))
     if (mTmpValue->mType == ITypedValue::TYPE_DIMENSION) {
         *size = CTypedValue::ComplexToDimensionPixelSize(
@@ -668,9 +868,14 @@ ECode CResources::GetFraction(
 {
     VALIDATE_NOT_NULL(fraction);
 
-    AutoLock lock(mTmpValueLock);
+    AutoLock lock(mAccessLock);
 
-    AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
+    ITypedValue* value = (ITypedValue*)mTmpValue.Get();
+    if (value == NULL) {
+        CTypedValue::NewByFriend((CTypedValue**)&mTmpValue);
+        value = (ITypedValue*)mTmpValue.Get();
+    }
+
     FAIL_RETURN(GetValue(id, value, TRUE))
     if (mTmpValue->mType == ITypedValue::TYPE_FRACTION) {
         *fraction = CTypedValue::ComplexToFraction(mTmpValue->mData, base, pbase);
@@ -686,12 +891,53 @@ ECode CResources::GetDrawable(
     /* [in] */ Int32 id,
     /* [out] */ IDrawable** drawable)
 {
-    VALIDATE_NOT_NULL(drawable);
+    VALIDATE_NOT_NULL(drawable)
 
-    AutoLock lock(mTmpValueLock);
-    AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
-    FAIL_RETURN(GetValue(id, value, TRUE))
-    return LoadDrawable(value, id, drawable);
+    AutoPtr<IDrawable> d;
+    GetDrawable(id, NULL, (IDrawable**)&d);
+    Boolean can;
+    d->CanApplyTheme(&can);
+    if (can) {
+        // Log.w(TAG, "Drawable " + getResourceName(id) + " has unresolved theme "
+        //         + "attributes! Consider using Resources.getDrawable(Int32, Theme) or "
+        //         + "Context.getDrawable(Int32).", new RuntimeException());
+    }
+
+    *drawable = d;
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
+}
+
+ECode CResources::GetDrawable(
+    /* [in] */ Int32 id,
+    /* [in] */ IResourcesTheme* theme,
+    /* [out] */ IDrawable** drawable)
+{
+    VALIDATE_NOT_NULL(drawable)
+    *drawable = NULL;
+
+    AutoPtr<ITypedValue> value;
+    synchronized (mAccessLock) {
+        value = (ITypedValue*)mTmpValue.Get();
+        if (value == NULL) {
+            CTypedValue::New((ITypedValue**)&value);
+        }
+        else {
+            mTmpValue = NULL;
+        }
+        GetValue(id, value, TRUE);
+    }
+    AutoPtr<IDrawable> res;
+    LoadDrawable(value, id, theme, (IDrawable**)&res);
+    synchronized (mAccessLock) {
+        if (mTmpValue == NULL) {
+            mTmpValue = (CTypedValue*)value.Get();
+        }
+    }
+
+    *drawable = res;
+    REFCOUNT_ADD(*drawable)
+    return NOERROR;
 }
 
 ECode CResources::GetDrawableForDensity(
@@ -699,10 +945,27 @@ ECode CResources::GetDrawableForDensity(
     /* [in] */ Int32 density,
     /* [out] */ IDrawable** drawable)
 {
-    VALIDATE_NOT_NULL(drawable);
+    return GetDrawableForDensity(id, density, NULL, drawable);
+}
 
-    AutoLock lock(mTmpValueLock);
+ECode CResources::GetDrawableForDensity(
+    /* [in] */ Int32 id,
+    /* [in] */ Int32 density,
+    /* [in] */ IResourcesTheme* theme,
+    /* [out] */ IDrawable** drawable)
+{
+    VALIDATE_NOT_NULL(drawable)
+    *drawable = NULL;
+
+    AutoLock lock(mAccessLock);
     AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
+    if (value == NULL) {
+        CTypedValue::New((ITypedValue**)&value);
+    }
+    else {
+        mTmpValue = NULL;
+    }
+
     FAIL_RETURN(GetValueForDensity(id, density, value, TRUE))
 
     /*
@@ -721,7 +984,18 @@ ECode CResources::GetDrawableForDensity(
         }
     }
 
-    return LoadDrawable(value, id, drawable);
+    AutoPtr<IDrawable> res;
+    LoadDrawable(value, id, theme, (IDrawable**)&res);
+
+    synchronized (mAccessLock) {
+        if (mTmpValue == NULL) {
+            mTmpValue = (CTypedValue*)value.Get();
+        }
+    }
+
+    *drawable = res;
+    REFCOUNT_ADD(*drawable)
+    return NOERROR;
 }
 
 ECode CResources::GetMovie(
@@ -732,7 +1006,8 @@ ECode CResources::GetMovie(
 
     AutoPtr<IInputStream> is;
     OpenRawResource(id, (IInputStream**)&is);
-    ECode ec = Movie::DecodeStream(is, movie);
+    assert(0 && "TODO");
+    ECode ec = NOERROR;// Movie::DecodeStream(is, movie);
     is->Close(); // don't care, since the return value is valid
 
     return ec;
@@ -744,24 +1019,39 @@ ECode CResources::GetColor(
 {
     VALIDATE_NOT_NULL(color);
 
-    AutoLock lock(mTmpValueLock);
 
-    AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
-    FAIL_RETURN(GetValue(id, value, TRUE))
-    if (mTmpValue->mType >= ITypedValue::TYPE_FIRST_INT
-            && mTmpValue->mType <= ITypedValue::TYPE_LAST_INT) {
-        *color = mTmpValue->mData;
-        return NOERROR;
-    }
-    else if (mTmpValue->mType == ITypedValue::TYPE_STRING) {
-        AutoPtr<IColorStateList> csl;
-        ASSERT_SUCCEEDED(LoadColorStateList(value, id, (IColorStateList**)&csl));
-        return csl->GetDefaultColor(color);
+    AutoPtr<ITypedValue> value;
+
+    synchronized (mAccessLock) {
+        value = (ITypedValue*)mTmpValue.Get();
+        if (value == NULL) {
+            CTypedValue::New((ITypedValue**)&value);
+        }
+
+        AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
+        FAIL_RETURN(GetValue(id, value, TRUE))
+        if (mTmpValue->mType >= ITypedValue::TYPE_FIRST_INT
+                && mTmpValue->mType <= ITypedValue::TYPE_LAST_INT) {
+            *color = mTmpValue->mData;
+            mTmpValue = (CTypedValue*)value.Get();
+            return NOERROR;
+        }
+        else if (mTmpValue->mType != ITypedValue::TYPE_STRING) {
+            Slogger::E(TAG, "Resource ID #0x%08x type #0x%08x is not valid", id, mTmpValue->mType);
+            *color = 0;
+            mTmpValue = NULL;
+            return E_NOT_FOUND_EXCEPTION;
+        }
     }
 
-    Slogger::E(TAG, "Resource ID #0x%08x type #0x%08x is not valid", id, mTmpValue->mType);
-    *color = 0;
-    return E_NOT_FOUND_EXCEPTION;
+    AutoPtr<IColorStateList> csl;
+    ASSERT_SUCCEEDED(LoadColorStateList(value, id, (IColorStateList**)&csl));
+    synchronized (mAccessLock) {
+        if (mTmpValue == NULL) {
+            mTmpValue = (CTypedValue*)value.Get();
+        }
+    }
+    return csl->GetDefaultColor(color);
 }
 
 ECode CResources::GetColorStateList(
@@ -770,10 +1060,31 @@ ECode CResources::GetColorStateList(
 {
     VALIDATE_NOT_NULL(list);
 
-    AutoLock lock(mTmpValueLock);
-    AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
-    FAIL_RETURN(GetValue(id, value, TRUE))
-    return LoadColorStateList(value, id, list);
+    AutoPtr<ITypedValue> value;
+
+    synchronized (mAccessLock) {
+        value = (ITypedValue*)mTmpValue.Get();
+        if (value == NULL) {
+            CTypedValue::New((ITypedValue**)&value);
+        }
+        else {
+            mTmpValue = NULL;
+        }
+
+        FAIL_RETURN(GetValue(id, value, TRUE))
+    }
+
+    AutoPtr<IColorStateList> csl;
+    ASSERT_SUCCEEDED(LoadColorStateList(value, id, (IColorStateList**)&csl));
+    synchronized (mAccessLock) {
+        if (mTmpValue == NULL) {
+            mTmpValue = (CTypedValue*)value.Get();
+        }
+    }
+
+    *list = csl;
+    REFCOUNT_ADD(*list)
+    return NOERROR;
 }
 
 ECode CResources::GetBoolean(
@@ -782,9 +1093,14 @@ ECode CResources::GetBoolean(
 {
     VALIDATE_NOT_NULL(b);
 
-    AutoLock lock(mTmpValueLock);
+    AutoLock lock(mAccessLock);
 
     AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
+    if (value == NULL) {
+        CTypedValue::NewByFriend((CTypedValue**)&mTmpValue);
+        value = (ITypedValue*)mTmpValue.Get();
+    }
+
     FAIL_RETURN(GetValue(id, value, TRUE))
     if (mTmpValue->mType >= ITypedValue::TYPE_FIRST_INT
             && mTmpValue->mType <= ITypedValue::TYPE_LAST_INT) {
@@ -803,9 +1119,14 @@ ECode CResources::GetInteger(
 {
     VALIDATE_NOT_NULL(i);
 
-    AutoLock lock(mTmpValueLock);
+    AutoLock lock(mAccessLock);
 
     AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
+    if (value == NULL) {
+        CTypedValue::NewByFriend((CTypedValue**)&mTmpValue);
+        value = (ITypedValue*)mTmpValue.Get();
+    }
+
     FAIL_RETURN(GetValue(id, value, TRUE))
     if (mTmpValue->mType >= ITypedValue::TYPE_FIRST_INT
             && mTmpValue->mType <= ITypedValue::TYPE_LAST_INT) {
@@ -815,6 +1136,30 @@ ECode CResources::GetInteger(
 
     Slogger::E(TAG, "Resource ID #0x%08x type #0x%08x is not valid", id, mTmpValue->mType);
     *i = 0;
+    return E_NOT_FOUND_EXCEPTION;
+}
+
+ECode CResources::GetFloat(
+    /* [in] */ Int32 id,
+    /* [out] */ Float* f)
+{
+    VALIDATE_NOT_NULL(f)
+    *f = 0.0f;
+
+    AutoLock lock(mAccessLock);
+
+    AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
+    if (value == NULL) {
+        CTypedValue::NewByFriend((CTypedValue**)&mTmpValue);
+        value = (ITypedValue*)mTmpValue.Get();
+    }
+
+    FAIL_RETURN(GetValue(id, value, TRUE))
+    if (mTmpValue->mType == ITypedValue::TYPE_FLOAT) {
+        return mTmpValue->GetFloat(f);
+    }
+
+    Slogger::E(TAG, "Resource ID #0x%08x type #0x%08x is not valid", id, mTmpValue->mType);
     return E_NOT_FOUND_EXCEPTION;
 }
 
@@ -847,8 +1192,28 @@ ECode CResources::OpenRawResource(
     /* [out] */ IInputStream** res)
 {
     VALIDATE_NOT_NULL(res);
-    AutoLock lock(mTmpValueLock);
-    return OpenRawResource(id, (ITypedValue*)mTmpValue.Get(), res);
+
+    AutoPtr<ITypedValue> value;
+    synchronized (mAccessLock) {
+        value = (ITypedValue*)mTmpValue.Get();
+        if (value == NULL) {
+            CTypedValue::New((ITypedValue**)&value);
+        }
+        else {
+            mTmpValue = NULL;
+        }
+    }
+
+    AutoPtr<IInputStream> is;
+    OpenRawResource(id, value, (IInputStream**)&is);
+    synchronized (mAccessLock) {
+        if (mTmpValue == NULL) {
+            mTmpValue = (CTypedValue*)value.Get();
+        }
+    }
+    *res = is;
+    REFCOUNT_ADD(*res)
+    return NOERROR;
 }
 
 ECode CResources::OpenRawResource(
@@ -880,15 +1245,24 @@ ECode CResources::OpenRawResourceFd(
 {
     VALIDATE_NOT_NULL(des);
 
-    AutoLock lock(mTmpValueLock);
+    AutoPtr<ITypedValue> value;
+    synchronized (mAccessLock) {
+        value = mTmpValue;
+        if (value == NULL) {
+            CTypedValue::New((ITypedValue**)&value);
+        }
+        else {
+            mTmpValue = NULL;
+        }
 
-    FAIL_RETURN(GetValue(id, (ITypedValue*)mTmpValue.Get(), TRUE))
+        FAIL_RETURN(GetValue(id, value, TRUE))
+    }
 
 //    try {
     String str;
-    mTmpValue->mString->ToString(&str);
-    return mAssets->OpenNonAssetFd(
-            mTmpValue->mAssetCookie, str, des);
+    ((CTypedValue*)value.Get())->mString->ToString(&str);
+    ECode ec = mAssets->OpenNonAssetFd(
+            ((CTypedValue*)value.Get())->mAssetCookie, str, des);
 //    } catch (Exception e) {
 //        NotFoundException rnf = new NotFoundException(
 //            "File " + value.string.toString()
@@ -897,6 +1271,12 @@ ECode CResources::OpenRawResourceFd(
 //        rnf.initCause(e);
 //        throw rnf;
 //    }
+    synchronized (mAccessLock) {
+        if (mTmpValue == NULL) {
+            mTmpValue = (CTypedValue*)value.Get();
+        }
+    }
+    return ec;
 }
 
 ECode CResources::GetValue(
@@ -960,7 +1340,8 @@ ECode CResources::ObtainAttributes(
     VALIDATE_NOT_NULL(array);
 
     Int32 len = attrs->GetLength();
-    AutoPtr<CTypedArray> temp = GetCachedStyledAttributes(len);
+    AutoPtr<ITypedArray> ta = CTypedArray::Obtain(THIS_PROBE(IResources), len);
+    CTypedArray* temp = (CTypedArray*)ta.Get();
 
     // XXX note that for now we only work with compiled XML files.
     // To support generic XML files we will need to manually parse
@@ -971,10 +1352,9 @@ ECode CResources::ObtainAttributes(
     FAIL_RETURN(mAssets->RetrieveAttributes(
             parser->mParseState, *attrs, temp->mData, temp->mIndices, &result));
 
-    temp->mRsrcs = attrs->Clone();
     temp->mXml = parser;
 
-    *array = (ITypedArray*)temp;
+    *array = ta.Get();
     REFCOUNT_ADD(*array);
 
     return NOERROR;
@@ -993,7 +1373,7 @@ ECode CResources::UpdateConfiguration(
     /* [in] */ ICompatibilityInfo* compat)
 {
     {
-        AutoLock lock(mTmpValueLock);
+        AutoLock lock(mAccessLock);
 
         // if (false) {
         //     Slog.i(TAG, "**** Updating config of " + this + ": old config is "
@@ -1018,9 +1398,7 @@ ECode CResources::UpdateConfiguration(
         // it would be cleaner and more maintainble to just be
         // consistently dealing with a compatible display everywhere in
         // the framework.
-        if (mCompatibilityInfo != NULL) {
-            mCompatibilityInfo->ApplyToDisplayMetrics(mMetrics);
-        }
+        mCompatibilityInfo->ApplyToDisplayMetrics(mMetrics);
 
         Int32 configChanges = 0xfffffff;
         if (config != NULL) {
@@ -1030,9 +1408,9 @@ ECode CResources::UpdateConfiguration(
             if (density == IConfiguration::DENSITY_DPI_UNDEFINED) {
                 mMetrics->GetNoncompatDensityDpi(&density);
             }
-            if (mCompatibilityInfo != NULL) {
-                mCompatibilityInfo->ApplyToConfiguration(density, mTmpConfig);
-            }
+
+            mCompatibilityInfo->ApplyToConfiguration(density, mTmpConfig);
+
             if (mTmpConfig->mLocale == NULL) {
                 AutoPtr<ILocaleHelper> helper;
                 CLocaleHelper::AcquireSingleton((ILocaleHelper**)&helper);
@@ -1041,7 +1419,7 @@ ECode CResources::UpdateConfiguration(
             }
             mConfiguration->UpdateFrom(mTmpConfig, &configChanges);
             AutoPtr<IActivityInfoHelper> activityInfoHelper;
-            CActivityInfoHelper::AcquireSingleton((IActivityInfoHelper**)&activityInfoHelper);
+            // CActivityInfoHelper::AcquireSingleton((IActivityInfoHelper**)&activityInfoHelper);
             activityInfoHelper->ActivityInfoConfigToNative(configChanges, &configChanges);
         }
         if (mConfiguration->mLocale == NULL) {
@@ -1058,12 +1436,9 @@ ECode CResources::UpdateConfiguration(
 
         String locale(NULL);
         if (mConfiguration->mLocale != NULL) {
-            mConfiguration->mLocale->GetLanguage(&locale);
-            String country;
-            mConfiguration->mLocale->GetCountry(&country);
-            if (!country.IsNullOrEmpty()) {
-                locale += String("-") + country;
-            }
+            String tag;
+            mConfiguration->mLocale->ToLanguageTag(&tag);
+            locale = AdjustLanguageTag(tag);
         }
         Int32 width, height;
         if (mMetrics->mWidthPixels >= mMetrics->mHeightPixels) {
@@ -1093,18 +1468,18 @@ ECode CResources::UpdateConfiguration(
                 Build::VERSION::RESOURCES_SDK_INT);
 
         if (DEBUG_CONFIG) {
-            Slogger::I(TAG, "**** Updating config of %p: final config is %p final compat is %p",
+            Slogger::I(TAG, "**** Updating config of %p: config is %p compat is %p",
                     this, mConfiguration.Get(), mCompatibilityInfo.Get());
         }
 
-        ClearDrawableCache(mDrawableCache, configChanges);
-        ClearDrawableCache(mColorDrawableCache, configChanges);
+        ClearDrawableCachesLocked(mDrawableCache, configChanges);
+        ClearDrawableCachesLocked(mColorDrawableCache, configChanges);
         mColorStateListCache.Clear();
         FlushLayoutCache();
     }
 
     {
-        // AutoLock lock(_m_syncLock);
+        // AutoLock lock(this);
         // if (mPluralRule != NULL) {
         //     assert(config);
         //     mPluralRule = NativePluralRules::ForLocale((CConfiguration*)config->mLocale);
@@ -1114,8 +1489,18 @@ ECode CResources::UpdateConfiguration(
     return NOERROR;
 }
 
-void CResources::ClearDrawableCache(
-    /* [in] */ HashMap<Int64, AutoPtr<IWeakReference> >& cache,
+void CResources::ClearDrawableCachesLocked(
+    /* [in] */ DrawableMap& cache,
+    /* [in] */ Int32 configChanges)
+{
+    DrawableMapIterator it = cache.Begin();
+    for (; it != cache.End(); ++it) {
+        ClearDrawableCacheLocked(it->mSecond, configChanges);
+    }
+}
+
+void CResources::ClearDrawableCacheLocked(
+    /* [in] */ ConstantStateMap* cache,
     /* [in] */ Int32 configChanges)
 {
     if (DEBUG_CONFIG) {
@@ -1123,9 +1508,9 @@ void CResources::ClearDrawableCache(
     }
 
     AutoPtr<IWeakReference> wr;
-    DrawableMapIterator it;
+    ConstantStateMapIterator it;
     Int32 con;
-    for (it = cache.Begin(); it != cache.End(); ++it) {
+    for (it = cache->Begin(); it != cache->End(); ++it) {
         wr = it->mSecond;
         if (wr.Get() != NULL) {
             AutoPtr<IDrawableConstantState> cs;
@@ -1136,7 +1521,7 @@ void CResources::ClearDrawableCache(
                     if (DEBUG_CONFIG) {
                         Slogger::D(TAG, "FLUSHING #0x%08x /%p with changes: 0x%08x", it->mFirst, cs.Get(), con);
                     }
-                    cache[it->mFirst] = NULL;
+                    (*cache)[it->mFirst] = NULL;
                 }
                 else if (DEBUG_CONFIG) {
                     Slogger::D(TAG, "(Keeping #0x%080x /%p with changes: 0x%08x", it->mFirst, cs.Get(), con);
@@ -1144,6 +1529,32 @@ void CResources::ClearDrawableCache(
             }
         }
     }
+}
+
+String CResources::AdjustLanguageTag(
+    /* [in] */ const String& languageTag)
+{
+    Int32 separator = languageTag.IndexOf('-');
+    String language;
+    String remainder;
+
+    if (separator == -1) {
+        language = languageTag;
+        remainder = "";
+    }
+    else {
+        language = languageTag.Substring(0, separator);
+        remainder = languageTag.Substring(separator);
+    }
+
+    AutoPtr<ILocaleHelper> helper;
+    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&helper);
+    String l;
+    helper->AdjustLanguageCode(language, &l);
+
+    StringBuilder sb(l);
+    sb += remainder;
+    return sb.ToString();
 }
 
 void CResources::UpdateSystemConfiguration(
@@ -1156,13 +1567,6 @@ void CResources::UpdateSystemConfiguration(
         //Log.i(TAG, "Updated system resources " + mSystem
         //        + ": " + mSystem.getConfiguration());
     }
-}
-
-void CResources::UpdateSystemConfiguration(
-    /* [in] */ IConfiguration* config,
-    /* [in] */ IDisplayMetrics* metrics)
-{
-    UpdateSystemConfiguration(config, metrics, NULL);
 }
 
 ECode CResources::GetDisplayMetrics(
@@ -1192,8 +1596,7 @@ ECode CResources::GetCompatibilityInfo(
 {
     VALIDATE_NOT_NULL(ci);
 
-    *ci = mCompatibilityInfo != NULL ? mCompatibilityInfo.Get()
-            : CCompatibilityInfo::DEFAULT_COMPATIBILITY_INFO.Get();
+    *ci = mCompatibilityInfo;
     REFCOUNT_ADD(*ci);
     return NOERROR;
 }
@@ -1201,9 +1604,12 @@ ECode CResources::GetCompatibilityInfo(
 ECode CResources::SetCompatibilityInfo(
     /* [in] */ ICompatibilityInfo* ci)
 {
-    mCompatibilityInfo = ci;
-    return UpdateConfiguration((IConfiguration*)mConfiguration.Get(),
-            (IDisplayMetrics*)mMetrics.Get());
+    if (ci != NULL) {
+        mCompatibilityInfo = ci;
+        return UpdateConfiguration((IConfiguration*)mConfiguration.Get(),
+                (IDisplayMetrics*)mMetrics.Get());
+    }
+    return NOERROR;
 }
 
 ECode CResources::GetIdentifier(
@@ -1213,14 +1619,25 @@ ECode CResources::GetIdentifier(
     /* [out] */ Int32* id)
 {
     VALIDATE_NOT_NULL(id);
+    *id = 0;
 
-    ECode ec = StringUtils::ParseInt32(name, id);
+    if (name.IsNull()) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    ECode ec = StringUtils::Parse(name, id);
     if (SUCCEEDED(ec)) {
         return NOERROR;
     }
 
     *id = mAssets->GetResourceIdentifier(name, defType, defPackage);
     return NOERROR;
+}
+
+Boolean ResourceHasPackage(
+    /* [in] */ Int32 resid)
+{
+    return (resid >> 24) != 0;
 }
 
 ECode CResources::GetResourceName(
@@ -1230,41 +1647,6 @@ ECode CResources::GetResourceName(
     VALIDATE_NOT_NULL(name);
 
     *name = mAssets->GetResourceName(resid);
-    if (!name->IsNull()) {
-        return NOERROR;
-    }
-
-    Slogger::E(TAG, "Unable to find resource ID #0x%08x", resid);
-    return E_NOT_FOUND_EXCEPTION;
-}
-
-ECode CResources::GetDrawableResourceName(
-    /* [in] */ Int32 resid,
-    /* [out] */ String* name)
-{
-    VALIDATE_NOT_NULL(name);
-
-    {
-        AutoLock lock(mTmpValueLock);
-
-        String cookie;
-        String path;
-
-        AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
-        FAIL_RETURN(GetValue(resid, value, TRUE))
-
-        Int32 ac;
-        value->GetAssetCookie(&ac);
-        mAssets->GetCookieName(ac, &cookie);
-        AutoPtr<ICharSequence> valueStr;
-        value->GetString((ICharSequence**)&valueStr);
-        valueStr->ToString(&path);
-        StringBuilder sb(cookie);
-        sb += IResources::path_separate;
-        sb += path;
-        *name = sb.ToString();
-    }
-
     if (!name->IsNull()) {
         return NOERROR;
     }
@@ -1324,24 +1706,26 @@ ECode CResources::ParseBundleExtras(
 {
     VALIDATE_NOT_NULL(outBundle);
 
+    IXmlPullParser* xpp = IXmlPullParser::Probe(parser);
+
     Int32 outerDepth;
-    parser->GetDepth(&outerDepth);
+    xpp->GetDepth(&outerDepth);
     Int32 type;
     Int32 depth;
-    while ((parser->Next(&type), type != IXmlPullParser::END_DOCUMENT)
-            && (type != IXmlPullParser::END_TAG || (parser->GetDepth(&depth), depth > outerDepth))) {
+    while ((xpp->Next(&type), type != IXmlPullParser::END_DOCUMENT)
+            && (type != IXmlPullParser::END_TAG || (xpp->GetDepth(&depth), depth > outerDepth))) {
         if (type == IXmlPullParser::END_TAG || type == IXmlPullParser::TEXT) {
             continue;
         }
 
         String nodeName;
-        parser->GetName(&nodeName);
+        xpp->GetName(&nodeName);
         if (nodeName.Equals("extra")) {
             ParseBundleExtra(nodeName, IAttributeSet::Probe(parser), outBundle);
-            XmlUtils::SkipCurrentTag(parser);
+            // XmlUtils::SkipCurrentTag(parser);
         }
         else {
-            XmlUtils::SkipCurrentTag(parser);
+            // XmlUtils::SkipCurrentTag(parser);
         }
     }
 
@@ -1407,7 +1791,7 @@ ECode CResources::ParseBundleExtra(
         else {
             sa->Recycle();
 //          throw new XmlPullParserException("<" + tagName
-//                  + "> only supports string, integer, float, color, and boolean at "
+//                  + "> only supports string, integer, float, color, and Boolean at "
 //                  + attrs.getPositionDescription());
             return E_XML_PULL_PARSER_EXCEPTION;
         }
@@ -1459,7 +1843,7 @@ ECode CResources::FlushLayoutCache()
 
 ECode CResources::StartPreloading()
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     if (sPreloaded) {
         Slogger::E(TAG, "Resources already preloaded");
@@ -1482,35 +1866,58 @@ ECode CResources::FinishPreloading()
     return NOERROR;
 }
 
+AutoPtr<CResources::ConstantStateMap> CResources::GetPreloadedDrawables()
+{
+    return sPreloadedDrawables[0];
+}
+
 Boolean CResources::VerifyPreloadConfig(
-    /* [in] */ ITypedValue* value,
+    /* [in] */ Int32 changingConfigurations,
+    /* [in] */ Int32 allowVarying,
+    /* [in] */ Int32 resourceId,
     /* [in] */ const String& name)
 {
-    if ((((CTypedValue*)value)->mChangingConfigurations & ~(IActivityInfo::CONFIG_FONT_SCALE
-            | IActivityInfo::CONFIG_DENSITY)) != 0) {
-        Int32 id;
-        value->GetResourceId(&id);
+    // We allow preloading of resources even if they vary by font scale (which
+    // doesn't impact resource selection) or density (which we handle specially by
+    // simply turning off all preloading), as well as any other configs specified
+    // by the caller.
+    if (((changingConfigurations & ~(IActivityInfo::CONFIG_FONT_SCALE |
+            IActivityInfo::CONFIG_DENSITY)) & ~allowVarying) != 0) {
         String resName;
-        ECode ec = GetResourceName(id, &resName);
+        ECode ec = GetResourceName(resourceId, &resName);
         if (ec == (ECode)E_NOT_FOUND_EXCEPTION) {
             resName = "?";
         }
+        // This should never happen in production, so we should log a
+        // warning even if we're not debugging.
         Slogger::W(TAG, "Preloaded %s resource #0x%08x (%s) that varies with configuration!!",
-            name.string(), id, resName.string());
+            name.string(), resourceId, resName.string());
         return FALSE;
+    }
+
+    if (TRACE_FOR_PRELOAD) {
+        String resName;
+        ECode ec = GetResourceName(resourceId, &resName);
+        if (ec == (ECode)E_NOT_FOUND_EXCEPTION) {
+            resName = "?";
+        }
+
+        Slogger::W(TAG, "Preloaded %s resource #0x%08x (%s) that varies with configuration!!",
+            name.string(), resourceId, resName.string());
     }
     return TRUE;
 }
 
 ECode CResources::LoadDrawable(
-    /* [in] */ ITypedValue* value,
+    /* [in] */ ITypedValue* typedValue,
     /* [in] */ Int32 id,
+    /* [in] */ IResourcesTheme* theme,
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
     *drawable = NULL;
 
-    CTypedValue* typedValue = (CTypedValue*)value;
+    CTypedValue* value = (CTypedValue*)typedValue;
 
     if (TRACE_FOR_PRELOAD) {
         // Log only framework resources
@@ -1521,38 +1928,48 @@ ECode CResources::LoadDrawable(
         }
     }
 
-    Boolean isColorDrawable = FALSE;
-    Int32 type;
-    value->GetType(&type);
-    if (type >= ITypedValue::TYPE_FIRST_COLOR_INT &&
-            type <= ITypedValue::TYPE_LAST_COLOR_INT) {
+    Boolean isColorDrawable;
+    DrawableMap* caches = NULL;
+
+    Int64 key;
+    if (value->mType >= ITypedValue::TYPE_FIRST_COLOR_INT
+            && value->mType <= ITypedValue::TYPE_LAST_COLOR_INT) {
         isColorDrawable = TRUE;
+        caches = &mColorDrawableCache;
+        key = value->mData;
     }
-    Int32 data, assetCookie;
-    value->GetData(&data);
-    value->GetAssetCookie(&assetCookie);
-    Int64 key = isColorDrawable ? data : (((Int64)assetCookie) << 32) | data | (((Int64) id ) << 32);
-
-    AutoPtr<IDrawable> dr = GetCachedDrawable(
-            isColorDrawable ? mColorDrawableCache : mDrawableCache, key);
-    if (dr != NULL) {
-        dr->SetResId(id);
-        *drawable = dr;
-        REFCOUNT_ADD(*drawable);
-        return NOERROR;
+    else {
+        isColorDrawable = FALSE;
+        caches = &mDrawableCache;
+        key = (((Int64) value->mAssetCookie) << 32) | value->mData;
     }
 
+    // First, check whether we have a cached version of this drawable
+    // that was inflated against the specified theme.
+    if (!mPreloading) {
+        AutoPtr<IDrawable> cachedDrawable = GetCachedDrawable(*caches, key, theme);
+        if (cachedDrawable != NULL) {
+            *drawable = cachedDrawable;
+            REFCOUNT_ADD(*drawable)
+            return NOERROR;
+        }
+    }
+
+    // Next, check preloaded drawables. These are unthemed but may have
+    // themeable attributes.
     AutoPtr<IWeakReference> wr;
-    DrawableMapIterator it;
     if (isColorDrawable) {
-        it = sPreloadedColorDrawables.Find(key);
+        ConstantStateMapIterator it = sPreloadedColorDrawables.Find(key);
         if (it != sPreloadedColorDrawables.End()) {
             wr = it->mSecond;
         }
     }
-    else if (sPreloadedDensity == mConfiguration->mDensityDpi) {
-        it = sPreloadedDrawables.Find(key);
-        if (it != sPreloadedDrawables.End()) {
+    else {
+        Int32 direction;
+        mConfiguration->GetLayoutDirection(&direction);
+        AutoPtr<ConstantStateMap> map = sPreloadedDrawables[direction];
+        ConstantStateMapIterator it = map->Find(key);
+        if (it != map->End()) {
             wr = it->mSecond;
         }
     }
@@ -1562,169 +1979,228 @@ ECode CResources::LoadDrawable(
         wr->Resolve(EIID_IDrawableConstantState, (IInterface**)&cs);
     }
 
+    assert(0 && "TODO");
+    AutoPtr<IDrawable> dr;
     if (cs != NULL) {
-        cs->NewDrawable((IResources*)this, (IDrawable**)&dr);
+        cs->NewDrawable(THIS_PROBE(IResources), theme, (IDrawable**)&dr);
+    }
+    else if (isColorDrawable) {
+        // CColorDrawable::New(value->mData, (IDrawable**)&dr);
     }
     else {
-        if (isColorDrawable) {
-            CColorDrawable::New(typedValue->mData, (IColorDrawable**)&dr);
-        }
-
-        if (dr == NULL) {
-            if (typedValue->mString == NULL) {
-                Slogger::E(TAG, "Resource is not a Drawable (color or path): %p", value);
-                return E_NOT_FOUND_EXCEPTION;
-                // throw new NotFoundException(
-                //         "Resource is not a Drawable (color or path): " + value);
-            }
-
-            String file;
-            typedValue->mString->ToString(&file);
-
-            if (TRACE_FOR_MISS_PRELOAD) {
-                // Log only framework resources
-                if (((unsigned Int32)id >> 24) == 0x1) {
-                    String name;
-                    GetResourceName(id, &name);
-                    if (!name.IsNull()) {
-                        Slogger::D(TAG, "Loading framework drawable #%d: %s at %s",
-                            id, name.string(), file.string());
-                    }
-                }
-            }
-
-            if (DEBUG_LOAD) {
-                Slogger::V(TAG, "Loading drawable for cookie %d: %s",
-                        typedValue->mAssetCookie, file.string());
-            }
-
-            if (file.EndWith(".xml")) {
-                // try {
-                AutoPtr<IXmlResourceParser> rp;
-                ECode ec = LoadXmlResourceParser(file, id, typedValue->mAssetCookie,
-                    String("drawable"), (IXmlResourceParser**)&rp);
-                if (FAILED(ec)) {
-                    Slogger::E(TAG, "File %s from drawable resource ID #0x%08x", file.string(), id);
-                    return E_NOT_FOUND_EXCEPTION;
-                }
-
-                ec = Drawable::CreateFromXml((IResources*)this, rp, (IDrawable**)&dr);
-                rp->Close();
-                if (FAILED(ec)) {
-                    Slogger::E(TAG, "File %s from drawable resource ID #0x%08x", file.string(), id);
-                    return E_NOT_FOUND_EXCEPTION;
-                }
-                // } catch (Exception e) {
-                //     NotFoundException rnf = new NotFoundException(
-                //         "File " + file + " from drawable resource ID #0x"
-                //         + Integer.toHexString(id));
-                //     rnf.initCause(e);
-                //     throw rnf;
-                // }
-            }
-            else {
-                // try {
-                AutoPtr<IInputStream> is;
-                ECode ec = mAssets->OpenNonAsset(typedValue->mAssetCookie, file,
-                    IAssetManager::ACCESS_STREAMING, (IInputStream**)&is);
-                if (FAILED(ec)) {
-                    Slogger::E(TAG, "File %s from drawable resource ID #0x%08x", file.string(), id);
-                    return E_NOT_FOUND_EXCEPTION;
-                }
-                // System.out.println("Opened file " + file + ": " + is);
-                ec = Drawable::CreateFromResourceStream((IResources*)this, value, is,
-                    file, NULL, (IDrawable**)&dr);
-                is->Close();
-                if (FAILED(ec)) {
-                    Slogger::E(TAG, "File %s from drawable resource ID #0x%08x", file.string(), id);
-                    return E_NOT_FOUND_EXCEPTION;
-                }
-                // System.out.println("Created stream: " + dr);
-                // } catch (Exception e) {
-                //     NotFoundException rnf = new NotFoundException(
-                //         "File " + file + " from drawable resource ID #0x"
-                //         + Integer.toHexString(id));
-                //     rnf.initCause(e);
-                //     throw rnf;
-                // }
-            }
-        }
+        LoadDrawableForCookie(typedValue, id, theme, (IDrawable**)&dr);
     }
 
+    // If we were able to obtain a drawable, store it in the appropriate
+    // cache (either preload or themed).
     if (dr != NULL) {
-        cs = NULL;
-        dr->SetChangingConfigurations(typedValue->mChangingConfigurations);
-        dr->GetConstantState((IDrawableConstantState**)&cs);
-        if (cs != NULL) {
-            IWeakReferenceSource* wrs = (IWeakReferenceSource*)cs->Probe(EIID_IWeakReferenceSource);
-            assert(wrs != NULL);
-            AutoPtr<IWeakReference> wr;
-            wrs->GetWeakReference((IWeakReference**)&wr);
-            if (id >= 0x7f020000 && id <= 0x7f02ffff) {
-                String name;
-                GetResourceName(id, &name);
-                if (name.EndWith(WIDGET_SUFFIX)) {
-                    sPreloadedDrawables[key] = wr;
-                }
-            }
+        dr->SetChangingConfigurations(value->mChangingConfigurations);
+        CacheDrawable(typedValue, theme, isColorDrawable, *caches, key, dr);
+    }
 
-            if (mPreloading) {
-                if (VerifyPreloadConfig(value, String("drawable"))) {
-                    if (isColorDrawable) {
-                        sPreloadedColorDrawables[key] = wr;
-                    }
-                    else {
-                        sPreloadedDrawables[key] = wr;
-                    }
-                }
+    *drawable = dr;
+    REFCOUNT_ADD(*drawable)
+    return NOERROR;
+}
+
+ECode CResources::CacheDrawable(
+    /* [in] */ ITypedValue* typedValue,
+    /* [in] */ IResourcesTheme* theme,
+    /* [in] */ Boolean isColorDrawable,
+    /* [in] */ DrawableMap& caches,
+    /* [in] */ Int64 key,
+    /* [in] */ IDrawable* dr)
+{
+    AutoPtr<IDrawableConstantState> cs;
+    dr->GetConstantState((IDrawableConstantState**)&cs);
+    if (cs == NULL) {
+        return NOERROR;
+    }
+
+    AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(cs);
+    AutoPtr<IWeakReference> wr;
+    wrs->GetWeakReference((IWeakReference**)&wr);
+
+    CTypedValue* value = (CTypedValue*)typedValue;
+    if (mPreloading) {
+        // Preloaded drawables never have a theme, but may be themeable.
+        Int32 changingConfigs;
+        cs->GetChangingConfigurations(&changingConfigs);
+
+        if (isColorDrawable) {
+            if (VerifyPreloadConfig(changingConfigs, 0, value->mResourceId, String("drawable"))) {
+
+                sPreloadedColorDrawables[key] = wr;
             }
-            else {
-                AutoLock lock(mTmpValueLock);
-                //Log.i(TAG, "Saving cached drawable @ #" +
-                //        Integer.toHexString(key.intValue())
-                //        + " in " + this + ": " + cs);
-                if (isColorDrawable) {
-                    mColorDrawableCache[key] = wr;
+        }
+        else {
+            if (VerifyPreloadConfig(
+                    changingConfigs, LAYOUT_DIR_CONFIG, value->mResourceId, String("drawable"))) {
+                if ((changingConfigs & LAYOUT_DIR_CONFIG) == 0) {
+                    // If this resource does not vary based on layout direction,
+                    // we can put it in all of the preload maps.
+                    AutoPtr<ConstantStateMap> map0 = sPreloadedDrawables[0];
+                    (*map0)[key] = wr;
+                    AutoPtr<ConstantStateMap> map1 = sPreloadedDrawables[1];
+                    (*map1)[key] = wr;
                 }
                 else {
-                    mDrawableCache[key] = wr;
+                    // Otherwise, only in the layout dir we loaded it for.
+                    Int32 direction;
+                    mConfiguration->GetLayoutDirection(&direction);
+                    AutoPtr<ConstantStateMap> map = sPreloadedDrawables[direction];
+                    (*map)[key] = wr;
                 }
             }
         }
     }
+    else {
+        synchronized (mAccessLock) {
+            String themeKey("");
+            if (theme != NULL) {
+                themeKey = ((CResources::Theme*)theme)->mKey;
+            }
 
-    if (dr != NULL) dr->SetResId(id);
+            DrawableMapIterator it = caches.Find(themeKey);
+            AutoPtr<ConstantStateMap> themedCache;
+            if (it == caches.End()) {
+                themedCache = new ConstantStateMap(1);
+                caches[themeKey] = themedCache;
+            }
+            else {
+                themedCache = it->mSecond;
+            }
+
+            (*themedCache)[key] = wr;
+        }
+    }
+
+    return NOERROR;
+}
+
+ECode CResources::LoadDrawableForCookie(
+    /* [in] */ ITypedValue* typedValue,
+    /* [in] */ Int32 id,
+    /* [in] */ IResourcesTheme* theme,
+    /* [out] */ IDrawable** drawable)
+{
+    VALIDATE_NOT_NULL(drawable)
+    *drawable = NULL;
+
+    CTypedValue* value = (CTypedValue*)typedValue;
+    if (value->mString == NULL) {
+        // throw new NotFoundException("Resource \"" + getResourceName(id) + "\" ("
+        //         + Integer.toHexString(id) + ")  is not a Drawable (color or path): " + value);
+        return E_NOT_FOUND_EXCEPTION;
+    }
+
+    String file = Object::ToString(value->mString);
+
+    if (TRACE_FOR_MISS_PRELOAD) {
+        // Log only framework resources
+        if ((id >> 24) == 0x1) {
+            String name;
+            GetResourceName(id, &name);
+            if (!name.IsNull()) {
+                Logger::D(TAG, "Loading framework drawable #%s : %s at %s",
+                    StringUtils::ToHexString(id).string(), name.string(), file.string());
+            }
+        }
+    }
+
+    if (DEBUG_LOAD) {
+        Logger::V(TAG, "Loading drawable for cookie %d : %s", value->mAssetCookie, file.string());
+    }
+
+    AutoPtr<IDrawable> dr;
+
+    assert(0 && "TODO");
+    // Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, file);
+    // try {
+    if (file.EndWith(".xml")) {
+        AutoPtr<IXmlResourceParser> rp;
+        LoadXmlResourceParser(file, id, value->mAssetCookie, String("drawable"), (IXmlResourceParser**)&rp);
+        // Drawable::CreateFromXml(THIS_PROBE(IResources), rp, theme, (IDrawable**)&dr);
+        ICloseable::Probe(rp)->Close();
+    }
+    else {
+        AutoPtr<IInputStream> is;
+        mAssets->OpenNonAsset(value->mAssetCookie, file, IAssetManager::ACCESS_STREAMING, (IInputStream**)&is);
+        // Drawable::CreateFromResourceStream(this, value, is, file, String(NULL), (IDrawable**)&dr);
+        ICloseable::Probe(is)->Close();
+    }
+    // } catch (Exception e) {
+    //     Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+    //     NotFoundException rnf = new NotFoundException(
+    //             "File " + file + " from drawable resource ID #0x" + Integer.toHexString(id));
+    //     rnf.initCause(e);
+    //     throw rnf;
+    // }
+    // Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+
     *drawable = dr;
-    REFCOUNT_ADD(*drawable);
+    REFCOUNT_ADD(*drawable)
     return NOERROR;
 }
 
 AutoPtr<IDrawable> CResources::GetCachedDrawable(
-    /* [in] */ HashMap<Int64, AutoPtr<IWeakReference> >& drawableCache,
-    /* [in] */ Int64 key)
+    /* [in] */ DrawableMap& caches,
+    /* [in] */ Int64 key,
+    /* [in] */ IResourcesTheme* theme)
 {
-    AutoLock lock(mTmpValueLock);
-    AutoPtr<IDrawableConstantState> drawable;
-    DrawableMapIterator it = drawableCache.Find(key);
-    if (it != drawableCache.End()) {
-        AutoPtr<IWeakReference> wr = it->mSecond;
-        if (wr != NULL) {
-            wr->Resolve(EIID_IDrawableConstantState, (IInterface**)&drawable);
+    synchronized (mAccessLock) {
+        String themeKey("");
+        if (theme != NULL) {
+            themeKey = ((CResources::Theme*)theme)->mKey;
+        }
+
+        DrawableMapIterator it = caches.Find(themeKey);
+        if (it != caches.End()) {
+            AutoPtr<ConstantStateMap> themedCache = it->mSecond;
+            AutoPtr<IDrawable> themedDrawable = GetCachedDrawableLocked(themedCache, key);
+            if (themedDrawable != NULL) {
+                return themedDrawable;
+            }
         }
     }
 
-    AutoPtr<IDrawable> dr;
-    if (drawable != NULL) {   // we have the key
-        //Log.i(TAG, "Returning cached drawable @ #" +
-        //        Integer.toHexString(((Integer)key).intValue())
-        //        + " in " + this + ": " + entry);
+    // No cached drawable, we'll need to create a new one.
+    return NULL;
+}
 
-        drawable->NewDrawable((IResources*)this, (IDrawable**)&dr);
+AutoPtr<IDrawableConstantState> CResources::GetConstantStateLocked(
+    /* [in] */ ConstantStateMap* drawableCache,
+    /* [in] */ Int64 key)
+{
+    ConstantStateMapIterator it = drawableCache->Find(key);
+    if (it != drawableCache->End()) { // we have the key
+        AutoPtr<IWeakReference> wr = it->mSecond;
+        AutoPtr<IDrawableConstantState> entry;
+        wr->Resolve(EIID_IDrawableConstantState, (IInterface**)&entry);
+        if (entry != NULL) {
+            //Log.i(TAG, "Returning cached drawable @ #" +
+            //        Integer.toHexString(((Integer)key).intValue())
+            //        + " in " + this + ": " + entry);
+            return entry;
+        }
+        else {  // our entry has been purged
+            drawableCache->Erase(it);
+        }
     }
-    else {  // our entry has been purged
-        drawableCache.Erase(it);
+    return NULL;
+}
+
+AutoPtr<IDrawable> CResources::GetCachedDrawableLocked(
+    /* [in] */ ConstantStateMap* drawableCache,
+    /* [in] */ Int64 key)
+{
+    AutoPtr<IDrawableConstantState> entry = GetConstantStateLocked(drawableCache, key);
+    if (entry != NULL) {
+        AutoPtr<IDrawable> dr;
+        entry->NewDrawable(THIS_PROBE(IResources), (IDrawable**)&dr);
+        return NOERROR;
     }
-    return dr;
+    return NULL;
 }
 
 ECode CResources::LoadColorStateList(
@@ -1769,7 +2245,8 @@ ECode CResources::LoadColorStateList(
         ASSERT_SUCCEEDED(CColorStateList::ValueOf(typedValue->mData,
                 (IColorStateList**)&csl));
         if (mPreloading) {
-            if (VerifyPreloadConfig(value, String("color"))) {
+            if (VerifyPreloadConfig(typedValue->mChangingConfigurations, 0,
+                typedValue->mResourceId, String("color"))) {
                 IWeakReferenceSource* wrs = (IWeakReferenceSource*)csl->Probe(EIID_IWeakReferenceSource);
                 assert(wrs != NULL);
                 AutoPtr<IWeakReference> wr;
@@ -1825,7 +2302,8 @@ ECode CResources::LoadColorStateList(
             return E_NOT_FOUND_EXCEPTION;
         }
 
-        ec = CColorStateList::CreateFromXml(this, rp, (IColorStateList**)&csl);
+        ec = CColorStateList::CreateFromXml(
+            THIS_PROBE(IResources), IXmlPullParser::Probe(rp), (IColorStateList**)&csl);
         rp->Close();
 
         if (FAILED(ec)) {
@@ -1853,12 +2331,13 @@ ECode CResources::LoadColorStateList(
         AutoPtr<IWeakReference> wr;
         wrs->GetWeakReference((IWeakReference**)&wr);
         if (mPreloading) {
-            if (VerifyPreloadConfig(value, String("color"))) {
+            if (VerifyPreloadConfig(typedValue->mChangingConfigurations, 0,
+                typedValue->mResourceId, String("color"))) {
                 sPreloadedColorStateLists[key] = wr;
             }
         }
         else {
-            AutoLock lock(mTmpValueLock);
+            AutoLock lock(mAccessLock);
 
             // Log.i(TAG, "Saving cached color state list @ #" +
             //         Integer.toHexString(key.intValue())
@@ -1875,7 +2354,7 @@ ECode CResources::LoadColorStateList(
 AutoPtr<IColorStateList> CResources::GetCachedColorStateList(
     /* [in] */ Int64 key)
 {
-    AutoLock lock(mTmpValueLock);
+    AutoLock lock(mAccessLock);
 
     AutoPtr<IColorStateList> entry;
     ColorStateIterator it = mColorStateListCache.Find(key);
@@ -1906,9 +2385,14 @@ ECode CResources::LoadXmlResourceParser(
     VALIDATE_NOT_NULL(parser);
     *parser = NULL;
 
-    AutoLock lock(mTmpValueLock);
+    AutoLock lock(mAccessLock);
 
     AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
+    if (value == NULL) {
+        CTypedValue::NewByFriend((CTypedValue**)&mTmpValue);
+        value = (ITypedValue*)mTmpValue.Get();
+    }
+
     FAIL_RETURN(GetValue(id, value, TRUE))
     if (mTmpValue->mType == ITypedValue::TYPE_STRING) {
         String str;
@@ -1950,7 +2434,7 @@ ECode CResources::LoadXmlResourceParser(
                     filename = sb.ToString();
                 }
 
-                AutoPtr<IXmlResourceParser> p = (*mCachedXmlBlocks)[i]->NewParser(filename);
+                AutoPtr<IXmlResourceParser> p = (*mCachedXmlBlocks)[i]->NewParser();
                 *parser = p;
                 REFCOUNT_ADD(*parser);
                 return NOERROR;
@@ -1979,15 +2463,7 @@ ECode CResources::LoadXmlResourceParser(
             (*mCachedXmlBlockIds)[pos] = id;
             mCachedXmlBlocks->Set(pos, block);
 
-            mAssets->GetCookieName(assetCookie, &name);
-            String filename = file;
-            if (!name.IsNull()) {
-                StringBuilder sb(name);
-                sb += IResources::path_separate;
-                sb += file;
-                filename = sb.ToString();
-            }
-            AutoPtr<IXmlResourceParser> p = block->NewParser(filename);
+            AutoPtr<IXmlResourceParser> p = block->NewParser();
             *parser = p;
             REFCOUNT_ADD(*parser);
             return NOERROR;
@@ -2009,83 +2485,16 @@ ECode CResources::LoadXmlResourceParser(
     return E_NOT_FOUND_EXCEPTION;
 }
 
-AutoPtr<CTypedArray> CResources::GetCachedStyledAttributes(
-    /* [in] */ Int32 len)
+ECode CResources::RecycleCachedStyledAttributes(
+    /* [in] */ CTypedArray* attrs)
 {
-    AutoLock lock(mTmpValueLock);
-
-    AutoPtr<CTypedArray> attrs = mCachedStyledAttributes;
-    if (attrs != NULL) {
-        mCachedStyledAttributes = NULL;
-
-        // if (DEBUG_ATTRIBUTES_CACHE) {
-        //     mLastRetrievedAttrs = new RuntimeException("here");
-        //     mLastRetrievedAttrs.fillInStackTrace();
-        // }
-
-        attrs->mLength = len;
-        Int32 fullLen = len * CAssetManager::STYLE_NUM_ENTRIES;
-        if (attrs->mData->GetLength() >= fullLen) {
-            return attrs;
+    synchronized (mAccessLock) {
+        AutoPtr<CTypedArray> cached = mCachedStyledAttributes;
+        if (cached == NULL || cached->mData->GetLength() < attrs->mData->GetLength()) {
+            mCachedStyledAttributes = attrs;
         }
-        attrs->mData = ArrayOf<Int32>::Alloc(fullLen);
-        attrs->mIndices = ArrayOf<Int32>::Alloc(1 + len);
-        return attrs;
     }
 
-    // if (DEBUG_ATTRIBUTES_CACHE) {
-    //     RuntimeException here = new RuntimeException("here");
-    //     here.fillInStackTrace();
-    //     if (mLastRetrievedAttrs != 0) {
-    //         Logger::I(TAG, String("Allocated new TypedArray of ") + (const char*)len + String(" in ")
-    //                 + (const char*)this + String("RuntimeException"));
-    //         Logger::I(TAG, String("Last retrieved attributes here RuntimeException"));
-    //     }
-    //     mLastRetrievedAttrs = here;
-    // }
-
-    AutoPtr< ArrayOf<Int32> > data = ArrayOf<Int32>::Alloc(len * CAssetManager::STYLE_NUM_ENTRIES);
-    AutoPtr< ArrayOf<Int32> > indices = ArrayOf<Int32>::Alloc(1 + len);
-    CTypedArray::NewByFriend(THIS_PROBE(IResources), data, indices, len, (CTypedArray**)&attrs);
-    return attrs;
-}
-
-ECode CResources::constructor(
-    /* [in] */ IAssetManager* assets,
-    /* [in] */ IDisplayMetrics* metrics,
-    /* [in] */ IConfiguration* config)
-{
-    return constructor(assets, metrics, config, NULL);
-}
-
-ECode CResources::constructor(
-    /* [in] */ IAssetManager* assets,
-    /* [in] */ IDisplayMetrics* metrics,
-    /* [in] */ IConfiguration* config,
-    /* [in] */ ICompatibilityInfo* compInfo)
-{
-    if (!assets) {
-        return E_INVALID_ARGUMENT;
-    }
-    mAssets = (CAssetManager*)assets;
-    mMetrics->SetToDefaults();
-    mCompatibilityInfo = compInfo;
-    UpdateConfiguration(config, metrics);
-    mAssets->EnsureStringBlocks();
-    return NOERROR;
-}
-
-ECode CResources::constructor()
-{
-    mAssets = CAssetManager::GetSystem();
-    // NOTE: Intentionally leaving this uninitialized (all values set
-    // to zero), so that anyone who tries to do something that requires
-    // metrics will get a very wrong value.
-    mConfiguration->SetToDefaults();
-    mMetrics->SetToDefaults();
-    UpdateConfiguration(NULL, NULL);
-    mAssets->EnsureStringBlocks();
-    mCompatibilityInfo = CCompatibilityInfo::DEFAULT_COMPATIBILITY_INFO;
     return NOERROR;
 }
 

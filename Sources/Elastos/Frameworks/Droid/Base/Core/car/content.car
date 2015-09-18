@@ -147,6 +147,8 @@ module
     interface Elastos.Droid.Accounts.IAccount;
     interface Elastos.Droid.Content.ILoader;
     interface Elastos.Droid.Content.Res.IResources;
+    interface Elastos.Droid.Content.Pm.IApplicationInfo;
+    interface Elastos.Droid.Utility.IDisplayMetrics;
 
     namespace Elastos {
     namespace Droid {
@@ -908,7 +910,7 @@ module
 //         constructor(
 //             [in] IPackageManager* pm);
 
-//         interface IApplicationInfoDisplayNameComparator;
+//         interface IComparator;
 //     }
 
 //     /**
@@ -1020,6 +1022,7 @@ module
 //             [in] IInstrumentationInfo* orig);
 
 //         interface IInstrumentationInfo;
+//         interface IPackageItemInfo;
 //         interface IParcelable;
 //     }
 
@@ -1513,10 +1516,6 @@ module
             [in] Int64 length,
             [in] IBundle* extras);
 
-        /**
-        * Create an empty surface, which will later be filled in by
-        * readFromParcel().
-        */
         constructor();
 
         interface IAssetFileDescriptor;
@@ -1545,159 +1544,141 @@ module
         interface IFlushable;
     }
 
-//     class CAssetManager {
+    class CAssetManager {
 
-//         /**
-//          * Create a new AssetManager containing only the basic system assets.
-//          * Applications will not generally use this method, instead retrieving the
-//          * appropriate asset manager with {@link Resources#getAssets}.    Not for
-//          * use by applications.
-//          * {@hide}
-//          */
-//         constructor();
+        /**
+         * Create a new AssetManager containing only the basic system assets.
+         * Applications will not generally use this method, instead retrieving the
+         * appropriate asset manager with {@link Resources#getAssets}.    Not for
+         * use by applications.
+         * {@hide}
+         */
+        constructor();
 
-//         constructor(
-//             [in] Boolean isSystem);
+        constructor(
+            [in] Boolean isSystem);
 
-//         interface IAssetManager;
-//     }
+        interface IAssetManager;
+    }
 
-//     singleton class CAssetManagerHelper{
-//         interface IAssetManagerHelper;
-//     }
+    singleton class CAssetManagerHelper{
+        interface IAssetManagerHelper;
+    }
 
-//     [deprecated]
-//     class CColorStateList {
-//         constructor();
+    [deprecated]
+    class CColorStateList {
+        constructor();
 
-//         /**
-//          * Creates a ColorStateList that returns the specified mapping from
-//          * states to colors.
-//          */
-//         constructor(
-//             [in] ArrayOf<Handle32>* states,
-//             [in] ArrayOf<Int32>* colors);
+        /**
+         * Creates a ColorStateList that returns the specified mapping from
+         * states to colors.
+         */
+        constructor(
+            [in] ArrayOf<Handle32>* states,
+            [in] ArrayOf<Int32>* colors);
 
-//         interface IColorStateList;
-//         interface IParcelable;
-//     }
+        interface IColorStateList;
+        interface IParcelable;
+    }
 
-//     singleton class CColorStateListHelper{
+    singleton class CColorStateListHelper{
 
-//         interface IColorStateListHelper;
-//     }
+        interface IColorStateListHelper;
+    }
 
-//     class CCompatibilityInfo{
-//         constructor(
-//             [in] IApplicationInfo* appInfo,
-//             [in] Int32 screenLayout,
-//             [in] Int32 sw,
-//             [in] Boolean forceCompat);
+    class CCompatibilityInfo {
+        constructor(
+            [in] IApplicationInfo* appInfo,
+            [in] Int32 screenLayout,
+            [in] Int32 sw,
+            [in] Boolean forceCompat);
 
-//         constructor(
-//             [in] Int32 compFlags,
-//             [in] Int32 dens,
-//             [in] Float scale,
-//             [in] Float invertedScale);
+        constructor(
+            [in] Int32 compFlags,
+            [in] Int32 dens,
+            [in] Float scale,
+            [in] Float invertedScale);
 
-//         constructor();
+        constructor();
 
-//         interface ICompatibilityInfo;
-//         interface IParcelable;
-//     }
+        interface ICompatibilityInfo;
+        interface IParcelable;
+    }
 
-//     singleton class CCompatibilityInfoHelper{
-//         interface ICompatibilityInfoHelper;
-//     }
+    singleton class CCompatibilityInfoHelper{
+        interface ICompatibilityInfoHelper;
+    }
 
-//     class CConfiguration{
-//         /**
-//          * Construct an invalid Configuration.  You must call {@link #setToDefaults}
-//          * for this object to be valid.  {@more}
-//          */
-//         constructor();
+    class CConfiguration{
+        /**
+         * Construct an invalid Configuration.  You must call {@link #setToDefaults}
+         * for this object to be valid.  {@more}
+         */
+        constructor();
 
-//         /**
-//          * Makes a deep copy suitable for modification.
-//          */
-//         constructor(
-//             [in] IConfiguration* o);
+        /**
+         * Makes a deep copy suitable for modification.
+         */
+        constructor(
+            [in] IConfiguration* o);
 
-//         interface IConfiguration;
-//         interface IParcelable;
-//         interface IComparable;
-//     }
+        interface IConfiguration;
+        interface IParcelable;
+        interface IComparable;
+    }
 
-//     singleton class CConfigurationHelper{
-//         interface IConfigurationHelper;
-//     }
+    singleton class CConfigurationHelper{
+        interface IConfigurationHelper;
+    }
 
-//     class CObbInfo {
-//         constructor();
+    class CObbInfo {
+        constructor();
 
-//         interface IObbInfo;
-//         interface IParcelable;
-//     }
+        interface IObbInfo;
+        interface IParcelable;
+    }
 
-//     singleton class CObbScanner {
-//         // Don't allow others to instantiate this class
+    singleton class CObbScanner {
+        //Don't allow others to instantiate this class
 
-//         interface IObbScanner;
-//     }
+        interface IObbScanner;
+    }
 
-//     class CResources{
-//         constructor();
+    class CResources{
+        constructor();
 
-//          /**
-//          * Create a new Resources object on top of an existing set of assets in an
-//          * AssetManager.
-//          *
-//          * @param assets Previously created AssetManager.
-//          * @param metrics Current display metrics to consider when
-//          *                selecting/computing resource values.
-//          * @param config Desired device configuration to consider when
-//          *               selecting/computing resource values (optional).
-//          */
-//         constructor(
-//             [in] IAssetManager* assets,
-//             [in] IDisplayMetrics* metrics,
-//             [in] IConfiguration* config);
+         /**
+         * Create a new Resources object on top of an existing set of assets in an
+         * AssetManager.
+         *
+         * @param assets Previously created AssetManager.
+         * @param metrics Current display metrics to consider when
+         *                selecting/computing resource values.
+         * @param config Desired device configuration to consider when
+         *               selecting/computing resource values (optional).
+         */
+        constructor(
+            [in] IAssetManager* assets,
+            [in] IDisplayMetrics* metrics,
+            [in] IConfiguration* config);
 
-//         /**
-//          * Creates a new Resources object with CompatibilityInfo.
-//          *
-//          * @param assets Previously created AssetManager.
-//          * @param metrics Current display metrics to consider when
-//          *                selecting/computing resource values.
-//          * @param config Desired device configuration to consider when
-//          *               selecting/computing resource values (optional).
-//          * @param compInfo this resource's compatibility info. It will use the default compatibility
-//          *  info when it's null.
-//          * @hide
-//          */
-//         constructor(
-//             [in] IAssetManager* assets,
-//             [in] IDisplayMetrics* metrics,
-//             [in] IConfiguration* config,
-//             [in] ICompatibilityInfo* compInfo);
+        interface IResources;
+    }
 
-//         interface IResources;
-//     }
+    singleton class CResourcesHelper {
+        interface IResourcesHelper;
+    }
 
-//     singleton class CResourcesHelper {
-//         interface IResourcesHelper;
-//     }
+    [deprecated]
+    class CTypedArray{
+        constructor(
+            [in] IResources* resources,
+            [in] ArrayOf<Int32>* data,
+            [in] ArrayOf<Int32>* indices,
+            [in] Int32 len);
 
-//     [deprecated]
-//     class CTypedArray{
-//         constructor(
-//             [in] IResources* resources,
-//             [in] ArrayOf<Int32>* data,
-//             [in] ArrayOf<Int32>* indices,
-//             [in] Int32 len);
-
-//         interface ITypedArray;
-//     }
+        interface ITypedArray;
+    }
 
     } // namespace Res
     } // namespace Content

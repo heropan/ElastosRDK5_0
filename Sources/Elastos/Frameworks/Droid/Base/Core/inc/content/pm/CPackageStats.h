@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CPACKAGESTATS_H__
 
 #include "_Elastos_Droid_Content_Pm_CPackageStats.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -16,6 +17,10 @@ namespace Pm {
 CarClass(CPackageStats)
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CPackageStats();
 
     ~CPackageStats();

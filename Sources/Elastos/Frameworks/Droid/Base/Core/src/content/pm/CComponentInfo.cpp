@@ -7,6 +7,8 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
+CAR_OBJECT_IMPL(CComponentInfo)
+
 CComponentInfo::CComponentInfo()
 {}
 

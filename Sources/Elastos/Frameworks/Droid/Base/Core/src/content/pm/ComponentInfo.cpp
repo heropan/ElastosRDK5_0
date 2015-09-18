@@ -9,6 +9,8 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
+CAR_INTERFACE_IMPL(ComponentInfo, PackageItemInfo, IComponentInfo)
+
 ComponentInfo::ComponentInfo()
     : mDescriptionRes(0)
     , mEnabled(TRUE)
@@ -26,7 +28,7 @@ ECode ComponentInfo::constructor()
 ECode ComponentInfo::constructor(
     /* [in] */ IComponentInfo* orig)
 {
-    assert(orig != NULL);
+    VALIDATE_NOT_NULL(orig)
 
     PackageItemInfo::constructor((IPackageItemInfo*)orig);
     orig->GetApplicationInfo((IApplicationInfo**)&mApplicationInfo);
@@ -78,7 +80,7 @@ ECode ComponentInfo::LoadLabel(
 ECode ComponentInfo::IsEnabled(
     /* [out] */ Boolean* isEnable)
 {
-    assert(isEnable != NULL);
+    VALIDATE_NOT_NULL(isEnable)
 
     Boolean enable = FALSE;
     mApplicationInfo->GetEnabled(&enable);
@@ -89,13 +91,41 @@ ECode ComponentInfo::IsEnabled(
 ECode ComponentInfo::GetIconResource(
     /* [out] */ Int32* icon)
 {
-    assert(icon != NULL);
+    VALIDATE_NOT_NULL(icon)
 
     if(mIcon !=0) {
         *icon = mIcon;
     }
     else {
         mApplicationInfo->GetIcon(icon);
+    }
+    return NOERROR;
+}
+
+ECode ComponentInfo::GetLogoResource(
+    /* [out] */ Int32* icon)
+{
+    VALIDATE_NOT_NULL(icon)
+
+    if(mLogo !=0) {
+        *icon = mLogo;
+    }
+    else {
+        mApplicationInfo->GetLogo(icon);
+    }
+    return NOERROR;
+}
+
+ECode ComponentInfo::GetLogoResource(
+    /* [out] */ Int32* icon)
+{
+    VALIDATE_NOT_NULL(icon)
+
+    if(mBanner !=0) {
+        *icon = mBanner;
+    }
+    else {
+        mApplicationInfo->GetBanner(icon);
     }
     return NOERROR;
 }
@@ -163,15 +193,23 @@ ECode ComponentInfo::LoadDefaultIcon(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** icon)
 {
-    assert(icon != NULL);
+    VALIDATE_NOT_NULL(icon)
     return mApplicationInfo->LoadIcon(pm, icon);
+}
+
+ECode ComponentInfo::LoadDefaultBanner(
+    /* [in] */ IPackageManager* pm,
+    /* [out] */ IDrawable** icon)
+{
+    VALIDATE_NOT_NULL(icon)
+    return mApplicationInfo->LoadBanner(pm, icon);
 }
 
 ECode ComponentInfo::LoadDefaultLogo(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** logo)
 {
-    assert(logo != NULL);
+    VALIDATE_NOT_NULL(logo)
     return mApplicationInfo->LoadLogo(pm, logo);
 }
 
@@ -183,7 +221,7 @@ AutoPtr<IApplicationInfo> ComponentInfo::GetApplicationInfo()
 ECode ComponentInfo::GetApplicationInfo(
     /* [out] */ IApplicationInfo** info)
 {
-    assert(info != NULL);
+    VALIDATE_NOT_NULL(info)
     *info = mApplicationInfo;
     REFCOUNT_ADD(*info);
     return NOERROR;
@@ -199,7 +237,7 @@ ECode ComponentInfo::SetApplicationInfo(
 ECode ComponentInfo::GetProcessName(
     /* [out] */ String* processName)
 {
-    assert(processName != NULL);
+    VALIDATE_NOT_NULL(processName)
     *processName = mProcessName;
     return NOERROR;
 }
@@ -214,7 +252,7 @@ ECode ComponentInfo::SetProcessName(
 ECode ComponentInfo::GetDescriptionRes(
     /* [out] */ Int32* desRes)
 {
-    assert(desRes != NULL);
+    VALIDATE_NOT_NULL(desRes)
     *desRes = mDescriptionRes;
     return NOERROR;
 }
@@ -229,7 +267,7 @@ ECode ComponentInfo::SetDescriptionRes(
 ECode ComponentInfo::GetEnabled(
     /* [out] */ Boolean* enabled)
 {
-    assert(enabled != NULL);
+    VALIDATE_NOT_NULL(enabled)
     *enabled = mEnabled;
     return NOERROR;
 }
@@ -244,7 +282,7 @@ ECode ComponentInfo::SetEnabled(
 ECode ComponentInfo::GetExported(
     /* [out] */ Boolean* exported)
 {
-    assert(exported != NULL);
+    VALIDATE_NOT_NULL(exported)
     *exported = mExported;
     return NOERROR;
 }

@@ -7,6 +7,10 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
+CAR_INTERFACE_DECL(CInstrumentationInfo, PackageItemInfo, IInstrumentationInfo)
+
+CAR_OBJECT_DECL(CInstrumentationInfo)
+
 CInstrumentationInfo::CInstrumentationInfo()
     : mHandleProfiling(FALSE)
     , mFunctionalTest(FALSE)

@@ -25,7 +25,7 @@ ECode CWifiConfigurationKeyMgmt::GetStrings(
 {
     VALIDATE_NOT_NULL(strings);
     *strings = sStrings;
-    REFCOUNT_ADDREF(*strings);
+    REFCOUNT_ADD(*strings);
     return NOERROR;
 }
 

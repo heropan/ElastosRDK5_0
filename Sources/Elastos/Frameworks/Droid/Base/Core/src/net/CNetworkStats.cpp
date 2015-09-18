@@ -445,7 +445,7 @@ ECode CNetworkStats::GetUniqueIfaces(
         (*resArray)[i] = *iter;
     }
     *result = resArray;
-    REFCOUNT_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -467,7 +467,7 @@ ECode CNetworkStats::GetUniqueUids(
         outputArray->Set(i, uids[i]);
     }
     *result = outputArray;
-    REFCOUNT_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -940,7 +940,7 @@ ECode CNetworkStats::GetIFace(
 {
     VALIDATE_NOT_NULL(face);
     *face = mIface;
-    REFCOUNT_ADDREF(*face);
+    REFCOUNT_ADD(*face);
     return NOERROR;
 }
 
@@ -949,7 +949,7 @@ ECode CNetworkStats::GetUid(
 {
     VALIDATE_NOT_NULL(uid);
     *uid = mUid;
-    REFCOUNT_ADDREF(*uid);
+    REFCOUNT_ADD(*uid);
     return NOERROR;
 }
 
@@ -958,7 +958,7 @@ ECode CNetworkStats::GetSet(
 {
     VALIDATE_NOT_NULL(set);
     *set = mSet;
-    REFCOUNT_ADDREF(*set);
+    REFCOUNT_ADD(*set);
     return NOERROR;
 }
 
@@ -967,7 +967,7 @@ ECode CNetworkStats::GetTag(
 {
     VALIDATE_NOT_NULL(tag);
     *tag = mTag;
-    REFCOUNT_ADDREF(*tag);
+    REFCOUNT_ADD(*tag);
     return NOERROR;
 }
 
@@ -976,7 +976,7 @@ ECode CNetworkStats::GetRxBytes(
 {
     VALIDATE_NOT_NULL(rxBytes);
     *rxBytes = mRxBytes;
-    REFCOUNT_ADDREF(*rxBytes);
+    REFCOUNT_ADD(*rxBytes);
     return NOERROR;
 }
 
@@ -985,7 +985,7 @@ ECode CNetworkStats::GetRxPackets(
 {
     VALIDATE_NOT_NULL(rxPackets);
     *rxPackets = mRxPackets;
-    REFCOUNT_ADDREF(*rxPackets);
+    REFCOUNT_ADD(*rxPackets);
     return NOERROR;
 }
 
@@ -994,7 +994,7 @@ ECode CNetworkStats::GetTxBytes(
 {
     VALIDATE_NOT_NULL(txBytes);
     *txBytes = mTxBytes;
-    REFCOUNT_ADDREF(*txBytes);
+    REFCOUNT_ADD(*txBytes);
     return NOERROR;
 }
 
@@ -1003,7 +1003,7 @@ ECode CNetworkStats::GetTxPackets(
 {
     VALIDATE_NOT_NULL(txPackets);
     *txPackets = mTxPackets;
-    REFCOUNT_ADDREF(*txPackets);
+    REFCOUNT_ADD(*txPackets);
     return NOERROR;
 }
 
@@ -1012,7 +1012,7 @@ ECode CNetworkStats::GetOperations(
 {
     VALIDATE_NOT_NULL(operations);
     *operations = mOperations;
-    REFCOUNT_ADDREF(*operations);
+    REFCOUNT_ADD(*operations);
     return NOERROR;
 }
 

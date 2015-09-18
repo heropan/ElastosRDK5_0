@@ -462,7 +462,7 @@ ECode CSystemSensorManager::GetFullSensorList(
             (*sensors)->Set(index++, *ator);
         }
     }
-    REFCOUNT_ADDREF(*sensors);
+    REFCOUNT_ADD(*sensors);
 
     return NOERROR;
 }

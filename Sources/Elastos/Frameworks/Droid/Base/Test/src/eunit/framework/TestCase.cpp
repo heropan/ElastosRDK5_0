@@ -171,7 +171,7 @@ ECode TestCase::GetFailures(
         }
     }
     *failures = failureArray;
-    REFCOUNT_ADDREF(*failures);
+    REFCOUNT_ADD(*failures);
     return NOERROR;
 }
 

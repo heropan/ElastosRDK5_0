@@ -4471,7 +4471,7 @@ ECode CWebViewClassic::GetHttpAuthUsernamePassword(
     AutoPtr< ArrayOf<String> > password =
             mDatabase->GetHttpAuthUsernamePassword(host, realm);
     *up = password;
-    REFCOUNT_ADDREF(*up);
+    REFCOUNT_ADD(*up);
     return NOERROR;
 }
 

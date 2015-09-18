@@ -52,7 +52,7 @@ ECode CSerialService::GetSerialPorts(
     }
 
     *serialPorts = ArrayOf<String>::Alloc(ports.GetSize());
-    REFCOUNT_ADDREF(*serialPorts);
+    REFCOUNT_ADD(*serialPorts);
     List<String>::Iterator it = ports.Begin();
     for (Int32 i = 0; it != ports.End(); ++it, i++) {
         (**serialPorts)[i] = *it;

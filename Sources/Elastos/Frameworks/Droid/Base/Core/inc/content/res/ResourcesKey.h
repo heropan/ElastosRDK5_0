@@ -5,6 +5,8 @@
 #include "ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Droid::Os::IBinder;
+
 namespace Elastos {
 namespace Droid {
 namespace Content {

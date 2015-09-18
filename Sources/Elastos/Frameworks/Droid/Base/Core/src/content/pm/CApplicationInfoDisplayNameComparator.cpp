@@ -7,6 +7,10 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
+CAR_INTERFACE_IMPL(CApplicationInfoDisplayNameComparator, Object, IComparator)
+
+CAR_OBJECT_IMPL(CApplicationInfoDisplayNameComparator)
+
 ECode CApplicationInfoDisplayNameComparator::constructor(
     /* [in] */ IPackageManager* pm)
 {
@@ -15,8 +19,8 @@ ECode CApplicationInfoDisplayNameComparator::constructor(
 }
 
 ECode CApplicationInfoDisplayNameComparator::Compare(
-    /* [in] */ IApplicationInfo* aa,
-    /* [in] */ IApplicationInfo* ab,
+    /* [in] */ IInterface* aa,
+    /* [in] */ IInterface* ab,
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);

@@ -3,6 +3,7 @@
 #include "content/res/CAssetManager.h"
 //#include "internal/util/XmlUtils.h"
 #include <elastos/core/Math.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <stdlib.h>
 
@@ -18,9 +19,37 @@ CAR_INTERFACE_IMPL(CTypedArray, Object, ITypedArray)
 
 CAR_OBJECT_IMPL(CTypedArray)
 
+AutoPtr<ITypedArray> CTypedArray::Obtain(
+    /* [in] */ IResources* res,
+    /* [in] */ Int32 len)
+{
+    CResources* r = (CResources*)res;
+    AutoPtr<ITypedArray> attrs = r->mTypedArrayPool->AcquireItem();
+    if (attrs != NULL) {
+        CTypedArray* cta = (CTypedArray*)attrs.Get();
+        cta->mLength = len;
+        cta->mRecycled = false;
+
+        Int32 fullLen = len * CAssetManager::STYLE_NUM_ENTRIES;
+        if (cta->mData->GetLength() >= fullLen) {
+            return attrs;
+        }
+
+        cta->mData = ArrayOf<Int32>::Alloc(fullLen);
+        cta->mIndices = ArrayOf<Int32>::Alloc(1 + len);
+        return attrs;
+    }
+
+    AutoPtr<CTypedArray> ta;
+    AutoPtr<ArrayOf<Int32> > a1 = ArrayOf<Int32>::Alloc(len*CAssetManager::STYLE_NUM_ENTRIES);
+    AutoPtr<ArrayOf<Int32> > a2 = ArrayOf<Int32>::Alloc(1+len);
+    CTypedArray::NewByFriend(res, a1, a2, len, (CTypedArray**)&ta);
+    return (ITypedArray*)ta.Get();
+}
+
 CTypedArray::CTypedArray()
     : mLength(0)
-    , mResources(NULL)
+    , mRecycled(FALSE)
 {
     ASSERT_SUCCEEDED(CTypedValue::NewByFriend((CTypedValue**)&mValue));
 }
@@ -28,10 +57,15 @@ CTypedArray::CTypedArray()
 CTypedArray::~CTypedArray()
 {}
 
-ECode CTypedArray::Length(
+ECode CTypedArray::GetLength(
     /* [out] */ Int32* len)
 {
     VALIDATE_NOT_NULL(len);
+    *len = 0;
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
+
     *len = mLength;
     return NOERROR;
 }
@@ -40,6 +74,10 @@ ECode CTypedArray::GetIndexCount(
     /* [out] */ Int32* count)
 {
     VALIDATE_NOT_NULL(count);
+    *count = 0;
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
     *count = (*mIndices)[0];
     return NOERROR;
 }
@@ -49,6 +87,10 @@ ECode CTypedArray::GetIndex(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index);
+    *index = 0;
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
     *index = (*mIndices)[1 + at];
     return NOERROR;
 }
@@ -57,7 +99,10 @@ ECode CTypedArray::GetResources(
     /* [out] */ IResources** res)
 {
     VALIDATE_NOT_NULL(res);
-
+    if (mRecycled) {
+        *res = NULL;
+        return E_RUNTIME_EXCEPTION;
+    }
     *res = (IResources*)mResources;
     REFCOUNT_ADD(*res);
     return NOERROR;
@@ -68,12 +113,16 @@ ECode CTypedArray::GetText(
     /* [out] */ ICharSequence** csq)
 {
     VALIDATE_NOT_NULL(csq);
+    *csq = NULL;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     index *= CAssetManager::STYLE_NUM_ENTRIES;
     AutoPtr< ArrayOf<Int32> > data = mData;
     Int32 type = (*data)[index + CAssetManager::STYLE_TYPE];
     if (type == ITypedValue::TYPE_NULL) {
-        *csq = NULL;
         return NOERROR;
     }
     else if (type == ITypedValue::TYPE_STRING) {
@@ -89,7 +138,6 @@ ECode CTypedArray::GetText(
         return v->CoerceToString(csq);
     }
     Slogger::W(CResources::TAG, "getString of bad type: %d", type);
-    *csq = NULL;
     return NOERROR;
 }
 
@@ -98,12 +146,16 @@ ECode CTypedArray::GetString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
+    *str = String(NULL);
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     index *= CAssetManager::STYLE_NUM_ENTRIES;
     AutoPtr< ArrayOf<Int32> > data = mData;
     Int32 type = (*data)[index + CAssetManager::STYLE_TYPE];
     if (type == ITypedValue::TYPE_NULL) {
-        *str = String(NULL);
         return NOERROR;
     }
     else if (type == ITypedValue::TYPE_STRING) {
@@ -132,6 +184,11 @@ ECode CTypedArray::GetNonResourceString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
+    *str = String(NULL);
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     index *= CAssetManager::STYLE_NUM_ENTRIES;
     AutoPtr< ArrayOf<Int32> > data = mData;
@@ -148,7 +205,7 @@ ECode CTypedArray::GetNonResourceString(
             return csq->ToString(str);
         }
     }
-    *str = String(NULL);
+
     return NOERROR;
 }
 
@@ -158,29 +215,30 @@ ECode CTypedArray::GetNonConfigurationString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
+    *str = String(NULL);
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     index *= CAssetManager::STYLE_NUM_ENTRIES;
     AutoPtr< ArrayOf<Int32> > data = mData;
     Int32 type = (*data)[index + CAssetManager::STYLE_TYPE];
     if (((*data)[index + CAssetManager::STYLE_CHANGING_CONFIGURATIONS]
             & ~allowedChangingConfigs) != 0) {
-        *str = String(NULL);
         return NOERROR;
     }
     if (type == ITypedValue::TYPE_NULL) {
-        *str = String(NULL);
         return NOERROR;
     }
     else if (type == ITypedValue::TYPE_STRING) {
         AutoPtr<ICharSequence> csq = LoadStringValueAt(index);
         if (csq == NULL) {
-            *str = String(NULL);
             return NOERROR;
         }
         return csq->ToString(str);
     }
     Slogger::W(CResources::TAG, "getString of bad type: 0x%08x", type);
-    *str = NULL;
     return NOERROR;
 }
 
@@ -190,6 +248,11 @@ ECode CTypedArray::GetBoolean(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = FALSE;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     index *= CAssetManager::STYLE_NUM_ENTRIES;
     AutoPtr< ArrayOf<Int32> > data = mData;
@@ -223,6 +286,11 @@ ECode CTypedArray::GetInt32(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = defValue;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     index *= CAssetManager::STYLE_NUM_ENTRIES;
     AutoPtr< ArrayOf<Int32> > data = mData;
@@ -239,9 +307,9 @@ ECode CTypedArray::GetInt32(
     assert(0 && "TODO");
     AutoPtr<CTypedValue> v = mValue;
     if (GetValueAt(index, v)) {
-        Slogger::W(CResources::TAG, "Converting to int: %p", v.Get());
+        Slogger::W(CResources::TAG, "Converting to Int32: %p", v.Get());
         AutoPtr<ICharSequence> csq;
-        v->CoerceToString((ICharSequence**)&csq);3
+        v->CoerceToString((ICharSequence**)&csq);
         // *value = XmlUtils::ConvertValueToInt32(csq, defValue);
         return NOERROR;
     }
@@ -256,6 +324,11 @@ ECode CTypedArray::GetFloat(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = defValue;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     index *= CAssetManager::STYLE_NUM_ENTRIES;
     AutoPtr< ArrayOf<Int32> > data = mData;
@@ -295,6 +368,11 @@ ECode CTypedArray::GetColor(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = defValue;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     index *= CAssetManager::STYLE_NUM_ENTRIES;
     AutoPtr< ArrayOf<Int32> > data = mData;
@@ -319,6 +397,10 @@ ECode CTypedArray::GetColor(
         *value = defValue;
         return NOERROR;
     }
+    else if (type == ITypedValue::TYPE_ATTRIBUTE) {
+        // throw new RuntimeException("Failed to resolve attribute at index " + index);
+        return E_RUNTIME_EXCEPTION;
+    }
 
     Slogger::E(CResources::TAG, "Can't convert to color: type=0x%08x", type);
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
@@ -329,9 +411,19 @@ ECode CTypedArray::GetColorStateList(
     /* [out] */ IColorStateList** list)
 {
     VALIDATE_NOT_NULL(list);
+    *list = NULL;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     AutoPtr<CTypedValue> value = mValue;
     if (GetValueAt(index * CAssetManager::STYLE_NUM_ENTRIES, value)) {
+        if (value->mType == ITypedValue::TYPE_ATTRIBUTE) {
+            // throw new RuntimeException("Failed to resolve attribute at index " + index);
+            return E_RUNTIME_EXCEPTION;
+        }
+
         Int32 resourceId;
         value->GetResourceId(&resourceId);
         return mResources->LoadColorStateList(value, resourceId, list);
@@ -346,6 +438,11 @@ ECode CTypedArray::GetInteger(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     index *= CAssetManager::STYLE_NUM_ENTRIES;
     AutoPtr< ArrayOf<Int32> > data = mData;
@@ -356,6 +453,10 @@ ECode CTypedArray::GetInteger(
     }
     else if (type >= ITypedValue::TYPE_FIRST_INT && type <= ITypedValue::TYPE_LAST_INT) {
         *value = (*data)[index + CAssetManager::STYLE_DATA];
+        return NOERROR;
+    }
+    else if (type == ITypedValue::TYPE_ATTRIBUTE) {
+        // throw new RuntimeException("Failed to resolve attribute at index " + index);
         return NOERROR;
     }
 
@@ -369,6 +470,11 @@ ECode CTypedArray::GetDimension(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     index *= CAssetManager::STYLE_NUM_ENTRIES;
     AutoPtr< ArrayOf<Int32> > data = mData;
@@ -379,8 +485,12 @@ ECode CTypedArray::GetDimension(
     }
     else if (type == ITypedValue::TYPE_DIMENSION) {
         *value = CTypedValue::ComplexToDimension(
-                (*data)[index + CAssetManager::STYLE_DATA], mResources->mMetrics);
+                (*data)[index + CAssetManager::STYLE_DATA], mMetrics);
         return NOERROR;
+    }
+    else if (type == ITypedValue::TYPE_ATTRIBUTE) {
+        // throw new RuntimeException("Failed to resolve attribute at index " + index);
+        return E_RUNTIME_EXCEPTION;
     }
 
     Slogger::E(CResources::TAG, "Can't convert to dimension: type=0x%08x", type);
@@ -393,6 +503,11 @@ ECode CTypedArray::GetDimensionPixelOffset(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     index *= CAssetManager::STYLE_NUM_ENTRIES;
     AutoPtr< ArrayOf<Int32> > data = mData;
@@ -403,8 +518,12 @@ ECode CTypedArray::GetDimensionPixelOffset(
     }
     else if (type == ITypedValue::TYPE_DIMENSION) {
         *value = CTypedValue::ComplexToDimensionPixelOffset(
-                (*data)[index + CAssetManager::STYLE_DATA], mResources->mMetrics);
+                (*data)[index + CAssetManager::STYLE_DATA], mMetrics);
         return NOERROR;
+    }
+    else if (type == ITypedValue::TYPE_ATTRIBUTE) {
+        // throw new RuntimeException("Failed to resolve attribute at index " + index);
+        return E_RUNTIME_EXCEPTION;
     }
 
     Slogger::E(CResources::TAG, "Can't convert to dimension: type=0x%08x", type);
@@ -417,6 +536,11 @@ ECode CTypedArray::GetDimensionPixelSize(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     index *= CAssetManager::STYLE_NUM_ENTRIES;
     AutoPtr< ArrayOf<Int32> > data = mData;
@@ -427,8 +551,12 @@ ECode CTypedArray::GetDimensionPixelSize(
     }
     else if (type == ITypedValue::TYPE_DIMENSION) {
         *value = CTypedValue::ComplexToDimensionPixelSize(
-                (*data)[index + CAssetManager::STYLE_DATA], mResources->mMetrics);
+                (*data)[index + CAssetManager::STYLE_DATA], mMetrics);
         return NOERROR;
+    }
+    else if (type == ITypedValue::TYPE_ATTRIBUTE) {
+        // throw new RuntimeException("Failed to resolve attribute at index " + index);
+        return E_RUNTIME_EXCEPTION;
     }
 
     Slogger::E(CResources::TAG, "Can't convert to dimension: type=0x%08x", type);
@@ -441,6 +569,11 @@ ECode CTypedArray::GetLayoutDimension(
     /* [out] */ Int32* dimension)
 {
     VALIDATE_NOT_NULL(dimension);
+    *dimension = 0;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     index *= CAssetManager::STYLE_NUM_ENTRIES;
     AutoPtr< ArrayOf<Int32> > data = mData;
@@ -451,8 +584,12 @@ ECode CTypedArray::GetLayoutDimension(
     }
     else if (type == ITypedValue::TYPE_DIMENSION) {
         *dimension = CTypedValue::ComplexToDimensionPixelSize(
-                (*data)[index + CAssetManager::STYLE_DATA], mResources->mMetrics);
+                (*data)[index + CAssetManager::STYLE_DATA], mMetrics);
         return NOERROR;
+    }
+    else if (type == ITypedValue::TYPE_ATTRIBUTE) {
+        // throw new RuntimeException("Failed to resolve attribute at index " + index);
+        return E_RUNTIME_EXCEPTION;
     }
 
     String des;
@@ -467,6 +604,11 @@ ECode CTypedArray::GetLayoutDimension(
     /* [out] */ Int32* dimension)
 {
     VALIDATE_NOT_NULL(dimension);
+    *dimension = defValue;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     index *= CAssetManager::STYLE_NUM_ENTRIES;
     AutoPtr< ArrayOf<Int32> > data = mData;
@@ -478,7 +620,7 @@ ECode CTypedArray::GetLayoutDimension(
     }
     else if (type == ITypedValue::TYPE_DIMENSION) {
         *dimension = CTypedValue::ComplexToDimensionPixelSize(
-                (*data)[index + CAssetManager::STYLE_DATA], mResources->mMetrics);
+                (*data)[index + CAssetManager::STYLE_DATA], mMetrics);
         return NOERROR;
     }
 
@@ -494,7 +636,11 @@ ECode CTypedArray::GetFraction(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = defValue;
 
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
     index *= CAssetManager::STYLE_NUM_ENTRIES;
     AutoPtr< ArrayOf<Int32> > data = mData;
     Int32 type = (*data)[index + CAssetManager::STYLE_TYPE];
@@ -507,6 +653,10 @@ ECode CTypedArray::GetFraction(
                 (*data)[index + CAssetManager::STYLE_DATA], base, pbase);
         return NOERROR;
     }
+    else if (type == ITypedValue::TYPE_ATTRIBUTE) {
+        // throw new RuntimeException("Failed to resolve attribute at index " + index);
+        return E_RUNTIME_EXCEPTION;
+    }
 
     Slogger::E(CResources::TAG, "Can't convert to fraction: type=0x%08x", type);
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
@@ -518,6 +668,11 @@ ECode CTypedArray::GetResourceId(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = defValue;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     index *= CAssetManager::STYLE_NUM_ENTRIES;
     AutoPtr< ArrayOf<Int32> > data = mData;
@@ -532,26 +687,46 @@ ECode CTypedArray::GetResourceId(
     return NOERROR;
 }
 
+ECode CTypedArray::GetThemeAttributeId(
+    /* [in] */ Int32 index,
+    /* [in] */ Int32 defValue,
+    /* [out] */ Int32* value)
+{
+    VALIDATE_NOT_NULL(value);
+    *value = defValue;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    index *= CAssetManager::STYLE_NUM_ENTRIES;
+    AutoPtr<ArrayOf<Int32> > data = mData;
+    if ((*data)[index + CAssetManager::STYLE_TYPE] == ITypedValue::TYPE_ATTRIBUTE) {
+        *value = (*data)[index + CAssetManager::STYLE_DATA];
+    }
+    return defValue;
+}
+
 ECode CTypedArray::GetDrawable(
     /* [in] */ Int32 index,
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
+    *drawable = NULL;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     AutoPtr<CTypedValue> value = mValue;
     if (GetValueAt(index*CAssetManager::STYLE_NUM_ENTRIES, value)) {
-        // if (FALSE) {
-        //     System.out.println("******************************************************************");
-        //     System.out.println("Got drawable resource: type="
-        //                        + value.type
-        //                        + " str=" + value.string
-        //                        + " int=0x" + Integer.toHexString(value.data)
-        //                        + " cookie=" + value.assetCookie);
-        //     System.out.println("******************************************************************");
-        // }
+        if (value->mType == ITypedValue::TYPE_ATTRIBUTE) {
+            // throw new RuntimeException("Failed to resolve attribute at index " + index);
+            return E_RUNTIME_EXCEPTION;
+        }
         Int32 resourceId;
         value->GetResourceId(&resourceId);
-        return mResources->LoadDrawable(value, resourceId, drawable);
+        return mResources->LoadDrawable((ITypedValue*)value.Get(), value->mResourceId, mTheme, drawable);
     }
     *drawable = NULL;
     return NOERROR;
@@ -561,17 +736,15 @@ ECode CTypedArray::GetTextArray(
     /* [in] */ Int32 index,
     /* [out, callee] */ ArrayOf<ICharSequence*>** array)
 {
+    VALIDATE_NOT_NULL(array)
+    *array = NULL;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
+
     AutoPtr<CTypedValue> value = mValue;
     if (GetValueAt(index*CAssetManager::STYLE_NUM_ENTRIES, value)) {
-        // if (false) {
-        //     System.out.println("******************************************************************");
-        //     System.out.println("Got drawable resource: type="
-        //                        + value.type
-        //                        + " str=" + value.string
-        //                        + " int=0x" + Integer.toHexString(value.data)
-        //                        + " cookie=" + value.assetCookie);
-        //     System.out.println("******************************************************************");
-        // }
         Int32 resourceId;
         value->GetResourceId(&resourceId);
         return mResources->GetTextArray(resourceId, array);
@@ -585,10 +758,30 @@ ECode CTypedArray::GetValue(
     /* [in, out] */ ITypedValue* outValue,
     /* [out] */ Boolean* value)
 {
-    VALIDATE_NOT_NULL(outValue);
     VALIDATE_NOT_NULL(value);
+    *value = FALSE;
+    VALIDATE_NOT_NULL(outValue);
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     *value = GetValueAt(index * CAssetManager::STYLE_NUM_ENTRIES, (CTypedValue*)outValue);
+    return NOERROR;
+}
+
+ECode CTypedArray::GetType(
+    /* [in] */ Int32 index,
+    /* [out] */ Int32* type)
+{
+    VALIDATE_NOT_NULL(type)
+    *type = 0;
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    index *= CAssetManager::STYLE_NUM_ENTRIES;
+    *type = (*mData)[index + CAssetManager::STYLE_TYPE];
     return NOERROR;
 }
 
@@ -597,6 +790,11 @@ ECode CTypedArray::HasValue(
     /* [out] */ Boolean* hasValue)
 {
     VALIDATE_NOT_NULL(hasValue);
+    *hasValue = FALSE;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     index *= CAssetManager::STYLE_NUM_ENTRIES;
     AutoPtr< ArrayOf<Int32> > data = mData;
@@ -610,6 +808,11 @@ ECode CTypedArray::PeekValue(
     /* [out] */ ITypedValue** value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = NULL;
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     AutoPtr<CTypedValue> v = mValue;
     if (GetValueAt(index * CAssetManager::STYLE_NUM_ENTRIES, v)) {
@@ -625,6 +828,11 @@ ECode CTypedArray::GetPositionDescription(
     /* [out] */ String* des)
 {
     VALIDATE_NOT_NULL(des);
+    *des = String(NULL);
+
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
+    }
 
     if (mXml != NULL) {
         return mXml->GetPositionDescription(des);
@@ -635,12 +843,81 @@ ECode CTypedArray::GetPositionDescription(
 
 ECode CTypedArray::Recycle()
 {
-    AutoLock lock(mResources->mTmpValueLock);
-    AutoPtr<ITypedArray> cached = mResources->mCachedStyledAttributes;
-    if (cached == NULL || ((CTypedArray*)cached.Get())->mData->GetLength() < mData->GetLength()) {
-        mXml = NULL;
-        mResources->mCachedStyledAttributes = this;
+    if (mRecycled) {
+        return E_RUNTIME_EXCEPTION;
     }
+
+    mRecycled = TRUE;
+
+    mXml = NULL;
+    mTheme = NULL;
+
+    mResources->mTypedArrayPool->ReleaseItem(THIS_PROBE(ITypedArray));
+    return NOERROR;
+}
+
+ECode CTypedArray::ExtractThemeAttrs(
+    /* [out, callee] */ ArrayOf<Int32>** result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    if (mRecycled) {
+        // throw new RuntimeException("Cannot make calls to a recycled instance!");
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    AutoPtr<ArrayOf<Int32> > attrs;
+
+    AutoPtr<ArrayOf<Int32> > data = mData;
+    Int32 N;
+    GetLength(&N);
+    for (Int32 i = 0; i < N; i++) {
+        Int32 index = i * CAssetManager::STYLE_NUM_ENTRIES;
+        if ((*data)[index + CAssetManager::STYLE_TYPE] != ITypedValue::TYPE_ATTRIBUTE) {
+            continue;
+        }
+
+        // Null the entry so that we can safely call getZzz().
+        (*data)[index + CAssetManager::STYLE_TYPE] = ITypedValue::TYPE_NULL;
+
+        Int32 attr = (*data)[index + CAssetManager::STYLE_DATA];
+        if (attr == 0) {
+            // This attribute is useless!
+            continue;
+        }
+
+        if (attrs == NULL) {
+            attrs = ArrayOf<Int32>::Alloc(N);
+        }
+        (*attrs)[i] = attr;
+    }
+
+    *result = attrs;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
+}
+
+ECode CTypedArray::GetChangingConfigurations(
+        /* [out] */ Int32* cfgs)
+{
+    VALIDATE_NOT_NULL(cfgs)
+    *cfgs = 0;
+
+    Int32 changingConfig = 0;
+
+    AutoPtr<ArrayOf<Int32> > data = mData;
+    Int32 N;
+    GetLength(&N);
+    for (Int32 i = 0; i < N; i++) {
+        Int32 index = i * CAssetManager::STYLE_NUM_ENTRIES;
+        Int32 type = (*data)[index + CAssetManager::STYLE_TYPE];
+        if (type == ITypedValue::TYPE_NULL) {
+            continue;
+        }
+        changingConfig |= (*data)[index + CAssetManager::STYLE_CHANGING_CONFIGURATIONS];
+    }
+
+    *cfgs = changingConfig;
     return NOERROR;
 }
 
@@ -679,9 +956,9 @@ AutoPtr<ICharSequence> CTypedArray::LoadStringValueAt(
         }
         return NULL;
     }
-    // System.out.println("Getting pooled from: " + v);
-    return mResources->mAssets->GetPooledString(
-            cookie, (*data)[index + CAssetManager::STYLE_DATA]);
+
+    CAssetManager* cam = (CAssetManager*)mAssets.Get();
+    return cam->GetPooledStringForCookie(cookie, (*data)[index + CAssetManager::STYLE_DATA]);
 }
 
 ECode CTypedArray::constructor(
@@ -691,6 +968,8 @@ ECode CTypedArray::constructor(
     /* [in] */ Int32 len)
 {
     mResources = (CResources*)resources;
+    mMetrics = mResources->mMetrics;
+    mAssets = mResources->mAssets;
     mData = data;
     mIndices = indices;
     mLength = len;

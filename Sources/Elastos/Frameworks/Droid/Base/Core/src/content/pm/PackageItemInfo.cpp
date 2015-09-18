@@ -9,10 +9,14 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
+CAR_INTERFACE_IMPL(PackageItemInfo, Object, IPackageItemInfo)
+
 PackageItemInfo::PackageItemInfo()
     : mLabelRes(0)
     , mIcon(0)
+    , mBanner(0)
     , mLogo(0)
+    , mShowUserIcon(0)
 {}
 
 PackageItemInfo::~PackageItemInfo()
@@ -40,8 +44,10 @@ ECode PackageItemInfo::constructor(
         CString::New(str.Trim(), (ICharSequence**)&mNonLocalizedLabel);
     }
     orig->GetIcon(&mIcon);
+    orig->GetBanner(&mBanner);
     orig->GetLogo(&mLogo);
     orig->GetMetaData((IBundle**)&mMetaData);
+    orig->GetShowUserIcon(&mShowUserIcon);
     return NOERROR;
 }
 
@@ -76,15 +82,25 @@ ECode PackageItemInfo::LoadIcon(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** icon)
 {
-    assert(icon != NULL);
+    VALIDATE_NOT_NULL(icon)
+    return pm->LoadItemIcon(THIS_PROBE(IPackageItemInfo), GetApplicationInfo(), icon);
+}
 
-    if (mIcon != 0) {
-        pm->GetDrawable(mPackageName, mIcon, GetApplicationInfo(), icon);
-        if (*icon != NULL) {
+ECode PackageItemInfo::LoadBanner(
+    /* [in] */ IPackageManager* pm,
+    /* [out] */ IDrawable** icon)
+{
+    VALIDATE_NOT_NULL(icon)
+    if (banner != 0) {
+        AutoPtr<IDrawable> dr;
+        pm->GetDrawable(mPackageName, banner, GetApplicationInfo(), (IDrawable**)&dr);
+        if (dr != NULL) {
+            *icon = dr;
+            REFCOUNT_ADD(*icon)
             return NOERROR;
         }
     }
-    return LoadDefaultIcon(pm, icon);
+    return LoadDefaultBanner(pm, icon);
 }
 
 ECode PackageItemInfo::LoadDefaultIcon(
@@ -92,6 +108,15 @@ ECode PackageItemInfo::LoadDefaultIcon(
     /* [out] */ IDrawable** icon)
 {
     return pm->GetDefaultActivityIcon(icon);
+}
+
+ECode PackageItemInfo::LoadDefaultBanner(
+    /* [in] */ IPackageManager* pm,
+    /* [out] */ IDrawable** icon)
+{
+    VALIDATE_NOT_NULL(icon)
+    *icon = NULL;
+    return NOERROR;
 }
 
 ECode PackageItemInfo::LoadLogo(
@@ -143,11 +168,11 @@ ECode PackageItemInfo::DumpFront(
     //     pw.println(prefix + "name=" + name);
     // }
     // pw.println(prefix + "packageName=" + packageName);
-    // if (labelRes != 0 || nonLocalizedLabel != null || icon != 0) {
+    // if (labelRes != 0 || nonLocalizedLabel != null || icon != 0 || banner != 0) {
     //     pw.println(prefix + "labelRes=0x" + Integer.toHexString(labelRes)
     //             + " nonLocalizedLabel=" + nonLocalizedLabel
-    //             + " icon=0x" + Integer.toHexString(icon));
-    // }
+    //             + " icon=0x" + Integer.toHexString(icon)
+    //             + " banner=0x" + Integer.toHexString(banner));
     assert(0);
     return E_NOT_IMPLEMENTED;
 }
@@ -172,6 +197,8 @@ ECode PackageItemInfo::WriteToParcel(
     dest->WriteInt32(mIcon);
     dest->WriteInt32(mLogo);
     dest->WriteInterfacePtr(mMetaData);
+    dest->WriteInt32(mBanner);
+    dest->WriteInterfacePtr(mShowUserIcon);
     return NOERROR;
 }
 
@@ -190,6 +217,8 @@ ECode PackageItemInfo::ReadFromParcel(
     AutoPtr<IInterface> obj;
     src->ReadInterfacePtr((Handle32*)&obj);
     mMetaData = obj != NULL ? IBundle::Probe(obj) : NULL;
+    src->ReadInt32(&mBanner);
+    src->ReadInt32(&mShowUserIcon);
     return NOERROR;
 }
 

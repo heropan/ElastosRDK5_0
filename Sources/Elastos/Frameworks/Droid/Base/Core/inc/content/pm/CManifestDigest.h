@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CMANIFESTDIGEST_H__
 
 #include "_Elastos_Droid_Content_Pm_CManifestDigest.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::Jar::IAttributes;
 
@@ -14,6 +15,10 @@ namespace Pm {
 CarClass(CManifestDigest)
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     static CARAPI FromAttributes(
             /* [in] */ IAttributes* attributes,
             /* [out] */ IManifestDigest** digest);

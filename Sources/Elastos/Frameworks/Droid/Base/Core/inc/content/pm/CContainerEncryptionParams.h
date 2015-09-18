@@ -3,8 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CCONTAINERENCRYPTIONPARAMS_H__
 
 #include "_Elastos_Droid_Content_Pm_CContainerEncryptionParams.h"
-
-using namespace Elastos::Core;
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -12,8 +11,17 @@ namespace Content {
 namespace Pm {
 
 CarClass(CContainerEncryptionParams)
+    , public Object
+    , public IContainerEncryptionParams
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor();
+
     CARAPI constructor(
         /* [in] */ const String& encryptionAlgorithm,
         /* [in] */ Elastos::Security::Spec::IAlgorithmParameterSpec* encryptionSpec,

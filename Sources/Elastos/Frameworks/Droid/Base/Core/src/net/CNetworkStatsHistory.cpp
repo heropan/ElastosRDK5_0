@@ -942,7 +942,7 @@ ECode CNetworkStatsHistory::GetBucketStart(
 {
     VALIDATE_NOT_NULL(bucketStart);
     *bucketStart = mBucketStart;
-    REFCOUNT_ADDREF(*bucketStart);
+    REFCOUNT_ADD(*bucketStart);
     return NOERROR;
 }
 
@@ -951,7 +951,7 @@ ECode CNetworkStatsHistory::GetRxBytes(
 {
     VALIDATE_NOT_NULL(rxBytes);
     *rxBytes = mRxBytes;
-    REFCOUNT_ADDREF(*rxBytes);
+    REFCOUNT_ADD(*rxBytes);
     return NOERROR;
 }
 
@@ -960,7 +960,7 @@ ECode CNetworkStatsHistory::GetRxPackets(
 {
     VALIDATE_NOT_NULL(rxPackets);
     *rxPackets = mRxPackets;
-    REFCOUNT_ADDREF(*rxPackets);
+    REFCOUNT_ADD(*rxPackets);
     return NOERROR;
 }
 
@@ -969,7 +969,7 @@ ECode CNetworkStatsHistory::GetTxBytes(
 {
     VALIDATE_NOT_NULL(txBytes);
     *txBytes = mTxBytes;
-    REFCOUNT_ADDREF(*txBytes);
+    REFCOUNT_ADD(*txBytes);
     return NOERROR;
 }
 
@@ -978,7 +978,7 @@ ECode CNetworkStatsHistory::GetTxPackets(
 {
     VALIDATE_NOT_NULL(txPackets);
     *txPackets = mTxPackets;
-    REFCOUNT_ADDREF(*txPackets);
+    REFCOUNT_ADD(*txPackets);
     return NOERROR;
 }
 
@@ -987,7 +987,7 @@ ECode CNetworkStatsHistory::GetOperations(
 {
     VALIDATE_NOT_NULL(operations);
     *operations = mOperations;
-    REFCOUNT_ADDREF(*operations);
+    REFCOUNT_ADD(*operations);
     return NOERROR;
 }
 

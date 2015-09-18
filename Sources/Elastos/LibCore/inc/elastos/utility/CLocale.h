@@ -15,6 +15,7 @@ namespace Elastos {
 namespace Utility {
 
 class CLocaleBuilder;
+class CLocaleHelper;
 
 typedef Elastos::Utility::Etl::HashMap<String, String> StringMap;
 typedef typename StringMap::Iterator StringMapIterator;
@@ -710,6 +711,8 @@ private:
         /* [out] */ ILocale** locale);
 
 private:
+    friend class CLocaleHelper;
+
     static AutoPtr<ArrayOf<IObjectStreamField*> > sSerialPersistentFields;
     static String UNDETERMINED_LANGUAGE;
 

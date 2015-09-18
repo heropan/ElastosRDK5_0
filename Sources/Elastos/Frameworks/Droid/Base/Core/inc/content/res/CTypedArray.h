@@ -10,6 +10,7 @@
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Utility::CTypedValue;
 using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Droid::Utility::IDisplayMetrics;
 
 namespace Elastos {
 namespace Droid {
@@ -41,7 +42,7 @@ public:
     /**
      * Return the number of values in this array.
      */
-    CARAPI Length(
+    CARAPI GetLength(
         /* [out] */ Int32* len);
 
     /**
@@ -353,6 +354,21 @@ public:
         /* [out] */ Int32* value);
 
     /**
+     * Retrieve the theme attribute resource identifier for the attribute at
+     * <var>index</var>.
+     *
+     * @param index Index of attribute to retrieve.
+     * @param defValue Value to return if the attribute is not defined or not a
+     *            resource.
+     * @return Theme attribute resource identifier, or defValue if not defined.
+     * @hide
+     */
+    CARAPI GetThemeAttributeId(
+        /* [in] */ Int32 index,
+        /* [in] */ Int32 defValue,
+        /* [out] */ Int32* value);
+
+    /**
      * Retrieve the Drawable for the attribute at <var>index</var>.  This
      * gets the resource ID of the selected attribute, and uses
      * {@link Resources#getDrawable Resources.getDrawable} of the owning
@@ -395,6 +411,16 @@ public:
         /* [out] */ Boolean* value);
 
     /**
+     * Returns the type of attribute at the specified index.
+     *
+     * @param index Index of attribute whose type to retrieve.
+     * @return Attribute type.
+     */
+    CARAPI GetType(
+        /* [in] */ Int32 index,
+        /* [out] */ Int32* type);
+
+    /**
      * Determines whether there is an attribute at <var>index</var>.
      *
      * @param index Index of attribute to retrieve.
@@ -431,10 +457,39 @@ public:
      */
     CARAPI Recycle();
 
+    /**
+     * Extracts theme attributes from a typed array for later resolution using
+     * {@link android.content.res.Resources.Theme#resolveAttributes(int[], int[])}.
+     * Removes the entries from the typed array so that subsequent calls to typed
+     * getters will return the default value without crashing.
+     *
+     * @return an array of length {@link #getIndexCount()} populated with theme
+     *         attributes, or null if there are no theme attributes in the typed
+     *         array
+     * @hide
+     */
+    CARAPI ExtractThemeAttrs(
+        /* [out, callee] */ ArrayOf<Int32>** attrs);
+
+    /**
+     * Return a mask of the configuration parameters for which the values in
+     * this typed array may change.
+     *
+     * @return Returns a mask of the changing configuration parameters, as
+     *         defined by {@link android.content.pm.ActivityInfo}.
+     * @see android.content.pm.ActivityInfo
+     */
+    CARAPI GetChangingConfigurations(
+        /* [out] */ Int32* cfgs);
+
     CARAPI constructor(
         /* [in] */ IResources* resources,
         /* [in] */ ArrayOf<Int32>* data,
         /* [in] */ ArrayOf<Int32>* indices,
+        /* [in] */ Int32 len);
+
+    static AutoPtr<ITypedArray> Obtain(
+        /* [in] */ IResources* res,
         /* [in] */ Int32 len);
 
 private:
@@ -447,14 +502,18 @@ private:
 
 public:
     /*package*/ AutoPtr<XmlBlock::Parser> mXml;
-    /*package*/ AutoPtr< ArrayOf<Int32> > mRsrcs;
+    /*package*/ AutoPtr<IResourcesTheme> mTheme;
     /*package*/ AutoPtr< ArrayOf<Int32> > mData;
     /*package*/ AutoPtr< ArrayOf<Int32> > mIndices;
     /*package*/ Int32 mLength;
+    /*package*/ AutoPtr<CTypedValue>    mValue;
 
 private:
     CResources*     mResources; // mResources->mCachedStyledAttributes == this sometime
-    AutoPtr<CTypedValue>    mValue;
+    AutoPtr<IDisplayMetrics> mMetrics;
+    AutoPtr<IAssetManager> mAssets;
+
+    Boolean mRecycled;
 };
 
 } // namespace Res

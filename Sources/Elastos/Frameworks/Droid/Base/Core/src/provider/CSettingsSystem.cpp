@@ -30,7 +30,7 @@ ECode CSettingsSystem::GetSettingsToBackup(
 {
     VALIDATE_NOT_NULL(array)
     *array = Settings::System::SETTINGS_TO_BACKUP;
-    REFCOUNT_ADDREF(*array)
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 
@@ -66,7 +66,7 @@ ECode CSettingsSystem::GetVolumnSettings(
 {
     VALIDATE_NOT_NULL(settings)
     *settings = Settings::System::VOLUME_SETTINGS;
-    REFCOUNT_ADDREF(*settings)
+    REFCOUNT_ADD(*settings)
     return NOERROR;
 }
 

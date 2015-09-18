@@ -529,21 +529,6 @@ module
             [in] Int32 location);
     }
 
-    /**
-     * @Involve
-     * interface IComparator;
-     */
-    interface IApplicationInfoDisplayNameComparator {
-        Compare(
-            [in] IApplicationInfo* a,
-            [in] IApplicationInfo* b,
-            [out] Int32* result);
-
-        Compare(
-            [in] IInterface* a,
-            [in] IInterface* b,
-            [out] Int32* result);
-    }
 
     } // namespace Pm
     } // namespace Content

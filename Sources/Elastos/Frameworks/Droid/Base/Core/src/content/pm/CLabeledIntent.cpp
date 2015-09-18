@@ -7,6 +7,10 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
+CAR_INTERFACE_IMPL(CLabeledIntent, Intent, ILabeledIntent)
+
+CAR_OBJECT_IMPL(CLabeledIntent)
+
 CLabeledIntent::CLabeledIntent()
     : mLabelRes(0)
     , mIcon(0)
@@ -14,12 +18,6 @@ CLabeledIntent::CLabeledIntent()
 
 CLabeledIntent::~CLabeledIntent()
 {}
-
-PInterface CLabeledIntent::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CLabeledIntent::Probe(riid);
-}
 
 ECode CLabeledIntent::constructor()
 {

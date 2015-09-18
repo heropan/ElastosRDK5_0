@@ -80,8 +80,26 @@ public:
         /* [in] */ Int32 alpha,
         /* [out] */ IColorStateList** colorState);
 
+    /**
+     * Indicates whether this color state list contains more than one state spec
+     * and will change color based on state.
+     *
+     * @return True if this color state list changes color based on state, false
+     *         otherwise.
+     * @see #getColorForState(int[], int)
+     */
     CARAPI IsStateful(
-        /* [out] */ Boolean* isStateful);
+        /* [out] */ Boolean* result);
+
+    /**
+     * Indicates whether this color state list is opaque, which means that every
+     * color returned from {@link #getColorForState(int[], int)} has an alpha
+     * value of 255.
+     *
+     * @return True if this color state list is opaque.
+     */
+    CARAPI IsOpaque(
+        /* [out] */ Boolean* result);
 
     /**
      * Return the color associated with the given set of {@link android.view.View} states.
@@ -100,6 +118,41 @@ public:
     CARAPI GetDefaultColor(
         /* [out] */ Int32* color);
 
+    /**
+     * Return the states in this {@link ColorStateList}.
+     * @return the states in this {@link ColorStateList}
+     * @hide
+     */
+    AutoPtr< ArrayOf<Int32Array > > GetStates();
+
+    /**
+     * Return the colors in this {@link ColorStateList}.
+     * @return the colors in this {@link ColorStateList}
+     * @hide
+     */
+    AutoPtr< ArrayOf<Int32> > GetColors();
+
+    /**
+     * If the color state list does not already have an entry matching the
+     * specified state, prepends a state set and color pair to a color state
+     * list.
+     * <p>
+     * This is a workaround used in TimePicker and DatePicker until we can
+     * add support for theme attributes in ColorStateList.
+     *
+     * @param colorStateList the source color state list
+     * @param state the state to prepend
+     * @param color the color to use for the given state
+     * @return a new color state list, or the source color state list if there
+     *         was already a matching state set
+     *
+     * @hide Remove when we can support theme attributes.
+     */
+    static AutoPtr<IColorStateList> AddFirstIfMissing(
+        /* [in] */ IColorStateList* colorStateList,
+        /* [in] */ Int32 state,
+        /* [in] */ Int32 color);
+
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
@@ -113,9 +166,12 @@ public:
         /* [in] */ ArrayOf<Int32>* colors);
 
 private:
-    /* Create from inside an XML document.  Called on a parser positioned at
-     * a tag in an XML document, tries to create a ColorStateList from that tag.
-     * Returns null if the tag is not a valid ColorStateList.
+    /**
+     * Create from inside an XML document. Called on a parser positioned at a
+     * tag in an XML document, tries to create a ColorStateList from that tag.
+     *
+     * @throws XmlPullParserException if the current tag is not &lt;selector>
+     * @return A color state list for the current tag.
      */
     static CARAPI CreateFromXmlInner(
         /* [in] */ IResources* r,

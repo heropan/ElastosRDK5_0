@@ -70,7 +70,7 @@ ECode CNetworkPolicyManager::GetUidsWithPolicy(
     ec = mService->GetUidsWithPolicy(policy, (ArrayOf<Int32>**)&outputarray);
     if(FAILED(ec)) outputarray = ArrayOf<Int32>::Alloc(0);
     *result = outputarray;
-    REFCOUNT_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -101,7 +101,7 @@ ECode CNetworkPolicyManager::GetNetworkPolicies(
     ec = mService->GetNetworkPolicies((ArrayOf<INetworkPolicy*>**)&outputarray);
     if(FAILED(ec)) outputarray = NULL;
     *result = outputarray;
-    REFCOUNT_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

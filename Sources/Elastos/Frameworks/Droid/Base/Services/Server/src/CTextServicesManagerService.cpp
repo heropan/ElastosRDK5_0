@@ -939,7 +939,7 @@ ECode CTextServicesManagerService::GetEnabledSpellCheckers(
         array->Set(i, (*it2).Get());
     }
     *infoArray = array;
-    REFCOUNT_ADDREF(*infoArray);
+    REFCOUNT_ADD(*infoArray);
     return NOERROR;
 }
 

@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CPACKAGEUSERSTATE_H__
 
 #include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Utility::Etl::HashSet;

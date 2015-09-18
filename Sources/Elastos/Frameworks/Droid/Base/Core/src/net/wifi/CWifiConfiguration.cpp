@@ -637,7 +637,7 @@ ECode CWifiConfiguration::GetWepKeys(
 {
     VALIDATE_NOT_NULL(wepKeys);
     *wepKeys = mWepKeys;
-    REFCOUNT_ADDREF(*wepKeys);
+    REFCOUNT_ADD(*wepKeys);
     return NOERROR;
 }
 

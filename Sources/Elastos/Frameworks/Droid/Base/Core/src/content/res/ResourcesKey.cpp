@@ -1,4 +1,5 @@
 #include "content/res/ResourcesKey.h"
+#include "content/res/CConfiguration.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Math.h>
 
@@ -18,7 +19,7 @@ ResourcesKey::ResourcesKey(
     /* [in] */ Float scale,
     /* [in] */ IBinder* token)
 {
-    CConfiguration::New((IConfiguration**)&mOverrideConfiguration)
+    CConfiguration::New((IConfiguration**)&mOverrideConfiguration);
     mResDir = resDir;
     mDisplayId = displayId;
     if (overrideConfiguration != NULL) {
@@ -32,7 +33,7 @@ ResourcesKey::ResourcesKey(
     hash = 31 * hash + mDisplayId;
     hash = 31 * hash + (mOverrideConfiguration != NULL
         ? Object::GetHashCode(mOverrideConfiguration) : 0);
-    hash = 31 * hash + Elastos::Core::Math::FloatToIntBits(mScale);
+    hash = 31 * hash + Elastos::Core::Math::FloatToInt32Bits(mScale);
     mHash = hash;
 }
 
@@ -54,32 +55,37 @@ ECode ResourcesKey::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    if (!(obj instanceof ResourcesKey)) {
-        return false;
+    *result = FALSE;
+
+    if (IResourcesKey::Probe(other) == NULL) {
+        return NOERROR;
     }
-    ResourcesKey peer = (ResourcesKey) obj;
-    if (mResDir != peer.mResDir) {
-        if (mResDir == null || peer.mResDir == null) {
-            return false;
-        } else if (!mResDir.equals(peer.mResDir)) {
-            return false;
+
+    ResourcesKey* peer = (ResourcesKey*) IResourcesKey::Probe(other);
+    if (mResDir != peer->mResDir) {
+        if (mResDir.IsNull() || peer->mResDir.IsNull()) {
+            return NOERROR;
+        }
+        else if (!mResDir.Equals(peer->mResDir)) {
+            return NOERROR;
         }
     }
-    if (mDisplayId != peer.mDisplayId) {
-        return false;
+    if (mDisplayId != peer->mDisplayId) {
+        return NOERROR;
     }
-    if (mOverrideConfiguration != peer.mOverrideConfiguration) {
-        if (mOverrideConfiguration == null || peer.mOverrideConfiguration == null) {
-            return false;
+    if (mOverrideConfiguration != peer->mOverrideConfiguration) {
+        if (mOverrideConfiguration == NULL || peer->mOverrideConfiguration == NULL) {
+            return NOERROR;
         }
-        if (!mOverrideConfiguration.equals(peer.mOverrideConfiguration)) {
-            return false;
+        if (!Object::Equals(mOverrideConfiguration, peer->mOverrideConfiguration)) {
+            return NOERROR;
         }
     }
-    if (mScale != peer.mScale) {
-        return false;
+    if (mScale != peer->mScale) {
+        return NOERROR;
     }
-    return true;
+
+    *result = TRUE;
     return NOERROR;
 }
 

@@ -1,6 +1,6 @@
 
 #include "content/res/XmlBlock.h"
-//#include "content/res/CAssetManager.h"
+#include "content/res/CAssetManager.h"
 #include "util/CTypedValue.h"
 //#include "internal/util/XmlUtils.h"
 #include <elastos/core/Math.h>
@@ -886,7 +886,6 @@ void XmlBlock::Close()
 
 void XmlBlock::DecOpenCountLocked()
 {
-    assert(0 && "TODO");
     mOpenCount--;
     if (mOpenCount == 0) {
         if (mNative != 0) {
@@ -895,7 +894,9 @@ void XmlBlock::DecOpenCountLocked()
         }
 
         if (mAssets != NULL) {
-            // ((CAssetManager*)mAssets.Get())->XmlBlockGone(GetHashCode());
+            Int32 hash;
+            GetHashCode(&hash);
+            ((CAssetManager*)mAssets.Get())->XmlBlockGone(hash);
             mAssets = NULL;
         }
     }
@@ -905,10 +906,11 @@ AutoPtr<IXmlResourceParser> XmlBlock::NewParser()
 {
     AutoLock lock(mSyncLock);
 
+    AutoPtr<IXmlResourceParser> parser;
     if (mNative != 0) {
-        return (IXmlResourceParser*)new Parser(NativeCreateParseState(mNative), this);
+        parser = new Parser(NativeCreateParseState(mNative), this);
     }
-    return NULL;
+    return parser;
 }
 
 Int64 XmlBlock::NativeCreate(

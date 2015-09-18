@@ -159,7 +159,7 @@ ECode CTestObject::Test_ArrayOf_Int16(
     AutoPtr< ArrayOf<Int16> > carArray = ArrayOf<Int16>::Alloc(inValue.GetLength());
     carArray->Copy(&inValue);
     *outValue = carArray;
-    REFCOUNT_ADDREF(*outValue);
+    REFCOUNT_ADD(*outValue);
     return NOERROR;
 }
 
@@ -171,7 +171,7 @@ ECode CTestObject::Test_ArrayOf_Int32(
     AutoPtr< ArrayOf<Int32> > carArray = ArrayOf<Int32>::Alloc(inValue.GetLength());
     carArray->Copy(&inValue);
     *outValue = carArray;
-    REFCOUNT_ADDREF(*outValue);
+    REFCOUNT_ADD(*outValue);
     return NOERROR;
 }
 
@@ -183,7 +183,7 @@ ECode CTestObject::Test_ArrayOf_Int64(
     AutoPtr< ArrayOf<Int64> > carArray = ArrayOf<Int64>::Alloc(inValue.GetLength());
     carArray->Copy(&inValue);
     *outValue = carArray;
-    REFCOUNT_ADDREF(*outValue);
+    REFCOUNT_ADD(*outValue);
     return NOERROR;
 }
 
@@ -195,7 +195,7 @@ ECode CTestObject::Test_ArrayOf_Byte(
     AutoPtr< ArrayOf<Byte> > carArray = ArrayOf<Byte>::Alloc(inValue.GetLength());
     carArray->Copy(&inValue);
     *outValue = carArray;
-    REFCOUNT_ADDREF(*outValue);
+    REFCOUNT_ADD(*outValue);
     return NOERROR;
 }
 
@@ -207,7 +207,7 @@ ECode CTestObject::Test_ArrayOf_Float(
     AutoPtr< ArrayOf<Float> > carArray = ArrayOf<Float>::Alloc(inValue.GetLength());
     carArray->Copy(&inValue);
     *outValue = carArray;
-    REFCOUNT_ADDREF(*outValue);
+    REFCOUNT_ADD(*outValue);
     return NOERROR;
 }
 
@@ -219,7 +219,7 @@ ECode CTestObject::Test_ArrayOf_Double(
     AutoPtr< ArrayOf<Double> > carArray = ArrayOf<Double>::Alloc(inValue.GetLength());
     carArray->Copy(&inValue);
     *outValue = carArray;
-    REFCOUNT_ADDREF(*outValue);
+    REFCOUNT_ADD(*outValue);
     return NOERROR;
 }
 
@@ -232,7 +232,7 @@ ECode CTestObject::Test_ArrayOf_Char(
     AutoPtr< ArrayOf<Char32> > carArray = ArrayOf<Char32>::Alloc(inValue.GetLength());
     carArray->Copy(&inValue);
     *outValue = carArray;
-    REFCOUNT_ADDREF(*outValue);
+    REFCOUNT_ADD(*outValue);
     return NOERROR;
 }
 
@@ -244,7 +244,7 @@ ECode CTestObject::Test_ArrayOf_String(
     AutoPtr< ArrayOf<String> > carArray = ArrayOf<String>::Alloc(inValue.GetLength());
     carArray->Copy(&inValue);
     *outValue = carArray;
-    REFCOUNT_ADDREF(*outValue);
+    REFCOUNT_ADD(*outValue);
     return NOERROR;
 }
 
@@ -256,7 +256,7 @@ ECode CTestObject::Test_ArrayOf_Boolean(
     AutoPtr< ArrayOf<Boolean> > carArray = ArrayOf<Boolean>::Alloc(inValue.GetLength());
     carArray->Copy(&inValue);
     *outValue = carArray;
-    REFCOUNT_ADDREF(*outValue);
+    REFCOUNT_ADD(*outValue);
     return NOERROR;
 }
 
@@ -268,7 +268,7 @@ ECode CTestObject::Test_ArrayOf_EMuid(
     AutoPtr< ArrayOf<EMuid> > carArray = ArrayOf<EMuid>::Alloc(inValue.GetLength());
     carArray->Copy(&inValue);
     *outValue = carArray;
-    REFCOUNT_ADDREF(*outValue);
+    REFCOUNT_ADD(*outValue);
     return NOERROR;
 }
 
@@ -280,7 +280,7 @@ ECode CTestObject::Test_ArrayOf_EGuid(
     AutoPtr< ArrayOf<EGuid> > carArray = ArrayOf<EGuid>::Alloc(inValue.GetLength());
     carArray->Copy(&inValue);
     *outValue = carArray;
-    REFCOUNT_ADDREF(*outValue);
+    REFCOUNT_ADD(*outValue);
     return NOERROR;
 }
 
@@ -293,7 +293,7 @@ ECode CTestObject::Test_ArrayOf_ECode(
     AutoPtr< ArrayOf<ECode> > carArray = ArrayOf<ECode>::Alloc(inValue.GetLength());
     carArray->Copy(&inValue);
     *outValue = carArray;
-    REFCOUNT_ADDREF(*outValue);
+    REFCOUNT_ADD(*outValue);
     return NOERROR;
 }
 
@@ -306,7 +306,7 @@ ECode CTestObject::Test_ArrayOf_Enum(
     AutoPtr< ArrayOf<TestObjectState> > carArray = ArrayOf<TestObjectState>::Alloc(inValue.GetLength());
     carArray->Copy(&inValue);
     *outValue = carArray;
-    REFCOUNT_ADDREF(*outValue);
+    REFCOUNT_ADD(*outValue);
     return NOERROR;
 }
 

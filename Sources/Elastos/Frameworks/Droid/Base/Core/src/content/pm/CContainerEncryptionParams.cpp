@@ -13,6 +13,15 @@ const Int32 CContainerEncryptionParams::ENC_PARAMS_IV_PARAMETERS = 1;
 
 const Int32 CContainerEncryptionParams::MAC_PARAMS_NONE = 1;
 
+CAR_INTERFACE_IMPL(CContainerEncryptionParams, Object, IContainerEncryptionParams, IParcelable)
+
+CAR_OBJECT_IMPL(CContainerEncryptionParams)
+
+ECode CContainerEncryptionParams::constructor()
+{
+    return NOERROR;
+}
+
 ECode CContainerEncryptionParams::constructor(
     /* [in] */ const String& encryptionAlgorithm,
     /* [in] */ Elastos::Security::Spec::IAlgorithmParameterSpec* encryptionSpec,

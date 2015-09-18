@@ -361,5 +361,14 @@ ECode CLocaleHelper::GetUS(
     return NOERROR;
 }
 
+ECode CLocaleHelper::AdjustLanguageCode(
+    /* [in] */ const String& languageCode,
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = CLocale::AdjustLanguageCode(languageCode);
+    return NOERROR;
+}
+
 } // namespace Utility
 } // namespace Elastos

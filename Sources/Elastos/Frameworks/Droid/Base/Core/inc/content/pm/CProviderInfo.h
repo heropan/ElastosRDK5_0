@@ -21,6 +21,10 @@ namespace Pm {
 CarClass(CProviderInfo), public ComponentInfo
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CProviderInfo();
 
     ~CProviderInfo();

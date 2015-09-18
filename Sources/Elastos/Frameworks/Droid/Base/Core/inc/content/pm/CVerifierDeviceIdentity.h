@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Content_Pm_CVerifierDeviceIdentity.h"
 #include "CVerifierDeviceIdentityHelper.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -15,6 +16,10 @@ CarClass(CVerifierDeviceIdentity)
     friend class CVerifierDeviceIdentityHelper;
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CVerifierDeviceIdentity();
 
     ~CVerifierDeviceIdentity();

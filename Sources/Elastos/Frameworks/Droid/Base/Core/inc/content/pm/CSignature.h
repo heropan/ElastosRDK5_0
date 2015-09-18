@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CSIGNATURE_H__
 
 #include "_Elastos_Droid_Content_Pm_CSignature.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Security::IPublicKey;
 
@@ -18,6 +19,10 @@ namespace Pm {
 CarClass(CSignature)
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     /**

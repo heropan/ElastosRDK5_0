@@ -1425,7 +1425,7 @@ ECode CConnectivityService::GetAllNetworkInfo(
         infoArray->Set(i, netInfo);
     }
     *allInfo = infoArray;
-    REFCOUNT_ADDREF(*allInfo);
+    REFCOUNT_ADD(*allInfo);
     return NOERROR;
 }
 
@@ -1523,7 +1523,7 @@ ECode CConnectivityService::GetAllNetworkState(
         stateArray->Set(i, netState);
     }
     *allStates = stateArray;
-    REFCOUNT_ADDREF(*allStates);
+    REFCOUNT_ADD(*allStates);
     return NOERROR;
 }
 
@@ -3994,7 +3994,7 @@ ECode CConnectivityService::GetTetherableUsbRegexs(
     else {
         AutoPtr< ArrayOf<String> > strArray = ArrayOf<String>::Alloc(0);
         *regexs = strArray;
-        REFCOUNT_ADDREF(*regexs);
+        REFCOUNT_ADD(*regexs);
         return NOERROR;
     }
 }
@@ -4011,7 +4011,7 @@ ECode CConnectivityService::GetTetherableWifiRegexs(
     else {
         AutoPtr< ArrayOf<String> > strArray = ArrayOf<String>::Alloc(0);
         *regexs = strArray;
-        REFCOUNT_ADDREF(*regexs);
+        REFCOUNT_ADD(*regexs);
         return NOERROR;
     }
 }
@@ -4028,7 +4028,7 @@ ECode CConnectivityService::GetTetherableBluetoothRegexs(
     else {
         AutoPtr< ArrayOf<String> > strArray = ArrayOf<String>::Alloc(0);
         *regexs = strArray;
-        REFCOUNT_ADDREF(*regexs);
+        REFCOUNT_ADD(*regexs);
         return NOERROR;
     }
 }
@@ -4081,7 +4081,7 @@ ECode CConnectivityService::GetTetheringErroredIfaces(
     FAIL_RETURN(EnforceTetherAccessPermission());
     AutoPtr< ArrayOf<String> > i = mTethering->GetErroredIfaces();
     *ifaces = i.Get();
-    REFCOUNT_ADDREF(*ifaces);
+    REFCOUNT_ADD(*ifaces);
     return NOERROR;
 }
 

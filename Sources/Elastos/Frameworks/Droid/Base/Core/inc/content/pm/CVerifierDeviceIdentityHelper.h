@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CVERIFIERDEVICEIDENTITYHELPER_H__
 
 #include "_Elastos_Droid_Content_Pm_CVerifierDeviceIdentityHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
@@ -12,6 +13,10 @@ namespace Pm {
 CarClass(CVerifierDeviceIdentityHelper)
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Generate a new device identity.
      *

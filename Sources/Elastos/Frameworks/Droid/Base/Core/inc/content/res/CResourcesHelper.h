@@ -31,6 +31,7 @@ public:
         /* [in] */ Int32 targetSdkVersion,
         /* [in] */ Int32 orig,
         /* [in] */ Int32 holo,
+        /* [in] */ Int32 dark,
         /* [in] */ Int32 deviceDefault,
         /* [out] */ Int32* value);
 
@@ -41,10 +42,6 @@ public:
         /* [in] */ IConfiguration* config,
         /* [in] */ IDisplayMetrics* metrics,
         /* [in] */ ICompatibilityInfo* compat);
-
-    CARAPI UpdateSystemConfiguration(
-        /* [in] */ IConfiguration* config,
-        /* [in] */ IDisplayMetrics* metrics);
 };
 
 } // namespace Res

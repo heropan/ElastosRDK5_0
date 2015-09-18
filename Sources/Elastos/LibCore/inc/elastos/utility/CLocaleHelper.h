@@ -212,6 +212,13 @@ public:
      */
     CARAPI GetUS(
         /* [out] */ ILocale** locale);
+
+    /**
+     * @hide for internal use only.
+     */
+    CARAPI AdjustLanguageCode(
+        /* [in] */ const String& languageCode,
+        /* [out] */ String* result);
 };
 
 } // namespace Utility

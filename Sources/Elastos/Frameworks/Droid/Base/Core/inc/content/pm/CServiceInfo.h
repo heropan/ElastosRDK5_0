@@ -18,6 +18,10 @@ namespace Pm {
 CarClass(CServiceInfo), public ComponentInfo
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CServiceInfo();
 
     ~CServiceInfo();

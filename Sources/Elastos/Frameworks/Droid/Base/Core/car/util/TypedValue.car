@@ -138,6 +138,9 @@ module {
          */
         const Int32 DENSITY_NONE = 0xffff;
 
+        /* ------------------------------------------------------------ */
+
+
         /** Return the data for this value as a float.  Only use for values
          *  whose type is {@link #TYPE_FLOAT}. */
         GetFloat(

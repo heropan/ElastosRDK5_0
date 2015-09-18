@@ -233,7 +233,7 @@ ECode CMainActivity::GetVideoList(
     }
 
     *result = array;
-    REFCOUNT_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

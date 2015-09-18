@@ -13,6 +13,7 @@
 #include <androidfw/ResourceTypes.h>
 
 using Elastos::Droid::Utility::CTypedValue;
+using Elastos::Droid::Os::ParcelFileDescriptor;
 using Elastos::Droid::Os::CParcelFileDescriptor;
 
 using Elastos::Core::StringBuilder;
@@ -85,7 +86,7 @@ ECode CAssetManager::AssetInputStream::Available(
 
 ECode CAssetManager::AssetInputStream::Close()
 {
-    AutoLock lock(mAssetManager->_m_syncLock);
+    AutoLock lock(mAssetManager);
 
     if (mAsset != 0) {
         mAssetManager->DestroyAsset(mAsset);
@@ -151,7 +152,7 @@ const Int32 CAssetManager::STYLE_CHANGING_CONFIGURATIONS;
 const Int32 CAssetManager::STYLE_DENSITY;
 
 const String CAssetManager::TAG("CAssetManager");
-const Boolean CAssetManager::LocalLOGV = FALSE || FALSE;
+const Boolean CAssetManager::LocalLOGV = FALSE;
 const Boolean CAssetManager::DEBUG_REFS = TRUE;
 Object CAssetManager::sSync;
 
@@ -161,7 +162,6 @@ CAR_OBJECT_IMPL(CAssetManager)
 
 CAssetManager::CAssetManager()
     : mObject(0)
-    , mNObject(0)
     , mNumRefs(1)
     , mOpen(TRUE)
 {
@@ -176,7 +176,7 @@ CAssetManager::~CAssetManager()
         Slogger::V(TAG, "==== CAssetManager::~CAssetManager, mNumRefs: %d, this: %p ====",
             mNumRefs, THIS_PROBE(IAssetManager));
 
-        HashMap<Int32, String>::Iterator it;
+        HashMap<Int64, String>::Iterator it;
         for (it = mRefStacks.Begin(); it != mRefStacks.End(); ++it) {
             Slogger::V(TAG, "==== CAssetManager reference through [%s]", it->mSecond.string());
         }
@@ -189,7 +189,7 @@ CAssetManager::~CAssetManager()
 ECode CAssetManager::constructor()
 {
     if (DEBUG_REFS) {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         mNumRefs = 0;
         IncRefsLocked(GetHashCode(), "AssetManager::constructor()");
     }
@@ -203,7 +203,7 @@ ECode CAssetManager::constructor(
     /* [in] */ Boolean isSystem)
 {
     if (DEBUG_REFS) {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
 
         mNumRefs = 0;
         IncRefsLocked(GetHashCode(), "AssetManager::constructor()");
@@ -237,7 +237,7 @@ AutoPtr<CAssetManager> CAssetManager::GetSystem()
 
 ECode CAssetManager::Close()
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     if (mOpen) {
         mOpen = FALSE;
@@ -249,7 +249,7 @@ ECode CAssetManager::Close()
 AutoPtr<ICharSequence> CAssetManager::GetResourceText(
     /* [in] */Int32 ident)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     AutoPtr<ITypedValue> tmpValue = mValue;
     Int32 block;
@@ -273,7 +273,7 @@ AutoPtr<ICharSequence> CAssetManager::GetResourceBagText(
     /* [in] */Int32 ident,
     /* [in] */Int32 bagEntryId)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     AutoPtr<ITypedValue> tmpValue = mValue;
     Int32 block;
@@ -375,7 +375,7 @@ Boolean CAssetManager::GetThemeValue(
 void CAssetManager::EnsureStringBlocks()
 {
     if (mStringBlocks == NULL) {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
 
         if (mStringBlocks == NULL) {
             MakeStringBlocks(sSystem->mStringBlocks);
@@ -405,7 +405,7 @@ void CAssetManager::MakeStringBlocks(
     }
 }
 
-AutoPtr<ICharSequence> CAssetManager::GetPooledString(
+AutoPtr<ICharSequence> CAssetManager::GetPooledStringForCookie(
     /* [in] */ Int32 cookie,
     /* [in] */ Int32 id)
 {
@@ -427,7 +427,7 @@ ECode CAssetManager::Open(
 {
     VALIDATE_NOT_NULL(stream);
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     if (!mOpen) {
         // Slogger::E(TAG, "Assetmanager has been closed");
@@ -454,7 +454,7 @@ ECode CAssetManager::OpenFd(
 {
     VALIDATE_NOT_NULL(fd);
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     if (!mOpen) {
         // Slogger::E(TAG, "Assetmanager has been closed");
@@ -544,7 +544,7 @@ ECode CAssetManager::OpenNonAsset(
     /* [out] */ IInputStream ** stream)
 {
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
 
         if (!mOpen) {
 //            throw new RuntimeException("Assetmanager has been closed");
@@ -581,7 +581,7 @@ ECode CAssetManager::OpenNonAssetFd(
     VALIDATE_NOT_NULL(fd);
 
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
 
         if (!mOpen) {
             // Slogger::E(TAG, "Assetmanager has been closed");
@@ -638,7 +638,7 @@ ECode CAssetManager::OpenXmlBlockAsset(
     VALIDATE_NOT_NULL(res);
     *res = NULL;
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     if (!mOpen) {
         // Slogger::E(TAG, "Assetmanager has been closed");
@@ -660,7 +660,7 @@ ECode CAssetManager::OpenXmlBlockAsset(
 void CAssetManager::XmlBlockGone(
     /* [in] */ Int32 id)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     DecRefsLocked(id, "AssetManager::XmlBlockGone");
 }
@@ -672,7 +672,7 @@ ECode CAssetManager::CreateTheme(
     *res = 0;
 
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
 
         if (!mOpen) {
             // Slogger::E(TAG, "Assetmanager has been closed");
@@ -688,7 +688,7 @@ ECode CAssetManager::CreateTheme(
 ECode CAssetManager::ReleaseTheme(
     /* [in] */ Int64 theme)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     DeleteTheme(theme);
     DecRefsLocked(theme, "AssetManager::ReleaseTheme");
@@ -731,11 +731,11 @@ ECode CAssetManager::AddAssetPath(
         return NOERROR;
     }
 
-    void* c = NULL;
+    int32_t c;
     bool res = am->addAssetPath(android::String8(path.string()), &c);
 
     MakeStringBlocks(mStringBlocks);
-    *cookie = (res) ? (Int32)c : 0;
+    *cookie = (res) ? c : 0;
     return NOERROR;
 }
 
@@ -758,7 +758,7 @@ ECode CAssetManager::AddAssetPaths(
     }
 
     *cookies = arr;
-    REFCOUNT_ADDREF(*cookies);
+    REFCOUNT_ADD(*cookies);
     return NOERROR;
 }
 
@@ -815,7 +815,7 @@ ECode CAssetManager::GetLocales(
     }
 
     *locales = result;
-    REFCOUNT_ADDREF(*locales);
+    REFCOUNT_ADD(*locales);
     return NOERROR;
 }
 
@@ -926,7 +926,7 @@ String CAssetManager::GetResourceName(
     }
 
     android::ResTable::resource_name name;
-    if (!am->getResources().getResourceName(resid, &name)) {
+    if (!am->getResources().getResourceName(resid, true, &name)) {
         return String(NULL);
     }
 
@@ -962,7 +962,7 @@ String CAssetManager::GetResourcePackageName(
     }
 
     android::ResTable::resource_name name;
-    if (!am->getResources().getResourceName(resid, &name)) {
+    if (!am->getResources().getResourceName(resid, true, &name)) {
         return String(NULL);
     }
 
@@ -983,7 +983,7 @@ String CAssetManager::GetResourceTypeName(
     }
 
     android::ResTable::resource_name name;
-    if (!am->getResources().getResourceName(resid, &name)) {
+    if (!am->getResources().getResourceName(resid, true, &name)) {
         return String(NULL);
     }
 
@@ -1004,7 +1004,7 @@ String CAssetManager::GetResourceEntryName(
     }
 
     android::ResTable::resource_name name;
-    if (!am->getResources().getResourceName(resid, &name)) {
+    if (!am->getResources().getResourceName(resid, true, &name)) {
         return String(NULL);
     }
 
@@ -1082,7 +1082,8 @@ static AutoPtr<IParcelFileDescriptor> ReturnParcelFileDescriptor(
     fileDesc->SetDescriptor(fd);
 
     AutoPtr<IParcelFileDescriptor> pfd;
-    CParcelFileDescriptor::New(fileDesc, (IParcelFileDescriptor**)&pfd);
+    CParcelFileDescriptor::New((IParcelFileDescriptor**)&pfd);
+    ((ParcelFileDescriptor*)pfd.Get())->constructor(fileDesc);
     return pfd;
 }
 
@@ -1140,7 +1141,8 @@ ECode CAssetManager::OpenNonAssetNative(
     }
 
     android::Asset* a = cookie
-        ? am->openNonAsset((void*)cookie, fileName.string(), (android::Asset::AccessMode)accessMode)
+        ? am->openNonAsset(static_cast<int32_t>(cookie), fileName.string(),
+                (android::Asset::AccessMode)accessMode)
         : am->openNonAsset(fileName.string(), (android::Asset::AccessMode)accessMode);
 
     if (a == NULL) {
@@ -1172,7 +1174,7 @@ AutoPtr<IParcelFileDescriptor> CAssetManager::OpenNonAssetFdNative(
     }
 
     android::Asset* a = cookie
-        ? am->openNonAsset((void*)cookie, fileName.string(), android::Asset::ACCESS_RANDOM)
+        ? am->openNonAsset(static_cast<int32_t>(cookie), fileName.string(), android::Asset::ACCESS_RANDOM)
         : am->openNonAsset(fileName.string(), android::Asset::ACCESS_RANDOM);
 
     if (a == NULL) {
@@ -1673,10 +1675,10 @@ ECode CAssetManager::ResolveAttrs(
         // jniThrowNullPointerException(env, "theme token");
         return E_NULL_POINTER_EXCEPTION;
     }
-    if (attrs == NULL) {
-        // jniThrowNullPointerException(env, "attrs");
-        return E_NULL_POINTER_EXCEPTION;
-    }
+    // if (attrs == NULL) {
+    //     // jniThrowNullPointerException(env, "attrs");
+    //     return E_NULL_POINTER_EXCEPTION;
+    // }
     if (outValues == NULL) {
         // jniThrowNullPointerException(env, "out values");
         return E_NULL_POINTER_EXCEPTION;
@@ -1685,10 +1687,10 @@ ECode CAssetManager::ResolveAttrs(
 //     DEBUG_STYLES(ALOGI("APPLY STYLE: theme=0x%x defStyleAttr=0x%x defStyleRes=0x%x",
 //         themeToken, defStyleAttr, defStyleRes));
 
-    ResTable::Theme* theme = reinterpret_cast<ResTable::Theme*>(themeToken);
-    const ResTable& res = theme->getResTable();
-    ResTable_config config;
-    Res_value value;
+    android::ResTable::Theme* theme = reinterpret_cast<android::ResTable::Theme*>(themeToken);
+    const android::ResTable& res = theme->getResTable();
+    android::ResTable_config config;
+    android::Res_value value;
 
     const Int32 NI = attrs.GetLength();
     const Int32 NV = outValues->GetLength();
@@ -1722,9 +1724,9 @@ ECode CAssetManager::ResolveAttrs(
     // Load default style from attribute, if specified...
     uint32_t defStyleBagTypeSetFlags = 0;
     if (defStyleAttr != 0) {
-        Res_value value;
+        android::Res_value value;
         if (theme->getAttribute(defStyleAttr, &value, &defStyleBagTypeSetFlags) >= 0) {
-            if (value.dataType == Res_value::TYPE_REFERENCE) {
+            if (value.dataType == android::Res_value::TYPE_REFERENCE) {
                 defStyleRes = value.data;
             }
         }
@@ -1734,12 +1736,12 @@ ECode CAssetManager::ResolveAttrs(
     res.lock();
 
     // Retrieve the default style bag, if requested.
-    const ResTable::bag_entry* defStyleEnt = NULL;
+    const android::ResTable::bag_entry* defStyleEnt = NULL;
     uint32_t defStyleTypeSetFlags = 0;
     ssize_t bagOff = defStyleRes != 0
             ? res.getBagLocked(defStyleRes, &defStyleEnt, &defStyleTypeSetFlags) : -1;
     defStyleTypeSetFlags |= defStyleBagTypeSetFlags;
-    const ResTable::bag_entry* endDefStyleEnt = defStyleEnt +
+    const android::ResTable::bag_entry* endDefStyleEnt = defStyleEnt +
         (bagOff >= 0 ? bagOff : 0);;
 
     // Now iterate through all of the attributes that the client has requested,
@@ -1754,7 +1756,7 @@ ECode CAssetManager::ResolveAttrs(
         // Try to find a value for this attribute...  we prioritize values
         // coming from, first XML attributes, then XML style, then default
         // style, and finally the theme.
-        value.dataType = Res_value::TYPE_NULL;
+        value.dataType = android::Res_value::TYPE_NULL;
         value.data = 0;
         typeSetFlags = 0;
         config.density = 0;
@@ -1762,7 +1764,7 @@ ECode CAssetManager::ResolveAttrs(
         // Retrieve the current input value if available.
         if (NSV > 0 && srcValues[ii] != 0) {
             block = -1;
-            value.dataType = Res_value::TYPE_ATTRIBUTE;
+            value.dataType = android::Res_value::TYPE_ATTRIBUTE;
             value.data = srcValues[ii];
             // DEBUG_STYLES(ALOGI("-> From values: type=0x%x, data=0x%08x",
             //         value.dataType, value.data));
@@ -1774,18 +1776,18 @@ ECode CAssetManager::ResolveAttrs(
         }
         // Retrieve the current default style attribute if it matches, and step to next.
         if (defStyleEnt < endDefStyleEnt && curIdent == defStyleEnt->map.name.ident) {
-            if (value.dataType == Res_value::TYPE_NULL) {
+            if (value.dataType == android::Res_value::TYPE_NULL) {
                 block = defStyleEnt->stringBlock;
                 typeSetFlags = defStyleTypeSetFlags;
                 value = defStyleEnt->map.value;
-                DEBUG_STYLES(ALOGI("-> From def style: type=0x%x, data=0x%08x",
-                        value.dataType, value.data));
+                // DEBUG_STYLES(ALOGI("-> From def style: type=0x%x, data=0x%08x",
+                //         value.dataType, value.data));
             }
             defStyleEnt++;
         }
 
         uint32_t resid = 0;
-        if (value.dataType != Res_value::TYPE_NULL) {
+        if (value.dataType != android::Res_value::TYPE_NULL) {
             // Take care of resolving the found resource to its final value.
             ssize_t newBlock = theme->resolveAttributeReference(&value, block,
                     &resid, &typeSetFlags, &config);
@@ -1814,9 +1816,9 @@ ECode CAssetManager::ResolveAttrs(
         }
 
         // Deal with the special @null value -- it turns back to TYPE_NULL.
-        if (value.dataType == Res_value::TYPE_REFERENCE && value.data == 0) {
+        if (value.dataType == android::Res_value::TYPE_REFERENCE && value.data == 0) {
             // DEBUG_STYLES(ALOGI("-> Setting to @null!"));
-            value.dataType = Res_value::TYPE_NULL;
+            value.dataType = android::Res_value::TYPE_NULL;
             block = -1;
         }
 
@@ -1827,12 +1829,12 @@ ECode CAssetManager::ResolveAttrs(
         dest[STYLE_TYPE] = value.dataType;
         dest[STYLE_DATA] = value.data;
         dest[STYLE_ASSET_COOKIE] =
-            block != -1 ? reinterpret_cast<jint>(res.getTableCookie(block)) : (jint)-1;
+            block != -1 ? reinterpret_cast<Int32>(res.getTableCookie(block)) : (Int32)-1;
         dest[STYLE_RESOURCE_ID] = resid;
         dest[STYLE_CHANGING_CONFIGURATIONS] = typeSetFlags;
         dest[STYLE_DENSITY] = config.density;
 
-        if (indices != NULL && value.dataType != Res_value::TYPE_NULL) {
+        if (indices != NULL && value.dataType != android::Res_value::TYPE_NULL) {
             indicesIdx++;
             indices[indicesIdx] = ii;
         }
@@ -2133,16 +2135,21 @@ ECode CAssetManager::GetCookieName(
 
     android::AssetManager* am = (android::AssetManager*)mObject;
     if (am == NULL) {
-        *name = NULL;
+        *name = String(NULL);
         return NOERROR;
     }
-    android::String8 n(am->getAssetPath((void*)cookie));
+    android::String8 n(am->getAssetPath(static_cast<int32_t>(cookie)));
     if (n.length() == 0) {
         // jniThrowException(env, "java/lang/IndexOutOfBoundsException", "Empty cookie name");
-        *name = NULL;
+        *name = String(NULL);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     *name = n.string();
+    return NOERROR;
+}
+
+AutoPtr<HashMap<Int32, String> > CAssetManager::GetAssignedPackageIdentifiers()
+{
     return NOERROR;
 }
 
@@ -2167,17 +2174,17 @@ Int32 CAssetManager::GetGlobalAssetManagerCount()
     return android::AssetManager::getGlobalCount();
 }
 
-Int32 CAssetManager::NewTheme()
+Int64 CAssetManager::NewTheme()
 {
     android::AssetManager* am = (android::AssetManager*)mObject;
     if (am == NULL) {
         return 0;
     }
-    return (Int32)new android::ResTable::Theme(am->getResources());
+    return (Int64)new android::ResTable::Theme(am->getResources());
 }
 
 void CAssetManager::DeleteTheme(
-    /* [in] */ Int32 theme)
+    /* [in] */ Int64 theme)
 {
     delete (android::ResTable::Theme*)theme;
 }
@@ -2185,7 +2192,7 @@ void CAssetManager::DeleteTheme(
 ECode CAssetManager::OpenXmlAssetNative(
     /* [in] */ Int32 cookie,
     /* [in] */ const String& fileName,
-    /* [out] */ Int32* result)
+    /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result);
     *result = 0;
@@ -2204,7 +2211,7 @@ ECode CAssetManager::OpenXmlAssetNative(
 
     const char* fileName8 = fileName.string();
     android::Asset* a = cookie
-        ? am->openNonAsset((void*)cookie, fileName8, android::Asset::ACCESS_BUFFER)
+        ? am->openNonAsset(static_cast<int32_t>(cookie), fileName8, android::Asset::ACCESS_BUFFER)
         : am->openNonAsset(fileName8, android::Asset::ACCESS_BUFFER);
 
     if (a == NULL) {
@@ -2230,9 +2237,11 @@ ECode CAssetManager::GetArrayStringResource(
     /* [in] */ Int32 arrayRes,
     /* [out] */ ArrayOf<String>** result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
     android::AssetManager* am = (android::AssetManager*)mObject;
     if (am == NULL) {
-        *result = NULL;
         return NOERROR;
     }
     const android::ResTable& res(am->getResources());
@@ -2240,7 +2249,6 @@ ECode CAssetManager::GetArrayStringResource(
     const android::ResTable::bag_entry* startOfBag;
     const ssize_t N = res.lockBag(arrayRes, &startOfBag);
     if (N < 0) {
-        *result = NULL;
         return NOERROR;
     }
 
@@ -2259,7 +2267,7 @@ ECode CAssetManager::GetArrayStringResource(
         if (block == android::BAD_INDEX) {
             // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
             *result = array;
-            REFCOUNT_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return E_ILLEGAL_STATE_EXCEPTION;
         }
 #endif
@@ -2286,7 +2294,7 @@ ECode CAssetManager::GetArrayStringResource(
     }
     res.unlockBag(startOfBag);
     *result = array;
-    REFCOUNT_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -2294,9 +2302,11 @@ ECode CAssetManager::GetArrayStringInfo(
     /* [in] */ Int32 arrayRes,
     /* [out] */ ArrayOf<Int32>** result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
     android::AssetManager* am = (android::AssetManager*)mObject;
     if (am == NULL) {
-        *result = NULL;
         return NOERROR;
     }
     const android::ResTable& res(am->getResources());
@@ -2304,7 +2314,6 @@ ECode CAssetManager::GetArrayStringInfo(
     const android::ResTable::bag_entry* startOfBag;
     const ssize_t N = res.lockBag(arrayRes, &startOfBag);
     if (N < 0) {
-        *result = NULL;
         return NOERROR;
     }
 
@@ -2327,7 +2336,7 @@ ECode CAssetManager::GetArrayStringInfo(
         if (stringBlock == android::BAD_INDEX) {
             // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
             *result = array;
-            REFCOUNT_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return E_ILLEGAL_STATE_EXCEPTION;
         }
 #endif
@@ -2341,12 +2350,14 @@ ECode CAssetManager::GetArrayStringInfo(
     }
     res.unlockBag(startOfBag);
     *result = array;
-    REFCOUNT_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
-ECode CAssetManager::Init()
+ECode CAssetManager::Init(
+    /* [in] */ Boolean isSystem)
 {
+    assert(0 && "TODO");
     android::AssetManager* am = new android::AssetManager();
     if (am == NULL) {
         // jniThrowException(env, "java/lang/OutOfMemoryError", "");
@@ -2374,9 +2385,11 @@ ECode CAssetManager::GetArrayIntResource(
     /* [in] */ Int32 arrayRes,
     /* [out] */ ArrayOf<Int32>** result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
     android::AssetManager* am = (android::AssetManager*)mObject;
     if (am == NULL) {
-        *result = NULL;
         return NOERROR;
     }
     const android::ResTable& res(am->getResources());
@@ -2384,14 +2397,12 @@ ECode CAssetManager::GetArrayIntResource(
     const android::ResTable::bag_entry* startOfBag;
     const ssize_t N = res.lockBag(arrayRes, &startOfBag);
     if (N < 0) {
-        *result = NULL;
         return NOERROR;
     }
 
     AutoPtr< ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(N);
     if (array == NULL) {
         res.unlockBag(startOfBag);
-        *result = NULL;
         return NOERROR;
     }
 
@@ -2406,7 +2417,7 @@ ECode CAssetManager::GetArrayIntResource(
         if (block == android::BAD_INDEX) {
             // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
             *result = array;
-            REFCOUNT_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return E_ILLEGAL_STATE_EXCEPTION;
         }
 #endif
@@ -2417,12 +2428,21 @@ ECode CAssetManager::GetArrayIntResource(
     }
     res.unlockBag(startOfBag);
     *result = array;
-    REFCOUNT_ADDREF(*result);
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode CAssetManager::GetStyleAttributes(
+    /* [in] */ Int32 arrayRes,
+    /* [out] */ ArrayOf<Int32>** result)
+{
+    VALIDATE_NOT_NULL(result)
+    assert(0 && "TODO");
     return NOERROR;
 }
 
 void CAssetManager::ApplyThemeStyle(
-    /* [in] */ Int32 themeToken,
+    /* [in] */ Int64 themeToken,
     /* [in] */ Int32 styleRes,
     /* [in] */ Boolean force)
 {
@@ -2431,8 +2451,8 @@ void CAssetManager::ApplyThemeStyle(
 }
 
 void CAssetManager::CopyTheme(
-    /* [in] */ Int32 destToken,
-    /* [in] */ Int32 sourceToken)
+    /* [in] */ Int64 destToken,
+    /* [in] */ Int64 sourceToken)
 {
     android::ResTable::Theme* dest = (android::ResTable::Theme*)destToken;
     android::ResTable::Theme* src = (android::ResTable::Theme*)sourceToken;
@@ -2440,12 +2460,15 @@ void CAssetManager::CopyTheme(
 }
 
 ECode CAssetManager::LoadThemeAttributeValue(
-    /* [in] */ Int32 themeToken,
+    /* [in] */ Int64 themeToken,
     /* [in] */ Int32 ident,
     /* [in] */ ITypedValue* outValue,
     /* [in] */ Boolean resolve,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
     android::ResTable::Theme* theme = (android::ResTable::Theme*)themeToken;
     const android::ResTable& res(theme->getResTable());
 
@@ -2477,7 +2500,7 @@ ECode CAssetManager::LoadThemeAttributeValue(
 }
 
 void CAssetManager::DumpTheme(
-    /* [in] */ Int32 themeToken,
+    /* [in] */ Int64 themeToken,
     /* [in] */ Int32 priority,
     /* [in] */ const String& tag,
     /* [in] */ const String& prefix)
@@ -2490,7 +2513,7 @@ void CAssetManager::DumpTheme(
 }
 
 void CAssetManager::IncRefsLocked(
-    /* [in] */ Int32 id,
+    /* [in] */ Int64 id,
     /* [in] */ const char* info)
 {
     // if (DEBUG_REFS) {
@@ -2512,7 +2535,7 @@ void CAssetManager::IncRefsLocked(
 }
 
 void CAssetManager::DecRefsLocked(
-    /* [in] */ Int32 id,
+    /* [in] */ Int64 id,
     /* [in] */ const char* info)
 {
     // if (DEBUG_REFS && mRefStacks != null) {

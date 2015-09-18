@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CPACKAGEITEMINFODISPLAYNAMECOMPARATOR_H__
 
 #include "_Elastos_Droid_Content_Pm_CPackageItemInfoDisplayNameComparator.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -12,6 +13,10 @@ namespace Pm {
 CarClass(CPackageItemInfoDisplayNameComparator)
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ IPackageManager* pm);
 

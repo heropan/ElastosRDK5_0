@@ -1,15 +1,20 @@
 
 #include "ext/frameworkext.h"
 #include "content/res/CConfiguration.h"
-#include "text/TextUtils.h"
+//#include "text/TextUtils.h"
+#include "os/Build.h"
 #include <elastos/core/StringBuilder.h>
-// #include <elastos/core/StringUtils.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Core::StringBuilder;
-// using Elastos::Core::StringUtils;
-using Libcore::ICU::CLocale;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::View::IView;
 using Elastos::Droid::Content::Pm::IActivityInfo;
-using Elastos::Droid::Text::TextUtils;
+//using Elastos::Droid::Text::TextUtils;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::CLocale;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
@@ -24,6 +29,57 @@ static AutoPtr<IConfiguration> InitEmpty()
 }
 
 const AutoPtr<IConfiguration> CConfiguration::EMPTY = InitEmpty();
+
+/** @hide Native-specific bit mask for MCC config; DO NOT USE UNLESS YOU ARE SURE. */
+const Int32 CConfiguration::NATIVE_CONFIG_MCC = 0x0001;
+/** @hide Native-specific bit mask for MNC config; DO NOT USE UNLESS YOU ARE SURE. */
+const Int32 CConfiguration::NATIVE_CONFIG_MNC = 0x0002;
+/** @hide Native-specific bit mask for LOCALE config; DO NOT USE UNLESS YOU ARE SURE. */
+const Int32 CConfiguration::NATIVE_CONFIG_LOCALE = 0x0004;
+/** @hide Native-specific bit mask for TOUCHSCREEN config; DO NOT USE UNLESS YOU ARE SURE. */
+const Int32 CConfiguration::NATIVE_CONFIG_TOUCHSCREEN = 0x0008;
+/** @hide Native-specific bit mask for KEYBOARD config; DO NOT USE UNLESS YOU ARE SURE. */
+const Int32 CConfiguration::NATIVE_CONFIG_KEYBOARD = 0x0010;
+/** @hide Native-specific bit mask for KEYBOARD_HIDDEN config; DO NOT USE UNLESS YOU
+ * ARE SURE. */
+const Int32 CConfiguration::NATIVE_CONFIG_KEYBOARD_HIDDEN = 0x0020;
+/** @hide Native-specific bit mask for NAVIGATION config; DO NOT USE UNLESS YOU ARE SURE. */
+const Int32 CConfiguration::NATIVE_CONFIG_NAVIGATION = 0x0040;
+/** @hide Native-specific bit mask for ORIENTATION config; DO NOT USE UNLESS YOU ARE SURE. */
+const Int32 CConfiguration::NATIVE_CONFIG_ORIENTATION = 0x0080;
+/** @hide Native-specific bit mask for DENSITY config; DO NOT USE UNLESS YOU ARE SURE. */
+const Int32 CConfiguration::NATIVE_CONFIG_DENSITY = 0x0100;
+/** @hide Native-specific bit mask for SCREEN_SIZE config; DO NOT USE UNLESS YOU ARE SURE. */
+const Int32 CConfiguration::NATIVE_CONFIG_SCREEN_SIZE = 0x0200;
+/** @hide Native-specific bit mask for VERSION config; DO NOT USE UNLESS YOU ARE SURE. */
+const Int32 CConfiguration::NATIVE_CONFIG_VERSION = 0x0400;
+/** @hide Native-specific bit mask for SCREEN_LAYOUT config; DO NOT USE UNLESS YOU ARE SURE. */
+const Int32 CConfiguration::NATIVE_CONFIG_SCREEN_LAYOUT = 0x0800;
+/** @hide Native-specific bit mask for UI_MODE config; DO NOT USE UNLESS YOU ARE SURE. */
+const Int32 CConfiguration::NATIVE_CONFIG_UI_MODE = 0x1000;
+/** @hide Native-specific bit mask for SMALLEST_SCREEN_SIZE config; DO NOT USE UNLESS YOU
+ * ARE SURE. */
+const Int32 CConfiguration::NATIVE_CONFIG_SMALLEST_SCREEN_SIZE = 0x2000;
+/** @hide Native-specific bit mask for LAYOUTDIR config ; DO NOT USE UNLESS YOU ARE SURE.*/
+const Int32 CConfiguration::NATIVE_CONFIG_LAYOUTDIR = 0x4000;
+
+const String CConfiguration::XML_ATTR_FONT_SCALE("fs");
+const String CConfiguration::XML_ATTR_MCC("mcc");
+const String CConfiguration::XML_ATTR_MNC("mnc");
+const String CConfiguration::XML_ATTR_LOCALE("locale");
+const String CConfiguration::XML_ATTR_TOUCHSCREEN("touch");
+const String CConfiguration::XML_ATTR_KEYBOARD("key");
+const String CConfiguration::XML_ATTR_KEYBOARD_HIDDEN("keyHid");
+const String CConfiguration::XML_ATTR_HARD_KEYBOARD_HIDDEN("hardKeyHid");
+const String CConfiguration::XML_ATTR_NAVIGATION("nav");
+const String CConfiguration::XML_ATTR_NAVIGATION_HIDDEN("navHid");
+const String CConfiguration::XML_ATTR_ORIENTATION("ori");
+const String CConfiguration::XML_ATTR_SCREEN_LAYOUT("scrLay");
+const String CConfiguration::XML_ATTR_UI_MODE("ui");
+const String CConfiguration::XML_ATTR_SCREEN_WIDTH("width");
+const String CConfiguration::XML_ATTR_SCREEN_HEIGHT("height");
+const String CConfiguration::XML_ATTR_SMALLEST_WIDTH("sw");
+const String CConfiguration::XML_ATTR_DENSITY("density");
 
 CAR_INTERFACE_IMPL(CConfiguration, Object, IConfiguration)
 
@@ -158,8 +214,9 @@ ECode CConfiguration::SetTo(
     AutoPtr<ILocale> locale;
     o->GetLocale((ILocale**)&locale);
     if (locale != NULL) {
-        mLocale = NULL;
-        locale->Clone((ILocale**)&mLocale);
+        AutoPtr<IInterface> obj;
+        locale->Clone((IInterface**)&obj);
+        mLocale = ILocale::Probe(obj);
     }
 
     o->IsUserSetLocale(&mUserSetLocale);
@@ -222,6 +279,8 @@ ECode CConfiguration::UpdateFrom(
     /* [in] */ IConfiguration* delta,
     /* [out] */ Int32* changes)
 {
+    VALIDATE_NOT_NULL(changes)
+
     AutoPtr<CConfiguration> config = (CConfiguration*)delta;
     if (config->mFontScale > 0 && mFontScale != config->mFontScale) {
         *changes |= IActivityInfo::CONFIG_FONT_SCALE;
@@ -248,6 +307,13 @@ ECode CConfiguration::UpdateFrom(
         // ... and we need to update the layout direction (represented by the first
         // 2 most significant bits in screenLayout).
         SetLayoutDirection(mLocale);
+    }
+
+    Int32 deltaScreenLayoutDir = config->mScreenLayout & SCREENLAYOUT_LAYOUTDIR_MASK;
+    if (deltaScreenLayoutDir != SCREENLAYOUT_LAYOUTDIR_UNDEFINED &&
+            deltaScreenLayoutDir != (mScreenLayout & SCREENLAYOUT_LAYOUTDIR_MASK)) {
+        mScreenLayout = (mScreenLayout & ~SCREENLAYOUT_LAYOUTDIR_MASK) | deltaScreenLayoutDir;
+        *changes |= IActivityInfo::CONFIG_LAYOUT_DIRECTION;
     }
 
     if (config->mUserSetLocale && (!mUserSetLocale ||
@@ -337,12 +403,14 @@ ECode CConfiguration::UpdateFrom(
         mScreenHeightDp = config->mScreenHeightDp;
     }
 
-    if (config->mSmallestScreenWidthDp != SMALLEST_SCREEN_WIDTH_DP_UNDEFINED) {
-        *changes |= IActivityInfo::CONFIG_SCREEN_SIZE;
+    if (config->mSmallestScreenWidthDp != SMALLEST_SCREEN_WIDTH_DP_UNDEFINED
+            && mSmallestScreenWidthDp != config->mSmallestScreenWidthDp) {
+        *changes |= IActivityInfo::CONFIG_SMALLEST_SCREEN_SIZE;
         mSmallestScreenWidthDp = config->mSmallestScreenWidthDp;
     }
 
-    if (config->mDensityDpi != DENSITY_DPI_UNDEFINED) {
+    if (config->mDensityDpi != DENSITY_DPI_UNDEFINED
+            && mDensityDpi != config->mDensityDpi) {
         *changes |= IActivityInfo::CONFIG_DENSITY;
         mDensityDpi = config->mDensityDpi;
     }
@@ -391,6 +459,12 @@ ECode CConfiguration::Diff(
     if (config->mLocale != NULL
             && (mLocale == NULL || (mLocale->Equals(config->mLocale, &isSameLocale), !isSameLocale))) {
         *result |= IActivityInfo::CONFIG_LOCALE;
+        *result |= IActivityInfo::CONFIG_LAYOUT_DIRECTION;
+    }
+
+    Int32 deltaScreenLayoutDir = config->mScreenLayout & SCREENLAYOUT_LAYOUTDIR_MASK;
+    if (deltaScreenLayoutDir != SCREENLAYOUT_LAYOUTDIR_UNDEFINED &&
+            deltaScreenLayoutDir != (mScreenLayout & SCREENLAYOUT_LAYOUTDIR_MASK)) {
         *result |= IActivityInfo::CONFIG_LAYOUT_DIRECTION;
     }
 
@@ -867,6 +941,7 @@ ECode CConfiguration::ToString(
         case UI_MODE_TYPE_CAR: sb += " car"; break;
         case UI_MODE_TYPE_TELEVISION: sb += " television"; break;
         case UI_MODE_TYPE_APPLIANCE: sb += " appliance"; break;
+        case UI_MODE_TYPE_WATCH: sb += " watch"; break;
         default: sb += " uimode="; sb += mUiMode & UI_MODE_TYPE_MASK; break;
     }
     switch ((mUiMode & UI_MODE_NIGHT_MASK)) {
@@ -938,10 +1013,8 @@ ECode CConfiguration::GetLayoutDirection(
     /* [out] */ Int32* dir)
 {
     VALIDATE_NOT_NULL(dir);
-    // We need to substract one here as the configuration values are using "0" as undefined thus
-    // having LRT set to "1" and RTL set to "2"
-    *dir = ((mScreenLayout & SCREENLAYOUT_LAYOUTDIR_MASK) >>
-            SCREENLAYOUT_LAYOUTDIR_SHIFT) - 1;
+    *dir = (mScreenLayout & SCREENLAYOUT_LAYOUTDIR_MASK) == SCREENLAYOUT_LAYOUTDIR_RTL
+            ? IView::LAYOUT_DIRECTION_RTL : IView::LAYOUT_DIRECTION_LTR;
     return NOERROR;
 }
 
@@ -950,9 +1023,10 @@ ECode CConfiguration::SetLayoutDirection(
 {
     // There is a "1" difference between the configuration values for
     // layout direction and View constants for layout direction, just add "1".
-    Int32 layoutDirection = 1 + TextUtils::GetLayoutDirectionFromLocale(locale);
-    mScreenLayout = (mScreenLayout & ~SCREENLAYOUT_LAYOUTDIR_MASK)|
-            (layoutDirection << SCREENLAYOUT_LAYOUTDIR_SHIFT);
+    assert(0 && "TODO");
+    // Int32 layoutDirection = 1 + TextUtils::GetLayoutDirectionFromLocale(locale);
+    // mScreenLayout = (mScreenLayout & ~SCREENLAYOUT_LAYOUTDIR_MASK)|
+    //         (layoutDirection << SCREENLAYOUT_LAYOUTDIR_SHIFT);
     return NOERROR;
 }
 
@@ -1295,6 +1369,505 @@ ECode CConfiguration::constructor(
     /* [in] */ IConfiguration* config)
 {
     return SetTo(config);
+}
+
+String CConfiguration::LocaleToResourceQualifier(
+    /* [in] */ ILocale* locale)
+{
+    String language, country, script, variant;
+    locale->GetLanguage(&language);
+    locale->GetCountry(&country);
+    locale->GetScript(&script);
+    locale->GetVariant(&variant);
+
+    StringBuilder sb;
+    Boolean l = !language.IsNullOrEmpty();
+    Boolean c = !country.IsNullOrEmpty();
+    Boolean s = !script.IsNullOrEmpty();
+    Boolean v = !variant.IsNullOrEmpty();
+
+    if (l) {
+        sb.Append(language);
+        if (c) {
+            sb.Append("-r");
+            sb.Append(country);
+            if (s) {
+                sb.Append("-s");
+                sb.Append(script);
+                if (v) {
+                    sb.Append("-v");
+                    sb.Append(variant);
+                }
+            }
+        }
+    }
+    return sb.ToString();
+}
+
+String CConfiguration::ResourceQualifierString(
+    /* [in] */ IConfiguration* config)
+{
+    List<String> parts;
+
+    StringBuilder sb;
+
+    Int32 ival;
+    config->GetMcc(&ival);
+    if (ival != 0) {
+        sb += ival;
+        sb += "mcc";
+        parts.PushBack(sb.ToString());
+        config->GetMnc(&ival);
+        if (ival != 0) {
+            sb.Reset();
+            sb += ival;
+            sb += "mnc";
+            parts.PushBack(sb.ToString());
+        }
+    }
+
+    AutoPtr<ILocale> locale;
+    config->GetLocale((ILocale**)&locale);
+    String str;
+    locale->GetLanguage(&str);
+    if (!str.IsNullOrEmpty()) {
+        parts.PushBack(LocaleToResourceQualifier(locale));
+    }
+
+    config->GetScreenLayout(&ival);
+    switch (ival & IConfiguration::SCREENLAYOUT_LAYOUTDIR_MASK) {
+        case IConfiguration::SCREENLAYOUT_LAYOUTDIR_LTR:
+            parts.PushBack(String("ldltr"));
+            break;
+        case IConfiguration::SCREENLAYOUT_LAYOUTDIR_RTL:
+            parts.PushBack(String("ldrtl"));
+            break;
+        default:
+            break;
+    }
+
+    config->GetSmallestScreenWidthDp(&ival);
+    if (ival != 0) {
+        sb.Reset();
+        sb += "sw";
+        sb += ival;
+        sb += "dp";
+        parts.PushBack(sb.ToString());
+    }
+
+    config->GetScreenWidthDp(&ival);
+    if (ival != 0) {
+        sb.Reset();
+        sb += "w";
+        sb += ival;
+        sb += "dp";
+        parts.PushBack(sb.ToString());
+    }
+
+    config->GetScreenHeightDp(&ival);
+    if (ival != 0) {
+        sb.Reset();
+        sb += "h";
+        sb += ival;
+        sb += "dp";
+        parts.PushBack(sb.ToString());
+    }
+
+    config->GetScreenLayout(&ival);
+    switch (ival & IConfiguration::SCREENLAYOUT_SIZE_MASK) {
+        case IConfiguration::SCREENLAYOUT_SIZE_SMALL:
+            parts.PushBack(String("small"));
+            break;
+        case IConfiguration::SCREENLAYOUT_SIZE_NORMAL:
+            parts.PushBack(String("normal"));
+            break;
+        case IConfiguration::SCREENLAYOUT_SIZE_LARGE:
+            parts.PushBack(String("large"));
+            break;
+        case IConfiguration::SCREENLAYOUT_SIZE_XLARGE:
+            parts.PushBack(String("xlarge"));
+            break;
+        default:
+            break;
+    }
+
+    switch (ival & IConfiguration::SCREENLAYOUT_LONG_MASK) {
+        case IConfiguration::SCREENLAYOUT_LONG_YES:
+            parts.PushBack(String("long"));
+            break;
+        case IConfiguration::SCREENLAYOUT_LONG_NO:
+            parts.PushBack(String("notlong"));
+            break;
+        default:
+            break;
+    }
+
+    config->GetOrientation(&ival);
+    switch (ival) {
+        case IConfiguration::ORIENTATION_LANDSCAPE:
+            parts.PushBack(String("land"));
+            break;
+        case IConfiguration::ORIENTATION_PORTRAIT:
+            parts.PushBack(String("port"));
+            break;
+        default:
+            break;
+    }
+
+    config->GetUiMode(&ival);
+    switch (ival & IConfiguration::UI_MODE_TYPE_MASK) {
+        case IConfiguration::UI_MODE_TYPE_APPLIANCE:
+            parts.PushBack(String("appliance"));
+            break;
+        case IConfiguration::UI_MODE_TYPE_DESK:
+            parts.PushBack(String("desk"));
+            break;
+        case IConfiguration::UI_MODE_TYPE_TELEVISION:
+            parts.PushBack(String("television"));
+            break;
+        case IConfiguration::UI_MODE_TYPE_CAR:
+            parts.PushBack(String("car"));
+            break;
+        case IConfiguration::UI_MODE_TYPE_WATCH:
+            parts.PushBack(String("watch"));
+            break;
+        default:
+            break;
+    }
+
+    switch (ival & IConfiguration::UI_MODE_NIGHT_MASK) {
+        case IConfiguration::UI_MODE_NIGHT_YES:
+            parts.PushBack(String("night"));
+            break;
+        case IConfiguration::UI_MODE_NIGHT_NO:
+            parts.PushBack(String("notnight"));
+            break;
+        default:
+            break;
+    }
+
+    config->GetDensityDpi(&ival);
+    switch (ival) {
+        case DENSITY_DPI_UNDEFINED:
+            break;
+        case 120:
+            parts.PushBack(String("ldpi"));
+            break;
+        case 160:
+            parts.PushBack(String("mdpi"));
+            break;
+        case 213:
+            parts.PushBack(String("tvdpi"));
+            break;
+        case 240:
+            parts.PushBack(String("hdpi"));
+            break;
+        case 320:
+            parts.PushBack(String("xhdpi"));
+            break;
+        case 480:
+            parts.PushBack(String("xxhdpi"));
+            break;
+        case 640:
+            parts.PushBack(String("xxxhdpi"));
+            break;
+        case DENSITY_DPI_ANY:
+            parts.PushBack(String("anydpi"));
+            break;
+        case DENSITY_DPI_NONE:
+            parts.PushBack(String("nodpi"));
+        default: {
+            sb.Reset();
+            sb += ival;
+            sb += "dpi";
+            parts.PushBack(sb.ToString());
+            break;
+        }
+    }
+
+    config->GetTouchscreen(&ival);
+    switch (ival) {
+        case IConfiguration::TOUCHSCREEN_NOTOUCH:
+            parts.PushBack(String("notouch"));
+            break;
+        case IConfiguration::TOUCHSCREEN_FINGER:
+            parts.PushBack(String("finger"));
+            break;
+        default:
+            break;
+    }
+
+    config->GetKeyboardHidden(&ival);
+    switch (ival) {
+        case IConfiguration::KEYBOARDHIDDEN_NO:
+            parts.PushBack(String("keysexposed"));
+            break;
+        case IConfiguration::KEYBOARDHIDDEN_YES:
+            parts.PushBack(String("keyshidden"));
+            break;
+        case IConfiguration::KEYBOARDHIDDEN_SOFT:
+            parts.PushBack(String("keyssoft"));
+            break;
+        default:
+            break;
+    }
+
+    config->GetKeyboard(&ival);
+    switch (ival) {
+        case IConfiguration::KEYBOARD_NOKEYS:
+            parts.PushBack(String("nokeys"));
+            break;
+        case IConfiguration::KEYBOARD_QWERTY:
+            parts.PushBack(String("qwerty"));
+            break;
+        case IConfiguration::KEYBOARD_12KEY:
+            parts.PushBack(String("12key"));
+            break;
+        default:
+            break;
+    }
+
+    config->GetNavigationHidden(&ival);
+    switch (ival) {
+        case IConfiguration::NAVIGATIONHIDDEN_NO:
+            parts.PushBack(String("navexposed"));
+            break;
+        case IConfiguration::NAVIGATIONHIDDEN_YES:
+            parts.PushBack(String("navhidden"));
+            break;
+        default:
+            break;
+    }
+
+    config->GetNavigation(&ival);
+    switch (ival) {
+        case IConfiguration::NAVIGATION_NONAV:
+            parts.PushBack(String("nonav"));
+            break;
+        case IConfiguration::NAVIGATION_DPAD:
+            parts.PushBack(String("dpad"));
+            break;
+        case IConfiguration::NAVIGATION_TRACKBALL:
+            parts.PushBack(String("trackball"));
+            break;
+        case IConfiguration::NAVIGATION_WHEEL:
+            parts.PushBack(String("wheel"));
+            break;
+        default:
+            break;
+    }
+
+    sb.Reset();
+    sb += "v";
+    sb += Build::VERSION::RESOURCES_SDK_INT;
+    parts.PushBack(sb.ToString());
+
+    sb.Reset();
+    List<String>::Iterator it = parts.Begin();
+    for (; it != parts.End(); ++it) {
+        if (it != parts.Begin()) {
+            sb += "-";
+        }
+
+        sb += *it;
+    }
+
+    return sb.ToString();
+}
+
+AutoPtr<IConfiguration> CConfiguration::GenerateDelta(
+    /* [in] */ IConfiguration* inBase,
+    /* [in] */ IConfiguration* inChange)
+{
+    AutoPtr<CConfiguration> delta;
+    CConfiguration::NewByFriend((CConfiguration**)&delta);
+    CConfiguration* base = (CConfiguration*)inBase;
+    CConfiguration* change = (CConfiguration*)inChange;
+
+    if (base->mFontScale != change->mFontScale) {
+        delta->mFontScale = change->mFontScale;
+    }
+
+    if (base->mMcc != change->mMcc) {
+        delta->mMcc = change->mMcc;
+    }
+
+    if (base->mMnc != change->mMnc) {
+        delta->mMnc = change->mMnc;
+    }
+
+    if ((base->mLocale == NULL && change->mLocale != NULL) ||
+            (base->mLocale != NULL && !Object::Equals(base->mLocale, change->mLocale)))  {
+        delta->mLocale = change->mLocale;
+    }
+
+    if (base->mTouchscreen != change->mTouchscreen) {
+        delta->mTouchscreen = change->mTouchscreen;
+    }
+
+    if (base->mKeyboard != change->mKeyboard) {
+        delta->mKeyboard = change->mKeyboard;
+    }
+
+    if (base->mKeyboardHidden != change->mKeyboardHidden) {
+        delta->mKeyboardHidden = change->mKeyboardHidden;
+    }
+
+    if (base->mNavigation != change->mNavigation) {
+        delta->mNavigation = change->mNavigation;
+    }
+
+    if (base->mNavigationHidden != change->mNavigationHidden) {
+        delta->mNavigationHidden = change->mNavigationHidden;
+    }
+
+    if (base->mOrientation != change->mOrientation) {
+        delta->mOrientation = change->mOrientation;
+    }
+
+    if ((base->mScreenLayout & SCREENLAYOUT_SIZE_MASK) !=
+            (change->mScreenLayout & SCREENLAYOUT_SIZE_MASK)) {
+        delta->mScreenLayout |= change->mScreenLayout & SCREENLAYOUT_SIZE_MASK;
+    }
+
+    if ((base->mScreenLayout & SCREENLAYOUT_LAYOUTDIR_MASK) !=
+            (change->mScreenLayout & SCREENLAYOUT_LAYOUTDIR_MASK)) {
+        delta->mScreenLayout |= change->mScreenLayout & SCREENLAYOUT_LAYOUTDIR_MASK;
+    }
+
+    if ((base->mScreenLayout & SCREENLAYOUT_LONG_MASK) !=
+            (change->mScreenLayout & SCREENLAYOUT_LONG_MASK)) {
+        delta->mScreenLayout |= change->mScreenLayout & SCREENLAYOUT_LONG_MASK;
+    }
+
+    if ((base->mUiMode & UI_MODE_TYPE_MASK) != (change->mUiMode & UI_MODE_TYPE_MASK)) {
+        delta->mUiMode |= change->mUiMode & UI_MODE_TYPE_MASK;
+    }
+
+    if ((base->mUiMode & UI_MODE_NIGHT_MASK) != (change->mUiMode & UI_MODE_NIGHT_MASK)) {
+        delta->mUiMode |= change->mUiMode & UI_MODE_NIGHT_MASK;
+    }
+
+    if (base->mScreenWidthDp != change->mScreenWidthDp) {
+        delta->mScreenWidthDp = change->mScreenWidthDp;
+    }
+
+    if (base->mScreenHeightDp != change->mScreenHeightDp) {
+        delta->mScreenHeightDp = change->mScreenHeightDp;
+    }
+
+    if (base->mSmallestScreenWidthDp != change->mSmallestScreenWidthDp) {
+        delta->mSmallestScreenWidthDp = change->mSmallestScreenWidthDp;
+    }
+
+    if (base->mDensityDpi != change->mDensityDpi) {
+        delta->mDensityDpi = change->mDensityDpi;
+    }
+    return (IConfiguration*)delta.Get();
+}
+
+ECode CConfiguration::ReadXmlAttrs(
+    /* [in] */ IXmlPullParser* parser,
+    /* [in] */ IConfiguration* configOut)
+{
+    assert(0 && "TODO");
+    // configOut->mFontScale = Float.intBitsToFloat(
+    //         XmlUtils.readIntAttribute(parser, XML_ATTR_FONT_SCALE, 0));
+    // configOut.mcc = XmlUtils.readIntAttribute(parser, XML_ATTR_MCC, 0);
+    // configOut.mnc = XmlUtils.readIntAttribute(parser, XML_ATTR_MNC, 0);
+
+    // final String localeStr = XmlUtils.readStringAttribute(parser, XML_ATTR_LOCALE);
+    // if (localeStr != NULL) {
+    //     configOut->mLocale = Locale.forLanguageTag(localeStr);
+    // }
+
+    // configOut.touchscreen = XmlUtils.readIntAttribute(parser, XML_ATTR_TOUCHSCREEN,
+    //         TOUCHSCREEN_UNDEFINED);
+    // configOut.keyboard = XmlUtils.readIntAttribute(parser, XML_ATTR_KEYBOARD,
+    //         KEYBOARD_UNDEFINED);
+    // configOut.keyboardHidden = XmlUtils.readIntAttribute(parser, XML_ATTR_KEYBOARD_HIDDEN,
+    //         KEYBOARDHIDDEN_UNDEFINED);
+    // configOut.hardKeyboardHidden =
+    //         XmlUtils.readIntAttribute(parser, XML_ATTR_HARD_KEYBOARD_HIDDEN,
+    //                 HARDKEYBOARDHIDDEN_UNDEFINED);
+    // configOut.navigation = XmlUtils.readIntAttribute(parser, XML_ATTR_NAVIGATION,
+    //         NAVIGATION_UNDEFINED);
+    // configOut.navigationHidden = XmlUtils.readIntAttribute(parser, XML_ATTR_NAVIGATION_HIDDEN,
+    //         NAVIGATIONHIDDEN_UNDEFINED);
+    // configOut.orientation = XmlUtils.readIntAttribute(parser, XML_ATTR_ORIENTATION,
+    //         ORIENTATION_UNDEFINED);
+    // configOut.screenLayout = XmlUtils.readIntAttribute(parser, XML_ATTR_SCREEN_LAYOUT,
+    //         SCREENLAYOUT_UNDEFINED);
+    // configOut.uiMode = XmlUtils.readIntAttribute(parser, XML_ATTR_UI_MODE, 0);
+    // configOut.screenWidthDp = XmlUtils.readIntAttribute(parser, XML_ATTR_SCREEN_WIDTH,
+    //         SCREEN_WIDTH_DP_UNDEFINED);
+    // configOut.screenHeightDp = XmlUtils.readIntAttribute(parser, XML_ATTR_SCREEN_HEIGHT,
+    //         SCREEN_HEIGHT_DP_UNDEFINED);
+    // configOut.smallestScreenWidthDp =
+    //         XmlUtils.readIntAttribute(parser, XML_ATTR_SMALLEST_WIDTH,
+    //                 SMALLEST_SCREEN_WIDTH_DP_UNDEFINED);
+    // configOut.densityDpi = XmlUtils.readIntAttribute(parser, XML_ATTR_DENSITY,
+    //         DENSITY_DPI_UNDEFINED);
+    return NOERROR;
+}
+
+ECode CConfiguration::WriteXmlAttrs(
+    /* [in] */ IXmlSerializer* xml,
+    /* [in] */ IConfiguration* config)
+{
+    assert(0 && "TODO");
+    // XmlUtils.writeIntAttribute(xml, XML_ATTR_FONT_SCALE,
+    //         Float.floatToIntBits(config.fontScale));
+    // if (config.mcc != 0) {
+    //     XmlUtils.writeIntAttribute(xml, XML_ATTR_MCC, config.mcc);
+    // }
+    // if (config.mnc != 0) {
+    //     XmlUtils.writeIntAttribute(xml, XML_ATTR_MNC, config.mnc);
+    // }
+    // if (config->mLocale != NULL) {
+    //     XmlUtils.writeStringAttribute(xml, XML_ATTR_LOCALE, config->mLocale.toLanguageTag());
+    // }
+    // if (config.touchscreen != TOUCHSCREEN_UNDEFINED) {
+    //     XmlUtils.writeIntAttribute(xml, XML_ATTR_TOUCHSCREEN, config.touchscreen);
+    // }
+    // if (config.keyboard != KEYBOARD_UNDEFINED) {
+    //     XmlUtils.writeIntAttribute(xml, XML_ATTR_KEYBOARD, config.keyboard);
+    // }
+    // if (config.keyboardHidden != KEYBOARDHIDDEN_UNDEFINED) {
+    //     XmlUtils.writeIntAttribute(xml, XML_ATTR_KEYBOARD_HIDDEN, config.keyboardHidden);
+    // }
+    // if (config.hardKeyboardHidden != HARDKEYBOARDHIDDEN_UNDEFINED) {
+    //     XmlUtils.writeIntAttribute(xml, XML_ATTR_HARD_KEYBOARD_HIDDEN,
+    //             config.hardKeyboardHidden);
+    // }
+    // if (config.navigation != NAVIGATION_UNDEFINED) {
+    //     XmlUtils.writeIntAttribute(xml, XML_ATTR_NAVIGATION, config.navigation);
+    // }
+    // if (config.navigationHidden != NAVIGATIONHIDDEN_UNDEFINED) {
+    //     XmlUtils.writeIntAttribute(xml, XML_ATTR_NAVIGATION_HIDDEN, config.navigationHidden);
+    // }
+    // if (config.orientation != ORIENTATION_UNDEFINED) {
+    //     XmlUtils.writeIntAttribute(xml, XML_ATTR_ORIENTATION, config.orientation);
+    // }
+    // if (config.screenLayout != SCREENLAYOUT_UNDEFINED) {
+    //     XmlUtils.writeIntAttribute(xml, XML_ATTR_SCREEN_LAYOUT, config.screenLayout);
+    // }
+    // if (config.uiMode != 0) {
+    //     XmlUtils.writeIntAttribute(xml, XML_ATTR_UI_MODE, config.uiMode);
+    // }
+    // if (config.screenWidthDp != SCREEN_WIDTH_DP_UNDEFINED) {
+    //     XmlUtils.writeIntAttribute(xml, XML_ATTR_SCREEN_WIDTH, config.screenWidthDp);
+    // }
+    // if (config.screenHeightDp != SCREEN_HEIGHT_DP_UNDEFINED) {
+    //     XmlUtils.writeIntAttribute(xml, XML_ATTR_SCREEN_HEIGHT, config.screenHeightDp);
+    // }
+    // if (config.smallestScreenWidthDp != SMALLEST_SCREEN_WIDTH_DP_UNDEFINED) {
+    //     XmlUtils.writeIntAttribute(xml, XML_ATTR_SMALLEST_WIDTH, config.smallestScreenWidthDp);
+    // }
+    // if (config.densityDpi != DENSITY_DPI_UNDEFINED) {
+    //     XmlUtils.writeIntAttribute(xml, XML_ATTR_DENSITY, config.densityDpi);
+    // }
+    return NOERROR;
 }
 
 } // res

@@ -398,4 +398,6 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
+DEFINE_CONVERSION_FOR(Elastos::Droid::Content::Res::XmlBlock, IInterface)
+
 #endif // __ELASTOS_DROID_CONTENT_RES_XMLBLOCK_H__

@@ -218,7 +218,7 @@ ECode CMiniThumbFile::GetMiniThumbFromFile(
 //            // ignore it.
 //        }
 //    }
-    REFCOUNT_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

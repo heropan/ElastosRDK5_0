@@ -8,6 +8,10 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
+CAR_INTERFACE_IMPL(CActivityInfo, Singleton, IActivityInfoHelper)
+
+CAR_SINGLETON_IMPL(CActivityInfo)
+
 ECode CActivityInfoHelper::GetCONFIG_NATIVE_BITS(
     /* [out, callee] */ ArrayOf<Int32>** bits)
 {
@@ -22,7 +26,6 @@ ECode CActivityInfoHelper::ActivityInfoConfigToNative(
     /* [out] */ Int32* native)
 {
     VALIDATE_NOT_NULL(native);
-
     *native = CActivityInfo::ActivityInfoConfigToNative(input);
     return NOERROR;
 }

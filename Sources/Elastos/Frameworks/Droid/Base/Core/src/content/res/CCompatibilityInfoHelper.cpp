@@ -8,7 +8,7 @@ namespace Droid {
 namespace Content {
 namespace Res {
 
-CAR_INTERFACE_IMPL(CCompatibilityInfoHelper, Singletonm, ICompatibilityInfoHelper)
+CAR_INTERFACE_IMPL(CCompatibilityInfoHelper, Singleton, ICompatibilityInfoHelper)
 
 CAR_SINGLETON_IMPL(CCompatibilityInfoHelper)
 

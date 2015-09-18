@@ -20,9 +20,15 @@ namespace Pm {
  *
  * @hide
  */
-CarClass(CLimitedLengthInputStream), public FilterInputStream
+CarClass(CLimitedLengthInputStream)
+    , public FilterInputStream
+    , public ILimitedLengthInputStream
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CLimitedLengthInputStream();
 
     ~CLimitedLengthInputStream();

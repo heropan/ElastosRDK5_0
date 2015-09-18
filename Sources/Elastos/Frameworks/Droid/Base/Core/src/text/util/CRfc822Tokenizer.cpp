@@ -176,7 +176,7 @@ ECode CRfc822Tokenizer::Tokenize(
     }
 
     *ret = ret_.Get();
-    REFCOUNT_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

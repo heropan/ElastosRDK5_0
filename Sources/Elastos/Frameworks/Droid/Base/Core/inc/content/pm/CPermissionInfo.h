@@ -18,6 +18,10 @@ namespace Pm {
 CarClass(CPermissionInfo), public PackageItemInfo
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CPermissionInfo();
 
     ~CPermissionInfo();

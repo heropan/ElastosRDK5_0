@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CCONFIGURATIONINFO_H__
 
 #include "_Elastos_Droid_Content_Pm_CConfigurationInfo.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -15,11 +16,18 @@ namespace Pm {
  * AndroidManifest.xml's &lt;uses-configuration&gt; and &lt;uses-feature&gt; tags.
  */
 CarClass(CConfigurationInfo)
+    , public Object
+    , public IConfigurationInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CConfigurationInfo();
 
-    ~CConfigurationInfo();
+    virtual ~CConfigurationInfo();
 
     CARAPI constructor();
 

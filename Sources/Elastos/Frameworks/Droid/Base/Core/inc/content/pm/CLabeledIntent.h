@@ -28,15 +28,18 @@ namespace Pm {
 * A special subclass of Intent that can have a custom label/icon
 * associated with it.  Primarily for use with {@link Intent#ACTION_CHOOSER}.
  */
-CarClass(CLabeledIntent), public Intent
+CarClass(CLabeledIntent)
+    , public Intent
+    , public ILabeledIntent
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CLabeledIntent();
 
     ~CLabeledIntent();
-
-    CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
 
     CARAPI constructor();
 

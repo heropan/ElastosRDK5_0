@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CUSERINFO_H__
 
 #include "_Elastos_Droid_Content_Pm_CUserInfo.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IUserHandle;
 
@@ -18,6 +19,10 @@ namespace Pm {
 CarClass(CUserInfo)
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CUserInfo();
 
     ~CUserInfo();

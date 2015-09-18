@@ -299,24 +299,24 @@ ECode SpannableStringInternal::GetSpans(
 
     if (count == 0) {
         *objs = ArrayOf<IInterface*>::Alloc(0);
-        REFCOUNT_ADDREF(*objs);
+        REFCOUNT_ADD(*objs);
         return NOERROR;
     }
     else if (count == 1) {
         *objs = ArrayOf<IInterface*>::Alloc(1);
         (*objs)->Set(0, ret1);
-        REFCOUNT_ADDREF(*objs);
+        REFCOUNT_ADD(*objs);
         return NOERROR;
     }
     else if (count == ret->GetLength()) {
         *objs = ret.Get();
-        REFCOUNT_ADDREF(*objs);
+        REFCOUNT_ADD(*objs);
         return NOERROR;
     }
 
     *objs = ArrayOf<IInterface*>::Alloc(count);
     (*objs)->Copy(0, ret, 0, count);
-    REFCOUNT_ADDREF(*objs);
+    REFCOUNT_ADD(*objs);
     return NOERROR;
 }
 

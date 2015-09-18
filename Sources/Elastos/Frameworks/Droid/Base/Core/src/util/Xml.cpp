@@ -26,6 +26,7 @@ namespace Utility {
 String Xml::FEATURE_RELAXED("http://xmlpull.org/v1/doc/features.html#relaxed");
 
 const String Xml::XmlSerializerFactory::TYPE("org.kxml2.io.KXmlParser,org.kxml2.io.KXmlSerializer");
+AutoPtr<IXmlPullParserFactory> Xml::XmlSerializerFactory::mInstance;
 
 AutoPtr<IXmlPullParserFactory> Xml::XmlSerializerFactory::GetInstance()
 {

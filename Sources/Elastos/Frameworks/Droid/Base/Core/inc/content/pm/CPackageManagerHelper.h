@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CPACKAGEMANAGERHELPER_H__
 
 #include "_Elastos_Droid_Content_Pm_CPackageManagerHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
@@ -12,6 +13,10 @@ namespace Pm {
 CarClass(CPackageManagerHelper)
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Returns the data directory for a particular user and package, given the uid of the package.
      * @param uid uid of the package, including the userId and appId

@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CVERIFICATIONPARAMS_H__
 
 #include "_Elastos_Droid_Content_Pm_CVerificationParams.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -17,6 +18,10 @@ namespace Pm {
 CarClass(CVerificationParams)
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CVerificationParams();
 
     ~CVerificationParams();

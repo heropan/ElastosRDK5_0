@@ -135,7 +135,7 @@ ECode URLUtil::Decode(
     VALIDATE_NOT_NULL(urlList);
     if (url->GetLength() == 0) {
         *urlList = ArrayOf<Byte>::Alloc(0);
-        REFCOUNT_ADDREF(*urlList);
+        REFCOUNT_ADD(*urlList);
         return NOERROR;
     }
 

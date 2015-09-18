@@ -4,6 +4,7 @@
 
 #include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 

@@ -27,11 +27,12 @@ ECode CResourcesHelper::SelectSystemTheme(
     /* [in] */ Int32 targetSdkVersion,
     /* [in] */ Int32 orig,
     /* [in] */ Int32 holo,
+    /* [in] */ Int32 dark,
     /* [in] */ Int32 deviceDefault,
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
-    *value = CResources::SelectSystemTheme(curTheme, targetSdkVersion, orig, holo, deviceDefault);
+    *value = CResources::SelectSystemTheme(curTheme, targetSdkVersion, orig, holo, dark, deviceDefault);
     return NOERROR;
 }
 
@@ -51,14 +52,6 @@ ECode CResourcesHelper::UpdateSystemConfiguration(
     /* [in] */ ICompatibilityInfo* compat)
 {
     CResources::UpdateSystemConfiguration(config, metrics, compat);
-    return NOERROR;
-}
-
-ECode CResourcesHelper::UpdateSystemConfiguration(
-    /* [in] */ IConfiguration* config,
-    /* [in] */ IDisplayMetrics* metrics)
-{
-    CResources::UpdateSystemConfiguration(config, metrics);
     return NOERROR;
 }
 

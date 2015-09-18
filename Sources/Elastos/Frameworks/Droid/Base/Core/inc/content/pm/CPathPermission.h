@@ -17,6 +17,10 @@ namespace Pm {
 CarClass(CPathPermission), public Elastos::Droid::Os::PatternMatcher
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     CARAPI constructor(

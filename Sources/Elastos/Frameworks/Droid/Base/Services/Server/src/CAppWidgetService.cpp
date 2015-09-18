@@ -467,7 +467,7 @@ ECode CAppWidgetService::GetAppWidgetIds(
     VALIDATE_NOT_NULL(ids);
     AutoPtr<ArrayOf<Int32> > _ids = GetImplForUser(GetCallingOrCurrentUserId())->GetAppWidgetIds(provider);
     *ids = _ids.Get();
-    REFCOUNT_ADDREF(*ids);
+    REFCOUNT_ADD(*ids);
     return NOERROR;
 }
 

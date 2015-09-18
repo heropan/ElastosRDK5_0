@@ -26,7 +26,7 @@ namespace Res {
  *  {@hide}
  */
 CarClass(CCompatibilityInfo)
-    , public object
+    , public Object
     , public ICompatibilityInfo
 {
 public:

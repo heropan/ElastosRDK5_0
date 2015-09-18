@@ -1755,7 +1755,7 @@ ECode CTethering::GetTetherableUsbRegexs(
 {
     VALIDATE_NOT_NULL(result);
     *result = mTetherableUsbRegexs;
-    REFCOUNT_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1764,7 +1764,7 @@ ECode CTethering::GetTetherableWifiRegexs(
 {
     VALIDATE_NOT_NULL(result);
     *result = mTetherableWifiRegexs;
-    REFCOUNT_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1773,7 +1773,7 @@ ECode CTethering::GetTetherableBluetoothRegexs(
 {
     VALIDATE_NOT_NULL(result);
     *result = mTetherableBluetoothRegexs;
-    REFCOUNT_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1905,7 +1905,7 @@ ECode CTethering::GetTetheredIfaces(
         (*retVal)[i] = *it;
     }
     *result = retVal;
-    REFCOUNT_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1932,7 +1932,7 @@ ECode CTethering::GetTetheredIfacePairs(
         (*retVal)[i] = *it;
     }
     *result = retVal;
-    REFCOUNT_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1958,7 +1958,7 @@ ECode CTethering::GetTetherableIfaces(
         (*retVal)[i] = *it;
     }
     *result = retVal;
-    REFCOUNT_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
