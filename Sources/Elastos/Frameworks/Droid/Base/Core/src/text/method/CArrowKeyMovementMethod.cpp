@@ -9,7 +9,7 @@ namespace Method {
 
 AutoPtr<IArrowKeyMovementMethod> CArrowKeyMovementMethod::sInstance;
 
-IBASEMOVEMENTMETHOD_METHODS_IMPL(CArrowKeyMovementMethod, ArrowKeyMovementMethod, ArrowKeyMovementMethod)
+CAR_OBJECT_IMPL(CArrowKeyMovementMethod)
 
 AutoPtr<IMovementMethod> CArrowKeyMovementMethod::GetInstance()
 {

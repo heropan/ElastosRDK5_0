@@ -12,6 +12,10 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
+CAR_INTERFACE_IMPL_2(BaseMovementMethod, Object, IBaseMovementMethod, IMovementMethod)
+
+BaseMovementMethod::~BaseMovementMethod(){}
+
 Boolean BaseMovementMethod::CanSelectArbitrarily() {
     return FALSE;
 }
@@ -147,7 +151,7 @@ Int32 BaseMovementMethod::GetMovementMetaState(
     Int32 eMetaState;
     event->GetMetaState(&eMetaState);
     Int32 mkMetaState;
-    mkMetaState = MetaKeyKeyListener::GetMetaState(buffer);
+    mkMetaState = MetaKeyKeyListener::GetMetaState(buffer, event);
 
     Int32 metaState = (eMetaState | mkMetaState)
                 & ~(IMetaKeyKeyListener::META_ALT_LOCKED | IMetaKeyKeyListener::META_SYM_LOCKED);

@@ -16,7 +16,7 @@ CarClass(CArrowKeyMovementMethod)
     , public ArrowKeyMovementMethod
 {
 public:
-    IBASEMOVEMENTMETHOD_METHODS_DECL();
+    CAR_OBJECT_DECL()
 
     static CARAPI_(AutoPtr<IMovementMethod>) GetInstance();
 

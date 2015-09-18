@@ -14,6 +14,8 @@ CarClass(CBaseMovementMethod)
     , public BaseMovementMethod
 {
 public:
+    CAR_OBJECT_DECL()
+
     CARAPI Initialize(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* text);

@@ -7,6 +7,8 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
+CAR_OBJECT_IMPL(CBaseMovementMethod)
+
 ECode CBaseMovementMethod::Initialize(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* text)

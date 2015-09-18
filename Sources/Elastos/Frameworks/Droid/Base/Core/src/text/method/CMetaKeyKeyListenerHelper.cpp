@@ -7,6 +7,10 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
+CAR_INTERFACE_DECL(CMetaKeyKeyListenerHelper, Singleton, IMetaKeyKeyListenerHelper)
+
+CAR_SINGLETON_DECL(CMetaKeyKeyListenerHelper)
+
 ECode CMetaKeyKeyListenerHelper::ResetMetaState(
     /* [in] */ ISpannable* text)
 {
@@ -22,10 +26,17 @@ ECode CMetaKeyKeyListenerHelper::GetMetaState(
     /* [out] */ Int32* state)
 {
     assert(state != NULL);
-    *state = GetActive(text, MetaKeyKeyListener::CAP, IMetaKeyKeyListener::META_SHIFT_ON, IMetaKeyKeyListener::META_CAP_LOCKED) |
-           GetActive(text, MetaKeyKeyListener::ALT, IMetaKeyKeyListener::META_ALT_ON, IMetaKeyKeyListener::META_ALT_LOCKED) |
-           GetActive(text, MetaKeyKeyListener::SYM, IMetaKeyKeyListener::META_SYM_ON, IMetaKeyKeyListener::META_SYM_LOCKED) |
-           GetActive(text, MetaKeyKeyListener::SELECTING, IMetaKeyKeyListener::META_SELECTING, IMetaKeyKeyListener::META_SELECTING);
+    *state = MetaKeyKeyListener::GetMetaState(text);
+    return NOERROR;
+}
+
+ECode CMetaKeyKeyListenerHelper::GetMetaState(
+    /* [in] */ ICharSequence* text,
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Int32* ret)
+{
+    VALIDATE_NOT_NULL(ret)
+    *ret = MetaKeyKeyListener::GetMetaState(text, event);
     return NOERROR;
 }
 
@@ -35,22 +46,18 @@ ECode CMetaKeyKeyListenerHelper::GetMetaState(
     /* [out] */ Int32* state)
 {
     assert(state != NULL);
-    if (meta == IMetaKeyKeyListener::META_SHIFT_ON) {
-        *state = GetActive(text, MetaKeyKeyListener::CAP, 1, 2);
-    }
-    else if (meta == IMetaKeyKeyListener::META_ALT_ON) {
-        *state = GetActive(text, MetaKeyKeyListener::ALT, 1, 2);
-    }
-    else if (meta == IMetaKeyKeyListener::META_SYM_ON) {
-        *state = GetActive(text, MetaKeyKeyListener::SYM, 1, 2);
-    }
-    else if (meta == IMetaKeyKeyListener::META_SELECTING) {
-        *state = GetActive(text, MetaKeyKeyListener::SELECTING, 1, 2);
-    }
-    else {
-        *state = 0;
-    }
+    *state = MetaKeyKeyListener::GetMetaState(text, meta);
+    return NOERROR;
+}
 
+ECode CMetaKeyKeyListenerHelper::GetMetaState(
+    /* [in] */ ICharSequence* text,
+    /* [in] */ Int32 meta,
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Int32* ret)
+{
+    VALIDATE_NOT_NULL(ret)
+    *ret = MetaKeyKeyListener::GetMetaState(text, meta, event);
     return NOERROR;
 }
 
@@ -59,28 +66,7 @@ ECode CMetaKeyKeyListenerHelper::GetMetaState(
     /* [out] */ Int32* ret)
 {
     assert(ret != NULL);
-    Int32 result = 0;
-
-    if ((state & IMetaKeyKeyListener::META_CAP_LOCKED) != 0) {
-        result |= IMetaKeyKeyListener::META_CAP_LOCKED;
-    } else if ((state & IMetaKeyKeyListener::META_SHIFT_ON) != 0) {
-        result |= IMetaKeyKeyListener::META_SHIFT_ON;
-    }
-
-    if ((state & IMetaKeyKeyListener::META_ALT_LOCKED) != 0) {
-        result |= IMetaKeyKeyListener::META_ALT_LOCKED;
-    } else if ((state & IMetaKeyKeyListener::META_ALT_ON) != 0) {
-        result |= IMetaKeyKeyListener::META_ALT_ON;
-    }
-
-    if ((state & IMetaKeyKeyListener::META_SYM_LOCKED) != 0) {
-        result |= IMetaKeyKeyListener::META_SYM_LOCKED;
-    } else if ((state & IMetaKeyKeyListener::META_SYM_ON) != 0) {
-        result |= IMetaKeyKeyListener::META_SYM_ON;
-    }
-
-    *ret = result;
-
+    *ret = MetaKeyKeyListener::GetMetaState(state);
     return NOERROR;
 }
 
@@ -90,22 +76,9 @@ ECode CMetaKeyKeyListenerHelper::GetMetaState(
     /* [out] */ Int32* ret)
 {
     assert(ret != NULL);
-    *ret = 0;
-
-    if (meta == IMetaKeyKeyListener::META_SHIFT_ON) {
-        if ((state & IMetaKeyKeyListener::META_CAP_LOCKED) != 0) *ret = 2;
-        if ((state & IMetaKeyKeyListener::META_SHIFT_ON) != 0) *ret = 1;
-    }
-    else if (meta == IMetaKeyKeyListener::META_ALT_ON) {
-        if ((state & IMetaKeyKeyListener::META_ALT_LOCKED) != 0) *ret = 2;
-        if ((state & IMetaKeyKeyListener::META_ALT_ON) != 0) *ret = 1;
-    }
-    else if (meta == IMetaKeyKeyListener::META_SYM_ON) {
-        if ((state & IMetaKeyKeyListener::META_SYM_LOCKED) != 0) *ret = 2;
-        if ((state & IMetaKeyKeyListener::META_SYM_ON) != 0) *ret = 1;
-    }
-
+    *ret = MetaKeyKeyListener::GetMetaState(state, meta);
     return NOERROR;
+
 }
 
 Int32 CMetaKeyKeyListenerHelper::GetActive(
@@ -213,59 +186,6 @@ ECode CMetaKeyKeyListenerHelper::ResetLockedMeta(
     }
 
     *meta = state;
-    return NOERROR;
-}
-
-ECode CMetaKeyKeyListenerHelper::GetMetaState(
-    /* [in] */ Int64 state,
-    /* [out] */ Int32* ret)
-{
-    assert(ret != NULL);
-    Int32 result = 0;
-
-    if ((state & IMetaKeyKeyListener::META_CAP_LOCKED) != 0) {
-        result |= IMetaKeyKeyListener::META_CAP_LOCKED;
-    } else if ((state & IMetaKeyKeyListener::META_SHIFT_ON) != 0) {
-        result |= IMetaKeyKeyListener::META_SHIFT_ON;
-    }
-
-    if ((state & IMetaKeyKeyListener::META_ALT_LOCKED) != 0) {
-        result |= IMetaKeyKeyListener::META_ALT_LOCKED;
-    } else if ((state & IMetaKeyKeyListener::META_ALT_ON) != 0) {
-        result |= IMetaKeyKeyListener::META_ALT_ON;
-    }
-
-    if ((state & IMetaKeyKeyListener::META_SYM_LOCKED) != 0) {
-        result |= IMetaKeyKeyListener::META_SYM_LOCKED;
-    } else if ((state & IMetaKeyKeyListener::META_SYM_ON) != 0) {
-        result |= IMetaKeyKeyListener::META_SYM_ON;
-    }
-
-    *ret = result;
-    return NOERROR;
-}
-
-ECode CMetaKeyKeyListenerHelper::GetMetaState(
-    /* [in] */ Int64 state,
-    /* [in] */ Int32 meta,
-    /* [out] */ Int32* result)
-{
-    assert(result != NULL);
-    *result = 0;
-
-    if (meta == IMetaKeyKeyListener::META_SHIFT_ON) {
-        if ((state & IMetaKeyKeyListener::META_CAP_LOCKED) != 0) *result = 2;
-        if ((state & IMetaKeyKeyListener::META_SHIFT_ON) != 0) *result = 1;
-    }
-    else if (meta == IMetaKeyKeyListener::META_ALT_ON) {
-        if ((state & IMetaKeyKeyListener::META_ALT_LOCKED) != 0) *result = 2;
-        if ((state & IMetaKeyKeyListener::META_ALT_ON) != 0) *result = 1;
-    }
-    else if (meta == IMetaKeyKeyListener::META_SYM_ON) {
-        if ((state & IMetaKeyKeyListener::META_SYM_LOCKED) != 0) *result = 2;
-        if ((state & IMetaKeyKeyListener::META_SYM_ON) != 0) *result = 1;
-    }
-
     return NOERROR;
 }
 

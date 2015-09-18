@@ -27,6 +27,8 @@ module
      * interface INumberKeyListener
      */
     interface IDigitsKeyListener {
+        GetInputType(
+            [out] Int* ret);
     }
 
     /**

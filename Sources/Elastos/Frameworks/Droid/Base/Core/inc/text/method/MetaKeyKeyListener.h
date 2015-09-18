@@ -65,8 +65,13 @@ namespace Method {
  * </code>
  */
 //public abstract
-class MetaKeyKeyListener {
+class MetaKeyKeyListener
+    : public object
+    , public IMetaKeyListener
+{
 public:
+    CAR_INTERFACE_DECL()
+
     static CARAPI_(AutoPtr<IInterface>) NewNoCopySpan();
 
     /**
@@ -83,7 +88,7 @@ public:
      * @return an Int32eger in which each bit set to one represents a pressed
      *         or locked meta key.
      */
-    static /*const*/ CARAPI_(Int32) GetMetaState(
+    static const CARAPI_(Int32) GetMetaState(
         /* [in] */ ICharSequence* text);
 
     /**
@@ -94,9 +99,41 @@ public:
      *
      * @return 0 if inactive, 1 if active, 2 if locked.
      */
-    static /*const*/ CARAPI_(Int32) GetMetaState(
+    static const CARAPI_(Int32) GetMetaState(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 meta);
+
+     /**
+     * Gets the state of the meta keys.
+     *
+     * @param state the current meta state bits.
+     *
+     * @return an Int32eger in which each bit set to one represents a pressed
+     *         or locked meta key.
+     */
+    static const CARAPI_(Int32) GetMetaState(
+        /* [in] */ Int64 state);
+
+    /**
+     * Gets the state of a particular meta key.
+     *
+     * @param state the current state bits.
+     * @param meta META_SHIFT_ON, META_ALT_ON, or META_SYM_ON
+     *
+     * @return 0 if inactive, 1 if active, 2 if locked.
+     */
+    static const CARAPI_(Int32) GetMetaState(
+        /* [in] */ Int64 state,
+        /* [in] */ Int32 meta);
+
+    static const CARAPI_(Int32) GetMetaState(
+        /* [in] */ ICharSequence* text,
+        /* [in] */ IKeyEvent* event);
+
+    static const CARAPI_(Int32) GetMetaState(
+           /* [in] */ ICharSequence* text,
+           /* [in] */ Int32 meta,
+           /* [in] */ IKeyEvent* event);
 
     /**
      * Call this method after you handle a keypress so that the meta
@@ -176,29 +213,6 @@ public:
     // ---------------------------------------------------------------------
     // Version of API that operates on a state bit mask
     // ---------------------------------------------------------------------
-
-    /**
-     * Gets the state of the meta keys.
-     *
-     * @param state the current meta state bits.
-     *
-     * @return an Int32eger in which each bit set to one represents a pressed
-     *         or locked meta key.
-     */
-    static /*const*/ CARAPI_(Int32) GetMetaState(
-        /* [in] */ Int64 state);
-
-    /**
-     * Gets the state of a particular meta key.
-     *
-     * @param state the current state bits.
-     * @param meta META_SHIFT_ON, META_ALT_ON, or META_SYM_ON
-     *
-     * @return 0 if inactive, 1 if active, 2 if locked.
-     */
-    static /*const*/ CARAPI_(Int32) GetMetaState(
-        /* [in] */ Int64 state,
-        /* [in] */ Int32 meta);
 
     /**
      * Call this method after you handle a keypress so that the meta
@@ -332,7 +346,9 @@ private:
      */
     static const Int32 LOCKED;// = Spannable.SPAN_MARK_MARK | (4 << Spannable.SPAN_USER_SHIFT);
 
-    friend class CMetaKeyKeyListenerHelper;
+    static const Int32 PRESSED_RETURN_VALUE;
+
+    static const Int32 LOCKED_RETURN_VALUE;
 };
 
 } // namespace Method

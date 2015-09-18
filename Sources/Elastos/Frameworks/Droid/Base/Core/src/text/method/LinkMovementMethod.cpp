@@ -23,6 +23,11 @@ const Int32 LinkMovementMethod::DOWN = 3;
 
 AutoPtr<IInterface> LinkMovementMethod::FROM_BELOW /*= (IInterface*)(new Object())*/;//new ElObject();;// = new NoCopySpan.Concrete();
 
+Boolean LinkMovementMethod::CanSelectArbitrarily()
+{
+    return TRUE;
+}
+
 Boolean LinkMovementMethod::HandleMovementKey(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* buffer,

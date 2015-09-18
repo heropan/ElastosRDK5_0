@@ -22,8 +22,16 @@ namespace Method {
 /**
  * Base classes for movement methods.
  */
-class BaseMovementMethod{
+class BaseMovementMethod
+    : public Object
+    , public IBaseMovementMethod
+    , public IMovementMethod
+{
 public:
+    CAR_INTERFACE_DECL()
+
+    virtual ~BaseMovementMethod();
+
     //@Override
     CARAPI_(Boolean) CanSelectArbitrarily();
 

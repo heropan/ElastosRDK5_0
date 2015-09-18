@@ -22,6 +22,9 @@ class LinkMovementMethod : public ScrollingMovementMethod
 {
 public:
     //@Override
+    CARAPI_(Boolean) CanSelectArbitrarily();
+
+    //@Override
     CARAPI_(Boolean) OnTouchEvent(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* buffer,

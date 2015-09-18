@@ -59,6 +59,11 @@ const Int32 MetaKeyKeyListener::USED = ISpannable::SPAN_MARK_MARK | (3 << ISpann
  */
 const Int32 MetaKeyKeyListener::LOCKED = ISpannable::SPAN_MARK_MARK | (4 << ISpannable::SPAN_USER_SHIFT);
 
+const Int32 MetaKeyKeyListener::PRESSED_RETURN_VALUE = 1;
+
+const Int32 MetaKeyKeyListener::LOCKED_RETURN_VALUE = 2;
+
+CAR_INTERFACE_IMPL(MetaKeyKeyListener, Object, IMetaKeyKeyListener)
 
 AutoPtr<IInterface> MetaKeyKeyListener::NewNoCopySpan()
 {
@@ -79,37 +84,6 @@ void MetaKeyKeyListener::ResetMetaState(
     text->RemoveSpan(ALT);
     text->RemoveSpan(SYM);
     text->RemoveSpan(SELECTING);
-}
-
-Int32 MetaKeyKeyListener::GetMetaState(
-    /* [in] */ ICharSequence* text)
-{
-    return GetActive(text, CAP, IMetaKeyKeyListener::META_SHIFT_ON, IMetaKeyKeyListener::META_CAP_LOCKED) |
-           GetActive(text, ALT, IMetaKeyKeyListener::META_ALT_ON, IMetaKeyKeyListener::META_ALT_LOCKED) |
-           GetActive(text, SYM, IMetaKeyKeyListener::META_SYM_ON, IMetaKeyKeyListener::META_SYM_LOCKED) |
-           GetActive(text, SELECTING, IMetaKeyKeyListener::META_SELECTING, IMetaKeyKeyListener::META_SELECTING);
-}
-
-Int32 MetaKeyKeyListener::GetMetaState(
-    /* [in] */ ICharSequence* text,
-    /* [in] */ Int32 meta)
-{
-    switch (meta) {
-        case IMetaKeyKeyListener::META_SHIFT_ON:
-            return GetActive(text, CAP, 1, 2);
-
-        case IMetaKeyKeyListener::META_ALT_ON:
-            return GetActive(text, ALT, 1, 2);
-
-        case IMetaKeyKeyListener::META_SYM_ON:
-            return GetActive(text, SYM, 1, 2);
-
-        case IMetaKeyKeyListener::META_SELECTING:
-            return GetActive(text, SELECTING, 1, 2);
-
-        default:
-            return 0;
-    }
 }
 
 Int32 MetaKeyKeyListener::GetActive(
@@ -389,19 +363,93 @@ Int32 MetaKeyKeyListener::GetMetaState(
 {
     switch (meta) {
         case IMetaKeyKeyListener::META_SHIFT_ON:
-            if ((state & IMetaKeyKeyListener::META_CAP_LOCKED) != 0) return 2;
-            if ((state & IMetaKeyKeyListener::META_SHIFT_ON) != 0) return 1;
+            if ((state & IMetaKeyKeyListener::META_CAP_LOCKED) != 0) return MetaKeyKeyListener::LOCKED_RETURN_VALUE;
+            if ((state & IMetaKeyKeyListener::META_SHIFT_ON) != 0) return MetaKeyKeyListener::PRESSED_RETURN_VALUE;
             return 0;
 
         case IMetaKeyKeyListener::META_ALT_ON:
-            if ((state & IMetaKeyKeyListener::META_ALT_LOCKED) != 0) return 2;
-            if ((state & IMetaKeyKeyListener::META_ALT_ON) != 0) return 1;
+            if ((state & IMetaKeyKeyListener::META_ALT_LOCKED) != 0) return MetaKeyKeyListener::LOCKED_RETURN_VALUE;
+            if ((state & IMetaKeyKeyListener::META_ALT_ON) != 0) return MetaKeyKeyListener::PRESSED_RETURN_VALUE;
             return 0;
 
         case IMetaKeyKeyListener::META_SYM_ON:
-            if ((state & IMetaKeyKeyListener::META_SYM_LOCKED) != 0) return 2;
-            if ((state & IMetaKeyKeyListener::META_SYM_ON) != 0) return 1;
+            if ((state & IMetaKeyKeyListener::META_SYM_LOCKED) != 0) return MetaKeyKeyListener::LOCKED_RETURN_VALUE;
+            if ((state & IMetaKeyKeyListener::META_SYM_ON) != 0) return MetaKeyKeyListener::PRESSED_RETURN_VALUE;
             return 0;
+
+        default:
+            return 0;
+    }
+}
+
+const Int32 MetaKeyKeyListener::GetMetaState(
+    /* [in] */ ICharSequence* text,
+    /* [in] */ IKeyEvent* event)
+{
+    VALIDATE_NOT_NULL(event)
+    Int32 metaState;
+    event->GetMetaState(&metaState);
+    AutoPtr<IKeyCharacterMap> keyCharacterMap;
+    event->GetKeyCharacterMap((IKeyCharacterMap**)&keyCharacterMap);
+    Int32 behavior;
+    keyCharacterMap->GetModifierBehavior(&behavior);
+    if (behavior == IKeyCharacterMap.MODIFIER_BEHAVIOR_CHORDED_OR_TOGGLED) {
+            metaState |= GetMetaState(text);
+    }
+    return metaState;
+}
+
+const Int32 MetaKeyKeyListener::GetMetaState(
+       /* [in] */ ICharSequence* text,
+       /* [in] */ Int32 meta,
+       /* [in] */ IKeyEvent* event)
+{
+    Int32 metaState;
+    event->GetMetaState(&metaState);
+    AutoPtr<IKeyCharacterMap> kcm;
+    event->GetKeyCharacterMap((IKeyCharacterMap**)&kcm);
+    Int32 behavior;
+    if ((kcm->GetModifierBehavior(&behavior), behavior)
+            == IKeyCharacterMap.MODIFIER_BEHAVIOR_CHORDED_OR_TOGGLED) {
+        metaState |= GetMetaState(text);
+    }
+    if (IMetaKeyKeyListener::META_SELECTING == meta) {
+        // #getMetaState(long, int) does not support META_SELECTING, but we want the same
+        // behavior as #getMetaState(CharSequence, int) so we need to do it here
+        if ((metaState & IMetaKeyKeyListener::META_SELECTING) != 0) {
+            // META_SELECTING is only ever set to PRESSED and can't be LOCKED, so return 1
+            return 1;
+        }
+        return 0;
+    }
+    return GetMetaState((Int64)metaState, meta);
+}
+
+Int32 MetaKeyKeyListener::GetMetaState(
+    /* [in] */ ICharSequence* text)
+{
+    return GetActive(text, CAP, IMetaKeyKeyListener::META_SHIFT_ON, IMetaKeyKeyListener::META_CAP_LOCKED) |
+           GetActive(text, ALT, IMetaKeyKeyListener::META_ALT_ON, IMetaKeyKeyListener::META_ALT_LOCKED) |
+           GetActive(text, SYM, IMetaKeyKeyListener::META_SYM_ON, IMetaKeyKeyListener::META_SYM_LOCKED) |
+           GetActive(text, SELECTING, IMetaKeyKeyListener::META_SELECTING, IMetaKeyKeyListener::META_SELECTING);
+}
+
+Int32 MetaKeyKeyListener::GetMetaState(
+    /* [in] */ ICharSequence* text,
+    /* [in] */ Int32 meta)
+{
+    switch (meta) {
+        case IMetaKeyKeyListener::META_SHIFT_ON:
+            return GetActive(text, CAP, MetaKeyKeyListener::PRESSED_RETURN_VALUE, MetaKeyKeyListener::LOCKED_RETURN_VALUE);
+
+        case IMetaKeyKeyListener::META_ALT_ON:
+            return GetActive(text, ALT, MetaKeyKeyListener::PRESSED_RETURN_VALUE, MetaKeyKeyListener::LOCKED_RETURN_VALUE);
+
+        case IMetaKeyKeyListener::META_SYM_ON:
+            return GetActive(text, SYM, MetaKeyKeyListener::PRESSED_RETURN_VALUE, MetaKeyKeyListener::LOCKED_RETURN_VALUE);
+
+        case IMetaKeyKeyListener::META_SELECTING:
+            return GetActive(text, SELECTING, MetaKeyKeyListener::PRESSED_RETURN_VALUE, MetaKeyKeyListener::LOCKED_RETURN_VALUE);
 
         default:
             return 0;

@@ -20,10 +20,14 @@ namespace Method {
 
 //public
 class Touch
+    : public Object
+    , public ITouch
 {
 private:
     //static
-    class DragState : public ElRefBase, public ITouchDragState
+    class DragState
+        : public object
+        , public ITouchDragState
     {
     public:
         CARAPI_(PInterface) Probe(
@@ -52,6 +56,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Scrolls the specified widget to the specified coordinates, except
      * constrains the X scrolling position to the horizontal regions of
@@ -71,7 +77,7 @@ public:
     static CARAPI_(Boolean) OnTouchEvent(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* buffer,
-        /* [in] */ IMotionEvent* event);
+        /* [in] */ IMotionEvent* ev ent);
 
     /**
      * @param widget The text view.
@@ -87,6 +93,12 @@ public:
      */
     static CARAPI_(Int32) GetInitialScrollY(
         /* [in] */ ITextView* widget,
+        /* [in] */ ISpannable* buffer);
+
+    static CARAPI_(Boolean) IsActivelySelecting(
+        /* [in] */ ISpannable* buffer);
+
+    static CARAPI_(Boolean) IsSelectionStarted(
         /* [in] */ ISpannable* buffer);
 
 private:

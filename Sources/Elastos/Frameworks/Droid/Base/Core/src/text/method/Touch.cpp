@@ -72,6 +72,10 @@ Touch::DragState::DragState(
 }
 
 /*****************************Touch*****************************/
+CAR_INTERFACE_IMPL(Touch, Object, ITouch)
+
+Touch::Touch(){}
+
 void Touch::ScrollTo(
     /* [in] */ ITextView* widget,
     /* [in] */ ILayout* layout,
@@ -115,9 +119,11 @@ void Touch::ScrollTo(
     const Int32 actualWidth = right - left;
 
     if (actualWidth < availableWidth) {
-        if (a == ALIGN_CENTER) {
+        if (a == LayoutAlignment.ALIGN_CENTER) {
             x = left - ((availableWidth - actualWidth) / 2);
-        } else if ((ltr && (a == ALIGN_OPPOSITE)) || (a == ALIGN_RIGHT)) {
+        } else if ((ltr && (a == LayoutAlignment.ALIGN_OPPOSITE))
+                    || (!ltr && (a == LayoutAlignment.ALIGN_NORMAL))
+                    || (a == LayoutAlignment.ALIGN_RIGHT)) {
             // align_opposite does NOT mean align_right, we need the paragraph
             // direction to resolve it to left or right
             x = left - (availableWidth - actualWidth);
@@ -181,6 +187,7 @@ Boolean Touch::OnTouchEvent(
             buffer->GetSpans(0, bufLen, EIID_ITouchDragState, (ArrayOf< IInterface* >**)&ds);
 
             if (ds->GetLength() > 0) {
+                ((DragState*)((*ds)[0]))->mIsSelectionStarted = FALSE;
                 if ( ((DragState*)((*ds)[0]))->mFarEnough == FALSE ) {
                     AutoPtr<IContext> context;
                     Int32 slop;
@@ -278,6 +285,27 @@ Int32 Touch::GetInitialScrollY(
     return ((ds != NULL) && (ds->GetLength() > 0)) ? ((DragState*)((*ds)[0]))->mScrollY : -1;
 }
 
+Boolean Touch::IsActivelySelecting(
+    /* [in] */ ISpannable* buffer)
+{
+    ArrayOf<AutoPtr<IDragState> > ds;
+    Int32 len;
+    buffer->GetLength(&len);
+    buffer->GetSpans(0, len, EIID_IDragState, (ArrayOf<IInterface*>**)&ds);
+
+    return ds->GetLength() > 0 && ((DragState*)((*ds)[0]))->mIsActivelySelecting;
+}
+
+Boolean Touch::IsSelectionStarted(
+    /* [in] */ ISpannable* buffer)
+{
+    ArrayOf<AutoPtr<IDragState> > ds;
+    Int32 len;
+    buffer->GetLength(&len);
+    buffer->GetSpans(0, len, EIID_IDragState, (ArrayOf<IInterface*>**)&ds);
+
+    return ds->GetLength() > 0 && ((DragState*)((*ds)[0]))->mIsSelectionStarted;
+}
 
 } // namespace Method
 } // namespace Text

@@ -1,15 +1,13 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_ArrowKeyMovementMethod_H__
 #define __ELASTOS_DROID_TEXT_METHOD_ArrowKeyMovementMethod_H__
 
-//#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Core_server.h"
 #include "text/method/BaseMovementMethod.h"
-//#include "os/ElObject.h"
-/*
+
 using Elastos::Droid::Text::ISpannable;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::Widget::ITextView;
-*/
 
 namespace Elastos {
 namespace Droid {
@@ -21,9 +19,16 @@ namespace Method {
  * Supports displaying the context menu on DPad Center.
  */
 class ArrowKeyMovementMethod
-    : public BaseMovementMethod
+    : public Object
+    , public IArrowKeyMovementMethod
+    , public IBaseMovementMethod
+    , public IMovementMethod
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    virtual ~ArrowKeyMovementMethod();
+
     //@Override
     CARAPI_(Boolean) OnTouchEvent(
         /* [in] */ ITextView* widget,
@@ -139,9 +144,13 @@ private:
     static CARAPI_(Int32) GetPageHeight(
         /* [in] */ ITextView* widget);
 
+    static CARAPI_(Boolean) IsTouchSelecting(
+        /* [in] */ Boolean isMouse,
+        /* [in] */ ISpannable* buffer);
+
 private:
     static const AutoPtr<IInterface> LAST_TAP_DOWN;// = new ElObject();
-    //private static ArrowKeyMovementMethod sInstance;
+    // static ArrowKeyMovementMethod sInstance;
 };
 
 } // namespace Method

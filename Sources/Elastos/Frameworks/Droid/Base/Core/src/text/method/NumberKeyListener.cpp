@@ -20,9 +20,8 @@ Int32 NumberKeyListener::Lookup(
     /* [in] */ ISpannable* content)
 {
     Int32 metaState;
-    ;
     Char32 c;
-    event->GetMatch( *((GetAcceptedChars()).Get()) , (event->GetMetaState(&metaState), metaState)|GetMetaState(content), &c);
+    event->GetMatch(*((GetAcceptedChars()).Get()), THIS_PROBE(IMetaKeyKeyListener)->GetMetaState(ICharSequence::Probe(content), event, &metaState));
     return (Int32)c;
 }
 
