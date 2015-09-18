@@ -6,13 +6,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_NAVIGATIONENTRY_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_NAVIGATIONENTRY_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "graphics/CBitmap.h"
-
-// package org.chromium.content.browser;
-// import android.graphics.Bitmap;
 
 using Elastos::Droid::Graphics::IBitmap;
 
@@ -90,11 +84,11 @@ protected:
         /* [in] */ IBitmap* favicon);
 
 private:
-    /*const*/ Int32 mIndex;
-    /*const*/ String mUrl;
-    /*const*/ String mOriginalUrl;
-    /*const*/ String mVirtualUrl;
-    /*const*/ String mTitle;
+    const Int32 mIndex;
+    const String mUrl;
+    const String mOriginalUrl;
+    const String mVirtualUrl;
+    const String mTitle;
     AutoPtr<IBitmap> mFavicon;
 };
 
@@ -105,4 +99,3 @@ private:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_NAVIGATIONENTRY_H_
-

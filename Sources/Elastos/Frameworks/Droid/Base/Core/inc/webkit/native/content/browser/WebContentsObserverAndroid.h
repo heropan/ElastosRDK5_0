@@ -6,24 +6,22 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_WEBCONTENTSOBSERVERANDROID_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_WEBCONTENTSOBSERVERANDROID_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "webkit/native/base/ThreadUtils.h"
+#include "webkit/native/content_public/browser/WebContents.h"
 
-// package org.chromium.content.browser;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 // import org.chromium.base.ThreadUtils;
-// import org.chromium.content_public.browser.WebContents;
 
-using Elastos::Droid::Webkit::Base::ThreadUtils;
+using Elastos::Droid::Webkit::Content_Public::Browser::WebContents;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Content {
 namespace Browser {
+
+class ContentViewCore;
 
 /**
   * This class receives callbacks that act as hooks for various a native web contents events related
@@ -212,4 +210,3 @@ private:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_WEBCONTENTSOBSERVERANDROID_H_
-

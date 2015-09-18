@@ -2,20 +2,23 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_BROWSERACCESSIBILITYMANAGER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_BROWSERACCESSIBILITYMANAGER_H__
 
-// import android.content.Context;
-// import android.graphics.Rect;
-// import android.os.Build;
-// import android.os.Bundle;
-// import android.text.SpannableString;
-// import android.text.style.URLSpan;
-// import android.view.MotionEvent;
-// import android.view.View;
-// import android.view.ViewGroup;
-// import android.view.ViewParent;
-// import android.view.accessibility.AccessibilityEvent;
-// import android.view.accessibility.AccessibilityManager;
-// import android.view.accessibility.AccessibilityNodeInfo;
-// import android.view.accessibility.AccessibilityNodeProvider;
+#include "ext/frameworkext.h"
+#include "os/Build.h"
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Text::ISpannableString;
+using Elastos::Droid::Text::Style::IURLSpan;
+using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::IViewParent;
+using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
+using Elastos::Droid::View::Accessibility::IAccessibilityManager;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeProvider;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
@@ -31,6 +34,10 @@ namespace Droid {
 namespace Webkit {
 namespace Content {
 namespace Browser {
+
+class ContentViewCore;
+class RenderCoordinates;
+
 namespace Accessibility {
 
 /**
@@ -42,7 +49,7 @@ namespace Accessibility {
  * accessibility.
  */
 //@JNINamespace("content")
-public class BrowserAccessibilityManager
+class BrowserAccessibilityManager
 {
 public:
     /**
@@ -77,9 +84,9 @@ protected:
     /**
      * @see AccessibilityNodeProvider#findAccessibilityNodeInfosByText(String, int)
      */
-    virtual CARAPI_(List<AccessibilityNodeInfo>) FindAccessibilityNodeInfosByText(
-        /* [in] */ String text,
-        /* [in] */ Int32 virtualViewId);
+//    virtual CARAPI_(List<AccessibilityNodeInfo>) FindAccessibilityNodeInfosByText(
+//        /* [in] */ String text,
+//        /* [in] */ Int32 virtualViewId);
 
     /**
      * @see AccessibilityNodeProvider#performAction(int, int, Bundle)
@@ -170,7 +177,7 @@ private:
      * @param contentViewCore The content view that this object provides accessibility for.
      */
     //@CalledByNative
-    static CARAPI_(AutoPtr<BrowserAccessibilityManager) Create(
+    static CARAPI_(AutoPtr<BrowserAccessibilityManager>) Create(
         /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
         /* [in] */ ContentViewCore* contentViewCore);
 
@@ -382,7 +389,7 @@ private:
     Boolean mIsHovering;
     Int32 mLastHoverId;
     Int32 mCurrentRootId;
-    const AutoPtr< ArrayOf<Int32> mTempLocation;
+    const AutoPtr< ArrayOf<Int32> > mTempLocation;
     const AutoPtr<IViewGroup> mView;
     Boolean mUserHasTouchExplored;
     Boolean mPendingScrollToMakeNodeVisible;

@@ -1,4 +1,6 @@
 
+#include "webkit/native/content/browser/BatteryStatusManager.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -34,9 +36,10 @@ BatteryStatusManager::BatteryStatusManager(
   : mNativePtr(0)
   , mEnabled(FALSE)
 {
-  mReceiver = new InnerBroadcastReceiver(this);
-  CIntentFilter::New(IIntent::ACTION_BATTERY_CHANGED, (IIntentFilter**)&mFilter);
-  context->GetApplicationContext((IContext**)&mAppContext);
+  assert(0);
+  // mReceiver = new InnerBroadcastReceiver(this);
+  // CIntentFilter::New(IIntent::ACTION_BATTERY_CHANGED, (IIntentFilter**)&mFilter);
+  // context->GetApplicationContext((IContext**)&mAppContext);
 }
 
 //@CalledByNative
@@ -54,14 +57,16 @@ AutoPtr<BatteryStatusManager> BatteryStatusManager::GetInstance(
 Boolean BatteryStatusManager::Start(
   /* [in] */ Int64 nativePtr)
 {
-    synchronized (mNativePtrLock) {
-        if (!mEnabled && mAppContext.registerReceiver(mReceiver, mFilter) != null) {
-            // success
-            mNativePtr = nativePtr;
-            mEnabled = true;
-        }
-    }
-    return mEnabled;
+  assert(0);
+    // synchronized (mNativePtrLock) {
+    //     if (!mEnabled && mAppContext.registerReceiver(mReceiver, mFilter) != null) {
+    //         // success
+    //         mNativePtr = nativePtr;
+    //         mEnabled = true;
+    //     }
+    // }
+    // return mEnabled;
+  return FALSE;
 }
 
 /**
@@ -70,19 +75,23 @@ Boolean BatteryStatusManager::Start(
 //@CalledByNative
 void BatteryStatusManager::Stop()
 {
-    synchronized (mNativePtrLock) {
-        if (mEnabled) {
-            mAppContext.unregisterReceiver(mReceiver);
-            mNativePtr = 0;
-            mEnabled = false;
-        }
-    }
+  assert(0);
+    // synchronized (mNativePtrLock) {
+    //     if (mEnabled) {
+    //         mAppContext.unregisterReceiver(mReceiver);
+    //         mNativePtr = 0;
+    //         mEnabled = false;
+    //     }
+    // }
 }
 
 //@VisibleForTesting
 void BatteryStatusManager::OnReceive(
   /* [in] */ IIntent* intent)
 {
+  assert(0);
+
+#if 0
    if (!intent.getAction().equals(Intent.ACTION_BATTERY_CHANGED)) {
        Log.e(TAG, "Unexpected intent.");
        return;
@@ -114,6 +123,7 @@ void BatteryStatusManager::OnReceive(
    double dischargingTime = Double.POSITIVE_INFINITY;
 
    gotBatteryStatus(charging, chargingTime, dischargingTime, level);
+#endif
 }
 
 /**
@@ -124,7 +134,7 @@ Boolean BatteryStatusManager::IgnoreBatteryPresentState()
 {
     // BatteryManager.EXTRA_PRESENT appears to be unreliable on Galaxy Nexus,
     // Android 4.2.1, it always reports false. See crbug.com/384348.
-    return Build.MODEL.equals("Galaxy Nexus");
+    return Build::MODEL.Equals("Galaxy Nexus");
 }
 
 void BatteryStatusManager::GotBatteryStatus(
@@ -133,11 +143,12 @@ void BatteryStatusManager::GotBatteryStatus(
   /* [in] */ Double dischargingTime,
   /* [in] */ Double level)
 {
-    synchronized (mNativePtrLock) {
-        if (mNativePtr != 0) {
-            nativeGotBatteryStatus(mNativePtr, charging, chargingTime, dischargingTime, level);
-        }
-    }
+  assert(0);
+    // synchronized (mNativePtrLock) {
+    //     if (mNativePtr != 0) {
+    //         nativeGotBatteryStatus(mNativePtr, charging, chargingTime, dischargingTime, level);
+    //     }
+    // }
 }
 
 /**

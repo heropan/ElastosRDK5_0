@@ -1,4 +1,12 @@
 
+#include "webkit/native/content/browser/BindingManagerImpl.h"
+#include "webkit/native/base/ThreadUtils.h"
+#include "webkit/native/base/SysUtils.h"
+
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+using Elastos::Droid::Webkit::Base::SysUtils;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -16,6 +24,8 @@ BindingManagerImpl::ManagedConnection::DoUnbindRunnable::DoUnbindRunnable(
     , mConnection(connection)
 {
 }
+
+CAR_INTERFACE_IMPL(BindingManagerImpl::ManagedConnection::DoUnbindRunnable, Runnable, IRunnable);
 
 ECode BindingManagerImpl::ManagedConnection::DoUnbindRunnable::Run()
 {
@@ -38,11 +48,14 @@ BindingManagerImpl::ManagedConnection::DelayedRunnable::DelayedRunnable(
 {
 }
 
+CAR_INTERFACE_IMPL(BindingManagerImpl::ManagedConnection::DelayedRunnable, Runnable, IRunnable);
+
 ECode BindingManagerImpl::ManagedConnection::DelayedRunnable::Run()
 {
-    if (mConnection->IsInitialBindingBound()) {
-        mConnection->removeInitialBinding();
-    }
+    assert(0);
+    // if (mConnection->IsInitialBindingBound()) {
+    //     mConnection->removeInitialBinding();
+    // }
 
     return NOERROR;
 }
@@ -52,8 +65,10 @@ ECode BindingManagerImpl::ManagedConnection::DelayedRunnable::Run()
 //===============================================================
 
 BindingManagerImpl::ManagedConnection::ManagedConnection(
+    /* [in] */ BindingManagerImpl* owner,
     /* [in] */ ChildProcessConnection* connection)
-    : mInForeground(FALSE)
+    : mOwner(owner)
+    , mInForeground(FALSE)
     , mBoundForBackgroundPeriod(FALSE)
     , mWasOomProtected(FALSE)
     , mConnection(connection)
@@ -67,7 +82,7 @@ void BindingManagerImpl::ManagedConnection::RemoveInitialBinding()
     if (connection == NULL || !connection->IsInitialBindingBound()) return;
 
     AutoPtr<IRunnable> runnable = new DelayedRunnable(this, connection);
-    ThreadUtils::PostOnUiThreadDelayed(runnable, mRemoveInitialBindingDelay);
+    ThreadUtils::PostOnUiThreadDelayed(runnable, mOwner->mRemoveInitialBindingDelay);
 }
 
 /** Adds a strong service binding. */
@@ -89,13 +104,13 @@ void BindingManagerImpl::ManagedConnection::RemoveStrongBinding()
 
     // This runnable performs the actual unbinding. It will be executed synchronously when
     // on low-end devices and posted with a delay otherwise.
-    AutoPtr<IRunnable> doUnbind = DoUnbindRunnable(this, connection);
+    AutoPtr<IRunnable> doUnbind =  new DoUnbindRunnable(this, connection);
 
-    if (mIsLowMemoryDevice) {
+    if (mOwner->mIsLowMemoryDevice) {
         doUnbind->Run();
     }
     else {
-        ThreadUtils::PostOnUiThreadDelayed(doUnbind, mRemoveStrongBindingDelay);
+        ThreadUtils::PostOnUiThreadDelayed(doUnbind, mOwner->mRemoveStrongBindingDelay);
     }
 }
 
@@ -105,7 +120,7 @@ void BindingManagerImpl::ManagedConnection::RemoveStrongBinding()
  */
 void BindingManagerImpl::ManagedConnection::DropBindings()
 {
-    assert(mIsLowMemoryDevice);
+    assert(mOwner->mIsLowMemoryDevice);
     AutoPtr<ChildProcessConnection> connection = mConnection;
     if (connection == NULL) return;
 
@@ -219,18 +234,19 @@ void BindingManagerImpl::AddNewConnection(
     /* [in] */ ChildProcessConnection* connection)
 {
 
-    {
-        Object::Autolock lock(mLastInForegroundLock)
-        if (mIsLowMemoryDevice && mLastInForeground != NULL) mLastInForeground->DropBindings();
-    }
+    assert(0);
+    // {
+    //     Object::Autolock lock(mLastInForegroundLock)
+    //     if (mIsLowMemoryDevice && mLastInForeground != NULL) mLastInForeground->DropBindings();
+    // }
 
-    // This will reset the previous entry for the pid in the unlikely event of the OS
-    // reusing renderer pids.
-    {
-        Object::Autolock lock(mManagedConnections)
-        AutoPtr<ManagedConnection> connection = new ManagedConnection(connection);
-        mManagedConnections->Put(pid, connection);
-    }
+    // // This will reset the previous entry for the pid in the unlikely event of the OS
+    // // reusing renderer pids.
+    // {
+    //     Object::Autolock lock(mManagedConnections)
+    //     AutoPtr<ManagedConnection> connection = new ManagedConnection(connection);
+    //     mManagedConnections->Put(pid, connection);
+    // }
 }
 
 //@Override
@@ -238,39 +254,42 @@ void BindingManagerImpl::SetInForeground(
     /* [in] */ Int32 pid,
     /* [in] */ Boolean inForeground)
 {
-    AutoPtr<ManagedConnection> managedConnection;
+//     assert(0);
+//     AutoPtr<ManagedConnection> managedConnection;
 
-    {
-        Object::Autolock lock(mManagedConnections);
-        managedConnection = mManagedConnections->Get(pid);
-    }
+//     {
+//         Object::Autolock lock(mManagedConnections);
+//         managedConnection = mManagedConnections->Get(pid);
+//     }
 
-    if (managedConnection == NULL) {
-//        Log.w(TAG, "Cannot setInForeground() - never saw a connection for the pid: " +
-//                Integer.toString(pid));
-        return;
-    }
+//     if (managedConnection == NULL) {
+// //        Log.w(TAG, "Cannot setInForeground() - never saw a connection for the pid: " +
+// //                Integer.toString(pid));
+//         return;
+//     }
 
-    {
-        Object::Autolock lock(mLastInForegroundLock)
-        managedConnection->SetInForeground(inForeground);
-        if (inForeground) mLastInForeground = managedConnection;
-    }
+//     {
+//         Object::Autolock lock(mLastInForegroundLock)
+//         managedConnection->SetInForeground(inForeground);
+//         if (inForeground) mLastInForeground = managedConnection;
+//     }
 }
 
 //@Override
 void BindingManagerImpl::OnSentToBackground()
 {
-    assert(mBoundForBackgroundPeriod == NULL);
-    {
-        Object::Autolock lock(mLastInForegroundLock)
-        // mLastInForeground can be null at this point as the embedding application could be
-        // used in foreground without spawning any renderers.
-        if (mLastInForeground != NULL) {
-            mLastInForeground->SetBoundForBackgroundPeriod(TRUE);
-            mBoundForBackgroundPeriod = mLastInForeground;
-        }
-    }
+    assert(0);
+
+    // assert(mBoundForBackgroundPeriod == NULL);
+    // {
+    //     Object::Autolock lock(mLastInForegroundLock)
+    //     // mLastInForeground can be null at this point as the embedding application could be
+    //     // used in foreground without spawning any renderers.
+    //     if (mLastInForeground != NULL) {
+    //         mLastInForeground->SetBoundForBackgroundPeriod(TRUE);
+    //         mBoundForBackgroundPeriod = mLastInForeground;
+    //     }
+    // }
 }
 
 //@Override
@@ -286,29 +305,34 @@ void BindingManagerImpl::OnBroughtToForeground()
 Boolean BindingManagerImpl::IsOomProtected(
     /* [in] */ Int32 pid)
 {
-    // In the unlikely event of the OS reusing renderer pid, the call will refer to the most
-    // recent renderer of the given pid. The binding state for a pid is being reset in
-    // addNewConnection().
-    AutoPtr<ManagedConnection> managedConnection;
-    {
-        Object::Autolock lock(mManagedConnections)
-        managedConnection = mManagedConnections->Get(pid);
-    }
+    assert(0);
 
-    return managedConnection != NULL ? managedConnection->IsOomProtected() : FALSE;
+    // // In the unlikely event of the OS reusing renderer pid, the call will refer to the most
+    // // recent renderer of the given pid. The binding state for a pid is being reset in
+    // // addNewConnection().
+    // AutoPtr<ManagedConnection> managedConnection;
+    // {
+    //     Object::Autolock lock(mManagedConnections)
+    //     managedConnection = mManagedConnections->Get(pid);
+    // }
+
+    // return managedConnection != NULL ? managedConnection->IsOomProtected() : FALSE;
+    return FALSE;
 }
 
 //@Override
 void BindingManagerImpl::ClearConnection(
     /* [in] */ Int32 pid)
 {
-    AutoPtr<ManagedConnection> managedConnection;
-    {
-        Object::Autolock lock(mManagedConnections)
-        managedConnection = mManagedConnections->Get(pid);
-    }
+    assert(0);
 
-    if (managedConnection != NULL) managedConnection->ClearConnection();
+    // AutoPtr<ManagedConnection> managedConnection;
+    // {
+    //     Object::Autolock lock(mManagedConnections)
+    //     managedConnection = mManagedConnections->Get(pid);
+    // }
+
+    // if (managedConnection != NULL) managedConnection->ClearConnection();
 }
 
 /** @return true iff the connection reference is no longer held */
@@ -316,8 +340,10 @@ void BindingManagerImpl::ClearConnection(
 Boolean BindingManagerImpl::IsConnectionCleared(
     /* [in] */ Int32 pid)
 {
-    Object::Autolock lock(mManagedConnections)
-    return mManagedConnections->Get(pid)->IsConnectionCleared();
+    assert(0);
+    // Object::Autolock lock(mManagedConnections)
+    // return mManagedConnections->Get(pid)->IsConnectionCleared();
+    return FALSE;
 }
 
 } // namespace Browser

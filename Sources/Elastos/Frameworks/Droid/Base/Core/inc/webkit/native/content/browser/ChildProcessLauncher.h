@@ -2,11 +2,25 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CHILDPROCESSLAUNCHER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CHILDPROCESSLAUNCHER_H__
 
-// import android.content.Context;
-// import android.graphics.SurfaceTexture;
+#include "ext/frameworkext.h"
+#include "webkit/native/content/app/ChildProcessService.h"
+#include "webkit/native/content/app/ChromiumLinkerParams.h"
+#include "webkit/native/content/app/SandboxedProcessService.h"
+#include "webkit/native/content/app/PrivilegedProcessService.h"
+#include "webkit/native/content/browser/ChildProcessConnection.h"
+#include "webkit/native/content/browser/BindingManager.h"
+#include "webkit/native/content/browser/FileDescriptorInfo.h"
+
+using Elastos::Utility::IMap;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::ISurfaceTexture;
 // import android.util.Log;
 // import android.util.Pair;
-// import android.view.Surface;
+using Elastos::Droid::View::ISurface;
+using Elastos::Droid::Webkit::Content::App::ChildProcessService;
+using Elastos::Droid::Webkit::Content::App::ChromiumLinkerParams;
+using Elastos::Droid::Webkit::Content::App::SandboxedProcessService;
+using Elastos::Droid::Webkit::Content::App::PrivilegedProcessService;
 
 // import com.google.common.annotations.VisibleForTesting;
 
@@ -36,10 +50,10 @@ namespace Browser {
  * This class provides the method to start/stop ChildProcess called by native.
  */
 //@JNINamespace("content")
-class ChildProcessLauncher
+class ChildProcessLauncher : public Object
 {
 private:
-    class ChildConnectionAllocator
+    class ChildConnectionAllocator : public Object
     {
     public:
         ChildConnectionAllocator(
@@ -62,7 +76,7 @@ private:
 
     private:
         // Connections to services. Indices of the array correspond to the service numbers.
-        const AutoPtr< ArrayOf<ChildProcessConnection> > mChildProcessConnections;
+        const AutoPtr< ArrayOf<ChildProcessConnection*> > mChildProcessConnections;
 
         // The list of free (not bound) service indices. When looking for a free service, the first
         // index in that list should be used. When a service is unbound, its index is added to the
@@ -72,20 +86,18 @@ private:
         // the process is reused and bad things happen (mostly static variables are set when we
         // don't expect them to).
         // SHOULD BE ACCESSED WITH mConnectionLock.
-        const ArrayList<Integer> mFreeConnectionIndices;
-        const Object mConnectionLock;
+//        const ArrayList<Integer> mFreeConnectionIndices;
+//        const Object mConnectionLock;
 
         AutoPtr<ChildProcessService> mChildClass;
         const Boolean mInSandbox;
     };
 
     class InnerDeathCallback
-        : public Object
-        , public ChildProcessConnection::DeathCallback
+        : public ChildProcessConnection::DeathCallback
     {
     public:
-        InnerDeathCallback(
-            /* [in] */ ChildProcessLauncher* owner);
+        InnerDeathCallback();
 
         CARAPI_(void) OnChildProcessDied(
             /* [in] */ ChildProcessConnection* connection);
@@ -95,12 +107,10 @@ private:
     };
 
     class InnerConnectionCallback
-        : public Object
-        , public ChildProcessConnection::ConnectionCallback
+        : public ChildProcessConnection::ConnectionCallback
     {
     public:
         InnerConnectionCallback(
-            /* [in] */ ChildProcessLauncher* owner,
             /* [in] */ const ChildProcessConnection* connection,
             /* [in] */ const Int64 clientContext);
 
@@ -108,8 +118,7 @@ private:
             /* [in] */ Int32 pid);
 
     private:
-        ChildProcessLauncher* mOwner;
-        const ChildProcessConnection* mConnection,
+        const ChildProcessConnection* mConnection;
         const Int64 mClientContext;
     };
 
@@ -195,7 +204,7 @@ public:
         /* [in] */ const ChildProcessConnection* connection,
         /* [in] */ ArrayOf<String>* commandLine,
         /* [in] */ Int32 childProcessId,
-        /* [in] */ ArrayOf<FileDescriptorInfo>* filesToBeMapped,
+        /* [in] */ ArrayOf<FileDescriptorInfo*>* filesToBeMapped,
         /* [in] */ Int32 callbackType,
         /* [in] */ const Int64 clientContext);
 
@@ -275,9 +284,9 @@ private:
     /**
      * This implementation is used to receive callbacks from the remote service.
      */
-    static CARAPI_(AutoPtr<IChildProcessCallback>) CreateCallback(
-        /* [in] */ const Int32 childProcessId,
-        /* [in] */ const Int32 callbackType);
+//    static CARAPI_(AutoPtr<IChildProcessCallback>) CreateCallback(
+//        /* [in] */ const Int32 childProcessId,
+//        /* [in] */ const Int32 callbackType);
 
     static CARAPI_(void) NativeOnChildProcessStarted(
         /* [in] */ Int64 clientContext,
@@ -313,7 +322,8 @@ private:
     static const Int32 NULL_PROCESS_HANDLE = 0;
 
     // Map from pid to ChildService connection.
-    static Map<Integer, ChildProcessConnection> sServiceMap;
+    //static Map<Integer, ChildProcessConnection> sServiceMap;
+    static AutoPtr<IMap> sServiceMap;
 
     // A pre-allocated and pre-bound connection ready for connection setup, or null.
     static AutoPtr<ChildProcessConnection> sSpareSandboxedConnection;
@@ -322,10 +332,12 @@ private:
     static AutoPtr<BindingManager> sBindingManager;
 
     // Map from surface id to Surface.
-    static Map<Integer, Surface> sViewSurfaceMap;
+    //static Map<Integer, Surface> sViewSurfaceMap;
+    static AutoPtr<IMap> sViewSurfaceMap;
 
     // Map from surface texture id to Surface.
-    static Map<Pair<Integer, Integer>, Surface> sSurfaceTextureSurfaceMap;
+    //static Map<Pair<Integer, Integer>, Surface> sSurfaceTextureSurfaceMap;
+    static AutoPtr<IMap> sSurfaceTextureSurfaceMap;
 };
 
 } // namespace Browser

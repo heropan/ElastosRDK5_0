@@ -6,13 +6,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SCREENORIENTATIONPROVIDER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SCREENORIENTATIONPROVIDER_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "app/Activity.h"
-#include "content/pm/CActivityInfo.h"
-#include "webkit/native/base/ApplicationStatus.h"
-#include "webkit/native/content/common/ScreenOrientationValues.h"
 
 // package org.chromium.content.browser;
 // import android.app.Activity;
@@ -70,4 +64,3 @@ private:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SCREENORIENTATIONPROVIDER_H_
-

@@ -2,14 +2,16 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACTIVITYCONTENTVIDEOVIEWCLIENT_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACTIVITYCONTENTVIDEOVIEWCLIENT_H__
 
+#include "ext/frameworkext.h"
+#include "webkit/native/content/browser/ContentVideoViewClient.h"
+
 // import android.annotation.SuppressLint;
-// import android.app.Activity;
-// import android.os.Build;
-// import android.view.Gravity;
-// import android.view.View;
-// import android.view.ViewGroup;
-// import android.view.WindowManager;
-// import android.widget.FrameLayout;
+using Elastos::Droid::App::IActivity;
+using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::IWindowManager;
+using Elastos::Droid::Widget::IFrameLayout;
 
 namespace Elastos {
 namespace Droid {

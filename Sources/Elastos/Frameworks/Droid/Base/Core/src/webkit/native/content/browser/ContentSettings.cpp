@@ -1,4 +1,10 @@
 
+#include "webkit/native/content/browser/ContentSettings.h"
+#include "webkit/native/content/browser/ContentViewCore.h"
+#include "webkit/native/base/ThreadUtils.h"
+
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {

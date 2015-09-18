@@ -6,8 +6,6 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_MEDIADRMCREDENTIALMANAGER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_MEDIADRMCREDENTIALMANAGER_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
 
 // package org.chromium.content.browser;
@@ -62,4 +60,3 @@ private:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_MEDIADRMCREDENTIALMANAGER_H_
-

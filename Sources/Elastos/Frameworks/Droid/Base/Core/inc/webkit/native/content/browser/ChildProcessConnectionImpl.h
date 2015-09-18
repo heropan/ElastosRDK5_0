@@ -2,14 +2,20 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CHILDPROCESSCONNECTIONIMPL_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CHILDPROCESSCONNECTIONIMPL_H__
 
-// import android.content.ComponentName;
-// import android.content.Context;
-// import android.content.Intent;
-// import android.content.ServiceConnection;
-// import android.os.Bundle;
+#include "ext/frameworkext.h"
+#include "webkit/native/content/browser/ChildProcessConnection.h"
+#include "webkit/native/content/browser/FileDescriptorInfo.h"
+#include "webkit/native/content/app/ChildProcessService.h"
+#include "webkit/native/content/app/ChromiumLinkerParams.h"
+
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IServiceConnection;
+using Elastos::Droid::Os::IBundle;
 // import android.os.DeadObjectException;
-// import android.os.IBinder;
-// import android.os.ParcelFileDescriptor;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IParcelFileDescriptor;
 // import android.os.RemoteException;
 // import android.util.Log;
 
@@ -19,8 +25,8 @@
 // import org.chromium.base.ThreadUtils;
 // import org.chromium.base.TraceEvent;
 // import org.chromium.base.library_loader.Linker;
-// import org.chromium.content.app.ChildProcessService;
-// import org.chromium.content.app.ChromiumLinkerParams;
+using Elastos::Droid::Webkit::Content::App::ChildProcessService;
+using Elastos::Droid::Webkit::Content::App::ChromiumLinkerParams;
 // import org.chromium.content.common.IChildProcessCallback;
 // import org.chromium.content.common.IChildProcessService;
 
@@ -35,24 +41,23 @@ namespace Browser {
 /**
  * Manages a connection between the browser activity and a child service.
  */
-public class ChildProcessConnectionImpl
-    : public Object
-    , public ChildProcessConnection
+class ChildProcessConnectionImpl
+    : public ChildProcessConnection
 {
 private:
-    class ConnectionParams
+    class ConnectionParams : public Object
     {
     public:
-        ConnectionParams(
-            /* [in] */ ArrayOf<String>* commandLine,
-            /* [in] */ ArrayOf<FileDescriptorInfo>* filesToBeMapped,
-            /* [in] */ IChildProcessCallback* callback,
-            /* [in] */ IBundle* sharedRelros);
+        // ConnectionParams(
+        //     /* [in] */ ArrayOf<String>* commandLine,
+        //     /* [in] */ ArrayOf<FileDescriptorInfo>* filesToBeMapped,
+        //     /* [in] */ IChildProcessCallback* callback,
+        //     /* [in] */ IBundle* sharedRelros);
 
     public:
         const AutoPtr< ArrayOf<String> > mCommandLine;
         const AutoPtr< ArrayOf<FileDescriptorInfo> > mFilesToBeMapped;
-        const AutoPtr<IChildProcessCallback> mCallback;
+//        const AutoPtr<IChildProcessCallback> mCallback;
         const AutoPtr<IBundle> mSharedRelros;
     };
 
@@ -65,6 +70,8 @@ private:
             /* [in] */ ChildProcessConnectionImpl* owner,
             /* [in] */ Int32 bindFlags);
 
+        CAR_INTERFACE_DECL()
+
         CARAPI_(Boolean) Bind(
             /* [in] */ ArrayOf<String>* commandLine);
 
@@ -73,13 +80,13 @@ private:
         CARAPI_(Boolean) IsBound();
 
         //@Override
-        CARAPI_(void) OnServiceConnected(
+        CARAPI OnServiceConnected(
             /* [in] */ IComponentName* className,
             /* [in] */ IBinder* service);
 
         // Called on the main thread to notify that the child service did not disconnect gracefully.
         //@Override
-        CARAPI_(void) OnServiceDisconnected(
+        CARAPI OnServiceDisconnected(
             /* [in] */ IComponentName* className);
 
     private:
@@ -107,7 +114,7 @@ public:
     CARAPI_(Boolean) IsInSandbox();
 
     //@Override
-    CARAPI_(AutoPtr<IChildProcessService>) GetService();
+//    CARAPI_(AutoPtr<IChildProcessService>) GetService();
 
     //@Override
     CARAPI_(Int32) GetPid();
@@ -117,12 +124,12 @@ public:
         /* [in] */ ArrayOf<String>* commandLine);
 
     //@Override
-    CARAPI_(void) SetupConnection(
-        /* [in] */ ArrayOf<String>* commandLine,
-        /* [in] */ ArrayOf<FileDescriptorInfo>* filesToBeMapped,
-        /* [in] */ IChildProcessCallback* processCallback,
-        /* [in] */ ConnectionCallback* connectionCallback,
-        /* [in] */ IBundle* sharedRelros);
+    // CARAPI_(void) SetupConnection(
+    //     /* [in] */ ArrayOf<String>* commandLine,
+    //     /* [in] */ ArrayOf<FileDescriptorInfo>* filesToBeMapped,
+    //     /* [in] */ IChildProcessCallback* processCallback,
+    //     /* [in] */ ConnectionCallback* connectionCallback,
+    //     /* [in] */ IBundle* sharedRelros);
 
     //@Override
     CARAPI_(void) Stop();
@@ -167,13 +174,13 @@ private:
     const Int32 mServiceNumber;
     const Boolean mInSandbox;
     const AutoPtr<ChildProcessConnection::DeathCallback> mDeathCallback;
-    const AutoPtr<IInterface> mServiceClass;
+//    const AutoPtr<IInterface> mServiceClass;
 
     // Synchronization: While most internal flow occurs on the UI thread, the public API
     // (specifically start and stop) may be called from any thread, hence all entry point methods
     // into the class are synchronized on the lock to protect access to these members.
-    const Object mLock;
-    AutoPtr<IChildProcessService> mService;
+//    const Object mLock;
+//    AutoPtr<IChildProcessService> mService;
     // Set to true when the service connected successfully.
     Boolean mServiceConnectComplete;
     // Set to true when the service disconnects, as opposed to being properly closed. This happens

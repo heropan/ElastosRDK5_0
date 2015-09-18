@@ -2,6 +2,9 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BINDINGMANAGER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BINDINGMANAGER_H__
 
+#include "ext/frameworkext.h"
+#include "webkit/native/content/browser/ChildProcessConnection.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -28,7 +31,7 @@ namespace Browser {
  * Thread-safety: most of the methods will be called only on the main thread, exceptions are
  * explicitly noted.
  */
-class BindingManager
+class BindingManager : public Object
 {
 public:
     /**

@@ -6,19 +6,16 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOADURLPARAMS_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOADURLPARAMS_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "elastos/utility/CLocale.h"
+#include "webkit/native/content_public/Referrer.h"
 
-// package org.chromium.content.browser;
+using Elastos::Droid::Webkit::Content_Public::Referrer;
+
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 // import org.chromium.content_public.Referrer;
 // import java.util.Locale;
 // import java.util.Map;
-
-using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Droid {
@@ -179,13 +176,13 @@ public:
       * @param extraHeaders Extra HTTP headers for this load. Note that these
       *                     headers will never overwrite existing ones set by Chromium.
       */
-    virtual CARAPI SetExtraHeaders(
-        /* [in] */ IMap<String, String>* extraHeaders);
+//    virtual CARAPI SetExtraHeaders(
+//        /* [in] */ IMap<String, String>* extraHeaders);
 
     /**
       * Return the extra headers as a map.
       */
-    virtual CARAPI_(AutoPtr< IMap<String, String> >) GetExtraHeaders();
+//    virtual CARAPI_(AutoPtr< IMap<String, String> >) GetExtraHeaders();
 
     /**
       * Return the extra headers as a single String separated by "\n", or null if no extra header is
@@ -325,8 +322,7 @@ public:
     Boolean mIsRendererInitiated;
 
 private:
-     Map<String;
-     String> mExtraHeaders;
+//    AutoPtr< IMap<String, String> > mExtraHeaders;
     String mVerbatimHeaders;
 };
 
@@ -337,4 +333,3 @@ private:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOADURLPARAMS_H_
-

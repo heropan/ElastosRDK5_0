@@ -2,14 +2,20 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIDEOVIEWLEGACY_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIDEOVIEWLEGACY_H__
 
-// import android.content.Context;
-// import android.graphics.Color;
-// import android.view.KeyEvent;
-// import android.view.MotionEvent;
-// import android.view.SurfaceHolder;
-// import android.view.SurfaceView;
-// import android.view.View;
-// import android.widget.MediaController;
+#include "ext/frameworkext.h"
+#include "webkit/native/content/browser/ContentVideoView.h"
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::IColor;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::ISurfaceHolder;
+using Elastos::Droid::View::ISurfaceView;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewOnKeyListener;
+using Elastos::Droid::View::IViewOnTouchListener;
+using Elastos::Droid::Widget::IMediaController;
+using Elastos::Droid::Widget::IMediaPlayerControl;
 
 namespace Elastos {
 namespace Droid {
@@ -58,6 +64,8 @@ private:
             /* [in] */ IView* video,
             /* [in] */ MediaControlsVisibilityListener* listener);
 
+        CAR_INTERFACE_DECL();
+
         //@Override
         CARAPI Show();
 
@@ -77,6 +85,8 @@ private:
         InnerViewOnKeyListener(
             /* [in] */ ContentVideoViewLegacy* owner);
 
+        CAR_INTERFACE_DECL()
+
         CARAPI OnKey(
             /* [in] */ IView* v,
             /* [in] */ Int32 keyCode,
@@ -95,6 +105,8 @@ private:
         InnerViewOnTouchListener(
             /* [in] */ ContentVideoViewLegacy* owner);
 
+        CAR_INTERFACE_DECL()
+
         CARAPI OnTouch(
             /* [in] */ IView* v,
             /* [in] */ IMotionEvent* event,
@@ -111,6 +123,8 @@ private:
     public:
         InnerMediaPlayerControl(
             /* [in] */ ContentVideoViewLegacy* owner);
+
+        CAR_INTERFACE_DECL()
 
         CARAPI Start();
 
@@ -158,7 +172,7 @@ public:
         /* [in] */ Int32 errorType);
 
     //@Override
-    CARAPI_(void) SurfaceChanged(
+    CARAPI SurfaceChanged(
         /* [in] */ ISurfaceHolder* holder,
         /* [in] */ Int32 format,
         /* [in] */ Int32 width,

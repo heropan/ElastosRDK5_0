@@ -2,12 +2,16 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWCLIENT_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWCLIENT_H__
 
-// import android.content.ActivityNotFoundException;
-// import android.content.Context;
-// import android.content.Intent;
+#include "ext/frameworkext.h"
+#include "webkit/native/content/browser/ContentVideoViewClient.h"
+#include "webkit/native/content/browser/SelectActionModeCallback.h"
+
+//using Elastos::Droid::Content::IActivityNotFoundException;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
 // import android.util.Log;
-// import android.view.ActionMode;
-// import android.view.KeyEvent;
+using Elastos::Droid::View::IActionMode;
+using Elastos::Droid::View::IKeyEvent;
 
 // import org.chromium.content.browser.SelectActionModeCallback.ActionHandler;
 
@@ -78,7 +82,7 @@ public:
      */
     CARAPI_(AutoPtr<IActionModeCallback>) GetSelectActionModeCallback(
         /* [in] */ IContext* context,
-        /* [in] */ IActionHandler* actionHandler,
+        /* [in] */ SelectActionModeCallback::ActionHandler* actionHandler,
         /* [in] */ Boolean incognito);
 
     /**

@@ -1,4 +1,12 @@
 
+#include "webkit/native/content/browser/ChildProcessLauncher.h"
+#include "webkit/native/content/browser/BindingManagerImpl.h"
+#include "webkit/native/base/ThreadUtils.h"
+#include "webkit/native/base/TraceEvent.h"
+
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+using Elastos::Droid::Webkit::Base::TraceEvent;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -11,17 +19,18 @@ namespace Browser {
 
 ChildProcessLauncher::ChildConnectionAllocator::ChildConnectionAllocator(
     /* [in] */ Boolean inSandbox)
+    : mInSandbox(inSandbox)
 {
+    assert(0);
     Int32 numChildServices = inSandbox ?
             MAX_REGISTERED_SANDBOXED_SERVICES : MAX_REGISTERED_PRIVILEGED_SERVICES;
-    mChildProcessConnections = ArrayOf<ChildProcessConnection>::Alloc(numChildServices);
-    mFreeConnectionIndices = new ArrayList<Integer>(numChildServices);
-    for (Int32 i = 0; i < numChildServices; i++) {
-        mFreeConnectionIndices->Add(i);
-    }
-    SetServiceClass(inSandbox ?
-            SandboxedProcessService.class : PrivilegedProcessService.class);
-    mInSandbox = inSandbox;
+    // mChildProcessConnections = ArrayOf<ChildProcessConnection>::Alloc(numChildServices);
+    // mFreeConnectionIndices = new ArrayList<Integer>(numChildServices);
+    // for (Int32 i = 0; i < numChildServices; i++) {
+    //     mFreeConnectionIndices->Add(i);
+    // }
+    // SetServiceClass(inSandbox ?
+    //         SandboxedProcessService.class : PrivilegedProcessService.class);
 }
 
 void ChildProcessLauncher::ChildConnectionAllocator::SetServiceClass(
@@ -35,6 +44,8 @@ AutoPtr<ChildProcessConnection> ChildProcessLauncher::ChildConnectionAllocator::
     /* [in] */ ChildProcessConnection::DeathCallback* deathCallback,
     /* [in] */ ChromiumLinkerParams* chromiumLinkerParams)
 {
+    assert(0);
+#if 0
     Object::Autolock lock(mConnectionLock);
 
     if (mFreeConnectionIndices->IsEmpty()) {
@@ -47,11 +58,16 @@ AutoPtr<ChildProcessConnection> ChildProcessLauncher::ChildConnectionAllocator::
     (*mChildProcessConnections)[slot] = new ChildProcessConnectionImpl(context, slot,
             mInSandbox, deathCallback, mChildClass, chromiumLinkerParams);
     return (*mChildProcessConnections)[slot];
+#endif
+
+    return NULL;
 }
 
 void ChildProcessLauncher::ChildConnectionAllocator::Free(
     /* [in] */ ChildProcessConnection* connection)
 {
+    assert(0);
+#if 0
     Object::Autolock lock(mConnectionLock);
 
     Int32 slot = connection->GetServiceNumber();
@@ -67,22 +83,23 @@ void ChildProcessLauncher::ChildConnectionAllocator::Free(
         assert(!mFreeConnectionIndices->Contains(slot));
         mFreeConnectionIndices->Add(slot);
     }
+#endif
 }
 
 /** @return the count of connections managed by the allocator */
 //@VisibleForTesting
 Int32 ChildProcessLauncher::ChildConnectionAllocator::AllocatedConnectionsCountForTesting()
 {
-    return mChildProcessConnections->GetLength() - mFreeConnectionIndices->Size();
+    assert(0);
+//    return mChildProcessConnections->GetLength() - mFreeConnectionIndices->Size();
+    return 0;
 }
 
 //===============================================================
 //           ChildProcessLauncher::InnerDeathCallback
 //===============================================================
 
-ChildProcessLauncher::InnerDeathCallback::InnerDeathCallback(
-    /* [in] */ ChildProcessLauncher* owner)
-    : mOwner(owner)
+ChildProcessLauncher::InnerDeathCallback::InnerDeathCallback()
 {
 }
 
@@ -102,11 +119,9 @@ void ChildProcessLauncher::InnerDeathCallback::OnChildProcessDied(
 //===============================================================
 
 ChildProcessLauncher::InnerConnectionCallback::InnerConnectionCallback(
-    /* [in] */ ChildProcessLauncher* owner,
     /* [in] */ const ChildProcessConnection* connection,
     /* [in] */ const Int64 clientContext)
-    : mOwner(owner)
-    , mConnection(connection)
+    : mConnection(connection)
     , mClientContext(clientContext)
 {
 }
@@ -114,6 +129,8 @@ ChildProcessLauncher::InnerConnectionCallback::InnerConnectionCallback(
 void ChildProcessLauncher::InnerConnectionCallback::OnConnected(
     /* [in] */ Int32 pid)
 {
+    assert(0);
+#if 0
 //    Log.d(TAG, "on connect callback, pid=" + pid + " context=" + clientContext);
     if (pid != NULL_PROCESS_HANDLE) {
         sBindingManager->AddNewConnection(pid, mConnection);
@@ -126,6 +143,7 @@ void ChildProcessLauncher::InnerConnectionCallback::OnConnected(
     if (mClientContext != 0) {  // Will be 0 in Java instrumentation tests.
         NativeOnChildProcessStarted(mClientContext, pid);
     }
+#endif
 }
 
 //===============================================================
@@ -155,10 +173,10 @@ const Int32 ChildProcessLauncher::MAX_REGISTERED_PRIVILEGED_SERVICES;
 
 // Service class for child process. As the default value it uses SandboxedProcessService0 and
 // PrivilegedProcessService0.
-const AutoPtr<ChildConnectionAllocator> ChildProcessLauncher::sSandboxedChildConnectionAllocator =
+const AutoPtr<ChildProcessLauncher::ChildConnectionAllocator> ChildProcessLauncher::sSandboxedChildConnectionAllocator =
         new ChildConnectionAllocator(TRUE);
-const AutoPtr<ChildConnectionAllocator> ChildProcessLauncher::sPrivilegedChildConnectionAllocator =
-        new ChildConnectionAllocator(FALSE);
+const AutoPtr<ChildProcessLauncher::ChildConnectionAllocator> ChildProcessLauncher::sPrivilegedChildConnectionAllocator =
+        new ChildProcessLauncher::ChildConnectionAllocator(FALSE);
 
 Boolean ChildProcessLauncher::sConnectionAllocated = FALSE;
 
@@ -169,8 +187,8 @@ Int64 ChildProcessLauncher::sLinkerLoadAddress = 0;
 const Int32 ChildProcessLauncher::NULL_PROCESS_HANDLE;
 
 // Map from pid to ChildService connection.
-Map<Integer, ChildProcessConnection> ChildProcessLauncher::sServiceMap =
-        new ConcurrentHashMap<Integer, ChildProcessConnection>();
+//Map<Integer, ChildProcessConnection> ChildProcessLauncher::sServiceMap =
+//        new ConcurrentHashMap<Integer, ChildProcessConnection>();
 
 // A pre-allocated and pre-bound connection ready for connection setup, or null.
 AutoPtr<ChildProcessConnection> ChildProcessLauncher::sSpareSandboxedConnection;
@@ -179,12 +197,12 @@ AutoPtr<ChildProcessConnection> ChildProcessLauncher::sSpareSandboxedConnection;
 AutoPtr<BindingManager> ChildProcessLauncher::sBindingManager = BindingManagerImpl::CreateBindingManager();
 
 // Map from surface id to Surface.
-Map<Integer, Surface> ChildProcessLauncher::sViewSurfaceMap =
-        new ConcurrentHashMap<Integer, Surface>();
+//Map<Integer, Surface> ChildProcessLauncher::sViewSurfaceMap =
+//        new ConcurrentHashMap<Integer, Surface>();
 
 // Map from surface texture id to Surface.
-Map<Pair<Integer, Integer>, Surface> ChildProcessLauncher::sSurfaceTextureSurfaceMap =
-        new ConcurrentHashMap<Pair<Integer, Integer>, Surface>();
+//Map<Pair<Integer, Integer>, Surface> ChildProcessLauncher::sSurfaceTextureSurfaceMap =
+//        new ConcurrentHashMap<Pair<Integer, Integer>, Surface>();
 
 /**
  * Sets service class for sandboxed service and privileged service.
@@ -199,7 +217,7 @@ void ChildProcessLauncher::SetChildProcessClass(
     sPrivilegedChildConnectionAllocator->SetServiceClass(privilegedServiceClass);
 }
 
-AutoPtr<ChildConnectionAllocator> ChildProcessLauncher::GetConnectionAllocator(
+AutoPtr<ChildProcessLauncher::ChildConnectionAllocator> ChildProcessLauncher::GetConnectionAllocator(
     /* [in] */ Boolean inSandbox)
 {
     return inSandbox ?
@@ -211,7 +229,7 @@ AutoPtr<ChildProcessConnection> ChildProcessLauncher::AllocateConnection(
     /* [in] */ Boolean inSandbox,
     /* [in] */ ChromiumLinkerParams* chromiumLinkerParams)
 {
-    AutoPtr<ChildProcessConnection::DeathCallback> deathCallback = new InnerDeathCallback(this);
+    AutoPtr<ChildProcessConnection::DeathCallback> deathCallback = new ChildProcessLauncher::InnerDeathCallback();
     sConnectionAllocated = TRUE;
     return GetConnectionAllocator(inSandbox)->Allocate(context, deathCallback,
             chromiumLinkerParams);
@@ -219,6 +237,8 @@ AutoPtr<ChildProcessConnection> ChildProcessLauncher::AllocateConnection(
 
 AutoPtr<ChromiumLinkerParams> ChildProcessLauncher::GetLinkerParamsForNewConnection()
 {
+    assert(0);
+#if 0
     if (!sLinkerInitialized) {
         if (Linker::IsUsed()) {
             sLinkerLoadAddress = Linker::GetBaseLoadAddress();
@@ -238,6 +258,9 @@ AutoPtr<ChromiumLinkerParams> ChildProcessLauncher::GetLinkerParamsForNewConnect
     return new ChromiumLinkerParams(sLinkerLoadAddress,
                             waitForSharedRelros,
                             Linker::GetTestRunnerClassName());
+#endif
+
+    return NULL;
 }
 
 AutoPtr<ChildProcessConnection> ChildProcessLauncher::AllocateBoundConnection(
@@ -281,14 +304,16 @@ void ChildProcessLauncher::RegisterViewSurface(
     /* [in] */ Int32 surfaceId,
     /* [in] */ ISurface* surface)
 {
-    sViewSurfaceMap->Put(surfaceId, surface);
+    assert(0);
+//    sViewSurfaceMap->Put(surfaceId, surface);
 }
 
 //@CalledByNative
 void ChildProcessLauncher::UnregisterViewSurface(
     /* [in] */ Int32 surfaceId)
 {
-    sViewSurfaceMap->Remove(surfaceId);
+    assert(0);
+//    sViewSurfaceMap->Remove(surfaceId);
 }
 
 //@CalledByNative
@@ -297,10 +322,13 @@ void ChildProcessLauncher::RegisterSurfaceTexture(
     /* [in] */ Int32 childProcessId,
     /* [in] */ ISurfaceTexture* surfaceTexture)
 {
+    assert(0);
+#if 0
     Pair<Integer, Integer> key = new Pair<Integer, Integer>(surfaceTextureId, childProcessId);
     AutoPtr<ISurface> sur;
     CSurface::New((ISurface**)&sur);
     sSurfaceTextureSurfaceMap->Put(key, sur);
+#endif
 }
 
 //@CalledByNative
@@ -308,8 +336,11 @@ void ChildProcessLauncher::UnregisterSurfaceTexture(
     /* [in] */ Int32 surfaceTextureId,
     /* [in] */ Int32 childProcessId)
 {
+    assert(0);
+#if 0
     Pair<Integer, Integer> key = new Pair<Integer, Integer>(surfaceTextureId, childProcessId);
     sSurfaceTextureSurfaceMap->Remove(key);
+#endif
 }
 
 /**
@@ -349,7 +380,8 @@ void ChildProcessLauncher::OnBroughtToForeground()
 void ChildProcessLauncher::WarmUp(
     /* [in] */ IContext* context)
 {
-    Object::Autolock lock(this);
+    assert(0);
+//    Object::Autolock lock(this);
     assert(!ThreadUtils::RunningOnUiThread());
     if (sSpareSandboxedConnection == NULL) {
         sSpareSandboxedConnection = AllocateBoundConnection(context, NULL, TRUE);
@@ -361,20 +393,23 @@ String ChildProcessLauncher::GetSwitchValue(
     /* [in] */ String switchKey)
 {
     if (commandLine == NULL || switchKey == NULL) {
-        return NULL;
+        return String(NULL);
     }
 
     // This format should be matched with the one defined in command_line.h.
     String switchKeyPrefix("--");
     switchKeyPrefix += switchKey;
     switchKeyPrefix += "=";
-    for (String command : commandLine) {
-        if (command != NULL && command.StartsWith(switchKeyPrefix)) {
+    Int32 length = commandLine->GetLength();
+    String command;
+    for (Int32 i = 0; i < length; --i) {
+        command = (*commandLine)[i];
+        if (command != NULL && command.StartWith(switchKeyPrefix)) {
             return command.Substring(switchKeyPrefix.GetLength());
         }
     }
 
-    return NULL;
+    return String(NULL);
 }
 
 /**
@@ -403,7 +438,7 @@ void ChildProcessLauncher::Start(
 {
     TraceEvent::Begin();
     assert(fileIds->GetLength() == fileFds->GetLength() && fileFds->GetLength() == fileAutoClose->GetLength());
-    AutoPtr< ArrayOf<FileDescriptorInfo> > filesToBeMapped = ArrayOf<FileDescriptorInfo>::Alloc(fileFds->GetLength());
+    AutoPtr< ArrayOf<FileDescriptorInfo*> > filesToBeMapped = ArrayOf<FileDescriptorInfo*>::Alloc(fileFds->GetLength());
     for (Int32 i = 0; i < fileFds->GetLength(); i++) {
         (*filesToBeMapped)[i] =
                 new FileDescriptorInfo((*fileIds)[i], (*fileFds)[i], (*fileAutoClose)[i]);
@@ -426,7 +461,8 @@ void ChildProcessLauncher::Start(
 
     AutoPtr<ChildProcessConnection> allocatedConnection;
     {
-        Object::Autolock lock(this);
+        assert(0);
+//        Object::Autolock lock(this);
         if (inSandbox) {
             allocatedConnection = sSpareSandboxedConnection;
             sSpareSandboxedConnection = NULL;
@@ -434,7 +470,8 @@ void ChildProcessLauncher::Start(
     }
 
     if (allocatedConnection == NULL) {
-        allocatedConnection = AllocateBoundConnection(context, commandLine, inSandbox);
+        assert(0);
+//        allocatedConnection = AllocateBoundConnection(context, commandLine, inSandbox);
         if (allocatedConnection == NULL) {
             // Notify the native code so it can free the heap allocated callback.
             NativeOnChildProcessStarted(clientContext, 0);
@@ -446,8 +483,9 @@ void ChildProcessLauncher::Start(
 
 //    Log.d(TAG, "Setting up connection to process: slot=" +
 //            allocatedConnection.getServiceNumber());
-    TriggerConnectionSetup(allocatedConnection, commandLine, childProcessId, filesToBeMapped,
-            callbackType, clientContext);
+    assert(0);
+//    TriggerConnectionSetup(allocatedConnection, commandLine, childProcessId, filesToBeMapped,
+//            callbackType, clientContext);
     TraceEvent::End();
 }
 
@@ -456,19 +494,21 @@ void ChildProcessLauncher::TriggerConnectionSetup(
     /* [in] */ const ChildProcessConnection* connection,
     /* [in] */ ArrayOf<String>* commandLine,
     /* [in] */ Int32 childProcessId,
-    /* [in] */ ArrayOf<FileDescriptorInfo>* filesToBeMapped,
+    /* [in] */ ArrayOf<FileDescriptorInfo*>* filesToBeMapped,
     /* [in] */ Int32 callbackType,
     /* [in] */ const Int64 clientContext)
 {
-    AutoPtr<ChildProcessConnection::ConnectionCallback> connectionCallback = new InnerConnectionCallback(this, connection, clientContext);
+    AutoPtr<ChildProcessConnection::ConnectionCallback> connectionCallback = new InnerConnectionCallback(connection, clientContext);
 
     // TODO(sievers): Revisit this as it doesn't correctly handle the utility process
     // assert callbackType != CALLBACK_FOR_UNKNOWN_PROCESS;
-    connection->SetupConnection(commandLine,
-                               filesToBeMapped,
-                               CreateCallback(childProcessId, callbackType),
-                               connectionCallback,
-                               Linker::GetSharedRelros());
+
+    assert(0);
+    // connection->SetupConnection(commandLine,
+    //                            filesToBeMapped,
+    //                            CreateCallback(childProcessId, callbackType),
+    //                            connectionCallback,
+    //                            Linker::GetSharedRelros());
 }
 
 /**
@@ -480,6 +520,8 @@ void ChildProcessLauncher::TriggerConnectionSetup(
 void ChildProcessLauncher::Stop(
     /* [in] */ Int32 pid)
 {
+    assert(0);
+#if 0
 //    Log.d(TAG, "stopping child connection: pid=" + pid);
     AutoPtr<ChildProcessConnection> connection = sServiceMap->Remove(pid);
     if (connection == NULL) {
@@ -489,76 +531,77 @@ void ChildProcessLauncher::Stop(
     sBindingManager->ClearConnection(pid);
     connection->Stop();
     FreeConnection(connection);
+#endif
 }
 
 /**
  * This implementation is used to receive callbacks from the remote service.
  */
-AutoPtr<IChildProcessCallback> ChildProcessLauncher::CreateCallback(
-    /* [in] */ const Int32 childProcessId,
-    /* [in] */ const Int32 callbackType)
-{
-    return new IChildProcessCallback.Stub() {
-        /**
-         * This is called by the remote service regularly to tell us about new values. Note that
-         * IPC calls are dispatched through a thread pool running in each process, so the code
-         * executing here will NOT be running in our main thread -- so, to update the UI, we
-         * need to use a Handler.
-         */
-        @Override
-        public void establishSurfacePeer(
-                int pid, Surface surface, int primaryID, int secondaryID) {
-            // Do not allow a malicious renderer to connect to a producer. This is only used
-            // from stream textures managed by the GPU process.
-            if (callbackType != CALLBACK_FOR_GPU_PROCESS) {
-                Log.e(TAG, "Illegal callback for non-GPU process.");
-                return;
-            }
+// AutoPtr<IChildProcessCallback> ChildProcessLauncher::CreateCallback(
+//     /* [in] */ const Int32 childProcessId,
+//     /* [in] */ const Int32 callbackType)
+// {
+//     return new IChildProcessCallback.Stub() {
+//         /**
+//          * This is called by the remote service regularly to tell us about new values. Note that
+//          * IPC calls are dispatched through a thread pool running in each process, so the code
+//          * executing here will NOT be running in our main thread -- so, to update the UI, we
+//          * need to use a Handler.
+//          */
+//         @Override
+//         public void establishSurfacePeer(
+//                 int pid, Surface surface, int primaryID, int secondaryID) {
+//             // Do not allow a malicious renderer to connect to a producer. This is only used
+//             // from stream textures managed by the GPU process.
+//             if (callbackType != CALLBACK_FOR_GPU_PROCESS) {
+//                 Log.e(TAG, "Illegal callback for non-GPU process.");
+//                 return;
+//             }
 
-            nativeEstablishSurfacePeer(pid, surface, primaryID, secondaryID);
-        }
+//             nativeEstablishSurfacePeer(pid, surface, primaryID, secondaryID);
+//         }
 
-        @Override
-        public SurfaceWrapper getViewSurface(int surfaceId) {
-            // Do not allow a malicious renderer to get to our view surface.
-            if (callbackType != CALLBACK_FOR_GPU_PROCESS) {
-                Log.e(TAG, "Illegal callback for non-GPU process.");
-                return null;
-            }
+//         @Override
+//         public SurfaceWrapper getViewSurface(int surfaceId) {
+//             // Do not allow a malicious renderer to get to our view surface.
+//             if (callbackType != CALLBACK_FOR_GPU_PROCESS) {
+//                 Log.e(TAG, "Illegal callback for non-GPU process.");
+//                 return null;
+//             }
 
-            Surface surface = sViewSurfaceMap.get(surfaceId);
-            if (surface == null) {
-                Log.e(TAG, "Invalid surfaceId.");
-                return null;
-            }
-            assert surface.isValid();
-            return new SurfaceWrapper(surface);
-        }
+//             Surface surface = sViewSurfaceMap.get(surfaceId);
+//             if (surface == null) {
+//                 Log.e(TAG, "Invalid surfaceId.");
+//                 return null;
+//             }
+//             assert surface.isValid();
+//             return new SurfaceWrapper(surface);
+//         }
 
-        @Override
-        public SurfaceWrapper getSurfaceTextureSurface(int primaryId, int secondaryId) {
-            if (callbackType != CALLBACK_FOR_RENDERER_PROCESS) {
-                Log.e(TAG, "Illegal callback for non-renderer process.");
-                return null;
-            }
+//         @Override
+//         public SurfaceWrapper getSurfaceTextureSurface(int primaryId, int secondaryId) {
+//             if (callbackType != CALLBACK_FOR_RENDERER_PROCESS) {
+//                 Log.e(TAG, "Illegal callback for non-renderer process.");
+//                 return null;
+//             }
 
-            if (secondaryId != childProcessId) {
-                Log.e(TAG, "Illegal secondaryId for renderer process.");
-                return null;
-            }
+//             if (secondaryId != childProcessId) {
+//                 Log.e(TAG, "Illegal secondaryId for renderer process.");
+//                 return null;
+//             }
 
-            Pair<Integer, Integer> key = new Pair<Integer, Integer>(primaryId, secondaryId);
-            // Note: This removes the surface and passes the ownership to the caller.
-            Surface surface = sSurfaceTextureSurfaceMap.remove(key);
-            if (surface == null) {
-                Log.e(TAG, "Invalid Id for surface texture.");
-                return null;
-            }
-            assert surface.isValid();
-            return new SurfaceWrapper(surface);
-        }
-    };
-}
+//             Pair<Integer, Integer> key = new Pair<Integer, Integer>(primaryId, secondaryId);
+//             // Note: This removes the surface and passes the ownership to the caller.
+//             Surface surface = sSurfaceTextureSurfaceMap.remove(key);
+//             if (surface == null) {
+//                 Log.e(TAG, "Invalid Id for surface texture.");
+//                 return null;
+//             }
+//             assert surface.isValid();
+//             return new SurfaceWrapper(surface);
+//         }
+//     };
+// }
 
 void ChildProcessLauncher::LogPidWarning(
     /* [in] */ Int32 pid,
@@ -588,7 +631,9 @@ Int32 ChildProcessLauncher::AllocatedConnectionsCountForTesting()
 //@VisibleForTesting
 Int32 ChildProcessLauncher::ConnectedServicesCountForTesting()
 {
-    return sServiceMap.size();
+    assert(0);
+//    return sServiceMap.size();
+    return 0;
 }
 
 void ChildProcessLauncher::NativeOnChildProcessStarted(

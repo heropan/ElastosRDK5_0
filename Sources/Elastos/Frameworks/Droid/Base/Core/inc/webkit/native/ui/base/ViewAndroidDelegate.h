@@ -9,10 +9,6 @@
 #include "elatypes.h"
 #include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "view/View.h"
-
-// package org.chromium.ui.base;
-// import android.view.View;
 
 using Elastos::Droid::View::IView;
 
@@ -63,4 +59,3 @@ public:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_UI_BASE_VIEWANDROIDDELEGATE_H_
-

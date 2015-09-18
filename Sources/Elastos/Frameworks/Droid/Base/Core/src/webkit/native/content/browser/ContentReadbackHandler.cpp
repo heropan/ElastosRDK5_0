@@ -1,4 +1,9 @@
 
+#include "webkit/native/content/browser/ContentReadbackHandler.h"
+#include "webkit/native/base/ThreadUtils.h"
+
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -12,7 +17,8 @@ ContentReadbackHandler::ContentReadbackHandler()
     : mNextReadbackId(1)
     , mNativeContentReadbackHandler(0)
 {
-    mGetBitmapRequests = new SparseArray<GetBitmapCallback>();
+    assert(0);
+//    mGetBitmapRequests = new SparseArray<GetBitmapCallback>();
 }
 
 /**
@@ -41,6 +47,8 @@ void ContentReadbackHandler::NotifyGetBitmapFinished(
     /* [in] */ Boolean success,
     /* [in] */ IBitmap* bitmap)
 {
+    assert(0);
+#if 0
     AutoPtr<GetBitmapCallback> callback = mGetBitmapRequests->Get(readbackId);
     if (callback != NULL) {
         mGetBitmapRequests->Delete(readbackId);
@@ -50,6 +58,7 @@ void ContentReadbackHandler::NotifyGetBitmapFinished(
         // readback Id is unregistered.
         assert false : "Readback finished for unregistered Id: " + readbackId;
     }
+#endif
 }
 
 /**
@@ -68,6 +77,8 @@ void ContentReadbackHandler::GetContentBitmapAsync(
     /* [in] */ ContentViewCore* view,
     /* [in] */ GetBitmapCallback* callback)
 {
+    assert(0);
+#if 0
     if (!ReadyForReadback()) {
         callback->OnFinishGetBitmap(FALSE, NULL);
         return;
@@ -85,6 +96,7 @@ void ContentReadbackHandler::GetContentBitmapAsync(
     NativeGetContentBitmap(mNativeContentReadbackHandler, readbackId, scale,
             Bitmap.Config.ARGB_8888, top, left, width,
             height, view);
+#endif
 }
 
 /**
@@ -93,22 +105,22 @@ void ContentReadbackHandler::GetContentBitmapAsync(
  * @param windowAndroid The window that hosts the compositor.
  * @param callback      The callback to be executed after readback completes.
  */
-void ContentReadbackHandler::GetCompositorBitmapAsync(
-    /* [in] */ WindowAndroid* windowAndroid,
-    /* [in] */ GetBitmapCallback* callback)
-{
-    if (!ReadyForReadback()) {
-        callback->OnFinishGetBitmap(FALSE, NULL);
-        return;
-    }
+// void ContentReadbackHandler::GetCompositorBitmapAsync(
+//     /* [in] */ WindowAndroid* windowAndroid,
+//     /* [in] */ GetBitmapCallback* callback)
+// {
+//     if (!ReadyForReadback()) {
+//         callback->OnFinishGetBitmap(FALSE, NULL);
+//         return;
+//     }
 
-    ThreadUtils::AssertOnUiThread();
+//     ThreadUtils::AssertOnUiThread();
 
-    Int32 readbackId = mNextReadbackId++;
-    mGetBitmapRequests->Put(readbackId, callback);
-    NativeGetCompositorBitmap(mNativeContentReadbackHandler, readbackId,
-            windowAndroid->GetNativePointer());
-}
+//     Int32 readbackId = mNextReadbackId++;
+//     mGetBitmapRequests->Put(readbackId, callback);
+//     NativeGetCompositorBitmap(mNativeContentReadbackHandler, readbackId,
+//             windowAndroid->GetNativePointer());
+// }
 
 Int64 ContentReadbackHandler::NativeInit()
 {
@@ -123,7 +135,7 @@ void ContentReadbackHandler::NativeGetContentBitmap(
     /* [in] */ Int64 nativeContentReadbackHandler,
     /* [in] */ Int32 readback_id,
     /* [in] */ Float scale,
-    /* [in] */ BitmapConfig* config,
+    /* [in] */ /*BitmapConfig*/Int32 config,
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float width,

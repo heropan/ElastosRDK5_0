@@ -2,12 +2,15 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BATTERYSTATUSMAMAGER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BATTERYSTATUSMAMAGER_H__
 
-// import android.content.BroadcastReceiver;
-// import android.content.Context;
-// import android.content.Intent;
-// import android.content.IntentFilter;
-// import android.os.BatteryManager;
-// import android.os.Build;
+#include "ext/frameworkext.h"
+#include "os/Build.h"
+
+using Elastos::Droid::Content::IBroadcastReceiver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Os::IBatteryManager;
+using Elastos::Droid::Os::Build;
 // import android.util.Log;
 
 // import com.google.common.annotations.VisibleForTesting;
@@ -25,7 +28,7 @@ namespace Browser {
  * Android implementation of the battery status APIs.
  */
 //@JNINamespace("content")
-class BatteryStatusManager
+class BatteryStatusManager : public Object
 {
 private:
   class InnerBroadcastReceiver

@@ -1,4 +1,6 @@
 
+#include "webkit/native/content/browser/ContentVideoViewLegacy.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -21,12 +23,17 @@ ContentVideoViewLegacy::FullScreenMediaController::FullScreenMediaController(
     : mVideoView(video)
     , mListener(listener)
 {
-    super(context);
+    assert(0);
+//    super(context);
 }
+
+CAR_INTERFACE_IMPL(ContentVideoViewLegacy::FullScreenMediaController, Object, IMediaController);
 
 //@Override
 ECode ContentVideoViewLegacy::FullScreenMediaController::Show()
 {
+    assert(0);
+#if 0
     super.show();
     if (mListener != NULL) {
         mListener->OnMediaControlsVisibilityChanged(TRUE);
@@ -35,6 +42,7 @@ ECode ContentVideoViewLegacy::FullScreenMediaController::Show()
     if (mVideoView != NULL) {
         mVideoView->SetSystemUiVisibility(IView::SYSTEM_UI_FLAG_VISIBLE);
     }
+#endif
 
     return NOERROR;
 }
@@ -50,7 +58,8 @@ ECode ContentVideoViewLegacy::FullScreenMediaController::Hide()
         mListener->OnMediaControlsVisibilityChanged(FALSE);
     }
 
-    super.hide();
+    assert(0);
+//    super.hide();
 
     return NOERROR;
 }
@@ -65,12 +74,16 @@ ContentVideoViewLegacy::InnerViewOnKeyListener::InnerViewOnKeyListener(
 {
 }
 
+CAR_INTERFACE_IMPL(ContentVideoViewLegacy::InnerViewOnKeyListener, Object, IViewOnKeyListener);
+
 ECode ContentVideoViewLegacy::InnerViewOnKeyListener::OnKey(
     /* [in] */ IView* v,
     /* [in] */ Int32 keyCode,
     /* [in] */ IKeyEvent* event,
     /* [out] */ Boolean* result)
 {
+    assert(0);
+#if 0
     VALIDATE_NOT_NULL(v);
     VALIDATE_NOT_NULL(result);
 
@@ -135,7 +148,7 @@ ECode ContentVideoViewLegacy::InnerViewOnKeyListener::OnKey(
     }
 
     *result = FALSE;
-
+#endif
     return NOERROR;
 }
 
@@ -149,11 +162,15 @@ ContentVideoViewLegacy::InnerViewOnTouchListener::InnerViewOnTouchListener(
 {
 }
 
+CAR_INTERFACE_IMPL(ContentVideoViewLegacy::InnerViewOnTouchListener, Object, IViewOnTouchListener);
+
 ECode ContentVideoViewLegacy::InnerViewOnTouchListener::OnTouch(
     /* [in] */ IView* v,
     /* [in] */ IMotionEvent* event,
     /* [out] */ Boolean* result)
 {
+    assert(0);
+#if 0
     VALIDATE_NOT_NULL(v);
     VALIDATE_NOT_NULL(event);
     VALIDATE_NOT_NULL(result);
@@ -165,7 +182,7 @@ ECode ContentVideoViewLegacy::InnerViewOnTouchListener::OnTouch(
     }
 
     *result = TRUE;
-
+#endif
     return NOERROR;
 }
 
@@ -178,6 +195,8 @@ ContentVideoViewLegacy::InnerMediaPlayerControl::InnerMediaPlayerControl(
     : mOwner(owner)
 {
 }
+
+CAR_INTERFACE_IMPL(ContentVideoViewLegacy::InnerMediaPlayerControl, Object, IMediaPlayerControl);
 
 ECode ContentVideoViewLegacy::InnerMediaPlayerControl::Start()
 {
@@ -270,18 +289,21 @@ ContentVideoViewLegacy::ContentVideoViewLegacy(
     /* [in] */ IContext* context,
     /* [in] */ Int64 nativeContentVideoView,
     /* [in] */ ContentVideoViewClient* client)
-    : mCanPause(FALSE)
+    : ContentVideoView(context, nativeContentVideoView, client)
+    , mCanPause(FALSE)
     , mCanSeekBackward(FALSE)
     , mCanSeekForward(FALSE)
 {
-    super(context, nativeContentVideoView, client);
-    SetBackgroundColor(IColor::BLACK);
+    assert(0);
+//    SetBackgroundColor(IColor::BLACK);
     mCurrentBufferPercentage = 0;
 }
 
 //@Override
 void ContentVideoViewLegacy::ShowContentVideoView()
 {
+    assert(0);
+#if 0
     AutoPtr<ISurfaceView> surfaceView = GetSurfaceView();
     surfaceView->SetZOrderOnTop(TRUE);
     AutoPtr<IViewOnKeyListener> listener = new InnerViewOnKeyListener(this);
@@ -292,14 +314,15 @@ void ContentVideoViewLegacy::ShowContentVideoView()
     surfaceView->SetFocusable(TRUE);
     surfaceView->SetFocusableInTouchMode(TRUE);
     surfaceView->RequestFocus();
-    super.showContentVideoView();
+    ContentVideoView::ShowContentVideoView();
+#endif
 }
 
 //@Override
 void ContentVideoViewLegacy::OnMediaPlayerError(
     /* [in] */ Int32 errorType)
 {
-    super.onMediaPlayerError(errorType);
+    ContentVideoView::OnMediaPlayerError(errorType);
 
     if (errorType == MEDIA_ERROR_INVALID_CODE) {
         return;
@@ -314,7 +337,7 @@ void ContentVideoViewLegacy::OnMediaPlayerError(
 void ContentVideoViewLegacy::OnBufferingUpdate(
     /* [in] */ Int32 percent)
 {
-    super.onBufferingUpdate(percent);
+    ContentVideoView::OnBufferingUpdate(percent);
     mCurrentBufferPercentage = percent;
 }
 
@@ -327,7 +350,9 @@ void ContentVideoViewLegacy::OnUpdateMediaMetadata(
     /* [in] */ Boolean canSeekBack,
     /* [in] */ Boolean canSeekForward)
 {
-    super.onUpdateMediaMetadata(videoWidth, videoHeight, duration,
+    assert(0);
+#if 0
+    ContentVideoView::OnUpdateMediaMetadata(videoWidth, videoHeight, duration,
             canPause, canSeekBack, canSeekForward);
     mCanPause = canPause;
     mCanSeekBackward = canSeekBack;
@@ -343,28 +368,36 @@ void ContentVideoViewLegacy::OnUpdateMediaMetadata(
     else {
         mMediaController->Show(0);
     }
+#endif
 }
 
 //@Override
-void ContentVideoViewLegacy::SurfaceChanged(
+ECode ContentVideoViewLegacy::SurfaceChanged(
     /* [in] */ ISurfaceHolder* holder,
     /* [in] */ Int32 format,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    super.surfaceChanged(holder, format, width, height);
+    assert(0);
+#if 0
+    ContentVideoView::SurfaceChanged(holder, format, width, height);
     AutoPtr<ISurfaceView> surfaceView = GetSurfaceView();
     surfaceView->SetFocusable(TRUE);
     surfaceView->SetFocusableInTouchMode(TRUE);
     if (IsInPlaybackState() && mMediaController != NULL) {
         mMediaController->Show();
     }
+#endif
+
+    return NOERROR;
 }
 
 //@Override
 void ContentVideoViewLegacy::OpenVideo()
 {
-    super.openVideo();
+    assert(0);
+#if 0
+    ContentVideoView::OpenVideo();
 
     mCurrentBufferPercentage = 0;
 
@@ -377,12 +410,13 @@ void ContentVideoViewLegacy::OpenVideo()
     mMediaController->SetMediaPlayer(controller);
     mMediaController->SetAnchorView(GetSurfaceView());
     mMediaController->SetEnabled(FALSE);
+#endif
 }
 
 //@Override
 void ContentVideoViewLegacy::OnCompletion()
 {
-    super.onCompletion();
+    ContentVideoView::OnCompletion();
     if (mMediaController != NULL) {
         mMediaController->Hide();
     }
@@ -401,7 +435,9 @@ Boolean ContentVideoViewLegacy::OnTrackballEvent(
 
 void ContentVideoViewLegacy::ToggleMediaControlsVisiblity()
 {
-    if (mMediaController->IsShowing()) {
+    Boolean isShowing = FALSE;
+    mMediaController->IsShowing(&isShowing);
+    if (isShowing) {
         mMediaController->Hide();
     }
     else {
@@ -413,12 +449,16 @@ void ContentVideoViewLegacy::ToggleMediaControlsVisiblity()
 void ContentVideoViewLegacy::DestroyContentVideoView(
     /* [in] */ Boolean nativeViewDestroyed)
 {
+    assert(0);
+#if 0
     if (mMediaController != NULL) {
         mMediaController->SetEnabled(FALSE);
         mMediaController->Hide();
         mMediaController = NULL;
     }
-    super.destroyContentVideoView(nativeViewDestroyed);
+
+    ContentVideoView::DestroyContentVideoView(nativeViewDestroyed);
+#endif
 }
 
 //@Override

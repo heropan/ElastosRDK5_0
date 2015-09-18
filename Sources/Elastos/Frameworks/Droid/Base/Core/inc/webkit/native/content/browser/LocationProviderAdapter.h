@@ -6,12 +6,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOCATIONPROVIDERADAPTER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOCATIONPROVIDERADAPTER_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "webkit/native/base/ThreadUtils.h"
-#include "elastos/utility/concurrent/FutureTask.h"
 
 // package org.chromium.content.browser;
 // import android.content.Context;

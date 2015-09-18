@@ -6,20 +6,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SPEECHRECOGNITION_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SPEECHRECOGNITION_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/CComponentName.h"
-#include "content/Context.h"
-#include "content/Intent.h"
-#include "content/pm/PackageManager.h"
-#include "content/pm/CResolveInfo.h"
-#include "content/pm/CServiceInfo.h"
-#include "os/CBundle.h"
-#include "speech/RecognitionService.h"
-#include "speech/RecognizerIntent.h"
-#include "speech/SpeechRecognizer.h"
-#include "elastos/utility/CArrayList.h"
 
 // package org.chromium.content.browser;
 // import android.content.ComponentName;
@@ -208,4 +195,3 @@ private:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SPEECHRECOGNITION_H_
-

@@ -2,8 +2,14 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BROWSERSTARTUPCONTROLLER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BROWSERSTARTUPCONTROLLER_H__
 
-// import android.content.Context;
-// import android.os.Handler;
+#include "ext/frameworkext.h"
+#include "webkit/native/content/browser/ChildProcessLauncher.h"
+#include "os/Runnable.h"
+
+using Elastos::Utility::IList;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::Os::IHandler;
 // import android.util.Log;
 
 // import com.google.common.annotations.VisibleForTesting;
@@ -39,7 +45,7 @@ namespace Browser {
  * This is a singleton, and stores a reference to the application context.
  */
 //@JNINamespace("content")
-class BrowserStartupController
+class BrowserStartupController : public Object
 {
 public:
     /**
@@ -56,14 +62,15 @@ public:
 
 private:
     class EnqueueCallbackExecutionRunnable
-        : public Object
-        , public IRunnable
+        : public Runnable
     {
     public:
         EnqueueCallbackExecutionRunnable(
             /* [in] */ BrowserStartupController* owner,
             /* [in] */ const Int32 startupFailure,
             /* [in] */ const Boolean alreadyStarted);
+
+        CAR_INTERFACE_DECL()
 
         CARAPI Run();
 
@@ -74,13 +81,14 @@ private:
     };
 
     class PostStartupCompletedRunnable
-        : public Object
-        , public IRunnable
+        : public Runnable
     {
     public:
         PostStartupCompletedRunnable(
             /* [in] */ BrowserStartupController* owner,
             /* [in] */ StartupCallback* callback);
+
+        CAR_INTERFACE_DECL()
 
         CARAPI Run();
 
@@ -215,7 +223,8 @@ private:
 
     // A list of callbacks that should be called when the async startup of the browser process is
     // complete.
-    const List<StartupCallback> mAsyncStartupCallbacks;
+    //const List<StartupCallback> mAsyncStartupCallbacks;
+    AutoPtr<IList> mAsyncStartupCallbacks;
 
     // The context is set on creation, but the reference is cleared after the browser process
     // initialization has been started, since it is not needed anymore. This is to ensure the
