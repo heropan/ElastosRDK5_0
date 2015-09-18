@@ -23,6 +23,10 @@ SOURCES += FileTest.cpp
 SOURCES += FilterInputStreamNullSourceTest.cpp
 SOURCES += InputStreamReaderTest.cpp
 SOURCES += InterruptedStreamTest.cpp
+SOURCES += ObjectOutputStreamTest.cpp
+SOURCES += OldAndroidBufferedInputStreamTest.cpp
+SOURCES += OldAndroidBufferedOutputStreamTest.cpp
+SOURCES += OldAndroidBufferedReaderTest.cpp
 
 SOURCES += MyThread.car
 
