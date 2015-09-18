@@ -2,11 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICHEADERVALUEPARSER_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICHEADERVALUEPARSER_H_
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Org::Apache::Http::IHeaderElement;
-using Org::Apache::Http::IParserCursor;
 using Org::Apache::Http::Utility::ICharArrayBuffer;
 
 namespace Org {
@@ -32,7 +30,7 @@ namespace Message {
  * @since 4.0
  */
 class BasicHeaderValueParser
-    , public Object
+    : public Object
     , public IBasicHeaderValueParser
     , public IHeaderValueParser
 {
@@ -50,7 +48,7 @@ public:
      * @return  array holding the header elements, never <code>null</code>
      */
     static CARAPI ParseElements(
-        /* [in] */ cosnt String& value,
+        /* [in] */ const String& value,
         /* [in] */ IHeaderValueParser* parser,
         /* [out] */ ArrayOf<IHeaderElement*>** elements);
 
@@ -105,7 +103,7 @@ public:
      * @return  the parsed header element
      */
     static CARAPI ParseHeaderElement(
-        /* [in] */ cosnt String& value,
+        /* [in] */ const String& value,
         /* [in] */ IHeaderValueParser* parser,
         /* [out] */ IHeaderElement** element);
 
@@ -136,7 +134,7 @@ public:
      * @return  array holding the parameters, never <code>null</code>
      */
     static CARAPI ParseParameters(
-        /* [in] */ cosnt String& value,
+        /* [in] */ const String& value,
         /* [in] */ IHeaderValueParser* parser,
         /* [out] */ ArrayOf<INameValuePair*>** elements);
 
@@ -236,7 +234,7 @@ public:
      * @return  the parsed name-value pair
      */
     static CARAPI ParseNameValuePair(
-        /* [in] */ cosnt String& value,
+        /* [in] */ const String& value,
         /* [in] */ IHeaderValueParser* parser,
         /* [out] */ INameValuePair* pair);
 
@@ -269,8 +267,8 @@ protected:
      * @return  a header element representing the argument
      */
     CARAPI CreateHeaderElement(
-        /* [in] */ cosnt String& name,
-        /* [in] */ cosnt String& value,
+        /* [in] */ const String& name,
+        /* [in] */ const String& value,
         /* [in] */ ArrayOf<INameValuePair*>* params,
         /* [out] */ IHeaderElement** element);
 
@@ -284,8 +282,8 @@ protected:
      * @return  a name-value pair representing the arguments
      */
     CARAPI CreateNameValuePair(
-        /* [in] */ cosnt String& name,
-        /* [in] */ cosnt String& value,
+        /* [in] */ const String& name,
+        /* [in] */ const String& value,
         /* [out] */ INameValuePair** pair);
 
 private:

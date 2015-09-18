@@ -1,6 +1,9 @@
 
 #include "DigestSchemeFactory.h"
-#include "BasicScheme.h"
+#include "DigestScheme.h"
+
+using Org::Apache::Http::Auth::EIID_IAuthSchemeFactory;
+using Org::Apache::Http::Auth::EIID_IAuthScheme;
 
 namespace Org {
 namespace Apache {

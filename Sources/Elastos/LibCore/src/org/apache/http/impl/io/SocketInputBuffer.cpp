@@ -10,6 +10,9 @@ namespace Http {
 namespace Impl {
 namespace IO {
 
+extern "C" const InterfaceID EIID_SocketInputBuffer =
+        { 0x3a5b9442, 0x2015, 0x4783, { 0x9d, 0xf0, 0xd4, 0x79, 0x62, 0x39, 0x2c, 0xe5 } };
+
 SocketInputBuffer::SocketInputBuffer(
     /* [in] */ ISocket* socket,
     /* [in] */ Int32 buffersize,

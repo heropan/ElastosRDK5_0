@@ -1,11 +1,12 @@
 
 #include "AbstractHttpClientConnection.h"
 #include "DefaultHttpResponseFactory.h"
-#include "entity/LaxContentLengthStrategy.h"
-#include "entity/StrictContentLengthStrategy.h"
-#include "io/HttpResponseParser.h"
-#include "io/HttpRequestWriter.h"
-#include <elastos/Logger.h>
+#include "SocketInputBuffer.h"
+#include "LaxContentLengthStrategy.h"
+#include "StrictContentLengthStrategy.h"
+#include "HttpResponseParser.h"
+#include "HttpRequestWriter.h"
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpMessage;
@@ -14,6 +15,8 @@ using Org::Apache::Http::Impl::Entity::LaxContentLengthStrategy;
 using Org::Apache::Http::Impl::Entity::StrictContentLengthStrategy;
 using Org::Apache::Http::Impl::IO::HttpResponseParser;
 using Org::Apache::Http::Impl::IO::HttpRequestWriter;
+using Org::Apache::Http::Impl::IO::SocketInputBuffer;
+using Org::Apache::Http::Impl::IO::EIID_SocketInputBuffer;
 using Org::Apache::Http::IO::IHttpTransportMetrics;
 
 namespace Org {
@@ -191,7 +194,7 @@ ECode AbstractHttpClientConnection::IsStale(
     // try {
     // BEGIN android-added
     //     don't reuse connections when the socket input stream is exhausted
-    AutoPtr<SocketInputBuffer> buffer = mInbuffer->Probe(EIID_SocketInputBuffer);
+    AutoPtr<SocketInputBuffer> buffer = reinterpret_cast<SocketInputBuffer*>(mInbuffer->Probe(EIID_SocketInputBuffer));
     if (buffer != NULL) {
         return buffer->IsStale(isStale);
     }

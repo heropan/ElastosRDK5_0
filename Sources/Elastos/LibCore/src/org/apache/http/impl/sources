@@ -2,9 +2,21 @@
 TARGET_NAME= impl
 TARGET_TYPE= lib
 
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/http/impl
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/http/params
-INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/http/message
+C_DEFINES += -DELASTOS_CORELIBRARY
+
+include $(MAKEDIR)/../../../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += ../../../../corelibrary
+INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/core;
+INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/utility;
+INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/utility/logging;
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http;
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/impl;
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/impl/entity;
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/impl/io;
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/params;
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/message;
 
 SOURCES = AbstractHttpClientConnection.cpp
 SOURCES += AbstractHttpServerConnection.cpp

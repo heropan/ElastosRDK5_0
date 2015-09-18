@@ -2,10 +2,11 @@
 #include "NTLMScheme.h"
 #include "CCharArrayBuffer.h"
 #include "CBufferedHeader.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Auth::IAUTH;
+using Org::Apache::Http::Auth::INTCredentials;
 using Org::Apache::Http::Message::CBufferedHeader;
 using Org::Apache::Http::Utility::ICharArrayBuffer;
 using Org::Apache::Http::Utility::CCharArrayBuffer;
@@ -44,7 +45,7 @@ ECode NTLMScheme::GetParameter(
 {
     VALIDATE_NOT_NULL(param)
     // String parameters not supported
-    *param = String(NULL)
+    *param = String(NULL);
     return NOERROR;
 }
 
@@ -118,9 +119,9 @@ ECode NTLMScheme::Authenticate(
     else if (mState == MSG_TYPE2_RECEVIED) {
         String userName, password, domain, station;
         ntcredentials->GetUserName(&userName);
-        ntcredentials->GetPassword(&password);
+        ICredentials::Probe(ntcredentials)->GetPassword(&password);
         ntcredentials->GetDomain(&domain);
-        ntcredentials->GetWorkStation(&station);
+        ntcredentials->GetWorkstation(&station);
         mEngine->GenerateType3Msg(userName, password, domain, station,
                 mChallenge, &response);
         mState = MSG_TYPE3_GENERATED;
@@ -131,8 +132,7 @@ ECode NTLMScheme::Authenticate(
     }
     AutoPtr<ICharArrayBuffer> buffer;
     CCharArrayBuffer::New(32, (ICharArrayBuffer**)&buffer);
-    Boolean isProxy;
-    if (IsProxy(&isProxy), isProxy) {
+    if (IsProxy()) {
         buffer->Append(IAUTH::PROXY_AUTH_RESP);
     }
     else {

@@ -2,13 +2,11 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_HTTPCONNECTIONMETRICSIMPL_H__
 #define __ORG_APACHE_HTTP_IMPL_HTTPCONNECTIONMETRICSIMPL_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Utility::IHashMap;
 using Org::Apache::Http::IHttpConnectionMetrics;
-using Org::Apache::Http::IHttpTransportMetrics;
+using Org::Apache::Http::IO::IHttpTransportMetrics;
 
 namespace Org {
 namespace Apache {

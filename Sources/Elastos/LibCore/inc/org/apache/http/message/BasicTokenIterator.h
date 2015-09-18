@@ -2,8 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICTOKENITERATOR_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICTOKENITERATOR_H_
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Utility::IIterator;
 using Org::Apache::Http::ITokenIterator;
@@ -23,7 +22,7 @@ namespace Message {
  * @version $Revision: 602520 $
  */
 class BasicTokenIterator
-    , public Object
+    : public Object
     , public IBasicTokenIterator
     , public ITokenIterator
     , public IIterator

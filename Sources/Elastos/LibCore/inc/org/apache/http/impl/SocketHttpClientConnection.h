@@ -70,13 +70,13 @@ protected:
     CARAPI CreateSessionInputBuffer(
         /* [in] */ ISocket* socket,
         /* [in] */ Int32 buffersize,
-        /* [in] */ IHttpParams* params
+        /* [in] */ IHttpParams* params,
         /* [out] */ ISessionInputBuffer** inputBuffer);
 
     CARAPI CreateSessionOutputBuffer(
         /* [in] */ ISocket* socket,
         /* [in] */ Int32 buffersize,
-        /* [in] */ IHttpParams* params
+        /* [in] */ IHttpParams* params,
         /* [out] */ ISessionOutputBuffer** outputBuffer);
 
     CARAPI Bind(

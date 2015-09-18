@@ -1,13 +1,15 @@
 
 #include "DefaultConnectionReuseStrategy.h"
+#include "CHttpVersion.h"
 #include "CBasicTokenIterator.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpEntity;
-using Org::Apache::Http::IHttpVersion;
+using Org::Apache::Http::CHttpVersion;
 using Org::Apache::Http::IProtocolVersion;
 using Org::Apache::Http::IStatusLine;
+using Org::Apache::Http::IHttpMessage;
 using Org::Apache::Http::Message::CBasicTokenIterator;
 using Org::Apache::Http::Protocol::IHTTP;
 using Org::Apache::Http::Protocol::IExecutionContext;
@@ -38,8 +40,8 @@ ECode DefaultConnectionReuseStrategy::KeepAlive(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<IObject> o;
-    context->GetAttribute(IExecutionContext::HTTP_CONNECTION, (IObject**)&o);
+    AutoPtr<IInterface> o;
+    context->GetAttribute(IExecutionContext::HTTP_CONNECTION, (IInterface**)&o);
     AutoPtr<IHttpConnection> conn = IHttpConnection::Probe(o);
 
     Boolean isOpen;
@@ -58,11 +60,11 @@ ECode DefaultConnectionReuseStrategy::KeepAlive(
     AutoPtr<IProtocolVersion> ver;
     statusLine->GetProtocolVersion((IProtocolVersion**)&ver);
     if (entity != NULL) {
-        Int32 len;
+        Int64 len;
         if (entity->GetContentLength(&len), len < 0) {
             Boolean isChunked, lessEquals;
             if ((entity->IsChunked(&isChunked), !isChunked) ||
-                    (ver->LessEquals(IHttpVersion::HTTP_1_0, &lessEquals), lessEquals)) {
+                    (ver->LessEquals(IProtocolVersion::Probe(CHttpVersion::HTTP_1_0), &lessEquals), lessEquals)) {
                 // if the content length is not known and is not chunk
                 // encoded, the connection cannot be reused
                 *result = FALSE;
@@ -75,11 +77,11 @@ ECode DefaultConnectionReuseStrategy::KeepAlive(
     // the "Proxy-Connection" header. The latter is an unspecified and
     // broken but unfortunately common extension of HTTP.
     AutoPtr<IHeaderIterator> hit;
-    response->HeaderIterator(IHTTP::CONN_DIRECTIVE, (IHeaderIterator**)&hit);
+    IHttpMessage::Probe(response)->GetHeaderIterator(IHTTP::CONN_DIRECTIVE, (IHeaderIterator**)&hit);
     Boolean hasNext;
     if (hit->HasNext(&hasNext), !hasNext) {
         hit = NULL;
-        response->HeaderIterator(String("Proxy-Connection"), (IHeaderIterator**)&hit);
+        IHttpMessage::Probe(response)->GetHeaderIterator(String("Proxy-Connection"), (IHeaderIterator**)&hit);
     }
 
     // Experimental usage of the "Connection" header in HTTP/1.0 is
@@ -137,7 +139,7 @@ ECode DefaultConnectionReuseStrategy::KeepAlive(
 
     // default since HTTP/1.1 is persistent, before it was non-persistent
     Boolean lessEquals;
-    ver->LessEquals(IHttpVersion::HTTP_1_0, &lessEquals);
+    ver->LessEquals(IProtocolVersion::Probe(CHttpVersion::HTTP_1_0), &lessEquals);
     *result = !lessEquals;
     return NOERROR;
 }

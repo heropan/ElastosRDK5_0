@@ -64,7 +64,7 @@ public:
      *                  <code>null</code>
      */
     CARAPI constructor(
-        /* [in] */ IProtocolVersion ver,
+        /* [in] */ IProtocolVersion* ver,
         /* [in] */ Int32 code,
         /* [in] */ const String& reason);
 

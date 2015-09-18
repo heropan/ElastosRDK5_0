@@ -2,7 +2,7 @@
 #include "AuthSchemeBase.h"
 #include "HTTP.h"
 #include "CCharArrayBuffer.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Auth::IAUTH;
@@ -61,7 +61,7 @@ ECode AuthSchemeBase::ProcessChallenge(
     }
     Int32 len;
     buffer->GetLength(&len);
-    Char c;
+    Char32 c;
     buffer->CharAt(pos, &c);
     while (pos < len && HTTP::IsWhitespace(c)) {
         pos++;

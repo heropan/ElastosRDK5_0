@@ -2,8 +2,12 @@
 #ifndef __ORG_APACHE_HTTP_UTILITY_ENCODINGUTILS_H_
 #define __ORG_APACHE_HTTP_UTILITY_ENCODINGUTILS_H_
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#ifdef ELASTOS_CORELIBRARY
+#include "Elastos.CoreLibrary_server.h"
+#else
+#include "Elastos.CoreLibrary.h"
+#endif
+#include <elastos/coredef.h>
 
 namespace Org {
 namespace Apache {

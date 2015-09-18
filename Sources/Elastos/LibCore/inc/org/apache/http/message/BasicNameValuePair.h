@@ -82,6 +82,7 @@ namespace Message {
  */
 class BasicNameValuePair
     : public Object
+    , public IBasicNameValuePair
     , public INameValuePair
     , public ICloneable
 {

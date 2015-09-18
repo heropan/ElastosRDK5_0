@@ -2,18 +2,25 @@
 #include "AbstractAuthenticationHandler.h"
 #include "HTTP.h"
 #include "CCharArrayBuffer.h"
-#include <elastos/Logger.h>
+#include "CString.h"
+#include "CHashMap.h"
+#include "CArrayList.h"
+#include "Logger.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::IHashMap;
 using Elastos::Utility::CHashMap;
-using Elastos::Utility::CList;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::EIID_IList;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::IHttpMessage;
 using Org::Apache::Http::IFormattedHeader;
 using Org::Apache::Http::Auth::IAuthSchemeRegistry;
+using Org::Apache::Http::Client::EIID_IAuthenticationHandler;
 using Org::Apache::Http::Client::Protocol::IClientContext;
+using Org::Apache::Http::Params::IHttpParams;
 using Org::Apache::Http::Protocol::HTTP;
 using Org::Apache::Http::Utility::ICharArrayBuffer;
 using Org::Apache::Http::Utility::CCharArrayBuffer;
@@ -26,8 +33,8 @@ namespace Client {
 
 static AutoPtr<IList> InitDefaultSchemePriority()
 {
-    AutoPtr<CList> list;
-    CList::NewByFriend((CList**)&list);
+    AutoPtr<CArrayList> list;
+    CArrayList::NewByFriend((CArrayList**)&list);
     AutoPtr<CString> ntlm, digest, basic;
     CString::NewByFriend(String("ntlm"), (CString**)&ntlm);
     CString::NewByFriend(String("digest"), (CString**)&digest);
@@ -35,11 +42,11 @@ static AutoPtr<IList> InitDefaultSchemePriority()
     list->Add(ntlm->Probe(EIID_IInterface));
     list->Add(digest->Probe(EIID_IInterface));
     list->Add(basic->Probe(EIID_IInterface));
-    return (IList*)list.Get();
+    return (IList*)list->Probe(EIID_IList);
 }
 const AutoPtr<IList> AbstractAuthenticationHandler::DEFAULT_SCHEME_PRIORITY = InitDefaultSchemePriority();
 
-CAR_INTERFACE_DECL(AbstractAuthenticationHandler, Object, IAuthenticationHandler)
+CAR_INTERFACE_IMPL(AbstractAuthenticationHandler, Object, IAuthenticationHandler)
 
 ECode AbstractAuthenticationHandler::ParseChallenges(
     /* [in] */ ArrayOf<IHeader*>* headers,
@@ -51,7 +58,7 @@ ECode AbstractAuthenticationHandler::ParseChallenges(
     AutoPtr<IHashMap> hm;
     CHashMap::New(headers->GetLength(), (IHashMap**)&hm);
     AutoPtr<IMap> map = IMap::Probe(hm);
-    for (Int32 i = 0; i < headers->GetLength(), ++i) {
+    for (Int32 i = 0; i < headers->GetLength(); ++i) {
         AutoPtr<IHeader> header = (*headers)[i];
         AutoPtr<ICharArrayBuffer> buffer;
         Int32 pos;
@@ -73,18 +80,18 @@ ECode AbstractAuthenticationHandler::ParseChallenges(
         }
         Int32 len;
         Char32 c;
-        while ((buffer->GetLength(&len), pos < len) && (buffer->GetCharAt(pos, &c), HTTP::IsWhitespace(c))) {
+        while ((buffer->GetLength(&len), pos < len) && (buffer->CharAt(pos, &c), HTTP::IsWhitespace(c))) {
             pos++;
         }
         Int32 beginIndex = pos;
-        while ((buffer->GetLength(&len), pos < len) && (buffer->GetCharAt(pos, &c), !HTTP::IsWhitespace(c))) {
+        while ((buffer->GetLength(&len), pos < len) && (buffer->CharAt(pos, &c), !HTTP::IsWhitespace(c))) {
             pos++;
         }
         Int32 endIndex = pos;
         String s;
         buffer->Substring(beginIndex, endIndex, &s);
         AutoPtr<ICharSequence> cs;
-        CString::New(s.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+        CString::New(s.ToLowerCase(/*ILocale::ENGLISH*/), (ICharSequence**)&cs);
         map->Put(cs, header);
     }
     *challenges = map;
@@ -92,7 +99,7 @@ ECode AbstractAuthenticationHandler::ParseChallenges(
     return NOERROR;
 }
 
-AutoPtr< List<String> > AbstractAuthenticationHandler::GetAuthPreferences()
+AutoPtr<IList> AbstractAuthenticationHandler::GetAuthPreferences()
 {
     return DEFAULT_SCHEME_PRIORITY;
 }
@@ -106,8 +113,8 @@ ECode AbstractAuthenticationHandler::SelectScheme(
     VALIDATE_NOT_NULL(scheme)
     *scheme = NULL;
 
-    AutoPtr<IObject> o;
-    context->GetAttribute(IClientContext::AUTHSCHEME_REGISTRY, (IObject**)&o);
+    AutoPtr<IInterface> o;
+    context->GetAttribute(IClientContext::AUTHSCHEME_REGISTRY, (IInterface**)&o);
     AutoPtr<IAuthSchemeRegistry> registry = IAuthSchemeRegistry::Probe(o);
     if (registry == NULL) {
         Logger::E("AbstractAuthenticationHandler", "AuthScheme registry not set in HTTP context");
@@ -115,7 +122,7 @@ ECode AbstractAuthenticationHandler::SelectScheme(
     }
 
     o = NULL;
-    context->GetAttribute(IClientContext::AUTH_SCHEME_PREF, (IObject**)&o);
+    context->GetAttribute(IClientContext::AUTH_SCHEME_PREF, (IInterface**)&o);
     AutoPtr<IList> authPrefs = IList::Probe(o);
     if (authPrefs == NULL) {
         authPrefs = GetAuthPreferences();
@@ -131,12 +138,12 @@ ECode AbstractAuthenticationHandler::SelectScheme(
     authPrefs->GetSize(&size);
     for (Int32 i = 0; i < size; i++) {
         AutoPtr<IInterface> value;
-        authPrefs->Get(i, &value);
+        authPrefs->Get(i, (IInterface**)&value);
         AutoPtr<ICharSequence> cs = ICharSequence::Probe(value);
         String id;
         cs->ToString(&id);
         AutoPtr<ICharSequence> idcs;
-        CString::New(id.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&idcs);
+        CString::New(id.ToLowerCase(/*ILocale::ENGLISH*/), (ICharSequence**)&idcs);
         value = NULL;
         challenges->Get(idcs, (IInterface**)&value);
         AutoPtr<IHeader> challenge = IHeader::Probe(value);
@@ -147,7 +154,7 @@ ECode AbstractAuthenticationHandler::SelectScheme(
             // }
             // try {
             AutoPtr<IHttpParams> params;
-            response->GetParams((IHttpParams**)&params);
+            IHttpMessage::Probe(response)->GetParams((IHttpParams**)&params);
             authScheme = NULL;
             ECode ec = registry->GetAuthScheme(id, params, (IAuthScheme**)&authScheme);
             if (ec == (ECode)E_ILLEGAL_STATE_EXCEPTION) {
@@ -171,7 +178,7 @@ ECode AbstractAuthenticationHandler::SelectScheme(
     }
     if (authScheme == NULL) {
         // If none selected, something is wrong
-        Logger::E("AbstractAuthenticationHandler", "Unable to respond to any of these challenges: %p", challenges.Get());
+        Logger::E("AbstractAuthenticationHandler", "Unable to respond to any of these challenges: %p", challenges);
         return E_AUTHENTICATION_EXCEPTION;
     }
     *scheme = authScheme;

@@ -2,6 +2,9 @@
 #include "BasicSchemeFactory.h"
 #include "BasicScheme.h"
 
+using Org::Apache::Http::Auth::EIID_IAuthSchemeFactory;
+using Org::Apache::Http::Auth::EIID_IAuthScheme;
+
 namespace Org {
 namespace Apache {
 namespace Http {

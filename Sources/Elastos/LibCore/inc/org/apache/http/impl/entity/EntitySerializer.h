@@ -2,10 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_ENTITY_EntitySERIALIZER_H__
 #define __ORG_APACHE_HTTP_IMPL_ENTITY_EntitySERIALIZER_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::IO::IOutputStream;
 using Org::Apache::Http::IHttpMessage;
 using Org::Apache::Http::IHttpEntity;

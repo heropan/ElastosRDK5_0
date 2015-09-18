@@ -2,11 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_IO_ABSTRACTSESSIONINPUTBUFFER_H__
 #define __ORG_APACHE_HTTP_IMPL_IO_ABSTRACTSESSIONINPUTBUFFER_H__
 
-#include <Org.Apache.Http_server.h>
 #include "HttpTransportMetricsImpl.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::IO::IInputStream;
 using Org::Apache::Http::IO::ISessionInputBuffer;
 using Org::Apache::Http::IO::IHttpTransportMetrics;
@@ -72,7 +70,7 @@ protected:
 
     CARAPI LineFromReadBuffer(
         /* [in] */ ICharArrayBuffer* charbuffer,
-        /* [in] */ Int32 pos
+        /* [in] */ Int32 pos,
         /* [out] */ Int32* len);
 
 private:

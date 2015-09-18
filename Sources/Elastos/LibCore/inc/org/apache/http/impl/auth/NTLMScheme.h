@@ -2,12 +2,11 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_AUTH_NTLMSCHEME_H__
 #define __ORG_APACHE_HTTP_IMPL_AUTH_NTLMSCHEME_H__
 
-#include <Org.Apache.Http_server.h>
 #include "AuthSchemeBase.h"
-#include "NTLMEngine.h"
 
 using Elastos::Utility::IMap;
 using Org::Apache::Http::IHeader;
+using Org::Apache::Http::Auth::ICredentials;
 using Org::Apache::Http::Utility::ICharArrayBuffer;
 
 namespace Org {

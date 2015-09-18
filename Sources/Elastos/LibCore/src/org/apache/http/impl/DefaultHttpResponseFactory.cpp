@@ -3,7 +3,8 @@
 #include "EnglishReasonPhraseCatalog.h"
 #include "CBasicStatusLine.h"
 #include "CBasicHttpResponse.h"
-#include <elastos/Logger.h>
+#include "CLocaleHelper.h"
+#include "Logger.h"
 
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
@@ -11,6 +12,7 @@ using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IStatusLine;
 using Org::Apache::Http::Message::CBasicStatusLine;
 using Org::Apache::Http::Message::CBasicHttpResponse;
+
 namespace Org {
 namespace Apache {
 namespace Http {
@@ -37,6 +39,7 @@ ECode DefaultHttpResponseFactory::Init(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mReasonCatalog = catalog;
+    return NOERROR;
 }
 
 ECode DefaultHttpResponseFactory::NewHttpResponse(
@@ -57,7 +60,7 @@ ECode DefaultHttpResponseFactory::NewHttpResponse(
     mReasonCatalog->GetReason(status, loc, &reason);
     AutoPtr<IStatusLine> statusline;
     CBasicStatusLine::New(ver, status, reason, (IStatusLine**)&statusline);
-    return CBasicHttpResponse::New(statusline, reasonCatalog, loc, response);
+    return CBasicHttpResponse::New(statusline, mReasonCatalog, loc, response);
 }
 
 ECode DefaultHttpResponseFactory::NewHttpResponse(
@@ -73,7 +76,7 @@ ECode DefaultHttpResponseFactory::NewHttpResponse(
     }
     AutoPtr<ILocale> loc;
     DetermineLocale(context, (ILocale**)&loc);
-    return CBasicHttpResponse::New(statusline, reasonCatalog, loc, response);
+    return CBasicHttpResponse::New(statusline, mReasonCatalog, loc, response);
 }
 
 ECode DefaultHttpResponseFactory::DetermineLocale(
@@ -82,7 +85,7 @@ ECode DefaultHttpResponseFactory::DetermineLocale(
 {
     VALIDATE_NOT_NULL(locale)
     AutoPtr<ILocaleHelper> helper;
-    CLocaleHelper::AcquireSingleton((ILocaleHelper));
+    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&helper);
     return helper->GetDefault(locale);
 }
 

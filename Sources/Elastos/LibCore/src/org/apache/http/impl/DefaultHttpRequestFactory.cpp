@@ -2,12 +2,12 @@
 #include "DefaultHttpRequestFactory.h"
 #include "CBasicHttpRequest.h"
 #include "CBasicHttpEntityEnclosingRequest.h"
-#include <elastos/Logger.h>
-#include <elastos/Core/StringBuilder.h>
+#include "Logger.h"
+#include "StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;
-using Org::Apache::Http::Message::IHttpEntityEnclosingRequest;
+using Org::Apache::Http::IHttpEntityEnclosingRequest;
 using Org::Apache::Http::Message::CBasicHttpEntityEnclosingRequest;
 using Org::Apache::Http::Message::CBasicHttpRequest;
 
@@ -42,7 +42,7 @@ static AutoPtr< ArrayOf<String> > InitSpecialMethods()
     (*array)[3] = String("TRACE");
     return array;
 }
-static const AutoPtr< ArrayOf<String> > RFC2616_SPECIAL_METHODS = InitSpecialMethods;
+static const AutoPtr< ArrayOf<String> > RFC2616_SPECIAL_METHODS = InitSpecialMethods();
 
 DefaultHttpRequestFactory::DefaultHttpRequestFactory()
 {}

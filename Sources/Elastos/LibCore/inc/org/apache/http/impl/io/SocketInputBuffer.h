@@ -13,6 +13,8 @@ namespace Http {
 namespace Impl {
 namespace IO {
 
+extern "C" const InterfaceID EIID_SocketInputBuffer;
+
 class SocketInputBuffer : public AbstractSessionInputBuffer
 {
 public:

@@ -2,11 +2,10 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_DEFAULTHTTPRESPONSEFACTORY_H__
 #define __ORG_APACHE_HTTP_IMPL_DEFAULTHTTPRESPONSEFACTORY_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
-using Elastos::Utility::Locale::IReasonPhraseCatalog;
+using Elastos::Utility::ILocale;
+using Org::Apache::Http::IReasonPhraseCatalog;
 using Org::Apache::Http::IHttpResponseFactory;
 using Org::Apache::Http::IHttpResponse;
 using Org::Apache::Http::IProtocolVersion;

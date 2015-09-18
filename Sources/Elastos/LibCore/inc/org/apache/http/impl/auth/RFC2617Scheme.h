@@ -2,12 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_AUTH_FRC2617SCHEME_H__
 #define __ORG_APACHE_HTTP_IMPL_AUTH_FRC2617SCHEME_H__
 
-#include <Org.Apache.Http_server.h>
 #include "AuthSchemeBase.h"
 
 using Elastos::Utility::IMap;
-using Org::Apache::Http::IHeader;
-using Org::Apache::Http::Utility::ICharArrayBuffer;
 
 namespace Org {
 namespace Apache {

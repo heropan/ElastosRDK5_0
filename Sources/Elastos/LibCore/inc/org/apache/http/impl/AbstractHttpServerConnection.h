@@ -2,13 +2,10 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_ABSTRACTHTTPSERVERCONNECTION_H__
 #define __ORG_APACHE_HTTP_IMPL_ABSTRACTHTTPSERVERCONNECTION_H__
 
-#include <Org.Apache.Http_server.h>
 #include "HttpConnectionMetricsImpl.h"
-#include "entity/EntityDeserializer.h"
-#include "entity/EntitySerializer.h"
-#include <elastos/core/Object.h>
+#include "EntityDeserializer.h"
+#include "EntitySerializer.h"
 
-using Elastos::Core::Object;
 using Org::Apache::Http::IHttpServerConnection;
 using Org::Apache::Http::IHttpConnection;
 using Org::Apache::Http::IHttpEntityEnclosingRequest;
@@ -78,7 +75,7 @@ protected:
 
     CARAPI_(AutoPtr<EntitySerializer>) CreateEntitySerializer();
 
-    CARAPI_(AutoPtr<IHttpResponseFactory>) CreateHttpRequestFactory();
+    CARAPI_(AutoPtr<IHttpRequestFactory>) CreateHttpRequestFactory();
 
     CARAPI_(AutoPtr<IHttpMessageParser>) CreateRequestParser(
         /* [in] */ ISessionInputBuffer* buffer,
@@ -103,7 +100,7 @@ private:
     AutoPtr<ISessionInputBuffer> mInbuffer;
     AutoPtr<ISessionOutputBuffer> mOutbuffer;
     AutoPtr<IHttpMessageParser> mRequestParser;
-    AutoPtr<IHttpMessageWriter> mReponseWriter;
+    AutoPtr<IHttpMessageWriter> mResponseWriter;
     AutoPtr<HttpConnectionMetricsImpl> mMetrics;
 };
 
