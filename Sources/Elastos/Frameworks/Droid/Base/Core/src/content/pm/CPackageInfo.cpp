@@ -42,6 +42,7 @@ ECode CPackageInfo::ReadFromParcel(
 {
     assert(source != NULL);
     source->ReadString(&mPackageName);
+    source->ReadArrayOfString((ArrayOf<String>**)&mRplitNames);
     source->ReadInt32(&mVersionCode);
     source->ReadString(&mVersionName);
     source->ReadString(&mSharedUserId);
@@ -63,7 +64,16 @@ ECode CPackageInfo::ReadFromParcel(
     source->ReadArrayOf((Handle32*)&mSignatures);
     source->ReadArrayOf((Handle32*)&mConfigPreferences);
     source->ReadArrayOf((Handle32*)&mReqFeatures);
+    source->ReadArrayOf((Handle32*)&mFeatureGroups);
     source->ReadInt32(&mInstallLocation);
+    Int32 ival;
+    dest->ReadInt32(&ival);
+    mCoreApp = ival != 0;
+    dest->ReadInt32(&ival);
+    mRequiredForAllUsers = ival != 0;
+    dest->ReadString(&mRestrictedAccountType);
+    dest->ReadString(&mRequiredAccountType);
+    dest->ReadString(&mOverlayTarget);
     return NOERROR;
 }
 
@@ -72,6 +82,7 @@ ECode CPackageInfo::WriteToParcel(
 {
     assert(dest != NULL);
     dest->WriteString(mPackageName);
+    dest->WriteArrayOfString(mRplitNames.Get());
     dest->WriteInt32(mVersionCode);
     dest->WriteString(mVersionName);
     dest->WriteString(mSharedUserId);
@@ -91,7 +102,13 @@ ECode CPackageInfo::WriteToParcel(
     dest->WriteArrayOf((Handle32)mSignatures.Get());
     dest->WriteArrayOf((Handle32)mConfigPreferences.Get());
     dest->WriteArrayOf((Handle32)mReqFeatures.Get());
+    dest->WriteArrayOf((Handle32)mFeatureGroups.Get());
     dest->WriteInt32(mInstallLocation);
+    dest->WriteInt32(mCoreApp ? 1 : 0);
+    dest->WriteInt32(mRequiredForAllUsers ? 1 : 0);
+    dest->WriteString(mRestrictedAccountType);
+    dest->WriteString(mRequiredAccountType);
+    dest->WriteString(mOverlayTarget);
     return NOERROR;
 }
 

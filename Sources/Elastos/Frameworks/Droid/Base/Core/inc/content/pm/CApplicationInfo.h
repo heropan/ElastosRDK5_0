@@ -15,9 +15,15 @@ namespace Pm {
  * corresponds to information collected from the AndroidManifest.xml's
  * &lt;application&gt; tag.
  */
-CarClass(CApplicationInfo), public PackageItemInfo
+CarClass(CApplicationInfo)
+    , public PackageItemInfo
+    , public IApplicationInfo
 {
 public:
+    CAR_INTRFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CApplicationInfo();
 
     ~CApplicationInfo();
@@ -267,11 +273,48 @@ public:
     CARAPI SetInstallLocation(
         /* [in] */ Int32 location);
 
-protected:
     // @override
     CARAPI LoadDefaultIcon(
         /* [in] */ IPackageManager* pm,
         /* [out] */ IDrawable** icon);
+
+    /** {@hide} */ CARPAI SetCodePath(
+        /* [in] */ const String& codePath);
+
+    /** {@hide} */ CARPAI SetBaseCodePath(
+        /* [in] */ const String& baseCodePath);
+
+    /** {@hide} */ CARPAI SetSplitCodePaths(
+        /* [in] */ ArrayOf<String>* splitCodePaths);
+
+    /** {@hide} */ CARPAI SetResourcePath(
+        /* [in] */ const String& resourcePath);
+
+    /** {@hide} */ CARPAI SetBaseResourcePath(
+        /* [in] */ const String& baseResourcePath);
+
+    /** {@hide} */ CARPAI SetSplitResourcePaths(
+        /* [in] */ ArrayOf<String>* splitResourcePaths);
+
+    /** {@hide} */ CARAPI GetCodePath(
+        /* [out] */ String* result);
+
+    /** {@hide} */ CARAPI GetBaseCodePath(
+        /* [out] */ String* result);
+
+    /** {@hide} */ CARAPI GetSplitCodePaths(
+        /* [out, callee] */ ArrayOf<String>** result);
+
+    /** {@hide} */ CARAPI GetResourcePath(
+        /* [out] */ String* result);
+
+    /** {@hide} */ CARAPI GetBaseResourcePath(
+        /* [out] */ String* result);
+
+    /** {@hide} */ CARAPI GetSplitResourcePaths(
+        /* [out, callee] */ ArrayOf<String>** result);
+
+protected:
 
     // @override
     CARAPI_(AutoPtr<IApplicationInfo>) GetApplicationInfo();
@@ -384,17 +427,35 @@ public:
      */
     Int32 mLargestWidthLimitDp;
 
+    /** {@hide} */
+    String mScanSourceDir;
+    /** {@hide} */
+    String mScanPublicSourceDir;
+
     /**
-     * Full path to the location of this package.
+     * Full path to the base APK for this application.
      */
     String mSourceDir;
 
     /**
-     * Full path to the location of the publicly available parts of this
-     * package (i.e. the primary resource package and manifest).  For
-     * non-forward-locked apps this will be the same as {@link #sourceDir).
+     * Full path to the publicly available parts of {@link #sourceDir},
+     * including resources and manifest. This may be different from
+     * {@link #sourceDir} if an application is forward locked.
      */
     String mPublicSourceDir;
+
+    /**
+     * Full paths to zero or more split APKs that, when combined with the base
+     * APK defined in {@link #sourceDir}, form a complete application.
+     */
+    AutoPtr< ArrayOf<String> > mSplitSourceDirs;
+
+    /**
+     * Full path to the publicly available parts of {@link #splitSourceDirs},
+     * including resources and manifest. This may be different from
+     * {@link #splitSourceDirs} if an application is forward locked.
+     */
+    AutoPtr< ArrayOf<String> > mSplitPublicSourceDirs;
 
     /**
      * Full paths to the locations of extra resource packages this application
@@ -404,6 +465,15 @@ public:
      * {@hide}
      */
     AutoPtr< ArrayOf<String> > mResourceDirs;
+
+    /**
+     * String retrieved from the seinfo tag found in selinux policy. This value
+     * is useful in setting an SELinux security context on the process as well
+     * as its data directory.
+     *
+     * {@hide}
+     */
+    String mSeinfo;
 
     /**
      * Paths to all shared libraries this application is linked against.  This
@@ -425,6 +495,62 @@ public:
     String mNativeLibraryDir;
 
     /**
+     * Full path where unpacked native libraries for {@link #secondaryCpuAbi}
+     * are stored, if present.
+     *
+     * The main reason this exists is for bundled multi-arch apps, where
+     * it's not trivial to calculate the location of libs for the secondary abi
+     * given the location of the primary.
+     *
+     * TODO: Change the layout of bundled installs so that we can use
+     * nativeLibraryRootDir & nativeLibraryRootRequiresIsa there as well.
+     * (e.g {@code [ "/system/app-lib/Foo/arm", "/system/app-lib/Foo/arm64" ]}
+     * instead of {@code [ "/system/lib/Foo", "/system/lib64/Foo" ]}.
+     *
+     * @hide
+     */
+    String mSecondaryNativeLibraryDir;
+
+    /**
+     * The root path where unpacked native libraries are stored.
+     * <p>
+     * When {@link #nativeLibraryRootRequiresIsa} is set, the libraries are
+     * placed in ISA-specific subdirectories under this path, otherwise the
+     * libraries are placed directly at this path.
+     *
+     * @hide
+     */
+    String mNativeLibraryRootDir;
+
+    /**
+     * Flag indicating that ISA must be appended to
+     * {@link #nativeLibraryRootDir} to be useful.
+     *
+     * @hide
+     */
+    Boolean mNativeLibraryRootRequiresIsa;
+
+    /**
+     * The primary ABI that this application requires, This is inferred from the ABIs
+     * of the native JNI libraries the application bundles. Will be {@code null}
+     * if this application does not require any particular ABI.
+     *
+     * If non-null, the application will always be launched with this ABI.
+     *
+     * {@hide}
+     */
+    String mPrimaryCpuAbi;
+
+    /**
+     * The secondary ABI for this application. Might be non-null for multi-arch
+     * installs. The application itself never uses this ABI, but other applications that
+     * use its code might.
+     *
+     * {@hide}
+     */
+    String mSecondaryCpuAbi;
+
+    /**
      * The kernel user-ID that has been assigned to this application;
      * currently this is not a unique ID (multiple applications can have
      * the same uid).
@@ -440,6 +566,12 @@ public:
      * behavior was introduced.
      */
     Int32 mTargetSdkVersion;
+
+    /**
+     * The app's declared version code.
+     * @hide
+     */
+    Int32 mVersionCode;
 
     /**
      * When false, indicates that all components within this application are

@@ -244,6 +244,10 @@ private:
         /* [in] */ IAtomicFile* atomicFile,
         /* [in] */ IFileOutputStream* fis);
 
+    CARAPI HandlePackageEvent(
+        /* [in] */ IIntent* intent,
+        /* [in] */ Int32 userId);
+
 public:
     AutoPtr<IContext> mContext;
 

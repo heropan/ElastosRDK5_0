@@ -4,51 +4,83 @@
 #include <elastos/core/StringBuilder.h>
 #include <elastos/IntegralToString.h>
 
-using Elastos::Core::IntegralToString;
-using Elastos::Core::StringBuilder;
 
 using Elastos::Droid::Utility::CBase64;
+using Elastos::Core::IntegralToString;
+using Elastos::Core::StringBuilder;
+using Elastos::IO::IBufferedInputStream;
+using Elastos::IO::CBufferedInputStream;
 using Elastos::Utility::IArrays;
 using Elastos::Utility::CArrays;
+using Elastos::Security::IMessageDigest;
+using Elastos::Security::IMessageDigestHelper;
+using Elastos::Security::CMessageDigestHelper;
+using Libcore::IO::IIoUtils;
+using Libcore::IO::CIoUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
 
-/** Digest field names to look for in preferred order. */
-AutoPtr<ArrayOf<String> > CManifestDigest::DIGEST_TYPES;
 
 /** What we print out first when toString() is called. */
-const String CManifestDigest::TO_STRING_PREFIX = InitStatic();
+const String CManifestDigest::TO_STRING_PREFIX("ManifestDigest {mDigest=");
 
-ECode CManifestDigest::FromAttributes(
-        /* [in] */ IAttributes* attributes,
-        /* [out] */ IManifestDigest** digest)
+const String CManifestDigest::DIGEST_ALGORITHM("SHA-256");
+
+ECode CManifestDigest::FromInputStream(
+    /* [in] */ IInputStream* fileIs,
+    /* [out] */ IManifestDigest** result)
 {
-    VALIDATE_NOT_NULL(digest)
-    if (attributes == NULL) {
-        return NOERROR;
-    }
-    String encodedDigest;
-    for (Int32 i = 0; i < DIGEST_TYPES->GetLength(); i++) {
-        String value;
-        attributes->GetValue((*DIGEST_TYPES)[i], &value);
-        if (!value.IsNull()) {
-            encodedDigest = value;
-            break;
-        }
-    }
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
 
-    if (encodedDigest.IsNull()) {
+    if (fileIs == NULL) {
         return NOERROR;
     }
 
-    AutoPtr<ArrayOf<Byte> > dgt;
-    AutoPtr<IBase64> base64;
-    CBase64::AcquireSingleton((IBase64**)&base64);
-    base64->Decode(encodedDigest, IBase64::DEFAULT, (ArrayOf<Byte>**)&dgt);
-    return CManifestDigest::New(dgt, digest);
+    AutoPtr<IManifestDigest> md;
+    AutoPtr<IManifestDigestHelper> helper;
+    CMessageDigestHelper::AcquireSingleton((IManifestDigestHelper**)&helper);
+    ECode ec = helper->GetInstance(DIGEST_ALGORITHM, (IManifestDigest**)&md);
+    if (ec == (ECode)E_NO_SUCH_ALGORITHM_EXCEPTION) {
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    AutoPtr<IBufferedInputStream> bis;
+    CBufferedInputStream::New(fileIs, (IBufferedInputStream**)&bis);
+
+    AutoPtr<IDigestInputStream> dis;
+    CDigestInputStream::New(bis, md, (IDigestInputStream**)&dis);
+
+    // try {
+    AutoPtr<ArrayOf<Byte> > readBuffer = ArrayOf<Byte>::Alloc(8192);
+    Int32 count;
+    while (dis->Read(readBuffer, 0, readBuffer->GetLength(), &count), count != -1) {
+        // not using
+    }
+    // } catch (IOException e) {
+    //     Slog.w(TAG, "Could not read manifest");
+    //     return null;
+    // }
+    // finally {
+    AutoPtr<IIoUtils> iou;
+    CIoUtils::AcquireSingleton((IIoUtils**)&iou)
+    iou->CloseQuietly(ICloseable::Probe(dis));
+    // }
+
+    if (ec == (ECode)E_IO_EXCEPTION) {
+        return ec;
+    }
+
+    AutoPtr<ArrayOf<Byte> > digest;
+    md->Digest((ArrayOf<Byte>**)&digest);
+    AutoPtr<CManifestDigest> cmd;
+    CManifestDigest::NewByFriend(digest, (CManifestDigest**)&cmd);
+    *result = (IManifestDigest*)cmd.Get();
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode CManifestDigest::constructor()
@@ -125,14 +157,6 @@ ECode CManifestDigest::WriteToParcel(
     return dest->WriteArrayOf((Handle32)mDigest.Get());
 }
 
-String CManifestDigest::InitStatic()
-{
-    AutoPtr<ArrayOf<String> > DIGEST_TYPES = ArrayOf<String>::Alloc(3);
-    (*DIGEST_TYPES)[0] = String("SHA1-Digest");
-    (*DIGEST_TYPES)[1] = String("SHA-Digest");
-    (*DIGEST_TYPES)[2] = String("MD5-Digest");
-    return String("ManifestDigest {mDigest=");
-}
 
 }
 }

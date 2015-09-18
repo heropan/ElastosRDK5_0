@@ -171,6 +171,11 @@ public:
     String mPackageName;
 
     /**
+     * The names of any installed split APKs for this package.
+     */
+    AutoPtr<ArrayOf<String> > mSplitNames;
+
+    /**
      * The version number of this package, as specified by the &lt;manifest&gt;
      * tag's {@link android.R.styleable#AndroidManifest_versionCode versionCode}
      * attribute.
@@ -311,6 +316,16 @@ public:
      */
     AutoPtr< ArrayOf<IFeatureInfo*> > mReqFeatures;
 
+   /**
+     * Groups of features that this application has requested.
+     * Each group contains a set of features that are required.
+     * A device must match the features listed in {@link #reqFeatures} and one
+     * or more FeatureGroups in order to have satisfied the feature requirement.
+     *
+     * @see FeatureInfo#FLAG_REQUIRED
+     */
+    AutoPtr<ArrayOf<IFeatureGroupInfo> > mFeatureGroups;
+
     /**
      * The install location requested by the activity.  From the
      * {@link android.R.attr#installLocation} attribute, one of
@@ -319,7 +334,27 @@ public:
      * {@link #INSTALL_LOCATION_PREFER_EXTERNAL}
      * @hide
      */
-    Int32 mInstallLocation;;
+    Int32 mInstallLocation;
+
+    /** @hide */
+    Boolean mCoreApp;
+
+    /** @hide */
+    Boolean mRequiredForAllUsers;
+
+    /** @hide */
+    String mRestrictedAccountType;
+
+    /** @hide */
+    String mRequiredAccountType;
+
+    /**
+     * What package, if any, this package will overlay.
+     *
+     * Package name of target package, or null.
+     * @hide
+     */
+    String mOverlayTarget;
 };
 
 } // namespace Pm

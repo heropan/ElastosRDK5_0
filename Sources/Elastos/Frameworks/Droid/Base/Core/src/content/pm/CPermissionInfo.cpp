@@ -69,12 +69,16 @@ String CPermissionInfo::ProtectionToString(
             break;
         }
     }
-    if ((level & PROTECTION_FLAG_SYSTEM) != 0) {
+    if ((level & IPermissionInfo::PROTECTION_FLAG_SYSTEM) != 0) {
         protLevel += String("|system");
     }
-    if ((level & PROTECTION_FLAG_DEVELOPMENT) != 0) {
+    if ((level & IPermissionInfo::PROTECTION_FLAG_DEVELOPMENT) != 0) {
         protLevel += String("|development");
     }
+    if ((level& IPermissionInfo::PROTECTION_FLAG_APPOP) != 0) {
+        protLevel += String("|appop");
+    }
+
     return protLevel;
 }
 

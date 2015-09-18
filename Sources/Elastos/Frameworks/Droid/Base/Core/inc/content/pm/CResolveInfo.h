@@ -172,20 +172,34 @@ public:
     CARAPI SetSystem(
         /* [in] */ Boolean sys);
 
+private:
+    CARAPI GetComponentInfo(
+        /* [out] */ IComponentInfo** info);
+
 public:
+    static const String TAG;// = "ResolveInfo";
+
     /**
-     * The activity or broadcast receiver that corresponds to this resolution match,
-     * if this resolution is for an activity or broadcast receiver. One and only one of this and
-     * serviceInfo must be non-null.
+     * The activity or broadcast receiver that corresponds to this resolution
+     * match, if this resolution is for an activity or broadcast receiver.
+     * Exactly one of {@link #activityInfo}, {@link #serviceInfo}, or
+     * {@link #providerInfo} will be non-null.
      */
     AutoPtr<IActivityInfo> mActivityInfo;
 
     /**
-     * The service that corresponds to this resolution match, if this
-     * resolution is for a service. One and only one of this and
-     * activityInfo must be non-null.
+     * The service that corresponds to this resolution match, if this resolution
+     * is for a service. Exactly one of {@link #activityInfo},
+     * {@link #serviceInfo}, or {@link #providerInfo} will be non-null.
      */
     AutoPtr<IServiceInfo> mServiceInfo;
+
+    /**
+     * The provider that corresponds to this resolution match, if this
+     * resolution is for a provider. Exactly one of {@link #activityInfo},
+     * {@link #serviceInfo}, or {@link #providerInfo} will be non-null.
+     */
+    AutoPtr<IProviderInfo> mProviderInfo;
 
     /**
      * The IntentFilter that was matched for this ResolveInfo.
@@ -253,6 +267,17 @@ public:
      * containing the resolved component.
      */
     String mResolvePackageName;
+
+    /**
+     * If not equal to UserHandle.USER_CURRENT, then the intent will be forwarded to this user.
+     * @hide
+     */
+    Int32 mTargetUserId;
+
+    /**
+     * @hide
+     */
+    Boolean mNoResourceId;
 
     /**
      * @hide Target comes from system process?

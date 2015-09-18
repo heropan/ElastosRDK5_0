@@ -33,7 +33,7 @@ ECode CConfigurationInfo::constructor()
 ECode CConfigurationInfo::constructor(
     /* [in] */ IConfigurationInfo* orig)
 {
-    assert(orig != NULL);
+    VALIDATE_NOT_NULL(orig)
     orig->GetReqTouchScreen(&mReqTouchScreen);
     orig->GetReqKeyboardType(&mReqKeyboardType);
     orig->GetReqNavigation(&mReqNavigation);

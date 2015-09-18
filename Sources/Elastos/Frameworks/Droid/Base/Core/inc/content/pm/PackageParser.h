@@ -34,7 +34,7 @@ namespace Pm {
  *
  * {@hide}
  */
- class PackageParser : public ElRefBase
+ class PackageParser : public Object
 {
 public:
     class Package;
@@ -49,7 +49,7 @@ public:
     class ServiceIntentInfo;
 
     /** @hide */
-    class NewPermissionInfo : public ElRefBase
+    class NewPermissionInfo : public Object
     {
     public:
         NewPermissionInfo(
@@ -64,7 +64,7 @@ public:
     };
 
     /** @hide */
-    class SplitPermissionInfo : public ElRefBase
+    class SplitPermissionInfo : public Object
     {
     public:
         SplitPermissionInfo(
@@ -78,7 +78,7 @@ public:
         Int32 mTargetSdk;
     };
 
-    class ParsePackageItemArgs : public ElRefBase
+    class ParsePackageItemArgs : public Object
     {
     public:
         ParsePackageItemArgs(
@@ -127,7 +127,7 @@ public:
     /* Light weight package info.
      * @hide
      */
-    class PackageLite : public ElRefBase
+    class PackageLite : public Object
     {
     public:
         PackageLite(
@@ -144,25 +144,13 @@ public:
     };
 
     class Package
-        : public ElRefBase
-        , public IInterface
+        : public Object
     {
     public:
         Package(
             /* [in] */ const String& name);
 
         ~Package();
-
-        CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
 
         CARAPI_(void) SetPackageName(
             /* [in] */ const String& newName);
@@ -262,7 +250,7 @@ public:
     };
 
     template <typename II>
-    class Component : public ElRefBase
+    class Component : public Object
     {
     public:
         Component(
@@ -416,23 +404,10 @@ public:
     };
 
     class IntentInfo
-        : public IIntentFilter
-        , public ElRefBase
-        , public IntentFilter
+        : public IntentFilter
     {
     public:
         IntentInfo();
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* pObject,
-            /* [in] */ InterfaceID* pIID);
 
         CARAPI SetPriority(
         /* [in] */ Int32 priority);

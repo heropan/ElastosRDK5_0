@@ -42,6 +42,16 @@ public:
     CARAPI constructor(
         /* [in] */ const String& text);
 
+  /**
+     * Create signature from a certificate chain. Used for backward
+     * compatibility.
+     *
+     * @throws CertificateEncodingException
+     * @hide
+     */
+    CARAPI constructor(
+        /* [in] */ ArrayOf<ICertificate*>* certificateChain);
+
     /**
      * Encode the Signature as ASCII text.
      */
@@ -85,6 +95,16 @@ public:
     CARAPI GetPublicKey(
         /* [out] */ IPublicKey** publicKey);
 
+    /**
+     * Used for compatibility code that needs to check the certificate chain
+     * during upgrades.
+     *
+     * @throws CertificateEncodingException
+     * @hide
+     */
+    CARAPI GetChainSignatures(
+        /* [out, callee] */ ArrayOf<ISignature*>** result);
+
     CARAPI Equals(
         /* [in] */ ISignature* obj,
         /* [out] */ Boolean* isEqual);
@@ -98,6 +118,44 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
+    /**
+     * Test if given {@link Signature} sets are exactly equal.
+     *
+     * @hide
+     */
+    static Boolean AreExactMatch(
+        /* [in] */ ArrayOf<ISignature*>* a,
+        /* [in] */ ArrayOf<ISignature*>* b);
+
+    /**
+     * Test if given {@link Signature} sets are effectively equal. In rare
+     * cases, certificates can have slightly malformed encoding which causes
+     * exact-byte checks to fail.
+     * <p>
+     * To identify effective equality, we bounce the certificates through an
+     * decode/encode pass before doing the exact-byte check. To reduce attack
+     * surface area, we only allow a byte size delta of a few bytes.
+     *
+     * @throws CertificateException if the before/after length differs
+     *             substantially, usually a signal of something fishy going on.
+     * @hide
+     */
+    static Boolean AreEffectiveMatch(
+        /* [in] */ ArrayOf<ISignature*>* a,
+        /* [in] */ ArrayOf<ISignature*>* b);
+
+    /**
+     * Bounce the given {@link Signature} through a decode/encode cycle.
+     *
+     * @throws CertificateException if the before/after length differs
+     *             substantially, usually a signal of something fishy going on.
+     * @hide
+     */
+    static CARAPI Bounce(
+        /* [in] */ ICertificateFactory* cf,
+        /* [in] */ ISignature* s,
+        /* [out] */ ISignature** sig);
+
 private:
     static CARAPI ParseHexDigit(
         /* [in] */ Int32 nibble,
@@ -107,6 +165,9 @@ private:
     AutoPtr< ArrayOf<Byte> > mSignature;
     Int32 mHashCode;
     Boolean mHaveHashCode;
+    AutoPtr<ArrayOf<ICertificate*> > mCertificateChain;
+
+
 };
 
 } // namespace Pm

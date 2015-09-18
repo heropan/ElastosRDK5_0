@@ -19,8 +19,8 @@ public:
 
     CAR_OBJECT_DECL()
 
-    static CARAPI FromAttributes(
-            /* [in] */ IAttributes* attributes,
+    static CARAPI FromInputStream(
+            /* [in] */ IInputStream* attributes,
             /* [out] */ IManifestDigest** digest);
 
     CARAPI constructor();
@@ -45,20 +45,21 @@ public:
         /* [in] */ IParcel* dest);
 
 private:
-    static CARAPI_(String) InitStatic();
 
     CARAPI constructor(
         /* [in] */ IParcel* source);
 
 private:
+    static const String TAG;// = "ManifestDigest";
+
     /** The digest of the manifest in our preferred order. */
     AutoPtr<ArrayOf<Byte> > mDigest;
 
-    /** Digest field names to look for in preferred order. */
-    static AutoPtr<ArrayOf<String> > DIGEST_TYPES;
-
     /** What we print out first when toString() is called. */
     static const String TO_STRING_PREFIX;
+
+    /** Digest algorithm to use. */
+    static const String DIGEST_ALGORITHM;// = "SHA-256";
 };
 
 } // namespace Pm
