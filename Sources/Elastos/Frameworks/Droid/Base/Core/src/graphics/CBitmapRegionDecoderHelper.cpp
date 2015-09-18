@@ -7,6 +7,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_SINGLETON_IMPL(CBitmapRegionDecoderHelper);
+CAR_INTERFACE_IMPL(CBitmapRegionDecoderHelper, Singleton, IBitmapRegionDecoderHelper);
 /**
 * Create a BitmapRegionDecoder from the specified byte array.
 * Currently only the JPEG and PNG formats are supported.

@@ -5,6 +5,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_SINGLETON_IMPL(CImageFormat);
+CAR_INTERFACE_IMPL(CImageFormat, Singleton, IImageFormat);
 ECode CImageFormat::GetBitsPerPixel(
     /* [in] */ Int32 format,
     /* [out] */ Int32* bits)

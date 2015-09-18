@@ -14,8 +14,8 @@ IMPORTS = Elastos.CoreLibrary.eco
 include $(MAKEDIR)/../../../sources.inc
 
 INCLUDES += $(MAKEDIR)/../inc
-// INCLUDES += $(MAKEDIR)/../inc/graphics
-// INCLUDES += $(MAKEDIR)/../inc/graphics/drawable
+INCLUDES += $(MAKEDIR)/../inc/graphics
+INCLUDES += $(MAKEDIR)/../inc/graphics/drawable
 INCLUDES += $(MAKEDIR)/../inc/graphics/drawable/shapes
 INCLUDES += $(MAKEDIR)/../inc/hardware
 INCLUDES += $(MAKEDIR)/../inc/hardware/display
@@ -103,8 +103,8 @@ SOURCES += frameworkext.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
-// LIBRARIES += graphics/graphics.lib
-LIBRARIES += graphics/drawable/shapes/shapes.lib
+LIBRARIES += graphics/graphics.lib
+//LIBRARIES += graphics/drawable/drawable.lib
 
 LIBRARIES += content/content.lib
 LIBRARIES += os/os.lib

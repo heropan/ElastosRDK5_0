@@ -3,7 +3,6 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_PICTUREDRAWABLE_H__
 
 #include "graphics/drawable/Drawable.h"
-#include "graphics/CPicture.h"
 
 namespace Elastos {
 namespace Droid {
@@ -14,9 +13,13 @@ namespace Drawable {
  * Drawable subclass that wraps a Picture, allowing the picture to be used
  * whereever a Drawable is supported.
  */
-class PictureDrawable : public Drawable
+class PictureDrawable
+    : public Drawable
+    , public IPictureDrawable
 {
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Construct a new drawable referencing the specified picture. The picture
      * may be null.
@@ -31,7 +34,8 @@ public:
      *
      * @return the picture associated with the drawable, or null.
      */
-    virtual CARAPI_(AutoPtr<IPicture>) GetPicture();
+    virtual CARAPI GetPicture(
+        /* [out] */ IPicture** picture);
 
     /**
      * Associate a picture with this drawable. The picture may be null.
@@ -46,13 +50,16 @@ public:
         /* [in] */ ICanvas* canvas);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicWidth();
+    CARAPI GetIntrinsicWidth(
+        /* [out] */ Int32* width);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicHeight();
+    CARAPI GetIntrinsicHeight(
+        /* [out] */ Int32* height);
 
     //@Override
-    CARAPI_(Int32) GetOpacity();
+    CARAPI GetOpacity(
+        /* [out] */ Int32* opacity);
 
     //@Override
     CARAPI SetFilterBitmap(
@@ -73,7 +80,7 @@ public:
 protected:
     PictureDrawable();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IPicture* picture);
 
 private:

@@ -554,7 +554,7 @@ module
          */
         ScheduleSelf(
             [in] IRunnable* what,
-            [in] Int32 when);
+            [in] Int64 when);
 
         /**
          * Specify an alpha value for the drawable. 0 means fully transparent, and
@@ -828,12 +828,6 @@ module
          */
         UnscheduleSelf(
             [in] IRunnable* what);
-
-        SetResId(
-            [in] Int32 resId);
-
-        GetResId(
-            [out] Int32* resId);
     }
 
     interface IDrawableCallback {

@@ -4,7 +4,9 @@
 
 #include "_Elastos_Droid_Graphics_CBitmapRegionDecoderHelper.h"
 #include <Elastos.CoreLibrary.h>
+#include <elastos/core/Singleton.h>
 
+using Elastos::Core::Singleton;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IInputStream;
 
@@ -13,8 +15,14 @@ namespace Droid {
 namespace Graphics {
 
 CarClass(CBitmapRegionDecoderHelper)
+    , public Singleton
+    , public IBitmapRegionDecoderHelper
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_SINGLETON_DECL();
+
     CARAPI NewInstance(
         /* [in] */ const ArrayOf<Byte>& data,
         /* [in] */ Int32 offset,

@@ -5,6 +5,7 @@
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Droid::Graphics::IOutline;
 using Elastos::Core::Object;
 using Elastos::Core::ICloneable;
 
@@ -72,6 +73,9 @@ public:
      */
     virtual CARAPI HasAlpha(
         /* [out] */ Boolean* has);
+
+    virtual CARAPI GetOutline(
+        /* [in] */ IOutline* outline);
 
     // virtual CARAPI Clone(
     //     /* [out] */ IInterface** other);

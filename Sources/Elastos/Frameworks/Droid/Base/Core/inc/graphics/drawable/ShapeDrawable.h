@@ -11,7 +11,9 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-class ShapeDrawable : public Drawable
+class ShapeDrawable
+    : public Drawable
+    , public IShapeDrawable
 {
 protected:
     /**
@@ -51,6 +53,8 @@ protected:
 
 
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * ShapeDrawable constructor.
      */
@@ -67,7 +71,8 @@ public:
     /**
      * Returns the Shape of this ShapeDrawable.
      */
-    virtual CARAPI_(AutoPtr<IShape>) GetShape();
+    virtual CARAPI GetShape(
+        /* [out] */ IShape** shape);
 
     /**
      * Sets the Shape of this ShapeDrawable.
@@ -88,12 +93,14 @@ public:
      * Returns the ShaderFactory used by this ShapeDrawable for requesting a
      * {@link android.graphics.Shader}.
      */
-    virtual CARAPI_(AutoPtr<IShaderFactory>) GetShaderFactory();
+    virtual CARAPI GetShaderFactory(
+        /* [out] */ IShaderFactory** fact);
 
     /**
      * Returns the Paint used to draw the shape.
      */
-    virtual CARAPI_(AutoPtr<IPaint>) GetPaint();
+    virtual CARAPI GetPaint(
+        /* [out] */ IPaint** paint);
 
     /**
      * Sets padding for the shape.
@@ -133,21 +140,25 @@ public:
         /* [in] */ Int32 height);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicWidth();
+    CARAPI GetIntrinsicWidth(
+        /* [out] */ Int32* width);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicHeight();
+    CARAPI GetIntrinsicHeight(
+        /* [out] */ Int32* height);
 
     //@Override
-    CARAPI_(Boolean) GetPadding(
-        /* [in] */ IRect* padding);
+    CARAPI GetPadding(
+        /* [in] */ IRect* padding,
+        /* [out] */ Boolean* isPadding);
 
     //@Override
     CARAPI Draw(
         /* [in] */ ICanvas* canvas);
 
     //@Override
-    CARAPI_(Int32) GetChangingConfigurations();
+    CARAPI GetChangingConfigurations(
+        /* [out] */ Int32* configuration);
 
     /**
      * Set the alpha level for this drawable [0..255]. Note that this drawable
@@ -166,7 +177,8 @@ public:
         /* [in] */ IColorFilter* cf);
 
     //@Override
-    CARAPI_(Int32) GetOpacity();
+    CARAPI GetOpacity(
+        /* [out] */ Int32* opacity);
 
     //@Override
     CARAPI SetDither(
@@ -179,18 +191,20 @@ public:
         /* [in] */ IAttributeSet* attrs);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawableConstantState>) GetConstantState();
+    CARAPI GetConstantState(
+        /* [out] */ IDrawableConstantState** state);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawable>) Mutate();
+    CARAPI Mutate(
+        /* [out] */ IDrawable** drawable);
 
 protected:
-    CARAPI Init();
+    CARAPI constructor();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IShape* s);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ShapeState* state);
 
     /**

@@ -9,6 +9,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CCamera);
+CAR_INTERFACE_IMPL(CCamera, Object, ICamera);
 CCamera::CCamera()
 {
     NativeConstructor();

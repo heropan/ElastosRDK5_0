@@ -9,7 +9,9 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-class LevelListDrawable : public DrawableContainer
+class LevelListDrawable
+    : public DrawableContainer
+    , public ILevelListDrawable
 {
 protected:
     class LevelListState : public DrawableContainer::DrawableContainerState
@@ -48,6 +50,8 @@ protected:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     LevelListDrawable();
 
     virtual CARAPI AddLevel(
@@ -62,12 +66,13 @@ public:
         /* [in] */ IAttributeSet* attrs);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawable>) Mutate();
+    CARAPI Mutate(
+        /* [out] */ IDrawable** drawable);
 
 protected:
-    CARAPI Init();
+    CARAPI constructor();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ LevelListState* state,
         /* [in] */ IResources* res);
 

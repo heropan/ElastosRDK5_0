@@ -9,15 +9,23 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-class ColorDrawable : public Drawable
+class ColorDrawable
+    : public Drawable
+    , public IColorDrawable
 {
 protected:
     class ColorState
         : public Drawable::ConstantState
     {
     public:
+        ColorState();
+
         ColorState(
             /* [in] */ ColorState* state);
+
+        // @Override
+        CARAPI CanApplyTheme(
+            /* [out] */ Boolean* can);
 
         CARAPI NewDrawable(
             /* [out] */ IDrawable** drawable);
@@ -26,16 +34,27 @@ protected:
             /* [in] */ IResources* res,
             /* [out] */ IDrawable** drawable);
 
+        // @Override
+        CARAPI NewDrawable(
+            /* [in] */ IResources* res,
+            /* [in] */ IResourcesTheme* theme,
+            /* [out] */ IDrawable** drawable);
+
         CARAPI GetChangingConfigurations(
             /* [out] */ Int32* config);
 
     public:
+        AutoPtr<ArrayOf<Int32> > mThemeAttrs;
         Int32 mBaseColor; // base color, independent of setAlpha()
         Int32 mUseColor;  // basecolor modulated by setAlpha()
         Int32 mChangingConfigurations;
+        AutoPtr<IColorStateList> mTint;
+        PorterDuffMode mTintMode;
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Creates a new black ColorDrawable.
      */
@@ -50,10 +69,13 @@ public:
         /* [in] */ Int32 color);
 
     ColorDrawable(
-        /* [in] */ ColorState* state);
+        /* [in] */ IDrawableConstantState* state,
+        /* [in] */ IResources* res,
+        /* [in] */ IResourcesTheme* theme);
 
     //@Override
-    CARAPI_(Int32) GetChangingConfigurations();
+    CARAPI GetChangingConfigurations(
+        /* [out] */ Int32* configuration);
 
     /**
      * A mutable BitmapDrawable still shares its Bitmap with any other Drawable
@@ -62,7 +84,8 @@ public:
      * @return This drawable.
      */
     //@Override
-    CARAPI_(AutoPtr<IDrawable>) Mutate();
+    CARAPI Mutate(
+        /* [out] */ IDrawable** drawable);
 
     //@Override
     CARAPI Draw(
@@ -90,7 +113,8 @@ public:
      *
      * @return A value between 0 and 255.
      */
-    virtual CARAPI_(Int32) GetAlpha();
+    virtual CARAPI GetAlpha(
+        /* [out] */ Int32* alpha);
 
     /**
      * Sets the color's alpha value.
@@ -102,35 +126,77 @@ public:
         /* [in] */ Int32 alpha);
 
     /**
-     * Setting a color filter on a ColorDrawable has no effect.
+     * Sets the color filter applied to this color.
+     * <p>
+     * Only supported on version {@link android.os.Build.VERSION_CODES#LOLLIPOP} and
+     * above. Calling this method has no effect on earlier versions.
      *
-     * @param colorFilter Ignore.
+     * @see android.graphics.drawable.Drawable#setColorFilter(ColorFilter)
      */
     //@Override
     CARAPI SetColorFilter(
         /* [in] */ IColorFilter* colorFilter);
 
+    // @Override
+    CARAPI SetTintList(
+        /* [in] */ IColorStateList* tint);
+
+    // @Override
+    CARAPI SetTintMode(
+        /* [in] */ PorterDuffMode tintMode);
+
+    // @Override
+    CARAPI IsStateful(
+        /* [out] */ Boolean* state);
+
     //@Override
-    CARAPI_(Int32) GetOpacity();
+    CARAPI GetOpacity(
+        /* [out] */ Int32* opacity);
+
+    // @Override
+    CARAPI GetOutline(
+        /* [in] */ /*@NonNull*/ IOutline* outline);
 
     //@Override
     CARAPI Inflate(
         /* [in] */ IResources* r,
         /* [in] */ IXmlPullParser* parser,
-        /* [in] */ IAttributeSet* attrs);
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ IResourcesTheme* theme);
+
+    // @Override
+    CARAPI ApplyTheme(
+        /* [in] */ IResourcesTheme* t);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawableConstantState>) GetConstantState();
+    CARAPI GetConstantState(
+        /* [out] */ IDrawableConstantState** state);
 
 protected:
-    CARAPI Init(
+    CARAPI constructor();
+
+    CARAPI constructor(
         /* [in] */ Int32 color);
 
-    CARAPI Init(
-        /* [in] */ ColorState* state);
+    CARAPI constructor(
+        /* [in] */ IDrawableConstantState* state,
+        /* [in] */ IResources* res,
+        /* [in] */ IResourcesTheme* theme);
+
+    // @Override
+    CARAPI_(Boolean) OnStateChange(
+        /* [in] */ const ArrayOf<Int32>* stateSet);
 
 private:
-    AutoPtr<ColorState> mState;
+    /**
+     * Updates the constant state from the values in the typed array.
+     */
+    CARAPI_(void) UpdateStateFromTypedArray(
+        /* [in] */ ITypedArray* a);
+
+private:
+    AutoPtr<ColorState> mColorState;
+    AutoPtr<IPorterDuffColorFilter> mTintFilter;
     AutoPtr<IPaint> mPaint;
     Boolean mMutated;
 };

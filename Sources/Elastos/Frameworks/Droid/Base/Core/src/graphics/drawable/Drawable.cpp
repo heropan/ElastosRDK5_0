@@ -2,9 +2,9 @@
 #include "ext/frameworkext.h"
 #include "graphics/drawable/Drawable.h"
 #include "graphics/CRect.h"
-#include "graphics/CBitmapFactory.h"
-#include "graphics/CBitmapFactoryOptions.h"
-#include "graphics/CPorterDuffColorFilter.h"
+// #include "graphics/CBitmapFactory.h"
+// #include "graphics/CBitmapFactoryOptions.h"
+// #include "graphics/CPorterDuffColorFilter.h"
 #include "graphics/Insets.h"
 #include "graphics/NinePatch.h"
 #include "graphics/drawable/CBitmapDrawable.h"
@@ -36,8 +36,7 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-CAR_INTERFACE_IMPL_2(Drawable::ConstantState, IDrawableConstantState, IWeakReferenceSource)
-
+CAR_INTERFACE_IMPL(Drawable::ConstantState, Object, IDrawableConstantState);
 ECode Drawable::ConstantState::GetWeakReference(
     /* [out] */ IWeakReference** weakReference)
 {
@@ -54,15 +53,40 @@ ECode Drawable::ConstantState::NewDrawable(
     return NewDrawable(drawable);
 }
 
+ECode Drawable::ConstantState::NewDrawable(
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme,
+    /* [out] */ IDrawable** drawable)
+{
+    return NewDrawable(drawable);
+}
+
+ECode Drawable::ConstantState::GetBitmap(
+        /* [out] */ IBitmap** bp)
+{
+    VALIDATE_NOT_NULL(bp);
+    *bp = NULL;
+    return NOERROR;
+}
+
+ECode Drawable::ConstantState::CanApplyTheme(
+    /* [out] */ Boolean* can)
+{
+    VALIDATE_NOT_NULL(can);
+    *can = FALSE;
+    return NOERROR;
+}
+
 AutoPtr<IRect> Init_ZERO_BOUNDS_RECT()
 {
-    AutoPtr<CRect> rect;
-    CRect::NewByFriend((CRect**)&rect);
+    AutoPtr<IRect> rect;
+    CRect::New((IRect**)&rect);
     return (IRect*)rect.Get();
 }
 
 CAR_INTERFACE_IMPL(Drawable, Object, IDrawable);
 AutoPtr<IRect> Drawable::ZERO_BOUNDS_RECT = Init_ZERO_BOUNDS_RECT();
+const PorterDuffMode Drawable::DEFAULT_TINT_MODE = PorterDuffMode_SRC_IN;
 Drawable::Drawable()
     : mStateSet(const_cast<ArrayOf<Int32>*>(StateSet::WILD_CARD.Get()))
     , mLevel(0)
@@ -70,7 +94,6 @@ Drawable::Drawable()
     , mBounds(ZERO_BOUNDS_RECT)
     , mVisible(TRUE)
     , mLayoutDirection(0)
-    , mResId(-1)
 {}
 
 Drawable::~Drawable()
@@ -97,6 +120,11 @@ ECode Drawable::SetBounds(
     CRect* oldBoundsObj = (CRect*)oldBounds.Get();
     if (oldBoundsObj->mLeft != left || oldBoundsObj->mTop != top ||
             oldBoundsObj->mRight != right || oldBoundsObj->mBottom != bottom) {
+        Boolean isEmpty = FALSE;
+        if (!(oldBounds->IsEmpty(&isEmpty), isEmpty)) {
+            // first invalidate the previous bounds
+            InvalidateSelf();
+        }
         mBounds->Set(left, top, right, bottom);
         OnBoundsChange(mBounds);
     }
@@ -136,6 +164,12 @@ ECode Drawable::GetBounds(
     *bounds = mBounds;
     REFCOUNT_ADD(*bounds);
     return NOERROR;
+}
+
+ECode Drawable::GetDirtyBounds(
+    /* [out] */ IRect** bounds)
+{
+    return GetBounds(bounds);
 }
 
 ECode Drawable::SetChangingConfigurations(
@@ -191,7 +225,8 @@ ECode Drawable::GetCallback(
 
 ECode Drawable::InvalidateSelf()
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->InvalidateDrawable((IDrawable*)this->Probe(EIID_IDrawable));
     }
@@ -203,7 +238,8 @@ ECode Drawable::ScheduleSelf(
     /* [in] */ IRunnable* what,
     /* [in] */ Int64 when)
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->ScheduleDrawable((IDrawable*)this->Probe(EIID_IDrawable),
                 what, when);
@@ -214,7 +250,8 @@ ECode Drawable::ScheduleSelf(
 ECode Drawable::UnscheduleSelf(
     /* [in] */ IRunnable* what)
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->UnscheduleDrawable((IDrawable*)this->Probe(EIID_IDrawable),
                 what);
@@ -233,10 +270,57 @@ ECode Drawable::GetLayoutDirection(
 ECode Drawable::SetLayoutDirection(
     /* [in] */ Int32 layoutDirection)
 {
-    if (GetLayoutDirection() != layoutDirection) {
+    Int32 dir = 0;
+    if ((GetLayoutDirection(&dir), dir) != layoutDirection) {
         mLayoutDirection = layoutDirection;
     }
 
+    return NOERROR;
+}
+
+ECode Drawable::GetAlpha(
+    /* [out] */ Int32* alpha)
+{
+    VALIDATE_NOT_NULL(alpha);
+    *alpha = 0xFF;
+    return NOERROR;
+}
+
+ECode Drawable::SetXfermode(
+    /* [in] */ IXfermode* mode)
+{
+    // Base implementation drops it on the floor for compatibility. Whee!
+    // TODO: For this to be included in the API proper, all framework drawables need impls.
+    // For right now only BitmapDrawable has it.
+    return NOERROR;
+}
+
+ECode Drawable::SetTint(
+    /* [in] */ Int32 tint)
+{
+    AutoPtr<IColorStateList> list;
+    assert(0 && "TODO");
+    // CColorStateList::ValueOf(tint, (IColorStateList**)&list);
+    return SetTintList(list);
+}
+
+ECode Drawable::SetTintList(
+    /* [in] */ IColorStateList* tint)
+{
+    return NOERROR;
+}
+
+ECode Drawable::SetTintMode(
+    /* [in] */ PorterDuffMode tintMode)
+{
+    return NOERROR;
+}
+
+ECode Drawable::GetColorFilter(
+    /* [out] */ IColorFilter** filter)
+{
+    VALIDATE_NOT_NULL(filter);
+    *filter = NULL;
     return NOERROR;
 }
 
@@ -245,13 +329,46 @@ ECode Drawable::SetColorFilter(
     /* [in] */ PorterDuffMode mode)
 {
     AutoPtr<IPorterDuffColorFilter> filter;
-    CPorterDuffColorFilter::New(color, mode, (IPorterDuffColorFilter**)&filter);
-    return SetColorFilter(filter.Get());
+    assert(0 && "TODO");
+    // CPorterDuffColorFilter::New(color, mode, (IPorterDuffColorFilter**)&filter);
+    return SetColorFilter(IColorFilter::Probe(filter));
 }
 
 ECode Drawable::ClearColorFilter()
 {
     return SetColorFilter(NULL);
+}
+
+ECode Drawable::SetHotspot(
+    /* [in] */ Float x,
+    /* [in] */ Float y)
+{
+    return NOERROR;
+}
+
+ECode Drawable::SetHotspotBounds(
+    /* [in] */ Int32 left,
+    /* [in] */ Int32 top,
+    /* [in] */ Int32 right,
+    /* [in] */ Int32 bottom)
+{
+    return NOERROR;
+}
+
+ECode Drawable::GetHotspotBounds(
+    /* [in] */ IRect* outRect)
+{
+    AutoPtr<IRect> bounds;
+    GetBounds((IRect**)&bounds);
+    return outRect->Set(bounds);
+}
+
+ECode Drawable::IsProjected(
+    /* [out] */ Boolean* projected)
+{
+    VALIDATE_NOT_NULL(projected);
+    *projected = FALSE;
+    return NOERROR;
 }
 
 ECode Drawable::IsStateful(
@@ -363,6 +480,34 @@ ECode Drawable::IsVisible(
     return NOERROR;
 }
 
+ECode Drawable::SetAutoMirrored(
+    /* [in] */ Boolean mirrored)
+{
+    return NOERROR;
+}
+
+ECode Drawable::IsAutoMirrored(
+    /* [out] */ Boolean* mirrored)
+{
+    VALIDATE_NOT_NULL(mirrored);
+    *mirrored = FALSE;
+    return NOERROR;
+}
+
+ECode Drawable::ApplyTheme(
+    /* [in] */ /*@SuppressWarnings("unused")*/ IResourcesTheme* t)
+{
+    return NOERROR;
+}
+
+ECode Drawable::CanApplyTheme(
+    /* [out] */ Boolean* can)
+{
+    VALIDATE_NOT_NULL(can);
+    *can = FALSE;
+    return NOERROR;
+}
+
 ECode Drawable::ResolveOpacity(
     /* [in] */ Int32 op1,
     /* [in] */ Int32 op2,
@@ -461,9 +606,23 @@ ECode Drawable::GetPadding(
     return NOERROR;
 }
 
-AutoPtr<IInsets> Drawable::GetLayoutInsets()
+ECode Drawable::GetOpticalInsets(
+    /* [out] */ IInsets** sets)
 {
-    return Insets::NONE;
+    VALIDATE_NOT_NULL(sets);
+    assert(0 && "TODO");
+    // *sets = Insets::NONE;
+    REFCOUNT_ADD(*sets);
+    return NOERROR;
+}
+
+ECode Drawable::GetOutline(
+    /* [in] */ /*@NonNull*/ IOutline* outline)
+{
+    AutoPtr<IRect> bounds;
+    GetBounds((IRect**)&bounds);
+    outline->SetRect(bounds);
+    return outline->SetAlpha(0);
 }
 
 ECode Drawable::Mutate(
@@ -482,7 +641,12 @@ ECode Drawable::CreateFromStream(
 {
     VALIDATE_NOT_NULL(drawable);
 
-    return CreateFromResourceStream(NULL, NULL, is, srcName, NULL, drawable);
+    // Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, srcName != null ? srcName : "Unknown drawable");
+    // try {
+    return CreateFromResourceStream(NULL, NULL, is, srcName, drawable);
+    // } finally {
+    //     Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+    // }
 }
 
 ECode Drawable::CreateFromResourceStream(
@@ -494,7 +658,12 @@ ECode Drawable::CreateFromResourceStream(
 {
     VALIDATE_NOT_NULL(drawable);
 
+    // Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, srcName != null ? srcName : "Unknown drawable");
+    // try {
     return CreateFromResourceStream(res, value, is, srcName, NULL, drawable);
+    // } finally {
+    //     Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+    // }
 }
 
 ECode Drawable::CreateFromResourceStream(
@@ -530,7 +699,8 @@ ECode Drawable::CreateFromResourceStream(
     // drawn to the screen.
     AutoPtr<IBitmapFactoryOptions> opts = _opts;
     if (opts == NULL) {
-        CBitmapFactoryOptions::New((IBitmapFactoryOptions**)&opts);
+        assert(0 && "TODO");
+        // CBitmapFactoryOptions::New((IBitmapFactoryOptions**)&opts);
     }
 
     if (res != NULL) {
@@ -547,7 +717,8 @@ ECode Drawable::CreateFromResourceStream(
 
     AutoPtr<IBitmap> bm;
     AutoPtr<IBitmapFactory> factory;
-    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
+    assert(0 && "TODO");
+    // FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
     FAIL_RETURN(factory->DecodeResourceStream(
             res, value, is, pad, opts, (IBitmap**)&bm));
     if (bm != NULL) {
@@ -557,14 +728,11 @@ ECode Drawable::CreateFromResourceStream(
             np = NULL;
             pad = NULL;
         }
-        AutoPtr< ArrayOf<Int32> > layoutBounds;
-        bm->GetLayoutBounds((ArrayOf<Int32>**)&layoutBounds);
-        AutoPtr<IRect> layoutBoundsRect;
-        if (layoutBounds != NULL) {
-            CRect::New((*layoutBounds)[0], (*layoutBounds)[1], (*layoutBounds)[2],
-                (*layoutBounds)[3], (IRect**)&layoutBoundsRect);
-        }
-        return DrawableFromBitmap(res, bm, np, pad, layoutBoundsRect, srcName, drawable);
+
+        AutoPtr<IRect> opticalInsets;
+        CRect::New((IRect**)&opticalInsets);
+        bm->GetOpticalInsets(opticalInsets);
+        return DrawableFromBitmap(res, bm, np, pad, opticalInsets, srcName, drawable);
     }
 
     return NOERROR;
@@ -573,6 +741,16 @@ ECode Drawable::CreateFromResourceStream(
 ECode Drawable::CreateFromXml(
     /* [in] */ IResources* r,
     /* [in] */ IXmlPullParser* parser,
+    /* [out] */ IDrawable** drawable)
+{
+    VALIDATE_NOT_NULL(drawable);
+    return CreateFromXml(r, parser, NULL, drawable);
+}
+
+ECode Drawable::CreateFromXml(
+    /* [in] */ IResources* r,
+    /* [in] */ IXmlPullParser* parser,
+    /* [in] */ IResourcesTheme* theme,
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
@@ -592,7 +770,7 @@ ECode Drawable::CreateFromXml(
         return E_XML_PULL_PARSER_EXCEPTION;
     }
 
-    FAIL_RETURN(CreateFromXmlInner(r, parser, attrs, drawable));
+    FAIL_RETURN(CreateFromXmlInner(r, parser, attrs, theme, drawable));
 
     if (*drawable == NULL) {
 //        throw new RuntimeException("Unknown initial tag: " + parser.getName());
@@ -609,6 +787,17 @@ ECode Drawable::CreateFromXmlInner(
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
+    return CreateFromXmlInner(r, parser, attrs, NULL, drawable);
+}
+
+ECode Drawable::CreateFromXmlInner(
+    /* [in] */ IResources* r,
+    /* [in] */ IXmlPullParser* parser,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme,
+    /* [out] */ IDrawable** drawable)
+{
+    VALIDATE_NOT_NULL(drawable);
     *drawable = NULL;
 
     String name;
@@ -620,21 +809,33 @@ ECode Drawable::CreateFromXmlInner(
     else if (name.Equals("level-list")) {
         FAIL_RETURN(CLevelListDrawable::New((ILevelListDrawable**)drawable));
     }
-    /* Probably not doing this.
-    } else if (name.equals("mipmap")) {
-        drawable = new MipmapDrawable();
-    }*/
+    else if (name.Equals("animated-selector")) {
+        assert(0 && "TODO");
+        // FAIL_RETURN(CAnimatedStateListDrawable::New((IAnimatedStateListDrawable**)drawable));
+    }
     else if (name.Equals("layer-list")) {
         FAIL_RETURN(CLayerDrawable::New((ILayerDrawable**)drawable));
     }
     else if (name.Equals("transition")) {
         FAIL_RETURN(CTransitionDrawable::New((ITransitionDrawable**)drawable));
     }
+    else if (name.Equals("ripple")) {
+        assert(0 && "TODO");
+        // CRippleDrawable::New((IRippleDrawable**)drawable);
+    }
     else if (name.Equals("color")) {
         FAIL_RETURN(CColorDrawable::New((IColorDrawable**)drawable));
     }
     else if (name.Equals("shape")) {
         FAIL_RETURN(CGradientDrawable::New((IGradientDrawable**)drawable));
+    }
+    else if (name.Equals("vector")) {
+        assert(0 && "TODO");
+        // CVectorDrawable::New((IVectorDrawable**)drawable);
+    }
+    else if (name.Equals("animated-vector")) {
+        assert(0 && "TODO");
+        // CAnimatedVectorDrawable::New((IAnimatedVectorDrawable**)drawable);
     }
     else if (name.Equals("scale")) {
         FAIL_RETURN(CScaleDrawable::New((IScaleDrawable**)drawable));
@@ -655,6 +856,7 @@ ECode Drawable::CreateFromXmlInner(
         FAIL_RETURN(CInsetDrawable::New((IInsetDrawable**)drawable));
     }
     else if (name.Equals("bitmap")) {
+        //noinspection deprecation
         FAIL_RETURN(CBitmapDrawable::New(r, (IBitmapDrawable**)drawable));
         if (r != NULL) {
             AutoPtr<IDisplayMetrics> metrics;
@@ -676,7 +878,7 @@ ECode Drawable::CreateFromXmlInner(
         return E_XML_PULL_PARSER_EXCEPTION;
     }
 
-    return (*drawable)->Inflate(r, parser, attrs);
+    return (*drawable)->Inflate(r, parser, attrs, theme);
 }
 
 ECode Drawable::CreateFromPath(
@@ -690,14 +892,38 @@ ECode Drawable::CreateFromPath(
         return NOERROR;
     }
 
+    // Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, pathName);
+    // try {
     AutoPtr<IBitmapFactory> factory;
-    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
+    assert(0 && "TODO");
+    // FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
     AutoPtr<IBitmap> bm;
     FAIL_RETURN(factory->DecodeFile(pathName, (IBitmap**)&bm));
     if (bm != NULL) {
         return DrawableFromBitmap(NULL, bm, NULL, NULL, NULL, pathName, drawable);
     }
+    // } finally {
+    //     Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+    // }
 
+    return NOERROR;
+}
+
+ECode Drawable::ParseTintMode(
+    /* [in] */ Int32 value,
+    /* [in] */ PorterDuffMode defaultMode,
+    /* [out] */ PorterDuffMode* mode)
+{
+    VALIDATE_NOT_NULL(mode);
+    switch (value) {
+        case 3: *mode = PorterDuffMode_SRC_OVER;
+        case 5: *mode = PorterDuffMode_SRC_IN;
+        case 9: *mode = PorterDuffMode_SRC_ATOP;
+        case 14: *mode = PorterDuffMode_MULTIPLY;
+        case 15: *mode = PorterDuffMode_SCREEN;
+        case 16: *mode = PorterDuffMode_ADD;
+        default: *mode = defaultMode;
+    }
     return NOERROR;
 }
 
@@ -706,12 +932,27 @@ ECode Drawable::Inflate(
     /* [in] */ IXmlPullParser* parser,
     /* [in] */ IAttributeSet* attrs)
 {
+    return Inflate(r, parser, attrs, NULL);
+}
+
+ECode Drawable::Inflate(
+    /* [in] */ IResources* r,
+    /* [in] */ IXmlPullParser* parser,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme)
+{
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::Drawable),
             ARRAY_SIZE(R::styleable::Drawable));
 
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(r->ObtainAttributes(attrs, attrIds, (ITypedArray**)&a));
+    if (theme != NULL) {
+        FAIL_RETURN(theme->ObtainStyledAttributes(
+            attrs, attrIds, 0, 0, (ITypedArray**)&a));
+    } else {
+        FAIL_RETURN(r->ObtainAttributes(attrs, attrIds, (ITypedArray**)&a));
+    }
+
     FAIL_RETURN(InflateWithAttributes(r, parser, a, R::styleable::Drawable_visible));
     return a->Recycle();
 }
@@ -750,19 +991,44 @@ ECode Drawable::DrawableFromBitmap(
 
     return CBitmapDrawable::New(res, bm, (IBitmapDrawable**)drawable);
 }
-ECode Drawable::SetResId(
-    /* [in] */ Int32 resId)
+
+AutoPtr<IPorterDuffColorFilter> Drawable::UpdateTintFilter(
+    /* [in] */ IPorterDuffColorFilter* tintFilter,
+    /* [in] */ IColorStateList* tint,
+    /* [in] */ PorterDuffMode tintMode)
 {
-    mResId = resId;
-    return NOERROR;
+    if (tint == NULL || tintMode == NULL) {
+        return NULL;
+    }
+
+    AutoPtr<ArrayOf<Int32> > state;
+    GetState((ArrayOf<Int32>**)&state);
+    Int32 color = 0;
+    tint->GetColorForState(state, IColor::TRANSPARENT, &color);
+    if (tintFilter == NULL) {
+        AutoPtr<IPorterDuffColorFilter> filter;
+        assert(0 && "TODO");
+        // CPorterDuffColorFilter::New(color, tintMode, (IPorterDuffColorFilter**)&filter);
+        return filter;
+    }
+
+    assert(0 && "TODO");
+    // tintFilter->SetColor(color);
+    // tintFilter->SetMode(tintMode);
+    return tintFilter;
 }
 
-ECode Drawable::GetResId(
-    /* [out] */ Int32* resId)
+ECode Drawable::ObtainAttributes(
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme,
+    /* [in] */ IAttributeSet* set,
+    /* [in] */ ArrayOf<Int32>* attrs,
+    /* [out] */ ITypedArray** a)
 {
-    VALIDATE_NOT_NULL(resId);
-    *resId = mResId;
-    return NOERROR;
+    if (theme == NULL) {
+        return res->ObtainAttributes(set, attrs, a);
+    }
+    return theme->ObtainStyledAttributes(set, attrs, 0, 0, a);
 }
 
 } // namespace Drawable

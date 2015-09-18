@@ -47,15 +47,11 @@ ECode TransitionDrawable::TransitionState::GetChangingConfigurations(
 }
 
 
-
 const Int32 TransitionDrawable::TRANSITION_STARTING;
 const Int32 TransitionDrawable::TRANSITION_RUNNING;
 const Int32 TransitionDrawable::TRANSITION_NONE;
 
-/**
- * Create a new transition drawable with the specified list of layers. At least
- * 2 layers are required for this drawable to work properly.
- */
+CAR_INTERFACE_IMPL(TransitionDrawable, LayerDrawable, ITransitionDrawable);
 TransitionDrawable::TransitionDrawable(
     /* [in] */ ArrayOf<IDrawable*>* layers)
     : mTransitionState(TRANSITION_NONE)
@@ -69,15 +65,9 @@ TransitionDrawable::TransitionDrawable(
     , mCrossFade(FALSE)
 {
     AutoPtr<TransitionState> state = new TransitionState(NULL, NULL, NULL);
-    ASSERT_SUCCEEDED(Init(state, layers));
+    ASSERT_SUCCEEDED(constructor(state, layers));
 }
 
-/**
- * Create a new transition drawable with no layer. To work correctly, at least 2
- * layers must be added to this drawable.
- *
- * @see #TransitionDrawable(Drawable[])
- */
 TransitionDrawable::TransitionDrawable()
     : mTransitionState(TRANSITION_NONE)
     , mReverse(FALSE)
@@ -261,14 +251,6 @@ ECode TransitionDrawable::Draw(
     return NOERROR;
 }
 
-/**
- * Enables or disables the cross fade of the drawables. When cross fade
- * is disabled, the first drawable is always drawn opaque. With cross
- * fade enabled, the first drawable is drawn with the opposite alpha of
- * the second drawable. Cross fade is disabled by default.
- *
- * @param enabled True to enable cross fading, false otherwise.
- */
 ECode TransitionDrawable::SetCrossFadeEnabled(
     /* [in] */ Boolean enabled)
 {
@@ -276,41 +258,39 @@ ECode TransitionDrawable::SetCrossFadeEnabled(
     return NOERROR;
 }
 
-/**
- * Indicates whether the cross fade is enabled for this transition.
- *
- * @return True if cross fading is enabled, false otherwise.
- */
-Boolean TransitionDrawable::IsCrossFadeEnabled()
+ECode TransitionDrawable::IsCrossFadeEnabled(
+    /* [out] */ Boolean* enabled)
 {
-    return mCrossFade;
+    VALIDATE_NOT_NULL(enabled);
+    *enabled = mCrossFade;
+    return NOERROR;
 }
 
-ECode TransitionDrawable::Init(
+ECode TransitionDrawable::constructor(
     /* [in] */ ArrayOf<IDrawable*>* layers)
 {
     AutoPtr<TransitionState> state = new TransitionState(NULL, NULL, NULL);
-    return Init(state, layers);
+    return constructor(state, layers);
 }
 
-ECode TransitionDrawable::Init()
+ECode TransitionDrawable::constructor()
 {
     AutoPtr<TransitionState> state = new TransitionState(NULL, NULL, NULL);
-    return Init(state, (IResources*)NULL);
+    return constructor(state, (IResources*)NULL);
 }
 
-ECode TransitionDrawable::Init(
+ECode TransitionDrawable::constructor(
     /* [in] */ TransitionState* state,
     /* [in] */ IResources* res)
 {
-    return LayerDrawable::Init(state, res);
+    return LayerDrawable::constructor(state, res);
 }
 
-ECode TransitionDrawable::Init(
+ECode TransitionDrawable::constructor(
     /* [in] */ TransitionState* state,
     /* [in] */ ArrayOf<IDrawable*>* layers)
 {
-    return LayerDrawable::Init(layers, state);
+    return LayerDrawable::constructor(layers, state);
 }
 
 } // namespace Drawable

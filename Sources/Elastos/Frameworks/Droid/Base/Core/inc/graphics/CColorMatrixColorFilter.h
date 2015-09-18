@@ -9,9 +9,20 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CarClass(CColorMatrixColorFilter), public ColorFilter
+CarClass(CColorMatrixColorFilter)
+    , public ColorFilter
+    , public IColorMatrixColorFilter
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CARAPI_(PInterface) Probe(
+        /* [in]  */ REIID riid);
+
+    CARAPI GetInterfaceID(
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
+
     /**
      * Create a colorfilter that transforms colors through a 4x5 color matrix.
      *

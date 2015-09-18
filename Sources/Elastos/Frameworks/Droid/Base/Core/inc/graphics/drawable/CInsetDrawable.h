@@ -5,7 +5,6 @@
 #include "_Elastos_Droid_Graphics_Drawable_CInsetDrawable.h"
 #include "graphics/drawable/InsetDrawable.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
@@ -14,6 +13,8 @@ namespace Drawable {
 CarClass(CInsetDrawable), public InsetDrawable
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI constructor();
 
     CARAPI constructor(
@@ -30,13 +31,6 @@ public:
     CARAPI constructor(
         /* [in] */ Handle32 state,
         /* [in] */ IResources* res);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    IDRAWABLE_METHODS_DECL()
-
-    IDRAWABLECALLBACK_METHODS_DECL()
 };
 
 } // namespace Drawable

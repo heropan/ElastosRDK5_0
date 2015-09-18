@@ -80,7 +80,7 @@ Boolean InsetDrawable::InsetState::CanConstantState()
     return mCanConstantState;
 }
 
-
+CAR_INTERFACE_IMPL_2(InsetDrawable, Drawable, IInsetDrawable, IDrawableCallback);
 InsetDrawable::InsetDrawable()
     : mMutated(FALSE)
 {
@@ -93,7 +93,7 @@ InsetDrawable::InsetDrawable(
     : mMutated(FALSE)
 {
     CRect::NewByFriend((CRect**)&mTmpRect);
-    ASSERT_SUCCEEDED(Init(drawable, inset, inset, inset, inset));
+    ASSERT_SUCCEEDED(constructor(drawable, inset, inset, inset, inset));
 }
 
 InsetDrawable::InsetDrawable(
@@ -105,7 +105,7 @@ InsetDrawable::InsetDrawable(
     : mMutated(FALSE)
 {
     CRect::NewByFriend((CRect**)&mTmpRect);
-    ASSERT_SUCCEEDED(Init(drawable, insetLeft, insetTop, insetRight, insetBottom));
+    ASSERT_SUCCEEDED(constructor(drawable, insetLeft, insetTop, insetRight, insetBottom));
 }
 
 InsetDrawable::InsetDrawable(
@@ -180,7 +180,8 @@ ECode InsetDrawable::Inflate(
 ECode InsetDrawable::InvalidateDrawable(
     /* [in] */ IDrawable* who)
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->InvalidateDrawable(THIS_PROBE(IDrawable));
     }
@@ -192,7 +193,8 @@ ECode InsetDrawable::ScheduleDrawable(
     /* [in] */ IRunnable* what,
     /* [in] */ Int64 when)
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->ScheduleDrawable(THIS_PROBE(IDrawable), what, when);
     }
@@ -203,7 +205,8 @@ ECode InsetDrawable::UnscheduleDrawable(
     /* [in] */ IDrawable* who,
     /* [in] */ IRunnable* what)
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->UnscheduleDrawable(THIS_PROBE(IDrawable), what);
     }
@@ -216,18 +219,24 @@ ECode InsetDrawable::Draw(
     return mInsetState->mDrawable->Draw(canvas);
 }
 
-Int32 InsetDrawable::GetChangingConfigurations()
+ECode InsetDrawable::GetChangingConfigurations(
+    /* [out] */ Int32* configuration)
 {
+    VALIDATE_NOT_NULL(configuration);
     Int32 config;
     mInsetState->mDrawable->GetChangingConfigurations(&config);
-    return Drawable::GetChangingConfigurations()
+    Drawable::GetChangingConfigurations(configuration);
+    *configuration = (*configuration)
             | mInsetState->mChangingConfigurations
             | config;
+    return NOERROR;
 }
 
-Boolean InsetDrawable::GetPadding(
-    /* [in] */ IRect* padding)
+ECode InsetDrawable::GetPadding(
+    /* [in] */ IRect* padding,
+    /* [out] */ Boolean* isPadding)
 {
+    VALIDATE_NOT_NULL(isPadding);
     Boolean pad;
     mInsetState->mDrawable->GetPadding(padding, &pad);
 
@@ -238,20 +247,21 @@ Boolean InsetDrawable::GetPadding(
 
     if (pad || (mInsetState->mInsetLeft | mInsetState->mInsetRight |
                 mInsetState->mInsetTop | mInsetState->mInsetBottom) != 0) {
-        return TRUE;
+        *isPadding = TRUE;
+        return NOERROR;
     }
-    else {
-        return FALSE;
-    }
+    *isPadding = FALSE;
+    return NOERROR;
 }
 
-Boolean InsetDrawable::SetVisible(
+ECode InsetDrawable::SetVisible(
     /* [in] */ Boolean visible,
-    /* [in] */ Boolean restart)
+    /* [in] */ Boolean restart,
+    /* [out] */ Boolean* isDifferent)
 {
-    Boolean isDifferent;
-    mInsetState->mDrawable->SetVisible(visible, restart, &isDifferent);
-    return Drawable::SetVisible(visible, restart);
+    VALIDATE_NOT_NULL(isDifferent);
+    mInsetState->mDrawable->SetVisible(visible, restart, isDifferent);
+    return Drawable::SetVisible(visible, restart, isDifferent);
 }
 
 ECode InsetDrawable::SetAlpha(
@@ -266,18 +276,16 @@ ECode InsetDrawable::SetColorFilter(
     return mInsetState->mDrawable->SetColorFilter(cf);
 }
 
-Int32 InsetDrawable::GetOpacity()
+ECode InsetDrawable::GetOpacity(
+    /* [out] */ Int32* opacity)
 {
-    Int32 opacity;
-    mInsetState->mDrawable->GetOpacity(&opacity);
-    return opacity;
+    return mInsetState->mDrawable->GetOpacity(opacity);
 }
 
-Boolean InsetDrawable::IsStateful()
+ECode InsetDrawable::IsStateful(
+    /* [out] */ Boolean* isStateful)
 {
-    Boolean isStateful;
-    mInsetState->mDrawable->IsStateful(&isStateful);
-    return isStateful;
+    return mInsetState->mDrawable->IsStateful(isStateful);
 }
 
 Boolean InsetDrawable::OnStateChange(
@@ -286,7 +294,9 @@ Boolean InsetDrawable::OnStateChange(
     Boolean changed;
     mInsetState->mDrawable->SetState(
         const_cast<ArrayOf<Int32>*>(state), &changed);
-    OnBoundsChange(GetBounds());
+    AutoPtr<IRect> rect;
+    GetBounds((IRect**)&rect);
+    OnBoundsChange(rect);
     return changed;
 }
 
@@ -304,59 +314,77 @@ void InsetDrawable::OnBoundsChange(
     mInsetState->mDrawable->SetBounds(r->mLeft, r->mTop, r->mRight, r->mBottom);
 }
 
-Int32 InsetDrawable::GetIntrinsicWidth()
+ECode InsetDrawable::GetIntrinsicWidth(
+    /* [out] */ Int32* width)
 {
-    Int32 width;
-    mInsetState->mDrawable->GetIntrinsicWidth(&width);
-    return width;
+    VALIDATE_NOT_NULL(width);
+    return mInsetState->mDrawable->GetIntrinsicWidth(width);
 }
 
-Int32 InsetDrawable::GetIntrinsicHeight()
+ECode InsetDrawable::GetIntrinsicHeight(
+    /* [out] */ Int32* height)
 {
-    Int32 height;
-    mInsetState->mDrawable->GetIntrinsicHeight(&height);
-    return height;
+    VALIDATE_NOT_NULL(height);
+    return mInsetState->mDrawable->GetIntrinsicHeight(height);
 }
 
-AutoPtr<IDrawableConstantState> InsetDrawable::GetConstantState()
+ECode InsetDrawable::GetConstantState(
+    /* [out] */ IDrawableConstantState** state)
 {
+    VALIDATE_NOT_NULL(state);
     if (mInsetState->CanConstantState()) {
-        mInsetState->mChangingConfigurations = GetChangingConfigurations();
-        return mInsetState;
+        GetChangingConfigurations(&mInsetState->mChangingConfigurations);
+        *state = mInsetState;
+        REFCOUNT_ADD(*state);
+        return NOERROR;
     }
-    return NULL;
+    *state = NULL;
+    return NOERROR;
 }
 
-AutoPtr<IDrawable> InsetDrawable::Mutate()
+ECode InsetDrawable::Mutate(
+    /* [out] */ IDrawable** drawable)
 {
-    if (!mMutated && Drawable::Mutate().Get() == THIS_PROBE(IDrawable)) {
-        AutoPtr<IDrawable> drawable;
-        mInsetState->mDrawable->Mutate((IDrawable**)&drawable);
+    VALIDATE_NOT_NULL(drawable);
+    AutoPtr<IDrawable> tmp;
+    if (!mMutated && (Drawable::Mutate((IDrawable**)&tmp), tmp.Get()) == THIS_PROBE(IDrawable)) {
+        tmp = NULL;
+        mInsetState->mDrawable->Mutate((IDrawable**)&tmp);
         mMutated = TRUE;
     }
-    return THIS_PROBE(IDrawable);
+    *drawable = THIS_PROBE(IDrawable);
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
-ECode InsetDrawable::Init()
+ECode InsetDrawable::GetDrawable(
+    /* [out] */ IDrawable** drawable)
 {
-    return Init((InsetState*)NULL, (IResources*)NULL);
+    assert(0 && "TODO");
+    //not merge from android5.x
+    return NOERROR;
 }
 
-ECode InsetDrawable::Init(
+ECode InsetDrawable::constructor()
+{
+    return constructor((InsetState*)NULL, (IResources*)NULL);
+}
+
+ECode InsetDrawable::constructor(
     /* [in] */ IDrawable* drawable,
     /* [in] */ Int32 inset)
 {
-    return Init(drawable, inset, inset, inset, inset);
+    return constructor(drawable, inset, inset, inset, inset);
 }
 
-ECode InsetDrawable::Init(
+ECode InsetDrawable::constructor(
     /* [in] */ IDrawable* drawable,
     /* [in] */ Int32 insetLeft,
     /* [in] */ Int32 insetTop,
     /* [in] */ Int32 insetRight,
     /* [in] */ Int32 insetBottom)
 {
-    FAIL_RETURN(Init((InsetState*)NULL, (IResources*)NULL));
+    FAIL_RETURN(constructor((InsetState*)NULL, (IResources*)NULL));
 
     mInsetState->mDrawable = drawable;
     mInsetState->mInsetLeft = insetLeft;
@@ -371,7 +399,7 @@ ECode InsetDrawable::Init(
     return NOERROR;
 }
 
-ECode InsetDrawable::Init(
+ECode InsetDrawable::constructor(
     /* [in] */ InsetState* state,
     /* [in] */ IResources* res)
 {

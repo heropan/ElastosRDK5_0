@@ -12,6 +12,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CInterpolator);
+CAR_INTERFACE_IMPL(CInterpolator, Object, IInterpolator);
 ECode CInterpolator::constructor(
     /* [in] */ Int32 valueCount)
 {

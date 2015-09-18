@@ -6,6 +6,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CBlurMaskFilter);
+CAR_INTERFACE_IMPL(CBlurMaskFilter, MaskFilter, IBlurMaskFilter);
 ECode CBlurMaskFilter::constructor(
     /* [in] */ Float radius,
     /* [in] */ Int32 style)

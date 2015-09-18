@@ -7,6 +7,7 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CDashPathEffect);
 ECode CDashPathEffect::constructor(
     /* [in] */ const ArrayOf<Float>& intervals,
     /* [in] */ Float phase)
@@ -25,7 +26,10 @@ PInterface CDashPathEffect::Probe(
     if (riid == EIID_PathEffect) {
         return reinterpret_cast<PInterface>((PathEffect*)this);
     }
-    return _CDashPathEffect::Probe(riid);
+    else if (riid == EIID_IDashPathEffect) {
+        return (IDashPathEffect*)this;
+    }
+    return PathEffect::Probe(riid);
 }
 
 Int32 CDashPathEffect::NativeCreate(

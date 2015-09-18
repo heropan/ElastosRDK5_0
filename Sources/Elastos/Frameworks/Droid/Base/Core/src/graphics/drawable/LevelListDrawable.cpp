@@ -4,7 +4,6 @@
 #include "graphics/drawable/CLevelListDrawable.h"
 #include "R.h"
 
-
 using Elastos::Droid::R;
 
 namespace Elastos {
@@ -85,7 +84,7 @@ void LevelListDrawable::LevelListState::GrowArray(
     mHighs = newInts;
 }
 
-
+CAR_INTERFACE_IMPL(LevelListDrawable, DrawableContainer, ILevelListDrawable);
 LevelListDrawable::LevelListDrawable()
     : mMutated(FALSE)
 {
@@ -98,7 +97,9 @@ LevelListDrawable::LevelListDrawable(
 {
     mLevelListState = new LevelListState(state, this, res);
     SetConstantState(mLevelListState);
-    OnLevelChange(GetLevel());
+    Int32 level = 0;
+    GetLevel(&level);
+    OnLevelChange(level);
 }
 
 ECode LevelListDrawable::AddLevel(
@@ -109,7 +110,9 @@ ECode LevelListDrawable::AddLevel(
     if (drawable != NULL) {
         mLevelListState->AddLevel(low, high, drawable);
         // in case the new state matches our current state...
-        OnLevelChange(GetLevel());
+        Int32 level = 0;
+        GetLevel(&level);
+        OnLevelChange(level);
     }
     return NOERROR;
 }
@@ -119,7 +122,8 @@ Boolean LevelListDrawable::OnLevelChange(
     /* [in] */ Int32 level)
 {
     Int32 idx = mLevelListState->IndexOfLevel(level);
-    if (SelectDrawable(idx)) {
+    Boolean res = FALSE;
+    if (SelectDrawable(idx, &res), res) {
         return TRUE;
     }
     return DrawableContainer::OnLevelChange(level);
@@ -196,34 +200,41 @@ ECode LevelListDrawable::Inflate(
         mLevelListState->AddLevel(low, high, dr);
     }
 
-    OnLevelChange(GetLevel());
+    Int32 level = 0;
+    OnLevelChange((GetLevel(&level), level));
     return NOERROR;
 }
 
-//@Override
-AutoPtr<IDrawable> LevelListDrawable::Mutate()
+ECode LevelListDrawable::Mutate(
+    /* [out] */ IDrawable** drawable)
 {
+    VALIDATE_NOT_NULL(drawable);
+    AutoPtr<IDrawable> tmp;
     if (!mMutated &&
-            DrawableContainer::Mutate().Get() == (IDrawable*)this->Probe(EIID_IDrawable)) {
+            (DrawableContainer::Mutate((IDrawable**)&tmp), tmp.Get()) == (IDrawable*)this->Probe(EIID_IDrawable)) {
         mLevelListState->mLows = mLevelListState->mLows->Clone();
         mLevelListState->mHighs = mLevelListState->mHighs->Clone();
         mMutated = TRUE;
     }
-    return (IDrawable*)this->Probe(EIID_IDrawable);
+    *drawable = (IDrawable*)this->Probe(EIID_IDrawable);
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
-ECode LevelListDrawable::Init()
+ECode LevelListDrawable::constructor()
 {
-    return Init(NULL, NULL);
+    return constructor(NULL, NULL);
 }
 
-ECode LevelListDrawable::Init(
+ECode LevelListDrawable::constructor(
     /* [in] */ LevelListState* state,
     /* [in] */ IResources* res)
 {
     mLevelListState = new LevelListState(state, this, res);
     SetConstantState(mLevelListState);
-    OnLevelChange(GetLevel());
+    Int32 level = 0;
+    GetLevel(&level);
+    OnLevelChange(level);
     return NOERROR;
 }
 

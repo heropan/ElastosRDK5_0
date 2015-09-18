@@ -13,6 +13,15 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CRectF);
+CAR_INTERFACE_IMPL_2(CRectF, Object, IRectF, IParcelable);
+CRectF::CRectF()
+    : mLeft(0.0f)
+    , mTop(0.0f)
+    , mRight(0.0f)
+    , mBottom(0.0f)
+{}
+
 ECode CRectF::constructor()
 {
     return NOERROR;

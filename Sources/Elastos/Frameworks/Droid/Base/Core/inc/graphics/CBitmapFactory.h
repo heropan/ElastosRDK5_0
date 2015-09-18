@@ -4,22 +4,28 @@
 
 #include "_Elastos_Droid_Graphics_CBitmapFactory.h"
 #include <Elastos.CoreLibrary.h>
-
-
-using Elastos::IO::IInputStream;
-using Elastos::IO::IFileDescriptor;
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Core::Singleton;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IFileDescriptor;
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
 CarClass(CBitmapFactory)
+    , public Singleton
+    , public IBitmapFactory
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_SINGLETON_DECL();
+
     CARAPI SetDefaultDensity(
         /* [in] */ Int32 density);
 
@@ -359,7 +365,7 @@ private:
         /* [in] */ IFileDescriptor* fd);
 
 private:
-    static const Int32 DECODE_BUFFER_SIZE = 16 * 1024;
+    static const Int32 DECODE_BUFFER_SIZE;
 };
 
 } // namespace Graphics

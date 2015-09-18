@@ -9,9 +9,15 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CarClass(CComposePathEffect), public PathEffect
+CarClass(CComposePathEffect)
+    , public PathEffect
+    , public IComposePathEffect
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     /**
      * Construct a PathEffect whose effect is to apply first the inner effect
      * and the the outer pathEffect (e.g. outer(inner(path))).

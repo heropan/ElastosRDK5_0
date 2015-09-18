@@ -2,11 +2,11 @@
 #include "ext/frameworkext.h"
 #include "graphics/drawable/ClipDrawable.h"
 #include "graphics/drawable/CClipDrawable.h"
-#include "view/CGravity.h"
+// #include "view/CGravity.h"
 #include "R.h"
 
 using Elastos::Droid::View::IGravity;
-using Elastos::Droid::View::CGravity;
+// using Elastos::Droid::View::CGravity;
 using Elastos::Droid::R;
 
 namespace Elastos {
@@ -35,6 +35,16 @@ ClipDrawable::ClipState::ClipState(
         }
         mDrawable->SetCallback(
                 (IDrawableCallback*)owner->Probe(EIID_IDrawableCallback));
+
+        Int32 value = 0;
+        orig->mDrawable->GetLayoutDirection(&value);
+        mDrawable->SetLayoutDirection(value);
+        AutoPtr<IRect> bounds;
+        orig->mDrawable->GetBounds((IRect**)&bounds);
+        mDrawable->SetBounds(bounds);
+        orig->mDrawable->GetLevel(&value);
+        Boolean res = FALSE;
+        mDrawable->SetLevel(value, &res);
         mOrientation = orig->mOrientation;
         mGravity = orig->mGravity;
         mCheckedConstantState = mCanConstantState = TRUE;
@@ -79,30 +89,28 @@ Boolean ClipDrawable::ClipState::CanConstantState()
     return mCanConstantState;
 }
 
-
+CAR_INTERFACE_IMPL_2(ClipDrawable, Drawable, IClipDrawable, IDrawableCallback)
 ClipDrawable::ClipDrawable()
 {
     CRect::NewByFriend((CRect**)&mTmpRect);
 }
 
-/**
- * @param orientation Bitwise-or of {@link #HORIZONTAL} and/or {@link #VERTICAL}
- */
 ClipDrawable::ClipDrawable(
     /* [in] */ IDrawable* drawable,
     /* [in] */ Int32 gravity,
     /* [in] */ Int32 orientation)
 {
     CRect::NewByFriend((CRect**)&mTmpRect);
-    ASSERT_SUCCEEDED(Init(drawable, gravity, orientation));
+    ASSERT_SUCCEEDED(constructor(drawable, gravity, orientation));
 }
 
 ECode ClipDrawable::Inflate(
     /* [in] */ IResources* r,
     /* [in] */ IXmlPullParser* parser,
-    /* [in] */ IAttributeSet* attrs)
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme)
 {
-    FAIL_RETURN(Drawable::Inflate(r, parser, attrs));
+    FAIL_RETURN(Drawable::Inflate(r, parser, attrs, theme));
 
     Int32 type;
 
@@ -111,7 +119,7 @@ ECode ClipDrawable::Inflate(
     layout->Copy(R::styleable::ClipDrawable, size);
 
     AutoPtr<ITypedArray> a;
-    r->ObtainAttributes(attrs, layout, (ITypedArray**)&a);
+    FAIL_RETURN(ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a));
 
     Int32 orientation;
     a->GetInt32(
@@ -132,7 +140,7 @@ ECode ClipDrawable::Inflate(
             continue;
         }
         dr = NULL;
-        FAIL_RETURN(Drawable::CreateFromXmlInner(r, parser, attrs, (IDrawable**)&dr));
+        FAIL_RETURN(Drawable::CreateFromXmlInner(r, parser, attrs, theme, (IDrawable**)&dr));
     }
 
     if (dr == NULL) {
@@ -151,7 +159,8 @@ ECode ClipDrawable::Inflate(
 ECode ClipDrawable::InvalidateDrawable(
     /* [in] */ IDrawable* who)
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->InvalidateDrawable(
                 (IDrawable*)this->Probe(EIID_IDrawable));
@@ -164,7 +173,8 @@ ECode ClipDrawable::ScheduleDrawable(
     /* [in] */ IRunnable* what,
     /* [in] */ Int64 when)
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->ScheduleDrawable(
                 (IDrawable*)this->Probe(EIID_IDrawable), what, when);
@@ -176,7 +186,8 @@ ECode ClipDrawable::UnscheduleDrawable(
     /* [in] */ IDrawable* who,
     /* [in] */ IRunnable* what)
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->UnscheduleDrawable(
                 (IDrawable*)this->Probe(EIID_IDrawable), what);
@@ -184,31 +195,37 @@ ECode ClipDrawable::UnscheduleDrawable(
     return NOERROR;
 }
 
-Int32 ClipDrawable::GetChangingConfigurations()
+ECode ClipDrawable::GetChangingConfigurations(
+    /* [out] */ Int32* configuration)
 {
+    VALIDATE_NOT_NULL(configuration);
     Int32 configs;
     mClipState->mDrawable->GetChangingConfigurations(&configs);
-    return Drawable::GetChangingConfigurations()
+    Drawable::GetChangingConfigurations(configuration);
+    *configuration = (*configuration)
             | mClipState->mChangingConfigurations
             | configs;
+    return NOERROR;
 }
 
-Boolean ClipDrawable::GetPadding(
-    /* [in] */ IRect* padding)
+ECode ClipDrawable::GetPadding(
+    /* [in] */ IRect* padding,
+    /* [out] */ Boolean* isPadding)
 {
+    VALIDATE_NOT_NULL(isPadding);
     // XXX need to adjust padding!
-    Boolean isPadding;
-    mClipState->mDrawable->GetPadding(padding, &isPadding);
-    return isPadding;
+    return mClipState->mDrawable->GetPadding(padding, isPadding);
 }
 
-Boolean ClipDrawable::SetVisible(
+ECode ClipDrawable::SetVisible(
     /* [in] */ Boolean visible,
-    /* [in] */ Boolean restart)
+    /* [in] */ Boolean restart,
+    /* [out] */ Boolean* isDifferent)
 {
+    VALIDATE_NOT_NULL(isDifferent);
     Boolean different;
     mClipState->mDrawable->SetVisible(visible, restart, &different);
-    return Drawable::SetVisible(visible, restart);
+    return Drawable::SetVisible(visible, restart, isDifferent);
 }
 
 ECode ClipDrawable::SetAlpha(
@@ -217,24 +234,42 @@ ECode ClipDrawable::SetAlpha(
     return mClipState->mDrawable->SetAlpha(alpha);
 }
 
+ECode ClipDrawable::GetAlpha(
+    /* [out] */ Int32* alpha)
+{
+    return mClipState->mDrawable->GetAlpha(alpha);
+}
+
+ECode ClipDrawable::SetTintList(
+    /* [in] */ IColorStateList* tint)
+{
+    return mClipState->mDrawable->SetTintList(tint);
+}
+
+ECode ClipDrawable::SetTintMode(
+    /* [in] */ PorterDuffMode tintMode)
+{
+    return mClipState->mDrawable->SetTintMode(tintMode);
+}
+
 ECode ClipDrawable::SetColorFilter(
     /* [in] */ IColorFilter* cf)
 {
     return mClipState->mDrawable->SetColorFilter(cf);
 }
 
-Int32 ClipDrawable::GetOpacity()
+ECode ClipDrawable::GetOpacity(
+    /* [out] */ Int32* opacity)
 {
-    Int32 opacity;
-    mClipState->mDrawable->GetOpacity(&opacity);
-    return opacity;
+    VALIDATE_NOT_NULL(opacity);
+    return mClipState->mDrawable->GetOpacity(opacity);
 }
 
-Boolean ClipDrawable::IsStateful()
+ECode ClipDrawable::IsStateful(
+    /* [out] */ Boolean* isStateful)
 {
-    Boolean stateful;
-    mClipState->mDrawable->IsStateful(&stateful);
-    return stateful;
+    VALIDATE_NOT_NULL(isStateful);
+    return mClipState->mDrawable->IsStateful(isStateful);
 }
 
 Boolean ClipDrawable::OnStateChange(
@@ -270,8 +305,10 @@ ECode ClipDrawable::Draw(
     }
 
     IRect* r = (IRect*)mTmpRect.Get();
-    AutoPtr<IRect> bounds = GetBounds();
-    Int32 level = GetLevel();
+    AutoPtr<IRect> bounds;
+    GetBounds((IRect**)&bounds);
+    Int32 level = 0;
+    GetLevel(&level);
     Int32 w;
     bounds->GetWidth(&w);
     Int32 iw = 0; //mClipState.mDrawable.getIntrinsicWidth();
@@ -284,9 +321,11 @@ ECode ClipDrawable::Draw(
     if ((mClipState->mOrientation & IClipDrawable::VERTICAL) != 0) {
         h -= (h - ih) * (10000 - level) / 10000;
     }
-    Int32 layoutDirection = GetLayoutDirection();
+    Int32 layoutDirection = 0;
+    GetLayoutDirection(&layoutDirection);
     AutoPtr<IGravity> gravity;
-    CGravity::AcquireSingleton((IGravity**)&gravity);
+    assert(0 && "TODO");
+    // CGravity::AcquireSingleton((IGravity**)&gravity);
     gravity->Apply(mClipState->mGravity, w, h, bounds, r, layoutDirection);
 
     if (w > 0 && h > 0) {
@@ -300,30 +339,32 @@ ECode ClipDrawable::Draw(
     return NOERROR;
 }
 
-//@Override
-Int32 ClipDrawable::GetIntrinsicWidth()
+ECode ClipDrawable::GetIntrinsicWidth(
+    /* [out] */ Int32* width)
 {
-    Int32 width;
-    mClipState->mDrawable->GetIntrinsicWidth(&width);
-    return width;
+    VALIDATE_NOT_NULL(width);
+    return mClipState->mDrawable->GetIntrinsicWidth(width);
 }
 
-//@Override
-Int32 ClipDrawable::GetIntrinsicHeight()
+ECode ClipDrawable::GetIntrinsicHeight(
+    /* [out] */ Int32* height)
 {
-    Int32 height;
-    mClipState->mDrawable->GetIntrinsicHeight(&height);
-    return height;
+    VALIDATE_NOT_NULL(height);
+    return mClipState->mDrawable->GetIntrinsicHeight(height);
 }
 
-//@Override
-AutoPtr<IDrawableConstantState> ClipDrawable::GetConstantState()
+ECode ClipDrawable::GetConstantState(
+    /* [out] */ IDrawableConstantState** state)
 {
+    VALIDATE_NOT_NULL(state);
     if (mClipState->CanConstantState()) {
-        mClipState->mChangingConfigurations = Drawable::GetChangingConfigurations();
-        return mClipState;
+        Drawable::GetChangingConfigurations(&mClipState->mChangingConfigurations);
+        *state = mClipState;
+        REFCOUNT_ADD(*state);
+        return NOERROR;
     }
-    return NULL;
+    *state = NULL;
+    return NOERROR;
 }
 
 ECode ClipDrawable::SetLayoutDirection(
@@ -339,15 +380,15 @@ ClipDrawable::ClipDrawable(
     /* [in] */ IResources* res)
 {
     CRect::NewByFriend((CRect**)&mTmpRect);
-    ASSERT_SUCCEEDED(Init(state, res));
+    ASSERT_SUCCEEDED(constructor(state, res));
 }
 
-ECode ClipDrawable::Init(
+ECode ClipDrawable::constructor(
     /* [in] */ IDrawable* drawable,
     /* [in] */ Int32 gravity,
     /* [in] */ Int32 orientation)
 {
-    FAIL_RETURN(Init(NULL, NULL));
+    FAIL_RETURN(constructor(NULL, NULL));
 
     mClipState->mDrawable = drawable;
     mClipState->mGravity = gravity;
@@ -360,7 +401,7 @@ ECode ClipDrawable::Init(
     return NOERROR;
 }
 
-ECode ClipDrawable::Init(
+ECode ClipDrawable::constructor(
     /* [in] */ ClipState* state,
     /* [in] */ IResources* res)
 {

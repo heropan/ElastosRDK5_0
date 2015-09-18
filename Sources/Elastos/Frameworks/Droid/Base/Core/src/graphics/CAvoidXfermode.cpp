@@ -6,6 +6,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CAvoidXfermode);
+CAR_INTERFACE_IMPL(CAvoidXfermode, Xfermode, IAvoidXfermode);
 ECode CAvoidXfermode::constructor(
     /* [in] */ Int32 opColor,
     /* [in] */ Int32 tolerance,
@@ -29,12 +31,12 @@ PInterface CAvoidXfermode::Probe(
     return _CAvoidXfermode::Probe(riid);
 }
 
-Int32 CAvoidXfermode::NativeCreate(
+Int64 CAvoidXfermode::NativeCreate(
     /* [in] */ Int32 opColor,
     /* [in] */ Int32 tolerance,
     /* [in] */ Int32 nativeMode)
 {
-    return reinterpret_cast<Int32>(new SkAvoidXfermode(
+    return reinterpret_cast<Int64>(new SkAvoidXfermode(
             opColor, tolerance, (SkAvoidXfermode::Mode)nativeMode));
 }
 

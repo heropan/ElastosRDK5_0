@@ -59,6 +59,12 @@ ECode Shape::HasAlpha(
     return NOERROR;
 }
 
+ECode Shape::GetOutline(
+    /* [in] */ IOutline* outline)
+{
+    return NOERROR;
+}
+
 void Shape::OnResize(
     /* [in] */ Float width,
     /* [in] */ Float height)

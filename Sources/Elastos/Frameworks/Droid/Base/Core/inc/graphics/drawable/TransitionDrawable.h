@@ -10,7 +10,9 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-class TransitionDrawable : public LayerDrawable
+class TransitionDrawable
+    : public LayerDrawable
+    , public ITransitionDrawable
 {
 public:
     class TransitionState : public LayerState
@@ -36,6 +38,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Create a new transition drawable with the specified list of layers. At least
      * 2 layers are required for this drawable to work properly.
@@ -100,19 +104,20 @@ public:
      *
      * @return True if cross fading is enabled, false otherwise.
      */
-    virtual CARAPI_(Boolean) IsCrossFadeEnabled();
+    virtual CARAPI IsCrossFadeEnabled(
+        /* [out] */ Boolean* enabled);
 
 protected:
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ArrayOf<IDrawable*>* layers);
 
-    CARAPI Init();
+    CARAPI constructor();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ TransitionState* state,
         /* [in] */ IResources* res);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ TransitionState* state,
         /* [in] */ ArrayOf<IDrawable*>* layers);
 

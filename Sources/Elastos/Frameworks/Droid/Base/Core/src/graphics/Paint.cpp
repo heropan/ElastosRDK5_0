@@ -77,6 +77,7 @@ const Int32 Paint::BIDI_MAX_FLAG_VALUE;
 const Int32 Paint::BIDI_FLAG_MASK;
 const Int32 Paint::CURSOR_OPT_MAX_VALUE;
 
+CAR_INTERFACE_IMPL(Paint, Object, IPaint);
 Paint::Paint()
     : mNativePaint(0)
     , mHasShadow(FALSE)
@@ -98,9 +99,9 @@ Paint::~Paint()
 /**
  * Create a new paint with default settings.
  */
-ECode Paint::Init()
+ECode Paint::constructor()
 {
-    return Init(0);
+    return constructor(0);
 }
 
 /**
@@ -109,7 +110,7 @@ ECode Paint::Init()
  *
  * @param flags initial flag bits, as if they were passed via setFlags().
  */
-ECode Paint::Init(
+ECode Paint::constructor(
     /* [in] */ Int32 flags)
 {
     mNativePaint = NativeInit();
@@ -124,7 +125,7 @@ ECode Paint::Init(
     return NOERROR;
 }
 
-ECode Paint::Init(
+ECode Paint::constructor(
     /* [in] */ IPaint* paint)
 {
     VALIDATE_NOT_NULL(paint);

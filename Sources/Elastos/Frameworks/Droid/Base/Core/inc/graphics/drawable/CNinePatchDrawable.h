@@ -5,15 +5,16 @@
 #include "_Elastos_Droid_Graphics_Drawable_CNinePatchDrawable.h"
 #include "graphics/drawable/NinePatchDrawable.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-CarClass(CNinePatchDrawable), NinePatchDrawable
+CarClass(CNinePatchDrawable), public NinePatchDrawable
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI constructor();
 
     CARAPI constructor(
@@ -47,23 +48,6 @@ public:
     CARAPI constructor(
         /* [in] */ Handle32 state,
         /* [in] */ IResources* res);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    IDRAWABLE_METHODS_DECL()
-
-    CARAPI SetTargetDensity(
-        /* [in] */ ICanvas* canvas);
-
-    CARAPI SetTargetDensity(
-        /* [in] */ IDisplayMetrics* metrics);
-
-    CARAPI SetTargetDensity(
-        /* [in] */ Int32 density);
-
-    CARAPI GetPaint(
-        /* [out] */ IPaint** paint);
 };
 
 } // namespace Drawable

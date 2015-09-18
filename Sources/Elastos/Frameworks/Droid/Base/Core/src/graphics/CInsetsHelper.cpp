@@ -7,6 +7,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_SINGLETON_IMPL(CInsetsHelper);
+CAR_INTERFACE_IMPL(CInsetsHelper, Singleton, IInsetsHelper);
 ECode CInsetsHelper::Of(
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,

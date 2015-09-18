@@ -26,6 +26,7 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_INTERFACE_IMPL(BitmapRegionDecoder, Object, BitmapRegionDecoder);
 /*  Private constructor that must receive an already allocated native
 region decoder int (pointer).
 */
@@ -42,37 +43,6 @@ BitmapRegionDecoder::~BitmapRegionDecoder()
     // } finally {
     //     super.finalize();
     // }
-}
-
-PInterface BitmapRegionDecoder::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IBitmapRegionDecoder*)this;
-    }
-    else if (riid == EIID_IBitmapRegionDecoder) {
-        return (IBitmapRegionDecoder*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 BitmapRegionDecoder::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 BitmapRegionDecoder::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode BitmapRegionDecoder::GetInterfaceID(
-    /* [in] */ IInterface* pObject,
-    /* [in] */ InterfaceID* pIID)
-{
-    assert(0);
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode BitmapRegionDecoder::NewInstance(

@@ -9,8 +9,14 @@ namespace Droid {
 namespace Graphics {
 
 CarClass(CBitmapFactoryOptions)
+    , public Object
+    , public IBitmapFactoryOptions
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     /**
      * Create a default Options object, which if left unchanged will give
      * the same result from the decoder as if null were passed.

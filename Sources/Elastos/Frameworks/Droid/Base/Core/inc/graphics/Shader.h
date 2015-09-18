@@ -18,8 +18,12 @@ extern "C" const InterfaceID EIID_Shader;
  * drawn with that paint will get its color(s) from the shader.
  */
 class Shader
+    : public Object
+    , public IShader
 {
 public:
+    CAR_INTERFACE_DECL();
+
     ~Shader();
 
     /**

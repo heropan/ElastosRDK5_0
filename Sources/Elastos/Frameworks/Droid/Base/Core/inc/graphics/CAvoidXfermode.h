@@ -13,9 +13,15 @@ namespace Graphics {
  * AvoidXfermode xfermode will draw the src everywhere except on top of the
  * opColor or, depending on the Mode, draw only on top of the opColor.
  */
-CarClass(CAvoidXfermode), public Xfermode
+CarClass(CAvoidXfermode)
+    , public Xfermode
+    , public IAvoidXfermode
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     /** This xfermode draws, or doesn't draw, based on the destination's
      * distance from an op-color.
      *
@@ -40,7 +46,7 @@ public:
         /* [in] */ REIID riid);
 
 private:
-    static CARAPI_(Int32) NativeCreate(
+    static CARAPI_(Int64) NativeCreate(
         /* [in] */ Int32 opColor,
         /* [in] */ Int32 tolerance,
         /* [in] */ Int32 nativeMode);

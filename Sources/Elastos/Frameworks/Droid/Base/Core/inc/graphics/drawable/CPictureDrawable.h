@@ -5,32 +5,15 @@
 #include "_Elastos_Droid_Graphics_Drawable_CPictureDrawable.h"
 #include "graphics/drawable/PictureDrawable.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-CarClass(CPictureDrawable), PictureDrawable
+CarClass(CPictureDrawable), public PictureDrawable
 {
 public:
-    IDRAWABLE_METHODS_DECL()
-
-    /**
-     * Return the picture associated with the drawable. May be null.
-     *
-     * @return the picture associated with the drawable, or null.
-     */
-    CARAPI GetPicture(
-        /* [out] */ IPicture** picture);
-
-    /**
-     * Associate a picture with this drawable. The picture may be null.
-     *
-     * @param picture The picture to associate with the drawable. May be null.
-     */
-    CARAPI SetPicture(
-        /* [in] */ IPicture* picture);
+    CAR_OBJECT_DECL();
 
     /**
      * Construct a new drawable referencing the specified picture. The picture
@@ -40,9 +23,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ IPicture* picture);
-
-    PInterface Probe(
-        /* [in] */ REIID riid);
 };
 
 } // namespace Drawable

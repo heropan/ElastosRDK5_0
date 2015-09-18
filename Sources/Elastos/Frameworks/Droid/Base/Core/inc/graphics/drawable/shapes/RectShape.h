@@ -32,6 +32,9 @@ public:
         /* [in] */ ICanvas* canvas,
         /* [in] */ IPaint* paint);
 
+    CARAPI GetOutline(
+        /* [in] */ IOutline* outline);
+
 protected:
     //@Override
     CARAPI_(void) OnResize(

@@ -32,6 +32,9 @@ public:
     CARAPI Draw(
         /* [in] */ ICanvas* canvas,
         /* [in] */ IPaint* paint);
+
+    CARAPI GetOutline(
+        /* [in] */ IOutline* outline);
 };
 
 } // namespace Shapes

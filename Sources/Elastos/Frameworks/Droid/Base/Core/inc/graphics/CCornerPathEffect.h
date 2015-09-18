@@ -9,9 +9,13 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CarClass(CCornerPathEffect), public PathEffect
+CarClass(CCornerPathEffect)
+    , public PathEffect
+    , public ICornerPathEffect
 {
 public:
+    CAR_OBJECT_DECL();
+
     /**
      * Transforms geometries that are drawn (either STROKE or FILL styles) by
      * replacing any sharp angles between line segments into rounded angles of

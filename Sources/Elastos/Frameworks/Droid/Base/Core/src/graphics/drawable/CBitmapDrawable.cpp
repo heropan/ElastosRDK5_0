@@ -6,167 +6,63 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-IDRAWABLE_METHODS_IMPL(CBitmapDrawable, BitmapDrawable)
-
+CAR_OBJECT_IMPL(CBitmapDrawable);
 ECode CBitmapDrawable::constructor()
 {
-    return BitmapDrawable::Init();
+    return BitmapDrawable::constructor();
 }
 
 ECode CBitmapDrawable::constructor(
         /* [in] */ IResources* res)
 {
-    return BitmapDrawable::Init(res);
+    return BitmapDrawable::constructor(res);
 }
 
 ECode CBitmapDrawable::constructor(
         /* [in] */ IBitmap* bitmap)
 {
-    return BitmapDrawable::Init(bitmap);
+    return BitmapDrawable::constructor(bitmap);
 }
 
 ECode CBitmapDrawable::constructor(
     /* [in] */ IResources* res,
     /* [in] */ IBitmap* bitmap)
 {
-    return BitmapDrawable::Init(res, bitmap);
+    return BitmapDrawable::constructor(res, bitmap);
 }
 
 ECode CBitmapDrawable::constructor(
     /* [in] */ const String& filepath)
 {
-    return BitmapDrawable::Init(filepath);
+    return BitmapDrawable::constructor(filepath);
 }
 
 ECode CBitmapDrawable::constructor(
     /* [in] */ IResources* res,
     /* [in] */ const String& filepath)
 {
-    return BitmapDrawable::Init(res, filepath);
+    return BitmapDrawable::constructor(res, filepath);
 }
 
 ECode CBitmapDrawable::constructor(
     /* [in] */ IInputStream* is)
 {
-    return BitmapDrawable::Init(is);
+    return BitmapDrawable::constructor(is);
 }
 
 ECode CBitmapDrawable::constructor(
     /* [in] */ IResources* res,
     /* [in] */ IInputStream* is)
 {
-    return BitmapDrawable::Init(res, is);
+    return BitmapDrawable::constructor(res, is);
 }
 
 ECode CBitmapDrawable::constructor(
-    /* [in] */ Handle32 state,
-    /* [in] */ IResources* res)
+    /* [in] */ IDrawableConstantState* state,
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme)
 {
-    return BitmapDrawable::Init((BitmapState*)state, res);
-}
-
-PInterface CBitmapDrawable::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CBitmapDrawable::Probe(riid);
-}
-
-ECode CBitmapDrawable::GetPaint(
-    /* [out] */ IPaint** paint)
-{
-    VALIDATE_NOT_NULL(paint);
-    AutoPtr<IPaint> temp = BitmapDrawable::GetPaint();
-    *paint = temp;
-    REFCOUNT_ADD(*paint);
-
-    return NOERROR;
-}
-
-ECode CBitmapDrawable::GetBitmap(
-    /* [out] */ IBitmap** bitmap)
-{
-    VALIDATE_NOT_NULL(bitmap);
-    AutoPtr<IBitmap> temp = BitmapDrawable::GetBitmap();
-    *bitmap = temp;
-    REFCOUNT_ADD(*bitmap);
-
-    return NOERROR;
-}
-
-ECode CBitmapDrawable::SetTargetDensity(
-    /* [in] */ ICanvas* canvas)
-{
-    return BitmapDrawable::SetTargetDensity(canvas);
-}
-
-ECode CBitmapDrawable::SetTargetDensity(
-    /* [in] */ IDisplayMetrics* metrics)
-{
-    return BitmapDrawable::SetTargetDensity(metrics);
-}
-
-ECode CBitmapDrawable::SetTargetDensity(
-    /* [in] */ Int32 density)
-{
-    return BitmapDrawable::SetTargetDensity(density);
-}
-
-ECode CBitmapDrawable::GetGravity(
-    /* [out] */ Int32* gravity)
-{
-    VALIDATE_NOT_NULL(gravity);
-    *gravity = BitmapDrawable::GetGravity();
-
-    return NOERROR;
-}
-
-ECode CBitmapDrawable::SetGravity(
-    /* [in] */ Int32 gravity)
-{
-    return BitmapDrawable::SetGravity(gravity);
-}
-
-ECode CBitmapDrawable::SetAntiAlias(
-    /* [in] */ Boolean aa)
-{
-    return BitmapDrawable::SetAntiAlias(aa);
-}
-
-ECode CBitmapDrawable::GetTileModeX(
-    /* [out] */ ShaderTileMode* tileModeX)
-{
-    VALIDATE_NOT_NULL(tileModeX);
-    *tileModeX = BitmapDrawable::GetTileModeX();
-
-    return NOERROR;
-}
-
-ECode CBitmapDrawable::GetTileModeY(
-    /* [out] */ ShaderTileMode* tileModeY)
-{
-    VALIDATE_NOT_NULL(tileModeY);
-    *tileModeY = BitmapDrawable::GetTileModeY();
-
-    return NOERROR;
-}
-
-ECode CBitmapDrawable::SetTileModeX(
-    /* [in] */ ShaderTileMode mode)
-{
-    return BitmapDrawable::SetTileModeX(mode);
-}
-
-ECode CBitmapDrawable::SetTileModeY(
-    /* [in] */ ShaderTileMode mode)
-{
-    return BitmapDrawable::SetTileModeY(mode);
-}
-
-ECode CBitmapDrawable::SetTileModeXY(
-    /* [in] */ ShaderTileMode xmode,
-    /* [in] */ ShaderTileMode ymode)
-{
-    return BitmapDrawable::SetTileModeXY(xmode, ymode);
+    return BitmapDrawable::constructor((BitmapState*)state, res, theme);
 }
 
 } // namespace Drawable

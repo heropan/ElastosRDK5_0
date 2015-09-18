@@ -3,14 +3,23 @@
 #define __ELASTOS_DROID_GRAPHICS_CCAMERA_H__
 
 #include "_Elastos_Droid_Graphics_CCamera.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
 CarClass(CCamera)
+    , public Object
+    , public ICamera
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     CCamera();
 
     ~CCamera();

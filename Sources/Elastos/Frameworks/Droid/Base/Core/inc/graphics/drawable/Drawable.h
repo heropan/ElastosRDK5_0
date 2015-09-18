@@ -5,14 +5,17 @@
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkext.h"
 
+using Elastos::Droid::Content::Res::IResourcesTheme;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Content::Res::IColorStateList;
+using Elastos::Droid::Graphics::IXfermode;
+using Elastos::Droid::Graphics::IColorFilter;
+using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Core::IRunnable;
 using Elastos::IO::IInputStream;
 using Org::Xmlpull::V1::IXmlPullParser;
-
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Content::Res::ITypedArray;
-using Elastos::Droid::Utility::ITypedValue;
-using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
@@ -39,9 +42,8 @@ public:
      * Drawable.
      */
     class ConstantState
-        : public ElRefBase
+        : public Object
         , public IDrawableConstantState
-        , public IWeakReferenceSource
     {
     public:
         CAR_INTERFACE_DECL();
@@ -72,12 +74,29 @@ public:
             /* [in] */ IResources* res,
             /* [out] */ IDrawable** drawable);
 
+        virtual CARAPI NewDrawable(
+            /* [in] */ IResources* res,
+            /* [in] */ IResourcesTheme* theme,
+            /* [out] */ IDrawable** drawable);
+
         /**
          * Return a bit mask of configuration changes that will impact
          * this drawable (and thus require completely reloading it).
          */
         virtual CARAPI GetChangingConfigurations(
             /* [out] */ Int32* configuration) = 0;
+
+        /**
+         * @hide
+         */
+        virtual CARAPI GetBitmap(
+            /* [out] */ IBitmap** bp);
+
+        /**
+         * Return whether this constant state can have a theme applied.
+         */
+        virtual CARAPI CanApplyTheme(
+            /* [out] */ Boolean* can);
     };
 
 public:
@@ -154,13 +173,26 @@ public:
         /* [out] */ IRect** bounds);
 
     /**
+     * Return the drawable's dirty bounds Rect. Note: for efficiency, the
+     * returned object may be the same object stored in the drawable (though
+     * this is not guaranteed).
+     * <p>
+     * By default, this returns the full drawable bounds. Custom drawables may
+     * override this method to perform more precise invalidation.
+     *
+     * @return The dirty bounds of this drawable
+     */
+    virtual CARAPI GetDirtyBounds(
+        /* [out] */ IRect** bounds);
+
+    /**
      * Set a mask of the configuration parameters for which this drawable
      * may change, requiring that it be re-created.
      *
      * @param configs A mask of the changing configuration parameters, as
-     * defined by {@link android.content.res.Configuration}.
+     * defined by {@link android.content.pm.ActivityInfo}.
      *
-     * @see android.content.res.Configuration
+     * @see android.content.pm.ActivityInfo
      */
     virtual CARAPI SetChangingConfigurations(
         /* [in] */ Int32 configs);
@@ -174,9 +206,9 @@ public:
      * drawables they hold.
      *
      * @return Returns a mask of the changing configuration parameters, as
-     * defined by {@link android.content.res.Configuration}.
+     * defined by {@link android.content.pm.ActivityInfo}.
      *
-     * @see android.content.res.Configuration
+     * @see android.content.pm.ActivityInfo
      */
     virtual CARAPI GetChangingConfigurations(
         /* [out] */ Int32* configs);
@@ -284,21 +316,123 @@ public:
         /* [in] */ Int32 alpha) = 0;
 
     /**
-     * Specify an optional colorFilter for the drawable. Pass null to remove
-     * any filters.
-    */
+     * Gets the current alpha value for the drawable. 0 means fully transparent,
+     * 255 means fully opaque. This method is implemented by
+     * Drawable subclasses and the value returned is specific to how that class treats alpha.
+     * The default return value is 255 if the class does not override this method to return a value
+     * specific to its use of alpha.
+     */
+    virtual CARAPI GetAlpha(
+        /* [out] */ Int32* alpha);
+
+    /**
+     * @hide Consider for future API inclusion
+     */
+    virtual CARAPI SetXfermode(
+        /* [in] */ IXfermode* mode);
+
+    /**
+     * Specify an optional color filter for the drawable. Pass {@code null} to
+     * remove any existing color filter.
+     *
+     * @param cf the color filter to apply, or {@code null} to remove the
+     *            existing color filter
+     */
     virtual CARAPI SetColorFilter(
         /* [in] */ IColorFilter* cf) = 0;
 
     /**
-     * Specify a color and porterduff mode to be the colorfilter for this
+     * Specify a color and Porter-Duff mode to be the color filter for this
      * drawable.
      */
     virtual CARAPI SetColorFilter(
         /* [in] */ Int32 color,
         /* [in] */ PorterDuffMode mode);
 
+    /**
+     * Specifies a tint for this drawable.
+     * <p>
+     * Setting a color filter via {@link #setColorFilter(ColorFilter)} overrides
+     * tint.
+     *
+     * @param tint Color to use for tinting this drawable
+     * @see #setTintMode(PorterDuff.Mode)
+     */
+    virtual CARAPI SetTint(
+        /* [in] */ Int32 tint);
+
+    /**
+     * Specifies a tint for this drawable as a color state list.
+     * <p>
+     * Setting a color filter via {@link #setColorFilter(ColorFilter)} overrides
+     * tint.
+     *
+     * @param tint Color state list to use for tinting this drawable, or null to
+     *            clear the tint
+     * @see #setTintMode(PorterDuff.Mode)
+     */
+    virtual CARAPI SetTintList(
+        /* [in] */ IColorStateList* tint);
+
+    /**
+     * Specifies a tint blending mode for this drawable.
+     * <p>
+     * Setting a color filter via {@link #setColorFilter(ColorFilter)} overrides
+     * tint.
+     *
+     * @param tintMode Color state list to use for tinting this drawable, or null to
+     *            clear the tint
+     * @param tintMode A Porter-Duff blending mode
+     */
+    virtual CARAPI SetTintMode(
+        /* [in] */ PorterDuffMode tintMode);
+
+    /**
+     * Returns the current color filter, or {@code null} if none set.
+     *
+     * @return the current color filter, or {@code null} if none set
+     */
+    virtual CARAPI GetColorFilter(
+        /* [out] */ IColorFilter** filter);
+
     virtual CARAPI ClearColorFilter();
+
+    /**
+     * Specifies the hotspot's location within the drawable.
+     *
+     * @param x The X coordinate of the center of the hotspot
+     * @param y The Y coordinate of the center of the hotspot
+     */
+    virtual CARAPI SetHotspot(
+        /* [in] */ Float x,
+        /* [in] */ Float y);
+
+    /**
+     * Sets the bounds to which the hotspot is constrained, if they should be
+     * different from the drawable bounds.
+     *
+     * @param left
+     * @param top
+     * @param right
+     * @param bottom
+     */
+    virtual CARAPI SetHotspotBounds(
+        /* [in] */ Int32 left,
+        /* [in] */ Int32 top,
+        /* [in] */ Int32 right,
+        /* [in] */ Int32 bottom);
+
+    /** @hide For internal use only. Individual results may vary. */
+    virtual CARAPI GetHotspotBounds(
+        /* [in] */ IRect* outRect);
+
+    /**
+     * Whether this drawable requests projection.
+     *
+     * @hide magic!
+     */
+    virtual CARAPI IsProjected(
+        /* [out] */ Boolean* projected);
 
     /**
      * Indicates whether this view will change its appearance based on state.
@@ -415,6 +549,33 @@ public:
         /* [out] */ Boolean* visible);
 
     /**
+     * Set whether this Drawable is automatically mirrored when its layout direction is RTL
+     * (right-to left). See {@link android.util.LayoutDirection}.
+     *
+     * @param mirrored Set to true if the Drawable should be mirrored, false if not.
+     */
+    virtual CARAPI SetAutoMirrored(
+        /* [in] */ Boolean mirrored);
+
+    /**
+     * Tells if this Drawable will be automatically mirrored  when its layout direction is RTL
+     * right-to-left. See {@link android.util.LayoutDirection}.
+     *
+     * @return boolean Returns true if this Drawable will be automatically mirrored.
+     */
+    virtual CARAPI IsAutoMirrored(
+        /* [out] */ Boolean* mirrored);
+
+    /**
+     * Applies the specified theme to this Drawable and its children.
+     */
+    virtual CARAPI ApplyTheme(
+        /* [in] */ /*@SuppressWarnings("unused")*/ IResourcesTheme* t);
+
+    virtual CARAPI CanApplyTheme(
+        /* [out] */ Boolean* can);
+
+    /**
      * Return the opacity/transparency of this Drawable.  The returned value is
      * one of the abstract format constants in
      * {@link android.graphics.PixelFormat}:
@@ -523,7 +684,7 @@ public:
      * is always set to 0.
      */
     virtual CARAPI GetPadding(
-        /* [in, out] */ IRect* padding.
+        /* [in, out] */ IRect* padding,
         /* [out] */ Boolean* isPadding);
 
     /**
@@ -532,7 +693,22 @@ public:
      *
      * @hide
      */
-    virtual CARAPI_(AutoPtr<IInsets>) GetLayoutInsets();
+    virtual CARAPI GetOpticalInsets(
+        /* [out] */ IInsets** sets);
+
+    /**
+     * Called to get the drawable to populate the Outline that defines its drawing area.
+     * <p>
+     * This method is called by the default {@link android.view.ViewOutlineProvider} to define
+     * the outline of the View.
+     * <p>
+     * The default behavior defines the outline to be the bounding rectangle of 0 alpha.
+     * Subclasses that wish to convey a different shape or alpha value must override this method.
+     *
+     * @see android.view.View#setOutlineProvider(android.view.ViewOutlineProvider)
+     */
+    virtual CARAPI GetOutline(
+        /* [in] */ /*@NonNull*/ IOutline* outline);
 
     /**
      * Make this drawable mutable. This operation cannot be reversed. A mutable
@@ -591,6 +767,17 @@ public:
         /* [out] */ IDrawable** drawable);
 
     /**
+     * Create a drawable from an XML document using an optional {@link Theme}.
+     * For more information on how to create resources in XML, see
+     * <a href="{@docRoot}guide/topics/resources/drawable-resource.html">Drawable Resources</a>.
+     */
+    static CARAPI CreateFromXml(
+        /* [in] */ IResources* r,
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ IResourcesTheme* theme,
+        /* [out] */ IDrawable** draw);
+
+    /**
      * Create from inside an XML document.  Called on a parser positioned at
      * a tag in an XML document, tries to create a Drawable from that tag.
      * Returns null if the tag is not a valid drawable.
@@ -602,28 +789,56 @@ public:
         /* [out] */ IDrawable** drawable);
 
     /**
+     * Create a drawable from inside an XML document using an optional
+     * {@link Theme}. Called on a parser positioned at a tag in an XML
+     * document, tries to create a Drawable from that tag. Returns {@code null}
+     * if the tag is not a valid drawable.
+     */
+    static CARAPI CreateFromXmlInner(
+        /* [in] */ IResources* r,
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ IResourcesTheme* theme,
+        /* [out] */ IDrawable** draw);
+
+    /**
      * Create a drawable from file path name.
      */
     static CARAPI CreateFromPath(
         /* [in] */ const String& pathName,
         /* [out] */ IDrawable** drawable);
 
+    static CARAPI ParseTintMode(
+        /* [in] */ Int32 value,
+        /* [in] */ PorterDuffMode defaultMode,
+        /* [out] */ PorterDuffMode* mode);
+
     virtual CARAPI Inflate(
         /* [in] */ IResources* r,
         /* [in] */ IXmlPullParser* parser,
-        /* [in] */ IAttributeSet* attrs);
+        /* [in] */ IAttributeSet* attrs)/* throws XmlPullParserException, IOException*/;
+
+    /**
+     * Inflate this Drawable from an XML resource optionally styled by a theme.
+     *
+     * @param r Resources used to resolve attribute values
+     * @param parser XML parser from which to inflate this Drawable
+     * @param attrs Base set of attribute values
+     * @param theme Theme to apply, may be null
+     * @throws XmlPullParserException
+     * @throws IOException
+     */
+    virtual CARAPI Inflate(
+        /* [in] */ IResources* r,
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ IResourcesTheme* theme)/* throws XmlPullParserException, IOException*/;
 
     /* package */ virtual CARAPI InflateWithAttributes(
         /* [in] */ IResources* r,
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ ITypedArray* attrs,
         /* [in] */ Int32 visibleAttr);
-
-    CARAPI SetResId(
-        /* [in] */ Int32 resId);
-
-    CARAPI GetResId(
-        /* [out] */ Int32* resId);
 
     virtual CARAPI GetConstantState(
         /* [out] */ IDrawableConstantState** state);
@@ -652,11 +867,31 @@ protected:
         /* [in] */ Int32 level);
 
     /**
-     * Override this in your subclass to change appearance if you recognize the
-     * specified state.
+     * Override this in your subclass to change appearance if you vary based on
+     * the bounds.
      */
     virtual CARAPI_(void) OnBoundsChange(
         /* [in] */ IRect* bounds);
+
+    /**
+     * Ensures the tint filter is consistent with the current tint color and
+     * mode.
+     */
+    virtual CARAPI_(AutoPtr<IPorterDuffColorFilter>) UpdateTintFilter(
+        /* [in] */ IPorterDuffColorFilter* tintFilter,
+        /* [in] */ IColorStateList* tint,
+        /* [in] */ PorterDuffMode tintMode);
+
+    /**
+     * Obtains styled attributes from the theme, if available, or unstyled
+     * resources if the theme is null.
+     */
+    static CARAPI ObtainAttributes(
+        /* [in] */ IResources* res,
+        /* [in] */ IResourcesTheme* theme,
+        /* [in] */ IAttributeSet* set,
+        /* [in] */ ArrayOf<Int32>* attrs,
+        /* [out] */ ITypedArray** a);
 
 private:
     static CARAPI DrawableFromBitmap(
@@ -668,8 +903,9 @@ private:
         /* [in] */ const String& srcName,
         /* [out] */ IDrawable** drawable);
 
-private:
+protected:
     static AutoPtr<IRect> ZERO_BOUNDS_RECT;
+    static const PorterDuffMode DEFAULT_TINT_MODE;
 
     AutoPtr< ArrayOf<Int32> > mStateSet;
     Int32 mLevel;
@@ -679,8 +915,6 @@ private:
     Boolean mVisible;
 
     Int32 mLayoutDirection;
-public:
-    Int32 mResId;
 };
 
 } // namespace Drawable

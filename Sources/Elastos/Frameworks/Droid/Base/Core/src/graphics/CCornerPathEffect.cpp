@@ -6,6 +6,7 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CCornerPathEffect);
 ECode CCornerPathEffect::constructor(
     /* [in] */ Float radius)
 {
@@ -19,7 +20,10 @@ PInterface CCornerPathEffect::Probe(
     if (riid == EIID_PathEffect) {
         return reinterpret_cast<PInterface>((PathEffect*)this);
     }
-    return _CCornerPathEffect::Probe(riid);
+    else if (riid == EIID_ICornerPathEffect) {
+        return (ICornerPathEffect*)this;
+    }
+    return PathEffect::Probe(riid);
 }
 
 Int32 CCornerPathEffect::NativeCreate(

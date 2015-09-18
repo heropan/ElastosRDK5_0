@@ -14,6 +14,8 @@ namespace Drawable {
 CarClass(CScaleDrawable), public ScaleDrawable
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI constructor();
 
     CARAPI constructor(
@@ -25,19 +27,6 @@ public:
     CARAPI constructor(
         /* [in] */ Handle32 state,
         /* [in] */ IResources* res);
-
-    PInterface Probe(
-        /* [in] */ REIID riid);
-
-    IDRAWABLE_METHODS_DECL()
-
-    IDRAWABLECALLBACK_METHODS_DECL()
-
-    /**
-     * Returns the drawable scaled by this ScaleDrawable.
-     */
-    CARAPI GetDrawable(
-        /* [out] */ IDrawable** drawable);
 };
 
 } // namespace Drawable

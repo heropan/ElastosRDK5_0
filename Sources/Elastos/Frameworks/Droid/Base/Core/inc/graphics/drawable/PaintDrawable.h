@@ -13,9 +13,13 @@ namespace Drawable {
  * Drawable that draws its bounds in the given paint, with optional
  * rounded corners.
 */
-class PaintDrawable : public ShapeDrawable
+class PaintDrawable
+    : public ShapeDrawable
+    , public IPaintDrawable
 {
 public:
+    CAR_INTERFACE_DECL();
+
     PaintDrawable();
 
     PaintDrawable(
@@ -39,9 +43,9 @@ public:
         /* [in] */ ArrayOf<Float>* radii);
 
 protected:
-    CARAPI Init();
+    CARAPI constructor();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 color);
 
     //@Override

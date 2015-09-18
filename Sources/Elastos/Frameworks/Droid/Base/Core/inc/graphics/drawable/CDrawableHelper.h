@@ -55,12 +55,29 @@ public:
         /* [in] */ IXmlPullParser* parser,
         /* [out] */ IDrawable** draw);
 
+    CARAPI CreateFromXml(
+        /* [in] */ IResources* r,
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ IResourcesTheme* theme,
+        /* [out] */ IDrawable** draw);
+
     CARAPI CreateFromXmlInner(
         /* [in] */ IResources* r,
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IAttributeSet* attrs,
         /* [out] */ IDrawable** draw);
 
+    CARAPI CreateFromXmlInner(
+        /* [in] */ IResources* r,
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ IResourcesTheme* theme,
+        /* [out] */ IDrawable** draw);
+
+    CARAPI ParseTintMode(
+        /* [in] */ Int32 value,
+        /* [in] */ PorterDuffMode defaultMode,
+        /* [out] */ PorterDuffMode* mode);
 };
 
 } // namespace Drawable

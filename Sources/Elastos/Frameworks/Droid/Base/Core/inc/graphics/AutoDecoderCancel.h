@@ -1,5 +1,6 @@
-#ifndef __ELASTOS_DROID_GRAPHICS_H_H__
-#define __ELASTOS_DROID_GRAPHICS_H_H__
+
+#ifndef __ELASTOS_DROID_GRAPHICS_AUTODECODERCANCEL_H__
+#define __ELASTOS_DROID_GRAPHICS_AUTODECODERCANCEL_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <skia/images/SkImageDecoder.h>
@@ -38,4 +39,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_GRAPHICS_H_H__
+#endif // __ELASTOS_DROID_GRAPHICS_AUTODECODERCANCEL_H__

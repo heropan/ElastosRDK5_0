@@ -61,7 +61,11 @@ namespace Drawable {
  * @attr ref android.R.styleable#AnimationDrawableItem_duration
  * @attr ref android.R.styleable#AnimationDrawableItem_drawable
  */
-class AnimationDrawable : public DrawableContainer
+class AnimationDrawable
+    : public DrawableContainer
+    , public IAnimationDrawable
+    , public IRunnable
+    , public IAnimatable
 {
 protected:
     class AnimationState : public DrawableContainer::DrawableContainerState
@@ -98,12 +102,28 @@ protected:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     AnimationDrawable();
 
+    /**
+     * Sets whether this AnimationDrawable is visible.
+     * <p>
+     * When the drawable becomes invisible, it will pause its animation. A
+     * subsequent change to visible with <code>restart</code> set to true will
+     * restart the animation from the first frame. If <code>restart</code> is
+     * false, the animation will resume from the most recent frame.
+     *
+     * @param visible true if visible, false otherwise
+     * @param restart when visible, true to force the animation to restart
+     *                from the first frame
+     * @return true if the new visibility is different than its previous state
+     */
     //@Override
-    CARAPI_(Boolean) SetVisible(
+    CARAPI SetVisible(
         /* [in] */ Boolean visible,
-        /* [in] */ Boolean restart);
+        /* [in] */ Boolean restart,
+        /* [out] */ Boolean* isDifferent);
 
     /**
      * <p>Starts the animation, looping if necessary. This method has no effect
@@ -133,7 +153,8 @@ public:
      *
      * @return true if the animation is running, false otherwise
      */
-    virtual CARAPI_(Boolean) IsRunning();
+    virtual CARAPI IsRunning(
+        /* [out] */ Boolean* running);
 
     /**
      * <p>This method exists for implementation purpose only and should not be
@@ -150,25 +171,29 @@ public:
     /**
      * @return The number of frames in the animation
      */
-    virtual CARAPI_(Int32) GetNumberOfFrames();
+    virtual CARAPI GetNumberOfFrames(
+        /* [out] */ Int32* number);
 
     /**
      * @return The Drawable at the specified frame index
      */
-    virtual CARAPI_(AutoPtr<IDrawable>) GetFrame(
-        /* [in] */ Int32 index);
+    virtual CARAPI GetFrame(
+        /* [in] */ Int32 index,
+        /* [out] */ IDrawable** drawable);
 
     /**
      * @return The duration in milliseconds of the frame at the
      * specified index
      */
-    virtual CARAPI_(Int32) GetDuration(
-        /* [in] */ Int32 i);
+    virtual CARAPI GetDuration(
+        /* [in] */ Int32 i,
+        /* [out] */ Int32* duration);
 
     /**
      * @return True of the animation will play once, false otherwise
      */
-    virtual CARAPI_(Boolean) IsOneShot();
+    virtual CARAPI IsOneShot(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets whether the animation should play once or repeat.
@@ -192,13 +217,15 @@ public:
     CARAPI Inflate(
         /* [in] */ IResources* r,
         /* [in] */ IXmlPullParser* parser,
-        /* [in] */ IAttributeSet* attrs);
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ IResourcesTheme* theme);
 
     //@Override
-    AutoPtr<IDrawable> Mutate();
+    CARAPI Mutate(
+        /* [out] */ IDrawable** drawable);
 
 protected:
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ AnimationState* state = NULL,
         /* [in] */ IResources* res = NULL);
 
@@ -218,6 +245,11 @@ private:
 private:
     AutoPtr<AnimationState> mAnimationState;
     Int32 mCurFrame;
+    /** Whether the drawable has an animation callback posted. */
+    Boolean mRunning;
+
+    /** Whether the drawable should animate when visible. */
+    Boolean mAnimating;
     Boolean mMutated;
 };
 

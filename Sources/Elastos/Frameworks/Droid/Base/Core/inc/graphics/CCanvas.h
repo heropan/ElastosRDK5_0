@@ -5,7 +5,6 @@
 #include "_Elastos_Droid_Graphics_CCanvas.h"
 #include "graphics/Canvas.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
@@ -13,6 +12,8 @@ namespace Graphics {
 CarClass(CCanvas), public Canvas
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI constructor();
 
     CARAPI constructor(
@@ -23,8 +24,6 @@ public:
 
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
-
-    ICANVAS_METHODS_DECL();
 };
 
 } // namespace Graphics

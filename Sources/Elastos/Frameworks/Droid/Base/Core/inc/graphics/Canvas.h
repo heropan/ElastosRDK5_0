@@ -1,10 +1,12 @@
 
+#ifndef __ELASTOS_DROID_GRAPHICS_CANVAS_H__
+#define __ELASTOS_DROID_GRAPHICS_CANVAS_H__
 
-#ifndef __ELASTOS_DROID_GRAPHICS_H_H__
-#define __ELASTOS_DROID_GRAPHICS_H_H__
-
+#include "ext/frameworkext.h"
 #include "graphics/CBitmap.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::ICharSequence;
 
 namespace Elastos {
@@ -14,8 +16,12 @@ namespace Graphics {
 extern const InterfaceID EIID_Canvas;
 
 class Canvas
+    : public Object
+    , public ICanvas
 {
 public:
+    CAR_INTERFACE_DECL();
+
     Canvas();
 
     virtual ~Canvas();
@@ -499,12 +505,12 @@ public:
     static CARAPI_(void) FreeTextLayoutCaches();
 
 protected:
-    CARAPI Init();
+    CARAPI constructor();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IBitmap* bitmap);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 nativeCanvas);
 
     // virtual CARAPI_(AutoPtr<IGL>) GetGL();
@@ -869,5 +875,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_GRAPHICS_H_H__
-
+#endif // __ELASTOS_DROID_GRAPHICS_CANVAS_H__

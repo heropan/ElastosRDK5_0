@@ -9,7 +9,10 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-class DrawableContainer : public Drawable
+class DrawableContainer
+    : public Drawable
+    , public IDrawableContainer
+    , public IDrawableCallback
 {
 public:
     /**
@@ -35,9 +38,28 @@ public:
         CARAPI_(Int32) AddChild(
             /* [in] */ IDrawable* dr);
 
+        CARAPI_(Int32) GetCapacity();
+
+        CARAPI_(void) CreateAllFutures();
+
         CARAPI_(Int32) GetChildCount();
 
         CARAPI_(AutoPtr< ArrayOf<IDrawable*> >) GetChildren();
+
+        CARAPI_(AutoPtr<IDrawable>) GetChild(
+            /* [in] */ Int32 index);
+
+        CARAPI SetLayoutDirection(
+            /* [in] */ Int32 layoutDirection);
+
+        CARAPI ApplyTheme(
+            /* [in] */ IResourcesTheme* theme);
+
+        // @Override
+        CARAPI CanApplyTheme(
+            /* [out] */ Boolean* can);
+
+        CARAPI Mutate();
 
         /** A Boolean value indicating whether to use the maximum padding value of
          * all frames in the set (FALSE), or to use the padding value of the frame
@@ -88,13 +110,20 @@ public:
     public:
         DrawableContainer* mOwner;
 
+        AutoPtr<IResources> mRes;
+
+        AutoPtr<IResourcesTheme> mTheme;
+
+        // SparseArray<ConstantStateFuture> mDrawableFutures;
+
         Int32 mChangingConfigurations;
         Int32 mChildrenChangingConfigurations;
 
-        AutoPtr< ArrayOf<IDrawable*> > mDrawables;
+        AutoPtr<ArrayOf<IDrawable*> > mDrawables;
         Int32 mNumChildren;
 
         Boolean mVariablePadding;
+        Boolean mPaddingChecked;
         AutoPtr<IRect> mConstantPadding;
 
         Boolean mConstantSize;
@@ -104,42 +133,43 @@ public:
         Int32 mConstantMinimumWidth;
         Int32 mConstantMinimumHeight;
 
+        Boolean mCheckedOpacity;
         Int32 mOpacity;
 
-        Boolean mHaveStateful;
+        Boolean mCheckedStateful;
         Boolean mStateful;
 
         Boolean mCheckedConstantState;
         Boolean mCanConstantState;
 
-        Boolean mPaddingChecked;
+        Boolean mDither/* = DEFAULT_DITHER*/;
 
-        Boolean mDither;
+        Boolean mMutated;
+        Int32 mLayoutDirection;
 
-        Int32         mEnterFadeDuration;
-        Int32         mExitFadeDuration;
+        Int32 mEnterFadeDuration;
+        Int32 mExitFadeDuration;
 
-        Object mLock;
+        Boolean mAutoMirrored;
+
+        AutoPtr<IColorFilter> mColorFilter;
+        Boolean mHasColorFilter;
+
+        AutoPtr<IColorStateList> mTintList;
+        PorterDuffMode mTintMode;
+        Boolean mHasTintList;
+        Boolean mHasTintMode;
     };
 
     class _Runnable
-        : public ElRefBase
+        : public Object
         , public IRunnable
     {
     public:
         _Runnable(
             /* [in] */ DrawableContainer* host);
 
-        CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
+        CAR_INTERFACE_DECL();
 
         CARAPI Run();
 
@@ -147,7 +177,55 @@ public:
         DrawableContainer*  mHost;
     };
 
+private:
+        /**
+         * Class capable of cloning a Drawable from another Drawable's
+         * ConstantState.
+         */
+        // private static class ConstantStateFuture {
+        //     private final ConstantState mConstantState;
+
+        //     private ConstantStateFuture(Drawable source) {
+        //         mConstantState = source.getConstantState();
+        //     }
+
+        //     /**
+        //      * Obtains and prepares the Drawable represented by this future.
+        //      *
+        //      * @param state the container into which this future will be placed
+        //      * @return a prepared Drawable
+        //      */
+        //     public Drawable get(DrawableContainerState state) {
+        //         final Drawable result;
+        //         if (state.mRes == null) {
+        //             result = mConstantState.newDrawable();
+        //         } else if (state.mTheme == null) {
+        //             result = mConstantState.newDrawable(state.mRes);
+        //         } else {
+        //             result = mConstantState.newDrawable(state.mRes, state.mTheme);
+        //         }
+        //         result.setLayoutDirection(state.mLayoutDirection);
+        //         result.setCallback(state.mOwner);
+
+        //         if (state.mMutated) {
+        //             result.mutate();
+        //         }
+
+        //         return result;
+        //     }
+
+        //     /**
+        //      * Whether the constant state wrapped by this future can apply a
+        //      * theme.
+        //      */
+        //     public boolean canApplyTheme() {
+        //         return mConstantState.canApplyTheme();
+        //     }
+        // };
+
 public:
+    CAR_INTERFACE_DECL();
+
     DrawableContainer();
 
     //@Override
@@ -155,21 +233,32 @@ public:
         /* [in] */ ICanvas* canvas);
 
     //@Override
-    CARAPI_(Int32) GetChangingConfigurations();
+    CARAPI GetChangingConfigurations(
+        /* [out] */ Int32* configuration);
 
     //@Override
-    CARAPI_(Boolean) GetPadding(
-        /* [in] */ IRect* padding);
+    CARAPI GetPadding(
+        /* [in] */ IRect* padding,
+        /* [out] */ Boolean* isPadding);
 
     /**
      * @hide
      */
     //@Override
-    CARAPI_(AutoPtr<IInsets>) GetLayoutInsets();
+    virtual CARAPI GetOpticalInsets(
+        /* [out] */ IInsets** sets);
+
+    // @Override
+    CARAPI GetOutline(
+        /* [in] */ /*@NonNull*/ IOutline* outline);
 
     //@Override
     CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
+
+    // @Override
+    CARAPI GetAlpha(
+        /* [out] */ Int32* alpha);
 
     //@Override
     virtual CARAPI SetDither(
@@ -178,6 +267,14 @@ public:
     //@Override
     virtual CARAPI SetColorFilter(
         /* [in] */ IColorFilter* cf);
+
+    // @Override
+    CARAPI SetTintList(
+        /* [in] */ IColorStateList* tint);
+
+    // @Override
+    CARAPI SetTintMode(
+        /* [in] */ PorterDuffMode tintMode);
 
     /**
      * Change the global fade duration when a new drawable is entering
@@ -196,22 +293,52 @@ public:
         /* [in] */ Int32 ms);
 
     //@Override
-    CARAPI_(Boolean) IsStateful();
+    CARAPI IsStateful(
+        /* [out] */ Boolean* isStateful);
+
+    // @Override
+    CARAPI SetAutoMirrored(
+        /* [in] */ Boolean mirrored);
+
+    // @Override
+    CARAPI IsAutoMirrored(
+        /* [out] */ Boolean* mirrored);
 
     //@Override
     CARAPI JumpToCurrentState();
 
-    //@Override
-    CARAPI_(Int32) GetIntrinsicWidth();
+    // @Override
+    CARAPI SetHotspot(
+        /* [in] */ Float x,
+        /* [in] */ Float y);
+
+    // @Override
+    CARAPI SetHotspotBounds(
+        /* [in] */ Int32 left,
+        /* [in] */ Int32 top,
+        /* [in] */ Int32 right,
+        /* [in] */ Int32 bottom);
+
+    /** @hide */
+    // @Override
+    CARAPI GetHotspotBounds(
+        /* [in] */ IRect* outRect);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicHeight();
+    CARAPI GetIntrinsicWidth(
+        /* [out] */ Int32* width);
 
     //@Override
-    CARAPI_(Int32) GetMinimumWidth();
+    CARAPI GetIntrinsicHeight(
+        /* [out] */ Int32* height);
 
     //@Override
-    CARAPI_(Int32) GetMinimumHeight();
+    CARAPI GetMinimumWidth(
+        /* [out] */ Int32* width);
+
+    //@Override
+    CARAPI GetMinimumHeight(
+        /* [out] */ Int32* height);
 
     virtual CARAPI InvalidateDrawable(
         /* [in] */ IDrawable* who);
@@ -226,27 +353,49 @@ public:
         /* [in] */ IRunnable* what);
 
     //@Override
-    CARAPI_(Boolean) SetVisible(
+    CARAPI SetVisible(
         /* [in] */ Boolean visible,
-        /* [in] */ Boolean restart);
+        /* [in] */ Boolean restart,
+        /* [out] */ Boolean* isDifferent);
 
     //@Override
-    CARAPI_(Int32) GetOpacity();
+    CARAPI GetOpacity(
+        /* [out] */ Int32* opacity);
 
-    virtual CARAPI_(Boolean) SelectDrawable(
-        /* [in] */ Int32 idx);
+    /** @hide */
+    virtual CARAPI SetCurrentIndex(
+        /* [in] */Int32 index);
+
+    /** @hide */
+    virtual CARAPI GetCurrentIndex(
+        /* [in] */ Int32* index);
+
+    virtual CARAPI SelectDrawable(
+        /* [in] */ Int32 idx,
+        /* [out] */ Boolean* res);
 
     CARAPI_(void) Animate(
         /* [in] */ Boolean schedule);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawable>) GetCurrent();
+    CARAPI GetCurrent(
+        /* [out] */ IDrawable** drawable);
+
+    // @Override
+    CARAPI ApplyTheme(
+        /* [in] */ IResourcesTheme* theme);
+
+    // @Override
+    CARAPI CanApplyTheme(
+        /* [out] */ Boolean* can);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawableConstantState>) GetConstantState();
+    CARAPI GetConstantState(
+        /* [out] */ IDrawableConstantState** state);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawable>) Mutate();
+    CARAPI Mutate(
+        /* [out] */ IDrawable** drawable);
 
 protected:
     //@Override
@@ -265,6 +414,9 @@ protected:
         /* [in] */ DrawableContainerState* state);
 
 private:
+    CARAPI_(Boolean) NeedsMirroring();
+
+private:
     static const Boolean DEBUG = FALSE;
     static const String TAG;
 
@@ -280,9 +432,11 @@ private:
      */
     static const Boolean DEFAULT_DITHER = TRUE;
     AutoPtr<DrawableContainerState> mDrawableContainerState;
+    AutoPtr<IRect> mHotspotBounds;
     AutoPtr<IDrawable> mCurrDrawable;
     Int32 mAlpha;
-    AutoPtr<IColorFilter> mColorFilter;
+    /** Whether setAlpha() has been called at least once. */
+    Boolean mHasAlpha;
 
     Int32 mCurIndex;
     Boolean mMutated;

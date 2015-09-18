@@ -1,11 +1,12 @@
 
 #include "graphics/drawable/ShapeDrawable.h"
 #include "graphics/drawable/CShapeDrawable.h"
-#include "graphics/CPaint.h"
+// #include "graphics/CPaint.h"
 #include "graphics/CRect.h"
 #include "R.h"
 
 using Elastos::Droid::R;
+using Elastos::Core::ICloneable;
 
 namespace Elastos {
 namespace Droid {
@@ -29,11 +30,11 @@ ShapeDrawable::ShapeState::ShapeState(
         mShaderFactory = orig->mShaderFactory;
     }
     else {
-        CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mPaint);
+        assert(0 && "TODO");
+        // CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mPaint);
     }
 }
 
-//@Override
 ECode ShapeDrawable::ShapeState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
@@ -58,7 +59,7 @@ ECode ShapeDrawable::ShapeState::GetChangingConfigurations(
     return NOERROR;
 }
 
-
+CAR_INTERFACE_IMPL(ShapeDrawable, Drawable, IShapeDrawable);
 ShapeDrawable::ShapeDrawable()
     : mMutated(FALSE)
 {
@@ -79,9 +80,13 @@ ShapeDrawable::ShapeDrawable(
     mShapeState = new ShapeState(state);
 }
 
-AutoPtr<IShape> ShapeDrawable::GetShape()
+ECode ShapeDrawable::GetShape(
+    /* [out] */ IShape** shape)
 {
-    return mShapeState->mShape;
+    VALIDATE_NOT_NULL(shape);
+    *shape = mShapeState->mShape;
+    REFCOUNT_ADD(*shape);
+    return NOERROR;
 }
 
 ECode ShapeDrawable::SetShape(
@@ -99,14 +104,22 @@ ECode ShapeDrawable::SetShaderFactory(
     return NOERROR;
 }
 
-AutoPtr<IShaderFactory> ShapeDrawable::GetShaderFactory()
+ECode ShapeDrawable::GetShaderFactory(
+    /* [out] */ IShaderFactory** fact)
 {
-    return mShapeState->mShaderFactory;
+    VALIDATE_NOT_NULL(fact);
+    *fact = mShapeState->mShaderFactory;
+    REFCOUNT_ADD(*fact);
+    return NOERROR;
 }
 
-AutoPtr<IPaint> ShapeDrawable::GetPaint()
+ECode ShapeDrawable::GetPaint(
+    /* [out] */ IPaint** paint)
 {
-    return mShapeState->mPaint;
+    VALIDATE_NOT_NULL(paint);
+    *paint = mShapeState->mPaint;
+    REFCOUNT_ADD(*paint);
+    return NOERROR;
 }
 
 ECode ShapeDrawable::SetPadding(
@@ -156,26 +169,34 @@ ECode ShapeDrawable::SetIntrinsicHeight(
     return InvalidateSelf();
 }
 
-Int32 ShapeDrawable::GetIntrinsicWidth()
+ECode ShapeDrawable::GetIntrinsicWidth(
+    /* [out] */ Int32* width)
 {
-    return mShapeState->mIntrinsicWidth;
+    VALIDATE_NOT_NULL(width);
+    *width = mShapeState->mIntrinsicWidth;
+    return NOERROR;
 }
 
-Int32 ShapeDrawable::GetIntrinsicHeight()
+ECode ShapeDrawable::GetIntrinsicHeight(
+    /* [out] */ Int32* height)
 {
-    return mShapeState->mIntrinsicHeight;
+    VALIDATE_NOT_NULL(height);
+    *height = mShapeState->mIntrinsicHeight;
+    return NOERROR;
 }
 
-Boolean ShapeDrawable::GetPadding(
-    /* [in] */ IRect* padding)
+ECode ShapeDrawable::GetPadding(
+    /* [in] */ IRect* padding,
+    /* [out] */ Boolean* isPadding)
 {
+    VALIDATE_NOT_NULL(isPadding);
     if (mShapeState->mPadding != NULL) {
         padding->Set(mShapeState->mPadding);
-        return TRUE;
+        *isPadding = TRUE;
+        return NOERROR;
     }
-    else {
-        return Drawable::GetPadding(padding);
-    }
+
+    return Drawable::GetPadding(padding, isPadding);
 }
 
 Int32 ShapeDrawable::ModulateAlpha(
@@ -199,7 +220,8 @@ void ShapeDrawable::OnDraw(
 ECode ShapeDrawable::Draw(
     /* [in] */ ICanvas* canvas)
 {
-    AutoPtr<IRect> r = GetBounds();
+    AutoPtr<IRect> r;
+    GetBounds((IRect**)&r);
     AutoPtr<IPaint> paint = mShapeState->mPaint;
 
     Int32 prevAlpha;
@@ -225,10 +247,14 @@ ECode ShapeDrawable::Draw(
     return NOERROR;
 }
 
-Int32 ShapeDrawable::GetChangingConfigurations()
+ECode ShapeDrawable::GetChangingConfigurations(
+    /* [out] */ Int32* configuration)
 {
-    return Drawable::GetChangingConfigurations()
+    VALIDATE_NOT_NULL(configuration);
+    Drawable::GetChangingConfigurations(configuration);
+    *configuration = (*configuration)
             | mShapeState->mChangingConfigurations;
+    return NOERROR;
 }
 
 ECode ShapeDrawable::SetAlpha(
@@ -245,8 +271,10 @@ ECode ShapeDrawable::SetColorFilter(
     return InvalidateSelf();
 }
 
-Int32 ShapeDrawable::GetOpacity()
+ECode ShapeDrawable::GetOpacity(
+    /* [out] */ Int32* opacity)
 {
+    VALIDATE_NOT_NULL(opacity);
     if (mShapeState->mShape == NULL) {
         AutoPtr<IPaint> p = mShapeState->mPaint;
         AutoPtr<IXfermode> mode;
@@ -254,15 +282,18 @@ Int32 ShapeDrawable::GetOpacity()
             Int32 alpha;
             p->GetAlpha(&alpha);
             if (alpha == 0) {
-                return IPixelFormat::TRANSPARENT;
+                *opacity = IPixelFormat::TRANSPARENT;
+                return NOERROR;
             }
             if (alpha == 255) {
-                return IPixelFormat::OPAQUE;
+                *opacity = IPixelFormat::OPAQUE;
+                return NOERROR;
             }
         }
     }
     // not sure, so be safe
-    return IPixelFormat::TRANSLUCENT;
+    *opacity = IPixelFormat::TRANSLUCENT;
+    return NOERROR;
 }
 
 ECode ShapeDrawable::SetDither(
@@ -366,7 +397,8 @@ ECode ShapeDrawable::Inflate(
 void ShapeDrawable::UpdateShape()
 {
     if (mShapeState->mShape != NULL) {
-        AutoPtr<IRect> r = GetBounds();
+        AutoPtr<IRect> r;
+        GetBounds((IRect**)&r);
         Int32 w, h;
         r->GetWidth(&w);
         r->GetHeight(&h);
@@ -381,22 +413,30 @@ void ShapeDrawable::UpdateShape()
     InvalidateSelf();
 }
 
-AutoPtr<IDrawableConstantState> ShapeDrawable::GetConstantState()
+ECode ShapeDrawable::GetConstantState(
+    /* [out] */ IDrawableConstantState** state)
 {
-    mShapeState->mChangingConfigurations = Drawable::GetChangingConfigurations();
-    return (IDrawableConstantState*)mShapeState.Get();
+    VALIDATE_NOT_NULL(state);
+    Drawable::GetChangingConfigurations(&mShapeState->mChangingConfigurations);
+    *state = (IDrawableConstantState*)mShapeState->Probe(EIID_IDrawableConstantState);
+    REFCOUNT_ADD(*state);
+    return NOERROR;
 }
 
-AutoPtr<IDrawable> ShapeDrawable::Mutate()
+ECode ShapeDrawable::Mutate(
+    /* [out] */ IDrawable** drawable)
 {
+    VALIDATE_NOT_NULL(drawable);
+    AutoPtr<IDrawable> tmp;
     if (!mMutated &&
-            Drawable::Mutate().Get() == (IDrawable*)this->Probe(EIID_IDrawable)) {
+            (Drawable::Mutate((IDrawable**)&tmp), tmp.Get()) == (IDrawable*)this->Probe(EIID_IDrawable)) {
         AutoPtr<IPaint> paint;
-        if (mShapeState->mPaint != NULL) {
-            CPaint::New(mShapeState->mPaint, (IPaint**)&paint);
-        } else {
-            CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&paint);
-        }
+        assert(0 && "TODO");
+        // if (mShapeState->mPaint != NULL) {
+        //     CPaint::New(mShapeState->mPaint, (IPaint**)&paint);
+        // } else {
+        //     CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&paint);
+        // }
         mShapeState->mPaint = paint;
 
         AutoPtr<IRect> padding;
@@ -409,30 +449,32 @@ AutoPtr<IDrawable> ShapeDrawable::Mutate()
 
 //        try {
         AutoPtr<IShape> shape;
-        mShapeState->mShape->Clone((IShape**)&shape);
+        ICloneable::Probe(mShapeState->mShape)->Clone((IInterface**)&shape);
         mShapeState->mShape = shape;
 //        } catch (CloneNotSupportedException e) {
 //            return null;
 //        }
         mMutated = TRUE;
     }
-    return (IDrawable*)this->Probe(EIID_IDrawable);
+    *drawable = (IDrawable*)this->Probe(EIID_IDrawable);
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
-ECode ShapeDrawable::Init()
+ECode ShapeDrawable::constructor()
 {
-    return Init((ShapeState*)NULL);
+    return constructor((ShapeState*)NULL);
 }
 
-ECode ShapeDrawable::Init(
+ECode ShapeDrawable::constructor(
     /* [in] */ IShape* s)
 {
-    Init((ShapeState*)NULL);
+    constructor((ShapeState*)NULL);
     mShapeState->mShape = s;
     return NOERROR;
 }
 
-ECode ShapeDrawable::Init(
+ECode ShapeDrawable::constructor(
     /* [in] */ ShapeState* state)
 {
     mShapeState = new ShapeState(state);

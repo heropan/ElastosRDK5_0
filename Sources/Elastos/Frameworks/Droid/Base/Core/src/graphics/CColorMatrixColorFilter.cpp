@@ -3,11 +3,12 @@
 #include <skia/effects/SkColorMatrixFilter.h>
 #include <skia/core/SkColorFilter.h>
 
-
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CColorMatrixColorFilter);
+CAR_INTERFACE_IMPL(CColorMatrixColorFilter, ColorFilter, IColorMatrixColorFilter);
 ECode CColorMatrixColorFilter::constructor(
     /* [in] */ IColorMatrix* matrix)
 {
@@ -37,7 +38,27 @@ PInterface CColorMatrixColorFilter::Probe(
     if (riid == EIID_ColorFilter) {
         return reinterpret_cast<PInterface>((ColorFilter*)this);
     }
-    return _CColorMatrixColorFilter::Probe(riid);
+    else if (riid == EIID_IColorMatrixColorFilter) {
+        return (IColorMatrixColorFilter*)this;
+    }
+    return ColorFilter::Probe(riid);
+}
+
+ECode CColorMatrixColorFilter::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    VALIDATE_NOT_NULL(iid);
+
+    if (object == reinterpret_cast<PInterface>((ColorFilter*)this)) {
+        *iid = EIID_ColorFilter;
+        return NOERROR;
+    }
+    else if (object == (IColorMatrixColorFilter*)this) {
+        *iid = EIID_IColorMatrixColorFilter;
+        return NOERROR;
+    }
+    return ColorFilter::GetInterfaceID(object, iid);
 }
 
 Int32 CColorMatrixColorFilter::NativeColorMatrixFilter(

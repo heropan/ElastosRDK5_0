@@ -7,8 +7,7 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-IDRAWABLE_METHODS_IMPL(CNinePatchDrawable, NinePatchDrawable)
-
+CAR_OBJECT_IMPL(CNinePatchDrawable);
 ECode CNinePatchDrawable::constructor()
 {
     return NOERROR;
@@ -20,7 +19,7 @@ ECode CNinePatchDrawable::constructor(
     /* [in] */ IRect* padding,
     /* [in] */ const String& srcName)
 {
-    return NinePatchDrawable::Init(bitmap, chunk, padding, srcName);
+    return NinePatchDrawable::constructor(bitmap, chunk, padding, srcName);
 }
 
 ECode CNinePatchDrawable::constructor(
@@ -30,7 +29,7 @@ ECode CNinePatchDrawable::constructor(
     /* [in] */ IRect* padding,
     /* [in] */ const String& srcName)
 {
-    return NinePatchDrawable::Init(res, bitmap, chunk, padding, srcName);
+    return NinePatchDrawable::constructor(res, bitmap, chunk, padding, srcName);
 }
 
 ECode CNinePatchDrawable::constructor(
@@ -41,63 +40,28 @@ ECode CNinePatchDrawable::constructor(
     /* [in] */ IRect* layoutInsets,
     /* [in] */ const String& srcName)
 {
-    return NinePatchDrawable::Init(res, bitmap, chunk, padding, layoutInsets, srcName);
+    return NinePatchDrawable::constructor(res, bitmap, chunk, padding, layoutInsets, srcName);
 }
 
 ECode CNinePatchDrawable::constructor(
     /* [in] */ INinePatch* patch)
 {
-    return NinePatchDrawable::Init(patch);
+    return NinePatchDrawable::constructor(patch);
 }
 
 ECode CNinePatchDrawable::constructor(
     /* [in] */ IResources* res,
     /* [in] */ INinePatch* patch)
 {
-    return NinePatchDrawable::Init(res, patch);
+    return NinePatchDrawable::constructor(res, patch);
 }
 
 ECode CNinePatchDrawable::constructor(
     /* [in] */ Handle32 state,
     /* [in] */ IResources* res)
 {
-    return NinePatchDrawable::Init(
+    return NinePatchDrawable::constructor(
             reinterpret_cast<NinePatchDrawable::NinePatchState*>(state), res);
-}
-
-PInterface CNinePatchDrawable::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CNinePatchDrawable::Probe(riid);
-}
-
-ECode CNinePatchDrawable::SetTargetDensity(
-    /* [in] */ ICanvas* canvas)
-{
-    return NinePatchDrawable::SetTargetDensity(canvas);
-}
-
-ECode CNinePatchDrawable::SetTargetDensity(
-    /* [in] */ IDisplayMetrics* metrics)
-{
-    return NinePatchDrawable::SetTargetDensity(metrics);
-}
-
-ECode CNinePatchDrawable::SetTargetDensity(
-    /* [in] */ Int32 density)
-{
-    return NinePatchDrawable::SetTargetDensity(density);
-}
-
-ECode CNinePatchDrawable::GetPaint(
-    /* [out] */ IPaint** paint)
-{
-    VALIDATE_NOT_NULL(paint);
-
-    AutoPtr<IPaint> temp = NinePatchDrawable::GetPaint();
-    *paint = temp;
-    REFCOUNT_ADD(*paint);
-    return NOERROR;
 }
 
 } // namespace Drawable

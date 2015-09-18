@@ -17,14 +17,15 @@ namespace Graphics {
 extern const InterfaceID EIID_Paint;
 
 class Paint
+    : public Object
+    , public IPaint
 {
 public:
+    CAR_INTERFACE_DECL();
+
     Paint();
 
     virtual ~Paint();
-
-    virtual CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid) = 0;
 
     /** Restores the paint to its default settings. */
     virtual CARAPI Reset();
@@ -1318,12 +1319,12 @@ public:
         /* [in] */ IRect* bounds);
 
 protected:
-    CARAPI Init();
+    CARAPI constructor();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 flags);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IPaint * pPaint);
 
 private:

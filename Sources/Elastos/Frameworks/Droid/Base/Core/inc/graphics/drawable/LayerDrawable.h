@@ -10,7 +10,10 @@ namespace Droid {
 namespace Graphics {
 namespace Drawable {
 
-class LayerDrawable : public Drawable
+class LayerDrawable
+    : public Drawable
+    , public ILayerDrawable
+    , public IDrawableCallback
 {
 public:
     class ChildDrawable : public ElRefBase
@@ -78,6 +81,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     LayerDrawable();
 
     /**
@@ -108,8 +113,9 @@ public:
      * @param id The layer ID to search for->
      * @return The {@link Drawable} of the layer that has the given id in the hierarchy or NULL.
      */
-    virtual CARAPI_(AutoPtr<IDrawable>) FindDrawableByLayerId(
-        /* [in] */ Int32 id);
+    virtual CARAPI FindDrawableByLayerId(
+        /* [in] */ Int32 id,
+        /* [out] */ IDrawable** drawable);
 
     /**
      * Sets the ID of a layer->
@@ -125,7 +131,8 @@ public:
      * Returns the number of layers contained within this.
      * @return The number of layers.
      */
-    virtual CARAPI_(Int32) GetNumberOfLayers();
+    virtual CARAPI GetNumberOfLayers(
+        /* [out] */ Int32* number);
 
     /**
      * Returns the drawable at the specified layer index.
@@ -134,8 +141,9 @@ public:
      *
      * @return The {@link android.graphics.drawable.Drawable} at the specified layer index.
      */
-    virtual CARAPI_(AutoPtr<IDrawable>) GetDrawable(
-        /* [in] */ Int32 index);
+    virtual CARAPI GetDrawable(
+        /* [in] */ Int32 index,
+        /* [out] */ IDrawable** drawable);
 
     /**
      * Returns the id of the specified layer.
@@ -144,8 +152,9 @@ public:
      *
      * @return The id of the layer or {@link android.view.View#NO_ID} if the layer has no id.
      */
-    virtual CARAPI_(Int32) GetId(
-        /* [in] */ Int32 index);
+    virtual CARAPI GetId(
+        /* [in] */ Int32 index,
+        /* [out] */ Int32* id);
 
     /**
      * Sets (or replaces) the {@link Drawable} for the layer with the given id.
@@ -155,9 +164,10 @@ public:
      * @return Whether the {@link Drawable} was replaced (could return FALSE if
      *         the id was not found).
      */
-    virtual CARAPI_(Boolean) SetDrawableByLayerId(
+    virtual CARAPI SetDrawableByLayerId(
         /* [in] */ Int32 id,
-        /* [in] */ IDrawable* drawable);
+        /* [in] */ IDrawable* drawable,
+        /* [out] */ Boolean* res);
 
     /** Specify modifiers to the bounds for the drawable[index]->
         left += l
@@ -171,6 +181,33 @@ public:
         /* [in] */ Int32 t,
         /* [in] */ Int32 r,
         /* [in] */ Int32 b);
+
+    /**
+     * Specifies how layer padding should affect the bounds of subsequent
+     * layers. The default value is {@link #PADDING_MODE_NEST}.
+     *
+     * @param mode padding mode, one of:
+     *            <ul>
+     *            <li>{@link #PADDING_MODE_NEST} to nest each layer inside the
+     *            padding of the previous layer
+     *            <li>{@link #PADDING_MODE_STACK} to stack each layer directly
+     *            atop the previous layer
+     *            </ul>
+     *
+     * @see #getPaddingMode()
+     * @attr ref android.R.styleable#LayerDrawable_paddingMode
+     */
+    virtual CARAPI SetPaddingMode(
+        /* [in] */ Int32 mode);
+
+    /**
+     * @return the current padding mode
+     *
+     * @see #setPaddingMode(int)
+     * @attr ref android.R.styleable#LayerDrawable_paddingMode
+     */
+    virtual CARAPI GetPaddingMode(
+        /* [out] */ Int32* mode);
 
     //@Override
     CARAPI InvalidateDrawable(
@@ -192,16 +229,19 @@ public:
         /* [in] */ ICanvas* canvas);
 
     //@Override
-    CARAPI_(Int32) GetChangingConfigurations();
+    CARAPI GetChangingConfigurations(
+        /* [out] */ Int32* configs);
 
     //@Override
-    CARAPI_(Boolean) GetPadding(
-        /* [in] */ IRect* padding);
+    CARAPI GetPadding(
+        /* [in] */ IRect* padding,
+        /* [out] */ Boolean* isPadding);
 
     //@Override
-    CARAPI_(Boolean) SetVisible(
+    CARAPI SetVisible(
         /* [in] */ Boolean visible,
-        /* [in] */ Boolean restart);
+        /* [in] */ Boolean restart,
+        /* [out] */ Boolean* isDifferent);
 
     //@Override
     CARAPI SetDither(
@@ -231,22 +271,28 @@ public:
         /* [in] */ Int32 opacity);
 
     //@Override
-    CARAPI_(Int32) GetOpacity();
+    CARAPI GetOpacity(
+        /* [out] */ Int32* opacity);
 
     //@Override
-    CARAPI_(Boolean) IsStateful();
+    CARAPI IsStateful(
+        /* [out] */ Boolean* isStateful);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicWidth();
+    CARAPI GetIntrinsicWidth(
+        /* [out] */ Int32* width);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicHeight();
+    CARAPI GetIntrinsicHeight(
+        /* [out] */ Int32* height);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawableConstantState>) GetConstantState();
+    CARAPI GetConstantState(
+        /* [out] */ IDrawableConstantState** state);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawable>) Mutate();
+    CARAPI Mutate(
+        /* [out] */ IDrawable** drawable);
 
     //@Override
     CARAPI SetLayoutDirection(
@@ -269,11 +315,11 @@ protected:
     CARAPI_(void) OnBoundsChange(
         /* [in] */ IRect* bounds);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ArrayOf<IDrawable*>* layers,
         /* [in] */ LayerState* state = NULL);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ LayerState* state,
         /* [in] */ IResources* res);
 

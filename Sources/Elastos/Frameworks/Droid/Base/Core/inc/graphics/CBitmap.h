@@ -30,8 +30,15 @@ struct ElaBitmapCallback
 };
 
 CarClass(CBitmap)
+    , public Object
+    , public IBitmap
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     CBitmap();
 
     ~CBitmap();

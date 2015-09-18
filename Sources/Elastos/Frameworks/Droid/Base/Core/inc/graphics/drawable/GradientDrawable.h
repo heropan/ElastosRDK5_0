@@ -46,7 +46,9 @@ namespace Drawable {
  * @attr ref android.R.styleable#GradientDrawablePadding_right
  * @attr ref android.R.styleable#GradientDrawablePadding_bottom
  */
-class GradientDrawable : public Drawable
+class GradientDrawable
+    : public Drawable
+    , public IGradientDrawable
 {
 public:
     class GradientState
@@ -154,6 +156,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     GradientDrawable();
 
     /**
@@ -165,8 +169,9 @@ public:
         /* [in] */ ArrayOf<Int32>* colors);
 
     //@Override
-    CARAPI_(Boolean) GetPadding(
-        /* [in] */ IRect* padding);
+    CARAPI GetPadding(
+        /* [in] */ IRect* padding,
+        /* [out] */ Boolean* isPadding);
 
     /**
      * Specify radii for each of the 4 corners. For each corner, the array
@@ -197,6 +202,16 @@ public:
         /* [in] */ Float dashWidth,
         /* [in] */ Float dashGap);
 
+    virtual CARAPI SetStroke(
+        /* [in] */ Int32 width,
+        /* [in] */ IColorStateList* colorStateList,
+        /* [in] */ Float dashWidth,
+        /* [in] */ Float dashGap);
+
+    virtual CARAPI SetStroke(
+        /* [in] */ Int32 width,
+        /* [in] */ IColorStateList* colorStateList);
+
     virtual CARAPI SetSize(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
@@ -213,6 +228,15 @@ public:
 
     virtual CARAPI SetGradientRadius(
         /* [in] */ Float gradientRadius);
+
+    /**
+     * Returns the radius of the gradient in pixels. The radius is valid only
+     * when the gradient type is set to {@link #RADIAL_GRADIENT}.
+     *
+     * @return Radius in pixels.
+     */
+    virtual CARAPI GetGradientRadius(
+        /* [out] */ Float* gradientRadius);
 
     virtual CARAPI SetUseLevel(
         /* [in] */ Boolean useLevel);
@@ -258,8 +282,12 @@ public:
     virtual CARAPI SetColor(
         /* [in] */ Int32 argb);
 
+    virtual CARAPI SetColor(
+        /* [in] */ IColorStateList* colorStateList);
+
     //@Override
-    CARAPI_(Int32) GetChangingConfigurations();
+    CARAPI GetChangingConfigurations(
+        /* [out] */ Int32* configuration);
 
     //@Override
     CARAPI SetAlpha(
@@ -274,7 +302,8 @@ public:
         /* [in] */ IColorFilter* cf);
 
     //@Override
-    CARAPI_(Int32) GetOpacity();
+    CARAPI GetOpacity(
+        /* [out] */ Int32* opacity);
 
     //@Override
     CARAPI Inflate(
@@ -283,16 +312,20 @@ public:
         /* [in] */ IAttributeSet* attrs);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicWidth();
+    CARAPI GetIntrinsicWidth(
+        /* [out] */ Int32* width);
 
     //@Override
-    CARAPI_(Int32) GetIntrinsicHeight();
+    CARAPI GetIntrinsicHeight(
+        /* [out] */ Int32* height);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawableConstantState>) GetConstantState();
+    CARAPI GetConstantState(
+        /* [out] */ IDrawableConstantState** state);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawable>) Mutate();
+    CARAPI Mutate(
+        /* [out] */ IDrawable** drawable);
 
 protected:
     //@Override
@@ -303,17 +336,17 @@ protected:
     CARAPI_(Boolean) OnLevelChange(
         /* [in] */ Int32 level);
 
-    CARAPI Init();
+    CARAPI constructor();
 
     /**
      * Create a new gradient drawable given an orientation and an array
      * of colors for the gradient.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ GradientDrawableOrientation orientation,
         /* [in] */ ArrayOf<Int32>* colors);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ GradientState* state);
 
 private:

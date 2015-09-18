@@ -2,13 +2,13 @@
 #include "ext/frameworkext.h"
 #include "graphics/drawable/ScaleDrawable.h"
 #include "graphics/drawable/CScaleDrawable.h"
-#include "view/CGravity.h"
+// #include "view/CGravity.h"
 #include "R.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::View::IGravity;
-using Elastos::Droid::View::CGravity;
+// using Elastos::Droid::View::CGravity;
 using Elastos::Droid::R;
 
 namespace Elastos {
@@ -81,7 +81,7 @@ Boolean ScaleDrawable::ScaleState::CanConstantState()
     return mCanConstantState;
 }
 
-
+CAR_INTERFACE_IMPL_2(ScaleDrawable, Drawable, IScaleDrawable, IDrawableCallback);
 ScaleDrawable::ScaleDrawable()
     : mMutated(FALSE)
 {
@@ -96,7 +96,7 @@ ScaleDrawable::ScaleDrawable(
     : mMutated(FALSE)
 {
     CRect::NewByFriend((CRect**)&mTmpRect);
-    ASSERT_SUCCEEDED(Init(drawable, gravity, scaleWidth, scaleHeight));
+    ASSERT_SUCCEEDED(constructor(drawable, gravity, scaleWidth, scaleHeight));
 }
 
 ScaleDrawable::ScaleDrawable(
@@ -107,9 +107,13 @@ ScaleDrawable::ScaleDrawable(
     mScaleState = new ScaleState(state, this, res);
 }
 
-AutoPtr<IDrawable> ScaleDrawable::GetDrawable()
+ECode ScaleDrawable::GetDrawable(
+    /* [out] */ IDrawable** drawable)
 {
-    return mScaleState->mDrawable;
+    VALIDATE_NOT_NULL(drawable);
+    *drawable = mScaleState->mDrawable;
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
 Float ScaleDrawable::GetPercent(
@@ -185,7 +189,8 @@ ECode ScaleDrawable::Inflate(
 ECode ScaleDrawable::InvalidateDrawable(
     /* [in] */ IDrawable* who)
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->InvalidateDrawable(THIS_PROBE(IDrawable));
     }
@@ -197,7 +202,8 @@ ECode ScaleDrawable::ScheduleDrawable(
     /* [in] */ IRunnable* what,
     /* [in] */ Int64 when)
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->ScheduleDrawable(THIS_PROBE(IDrawable), what, when);
     }
@@ -208,7 +214,8 @@ ECode ScaleDrawable::UnscheduleDrawable(
     /* [in] */ IDrawable* who,
     /* [in] */ IRunnable* what)
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->UnscheduleDrawable(THIS_PROBE(IDrawable), what);
     }
@@ -226,31 +233,35 @@ ECode ScaleDrawable::Draw(
     return NOERROR;
 }
 
-Int32 ScaleDrawable::GetChangingConfigurations()
+ECode ScaleDrawable::GetChangingConfigurations(
+    /* [out] */ Int32* configuration)
 {
+    VALIDATE_NOT_NULL(configuration);
     Int32 config;
     mScaleState->mDrawable->GetChangingConfigurations(&config);
-    return Drawable::GetChangingConfigurations()
+    Drawable::GetChangingConfigurations(configuration);
+    *configuration = (*configuration)
             | mScaleState->mChangingConfigurations
             | config;
+    return NOERROR;
 }
 
-Boolean ScaleDrawable::GetPadding(
-    /* [in] */ IRect* padding)
+ECode ScaleDrawable::GetPadding(
+    /* [in] */ IRect* padding,
+    /* [out] */ Boolean* isPadding)
 {
     // XXX need to adjust padding!
-    Boolean pad;
-    mScaleState->mDrawable->GetPadding(padding, &pad);
-    return pad;
+    return mScaleState->mDrawable->GetPadding(padding, isPadding);
 }
 
-Boolean ScaleDrawable::SetVisible(
+ECode ScaleDrawable::SetVisible(
     /* [in] */ Boolean visible,
-    /* [in] */ Boolean restart)
+    /* [in] */ Boolean restart,
+    /* [out] */ Boolean* isDifferent)
 {
-    Boolean isDifferent;
-    mScaleState->mDrawable->SetVisible(visible, restart, &isDifferent);
-    return Drawable::SetVisible(visible, restart);
+    VALIDATE_NOT_NULL(isDifferent);
+    mScaleState->mDrawable->SetVisible(visible, restart, isDifferent);
+    return Drawable::SetVisible(visible, restart, isDifferent);
 }
 
 ECode ScaleDrawable::SetAlpha(
@@ -265,18 +276,16 @@ ECode ScaleDrawable::SetColorFilter(
     return mScaleState->mDrawable->SetColorFilter(cf);
 }
 
-Int32 ScaleDrawable::GetOpacity()
+ECode ScaleDrawable::GetOpacity(
+    /* [out] */ Int32* opacity)
 {
-    Int32 opacity;
-    mScaleState->mDrawable->GetOpacity(&opacity);
-    return opacity;
+    return mScaleState->mDrawable->GetOpacity(opacity);
 }
 
-Boolean ScaleDrawable::IsStateful()
+ECode ScaleDrawable::IsStateful(
+    /* [out] */ Boolean* isStateful)
 {
-    Boolean isStateful;
-    mScaleState->mDrawable->IsStateful(&isStateful);
-    return isStateful;
+    return mScaleState->mDrawable->IsStateful(isStateful);
 }
 
 Boolean ScaleDrawable::OnStateChange(
@@ -285,7 +294,9 @@ Boolean ScaleDrawable::OnStateChange(
     Boolean changed;
     mScaleState->mDrawable->SetState(
             const_cast<ArrayOf<Int32>*>(state), &changed);
-    OnBoundsChange(GetBounds());
+    AutoPtr<IRect> rect;
+    GetBounds((IRect**)&rect);
+    OnBoundsChange(rect);
     return changed;
 }
 
@@ -294,7 +305,9 @@ Boolean ScaleDrawable::OnLevelChange(
 {
     Boolean changed;
     mScaleState->mDrawable->SetLevel(level, &changed);
-    OnBoundsChange(GetBounds());
+    AutoPtr<IRect> rect;
+    GetBounds((IRect**)&rect);
+    OnBoundsChange(rect);
     InvalidateSelf();
     return TRUE;
 }
@@ -304,7 +317,8 @@ void ScaleDrawable::OnBoundsChange(
 {
     CRect* r = mTmpRect;
     Boolean min = mScaleState->mUseIntrinsicSizeAsMin;
-    Int32 level = GetLevel();
+    Int32 level = 0;
+    GetLevel(&level);
     Int32 w;
     bounds->GetWidth(&w);
     if (mScaleState->mScaleWidth > 0) {
@@ -323,9 +337,11 @@ void ScaleDrawable::OnBoundsChange(
         }
         h -= (Int32)((h - ih) * (10000 - level) * mScaleState->mScaleHeight / 10000);
     }
-    Int32 layoutDirection = GetLayoutDirection();
+    Int32 layoutDirection = 0;
+    GetLayoutDirection(&layoutDirection);
     AutoPtr<IGravity> gravity;
-    CGravity::AcquireSingleton((IGravity**)&gravity);
+    assert(0 && "TODO");
+    // CGravity::AcquireSingleton((IGravity**)&gravity);
     gravity->Apply(mScaleState->mGravity, w, h, bounds, r, layoutDirection);
 
     if (w > 0 && h > 0) {
@@ -333,52 +349,62 @@ void ScaleDrawable::OnBoundsChange(
     }
 }
 
-Int32 ScaleDrawable::GetIntrinsicWidth()
+ECode ScaleDrawable::GetIntrinsicWidth(
+    /* [out] */ Int32* width)
 {
-    Int32 width;
-    mScaleState->mDrawable->GetIntrinsicWidth(&width);
-    return width;
+    VALIDATE_NOT_NULL(width);
+    return mScaleState->mDrawable->GetIntrinsicWidth(width);
 }
 
-Int32 ScaleDrawable::GetIntrinsicHeight()
+ECode ScaleDrawable::GetIntrinsicHeight(
+    /* [out] */ Int32* height)
 {
-    Int32 height;
-    mScaleState->mDrawable->GetIntrinsicHeight(&height);
-    return height;
+    VALIDATE_NOT_NULL(height);
+    return mScaleState->mDrawable->GetIntrinsicHeight(height);
 }
 
-AutoPtr<IDrawableConstantState> ScaleDrawable::GetConstantState()
+ECode ScaleDrawable::GetConstantState(
+    /* [out] */ IDrawableConstantState** state)
 {
+    VALIDATE_NOT_NULL(state);
     if (mScaleState->CanConstantState()) {
-        mScaleState->mChangingConfigurations = GetChangingConfigurations();
-        return mScaleState;
+        GetChangingConfigurations(&mScaleState->mChangingConfigurations);
+        *state = mScaleState;
+        REFCOUNT_ADD(*state);
+        return NOERROR;
     }
-    return NULL;
+    *state = NULL;
+    return NOERROR;
 }
 
-AutoPtr<IDrawable> ScaleDrawable::Mutate()
+ECode ScaleDrawable::Mutate(
+    /* [out] */ IDrawable** drawable)
 {
+    VALIDATE_NOT_NULL(drawable);
+    AutoPtr<IDrawable> tmp;
     if (!mMutated &&
-            Drawable::Mutate().Get() == THIS_PROBE(IDrawable)) {
-        AutoPtr<IDrawable> drawable;
-        mScaleState->mDrawable->Mutate((IDrawable**)&drawable);
+            (Drawable::Mutate((IDrawable**)&tmp), tmp.Get()) == THIS_PROBE(IDrawable)) {
+        tmp = NULL;
+        mScaleState->mDrawable->Mutate((IDrawable**)&tmp);
         mMutated = TRUE;
     }
-    return THIS_PROBE(IDrawable);
+    *drawable = THIS_PROBE(IDrawable);
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
-ECode ScaleDrawable::Init()
+ECode ScaleDrawable::constructor()
 {
-    return Init((ScaleState*)NULL, (IResources*)NULL);
+    return constructor((ScaleState*)NULL, (IResources*)NULL);
 }
 
-ECode ScaleDrawable::Init(
+ECode ScaleDrawable::constructor(
     /* [in] */ IDrawable* drawable,
     /* [in] */ Int32 gravity,
     /* [in] */ Float scaleWidth,
     /* [in] */ Float scaleHeight)
 {
-    FAIL_RETURN(Init((ScaleState*)NULL, (IResources*)NULL));
+    FAIL_RETURN(constructor((ScaleState*)NULL, (IResources*)NULL));
 
     mScaleState->mDrawable = drawable;
     mScaleState->mGravity = gravity;
@@ -392,7 +418,7 @@ ECode ScaleDrawable::Init(
     return NOERROR;
 }
 
-ECode ScaleDrawable::Init(
+ECode ScaleDrawable::constructor(
     /* [in] */ ScaleState* state,
     /* [in] */ IResources* res)
 {

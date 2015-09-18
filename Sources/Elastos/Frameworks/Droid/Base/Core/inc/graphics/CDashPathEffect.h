@@ -9,9 +9,13 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CarClass(CDashPathEffect), public PathEffect
+CarClass(CDashPathEffect)
+    , public PathEffect
+    , public IDashPathEffect
 {
 public:
+    CAR_OBJECT_DECL();
+
     /**
      * The intervals array must contain an even number of entries (>=2), with
      * the even indices specifying the "on" intervals, and the odd indices

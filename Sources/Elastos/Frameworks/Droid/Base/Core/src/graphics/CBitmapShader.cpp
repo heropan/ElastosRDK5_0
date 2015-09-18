@@ -9,6 +9,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CBitmapShader);
+CAR_INTERFACE_IMPL(CBitmapShader, Shader, IBitmapShader);
 ECode CBitmapShader::constructor(
     /* [in] */ IBitmap* bitmap,
     /* [in] */ ShaderTileMode tileX,

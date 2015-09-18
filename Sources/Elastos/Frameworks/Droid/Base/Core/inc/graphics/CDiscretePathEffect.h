@@ -9,9 +9,13 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CarClass(CDiscretePathEffect), public PathEffect
+CarClass(CDiscretePathEffect)
+    , public PathEffect
+    , public IDiscretePathEffect
 {
 public:
+    CAR_OBJECT_DECL();
+
     /**
      * Chop the path into lines of segmentLength, randomly deviating from the
      * original path by deviation.

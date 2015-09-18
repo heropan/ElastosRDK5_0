@@ -15,9 +15,15 @@ namespace Graphics {
  * inside, or straddles, the original mask's border, is controlled by the
  * Blur enum.
  */
-CarClass(CBlurMaskFilter), public MaskFilter
+CarClass(CBlurMaskFilter)
+    , public MaskFilter
+    , public IBlurMaskFilter
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     /**
      * Create a blur maskfilter.
      *
