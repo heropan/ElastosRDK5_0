@@ -246,6 +246,10 @@ module
         constructor(
             [in] IReader* rin);
 
+        constructor(
+            [in] IReader* rin,
+            [in] Int32 size);
+
         interface IBufferedReader;
         interface IReadable;
         interface IReader;
