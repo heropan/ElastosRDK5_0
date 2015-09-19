@@ -1,0 +1,40 @@
+
+TARGET_NAME= videoeditor
+TARGET_TYPE= lib
+
+include $(MAKEDIR)/../../../../../../../sources.inc
+
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
+INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/media
+INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/media/media/videoeditor
+INCLUDES += $(PREBUILD_INC)/media
+INCLUDES += $(PREBUILD_INC)/system
+INCLUDES += $(PREBUILD_INC)/gui
+INCLUDES += $(PREBUILD_INC)/binder
+
+C_DEFINES += -DDROID_CORE
+
+SOURCES = CAudioTrack2.cpp
+SOURCES += Effect.cpp
+SOURCES += CEffectColor.cpp
+SOURCES += CEffectKenBurns.cpp
+SOURCES += MediaArtistNativeHelper.cpp
+SOURCES += MediaItem.cpp
+SOURCES += CMediaImageItem.cpp
+SOURCES += CMediaImageItemHelper.cpp
+SOURCES += CMediaPropertiesHelper.cpp
+SOURCES += CMediaVideoItem.cpp
+SOURCES += Overlay.cpp
+SOURCES += COverlayFrame.cpp
+SOURCES += Transition.cpp
+SOURCES += CTransitionAlpha.cpp
+SOURCES += CTransitionCrossfade.cpp
+SOURCES += CTransitionFadeBlack.cpp
+SOURCES += CTransitionSliding.cpp
+SOURCES += CVideoEditorOverlayData.cpp
+SOURCES += CVideoEditorFactoryHelper.cpp
+SOURCES += CVideoEditorImpl.cpp
+SOURCES += CVideoEditorProfile.cpp
+SOURCES += CVideoEditorProfileHelper.cpp
+SOURCES += CWaveformData.cpp

@@ -6,7 +6,7 @@ $INPUT class
 $OUTPUT "_${fullname}.cpp"
 $
 #include <new>
-#include "${name}.h"
+#include "${ClassFullPath(class)}.h"
 
 ${ClassNamespaceBegin(class)}
 $IF attrib is "singleton"

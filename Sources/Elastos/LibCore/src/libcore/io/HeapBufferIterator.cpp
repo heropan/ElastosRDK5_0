@@ -1,6 +1,6 @@
 #include "HeapBufferIterator.h"
 #include "io/Memory.h"
-#include "io/nio/CByteOrderHelper.h"
+#include "io/CByteOrderHelper.h"
 
 // using Elastos::IO::Memory;
 using Elastos::IO::CByteOrderHelper;

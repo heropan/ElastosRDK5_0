@@ -1,0 +1,20 @@
+TARGET_NAME= appwidget
+TARGET_TYPE= lib
+
+include $(MAKEDIR)/../../../../../../sources.inc
+
+C_DEFINES += -DDROID_CORE
+
+INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid
+
+SOURCES = CAppWidgetHostCallbacks.cpp
+SOURCES += AppWidgetProvider.cpp
+SOURCES += CAppWidgetHost.cpp
+SOURCES += CAppWidgetHostHelper.cpp
+SOURCES += AppWidgetHostView.cpp
+SOURCES += CAppWidgetHostView.cpp
+SOURCES += CAppWidgetHostViewHelper.cpp
+SOURCES += CAppWidgetManager.cpp
+SOURCES += CAppWidgetManagerHelper.cpp
+SOURCES += CAppWidgetProviderInfo.cpp

@@ -5,12 +5,12 @@ $
 $INPUT class
 $OUTPUT "${fullname}.cpp"
 
-#include "${ClassNameOfClassObj(name)}.h"
+#include "${ClassFullPathOfClassObject(class)}.h"
 #include "${fullname}.h"
 
 extern "C" Int32 g_dllLockCount;
 
-${namespace}${name} _g_${ClassNameOfClassObj(name)}_ClsObj;
+${namespace}${name} _g_${ClassFullNameOfClassObj(class)}_ClsObj;
 
 ${ClassNamespaceBegin(class)}$^
 

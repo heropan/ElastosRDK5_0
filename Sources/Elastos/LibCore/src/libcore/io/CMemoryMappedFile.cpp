@@ -1,7 +1,7 @@
 #include "CMemoryMappedFile.h"
 #include "CLibcore.h"
 #include "droid/system/OsConstants.h"
-#include "nio/CByteOrderHelper.h"
+#include "io/CByteOrderHelper.h"
 #include "NioBufferIterator.h"
 #include "CLibcore.h"
 #include "AutoLock.h"

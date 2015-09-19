@@ -1,0 +1,24 @@
+module
+{
+    merge("utility/AsyncService.car");
+    merge("utility/BitwiseInputStream.car");
+    merge("utility/BitwiseOutputStream.car");
+    merge("utility/CharSequences.car");
+    merge("utility/DumpUtils.car");
+    merge("utility/FastMath.car");
+    merge("utility/FastPrintWriter.car");
+    merge("utility/FastXmlSerializer.car");
+    merge("utility/FileRotator.car");
+    merge("utility/HexDump.car");
+    merge("utility/IndentingPrintWriter.car");
+    merge("utility/MemInfoReader.car");
+    merge("utility/Preconditions.car");
+    merge("utility/Predicate.car");
+    merge("utility/Predicates.car");
+    merge("utility/ProcFileReader.car");
+    merge("utility/Protocol.car");
+    merge("utility/SizedInputStream.car");
+    merge("utility/TypedProperties.car");
+    merge("utility/VirtualRefBasePtr.car");
+    merge("utility/WithFramework.car");
+}

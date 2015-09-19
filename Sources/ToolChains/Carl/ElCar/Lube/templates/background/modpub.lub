@@ -48,7 +48,7 @@ $
 
 $WITH all classes DO
 $   IF type is not "sink" and type is not "clsobj"
-extern ${namespace}${name}ClassObject _g_${name}_ClsObj;
+extern ${namespace}${name}ClassObject _g_${fullname}_ClsObj;
 $   END IF
 $END DO
 extern CIClassInfo *g_${MacroRewrite(name)}_classInfo;
@@ -61,7 +61,7 @@ $WITH all classes DO
 $IF attrib is not "private" and class.type is not "clsobj"
     if (${namespace}ECLSID_${name} == clsid) {
 $       IF class.type is not "sink"
-        *ppObj = _g_${class.name}_ClsObj.Probe(riid);
+        *ppObj = _g_${class.fullname}_ClsObj.Probe(riid);
         if (*ppObj) (*ppObj)->AddRef();
         else ec = E_NO_INTERFACE;
         return ec;

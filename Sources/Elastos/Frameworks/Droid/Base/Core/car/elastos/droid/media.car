@@ -1,0 +1,975 @@
+
+module
+{
+    merge("mtp/MtpConstants.car");
+    merge("mtp/MtpDatabase.car");
+    merge("mtp/MtpDevice.car");
+    merge("mtp/MtpDeviceInfo.car");
+    merge("mtp/MtpObjectInfo.car");
+    merge("mtp/MtpPropertyGroup.car");
+    merge("mtp/MtpPropertyList.car");
+    merge("mtp/MtpServer.car");
+    merge("mtp/MtpStorage.car");
+    merge("mtp/MtpStorageInfo.car");
+
+    merge("media/audiofx/AudioEffect.car");
+    merge("media/audiofx/AcousticEchoCanceler.car");
+    merge("media/audiofx/AutomaticGainControl.car");
+    merge("media/audiofx/BassBoost.car");
+    merge("media/audiofx/EnvironmentalReverb.car");
+    merge("media/audiofx/Equalizer.car");
+    merge("media/audiofx/LoudnessEnhancer.car");
+    merge("media/audiofx/NoiseSuppressor.car");
+    merge("media/audiofx/PresetReverb.car");
+    merge("media/audiofx/Virtualizer.car");
+    merge("media/audiofx/Visualizer.car");
+
+    merge("media/audiopolicy/AudioMix.car");
+    merge("media/audiopolicy/AudioMixingRule.car");
+    merge("media/audiopolicy/AudioPolicy.car");
+    merge("media/audiopolicy/AudioPolicyConfig.car");
+
+    merge("media/browse/MediaBrowser.car");
+
+    merge("media/projection/IMediaProjection.car");
+    merge("media/projection/IMediaProjectionCallback.car");
+    merge("media/projection/IMediaProjectionManager.car");
+    merge("media/projection/IMediaProjectionWatcherCallback.car");
+    merge("media/projection/MediaProjection.car");
+    merge("media/projection/MediaProjectionInfo.car");
+    merge("media/projection/MediaProjectionManager.car");
+
+    merge("media/session/IActiveSessionsListener.car");
+    merge("media/session/ISession.car");
+    merge("media/session/ISessionCallback.car");
+    merge("media/session/ISessionController.car");
+    merge("media/session/ISessionControllerCallback.car");
+    merge("media/session/ISessionManager.car");
+    merge("media/session/MediaController.car");
+    merge("media/session/MediaSession.car");
+    merge("media/session/MediaSessionLegacyHelper.car");
+    merge("media/session/MediaSessionManager.car");
+    merge("media/session/ParcelableVolumeInfo.car");
+    merge("media/session/PlaybackState.car");
+
+    merge("media/tv/ITvInputClient.car");
+    merge("media/tv/ITvInputHardware.car");
+    merge("media/tv/ITvInputHardwareCallback.car");
+    merge("media/tv/ITvInputManager.car");
+    merge("media/tv/ITvInputManagerCallback.car");
+    merge("media/tv/ITvInputService.car");
+    merge("media/tv/ITvInputServiceCallback.car");
+    merge("media/tv/ITvInputSession.car");
+    merge("media/tv/ITvInputSessionCallback.car");
+
+    merge("media/tv/ITvInputSessionWrapper.car");
+    merge("media/tv/TvContentRating.car");
+    merge("media/tv/TvContentRatingSystemInfo.car");
+    merge("media/tv/TvContract.car");
+    merge("media/tv/TvInputHardwareInfo.car");
+    merge("media/tv/TvInputInfo.car");
+    merge("media/tv/TvInputManager.car");
+    merge("media/tv/TvInputService.car");
+    merge("media/tv/TvStreamConfig.car");
+    merge("media/tv/TvTrackInfo.car");
+    merge("media/tv/TvView.car");
+
+    merge("media/AmrInputStream.car");
+    merge("media/AsyncPlayer.car");
+    merge("media/AudioAttributes.car");
+    merge("media/AudioDevice.car");
+    merge("media/AudioDevicePort.car");
+    merge("media/AudioDevicePortConfig.car");
+    merge("media/AudioFormat.car");
+    merge("media/AudioGain.car");
+    merge("media/AudioGainConfig.car");
+    merge("media/AudioHandle.car");
+    merge("media/AudioManager.car");
+    merge("media/AudioManagerInternal.car");
+    merge("media/AudioMixPort.car");
+    merge("media/AudioMixPortConfig.car");
+    merge("media/AudioPatch.car");
+    merge("media/AudioPort.car");
+    merge("media/AudioPortConfig.car");
+    merge("media/AudioRecord.car");
+    merge("media/AudioRoutesInfo.car");
+    merge("media/AudioService.car");
+    merge("media/AudioSystem.car");
+    merge("media/AudioTimestamp.car");
+    merge("media/AudioTrack.car");
+    merge("media/CamcorderProfile.car");
+    merge("media/CameraProfile.car");
+    merge("media/ClosedCaptionRenderer.car");
+    merge("media/DataSource.car");
+    merge("media/DecoderCapabilities.car");
+    merge("media/EncoderCapabilities.car");
+    merge("media/ExifInterface.car");
+    merge("media/FaceDetector.car");
+    merge("media/FocusRequester.car");
+    merge("media/IAudioFocusDispatcher.car");
+    merge("media/IAudioRoutesObserver.car");
+    merge("media/IAudioService.car");
+    merge("media/IMediaHTTPConnection.car");
+    merge("media/IMediaRouterClient.car");
+    merge("media/IMediaRouterService.car");
+    merge("media/IMediaScannerListener.car");
+    merge("media/IMediaScannerService.car");
+    merge("media/IRemoteControlClient.car");
+    merge("media/IRemoteControlDisplay.car");
+    merge("media/IRemoteDisplayCallback.car");
+    merge("media/IRemoteDisplayProvider.car");
+    merge("media/IRemoteVolumeController.car");
+    merge("media/IRemoteVolumeObserver.car");
+    merge("media/IRingtonePlayer.car");
+    merge("media/IVolumeController.car");
+    merge("media/Image.car");
+    merge("media/ImageReader.car");
+    merge("media/JetPlayer.car");
+    merge("media/MediaActionSound.car");
+    merge("media/MediaCodec.car");
+    merge("media/MediaCodecInfo.car");
+    merge("media/MediaCodecList.car");
+    merge("media/MediaCrypto.car");
+    merge("media/MediaDescription.car");
+    merge("media/MediaDrm.car");
+    merge("media/MediaExtractor.car");
+    merge("media/MediaFile.car");
+    merge("media/MediaFormat.car");
+    merge("media/MediaInserter.car");
+    merge("media/MediaMetadata.car");
+    merge("media/MediaMetadataEditor.car");
+    merge("media/MediaMetadataRetriever.car");
+    merge("media/MediaMuxer.car");
+    merge("media/MediaPlayer.car");
+    merge("media/MediaRecorder.car");
+    merge("media/MediaRouter.car");
+    merge("media/MediaRouterClientState.car");
+    merge("media/MediaScanner.car");
+    merge("media/MediaScannerClient.car");
+    merge("media/MediaScannerConnection.car");
+    merge("media/MediaSyncEvent.car");
+    merge("media/MediaTimeProvider.car");
+    merge("media/Metadata.car");
+    merge("media/MiniThumbFile.car");
+    merge("media/Rating.car");
+    merge("media/RemoteControlClient.car");
+    merge("media/RemoteController.car");
+    merge("media/RemoteDisplay.car");
+    merge("media/RemoteDisplayState.car");
+    merge("media/ResampleInputStream.car");
+    merge("media/Ringtone.car");
+    merge("media/RingtoneManager.car");
+    merge("media/SoundPool.car");
+    merge("media/SubtitleData.car");
+    merge("media/SubtitleController.car");
+    merge("media/SubtitleTrack.car");
+    merge("media/ThumbnailUtils.car");
+    merge("media/TimedText.car");
+    merge("media/ToneGenerator.car");
+    merge("media/VolumeProvider.car");
+
+    interface Elastos.Core.IRunnable;
+    interface Elastos.Droid.Os.Storage.IStorageVolume;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IIContentProvider;
+    interface Elastos.Droid.Hardware.Usb.IUsbDevice;
+
+//        // media/media/AmrInputStream
+//        class CAmrInputStream {
+//            constructor(
+//                [in] IInputStream* inputStream);
+//
+//            interface IAmrInputStream;
+//        }
+//
+//        // media/media/AsyncPlayer
+//        class CAsyncPlayer {
+//            constructor(
+//                [in] String tag);
+//
+//            interface IAsyncPlayer;
+//        }
+//
+//        class CAudioManagerAudioFocusDispatcher {
+//            constructor(
+//                [in] IAudioManager* owner);
+//
+//            interface IIAudioFocusDispatcher;
+//        }
+//
+//        // media/media/AudioManager
+//        [local]
+//        class CAudioManager {
+//            constructor(
+//                [in] IContext* ctx);
+//
+//            interface IAudioManager;
+//        }
+//
+//        singleton class CAudioManagerHelper{
+//            interface IAudioManagerHelper;
+//        }
+//
+//        // media/media/AudioRecord
+//        class CAudioRecord {
+//            constructor(
+//                [in] Int32 audioSource,
+//                [in] Int32 sampleRateInHz,
+//                [in] Int32 channelConfig,
+//                [in] Int32 audioFormat,
+//                [in] Int32 bufferSizeInBytes);
+//
+//            interface IAudioRecord;
+//        }
+//
+//        singleton class CAudioRecordHelper {
+//            interface IAudioRecordHelper;
+//        }
+//
+//        // media/media/AudioRoutesInfo
+//        class CAudioRoutesInfo{
+//            constructor();
+//
+//            constructor(
+//                [in] IAudioRoutesInfo* o);
+//
+//            interface IAudioRoutesInfo;
+//            interface IParcelable;
+//        }
+//
+//        // media/media/AudioService
+//        [local]
+//        class CAudioService {
+//            constructor(
+//                [in] IContext* ctx);
+//
+//            interface IAudioService;
+//            interface IPendingIntentOnFinished;
+//        }
+//
+//        singleton class CAudioServiceHelper{
+//            interface IAudioServiceHelper;
+//        }
+//
+//        // media/media/AudioSystem
+//        class CAudioSystem {
+//            interface IAudioSystem;
+//        }
+//
+//        singleton class CAudioSystemHelper {
+//            interface IAudioSystemHelper;
+//        }
+//
+//        // media/media/AudioTrack
+//        class CAudioTrack {
+//            constructor(
+//                [in] Int32 streamType,
+//                [in] Int32 sampleRateInHz,
+//                [in] Int32 channelConfig,
+//                [in] Int32 audioFormat,
+//                [in] Int32 bufferSizeInBytes,
+//                [in] Int32 mode);
+//
+//            constructor(
+//                [in] Int32 streamType,
+//                [in] Int32 sampleRateInHz,
+//                [in] Int32 channelConfig,
+//                [in] Int32 audioFormat,
+//                [in] Int32 bufferSizeInBytes,
+//                [in] Int32 mode,
+//                [in] Int32 sessionId);
+//
+//            interface IAudioTrack;
+//        }
+//
+//        singleton class CAudioTrackHelper {
+//            interface IAudioTrackHelper;
+//        }
+//
+//        // media/media/CamcorderProfile
+//        class CCamcorderProfile {
+//            constructor(
+//                [in] Int32 duration,
+//                [in] Int32 quality,
+//                [in] Int32 fileFormat,
+//                [in] Int32 videoCodec,
+//                [in] Int32 videoBitRate,
+//                [in] Int32 videoFrameRate,
+//                [in] Int32 videoWidth,
+//                [in] Int32 videoHeight,
+//                [in] Int32 audioCodec,
+//                [in] Int32 audioBitRate,
+//                [in] Int32 audioSampleRate,
+//                [in] Int32 audioChannels);
+//
+//            interface ICamcorderProfile;
+//        }
+//
+//        singleton class CCamcorderProfileHelper {
+//            interface ICamcorderProfileHelper;
+//        }
+//
+//        singleton class CCameraProfileHelper {
+//            interface ICameraProfileHelper;
+//        }
+//
+//        // media/media/DecoderCapabilities
+//        class CDecoderCapabilities {
+//            constructor();
+//
+//            interface IDecoderCapabilities;
+//        }
+//
+//        singleton class CDecoderCapabilitiesHelper {
+//            interface IDecoderCapabilitiesHelper;
+//        }
+//
+//        // media/media/EncoderCapabilities
+//        class CEncoderCapabilities {
+//            constructor();
+//
+//            interface IEncoderCapabilities;
+//        }
+//
+//        singleton class CEncoderCapabilitiesHelper {
+//            interface IEncoderCapabilitiesHelper;
+//        }
+//
+//        // media/media/ExifInterface
+//        class CExifInterface {
+//            constructor(
+//                [in] String fileName);
+//
+//            interface IExifInterface;
+//        }
+//
+//        class CFace {
+//            interface IFace;
+//        }
+//
+//        class CFaceDetector {
+//            constructor(
+//                [in] Int32 width,
+//                [in] Int32 height,
+//                [in] Int32 maxFaces);
+//
+//            interface IFaceDetector;
+//        }
+//
+//        class CJetPlayer {
+//            constructor();
+//
+//            interface IJetPlayer;
+//        }
+//
+//        singleton class CJetPlayerHelper {
+//            interface IJetPlayerHelper;
+//        }
+//
+//        class CMediaActionSound {
+//            constructor();
+//            interface IMediaActionSound;
+//        }
+//
+//        // media/media/TrackInfoVendor
+//        [deprecated]
+//        class CTrackInfoVendor {
+//            constructor(
+//                [in] ArrayOf<Byte>* name,
+//                [in] String charset);
+//
+//            interface ITrackInfoVendor;
+//        }
+//
+//        // media/media/SubInfo
+//        [deprecated]
+//        class CMediaPlayerSubInfo {
+//            constructor(
+//                [in] ArrayOf<Byte>* name,
+//                [in] String charset,
+//                [in] Int32 type);
+//
+//            interface IMediaPlayerSubInfo;
+//        }
+//
+//        class CMediaPlayer {
+//            constructor();
+//
+//            interface IMediaPlayer;
+//        }
+//
+//        singleton class CMediaPlayerHelper {
+//            interface IMediaPlayerHelper;
+//        }
+//
+//        // media/media/MediaPlayer.TrackInfo
+//        class CMediaPlayerTrackInfo {
+//            constructor();
+//
+//            interface IMediaPlayerTrackInfo;
+//            interface IParcelable;
+//        }
+//
+//        // media/media/MediaRecorder
+//        class CMediaRecorder {
+//            constructor();
+//
+//            interface IMediaRecorder;
+//        }
+//
+//        singleton class CMediaRecorderHelper {
+//            interface IMediaRecorderHelper;
+//        }
+//
+//        // media/media/MediaRouter
+//        [local]
+//        class CMediaRouter {
+//            constructor(
+//                [in] IContext* ctx);
+//
+//            interface IMediaRouter;
+//        }
+//
+//        [local]
+//        class CMediaRouteInfo {
+//            constructor(
+//                [in] IRouteCategory* category);
+//
+//            interface IRouteInfo;
+//        }
+//
+//        class CRouteCategory {
+//            constructor(
+//                [in] ICharSequence* name,
+//                [in] Int32 types,
+//                [in] Boolean groupable);
+//
+//            constructor(
+//                [in] Int32 nameResId,
+//                [in] Int32 types,
+//                [in] Boolean groupable);
+//
+//            interface IRouteCategory;
+//        }
+//
+//        [local]
+//        class CUserRouteInfo {
+//            constructor(
+//                [in] IRouteCategory* category);
+//
+//            interface IUserRouteInfo;
+//        }
+//
+//        [local]
+//        class CRouteGroup {
+//            constructor(
+//                [in] IRouteCategory* category);
+//
+//            interface IRouteGroup;
+//        }
+//
+//        // media/media/MediaScanner
+//        [local]
+//        class CMediaScanner {
+//            constructor(
+//                [in] IContext* c);
+//
+//            interface IMediaScanner;
+//        }
+//
+//        singleton class CMediaScannerHelper {
+//            interface IMediaScannerHelper;
+//        }
+//
+////      class CMediaScannerClient {
+////          interface IMediaScannerClient;
+////      }
+//
+//        // media/media/MediaScannerConnection
+//        [local]
+//        class CMediaScannerConnection {
+//            constructor(
+//                [in] IContext* ctx,
+//                [in] IMediaScannerConnectionClient* client);
+//
+//            interface IMediaScannerConnection;
+//        }
+//
+//        singleton class CMediaScannerConnectionHelper {
+//            interface IMediaScannerConnectionHelper;
+//        }
+//
+//        class CMediaSyncEvent {
+//            constructor(
+//                [in] Int32 eventType);
+//
+//            interface IMediaSyncEvent;
+//        }
+//
+//        singleton class CMediaSyncEventHelper {
+//            interface IMediaSyncEventHelper;
+//        }
+//
+//        // media/media/Metadata
+//        class CMetadata {
+//            constructor();
+//
+//            interface IMetadata;
+//        }
+//
+//        singleton class CMetadataHelper {
+//            interface IMetadataHelper;
+//        }
+//
+//        // media/media/MiniThumbFile
+//        class CMiniThumbFile {
+//            constructor(
+//                [in] IUri* uri);
+//
+//            interface IMiniThumbFile;
+//        }
+//
+//        singleton class CMiniThumbFileHelper {
+//            interface IMiniThumbFileHelper;
+//        }
+//
+//        // media/media/RemoteControlClient
+//        class CRemoteControlClient {
+//            constructor(
+//                [in] IPendingIntent* mediaButtonIntent);
+//
+//            constructor(
+//                [in] IPendingIntent* mediaButtonIntent,
+//                [in] ILooper* looper);
+//
+//            interface IRemoteControlClient;
+//        }
+//
+//        // media/media/RemoteDisplay
+//        class CRemoteDisplay {
+//            constructor(
+//                [in] IRemoteDisplayListener* listener,
+//                [in] IHandler* handler);
+//
+//            interface IRemoteDisplay;
+//        }
+//
+//        singleton class CRemoteDisplayHelper {
+//            interface IRemoteDisplayHelper;
+//        }
+//
+//        class CResampleInputStream {
+//            constructor(
+//                [in] IInputStream* inputStream,
+//                [in] Int32 rateIn,
+//                [in] Int32 rateOut);
+//
+//            interface IResampleInputStream;
+//        }
+//
+//        [local]
+//        class CRingtone {
+//            constructor(
+//                [in] IContext* ctx,
+//                [in] Boolean allowRemote);
+//
+//            interface IRingtone;
+//        }
+//
+//        // media/media/RingtoneManager
+//        [local]
+//        class CRingtoneManager {
+//            constructor(
+//                [in] IActivity* activity);
+//
+//            constructor(
+//                [in] IContext* ctx);
+//
+//            interface IRingtoneManager;
+//        }
+//
+//        singleton class CRingtoneManagerHelper {
+//            interface IRingtoneManagerHelper;
+//        }
+//
+//        // media/media/SoundPool
+//        class CSoundPool {
+//            constructor(
+//                [in] Int32 maxStreams,
+//                [in] Int32 streamType,
+//                [in] Int32 srcQuality);
+//
+//            interface ISoundPool;
+//        }
+//
+//        singleton class CThumbnailUtils {
+//            interface IThumbnailUtils;
+//        }
+//
+//        // media/media/TimeText
+//        class CTimedText {
+//            constructor(
+//                [in] IParcel* parcel);
+//
+//            interface ITimedText;
+//        }
+//
+//        class CToneGenerator {
+//
+//            constructor(
+//                [in] Int32 streamType,
+//                [in] Int32 volume);
+//
+//            interface IToneGenerator;
+//        }
+//
+//        class CMediaCodec {
+//            constructor(
+//                [in] String name,
+//                [in] Boolean nameIsType,
+//                [in] Boolean encoder);
+//
+//            interface IMediaCodec;
+//        }
+//
+//        singleton class CMediaCodecHelper {
+//
+//            interface IMediaCodecHelper;
+//        }
+//
+//        class CMediaCodecCryptoInfo {
+//            interface IMediaCodecCryptoInfo;
+//        }
+//
+//        class CMediaCodecBufferInfo {
+//            interface IMediaCodecBufferInfo;
+//        }
+//
+//        class CMediaCodecInfo {
+//            constructor(
+//                [in] Int32 index);
+//
+//            interface IMediaCodecInfo;
+//        }
+//
+//        class CCodecCapabilities {
+//            interface ICodecCapabilities;
+//        }
+//
+//        class CCodecProfileLevel {
+//            interface ICodecProfileLevel;
+//        }
+//
+//        singleton class CMediaCodecList {
+//            interface IMediaCodecList;
+//        }
+//
+//        [deprecated]
+//        class CMediaCrypto {
+//            constructor(
+//                [in] IUUID* uuid,
+//                [in] ArrayOf<Byte>* initData);
+//
+//            interface IMediaCrypto;
+//        }
+//
+//        singleton class CMediaCryptoHelper {
+//            interface IMediaCryptoHelper;
+//        }
+//
+//        class CMediaExtractor {
+//            constructor();
+//
+//            interface IMediaExtractor;
+//        }
+//
+//        // media/media/MediaFile
+//        singleton class CMediaFile {
+//            interface IMediaFile;
+//        }
+//
+//        class CMediaFileType {
+//            constructor(
+//                [in] Int32 fileType,
+//                [in] String mimeType);
+//
+//            interface IMediaFileType;
+//        }
+//
+//        // media/media/MediaFormat
+//        class CMediaFormat {
+//            constructor();
+//
+//            constructor(
+//                [in] IObjectStringMap* inputmap);
+//
+//            interface IMediaFormat;
+//        }
+//
+//        singleton class CMediaFormatHelper {
+//            interface IMediaFormatHelper;
+//        }
+//
+//        // media/media/MediaInserter
+//        class CMediaInserter {
+//            constructor(
+//                [in] IIContentProvider* provider,
+//                [in] Int32 bufferSizePerUri);
+//
+//            interface IMediaInserter;
+//        }
+//
+//        class CMediaMetadataRetriever {
+//            constructor();
+//
+//            interface IMediaMetadataRetriever;
+//        }
+//
+//    } // namespace media
+//    } // namepsace Droid
+//    } // namespace Elastos
+//
+//    namespace Elastos {
+//    namespace Droid {
+//    namespace Media {
+//    namespace Audiofx {
+//
+//        class CAudioEffectDescriptor {
+//            constructor(
+//            [in] String type,
+//            [in] String uuid,
+//            [in] String connectMode,
+//            [in] String name,
+//            [in] String implementor);
+//
+//            interface IAudioEffectDescriptor;
+//        }
+//
+//        class CAudioEffect {
+//            constructor(
+//                [in] IUUID* type,
+//                [in] IUUID* uuid,
+//                [in] Int32 priority,
+//                [in] Int32 audioSession);
+//
+//            interface IAudioEffect;
+//        }
+//
+//        singleton class CAudioEffectHelper {
+//            interface IAudioEffectHelper;
+//        }
+//
+//        class CAcousticEchoCanceler {
+//            constructor(
+//                [in] Int32 audioSession);
+//
+//            interface IAcousticEchoCanceler;
+//        }
+//
+//        singleton class CAcousticEchoCancelerHelper {
+//            interface IAcousticEchoCancelerHelper;
+//        }
+//
+//        class CAutomaticGainControl {
+//            constructor(
+//                [in] Int32 audioSession);
+//
+//            interface IAutomaticGainControl;
+//        }
+//
+//        singleton class CAutomaticGainControlHelper {
+//            interface IAutomaticGainControlHelper;
+//        }
+//
+//        class CBassBoostSettings {
+//            constructor();
+//
+//            constructor(
+//                [in] String settings);
+//
+//            interface IBassBoostSettings;
+//        }
+//
+//        class CBassBoost {
+//            constructor(
+//                [in] Int32 priority,
+//                [in] Int32 audioSession);
+//
+//            interface IBassBoost;
+//        }
+//
+//        class CEnvironmentalReverbSettings {
+//            constructor();
+//
+//            constructor(
+//                [in] String settings);
+//
+//            interface IEnvironmentalReverbSettings;
+//        }
+//
+//        class CEnvironmentalReverb {
+//            constructor(
+//                [in] Int32 priority,
+//                [in] Int32 audioSession);
+//
+//            interface IEnvironmentalReverb;
+//        }
+//
+//        class CEqualizerSettings {
+//            constructor();
+//
+//            constructor(
+//                [in] String settings);
+//
+//            interface IEqualizerSettings;
+//        }
+//
+//        class CEqualizer {
+//            constructor(
+//                [in] Int32 priority,
+//                [in] Int32 audioSession);
+//
+//            interface IEqualizer;
+//        }
+//
+//        class CNoiseSuppressor {
+//            constructor(
+//                [in] Int32 audioSession);
+//
+//            interface INoiseSuppressor;
+//        }
+//
+//        singleton class CNoiseSuppressorHelper {
+//            interface INoiseSuppressorHelper;
+//        }
+//
+//        class CPresetReverbSettings {
+//            constructor();
+//
+//            constructor(
+//                [in] String settings);
+//
+//            interface IPresetReverbSettings;
+//        }
+//
+//        class CPresetReverb {
+//            constructor(
+//                [in] Int32 priority,
+//                [in] Int32 audioSession);
+//
+//            interface IPresetReverb;
+//        }
+//
+//        class CVirtualizerSettings {
+//            constructor();
+//
+//            constructor(
+//                [in] String settings);
+//
+//            interface IVirtualizerSettings;
+//        }
+//
+//        class CVirtualizer {
+//            constructor(
+//                [in] Int32 priority,
+//                [in] Int32 audioSession);
+//
+//            interface IVirtualizer;
+//        }
+//
+//        class CVisualizer {
+//            constructor(
+//                [in] Int32 audioSession);
+//
+//            interface IVisualizer;
+//        }
+//
+//        singleton class CVisualizerHelper {
+//            interface IVisualizerHelper;
+//        }
+//
+//    } // namespace audiofx
+//    } // namespace media
+//    } // namespace Droid
+//    } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Mtp {
+
+        singleton class CMtpConstants {
+            interface IMtpConstants;
+        }
+
+//        [local, deprecated]
+//        class CMtpDatabase {
+//            constructor(
+//                [in] IContext* ctx,
+//                [in] String volumeName,
+//                [in] String storagePath,
+//                [in] ArrayOf<String>* subDirectories);
+//
+//            interface IMtpDatabase;
+//        }
+
+        class CMtpDevice {
+            constructor(
+                [in] IUsbDevice* device);
+
+            interface IMtpDevice;
+        }
+
+        class CMtpDeviceInfo {
+            interface IMtpDeviceInfo;
+        }
+
+        class CMtpObjectInfo {
+            interface IMtpObjectInfo;
+        }
+
+//        [deprecated]
+//        class CMtpPropertyGroup {
+//            constructor(
+//                [in] IMtpDatabase* database,
+//                [in] IIContentProvider* provider,
+//                [in] String packageName,
+//                [in] String volume,
+//                [in] ArrayOf<Int32>* properties);
+//
+//            interface IMtpPropertyGroup;
+//        }
+
+        class CMtpPropertyList {
+            constructor(
+                [in] Int32 maxCount,
+                [in] Int32 result);
+
+            interface IMtpPropertyList;
+        }
+
+//        class CMtpServer {
+//            constructor(
+//                [in] IMtpDatabase* database,
+//                [in] Boolean usePtp);
+//
+//            interface IMtpServer;
+//            interface IRunnable;
+//        }
+
+        [local]
+        class CMtpStorage {
+            constructor(
+                [in] IStorageVolume* volume,
+                [in] IContext* ctx);
+
+            interface IMtpStorage;
+        }
+
+        class CMtpStorageInfo {
+            interface IMtpStorageInfo;
+        }
+
+   } // namespace mtp
+   } // namespace Droid
+   } // namespace Elastos
+}

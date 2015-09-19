@@ -1,0 +1,21 @@
+TARGET_NAME = base
+TARGET_TYPE = lib
+
+include $(MAKEDIR)/../../../../../../../../../sources.inc
+
+INCLUDES += ../../../../
+INCLUDES += $(MAKEDIR)/../../../../../../../inc/elastos/droid
+INCLUDES += $(MAKEDIR)/../../../../../../../inc/elastos/droid/webkit/native/ui
+INCLUDES += $(MAKEDIR)/../../../../../../../inc/elastos/droid/webkit/native/ui/base
+
+C_DEFINES += -DDROID_CORE
+
+SOURCES = SelectFileDialog.cpp
+SOURCES += LocalizationUtils.cpp
+SOURCES += Clipboard.cpp
+SOURCES += ViewAndroid.cpp
+SOURCES += DeviceFormFactor.cpp
+SOURCES += ActivityWindowAndroid.cpp
+SOURCES += ResourceBundle.cpp
+SOURCES += TouchDevice.cpp
+SOURCES += WindowAndroid.cpp

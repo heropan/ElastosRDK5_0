@@ -60,22 +60,22 @@ module
     merge("io/IPipedReader.car");
     merge("io/IPipedWriter.car");
 
-    merge("io/nio/IByteOrder.car");
-    merge("io/nio/IBuffer.car");
-    merge("io/nio/IByteBuffer.car");
-    merge("io/nio/IByteArrayBuffer.car");
-    merge("io/nio/ICharBuffer.car");
-    merge("io/nio/IDoubleBuffer.car");
-    merge("io/nio/IFloatBuffer.car");
-    merge("io/nio/IInt16Buffer.car");
-    merge("io/nio/IInt32Buffer.car");
-    merge("io/nio/IInt64Buffer.car");
-    merge("io/nio/IMappedByteBuffer.car");
-    merge("io/nio/IDirectByteBuffer.car");
-    merge("io/nio/INIOAccess.car");
-    merge("io/nio/IFileDescriptorChannel.car");
-    merge("io/nio/IFileChannelImpl.car");
-    merge("io/nio/INioUtils.car");
+    merge("io/IByteOrder.car");
+    merge("io/IBuffer.car");
+    merge("io/IByteBuffer.car");
+    merge("io/IByteArrayBuffer.car");
+    merge("io/ICharBuffer.car");
+    merge("io/IDoubleBuffer.car");
+    merge("io/IFloatBuffer.car");
+    merge("io/IInt16Buffer.car");
+    merge("io/IInt32Buffer.car");
+    merge("io/IInt64Buffer.car");
+    merge("io/IMappedByteBuffer.car");
+    merge("io/IDirectByteBuffer.car");
+    merge("io/INIOAccess.car");
+    merge("io/IFileDescriptorChannel.car");
+    merge("io/IFileChannelImpl.car");
+    merge("io/INioUtils.car");
 
     merge("io/channels/IChannel.car");
     merge("io/channels/IReadableByteChannel.car");

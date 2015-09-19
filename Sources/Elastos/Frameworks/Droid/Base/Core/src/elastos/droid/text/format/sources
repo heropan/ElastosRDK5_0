@@ -1,0 +1,20 @@
+
+TARGET_NAME= format
+TARGET_TYPE= lib
+
+include $(MAKEDIR)/../../../../../../../sources.inc
+
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
+INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/text
+
+C_DEFINES += -DDROID_CORE
+
+SOURCES = CDateUtils.cpp
+SOURCES += CFormatter.cpp
+SOURCES += CTime.cpp
+SOURCES += CTimeHelper.cpp
+SOURCES += DateUtils.cpp
+SOURCES += Formatter.cpp
+SOURCES += DateFormat.cpp
+SOURCES += CDateFormat.cpp

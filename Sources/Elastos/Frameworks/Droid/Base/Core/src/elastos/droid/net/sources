@@ -1,0 +1,86 @@
+TARGET_NAME= net
+TARGET_TYPE= lib
+
+include $(MAKEDIR)/../../../../../../sources.inc
+
+INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid/
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid/net/
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid/os/
+#INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/core/
+#INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/core/inc/
+#INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/utility/logging/
+#INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/utility/
+#INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/utility/concurrent/atomic/
+
+C_DEFINES += -DDROID_CORE
+
+SOURCES = net.cpp
+SOURCES += BaseNetworkStateTracker.cpp
+SOURCES += CConnectivityManager.cpp
+SOURCES += CConnectivityManagerHelper.cpp
+SOURCES += CCredentials.cpp
+SOURCES += CDhcpInfo.cpp
+SOURCES += DhcpResults.cpp
+SOURCES += DhcpStateMachine.cpp
+SOURCES += CDhcpStateMachineHelper.cpp
+SOURCES += CDnsPinger.cpp
+SOURCES += EthernetManager.cpp
+SOURCES += CInterfaceConfiguration.cpp
+SOURCES += IpConfiguration.cpp
+SOURCES += IpPrefix.cpp
+SOURCES += LinkAddress.cpp
+SOURCES += LinkProperties.cpp
+SOURCES += LinkQualityInfo.cpp
+SOURCES += LocalServerSocket.cpp
+SOURCES += LocalSocket.cpp
+SOURCES += LocalSocketAddress.cpp
+SOURCES += LocalSocketImpl.cpp
+SOURCES += MailTo.cpp
+SOURCES += CMailToHelper.cpp
+SOURCES += MobileDataStateTracker.cpp
+SOURCES += CMobileDataStateTrackerHelper.cpp
+SOURCES += MobileLinkQualityInfo.cpp
+SOURCES += CMobileLinkQualityInfoHelper.cpp
+#SOURCES += CNetworkConfig.cpp
+#SOURCES += CNetworkIdentity.cpp
+#SOURCES += CNetworkIdentityHelper.cpp
+#SOURCES += CNetworkInfo.cpp
+#SOURCES += CNetworkPolicy.cpp
+#SOURCES += CNetworkPolicyManager.cpp
+#SOURCES += CNetworkPolicyManagerHelper.cpp
+#SOURCES += CNetworkQuotaInfo.cpp
+#SOURCES += CNetworkState.cpp
+#SOURCES += CNetworkStats.cpp
+#SOURCES += CNetworkStatsHelper.cpp
+#SOURCES += CNetworkStatsEntry.cpp
+#SOURCES += CNetworkStatsFactory.cpp
+#SOURCES += CNetworkStatsHistory.cpp
+#SOURCES += CNetworkStatsHistoryHelper.cpp
+#SOURCES += CNetworkStatsHistoryEntry.cpp
+#SOURCES += CNetworkTemplate.cpp
+#SOURCES += CNetworkTemplateHelper.cpp
+#SOURCES += NetworkUtils.cpp
+#SOURCES += CProxy.cpp
+#SOURCES += CProxyProperties.cpp
+#SOURCES += CRouteInfo.cpp
+#SOURCES += CRouteInfoHelper.cpp
+#SOURCES += CStringUri.cpp
+#SOURCES += CTrafficStats.cpp
+SOURCES += Uri.cpp
+#SOURCES += CUriHelper.cpp
+#SOURCES += CUriBuilder.cpp
+#SOURCES += CHierarchicalUri.cpp
+#SOURCES += CStringUri.cpp
+#SOURCES += COpaqueUri.cpp
+#SOURCES += CParseException.cpp
+#SOURCES += CSntpClient.cpp
+#SOURCES += CThrottleManager.cpp
+#SOURCES += CLegacyVpnInfo.cpp
+#SOURCES += CVpnConfig.cpp
+#SOURCES += CVpnConfigHelper.cpp
+#SOURCES += CVpnProfile.cpp
+#SOURCES += CVpnProfileHelper.cpp
+
+
+#LIBRARIES += wifi/wifi.lib

@@ -1,0 +1,32 @@
+
+TARGET_NAME= inputmethod
+TARGET_TYPE= lib
+
+include $(MAKEDIR)/../../../../../../../sources.inc
+
+INCLUDES += $(MAKEDIR)/../../../../../../Core/inc/elastos/droid
+INCLUDES += ../../
+
+ifeq "$(XDK_TARGET_PLATFORM)" "linux"
+INCLUDES += $(PREBUILD_INC)/skia/utils
+INCLUDES += $(PREBUILD_INC)/skia/core
+endif
+
+C_DEFINES += -DDROID_CORE
+
+SOURCES += CExtractedTextRequest.cpp
+SOURCES += CExtractedText.cpp
+SOURCES += CCompletionInfo.cpp
+SOURCES += BaseInputConnection.cpp
+SOURCES += CBaseInputConnection.cpp
+SOURCES += CEditorInfo.cpp
+SOURCES += CIInputMethodClient.cpp
+SOURCES += CControlledInputConnectionWrapper.cpp
+SOURCES += CInputMethodManager.cpp
+SOURCES += CInputBinding.cpp
+SOURCES += CInputConnectionWrapper.cpp
+SOURCES += CInputMethodInfo.cpp
+SOURCES += CInputMethodManagerInputMethodCallback.cpp
+SOURCES += CCorrectionInfo.cpp
+SOURCES += CInputMethodSubtype.cpp
+SOURCES += CInputMethodSubtypeHelper.cpp

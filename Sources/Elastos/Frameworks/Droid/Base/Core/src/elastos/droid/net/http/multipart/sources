@@ -1,0 +1,20 @@
+TARGET_NAME= multipart
+TARGET_TYPE= lib
+
+C_DEFINES += -DDROID_CORE
+
+INCLUDES += ../../
+INCLUDES += ../../../
+#INCLUDES += $(MAKEDIR)/../../../inc
+#INCLUDES += $(MAKEDIR)/../../../inc/net/http
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid/net/http/multipart
+
+SOURCES += CByteArrayPartSource.cpp
+SOURCES += CFilePart.cpp
+SOURCES += CFilePartHelper.cpp
+SOURCES += CFilePartSource.cpp
+SOURCES += CMultipartEntity.cpp
+SOURCES += CStringPart.cpp
+SOURCES += CStringPartHelper.cpp
+SOURCES += Part.cpp
+SOURCES += PartBase.cpp

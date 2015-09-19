@@ -3,7 +3,7 @@
 #define __LIBCORE_IO_MEMORY_H__
 
 #include "Elastos.CoreLibrary_server.h"
-#include "nio/MappedByteBuffer.h"
+#include "io/MappedByteBuffer.h"
 
 using Elastos::IO::ByteOrder;
 using Elastos::IO::MappedByteBuffer;

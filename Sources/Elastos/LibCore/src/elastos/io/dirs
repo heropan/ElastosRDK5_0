@@ -1,3 +1,2 @@
 DIRS = channels
 DIRS += charset
-DIRS += nio

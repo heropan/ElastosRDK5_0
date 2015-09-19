@@ -1,0 +1,43 @@
+TARGET_NAME= http
+TARGET_TYPE= lib
+
+C_DEFINES += -DDROID_CORE
+
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
+INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/net/http
+
+SOURCES += CAndroidHttpClient.cpp
+SOURCES += CAndroidHttpClientHelper.cpp
+SOURCES += CAndroidHttpClientConnection.cpp
+SOURCES += CCertificateChainValidatorHelper.cpp
+SOURCES += CCharArrayBuffers.cpp
+SOURCES += CCharArrayBuffersHelper.cpp
+SOURCES += CErrorStrings.cpp
+SOURCES += CHeaders.cpp
+SOURCES += CHttpAuthHeader.cpp
+SOURCES += CHttpResponseCache.cpp
+SOURCES += CHttpResponseCacheHelper.cpp
+SOURCES += CLoggingEventHandler.cpp
+SOURCES += CRequestHandle.cpp
+SOURCES += CRequestHandleHelper.cpp
+SOURCES += CRequestQueue.cpp
+SOURCES += CSslCertificate.cpp
+SOURCES += CSslCertificateHelper.cpp
+SOURCES += CSslCertificateDName.cpp
+SOURCES += CSslError.cpp
+SOURCES += CSslErrorHelper.cpp
+SOURCES += CX509TrustManagerExtensions.cpp
+SOURCES += CertificateChainValidator.cpp
+SOURCES += Connection.cpp
+SOURCES += ConnectionThread.cpp
+SOURCES += HttpConnection.cpp
+SOURCES += HttpLog.cpp
+SOURCES += HttpsConnection.cpp
+SOURCES += IdleCache.cpp
+SOURCES += Request.cpp
+SOURCES += RequestQueue.cpp
+SOURCES += Timer.cpp
+SOURCES += CHttpDateTime.cpp
+
+LIBRARIES += multipart/multipart.lib

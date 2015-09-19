@@ -1,0 +1,19 @@
+TARGET_NAME= p2p
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid/net/wifi
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid/net/wifi/p2p
+INCLUDES += ../../../
+
+SOURCES = CWifiP2pConfig.cpp
+SOURCES += CWifiP2pDevice.cpp
+SOURCES += CWifiP2pDeviceList.cpp
+SOURCES += CWifiP2pGroup.cpp
+SOURCES += CWifiP2pGroupList.cpp
+SOURCES += CWifiP2pInfo.cpp
+SOURCES += CWifiP2pProvDiscEvent.cpp
+SOURCES += CWifiP2pWfdInfo.cpp
+SOURCES += CWifiP2pManager.cpp
+SOURCES += CWifiP2pManagerChannel.cpp
+SOURCES += CWifiP2pService.cpp

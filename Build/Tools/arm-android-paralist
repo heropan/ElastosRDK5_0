@@ -41,7 +41,6 @@
 > Elastos/LibCore/src/elastos/io/channels
   Elastos/LibCore/src/elastos/io/charset/spi
 > Elastos/LibCore/src/elastos/io/charset
-  Elastos/LibCore/src/elastos/io/nio
 > Elastos/LibCore/src/elastos/io
   Elastos/LibCore/src/elastos/math
   Elastos/LibCore/src/elastos/security/cert

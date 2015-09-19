@@ -1,0 +1,70 @@
+
+module
+{
+    importlib("Elastos.CoreLibrary.eco");
+
+    merge("../../../car/elastos/droid/Exceptions.car");
+    merge("../../../car/elastos/droid/fake_interfaces.car");
+    merge("../../../car/elastos/droid/utility.car");
+    merge("../../../car/elastos/droid/os.car");
+    merge("../../../car/elastos/droid/animation.car");
+    merge("../../../car/elastos/droid/database.car");
+    merge("../../../car/elastos/droid/text.car");
+    merge("../../../car/elastos/droid/content.car");
+    merge("../../../car/elastos/droid/graphics.car");
+    merge("../../../car/elastos/droid/location.car");
+    merge("../../../car/elastos/droid/view.car");
+    merge("../../../car/elastos/droid/hardware.car");
+    merge("../../../car/elastos/droid/app.car");
+    merge("../../../car/elastos/droid/net.car");
+    merge("../../../car/elastos/droid/nfc.car");
+    merge("../../../car/elastos/droid/widget.car");
+    merge("../../../car/elastos/droid/gesture.car");
+    merge("../../../car/elastos/droid/preference.car");
+    merge("../../../car/elastos/droid/accounts.car");
+    merge("../../../car/elastos/droid/accessibilityservice.car");
+    merge("../../../car/elastos/droid/provider.car");
+    merge("../../../car/elastos/droid/inputmethods.car");
+    merge("../../../car/elastos/droid/transition.car");
+    merge("../../../car/elastos/droid/systemui.car");
+    merge("../../../car/elastos/droid/opengl.car");
+
+    merge("../../../car/elastos/droid/internal/app.car");
+    merge("../../../car/elastos/droid/internal/appwidget.car");
+    merge("../../../car/elastos/droid/internal/backup.car");
+    merge("../../../car/elastos/droid/internal/content.car");
+    merge("../../../car/elastos/droid/internal/database.car");
+    merge("../../../car/elastos/droid/internal/http.car");
+    merge("../../../car/elastos/droid/internal/inputmethod.car");
+    merge("../../../car/elastos/droid/internal/logging.car");
+    merge("../../../car/elastos/droid/internal/net.car");
+    merge("../../../car/elastos/droid/internal/os.car");
+    merge("../../../car/elastos/droid/internal/policy.car");
+    merge("../../../car/elastos/droid/internal/preference.car");
+    merge("../../../car/elastos/droid/internal/statusbar.car");
+    merge("../../../car/elastos/droid/internal/telephony.car");
+    merge("../../../car/elastos/droid/internal/textservice.car");
+    merge("../../../car/elastos/droid/internal/utility.car");
+    merge("../../../car/elastos/droid/internal/view.car");
+    merge("../../../car/elastos/droid/internal/widget.car");
+
+    merge("../../../car/elastos/droid/inputmethodservice.car");
+    merge("../../../car/elastos/droid/media.car");
+    //merge("../../../car/elastos/droid/bluetooth.car");
+    //merge("../../../car/elastos/droid/menu1.car");
+    //merge("../../../car/elastos/droid/text2.car");
+    //merge("../../../car/elastos/droid/menu2.car");
+    //merge("../../../car/elastos/droid/content2.car");
+    //merge("../../../car/elastos/droid/app/ResolverActivity.car");
+    //merge("../../../car/elastos/droid/pppoe.car");
+    //merge("../../../car/elastos/droid/ethernet.car");
+    merge("../../../car/elastos/droid/speech.car");
+    //merge("../../../car/elastos/droid/webkit.car");
+    //merge("../../../car/elastos/droid/privacy.car");
+    merge("../../../car/elastos/droid/service.car");
+    merge("../../../car/elastos/droid/appwidget.car");
+    //merge("../../../car/elastos/droid/swextend.car");
+    //merge("../../../car/elastos/droid/telephony.car");
+    merge("../../../car/elastos/droid/sax.car");
+    merge("../../../car/elastos/droid/keystore.car");
+}

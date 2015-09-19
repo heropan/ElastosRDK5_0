@@ -75,12 +75,16 @@ DECL_USERFUNC(HasDefaultConstructor);
 DECL_USERFUNC(ParcelParameter);
 DECL_USERFUNC(HasParameters);
 DECL_USERFUNC(OrgClassIsAspect);
+DECL_USERFUNC(ClassFullPath);
 DECL_USERFUNC(ClassNamespaceBegin);
 DECL_USERFUNC(ClassNamespaceEnd);
+DECL_USERFUNC(ClassFullNameOfClassObj);
+DECL_USERFUNC(ClassFullPathOfClassObject);
 DECL_USERFUNC(InterfaceNamespaceBegin);
 DECL_USERFUNC(InterfaceNamespaceEnd);
 DECL_USERFUNC(EnumNamespaceBegin);
 DECL_USERFUNC(EnumNamespaceEnd);
+
 
 const UserFuncEntry g_userFuncs[] = {
     USERFUNC_(Embed, ARGTYPE_STRING, \
@@ -169,10 +173,16 @@ const UserFuncEntry g_userFuncs[] = {
             "Judge if the method has some parameters"),
     USERFUNC_(OrgClassIsAspect, ARGTYPE_(Object_Class, Member_None), \
             "Judge whether the original class of this sink class is aspect"),
+    USERFUNC_(ClassFullPath, ARGTYPE_(Object_Class, Member_None), \
+            "Generate the full path of the class"),
     USERFUNC_(ClassNamespaceBegin, ARGTYPE_(Object_Class, Member_None), \
             "Generate the namespace beginning of the class"),
     USERFUNC_(ClassNamespaceEnd, ARGTYPE_(Object_Class, Member_None), \
             "Generate the namespace end of the class"),
+    USERFUNC_(ClassFullNameOfClassObj, ARGTYPE_(Object_Class, Member_None), \
+            "Get class name from class object"),
+    USERFUNC_(ClassFullPathOfClassObject, ARGTYPE_(Object_Class, Member_None), \
+            "Generate the full path of the class in it's class object"),
     USERFUNC_(InterfaceNamespaceBegin, ARGTYPE_(Object_Interface, Member_None), \
             "Generate the namespace beginning of the interface"),
     USERFUNC_(InterfaceNamespaceEnd, ARGTYPE_(Object_Interface, Member_None), \
@@ -1878,6 +1888,34 @@ IMPL_USERFUNC(HasParameters)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     return false;
 }
 
+IMPL_USERFUNC(ClassFullPath)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
+{
+    assert(NULL != pCtx->m_pClass && pvArg == pCtx->m_pClass);
+
+    ClassDirEntry *pClsDir = pCtx->m_pClass;
+    if (pClsDir->mNameSpace != NULL && pClsDir->mNameSpace[0] != '\0') {
+        char *pszNamespace = (char*)malloc(strlen(pClsDir->mNameSpace) + 1);
+        strcpy(pszNamespace, pClsDir->mNameSpace);
+        char *begin = pszNamespace;
+        while (begin != NULL) {
+            char *dot = strchr(begin, '.');
+            if (dot != NULL) *dot = '\0';
+            int length = strlen(begin);
+            for (int i = 0; i < length; i++) {
+                begin[i] = tolower(begin[i]);
+            }
+            pCtx->PutString(begin);
+            pCtx->PutString("/");
+            if (dot != NULL) begin = dot + 1;
+            else begin = NULL;
+        }
+        free(pszNamespace);
+        pCtx->PutString(pClsDir->mName);
+    }
+
+    return LUBE_OK;
+}
+
 IMPL_USERFUNC(ClassNamespaceBegin)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 {
     assert(NULL != pCtx->m_pClass && pvArg == pCtx->m_pClass);
@@ -1919,6 +1957,64 @@ IMPL_USERFUNC(ClassNamespaceEnd)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
             else begin = NULL;
         }
         free(pszNamespace);
+    }
+
+    return LUBE_OK;
+}
+
+IMPL_USERFUNC(ClassFullNameOfClassObj)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
+{
+    assert(NULL != pCtx->m_pClass && pvArg == pCtx->m_pClass);
+
+    ClassDirEntry *pClsDir = pCtx->m_pClass;
+    if (pClsDir->mNameSpace != NULL && pClsDir->mNameSpace[0] != '\0') {
+        char *pszNamespace = (char*)malloc(strlen(pClsDir->mNameSpace) + 1);
+        strcpy(pszNamespace, pClsDir->mNameSpace);
+        char *begin = pszNamespace;
+        while (begin != NULL) {
+            char *dot = strchr(begin, '.');
+            if (dot != NULL) *dot = '\0';
+            pCtx->PutString(begin);
+            pCtx->PutString("_");
+            if (dot != NULL) begin = dot + 1;
+            else begin = NULL;
+        }
+        free(pszNamespace);
+        char szName[c_nStrBufSize];
+        strcpy(szName, (char *)pClsDir->mName);
+        szName[strlen(szName) - 11] = 0;
+        pCtx->PutString(szName);
+    }
+
+    return LUBE_OK;
+}
+
+IMPL_USERFUNC(ClassFullPathOfClassObject)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
+{
+    assert(NULL != pCtx->m_pClass && pvArg == pCtx->m_pClass);
+
+    ClassDirEntry *pClsDir = pCtx->m_pClass;
+    if (pClsDir->mNameSpace != NULL && pClsDir->mNameSpace[0] != '\0') {
+        char *pszNamespace = (char*)malloc(strlen(pClsDir->mNameSpace) + 1);
+        strcpy(pszNamespace, pClsDir->mNameSpace);
+        char *begin = pszNamespace;
+        while (begin != NULL) {
+            char *dot = strchr(begin, '.');
+            if (dot != NULL) *dot = '\0';
+            int length = strlen(begin);
+            for (int i = 0; i < length; i++) {
+                begin[i] = tolower(begin[i]);
+            }
+            pCtx->PutString(begin);
+            pCtx->PutString("/");
+            if (dot != NULL) begin = dot + 1;
+            else begin = NULL;
+        }
+        free(pszNamespace);
+        char szName[c_nStrBufSize];
+        strcpy(szName, (char *)pClsDir->mName);
+        szName[strlen(szName) - 11] = 0;
+        pCtx->PutString(szName);
     }
 
     return LUBE_OK;

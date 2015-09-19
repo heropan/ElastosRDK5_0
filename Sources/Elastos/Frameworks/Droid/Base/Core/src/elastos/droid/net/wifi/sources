@@ -1,0 +1,41 @@
+TARGET_NAME= wifi
+TARGET_TYPE= lib
+
+C_DEFINES += -DDROID_CORE
+
+include $(MAKEDIR)/../../../../../../../sources.inc
+INCLUDES += $(MAKEDIR)/../../../../../../Core/inc/elastos/droid
+INCLUDES += ../../
+
+SOURCES += NetworkUpdateResult.cpp
+SOURCES += CWifiSsid.cpp
+SOURCES += CWifiSsidHelper.cpp
+SOURCES += CScanResult.cpp
+SOURCES += CRssiPacketCountInfo.cpp
+SOURCES += CSupplicantStateHelper.cpp
+SOURCES += CStateChangeResult.cpp
+SOURCES += CSupplicantState.cpp
+SOURCES += CWpsInfo.cpp
+SOURCES += CWpsResult.cpp
+SOURCES += CEnterpriseField.cpp
+SOURCES += CWifiConfigurationKeyMgmt.cpp
+SOURCES += CWifiConfigurationProtocol.cpp
+SOURCES += CWifiConfigurationAuthAlgorithm.cpp
+SOURCES += CWifiConfigurationPairwiseCipher.cpp
+SOURCES += CWifiConfigurationGroupCipher.cpp
+SOURCES += CWifiConfigurationStatus.cpp
+SOURCES += CWifiConfiguration.cpp
+SOURCES += CWifiConfigurationHelper.cpp
+SOURCES += CWifiManager.cpp
+SOURCES += CWifiManagerHelper.cpp
+SOURCES += WifiNative.cpp
+SOURCES += CWifiInfo.cpp
+SOURCES += CWifiInfoHelper.cpp
+SOURCES += WifiConfigStore.cpp
+SOURCES += WifiMonitor.cpp
+SOURCES += WifiApConfigStore.cpp
+SOURCES += SupplicantStateHelper.cpp
+SOURCES += SupplicantStateTracker.cpp
+SOURCES += WifiStateTracker.cpp
+SOURCES += WifiStateMachine.cpp
+SOURCES += WifiWatchdogStateMachine.cpp

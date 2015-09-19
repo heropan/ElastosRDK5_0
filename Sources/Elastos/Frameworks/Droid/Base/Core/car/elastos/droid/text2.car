@@ -1,0 +1,37 @@
+module
+{
+    merge("text/utility/Rfc822Token.car");
+    merge("text/utility/Rfc822Tokenizer.car");
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Utility {
+
+    class CRfc822Token{
+        interface IRfc822Token;
+
+        //public
+        constructor(
+            [in] String name,
+            [in] String address,
+            [in] String comment);
+    }
+
+    singleton class CRfc822TokenHelper{
+        interface IRfc822TokenHelper;
+    }
+
+    class CRfc822Tokenizer{
+        interface IRfc822Tokenizer;
+    }
+
+    singleton class CRfc822TokenizerHelper{
+        interface IRfc822TokenizerHelper;
+    }
+
+    } // Utility
+    } // Text
+    } // Droid
+    } // Elastos
+}

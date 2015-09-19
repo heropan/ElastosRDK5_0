@@ -1,5 +1,0 @@
-
-DIRS += format
-DIRS += method
-DIRS += style
-DIRS += util

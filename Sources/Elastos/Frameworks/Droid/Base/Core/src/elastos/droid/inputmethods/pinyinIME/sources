@@ -1,0 +1,31 @@
+TARGET_NAME= pinyin
+TARGET_TYPE= lib
+
+C_DEFINES += -DDROID_CORE
+
+include $(MAKEDIR)/../../../../../../../sources.inc
+
+INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
+INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/inputmethods/pinyinIME
+INCLUDES += ../../
+
+SOURCES += CDecodingInfo.cpp
+SOURCES += CPinyinSettings.cpp
+SOURCES += CSoundManager.cpp
+SOURCES += CSoundManagerHelper.cpp
+SOURCES += SkbPool.cpp
+SOURCES += SkbTemplate.cpp
+SOURCES += SoftKey.cpp
+SOURCES += XmlKeyboardLoader.cpp
+SOURCES += SoftKeyToggle.cpp
+SOURCES += CPinyinEnvironment.cpp
+SOURCES += CPinyinEnvironmentHelper.cpp
+SOURCES += SoftKeyboard.cpp
+SOURCES += CBalloonHint.cpp
+SOURCES += CBalloonView.cpp
+SOURCES += CPinyinCandidateView.cpp
+SOURCES += CComposingView.cpp
+SOURCES += CSkbContainer.cpp
+SOURCES += CSoftKeyboardView.cpp
+SOURCES += CCandidatesContainer.cpp
+SOURCES += CPinyinGestureListener.cpp

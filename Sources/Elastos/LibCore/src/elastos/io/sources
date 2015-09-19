@@ -11,7 +11,7 @@ INCLUDES += ../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
-INCLUDES += $(MAKEDIR)/../../../inc/elastos/io/nio;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io/charset;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io/charset/spi;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io/channels;
@@ -71,6 +71,50 @@ SOURCES += FileReader.cpp
 SOURCES += FileWriter.cpp
 SOURCES += StreamTokenizer.cpp
 
+SOURCES += CByteOrderHelper.cpp
+SOURCES += MemoryBlock.cpp
+SOURCES += Buffer.cpp
+SOURCES += ByteBuffer.cpp
+SOURCES += CByteBufferHelper.cpp
+SOURCES += ByteArrayBuffer.cpp
+SOURCES += CharBuffer.cpp
+SOURCES += CharSequenceAdapter.cpp
+SOURCES += Buffer.cpp
+SOURCES += CByteOrderHelper.cpp
+SOURCES += CharArrayBuffer.cpp
+SOURCES += ByteBuffer.cpp
+SOURCES += NioUtils.cpp
+SOURCES += DirectByteBuffer.cpp
+SOURCES += FileChannelImpl.cpp
+SOURCES += MappedByteBuffer.cpp
+SOURCES += DoubleBuffer.cpp
+SOURCES += FloatBuffer.cpp
+SOURCES += Int16Buffer.cpp
+SOURCES += Int32Buffer.cpp
+SOURCES += Int64Buffer.cpp
+SOURCES += DoubleArrayBuffer.cpp
+SOURCES += FloatArrayBuffer.cpp
+SOURCES += Int16ArrayBuffer.cpp
+SOURCES += Int32ArrayBuffer.cpp
+SOURCES += Int64ArrayBuffer.cpp
+SOURCES += IoVec.cpp
+SOURCES += NIOAccess.cpp
+SOURCES += PipeImpl.cpp
+SOURCES += SelectionKeyImpl.cpp
+SOURCES += SelectorImpl.cpp
+SOURCES += nio.cpp
+SOURCES += SocketChannelImpl.cpp
+SOURCES += SelectorProviderImpl.cpp
+SOURCES += ByteBufferAsCharBuffer.cpp
+SOURCES += ByteBufferAsDoubleBuffer.cpp
+SOURCES += ByteBufferAsFloatBuffer.cpp
+SOURCES += ByteBufferAsInt16Buffer.cpp
+SOURCES += ByteBufferAsInt32Buffer.cpp
+SOURCES += ByteBufferAsInt64Buffer.cpp
+SOURCES += ServerSocketChannelImpl.cpp
+SOURCES += CNioUtils.cpp
+SOURCES += DatagramChannelImpl.cpp
+
 # For Serializable(not surport now)
 # EmulatedFields
 # EmulatedFieldsForDumping
@@ -90,4 +134,3 @@ SOURCES += StreamTokenizer.cpp
 
 LIBRARIES += channels/channels.lib
 LIBRARIES += charset/charset.lib
-LIBRARIES += nio/nio.lib
