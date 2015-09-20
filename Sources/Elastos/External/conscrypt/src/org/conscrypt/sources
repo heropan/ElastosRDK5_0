@@ -2,12 +2,14 @@
 TARGET_NAME = Org.Conscrypt
 TARGET_TYPE = eco
 
-include $(MAKEDIR)/../../../LibCore/src/sources.inc
+include $(MAKEDIR)/../../../../../LibCore/src/sources.inc
 
-INCLUDES += $(MAKEDIR)/../inc
+INCLUDES += $(MAKEDIR)/../../../inc
+INCLUDES += $(MAKEDIR)/../../../inc/org/conscrypt
 
 SOURCES = Org.Conscrypt.car
 SOURCES += COpenSSLProvider.cpp
+SOURCES += CryptoUpcalls.cpp
 SOURCES += NativeCrypto.cpp
 SOURCES += Platform.cpp
 SOURCES += Elastos.CoreLibrary.cpp

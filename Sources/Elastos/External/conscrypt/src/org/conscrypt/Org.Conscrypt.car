@@ -3,9 +3,9 @@ module
 {
     importlib("Elastos.CoreLibrary.eco");
 
-    merge("../car/INativeCrypto.car");
-    merge("../car/IOpenSSLBIOInputStream.car");
-    merge("../car/IOpenSSLDigestContext.car");
+    merge("../../../car/org/conscrypt/INativeCrypto.car");
+    merge("../../../car/org/conscrypt/IOpenSSLBIOInputStream.car");
+    merge("../../../car/org/conscrypt/IOpenSSLDigestContext.car");
 
     using interface Elastos.Security.IProvider;
 
