@@ -69,12 +69,33 @@ struct BIO_Delete {
 };
 typedef UniquePtr<BIO, BIO_Delete> Unique_BIO;
 
+struct BIGNUM_Delete {
+    void operator()(BIGNUM* p) const {
+        BN_free(p);
+    }
+};
+typedef UniquePtr<BIGNUM, BIGNUM_Delete> Unique_BIGNUM;
+
+struct DH_Delete {
+    void operator()(DH* p) const {
+        DH_free(p);
+    }
+};
+typedef UniquePtr<DH, DH_Delete> Unique_DH;
+
 struct DSA_Delete {
     void operator()(DSA* p) const {
         DSA_free(p);
     }
 };
 typedef UniquePtr<DSA, DSA_Delete> Unique_DSA;
+
+struct EC_POINT_Delete {
+    void operator()(EC_POINT* p) const {
+        EC_POINT_clear_free(p);
+    }
+};
+typedef UniquePtr<EC_POINT, EC_POINT_Delete> Unique_EC_POINT;
 
 struct EC_KEY_Delete {
     void operator()(EC_KEY* p) const {
@@ -360,6 +381,48 @@ static Boolean ArrayToBignum(ArrayOf<Byte>* source, BIGNUM** dest, ECode* ec)
     *dest = ret;
     NATIVE_TRACE("ArrayToBignum(%p, %p) => *dest = %p", source, dest, ret);
     return TRUE;
+}
+
+/**
+ * Converts an OpenSSL BIGNUM to a Java byte[] array in two's complement.
+ */
+static ECode BignumToArray(const BIGNUM* source, const char* sourceName, ArrayOf<Byte>** result)
+{
+    NATIVE_TRACE("bignumToArray(%p, %s)", source, sourceName);
+
+    if (source == NULL) {
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    size_t numBytes = BN_num_bytes(source) + 1;
+    AutoPtr< ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(numBytes);
+
+    unsigned char* tmp = reinterpret_cast<unsigned char*>(bytes->GetPayload());
+    if (BN_num_bytes(source) > 0 && BN_bn2bin(source, tmp + 1) <= 0) {
+        *result = NULL;
+        return ThrowExceptionIfNecessary("bignumToArray");
+    }
+
+    // Set the sign and convert to two's complement if necessary for the Java code.
+    if (BN_is_negative(source)) {
+        bool carry = true;
+        for (ssize_t i = numBytes - 1; i >= 0; i--) {
+            tmp[i] ^= 0xFF;
+            if (carry) {
+                carry = (++tmp[i]) == 0;
+            }
+        }
+        *tmp |= 0x80;
+    }
+    else {
+        *tmp = 0x00;
+    }
+
+    NATIVE_TRACE("bignumToArray(%p, %s) => %p", source, sourceName, bytes);
+    *result = bytes;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
 }
 
 /**
@@ -1681,6 +1744,1186 @@ ECode NativeCrypto::GetECPrivateKeyWrapper(
     }
     OWNERSHIP_TRANSFERRED(ecKey);
     *result = reinterpret_cast<uintptr_t>(pkey.release());
+    return NOERROR;
+}
+
+ECode NativeCrypto::RSA_generate_key_ex(
+    /* [in] */ Int32 modulusBits,
+    /* [in] */ ArrayOf<Byte>* publicExponent,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    NATIVE_TRACE("RSA_generate_key_ex(%d, %p)", modulusBits, publicExponent);
+
+    ECode ec;
+    BIGNUM* eRef = NULL;
+    if (!ArrayToBignum(publicExponent, &eRef, &ec)) {
+        *result = 0;
+        return ec;
+    }
+    Unique_BIGNUM e(eRef);
+
+    Unique_RSA rsa(RSA_new());
+    if (rsa.get() == NULL) {
+        *result = 0;
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
+    if (::RSA_generate_key_ex(rsa.get(), modulusBits, e.get(), NULL) < 0) {
+        *result = 0;
+        return ThrowExceptionIfNecessary("RSA_generate_key_ex");
+    }
+
+    Unique_EVP_PKEY pkey(EVP_PKEY_new());
+    if (pkey.get() == NULL) {
+        *result = 0;
+        return ThrowRuntimeException("RSA_generate_key_ex failed");
+    }
+
+    if (EVP_PKEY_assign_RSA(pkey.get(), rsa.get()) != 1) {
+        *result = 0;
+        return ThrowRuntimeException("RSA_generate_key_ex failed");
+    }
+
+    OWNERSHIP_TRANSFERRED(rsa);
+    NATIVE_TRACE("RSA_generate_key_ex(n=%d, e=%p) => %p", modulusBits, publicExponent, pkey.get());
+    *result = reinterpret_cast<uintptr_t>(pkey.release());
+    return NOERROR;
+}
+
+ECode NativeCrypto::RSA_size(
+    /* [in] */ Int64 pkeyRef,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("RSA_size(%p)", pkey);
+
+    if (pkey == NULL) {
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_RSA rsa(EVP_PKEY_get1_RSA(pkey));
+    if (rsa.get() == NULL) {
+        *result = 0;
+        return ThrowRuntimeException("RSA_size failed");
+    }
+
+    *result = static_cast<Int32>(::RSA_size(rsa.get()));
+    return NOERROR;
+}
+
+typedef int RSACryptOperation(int flen, const unsigned char* from, unsigned char* to, RSA* rsa,
+                              int padding);
+
+static ECode RSA_crypt_operation(RSACryptOperation operation,
+        const char* caller __attribute__ ((unused)), Int32 flen,
+        ArrayOf<Byte>* from, ArrayOf<Byte>* to, Int64 pkeyRef, Int32 padding, Int32* result)
+{
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("%s(%d, %p, %p, %p)", caller, flen, from, to, pkey);
+
+    if (pkey == NULL) {
+        *result = -1;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_RSA rsa(EVP_PKEY_get1_RSA(pkey));
+    if (rsa.get() == NULL) {
+        *result = -1;
+        return NOERROR;
+    }
+
+    if (from == NULL) {
+        *result = -1;
+        return NOERROR;
+    }
+
+    if (to == NULL) {
+        *result = -1;
+        return NOERROR;
+    }
+
+    int resultSize = operation(static_cast<int>(flen),
+            reinterpret_cast<const unsigned char*>(from->GetPayload()),
+            reinterpret_cast<unsigned char*>(to->GetPayload()), rsa.get(), padding);
+    if (resultSize == -1) {
+        NATIVE_TRACE("%s => failed", caller);
+        *result = -1;
+        return ThrowExceptionIfNecessary("RSA_crypt_operation");
+    }
+
+    NATIVE_TRACE("%s(%d, %p, %p, %p) => %d", caller, flen, from, to, pkey,
+            resultSize);
+    *result = static_cast<Int32>(resultSize);
+    return NOERROR;
+}
+
+ECode NativeCrypto::RSA_private_encrypt(
+    /* [in] */ Int32 flen,
+    /* [in] */ ArrayOf<Byte>* from,
+    /* [in] */ ArrayOf<Byte>* to,
+    /* [in] */ Int64 pkeyRef,
+    /* [in] */ Int32 padding,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return RSA_crypt_operation(::RSA_private_encrypt, __FUNCTION__,
+                               flen, from, to, pkeyRef, padding, result);
+}
+
+ECode NativeCrypto::RSA_public_decrypt(
+    /* [in] */ Int32 flen,
+    /* [in] */ ArrayOf<Byte>* from,
+    /* [in] */ ArrayOf<Byte>* to,
+    /* [in] */ Int64 pkeyRef,
+    /* [in] */ Int32 padding,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return RSA_crypt_operation(::RSA_public_decrypt, __FUNCTION__,
+                               flen, from, to, pkeyRef, padding, result);
+}
+
+ECode NativeCrypto::RSA_public_encrypt(
+    /* [in] */ Int32 flen,
+    /* [in] */ ArrayOf<Byte>* from,
+    /* [in] */ ArrayOf<Byte>* to,
+    /* [in] */ Int64 pkeyRef,
+    /* [in] */ Int32 padding,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return RSA_crypt_operation(::RSA_public_encrypt, __FUNCTION__,
+                               flen, from, to, pkeyRef, padding, result);
+}
+
+ECode NativeCrypto::RSA_private_decrypt(
+    /* [in] */ Int32 flen,
+    /* [in] */ ArrayOf<Byte>* from,
+    /* [in] */ ArrayOf<Byte>* to,
+    /* [in] */ Int64 pkeyRef,
+    /* [in] */ Int32 padding,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return RSA_crypt_operation(::RSA_private_decrypt, __FUNCTION__,
+                               flen, from, to, pkeyRef, padding, result);
+}
+
+ECode NativeCrypto::Get_RSA_public_params(
+    /* [in] */ Int64 pkeyRef,
+    /* [out, callee] */ ArrayOf<Byte>** n,
+    /* [out, callee] */ ArrayOf<Byte>** e)
+{
+    VALIDATE_NOT_NULL(n);
+    VALIDATE_NOT_NULL(e);
+
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("get_RSA_public_params(%p)", pkey);
+
+    if (pkey == NULL) {
+        *n = NULL;
+        *e = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_RSA rsa(EVP_PKEY_get1_RSA(pkey));
+    if (rsa.get() == NULL) {
+        *n = NULL;
+        *e = NULL;
+        return ThrowExceptionIfNecessary("get_RSA_public_params failed");
+    }
+
+    ECode ec = BignumToArray(rsa->n, "n", n);
+    if (FAILED(ec)) {
+        *n = NULL;
+        *e = NULL;
+        return ec;
+    }
+
+    ec = BignumToArray(rsa->e, "e", e);
+    if (FAILED(ec)) {
+        *n = NULL;
+        *e = NULL;
+        return ec;
+    }
+
+    return NOERROR;
+}
+
+ECode NativeCrypto::Get_RSA_private_params(
+    /* [in] */ Int64 pkeyRef,
+    /* [out, callee] */ ArrayOf<Byte>** n,
+    /* [out, callee] */ ArrayOf<Byte>** e,
+    /* [out, callee] */ ArrayOf<Byte>** d,
+    /* [out, callee] */ ArrayOf<Byte>** p,
+    /* [out, callee] */ ArrayOf<Byte>** q,
+    /* [out, callee] */ ArrayOf<Byte>** dmp1,
+    /* [out, callee] */ ArrayOf<Byte>** dmq1,
+    /* [out, callee] */ ArrayOf<Byte>** iqmp)
+{
+    VALIDATE_NOT_NULL(n && e && d && p && q && dmp1 && dmq1 && iqmp);
+
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("get_RSA_public_params(%p)", pkey);
+
+    if (pkey == NULL) {
+        *n = *e = *d = *p = *q = *dmp1 = *dmq1 = *iqmp = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_RSA rsa(EVP_PKEY_get1_RSA(pkey));
+    if (rsa.get() == NULL) {
+        *n = *e = *d = *p = *q = *dmp1 = *dmq1 = *iqmp = NULL;
+        return ThrowExceptionIfNecessary("get_RSA_public_params failed");
+    }
+
+    ECode ec = BignumToArray(rsa->n, "n", n);
+    if (FAILED(ec)) {
+        *n = *e = *d = *p = *q = *dmp1 = *dmq1 = *iqmp = NULL;
+        return ec;
+    }
+
+    *e = *d = *p = *q = *dmp1 = *dmq1 = *iqmp = NULL;
+
+    if (rsa->e != NULL) {
+        ec = BignumToArray(rsa->e, "e", e);
+        if (FAILED(ec)) {
+            *n = *e = *d = *p = *q = *dmp1 = *dmq1 = *iqmp = NULL;
+            return ec;
+        }
+    }
+
+    if (rsa->d != NULL) {
+        ec = BignumToArray(rsa->d, "d", d);
+        if (FAILED(ec)) {
+            *n = *e = *d = *p = *q = *dmp1 = *dmq1 = *iqmp = NULL;
+            return ec;
+        }
+    }
+
+    if (rsa->p != NULL) {
+        ec = BignumToArray(rsa->p, "p", p);
+        if (FAILED(ec)) {
+            *n = *e = *d = *p = *q = *dmp1 = *dmq1 = *iqmp = NULL;
+            return ec;
+        }
+    }
+
+    if (rsa->q != NULL) {
+        ec = BignumToArray(rsa->q, "q", q);
+        if (FAILED(ec)) {
+            *n = *e = *d = *p = *q = *dmp1 = *dmq1 = *iqmp = NULL;
+            return ec;
+        }
+    }
+
+    if (rsa->dmp1 != NULL) {
+        ec = BignumToArray(rsa->dmp1, "dmp1", dmp1);
+        if (FAILED(ec)) {
+            *n = *e = *d = *p = *q = *dmp1 = *dmq1 = *iqmp = NULL;
+            return ec;
+        }
+    }
+
+    if (rsa->dmq1 != NULL) {
+        ec = BignumToArray(rsa->dmq1, "dmq1", dmq1);
+        if (FAILED(ec)) {
+            *n = *e = *d = *p = *q = *dmp1 = *dmq1 = *iqmp = NULL;
+            return ec;
+        }
+    }
+
+    if (rsa->iqmp != NULL) {
+        ec = BignumToArray(rsa->iqmp, "iqmp", iqmp);
+        if (FAILED(ec)) {
+            *n = *e = *d = *p = *q = *dmp1 = *dmq1 = *iqmp = NULL;
+            return ec;
+        }
+    }
+
+    return NOERROR;
+}
+
+ECode NativeCrypto::DSA_generate_key(
+    /* [in] */ Int32 primeBits,
+    /* [in] */ ArrayOf<Byte>* seed,
+    /* [in] */ ArrayOf<Byte>* g,
+    /* [in] */ ArrayOf<Byte>* p,
+    /* [in] */ ArrayOf<Byte>* q,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    NATIVE_TRACE("DSA_generate_key(%d, %p, %p, %p, %p)", primeBits, seed, g, p, q);
+
+    UniquePtr<unsigned char[]> seedPtr;
+    unsigned long seedSize = 0;
+    if (seed != NULL) {
+        seedSize = seed->GetLength();
+        seedPtr.reset(new unsigned char[seedSize]);
+
+        memcpy(seedPtr.get(), seed->GetPayload(), seedSize);
+    }
+
+    Unique_DSA dsa(DSA_new());
+    if (dsa.get() == NULL) {
+        NATIVE_TRACE("DSA_generate_key failed");
+        FreeOpenSslErrorState();
+        *result = 0;
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
+    if (g != NULL && p != NULL && q != NULL) {
+        NATIVE_TRACE("DSA_generate_key parameters specified");
+
+        ECode ec;
+        if (!ArrayToBignum(g, &dsa->g, &ec)) {
+            *result = 0;
+            return ec;
+        }
+
+        if (!ArrayToBignum(p, &dsa->p, &ec)) {
+            *result = 0;
+            return ec;
+        }
+
+        if (!ArrayToBignum(q, &dsa->q, &ec)) {
+            *result = 0;
+            return ec;
+        }
+    }
+    else {
+        NATIVE_TRACE("DSA_generate_key generating parameters");
+
+        if (!DSA_generate_parameters_ex(dsa.get(), primeBits, seedPtr.get(), seedSize, NULL, NULL, NULL)) {
+            NATIVE_TRACE("DSA_generate_key => param generation failed");
+            *result = 0;
+            return ThrowExceptionIfNecessary("NativeCrypto_DSA_generate_parameters_ex failed");
+        }
+    }
+
+    if (!::DSA_generate_key(dsa.get())) {
+        NATIVE_TRACE("DSA_generate_key failed");
+        *result = 0;
+        return ThrowExceptionIfNecessary("NativeCrypto_DSA_generate_key failed");
+    }
+
+    Unique_EVP_PKEY pkey(EVP_PKEY_new());
+    if (pkey.get() == NULL) {
+        NATIVE_TRACE("DSA_generate_key failed");
+        FreeOpenSslErrorState();
+        *result = 0;
+        return ThrowRuntimeException("NativeCrypto_DSA_generate_key failed");
+    }
+
+    if (EVP_PKEY_assign_DSA(pkey.get(), dsa.get()) != 1) {
+        NATIVE_TRACE("DSA_generate_key failed");
+        *result = 0;
+        return ThrowExceptionIfNecessary("NativeCrypto_DSA_generate_key failed");
+    }
+
+    OWNERSHIP_TRANSFERRED(dsa);
+    NATIVE_TRACE("DSA_generate_key(n=%d, e=%p) => %p", primeBits, seedPtr.get(), pkey.get());
+    *result = reinterpret_cast<uintptr_t>(pkey.release());
+    return NOERROR;
+}
+
+ECode NativeCrypto::Get_DSA_params(
+    /* [in] */ Int64 pkeyRef,
+    /* [out, callee] */ ArrayOf<Byte>** g,
+    /* [out, callee] */ ArrayOf<Byte>** p,
+    /* [out, callee] */ ArrayOf<Byte>** q,
+    /* [out, callee] */ ArrayOf<Byte>** ypub,
+    /* [out, callee] */ ArrayOf<Byte>** xpriv)
+{
+    VALIDATE_NOT_NULL(g && p && q && ypub && xpriv);
+
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("get_DSA_params(%p)", pkey);
+
+    if (pkey == NULL) {
+        *g = *p = *q = *ypub = *xpriv = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_DSA dsa(EVP_PKEY_get1_DSA(pkey));
+    if (dsa.get() == NULL) {
+        *g = *p = *q = *ypub = *xpriv = NULL;
+        return ThrowExceptionIfNecessary("get_DSA_params failed");
+    }
+
+    *g = *p = *q = *ypub = *xpriv = NULL;
+
+    if (dsa->g != NULL) {
+        ECode ec = BignumToArray(dsa->g, "g", g);
+        if (FAILED(ec)) {
+            *g = *p = *q = *ypub = *xpriv = NULL;
+            return ec;
+        }
+    }
+
+    if (dsa->p != NULL) {
+        ECode ec = BignumToArray(dsa->p, "p", p);
+        if (FAILED(ec)) {
+            *g = *p = *q = *ypub = *xpriv = NULL;
+            return ec;
+        }
+    }
+
+    if (dsa->q != NULL) {
+        ECode ec = BignumToArray(dsa->q, "q", q);
+        if (FAILED(ec)) {
+            *g = *p = *q = *ypub = *xpriv = NULL;
+            return ec;
+        }
+    }
+
+    if (dsa->pub_key != NULL) {
+        ECode ec = BignumToArray(dsa->pub_key, "pub_key", ypub);
+        if (FAILED(ec)) {
+            *g = *p = *q = *ypub = *xpriv = NULL;
+            return ec;
+        }
+    }
+
+    if (dsa->priv_key != NULL) {
+        ECode ec = BignumToArray(dsa->priv_key, "priv_key", xpriv);
+        if (FAILED(ec)) {
+            *g = *p = *q = *ypub = *xpriv = NULL;
+            return ec;
+        }
+    }
+
+    return NOERROR;
+}
+
+ECode NativeCrypto::Set_DSA_flag_nonce_from_hash(
+    /* [in] */ Int64 pkeyRef)
+{
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("set_DSA_flag_nonce_from_hash(%p)", pkey);
+
+    if (pkey == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_DSA dsa(EVP_PKEY_get1_DSA(pkey));
+    if (dsa.get() == NULL) {
+        return ThrowExceptionIfNecessary("set_DSA_flag_nonce_from_hash failed");
+    }
+
+    dsa->flags |= DSA_FLAG_NONCE_FROM_HASH;
+    return NOERROR;
+}
+
+ECode NativeCrypto::I2d_RSAPublicKey(
+    /* [in] */ Int64 pkeyRef,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    assert(0);
+    return NOERROR;
+}
+
+ECode NativeCrypto::I2d_RSAPrivateKey(
+    /* [in] */ Int64 pkeyRef,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    assert(0);
+    return NOERROR;
+}
+
+ECode NativeCrypto::I2d_DSAPublicKey(
+    /* [in] */ Int64 pkeyRef,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    assert(0);
+    return NOERROR;
+}
+
+ECode NativeCrypto::I2d_DSAPrivateKey(
+    /* [in] */ Int64 pkeyRef,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    assert(0);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EVP_PKEY_new_DH(
+    /* [in] */ ArrayOf<Byte>* p,
+    /* [in] */ ArrayOf<Byte>* g,
+    /* [in] */ ArrayOf<Byte>* pub_key,
+    /* [in] */ ArrayOf<Byte>* priv_key,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    NATIVE_TRACE("EVP_PKEY_new_DH(p=%p, g=%p, pub_key=%p, priv_key=%p)",
+              p, g, pub_key, priv_key);
+
+    Unique_DH dh(DH_new());
+    if (dh.get() == NULL) {
+        *result = 0;
+        return ThrowRuntimeException("DH_new failed");
+    }
+
+    ECode ec;
+    if (!ArrayToBignum(p, &dh->p, &ec)) {
+        *result = 0;
+        return ec;
+    }
+
+    if (!ArrayToBignum(g, &dh->g, &ec)) {
+        *result = 0;
+        return ec;
+    }
+
+    if (pub_key != NULL && !ArrayToBignum(pub_key, &dh->pub_key, &ec)) {
+        *result = 0;
+        return ec;
+    }
+
+    if (priv_key != NULL && !ArrayToBignum(priv_key, &dh->priv_key, &ec)) {
+        *result = 0;
+        return ec;
+    }
+
+    if (dh->p == NULL || dh->g == NULL
+            || (pub_key != NULL && dh->pub_key == NULL)
+            || (priv_key != NULL && dh->priv_key == NULL)) {
+        *result = 0;
+        return ThrowRuntimeException("Unable to convert BigInteger to BIGNUM");
+    }
+
+    /* The public key can be recovered if the private key is available. */
+    if (dh->pub_key == NULL && dh->priv_key != NULL) {
+        if (!::DH_generate_key(dh.get())) {
+            *result = 0;
+            return ThrowRuntimeException("EVP_PKEY_new_DH failed during pub_key generation");
+        }
+    }
+
+    Unique_EVP_PKEY pkey(EVP_PKEY_new());
+    if (pkey.get() == NULL) {
+        *result = 0;
+        return ThrowRuntimeException("EVP_PKEY_new failed");
+    }
+    if (EVP_PKEY_assign_DH(pkey.get(), dh.get()) != 1) {
+        *result = 0;
+        return ThrowRuntimeException("EVP_PKEY_assign_DH failed");
+    }
+    OWNERSHIP_TRANSFERRED(dh);
+    NATIVE_TRACE("EVP_PKEY_new_DH(p=%p, g=%p, pub_key=%p, priv_key=%p) => %p",
+              p, g, pub_key, priv_key, pkey.get());
+    *result = reinterpret_cast<Int64>(pkey.release());
+    return NOERROR;
+}
+
+ECode NativeCrypto::DH_generate_parameters_ex(
+    /* [in] */ Int32 primeBits,
+    /* [in] */ Int64 generator,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    NATIVE_TRACE("DH_generate_parameters_ex(%d, %d)", primeBits, generator);
+
+    Unique_DH dh(DH_new());
+    if (dh.get() == NULL) {
+        NATIVE_TRACE("DH_generate_parameters_ex failed");
+        FreeOpenSslErrorState();
+        *result = 0;
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
+    NATIVE_TRACE("DH_generate_parameters_ex generating parameters");
+
+    if (!::DH_generate_parameters_ex(dh.get(), primeBits, generator, NULL)) {
+        NATIVE_TRACE("DH_generate_parameters_ex => param generation failed");
+        *result = 0;
+        return ThrowExceptionIfNecessary("NativeCrypto_DH_generate_parameters_ex failed");
+    }
+
+    Unique_EVP_PKEY pkey(EVP_PKEY_new());
+    if (pkey.get() == NULL) {
+        NATIVE_TRACE("DH_generate_parameters_ex failed");
+        FreeOpenSslErrorState();
+        *result = 0;
+        return ThrowRuntimeException("NativeCrypto_DH_generate_parameters_ex failed");
+    }
+
+    if (EVP_PKEY_assign_DH(pkey.get(), dh.get()) != 1) {
+        NATIVE_TRACE("DH_generate_parameters_ex failed");
+        *result = 0;
+        return ThrowExceptionIfNecessary("NativeCrypto_DH_generate_parameters_ex failed");
+    }
+
+    OWNERSHIP_TRANSFERRED(dh);
+    NATIVE_TRACE("DH_generate_parameters_ex(n=%d, g=%d) => %p", primeBits, generator, pkey.get());
+    *result = reinterpret_cast<uintptr_t>(pkey.release());
+    return NOERROR;
+}
+
+ECode NativeCrypto::DH_generate_key(
+    /* [in] */ Int64 pkeyRef)
+{
+    NATIVE_TRACE("DH_generate_key(%p)", pkeyRef);
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+
+    if (pkey == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_DH dh(EVP_PKEY_get1_DH(pkey));
+    if (dh.get() == NULL) {
+        NATIVE_TRACE("DH_generate_key failed");
+        FreeOpenSslErrorState();
+        return ThrowExceptionIfNecessary("Unable to get DH key");
+    }
+
+    if (!::DH_generate_key(dh.get())) {
+        NATIVE_TRACE("DH_generate_key failed");
+        return ThrowExceptionIfNecessary("NativeCrypto_DH_generate_key failed");
+    }
+
+    return NOERROR;
+}
+
+ECode NativeCrypto::Get_DH_params(
+    /* [in] */ Int64 pkeyRef,
+    /* [out, callee] */ ArrayOf<Byte>** p,
+    /* [out, callee] */ ArrayOf<Byte>** g,
+    /* [out, callee] */ ArrayOf<Byte>** ypub,
+    /* [out, callee] */ ArrayOf<Byte>** xpriv)
+{
+    VALIDATE_NOT_NULL(p && g && ypub && xpriv);
+
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("get_DH_params(%p)", pkey);
+
+    if (pkey == NULL) {
+        *p = *g = *ypub = *xpriv = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_DH dh(EVP_PKEY_get1_DH(pkey));
+    if (dh.get() == NULL) {
+        *p = *g = *ypub = *xpriv = NULL;
+        return ThrowExceptionIfNecessary("get_DH_params failed");
+    }
+
+    *p = *g = *ypub = *xpriv = NULL;
+
+    if (dh->p != NULL) {
+        ECode ec = BignumToArray(dh->p, "p", p);
+        if (FAILED(ec)) {
+            *p = *g = *ypub = *xpriv = NULL;
+            return ec;
+        }
+    }
+
+    if (dh->g != NULL) {
+        ECode ec = BignumToArray(dh->g, "g", g);
+        if (FAILED(ec)) {
+            *p = *g = *ypub = *xpriv = NULL;
+            return ec;
+        }
+    }
+
+    if (dh->pub_key != NULL) {
+        ECode ec = BignumToArray(dh->pub_key, "pub_key", ypub);
+        if (FAILED(ec)) {
+            *p = *g = *ypub = *xpriv = NULL;
+            return ec;
+        }
+    }
+
+    if (dh->priv_key != NULL) {
+        ECode ec = BignumToArray(dh->priv_key, "priv_key", xpriv);
+        if (FAILED(ec)) {
+            *p = *g = *ypub = *xpriv = NULL;
+            return ec;
+        }
+    }
+
+    return NOERROR;
+}
+
+ECode NativeCrypto::EVP_PKEY_new_EC_KEY(
+    /* [in] */ Int64 groupRef,
+    /* [in] */ Int64 pubkeyRef,
+    /* [in] */ ArrayOf<Byte>* keyBytes,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    const EC_GROUP* group = reinterpret_cast<const EC_GROUP*>(groupRef);
+    const EC_POINT* pubkey = reinterpret_cast<const EC_POINT*>(pubkeyRef);
+    NATIVE_TRACE("EVP_PKEY_new_EC_KEY(%p, %p, %p)", group, pubkey, keyBytes);
+
+    Unique_BIGNUM key(NULL);
+    if (keyBytes != NULL) {
+        ECode ec;
+        BIGNUM* keyRef = NULL;
+        if (!ArrayToBignum(keyBytes, &keyRef, &ec)) {
+            *result = 0;
+            return ec;
+        }
+        key.reset(keyRef);
+    }
+
+    Unique_EC_KEY eckey(EC_KEY_new());
+    if (eckey.get() == NULL) {
+        *result = 0;
+        return ThrowRuntimeException("EC_KEY_new failed");
+    }
+
+    if (EC_KEY_set_group(eckey.get(), group) != 1) {
+        NATIVE_TRACE("EVP_PKEY_new_EC_KEY(%p, %p, %p) > EC_KEY_set_group failed", group, pubkey,
+                keyBytes);
+        *result = 0;
+        return ThrowExceptionIfNecessary("EC_KEY_set_group");
+    }
+
+    if (pubkey != NULL) {
+        if (EC_KEY_set_public_key(eckey.get(), pubkey) != 1) {
+            NATIVE_TRACE("EVP_PKEY_new_EC_KEY(%p, %p, %p) => EC_KEY_set_private_key failed", group,
+                    pubkey, keyBytes);
+            *result = 0;
+            return ThrowExceptionIfNecessary("EC_KEY_set_public_key");
+        }
+    }
+
+    if (key.get() != NULL) {
+        if (EC_KEY_set_private_key(eckey.get(), key.get()) != 1) {
+            NATIVE_TRACE("EVP_PKEY_new_EC_KEY(%p, %p, %p) => EC_KEY_set_private_key failed", group,
+                    pubkey, keyBytes);
+            *result = 0;
+            return ThrowExceptionIfNecessary("EC_KEY_set_private_key");
+        }
+        if (pubkey == NULL) {
+            Unique_EC_POINT calcPubkey(EC_POINT_new(group));
+            if (!EC_POINT_mul(group, calcPubkey.get(), key.get(), NULL, NULL, NULL)) {
+                NATIVE_TRACE("EVP_PKEY_new_EC_KEY(%p, %p, %p) => can't calulate public key", group,
+                        pubkey, keyBytes);
+                *result = 0;
+                return ThrowExceptionIfNecessary("EC_KEY_set_private_key");
+            }
+            EC_KEY_set_public_key(eckey.get(), calcPubkey.get());
+        }
+    }
+
+    if (!EC_KEY_check_key(eckey.get())) {
+        NATIVE_TRACE("EVP_KEY_new_EC_KEY(%p, %p, %p) => invalid key created", group, pubkey, keyBytes);
+        *result = 0;
+        return ThrowExceptionIfNecessary("EC_KEY_check_key");
+    }
+
+    Unique_EVP_PKEY pkey(EVP_PKEY_new());
+    if (pkey.get() == NULL) {
+        NATIVE_TRACE("EVP_PKEY_new_EC(%p, %p, %p) => threw error", group, pubkey, keyBytes);
+        *result = 0;
+        return ThrowExceptionIfNecessary("EVP_PKEY_new failed");
+    }
+    if (EVP_PKEY_assign_EC_KEY(pkey.get(), eckey.get()) != 1) {
+        NATIVE_TRACE("EVP_PKEY_new_EC(%p, %p, %p) => threw error", group, pubkey, keyBytes);
+        *result = 0;
+        return ThrowRuntimeException("EVP_PKEY_assign_EC_KEY failed");
+    }
+    OWNERSHIP_TRANSFERRED(eckey);
+
+    NATIVE_TRACE("EVP_PKEY_new_EC_KEY(%p, %p, %p) => %p", group, pubkey, keyBytes, pkey.get());
+    *result = reinterpret_cast<uintptr_t>(pkey.release());
+    return NOERROR;
+}
+
+#define EC_CURVE_GFP 1
+#define EC_CURVE_GF2M 2
+
+/**
+ * Return group type or 0 if unknown group.
+ * EC_GROUP_GFP or EC_GROUP_GF2M
+ */
+static int get_EC_GROUP_type(const EC_GROUP* group)
+{
+    const EC_METHOD* method = EC_GROUP_method_of(group);
+    if (method == EC_GFp_nist_method()
+                || method == EC_GFp_mont_method()
+                || method == EC_GFp_simple_method()) {
+        return EC_CURVE_GFP;
+    }
+    else if (method == EC_GF2m_simple_method()) {
+        return EC_CURVE_GF2M;
+    }
+
+    return 0;
+}
+
+ECode NativeCrypto::EC_GROUP_new_by_curve_name(
+    /* [in] */ const String& curveName,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    NATIVE_TRACE("EC_GROUP_new_by_curve_name()");
+
+    if (curveName.IsNull()) {
+        *result = 0;
+        return NOERROR;
+    }
+    NATIVE_TRACE("EC_GROUP_new_by_curve_name(%s)", curveName.string());
+
+    int nid = OBJ_sn2nid(curveName.string());
+    if (nid == NID_undef) {
+        NATIVE_TRACE("EC_GROUP_new_by_curve_name(%s) => unknown NID name", curveName.string());
+        *result = 0;
+        return NOERROR;
+    }
+
+    EC_GROUP* group = ::EC_GROUP_new_by_curve_name(nid);
+    if (group == NULL) {
+        NATIVE_TRACE("EC_GROUP_new_by_curve_name(%s) => unknown NID %d", curveName.string(), nid);
+        FreeOpenSslErrorState();
+        *result = 0;
+        return NOERROR;
+    }
+
+    NATIVE_TRACE("EC_GROUP_new_by_curve_name(%s) => %p", curveName.string(), group);
+    *result = reinterpret_cast<uintptr_t>(group);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_GROUP_new_curve(
+    /* [in] */ Int32 type,
+    /* [in] */ ArrayOf<Byte>* pBytes,
+    /* [in] */ ArrayOf<Byte>* aBytes,
+    /* [in] */ ArrayOf<Byte>* bBytes,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    NATIVE_TRACE("EC_GROUP_new_curve(%d, %p, %p, %p)", type, pBytes, aBytes, bBytes);
+
+    ECode ec;
+    BIGNUM* pRef = NULL;
+    if (!ArrayToBignum(pBytes, &pRef, &ec)) {
+        *result = 0;
+        return ec;
+    }
+    Unique_BIGNUM p(pRef);
+
+    BIGNUM* aRef = NULL;
+    if (!ArrayToBignum(aBytes, &aRef, &ec)) {
+        *result = 0;
+        return ec;
+    }
+    Unique_BIGNUM a(aRef);
+
+    BIGNUM* bRef = NULL;
+    if (!ArrayToBignum(bBytes, &bRef, &ec)) {
+        *result = 0;
+        return ec;
+    }
+    Unique_BIGNUM b(bRef);
+
+    EC_GROUP* group;
+    switch (type) {
+    case EC_CURVE_GFP:
+        group = ::EC_GROUP_new_curve_GFp(p.get(), a.get(), b.get(), (BN_CTX*) NULL);
+        break;
+    case EC_CURVE_GF2M:
+        group = ::EC_GROUP_new_curve_GF2m(p.get(), a.get(), b.get(), (BN_CTX*) NULL);
+        break;
+    default:
+        *result = 0;
+        return ThrowRuntimeException("invalid group");
+    }
+
+    if (group == NULL) {
+        *result = 0;
+        return ThrowExceptionIfNecessary("EC_GROUP_new_curve");
+    }
+
+    NATIVE_TRACE("EC_GROUP_new_curve(%d, %p, %p, %p) => %p", type, pBytes, aBytes, bBytes, group);
+    *result = reinterpret_cast<uintptr_t>(group);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_GROUP_dup(
+    /* [in] */ Int64 groupRef,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    const EC_GROUP* group = reinterpret_cast<const EC_GROUP*>(groupRef);
+    NATIVE_TRACE("EC_GROUP_dup(%p)", group);
+
+    if (group == NULL) {
+         NATIVE_TRACE("EC_GROUP_dup => group == NULL");
+         *result = 0;
+         return E_NULL_POINTER_EXCEPTION;
+     }
+
+     EC_GROUP* groupDup = ::EC_GROUP_dup(group);
+     NATIVE_TRACE("EC_GROUP_dup(%p) => %p", group, groupDup);
+     *result = reinterpret_cast<uintptr_t>(groupDup);
+     return NOERROR;
+}
+
+ECode NativeCrypto::EC_GROUP_set_asn1_flag(
+    /* [in] */ Int64 groupRef,
+    /* [in] */ Int32 flag)
+{
+    EC_GROUP* group = reinterpret_cast<EC_GROUP*>(groupRef);
+    NATIVE_TRACE("EC_GROUP_set_asn1_flag(%p, %d)", group, flag);
+
+    if (group == NULL) {
+        NATIVE_TRACE("EC_GROUP_set_asn1_flag => group == NULL");
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    ::EC_GROUP_set_asn1_flag(group, flag);
+    NATIVE_TRACE("EC_GROUP_set_asn1_flag(%p, %d) => success", group, flag);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_GROUP_set_point_conversion_form(
+    /* [in] */ Int64 groupRef,
+    /* [in] */ Int32 form)
+{
+    EC_GROUP* group = reinterpret_cast<EC_GROUP*>(groupRef);
+    NATIVE_TRACE("EC_GROUP_set_point_conversion_form(%p, %d)", group, form);
+
+    if (group == NULL) {
+        NATIVE_TRACE("EC_GROUP_set_point_conversion_form => group == NULL");
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    ::EC_GROUP_set_point_conversion_form(group, static_cast<point_conversion_form_t>(form));
+    NATIVE_TRACE("EC_GROUP_set_point_conversion_form(%p, %d) => success", group, form);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_GROUP_get_curve_name(
+    /* [in] */ Int64 groupRef,
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    const EC_GROUP* group = reinterpret_cast<const EC_GROUP*>(groupRef);
+    NATIVE_TRACE("EC_GROUP_get_curve_name(%p)", group);
+
+    if (group == NULL) {
+        NATIVE_TRACE("EC_GROUP_get_curve_name => group == NULL");
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    int nid = ::EC_GROUP_get_curve_name(group);
+    if (nid == NID_undef) {
+        NATIVE_TRACE("EC_GROUP_get_curve_name(%p) => unnamed curve", group);
+        *result = NULL;
+        return NOERROR;
+    }
+
+    const char* shortName = OBJ_nid2sn(nid);
+    NATIVE_TRACE("EC_GROUP_get_curve_name(%p) => \"%s\"", group, shortName);
+    *result = shortName;
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_GROUP_get_curve(
+    /* [in] */ Int64 groupRef,
+    /* [out, callee] */ ArrayOf<Byte>** pBytes,
+    /* [out, callee] */ ArrayOf<Byte>** aBytes,
+    /* [out, callee] */ ArrayOf<Byte>** bBytes)
+{
+    VALIDATE_NOT_NULL(pBytes && aBytes && bBytes);
+
+    const EC_GROUP* group = reinterpret_cast<const EC_GROUP*>(groupRef);
+    NATIVE_TRACE("EC_GROUP_get_curve(%p)", group);
+
+    Unique_BIGNUM p(BN_new());
+    Unique_BIGNUM a(BN_new());
+    Unique_BIGNUM b(BN_new());
+
+    int ret;
+    switch (get_EC_GROUP_type(group)) {
+    case EC_CURVE_GFP:
+        ret = EC_GROUP_get_curve_GFp(group, p.get(), a.get(), b.get(), (BN_CTX*) NULL);
+        break;
+    case EC_CURVE_GF2M:
+        ret = EC_GROUP_get_curve_GF2m(group, p.get(), a.get(), b.get(), (BN_CTX*)NULL);
+        break;
+    default:
+        *pBytes = *aBytes = *bBytes = NULL;
+        return ThrowRuntimeException("invalid group");
+    }
+    if (ret != 1) {
+        *pBytes = *aBytes = *bBytes = NULL;
+        return ThrowExceptionIfNecessary("EC_GROUP_get_curve");
+    }
+
+    ECode ec = BignumToArray(p.get(), "p", pBytes);
+    if (FAILED(ec)) {
+        *pBytes = *aBytes = *bBytes = NULL;
+        return ec;
+    }
+
+    ec = BignumToArray(a.get(), "a", aBytes);
+    if (FAILED(ec)) {
+        *pBytes = *aBytes = *bBytes = NULL;
+        return ec;
+    }
+
+    ec = BignumToArray(b.get(), "b", bBytes);
+    if (FAILED(ec)) {
+        *pBytes = *aBytes = *bBytes = NULL;
+        return ec;
+    }
+
+    NATIVE_TRACE("EC_GROUP_get_curve(%p) => %p, %p, %p", group, *pBytes, *aBytes, *bBytes);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_GROUP_clear_free(
+    /* [in] */ Int64 groupRef)
+{
+    EC_GROUP* group = reinterpret_cast<EC_GROUP*>(groupRef);
+    NATIVE_TRACE("EC_GROUP_clear_free(%p)", group);
+
+    if (group == NULL) {
+        NATIVE_TRACE("EC_GROUP_clear_free => group == NULL");
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    ::EC_GROUP_clear_free(group);
+    NATIVE_TRACE("EC_GROUP_clear_free(%p) => success", group);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_GROUP_cmp(
+    /* [in] */ Int64 group1Ref,
+    /* [in] */ Int64 group2Ref,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    const EC_GROUP* group1 = reinterpret_cast<const EC_GROUP*>(group1Ref);
+    const EC_GROUP* group2 = reinterpret_cast<const EC_GROUP*>(group2Ref);
+    NATIVE_TRACE("EC_GROUP_cmp(%p, %p)", group1, group2);
+
+    if (group1 == NULL || group2 == NULL) {
+        NATIVE_TRACE("EC_GROUP_cmp(%p, %p) => group1 == null || group2 == null", group1, group2);
+        *result = FALSE;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    int ret = ::EC_GROUP_cmp(group1, group2, (BN_CTX*)NULL);
+
+    NATIVE_TRACE("ECP_GROUP_cmp(%p, %p) => %d", group1, group2, ret);
+    *result = ret == 0;
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_GROUP_set_generator(
+    /* [in] */ Int64 groupRef,
+    /* [in] */ Int64 pointRef,
+    /* [in] */ ArrayOf<Byte>* nBytes,
+    /* [in] */ ArrayOf<Byte>* hBytes)
+{
+    EC_GROUP* group = reinterpret_cast<EC_GROUP*>(groupRef);
+    const EC_POINT* point = reinterpret_cast<const EC_POINT*>(pointRef);
+    NATIVE_TRACE("EC_GROUP_set_generator(%p, %p, %p, %p)", group, point, nBytes, hBytes);
+
+    if (group == NULL || point == NULL) {
+        NATIVE_TRACE("EC_GROUP_set_generator(%p, %p, %p, %p) => group == null || point == null",
+                group, point, nBytes, hBytes);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    ECode ec;
+    BIGNUM* nRef = NULL;
+    if (!ArrayToBignum(nBytes, &nRef, &ec)) {
+        return ec;
+    }
+    Unique_BIGNUM n(nRef);
+
+    BIGNUM* hRef = NULL;
+    if (!ArrayToBignum(hBytes, &hRef, &ec)) {
+        return ec;
+    }
+    Unique_BIGNUM h(hRef);
+
+    int ret = ::EC_GROUP_set_generator(group, point, n.get(), h.get());
+    if (ret == 0) {
+        return ThrowExceptionIfNecessary("EC_GROUP_set_generator");
+    }
+
+    NATIVE_TRACE("EC_GROUP_set_generator(%p, %p, %p, %p) => %d", group, point, nBytes, hBytes, ret);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_GROUP_get_generator(
+    /* [in] */ Int64 groupRef,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    const EC_GROUP* group = reinterpret_cast<const EC_GROUP*>(groupRef);
+    NATIVE_TRACE("EC_GROUP_get_generator(%p)", group);
+
+    if (group == NULL) {
+        NATIVE_TRACE("EC_POINT_get_generator(%p) => group == null", group);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    const EC_POINT* generator = EC_GROUP_get0_generator(group);
+
+    Unique_EC_POINT dup(EC_POINT_dup(generator, group));
+    if (dup.get() == NULL) {
+        NATIVE_TRACE("EC_GROUP_get_generator(%p) => oom error", group);
+        *result = 0;
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
+    NATIVE_TRACE("EC_GROUP_get_generator(%p) => %p", group, dup.get());
+    *result = reinterpret_cast<uintptr_t>(dup.release());
+    return NOERROR;
+}
+
+ECode NativeCrypto::Get_EC_GROUP_type(
+    /* [in] */ Int64 groupRef,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    const EC_GROUP* group = reinterpret_cast<const EC_GROUP*>(groupRef);
+    NATIVE_TRACE("get_EC_GROUP_type(%p)", group);
+
+    int type = get_EC_GROUP_type(group);
+    if (type == 0) {
+        NATIVE_TRACE("get_EC_GROUP_type(%p) => curve type", group);
+        *result = 0;
+        return ThrowRuntimeException("unknown curve type");
+    }
+    else {
+        NATIVE_TRACE("get_EC_GROUP_type(%p) => %d", group, type);
+    }
+    *result = type;
     return NOERROR;
 }
 

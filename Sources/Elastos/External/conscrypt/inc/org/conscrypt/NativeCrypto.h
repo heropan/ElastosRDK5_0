@@ -130,6 +130,181 @@ public:
         /* [in] */ Int64 ecGroupRef,
         /* [out] */ Int64* result);
 
+    static CARAPI RSA_generate_key_ex(
+        /* [in] */ Int32 modulusBits,
+        /* [in] */ ArrayOf<Byte>* publicExponent,
+        /* [out] */ Int64* result);
+
+    static CARAPI RSA_size(
+        /* [in] */ Int64 pkeyRef,
+        /* [out] */ Int32* result);
+
+    static CARAPI RSA_private_encrypt(
+        /* [in] */ Int32 flen,
+        /* [in] */ ArrayOf<Byte>* from,
+        /* [in] */ ArrayOf<Byte>* to,
+        /* [in] */ Int64 pkeyRef,
+        /* [in] */ Int32 padding,
+        /* [out] */ Int32* result);
+
+    static CARAPI RSA_public_decrypt(
+        /* [in] */ Int32 flen,
+        /* [in] */ ArrayOf<Byte>* from,
+        /* [in] */ ArrayOf<Byte>* to,
+        /* [in] */ Int64 pkeyRef,
+        /* [in] */ Int32 padding,
+        /* [out] */ Int32* result);
+
+    static CARAPI RSA_public_encrypt(
+        /* [in] */ Int32 flen,
+        /* [in] */ ArrayOf<Byte>* from,
+        /* [in] */ ArrayOf<Byte>* to,
+        /* [in] */ Int64 pkeyRef,
+        /* [in] */ Int32 padding,
+        /* [out] */ Int32* result);
+
+    static CARAPI RSA_private_decrypt(
+        /* [in] */ Int32 flen,
+        /* [in] */ ArrayOf<Byte>* from,
+        /* [in] */ ArrayOf<Byte>* to,
+        /* [in] */ Int64 pkeyRef,
+        /* [in] */ Int32 padding,
+        /* [out] */ Int32* result);
+
+    static CARAPI Get_RSA_public_params(
+        /* [in] */ Int64 pkeyRef,
+        /* [out, callee] */ ArrayOf<Byte>** n,
+        /* [out, callee] */ ArrayOf<Byte>** e);
+
+    static CARAPI Get_RSA_private_params(
+        /* [in] */ Int64 pkeyRef,
+        /* [out, callee] */ ArrayOf<Byte>** n,
+        /* [out, callee] */ ArrayOf<Byte>** e,
+        /* [out, callee] */ ArrayOf<Byte>** d,
+        /* [out, callee] */ ArrayOf<Byte>** p,
+        /* [out, callee] */ ArrayOf<Byte>** q,
+        /* [out, callee] */ ArrayOf<Byte>** dmp1,
+        /* [out, callee] */ ArrayOf<Byte>** dmq1,
+        /* [out, callee] */ ArrayOf<Byte>** iqmp);
+
+    static CARAPI DSA_generate_key(
+        /* [in] */ Int32 primeBits,
+        /* [in] */ ArrayOf<Byte>* seed,
+        /* [in] */ ArrayOf<Byte>* g,
+        /* [in] */ ArrayOf<Byte>* p,
+        /* [in] */ ArrayOf<Byte>* q,
+        /* [out] */ Int64* result);
+
+    static CARAPI Get_DSA_params(
+        /* [in] */ Int64 pkeyRef,
+        /* [out, callee] */ ArrayOf<Byte>** g,
+        /* [out, callee] */ ArrayOf<Byte>** p,
+        /* [out, callee] */ ArrayOf<Byte>** q,
+        /* [out, callee] */ ArrayOf<Byte>** ypub,
+        /* [out, callee] */ ArrayOf<Byte>** xpriv);
+
+    static CARAPI Set_DSA_flag_nonce_from_hash(
+        /* [in] */ Int64 pkeyRef);
+
+    static CARAPI I2d_RSAPublicKey(
+        /* [in] */ Int64 pkeyRef,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI I2d_RSAPrivateKey(
+        /* [in] */ Int64 pkeyRef,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI I2d_DSAPublicKey(
+        /* [in] */ Int64 pkeyRef,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI I2d_DSAPrivateKey(
+        /* [in] */ Int64 pkeyRef,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI EVP_PKEY_new_DH(
+        /* [in] */ ArrayOf<Byte>* p,
+        /* [in] */ ArrayOf<Byte>* g,
+        /* [in] */ ArrayOf<Byte>* pub_key,
+        /* [in] */ ArrayOf<Byte>* priv_key,
+        /* [out] */ Int64* result);
+
+    static CARAPI DH_generate_parameters_ex(
+        /* [in] */ Int32 primeBits,
+        /* [in] */ Int64 generator,
+        /* [out] */ Int64* result);
+
+    static CARAPI DH_generate_key(
+        /* [in] */ Int64 pkeyRef);
+
+    static CARAPI Get_DH_params(
+        /* [in] */ Int64 pkeyRef,
+        /* [out, callee] */ ArrayOf<Byte>** p,
+        /* [out, callee] */ ArrayOf<Byte>** g,
+        /* [out, callee] */ ArrayOf<Byte>** ypub,
+        /* [out, callee] */ ArrayOf<Byte>** xpriv);
+
+    static CARAPI EVP_PKEY_new_EC_KEY(
+        /* [in] */ Int64 groupRef,
+        /* [in] */ Int64 pubkeyRef,
+        /* [in] */ ArrayOf<Byte>* keyBytes,
+        /* [out] */ Int64* result);
+
+    static CARAPI EC_GROUP_new_by_curve_name(
+        /* [in] */ const String& curveName,
+        /* [out] */ Int64* result);
+
+    static CARAPI EC_GROUP_new_curve(
+        /* [in] */ Int32 type,
+        /* [in] */ ArrayOf<Byte>* p,
+        /* [in] */ ArrayOf<Byte>* a,
+        /* [in] */ ArrayOf<Byte>* b,
+        /* [out] */ Int64* result);
+
+    static CARAPI EC_GROUP_dup(
+        /* [in] */ Int64 groupRef,
+        /* [out] */ Int64* result);
+
+    static CARAPI EC_GROUP_set_asn1_flag(
+        /* [in] */ Int64 groupRef,
+        /* [in] */ Int32 flag);
+
+    static CARAPI EC_GROUP_set_point_conversion_form(
+        /* [in] */ Int64 groupRef,
+        /* [in] */ Int32 form);
+
+    static CARAPI EC_GROUP_get_curve_name(
+        /* [in] */ Int64 groupRef,
+        /* [out] */ String* result);
+
+    static CARAPI EC_GROUP_get_curve(
+        /* [in] */ Int64 groupRef,
+        /* [out, callee] */ ArrayOf<Byte>** p,
+        /* [out, callee] */ ArrayOf<Byte>** a,
+        /* [out, callee] */ ArrayOf<Byte>** b);
+
+    static CARAPI EC_GROUP_clear_free(
+        /* [in] */ Int64 groupRef);
+
+    static CARAPI EC_GROUP_cmp(
+        /* [in] */ Int64 group1Ref,
+        /* [in] */ Int64 group2Ref,
+        /* [out] */ Boolean* result);
+
+    static CARAPI EC_GROUP_set_generator(
+        /* [in] */ Int64 groupRef,
+        /* [in] */ Int64 pointRef,
+        /* [in] */ ArrayOf<Byte>* nBytes,
+        /* [in] */ ArrayOf<Byte>* hBytes);
+
+    static CARAPI EC_GROUP_get_generator(
+        /* [in] */ Int64 groupRef,
+        /* [out] */ Int64* result);
+
+    static CARAPI Get_EC_GROUP_type(
+        /* [in] */ Int64 groupRef,
+        /* [out] */ Int32* result);
+
 private:
     static const Boolean sInitialized;
 
