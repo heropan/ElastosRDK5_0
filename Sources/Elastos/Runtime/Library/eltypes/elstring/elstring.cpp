@@ -125,6 +125,31 @@ String::String(const ArrayOf<Char32>& array, Int32 offset, Int32 length)
     Append(array, offset, length);
 }
 
+String::String(const ArrayOf<Byte>& array, Int32 offset)
+    : mString(NULL)
+    , mCharCount(0)
+{
+    if (offset > 0 && offset < array.GetLength()) {
+        mString = _allocFromUTF8((char*)array.GetPayload() + offset, array.GetLength() - offset);
+        if (mString == NULL) {
+            mString = _getEmptyString();
+        }
+    }
+}
+
+String::String(const ArrayOf<Byte>& array, Int32 offset, Int32 length)
+    : mString(NULL)
+    , mCharCount(0)
+{
+    if (offset > 0 && length > 0 && offset < array.GetLength()
+            && offset + length <= array.GetLength()) {
+        mString = _allocFromUTF8((char*)array.GetPayload() + offset, length);
+        if (mString == NULL) {
+            mString = _getEmptyString();
+        }
+    }
+}
+
 String::~String()
 {
     if (mString != NULL) {

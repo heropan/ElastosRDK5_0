@@ -24,6 +24,9 @@ public:
     explicit String(const ArrayOf<Char32>& array, Int32 offset = 0);
     explicit String(const ArrayOf<Char32>& array, Int32 offset, Int32 length);
 
+    explicit String(const ArrayOf<Byte>& array, Int32 offset = 0);
+    explicit String(const ArrayOf<Byte>& array, Int32 offset, Int32 length);
+
     explicit String(const char* other);
     explicit String(const char* other, Int32 numOfBytes);
 
