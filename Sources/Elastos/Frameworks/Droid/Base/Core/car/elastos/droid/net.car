@@ -342,6 +342,18 @@ module
         interface IMobileLinkQualityInfoHelper;
     }
 
+    [local]
+    class CNetwork {
+        constructor(
+            [in] Int32 netId);
+
+        constructor(
+            [in] INetwork* that);
+
+        interface IParcelable;
+        interface INetwork;
+    }
+
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos

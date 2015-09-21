@@ -96,6 +96,7 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/droid/utility
 // INCLUDES += $(MAKEDIR)/../../../inc/elastos/droid/sax
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/droid/internal/content
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/droid/internal/os
+INCLUDES += $(MAKEDIR)/../../../../../../../LibCore/inc/
 
 SOURCES = Elastos.Droid.Core.car
 SOURCES += R.cpp

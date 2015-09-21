@@ -2565,3 +2565,33 @@ EXPORTS
     _ZThn72_N7Elastos7Utility10Properties4SaveEPNS_2IO13IOutputStreamERKNS_6StringE
     _ZThn72_N7Elastos7Utility10Properties5StoreEPNS_2IO13IOutputStreamERKNS_6StringE
     _ZThn72_N7Elastos7Utility10Properties5StoreEPNS_2IO7IWriterERKNS_6StringE
+
+    ;;elastosx/net/SocketFactory
+    _ZN8Elastosx3Net13SocketFactory10GetDefaultEPPNS0_14ISocketFactoryE
+    _ZN8Elastosx3Net13SocketFactory12CreateSocketEPPN7Elastos3Net7ISocketE
+    _ZN8Elastosx3Net13SocketFactory14GetInterfaceIDEP10IInterfacePN7Elastos6_EMuidE
+    _ZN8Elastosx3Net13SocketFactory5ProbeERKN7Elastos6_EMuidE
+    _ZN8Elastosx3Net13SocketFactory6AddRefEv
+    _ZN8Elastosx3Net13SocketFactory7ReleaseEv
+    _ZN8Elastosx3Net13SocketFactoryC1Ev
+    _ZN8Elastosx3Net13SocketFactoryC2Ev
+    _ZN8Elastosx3Net13SocketFactoryD0Ev
+    _ZN8Elastosx3Net13SocketFactoryD1Ev
+    _ZN8Elastosx3Net13SocketFactoryD2Ev
+    _ZThn12_N8Elastosx3Net13SocketFactory14GetInterfaceIDEP10IInterfacePN7Elastos6_EMuidE
+    _ZThn12_N8Elastosx3Net13SocketFactory5ProbeERKN7Elastos6_EMuidE
+    _ZThn12_N8Elastosx3Net13SocketFactory6AddRefEv
+    _ZThn12_N8Elastosx3Net13SocketFactory7ReleaseEv
+    _ZThn16_N8Elastosx3Net13SocketFactory14GetInterfaceIDEP10IInterfacePN7Elastos6_EMuidE
+    _ZThn16_N8Elastosx3Net13SocketFactory5ProbeERKN7Elastos6_EMuidE
+    _ZThn16_N8Elastosx3Net13SocketFactory6AddRefEv
+    _ZThn16_N8Elastosx3Net13SocketFactory7ReleaseEv
+    _ZThn24_N8Elastosx3Net13SocketFactory12CreateSocketEPPN7Elastos3Net7ISocketE
+    _ZThn24_N8Elastosx3Net13SocketFactory14GetInterfaceIDEP10IInterfacePN7Elastos6_EMuidE
+    _ZThn24_N8Elastosx3Net13SocketFactory5ProbeERKN7Elastos6_EMuidE
+    _ZThn24_N8Elastosx3Net13SocketFactory6AddRefEv
+    _ZThn24_N8Elastosx3Net13SocketFactory7ReleaseEv
+    _ZThn8_N8Elastosx3Net13SocketFactory14GetInterfaceIDEP10IInterfacePN7Elastos6_EMuidE
+    _ZThn8_N8Elastosx3Net13SocketFactory5ProbeERKN7Elastos6_EMuidE
+    _ZThn8_N8Elastosx3Net13SocketFactory6AddRefEv
+    _ZThn8_N8Elastosx3Net13SocketFactory7ReleaseEv

@@ -5,7 +5,7 @@
 #include "_Elastos_Droid_Server_CSystemServer.h"
 #include <elastos/core/Singleton.h>
 #include <elastos/core/Thread.h>
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 // #include "CInputMethodManagerService.h"
 // #include "CWallpaperManagerService.h"
 // #include "CStatusBarManagerService.h"
