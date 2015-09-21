@@ -1910,8 +1910,8 @@ IMPL_USERFUNC(ClassFullPath)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
             else begin = NULL;
         }
         free(pszNamespace);
-        pCtx->PutString(pClsDir->mName);
     }
+    pCtx->PutString(pClsDir->mName);
 
     return LUBE_OK;
 }
@@ -1980,11 +1980,11 @@ IMPL_USERFUNC(ClassFullNameOfClassObj)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pv
             else begin = NULL;
         }
         free(pszNamespace);
-        char szName[c_nStrBufSize];
-        strcpy(szName, (char *)pClsDir->mName);
-        szName[strlen(szName) - 11] = 0;
-        pCtx->PutString(szName);
     }
+    char szName[c_nStrBufSize];
+    strcpy(szName, (char *)pClsDir->mName);
+    szName[strlen(szName) - 11] = 0;
+    pCtx->PutString(szName);
 
     return LUBE_OK;
 }
@@ -2011,11 +2011,11 @@ IMPL_USERFUNC(ClassFullPathOfClassObject)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID
             else begin = NULL;
         }
         free(pszNamespace);
-        char szName[c_nStrBufSize];
-        strcpy(szName, (char *)pClsDir->mName);
-        szName[strlen(szName) - 11] = 0;
-        pCtx->PutString(szName);
     }
+    char szName[c_nStrBufSize];
+    strcpy(szName, (char *)pClsDir->mName);
+    szName[strlen(szName) - 11] = 0;
+    pCtx->PutString(szName);
 
     return LUBE_OK;
 }
