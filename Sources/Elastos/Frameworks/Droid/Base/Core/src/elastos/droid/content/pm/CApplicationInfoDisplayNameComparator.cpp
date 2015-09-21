@@ -1,7 +1,10 @@
 
 #include "ext/frameworkext.h"
 #include "content/pm/CApplicationInfoDisplayNameComparator.h"
+#include "content/pm/CApplicationInfo.h"
 
+using Elastos::Core::EIID_IComparator;
+using Elastos::Core::ICharSequence;
 using Elastos::Text::ICollator;
 using Elastos::Text::ICollatorHelper;
 using Elastos::Text::CCollatorHelper;
@@ -23,32 +26,40 @@ ECode CApplicationInfoDisplayNameComparator::constructor(
 }
 
 ECode CApplicationInfoDisplayNameComparator::Compare(
-    /* [in] */ IInterface* aa,
-    /* [in] */ IInterface* ab,
+    /* [in] */ IInterface* aaObj,
+    /* [in] */ IInterface* abObj,
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
     *result = -1;
 
+    IApplicationInfo* aa = IApplicationInfo::Probe(aaObj);
+    IApplicationInfo* ab = IApplicationInfo::Probe(abObj);
+
+    String a, b;
     AutoPtr<ICharSequence> sa;
-    mPM->GetApplicationLabel(IApplicationInfo::Probe(aa), (ICharSequence**)&sa);
+    mPM->GetApplicationLabel(aa, (ICharSequence**)&sa);
     if (sa == NULL) {
-        aa->GetPackageName((ICharSequence**)&sa);
+        ((CApplicationInfo*)aa)->GetPackageName(&a);
+    }
+    else{
+        a = Object::ToString(sa);
     }
 
-
     AutoPtr<ICharSequence> sb;
-    mPM->GetApplicationLabel(IApplicationInfo::Probe(ab), (ICharSequence**)&sb);
+    mPM->GetApplicationLabel(ab, (ICharSequence**)&sb);
     if (sb == NULL) {
-        ab->GetPackageName((ICharSequence**)&sb);
+        ((CApplicationInfo*)ab)->GetPackageName(&b);
+    }
+    else{
+        b = Object::ToString(sb);
     }
 
     AutoPtr<ICollator> collator;
     AutoPtr<ICollatorHelper> helper;
     CCollatorHelper::AcquireSingleton((ICollatorHelper**)&helper);
     helper->GetInstance((ICollator**)&collator);
-    return collator->Compare(Object::ToString(sa), Object::ToString(sb), result);
-
+    return collator->Compare(a, b, result);
 }
 
 } // namespace Pm

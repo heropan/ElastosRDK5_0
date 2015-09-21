@@ -913,7 +913,6 @@ ECode IntentFilter::HasDataPath(
     pm->GetType(&type);
     pm->GetPath(&path);
 
-    Boolean isMatched;
     List< AutoPtr<IPatternMatcher> >::Iterator it = mDataPaths->Begin();
     while (it != mDataPaths->End()) {
         AutoPtr<IPatternMatcher> pe = *it;

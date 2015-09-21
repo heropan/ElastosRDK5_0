@@ -15,7 +15,7 @@ module
      * corresponds to information collected from the AndroidManifest.xml's
      * <application> tag.
      *
-     * @implements Elastos.Droid.Content.Pm.Elastos.Droid.Content.Pm.IPackageItemInfo
+     * @implements PackageItemInfo
      */
 
     /**
@@ -438,12 +438,6 @@ module
         SetResourceDirs(
             [in] ArrayOf<String>* resourceDirs);
 
-        GetSeinfo(
-            [out] String* dataDir);
-
-        SetSeinfo(
-            [in] String dataDir);
-
         GetSharedLibraryFiles(
             [out, callee] ArrayOf<String>* sharedLibraryFiles);
 
@@ -460,24 +454,6 @@ module
             [out] String* libraryDir);
 
         SetNativeLibraryDir(
-            [in] String libraryDir);
-
-        GetSecondaryNativeLibraryDir(
-            [out] String* libraryDir);
-
-        SetSecondaryNativeLibraryDir(
-            [in] String libraryDir);
-
-        GetNativeLibraryRootDir(
-            [out] String* libraryDir);
-
-        SetNativeLibraryRootDir(
-            [in] String libraryDir);
-
-        GetNativeLibraryRootRequiresIsa(
-            [out] String* libraryDir);
-
-        SetNativeLibraryRootRequiresIsa(
             [in] String libraryDir);
 
         GetPrimaryCpuAbi(
@@ -505,10 +481,10 @@ module
             [in] Int32 sdkVersion);
 
         GetVersionCode(
-            [out] Int32* uid);
+            [out] Int32* code);
 
         SetVersionCode(
-            [in] Int32 uid);
+            [in] Int32 code);
 
         GetEnabled(
             [out] Boolean* enabled);

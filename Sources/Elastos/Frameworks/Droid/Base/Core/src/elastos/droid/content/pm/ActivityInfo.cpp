@@ -1,11 +1,16 @@
 
 #include "ext/frameworkext.h"
-#include "content/pm/CActivityInfo.h"
+#include "content/pm/ActivityInfo.h"
+#include "content/res/CConfiguration.h"
 #include "os/Build.h"
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Content::Res::CConfiguration;
 
 using Elastos::Core::StringUtils;
-using Elastos::Droid::Os::Build;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
@@ -32,13 +37,11 @@ static AutoPtr< ArrayOf<Int32> > Init_CONFIG_NATIVE_BITS()
     return int32Array;
 }
 
-AutoPtr< ArrayOf<Int32> > CActivityInfo::CONFIG_NATIVE_BITS = Init_CONFIG_NATIVE_BITS();
+AutoPtr< ArrayOf<Int32> > ActivityInfo::CONFIG_NATIVE_BITS = Init_CONFIG_NATIVE_BITS();
 
-CAR_INTERFACE_IMPL(CActivityInfo, ComponentInfo, IActivityInfo)
+CAR_INTERFACE_IMPL_2(ActivityInfo, ComponentInfo, IActivityInfo, IParcelable)
 
-CAR_OBJECT_IMPL(CActivityInfo)
-
-CActivityInfo::CActivityInfo()
+ActivityInfo::ActivityInfo()
     : mTheme(0)
     , mLaunchMode(0)
     , mFlags(0)
@@ -50,36 +53,37 @@ CActivityInfo::CActivityInfo()
     , mMaxRecents(0)
 {}
 
-CActivityInfo::~CActivityInfo()
+ActivityInfo::~ActivityInfo()
 {}
 
-ECode CActivityInfo::constructor()
+ECode ActivityInfo::constructor()
 {
     return ComponentInfo::constructor();
 }
 
-ECode CActivityInfo::constructor(
-    /* [in] */ IActivityInfo* orig)
+ECode ActivityInfo::constructor(
+    /* [in] */ IActivityInfo* origObj)
 {
-    assert(orig != NULL);
+    VALIDATE_NOT_NULL(origObj)
+    FAIL_RETURN(ComponentInfo::constructor(IComponentInfo::Probe(origObj)))
 
-    ComponentInfo::constructor((IComponentInfo*)orig);
-    orig->GetTheme(&mTheme);
-    orig->GetLaunchMode(&mLaunchMode);
-    orig->GetPermission(&mPermission);
-    orig->GetTaskAffinity(&mTaskAffinity);
-    orig->GetTargetActivity(&mTargetActivity);
-    orig->GetFlags(&mFlags);
-    orig->GetScreenOrientation(&mScreenOrientation);
-    orig->GetConfigChanges(&mConfigChanges);
-    orig->GetSoftInputMode(&mSoftInputMode);
-    orig->GetUiOptions(&mUiOptions);
-    orig->GetParentActivityName(&mParentActivityName);
-    orig->GetMaxRecents(&mMaxRecents);
+    ActivityInfo* orig = (ActivityInfo*)origObj;
+    mTheme = orig->mTheme;
+    mLaunchMode = orig->mLaunchMode;
+    mPermission = orig->mPermission;
+    mTaskAffinity = orig->mTaskAffinity;
+    mTargetActivity = orig->mTargetActivity;
+    mFlags = orig->mFlags;
+    mScreenOrientation = orig->mScreenOrientation;
+    mConfigChanges = orig->mConfigChanges;
+    mSoftInputMode = orig->mSoftInputMode;
+    mUiOptions = orig->mUiOptions;
+    mParentActivityName = orig->mParentActivityName;
+    mMaxRecents = orig->mMaxRecents;
     return NOERROR;
 }
 
-Int32 CActivityInfo::ActivityInfoConfigToNative(
+Int32 ActivityInfo::ActivityInfoConfigToNative(
     /* [in] */ Int32 input)
 {
     Int32 output = 0;
@@ -91,7 +95,7 @@ Int32 CActivityInfo::ActivityInfoConfigToNative(
     return output;
 }
 
-ECode CActivityInfo::GetRealConfigChanged(
+ECode ActivityInfo::GetRealConfigChanged(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -109,7 +113,7 @@ ECode CActivityInfo::GetRealConfigChanged(
     return NOERROR;
 }
 
-ECode CActivityInfo::GetThemeResource(
+ECode ActivityInfo::GetThemeResource(
     /* [out] */ Int32* theme)
 {
     VALIDATE_NOT_NULL(theme);
@@ -123,7 +127,7 @@ ECode CActivityInfo::GetThemeResource(
     return NOERROR;
 }
 
-String CActivityInfo::PersistableModeToString()
+String ActivityInfo::PersistableModeToString()
 {
     switch(mPersistableMode) {
         case PERSIST_ROOT_ONLY: return String("PERSIST_ROOT_ONLY");
@@ -137,7 +141,7 @@ String CActivityInfo::PersistableModeToString()
     }
 }
 
-ECode CActivityInfo::Dump(
+ECode ActivityInfo::Dump(
     /* [in] */ IPrinter* pw,
     /* [in] */ const String& prefix)
 {
@@ -166,17 +170,17 @@ ECode CActivityInfo::Dump(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CActivityInfo::ToString(
+ECode ActivityInfo::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
     Int32 hashCode;
     THIS_PROBE(IObject)->GetHashCode(&hashCode);
-    str->AppendFormat("ActivityInfo{%s %s}", StringUtils::Int32ToHexString(hashCode).string(), mName.string());
+    str->AppendFormat("ActivityInfo{%s %s}", StringUtils::ToHexString(hashCode).string(), mName.string());
     return NOERROR;
 }
 
-ECode CActivityInfo::ReadFromParcel(
+ECode ActivityInfo::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     assert(source != NULL);
@@ -198,7 +202,7 @@ ECode CActivityInfo::ReadFromParcel(
     return NOERROR;
 }
 
-ECode CActivityInfo::WriteToParcel(
+ECode ActivityInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
     ComponentInfo::WriteToParcel(dest);
@@ -218,210 +222,7 @@ ECode CActivityInfo::WriteToParcel(
     return NOERROR;
 }
 
-ECode CActivityInfo::LoadLabel(
-    /* [in] */ IPackageManager* pm,
-    /* [out] */ ICharSequence** label)
-{
-    VALIDATE_NOT_NULL(label);
-    return ComponentInfo::LoadLabel(pm, label);
-}
-
-ECode CActivityInfo::LoadIcon(
-    /* [in] */ IPackageManager* pm,
-    /* [out] */ IDrawable** icon)
-{
-    VALIDATE_NOT_NULL(icon);
-    return ComponentInfo::LoadIcon(pm, icon);
-}
-
-ECode CActivityInfo::LoadLogo(
-    /* [in] */ IPackageManager* pm,
-    /* [out] */ IDrawable** logo)
-{
-    VALIDATE_NOT_NULL(logo);
-    return ComponentInfo::LoadLogo(pm, logo);;
-}
-
-ECode CActivityInfo::LoadXmlMetaData(
-    /* [in] */ IPackageManager* pm,
-    /* [in] */ const String& name,
-    /* [out] */ IXmlResourceParser** resource)
-{
-    VALIDATE_NOT_NULL(resource);
-    return ComponentInfo::LoadXmlMetaData(pm, name, resource);
-}
-
-ECode CActivityInfo::GetName(
-    /* [out] */ String* name)
-{
-    VALIDATE_NOT_NULL(name);
-    return ComponentInfo::GetName(name);
-}
-
-ECode CActivityInfo::SetName(
-    /* [in] */ const String& name)
-{
-    return ComponentInfo::SetName(name);
-}
-
-ECode CActivityInfo::GetPackageName(
-    /* [out] */ String* name)
-{
-    VALIDATE_NOT_NULL(name);
-    return ComponentInfo::GetPackageName(name);
-}
-
-ECode CActivityInfo::SetPackageName(
-    /* [in] */ const String& name)
-{
-    return ComponentInfo::SetPackageName(name);
-}
-
-ECode CActivityInfo::GetLabelRes(
-    /* [out] */ Int32* labelRes)
-{
-    VALIDATE_NOT_NULL(labelRes);
-    return ComponentInfo::GetLabelRes(labelRes);
-}
-
-ECode CActivityInfo::SetLabelRes(
-    /* [in] */ Int32 labelRes)
-{
-    return ComponentInfo::SetLabelRes(labelRes);
-}
-
-ECode CActivityInfo::GetNonLocalizedLabel(
-    /* [out] */ ICharSequence** label)
-{
-    VALIDATE_NOT_NULL(label);
-    return ComponentInfo::GetNonLocalizedLabel(label);
-}
-
-ECode CActivityInfo::SetNonLocalizedLabel(
-    /* [in] */ ICharSequence* label)
-{
-    return ComponentInfo::SetNonLocalizedLabel(label);
-}
-
-ECode CActivityInfo::GetIcon(
-    /* [out] */ Int32* icon)
-{
-    VALIDATE_NOT_NULL(icon);
-    return ComponentInfo::GetIcon(icon);
-}
-
-ECode CActivityInfo::SetIcon(
-    /* [in] */ Int32 icon)
-{
-    return ComponentInfo::SetIcon(icon);
-}
-
-ECode CActivityInfo::GetLogo(
-    /* [out] */ Int32* logo)
-{
-    VALIDATE_NOT_NULL(logo);
-    return ComponentInfo::GetLogo(logo);
-}
-
-ECode CActivityInfo::SetLogo(
-    /* [in] */ Int32 logo)
-{
-    return ComponentInfo::SetLogo(logo);
-}
-
-ECode CActivityInfo::GetMetaData(
-    /* [out] */ IBundle** metaData)
-{
-    VALIDATE_NOT_NULL(metaData);
-    return ComponentInfo::GetMetaData(metaData);
-}
-
-ECode CActivityInfo::SetMetaData(
-    /* [in] */ IBundle* metaData)
-{
-    return ComponentInfo::SetMetaData(metaData);
-}
-
-ECode CActivityInfo::IsEnabled(
-    /* [out] */ Boolean* isEnable)
-{
-    VALIDATE_NOT_NULL(isEnable);
-    return ComponentInfo::IsEnabled(isEnable);
-}
-
-ECode CActivityInfo::GetIconResource(
-    /* [out] */ Int32* icon)
-{
-    VALIDATE_NOT_NULL(icon);
-    return ComponentInfo::GetIconResource(icon);
-}
-
-ECode CActivityInfo::GetApplicationInfo(
-    /* [out] */ IApplicationInfo** info)
-{
-    VALIDATE_NOT_NULL(info);
-    return ComponentInfo::GetApplicationInfo(info);
-}
-
-ECode CActivityInfo::SetApplicationInfo(
-    /* [in] */ IApplicationInfo* info)
-{
-    return ComponentInfo::SetApplicationInfo(info);
-}
-
-ECode CActivityInfo::GetProcessName(
-    /* [out] */ String* processName)
-{
-    VALIDATE_NOT_NULL(processName);
-    return ComponentInfo::GetProcessName(processName);
-}
-
-ECode CActivityInfo::SetProcessName(
-    /* [in] */ const String& processName)
-{
-    return ComponentInfo::SetProcessName(processName);
-}
-
-ECode CActivityInfo::GetDescriptionRes(
-    /* [out] */ Int32* desRes)
-{
-    VALIDATE_NOT_NULL(desRes);
-    return ComponentInfo::GetDescriptionRes(desRes);
-}
-
-ECode CActivityInfo::SetDescriptionRes(
-    /* [in] */ Int32 desRes)
-{
-    return ComponentInfo::SetDescriptionRes(desRes);
-}
-
-ECode CActivityInfo::GetEnabled(
-    /* [out] */ Boolean* enabled)
-{
-    VALIDATE_NOT_NULL(enabled);
-    return ComponentInfo::GetEnabled(enabled);
-}
-
-ECode CActivityInfo::SetEnabled(
-    /* [in] */ Boolean enabled)
-{
-    return ComponentInfo::SetEnabled(enabled);
-}
-
-ECode CActivityInfo::GetExported(
-    /* [out] */ Boolean* exported)
-{
-    VALIDATE_NOT_NULL(exported);
-    return ComponentInfo::GetExported(exported);
-}
-
-ECode CActivityInfo::SetExported(
-    /* [in] */ Boolean exported)
-{
-    return ComponentInfo::SetExported(exported);
-}
-
-ECode CActivityInfo::GetTheme(
+ECode ActivityInfo::GetTheme(
     /* [out] */ Int32* theme)
 {
     VALIDATE_NOT_NULL(theme);
@@ -429,14 +230,14 @@ ECode CActivityInfo::GetTheme(
     return NOERROR;
 }
 
-ECode CActivityInfo::SetTheme(
+ECode ActivityInfo::SetTheme(
     /* [in] */ Int32 theme)
 {
     mTheme = theme;
     return NOERROR;
 }
 
-ECode CActivityInfo::GetLaunchMode(
+ECode ActivityInfo::GetLaunchMode(
     /* [out] */ Int32* mode)
 {
     VALIDATE_NOT_NULL(mode);
@@ -444,14 +245,14 @@ ECode CActivityInfo::GetLaunchMode(
     return NOERROR;
 }
 
-ECode CActivityInfo::SetLaunchMode(
+ECode ActivityInfo::SetLaunchMode(
     /* [in] */ Int32 mode)
 {
     mLaunchMode = mode;
     return NOERROR;
 }
 
-ECode CActivityInfo::GetPermission(
+ECode ActivityInfo::GetPermission(
     /* [out] */ String* permission)
 {
     VALIDATE_NOT_NULL(permission);
@@ -459,14 +260,14 @@ ECode CActivityInfo::GetPermission(
     return NOERROR;
 }
 
-ECode CActivityInfo::SetPermission(
+ECode ActivityInfo::SetPermission(
     /* [in] */ const String& permission)
 {
     mPermission = permission;
     return NOERROR;
 }
 
-ECode CActivityInfo::GetTaskAffinity(
+ECode ActivityInfo::GetTaskAffinity(
     /* [out] */ String* task)
 {
     VALIDATE_NOT_NULL(task);
@@ -474,14 +275,14 @@ ECode CActivityInfo::GetTaskAffinity(
     return NOERROR;
 }
 
-ECode CActivityInfo::SetTaskAffinity(
+ECode ActivityInfo::SetTaskAffinity(
     /* [in] */ const String& task)
 {
     mTaskAffinity = task;
     return NOERROR;
 }
 
-ECode CActivityInfo::GetTargetActivity(
+ECode ActivityInfo::GetTargetActivity(
     /* [out] */ String* target)
 {
     VALIDATE_NOT_NULL(target);
@@ -489,14 +290,14 @@ ECode CActivityInfo::GetTargetActivity(
     return NOERROR;
 }
 
-ECode CActivityInfo::SetTargetActivity(
+ECode ActivityInfo::SetTargetActivity(
     /* [in] */ const String& target)
 {
     mTargetActivity = target;
     return NOERROR;
 }
 
-ECode CActivityInfo::GetFlags(
+ECode ActivityInfo::GetFlags(
     /* [out] */ Int32* flags)
 {
     VALIDATE_NOT_NULL(flags);
@@ -504,14 +305,14 @@ ECode CActivityInfo::GetFlags(
     return NOERROR;
 }
 
-ECode CActivityInfo::SetFlags(
+ECode ActivityInfo::SetFlags(
     /* [in] */ Int32 flags)
 {
     mFlags = flags;
     return NOERROR;
 }
 
-ECode CActivityInfo::GetScreenOrientation(
+ECode ActivityInfo::GetScreenOrientation(
     /* [out] */ Int32* orientation)
 {
     VALIDATE_NOT_NULL(orientation);
@@ -519,14 +320,14 @@ ECode CActivityInfo::GetScreenOrientation(
     return NOERROR;
 }
 
-ECode CActivityInfo::SetScreenOrientation(
+ECode ActivityInfo::SetScreenOrientation(
     /* [in] */ Int32 orientation)
 {
     mScreenOrientation = orientation;
     return NOERROR;
 }
 
-ECode CActivityInfo::GetConfigChanges(
+ECode ActivityInfo::GetConfigChanges(
     /* [out] */ Int32* changes)
 {
     VALIDATE_NOT_NULL(changes);
@@ -534,14 +335,14 @@ ECode CActivityInfo::GetConfigChanges(
     return NOERROR;
 }
 
-ECode CActivityInfo::SetConfigChanges(
+ECode ActivityInfo::SetConfigChanges(
     /* [in] */ Int32 changes)
 {
     mConfigChanges = changes;
     return NOERROR;
 }
 
-ECode CActivityInfo::GetSoftInputMode(
+ECode ActivityInfo::GetSoftInputMode(
     /* [out] */ Int32* mode)
 {
     VALIDATE_NOT_NULL(mode);
@@ -549,14 +350,14 @@ ECode CActivityInfo::GetSoftInputMode(
     return NOERROR;
 }
 
-ECode CActivityInfo::SetSoftInputMode(
+ECode ActivityInfo::SetSoftInputMode(
     /* [in] */ Int32 mode)
 {
     mSoftInputMode = mode;
     return NOERROR;
 }
 
-ECode CActivityInfo::GetUiOptions(
+ECode ActivityInfo::GetUiOptions(
     /* [out] */ Int32* uiOptions)
 {
     VALIDATE_NOT_NULL(uiOptions);
@@ -564,14 +365,14 @@ ECode CActivityInfo::GetUiOptions(
     return NOERROR;
 }
 
-ECode CActivityInfo::SetUiOptions(
+ECode ActivityInfo::SetUiOptions(
     /* [in] */ Int32 uiOptions)
 {
     mUiOptions = uiOptions;
     return NOERROR;
 }
 
-ECode CActivityInfo::GetParentActivityName(
+ECode ActivityInfo::GetParentActivityName(
     /* [out] */ String* parentActivityName)
 {
     VALIDATE_NOT_NULL(parentActivityName);
@@ -579,7 +380,7 @@ ECode CActivityInfo::GetParentActivityName(
     return NOERROR;
 }
 
-ECode CActivityInfo::SetParentActivityName(
+ECode ActivityInfo::SetParentActivityName(
     /* [in] */ const String& parentActivityName)
 {
     mParentActivityName = parentActivityName;

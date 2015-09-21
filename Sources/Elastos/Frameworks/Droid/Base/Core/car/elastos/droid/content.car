@@ -62,7 +62,6 @@ module
     merge("content/UriMatcher.car");
     merge("content/UriPermission.car");
 
-
     merge("content/pm/ActivityInfo.car");
     merge("content/pm/ApplicationInfo.car");
     merge("content/pm/ComponentInfo.car");
@@ -125,6 +124,7 @@ module
     merge("content/res/TypedArray.car");
     merge("content/res/XmlResourceParser.car");
 
+    using interface Elastos.Core.IComparator;
     using interface Elastos.Core.IComparable;
     using interface Elastos.Core.ICloneable;
     using interface Elastos.Core.ICharSequence;
@@ -148,6 +148,7 @@ module
     interface Elastos.Droid.Content.ILoader;
     interface Elastos.Droid.Content.Res.IResources;
     interface Elastos.Droid.Content.Pm.IApplicationInfo;
+    interface Elastos.Droid.Content.Pm.IPackageManager;
     interface Elastos.Droid.Utility.IDisplayMetrics;
 
     namespace Elastos {
@@ -869,87 +870,67 @@ module
     }//namespace Droid
     }//namespace Elastos
 
-//        namespace Pm {
+    namespace Elastos {
+    namespace Droid {
+    namespace Content {
+    namespace Pm {
 
-//     /**
-//      * Information you can retrieve about a particular application
-//      * activity or receiver. This corresponds to information collected
-//      * from the AndroidManifest.xml's &lt;activity&gt; and
-//      * &lt;receiver&gt; tags.
-//      */
-//     class CActivityInfo {
-//         constructor();
+    class CActivityInfo {
+        constructor();
 
-//         constructor(
-//             [in] IActivityInfo* orig);
+        constructor(
+            [in] IActivityInfo* orig);
 
-//         interface IActivityInfo;
-//         interface IParcelable;
-//     }
+        interface IActivityInfo;
+        interface IComponentInfo;
+        interface IPackageItemInfo;
+        interface IParcelable;
+    }
 
-//     singleton class CActivityInfoHelper {
-//         interface IActivityInfoHelper;
-//     }
+    singleton class CActivityInfoHelper {
+        interface IActivityInfoHelper;
+    }
 
-//     /**
-//      * Information you can retrieve about a particular application.  This
-//      * corresponds to information collected from the AndroidManifest.xml's
-//      * &lt;application&gt; tag.
-//      */
-//     class CApplicationInfo {
-//         constructor();
+    class CApplicationInfo {
+        constructor();
 
-//         constructor(
-//             [in] IApplicationInfo* orig);
+        constructor(
+            [in] IApplicationInfo* orig);
 
-//         interface IApplicationInfo;
-//         interface IParcelable;
-//     }
+        interface IApplicationInfo;
+        interface IPackageItemInfo;
+        interface IParcelable;
+    }
 
-//     class CApplicationInfoDisplayNameComparator {
-//         constructor(
-//             [in] IPackageManager* pm);
+    [local]
+    class CApplicationInfoDisplayNameComparator {
+        constructor(
+            [in] IPackageManager* pm);
 
-//         interface IComparator;
-//     }
+        interface IComparator;
+    }
 
-//     /**
-//      * Base class containing information common to all application components
-//      * ({@link ActivityInfo}, {@link ServiceInfo}).  This class is not intended
-//      * to be used by itself; it is simply here to share common definitions
-//      * between all application components.  As such, it does not itself
-//      * implement Parcelable, but does provide convenience methods to assist
-//      * in the implementation of Parcelable in subclasses.
-//      */
-//     class CComponentInfo {
-//         constructor();
+    class CComponentInfo {
+        constructor();
 
-//         constructor(
-//             [in] IComponentInfo* orig);
+        constructor(
+            [in] IComponentInfo* orig);
 
-//         interface IComponentInfo;
-//     }
+        interface IComponentInfo;
+        interface IPackageItemInfo;
+    }
 
-//     /**
-//      * Information you can retrieve about hardware configuration preferences
-//      * declared by an application. This corresponds to information collected from the
-//      * AndroidManifest.xml's &lt;uses-configuration&gt; and &lt;uses-feature&gt; tags.
-//      */
-//     class CConfigurationInfo {
-//         constructor();
+    class CConfigurationInfo {
+        constructor();
 
-//         constructor(
-//             [in] IConfigurationInfo* orig);
+        constructor(
+            [in] IConfigurationInfo* orig);
 
-//         interface IConfigurationInfo;
-//         interface IParcelable;
-//     }
+        interface IConfigurationInfo;
+        interface IParcelable;
+    }
 
-//     /**
-//      * Represents encryption parameters used to read a container.
-//      *
-//      * @hide
-//      */
+
 // //    [deprecated]
 // //    class CContainerEncryptionParams {
 // //        constructor();
@@ -958,27 +939,7 @@ module
 // //            [in] String encryptionAlgorithm,
 // //            [in] IAlgorithmParameterSpec* encryptionSpec,
 // //            [in] ISecretKey* encryptionKey);
-// //
-// //        /**
-// //         * Creates container encryption specifications for installing from encrypted
-// //         * containers.
-// //         *
-// //         * @param encryptionAlgorithm encryption algorithm to use; format matches
-// //         *            JCE
-// //         * @param encryptionSpec algorithm parameter specification
-// //         * @param encryptionKey key used for decryption
-// //         * @param macAlgorithm MAC algorithm to use; format matches JCE
-// //         * @param macSpec algorithm parameters specification, may be {@code null}
-// //         * @param macKey key used for authentication (i.e., for the MAC tag)
-// //         * @param macTag message authentication code (MAC) tag for the authenticated
-// //         *            data
-// //         * @param authenticatedDataStart offset of start of authenticated data in
-// //         *            stream
-// //         * @param encryptedDataStart offset of start of encrypted data in stream
-// //         * @param dataEnd offset of the end of both the authenticated and encrypted
-// //         *            data
-// //         * @throws InvalidAlgorithmParameterException
-// //         */
+
 // //        constructor(
 // //            [in] String encryptionAlgorithm,
 // //            [in] IAlgorithmParameterSpec* encryptionSpec,
@@ -995,36 +956,26 @@ module
 // //        interface IParcelable;
 // //    }
 
-//     /**
-//      * A single feature that can be requested by an application. This corresponds
-//      * to information collected from the
-//      * AndroidManifest.xml's &lt;uses-feature&gt; tag.
-//      */
-//     class CFeatureInfo {
-//         constructor();
+    class CFeatureInfo {
+        constructor();
 
-//         constructor(
-//             [in] IFeatureInfo* orig);
+        constructor(
+            [in] IFeatureInfo* orig);
 
-//         interface IFeatureInfo;
-//         interface IParcelable;
-//     }
+        interface IFeatureInfo;
+        interface IParcelable;
+    }
 
-//     /**
-//      * Information you can retrieve about a particular piece of test
-//      * instrumentation.  This corresponds to information collected
-//      * from the AndroidManifest.xml's &lt;instrumentation&gt; tag.
-//      */
-//     class CInstrumentationInfo {
-//         constructor();
+    class CInstrumentationInfo {
+        constructor();
 
-//         constructor(
-//             [in] IInstrumentationInfo* orig);
+        constructor(
+            [in] IInstrumentationInfo* orig);
 
-//         interface IInstrumentationInfo;
-//         interface IPackageItemInfo;
-//         interface IParcelable;
-//     }
+        interface IInstrumentationInfo;
+        interface IPackageItemInfo;
+        interface IParcelable;
+    }
 
 //     /**
 //      * A special subclass of Intent that can have a custom label/icon
@@ -1163,16 +1114,12 @@ module
 //         interface IParcelable;
 //     }
 
-//     /**
-//      * Overall information about the contents of a package.  This corresponds
-//      * to all of the information collected from AndroidManifest.xml.
-//      */
-//     class CPackageInfo {
-//         constructor();
+    class CPackageInfo {
+        constructor();
 
-//         interface IPackageInfo;
-//         interface IParcelable;
-//     }
+        interface IPackageInfo;
+        interface IParcelable;
+    }
 
 //     /**
 //      * Basic information about a package as specified in its manifest.
@@ -1186,30 +1133,22 @@ module
 //         interface IParcelable;
 //     }
 
-//     /**
-//      * Base class containing information common to all package items held by
-//      * the package manager.  This provides a very common basic set of attributes:
-//      * a label, icon, and meta-data.  This class is not intended
-//      * to be used by itself; it is simply here to share common definitions
-//      * between all items returned by the package manager.  As such, it does not
-//      * itself implement Parcelable, but does provide convenience methods to assist
-//      * in the implementation of Parcelable in subclasses.
-//      */
-//     class CPackageItemInfo {
-//         constructor();
+    class CPackageItemInfo {
+        constructor();
 
-//         constructor(
-//             [in] IPackageItemInfo* orig);
+        constructor(
+            [in] IPackageItemInfo* orig);
 
-//         interface IPackageItemInfo;
-//     }
+        interface IPackageItemInfo;
+    }
 
-//     class CPackageItemInfoDisplayNameComparator {
-//         constructor(
-//             [in] IPackageManager* pm);
+    [local]
+    class CPackageItemInfoDisplayNameComparator {
+        constructor(
+            [in] IPackageManager* pm);
 
-//         interface IPackageItemInfoDisplayNameComparator;
-//     }
+        interface IComparator;
+    }
 
 // //    singleton class CPackageManagerHelper {
 // //        interface IPackageManagerHelper;
@@ -1302,59 +1241,46 @@ module
 //         interface IPermissionInfoHelper;
 //     }
 
-//     /**
-//      * Holds information about a specific
-//      * {@link android.content.ContentProvider content provider}. This is returned by
-//      * {@link android.content.pm.PackageManager#resolveContentProvider(java.lang.String, int)
-//      * PackageManager.resolveContentProvider()}.
-//      */
-//     class CProviderInfo {
-//         constructor();
+    class CProviderInfo {
+        constructor();
 
-//         constructor(
-//             [in] IProviderInfo* orig);
+        constructor(
+            [in] IProviderInfo* orig);
 
-//         interface IProviderInfo;
-//         interface IParcelable;
-//     }
+        interface IProviderInfo;
+        interface IParcelable;
+    }
 
-//     /**
-//      * Information that is returned from resolving an intent
-//      * against an IntentFilter. This partially corresponds to
-//      * information collected from the AndroidManifest.xml's
-//      * &lt;intent&gt; tags.
-//      */
-//     class CResolveInfo {
-//         constructor();
+    [local]
+    class CResolveInfo {
+        constructor();
 
-//         constructor(
-//             [in] IResolveInfo* orig);
+        constructor(
+            [in] IResolveInfo* orig);
 
-//         interface IResolveInfo;
-//         interface IParcelable;
-//     }
+        interface IResolveInfo;
+        interface IParcelable;
+    }
 
-//     class CResolveInfoDisplayNameComparator {
-//         constructor(
-//             [in] IPackageManager* pm);
+    [local]
+    class CResolveInfoDisplayNameComparator {
+        constructor(
+            [in] IPackageManager* pm);
 
-//         interface IResolveInfoDisplayNameComparator;
-//     }
+        interface IComparator;
+    }
 
-//     /**
-//      * Information you can retrieve about a particular application
-//      * service. This corresponds to information collected from the
-//      * AndroidManifest.xml's &lt;service&gt; tags.
-//      */
-//     class CServiceInfo {
-//         constructor();
+    class CServiceInfo {
+        constructor();
 
-//         constructor(
-//             [in] IServiceInfo* orig);
+        constructor(
+            [in] IServiceInfo* orig);
 
-//         interface IServiceInfo;
-//         interface IParcelable;
-//     }
+        interface IServiceInfo;
+        interface IComponentInfo;
+        interface IPackageItemInfo;
+        interface IParcelable;
+    }
 
 //     /**
 //      * Opaque, immutable representation of a signature associated with an
@@ -1385,36 +1311,31 @@ module
 //         interface IParcelable;
 //     }
 
-//     /**
-//      * Per-user information.
-//      * @hide
-//      */
-//     class CUserInfo {
-//         constructor();
+    /**
+     * Per-user information.
+     * @hide
+     */
+    class CUserInfo {
+        constructor();
 
-//         constructor(
-//             [in] IUserInfo* orig);
+        constructor(
+            [in] IUserInfo* orig);
 
-//         constructor(
-//             [in] Int32 id,
-//             [in] String name,
-//             [in] Int32 flags);
+        constructor(
+            [in] Int32 id,
+            [in] String name,
+            [in] Int32 flags);
 
-//         constructor(
-//             [in] Int32 id,
-//             [in] String name,
-//             [in] String iconPath,
-//             [in] Int32 flags);
+        constructor(
+            [in] Int32 id,
+            [in] String name,
+            [in] String iconPath,
+            [in] Int32 flags);
 
-//         interface IUserInfo;
-//         interface IParcelable;
-//     }
+        interface IUserInfo;
+        interface IParcelable;
+    }
 
-//     /**
-//      * Represents verification parameters used to verify packages to be installed.
-//      *
-//      * @hide
-//      */
 //      [deprecated]
 //      class CVerificationParams {
 //          /**
@@ -1493,10 +1414,10 @@ module
 // //        interface IParcelable;
 // //    }
 
-//     } // namespace Pm
-//     } // namespace Content
-//     } // namespace Droid
-//     } // namespace Elastos
+    } // namespace Pm
+    } // namespace Content
+    } // namespace Droid
+    } // namespace Elastos
 
     namespace Elastos {
     namespace Droid {

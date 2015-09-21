@@ -151,14 +151,6 @@ module
             [in] Boolean system);
     }
 
-    [local]
-    interface IResolveInfoDisplayNameComparator {
-        Compare(
-            [in] IResolveInfo* a,
-            [in] IResolveInfo* b,
-            [out] Int32* result);
-    }
-
     } // namespace Pm
     } // namespace Content
     } // namespace Droid

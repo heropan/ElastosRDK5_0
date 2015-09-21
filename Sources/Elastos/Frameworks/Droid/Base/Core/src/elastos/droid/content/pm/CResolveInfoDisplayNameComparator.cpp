@@ -1,7 +1,12 @@
 
 #include "ext/frameworkext.h"
 #include "content/pm/CResolveInfoDisplayNameComparator.h"
+#include "content/pm/ResolveInfo.h"
+#include "os/UserHandle.h"
 
+using Elastos::Droid::Os::UserHandle;
+
+using Elastos::Core::EIID_IComparator;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
 using Elastos::Text::ICollatorHelper;
@@ -11,6 +16,10 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
+
+CAR_INTERFACE_IMPL(CResolveInfoDisplayNameComparator, Object, IComparator)
+
+CAR_OBJECT_IMPL(CResolveInfoDisplayNameComparator)
 
 CResolveInfoDisplayNameComparator::CResolveInfoDisplayNameComparator()
 {
@@ -28,17 +37,20 @@ ECode CResolveInfoDisplayNameComparator::constructor(
 }
 
 ECode CResolveInfoDisplayNameComparator::Compare(
-    /* [in] */ IResolveInfo* a,
-    /* [in] */ IResolveInfo* b,
+    /* [in] */ IInterface* ab,
+    /* [in] */ IInterface* bb,
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
 
+    IResolveInfo* a = IResolveInfo::Probe(ab);
+    IResolveInfo* b = IResolveInfo::Probe(bb);
+
     // We want to put the one targeted to another user at the end of the dialog.
-    if (a.targetUserId != UserHandle::USER_CURRENT) {
+    if (((ResolveInfo*)a)->mTargetUserId != UserHandle::USER_CURRENT) {
         return 1;
     }
-    if (b.targetUserId != UserHandle::USER_CURRENT) {
+    if (((ResolveInfo*)b)->mTargetUserId != UserHandle::USER_CURRENT) {
         return -1;
     }
 
@@ -48,7 +60,7 @@ ECode CResolveInfoDisplayNameComparator::Compare(
     if (sa == NULL) {
         AutoPtr<IActivityInfo> aInfo;
         a->GetActivityInfo((IActivityInfo**)&aInfo);
-        aInfo->GetName(&aStr);
+        IPackageItemInfo::Probe(aInfo)->GetName(&aStr);
     }
     else {
         sa->ToString(&aStr);
@@ -59,7 +71,7 @@ ECode CResolveInfoDisplayNameComparator::Compare(
     if (sb == NULL) {
         AutoPtr<IActivityInfo> aInfo;
         b->GetActivityInfo((IActivityInfo**)&aInfo);
-        aInfo->GetName(&bStr);
+        IPackageItemInfo::Probe(aInfo)->GetName(&bStr);
     }
     else {
         sb->ToString(&bStr);

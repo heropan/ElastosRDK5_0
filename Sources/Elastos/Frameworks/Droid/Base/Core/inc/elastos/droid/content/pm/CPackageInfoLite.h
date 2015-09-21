@@ -16,6 +16,9 @@ namespace Pm {
  * @hide
  */
 CarClass(CPackageInfoLite)
+    , public Object
+    , public IPackageInfoLite
+    , public IParcelable
 {
 public:
     CAR_INTERFACE_DECL()

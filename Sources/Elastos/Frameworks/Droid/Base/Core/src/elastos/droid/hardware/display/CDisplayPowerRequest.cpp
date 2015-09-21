@@ -43,6 +43,7 @@ ECode CDisplayPowerRequest::IsBrightOrDim(
     VALIDATE_NOT_NULL(result);
 
     *result = (mPolicy == IDisplayPowerRequest::POLICY_BRIGHT || mPolicy == IDisplayPowerRequest::POLICY_DIM);
+    return NOERROR;
 }
 
 ECode CDisplayPowerRequest::CopyFrom(

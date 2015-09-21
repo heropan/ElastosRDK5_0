@@ -60,14 +60,14 @@ ECode ComponentInfo::LoadLabel(
         }
     }
     AutoPtr<ICharSequence> nonLocalizedLabel;
-    ai->GetNonLocalizedLabel((ICharSequence**)&nonLocalizedLabel);
+    IPackageItemInfo::Probe(ai)->GetNonLocalizedLabel((ICharSequence**)&nonLocalizedLabel);
     if (nonLocalizedLabel != NULL) {
         *label = nonLocalizedLabel;
         REFCOUNT_ADD(*label);
         return NOERROR;
     }
     Int32 labelRes;
-    ai->GetLabelRes(&labelRes);
+    IPackageItemInfo::Probe(ai)->GetLabelRes(&labelRes);
     if (labelRes != 0) {
         pm->GetText(mPackageName, labelRes, ai, label);
         if (*label != NULL) {
@@ -97,7 +97,7 @@ ECode ComponentInfo::GetIconResource(
         *icon = mIcon;
     }
     else {
-        mApplicationInfo->GetIcon(icon);
+        IPackageItemInfo::Probe(mApplicationInfo)->GetIcon(icon);
     }
     return NOERROR;
 }
@@ -111,21 +111,21 @@ ECode ComponentInfo::GetLogoResource(
         *icon = mLogo;
     }
     else {
-        mApplicationInfo->GetLogo(icon);
+        IPackageItemInfo::Probe(mApplicationInfo)->GetLogo(icon);
     }
     return NOERROR;
 }
 
-ECode ComponentInfo::GetLogoResource(
+ECode ComponentInfo::GetBannerResource(
     /* [out] */ Int32* icon)
 {
     VALIDATE_NOT_NULL(icon)
 
-    if(mBanner !=0) {
+    if(mBanner != 0) {
         *icon = mBanner;
     }
     else {
-        mApplicationInfo->GetBanner(icon);
+        IPackageItemInfo::Probe(mApplicationInfo)->GetBanner(icon);
     }
     return NOERROR;
 }
@@ -193,24 +193,21 @@ ECode ComponentInfo::LoadDefaultIcon(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** icon)
 {
-    VALIDATE_NOT_NULL(icon)
-    return mApplicationInfo->LoadIcon(pm, icon);
+    return IPackageItemInfo::Probe(mApplicationInfo)->LoadIcon(pm, icon);
 }
 
 ECode ComponentInfo::LoadDefaultBanner(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** icon)
 {
-    VALIDATE_NOT_NULL(icon)
-    return mApplicationInfo->LoadBanner(pm, icon);
+    return IPackageItemInfo::Probe(mApplicationInfo)->LoadBanner(pm, icon);
 }
 
 ECode ComponentInfo::LoadDefaultLogo(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** logo)
 {
-    VALIDATE_NOT_NULL(logo)
-    return mApplicationInfo->LoadLogo(pm, logo);
+    return IPackageItemInfo::Probe(mApplicationInfo)->LoadLogo(pm, logo);
 }
 
 AutoPtr<IApplicationInfo> ComponentInfo::GetApplicationInfo()

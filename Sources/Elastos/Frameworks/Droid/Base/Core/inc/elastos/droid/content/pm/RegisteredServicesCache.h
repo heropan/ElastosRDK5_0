@@ -39,14 +39,14 @@ namespace Pm {
  *
  * @hide
  */
-class RegisteredServicesCache : public ElRefBase
+class RegisteredServicesCache : public Object
 {
 public:
     /**
      * Value type that describes a Service. The information within can be used
      * to bind to the service.
      */
-    class ServiceInfo : public ElRefBase
+    class ServiceInfo : public Object
     {
     public:
         /** @hide */
@@ -64,7 +64,7 @@ public:
     };
 
 private:
-    class UserServices : public ElRefBase
+    class UserServices : public Object
     {
     public:
         UserServices();
@@ -124,12 +124,9 @@ private:
     };
 
     class ListenerRunnable
-        : public ElRefBase
-        , public IRunnable
+        : public Runnable
     {
     public:
-        CAR_INTERFACE_DECL();
-
         ListenerRunnable(
             /* [in] */ IInterface* type,
             /* [in] */ Int32 userId,

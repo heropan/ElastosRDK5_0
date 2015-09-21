@@ -14,8 +14,9 @@ namespace Display {
 CAR_INTERFACE_IMPL_2(WifiDisplaySessionInfo, Object, IWifiDisplaySessionInfo, IParcelable)
 
 WifiDisplaySessionInfo::WifiDisplaySessionInfo()
-    : WifiDisplaySessionInfo(TRUE, 0, String(""), String(""), String(""))
-{}
+{
+    constructor(TRUE, 0, String(""), String(""), String(""));
+}
 
 WifiDisplaySessionInfo::WifiDisplaySessionInfo(
     /* [in] */ Boolean client,

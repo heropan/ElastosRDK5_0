@@ -11,6 +11,8 @@ namespace Content {
 namespace Pm {
 
 CarClass(CVerifierDeviceIdentityHelper)
+    , public Singleton
+    , public IVerifierDeviceIdentityHelper
 {
 public:
     CAR_INTERFACE_DECL()

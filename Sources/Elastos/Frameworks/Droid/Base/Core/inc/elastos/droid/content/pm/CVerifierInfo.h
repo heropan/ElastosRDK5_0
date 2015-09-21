@@ -17,6 +17,9 @@ namespace Pm {
  * @hide
  */
 CarClass(CVerifierInfo)
+    , public Object
+    , public IVerifierInfo
+    , public IParcelable
 {
 public:
     CAR_INTERFACE_DECL()

@@ -19,6 +19,8 @@ namespace Pm {
  * You can find this class through {@link Context#getPackageManager}.
  */
 class PackageManager
+    , public Object
+    , public IPackageManager
 {
 public:
     /**

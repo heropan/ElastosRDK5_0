@@ -16,6 +16,9 @@ namespace Pm {
  * to all of the information collected from AndroidManifest.xml.
  */
 CarClass(CPackageInfo)
+    , public Object
+    , public IPackageInfo
+    , public IParcelable
 {
 public:
     CAR_INTERFACE_DECL()
@@ -24,7 +27,7 @@ public:
 
     CPackageInfo();
 
-    ~CPackageInfo();
+    virtual ~CPackageInfo();
 
     CARAPI constructor();
 
@@ -324,7 +327,7 @@ public:
      *
      * @see FeatureInfo#FLAG_REQUIRED
      */
-    AutoPtr<ArrayOf<IFeatureGroupInfo> > mFeatureGroups;
+    AutoPtr<ArrayOf<IFeatureGroupInfo*> > mFeatureGroups;
 
     /**
      * The install location requested by the activity.  From the

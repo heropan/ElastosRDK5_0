@@ -10,6 +10,10 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
+CAR_INTERFACE_IMPL_2(CPackageInfo, Object, IPackageInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CPackageInfo)
+
 CPackageInfo::CPackageInfo()
     : mVersionCode(0)
     , mSharedUserLabel(0)
@@ -42,7 +46,7 @@ ECode CPackageInfo::ReadFromParcel(
 {
     assert(source != NULL);
     source->ReadString(&mPackageName);
-    source->ReadArrayOfString((ArrayOf<String>**)&mRplitNames);
+    source->ReadArrayOfString((ArrayOf<String>**)&mSplitNames);
     source->ReadInt32(&mVersionCode);
     source->ReadString(&mVersionName);
     source->ReadString(&mSharedUserId);
@@ -67,13 +71,13 @@ ECode CPackageInfo::ReadFromParcel(
     source->ReadArrayOf((Handle32*)&mFeatureGroups);
     source->ReadInt32(&mInstallLocation);
     Int32 ival;
-    dest->ReadInt32(&ival);
+    source->ReadInt32(&ival);
     mCoreApp = ival != 0;
-    dest->ReadInt32(&ival);
+    source->ReadInt32(&ival);
     mRequiredForAllUsers = ival != 0;
-    dest->ReadString(&mRestrictedAccountType);
-    dest->ReadString(&mRequiredAccountType);
-    dest->ReadString(&mOverlayTarget);
+    source->ReadString(&mRestrictedAccountType);
+    source->ReadString(&mRequiredAccountType);
+    source->ReadString(&mOverlayTarget);
     return NOERROR;
 }
 
@@ -82,7 +86,7 @@ ECode CPackageInfo::WriteToParcel(
 {
     assert(dest != NULL);
     dest->WriteString(mPackageName);
-    dest->WriteArrayOfString(mRplitNames.Get());
+    dest->WriteArrayOfString(mSplitNames.Get());
     dest->WriteInt32(mVersionCode);
     dest->WriteString(mVersionName);
     dest->WriteString(mSharedUserId);

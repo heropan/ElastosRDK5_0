@@ -1,27 +1,27 @@
 
 #include "ext/frameworkext.h"
-#include "content/pm/CPermissionInfo.h"
+#include "content/pm/PermissionInfo.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
 
-CPermissionInfo::CPermissionInfo()
+PermissionInfo::PermissionInfo()
     : mProtectionLevel(0)
     , mFlags(0)
     , mDescriptionRes(0)
 {}
 
-CPermissionInfo::~CPermissionInfo()
+PermissionInfo::~PermissionInfo()
 {}
 
-ECode CPermissionInfo::constructor()
+ECode PermissionInfo::constructor()
 {
     return NOERROR;
 }
 
-ECode CPermissionInfo::constructor(
+ECode PermissionInfo::constructor(
     /* [in] */ IPermissionInfo* orig)
 {
     assert(orig != NULL);
@@ -34,7 +34,7 @@ ECode CPermissionInfo::constructor(
     return NOERROR;
 }
 
-Int32 CPermissionInfo::FixProtectionLevel(
+Int32 PermissionInfo::FixProtectionLevel(
     /* [in] */ Int32 level)
 {
     if (level == PROTECTION_SIGNATURE_OR_SYSTEM) {
@@ -43,7 +43,7 @@ Int32 CPermissionInfo::FixProtectionLevel(
     return level;
 }
 
-String CPermissionInfo::ProtectionToString(
+String PermissionInfo::ProtectionToString(
     /* [in] */ Int32 level)
 {
     String protLevel("????");
@@ -82,7 +82,7 @@ String CPermissionInfo::ProtectionToString(
     return protLevel;
 }
 
-ECode CPermissionInfo::LoadDescription(
+ECode PermissionInfo::LoadDescription(
     /* [in] */ IPackageManager* pm,
     /* [out] */ ICharSequence** description)
 {
@@ -102,7 +102,7 @@ ECode CPermissionInfo::LoadDescription(
     return NOERROR;
 }
 
-ECode CPermissionInfo::ToString(
+ECode PermissionInfo::ToString(
     /* [out] */ String* str)
 {
     // return "PermissionInfo{"
@@ -112,7 +112,7 @@ ECode CPermissionInfo::ToString(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CPermissionInfo::ReadFromParcel(
+ECode PermissionInfo::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     PackageItemInfo::ReadFromParcel(source);
@@ -124,7 +124,7 @@ ECode CPermissionInfo::ReadFromParcel(
     return NOERROR;
 }
 
-ECode CPermissionInfo::WriteToParcel(
+ECode PermissionInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
     PackageItemInfo::WriteToParcel(dest);
@@ -136,7 +136,7 @@ ECode CPermissionInfo::WriteToParcel(
     return NOERROR;
 }
 
-ECode CPermissionInfo::LoadLabel(
+ECode PermissionInfo::LoadLabel(
     /* [in] */ IPackageManager* pm,
     /* [out] */ ICharSequence** label)
 {
@@ -144,7 +144,7 @@ ECode CPermissionInfo::LoadLabel(
     return PackageItemInfo::LoadLabel(pm, label);
 }
 
-ECode CPermissionInfo::LoadIcon(
+ECode PermissionInfo::LoadIcon(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** icon)
 {
@@ -152,7 +152,7 @@ ECode CPermissionInfo::LoadIcon(
     return PackageItemInfo::LoadIcon(pm, icon);
 }
 
-ECode CPermissionInfo::LoadLogo(
+ECode PermissionInfo::LoadLogo(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** logo)
 {
@@ -160,7 +160,7 @@ ECode CPermissionInfo::LoadLogo(
     return PackageItemInfo::LoadLogo(pm, logo);
 }
 
-ECode CPermissionInfo::LoadXmlMetaData(
+ECode PermissionInfo::LoadXmlMetaData(
     /* [in] */ IPackageManager* pm,
     /* [in] */ const String& name,
     /* [out] */ IXmlResourceParser** resource)
@@ -169,98 +169,98 @@ ECode CPermissionInfo::LoadXmlMetaData(
     return PackageItemInfo::LoadXmlMetaData(pm, name, resource);
 }
 
-ECode CPermissionInfo::GetName(
+ECode PermissionInfo::GetName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
     return PackageItemInfo::GetName(name);
 }
 
-ECode CPermissionInfo::SetName(
+ECode PermissionInfo::SetName(
     /* [in] */ const String& name)
 {
     return PackageItemInfo::SetName(name);
 }
 
-ECode CPermissionInfo::GetPackageName(
+ECode PermissionInfo::GetPackageName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
     return PackageItemInfo::GetPackageName(name);
 }
 
-ECode CPermissionInfo::SetPackageName(
+ECode PermissionInfo::SetPackageName(
     /* [in] */ const String& name)
 {
     return PackageItemInfo::SetPackageName(name);
 }
 
-ECode CPermissionInfo::GetLabelRes(
+ECode PermissionInfo::GetLabelRes(
     /* [out] */ Int32* labelRes)
 {
     VALIDATE_NOT_NULL(labelRes);
     return PackageItemInfo::GetLabelRes(labelRes);
 }
 
-ECode CPermissionInfo::SetLabelRes(
+ECode PermissionInfo::SetLabelRes(
     /* [in] */ Int32 labelRes)
 {
     return PackageItemInfo::SetLabelRes(labelRes);
 }
 
-ECode CPermissionInfo::GetNonLocalizedLabel(
+ECode PermissionInfo::GetNonLocalizedLabel(
     /* [out] */ ICharSequence** label)
 {
     VALIDATE_NOT_NULL(label);
     return PackageItemInfo::GetNonLocalizedLabel(label);
 }
 
-ECode CPermissionInfo::SetNonLocalizedLabel(
+ECode PermissionInfo::SetNonLocalizedLabel(
     /* [in] */ ICharSequence*  label)
 {
     return PackageItemInfo::SetNonLocalizedLabel(label);
 }
 
-ECode CPermissionInfo::GetIcon(
+ECode PermissionInfo::GetIcon(
     /* [out] */ Int32* icon)
 {
     VALIDATE_NOT_NULL(icon);
     return PackageItemInfo::GetIcon(icon);
 }
 
-ECode CPermissionInfo::SetIcon(
+ECode PermissionInfo::SetIcon(
     /* [in] */ Int32 icon)
 {
     return PackageItemInfo::SetIcon(icon);
 }
 
-ECode CPermissionInfo::GetLogo(
+ECode PermissionInfo::GetLogo(
     /* [out] */ Int32* logo)
 {
     VALIDATE_NOT_NULL(logo);
     return PackageItemInfo::GetLogo(logo);
 }
 
-ECode CPermissionInfo::SetLogo(
+ECode PermissionInfo::SetLogo(
     /* [in] */ Int32 logo)
 {
     return PackageItemInfo::SetLogo(logo);
 }
 
-ECode CPermissionInfo::GetMetaData(
+ECode PermissionInfo::GetMetaData(
     /* [out] */ IBundle** metaData)
 {
     VALIDATE_NOT_NULL(metaData);
     return PackageItemInfo::GetMetaData(metaData);
 }
 
-ECode CPermissionInfo::SetMetaData(
+ECode PermissionInfo::SetMetaData(
     /* [in] */ IBundle* metaData)
 {
     return PackageItemInfo::SetMetaData(metaData);
 }
 
-ECode CPermissionInfo::GetProtectionLevel(
+ECode PermissionInfo::GetProtectionLevel(
     /* [out] */ Int32* level)
 {
     VALIDATE_NOT_NULL(level);
@@ -268,14 +268,14 @@ ECode CPermissionInfo::GetProtectionLevel(
     return NOERROR;
 }
 
-ECode CPermissionInfo::SetProtectionLevel(
+ECode PermissionInfo::SetProtectionLevel(
     /* [in] */ Int32 level)
 {
     mProtectionLevel = level;
     return NOERROR;
 }
 
-ECode CPermissionInfo::GetGroup(
+ECode PermissionInfo::GetGroup(
     /* [out] */ String* group)
 {
     VALIDATE_NOT_NULL(group);
@@ -283,14 +283,14 @@ ECode CPermissionInfo::GetGroup(
     return NOERROR;
 }
 
-ECode CPermissionInfo::SetGroup(
+ECode PermissionInfo::SetGroup(
     /* [in] */ const String& group)
 {
     mGroup = group;
     return NOERROR;
 }
 
-ECode CPermissionInfo::GetFlags(
+ECode PermissionInfo::GetFlags(
     /* [out] */ Int32* flags)
 {
     VALIDATE_NOT_NULL(flags);
@@ -298,14 +298,14 @@ ECode CPermissionInfo::GetFlags(
     return NOERROR;
 }
 
-ECode CPermissionInfo::SetFlags(
+ECode PermissionInfo::SetFlags(
     /* [in] */ Int32 flags)
 {
     mFlags = flags;
     return NOERROR;
 }
 
-ECode CPermissionInfo::GetDescriptionRes(
+ECode PermissionInfo::GetDescriptionRes(
     /* [out] */ Int32* desRes)
 {
     VALIDATE_NOT_NULL(desRes);
@@ -313,14 +313,14 @@ ECode CPermissionInfo::GetDescriptionRes(
     return NOERROR;
 }
 
-ECode CPermissionInfo::SetDescriptionRes(
+ECode PermissionInfo::SetDescriptionRes(
     /* [in] */ Int32 desRes)
 {
     mDescriptionRes = desRes;
     return NOERROR;
 }
 
-ECode CPermissionInfo::GetNonLocalizedDescription(
+ECode PermissionInfo::GetNonLocalizedDescription(
     /* [out] */ ICharSequence** des)
 {
     VALIDATE_NOT_NULL(des);
@@ -329,7 +329,7 @@ ECode CPermissionInfo::GetNonLocalizedDescription(
     return NOERROR;
 }
 
-ECode CPermissionInfo::SetNonLocalizedDescription(
+ECode PermissionInfo::SetNonLocalizedDescription(
     /* [in] */ ICharSequence* des)
 {
     mNonLocalizedDescription = des;

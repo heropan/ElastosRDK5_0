@@ -10,6 +10,10 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
+CAR_INTERFACE_IMPL_2(CUserInfo, Object, IUserInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CUserInfo)
+
 CUserInfo::CUserInfo()
     : mId(0)
     , mSerialNumber(0)
@@ -34,7 +38,7 @@ ECode CUserInfo::constructor(
     /* [in] */ IUserInfo* other)
 {
     VALIDATE_NOT_NULL(other)
-    UserInfo* orig = (UserInfo*)other;
+    CUserInfo* orig = (CUserInfo*)other;
 
     mName = orig->mName;
     mIconPath = orig->mIconPath;
@@ -55,19 +59,10 @@ ECode CUserInfo::constructor(
     /* [in] */ const String& name,
     /* [in] */ Int32 flags)
 {
-    return Init(id, name, String(NULL), flags);
+    return constructor(id, name, String(NULL), flags);
 }
 
 ECode CUserInfo::constructor(
-    /* [in] */ Int32 id,
-    /* [in] */ const String& name,
-    /* [in] */ const String& iconPath,
-    /* [in] */ Int32 flags)
-{
-    return Init(id, name, iconPath, flags);
-}
-
-ECode CUserInfo::Init(
     /* [in] */ Int32 id,
     /* [in] */ const String& name,
     /* [in] */ const String& iconPath,

@@ -12,6 +12,9 @@ namespace Content {
 namespace Pm {
 
 CarClass(CVerifierDeviceIdentity)
+    , public Object
+    , public IVerifierDeviceIdentity
+    , public IParcelable
 {
     friend class CVerifierDeviceIdentityHelper;
 

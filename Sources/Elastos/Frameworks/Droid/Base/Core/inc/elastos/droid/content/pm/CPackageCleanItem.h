@@ -12,6 +12,8 @@ namespace Pm {
 
 /** @hide */
 CarClass(CPackageCleanItem)
+    , public Object
+    , public IPackageCleanItem
 {
 public:
     CAR_INTERFACE_DECL()

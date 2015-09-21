@@ -13,6 +13,9 @@ namespace Content {
 namespace Pm {
 
 CarClass(CManifestDigest)
+    , public Object
+    , public IManifestDigest
+    , public IParcelable
 {
 public:
     CAR_INTERFACE_DECL()

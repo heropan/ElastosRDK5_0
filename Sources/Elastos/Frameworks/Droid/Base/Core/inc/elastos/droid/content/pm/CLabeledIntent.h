@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CLABELEDINTENT_H__
 
 #include "_Elastos_Droid_Content_Pm_CLabeledIntent.h"
-#include "../Intent.h"
+#include "content/Intent.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IStringBuilder;

@@ -582,7 +582,9 @@ Boolean CursorWindow::NativePutNull(
 }
 
 ECode CursorWindow::constructor()
-{}
+{
+    return NOERROR;
+}
 
 ECode CursorWindow::constructor(
     /* [in] */ const String& name)

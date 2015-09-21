@@ -17,6 +17,9 @@ namespace Pm {
  * application package.
  */
 CarClass(CSignature)
+    , public Object
+    , public ISignature
+    , public IParcelable
 {
 public:
     CAR_INTERFACE_DECL()

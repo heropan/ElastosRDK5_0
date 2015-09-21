@@ -17,6 +17,9 @@ namespace Pm {
  * @hide
  */
 CarClass(CParceledListSlice)
+    , public Object
+    , public IParceledListSlice
+    , public IParcelable
 {
 public:
     CAR_INTERFACE_DECL()

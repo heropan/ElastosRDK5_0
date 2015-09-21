@@ -1,7 +1,13 @@
 
 #include "ext/frameworkext.h"
-#include "content/pm/CResolveInfo.h"
+#include "content/pm/ResolveInfo.h"
+#include "content/pm/CActivityInfo.h"
+#include "content/pm/CProviderInfo.h"
+#include "content/pm/CServiceInfo.h"
+#include "os/UserHandle.h"
 #include <elastos/utility/logging/Slogger.h>
+
+using Elastos::Droid::Os::UserHandle;
 
 using Elastos::Core::CString;
 using Elastos::Utility::Logging::Slogger;
@@ -11,9 +17,11 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
-const String CResolveInfo::TAG("CResolveInfo");
+const String ResolveInfo::TAG("ResolveInfo");
 
-CResolveInfo::CResolveInfo()
+CAR_INTERFACE_IMPL_2(ResolveInfo, Object, IResolveInfo, IParcelable)
+
+ResolveInfo::ResolveInfo()
     : mPriority(0)
     , mPreferredOrder(0)
     , mMatch(0)
@@ -27,20 +35,20 @@ CResolveInfo::CResolveInfo()
     mTargetUserId = UserHandle::USER_CURRENT;
 }
 
-CResolveInfo::~CResolveInfo()
+ResolveInfo::~ResolveInfo()
 {
 }
 
-ECode CResolveInfo::constructor()
+ECode ResolveInfo::constructor()
 {
     return NOERROR;
 }
 
-ECode CResolveInfo::constructor(
+ECode ResolveInfo::constructor(
     /* [in] */ IResolveInfo* other)
 {
     VALIDATE_NOT_NULL(other);
-    CResolveInfo* orig = (CResolveInfo*)other;
+    ResolveInfo* orig = (ResolveInfo*)other;
 
     mActivityInfo = orig->mActivityInfo;
     mServiceInfo = orig->mServiceInfo;
@@ -60,17 +68,26 @@ ECode CResolveInfo::constructor(
     return NOERROR;
 }
 
-ECode CResolveInfo::GetComponentInfo(
+ECode ResolveInfo::GetComponentInfo(
     /* [out] */ IComponentInfo** info)
 {
-    // if (activityInfo != null) return activityInfo;
-    // if (serviceInfo != null) return serviceInfo;
-    // if (providerInfo != null) return providerInfo;
-    // throw new IllegalStateException("Missing ComponentInfo!");
+    VALIDATE_NOT_NULL(info)
+    *info = NULL;
+
+    if (mActivityInfo != NULL) *info = IComponentInfo::Probe(mActivityInfo);
+    else if (mServiceInfo != NULL) *info = IComponentInfo::Probe(mServiceInfo);
+    else if (mProviderInfo != NULL) *info = IComponentInfo::Probe(mProviderInfo);
+    REFCOUNT_ADD(*info)
+
+    if (*info == NULL) {
+        // throw new IllegalStateException("Missing ComponentInfo!");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+
     return NOERROR;
 }
 
-ECode CResolveInfo::LoadLabel(
+ECode ResolveInfo::LoadLabel(
     /* [in] */ IPackageManager* pm,
     /* [out] */ ICharSequence** label)
 {
@@ -99,18 +116,17 @@ ECode CResolveInfo::LoadLabel(
     ci->GetApplicationInfo((IApplicationInfo**)&ai);
     if (mLabelRes != 0) {
         String packageName;
-        ci->GetPackageName(&packageName);
+        IPackageItemInfo::Probe(ci)->GetPackageName(&packageName);
         pm->GetText(packageName, mLabelRes, ai, label);
         if (*label != NULL) {
-            String str;
-            (*label)->ToString(&str);
+            String str = Object::ToString(*label);
             *label = NULL;
             return CString::New(str.Trim(), label);
         }
     }
 
     AutoPtr<ICharSequence> data;
-    ci->LoadLabel(pm, (ICharSequence**)&data);
+    IPackageItemInfo::Probe(ci)->LoadLabel(pm, (ICharSequence**)&data);
     // Make the data safe
     if (data != NULL) {
         String str;
@@ -121,7 +137,7 @@ ECode CResolveInfo::LoadLabel(
     return NOERROR;
 }
 
-ECode CResolveInfo::LoadIcon(
+ECode ResolveInfo::LoadIcon(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** icon)
 {
@@ -142,16 +158,16 @@ ECode CResolveInfo::LoadIcon(
     ci->GetApplicationInfo((IApplicationInfo**)&ai);
     if (mIcon != 0) {
         String packageName;
-        ci->GetPackageName(&packageName);
+        IPackageItemInfo::Probe(ci)->GetPackageName(&packageName);
         pm->GetDrawable(packageName, mIcon, ai, icon);
         if (*icon != NULL) {
             return NOERROR;
         }
     }
-    return ci->LoadIcon(pm, icon);
+    return IPackageItemInfo::Probe(ci)->LoadIcon(pm, icon);
 }
 
-ECode CResolveInfo::GetIconResource(
+ECode ResolveInfo::GetIconResource(
     /* [out] */ Int32* iconRes)
 {
     VALIDATE_NOT_NULL(iconRes);
@@ -172,11 +188,11 @@ ECode CResolveInfo::GetIconResource(
     return NOERROR;
 }
 
-ECode CResolveInfo::Dump(
+ECode ResolveInfo::Dump(
     /* [in] */ IPrinter* pw,
     /* [in] */ const String& prefix)
 {
-    // if (filter != null) {
+    // if (filter != NULL) {
     //     pw.println(prefix + "Filter:");
     //     filter.dump(pw, prefix + "  ");
     // }
@@ -185,18 +201,18 @@ ECode CResolveInfo::Dump(
     //         + " match=0x" + Integer.toHexString(match)
     //         + " specificIndex=" + specificIndex
     //         + " isDefault=" + isDefault);
-    // if (resolvePackageName != null) {
+    // if (resolvePackageName != NULL) {
     //     pw.println(prefix + "resolvePackageName=" + resolvePackageName);
     // }
-    // if (labelRes != 0 || nonLocalizedLabel != null || icon != 0) {
+    // if (labelRes != 0 || nonLocalizedLabel != NULL || icon != 0) {
     //     pw.println(prefix + "labelRes=0x" + Integer.toHexString(labelRes)
     //             + " nonLocalizedLabel=" + nonLocalizedLabel
     //             + " icon=0x" + Integer.toHexString(icon));
     // }
-    // if (activityInfo != null) {
+    // if (activityInfo != NULL) {
     //     pw.println(prefix + "ActivityInfo:");
     //     activityInfo.dump(pw, prefix + "  ");
-    // } else if (serviceInfo != null) {
+    // } else if (serviceInfo != NULL) {
     //     pw.println(prefix + "ServiceInfo:");
     //     serviceInfo.dump(pw, prefix + "  ");
     // }
@@ -204,7 +220,7 @@ ECode CResolveInfo::Dump(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CResolveInfo::ToString(
+ECode ResolveInfo::ToString(
     /* [out] */ String* str)
 {
     return NOERROR;
@@ -233,7 +249,7 @@ ECode CResolveInfo::ToString(
     // return sb.toString();
 }
 
-ECode CResolveInfo::ReadFromParcel(
+ECode ResolveInfo::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     Int32 ival;
@@ -267,18 +283,18 @@ ECode CResolveInfo::ReadFromParcel(
     return NOERROR;
 }
 
-ECode CResolveInfo::WriteToParcel(
+ECode ResolveInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    if (mActivityInfo != null) {
+    if (mActivityInfo != NULL) {
         dest->WriteInt32(1);
         IParcelable::Probe(mActivityInfo)->WriteToParcel(dest);
     }
-    else if (mServiceInfo != null) {
+    else if (mServiceInfo != NULL) {
         dest->WriteInt32(2);
         IParcelable::Probe(mServiceInfo)->WriteToParcel(dest);
     }
-    else if (mProviderInfo != null) {
+    else if (mProviderInfo != NULL) {
         dest->WriteInt32(3);
         IParcelable::Probe(mProviderInfo)->WriteToParcel(dest);
     }
@@ -302,7 +318,7 @@ ECode CResolveInfo::WriteToParcel(
     return NOERROR;
 }
 
-ECode CResolveInfo::GetActivityInfo(
+ECode ResolveInfo::GetActivityInfo(
     /* [out] */ IActivityInfo** activityInfo)
 {
     VALIDATE_NOT_NULL(activityInfo);
@@ -311,14 +327,14 @@ ECode CResolveInfo::GetActivityInfo(
     return NOERROR;
 }
 
-ECode CResolveInfo::SetActivityInfo(
+ECode ResolveInfo::SetActivityInfo(
     /* [in] */ IActivityInfo* activityInfo)
 {
     mActivityInfo = activityInfo;
     return NOERROR;
 }
 
-ECode CResolveInfo::GetServiceInfo(
+ECode ResolveInfo::GetServiceInfo(
     /* [out] */ IServiceInfo** serviceInfo)
 {
     VALIDATE_NOT_NULL(serviceInfo);
@@ -327,14 +343,14 @@ ECode CResolveInfo::GetServiceInfo(
     return NOERROR;
 }
 
-ECode CResolveInfo::SetServiceInfo(
+ECode ResolveInfo::SetServiceInfo(
     /* [in] */ IServiceInfo* serviceInfo)
 {
     mServiceInfo = serviceInfo;
     return NOERROR;
 }
 
-ECode CResolveInfo::GetFilter(
+ECode ResolveInfo::GetFilter(
     /* [out] */ IIntentFilter** filter)
 {
     VALIDATE_NOT_NULL(filter);
@@ -343,14 +359,14 @@ ECode CResolveInfo::GetFilter(
     return NOERROR;
 }
 
-ECode CResolveInfo::SetFilter(
+ECode ResolveInfo::SetFilter(
     /* [in] */ IIntentFilter* filter)
 {
     mFilter = filter;
     return NOERROR;
 }
 
-ECode CResolveInfo::GetPriority(
+ECode ResolveInfo::GetPriority(
     /* [out] */ Int32* priority)
 {
     VALIDATE_NOT_NULL(priority);
@@ -358,14 +374,14 @@ ECode CResolveInfo::GetPriority(
     return NOERROR;
 }
 
-ECode CResolveInfo::SetPriority(
+ECode ResolveInfo::SetPriority(
     /* [in] */ Int32 priority)
 {
     mPriority = priority;
     return NOERROR;
 }
 
-ECode CResolveInfo::GetPreferredOrder(
+ECode ResolveInfo::GetPreferredOrder(
     /* [out] */ Int32* preferredOrder)
 {
     VALIDATE_NOT_NULL(preferredOrder);
@@ -373,14 +389,14 @@ ECode CResolveInfo::GetPreferredOrder(
     return NOERROR;
 }
 
-ECode CResolveInfo::SetPreferredOrder(
+ECode ResolveInfo::SetPreferredOrder(
     /* [in] */ Int32 preferredOrder)
 {
     mPreferredOrder = preferredOrder;
     return NOERROR;
 }
 
-ECode CResolveInfo::GetMatch(
+ECode ResolveInfo::GetMatch(
     /* [out] */ Int32* match)
 {
     VALIDATE_NOT_NULL(match);
@@ -388,14 +404,14 @@ ECode CResolveInfo::GetMatch(
     return NOERROR;
 }
 
-ECode CResolveInfo::SetMatch(
+ECode ResolveInfo::SetMatch(
     /* [in] */ Int32 match)
 {
     mMatch = match;
     return NOERROR;
 }
 
-ECode CResolveInfo::GetSpecificIndex(
+ECode ResolveInfo::GetSpecificIndex(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index);
@@ -403,14 +419,14 @@ ECode CResolveInfo::GetSpecificIndex(
     return NOERROR;
 }
 
-ECode CResolveInfo::SetSpecificIndex(
+ECode ResolveInfo::SetSpecificIndex(
     /* [in] */ Int32 index)
 {
     mSpecificIndex = index;
     return NOERROR;
 }
 
-ECode CResolveInfo::GetIsDefault(
+ECode ResolveInfo::GetIsDefault(
     /* [out] */ Boolean* isDefault)
 {
     VALIDATE_NOT_NULL(isDefault);
@@ -418,14 +434,14 @@ ECode CResolveInfo::GetIsDefault(
     return NOERROR;
 }
 
-ECode CResolveInfo::SetIsDefault(
+ECode ResolveInfo::SetIsDefault(
     /* [in] */ Boolean isDefault)
 {
     mIsDefault = isDefault;
     return NOERROR;
 }
 
-ECode CResolveInfo::GetLabelRes(
+ECode ResolveInfo::GetLabelRes(
     /* [out] */ Int32* labelRes)
 {
     VALIDATE_NOT_NULL(labelRes);
@@ -433,14 +449,14 @@ ECode CResolveInfo::GetLabelRes(
     return NOERROR;
 }
 
-ECode CResolveInfo::SetLabelRes(
+ECode ResolveInfo::SetLabelRes(
     /* [in] */ Int32 labelRes)
 {
     mLabelRes = labelRes;
     return NOERROR;
 }
 
-ECode CResolveInfo::GetNonLocalizedLabel(
+ECode ResolveInfo::GetNonLocalizedLabel(
     /* [out] */ ICharSequence** label)
 {
     VALIDATE_NOT_NULL(label);
@@ -449,14 +465,14 @@ ECode CResolveInfo::GetNonLocalizedLabel(
     return NOERROR;
 }
 
-ECode CResolveInfo::SetNonLocalizedLabel(
+ECode ResolveInfo::SetNonLocalizedLabel(
     /* [in] */ ICharSequence* label)
 {
     mNonLocalizedLabel = label;
     return NOERROR;
 }
 
-ECode CResolveInfo::GetIcon(
+ECode ResolveInfo::GetIcon(
     /* [out] */ Int32* icon)
 {
     VALIDATE_NOT_NULL(icon);
@@ -464,14 +480,14 @@ ECode CResolveInfo::GetIcon(
     return NOERROR;
 }
 
-ECode CResolveInfo::SetIcon(
+ECode ResolveInfo::SetIcon(
     /* [in] */ Int32 icon)
 {
     mIcon = icon;
     return NOERROR;
 }
 
-ECode CResolveInfo::GetResolvePackageName(
+ECode ResolveInfo::GetResolvePackageName(
     /* [out] */ String* resolvePackageName)
 {
     VALIDATE_NOT_NULL(resolvePackageName);
@@ -479,14 +495,14 @@ ECode CResolveInfo::GetResolvePackageName(
     return NOERROR;
 }
 
-ECode CResolveInfo::SetResolvePackageName(
+ECode ResolveInfo::SetResolvePackageName(
     /* [in] */ const String& resolvePackageName)
 {
     mResolvePackageName = resolvePackageName;
     return NOERROR;
 }
 
-ECode CResolveInfo::GetSystem(
+ECode ResolveInfo::GetSystem(
     /* [out] */ Boolean* sys)
 {
     VALIDATE_NOT_NULL(sys);
@@ -494,7 +510,7 @@ ECode CResolveInfo::GetSystem(
     return NOERROR;
 }
 
-ECode CResolveInfo::SetSystem(
+ECode ResolveInfo::SetSystem(
     /* [in] */ Boolean sys)
 {
     mSystem = sys;

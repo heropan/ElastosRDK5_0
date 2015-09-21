@@ -5,6 +5,8 @@
 #include "_Elastos_Droid_Content_Pm_CApplicationInfoDisplayNameComparator.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Core::IComparator;
+
 namespace Elastos {
 namespace Droid {
 namespace Content {

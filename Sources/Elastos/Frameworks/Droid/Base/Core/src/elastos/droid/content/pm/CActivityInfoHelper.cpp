@@ -1,22 +1,22 @@
 
 #include "ext/frameworkext.h"
 #include "content/pm/CActivityInfoHelper.h"
-#include "content/pm/CActivityInfo.h"
+#include "content/pm/ActivityInfo.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
 
-CAR_INTERFACE_IMPL(CActivityInfo, Singleton, IActivityInfoHelper)
+CAR_INTERFACE_IMPL(CActivityInfoHelper, Singleton, IActivityInfoHelper)
 
-CAR_SINGLETON_IMPL(CActivityInfo)
+CAR_SINGLETON_IMPL(CActivityInfoHelper)
 
 ECode CActivityInfoHelper::GetCONFIG_NATIVE_BITS(
     /* [out, callee] */ ArrayOf<Int32>** bits)
 {
     VALIDATE_NOT_NULL(bits);
-    *bits = CActivityInfo::CONFIG_NATIVE_BITS;
+    *bits = ActivityInfo::CONFIG_NATIVE_BITS;
     REFCOUNT_ADD(*bits);
     return NOERROR;
 }
@@ -26,7 +26,7 @@ ECode CActivityInfoHelper::ActivityInfoConfigToNative(
     /* [out] */ Int32* native)
 {
     VALIDATE_NOT_NULL(native);
-    *native = CActivityInfo::ActivityInfoConfigToNative(input);
+    *native = ActivityInfo::ActivityInfoConfigToNative(input);
     return NOERROR;
 }
 

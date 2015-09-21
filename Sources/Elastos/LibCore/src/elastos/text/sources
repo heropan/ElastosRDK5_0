@@ -28,6 +28,7 @@ SOURCES += CCollationElementIterator.cpp
 SOURCES += CCollationElementIteratorHelper.cpp
 SOURCES += CollationKey.cpp
 SOURCES += Collator.cpp
+SOURCES += CCollatorHelper.cpp
 SOURCES += DateFormat.cpp
 SOURCES += CDateFormatHelper.cpp
 SOURCES += DateFormatSymbols.cpp

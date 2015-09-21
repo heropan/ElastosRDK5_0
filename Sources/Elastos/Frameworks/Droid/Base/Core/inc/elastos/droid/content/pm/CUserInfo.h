@@ -17,6 +17,9 @@ namespace Pm {
  * @hide
  */
 CarClass(CUserInfo)
+    , public Object
+    , public IUserInfo
+    , public IParcelable
 {
 public:
     CAR_INTERFACE_DECL()
@@ -25,7 +28,7 @@ public:
 
     CUserInfo();
 
-    ~CUserInfo();
+    virtual ~CUserInfo();
 
     CARAPI constructor();
 
@@ -111,13 +114,6 @@ public:
 
     CARAPI SetPartial(
         /* [in] */ Boolean partial);
-
-private:
-    CARAPI Init(
-        /* [in] */ Int32 id,
-        /* [in] */ const String& name,
-        /* [in] */ const String& iconPath,
-        /* [in] */ Int32 flags);
 
 public:
     Int32 mId;

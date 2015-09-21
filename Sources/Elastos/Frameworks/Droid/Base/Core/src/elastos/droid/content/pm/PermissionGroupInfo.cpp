@@ -1,27 +1,27 @@
 
 #include "ext/frameworkext.h"
-#include "content/pm/CPermissionGroupInfo.h"
+#include "content/pm/PermissionGroupInfo.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
 
-CPermissionGroupInfo::CPermissionGroupInfo()
+PermissionGroupInfo::PermissionGroupInfo()
     : mDescriptionRes(0)
     , mFlags(0)
     , mPriority(0)
 {}
 
-CPermissionGroupInfo::~CPermissionGroupInfo()
+PermissionGroupInfo::~PermissionGroupInfo()
 {}
 
-ECode CPermissionGroupInfo::constructor()
+ECode PermissionGroupInfo::constructor()
 {
     return NOERROR;
 }
 
-ECode CPermissionGroupInfo::constructor(
+ECode PermissionGroupInfo::constructor(
     /* [in] */ IPermissionGroupInfo* orig)
 {
     assert(orig != NULL);
@@ -33,7 +33,7 @@ ECode CPermissionGroupInfo::constructor(
     return NOERROR;
 }
 
-ECode CPermissionGroupInfo::LoadDescription(
+ECode PermissionGroupInfo::LoadDescription(
     /* [in] */ IPackageManager* pm,
     /* [out] */ ICharSequence** description)
 {
@@ -53,7 +53,7 @@ ECode CPermissionGroupInfo::LoadDescription(
     return NOERROR;
 }
 
-ECode CPermissionGroupInfo::ToString(
+ECode PermissionGroupInfo::ToString(
     /* [out] */ String* str)
 {
     // return "PermissionGroupInfo{"
@@ -63,7 +63,7 @@ ECode CPermissionGroupInfo::ToString(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CPermissionGroupInfo::ReadFromParcel(
+ECode PermissionGroupInfo::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     PackageItemInfo::ReadFromParcel(source);
@@ -74,7 +74,7 @@ ECode CPermissionGroupInfo::ReadFromParcel(
     return NOERROR;
 }
 
-ECode CPermissionGroupInfo::WriteToParcel(
+ECode PermissionGroupInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
     PackageItemInfo::WriteToParcel(dest);
@@ -85,7 +85,7 @@ ECode CPermissionGroupInfo::WriteToParcel(
     return NOERROR;
 }
 
-ECode CPermissionGroupInfo::LoadLabel(
+ECode PermissionGroupInfo::LoadLabel(
     /* [in] */ IPackageManager* pm,
     /* [out] */ ICharSequence** label)
 {
@@ -93,7 +93,7 @@ ECode CPermissionGroupInfo::LoadLabel(
     return PackageItemInfo::LoadLabel(pm, label);
 }
 
-ECode CPermissionGroupInfo::LoadIcon(
+ECode PermissionGroupInfo::LoadIcon(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** icon)
 {
@@ -101,7 +101,7 @@ ECode CPermissionGroupInfo::LoadIcon(
     return PackageItemInfo::LoadIcon(pm, icon);
 }
 
-ECode CPermissionGroupInfo::LoadLogo(
+ECode PermissionGroupInfo::LoadLogo(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** logo)
 {
@@ -109,7 +109,7 @@ ECode CPermissionGroupInfo::LoadLogo(
     return PackageItemInfo::LoadLogo(pm, logo);
 }
 
-ECode CPermissionGroupInfo::LoadXmlMetaData(
+ECode PermissionGroupInfo::LoadXmlMetaData(
     /* [in] */ IPackageManager* pm,
     /* [in] */ const String& name,
     /* [out] */ IXmlResourceParser** resource)
@@ -118,98 +118,98 @@ ECode CPermissionGroupInfo::LoadXmlMetaData(
     return PackageItemInfo::LoadXmlMetaData(pm, name, resource);
 }
 
-ECode CPermissionGroupInfo::GetName(
+ECode PermissionGroupInfo::GetName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
     return PackageItemInfo::GetName(name);
 }
 
-ECode CPermissionGroupInfo::SetName(
+ECode PermissionGroupInfo::SetName(
     /* [in] */ const String& name)
 {
     return PackageItemInfo::SetName(name);
 }
 
-ECode CPermissionGroupInfo::GetPackageName(
+ECode PermissionGroupInfo::GetPackageName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
     return PackageItemInfo::GetPackageName(name);
 }
 
-ECode CPermissionGroupInfo::SetPackageName(
+ECode PermissionGroupInfo::SetPackageName(
     /* [in] */ const String& name)
 {
     return PackageItemInfo::SetPackageName(name);
 }
 
-ECode CPermissionGroupInfo::GetLabelRes(
+ECode PermissionGroupInfo::GetLabelRes(
     /* [out] */ Int32* labelRes)
 {
     VALIDATE_NOT_NULL(labelRes);
     return PackageItemInfo::GetLabelRes(labelRes);
 }
 
-ECode CPermissionGroupInfo::SetLabelRes(
+ECode PermissionGroupInfo::SetLabelRes(
     /* [in] */ Int32 labelRes)
 {
     return PackageItemInfo::SetLabelRes(labelRes);
 }
 
-ECode CPermissionGroupInfo::GetNonLocalizedLabel(
+ECode PermissionGroupInfo::GetNonLocalizedLabel(
     /* [out] */ ICharSequence** label)
 {
     VALIDATE_NOT_NULL(label);
     return PackageItemInfo::GetNonLocalizedLabel(label);
 }
 
-ECode CPermissionGroupInfo::SetNonLocalizedLabel(
+ECode PermissionGroupInfo::SetNonLocalizedLabel(
     /* [in] */ ICharSequence*  label)
 {
     return PackageItemInfo::SetNonLocalizedLabel(label);
 }
 
-ECode CPermissionGroupInfo::GetIcon(
+ECode PermissionGroupInfo::GetIcon(
     /* [out] */ Int32* icon)
 {
     VALIDATE_NOT_NULL(icon);
     return PackageItemInfo::GetIcon(icon);
 }
 
-ECode CPermissionGroupInfo::SetIcon(
+ECode PermissionGroupInfo::SetIcon(
     /* [in] */ Int32 icon)
 {
     return PackageItemInfo::SetIcon(icon);
 }
 
-ECode CPermissionGroupInfo::GetLogo(
+ECode PermissionGroupInfo::GetLogo(
     /* [out] */ Int32* logo)
 {
     VALIDATE_NOT_NULL(logo);
     return PackageItemInfo::GetLogo(logo);
 }
 
-ECode CPermissionGroupInfo::SetLogo(
+ECode PermissionGroupInfo::SetLogo(
     /* [in] */ Int32 logo)
 {
     return PackageItemInfo::SetLogo(logo);
 }
 
-ECode CPermissionGroupInfo::GetMetaData(
+ECode PermissionGroupInfo::GetMetaData(
     /* [out] */ IBundle** metaData)
 {
     VALIDATE_NOT_NULL(metaData);
     return PackageItemInfo::GetMetaData(metaData);
 }
 
-ECode CPermissionGroupInfo::SetMetaData(
+ECode PermissionGroupInfo::SetMetaData(
     /* [in] */ IBundle* metaData)
 {
     return PackageItemInfo::SetMetaData(metaData);
 }
 
-ECode CPermissionGroupInfo::GetDescriptionRes(
+ECode PermissionGroupInfo::GetDescriptionRes(
     /* [out] */ Int32* descriptionRes)
 {
     VALIDATE_NOT_NULL(descriptionRes);
@@ -217,14 +217,14 @@ ECode CPermissionGroupInfo::GetDescriptionRes(
     return NOERROR;
 }
 
-ECode CPermissionGroupInfo::SetDescriptionRes(
+ECode PermissionGroupInfo::SetDescriptionRes(
     /* [in] */ Int32 descriptionRes)
 {
     mDescriptionRes = descriptionRes;
     return NOERROR;
 }
 
-ECode CPermissionGroupInfo::GetNonLocalizedDescription(
+ECode PermissionGroupInfo::GetNonLocalizedDescription(
     /* [out] */ ICharSequence** nonLocalizedDescription)
 {
     VALIDATE_NOT_NULL(nonLocalizedDescription);
@@ -233,14 +233,14 @@ ECode CPermissionGroupInfo::GetNonLocalizedDescription(
     return NOERROR;
 }
 
-ECode CPermissionGroupInfo::SetNonLocalizedDescription(
+ECode PermissionGroupInfo::SetNonLocalizedDescription(
     /* [in] */ ICharSequence* nonLocalizedDescription)
 {
     mNonLocalizedDescription = nonLocalizedDescription;
     return NOERROR;
 }
 
-ECode CPermissionGroupInfo::GetFlags(
+ECode PermissionGroupInfo::GetFlags(
     /* [out] */ Int32* flags)
 {
     VALIDATE_NOT_NULL(flags);
@@ -248,14 +248,14 @@ ECode CPermissionGroupInfo::GetFlags(
     return NOERROR;
 }
 
-ECode CPermissionGroupInfo::SetFlags(
+ECode PermissionGroupInfo::SetFlags(
     /* [in] */ Int32 flags)
 {
     mFlags = flags;
     return NOERROR;
 }
 
-ECode CPermissionGroupInfo::GetPriority(
+ECode PermissionGroupInfo::GetPriority(
     /* [out] */ Int32* priority)
 {
     VALIDATE_NOT_NULL(priority);
@@ -263,7 +263,7 @@ ECode CPermissionGroupInfo::GetPriority(
     return NOERROR;
 }
 
-ECode CPermissionGroupInfo::SetPriority(
+ECode PermissionGroupInfo::SetPriority(
     /* [in] */ Int32 priority)
 {
     mPriority = priority;

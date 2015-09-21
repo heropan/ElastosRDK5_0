@@ -323,6 +323,10 @@ module
         interface ICloneable;
     }
 
+    singleton class CCollatorHelper {
+        interface ICollatorHelper;
+    }
+
 
     } // Text
     } // Elastos

@@ -27,7 +27,7 @@ public:
 
     CFeatureInfo();
 
-    ~CFeatureInfo();
+    virtual ~CFeatureInfo();
 
     CARAPI constructor();
 

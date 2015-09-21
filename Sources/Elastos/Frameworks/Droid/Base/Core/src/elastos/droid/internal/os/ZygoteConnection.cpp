@@ -477,7 +477,7 @@ Boolean ZygoteConnection::HandleAbiListQuery()
         ec = IOutputStream::Probe(mSocketOutStream)->Write(abiListBytes);
     } while (0);
 
-    if (ec = (ECode)E_IO_EXCEPTION) {
+    if (ec == (ECode)E_IO_EXCEPTION) {
         Logger::E(TAG, "Error writing to command socket");
         return TRUE;
     }

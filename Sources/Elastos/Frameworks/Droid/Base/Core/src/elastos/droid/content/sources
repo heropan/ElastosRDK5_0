@@ -79,5 +79,5 @@ SOURCES += UndoOwner.cpp
 SOURCES += CUriMatcher.cpp
 SOURCES += CUriPermission.cpp
 
-#LIBRARIES += pm/pm.lib
+LIBRARIES += pm/pm.lib
 LIBRARIES += res/res.lib

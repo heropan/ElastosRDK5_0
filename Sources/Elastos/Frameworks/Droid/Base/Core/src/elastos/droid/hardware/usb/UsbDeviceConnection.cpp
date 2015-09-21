@@ -214,6 +214,8 @@ ECode UsbDeviceConnection::CheckBounds(
         //throw new IllegalArgumentException("Buffer start or length out of bounds.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+
+    return NOERROR;
 }
 
 struct usb_device* UsbDeviceConnection_get_device_from_object(IUsbDeviceConnection* connection)

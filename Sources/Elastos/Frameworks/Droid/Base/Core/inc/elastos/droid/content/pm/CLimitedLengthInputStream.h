@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CLIMITEDLENGTHINPUTSTREAM_H__
 
 #include "_Elastos_Droid_Content_Pm_CLimitedLengthInputStream.h"
-#include "elastos/io/FilterInputStream.h"
+#include <elastos/io/FilterInputStream.h>
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::FilterInputStream;
@@ -31,10 +31,7 @@ public:
 
     CLimitedLengthInputStream();
 
-    ~CLimitedLengthInputStream();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    virtual ~CLimitedLengthInputStream();
 
     /**
      * @param in underlying stream to wrap
@@ -76,9 +73,6 @@ public:
     CARAPI Skip(
         /* [in] */ Int64 byteCount,
         /* [out] */ Int64* number);
-
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
 
 private:
     /**

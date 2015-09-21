@@ -21,7 +21,9 @@ namespace Pm {
  *
  * @hide
  */
-CarClass(CMacAuthenticatedInputStream), public FilterInputStream
+CarClass(CMacAuthenticatedInputStream)
+    , public FilterInputStream
+    , public IMacAuthenticatedInputStream
 {
 public:
     CAR_INTERFACE_DECL()
@@ -31,9 +33,6 @@ public:
     CMacAuthenticatedInputStream();
 
     ~CMacAuthenticatedInputStream();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     CARAPI constructor(
         /* [in] */ IInputStream* inStream,
@@ -72,9 +71,6 @@ public:
     CARAPI Skip(
         /* [in] */ Int64 byteCount,
         /* [out] */ Int64* number);
-
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
 
 private:
     AutoPtr<IMac> mMac;

@@ -2,10 +2,21 @@
 #include "ext/frameworkext.h"
 #include "content/pm/CPackageItemInfoDisplayNameComparator.h"
 
+using Elastos::Core::ICharSequence;
+using Elastos::Core::EIID_IComparator;
+using Elastos::Text::ICollatorHelper;
+using Elastos::Text::CCollatorHelper;
+
 namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
+
+AutoPtr<ICollator> CPackageItemInfoDisplayNameComparator::sCollator;
+
+CAR_INTERFACE_IMPL(CPackageItemInfoDisplayNameComparator, Object, IComparator)
+
+CAR_OBJECT_IMPL(CPackageItemInfoDisplayNameComparator)
 
 ECode CPackageItemInfoDisplayNameComparator::constructor(
     /* [in] */ IPackageManager* pm)
@@ -15,17 +26,43 @@ ECode CPackageItemInfoDisplayNameComparator::constructor(
 }
 
 ECode CPackageItemInfoDisplayNameComparator::Compare(
-    /* [in] */ IPackageItemInfo* aa,
-    /* [in] */ IPackageItemInfo* ab,
+    /* [in] */ IInterface* aa,
+    /* [in] */ IInterface* ab,
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    // CharSequence  sa = aa.loadLabel(mPM);
-    // if (sa == null) sa = aa.name;
-    // CharSequence  sb = ab.loadLabel(mPM);
-    // if (sb == null) sb = ab.name;
-    // return sCollator.compare(sa.toString(), sb.toString());
-    return NOERROR;
+    *result = -1;
+
+    IPackageItemInfo* pa = IPackageItemInfo::Probe(aa);
+    IPackageItemInfo* pb = IPackageItemInfo::Probe(ab);
+    VALIDATE_NOT_NULL(pa)
+    VALIDATE_NOT_NULL(pb)
+
+    String a, b;
+    AutoPtr<ICharSequence> sa, sb;
+    pa->LoadLabel(mPM, (ICharSequence**)&sa);
+    if (sa == NULL) {
+        pa->GetName(&a);
+    }
+    else {
+        a = Object::ToString(sa);
+    }
+
+    pb->LoadLabel(mPM, (ICharSequence**)&sb);
+    if (sb == NULL) {
+        pb->GetName(&b);
+    }
+    else {
+        b = Object::ToString(sb);
+    }
+
+    if (sCollator == NULL) {
+        AutoPtr<ICollatorHelper> helper;
+        CCollatorHelper::AcquireSingleton((ICollatorHelper**)&helper);
+        helper->GetInstance((ICollator**)&sCollator);
+    }
+
+    return sCollator->Compare(a, b, result);
 }
 
 } // namespace Pm

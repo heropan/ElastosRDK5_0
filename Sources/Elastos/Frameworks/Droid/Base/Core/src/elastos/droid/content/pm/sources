@@ -1,33 +1,39 @@
 TARGET_NAME = pm
 TARGET_TYPE = lib
 
-include $(MAKEDIR)/../../../../../sources.inc
-
-INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../inc/
-INCLUDES += $(MAKEDIR)/../../../inc/content/pm
+include $(MAKEDIR)/../../../../../../../sources.inc
 
 C_DEFINES += -DDROID_CORE
 
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
+
 SOURCES += pm.cpp
-SOURCES += PackageItemInfo.cpp
+SOURCES += ActivityInfo.cpp
+SOURCES += CActivityInfoHelper.cpp
+SOURCES += ApplicationInfo.cpp
+SOURCES += CApplicationInfoDisplayNameComparator.cpp
 SOURCES += ComponentInfo.cpp
-#SOURCES += CPackageItemInfoDisplayNameComparator.cpp
-#SOURCES += CActivityInfo.cpp
-#SOURCES += CActivityInfoHelper.cpp
-#SOURCES += CApplicationInfo.cpp
-#SOURCES += CApplicationInfoDisplayNameComparator.cpp
-#SOURCES += CConfigurationInfo.cpp
+SOURCES += CFeatureInfo.cpp
+SOURCES += CConfigurationInfo.cpp
+SOURCES += InstrumentationInfo.cpp
+SOURCES += CPackageInfo.cpp
+SOURCES += PackageItemInfo.cpp
+SOURCES += CPackageItemInfoDisplayNameComparator.cpp
+SOURCES += ProviderInfo.cpp
+SOURCES += ResolveInfo.cpp
+SOURCES += CResolveInfoDisplayNameComparator.cpp
+SOURCES += ServiceInfo.cpp
+SOURCES += CUserInfo.cpp
+
+
 #SOURCES += CContainerEncryptionParams.cpp
-#SOURCES += CFeatureInfo.cpp
-#SOURCES += CInstrumentationInfo.cpp
 #SOURCES += CLabeledIntent.cpp
 #SOURCES += CLimitedLengthInputStream.cpp
 #SOURCES += CMacAuthenticatedInputStream.cpp
 #SOURCES += CManifestDigest.cpp
 #SOURCES += CManifestDigestHelper.cpp
 #SOURCES += CPackageCleanItem.cpp
-#SOURCES += CPackageInfo.cpp
 #SOURCES += CPackageInfoLite.cpp
 #SOURCES += CPackageManagerHelper.cpp
 #SOURCES += CPackageStats.cpp
@@ -37,12 +43,7 @@ SOURCES += ComponentInfo.cpp
 #SOURCES += CPermissionGroupInfo.cpp
 #SOURCES += CPermissionInfo.cpp
 #SOURCES += CPermissionInfoHelper.cpp
-#SOURCES += CProviderInfo.cpp
-#SOURCES += CResolveInfo.cpp
-#SOURCES += CResolveInfoDisplayNameComparator.cpp
-#SOURCES += CServiceInfo.cpp
 #SOURCES += CSignature.cpp
-#SOURCES += CUserInfo.cpp
 #SOURCES += CVerificationParams.cpp
 #SOURCES += CVerifierDeviceIdentity.cpp
 #SOURCES += CVerifierDeviceIdentityHelper.cpp

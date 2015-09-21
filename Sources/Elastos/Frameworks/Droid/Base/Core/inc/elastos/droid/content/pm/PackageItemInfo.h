@@ -157,6 +157,12 @@ public:
     CARAPI SetIcon(
         /* [in] */ Int32 icon);
 
+    CARAPI GetBanner(
+        /* [out] */ Int32* banner);
+
+    CARAPI SetBanner(
+        /* [in] */ Int32 banner);
+
     CARAPI GetLogo(
         /* [out] */ Int32* logo);
 

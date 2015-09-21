@@ -15,6 +15,9 @@ namespace Pm {
  * application package.
  */
 CarClass(CPackageStats)
+    , public Object
+    , public IPackageStats
+    , public IParcelable
 {
 public:
     CAR_INTERFACE_DECL()

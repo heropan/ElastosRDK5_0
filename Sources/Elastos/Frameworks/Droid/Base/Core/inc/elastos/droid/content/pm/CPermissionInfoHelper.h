@@ -11,6 +11,8 @@ namespace Content {
 namespace Pm {
 
 CarClass(CPermissionInfoHelper)
+    , public Singleton
+    , public IPermissionInfoHelper
 {
 public:
     CAR_INTERFACE_DECL()

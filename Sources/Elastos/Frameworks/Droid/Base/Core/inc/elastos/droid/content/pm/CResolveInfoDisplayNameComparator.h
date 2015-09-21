@@ -5,6 +5,7 @@
 #include "_Elastos_Droid_Content_Pm_CResolveInfoDisplayNameComparator.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Core::IComparator;
 using Elastos::Text::ICollator;
 
 namespace Elastos {
@@ -13,6 +14,8 @@ namespace Content {
 namespace Pm {
 
 CarClass(CResolveInfoDisplayNameComparator)
+    , public Object
+    , public IComparator
 {
 public:
     CAR_INTERFACE_DECL()
@@ -25,8 +28,8 @@ public:
         /* [in] */ IPackageManager* pm);
 
     CARAPI Compare(
-        /* [in] */ IResolveInfo* a,
-        /* [in] */ IResolveInfo* b,
+        /* [in] */ IInterface* a,
+        /* [in] */ IInterface* b,
         /* [out] */ Int32* result);
 
 private:

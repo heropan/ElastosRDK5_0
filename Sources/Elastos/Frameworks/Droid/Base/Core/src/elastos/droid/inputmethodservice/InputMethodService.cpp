@@ -280,7 +280,7 @@ ECode InputMethodService::InputMethodImpl::ShowSoftInput(
     mHost->OnShowInputRequested(flags, FALSE, &requested);
     if (requested) {
         ECode ec = mHost->ShowWindow(TRUE);
-        if (ec == E_BAD_TOKEN_EXCEPTION) {
+        if (ec == (ECode)E_BAD_TOKEN_EXCEPTION) {
             if (DEBUG) Logger::V(TAG, "BadTokenException: IME is done.");
             mHost->mWindowVisible = FALSE;
             mHost->mWindowAdded = FALSE;

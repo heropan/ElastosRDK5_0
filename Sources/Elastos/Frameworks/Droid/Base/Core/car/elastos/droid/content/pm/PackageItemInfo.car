@@ -56,6 +56,21 @@ module
             [out] IDrawable** icon);
 
         /**
+         * Retrieve the current graphical banner associated with this item.  This
+         * will call back on the given PackageManager to load the banner from
+         * the application.
+         *
+         * @param pm A PackageManager from which the banner can be loaded; usually
+         * the PackageManager from which you originally retrieved this item.
+         *
+         * @return Returns a Drawable containing the item's banner.  If the item
+         * does not have a banner, this method will return null.
+         */
+        LoadBanner(
+            [in] IPackageManager* pm,
+            [out] IDrawable** banner);
+
+        /**
          * Retrieve the current graphical logo associated with this item. This
          * will call back on the given PackageManager to load the logo from
          * the application.
@@ -118,6 +133,12 @@ module
         SetIcon(
             [in] Int32 icon);
 
+        GetBanner(
+            [out] Int32* banner);
+
+        SetBanner(
+            [in] Int32 banner);
+
         GetLogo(
             [out] Int32* logo);
 
@@ -129,13 +150,6 @@ module
 
         SetMetaData(
             [in] IBundle* metaData);
-    }
-
-    interface IPackageItemInfoDisplayNameComparator {
-        Compare(
-            [in] IPackageItemInfo* aa,
-            [in] IPackageItemInfo* ab,
-            [out] Int32* result);
     }
 
     } // namespace Pm

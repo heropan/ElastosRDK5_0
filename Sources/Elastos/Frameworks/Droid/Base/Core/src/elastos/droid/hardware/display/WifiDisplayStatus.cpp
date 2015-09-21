@@ -17,13 +17,20 @@ namespace Display {
 CAR_INTERFACE_IMPL_2(WifiDisplayStatus, Object, IWifiDisplayStatus, IParcelable)
 
 WifiDisplayStatus::WifiDisplayStatus()
-    : WifiDisplayStatus(FEATURE_STATE_UNAVAILABLE, SCAN_STATE_NOT_SCANNING,
-            DISPLAY_STATE_NOT_CONNECTED, NULL,
-            WifiDisplay::EMPTY_ARRAY, NULL)
+    : mFeatureState(0)
+    , mScanState(0)
+    , mActiveDisplayState(0)
 {
 }
 
-WifiDisplayStatus::WifiDisplayStatus(
+ECode WifiDisplayStatus::constrcutor()
+{
+    return constrcutor(FEATURE_STATE_UNAVAILABLE, SCAN_STATE_NOT_SCANNING,
+            DISPLAY_STATE_NOT_CONNECTED, NULL,
+            WifiDisplay::EMPTY_ARRAY, NULL);
+}
+
+ECode WifiDisplayStatus::constrcutor(
     /* [in] */ Int32 featureState,
     /* [in] */ Int32 scanState,
     /* [in] */ Int32 activeDisplayState,
@@ -47,6 +54,7 @@ WifiDisplayStatus::WifiDisplayStatus(
     else {
         mSessionInfo = new WifiDisplaySessionInfo();
     }
+    return NOERROR;
 }
 
 ECode WifiDisplayStatus::GetFeatureState(
@@ -99,7 +107,7 @@ ECode WifiDisplayStatus::GetDisplays(
 }
 
 ECode WifiDisplayStatus::GetSessionInfo(
-        /* [out] */ IWifiDisplaySessionInfo** result)
+    /* [out] */ IWifiDisplaySessionInfo** result)
 {
     VALIDATE_NOT_NULL(result);
 

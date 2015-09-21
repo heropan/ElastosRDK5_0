@@ -7,6 +7,10 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
+CAR_INTERFACE_IMPL_2(CSignature, Object, ISignature, IParcelable)
+
+CAR_OBJECT_IMPL(CSignature)
+
 ECode CSignature::constructor()
 {
     return NOERROR;
@@ -15,6 +19,7 @@ ECode CSignature::constructor()
 ECode CSignature::constructor(
     /* [in] */ ArrayOf<Byte>* signature)
 {
+    VALIDATE_NOT_NULL(signature)
     mSignature = signature->Clone();
     return NOERROR;
 }

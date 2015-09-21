@@ -1,6 +1,4 @@
-
-#include "ext/frameworkext.h"
-#include "content/pm/CApplicationInfo.h"
+#include "content/pm/ApplicationInfo.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
@@ -12,12 +10,9 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
+CAR_INTERFACE_IMPL_2(ApplicationInfo, PackageItemInfo, IApplicationInfo, IParcelable)
 
-CAR_INTRFACE_IMPL(CApplicationInfo, PackageItemInfo, IApplicationInfo)
-
-CAR_OBJECT_IMPL(CApplicationInfo)
-
-CApplicationInfo::CApplicationInfo()
+ApplicationInfo::ApplicationInfo()
     : mDescriptionRes(0)
     , mTheme(0)
     , mUiOptions(0)
@@ -34,22 +29,22 @@ CApplicationInfo::CApplicationInfo()
     , mInstallLocation(IPackageInfo::INSTALL_LOCATION_UNSPECIFIED)
 {}
 
-CApplicationInfo::~CApplicationInfo()
+ApplicationInfo::~ApplicationInfo()
 {}
 
-ECode CApplicationInfo::constructor()
+ECode ApplicationInfo::constructor()
 {
     return PackageItemInfo::constructor();
 }
 
-ECode CApplicationInfo::constructor(
+ECode ApplicationInfo::constructor(
     /* [in] */ IApplicationInfo* other)
 {
     VALIDATE_NOT_NULL(other)
 
-    PackageItemInfo::constructor(IPackageItemInfo::Probe(other));
+    FAIL_RETURN(PackageItemInfo::constructor(IPackageItemInfo::Probe(other)))
 
-    CApplicationInfo* orig = (CApplicationInfo*)other;
+    ApplicationInfo* orig = (ApplicationInfo*)other;
 
     mTaskAffinity = orig->mTaskAffinity;
     mPermission = orig->mPermission;
@@ -78,7 +73,7 @@ ECode CApplicationInfo::constructor(
     return NOERROR;
 }
 
-ECode CApplicationInfo::Dump(
+ECode ApplicationInfo::Dump(
     /* [in] */ IPrinter* pw,
     /* [in] */ const String& prefix)
 {
@@ -127,7 +122,7 @@ ECode CApplicationInfo::Dump(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CApplicationInfo::HasRtlSupport(
+ECode ApplicationInfo::HasRtlSupport(
     /* [out] */ Boolean* isSupport)
 {
     VALIDATE_NOT_NULL(isSupport);
@@ -136,13 +131,13 @@ ECode CApplicationInfo::HasRtlSupport(
     return NOERROR;
 }
 
-ECode CApplicationInfo::ToString(
+ECode ApplicationInfo::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
 
     StringBuilder sb("ApplicationInfo:0x");
-    sb += StringUtils::Int32ToHexString((Int32)this);
+    sb += StringUtils::ToHexString((Int32)this);
     sb += ":";
     sb += mPackageName;
     sb += ", ";
@@ -155,7 +150,7 @@ ECode CApplicationInfo::ToString(
     return NOERROR;
 }
 
-ECode CApplicationInfo::ReadFromParcel(
+ECode ApplicationInfo::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     assert(source != NULL);
@@ -207,7 +202,7 @@ ECode CApplicationInfo::ReadFromParcel(
     return NOERROR;
 }
 
-ECode CApplicationInfo::WriteToParcel(
+ECode ApplicationInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
     assert(dest != NULL);
@@ -255,7 +250,7 @@ ECode CApplicationInfo::WriteToParcel(
     return NOERROR;
 }
 
-ECode CApplicationInfo::LoadDescription(
+ECode ApplicationInfo::LoadDescription(
     /* [in] */ IPackageManager* pm,
     /* [out] */ ICharSequence** label)
 {
@@ -269,7 +264,7 @@ ECode CApplicationInfo::LoadDescription(
     return NOERROR;
 }
 
-ECode CApplicationInfo::DisableCompatibilityMode()
+ECode ApplicationInfo::DisableCompatibilityMode()
 {
     mFlags |= (FLAG_SUPPORTS_LARGE_SCREENS | FLAG_SUPPORTS_NORMAL_SCREENS |
             FLAG_SUPPORTS_SMALL_SCREENS | FLAG_RESIZEABLE_FOR_SCREENS |
@@ -277,7 +272,7 @@ ECode CApplicationInfo::DisableCompatibilityMode()
     return NOERROR;
 }
 
-ECode CApplicationInfo::LoadDefaultIcon(
+ECode ApplicationInfo::LoadDefaultIcon(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** icon)
 {
@@ -293,7 +288,7 @@ ECode CApplicationInfo::LoadDefaultIcon(
     return pm->GetDefaultActivityIcon(icon);
 }
 
-Boolean CApplicationInfo::IsPackageUnavailable(
+Boolean ApplicationInfo::IsPackageUnavailable(
     /* [in] */ IPackageManager* pm)
 {
     // try {
@@ -305,137 +300,12 @@ Boolean CApplicationInfo::IsPackageUnavailable(
     // }
 }
 
-AutoPtr<IApplicationInfo> CApplicationInfo::GetApplicationInfo()
+AutoPtr<IApplicationInfo> ApplicationInfo::GetApplicationInfo()
 {
     return this;
 }
 
-ECode CApplicationInfo::LoadLabel(
-    /* [in] */ IPackageManager* pm,
-    /* [out] */ ICharSequence** label)
-{
-    VALIDATE_NOT_NULL(label);
-    return PackageItemInfo::LoadLabel(pm, label);
-}
-
-ECode CApplicationInfo::LoadIcon(
-    /* [in] */ IPackageManager* pm,
-    /* [out] */ IDrawable** icon)
-{
-    VALIDATE_NOT_NULL(icon);
-    return PackageItemInfo::LoadIcon(pm, icon);
-}
-
-ECode CApplicationInfo::LoadLogo(
-    /* [in] */ IPackageManager* pm,
-    /* [out] */ IDrawable** logo)
-{
-    VALIDATE_NOT_NULL(logo);
-    return PackageItemInfo::LoadLogo(pm, logo);
-}
-
-ECode CApplicationInfo::LoadXmlMetaData(
-    /* [in] */ IPackageManager* pm,
-    /* [in] */ const String& name,
-    /* [out] */ IXmlResourceParser** resource)
-{
-    VALIDATE_NOT_NULL(resource);
-    return PackageItemInfo::LoadXmlMetaData(pm, name, resource);
-}
-
-ECode CApplicationInfo::GetName(
-    /* [out] */ String* name)
-{
-    VALIDATE_NOT_NULL(name);
-    return PackageItemInfo::GetName(name);
-}
-
-ECode CApplicationInfo::SetName(
-    /* [in] */ const String& name)
-{
-    return PackageItemInfo::SetName(name);
-}
-
-ECode CApplicationInfo::GetPackageName(
-    /* [out] */ String* name)
-{
-    VALIDATE_NOT_NULL(name);
-    return PackageItemInfo::GetPackageName(name);
-}
-
-ECode CApplicationInfo::SetPackageName(
-    /* [in] */ const String& name)
-{
-    return PackageItemInfo::SetPackageName(name);
-}
-
-ECode CApplicationInfo::GetLabelRes(
-    /* [out] */ Int32* labelRes)
-{
-    VALIDATE_NOT_NULL(labelRes);
-    return PackageItemInfo::GetLabelRes(labelRes);
-}
-
-ECode CApplicationInfo::SetLabelRes(
-    /* [in] */ Int32 labelRes)
-{
-    return PackageItemInfo::SetLabelRes(labelRes);
-}
-
-ECode CApplicationInfo::GetNonLocalizedLabel(
-    /* [out] */ ICharSequence** label)
-{
-    VALIDATE_NOT_NULL(label);
-    return PackageItemInfo::GetNonLocalizedLabel(label);
-}
-
-ECode CApplicationInfo::SetNonLocalizedLabel(
-    /* [in] */ ICharSequence* label)
-{
-    return PackageItemInfo::SetNonLocalizedLabel(label);
-}
-
-ECode CApplicationInfo::GetIcon(
-    /* [out] */ Int32* icon)
-{
-    VALIDATE_NOT_NULL(icon);
-    return PackageItemInfo::GetIcon(icon);
-}
-
-ECode CApplicationInfo::SetIcon(
-    /* [in] */ Int32 icon)
-{
-    return PackageItemInfo::SetIcon(icon);
-}
-
-ECode CApplicationInfo::GetLogo(
-    /* [out] */ Int32* logo)
-{
-    VALIDATE_NOT_NULL(logo);
-    return PackageItemInfo::GetLogo(logo);
-}
-
-ECode CApplicationInfo::SetLogo(
-    /* [in] */ Int32 logo)
-{
-    return PackageItemInfo::SetLogo(logo);
-}
-
-ECode CApplicationInfo::GetMetaData(
-    /* [out] */ IBundle** metaData)
-{
-    VALIDATE_NOT_NULL(metaData);
-    return PackageItemInfo::GetMetaData(metaData);
-}
-
-ECode CApplicationInfo::SetMetaData(
-    /* [in] */ IBundle* metaData)
-{
-    VALIDATE_NOT_NULL(metaData);
-    return PackageItemInfo::SetMetaData(metaData);
-}
-
-ECode CApplicationInfo::GetTaskAffinity(
+ECode ApplicationInfo::GetTaskAffinity(
     /* [out] */ String* task)
 {
     VALIDATE_NOT_NULL(task);
@@ -443,14 +313,14 @@ ECode CApplicationInfo::GetTaskAffinity(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetTaskAffinity(
+ECode ApplicationInfo::SetTaskAffinity(
     /* [in] */ const String& task)
 {
     mTaskAffinity = task;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetPermission(
+ECode ApplicationInfo::GetPermission(
     /* [out] */ String* permission)
 {
     VALIDATE_NOT_NULL(permission);
@@ -458,14 +328,14 @@ ECode CApplicationInfo::GetPermission(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetPermission(
+ECode ApplicationInfo::SetPermission(
     /* [in] */ const String& permission)
 {
     mPermission = permission;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetProcessName(
+ECode ApplicationInfo::GetProcessName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
@@ -473,14 +343,14 @@ ECode CApplicationInfo::GetProcessName(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetProcessName(
+ECode ApplicationInfo::SetProcessName(
     /* [in] */ const String& name)
 {
     mProcessName = name;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetClassName(
+ECode ApplicationInfo::GetClassName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
@@ -488,14 +358,14 @@ ECode CApplicationInfo::GetClassName(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetClassName(
+ECode ApplicationInfo::SetClassName(
     /* [in] */ const String& name)
 {
     mClassName = name;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetDescriptionRes(
+ECode ApplicationInfo::GetDescriptionRes(
     /* [out] */ Int32* desRes)
 {
     VALIDATE_NOT_NULL(desRes);
@@ -503,14 +373,14 @@ ECode CApplicationInfo::GetDescriptionRes(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetDescriptionRes(
+ECode ApplicationInfo::SetDescriptionRes(
     /* [in] */ Int32 desRes)
 {
     mDescriptionRes = desRes;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetTheme(
+ECode ApplicationInfo::GetTheme(
     /* [out] */ Int32* theme)
 {
     VALIDATE_NOT_NULL(theme);
@@ -518,14 +388,14 @@ ECode CApplicationInfo::GetTheme(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetTheme(
+ECode ApplicationInfo::SetTheme(
     /* [in] */ Int32 theme)
 {
     mTheme = theme;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetManageSpaceActivityName(
+ECode ApplicationInfo::GetManageSpaceActivityName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
@@ -533,14 +403,14 @@ ECode CApplicationInfo::GetManageSpaceActivityName(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetManageSpaceActivityName(
+ECode ApplicationInfo::SetManageSpaceActivityName(
     /* [in] */ const String& name)
 {
     mManageSpaceActivityName = name;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetBackupAgentName(
+ECode ApplicationInfo::GetBackupAgentName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
@@ -548,14 +418,14 @@ ECode CApplicationInfo::GetBackupAgentName(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetBackupAgentName(
+ECode ApplicationInfo::SetBackupAgentName(
     /* [in] */ const String& name)
 {
     mBackupAgentName = name;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetUiOptions(
+ECode ApplicationInfo::GetUiOptions(
     /* [out] */ Int32* uiOptions)
 {
     VALIDATE_NOT_NULL(uiOptions);
@@ -563,14 +433,14 @@ ECode CApplicationInfo::GetUiOptions(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetUiOptions(
+ECode ApplicationInfo::SetUiOptions(
     /* [in] */ Int32 uiOptions)
 {
     mUiOptions = uiOptions;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetFlags(
+ECode ApplicationInfo::GetFlags(
     /* [out] */ Int32* flags)
 {
     VALIDATE_NOT_NULL(flags);
@@ -578,14 +448,14 @@ ECode CApplicationInfo::GetFlags(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetFlags(
+ECode ApplicationInfo::SetFlags(
     /* [in] */ Int32 flags)
 {
     mFlags = flags;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetRequiresSmallestWidthDp(
+ECode ApplicationInfo::GetRequiresSmallestWidthDp(
     /* [out] */ Int32* requiresSmallestWidthDp)
 {
     VALIDATE_NOT_NULL(requiresSmallestWidthDp);
@@ -593,14 +463,14 @@ ECode CApplicationInfo::GetRequiresSmallestWidthDp(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetRequiresSmallestWidthDp(
+ECode ApplicationInfo::SetRequiresSmallestWidthDp(
     /* [in] */ Int32 requiresSmallestWidthDp)
 {
     mRequiresSmallestWidthDp = requiresSmallestWidthDp;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetCompatibleWidthLimitDp(
+ECode ApplicationInfo::GetCompatibleWidthLimitDp(
     /* [out] */ Int32* compatibleWidthLimitDp)
 {
     VALIDATE_NOT_NULL(compatibleWidthLimitDp);
@@ -608,14 +478,14 @@ ECode CApplicationInfo::GetCompatibleWidthLimitDp(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetCompatibleWidthLimitDp(
+ECode ApplicationInfo::SetCompatibleWidthLimitDp(
     /* [in] */ Int32 compatibleWidthLimitDp)
 {
     mCompatibleWidthLimitDp = compatibleWidthLimitDp;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetLargestWidthLimitDp(
+ECode ApplicationInfo::GetLargestWidthLimitDp(
     /* [out] */ Int32* largestWidthLimitDp)
 {
     VALIDATE_NOT_NULL(largestWidthLimitDp);
@@ -623,14 +493,14 @@ ECode CApplicationInfo::GetLargestWidthLimitDp(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetLargestWidthLimitDp(
+ECode ApplicationInfo::SetLargestWidthLimitDp(
     /* [in] */ Int32 largestWidthLimitDp)
 {
     mLargestWidthLimitDp = largestWidthLimitDp;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetSourceDir(
+ECode ApplicationInfo::GetSourceDir(
     /* [out] */ String* sourceDir)
 {
     VALIDATE_NOT_NULL(sourceDir);
@@ -638,14 +508,14 @@ ECode CApplicationInfo::GetSourceDir(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetSourceDir(
+ECode ApplicationInfo::SetSourceDir(
     /* [in] */ const String& sourceDir)
 {
     mSourceDir = sourceDir;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetPublicSourceDir(
+ECode ApplicationInfo::GetPublicSourceDir(
     /* [out] */ String* publicSourceDir)
 {
     VALIDATE_NOT_NULL(publicSourceDir);
@@ -653,14 +523,14 @@ ECode CApplicationInfo::GetPublicSourceDir(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetPublicSourceDir(
+ECode ApplicationInfo::SetPublicSourceDir(
     /* [in] */ const String& pubicSourceDir)
 {
     mPublicSourceDir = pubicSourceDir;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetResourceDirs(
+ECode ApplicationInfo::GetResourceDirs(
     /* [out, callee] */ ArrayOf<String>** resourceDirs)
 {
     VALIDATE_NOT_NULL(resourceDirs);
@@ -669,14 +539,14 @@ ECode CApplicationInfo::GetResourceDirs(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetResourceDirs(
+ECode ApplicationInfo::SetResourceDirs(
     /* [in] */ ArrayOf<String>* resourceDirs)
 {
     mResourceDirs = resourceDirs;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetSharedLibraryFiles(
+ECode ApplicationInfo::GetSharedLibraryFiles(
     /* [out, callee] */ ArrayOf<String>** sharedLibraryFiles)
 {
     VALIDATE_NOT_NULL(sharedLibraryFiles);
@@ -685,14 +555,14 @@ ECode CApplicationInfo::GetSharedLibraryFiles(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetSharedLibraryFiles(
+ECode ApplicationInfo::SetSharedLibraryFiles(
     /* [in] */ ArrayOf<String>* sharedLibraryFiles)
 {
     mSharedLibraryFiles = sharedLibraryFiles;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetDataDir(
+ECode ApplicationInfo::GetDataDir(
     /* [out] */ String* dataDir)
 {
     VALIDATE_NOT_NULL(dataDir);
@@ -700,14 +570,14 @@ ECode CApplicationInfo::GetDataDir(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetDataDir(
+ECode ApplicationInfo::SetDataDir(
     /* [in] */ const String& dataDir)
 {
     mDataDir = dataDir;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetNativeLibraryDir(
+ECode ApplicationInfo::GetNativeLibraryDir(
     /* [out] */ String* libraryDir)
 {
     VALIDATE_NOT_NULL(libraryDir);
@@ -715,14 +585,14 @@ ECode CApplicationInfo::GetNativeLibraryDir(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetNativeLibraryDir(
+ECode ApplicationInfo::SetNativeLibraryDir(
     /* [in] */ const String& libraryDir)
 {
     mNativeLibraryDir = libraryDir;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetUid(
+ECode ApplicationInfo::GetUid(
     /* [out] */ Int32* uid)
 {
     VALIDATE_NOT_NULL(uid);
@@ -730,14 +600,14 @@ ECode CApplicationInfo::GetUid(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetUid(
+ECode ApplicationInfo::SetUid(
     /* [in] */ Int32 uid)
 {
     mUid = uid;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetTargetSdkVersion(
+ECode ApplicationInfo::GetTargetSdkVersion(
     /* [out] */ Int32* sdkVersion)
 {
     VALIDATE_NOT_NULL(sdkVersion);
@@ -745,14 +615,14 @@ ECode CApplicationInfo::GetTargetSdkVersion(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetTargetSdkVersion(
+ECode ApplicationInfo::SetTargetSdkVersion(
     /* [in] */ Int32 sdkVersion)
 {
     mTargetSdkVersion = sdkVersion;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetEnabled(
+ECode ApplicationInfo::GetEnabled(
     /* [out] */ Boolean* enabled)
 {
     VALIDATE_NOT_NULL(enabled);
@@ -760,14 +630,14 @@ ECode CApplicationInfo::GetEnabled(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetEnabled(
+ECode ApplicationInfo::SetEnabled(
     /* [in] */ Boolean enabled)
 {
     mEnabled = enabled;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetEnabledSetting(
+ECode ApplicationInfo::GetEnabledSetting(
     /* [out] */ Int32* enabledSetting)
 {
     VALIDATE_NOT_NULL(enabledSetting);
@@ -775,14 +645,14 @@ ECode CApplicationInfo::GetEnabledSetting(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetEnabledSetting(
+ECode ApplicationInfo::SetEnabledSetting(
     /* [in] */ Int32 enabledSetting)
 {
     mEnabledSetting = enabledSetting;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetInstallLocation(
+ECode ApplicationInfo::GetInstallLocation(
     /* [out] */ Int32* location)
 {
     VALIDATE_NOT_NULL(location);
@@ -790,7 +660,7 @@ ECode CApplicationInfo::GetInstallLocation(
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetInstallLocation(
+ECode ApplicationInfo::SetInstallLocation(
     /* [in] */ Int32 location)
 {
     mInstallLocation = location;
@@ -798,49 +668,49 @@ ECode CApplicationInfo::SetInstallLocation(
 }
 
 
-ECode CApplicationInfo::SetCodePath(
+ECode ApplicationInfo::SetCodePath(
     /* [in] */ const String& codePath)
 {
     mScanSourceDir = codePath;
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetBaseCodePath(
+ECode ApplicationInfo::SetBaseCodePath(
     /* [in] */ const String& baseCodePath)
 {
     mSourceDir = baseCodePath;
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetSplitCodePaths(
+ECode ApplicationInfo::SetSplitCodePaths(
     /* [in] */ ArrayOf<String>* splitCodePaths)
 {
     mSplitSourceDirs = splitCodePaths;
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetResourcePath(
+ECode ApplicationInfo::SetResourcePath(
     /* [in] */ const String& resourcePath)
 {
     mScanPublicSourceDir = resourcePath;
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetBaseResourcePath(
+ECode ApplicationInfo::SetBaseResourcePath(
     /* [in] */ const String& baseResourcePath)
 {
     mPublicSourceDir = baseResourcePath;
     return NOERROR;
 }
 
-ECode CApplicationInfo::SetSplitResourcePaths(
+ECode ApplicationInfo::SetSplitResourcePaths(
     /* [in] */ ArrayOf<String>* splitResourcePaths)
 {
     mSplitPublicSourceDirs = splitResourcePaths;
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetCodePath(
+ECode ApplicationInfo::GetCodePath(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -848,7 +718,7 @@ ECode CApplicationInfo::GetCodePath(
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetBaseCodePath(
+ECode ApplicationInfo::GetBaseCodePath(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -856,7 +726,7 @@ ECode CApplicationInfo::GetBaseCodePath(
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetSplitCodePaths(
+ECode ApplicationInfo::GetSplitCodePaths(
     /* [out, callee] */ ArrayOf<String>** result)
 {
     VALIDATE_NOT_NULL(result)
@@ -865,7 +735,7 @@ ECode CApplicationInfo::GetSplitCodePaths(
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetResourcePath(
+ECode ApplicationInfo::GetResourcePath(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -873,7 +743,7 @@ ECode CApplicationInfo::GetResourcePath(
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetBaseResourcePath(
+ECode ApplicationInfo::GetBaseResourcePath(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -881,12 +751,89 @@ ECode CApplicationInfo::GetBaseResourcePath(
     return NOERROR;
 }
 
-ECode CApplicationInfo::GetSplitResourcePaths(
-    /* [out, callee] */ ArrayOf<String>* result)
+ECode ApplicationInfo::GetSplitResourcePaths(
+    /* [out, callee] */ ArrayOf<String>** result)
 {
     VALIDATE_NOT_NULL(result)
     *result = mSplitPublicSourceDirs;
     REFCOUNT_ADD(*result)
+    return NOERROR;
+}
+
+ECode ApplicationInfo::GetSplitSourceDirs(
+    /* [out, callee] */ ArrayOf<String>** resourceDirs)
+{
+    VALIDATE_NOT_NULL(resourceDirs)
+    *resourceDirs = mSplitSourceDirs;
+    REFCOUNT_ADD(*resourceDirs)
+    return NOERROR;
+}
+
+ECode ApplicationInfo::SetSplitSourceDirs(
+    /* [in] */ ArrayOf<String>* resourceDirs)
+{
+    mResourceDirs = resourceDirs;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::GetSplitPublicSourceDirs(
+    /* [out, callee] */ ArrayOf<String>** resourceDirs)
+{
+    VALIDATE_NOT_NULL(resourceDirs)
+    *resourceDirs = mResourceDirs;
+    REFCOUNT_ADD(*resourceDirs)
+    return NOERROR;
+}
+
+ECode ApplicationInfo::SetSplitPublicSourceDirs(
+    /* [in] */ ArrayOf<String>* resourceDirs)
+{
+    mResourceDirs = resourceDirs;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::GetPrimaryCpuAbi(
+    /* [out] */ String* libraryDir)
+{
+    VALIDATE_NOT_NULL(libraryDir)
+    *libraryDir = mPrimaryCpuAbi;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::SetPrimaryCpuAbi(
+    /* [in] */ const String& libraryDir)
+{
+    mPrimaryCpuAbi = libraryDir;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::GetSecondaryCpuAbi(
+    /* [out] */ String* libraryDir)
+{
+    VALIDATE_NOT_NULL(libraryDir)
+    *libraryDir = mSecondaryCpuAbi;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::SetSecondaryCpuAbi(
+    /* [in] */ const String& libraryDir)
+{
+    mSecondaryCpuAbi = libraryDir;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::GetVersionCode(
+    /* [out] */ Int32* code)
+{
+    VALIDATE_NOT_NULL(code)
+    *code = mVersionCode;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::SetVersionCode(
+    /* [in] */ Int32 code)
+{
+    mVersionCode = code;
     return NOERROR;
 }
 

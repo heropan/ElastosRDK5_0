@@ -82,7 +82,7 @@ ECode CFeatureInfo::GetGlEsVersion(
 
     Int32 major = ((mReqGlEsVersion & 0xffff0000) >> 16);
     Int32 minor = mReqGlEsVersion & 0x0000ffff;
-    *ver = StringUtils::ToString(major) + String(".") + StringUtils::Int32ToString(minor);
+    *ver = StringUtils::ToString(major) + String(".") + StringUtils::ToString(minor);
     return NOERROR;
 }
 

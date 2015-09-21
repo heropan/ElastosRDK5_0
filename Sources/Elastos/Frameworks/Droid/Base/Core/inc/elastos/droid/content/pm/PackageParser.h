@@ -34,7 +34,8 @@ namespace Pm {
  *
  * {@hide}
  */
- class PackageParser : public Object
+ class PackageParser
+    : public Object
 {
 public:
     class Package;

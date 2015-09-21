@@ -5,12 +5,17 @@
 #include "_Elastos_Droid_Content_Pm_CPackageItemInfoDisplayNameComparator.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Core::IComparator;
+using Elastos::Text::ICollator;
+
 namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
 
 CarClass(CPackageItemInfoDisplayNameComparator)
+    , public Object
+    , public IComparator
 {
 public:
     CAR_INTERFACE_DECL()
@@ -21,12 +26,12 @@ public:
         /* [in] */ IPackageManager* pm);
 
     CARAPI Compare(
-        /* [in] */ IPackageItemInfo* aa,
-        /* [in] */ IPackageItemInfo* ab,
+        /* [in] */ IInterface* aa,
+        /* [in] */ IInterface* ab,
         /* [out] */ Int32* result);
 
 private:
-    // private final Collator   sCollator = Collator.getInstance();
+    static AutoPtr<ICollator> sCollator;
     AutoPtr<IPackageManager> mPM;
 };
 

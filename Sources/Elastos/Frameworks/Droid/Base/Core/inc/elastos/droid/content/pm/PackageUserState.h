@@ -17,7 +17,8 @@ namespace Pm {
  * Per-user state information about a package.
  * @hide
  */
-class PackageUserState : public ElRefBase
+class PackageUserState
+    : public Object
 {
 public:
     PackageUserState();

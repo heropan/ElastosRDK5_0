@@ -1,6 +1,7 @@
 
 #include "ext/frameworkext.h"
 #include "content/pm/PackageItemInfo.h"
+//#include "content/pm/PackageManager.h"
 
 using Elastos::Core::CString;
 
@@ -28,26 +29,27 @@ ECode PackageItemInfo::constructor()
 }
 
 ECode PackageItemInfo::constructor(
-    /* [in] */ IPackageItemInfo* orig)
+    /* [in] */ IPackageItemInfo* origObj)
 {
-    assert(orig != NULL);
+    VALIDATE_NOT_NULL(origObj)
 
-    orig->GetName(&mName);
+    PackageItemInfo* orig = (PackageItemInfo*)origObj;
+    mName = orig->mName;
     if (!mName.IsNull()) mName = mName.Trim();
-    orig->GetPackageName(&mPackageName);
-    orig->GetLabelRes(&mLabelRes);
-    orig->GetNonLocalizedLabel((ICharSequence**)&mNonLocalizedLabel);
+    mPackageName = orig->mPackageName;
+    mLabelRes = orig->mLabelRes;
+    mNonLocalizedLabel = orig->mNonLocalizedLabel;
     if (mNonLocalizedLabel != NULL) {
-        String str;
-        mNonLocalizedLabel->ToString(&str);
+        String str = Object::ToString(mNonLocalizedLabel).Trim();
         mNonLocalizedLabel = NULL;
-        CString::New(str.Trim(), (ICharSequence**)&mNonLocalizedLabel);
+        CString::New(str, (ICharSequence**)&mNonLocalizedLabel);
     }
-    orig->GetIcon(&mIcon);
-    orig->GetBanner(&mBanner);
-    orig->GetLogo(&mLogo);
-    orig->GetMetaData((IBundle**)&mMetaData);
-    orig->GetShowUserIcon(&mShowUserIcon);
+    mIcon = orig->mIcon;
+    mBanner = orig->mBanner;
+    mLogo = orig->mLogo;
+    mMetaData = orig->mMetaData;
+    mShowUserIcon = orig->mShowUserIcon;
+
     return NOERROR;
 }
 
@@ -55,7 +57,7 @@ ECode PackageItemInfo::LoadLabel(
     /* [in] */ IPackageManager* pm,
     /* [out] */ ICharSequence** label)
 {
-    assert(label != NULL);
+    VALIDATE_NOT_NULL(label)
     *label = NULL;
 
     if (mNonLocalizedLabel != NULL) {
@@ -82,8 +84,9 @@ ECode PackageItemInfo::LoadIcon(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** icon)
 {
-    VALIDATE_NOT_NULL(icon)
-    return pm->LoadItemIcon(THIS_PROBE(IPackageItemInfo), GetApplicationInfo(), icon);
+    assert(0 && "TODO");
+    return NOERROR;
+    // return ((PackageManager*)pm)->LoadItemIcon(THIS_PROBE(IPackageItemInfo), GetApplicationInfo(), icon);
 }
 
 ECode PackageItemInfo::LoadBanner(
@@ -91,9 +94,9 @@ ECode PackageItemInfo::LoadBanner(
     /* [out] */ IDrawable** icon)
 {
     VALIDATE_NOT_NULL(icon)
-    if (banner != 0) {
+    if (mBanner != 0) {
         AutoPtr<IDrawable> dr;
-        pm->GetDrawable(mPackageName, banner, GetApplicationInfo(), (IDrawable**)&dr);
+        pm->GetDrawable(mPackageName, mBanner, GetApplicationInfo(), (IDrawable**)&dr);
         if (dr != NULL) {
             *icon = dr;
             REFCOUNT_ADD(*icon)
@@ -123,7 +126,7 @@ ECode PackageItemInfo::LoadLogo(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** logo)
 {
-    assert(logo != NULL);
+    VALIDATE_NOT_NULL(logo)
 
     if (mLogo != 0) {
        pm->GetDrawable(mPackageName, mLogo, GetApplicationInfo(), logo);
@@ -138,6 +141,7 @@ ECode PackageItemInfo::LoadDefaultLogo(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** icon)
 {
+    VALIDATE_NOT_NULL(icon)
     *icon = NULL;
     return NOERROR;
 }
@@ -147,7 +151,7 @@ ECode PackageItemInfo::LoadXmlMetaData(
     /* [in] */ const String& name,
     /* [out] */ IXmlResourceParser** resource)
 {
-    assert(resource != NULL);
+    VALIDATE_NOT_NULL(resource)
 
     if (mMetaData != NULL) {
         Int32 resid = 0;
@@ -193,12 +197,13 @@ ECode PackageItemInfo::WriteToParcel(
     dest->WriteString(mName);
     dest->WriteString(mPackageName);
     dest->WriteInt32(mLabelRes);
+    assert(0 && "TODO");
     // TextUtils.writeToParcel(nonLocalizedLabel, dest, parcelableFlags);
     dest->WriteInt32(mIcon);
     dest->WriteInt32(mLogo);
     dest->WriteInterfacePtr(mMetaData);
     dest->WriteInt32(mBanner);
-    dest->WriteInterfacePtr(mShowUserIcon);
+    dest->WriteInt32(mShowUserIcon);
     return NOERROR;
 }
 
@@ -210,6 +215,7 @@ ECode PackageItemInfo::ReadFromParcel(
     src->ReadString(&mName);
     src->ReadString(&mPackageName);
     src->ReadInt32(&mLabelRes);
+    assert(0 && "TODO");
     // nonLocalizedLabel
     //         = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(source);
     src->ReadInt32(&mIcon);
@@ -245,7 +251,7 @@ ECode PackageItemInfo::SetName(
 ECode PackageItemInfo::GetPackageName(
     /* [out] */ String* name)
 {
-    assert(name != NULL);
+    VALIDATE_NOT_NULL(name)
     *name = mPackageName;
     return NOERROR;
 }
@@ -260,7 +266,7 @@ ECode PackageItemInfo::SetPackageName(
 ECode PackageItemInfo::GetLabelRes(
     /* [out] */ Int32* labelRes)
 {
-    assert(labelRes != NULL);
+    VALIDATE_NOT_NULL(labelRes)
     *labelRes = mLabelRes;
     return NOERROR;
 }
@@ -275,7 +281,7 @@ ECode PackageItemInfo::SetLabelRes(
 ECode PackageItemInfo::GetNonLocalizedLabel(
     /* [out] */ ICharSequence** label)
 {
-    assert(label != NULL);
+    VALIDATE_NOT_NULL(label)
     *label = mNonLocalizedLabel;
     REFCOUNT_ADD(*label);
     return NOERROR;
@@ -291,7 +297,7 @@ ECode PackageItemInfo::SetNonLocalizedLabel(
 ECode PackageItemInfo::GetIcon(
     /* [out] */ Int32* icon)
 {
-    assert(icon != NULL);
+    VALIDATE_NOT_NULL(icon)
     *icon = mIcon;
     return NOERROR;
 }
@@ -303,10 +309,25 @@ ECode PackageItemInfo::SetIcon(
     return NOERROR;
 }
 
+ECode PackageItemInfo::GetBanner(
+    /* [out] */ Int32* banner)
+{
+    VALIDATE_NOT_NULL(banner)
+    *banner = mBanner;
+    return NOERROR;
+}
+
+ECode PackageItemInfo::SetBanner(
+    /* [in] */ Int32 banner)
+{
+    mBanner = banner;
+    return NOERROR;
+}
+
 ECode PackageItemInfo::GetLogo(
     /* [out] */ Int32* logo)
 {
-    assert(logo != NULL);
+    VALIDATE_NOT_NULL(logo)
     *logo = mLogo;
     return NOERROR;
 }
@@ -321,7 +342,7 @@ ECode PackageItemInfo::SetLogo(
 ECode PackageItemInfo::GetMetaData(
     /* [out] */ IBundle** metaData)
 {
-    assert(metaData != NULL);
+    VALIDATE_NOT_NULL(metaData)
     *metaData = mMetaData;
     REFCOUNT_ADD(*metaData);
     return NOERROR;

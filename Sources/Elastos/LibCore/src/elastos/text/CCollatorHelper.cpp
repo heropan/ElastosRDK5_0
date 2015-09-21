@@ -5,6 +5,10 @@
 namespace Elastos {
 namespace Text {
 
+CAR_INTERFACE_IMPL(CCollatorHelper, Singleton, ICollatorHelper)
+
+CAR_SINGLETON_IMPL(CCollatorHelper)
+
 ECode CCollatorHelper::GetAvailableLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** locales)
 {

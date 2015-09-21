@@ -11,6 +11,8 @@ namespace Content {
 namespace Pm {
 
 CarClass(CPackageManagerHelper)
+    , public Singleton
+    , public IPackageManagerHelper
 {
 public:
     CAR_INTERFACE_DECL()

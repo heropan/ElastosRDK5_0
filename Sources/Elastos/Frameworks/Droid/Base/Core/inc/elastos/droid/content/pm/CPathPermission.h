@@ -14,7 +14,9 @@ namespace Pm {
  * Description of permissions needed to access a particular path
  * in a {@link ProviderInfo}.
  */
-CarClass(CPathPermission), public Elastos::Droid::Os::PatternMatcher
+CarClass(CPathPermission)
+    , public Elastos::Droid::Os::PatternMatcher
+    , public IPathPermission
 {
 public:
     CAR_INTERFACE_DECL()
