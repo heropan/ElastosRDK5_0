@@ -16,6 +16,9 @@ CAR_INTERFACE_IMPL(SocketFactory, Object, ISocketFactory)
 SocketFactory::SocketFactory()
 {}
 
+SocketFactory::~SocketFactory()
+{}
+
 ECode SocketFactory::GetDefault(
     /* [out] */ ISocketFactory** factory)
 {

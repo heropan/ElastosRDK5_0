@@ -101,3 +101,6 @@ EXPORT_HEADERS += libcore/utility/EmptyArray.h
 
 EXPORT_HEADERS += elastos/droid/system/Os.h
 EXPORT_HEADERS += elastos/droid/system/OsConstants.h
+
+
+EXPORT_HEADERS += elastosx/net/SocketFactory.h

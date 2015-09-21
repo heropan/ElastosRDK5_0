@@ -2,7 +2,7 @@
 #ifndef __ELASTOSX_NET_SOCKETFACTORY_H__
 #define __ELASTOSX_NET_SOCKETFACTORY_H__
 
-#include "Object.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
 using Elastos::Net::ISocket;
@@ -131,6 +131,8 @@ protected:
      * Creates a new {@code SocketFactory} instance.
      */
     SocketFactory();
+
+    virtual ~SocketFactory();
 
 private:
     static AutoPtr<ISocketFactory> sDefaultFactory;
