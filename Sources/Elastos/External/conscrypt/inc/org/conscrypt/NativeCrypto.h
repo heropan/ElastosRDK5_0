@@ -305,6 +305,70 @@ public:
         /* [in] */ Int64 groupRef,
         /* [out] */ Int32* result);
 
+    static CARAPI EC_GROUP_get_order(
+        /* [in] */ Int64 groupRef,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI EC_GROUP_get_degree(
+        /* [in] */ Int64 groupRef,
+        /* [out] */ Int32* result);
+
+    static CARAPI EC_GROUP_get_cofactor(
+        /* [in] */ Int64 groupRef,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI EC_POINT_new(
+        /* [in] */ Int64 groupRef,
+        /* [out] */ Int64* result);
+
+    static CARAPI EC_POINT_clear_free(
+        /* [in] */ Int64 pointRef);
+
+    static CARAPI EC_POINT_cmp(
+        /* [in] */ Int64 groupRef,
+        /* [in] */ Int64 point1Ref,
+        /* [in] */ Int64 point2Ref,
+        /* [out] */ Boolean* result);
+
+    static CARAPI EC_POINT_get_affine_coordinates(
+        /* [in] */ Int64 groupRef,
+        /* [in] */ Int64 pointRef,
+        /* [out, callee] */ ArrayOf<Byte>** xBytes,
+        /* [out, callee] */ ArrayOf<Byte>** yBytes);
+
+    static CARAPI EC_POINT_set_affine_coordinates(
+        /* [in] */ Int64 groupRef,
+        /* [in] */ Int64 pointRef,
+        /* [in] */ ArrayOf<Byte>* xBytes,
+        /* [in] */ ArrayOf<Byte>* yBytes);
+
+    static CARAPI EC_KEY_generate_key(
+        /* [in] */ Int64 groupRef,
+        /* [out] */ Int64* result);
+
+    static CARAPI EC_KEY_get0_group(
+        /* [in] */ Int64 pkeyRef,
+        /* [out] */ Int64* result);
+
+    static CARAPI EC_KEY_get_private_key(
+        /* [in] */ Int64 pkeyRef,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI EC_KEY_get_public_key(
+        /* [in] */ Int64 pkeyRef,
+        /* [out] */ Int64* result);
+
+    static CARAPI EC_KEY_set_nonce_from_hash(
+        /* [in] */ Int64 pkeyRef,
+        /* [in] */ Boolean enabled);
+
+    static CARAPI ECDH_compute_key(
+        /* [in] */ ArrayOf<Byte>* outArray,
+        /* [in] */ Int32 outOffset,
+        /* [in] */ Int64 publicKeyRef,
+        /* [in] */ Int64 privateKeyRef,
+        /* [out] */ Int32* result);
+
 private:
     static const Boolean sInitialized;
 

@@ -2514,7 +2514,7 @@ ECode NativeCrypto::EVP_PKEY_new_EC_KEY(
             return ThrowExceptionIfNecessary("EC_KEY_set_private_key");
         }
         if (pubkey == NULL) {
-            Unique_EC_POINT calcPubkey(EC_POINT_new(group));
+            Unique_EC_POINT calcPubkey(::EC_POINT_new(group));
             if (!EC_POINT_mul(group, calcPubkey.get(), key.get(), NULL, NULL, NULL)) {
                 NATIVE_TRACE("EVP_PKEY_new_EC_KEY(%p, %p, %p) => can't calulate public key", group,
                         pubkey, keyBytes);
@@ -2924,6 +2924,490 @@ ECode NativeCrypto::Get_EC_GROUP_type(
         NATIVE_TRACE("get_EC_GROUP_type(%p) => %d", group, type);
     }
     *result = type;
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_GROUP_get_order(
+    /* [in] */ Int64 groupRef,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    const EC_GROUP* group = reinterpret_cast<const EC_GROUP*>(groupRef);
+    NATIVE_TRACE("EC_GROUP_get_order(%p)", group);
+
+    Unique_BIGNUM order(BN_new());
+    if (order.get() == NULL) {
+        NATIVE_TRACE("EC_GROUP_get_order(%p) => can't create BN", group);
+        *result = NULL;
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
+    if (::EC_GROUP_get_order(group, order.get(), NULL) != 1) {
+        NATIVE_TRACE("EC_GROUP_get_order(%p) => threw error", group);
+        *result = NULL;
+        return ThrowExceptionIfNecessary("EC_GROUP_get_order");
+    }
+
+    ECode ec = BignumToArray(order.get(), "order", result);
+    if (FAILED(ec)) {
+        *result = NULL;
+        return ec;
+    }
+
+    NATIVE_TRACE("EC_GROUP_get_order(%p) => %p", group, *result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_GROUP_get_degree(
+    /* [in] */ Int64 groupRef,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    const EC_GROUP* group = reinterpret_cast<const EC_GROUP*>(groupRef);
+    NATIVE_TRACE("EC_GROUP_get_degree(%p)", group);
+
+    int degree = ::EC_GROUP_get_degree(group);
+    if (degree == 0) {
+      NATIVE_TRACE("EC_GROUP_get_degree(%p) => unsupported", group);
+      *result = 0;
+      return ThrowRuntimeException("not supported");
+    }
+
+    NATIVE_TRACE("EC_GROUP_get_degree(%p) => %d", group, degree);
+    *result = degree;
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_GROUP_get_cofactor(
+    /* [in] */ Int64 groupRef,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    const EC_GROUP* group = reinterpret_cast<const EC_GROUP*>(groupRef);
+    NATIVE_TRACE("EC_GROUP_get_cofactor(%p)", group);
+
+    Unique_BIGNUM cofactor(BN_new());
+    if (cofactor.get() == NULL) {
+        NATIVE_TRACE("EC_GROUP_get_cofactor(%p) => can't create BN", group);
+        *result = NULL;
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
+    if (::EC_GROUP_get_cofactor(group, cofactor.get(), NULL) != 1) {
+        NATIVE_TRACE("EC_GROUP_get_cofactor(%p) => threw error", group);
+        *result = NULL;
+        return ThrowExceptionIfNecessary("EC_GROUP_get_cofactor");
+    }
+
+    ECode ec = BignumToArray(cofactor.get(), "cofactor", result);
+    if (FAILED(ec)) {
+        *result = NULL;
+        return ec;
+    }
+
+    NATIVE_TRACE("EC_GROUP_get_cofactor(%p) => %p", group, *result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_POINT_new(
+    /* [in] */ Int64 groupRef,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    const EC_GROUP* group = reinterpret_cast<const EC_GROUP*>(groupRef);
+    NATIVE_TRACE("EC_POINT_new(%p)", group);
+
+    if (group == NULL) {
+        NATIVE_TRACE("EC_POINT_new(%p) => group == null", group);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    EC_POINT* point = ::EC_POINT_new(group);
+    if (point == NULL) {
+        *result = 0;
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
+    *result = reinterpret_cast<uintptr_t>(point);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_POINT_clear_free(
+    /* [in] */ Int64 pointRef)
+{
+    EC_POINT* point = reinterpret_cast<EC_POINT*>(pointRef);
+    NATIVE_TRACE("EC_POINT_clear_free(%p)", point);
+
+    if (point == NULL) {
+        NATIVE_TRACE("EC_POINT_clear_free => point == NULL");
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    ::EC_POINT_clear_free(point);
+    NATIVE_TRACE("EC_POINT_clear_free(%p) => success", point);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_POINT_cmp(
+    /* [in] */ Int64 groupRef,
+    /* [in] */ Int64 point1Ref,
+    /* [in] */ Int64 point2Ref,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    const EC_GROUP* group = reinterpret_cast<const EC_GROUP*>(groupRef);
+    const EC_POINT* point1 = reinterpret_cast<const EC_POINT*>(point1Ref);
+    const EC_POINT* point2 = reinterpret_cast<const EC_POINT*>(point2Ref);
+    NATIVE_TRACE("EC_POINT_cmp(%p, %p, %p)", group, point1, point2);
+
+    if (group == NULL || point1 == NULL || point2 == NULL) {
+        NATIVE_TRACE("EC_POINT_cmp(%p, %p, %p) => group == null || point1 == null || point2 == null",
+                group, point1, point2);
+        *result = FALSE;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    int ret = ::EC_POINT_cmp(group, point1, point2, (BN_CTX*)NULL);
+
+    NATIVE_TRACE("ECP_GROUP_cmp(%p, %p) => %d", point1, point2, ret);
+    *result = ret == 0;
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_POINT_get_affine_coordinates(
+    /* [in] */ Int64 groupRef,
+    /* [in] */ Int64 pointRef,
+    /* [out, callee] */ ArrayOf<Byte>** xBytes,
+    /* [out, callee] */ ArrayOf<Byte>** yBytes)
+{
+    VALIDATE_NOT_NULL(xBytes);
+    VALIDATE_NOT_NULL(yBytes);
+
+    const EC_GROUP* group = reinterpret_cast<const EC_GROUP*>(groupRef);
+    const EC_POINT* point = reinterpret_cast<const EC_POINT*>(pointRef);
+    NATIVE_TRACE("EC_POINT_get_affine_coordinates(%p, %p)", group, point);
+
+    Unique_BIGNUM x(BN_new());
+    Unique_BIGNUM y(BN_new());
+
+    int ret;
+    switch (get_EC_GROUP_type(group)) {
+    case EC_CURVE_GFP:
+        ret = EC_POINT_get_affine_coordinates_GFp(group, point, x.get(), y.get(), NULL);
+        break;
+    case EC_CURVE_GF2M:
+        ret = EC_POINT_get_affine_coordinates_GF2m(group, point, x.get(), y.get(), NULL);
+        break;
+    default:
+        *xBytes = *yBytes = NULL;
+        return ThrowRuntimeException("invalid curve type");
+    }
+    if (ret != 1) {
+        NATIVE_TRACE("EC_POINT_get_affine_coordinates(%p, %p)", group, point);
+        *xBytes = *yBytes = NULL;
+        return ThrowExceptionIfNecessary("EC_POINT_get_affine_coordinates");
+    }
+
+    ECode ec = BignumToArray(x.get(), "x", xBytes);
+    if (FAILED(ec)) {
+        *xBytes = *yBytes = NULL;
+        return ec;
+    }
+
+    ec = BignumToArray(y.get(), "y", yBytes);
+    if (FAILED(ec)) {
+        *xBytes = *yBytes = NULL;
+        return ec;
+    }
+
+    NATIVE_TRACE("EC_POINT_get_affine_coordinates(%p, %p) => %p, %p", group, point, *xBytes, *yBytes);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_POINT_set_affine_coordinates(
+    /* [in] */ Int64 groupRef,
+    /* [in] */ Int64 pointRef,
+    /* [in] */ ArrayOf<Byte>* xBytes,
+    /* [in] */ ArrayOf<Byte>* yBytes)
+{
+    const EC_GROUP* group = reinterpret_cast<const EC_GROUP*>(groupRef);
+    EC_POINT* point = reinterpret_cast<EC_POINT*>(pointRef);
+    NATIVE_TRACE("EC_POINT_set_affine_coordinates(%p, %p, %p, %p)", group, point, xBytes,
+            yBytes);
+
+    if (group == NULL || point == NULL) {
+        NATIVE_TRACE("EC_POINT_set_affine_coordinates(%p, %p, %p, %p) => group == null || point == null",
+                group, point, xBytes, yBytes);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    ECode ec;
+    BIGNUM* xRef = NULL;
+    if (!ArrayToBignum(xBytes, &xRef, &ec)) {
+        return ec;
+    }
+    Unique_BIGNUM x(xRef);
+
+    BIGNUM* yRef = NULL;
+    if (!ArrayToBignum(yBytes, &yRef, &ec)) {
+        return ec;
+    }
+    Unique_BIGNUM y(yRef);
+
+    int ret;
+    switch (get_EC_GROUP_type(group)) {
+    case EC_CURVE_GFP:
+        ret = EC_POINT_set_affine_coordinates_GFp(group, point, x.get(), y.get(), NULL);
+        break;
+    case EC_CURVE_GF2M:
+        ret = EC_POINT_set_affine_coordinates_GF2m(group, point, x.get(), y.get(), NULL);
+        break;
+    default:
+        return ThrowRuntimeException("invalid curve type");
+    }
+
+    if (ret != 1) {
+        return ThrowExceptionIfNecessary("EC_POINT_set_affine_coordinates");
+    }
+
+    NATIVE_TRACE("EC_POINT_set_affine_coordinates(%p, %p, %p, %p) => %d", group, point,
+            xBytes, yBytes, ret);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_KEY_generate_key(
+    /* [in] */ Int64 groupRef,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    const EC_GROUP* group = reinterpret_cast<const EC_GROUP*>(groupRef);
+    NATIVE_TRACE("EC_KEY_generate_key(%p)", group);
+
+    Unique_EC_KEY eckey(EC_KEY_new());
+    if (eckey.get() == NULL) {
+        NATIVE_TRACE("EC_KEY_generate_key(%p) => EC_KEY_new() oom", group);
+        *result = 0;
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
+    if (EC_KEY_set_group(eckey.get(), group) != 1) {
+        NATIVE_TRACE("EC_KEY_generate_key(%p) => EC_KEY_set_group error", group);
+        *result = 0;
+        return ThrowExceptionIfNecessary("EC_KEY_set_group");
+    }
+
+    if (::EC_KEY_generate_key(eckey.get()) != 1) {
+        NATIVE_TRACE("EC_KEY_generate_key(%p) => EC_KEY_generate_key error", group);
+        *result = 0;
+        return ThrowExceptionIfNecessary("EC_KEY_set_group");
+    }
+
+    Unique_EVP_PKEY pkey(EVP_PKEY_new());
+    if (pkey.get() == NULL) {
+        NATIVE_TRACE("EC_KEY_generate_key(%p) => threw error", group);
+        *result = 0;
+        return ThrowExceptionIfNecessary("EC_KEY_generate_key");
+    }
+    if (EVP_PKEY_assign_EC_KEY(pkey.get(), eckey.get()) != 1) {
+        *result = 0;
+        return ThrowRuntimeException("EVP_PKEY_assign_EC_KEY failed");
+    }
+    OWNERSHIP_TRANSFERRED(eckey);
+
+    NATIVE_TRACE("EC_KEY_generate_key(%p) => %p", group, pkey.get());
+    *result = reinterpret_cast<uintptr_t>(pkey.release());
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_KEY_get0_group(
+    /* [in] */ Int64 pkeyRef,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("EC_KEY_get0_group(%p)", pkey);
+
+    if (pkey == NULL) {
+        NATIVE_TRACE("EC_KEY_get0_group(%p) => pkey == null", pkey);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (::EVP_PKEY_type(pkey->type) != EVP_PKEY_EC) {
+        NATIVE_TRACE("EC_KEY_get0_group(%p) => not EC key (type == %d)", pkey,
+                ::EVP_PKEY_type(pkey->type));
+        *result = 0;
+        return ThrowRuntimeException("not EC key");
+    }
+
+    const EC_GROUP* group = ::EC_KEY_get0_group(pkey->pkey.ec);
+    NATIVE_TRACE("EC_KEY_get0_group(%p) => %p", pkey, group);
+    *result = reinterpret_cast<uintptr_t>(group);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_KEY_get_private_key(
+    /* [in] */ Int64 pkeyRef,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("EC_KEY_get_private_key(%p)", pkey);
+
+    if (pkey == NULL) {
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_EC_KEY eckey(EVP_PKEY_get1_EC_KEY(pkey));
+    if (eckey.get() == NULL) {
+        *result = NULL;
+        return ThrowExceptionIfNecessary("EVP_PKEY_get1_EC_KEY");
+    }
+
+    const BIGNUM *privkey = EC_KEY_get0_private_key(eckey.get());
+
+    ECode ec = BignumToArray(privkey, "privkey", result);
+    if (FAILED(ec)) {
+        NATIVE_TRACE("EC_KEY_get_private_key(%p) => threw error", pkey);
+        *result = NULL;
+        return ec;
+    }
+
+    NATIVE_TRACE("EC_KEY_get_private_key(%p) => %p", pkey, *result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_KEY_get_public_key(
+    /* [in] */ Int64 pkeyRef,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("EC_KEY_get_public_key(%p)", pkey);
+
+    if (pkey == NULL) {
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_EC_KEY eckey(EVP_PKEY_get1_EC_KEY(pkey));
+    if (eckey.get() == NULL) {
+        *result = 0;
+        return ThrowExceptionIfNecessary("EVP_PKEY_get1_EC_KEY");
+    }
+
+    Unique_EC_POINT dup(EC_POINT_dup(EC_KEY_get0_public_key(eckey.get()),
+            ::EC_KEY_get0_group(eckey.get())));
+    if (dup.get() == NULL) {
+        NATIVE_TRACE("EC_KEY_get_public_key(%p) => can't dup public key", pkey);
+        *result = 0;
+        return ThrowRuntimeException("EC_POINT_dup");
+    }
+
+    NATIVE_TRACE("EC_KEY_get_public_key(%p) => %p", pkey, dup.get());
+    *result = reinterpret_cast<uintptr_t>(dup.release());
+    return NOERROR;
+}
+
+ECode NativeCrypto::EC_KEY_set_nonce_from_hash(
+    /* [in] */ Int64 pkeyRef,
+    /* [in] */ Boolean enabled)
+{
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("EC_KEY_set_nonce_from_hash(%p, %d)", pkey, enabled ? 1 : 0);
+
+    if (pkey == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_EC_KEY eckey(EVP_PKEY_get1_EC_KEY(pkey));
+    if (eckey.get() == NULL) {
+        return ThrowExceptionIfNecessary("EVP_PKEY_get1_EC_KEY");
+    }
+
+    ::EC_KEY_set_nonce_from_hash(eckey.get(), enabled ? 1 : 0);
+    return NOERROR;
+}
+
+ECode NativeCrypto::ECDH_compute_key(
+    /* [in] */ ArrayOf<Byte>* outArray,
+    /* [in] */ Int32 outOffset,
+    /* [in] */ Int64 publicKeyRef,
+    /* [in] */ Int64 privateKeyRef,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    EVP_PKEY* pubPkey = reinterpret_cast<EVP_PKEY*>(publicKeyRef);
+    EVP_PKEY* privPkey = reinterpret_cast<EVP_PKEY*>(privateKeyRef);
+    NATIVE_TRACE("ECDH_compute_key(%p, %d, %p, %p)", outArray, outOffset, pubPkey, privPkey);
+
+    if (outArray == NULL) {
+        NATIVE_TRACE("ECDH_compute_key(%p, %d, %p, %p) can't get output buffer",
+                outArray, outOffset, pubPkey, privPkey);
+        *result = -1;
+        return NOERROR;
+    }
+
+    if ((outOffset < 0) || (outOffset >= outArray->GetLength())) {
+        *result = -1;
+        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    if (pubPkey == NULL) {
+        *result = -1;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_EC_KEY pubkey(EVP_PKEY_get1_EC_KEY(pubPkey));
+    if (pubkey.get() == NULL) {
+        NATIVE_TRACE("ECDH_compute_key(%p) => can't get public key", pubPkey);
+        *result = -1;
+        return ThrowExceptionIfNecessary("EVP_PKEY_get1_EC_KEY public");
+    }
+
+    const EC_POINT* pubkeyPoint = EC_KEY_get0_public_key(pubkey.get());
+    if (pubkeyPoint == NULL) {
+        NATIVE_TRACE("ECDH_compute_key(%p) => can't get public key point", pubPkey);
+        *result = -1;
+        return ThrowExceptionIfNecessary("EVP_PKEY_get1_EC_KEY public");
+    }
+
+    if (privPkey == NULL) {
+        *result = -1;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_EC_KEY privkey(EVP_PKEY_get1_EC_KEY(privPkey));
+    if (privkey.get() == NULL) {
+        *result = -1;
+        return ThrowExceptionIfNecessary("EVP_PKEY_get1_EC_KEY private");
+    }
+
+    int outputLength = ::ECDH_compute_key(
+            &(*outArray)[outOffset],
+            outArray->GetLength() - outOffset,
+            pubkeyPoint,
+            privkey.get(),
+            NULL // No KDF
+            );
+    if (outputLength == -1) {
+        *result = -1;
+        return ThrowExceptionIfNecessary("ECDH_compute_key");
+    }
+
+    *result = outputLength;
     return NOERROR;
 }
 
