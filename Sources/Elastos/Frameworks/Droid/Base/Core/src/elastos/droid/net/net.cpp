@@ -13,6 +13,8 @@
 #include "CLocalSocketAddressNamespace.h"
 #include "CMobileDataStateTracker.h"
 #include "CNetwork.h"
+#include "CNetworkCapabilities.h"
+// #include "CNetworkConfig.h"
 
 namespace Elastos {
 namespace Droid {
@@ -45,6 +47,10 @@ CAR_OBJECT_IMPL(CLocalSocketAddressNamespace)
 CAR_OBJECT_IMPL(CMobileDataStateTracker)
 
 CAR_OBJECT_IMPL(CNetwork)
+
+CAR_OBJECT_IMPL(CNetworkCapabilities)
+
+// CAR_OBJECT_IMPL(CNetworkConfig)
 
 } // namespace Net
 } // namespace Droid

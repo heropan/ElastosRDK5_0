@@ -1,4 +1,44 @@
 
+#include "NetworkConfig.h"
+
+namespace Elastos {
+namespace Droid {
+namespace Net {
+
+CAR_INTERFACE_IMPL(NetworkConfig, Object, INetworkConfig)
+
+ECode NetworkConfig::constructor(
+    /* [in] */ String init)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        String fragments[] = init.split(",");
+        name = fragments[0].trim().toLowerCase(Locale.ROOT);
+        type = Integer.parseInt(fragments[1]);
+        radio = Integer.parseInt(fragments[2]);
+        priority = Integer.parseInt(fragments[3]);
+        restoreTime = Integer.parseInt(fragments[4]);
+        dependencyMet = Boolean.parseBoolean(fragments[5]);
+
+#endif
+}
+
+ECode NetworkConfig::IsDefault(
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return (type == radio);
+
+#endif
+}
+
+
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
+
+#if 0 // old CNetworkConfig.cpp
 #include "ext/frameworkext.h"
 #include "net/CNetworkConfig.h"
 #include <Elastos.CoreLibrary.h>
@@ -132,3 +172,4 @@ ECode CNetworkConfig::SetRestoreTime(
 } // namespace Net
 } // namepsace Droid
 } // namespace Elastos
+#endif
