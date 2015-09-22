@@ -24,11 +24,11 @@ extern "C" const Elastos::ClassID ECLSID_CDummyObject;
 #endif
 
 #ifndef __DROIDFRAMEWORKDEF_H__
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #endif
 
 #ifndef __DROIDFRAMEWORKHASH_H__
-#include "ext/frameworkhash.h"
+#include "elastos/droid/ext/frameworkhash.h"
 #endif
 
 #endif //__FRAMEWORKEXT_H__
