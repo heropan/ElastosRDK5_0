@@ -5,6 +5,8 @@
 #include <elastos/core/UniquePtr.h>
 #include <elastos/utility/logging/Logger.h>
 
+#include <arpa/inet.h>
+
 #include <openssl/asn1t.h>
 #include <openssl/dsa.h>
 #include <openssl/engine.h>
@@ -16,6 +18,14 @@
 #include <openssl/x509v3.h>
 #include <openssl/crypto/ecdsa/ecs_locl.h>
 
+using Elastos::Core::CArrayOf;
+using Elastos::Core::CByte;
+using Elastos::Core::CInteger32;
+using Elastos::Core::CString;
+using Elastos::Core::EIID_IByte;
+using Elastos::Core::IByte;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IInteger32;
 using Elastos::Core::UniquePtr;
 using Elastos::Security::CMessageDigestHelper;
 using Elastos::Security::IMessageDigest;
@@ -149,6 +159,13 @@ struct RSA_Delete {
 };
 typedef UniquePtr<RSA, RSA_Delete> Unique_RSA;
 
+struct ASN1_BIT_STRING_Delete {
+    void operator()(ASN1_BIT_STRING* p) const {
+        ASN1_BIT_STRING_free(p);
+    }
+};
+typedef UniquePtr<ASN1_BIT_STRING, ASN1_BIT_STRING_Delete> Unique_ASN1_BIT_STRING;
+
 struct ASN1_OBJECT_Delete {
     void operator()(ASN1_OBJECT* p) const {
         ASN1_OBJECT_free(p);
@@ -162,6 +179,20 @@ struct sk_X509_Delete {
     }
 };
 typedef UniquePtr<STACK_OF(X509), sk_X509_Delete> Unique_sk_X509;
+
+struct sk_ASN1_OBJECT_Delete {
+    void operator()(STACK_OF(ASN1_OBJECT)* p) const {
+        sk_ASN1_OBJECT_pop_free(p, ASN1_OBJECT_free);
+    }
+};
+typedef UniquePtr<STACK_OF(ASN1_OBJECT), sk_ASN1_OBJECT_Delete> Unique_sk_ASN1_OBJECT;
+
+struct sk_GENERAL_NAME_Delete {
+    void operator()(STACK_OF(GENERAL_NAME)* p) const {
+        sk_GENERAL_NAME_pop_free(p, GENERAL_NAME_free);
+    }
+};
+typedef UniquePtr<STACK_OF(GENERAL_NAME), sk_GENERAL_NAME_Delete> Unique_sk_GENERAL_NAME;
 
 /**
  * Many OpenSSL APIs take ownership of an argument on success but don't free the argument
@@ -525,6 +556,27 @@ T* ByteArrayToASN1(ArrayOf<Byte>* byteArray)
 
     const unsigned char* tmp = reinterpret_cast<const unsigned char*>(byteArray->GetPayload());
     return d2i_func(NULL, &tmp, byteArray->GetLength());
+}
+
+/**
+ * Converts ASN.1 BIT STRING to a jbooleanArray.
+ */
+ECode ASN1BitStringToBooleanArray(ASN1_BIT_STRING* bitStr, ArrayOf<Boolean>** result)
+{
+    int size = bitStr->length * 8;
+    if (bitStr->flags & ASN1_STRING_FLAG_BITS_LEFT) {
+        size -= bitStr->flags & 0x07;
+    }
+
+    AutoPtr< ArrayOf<Boolean> > bitsRef = ArrayOf<Boolean>::Alloc(size);
+
+    for (int i = 0; i < size; i++) {
+        (*bitsRef)[i] = ASN1_BIT_STRING_get_bit(bitStr, i);
+    }
+
+    *result = bitsRef;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
 }
 
 /**
@@ -4738,6 +4790,614 @@ ECode NativeCrypto::Get_X509_hashCode(
         hashCode = 31 * hashCode + x509->sha1_hash[i];
     }
     *result = hashCode;
+    return NOERROR;
+}
+
+ECode NativeCrypto::X509_print_ex(
+    /* [in] */ Int64 bioRef,
+    /* [in] */ Int64 x509Ref,
+    /* [in] */ Int64 jnmflag,
+    /* [in] */ Int64 jcertflag)
+{
+    BIO* bio = reinterpret_cast<BIO*>(static_cast<uintptr_t>(bioRef));
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    long nmflag = static_cast<long>(jnmflag);
+    long certflag = static_cast<long>(jcertflag);
+    NATIVE_TRACE("X509_print_ex(%p, %p, %ld, %ld)", bio, x509, nmflag, certflag);
+
+    if (bio == NULL) {
+        NATIVE_TRACE("X509_print_ex(%p, %p, %ld, %ld) => bio == null", bio, x509, nmflag, certflag);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (x509 == NULL) {
+        NATIVE_TRACE("X509_print_ex(%p, %p, %ld, %ld) => x509 == null", bio, x509, nmflag, certflag);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (!::X509_print_ex(bio, x509, nmflag, certflag)) {
+        NATIVE_TRACE("X509_print_ex(%p, %p, %ld, %ld) => threw error", bio, x509, nmflag, certflag);
+        return ThrowExceptionIfNecessary("X509_print_ex");
+    }
+    else {
+        NATIVE_TRACE("X509_print_ex(%p, %p, %ld, %ld) => success", bio, x509, nmflag, certflag);
+        return NOERROR;
+    }
+}
+
+ECode NativeCrypto::X509_get_issuer_name(
+    /* [in] */ Int64 x509Ref,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("X509_get_issuer_name(%p)", x509);
+    return ASN1ToByteArray<X509_NAME, i2d_X509_NAME>(::X509_get_issuer_name(x509), result);
+}
+
+ECode NativeCrypto::X509_get_subject_name(
+    /* [in] */ Int64 x509Ref,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("X509_get_subject_name(%p)", x509);
+    return ASN1ToByteArray<X509_NAME, i2d_X509_NAME>(::X509_get_subject_name(x509), result);
+}
+
+ECode NativeCrypto::Get_X509_sig_alg_oid(
+    /* [in] */ Int64 x509Ref,
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("get_X509_sig_alg_oid(%p)", x509);
+
+    if (x509 == NULL || x509->sig_alg == NULL) {
+        NATIVE_TRACE("get_X509_sig_alg_oid(%p) => x509 == NULL", x509);
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    return ASN1_OBJECT_to_OID_string(x509->sig_alg->algorithm, result);
+}
+
+ECode NativeCrypto::Get_X509_sig_alg_parameter(
+    /* [in] */ Int64 x509Ref,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("get_X509_sig_alg_parameter(%p)", x509);
+
+    if (x509 == NULL) {
+        NATIVE_TRACE("get_X509_sig_alg_parameter(%p) => x509 == null", x509);
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (x509->sig_alg->parameter == NULL) {
+        NATIVE_TRACE("get_X509_sig_alg_parameter(%p) => null", x509);
+        *result = NULL;
+        return NOERROR;
+    }
+
+    return ASN1ToByteArray<ASN1_TYPE, i2d_ASN1_TYPE>(x509->sig_alg->parameter, result);
+}
+
+ECode NativeCrypto::Get_X509_issuerUID(
+    /* [in] */ Int64 x509Ref,
+    /* [out, callee] */ ArrayOf<Boolean>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("get_X509_issuerUID(%p)", x509);
+
+    if (x509 == NULL) {
+        NATIVE_TRACE("get_X509_issuerUID(%p) => x509 == null", x509);
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (x509->cert_info->issuerUID == NULL) {
+        NATIVE_TRACE("get_X509_issuerUID(%p) => null", x509);
+        *result = NULL;
+        return NOERROR;
+    }
+
+    return ASN1BitStringToBooleanArray(x509->cert_info->issuerUID, result);
+}
+
+ECode NativeCrypto::Get_X509_subjectUID(
+    /* [in] */ Int64 x509Ref,
+    /* [out, callee] */ ArrayOf<Boolean>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("get_X509_subjectUID(%p)", x509);
+
+    if (x509 == NULL) {
+        NATIVE_TRACE("get_X509_subjectUID(%p) => x509 == null", x509);
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (x509->cert_info->subjectUID == NULL) {
+        NATIVE_TRACE("get_X509_subjectUID(%p) => null", x509);
+        *result = NULL;
+        return NOERROR;
+    }
+
+    return ASN1BitStringToBooleanArray(x509->cert_info->subjectUID, result);
+}
+
+ECode NativeCrypto::X509_get_pubkey(
+    /* [in] */ Int64 x509Ref,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("X509_get_pubkey(%p)", x509);
+
+    if (x509 == NULL) {
+        NATIVE_TRACE("X509_get_pubkey(%p) => x509 == null", x509);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_EVP_PKEY pkey(::X509_get_pubkey(x509));
+    if (pkey.get() == NULL) {
+        *result = 0;
+        return ThrowExceptionIfNecessary("X509_get_pubkey");
+    }
+
+    NATIVE_TRACE("X509_get_pubkey(%p) => %p", x509, pkey.get());
+    *result = reinterpret_cast<uintptr_t>(pkey.release());
+    return NOERROR;
+}
+
+ECode NativeCrypto::Get_X509_pubkey_oid(
+    /* [in] */ Int64 x509Ref,
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("get_X509_pubkey_oid(%p)", x509);
+
+    if (x509 == NULL) {
+        NATIVE_TRACE("get_X509_pubkey_oid(%p) => x509 == null", x509);
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    X509_PUBKEY* pubkey = X509_get_X509_PUBKEY(x509);
+    return ASN1_OBJECT_to_OID_string(pubkey->algor->algorithm, result);
+}
+
+template<typename T, int (*get_ext_by_OBJ_func)(T*, ASN1_OBJECT*, int),
+        X509_EXTENSION* (*get_ext_func)(T*, int)>
+static X509_EXTENSION *X509Type_get_ext(T* x509Type, const String& oid, ECode* ec)
+{
+    NATIVE_TRACE("X509Type_get_ext(%p)", x509Type);
+
+    if (x509Type == NULL) {
+        *ec = E_NULL_POINTER_EXCEPTION;
+        return NULL;
+    }
+
+    if (oid.IsNull()) {
+        *ec = NOERROR;
+        return NULL;
+    }
+
+    Unique_ASN1_OBJECT asn1(OBJ_txt2obj(oid.string(), 1));
+    if (asn1.get() == NULL) {
+        NATIVE_TRACE("X509Type_get_ext(%p, %s) => oid conversion failed", x509Type, oid.string());
+        FreeOpenSslErrorState();
+        *ec = NOERROR;
+        return NULL;
+    }
+
+    int extIndex = get_ext_by_OBJ_func(x509Type, asn1.get(), -1);
+    if (extIndex == -1) {
+        NATIVE_TRACE("X509Type_get_ext(%p, %s) => ext not found", x509Type, oid.string());
+        *ec = NOERROR;
+        return NULL;
+    }
+
+    X509_EXTENSION* ext = get_ext_func(x509Type, extIndex);
+    NATIVE_TRACE("X509Type_get_ext(%p, %s) => %p", x509Type, oid.string(), ext);
+    *ec = NOERROR;
+    return ext;
+}
+
+template<typename T, int (*get_ext_by_OBJ_func)(T*, ASN1_OBJECT*, int),
+        X509_EXTENSION* (*get_ext_func)(T*, int)>
+static ECode X509Type_get_ext_oid(T* x509Type, const String& oidString, ArrayOf<Byte>** result)
+{
+    ECode ec;
+    X509_EXTENSION* ext = X509Type_get_ext<T, get_ext_by_OBJ_func, get_ext_func>(x509Type,
+            oidString, &ec);
+    if (ext == NULL) {
+        NATIVE_TRACE("X509Type_get_ext_oid(%p, %s) => fetching extension failed", x509Type, oidString.string());
+        *result = NULL;
+        return ec;
+    }
+
+    NATIVE_TRACE("X509Type_get_ext_oid(%p, %s) => %p", x509Type, oidString.string(), ext->value);
+    return ASN1ToByteArray<ASN1_OCTET_STRING, i2d_ASN1_OCTET_STRING>(ext->value, result);
+}
+
+ECode NativeCrypto::X509_get_ext_oid(
+    /* [in] */ Int64 x509Ref,
+    /* [in] */ const String& oid,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("X509_get_ext_oid(%p, %s)", x509, oid.string());
+    return X509Type_get_ext_oid<X509, X509_get_ext_by_OBJ, X509_get_ext>(x509, oid, result);
+}
+
+template<typename T, int (*get_ext_by_critical_func)(T*, int, int), X509_EXTENSION* (*get_ext_func)(T*, int)>
+static ECode get_X509Type_ext_oids(Int64 x509Ref, Int32 critical, ArrayOf<String>** result)
+{
+    T* x509 = reinterpret_cast<T*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("get_X509Type_ext_oids(%p, %d)", x509, critical);
+
+    if (x509 == NULL) {
+        NATIVE_TRACE("get_X509Type_ext_oids(%p, %d) => x509 == null", x509, critical);
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    int lastPos = -1;
+    int count = 0;
+    while ((lastPos = get_ext_by_critical_func(x509, critical, lastPos)) != -1) {
+        count++;
+    }
+
+    NATIVE_TRACE("get_X509Type_ext_oids(%p, %d) has %d entries", x509, critical, count);
+
+    AutoPtr< ArrayOf<String> > joa = ArrayOf<String>::Alloc(count);
+
+    lastPos = -1;
+    count = 0;
+    while ((lastPos = get_ext_by_critical_func(x509, critical, lastPos)) != -1) {
+        X509_EXTENSION* ext = get_ext_func(x509, lastPos);
+
+        String extOid;
+        ECode ec = ASN1_OBJECT_to_OID_string(ext->object, &extOid);
+        if (extOid.IsNull()) {
+            NATIVE_TRACE("get_X509Type_ext_oids(%p) => couldn't get OID", x509);
+            *result = NULL;
+            return ec;
+        }
+
+        (*joa)[count++] = extOid;
+    }
+
+    NATIVE_TRACE("get_X509Type_ext_oids(%p, %d) => success", x509, critical);
+    *result = joa;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::Get_X509_ext_oids(
+    /* [in] */ Int64 x509Ref,
+    /* [in] */ Int32 critical,
+    /* [out, callee] */ ArrayOf<String>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    NATIVE_TRACE("get_X509_ext_oids(0x%llx, %d)", x509Ref, critical);
+    return get_X509Type_ext_oids<X509, X509_get_ext_by_critical, X509_get_ext>(x509Ref,
+            critical, result);
+}
+
+/**
+ * Converts GENERAL_NAME items to the output format expected in
+ * X509Certificate#getSubjectAlternativeNames and
+ * X509Certificate#getIssuerAlternativeNames return.
+ */
+static ECode GENERAL_NAME_to_object(GENERAL_NAME* gen, IInterface** result)
+{
+    switch (gen->type) {
+    case GEN_EMAIL:
+    case GEN_DNS:
+    case GEN_URI: {
+        // This must not be a T61String and must not contain NULLs.
+        const char* data = reinterpret_cast<const char*>(ASN1_STRING_data(gen->d.ia5));
+        ssize_t len = ASN1_STRING_length(gen->d.ia5);
+        if ((len == static_cast<ssize_t>(strlen(data)))
+                && (ASN1_PRINTABLE_type(ASN1_STRING_data(gen->d.ia5), len) != V_ASN1_T61STRING)) {
+            NATIVE_TRACE("GENERAL_NAME_to_jobject(%p) => Email/DNS/URI \"%s\"", gen, data);
+            String str(data);
+            return CString::New(str, (ICharSequence**)result);
+        }
+        else {
+            NATIVE_TRACE("GENERAL_NAME_to_jobject(%p) => Email/DNS/URI invalid", gen);
+            *result = NULL;
+            return E_CERTIFICATE_PARSING_EXCEPTION;
+        }
+    }
+    case GEN_DIRNAME: {
+        /* Write in RFC 2253 format */
+        String str;
+        ECode ec = X509_NAME_to_String(gen->d.directoryName, XN_FLAG_RFC2253, &str);
+        if (FAILED(ec)) {
+            *result = NULL;
+            return ec;
+        }
+        return CString::New(str, (ICharSequence**)result);
+    }
+    case GEN_IPADD: {
+        const void *ip = reinterpret_cast<const void *>(gen->d.ip->data);
+        if (gen->d.ip->length == 4) {
+            // IPv4
+            UniquePtr<char[]> buffer(new char[INET_ADDRSTRLEN]);
+            if (inet_ntop(AF_INET, ip, buffer.get(), INET_ADDRSTRLEN) != NULL) {
+                NATIVE_TRACE("GENERAL_NAME_to_jobject(%p) => IPv4 %s", gen, buffer.get());
+                String str(buffer.get());
+                return CString::New(str, (ICharSequence**)result);
+            }
+            else {
+                NATIVE_TRACE("GENERAL_NAME_to_jobject(%p) => IPv4 failed %s", gen, strerror(errno));
+            }
+        }
+        else if (gen->d.ip->length == 16) {
+            // IPv6
+            UniquePtr<char[]> buffer(new char[INET6_ADDRSTRLEN]);
+            if (inet_ntop(AF_INET6, ip, buffer.get(), INET6_ADDRSTRLEN) != NULL) {
+                NATIVE_TRACE("GENERAL_NAME_to_jobject(%p) => IPv6 %s", gen, buffer.get());
+                String str(buffer.get());
+                return CString::New(str, (ICharSequence**)result);
+            }
+            else {
+                NATIVE_TRACE("GENERAL_NAME_to_jobject(%p) => IPv6 failed %s", gen, strerror(errno));
+            }
+        }
+
+        /* Invalid IP encodings are pruned out without throwing an exception. */
+        *result = NULL;
+        return NOERROR;
+    }
+    case GEN_RID: {
+        String str;
+        ECode ec = ASN1_OBJECT_to_OID_string(gen->d.registeredID, &str);
+        if (FAILED(ec)) {
+            *result = NULL;
+            return ec;
+        }
+        return CString::New(str, (ICharSequence**)result);
+    }
+    case GEN_OTHERNAME:
+    case GEN_X400:
+    default: {
+        AutoPtr< ArrayOf<Byte> > byteArray;
+        ECode ec = ASN1ToByteArray<GENERAL_NAME, i2d_GENERAL_NAME>(gen, (ArrayOf<Byte>**)&byteArray);
+        if (FAILED(ec)) {
+            *result = NULL;
+            return ec;
+        }
+        AutoPtr<IArrayOf> arrayObj;
+        CArrayOf::New(EIID_IByte, byteArray->GetLength(), (IArrayOf**)&arrayObj);
+        for (Int32 i = 0; i < byteArray->GetLength(); ++i) {
+            AutoPtr<IByte> bObj;
+            CByte::New((*byteArray)[i], (IByte**)&bObj);
+            arrayObj->Set(i, bObj);
+        }
+        *result = arrayObj;
+        REFCOUNT_ADD(*result);
+        return NOERROR;
+    }
+    }
+
+    *result = NULL;
+    return NOERROR;
+}
+
+#define GN_STACK_SUBJECT_ALT_NAME 1
+#define GN_STACK_ISSUER_ALT_NAME 2
+
+ECode NativeCrypto::Get_X509_GENERAL_NAME_stack(
+    /* [in] */ Int64 x509Ref,
+    /* [in] */ Int32 type,
+    /* [out, callee] */ ArrayOf<IArrayOf*>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("get_X509_GENERAL_NAME_stack(%p, %d)", x509, type);
+
+    if (x509 == NULL) {
+        NATIVE_TRACE("get_X509_GENERAL_NAME_stack(%p, %d) => x509 == null", x509, type);
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    X509_check_ca(x509);
+
+    STACK_OF(GENERAL_NAME)* gn_stack;
+    Unique_sk_GENERAL_NAME stackHolder;
+    if (type == GN_STACK_SUBJECT_ALT_NAME) {
+        gn_stack = x509->altname;
+    }
+    else if (type == GN_STACK_ISSUER_ALT_NAME) {
+        stackHolder.reset(
+                static_cast<STACK_OF(GENERAL_NAME)*>(X509_get_ext_d2i(x509, NID_issuer_alt_name,
+                        NULL, NULL)));
+        gn_stack = stackHolder.get();
+    }
+    else {
+        NATIVE_TRACE("get_X509_GENERAL_NAME_stack(%p, %d) => unknown type", x509, type);
+        *result = NULL;
+        return NOERROR;
+    }
+
+    int count = sk_GENERAL_NAME_num(gn_stack);
+    if (count <= 0) {
+        NATIVE_TRACE("get_X509_GENERAL_NAME_stack(%p, %d) => null (no entries)", x509, type);
+        *result = NULL;
+        return NOERROR;
+    }
+
+    /*
+     * Keep track of how many originally so we can ignore any invalid
+     * values later.
+     */
+    const int origCount = count;
+
+    AutoPtr< ArrayOf<IArrayOf*> > joa = ArrayOf<IArrayOf*>::Alloc(count);
+    for (int i = 0, j = 0; i < origCount; i++, j++) {
+        GENERAL_NAME* gen = sk_GENERAL_NAME_value(gn_stack, i);
+        AutoPtr<IInterface> val;
+        ECode ec = GENERAL_NAME_to_object(gen, (IInterface**)&val);
+        if (FAILED(ec)) {
+            NATIVE_TRACE("get_X509_GENERAL_NAME_stack(%p, %d) => threw exception parsing gen name",
+                    x509, type);
+            *result = NULL;
+            return ec;
+        }
+
+        /*
+         * If it's NULL, we'll have to skip this, reduce the number of total
+         * entries, and fix up the array later.
+         */
+        if (val == NULL) {
+            j--;
+            count--;
+            continue;
+        }
+
+        AutoPtr<IArrayOf> item;
+        CArrayOf::New(EIID_IInterface, 2, (IArrayOf**)&item);
+
+        AutoPtr<IInteger32> type;
+        CInteger32::New(gen->type, (IInteger32**)&type);
+        item->Set(0, type);
+        item->Set(1, val);
+
+        joa->Set(j, item);
+    }
+
+    if (count == 0) {
+        NATIVE_TRACE("get_X509_GENERAL_NAME_stack(%p, %d) shrunk from %d to 0; returning NULL",
+                x509, type, origCount);
+        joa = NULL;
+    }
+    else if (origCount != count) {
+        NATIVE_TRACE("get_X509_GENERAL_NAME_stack(%p, %d) shrunk from %d to %d", x509, type,
+                origCount, count);
+
+        AutoPtr< ArrayOf<IArrayOf*> > joa_copy = ArrayOf<IArrayOf*>::Alloc(count);
+
+        for (int i = 0; i < count; i++) {
+            AutoPtr<IArrayOf> item = (*joa)[i];
+            joa_copy->Set(i, item);
+        }
+
+        joa = joa_copy;
+    }
+
+    NATIVE_TRACE("get_X509_GENERAL_NAME_stack(%p, %d) => %d entries", x509, type, count);
+    *result = joa;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::Get_X509_ex_kusage(
+    /* [in] */ Int64 x509Ref,
+    /* [out, callee] */ ArrayOf<Boolean>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("get_X509_ex_kusage(%p)", x509);
+
+    if (x509 == NULL) {
+        NATIVE_TRACE("get_X509_ex_kusage(%p) => x509 == null", x509);
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_ASN1_BIT_STRING bitStr(static_cast<ASN1_BIT_STRING*>(
+            X509_get_ext_d2i(x509, NID_key_usage, NULL, NULL)));
+    if (bitStr.get() == NULL) {
+        NATIVE_TRACE("get_X509_ex_kusage(%p) => null", x509);
+        *result = NULL;
+        return NOERROR;
+    }
+
+    return ASN1BitStringToBooleanArray(bitStr.get(), result);
+}
+
+ECode NativeCrypto::Get_X509_ex_xkusage(
+    /* [in] */ Int64 x509Ref,
+    /* [out, callee] */ ArrayOf<String>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("get_X509_ex_xkusage(%p)", x509);
+
+    if (x509 == NULL) {
+        NATIVE_TRACE("get_X509_ex_xkusage(%p) => x509 == null", x509);
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_sk_ASN1_OBJECT objArray(static_cast<STACK_OF(ASN1_OBJECT)*>(
+            X509_get_ext_d2i(x509, NID_ext_key_usage, NULL, NULL)));
+    if (objArray.get() == NULL) {
+        NATIVE_TRACE("get_X509_ex_xkusage(%p) => null", x509);
+        *result = NULL;
+        return NOERROR;
+    }
+
+    size_t size = sk_ASN1_OBJECT_num(objArray.get());
+    AutoPtr< ArrayOf<String> > exKeyUsage = ArrayOf<String>::Alloc(size);
+
+    for (size_t i = 0; i < size; i++) {
+        String oidStr;
+        ASN1_OBJECT_to_OID_string(
+                sk_ASN1_OBJECT_value(objArray.get(), i), &oidStr);
+        (*exKeyUsage)[i] = oidStr;
+    }
+
+    NATIVE_TRACE("get_X509_ex_xkusage(%p) => success (%d entries)", x509, size);
+    *result = exKeyUsage;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::Get_X509_ex_pathlen(
+    /* [in] */ Int64 x509Ref,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("get_X509_ex_pathlen(%p)", x509);
+
+    if (x509 == NULL) {
+        NATIVE_TRACE("get_X509_ex_pathlen(%p) => x509 == null", x509);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    /* Just need to do this to cache the ex_* values. */
+    X509_check_ca(x509);
+
+    NATIVE_TRACE("get_X509_ex_pathlen(%p) => %ld", x509, x509->ex_pathlen);
+    *result = x509->ex_pathlen;
     return NOERROR;
 }
 
