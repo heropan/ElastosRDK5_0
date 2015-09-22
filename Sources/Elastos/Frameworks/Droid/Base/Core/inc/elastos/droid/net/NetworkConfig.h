@@ -26,7 +26,7 @@ public:
      * [associated radio-type],[priority],[dependencyMet]
      */
     CARAPI constructor(
-        /* [in] */ String init);
+        /* [in] */ const String& init);
 
     /**
      * Indicates if this network is supposed to be default-routable
@@ -44,7 +44,7 @@ public:
      * Human readable string
      */
     CARAPI SetName(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     /**
      * Type from ConnectivityManager
