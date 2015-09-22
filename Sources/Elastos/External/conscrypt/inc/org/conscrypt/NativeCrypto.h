@@ -7,6 +7,7 @@
 using Elastos::Security::Interfaces::IDSAPrivateKey;
 using Elastos::Security::Interfaces::IECPrivateKey;
 using Elastos::Security::Interfaces::IRSAPrivateKey;
+using Elastosx::Security::Auth::X500::IX500Principal;
 
 namespace Org {
 namespace Conscrypt {
@@ -476,44 +477,153 @@ public:
 
     // --- Block ciphers -------------------------------------------------------
 
-    // EVP_get_cipherbyname(
-    //     [in] String string,
-    //     [out] Int64* result);
+    static CARAPI EVP_get_cipherbyname(
+        /* [in] */ const String& algorithm,
+        /* [out] */ Int64* result);
 
-    // EVP_CipherInit_ex(
-    //     [in] Int64 ctx,
-    //     [in] Int64 evpCipher,
-    //     [in] ArrayOf<Byte>* key,
-    //     [in] ArrayOf<Byte>* iv,
-    //     [in] Boolean encrypting);
+    static CARAPI EVP_CipherInit_ex(
+        /* [in] */ Int64 ctxRef,
+        /* [in] */ Int64 evpCipherRef,
+        /* [in] */ ArrayOf<Byte>* keyArray,
+        /* [in] */ ArrayOf<Byte>* ivArray,
+        /* [in] */ Boolean encrypting);
 
-    // EVP_CipherUpdate(
-    //     [in] Int64 ctx,
-    //     [in] ArrayOf<Byte>* outArray,
-    //     [in] Int32 outOffset,
-    //     [in] ArrayOf<Byte>* inArray,
-    //     [in] Int32 inOffset,
-    //     [in] Int32 inLength,
-    //     [out] Int32* result);
+    static CARAPI EVP_CipherUpdate(
+        /* [in] */ Int64 ctxRef,
+        /* [in] */ ArrayOf<Byte>* outArray,
+        /* [in] */ Int32 outOffset,
+        /* [in] */ ArrayOf<Byte>* inArray,
+        /* [in] */ Int32 inOffset,
+        /* [in] */ Int32 inLength,
+        /* [out] */ Int32* result);
 
-    // EVP_CipherFinal_ex(
-    //     [in] Int64 ctx,
-    //     [in] ArrayOf<Byte>* outArray,
-    //     [in] Int32 outOffset,
-    //     [out] Int32* result);
+    static CARAPI EVP_CipherFinal_ex(
+        /* [in] */ Int64 ctxRef,
+        /* [in] */ ArrayOf<Byte>* outArray,
+        /* [in] */ Int32 outOffset,
+        /* [out] */ Int32* result);
 
-    // EVP_CIPHER_iv_length(
-    //     [in] Int64 evpCipher,
-    //     [out] Int32* result);
+    static CARAPI EVP_CIPHER_iv_length(
+        /* [in] */ Int64 evpCipherRef,
+        /* [out] */ Int32* result);
 
-    // EVP_CIPHER_CTX_new(
-    //     [out] Int64* result);
+    static CARAPI EVP_CIPHER_CTX_new(
+        /* [out] */ Int64* result);
+
+    static CARAPI EVP_CIPHER_CTX_block_size(
+        /* [in] */ Int64 ctxRef,
+        /* [out] */ Int32* result);
+
+    static CARAPI Get_EVP_CIPHER_CTX_buf_len(
+        /* [in] */ Int64 ctxRef,
+        /* [out] */ Int32* result);
+
+    static CARAPI EVP_CIPHER_CTX_set_padding(
+        /* [in] */ Int64 ctxRef,
+        /* [in] */ Boolean enablePaddingBool);
+
+    static CARAPI EVP_CIPHER_CTX_set_key_length(
+        /* [in] */ Int64 ctxRef,
+        /* [in] */ Int32 keySizeBits);
+
+    static CARAPI EVP_CIPHER_CTX_cleanup(
+        /* [in] */ Int64 ctxRef);
+
+    // --- RAND seeding --------------------------------------------------------
+
+    static CARAPI RAND_seed(
+        /* [in] */ ArrayOf<Byte>* seed);
+
+    static CARAPI RAND_load_file(
+        /* [in] */ const String& filename,
+        /* [in] */ Int64 max_bytes,
+        /* [out] */ Int32* result);
+
+    static CARAPI RAND_bytes(
+        /* [in] */ ArrayOf<Byte>* output);
+
+    // --- ASN.1 objects -------------------------------------------------------
+
+    static CARAPI OBJ_txt2nid(
+        /* [in] */ const String& oid,
+        /* [out] */ Int32* result);
+
+    static CARAPI OBJ_txt2nid_longName(
+        /* [in] */ const String& oid,
+        /* [out] */ String* result);
+
+    static CARAPI OBJ_txt2nid_oid(
+        /* [in] */ const String& oid,
+        /* [out] */ String* result);
+
+    // --- X509_NAME -----------------------------------------------------------
+
+    static CARAPI X509_NAME_hash(
+        /* [in] */ IX500Principal* principal,
+        /* [out] */ Int32* result);
+
+    static CARAPI X509_NAME_hash_old(
+        /* [in] */ IX500Principal* principal,
+        /* [out] */ Int32* result);
+
+    static CARAPI X509_NAME_print_ex(
+        /* [in] */ Int64 x509NameRef,
+        /* [in] */ Int64 flags,
+        /* [out] */ String* result);
+
+    // --- X509 ----------------------------------------------------------------
+
+    static CARAPI D2i_X509_bio(
+        /* [in] */ Int64 bioRef,
+        /* [out] */ Int64* result);
+
+    static CARAPI D2i_X509(
+        /* [in] */ ArrayOf<Byte>* certBytes,
+        /* [out] */ Int64* result);
+
+    static CARAPI PEM_read_bio_X509(
+        /* [in] */ Int64 bioRef,
+        /* [out] */ Int64* result);
+
+    static CARAPI I2d_X509(
+        /* [in] */ Int64 x509Ref,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    /** Takes an X509 context not an X509_PUBKEY context. */
+    static CARAPI I2d_X509_PUBKEY(
+        /* [in] */ Int64 x509Ref,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI ASN1_seq_pack_X509(
+        /* [in] */ ArrayOf<Int64>* x509CertRefs,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI ASN1_seq_unpack_X509_bio(
+        /* [in] */ Int64 bioRef,
+        /* [out, callee] */ ArrayOf<Int64>** result);
+
+    static CARAPI X509_free(
+        /* [in] */ Int64 x509Ref);
+
+    static CARAPI X509_cmp(
+        /* [in] */ Int64 x509Ref1,
+        /* [in] */ Int64 x509Ref2,
+        /* [out] */ Int32* result);
+
+    static CARAPI Get_X509_hashCode(
+        /* [in] */ Int64 x509Ref,
+        /* [out] */ Int32* result);
+
+private:
+    static CARAPI X509_NAME_hash(
+        /* [in] */ IX500Principal* principal,
+        /* [in] */ const String& algorithm,
+        /* [out] */ Int32* result);
+
+    static CARAPI_(Boolean) Clinit();
 
 private:
     static const Boolean sInitialized;
-
-private:
-    static CARAPI_(Boolean) Clinit();
 };
 
 } // namespace Conscrypt
