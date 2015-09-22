@@ -4,11 +4,9 @@ module
     namespace Org {
     namespace Conscrypt {
 
-    /*
-     * @Involve
-     * interface IOpenSSLNativeReference
-     */
-    interface IOpenSSLDigestContext {
+    interface IOpenSSLNativeReference {
+        GetNativeContext(
+            [out] Int64* ctxRef);
     }
 
     } // namespace Conscrypt

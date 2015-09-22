@@ -6,6 +6,7 @@ module
     merge("../../../car/org/conscrypt/INativeCrypto.car");
     merge("../../../car/org/conscrypt/IOpenSSLBIOInputStream.car");
     merge("../../../car/org/conscrypt/IOpenSSLDigestContext.car");
+    merge("../../../car/org/conscrypt/IOpenSSLNativeReference.car");
 
     using interface Elastos.Security.IProvider;
 

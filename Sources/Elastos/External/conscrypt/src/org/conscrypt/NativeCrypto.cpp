@@ -104,6 +104,13 @@ struct EC_KEY_Delete {
 };
 typedef UniquePtr<EC_KEY, EC_KEY_Delete> Unique_EC_KEY;
 
+struct EVP_MD_CTX_Delete {
+    void operator()(EVP_MD_CTX* p) const {
+        EVP_MD_CTX_destroy(p);
+    }
+};
+typedef UniquePtr<EVP_MD_CTX, EVP_MD_CTX_Delete> Unique_EVP_MD_CTX;
+
 struct EVP_PKEY_Delete {
     void operator()(EVP_PKEY* p) const {
         EVP_PKEY_free(p);
@@ -319,6 +326,19 @@ static ECode ThrowExceptionIfNecessary(const char* location  __attribute__ ((unu
 
     FreeOpenSslErrorState();
     return ec;
+}
+
+template<typename T>
+static T* FromContextObject(IOpenSSLDigestContext* contextObject, ECode* ec) {
+    *ec = NOERROR;
+    Int64 ctxRef;
+    IOpenSSLNativeReference::Probe(contextObject)->GetNativeContext(&ctxRef);
+    T* ref = reinterpret_cast<T*>(ctxRef);
+    if (ref == NULL) {
+        NATIVE_TRACE("ctx == null");
+        *ec = E_NULL_POINTER_EXCEPTION;
+    }
+    return ref;
 }
 
 /**
@@ -3409,6 +3429,489 @@ ECode NativeCrypto::ECDH_compute_key(
 
     *result = outputLength;
     return NOERROR;
+}
+
+ECode NativeCrypto::EVP_get_digestbyname(
+    /* [in] */ const String& algorithm,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    if (algorithm.IsNull()) {
+        *result = -1;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    NATIVE_TRACE("NativeCrypto_EVP_get_digestbyname(%s)", algorithm.string());
+
+    const EVP_MD* evp_md = ::EVP_get_digestbyname(algorithm.string());
+    if (evp_md == NULL) {
+        *result = 0;
+        return ThrowRuntimeException("Hash algorithm not found");
+    }
+
+    NATIVE_TRACE("NativeCrypto_EVP_get_digestbyname(%s) => %p", algorithm.string(), evp_md);
+    *result = reinterpret_cast<uintptr_t>(evp_md);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EVP_MD_size(
+    /* [in] */ Int64 evpMdRef,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    EVP_MD* evp_md = reinterpret_cast<EVP_MD*>(evpMdRef);
+    NATIVE_TRACE("NativeCrypto_EVP_MD_size(%p)", evp_md);
+
+    if (evp_md == NULL) {
+        *result = -1;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    int ret = ::EVP_MD_size(evp_md);
+    NATIVE_TRACE("NativeCrypto_EVP_MD_size(%p) => %d", evp_md, ret);
+    *result = ret;
+    return NOERROR;
+}
+
+ECode NativeCrypto::EVP_MD_block_size(
+    /* [in] */ Int64 evpMdRef,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    EVP_MD* evp_md = reinterpret_cast<EVP_MD*>(evpMdRef);
+    NATIVE_TRACE("NativeCrypto_EVP_MD_block_size(%p)", evp_md);
+
+    if (evp_md == NULL) {
+        *result = -1;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    int ret = ::EVP_MD_block_size(evp_md);
+    NATIVE_TRACE("NativeCrypto_EVP_MD_block_size(%p) => %d", evp_md, ret);
+    *result = ret;
+    return NOERROR;
+}
+
+ECode NativeCrypto::EVP_MD_CTX_create(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    NATIVE_TRACE_MD("EVP_MD_CTX_create()");
+
+    Unique_EVP_MD_CTX ctx(::EVP_MD_CTX_create());
+    if (ctx.get() == NULL) {
+        *result = 0;
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
+    NATIVE_TRACE_MD("EVP_MD_CTX_create() => %p", ctx.get());
+    *result = reinterpret_cast<uintptr_t>(ctx.release());
+    return NOERROR;
+}
+
+ECode NativeCrypto::EVP_MD_CTX_init(
+    /* [in] */ IOpenSSLDigestContext* ctxRef)
+{
+    ECode ec;
+    EVP_MD_CTX* ctx = FromContextObject<EVP_MD_CTX>(ctxRef, &ec);
+    NATIVE_TRACE_MD("EVP_MD_CTX_init(%p)", ctx);
+
+    if (ctx != NULL) {
+        ::EVP_MD_CTX_init(ctx);
+    }
+    return ec;
+}
+
+ECode NativeCrypto::EVP_MD_CTX_destroy(
+    /* [in] */ Int64 ctxRef)
+{
+    EVP_MD_CTX* ctx = reinterpret_cast<EVP_MD_CTX*>(ctxRef);
+    NATIVE_TRACE_MD("EVP_MD_CTX_destroy(%p)", ctx);
+
+    if (ctx != NULL) {
+        ::EVP_MD_CTX_destroy(ctx);
+    }
+    return NOERROR;
+}
+
+ECode NativeCrypto::EVP_MD_CTX_copy(
+    /* [in] */ IOpenSSLDigestContext* dstCtxRef,
+    /* [in] */ IOpenSSLDigestContext* srcCtxRef,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    ECode ec = NOERROR;
+    EVP_MD_CTX* dst_ctx = FromContextObject<EVP_MD_CTX>(dstCtxRef, &ec);
+    if (dst_ctx == NULL) {
+        *result = 0;
+        return ec;
+    }
+    const EVP_MD_CTX* src_ctx = FromContextObject<EVP_MD_CTX>(srcCtxRef, &ec);
+    if (src_ctx == NULL) {
+        *result = 0;
+        return ec;
+    }
+    NATIVE_TRACE_MD("EVP_MD_CTX_copy(%p. %p)", dst_ctx, src_ctx);
+
+    int ret = EVP_MD_CTX_copy_ex(dst_ctx, src_ctx);
+    if (ret == 0) {
+        FreeOpenSslErrorState();
+        ec = ThrowRuntimeException("Unable to copy EVP_MD_CTX");
+    }
+
+    NATIVE_TRACE_MD("EVP_MD_CTX_copy(%p, %p) => %d", dst_ctx, src_ctx, ret);
+    *result = ret;
+    return ec;
+}
+
+static ECode EvpInit(IOpenSSLDigestContext* evpMdCtxRef, Int64 evpMdRef, const char* name,
+        int (*init_func)(EVP_MD_CTX*, const EVP_MD*, ENGINE*), Int32* result)
+{
+    ECode ec = NOERROR;
+    EVP_MD_CTX* ctx = FromContextObject<EVP_MD_CTX>(evpMdCtxRef, &ec);
+    if (ctx == NULL) {
+        *result = 0;
+        return ec;
+    }
+
+    const EVP_MD* evp_md = reinterpret_cast<const EVP_MD*>(evpMdRef);
+    if (evp_md == NULL) {
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    NATIVE_TRACE_MD("%s(%p, %p)", name, ctx, evp_md);
+
+    int ok = init_func(ctx, evp_md, NULL);
+    if (ok == 0) {
+        ec = ThrowExceptionIfNecessary(name);
+        if (FAILED(ec)) {
+            NATIVE_TRACE("%s(%p) => threw exception", name, evp_md);
+            *result = 0;
+            return ec;
+        }
+    }
+    NATIVE_TRACE_MD("%s(%p, %p) => %d", name, ctx, evp_md, ok);
+    *result = ok;
+    return NOERROR;
+}
+
+ECode NativeCrypto::EVP_DigestInit(
+    /* [in] */ IOpenSSLDigestContext* evpMdCtxRef,
+    /* [in] */ Int64 evpMdRef,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    return EvpInit(evpMdCtxRef, evpMdRef, "EVP_DigestInit", EVP_DigestInit_ex, result);
+}
+
+static ECode EvpUpdate(IOpenSSLDigestContext* evpMdCtxRef, ArrayOf<Byte>* inBytes, Int32 inOffset,
+        Int32 inLength, const char *name, int (*update_func)(EVP_MD_CTX*, const void *,
+        size_t))
+{
+    ECode ec = NOERROR;
+    EVP_MD_CTX* mdCtx = FromContextObject<EVP_MD_CTX>(evpMdCtxRef, &ec);
+    NATIVE_TRACE_MD("%s(%p, %p, %d, %d)", name, mdCtx, inBytes, inOffset, inLength);
+
+    if (mdCtx == NULL) {
+        return ec;
+    }
+
+    if (inOffset < 0 || inOffset > inBytes->GetLength()) {
+        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    const Int32 inEnd = inOffset + inLength;
+    if (inLength < 0 || inEnd < 0 || inEnd > inBytes->GetLength()) {
+        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    const unsigned char *tmp = reinterpret_cast<const unsigned char *>(inBytes->GetPayload());
+    if (!update_func(mdCtx, tmp + inOffset, inLength)) {
+        NATIVE_TRACE("ctx=%p %s => threw exception", mdCtx, name);
+        ec = ThrowExceptionIfNecessary(name);
+    }
+
+    NATIVE_TRACE_MD("%s(%p, %p, %d, %d) => success", name, mdCtx, inBytes, inOffset, inLength);
+    return ec;
+}
+
+ECode NativeCrypto::EVP_DigestUpdate(
+    /* [in] */ IOpenSSLDigestContext* evpMdCtxRef,
+    /* [in] */ ArrayOf<Byte>* buffer,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int32 length)
+{
+    return EvpUpdate(evpMdCtxRef, buffer, offset, length, "EVP_DigestUpdate",
+            ::EVP_DigestUpdate);
+}
+
+ECode NativeCrypto::EVP_DigestFinal(
+    /* [in] */ IOpenSSLDigestContext* ctxRef,
+    /* [in] */ ArrayOf<Byte>* hash,
+    /* [in] */ Int32 offset,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    ECode ec = NOERROR;
+    EVP_MD_CTX* ctx = FromContextObject<EVP_MD_CTX>(ctxRef, &ec);
+    NATIVE_TRACE_MD("EVP_DigestFinal(%p, %p, %d)", ctx, hash, offset);
+
+    if (ctx == NULL) {
+        *result = -1;
+        return ec;
+    }
+    else if (hash == NULL) {
+        *result = -1;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    unsigned int bytesWritten = -1;
+    int ok = EVP_DigestFinal_ex(ctx,
+                             reinterpret_cast<unsigned char*>(hash->GetPayload() + offset),
+                             &bytesWritten);
+    if (ok == 0) {
+        ec = ThrowExceptionIfNecessary("EVP_DigestFinal");
+    }
+
+    NATIVE_TRACE_MD("EVP_DigestFinal(%p, %p, %d) => %d", ctx, hash, offset, bytesWritten);
+    *result = bytesWritten;
+    return ec;
+}
+
+ECode NativeCrypto::EVP_DigestSignInit(
+    /* [in] */ IOpenSSLDigestContext* evpMdCtxRef,
+    /* [in] */ Int64 evpMdRef,
+    /* [in] */ Int64 pkeyRef)
+{
+    ECode ec = NOERROR;
+    EVP_MD_CTX* mdCtx = FromContextObject<EVP_MD_CTX>(evpMdCtxRef, &ec);
+    if (mdCtx == NULL) {
+         return ec;
+    }
+
+    const EVP_MD* md = reinterpret_cast<const EVP_MD*>(evpMdRef);
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("EVP_DigestSignInit(%p, %p, %p)", mdCtx, md, pkey);
+
+    if (md == NULL || pkey == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (::EVP_DigestSignInit(mdCtx, (EVP_PKEY_CTX **) NULL, md, (ENGINE *) NULL, pkey) <= 0) {
+        NATIVE_TRACE("ctx=%p EVP_DigestSignInit => threw exception", mdCtx);
+        return ThrowExceptionIfNecessary("EVP_DigestSignInit");
+    }
+
+    NATIVE_TRACE("EVP_DigestSignInit(%p, %p, %p) => success", mdCtx, md, pkey);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EVP_DigestSignUpdate(
+    /* [in] */ IOpenSSLDigestContext* evpMdCtxRef,
+    /* [in] */ ArrayOf<Byte>* buffer,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int32 length)
+{
+    return EvpUpdate(evpMdCtxRef, buffer, offset, length, "EVP_DigestSignUpdate",
+            ::EVP_DigestUpdate);
+}
+
+ECode NativeCrypto::EVP_DigestSignFinal(
+    /* [in] */ IOpenSSLDigestContext* evpMdCtxRef,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    ECode ec = NOERROR;
+    EVP_MD_CTX* mdCtx = FromContextObject<EVP_MD_CTX>(evpMdCtxRef, &ec);
+    NATIVE_TRACE("EVP_DigestSignFinal(%p)", mdCtx);
+
+    if (mdCtx == NULL) {
+        *result = NULL;
+        return ec;
+    }
+
+    const size_t expectedSize = EVP_MD_CTX_size(mdCtx);
+    AutoPtr< ArrayOf<Byte> > outBytes = ArrayOf<Byte>::Alloc(expectedSize);
+    unsigned char *tmp = reinterpret_cast<unsigned char*>(outBytes->GetPayload());
+    size_t len;
+    if (!::EVP_DigestSignFinal(mdCtx, tmp, &len)) {
+        NATIVE_TRACE("ctx=%p EVP_DigestSignFinal => threw exception", mdCtx);
+        *result = NULL;
+        return ThrowExceptionIfNecessary("EVP_DigestSignFinal");
+    }
+
+    if (len != expectedSize) {
+        *result = NULL;
+        return ThrowRuntimeException("hash size unexpected");
+    }
+
+    NATIVE_TRACE("EVP_DigestSignFinal(%p) => %p", mdCtx, outBytes.Get());
+    *result = outBytes;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::EVP_SignInit(
+    /* [in] */ IOpenSSLDigestContext* evpMdCtxRef,
+    /* [in] */ Int64 evpMdRef,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    return EvpInit(evpMdCtxRef, evpMdRef, "EVP_SignInit", EVP_DigestInit_ex, result);
+}
+
+ECode NativeCrypto::EVP_SignUpdate(
+    /* [in] */ IOpenSSLDigestContext* evpMdCtxRef,
+    /* [in] */ ArrayOf<Byte>* buffer,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int32 length)
+{
+    return EvpUpdate(evpMdCtxRef, buffer, offset, length, "EVP_SignUpdate",
+            ::EVP_DigestUpdate);
+}
+
+ECode NativeCrypto::EVP_SignFinal(
+    /* [in] */ IOpenSSLDigestContext* ctxRef,
+    /* [in] */ ArrayOf<Byte>* signature,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int64 pkeyRef,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    ECode ec = NOERROR;
+    EVP_MD_CTX* ctx = FromContextObject<EVP_MD_CTX>(ctxRef, &ec);
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("NativeCrypto_EVP_SignFinal(%p, %p, %d, %p)", ctx, signature, offset, pkey);
+
+    if (ctx == NULL) {
+        *result = -1;
+        return ec;
+    }
+    else if (pkey == NULL) {
+        *result = -1;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (signature == NULL) {
+        *result = -1;
+        return NOERROR;
+    }
+    unsigned int bytesWritten = -1;
+    int ok = ::EVP_SignFinal(ctx,
+                           reinterpret_cast<unsigned char*>(signature->GetPayload() + offset),
+                           &bytesWritten,
+                           pkey);
+    if (ok == 0) {
+        ec = ThrowExceptionIfNecessary("NativeCrypto_EVP_SignFinal");
+    }
+    NATIVE_TRACE("NativeCrypto_EVP_SignFinal(%p, %p, %d, %p) => %u",
+              ctx, signature, offset, pkey, bytesWritten);
+
+    *result = bytesWritten;
+    return NOERROR;
+}
+
+ECode NativeCrypto::EVP_VerifyInit(
+    /* [in] */ IOpenSSLDigestContext* evpMdCtxRef,
+    /* [in] */ Int64 evpMdRef,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    return EvpInit(evpMdCtxRef, evpMdRef, "EVP_VerifyInit", EVP_DigestInit_ex, result);
+}
+
+ECode NativeCrypto::EVP_VerifyUpdate(
+    /* [in] */ IOpenSSLDigestContext* ctxRef,
+    /* [in] */ ArrayOf<Byte>* buffer,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int32 length)
+{
+    ECode ec = NOERROR;
+    EVP_MD_CTX* ctx = FromContextObject<EVP_MD_CTX>(ctxRef, &ec);
+    NATIVE_TRACE("NativeCrypto_EVP_VerifyUpdate(%p, %p, %d, %d)", ctx, buffer, offset, length);
+
+    if (ctx == NULL) {
+        return ec;
+    }
+    else if (buffer == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (offset < 0 || length < 0) {
+        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    if (buffer == NULL) {
+        return NOERROR;
+    }
+    if (buffer->GetLength() < offset + length) {
+        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    int ok = ::EVP_DigestUpdate(ctx,
+                            reinterpret_cast<const unsigned char*>(buffer->GetPayload() + offset),
+                            length);
+    if (ok == 0) {
+        ec = ThrowExceptionIfNecessary("NativeCrypto_EVP_VerifyUpdate");
+    }
+    return ec;
+}
+
+ECode NativeCrypto::EVP_VerifyFinal(
+    /* [in] */ IOpenSSLDigestContext* ctxRef,
+    /* [in] */ ArrayOf<Byte>* buffer,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int32 length,
+    /* [in] */ Int64 pkeyRef,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    ECode ec = NOERROR;
+    EVP_MD_CTX* ctx = FromContextObject<EVP_MD_CTX>(ctxRef, &ec);
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("NativeCrypto_EVP_VerifyFinal(%p, %p, %d, %d, %p)",
+            ctx, buffer, offset, length, pkey);
+
+    if (ctx == NULL) {
+        *result = -1;
+        return ec;
+    }
+    else if (buffer == NULL || pkey == NULL) {
+        *result = -1;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    int ok = ::EVP_VerifyFinal(ctx,
+                            reinterpret_cast<const unsigned char*>(buffer->GetPayload() + offset),
+                            length,
+                            pkey);
+    if (ok < 0) {
+        ec = ThrowExceptionIfNecessary("NativeCrypto_EVP_VerifyFinal");
+    }
+
+    /*
+     * For DSA keys, OpenSSL appears to have a bug where it returns
+     * errors for any result != 1. See dsa_ossl.c in dsa_do_verify
+     */
+    FreeOpenSslErrorState();
+
+    NATIVE_TRACE("NativeCrypto_EVP_VerifyFinal(%p, %p, %d, %d, %p) => %d",
+              ctx, buffer, offset, length, pkey, ok);
+
+    *result = ok;
+    return ec;
 }
 
 } // namespace Conscrypt
