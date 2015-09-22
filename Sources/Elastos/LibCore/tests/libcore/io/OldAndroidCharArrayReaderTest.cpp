@@ -1,20 +1,18 @@
 /*
- * ~/libcore/luni/src/test/java/libcore/java/io/OldAndroidByteArrayInputStreamTest.java
+ * ~/libcore/luni/src/test/java/libcore/java/io/OldAndroidCharArrayReaderTest.java
  */
 
-#include <stdarg.h>
-
 #include <elautoptr.h>
-#include <elastos/coredef.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
-#include <elastos/utility/etl/List.h>
 #include <elastos/utility/Arrays.h>
 
 using Elastos::Core::StringUtils;
+using Elastos::Core::IAppendable;
 using Elastos::Utility::Arrays;
 using Elastos::Utility::Zip::CCRC32;
-using Elastos::Core::IAppendable;
+using Elastos::Utility::Zip::ICheckedInputStream;
+using Elastos::Utility::Zip::CCheckedInputStream;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
@@ -25,20 +23,20 @@ using Libcore::IO::ILibcore;
 using Libcore::IO::CLibcore;
 using Libcore::IO::IOs;
 using Elastos::IO::IInputStream;
-using Elastos::Utility::Zip::ICheckedInputStream;
-using Elastos::Utility::Zip::CCheckedInputStream;
 using Elastos::IO::IObjectOutputStream;
-using Elastos::IO::IByteArrayInputStream;
-using Elastos::IO::CByteArrayInputStream;
+using Elastos::IO::IReader;
+using Elastos::IO::ICharArrayReader;
+using Elastos::IO::CCharArrayReader;
 
 namespace Elastos {
-namespace OldAndroidByteArrayInputStreamTest {
+namespace OldAndroidCharArrayReaderTest {
 
 
-static String read(IInputStream *a);
-static String skipRead(IInputStream *a);
-static String read(IInputStream *a, int x);
-static String markRead(IInputStream *a, int x, int y);
+static String read(IReader *a);
+static String skipRead(IReader *a);
+static String read(IReader *a, int x);
+static String markRead(IReader *a, int x, int y);
+
 
 static void assertEquals(const char *info, Int32 aspect, Int32 test)
 {
@@ -53,7 +51,6 @@ static void assertEquals(const char *info, String aspect, String test)
 }
 
 #if 0
-
 /*
  * Copyright (C) 2008 The Android Open Source Project
  *
@@ -72,24 +69,23 @@ static void assertEquals(const char *info, String aspect, String test)
 
 package libcore.java.io;
 
-import java.io.ByteArrayInputStream;
+import java.io.CharArrayReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
 /**
- * Tests to verify that simple functionality works for ByteArrayInputStreams.
+ * Basic tests for CharArrayReader.
  */
-public class OldAndroidByteArrayInputStreamTest extends TestCase {
+public class OldAndroidCharArrayReaderTest extends TestCase {
 
-    public void testByteArrayInputStream() throws Exception {
+    public void testCharArrayReader() throws Exception {
         String str = "AbCdEfGhIjKlMnOpQrStUvWxYz";
-
-        ByteArrayInputStream a = new ByteArrayInputStream(str.getBytes());
-        ByteArrayInputStream b = new ByteArrayInputStream(str.getBytes());
-        ByteArrayInputStream c = new ByteArrayInputStream(str.getBytes());
-        ByteArrayInputStream d = new ByteArrayInputStream(str.getBytes());
+        CharArrayReader a = new CharArrayReader(str.toCharArray());
+        CharArrayReader b = new CharArrayReader(str.toCharArray());
+        CharArrayReader c = new CharArrayReader(str.toCharArray());
+        CharArrayReader d = new CharArrayReader(str.toCharArray());
 
         Assert.assertEquals(str, read(a));
         Assert.assertEquals("AbCdEfGhIj", read(b, 10));
@@ -97,39 +93,30 @@ public class OldAndroidByteArrayInputStreamTest extends TestCase {
         Assert.assertEquals("AbCdEfGdEfGhIjKlMnOpQrStUvWxYz", markRead(d, 3, 4));
     }
 #endif
-void testByteArrayInputStream()
+void testCharArrayReader()
 {
     ECode ec;
-    String str = String("AbCdEfGhIjKlMnOpQrStUvWxYz");
+    String str("AbCdEfGhIjKlMnOpQrStUvWxYz");
+    AutoPtr<ICharArrayReader> a;
+    AutoPtr<ICharArrayReader> b;
+    AutoPtr<ICharArrayReader> c;
+    AutoPtr<ICharArrayReader> d;
 
-    AutoPtr<IByteArrayInputStream> a;
-    AutoPtr<IByteArrayInputStream> b;
-    AutoPtr<IByteArrayInputStream> c;
-    AutoPtr<IByteArrayInputStream> d;
+    ec = CCharArrayReader::New(str.GetChars(), (ICharArrayReader **)&a);
+    ec = CCharArrayReader::New(str.GetChars(), (ICharArrayReader **)&b);
+    ec = CCharArrayReader::New(str.GetChars(), (ICharArrayReader **)&c);
+    ec = CCharArrayReader::New(str.GetChars(), (ICharArrayReader **)&d);
 
-    ec = CByteArrayInputStream::New((ArrayOf<Byte> *)str.GetBytes(), (IByteArrayInputStream **)&a);
-    ec = CByteArrayInputStream::New((ArrayOf<Byte> *)str.GetBytes(), (IByteArrayInputStream **)&b);
-    ec = CByteArrayInputStream::New((ArrayOf<Byte> *)str.GetBytes(), (IByteArrayInputStream **)&c);
-    ec = CByteArrayInputStream::New((ArrayOf<Byte> *)str.GetBytes(), (IByteArrayInputStream **)&d);
 
-    AutoPtr<IInputStream> ia;
-    AutoPtr<IInputStream> ib;
-    AutoPtr<IInputStream> ic;
-    AutoPtr<IInputStream> id;
 
-    ia = IInputStream::Probe((IByteArrayInputStream *)a);
-    ib = IInputStream::Probe((IByteArrayInputStream *)a);
-    ic = IInputStream::Probe((IByteArrayInputStream *)a);
-    id = IInputStream::Probe((IByteArrayInputStream *)a);
-
-    assertEquals("", str, read(ia));
-    assertEquals("", String("AbCdEfGhIj"), read(ib, 10));
-    assertEquals("", String("bdfhjlnprtvxz"), skipRead(ic));
-    assertEquals("", String("AbCdEfGdEfGhIjKlMnOpQrStUvWxYz"), markRead(id, 3, 4));
+    assertEquals("testCharArrayReader", str, read(IReader::Probe(a)));
+    assertEquals("testCharArrayReader", String("AbCdEfGhIj"), read(IReader::Probe(b), 10));
+    assertEquals("testCharArrayReader", String("bdfhjlnprtvxz"), skipRead(IReader::Probe(c)));
+    assertEquals("testCharArrayReader", String("AbCdEfGdEfGhIjKlMnOpQrStUvWxYz"), markRead(IReader::Probe(d), 3, 4));
 }
 
 #if 0
-    public static String read(InputStream a) throws IOException {
+    public static String read(Reader a) throws IOException {
         int r;
         StringBuilder builder = new StringBuilder();
         do {
@@ -140,8 +127,8 @@ void testByteArrayInputStream()
         return builder.toString();
     }
 
-    public static String read(InputStream a, int x) throws IOException {
-        byte[] b = new byte[x];
+    public static String read(Reader a, int x) throws IOException {
+        char[] b = new char[x];
         int len = a.read(b, 0, x);
         if (len < 0) {
             return "";
@@ -149,7 +136,7 @@ void testByteArrayInputStream()
         return new String(b, 0, len);
     }
 
-    public static String skipRead(InputStream a) throws IOException {
+    public static String skipRead(Reader a) throws IOException {
         int r;
         StringBuilder builder = new StringBuilder();
         do {
@@ -161,7 +148,7 @@ void testByteArrayInputStream()
         return builder.toString();
     }
 
-    public static String markRead(InputStream a, int x, int y) throws IOException {
+    public static String markRead(Reader a, int x, int y) throws IOException {
         int m = 0;
         int r;
         StringBuilder builder = new StringBuilder();
@@ -180,7 +167,8 @@ void testByteArrayInputStream()
     }
 }
 #endif
-static String read(IInputStream *a)
+
+static String read(IReader *a)
 {
     int r;
     StringBuilder builder;
@@ -193,7 +181,7 @@ static String read(IInputStream *a)
     return builder.ToString();
 }
 
-static String skipRead(IInputStream *a)
+static String skipRead(IReader *a)
 {
     int r;
     StringBuilder builder;
@@ -208,21 +196,21 @@ static String skipRead(IInputStream *a)
     return builder.ToString();
 }
 
-static String read(IInputStream *a, int x)
+static String read(IReader *a, int x)
 {
-    AutoPtr<ArrayOf<Byte> > b = ArrayOf<Byte>::Alloc(x);
+    AutoPtr<ArrayOf<Char32> > b = ArrayOf<Char32>::Alloc(x);
 
     int len;
 
-    a->Read((ArrayOf<Byte> *)b, 0, x, &len);
+    a->Read((ArrayOf<Char32> *)b, 0, x, &len);
     if (len < 0) {
         return String("");
     }
-    String str = String((const char *)b->GetPayload(), len);
+    String str = String(*(ArrayOf<Char32> *)b, 0, len);
     return str;
 }
 
-static String markRead(IInputStream *a, int x, int y)
+static String markRead(IReader *a, int x, int y)
 {
     int m = 0;
     int r;
@@ -241,14 +229,13 @@ static String markRead(IInputStream *a, int x, int y)
     return builder.ToString();
 }
 
-
 //==============================================================================
 
-int mainOldAndroidByteArrayInputStreamTest(int argc, char *argv[])
+int mainOldAndroidCharArrayReaderTest(int argc, char *argv[])
 {
-    printf("\n==== libcore/math/OldAndroidByteArrayInputStreamTest ====\n");
-    testByteArrayInputStream();
-    printf("\n==== end of libcore/math/OldAndroidByteArrayInputStreamTest ====\n");
+    printf("\n==== libcore/math/OldAndroidCharArrayReaderTest ====\n");
+    testCharArrayReader();
+    printf("\n==== end of libcore/math/OldAndroidCharArrayReaderTest ====\n");
 
     return 0;
 }
