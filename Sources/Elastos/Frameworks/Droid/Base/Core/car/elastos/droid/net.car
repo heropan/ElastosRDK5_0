@@ -354,6 +354,16 @@ module
         interface INetwork;
     }
 
+    class CNetworkCapabilities {
+        constructor();
+
+        constructor(
+            [in] INetworkCapabilities* nc);
+
+        interface IParcelable;
+        interface INetworkCapabilities;
+    }
+
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos

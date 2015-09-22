@@ -45,6 +45,7 @@ SOURCES += MobileLinkQualityInfo.cpp
 SOURCES += CMobileLinkQualityInfoHelper.cpp
 SOURCES += Network.cpp
 SOURCES += NetworkAgent.cpp
+SOURCES += NetworkCapabilities.cpp
 #SOURCES += CNetworkConfig.cpp
 #SOURCES += CNetworkIdentity.cpp
 #SOURCES += CNetworkIdentityHelper.cpp
