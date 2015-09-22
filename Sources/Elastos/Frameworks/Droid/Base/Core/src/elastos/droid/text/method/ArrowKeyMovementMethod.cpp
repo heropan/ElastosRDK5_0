@@ -1,13 +1,12 @@
 #include "text/method/ArrowKeyMovementMethod.h"
 
-#include "text/method/MetaKeyKeyListener.h"
-#include "text/method/CWordIterator.h"
-#include "text/method/Touch.h"
-#include "text/Selection.h"
+#include "elastos/droid/text/method/MetaKeyKeyListener.h"
+#include "elastos/droid/text/method/CWordIterator.h"
+#include "elastos/droid/text/method/Touch.h"
+#include "elastos/droid/text/Selection.h"
 #include "graphics/CRect.h"
 #include "view/CKeyEvent.h"
-//#include "os/ElObject.h"
-//#include <elastos/Core/Object.h>
+#include <elastos/Core/Object.h>
 
 using Elastos::Droid::Text::ISelectionPositionIterator;
 using Elastos::Droid::Text::EIID_ISelectionPositionIterator;
@@ -15,7 +14,7 @@ using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::View::CKeyEvent;
 using Elastos::Droid::View::IViewParent;
-//using Elastos::Core::Object;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -300,10 +299,11 @@ Boolean ArrowKeyMovementMethod::IsTouchSelecting(
     return isMouse ? Touch::IsActivelySelecting(buffer) : IsSelecting(buffer);
 }
 
-Boolean ArrowKeyMovementMethod::OnTouchEvent(
+ECode ArrowKeyMovementMethod::OnTouchEvent(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* buffer,
-    /* [in] */ IMotionEvent* event)
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
 {
     Int32 initialScrollX = -1;
     Int32 initialScrollY = -1;
@@ -373,7 +373,8 @@ Boolean ArrowKeyMovementMethod::OnTouchEvent(
                 widget->GetOffsetForPosition(x, y, &offset);
 
                 Selection::ExtendSelection(buffer, offset);
-                return TRUE;
+                *result = TRUE;
+                return NOERROR;
             }
         }
         else if (action == IMotionEvent::ACTION_UP) {
@@ -386,7 +387,8 @@ Boolean ArrowKeyMovementMethod::OnTouchEvent(
                 (initialScrollX >= 0 && initialScrollX != (widget->GetScrollX(&scrollX), scrollX))) {
                 Boolean bMoveCursorToVisibleOffset;
                 widget->MoveCursorToVisibleOffset(&bMoveCursorToVisibleOffset);
-                return TRUE;
+                *result = TRUE;
+                return NOERROR;
             }
 
             Int32 offset = 0;
@@ -399,25 +401,30 @@ Boolean ArrowKeyMovementMethod::OnTouchEvent(
             MetaKeyKeyListener::AdjustMetaAfterKeypress(buffer);
             MetaKeyKeyListener::ResetLockedMeta(buffer);
 
-            return TRUE;
+            *result = TRUE;
+            return NOERROR;
         }
     }
-    return handled;
+    *result = handled;
+    return NOERROR;
 }
 
-Boolean ArrowKeyMovementMethod::CanSelectArbitrarily()
+ECode ArrowKeyMovementMethod::CanSelectArbitrarily(
+    /* [out] */ Boolean* result)
 {
-    return TRUE;
+    *result = TRUE;
+    return NOERROR;
 }
 
-void ArrowKeyMovementMethod::Initialize(
+ECode ArrowKeyMovementMethod::Initialize(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* text)
 {
     Selection::SetSelection(text, 0);
+    return NOERROR;
 }
 
-void ArrowKeyMovementMethod::OnTakeFocus(
+ECode ArrowKeyMovementMethod::OnTakeFocus(
     /* [in] */ ITextView* view,
     /* [in] */ ISpannable* text,
     /* [in] */ Int32 dir)
@@ -435,6 +442,7 @@ void ArrowKeyMovementMethod::OnTakeFocus(
         Int32 length;
         Selection::SetSelection(text, (text->GetLength(&length), length));
     }
+    return NOERROR;
 }
 
 } // namespace Method

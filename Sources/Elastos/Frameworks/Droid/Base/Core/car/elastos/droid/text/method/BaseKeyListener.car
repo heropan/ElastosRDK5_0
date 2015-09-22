@@ -60,12 +60,12 @@ module
             [out] Boolean* ret);
     }
 
-    // interface IBaseKeyListenerHelper {
-    //     MakeTextContentType(
-    //         [in] ICapitalize* caps,
-    //         [in] Boolean autoText,
-    //         [out] Int32* ret);
-    // }
+    interface IBaseKeyListenerHelper {
+        MakeTextContentType(
+            [in] ICapitalize* caps,
+            [in] Boolean autoText,
+            [out] Int32* ret);
+     }
 
     }//namespace Method
     }//namespace Text

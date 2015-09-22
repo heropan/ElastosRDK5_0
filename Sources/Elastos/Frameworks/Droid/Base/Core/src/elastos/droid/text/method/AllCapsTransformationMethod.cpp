@@ -2,29 +2,30 @@
 #include "content/res/CConfiguration.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CString;
-using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Content::Res::CConfiguration;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Core::CString;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Method {
 
-const CString AllCapsTransformationMethod::TAG = "AllCapsTransformationMethod";
+const String AllCapsTransformationMethod::TAG = "AllCapsTransformationMethod";
+
+CAR_INTERFACE_IMPL_3(AllCapsTransformationMethod, Object, IAllCapsTransformationMethod, ITransformationMethod2, ITransformationMethod)
 
 AllCapsTransformationMethod::AllCapsTransformationMethod()
+    : mEnabled(FALSE)
+    , mLocale(NULL)
 {}
 
-AllCapsTransformationMethod::AllCapsTransformationMethod(
-    /* [in] */ IContext* context)
-{
-    Init(context);
-}
+AllCapsTransformationMethod::~AllCapsTransformationMethod()
+{}
 
-void AllCapsTransformationMethod::Init(
+ECode AllCapsTransformationMethod::constructor(
     /* [in] */ IContext* context)
 {
     AutoPtr<IResources> res;
@@ -33,11 +34,13 @@ void AllCapsTransformationMethod::Init(
     res->GetConfiguration((IConfiguration**)&config);
     config->GetLocale((ILocale**)&mLocale);
     mEnabled = FALSE;
+    return NOERROR;
 }
 
-AutoPtr<ICharSequence> AllCapsTransformationMethod::GetTransformation(
+ECode AllCapsTransformationMethod::GetTransformation(
     /* [in] */ ICharSequence* source,
-    /* [in] */ IView* view)
+    /* [in] */ IView* view,
+    /* [out] */ ICharSequence** csq)
 {
     if (mEnabled) {
         if(source != NULL) {
@@ -46,27 +49,35 @@ AutoPtr<ICharSequence> AllCapsTransformationMethod::GetTransformation(
             source->ToString(&strSource);
             AutoPtr<ICharSequence> cs;
             CString::New(strSource.ToUpperCase(), (ICharSequence**)&cs);
-            return cs;
+            *csq = cs;
+            REFCOUNT_ADD(*csq);
+            return NOERROR
         } else {
-            return NULL;
+            *csq = NULL;
+            return NOERROR;
         }
     }
     Logger::W(TAG, String("Caller did not enable length changes; not transforming text\n") );
-    return source;
+    *csq = source;
+    REFCOUNT_ADD(*csq);
+    return NOERROR;
 }
 
-void AllCapsTransformationMethod::OnFocusChanged(
+ECode AllCapsTransformationMethod::OnFocusChanged(
     /* [in] */ IView* view,
     /* [in] */ ICharSequence* sourceText,
     /* [in] */ Boolean focused,
     /* [in] */ Int32 direction,
     /* [in] */ IRect* previouslyFocusedRect)
-{}
+{
+    return NOERROR;
+}
 
-void AllCapsTransformationMethod::SetLengthChangesAllowed(
+ECode AllCapsTransformationMethod::SetLengthChangesAllowed(
     /* [in] */ Boolean allowLengthChanges)
 {
     mEnabled = allowLengthChanges;
+    return NOERROR;
 }
 
 

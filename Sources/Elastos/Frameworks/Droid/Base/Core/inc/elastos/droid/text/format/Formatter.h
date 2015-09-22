@@ -3,9 +3,9 @@
 
 #include "Elastos.Droid.Core_server.h"
 
-using Elastos::Net::IInetAddress;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Net::IInetAddress;
 
 namespace Elastos {
 namespace Droid {

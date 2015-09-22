@@ -8,12 +8,18 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
+AutoPtr<IArrowKeyMovementMethod> CArrowKeyMovementMethodHelper::sInstance;
+
+CAR_SINGLETON_IMPL(CArrowKeyMovementMethodHelper)
+
 ECode CArrowKeyMovementMethodHelper::GetInstance(
     /* [out] */ IMovementMethod** ret)
 {
     VALIDATE_NOT_NULL(ret);
-    AutoPtr<IMovementMethod> mm = CArrowKeyMovementMethod::GetInstance();
-    *ret = mm;
+    if (sInstance == NULL) {
+        sInstance = new ArrowKeyMovementMethod();
+    }
+    *ret = IMovementMethod::Probe(sInstance);
     REFCOUNT_ADD(*ret);
     return NOERROR;
 }

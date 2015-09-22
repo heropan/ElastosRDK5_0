@@ -9,11 +9,18 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-CarClass(CArrowKeyMovementMethodHelper)
+CarClass(CArrowKeyMovementMethodHelper), public IArrowKeyMovementMethodHelper
+
 {
 public:
+    CAR_SINGLETON_DECL()
+
     CARAPI GetInstance(
         /* [out] */ IMovementMethod** ret);
+
+private:
+    static AutoPtr<IArrowKeyMovementMethod> sInstance;
+
 };
 
 } // namespace Method

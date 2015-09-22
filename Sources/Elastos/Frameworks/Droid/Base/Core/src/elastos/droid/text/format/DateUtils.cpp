@@ -1,9 +1,9 @@
-#include "text/format/DateUtils.h"
-#include "text/format/DateFormat.h"
-#include "text/format/CTime.h"
-#include "content/res/CResourcesHelper.h"
-#include "content/res/CResources.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/text/format/DateUtils.h"
+#include "elastos/droid/text/format/DateFormat.h"
+#include "elastos/droid/text/format/CTime.h"
+#include "elastos/droid/content/res/CResourcesHelper.h"
+#include "elastos/droid/content/res/CResources.h"
+#include "elastos/droid/os/SystemClock.h"
 #include "R.h"
 #include <elastos/core/Math.h>
 

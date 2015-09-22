@@ -66,7 +66,7 @@ namespace Method {
  */
 //public abstract
 class MetaKeyKeyListener
-    : public object
+    : public Object
     , public IMetaKeyListener
 {
 public:

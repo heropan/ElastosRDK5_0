@@ -3,9 +3,7 @@
 #define __ELASTOS_DROID_TEXT_METHOD_CARROWKEYMOVEMENTMETHOD_H__
 
 #include "_Elastos_Droid_Text_Method_CArrowKeyMovementMethod.h"
-#include "text/method/ArrowKeyMovementMethod.h"
-
-
+#include "elastos/droid/text/method/ArrowKeyMovementMethod.h"
 
 namespace Elastos {
 namespace Droid {
@@ -17,14 +15,6 @@ CarClass(CArrowKeyMovementMethod)
 {
 public:
     CAR_OBJECT_DECL()
-
-    static CARAPI_(AutoPtr<IMovementMethod>) GetInstance();
-
-    //Test
-//    CARAPI_(void) RefShow();
-
-private:
-    static AutoPtr<IArrowKeyMovementMethod> sInstance;
 };
 
 } // namespace Method
