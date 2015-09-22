@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "CLinkPropertiesHelper.h"
-#include "CLinkProperties.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/CLinkPropertiesHelper.h"
+#include "elastos/droid/net/CLinkProperties.h"
 
 namespace Elastos {
 namespace Droid {

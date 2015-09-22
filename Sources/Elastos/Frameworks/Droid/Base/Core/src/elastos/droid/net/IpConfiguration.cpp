@@ -1,5 +1,5 @@
 
-#include "IpConfiguration.h"
+#include "elastos/droid/net/IpConfiguration.h"
 
 namespace Elastos {
 namespace Droid {

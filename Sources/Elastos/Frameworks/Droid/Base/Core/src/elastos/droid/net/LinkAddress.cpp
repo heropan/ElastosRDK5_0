@@ -1,6 +1,5 @@
 
-// LinkAddress.cpp
-#include "LinkAddress.h"
+#include "elastos/droid/net/LinkAddress.h"
 
 namespace Elastos {
 namespace Droid {

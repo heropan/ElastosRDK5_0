@@ -1,5 +1,5 @@
 
-#include "Uri.h"
+#include "elastos/droid/net/Uri.h"
 
 using Elastos::Core::EIID_IComparable;
 

@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "CDhcpStateMachineHelper.h"
-#include "DhcpStateMachine.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/CDhcpStateMachineHelper.h"
+#include "elastos/droid/net/DhcpStateMachine.h"
 
 namespace Elastos {
 namespace Droid {

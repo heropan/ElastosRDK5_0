@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "CMailToHelper.h"
-#include "MailTo.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/CMailToHelper.h"
+#include "elastos/droid/net/MailTo.h"
 
 namespace Elastos {
 namespace Droid {

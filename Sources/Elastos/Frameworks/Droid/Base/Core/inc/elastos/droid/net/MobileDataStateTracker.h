@@ -2,10 +2,10 @@
 #ifndef __ELASTOS_DROID_NET_MOBILEDATASTATETRACKER_H__
 #define __ELASTOS_DROID_NET_MOBILEDATASTATETRACKER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "BaseNetworkStateTracker.h"
-#include "Handler.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IIntent;

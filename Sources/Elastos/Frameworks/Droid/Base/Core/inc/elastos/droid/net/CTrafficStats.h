@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CTRAFFICSTATS_H__
 
 #include "_Elastos_Droid_Net_CTrafficStats.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/Mutex.h"
 #include "content/Context.h"
 

@@ -1,5 +1,5 @@
 
-#include "LinkQualityInfo.h"
+#include "elastos/droid/net/LinkQualityInfo.h"
 #include <elastos/core/Math.h>
 
 namespace Elastos {

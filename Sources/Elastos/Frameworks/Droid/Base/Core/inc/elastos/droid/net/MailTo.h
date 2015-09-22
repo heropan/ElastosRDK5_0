@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_MAILTO_H__
 #define __ELASTOS_DROID_NET_MAILTO_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Utility::IMap;
 using Elastos::Utility::IHashMap;

@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "CMobileLinkQualityInfoHelper.h"
-#include "MobileLinkQualityInfo.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/CMobileLinkQualityInfoHelper.h"
+#include "elastos/droid/net/MobileLinkQualityInfo.h"
 
 namespace Elastos {
 namespace Droid {

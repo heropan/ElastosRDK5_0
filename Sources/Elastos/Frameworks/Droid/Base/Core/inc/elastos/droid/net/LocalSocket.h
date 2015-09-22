@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_LOCALSOCKET_H__
 #define __ELASTOS_DROID_NET_LOCALSOCKET_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::IO::ICloseable;
 using Elastos::IO::IInputStream;

@@ -371,6 +371,17 @@ module
         interface INetworkConfig;
     }
 
+    class CNetworkFactory {
+        constructor(
+            [in] ILooper* looper,
+            [in] IContext* context,
+            [in] String logTag,
+            [in] INetworkCapabilities* filter);
+
+        interface IHandler;
+        interface INetworkFactory;
+    }
+
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos

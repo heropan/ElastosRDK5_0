@@ -1,5 +1,5 @@
 
-#include "net/CDhcpInfo.h"
+#include "elastos/droid/net/CDhcpInfo.h"
 #if 0 // TODO: Waiting for NetworkUtils
 #include "net/NetworkUtils.h"
 #endif

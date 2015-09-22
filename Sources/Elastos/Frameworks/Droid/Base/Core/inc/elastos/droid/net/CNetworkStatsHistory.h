@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CNETWORKSTATSHISTORY_H__
 
 #include "_Elastos_Droid_Net_CNetworkStatsHistory.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::IO::IDataOutputStream;
 using Elastos::IO::IDataInputStream;

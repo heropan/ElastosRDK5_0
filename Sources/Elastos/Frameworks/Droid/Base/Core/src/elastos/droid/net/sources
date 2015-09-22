@@ -4,15 +4,7 @@ TARGET_TYPE= lib
 include $(MAKEDIR)/../../../../../../sources.inc
 
 INCLUDES += ../
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid/
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid/net/
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid/os/
-INCLUDES += $(MAKEDIR)/../../../../../../../../LibCore/inc/
-#INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/core/
-#INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/core/inc/
-#INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/utility/logging/
-#INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/utility/
-#INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/utility/concurrent/atomic/
+INCLUDES += $(MAKEDIR)/../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
@@ -47,6 +39,7 @@ SOURCES += Network.cpp
 SOURCES += NetworkAgent.cpp
 SOURCES += NetworkCapabilities.cpp
 SOURCES += NetworkConfig.cpp
+SOURCES += NetworkFactory.cpp
 #SOURCES += CNetworkIdentity.cpp
 #SOURCES += CNetworkIdentityHelper.cpp
 #SOURCES += CNetworkInfo.cpp

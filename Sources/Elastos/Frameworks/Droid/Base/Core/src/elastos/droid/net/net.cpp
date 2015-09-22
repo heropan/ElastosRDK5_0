@@ -1,20 +1,21 @@
 
-#include "CDhcpResults.h"
-#include "CEthernetManager.h"
-#include "CIpConfiguration.h"
-#include "CIpPrefix.h"
-#include "CLinkAddress.h"
-#include "CLinkProperties.h"
-#include "CLinkPropertiesCompareResult.h"
-#include "CLinkQualityInfo.h"
-#include "CLocalServerSocket.h"
-#include "CLocalSocket.h"
-#include "CLocalSocketAddress.h"
-#include "CLocalSocketAddressNamespace.h"
-#include "CMobileDataStateTracker.h"
-#include "CNetwork.h"
-#include "CNetworkCapabilities.h"
-#include "CNetworkConfig.h"
+#include "elastos/droid/net/CDhcpResults.h"
+#include "elastos/droid/net/CEthernetManager.h"
+#include "elastos/droid/net/CIpConfiguration.h"
+#include "elastos/droid/net/CIpPrefix.h"
+#include "elastos/droid/net/CLinkAddress.h"
+#include "elastos/droid/net/CLinkProperties.h"
+#include "elastos/droid/net/CLinkPropertiesCompareResult.h"
+#include "elastos/droid/net/CLinkQualityInfo.h"
+#include "elastos/droid/net/CLocalServerSocket.h"
+#include "elastos/droid/net/CLocalSocket.h"
+#include "elastos/droid/net/CLocalSocketAddress.h"
+#include "elastos/droid/net/CLocalSocketAddressNamespace.h"
+#include "elastos/droid/net/CMobileDataStateTracker.h"
+#include "elastos/droid/net/CNetwork.h"
+#include "elastos/droid/net/CNetworkCapabilities.h"
+#include "elastos/droid/net/CNetworkConfig.h"
+#include "elastos/droid/net/CNetworkFactory.h"
 
 namespace Elastos {
 namespace Droid {
@@ -51,6 +52,8 @@ CAR_OBJECT_IMPL(CNetwork)
 CAR_OBJECT_IMPL(CNetworkCapabilities)
 
 CAR_OBJECT_IMPL(CNetworkConfig)
+
+CAR_OBJECT_IMPL(CNetworkFactory)
 
 } // namespace Net
 } // namespace Droid

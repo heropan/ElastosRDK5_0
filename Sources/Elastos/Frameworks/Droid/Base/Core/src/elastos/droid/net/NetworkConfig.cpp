@@ -1,5 +1,5 @@
 
-#include "NetworkConfig.h"
+#include "elastos/droid/net/NetworkConfig.h"
 
 namespace Elastos {
 namespace Droid {

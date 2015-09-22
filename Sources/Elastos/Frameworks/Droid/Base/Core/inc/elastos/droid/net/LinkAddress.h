@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_LINKADDRESS_H__
 #define __ELASTOS_DROID_NET_LINKADDRESS_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Net::IInterfaceAddress;
 using Elastos::Net::IInetAddress;

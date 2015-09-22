@@ -2,11 +2,11 @@
 #ifndef __ELASTOS_DROID_NET_CCONNECTIVITYMANAGER_H__
 #define __ELASTOS_DROID_NET_CCONNECTIVITYMANAGER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Net_CConnectivityManager.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/logging/Logger.h>
-#include "Handler.h"
+#include "elastos/droid/os/Handler.h"
 
 
 using Elastos::Core::Object;

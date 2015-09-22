@@ -1,18 +1,18 @@
 
-#include "ext/frameworkext.h"
-#include "net/CConnectivityManager.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/CConnectivityManager.h"
 // #include "net/NetworkUtils.h"
-#include "os/CBinder.h"
+#include "elastos/droid/os/CBinder.h"
 #include <elastos/core/StringUtils.h>
 // #include "CHashMap.h"
 // #include "CArrayMap.h"
 #include <elastos/core/AutoLock.h>
 // #include "CAtomicInteger32.h"
 // #include "CNetworkCapabilities.h"
-#include "R.h"
-#include "Manifest.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/Manifest.h"
 // #include "CHandlerThread.h"
-#include "CMessenger.h"
+#include "elastos/droid/os/CMessenger.h"
 
 using Elastos::Core::StringUtils;
 // using Elastos::Droid::Net::NetworkUtils;

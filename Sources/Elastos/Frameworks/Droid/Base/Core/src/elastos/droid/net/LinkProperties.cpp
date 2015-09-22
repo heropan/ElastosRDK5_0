@@ -1,5 +1,5 @@
 
-#include "LinkProperties.h"
+#include "elastos/droid/net/LinkProperties.h"
 
 namespace Elastos {
 namespace Droid {

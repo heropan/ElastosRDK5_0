@@ -3,7 +3,7 @@
 #define __CPATHSEGMENTSBUILDER_H__
 
 #include "_CPathSegmentsBuilder.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 
 /**

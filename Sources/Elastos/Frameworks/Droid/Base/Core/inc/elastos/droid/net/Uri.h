@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_URI_H__
 #define __ELASTOS_DROID_NET_URI_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Core::IComparable;
 using Elastos::IO::IFile;
