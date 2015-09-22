@@ -8,18 +8,19 @@ namespace Net {
 CAR_INTERFACE_IMPL(NetworkConfig, Object, INetworkConfig)
 
 ECode NetworkConfig::constructor(
-    /* [in] */ String init)
+    /* [in] */ const String& init)
 {
     return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        String fragments[] = init.split(",");
-        name = fragments[0].trim().toLowerCase(Locale.ROOT);
-        type = Integer.parseInt(fragments[1]);
-        radio = Integer.parseInt(fragments[2]);
-        priority = Integer.parseInt(fragments[3]);
-        restoreTime = Integer.parseInt(fragments[4]);
-        dependencyMet = Boolean.parseBoolean(fragments[5]);
-
+#if 0 // TODO: Translated before. Need check.
+    AutoPtr<ArrayOf<String> > fragments;
+    StringUtils::Split(init, String(","), (ArrayOf<String>**)&fragments);
+    mName = (*fragments)[0].Trim().ToLowerCase(ILocale::ROOT);
+    mType = StringUtils::ParseInt32((*fragments)[1]);
+    mRadio = StringUtils::ParseInt32((*fragments)[2]);
+    mPriority = StringUtils::ParseInt32((*fragments)[3]);
+    mRestoreTime = StringUtils::ParseInt32((*fragments)[4]);
+    mDependencyMet = (*fragments)[5].EqualsIgnoreCase("TRUE");
+    return NOERROR;
 #endif
 }
 
@@ -27,149 +28,117 @@ ECode NetworkConfig::IsDefault(
     /* [out] */ Boolean* result)
 {
     return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return (type == radio);
-
-#endif
-}
-
-
-} // namespace Net
-} // namespace Droid
-} // namespace Elastos
-
-#if 0 // old CNetworkConfig.cpp
-#include "ext/frameworkext.h"
-#include "net/CNetworkConfig.h"
-#include <Elastos.CoreLibrary.h>
-#include <elastos/core/StringUtils.h>
-
-using Elastos::Core::StringUtils;
-
-namespace Elastos {
-namespace Droid {
-namespace Net {
-
-/**
- * input string from config.xml resource.  Uses the form:
- * [Connection name],[ConnectivityManager connection type],
- * [associated radio-type],[priority],[dependencyMet]
- */
-ECode CNetworkConfig::constructor(
-    /* [in] */ const String& init)
-{
-    AutoPtr<ArrayOf<String> > fragments;
-    StringUtils::Split(init, String(","), (ArrayOf<String>**)&fragments);
-    mName = (*fragments)[0].Trim().ToLowerCase();
-    mType = StringUtils::ParseInt32((*fragments)[1]);
-    mRadio = StringUtils::ParseInt32((*fragments)[2]);
-    mPriority = StringUtils::ParseInt32((*fragments)[3]);
-    mRestoreTime = StringUtils::ParseInt32((*fragments)[4]);
-    mDependencyMet = (*fragments)[5].EqualsIgnoreCase("TRUE");
-    return NOERROR;
-}
-
-/**
- * Indicates if this network is supposed to be default-routable
- */
-ECode CNetworkConfig::IsDefault(
-    /* [out] */ Boolean* result)
-{
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     *result = (mType == mRadio);
     return NOERROR;
+#endif
 }
 
-ECode CNetworkConfig::GetName(
-    /* [out] */ String* name)
+ECode NetworkConfig::GetName(
+    /* [out] */ String* result)
 {
-    VALIDATE_NOT_NULL(name);
-    *name = mName;
+    VALIDATE_NOT_NULL(result)
+
+    *result = mName;
     return NOERROR;
 }
 
-ECode CNetworkConfig::SetName(
+ECode NetworkConfig::SetName(
     /* [in] */ const String& name)
 {
     mName = name;
     return NOERROR;
 }
 
-ECode CNetworkConfig::GetType(
-    /* [out] */ Int32* type)
+ECode NetworkConfig::GetType(
+    /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(type);
-    *type = mType;
+    VALIDATE_NOT_NULL(result)
+
+    *result = mType;
     return NOERROR;
 }
 
-ECode CNetworkConfig::SetType(
+ECode NetworkConfig::SetType(
     /* [in] */ Int32 type)
 {
     mType = type;
     return NOERROR;
 }
 
-ECode CNetworkConfig::GetRadio(
-    /* [out] */ Int32* radio)
+ECode NetworkConfig::GetRadio(
+    /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(radio);
-    *radio = mRadio;
+    VALIDATE_NOT_NULL(result)
+
+    *result = mRadio;
     return NOERROR;
 }
 
-ECode CNetworkConfig::SetRadio(
+ECode NetworkConfig::SetRadio(
     /* [in] */ Int32 radio)
 {
     mRadio = radio;
     return NOERROR;
 }
 
-ECode CNetworkConfig::GetPriority(
-    /* [out] */ Int32* priority)
+
+ECode NetworkConfig::GetPriority(
+    /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(priority);
-    *priority = mPriority;
+    VALIDATE_NOT_NULL(result)
+
+    *result = mPriority;
     return NOERROR;
 }
 
-ECode CNetworkConfig::SetPriority(
+ECode NetworkConfig::SetPriority(
     /* [in] */ Int32 priority)
 {
     mPriority = priority;
     return NOERROR;
 }
 
-ECode CNetworkConfig::GetDependencyMet(
-    /* [out] */ Boolean* dependencyMet)
+
+ECode NetworkConfig::GetDependencyMet(
+    /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(dependencyMet);
-    *dependencyMet = mDependencyMet;
+    VALIDATE_NOT_NULL(result)
+
+    *result = mDependencyMet;
     return NOERROR;
 }
 
-ECode CNetworkConfig::SetDependencyMet(
+ECode NetworkConfig::SetDependencyMet(
     /* [in] */ Boolean dependencyMet)
 {
     mDependencyMet = dependencyMet;
     return NOERROR;
 }
 
-ECode CNetworkConfig::GetRestoreTime(
-    /* [out] */ Int32* restoretime)
+ECode NetworkConfig::GetRestoreTime(
+    /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(restoretime);
-    *restoretime = mRestoreTime;
+    VALIDATE_NOT_NULL(result)
+
+    *result = mRestoreTime;
     return NOERROR;
 }
 
-ECode CNetworkConfig::SetRestoreTime(
-    /* [in] */ Int32 restoretime)
+    /**
+     * indicates the default restoral timer in seconds
+     * if the network is used as a special network feature
+     * -1 indicates no restoration of default
+     */
+ECode NetworkConfig::SetRestoreTime(
+    /* [in] */ Int32 restoreTime)
 {
-    mRestoreTime = restoretime;
+    mRestoreTime = restoreTime;
     return NOERROR;
 }
+
+
 } // namespace Net
-} // namepsace Droid
+} // namespace Droid
 } // namespace Elastos
-#endif

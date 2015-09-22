@@ -364,6 +364,13 @@ module
         interface INetworkCapabilities;
     }
 
+    class CNetworkConfig {
+        constructor(
+            [in] String init);
+
+        interface INetworkConfig;
+    }
+
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos
