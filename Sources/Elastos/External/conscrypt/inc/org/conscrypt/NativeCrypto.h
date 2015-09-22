@@ -369,6 +369,146 @@ public:
         /* [in] */ Int64 privateKeyRef,
         /* [out] */ Int32* result);
 
+    // --- Message digest functions --------------
+
+    static CARAPI EVP_get_digestbyname(
+        /* [in] */ const String& algorithm,
+        /* [out] */ Int64* result);
+
+    static CARAPI EVP_MD_size(
+        /* [in] */ Int64 evpMdRef,
+        /* [out] */ Int32* result);
+
+    static CARAPI EVP_MD_block_size(
+        /* [in] */ Int64 evpMdRef,
+        /* [out] */ Int32* result);
+
+    // --- Message digest context functions --------------
+
+    static CARAPI EVP_MD_CTX_create(
+        /* [out] */ Int64* result);
+
+    static CARAPI EVP_MD_CTX_init(
+        /* [in] */ IOpenSSLDigestContext* ctxRef);
+
+    static CARAPI EVP_MD_CTX_destroy(
+        /* [in] */ Int64 ctx);
+
+    static CARAPI EVP_MD_CTX_copy(
+        /* [in] */ IOpenSSLDigestContext* dstCtxRef,
+        /* [in] */ IOpenSSLDigestContext* srcCtxRef,
+        /* [out] */ Int32* result);
+
+    // --- Digest handling functions -------------------------------------------
+
+    static CARAPI EVP_DigestInit(
+        /* [in] */ IOpenSSLDigestContext* evpMdCtxRef,
+        /* [in] */ Int64 evpMdRef,
+        /* [out] */ Int32* result);
+
+    static CARAPI EVP_DigestUpdate(
+        /* [in] */ IOpenSSLDigestContext* evpMdCtxRef,
+        /* [in] */ ArrayOf<Byte>* buffer,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 length);
+
+    static CARAPI EVP_DigestFinal(
+        /* [in] */ IOpenSSLDigestContext* ctxRef,
+        /* [in] */ ArrayOf<Byte>* hash,
+        /* [in] */ Int32 offset,
+        /* [out] */ Int32* result);
+
+    // --- MAC handling functions ----------------------------------------------
+
+    static CARAPI EVP_DigestSignInit(
+        /* [in] */ IOpenSSLDigestContext* evpMdCtxRef,
+        /* [in] */ Int64 evpMdRef,
+        /* [in] */ Int64 pkeyRef);
+
+    static CARAPI EVP_DigestSignUpdate(
+        /* [in] */ IOpenSSLDigestContext* evpMdCtxRef,
+        /* [in] */ ArrayOf<Byte>* buffer,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 length);
+
+    static CARAPI EVP_DigestSignFinal(
+        /* [in] */ IOpenSSLDigestContext* evpMdCtxRef,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    // --- Signature handling functions ----------------------------------------
+
+    static CARAPI EVP_SignInit(
+        /* [in] */ IOpenSSLDigestContext* evpMdCtxRef,
+        /* [in] */ Int64 evpMdRef,
+        /* [out] */ Int32* result);
+
+    static CARAPI EVP_SignUpdate(
+        /* [in] */ IOpenSSLDigestContext* evpMdCtxRef,
+        /* [in] */ ArrayOf<Byte>* buffer,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 length);
+
+    static CARAPI EVP_SignFinal(
+        /* [in] */ IOpenSSLDigestContext* ctxRef,
+        /* [in] */ ArrayOf<Byte>* signature,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int64 pkeyRef,
+        /* [out] */ Int32* result);
+
+    static CARAPI EVP_VerifyInit(
+        /* [in] */ IOpenSSLDigestContext* evpMdCtxRef,
+        /* [in] */ Int64 evpMdRef,
+        /* [out] */ Int32* result);
+
+    static CARAPI EVP_VerifyUpdate(
+        /* [in] */ IOpenSSLDigestContext* ctxRef,
+        /* [in] */ ArrayOf<Byte>* buffer,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 length);
+
+    static CARAPI EVP_VerifyFinal(
+        /* [in] */ IOpenSSLDigestContext* ctxRef,
+        /* [in] */ ArrayOf<Byte>* buffer,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 length,
+        /* [in] */ Int64 pkeyRef,
+        /* [out] */ Int32* result);
+
+    // --- Block ciphers -------------------------------------------------------
+
+    // EVP_get_cipherbyname(
+    //     [in] String string,
+    //     [out] Int64* result);
+
+    // EVP_CipherInit_ex(
+    //     [in] Int64 ctx,
+    //     [in] Int64 evpCipher,
+    //     [in] ArrayOf<Byte>* key,
+    //     [in] ArrayOf<Byte>* iv,
+    //     [in] Boolean encrypting);
+
+    // EVP_CipherUpdate(
+    //     [in] Int64 ctx,
+    //     [in] ArrayOf<Byte>* outArray,
+    //     [in] Int32 outOffset,
+    //     [in] ArrayOf<Byte>* inArray,
+    //     [in] Int32 inOffset,
+    //     [in] Int32 inLength,
+    //     [out] Int32* result);
+
+    // EVP_CipherFinal_ex(
+    //     [in] Int64 ctx,
+    //     [in] ArrayOf<Byte>* outArray,
+    //     [in] Int32 outOffset,
+    //     [out] Int32* result);
+
+    // EVP_CIPHER_iv_length(
+    //     [in] Int64 evpCipher,
+    //     [out] Int32* result);
+
+    // EVP_CIPHER_CTX_new(
+    //     [out] Int64* result);
+
 private:
     static const Boolean sInitialized;
 

@@ -561,7 +561,9 @@ module
 
         EVP_DigestSignUpdate(
             [in] IOpenSSLDigestContext* evp_md_ctx,
-            [in] ArrayOf<Byte>* inArray);
+            [in] ArrayOf<Byte>* buffer,
+            [in] Int32 offset,
+            [in] Int32 length);
 
         EVP_DigestSignFinal(
             [in] IOpenSSLDigestContext* evp_md_ctx,
