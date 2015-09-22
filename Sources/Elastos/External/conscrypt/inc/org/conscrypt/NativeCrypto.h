@@ -4,6 +4,7 @@
 
 #include "Org.Conscrypt_server.h"
 
+using Elastos::Core::IArrayOf;
 using Elastos::Security::Interfaces::IDSAPrivateKey;
 using Elastos::Security::Interfaces::IECPrivateKey;
 using Elastos::Security::Interfaces::IRSAPrivateKey;
@@ -611,6 +612,71 @@ public:
         /* [out] */ Int32* result);
 
     static CARAPI Get_X509_hashCode(
+        /* [in] */ Int64 x509Ref,
+        /* [out] */ Int32* result);
+
+    static CARAPI X509_print_ex(
+        /* [in] */ Int64 bioRef,
+        /* [in] */ Int64 x509Ref,
+        /* [in] */ Int64 nmflag,
+        /* [in] */ Int64 certflag);
+
+    static CARAPI X509_get_issuer_name(
+        /* [in] */ Int64 x509Ref,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI X509_get_subject_name(
+        /* [in] */ Int64 x509Ref,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI Get_X509_sig_alg_oid(
+        /* [in] */ Int64 x509Ref,
+        /* [out] */ String* result);
+
+    static CARAPI Get_X509_sig_alg_parameter(
+        /* [in] */ Int64 x509Ref,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI Get_X509_issuerUID(
+        /* [in] */ Int64 x509Ref,
+        /* [out, callee] */ ArrayOf<Boolean>** result);
+
+    static CARAPI Get_X509_subjectUID(
+        /* [in] */ Int64 x509Ref,
+        /* [out, callee] */ ArrayOf<Boolean>** result);
+
+    static CARAPI X509_get_pubkey(
+        /* [in] */ Int64 x509Ref,
+        /* [out] */ Int64* result);
+
+    static CARAPI Get_X509_pubkey_oid(
+        /* [in] */ Int64 x509Ref,
+        /* [out] */ String* result);
+
+    static CARAPI X509_get_ext_oid(
+        /* [in] */ Int64 x509Ref,
+        /* [in] */ const String& oid,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI Get_X509_ext_oids(
+        /* [in] */ Int64 x509Ref,
+        /* [in] */ Int32 critical,
+        /* [out, callee] */ ArrayOf<String>** result);
+
+    static CARAPI Get_X509_GENERAL_NAME_stack(
+        /* [in] */ Int64 x509Ref,
+        /* [in] */ Int32 type,
+        /* [out, callee] */ ArrayOf<IArrayOf*>** result);
+
+    static CARAPI Get_X509_ex_kusage(
+        /* [in] */ Int64 x509Ref,
+        /* [out, callee] */ ArrayOf<Boolean>** result);
+
+    static CARAPI Get_X509_ex_xkusage(
+        /* [in] */ Int64 x509Ref,
+        /* [out, callee] */ ArrayOf<String>** result);
+
+    static CARAPI Get_X509_ex_pathlen(
         /* [in] */ Int64 x509Ref,
         /* [out] */ Int32* result);
 
