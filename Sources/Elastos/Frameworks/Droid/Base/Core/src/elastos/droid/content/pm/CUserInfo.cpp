@@ -99,6 +99,40 @@ ECode CUserInfo::IsGuest(
     return NOERROR;
 }
 
+ECode CUserInfo::IsRestricted(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = (mFlags & FLAG_RESTRICTED) == FLAG_RESTRICTED;
+    return NOERROR;
+}
+
+ECode CUserInfo::IsManagedProfile(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = (mFlags & FLAG_MANAGED_PROFILE) == FLAG_MANAGED_PROFILE;
+    return NOERROR;
+}
+
+ECode CUserInfo::IsEnabled(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = (mFlags & FLAG_DISABLED) != FLAG_DISABLED;
+    return NOERROR;
+}
+
+ECode CUserInfo::SupportsSwitchTo(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    // TODO remove fw.show_hidden_users when we have finished developing managed profiles.
+    // return !isManagedProfile() || SystemProperties.getBoolean("fw.show_hidden_users", false);
+    return NOERROR;
+}
+
+
 ECode CUserInfo::GetUserHandle(
     /* [out] */ IUserHandle** userHandle)
 {

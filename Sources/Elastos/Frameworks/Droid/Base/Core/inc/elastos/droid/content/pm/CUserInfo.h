@@ -55,6 +55,18 @@ public:
     CARAPI IsGuest(
         /* [out] */ Boolean* isGuest);
 
+    CARAPI IsRestricted(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsManagedProfile(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsEnabled(
+        /* [out] */ Boolean* result);
+
+    CARAPI SupportsSwitchTo(
+        /* [out] */ Boolean* result);
+
     CARAPI GetUserHandle(
         /* [out] */ IUserHandle** userHandle);
 

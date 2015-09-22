@@ -7,7 +7,7 @@ C_DEFINES += -DDROID_SERVER
 
 IMPORTS = Elastos.CoreLibrary.eco
 
-VPATH := $(MAKEDIR)/../../../Core/src/os
+VPATH := $(MAKEDIR)/../../../Core/src/elastos/droid/os
 
 #VPATH := $(MAKEDIR)/../../../Core/src:$(MAKEDIR)/../../../Core/src/app:$(MAKEDIR)/../../../Core/src/app/backup:$(MAKEDIR)/../../../Core/src/content:$(MAKEDIR)/../../../Core/src/content/pm:$(MAKEDIR)/../../../Core/src/net:$(MAKEDIR)/../../../Core/src/os:$(MAKEDIR)/../../../Core/src/util:$(MAKEDIR)/../../../Core/src/view:$(MAKEDIR)/../../../Core/src/provider:$(MAKEDIR)/../../../Core/src/text:$(MAKEDIR)/../../../Core/src/database:$(MAKEDIR)/../../../Core/src/database/sqlite:$(MAKEDIR)/../../../Core/src/net/ethernet:$(MAKEDIR)/../../../Core/src/net/wifi:$(MAKEDIR)/../../../Core/src/net/pppoe:$(MAKEDIR)/../../../Core/src/view/animation:$(MAKEDIR)/../../../Core/src/text/format:$(MAKEDIR)/../../../Core/src/widget
 
@@ -28,7 +28,7 @@ INCLUDES += $(MAKEDIR)/../inc
 #INCLUDES += $(MAKEDIR)/../inc/power
 #INCLUDES += $(MAKEDIR)/../inc/dreams
 #INCLUDES += $(MAKEDIR)/../inc/search
-INCLUDES += $(MAKEDIR)/../../../Core/inc
+INCLUDES += $(MAKEDIR)/../../../Core/inc/elastos/droid/
 INCLUDES += $(PREBUILD_INC)/skia/utils
 INCLUDES += $(PREBUILD_INC)/skia/core
 INCLUDES += $(PREBUILD_INC)/gui

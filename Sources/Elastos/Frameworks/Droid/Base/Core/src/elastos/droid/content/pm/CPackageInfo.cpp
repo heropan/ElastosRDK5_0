@@ -131,6 +131,22 @@ ECode CPackageInfo::SetPackageName(
     return NOERROR;
 }
 
+ECode CPackageInfo::SetSplitNames(
+    /* [in] */ ArrayOf<String>* names)
+{
+    mSplitNames = names;
+    return NOERROR;
+}
+
+ECode CPackageInfo::GetSplitNames(
+    /* [out, callee] */ ArrayOf<String>** names)
+{
+    VALIDATE_NOT_NULL(names)
+    *names = mSplitNames;
+    REFCOUNT_ADD(*names)
+    return NOERROR;
+}
+
 ECode CPackageInfo::GetVersionCode(
     /* [out] */ Int32* versionCode)
 {
@@ -426,6 +442,22 @@ ECode CPackageInfo::SetReqFeatures(
     /* [in] */ ArrayOf<IFeatureInfo*>* reqFeatures)
 {
     mReqFeatures = reqFeatures;
+    return NOERROR;
+}
+
+ECode CPackageInfo::GetFeatureGroups(
+    /* [out, callee] */ ArrayOf<IFeatureGroupInfo*>** featureGroups)
+{
+    VALIDATE_NOT_NULL(featureGroups)
+    *featureGroups = mFeatureGroups;
+    REFCOUNT_ADD(*featureGroups)
+    return NOERROR;
+}
+
+ECode CPackageInfo::SetFeatureGroups(
+    /* [in] */ ArrayOf<IFeatureGroupInfo*>* featureGroups)
+{
+    mFeatureGroups = featureGroups;
     return NOERROR;
 }
 

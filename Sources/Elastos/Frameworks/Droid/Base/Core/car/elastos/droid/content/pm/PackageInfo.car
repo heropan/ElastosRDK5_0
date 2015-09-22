@@ -17,7 +17,6 @@ module
     namespace Content {
     namespace Pm {
 
-
     /**
      * Overall information about the contents of a package. This corresponds to all
      * of the information collected from AndroidManifest.xml.

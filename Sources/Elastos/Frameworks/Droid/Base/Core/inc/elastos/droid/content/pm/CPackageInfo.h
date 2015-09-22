@@ -46,6 +46,12 @@ public:
     CARAPI SetPackageName(
         /* [in] */ const String& packageName);
 
+    CARAPI SetSplitNames(
+        /* [in] */ ArrayOf<String>* names);
+
+    CARAPI GetSplitNames(
+        /* [out, callee] */ ArrayOf<String>** names);
+
     CARAPI GetVersionCode(
         /* [out] */ Int32* versionCode);
 
@@ -159,6 +165,12 @@ public:
 
     CARAPI SetReqFeatures(
         /* [in] */ ArrayOf<IFeatureInfo*>* reqFeatures);
+
+    CARAPI GetFeatureGroups(
+        /* [out, callee] */ ArrayOf<IFeatureGroupInfo*>** featureGroups);
+
+    CARAPI SetFeatureGroups(
+        /* [in] */ ArrayOf<IFeatureGroupInfo*>* featureGroups);
 
     CARAPI GetInstallLocation(
         /* [out] */ Int32* installLocation);
