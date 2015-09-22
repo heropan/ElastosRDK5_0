@@ -27,6 +27,8 @@ SOURCES += ObjectOutputStreamTest.cpp
 SOURCES += OldAndroidBufferedInputStreamTest.cpp
 SOURCES += OldAndroidBufferedOutputStreamTest.cpp
 SOURCES += OldAndroidBufferedReaderTest.cpp
+SOURCES += OldAndroidBufferedWriterTest.cpp
+SOURCES += OldAndroidByteArrayInputStreamTest.cpp
 
 SOURCES += MyThread.car
 

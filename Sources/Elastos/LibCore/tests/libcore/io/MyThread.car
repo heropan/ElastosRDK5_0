@@ -8,8 +8,8 @@ module
     using interface Elastos.Core.IComparable;
     using interface Elastos.IO.IFileDescriptor;
 
-    namespace Elastos {
-    namespace HelloCar {
+//    namespace Elastos {
+//    namespace HelloCar {
 
     class CMyThread {
         constructor(
@@ -19,6 +19,6 @@ module
         interface IRunnable;                    // 实现 IThread 的 CAR 类必须同时实现 IRunnable
     }
 
-    } // HelloCar
-    } // Elastos
+//    } // HelloCar
+//    } // Elastos
 }

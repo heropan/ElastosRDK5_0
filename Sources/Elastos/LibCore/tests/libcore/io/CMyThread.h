@@ -2,14 +2,15 @@
 #ifndef __HELLOCAR_CMYTHREAD_H__
 #define __HELLOCAR_CMYTHREAD_H__
 
-#include "_Elastos_HelloCar_CMyThread.h"    // include 编译器生成的夹壁墙头文件，文件名格式：_命名空间_CAR类名称.h
+//#include "_Elastos_HelloCar_CMyThread.h"    // include 编译器生成的夹壁墙头文件，文件名格式：_命名空间_CAR类名称.h
+#include "_CMyThread.h"    // include 编译器生成的夹壁墙头文件，文件名格式：_命名空间_CAR类名称.h
 #include <elastos/core/Thread.h>            // include 基类
 
 using Elastos::Core::Thread;
 using Elastos::IO::IFileDescriptor;
 
-namespace Elastos {
-namespace HelloCar {
+//namespace Elastos {
+//namespace HelloCar {
 
 CarClass(CMyThread)
     , public Thread
@@ -22,10 +23,10 @@ public:
     CARAPI Run();
 
 private:
-	IFileDescriptor *mOutFd;
+	AutoPtr<IFileDescriptor> mOutFd;
 };
 
-} // HelloCar
-} // Elastos
+//} // HelloCar
+//} // Elastos
 
 #endif //__HELLOCAR_CTHREAD_H__
