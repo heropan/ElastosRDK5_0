@@ -3,12 +3,11 @@
 
 #include "Elastos.Droid.Core_server.h"
 
+using Libcore::ICU::ILocale;
+using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::View::IView;
-using Libcore::ICU::ILocale;
-using Elastos::Core::ICharSequence;
-
 
 namespace Elastos {
 namespace Droid {
@@ -20,30 +19,21 @@ namespace Method {
  *
  * @hide
  */
-class AllCapsTransformationMethod
-    : public Object
-    , public IAllCapsTransformationMethod
-    , public ITransformationMethod2
-    , public ITransformationMethod
-{
+class AllCapsTransformationMethod{
 public:
-    CAR_INTERFACE_DECL()
-
-    AllCapsTransformationMethod();
-
-    virtual ~AllCapsTransformationMethod();
-
-    CARAPI constructor(
+    AllCapsTransformationMethod(
         /* [in] */ IContext* context);
 
-    //@Override
-    CARAPI GetTransformation(
-        /* [in] */ ICharSequence* source,
-        /* [in] */ IView* view,
-        /* [out] */ ICharSequence** csq);
+    CARAPI_(void) Init(
+    /* [in] */ IContext* context);
 
     //@Override
-    CARAPI OnFocusChanged(
+    CARAPI_(AutoPtr<ICharSequence>) GetTransformation(
+        /* [in] */ ICharSequence* source,
+        /* [in] */ IView* view);
+
+    //@Override
+    CARAPI_(void) OnFocusChanged(
         /* [in] */ IView* view,
         /* [in] */ ICharSequence* sourceText,
         /* [in] */ Boolean focused,
@@ -51,11 +41,14 @@ public:
         /* [in] */ IRect* previouslyFocusedRect);
 
     //@Override
-    CARAPI SetLengthChangesAllowed(
+    CARAPI_(void) SetLengthChangesAllowed(
         /* [in] */ Boolean allowLengthChanges);
 
+protected:
+    AllCapsTransformationMethod();
+
 private:
-    static const String TAG;// = "AllCapsTransformationMethod";
+    static const CString TAG;// = "AllCapsTransformationMethod";
 
     Boolean mEnabled;//=FALSE;
     AutoPtr<ILocale> mLocale;

@@ -1,6 +1,6 @@
 
-#include "elastos/droid/text/format/CFormatter.h"
-#include "elastos/droid/text/format/Formatter.h"
+#include "text/format/CFormatter.h"
+#include "text/format/Formatter.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

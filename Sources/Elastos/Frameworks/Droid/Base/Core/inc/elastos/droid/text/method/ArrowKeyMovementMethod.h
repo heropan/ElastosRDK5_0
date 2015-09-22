@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_TEXT_METHOD_ArrowKeyMovementMethod_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include "elastos/droid/text/method/BaseMovementMethod.h"
+#include "text/method/BaseMovementMethod.h"
 
 using Elastos::Droid::Text::ISpannable;
 using Elastos::Droid::View::IKeyEvent;
@@ -30,23 +30,21 @@ public:
     virtual ~ArrowKeyMovementMethod();
 
     //@Override
-    CARAPI OnTouchEvent(
+    CARAPI_(Boolean) OnTouchEvent(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* buffer,
-        /* [in] */ IMotionEvent* event,
-        /* [out] */ Boolean* result);
+        /* [in] */ IMotionEvent* event);
 
     //@Override
-    CARAPI CanSelectArbitrarily(
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) CanSelectArbitrarily();
 
     //@Override
-    CARAPI Initialize(
+    CARAPI_(void) Initialize(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* text);
 
     //@Override
-    CARAPI OnTakeFocus(
+    CARAPI_(void) OnTakeFocus(
         /* [in] */ ITextView* view,
         /* [in] */ ISpannable* text,
         /* [in] */ Int32 dir);
@@ -56,99 +54,84 @@ public:
 
 protected:
     //@Override
-    CARAPI HandleMovementKey(
+    CARAPI_(Boolean) HandleMovementKey(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* buffer,
         /* [in] */ Int32 keyCode,
         /* [in] */ Int32 movementMetaState,
-        /* [in] */ IKeyEvent* event,
-        /* [out] */ Boolean* result);
+        /* [in] */ IKeyEvent* event);
 
     //@Override
-    CARAPI Left(
+    CARAPI_(Boolean) Left(
         /* [in] */ ITextView* widget,
-        /* [in] */ ISpannable* buffer,
-        /* [out] */ Boolean* result);
+        /* [in] */ ISpannable* buffer);
 
     //@Override
-    CARAPI Right(
+    CARAPI_(Boolean) Right(
         /* [in] */ ITextView* widget,
-        /* [in] */ ISpannable* buffer,
-        /* [out] */ Boolean* result);
+        /* [in] */ ISpannable* buffer);
 
     //@Override
-    CARAPI Up(
+    CARAPI_(Boolean) Up(
         /* [in] */ ITextView* widget,
-        /* [in] */ ISpannable* buffer,
-        /* [out] */ Boolean* result);
+        /* [in] */ ISpannable* buffer);
 
     //@Override
-    CARAPI Down(
+    CARAPI_(Boolean) Down(
         /* [in] */ ITextView* widget,
-        /* [in] */ ISpannable* buffer,
-        /* [out] */ Boolean* result);
+        /* [in] */ ISpannable* buffer);
 
     //@Override
-    CARAPI PageUp(
+    CARAPI_(Boolean) PageUp(
         /* [in] */ ITextView* widget,
-        /* [in] */ ISpannable* buffer,
-        /* [out] */ Boolean* result);
+        /* [in] */ ISpannable* buffer);
 
     //@Override
-    CARAPI PageDown(
+    CARAPI_(Boolean) PageDown(
         /* [in] */ ITextView* widget,
-        /* [in] */ ISpannable* buffer,
-        /* [out] */ Boolean* result);
+        /* [in] */ ISpannable* buffer);
 
     //@Override
-    CARAPI Top(
+    CARAPI_(Boolean) Top(
         /* [in] */ ITextView* widget,
-        /* [in] */ ISpannable* buffer,
-        /* [out] */ Boolean* result);
+        /* [in] */ ISpannable* buffer);
 
     //@Override
-    CARAPI Bottom(
+    CARAPI_(Boolean) Bottom(
         /* [in] */ ITextView* widget,
-        /* [in] */ ISpannable* buffer,
-        /* [out] */ Boolean* result);
+        /* [in] */ ISpannable* buffer);
 
     //@Override
-    CARAPI LineStart(
+    CARAPI_(Boolean) LineStart(
         /* [in] */ ITextView* widget,
-        /* [in] */ ISpannable* buffer,
-        /* [out] */ Boolean* result);
+        /* [in] */ ISpannable* buffer);
 
     //@Override
-    CARAPI LineEnd(
+    CARAPI_(Boolean) LineEnd(
         /* [in] */ ITextView* widget,
-        /* [in] */ ISpannable* buffer,
-        /* [out] */ Boolean* result);
+        /* [in] */ ISpannable* buffer);
 
     /** {@hide} */
     //@Override
-    CARAPI LeftWord(
+    CARAPI_(Boolean) LeftWord(
         /* [in] */ ITextView* widget,
-        /* [in] */ ISpannable* buffer,
-        /* [out] */ Boolean* result);
+        /* [in] */ ISpannable* buffer);
 
     /** {@hide} */
     //@Override
-    CARAPI RightWord(
+    CARAPI_(Boolean) RightWord(
         /* [in] */ ITextView* widget,
-        /* [in] */ ISpannable* buffer,
-        /* [out] */ Boolean* result);
+        /* [in] */ ISpannable* buffer);
 
     //@Override
-    CARAPI Home(
+    CARAPI_(Boolean) Home(
         /* [in] */ ITextView* widget,
-        /* [in] */ ISpannable* buffer,
-        /* [out] */ Boolean* result);
+        /* [in] */ ISpannable* buffer);
 
     //@Override
-    CARAPI End(
+    CARAPI_(Boolean) End(
         /* [in] */ ITextView* widget,
-        /* [in] */ ISpannable* buffer,
-        /* [out] */ Boolean* result);
+        /* [in] */ ISpannable* buffer);
 
 private:
     static CARAPI_(Boolean) IsSelecting(

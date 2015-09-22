@@ -1,11 +1,10 @@
-#include "elastos/droid/text/format/Formatter.h"
+#include "text/format/Formatter.h"
 #include "R.h"
 #include "net/NetworkUtils.h"
 
-using Elastos::Droid::Net::NetworkUtils;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
-
+using Elastos::Droid::Net::NetworkUtils;
 
 namespace Elastos {
 namespace Droid {

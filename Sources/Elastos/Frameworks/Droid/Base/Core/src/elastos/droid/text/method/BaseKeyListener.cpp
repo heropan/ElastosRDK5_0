@@ -20,33 +20,22 @@ namespace Method {
 
 const AutoPtr<IInterface> BaseKeyListener::OLD_SEL_START = MetaKeyKeyListener::NewNoCopySpan();
 
-CAR_INTERFACE_IMPL(BaseKeyListener, Object, IBaseKeyListener)
-
-BaseKeyListener::~BaseKeyListener()
-{}
-
-ECode BaseKeyListener::Backspace(
+Boolean BaseKeyListener::Backspace(
     /* [in] */ IView* view,
     /* [in] */ IEditable* content,
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event,
-    /* [out] */ Boolean* ret)
+    /* [in] */ IKeyEvent* event)
 {
-    VALIDATE_NOT_NULL(ret)
-    *ret = BackspaceOrForwardDelete(view, content, keyCode, event, FALSE);
-    return NOERROR;
+    return BackspaceOrForwardDelete(view, content, keyCode, event, FALSE);
 }
 
-ECode BaseKeyListener::ForwardDelete(
+Boolean BaseKeyListener::ForwardDelete(
     /* [in] */ IView* view,
     /* [in] */ IEditable* content,
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event,
-    /* [out] */ Boolean* ret)
+    /* [in] */ IKeyEvent* event)
 {
-    VALIDATE_NOT_NULL(ret)
-    *ret = BackspaceOrForwardDelete(view, content, keyCode, event, TRUE);
-    return NOERROR;
+    return BackspaceOrForwardDelete(view, content, keyCode, event, TRUE);
 }
 
 Boolean BaseKeyListener::BackspaceOrForwardDelete(

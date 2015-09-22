@@ -1,6 +1,6 @@
 
-#include "elastos/droid/text/format/DateFormat.h"
-#include "elastos/droid/text/format/CDateUtils.h"
+#include "text/format/DateFormat.h"
+#include "text/format/CDateUtils.h"
 #include "text/CSpannedString.h"
 #include "text/CSpannableStringBuilder.h"
 #include "provider/Settings.h"

@@ -21,13 +21,8 @@ namespace Method {
  */
 class BaseKeyListener
     : public MetaKeyKeyListener
-    , public IBaseKeyListener
 {
 public:
-    CAR_INTERFACE_DECL()
-
-    virtual ~BaseKeyListener();
-
     /**
      * Performs the action that happens when you press the {@link KeyEvent#KEYCODE_DEL} key in
      * a {@link TextView}.  If there is a selection, deletes the selection; otherwise,
@@ -36,12 +31,11 @@ public:
      *
      * @return true if anything was deleted; false otherwise.
      */
-    CARAPI Backspace(
+    CARAPI_(Boolean) Backspace(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event,
-        /* [out] */ Boolean* ret);
+        /* [in] */ IKeyEvent* event);
 
     /**
      * Performs the action that happens when you press the {@link KeyEvent#KEYCODE_FORWARD_DEL}
@@ -51,33 +45,30 @@ public:
      *
      * @return true if anything was deleted; false otherwise.
      */
-    CARAPI ForwardDelete(
+    CARAPI_(Boolean) ForwardDelete(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event,
-        /* [out] */ Boolean* ret);
+        /* [in] */ IKeyEvent* event);
 
     static CARAPI_(Int32) MakeTextContentType(
         /* [in] */ Capitalize caps,
         /* [in] */ Boolean autoText);
 
-    CARAPI OnKeyDown(
+    CARAPI_(Boolean) OnKeyDown(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event,
-        /* [out] */ Boolean* ret);
+        /* [in] */ IKeyEvent* event);
 
     /**
      * Base implementation handles ACTION_MULTIPLE KEYCODE_UNKNOWN by inserting
      * the event's text into the content.
      */
-    CARAPI OnKeyOther(
+    CARAPI_(Boolean) OnKeyOther(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,
-        /* [in] */ IKeyEvent* event,
-        /* [out] */ Boolean* ret);
+        /* [in] */ IKeyEvent* event);
 
 private:
     CARAPI_(Boolean) BackspaceOrForwardDelete(

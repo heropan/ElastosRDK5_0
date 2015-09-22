@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_Text_Format_CDateUtils.h"
 #include "Elastos.Droid.Core_server.h"
-#include "elastos/droid/text/format/DateUtils.h"
+#include "DateUtils.h"
 #include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
