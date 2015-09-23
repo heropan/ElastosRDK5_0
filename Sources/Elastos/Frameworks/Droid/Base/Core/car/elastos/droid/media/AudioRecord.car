@@ -4,7 +4,7 @@ module
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Media.IAudioRecord;
     interface Elastos.Droid.Media.IMediaSyncEvent;
-    using interface Elastos.IO.IByteBuffer;
+    interface Elastos.IO.IByteBuffer;
 
     namespace Elastos {
     namespace Droid {

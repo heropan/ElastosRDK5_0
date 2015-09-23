@@ -5,6 +5,7 @@ module
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Media.IIVolumeController;
+    interface Elastos.Droid.Media.AudioPolicy.IAudioPolicyConfig;
 
     namespace Elastos {
     namespace Droid {

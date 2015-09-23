@@ -4,7 +4,7 @@ module
     interface Elastos.Utility.IHashMap;
     interface Elastos.Utility.IList;
     interface Elastos.Utility.IUUID;
-    interface IMediaDrm;
+    interface Elastos.Droid.Media.IMediaDrm;
 
     namespace Elastos {
     namespace Droid {
