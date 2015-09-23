@@ -27,12 +27,15 @@ using Elastos::Core::IByte;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IInteger32;
 using Elastos::Core::UniquePtr;
+using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IFlushable;
 using Elastos::IO::IInputStream;
 using Elastos::Security::CMessageDigestHelper;
 using Elastos::Security::IMessageDigest;
 using Elastos::Security::IMessageDigestHelper;
 using Elastos::Security::IPrivateKey;
+using Elastos::Utility::CHashMap;
+using Elastos::Utility::CLinkedHashMap;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
@@ -188,6 +191,13 @@ struct ASN1_GENERALIZEDTIME_Delete {
     }
 };
 typedef UniquePtr<ASN1_GENERALIZEDTIME, ASN1_GENERALIZEDTIME_Delete> Unique_ASN1_GENERALIZEDTIME;
+
+struct SSL_CTX_Delete {
+    void operator()(SSL_CTX* p) const {
+        SSL_CTX_free(p);
+    }
+};
+typedef UniquePtr<SSL_CTX, SSL_CTX_Delete> Unique_SSL_CTX;
 
 struct PKCS7_Delete {
     void operator()(PKCS7* p) const {
@@ -1240,6 +1250,27 @@ const ECDSA_METHOD elastos_ecdsa_method = {
 };
 
 /**
+ * Copied from libnativehelper NetworkUtilites.cpp
+ */
+static Boolean setBlocking(int fd, Boolean blocking)
+{
+    int flags = fcntl(fd, F_GETFL);
+    if (flags == -1) {
+        return FALSE;
+    }
+
+    if (!blocking) {
+        flags |= O_NONBLOCK;
+    }
+    else {
+        flags &= ~O_NONBLOCK;
+    }
+
+    int rc = fcntl(fd, F_SETFL, flags);
+    return (rc != -1);
+}
+
+/**
  * OpenSSL locking support. Taken from the O'Reilly book by Viega et al., but I
  * suppose there are not many other ways to do this on a Linux system (modulo
  * isomorphism).
@@ -1307,6 +1338,8 @@ int THREAD_cleanup(void)
     return 1;
 }
 
+AutoPtr<IMap> NativeCrypto::OPENSSL_TO_STANDARD_CIPHER_SUITES;
+AutoPtr<IMap> NativeCrypto::STANDARD_TO_OPENSSL_CIPHER_SUITES;
 const Boolean NativeCrypto::sInitialized = Clinit();
 
 /**
@@ -1315,6 +1348,9 @@ const Boolean NativeCrypto::sInitialized = Clinit();
  */
 Boolean NativeCrypto::Clinit()
 {
+    CHashMap::New((IMap**)&OPENSSL_TO_STANDARD_CIPHER_SUITES);
+    CLinkedHashMap::New((IMap**)&STANDARD_TO_OPENSSL_CIPHER_SUITES);
+
     SSL_load_error_strings();
     ERR_load_crypto_strings();
     SSL_library_init();
@@ -1548,7 +1584,7 @@ ECode NativeCrypto::EVP_PKEY_new_DSA(
     VALIDATE_NOT_NULL(result);
 
     NATIVE_TRACE("EVP_PKEY_new_DSA(p=%p, q=%p, g=%p, pub_key=%p, priv_key=%p)",
-              p, q, g, pub_key, priv_key);
+            p, q, g, pub_key, priv_key);
 
     Unique_DSA dsa(DSA_new());
     if (dsa.get() == NULL) {
@@ -2224,7 +2260,7 @@ static ECode RSA_crypt_operation(RSACryptOperation operation,
 
     NATIVE_TRACE("%s(%d, %p, %p, %p) => %d", caller, flen, from, to, pkey,
             resultSize);
-    *result = static_cast<Int32>(resultSize);
+    *result = resultSize;
     return NOERROR;
 }
 
@@ -6731,6 +6767,620 @@ ECode NativeCrypto::BIO_free_all(
     }
 
     ::BIO_free_all(bio);
+    return NOERROR;
+}
+
+ECode NativeCrypto::Get_OPENSSL_TO_STANDARD_CIPHER_SUITES(
+    /* [out] */ IMap** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = OPENSSL_TO_STANDARD_CIPHER_SUITES;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::Get_STANDARD_TO_OPENSSL_CIPHER_SUITES(
+    /* [out] */ IMap** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = STANDARD_TO_OPENSSL_CIPHER_SUITES;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+/**
+ * Returns an array containing all the X509 certificate references
+ */
+static AutoPtr< ArrayOf<Int64> > getCertificateRefs(const STACK_OF(X509)* chain)
+{
+    if (chain == NULL) {
+        // Chain can be NULL if the associated cipher doesn't do certs.
+        return NULL;
+    }
+    ssize_t count = sk_X509_num(chain);
+    if (count <= 0) {
+        return NULL;
+    }
+    AutoPtr< ArrayOf<Int64> > refArray = ArrayOf<Int64>::Alloc(count);
+    for (ssize_t i = 0; i < count; i++) {
+        (*refArray)[i] = reinterpret_cast<uintptr_t>(X509_dup_nocopy(sk_X509_value(chain, i)));
+    }
+    return refArray;
+}
+
+/**
+ * Returns an array containing all the X500 principal's bytes.
+ */
+static AutoPtr< ArrayOf<Handle32> > getPrincipalBytes(const STACK_OF(X509_NAME)* names)
+{
+    if (names == NULL) {
+        return NULL;
+    }
+
+    int count = sk_X509_NAME_num(names);
+    if (count <= 0) {
+        return NULL;
+    }
+
+    AutoPtr< ArrayOf<Handle32> > joa = ArrayOf<Handle32>::Alloc(count);
+
+    for (int i = 0; i < count; i++) {
+        X509_NAME* principal = sk_X509_NAME_value(names, i);
+
+        AutoPtr< ArrayOf<Byte> > byteArray;
+        ASN1ToByteArray<X509_NAME, i2d_X509_NAME>(principal, (ArrayOf<Byte>**)&byteArray);
+        if (byteArray == NULL) {
+            return NULL;
+        }
+        byteArray->AddRef();
+        (*joa)[i] = reinterpret_cast<Handle32>(byteArray.Get());
+    }
+
+    return joa;
+}
+
+/**
+ * Wraps access to the int inside a Elastos.IO.IFileDescriptor, taking care of throwing exceptions.
+ */
+class NetFd
+{
+public:
+    NetFd(IFileDescriptor* fileDescriptor)
+        : mFileDescriptor(fileDescriptor), mFd(-1)
+    {}
+
+    Boolean IsClosed()
+    {
+        mFileDescriptor->GetDescriptor(&mFd);
+        Boolean closed = (mFd == -1);
+        if (closed) {
+            // jniThrowException(mEnv, "java/net/SocketException", "Socket closed");
+        }
+        return closed;
+    }
+
+    Int32 Get() const
+    {
+        return mFd;
+    }
+
+private:
+    IFileDescriptor* mFileDescriptor;
+    Int32 mFd;
+
+    // Disallow copy and assignment.
+    NetFd(const NetFd&);
+    void operator=(const NetFd&);
+};
+
+/**
+ * Our additional application data needed for getting synchronization right.
+ * This maybe warrants a bit of lengthy prose:
+ *
+ * (1) We use a flag to reflect whether we consider the SSL connection alive.
+ * Any read or write attempt loops will be cancelled once this flag becomes 0.
+ *
+ * (2) We use an int to count the number of threads that are blocked by the
+ * underlying socket. This may be at most two (one reader and one writer), since
+ * the Java layer ensures that no more threads will enter the native code at the
+ * same time.
+ *
+ * (3) The pipe is used primarily as a means of cancelling a blocking select()
+ * when we want to close the connection (aka "emergency button"). It is also
+ * necessary for dealing with a possible race condition situation: There might
+ * be cases where both threads see an SSL_ERROR_WANT_READ or
+ * SSL_ERROR_WANT_WRITE. Both will enter a select() with the proper argument.
+ * If one leaves the select() successfully before the other enters it, the
+ * "success" event is already consumed and the second thread will be blocked,
+ * possibly forever (depending on network conditions).
+ *
+ * The idea for solving the problem looks like this: Whenever a thread is
+ * successful in moving around data on the network, and it knows there is
+ * another thread stuck in a select(), it will write a byte to the pipe, waking
+ * up the other thread. A thread that returned from select(), on the other hand,
+ * knows whether it's been woken up by the pipe. If so, it will consume the
+ * byte, and the original state of affairs has been restored.
+ *
+ * The pipe may seem like a bit of overhead, but it fits in nicely with the
+ * other file descriptors of the select(), so there's only one condition to wait
+ * for.
+ *
+ * (4) Finally, a mutex is needed to make sure that at most one thread is in
+ * either SSL_read() or SSL_write() at any given time. This is an OpenSSL
+ * requirement. We use the same mutex to guard the field for counting the
+ * waiting threads.
+ *
+ * Note: The current implementation assumes that we don't have to deal with
+ * problems induced by multiple cores or processors and their respective
+ * memory caches. One possible problem is that of inconsistent views on the
+ * "aliveAndKicking" field. This could be worked around by also enclosing all
+ * accesses to that field inside a lock/unlock sequence of our mutex, but
+ * currently this seems a bit like overkill. Marking volatile at the very least.
+ *
+ * During handshaking, additional fields are used to up-call into
+ * Java to perform certificate verification and handshake
+ * completion. These are also used in any renegotiation.
+ *
+ * (5) the JNIEnv so we can invoke the Java callback
+ *
+ * (6) a NativeCrypto.SSLHandshakeCallbacks instance for callbacks from native to Java
+ *
+ * (7) a java.io.FileDescriptor wrapper to check for socket close
+ *
+ * We store the NPN protocols list so we can either send it (from the server) or
+ * select a protocol (on the client). We eagerly acquire a pointer to the array
+ * data so the callback doesn't need to acquire resources that it cannot
+ * release.
+ *
+ * Because renegotiation can be requested by the peer at any time,
+ * care should be taken to maintain an appropriate JNIEnv on any
+ * downcall to openssl since it could result in an upcall to Java. The
+ * current code does try to cover these cases by conditionally setting
+ * the JNIEnv on calls that can read and write to the SSL such as
+ * SSL_do_handshake, SSL_read, SSL_write, and SSL_shutdown.
+ *
+ * Finally, we have two emphemeral keys setup by OpenSSL callbacks:
+ *
+ * (8) a set of ephemeral RSA keys that is lazily generated if a peer
+ * wants to use an exportable RSA cipher suite.
+ *
+ * (9) a set of ephemeral EC keys that is lazily generated if a peer
+ * wants to use an TLS_ECDHE_* cipher suite.
+ *
+ */
+class AppData
+{
+public:
+    volatile int aliveAndKicking;
+    int waitingThreads;
+    int fdsEmergency[2];
+    MUTEX_TYPE mutex;
+    ISSLHandshakeCallbacks* sslHandshakeCallbacks;
+    ArrayOf<Byte>* npnProtocolsArray;
+    Byte* npnProtocolsData;
+    size_t npnProtocolsLength;
+    ArrayOf<Byte>* alpnProtocolsArray;
+    Byte* alpnProtocolsData;
+    size_t alpnProtocolsLength;
+    Unique_RSA ephemeralRsa;
+    Unique_EC_KEY ephemeralEc;
+
+    /**
+     * Creates the application data context for the SSL*.
+     */
+  public:
+    static AppData* Create()
+    {
+        UniquePtr<AppData> appData(new AppData());
+        if (pipe(appData.get()->fdsEmergency) == -1) {
+            Logger::E(LOG_TAG, "AppData::create pipe(2) failed: %s", strerror(errno));
+            return NULL;
+        }
+        if (!setBlocking(appData.get()->fdsEmergency[0], false)) {
+            Logger::E(LOG_TAG, "AppData::create fcntl(2) failed: %s", strerror(errno));
+            return NULL;
+        }
+        if (MUTEX_SETUP(appData.get()->mutex) == -1) {
+            Logger::E(LOG_TAG, "pthread_mutex_init(3) failed: %s", strerror(errno));
+            return NULL;
+        }
+        return appData.release();
+    }
+
+    ~AppData()
+    {
+        aliveAndKicking = 0;
+        if (fdsEmergency[0] != -1) {
+            close(fdsEmergency[0]);
+        }
+        if (fdsEmergency[1] != -1) {
+            close(fdsEmergency[1]);
+        }
+        ClearCallbackState();
+        MUTEX_CLEANUP(mutex);
+    }
+
+  private:
+    AppData() :
+            aliveAndKicking(1),
+            waitingThreads(0),
+            sslHandshakeCallbacks(NULL),
+            npnProtocolsArray(NULL),
+            npnProtocolsData(NULL),
+            npnProtocolsLength(-1),
+            alpnProtocolsArray(NULL),
+            alpnProtocolsData(NULL),
+            alpnProtocolsLength(-1),
+            ephemeralRsa(NULL),
+            ephemeralEc(NULL)
+    {
+        fdsEmergency[0] = -1;
+        fdsEmergency[1] = -1;
+    }
+
+  public:
+    /**
+     * Used to set the SSL-to-Java callback state before each SSL_*
+     * call that may result in a callback. It should be cleared after
+     * the operation returns with clearCallbackState.
+     *
+     * @param env The JNIEnv
+     * @param shc The SSLHandshakeCallbacks
+     * @param fd The FileDescriptor
+     * @param npnProtocols NPN protocols so that they may be advertised (by the
+     *                     server) or selected (by the client). Has no effect
+     *                     unless NPN is enabled.
+     * @param alpnProtocols ALPN protocols so that they may be advertised (by the
+     *                     server) or selected (by the client). Passing non-NULL
+     *                     enables ALPN.
+     */
+    Boolean SetCallbackState(ISSLHandshakeCallbacks* shc, IFileDescriptor* fd, ArrayOf<Byte>* npnProtocols,
+            ArrayOf<Byte>* alpnProtocols)
+    {
+        UniquePtr<NetFd> netFd;
+        if (fd != NULL) {
+            netFd.reset(new NetFd(fd));
+            if (netFd->IsClosed()) {
+                NATIVE_TRACE("appData=%p setCallbackState => netFd->isClosed() == true", this);
+                return FALSE;
+            }
+        }
+        sslHandshakeCallbacks = shc;
+        if (npnProtocols != NULL) {
+            npnProtocolsData = npnProtocols->GetPayload();
+            if (npnProtocolsData == NULL) {
+                ClearCallbackState();
+                NATIVE_TRACE("appData=%p setCallbackState => npnProtocolsData == NULL", this);
+                return FALSE;
+            }
+            npnProtocolsArray = npnProtocols;
+            npnProtocolsLength = npnProtocols->GetLength();
+        }
+        if (alpnProtocols != NULL) {
+            alpnProtocolsData = alpnProtocols->GetPayload();
+            if (alpnProtocolsData == NULL) {
+                ClearCallbackState();
+                NATIVE_TRACE("appData=%p setCallbackState => alpnProtocolsData == NULL", this);
+                return FALSE;
+            }
+            alpnProtocolsArray = alpnProtocols;
+            alpnProtocolsLength = alpnProtocols->GetLength();
+        }
+        return TRUE;
+    }
+
+    void ClearCallbackState() {
+        sslHandshakeCallbacks = NULL;
+        if (npnProtocolsArray != NULL) {
+            npnProtocolsArray = NULL;
+            npnProtocolsData = NULL;
+            npnProtocolsLength = -1;
+        }
+        if (alpnProtocolsArray != NULL) {
+            alpnProtocolsArray = NULL;
+            alpnProtocolsData = NULL;
+            alpnProtocolsLength = -1;
+        }
+    }
+};
+
+static AppData* toAppData(const SSL* ssl)
+{
+    return reinterpret_cast<AppData*>(SSL_get_app_data(ssl));
+}
+
+/**
+ * Verify the X509 certificate via SSL_CTX_set_cert_verify_callback
+ */
+static int cert_verify_callback(X509_STORE_CTX* x509_store_ctx, void* arg __attribute__ ((unused)))
+{
+    /* Get the correct index to the SSLobject stored into X509_STORE_CTX. */
+    SSL* ssl = reinterpret_cast<SSL*>(X509_STORE_CTX_get_ex_data(x509_store_ctx,
+            SSL_get_ex_data_X509_STORE_CTX_idx()));
+    NATIVE_TRACE("ssl=%p cert_verify_callback x509_store_ctx=%p arg=%p", ssl, x509_store_ctx, arg);
+
+    AppData* appData = toAppData(ssl);
+    ISSLHandshakeCallbacks* sslHandshakeCallbacks = appData->sslHandshakeCallbacks;
+
+    AutoPtr< ArrayOf<Int64> > refArray = getCertificateRefs(x509_store_ctx->untrusted);
+
+    const char* authMethod = SSL_authentication_method(ssl);
+    NATIVE_TRACE("ssl=%p cert_verify_callback calling verifyCertificateChain authMethod=%s",
+              ssl, authMethod);
+    String authMethodString(authMethod);
+    ECode ec = sslHandshakeCallbacks->VerifyCertificateChain(
+            reinterpret_cast<uintptr_t>(SSL_get1_session(ssl)),
+            refArray, authMethodString);
+
+    int result = (FAILED(ec)) ? 0 : 1;
+    NATIVE_TRACE("ssl=%p cert_verify_callback => %d", ssl, result);
+    return result;
+}
+
+/**
+ * Call back to watch for handshake to be completed. This is necessary
+ * for SSL_MODE_HANDSHAKE_CUTTHROUGH support, since SSL_do_handshake
+ * returns before the handshake is completed in this case.
+ */
+static void info_callback(const SSL* ssl, int where, int ret)
+{
+    NATIVE_TRACE("ssl=%p info_callback where=0x%x ret=%d", ssl, where, ret);
+#ifdef WITH_JNI_TRACE
+    info_callback_LOG(ssl, where, ret);
+#endif
+    if (!(where & SSL_CB_HANDSHAKE_DONE) && !(where & SSL_CB_HANDSHAKE_START)) {
+        NATIVE_TRACE("ssl=%p info_callback ignored", ssl);
+        return;
+    }
+
+    AppData* appData = toAppData(ssl);
+
+    ISSLHandshakeCallbacks* sslHandshakeCallbacks = appData->sslHandshakeCallbacks;
+
+    NATIVE_TRACE("ssl=%p info_callback calling onSSLStateChange", ssl);
+    ECode ec = sslHandshakeCallbacks->OnSSLStateChange(reinterpret_cast<Int64>(ssl), where, ret);
+
+    if (FAILED(ec)) {
+        NATIVE_TRACE("ssl=%p info_callback exception", ssl);
+    }
+    NATIVE_TRACE("ssl=%p info_callback completed", ssl);
+}
+
+/**
+ * Call back to ask for a client certificate. There are three possible exit codes:
+ *
+ * 1 is success. x509Out and pkeyOut should point to the correct private key and certificate.
+ * 0 is unable to find key. x509Out and pkeyOut should be NULL.
+ * -1 is error and it doesn't matter what x509Out and pkeyOut are.
+ */
+static int client_cert_cb(SSL* ssl, X509** x509Out, EVP_PKEY** pkeyOut)
+{
+    NATIVE_TRACE("ssl=%p client_cert_cb x509Out=%p pkeyOut=%p", ssl, x509Out, pkeyOut);
+
+    /* Clear output of key and certificate in case of early exit due to error. */
+    *x509Out = NULL;
+    *pkeyOut = NULL;
+
+    AppData* appData = toAppData(ssl);
+    ISSLHandshakeCallbacks* sslHandshakeCallbacks = appData->sslHandshakeCallbacks;
+
+    // Call Java callback which can use SSL_use_certificate and SSL_use_PrivateKey to set values
+    char ssl2_ctype = SSL3_CT_RSA_SIGN;
+    const char* ctype = NULL;
+    int ctype_num = 0;
+    AutoPtr< ArrayOf<Handle32> > issuers;
+    switch (ssl->version) {
+        case SSL2_VERSION:
+            ctype = &ssl2_ctype;
+            ctype_num = 1;
+            break;
+        case SSL3_VERSION:
+        case TLS1_VERSION:
+        case TLS1_1_VERSION:
+        case TLS1_2_VERSION:
+        case DTLS1_VERSION:
+            ctype = ssl->s3->tmp.ctype;
+            ctype_num = ssl->s3->tmp.ctype_num;
+            issuers = getPrincipalBytes(ssl->s3->tmp.ca_names);
+            break;
+    }
+#ifdef WITH_JNI_TRACE
+    for (int i = 0; i < ctype_num; i++) {
+        NATIVE_TRACE("ssl=%p clientCertificateRequested keyTypes[%d]=%d", ssl, i, ctype[i]);
+    }
+#endif
+
+    AutoPtr< ArrayOf<Byte> > keyTypes = ArrayOf<Byte>::Alloc(ctype_num);
+    keyTypes->Copy(reinterpret_cast<const Byte*>(ctype), ctype_num);
+
+    NATIVE_TRACE("ssl=%p clientCertificateRequested calling clientCertificateRequested "
+              "keyTypes=%p issuers=%p", ssl, keyTypes, issuers);
+    ECode ec = sslHandshakeCallbacks->ClientCertificateRequested(keyTypes, issuers);
+
+    if (FAILED(ec)) {
+        NATIVE_TRACE("ssl=%p client_cert_cb exception => 0", ssl);
+        return -1;
+    }
+
+    // Check for values set from Java
+    X509*     certificate = SSL_get_certificate(ssl);
+    EVP_PKEY* privatekey  = SSL_get_privatekey(ssl);
+    int result = 0;
+    if (certificate != NULL && privatekey != NULL) {
+        *x509Out = certificate;
+        *pkeyOut = privatekey;
+        result = 1;
+    }
+    else {
+        // Some error conditions return NULL, so make sure it doesn't linger.
+        FreeOpenSslErrorState();
+    }
+    NATIVE_TRACE("ssl=%p client_cert_cb => *x509=%p *pkey=%p %d", ssl, *x509Out, *pkeyOut, result);
+    return result;
+}
+
+static RSA* rsaGenerateKey(int keylength)
+{
+    Unique_BIGNUM bn(BN_new());
+    if (bn.get() == NULL) {
+        return NULL;
+    }
+    int setWordResult = BN_set_word(bn.get(), RSA_F4);
+    if (setWordResult != 1) {
+        return NULL;
+    }
+    Unique_RSA rsa(RSA_new());
+    if (rsa.get() == NULL) {
+        return NULL;
+    }
+    int generateResult = RSA_generate_key_ex(rsa.get(), keylength, bn.get(), NULL);
+    if (generateResult != 1) {
+        return NULL;
+    }
+    return rsa.release();
+}
+
+/**
+ * Call back to ask for an ephemeral RSA key for SSL_RSA_EXPORT_WITH_RC4_40_MD5 (aka EXP-RC4-MD5)
+ */
+static RSA* tmp_rsa_callback(SSL* ssl __attribute__ ((unused)),
+                             int is_export __attribute__ ((unused)),
+                             int keylength)
+{
+    NATIVE_TRACE("ssl=%p tmp_rsa_callback is_export=%d keylength=%d", ssl, is_export, keylength);
+
+    AppData* appData = toAppData(ssl);
+    if (appData->ephemeralRsa.get() == NULL) {
+        NATIVE_TRACE("ssl=%p tmp_rsa_callback generating ephemeral RSA key", ssl);
+        appData->ephemeralRsa.reset(rsaGenerateKey(keylength));
+    }
+    NATIVE_TRACE("ssl=%p tmp_rsa_callback => %p", ssl, appData->ephemeralRsa.get());
+    return appData->ephemeralRsa.get();
+}
+
+static DH* dhGenerateParameters(int keylength)
+{
+    /*
+     * The SSL_CTX_set_tmp_dh_callback(3SSL) man page discusses two
+     * different options for generating DH keys. One is generating the
+     * keys using a single set of DH parameters. However, generating
+     * DH parameters is slow enough (minutes) that they suggest doing
+     * it once at install time. The other is to generate DH keys from
+     * DSA parameters. Generating DSA parameters is faster than DH
+     * parameters, but to prevent small subgroup attacks, they needed
+     * to be regenerated for each set of DH keys. Setting the
+     * SSL_OP_SINGLE_DH_USE option make sure OpenSSL will call back
+     * for new DH parameters every type it needs to generate DH keys.
+     */
+#if 0
+    // Slow path that takes minutes but could be cached
+    Unique_DH dh(DH_new());
+    if (!DH_generate_parameters_ex(dh.get(), keylength, 2, NULL)) {
+        return NULL;
+    }
+    return dh.release();
+#else
+    // Faster path but must have SSL_OP_SINGLE_DH_USE set
+    Unique_DSA dsa(DSA_new());
+    if (!DSA_generate_parameters_ex(dsa.get(), keylength, NULL, 0, NULL, NULL, NULL)) {
+        return NULL;
+    }
+    DH* dh = DSA_dup_DH(dsa.get());
+    return dh;
+#endif
+}
+
+/**
+ * Call back to ask for Diffie-Hellman parameters
+ */
+static DH* tmp_dh_callback(SSL* ssl __attribute__ ((unused)),
+                           int is_export __attribute__ ((unused)),
+                           int keylength)
+{
+    NATIVE_TRACE("ssl=%p tmp_dh_callback is_export=%d keylength=%d", ssl, is_export, keylength);
+    DH* tmp_dh = dhGenerateParameters(keylength);
+    NATIVE_TRACE("ssl=%p tmp_dh_callback => %p", ssl, tmp_dh);
+    return tmp_dh;
+}
+
+static EC_KEY* ecGenerateKey(int keylength __attribute__ ((unused)))
+{
+    // TODO selected curve based on keylength
+    Unique_EC_KEY ec(EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
+    if (ec.get() == NULL) {
+        return NULL;
+    }
+    return ec.release();
+}
+
+/**
+ * Call back to ask for an ephemeral EC key for TLS_ECDHE_* cipher suites
+ */
+static EC_KEY* tmp_ecdh_callback(SSL* ssl __attribute__ ((unused)),
+                                 int is_export __attribute__ ((unused)),
+                                 int keylength)
+{
+    NATIVE_TRACE("ssl=%p tmp_ecdh_callback is_export=%d keylength=%d", ssl, is_export, keylength);
+    AppData* appData = toAppData(ssl);
+    if (appData->ephemeralEc.get() == NULL) {
+        NATIVE_TRACE("ssl=%p tmp_ecdh_callback generating ephemeral EC key", ssl);
+        appData->ephemeralEc.reset(ecGenerateKey(keylength));
+    }
+    NATIVE_TRACE("ssl=%p tmp_ecdh_callback => %p", ssl, appData->ephemeralEc.get());
+    return appData->ephemeralEc.get();
+}
+
+ECode NativeCrypto::SSL_CTX_new(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    Unique_SSL_CTX sslCtx(::SSL_CTX_new(SSLv23_method()));
+    if (sslCtx.get() == NULL) {
+        *result = 0;
+        return ThrowExceptionIfNecessary("SSL_CTX_new");
+    }
+    SSL_CTX_set_options(sslCtx.get(),
+                        SSL_OP_ALL
+                        // Note: We explicitly do not allow SSLv2 to be used.
+                        | SSL_OP_NO_SSLv2
+                        // We also disable session tickets for better compatibility b/2682876
+                        | SSL_OP_NO_TICKET
+                        // We also disable compression for better compatibility b/2710492 b/2710497
+                        | SSL_OP_NO_COMPRESSION
+                        // Because dhGenerateParameters uses DSA_generate_parameters_ex
+                        | SSL_OP_SINGLE_DH_USE
+                        // Because ecGenerateParameters uses a fixed named curve
+                        | SSL_OP_SINGLE_ECDH_USE);
+
+    int mode = SSL_CTX_get_mode(sslCtx.get());
+    /*
+     * Turn on "partial write" mode. This means that SSL_write() will
+     * behave like Posix write() and possibly return after only
+     * writing a partial buffer. Note: The alternative, perhaps
+     * surprisingly, is not that SSL_write() always does full writes
+     * but that it will force you to retry write calls having
+     * preserved the full state of the original call. (This is icky
+     * and undesirable.)
+     */
+    mode |= SSL_MODE_ENABLE_PARTIAL_WRITE;
+
+    // Reuse empty buffers within the SSL_CTX to save memory
+    mode |= SSL_MODE_RELEASE_BUFFERS;
+
+    SSL_CTX_set_mode(sslCtx.get(), mode);
+
+    SSL_CTX_set_cert_verify_callback(sslCtx.get(), cert_verify_callback, NULL);
+    SSL_CTX_set_info_callback(sslCtx.get(), info_callback);
+    SSL_CTX_set_client_cert_cb(sslCtx.get(), client_cert_cb);
+    SSL_CTX_set_tmp_rsa_callback(sslCtx.get(), tmp_rsa_callback);
+    SSL_CTX_set_tmp_dh_callback(sslCtx.get(), tmp_dh_callback);
+    SSL_CTX_set_tmp_ecdh_callback(sslCtx.get(), tmp_ecdh_callback);
+
+    // When TLS Channel ID extension is used, use the new version of it.
+    sslCtx.get()->tlsext_channel_id_enabled_new = 1;
+
+    NATIVE_TRACE("NativeCrypto_SSL_CTX_new => %p", sslCtx.get());
+    *result = reinterpret_cast<uintptr_t>(sslCtx.release());
     return NOERROR;
 }
 
