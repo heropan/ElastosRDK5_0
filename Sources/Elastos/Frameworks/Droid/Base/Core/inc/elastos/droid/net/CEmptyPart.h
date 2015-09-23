@@ -3,7 +3,7 @@
 #define __CEMPTYPART_H__
 
 #include "_CEmptyPart.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "net/Uri.h"
 #include "net/CPart.h"
 

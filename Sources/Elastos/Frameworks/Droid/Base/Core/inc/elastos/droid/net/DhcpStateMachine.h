@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_DHCPSTATEMACHINE_H__
 #define __ELASTOS_DROID_NET_DHCPSTATEMACHINE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #if 0 // TODO: Waiting for BroadcastReceiver, State, StateMachine
 #include "content/BroadcastReceiver.h"
 #include "utility/State.h"

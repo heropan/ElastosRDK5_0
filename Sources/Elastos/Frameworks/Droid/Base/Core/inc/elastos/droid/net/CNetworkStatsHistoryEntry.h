@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CNETWORKSTATSHISTORYENTRY_H__
 
 #include "_Elastos_Droid_Net_CNetworkStatsHistoryEntry.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_DHCPRESULTS_H__
 #define __ELASTOS_DROID_NET_DHCPRESULTS_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Net::IInetAddress;
 

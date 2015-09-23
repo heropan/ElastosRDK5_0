@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_NETWORK_H__
 #define __ELASTOS_DROID_NET_NETWORK_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastosx/net/SocketFactory.h>
 
 using Elastosx::Net::ISocketFactory;

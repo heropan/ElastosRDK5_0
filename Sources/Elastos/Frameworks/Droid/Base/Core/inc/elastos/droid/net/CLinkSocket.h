@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CLINKSOCKET_H__
 
 #include "_Elastos_Droid_Net_CLinkSocket.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Net::ISocketAddress;
 using Elastos::Net::IInetAddress;

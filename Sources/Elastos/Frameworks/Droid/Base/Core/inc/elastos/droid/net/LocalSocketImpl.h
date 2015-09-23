@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_LOCALSOCKETIMPL_H__
 #define __ELASTOS_DROID_NET_LOCALSOCKETIMPL_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/io/InputStream.h>
 #include <elastos/io/OutputStream.h>
 

@@ -6,7 +6,6 @@ include $(MAKEDIR)/../../../../../../sources.inc
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid
 
-
 C_DEFINES += -DDROID_CORE
 
 SOURCES += SerialPort.cpp

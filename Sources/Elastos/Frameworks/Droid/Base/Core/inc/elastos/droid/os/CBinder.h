@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_OS_CBINDER_H__
 
 #include "_Elastos_Droid_Os_CBinder.h"
-#include "os/Binder.h"
+#include "elastos/droid/os/Binder.h"
 
 namespace Elastos {
 namespace Droid {

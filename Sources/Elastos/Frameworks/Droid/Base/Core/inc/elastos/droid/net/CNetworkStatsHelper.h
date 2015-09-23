@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CNETWORKSTATSHELPER_H__
 
 #include "_Elastos_Droid_Net_CNetworkStatsHelper.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
@@ -16,7 +16,7 @@ public:
     CARAPI SetToString(
         /* [in] */ Int32 set,
         /* [out] */ String* result);
-    
+
     CARAPI TagToString(
         /* [in] */ Int32 tag,
         /* [out] */ String* result);

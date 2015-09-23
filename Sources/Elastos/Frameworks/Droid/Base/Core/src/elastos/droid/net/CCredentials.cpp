@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "net/CCredentials.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/CCredentials.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,5 +1,5 @@
 
-#include "net/DhcpStateMachine.h"
+#include "elastos/droid/net/DhcpStateMachine.h"
 #ifdef DROID_CORE
 
 #if 0 // TODO: Waiting for CPendingIntentHelper, CIntent, CIntentFilter
@@ -13,7 +13,7 @@
 #if 0 // TODO: Waiting for NetworkUtils
 #include "net/NetworkUtils.h"
 #endif
-#include "os/SystemClock.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

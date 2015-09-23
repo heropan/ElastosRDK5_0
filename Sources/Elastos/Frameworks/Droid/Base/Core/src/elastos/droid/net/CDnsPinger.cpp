@@ -1,11 +1,11 @@
 
-#include "net/CDnsPinger.h"
+#include "elastos/droid/net/CDnsPinger.h"
 // #include "net/NetworkUtils.h"
-#include "net/CConnectivityManager.h"
-#include "R.h"
+#include "elastos/droid/net/CConnectivityManager.h"
+#include "elastos/droid/R.h"
 // #include "provider/Settings.h"
-#include "os/SystemClock.h"
-#include "CConnectivityManagerHelper.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/net/CConnectivityManagerHelper.h"
 
 #include <elastos/utility/logging/Logger.h>
 // #include <CRandom.h>

@@ -1,5 +1,5 @@
 
-#include "net/CInterfaceConfiguration.h"
+#include "elastos/droid/net/CInterfaceConfiguration.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

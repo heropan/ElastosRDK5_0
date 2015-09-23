@@ -1,5 +1,5 @@
 
-#include "EthernetManager.h"
+#include "elastos/droid/net/EthernetManager.h"
 
 namespace Elastos {
 namespace Droid {

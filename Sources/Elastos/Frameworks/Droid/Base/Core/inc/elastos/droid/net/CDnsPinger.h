@@ -3,9 +3,9 @@
 #define __ELASTOS_DROID_NET_CDNSPINGER_H__
 
 #include "_Elastos_Droid_Net_CDnsPinger.h"
-#include "ext/frameworkdef.h"
-#include "os/SystemClock.h"
-#include "os/Handler.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/Handler.h"
 
 #include <elastos/utility/etl/List.h>
 

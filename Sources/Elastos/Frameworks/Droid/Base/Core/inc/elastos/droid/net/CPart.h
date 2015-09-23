@@ -3,7 +3,7 @@
 #define __CPART_H__
 
 #include "_CPart.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/AutoPtr.h>
 #include "net/Uri.h"
 
