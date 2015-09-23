@@ -10,6 +10,7 @@ using Elastos::Security::Interfaces::IDSAPrivateKey;
 using Elastos::Security::Interfaces::IECPrivateKey;
 using Elastos::Security::Interfaces::IRSAPrivateKey;
 using Elastos::Utility::ICalendar;
+using Elastos::Utility::IMap;
 using Elastosx::Security::Auth::X500::IX500Principal;
 
 namespace Org {
@@ -901,6 +902,53 @@ public:
     static CARAPI BIO_free_all(
         /* [in] */ Int64 bioRef);
 
+    // --- SSL handling --------------------------------------------------------
+
+    static CARAPI Get_OPENSSL_TO_STANDARD_CIPHER_SUITES(
+        /* [out] */ IMap** result);
+
+    static CARAPI Get_STANDARD_TO_OPENSSL_CIPHER_SUITES(
+        /* [out] */ IMap** result);
+
+    static CARAPI SSL_CTX_new(
+        /* [out] */ Int64* result);
+
+    static CARAPI GetSupportedCipherSuites(
+        /* [out, callee] */ ArrayOf<String>** result);
+
+    static CARAPI SSL_CTX_free(
+        /* [in] */ Int64 ssl_ctx);
+
+    static CARAPI SSL_CTX_set_session_id_context(
+        /* [in] */ Int64 ssl_ctx,
+        /* [in] */ ArrayOf<Byte>** sid_ctx);
+
+    static CARAPI SSL_new(
+        /* [in] */ Int64 ssl_ctx,
+        /* [out] */ Int64* result);
+
+    static CARAPI SSL_enable_tls_channel_id(
+        /* [in] */ Int64 ssl);
+
+    static CARAPI SSL_get_tls_channel_id(
+        /* [in] */ Int64 ssl,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI SSL_set1_tls_channel_id(
+        /* [in] */ Int64 ssl,
+        /* [in] */ Int64 pkey);
+
+    static CARAPI SSL_use_certificate(
+        /* [in] */ Int64 ssl,
+        /* [in] */ ArrayOf<Int64>** x509refs);
+
+    static CARAPI SSL_use_PrivateKey(
+        /* [in] */ Int64 ssl,
+        /* [in] */ Int64 pkey);
+
+    static CARAPI SSL_check_private_key(
+        /* [in] */ Int64 ssl);
+
 private:
     static CARAPI X509_NAME_hash(
         /* [in] */ IX500Principal* principal,
@@ -908,6 +956,10 @@ private:
         /* [out] */ Int32* result);
 
     static CARAPI_(Boolean) Clinit();
+
+public:
+    static AutoPtr<IMap> OPENSSL_TO_STANDARD_CIPHER_SUITES;
+    static AutoPtr<IMap> STANDARD_TO_OPENSSL_CIPHER_SUITES;
 
 private:
     static const Boolean sInitialized;
