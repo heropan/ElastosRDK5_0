@@ -1,7 +1,7 @@
 module
 {
     interface Elastos.Droid.Media.IAudioFormat;
-    interface IAudioMixingRule;
+    interface Elastos.Droid.Media.AudioPolicy.IAudioMixingRule;
 
     namespace Elastos {
     namespace Droid {

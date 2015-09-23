@@ -1,6 +1,6 @@
 module
 {
-    interface IIMediaProjectionCallback;
+    interface Elastos.Droid.Media.Projection.IIMediaProjectionCallback;
 
     namespace Elastos {
     namespace Droid {

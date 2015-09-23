@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Droid.Media.Session.IISessionController;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {

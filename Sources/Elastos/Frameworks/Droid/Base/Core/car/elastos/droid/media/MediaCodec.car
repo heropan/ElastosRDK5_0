@@ -5,9 +5,9 @@ module
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.View.ISurface;
-    interface IMediaCrypto;
-    interface IMediaCodecInfo;
-    interface IMediaCodec;
+    interface Elastos.Droid.Media.IMediaCrypto;
+    interface Elastos.Droid.Media.IMediaCodecInfo;
+    interface Elastos.Droid.Media.IMediaCodec;
 
     namespace Elastos {
     namespace Droid {

@@ -4,8 +4,8 @@ module
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Media.IMediaMetadata;
     interface Elastos.Droid.Content.Pm.IParceledListSlice;
-    interface IParcelableVolumeInfo;
-    interface IPlaybackState;
+    interface Elastos.Droid.Media.Session.IParcelableVolumeInfo;
+    interface Elastos.Droid.Media.Session.IPlaybackState;
 
     namespace Elastos {
     namespace Droid {

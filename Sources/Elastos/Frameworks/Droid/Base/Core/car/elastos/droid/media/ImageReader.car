@@ -3,7 +3,7 @@ module
 {
     interface Elastos.Droid.View.ISurface;
     interface Elastos.Droid.Os.IHandler;
-    interface IImageReader;
+    interface Elastos.Droid.Media.IImageReader;
 
     namespace Elastos {
     namespace Droid {

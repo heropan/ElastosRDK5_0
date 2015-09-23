@@ -6,8 +6,8 @@ module
     interface Elastos.Droid.Media.IAudioAttributes;
     interface Elastos.Droid.Media.IMediaMetadata;
     interface Elastos.Droid.Content.Pm.IParceledListSlice;
-    interface IISessionController;
-    interface IPlaybackState;
+    interface Elastos.Droid.Media.Session.IISessionController;
+    interface Elastos.Droid.Media.Session.IPlaybackState;
 
     namespace Elastos {
     namespace Droid {

@@ -1,8 +1,8 @@
 
 module
 {
-    interface IAudioGainConfig;
-    interface IAudioDevicePortConfig;
+    interface Elastos.Droid.Media.IAudioGainConfig;
+    interface Elastos.Droid.Media.IAudioDevicePortConfig;
 
     namespace Elastos {
     namespace Droid {
