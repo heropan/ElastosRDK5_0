@@ -1,95 +1,62 @@
 
-#include "ext/frameworkext.h"
-#include "net/CNetworkIdentity.h"
-#include "net/CConnectivityManager.h"
-#include "telephony/CTelephonyManagerHelper.h"
-#include <elastos/core/StringBuilder.h>
-#include <elastos/core/Math.h>
-
-using Elastos::Core::Math;
-using Elastos::Core::StringBuilder;
-using Elastos::Droid::Net::CConnectivityManager;
-using Elastos::Droid::Net::Wifi::IWifiInfo;
-using Elastos::Droid::Net::Wifi::IWifiManager;
-using Elastos::Droid::Telephony::ITelephonyManager;
-using Elastos::Droid::Telephony::ITelephonyManagerHelper;
-using Elastos::Droid::Telephony::CTelephonyManagerHelper;
+#include "elastos/droid/net/NetworkIdentity.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
-ECode CNetworkIdentity::constructor(
-    /* [in] */ Int32 nType,
+CAR_INTERFACE_IMPL(NetworkIdentity, Object, INetworkIdentity)
+
+ECode NetworkIdentity::constructor(
+    /* [in] */ Int32 type,
     /* [in] */ Int32 subType,
     /* [in] */ const String& subscriberId,
     /* [in] */ const String& networkId,
     /* [in] */ Boolean roaming)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     mType = nType;
     mSubType = COMBINE_SUBTYPE_ENABLED ? SUBTYPE_COMBINED : subType;
     mSubscriberId = subscriberId;
     mNetworkId = networkId;
     mRoaming = roaming;
     return NOERROR;
+#endif
 }
 
-//@Override
-ECode CNetworkIdentity::GetHashCode(
+ECode NetworkIdentity::HashCode(
     /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(result);
-    Int32 hashCode = 1;
-    hashCode = 31 * hashCode + mType;
-    hashCode = 31 * hashCode + mSubType;
-    hashCode = 31 * hashCode + mSubscriberId.GetHashCode();
-    hashCode = 31 * hashCode + mNetworkId.GetHashCode();
-    hashCode = 31 * hashCode + (mRoaming ? 1231 : 1237);
-    *result = hashCode;
-    return NOERROR;
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return Objects.hash(mType, mSubType, mSubscriberId, mNetworkId, mRoaming);
+
+#endif
 }
 
-//@Override
-ECode CNetworkIdentity::Equals(
-    /* [in] */ INetworkIdentity* obj,
-    /* [out] */ Boolean* result )
+ECode NetworkIdentity::Equals(
+    /* [in] */ IObject* obj,
+    /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
-    if (INetworkIdentity::Probe(obj) != NULL) {
-        const AutoPtr<INetworkIdentity> ident = obj;
-        Int32 type;
-        ident->GetType(&type);
-        Int32 subType;
-        ident->GetSubType(&subType);
-        String subscriberId;
-        ident->GetSubscriberId(&subscriberId);
-        String networkId;
-        ident->GetNetworkId(&networkId);
-        Boolean roaming;
-        ident->GetRoaming(&roaming);
-        *result = mType == type &&
-                  mSubType == subType &&
-                  mRoaming == roaming &&
-                  mSubscriberId.Equals(subscriberId) &&
-                  mNetworkId.Equals(networkId);
-        return NOERROR;
-    }
-    *result = FALSE;
-    return NOERROR;
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (obj instanceof NetworkIdentity) {
+            final NetworkIdentity ident = (NetworkIdentity) obj;
+            return mType == ident.mType && mSubType == ident.mSubType && mRoaming == ident.mRoaming
+                    && Objects.equals(mSubscriberId, ident.mSubscriberId)
+                    && Objects.equals(mNetworkId, ident.mNetworkId);
+        }
+        return false;
+
+#endif
 }
 
-ECode CNetworkIdentity::Equals(
-    /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result )
-{
-    VALIDATE_NOT_NULL(result);
-    return Equals(INetworkIdentity::Probe(obj), result);
-}
-
-//@Override
-ECode CNetworkIdentity::ToString(
+ECode NetworkIdentity::ToString(
     /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     StringBuilder builder("[");
     builder += String("type=");
@@ -127,55 +94,70 @@ ECode CNetworkIdentity::ToString(
     builder += String("]");
     *result = builder.ToString();
     return NOERROR;
+#endif
 }
 
-ECode CNetworkIdentity::GetType(
+ECode NetworkIdentity::GetType(
     /* [out] */ Int32* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     *result = mType;
     return NOERROR;
+#endif
 }
 
-ECode CNetworkIdentity::GetSubType(
+ECode NetworkIdentity::GetSubType(
     /* [out] */ Int32* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     *result = mSubType;
     return NOERROR;
+#endif
 }
 
-ECode CNetworkIdentity::GetSubscriberId(
+ECode NetworkIdentity::GetSubscriberId(
     /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     *result = mSubscriberId;
     return NOERROR;
+#endif
 }
 
-ECode CNetworkIdentity::GetNetworkId(
+ECode NetworkIdentity::GetNetworkId(
     /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     *result = mNetworkId;
     return NOERROR;
+#endif
 }
 
-ECode CNetworkIdentity::GetRoaming(
+ECode NetworkIdentity::GetRoaming(
     /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     *result = mRoaming;
     return NOERROR;
+#endif
 }
 
-/**
- * Scrub given IMSI on production builds.
- */
-ECode CNetworkIdentity::ScrubSubscriberId(
+ECode NetworkIdentity::ScrubSubscriberId(
     /* [in] */ const String& subscriberId,
     /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
 
     using Elastos::Core::Math;
@@ -191,17 +173,16 @@ ECode CNetworkIdentity::ScrubSubscriberId(
         *result = String("NULL");
     }
     return NOERROR;
+#endif
 }
 
-/**
- * Build a {@link NetworkIdentity} from the given {@link NetworkState},
- * assuming that any mobile networks are using the current IMSI.
- */
-ECode CNetworkIdentity::BuildNetworkIdentity(
+ECode NetworkIdentity::BuildNetworkIdentity(
     /* [in] */ IContext* context,
     /* [in] */ INetworkState* state,
     /* [out] */ INetworkIdentity** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
 
     Int32 type;
@@ -251,9 +232,54 @@ ECode CNetworkIdentity::BuildNetworkIdentity(
     }
     CNetworkIdentity::New(type, subType, subscriberId, networkId, roaming, result);
     return NOERROR;
+#endif
 }
 
 
 } // namespace Net
-} // namepsace Droid
+} // namespace Droid
 } // namespace Elastos
+
+#if 0 // old CNetworkIdentity.cpp
+ECode CNetworkIdentity::GetHashCode(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    Int32 hashCode = 1;
+    hashCode = 31 * hashCode + mType;
+    hashCode = 31 * hashCode + mSubType;
+    hashCode = 31 * hashCode + mSubscriberId.GetHashCode();
+    hashCode = 31 * hashCode + mNetworkId.GetHashCode();
+    hashCode = 31 * hashCode + (mRoaming ? 1231 : 1237);
+    *result = hashCode;
+    return NOERROR;
+}
+
+ECode CNetworkIdentity::Equals(
+    /* [in] */ INetworkIdentity* obj,
+    /* [out] */ Boolean* result )
+{
+    VALIDATE_NOT_NULL(result);
+    if (INetworkIdentity::Probe(obj) != NULL) {
+        const AutoPtr<INetworkIdentity> ident = obj;
+        Int32 type;
+        ident->GetType(&type);
+        Int32 subType;
+        ident->GetSubType(&subType);
+        String subscriberId;
+        ident->GetSubscriberId(&subscriberId);
+        String networkId;
+        ident->GetNetworkId(&networkId);
+        Boolean roaming;
+        ident->GetRoaming(&roaming);
+        *result = mType == type &&
+                  mSubType == subType &&
+                  mRoaming == roaming &&
+                  mSubscriberId.Equals(subscriberId) &&
+                  mNetworkId.Equals(networkId);
+        return NOERROR;
+    }
+    *result = FALSE;
+    return NOERROR;
+}
+#endif

@@ -1,11 +1,15 @@
 
-#include "ext/frameworkext.h"
-#include "net/CNetworkIdentity.h"
-#include "net/CNetworkIdentityHelper.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/CNetworkIdentity.h"
+#include "elastos/droid/net/CNetworkIdentityHelper.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
+
+CAR_INTERFACE_IMPL(CNetworkIdentityHelper, Singleton, INetworkIdentityHelper)
+
+CAR_SINGLETON_IMPL(CNetworkIdentityHelper)
 
 ECode CNetworkIdentityHelper::ScrubSubscriberId(
     /* [in] */ const String& subscriberId,

@@ -1,4 +1,482 @@
 
+#include "elastos/droid/net/NetworkInfo.h"
+
+namespace Elastos {
+namespace Droid {
+namespace Net {
+
+CAR_INTERFACE_IMPL_2(NetworkInfo, Object, IParcelable, INetworkInfo)
+
+const AutoPtr<IEnumMap> NetworkInfo::STATE_MAP = CreateStateMap();
+
+AutoPtr<IEnumMap> NetworkInfo::CreateStateMap()
+{
+    AutoPtr<IEnumMap> rev;
+#if 0 // TODO: Translate codes below
+    private static final EnumMap<DetailedState, State> stateMap =
+        new EnumMap<DetailedState, State>(DetailedState.class);
+
+    static {
+        stateMap.put(DetailedState.IDLE, State.DISCONNECTED);
+        stateMap.put(DetailedState.SCANNING, State.DISCONNECTED);
+        stateMap.put(DetailedState.CONNECTING, State.CONNECTING);
+        stateMap.put(DetailedState.AUTHENTICATING, State.CONNECTING);
+        stateMap.put(DetailedState.OBTAINING_IPADDR, State.CONNECTING);
+        stateMap.put(DetailedState.VERIFYING_POOR_LINK, State.CONNECTING);
+        stateMap.put(DetailedState.CAPTIVE_PORTAL_CHECK, State.CONNECTING);
+        stateMap.put(DetailedState.CONNECTED, State.CONNECTED);
+        stateMap.put(DetailedState.SUSPENDED, State.SUSPENDED);
+        stateMap.put(DetailedState.DISCONNECTING, State.DISCONNECTING);
+        stateMap.put(DetailedState.DISCONNECTED, State.DISCONNECTED);
+        stateMap.put(DetailedState.FAILED, State.DISCONNECTED);
+        stateMap.put(DetailedState.BLOCKED, State.DISCONNECTED);
+    }
+#else
+    assert(0);
+#endif
+    return rev;
+}
+
+ECode NetworkInfo::constructor(
+    /* [in] */ Int32 type,
+    /* [in] */ Int32 subtype,
+    /* [in] */ const String& typeName,
+    /* [in] */ const String& subtypeName)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (!ConnectivityManager.isNetworkTypeValid(type)) {
+            throw new IllegalArgumentException("Invalid network type: " + type);
+        }
+        mNetworkType = type;
+        mSubtype = subtype;
+        mTypeName = typeName;
+        mSubtypeName = subtypeName;
+        setDetailedState(DetailedState.IDLE, null, null);
+        mState = State.UNKNOWN;
+        mIsAvailable = false; // until we're told otherwise, assume unavailable
+        mIsRoaming = false;
+        mIsConnectedToProvisioningNetwork = false;
+
+#endif
+}
+
+ECode NetworkInfo::constructor(
+    /* [in] */ INetworkInfo* source)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (source != null) {
+            synchronized (source) {
+                mNetworkType = source.mNetworkType;
+                mSubtype = source.mSubtype;
+                mTypeName = source.mTypeName;
+                mSubtypeName = source.mSubtypeName;
+                mState = source.mState;
+                mDetailedState = source.mDetailedState;
+                mReason = source.mReason;
+                mExtraInfo = source.mExtraInfo;
+                mIsFailover = source.mIsFailover;
+                mIsRoaming = source.mIsRoaming;
+                mIsAvailable = source.mIsAvailable;
+                mIsConnectedToProvisioningNetwork = source.mIsConnectedToProvisioningNetwork;
+            }
+        }
+
+#endif
+}
+
+ECode NetworkInfo::GetType(
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            return mNetworkType;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::SetType(
+    /* [in] */ Int32 type)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            mNetworkType = type;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::GetSubtype(
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            return mSubtype;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::SetSubtype(
+    /* [in] */ Int32 subtype,
+    /* [in] */ const String& subtypeName)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            mSubtype = subtype;
+            mSubtypeName = subtypeName;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::GetTypeName(
+    /* [out] */ String* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            return mTypeName;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::GetSubtypeName(
+    /* [out] */ String* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            return mSubtypeName;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::IsConnectedOrConnecting(
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            return mState == State.CONNECTED || mState == State.CONNECTING;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::IsConnected(
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            return mState == State.CONNECTED;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::IsAvailable(
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            return mIsAvailable;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::SetIsAvailable(
+    /* [in] */ Boolean isAvailable)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            mIsAvailable = isAvailable;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::IsFailover(
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            return mIsFailover;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::SetFailover(
+    /* [in] */ Boolean isFailover)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            mIsFailover = isFailover;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::IsRoaming(
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            return mIsRoaming;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::SetRoaming(
+    /* [in] */ Boolean isRoaming)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            mIsRoaming = isRoaming;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::IsConnectedToProvisioningNetwork(
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            return mIsConnectedToProvisioningNetwork;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::SetIsConnectedToProvisioningNetwork(
+    /* [in] */ Boolean val)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            mIsConnectedToProvisioningNetwork = val;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::GetState(
+    /* [out] */ NetworkInfoState* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            return mState;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::GetDetailedState(
+    /* [out] */ NetworkInfoDetailedState* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            return mDetailedState;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::SetDetailedState(
+    /* [in] */ NetworkInfoDetailedState detailedState,
+    /* [in] */ const String& reason,
+    /* [in] */ const String& extraInfo)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            this.mDetailedState = detailedState;
+            this.mState = stateMap.get(detailedState);
+            this.mReason = reason;
+            this.mExtraInfo = extraInfo;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::SetExtraInfo(
+    /* [in] */ const String& extraInfo)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            this.mExtraInfo = extraInfo;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::GetReason(
+    /* [out] */ String* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            return mReason;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::GetExtraInfo(
+    /* [out] */ String* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            return mExtraInfo;
+        }
+
+#endif
+}
+
+ECode NetworkInfo::ToString(
+    /* [out] */ String* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            StringBuilder builder = new StringBuilder("[");
+            builder.append("type: ").append(getTypeName()).append("[").append(getSubtypeName()).
+            append("], state: ").append(mState).append("/").append(mDetailedState).
+            append(", reason: ").append(mReason == null ? "(unspecified)" : mReason).
+            append(", extra: ").append(mExtraInfo == null ? "(none)" : mExtraInfo).
+            append(", roaming: ").append(mIsRoaming).
+            append(", failover: ").append(mIsFailover).
+            append(", isAvailable: ").append(mIsAvailable).
+            append(", isConnectedToProvisioningNetwork: ").
+            append(mIsConnectedToProvisioningNetwork).
+            append("]");
+            return builder.toString();
+        }
+
+#endif
+}
+
+ECode NetworkInfo::DescribeContents(
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return 0;
+
+#endif
+}
+
+ECode NetworkInfo::WriteToParcel(
+    /* [in] */ IParcel* dest,
+    /* [in] */ Int32 flags)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        synchronized (this) {
+            dest.writeInt(mNetworkType);
+            dest.writeInt(mSubtype);
+            dest.writeString(mTypeName);
+            dest.writeString(mSubtypeName);
+            dest.writeString(mState.name());
+            dest.writeString(mDetailedState.name());
+            dest.writeInt(mIsFailover ? 1 : 0);
+            dest.writeInt(mIsAvailable ? 1 : 0);
+            dest.writeInt(mIsRoaming ? 1 : 0);
+            dest.writeInt(mIsConnectedToProvisioningNetwork ? 1 : 0);
+            dest.writeString(mReason);
+            dest.writeString(mExtraInfo);
+        }
+
+#endif
+}
+
+ECode NetworkInfo::ReadFromParcel(
+    /* [in] */ IParcel* parcel)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+            public NetworkInfo createFromParcel(Parcel in) {
+                int netType = in.readInt();
+                int subtype = in.readInt();
+                String typeName = in.readString();
+                String subtypeName = in.readString();
+                NetworkInfo netInfo = new NetworkInfo(netType, subtype, typeName, subtypeName);
+                netInfo.mState = State.valueOf(in.readString());
+                netInfo.mDetailedState = DetailedState.valueOf(in.readString());
+                netInfo.mIsFailover = in.readInt() != 0;
+                netInfo.mIsAvailable = in.readInt() != 0;
+                netInfo.mIsRoaming = in.readInt() != 0;
+                netInfo.mIsConnectedToProvisioningNetwork = in.readInt() != 0;
+                netInfo.mReason = in.readString();
+                netInfo.mExtraInfo = in.readString();
+                return netInfo;
+            }
+            public NetworkInfo[] newArray(int size) {
+                return new NetworkInfo[size];
+            }
+
+#endif
+}
+
+ECode NetworkInfo::WriteToParcel(
+    /* [in] */ IParcel* dest)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+            public NetworkInfo createFromParcel(Parcel in) {
+                int netType = in.readInt();
+                int subtype = in.readInt();
+                String typeName = in.readString();
+                String subtypeName = in.readString();
+                NetworkInfo netInfo = new NetworkInfo(netType, subtype, typeName, subtypeName);
+                netInfo.mState = State.valueOf(in.readString());
+                netInfo.mDetailedState = DetailedState.valueOf(in.readString());
+                netInfo.mIsFailover = in.readInt() != 0;
+                netInfo.mIsAvailable = in.readInt() != 0;
+                netInfo.mIsRoaming = in.readInt() != 0;
+                netInfo.mIsConnectedToProvisioningNetwork = in.readInt() != 0;
+                netInfo.mReason = in.readString();
+                netInfo.mExtraInfo = in.readString();
+                return netInfo;
+            }
+            public NetworkInfo[] newArray(int size) {
+                return new NetworkInfo[size];
+            }
+
+#endif
+}
+
+
+
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
+
+#if 0 // old CNetworkInfo.cpp
 #include "net/CNetworkInfo.h"
 #include "net/CConnectivityManager.h"
 #include <elastos/core/StringBuilder.h>
@@ -477,3 +955,4 @@ ECode CNetworkInfo::ReadFromParcel(
 } // namespace Net
 } // namepsace Droid
 } // namespace Elastos
+#endif
