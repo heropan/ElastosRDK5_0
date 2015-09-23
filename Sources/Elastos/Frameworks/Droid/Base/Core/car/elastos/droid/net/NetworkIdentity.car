@@ -2,7 +2,7 @@
 module
 {
 
-
+    interface Elastos.Droid.Content.IContext;
 
     namespace Elastos {
     namespace Droid {
@@ -42,6 +42,25 @@ module
 
         GetRoaming(
             [out] Boolean* result);
+    }
+
+    [local]
+    interface INetworkIdentityHelper {
+        /**
+         * Scrub given IMSI on production builds.
+         */
+        ScrubSubscriberId(
+            [in] String subscriberId,
+            [out] String* result);
+
+        /**
+         * Build a {@link NetworkIdentity} from the given {@link NetworkState},
+         * assuming that any mobile networks are using the current IMSI.
+         */
+        BuildNetworkIdentity(
+            [in] IContext* ctx,
+            [in] INetworkState* state,
+            [out] INetworkIdentity** result);
     }
 
     } // namespace Net

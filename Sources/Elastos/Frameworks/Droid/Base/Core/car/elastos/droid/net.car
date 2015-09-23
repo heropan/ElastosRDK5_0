@@ -37,7 +37,6 @@ module
     merge("net/NetworkConfig.car");
     merge("net/NetworkFactory.car");
     merge("net/NetworkIdentity.car");
-    merge("net/NetworkIdentityHelper.car");
     merge("net/NetworkInfo.car");
     merge("net/NetworkKey.car");
     merge("net/NetworkMisc.car");
@@ -380,6 +379,35 @@ module
 
         interface IHandler;
         interface INetworkFactory;
+    }
+
+    class CNetworkIdentity {
+        constructor(
+            [in] Int32 type,
+            [in] Int32 subType,
+            [in] String subscriberId,
+            [in] String networkId,
+            [in] Boolean roaming);
+
+        interface INetworkIdentity;
+    }
+
+    singleton class CNetworkIdentityHelper {
+        interface INetworkIdentityHelper;
+    }
+
+    class CNetworkInfo {
+        constructor(
+            [in] Int32 type,
+            [in] Int32 subtype,
+            [in] String typeName,
+            [in] String subtypeName);
+
+        constructor(
+            [in] INetworkInfo* source);
+
+        interface IParcelable;
+        interface INetworkInfo;
     }
 
     } // namespace Net
