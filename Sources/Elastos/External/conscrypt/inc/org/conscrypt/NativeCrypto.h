@@ -5,9 +5,11 @@
 #include "Org.Conscrypt_server.h"
 
 using Elastos::Core::IArrayOf;
+using Elastos::IO::IOutputStream;
 using Elastos::Security::Interfaces::IDSAPrivateKey;
 using Elastos::Security::Interfaces::IECPrivateKey;
 using Elastos::Security::Interfaces::IRSAPrivateKey;
+using Elastos::Utility::ICalendar;
 using Elastosx::Security::Auth::X500::IX500Principal;
 
 namespace Org {
@@ -679,6 +681,225 @@ public:
     static CARAPI Get_X509_ex_pathlen(
         /* [in] */ Int64 x509Ref,
         /* [out] */ Int32* result);
+
+    static CARAPI X509_get_notBefore(
+        /* [in] */ Int64 x509Ref,
+        /* [out] */ Int64* result);
+
+    static CARAPI X509_get_notAfter(
+        /* [in] */ Int64 x509Ref,
+        /* [out] */ Int64* result);
+
+    static CARAPI X509_get_version(
+        /* [in] */ Int64 x509Ref,
+        /* [out] */ Int64* result);
+
+    static CARAPI X509_get_serialNumber(
+        /* [in] */ Int64 x509Ref,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI X509_verify(
+        /* [in] */ Int64 x509Ref,
+        /* [in] */ Int64 pkeyRef);
+
+    static CARAPI Get_X509_cert_info_enc(
+        /* [in] */ Int64 x509Ref,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI Get_X509_signature(
+        /* [in] */ Int64 x509Ref,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI Get_X509_ex_flags(
+        /* [in] */ Int64 x509Ref,
+        /* [out] */ Int32* result);
+
+    static CARAPI X509_check_issued(
+        /* [in] */ Int64 x509Ref1,
+        /* [in] */ Int64 x509Ref2,
+        /* [out] */ Int32* result);
+
+    // --- PKCS7 ---------------------------------------------------------------
+
+    /** Returns an array of X509 or X509_CRL pointers. */
+    static CARAPI D2i_PKCS7_bio(
+        /* [in] */ Int64 bioRef,
+        /* [in] */ Int32 which,
+        /* [out, callee] */ ArrayOf<Int64>** result);
+
+    /** Returns an array of X509 or X509_CRL pointers. */
+    static CARAPI I2d_PKCS7(
+        /* [in] */ ArrayOf<Int64>* certsArray,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    /** Returns an array of X509 or X509_CRL pointers. */
+    static CARAPI PEM_read_bio_PKCS7(
+        /* [in] */ Int64 bioRef,
+        /* [in] */ Int32 which,
+        /* [out, callee] */ ArrayOf<Int64>** result);
+
+    // --- X509_CRL ------------------------------------------------------------
+
+    static CARAPI D2i_X509_CRL_bio(
+        /* [in] */ Int64 bioRef,
+        /* [out] */ Int64* result);
+
+    static CARAPI PEM_read_bio_X509_CRL(
+        /* [in] */ Int64 bioRef,
+        /* [out] */ Int64* result);
+
+    static CARAPI I2d_X509_CRL(
+        /* [in] */ Int64 x509CrlRef,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI X509_CRL_free(
+        /* [in] */ Int64 x509CrlRef);
+
+    static CARAPI X509_CRL_print(
+        /* [in] */ Int64 bioRef,
+        /* [in] */ Int64 x509CrlRef);
+
+    static CARAPI Get_X509_CRL_sig_alg_oid(
+        /* [in] */ Int64 x509CrlRef,
+        /* [out] */ String* result);
+
+    static CARAPI Get_X509_CRL_sig_alg_parameter(
+        /* [in] */ Int64 x509CrlRef,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI X509_CRL_get_issuer_name(
+        /* [in] */ Int64 x509CrlRef,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    /** Returns X509_REVOKED reference that is not duplicated! */
+    static CARAPI X509_CRL_get0_by_cert(
+        /* [in] */ Int64 x509crlRef,
+        /* [in] */ Int64 x509Ref,
+        /* [out] */ Int64* result);
+
+    /** Returns X509_REVOKED reference that is not duplicated! */
+    static CARAPI X509_CRL_get0_by_serial(
+        /* [in] */ Int64 x509crlRef,
+        /* [in] */ ArrayOf<Byte>* serialArray,
+        /* [out] */ Int64* result);
+
+    /** Returns an array of X509_REVOKED that are owned by the caller. */
+    static CARAPI X509_CRL_get_REVOKED(
+        /* [in] */ Int64 x509crlRef,
+        /* [out, callee] */ ArrayOf<Int64>** result);
+
+    static CARAPI Get_X509_CRL_ext_oids(
+        /* [in] */ Int64 x509crlRef,
+        /* [in] */ Int32 critical,
+        /* [out, callee] */ ArrayOf<String>** result);
+
+    static CARAPI X509_CRL_get_ext_oid(
+        /* [in] */ Int64 x509crlRef,
+        /* [in] */ const String& oid,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI X509_CRL_get_version(
+        /* [in] */ Int64 x509crlRef,
+        /* [out] */ Int64* result);
+
+    static CARAPI X509_CRL_get_ext(
+        /* [in] */ Int64 x509crlRef,
+        /* [in] */ const String& oid,
+        /* [out] */ Int64* result);
+
+    static CARAPI Get_X509_CRL_signature(
+        /* [in] */ Int64 x509crlRef,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI X509_CRL_verify(
+        /* [in] */ Int64 x509crlRef,
+        /* [in] */ Int64 pkeyRef);
+
+    static CARAPI Get_X509_CRL_crl_enc(
+        /* [in] */ Int64 x509crlRef,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI X509_CRL_get_lastUpdate(
+        /* [in] */ Int64 x509crlRef,
+        /* [out] */ Int64* result);
+
+    static CARAPI X509_CRL_get_nextUpdate(
+        /* [in] */ Int64 x509crlRef,
+        /* [out] */ Int64* result);
+
+    // --- X509_REVOKED --------------------------------------------------------
+
+    static CARAPI X509_REVOKED_dup(
+        /* [in] */ Int64 x509RevokedRef,
+        /* [out] */ Int64* result);
+
+    static CARAPI I2d_X509_REVOKED(
+        /* [in] */ Int64 x509RevokedRef,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI Get_X509_REVOKED_ext_oids(
+        /* [in] */ Int64 x509RevokedRef,
+        /* [in] */ Int32 critical,
+        /* [out, callee] */ ArrayOf<String>** result);
+
+    static CARAPI X509_REVOKED_get_ext_oid(
+        /* [in] */ Int64 x509RevokedRef,
+        /* [in] */ const String& oid,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI X509_REVOKED_get_serialNumber(
+        /* [in] */ Int64 x509RevokedRef,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI X509_REVOKED_get_ext(
+        /* [in] */ Int64 x509RevokedRef,
+        /* [in] */ const String& oid,
+        /* [out] */ Int64* result);
+
+    /** Returns ASN1_TIME reference. */
+    static CARAPI Get_X509_REVOKED_revocationDate(
+        /* [in] */ Int64 x509RevokedRef,
+        /* [out] */ Int64* result);
+
+    static CARAPI X509_REVOKED_print(
+        /* [in] */ Int64 bioRef,
+        /* [in] */ Int64 x509RevokedRef);
+
+    // --- X509_EXTENSION ------------------------------------------------------
+
+    static CARAPI X509_supported_extension(
+        /* [in] */ Int64 x509ExtensionRef,
+        /* [out] */ Int32* result);
+
+    // --- ASN1_TIME -----------------------------------------------------------
+
+    static CARAPI ASN1_TIME_to_Calendar(
+        /* [in] */ Int64 asn1TimeRef,
+        /* [in] */ ICalendar* cal);
+
+    // --- BIO stream creation -------------------------------------------------
+
+    static CARAPI Create_BIO_InputStream(
+        /* [in] */ IOpenSSLBIOInputStream* is,
+        /* [out] */ Int64* result);
+
+    static CARAPI Create_BIO_OutputStream(
+        /* [in] */ IOutputStream* os,
+        /* [out] */ Int64* result);
+
+    static CARAPI BIO_read(
+        /* [in] */ Int64 bioRef,
+        /* [in] */ ArrayOf<Byte>* buffer,
+        /* [out] */ Int32* result);
+
+    static CARAPI BIO_write(
+        /* [in] */ Int64 bioRef,
+        /* [in] */ ArrayOf<Byte>* buffer,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 length);
+
+    static CARAPI BIO_free_all(
+        /* [in] */ Int64 bioRef);
 
 private:
     static CARAPI X509_NAME_hash(
