@@ -1,11 +1,13 @@
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "content/pm/PermissionInfo.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
+
+CAR_INTERFACE_IMPL_2(PermissionInfo, Object, IPermissionInfo, IParcelable)
 
 PermissionInfo::PermissionInfo()
     : mProtectionLevel(0)
@@ -24,7 +26,7 @@ ECode PermissionInfo::constructor()
 ECode PermissionInfo::constructor(
     /* [in] */ IPermissionInfo* orig)
 {
-    assert(orig != NULL);
+    VALIDATE_NOT_NULL(orig)
     PackageItemInfo::constructor((IPackageItemInfo*)orig);
     orig->GetProtectionLevel(&mProtectionLevel);
     orig->GetGroup(&mGroup);
@@ -105,6 +107,7 @@ ECode PermissionInfo::LoadDescription(
 ECode PermissionInfo::ToString(
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
     // return "PermissionInfo{"
     //         + Integer.toHexString(System.identityHashCode(this))
     //         + " " + name + "}";
@@ -120,6 +123,7 @@ ECode PermissionInfo::ReadFromParcel(
     source->ReadString(&mGroup);
     source->ReadInt32(&mFlags);
     source->ReadInt32(&mDescriptionRes);
+    assert(0 && "TODO");
     // mNonLocalizedDescription = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(source);
     return NOERROR;
 }
@@ -132,6 +136,7 @@ ECode PermissionInfo::WriteToParcel(
     dest->WriteString(mGroup);
     dest->WriteInt32(mFlags);
     dest->WriteInt32(mDescriptionRes);
+    assert(0 && "TODO");
     // TextUtils.writeToParcel(mNonLocalizedDescription, dest, parcelableFlags);
     return NOERROR;
 }
@@ -140,7 +145,6 @@ ECode PermissionInfo::LoadLabel(
     /* [in] */ IPackageManager* pm,
     /* [out] */ ICharSequence** label)
 {
-    VALIDATE_NOT_NULL(label);
     return PackageItemInfo::LoadLabel(pm, label);
 }
 
@@ -148,7 +152,6 @@ ECode PermissionInfo::LoadIcon(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** icon)
 {
-    VALIDATE_NOT_NULL(icon)
     return PackageItemInfo::LoadIcon(pm, icon);
 }
 
@@ -156,7 +159,6 @@ ECode PermissionInfo::LoadLogo(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** logo)
 {
-    VALIDATE_NOT_NULL(logo);
     return PackageItemInfo::LoadLogo(pm, logo);
 }
 

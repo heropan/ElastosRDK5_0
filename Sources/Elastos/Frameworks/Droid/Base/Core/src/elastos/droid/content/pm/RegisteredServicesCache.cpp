@@ -1,33 +1,21 @@
 
 #include "content/pm/RegisteredServicesCache.h"
-#ifdef DROID_CORE
 #include "content/CComponentName.h"
 #include "content/CIntent.h"
 #include "content/CIntentFilter.h"
-#include "os/CHandler.h"
-#include "os/CEnvironment.h"
-#include "util/CAtomicFile.h"
-#endif
-#include "util/Xml.h"
 #include "os/UserHandle.h"
 #include "os/Handler.h"
+#include "os/CHandler.h"
+#include "os/CEnvironment.h"
+#include "utility/CAtomicFile.h"
+#include "utility/Xml.h"
+
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
 
-using Elastos::Core::StringUtils;
-using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::CInteger32;
-using Elastos::Core::IBoolean;
-using Elastos::Core::CBoolean;
-using Elastos::IO::IFile;
-using Elastos::IO::CFile;
-using Elastos::Core::CObjectContainer;
-using Elastos::Utility::Logging::Logger;
-using Elastos::Utility::Logging::Slogger;
-using Org::Xmlpull::V1::IXmlSerializer;
 using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::CIntent;
@@ -42,11 +30,31 @@ using Elastos::Droid::Utility::Xml;
 using Elastos::Droid::Utility::IAtomicFile;
 using Elastos::Droid::Utility::CAtomicFile;
 
+using Elastos::Core::StringUtils;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::CInteger32;
+using Elastos::Core::IBoolean;
+using Elastos::Core::CBoolean;
+using Elastos::IO::IFile;
+using Elastos::IO::CFile;
+using Elastos::IO::ICloseable;
+using Elastos::IO::IOutputStream;
+using Elastos::Utility::IList;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::Logging::Slogger;
+using Org::Xmlpull::V1::IXmlSerializer;
+
 namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
 
+
+//====================================================================
+// RegisteredServicesCache::UserServices
+//====================================================================
 RegisteredServicesCache::UserServices::UserServices()
 {}
 
@@ -54,6 +62,9 @@ RegisteredServicesCache::UserServices::~UserServices()
 {
 }
 
+//====================================================================
+// RegisteredServicesCache::PackageReceiver
+//====================================================================
 RegisteredServicesCache::PackageReceiver::PackageReceiver(
     /* [in] */ RegisteredServicesCache* parent)
     : mParent(parent)
@@ -66,12 +77,15 @@ ECode RegisteredServicesCache::PackageReceiver::OnReceive(
     Int32 uid;
     intent->GetInt32Extra(IIntent::EXTRA_UID, -1, &uid);
     if (uid != -1) {
-        mParent->HandlePackageEvent(UserHandle::GetUserId(uid));
+        mParent->HandlePackageEvent(intent, UserHandle::GetUserId(uid));
     }
 
     return NOERROR;
 }
 
+//====================================================================
+// RegisteredServicesCache::ExternalReceiver
+//====================================================================
 
 RegisteredServicesCache::ExternalReceiver::ExternalReceiver(
     /* [in] */ RegisteredServicesCache* parent)
@@ -83,11 +97,13 @@ ECode RegisteredServicesCache::ExternalReceiver::OnReceive(
     /* [in] */ IIntent* intent)
 {
     // External apps can't coexist with multi-user, so scan owner
-    mParent->HandlePackageEvent(IUserHandle::USER_OWNER);
+    mParent->HandlePackageEvent(intent, IUserHandle::USER_OWNER);
     return NOERROR;
 }
 
-
+//====================================================================
+// RegisteredServicesCache::ListenerRunnable
+//====================================================================
 RegisteredServicesCache::ListenerRunnable::ListenerRunnable(
     /* [in] */ IInterface* type,
     /* [in] */ Int32 userId,
@@ -99,14 +115,14 @@ RegisteredServicesCache::ListenerRunnable::ListenerRunnable(
     , mListener(listener)
 {}
 
-CAR_INTERFACE_IMPL(RegisteredServicesCache::ListenerRunnable, IRunnable);
-
 ECode RegisteredServicesCache::ListenerRunnable::Run()
 {
     return mListener->OnServiceChanged(mType, mUserId, mRemoved);
 }
 
-
+//====================================================================
+// RegisteredServicesCache::ServiceInfo
+//====================================================================
 RegisteredServicesCache::ServiceInfo::ServiceInfo(
     /* [in] */ IInterface* type,
     /* [in] */ IComponentName* componentName,
@@ -116,14 +132,25 @@ RegisteredServicesCache::ServiceInfo::ServiceInfo(
     , mUid(uid)
 {}
 
-String RegisteredServicesCache::ServiceInfo::ToString()
+ECode RegisteredServicesCache::ServiceInfo::ToString(
+    /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
     String s;
     mComponentName->ToString(&s);
-    return String("ServiceInfo: ")/* + mType*/ + String(", ") + s + String(", uid ") + StringUtils::Int32ToString(mUid);
+    StringBuilder sb("ServiceInfo: ");
+    sb += mType;
+    sb += ", ";
+    sb += s;
+    sb += ", uid ";
+    sb += StringUtils::ToString(mUid);
+    *str = sb.ToString();
+    return NOERROR;
 }
 
-
+//====================================================================
+// RegisteredServicesCache
+//====================================================================
 const String RegisteredServicesCache::TAG("PackageManager");
 
 RegisteredServicesCache::RegisteredServicesCache(
@@ -177,24 +204,28 @@ ECode RegisteredServicesCache::HandlePackageEvent(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 userId)
 {
-        // Don't regenerate the services map when the package is removed or its
-        // ASEC container unmounted as a step in replacement.  The subsequent
-        // _ADDED / _AVAILABLE call will regenerate the map in the final state.
-        final String action = intent.getAction();
-        // it's a new-component action if it isn't some sort of removal
-        final boolean isRemoval = Intent.ACTION_PACKAGE_REMOVED.equals(action)
-                || Intent.ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE.equals(action);
-        // if it's a removal, is it part of an update-in-place step?
-        final boolean replacing = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false);
+    // Don't regenerate the services map when the package is removed or its
+    // ASEC container unmounted as a step in replacement.  The subsequent
+    // _ADDED / _AVAILABLE call will regenerate the map in the final state.
+    String action;
+    intent->GetAction(&action);
+    // it's a new-component action if it isn't some sort of removal
+    Boolean isRemoval = IIntent::ACTION_PACKAGE_REMOVED.Equals(action)
+            || IIntent::ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE.Equals(action);
+    // if it's a removal, is it part of an update-in-place step?
+    Boolean replacing;
+    intent->GetBooleanExtra(IIntent::EXTRA_REPLACING, FALSE, &replacing);
 
-        if (isRemoval && replacing) {
-            // package is going away, but it's the middle of an upgrade: keep the current
-            // state and do nothing here.  This clause is intentionally empty.
-        } else {
-            // either we're adding/changing, or it's a removal without replacement, so
-            // we need to recalculate the set of available services
-            generateServicesMap(userId);
-        }
+    if (isRemoval && replacing) {
+        // package is going away, but it's the middle of an upgrade: keep the current
+        // state and do nothing here.  This clause is intentionally empty.
+    } else {
+        // either we're adding/changing, or it's a removal without replacement, so
+        // we need to recalculate the set of available services
+        GenerateServicesMap(userId);
+    }
+
+    return NOERROR;
 }
 
 AutoPtr<RegisteredServicesCache::UserServices> RegisteredServicesCache::FindOrCreateUserLocked(
@@ -232,18 +263,22 @@ void RegisteredServicesCache::Dump(
 
     AutoPtr<UserServices> user = FindOrCreateUserLocked(userId);
     if (user->mServices != NULL) {
-        fout->PrintStringln(String("RegisteredServicesCache: ") +
-            StringUtils::Int32ToString(user->mServices->GetSize()) + String(" services"));
+        StringBuilder sb("RegisteredServicesCache: ");
+        sb += (Int32)user->mServices->GetSize();
+        sb += " services";
+        fout->Println(sb.ToString());
 
         HashMap<AutoPtr<IInterface>, AutoPtr<ServiceInfo> >::Iterator itr =
                 user->mServices->Begin();
         for (; itr != user->mServices->End(); ++itr) {
             AutoPtr<ServiceInfo> info = itr->mSecond;
-            fout->PrintStringln(String("  ") + info->ToString());
+            StringBuilder sb("  ");
+            sb += Object::ToString(info);
+            fout->Println(sb.ToString());
         }
     }
     else {
-        fout->PrintStringln(String("RegisteredServicesCache: services not loaded"));
+        fout->Println(String("RegisteredServicesCache: services not loaded"));
     }
 }
 
@@ -263,7 +298,7 @@ void RegisteredServicesCache::SetListener(
         CHandler::New(looper, (IHandler**)&handler);
     }
 
-    AutoLock lock(mLock);
+    AutoLock lock(this);
     mHandler = handler;
     mListener = listener;
 }
@@ -279,7 +314,7 @@ void RegisteredServicesCache::NotifyListener(
     AutoPtr<IRegisteredServicesCacheListener> listener;
     AutoPtr<IHandler> handler;
     {
-        AutoLock lock(mLock);
+        AutoLock lock(this);
 
         listener = mListener;
         handler = mHandler;
@@ -368,18 +403,18 @@ void RegisteredServicesCache::GenerateServicesMap(
     AutoPtr<IPackageManager> pm;
     mContext->GetPackageManager((IPackageManager**)&pm);
     List<AutoPtr<ServiceInfo> > serviceInfos;
-    AutoPtr<IObjectContainer> resolveInfos;
+    AutoPtr<IList> resolveInfos;
     AutoPtr<IIntent> intent;
     CIntent::New(mInterfaceName, (IIntent**)&intent);
     ASSERT_SUCCEEDED(pm->QueryIntentServicesAsUser(intent, IPackageManager::GET_META_DATA, userId,
-            (IObjectContainer**)&resolveInfos));
-    AutoPtr<IObjectEnumerator> objEnumerator;
-    resolveInfos->GetObjectEnumerator((IObjectEnumerator**)&objEnumerator);
+            (IList**)&resolveInfos));
+    AutoPtr<IIterator> it;
+    resolveInfos->GetIterator((IIterator**)&it);
     Boolean hasNext;
-    while (objEnumerator->MoveNext(&hasNext), hasNext) {
+    while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> current;
-        objEnumerator->Current((IInterface**)&current);
-        AutoPtr<IResolveInfo> resolveInfo = (IResolveInfo*)current->Probe(EIID_IResolveInfo);
+        it->GetNext((IInterface**)&current);
+        AutoPtr<IResolveInfo> resolveInfo = IResolveInfo::Probe(current);
         // try {
         AutoPtr<ServiceInfo> info;
         ECode ec = ParseServiceInfo(resolveInfo, (ServiceInfo**)&info);
@@ -430,7 +465,7 @@ void RegisteredServicesCache::GenerateServicesMap(
         if (previousUid == NULL) {
             if (Logger::IsLoggable(TAG, Logger::VERBOSE)) {
                 changes += "  New service added: ";
-                changes += info->ToString();
+                changes += Object::ToString(info);
                 changes += "\n";
             }
 
@@ -448,9 +483,9 @@ void RegisteredServicesCache::GenerateServicesMap(
             previousUid->GetValue(&pUid);
             if (pUid == info->mUid) {
                 if (Logger::IsLoggable(TAG, Logger::VERBOSE)) {
-                    changes.AppendCStr("  Existing service (nop): ");
-                    changes.AppendString(info->ToString());
-                    changes.AppendCStr("\n");
+                    changes += "  Existing service (nop): ";
+                    changes += Object::ToString(info);
+                    changes += "\n";
                 }
                 (*user->mServices)[info->mType] = info;
             }
@@ -458,16 +493,16 @@ void RegisteredServicesCache::GenerateServicesMap(
                     || !ContainsTypeAndUid(&serviceInfos, info->mType, pUid)) {
                 if (InSystemImage(info->mUid)) {
                     if (Logger::IsLoggable(TAG, Logger::VERBOSE)) {
-                        changes.AppendCStr("  System service replacing existing: ");
-                        changes.AppendString(info->ToString());
-                        changes.AppendCStr("\n");
+                        changes += ("  System service replacing existing: ");
+                        changes += Object::ToString(info);
+                        changes += ("\n");
                     }
                 }
                 else {
                     if (Logger::IsLoggable(TAG, Logger::VERBOSE)) {
-                        changes.AppendCStr("  Existing service replacing a removed service: ");
-                        changes.AppendString(info->ToString());
-                        changes.AppendCStr("\n");
+                        changes += ("  Existing service replacing a removed service: ");
+                        changes += Object::ToString(info);
+                        changes += ("\n");
                     }
                 }
                 (*user->mServices)[info->mType] = info;
@@ -479,9 +514,9 @@ void RegisteredServicesCache::GenerateServicesMap(
             else {
                 if (Logger::IsLoggable(TAG, Logger::VERBOSE)) {
                     // ignore
-                    changes.AppendCStr("  Existing service with new uid ignored: ");
-                    changes.AppendString(info->ToString());
-                    changes.AppendCStr("\n");
+                    changes += ("  Existing service with new uid ignored: ");
+                    changes += Object::ToString(info);
+                    changes += ("\n");
                 }
             }
         }
@@ -503,9 +538,9 @@ void RegisteredServicesCache::GenerateServicesMap(
         changed = TRUE;
 
         if (Logger::IsLoggable(TAG, Logger::VERBOSE)) {
-            changes.AppendCStr("  Service removed: ");
-            changes.AppendObject(v1);
-            changes.AppendCStr("\n");
+            changes += ("  Service removed: ");
+            changes += Object::ToString(v1);
+            changes += ("\n");
         }
     }
 
@@ -566,8 +601,8 @@ ECode RegisteredServicesCache::ParseServiceInfo(
     service->GetServiceInfo((IServiceInfo**)&si);
     AutoPtr<IComponentName> componentName;
     String packageName, name;
-    si->GetPackageName(&packageName);
-    si->GetName(&name);
+    IPackageItemInfo::Probe(si)->GetPackageName(&packageName);
+    IPackageItemInfo::Probe(si)->GetName(&name);
     CComponentName::New(packageName, name, (IComponentName**)&componentName);
 
     AutoPtr<IPackageManager> pm;
@@ -575,7 +610,7 @@ ECode RegisteredServicesCache::ParseServiceInfo(
 
     AutoPtr<IXmlResourceParser> parser;
     // try {
-    si->LoadXmlMetaData(pm, mMetaDataName, (IXmlResourceParser**)&parser);
+    IPackageItemInfo::Probe(si)->LoadXmlMetaData(pm, mMetaDataName, (IXmlResourceParser**)&parser);
     if (parser == NULL) {
         Slogger::E(TAG, "No %s meta-data", mMetaDataName.string());
         *info = NULL;
@@ -583,29 +618,30 @@ ECode RegisteredServicesCache::ParseServiceInfo(
         // throw new XmlPullParserException("No " + mMetaDataName + " meta-data");
     }
 
-    AutoPtr<IAttributeSet> attrs = Xml::AsAttributeSet(parser);
+    IXmlPullParser* xpp = IXmlPullParser::Probe(parser);
+    AutoPtr<IAttributeSet> attrs = Xml::AsAttributeSet(IXmlPullParser::Probe(xpp));
 
     Int32 type;
-    while (parser->Next(&type), type != IXmlPullParser::END_DOCUMENT
+    while (xpp->Next(&type), type != IXmlPullParser::END_DOCUMENT
             && type != IXmlPullParser::START_TAG) {
     }
 
     String nodeName;
-    parser->GetName(&nodeName);
+    xpp->GetName(&nodeName);
     if (!mAttributesName.Equals(nodeName)) {
         Slogger::E(TAG, "Meta-data does not start with %s tag", mAttributesName.string());
-        if (parser != NULL) parser->Close();
+        if (parser != NULL) ICloseable::Probe(parser)->Close();
         return E_XML_PULL_PARSER_EXCEPTION;
         // throw new XmlPullParserException(
         //         "Meta-data does not start with " + mAttributesName +  " tag");
     }
 
     AutoPtr<IApplicationInfo> appInfo;
-    si->GetApplicationInfo((IApplicationInfo**)&appInfo);
+    IComponentInfo::Probe(si)->GetApplicationInfo((IApplicationInfo**)&appInfo);
     AutoPtr<IResources> resources;
     pm->GetResourcesForApplication(appInfo, (IResources**)&resources);
     String pkgName;
-    si->GetPackageName(&pkgName);
+    IPackageItemInfo::Probe(si)->GetPackageName(&pkgName);
     AutoPtr<IInterface> v;
     ECode ec = ParseServiceAttributes(resources, pkgName, attrs, (IInterface**)&v);
     if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
@@ -627,7 +663,7 @@ ECode RegisteredServicesCache::ParseServiceInfo(
     AutoPtr<IServiceInfo> serviceInfo;
     service->GetServiceInfo((IServiceInfo**)&serviceInfo);
     AutoPtr<IApplicationInfo> applicationInfo;
-    serviceInfo->GetApplicationInfo((IApplicationInfo**)&applicationInfo);
+    IComponentInfo::Probe(serviceInfo)->GetApplicationInfo((IApplicationInfo**)&applicationInfo);
     Int32 uid;
     applicationInfo->GetUid(&uid);
     *info = new ServiceInfo(v, componentName, uid);
@@ -663,18 +699,19 @@ void RegisteredServicesCache::ReadPersistentServicesLocked()
         Slogger::W(TAG, "Error reading persistent services, starting from scratch");
         if (fis != NULL) {
             // try {
-            fis->Close();
+            ICloseable::Probe(fis)->Close();
             // } catch (java.io.IOException e1) {
             // }
         }
         return;
     }
-    AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-    if (FAILED(parser->SetInput(fis, String(NULL)))) {
+    AutoPtr<IXmlPullParser> parser;
+    Xml::NewPullParser((IXmlPullParser**)&parser);
+    if (FAILED(parser->SetInput(IInputStream::Probe(fis), String(NULL)))) {
         Slogger::W(TAG, "Error reading persistent services, starting from scratch");
         if (fis != NULL) {
             // try {
-            fis->Close();
+            ICloseable::Probe(fis)->Close();
             // } catch (java.io.IOException e1) {
             // }
         }
@@ -685,7 +722,7 @@ void RegisteredServicesCache::ReadPersistentServicesLocked()
         Slogger::W(TAG, "Error reading persistent services, starting from scratch");
         if (fis != NULL) {
             // try {
-            fis->Close();
+            ICloseable::Probe(fis)->Close();
             // } catch (java.io.IOException e1) {
             // }
         }
@@ -697,7 +734,7 @@ void RegisteredServicesCache::ReadPersistentServicesLocked()
             Slogger::W(TAG, "Error reading persistent services, starting from scratch");
             if (fis != NULL) {
                 // try {
-                fis->Close();
+                ICloseable::Probe(fis)->Close();
                 // } catch (java.io.IOException e1) {
                 // }
             }
@@ -709,7 +746,7 @@ void RegisteredServicesCache::ReadPersistentServicesLocked()
         Slogger::W(TAG, "Error reading persistent services, starting from scratch");
         if (fis != NULL) {
             // try {
-            fis->Close();
+            ICloseable::Probe(fis)->Close();
             // } catch (java.io.IOException e1) {
             // }
         }
@@ -720,7 +757,7 @@ void RegisteredServicesCache::ReadPersistentServicesLocked()
             Slogger::W(TAG, "Error reading persistent services, starting from scratch");
             if (fis != NULL) {
                 // try {
-                fis->Close();
+                ICloseable::Probe(fis)->Close();
                 // } catch (java.io.IOException e1) {
                 // }
             }
@@ -733,7 +770,7 @@ void RegisteredServicesCache::ReadPersistentServicesLocked()
                     Slogger::W(TAG, "Error reading persistent services, starting from scratch");
                     if (fis != NULL) {
                         // try {
-                        fis->Close();
+                        ICloseable::Probe(fis)->Close();
                         // } catch (java.io.IOException e1) {
                         // }
                     }
@@ -750,7 +787,7 @@ void RegisteredServicesCache::ReadPersistentServicesLocked()
                         Slogger::W(TAG, "Error reading persistent services, starting from scratch");
                         if (fis != NULL) {
                             // try {
-                            fis->Close();
+                            ICloseable::Probe(fis)->Close();
                             // } catch (java.io.IOException e1) {
                             // }
                         }
@@ -767,7 +804,7 @@ void RegisteredServicesCache::ReadPersistentServicesLocked()
                 Slogger::W(TAG, "Error reading persistent services, starting from scratch");
                 if (fis != NULL) {
                     // try {
-                    fis->Close();
+                    ICloseable::Probe(fis)->Close();
                     // } catch (java.io.IOException e1) {
                     // }
                 }
@@ -804,7 +841,7 @@ void RegisteredServicesCache::WritePersistentServicesLocked()
     AutoPtr<IXmlSerializer> out;
     assert(0);
     // XmlSerializer out = new FastXmlSerializer();
-    ECode ec = out->SetOutput(fos, String("utf-8"));
+    ECode ec = out->SetOutput(IOutputStream::Probe(fos), String("utf-8"));
     if (ec == (ECode)E_IO_EXCEPTION) {
         Slogger::W(TAG, "Error writing accounts 0x%08x", ec);
         if (fos != NULL) {
@@ -853,7 +890,7 @@ void RegisteredServicesCache::WritePersistentServicesLocked()
             }
             Int32 value;
             item->mSecond->GetValue(&value);
-            ec = out->WriteAttribute(String(NULL), String("uid"), StringUtils::Int32ToString(value));
+            ec = out->WriteAttribute(String(NULL), String("uid"), StringUtils::ToString(value));
             if (ec == (ECode)E_IO_EXCEPTION) {
                 Slogger::W(TAG, "Error writing accounts 0x%08x", ec);
                 if (fos != NULL) {

@@ -9,7 +9,7 @@
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::IInteger64;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Core::CString;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Internal::Os::SomeArgs;

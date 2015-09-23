@@ -13,7 +13,7 @@
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::IO::IDataOutput;
 using Elastos::IO::IDataInput;
 using Elastos::IO::CDataOutputStream;

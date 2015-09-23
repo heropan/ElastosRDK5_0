@@ -5,6 +5,8 @@
 #include "_Elastos_Droid_Content_Pm_CParceledListSlice.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Utility::IList;
+
 namespace Elastos {
 namespace Droid {
 namespace Content {
@@ -28,7 +30,7 @@ public:
 
     CParceledListSlice();
 
-    ~CParceledListSlice();
+    virtual ~CParceledListSlice();
 
     CARAPI constructor();
 
@@ -64,8 +66,6 @@ private:
      */
     static const Int32 MAX_IPC_SIZE;// = 256 * 1024;
     static const Int32 MAX_FIRST_IPC_SIZE;// = MAX_IPC_SIZE / 2;
-
-    AutoPtr<IParcel> mParcel;
 
     Int32 mNumItems;
 

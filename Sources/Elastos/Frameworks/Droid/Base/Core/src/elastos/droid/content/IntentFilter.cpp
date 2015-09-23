@@ -2,7 +2,7 @@
 #include "content/IntentFilter.h"
 #include "content/CIntentFilter.h"
 #include "content/CIntentFilterAuthorityEntry.h"
-#include "os/CPatternMatcher.h"
+#include "elastos/droid/os/CPatternMatcher.h"
 //#include "internal/utility/XmlUtils.h"
 #include <elastos/utility/etl/Algorithm.h>
 #include <elastos/utility/logging/Logger.h>

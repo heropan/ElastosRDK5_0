@@ -4,7 +4,6 @@
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
-using Elastos::Core::CObjectContainer;
 
 namespace Elastos {
 namespace Droid {
@@ -29,7 +28,7 @@ PackageUserState::PackageUserState(
     mInstalled = orig->mInstalled;
     mEnabled = orig->mEnabled;
     mHidden = orig->mHidden;
-    mLastDisableAppCaller = o->mLastDisableAppCaller;
+    mLastDisableAppCaller = orig->mLastDisableAppCaller;
 
     if (orig->mDisabledComponents != NULL) {
         mDisabledComponents = new HashSet<String>(orig->mDisabledComponents->Begin(),
@@ -41,7 +40,7 @@ PackageUserState::PackageUserState(
             orig->mEnabledComponents->End());
     }
 
-    mBlockUninstall = o->mBlockUninstall;
+    mBlockUninstall = orig->mBlockUninstall;
 }
 
 PackageUserState::~PackageUserState()

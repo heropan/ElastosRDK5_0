@@ -1,11 +1,13 @@
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "content/pm/PermissionGroupInfo.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
+
+CAR_INTERFACE_IMPL_2(PermissionGroupInfo, Object, IPermissionGroupInfo, IParcelable)
 
 PermissionGroupInfo::PermissionGroupInfo()
     : mDescriptionRes(0)

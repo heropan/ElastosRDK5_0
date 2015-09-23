@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_PACKAGEPARSER_H__
 #define __ELASTOS_DROID_CONTENT_PM_PACKAGEPARSER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "content/IntentFilter.h"
 #include "content/pm/PackageUserState.h"
 #include <elastos/utility/etl/List.h>

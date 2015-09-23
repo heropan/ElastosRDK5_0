@@ -12,7 +12,7 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
 using Elastos::IO::ICloseable;

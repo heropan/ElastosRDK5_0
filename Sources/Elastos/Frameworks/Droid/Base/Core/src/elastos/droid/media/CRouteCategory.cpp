@@ -2,7 +2,7 @@
 #include "media/CRouteCategory.h"
 #include <elastos/core/StringBuilder.h>;
 
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Core::StringBuilder;
 
 using Elastos::Utility::IArrayList;

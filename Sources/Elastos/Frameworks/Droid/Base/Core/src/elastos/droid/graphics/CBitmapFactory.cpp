@@ -10,7 +10,7 @@
 #include "graphics/AutoDecoderCancel.h"
 #include "graphics/NinePatchPeeker.h"
 #include "graphics/NBitmapFactory.h"
-#include "util/CTypedValue.h"
+#include "utility/CTypedValue.h"
 #include <elastos/utility/logging/Logger.h>
 #include <skia/core/SkBitmap.h>
 #include <skia/core/SkTemplates.h>

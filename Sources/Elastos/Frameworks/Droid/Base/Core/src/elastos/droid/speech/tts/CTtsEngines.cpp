@@ -2,7 +2,7 @@
 #include "speech/tts/CTtsEngines.h"
 #include "ext/frameworkext.h"
 
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 

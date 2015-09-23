@@ -14,7 +14,7 @@
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Core::CString;
 using Elastos::Core::Thread;
 using Elastos::Utility::Etl::List;

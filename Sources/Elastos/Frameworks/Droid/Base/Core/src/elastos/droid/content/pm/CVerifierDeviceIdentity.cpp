@@ -1,4 +1,4 @@
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "content/pm/CVerifierDeviceIdentity.h"
 #include <elastos/utility/logging/Slogger.h>
 
@@ -9,14 +9,9 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
-const Char8 CVerifierDeviceIdentity::SEPARATOR = '-';
-const Int32 CVerifierDeviceIdentity::LONG_SIZE = 13;
-const Int32 CVerifierDeviceIdentity::GROUP_SIZE = 4;
-const AutoPtr<ArrayOf<Char8> > CVerifierDeviceIdentity::ENCODE = InitENCODE();
-
-const AutoPtr<ArrayOf<Char8> > CVerifierDeviceIdentity::InitENCODE()
+const AutoPtr<ArrayOf<Char32> > InitENCODE()
 {
-    AutoPtr<ArrayOf<Char8> > char8Array = ArrayOf<Char8>::Alloc(32);
+    AutoPtr<ArrayOf<Char32> > char8Array = ArrayOf<Char32>::Alloc(32);
 
     (*char8Array)[0]  = 'A';
     (*char8Array)[1]  = 'B';
@@ -53,6 +48,16 @@ const AutoPtr<ArrayOf<Char8> > CVerifierDeviceIdentity::InitENCODE()
     return char8Array;
 }
 
+const Char32 CVerifierDeviceIdentity::SEPARATOR = '-';
+const Int32 CVerifierDeviceIdentity::LONG_SIZE = 13;
+const Int32 CVerifierDeviceIdentity::GROUP_SIZE = 4;
+const AutoPtr<ArrayOf<Char32> > CVerifierDeviceIdentity::ENCODE = InitENCODE();
+
+
+CAR_INTERFACE_IMPL_2(CVerifierDeviceIdentity, Object, IVerifierDeviceIdentity, IParcelable)
+
+CAR_OBJECT_IMPL(CVerifierDeviceIdentity)
+
 CVerifierDeviceIdentity::CVerifierDeviceIdentity()
     : mIdentity(0)
 {}
@@ -69,7 +74,7 @@ ECode CVerifierDeviceIdentity::constructor(
     /* [in] */ Int64 identity)
 {
     mIdentity = identity;
-    mIdentityString = EncodeBase32(&identity);
+    mIdentityString = EncodeBase32(identity);
 
     return NOERROR;
 }
@@ -80,21 +85,21 @@ ECode CVerifierDeviceIdentity::constructor(
     VALIDATE_NOT_NULL(source);
 
     source->ReadInt64(&mIdentity);
-    mIdentityString = EncodeBase32(&mIdentity);
+    mIdentityString = EncodeBase32(mIdentity);
 
     return NOERROR;
 }
 
-const String CVerifierDeviceIdentity::EncodeBase32(
-        /* [in, out] */ Int64* input)
+String CVerifierDeviceIdentity::EncodeBase32(
+        /* [in] */ Int64 input)
 {
-    AutoPtr<ArrayOf<Char8> > alphabet = ENCODE;
+    AutoPtr<ArrayOf<Char32> > alphabet = ENCODE;
 
     /*
      * Make a character array with room for the separators between each
      * group.
      */
-     AutoPtr<ArrayOf<Char8> > encoded = ArrayOf<Char8>::Alloc(LONG_SIZE + (LONG_SIZE / GROUP_SIZE));
+    AutoPtr<ArrayOf<Char32> > encoded = ArrayOf<Char32>::Alloc(LONG_SIZE + (LONG_SIZE / GROUP_SIZE));
 
     Int32 index = encoded->GetLength();
     for (Int32 i = 0; i < LONG_SIZE; i++) {
@@ -111,70 +116,76 @@ const String CVerifierDeviceIdentity::EncodeBase32(
         /*
          * Extract 5 bits of data, then shift it out.
          */
-        const Int32 group = (Int32) (*input & 0x1F);
-        UInt32 uInput = *input;
+        const Int32 group = (Int32) (input & 0x1F);
+        UInt32 uInput = input;
         uInput >>= 5;
-        *input = uInput;
+        input = uInput;
 
         (*encoded)[--index] = (*alphabet)[group];
     }
 
-    return String(encoded->GetPayload());
+    return String(*encoded);
 }
 
-const CVerifierDeviceIdentity::DecodeBase32(
-        /* [in] */ ArrayOf<Byte>* input,
-        /* [out] */ Int64* vaule)
+ECode CVerifierDeviceIdentity::DecodeBase32(
+    /* [in] */ ArrayOf<Byte>* input,
+    /* [out] */ Int64* value)
 {
-    // long output = 0L;
-    // int numParsed = 0;
+    VALIDATE_NOT_NULL(value)
+    *value = 0;
 
-    // final int N = input.length;
-    // for (int i = 0; i < N; i++) {
-    //     final int group = input[i];
+    Int64 output = 0L;
+    Int32 numParsed = 0;
 
-    //     /*
-    //      * This essentially does the reverse of the ENCODED alphabet above
-    //      * without a table. A..Z are 0..25 and 2..7 are 26..31.
-    //      */
-    //     final int value;
-    //     if ('A' <= group && group <= 'Z') {
-    //         value = group - 'A';
-    //     } else if ('2' <= group && group <= '7') {
-    //         value = group - ('2' - 26);
-    //     } else if (group == SEPARATOR) {
-    //         continue;
-    //     } else if ('a' <= group && group <= 'z') {
-    //         /* Lowercase letters should be the same as uppercase for Base32 */
-    //         value = group - 'a';
-    //     } else if (group == '0') {
-    //          Be nice to users that mistake O (letter) for 0 (zero)
-    //         value = 'O' - 'A';
-    //     } else if (group == '1') {
-    //         /* Be nice to users that mistake I (letter) for 1 (one) */
-    //         value = 'I' - 'A';
-    //     } else {
-    //         throw new IllegalArgumentException("base base-32 character: " + group);
-    //     }
+    Int32 N = input->GetLength();
+    for (Int32 i = 0; i < N; i++) {
+        Int32 group = (*input)[i];
 
-    //     output = (output << 5) | value;
-    //     numParsed++;
+        /*
+         * This essentially does the reverse of the ENCODED alphabet above
+         * without a table. A..Z are 0..25 and 2..7 are 26..31.
+         */
+        Int32 value;
+        if ('A' <= group && group <= 'Z') {
+            value = group - 'A';
+        } else if ('2' <= group && group <= '7') {
+            value = group - ('2' - 26);
+        } else if (group == SEPARATOR) {
+            continue;
+        } else if ('a' <= group && group <= 'z') {
+            /* Lowercase letters should be the same as uppercase for Base32 */
+            value = group - 'a';
+        } else if (group == '0') {
+            /* Be nice to users that mistake O (letter) for 0 (zero) */
+            value = 'O' - 'A';
+        } else if (group == '1') {
+            /* Be nice to users that mistake I (letter) for 1 (one) */
+            value = 'I' - 'A';
+        } else {
+            // throw new IllegalArgumentException("base base-32 character: " + group);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
 
-    //     if (numParsed == 1) {
-    //         if ((value & 0xF) != value) {
-    //             throw new IllegalArgumentException("illegal start character; will overflow");
-    //         }
-    //     } else if (numParsed > 13) {
-    //         throw new IllegalArgumentException("too long; should have 13 characters");
-    //     }
-    // }
+        output = (output << 5) | value;
+        numParsed++;
 
-    // if (numParsed != 13) {
-    //     throw new IllegalArgumentException("too short; should have 13 characters");
-    // }
+        if (numParsed == 1) {
+            if ((value & 0xF) != value) {
+                // throw new IllegalArgumentException("illegal start character; will overflow");
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
+        } else if (numParsed > 13) {
+            // throw new IllegalArgumentException("too Int64; should have 13 characters");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+    }
 
-    // return output;
-    *vaule = 0;
+    if (numParsed != 13) {
+        // throw new IllegalArgumentException("too short; should have 13 characters");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    *value = output;
     Slogger::E("CVerifierDeviceIdentity", "CVerifierDeviceIdentity::DecodeBase32() E_NOT_IMPLEMENTED");
     return NOERROR;
 }
@@ -183,8 +194,16 @@ ECode CVerifierDeviceIdentity::Equals(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* isEquals)
 {
-    // TODO: Add your code here
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(isEquals)
+    *isEquals = FALSE;
+
+    if (IVerifierDeviceIdentity::Probe(obj) == NULL) {
+        return NOERROR;
+    }
+
+    CVerifierDeviceIdentity* o = (CVerifierDeviceIdentity*)IVerifierDeviceIdentity::Probe(obj);
+    *isEquals = mIdentity == o->mIdentity;
+    return NOERROR;
 }
 
 ECode CVerifierDeviceIdentity::GetHashCode(
@@ -207,7 +226,7 @@ ECode CVerifierDeviceIdentity::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     source->ReadInt64(&mIdentity);
-    mIdentityString = EncodeBase32(&mIdentity);
+    mIdentityString = EncodeBase32(mIdentity);
     return NOERROR;
 }
 

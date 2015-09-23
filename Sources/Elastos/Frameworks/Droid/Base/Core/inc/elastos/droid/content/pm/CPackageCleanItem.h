@@ -53,6 +53,16 @@ public:
     CARAPI GetAndCode(
         /* [out] */ Boolean* andCode);
 
+    CARAPI SetUserId(
+        /* [in] */ Int32 userId);
+
+    CARAPI SetPackageName(
+        /* [in] */ const String& packageName);
+
+    CARAPI SetAndCode(
+        /* [in] */ Boolean andCode);
+
+
 public:
     Int32 mUserId;
     String mPackageName;

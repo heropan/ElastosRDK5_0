@@ -1,9 +1,12 @@
 #include "os/CBinder.h"
 #include "os/CHandler.h"
 #include "os/CUserHandle.h"
+#include "os/CPatternMatcher.h"
 #include "os/CParcelFileDescriptor.h"
 #include "os/CParcelFileDescriptorAutoCloseInputStream.h"
 #include "os/CParcelFileDescriptorAutoCloseOutputStream.h"
+
+
 
 namespace Elastos {
 namespace Droid {
@@ -14,6 +17,8 @@ CAR_OBJECT_IMPL(CBinder)
 CAR_OBJECT_IMPL(CHandler)
 
 CAR_OBJECT_IMPL(CUserHandle)
+
+CAR_OBJECT_IMPL(CPatternMatcher)
 
 CAR_OBJECT_IMPL(CParcelFileDescriptor)
 

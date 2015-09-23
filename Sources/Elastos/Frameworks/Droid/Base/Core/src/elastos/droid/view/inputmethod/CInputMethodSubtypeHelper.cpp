@@ -2,7 +2,7 @@
 #include "view/inputmethod/CInputMethodSubtypeHelper.h"
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Utility::Etl::List;
 
 namespace Elastos {

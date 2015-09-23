@@ -1,17 +1,20 @@
 
 #include "content/pm/CManifestDigest.h"
-#include "util/CBase64.h"
+#include "utility/CBase64.h"
 #include <elastos/core/StringBuilder.h>
-#include <elastos/IntegralToString.h>
-
+#include <elastos/core/IntegralToString.h>
+#include <elastos/utility/Arrays.h>
 
 using Elastos::Droid::Utility::CBase64;
+
 using Elastos::Core::IntegralToString;
 using Elastos::Core::StringBuilder;
 using Elastos::IO::IBufferedInputStream;
 using Elastos::IO::CBufferedInputStream;
-using Elastos::Utility::IArrays;
-using Elastos::Utility::CArrays;
+using Elastos::IO::ICloseable;
+using Elastos::Utility::Arrays;
+using Elastos::Security::IDigestInputStream;
+//using Elastos::Security::CDigestInputStream;
 using Elastos::Security::IMessageDigest;
 using Elastos::Security::IMessageDigestHelper;
 using Elastos::Security::CMessageDigestHelper;
@@ -23,11 +26,14 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
-
 /** What we print out first when toString() is called. */
 const String CManifestDigest::TO_STRING_PREFIX("ManifestDigest {mDigest=");
 
 const String CManifestDigest::DIGEST_ALGORITHM("SHA-256");
+
+CAR_INTERFACE_IMPL_2(CManifestDigest, Object, IManifestDigest, IParcelable)
+
+CAR_OBJECT_IMPL(CManifestDigest)
 
 ECode CManifestDigest::FromInputStream(
     /* [in] */ IInputStream* fileIs,
@@ -40,10 +46,10 @@ ECode CManifestDigest::FromInputStream(
         return NOERROR;
     }
 
-    AutoPtr<IManifestDigest> md;
-    AutoPtr<IManifestDigestHelper> helper;
-    CMessageDigestHelper::AcquireSingleton((IManifestDigestHelper**)&helper);
-    ECode ec = helper->GetInstance(DIGEST_ALGORITHM, (IManifestDigest**)&md);
+    AutoPtr<IMessageDigest> md;
+    AutoPtr<IMessageDigestHelper> helper;
+    CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
+    ECode ec = helper->GetInstance(DIGEST_ALGORITHM, (IMessageDigest**)&md);
     if (ec == (ECode)E_NO_SUCH_ALGORITHM_EXCEPTION) {
         return E_RUNTIME_EXCEPTION;
     }
@@ -52,12 +58,14 @@ ECode CManifestDigest::FromInputStream(
     CBufferedInputStream::New(fileIs, (IBufferedInputStream**)&bis);
 
     AutoPtr<IDigestInputStream> dis;
-    CDigestInputStream::New(bis, md, (IDigestInputStream**)&dis);
+    assert(0 && "TODO");
+    //CDigestInputStream::New(bis, md, (IDigestInputStream**)&dis);
 
     // try {
     AutoPtr<ArrayOf<Byte> > readBuffer = ArrayOf<Byte>::Alloc(8192);
     Int32 count;
-    while (dis->Read(readBuffer, 0, readBuffer->GetLength(), &count), count != -1) {
+    IInputStream* is = IInputStream::Probe(dis);
+    while (is->Read(readBuffer, 0, readBuffer->GetLength(), &count), count != -1) {
         // not using
     }
     // } catch (IOException e) {
@@ -66,7 +74,7 @@ ECode CManifestDigest::FromInputStream(
     // }
     // finally {
     AutoPtr<IIoUtils> iou;
-    CIoUtils::AcquireSingleton((IIoUtils**)&iou)
+    CIoUtils::AcquireSingleton((IIoUtils**)&iou);
     iou->CloseQuietly(ICloseable::Probe(dis));
     // }
 
@@ -109,22 +117,22 @@ ECode CManifestDigest::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    const AutoPtr<IManifestDigest> other = IManifestDigest::Probe(obj);
+    AutoPtr<IManifestDigest> other = IManifestDigest::Probe(obj);
     if (other == NULL) {
         *result = FALSE;
         return NOERROR;
     }
 
-    return this == (CManifestDigest*)other.Get()
-        || mDigest->Equals(((CManifestDigest*)other.Get())->mDigest);
+    CManifestDigest* o = (CManifestDigest*)other.Get();
+    return this == o || Arrays::Equals(mDigest, o->mDigest);
 }
 
 ECode CManifestDigest::GetHashCode(
     /* [out] */ Int32* code)
 {
-    AutoPtr<IArrays> arr;
-    CArrays::AcquireSingleton((IArrays**)&arr);
-    return arr->HashCodeByte(mDigest, code);
+    VALIDATE_NOT_NULL(code)
+    *code = Arrays::GetHashCode(mDigest);
+    return NOERROR;
 }
 
 ECode CManifestDigest::ToString(

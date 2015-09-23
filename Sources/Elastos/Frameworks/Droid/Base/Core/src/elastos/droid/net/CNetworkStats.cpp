@@ -3,8 +3,8 @@
 #include "net/CNetworkStats.h"
 #include "net/CNetworkStatsEntry.h"
 #include "os/SystemClock.h"
-#include "util/ArrayUtils.h"
-#include "util/SparseArray.h"
+#include "utility/ArrayUtils.h"
+#include "utility/SparseArray.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/HashMap.h>

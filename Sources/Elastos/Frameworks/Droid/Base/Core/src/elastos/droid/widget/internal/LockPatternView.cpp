@@ -9,7 +9,7 @@
 #include "view/accessibility/CAccessibilityManager.h"
 
 using Elastos::Core::Math;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Graphics::CRect;

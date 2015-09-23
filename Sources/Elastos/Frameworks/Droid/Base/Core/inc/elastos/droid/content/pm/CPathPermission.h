@@ -3,7 +3,9 @@
 #define __ELASTOS_DROID_CONTENT_PM_CPATHPERMISSION_H__
 
 #include "_Elastos_Droid_Content_Pm_CPathPermission.h"
-#include "os/PatternMatcher.h"
+#include "elastos/droid/os/PatternMatcher.h"
+
+using Elastos::Droid::Os::PatternMatcher;
 
 namespace Elastos {
 namespace Droid {
@@ -15,7 +17,7 @@ namespace Pm {
  * in a {@link ProviderInfo}.
  */
 CarClass(CPathPermission)
-    , public Elastos::Droid::Os::PatternMatcher
+    , public PatternMatcher
     , public IPathPermission
 {
 public:
@@ -42,19 +44,6 @@ public:
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
-
-    CARAPI GetPath(
-        /* [out] */ String* path);
-
-    CARAPI GetType(
-        /* [out] */ Int32* type);
-
-    CARAPI Match(
-        /* [in] */ const String& str,
-        /* [out] */ Boolean* isMatch);
-
-    CARAPI ToString(
-        /* [out] */ String* str);
 
 private:
     String mReadPermission;

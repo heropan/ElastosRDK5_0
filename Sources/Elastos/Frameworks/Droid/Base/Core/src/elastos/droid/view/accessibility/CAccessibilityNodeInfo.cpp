@@ -6,7 +6,7 @@
 
 using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::CObjectInt32Map;
 using Elastos::Droid::Graphics::CRect;

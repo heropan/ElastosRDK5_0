@@ -5,6 +5,8 @@
 #include "_Elastos_Droid_Content_Pm_CVerifierDeviceIdentityHelper.h"
 #include <elastos/core/Singleton.h>
 
+using Elastos::Security::ISecureRandom;
+
 namespace Elastos {
 namespace Droid {
 namespace Content {
@@ -25,11 +27,11 @@ public:
      * @return random uniformly-distributed device identity
      */
     CARAPI Generate(
-        /* [out] */ Elastos::Droid::Content::Pm::IVerifierDeviceIdentity** identity);
+        /* [out] */ IVerifierDeviceIdentity** identity);
 
     CARAPI Parse(
         /* [in] */ const String& deviceIdentity,
-        /* [out] */ Elastos::Droid::Content::Pm::IVerifierDeviceIdentity** identity);
+        /* [out] */ IVerifierDeviceIdentity** identity);
 
 private:
     /**
@@ -41,8 +43,8 @@ private:
      *         random number generator
      */
     static CARAPI Generate(
-        /* [in] */ Elastos::Security::ISecureRandom* rng,
-        /* [out] */ Elastos::Droid::Content::Pm::IVerifierDeviceIdentity** identity);
+        /* [in] */ ISecureRandom* rng,
+        /* [out] */ IVerifierDeviceIdentity** identity);
 
 };
 

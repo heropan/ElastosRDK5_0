@@ -1,11 +1,15 @@
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "content/pm/CPathPermission.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
+
+CAR_INTERFACE_IMPL(CPathPermission, PatternMatcher, IPathPermission)
+
+CAR_OBJECT_IMPL(CPathPermission)
 
 ECode CPathPermission::constructor()
 {
@@ -18,7 +22,8 @@ ECode CPathPermission::constructor(
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission)
 {
-    PatternMatcher::constructor(pattern, type);
+    FAIL_RETURN(PatternMatcher::constructor(pattern, type))
+
     mReadPermission = readPermission;
     mWritePermission = writePermission;
     return NOERROR;
@@ -58,31 +63,6 @@ ECode CPathPermission::WriteToParcel(
     dest->WriteString(mReadPermission);
     dest->WriteString(mWritePermission);
     return NOERROR;
-}
-
-ECode CPathPermission::GetPath(
-    /* [out] */ String* path)
-{
-    return PatternMatcher::GetPath(path);
-}
-
-ECode CPathPermission::GetType(
-    /* [out] */ Int32* type)
-{
-    return PatternMatcher::GetType(type);
-}
-
-ECode CPathPermission::Match(
-    /* [in] */ const String& str,
-    /* [out] */ Boolean* isMatch)
-{
-    return PatternMatcher::Match(str, isMatch);
-}
-
-ECode CPathPermission::ToString(
-    /* [out] */ String* str)
-{
-    return PatternMatcher::ToString(str);
 }
 
 } // namespace Pm

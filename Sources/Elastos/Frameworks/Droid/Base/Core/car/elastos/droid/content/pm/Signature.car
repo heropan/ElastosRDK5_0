@@ -62,13 +62,6 @@ module
          */
         GetPublicKey(
             [out] IPublicKey** publicKey);
-
-        Equals(
-            [in] ISignature* obj,
-            [out] Boolean* isEqual);
-
-        GetHashCode(
-            [out] Int32* hashCode);
     }
 
     } // namespace Pm

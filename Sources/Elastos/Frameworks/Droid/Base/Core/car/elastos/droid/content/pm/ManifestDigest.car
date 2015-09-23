@@ -30,12 +30,6 @@ module
             [out] String* str);
     }
 
-    interface IManifestDigestHelper {
-        FromInputStream(
-            [in] IInputStream* attributes,
-            [out] IManifestDigest** digest);
-    }
-
     } // namespace Pm
     } // namespace Content
     } // namespace Droid

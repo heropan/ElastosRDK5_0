@@ -4,7 +4,7 @@
 #include "graphics/drawable/CAnimatedRotateDrawable.h"
 #include "graphics/CRect.h"
 #include "os/SystemClock.h"
-// #include "util/CTypedValue.h"
+// #include "utility/CTypedValue.h"
 #include "R.h"
 #include <elastos/utility/logging/Logger.h>
 

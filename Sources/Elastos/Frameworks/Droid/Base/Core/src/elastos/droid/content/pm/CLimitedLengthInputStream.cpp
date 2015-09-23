@@ -1,7 +1,7 @@
 
 #include "content/pm/CLimitedLengthInputStream.h"
 #include <elastos/utility/logging/Logger.h>
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Utility::Logging::Logger;
 
@@ -9,6 +9,10 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
+
+CAR_INTERFACE_IMPL(CLimitedLengthInputStream, FilterInputStream, ILimitedLengthInputStream)
+
+CAR_OBJECT_IMPL(CLimitedLengthInputStream)
 
 CLimitedLengthInputStream::CLimitedLengthInputStream()
     : mEnd(0)
@@ -18,18 +22,12 @@ CLimitedLengthInputStream::CLimitedLengthInputStream()
 CLimitedLengthInputStream::~CLimitedLengthInputStream()
 {}
 
-PInterface CLimitedLengthInputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CLimitedLengthInputStream::Probe(riid);
-}
-
 ECode CLimitedLengthInputStream::constructor(
     /* [in] */ IInputStream* inStream,
     /* [in] */ Int64 offset,
     /* [in] */ Int64 length)
 {
-    FilterInputStream::Init(inStream);
+    FAIL_RETURN(FilterInputStream::constructor(inStream))
 
     if (inStream == NULL) {
         Logger::E(String("CLimitedLengthInputStream"), String("in == null"));
@@ -63,6 +61,7 @@ ECode CLimitedLengthInputStream::constructor(
 ECode CLimitedLengthInputStream::Read(
     /* [out] */ Int32* value)
 {
+    VALIDATE_NOT_NULL(value)
     if (mOffset >= mEnd) {
         *value = -1;
         return NOERROR;
@@ -72,19 +71,25 @@ ECode CLimitedLengthInputStream::Read(
     return FilterInputStream::Read(value);
 }
 
-ECode CLimitedLengthInputStream::ReadBytes(
+ECode CLimitedLengthInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
-    return ReadBytes(buffer, 0, buffer->GetLength(), number);
+    VALIDATE_NOT_NULL(number)
+    *number = -1;
+    VALIDATE_NOT_NULL(buffer)
+
+    return Read(buffer, 0, buffer->GetLength(), number);
 }
 
-ECode CLimitedLengthInputStream::ReadBytes(
+ECode CLimitedLengthInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
+    VALIDATE_NOT_NULL(number)
+
     if (mOffset >= mEnd) {
         *number = -1;
         return NOERROR;
@@ -105,56 +110,10 @@ ECode CLimitedLengthInputStream::ReadBytes(
     }
 
     Int32 numRead;
-    FilterInputStream::ReadBytes(buffer, offset, byteCount, &numRead);
+    FilterInputStream::Read(buffer, offset, byteCount, &numRead);
     mOffset += numRead;
 
     *number = numRead;
-    return NOERROR;
-}
-
-ECode CLimitedLengthInputStream::Close()
-{
-    return FilterInputStream::Close();
-}
-
-ECode CLimitedLengthInputStream::Available(
-    /* [out] */ Int32* number)
-{
-    return FilterInputStream::Available(number);
-}
-
-ECode CLimitedLengthInputStream::Mark(
-    /* [in] */ Int32 readLimit)
-{
-    return FilterInputStream::Mark(readLimit);
-}
-
-ECode CLimitedLengthInputStream::IsMarkSupported(
-    /* [out] */ Boolean* supported)
-{
-    return FilterInputStream::IsMarkSupported(supported);
-}
-
-ECode CLimitedLengthInputStream::Reset()
-{
-    return FilterInputStream::Reset();
-}
-
-ECode CLimitedLengthInputStream::Skip(
-    /* [in] */ Int64 byteCount,
-    /* [out] */ Int64* number)
-{
-    return FilterInputStream::Skip(byteCount, number);
-}
-
-ECode CLimitedLengthInputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = FilterInputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

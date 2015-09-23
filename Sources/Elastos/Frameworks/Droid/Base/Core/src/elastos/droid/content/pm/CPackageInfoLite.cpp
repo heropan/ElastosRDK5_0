@@ -1,11 +1,18 @@
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "content/pm/CPackageInfoLite.h"
+#include <elastos/core/StringBuilder.h>
+
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
+
+CAR_INTERFACE_IMPL_2(CPackageInfoLite, Object, IPackageInfoLite, IParcelable)
+
+CAR_OBJECT_IMPL(CPackageInfoLite)
 
 CPackageInfoLite::CPackageInfoLite()
     : mVersionCode(0)
@@ -26,11 +33,13 @@ ECode CPackageInfoLite::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
-    // return "PackageInfoLite{"
-    //         + Integer.toHexString(System.identityHashCode(this))
-    //         + " " + packageName + "}";
-    assert(0);
-    return E_NOT_IMPLEMENTED;
+    StringBuilder sb("PackageInfoLite{");
+    sb += (Int32)this;
+    sb += " ";
+    sb += mPackageName;
+    sb += "}";
+    *str = sb.ToString();
+    return NOERROR;
 }
 
 ECode CPackageInfoLite::ReadFromParcel(
@@ -100,6 +109,21 @@ ECode CPackageInfoLite::GetVersionCode(
 
 ECode CPackageInfoLite::SetVersionCode(
     /* [in] */ Int32 versionCode)
+{
+    mVersionCode = versionCode;
+    return NOERROR;
+}
+
+ECode CPackageInfoLite::GetMultiArch(
+    /* [out] */ Boolean* versionCode)
+{
+    VALIDATE_NOT_NULL(versionCode)
+    *versionCode = mVersionCode;
+    return NOERROR;
+}
+
+ECode CPackageInfoLite::SetMultiArch(
+    /* [in] */ Boolean versionCode)
 {
     mVersionCode = versionCode;
     return NOERROR;

@@ -4,7 +4,7 @@
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CObjectContainer;
+
 
 namespace Elastos {
 namespace Droid {

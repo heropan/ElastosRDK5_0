@@ -16,7 +16,7 @@
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::CObjectMap;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Os::SystemClock;

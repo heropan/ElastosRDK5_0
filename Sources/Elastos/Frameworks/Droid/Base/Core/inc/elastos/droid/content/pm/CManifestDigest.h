@@ -5,6 +5,7 @@
 #include "_Elastos_Droid_Content_Pm_CManifestDigest.h"
 #include <elastos/core/Object.h>
 
+using Elastos::IO::IInputStream;
 using Elastos::Utility::Jar::IAttributes;
 
 namespace Elastos {
@@ -23,8 +24,8 @@ public:
     CAR_OBJECT_DECL()
 
     static CARAPI FromInputStream(
-            /* [in] */ IInputStream* attributes,
-            /* [out] */ IManifestDigest** digest);
+        /* [in] */ IInputStream* attributes,
+        /* [out] */ IManifestDigest** digest);
 
     CARAPI constructor();
 

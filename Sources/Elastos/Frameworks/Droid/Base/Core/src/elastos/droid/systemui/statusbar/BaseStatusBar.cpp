@@ -37,7 +37,7 @@ using Elastos::Core::StringUtils;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Core::CString;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::R;
 using Elastos::Droid::Utility::CDisplayMetrics;

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_RES_CCOLORSTATELIST_H__
 
 #include "_Elastos_Droid_Content_Res_CColorStateList.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/core/Object.h>
 

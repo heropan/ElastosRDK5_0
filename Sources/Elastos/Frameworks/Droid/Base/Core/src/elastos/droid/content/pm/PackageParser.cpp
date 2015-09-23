@@ -20,7 +20,7 @@
 #include "content/res/CResources.h"
 #include "os/CBundle.h"
 #include "os/CPatternMatcher.h"
-#include "util/CDisplayMetrics.h"
+#include "utility/CDisplayMetrics.h"
 #endif
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Logger.h>
@@ -29,7 +29,7 @@
 #include "os/Build.h"
 #include "os/UserHandle.h"
 #include <os/SystemClock.h>
-#include "util/XmlUtils.h"
+#include "utility/XmlUtils.h"
 #include "R.h"
 #include "Manifest.h"
 

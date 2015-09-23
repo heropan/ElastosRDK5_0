@@ -17,7 +17,7 @@
 #include "content/CIntentFilter.h"
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::CInteger64;
 using Elastos::Core::ICharSequence;

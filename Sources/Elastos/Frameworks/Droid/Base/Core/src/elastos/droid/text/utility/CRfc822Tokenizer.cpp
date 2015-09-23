@@ -3,7 +3,7 @@
 #include "text/util/CRfc822Token.h"
 
 using Elastos::Core::CString;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Droid::Text::Utility::CRfc822Token;
 
 namespace Elastos {

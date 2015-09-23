@@ -22,8 +22,6 @@ class PermissionGroupInfo
 public:
     CAR_INTERFACE_DECL()
 
-    CAR_OBJECT_DECL()
-
     PermissionGroupInfo();
 
     virtual ~PermissionGroupInfo();

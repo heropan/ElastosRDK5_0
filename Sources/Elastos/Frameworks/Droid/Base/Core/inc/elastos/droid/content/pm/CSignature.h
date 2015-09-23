@@ -6,6 +6,8 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Security::IPublicKey;
+using Elastos::Security::Cert::ICertificate;
+using Elastos::Security::Cert::ICertificateFactory;
 
 namespace Elastos {
 namespace Droid {
@@ -25,6 +27,8 @@ public:
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
+
+    CSignature();
 
     CARAPI constructor();
 
@@ -109,7 +113,7 @@ public:
         /* [out, callee] */ ArrayOf<ISignature*>** result);
 
     CARAPI Equals(
-        /* [in] */ ISignature* obj,
+        /* [in] */ IInterface* obj,
         /* [out] */ Boolean* isEqual);
 
     CARAPI GetHashCode(
@@ -168,6 +172,7 @@ private:
     AutoPtr< ArrayOf<Byte> > mSignature;
     Int32 mHashCode;
     Boolean mHaveHashCode;
+    String mStringRef;
     AutoPtr<ArrayOf<ICertificate*> > mCertificateChain;
 
 

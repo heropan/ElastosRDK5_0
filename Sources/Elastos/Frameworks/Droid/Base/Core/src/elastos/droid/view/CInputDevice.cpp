@@ -4,7 +4,7 @@
 #include "view/CMotionEvent.h"
 #include "hardware/input/CInputManager.h"
 
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Droid::View::CMotionEvent;
 using Elastos::Droid::Hardware::Input::CInputManager;
 

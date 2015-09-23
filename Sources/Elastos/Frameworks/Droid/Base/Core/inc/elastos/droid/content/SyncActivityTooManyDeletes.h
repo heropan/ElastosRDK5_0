@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_SYNCACTIVITYTOOMANYDELETES_H__
 
 //#include "app/Activity.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 //using Elastos::Droid::App::Activity;

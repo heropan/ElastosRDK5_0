@@ -8,7 +8,7 @@ using Elastos::Core::StringUtils;
 using Elastos::Core::CInteger32;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Graphics::CRect;
-using Elastos::Core::CObjectContainer;
+
 
 namespace Elastos {
 namespace Droid {

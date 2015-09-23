@@ -16,7 +16,7 @@
 #include "provider/CMediaStoreAudioPlaylists.h"
 #include "content/CContentValues.h"
 #include "content/CContentUris.h"
-#include "util/CXml.h"
+#include "utility/CXml.h"
 #include "text/TextUtils.h"
 #include "graphics/CBitmapFactory.h"
 #include "net/Uri.h"

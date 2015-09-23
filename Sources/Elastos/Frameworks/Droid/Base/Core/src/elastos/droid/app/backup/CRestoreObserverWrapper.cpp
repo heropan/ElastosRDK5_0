@@ -2,7 +2,7 @@
 #include "app/backup/CRestoreObserverWrapper.h"
 
 using Elastos::Core::CString;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::IMessage;
 

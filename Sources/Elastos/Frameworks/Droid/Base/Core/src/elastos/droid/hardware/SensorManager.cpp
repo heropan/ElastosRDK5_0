@@ -7,7 +7,7 @@ using Elastos::Utility::Etl::List;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Utility::CObjectMap;
-using Elastos::Core::CObjectContainer;
+
 
 
 namespace Elastos {

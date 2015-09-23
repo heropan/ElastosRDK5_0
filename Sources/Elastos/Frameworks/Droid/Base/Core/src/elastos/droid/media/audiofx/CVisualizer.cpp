@@ -5,7 +5,7 @@
 
 using Elastos::Core::IByte;
 using Elastos::Core::CByte;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::ILooperHelper;
 using Elastos::Droid::Os::CLooperHelper;

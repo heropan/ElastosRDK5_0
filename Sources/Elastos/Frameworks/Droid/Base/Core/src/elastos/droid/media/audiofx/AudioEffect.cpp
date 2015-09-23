@@ -12,7 +12,7 @@
 
 using Elastos::Core::IByte;
 using Elastos::Core::CByte;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Utility::Logging::Logger;
 using Elastos::IO::ByteOrder;
 using Elastos::IO::IByteOrderHelper;

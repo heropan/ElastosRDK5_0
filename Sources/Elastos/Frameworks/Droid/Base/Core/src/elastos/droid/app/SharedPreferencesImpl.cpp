@@ -13,7 +13,7 @@ using Elastos::Core::CBoolean;
 using Elastos::Core::CFloat;
 using Elastos::Core::CInteger32;
 using Elastos::Core::CInteger64;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Core::CString;
 using Elastos::Core::IBoolean;
 using Elastos::Core::IFloat;

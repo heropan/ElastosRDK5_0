@@ -8,7 +8,7 @@
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Os::ILooper;

@@ -5,7 +5,7 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Core::CInteger32;
 using Elastos::Utility::CDate;
 using Elastos::Utility::ITimeZone;

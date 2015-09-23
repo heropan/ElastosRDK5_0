@@ -13,7 +13,7 @@ using Elastos::Core::StringUtils;
 using Libcore::ICU::CLocale;
 using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::/*IIBinder*/IBinder;
 using Elastos::Droid::Content::EIID_IServiceConnection;

@@ -10,7 +10,7 @@ using Elastos::Droid::Content::Pm::PackageManager;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::ISignature;
 using Elastos::Droid::Content::Pm::IPackageInfo;
-using Elastos::Core::CObjectContainer;
+
 
 namespace Elastos {
 namespace Droid {

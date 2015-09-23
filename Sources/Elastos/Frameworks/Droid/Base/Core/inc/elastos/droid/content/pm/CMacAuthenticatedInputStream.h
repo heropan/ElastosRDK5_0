@@ -5,7 +5,7 @@
 #include "_Elastos_Droid_Content_Pm_CMacAuthenticatedInputStream.h"
 #include "elastos/io/FilterInputStream.h"
 
-using Elastos::Crypto::IMac;
+using Elastosx::Crypto::IMac;
 using Elastos::IO::IInputStream;
 using Elastos::IO::FilterInputStream;
 
@@ -32,7 +32,7 @@ public:
 
     CMacAuthenticatedInputStream();
 
-    ~CMacAuthenticatedInputStream();
+    virtual ~CMacAuthenticatedInputStream();
 
     CARAPI constructor(
         /* [in] */ IInputStream* inStream,
@@ -45,32 +45,11 @@ public:
     CARAPI Read(
         /* [out] */ Int32* value);
 
-    CARAPI ReadBytes(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [out] */ Int32* number);
-
-    CARAPI Close();
-
-    CARAPI Available(
-        /* [out] */ Int32* number);
-
-    CARAPI Mark(
-        /* [in] */ Int32 readLimit);
-
-    CARAPI IsMarkSupported(
-        /* [out] */ Boolean* supported);
-
-    CARAPI ReadBytes(
-        /* [out] */ ArrayOf<Byte>* buffer,
-        /* [out] */ Int32* number);
-
-    CARAPI Reset();
-
-    CARAPI Skip(
-        /* [in] */ Int64 byteCount,
-        /* [out] */ Int64* number);
 
 private:
     AutoPtr<IMac> mMac;

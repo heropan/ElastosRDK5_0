@@ -32,7 +32,7 @@ using Elastos::Core::StringBuilder;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Core::CThread;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Find;

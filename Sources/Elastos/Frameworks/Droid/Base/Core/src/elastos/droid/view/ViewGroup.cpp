@@ -35,7 +35,7 @@ using Elastos::Droid::View::Animation::AnimationUtils;
 using Elastos::Droid::View::Animation::CTransformation;
 using Libcore::ICU::ILocale;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Core::CString;
 
 namespace Elastos {

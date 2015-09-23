@@ -6,6 +6,7 @@ C_DEFINES += -DDROID_CORE
 include $(MAKEDIR)/../../../../../../sources.inc
 
 INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../../../inc/
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid
 INCLUDES += $(PREBUILD_INC)/binder
 INCLUDES += $(PREBUILD_INC)/utils
@@ -57,7 +58,7 @@ SOURCES += ParcelFileDescriptor.cpp
 SOURCES += CParcelFileDescriptorHelper.cpp
 SOURCES += CParcelUuid.cpp
 SOURCES += CParcelUuidHelper.cpp
-SOURCES += CPatternMatcher.cpp
+SOURCES += PatternMatcher.cpp
 SOURCES += PerformanceCollector.cpp
 #SOURCES += CPersistableBundle.cpp
 SOURCES += CPowerManager.cpp

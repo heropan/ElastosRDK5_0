@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERCLIENT_H__
 
 #include "_Elastos_Droid_Content_CContentProviderClient.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "os/Runnable.h"
 
 using Elastos::Droid::Content::Res::IAssetFileDescriptor;

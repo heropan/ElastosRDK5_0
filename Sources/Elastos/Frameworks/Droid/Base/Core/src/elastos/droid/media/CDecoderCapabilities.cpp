@@ -5,7 +5,7 @@
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
-using Elastos::Core::CObjectContainer;
+
 
 namespace Elastos {
 namespace Droid {

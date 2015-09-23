@@ -52,6 +52,12 @@ public:
     CARAPI SetVersionCode(
         /* [in] */ Int32 versionCode);
 
+    CARAPI GetMultiArch(
+        /* [out] */ Boolean* versionCode);
+
+    CARAPI SetMultiArch(
+        /* [in] */ Boolean versionCode);
+
     CARAPI GetRecommendedInstallLocation(
         /* [out] */ Int32* location);
 

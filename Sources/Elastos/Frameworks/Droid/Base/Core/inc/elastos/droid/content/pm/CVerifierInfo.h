@@ -5,6 +5,8 @@
 #include "_Elastos_Droid_Content_Pm_CVerifierInfo.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Security::IPublicKey;
+
 namespace Elastos {
 namespace Droid {
 namespace Content {
@@ -28,7 +30,9 @@ public:
 
     CVerifierInfo();
 
-    ~CVerifierInfo();
+    virtual ~CVerifierInfo();
+
+    CARAPI constructor();
 
     /**
      * Creates an object that represents a verifier info object.
@@ -41,7 +45,7 @@ public:
      */
     CARAPI constructor(
         /* [in] */ const String& packageName,
-        /* [in] */ Elastos::Security::IPublicKey* publicKey);
+        /* [in] */ IPublicKey* publicKey);
 
     CARAPI GetPackageName(
         /* [out] */ String* packageName);
@@ -50,10 +54,10 @@ public:
         /* [in] */ const String& packageName);
 
     CARAPI GetPublicKey(
-        /* [out] */ Elastos::Security::IPublicKey** publicKey);
+        /* [out] */ IPublicKey** publicKey);
 
     CARAPI SetPublicKey(
-        /* [in] */ Elastos::Security::IPublicKey* publicKey);
+        /* [in] */ IPublicKey* publicKey);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -61,16 +65,12 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-private:
-    CARAPI constructor(
-        /* [in] */ IParcel* source);
-
 public:
     /** Package name of the verifier. */
     String mPackageName;
 
     /** Signatures used to sign the package verifier's package. */
-    AutoPtr<Elastos::Security::IPublicKey> mPublicKey;
+    AutoPtr<IPublicKey> mPublicKey;
 
 };
 

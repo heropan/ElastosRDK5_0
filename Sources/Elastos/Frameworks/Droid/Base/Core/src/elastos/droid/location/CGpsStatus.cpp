@@ -2,7 +2,7 @@
 #include "location/CGpsStatus.h"
 #include "location/CGpsSatellite.h"
 
-using Elastos::Core::CObjectContainer;
+
 
 namespace Elastos {
 namespace Droid {

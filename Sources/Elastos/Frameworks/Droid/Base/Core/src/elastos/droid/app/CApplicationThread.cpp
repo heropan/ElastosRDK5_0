@@ -7,7 +7,7 @@
 #include "os/CDebug.h"
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Core::CString;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::ITimeZoneHelper;

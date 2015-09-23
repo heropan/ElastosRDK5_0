@@ -79,7 +79,7 @@ using Elastos::Core::StringBuilder;
 using Libcore::ICU::ILocaleHelper;
 using Libcore::ICU::CLocaleHelper;
 
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Concurrent::Locks::CReentrantLock;
 

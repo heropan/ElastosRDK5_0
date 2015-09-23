@@ -5,7 +5,7 @@
 #include <Elastos.CoreLibrary.h>
 #include "content/CComponentName.h"
 #include "view/accessibility/CAccessibilityEventHelper.h"
-#include "util/Xml.h"
+#include "utility/Xml.h"
 #include "R.h"
 
 using Elastos::Core::StringUtils;

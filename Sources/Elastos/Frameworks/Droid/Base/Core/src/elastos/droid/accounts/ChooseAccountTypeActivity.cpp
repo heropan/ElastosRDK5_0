@@ -9,7 +9,7 @@
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CString;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Content::CIntent;

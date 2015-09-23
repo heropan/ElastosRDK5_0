@@ -1,6 +1,6 @@
 
 #include <elastos/core/StringBuilder.h>
-#include "os/CPatternMatcher.h"
+#include "os/PatternMatcher.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -8,21 +8,23 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-CAR_INTERFACE_IMPL_2(CPatternMatcher, Object, IPatternMatcher, IParcelable)
+CAR_INTERFACE_IMPL_2(PatternMatcher, Object, IPatternMatcher, IParcelable)
 
-CAR_OBJECT_IMPL(CPatternMatcher)
-
-CPatternMatcher::CPatternMatcher()
+PatternMatcher::PatternMatcher()
     : mType(-1)
 {
 }
 
-ECode CPatternMatcher::constructor()
+PatternMatcher::~PatternMatcher()
+{
+}
+
+ECode PatternMatcher::constructor()
 {
     return NOERROR;
 }
 
-ECode CPatternMatcher::constructor(
+ECode PatternMatcher::constructor(
     /* [in] */ const String& pattern,
     /* [in] */ Int32 type)
 {
@@ -31,7 +33,7 @@ ECode CPatternMatcher::constructor(
     return NOERROR;
 }
 
-ECode CPatternMatcher::GetPath(
+ECode PatternMatcher::GetPath(
     /* [in] */ String* path)
 {
     VALIDATE_NOT_NULL(path);
@@ -39,7 +41,7 @@ ECode CPatternMatcher::GetPath(
     return NOERROR;
 }
 
-ECode CPatternMatcher::GetType(
+ECode PatternMatcher::GetType(
     /* [out] */ Int32* type)
 {
     VALIDATE_NOT_NULL(type);
@@ -48,7 +50,7 @@ ECode CPatternMatcher::GetType(
     return NOERROR;
 }
 
-ECode CPatternMatcher::Match(
+ECode PatternMatcher::Match(
     /* [in] */ const String& str,
     /* [out] */ Boolean* result)
 {
@@ -58,7 +60,7 @@ ECode CPatternMatcher::Match(
     return NOERROR;
 }
 
-ECode CPatternMatcher::ToString(
+ECode PatternMatcher::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
@@ -75,7 +77,7 @@ ECode CPatternMatcher::ToString(
             break;
     }
 
-    StringBuilder sb("CPatternMatcher{");
+    StringBuilder sb("PatternMatcher{");
     sb += mType;
     sb += mPattern;
     sb += "}";
@@ -83,7 +85,7 @@ ECode CPatternMatcher::ToString(
     return NOERROR;
 }
 
-ECode CPatternMatcher::ReadFromParcel(
+ECode PatternMatcher::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     VALIDATE_NOT_NULL(source);
@@ -92,7 +94,7 @@ ECode CPatternMatcher::ReadFromParcel(
     return NOERROR;
 }
 
-ECode CPatternMatcher::WriteToParcel(
+ECode PatternMatcher::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
     VALIDATE_NOT_NULL(dest);
@@ -101,7 +103,7 @@ ECode CPatternMatcher::WriteToParcel(
     return NOERROR;
 }
 
-Boolean CPatternMatcher::MatchPattern(
+Boolean PatternMatcher::MatchPattern(
     /* [in] */ const String& pattern,
     /* [in] */ const String& match,
     /* [in] */ Int32 type)

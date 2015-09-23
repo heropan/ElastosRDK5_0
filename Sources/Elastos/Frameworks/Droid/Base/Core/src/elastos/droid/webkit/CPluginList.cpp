@@ -3,7 +3,7 @@
 #include "webkit/CPluginList.h"
 #include <elastos/utility/etl/Algorithm.h>
 
-using Elastos::Core::CObjectContainer;
+
 
 namespace Elastos {
 namespace Droid {

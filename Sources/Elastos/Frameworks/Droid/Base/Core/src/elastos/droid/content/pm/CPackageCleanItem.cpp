@@ -1,11 +1,15 @@
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "content/pm/CPackageCleanItem.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
+
+CAR_INTERFACE_IMPL(CPackageCleanItem, Object, IPackageCleanItem)
+
+CAR_OBJECT_IMPL(CPackageCleanItem)
 
 CPackageCleanItem::CPackageCleanItem()
     : mUserId(0)
@@ -114,6 +118,28 @@ ECode CPackageCleanItem::GetAndCode(
 {
     VALIDATE_NOT_NULL(andCode);
     *andCode = mAndCode;
+    return NOERROR;
+}
+
+
+ECode CPackageCleanItem::SetUserId(
+    /* [in] */ Int32 userId)
+{
+    mUserId = userId;
+    return NOERROR;
+}
+
+ECode CPackageCleanItem::SetPackageName(
+    /* [in] */ const String& packageName)
+{
+    mPackageName = packageName;
+    return NOERROR;
+}
+
+ECode CPackageCleanItem::SetAndCode(
+    /* [in] */ Boolean andCode)
+{
+    mAndCode = andCode;
     return NOERROR;
 }
 

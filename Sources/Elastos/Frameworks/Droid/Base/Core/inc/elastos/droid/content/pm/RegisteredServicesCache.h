@@ -2,8 +2,9 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_REGISTEREDSERVICESCACHE_H__
 #define __ELASTOS_DROID_CONTENT_PM_REGISTEREDSERVICESCACHE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
+#include "elastos/droid/os/Runnable.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
@@ -19,6 +20,7 @@ using Elastos::IO::IFileOutputStream;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Utility::IAtomicFile;
 using Elastos::Droid::Utility::IAttributeSet;
 
@@ -55,7 +57,8 @@ public:
             /* [in] */ IComponentName* componentName,
             /* [in] */ Int32 uid);
 
-        CARAPI_(String) ToString();
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     public:
         AutoPtr<IInterface> mType;
@@ -277,13 +280,12 @@ private:
     AutoPtr<IBroadcastReceiver> mPackageReceiver;
 
     AutoPtr<IBroadcastReceiver> mExternalReceiver;
-
-    Object mLock;
 };
 
 } // namespace Pm
 } // namespace Content
 } // namespace Droid
 } // namespace Elastos
+
 
 #endif // __ELASTOS_DROID_CONTENT_PM_REGISTEREDSERVICESCACHE_H__

@@ -19,7 +19,7 @@ using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
 using Elastos::IO::IFileOutputStream;
 using Elastos::Core::EIID_IComparable;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::IO::IFileInputStream;
 using Org::Xmlpull::V1::IXmlSerializer;
 using Elastos::Droid::Utility::Xml;

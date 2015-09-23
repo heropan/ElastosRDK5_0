@@ -58,14 +58,12 @@ private:
     CARAPI constructor(
         /* [in] */ IParcel* source);
 
-    static const String EncodeBase32(
-        /* [in, out] */ Int64* input);
+    static String EncodeBase32(
+        /* [in] */ Int64 input);
 
-    static const CARAPI DecodeBase32(
+    static CARAPI DecodeBase32(
         /* [in] */ ArrayOf<Byte>* input,
-        /* [out] */ Int64* vaule);
-
-    static const AutoPtr<ArrayOf<Char8> > InitENCODE();
+        /* [out] */ Int64* value);
 
 private:
     Int64 mIdentity;
@@ -85,9 +83,9 @@ private:
      */
     static const Int32 GROUP_SIZE;
 
-    static const AutoPtr<ArrayOf<Char8> > ENCODE;
+    static const AutoPtr<ArrayOf<Char32> > ENCODE;
 
-    static const Char8 SEPARATOR;
+    static const Char32 SEPARATOR;
 
 };
 

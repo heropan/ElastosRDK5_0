@@ -21,7 +21,7 @@ using Libcore::ICU::ILocaleDataHelper;
 using Libcore::ICU::CLocaleDataHelper;
 using Elastos::Core::CInteger32;
 using Elastos::Core::CStringWrapper;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::ICompatibilityInfo;
 using Elastos::Droid::Content::Res::CCompatibilityInfo;

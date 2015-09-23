@@ -13,7 +13,7 @@
 #include "os/UserHandle.h"
 #include "os/ServiceManager.h"
 
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Droid::App::IContextImpl;
 using Elastos::Droid::App::IActivityThreadHelper;
 using Elastos::Droid::App::CActivityThreadHelper;

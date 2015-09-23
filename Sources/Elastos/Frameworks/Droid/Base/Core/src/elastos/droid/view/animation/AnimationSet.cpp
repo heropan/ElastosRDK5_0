@@ -6,7 +6,7 @@
 
 using Elastos::Droid::Os::Build;
 using namespace Elastos::Core;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 
 namespace Elastos {

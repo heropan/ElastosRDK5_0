@@ -1,12 +1,15 @@
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "content/pm/CPackageStats.h"
-
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
+
+CAR_INTERFACE_IMPL_2(CPackageStats, Object, IPackageStats, IParcelable)
+
+CAR_OBJECT_IMPL(CPackageStats)
 
 CPackageStats::CPackageStats()
     : mUserHandle(0)

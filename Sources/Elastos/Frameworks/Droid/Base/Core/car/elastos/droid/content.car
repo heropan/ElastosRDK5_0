@@ -131,21 +131,29 @@ module
     using interface Elastos.IO.ICloseable;
     using interface Elastos.IO.IFileInputStream;
     using interface Elastos.IO.IFileOutputStream;
+    using interface Elastos.IO.IFilterInputStream;
     using interface Elastos.IO.IOutputStream;
     using interface Elastos.IO.IInputStream;
     using interface Elastos.IO.IFlushable;
+    using interface Elastos.Utility.IList;
     using interface Elastos.Utility.IObservable;
+    using interface Elastos.Security.IPublicKey;
+    using interface Elastos.Security.Spec.IAlgorithmParameterSpec;
+    using interface Elastosx.Crypto.ISecretKey;
+    using interface Elastosx.Crypto.IMac;
     using interface Org.Xml.Sax.IContentHandler;
 
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IParcelFileDescriptor;
+    interface Elastos.Droid.Os.IPatternMatcher;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Database.ICursor;
     interface Elastos.Droid.Database.IContentObserver;
     interface Elastos.Droid.Accounts.IAccount;
     interface Elastos.Droid.Content.ILoader;
+    interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.Res.IResources;
     interface Elastos.Droid.Content.Pm.IApplicationInfo;
     interface Elastos.Droid.Content.Pm.IPackageManager;
@@ -879,7 +887,7 @@ module
         constructor();
 
         constructor(
-            [in] IActivityInfo* orig);
+            [in] IActivityInfo* other);
 
         interface IActivityInfo;
         interface IComponentInfo;
@@ -895,7 +903,7 @@ module
         constructor();
 
         constructor(
-            [in] IApplicationInfo* orig);
+            [in] IApplicationInfo* other);
 
         interface IApplicationInfo;
         interface IPackageItemInfo;
@@ -914,7 +922,7 @@ module
         constructor();
 
         constructor(
-            [in] IComponentInfo* orig);
+            [in] IComponentInfo* other);
 
         interface IComponentInfo;
         interface IPackageItemInfo;
@@ -924,195 +932,147 @@ module
         constructor();
 
         constructor(
-            [in] IConfigurationInfo* orig);
+            [in] IConfigurationInfo* other);
 
         interface IConfigurationInfo;
         interface IParcelable;
     }
 
 
-// //    [deprecated]
-// //    class CContainerEncryptionParams {
-// //        constructor();
-// //
-// //        constructor(
-// //            [in] String encryptionAlgorithm,
-// //            [in] IAlgorithmParameterSpec* encryptionSpec,
-// //            [in] ISecretKey* encryptionKey);
+    [deprecated]
+    class CContainerEncryptionParams {
+        constructor();
 
-// //        constructor(
-// //            [in] String encryptionAlgorithm,
-// //            [in] IAlgorithmParameterSpec* encryptionSpec,
-// //            [in] ISecretKey* encryptionKey,
-// //            [in] String macAlgorithm,
-// //            [in] IAlgorithmParameterSpec* macSpec,
-// //            [in] ISecretKey* macKey,
-// //            [in] ArrayOf<Byte>* macTag,
-// //            [in] Int64 authenticatedDataStart,
-// //            [in] Int64 encryptedDataStart,
-// //            [in] Int64 dataEnd);
-// //
-// //        interface IContainerEncryptionParams;
-// //        interface IParcelable;
-// //    }
+        constructor(
+            [in] String encryptionAlgorithm,
+            [in] IAlgorithmParameterSpec* encryptionSpec,
+            [in] ISecretKey* encryptionKey);
+
+        constructor(
+            [in] String encryptionAlgorithm,
+            [in] IAlgorithmParameterSpec* encryptionSpec,
+            [in] ISecretKey* encryptionKey,
+            [in] String macAlgorithm,
+            [in] IAlgorithmParameterSpec* macSpec,
+            [in] ISecretKey* macKey,
+            [in] ArrayOf<Byte>* macTag,
+            [in] Int64 authenticatedDataStart,
+            [in] Int64 encryptedDataStart,
+            [in] Int64 dataEnd);
+
+        interface IContainerEncryptionParams;
+        interface IParcelable;
+    }
 
     class CFeatureInfo {
         constructor();
 
         constructor(
-            [in] IFeatureInfo* orig);
+            [in] IFeatureInfo* other);
 
         interface IFeatureInfo;
         interface IParcelable;
     }
 
+    //class CFeatureGroupInfo {
+    //    constructor();
+
+    //    constructor(
+    //        [in] IFeatureGroupInfo* other);
+
+    //    interface IFeatureGroupInfo;
+    //    interface IParcelable;
+    //}
+
     class CInstrumentationInfo {
         constructor();
 
         constructor(
-            [in] IInstrumentationInfo* orig);
+            [in] IInstrumentationInfo* other);
 
         interface IInstrumentationInfo;
         interface IPackageItemInfo;
         interface IParcelable;
     }
 
-//     /**
-//      * A special subclass of Intent that can have a custom label/icon
-//      * associated with it.  Primarily for use with {@link Intent#ACTION_CHOOSER}.
-//      */
-//    class CLabeledIntent {
-//        /**
-//         * Create a labeled intent from the given intent, supplying the label
-//         * and icon resources for it.
-//         *
-//         * @param origIntent The original Intent to copy.
-//         * @param sourcePackage The package in which the label and icon live.
-//         * @param labelRes Resource containing the label, or 0 if none.
-//         * @param icon Resource containing the icon, or 0 if none.
-//         */
-//         constructor(
-//             [in] IIntent* origIntent,
-//             [in] String sourcePackage,
-//             [in] Int32 labelRes,
-//             [in] Int32 icon);
+    class CLabeledIntent {
 
-//        /**
-//         * Create a labeled intent from the given intent, supplying a textual
-//         * label and icon resource for it.
-//         *
-//         * @param origIntent The original Intent to copy.
-//         * @param sourcePackage The package in which the label and icon live.
-//         * @param nonLocalizedLabel Concrete text to use for the label.
-//         * @param icon Resource containing the icon, or 0 if none.
-//         */
-//         constructor(
-//             [in] IIntent* origIntent,
-//             [in] String sourcePackage,
-//             [in] ICharSequence* nonLocalizedLabel,
-//             [in] Int32 icon);
+         constructor(
+             [in] IIntent* origIntent,
+             [in] String sourcePackage,
+             [in] Int32 labelRes,
+             [in] Int32 icon);
 
-//         /**
-//          * Create a labeled intent with no intent data but supplying the label
-//          * and icon resources for it.
-//          *
-//          * @param sourcePackage The package in which the label and icon live.
-//          * @param labelRes Resource containing the label, or 0 if none.
-//          * @param icon Resource containing the icon, or 0 if none.
-//          */
-//         constructor(
-//             [in] String sourcePackage,
-//             [in] Int32 labelRes,
-//             [in] Int32 icon);
+         constructor(
+             [in] IIntent* origIntent,
+             [in] String sourcePackage,
+             [in] ICharSequence* nonLocalizedLabel,
+             [in] Int32 icon);
 
-//        /**
-//         * Create a labeled intent with no intent data but supplying a textual
-//         * label and icon resource for it.
-//         *
-//         * @param sourcePackage The package in which the label and icon live.
-//         * @param nonLocalizedLabel Concrete text to use for the label.
-//         * @param icon Resource containing the icon, or 0 if none.
-//         */
-//         constructor(
-//             [in] String sourcePackage,
-//             [in] ICharSequence* nonLocalizedLabel,
-//             [in] Int32 icon);
+         constructor(
+             [in] String sourcePackage,
+             [in] Int32 labelRes,
+             [in] Int32 icon);
 
-//         constructor();
+         constructor(
+             [in] String sourcePackage,
+             [in] ICharSequence* nonLocalizedLabel,
+             [in] Int32 icon);
 
-//        interface ILabeledIntent;
-//        interface IParcelable;
-//    }
+         constructor();
 
-//     /**
-//      * A class that limits the amount of data that is read from an InputStream. When
-//      * the specified length is reached, the stream returns an EOF even if the
-//      * underlying stream still has more data.
-//      *
-//      * @hide
-//      */
-//    class CLimitedLengthInputStream {
-//        /**
-//         * @param in underlying stream to wrap
-//         * @param offset offset into stream where data starts
-//         * @param length length of data at offset
-//         * @throws IOException if an error occurred with the underlying stream
-//         */
-//        constructor(
-//            [in] IInputStream* inStream,
-//            [in] Int64 offset,
-//            [in] Int64 length);
+        interface ILabeledIntent;
+        interface IIntent;
+        interface ICloneable;
+        interface IParcelable;
+    }
 
-//        interface ILimitedLengthInputStream;
-//    }
+    class CLimitedLengthInputStream {
+        constructor(
+            [in] IInputStream* inStream,
+            [in] Int64 offset,
+            [in] Int64 length);
 
-//     /**
-//      * An input stream filter that applies a MAC to the data passing through it. At
-//      * the end of the data that should be authenticated, the tag can be calculated.
-//      * After that, the stream should not be used.
-//      *
-//      * @hide
-//      */
-//    class CMacAuthenticatedInputStream {
-//        constructor(
-//            [in] IInputStream* inStream,
-//            [in] IMac* mac);
+        interface ILimitedLengthInputStream;
+        interface IFilterInputStream;
+        interface IInputStream;
+        interface ICloseable;
+    }
 
-//        interface IMacAuthenticatedInputStream;
-//    }
+    class CMacAuthenticatedInputStream {
+        constructor(
+            [in] IInputStream* inStream,
+            [in] IMac* mac);
 
-//     /**
-//      * Represents the manifest digest for a package. This is suitable for comparison
-//      * of two packages to know whether the manifests are identical.
-//      *
-//      * @hide
-//      */
-//     [deprecated]
-//     class CManifestDigest {
-//         constructor();
-//         constructor(
-//             [in] ArrayOf<Byte>* digest);
+        interface IMacAuthenticatedInputStream;
+        interface IFilterInputStream;
+        interface IInputStream;
+        interface ICloseable;
+    }
 
-//         interface IManifestDigest;
-//         interface IParcelable;
-//     }
+     [deprecated]
+     class CManifestDigest {
+         constructor();
 
-//     singleton class CManifestDigestHelper {
-//         interface IManifestDigestHelper;
-//     }
+         constructor(
+             [in] ArrayOf<Byte>* digest);
 
-//     /** @hide */
-//     class CPackageCleanItem {
-//         constructor();
+         interface IManifestDigest;
+         interface IParcelable;
+     }
 
-//         constructor(
-//             [in] Int32 userId,
-//             [in] String packageName,
-//             [in] Boolean andCode);
+     /** @hide */
+     class CPackageCleanItem {
+         constructor();
 
-//         interface IPackageCleanItem;
-//         interface IParcelable;
-//     }
+         constructor(
+             [in] Int32 userId,
+             [in] String packageName,
+             [in] Boolean andCode);
+
+         interface IPackageCleanItem;
+         interface IParcelable;
+     }
 
     class CPackageInfo {
         constructor();
@@ -1121,17 +1081,12 @@ module
         interface IParcelable;
     }
 
-//     /**
-//      * Basic information about a package as specified in its manifest.
-//      * Utility class used in PackageManager methods
-//      * @hide
-//      */
-//     class CPackageInfoLite {
-//         constructor();
+    class CPackageInfoLite {
+        constructor();
 
-//         interface IPackageInfoLite;
-//         interface IParcelable;
-//     }
+        interface IPackageInfoLite;
+        interface IParcelable;
+    }
 
     class CPackageItemInfo {
         constructor();
@@ -1150,96 +1105,74 @@ module
         interface IComparator;
     }
 
-// //    singleton class CPackageManagerHelper {
-// //        interface IPackageManagerHelper;
-// //    }
+//    singleton class CPackageManagerHelper {
+//        interface IPackageManagerHelper;
+//    }
 
-//     /**
-//      * implementation of PackageStats associated with a
-//      * application package.
-//      */
-//     class CPackageStats {
-//         constructor();
+    class CPackageStats {
+        constructor();
 
-//         constructor(
-//             [in] String pkgName);
+        constructor(
+            [in] String pkgName);
 
-//         /** @hide */
-//         constructor(
-//             [in] String pkgName,
-//             [in] Int32 userHandle);
+        constructor(
+            [in] IPackageStats* pStats);
 
-//         constructor(
-//             [in] IPackageStats* pStats);
+        interface IPackageStats;
+        interface IParcelable;
+    }
 
-//         interface IPackageStats;
-//         interface IParcelable;
-//     }
+    class CParceledListSlice {
+        constructor();
 
-//     /**
-//      * Builds up a parcel that is discarded when written to another parcel or
-//      * written to a list. This is useful for API that sends huge lists across a
-//      * Binder that may be larger than the IPC limit.
-//      *
-//      * @hide
-//      */
-//     class CParceledListSlice {
-//         constructor();
+        constructor(
+            [in] IList* list);
 
-//         interface IParceledListSlice;
-//         interface IParcelable;
-//     }
+        interface IParceledListSlice;
+        interface IParcelable;
+    }
 
-//     /**
-//      * Description of permissions needed to access a particular path
-//      * in a {@link ProviderInfo}.
-//      */
-//     class CPathPermission {
-//         constructor();
+    class CPathPermission {
+        constructor();
 
-//         constructor(
-//             [in] String pattern,
-//             [in] Int32 type,
-//             [in] String readPermission,
-//             [in] String writePermission);
+        constructor(
+            [in] String pattern,
+            [in] Int32 type,
+            [in] String readPermission,
+            [in] String writePermission);
 
-//         interface IPathPermission;
-//         interface IParcelable;
-//     }
+        interface IPathPermission;
+        interface IPatternMatcher;
+        interface IParcelable;
+    }
 
-//     /**
-//      * Information you can retrieve about a particular security permission
-//      * group known to the system.  This corresponds to information collected from the
-//      * AndroidManifest.xml's &lt;permission-group&gt; tags.
-//      */
-//     class CPermissionGroupInfo {
-//         constructor();
+    [local]
+    class CPermissionGroupInfo {
+        constructor();
 
-//         constructor(
-//             [in] IPermissionGroupInfo* orig);
+        constructor(
+            [in] IPermissionGroupInfo* orig);
 
-//         interface IPermissionGroupInfo;
-//         interface IParcelable;
-//     }
+        interface IPermissionGroupInfo;
+        interface IPackageItemInfo;
+        interface IParcelable;
+    }
 
-//     /**
-//      * Information you can retrieve about a particular security permission
-//      * known to the system.  This corresponds to information collected from the
-//      * AndroidManifest.xml's &lt;permission&gt; tags.
-//      */
-//     class CPermissionInfo {
-//         constructor();
+    [local]
+    class CPermissionInfo {
+        constructor();
 
-//         constructor(
-//             [in] IPermissionInfo* orig);
+        constructor(
+            [in] IPermissionInfo* orig);
 
-//         interface IPermissionInfo;
-//         interface IParcelable;
-//     }
+        interface IPermissionInfo;
+        interface IPackageItemInfo;
+        interface IParcelable;
+    }
 
-//     singleton class CPermissionInfoHelper {
-//         interface IPermissionInfoHelper;
-//     }
+    singleton class CPermissionInfoHelper {
+        interface IPermissionInfoHelper;
+    }
 
     class CProviderInfo {
         constructor();
@@ -1282,39 +1215,21 @@ module
         interface IParcelable;
     }
 
-//     /**
-//      * Opaque, immutable representation of a signature associated with an
-//      * application package.
-//      */
-//     [deprecated]
-//     class CSignature {
-//         /**
-//          * Create Signature from an existing raw byte array.
-//          */
-//         constructor(
-//             [in] ArrayOf<Byte>* signature);
+    [deprecated]
+    class CSignature {
 
-//         /**
-//          * Create Signature from a text representation previously returned by
-//          * {@link #toChars} or {@link #toCharsString()}. Signatures are expected to
-//          * be a hex-encoded ASCII string.
-//          *
-//          * @param text hex-encoded string representing the signature
-//          * @throws IllegalArgumentException when signature is odd-length
-//          */
-//         constructor(
-//             [in] String text);
+        constructor(
+            [in] ArrayOf<Byte>* signature);
 
-//         constructor();
+        constructor(
+            [in] String text);
 
-//         interface ISignature;
-//         interface IParcelable;
-//     }
+        constructor();
 
-    /**
-     * Per-user information.
-     * @hide
-     */
+        interface ISignature;
+        interface IParcelable;
+    }
+
     class CUserInfo {
         constructor();
 
@@ -1336,83 +1251,45 @@ module
         interface IParcelable;
     }
 
-//      [deprecated]
-//      class CVerificationParams {
-//          /**
-//           * Creates verification specifications for installing with application verification.
-//           *
-//           * @param verificationURI The location of the supplementary verification
-//           *            file. This can be a 'file:' or a 'content:' URI. May be {@code null}.
-//           * @param originatingURI URI referencing where the package was downloaded
-//           *            from. May be {@code null}.
-//           * @param referrer HTTP referrer URI associated with the originatingURI.
-//           *            May be {@code null}.
-//           * @param originatingUid UID of the application that the install request originated
-//           *            from, or NO_UID if not present
-//           * @param manifestDigest an object that holds the digest of the package
-//           *            which can be used to verify ownership. May be {@code null}.
-//           */
-//          constructor(
-//              [in] IUri* verificationURI,
-//              [in] IUri* originatingURI,
-//              [in] IUri* referrer,
-//              [in] Int32 originatingUid,
-//              [in] IManifestDigest* manifestDigest);
+    [deprecated]
+    class CVerificationParams {
+        constructor(
+            [in] IUri* verificationURI,
+            [in] IUri* originatingURI,
+            [in] IUri* referrer,
+            [in] Int32 originatingUid,
+            [in] IManifestDigest* manifestDigest);
 
-//          constructor();
+        constructor();
 
-//          interface IVerificationParams;
-//          interface IParcelable;
-//      }
+        interface IVerificationParams;
+        interface IParcelable;
+    }
 
-//     /**
-//      * An identity that uniquely identifies a particular device. In this
-//      * implementation, the identity is represented as a 64-bit integer encoded to a
-//      * 13-character string using RFC 4648's Base32 encoding without the trailing
-//      * padding. This makes it easy for users to read and write the code without
-//      * confusing 'I' (letter) with '1' (one) or 'O' (letter) with '0' (zero).
-//      *
-//      * @hide
-//      */
-//      class CVerifierDeviceIdentity {
-//          /**
-//           * Create a verifier device identity from a long.
-//           *
-//           * @param identity device identity in a 64-bit integer.
-//           * @throws
-//           */
-//          constructor(
-//              [in] Int64 identity);
+    class CVerifierDeviceIdentity {
+        constructor(
+            [in] Int64 identity);
 
-//          constructor();
+        constructor();
 
-//          interface IVerifierDeviceIdentity;
-//          interface IParcelable;
-//      }
+        interface IVerifierDeviceIdentity;
+        interface IParcelable;
+    }
 
-//      singleton class CVerifierDeviceIdentityHelper {
-//          interface IVerifierDeviceIdentityHelper;
-//      }
+    singleton class CVerifierDeviceIdentityHelper {
+        interface IVerifierDeviceIdentityHelper;
+    }
 
-// //    class CVerifierInfo {
-// //        /**
-// //         * Creates an object that represents a verifier info object.
-// //         *
-// //         * @param packageName the package name in Java-style. Must not be {@code
-// //         *            null} or empty.
-// //         * @param publicKey the public key for the signer encoded in Base64. Must
-// //         *            not be {@code null} or empty.
-// //         * @throws IllegalArgumentException if either argument is null or empty.
-// //         */
-// //        constructor(
-// //            [in] String packageName,
-// //            [in] IPublicKey* publicKey);
-// //
-// //        constructor();
-// //
-// //        interface IVerifierInfo;
-// //        interface IParcelable;
-// //    }
+    class CVerifierInfo {
+        constructor(
+            [in] String packageName,
+            [in] IPublicKey* publicKey);
+
+        constructor();
+
+        interface IVerifierInfo;
+        interface IParcelable;
+    }
 
     } // namespace Pm
     } // namespace Content

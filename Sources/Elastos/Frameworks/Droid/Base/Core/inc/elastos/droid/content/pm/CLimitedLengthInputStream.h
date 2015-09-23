@@ -47,32 +47,15 @@ public:
     CARAPI Read(
         /* [out] */ Int32* value);
 
-    CARAPI ReadBytes(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32 * pNumber);
 
-    CARAPI ReadBytes(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
         /* [out] */ Int32* number);
-
-    CARAPI Close();
-
-    CARAPI Available(
-        /* [out] */ Int32* number);
-
-    CARAPI Mark(
-        /* [in] */ Int32 readLimit);
-
-    CARAPI IsMarkSupported(
-        /* [out] */ Boolean* supported);
-
-    CARAPI Reset();
-
-    CARAPI Skip(
-        /* [in] */ Int64 byteCount,
-        /* [out] */ Int64* number);
 
 private:
     /**

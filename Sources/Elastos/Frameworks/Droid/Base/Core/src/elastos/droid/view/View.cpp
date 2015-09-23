@@ -28,9 +28,9 @@
 #include "graphics/drawable/CColorDrawable.h"
 #include "graphics/CInterpolator.h"
 #include "widget/CScrollBarDrawable.h"
-#include "util/CParcelableObjectContainer.h"
-#include "util/Pools.h"
-#include "util/CTypedValue.h"
+#include "utility/CParcelableObjectContainer.h"
+#include "utility/Pools.h"
+#include "utility/CTypedValue.h"
 #include "os/SystemClock.h"
 #include "os/SystemProperties.h"
 #include "os/Build.h"
@@ -46,7 +46,7 @@ using Libcore::ICU::ILocaleHelper;
 using Libcore::ICU::ILocale;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CString;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::Pm::IApplicationInfo;

@@ -30,7 +30,7 @@ using Elastos::IO::CFileInputStream;
 using Elastos::IO::IFileOutputStream;
 using Elastos::IO::CFileOutputStream;
 using Elastos::IO::IFlushable;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IBoolean;

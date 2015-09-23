@@ -22,9 +22,9 @@ class PermissionInfo
 public:
     CAR_INTERFACE_DECL()
 
-    CPermissionInfo();
+    PermissionInfo();
 
-    ~CPermissionInfo();
+    virtual ~PermissionInfo();
 
     CARAPI constructor();
 

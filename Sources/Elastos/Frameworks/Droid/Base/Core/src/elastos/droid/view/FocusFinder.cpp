@@ -6,7 +6,7 @@
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {

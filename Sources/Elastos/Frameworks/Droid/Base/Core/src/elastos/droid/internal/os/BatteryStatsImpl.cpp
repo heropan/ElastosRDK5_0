@@ -3,10 +3,10 @@
 #include "os/SystemClock.h"
 #include "os/Process.h"
 #include "os/FileUtils.h"
-#include "util/TimeUtils.h"
+#include "utility/TimeUtils.h"
 #include "os/Handler.h"
 #ifdef DROID_CORE
-#include "util/CAtomicFile.h"
+#include "utility/CAtomicFile.h"
 #include "net/CNetworkStatsFactory.h"
 #include "net/CConnectivityManagerHelper.h"
 #include "net/CNetworkStats.h"
@@ -15,7 +15,7 @@
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;

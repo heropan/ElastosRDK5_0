@@ -8,7 +8,7 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::StringBuilder;
 

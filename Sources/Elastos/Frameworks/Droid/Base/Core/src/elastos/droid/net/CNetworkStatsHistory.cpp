@@ -2,7 +2,7 @@
 #include "net/CNetworkStatsHistory.h"
 #include "net/CNetworkStatsHistoryEntry.h"
 #include "net/CNetworkStatsEntry.h"
-#include "util/ArrayUtils.h"
+#include "utility/ArrayUtils.h"
 #include <elastos/core/Math.h>
 
 using Elastos::IO::IDataInput;

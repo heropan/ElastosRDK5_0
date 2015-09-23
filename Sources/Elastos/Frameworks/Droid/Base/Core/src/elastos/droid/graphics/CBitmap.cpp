@@ -8,8 +8,8 @@
 #include "graphics/CRectF.h"
 #include "graphics/GraphicsNative.h"
 #include "graphics/CreateOutputStreamAdaptor.h"
-#include "util/CDisplayMetrics.h"
-#include "util/droid_nio_utils.h"
+#include "utility/CDisplayMetrics.h"
+#include "utility/droid_nio_utils.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 #include <skia/core/SkUnPreMultiply.h>

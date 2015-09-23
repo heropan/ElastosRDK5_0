@@ -12,7 +12,7 @@
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
 using Elastos::Droid::Os::Binder;

@@ -5,7 +5,7 @@
 
 using Elastos::Droid::Net::CLinkProperties;
 using Elastos::Droid::Net::CLinkCapabilities;
-using Elastos::Core::CObjectContainer;
+
 
 namespace Elastos {
 namespace Droid {

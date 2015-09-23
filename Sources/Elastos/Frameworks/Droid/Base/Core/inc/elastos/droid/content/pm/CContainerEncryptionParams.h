@@ -5,6 +5,10 @@
 #include "_Elastos_Droid_Content_Pm_CContainerEncryptionParams.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Security::Spec::IAlgorithmParameterSpec;
+using Elastosx::Crypto::ISecretKey;
+using Elastosx::Crypto::Spec::IIvParameterSpec;
+
 namespace Elastos {
 namespace Droid {
 namespace Content {
@@ -24,16 +28,16 @@ public:
 
     CARAPI constructor(
         /* [in] */ const String& encryptionAlgorithm,
-        /* [in] */ Elastos::Security::Spec::IAlgorithmParameterSpec* encryptionSpec,
-        /* [in] */ Elastos::Crypto::ISecretKey* encryptionKey);
+        /* [in] */ IAlgorithmParameterSpec* encryptionSpec,
+        /* [in] */ ISecretKey* encryptionKey);
 
     CARAPI constructor(
         /* [in] */ const String& encryptionAlgorithm,
-        /* [in] */ Elastos::Security::Spec::IAlgorithmParameterSpec* encryptionSpec,
-        /* [in] */ Elastos::Crypto::ISecretKey* encryptionKey,
+        /* [in] */ IAlgorithmParameterSpec* encryptionSpec,
+        /* [in] */ ISecretKey* encryptionKey,
         /* [in] */ const String& macAlgorithm,
-        /* [in] */ Elastos::Security::Spec::IAlgorithmParameterSpec* macSpec,
-        /* [in] */ Elastos::Crypto::ISecretKey* macKey,
+        /* [in] */ IAlgorithmParameterSpec* macSpec,
+        /* [in] */ ISecretKey* macKey,
         /* [in] */ ArrayOf<Byte>* macTag,
         /* [in] */ Int64 authenticatedDataStart,
         /* [in] */ Int64 encryptedDataStart,
@@ -43,19 +47,19 @@ public:
         /* [out] */ String* ealgo);
 
     CARAPI GetEncryptionSpec(
-        /* [out] */ Elastos::Security::Spec::IAlgorithmParameterSpec** spec);
+        /* [out] */ IAlgorithmParameterSpec** spec);
 
     CARAPI GetEncryptionKey(
-        /* [out] */ Elastos::Crypto::ISecretKey** key);
+        /* [out] */ ISecretKey** key);
 
     CARAPI GetMacAlgorithm(
         /* [out] */ String* malgo);
 
     CARAPI GetMacSpec(
-        /* [out] */ Elastos::Security::Spec::IAlgorithmParameterSpec** spec);
+        /* [out] */ IAlgorithmParameterSpec** spec);
 
     CARAPI GetMacKey(
-        /* [out] */ Elastos::Crypto::ISecretKey** key);
+        /* [out] */ ISecretKey** key);
 
     CARAPI GetMacTag(
         /* [out, callee] */ ArrayOf<Byte>** tag);
@@ -86,20 +90,9 @@ public:
         /* [in] */ IParcel* dest);
 
 private:
-    CARAPI constructor(
-        /* [in] */ IParcel* source);
-
-    CARAPI Init(
-        /* [in] */ const String& encryptionAlgorithm,
-        /* [in] */ Elastos::Security::Spec::IAlgorithmParameterSpec* encryptionSpec,
-        /* [in] */ Elastos::Crypto::ISecretKey* encryptionKey,
-        /* [in] */ const String& macAlgorithm,
-        /* [in] */ Elastos::Security::Spec::IAlgorithmParameterSpec* macSpec,
-        /* [in] */ Elastos::Crypto::ISecretKey* macKey,
-        /* [in] */ ArrayOf<Byte>* macTag,
-        /* [in] */ Int64 authenticatedDataStart,
-        /* [in] */ Int64 encryptedDataStart,
-        /* [in] */ Int64 dataEnd);
+    static Boolean IsSecretKeyEqual(
+        /* [in] */ ISecretKey* key1,
+        /* [in] */ ISecretKey* key2);
 
 private:
     /** What we print out first when toString() is called. */
@@ -118,19 +111,19 @@ private:
     String mEncryptionAlgorithm;
 
     /** The parameter spec to be used for encryption. */
-    AutoPtr<Elastos::Security::Spec::IIvParameterSpec> mEncryptionSpec;
+    AutoPtr<IIvParameterSpec> mEncryptionSpec;
 
     /** Secret key to be used for decryption. */
-    AutoPtr<Elastos::Crypto::ISecretKey> mEncryptionKey;
+    AutoPtr<ISecretKey> mEncryptionKey;
 
     /** Algorithm name for the MAC to be used. */
     String mMacAlgorithm;
 
     /** The parameter spec to be used for the MAC tag authentication. */
-    AutoPtr<Elastos::Security::Spec::IAlgorithmParameterSpec> mMacSpec;
+    AutoPtr<IAlgorithmParameterSpec> mMacSpec;
 
     /** Secret key to be used for MAC tag authentication. */
-    AutoPtr<Elastos::Crypto::ISecretKey> mMacKey;
+    AutoPtr<ISecretKey> mMacKey;
 
     /** MAC tag authenticating the data in the container. */
     AutoPtr<ArrayOf<Byte> > mMacTag;

@@ -1,6 +1,18 @@
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "content/pm/CSignature.h"
+//#include "internal/utility/ArrayUtils.h"
+#include <elastos/utility/Arrays.h>
+#include <elastos/core/Math.h>
+
+//using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Core::Math;
+using Elastos::Utility::Arrays;
+using Elastos::IO::IInputStream;
+using Elastos::IO::CByteArrayInputStream;
+using Elastos::Security::Cert::ICertificateFactoryHelper;
+using Elastos::Security::Cert::CCertificateFactoryHelper;
+using Elastos::Security::Cert::IX509Certificate;
 
 namespace Elastos {
 namespace Droid {
@@ -10,6 +22,11 @@ namespace Pm {
 CAR_INTERFACE_IMPL_2(CSignature, Object, ISignature, IParcelable)
 
 CAR_OBJECT_IMPL(CSignature)
+
+CSignature::CSignature()
+    : mHashCode(0)
+    , mHaveHashCode(FALSE)
+{}
 
 ECode CSignature::constructor()
 {
@@ -27,40 +44,35 @@ ECode CSignature::constructor(
 ECode CSignature::constructor(
     /* [in] */ const String& text)
 {
-    // TODO:
-    // AutoPtr<ArrayOf<Byte> > input;
-    // text.GetBytes(&input);
-    // const Int32 N = input->GetLength();
+    AutoPtr<ArrayOf<Byte> > input = text.GetBytes();
+    const Int32 N = input->GetLength();
 
-    // if (N % 2 != 0) {
-    //     return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    // }
+    if (N % 2 != 0) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
-    // AutoPtr<ArrayOf<Byte> > sig = ArrayOf::Alloc(N / 2);
-    // Int32 sigIndex = 0;
+    AutoPtr<ArrayOf<Byte> > sig = ArrayOf<Byte>::Alloc(N / 2);
+    Int32 sigIndex = 0;
+    Int32 hi, lo;
+    for (Int32 i = 0; i < N;) {
+        FAIL_RETURN(ParseHexDigit((*input)[i++], &hi));
+        FAIL_RETURN(ParseHexDigit((*input)[i++], &lo));
+        (*sig)[sigIndex++] = (Byte) ((hi << 4) | lo);
+    }
 
-    // for (Int32 i = 0; i < N;) {
-    //     Int32 hi;
-    //     Int32 lo;
-
-    //     FAIL_RETURN(ParseHexDigit(input[i++], &hi));
-    //     FAIL_RETURN(ParseHexDigit(input[i++], &lo));
-    //     sig[sigIndex++] = (Byte) ((hi << 4) | lo);
-    // }
-
-    // mSignature = sig->Clone();
-    assert(0);
-    return E_NOT_IMPLEMENTED;
+    mSignature = sig->Clone();
+    return NOERROR;
 }
 
 
 ECode CSignature::constructor(
     /* [in] */ ArrayOf<ICertificate*>* certificateChain)
 {
-    mSignature = certificateChain[0].getEncoded();
-    if (certificateChain.length > 1) {
-        mCertificateChain = Arrays.copyOfRange(certificateChain, 1, certificateChain.length);
+    (*certificateChain)[0]->GetEncoded((ArrayOf<Byte>**)&mSignature);
+    if (certificateChain->GetLength() > 1) {
+        Arrays::CopyOfRange(certificateChain, 1, certificateChain->GetLength(), (ArrayOf<ICertificate*>**)&mCertificateChain);
     }
+    return NOERROR;
 }
 
 ECode CSignature::ParseHexDigit(
@@ -95,38 +107,40 @@ ECode CSignature::ToChars(
 {
     VALIDATE_NOT_NULL(text);
 
-    // byte[] sig = mSignature;
-    // final int N = sig.length;
-    // final int N2 = N*2;
-    // char[] text = existingArray == null || N2 > existingArray.length
-    //         ? new char[N2] : existingArray;
-    // for (int j=0; j<N; j++) {
-    //     byte v = sig[j];
-    //     int d = (v>>4)&0xf;
-    //     text[j*2] = (char)(d >= 10 ? ('a' + d - 10) : ('0' + d));
-    //     d = v&0xf;
-    //     text[j*2+1] = (char)(d >= 10 ? ('a' + d - 10) : ('0' + d));
-    // }
-    // if (outLen != null) outLen[0] = N;
-    // return text;
-    assert(0);
+    AutoPtr<ArrayOf<Byte> > sig = mSignature;
+    Int32 N = sig->GetLength();
+    Int32 N2 = N*2;
+    AutoPtr<ArrayOf<Char32> > textArray = existingArray == NULL || N2 > existingArray->GetLength()
+                ? ArrayOf<Char32>::Alloc(2) : existingArray;
+    for (Int32 j = 0; j < N; j++) {
+        Byte v = (*sig)[j];
+        Int32 d = (v >> 4) & 0xf;
+        (*textArray)[j*2] = (Char32)(d >= 10 ? ('a' + d - 10) : ('0' + d));
+        d = v&0xf;
+        (*textArray)[j*2+1] = (Char32)(d >= 10 ? ('a' + d - 10) : ('0' + d));
+    }
+    if (outLen != NULL) (*outLen)[0] = N;
+    *text = textArray;
     return NOERROR;
 }
 
 ECode CSignature::ToCharsString(
-    /* [out] */ String* str)
+    /* [out] */ String* result)
 {
-    VALIDATE_NOT_NULL(str);
+    VALIDATE_NOT_NULL(result);
 
-//    String str = mStringRef == null ? null : mStringRef.get();
-//    if (str != null) {
-//        return str;
-//    }
-//    *str = String(toChars());
-//    mStringRef = new SoftReference<String>(str);
-//    return str;
-    assert(0);
-    return NOERROR;
+   String str = mStringRef.IsNull() ? String(NULL) : mStringRef;
+   if (!str.IsNull()) {
+       *result = str;
+       return NOERROR;
+   }
+
+   AutoPtr<ArrayOf<Char32> > chars;
+   ToChars((ArrayOf<Char32>**)&chars);
+
+   *result = String(*chars.Get());
+   mStringRef = *result;
+   return NOERROR;
 }
 
 ECode CSignature::ToByteArray(
@@ -142,31 +156,49 @@ ECode CSignature::ToByteArray(
 ECode CSignature::GetPublicKey(
     /* [out] */ IPublicKey** publicKey)
 {
-    // final CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-    // final ByteArrayInputStream bais = new ByteArrayInputStream(mSignature);
-    // final Certificate cert = certFactory.generateCertificate(bais);
-    // return cert.getPublicKey();
-    assert(0);
-    return E_NOT_IMPLEMENTED;
-}
+    VALIDATE_NOT_NULL(publicKey)
+    *publicKey = NULL;
 
+    AutoPtr<ICertificateFactory> certFactory;
+    AutoPtr<ICertificateFactoryHelper> helper;
+    CCertificateFactoryHelper::AcquireSingleton((ICertificateFactoryHelper**)&helper);
+    helper->GetInstance(String("X.509"), (ICertificateFactory**)&certFactory);
+
+    AutoPtr<IInputStream> bais;
+    CByteArrayInputStream::New(mSignature, (IInputStream**)&bais);
+    AutoPtr<ICertificate> cert;
+    certFactory->GenerateCertificate(bais, (ICertificate**)&cert);
+    return cert->GetPublicKey(publicKey);
+}
 
 ECode CSignature::GetChainSignatures(
     /* [out, callee] */ ArrayOf<ISignature*>** result)
 {
-    // if (mCertificateChain == null) {
-    //     return new Signature[] { this };
-    // }
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
 
-    // Signature[] chain = new Signature[1 + mCertificateChain.length];
-    // chain[0] = this;
+    if (mCertificateChain == NULL) {
+        AutoPtr<ArrayOf<ISignature*> > sigs = ArrayOf<ISignature*>::Alloc(1);
+        sigs->Set(0, THIS_PROBE(ISignature));
+        *result = sigs;
+        REFCOUNT_ADD(*result)
+        return NOERROR;
+    }
 
-    // int i = 1;
-    // for (Certificate c : mCertificateChain) {
-    //     chain[i++] = new Signature(c.getEncoded());
-    // }
+    AutoPtr<ArrayOf<ISignature*> > chain = ArrayOf<ISignature*>::Alloc(1 + mCertificateChain->GetLength());
+    chain->Set(0, THIS_PROBE(ISignature));
 
-    // return chain;
+    Int32 i = 1;
+    for (; i < mCertificateChain->GetLength(); ++i) {
+        AutoPtr<ArrayOf<Byte> > encoded;
+        (*mCertificateChain)[i]->GetEncoded((ArrayOf<Byte>**)&encoded);
+        AutoPtr<CSignature> sig;
+        CSignature::NewByFriend(encoded, (CSignature**)&sig);
+        chain->Set(i + 1, (ISignature*)sig.Get());
+    }
+
+    *result = chain;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -175,6 +207,7 @@ ECode CSignature::Equals(
     /* [out] */ Boolean* isEqual)
 {
     VALIDATE_NOT_NULL(isEqual);
+    *isEqual = FALSE;
 
     ISignature* sg = ISignature::Probe(obj);
 
@@ -193,7 +226,6 @@ ECode CSignature::Equals(
     }
 //    } catch (ClassCastException e) {
 //    }
-    *isEqual = FALSE;
     return NOERROR;
 }
 
@@ -206,8 +238,8 @@ ECode CSignature::GetHashCode(
         *hashCode = mHashCode;
         return NOERROR;
     }
-//    mHashCode = Arrays.hashCode(mSignature);
-    assert(0);
+
+    mHashCode = Arrays::GetHashCode(mSignature);
     mHaveHashCode = TRUE;
     *hashCode = mHashCode;
     return NOERROR;;
@@ -216,41 +248,49 @@ ECode CSignature::GetHashCode(
 ECode CSignature::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    source->ReadArrayOf((Handle32*)&mSignature);
-    return NOERROR;
+    return source->ReadArrayOf((Handle32*)&mSignature);
 }
 
 ECode CSignature::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    dest->WriteArrayOf((Handle32)mSignature.Get());
-    return NOERROR;
+    return dest->WriteArrayOf((Handle32)mSignature.Get());
 }
 
 Boolean CSignature::AreExactMatch(
     /* [in] */ ArrayOf<ISignature*>* a,
     /* [in] */ ArrayOf<ISignature*>* b)
 {
-    return (a.length == b.length) && ArrayUtils.containsAll(a, b)
-            && ArrayUtils.containsAll(b, a);
+    assert(0 && "TODO");
+    return FALSE;
+    // return (a->GetLength() == b->GetLength()) && ArrayUtils::ContainsAll(a, b)
+    //         && ArrayUtils::ContainsAll(b, a);
 }
 
 Boolean CSignature::AreEffectiveMatch(
     /* [in] */ ArrayOf<ISignature*>* a,
     /* [in] */ ArrayOf<ISignature*>* b)
 {
-    final CertificateFactory cf = CertificateFactory.getInstance("X.509");
+    AutoPtr<ICertificateFactory> cf;
+    AutoPtr<ICertificateFactoryHelper> helper;
+    CCertificateFactoryHelper::AcquireSingleton((ICertificateFactoryHelper**)&helper);
+    helper->GetInstance(String("X.509"), (ICertificateFactory**)&cf);
 
-    final Signature[] aPrime = new Signature[a.length];
-    for (int i = 0; i < a.length; i++) {
-        aPrime[i] = bounce(cf, a[i]);
-    }
-    final Signature[] bPrime = new Signature[b.length];
-    for (int i = 0; i < b.length; i++) {
-        bPrime[i] = bounce(cf, b[i]);
+    AutoPtr<ArrayOf<ISignature*> > aPrime = ArrayOf<ISignature*>::Alloc(a->GetLength());
+    for (Int32 i = 0; i < a->GetLength(); i++) {
+        AutoPtr<ISignature> sig;
+        Bounce(cf, (*a)[i], (ISignature**)&sig);
+        aPrime->Set(i, sig);
     }
 
-    return areExactMatch(aPrime, bPrime);
+    AutoPtr<ArrayOf<ISignature*> > bPrime = ArrayOf<ISignature*>::Alloc(b->GetLength());
+    for (Int32 i = 0; i < b->GetLength(); i++) {
+        AutoPtr<ISignature> sig;
+        Bounce(cf, (*b)[i], (ISignature**)&sig);
+        bPrime->Set(i, sig);
+    }
+
+    return AreExactMatch(aPrime, bPrime);
 }
 
 ECode CSignature::Bounce(
@@ -258,17 +298,35 @@ ECode CSignature::Bounce(
     /* [in] */ ISignature* s,
     /* [out] */ ISignature** sig)
 {
-    final InputStream is = new ByteArrayInputStream(s.mSignature);
-    final X509Certificate cert = (X509Certificate) cf.generateCertificate(is);
-    final Signature sPrime = new Signature(cert.getEncoded());
+    VALIDATE_NOT_NULL(sig)
+    *sig = NULL;
 
-    if (Math.abs(sPrime.mSignature.length - s.mSignature.length) > 2) {
-        throw new CertificateException("Bounced cert length looks fishy; before "
-                + s.mSignature.length + ", after " + sPrime.mSignature.length);
+    AutoPtr<IInputStream> is;
+    CSignature* csg = (CSignature*)s;
+    CByteArrayInputStream::New(csg->mSignature, (IInputStream**)&is);
+
+    AutoPtr<ICertificate> ce;
+    cf->GenerateCertificate(is, (ICertificate**)&ce);
+    AutoPtr<IX509Certificate> cert = IX509Certificate::Probe(ce);
+    VALIDATE_NOT_NULL(cert)
+
+    AutoPtr<ArrayOf<Byte> > encoded;
+    ce->GetEncoded((ArrayOf<Byte>**)&encoded);
+
+    AutoPtr<CSignature> sPrime;
+    CSignature::NewByFriend(encoded, (CSignature**)&sPrime);
+
+    if (Elastos::Core::Math::Abs(sPrime->mSignature->GetLength() - csg->mSignature->GetLength()) > 2) {
+        // throw new CertificateException("Bounced cert length looks fishy; before "
+        //         + s.mSignature.length + ", after " + sPrime.mSignature.length);
+        return E_CERTIFICATE_EXCEPTION;
     }
 
-    return sPrime;
+    *sig = (ISignature*)sPrime.Get();
+    REFCOUNT_ADD(*sig);
+    return NOERROR;
 }
+
 
 } // namespace Pm
 } // namespace Content

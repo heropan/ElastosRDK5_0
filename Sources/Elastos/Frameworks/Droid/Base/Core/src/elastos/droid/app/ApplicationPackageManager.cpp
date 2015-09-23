@@ -10,7 +10,7 @@
 #include <elastos/utility/logging/Logger.h>
 #include "R.h"
 
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Core::EIID_ICharSequence;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Logging::Logger;

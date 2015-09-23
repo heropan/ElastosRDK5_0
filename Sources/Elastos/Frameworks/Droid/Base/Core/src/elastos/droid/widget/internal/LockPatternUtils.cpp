@@ -19,7 +19,7 @@
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::Character;
 using Elastos::Core::StringUtils;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Droid::App::ActivityManagerNative;
 using Elastos::Droid::App::IIActivityManager;
 using Elastos::Droid::View::IView;

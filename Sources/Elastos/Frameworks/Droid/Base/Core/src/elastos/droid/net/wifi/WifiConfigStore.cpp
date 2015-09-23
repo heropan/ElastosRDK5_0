@@ -36,7 +36,7 @@ using Elastos::Core::CString;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringUtils;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Net::IInetAddress;
 using Elastos::Utility::Logging::Logger;
 using Elastos::IO::IBufferedOutputStream;

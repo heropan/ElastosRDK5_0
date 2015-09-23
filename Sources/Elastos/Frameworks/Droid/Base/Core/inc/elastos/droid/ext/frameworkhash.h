@@ -4,6 +4,8 @@
 
 #include <elastos/core/Object.h>
 
+DEFINE_OBJECT_HASH_FUNC_FOR(IInterface)
+
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Os::IBinder)
 
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Accounts::IAccount)

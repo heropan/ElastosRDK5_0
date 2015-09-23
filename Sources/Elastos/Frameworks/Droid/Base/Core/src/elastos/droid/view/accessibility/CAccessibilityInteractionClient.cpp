@@ -9,7 +9,7 @@
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Core::IInteger64;
 using Elastos::Core::Thread;
 using Elastos::Utility::Etl::HashSet;

@@ -1,11 +1,15 @@
 
 #include "content/pm/CMacAuthenticatedInputStream.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
+
+CAR_INTERFACE_IMPL(CMacAuthenticatedInputStream, FilterInputStream, IMacAuthenticatedInputStream)
+
+CAR_OBJECT_IMPL(CMacAuthenticatedInputStream)
 
 CMacAuthenticatedInputStream::CMacAuthenticatedInputStream()
 {}
@@ -13,17 +17,11 @@ CMacAuthenticatedInputStream::CMacAuthenticatedInputStream()
 CMacAuthenticatedInputStream::~CMacAuthenticatedInputStream()
 {}
 
-PInterface CMacAuthenticatedInputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CMacAuthenticatedInputStream::Probe(riid);
-}
-
 ECode CMacAuthenticatedInputStream::constructor(
     /* [in] */ IInputStream* inStream,
     /* [in] */ IMac* mac)
 {
-    FilterInputStream::Init(inStream);
+    FAIL_RETURN(FilterInputStream::constructor(inStream))
 
     mMac = mac;
 
@@ -34,9 +32,11 @@ ECode CMacAuthenticatedInputStream::IsTagEqual(
     /* [in] */ ArrayOf<Byte>* tag,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     AutoPtr<ArrayOf<Byte> > actualTag;
-    // TODO:
-    // mMac->DoFinal(&actualTag);
+    mMac->DoFinal((ArrayOf<Byte>**)&actualTag);
 
     if (tag == NULL || actualTag == NULL || tag->GetLength() != actualTag->GetLength()) {
         *result = FALSE;
@@ -63,79 +63,24 @@ ECode CMacAuthenticatedInputStream::Read(
     Int32 b;
     FilterInputStream::Read(&b);
     if (b >= 0) {
-        // TODO:
-        // mMac->Update((Byte) b);
+        mMac->Update((Byte) b);
     }
     *value = b;
     return NOERROR;
 }
 
-ECode CMacAuthenticatedInputStream::ReadBytes(
+ECode CMacAuthenticatedInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,
     /* [out] */ Int32* number)
 {
     Int32 numRead;
-    FilterInputStream::ReadBytes(buffer, offset, count, &numRead);
+    FilterInputStream::Read(buffer, offset, count, &numRead);
     if (numRead > 0) {
-        // TODO:
-        // mMac->Update(buffer, offset, numRead);
+        mMac->Update(buffer, offset, numRead);
     }
     *number = numRead;
-    return NOERROR;
-}
-
-ECode CMacAuthenticatedInputStream::Close()
-{
-    return FilterInputStream::Close();
-}
-
-ECode CMacAuthenticatedInputStream::Available(
-    /* [out] */ Int32* number)
-{
-    return FilterInputStream::Available(number);
-}
-
-ECode CMacAuthenticatedInputStream::Mark(
-    /* [in] */ Int32 readLimit)
-{
-    return FilterInputStream::Mark(readLimit);
-}
-
-ECode CMacAuthenticatedInputStream::IsMarkSupported(
-    /* [out] */ Boolean* supported)
-{
-    return FilterInputStream::IsMarkSupported(supported);
-}
-
-ECode CMacAuthenticatedInputStream::ReadBytes(
-    /* [out] */ ArrayOf<Byte>* buffer,
-    /* [out] */ Int32* number)
-{
-    return FilterInputStream::ReadBytes(buffer, number);
-}
-
-ECode CMacAuthenticatedInputStream::Reset()
-{
-    return FilterInputStream::Reset();
-}
-
-ECode CMacAuthenticatedInputStream::Skip(
-    /* [in] */ Int64 byteCount,
-    /* [out] */ Int64* number)
-{
-    return FilterInputStream::Skip(byteCount, number);
-}
-
-ECode CMacAuthenticatedInputStream::GetLock(
-    /* [out] */ IInterface** lockobj)
-{
-    VALIDATE_NOT_NULL(lockobj);
-
-    AutoPtr<IInterface> obj = FilterInputStream::GetLock();
-    *lockobj = obj;
-    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

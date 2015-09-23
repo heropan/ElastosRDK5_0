@@ -18,7 +18,7 @@
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::CString;
-using Elastos::Core::CObjectContainer;
+
 using Elastos::Droid::App::Fragment;
 using Elastos::Droid::App::IFragmentManager;
 using Elastos::Droid::App::IFragmentTransaction;
