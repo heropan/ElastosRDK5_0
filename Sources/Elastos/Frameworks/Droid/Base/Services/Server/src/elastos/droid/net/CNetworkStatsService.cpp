@@ -505,7 +505,7 @@ void CNetworkStatsService::SystemReady()
     UpdatePersistThresholds();
 
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         // upgrade any legacy stats, migrating them to rotated files
         MaybeUpgradeLegacyStatsLocked();
 
@@ -834,7 +834,7 @@ ECode CNetworkStatsService::IncrementOperationCount(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     Int32 set = INetworkStats::SET_DEFAULT;
     HashMap<Int32, Int32>::Iterator iter = mActiveUidCounterSet.Find(uid);
     if(iter != mActiveUidCounterSet.End()) {
@@ -852,7 +852,7 @@ ECode CNetworkStatsService::SetUidForeground(
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MODIFY_NETWORK_ACCOUNTING, TAG))
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     Int32 set = uidForeground ? INetworkStats::SET_FOREGROUND : INetworkStats::SET_DEFAULT;
     Int32 oldSet = INetworkStats::SET_DEFAULT;
     HashMap<Int32, Int32>::Iterator iter = mActiveUidCounterSet.Find(uid);
@@ -913,7 +913,7 @@ ECode CNetworkStatsService::AdvisePersistThreshold(
     }
 
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         if (!mSystemReady) return NOERROR;
 
         UpdatePersistThresholds();
@@ -940,7 +940,7 @@ void CNetworkStatsService::UpdatePersistThresholds()
 
 void CNetworkStatsService::UpdateIfaces()
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     mWakeLock->AcquireLock();
     UpdateIfacesLocked();
     mWakeLock->ReleaseLock();
@@ -1076,7 +1076,7 @@ void CNetworkStatsService::BootstrapStatsLocked()
 void CNetworkStatsService::PerformPoll(
     /* [in] */ Int32 flags)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     mWakeLock->AcquireLock();
 
     // try refreshing time source when stale
@@ -1307,7 +1307,7 @@ void CNetworkStatsService::Dump(
 
     // //synchronized (_m_syncLock) {
     // {
-    //     AutoLock lock(_m_syncLock);
+    //     AutoLock lock(this);
     //     if (poll) {
     //         PerformPollLocked(FLAG_PERSIST_ALL | FLAG_PERSIST_FORCE);
     //         pw->PrintStringln("Forced poll");

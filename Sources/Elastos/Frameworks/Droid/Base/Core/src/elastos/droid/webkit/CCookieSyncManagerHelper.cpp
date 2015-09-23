@@ -10,7 +10,7 @@ namespace Webkit {
 ECode CCookieSyncManagerHelper::GetInstance(
     /* [out] */ ICookieSyncManager** instance)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     VALIDATE_NOT_NULL(instance);
     CheckInstanceIsCreated();
     *instance = sRef;
@@ -22,7 +22,7 @@ ECode CCookieSyncManagerHelper::CreateInstance(
     /* [in] */ IContext* context,
     /* [out] */ ICookieSyncManager** instance)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     VALIDATE_NOT_NULL(context);
     VALIDATE_NOT_NULL(instance);
 

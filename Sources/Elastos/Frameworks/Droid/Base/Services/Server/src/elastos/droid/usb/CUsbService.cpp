@@ -57,7 +57,7 @@ CUsbService::~CUsbService()
 AutoPtr<UsbSettingsManager> CUsbService::GetSettingsForUser(
     /* [in] */ Int32 userId)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     AutoPtr<UsbSettingsManager> settings = mSettingsByUser[userId];
     if (settings == NULL) {

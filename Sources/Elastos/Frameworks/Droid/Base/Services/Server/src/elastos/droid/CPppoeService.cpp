@@ -114,7 +114,7 @@ ECode CPppoeService::GetDeviceNameList(
 ECode CPppoeService::SetPppoeState(
     /* [in] */ Int32 state)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     Slogger::I(TAG, "setPppoeState from %d to %d", mPppoeState, state);
 
@@ -158,7 +158,7 @@ ECode CPppoeService::GetPppoeState(
 ECode CPppoeService::UpdatePppoeDevInfo(
     /* [in] */ IPppoeDevInfo* info)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     const AutoPtr<IContentResolver> cr;
     mContext->GetContentResolver((IContentResolver**)&cr);
     Boolean result;
@@ -213,7 +213,7 @@ ECode CPppoeService::GetSavedPppoeConfig(
     /* [out] */ IPppoeDevInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     Boolean result;
     IsPppoeConfigured(&result);
     if (result) {
@@ -255,7 +255,7 @@ ECode CPppoeService::GetTotalInterface(
 ECode CPppoeService::SetPppoeMode(
     /* [in] */ const String& mode)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     const AutoPtr<IContentResolver> cr;
     mContext->GetContentResolver((IContentResolver**)&cr);
     Int32 devCount = DevName->GetLength();
@@ -384,7 +384,7 @@ Int32 CPppoeService::GetPersistedState()
 
 ECode CPppoeService::PersistPppoeEnabled(Boolean enabled)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     const AutoPtr<IContentResolver> cr;
     Boolean result;
     mContext->GetContentResolver((IContentResolver**)&cr);

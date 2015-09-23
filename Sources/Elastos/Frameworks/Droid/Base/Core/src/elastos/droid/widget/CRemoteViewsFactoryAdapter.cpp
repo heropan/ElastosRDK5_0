@@ -29,7 +29,7 @@ ECode CRemoteViewsFactoryAdapter::IsCreated(
 {
     VALIDATE_NOT_NULL(res);
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *res = mIsCreated;
     return NOERROR;
 }
@@ -37,7 +37,7 @@ ECode CRemoteViewsFactoryAdapter::IsCreated(
 ECode CRemoteViewsFactoryAdapter::OnDataSetChanged()
 {
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     //try{
     mFactory->OnDataSetChanged();
     // } catch (Exception ex) {
@@ -49,7 +49,7 @@ ECode CRemoteViewsFactoryAdapter::OnDataSetChanged()
 
 ECode CRemoteViewsFactoryAdapter::OnDataSetChangedAsync()
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     return OnDataSetChanged();
 }
 
@@ -57,7 +57,7 @@ ECode CRemoteViewsFactoryAdapter::GetCount(
     /* [out] */ Int32* count)
 {
     VALIDATE_NOT_NULL(count);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     //try {
     mFactory->GetCount(count);
 
@@ -73,7 +73,7 @@ ECode CRemoteViewsFactoryAdapter::GetViewAt(
     /* [out] */ IParcelable** views)
 {
     VALIDATE_NOT_NULL(views);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     //try {
         mFactory->GetViewAt(position, views);
         if (IRemoteViews::Probe(*views)) {
@@ -90,7 +90,7 @@ ECode CRemoteViewsFactoryAdapter::GetLoadingView(
     /* [out] */ IParcelable** views)
 {
     VALIDATE_NOT_NULL(views);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     //try {
     mFactory->GetLoadingView(views);
     //} catch (Exception ex) {
@@ -104,7 +104,7 @@ ECode CRemoteViewsFactoryAdapter::GetViewTypeCount(
     /* [out] */ Int32* count)
 {
     VALIDATE_NOT_NULL(count);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     //try {
     *count = 0;
     mFactory->GetViewTypeCount(count);
@@ -120,7 +120,7 @@ ECode CRemoteViewsFactoryAdapter::GetItemId(
     /* [out] */ Int64* id)
 {
     VALIDATE_NOT_NULL(id);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *id = 0;
     //try {
     mFactory->GetItemId(position, id);
@@ -135,7 +135,7 @@ ECode CRemoteViewsFactoryAdapter::HasStableIds(
     /* [out] */ Boolean* res)
 {
     VALIDATE_NOT_NULL(res);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *res = FALSE;
     //try {
     mFactory->HasStableIds(res);

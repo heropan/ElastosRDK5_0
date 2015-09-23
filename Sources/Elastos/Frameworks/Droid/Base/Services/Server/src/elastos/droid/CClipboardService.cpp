@@ -111,7 +111,7 @@ void CClipboardService::RemoveClipboard(
 ECode CClipboardService::SetPrimaryClip(
     /* [in] */ IClipData* clip)
 {
-    AutoLock Lock(_m_syncLock);
+    AutoLock lock(this);
     Int32 itemCount;
     if (clip == NULL || (clip->GetItemCount(&itemCount), itemCount <= 0)) {
         Slogger::E(TAG, "No items");
@@ -145,7 +145,7 @@ ECode CClipboardService::GetPrimaryClip(
     VALIDATE_NOT_NULL(clip)
     *clip = NULL;
 
-    AutoLock Lock(_m_syncLock);
+    AutoLock lock(this);
     FAIL_RETURN(AddActiveOwnerLocked(Binder::GetCallingUid(), pkg));
     *clip = GetClipboard()->mPrimaryClip;
     REFCOUNT_ADD(*clip)
@@ -159,7 +159,7 @@ ECode CClipboardService::GetPrimaryClipDescription(
     VALIDATE_NOT_NULL(description)
     *description = NULL;
 
-    AutoLock Lock(_m_syncLock);
+    AutoLock lock(this);
     AutoPtr<PerUserClipboard> clipboard = GetClipboard();
     if (clipboard->mPrimaryClip != NULL) {
         AutoPtr<IClipDescription> des;
@@ -175,7 +175,7 @@ ECode CClipboardService::HasPrimaryClip(
     /* [out] */ Boolean* hasPrimaryClip)
 {
     VALIDATE_NOT_NULL(hasPrimaryClip);
-    AutoLock Lock(_m_syncLock);
+    AutoLock lock(this);
     *hasPrimaryClip = GetClipboard()->mPrimaryClip != NULL;
     return NOERROR;
 }
@@ -183,7 +183,7 @@ ECode CClipboardService::HasPrimaryClip(
 ECode CClipboardService::AddPrimaryClipChangedListener(
     /* [in] */ IOnPrimaryClipChangedListener* listener)
 {
-    AutoLock Lock(_m_syncLock);
+    AutoLock lock(this);
     Boolean result;
     return GetClipboard()->mPrimaryClipListeners->Register(listener, &result);
 }
@@ -201,7 +201,7 @@ ECode CClipboardService::HasClipboardText(
 {
     VALIDATE_NOT_NULL(hasClipboardText);
 
-    AutoLock Lock(_m_syncLock);
+    AutoLock lock(this);
     AutoPtr<PerUserClipboard> clipboard = GetClipboard();
     if (clipboard->mPrimaryClip != NULL) {
         AutoPtr<IClipDataItem> item;

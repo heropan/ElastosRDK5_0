@@ -304,7 +304,7 @@ ECode CStatusBarManagerService::DisableInternal(
 {
     FAIL_RETURN(EnforceStatusBar());
     {
-        AutoLock Lock(_m_syncLock);
+        AutoLock lock(this);
         DisableLocked(userId, what, token, pkg);
     }
     return NOERROR;
@@ -436,7 +436,7 @@ ECode CStatusBarManagerService::TopAppWindowChanged(
     if (SPEW)
         Slogger::D(TAG, (mMenuVisible?"showing":"hiding"), " MENU key");
     {
-        AutoLock Lock(_m_syncLock);
+        AutoLock lock(this);
         mMenuVisible = menuVisible;
 
         Boolean result;
@@ -456,7 +456,7 @@ ECode CStatusBarManagerService::SetImeWindowStatus(
         Slogger::D(TAG, "swetImeWindowStatus vis=%d backDisposition=%d", vis, backDisposition);
     }
     {
-        AutoLock Lock(_m_syncLock);
+        AutoLock lock(this);
         // In case of IME change, we need to call up setImeWindowStatus() regardless of
         // mImeWindowVis because mImeWindowVis may not have been set to false when the
         // previous IME was destroyed.
@@ -480,7 +480,7 @@ ECode CStatusBarManagerService::SetSystemUiVisibility(
     if (SPEW)
         Slogger::D(TAG, "setSystemUiVisibility(0x%s)", StringUtils::Int32ToString(vis).string());
     {
-        AutoLock Lock(_m_syncLock);
+        AutoLock lock(this);
         UpdateUiVisibilityLocked(vis, mask);
 
         DisableLocked(
@@ -615,7 +615,7 @@ ECode CStatusBarManagerService::RegisterStatusBar(
     } while (FALSE);
 
     do {
-        AutoLock Lock(_m_syncLock);
+        AutoLock lock(this);
         GatherDisableActionsLocked(mCurrentUserId, &((**switches)[0]));
         (**switches)[1] = mSystemUiVisibility;
         (**switches)[2] = mMenuVisible ? 1 : 0;

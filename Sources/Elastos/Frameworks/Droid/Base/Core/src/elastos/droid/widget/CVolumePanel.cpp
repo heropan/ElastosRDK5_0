@@ -709,7 +709,7 @@ ECode CVolumePanel::PostVolumeChanged(
     if (hasMessage) return NOERROR;
 
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
 
         if (mStreamControls.IsEmpty()) {
             CreateSliders();
@@ -733,7 +733,7 @@ ECode CVolumePanel::PostRemoteVolumeChanged(
     if (hasMessage) return NOERROR;
 
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
 
         if (mStreamControls.IsEmpty()) {
             CreateSliders();
@@ -787,7 +787,7 @@ ECode CVolumePanel::PostMuteChanged(
     if (hasMessage) return NOERROR;
 
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
 
         if (mStreamControls.IsEmpty()) {
             CreateSliders();
@@ -826,7 +826,7 @@ void CVolumePanel::OnVolumeChanged(
 {
     if ((flags & IAudioManager::FLAG_SHOW_UI) != 0) {
         {
-            AutoLock lock(_m_syncLock);
+            AutoLock lock(this);
             if (mActiveStreamType != streamType) {
                 ReorderSliders(streamType);
             }
@@ -1051,7 +1051,7 @@ void CVolumePanel::OnPlaySound(
     }
 
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         AutoPtr<IToneGenerator> toneGen = GetOrCreateToneGenerator(streamType);
         if (toneGen != NULL) {
             toneGen->StartTone(IToneGenerator::TONE_PROP_BEEP, &bval);
@@ -1065,7 +1065,7 @@ void CVolumePanel::OnPlaySound(
 void CVolumePanel::OnStopSounds()
 {
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         AutoPtr<IAudioSystemHelper> asHelper;
         CAudioSystemHelper::AcquireSingleton((IAudioSystemHelper**)&asHelper);
         Int32 numStreamTypes;
@@ -1106,7 +1106,7 @@ void CVolumePanel::OnRemoteVolumeChanged(
     Boolean bval;
     if (((flags & IAudioManager::FLAG_SHOW_UI) != 0)
         || (mDialog->IsShowing(&bval), bval)) {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         if (mActiveStreamType != IAudioService::STREAM_REMOTE_MUSIC) {
             ReorderSliders(IAudioService::STREAM_REMOTE_MUSIC);
         }
@@ -1215,7 +1215,7 @@ AutoPtr<IToneGenerator> CVolumePanel::GetOrCreateToneGenerator(
     }
 
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
 
         if ((*mToneGenerators)[streamType] == NULL) {
             // try {
@@ -1253,7 +1253,7 @@ void CVolumePanel::SetMusicIcon(
 void CVolumePanel::OnFreeResources()
 {
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         for (Int32 i = mToneGenerators->GetLength() - 1; i >= 0; i--) {
             if ((*mToneGenerators)[i] != NULL) {
                 (*mToneGenerators)[i]->ReleaseResources();

@@ -812,7 +812,7 @@ void CPowerManagerService::Init(
 void CPowerManagerService::SetPolicy(
     /* [in] */ IWindowManagerPolicy* policy)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     mPolicy = policy;
 }
 
@@ -820,7 +820,7 @@ ECode CPowerManagerService::SystemReady(
     /* [in] */ TwilightService* twilight)
     ///* [in] */ CDreamManagerService* dreamManager)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     mSystemReady = TRUE;
     // mDreamManager = dreamManager;
 
@@ -1079,7 +1079,7 @@ ECode CPowerManagerService::AcquireWakeLockInternal(
     /* [in] */ Int32 uid,
     /* [in] */ Int32 pid)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (DEBUG_SPEW) {
         Slogger::D(TAG, "acquireWakeLockInternal: lock=, flags=0x%08x, tag=\"%s\", ws=%p, uid=%d, pid=%d"
                 /*+ Objects.hashCode(lock)*/, flags, (const char*)tag, ws, uid, pid);
@@ -1160,7 +1160,7 @@ void CPowerManagerService::ReleaseWakeLockInternal(
     /* [in] */ IBinder* _lock,
     /* [in] */ Int32 flags)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (DEBUG_SPEW) {
         Slogger::D(TAG, "releaseWakeLockInternal: lock=, flags=0x%08x"
                 /* + Objects.hashCode(lock)*/, flags);
@@ -1192,7 +1192,7 @@ void CPowerManagerService::ReleaseWakeLockInternal(
 void CPowerManagerService::HandleWakeLockDeath(
     /* [in] */ WakeLock* wakeLock)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (DEBUG_SPEW) {
         Slogger::D(TAG, "handleWakeLockDeath: lock="/* + Objects.hashCode(wakeLock.mLock)*/);
     }
@@ -1260,7 +1260,7 @@ ECode CPowerManagerService::UpdateWakeLockWorkSourceInternal(
     /* [in] */IBinder* _lock,
     /* [in] */IWorkSource* ws)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     List< AutoPtr<WakeLock> >::Iterator it = FindWakeLockIndexLocked(_lock);
     if (it == mWakeLocks.End()) {
         Slogger::E(TAG, "Wake lock not active");
@@ -1327,7 +1327,7 @@ ECode CPowerManagerService::IsWakeLockLevelSupported(
 Boolean CPowerManagerService::IsWakeLockLevelSupportedInternal(
     /* [in] */ Int32 level)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     switch (level) {
         case IPowerManager::PARTIAL_WAKE_LOCK:
         case IPowerManager::SCREEN_DIM_WAKE_LOCK:
@@ -1355,7 +1355,7 @@ ECode CPowerManagerService::UserActivity(
         // Once upon a time applications could call userActivity().
         // Now we require the DEVICE_POWER permission.  Log a warning and ignore the
         // request instead of throwing a SecurityException so we don't break old apps.
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         if (now >= mLastWarningAboutUserActivityPermission + (5 * 60 * 1000)) {
             mLastWarningAboutUserActivityPermission = now;
             Slogger::W(TAG, "Ignoring call to PowerManager.userActivity() because the caller does not have DEVICE_POWER permission.  Please fix your app!   pid=%d uid=%d"
@@ -1405,7 +1405,7 @@ void CPowerManagerService::UserActivityInternal(
             Slogger::D(TAG, "in boot fast mode not allow userActivity");
             return;
     }
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (UserActivityNoUpdateLocked(eventTime, event, flags, uid)) {
         UpdatePowerStateLocked();
     }
@@ -1488,7 +1488,7 @@ void CPowerManagerService::WakeUpFromNative(
 void CPowerManagerService::WakeUpInternal(
     /* [in] */ Int64 eventTime)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (WakeUpNoUpdateLocked(eventTime)) {
         UpdatePowerStateLocked();
     }
@@ -1567,7 +1567,7 @@ void CPowerManagerService::GoToSleepInternal(
     /* [in] */ Int64 eventTime,
     /* [in] */ Int32 reason)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (GoToSleepNoUpdateLocked(eventTime, reason)) {
         UpdatePowerStateLocked();
     }
@@ -1663,7 +1663,7 @@ ECode CPowerManagerService::Nap(
 void CPowerManagerService::NapInternal(
     /* [in] */ Int64 eventTime)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (NapNoUpdateLocked(eventTime)) {
         UpdatePowerStateLocked();
     }
@@ -1960,7 +1960,7 @@ void CPowerManagerService::UpdateUserActivitySummaryLocked(
 void CPowerManagerService::HandleUserActivityTimeout()
 {
     // runs on handler thread
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (DEBUG_SPEW) {
         Slogger::D(TAG, "handleUserActivityTimeout");
     }
@@ -2077,7 +2077,7 @@ void CPowerManagerService::HandleSandman()
     // Handle preconditions.
     Boolean startDreaming = FALSE;
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         mSandmanScheduled = FALSE;
         Boolean canDream = CanDreamLocked();
         if (DEBUG_SPEW) {
@@ -2105,7 +2105,7 @@ void CPowerManagerService::HandleSandman()
     // We might need to stop the dream again if the preconditions changed.
     Boolean continueDreaming = FALSE;
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         if (isDreaming && CanDreamLocked()) {
             if (mWakefulness == WAKEFULNESS_NAPPING) {
                 mWakefulness = WAKEFULNESS_DREAMING;
@@ -2171,7 +2171,7 @@ void CPowerManagerService::HandleDreamFinishedLocked()
 
 void CPowerManagerService::HandleScreenOnBlockerReleased()
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     mDirty |= DIRTY_SCREEN_ON_BLOCKER_RELEASED;
     UpdatePowerStateLocked();
 }
@@ -2332,7 +2332,7 @@ ECode CPowerManagerService::IsScreenOn(
 
 Boolean CPowerManagerService::IsScreenOnInternal()
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     return !mSystemReady
             || mDisplayPowerRequest->mScreenState != DisplayPowerRequest::SCREEN_STATE_OFF;
 }
@@ -2367,7 +2367,7 @@ void CPowerManagerService::CheckIfBootAnimationFinished()
         return;
     }
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (!mBootCompleted) {
         Slogger::I(TAG, "Boot animation finished.");
         HandleBootCompletedLocked();
@@ -2560,7 +2560,7 @@ ECode CPowerManagerService::SetMaximumScreenOffTimeoutFromDeviceAdmin(
 void CPowerManagerService::SetMaximumScreenOffTimeoutFromDeviceAdminInternal(
     /* [in] */ Int32 timeMs)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     mMaximumScreenOffTimeoutFromDeviceAdmin = timeMs;
     mDirty |= DIRTY_SETTINGS;
     UpdatePowerStateLocked();
@@ -2594,7 +2594,7 @@ void CPowerManagerService::SetAttentionLightInternal(
 {
     AutoPtr<LightsService::Light> light;
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         if (!mSystemReady) {
             return;
         }
@@ -2634,7 +2634,7 @@ void CPowerManagerService::GoToBootFastSleepInternal(
 {
     if(DEBUG_BOOTFAST)
         Slogger::D(TAG, "goToBootFastSleepInternal");
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (GoToBootFastSleepNoUpdateLocked(eventTime)) {
         mPolicy->HideScreen(TRUE);
         UpdatePowerStateLocked();
@@ -2706,7 +2706,7 @@ void CPowerManagerService::BootFastWakeInternal(
 {
     if(DEBUG_BOOTFAST)
         Slogger::D(TAG, "bootFastWakeInternal");
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (BootFastWakeNoUpdateLocked(eventTime)) {
         UpdatePowerStateLocked();
     }
@@ -2815,7 +2815,7 @@ ECode CPowerManagerService::TimeSinceScreenWasLastOn(
     /* [out] */ Int64* time)
 {
     VALIDATE_NOT_NULL(time);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (mDisplayPowerRequest->mScreenState != DisplayPowerRequest::SCREEN_STATE_OFF) {
         *time = 0;
         return NOERROR;
@@ -2843,7 +2843,7 @@ ECode CPowerManagerService::SetScreenBrightnessOverrideFromWindowManager(
 void CPowerManagerService::SetScreenBrightnessOverrideFromWindowManagerInternal(
         /* [in] */ Int32 brightness)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (mScreenBrightnessOverrideFromWindowManager != brightness) {
         mScreenBrightnessOverrideFromWindowManager = brightness;
         mDirty |= DIRTY_SETTINGS;
@@ -2878,7 +2878,7 @@ ECode CPowerManagerService::SetUserActivityTimeoutOverrideFromWindowManager(
 void CPowerManagerService::SetUserActivityTimeoutOverrideFromWindowManagerInternal(
     /* [in] */ Int64 timeoutMillis)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (mUserActivityTimeoutOverrideFromWindowManager != timeoutMillis) {
         mUserActivityTimeoutOverrideFromWindowManager = timeoutMillis;
         mDirty |= DIRTY_SETTINGS;
@@ -2904,7 +2904,7 @@ ECode CPowerManagerService::SetTemporaryScreenBrightnessSettingOverride(
 void CPowerManagerService::SetTemporaryScreenBrightnessSettingOverrideInternal(
     /* [in] */ Int32 brightness)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (mTemporaryScreenBrightnessSettingOverride != brightness) {
         mTemporaryScreenBrightnessSettingOverride = brightness;
         mDirty |= DIRTY_SETTINGS;
@@ -2930,7 +2930,7 @@ ECode CPowerManagerService::SetTemporaryScreenAutoBrightnessAdjustmentSettingOve
 void CPowerManagerService::SetTemporaryScreenAutoBrightnessAdjustmentSettingOverrideInternal(
     /* [in] */ Float adj)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     // Note: This condition handles NaN because NaN is not equal to any other
     // value, including itself.
     if (mTemporaryScreenAutoBrightnessAdjustmentSettingOverride != adj) {
@@ -2954,7 +2954,7 @@ ECode CPowerManagerService::LowLevelReboot(
 // ECode CPowerManagerService::Monitor()
 // {
 //     // Grab and release lock for watchdog monitor to detect deadlocks.
-//     AutoLock lock(_m_syncLock);
+//     AutoLock lock(this);
 //     return NOERROR;
 // }
 
@@ -3111,7 +3111,7 @@ AutoPtr<IWorkSource> CPowerManagerService::CopyWorkSource(
 ECode CPowerManagerService::constructor()
 {
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         mWakeLockSuspendBlocker = CreateSuspendBlockerLocked(String("PowerManagerService"));
         mWakeLockSuspendBlocker->Acquire();
         mScreenOnBlocker = new ScreenOnBlockerImpl(this);

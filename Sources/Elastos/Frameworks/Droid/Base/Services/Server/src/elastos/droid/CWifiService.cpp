@@ -833,7 +833,7 @@ void CWifiService::NoteScanStart()
 {
     AutoPtr<IWorkSource> scanWorkSource;
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
 
         if (mScanWorkSource != NULL) {
             // Scan already in progress, don't add this one to battery stats
@@ -857,7 +857,7 @@ void CWifiService::NoteScanEnd()
 {
     AutoPtr<IWorkSource> scanWorkSource;
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
 
         scanWorkSource = mScanWorkSource;
         mScanWorkSource = NULL;
@@ -1052,7 +1052,7 @@ ECode CWifiService::SetWifiEnabled(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     FAIL_RETURN(EnforceChangePermission());
     Slogger::D(TAG, "SetWifiEnabled: %d pid=%d, uid=%d", enable, Binder::GetCallingPid(),
             Binder::GetCallingUid());

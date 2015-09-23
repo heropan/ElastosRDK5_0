@@ -154,7 +154,7 @@ ECode CParcelableObjectContainer::Add(
 {
     VALIDATE_NOT_NULL(object);
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     ObjectNode* node = new ObjectNode(object);
     if (NULL == node) {
@@ -173,7 +173,7 @@ ECode CParcelableObjectContainer::Remove(
 {
     VALIDATE_NOT_NULL(object);
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     ObjectNode* node;
     ForEachDLinkNode(ObjectNode*, node, &mHead) {
@@ -219,7 +219,7 @@ ECode CParcelableObjectContainer::Contains(
     *contains = FALSE;
     VALIDATE_NOT_NULL(object);
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     AutoPtr<IObjectEnumerator> pEnumerator;
     ECode ec = GetObjectEnumerator((IObjectEnumerator**)&pEnumerator);
@@ -244,7 +244,7 @@ ECode CParcelableObjectContainer::ContainsAll(
 {
     VALIDATE_NOT_NULL(contains);
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     AutoPtr<IObjectEnumerator> emu;
     objectContainer->GetObjectEnumerator((IObjectEnumerator**)&emu);
@@ -266,7 +266,7 @@ ECode CParcelableObjectContainer::ContainsAll(
 
 ECode CParcelableObjectContainer::Dispose()
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     mCount = 0;
     mState++;
@@ -283,7 +283,7 @@ ECode CParcelableObjectContainer::Dispose()
 ECode CParcelableObjectContainer::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     source->ReadInt32(&mCount);
     for (Int32 i = 0; i < mCount; ++i) {
@@ -300,7 +300,7 @@ ECode CParcelableObjectContainer::ReadFromParcel(
 ECode CParcelableObjectContainer::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     dest->WriteInt32(mCount);
     ObjectNode* node;

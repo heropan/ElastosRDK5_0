@@ -536,7 +536,7 @@ ECode CDropBoxManagerService::GetNextEntry(
     VALIDATE_NOT_NULL(nextEntry);
     *nextEntry = NULL;
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     Int32 result;
     FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::READ_LOGS, &result));
     if (result != IPackageManager::PERMISSION_GRANTED) {
@@ -594,7 +594,7 @@ ECode CDropBoxManagerService::GetNextEntry(
 
 ECode CDropBoxManagerService::Init()
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (mStatFs == NULL) {
         Boolean isDirectory;
         Boolean succeed;
@@ -661,7 +661,7 @@ ECode CDropBoxManagerService::Init()
 ECode CDropBoxManagerService::EnrollEntry(
     /* [in] */ EntryFile* entry)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     mAllFiles->mContents.Insert(entry);
     mAllFiles->mBlocks += entry->mBlocks;
 
@@ -685,7 +685,7 @@ ECode CDropBoxManagerService::CreateEntry(
     /* [in] */ Int32 flags,
     /* [out] */ Int64* value)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
     Int64 t;
@@ -763,7 +763,7 @@ ECode CDropBoxManagerService::CreateEntry(
 
 Int64 CDropBoxManagerService::TrimToFit()
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     // Expunge aged items (including tombstones marking deleted data).
     AutoPtr<ISettingsGlobal> settingsGlobal;

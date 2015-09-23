@@ -1074,7 +1074,7 @@ ECode CConnectivityService::GetNetworkPreference(
     VALIDATE_NOT_NULL(preference);
     FAIL_RETURN(EnforceAccessPermission());
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         *preference = mNetworkPreference;
     }
     return NOERROR;
@@ -1099,7 +1099,7 @@ void CConnectivityService::HandleSetNetworkPreference(
             CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
             settingsGlobal->PutInt32(cr, ISettingsGlobal::NETWORK_PREFERENCE, preference, &bol);
             {
-                AutoLock lock(_m_syncLock);
+                AutoLock lock(this);
                 mNetworkPreference = preference;
             }
             EnforcePreference();
@@ -1769,7 +1769,7 @@ ECode CConnectivityService::StartUsingNetworkFeature(
             Int32 restoreTimer = GetRestoreDefaultNetworkDelay(usedNetworkType);
 
             {
-                AutoLock lock(_m_syncLock);
+                AutoLock lock(this);
                 Boolean addToList = TRUE;
                 if (restoreTimer < 0) {
                     // In case there is no timer is specified for the feature,
@@ -1864,7 +1864,7 @@ ECode CConnectivityService::StartUsingNetworkFeature(
         else {
             // need to remember this unsupported request so we respond appropriately on stop
             {
-                AutoLock lock(_m_syncLock);
+                AutoLock lock(this);
                 mFeatureUsers.PushBack(fuser);
                 AutoPtr< List<Int32> > netRequestersPid = (*mNetRequestersPids)[usedNetworkType];
                 if (Find(netRequestersPid->Begin(), netRequestersPid->End(), currentPid)
@@ -1914,7 +1914,7 @@ ECode CConnectivityService::StopUsingNetworkFeature(
     Boolean found = FALSE;
 
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         List< AutoPtr<FeatureUser> >::Iterator it;
         for (it = mFeatureUsers.Begin(); it != mFeatureUsers.End(); ++it) {
             AutoPtr<FeatureUser> fu = *it;
@@ -1970,7 +1970,7 @@ Int32 CConnectivityService::StopUsingNetworkFeature(
     // need to link the mFeatureUsers list with the mNetRequestersPids state in this
     // sync block
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         // check if this process still has an outstanding start request
         if (Find(mFeatureUsers.Begin(), mFeatureUsers.End(), AutoPtr<FeatureUser>(u))
                 == mFeatureUsers.End()) {
@@ -2820,7 +2820,7 @@ void CConnectivityService::HandleConnectionFailure(
 void CConnectivityService::SendStickyBroadcast(
     /* [in] */ IIntent* intent)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (!mSystemReady) {
         mInitialBroadcast = NULL;
         CIntent::New(intent, (IIntent**)&mInitialBroadcast);
@@ -2866,7 +2866,7 @@ void CConnectivityService::SendStickyBroadcastDelayed(
 void CConnectivityService::SystemReady()
 {
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         mSystemReady = TRUE;
         if (mInitialBroadcast != NULL) {
             AutoPtr<IUserHandleHelper> helper;
@@ -2959,7 +2959,7 @@ void CConnectivityService::HandleConnect(
         }
 
         {
-            AutoLock lock(_m_syncLock);
+            AutoLock lock(this);
             // have a new default network, release the transition wakelock in a second
             // if it's held.  The second pause is to allow apps to reconnect over the
             // new network
@@ -3905,7 +3905,7 @@ void CConnectivityService::Dump(
 //    pw->DecreaseIndent();
 //
 //    {
-//        AutoLock lock(_m_syncLock);
+//        AutoLock lock(this);
 //
 //        Boolean isHeld;
 //        mNetTransitionWakeLock->IsHeld(&isHeld);
@@ -4120,7 +4120,7 @@ ECode CConnectivityService::RequestNetworkTransitionWakelock(
 {
     FAIL_RETURN(EnforceConnectivityInternalPermission());
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
 
         Boolean  isHeld = FALSE;
         if ((mNetTransitionWakeLock->IsHeld(&isHeld), isHeld)) {
@@ -4663,7 +4663,7 @@ void CConnectivityService::HandleEventClearNetTransitionWakelock(
 {
     String causedBy;
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         Boolean held = FALSE;
         if (arg1 == mNetTransitionWakeLockSerialNumber &&
                 (mNetTransitionWakeLock->IsHeld(&held), held)) {

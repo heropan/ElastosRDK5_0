@@ -26,7 +26,7 @@ ECode CStatusBarManager::constructor(
 
 AutoPtr<IIStatusBarService> CStatusBarManager::GetService()
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     if (mService == NULL) {
         AutoPtr<IInterface> tmpObj = ServiceManager::GetService(IContext::STATUS_BAR_SERVICE);
         mService = IIStatusBarService::Probe(tmpObj.Get());

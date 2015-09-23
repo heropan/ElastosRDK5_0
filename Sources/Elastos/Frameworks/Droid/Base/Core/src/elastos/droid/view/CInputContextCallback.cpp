@@ -77,7 +77,7 @@ ECode CInputContextCallback::SetTextBeforeCursor(
     /* [in] */ ICharSequence* textBeforeCursor,
     /* [in] */ Int32 seq)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     if (seq == mSeq) {
         mTextBeforeCursor = textBeforeCursor;
@@ -96,7 +96,7 @@ ECode CInputContextCallback::SetTextAfterCursor(
     /* [in] */ ICharSequence* textAfterCursor,
     /* [in] */ Int32 seq)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     if (seq == mSeq) {
         mTextAfterCursor = textAfterCursor;
@@ -115,7 +115,7 @@ ECode CInputContextCallback::SetSelectedText(
     /* [in] */ ICharSequence* selectedText,
     /* [in] */ Int32 seq)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     if (seq == mSeq) {
         mSelectedText = selectedText;
@@ -134,7 +134,7 @@ ECode CInputContextCallback::SetCursorCapsMode(
     /* [in] */ Int32 capsMode,
     /* [in] */ Int32 seq)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     if (seq == mSeq) {
         mCursorCapsMode = capsMode;
@@ -153,7 +153,7 @@ ECode CInputContextCallback::SetExtractedText(
     /* [in] */ IExtractedText* extractedText,
     /* [in] */ Int32 seq)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     if (seq == mSeq) {
         mExtractedText = extractedText;

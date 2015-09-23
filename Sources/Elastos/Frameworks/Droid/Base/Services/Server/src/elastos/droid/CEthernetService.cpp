@@ -81,7 +81,7 @@ ECode CEthernetService::GetSavedConfig(
     VALIDATE_NOT_NULL(info);
     *info = NULL;
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     Boolean isConfigured;
     if (IsConfigured(&isConfigured), isConfigured) {
@@ -124,7 +124,7 @@ ECode CEthernetService::GetSavedConfig(
 ECode CEthernetService::SetMode(
     /* [in] */ Int32 mode)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     AutoPtr<IContentResolver> cr;
     mContext->GetContentResolver((IContentResolver**)&cr);
@@ -142,7 +142,7 @@ ECode CEthernetService::SetMode(
 ECode CEthernetService::UpdateDevInfo(
     /* [in] */ IEthernetDevInfo* info)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     assert(info);
 
     AutoPtr<IContentResolver> cr;
@@ -325,7 +325,7 @@ ECode CEthernetService::GetDeviceNameList(
 void CEthernetService::PersistEnabled(
     /* [in] */ Boolean enabled)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     AutoPtr<IContentResolver> cr;
     mContext->GetContentResolver((IContentResolver**)&cr);
@@ -340,7 +340,7 @@ void CEthernetService::PersistEnabled(
 ECode CEthernetService::SetState(
     /* [in] */ Int32 state)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     if (mEthState != state) {
         mEthState = state;
@@ -453,7 +453,7 @@ ECode CEthernetService::IsOn(
 {
     VALIDATE_NOT_NULL(isOn);
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     AutoPtr<IContentResolver> cr;
     mContext->GetContentResolver((IContentResolver**)&cr);
     // try{
@@ -477,7 +477,7 @@ ECode CEthernetService::IsDhcp(
 {
     VALIDATE_NOT_NULL(isDhcp);
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     AutoPtr<IContentResolver> cr;
     mContext->GetContentResolver((IContentResolver**)&cr);
     // try{

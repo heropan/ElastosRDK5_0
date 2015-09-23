@@ -588,7 +588,7 @@ ECode CNetworkInfo::constructor(
 ECode CNetworkInfo::SetState(
     /* [in] */ NetworkInfoState state)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     mState = state;
     return NOERROR;
 }
@@ -605,7 +605,7 @@ ECode CNetworkInfo::GetType(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *result = mNetworkType;
     return NOERROR;
 }
@@ -619,7 +619,7 @@ ECode CNetworkInfo::GetSubtype(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *result = mSubtype;
     return NOERROR;
 }
@@ -628,7 +628,7 @@ ECode CNetworkInfo::SetSubtype(
     /* [in] */ Int32 subtype,
     /* [in] */ const String& subtypeName)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     mSubtype = subtype;
     mSubtypeName = subtypeName;
     return NOERROR;
@@ -643,7 +643,7 @@ ECode CNetworkInfo::GetTypeName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *name = mTypeName;
     return NOERROR;
 }
@@ -656,7 +656,7 @@ ECode CNetworkInfo::GetSubtypeName(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *result = mSubtypeName;
     return NOERROR;
 }
@@ -674,7 +674,7 @@ ECode CNetworkInfo::IsConnectedOrConnecting(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *result = ((mState == NetworkInfoState_CONNECTED) || mState == (NetworkInfoState_CONNECTING));
     return NOERROR;
 }
@@ -689,7 +689,7 @@ ECode CNetworkInfo::IsConnected(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *result = (mState == NetworkInfoState_CONNECTED);
     return NOERROR;
 }
@@ -710,7 +710,7 @@ ECode CNetworkInfo::IsAvailable(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *result = mIsAvailable;
     return NOERROR;
 }
@@ -724,7 +724,7 @@ ECode CNetworkInfo::IsAvailable(
 ECode CNetworkInfo::SetIsAvailable(
     /* [in] */ Boolean isAvailable)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     mIsAvailable = isAvailable;
     return NOERROR;
 }
@@ -740,7 +740,7 @@ ECode CNetworkInfo::IsFailover(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *result = mIsFailover;
     return NOERROR;
 }
@@ -754,7 +754,7 @@ ECode CNetworkInfo::IsFailover(
 ECode CNetworkInfo::SetFailover(
     /* [in] */ Boolean isFailover)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     mIsFailover = isFailover;
     return NOERROR;
 }
@@ -769,7 +769,7 @@ ECode CNetworkInfo::IsRoaming(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *result = mIsRoaming;
     return NOERROR;
 }
@@ -777,7 +777,7 @@ ECode CNetworkInfo::IsRoaming(
 ECode CNetworkInfo::SetRoaming(
     /* [in] */ Boolean isRoaming)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     mIsRoaming = isRoaming;
     return NOERROR;
 }
@@ -790,7 +790,7 @@ ECode CNetworkInfo::GetState(
     /* [out] */ NetworkInfoState* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *result = mState;
     return NOERROR;
 }
@@ -803,7 +803,7 @@ ECode CNetworkInfo::GetDetailedState(
     /* [out] */ NetworkInfoDetailedState* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *result = mDetailedState;
     return NOERROR;
 }
@@ -822,7 +822,7 @@ ECode CNetworkInfo::SetDetailedState(
     /* [in] */ const String& reason,
     /* [in] */ const String& extraInfo)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     mDetailedState = detailedState;
     Int32 num = detailedState;
     mState = mStateMap[num];
@@ -840,7 +840,7 @@ ECode CNetworkInfo::SetDetailedState(
 ECode CNetworkInfo::SetExtraInfo(
     /* [in] */ const String& extraInfo)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     mExtraInfo = extraInfo;
     return NOERROR;
 }
@@ -854,7 +854,7 @@ ECode CNetworkInfo::GetReason(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *result = mReason;
     return NOERROR;
 }
@@ -869,7 +869,7 @@ ECode CNetworkInfo::GetExtraInfo(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *result = mExtraInfo;
     return NOERROR;
 }
@@ -879,7 +879,7 @@ ECode CNetworkInfo::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     StringBuilder builder("NetworkInfo: ");
     builder.AppendCStr("type: ");
@@ -914,7 +914,7 @@ ECode CNetworkInfo::ToString(
 ECode CNetworkInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     dest->WriteInt32(mNetworkType);
     dest->WriteInt32(mSubtype);
     dest->WriteString(mTypeName);
