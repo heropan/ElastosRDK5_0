@@ -1,3 +1,4 @@
+#include "elastos/droid/content/pm/KeySet.h"
 
 namespace Elastos {
 namespace Droid {
@@ -33,7 +34,7 @@ ECode KeySet::Equals(
 
     IKeySet* ks = IKeySet::Probe(other);
     if (ks) {
-        *result = mToken.Get() == ((KeySet*)ks)->mToken.Get());
+        *result = mToken.Get() == ((KeySet*)ks)->mToken.Get();
     }
     return NOERROR;
 }
@@ -49,7 +50,7 @@ ECode KeySet::GetHashCode(
 ECode KeySet::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    return source->ReadInterfacePtr((Handle32)&mToken);
+    return source->ReadInterfacePtr((Handle32*)&mToken);
 }
 
 ECode KeySet::WriteToParcel(

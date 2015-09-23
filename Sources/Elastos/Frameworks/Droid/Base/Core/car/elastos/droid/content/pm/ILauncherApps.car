@@ -53,7 +53,8 @@ module
 
         IsActivityEnabled(
             [in] IComponentName* component,
-            [in] IUserHandle* user);
+            [in] IUserHandle* user,
+            [out] Boolean* result);
     }
 
     } // namespace Pm

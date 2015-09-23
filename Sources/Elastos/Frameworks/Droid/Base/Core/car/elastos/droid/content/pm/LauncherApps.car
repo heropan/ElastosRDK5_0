@@ -107,9 +107,6 @@ module
     [deprecated, local]
     interface ILauncherApps {
 
-        GetToken(
-            [out] IBinder** binder);
-
         /**
          * Retrieves a list of launchable activities that match {@link Intent#ACTION_MAIN} and
          * {@link Intent#CATEGORY_LAUNCHER}, for a specified user.
@@ -177,7 +174,7 @@ module
         IsPackageEnabled(
             [in] String packageName,
             [in] IUserHandle* user,
-            [out] Boolean** result);
+            [out] Boolean* result);
 
         /**
          * Checks if the activity exists and it enabled for a profile.
@@ -188,9 +185,9 @@ module
          * @return true if the activity exists and is enabled.
          */
         IsActivityEnabled(
-            [in] String packageName,
+            [in] IComponentName* packageName,
             [in] IUserHandle* user,
-            [out] Boolean** result);
+            [out] Boolean* result);
 
         /**
          * Registers a callback for changes to packages in current and managed profiles.

@@ -148,10 +148,12 @@ module
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IParcelFileDescriptor;
     interface Elastos.Droid.Os.IPatternMatcher;
+    interface Elastos.Droid.Os.IUserHandle;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Database.ICursor;
     interface Elastos.Droid.Database.IContentObserver;
     interface Elastos.Droid.Accounts.IAccount;
+    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.ILoader;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.Res.IResources;
@@ -974,15 +976,15 @@ module
         interface IParcelable;
     }
 
-    //class CFeatureGroupInfo {
-    //    constructor();
+    class CFeatureGroupInfo {
+        constructor();
 
-    //    constructor(
-    //        [in] IFeatureGroupInfo* other);
+        constructor(
+            [in] IFeatureGroupInfo* other);
 
-    //    interface IFeatureGroupInfo;
-    //    interface IParcelable;
-    //}
+        interface IFeatureGroupInfo;
+        interface IParcelable;
+    }
 
     class CInstrumentationInfo {
         constructor();
@@ -1025,6 +1027,29 @@ module
         interface IIntent;
         interface ICloneable;
         interface IParcelable;
+    }
+
+    [local]
+    class CLauncherActivityInfo {
+         constructor(
+             [in] IContext* context);
+
+         constructor(
+             [in] IContext* context,
+             [in] IResolveInfo* info,
+             [in] IUserHandle* user,
+             [in] Int64 firstInstallTime);
+
+        interface ILauncherActivityInfo;
+    }
+
+    [local]
+    class CLauncherApps {
+         constructor(
+             [in] IContext* context,
+             [in] IILauncherApps* service);
+
+        interface ILauncherApps;
     }
 
     class CLimitedLengthInputStream {
@@ -1482,49 +1507,6 @@ module
     } // namespace Content
     } // namepsace Droid
     } // namespace Elastos
-
-
-//     namespace Elastos {
-//     namespace Droid {
-//     namespace Internal {
-//     namespace Content {
-
-//     /**
-//      * Native libraries helper.
-//      *
-//      * @hide
-//      */
-//     singleton class CNativeLibraryHelper {
-
-//         interface INativeLibraryHelper;
-//     }
-
-//     /**
-//      * Constants used internally between the PackageManager
-//      * and media container service transports.
-//      * Some utility methods to invoke MountService api.
-//      */
-//     singleton class CPackageHelper {
-
-//         interface IPackageHelper;
-//     }
-
-//     /**
-//      * Helper for building selection clauses for {@link SQLiteDatabase}. Each
-//      * appended clause is combined using {@code AND}. This class is <em>not</em>
-//      * thread safe.
-//      *
-//      * @hide
-//      */
-//     class CSelectionBuilder {
-
-//         interface ISelectionBuilder;
-//     }
-
-//     } // namespace Content
-//     } // namespace Internal
-//     } // namespace Droid
-//     } // namespace Elastos
 
 }
 

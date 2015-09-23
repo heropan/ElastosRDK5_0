@@ -10,6 +10,7 @@ module
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.IIntentSender;
+    interface Elastos.Droid.Net.IUri;
 
     namespace Elastos {
     namespace Droid {
@@ -294,7 +295,7 @@ module
          * @see Intent#EXTRA_ORIGINATING_URI
          */
         SetOriginatingUri(
-            /*[in] IUri* originatingUri*/);
+            [in] IUri* originatingUri);
 
         /**
          * Optionally set the URI that referred you to install this package. Used
@@ -303,7 +304,7 @@ module
          * @see Intent#EXTRA_REFERRER
          */
         SetReferrerUri(
-            /*[in] IUri* referrerUri*/);
+            [in] IUri* referrerUri);
     }
 
 
@@ -730,10 +731,6 @@ module
          */
         UnregisterSessionCallback(
             [in] IPackageInstallerSessionCallback* cb);
-
-
-
-
     }
 
     } // namespace Pm

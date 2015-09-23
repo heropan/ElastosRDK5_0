@@ -25,12 +25,12 @@ module
         OnPackagesAvailable(
             [in] IUserHandle* user,
             [in] ArrayOf<String>* packageNames,
-            [out] Boolean* replacing);
+            [in] Boolean* replacing);
 
         OnPackagesUnavailable(
             [in] IUserHandle* user,
             [in] ArrayOf<String>* packageNames,
-            [out] Boolean* replacing);
+            [in] Boolean replacing);
     }
 
     } // namespace Pm

@@ -40,6 +40,11 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
+    CARAPI SetFeatures(
+        /* [in] */ ArrayOf<IFeatureInfo*>* features);
+
+    CARAPI GetFeatures(
+        /* [out, callee] */ ArrayOf<IFeatureInfo*>** features);
 
 public:
     AutoPtr<ArrayOf<IFeatureInfo*> > mFeatures;

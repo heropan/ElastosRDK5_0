@@ -39,13 +39,28 @@ ECode CFeatureGroupInfo::constructor(
 ECode CFeatureGroupInfo::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    source->ReadArrayOf((Handle32*)&mFeatures);
+    return source->ReadArrayOf((Handle32*)&mFeatures);
 }
 
 ECode CFeatureGroupInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    dest->WriteArrayOf((Handle32)mFeatures.Get());
+    return dest->WriteArrayOf((Handle32)mFeatures.Get());
+}
+
+ECode CFeatureGroupInfo::SetFeatures(
+    /* [in] */ ArrayOf<IFeatureInfo*>* features)
+{
+    mFeatures = features;
+    return NOERROR;
+}
+
+ECode CFeatureGroupInfo::GetFeatures(
+    /* [out, callee] */ ArrayOf<IFeatureInfo*>** features)
+{
+    VALIDATE_NOT_NULL(features)
+    *features = mFeatures;
+    REFCOUNT_ADD(*features)
     return NOERROR;
 }
 
