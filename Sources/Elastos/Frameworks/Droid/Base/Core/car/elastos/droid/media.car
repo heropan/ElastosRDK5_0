@@ -901,16 +901,16 @@ module
             interface IMtpConstants;
         }
 
-//        [local, deprecated]
-//        class CMtpDatabase {
-//            constructor(
-//                [in] IContext* ctx,
-//                [in] String volumeName,
-//                [in] String storagePath,
-//                [in] ArrayOf<String>* subDirectories);
-//
-//            interface IMtpDatabase;
-//        }
+       [local, deprecated]
+       class CMtpDatabase {
+           constructor(
+               [in] IContext* ctx,
+               [in] String volumeName,
+               [in] String storagePath,
+               [in] ArrayOf<String>* subDirectories);
+
+           interface IMtpDatabase;
+       }
 
         class CMtpDevice {
             constructor(
@@ -927,17 +927,17 @@ module
             interface IMtpObjectInfo;
         }
 
-//        [deprecated]
-//        class CMtpPropertyGroup {
-//            constructor(
-//                [in] IMtpDatabase* database,
-//                [in] IIContentProvider* provider,
-//                [in] String packageName,
-//                [in] String volume,
-//                [in] ArrayOf<Int32>* properties);
-//
-//            interface IMtpPropertyGroup;
-//        }
+       [deprecated]
+       class CMtpPropertyGroup {
+           constructor(
+               [in] IMtpDatabase* database,
+               [in] IIContentProvider* provider,
+               [in] String packageName,
+               [in] String volume,
+               [in] ArrayOf<Int32>* properties);
+
+           interface IMtpPropertyGroup;
+       }
 
         class CMtpPropertyList {
             constructor(
@@ -947,14 +947,14 @@ module
             interface IMtpPropertyList;
         }
 
-//        class CMtpServer {
-//            constructor(
-//                [in] IMtpDatabase* database,
-//                [in] Boolean usePtp);
-//
-//            interface IMtpServer;
-//            interface IRunnable;
-//        }
+       class CMtpServer {
+           constructor(
+               [in] IMtpDatabase* database,
+               [in] Boolean usePtp);
+
+           interface IMtpServer;
+           interface IRunnable;
+       }
 
         [local]
         class CMtpStorage {

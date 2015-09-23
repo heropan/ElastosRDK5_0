@@ -6,33 +6,41 @@
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 #include "mtp/CMtpPropertyList.h"
-#include "provider/CMediaStoreFiles.h"
-#include "provider/CMediaStoreAudioMedia.h"
-#include "provider/CMediaStoreAudioGenres.h"
+//TODO: Need provider/CMediaStoreFiles
+// #include "provider/CMediaStoreFiles.h"
+//TODO: Need provider/CMediaStoreAudioMedia
+// #include "provider/CMediaStoreAudioMedia.h"
+//TODO: Need provider/CMediaStoreAudioGenres
+// #include "provider/CMediaStoreAudioGenres.h"
 
+using Elastos::IO::ICloseable;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Mtp::CMtpPropertyList;
+using Elastos::Droid::Provider::IBaseColumns;
 using Elastos::Droid::Provider::IMediaStoreFilesFileColumns;
 using Elastos::Droid::Provider::IMediaStoreFiles;
-using Elastos::Droid::Provider::CMediaStoreFiles;
+//TODO: Need provider/CMediaStoreFiles
+// using Elastos::Droid::Provider::CMediaStoreFiles;
 using Elastos::Droid::Provider::IMediaStoreMediaColumns;
 using Elastos::Droid::Provider::IMediaStoreAudioAudioColumns;
 using Elastos::Droid::Provider::IMediaStoreAudioPlaylistsColumns;
 using Elastos::Droid::Provider::IMediaStoreImagesImageColumns;
 using Elastos::Droid::Provider::IMediaStoreAudioGenresColumns;
 using Elastos::Droid::Provider::IMediaStoreAudioMedia;
-using Elastos::Droid::Provider::CMediaStoreAudioMedia;
+//TODO: Need provider/CMediaStoreAudioMedia
+// using Elastos::Droid::Provider::CMediaStoreAudioMedia;
 using Elastos::Droid::Provider::IMediaStoreAudioGenres;
-using Elastos::Droid::Provider::CMediaStoreAudioGenres;
+//TODO: Need provider/CMediaStoreAudioGenres
+// using Elastos::Droid::Provider::CMediaStoreAudioGenres;
 
 namespace Elastos {
 namespace Droid {
 namespace Mtp {
 
 const String CMtpPropertyGroup::TAG("MtpPropertyGroup");
-const String CMtpPropertyGroup::ID_WHERE = IMediaStoreFilesFileColumns::ID + "=?";
+const String CMtpPropertyGroup::ID_WHERE = IBaseColumns::ID + "=?";
 const String CMtpPropertyGroup::FORMAT_WHERE = IMediaStoreFilesFileColumns::FORMAT + "=?";
 const String CMtpPropertyGroup::ID_FORMAT_WHERE = CMtpPropertyGroup::ID_WHERE + " AND " + CMtpPropertyGroup::FORMAT_WHERE;
 const String CMtpPropertyGroup::PARENT_WHERE = IMediaStoreFilesFileColumns::PARENT + "=?";
@@ -67,12 +75,13 @@ ECode CMtpPropertyGroup::constructor(
     mPackageName = packageName;
     mVolumeName = volume;
     AutoPtr<IMediaStoreFiles> files;
-    CMediaStoreFiles::AcquireSingleton((IMediaStoreFiles**)&files);
+//TODO: Need provider/CMediaStoreFiles
+    // CMediaStoreFiles::AcquireSingleton((IMediaStoreFiles**)&files);
     files->GetMtpObjectsUri(volume, (IUri**)&mUri);
 
     Int32 count = properties->GetLength();
     AutoPtr<List<String> > columns = new List<String>();
-    columns->PushBack(IMediaStoreFilesFileColumns::ID);
+    columns->PushBack(IBaseColumns::ID);
 
     mProperties = ArrayOf<Property*>::Alloc(count);
     for (Int32 i = 0; i < count; i++) {
@@ -109,7 +118,7 @@ ECode CMtpPropertyGroup::GetPropertyList(
         }
         else {
             whereArgs = ArrayOf<String>::Alloc(1);
-            whereArgs->Set(0, StringUtils::Int32ToString(handle));
+            whereArgs->Set(0, StringUtils::ToString(handle));
             if (depth == 1) {
                 where = PARENT_WHERE;
             } else {
@@ -122,12 +131,12 @@ ECode CMtpPropertyGroup::GetPropertyList(
             // select all objects with given format
             where = FORMAT_WHERE;
             whereArgs = ArrayOf<String>::Alloc(1);
-            whereArgs->Set(0, StringUtils::Int32ToString(format));
+            whereArgs->Set(0, StringUtils::ToString(format));
         }
         else {
             whereArgs = ArrayOf<String>::Alloc(2);
-            whereArgs->Set(0, StringUtils::Int32ToString(handle));
-            whereArgs->Set(1, StringUtils::Int32ToString(format));
+            whereArgs->Set(0, StringUtils::ToString(handle));
+            whereArgs->Set(1, StringUtils::ToString(format));
             if (depth == 1) {
                 where = PARENT_FORMAT_WHERE;
             }
@@ -203,7 +212,7 @@ ECode CMtpPropertyGroup::GetPropertyList(
                         }
                         // if title and name fail, extract name from full path
                         if (name == NULL) {
-                            name = QueryString(handle, IMediaStoreFilesFileColumns::DATA);
+                            name = QueryString(handle, IMediaStoreMediaColumns::DATA);
                             if (name != NULL) {
                                 name = NameFromPath(name);
                             }
@@ -303,11 +312,11 @@ AutoPtr<Elastos::Droid::Mtp::CMtpPropertyGroup::Property> CMtpPropertyGroup::Cre
             type = IMtpConstants::TYPE_UINT16;
             break;
         case IMtpConstants::PROPERTY_OBJECT_SIZE:
-            column = IMediaStoreFilesFileColumns::SIZE;
+            column = IMediaStoreMediaColumns::SIZE;
             type = IMtpConstants::TYPE_UINT64;
             break;
         case IMtpConstants::PROPERTY_OBJECT_FILE_NAME:
-            column = IMediaStoreFilesFileColumns::DATA;
+            column = IMediaStoreMediaColumns::DATA;
             type = IMtpConstants::TYPE_STR;
             break;
         case IMtpConstants::PROPERTY_NAME:
@@ -315,11 +324,11 @@ AutoPtr<Elastos::Droid::Mtp::CMtpPropertyGroup::Property> CMtpPropertyGroup::Cre
             type = IMtpConstants::TYPE_STR;
             break;
         case IMtpConstants::PROPERTY_DATE_MODIFIED:
-            column = IMediaStoreFilesFileColumns::DATE_MODIFIED;
+            column = IMediaStoreMediaColumns::DATE_MODIFIED;
             type = IMtpConstants::TYPE_STR;
             break;
         case IMtpConstants::PROPERTY_DATE_ADDED:
-            column = IMediaStoreFilesFileColumns::DATE_ADDED;
+            column = IMediaStoreMediaColumns::DATE_ADDED;
             type = IMtpConstants::TYPE_STR;
             break;
         case IMtpConstants::PROPERTY_ORIGINAL_RELEASE_DATE:
@@ -394,10 +403,10 @@ String CMtpPropertyGroup::QueryString(
     //try {
         // for now we are only reading properties from the "objects" table
         AutoPtr<ArrayOf<String> > s1 = ArrayOf<String>::Alloc(2);
-        s1->Set(0, IMediaStoreFilesFileColumns::ID);
+        s1->Set(0, IBaseColumns::ID);
         s1->Set(1, column);
         AutoPtr<ArrayOf<String> > s2 = ArrayOf<String>::Alloc(1);
-        s1->Set(0, StringUtils::Int32ToString(id));
+        s1->Set(0, StringUtils::ToString(id));
         mProvider->Query(mPackageName, mUri, s1, ID_WHERE, s2, String(NULL), NULL, (ICursor**)&c);
         Boolean b;
         if (c != NULL && (c->MoveToNext(&b),b)) {
@@ -424,12 +433,13 @@ String CMtpPropertyGroup::QueryAudio(
     AutoPtr<ICursor> c;
     //try {
         AutoPtr<ArrayOf<String> > s1 = ArrayOf<String>::Alloc(2);
-        s1->Set(0, IMediaStoreFilesFileColumns::ID);
+        s1->Set(0, IBaseColumns::ID);
         s1->Set(1, column);
         AutoPtr<ArrayOf<String> > s2 = ArrayOf<String>::Alloc(1);
-        s1->Set(0, StringUtils::Int32ToString(id));
+        s1->Set(0, StringUtils::ToString(id));
         AutoPtr<IMediaStoreAudioMedia> am;
-        CMediaStoreAudioMedia::AcquireSingleton((IMediaStoreAudioMedia**)&am);
+//TODO: Need provider/CMediaStoreAudioMedia
+        // CMediaStoreAudioMedia::AcquireSingleton((IMediaStoreAudioMedia**)&am);
         AutoPtr<IUri> uri;
         am->GetContentUri(mVolumeName, (IUri**)&uri);
         mProvider->Query(mPackageName, uri, s1, ID_WHERE, s2, String(NULL), NULL, (ICursor**)&c);
@@ -458,10 +468,11 @@ String CMtpPropertyGroup::QueryGenre(
     //try {
         AutoPtr<IUri> uri;
         AutoPtr<IMediaStoreAudioGenres> ag;
-        CMediaStoreAudioGenres::AcquireSingleton((IMediaStoreAudioGenres**)&ag);
+//TODO: Need provider/CMediaStoreAudioGenres
+        // CMediaStoreAudioGenres::AcquireSingleton((IMediaStoreAudioGenres**)&ag);
         ag->GetContentUriForAudioId(mVolumeName, id, (IUri**)&uri);
         AutoPtr<ArrayOf<String> > s1 = ArrayOf<String>::Alloc(2);
-        s1->Set(0, IMediaStoreFilesFileColumns::ID);
+        s1->Set(0, IBaseColumns::ID);
         s1->Set(1, IMediaStoreAudioGenresColumns::NAME);
         mProvider->Query(mPackageName, uri, s1, String(NULL), NULL, String(NULL), NULL, (ICursor**)&c);
         Boolean b;
@@ -491,10 +502,10 @@ Int64 CMtpPropertyGroup::QueryInt64(
     //try {
         // for now we are only reading properties from the "objects" table
         AutoPtr<ArrayOf<String> > s1 = ArrayOf<String>::Alloc(2);
-        s1->Set(0, IMediaStoreFilesFileColumns::ID);
+        s1->Set(0, IBaseColumns::ID);
         s1->Set(1, column);
         AutoPtr<ArrayOf<String> > s2 = ArrayOf<String>::Alloc(1);
-        s1->Set(0, StringUtils::Int32ToString(id));
+        s1->Set(0, StringUtils::ToString(id));
         mProvider->Query(mPackageName, mUri, s1, ID_WHERE, s2, String(NULL), NULL, (ICursor**)&c);
         Boolean b;
         if (c != NULL && (c->MoveToNext(&b),b)) {
@@ -505,7 +516,7 @@ Int64 CMtpPropertyGroup::QueryInt64(
     //} catch (Exception e) {
     //} finally {
         if (c != NULL) {
-            c->Close();
+            ICloseable::Probe(c)->Close();
         }
     //}
     return NULL;

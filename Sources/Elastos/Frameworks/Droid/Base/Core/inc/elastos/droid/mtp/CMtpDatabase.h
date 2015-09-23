@@ -11,6 +11,7 @@
 using Elastos::Core::IInteger32;
 using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::IHashMap;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IContext;
@@ -183,6 +184,11 @@ public:
 
     CARAPI_(void) NativeFinalize();
 
+public:
+    // read from native code
+    Int32 mBatteryLevel;
+    Int32 mBatteryScale;
+
 private:
     static const String TAG;
 
@@ -200,13 +206,13 @@ private:
     // where arguments for restricting queries to files in mSubDirectories
     AutoPtr<ArrayOf<String> > mSubDirectoriesWhereArgs;
 
-    HashMap<String, AutoPtr<IMtpStorage> > mStorageMap;
+    AutoPtr<IHashMap> mStorageMap;
 
     // cached property groups for single properties
-    HashMap<AutoPtr<IInteger32>, AutoPtr<IMtpPropertyGroup> > mPropertyGroupsByProperty;
+    AutoPtr<IHashMap> mPropertyGroupsByProperty;
 
     // cached property groups for all properties for a given format
-    HashMap<AutoPtr<IInteger32>, AutoPtr<IMtpPropertyGroup> > mPropertyGroupsByFormat;
+    AutoPtr<IHashMap> mPropertyGroupsByFormat;
 
     // true if the database has been modified in the current MTP session
     Boolean mDatabaseModified;
@@ -241,10 +247,6 @@ private:
     AutoPtr<IMediaScanner> mMediaScanner;
 
     AutoPtr<IMtpServer> mServer;
-
-    // read from native code
-    Int32 mBatteryLevel;
-    Int32 mBatteryScale;
 
     AutoPtr<IBroadcastReceiver> mBatteryReceiver;
 

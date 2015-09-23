@@ -2,10 +2,12 @@
 #include "ext/frameworkext.h"
 #include "CMtpDatabase.h"
 #include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 #include "text/TextUtils.h"
 // TODO: Need CMediaScanner
 // #include "media/media/CMediaScanner.h"
 #include "content/CIntent.h"
+#include "content/CIntentFilter.h"
 #include "content/CContentValues.h"
 #include "mtp/CMtpPropertyList.h"
 #include "mtp/CMtpPropertyGroup.h"
@@ -16,8 +18,10 @@
 #include "MtpStringBuffer.h"
 #include "MtpUtils.h"
 #include "mtp.h"
-#include "provider/CMediaStoreFiles.h"
-#include "provider/CMediaStoreAudioPlaylists.h"
+//TODO: Need provider/CMediaStoreFiles
+// #include "provider/CMediaStoreFiles.h"
+//TODO: Need provider/CMediaStoreAudioPlaylists
+// #include "provider/CMediaStoreAudioPlaylists.h"
 
 extern "C" {
 #include "libexif/exif-content.h"
@@ -27,9 +31,12 @@ extern "C" {
 }
 
 using namespace android;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::IList;
+using Elastos::Utility::CHashMap;
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
+using Elastos::IO::ICloseable;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
@@ -39,7 +46,9 @@ using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
+using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IBatteryManager;
 using Elastos::Droid::Text::TextUtils;
 // TODO: Need CMediaScanner
 // using Elastos::Droid::Media::CMediaScanner;
@@ -50,18 +59,23 @@ using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::CContentValues;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::ISharedPreferencesEditor;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Mtp::CMtpPropertyList;
 using Elastos::Droid::Mtp::CMtpPropertyGroup;
+using Elastos::Droid::Provider::IBaseColumns;
 using Elastos::Droid::Provider::IMediaStoreFilesFileColumns;
 using Elastos::Droid::Provider::IMediaStoreFiles;
-using Elastos::Droid::Provider::CMediaStoreFiles;
+//TODO: Need provider/CMediaStoreFiles
+// using Elastos::Droid::Provider::CMediaStoreFiles;
 using Elastos::Droid::Provider::IMediaStore;
 using Elastos::Droid::Provider::IMediaStoreAudioPlaylists;
-using Elastos::Droid::Provider::CMediaStoreAudioPlaylists;
+//TODO: Need provider/CMediaStoreAudioPlaylists
+// using Elastos::Droid::Provider::CMediaStoreAudioPlaylists;
 using Elastos::Droid::Provider::IMediaStoreMediaColumns;
 
 namespace Elastos {
@@ -449,7 +463,7 @@ MtpResponseCode MyMtpDatabase::getDevicePropertyValue(
 {
     if (property == MTP_DEVICE_PROPERTY_BATTERY_LEVEL) {
         // special case - implemented here instead of Java
-        packet.putUInt8((uint8_t)mBatteryLevel);
+        packet.putUInt8((uint8_t)mDatabase->mBatteryLevel);
         return MTP_RESPONSE_OK;
     } else {
         int type;
@@ -1001,8 +1015,8 @@ MtpProperty* MyMtpDatabase::getDevicePropertyDesc(
         }
         case MTP_DEVICE_PROPERTY_BATTERY_LEVEL:
             result = new MtpProperty(property, MTP_TYPE_UINT8);
-            result->setFormRange(0, mBatteryScale, 1);
-            result->mCurrentValue.u.u8 = (uint8_t)mBatteryLevel;
+            result->setFormRange(0, mDatabase->mBatteryScale, 1);
+            result->mCurrentValue.u.u8 = (uint8_t)mDatabase->mBatteryLevel;
             break;
     }
 
@@ -1035,8 +1049,8 @@ ArrayOf<Int32>* CMtpDatabase::VIDEO_PROPERTIES;
 ArrayOf<Int32>* CMtpDatabase::IMAGE_PROPERTIES;
 ArrayOf<Int32>* CMtpDatabase::ALL_PROPERTIES;
 
-const String CMtpDatabase::ID_WHERE = IMediaStoreFilesFileColumns::ID + "=?";
-const String CMtpDatabase::PATH_WHERE = IMediaStoreFilesFileColumns::DATA + "=?";
+const String CMtpDatabase::ID_WHERE = IBaseColumns::ID + "=?";
+const String CMtpDatabase::PATH_WHERE = IMediaStoreMediaColumns::DATA + "=?";
 const String CMtpDatabase::STORAGE_WHERE = IMediaStoreFilesFileColumns::STORAGE_ID + "=?";
 const String CMtpDatabase::FORMAT_WHERE = IMediaStoreFilesFileColumns::FORMAT + "=?";
 const String CMtpDatabase::PARENT_WHERE = IMediaStoreFilesFileColumns::PARENT + "=?";
@@ -1058,9 +1072,9 @@ ECode CMtpDatabase::BatteryReceiver::OnReceive(
     String action;
     intent->GetAction(&action);
     if (action.Equals(IIntent::ACTION_BATTERY_CHANGED)) {
-        intent->GetIntExtra(IBatteryManager::EXTRA_SCALE, 0, &mHost->mBatteryScale);
+        intent->GetInt32Extra(IBatteryManager::EXTRA_SCALE, 0, &mHost->mBatteryScale);
         Int32 newLevel;
-        intent->GetIntExtra(IBatteryManager::EXTRA_LEVEL, 0, &newLevel);
+        intent->GetInt32Extra(IBatteryManager::EXTRA_LEVEL, 0, &newLevel);
         if (newLevel != mHost->mBatteryLevel) {
             mHost->mBatteryLevel = newLevel;
             if (mHost->mServer != NULL) {
@@ -1080,25 +1094,25 @@ CMtpDatabase::CMtpDatabase()
     , mNativeContext(0)
 {
     ID_PROJECTION = ArrayOf<String>::Alloc(1);
-    ID_PROJECTION->Set(0, IMediaStoreFilesFileColumns::ID);
+    ID_PROJECTION->Set(0, IBaseColumns::ID);
 
     PATH_PROJECTION = ArrayOf<String>::Alloc(2);
-    PATH_PROJECTION->Set(0, IMediaStoreFilesFileColumns::ID);
-    PATH_PROJECTION->Set(1, IMediaStoreFilesFileColumns::DATA);
+    PATH_PROJECTION->Set(0, IBaseColumns::ID);
+    PATH_PROJECTION->Set(1, IMediaStoreMediaColumns::DATA);
 
     PATH_FORMAT_PROJECTION = ArrayOf<String>::Alloc(3);
-    PATH_FORMAT_PROJECTION->Set(0, IMediaStoreFilesFileColumns::ID);
-    PATH_FORMAT_PROJECTION->Set(1, IMediaStoreFilesFileColumns::DATA);
+    PATH_FORMAT_PROJECTION->Set(0, IBaseColumns::ID);
+    PATH_FORMAT_PROJECTION->Set(1, IMediaStoreMediaColumns::DATA);
     PATH_FORMAT_PROJECTION->Set(2, IMediaStoreFilesFileColumns::FORMAT);
 
     OBJECT_INFO_PROJECTION = ArrayOf<String>::Alloc(6);
-    OBJECT_INFO_PROJECTION->Set(0, IMediaStoreFilesFileColumns::ID);
+    OBJECT_INFO_PROJECTION->Set(0, IBaseColumns::ID);
     OBJECT_INFO_PROJECTION->Set(1, IMediaStoreFilesFileColumns::STORAGE_ID);
     OBJECT_INFO_PROJECTION->Set(2, IMediaStoreFilesFileColumns::FORMAT);
     OBJECT_INFO_PROJECTION->Set(3, IMediaStoreFilesFileColumns::PARENT);
-    OBJECT_INFO_PROJECTION->Set(4, IMediaStoreFilesFileColumns::DATA);
-    OBJECT_INFO_PROJECTION->Set(5, IMediaStoreFilesFileColumns::DATE_ADDED);
-    OBJECT_INFO_PROJECTION->Set(6, IMediaStoreFilesFileColumns::DATE_MODIFIED);
+    OBJECT_INFO_PROJECTION->Set(4, IMediaStoreMediaColumns::DATA);
+    OBJECT_INFO_PROJECTION->Set(5, IMediaStoreMediaColumns::DATE_ADDED);
+    OBJECT_INFO_PROJECTION->Set(6, IMediaStoreMediaColumns::DATE_MODIFIED);
 
     FILE_PROPERTIES = ArrayOf<Int32>::Alloc(10);
             // NOTE must match beginning of AUDIO_PROPERTIES, VIDEO_PROPERTIES
@@ -1210,6 +1224,10 @@ CMtpDatabase::CMtpDatabase()
     ALL_PROPERTIES->Set(24, IMtpConstants::PROPERTY_DESCRIPTION);
 
     mBatteryReceiver = new BatteryReceiver(this);
+
+    CHashMap::New((IHashMap**)&mStorageMap);
+    CHashMap::New((IHashMap**)&mPropertyGroupsByProperty);
+    CHashMap::New((IHashMap**)&mPropertyGroupsByFormat);
 }
 
 CAR_INTERFACE_IMPL(CMtpDatabase, Object, IMtpDatabase)
@@ -1232,7 +1250,8 @@ ECode CMtpDatabase::constructor(
     mVolumeName = volumeName;
     mMediaStoragePath = storagePath;
     AutoPtr<IMediaStoreFiles> files;
-    CMediaStoreFiles::AcquireSingleton((IMediaStoreFiles**)&files);
+//TODO: Need provider/CMediaStoreFiles
+    // CMediaStoreFiles::AcquireSingleton((IMediaStoreFiles**)&files);
     files->GetMtpObjectsUri(volumeName, (IUri**)&mObjectsUri);
 // TODO: Need CMediaScanner
     // CMediaScanner::New(context, (IMediaScanner**)&mMediaScanner);
@@ -1241,17 +1260,17 @@ ECode CMtpDatabase::constructor(
     if (subDirectories != NULL) {
         // Compute "where" string for restricting queries to subdirectories
         AutoPtr<IStringBuilder> builder = new StringBuilder();
-        builder->AppendString(String("("));
+        builder->Append(String("("));
         Int32 count = subDirectories->GetLength();
         for (Int32 i = 0; i < count; i++) {
-            builder->AppendString(IMediaStoreFilesFileColumns::DATA + "=? OR "
-                + IMediaStoreFilesFileColumns::DATA + " LIKE ?");
+            builder->Append(IMediaStoreMediaColumns::DATA + "=? OR "
+                + IMediaStoreMediaColumns::DATA + " LIKE ?");
             if (i != count - 1) {
-                builder->AppendString(String(" OR "));
+                builder->Append(String(" OR "));
             }
         }
-        builder->AppendString(String(")"));
-        builder->ToString(&mSubDirectoriesWhere);
+        builder->Append(String(")"));
+        ICharSequence::Probe(builder)->ToString(&mSubDirectoriesWhere);
 
         // Compute "where" arguments for restricting queries to subdirectories
         mSubDirectoriesWhereArgs = ArrayOf<String>::Alloc(count * 2);
@@ -1307,7 +1326,8 @@ ECode CMtpDatabase::SetServer(
     if (server != NULL) {
         AutoPtr<IIntentFilter> filter;
         CIntentFilter::New(IIntent::ACTION_BATTERY_CHANGED, (IIntentFilter**)&filter);
-        mContext->RegisterReceiver(mBatteryReceiver, filter);
+        AutoPtr<IIntent> intent;
+        mContext->RegisterReceiver(mBatteryReceiver, filter, (IIntent**)&intent);
     }
     return NOERROR;
 }
@@ -1317,7 +1337,9 @@ ECode CMtpDatabase::AddStorage(
 {
     String path;
     storage->GetPath(&path);
-    mStorageMap.Insert(HashMap<String, AutoPtr<IMtpStorage> >::ValueType(path, storage));
+    AutoPtr<ICharSequence> csq;
+    CString::New(path, (ICharSequence**)&csq);
+    mStorageMap->Put(csq, storage);
     return NOERROR;
 }
 
@@ -1326,7 +1348,9 @@ ECode CMtpDatabase::RemoveStorage(
 {
     String path;
     storage->GetPath(&path);
-    mStorageMap.Erase(path);
+    AutoPtr<ICharSequence> csq;
+    CString::New(path, (ICharSequence**)&csq);
+    mStorageMap->Remove(csq);
     return NOERROR;
 }
 
@@ -1380,10 +1404,10 @@ void CMtpDatabase::InitDeviceProperties(
         //} catch (Exception e) {
         //    Log->E(TAG, "failed to migrate device properties", e);
         //} finally {
-            if (c != NULL) c->Close();
-            if (db != NULL) db->Close();
+            if (c != NULL) ICloseable::Probe(c)->Close();
+            if (db != NULL) ICloseable::Probe(db)->Close();
         //}
-        context->DeleteDatabase(devicePropertiesName);
+        context->DeleteDatabase(devicePropertiesName, &b);
     }
 }
 
@@ -1429,11 +1453,17 @@ Boolean CMtpDatabase::InStorageRoot(
 {
     // try {
         AutoPtr<IFile> f;
-        CFile::New(path);
+        CFile::New(path, (IFile**)&f);
         String canonical;
         f->GetCanonicalPath(&canonical);
-        for (String root: mStorageMap.keySet()) {
-            if (canonical.startsWith(root)) {
+        AutoPtr<ISet> set;
+        mStorageMap->GetKeySet((ISet**)&set);
+        AutoPtr<ArrayOf<IInterface*> > array;
+        set->ToArray((ArrayOf<IInterface*>**)&array);
+        for(Int32 i = 0; i < array->GetLength(); i++) {
+            String root;
+            ICharSequence::Probe((*array)[i])->ToString(&root);
+            if (canonical.StartWith(root)) {
                 return TRUE;
             }
         }
@@ -1466,7 +1496,6 @@ Int32 CMtpDatabase::BeginSendObject(
         AutoPtr<ArrayOf<String> > s = ArrayOf<String>::Alloc(1);
         s->Set(0, path);
         mMediaProvider->Query(mPackageName, mObjectsUri, ID_PROJECTION, PATH_WHERE, s, String(NULL), NULL, (ICursor**)&c);
-        Int32 count;
         if (c != NULL) {
             Int32 count;
             c->GetCount(&count);
@@ -1479,7 +1508,7 @@ Int32 CMtpDatabase::BeginSendObject(
         //    Log->E(TAG, "RemoteException in beginSendObject", e);
         //} finally {
         if (c != NULL) {
-            c->Close();
+            ICloseable::Probe(c)->Close();
         }
         //}
     }
@@ -1489,30 +1518,34 @@ Int32 CMtpDatabase::BeginSendObject(
     CContentValues::New((IContentValues**)&values);
     AutoPtr<ICharSequence> csq;
     CString::New(path, (ICharSequence**)&csq);
-    values->PutString(IMediaStoreFilesFileColumns::DATA, csq);
+    values->Put(IMediaStoreMediaColumns::DATA, csq);
     AutoPtr<IInteger32> iFormat;
     CInteger32::New(format, (IInteger32**)&iFormat);
-    values->PutInt32(IMediaStoreFilesFileColumns::FORMAT, iFormat);
+    values->Put(IMediaStoreFilesFileColumns::FORMAT, iFormat);
     AutoPtr<IInteger32> iParent;
     CInteger32::New(parent, (IInteger32**)&iParent);
-    values->PutInt32(IMediaStoreFilesFileColumns::PARENT, iParent);
+    values->Put(IMediaStoreFilesFileColumns::PARENT, iParent);
     AutoPtr<IInteger32> iStorageId;
     CInteger32::New(storageId, (IInteger32**)&iStorageId);
-    values->PutInt32(IMediaStoreFilesFileColumns::STORAGE_ID, iStorageId);
+    values->Put(IMediaStoreFilesFileColumns::STORAGE_ID, iStorageId);
     AutoPtr<IInteger64> iSize;
     CInteger64::New(size, (IInteger64**)&iSize);
-    values->PutInt64(IMediaStoreFilesFileColumns::SIZE, iSize);
+    values->Put(IMediaStoreMediaColumns::SIZE, iSize);
     AutoPtr<IInteger64> iModified;
     CInteger64::New(modified, (IInteger64**)&iModified);
-    values->PutInt64(IMediaStoreFilesFileColumns::DATE_MODIFIED, iModified);
+    values->Put(IMediaStoreMediaColumns::DATE_MODIFIED, iModified);
 
     //try {
         AutoPtr<IUri> uri;
         mMediaProvider->Insert(mPackageName, mObjectsUri, values, (IUri**)&uri);
         if (uri != NULL) {
-            AutoPtr<ArrayOf<String> > s;
-            uri->GetPathSegments((ArrayOf<String>**)&s);
-            return StringUtils::ParseInt32((*s)[2]);
+            AutoPtr<IList> list;
+            uri->GetPathSegments((IList**)&list);
+            AutoPtr<ICharSequence> cs;
+            list->Get(2, (IInterface**)&cs);
+            String s;
+            cs->ToString(&s);
+            return StringUtils::ParseInt32(s);
         } else {
             return -1;
         }
@@ -1550,27 +1583,28 @@ void CMtpDatabase::EndSendObject(
             CContentValues::New(1, (IContentValues**)&values);
             AutoPtr<ICharSequence> csData;
             CString::New(path, (ICharSequence**)&csData);
-            values->PutString(IMediaStoreAudioPlaylists::DATA, csData);
+            values->Put(IMediaStoreAudioPlaylists::DATA, csData);
             AutoPtr<ICharSequence> csName;
             CString::New(name, (ICharSequence**)&csName);
-            values->PutString(IMediaStoreAudioPlaylists::NAME, csName);
+            values->Put(IMediaStoreAudioPlaylists::NAME, csName);
             AutoPtr<IInteger32> iFormat;
             CInteger32::New(format, (IInteger32**)&iFormat);
-            values->PutInt32(IMediaStoreFilesFileColumns::FORMAT, iFormat);
+            values->Put(IMediaStoreFilesFileColumns::FORMAT, iFormat);
             Int64 millis;
             system->GetCurrentTimeMillis(&millis);
 
             AutoPtr<IInteger64> iModified;
             CInteger64::New(millis / 1000, (IInteger64**)&iModified);
-            values->PutInt64(IMediaStoreFilesFileColumns::DATE_MODIFIED, iModified);
+            values->Put(IMediaStoreMediaColumns::DATE_MODIFIED, iModified);
             AutoPtr<IInteger32> iHandle;
             CInteger32::New(handle, (IInteger32**)&iHandle);
-            values->PutInt32(IMediaStoreMediaColumns::MEDIA_SCANNER_NEW_OBJECT_ID, iHandle);
+            values->Put(IMediaStoreMediaColumns::MEDIA_SCANNER_NEW_OBJECT_ID, iHandle);
 
             //try {
                 AutoPtr<IUri> uri;
                 AutoPtr<IMediaStoreAudioPlaylists> list;
-                CMediaStoreAudioPlaylists::AcquireSingleton((IMediaStoreAudioPlaylists**)&list);
+//TODO: Need provider/CMediaStoreAudioPlaylists
+                // CMediaStoreAudioPlaylists::AcquireSingleton((IMediaStoreAudioPlaylists**)&list);
                 AutoPtr<IUri> extUri;
                 list->GetEXTERNAL_CONTENT_URI((IUri**)&extUri);
                 mMediaProvider->Insert(mPackageName, extUri, values, (IUri**)&uri);
@@ -1609,7 +1643,7 @@ AutoPtr<ICursor> CMtpDatabase::CreateObjectQuery(
                 }
                 where = PARENT_WHERE;
                 whereArgs = ArrayOf<String>::Alloc(1);
-                whereArgs->Set(0, StringUtils::Int32ToString(parent));
+                whereArgs->Set(0, StringUtils::ToString(parent));
             }
         }
         else {
@@ -1618,7 +1652,7 @@ AutoPtr<ICursor> CMtpDatabase::CreateObjectQuery(
                 // query all objects
                 where = FORMAT_WHERE;
                 whereArgs = ArrayOf<String>::Alloc(1);
-                whereArgs->Set(0, StringUtils::Int32ToString(format));
+                whereArgs->Set(0, StringUtils::ToString(format));
             }
             else {
                 if (parent == 0xFFFFFFFF) {
@@ -1627,8 +1661,8 @@ AutoPtr<ICursor> CMtpDatabase::CreateObjectQuery(
                 }
                 where = FORMAT_PARENT_WHERE;
                 whereArgs = ArrayOf<String>::Alloc(2);
-                whereArgs->Set(0, StringUtils::Int32ToString(format));
-                whereArgs->Set(1, StringUtils::Int32ToString(parent));
+                whereArgs->Set(0, StringUtils::ToString(format));
+                whereArgs->Set(1, StringUtils::ToString(parent));
             }
         }
     }
@@ -1640,7 +1674,7 @@ AutoPtr<ICursor> CMtpDatabase::CreateObjectQuery(
                 // query all objects
                 where = STORAGE_WHERE;
                 whereArgs = ArrayOf<String>::Alloc(1);
-                whereArgs->Set(0, StringUtils::Int32ToString(storageID));
+                whereArgs->Set(0, StringUtils::ToString(storageID));
             }
             else {
                 if (parent == 0xFFFFFFFF) {
@@ -1649,8 +1683,8 @@ AutoPtr<ICursor> CMtpDatabase::CreateObjectQuery(
                 }
                 where = STORAGE_PARENT_WHERE;
                 whereArgs = ArrayOf<String>::Alloc(2);
-                whereArgs->Set(0, StringUtils::Int32ToString(storageID));
-                whereArgs->Set(1, StringUtils::Int32ToString(parent));
+                whereArgs->Set(0, StringUtils::ToString(storageID));
+                whereArgs->Set(1, StringUtils::ToString(parent));
             }
         }
         else {
@@ -1659,8 +1693,8 @@ AutoPtr<ICursor> CMtpDatabase::CreateObjectQuery(
                 // query all objects
                 where = STORAGE_FORMAT_WHERE;
                 whereArgs = ArrayOf<String>::Alloc(2);
-                whereArgs->Set(0, StringUtils::Int32ToString(storageID));
-                whereArgs->Set(1, StringUtils::Int32ToString(format));
+                whereArgs->Set(0, StringUtils::ToString(storageID));
+                whereArgs->Set(1, StringUtils::ToString(format));
             }
             else {
                 if (parent == 0xFFFFFFFF) {
@@ -1669,9 +1703,9 @@ AutoPtr<ICursor> CMtpDatabase::CreateObjectQuery(
                 }
                 where = STORAGE_FORMAT_PARENT_WHERE;
                 whereArgs = ArrayOf<String>::Alloc(3);
-                whereArgs->Set(0, StringUtils::Int32ToString(storageID));
-                whereArgs->Set(1, StringUtils::Int32ToString(format));
-                whereArgs->Set(2, StringUtils::Int32ToString(parent));
+                whereArgs->Set(0, StringUtils::ToString(storageID));
+                whereArgs->Set(1, StringUtils::ToString(format));
+                whereArgs->Set(2, StringUtils::ToString(parent));
             }
         }
     }
@@ -1732,7 +1766,7 @@ AutoPtr<ArrayOf<Int32> > CMtpDatabase::GetObjectList(
     //    Log->E(TAG, "RemoteException in getObjectList", e);
     //} finally {
         if (c != NULL) {
-            c->Close();
+            ICloseable::Probe(c)->Close();
         }
     //}
     return NULL;
@@ -1755,7 +1789,7 @@ Int32 CMtpDatabase::GetNumObjects(
     //    Log->E(TAG, "RemoteException in getNumObjects", e);
     //} finally {
         if (c != NULL) {
-            c->Close();
+            ICloseable::Probe(c)->Close();
         }
     //}
     return -1;
@@ -1849,25 +1883,28 @@ AutoPtr<IMtpPropertyList> CMtpDatabase::GetObjectPropertyList(
         return list;
     }
 
+
     AutoPtr<IMtpPropertyGroup> propertyGroup;
     if (property == 0xFFFFFFFFL) {
         AutoPtr<IInteger32> iFormat;
         CInteger32::New(format, (IInteger32**)&iFormat);
-        HashMap<AutoPtr<IInteger32>, AutoPtr<IMtpPropertyGroup> >::Iterator it = mPropertyGroupsByFormat.Find(iFormat);
-        if (it == mPropertyGroupsByFormat.End()) {
+        mPropertyGroupsByFormat->Get(iFormat, (IInterface**)&propertyGroup);
+         // propertyGroup = mPropertyGroupsByFormat.get(format);
+        if (propertyGroup == NULL) {
             AutoPtr<ArrayOf<Int32> > propertyList = GetSupportedObjectProperties(format);
             CMtpPropertyGroup::New(this, mMediaProvider, mPackageName, mVolumeName, propertyList, (IMtpPropertyGroup**)&propertyGroup);
-            mPropertyGroupsByFormat[iFormat] = propertyGroup;
+            mPropertyGroupsByFormat->Put(iFormat, propertyGroup);
         }
     } else {
         AutoPtr<IInteger32> iProperty;
         CInteger32::New(property, (IInteger32**)&iProperty);
-        HashMap<AutoPtr<IInteger32>, AutoPtr<IMtpPropertyGroup> >::Iterator it = mPropertyGroupsByProperty.Find(iProperty);
-        if (it == mPropertyGroupsByProperty.End()) {
+        mPropertyGroupsByProperty->Get(iProperty, (IInterface**)&propertyGroup);
+        // propertyGroup = mPropertyGroupsByProperty.get(property);
+        if (propertyGroup == NULL) {
             AutoPtr<ArrayOf<Int32> > propertyList = ArrayOf<Int32>::Alloc(1);
             propertyList->Set(0, (Int32)property);
             CMtpPropertyGroup::New(this, mMediaProvider, mPackageName, mVolumeName, propertyList, (IMtpPropertyGroup**)&propertyGroup);
-            mPropertyGroupsByProperty[iProperty] = propertyGroup;
+            mPropertyGroupsByProperty->Put(iProperty, propertyGroup);
         }
     }
 
@@ -1885,7 +1922,7 @@ Int32 CMtpDatabase::RenameFile(
     // first compute current path
     String path;
     AutoPtr<ArrayOf<String> > whereArgs = ArrayOf<String>::Alloc(1);
-    whereArgs->Set(0, StringUtils::Int32ToString(handle));
+    whereArgs->Set(0, StringUtils::ToString(handle));
     //try {
         mMediaProvider->Query(mPackageName, mObjectsUri, PATH_PROJECTION, ID_WHERE, whereArgs, String(NULL), NULL, (ICursor**)&c);
         Boolean b;
@@ -1897,7 +1934,7 @@ Int32 CMtpDatabase::RenameFile(
         return IMtpConstants::RESPONSE_GENERAL_ERROR;
     //} finally {
         if (c != NULL) {
-            c->Close();
+            ICloseable::Probe(c)->Close();
         }
     //}
     if (path == NULL) {
@@ -1931,7 +1968,7 @@ Int32 CMtpDatabase::RenameFile(
     CContentValues::New((IContentValues**)&values);
     AutoPtr<ICharSequence> csq;
     CString::New(newPath, (ICharSequence**)&csq);
-    values->PutString(IMediaStoreFilesFileColumns::DATA, csq);
+    values->Put(IMediaStoreMediaColumns::DATA, csq);
     Int32 updated = 0;
     //try {
         // note - we are relying on a special case in MediaProvider->Update() to update
@@ -2012,13 +2049,14 @@ Int32 CMtpDatabase::GetDeviceProperty(
         case IMtpConstants::DEVICE_PROPERTY_SYNCHRONIZATION_PARTNER:
         case IMtpConstants::DEVICE_PROPERTY_DEVICE_FRIENDLY_NAME:
             // writable string properties kept in shared preferences
-            mDeviceProperties->GetString(StringUtils::Int32ToString(property), String(""), &value);
+            mDeviceProperties->GetString(StringUtils::ToString(property), String(""), &value);
             length = value.GetLength();
             if (length > 255) {
                 length = 255;
             }
             CString::New(value, (ICharSequence**)&csq);
-            TextUtils::GetChars(csq, 0, length, outStringValue, 0);
+//TODO: Need TextUtils
+            // TextUtils::GetChars(csq, 0, length, outStringValue, 0);
             outStringValue->Set(length, 0);
             return IMtpConstants::RESPONSE_OK;
 
@@ -2028,9 +2066,10 @@ Int32 CMtpDatabase::GetDeviceProperty(
             wm->GetDefaultDisplay((IDisplay**)&display);
             display->GetMaximumSizeDimension(&width);
             display->GetMaximumSizeDimension(&height);
-            imageSize = StringUtils::ToString(width) + "x" +  StringUtils::Int32ToString(height);
+            imageSize = StringUtils::ToString(width) + "x" +  StringUtils::ToString(height);
             CString::New(imageSize, (ICharSequence**)&csq);
-            TextUtils::GetChars(csq, 0, imageSize.GetLength(), outStringValue, 0);
+//TODO: Need TextUtils
+            // TextUtils::GetChars(csq, 0, imageSize.GetLength(), outStringValue, 0);
             outStringValue->Set(imageSize.GetLength(), 0);
             return IMtpConstants::RESPONSE_OK;
 
@@ -2052,7 +2091,7 @@ Int32 CMtpDatabase::SetDeviceProperty(
             // writable string properties kept in shared prefs
             AutoPtr<ISharedPreferencesEditor> e;
             mDeviceProperties->Edit((ISharedPreferencesEditor**)&e);
-            e->PutString(StringUtils::Int32ToString(property), stringValue);
+            e->PutString(StringUtils::ToString(property), stringValue);
             Boolean b;
             e->Commit(&b);
             return (b ? IMtpConstants::RESPONSE_OK
@@ -2071,7 +2110,7 @@ Boolean CMtpDatabase::GetObjectInfo(
     AutoPtr<ICursor> c;
     //try {
         AutoPtr<ArrayOf<String> > array = ArrayOf<String>::Alloc(1);
-        array->Set(0, StringUtils::Int32ToString(handle));
+        array->Set(0, StringUtils::ToString(handle));
         mMediaProvider->Query(mPackageName, mObjectsUri, OBJECT_INFO_PROJECTION,
                         ID_WHERE, array, String(NULL), NULL, (ICursor**)&c);
         Boolean b;
@@ -2095,7 +2134,8 @@ Boolean CMtpDatabase::GetObjectInfo(
             }
             AutoPtr<ICharSequence> csq;
             CString::New(path, (ICharSequence**)&csq);
-            TextUtils::GetChars(csq, start, end, outName, 0);
+//TODO: Need TextUtils
+            // TextUtils::GetChars(csq, start, end, outName, 0);
             outName->Set(end - start, 0);
 
             Int64 value;
@@ -2114,7 +2154,7 @@ Boolean CMtpDatabase::GetObjectInfo(
     //    Log->E(TAG, "RemoteException in getObjectInfo", e);
     //} finally {
         if (c != NULL) {
-            c->Close();
+            ICloseable::Probe(c)->Close();
         }
     //}
     return FALSE;
@@ -2129,7 +2169,8 @@ Int32 CMtpDatabase::GetObjectFilePath(
         // special case root directory
         AutoPtr<ICharSequence> csq;
         CString::New(mMediaStoragePath, (ICharSequence**)&csq);
-        TextUtils::GetChars(csq, 0, mMediaStoragePath.GetLength(), outFilePath, 0);
+//TODO: Need TextUtils
+        // TextUtils::GetChars(csq, 0, mMediaStoragePath.GetLength(), outFilePath, 0);
         outFilePath->Set(mMediaStoragePath.GetLength(), 0);
         outFileLengthFormat->Set(0, 0);
         outFileLengthFormat->Set(1, IMtpConstants::FORMAT_ASSOCIATION);
@@ -2138,7 +2179,7 @@ Int32 CMtpDatabase::GetObjectFilePath(
     AutoPtr<ICursor> c;
     //try {
         AutoPtr<ArrayOf<String> > array = ArrayOf<String>::Alloc(1);
-        array->Set(0, StringUtils::Int32ToString(handle));
+        array->Set(0, StringUtils::ToString(handle));
         mMediaProvider->Query(mPackageName, mObjectsUri, PATH_FORMAT_PROJECTION,
                         ID_WHERE, array, String(NULL), NULL, (ICursor**)&c);
         Boolean b;
@@ -2147,7 +2188,8 @@ Int32 CMtpDatabase::GetObjectFilePath(
             c->GetString(1, &path);
             AutoPtr<ICharSequence> csq;
             CString::New(path, (ICharSequence**)&csq);
-            TextUtils::GetChars(csq, 0, path.GetLength(), outFilePath, 0);
+//TODO: Need TextUtils
+            // TextUtils::GetChars(csq, 0, path.GetLength(), outFilePath, 0);
             outFilePath->Set(path.GetLength(), 0);
             // File transfers from device to host will likely fail if the size is incorrect.
             // So to be safe, use the actual file size here.
@@ -2165,7 +2207,7 @@ Int32 CMtpDatabase::GetObjectFilePath(
         assert(0);
 
     if (c != NULL) {
-        c->Close();
+        ICloseable::Probe(c)->Close();
     }
     //} catch (RemoteException e) {
     //    Log->E(TAG, "RemoteException in getObjectFilePath", e);
@@ -2185,7 +2227,7 @@ Int32 CMtpDatabase::DeleteFile(
     AutoPtr<ICursor> c;
     //try {
         AutoPtr<ArrayOf<String> > array = ArrayOf<String>::Alloc(1);
-        array->Set(0, StringUtils::Int32ToString(handle));
+        array->Set(0, StringUtils::ToString(handle));
         mMediaProvider->Query(mPackageName, mObjectsUri, PATH_FORMAT_PROJECTION,
                         ID_WHERE, array, String(NULL), NULL, (ICursor**)&c);
         Boolean b;
@@ -2212,14 +2254,15 @@ Int32 CMtpDatabase::DeleteFile(
             // recursive case - delete all children first
             AutoPtr<IUri> uri;
             AutoPtr<IMediaStoreFiles> files;
-            CMediaStoreFiles::AcquireSingleton((IMediaStoreFiles**)&files);
+//TODO: Need provider/CMediaStoreFiles
+            // CMediaStoreFiles::AcquireSingleton((IMediaStoreFiles**)&files);
             files->GetMtpObjectsUri(mVolumeName, (IUri**)&uri);
             Int32 count;
             Int32 len = path.GetLength() + 1;
 
             AutoPtr<ArrayOf<String> > ss;
             ss->Set(0, path + "/%");
-            ss->Set(1, StringUtils::Int32ToString(len));
+            ss->Set(1, StringUtils::ToString(len));
             ss->Set(2, path + "/%");
             mMediaProvider->Delete(mPackageName, uri,
                 // the 'like' makes it use the index, the 'lower()' makes it correct
@@ -2229,7 +2272,8 @@ Int32 CMtpDatabase::DeleteFile(
 
         AutoPtr<IUri> uri;
         AutoPtr<IMediaStoreFiles> files;
-        CMediaStoreFiles::AcquireSingleton((IMediaStoreFiles**)&files);
+//TODO: Need provider/CMediaStoreFiles
+        // CMediaStoreFiles::AcquireSingleton((IMediaStoreFiles**)&files);
         files->GetMtpObjectsUri(mVolumeName, handle, (IUri**)&uri);
         Int32 v;
         mMediaProvider->Delete(mPackageName, uri, String(NULL), NULL, &v);
@@ -2253,7 +2297,7 @@ Int32 CMtpDatabase::DeleteFile(
         return IMtpConstants::RESPONSE_GENERAL_ERROR;
     //} finally {
     //    if (c != NULL) {
-    //        c->Close();
+    //        ICloseable::Probe(c)->Close();
     //    }
     //}
 }
@@ -2263,7 +2307,8 @@ AutoPtr<ArrayOf<Int32> > CMtpDatabase::GetObjectReferences(
 {
     AutoPtr<IUri> uri;
     AutoPtr<IMediaStoreFiles> files;
-    CMediaStoreFiles::AcquireSingleton((IMediaStoreFiles**)&files);
+//TODO: Need provider/CMediaStoreFiles
+    // CMediaStoreFiles::AcquireSingleton((IMediaStoreFiles**)&files);
     files->GetMtpReferencesUri(mVolumeName, handle, (IUri**)&uri);
     AutoPtr<ICursor> c;
     //try {
@@ -2288,7 +2333,7 @@ AutoPtr<ArrayOf<Int32> > CMtpDatabase::GetObjectReferences(
     //    Log->E(TAG, "RemoteException in getObjectList", e);
     //} finally {
         if (c != NULL) {
-            c->Close();
+            ICloseable::Probe(c)->Close();
         }
     //}
     return NULL;
@@ -2301,7 +2346,8 @@ Int32 CMtpDatabase::SetObjectReferences(
     mDatabaseModified = TRUE;
     AutoPtr<IUri> uri;
     AutoPtr<IMediaStoreFiles> files;
-    CMediaStoreFiles::AcquireSingleton((IMediaStoreFiles**)&files);
+//TODO: Need provider/CMediaStoreFiles
+    // CMediaStoreFiles::AcquireSingleton((IMediaStoreFiles**)&files);
     files->GetMtpReferencesUri(mVolumeName, handle, (IUri**)&uri);
     Int32 count = references->GetLength();
     AutoPtr<ArrayOf<IContentValues*> > valuesList =ArrayOf<IContentValues*>::Alloc(count);
@@ -2310,7 +2356,7 @@ Int32 CMtpDatabase::SetObjectReferences(
         CContentValues::New((IContentValues**)&values);
         AutoPtr<IInteger32> iVal;
         CInteger32::New((*references)[i], (IInteger32**)&iVal);
-        values->PutInt32(IMediaStoreFilesFileColumns::ID, iVal);
+        values->Put(IBaseColumns::ID, iVal);
         valuesList->Set(i, values);
     }
     //try {
