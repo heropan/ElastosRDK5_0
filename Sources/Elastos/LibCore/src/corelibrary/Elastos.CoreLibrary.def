@@ -2219,7 +2219,6 @@ EXPORTS
     _ZThn8_N7Elastos8Security8Provider7ReleaseEv
 
     ;;elastos/utility/concurrent/FutureTask
-
     _ZN7Elastos7Utility10Concurrent10FutureTask11IsCancelledEPh
     _ZN7Elastos7Utility10Concurrent10FutureTask11RunAndResetEv
     _ZN7Elastos7Utility10Concurrent10FutureTask11constructorEPNS1_9ICallableE
