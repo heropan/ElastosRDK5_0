@@ -5,21 +5,21 @@
  * This package is an SSL implementation written
  * by Eric Young (eay@cryptsoft.com).
  * The implementation was written so as to conform with Netscapes SSL.
- * 
+ *
  * This library is free for commercial and non-commercial use as long as
  * the following conditions are aheared to.  The following conditions
  * apply to all code found in this distribution, be it the RC4, RSA,
  * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
  * included with this distribution is covered by the same copyright terms
  * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- * 
+ *
  * Copyright remains Eric Young's, and as such any Copyright notices in
  * the code are not to be removed.
  * If this package is used in a product, Eric Young should be given attribution
  * as the author of the parts of the library used.
  * This can be in the form of a textual message at program startup or
  * in documentation (online or textual) provided with the package.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -34,10 +34,10 @@
  *     Eric Young (eay@cryptsoft.com)"
  *    The word 'cryptographic' can be left out if the rouines from the library
  *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from 
+ * 4. If you include any Windows specific code (or a derivative thereof) from
  *    the apps directory (application code) you must include an acknowledgement:
  *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -49,7 +49,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- * 
+ *
  * The licence and distribution terms for any publically available version or
  * derivative of this code cannot be changed.  i.e. this code cannot simply be
  * copied and put under another distribution licence
@@ -57,7 +57,7 @@
  */
 /* ====================================================================
  * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
- * ECDH support in OpenSSL originally developed by 
+ * ECDH support in OpenSSL originally developed by
  * SUN MICROSYSTEMS, INC., and contributed to the OpenSSL project.
  */
 
@@ -373,7 +373,7 @@ typedef struct x509_cert_pair_st {
 #define	X509_FLAG_NO_AUX		(1L << 10)
 #define	X509_FLAG_NO_ATTRIBUTES		(1L << 11)
 
-/* Flags specific to X509_NAME_print_ex() */	
+/* Flags specific to X509_NAME_print_ex() */
 
 /* The field separator information */
 
@@ -607,10 +607,10 @@ extern "C" {
 #define X509_EXT_PACK_UNKNOWN	1
 #define X509_EXT_PACK_STRING	2
 
-#define		X509_get_version(x) ASN1_INTEGER_get((x)->cert_info->version)
+#define		X509_GET_VERSION(x) ASN1_INTEGER_get((x)->cert_info->version)
 /* #define	X509_get_serialNumber(x) ((x)->cert_info->serialNumber) */
-#define		X509_get_notBefore(x) ((x)->cert_info->validity->notBefore)
-#define		X509_get_notAfter(x) ((x)->cert_info->validity->notAfter)
+#define		X509_GET_NOTBEFORE(x) ((x)->cert_info->validity->notBefore)
+#define		X509_GET_NOTAFTER(x) ((x)->cert_info->validity->notAfter)
 #define		X509_extract_key(x)	X509_get_pubkey(x) /*****/
 #define		X509_REQ_get_version(x) ASN1_INTEGER_get((x)->req_info->version)
 #define		X509_REQ_get_subject_name(x) ((x)->req_info->subject)
@@ -618,11 +618,11 @@ extern "C" {
 #define		X509_name_cmp(a,b)	X509_NAME_cmp((a),(b))
 #define		X509_get_signature_type(x) EVP_PKEY_type(OBJ_obj2nid((x)->sig_alg->algorithm))
 
-#define		X509_CRL_get_version(x) ASN1_INTEGER_get((x)->crl->version)
-#define 	X509_CRL_get_lastUpdate(x) ((x)->crl->lastUpdate)
-#define 	X509_CRL_get_nextUpdate(x) ((x)->crl->nextUpdate)
+// #define		X509_CRL_get_version(x) ASN1_INTEGER_get((x)->crl->version)
+// #define 	X509_CRL_get_lastUpdate(x) ((x)->crl->lastUpdate)
+// #define 	X509_CRL_get_nextUpdate(x) ((x)->crl->nextUpdate)
 #define		X509_CRL_get_issuer(x) ((x)->crl->issuer)
-#define		X509_CRL_get_REVOKED(x) ((x)->crl->revoked)
+// #define		X509_CRL_get_REVOKED(x) ((x)->crl->revoked)
 
 void X509_CRL_set_default_method(const X509_CRL_METHOD *meth);
 X509_CRL_METHOD *X509_CRL_METHOD_new(

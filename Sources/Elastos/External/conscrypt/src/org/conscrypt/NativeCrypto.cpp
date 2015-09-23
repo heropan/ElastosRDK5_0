@@ -27,6 +27,8 @@ using Elastos::Core::IByte;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IInteger32;
 using Elastos::Core::UniquePtr;
+using Elastos::IO::IFlushable;
+using Elastos::IO::IInputStream;
 using Elastos::Security::CMessageDigestHelper;
 using Elastos::Security::IMessageDigest;
 using Elastos::Security::IMessageDigestHelper;
@@ -95,6 +97,13 @@ struct BIGNUM_Delete {
     }
 };
 typedef UniquePtr<BIGNUM, BIGNUM_Delete> Unique_BIGNUM;
+
+struct ASN1_INTEGER_Delete {
+    void operator()(ASN1_INTEGER* p) const {
+        ASN1_INTEGER_free(p);
+    }
+};
+typedef UniquePtr<ASN1_INTEGER, ASN1_INTEGER_Delete> Unique_ASN1_INTEGER;
 
 struct DH_Delete {
     void operator()(DH* p) const {
@@ -172,6 +181,20 @@ struct ASN1_OBJECT_Delete {
     }
 };
 typedef UniquePtr<ASN1_OBJECT, ASN1_OBJECT_Delete> Unique_ASN1_OBJECT;
+
+struct ASN1_GENERALIZEDTIME_Delete {
+    void operator()(ASN1_GENERALIZEDTIME* p) const {
+        ASN1_GENERALIZEDTIME_free(p);
+    }
+};
+typedef UniquePtr<ASN1_GENERALIZEDTIME, ASN1_GENERALIZEDTIME_Delete> Unique_ASN1_GENERALIZEDTIME;
+
+struct PKCS7_Delete {
+    void operator()(PKCS7* p) const {
+        PKCS7_free(p);
+    }
+};
+typedef UniquePtr<PKCS7, PKCS7_Delete> Unique_PKCS7;
 
 struct sk_X509_Delete {
     void operator()(STACK_OF(X509)* p) const {
@@ -590,6 +613,222 @@ static X509* X509_dup_nocopy(X509* x509)
     CRYPTO_add(&x509->references, 1, CRYPTO_LOCK_X509);
     return x509;
 }
+
+/**
+ * BIO for InputStream
+ */
+class BIO_Stream
+{
+public:
+    BIO_Stream(IInterface* stream)
+        : mStream(stream)
+        , mEof(FALSE)
+    {}
+
+    ~BIO_Stream() {}
+
+    Boolean IsEof() const
+    {
+        NATIVE_TRACE("isEof? %s", mEof ? "yes" : "no");
+        return mEof;
+    }
+
+    Int32 Flush()
+    {
+        ECode ec = IFlushable::Probe(mStream)->Flush();
+        if (FAILED(ec)) return -1;
+
+        return 1;
+    }
+
+protected:
+    AutoPtr<IInterface> GetStream()
+    {
+        return mStream;
+    }
+
+    void SetEof(Boolean eof)
+    {
+        mEof = eof;
+    }
+
+private:
+    AutoPtr<IInterface> mStream;
+    Boolean mEof;
+};
+
+class BIO_InputStream : public BIO_Stream
+{
+public:
+    BIO_InputStream(IInterface* stream)
+        : BIO_Stream(stream)
+    {}
+
+    Int32 Read(char *buf, Int32 len)
+    {
+        AutoPtr< ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(len);
+        Int32 read;
+        ECode ec = IInputStream::Probe(GetStream())->Read(bytes, &read);
+        if (FAILED(ec)) {
+            NATIVE_TRACE("BIO_InputStream::read failed call to InputStream#read");
+            return -1;
+        }
+
+        /* Java uses -1 to indicate EOF condition. */
+        if (read == -1) {
+            SetEof(TRUE);
+            read = 0;
+        }
+        else if (read > 0) {
+            memcpy(buf, bytes->GetPayload(), read);
+        }
+
+        return read;
+    }
+
+    Int32 Gets(char *buf, Int32 len)
+    {
+        if (len > PEM_LINE_LENGTH) {
+            len = PEM_LINE_LENGTH;
+        }
+
+        AutoPtr< ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(len - 1);
+        Int32 read;
+        ECode ec = IOpenSSLBIOInputStream::Probe(GetStream())->Gets(bytes, &read);
+        if (FAILED(ec)) {
+            NATIVE_TRACE("BIO_InputStream::read failed call to InputStream#read");
+            return -1;
+        }
+
+        /* Java uses -1 to indicate EOF condition. */
+        if (read == -1) {
+            SetEof(TRUE);
+            read = 0;
+        }
+        else if (read > 0) {
+            memcpy(buf, bytes->GetPayload(), read);
+        }
+
+        buf[read] = '\0';
+        NATIVE_TRACE("BIO::gets \"%s\"", buf);
+        return read;
+    }
+
+public:
+    /** Length of PEM-encoded line (64) plus CR plus NULL */
+    static const Int32 PEM_LINE_LENGTH = 66;
+};
+
+class BIO_OutputStream : public BIO_Stream
+{
+public:
+    BIO_OutputStream(IInterface* stream)
+        : BIO_Stream(stream)
+    {}
+
+    Int32 Write(const char *buf, Int32 len)
+    {
+        AutoPtr< ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(len);
+        bytes->Copy(reinterpret_cast<const Byte*>(buf), len);
+
+        ECode ec = IOutputStream::Probe(GetStream())->Write(bytes);
+        if (FAILED(ec)) {
+            NATIVE_TRACE("BIO_OutputStream::write => failed call to OutputStream#write");
+            return -1;
+        }
+
+        return len;
+    }
+};
+
+static int bio_stream_create(BIO *b)
+{
+    b->init = 1;
+    b->num = 0;
+    b->ptr = NULL;
+    b->flags = 0;
+    return 1;
+}
+
+static int bio_stream_destroy(BIO *b)
+{
+    if (b == NULL) {
+        return 0;
+    }
+
+    if (b->ptr != NULL) {
+        delete static_cast<BIO_Stream*>(b->ptr);
+        b->ptr = NULL;
+    }
+
+    b->init = 0;
+    b->flags = 0;
+    return 1;
+}
+
+static int bio_stream_read(BIO *b, char *buf, int len)
+{
+    BIO_clear_retry_flags(b);
+    BIO_InputStream* stream = static_cast<BIO_InputStream*>(b->ptr);
+    int ret = stream->Read(buf, len);
+    if (ret == 0) {
+        // EOF is indicated by -1 with a BIO flag.
+        BIO_set_retry_read(b);
+        return -1;
+    }
+    return ret;
+}
+
+static int bio_stream_write(BIO *b, const char *buf, int len)
+{
+    BIO_clear_retry_flags(b);
+    BIO_OutputStream* stream = static_cast<BIO_OutputStream*>(b->ptr);
+    return stream->Write(buf, len);
+}
+
+static int bio_stream_puts(BIO *b, const char *buf)
+{
+    BIO_OutputStream* stream = static_cast<BIO_OutputStream*>(b->ptr);
+    return stream->Write(buf, strlen(buf));
+}
+
+static int bio_stream_gets(BIO *b, char *buf, int len)
+{
+    BIO_InputStream* stream = static_cast<BIO_InputStream*>(b->ptr);
+    return stream->Gets(buf, len);
+}
+
+static void bio_stream_assign(BIO *b, BIO_Stream* stream)
+{
+    b->ptr = static_cast<void*>(stream);
+}
+
+static long bio_stream_ctrl(BIO *b, int cmd, long, void *)
+{
+    BIO_Stream* stream = static_cast<BIO_Stream*>(b->ptr);
+
+    switch (cmd) {
+    case BIO_CTRL_EOF:
+        return stream->IsEof() ? 1 : 0;
+    case BIO_CTRL_FLUSH:
+        return stream->Flush();
+    default:
+        return 0;
+    }
+}
+
+static BIO_METHOD stream_bio_method = {
+        ( 100 | 0x0400 ), /* source/sink BIO */
+        "InputStream/OutputStream BIO",
+        bio_stream_write, /* bio_write */
+        bio_stream_read, /* bio_read */
+        bio_stream_puts, /* bio_puts */
+        bio_stream_gets, /* bio_gets */
+        bio_stream_ctrl, /* bio_ctrl */
+        bio_stream_create, /* bio_create */
+        bio_stream_destroy, /* bio_free */
+        NULL, /* no bio_callback_ctrl */
+};
 
 static AutoPtr< ArrayOf<Byte> > RawSignDigestWithPrivateKey(IPrivateKey* privateKey,
     const char* message, size_t message_len)
@@ -1570,7 +1809,7 @@ ECode NativeCrypto::EVP_PKEY_print_public(
         return ThrowExceptionIfNecessary("EVP_PKEY_print_public");
     }
     // Null terminate this
-    BIO_write(buffer.get(), "\0", 1);
+    ::BIO_write(buffer.get(), "\0", 1);
 
     char *tmp;
     BIO_get_mem_data(buffer.get(), &tmp);
@@ -1605,7 +1844,7 @@ ECode NativeCrypto::EVP_PKEY_print_private(
         return ThrowExceptionIfNecessary("EVP_PKEY_print_private");
     }
     // Null terminate this
-    BIO_write(buffer.get(), "\0", 1);
+    ::BIO_write(buffer.get(), "\0", 1);
 
     char *tmp;
     BIO_get_mem_data(buffer.get(), &tmp);
@@ -5398,6 +5637,1100 @@ ECode NativeCrypto::Get_X509_ex_pathlen(
 
     NATIVE_TRACE("get_X509_ex_pathlen(%p) => %ld", x509, x509->ex_pathlen);
     *result = x509->ex_pathlen;
+    return NOERROR;
+}
+
+ECode NativeCrypto::X509_get_notBefore(
+    /* [in] */ Int64 x509Ref,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("X509_get_notBefore(%p)", x509);
+
+    if (x509 == NULL) {
+        NATIVE_TRACE("X509_get_notBefore(%p) => x509 == null", x509);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    ASN1_TIME* notBefore = X509_GET_NOTBEFORE(x509);
+    NATIVE_TRACE("X509_get_notBefore(%p) => %p", x509, notBefore);
+    *result = reinterpret_cast<uintptr_t>(notBefore);
+    return NOERROR;
+}
+
+ECode NativeCrypto::X509_get_notAfter(
+    /* [in] */ Int64 x509Ref,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("X509_get_notAfter(%p)", x509);
+
+    if (x509 == NULL) {
+        NATIVE_TRACE("X509_get_notAfter(%p) => x509 == null", x509);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    ASN1_TIME* notAfter = X509_GET_NOTAFTER(x509);
+    NATIVE_TRACE("X509_get_notAfter(%p) => %p", x509, notAfter);
+    *result = reinterpret_cast<uintptr_t>(notAfter);
+    return NOERROR;
+}
+
+ECode NativeCrypto::X509_get_version(
+    /* [in] */ Int64 x509Ref,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("X509_get_version(%p)", x509);
+
+    long version = X509_GET_VERSION(x509);
+    NATIVE_TRACE("X509_get_version(%p) => %ld", x509, version);
+    *result = version;
+    return NOERROR;
+}
+
+template<typename T>
+static ECode get_X509Type_serialNumber(T* x509Type, ASN1_INTEGER* (*get_serial_func)(T*), ArrayOf<Byte>** result)
+{
+    NATIVE_TRACE("get_X509Type_serialNumber(%p)", x509Type);
+
+    if (x509Type == NULL) {
+        NATIVE_TRACE("get_X509Type_serialNumber(%p) => x509Type == null", x509Type);
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    ASN1_INTEGER* serialNumber = get_serial_func(x509Type);
+    Unique_BIGNUM serialBn(ASN1_INTEGER_to_BN(serialNumber, NULL));
+    if (serialBn.get() == NULL) {
+        NATIVE_TRACE("X509_get_serialNumber(%p) => threw exception", x509Type);
+        *result = NULL;
+        return NOERROR;
+    }
+
+    AutoPtr< ArrayOf<Byte> > serialArray;
+    ECode ec = BignumToArray(serialBn.get(), "serialBn", (ArrayOf<Byte>**)&serialArray);
+    if (FAILED(ec)) {
+        NATIVE_TRACE("X509_get_serialNumber(%p) => threw exception", x509Type);
+        *result = NULL;
+        return ec;
+    }
+
+    NATIVE_TRACE("X509_get_serialNumber(%p) => %p", x509Type, serialArray.Get());
+    *result = serialArray;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::X509_get_serialNumber(
+    /* [in] */ Int64 x509Ref,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("X509_get_serialNumber(%p)", x509);
+    return get_X509Type_serialNumber<X509>(x509, ::X509_get_serialNumber, result);
+}
+
+ECode NativeCrypto::X509_verify(
+    /* [in] */ Int64 x509Ref,
+    /* [in] */ Int64 pkeyRef)
+{
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("X509_verify(%p, %p)", x509, pkey);
+
+    if (x509 == NULL) {
+        NATIVE_TRACE("X509_verify(%p, %p) => x509 == null", x509, pkey);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (pkey == NULL) {
+        NATIVE_TRACE("X509_verify(%p, %p) => pkey == null", x509, pkey);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (::X509_verify(x509, pkey) != 1) {
+        NATIVE_TRACE("X509_verify(%p, %p) => verify failure", x509, pkey);
+        return ThrowExceptionIfNecessary("X509_verify");
+    }
+    else {
+        NATIVE_TRACE("X509_verify(%p, %p) => verify success", x509, pkey);
+        return NOERROR;
+    }
+}
+
+ECode NativeCrypto::Get_X509_cert_info_enc(
+    /* [in] */ Int64 x509Ref,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("get_X509_cert_info_enc(%p)", x509);
+    return ASN1ToByteArray<X509_CINF, i2d_X509_CINF>(x509->cert_info, result);
+}
+
+static void get_X509_signature(X509 *x509, ASN1_BIT_STRING** signature)
+{
+    *signature = x509->signature;
+}
+
+template<typename T>
+static ECode get_X509Type_signature(T* x509Type, void (*get_signature_func)(T*, ASN1_BIT_STRING**), ArrayOf<Byte>** result)
+{
+    NATIVE_TRACE("get_X509Type_signature(%p)", x509Type);
+
+    if (x509Type == NULL) {
+        NATIVE_TRACE("get_X509Type_signature(%p) => x509Type == null", x509Type);
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    ASN1_BIT_STRING* signature;
+    get_signature_func(x509Type, &signature);
+
+    AutoPtr< ArrayOf<Byte> > signatureArray = ArrayOf<Byte>::Alloc(signature->length);
+
+    memcpy(signatureArray->GetPayload(), signature->data, signature->length);
+
+    NATIVE_TRACE("get_X509Type_signature(%p) => %p (%d bytes)", x509Type, signatureArray.Get(),
+            signature->length);
+    *result = signatureArray;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::Get_X509_signature(
+    /* [in] */ Int64 x509Ref,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("get_X509_signature(%p)", x509);
+    return get_X509Type_signature<X509>(x509, get_X509_signature, result);
+}
+
+ECode NativeCrypto::Get_X509_ex_flags(
+    /* [in] */ Int64 x509Ref,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("get_X509_ex_flags(%p)", x509);
+
+    if (x509 == NULL) {
+        NATIVE_TRACE("get_X509_ex_flags(%p) => x509 == null", x509);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    X509_check_ca(x509);
+
+    *result = x509->ex_flags;
+    return NOERROR;
+}
+
+ECode NativeCrypto::X509_check_issued(
+    /* [in] */ Int64 x509Ref1,
+    /* [in] */ Int64 x509Ref2,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509* x509_1 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref1));
+    X509* x509_2 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref2));
+    NATIVE_TRACE("X509_check_issued(%p, %p)", x509_1, x509_2);
+
+    int ret = ::X509_check_issued(x509_1, x509_2);
+    NATIVE_TRACE("X509_check_issued(%p, %p) => %d", x509_1, x509_2, ret);
+    *result = ret;
+    return NOERROR;
+}
+
+static STACK_OF(X509)* PKCS7_get_certs(PKCS7* pkcs7)
+{
+    if (PKCS7_type_is_signed(pkcs7)) {
+        return pkcs7->d.sign->cert;
+    }
+    else if (PKCS7_type_is_signedAndEnveloped(pkcs7)) {
+        return pkcs7->d.signed_and_enveloped->cert;
+    }
+    else {
+        NATIVE_TRACE("PKCS7_get_certs(%p) => unknown PKCS7 type", pkcs7);
+        return NULL;
+    }
+}
+
+static STACK_OF(X509_CRL)* PKCS7_get_CRLs(PKCS7* pkcs7)
+{
+    if (PKCS7_type_is_signed(pkcs7)) {
+        return pkcs7->d.sign->crl;
+    }
+    else if (PKCS7_type_is_signedAndEnveloped(pkcs7)) {
+        return pkcs7->d.signed_and_enveloped->crl;
+    }
+    else {
+        NATIVE_TRACE("PKCS7_get_CRLs(%p) => unknown PKCS7 type", pkcs7);
+        return NULL;
+    }
+}
+
+template <typename T, typename T_stack>
+static ECode PKCS7_to_ItemArray(T_stack* stack, T* (*dup_func)(T*), ArrayOf<Int64>** result)
+{
+    if (stack == NULL) {
+        *result = NULL;
+        return NOERROR;
+    }
+
+    size_t size = sk_num(reinterpret_cast<_STACK*>(stack));
+    AutoPtr< ArrayOf<Int64> > ref_array = ArrayOf<Int64>::Alloc(size);
+    for (size_t i = 0; i < size; i++) {
+        T* item = reinterpret_cast<T*>(sk_value(reinterpret_cast<_STACK*>(stack), i));
+        (*ref_array)[i] = reinterpret_cast<uintptr_t>(dup_func(item));
+    }
+
+    NATIVE_TRACE("PKCS7_to_ItemArray(%p) => %p [size=%d]", stack, ref_array.Get(), size);
+    *result = ref_array;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+#define PKCS7_CERTS 1
+#define PKCS7_CRLS 2
+
+ECode NativeCrypto::D2i_PKCS7_bio(
+    /* [in] */ Int64 bioRef,
+    /* [in] */ Int32 which,
+    /* [out, callee] */ ArrayOf<Int64>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    BIO* bio = reinterpret_cast<BIO*>(static_cast<uintptr_t>(bioRef));
+    NATIVE_TRACE("d2i_PKCS7_bio(%p, %d)", bio, which);
+
+    if (bio == NULL) {
+        NATIVE_TRACE("d2i_PKCS7_bio(%p, %d) => bio == null", bio, which);
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_PKCS7 pkcs7(d2i_PKCS7_bio(bio, NULL));
+    if (pkcs7.get() == NULL) {
+        NATIVE_TRACE("d2i_PKCS7_bio(%p, %d) => threw exception", bio, which);
+        *result = 0;
+        return ThrowExceptionIfNecessary("d2i_PKCS7_bio");
+    }
+
+    switch (which) {
+    case PKCS7_CERTS:
+        return PKCS7_to_ItemArray<X509, STACK_OF(X509)>(PKCS7_get_certs(pkcs7.get()), X509_dup, result);
+    case PKCS7_CRLS:
+        return PKCS7_to_ItemArray<X509_CRL, STACK_OF(X509_CRL)>(PKCS7_get_CRLs(pkcs7.get()),
+                X509_CRL_dup, result);
+    default:
+        *result = NULL;
+        return ThrowRuntimeException("unknown PKCS7 field");
+    }
+}
+
+ECode NativeCrypto::I2d_PKCS7(
+    /* [in] */ ArrayOf<Int64>* certsArray,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    NATIVE_TRACE("i2d_PKCS7(%p)", certsArray);
+
+    Unique_PKCS7 pkcs7(PKCS7_new());
+    if (pkcs7.get() == NULL) {
+        NATIVE_TRACE("i2d_PKCS7(%p) => pkcs7 == null", certsArray);
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (PKCS7_set_type(pkcs7.get(), NID_pkcs7_signed) != 1) {
+        *result = NULL;
+        return ThrowExceptionIfNecessary("PKCS7_set_type");
+    }
+
+    for (Int32 i = 0; i < certsArray->GetLength(); i++) {
+        X509* item = reinterpret_cast<X509*>((*certsArray)[i]);
+        if (PKCS7_add_certificate(pkcs7.get(), item) != 1) {
+            *result = NULL;
+            return ThrowExceptionIfNecessary("i2d_PKCS7");
+        }
+    }
+
+    NATIVE_TRACE("i2d_PKCS7(%p) => %d certs", certsArray, certsArray->GetLength());
+    return ASN1ToByteArray<PKCS7, i2d_PKCS7>(pkcs7.get(), result);
+}
+
+ECode NativeCrypto::PEM_read_bio_PKCS7(
+    /* [in] */ Int64 bioRef,
+    /* [in] */ Int32 which,
+    /* [out, callee] */ ArrayOf<Int64>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    BIO* bio = reinterpret_cast<BIO*>(static_cast<uintptr_t>(bioRef));
+    NATIVE_TRACE("PEM_read_bio_PKCS7_CRLs(%p)", bio);
+
+    if (bio == NULL) {
+        NATIVE_TRACE("PEM_read_bio_PKCS7_CRLs(%p) => bio == null", bio);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_PKCS7 pkcs7(::PEM_read_bio_PKCS7(bio, NULL, NULL, NULL));
+    if (pkcs7.get() == NULL) {
+        NATIVE_TRACE("PEM_read_bio_PKCS7_CRLs(%p) => threw exception", bio);
+        *result = 0;
+        return ThrowExceptionIfNecessary("PEM_read_bio_PKCS7_CRLs");
+    }
+
+    switch (which) {
+    case PKCS7_CERTS:
+        return PKCS7_to_ItemArray<X509, STACK_OF(X509)>(PKCS7_get_certs(pkcs7.get()), X509_dup, result);
+    case PKCS7_CRLS:
+        return PKCS7_to_ItemArray<X509_CRL, STACK_OF(X509_CRL)>(PKCS7_get_CRLs(pkcs7.get()),
+                X509_CRL_dup, result);
+    default:
+        *result = NULL;
+        return ThrowRuntimeException("unknown PKCS7 field");
+    }
+}
+
+ECode NativeCrypto::D2i_X509_CRL_bio(
+    /* [in] */ Int64 bioRef,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return d2i_ASN1Object_to_Int64<X509_CRL, d2i_X509_CRL_bio>(bioRef, result);
+}
+
+ECode NativeCrypto::PEM_read_bio_X509_CRL(
+    /* [in] */ Int64 bioRef,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    NATIVE_TRACE("PEM_read_bio_X509_CRL(0x%llx)", bioRef);
+    return PEM_ASN1Object_to_Int64<X509_CRL, ::PEM_read_bio_X509_CRL>(bioRef, result);
+}
+
+ECode NativeCrypto::I2d_X509_CRL(
+    /* [in] */ Int64 x509CrlRef,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_CRL* crl = reinterpret_cast<X509_CRL*>(static_cast<uintptr_t>(x509CrlRef));
+    NATIVE_TRACE("i2d_X509_CRL(%p)", crl);
+    return ASN1ToByteArray<X509_CRL, i2d_X509_CRL>(crl, result);
+}
+
+ECode NativeCrypto::X509_CRL_free(
+    /* [in] */ Int64 x509CrlRef)
+{
+    X509_CRL* crl = reinterpret_cast<X509_CRL*>(static_cast<uintptr_t>(x509CrlRef));
+    NATIVE_TRACE("X509_CRL_free(%p)", crl);
+
+    if (crl == NULL) {
+        NATIVE_TRACE("X509_CRL_free(%p) => crl == null", crl);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    ::X509_CRL_free(crl);
+    return NOERROR;
+}
+
+ECode NativeCrypto::X509_CRL_print(
+    /* [in] */ Int64 bioRef,
+    /* [in] */ Int64 x509CrlRef)
+{
+    BIO* bio = reinterpret_cast<BIO*>(static_cast<uintptr_t>(bioRef));
+    X509_CRL* crl = reinterpret_cast<X509_CRL*>(static_cast<uintptr_t>(x509CrlRef));
+    NATIVE_TRACE("X509_CRL_print(%p, %p)", bio, crl);
+
+    if (bio == NULL) {
+        NATIVE_TRACE("X509_CRL_print(%p, %p) => bio == null", bio, crl);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (crl == NULL) {
+        NATIVE_TRACE("X509_CRL_print(%p, %p) => crl == null", bio, crl);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (!::X509_CRL_print(bio, crl)) {
+        NATIVE_TRACE("X509_CRL_print(%p, %p) => threw error", bio, crl);
+        return ThrowExceptionIfNecessary("X509_CRL_print");
+    }
+    else {
+        NATIVE_TRACE("X509_CRL_print(%p, %p) => success", bio, crl);
+        return NOERROR;
+    }
+}
+
+ECode NativeCrypto::Get_X509_CRL_sig_alg_oid(
+    /* [in] */ Int64 x509CrlRef,
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_CRL* crl = reinterpret_cast<X509_CRL*>(static_cast<uintptr_t>(x509CrlRef));
+    NATIVE_TRACE("get_X509_CRL_sig_alg_oid(%p)", crl);
+
+    if (crl == NULL || crl->sig_alg == NULL) {
+        NATIVE_TRACE("get_X509_CRL_sig_alg_oid(%p) => crl == NULL", crl);
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    return ASN1_OBJECT_to_OID_string(crl->sig_alg->algorithm, result);
+}
+
+ECode NativeCrypto::Get_X509_CRL_sig_alg_parameter(
+    /* [in] */ Int64 x509CrlRef,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    X509_CRL* crl = reinterpret_cast<X509_CRL*>(static_cast<uintptr_t>(x509CrlRef));
+    NATIVE_TRACE("get_X509_CRL_sig_alg_parameter(%p)", crl);
+
+    if (crl == NULL) {
+        NATIVE_TRACE("get_X509_CRL_sig_alg_parameter(%p) => crl == null", crl);
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (crl->sig_alg->parameter == NULL) {
+        NATIVE_TRACE("get_X509_CRL_sig_alg_parameter(%p) => null", crl);
+        *result = NULL;
+        return NOERROR;
+    }
+
+    return ASN1ToByteArray<ASN1_TYPE, i2d_ASN1_TYPE>(crl->sig_alg->parameter, result);
+}
+
+ECode NativeCrypto::X509_CRL_get_issuer_name(
+    /* [in] */ Int64 x509CrlRef,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_CRL* crl = reinterpret_cast<X509_CRL*>(static_cast<uintptr_t>(x509CrlRef));
+    NATIVE_TRACE("X509_CRL_get_issuer_name(%p)", crl);
+    return ASN1ToByteArray<X509_NAME, i2d_X509_NAME>(X509_CRL_get_issuer(crl), result);
+}
+
+ECode NativeCrypto::X509_CRL_get0_by_cert(
+    /* [in] */ Int64 x509crlRef,
+    /* [in] */ Int64 x509Ref,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_CRL* x509crl = reinterpret_cast<X509_CRL*>(static_cast<uintptr_t>(x509crlRef));
+    X509* x509 = reinterpret_cast<X509*>(static_cast<uintptr_t>(x509Ref));
+    NATIVE_TRACE("X509_CRL_get0_by_cert(%p, %p)", x509crl, x509);
+
+    if (x509crl == NULL) {
+        NATIVE_TRACE("X509_CRL_get0_by_cert(%p, %p) => x509crl == null", x509crl, x509);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    else if (x509 == NULL) {
+        NATIVE_TRACE("X509_CRL_get0_by_cert(%p, %p) => x509 == null", x509crl, x509);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    X509_REVOKED* revoked = NULL;
+    int ret = ::X509_CRL_get0_by_cert(x509crl, &revoked, x509);
+    if (ret == 0) {
+        NATIVE_TRACE("X509_CRL_get0_by_cert(%p, %p) => none", x509crl, x509);
+        *result = 0;
+        return NOERROR;
+    }
+
+    NATIVE_TRACE("X509_CRL_get0_by_cert(%p, %p) => %p", x509crl, x509, revoked);
+    *result = reinterpret_cast<uintptr_t>(revoked);
+    return NOERROR;
+}
+
+ECode NativeCrypto::X509_CRL_get0_by_serial(
+    /* [in] */ Int64 x509crlRef,
+    /* [in] */ ArrayOf<Byte>* serialArray,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_CRL* x509crl = reinterpret_cast<X509_CRL*>(static_cast<uintptr_t>(x509crlRef));
+    NATIVE_TRACE("X509_CRL_get0_by_serial(%p, %p)", x509crl, serialArray);
+
+    if (x509crl == NULL) {
+        NATIVE_TRACE("X509_CRL_get0_by_serial(%p, %p) => crl == null", x509crl, serialArray);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_BIGNUM serialBn(BN_new());
+    if (serialBn.get() == NULL) {
+        NATIVE_TRACE("X509_CRL_get0_by_serial(%p, %p) => BN allocation failed", x509crl, serialArray);
+        *result = 0;
+        return NOERROR;
+    }
+
+    ECode ec = NOERROR;
+    BIGNUM* serialBare = serialBn.get();
+    if (!ArrayToBignum(serialArray, &serialBare, &ec)) {
+        if (SUCCEEDED(ec)) ec = E_NULL_POINTER_EXCEPTION;
+        NATIVE_TRACE("X509_CRL_get0_by_serial(%p, %p) => BN conversion failed", x509crl, serialArray);
+        *result = 0;
+        return ec;
+    }
+
+    Unique_ASN1_INTEGER serialInteger(BN_to_ASN1_INTEGER(serialBn.get(), NULL));
+    if (serialInteger.get() == NULL) {
+        NATIVE_TRACE("X509_CRL_get0_by_serial(%p, %p) => BN conversion failed", x509crl, serialArray);
+        *result = 0;
+        return NOERROR;
+    }
+
+    X509_REVOKED* revoked = NULL;
+    int ret = ::X509_CRL_get0_by_serial(x509crl, &revoked, serialInteger.get());
+    if (ret == 0) {
+        NATIVE_TRACE("X509_CRL_get0_by_serial(%p, %p) => none", x509crl, serialArray);
+        *result = 0;
+        return NOERROR;
+    }
+
+    NATIVE_TRACE("X509_CRL_get0_by_cert(%p, %p) => %p", x509crl, serialArray, revoked);
+    *result = reinterpret_cast<uintptr_t>(revoked);
+    return NOERROR;
+}
+
+/* This appears to be missing from OpenSSL. */
+#if !defined(X509_revoked_dup)
+X509_REVOKED* X509_revoked_dup(X509_REVOKED* x)
+{
+    return reinterpret_cast<X509_REVOKED*>(ASN1_item_dup(ASN1_ITEM_rptr(X509_REVOKED), x));
+}
+#endif
+
+ECode NativeCrypto::X509_CRL_get_REVOKED(
+    /* [in] */ Int64 x509crlRef,
+    /* [out, callee] */ ArrayOf<Int64>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_CRL* crl = reinterpret_cast<X509_CRL*>(static_cast<uintptr_t>(x509crlRef));
+    NATIVE_TRACE("X509_CRL_get_REVOKED(%p)", crl);
+
+    if (crl == NULL) {
+        *result = NULL;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    STACK_OF(X509_REVOKED)* stack = ((crl)->crl->revoked);
+    if (stack == NULL) {
+        NATIVE_TRACE("X509_CRL_get_REVOKED(%p) => stack is null", crl);
+        *result = NULL;
+        return NOERROR;
+    }
+
+    size_t size = sk_X509_REVOKED_num(stack);
+
+    AutoPtr< ArrayOf<Int64> > revokedArray = ArrayOf<Int64>::Alloc(size);
+    for (size_t i = 0; i < size; i++) {
+        X509_REVOKED* item = reinterpret_cast<X509_REVOKED*>(sk_X509_REVOKED_value(stack, i));
+        (*revokedArray)[i] = reinterpret_cast<uintptr_t>(X509_revoked_dup(item));
+    }
+
+    NATIVE_TRACE("X509_CRL_get_REVOKED(%p) => %p [size=%d]", stack, revokedArray.Get(), size);
+    *result = revokedArray;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::Get_X509_CRL_ext_oids(
+    /* [in] */ Int64 x509crlRef,
+    /* [in] */ Int32 critical,
+    /* [out, callee] */ ArrayOf<String>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    NATIVE_TRACE("get_X509_CRL_ext_oids(0x%llx, %d)", x509crlRef, critical);
+    return get_X509Type_ext_oids<X509_CRL, X509_CRL_get_ext_by_critical, ::X509_CRL_get_ext>(
+            x509crlRef, critical, result);
+}
+
+ECode NativeCrypto::X509_CRL_get_ext_oid(
+    /* [in] */ Int64 x509crlRef,
+    /* [in] */ const String& oid,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_CRL* crl = reinterpret_cast<X509_CRL*>(static_cast<uintptr_t>(x509crlRef));
+    NATIVE_TRACE("X509_CRL_get_ext_oid(%p, %s)", crl, oid.string());
+    return X509Type_get_ext_oid<X509_CRL, X509_CRL_get_ext_by_OBJ, ::X509_CRL_get_ext>(crl,
+            oid, result);
+}
+
+ECode NativeCrypto::X509_CRL_get_version(
+    /* [in] */ Int64 x509crlRef,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_CRL* crl = reinterpret_cast<X509_CRL*>(static_cast<uintptr_t>(x509crlRef));
+    NATIVE_TRACE("X509_CRL_get_version(%p)", crl);
+
+    long version = ::ASN1_INTEGER_get((crl)->crl->version);
+    NATIVE_TRACE("X509_CRL_get_version(%p) => %ld", crl, version);
+    *result = version;
+    return NOERROR;
+}
+
+ECode NativeCrypto::X509_CRL_get_ext(
+    /* [in] */ Int64 x509crlRef,
+    /* [in] */ const String& oid,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_CRL* crl = reinterpret_cast<X509_CRL*>(static_cast<uintptr_t>(x509crlRef));
+    NATIVE_TRACE("X509_CRL_get_ext(%p, %p)", crl, oid);
+    ECode ec = NOERROR;
+    X509_EXTENSION* ext = X509Type_get_ext<X509_CRL, X509_CRL_get_ext_by_OBJ, ::X509_CRL_get_ext>(
+            crl, oid, &ec);
+    NATIVE_TRACE("X509_CRL_get_ext(%p, %p) => %p", crl, oid, ext);
+    *result = reinterpret_cast<uintptr_t>(ext);
+    return ec;
+}
+
+static void get_X509_CRL_signature(X509_CRL *crl, ASN1_BIT_STRING** signature)
+{
+    *signature = crl->signature;
+}
+
+ECode NativeCrypto::Get_X509_CRL_signature(
+    /* [in] */ Int64 x509crlRef,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_CRL* crl = reinterpret_cast<X509_CRL*>(static_cast<uintptr_t>(x509crlRef));
+    NATIVE_TRACE("get_X509_CRL_signature(%p)", crl);
+    return get_X509Type_signature<X509_CRL>(crl, get_X509_CRL_signature, result);
+}
+
+ECode NativeCrypto::X509_CRL_verify(
+    /* [in] */ Int64 x509crlRef,
+    /* [in] */ Int64 pkeyRef)
+{
+    X509_CRL* crl = reinterpret_cast<X509_CRL*>(static_cast<uintptr_t>(x509crlRef));
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("X509_CRL_verify(%p, %p)", crl, pkey);
+
+    if (crl == NULL) {
+        NATIVE_TRACE("X509_CRL_verify(%p, %p) => crl == null", crl, pkey);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (pkey == NULL) {
+        NATIVE_TRACE("X509_CRL_verify(%p, %p) => pkey == null", crl, pkey);
+        return E_NULL_POINTER_EXCEPTION;;
+    }
+
+    if (::X509_CRL_verify(crl, pkey) != 1) {
+        NATIVE_TRACE("X509_CRL_verify(%p, %p) => verify failure", crl, pkey);
+        return ThrowExceptionIfNecessary("X509_CRL_verify");
+    }
+    else {
+        NATIVE_TRACE("X509_CRL_verify(%p, %p) => verify success", crl, pkey);
+        return NOERROR;
+    }
+}
+
+ECode NativeCrypto::Get_X509_CRL_crl_enc(
+    /* [in] */ Int64 x509crlRef,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_CRL* crl = reinterpret_cast<X509_CRL*>(static_cast<uintptr_t>(x509crlRef));
+    NATIVE_TRACE("get_X509_CRL_crl_enc(%p)", crl);
+    return ASN1ToByteArray<X509_CRL_INFO, i2d_X509_CRL_INFO>(crl->crl, result);
+}
+
+ECode NativeCrypto::X509_CRL_get_lastUpdate(
+    /* [in] */ Int64 x509crlRef,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_CRL* crl = reinterpret_cast<X509_CRL*>(static_cast<uintptr_t>(x509crlRef));
+    NATIVE_TRACE("X509_CRL_get_lastUpdate(%p)", crl);
+
+    if (crl == NULL) {
+        NATIVE_TRACE("X509_CRL_get_lastUpdate(%p) => crl == null", crl);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    ASN1_TIME* lastUpdate = ((crl)->crl->lastUpdate);
+    NATIVE_TRACE("X509_CRL_get_lastUpdate(%p) => %p", crl, lastUpdate);
+    *result = reinterpret_cast<uintptr_t>(lastUpdate);
+    return NOERROR;
+}
+
+ECode NativeCrypto::X509_CRL_get_nextUpdate(
+    /* [in] */ Int64 x509crlRef,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_CRL* crl = reinterpret_cast<X509_CRL*>(static_cast<uintptr_t>(x509crlRef));
+    NATIVE_TRACE("X509_CRL_get_nextUpdate(%p)", crl);
+
+    if (crl == NULL) {
+        NATIVE_TRACE("X509_CRL_get_nextUpdate(%p) => crl == null", crl);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    ASN1_TIME* nextUpdate = ((crl)->crl->nextUpdate);
+    NATIVE_TRACE("X509_CRL_get_nextUpdate(%p) => %p", crl, nextUpdate);
+    *result = reinterpret_cast<uintptr_t>(nextUpdate);
+    return NOERROR;
+}
+
+ECode NativeCrypto::X509_REVOKED_dup(
+    /* [in] */ Int64 x509RevokedRef,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_REVOKED* revoked = reinterpret_cast<X509_REVOKED*>(static_cast<uintptr_t>(x509RevokedRef));
+    NATIVE_TRACE("X509_REVOKED_dup(%p)", revoked);
+
+    if (revoked == NULL) {
+        NATIVE_TRACE("X509_REVOKED_dup(%p) => revoked == null", revoked);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    X509_REVOKED* dup = X509_revoked_dup(revoked);
+    NATIVE_TRACE("X509_REVOKED_dup(%p) => %p", revoked, dup);
+    *result = reinterpret_cast<uintptr_t>(dup);
+    return NOERROR;
+}
+
+ECode NativeCrypto::I2d_X509_REVOKED(
+    /* [in] */ Int64 x509RevokedRef,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_REVOKED* x509Revoked =
+            reinterpret_cast<X509_REVOKED*>(static_cast<uintptr_t>(x509RevokedRef));
+    NATIVE_TRACE("i2d_X509_REVOKED(%p)", x509Revoked);
+    return ASN1ToByteArray<X509_REVOKED, i2d_X509_REVOKED>(x509Revoked, result);
+}
+
+ECode NativeCrypto::Get_X509_REVOKED_ext_oids(
+    /* [in] */ Int64 x509RevokedRef,
+    /* [in] */ Int32 critical,
+    /* [out, callee] */ ArrayOf<String>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    NATIVE_TRACE("get_X509_CRL_ext_oids(0x%llx, %d)", x509RevokedRef, critical);
+    return get_X509Type_ext_oids<X509_REVOKED, X509_REVOKED_get_ext_by_critical,
+            ::X509_REVOKED_get_ext>(x509RevokedRef, critical, result);
+}
+
+ECode NativeCrypto::X509_REVOKED_get_ext_oid(
+    /* [in] */ Int64 x509RevokedRef,
+    /* [in] */ const String& oid,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_REVOKED* revoked = reinterpret_cast<X509_REVOKED*>(static_cast<uintptr_t>(x509RevokedRef));
+    NATIVE_TRACE("X509_REVOKED_get_ext_oid(%p, %p)", revoked, oid);
+    return X509Type_get_ext_oid<X509_REVOKED, X509_REVOKED_get_ext_by_OBJ, ::X509_REVOKED_get_ext>(
+            revoked, oid, result);
+}
+
+/* OpenSSL includes set_serialNumber but not get. */
+#if !defined(X509_revoked_get_serialNumber)
+static ASN1_INTEGER* X509_revoked_get_serialNumber(X509_REVOKED* x) {
+    return x->serialNumber;
+}
+#endif
+
+ECode NativeCrypto::X509_REVOKED_get_serialNumber(
+    /* [in] */ Int64 x509RevokedRef,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_REVOKED* revoked = reinterpret_cast<X509_REVOKED*>(static_cast<uintptr_t>(x509RevokedRef));
+    NATIVE_TRACE("X509_REVOKED_get_serialNumber(%p)", revoked);
+    return get_X509Type_serialNumber<X509_REVOKED>(revoked, X509_revoked_get_serialNumber, result);
+}
+
+ECode NativeCrypto::X509_REVOKED_get_ext(
+    /* [in] */ Int64 x509RevokedRef,
+    /* [in] */ const String& oid,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_REVOKED* revoked = reinterpret_cast<X509_REVOKED*>(static_cast<uintptr_t>(x509RevokedRef));
+    NATIVE_TRACE("X509_REVOKED_get_ext(%p, %p)", revoked, oid);
+    ECode ec = NOERROR;
+    X509_EXTENSION* ext = X509Type_get_ext<X509_REVOKED, X509_REVOKED_get_ext_by_OBJ,
+            ::X509_REVOKED_get_ext>(revoked, oid, &ec);
+    NATIVE_TRACE("X509_REVOKED_get_ext(%p, %p) => %p", revoked, oid, ext);
+    *result = reinterpret_cast<uintptr_t>(ext);
+    return ec;
+}
+
+ECode NativeCrypto::Get_X509_REVOKED_revocationDate(
+    /* [in] */ Int64 x509RevokedRef,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_REVOKED* revoked = reinterpret_cast<X509_REVOKED*>(static_cast<uintptr_t>(x509RevokedRef));
+    NATIVE_TRACE("get_X509_REVOKED_revocationDate(%p)", revoked);
+
+    if (revoked == NULL) {
+        NATIVE_TRACE("get_X509_REVOKED_revocationDate(%p) => revoked == null", revoked);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    NATIVE_TRACE("get_X509_REVOKED_revocationDate(%p) => %p", revoked, revoked->revocationDate);
+    *result = reinterpret_cast<uintptr_t>(revoked->revocationDate);
+    return NOERROR;
+}
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wwrite-strings"
+ECode NativeCrypto::X509_REVOKED_print(
+    /* [in] */ Int64 bioRef,
+    /* [in] */ Int64 x509RevokedRef)
+{
+    BIO* bio = reinterpret_cast<BIO*>(static_cast<uintptr_t>(bioRef));
+    X509_REVOKED* revoked = reinterpret_cast<X509_REVOKED*>(static_cast<uintptr_t>(x509RevokedRef));
+    NATIVE_TRACE("X509_REVOKED_print(%p, %p)", bio, revoked);
+
+    if (bio == NULL) {
+        NATIVE_TRACE("X509_REVOKED_print(%p, %p) => bio == null", bio, revoked);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (revoked == NULL) {
+        NATIVE_TRACE("X509_REVOKED_print(%p, %p) => revoked == null", bio, revoked);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    BIO_printf(bio, "Serial Number: ");
+    i2a_ASN1_INTEGER(bio, revoked->serialNumber);
+    BIO_printf(bio, "\nRevocation Date: ");
+    ASN1_TIME_print(bio, revoked->revocationDate);
+    BIO_printf(bio, "\n");
+    X509V3_extensions_print(bio, "CRL entry extensions", revoked->extensions, 0, 0);
+    return NOERROR;
+}
+#pragma GCC diagnostic pop
+
+ECode NativeCrypto::X509_supported_extension(
+    /* [in] */ Int64 x509ExtensionRef,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    X509_EXTENSION* ext = reinterpret_cast<X509_EXTENSION*>(static_cast<uintptr_t>(x509ExtensionRef));
+
+    if (ext == NULL) {
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    *result = ::X509_supported_extension(ext);
+    return NOERROR;
+}
+
+static inline void get_ASN1_TIME_data(char **data, int* output, size_t len)
+{
+    char c = **data;
+    **data = '\0';
+    *data -= len;
+    *output = atoi(*data);
+    *(*data + len) = c;
+}
+
+ECode NativeCrypto::ASN1_TIME_to_Calendar(
+    /* [in] */ Int64 asn1TimeRef,
+    /* [in] */ ICalendar* cal)
+{
+    ASN1_TIME* asn1Time = reinterpret_cast<ASN1_TIME*>(static_cast<uintptr_t>(asn1TimeRef));
+    NATIVE_TRACE("ASN1_TIME_to_Calendar(%p, %p)", asn1Time, calendar);
+
+    if (asn1Time == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_ASN1_GENERALIZEDTIME gen(ASN1_TIME_to_generalizedtime(asn1Time, NULL));
+    if (gen.get() == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (gen->length < 14 || gen->data == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    int sec, min, hour, mday, mon, year;
+
+    char *p = (char*) &gen->data[14];
+
+    get_ASN1_TIME_data(&p, &sec, 2);
+    get_ASN1_TIME_data(&p, &min, 2);
+    get_ASN1_TIME_data(&p, &hour, 2);
+    get_ASN1_TIME_data(&p, &mday, 2);
+    get_ASN1_TIME_data(&p, &mon, 2);
+    get_ASN1_TIME_data(&p, &year, 4);
+
+    cal->Set(year, mon - 1, mday, hour, min, sec);
+    return NOERROR;
+}
+
+ECode NativeCrypto::Create_BIO_InputStream(
+    /* [in] */ IOpenSSLBIOInputStream* streamObj,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    NATIVE_TRACE("create_BIO_InputStream(%p)", streamObj);
+
+    if (streamObj == NULL) {
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_BIO bio(BIO_new(&stream_bio_method));
+    if (bio.get() == NULL) {
+        *result = 0;
+        return NOERROR;
+    }
+
+    bio_stream_assign(bio.get(), new BIO_InputStream(streamObj));
+
+    NATIVE_TRACE("create_BIO_InputStream(%p) => %p", streamObj, bio.get());
+    *result = reinterpret_cast<uintptr_t>(bio.release());
+    return NOERROR;
+}
+
+ECode NativeCrypto::Create_BIO_OutputStream(
+    /* [in] */ IOutputStream* streamObj,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    NATIVE_TRACE("create_BIO_OutputStream(%p)", streamObj);
+
+    if (streamObj == NULL) {
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    Unique_BIO bio(BIO_new(&stream_bio_method));
+    if (bio.get() == NULL) {
+        *result = 0;
+        return NOERROR;
+    }
+
+    bio_stream_assign(bio.get(), new BIO_OutputStream(streamObj));
+
+    NATIVE_TRACE("create_BIO_OutputStream(%p) => %p", streamObj, bio.get());
+    *result = reinterpret_cast<uintptr_t>(bio.release());
+    return NOERROR;
+}
+
+ECode NativeCrypto::BIO_read(
+    /* [in] */ Int64 bioRef,
+    /* [in] */ ArrayOf<Byte>* outputBytes,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    BIO* bio = reinterpret_cast<BIO*>(static_cast<uintptr_t>(bioRef));
+    NATIVE_TRACE("BIO_read(%p, %p)", bio, outputBytes);
+
+    if (outputBytes == NULL) {
+        NATIVE_TRACE("BIO_read(%p, %p) => output == null", bio, outputBytes);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    int outputSize = outputBytes->GetLength();
+
+    UniquePtr<unsigned char[]> buffer(new unsigned char[outputSize]);
+    if (buffer.get() == NULL) {
+        *result = 0;
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
+    int read = ::BIO_read(bio, buffer.get(), outputSize);
+    if (read <= 0) {
+        NATIVE_TRACE("BIO_read(%p, %p) => threw IO exception", bio, outputBytes);
+        *result = 0;
+        return E_IO_EXCEPTION;
+    }
+
+    outputBytes->Copy(reinterpret_cast<Byte*>(buffer.get()), read);
+    NATIVE_TRACE("BIO_read(%p, %p) => %d", bio, outBytes, read);
+    *result = read;
+    return NOERROR;
+}
+
+ECode NativeCrypto::BIO_write(
+    /* [in] */ Int64 bioRef,
+    /* [in] */ ArrayOf<Byte>* inputBytes,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int32 length)
+{
+    BIO* bio = reinterpret_cast<BIO*>(static_cast<uintptr_t>(bioRef));
+    NATIVE_TRACE("BIO_write(%p, %p, %d, %d)", bio, inputBytes, offset, length);
+
+    if (inputBytes == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (offset < 0 || length < 0) {
+        NATIVE_TRACE("BIO_write(%p, %p, %d, %d) => IOOB", bio, inputBytes, offset, length);
+        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    int inputSize = inputBytes->GetLength();
+    if (inputSize < offset + length) {
+        NATIVE_TRACE("BIO_write(%p, %p, %d, %d) => IOOB", bio, inputBytes, offset, length);
+        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    UniquePtr<unsigned char[]> buffer(new unsigned char[length]);
+    if (buffer.get() == NULL) {
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
+    memcpy(buffer.get(), inputBytes->GetPayload() + offset, length);
+    if (::BIO_write(bio, buffer.get(), length) != length) {
+        FreeOpenSslErrorState();
+        NATIVE_TRACE("BIO_write(%p, %p, %d, %d) => IO error", bio, inputBytes, offset, length);
+        return E_IO_EXCEPTION;
+    }
+
+    NATIVE_TRACE("BIO_write(%p, %p, %d, %d) => success", bio, inputBytes, offset, length);
+    return NOERROR;
+}
+
+ECode NativeCrypto::BIO_free_all(
+    /* [in] */ Int64 bioRef)
+{
+    BIO* bio = reinterpret_cast<BIO*>(static_cast<uintptr_t>(bioRef));
+    NATIVE_TRACE("BIO_free_all(%p)", bio);
+
+    if (bio == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    ::BIO_free_all(bio);
     return NOERROR;
 }
 
