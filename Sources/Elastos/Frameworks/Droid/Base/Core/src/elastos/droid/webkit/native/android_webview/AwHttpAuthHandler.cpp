@@ -13,8 +13,8 @@ AwHttpAuthHandler::AwHttpAuthHandler(
 }
 
 void AwHttpAuthHandler::Proceed(
-    /* [in] */ String username,
-    /* [in] */ String password)
+    /* [in] */ const String& username,
+    /* [in] */ const String& password)
 {
     if (mNativeAwHttpAuthHandler != 0) {
         NativeProceed(mNativeAwHttpAuthHandler, username, password);
@@ -52,8 +52,8 @@ void AwHttpAuthHandler::HandlerDestroyed()
 
 void AwHttpAuthHandler::NativeProceed(
     /* [in] */ Int64 nativeAwHttpAuthHandler,
-    /* [in] */ String username,
-    /* [in] */ String password)
+    /* [in] */ const String& username,
+    /* [in] */ const String& password)
 {
 }
 

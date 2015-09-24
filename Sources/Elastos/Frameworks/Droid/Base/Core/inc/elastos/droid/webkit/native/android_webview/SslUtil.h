@@ -28,7 +28,7 @@ public:
     static CARAPI_(AutoPtr<ISslError>) SslErrorFromNetErrorCode(
         /* [in] */ Int32 error,
         /* [in] */ ISslCertificate* cert,
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     static CARAPI_(AutoPtr<ISslCertificate>) GetCertificateFromDerBytes(
         /* [in] */ ArrayOf<Byte>* derBytes);

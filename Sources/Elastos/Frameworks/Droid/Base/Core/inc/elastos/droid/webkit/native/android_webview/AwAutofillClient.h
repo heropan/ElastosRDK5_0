@@ -76,8 +76,8 @@ private:
     static CARAPI_(void) AddToAutofillSuggestionArray(
         /* [in] */ ArrayOf<AutofillSuggestion>* array,
         /* [in] */ Int32 index,
-        /* [in] */ String name,
-        /* [in] */ String label,
+        /* [in] */ const String& name,
+        /* [in] */ const String& label,
         /* [in] */ Int32 uniqueId);
 
     CARAPI_(void) NativeSuggestionSelected(

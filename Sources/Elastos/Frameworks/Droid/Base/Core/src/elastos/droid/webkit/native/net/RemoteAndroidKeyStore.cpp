@@ -157,7 +157,7 @@ Int64 RemoteAndroidKeyStore::GetOpenSSLHandleForPrivateKey(
 }
 
 AutoPtr<AndroidPrivateKey> RemoteAndroidKeyStore::CreateKey(
-    /* [in] */ String alias)
+    /* [in] */ const String& alias)
 {
     // ==================before translated======================
     // try {

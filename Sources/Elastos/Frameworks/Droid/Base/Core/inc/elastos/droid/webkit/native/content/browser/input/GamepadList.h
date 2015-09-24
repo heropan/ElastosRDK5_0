@@ -186,7 +186,7 @@ private:
         /* [in] */ Int32 index,
         /* [in] */ Boolean mapping,
         /* [in] */ Boolean connected,
-        /* [in] */ String devicename,
+        /* [in] */ const String& devicename,
         /* [in] */ Int64 timestamp,
         /* [in] */ ArrayOf<Float>* axes,
         /* [in] */ ArrayOf<Float>* buttons);

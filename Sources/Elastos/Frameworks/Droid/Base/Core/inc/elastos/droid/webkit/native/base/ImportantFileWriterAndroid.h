@@ -27,12 +27,12 @@ public:
      * @return true if the data was written to the file, false if not.
      */
     static CARAPI_(Boolean) WriteFileAtomically(
-        /* [in] */ String fileName,
+        /* [in] */ const String& fileName,
         /* [in] */ ArrayOf<Byte>* data);
 
 private:
     static CARAPI_(Boolean) NativeWriteFileAtomically(
-        /* [in] */ String fileName,
+        /* [in] */ const String& fileName,
         /* [in] */ ArrayOf<Byte>* data);
 };
 

@@ -24,7 +24,7 @@ const String RemoteUtils::SPLITER = String("94:GM");
  */
 String RemoteUtils::ComposeResult(
     /* [in] */ Int32 rltNum,
-    /* [in] */ String result)
+    /* [in] */ const String& result)
 {
     StringBuilder sb(StringUtils::Int32ToString(rltNum));
     sb.Append(SPLITER);

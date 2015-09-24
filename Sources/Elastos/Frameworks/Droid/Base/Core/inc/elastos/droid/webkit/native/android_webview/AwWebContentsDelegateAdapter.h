@@ -64,7 +64,7 @@ private:
          * or an empty string otherwise.
          */
         CARAPI_(String) ResolveFileName(
-            /* [in] */ String filePath);
+            /* [in] */ const String& filePath);
     };
 
     class InnerHandler
@@ -134,18 +134,18 @@ public:
     //@Override
     CARAPI_(Boolean) AddMessageToConsole(
         /* [in] */ Int32 level,
-        /* [in] */ String message,
+        /* [in] */ const String& message,
         /* [in] */ Int32 lineNumber,
-        /* [in] */ String sourceId);
+        /* [in] */ const String& sourceId);
 
     //@Override
     CARAPI_(void) OnUpdateUrl(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     //@Override
     CARAPI_(void) OpenNewTab(
-        /* [in] */ String url,
-        /* [in] */ String extraHeaders,
+        /* [in] */ const String& url,
+        /* [in] */ const String& extraHeaders,
         /* [in] */ ArrayOf<Byte>* postData,
         /* [in] */ Int32 disposition,
         /* [in] */ Boolean isRendererInitiated);
@@ -162,9 +162,9 @@ public:
         /* [in] */ Int32 processId,
         /* [in] */ Int32 renderId,
         /* [in] */ Int32 modeFlags,
-        /* [in] */ String acceptTypes,
-        /* [in] */ String title,
-        /* [in] */ String defaultFilename,
+        /* [in] */ const String& acceptTypes,
+        /* [in] */ const String& title,
+        /* [in] */ const String& defaultFilename,
         /* [in] */ Boolean capture);
 
     //@Override

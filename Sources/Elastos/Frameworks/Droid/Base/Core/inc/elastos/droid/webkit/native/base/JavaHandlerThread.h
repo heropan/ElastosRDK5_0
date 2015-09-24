@@ -49,11 +49,11 @@ public:
 
 private:
     JavaHandlerThread(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     //@CalledByNative
     static CARAPI_(AutoPtr<JavaHandlerThread>) Create(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     //@CalledByNative
     CARAPI_(void) Start(

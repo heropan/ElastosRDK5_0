@@ -44,7 +44,7 @@ AutoPtr< ArrayOf<String> > JavaCommandLine::GetCommandLineArguments()
 
 //@Override
 Boolean JavaCommandLine::HasSwitch(
-    /* [in] */ String switchString)
+    /* [in] */ const String& switchString)
 {
     assert(0);
 //    return mSwitches.ContainsKey(switchString);
@@ -53,7 +53,7 @@ Boolean JavaCommandLine::HasSwitch(
 
 //@Override
 String JavaCommandLine::GetSwitchValue(
-    /* [in] */ String switchString)
+    /* [in] */ const String& switchString)
 {
     assert(0);
 #if 0
@@ -67,7 +67,7 @@ String JavaCommandLine::GetSwitchValue(
 
 //@Override
 void JavaCommandLine::AppendSwitch(
-    /* [in] */ String switchString)
+    /* [in] */ const String& switchString)
 {
     AppendSwitchWithValue(switchString, String(NULL));
 }
@@ -79,8 +79,8 @@ void JavaCommandLine::AppendSwitch(
  */
 //@Override
 void JavaCommandLine::AppendSwitchWithValue(
-    /* [in] */ String switchString,
-    /* [in] */ String value)
+    /* [in] */ const String& switchString,
+    /* [in] */ const String& value)
 {
     assert(0);
 #if 0
@@ -140,29 +140,29 @@ void JavaCommandLine::AppendSwitchesInternal(
 
 //@Override
 Boolean NativeCommandLine::HasSwitch(
-    /* [in] */ String switchString)
+    /* [in] */ const String& switchString)
 {
     return NativeHasSwitch(switchString);
 }
 
 //@Override
 String NativeCommandLine::GetSwitchValue(
-    /* [in] */ String switchString)
+    /* [in] */ const String& switchString)
 {
     return NativeGetSwitchValue(switchString);
 }
 
 //@Override
 void NativeCommandLine::AppendSwitch(
-    /* [in] */ String switchString)
+    /* [in] */ const String& switchString)
 {
     NativeAppendSwitch(switchString);
 }
 
 //@Override
 void NativeCommandLine::AppendSwitchWithValue(
-    /* [in] */ String switchString,
-    /* [in] */ String value)
+    /* [in] */ const String& switchString,
+    /* [in] */ const String& value)
 {
     NativeAppendSwitchWithValue(switchString, value);
 }
@@ -201,8 +201,8 @@ CommandLine::CommandLine()
  * @return Switch value, or {@code defaultValue} if the switch is not set or set to empty.
  */
 String CommandLine::GetSwitchValue(
-    /* [in] */ String switchString,
-    /* [in] */ String defaultValue)
+    /* [in] */ const String& switchString,
+    /* [in] */ const String& defaultValue)
 {
     String value = GetSwitchValue(switchString);
     assert(0);
@@ -260,7 +260,7 @@ void CommandLine::Init(
  * @param file The fully qualified command line file.
  */
 void CommandLine::InitFromFile(
-    /* [in] */ String file)
+    /* [in] */ const String& file)
 {
     // Arbitrary clamp of 8k on the amount of file we read in.
     AutoPtr< ArrayOf<Int8> > buffer = ReadUtf8FileFully(file, 8 * 1024);
@@ -369,7 +369,7 @@ void CommandLine::SetInstance(
  *         or if its length exceeds |sizeLimit|.
  */
 AutoPtr< ArrayOf<Int8> > CommandLine::ReadUtf8FileFully(
-    /* [in] */ String fileName,
+    /* [in] */ const String& fileName,
     /* [in] */ Int32 sizeLimit)
 {
     assert(0);
@@ -416,23 +416,23 @@ void CommandLine::NativeReset()
 }
 
 Boolean CommandLine::NativeHasSwitch(
-    /* [in] */ String switchString)
+    /* [in] */ const String& switchString)
 {
 }
 
 String CommandLine::NativeGetSwitchValue(
-    /* [in] */ String switchString)
+    /* [in] */ const String& switchString)
 {
 }
 
 void CommandLine::NativeAppendSwitch(
-    /* [in] */ String switchString)
+    /* [in] */ const String& switchString)
 {
 }
 
 void CommandLine::NativeAppendSwitchWithValue(
-    /* [in] */ String switchString,
-    /* [in] */ String value)
+    /* [in] */ const String& switchString,
+    /* [in] */ const String& value)
 {
 }
 

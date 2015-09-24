@@ -11,7 +11,7 @@ namespace Net {
 //                   ProxyChangeListener::ProxyConfig
 //=====================================================================
 ProxyChangeListener::ProxyConfig::ProxyConfig(
-    /* [in] */ String host,
+    /* [in] */ const String& host,
     /* [in] */ Int32 port)
 {
     // ==================before translated======================
@@ -123,7 +123,7 @@ AutoPtr<ProxyChangeListener> ProxyChangeListener::Create(
 }
 
 String ProxyChangeListener::GetProperty(
-    /* [in] */ String property)
+    /* [in] */ const String& property)
 {
     // ==================before translated======================
     // return System.getProperty(property);
@@ -211,7 +211,7 @@ ECode ProxyChangeListener::UnregisterReceiver()
 
 ECode ProxyChangeListener::NativeProxySettingsChangedTo(
     /* [in] */ Int64 nativePtr,
-    /* [in] */ String host,
+    /* [in] */ const String& host,
     /* [in] */ Int32 port)
 {
     assert(0);

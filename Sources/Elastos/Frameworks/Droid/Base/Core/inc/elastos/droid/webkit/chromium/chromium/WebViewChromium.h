@@ -1936,9 +1936,9 @@ public:
 
     //@Override
     CARAPI SavePassword(
-        /* [in] */ String host,
-        /* [in] */ String username,
-        /* [in] */ String password);
+        /* [in] */ const String& host,
+        /* [in] */ const String& username,
+        /* [in] */ const String& password);
 
     //@Override
     CARAPI SetHttpAuthUsernamePassword(
@@ -1989,34 +1989,34 @@ public:
 
     //@Override
     CARAPI LoadUrl(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     //@Override
     CARAPI PostUrl(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ ArrayOf<Byte>* postData);
 
     //@Override
     CARAPI LoadData(
-        /* [in] */ String data,
-        /* [in] */ String mimeType,
-        /* [in] */ String encoding);
+        /* [in] */ const String& data,
+        /* [in] */ const String& mimeType,
+        /* [in] */ const String& encoding);
 
     //@Override
     CARAPI LoadDataWithBaseURL(
-        /* [in] */ String baseUrl,
-        /* [in] */ String data,
-        /* [in] */ String mimeType,
-        /* [in] */ String encoding,
-        /* [in] */ String historyUrl);
+        /* [in] */ const String& baseUrl,
+        /* [in] */ const String& data,
+        /* [in] */ const String& mimeType,
+        /* [in] */ const String& encoding,
+        /* [in] */ const String& historyUrl);
 
     CARAPI_(void) EvaluateJavaScript(
-        /* [in] */ String script,
+        /* [in] */ const String& script,
         /* [in] */ IValueCallback* resultCallback);
 
     //@Override
     CARAPI SaveWebArchive(
-        /* [in] */ String filename);
+        /* [in] */ const String& filename);
 
     //@Override
     CARAPI SaveWebArchive(
@@ -2271,7 +2271,7 @@ public:
 
     //@Override
     CARAPI FindHierarchyView(
-        /* [in] */ String className,
+        /* [in] */ const String& className,
         /* [in] */ Int32 hashCode,
         /* [out] */ IView** view);
 
@@ -2514,7 +2514,7 @@ public:
 
     //@Override TODO(sgurun) commenting this out to have master-gpl compiling.
     CARAPI_(AutoPtr<IPrintDocumentAdapter>) CreatePrintDocumentAdapter(
-        /* [in] */ String documentName);
+        /* [in] */ const String& documentName);
 
     // Implements SmartClipProvider
     //@Override
@@ -2562,19 +2562,19 @@ private:
     CARAPI_(void) CheckThread();
 
     static CARAPI_(String) FixupMimeType(
-        /* [in] */ String mimeType);
+        /* [in] */ const String& mimeType);
 
     static CARAPI_(String) FixupData(
-        /* [in] */ String data);
+        /* [in] */ const String& data);
 
     static CARAPI_(String) FixupBase(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     static CARAPI_(String) FixupHistory(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     static CARAPI_(Boolean) IsBase64Encoded(
-        /* [in] */ String encoding);
+        /* [in] */ const String& encoding);
 
     CARAPI_(void) LoadUrlOnUiThread(
         /* [in] */ const LoadUrlParams* loadUrlParams);

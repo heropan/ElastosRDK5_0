@@ -152,9 +152,9 @@ AutoPtr<MediaMetadata> MediaResourceGetter::Extract(
 
 Boolean MediaResourceGetter::Configure(
     /* [in] */ IContext* context,
-    /* [in] */ String url,
-    /* [in] */ String cookies,
-    /* [in] */ String userAgent)
+    /* [in] */ const String& url,
+    /* [in] */ const String& cookies,
+    /* [in] */ const String& userAgent)
 {
     // ==================before translated======================
     // URI uri;
@@ -278,7 +278,7 @@ Boolean MediaResourceGetter::AndroidDeviceOk(
 }
 
 AutoPtr<IFile> MediaResourceGetter::UriToFile(
-    /* [in] */ String path)
+    /* [in] */ const String& path)
 {
     // ==================before translated======================
     // return new File(path);
@@ -339,7 +339,7 @@ ECode MediaResourceGetter::Configure(
 }
 
 ECode MediaResourceGetter::Configure(
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ IMap<String, String>* headers)
 {
     VALIDATE_NOT_NULL(headers);
@@ -350,7 +350,7 @@ ECode MediaResourceGetter::Configure(
 }
 
 ECode MediaResourceGetter::Configure(
-    /* [in] */ String path)
+    /* [in] */ const String& path)
 {
     // ==================before translated======================
     // mRetriever.setDataSource(path);
@@ -457,7 +457,7 @@ AutoPtr<MediaMetadata> MediaResourceGetter::DoExtractMetadata()
 }
 
 Boolean MediaResourceGetter::IsLoopbackAddress(
-    /* [in] */ String host)
+    /* [in] */ const String& host)
 {
     // ==================before translated======================
     // return host != null && (host.equalsIgnoreCase("localhost")  // typical hostname

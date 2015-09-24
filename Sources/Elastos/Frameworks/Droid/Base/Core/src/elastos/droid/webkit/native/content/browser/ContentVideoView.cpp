@@ -59,7 +59,7 @@ ECode ContentVideoView::VideoSurfaceView::OnMeasure(
 
 ContentVideoView::ProgressView::ProgressView(
     /* [in] */ IContext* context,
-    /* [in] */ String videoLoadingText)
+    /* [in] */ const String& videoLoadingText)
 {
     assert(0);
 #if 0

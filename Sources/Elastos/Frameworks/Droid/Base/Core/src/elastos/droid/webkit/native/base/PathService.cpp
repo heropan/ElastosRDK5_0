@@ -15,14 +15,14 @@ PathService::PathService()
 
 void PathService::Override(
     /* [in] */ Int32 what,
-    /* [in] */ String path)
+    /* [in] */ const String& path)
 {
     NativeOverride(what, path);
 }
 
 void PathService::NativeOverride(
     /* [in] */ Int32 what,
-    /* [in] */ String path)
+    /* [in] */ const String& path)
 {
 }
 

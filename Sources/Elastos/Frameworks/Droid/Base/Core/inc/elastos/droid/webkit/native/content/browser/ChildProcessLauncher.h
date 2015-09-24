@@ -219,7 +219,7 @@ public:
 
     static CARAPI_(void) LogPidWarning(
         /* [in] */ Int32 pid,
-        /* [in] */ String message);
+        /* [in] */ const String& message);
 
     //@VisibleForTesting
     static CARAPI_(AutoPtr<ChildProcessConnection>) AllocateBoundConnectionForTesting(
@@ -279,7 +279,7 @@ private:
 
     static CARAPI_(String) GetSwitchValue(
         /* [in] */ const ArrayOf<String>* commandLine,
-        /* [in] */ String switchKey);
+        /* [in] */ const String& switchKey);
 
     /**
      * This implementation is used to receive callbacks from the remote service.

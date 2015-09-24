@@ -6,10 +6,10 @@ namespace AndroidWebview {
 
 //@CalledByNative
 AutoPtr<AwWebResourceResponse> AwContentsIoThreadClient::ShouldInterceptRequest(
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ Boolean isMainFrame,
     /* [in] */ Boolean hasUserGesture,
-    /* [in] */ String method,
+    /* [in] */ const String& method,
     /* [in] */ ArrayOf<String>* requestHeaderNames,
     /* [in] */ ArrayOf<String>* requestHeaderValues)
 {

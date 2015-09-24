@@ -280,8 +280,8 @@ ContentViewCore::InnerWebContentsObserverAndroid::InnerWebContentsObserverAndroi
 
 //@Override
 ECode ContentViewCore::InnerWebContentsObserverAndroid::DidNavigateMainFrame(
-    /* [in] */ String url,
-    /* [in] */ String baseUrl,
+    /* [in] */ const String& url,
+    /* [in] */ const String& baseUrl,
     /* [in] */ Boolean isNavigationToDifferentPage,
     /* [in] */ Boolean isFragmentNavigation)
 {
@@ -1298,7 +1298,7 @@ String ContentViewCore::GetTitle()
  */
 //@VisibleForTesting
 void ContentViewCore::ShowInterstitialPage(
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ InterstitialPageDelegateAndroid* delegate)
 {
     if (mNativeContentViewCore == 0) {
@@ -1954,7 +1954,7 @@ void ContentViewCore::UpdateGestureStateListener(
  * main frame's document.
  */
 void ContentViewCore::AddStyleSheetByURL(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     NativeAddStyleSheetByURL(mNativeContentViewCore, url);
 }
@@ -1971,7 +1971,7 @@ void ContentViewCore::AddStyleSheetByURL(
  *                 If no result is required, pass null.
  */
 void ContentViewCore::EvaluateJavaScript(
-    /* [in] */ String script,
+    /* [in] */ const String& script,
     /* [in] */ JavaScriptCallback* callback)
 {
     if (mNativeContentViewCore == 0) {
@@ -1988,7 +1988,7 @@ void ContentViewCore::EvaluateJavaScript(
  * @param script The Javascript to execute.
  */
 void ContentViewCore::EvaluateJavaScriptEvenIfNotYetNavigated(
-    /* [in] */ String script)
+    /* [in] */ const String& script)
 {
     if (mNativeContentViewCore == 0) {
         return;
@@ -3038,7 +3038,7 @@ void ContentViewCore::UpdateFrameInfo(
 void ContentViewCore::UpdateImeAdapter(
     /* [in] */ Int64 nativeImeAdapterAndroid,
     /* [in] */ Int32 textInputType,
-    /* [in] */ String text,
+    /* [in] */ const String& text,
     /* [in] */ Int32 selectionStart,
     /* [in] */ Int32 selectionEnd,
     /* [in] */ Int32 compositionStart,
@@ -3067,7 +3067,7 @@ void ContentViewCore::UpdateImeAdapter(
 //@SuppressWarnings("unused")
 //@CalledByNative
 void ContentViewCore::SetTitle(
-    /* [in] */ String title)
+    /* [in] */ const String& title)
 {
     GetContentViewClient()->OnUpdateTitle(title);
 }
@@ -3150,7 +3150,7 @@ AutoPtr<TouchEventSynthesizer> ContentViewCore::CreateTouchEventSynthesizer()
 //@SuppressWarnings("unused")
 //@CalledByNative
 void ContentViewCore::OnSelectionChanged(
-    /* [in] */ String text)
+    /* [in] */ const String& text)
 {
     mLastSelectedText = text;
     GetContentViewClient()->OnSelectionChanged(text);
@@ -3247,7 +3247,7 @@ void ContentViewCore::OnSelectionBoundsChanged(
 //@SuppressWarnings("unused")
 //@CalledByNative
 void ContentViewCore::OnEvaluateJavaScriptResult(
-    /* [in] */ String jsonResult,
+    /* [in] */ const String& jsonResult,
     /* [in] */ JavaScriptCallback* callback)
 {
     callback->HandleJavaScriptResult(jsonResult);
@@ -3441,7 +3441,7 @@ Map<String, Pair<Object, Class>> ContentViewCore::GetJavascriptInterfaces()
  */
 void ContentViewCore::AddJavascriptInterface(
     /* [in] */ IInterface* object,
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
     AddPossiblyUnsafeJavascriptInterface(object, name, JavascriptInterface.class);
 }
@@ -3490,7 +3490,7 @@ void ContentViewCore::AddJavascriptInterface(
  */
 void ContentViewCore::AddPossiblyUnsafeJavascriptInterface(
     /* [in] */ IInterface* object,
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Annotation* requiredAnnotation)
 {
     if (mNativeContentViewCore != 0 && object != null) {
@@ -3505,7 +3505,7 @@ void ContentViewCore::AddPossiblyUnsafeJavascriptInterface(
  * @param name The name of the interface to remove.
  */
 void ContentViewCore::RemoveJavascriptInterface(
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
     mJavaScriptInterfaces->Remove(name);
     if (mNativeContentViewCore != 0) {
@@ -3539,7 +3539,7 @@ Boolean ContentViewCore::IsReady()
 
 //@CalledByNative
 void ContentViewCore::StartContentIntent(
-    /* [in] */ String contentUrl)
+    /* [in] */ const String& contentUrl)
 {
     GetContentViewClient()->OnStartContentIntent(GetContext(), contentUrl);
 }
@@ -3830,10 +3830,10 @@ void ContentViewCore::UpdateTopControlsState(
 void ContentViewCore::AddToNavigationHistory(
     /* [in] */ IInterface* history,
     /* [in] */ Int32 index,
-    /* [in] */ String url,
-    /* [in] */ String virtualUrl,
-    /* [in] */ String originalUrl,
-    /* [in] */ String title,
+    /* [in] */ const String& url,
+    /* [in] */ const String& virtualUrl,
+    /* [in] */ const String& originalUrl,
+    /* [in] */ const String& title,
     /* [in] */ IBitmap* favicon)
 {
     AutoPtr<NavigationEntry> entry = new NavigationEntry(
@@ -3932,8 +3932,8 @@ void ContentViewCore::SetSmartClipOffsets(
 
 //@CalledByNative
 void ContentViewCore::OnSmartClipDataExtracted(
-    /* [in] */ String text,
-    /* [in] */ String html,
+    /* [in] */ const String& text,
+    /* [in] */ const String& html,
     /* [in] */ IRect* clipRect)
 {
     if (mSmartClipDataListener != NULL) {
@@ -4006,7 +4006,7 @@ AutoPtr<ContentVideoViewClient> ContentViewCore::GetContentVideoViewClient()
 
 //@CalledByNative
 Boolean ContentViewCore::ShouldBlockMediaRequest(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     return GetContentViewClient()->ShouldBlockMediaRequest(url);
 }
@@ -4043,16 +4043,16 @@ void ContentViewCore::NativeOnJavaContentViewCoreDestroyed(
 
 void ContentViewCore::NativeLoadUrl(
     /* [in] */ Int64 nativeContentViewCoreImpl,
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ Int32 loadUrlType,
     /* [in] */ Int32 transitionType,
-    /* [in] */ String referrerUrl,
+    /* [in] */ const String& referrerUrl,
     /* [in] */ Int32 referrerPolicy,
     /* [in] */ Int32 uaOverrideOption,
-    /* [in] */ String extraHeaders,
+    /* [in] */ const String& extraHeaders,
     /* [in] */ ArrayOf<Byte>* postData,
-    /* [in] */ String baseUrlForDataUrl,
-    /* [in] */ String virtualUrlForDataUrl,
+    /* [in] */ const String& baseUrlForDataUrl,
+    /* [in] */ const String& virtualUrlForDataUrl,
     /* [in] */ Boolean canLoadLocalResources,
     /* [in] */ Boolean isRendererInitiated)
 {
@@ -4065,7 +4065,7 @@ String ContentViewCore::NativeGetURL(
 
 void ContentViewCore::NativeShowInterstitialPage(
     /* [in] */ Int64 nativeContentViewCoreImpl,
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ Int64 nativeInterstitialPageDelegateAndroid)
 {
 }
@@ -4311,13 +4311,13 @@ void ContentViewCore::NativeClearHistory(
 
 void ContentViewCore::NativeAddStyleSheetByURL(
     /* [in] */ Int64 nativeContentViewCoreImpl,
-    /* [in] */ String stylesheetUrl)
+    /* [in] */ const String& stylesheetUrl)
 {
 }
 
 void ContentViewCore::NativeEvaluateJavaScript(
     /* [in] */ Int64 nativeContentViewCoreImpl,
-    /* [in] */ String script,
+    /* [in] */ const String& script,
     /* [in] */ JavaScriptCallback* callback,
     /* [in] */ Boolean startRenderer)
 {
@@ -4374,14 +4374,14 @@ void ContentViewCore::NativeSetAllowJavascriptInterfacesInspection(
 void ContentViewCore::NativeAddJavascriptInterface(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ IInterface* object,
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Class requiredAnnotation)
 {
 }
 
 void ContentViewCore::NativeRemoveJavascriptInterface(
     /* [in] */ Int64 nativeContentViewCoreImpl,
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
 }
 

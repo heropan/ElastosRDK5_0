@@ -131,7 +131,7 @@ Void MediaDrmBridge::PostRequestTask::DoInBackground(String... urls)
 }
 
 AutoPtr< ArrayOf<Byte> > MediaDrmBridge::PostRequestTask::PostRequest(
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ ArrayOf<Byte>* drmRequest)
 {
     AutoPtr<IHttpClient> httpClient;
@@ -482,7 +482,7 @@ void MediaDrmBridge::CloseSession(
 //@CalledByNative
 Boolean MediaDrmBridge::IsCryptoSchemeSupported(
     /* [in] */ ArrayOf<Byte>* schemeUUID,
-    /* [in] */ String containerMimeType)
+    /* [in] */ const String& containerMimeType)
 {
     AutoPtr<IUUID> cryptoScheme = GetUUIDFromBytes(schemeUUID);
 
@@ -547,7 +547,7 @@ AutoPtr<MediaDrmBridge> MediaDrmBridge::Create(
  */
 //@CalledByNative
 Boolean MediaDrmBridge::SetSecurityLevel(
-    /* [in] */ String securityLevel)
+    /* [in] */ const String& securityLevel)
 {
     if (mMediaDrm == NULL || mMediaCrypto != NULL) {
         return FALSE;
@@ -650,7 +650,7 @@ void MediaDrmBridge::Release()
 AutoPtr<IMediaDrmKeyRequest> MediaDrmBridge::GetKeyRequest(
     /* [in] */ IByteBuffer* session,
     /* [in] */ ArrayOf<Byte>* data,
-    /* [in] */ String mime)
+    /* [in] */ const String& mime)
 {
     assert(mMediaDrm != NULL);
     assert(mMediaCrypto != NULL);
@@ -671,7 +671,7 @@ AutoPtr<IMediaDrmKeyRequest> MediaDrmBridge::GetKeyRequest(
 void MediaDrmBridge::SavePendingCreateSessionData(
     /* [in] */ Int32 sessionId,
     /* [in] */ ArrayOf<Byte>* initData,
-    /* [in] */ String mime)
+    /* [in] */ const String& mime)
 {
 //    Log.d(TAG, "savePendingCreateSessionData()");
     AutoPtr<PendingCreateSessionData> data = new PendingCreateSessionData(sessionId, initData, mime);
@@ -721,7 +721,7 @@ void MediaDrmBridge::ResumePendingOperations()
 void MediaDrmBridge::CreateSession(
     /* [in] */ Int32 sessionId,
     /* [in] */ ArrayOf<Byte>* initData,
-    /* [in] */ String mime)
+    /* [in] */ const String& mime)
 {
 //    Log.d(TAG, "createSession()");
     if (mMediaDrm == NULL) {
@@ -1040,7 +1040,7 @@ String MediaDrmBridge::GetWebSessionId(
 }
 
 void MediaDrmBridge::AddKeySystemUuidMapping(
-    /* [in] */ String keySystem,
+    /* [in] */ const String& keySystem,
     /* [in] */ IUUID* uuid)
 {
     AutoPtr<IByteBuffer> uuidBuffer;
@@ -1064,7 +1064,7 @@ void MediaDrmBridge::NativeOnMediaCryptoReady(
 void MediaDrmBridge::NativeOnSessionCreated(
     /* [in] */ Int64 nativeMediaDrmBridge,
     /* [in] */ Int32 sessionId,
-    /* [in] */ String webSessionId)
+    /* [in] */ const String& webSessionId)
 {
 }
 
@@ -1072,7 +1072,7 @@ void MediaDrmBridge::NativeOnSessionMessage(
     /* [in] */ Int64 nativeMediaDrmBridge,
     /* [in] */ Int32 sessionId,
     /* [in] */ ArrayOf<Byte>* message,
-    /* [in] */ String destinationUrl)
+    /* [in] */ const String& destinationUrl)
 {
 }
 
@@ -1101,7 +1101,7 @@ void MediaDrmBridge::NativeOnResetDeviceCredentialsCompleted(
 }
 
 void MediaDrmBridge::NativeAddKeySystemUuidMapping(
-    /* [in] */ String keySystem,
+    /* [in] */ const String& keySystem,
     /* [in] */ IByteBuffer* uuid)
 {
 }

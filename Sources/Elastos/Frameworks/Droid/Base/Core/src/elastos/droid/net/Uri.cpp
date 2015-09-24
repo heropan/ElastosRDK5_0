@@ -242,7 +242,7 @@ ECode Uri::GetQueryParameterNames(
 }
 
 ECode Uri::GetQueryParameters(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ IList** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -293,7 +293,7 @@ ECode Uri::GetQueryParameters(
 }
 
 ECode Uri::GetQueryParameter(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ String* result)
 {
     return E_NOT_IMPLEMENTED;
@@ -340,7 +340,7 @@ ECode Uri::GetQueryParameter(
 }
 
 ECode Uri::GetBooleanQueryParameter(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Boolean defaultValue,
     /* [out] */ Boolean* result)
 {
@@ -401,7 +401,7 @@ ECode Uri::ReadFromParcel(
 }
 
 ECode Uri::Encode(
-    /* [in] */ String s,
+    /* [in] */ const String& s,
     /* [out] */ String* result)
 {
     return E_NOT_IMPLEMENTED;
@@ -412,8 +412,8 @@ ECode Uri::Encode(
 }
 
 ECode Uri::Encode(
-    /* [in] */ String s,
-    /* [in] */ String allow,
+    /* [in] */ const String& s,
+    /* [in] */ const String& allow,
     /* [out] */ String* result)
 {
     return E_NOT_IMPLEMENTED;
@@ -503,7 +503,7 @@ ECode Uri::IsAllowed(
 }
 
 ECode Uri::Decode(
-    /* [in] */ String s,
+    /* [in] */ const String& s,
     /* [out] */ String* result)
 {
     return E_NOT_IMPLEMENTED;
@@ -518,7 +518,7 @@ ECode Uri::Decode(
 
 ECode Uri::WithAppendedPath(
     /* [in] */ IUri* baseUri,
-    /* [in] */ String pathSegment,
+    /* [in] */ const String& pathSegment,
     /* [out] */ IUri** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -561,7 +561,7 @@ ECode Uri::GetCanonicalUri(
 }
 
 ECode Uri::CheckFileUriExposed(
-    /* [in] */ String location)
+    /* [in] */ const String& location)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
@@ -1942,7 +1942,7 @@ ECode HierarchicalUri::BuildUpon(
 CAR_INTERFACE_IMPL(UriBuilder, Object, IUriBuilder)
 
 ECode UriBuilder::Scheme(
-    /* [in] */ String scheme,
+    /* [in] */ const String& scheme,
     /* [out] */ IUriBuilder** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -1966,7 +1966,7 @@ ECode UriBuilder::OpaquePart(
 }
 
 ECode UriBuilder::OpaquePart(
-    /* [in] */ String opaquePart,
+    /* [in] */ const String& opaquePart,
     /* [out] */ IUriBuilder** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -1977,7 +1977,7 @@ ECode UriBuilder::OpaquePart(
 }
 
 ECode UriBuilder::EncodedOpaquePart(
-    /* [in] */ String opaquePart,
+    /* [in] */ const String& opaquePart,
     /* [out] */ IUriBuilder** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -2002,7 +2002,7 @@ ECode UriBuilder::Authority(
 }
 
 ECode UriBuilder::Authority(
-    /* [in] */ String authority,
+    /* [in] */ const String& authority,
     /* [out] */ IUriBuilder** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -2013,7 +2013,7 @@ ECode UriBuilder::Authority(
 }
 
 ECode UriBuilder::EncodedAuthority(
-    /* [in] */ String authority,
+    /* [in] */ const String& authority,
     /* [out] */ IUriBuilder** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -2038,7 +2038,7 @@ ECode UriBuilder::Path(
 }
 
 ECode UriBuilder::Path(
-    /* [in] */ String path,
+    /* [in] */ const String& path,
     /* [out] */ IUriBuilder** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -2049,7 +2049,7 @@ ECode UriBuilder::Path(
 }
 
 ECode UriBuilder::EncodedPath(
-    /* [in] */ String path,
+    /* [in] */ const String& path,
     /* [out] */ IUriBuilder** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -2060,7 +2060,7 @@ ECode UriBuilder::EncodedPath(
 }
 
 ECode UriBuilder::AppendPath(
-    /* [in] */ String newSegment,
+    /* [in] */ const String& newSegment,
     /* [out] */ IUriBuilder** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -2071,7 +2071,7 @@ ECode UriBuilder::AppendPath(
 }
 
 ECode UriBuilder::AppendEncodedPath(
-    /* [in] */ String newSegment,
+    /* [in] */ const String& newSegment,
     /* [out] */ IUriBuilder** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -2096,7 +2096,7 @@ ECode UriBuilder::Query(
 }
 
 ECode UriBuilder::Query(
-    /* [in] */ String query,
+    /* [in] */ const String& query,
     /* [out] */ IUriBuilder** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -2107,7 +2107,7 @@ ECode UriBuilder::Query(
 }
 
 ECode UriBuilder::EncodedQuery(
-    /* [in] */ String query,
+    /* [in] */ const String& query,
     /* [out] */ IUriBuilder** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -2130,7 +2130,7 @@ ECode UriBuilder::Fragment(
 }
 
 ECode UriBuilder::Fragment(
-    /* [in] */ String fragment,
+    /* [in] */ const String& fragment,
     /* [out] */ IUriBuilder** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -2141,7 +2141,7 @@ ECode UriBuilder::Fragment(
 }
 
 ECode UriBuilder::EncodedFragment(
-    /* [in] */ String fragment,
+    /* [in] */ const String& fragment,
     /* [out] */ IUriBuilder** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -2152,8 +2152,8 @@ ECode UriBuilder::EncodedFragment(
 }
 
 ECode UriBuilder::AppendQueryParameter(
-    /* [in] */ String key,
-    /* [in] */ String value,
+    /* [in] */ const String& key,
+    /* [in] */ const String& value,
     /* [out] */ IUriBuilder** result)
 {
     return E_NOT_IMPLEMENTED;

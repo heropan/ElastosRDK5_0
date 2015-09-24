@@ -12,7 +12,7 @@ namespace Net {
 //=====================================================================
 String NetStringUtil::ConvertToUnicode(
     /* [in] */ IByteBuffer* text,
-    /* [in] */ String charset_name)
+    /* [in] */ const String& charset_name)
 {
     // ==================before translated======================
     // try {
@@ -29,7 +29,7 @@ String NetStringUtil::ConvertToUnicode(
 
 String NetStringUtil::ConvertToUnicodeAndNormalize(
     /* [in] */ IByteBuffer* text,
-    /* [in] */ String charset_name)
+    /* [in] */ const String& charset_name)
 {
     // ==================before translated======================
     // String unicodeString = convertToUnicode(text, charset_name);
@@ -42,7 +42,7 @@ String NetStringUtil::ConvertToUnicodeAndNormalize(
 
 String NetStringUtil::ConvertToUnicodeWithSubstitutions(
     /* [in] */ IByteBuffer* text,
-    /* [in] */ String charset_name)
+    /* [in] */ const String& charset_name)
 {
     // ==================before translated======================
     // try {

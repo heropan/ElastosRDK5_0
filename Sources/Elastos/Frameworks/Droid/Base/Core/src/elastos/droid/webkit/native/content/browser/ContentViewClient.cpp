@@ -14,7 +14,7 @@ namespace Browser {
 const String ContentViewClient::TAG("ContentViewClient");
 
 void ContentViewClient::OnUpdateTitle(
-    /* [in] */ String title)
+    /* [in] */ const String& title)
 {
 }
 
@@ -114,7 +114,7 @@ void ContentViewClient::OnContextualActionBarHidden()
  * @param searchQuery The string to search for.
  */
 void ContentViewClient::PerformWebSearch(
-    /* [in] */ String searchQuery)
+    /* [in] */ const String& searchQuery)
 {
 }
 
@@ -134,7 +134,7 @@ Boolean ContentViewClient::DoesPerformWebSearch()
  * @param selection The newly established selection.
  */
 void ContentViewClient::OnSelectionChanged(
-    /* [in] */ String selection)
+    /* [in] */ const String& selection)
 {
 }
 
@@ -143,7 +143,7 @@ void ContentViewClient::OnSelectionChanged(
  */
 void ContentViewClient::OnStartContentIntent(
     /* [in] */ IContext* context,
-    /* [in] */ String intentUrl)
+    /* [in] */ const String& intentUrl)
 {
     assert(0);
 #if 0
@@ -177,7 +177,7 @@ AutoPtr<ContentVideoViewClient> ContentViewClient::GetContentVideoViewClient()
  * @return true to prevent the resource from being loaded.
  */
 Boolean ContentViewClient::ShouldBlockMediaRequest(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     return FALSE;
 }

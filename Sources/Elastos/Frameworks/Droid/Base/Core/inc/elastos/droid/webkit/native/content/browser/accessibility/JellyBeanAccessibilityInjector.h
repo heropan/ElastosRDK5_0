@@ -43,12 +43,12 @@ private:
         //@JavascriptInterface
         //@SuppressWarnings("unused")
         CARAPI_(void) OnResult(
-            /* [in] */ String id,
-            /* [in] */ String result);
+            /* [in] */ const String& id,
+            /* [in] */ const String& result);
 
     private:
         CallbackHandler(
-            /* [in] */ String interfaceName);
+            /* [in] */ const String& interfaceName);
 
         /**
          * Performs an action and attempts to wait for a result.
@@ -59,7 +59,7 @@ private:
          */
         CARAPI_(Boolean) PerformAction(
             /* [in] */ ContentViewCore* contentView,
-            /* [in] */ String code);
+            /* [in] */ const String& code);
 
         /**
          * Gets the result of a request to perform an accessibility action.

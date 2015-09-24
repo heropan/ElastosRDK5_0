@@ -58,7 +58,7 @@ AwGeolocationPermissions::AwGeolocationPermissions(
  * Set one origin to be allowed.
  */
 void AwGeolocationPermissions::Allow(
-    /* [in] */ String origin)
+    /* [in] */ const String& origin)
 {
     String key = GetOriginKey(origin);
     if (key != NULL) {
@@ -73,7 +73,7 @@ void AwGeolocationPermissions::Allow(
  * Set one origin to be denied.
  */
 void AwGeolocationPermissions::Deny(
-    /* [in] */ String origin)
+    /* [in] */ const String& origin)
 {
     String key = GetOriginKey(origin);
     if (key != NULL) {
@@ -88,7 +88,7 @@ void AwGeolocationPermissions::Deny(
  * Clear the stored permission for a particular origin.
  */
 void AwGeolocationPermissions::Clear(
-    /* [in] */ String origin)
+    /* [in] */ const String& origin)
 {
     String key = GetOriginKey(origin);
     if (key != NULL) {
@@ -122,7 +122,7 @@ void AwGeolocationPermissions::ClearAll()
  * Synchronous method to get if an origin is set to be allowed.
  */
 Boolean AwGeolocationPermissions::IsOriginAllowed(
-    /* [in] */ String origin)
+    /* [in] */ const String& origin)
 {
     Boolean result = FALSE;
     mSharedPreferences->GetBoolean(GetOriginKey(origin), FALSE, &result);
@@ -133,7 +133,7 @@ Boolean AwGeolocationPermissions::IsOriginAllowed(
  * Returns true if the origin is either set to allowed or denied.
  */
 Boolean AwGeolocationPermissions::HasOrigin(
-    /* [in] */ String origin)
+    /* [in] */ const String& origin)
 {
     Boolean result = FALSE;
     mSharedPreferences->Contains(GetOriginKey(origin), &result);
@@ -144,7 +144,7 @@ Boolean AwGeolocationPermissions::HasOrigin(
  * Asynchronous method to get if an origin set to be allowed.
  */
 void AwGeolocationPermissions::GetAllowed(
-    /* [in] */ String origin,
+    /* [in] */ const String& origin,
     /* [in] */ const IValueCallback* callback)
 {
     Boolean finalAllowed = IsOriginAllowed(origin);
@@ -172,7 +172,7 @@ void AwGeolocationPermissions::GetOrigins(
  * Get the domain of an URL using the GURL library.
  */
 String AwGeolocationPermissions::GetOriginKey(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     String origin = GURLUtils::GetOrigin(url);
     if (origin.IsEmpty()) {

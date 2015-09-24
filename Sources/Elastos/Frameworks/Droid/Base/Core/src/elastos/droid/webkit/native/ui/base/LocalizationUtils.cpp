@@ -56,7 +56,7 @@ Boolean LocalizationUtils::IsLayoutRtl()
 }
 
 Int32 LocalizationUtils::GetFirstStrongCharacterDirection(
-    /* [in] */ String string)
+    /* [in] */ const String& string)
 {
     // ==================before translated======================
     // return nativeGetFirstStrongCharacterDirection(string);
@@ -80,9 +80,9 @@ LocalizationUtils::LocalizationUtils()
 }
 
 AutoPtr<ILocale> LocalizationUtils::GetJavaLocale(
-    /* [in] */ String language,
-    /* [in] */ String country,
-    /* [in] */ String variant)
+    /* [in] */ const String& language,
+    /* [in] */ const String& country,
+    /* [in] */ const String& variant)
 {
     // ==================before translated======================
     // return new Locale(language, country, variant);
@@ -102,7 +102,7 @@ String LocalizationUtils::GetDisplayNameForLocale(
 }
 
 Int32 LocalizationUtils::NativeGetFirstStrongCharacterDirection(
-    /* [in] */ String string)
+    /* [in] */ const String& string)
 {
     assert(0);
     return 0;

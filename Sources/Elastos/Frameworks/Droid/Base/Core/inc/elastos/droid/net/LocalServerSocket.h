@@ -34,7 +34,7 @@ public:
      * @throws IOException
      */
     CARAPI constructor(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     /**
      * Create a LocalServerSocket from a file descriptor that's already

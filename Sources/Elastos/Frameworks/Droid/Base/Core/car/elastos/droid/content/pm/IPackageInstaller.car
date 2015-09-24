@@ -3,7 +3,7 @@ module
 {
     interface Elastos.Droid.Content.Pm.IPackageInstallerSessionInfo;
     interface Elastos.Droid.Content.Pm.IPackageInstallerCallback;
-    interface Elastos.Droid.Content.Pm.IPackageInstallerSession;
+    interface Elastos.Droid.Content.Pm.IIPackageInstallerSession;
     interface Elastos.Droid.Content.Pm.IParceledListSlice;
     interface Elastos.Droid.Content.Pm.IPackageInstallerSessionParams;
     interface Elastos.Droid.Content.IIntentSender;
@@ -37,7 +37,7 @@ module
 
         OpenSession(
             [in] Int32 sessionId,
-            [out] IPackageInstallerSession** session);
+            [out] IIPackageInstallerSession** session);
 
         GetSessionInfo(
             [in] Int32 sessionId,

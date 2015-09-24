@@ -17,7 +17,7 @@ AwContentsClient::AwWebContentsObserver::AwWebContentsObserver(
 //@Override
 void AwContentsClient::AwWebContentsObserver::DidFinishLoad(
     /* [in] */ Int64 frameId,
-    /* [in] */ String validatedUrl,
+    /* [in] */ const String& validatedUrl,
     /* [in] */ Boolean isMainFrame)
 {
     String unreachableWebDataUrl = AwContentsStatics::GetUnreachableWebDataUrl();
@@ -33,8 +33,8 @@ void AwContentsClient::AwWebContentsObserver::DidFailLoad(
     /* [in] */ Boolean isProvisionalLoad,
     /* [in] */ Boolean isMainFrame,
     /* [in] */ Int32 errorCode,
-    /* [in] */ String description,
-    /* [in] */ String failingUrl)
+    /* [in] */ const String& description,
+    /* [in] */ const String& failingUrl)
 {
     if (isMainFrame) {
         if (errorCode != NetError::ERR_ABORTED) {
@@ -56,8 +56,8 @@ void AwContentsClient::AwWebContentsObserver::DidFailLoad(
 
 //@Override
 void AwContentsClient::AwWebContentsObserver::DidNavigateMainFrame(
-    /* [in] */ String url,
-    /* [in] */ String baseUrl,
+    /* [in] */ const String& url,
+    /* [in] */ const String& baseUrl,
     /* [in] */ Boolean isNavigationToDifferentPage, boolean isFragmentNavigation)
 {
     // This is here to emulate the Classic WebView firing onPageFinished for main frame
@@ -69,8 +69,8 @@ void AwContentsClient::AwWebContentsObserver::DidNavigateMainFrame(
 
 //@Override
 void AwContentsClient::AwWebContentsObserver::DidNavigateAnyFrame(
-    /* [in] */ String url,
-    /* [in] */ String baseUrl,
+    /* [in] */ const String& url,
+    /* [in] */ const String& baseUrl,
     /* [in] */ Boolean isReload)
 {
     AwContentsClient::DoUpdateVisitedHistory(url, isReload);

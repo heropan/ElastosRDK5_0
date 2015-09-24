@@ -34,14 +34,14 @@ ECode WebContentsObserverAndroid::RenderProcessGone(
 }
 
 ECode WebContentsObserverAndroid::DidStartLoading(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DidStopLoading(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     assert(0);
     return NOERROR;
@@ -51,16 +51,16 @@ ECode WebContentsObserverAndroid::DidFailLoad(
     /* [in] */ Boolean isProvisionalLoad,
     /* [in] */ Boolean isMainFrame,
     /* [in] */ Int32 errorCode,
-    /* [in] */ String description,
-    /* [in] */ String failingUrl)
+    /* [in] */ const String& description,
+    /* [in] */ const String& failingUrl)
 {
     assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DidNavigateMainFrame(
-    /* [in] */ String url,
-    /* [in] */ String baseUrl,
+    /* [in] */ const String& url,
+    /* [in] */ const String& baseUrl,
     /* [in] */ Boolean isNavigationToDifferentPage,
     /* [in] */ Boolean isFragmentNavigation)
 {
@@ -75,8 +75,8 @@ ECode WebContentsObserverAndroid::DidFirstVisuallyNonEmptyPaint()
 }
 
 ECode WebContentsObserverAndroid::DidNavigateAnyFrame(
-    /* [in] */ String url,
-    /* [in] */ String baseUrl,
+    /* [in] */ const String& url,
+    /* [in] */ const String& baseUrl,
     /* [in] */ Boolean isReload)
 {
     assert(0);
@@ -87,7 +87,7 @@ ECode WebContentsObserverAndroid::DidStartProvisionalLoadForFrame(
     /* [in] */ Int64 frameId,
     /* [in] */ Int64 parentFrameId,
     /* [in] */ Boolean isMainFrame,
-    /* [in] */ String validatedUrl,
+    /* [in] */ const String& validatedUrl,
     /* [in] */ Boolean isErrorPage,
     /* [in] */ Boolean isIframeSrcdoc)
 {
@@ -98,7 +98,7 @@ ECode WebContentsObserverAndroid::DidStartProvisionalLoadForFrame(
 ECode WebContentsObserverAndroid::DidCommitProvisionalLoadForFrame(
     /* [in] */ Int64 frameId,
     /* [in] */ Boolean isMainFrame,
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ Int32 transitionType)
 {
     assert(0);
@@ -107,7 +107,7 @@ ECode WebContentsObserverAndroid::DidCommitProvisionalLoadForFrame(
 
 ECode WebContentsObserverAndroid::DidFinishLoad(
     /* [in] */ Int64 frameId,
-    /* [in] */ String validatedUrl,
+    /* [in] */ const String& validatedUrl,
     /* [in] */ Boolean isMainFrame)
 {
     assert(0);

@@ -15,6 +15,7 @@ module
     merge("os/DebugMemoryInfo.car");
     merge("os/DropBoxManager.car");
     merge("os/Environment.car");
+    merge("os/FileBridge.car");
     merge("os/FileObserver.car");
     merge("os/Handler.car");
     merge("os/HandlerThread.car");

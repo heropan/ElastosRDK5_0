@@ -15,7 +15,7 @@ const String PerfTraceEvent::EventType::FINISH("F");
 const String PerfTraceEvent::EventType::INSTANT("I");
 
 PerfTraceEvent::EventType::EventType(
-    /* [in] */ String typeStr)
+    /* [in] */ const String& typeStr)
     : mTypeStr(typeStr)
 {
 }
@@ -141,7 +141,7 @@ Boolean PerfTraceEvent::Enabled()
  */
 //synchronized
 void PerfTraceEvent::Instant(
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
     assert(0);
 #if 0
@@ -162,7 +162,7 @@ void PerfTraceEvent::Instant(
  */
 //synchronized
 void PerfTraceEvent::Begin(
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
     assert(0);
 #if 0
@@ -190,7 +190,7 @@ void PerfTraceEvent::Begin(
  */
 //synchronized
 void PerfTraceEvent::End(
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
     assert(0);
 #if 0
@@ -218,7 +218,7 @@ void PerfTraceEvent::End(
 #if 0
 //synchronized
 void PerfTraceEvent::Begin(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ IMemoryInfo* memoryInfo)
 {
     AutoLock lock(this);
@@ -245,7 +245,7 @@ void PerfTraceEvent::Begin(
 #if 0
 //synchronized
 void PerfTraceEvent::End(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ IMemoryInfo* memoryInfo)
 {
     AutoLock lock(this);
@@ -269,7 +269,7 @@ void PerfTraceEvent::End(
  * @return True if the name matches the allowed filter; else false.
  */
 Boolean PerfTraceEvent::MatchesFilter(
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
     assert(0);
 //    return sFilter != null ? sFilter.contains(name) : false;
@@ -285,9 +285,9 @@ Boolean PerfTraceEvent::MatchesFilter(
  * @param includeMemory Whether to include current browser process memory usage in the trace.
  */
 void PerfTraceEvent::SavePerfString(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Int64 id,
-    /* [in] */ String type,
+    /* [in] */ const String& type,
     /* [in] */ Boolean includeMemory)
 {
     assert(0);
@@ -314,9 +314,9 @@ void PerfTraceEvent::SavePerfString(
  */
 #if 0
 void PerfTraceEvent::SavePerfString(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Int64 id,
-    /* [in] */ String type,
+    /* [in] */ const String& type,
     /* [in] */ Int64 timestampUs,
     /* [in] */ IMemoryInfo* memoryInfo)
 {
@@ -350,7 +350,7 @@ void PerfTraceEvent::SavePerfString(
  * @return The memory perf name to use.
  */
 String PerfTraceEvent::MakeMemoryTraceNameFromTimingName(
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
     return MakeSafeTraceName(name, MEMORY_TRACE_NAME_SUFFIX);
 }
@@ -365,8 +365,8 @@ String PerfTraceEvent::MakeMemoryTraceNameFromTimingName(
  * @return A name that is safe for the perf trace framework.
  */
 String PerfTraceEvent::MakeSafeTraceName(
-    /* [in] */ String baseName,
-    /* [in] */ String suffix)
+    /* [in] */ const String& baseName,
+    /* [in] */ const String& suffix)
 {
     Int32 suffixLength = suffix.GetLength();
 

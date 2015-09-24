@@ -45,7 +45,7 @@ private:
     //@CalledByNative
     static CARAPI_(AutoPtr<AwPermissionRequest>) Create(
         /* [in] */ Int64 nativeAwPermissionRequest,
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ Int64 resources);
 
     //@CalledByNative

@@ -42,7 +42,7 @@ public:
      *  (Switch names ARE case-sensitive).
      */
     virtual CARAPI_(Boolean) HasSwitch(
-        /* [in] */ String switchString) = 0;
+        /* [in] */ const String& switchString) = 0;
 
     /**
      * Return the value associated with the given switch, or null.
@@ -50,7 +50,7 @@ public:
      * @return switch value, or null if the switch is not set or set to empty.
      */
     virtual CARAPI_(String) GetSwitchValue(
-        /* [in] */ String switchString) = 0;
+        /* [in] */ const String& switchString) = 0;
 
     /**
      * Return the value associated with the given switch, or {@code defaultValue} if the switch
@@ -60,8 +60,8 @@ public:
      * @return Switch value, or {@code defaultValue} if the switch is not set or set to empty.
      */
     virtual CARAPI_(String) GetSwitchValue(
-        /* [in] */ String switchString,
-        /* [in] */ String defaultValue);
+        /* [in] */ const String& switchString,
+        /* [in] */ const String& defaultValue);
 
     /**
      * Append a switch to the command line.  There is no guarantee
@@ -69,7 +69,7 @@ public:
      * @param switchString the switch to add.  It should NOT start with '--' !
      */
     virtual CARAPI_(void) AppendSwitch(
-        /* [in] */ String switchString) = 0;
+        /* [in] */ const String& switchString) = 0;
 
     /**
      * Append a switch and value to the command line.  There is no
@@ -79,8 +79,8 @@ public:
      * For example, --foo=bar becomes 'foo', 'bar'.
      */
     virtual CARAPI_(void) AppendSwitchWithValue(
-        /* [in] */ String switchString,
-        /* [in] */ String value) = 0;
+        /* [in] */ const String& switchString,
+        /* [in] */ const String& value) = 0;
 
     /**
      * Append switch/value items in "command line" format (excluding argv[0] program name).
@@ -120,7 +120,7 @@ public:
      * @param file The fully qualified command line file.
      */
     static CARAPI_(void) InitFromFile(
-        /* [in] */ String file);
+        /* [in] */ const String& file);
 
     /**
      * Resets both the java proxy and the native command lines. This allows the entire
@@ -157,23 +157,23 @@ private:
      *         or if its length exceeds |sizeLimit|.
      */
     static CARAPI_(AutoPtr< ArrayOf<Int8> >) ReadUtf8FileFully(
-        /* [in] */ String fileName,
+        /* [in] */ const String& fileName,
         /* [in] */ Int32 sizeLimit);
 
     static CARAPI_(void) NativeReset();
 
     static CARAPI_(Boolean) NativeHasSwitch(
-        /* [in] */ String switchString);
+        /* [in] */ const String& switchString);
 
     static CARAPI_(String) NativeGetSwitchValue(
-        /* [in] */ String switchString);
+        /* [in] */ const String& switchString);
 
     static CARAPI_(void) NativeAppendSwitch(
-        /* [in] */ String switchString);
+        /* [in] */ const String& switchString);
 
     static CARAPI_(void) NativeAppendSwitchWithValue(
-        /* [in] */ String switchString,
-        /* [in] */ String value);
+        /* [in] */ const String& switchString,
+        /* [in] */ const String& value);
 
     static CARAPI_(void) NativeAppendSwitchesAndArguments(
         /* [in] */ ArrayOf<String>* array);
@@ -196,15 +196,15 @@ public:
 
     //@Override
     CARAPI_(Boolean) HasSwitch(
-        /* [in] */ String switchString);
+        /* [in] */ const String& switchString);
 
     //@Override
     CARAPI_(String) GetSwitchValue(
-        /* [in] */ String switchString);
+        /* [in] */ const String& switchString);
 
     //@Override
     CARAPI_(void) AppendSwitch(
-        /* [in] */ String switchString);
+        /* [in] */ const String& switchString);
 
     /**
      * Appends a switch to the current list.
@@ -213,8 +213,8 @@ public:
      */
     //@Override
     CARAPI_(void) AppendSwitchWithValue(
-        /* [in] */ String switchString,
-        /* [in] */ String value);
+        /* [in] */ const String& switchString,
+        /* [in] */ const String& value);
 
     //@Override
     CARAPI_(void) AppendSwitchesAndArguments(
@@ -245,20 +245,20 @@ class NativeCommandLine : public CommandLine
 public:
     //@Override
     CARAPI_(Boolean) HasSwitch(
-        /* [in] */ String switchString);
+        /* [in] */ const String& switchString);
 
     //@Override
     CARAPI_(String) GetSwitchValue(
-        /* [in] */ String switchString);
+        /* [in] */ const String& switchString);
 
     //@Override
     CARAPI_(void) AppendSwitch(
-        /* [in] */ String switchString);
+        /* [in] */ const String& switchString);
 
     //@Override
     CARAPI_(void) AppendSwitchWithValue(
-        /* [in] */ String switchString,
-        /* [in] */ String value);
+        /* [in] */ const String& switchString,
+        /* [in] */ const String& value);
 
     //@Override
     CARAPI_(void) AppendSwitchesAndArguments(

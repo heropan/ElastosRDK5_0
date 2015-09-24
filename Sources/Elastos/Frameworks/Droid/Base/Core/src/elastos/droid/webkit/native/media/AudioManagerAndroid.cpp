@@ -40,7 +40,7 @@ Boolean AudioManagerAndroid::NonThreadSafe::CalledOnValidThread()
 
 AudioManagerAndroid::AudioDeviceName::AudioDeviceName(
     /* [in] */ Int32 id,
-    /* [in] */ String name)
+    /* [in] */ const String& name)
     : mId(id)
     , mName(name)
 {
@@ -593,7 +593,7 @@ void AudioManagerAndroid::SetCommunicationAudioModeOn(boolean on)
  */
 //@CalledByNative
 Boolean AudioManagerAndroid::SetDevice(
-    /* [in] */ String deviceId)
+    /* [in] */ const String& deviceId)
 {
     if (DEBUG) Logd("setDevice: " + deviceId);
     if (!mIsInitialized)
@@ -908,7 +908,7 @@ Boolean AudioManagerAndroid::HasWiredHeadset()
 
 /** Checks if the process has as specified permission or not. */
 Boolean AudioManagerAndroid::HasPermission(
-    /* [in] */ String permission)
+    /* [in] */ const String& permission)
 {
     Boolean result = FALSE;
     Int32 permission;
@@ -1252,14 +1252,14 @@ void AudioManagerAndroid::LogDeviceInfo()
 
 /** Trivial helper method for debug logging */
 void AudioManagerAndroid::Logd(
-    /* [in] */ String msg)
+    /* [in] */ const String& msg)
 {
 //    Log.d(TAG, msg);
 }
 
 /** Trivial helper method for error logging */
 void AudioManagerAndroid::Loge(
-    /* [in] */ String msg)
+    /* [in] */ const String& msg)
 {
 //    Log.e(TAG, msg);
 }

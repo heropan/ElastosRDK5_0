@@ -37,7 +37,7 @@ public:
       * @param url the url to be loaded
       */
     LoadUrlParams(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     /**
       * Creates an instance with the given page transition type.
@@ -45,7 +45,7 @@ public:
       * @param transitionType the PageTransitionType constant corresponding to the load
       */
     LoadUrlParams(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ Int32 transitionType);
 
     /**
@@ -55,8 +55,8 @@ public:
       * @param isBase64Encoded True if the data is encoded in Base 64 format.
       */
     static CARAPI_(AutoPtr<LoadUrlParams>) CreateLoadDataParams(
-        /* [in] */ String data,
-        /* [in] */ String mimeType,
+        /* [in] */ const String& data,
+        /* [in] */ const String& mimeType,
         /* [in] */ Boolean isBase64Encoded);
 
     /**
@@ -68,10 +68,10 @@ public:
       *                does not require a special charset.
       */
     static CARAPI_(AutoPtr<LoadUrlParams>) CreateLoadDataParams(
-        /* [in] */ String data,
-        /* [in] */ String mimeType,
+        /* [in] */ const String& data,
+        /* [in] */ const String& mimeType,
         /* [in] */ Boolean isBase64Encoded,
-        /* [in] */ String charset);
+        /* [in] */ const String& charset);
 
     /**
       * Helper method to create a LoadUrlParams object for data url with base
@@ -87,11 +87,11 @@ public:
       *                   if null.
       */
     static CARAPI_(AutoPtr<LoadUrlParams>) CreateLoadDataParamsWithBaseUrl(
-        /* [in] */ String data,
-        /* [in] */ String mimeType,
+        /* [in] */ const String& data,
+        /* [in] */ const String& mimeType,
         /* [in] */ Boolean isBase64Encoded,
-        /* [in] */ String baseUrl,
-        /* [in] */ String historyUrl);
+        /* [in] */ const String& baseUrl,
+        /* [in] */ const String& historyUrl);
 
     /**
       * Helper method to create a LoadUrlParams object for data url with base
@@ -109,12 +109,12 @@ public:
       *                does not require a special charset.
       */
     static CARAPI_(AutoPtr<LoadUrlParams>) CreateLoadDataParamsWithBaseUrl(
-        /* [in] */ String data,
-        /* [in] */ String mimeType,
+        /* [in] */ const String& data,
+        /* [in] */ const String& mimeType,
         /* [in] */ Boolean isBase64Encoded,
-        /* [in] */ String baseUrl,
-        /* [in] */ String historyUrl,
-        /* [in] */ String charset);
+        /* [in] */ const String& baseUrl,
+        /* [in] */ const String& historyUrl,
+        /* [in] */ const String& charset);
 
     /**
       * Helper method to create a LoadUrlParams object for an HTTP POST load.
@@ -122,14 +122,14 @@ public:
       * @param postData Post data of the load. Can be null.
       */
     static CARAPI_(AutoPtr<LoadUrlParams>) CreateLoadHttpPostParams(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ ArrayOf<Byte>* postData);
 
     /**
       * Sets the url.
       */
     virtual CARAPI SetUrl(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     /**
       * Return the url.
@@ -205,7 +205,7 @@ public:
       * a map (setExtraHeaders()) for the embedders that use collapsed headers strings.
       */
     virtual CARAPI SetVerbatimHeaders(
-        /* [in] */ String headers);
+        /* [in] */ const String& headers);
 
     /**
       * @return the verbatim extra headers string
@@ -239,7 +239,7 @@ public:
       * @param baseUrl The base url for this data load.
       */
     virtual CARAPI SetBaseUrlForDataUrl(
-        /* [in] */ String baseUrl);
+        /* [in] */ const String& baseUrl);
 
     /**
       * Set the virtual url for data load. It is the url displayed to the user.
@@ -247,7 +247,7 @@ public:
       * @param virtualUrl The virtual url for this data load.
       */
     virtual CARAPI SetVirtualUrlForDataUrl(
-        /* [in] */ String virtualUrl);
+        /* [in] */ const String& virtualUrl);
 
     /**
       * Set whether the load should be able to access local resources. This
@@ -273,7 +273,7 @@ public:
 
 private:
     CARAPI_(String) GetExtraHeadersString(
-        /* [in] */ String delimiter,
+        /* [in] */ const String& delimiter,
         /* [in] */ Boolean addTerminator);
 
     // @SuppressWarnings("unused")
@@ -291,7 +291,7 @@ private:
       * returns true if it's scheme is data:.
       */
     static CARAPI_(Boolean) NativeIsDataScheme(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
 public:
     // Should match NavigationController::LoadUrlType exactly. See comments

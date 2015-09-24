@@ -85,7 +85,7 @@ protected:
      * @see AccessibilityNodeProvider#findAccessibilityNodeInfosByText(String, int)
      */
 //    virtual CARAPI_(List<AccessibilityNodeInfo>) FindAccessibilityNodeInfosByText(
-//        /* [in] */ String text,
+//        /* [in] */ const String& text,
 //        /* [in] */ Int32 virtualViewId);
 
     /**
@@ -185,7 +185,7 @@ private:
     CARAPI_(void) OnNativeObjectDestroyed();
 
     CARAPI_(Boolean)  JumpToElementType(
-        /* [in] */ String elementType,
+        /* [in] */ const String& elementType,
         /* [in] */ Boolean forwards);
 
     CARAPI_(void) SendAccessibilityEvent(
@@ -241,7 +241,7 @@ private:
 
     //@CalledByNative
     CARAPI_(void) AnnounceLiveRegionText(
-        /* [in] */ String text);
+        /* [in] */ const String& text);
 
     //@CalledByNative
     CARAPI_(void) SetAccessibilityNodeInfoParent(
@@ -271,12 +271,12 @@ private:
     //@CalledByNative
     CARAPI_(void) SetAccessibilityNodeInfoClassName(
         /* [in] */ IAccessibilityNodeInfo* node,
-        /* [in] */ String className);
+        /* [in] */ const String& className);
 
     //@CalledByNative
     CARAPI_(void) SetAccessibilityNodeInfoContentDescription(
         /* [in] */ IAccessibilityNodeInfo* node,
-        /* [in] */ String contentDescription,
+        /* [in] */ const String& contentDescription,
         /* [in] */ Boolean annotateAsLink);
 
     //@CalledByNative
@@ -301,7 +301,7 @@ private:
     //@CalledByNative
     CARAPI_(void) SetAccessibilityEventClassName(
         /* [in] */ IAccessibilityEvent* event,
-        /* [in] */ String className);
+        /* [in] */ const String& className);
 
     //@CalledByNative
     CARAPI_(void) SetAccessibilityEventListAttributes(
@@ -323,8 +323,8 @@ private:
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 addedCount,
         /* [in] */ Int32 removedCount,
-        /* [in] */ String beforeText,
-        /* [in] */ String text);
+        /* [in] */ const String& beforeText,
+        /* [in] */ const String& text);
 
     //@CalledByNative
     CARAPI_(void) SetAccessibilityEventSelectionAttrs(
@@ -332,7 +332,7 @@ private:
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 addedCount,
         /* [in] */ Int32 itemCount,
-        /* [in] */ String text);
+        /* [in] */ const String& text);
 
     CARAPI_(Int32) NativeGetRootId(
         /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid);
@@ -375,7 +375,7 @@ private:
     CARAPI_(Int32) NativeFindElementType(
         /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
         /* [in] */ Int32 startId,
-        /* [in] */ String elementType,
+        /* [in] */ const String& elementType,
         /* [in] */ Boolean forwards);
 
 private:

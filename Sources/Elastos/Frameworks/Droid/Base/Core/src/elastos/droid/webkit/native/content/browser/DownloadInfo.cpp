@@ -12,7 +12,7 @@ namespace Browser {
 //                        DownloadInfo::Builder
 //=====================================================================
 AutoPtr<Builder> DownloadInfo::Builder::SetUrl(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     // ==================before translated======================
     // mUrl = url;
@@ -23,7 +23,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetUrl(
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetUserAgent(
-    /* [in] */ String userAgent)
+    /* [in] */ const String& userAgent)
 {
     // ==================before translated======================
     // mUserAgent = userAgent;
@@ -34,7 +34,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetUserAgent(
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetMimeType(
-    /* [in] */ String mimeType)
+    /* [in] */ const String& mimeType)
 {
     // ==================before translated======================
     // mMimeType = mimeType;
@@ -45,7 +45,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetMimeType(
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetCookie(
-    /* [in] */ String cookie)
+    /* [in] */ const String& cookie)
 {
     // ==================before translated======================
     // mCookie = cookie;
@@ -56,7 +56,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetCookie(
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetFileName(
-    /* [in] */ String fileName)
+    /* [in] */ const String& fileName)
 {
     // ==================before translated======================
     // mFileName = fileName;
@@ -67,7 +67,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetFileName(
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetDescription(
-    /* [in] */ String description)
+    /* [in] */ const String& description)
 {
     // ==================before translated======================
     // mDescription = description;
@@ -78,7 +78,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetDescription(
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetFilePath(
-    /* [in] */ String filePath)
+    /* [in] */ const String& filePath)
 {
     // ==================before translated======================
     // mFilePath = filePath;
@@ -89,7 +89,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetFilePath(
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetReferer(
-    /* [in] */ String referer)
+    /* [in] */ const String& referer)
 {
     // ==================before translated======================
     // mReferer = referer;
@@ -155,7 +155,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetIsSuccessful(
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetContentDisposition(
-    /* [in] */ String contentDisposition)
+    /* [in] */ const String& contentDisposition)
 {
     // ==================before translated======================
     // mContentDisposition = contentDisposition;

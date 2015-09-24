@@ -103,7 +103,7 @@ public:
       */
     // @CalledByNative
     static CARAPI_(String) GetMimeTypeFromExtension(
-        /* [in] */ String extension);
+        /* [in] */ const String& extension);
 
     /**
       * @return true if it can determine that only loopback addresses are
@@ -137,8 +137,8 @@ public:
     // @CalledByNative
     static CARAPI_(AutoPtr<AndroidCertVerifyResult>) VerifyServerCertificates(
         /* [in] */ ArrayOf< AutoPtr< ArrayOf<Byte> > >* certChain,
-        /* [in] */ String authType,
-        /* [in] */ String host);
+        /* [in] */ const String& authType,
+        /* [in] */ const String& host);
 
     /**
       * Adds a test root certificate to the local trust store.

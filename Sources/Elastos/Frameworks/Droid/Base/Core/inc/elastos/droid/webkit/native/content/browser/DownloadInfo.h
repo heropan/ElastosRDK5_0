@@ -24,28 +24,28 @@ public:
     {
     public:
         virtual CARAPI_(AutoPtr<Builder>) SetUrl(
-            /* [in] */ String url);
+            /* [in] */ const String& url);
 
         virtual CARAPI_(AutoPtr<Builder>) SetUserAgent(
-            /* [in] */ String userAgent);
+            /* [in] */ const String& userAgent);
 
         virtual CARAPI_(AutoPtr<Builder>) SetMimeType(
-            /* [in] */ String mimeType);
+            /* [in] */ const String& mimeType);
 
         virtual CARAPI_(AutoPtr<Builder>) SetCookie(
-            /* [in] */ String cookie);
+            /* [in] */ const String& cookie);
 
         virtual CARAPI_(AutoPtr<Builder>) SetFileName(
-            /* [in] */ String fileName);
+            /* [in] */ const String& fileName);
 
         virtual CARAPI_(AutoPtr<Builder>) SetDescription(
-            /* [in] */ String description);
+            /* [in] */ const String& description);
 
         virtual CARAPI_(AutoPtr<Builder>) SetFilePath(
-            /* [in] */ String filePath);
+            /* [in] */ const String& filePath);
 
         virtual CARAPI_(AutoPtr<Builder>) SetReferer(
-            /* [in] */ String referer);
+            /* [in] */ const String& referer);
 
         virtual CARAPI_(AutoPtr<Builder>) SetContentLength(
             /* [in] */ Int64 contentLength);
@@ -63,7 +63,7 @@ public:
             /* [in] */ Boolean isSuccessful);
 
         virtual CARAPI_(AutoPtr<Builder>) SetContentDisposition(
-            /* [in] */ String contentDisposition);
+            /* [in] */ const String& contentDisposition);
 
         virtual CARAPI_(AutoPtr<Builder>) SetPercentCompleted(
             /* [in] */ Int32 percentCompleted);

@@ -115,9 +115,9 @@ public:
     // @VisibleForTesting
     virtual CARAPI_(Boolean) Configure(
         /* [in] */ IContext* context,
-        /* [in] */ String url,
-        /* [in] */ String cookies,
-        /* [in] */ String userAgent);
+        /* [in] */ const String& url,
+        /* [in] */ const String& cookies,
+        /* [in] */ const String& userAgent);
 
     /**
       * @return true if the device is on an ethernet or wifi network.
@@ -151,7 +151,7 @@ public:
     // The methods below can be used by unit tests to fake functionality.
     // @VisibleForTesting
     virtual CARAPI_(AutoPtr<IFile>) UriToFile(
-        /* [in] */ String path);
+        /* [in] */ const String& path);
 
     // @VisibleForTesting
     virtual CARAPI_(AutoPtr<Integer>) GetNetworkType(
@@ -168,12 +168,12 @@ public:
 
     // @VisibleForTesting
     virtual CARAPI Configure(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ IMap<String, String>* headers);
 
     // @VisibleForTesting
     virtual CARAPI Configure(
-        /* [in] */ String path);
+        /* [in] */ const String& path);
 
     // @VisibleForTesting
     virtual CARAPI_(String) ExtractMetadata(
@@ -198,7 +198,7 @@ private:
     // This method covers only typcial expressions for the loopback address
     // to resolve the hostname without a DNS loopup.
     CARAPI_(Boolean) IsLoopbackAddress(
-        /* [in] */ String host);
+        /* [in] */ const String& host);
 
     CARAPI_(AutoPtr< IList<String> >) GetRawAcceptableDirectories();
 

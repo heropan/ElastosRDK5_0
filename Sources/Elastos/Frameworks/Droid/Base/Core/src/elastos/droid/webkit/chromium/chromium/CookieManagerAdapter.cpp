@@ -56,8 +56,8 @@ Boolean CookieManagerAdapter::AcceptThirdPartyCookies(
 
 //@Override
 void CookieManagerAdapter::SetCookie(
-    /* [in] */ String url,
-    /* [in] */ String value)
+    /* [in] */ const String& url,
+    /* [in] */ const String& value)
 {
     // try {
         mChromeCookieManager->SetCookie(FixupUrl(url), value);
@@ -68,8 +68,8 @@ void CookieManagerAdapter::SetCookie(
 
 //@Override
 void CookieManagerAdapter::SetCookie(
-    /* [in] */ String url,
-    /* [in] */ String value,
+    /* [in] */ const String& url,
+    /* [in] */ const String& value,
     /* [in] */ IValueCallback* callback)
 {
     // try {
@@ -81,7 +81,7 @@ void CookieManagerAdapter::SetCookie(
 
 //@Override
 String CookieManagerAdapter::GetCookie(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     // try {
         return mChromeCookieManager->GetCookie(FixupUrl(url));
@@ -93,7 +93,7 @@ String CookieManagerAdapter::GetCookie(
 
 //@Override
 String CookieManagerAdapter::GetCookie(
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ Boolean privateBrowsing)
 {
     return GetCookie(url);
@@ -174,7 +174,7 @@ void CookieManagerAdapter::SetAcceptFileSchemeCookiesImpl(
 }
 
 String CookieManagerAdapter::FixupUrl(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     // WebAddress is a private API in the android framework and a "quirk"
     // of the Classic WebView implementation that allowed embedders to

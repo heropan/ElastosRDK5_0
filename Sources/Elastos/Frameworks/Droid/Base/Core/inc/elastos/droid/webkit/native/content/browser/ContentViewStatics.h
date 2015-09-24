@@ -24,7 +24,7 @@ public:
      * @return the address, or if no address is found, return null.
      */
     static CARAPI_(String) FindAddress(
-        /* [in] */ String addr);
+        /* [in] */ const String& addr);
 
     /**
      * Suspends Webkit timers in all renderers.
@@ -52,7 +52,7 @@ private:
     // Native functions
 
     static CARAPI_(String) NativeFindAddress(
-        /* [in] */ String addr);
+        /* [in] */ const String& addr);
 
     static CARAPI_(void) NativeSetWebKitSharedTimersSuspended(
         /* [in] */ Boolean suspend);

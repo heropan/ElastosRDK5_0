@@ -159,10 +159,10 @@ Boolean AwContents::IoThreadClientImpl::ShouldAcceptThirdPartyCookies()
 
 //@Override
 void AwContents::IoThreadClientImpl::OnDownloadStart(
-    /* [in] */ String url,
-    /* [in] */ String userAgent,
-    /* [in] */ String contentDisposition,
-    /* [in] */ String mimeType,
+    /* [in] */ const String& url,
+    /* [in] */ const String& userAgent,
+    /* [in] */ const String& contentDisposition,
+    /* [in] */ const String& mimeType,
     /* [in] */ Int64 contentLength)
 {
     mContentsClient->GetCallbackHelper()->PostOnDownloadStart(url, userAgent,
@@ -171,9 +171,9 @@ void AwContents::IoThreadClientImpl::OnDownloadStart(
 
 //@Override
 void AwContents::IoThreadClientImpl::NewLoginRequest(
-    /* [in] */ String realm,
-    /* [in] */ String account,
-    /* [in] */ String args)
+    /* [in] */ const String& realm,
+    /* [in] */ const String& account,
+    /* [in] */ const String& args)
 {
     mContentsClient->GetCallbackHelper()->PostOnReceivedLoginRequest(realm, account, args);
 }
@@ -499,7 +499,7 @@ AwContents::InnerJavaScriptCallback::InnerJavaScriptCallback(
 }
 
 void AwContents::InnerJavaScriptCallback::HandleJavaScriptResult(
-    /* [in] */ String jsonResult)
+    /* [in] */ const String& jsonResult)
 {
     mCallback->OnReceiveValue(jsonResult);
 }
@@ -580,8 +580,8 @@ AwContents::InnerSmartClipDataListener::InnerSmartClipDataListener(
 }
 
 void AwContents::InnerSmartClipDataListener::OnSmartClipDataExtracted(
-    /* [in] */ String text,
-    /* [in] */ String html,
+    /* [in] */ const String& text,
+    /* [in] */ const String& html,
     /* [in] */ IRect* clipRect)
 {
     AutoPtr<IBundle> bundle;
@@ -1489,7 +1489,7 @@ void AwContents::EnableOnNewPicture(
 }
 
 void AwContents::FindAllAsync(
-    /* [in] */ String searchString)
+    /* [in] */ const String& searchString)
 {
     if (mNativeAwContents == 0) return;
     NativeFindAllAsync(mNativeAwContents, searchString);
@@ -2043,17 +2043,17 @@ void AwContents::ClearHistory()
 }
 
 AutoPtr< ArrayOf<String> > AwContents::GetHttpAuthUsernamePassword(
-    /* [in] */ String host,
-    /* [in] */ String realm)
+    /* [in] */ const String& host,
+    /* [in] */ const String& realm)
 {
     return mBrowserContext->GetHttpAuthDatabase(mContext)->GetHttpAuthUsernamePassword(host, realm);
 }
 
 void AwContents::SetHttpAuthUsernamePassword(
-    /* [in] */ String host,
-    /* [in] */ String realm,
-    /* [in] */ String username,
-    /* [in] */ String password)
+    /* [in] */ const String& host,
+    /* [in] */ const String& realm,
+    /* [in] */ const String& username,
+    /* [in] */ const String& password)
 {
     mBrowserContext->GetHttpAuthDatabase(mContext)->SetHttpAuthUsernamePassword(host, realm, username, password);
 }
@@ -2263,7 +2263,7 @@ void AwContents::PreauthorizePermission(
  * @see ContentViewCore.evaluateJavaScript(String, ContentViewCore.JavaScriptCallback)
  */
 void AwContents::EvaluateJavaScript(
-    /* [in] */ String script,
+    /* [in] */ const String& script,
     /* [in] */ const IValueCallback* callback)
 {
     AutoPtr<ContentViewCore::JavaScriptCallback> jsCallback;
@@ -2278,7 +2278,7 @@ void AwContents::EvaluateJavaScript(
  * @see ContentViewCore.evaluateJavaScriptEvenIfNotYetNavigated(String)
  */
 void AwContents::EvaluateJavaScriptEvenIfNotYetNavigated(
-    /* [in] */ String script)
+    /* [in] */ const String& script)
 {
     mContentViewCore->EvaluateJavaScriptEvenIfNotYetNavigated(script);
 }
@@ -2471,7 +2471,7 @@ Boolean AwContents::RestoreState(
  */
 void AwContents::AddPossiblyUnsafeJavascriptInterface(
     /* [in] */ Object* object,
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ IInterface* requiredAnnotation)
 {
     mContentViewCore->AddPossiblyUnsafeJavascriptInterface(object, name, requiredAnnotation);
@@ -2481,7 +2481,7 @@ void AwContents::AddPossiblyUnsafeJavascriptInterface(
  * @see android.webkit.WebView#removeJavascriptInterface(String)
  */
 void AwContents::RemoveJavascriptInterface(
-    /* [in] */ String interfaceName)
+    /* [in] */ const String& interfaceName)
 {
     mContentViewCore->RemoveJavascriptInterface(interfaceName);
 }
@@ -2563,7 +2563,7 @@ void AwContents::OnDocumentHasImagesResponse(
 
 //@CalledByNative
 void AwContents::OnReceivedTouchIconUrl(
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ boolean precomposed)
 {
     mContentsClient->OnReceivedTouchIconUrl(url, precomposed);
@@ -2580,7 +2580,7 @@ void AwContents::OnReceivedIcon(
 /** Callback for generateMHTML. */
 //@CalledByNative
 void AwContents::GenerateMHTMLCallback(
-    /* [in] */ String path,
+    /* [in] */ const String& path,
     /* [in] */ Int64 size,
     /* [in] */ IValueCallback* callback)
 {
@@ -2591,15 +2591,15 @@ void AwContents::GenerateMHTMLCallback(
 //@CalledByNative
 void AwContents::OnReceivedHttpAuthRequest(
     /* [in] */ AwHttpAuthHandler* handler,
-    /* [in] */ String host,
-    /* [in] */ String realm)
+    /* [in] */ const String& host,
+    /* [in] */ const String& realm)
 {
     mContentsClient->OnReceivedHttpAuthRequest(handler, host, realm);
 }
 
 //@CalledByNative
 void AwContents::OnGeolocationPermissionsShowPrompt(
-    /* [in] */ String origin)
+    /* [in] */ const String& origin)
 {
     if (mNativeAwContents == 0) return;
     AutoPtr<AwGeolocationPermissions> permissions = mBrowserContext->GetGeolocationPermissions();
@@ -2660,10 +2660,10 @@ void AwContents::OnNewPicture()
 //@CalledByNative
 void AwContents::UpdateHitTestData(
     /* [in] */ Int32 type,
-    /* [in] */ String extra,
-    /* [in] */ String href,
-    /* [in] */ String anchorText,
-    /* [in] */ String imgSrc)
+    /* [in] */ const String& extra,
+    /* [in] */ const String& href,
+    /* [in] */ const String& anchorText,
+    /* [in] */ const String& imgSrc)
 {
     mPossiblyStaleHitTestData->hitTestResultType = type;
     mPossiblyStaleHitTestData->hitTestResultExtraData = extra;
@@ -2805,7 +2805,7 @@ void AwContents::SetPageScaleFactorAndLimits(
 }
 
 void AwContents::SaveWebArchiveInternal(
-    /* [in] */ String path,
+    /* [in] */ const String& path,
     /* [in] */ const IValueCallback* callback)
 {
     if (path == null || mNativeAwContents == 0) {
@@ -2822,8 +2822,8 @@ void AwContents::SaveWebArchiveInternal(
  * autoname logic.
  */
 String AwContents::GenerateArchiveAutoNamePath(
-    /* [in] */ String originalUrl,
-    /* [in] */ String baseName)
+    /* [in] */ const String& originalUrl,
+    /* [in] */ const String& baseName)
 {
     String name;
     if (originalUrl != NULL && !originalUrl.IsEmpty()) {
@@ -2934,7 +2934,7 @@ void AwContents::NativeDocumentHasImages(
 
 void AwContents::NativeGenerateMHTML(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ String path,
+    /* [in] */ const String& path,
     /* [in] */ IValueCallback* callback);
 
 void AwContents::NativeAddVisitedLinks(
@@ -2954,7 +2954,7 @@ Boolean AwContents::NativeOnDraw(
 
 void AwContents::NativeFindAllAsync(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ String searchString);
+    /* [in] */ const String& searchString);
 
 void AwContents::NativeFindNext(
     /* [in] */ Int64 nativeAwContents,
@@ -3051,13 +3051,13 @@ void AwContents::NativeClearView(
 
 void AwContents::NativeSetExtraHeadersForUrl(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ String url,
-    /* [in] */ String extraHeaders);
+    /* [in] */ const String& url,
+    /* [in] */ const String& extraHeaders);
 
 void AwContents::NativeInvokeGeolocationCallback(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ Boolean value,
-    /* [in] */ String requestingFrame);
+    /* [in] */ const String& requestingFrame);
 
 void AwContents::NativeSetJsOnlineProperty(
     /* [in] */ Int64 nativeAwContents,
@@ -3074,7 +3074,7 @@ void AwContents::NativeCreatePdfExporter(
 
 void AwContents::NativePreauthorizePermission(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ String origin,
+    /* [in] */ const String& origin,
     /* [in] */ Int64 resources);
 
 } // namespace AndroidWebview

@@ -13,7 +13,7 @@ AwGeolocationPermissions::GeolocationPermissionsAdapter(
 
 //@Override
 ECode AwGeolocationPermissions::Allow(
-    /* [in] */ String origin)
+    /* [in] */ const String& origin)
 {
     mChromeGeolocationPermissions->Allow(origin);
     return NOERROR;
@@ -21,7 +21,7 @@ ECode AwGeolocationPermissions::Allow(
 
 //@Override
 ECode AwGeolocationPermissions::Clear(
-    /* [in] */ String origin)
+    /* [in] */ const String& origin)
 {
     mChromeGeolocationPermissions->Clear(origin);
     return NOERROR;
@@ -36,7 +36,7 @@ ECode AwGeolocationPermissions::ClearAll()
 
 //@Override
 ECode AwGeolocationPermissions::GetAllowed(
-    /* [in] */ String origin,
+    /* [in] */ const String& origin,
     /* [in] */ IValueCallback* callback)
 {
     mChromeGeolocationPermissions->GetAllowed(origin, callback);

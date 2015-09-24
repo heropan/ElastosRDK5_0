@@ -65,7 +65,7 @@ void MemoryPressureListener::RegisterSystemCallback(
  */
 Boolean MemoryPressureListener::HandleDebugIntent(
     /* [in] */ IActivity* activity,
-    /* [in] */ String action)
+    /* [in] */ const String& action)
 {
     if (ACTION_LOW_MEMORY.Equals(action)) {
         SimulateLowMemoryPressureSignal(activity);

@@ -12,8 +12,8 @@ namespace Autofill {
 //                          AutofillSuggestion
 //=====================================================================
 AutofillSuggestion::AutofillSuggestion(
-    /* [in] */ String name,
-    /* [in] */ String label,
+    /* [in] */ const String& name,
+    /* [in] */ const String& label,
     /* [in] */ Int32 uniqueId)
 {
     // ==================before translated======================

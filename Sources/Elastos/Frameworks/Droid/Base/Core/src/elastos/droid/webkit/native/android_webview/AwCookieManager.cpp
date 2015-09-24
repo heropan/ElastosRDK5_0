@@ -103,8 +103,8 @@ Boolean void AwBrowserProcess::AcceptCookie()
  * Synchronous version of setCookie.
  */
 void AwBrowserProcess::SetCookie(
-    /* [in] */ String url,
-    /* [in] */ String value)
+    /* [in] */ const String& url,
+    /* [in] */ const String& value)
 {
     NativeSetCookieSync(url, value);
 }
@@ -254,20 +254,20 @@ Boolean AwBrowserProcess::NativeGetShouldAcceptCookies()
 }
 
 void AwBrowserProcess::NativeSetCookie(
-    /* [in] */ String url,
-    /* [in] */ String value,
+    /* [in] */ const String& url,
+    /* [in] */ const String& value,
     /* [in] */ CookieCallback* callback)
 {
 }
 
 void AwBrowserProcess::NativeSetCookieSync(
-    /* [in] */ String url,
-    /* [in] */ String value)
+    /* [in] */ const String& url,
+    /* [in] */ const String& value)
 {
 }
 
 String AwBrowserProcess::NativeGetCookie(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
 }
 

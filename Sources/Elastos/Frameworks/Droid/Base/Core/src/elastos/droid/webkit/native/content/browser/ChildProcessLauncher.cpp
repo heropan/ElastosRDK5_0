@@ -390,7 +390,7 @@ void ChildProcessLauncher::WarmUp(
 
 String ChildProcessLauncher::GetSwitchValue(
     /* [in] */ const ArrayOf<String>* commandLine,
-    /* [in] */ String switchKey)
+    /* [in] */ const String& switchKey)
 {
     if (commandLine == NULL || switchKey == NULL) {
         return String(NULL);
@@ -605,7 +605,7 @@ void ChildProcessLauncher::Stop(
 
 void ChildProcessLauncher::LogPidWarning(
     /* [in] */ Int32 pid,
-    /* [in] */ String message)
+    /* [in] */ const String& message)
 {
     // This class is effectively a no-op in single process mode, so don't log warnings there.
     if (pid > 0 && !NativeIsSingleProcess()) {

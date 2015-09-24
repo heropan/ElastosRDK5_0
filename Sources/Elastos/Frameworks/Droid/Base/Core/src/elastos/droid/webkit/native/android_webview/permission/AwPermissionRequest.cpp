@@ -30,7 +30,7 @@ AwPermissionRequest::~AwPermissionRequest()
 //@CalledByNative
 AutoPtr<AwPermissionRequest> AwPermissionRequest::Create(
     /* [in] */ Int64 nativeAwPermissionRequest,
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ Int64 resources)
 {
     if (nativeAwPermissionRequest == 0) return NULL;

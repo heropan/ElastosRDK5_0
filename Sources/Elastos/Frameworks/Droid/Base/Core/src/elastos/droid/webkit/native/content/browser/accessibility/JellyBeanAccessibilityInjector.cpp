@@ -38,7 +38,7 @@ static AutoPtr<IAtomicInteger> mResultIdCounter_init()
 }
 
 JellyBeanAccessibilityInjector::CallbackHandler::CallbackHandler(
-    /* [in] */ String interfaceName)
+    /* [in] */ const String& interfaceName)
     : mInterfaceName(interfaceName)
     , mResultIdCounter(mResultIdCounter_init())
     , mResult(FALSE)
@@ -55,7 +55,7 @@ JellyBeanAccessibilityInjector::CallbackHandler::CallbackHandler(
  */
 Boolean JellyBeanAccessibilityInjector::CallbackHandler::PerformAction(
     /* [in] */ ContentViewCore* contentView,
-    /* [in] */ String code)
+    /* [in] */ const String& code)
 {
     Int32 resultId;
     mResultIdCounter->GetAndIncrement(&resultId);
@@ -127,8 +127,8 @@ Boolean JellyBeanAccessibilityInjector::CallbackHandler::WaitForResultTimedLocke
 //@JavascriptInterface
 //@SuppressWarnings("unused")
 void JellyBeanAccessibilityInjector::CallbackHandler::OnResult(
-    /* [in] */ String id,
-    /* [in] */ String result)
+    /* [in] */ const String& id,
+    /* [in] */ const String& result)
 {
     Int64 resultId;
     // try {

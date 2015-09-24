@@ -136,7 +136,7 @@ String TracingControllerAndroid::GetOutputPath()
 
 Boolean TracingControllerAndroid::StartTracing(
     /* [in] */ Boolean showToasts,
-    /* [in] */ String categories,
+    /* [in] */ const String& categories,
     /* [in] */ Boolean recordContinuously)
 {
     // ==================before translated======================
@@ -153,9 +153,9 @@ Boolean TracingControllerAndroid::StartTracing(
 }
 
 Boolean TracingControllerAndroid::StartTracing(
-    /* [in] */ String filename,
+    /* [in] */ const String& filename,
     /* [in] */ Boolean showToasts,
-    /* [in] */ String categories,
+    /* [in] */ const String& categories,
     /* [in] */ Boolean recordContinuously)
 {
     // ==================before translated======================
@@ -265,7 +265,7 @@ ECode TracingControllerAndroid::InitializeNativeControllerIfNeeded()
 }
 
 ECode TracingControllerAndroid::LogAndToastError(
-    /* [in] */ String str)
+    /* [in] */ const String& str)
 {
     // ==================before translated======================
     // Log.e(TAG, str);
@@ -275,7 +275,7 @@ ECode TracingControllerAndroid::LogAndToastError(
 }
 
 ECode TracingControllerAndroid::LogForProfiler(
-    /* [in] */ String str)
+    /* [in] */ const String& str)
 {
     // ==================before translated======================
     // Log.i(TAG, str);
@@ -284,7 +284,7 @@ ECode TracingControllerAndroid::LogForProfiler(
 }
 
 ECode TracingControllerAndroid::ShowToast(
-    /* [in] */ String str)
+    /* [in] */ const String& str)
 {
     // ==================before translated======================
     // if (mShowToasts) Toast.makeText(mContext, str, Toast.LENGTH_SHORT).show();
@@ -307,7 +307,7 @@ ECode TracingControllerAndroid::NativeDestroy(
 
 Boolean TracingControllerAndroid::NativeStartTracing(
     /* [in] */ Int64 nativeTracingControllerAndroid,
-    /* [in] */ String categories,
+    /* [in] */ const String& categories,
     /* [in] */ Boolean recordContinuously)
 {
     assert(0);
@@ -316,7 +316,7 @@ Boolean TracingControllerAndroid::NativeStartTracing(
 
 ECode TracingControllerAndroid::NativeStopTracing(
     /* [in] */ Int64 nativeTracingControllerAndroid,
-    /* [in] */ String filename)
+    /* [in] */ const String& filename)
 {
     assert(0);
     return NOERROR;

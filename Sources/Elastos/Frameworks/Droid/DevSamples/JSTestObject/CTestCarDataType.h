@@ -91,7 +91,7 @@ public:
         /* [out] */ String * pOutStr);
 
     CARAPI Test_String_Ref(
-        /* [in] */ String * pInStr,
+        /* [in] */ const String& * pInStr,
         /* [out] */ String * pOutStr);
 
     CARAPI Test_Boolean(

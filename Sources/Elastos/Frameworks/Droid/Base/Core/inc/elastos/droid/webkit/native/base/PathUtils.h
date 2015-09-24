@@ -26,7 +26,7 @@ public:
      * @see Context#getDir(String, int)
      */
     static CARAPI_(void) SetPrivateDataDirectorySuffix(
-        /* [in] */ String suffix);
+        /* [in] */ const String& suffix);
 
     /**
      * @return the private directory that is used to store application data.

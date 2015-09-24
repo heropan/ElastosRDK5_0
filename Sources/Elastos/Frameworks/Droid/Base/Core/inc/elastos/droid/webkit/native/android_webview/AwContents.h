@@ -274,17 +274,17 @@ private:
 
         //@Override
         CARAPI_(void) OnDownloadStart(
-            /* [in] */ String url,
-            /* [in] */ String userAgent,
-            /* [in] */ String contentDisposition,
-            /* [in] */ String mimeType,
+            /* [in] */ const String& url,
+            /* [in] */ const String& userAgent,
+            /* [in] */ const String& contentDisposition,
+            /* [in] */ const String& mimeType,
             /* [in] */ Int64 contentLength);
 
         //@Override
         CARAPI_(void) NewLoginRequest(
-            /* [in] */ String realm,
-            /* [in] */ String account,
-            /* [in] */ String args);
+            /* [in] */ const String& realm,
+            /* [in] */ const String& account,
+            /* [in] */ const String& args);
 
     private:
         AwContents* mOwner;
@@ -669,7 +669,7 @@ private:
             /* [in] */ IValueCallback* callback);
 
         CARAPI_(void) HandleJavaScriptResult(
-            /* [in] */ String jsonResult);
+            /* [in] */ const String& jsonResult);
 
     private:
         AwContents* mOwner;
@@ -702,8 +702,8 @@ private:
             /* [in] */ const IHandler* resultHandler);
 
         CARAPI_(void) OnSmartClipDataExtracted(
-            /* [in] */ String text,
-            /* [in] */ String html,
+            /* [in] */ const String& text,
+            /* [in] */ const String& html,
             /* [in] */ IRect* clipRect);
 
     private:
@@ -845,7 +845,7 @@ public:
         /* [in] */ Boolean invalidationOnly);
 
     virtual CARAPI_(void) FindAllAsync(
-        /* [in] */ String searchString);
+        /* [in] */ const String& searchString);
 
     virtual CARAPI_(void) FindNext(
         /* [in] */ Boolean forward);
@@ -1110,14 +1110,14 @@ public:
     virtual CARAPI_(void) ClearHistory();
 
     virtual CARAPI_(AutoPtr< ArrayOf<String> >) GetHttpAuthUsernamePassword(
-        /* [in] */ String host,
-        /* [in] */ String realm);
+        /* [in] */ const String& host,
+        /* [in] */ const String& realm);
 
     virtual CARAPI_(void) SetHttpAuthUsernamePassword(
-        /* [in] */ String host,
-        /* [in] */ String realm,
-        /* [in] */ String username,
-        /* [in] */ String password);
+        /* [in] */ const String& host,
+        /* [in] */ const String& realm,
+        /* [in] */ const String& username,
+        /* [in] */ const String& password);
 
     /**
      * @see android.webkit.WebView#getCertificate()
@@ -1234,14 +1234,14 @@ public:
      * @see ContentViewCore.evaluateJavaScript(String, ContentViewCore.JavaScriptCallback)
      */
     virtual CARAPI_(void) EvaluateJavaScript(
-        /* [in] */ String script,
+        /* [in] */ const String& script,
         /* [in] */ const IValueCallback* callback);
 
     /**
      * @see ContentViewCore.evaluateJavaScriptEvenIfNotYetNavigated(String)
      */
     virtual CARAPI_(void) EvaluateJavaScriptEvenIfNotYetNavigated(
-        /* [in] */ String script);
+        /* [in] */ const String& script);
 
     //--------------------------------------------------------------------------------------------
     //  View and ViewGroup method implementations
@@ -1348,14 +1348,14 @@ public:
      */
     virtual CARAPI_(void) AddPossiblyUnsafeJavascriptInterface(
         /* [in] */ Object* object,
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [in] */ IInterface* requiredAnnotation);
 
     /**
      * @see android.webkit.WebView#removeJavascriptInterface(String)
      */
     virtual CARAPI_(void) RemoveJavascriptInterface(
-        /* [in] */ String interfaceName);
+        /* [in] */ const String& interfaceName);
 
     /**
      * If native accessibility (not script injection) is enabled, and if this is
@@ -1472,7 +1472,7 @@ private:
 
     //@CalledByNative
     CARAPI_(void) OnReceivedTouchIconUrl(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ Boolean precomposed);
 
     //@CalledByNative
@@ -1482,19 +1482,19 @@ private:
     /** Callback for generateMHTML. */
     //@CalledByNative
     static CARAPI_(void) GenerateMHTMLCallback(
-        /* [in] */ String path,
+        /* [in] */ const String& path,
         /* [in] */ Int64 size,
         /* [in] */ IValueCallback* callback);
 
     //@CalledByNative
     CARAPI_(void) OnReceivedHttpAuthRequest(
         /* [in] */ AwHttpAuthHandler* handler,
-        /* [in] */ String host,
-        /* [in] */ String realm);
+        /* [in] */ const String& host,
+        /* [in] */ const String& realm);
 
     //@CalledByNative
     CARAPI_(void) OnGeolocationPermissionsShowPrompt(
-        /* [in] */ String origin);
+        /* [in] */ const String& origin);
 
     //@CalledByNative
     CARAPI_(void) OnGeolocationPermissionsHidePrompt();
@@ -1511,10 +1511,10 @@ private:
     //@CalledByNative
     CARAPI_(void) UpdateHitTestData(
         /* [in] */ Int32 type,
-        /* [in] */ String extra,
-        /* [in] */ String href,
-        /* [in] */ String anchorText,
-        /* [in] */ String imgSrc);
+        /* [in] */ const String& extra,
+        /* [in] */ const String& href,
+        /* [in] */ const String& anchorText,
+        /* [in] */ const String& imgSrc);
 
     //@CalledByNative
     CARAPI_(Boolean) RequestDrawGL(
@@ -1578,7 +1578,7 @@ private:
         /* [in] */ Float maxPageScaleFactor);
 
     CARAPI_(void) SaveWebArchiveInternal(
-        /* [in] */ String path,
+        /* [in] */ const String& path,
         /* [in] */ const IValueCallback* callback);
 
     /**
@@ -1586,8 +1586,8 @@ private:
      * autoname logic.
      */
     static CARAPI_(String) GenerateArchiveAutoNamePath(
-        /* [in] */ String originalUrl,
-        /* [in] */ String baseName);
+        /* [in] */ const String& originalUrl,
+        /* [in] */ const String& baseName);
 
 
     // Return true if the GeolocationPermissionAPI should be used.
@@ -1634,7 +1634,7 @@ private:
 
     CARAPI_(void) NativeGenerateMHTML(
         /* [in] */ Int64 nativeAwContents,
-        /* [in] */ String path,
+        /* [in] */ const String& path,
         /* [in] */ IValueCallback* callback);
 
     CARAPI_(void) NativeAddVisitedLinks(
@@ -1654,7 +1654,7 @@ private:
 
     CARAPI_(void) NativeFindAllAsync(
         /* [in] */ Int64 nativeAwContents,
-        /* [in] */ String searchString);
+        /* [in] */ const String& searchString);
 
     CARAPI_(void) NativeFindNext(
         /* [in] */ Int64 nativeAwContents,
@@ -1751,13 +1751,13 @@ private:
 
     CARAPI_(void) NativeSetExtraHeadersForUrl(
         /* [in] */ Int64 nativeAwContents,
-        /* [in] */ String url,
-        /* [in] */ String extraHeaders);
+        /* [in] */ const String& url,
+        /* [in] */ const String& extraHeaders);
 
     CARAPI_(void) NativeInvokeGeolocationCallback(
         /* [in] */ Int64 nativeAwContents,
         /* [in] */ Boolean value,
-        /* [in] */ String requestingFrame);
+        /* [in] */ const String& requestingFrame);
 
     CARAPI_(void) NativeSetJsOnlineProperty(
         /* [in] */ Int64 nativeAwContents,
@@ -1774,7 +1774,7 @@ private:
 
     CARAPI_(void) NativePreauthorizePermission(
         /* [in] */ Int64 nativeAwContents,
-        /* [in] */ String origin,
+        /* [in] */ const String& origin,
         /* [in] */ Int64 resources);
 
     CARAPI_(void) Init(

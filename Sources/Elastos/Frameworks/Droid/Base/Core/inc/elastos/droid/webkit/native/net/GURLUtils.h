@@ -33,7 +33,7 @@ public:
       * @return The origin of the url
       */
     static CARAPI_(String) GetOrigin(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     /**
       * Get the scheme of the url (e.g. http, https, file). The returned string
@@ -42,14 +42,14 @@ public:
       * @return The scheme of the url.
       */
     static CARAPI_(String) GetScheme(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
 private:
     static CARAPI_(String) NativeGetOrigin(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     static CARAPI_(String) NativeGetScheme(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 };
 
 } // namespace Net

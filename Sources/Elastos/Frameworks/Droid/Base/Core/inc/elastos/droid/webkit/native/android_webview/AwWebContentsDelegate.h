@@ -30,9 +30,9 @@ public:
         /* [in] */ Int32 processId,
         /* [in] */ Int32 renderId,
         /* [in] */ Int32 mode_flags,
-        /* [in] */ String acceptTypes,
-        /* [in] */ String title,
-        /* [in] */ String defaultFilename,
+        /* [in] */ const String& acceptTypes,
+        /* [in] */ const String& title,
+        /* [in] */ const String& defaultFilename,
         /* [in] */ Boolean capture) = 0;
 
     //@CalledByNative

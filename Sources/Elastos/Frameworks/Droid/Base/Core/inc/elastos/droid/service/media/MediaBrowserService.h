@@ -71,7 +71,7 @@ private:
     public:
         ConnectRunnable(
             /* [in] */ MediaBrowserService *mediaBrowserService,
-            /* [in] */ String pkg,
+            /* [in] */ const String& pkg,
             /* [in] */ IBundle * rootHints,
             /* [in] */ IIMediaBrowserServiceCallbacks * callbacks,
             /* [in] */ Int32 uid);
@@ -113,7 +113,7 @@ private:
     public:
         AddSubscriptionRunnable(
             /* [in] */ MediaBrowserService *mediaBrowserService,
-            /* [in] */ String id,
+            /* [in] */ const String& id,
             /* [in] */ IIMediaBrowserServiceCallbacks * callbacks);
 
         CAR_INTERFACE_DECL()
@@ -133,7 +133,7 @@ private:
     public:
         RemoveSubscriptionRunnable(
             /* [in] */ MediaBrowserService *mediaBrowserService,
-            /* [in] */ String id,
+            /* [in] */ const String& id,
             /* [in] */ IIMediaBrowserServiceCallbacks * callbacks);
 
         CAR_INTERFACE_DECL()
@@ -153,7 +153,7 @@ private:
     public:
         NotifyChildrenChangedRunnable(
             /* [in] */ MediaBrowserService *mediaBrowserService,
-            /* [in] */ String parentId);
+            /* [in] */ const String& parentId);
 
         CAR_INTERFACE_DECL()
 
@@ -204,7 +204,7 @@ private:
     public:
         PerformLoadChildrenResult(
             /* [in] */ MediaBrowserService *mediaBrowserService,
-            /* [in] */ String parentId,
+            /* [in] */ const String& parentId,
             /* [in] */ ConnectionRecord * connection);
 
         CARAPI OnResultSent(
@@ -247,7 +247,7 @@ public:
      * the information returned when browsing.
      */
     CARAPI OnGetRoot(
-        /* [in] */ String clientPackageName,
+        /* [in] */ const String& clientPackageName,
         /* [in] */ Int32 clientUid,
         /* [in] */ IBundle * rootHints,
         /* [out] */ IMediaBrowserServiceBrowserRoot ** result);
@@ -266,7 +266,7 @@ public:
      * @return The list of children, or null if the id is invalid.
      */
     CARAPI OnLoadChildren(
-        /* [in] */ String parentId,
+        /* [in] */ const String& parentId,
         /* [in] */ IMediaBrowserServiceResult * result);
 
     /**
@@ -295,21 +295,21 @@ public:
      * children changed.
      */
     CARAPI NotifyChildrenChanged(
-        /* [in] */ String parentId);
+        /* [in] */ const String& parentId);
 
 private:
     /**
      * Return whether the given package is one of the ones that is owned by the uid.
      */
     CARAPI_(Boolean) IsValidPackage(
-        /* [in] */ String pkg,
+        /* [in] */ const String& pkg,
         /* [in] */ Int32 uid);
 
     /**
      * Save the subscription and if it is a new subscription send the results.
      */
     CARAPI_(void) AddSubscription(
-        /* [in] */ String id,
+        /* [in] */ const String& id,
         /* [in] */ ConnectionRecord * connection);
 
     /**
@@ -318,7 +318,7 @@ private:
      * Callers must make sure that this connection is still connected.
      */
     CARAPI PerformLoadChildren(
-        /* [in] */ String parentId,
+        /* [in] */ const String& parentId,
         /* [in] */ ConnectionRecord * connection);
 
 private:

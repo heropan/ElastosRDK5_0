@@ -106,11 +106,11 @@ public:
     //@Override
     CARAPI_(void) OnStartContentIntent(
         /* [in] */ IContext* context,
-        /* [in] */ String contentUrl);
+        /* [in] */ const String& contentUrl);
 
     //@Override
     CARAPI_(void) OnUpdateTitle(
-        /* [in] */ String title);
+        /* [in] */ const String& title);
 
     //@Override
     CARAPI_(Boolean) ShouldOverrideKeyEvent(
@@ -121,7 +121,7 @@ public:
 
     //@Override
     CARAPI_(Boolean) ShouldBlockMediaRequest(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
 private:
     static CARAPI_(Boolean) AreHtmlControlsEnabled();

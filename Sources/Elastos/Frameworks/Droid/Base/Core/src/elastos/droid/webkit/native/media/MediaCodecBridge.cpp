@@ -33,8 +33,8 @@ Int32 MediaCodecBridge::DequeueInputResult::Index()
 //===============================================================
 
 MediaCodecBridge::CodecInfo::CodecInfo(
-    /* [in] */ String codecType,
-    /* [in] */ String codecName,
+    /* [in] */ const String& codecType,
+    /* [in] */ const String& codecName,
     /* [in] */ Int32 direction)
     : mCodecType(codecType)
     , mCodecName(codecName)
@@ -153,7 +153,7 @@ const Int64 MediaCodecBridge::MAX_PRESENTATION_TIMESTAMP_SHIFT_US;
 
 MediaCodecBridge::MediaCodecBridge(
     /* [in] */ MediaCodec* mediaCodec,
-    /* [in] */ String mime,
+    /* [in] */ const String& mime,
     /* [in] */ Boolean adaptivePlaybackSupported)
     : mFlushed(FALSE)
     , mLastPresentationTimeUs(0)
@@ -199,7 +199,7 @@ AutoPtr< ArrayOf<CodecInfo> > MediaCodecBridge::GetCodecsInfo()
 }
 
 String MediaCodecBridge::GetDecoderNameForMime(
-    /* [in] */ String mime)
+    /* [in] */ const String& mime)
 {
     AutoPtr<IMediaCodecList> mediaCodecList;
     CMediaCodecList::AcquireSingleton((IMediaCodecList**)&mediaCodecList);
@@ -231,7 +231,7 @@ String MediaCodecBridge::GetDecoderNameForMime(
 
 //@CalledByNative
 AutoPtr<MediaCodecBridge> MediaCodecBridge::Create(
-    /* [in] */ String mime,
+    /* [in] */ const String& mime,
     /* [in] */ Boolean isSecure,
     /* [in] */ Int32 direction)
 {
@@ -606,7 +606,7 @@ Boolean MediaCodecBridge::ConfigureVideo(
 
 //@CalledByNative
 AutoPtr<IMediaFormat> MediaCodecBridge::CreateAudioFormat(
-    /* [in] */ String mime,
+    /* [in] */ const String& mime,
     /* [in] */ Int32 sampleRate,
     /* [in] */ Int32 channelCount)
 {
@@ -619,7 +619,7 @@ AutoPtr<IMediaFormat> MediaCodecBridge::CreateAudioFormat(
 
 //@CalledByNative
 AutoPtr<IMediaFormat> MediaCodecBridge::CreateVideoDecoderFormat(
-    /* [in] */ String mime,
+    /* [in] */ const String& mime,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
@@ -632,7 +632,7 @@ AutoPtr<IMediaFormat> MediaCodecBridge::CreateVideoDecoderFormat(
 
 //@CalledByNative
 AutoPtr<IMediaFormat> MediaCodecBridge::CreateVideoEncoderFormat(
-    /* [in] */ String mime,
+    /* [in] */ const String& mime,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int32 bitRate,
@@ -663,7 +663,7 @@ Boolean MediaCodecBridge::IsAdaptivePlaybackSupported(
 
 Boolean MediaCodecBridge::CodecSupportsAdaptivePlayback(
     /* [in] */ IMediaCodec* mediaCodec,
-    /* [in] */ String mime)
+    /* [in] */ const String& mime)
 {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || mediaCodec == null) {
         return FALSE;

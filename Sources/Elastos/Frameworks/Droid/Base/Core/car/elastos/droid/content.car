@@ -1147,6 +1147,36 @@ module
         interface IParcelable;
     }
 
+    class CPackageInstaller {
+        constructor();
+
+        interface IPackageInstaller;
+    }
+
+    class CPackageInstallerSession {
+        constructor();
+
+        interface IPackageInstallerSession;
+        interface ICloseable;
+    }
+
+    class CPackageInstallerSessionParams {
+        constructor();
+
+        constructor(
+            [in] Int32 mode);
+
+        interface IPackageInstallerSessionParams;
+        interface IParcelable;
+    }
+
+    class CPackageInstallerSessionInfo {
+        constructor();
+
+        interface IPackageInstallerSessionInfo;
+        interface IParcelable;
+    }
+
     class CParceledListSlice {
         constructor();
 

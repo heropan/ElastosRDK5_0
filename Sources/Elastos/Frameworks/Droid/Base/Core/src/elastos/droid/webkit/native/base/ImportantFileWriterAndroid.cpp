@@ -16,14 +16,14 @@ namespace Base {
  * @return true if the data was written to the file, false if not.
  */
 Boolean ImportantFileWriterAndroid::WriteFileAtomically(
-    /* [in] */ String fileName,
+    /* [in] */ const String& fileName,
     /* [in] */ ArrayOf<Byte>* data)
 {
     return NativeWriteFileAtomically(fileName, data);
 }
 
 Boolean ImportantFileWriterAndroid::NativeWriteFileAtomically(
-    /* [in] */ String fileName,
+    /* [in] */ const String& fileName,
     /* [in] */ ArrayOf<Byte>* data)
 {
 }

@@ -47,7 +47,7 @@ private:
         PendingCreateSessionData(
             /* [in] */ Int32 sessionId,
             /* [in] */ ArrayOf<Byte>* initData,
-            /* [in] */ String mimeType);
+            /* [in] */ const String& mimeType);
 
         CARAPI_(Int32) SessionId();
 
@@ -97,7 +97,7 @@ private:
 
     private:
         CARAPI_(AutoPtr< ArrayOf<Byte> >) PostRequest(
-            /* [in] */ String url,
+            /* [in] */ const String& url,
             /* [in] */ ArrayOf<Byte>* drmRequest);
 
     private:
@@ -216,7 +216,7 @@ public:
         /* [in] */ ArrayOf<Byte>* response);
 
     static CARAPI_(void) AddKeySystemUuidMapping(
-        /* [in] */ String keySystem,
+        /* [in] */ const String& keySystem,
         /* [in] */ IUUID* uuid);
 
 private:
@@ -270,7 +270,7 @@ private:
     //@CalledByNative
     static CARAPI_(Boolean) IsCryptoSchemeSupported(
         /* [in] */ ArrayOf<Byte>* schemeUUID,
-        /* [in] */ String containerMimeType);
+        /* [in] */ const String& containerMimeType);
 
     /**
      * Create a new MediaDrmBridge from the crypto scheme UUID.
@@ -291,7 +291,7 @@ private:
      */
     //@CalledByNative
     CARAPI_(Boolean) SetSecurityLevel(
-        /* [in] */ String securityLevel);
+        /* [in] */ const String& securityLevel);
 
     /**
      * Return the MediaCrypto object if available.
@@ -323,7 +323,7 @@ private:
     CARAPI_(AutoPtr<IMediaDrmKeyRequest>) GetKeyRequest(
         /* [in] */ IByteBuffer* session,
         /* [in] */ ArrayOf<Byte>* data,
-        /* [in] */ String mime);
+        /* [in] */ const String& mime);
 
     /**
      * Save data to |mPendingCreateSessionDataQueue| so that we can resume the
@@ -332,7 +332,7 @@ private:
     CARAPI_(void) SavePendingCreateSessionData(
         /* [in] */ Int32 sessionId,
         /* [in] */ ArrayOf<Byte>* initData,
-        /* [in] */ String mime);
+        /* [in] */ const String& mime);
 
     /**
      * Process all pending createSession() calls synchronously.
@@ -357,7 +357,7 @@ private:
     CARAPI_(void) CreateSession(
         /* [in] */ Int32 sessionId,
         /* [in] */ ArrayOf<Byte>* initData,
-        /* [in] */ String mime);
+        /* [in] */ const String& mime);
 
     /**
      * Returns whether |sessionId| is a valid key session, excluding the media
@@ -430,13 +430,13 @@ private:
     CARAPI_(void) NativeOnSessionCreated(
         /* [in] */ Int64 nativeMediaDrmBridge,
         /* [in] */ Int32 sessionId,
-        /* [in] */ String webSessionId);
+        /* [in] */ const String& webSessionId);
 
     CARAPI_(void) NativeOnSessionMessage(
         /* [in] */ Int64 nativeMediaDrmBridge,
         /* [in] */ Int32 sessionId,
         /* [in] */ ArrayOf<Byte>* message,
-        /* [in] */ String destinationUrl);
+        /* [in] */ const String& destinationUrl);
 
     CARAPI_(void) NativeOnSessionReady(
         /* [in] */ Int64 nativeMediaDrmBridge,
@@ -455,7 +455,7 @@ private:
         /* [in] */ Boolean success);
 
     static CARAPI_(void) NativeAddKeySystemUuidMapping(
-        /* [in] */ String keySystem,
+        /* [in] */ const String& keySystem,
         /* [in] */ IByteBuffer* uuid);
 
 private:

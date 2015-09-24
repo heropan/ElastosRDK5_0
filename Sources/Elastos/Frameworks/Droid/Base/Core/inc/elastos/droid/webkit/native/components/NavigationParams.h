@@ -22,7 +22,7 @@ class NavigationParams : public Object
 {
 public:
     NavigationParams(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ Boolean isPost,
         /* [in] */ Boolean hasUserGesture,
         /* [in] */ Int32 pageTransitionType,
@@ -30,7 +30,7 @@ public:
 
     // @CalledByNative
     static CARAPI_(AutoPtr<NavigationParams>) Create(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ Boolean isPost,
         /* [in] */ Boolean hasUserGesture,
         /* [in] */ Int32 pageTransitionType,

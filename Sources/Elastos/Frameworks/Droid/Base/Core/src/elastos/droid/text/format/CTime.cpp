@@ -109,7 +109,7 @@ ECode CTime::constructor(
 
 /** Initialize the Time to 00:00:00 1/1/1970 in the specified timezone. */
 ECode CTime::Initialize(
-    /* [in] */ String timezoneId)
+    /* [in] */ const String& timezoneId)
 {
     mTimeZone = timezoneId;
     mYear = 1970;
@@ -283,7 +283,7 @@ ECode CTime::Parse(
 }
 
 Boolean CTime::ParseInternal(
-    /* [in] */ String s)
+    /* [in] */ const String& s)
 {
     Int32 len = s.GetLength();
     if (len < 8) {
@@ -358,7 +358,7 @@ Boolean CTime::ParseInternal(
 }
 
 ECode CTime::CheckChar(
-    /* [in] */ String s,
+    /* [in] */ const String& s,
     /* [in] */ Int32 spos,
     /* [in] */ Char32 expected)
 {
@@ -372,7 +372,7 @@ ECode CTime::CheckChar(
 }
 
 Int32 CTime::GetChar(
-    /* [in] */ String s,
+    /* [in] */ const String& s,
     /* [in] */ Int32 spos,
     /* [in] */ Int32 mul)
 {
@@ -405,7 +405,7 @@ ECode CTime::Parse3339(
 }
 
 Boolean CTime::Parse3339Internal(
-    /* [in] */ String s)
+    /* [in] */ const String& s)
 {
     Int32 len = s.GetLength();
     if (len < 10) {
@@ -955,7 +955,7 @@ ECode CTime::GetTimeZone(
 }
 
 CTime::TimeCalculator::TimeCalculator(
-    /* [in] */ String timezonId)
+    /* [in] */ const String& timezonId)
 {
     mZoneInfo = LookupZoneInfo(timezoneId);
     CZoneInfoWallTime::New((IZoneInfoWallTime**)&mWallTime);
@@ -986,7 +986,7 @@ ECode CTime::TimeCalculator::SetTimeInMillis(
 }
 
 String CTime::TimeCalculator::Format(
-    /* [in] */ String format)
+    /* [in] */ const String& format)
 {
     if (format.IsNull())
     {
@@ -1010,7 +1010,7 @@ ECode CTime::TimeCalculator::UpdateZoneInfoFromTimeZone()
 }
 
 ECode CTime::TimeCalculator::LookupZoneInfo(
-    /* [in] */ String timezoneId ,
+    /* [in] */ const String& timezoneId ,
     /* [out] */ ZoneInfo** ret)
 {
     VALIDATE_NOT_NULL(ret)
@@ -1037,7 +1037,7 @@ ECode CTime::TimeCalculator::LookupZoneInfo(
 }
 
 ECode CTime::TimeCalculator::SwitchTimezone(
-    /* [in] */ String timezone)
+    /* [in] */ const String& timezone)
 {
     Int32 seconds;
     mWallTime->Mktime(zoneInfo, &seconds);

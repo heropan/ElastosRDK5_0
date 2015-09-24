@@ -70,7 +70,7 @@ HttpAuthDatabase::HttpAuthDatabase(
  */
 void HttpAuthDatabase::InitOnBackgroundThread(
     /* [in] */ IContext* context,
-    /* [in] */ String databaseFile)
+    /* [in] */ const String& databaseFile)
 {
     AutoLock lock(mInitializedLock);
     if (mInitialized) {
@@ -92,7 +92,7 @@ void HttpAuthDatabase::InitOnBackgroundThread(
  */
 void HttpAuthDatabase::InitDatabase(
     /* [in] */ IContext* context,
-    /* [in] */ String databaseFile)
+    /* [in] */ const String& databaseFile)
 {
     // try {
         context->OpenOrCreateDatabase(databaseFile, 0, NULL, (ISQLiteDatabase**)&mDatabase);
@@ -180,10 +180,10 @@ Boolean HttpAuthDatabase::WaitForInit()
  * @param password the password
  */
 void HttpAuthDatabase::SetHttpAuthUsernamePassword(
-    /* [in] */ String host,
-    /* [in] */ String realm,
-    /* [in] */ String username,
-    /* [in] */ String password)
+    /* [in] */ const String& host,
+    /* [in] */ const String& realm,
+    /* [in] */ const String& username,
+    /* [in] */ const String& password)
 {
     if (host == NULL || realm == NULL || !WaitForInit()) {
         return;
@@ -209,8 +209,8 @@ void HttpAuthDatabase::SetHttpAuthUsernamePassword(
  *         String[1] is password.  Null is returned if it can't find anything.
  */
 AutoPtr< ArrayOf<String> > HttpAuthDatabase::GetHttpAuthUsernamePassword(
-    /* [in] */ String host,
-    /* [in] */ String realm)
+    /* [in] */ const String& host,
+    /* [in] */ const String& realm)
 {
     if (host == NULL || realm == NULL || !WaitForInit()) {
         return NULL;

@@ -72,9 +72,9 @@ public:
 private:
     // Clone constructor.
     WebHistoryItemChromium(
-        /* [in] */ String url,
-        /* [in] */ String originalUrl,
-        /* [in] */ String title,
+        /* [in] */ const String& url,
+        /* [in] */ const String& originalUrl,
+        /* [in] */ const String& title,
         /* [in] */ IBitmap* favicon);
 
 private:

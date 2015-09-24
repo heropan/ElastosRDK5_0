@@ -5,7 +5,7 @@ namespace Webkit {
 namespace Content_Public {
 
 Referrer::Referrer(
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ Int32 policy)
     : mUrl(url)
     , mPolicy(policy)

@@ -119,7 +119,7 @@ ECode LocationProviderAdapter::NewLocationAvailable(
 }
 
 ECode LocationProviderAdapter::NewErrorAvailable(
-    /* [in] */ String message)
+    /* [in] */ const String& message)
 {
     // ==================before translated======================
     // nativeNewErrorAvailable(message);
@@ -152,7 +152,7 @@ ECode LocationProviderAdapter::NativeNewLocationAvailable(
 }
 
 ECode LocationProviderAdapter::NativeNewErrorAvailable(
-    /* [in] */ String message)
+    /* [in] */ const String& message)
 {
     assert(0);
     return NOERROR;

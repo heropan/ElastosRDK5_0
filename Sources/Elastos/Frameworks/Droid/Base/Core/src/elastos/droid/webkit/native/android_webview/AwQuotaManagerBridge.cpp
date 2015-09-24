@@ -79,7 +79,7 @@ void AwQuotaManagerBridge::DeleteAllData()
  * Implements WebStorage.deleteOrigin(). Clear the storage of APIs 2-5 for the given origin.
  */
 void AwQuotaManagerBridge::DeleteOrigin(
-    /* [in] */ String origin)
+    /* [in] */ const String& origin)
 {
     NativeDeleteOrigin(mNativeAwQuotaManagerBridgeImpl, origin);
 }
@@ -102,7 +102,7 @@ void AwQuotaManagerBridge::GetOrigins(
  * origin.
  */
 void AwQuotaManagerBridge::GetQuotaForOrigin(
-    /* [in] */ String origin, ValueCallback<Long> callback)
+    /* [in] */ const String& origin, ValueCallback<Long> callback)
 {
     Int32 callbackId = getNextId();
     assert mPendingGetQuotaForOriginCallbacks.get(callbackId) == null;
@@ -115,7 +115,7 @@ void AwQuotaManagerBridge::GetQuotaForOrigin(
  * origin.
  */
 void AwQuotaManagerBridge::GetUsageForOrigin(
-    /* [in] */ String origin,
+    /* [in] */ const String& origin,
     /* [in] */ IValueCallback* callback)
 {
     Int32 callbackId = GetNextId();
@@ -168,7 +168,7 @@ void AwQuotaManagerBridge::NativeDeleteAllData(
 
 void AwQuotaManagerBridge::NativeDeleteOrigin(
     /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl,
-    /* [in] */ String origin)
+    /* [in] */ const String& origin)
 {
 }
 
@@ -180,7 +180,7 @@ void AwQuotaManagerBridge::NativeGetOrigins(
 
 void AwQuotaManagerBridge::NativeGetUsageAndQuotaForOrigin(
     /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl,
-    /* [in] */ String origin,
+    /* [in] */ const String& origin,
     /* [in] */ Int32 callbackId,
     /* [in] */ Boolean isQuota)
 {

@@ -49,7 +49,7 @@ private:
     {
     public:
         EventType(
-            /* [in] */ String typeStr);
+            /* [in] */ const String& typeStr);
 
         CARAPI_(String) ToString();
 
@@ -127,7 +127,7 @@ public:
      */
     //synchronized
     static CARAPI_(void) Instant(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     /**
      * Record an "begin" perf trace event.
@@ -135,7 +135,7 @@ public:
      */
     //synchronized
     static CARAPI_(void) Begin(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     /**
      * Record an "end" perf trace event, to match a begin event.  The
@@ -144,7 +144,7 @@ public:
      */
     //synchronized
     static CARAPI_(void) End(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     /**
      * Record an "begin" memory trace event.
@@ -152,7 +152,7 @@ public:
      */
     //synchronized
 //    static CARAPI_(void) Begin(
-//        /* [in] */ String name,
+//        /* [in] */ const String& name,
 //        /* [in] */ IMemoryInfo* memoryInfo);
 
     /**
@@ -162,7 +162,7 @@ public:
      */
     //synchronized
 //    static CARAPI_(void) End(
-//        /* [in] */ String name,
+//        /* [in] */ const String& name,
 //        /* [in] */ IMemoryInfo* memoryInfo);
 
     /**
@@ -172,7 +172,7 @@ public:
      * @return The memory perf name to use.
      */
     static CARAPI_(String) MakeMemoryTraceNameFromTimingName(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     /**
      * Builds a name to be used in the perf trace framework.  The framework has length requirements
@@ -184,8 +184,8 @@ public:
      * @return A name that is safe for the perf trace framework.
      */
     static CARAPI_(String) MakeSafeTraceName(
-        /* [in] */ String baseName,
-        /* [in] */ String suffix);
+        /* [in] */ const String& baseName,
+        /* [in] */ const String& suffix);
 
     /**
      * Sets a file to dump the results to.  If {@code file} is {@code null}, it will be dumped
@@ -228,7 +228,7 @@ private:
      * @return True if the name matches the allowed filter; else false.
      */
     static CARAPI_(Boolean) MatchesFilter(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     /**
      * Save a perf trace event as a JSON dict.  The format mirrors a TraceEvent dict.
@@ -239,9 +239,9 @@ private:
      * @param includeMemory Whether to include current browser process memory usage in the trace.
      */
     static CARAPI_(void) SavePerfString(
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [in] */ Int64 id,
-        /* [in] */ String type,
+        /* [in] */ const String& type,
         /* [in] */ Boolean includeMemory);
 
     /**
@@ -255,9 +255,9 @@ private:
      *                   no memory details are to be included.
      */
 //    static CARAPI_(void) SavePerfString(
-//        /* [in] */ String name,
+//        /* [in] */ const String& name,
 //        /* [in] */ Int64 id,
-//        /* [in] */ String type,
+//        /* [in] */ const String& type,
 //        /* [in] */ Int64 timestampUs,
 //        /* [in] */ IMemoryInfo* memoryInfo);
 

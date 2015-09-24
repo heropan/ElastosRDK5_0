@@ -50,7 +50,7 @@ public:
      */
     static CARAPI_(Boolean) HandleDebugIntent(
         /* [in] */ IActivity* activity,
-        /* [in] */ String action);
+        /* [in] */ const String& action);
 
     static CARAPI_(void) MaybeNotifyMemoryPresure(
         /* [in] */ Int32 level);

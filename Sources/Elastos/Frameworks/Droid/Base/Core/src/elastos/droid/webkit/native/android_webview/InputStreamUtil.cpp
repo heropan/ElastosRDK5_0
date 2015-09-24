@@ -9,7 +9,7 @@ const Int32 InputStreamUtil::CALL_FAILED_STATUS;
 const Int32 InputStreamUtil::EXCEPTION_THROWN_STATUS;
 
 String InputStreamUtil::LogMessage(
-    /* [in] */ String method)
+    /* [in] */ const String& method)
 {
     String retStr("Got exception when calling ");
     retStr += method;

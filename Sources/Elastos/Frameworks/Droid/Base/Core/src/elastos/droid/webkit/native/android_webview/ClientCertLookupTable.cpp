@@ -46,7 +46,7 @@ ClientCertLookupTable::ClientCertLookupTable()
 }
 
 void ClientCertLookupTable::Allow(
-    /* [in] */ String host,
+    /* [in] */ const String& host,
     /* [in] */ Int32 port,
     /* [in] */ AndroidPrivateKey* privateKey,
     /* [in] */ ArrayOf< ArrayOf<Byte> >* chain)
@@ -57,7 +57,7 @@ void ClientCertLookupTable::Allow(
 }
 
 void ClientCertLookupTable::Deny(
-    /* [in] */ String host,
+    /* [in] */ const String& host,
     /* [in] */ Int32 port)
 {
     String host_and_port = HostAndPort(host, port);
@@ -66,14 +66,14 @@ void ClientCertLookupTable::Deny(
 }
 
 AutoPtr<Cert> ClientCertLookupTable::GetCertData(
-    /* [in] */ String host,
+    /* [in] */ const String& host,
     /* [in] */ Int32 port)
 {
     return mCerts->Get(HostAndPort(host, port));
 }
 
 Boolean ClientCertLookupTable::IsDenied(
-    /* [in] */ String host,
+    /* [in] */ const String& host,
     /* [in] */ Int32 port)
 {
     return mDenieds.contains(HostAndPort(host, port));
@@ -82,7 +82,7 @@ Boolean ClientCertLookupTable::IsDenied(
 // TODO(sgurun) add a test for this. Not separating host and pair properly will be
 // a security issue.
 String ClientCertLookupTable::HostAndPort(
-    /* [in] */ String host,
+    /* [in] */ const String& host,
     /* [in] */ Int32 port)
 {
     String retStr(host);

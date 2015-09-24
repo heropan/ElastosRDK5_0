@@ -59,7 +59,7 @@ public:
      */
     AwPrintDocumentAdapter(
         /* [in] */ AwPdfExporter* pdfExporter,
-        /* [in] */ String documentName);
+        /* [in] */ const String& documentName);
 
     //@Override
     CARAPI_(void) OnLayout(

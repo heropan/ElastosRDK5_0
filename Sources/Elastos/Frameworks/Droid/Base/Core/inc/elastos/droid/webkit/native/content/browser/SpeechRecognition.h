@@ -127,7 +127,7 @@ private:
 
     // @CalledByNative
     CARAPI StartRecognition(
-        /* [in] */ String language,
+        /* [in] */ const String& language,
         /* [in] */ Boolean continuous,
         /* [in] */ Boolean interimResults);
 

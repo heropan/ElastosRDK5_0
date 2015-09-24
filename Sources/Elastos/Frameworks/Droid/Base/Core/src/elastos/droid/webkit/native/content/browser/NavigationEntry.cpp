@@ -72,10 +72,10 @@ ECode NavigationEntry::UpdateFavicon(
 
 NavigationEntry::NavigationEntry(
     /* [in] */ Int32 index,
-    /* [in] */ String url,
-    /* [in] */ String virtualUrl,
-    /* [in] */ String originalUrl,
-    /* [in] */ String title,
+    /* [in] */ const String& url,
+    /* [in] */ const String& virtualUrl,
+    /* [in] */ const String& originalUrl,
+    /* [in] */ const String& title,
     /* [in] */ IBitmap* favicon)
 {
     // ==================before translated======================

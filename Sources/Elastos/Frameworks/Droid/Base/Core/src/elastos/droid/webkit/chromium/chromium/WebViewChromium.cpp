@@ -2280,9 +2280,9 @@ ECode WebViewChromium::SetCertificate(
 
 //@Override
 ECode WebViewChromium::SavePassword(
-    /* [in] */ String host,
-    /* [in] */ String username,
-    /* [in] */ String password)
+    /* [in] */ const String& host,
+    /* [in] */ const String& username,
+    /* [in] */ const String& password)
 {
     // This is a deprecated API: intentional no-op.
     return NOERROR;
@@ -2456,7 +2456,7 @@ ECode WebViewChromium::LoadUrl(
 
 //@Override
 ECode WebViewChromium::LoadUrl(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     // Early out to match old WebView implementation
     if (url == NULL) {
@@ -2470,7 +2470,7 @@ ECode WebViewChromium::LoadUrl(
 
 //@Override
 ECode WebViewChromium::PostUrl(
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ ArrayOf<Byte>* postData)
 {
 #if 0
@@ -2483,40 +2483,40 @@ ECode WebViewChromium::PostUrl(
 }
 
 String WebViewChromium::FixupMimeType(
-    /* [in] */ String mimeType)
+    /* [in] */ const String& mimeType)
 {
     return TextUtils::IsEmpty(mimeType) ? String("text/html") : mimeType;
 }
 
 String WebViewChromium::FixupData(
-    /* [in] */ String data)
+    /* [in] */ const String& data)
 {
     return TextUtils::IsEmpty(data) ? String("") : data;
 }
 
 String WebViewChromium::FixupBase(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     return TextUtils::IsEmpty(url) ? String("about:blank") : url;
 }
 
 String WebViewChromium::FixupHistory(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     return TextUtils::IsEmpty(url) ? String("about:blank") : url;
 }
 
 Boolean WebViewChromium::IsBase64Encoded(
-    /* [in] */ String encoding)
+    /* [in] */ const String& encoding)
 {
     return String("base64").Equals(encoding);
 }
 
 //@Override
 ECode WebViewChromium::LoadData(
-    /* [in] */ String data,
-    /* [in] */ String mimeType,
-    /* [in] */ String encoding)
+    /* [in] */ const String& data,
+    /* [in] */ const String& mimeType,
+    /* [in] */ const String& encoding)
 {
 #if 0
     loadUrlOnUiThread(LoadUrlParams.createLoadDataParams(
@@ -2526,11 +2526,11 @@ ECode WebViewChromium::LoadData(
 
 //@Override
 ECode WebViewChromium::LoadDataWithBaseURL(
-    /* [in] */ String baseUrl,
-    /* [in] */ String data,
-    /* [in] */ String mimeType,
-    /* [in] */ String encoding,
-    /* [in] */ String historyUrl)
+    /* [in] */ const String& baseUrl,
+    /* [in] */ const String& data,
+    /* [in] */ const String& mimeType,
+    /* [in] */ const String& encoding,
+    /* [in] */ const String& historyUrl)
 {
 #if 0
     data = fixupData(data);
@@ -2583,7 +2583,7 @@ void WebViewChromium::LoadUrlOnUiThread(
 }
 
 void WebViewChromium::EvaluateJavaScript(
-    /* [in] */ String script,
+    /* [in] */ const String& script,
     /* [in] */ IValueCallback* resultCallback)
 {
     CheckThread();
@@ -2592,7 +2592,7 @@ void WebViewChromium::EvaluateJavaScript(
 
 //@Override
 ECode WebViewChromium::SaveWebArchive(
-    /* [in] */ String filename)
+    /* [in] */ const String& filename)
 {
     return SaveWebArchive(filename, FALSE, NULL);
 }
@@ -3503,7 +3503,7 @@ ECode WebViewChromium::DumpViewHierarchyWithProperties(
 
 //@Override
 ECode WebViewChromium::FindHierarchyView(
-    /* [in] */ String className,
+    /* [in] */ const String& className,
     /* [in] */ Int32 hashCode,
     /* [out] */ IView** view)
 {
@@ -4210,7 +4210,7 @@ AutoPtr<IPrintDocumentAdapter> WebViewChromium::CreatePrintDocumentAdapter()
 
 //@Override TODO(sgurun) commenting this out to have master-gpl compiling.
 AutoPtr<IPrintDocumentAdapter> WebViewChromium::CreatePrintDocumentAdapter(
-    /* [in] */ String documentName)
+    /* [in] */ const String& documentName)
 {
     CheckThread();
     return new AwPrintDocumentAdapter(mAwContents.getPdfExporter(), documentName);

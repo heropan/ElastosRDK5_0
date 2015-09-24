@@ -31,7 +31,7 @@ public:
       */
     ColorSuggestion(
         /* [in] */ Int32 color,
-        /* [in] */ String label);
+        /* [in] */ const String& label);
 
 public:
     /*const*/ Int32 mColor;

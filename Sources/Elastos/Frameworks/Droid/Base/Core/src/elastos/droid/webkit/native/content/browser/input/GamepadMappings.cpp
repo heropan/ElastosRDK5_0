@@ -16,7 +16,7 @@ Boolean GamepadMappings::MapToStandardGamepad(
     /* [in] */ ArrayOf<Float>*mappedButtons,
     /* [in] */ ArrayOf<Float>*rawAxes,
     /* [in] */ ArrayOf<Float>*rawButtons,
-    /* [in] */ String deviceName)
+    /* [in] */ const String& deviceName)
 {
     if (deviceName.StartsWith(NVIDIA_SHIELD_DEVICE_NAME_PREFIX)) {
         MapShieldGamepad(mappedButtons, rawButtons, mappedAxes, rawAxes);

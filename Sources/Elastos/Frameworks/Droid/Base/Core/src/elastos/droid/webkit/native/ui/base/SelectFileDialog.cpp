@@ -222,8 +222,8 @@ Boolean SelectFileDialog::NoSpecificType()
 }
 
 Boolean SelectFileDialog::ShouldShowTypes(
-    /* [in] */ String allTypes,
-    /* [in] */ String specificType)
+    /* [in] */ const String& allTypes,
+    /* [in] */ const String& specificType)
 {
     // ==================before translated======================
     // if (noSpecificType() || mFileTypes.contains(allTypes)) return true;
@@ -257,7 +257,7 @@ Boolean SelectFileDialog::ShouldShowAudioTypes()
 }
 
 Boolean SelectFileDialog::AcceptsSpecificType(
-    /* [in] */ String type)
+    /* [in] */ const String& type)
 {
     // ==================before translated======================
     // return mFileTypes.size() == 1 && TextUtils.equals(mFileTypes.get(0), type);
@@ -290,7 +290,7 @@ Boolean SelectFileDialog::CaptureMicrophone()
 }
 
 Boolean SelectFileDialog::AcceptSpecificType(
-    /* [in] */ String accept)
+    /* [in] */ const String& accept)
 {
     // ==================before translated======================
     // for (String type : mFileTypes) {
@@ -315,8 +315,8 @@ AutoPtr<SelectFileDialog> SelectFileDialog::Create(
 
 ECode SelectFileDialog::NativeOnFileSelected(
     /* [in] */ Int64 nativeSelectFileDialogImpl,
-    /* [in] */ String filePath,
-    /* [in] */ String displayName)
+    /* [in] */ const String& filePath,
+    /* [in] */ const String& displayName)
 {
     assert(0);
     return NOERROR;

@@ -30,7 +30,7 @@ public:
       * @param htmlContent The HTML content for the interstitial.
       */
     InterstitialPageDelegateAndroid(
-        /* [in] */ String htmlContent);
+        /* [in] */ const String& htmlContent);
 
     /**
       * @return The pointer to the underlying native counterpart.
@@ -57,7 +57,7 @@ protected:
       */
     // @CalledByNative
     virtual CARAPI CommandReceived(
-        /* [in] */ String command);
+        /* [in] */ const String& command);
 
     /**
       * Notifies the native interstitial to proceed.
@@ -74,7 +74,7 @@ private:
     CARAPI OnNativeDestroyed();
 
     CARAPI_(Int64) NativeInit(
-        /* [in] */ String htmlContent);
+        /* [in] */ const String& htmlContent);
 
     CARAPI NativeProceed(
         /* [in] */ Int64 nativeInterstitialPageDelegateAndroid);

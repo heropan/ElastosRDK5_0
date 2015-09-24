@@ -370,7 +370,7 @@ LayoutAlgorithm ContentSettingsAdapter::GetLayoutAlgorithm()
 //@Override
 //synchronized
 void ContentSettingsAdapter::SetStandardFontFamily(
-    /* [in] */ String font)
+    /* [in] */ const String& font)
 {
     Object::Autolock lock(this);
 
@@ -392,7 +392,7 @@ String ContentSettingsAdapter::GetStandardFontFamily()
 //@Override
 //synchronized
 void ContentSettingsAdapter::SetFixedFontFamily(
-    /* [in] */ String font)
+    /* [in] */ const String& font)
 {
     Object::Autolock lock(this);
 
@@ -414,7 +414,7 @@ String ContentSettingsAdapter::GetFixedFontFamily()
 //@Override
 //synchronized
 void ContentSettingsAdapter::SetSansSerifFontFamily(
-    /* [in] */ String font)
+    /* [in] */ const String& font)
 {
     Object::Autolock lock(this);
 
@@ -436,7 +436,7 @@ String ContentSettingsAdapter::GetSansSerifFontFamily()
 //@Override
 //synchronized
 void ContentSettingsAdapter::SetSerifFontFamily(
-    /* [in] */ String font)
+    /* [in] */ const String& font)
 {
     Object::Autolock lock(this);
 
@@ -458,7 +458,7 @@ String ContentSettingsAdapter::GetSerifFontFamily()
 //@Override
 //synchronized
 void ContentSettingsAdapter::SetCursiveFontFamily(
-    /* [in] */ String font)
+    /* [in] */ const String& font)
 {
     Object::Autolock lock(this);
 
@@ -480,7 +480,7 @@ String ContentSettingsAdapter::GetCursiveFontFamily()
 //@Override
 //synchronized
 void ContentSettingsAdapter::SetFantasyFontFamily(
-    /* [in] */ String font)
+    /* [in] */ const String& font)
 {
     Object::Autolock lock(this);
 
@@ -719,7 +719,7 @@ void ContentSettingsAdapter::SetPluginState(
 //@Override
 //synchronized
 void ContentSettingsAdapter::SetDatabasePath(
-    /* [in] */ String databasePath)
+    /* [in] */ const String& databasePath)
 {
     Object::Autolock lock(this);
     // Intentional no-op.
@@ -728,7 +728,7 @@ void ContentSettingsAdapter::SetDatabasePath(
 //@Override
 //synchronized
 void ContentSettingsAdapter::SetGeolocationDatabasePath(
-    /* [in] */ String databasePath)
+    /* [in] */ const String& databasePath)
 {
     Object::Autolock lock(this);
     // Intentional no-op.
@@ -751,7 +751,7 @@ void ContentSettingsAdapter::SetAppCacheEnabled(
 //@Override
 //synchronized
 void ContentSettingsAdapter::SetAppCachePath(
-    /* [in] */ String appCachePath)
+    /* [in] */ const String& appCachePath)
 {
     Object::Autolock lock(this);
 
@@ -899,7 +899,7 @@ Boolean ContentSettingsAdapter::GetJavaScriptCanOpenWindowsAutomatically()
 //@Override
 //synchronized
 void ContentSettingsAdapter::SetDefaultTextEncodingName(
-    /* [in] */ String encoding)
+    /* [in] */ const String& encoding)
 {
     Object::Autolock lock(this);
 
@@ -921,7 +921,7 @@ String ContentSettingsAdapter::GetDefaultTextEncodingName()
 //@Override
 //synchronized
 void ContentSettingsAdapter::SetUserAgentString(
-    /* [in] */ String ua)
+    /* [in] */ const String& ua)
 {
     Object::Autolock lock(this);
 

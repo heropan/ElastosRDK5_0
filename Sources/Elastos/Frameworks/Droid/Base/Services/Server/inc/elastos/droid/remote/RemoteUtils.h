@@ -18,7 +18,7 @@ public:
      */
     static CARAPI_(String) ComposeResult(
         /* [in] */ Int32 rltNum,
-        /* [in] */ String result);
+        /* [in] */ const String& result);
 
     static CARAPI_(Boolean) IsDebug();
 

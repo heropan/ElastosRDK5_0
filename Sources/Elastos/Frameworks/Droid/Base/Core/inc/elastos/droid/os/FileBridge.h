@@ -27,8 +27,11 @@ class FileBridge
 public:
     class FileBridgeOutputStream
         : public OutputStream
+        , public IFileBridgeOutputStream
     {
     public:
+        CAR_INTERFACE_DECL()
+
         FileBridgeOutputStream(
             /* [in] */ IParcelFileDescriptor* clientPfd);
 

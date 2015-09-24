@@ -15,8 +15,8 @@ class AwHttpAuthHandler
 {
 public:
     CARAPI_(void) Proceed(
-        /* [in] */ String username,
-        /* [in] */ String password);
+        /* [in] */ const String& username,
+        /* [in] */ const String& password);
 
     CARAPI_(void) Cancel();
 
@@ -37,8 +37,8 @@ private:
 
     CARAPI_(void) NativeProceed(
         /* [in] */ Int64 nativeAwHttpAuthHandler,
-        /* [in] */ String username,
-        /* [in] */ String password);
+        /* [in] */ const String& username,
+        /* [in] */ const String& password);
 
     CARAPI_(void) NativeCancel(
         /* [in] */ Int64 nativeAwHttpAuthHandler);

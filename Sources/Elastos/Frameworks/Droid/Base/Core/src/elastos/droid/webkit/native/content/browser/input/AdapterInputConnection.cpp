@@ -11,7 +11,7 @@ namespace Input {
 //==================================================================
 
 AdapterInputConnection::ImeState::ImeState(
-    /* [in] */ String _text,
+    /* [in] */ const String& _text,
     /* [in] */ Int32 _selectionStart,
     /* [in] */ Int32 _selectionEnd,
     /* [in] */ Int32 _compositionStart,
@@ -202,7 +202,7 @@ AdapterInputConnection::AdapterInputConnection(
  */
 //@VisibleForTesting
 void AdapterInputConnection::UpdateState(
-    /* [in] */ String text,
+    /* [in] */ const String& text,
     /* [in] */ Int32 selectionStart,
     /* [in] */ Int32 selectionEnd,
     /* [in] */ Int32 compositionStart,

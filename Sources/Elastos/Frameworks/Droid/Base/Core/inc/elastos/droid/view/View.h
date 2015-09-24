@@ -4569,7 +4569,7 @@ public:
         /* [in] */ IMap* namedElements);
 
     virtual CARAPI SetTransitionName(
-        /* [in] */ String transitionName);
+        /* [in] */ const String& transitionName);
 
     virtual CARAPI GetTransitionName(
         /* [out] */ String* name);

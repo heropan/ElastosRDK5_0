@@ -51,22 +51,22 @@ public:
 
     //@Override
     CARAPI GetUsageForOrigin(
-        /* [in] */ String origin,
+        /* [in] */ const String& origin,
         /* [in] */ IValueCallback* callback);
 
     //@Override
     CARAPI GetQuotaForOrigin(
-        /* [in] */ String origin,
+        /* [in] */ const String& origin,
         /* [in] */ IValueCallback* callback);
 
     //@Override
     CARAPI SetQuotaForOrigin(
-        /* [in] */ String origin,
+        /* [in] */ const String& origin,
         /* [in] */ Int64 quota);
 
     //@Override
     CARAPI DeleteOrigin(
-        /* [in] */ String origin);
+        /* [in] */ const String& origin);
 
     //@Override
     CARAPI DeleteAllData();

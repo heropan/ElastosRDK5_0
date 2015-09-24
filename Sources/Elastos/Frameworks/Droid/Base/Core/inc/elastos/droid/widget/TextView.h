@@ -920,7 +920,7 @@ public:
     virtual CARAPI_(String) GetFontFeatureSettings();
 
     virtual CARAPI_(void) SetFontFeatureSettings(
-        /* [in] */ String fontFeatureSettings);
+        /* [in] */ const String& fontFeatureSettings);
 
     /**
      * Sets the text color for all the states (normal, selected,
@@ -2377,7 +2377,7 @@ public: /*package*/
 
     virtual CARAPI_(void) SetUndoManager(
         /* [in] */ IUndoManager* undoManager,
-        /* [in] */ String tag);
+        /* [in] */ const String& tag);
 
     virtual CARAPI RemoveMisspelledSpans(
         /* [in] */ ISpannable* spannable);

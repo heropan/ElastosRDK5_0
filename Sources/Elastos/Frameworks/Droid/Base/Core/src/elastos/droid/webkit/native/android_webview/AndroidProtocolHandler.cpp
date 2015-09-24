@@ -17,7 +17,7 @@ const String AndroidProtocolHandler::CONTENT_SCHEME("content");
 //@CalledByNative
 AutoPtr<IInputStream> AndroidProtocolHandler::Open(
     /* [in] */ IContext* context,
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     AutoPtr<IUri> uri = VerifyUrl(url);
     if (uri == NULL) {
@@ -47,8 +47,8 @@ AutoPtr<IInputStream> AndroidProtocolHandler::Open(
 
 Int32 AndroidProtocolHandler::GetFieldId(
     /* [in] */ IContext* context,
-    /* [in] */ String assetType,
-    /* [in] */ String assetName)
+    /* [in] */ const String& assetType,
+    /* [in] */ const String& assetName)
 {
     Class<?> d = context.getClassLoader()
         .loadClass(context.getPackageName() + ".R$" + assetType);
@@ -187,7 +187,7 @@ AutoPtr<IInputStream> AndroidProtocolHandler::OpenContent(
 String AndroidProtocolHandler::GetMimeType(
     /* [in] */ IContext* context,
     /* [in] */ IInputStream* stream,
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     AutoPtr<IUri> uri = VerifyUrl(url);
     if (uri == NULL) {
@@ -239,7 +239,7 @@ String AndroidProtocolHandler::GetMimeType(
  * @return a Uri instance, or null if the URL was invalid.
  */
 AutoPtr<IUri> AndroidProtocolHandler::VerifyUrl(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     if (url == NULL) {
         return NULL;

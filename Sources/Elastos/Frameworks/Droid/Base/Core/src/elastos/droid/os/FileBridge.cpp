@@ -31,6 +31,7 @@ const Int32 FileBridge::CMD_FSYNC = 2;
 /** CMD_CLOSE */
 const Int32 FileBridge::CMD_CLOSE = 3;
 
+CAR_INTERFACE_IMPL(FileBridge::FileBridgeOutputStream, OutputStream, IFileBridgeOutputStream)
 
 FileBridge::FileBridgeOutputStream::FileBridgeOutputStream(
     /* [in] */ IParcelFileDescriptor* clientPfd)

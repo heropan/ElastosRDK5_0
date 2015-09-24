@@ -35,10 +35,10 @@ private:
                 /* [in] */ Int64 millis);
 
             CARAPI_(String) Format(
-                /* [in] */ String format);
+                /* [in] */ const String& format);
 
             CARAPI SwitchTimezone(
-                /* [in] */ String timezone);
+                /* [in] */ const String& timezone);
 
             CARAPI_(String) Format2445(
                 /* [in] */ Boolean hasTime);
@@ -59,7 +59,7 @@ private:
             CARAPI UpdateZoneInfoFromTimeZone();
 
             CARAPI LookupZoneInfo(
-                /* [in] */ String timezoneId,
+                /* [in] */ const String& timezoneId,
                 /* [out] */ ZoneInfo** ret);
 
             CARAPI_(Char32) ToChar(
@@ -565,26 +565,26 @@ public:
 
 private:
     CARAPI Initialize(
-        /* [in] */ String timezoneId);
+        /* [in] */ const String& timezoneId);
 
     /**
      * Parse a time in the current zone in YYYYMMDDTHHMMSS format.
      */
     CARAPI_(Boolean) ParseInternal(
-        /* [in] */ String s);
+        /* [in] */ const String& s);
 
     CARAPI CheckChar(
-        /* [in] */ String s,
+        /* [in] */ const String& s,
         /* [in] */ Int32 spos,
         /* [in] */ Char32 expected);
 
     static CARAPI_(Int32) GetChar(
-        /* [in] */ String s,
+        /* [in] */ const String& s,
         /* [in] */ Int32 spos,
         /* [in] */ Int32 mul);
 
     CARAPI_(Boolean) Parse3339Internal(
-        /* [in] */ String s);
+        /* [in] */ const String& s);
 
 public:
     /**

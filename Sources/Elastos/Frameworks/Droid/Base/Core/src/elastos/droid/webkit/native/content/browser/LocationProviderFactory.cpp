@@ -81,7 +81,7 @@ ECode LocationProviderFactory::LocationProviderImpl::OnLocationChanged(
 }
 
 ECode LocationProviderFactory::LocationProviderImpl::OnStatusChanged(
-    /* [in] */ String provider,
+    /* [in] */ const String& provider,
     /* [in] */ Int32 status,
     /* [in] */ IBundle* extras)
 {
@@ -91,14 +91,14 @@ ECode LocationProviderFactory::LocationProviderImpl::OnStatusChanged(
 }
 
 ECode LocationProviderFactory::LocationProviderImpl::OnProviderEnabled(
-    /* [in] */ String provider)
+    /* [in] */ const String& provider)
 {
     assert(0);
     return NOERROR;
 }
 
 ECode LocationProviderFactory::LocationProviderImpl::OnProviderDisabled(
-    /* [in] */ String provider)
+    /* [in] */ const String& provider)
 {
     assert(0);
     return NOERROR;

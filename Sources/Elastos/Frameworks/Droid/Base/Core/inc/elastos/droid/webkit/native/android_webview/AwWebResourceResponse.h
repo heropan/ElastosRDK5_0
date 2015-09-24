@@ -21,16 +21,16 @@ class AwWebResourceResponse
 {
 public:
     AwWebResourceResponse(
-        /* [in] */ String mimeType,
-        /* [in] */ String encoding,
+        /* [in] */ const String& mimeType,
+        /* [in] */ const String& encoding,
         /* [in] */ InputStream data);
 
     AwWebResourceResponse(
-        /* [in] */ String mimeType,
-        /* [in] */ String encoding,
+        /* [in] */ const String& mimeType,
+        /* [in] */ const String& encoding,
         /* [in] */ IInputStream* data,
         /* [in] */ Int32 statusCode,
-        /* [in] */ String reasonPhrase,
+        /* [in] */ const String& reasonPhrase,
         /* [in] */ Map<String, String> responseHeaders);
 
     //@CalledByNative

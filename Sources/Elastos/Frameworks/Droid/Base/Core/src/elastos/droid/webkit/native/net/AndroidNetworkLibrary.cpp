@@ -72,7 +72,7 @@ Boolean AndroidNetworkLibrary::StoreCertificate(
 }
 
 String AndroidNetworkLibrary::GetMimeTypeFromExtension(
-    /* [in] */ String extension)
+    /* [in] */ const String& extension)
 {
     // ==================before translated======================
     // return URLConnection.guessContentTypeFromName("foo." + extension);
@@ -160,8 +160,8 @@ String AndroidNetworkLibrary::GetNetworkList()
 
 AutoPtr<AndroidCertVerifyResult> AndroidNetworkLibrary::VerifyServerCertificates(
     /* [in] */ ArrayOf< AutoPtr< ArrayOf<Byte> > >* certChain,
-    /* [in] */ String authType,
-    /* [in] */ String host)
+    /* [in] */ const String& authType,
+    /* [in] */ const String& host)
 {
     // ==================before translated======================
     // try {

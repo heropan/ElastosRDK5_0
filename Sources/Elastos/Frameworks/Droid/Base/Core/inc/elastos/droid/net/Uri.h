@@ -436,7 +436,7 @@ public:
      * @return a list of decoded values
      */
     CARAPI GetQueryParameters(
-        /* [in] */ String key,
+        /* [in] */ const String& key,
         /* [out] */ IList** result);
 
     /**
@@ -451,7 +451,7 @@ public:
      * @return the decoded value or null if no parameter is found
      */
     CARAPI GetQueryParameter(
-        /* [in] */ String key,
+        /* [in] */ const String& key,
         /* [out] */ String* result);
 
     /**
@@ -464,7 +464,7 @@ public:
      * @return the boolean interpretation of the query parameter key
      */
     CARAPI GetBooleanQueryParameter(
-        /* [in] */ String key,
+        /* [in] */ const String& key,
         /* [in] */ Boolean defaultValue,
         /* [out] */ Boolean* result);
 
@@ -522,7 +522,7 @@ public:
      *  or null if s is null
      */
     static CARAPI Encode(
-        /* [in] */ String s,
+        /* [in] */ const String& s,
         /* [out] */ String* result);
 
     /**
@@ -539,8 +539,8 @@ public:
      *  or null if s is null
      */
     static CARAPI Encode(
-        /* [in] */ String s,
-        /* [in] */ String allow,
+        /* [in] */ const String& s,
+        /* [in] */ const String& allow,
         /* [out] */ String* result);
 
     /**
@@ -553,7 +553,7 @@ public:
      *  s is null
      */
     static CARAPI Decode(
-        /* [in] */ String s,
+        /* [in] */ const String& s,
         /* [out] */ String* result);
 
     /**
@@ -568,7 +568,7 @@ public:
      */
     static CARAPI WithAppendedPath(
         /* [in] */ IUri* baseUri,
-        /* [in] */ String pathSegment,
+        /* [in] */ const String& pathSegment,
         /* [out] */ IUri** result);
 
     /**
@@ -589,7 +589,7 @@ public:
      * @hide
      */
     CARAPI CheckFileUriExposed(
-        /* [in] */ String location);
+        /* [in] */ const String& location);
 
     /**
      * Test if this is a path prefix match against the given Uri. Verifies that
@@ -1092,7 +1092,7 @@ public:
      * @param scheme name or {@code null} if this is a relative Uri
      */
     CARAPI Scheme(
-        /* [in] */ String scheme,
+        /* [in] */ const String& scheme,
         /* [out] */ IUriBuilder** result);
 
     CARAPI OpaquePart(
@@ -1105,7 +1105,7 @@ public:
      * @param opaquePart decoded opaque part
      */
     CARAPI OpaquePart(
-        /* [in] */ String opaquePart,
+        /* [in] */ const String& opaquePart,
         /* [out] */ IUriBuilder** result);
 
     /**
@@ -1114,7 +1114,7 @@ public:
      * @param opaquePart encoded opaque part
      */
     CARAPI EncodedOpaquePart(
-        /* [in] */ String opaquePart,
+        /* [in] */ const String& opaquePart,
         /* [out] */ IUriBuilder** result);
 
     CARAPI Authority(
@@ -1125,14 +1125,14 @@ public:
      * Encodes and sets the authority.
      */
     CARAPI Authority(
-        /* [in] */ String authority,
+        /* [in] */ const String& authority,
         /* [out] */ IUriBuilder** result);
 
     /**
      * Sets the previously encoded authority.
      */
     CARAPI EncodedAuthority(
-        /* [in] */ String authority,
+        /* [in] */ const String& authority,
         /* [out] */ IUriBuilder** result);
 
     CARAPI Path(
@@ -1148,7 +1148,7 @@ public:
      * given path with a '/'.
      */
     CARAPI Path(
-        /* [in] */ String path,
+        /* [in] */ const String& path,
         /* [out] */ IUriBuilder** result);
 
     /**
@@ -1159,21 +1159,21 @@ public:
      * given path with a '/'.
      */
     CARAPI EncodedPath(
-        /* [in] */ String path,
+        /* [in] */ const String& path,
         /* [out] */ IUriBuilder** result);
 
     /**
      * Encodes the given segment and appends it to the path.
      */
     CARAPI AppendPath(
-        /* [in] */ String newSegment,
+        /* [in] */ const String& newSegment,
         /* [out] */ IUriBuilder** result);
 
     /**
      * Appends the given segment to the path.
      */
     CARAPI AppendEncodedPath(
-        /* [in] */ String newSegment,
+        /* [in] */ const String& newSegment,
         /* [out] */ IUriBuilder** result);
 
     CARAPI Query(
@@ -1184,14 +1184,14 @@ public:
      * Encodes and sets the query.
      */
     CARAPI Query(
-        /* [in] */ String query,
+        /* [in] */ const String& query,
         /* [out] */ IUriBuilder** result);
 
     /**
      * Sets the previously encoded query.
      */
     CARAPI EncodedQuery(
-        /* [in] */ String query,
+        /* [in] */ const String& query,
         /* [out] */ IUriBuilder** result);
 
     CARAPI Fragment(
@@ -1202,14 +1202,14 @@ public:
      * Encodes and sets the fragment.
      */
     CARAPI Fragment(
-        /* [in] */ String fragment,
+        /* [in] */ const String& fragment,
         /* [out] */ IUriBuilder** result);
 
     /**
      * Sets the previously encoded fragment.
      */
     CARAPI EncodedFragment(
-        /* [in] */ String fragment,
+        /* [in] */ const String& fragment,
         /* [out] */ IUriBuilder** result);
 
     /**
@@ -1220,8 +1220,8 @@ public:
      * @param value which will be encoded
      */
     CARAPI AppendQueryParameter(
-        /* [in] */ String key,
-        /* [in] */ String value,
+        /* [in] */ const String& key,
+        /* [in] */ const String& value,
         /* [out] */ IUriBuilder** result);
 
     /**

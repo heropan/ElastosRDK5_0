@@ -75,7 +75,7 @@ public:
      * @hide
      */
     CARAPI constructor(
-        /* [in] */ String prefix);
+        /* [in] */ const String& prefix);
 
     /**
      * Compares this {@code IpPrefix} object against the specified object in {@code obj}. Two

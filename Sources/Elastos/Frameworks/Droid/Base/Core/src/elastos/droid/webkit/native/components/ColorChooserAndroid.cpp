@@ -96,7 +96,7 @@ ECode ColorChooserAndroid::AddToColorSuggestionArray(
     /* [in] */ ArrayOf<ColorSuggestion>* array,
     /* [in] */ Int32 index,
     /* [in] */ Int32 color,
-    /* [in] */ String label)
+    /* [in] */ const String& label)
 {
     VALIDATE_NOT_NULL(array);
     // ==================before translated======================

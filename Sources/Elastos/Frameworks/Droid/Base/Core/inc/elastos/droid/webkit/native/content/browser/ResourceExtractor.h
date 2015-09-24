@@ -56,7 +56,7 @@ public:
         // @Override
         CARAPI Accept(
             /* [in] */ IFile* dir,
-            /* [in] */ String name,
+            /* [in] */ const String& name,
             /* [out] */ Boolean* result);
 
     private:

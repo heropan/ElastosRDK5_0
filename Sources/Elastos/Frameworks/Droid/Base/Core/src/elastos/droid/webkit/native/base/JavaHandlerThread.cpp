@@ -40,14 +40,14 @@ ECode JavaHandlerThread::InnerRunnable::Run()
 //===============================================================
 
 JavaHandlerThread::JavaHandlerThread(
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
     CHandlerThread::New(name, (IHandlerThread**)&mThread);
 }
 
 //@CalledByNative
 AutoPtr<JavaHandlerThread> JavaHandlerThread::Create(
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
     AutoPtr<JavaHandlerThread> thread = new JavaHandlerThread(name);
     return thread;

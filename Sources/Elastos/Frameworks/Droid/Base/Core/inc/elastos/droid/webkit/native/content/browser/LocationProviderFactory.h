@@ -112,17 +112,17 @@ private:
 
         // @Override
         CARAPI OnStatusChanged(
-            /* [in] */ String provider,
+            /* [in] */ const String& provider,
             /* [in] */ Int32 status,
             /* [in] */ IBundle* extras);
 
         // @Override
         CARAPI OnProviderEnabled(
-            /* [in] */ String provider);
+            /* [in] */ const String& provider);
 
         // @Override
         CARAPI OnProviderDisabled(
-            /* [in] */ String provider);
+            /* [in] */ const String& provider);
 
     private:
         CARAPI UpdateNewLocation(

@@ -12,7 +12,7 @@ namespace Browser {
 //                   InterstitialPageDelegateAndroid
 //=====================================================================
 InterstitialPageDelegateAndroid::InterstitialPageDelegateAndroid(
-    /* [in] */ String htmlContent)
+    /* [in] */ const String& htmlContent)
 {
     // ==================before translated======================
     // mNativePtr = nativeInit(htmlContent);
@@ -39,7 +39,7 @@ ECode InterstitialPageDelegateAndroid::OnDontProceed()
 }
 
 ECode InterstitialPageDelegateAndroid::CommandReceived(
-    /* [in] */ String command)
+    /* [in] */ const String& command)
 {
     assert(0);
     return NOERROR;
@@ -70,7 +70,7 @@ ECode InterstitialPageDelegateAndroid::OnNativeDestroyed()
 }
 
 Int64 InterstitialPageDelegateAndroid::NativeInit(
-    /* [in] */ String htmlContent)
+    /* [in] */ const String& htmlContent)
 {
     assert(0);
     return 0;

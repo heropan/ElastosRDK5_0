@@ -44,7 +44,7 @@ void AwWebContentsDelegateAdapter::GetDisplayNameTask::OnPostExecute(
  * or an empty string otherwise.
  */
 String AwWebContentsDelegateAdapter::GetDisplayNameTask::ResolveFileName(
-    /* [in] */ String filePath)
+    /* [in] */ const String& filePath)
 {
     if (mContentResolver == NULL || filePath == NULL)
     {
@@ -221,9 +221,9 @@ Boolean AwWebContentsDelegateAdapter::TryToMoveFocus(
 //@Override
 Boolean AwWebContentsDelegateAdapter::AddMessageToConsole(
     /* [in] */ Int32 level,
-    /* [in] */ String message,
+    /* [in] */ const String& message,
     /* [in] */ Int32 lineNumber,
-    /* [in] */ String sourceId)
+    /* [in] */ const String& sourceId)
 {
     ConsoleMessage.MessageLevel messageLevel = ConsoleMessage.MessageLevel.DEBUG;
     switch(level) {
@@ -251,15 +251,15 @@ Boolean AwWebContentsDelegateAdapter::AddMessageToConsole(
 
 //@Override
 void AwWebContentsDelegateAdapter::OnUpdateUrl(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     // TODO: implement
 }
 
 //@Override
 void AwWebContentsDelegateAdapter::OpenNewTab(
-    /* [in] */ String url,
-    /* [in] */ String extraHeaders,
+    /* [in] */ const String& url,
+    /* [in] */ const String& extraHeaders,
     /* [in] */ ArrayOf<Byte>* postData,
     /* [in] */ Int32 disposition,
     /* [in] */ Boolean isRendererInitiated)
@@ -300,9 +300,9 @@ void AwWebContentsDelegateAdapter::RunFileChooser(
     /* [in] */ Int32 processId,
     /* [in] */ Int32 renderId,
     /* [in] */ Int32 modeFlags,
-    /* [in] */ String acceptTypes,
-    /* [in] */ String title,
-    /* [in] */ String defaultFilename,
+    /* [in] */ const String& acceptTypes,
+    /* [in] */ const String& title,
+    /* [in] */ const String& defaultFilename,
     /* [in] */ Boolean capture)
 {
     AutoPtr<AwContentsClient::FileChooserParams> params = new AwContentsClient::FileChooserParams();

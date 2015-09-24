@@ -29,8 +29,8 @@ Int32 WebContentsDelegateAndroid::GetMostRecentProgress()
 }
 
 ECode WebContentsDelegateAndroid::OpenNewTab(
-    /* [in] */ String url,
-    /* [in] */ String extraHeaders,
+    /* [in] */ const String& url,
+    /* [in] */ const String& extraHeaders,
     /* [in] */ ArrayOf<Byte>* postData,
     /* [in] */ Int32 disposition,
     /* [in] */ Boolean isRendererInitiated)
@@ -97,7 +97,7 @@ ECode WebContentsDelegateAndroid::RendererResponsive()
 }
 
 ECode WebContentsDelegateAndroid::OnUpdateUrl(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     assert(0);
     return NOERROR;
@@ -125,9 +125,9 @@ ECode WebContentsDelegateAndroid::HandleKeyboardEvent(
 
 Boolean WebContentsDelegateAndroid::AddMessageToConsole(
     /* [in] */ Int32 level,
-    /* [in] */ String message,
+    /* [in] */ const String& message,
     /* [in] */ Int32 lineNumber,
-    /* [in] */ String sourceId)
+    /* [in] */ const String& sourceId)
 {
     // ==================before translated======================
     // return false;

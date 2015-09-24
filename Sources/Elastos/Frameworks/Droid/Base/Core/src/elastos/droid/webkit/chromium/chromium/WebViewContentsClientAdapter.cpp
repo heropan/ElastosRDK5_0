@@ -27,7 +27,7 @@ ECode WebViewContentsClientAdapter::NullWebViewClientShouldOverrideKeyEvent(
 //@Override
 ECode WebViewContentsClientAdapter::NullWebViewClientShouldOverrideUrlLoading(
     /* [in] */ IWebView* view,
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [out] */ Boolean* result)
 {
 #if 0
@@ -177,7 +177,7 @@ WebViewContentsClientAdapter::ClientCertRequestImpl::ClientCertRequestImpl(
     /* [in] */ AwContentsClientBridge::ClientCertificateRequestCallback* callback,
     /* [in] */ ArrayOf<String>* keyTypes,
     /* [in] */ ArrayOf<IPrincipal>* principals,
-    /* [in] */ String host,
+    /* [in] */ const String& host,
     /* [in] */ Int32 port)
     : mCallback(callback)
     , mKeyTypes(keyTypes)
@@ -264,8 +264,8 @@ WebViewContentsClientAdapter::AwHttpAuthHandlerAdapter::AwHttpAuthHandlerAdapter
 
 //@Override
 ECode WebViewContentsClientAdapter::AwHttpAuthHandlerAdapter::Proceed(
-    /* [in] */ String username,
-    /* [in] */ String password)
+    /* [in] */ const String& username,
+    /* [in] */ const String& password)
 {
     if (username == NULL) {
         username = "";
@@ -514,7 +514,7 @@ void WebViewContentsClientAdapter::GetVisitedHistory(
  */
 //@Override
 void WebViewContentsClientAdapter::DoUpdateVisitedHistory(
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ Boolean isReload)
 {
 #if 0
@@ -578,7 +578,7 @@ AutoPtr<AwWebResourceResponse> WebViewContentsClientAdapter::ShouldInterceptRequ
  */
 //@Override
 Boolean WebViewContentsClientAdapter::ShouldOverrideUrlLoading(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
 #if 0
     TraceEvent.begin();
@@ -667,7 +667,7 @@ void WebViewContentsClientAdapter::OnNewPicture(
 
 //@Override
 void WebViewContentsClientAdapter::OnLoadResource(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
 #if 0
     TraceEvent.begin();
@@ -736,7 +736,7 @@ void WebViewContentsClientAdapter::OnRequestFocus()
  */
 //@Override
 void WebViewContentsClientAdapter::OnReceivedTouchIconUrl(
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ Boolean precomposed)
 {
 #if 0
@@ -771,7 +771,7 @@ void WebViewContentsClientAdapter::OnReceivedIcon(
  */
 //@Override
 void WebViewContentsClientAdapter::OnPageStarted(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
 #if 0
     TraceEvent.begin();
@@ -786,7 +786,7 @@ void WebViewContentsClientAdapter::OnPageStarted(
  */
 //@Override
 void WebViewContentsClientAdapter::OnPageFinished(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
 #if 0
     TraceEvent.begin();
@@ -828,8 +828,8 @@ void WebViewContentsClientAdapter::OnPageFinished(
 //@Override
 void WebViewContentsClientAdapter::OnReceivedError(
     /* [in] */ Int32 errorCode,
-    /* [in] */ String description,
-    /* [in] */ String failingUrl)
+    /* [in] */ const String& description,
+    /* [in] */ const String& failingUrl)
 {
 #if 0
     if (description == null || description.isEmpty()) {
@@ -850,7 +850,7 @@ void WebViewContentsClientAdapter::OnReceivedError(
  */
 //@Override
 void WebViewContentsClientAdapter::OsnReceivedTitle(
-    /* [in] */ String title)
+    /* [in] */ const String& title)
 {
 #if 0
     TraceEvent.begin();
@@ -895,7 +895,7 @@ Boolean WebViewContentsClientAdapter::ShouldOverrideKeyEvent(
 // TODO: Delete this method when removed from base class.
 void WebViewContentsClientAdapter::OnStartContentIntent(
     /* [in] */ IContext* context,
-    /* [in] */ String contentUrl)
+    /* [in] */ const String& contentUrl)
 {
 #if 0
     TraceEvent.begin();
@@ -907,7 +907,7 @@ void WebViewContentsClientAdapter::OnStartContentIntent(
 
 //@Override
 void WebViewContentsClientAdapter::OnGeolocationPermissionsShowPrompt(
-    /* [in] */ String origin,
+    /* [in] */ const String& origin,
     /* [in] */ IGeolocationPermissionsCallback* callback)
 {
 #if 0
@@ -981,8 +981,8 @@ void WebViewContentsClientAdapter::OnPermissionRequestCanceled(
 
 //@Override
 void WebViewContentsClientAdapter::HandleJsAlert(
-    /* [in] */ String url,
-    /* [in] */ String message,
+    /* [in] */ const String& url,
+    /* [in] */ const String& message,
     /* [in] */ IJsResultReceiver receiver)
 {
 #if 0
@@ -1004,8 +1004,8 @@ void WebViewContentsClientAdapter::HandleJsAlert(
 
 //@Override
 void WebViewContentsClientAdapter::HandleJsBeforeUnload(
-    /* [in] */ String url,
-    /* [in] */ String message,
+    /* [in] */ const String& url,
+    /* [in] */ const String& message,
     /* [in] */ IJsResultReceiver* receiver)
 {
 #if 0
@@ -1027,8 +1027,8 @@ void WebViewContentsClientAdapter::HandleJsBeforeUnload(
 
 //@Override
 void WebViewContentsClientAdapter::HandleJsConfirm(
-    /* [in] */ String url,
-    /* [in] */ String message,
+    /* [in] */ const String& url,
+    /* [in] */ const String& message,
     /* [in] */ IJsResultReceiver* receiver)
 {
 #if 0
@@ -1050,9 +1050,9 @@ void WebViewContentsClientAdapter::HandleJsConfirm(
 
 //@Override
 void WebViewContentsClientAdapter::HandleJsPrompt(
-    /* [in] */ String url,
-    /* [in] */ String message,
-    /* [in] */ String defaultValue,
+    /* [in] */ const String& url,
+    /* [in] */ const String& message,
+    /* [in] */ const String& defaultValue,
     /* [in] */ IJsPromptResultReceiver* receiver)
 {
 #if 0
@@ -1075,8 +1075,8 @@ void WebViewContentsClientAdapter::HandleJsPrompt(
 //@Override
 void WebViewContentsClientAdapter::OnReceivedHttpAuthRequest(
     /* [in] */ AwHttpAuthHandler* handler,
-    /* [in] */ String host,
-    /* [in] */ String realm)
+    /* [in] */ const String& host,
+    /* [in] */ const String& realm)
 {
 #if 0
     TraceEvent.begin();
@@ -1115,7 +1115,7 @@ void WebViewContentsClientAdapter::OnReceivedClientCertRequest(
     /* [in] */ AwContentsClientBridge::ClientCertificateRequestCallback* callback,
     /* [in] */ ArrayOf<String>* keyTypes,
     /* [in] */ ArrayOf<IPrincipal>* principals,
-    /* [in] */ String host,
+    /* [in] */ const String& host,
     /* [in] */ Int32 port)
 {
 #if 0
@@ -1130,9 +1130,9 @@ void WebViewContentsClientAdapter::OnReceivedClientCertRequest(
 
 //@Override
 void WebViewContentsClientAdapter::OnReceivedLoginRequest(
-    /* [in] */ String realm,
-    /* [in] */ String account,
-    /* [in] */ String args)
+    /* [in] */ const String& realm,
+    /* [in] */ const String& account,
+    /* [in] */ const String& args)
 {
 #if 0
     TraceEvent.begin();
@@ -1157,10 +1157,10 @@ void WebViewContentsClientAdapter::OnFormResubmission(
 
 //@Override
 void WebViewContentsClientAdapter::OnDownloadStart(
-    /* [in] */ String url,
-    /* [in] */ String userAgent,
-    /* [in] */ String contentDisposition,
-    /* [in] */ String mimeType,
+    /* [in] */ const String& url,
+    /* [in] */ const String& userAgent,
+    /* [in] */ const String& contentDisposition,
+    /* [in] */ const String& mimeType,
     /* [in] */ Int64 contentLength)
 {
 #if 0

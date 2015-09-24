@@ -105,7 +105,7 @@ public:
         //@Override
         CARAPI ShouldOverrideUrlLoading(
             /* [in] */ IWebView* view,
-            /* [in] */ String url,
+            /* [in] */ const String& url,
             /* [out] */ Boolean* result);
     };
 
@@ -211,7 +211,7 @@ private:
             /* [in] */ AwContentsClientBridge::ClientCertificateRequestCallback* callback,
             /* [in] */ ArrayOf<String>* keyTypes,
             /* [in] */ ArrayOf<IPrincipal>* principals,
-            /* [in] */ String host,
+            /* [in] */ const String& host,
             /* [in] */ Int32 port);
 
         //@Override
@@ -259,8 +259,8 @@ private:
 
         //@Override
         CARAPI Proceed(
-            /* [in] */ String username,
-            /* [in] */ String password);
+            /* [in] */ const String& username,
+            /* [in] */ const String& password);
 
         //@Override
         CARAPI Cancel();
@@ -313,7 +313,7 @@ public:
      */
     //@Override
     CARAPI_(void) DoUpdateVisitedHistory(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ Boolean isReload);
 
     /**
@@ -335,7 +335,7 @@ public:
      */
     //@Override
     CARAPI_(Boolean) ShouldOverrideUrlLoading(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     /**
      * @see AwContentsClient#onUnhandledKeyEvent(android.view.KeyEvent)
@@ -369,7 +369,7 @@ public:
 
     //@Override
     CARAPI_(void) OnLoadResource(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     //@Override
     CARAPI_(Boolean) OnCreateWindow(
@@ -393,7 +393,7 @@ public:
      */
     //@Override
     CARAPI_(void) OnReceivedTouchIconUrl(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ Boolean precomposed);
 
     /**
@@ -408,14 +408,14 @@ public:
      */
     //@Override
     CARAPI_(void) OnPageStarted(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     /**
      * @see ContentViewClient#onPageFinished(String)
      */
     //@Override
     CARAPI_(void) OnPageFinished(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     /**
      * @see ContentViewClient#onReceivedError(int,String,String)
@@ -423,15 +423,15 @@ public:
     //@Override
     CARAPI_(void) OnReceivedError(
         /* [in] */ Int32 errorCode,
-        /* [in] */ String description,
-        /* [in] */ String failingUrl);
+        /* [in] */ const String& description,
+        /* [in] */ const String& failingUrl);
 
     /**
      * @see ContentViewClient#onReceivedTitle(String)
      */
     //@Override
     CARAPI_(void) OnReceivedTitle(
-        /* [in] */ String title);
+        /* [in] */ const String& title);
 
     /**
      * @see ContentViewClient#shouldOverrideKeyEvent(KeyEvent)
@@ -447,11 +447,11 @@ public:
     // TODO: Delete this method when removed from base class.
     CARAPI_(void) OnStartContentIntent(
         /* [in] */ IContext* context,
-        /* [in] */ String contentUrl);
+        /* [in] */ const String& contentUrl);
 
     //@Override
     CARAPI_(void) OnGeolocationPermissionsShowPrompt(
-        /* [in] */ String origin,
+        /* [in] */ const String& origin,
         /* [in] */ IGeolocationPermissionsCallback* callback);
 
     //@Override
@@ -467,34 +467,34 @@ public:
 
     //@Override
     CARAPI_(void) HandleJsAlert(
-        /* [in] */ String url,
-        /* [in] */ String message,
+        /* [in] */ const String& url,
+        /* [in] */ const String& message,
         /* [in] */ IJsResultReceiver* receiver);
 
     //@Override
     CARAPI_(void) HandleJsBeforeUnload(
-        /* [in] */ String url,
-        /* [in] */ String message,
+        /* [in] */ const String& url,
+        /* [in] */ const String& message,
         /* [in] */ IJsResultReceiver* receiver);
 
     //@Override
     CARAPI_(void) HandleJsConfirm(
-        /* [in] */ String url,
-        /* [in] */ String message,
+        /* [in] */ const String& url,
+        /* [in] */ const String& message,
         /* [in] */ IJsResultReceiver* receiver);
 
     //@Override
     CARAPI_(void) HandleJsPrompt(
-        /* [in] */ String url,
-        /* [in] */ String message,
-        /* [in] */ String defaultValue,
+        /* [in] */ const String& url,
+        /* [in] */ const String& message,
+        /* [in] */ const String& defaultValue,
         /* [in] */ IJsPromptResultReceiver* receiver);
 
     //@Override
     CARAPI_(void) OnReceivedHttpAuthRequest(
         /* [in] */ AwHttpAuthHandler* handler,
-        /* [in] */ String host,
-        /* [in] */ String realm);
+        /* [in] */ const String& host,
+        /* [in] */ const String& realm);
 
     //@Override
     CARAPI_(void) OnReceivedSslError(
@@ -506,14 +506,14 @@ public:
         /* [in] */ AwContentsClientBridge::ClientCertificateRequestCallback* callback,
         /* [in] */ ArrayOf<String>* keyTypes,
         /* [in] */ ArrayOf<IPrincipal>* principals,
-        /* [in] */ String host,
+        /* [in] */ const String& host,
         /* [in] */ Int32 port);
 
     //@Override
     CARAPI_(void) OnReceivedLoginRequest(
-        /* [in] */ String realm,
-        /* [in] */ String account,
-        /* [in] */ String args);
+        /* [in] */ const String& realm,
+        /* [in] */ const String& account,
+        /* [in] */ const String& args);
 
     //@Override
     CARAPI_(void) OnFormResubmission(
@@ -522,10 +522,10 @@ public:
 
     //@Override
     CARAPI_(void) OnDownloadStart(
-        /* [in] */ String url,
-        /* [in] */ String userAgent,
-        /* [in] */ String contentDisposition,
-        /* [in] */ String mimeType,
+        /* [in] */ const String& url,
+        /* [in] */ const String& userAgent,
+        /* [in] */ const String& contentDisposition,
+        /* [in] */ const String& mimeType,
         /* [in] */ Int64 contentLength);
 
     //@Override

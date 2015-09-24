@@ -28,7 +28,7 @@ private:
 
     static CARAPI_(void) NativeOverride(
         /* [in] */ Int32 what,
-        /* [in] */ String path);
+        /* [in] */ const String& path);
 };
 
 } // namespace Base

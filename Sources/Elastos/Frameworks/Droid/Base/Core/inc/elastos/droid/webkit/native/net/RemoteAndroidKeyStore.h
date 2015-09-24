@@ -86,7 +86,7 @@ public:
         /* [in] */ AndroidPrivateKey* privateKey);
 
     virtual CARAPI_(AutoPtr<AndroidPrivateKey>) CreateKey(
-        /* [in] */ String alias);
+        /* [in] */ const String& alias);
 
     // @Override
     CARAPI ReleaseKey(

@@ -81,8 +81,8 @@ private:
         /* [in] */ ArrayOf<DateTimeSuggestion>* array,
         /* [in] */ Int32 index,
         /* [in] */ Double value,
-        /* [in] */ String localizedValue,
-        /* [in] */ String label);
+        /* [in] */ const String& localizedValue,
+        /* [in] */ const String& label);
 
     //@CalledByNative
     static CARAPI_(void) InitializeDateInputTypes(

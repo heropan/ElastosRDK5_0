@@ -107,7 +107,7 @@ public:
         /* [in] */ Double speed);
 
     static CARAPI NewErrorAvailable(
-        /* [in] */ String message);
+        /* [in] */ const String& message);
 
 private:
     LocationProviderAdapter(
@@ -128,7 +128,7 @@ private:
         /* [in] */ Double speed);
 
     static CARAPI NativeNewErrorAvailable(
-        /* [in] */ String message);
+        /* [in] */ const String& message);
 
 private:
     // Delegate handling the real work in the main thread.

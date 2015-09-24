@@ -93,8 +93,8 @@ void DateTimeChooserAndroid::SetDateTimeSuggestionAt(
     /* [in] */ ArrayOf<DateTimeSuggestion>* array,
     /* [in] */ Int32 index,
     /* [in] */ Double value,
-    /* [in] */ String localizedValue,
-    /* [in] */ String label)
+    /* [in] */ const String& localizedValue,
+    /* [in] */ const String& label)
 {
     (*array)[index] = new DateTimeSuggestion(value, localizedValue, label);
 }

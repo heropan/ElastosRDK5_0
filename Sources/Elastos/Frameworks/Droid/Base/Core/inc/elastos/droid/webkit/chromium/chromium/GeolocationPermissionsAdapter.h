@@ -27,18 +27,18 @@ public:
 
     //@Override
     CARAPI Allow(
-        /* [in] */ String origin);
+        /* [in] */ const String& origin);
 
     //@Override
     CARAPI Clear(
-        /* [in] */ String origin);
+        /* [in] */ const String& origin);
 
     //@Override
     CARAPI ClearAll();
 
     //@Override
     CARAPI GetAllowed(
-        /* [in] */ String origin,
+        /* [in] */ const String& origin,
         /* [in] */ IValueCallback* callback);
 
     //@Override

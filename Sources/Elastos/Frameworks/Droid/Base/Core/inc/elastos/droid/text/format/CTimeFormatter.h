@@ -22,16 +22,16 @@ public:
     CTimeFormatter();
 
     CARAPI_(String) Format(
-        /* [in] */ String pattern,
+        /* [in] */ const String& pattern,
         /* [in] */ IZoneInfoWallTime* wallTime,
         /* [in] */ IZoneInfo* zoneInfo);
 
 private:
     CARAPI_(String) LocalizeDigits(
-        /* [in] */ String s);
+        /* [in] */ const String& s);
 
     CARAPI FormatInternal(
-        /* [in] */ String pattern,
+        /* [in] */ const String& pattern,
         /* [in] */ IZoneInfoWallTime* wallTime,
         /* [in] */ IZoneInfo* zoneInfo);
 
@@ -52,10 +52,10 @@ private:
 
     static CARAPI_(String) GetFormat(
         /* [in] */ Int32 modifier,
-        /* [in] */ String normal,
-        /* [in] */ String underscore,
-        /* [in] */ String dash,
-        /* [in] */ String zero);
+        /* [in] */ const String& normal,
+        /* [in] */ const String& underscore,
+        /* [in] */ const String& dash,
+        /* [in] */ const String& zero);
 
     static CARAPI_(Boolean) IsLeap(
         /* [in] */ Int32 year);
