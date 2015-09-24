@@ -1,10 +1,16 @@
 
 #include "ext/frameworkdef.h"
 #include "internal/os/RuntimeInit.h"
-//#include "os/CZygoteInit.h"
+#include "internal/os/AndroidPrintStream.h"
+#include "internal/os/CZygoteInit.h"
+#include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <DroidRuntime.h>
 
+using Elastos::Core::CSystem;
+using Elastos::Core::ISystem;
+using Elastos::IO::ICloseable;
+using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
 
 AutoPtr<Elastos::Droid::DroidRuntime> sCurRuntime;
@@ -93,8 +99,8 @@ ECode RuntimeInit::InvokeStaticMain(
         Slogger::E("RuntimeInit::InvokeStaticMain", "Acquire \"Main\" method info failed!\n");
         return ec;
     }
-    assert(0 && "TODO: upgrade");
-    //*task = new CZygoteInit::MethodAndArgsCaller(object, methodInfo, argv);
+
+    *task = new CZygoteInit::MethodAndArgsCaller(object, methodInfo, argv);
     REFCOUNT_ADD(*task);
     return NOERROR;
 }
@@ -168,6 +174,22 @@ ECode RuntimeInit::ApplicationInit(
     return InvokeStaticMain(args->mModule, args->mStartClass, args->mStartArgs, task);
 }
 
+void RuntimeInit::RedirectLogStreams()
+{
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    AutoPtr<IPrintStream> out;
+    system->GetOut((IPrintStream**)&out);
+    ICloseable::Probe(out)->Close();
+    AutoPtr<AndroidPrintStream> infoStream = new AndroidPrintStream(Logger::INFO, String("System.out"));
+    system->SetOut(infoStream);
+
+    AutoPtr<IPrintStream> err;
+    system->GetErr((IPrintStream**)&err);
+    ICloseable::Probe(err)->Close();
+    AutoPtr<AndroidPrintStream> warmStream = new AndroidPrintStream(Logger::WARN, String("System.err"));
+    system->SetErr(warmStream);
+}
 } // namespace Os
 } // namespace Internal
 } // namespace Droid

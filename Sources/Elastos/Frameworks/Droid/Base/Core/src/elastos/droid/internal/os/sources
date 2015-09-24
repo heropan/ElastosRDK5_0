@@ -3,12 +3,17 @@ TARGET_TYPE = lib
 
 include $(MAKEDIR)/../../../../../../../sources.inc
 
-INCLUDES += ../../
+INCLUDES += ../..
 INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
 
 C_DEFINES += -DDROID_CORE
 
 #SOURCES += storage/CExternalStorageFormatter.cpp
+SOURCES += AndroidPrintStream.cpp
+SOURCES += BackgroundThread.cpp
+SOURCES += BaseCommand.cpp
+SOURCES += CAtomicFile.cpp
+SOURCES += CBackgroundThreadHelper.cpp
 SOURCES += CZygoteInit.cpp
 SOURCES += CHandlerCaller.cpp
 SOURCES += RuntimeInit.cpp
@@ -17,3 +22,4 @@ SOURCES += SomeArgs.cpp
 SOURCES += CSomeArgsHelper.cpp
 SOURCES += ZygoteConnection.cpp
 SOURCES += Zygote.cpp
+SOURCES += LoggingPrintStream.cpp

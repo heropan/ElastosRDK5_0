@@ -7,7 +7,7 @@ module
     namespace Internal {
     namespace Os {
 
-    [local]
+    [local, deprecated]
     interface IBaseCommand {
         // These are magic strings understood by the Eclipse plugin.
         const String FATAL_ERROR_CODE = "Error type 1";
@@ -18,7 +18,7 @@ module
          * Call to run the command.
          */
         Run(
-            [in] ArrayOf<String> args);
+            [in] ArrayOf<String>* args);
 
         /**
          * Convenience to show usage information to error output.
