@@ -75,6 +75,11 @@ public:
     static CARAPI Main(
         /* [in] */ const ArrayOf<String>& args);
 
+    /**
+     * Redirect System.out and System.err to the Android log.
+     */
+    static CARAPI_(void) RedirectLogStreams();
+
 private:
     /**
      * Invokes a static "main(argv[]) method on class "className".
