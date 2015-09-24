@@ -154,7 +154,7 @@ ECode CWifiConfiguration::constructor(
 }
 
 ECode CWifiConfiguration::ToString(
-    /* [out] */ String * pValue)
+    /* [out] */ String* pValue)
 {
     StringBuilder sbuf;
     if (mStatus == IWifiConfigurationStatus::CURRENT) {

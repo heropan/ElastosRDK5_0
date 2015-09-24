@@ -1,69 +1,98 @@
 
-#include "net/CNetworkPolicyManager.h"
-#include "os/UserHandle.h"
-#include "text/format/CTime.h"
-#include "content/pm/PackageManager.h"
-
-using Elastos::Droid::Text::Format::CTime;
-using Elastos::Droid::Os::UserHandle;
-using Elastos::Droid::Content::Pm::PackageManager;
-using Elastos::Droid::Content::Pm::IPackageManager;
-using Elastos::Droid::Content::Pm::ISignature;
-using Elastos::Droid::Content::Pm::IPackageInfo;
-
+#include "elastos/droid/net/NetworkPolicyManager.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
-ECode CNetworkPolicyManager::constructor(
+CAR_INTERFACE_IMPL(NetworkPolicyManager, Object, INetworkPolicyManager)
+
+const Boolean NetworkPolicyManager::ALLOW_PLATFORM_APP_POLICY = TRUE;
+
+ECode NetworkPolicyManager::constructor(
     /* [in] */ IINetworkPolicyManager* service)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     if (service == NULL) {
         //throw new IllegalArgumentException("missing INetworkPolicyManager");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mService = service;
     return NOERROR;
+#endif
 }
 
-ECode CNetworkPolicyManager::From(
+ECode NetworkPolicyManager::From(
     /* [in] */ IContext* context,
     /* [out] */ INetworkPolicyManager** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     ASSERT_SUCCEEDED(context->GetSystemService(IContext::NETWORK_POLICY_SERVICE, (IInterface**)result));
     return NOERROR;
+#endif
 }
 
-/**
- * Set policy flags for specific UID.
- *
- * @param policy {@link #POLICY_NONE} or combination of flags like
- *            {@link #POLICY_REJECT_METERED_BACKGROUND}.
- */
-ECode CNetworkPolicyManager::SetUidPolicy(
+ECode NetworkPolicyManager::SetUidPolicy(
     /* [in] */ Int32 uid,
     /* [in] */ Int32 policy)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     return mService->SetUidPolicy(uid, policy);
+#endif
 }
 
-ECode CNetworkPolicyManager::GetUidPolicy(
+ECode NetworkPolicyManager::AddUidPolicy(
+    /* [in] */ Int32 uid,
+    /* [in] */ Int32 policy)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        try {
+            mService.addUidPolicy(uid, policy);
+        } catch (RemoteException e) {
+        }
+
+#endif
+}
+
+ECode NetworkPolicyManager::RemoveUidPolicy(
+    /* [in] */ Int32 uid,
+    /* [in] */ Int32 policy)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        try {
+            mService.removeUidPolicy(uid, policy);
+        } catch (RemoteException e) {
+        }
+
+#endif
+}
+
+ECode NetworkPolicyManager::GetUidPolicy(
     /* [in] */ Int32 uid,
     /* [out] */ Int32* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     ECode ec;
     ec = mService->GetUidPolicy(uid, result);
     if(FAILED(ec)) *result = POLICY_NONE;
     return NOERROR;
+#endif
 }
 
-ECode CNetworkPolicyManager::GetUidsWithPolicy(
+ECode NetworkPolicyManager::GetUidsWithPolicy(
     /* [in] */ Int32 policy,
     /* [out, callee] */ ArrayOf<Int32>** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     AutoPtr< ArrayOf<Int32> > outputarray;
     ECode ec;
@@ -72,29 +101,55 @@ ECode CNetworkPolicyManager::GetUidsWithPolicy(
     *result = outputarray;
     REFCOUNT_ADD(*result);
     return NOERROR;
+#endif
 }
 
-ECode CNetworkPolicyManager::RegisterListener(
-    /* [in] */ INetworkPolicyListener* listener)
+ECode NetworkPolicyManager::GetPowerSaveAppIdWhitelist(
+    /* [out, callee] */ ArrayOf<Int32>** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        try {
+            return mService.getPowerSaveAppIdWhitelist();
+        } catch (RemoteException e) {
+            return new int[0];
+        }
+
+#endif
+}
+
+ECode NetworkPolicyManager::RegisterListener(
+    /* [in] */ IINetworkPolicyListener* listener)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     return mService->RegisterListener(listener);
+#endif
 }
 
-ECode CNetworkPolicyManager::UnregisterListener(
-    /* [in] */ INetworkPolicyListener* listener)
+ECode NetworkPolicyManager::UnregisterListener(
+    /* [in] */ IINetworkPolicyListener* listener)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     return mService->UnregisterListener(listener);
+#endif
 }
 
-ECode CNetworkPolicyManager::SetNetworkPolicies(
+ECode NetworkPolicyManager::SetNetworkPolicies(
     /* [in] */ ArrayOf<INetworkPolicy*>* policies)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     return mService->SetNetworkPolicies(policies);
+#endif
 }
 
-ECode CNetworkPolicyManager::GetNetworkPolicies(
+ECode NetworkPolicyManager::GetNetworkPolicies(
     /* [out, callee] */ ArrayOf<INetworkPolicy*>** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     AutoPtr< ArrayOf<INetworkPolicy*> > outputarray;
     ECode ec;
@@ -103,37 +158,38 @@ ECode CNetworkPolicyManager::GetNetworkPolicies(
     *result = outputarray;
     REFCOUNT_ADD(*result);
     return NOERROR;
+#endif
 }
 
-ECode CNetworkPolicyManager::SetRestrictBackground(
+ECode NetworkPolicyManager::SetRestrictBackground(
     /* [in] */ Boolean restrictBackground)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     return mService->SetRestrictBackground(restrictBackground);
+#endif
 }
 
-ECode CNetworkPolicyManager::GetRestrictBackground(
+ECode NetworkPolicyManager::GetRestrictBackground(
     /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     ECode ec;
     ec = mService->GetRestrictBackground(result);
     if(FAILED(ec)) *result = FALSE;
     return NOERROR;
+#endif
 }
 
-/**
- * Compute the last cycle boundary for the given {@link NetworkPolicy}. For
- * example, if cycle day is 20th, and today is June 15th, it will return May
- * 20th. When cycle day doesn't exist in current month, it snaps to the 1st
- * of following month.
- *
- * @hide
- */
-ECode CNetworkPolicyManager::ComputeLastCycleBoundary(
+ECode NetworkPolicyManager::ComputeLastCycleBoundary(
     /* [in] */ Int64 currentTime,
     /* [in] */ INetworkPolicy* policy,
     /* [out] */ Int64* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     Int32 cycleday;
     policy->GetCycleDay(&cycleday);
@@ -173,14 +229,16 @@ ECode CNetworkPolicyManager::ComputeLastCycleBoundary(
     }
     cycle->ToMillis(TRUE, result);
     return NOERROR;
+#endif
 }
 
-/** {@hide} */
-ECode CNetworkPolicyManager::ComputeNextCycleBoundary(
+ECode NetworkPolicyManager::ComputeNextCycleBoundary(
     /* [in] */ Int64 currentTime,
     /* [in] */ INetworkPolicy* policy,
     /* [out] */ Int64* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     Int32 cycleday;
     policy->GetCycleDay(&cycleday);
@@ -221,18 +279,15 @@ ECode CNetworkPolicyManager::ComputeNextCycleBoundary(
     }
     cycle->ToMillis(TRUE, result);
     return NOERROR;
+#endif
 }
 
-/**
- * Snap to the cycle day for the current month given; when cycle day doesn't
- * exist, it snaps to last second of current month.
- *
- * @hide
- */
-ECode CNetworkPolicyManager::SnapToCycleDay(
+ECode NetworkPolicyManager::SnapToCycleDay(
     /* [in] */ ITime* time,
     /* [in] */ Int32 cycleDay)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Int32 maximum;
     time->GetActualMaximum(ITime::MONTH_DAY, &maximum);
     if (cycleDay > maximum) {
@@ -251,18 +306,16 @@ ECode CNetworkPolicyManager::SnapToCycleDay(
     Int64 ret;
     time->Normalize(TRUE, &ret);
     return NOERROR;
+#endif
 }
 
-/**
- * Check if given UID can have a {@link #setUidPolicy(int, int)} defined,
- * usually to protect critical system services.
- */
-//@Deprecated
-ECode CNetworkPolicyManager::IsUidValidForPolicy(
+ECode NetworkPolicyManager::IsUidValidForPolicy(
     /* [in] */ IContext* context,
     /* [in] */ Int32 uid,
     /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     //first, quick-reject non-applications
     if (!(UserHandle::IsApp(uid))) {
@@ -313,36 +366,39 @@ ECode CNetworkPolicyManager::IsUidValidForPolicy(
     //nothing found above; we can apply policy to UID
     *result = TRUE;
     return NOERROR;
-
+#endif
 }
 
-/** {@hide} */
-ECode CNetworkPolicyManager::DumpPolicy(
+ECode NetworkPolicyManager::DumpPolicy(
     /* [in] */ IPrintWriter* fout,
     /* [in] */ Int32 policy)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     fout->WriteString(String("["));
     if ((policy & POLICY_REJECT_METERED_BACKGROUND) != 0) {
         fout->WriteString(String("REJECT_METERED_BACKGROUND"));
     }
     fout->WriteString(String("]"));
     return NOERROR;
+#endif
 }
 
-/** {@hide} */
-ECode CNetworkPolicyManager::DumpRules(
+ECode NetworkPolicyManager::DumpRules(
     /* [in] */ IPrintWriter* fout,
     /* [in] */ Int32 rules)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     fout->WriteString(String("["));
     if ((rules & RULE_REJECT_METERED) != 0) {
         fout->WriteString(String("REJECT_METERED"));
     }
     fout->WriteString(String("]"));
     return NOERROR;
+#endif
 }
 
-
 } // namespace Net
-} // namepsace Droid
+} // namespace Droid
 } // namespace Elastos

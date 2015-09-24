@@ -16,7 +16,7 @@ CarClass(CWifiP2pServiceResponseStatus)
 public:
     CARAPI ToString(
         /* [in] */ Int32 status,
-        /* [out] */ String * pString);
+        /* [out] */ String* pString);
 
 private:
 };

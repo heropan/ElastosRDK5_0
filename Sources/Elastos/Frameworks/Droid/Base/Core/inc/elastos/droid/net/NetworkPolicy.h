@@ -1,9 +1,10 @@
 
-#ifndef __ELASTOS_DROID_NET_CNETWORKPOLICY_H__
-#define __ELASTOS_DROID_NET_CNETWORKPOLICY_H__
+#ifndef __ELASTOS_DROID_NET_NETWORKPOLICY_H__
+#define __ELASTOS_DROID_NET_NETWORKPOLICY_H__
 
-#include "_Elastos_Droid_Net_CNetworkPolicy.h"
-#include "elastos/droid/net/NetworkPolicy.h"
+#include "elastos/droid/ext/frameworkext.h"
+
+using Elastos::Core::IComparable;
 
 namespace Elastos {
 namespace Droid {
@@ -15,37 +16,18 @@ namespace Net {
  *
  * @hide
  */
-CarClass(CNetworkPolicy)
-    , public NetworkPolicy
+class NetworkPolicy
+    : public Object
+    , public IParcelable
+    , public IComparable
+    , public INetworkPolicy
 {
 public:
-    CAR_OBJECT_DECL()
+    CAR_INTERFACE_DECL()
 
-};
-
-} // namespace Net
-} // namespace Droid
-} // namespace Elastos
-#endif // __ELASTOS_DROID_NET_CNETWORKPOLICY_H__
-
-#if 0 // old CNetworkPolicy.h
-#ifndef __ELASTOS_DROID_NET_CNETWORKPOLICY_H__
-#define __ELASTOS_DROID_NET_CNETWORKPOLICY_H__
-
-#include "_Elastos_Droid_Net_CNetworkPolicy.h"
-
-
-namespace Elastos {
-namespace Droid {
-namespace Net {
-
-CarClass(CNetworkPolicy)
-{
-public:
-    CARAPI constructor();
-
+    // @Deprecated
     CARAPI constructor(
-        /* [in] */ INetworkTemplate* temp,
+        /* [in] */ INetworkTemplate* networkTemplate,
         /* [in] */ Int32 cycleDay,
         /* [in] */ const String& cycleTimezone,
         /* [in] */ Int64 warningBytes,
@@ -53,7 +35,7 @@ public:
         /* [in] */ Boolean metered);
 
     CARAPI constructor(
-        /* [in] */ INetworkTemplate* temp,
+        /* [in] */ INetworkTemplate* networkTemplate,
         /* [in] */ Int32 cycleDay,
         /* [in] */ const String& cycleTimezone,
         /* [in] */ Int64 warningBytes,
@@ -63,116 +45,143 @@ public:
         /* [in] */ Boolean metered,
         /* [in] */ Boolean inferred);
 
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest);
+    CARAPI constructor(
+        /* [in] */ IParcel* in);
 
+    // @Override
+    CARAPI WriteToParcel(
+        /* [in] */ IParcel* dest,
+        /* [in] */ Int32 flags);
+
+    // @Override
+    CARAPI DescribeContents(
+        /* [out] */ Int32* result);
+
+    /**
+     * Test if given measurement is over {@link #warningBytes}.
+     */
     CARAPI IsOverWarning(
         /* [in] */ Int64 totalBytes,
         /* [out] */ Boolean* result);
 
+    /**
+     * Test if given measurement is near enough to {@link #limitBytes} to be
+     * considered over-limit.
+     */
     CARAPI IsOverLimit(
         /* [in] */ Int64 totalBytes,
         /* [out] */ Boolean* result);
 
+    /**
+     * Clear any existing snooze values, setting to {@link #SNOOZE_NEVER}.
+     */
     CARAPI ClearSnooze();
 
+    /**
+     * Test if this policy has a cycle defined, after which usage should reset.
+     */
     CARAPI HasCycle(
         /* [out] */ Boolean* result);
 
+    // @Override
     CARAPI CompareTo(
-        /* [in] */ INetworkPolicy* another,
+        /* [in] */ IInterface* another,
         /* [out] */ Int32* result);
 
-    CARAPI GetHashCode(
+    // @Override
+    CARAPI HashCode(
         /* [out] */ Int32* result);
 
+    // @Override
     CARAPI Equals(
-        /* [in] */ IInterface* obj,
+        /* [in] */ IObject* obj,
         /* [out] */ Boolean* result);
 
-    CARAPI Equals(
-        /* [in] */ INetworkPolicy* obj,
-        /* [out] */ Boolean* result);
-
+    // @Override
     CARAPI ToString(
         /* [out] */ String* result);
 
     CARAPI ReadFromParcel(
-        /* [in] */ IParcel* source);
+        /* [in] */ IParcel* parcel);
+
+    CARAPI WriteToParcel(
+        /* [in] */ IParcel* dest);
 
     CARAPI GetTemplate(
         /* [out] */ INetworkTemplate** result);
 
     CARAPI GetCycleDay(
-        /* [out] */ Int32* cycleday);
+        /* [out] */ Int32* result);
 
     CARAPI SetCycleDay(
-        /* [in] */ Int32 cycleday);
+        /* [in] */ Int32 cycleDay);
 
     CARAPI GetCycleTimezone(
-        /* [out] */ String* cycleTimezone);
+        /* [out] */ String* result);
 
     CARAPI SetCycleTimezone(
         /* [in] */ const String& cycleTimezone);
 
     CARAPI GetWarningBytes(
-        /* [out] */ Int64* warningbytes);
+        /* [out] */ Int64* result);
 
     CARAPI SetWarningBytes(
-        /* [in] */ Int64 warningbytes);
+        /* [in] */ Int64 warningBytes);
 
     CARAPI GetLimitBytes(
-        /* [out] */ Int64* limitbytes);
+        /* [out] */ Int64* result);
 
     CARAPI SetLimitBytes(
-        /* [in] */ Int64 limitbytes);
+        /* [in] */ Int64 limitBytes);
 
     CARAPI GetLastWarningSnooze(
-        /* [out] */ Int64* lastwarningsnooze);
+        /* [out] */ Int64* result);
 
     CARAPI SetLastWarningSnooze(
-        /* [in] */ Int64 lastwarningsnooze);
+        /* [in] */ Int64 lastWarningSnooze);
 
     CARAPI GetLastLimitSnooze(
-        /* [out] */ Int64* lastlimitsnooze);
+        /* [out] */ Int64* result);
 
     CARAPI SetLastLimitSnooze(
-        /* [in] */ Int64 lastlimitsnooze);
+        /* [in] */ Int64 lastLimitSnooze);
 
     CARAPI GetMetered(
-        /* [out] */ Boolean* metered);
+        /* [out] */ Boolean* result);
 
     CARAPI SetMetered(
         /* [in] */ Boolean metered);
 
     CARAPI GetInferred(
-        /* [out] */ Boolean* inferred);
+        /* [out] */ Boolean* result);
 
     CARAPI SetInferred(
         /* [in] */ Boolean inferred);
 
-public:
+private:
+    const AutoPtr<INetworkTemplate> mTemplate;
 
-    AutoPtr<INetworkTemplate> mTemplate;
     Int32 mCycleDay;
+
     String mCycleTimezone;
+
     Int64 mWarningBytes;
+
     Int64 mLimitBytes;
+
     Int64 mLastWarningSnooze;
+
     Int64 mLastLimitSnooze;
+
     Boolean mMetered;
+
     Boolean mInferred;
 
-private:
-    static const Int64 DEFAULT_MTU = 1500;
+    static const Int64 DEFAULT_MTU;
 
-    /** Cache for the hash code. */
-    Int32 mHashCode;
 };
 
 } // namespace Net
-} // namepsace Droid
+} // namespace Droid
 } // namespace Elastos
-
-#endif // __ELASTOS_DROID_NET_CNETWORKPOLICY_H__
-#endif
+#endif // __ELASTOS_DROID_NET_NETWORKPOLICY_H__

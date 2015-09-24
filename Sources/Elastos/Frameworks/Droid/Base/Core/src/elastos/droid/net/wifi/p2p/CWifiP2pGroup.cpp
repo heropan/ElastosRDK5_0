@@ -377,7 +377,7 @@ ECode CWifiP2pGroup::SetNetworkId(
 }
 
 ECode CWifiP2pGroup::ToString(
-    /* [out] */ String * string)
+    /* [out] */ String* string)
 {
     VALIDATE_NOT_NULL(string);
 

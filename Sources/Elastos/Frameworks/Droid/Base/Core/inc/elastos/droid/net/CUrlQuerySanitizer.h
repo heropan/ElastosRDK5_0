@@ -41,7 +41,7 @@ public:
      */
     virtual Sanitize(
         /* [in] */ const String& value,
-        /* [out] */ String *result);
+        /* [out] */ String* result);
 };
 
 

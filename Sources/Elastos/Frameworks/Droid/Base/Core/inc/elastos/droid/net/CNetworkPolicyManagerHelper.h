@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_NET_CNETWORKPOLICYMANAGERHELPER_H__
 
 #include "_Elastos_Droid_Net_CNetworkPolicyManagerHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Text::Format::ITime;
 using Elastos::Droid::Content::IContext;
@@ -13,8 +14,14 @@ namespace Droid {
 namespace Net {
 
 CarClass(CNetworkPolicyManagerHelper)
+    , public Singleton
+    , public INetworkPolicyManagerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI From(
         /* [in] */ IContext* context,
         /* [out] */ INetworkPolicyManager** result);

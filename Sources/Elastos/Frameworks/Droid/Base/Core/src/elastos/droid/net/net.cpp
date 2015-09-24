@@ -20,6 +20,8 @@
 #include "elastos/droid/net/CNetworkInfo.h"
 #include "elastos/droid/net/CNetworkKey.h"
 #include "elastos/droid/net/CNetworkMisc.h"
+#include "elastos/droid/net/CNetworkPolicy.h"
+#include "elastos/droid/net/CNetworkPolicyManager.h"
 
 namespace Elastos {
 namespace Droid {
@@ -66,6 +68,10 @@ CAR_OBJECT_IMPL(CNetworkInfo)
 CAR_OBJECT_IMPL(CNetworkKey)
 
 CAR_OBJECT_IMPL(CNetworkMisc)
+
+CAR_OBJECT_IMPL(CNetworkPolicy)
+
+CAR_OBJECT_IMPL(CNetworkPolicyManager)
 
 } // namespace Net
 } // namespace Droid

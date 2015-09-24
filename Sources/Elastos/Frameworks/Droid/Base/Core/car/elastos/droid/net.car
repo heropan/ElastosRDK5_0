@@ -107,6 +107,7 @@ module
     interface Elastos.Droid.Os.ILooper;
     interface Elastos.Droid.Os.IHandler;
 
+    using interface Elastos.Core.IComparable;
     using interface Elastos.IO.IFileDescriptor;
     using interface Elastos.Net.IInetAddress;
     using interface Elastos.Net.IInterfaceAddress;
@@ -426,6 +427,45 @@ module
 
         interface IParcelable;
         interface INetworkMisc;
+    }
+
+    class CNetworkPolicy {
+        constructor(
+            [in] INetworkTemplate* networkTemplate,
+            [in] Int32 cycleDay,
+            [in] String cycleTimezone,
+            [in] Int64 warningBytes,
+            [in] Int64 limitBytes,
+            [in] Boolean metered);
+
+        constructor(
+            [in] INetworkTemplate* networkTemplate,
+            [in] Int32 cycleDay,
+            [in] String cycleTimezone,
+            [in] Int64 warningBytes,
+            [in] Int64 limitBytes,
+            [in] Int64 lastWarningSnooze,
+            [in] Int64 lastLimitSnooze,
+            [in] Boolean metered,
+            [in] Boolean inferred);
+
+        constructor(
+            [in] IParcel* parcel);
+
+        interface IParcelable;
+        interface IComparable;
+        interface INetworkPolicy;
+    }
+
+    class CNetworkPolicyManager {
+        constructor(
+            [in] IINetworkPolicyManager* service);
+
+        interface INetworkPolicyManager;
+    }
+
+    singleton class CNetworkPolicyManagerHelper {
+        interface INetworkPolicyManagerHelper;
     }
 
     } // namespace Net
