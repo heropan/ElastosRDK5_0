@@ -3,6 +3,7 @@
 #include "NativeCrypto.h"
 #include "CryptoUpcalls.h"
 #include <elastos/core/UniquePtr.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/utility/logging/Logger.h>
 
 #include <arpa/inet.h>
@@ -36,6 +37,7 @@ using Elastos::Security::IMessageDigestHelper;
 using Elastos::Security::IPrivateKey;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::CLinkedHashMap;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
@@ -192,12 +194,33 @@ struct ASN1_GENERALIZEDTIME_Delete {
 };
 typedef UniquePtr<ASN1_GENERALIZEDTIME, ASN1_GENERALIZEDTIME_Delete> Unique_ASN1_GENERALIZEDTIME;
 
+struct SSL_Delete {
+    void operator()(SSL* p) const {
+        SSL_free(p);
+    }
+};
+typedef UniquePtr<SSL, SSL_Delete> Unique_SSL;
+
 struct SSL_CTX_Delete {
     void operator()(SSL_CTX* p) const {
         SSL_CTX_free(p);
     }
 };
 typedef UniquePtr<SSL_CTX, SSL_CTX_Delete> Unique_SSL_CTX;
+
+struct X509_Delete {
+    void operator()(X509* p) const {
+        X509_free(p);
+    }
+};
+typedef UniquePtr<X509, X509_Delete> Unique_X509;
+
+struct X509_NAME_Delete {
+    void operator()(X509_NAME* p) const {
+        X509_NAME_free(p);
+    }
+};
+typedef UniquePtr<X509_NAME, X509_NAME_Delete> Unique_X509_NAME;
 
 struct PKCS7_Delete {
     void operator()(PKCS7* p) const {
@@ -206,12 +229,27 @@ struct PKCS7_Delete {
 };
 typedef UniquePtr<PKCS7, PKCS7_Delete> Unique_PKCS7;
 
+struct sk_SSL_CIPHER_Delete {
+    void operator()(STACK_OF(SSL_CIPHER)* p) const {
+        // We don't own SSL_CIPHER references, so no need for pop_free
+        sk_SSL_CIPHER_free(p);
+    }
+};
+typedef UniquePtr<STACK_OF(SSL_CIPHER), sk_SSL_CIPHER_Delete> Unique_sk_SSL_CIPHER;
+
 struct sk_X509_Delete {
     void operator()(STACK_OF(X509)* p) const {
         sk_X509_pop_free(p, X509_free);
     }
 };
 typedef UniquePtr<STACK_OF(X509), sk_X509_Delete> Unique_sk_X509;
+
+struct sk_X509_NAME_Delete {
+    void operator()(STACK_OF(X509_NAME)* p) const {
+        sk_X509_NAME_pop_free(p, X509_NAME_free);
+    }
+};
+typedef UniquePtr<STACK_OF(X509_NAME), sk_X509_NAME_Delete> Unique_sk_X509_NAME;
 
 struct sk_ASN1_OBJECT_Delete {
     void operator()(STACK_OF(ASN1_OBJECT)* p) const {
@@ -421,6 +459,201 @@ static ECode ThrowExceptionIfNecessary(const char* location  __attribute__ ((unu
 
     FreeOpenSslErrorState();
     return ec;
+}
+
+/**
+ * Throws a javax.net.ssl.SSLException with the given string as a message.
+ */
+static ECode ThrowSSLExceptionStr(const char* message)
+{
+    NATIVE_TRACE("throwSSLExceptionStr %s", message);
+    return E_SSL_EXCEPTION;
+}
+
+/**
+ * Throws a javax.net.ssl.SSLProcotolException with the given string as a message.
+ */
+static ECode ThrowSSLProtocolExceptionStr(const char* message)
+{
+    NATIVE_TRACE("throwSSLProtocolExceptionStr %s", message);
+    return E_SSL_PROTOCOL_EXCEPTION;
+}
+
+/**
+ * Throws an SSLException with a message constructed from the current
+ * SSL errors. This will also log the errors.
+ *
+ * @param env the JNI environment
+ * @param ssl the possibly NULL SSL
+ * @param sslErrorCode error code returned from SSL_get_error() or
+ * SSL_ERROR_NONE to probe with ERR_get_error
+ * @param message null-ok; general error message
+ */
+static ECode ThrowSSLExceptionWithSslErrors(SSL* ssl, int sslErrorCode,
+        const char* message, ECode (*actualThrow)(const char*) = ThrowSSLExceptionStr)
+{
+
+    if (message == NULL) {
+        message = "SSL error";
+    }
+
+    // First consult the SSL error code for the general message.
+    const char* sslErrorStr = NULL;
+    switch (sslErrorCode) {
+        case SSL_ERROR_NONE:
+            if (ERR_peek_error() == 0) {
+                sslErrorStr = "OK";
+            }
+            else {
+                sslErrorStr = "";
+            }
+            break;
+        case SSL_ERROR_SSL:
+            sslErrorStr = "Failure in SSL library, usually a protocol error";
+            break;
+        case SSL_ERROR_WANT_READ:
+            sslErrorStr = "SSL_ERROR_WANT_READ occurred. You should never see this.";
+            break;
+        case SSL_ERROR_WANT_WRITE:
+            sslErrorStr = "SSL_ERROR_WANT_WRITE occurred. You should never see this.";
+            break;
+        case SSL_ERROR_WANT_X509_LOOKUP:
+            sslErrorStr = "SSL_ERROR_WANT_X509_LOOKUP occurred. You should never see this.";
+            break;
+        case SSL_ERROR_SYSCALL:
+            sslErrorStr = "I/O error during system call";
+            break;
+        case SSL_ERROR_ZERO_RETURN:
+            sslErrorStr = "SSL_ERROR_ZERO_RETURN occurred. You should never see this.";
+            break;
+        case SSL_ERROR_WANT_CONNECT:
+            sslErrorStr = "SSL_ERROR_WANT_CONNECT occurred. You should never see this.";
+            break;
+        case SSL_ERROR_WANT_ACCEPT:
+            sslErrorStr = "SSL_ERROR_WANT_ACCEPT occurred. You should never see this.";
+            break;
+        default:
+            sslErrorStr = "Unknown SSL error";
+    }
+
+    ECode ec = NOERROR;
+    // Prepend either our explicit message or a default one.
+    char* str;
+    if (asprintf(&str, "%s: ssl=%p: %s", message, ssl, sslErrorStr) <= 0) {
+        // problem with asprintf, just throw argument message, log everything
+        ec = actualThrow(message);
+        Logger::V(LOG_TAG, "%s: ssl=%p: %s", message, ssl, sslErrorStr);
+        FreeOpenSslErrorState();
+        return ec;
+    }
+
+    char* allocStr = str;
+
+    // For protocol errors, SSL might have more information.
+    if (sslErrorCode == SSL_ERROR_NONE || sslErrorCode == SSL_ERROR_SSL) {
+        // Append each error as an additional line to the message.
+        for (;;) {
+            char errStr[256];
+            const char* file;
+            int line;
+            const char* data;
+            int flags;
+            unsigned long err = ERR_get_error_line_data(&file, &line, &data, &flags);
+            if (err == 0) {
+                break;
+            }
+
+            ERR_error_string_n(err, errStr, sizeof(errStr));
+
+            int ret = asprintf(&str, "%s\n%s (%s:%d %p:0x%08x)",
+                               (allocStr == NULL) ? "" : allocStr,
+                               errStr,
+                               file,
+                               line,
+                               (flags & ERR_TXT_STRING) ? data : "(no data)",
+                               flags);
+
+            if (ret < 0) {
+                break;
+            }
+
+            free(allocStr);
+            allocStr = str;
+        }
+    // For errors during system calls, errno might be our friend.
+    }
+    else if (sslErrorCode == SSL_ERROR_SYSCALL) {
+        if (asprintf(&str, "%s, %s", allocStr, strerror(errno)) >= 0) {
+            free(allocStr);
+            allocStr = str;
+        }
+    // If the error code is invalid, print it.
+    }
+    else if (sslErrorCode > SSL_ERROR_WANT_ACCEPT) {
+        if (asprintf(&str, ", error code is %d", sslErrorCode) >= 0) {
+            free(allocStr);
+            allocStr = str;
+        }
+    }
+
+    if (sslErrorCode == SSL_ERROR_SSL) {
+        ec = ThrowSSLProtocolExceptionStr(allocStr);
+    }
+    else {
+        ec = actualThrow(allocStr);
+    }
+
+    Logger::V(LOG_TAG, "%s", allocStr);
+    free(allocStr);
+    FreeOpenSslErrorState();
+    return ec;
+}
+
+/**
+ * Helper function that grabs the casts an ssl pointer and then checks for nullness.
+ * If this function returns NULL and <code>throwIfNull</code> is
+ * passed as <code>true</code>, then this function will call
+ * <code>throwSSLExceptionStr</code> before returning, so in this case of
+ * NULL, a caller of this function should simply return and allow JNI
+ * to do its thing.
+ *
+ * @param env the JNI environment
+ * @param ssl_address; the ssl_address pointer as an integer
+ * @param throwIfNull whether to throw if the SSL pointer is NULL
+ * @returns the pointer, which may be NULL
+ */
+static SSL_CTX* to_SSL_CTX(Int64 ssl_ctx_address, Boolean throwIfNull, ECode* ec)
+{
+    *ec = NOERROR;
+    SSL_CTX* ssl_ctx = reinterpret_cast<SSL_CTX*>(static_cast<uintptr_t>(ssl_ctx_address));
+    if ((ssl_ctx == NULL) && throwIfNull) {
+        NATIVE_TRACE("ssl_ctx == null");
+        *ec = E_NULL_POINTER_EXCEPTION;
+    }
+    return ssl_ctx;
+}
+
+static SSL* to_SSL(Int64 ssl_address, Boolean throwIfNull, ECode* ec)
+{
+    *ec = NOERROR;
+    SSL* ssl = reinterpret_cast<SSL*>(static_cast<uintptr_t>(ssl_address));
+    if ((ssl == NULL) && throwIfNull) {
+        NATIVE_TRACE("ssl == null");
+        *ec = E_NULL_POINTER_EXCEPTION;
+    }
+    return ssl;
+}
+
+static SSL_CIPHER* to_SSL_CIPHER(Int64 ssl_cipher_address, Boolean throwIfNull, ECode* ec)
+{
+    *ec = NOERROR;
+    SSL_CIPHER* ssl_cipher
+        = reinterpret_cast<SSL_CIPHER*>(static_cast<uintptr_t>(ssl_cipher_address));
+    if ((ssl_cipher == NULL) && throwIfNull) {
+        NATIVE_TRACE("ssl_cipher == null");
+        *ec = E_NULL_POINTER_EXCEPTION;
+    }
+    return ssl_cipher;
 }
 
 template<typename T>
@@ -1340,6 +1573,7 @@ int THREAD_cleanup(void)
 
 AutoPtr<IMap> NativeCrypto::OPENSSL_TO_STANDARD_CIPHER_SUITES;
 AutoPtr<IMap> NativeCrypto::STANDARD_TO_OPENSSL_CIPHER_SUITES;
+AutoPtr< ArrayOf<String> > NativeCrypto::DEFAULT_PROTOCOLS;
 const Boolean NativeCrypto::sInitialized = Clinit();
 
 /**
@@ -1350,6 +1584,11 @@ Boolean NativeCrypto::Clinit()
 {
     CHashMap::New((IMap**)&OPENSSL_TO_STANDARD_CIPHER_SUITES);
     CLinkedHashMap::New((IMap**)&STANDARD_TO_OPENSSL_CIPHER_SUITES);
+    DEFAULT_PROTOCOLS = ArrayOf<String>::Alloc(4);
+    (*DEFAULT_PROTOCOLS)[0] = INativeCrypto::SUPPORTED_PROTOCOL_SSLV3;
+    (*DEFAULT_PROTOCOLS)[1] = INativeCrypto::SUPPORTED_PROTOCOL_TLSV1;
+    (*DEFAULT_PROTOCOLS)[2] = INativeCrypto::SUPPORTED_PROTOCOL_TLSV1_1;
+    (*DEFAULT_PROTOCOLS)[3] = INativeCrypto::SUPPORTED_PROTOCOL_TLSV1_2;
 
     SSL_load_error_strings();
     ERR_load_crypto_strings();
@@ -7219,6 +7458,92 @@ static int client_cert_cb(SSL* ssl, X509** x509Out, EVP_PKEY** pkeyOut)
     return result;
 }
 
+/**
+ * Pre-Shared Key (PSK) client callback.
+ */
+static unsigned int psk_client_callback(SSL* ssl, const char *hint,
+        char *identity, unsigned int max_identity_len,
+        unsigned char *psk, unsigned int max_psk_len)
+{
+    NATIVE_TRACE("ssl=%p psk_client_callback", ssl);
+
+    AppData* appData = toAppData(ssl);
+
+    ISSLHandshakeCallbacks* sslHandshakeCallbacks = appData->sslHandshakeCallbacks;
+    NATIVE_TRACE("ssl=%p psk_client_callback calling clientPSKKeyRequested", ssl);
+
+    String identityHint;
+    if (hint != NULL) {
+        identityHint = hint;
+    }
+    AutoPtr< ArrayOf<Byte> > identityArray = ArrayOf<Byte>::Alloc(max_identity_len);
+    AutoPtr< ArrayOf<Byte> > keyArray = ArrayOf<Byte>::Alloc(max_psk_len);
+    Int32 keyLen;
+    ECode ec = sslHandshakeCallbacks->ClientPSKKeyRequested(identityHint, identityArray, keyArray, &keyLen);
+    if (FAILED(ec)) {
+        NATIVE_TRACE("ssl=%p psk_client_callback exception", ssl);
+        return 0;
+    }
+    if (keyLen <= 0) {
+        NATIVE_TRACE("ssl=%p psk_client_callback failed to get key", ssl);
+        return 0;
+    }
+    else if ((unsigned int) keyLen > max_psk_len) {
+        NATIVE_TRACE("ssl=%p psk_client_callback got key which is too long", ssl);
+        return 0;
+    }
+    memcpy(psk, keyArray->GetPayload(), keyLen);
+
+    memcpy(identity, identityArray->GetPayload(), max_identity_len);
+
+    NATIVE_TRACE("ssl=%p psk_client_callback completed", ssl);
+    return keyLen;
+}
+
+/**
+ * Pre-Shared Key (PSK) server callback.
+ */
+static unsigned int psk_server_callback(SSL* ssl, const char *identity,
+        unsigned char *psk, unsigned int max_psk_len)
+{
+    NATIVE_TRACE("ssl=%p psk_server_callback", ssl);
+
+    AppData* appData = toAppData(ssl);
+
+    ISSLHandshakeCallbacks* sslHandshakeCallbacks = appData->sslHandshakeCallbacks;
+    NATIVE_TRACE("ssl=%p psk_server_callback calling serverPSKKeyRequested", ssl);
+    const char* identityHint = SSL_get_psk_identity_hint(ssl);
+    // identityHint = NULL;
+    // identity = NULL;
+    String identityHintStr;
+    if (identityHint != NULL) {
+        identityHintStr = identityHint;
+    }
+    String identityStr;
+    if (identity != NULL) {
+        identityHintStr = identity;
+    }
+    AutoPtr< ArrayOf<Byte> > keyArray = ArrayOf<Byte>::Alloc(max_psk_len);
+    Int32 keyLen;
+    ECode ec = sslHandshakeCallbacks->ServerPSKKeyRequested(identityHintStr, identityStr, keyArray, &keyLen);
+    if (FAILED(ec)) {
+        NATIVE_TRACE("ssl=%p psk_server_callback exception", ssl);
+        return 0;
+    }
+    if (keyLen <= 0) {
+        NATIVE_TRACE("ssl=%p psk_server_callback failed to get key", ssl);
+        return 0;
+    }
+    else if ((unsigned int) keyLen > max_psk_len) {
+        NATIVE_TRACE("ssl=%p psk_server_callback got key which is too long", ssl);
+        return 0;
+    }
+    memcpy(psk, keyArray->GetPayload(), keyLen);
+
+    NATIVE_TRACE("ssl=%p psk_server_callback completed", ssl);
+    return keyLen;
+}
+
 static RSA* rsaGenerateKey(int keylength)
 {
     Unique_BIGNUM bn(BN_new());
@@ -7382,6 +7707,898 @@ ECode NativeCrypto::SSL_CTX_new(
     NATIVE_TRACE("NativeCrypto_SSL_CTX_new => %p", sslCtx.get());
     *result = reinterpret_cast<uintptr_t>(sslCtx.release());
     return NOERROR;
+}
+
+ECode NativeCrypto::GetSupportedCipherSuites(
+    /* [out, callee] */ ArrayOf<String>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    AutoPtr< ArrayOf<String> > ciphers = ArrayOf<String>::Alloc(4);
+    (*ciphers)[0] = INativeCrypto::SUPPORTED_PROTOCOL_SSLV3;
+    (*ciphers)[1] = INativeCrypto::SUPPORTED_PROTOCOL_TLSV1;
+    (*ciphers)[2] = INativeCrypto::SUPPORTED_PROTOCOL_TLSV1_1;
+    (*ciphers)[3] = INativeCrypto::SUPPORTED_PROTOCOL_TLSV1_2;
+    (*result) = ciphers;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_CTX_free(
+    /* [in] */ Int64 ssl_ctx_address)
+{
+    ECode ec;
+    SSL_CTX* ssl_ctx = to_SSL_CTX(ssl_ctx_address, TRUE, &ec);
+    NATIVE_TRACE("ssl_ctx=%p NativeCrypto_SSL_CTX_free", ssl_ctx);
+    if (ssl_ctx == NULL) {
+        return ec;
+    }
+    ::SSL_CTX_free(ssl_ctx);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_CTX_set_session_id_context(
+    /* [in] */ Int64 ssl_ctx_address,
+    /* [in] */ ArrayOf<Byte>* sid_ctx)
+{
+    ECode ec;
+    SSL_CTX* ssl_ctx = to_SSL_CTX(ssl_ctx_address, TRUE, &ec);
+    NATIVE_TRACE("ssl_ctx=%p NativeCrypto_SSL_CTX_set_session_id_context sid_ctx=%p", ssl_ctx, sid_ctx);
+    if (ssl_ctx == NULL) {
+        return ec;
+    }
+
+    unsigned int length = sid_ctx->GetLength();
+    if (length > SSL_MAX_SSL_SESSION_ID_LENGTH) {
+        NATIVE_TRACE("NativeCrypto_SSL_CTX_set_session_id_context => length = %d", length);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    const unsigned char* bytes = reinterpret_cast<const unsigned char*>(sid_ctx->GetPayload());
+    int result = ::SSL_CTX_set_session_id_context(ssl_ctx, bytes, length);
+    if (result == 0) {
+        return ThrowExceptionIfNecessary("NativeCrypto_SSL_CTX_set_session_id_context");
+    }
+    NATIVE_TRACE("ssl_ctx=%p NativeCrypto_SSL_CTX_set_session_id_context => ok", ssl_ctx);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_new(
+    /* [in] */ Int64 ssl_ctx_address,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL_CTX* ssl_ctx = to_SSL_CTX(ssl_ctx_address, TRUE, &ec);
+    NATIVE_TRACE("ssl_ctx=%p NativeCrypto_SSL_new", ssl_ctx);
+    if (ssl_ctx == NULL) {
+        *result = 0;
+        return ec;
+    }
+    Unique_SSL ssl(::SSL_new(ssl_ctx));
+    if (ssl.get() == NULL) {
+        NATIVE_TRACE("ssl_ctx=%p NativeCrypto_SSL_new => NULL", ssl_ctx);
+        *result = 0;
+        return ThrowSSLExceptionWithSslErrors(NULL, SSL_ERROR_NONE,
+                "Unable to create SSL structure");
+    }
+
+    /*
+     * Create our special application data.
+     */
+    AppData* appData = AppData::Create();
+    if (appData == NULL) {
+        FreeOpenSslErrorState();
+        NATIVE_TRACE("ssl_ctx=%p NativeCrypto_SSL_new appData => 0", ssl_ctx);
+        *result = 0;
+        return ThrowSSLExceptionStr("Unable to create application data");
+    }
+    SSL_set_app_data(ssl.get(), reinterpret_cast<char*>(appData));
+
+    /*
+     * Java code in class OpenSSLSocketImpl does the verification. Since
+     * the callbacks do all the verification of the chain, this flag
+     * simply controls whether to send protocol-level alerts or not.
+     * SSL_VERIFY_NONE means don't send alerts and anything else means send
+     * alerts.
+     */
+    SSL_set_verify(ssl.get(), SSL_VERIFY_PEER, NULL);
+
+    NATIVE_TRACE("ssl_ctx=%p NativeCrypto_SSL_new => ssl=%p appData=%p", ssl_ctx, ssl.get(), appData);
+    *result = (Int64) ssl.release();
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_enable_tls_channel_id(
+    /* [in] */ Int64 ssl_address)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_NativeCrypto_SSL_enable_tls_channel_id", ssl);
+    if (ssl == NULL) {
+        return ec;
+    }
+
+    long ret = ::SSL_ctrl(ssl, SSL_CTRL_CHANNEL_ID, 0, NULL);
+    if (ret != 1L) {
+        Logger::E(LOG_TAG, "%s", ERR_error_string(ERR_peek_error(), NULL));
+        SSL_clear(ssl);
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_enable_tls_channel_id => error", ssl);
+        return ThrowSSLExceptionWithSslErrors(ssl, SSL_ERROR_NONE, "Error enabling Channel ID");
+    }
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_get_tls_channel_id(
+    /* [in] */ Int64 ssl_address,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_NativeCrypto_SSL_get_tls_channel_id", ssl);
+    if (ssl == NULL) {
+        *result = NULL;
+        return ec;
+    }
+
+    // Channel ID is 64 bytes long. Unfortunately, OpenSSL doesn't declare this length
+    // as a constant anywhere.
+    AutoPtr< ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(64);
+
+    unsigned char* tmp = reinterpret_cast<unsigned char*>(bytes->GetPayload());
+    // Unfortunately, the SSL_get_tls_channel_id method below always returns 64 (upon success)
+    // regardless of the number of bytes copied into the output buffer "tmp". Thus, the correctness
+    // of this code currently relies on the "tmp" buffer being exactly 64 bytes long.
+    long ret = ::SSL_ctrl(ssl, SSL_CTRL_GET_CHANNEL_ID, 64,(void*)tmp);
+    if (ret == 0) {
+        // Channel ID either not set or did not verify
+        NATIVE_TRACE("NativeCrypto_SSL_get_tls_channel_id(%p) => not available", ssl);
+        *result = NULL;
+        return NOERROR;
+    }
+    else if (ret != 64) {
+        Logger::E(LOG_TAG, "%s", ERR_error_string(ERR_peek_error(), NULL));
+        SSL_clear(ssl);
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_tls_channel_id => error, returned %ld", ssl, ret);
+        *result = NULL;
+        return ThrowSSLExceptionWithSslErrors(ssl, SSL_ERROR_NONE, "Error getting Channel ID");
+    }
+
+    NATIVE_TRACE("ssl=%p NativeCrypto_NativeCrypto_SSL_get_tls_channel_id() => %p", ssl, javaBytes);
+    *result = bytes;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_set1_tls_channel_id(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ Int64 pkeyRef)
+{
+    ECode ec = NOERROR;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("ssl=%p SSL_set1_tls_channel_id privatekey=%p", ssl, pkey);
+    if (ssl == NULL) {
+        return ec;
+    }
+
+    if (pkey == NULL) {
+        NATIVE_TRACE("ssl=%p SSL_set1_tls_channel_id => pkey == null", ssl);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    // SSL_set1_tls_channel_id requires ssl->server to be set to 0.
+    // Unfortunately, the default value is 1 and it's only changed to 0 just
+    // before the handshake starts (see NativeCrypto_SSL_do_handshake).
+    ssl->server = 0;
+    long ret = ::SSL_ctrl(ssl,SSL_CTRL_SET_CHANNEL_ID,0,(void*)pkey);
+
+    if (ret != 1L) {
+        Logger::E(LOG_TAG, "%s", ERR_error_string(ERR_peek_error(), NULL));
+        SSL_clear(ssl);
+        NATIVE_TRACE("ssl=%p SSL_set1_tls_channel_id => error", ssl);
+        return ThrowSSLExceptionWithSslErrors(
+                ssl, SSL_ERROR_NONE, "Error setting private key for Channel ID");
+    }
+    // SSL_set1_tls_channel_id expects to take ownership of the EVP_PKEY, but
+    // we have an external reference from the caller such as an OpenSSLKey,
+    // so we manually increment the reference count here.
+    CRYPTO_add(&pkey->references, +1, CRYPTO_LOCK_EVP_PKEY);
+
+    NATIVE_TRACE("ssl=%p SSL_set1_tls_channel_id => ok", ssl);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_use_certificate(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ ArrayOf<Int64>* certificates)
+{
+    ECode ec = NOERROR;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_use_certificate certificates=%p", ssl, certificates);
+    if (ssl == NULL) {
+        return ec;
+    }
+
+    if (certificates == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_use_certificate => certificates == null", ssl);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    size_t length = certificates->GetLength();
+    if (length == 0) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_use_certificate => certificates.length == 0", ssl);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    Unique_X509 serverCert(
+            X509_dup_nocopy(reinterpret_cast<X509*>(static_cast<uintptr_t>((*certificates)[0]))));
+    if (serverCert.get() == NULL) {
+        // Note this shouldn't happen since we checked the number of certificates above.
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_use_certificate => chain allocation error", ssl);
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
+    Unique_sk_X509 chain(sk_X509_new_null());
+    if (chain.get() == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_use_certificate => chain allocation error", ssl);
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
+    for (size_t i = 1; i < length; i++) {
+        Unique_X509 cert(
+                X509_dup_nocopy(reinterpret_cast<X509*>(static_cast<uintptr_t>((*certificates)[i]))));
+        if (cert.get() == NULL || !sk_X509_push(chain.get(), cert.get())) {
+            Logger::E(LOG_TAG, "%s", ERR_error_string(ERR_peek_error(), NULL));
+            SSL_clear(ssl);
+            NATIVE_TRACE("ssl=%p NativeCrypto_SSL_use_certificate => certificates parsing error", ssl);
+            return ThrowSSLExceptionWithSslErrors(ssl, SSL_ERROR_NONE, "Error parsing certificate");
+        }
+        OWNERSHIP_TRANSFERRED(cert);
+    }
+
+    int ret = ::SSL_use_certificate(ssl, serverCert.get());
+    if (ret != 1) {
+        Logger::E(LOG_TAG, "%s", ERR_error_string(ERR_peek_error(), NULL));
+        SSL_clear(ssl);
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_use_certificate => SSL_use_certificate error", ssl);
+        return ThrowSSLExceptionWithSslErrors(ssl, SSL_ERROR_NONE, "Error setting certificate");
+    }
+    OWNERSHIP_TRANSFERRED(serverCert);
+
+    int chainResult = SSL_use_certificate_chain(ssl, chain.get());
+    if (chainResult == 0) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_use_certificate => SSL_use_certificate_chain error",
+                  ssl);
+        return ThrowSSLExceptionWithSslErrors(ssl, SSL_ERROR_NONE, "Error setting certificate chain");
+    }
+    OWNERSHIP_TRANSFERRED(chain);
+
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_use_certificate => ok", ssl);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_use_PrivateKey(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ Int64 pkeyRef)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(pkeyRef);
+    NATIVE_TRACE("ssl=%p SSL_use_PrivateKey privatekey=%p", ssl, pkey);
+    if (ssl == NULL) {
+        return ec;
+    }
+
+    if (pkey == NULL) {
+        NATIVE_TRACE("ssl=%p SSL_use_PrivateKey => pkey == null", ssl);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    int ret = ::SSL_use_PrivateKey(ssl, pkey);
+    if (ret != 1) {
+        Logger::E(LOG_TAG, "%s", ERR_error_string(ERR_peek_error(), NULL));
+        SSL_clear(ssl);
+        NATIVE_TRACE("ssl=%p SSL_use_PrivateKey => error", ssl);
+        return ThrowSSLExceptionWithSslErrors(ssl, SSL_ERROR_NONE, "Error setting private key");
+    }
+    // SSL_use_PrivateKey expects to take ownership of the EVP_PKEY,
+    // but we have an external reference from the caller such as an
+    // OpenSSLKey, so we manually increment the reference count here.
+    CRYPTO_add(&pkey->references,+1,CRYPTO_LOCK_EVP_PKEY);
+
+    NATIVE_TRACE("ssl=%p SSL_use_PrivateKey => ok", ssl);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_check_private_key(
+    /* [in] */ Int64 ssl_address)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_check_private_key", ssl);
+    if (ssl == NULL) {
+        return ec;
+    }
+    int ret = ::SSL_check_private_key(ssl);
+    if (ret != 1) {
+        SSL_clear(ssl);
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_check_private_key => error", ssl);
+        return ThrowSSLExceptionWithSslErrors(ssl, SSL_ERROR_NONE, "Error checking private key");
+    }
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_check_private_key => ok", ssl);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_set_client_CA_list(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ ArrayOf<Handle32>* principals)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_client_CA_list principals=%p", ssl, principals);
+    if (ssl == NULL) {
+        return ec;
+    }
+
+    if (principals == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_client_CA_list => principals == null", ssl);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    int length = principals->GetLength();
+    if (length == 0) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_client_CA_list => principals.length == 0", ssl);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    Unique_sk_X509_NAME principalsStack(sk_X509_NAME_new_null());
+    if (principalsStack.get() == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_client_CA_list => stack allocation error", ssl);
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+    for (int i = 0; i < length; i++) {
+        AutoPtr< ArrayOf<Byte> > principal = reinterpret_cast< ArrayOf<Byte>* >((*principals)[i]);
+        if (principal == NULL) {
+            NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_client_CA_list => principals element null", ssl);
+            return E_NULL_POINTER_EXCEPTION;
+        }
+
+        const unsigned char* tmp = reinterpret_cast<const unsigned char*>(principal->GetPayload());
+        Unique_X509_NAME principalX509Name(d2i_X509_NAME(NULL, &tmp, principal->GetLength()));
+
+        if (principalX509Name.get() == NULL) {
+            Logger::E(LOG_TAG, "%s", ERR_error_string(ERR_peek_error(), NULL));
+            SSL_clear(ssl);
+            NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_client_CA_list => principals parsing error",
+                      ssl);
+            return ThrowSSLExceptionWithSslErrors(ssl, SSL_ERROR_NONE, "Error parsing principal");
+        }
+
+        if (!sk_X509_NAME_push(principalsStack.get(), principalX509Name.release())) {
+            NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_client_CA_list => principal push error", ssl);
+            return E_OUT_OF_MEMORY_ERROR;
+        }
+    }
+
+    ::SSL_set_client_CA_list(ssl, principalsStack.release());
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_client_CA_list => ok", ssl);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_get_mode(
+    /* [in] */ Int64 ssl_address,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_mode", ssl);
+    if (ssl == NULL) {
+        *result = 0;
+        return ec;
+    }
+    long mode = SSL_ctrl((ssl),SSL_CTRL_MODE,0,NULL);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_mode => 0x%lx", ssl, mode);
+    *result = mode;
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_set_mode(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ Int64 mode,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_mode mode=0x%llx", ssl, mode);
+    if (ssl == NULL) {
+        *result = 0;
+        return ec;
+    }
+    long ret = ::SSL_ctrl((ssl),SSL_CTRL_MODE,(mode),NULL);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_mode => 0x%lx", ssl, ret);
+    *result = ret;
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_clear_mode(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ Int64 mode,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_clear_mode mode=0x%llx", ssl, mode);
+    if (ssl == NULL) {
+        *result = 0;
+        return ec;
+    }
+    long ret = ::SSL_ctrl((ssl),SSL_CTRL_CLEAR_MODE,(mode),NULL);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_clear_mode => 0x%lx", ssl, ret);
+    *result = ret;
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_get_options(
+    /* [in] */ Int64 ssl_address,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_options", ssl);
+    if (ssl == NULL) {
+        *result = 0;
+        return ec;
+    }
+    long options = ::SSL_ctrl((ssl),SSL_CTRL_OPTIONS,0,NULL);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_options => 0x%lx", ssl, options);
+    *result = options;
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_set_options(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ Int64 options,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_options options=0x%llx", ssl, options);
+    if (ssl == NULL) {
+        *result = 0;
+        return ec;
+    }
+    long ret = ::SSL_ctrl((ssl),SSL_CTRL_OPTIONS,(options),NULL);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_options => 0x%lx", ssl, ret);
+    *result = ret;
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_clear_options(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ Int64 options,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_clear_options options=0x%llx", ssl, options);
+    if (ssl == NULL) {
+        *result = 0;
+        return ec;
+    }
+    long ret = ::SSL_ctrl((ssl),SSL_CTRL_CLEAR_OPTIONS,(options),NULL);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_clear_options => 0x%lx", ssl, ret);
+    *result = ret;
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_use_psk_identity_hint(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ const String& identityHint)
+{
+    ECode ec = NOERROR;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_use_psk_identity_hint identityHint=%s",
+            ssl, identityHint.string());
+    if (ssl == NULL)  {
+        return ec;
+    }
+
+    int ret;
+    if (identityHint.IsNull()) {
+        ret = ::SSL_use_psk_identity_hint(ssl, NULL);
+    }
+    else {
+        ret = ::SSL_use_psk_identity_hint(ssl, identityHint.string());
+    }
+
+    if (ret != 1) {
+        int sslErrorCode = SSL_get_error(ssl, ret);
+        SSL_clear(ssl);
+        ec = ThrowSSLExceptionWithSslErrors(ssl, sslErrorCode, "Failed to set PSK identity hint");
+    }
+    return ec;
+}
+
+ECode NativeCrypto::Set_SSL_psk_client_callback_enabled(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ Boolean enabled)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_set_SSL_psk_client_callback_enabled(%d)",
+            ssl, enabled);
+    if (ssl == NULL)  {
+        return ec;
+    }
+
+    ::SSL_set_psk_client_callback(ssl, (enabled) ? psk_client_callback : NULL);
+    return NOERROR;
+}
+
+ECode NativeCrypto::Set_SSL_psk_server_callback_enabled(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ Boolean enabled)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_set_SSL_psk_server_callback_enabled(%d)",
+            ssl, enabled);
+    if (ssl == NULL)  {
+        return ec;
+    }
+
+    ::SSL_set_psk_server_callback(ssl, (enabled) ? psk_server_callback : NULL);
+    return NOERROR;
+}
+
+ECode NativeCrypto::Get_DEFAULT_PROTOCOLS(
+    /* [out, callee] */ ArrayOf<String>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = DEFAULT_PROTOCOLS;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::GetSupportedProtocols(
+    /* [out, callee] */ ArrayOf<String>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    AutoPtr< ArrayOf<String> > protocols = ArrayOf<String>::Alloc(4);
+    (*protocols)[0] = INativeCrypto::SUPPORTED_PROTOCOL_SSLV3;
+    (*protocols)[1] = INativeCrypto::SUPPORTED_PROTOCOL_TLSV1;
+    (*protocols)[2] = INativeCrypto::SUPPORTED_PROTOCOL_TLSV1_1;
+    (*protocols)[3] = INativeCrypto::SUPPORTED_PROTOCOL_TLSV1_2;
+    *result = protocols;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SetEnabledProtocols(
+    /* [in] */ Int64 ssl,
+    /* [in] */ ArrayOf<String>* protocols)
+{
+    AutoPtr< ArrayOf<String> > enabledProtocols;
+    FAIL_RETURN(CheckEnabledProtocols(protocols, (ArrayOf<String>**)&enabledProtocols));
+    // openssl uses negative logic letting you disable protocols.
+    // so first, assume we need to set all (disable all) and clear none (enable none).
+    // in the loop, selectively move bits from set to clear (from disable to enable)
+    Int64 optionsToSet = (INativeCrypto::SSL_OP_NO_SSLv3 | INativeCrypto::SSL_OP_NO_TLSv1 |
+                          INativeCrypto::SSL_OP_NO_TLSv1_1 | INativeCrypto::SSL_OP_NO_TLSv1_2);
+    Int64 optionsToClear = 0;
+    for (Int32 i = 0; i < protocols->GetLength(); i++) {
+        String protocol = (*protocols)[i];
+        if (protocol.Equals(INativeCrypto::SUPPORTED_PROTOCOL_SSLV3)) {
+            optionsToSet &= ~INativeCrypto::SSL_OP_NO_SSLv3;
+            optionsToClear |= INativeCrypto::SSL_OP_NO_SSLv3;
+        }
+        else if (protocol.Equals(INativeCrypto::SUPPORTED_PROTOCOL_TLSV1)) {
+            optionsToSet &= ~INativeCrypto::SSL_OP_NO_TLSv1;
+            optionsToClear |= INativeCrypto::SSL_OP_NO_TLSv1;
+        }
+        else if (protocol.Equals(INativeCrypto::SUPPORTED_PROTOCOL_TLSV1_1)) {
+            optionsToSet &= ~INativeCrypto::SSL_OP_NO_TLSv1_1;
+            optionsToClear |= INativeCrypto::SSL_OP_NO_TLSv1_1;
+        }
+        else if (protocol.Equals(INativeCrypto::SUPPORTED_PROTOCOL_TLSV1_2)) {
+            optionsToSet &= ~INativeCrypto::SSL_OP_NO_TLSv1_2;
+            optionsToClear |= INativeCrypto::SSL_OP_NO_TLSv1_2;
+        }
+        else {
+            // error checked by checkEnabledProtocols
+            return E_ILLEGAL_STATE_EXCEPTION;
+        }
+    }
+
+    Int64 result;
+    FAIL_RETURN(SSL_set_options(ssl, optionsToSet, &result));
+    return SSL_clear_options(ssl, optionsToClear, &result);
+}
+
+ECode NativeCrypto::CheckEnabledProtocols(
+    /* [in] */ ArrayOf<String>* protocols,
+    /* [out, callee] */ ArrayOf<String>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    if (protocols == NULL) {
+        *result = NULL;
+        Logger::E(LOG_TAG, "protocols == null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    for (Int32 i = 0; i < protocols->GetLength(); i++) {
+        String protocol = (*protocols)[i];
+        if (protocol.IsNull()) {
+            Logger::E(LOG_TAG, "protocols[%d] == null", i);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        if ((!protocol.Equals(INativeCrypto::SUPPORTED_PROTOCOL_SSLV3))
+                && (!protocol.Equals(INativeCrypto::SUPPORTED_PROTOCOL_TLSV1))
+                && (!protocol.Equals(INativeCrypto::SUPPORTED_PROTOCOL_TLSV1_1))
+                && (!protocol.Equals(INativeCrypto::SUPPORTED_PROTOCOL_TLSV1_2))) {
+            Logger::E(LOG_TAG, "protocol %s  is not supported", protocol.string());
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+    }
+    *result = protocols;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_set_cipher_lists(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ ArrayOf<String>* cipherSuites)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_cipher_lists cipherSuites=%p", ssl, cipherSuites);
+    if (ssl == NULL) {
+        return ec;
+    }
+    if (cipherSuites == NULL) {
+        return E_NULL_POINTER_EXCEPTION;;
+    }
+
+    Unique_sk_SSL_CIPHER cipherstack(sk_SSL_CIPHER_new_null());
+    if (cipherstack.get() == NULL) {
+        return ThrowRuntimeException("sk_SSL_CIPHER_new_null failed");
+    }
+
+    const SSL_METHOD* ssl_method = ssl->method;
+    int num_ciphers = ssl_method->num_ciphers();
+
+    int length = cipherSuites->GetLength();
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_cipher_lists length=%d", ssl, length);
+    for (int i = 0; i < length; i++) {
+        String cipherSuite = (*cipherSuites)[i];
+        if (cipherSuite.IsNull()) {
+            return NOERROR;
+        }
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_cipher_lists cipherSuite=%s", ssl, cipherSuite.string());
+        Boolean found = FALSE;
+        for (int j = 0; j < num_ciphers; j++) {
+            const SSL_CIPHER* cipher = ssl_method->get_cipher(j);
+            if ((strcmp(cipherSuite.string(), cipher->name) == 0)
+                    && (strcmp(SSL_CIPHER_get_version(cipher), "SSLv2"))) {
+                if (!sk_SSL_CIPHER_push(cipherstack.get(), cipher)) {
+                    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_cipher_lists => cipher push error", ssl);
+                    return E_OUT_OF_MEMORY_ERROR;
+                }
+                found = TRUE;
+            }
+        }
+        if (!found) {
+            Logger::E(LOG_TAG, "Could not find cipher suite.");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+    }
+
+    int rc = ::SSL_set_cipher_lists(ssl, cipherstack.get());
+    if (rc == 0) {
+        FreeOpenSslErrorState();
+        Logger::E(LOG_TAG, "Illegal cipher suite strings.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    else {
+        OWNERSHIP_TRANSFERRED(cipherstack);
+        return NOERROR;
+    }
+}
+
+ECode NativeCrypto::SSL_get_ciphers(
+    /* [in] */ Int64 ssl_address,
+    /* [out, callee] */ ArrayOf<Int64>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_ciphers", ssl);
+
+    STACK_OF(SSL_CIPHER)* cipherStack = ::SSL_get_ciphers(ssl);
+    int count = (cipherStack != NULL) ? sk_SSL_CIPHER_num(cipherStack) : 0;
+    AutoPtr< ArrayOf<Int64> > ciphersArray = ArrayOf<Int64>::Alloc(count);
+    for (int i = 0; i < count; i++) {
+        (*ciphersArray)[i] = reinterpret_cast<Int64>(sk_SSL_CIPHER_value(cipherStack, i));
+    }
+
+    NATIVE_TRACE("NativeCrypto_SSL_get_ciphers(%p) => %p [size=%d]", ssl, ciphersArray.Get(), count);
+    *result = ciphersArray;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::Get_SSL_CIPHER_algorithm_mkey(
+    /* [in] */ Int64 ssl_cipher_address,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL_CIPHER* cipher = to_SSL_CIPHER(ssl_cipher_address, TRUE, &ec);
+    NATIVE_TRACE("cipher=%p get_SSL_CIPHER_algorithm_mkey", cipher);
+    if (cipher == NULL) {
+        return ec;
+    }
+    *result = cipher->algorithm_mkey;
+    return NOERROR;
+}
+
+ECode NativeCrypto::Get_SSL_CIPHER_algorithm_auth(
+    /* [in] */ Int64 ssl_cipher_address,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL_CIPHER* cipher = to_SSL_CIPHER(ssl_cipher_address, TRUE, &ec);
+    NATIVE_TRACE("cipher=%p get_SSL_CIPHER_algorithm_auth", cipher);
+    if (cipher == NULL) {
+        return ec;
+    }
+    *result = cipher->algorithm_auth;
+    return ec;
+}
+
+ECode NativeCrypto::SetEnabledCipherSuites(
+    /* [in] */ Int64 ssl,
+    /* [in] */ ArrayOf<String>* cipherSuites)
+{
+    AutoPtr< ArrayOf<String> > enabledCipherSuites;
+    FAIL_RETURN(CheckEnabledCipherSuites(cipherSuites, (ArrayOf<String>**)&enabledCipherSuites));
+    List<String> opensslSuites;
+    for (int i = 0; i < cipherSuites->GetLength(); i++) {
+        String cipherSuite = (*cipherSuites)[i];
+        if (cipherSuite.Equals(INativeCrypto::TLS_EMPTY_RENEGOTIATION_INFO_SCSV)) {
+            continue;
+        }
+        if (cipherSuite.Equals(INativeCrypto::TLS_FALLBACK_SCSV)) {
+            Int64 result;
+            SSL_set_mode(ssl, SSL_MODE_SEND_FALLBACK_SCSV, &result);
+            continue;
+        }
+        AutoPtr<ICharSequence> keyObj, valueObj;
+        CString::New(cipherSuite, (ICharSequence**)&keyObj);
+        STANDARD_TO_OPENSSL_CIPHER_SUITES->Get(keyObj, (IInterface**)&valueObj);
+        String openssl;
+        valueObj->ToString(&openssl);
+        String cs = openssl.IsNull() ? cipherSuite : openssl;
+        opensslSuites.PushBack(cs);
+    }
+    AutoPtr< ArrayOf<String> > opensslSuitesArray = ArrayOf<String>::Alloc(opensslSuites.GetSize());
+    List<String>::Iterator it;
+    Int32 i;
+    for (it = opensslSuites.Begin(), i = 0; it != opensslSuites.End(); ++it, ++i) {
+        (*opensslSuitesArray)[i] = *it;
+    }
+    return SSL_set_cipher_lists(ssl, opensslSuitesArray);
+}
+
+ECode NativeCrypto::CheckEnabledCipherSuites(
+    /* [in] */ ArrayOf<String>* cipherSuites,
+    /* [out, callee] */ ArrayOf<String>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = NULL;
+    if (cipherSuites == NULL) {
+        Logger::E(LOG_TAG, "cipherSuites == null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    // makes sure all suites are valid, throwing on error
+    for (Int32 i = 0; i < cipherSuites->GetLength(); i++) {
+        String cipherSuite = (*cipherSuites)[i];
+        if (cipherSuite.IsNull()) {
+            Logger::E(LOG_TAG, "cipherSuites[%d] == null", i);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        if (cipherSuite.Equals(INativeCrypto::TLS_EMPTY_RENEGOTIATION_INFO_SCSV) ||
+                cipherSuite.Equals(INativeCrypto::TLS_FALLBACK_SCSV)) {
+            continue;
+        }
+        AutoPtr<ICharSequence> keyObj;
+        CString::New(cipherSuite, (ICharSequence**)&keyObj);
+        Boolean result;
+        if (STANDARD_TO_OPENSSL_CIPHER_SUITES->ContainsKey(keyObj, &result), result) {
+            continue;
+        }
+        if (OPENSSL_TO_STANDARD_CIPHER_SUITES->ContainsKey(keyObj, &result), result) {
+            // TODO log warning about using backward compatability
+            continue;
+        }
+        Logger::E(LOG_TAG, "cipherSuite %s is not supported.", cipherSuite.string());
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    *result = cipherSuites;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_set_accept_state(
+    /* [in] */ Int64 sslRef)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(sslRef, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_accept_state", ssl);
+    if (ssl == NULL) {
+      return ec;
+    }
+    ::SSL_set_accept_state(ssl);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_set_connect_state(
+    /* [in] */ Int64 sslRef)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(sslRef, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_connect_state", ssl);
+    if (ssl == NULL) {
+      return ec;
+    }
+    ::SSL_set_connect_state(ssl);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_set_verify(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ Int32 mode)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_verify mode=%x", ssl, mode);
+    if (ssl == NULL) {
+      return ec;
+    }
+    ::SSL_set_verify(ssl, (int)mode, NULL);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_set_session(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ Int64 ssl_session_address)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    SSL_SESSION* ssl_session = to_SSL_SESSION(env, ssl_session_address, false);
+    JNI_TRACE("ssl=%p NativeCrypto_SSL_set_session ssl_session=%p", ssl, ssl_session);
+    if (ssl == NULL) {
+        return;
+    }
+
+    int ret = SSL_set_session(ssl, ssl_session);
+    if (ret != 1) {
+        /*
+         * Translate the error, and throw if it turns out to be a real
+         * problem.
+         */
+        int sslErrorCode = SSL_get_error(ssl, ret);
+        if (sslErrorCode != SSL_ERROR_ZERO_RETURN) {
+            throwSSLExceptionWithSslErrors(env, ssl, sslErrorCode, "SSL session set");
+            SSL_clear(ssl);
+        }
+    }
 }
 
 } // namespace Conscrypt

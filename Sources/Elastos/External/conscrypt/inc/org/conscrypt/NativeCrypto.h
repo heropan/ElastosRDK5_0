@@ -917,37 +917,150 @@ public:
         /* [out, callee] */ ArrayOf<String>** result);
 
     static CARAPI SSL_CTX_free(
-        /* [in] */ Int64 ssl_ctx);
+        /* [in] */ Int64 ssl_ctx_address);
 
     static CARAPI SSL_CTX_set_session_id_context(
-        /* [in] */ Int64 ssl_ctx,
-        /* [in] */ ArrayOf<Byte>** sid_ctx);
+        /* [in] */ Int64 ssl_ctx_address,
+        /* [in] */ ArrayOf<Byte>* sid_ctx);
 
     static CARAPI SSL_new(
-        /* [in] */ Int64 ssl_ctx,
+        /* [in] */ Int64 ssl_ctx_address,
         /* [out] */ Int64* result);
 
     static CARAPI SSL_enable_tls_channel_id(
-        /* [in] */ Int64 ssl);
+        /* [in] */ Int64 ssl_address);
 
     static CARAPI SSL_get_tls_channel_id(
-        /* [in] */ Int64 ssl,
+        /* [in] */ Int64 ssl_address,
         /* [out, callee] */ ArrayOf<Byte>** result);
 
     static CARAPI SSL_set1_tls_channel_id(
-        /* [in] */ Int64 ssl,
-        /* [in] */ Int64 pkey);
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ Int64 pkeyRef);
 
     static CARAPI SSL_use_certificate(
-        /* [in] */ Int64 ssl,
-        /* [in] */ ArrayOf<Int64>** x509refs);
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ ArrayOf<Int64>* certificates);
 
     static CARAPI SSL_use_PrivateKey(
-        /* [in] */ Int64 ssl,
-        /* [in] */ Int64 pkey);
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ Int64 pkeyRef);
 
     static CARAPI SSL_check_private_key(
-        /* [in] */ Int64 ssl);
+        /* [in] */ Int64 ssl_address);
+
+    static CARAPI SSL_set_client_CA_list(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ ArrayOf<Handle32>* asn1DerEncodedX500Principals);
+
+    static CARAPI SSL_get_mode(
+        /* [in] */ Int64 ssl_address,
+        /* [out] */ Int64* result);
+
+    static CARAPI SSL_set_mode(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ Int64 mode,
+        /* [out] */ Int64* result);
+
+    static CARAPI SSL_clear_mode(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ Int64 mode,
+        /* [out] */ Int64* result);
+
+    static CARAPI SSL_get_options(
+        /* [in] */ Int64 ssl_address,
+        /* [out] */ Int64* result);
+
+    static CARAPI SSL_set_options(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ Int64 options,
+        /* [out] */ Int64* result);
+
+    static CARAPI SSL_clear_options(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ Int64 options,
+        /* [out] */ Int64* result);
+
+    static CARAPI SSL_use_psk_identity_hint(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ const String& identityHint);
+
+    static CARAPI Set_SSL_psk_client_callback_enabled(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ Boolean enabled);
+
+    static CARAPI Set_SSL_psk_server_callback_enabled(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ Boolean enabled);
+
+    static CARAPI Get_DEFAULT_PROTOCOLS(
+        /* [out, callee] */ ArrayOf<String>** result);
+
+    static CARAPI GetSupportedProtocols(
+        /* [out, callee] */ ArrayOf<String>** result);
+
+    static CARAPI SetEnabledProtocols(
+        /* [in] */ Int64 ssl,
+        /* [in] */ ArrayOf<String>* protocols);
+
+    static CARAPI CheckEnabledProtocols(
+        /* [in] */ ArrayOf<String>* protocols,
+        /* [out, callee] */ ArrayOf<String>** result);
+
+    static CARAPI SSL_set_cipher_lists(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ ArrayOf<String>* ciphers);
+
+    /**
+     * Gets the list of cipher suites enabled for the provided {@code SSL} instance.
+     *
+     * @return array of {@code SSL_CIPHER} references.
+     */
+    static CARAPI SSL_get_ciphers(
+        /* [in] */ Int64 ssl_address,
+        /* [out, callee] */ ArrayOf<Int64>** result);
+
+    static CARAPI Get_SSL_CIPHER_algorithm_mkey(
+        /* [in] */ Int64 ssl_cipher_address,
+        /* [out] */ Int32* result);
+
+    static CARAPI Get_SSL_CIPHER_algorithm_auth(
+        /* [in] */ Int64 ssl_cipher_address,
+        /* [out] */ Int32* result);
+
+    static CARAPI SetEnabledCipherSuites(
+        /* [in] */ Int64 ssl,
+        /* [in] */ ArrayOf<String>* cipherSuites);
+
+    static CARAPI CheckEnabledCipherSuites(
+        /* [in] */ ArrayOf<String>* cipherSuites,
+        /* [out, callee] */ ArrayOf<String>** result);
+
+    static CARAPI SSL_set_accept_state(
+        /* [in] */ Int64 sslRef);
+
+    static CARAPI SSL_set_connect_state(
+        /* [in] */ Int64 sslRef);
+
+    static CARAPI SSL_set_verify(
+        /* [in] */ Int64 sslRef,
+        /* [in] */ Int32 mode);
+
+    static CARAPI SSL_set_session(
+        /* [in] */ Int64 sslRef,
+        /* [in] */ Int64 sslSessionNativePointer);
+
+    static CARAPI SSL_set_session_creation_enabled(
+        /* [in] */ Int64 sslRef,
+        /* [in] */ Boolean creationEnabled);
+
+    static CARAPI SSL_set_tlsext_host_name(
+        /* [in] */ Int64 sslRef,
+        /* [in] */ const String& hostname);
+
+    static CARAPI SSL_get_servername(
+        /* [in] */ Int64 sslRef,
+        /* [out] */ String* result);
 
 private:
     static CARAPI X509_NAME_hash(
@@ -960,6 +1073,7 @@ private:
 public:
     static AutoPtr<IMap> OPENSSL_TO_STANDARD_CIPHER_SUITES;
     static AutoPtr<IMap> STANDARD_TO_OPENSSL_CIPHER_SUITES;
+    static AutoPtr< ArrayOf<String> > DEFAULT_PROTOCOLS;
 
 private:
     static const Boolean sInitialized;
