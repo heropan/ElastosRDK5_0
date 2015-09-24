@@ -410,6 +410,24 @@ module
         interface INetworkInfo;
     }
 
+    class CNetworkKey {
+        constructor(
+            [in] IWifiKey* wifiKey);
+
+        interface IParcelable;
+        interface INetworkKey;
+    }
+
+    class CNetworkMisc {
+        constructor();
+
+        constructor(
+            [in] INetworkMisc* nm);
+
+        interface IParcelable;
+        interface INetworkMisc;
+    }
+
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos

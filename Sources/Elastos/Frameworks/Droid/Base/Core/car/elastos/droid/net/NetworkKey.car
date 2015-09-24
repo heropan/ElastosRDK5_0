@@ -37,18 +37,12 @@ module
         GetType(
             [out] Int32* result);
 
-        SetType(
-            [in] Int32 type);
-
         /**
          * Information identifying a Wi-Fi network. Only set when {@link #type} equals
          * {@link #TYPE_WIFI}.
          */
         GetWifiKey(
             [out] IWifiKey** result);
-
-        SetWifiKey(
-            [in] IWifiKey* wifiKey);
 
     }
 

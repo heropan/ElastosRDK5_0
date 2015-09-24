@@ -18,6 +18,8 @@
 #include "elastos/droid/net/CNetworkFactory.h"
 #include "elastos/droid/net/CNetworkIdentity.h"
 #include "elastos/droid/net/CNetworkInfo.h"
+#include "elastos/droid/net/CNetworkKey.h"
+#include "elastos/droid/net/CNetworkMisc.h"
 
 namespace Elastos {
 namespace Droid {
@@ -61,7 +63,10 @@ CAR_OBJECT_IMPL(CNetworkIdentity)
 
 CAR_OBJECT_IMPL(CNetworkInfo)
 
+CAR_OBJECT_IMPL(CNetworkKey)
+
+CAR_OBJECT_IMPL(CNetworkMisc)
+
 } // namespace Net
 } // namespace Droid
 } // namespace Elastos
-
