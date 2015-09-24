@@ -2481,7 +2481,7 @@ AutoPtr<IUndoManager> TextView::GetUndoManager() {
 
 void TextView::SetUndoManager(
     /* [in] */ IUndoManager* undoManager,
-    /* [in] */ String tag)
+    /* [in] */ const String& tag)
 {
     if (undoManager != NULL) {
         CreateEditorIfNeeded();
@@ -3568,7 +3568,7 @@ String TextView::GetFontFeatureSettings()
 }
 
 void TextView::SetFontFeatureSettings(
-    /* [in] */ String fontFeatureSettings)
+    /* [in] */ const String& fontFeatureSettings)
 {
     String res;
     mTextPaint->GetFontFeatureSettings(&res);

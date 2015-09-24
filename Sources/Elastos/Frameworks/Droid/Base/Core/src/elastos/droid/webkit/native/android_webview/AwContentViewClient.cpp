@@ -141,7 +141,7 @@ void AwContentViewClient::OnBackgroundColorChanged(
 //@Override
 void AwContentViewClient::OnStartContentIntent(
     /* [in] */ IContext* context,
-    /* [in] */ String contentUrl)
+    /* [in] */ const String& contentUrl)
 {
     //  Callback when detecting a click on a content link.
     mAwContentsClient->ShouldOverrideUrlLoading(contentUrl);
@@ -149,7 +149,7 @@ void AwContentViewClient::OnStartContentIntent(
 
 //@Override
 void AwContentViewClient::OnUpdateTitle(
-    /* [in] */ String title)
+    /* [in] */ const String& title)
 {
     mAwContentsClient->OnReceivedTitle(title);
 }
@@ -170,7 +170,7 @@ AutoPtr<ContentVideoViewClient> AwContentViewClient::GetContentVideoViewClient()
 
 //@Override
 Boolean AwContentViewClient::ShouldBlockMediaRequest(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     return mAwSettings != NULL ?
             mAwSettings->GetBlockNetworkLoads() && URLUtil::IsNetworkUrl(url) : TRUE;

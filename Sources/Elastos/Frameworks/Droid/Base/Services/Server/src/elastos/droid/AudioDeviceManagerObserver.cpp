@@ -262,8 +262,8 @@ void AudioDeviceManagerObserver::Init()
 /** when the id is not NULL,it will find mapped androidName by id,
  *if the devName is not NULL,its device name will be set to devName,else not change the device name.*/
 String AudioDeviceManagerObserver::FindNameMap(
-    /* [in] */ String id,
-    /* [in] */ String devName,
+    /* [in] */ const String& id,
+    /* [in] */ const String& devName,
     /* [in] */ Boolean audioIn)
 {
     Logger::D(TAG, "~~~~~~~~ AudioDeviceManagerObserver: findNameMap: id: %s", id.string());
@@ -310,7 +310,7 @@ String AudioDeviceManagerObserver::FindNameMap(
 
 /** find mapped androidName by devName,if the reset is TRUE,its devName will reset to 'unknown' when find it */
 String AudioDeviceManagerObserver::FindNameMap(
-    /* [in] */ String devName,
+    /* [in] */ const String& devName,
     /* [in] */ Boolean audioIn,
     /* [in] */ Boolean reset)
 {
@@ -462,7 +462,7 @@ void AudioDeviceManagerObserver::OnUEvent(
 }
 
 void AudioDeviceManagerObserver::UpdateState(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Int32 type,
     /* [in] */ Int32 state)
 {
@@ -470,10 +470,10 @@ void AudioDeviceManagerObserver::UpdateState(
 }
 
 void AudioDeviceManagerObserver::UpdateState(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Int32 type,
     /* [in] */ Int32 state,
-    /* [in] */ String extraMng)
+    /* [in] */ const String& extraMng)
 {
     AutoLock lock(mLock);
     Logger::D(TAG, "name: %s, state: %d, type: %d", name.string(), state, type);
@@ -493,7 +493,7 @@ void AudioDeviceManagerObserver::UpdateState(
 }
 
 Int32 AudioDeviceManagerObserver::GetDevState(
-    /* [in] */ String statePath)
+    /* [in] */ const String& statePath)
 {
     ECode ec;
     do {

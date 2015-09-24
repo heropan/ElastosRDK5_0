@@ -37,8 +37,8 @@ public:
       * @param uniqueId The unique id used to identify the Autofill suggestion.
       */
     AutofillSuggestion(
-        /* [in] */ String name,
-        /* [in] */ String label,
+        /* [in] */ const String& name,
+        /* [in] */ const String& label,
         /* [in] */ Int32 uniqueId);
 
     // @Override

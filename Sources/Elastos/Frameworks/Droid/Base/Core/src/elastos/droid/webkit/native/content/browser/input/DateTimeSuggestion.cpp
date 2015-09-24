@@ -14,8 +14,8 @@ namespace Input {
  */
 DateTimeSuggestion::DateTimeSuggestion(
     /* [in] */ Double value,
-    /* [in] */ String localizedValue,
-    /* [in] */ String label)
+    /* [in] */ const String& localizedValue,
+    /* [in] */ const String& label)
     : mValue(value)
     , mLocalizedValue(localizedValue)
     , mLabel(label)

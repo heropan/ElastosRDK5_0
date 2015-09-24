@@ -9,7 +9,7 @@ private static final String AwAssets::LOGTAG = "AwAssets";
 //@CalledByNative
 AutoPtr< ArrayOf<Int64> > AwAssets::OspenAsset(
     /* [in] */ IContext* context,
-    /* [in] */ String fileName)
+    /* [in] */ const String& fileName)
 {
     AutoPtr<IAssetFileDescriptor> afd;
     //try {

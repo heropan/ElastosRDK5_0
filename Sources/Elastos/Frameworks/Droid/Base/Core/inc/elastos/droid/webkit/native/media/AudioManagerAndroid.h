@@ -66,7 +66,7 @@ private:
     private:
         AudioDeviceName(
             /* [in] */ Int32 id,
-            /* [in] */ String name);
+            /* [in] */ const String& name);
 
         //@CalledByNative("AudioDeviceName")
         CARAPI_(String) Id();
@@ -203,7 +203,7 @@ private:
      */
     //@CalledByNative
     CARAPI_(Boolean) SetDevice(
-        /* [in] */ String deviceId);
+        /* [in] */ const String& deviceId);
 
     /**
      * @return the current list of available audio devices.
@@ -290,7 +290,7 @@ private:
 
     /** Checks if the process has as specified permission or not. */
     CARAPI_(Boolean) HasPermission(
-        /* [in] */ String permission);
+        /* [in] */ const String& permission);
 
     /**
      * Gets the current Bluetooth headset state.
@@ -376,11 +376,11 @@ private:
 
     /** Trivial helper method for debug logging */
     static CARAPI_(void) Logd(
-        /* [in] */ String msg);
+        /* [in] */ const String& msg);
 
     /** Trivial helper method for error logging */
     static CARAPI_(void) Loge(
-        /* [in] */ String msg);
+        /* [in] */ const String& msg);
 
     /** Start thread which observes volume changes on the voice stream. */
     CARAPI_(void) StartObservingVolumeChanges();

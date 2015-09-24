@@ -59,13 +59,13 @@ public:
     //@CalledByNative
     CARAPI_(void) NewHttpGetDownload(
         /* [in] */ ContentViewCore* view,
-        /* [in] */ String url,
-        /* [in] */ String userAgent,
-        /* [in] */ String contentDisposition,
-        /* [in] */ String mimeType,
-        /* [in] */ String cookie,
-        /* [in] */ String referer,
-        /* [in] */ String filename,
+        /* [in] */ const String& url,
+        /* [in] */ const String& userAgent,
+        /* [in] */ const String& contentDisposition,
+        /* [in] */ const String& mimeType,
+        /* [in] */ const String& cookie,
+        /* [in] */ const String& referer,
+        /* [in] */ const String& filename,
         /* [in] */ Int64 contentLength);
 
     /**
@@ -78,8 +78,8 @@ public:
     //@CalledByNative
     CARAPI_(void) OnDownloadStarted(
         /* [in] */ ContentViewCore* view,
-        /* [in] */ String filename,
-        /* [in] */ String mimeType);
+        /* [in] */ const String& filename,
+        /* [in] */ const String& mimeType);
 
     /**
      * Notifies the download delegate that a download completed and passes along info about the
@@ -88,10 +88,10 @@ public:
     //@CalledByNative
     CARAPI_(void) OnDownloadCompleted(
         /* [in] */ IContext* context,
-        /* [in] */ String url,
-        /* [in] */ String mimeType,
-        /* [in] */ String filename,
-        /* [in] */ String path,
+        /* [in] */ const String& url,
+        /* [in] */ const String& mimeType,
+        /* [in] */ const String& filename,
+        /* [in] */ const String& path,
         /* [in] */ Int64 contentLength,
         /* [in] */ Boolean successful,
         /* [in] */ Int32 downloadId);
@@ -103,10 +103,10 @@ public:
     //@CalledByNative
     CARAPI_(void) OnDownloadUpdated(
         /* [in] */ IContext* context,
-        /* [in] */ String url,
-        /* [in] */ String mimeType,
-        /* [in] */ String filename,
-        /* [in] */ String path,
+        /* [in] */ const String& url,
+        /* [in] */ const String& mimeType,
+        /* [in] */ const String& filename,
+        /* [in] */ const String& path,
         /* [in] */ Int64 contentLength,
         /* [in] */ Boolean successful,
         /* [in] */ Int32 downloadId,
@@ -119,7 +119,7 @@ public:
     //@CalledByNative
     CARAPI_(void) OnDangerousDownload(
         /* [in] */ ContentViewCore* view,
-        /* [in] */ String filename,
+        /* [in] */ const String& filename,
         /* [in] */ Int32 downloadId);
 
 private:

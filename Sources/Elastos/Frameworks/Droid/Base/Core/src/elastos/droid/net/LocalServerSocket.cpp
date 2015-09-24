@@ -10,7 +10,7 @@ CAR_INTERFACE_IMPL(LocalServerSocket, Object, ILocalServerSocket)
 const Int32 LocalServerSocket::sLISTEN_BACKLOG = 50;
 
 ECode LocalServerSocket::constructor(
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translated before. Need check.

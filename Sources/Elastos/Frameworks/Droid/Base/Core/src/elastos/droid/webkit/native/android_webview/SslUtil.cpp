@@ -12,7 +12,7 @@ const String SslUtil::TAG("SslUtil");
 AutoPtr<ISslError> SslUtil::SslErrorFromNetErrorCode(
     /* [in] */ Int32 error,
     /* [in] */ ISslCertificate* cert,
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     assert (error >= NetError::ERR_CERT_END && error <= NetError::ERR_CERT_COMMON_NAME_INVALID);
     switch(error) {

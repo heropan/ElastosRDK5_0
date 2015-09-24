@@ -41,7 +41,7 @@ public:
     // @CalledByNative
     static CARAPI_(Boolean) AssetContainedInApk(
         /* [in] */ IContext* ctx,
-        /* [in] */ String filename);
+        /* [in] */ const String& filename);
 };
 
 } // namespace Base

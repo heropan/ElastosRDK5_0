@@ -5,8 +5,8 @@ namespace Webkit {
 namespace AndroidWebview {
 
 AwWebResourceResponse::AwWebResourceResponse(
-    /* [in] */ String mimeType,
-    /* [in] */ String encoding,
+    /* [in] */ const String& mimeType,
+    /* [in] */ const String& encoding,
     /* [in] */ IInputStream* data)
     : mMimeType(mimeType)
     , mCharset(encoding)
@@ -16,11 +16,11 @@ AwWebResourceResponse::AwWebResourceResponse(
 }
 
 AwWebResourceResponse::AwWebResourceResponse(
-    /* [in] */ String mimeType,
-    /* [in] */ String encoding,
+    /* [in] */ const String& mimeType,
+    /* [in] */ const String& encoding,
     /* [in] */ IInputStream* data,
     /* [in] */ Int32 statusCode,
-    /* [in] */ String reasonPhrase,
+    /* [in] */ const String& reasonPhrase,
     /* [in] */ Map<String, String> responseHeaders)
     : mMimeType(mimeType)
     , mCharset(encoding)

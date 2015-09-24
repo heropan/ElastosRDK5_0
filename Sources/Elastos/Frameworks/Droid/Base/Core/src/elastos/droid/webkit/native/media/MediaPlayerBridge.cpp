@@ -11,7 +11,7 @@ namespace Media {
 MediaPlayerBridge::LoadDataUriTask::LoadDataUriTask(
     /* [in] */ MediaPlayerBridge* owner,
     /* [in] */ IContext* context,
-    /* [in] */ String data)
+    /* [in] */ const String& data)
     : mOwner(owner)
     , mData(data)
     , mContext(context)
@@ -257,9 +257,9 @@ void MediaPlayerBridge::SeekTo(
 //@CalledByNative
 Boolean MediaPlayerBridge::SetDataSource(
     /* [in] */ IContext* context,
-    /* [in] */ String url,
-    /* [in] */ String cookies,
-    /* [in] */ String userAgent,
+    /* [in] */ const String& url,
+    /* [in] */ const String& cookies,
+    /* [in] */ const String& userAgent,
     /* [in] */ Boolean hideUrlLog)
 {
     Uri uri = Uri.parse(url);

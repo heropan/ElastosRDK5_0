@@ -63,8 +63,8 @@ private:
     ValidationMessageBubble(
         /* [in] */ ContentViewCore* contentViewCore,
         /* [in] */ IRectF* anchor,
-        /* [in] */ String mainText,
-        /* [in] */ String subText);
+        /* [in] */ const String& mainText,
+        /* [in] */ const String& subText);
 
     /**
       * Creates a popup window to show the specified messages, and show it on
@@ -88,8 +88,8 @@ private:
         /* [in] */ Int32 anchorY,
         /* [in] */ Int32 anchorWidth,
         /* [in] */ Int32 anchorHeight,
-        /* [in] */ String mainText,
-        /* [in] */ String subText);
+        /* [in] */ const String& mainText,
+        /* [in] */ const String& subText);
 
     // @CalledByNative
     CARAPI Close();
@@ -124,8 +124,8 @@ private:
 
     static CARAPI UpdateTextViews(
         /* [in] */ IViewGroup* root,
-        /* [in] */ String mainText,
-        /* [in] */ String subText);
+        /* [in] */ const String& mainText,
+        /* [in] */ const String& subText);
 
     CARAPI Measure(
         /* [in] */ RenderCoordinates* coordinates);

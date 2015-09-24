@@ -45,7 +45,7 @@ private:
     // @CalledByNative
     static CARAPI_(String) ConvertToUnicode(
         /* [in] */ IByteBuffer* text,
-        /* [in] */ String charset_name);
+        /* [in] */ const String& charset_name);
 
     /**
       * Attempts to convert text in a given character set to a Unicode string,
@@ -57,7 +57,7 @@ private:
     // @CalledByNative
     static CARAPI_(String) ConvertToUnicodeAndNormalize(
         /* [in] */ IByteBuffer* text,
-        /* [in] */ String charset_name);
+        /* [in] */ const String& charset_name);
 
     /**
       * Convert text in a given character set to a Unicode string.  Any invalid
@@ -70,7 +70,7 @@ private:
     // @CalledByNative
     static CARAPI_(String) ConvertToUnicodeWithSubstitutions(
         /* [in] */ IByteBuffer* text,
-        /* [in] */ String charset_name);
+        /* [in] */ const String& charset_name);
 };
 
 } // namespace Net

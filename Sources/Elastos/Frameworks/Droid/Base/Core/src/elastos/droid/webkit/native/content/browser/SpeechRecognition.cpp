@@ -216,7 +216,7 @@ SpeechRecognition::SpeechRecognition(
     : Continuous mode may not work as expected with a different provider.
              mRecognizer = SpeechRecognizer.createSpeechRecognizer(mContext);
          }
- 
+
          mRecognizer.setRecognitionListener(mListener);
      }
 {
@@ -276,7 +276,7 @@ AutoPtr<SpeechRecognition> SpeechRecognition::CreateSpeechRecognition(
 }
 
 ECode SpeechRecognition::StartRecognition(
-    /* [in] */ String language,
+    /* [in] */ const String& language,
     /* [in] */ Boolean continuous,
     /* [in] */ Boolean interimResults)
 {

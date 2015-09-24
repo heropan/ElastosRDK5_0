@@ -42,7 +42,7 @@ void AwContentsStatics::clientCertificatesCleared(
  * Set Data Reduction Proxy key for authentication.
  */
 void AwContentsStatics::SetDataReductionProxyKey(
-    /* [in] */ String key)
+    /* [in] */ const String& key)
 {
     ThreadUtils::AssertOnUiThread();
     NativeSetDataReductionProxyKey(key);
@@ -81,7 +81,7 @@ void AwContentsStatics::NativeClearClientCertPreferences(
 }
 
 void AwContentsStatics::NativeSetDataReductionProxyKey(
-    /* [in] */ String key)
+    /* [in] */ const String& key)
 {
 }
 

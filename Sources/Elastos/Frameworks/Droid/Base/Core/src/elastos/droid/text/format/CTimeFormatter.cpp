@@ -51,7 +51,7 @@ CTimeFormatter::CTiemFormatter()
 }
 
 String CTiemFormatter::Format(
-    /* [in] */ String pattern,
+    /* [in] */ const String& pattern,
     /* [in] */ IZoneInfoWallTime* wallTime,
     /* [in] */ IZoneInfo* zoneInfo)
 {
@@ -79,7 +79,7 @@ String CTiemFormatter::Format(
 }
 
 String CTiemFormatter::LocalizeDigits(
-    /* [in] */ String s)
+    /* [in] */ const String& s)
 {
     Int32 length = s.GetLength();
     Int32 offsetToLocalizedDigits = mLocaleData->mZeroDigit - '0';
@@ -96,7 +96,7 @@ String CTiemFormatter::LocalizeDigits(
 }
 
 ECode CTiemFormatter::FormatInternal(
-    /* [in] */ String pattern,
+    /* [in] */ const String& pattern,
     /* [in] */ IZoneInfoWallTime* wallTime,
     /* [in] */ IZoneInfo* zoneInfo)
 {
@@ -478,10 +478,10 @@ ECode CTimeFormatter::OutputYear(
 
 String CTimeFormatter::GetFormat(
     /* [in] */ Int32 modifier,
-    /* [in] */ String normal,
-    /* [in] */ String underscore,
-    /* [in] */ String dash,
-    /* [in] */ String zero)
+    /* [in] */ const String& normal,
+    /* [in] */ const String& underscore,
+    /* [in] */ const String& dash,
+    /* [in] */ const String& zero)
 {
     switch (modifier) {
         case '_':

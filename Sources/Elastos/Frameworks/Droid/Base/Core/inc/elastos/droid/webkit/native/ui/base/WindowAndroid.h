@@ -183,7 +183,7 @@ public:
       * @param error The error message string to be displayed.
       */
     virtual CARAPI ShowError(
-        /* [in] */ String error);
+        /* [in] */ const String& error);
 
     /**
       * Displays an error message from the given resource id.
@@ -265,7 +265,7 @@ protected:
       * @param error The error message string to be displayed.
       */
     virtual CARAPI ShowCallbackNonExistentError(
-        /* [in] */ String error);
+        /* [in] */ const String& error);
 
 private:
     // @CalledByNative

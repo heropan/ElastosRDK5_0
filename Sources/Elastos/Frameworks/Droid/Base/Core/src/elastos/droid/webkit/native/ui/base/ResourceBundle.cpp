@@ -13,7 +13,7 @@ namespace Base {
 //=====================================================================
 Boolean ResourceBundle::AssetContainedInApk(
     /* [in] */ IContext* ctx,
-    /* [in] */ String filename)
+    /* [in] */ const String& filename)
 {
     // ==================before translated======================
     // try {

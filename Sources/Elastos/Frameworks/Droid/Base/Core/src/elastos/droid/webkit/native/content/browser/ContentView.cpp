@@ -24,8 +24,8 @@ ContentView::InnerSmartClipDataListener::InnerSmartClipDataListener(
 }
 
 void ContentView::InnerSmartClipDataListener::OnSmartClipDataExtracted(
-    /* [in] */ String text,
-    /* [in] */ String html,
+    /* [in] */ const String& text,
+    /* [in] */ const String& html,
     /* [in] */ IRect* clipRect)
 {
     assert(0);

@@ -31,7 +31,7 @@ CAR_INTERFACE_IMPL(MediaBrowserService::ConnectRunnable, Object, IRunnable)
 
 MediaBrowserService::ConnectRunnable::ConnectRunnable(
     /* [in] */ MediaBrowserService* mediaBrowserService,
-    /* [in] */ String pkg,
+    /* [in] */ const String& pkg,
     /* [in] */ IBundle * rootHints,
     /* [in] */ IIMediaBrowserServiceCallbacks * callbacks,
     /* [in] */ Int32 uid)
@@ -118,7 +118,7 @@ CAR_INTERFACE_IMPL(MediaBrowserService::AddSubscriptionRunnable, Object, IRunnab
 
 MediaBrowserService::AddSubscriptionRunnable::AddSubscriptionRunnable(
     /* [in] */ MediaBrowserService* mediaBrowserService,
-    /* [in] */ String id,
+    /* [in] */ const String& id,
     /* [in] */ IIMediaBrowserServiceCallbacks * callbacks)
 {
     mMediaBrowserService = mediaBrowserService;
@@ -153,7 +153,7 @@ CAR_INTERFACE_IMPL(MediaBrowserService::RemoveSubscriptionRunnable, Object, IRun
 
 MediaBrowserService::RemoveSubscriptionRunnable::RemoveSubscriptionRunnable(
     /* [in] */ MediaBrowserService* mediaBrowserService,
-    /* [in] */ String id,
+    /* [in] */ const String& id,
     /* [in] */ IIMediaBrowserServiceCallbacks * callbacks)
 {
     mMediaBrowserService = mediaBrowserService;
@@ -193,7 +193,7 @@ CAR_INTERFACE_IMPL(MediaBrowserService::NotifyChildrenChangedRunnable, Object, I
 
 MediaBrowserService::NotifyChildrenChangedRunnable::NotifyChildrenChangedRunnable(
     /* [in] */ MediaBrowserService* mediaBrowserService,
-    /* [in] */ String parentId)
+    /* [in] */ const String& parentId)
 {
     mMediaBrowserService = mediaBrowserService;
     mParentId = parentId;
@@ -229,7 +229,7 @@ ECode MediaBrowserService::NotifyChildrenChangedRunnable::Run()
 
 MediaBrowserService::PerformLoadChildrenResult::PerformLoadChildrenResult(
     /* [in] */ MediaBrowserService* mediaBrowserService,
-    /* [in] */ String parentId,
+    /* [in] */ const String& parentId,
     /* [in] */ ConnectionRecord * connection)
 {
     mMediaBrowserService = mediaBrowserService;
@@ -370,7 +370,7 @@ ECode MediaBrowserService::Dump(
 }
 
 ECode MediaBrowserService::OnGetRoot(
-    /* [in] */ String clientPackageName,
+    /* [in] */ const String& clientPackageName,
     /* [in] */ Int32 clientUid,
     /* [in] */ IBundle * rootHints,
     /* [out] */ IMediaBrowserServiceBrowserRoot ** result)
@@ -379,7 +379,7 @@ ECode MediaBrowserService::OnGetRoot(
 }
 
 ECode MediaBrowserService::OnLoadChildren(
-    /* [in] */ String parentId,
+    /* [in] */ const String& parentId,
     /* [in] */ IMediaBrowserServiceResult * result)
 {
     return NOERROR;
@@ -407,7 +407,7 @@ ECode MediaBrowserService::GetSessionToken(
 }
 
 ECode MediaBrowserService::NotifyChildrenChanged(
-    /* [in] */ String parentId)
+    /* [in] */ const String& parentId)
 {
     if (parentId == NULL) {
         // throw new IllegalArgumentException("parentId cannot be null in notifyChildrenChanged");
@@ -419,7 +419,7 @@ ECode MediaBrowserService::NotifyChildrenChanged(
 }
 
 Boolean MediaBrowserService::IsValidPackage(
-    /* [in] */ String pkg,
+    /* [in] */ const String& pkg,
     /* [in] */ Int32 uid)
 {
     if (pkg == NULL) {
@@ -440,7 +440,7 @@ Boolean MediaBrowserService::IsValidPackage(
 }
 
 void MediaBrowserService::AddSubscription(
-    /* [in] */ String id,
+    /* [in] */ const String& id,
     /* [in] */ ConnectionRecord * connection)
 {
     // Save the subscription
@@ -456,7 +456,7 @@ void MediaBrowserService::AddSubscription(
 }
 
 ECode MediaBrowserService::PerformLoadChildren(
-    /* [in] */ String parentId,
+    /* [in] */ const String& parentId,
     /* [in] */ ConnectionRecord * connection)
 {
     // Result<List<MediaBrowser.MediaItem>> result

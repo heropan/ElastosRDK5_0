@@ -9,8 +9,8 @@ namespace Media {
 //===============================================================
 
 VideoCaptureAndroid::BuggyDeviceHack::IdAndSizes::IdAndSizes(
-    /* [in] */ String model,
-    /* [in] */ String device,
+    /* [in] */ const String& model,
+    /* [in] */ const String& device,
     /* [in] */ Int32 minWidth,
     /* [in] */ Int32 minHeight)
     : mModel(model)

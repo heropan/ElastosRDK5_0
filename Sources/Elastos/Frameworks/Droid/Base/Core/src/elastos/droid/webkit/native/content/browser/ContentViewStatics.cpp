@@ -13,7 +13,7 @@ namespace Browser {
  * @return the address, or if no address is found, return null.
  */
 String ContentViewStatics::FindAddress(
-    /* [in] */ String addr)
+    /* [in] */ const String& addr)
 {
     if (addr == NULL) {
         //throw new NullPointerException("addr is null");
@@ -59,7 +59,7 @@ void ContentViewStatics::DisablePlatformNotifications ()
 // Native functions
 
 String ContentViewStatics::NativeFindAddress(
-    /* [in] */ String addr)
+    /* [in] */ const String& addr)
 {
 }
 

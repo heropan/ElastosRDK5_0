@@ -9,8 +9,13 @@ using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IHandlerCallback;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Content::IContext;
+using Elastos::Core::ICharSequence;
+using Elastos::IO::IInputStream;
 using Elastos::Utility::IList;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -56,6 +61,10 @@ private:
     public:
         CAR_INTERFACE_DECL()
 
+        SessionCallbackDelegate(
+            /* [in] */ IPackageInstallerSessionCallback* callback,
+            /* [in] */ ILooper* looper);
+
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg,
             /* [out] */ Boolean* result);
@@ -78,6 +87,8 @@ private:
             /* [in] */ Int32 sessionId,
             /* [in] */ Boolean success);
 
+        CARAPI ToString(
+            /* [out] */ String* str);
     private:
         friend class CPackageInstaller;
 
@@ -99,6 +110,8 @@ public:
     CPackageInstaller();
 
     ~CPackageInstaller();
+
+    CARAPI constructor();
 
     /** {@hide} */
     CARAPI constructor(

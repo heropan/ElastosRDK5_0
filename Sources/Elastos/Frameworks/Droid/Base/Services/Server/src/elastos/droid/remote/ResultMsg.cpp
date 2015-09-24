@@ -54,7 +54,7 @@ Int32 ResultMsg::ToInt32()
 }
 
 AutoPtr<ResultMsg> ResultMsg::SetResult(
-    /* [in] */ String str)
+    /* [in] */ const String& str)
 {
     mResult = str;
     return this;

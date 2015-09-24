@@ -106,9 +106,9 @@ private:
         //@JavascriptInterface
         //@SuppressWarnings("unused")
         CARAPI_(Int32) Speak(
-            /* [in] */ String text,
+            /* [in] */ const String& text,
             /* [in] */ Int32 queueMode,
-            /* [in] */ String jsonParams);
+            /* [in] */ const String& jsonParams);
 
         //@JavascriptInterface
         //@SuppressWarnings("unused")
@@ -117,7 +117,7 @@ private:
         //@JavascriptInterface
         //@SuppressWarnings("unused")
         CARAPI_(void) Braille(
-            /* [in] */ String jsonString);
+            /* [in] */ const String& jsonString);
 
     protected:
         //@SuppressWarnings("unused")
@@ -181,11 +181,11 @@ public:
      */
     //@Override
     CARAPI DidStartLoading(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     //@Override
     CARAPI DidStopLoading(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     /**
      * Stop any notifications that are currently going on (e.g. Text-to-Speech).

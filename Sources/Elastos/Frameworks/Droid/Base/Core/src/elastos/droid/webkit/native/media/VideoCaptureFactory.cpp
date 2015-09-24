@@ -10,7 +10,7 @@ namespace Media {
 
 VideoCaptureFactory::CamParams::CamParams(
     /* [in] */ Int32 id,
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
     : mId(id)

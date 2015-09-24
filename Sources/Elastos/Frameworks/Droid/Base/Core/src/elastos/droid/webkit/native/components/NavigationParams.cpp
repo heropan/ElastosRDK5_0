@@ -11,7 +11,7 @@ namespace Components {
 //                           NavigationParams
 //=====================================================================
 NavigationParams::NavigationParams(
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ Boolean isPost,
     /* [in] */ Boolean hasUserGesture,
     /* [in] */ Int32 pageTransitionType,
@@ -26,7 +26,7 @@ NavigationParams::NavigationParams(
 }
 
 AutoPtr<NavigationParams> NavigationParams::Create(
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ Boolean isPost,
     /* [in] */ Boolean hasUserGesture,
     /* [in] */ Int32 pageTransitionType,

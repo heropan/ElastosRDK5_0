@@ -23,7 +23,7 @@ public:
     ChromiumLinkerParams(
         /* [in] */ Int64 baseLoadAddress,
         /* [in] */ Boolean waitForSharedRelro,
-        /* [in] */ String testRunnerClassName);
+        /* [in] */ const String& testRunnerClassName);
 
     /**
      * Use this constructor to recreate a LinkerParams instance from an Intent.

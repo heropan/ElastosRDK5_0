@@ -133,7 +133,7 @@ AutoPtr<IAccessibilityNodeInfo> BrowserAccessibilityManager::CreateAccessibility
  * @see AccessibilityNodeProvider#findAccessibilityNodeInfosByText(String, int)
  */
 List<AccessibilityNodeInfo> BrowserAccessibilityManager::FindAccessibilityNodeInfosByText(
-    /* [in] */ String text,
+    /* [in] */ const String& text,
     /* [in] */ Int32 virtualViewId)
 {
     return new ArrayList<AccessibilityNodeInfo>();
@@ -285,7 +285,7 @@ void BrowserAccessibilityManager::NotifyFrameInfoInitialized()
 }
 
 Boolean BrowserAccessibilityManager::JumpToElementType(
-    /* [in] */ String elementType,
+    /* [in] */ const String& elementType,
     /* [in] */ Boolean forwards)
 {
     Int32 id = NativeFindElementType(mNativeObj, mAccessibilityFocusId, elementType, forwards);
@@ -508,7 +508,7 @@ void BrowserAccessibilityManager::HandleHover(
 
 //@CalledByNative
 void BrowserAccessibilityManager::AnnounceLiveRegionText(
-    /* [in] */ String text)
+    /* [in] */ const String& text)
 {
     mView->AnnounceForAccessibility(text);
 }
@@ -584,7 +584,7 @@ void BrowserAccessibilityManager::SetAccessibilityNodeInfoBooleanAttributes(
 //@CalledByNative
 void BrowserAccessibilityManager::SetAccessibilityNodeInfoClassName(
     /* [in] */ IAccessibilityNodeInfo* node,
-    /* [in] */ String className)
+    /* [in] */ const String& className)
 {
     node->SetClassName(className);
 }
@@ -592,7 +592,7 @@ void BrowserAccessibilityManager::SetAccessibilityNodeInfoClassName(
 //@CalledByNative
 void BrowserAccessibilityManager::SetAccessibilityNodeInfoContentDescription(
     /* [in] */ IAccessibilityNodeInfo* node,
-    /* [in] */ String contentDescription,
+    /* [in] */ const String& contentDescription,
     /* [in] */ Boolean annotateAsLink)
 {
     if (annotateAsLink) {
@@ -729,7 +729,7 @@ void BrowserAccessibilityManager::SetAccessibilityEventBooleanAttributes(
 //@CalledByNative
 void BrowserAccessibilityManager::SetAccessibilityEventClassName(
     /* [in] */ IAccessibilityEvent* event,
-    /* [in] */ String className)
+    /* [in] */ const String& className)
 {
     event->SetClassName(className);
 }
@@ -764,8 +764,8 @@ void BrowserAccessibilityManager::SetAccessibilityEventTextChangedAttrs(
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 addedCount,
     /* [in] */ Int32 removedCount,
-    /* [in] */ String beforeText,
-    /* [in] */ String text)
+    /* [in] */ const String& beforeText,
+    /* [in] */ const String& text)
 {
     event->SetFromIndex(fromIndex);
     event->SetAddedCount(addedCount);
@@ -782,7 +782,7 @@ void BrowserAccessibilityManager::SetAccessibilityEventSelectionAttrs(
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 addedCount,
     /* [in] */ Int32 itemCount,
-    /* [in] */ String text)
+    /* [in] */ const String& text)
 {
     event->SetFromIndex(fromIndex);
     event->SetAddedCount(addedCount);
@@ -927,7 +927,7 @@ void BrowserAccessibilityManager::NativeScrollToMakeNodeVisible(
 Int32 BrowserAccessibilityManager::NativeFindElementType(
     /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ Int32 startId,
-    /* [in] */ String elementType,
+    /* [in] */ const String& elementType,
     /* [in] */ Boolean forwards)
 {
 }

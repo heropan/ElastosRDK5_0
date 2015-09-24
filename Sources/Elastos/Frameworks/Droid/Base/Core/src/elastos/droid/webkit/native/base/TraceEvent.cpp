@@ -128,7 +128,7 @@ void TraceEvent::IdleTracingLooperMonitor::EndHandling(
 
 void TraceEvent::IdleTracingLooperMonitor::TraceAndLog(
     /* [in] */ Int32 level,
-    /* [in] */ String message)
+    /* [in] */ const String& message)
 {
     TraceEvent::Instant(String("TraceEvent.LooperMonitor:IdleStats"), message);
 //    Log.println(level, TAG, message);
@@ -238,7 +238,7 @@ Boolean TraceEvent::Enabled()
  * @param name The name of the event.
  */
 void TraceEvent::Instant(
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
     if (sEnabled) NativeInstant(name, String(NULL));
 }
@@ -249,8 +249,8 @@ void TraceEvent::Instant(
  * @param arg  The arguments of the event.
  */
 void TraceEvent::Instant(
-    /* [in] */ String name,
-    /* [in] */ String arg)
+    /* [in] */ const String& name,
+    /* [in] */ const String& arg)
 {
     if (sEnabled) NativeInstant(name, arg);
 }
@@ -272,7 +272,7 @@ void TraceEvent::StartAsync(
  * @param id   The id of the asynchronous event.
  */
 void TraceEvent::StartAsync(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Int64 id)
 {
     if (sEnabled) NativeStartAsync(name, id, String(NULL));
@@ -285,9 +285,9 @@ void TraceEvent::StartAsync(
  * @param arg  The arguments of the event.
  */
 void TraceEvent::StartAsync(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Int64 id,
-    /* [in] */ String arg)
+    /* [in] */ const String& arg)
 {
     if (sEnabled) NativeStartAsync(name, id, arg);
 }
@@ -309,7 +309,7 @@ void TraceEvent::FinishAsync(
  * @param id   The id of the asynchronous event.
  */
 void TraceEvent::FinishAsync(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Int64 id)
 {
     if (sEnabled) NativeFinishAsync(name, id, String(NULL));
@@ -322,9 +322,9 @@ void TraceEvent::FinishAsync(
  * @param arg  The arguments of the event.
  */
 void TraceEvent::FinishAsync(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Int64 id,
-    /* [in] */ String arg)
+    /* [in] */ const String& arg)
 {
     if (sEnabled) NativeFinishAsync(name, id, arg);
 }
@@ -347,7 +347,7 @@ void TraceEvent::Begin() {
  * @param name The name of the event.
  */
 void TraceEvent::Begin(
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
     if (sEnabled) NativeBegin(name, String(NULL));
 }
@@ -358,8 +358,8 @@ void TraceEvent::Begin(
  * @param arg  The arguments of the event.
  */
 void TraceEvent::Begin(
-    /* [in] */ String name,
-    /* [in] */ String arg)
+    /* [in] */ const String& name,
+    /* [in] */ const String& arg)
 {
     if (sEnabled) NativeBegin(name, arg);
 }
@@ -377,7 +377,7 @@ void TraceEvent::End() {
  * @param name The name of the event.
  */
 void TraceEvent::End(
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
     if (sEnabled) NativeEnd(name, String(NULL));
 }
@@ -388,8 +388,8 @@ void TraceEvent::End(
  * @param arg  The arguments of the event.
  */
 void TraceEvent::End(
-    /* [in] */ String name,
-    /* [in] */ String arg)
+    /* [in] */ const String& name,
+    /* [in] */ const String& arg)
 {
     if (sEnabled) NativeEnd(name, arg);
 }
@@ -426,20 +426,20 @@ void TraceEvent::NativeStopATrace()
 }
 
 void TraceEvent::NativeInstant(
-    /* [in] */ String name,
-    /* [in] */ String arg)
+    /* [in] */ const String& name,
+    /* [in] */ const String& arg)
 {
 }
 
 void TraceEvent::NativeBegin(
-    /* [in] */ String name,
-    /* [in] */ String arg)
+    /* [in] */ const String& name,
+    /* [in] */ const String& arg)
 {
 }
 
 void TraceEvent::NativeEnd(
-    /* [in] */ String name,
-    /* [in] */ String arg)
+    /* [in] */ const String& name,
+    /* [in] */ const String& arg)
 {
 }
 
@@ -452,16 +452,16 @@ void TraceEvent::NativeEndToplevel()
 }
 
 void TraceEvent::NativeStartAsync(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Int64 id,
-    /* [in] */ String arg)
+    /* [in] */ const String& arg)
 {
 }
 
 void TraceEvent::NativeFinishAsync(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Int64 id,
-    /* [in] */ String arg)
+    /* [in] */ const String& arg)
 {
 }
 

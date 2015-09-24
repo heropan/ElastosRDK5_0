@@ -1,13 +1,19 @@
-#include <elastos/droid/content/pm/CPackageInstaller.h>
-#include <elastos/droid/content/pm/CPackageInstallerSession.h>
-#include <elastos/droid/os/CHandler.h>
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/content/pm/CPackageInstaller.h"
+#include "elastos/droid/content/pm/CPackageInstallerSession.h"
+#include "elastos/droid/os/CHandler.h"
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::EIID_IBinder;
-using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::EIID_IHandlerCallback;
 using Elastos::Core::IFloat;
 using Elastos::Core::CFloat;
+using Elastos::Utility::ICollections;
+using Elastos::Utility::CCollections;
 using Elastos::Utility::IIterator;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -23,7 +29,15 @@ const Int32 CPackageInstaller::SessionCallbackDelegate::MSG_SESSION_ACTIVE_CHANG
 const Int32 CPackageInstaller::SessionCallbackDelegate::MSG_SESSION_PROGRESS_CHANGED = 4;
 const Int32 CPackageInstaller::SessionCallbackDelegate::MSG_SESSION_FINISHED = 5;
 
-CAR_INTERFACE_DECL_3(CPackageInstaller::SessionCallbackDelegate, Object, IPackageInstallerCallback, IHandlerCallback, IBinder)
+CAR_INTERFACE_IMPL_3(CPackageInstaller::SessionCallbackDelegate, Object, IPackageInstallerCallback, IHandlerCallback, IBinder)
+
+CPackageInstaller::SessionCallbackDelegate::SessionCallbackDelegate(
+    /* [in] */ IPackageInstallerSessionCallback* callback,
+    /* [in] */ ILooper* looper)
+    : mCallback(callback)
+{
+    CHandler::New(looper, THIS_PROBE(IHandlerCallback), FALSE, (IHandler**)&mHandler);
+}
 
 ECode CPackageInstaller::SessionCallbackDelegate::HandleMessage(
     /* [in] */ IMessage* msg,
@@ -104,7 +118,7 @@ ECode CPackageInstaller::SessionCallbackDelegate::OnSessionProgressChanged(
     /* [in] */ Float progress)
 {
     AutoPtr<IFloat> fo;
-    CFloat::New(fo, (IFloat**)&fo);
+    CFloat::New(progress, (IFloat**)&fo);
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(MSG_SESSION_PROGRESS_CHANGED, sessionId, 0, TO_IINTERFACE(fo), (IMessage**)&msg);
     return msg->SendToTarget();
@@ -119,6 +133,14 @@ ECode CPackageInstaller::SessionCallbackDelegate::OnSessionFinished(
     return msg->SendToTarget();
 }
 
+ECode CPackageInstaller::SessionCallbackDelegate::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("CPackageInstaller::SessionCallbackDelegate");
+    return NOERROR;
+}
+
 //=============================================================
 // CPackageInstaller
 //=============================================================
@@ -129,10 +151,16 @@ CAR_INTERFACE_IMPL(CPackageInstaller, Object, IPackageInstaller)
 CAR_OBJECT_IMPL(CPackageInstaller)
 
 CPackageInstaller::CPackageInstaller()
+    : mUserId(0)
 {}
 
 CPackageInstaller::~CPackageInstaller()
 {}
+
+ECode CPackageInstaller::constructor()
+{
+    return NOERROR;
+}
 
 ECode CPackageInstaller::constructor(
     /* [in] */ IContext* context,
@@ -170,9 +198,10 @@ ECode CPackageInstaller::OpenSession(
 {
     VALIDATE_NOT_NULL(session)
     // try {
-    AutoPtr<IPackageInstallerSession> ss;
-    mInstaller->OpenSession(sessionId, (IPackageInstallerSession**)&ss);
-    return CPackageInstallerSession::New(ss, session);
+    AutoPtr<IIPackageInstallerSession> ss;
+    mInstaller->OpenSession(sessionId, (IIPackageInstallerSession**)&ss);
+    CPackageInstallerSession::New(session);
+    return ((CPackageInstallerSession*)(*session))->constructor(ss);
     // } catch (RuntimeException e) {
     //     ExceptionUtils.maybeUnwrapIOException(e);
     //     throw e;
@@ -190,7 +219,6 @@ ECode CPackageInstaller::UpdateSessionAppIcon(
     // } catch (RemoteException e) {
     //     throw e.rethrowAsRuntimeException();
     // }
-    return NOERROR;
 }
 
 ECode CPackageInstaller::UpdateSessionAppLabel(
@@ -198,8 +226,8 @@ ECode CPackageInstaller::UpdateSessionAppLabel(
     /* [in] */ ICharSequence* appLabel)
 {
     // try {
-        String val = (appLabel != NULL) ? Object::ToStrng(appLabel) : String(NULL);
-        mInstaller->UpdateSessionAppLabel(sessionId, val);
+        String val = (appLabel != NULL) ? Object::ToString(appLabel) : String(NULL);
+        return mInstaller->UpdateSessionAppLabel(sessionId, val);
     // } catch (RemoteException e) {
     //     throw e.rethrowAsRuntimeException();
     // }
@@ -213,7 +241,6 @@ ECode CPackageInstaller::AbandonSession(
     // } catch (RemoteException e) {
     //     throw e.rethrowAsRuntimeException();
     // }
-    return NOERROR;
 }
 
 ECode CPackageInstaller::GetSessionInfo(
@@ -235,15 +262,15 @@ ECode CPackageInstaller::GetAllSessions(
     AutoPtr<IApplicationInfo> info;
     mContext->GetApplicationInfo((IApplicationInfo**)&info);
     String packageName;
-    info->GetPackageName(&packageName);
+    IPackageItemInfo::Probe(info)->GetPackageName(&packageName);
     Int32 versionCode;
-    ifno->GetVersionCode(&versionCode);
+    info->GetVersionCode(&versionCode);
     if (packageName.Equals("com.google.android.googlequicksearchbox")
             && versionCode <= 300400110) {
         Logger::D(TAG, "Ignoring callback request from old prebuilt");
 
         AutoPtr<ICollections> collections;
-        CCollections::New((ICollections**)&collections);
+        CCollections::AcquireSingleton((ICollections**)&collections);
         return collections->GetEmptyList(sessions);
     }
 
@@ -321,9 +348,9 @@ ECode CPackageInstaller::RegisterSessionCallback(
     AutoPtr<IApplicationInfo> info;
     mContext->GetApplicationInfo((IApplicationInfo**)&info);
     String packageName;
-    info->GetPackageName(&packageName);
+    IPackageItemInfo::Probe(info)->GetPackageName(&packageName);
     Int32 versionCode;
-    ifno->GetVersionCode(&versionCode);
+    info->GetVersionCode(&versionCode);
     if (packageName.Equals("com.google.android.googlequicksearchbox")
             && versionCode <= 300400110) {
         Logger::D(TAG, "Ignoring callback request from old prebuilt");
@@ -331,7 +358,7 @@ ECode CPackageInstaller::RegisterSessionCallback(
         return NOERROR;
     }
 
-    ISynchronize* sync = ISynchronize::Probe(mDelegates)
+    ISynchronize* sync = ISynchronize::Probe(mDelegates);
     synchronized(sync) {
         AutoPtr<ILooper> looper;
         handler->GetLooper((ILooper**)&looper);
@@ -355,17 +382,17 @@ ECode CPackageInstaller::RemoveSessionCallback(
 ECode CPackageInstaller::UnregisterSessionCallback(
     /* [in] */ IPackageInstallerSessionCallback* callback)
 {
-    ISynchronize* sync = ISynchronize::Probe(mDelegates)
+    ISynchronize* sync = ISynchronize::Probe(mDelegates);
     synchronized(sync) {
         AutoPtr<IIterator> it;
-        mDelegates->GetIterator((IIterator**)&it)
+        mDelegates->GetIterator((IIterator**)&it);
+        SessionCallbackDelegate* delegate;
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> obj;
             it->GetNext((IInterface**)&obj);
-            SessionCallbackDelegate* delegate = (SessionCallbackDelegate*)IPackageInstallerCallback::Probe(obj)
-
-            if (delegate->mCallback == callback) {
+            delegate = (SessionCallbackDelegate*)IPackageInstallerCallback::Probe(obj);
+            if (delegate->mCallback.Get() == callback) {
                 // try {
                     mInstaller->UnregisterCallback(delegate);
                 // } catch (RemoteException e) {

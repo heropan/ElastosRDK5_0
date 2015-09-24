@@ -38,7 +38,7 @@ public:
     //@CalledByNative
     static CARAPI_(AutoPtr<IInputStream>) Open(
         /* [in] */ IContext* context,
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     /**
      * Determine the mime type for an Android resource.
@@ -51,7 +51,7 @@ public:
     static CARAPI_(String) GetMimeType(
         /* [in] */ IContext* context,
         /* [in] */ IInputStream* stream,
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     /**
      * Set the context to be used for resolving resource queries.
@@ -71,8 +71,8 @@ private:
 
     static Int32 GetFieldId(
         /* [in] */ IContext* context,
-        /* [in] */ String assetType,
-        /* [in] */ String assetName);
+        /* [in] */ const String& assetType,
+        /* [in] */ const String& assetName);
 
     static CARAPI_(Int32) GetValueType(
         /* [in] */ IContext* context,
@@ -95,7 +95,7 @@ private:
      * @return a Uri instance, or null if the URL was invalid.
      */
     static CARAPI_(AutoPtr<IUri>) VerifyUrl(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     static CARAPI_(void) NativeSetResourceContextForTesting(
         /* [in] */ IContext* context);

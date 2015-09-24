@@ -304,12 +304,12 @@ private:
 
     CARAPI ConnectLocal(
         /* [in] */ IFileDescriptor* fd,
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [in] */ Int32 ns);
 
     CARAPI BindLocal(
         /* [in] */ IFileDescriptor* fd,
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [in] */ Int32 ns);
 
     CARAPI Listen_native(

@@ -112,8 +112,8 @@ public:
         // @Override
         CARAPI_(AutoPtr< IList< AutoPtr<IX509Certificate> > >) CheckServerTrusted(
             /* [in] */ ArrayOf<IX509Certificate>* chain,
-            /* [in] */ String authType,
-            /* [in] */ String host);
+            /* [in] */ const String& authType,
+            /* [in] */ const String& host);
 
     private:
         /*const*/ AutoPtr<IX509TrustManager> mTrustManager;
@@ -131,8 +131,8 @@ public:
         // @Override
         CARAPI_(AutoPtr< IList< AutoPtr<IX509Certificate> > >) CheckServerTrusted(
             /* [in] */ ArrayOf<IX509Certificate>* chain,
-            /* [in] */ String authType,
-            /* [in] */ String host);
+            /* [in] */ const String& authType,
+            /* [in] */ const String& host);
 
     private:
         /*const*/ AutoPtr<IX509TrustManagerExtensions> mTrustManagerExtensions;
@@ -149,8 +149,8 @@ private:
     public:
         virtual CARAPI_(AutoPtr< IList< AutoPtr<IX509Certificate> > >) CheckServerTrusted(
             /* [in] */ ArrayOf<IX509Certificate>* chain,
-            /* [in] */ String authType,
-            /* [in] */ String host) = 0;
+            /* [in] */ const String& authType,
+            /* [in] */ const String& host) = 0;
     };
 
 public:
@@ -180,8 +180,8 @@ public:
 
     static CARAPI_(AutoPtr<AndroidCertVerifyResult>) VerifyServerCertificates(
         /* [in] */ ArrayOf< AutoPtr< ArrayOf<Byte> > >* certChain,
-        /* [in] */ String authType,
-        /* [in] */ String host);
+        /* [in] */ const String& authType,
+        /* [in] */ const String& host);
 
     static CARAPI SetDisableNativeCodeForTest(
         /* [in] */ Boolean disabled);

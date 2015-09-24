@@ -11,7 +11,7 @@ namespace Input {
 //==================================================================
 
 MultiFieldTimePickerDialog::NumberFormatter::NumberFormatter(
-    /* [in] */ String format)
+    /* [in] */ const String& format)
     : mFormat(format)
 {
 }

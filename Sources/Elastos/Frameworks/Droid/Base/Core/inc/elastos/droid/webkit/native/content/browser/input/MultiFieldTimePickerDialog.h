@@ -52,7 +52,7 @@ private:
     {
     public:
         NumberFormatter(
-            /* [in] */ String format);
+            /* [in] */ const String& format);
 
         //@Override
         CARAPI Format(

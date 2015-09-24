@@ -347,7 +347,7 @@ public:
      * See {@link android.webkit.WebSettings#setUserAgentString}.
      */
     CARAPI_(void) SetUserAgentString(
-        /* [in] */ String ua);
+        /* [in] */ const String& ua);
 
     /**
      * See {@link android.webkit.WebSettings#getUserAgentString}.
@@ -380,7 +380,7 @@ public:
      * See {@link android.webkit.WebSettings#setStandardFontFamily}.
      */
     CARAPI_(void) SetStandardFontFamily(
-        /* [in] */ String font);
+        /* [in] */ const String& font);
 
     /**
      * See {@link android.webkit.WebSettings#getStandardFontFamily}.
@@ -391,7 +391,7 @@ public:
      * See {@link android.webkit.WebSettings#setFixedFontFamily}.
      */
     CARAPI_(void) SetFixedFontFamily(
-        /* [in] */ String font);
+        /* [in] */ const String& font);
 
     /**
      * See {@link android.webkit.WebSettings#getFixedFontFamily}.
@@ -402,7 +402,7 @@ public:
      * See {@link android.webkit.WebSettings#setSansSerifFontFamily}.
      */
     CARAPI_(void) SetSansSerifFontFamily(
-        /* [in] */ String font);
+        /* [in] */ const String& font);
 
     /**
      * See {@link android.webkit.WebSettings#getSansSerifFontFamily}.
@@ -413,7 +413,7 @@ public:
      * See {@link android.webkit.WebSettings#setSerifFontFamily}.
      */
     CARAPI_(void) SetSerifFontFamily(
-        /* [in] */ String font);
+        /* [in] */ const String& font);
 
     /**
      * See {@link android.webkit.WebSettings#getSerifFontFamily}.
@@ -424,7 +424,7 @@ public:
      * See {@link android.webkit.WebSettings#setCursiveFontFamily}.
      */
     CARAPI_(void) SetCursiveFontFamily(
-        /* [in] */ String font);
+        /* [in] */ const String& font);
 
     /**
      * See {@link android.webkit.WebSettings#getCursiveFontFamily}.
@@ -435,7 +435,7 @@ public:
      * See {@link android.webkit.WebSettings#setFantasyFontFamily}.
      */
     CARAPI_(void) SetFantasyFontFamily(
-        /* [in] */ String font);
+        /* [in] */ const String& font);
 
     /**
      * See {@link android.webkit.WebSettings#getFantasyFontFamily}.
@@ -627,7 +627,7 @@ public:
      * See {@link android.webkit.WebSettings#setAppCachePath}.
      */
     CARAPI_(void) SetAppCachePath(
-        /* [in] */ String path);
+        /* [in] */ const String& path);
 
     /**
      * See {@link android.webkit.WebSettings#setDomStorageEnabled}.
@@ -655,7 +655,7 @@ public:
      * See {@link android.webkit.WebSettings#setDefaultTextEncodingName}.
      */
     CARAPI_(void) SetDefaultTextEncodingName(
-        /* [in] */ String encoding);
+        /* [in] */ const String& encoding);
 
     /**
      * See {@link android.webkit.WebSettings#getDefaultTextEncodingName}.

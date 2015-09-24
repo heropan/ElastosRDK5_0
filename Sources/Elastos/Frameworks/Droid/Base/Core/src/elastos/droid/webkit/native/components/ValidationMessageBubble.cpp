@@ -13,8 +13,8 @@ namespace Components {
 ValidationMessageBubble::ValidationMessageBubble(
     /* [in] */ ContentViewCore* contentViewCore,
     /* [in] */ IRectF* anchor,
-    /* [in] */ String mainText,
-    /* [in] */ String subText)
+    /* [in] */ const String& mainText,
+    /* [in] */ const String& subText)
 {
     // ==================before translated======================
     // final ViewGroup root = (ViewGroup) View.inflate(contentViewCore.getContext(),
@@ -34,8 +34,8 @@ AutoPtr<ValidationMessageBubble> ValidationMessageBubble::CreateAndShow(
     /* [in] */ Int32 anchorY,
     /* [in] */ Int32 anchorWidth,
     /* [in] */ Int32 anchorHeight,
-    /* [in] */ String mainText,
-    /* [in] */ String subText)
+    /* [in] */ const String& mainText,
+    /* [in] */ const String& subText)
 {
     // ==================before translated======================
     // final RectF anchorPixInScreen = makePixRectInScreen(
@@ -107,8 +107,8 @@ Float ValidationMessageBubble::GetWebViewOffsetYPixInScreen(
 
 ECode ValidationMessageBubble::UpdateTextViews(
     /* [in] */ IViewGroup* root,
-    /* [in] */ String mainText,
-    /* [in] */ String subText)
+    /* [in] */ const String& mainText,
+    /* [in] */ const String& subText)
 {
     VALIDATE_NOT_NULL(root);
     // ==================before translated======================

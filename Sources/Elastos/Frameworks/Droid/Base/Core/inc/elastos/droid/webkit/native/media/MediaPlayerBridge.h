@@ -46,7 +46,7 @@ private:
         LoadDataUriTask(
             /* [in] */ MediaPlayerBridge* owner,
             /* [in] */ IContext* context,
-            /* [in] */ String data);
+            /* [in] */ const String& data);
 
         //@Override
         CARAPI_(Boolean) DoInBackground(
@@ -144,9 +144,9 @@ protected:
     //@CalledByNative
     CARAPI_(Boolean) SetDataSource(
         /* [in] */ IContext* context,
-        /* [in] */ String url,
-        /* [in] */ String cookies,
-        /* [in] */ String userAgent,
+        /* [in] */ const String& url,
+        /* [in] */ const String& cookies,
+        /* [in] */ const String& userAgent,
         /* [in] */ Boolean hideUrlLog);
 
     //@CalledByNative

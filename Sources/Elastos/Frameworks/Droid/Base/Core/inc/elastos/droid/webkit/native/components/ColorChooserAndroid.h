@@ -93,7 +93,7 @@ private:
         /* [in] */ ArrayOf<ColorSuggestion>* array,
         /* [in] */ Int32 index,
         /* [in] */ Int32 color,
-        /* [in] */ String label);
+        /* [in] */ const String& label);
 
     // Implemented in color_chooser_android.cc
     CARAPI NativeOnColorChosen(

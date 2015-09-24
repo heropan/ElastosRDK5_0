@@ -20,7 +20,7 @@ const String ChromiumLinkerParams::EXTRA_LINKER_PARAMS_TEST_RUNNER_CLASS_NAME =
 ChromiumLinkerParams::ChromiumLinkerParams(
     /* [in] */ Int64 baseLoadAddress,
     /* [in] */ Boolean waitForSharedRelro,
-    /* [in] */ String testRunnerClassName)
+    /* [in] */ const String& testRunnerClassName)
     : mBaseLoadAddress(baseLoadAddress)
     , mWaitForSharedRelro(waitForSharedRelro)
     , mTestRunnerClassName(testRunnerClassName)

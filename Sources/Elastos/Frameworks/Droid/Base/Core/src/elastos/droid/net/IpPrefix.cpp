@@ -49,7 +49,7 @@ ECode IpPrefix::constructor(
 }
 
 ECode IpPrefix::constructor(
-    /* [in] */ String prefix)
+    /* [in] */ const String& prefix)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below

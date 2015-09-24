@@ -95,7 +95,7 @@ public:
         ClientCertificateRequestCallback(
             /* [in] */ AwContentsClientBridge* owner,
             /* [in] */ Int32 id,
-            /* [in] */ String host,
+            /* [in] */ const String& host,
             /* [in] */ Int32 port);
 
         virtual CARAPI_(void) Proceed(
@@ -177,7 +177,7 @@ public:
 
     virtual CARAPI_(void) ConfirmJsResult(
         /* [in] */ Int32 id,
-        /* [in] */ String prompt);
+        /* [in] */ const String& prompt);
 
     virtual CARAPI_(void) CancelJsResult(
         /* [in] */ Int32 id);
@@ -222,32 +222,32 @@ private:
 
     //@CalledByNative
     CARAPI_(void) HandleJsAlert(
-        /* [in] */ String url,
-        /* [in] */ String message,
+        /* [in] */ const String& url,
+        /* [in] */ const String& message,
         /* [in] */ Int32 id);
 
     //@CalledByNative
     CARAPI_(void) HandleJsConfirm(
-        /* [in] */ String url,
-        /* [in] */ String message,
+        /* [in] */ const String& url,
+        /* [in] */ const String& message,
         /* [in] */ Int32 id);
 
     //@CalledByNative
     CARAPI_(void) HandleJsPrompt(
-        /* [in] */ String url,
-        /* [in] */ String message,
-        /* [in] */ String defaultValue,
+        /* [in] */ const String& url,
+        /* [in] */ const String& message,
+        /* [in] */ const String& defaultValue,
         /* [in] */ Int32 id);
 
     //@CalledByNative
     CARAPI_(void) HandleJsBeforeUnload(
-        /* [in] */ String url,
-        /* [in] */ String message,
+        /* [in] */ const String& url,
+        /* [in] */ const String& message,
         /* [in] */ Int32 id);
 
     //@CalledByNative
     CARAPI_(Boolean) ShouldOverrideUrlLoading(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     //--------------------------------------------------------------------------------------------
     //  Native methods
@@ -266,7 +266,7 @@ private:
     CARAPI_(void) NativeConfirmJsResult(
         /* [in] */ Int64 nativeAwContentsClientBridge,
         /* [in] */ Int32 id,
-        /* [in] */ String prompt);
+        /* [in] */ const String& prompt);
 
     CARAPI_(void) NativeCancelJsResult(
         /* [in] */ Int64 nativeAwContentsClientBridge,

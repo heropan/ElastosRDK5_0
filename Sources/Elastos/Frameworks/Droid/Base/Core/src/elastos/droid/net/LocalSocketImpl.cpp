@@ -421,7 +421,7 @@ ECode LocalSocketImpl::Write_native(
 
 ECode LocalSocketImpl::ConnectLocal(
     /* [in] */ IFileDescriptor* fd,
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Int32 ns)
 {
     return E_NOT_IMPLEMENTED;
@@ -431,7 +431,7 @@ ECode LocalSocketImpl::ConnectLocal(
 
 ECode LocalSocketImpl::BindLocal(
     /* [in] */ IFileDescriptor* fd,
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Int32 ns)
 {
     return E_NOT_IMPLEMENTED;

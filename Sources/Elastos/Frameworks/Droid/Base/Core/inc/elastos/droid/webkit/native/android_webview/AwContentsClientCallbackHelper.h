@@ -33,10 +33,10 @@ namespace AndroidWebview {
     {
     public:
         DownloadInfo(
-            /* [in] */ String url,
-            /* [in] */ String userAgent,
-            /* [in] */ String contentDisposition,
-            /* [in] */ String mimeType,
+            /* [in] */ const String& url,
+            /* [in] */ const String& userAgent,
+            /* [in] */ const String& contentDisposition,
+            /* [in] */ const String& mimeType,
             /* [in] */ Int64 contentLength);
 
     public:
@@ -51,9 +51,9 @@ namespace AndroidWebview {
     {
     public:
         LoginRequestInfo(
-            /* [in] */ String realm,
-            /* [in] */ String account,
-            /* [in] */ String args);
+            /* [in] */ const String& realm,
+            /* [in] */ const String& account,
+            /* [in] */ const String& args);
 
     public:
         const String mRealm;
@@ -66,8 +66,8 @@ namespace AndroidWebview {
     public:
         OnReceivedErrorInfo(
             /* [in] */ Int32 errorCode,
-            /* [in] */ String description,
-            /* [in] */ String failingUrl);
+            /* [in] */ const String& description,
+            /* [in] */ const String& failingUrl);
 
     public:
         const Int32 mErrorCode;
@@ -96,27 +96,27 @@ public:
         /* [in] */ AwContentsClient* contentsClient);
 
     virtual CARAPI_(void) PostOnLoadResource(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     virtual CARAPI_(void) PostOnPageStarted(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     virtual CARAPI_(void) PostOnDownloadStart(
-        /* [in] */ String url,
-        /* [in] */ String userAgent,
-        /* [in] */ String contentDisposition,
-        /* [in] */ String mimeType,
+        /* [in] */ const String& url,
+        /* [in] */ const String& userAgent,
+        /* [in] */ const String& contentDisposition,
+        /* [in] */ const String& mimeType,
         /* [in] */ Int64 contentLength);
 
     virtual CARAPI_(void) PostOnReceivedLoginRequest(
-        /* [in] */ String realm,
-        /* [in] */ String account,
-        /* [in] */ String args);
+        /* [in] */ const String& realm,
+        /* [in] */ const String& account,
+        /* [in] */ const String& args);
 
     virtual CARAPI_(void) PostOnReceivedError(
         /* [in] */ Int32 errorCode,
-        /* [in] */ String description,
-        /* [in] */ String failingUrl);
+        /* [in] */ const String& description,
+        /* [in] */ const String& failingUrl);
 
     virtual CARAPI_(void) PostOnNewPicture(
         /* [in] */ ICallable* pictureProvider);

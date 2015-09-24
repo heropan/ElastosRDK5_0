@@ -19,8 +19,8 @@ X509Util::X509TrustManagerIceCreamSandwich::X509TrustManagerIceCreamSandwich(
 
 AutoPtr< IList< AutoPtr<IX509Certificate> > > X509Util::X509TrustManagerIceCreamSandwich::CheckServerTrusted(
     /* [in] */ ArrayOf<IX509Certificate>* chain,
-    /* [in] */ String authType,
-    /* [in] */ String host)
+    /* [in] */ const String& authType,
+    /* [in] */ const String& host)
 {
     // ==================before translated======================
     // mTrustManager.checkServerTrusted(chain, authType);
@@ -42,8 +42,8 @@ X509Util::X509TrustManagerJellyBean::X509TrustManagerJellyBean(
 
 AutoPtr< IList< AutoPtr<IX509Certificate> > > X509Util::X509TrustManagerJellyBean::CheckServerTrusted(
     /* [in] */ ArrayOf<IX509Certificate>* chain,
-    /* [in] */ String authType,
-    /* [in] */ String host)
+    /* [in] */ const String& authType,
+    /* [in] */ const String& host)
 {
     // ==================before translated======================
     // return mTrustManagerExtensions.checkServerTrusted(chain, authType, host);
@@ -150,8 +150,8 @@ Boolean X509Util::VerifyKeyUsage(
 
 AutoPtr<AndroidCertVerifyResult> X509Util::VerifyServerCertificates(
     /* [in] */ ArrayOf< AutoPtr< ArrayOf<Byte> > >* certChain,
-    /* [in] */ String authType,
-    /* [in] */ String host)
+    /* [in] */ const String& authType,
+    /* [in] */ const String& host)
 {
     // ==================before translated======================
     // if (certChain == null || certChain.length == 0 || certChain[0] == null) {

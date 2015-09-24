@@ -54,7 +54,7 @@ private:
       */
     // @CalledByNative
     static CARAPI_(AutoPtr<IBitmap>) DecodeDrawableResource(
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [in] */ Int32 reqWidth,
         /* [in] */ Int32 reqHeight);
 

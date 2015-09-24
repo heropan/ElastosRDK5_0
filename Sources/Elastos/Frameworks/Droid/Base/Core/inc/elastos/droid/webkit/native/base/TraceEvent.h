@@ -98,7 +98,7 @@ private:
 
         static CARAPI_(void) TraceAndLog(
             /* [in] */ Int32 level,
-            /* [in] */ String message);
+            /* [in] */ const String& message);
 
     private:
         // Tags for dumping to logcat or TraceEvent
@@ -165,7 +165,7 @@ public:
      * @param name The name of the event.
      */
     static CARAPI_(void) Instant(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     /**
      * Triggers the 'instant' native trace event.
@@ -173,8 +173,8 @@ public:
      * @param arg  The arguments of the event.
      */
     static CARAPI_(void) Instant(
-        /* [in] */ String name,
-        /* [in] */ String arg);
+        /* [in] */ const String& name,
+        /* [in] */ const String& arg);
 
     /**
      * Convenience wrapper around the versions of startAsync() that take string parameters.
@@ -190,7 +190,7 @@ public:
      * @param id   The id of the asynchronous event.
      */
     static CARAPI_(void) StartAsync(
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [in] */ Int64 id);
 
     /**
@@ -200,9 +200,9 @@ public:
      * @param arg  The arguments of the event.
      */
     static CARAPI_(void) StartAsync(
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [in] */ Int64 id,
-        /* [in] */ String arg);
+        /* [in] */ const String& arg);
 
     /**
      * Convenience wrapper around the versions of finishAsync() that take string parameters.
@@ -218,7 +218,7 @@ public:
      * @param id   The id of the asynchronous event.
      */
     static CARAPI_(void) FinishAsync(
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [in] */ Int64 id);
 
     /**
@@ -228,9 +228,9 @@ public:
      * @param arg  The arguments of the event.
      */
     static CARAPI_(void) FinishAsync(
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [in] */ Int64 id,
-        /* [in] */ String arg);
+        /* [in] */ const String& arg);
 
     /**
      * Convenience wrapper around the versions of begin() that take string parameters.
@@ -248,7 +248,7 @@ public:
      * @param name The name of the event.
      */
     static CARAPI_(void) Begin(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     /**
      * Triggers the 'begin' native trace event.
@@ -256,8 +256,8 @@ public:
      * @param arg  The arguments of the event.
      */
     static CARAPI_(void) Begin(
-        /* [in] */ String name,
-        /* [in] */ String arg);
+        /* [in] */ const String& name,
+        /* [in] */ const String& arg);
 
     /**
      * Convenience wrapper around the versions of end() that take string parameters.
@@ -270,7 +270,7 @@ public:
      * @param name The name of the event.
      */
     static CARAPI_(void) End(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     /**
      * Triggers the 'end' native trace event.
@@ -278,8 +278,8 @@ public:
      * @param arg  The arguments of the event.
      */
     static CARAPI_(void) End(
-        /* [in] */ String name,
-        /* [in] */ String arg);
+        /* [in] */ const String& name,
+        /* [in] */ const String& arg);
 
 private:
     static CARAPI_(String) GetCallerName();
@@ -291,30 +291,30 @@ private:
     static CARAPI_(void) NativeStopATrace();
 
     static CARAPI_(void) NativeInstant(
-        /* [in] */ String name,
-        /* [in] */ String arg);
+        /* [in] */ const String& name,
+        /* [in] */ const String& arg);
 
     static CARAPI_(void) NativeBegin(
-        /* [in] */ String name,
-        /* [in] */ String arg);
+        /* [in] */ const String& name,
+        /* [in] */ const String& arg);
 
     static CARAPI_(void) NativeEnd(
-        /* [in] */ String name,
-        /* [in] */ String arg);
+        /* [in] */ const String& name,
+        /* [in] */ const String& arg);
 
     static CARAPI_(void) NativeBeginToplevel();
 
     static CARAPI_(void) NativeEndToplevel();
 
     static CARAPI_(void) NativeStartAsync(
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [in] */ Int64 id,
-        /* [in] */ String arg);
+        /* [in] */ const String& arg);
 
     static CARAPI_(void) NativeFinishAsync(
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [in] */ Int64 id,
-        /* [in] */ String arg);
+        /* [in] */ const String& arg);
 
 private:
     static volatile Boolean sEnabled;

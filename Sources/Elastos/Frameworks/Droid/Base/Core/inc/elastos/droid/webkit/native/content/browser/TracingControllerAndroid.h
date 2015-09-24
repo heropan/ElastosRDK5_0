@@ -132,7 +132,7 @@ public:
       */
     virtual CARAPI_(Boolean) StartTracing(
         /* [in] */ Boolean showToasts,
-        /* [in] */ String categories,
+        /* [in] */ const String& categories,
         /* [in] */ Boolean recordContinuously);
 
     /**
@@ -152,9 +152,9 @@ public:
       * size and we use it as a ring buffer during recording.
       */
     virtual CARAPI_(Boolean) StartTracing(
-        /* [in] */ String filename,
+        /* [in] */ const String& filename,
         /* [in] */ Boolean showToasts,
-        /* [in] */ String categories,
+        /* [in] */ const String& categories,
         /* [in] */ Boolean recordContinuously);
 
     /**
@@ -187,14 +187,14 @@ private:
     CARAPI InitializeNativeControllerIfNeeded();
 
     CARAPI LogAndToastError(
-        /* [in] */ String str);
+        /* [in] */ const String& str);
 
     // The |str| string needs to match the ones that adb_chrome_profiler looks for.
     CARAPI LogForProfiler(
-        /* [in] */ String str);
+        /* [in] */ const String& str);
 
     CARAPI ShowToast(
-        /* [in] */ String str);
+        /* [in] */ const String& str);
 
     CARAPI_(Int64) NativeInit();
 
@@ -203,12 +203,12 @@ private:
 
     CARAPI_(Boolean) NativeStartTracing(
         /* [in] */ Int64 nativeTracingControllerAndroid,
-        /* [in] */ String categories,
+        /* [in] */ const String& categories,
         /* [in] */ Boolean recordContinuously);
 
     CARAPI NativeStopTracing(
         /* [in] */ Int64 nativeTracingControllerAndroid,
-        /* [in] */ String filename);
+        /* [in] */ const String& filename);
 
     CARAPI_(Boolean) NativeGetKnownCategoryGroupsAsync(
         /* [in] */ Int64 nativeTracingControllerAndroid);

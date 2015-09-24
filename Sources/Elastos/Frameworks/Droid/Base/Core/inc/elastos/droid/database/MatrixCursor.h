@@ -62,7 +62,7 @@ public:
          * @return this builder to support chaining
          */
         CARAPI Add(
-            /* [in] */ String columnName,
+            /* [in] */ const String& columnName,
             /* [in] */ IInterface* value);
 
     private:

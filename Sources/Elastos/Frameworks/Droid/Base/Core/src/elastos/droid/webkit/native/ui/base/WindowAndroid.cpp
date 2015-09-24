@@ -119,7 +119,7 @@ Boolean WindowAndroid::RemoveIntentCallback(
 }
 
 ECode WindowAndroid::ShowError(
-    /* [in] */ String error)
+    /* [in] */ const String& error)
 {
     // ==================before translated======================
     // if (error != null) {
@@ -236,7 +236,7 @@ Int64 WindowAndroid::GetNativePointer()
 }
 
 ECode WindowAndroid::ShowCallbackNonExistentError(
-    /* [in] */ String error)
+    /* [in] */ const String& error)
 {
     // ==================before translated======================
     // showError(error);

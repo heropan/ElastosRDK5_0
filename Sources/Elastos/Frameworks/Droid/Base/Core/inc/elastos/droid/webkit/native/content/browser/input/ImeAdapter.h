@@ -322,7 +322,7 @@ private:
         /* [in] */ Int32 type);
 
     CARAPI_(Int32) ShouldSendKeyEventWithKeyCode(
-        /* [in] */ String text);
+        /* [in] */ const String& text);
 
     // Calls from C++ to Java
 
@@ -393,12 +393,12 @@ private:
     CARAPI_(void) NativeSetComposingText(
         /* [in] */ Int64 nativeImeAdapterAndroid,
         /* [in] */ ICharSequence* text,
-        /* [in] */ String textStr,
+        /* [in] */ const String& textStr,
         /* [in] */ Int32 newCursorPosition);
 
     CARAPI_(void) NativeCommitText(
         /* [in] */ Int64 nativeImeAdapterAndroid,
-        /* [in] */ String textStr);
+        /* [in] */ const String& textStr);
 
     CARAPI_(void) NativeFinishComposingText(
         /* [in] */ Int64 nativeImeAdapterAndroid);

@@ -71,10 +71,10 @@ public:
      * @param password the password
      */
     CARAPI_(void) SetHttpAuthUsernamePassword(
-        /* [in] */ String host,
-        /* [in] */ String realm,
-        /* [in] */ String username,
-        /* [in] */ String password);
+        /* [in] */ const String& host,
+        /* [in] */ const String& realm,
+        /* [in] */ const String& username,
+        /* [in] */ const String& password);
 
     /**
      * Retrieves the HTTP authentication username and password for a given host and realm pair. If
@@ -87,8 +87,8 @@ public:
      *         String[1] is password.  Null is returned if it can't find anything.
      */
     CARAPI_(AutoPtr< ArrayOf<String> >) GetHttpAuthUsernamePassword(
-        /* [in] */ String host,
-        /* [in] */ String realm);
+        /* [in] */ const String& host,
+        /* [in] */ const String& realm);
 
     /**
      * Determines if there are any HTTP authentication passwords saved.
@@ -111,7 +111,7 @@ private:
      */
     CARAPI_(void) InitOnBackgroundThread(
         /* [in] */ IContext* context,
-        /* [in] */ String databaseFile);
+        /* [in] */ const String& databaseFile);
 
     /**
      * Opens the database, and upgrades it if necessary.
@@ -121,7 +121,7 @@ private:
      */
     CARAPI_(void) InitDatabase(
         /* [in] */ IContext* context,
-        /* [in] */ String databaseFile);
+        /* [in] */ const String& databaseFile);
 
     CARAPI_(void) CreateTable();
 

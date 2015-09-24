@@ -18,7 +18,7 @@ class JsPromptResultReceiver
 {
 public:
     virtual CARAPI_(void) Confirm(
-        /* [in] */ String result) = 0;
+        /* [in] */ const String& result) = 0;
 
     virtual CARAPI_(void) Cancel() = 0;
 };

@@ -62,7 +62,7 @@ private:
     {
     public:
         ProxyConfig(
-            /* [in] */ String host,
+            /* [in] */ const String& host,
             /* [in] */ Int32 port);
 
     public:
@@ -104,7 +104,7 @@ public:
 
     // @CalledByNative
     static CARAPI_(String) GetProperty(
-        /* [in] */ String property);
+        /* [in] */ const String& property);
 
     // @CalledByNative
     virtual CARAPI Start(
@@ -130,7 +130,7 @@ private:
     // @NativeClassQualifiedName("ProxyConfigServiceAndroid::JNIDelegate")
     CARAPI NativeProxySettingsChangedTo(
         /* [in] */ Int64 nativePtr,
-        /* [in] */ String host,
+        /* [in] */ const String& host,
         /* [in] */ Int32 port);
 
     // @NativeClassQualifiedName("ProxyConfigServiceAndroid::JNIDelegate")

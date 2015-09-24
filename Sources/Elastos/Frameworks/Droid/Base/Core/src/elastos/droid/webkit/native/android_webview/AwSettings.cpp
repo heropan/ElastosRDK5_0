@@ -775,7 +775,7 @@ Int32 AwSettings::GetTextSizePercentLocked()
  * See {@link android.webkit.WebSettings#setStandardFontFamily}.
  */
 void AwSettings::SetStandardFontFamily(
-    /* [in] */ String font)
+    /* [in] */ const String& font)
 {
     AutoLock lock(mAwSettingsLock);
     if (font != NULL && !mStandardFontFamily.Equals(font)) {
@@ -804,7 +804,7 @@ String AwSettings::GetStandardFontFamilyLocked()
  * See {@link android.webkit.WebSettings#setFixedFontFamily}.
  */
 void AwSettings::SetFixedFontFamily(
-    /* [in] */ String font)
+    /* [in] */ const String& font)
 {
     AutoLock lock(mAwSettingsLock);
     if (font != NULL && !mFixedFontFamily.Equals(font)) {
@@ -833,7 +833,7 @@ String AwSettings::GetFixedFontFamilyLocked()
  * See {@link android.webkit.WebSettings#setSansSerifFontFamily}.
  */
 void AwSettings::SetSansSerifFontFamily(
-    /* [in] */ String font)
+    /* [in] */ const String& font)
 {
     AutoLock lock(mAwSettingsLock);
     if (font != NULL && !mSansSerifFontFamily.Equals(font)) {
@@ -863,7 +863,7 @@ String AwSettings::GetSansSerifFontFamilyLocked()
  * See {@link android.webkit.WebSettings#setSerifFontFamily}.
  */
 void AwSettings::SetSerifFontFamily(
-    /* [in] */ String font)
+    /* [in] */ const String& font)
 {
     AutoLock lock(mAwSettingsLock);
     if (font != NULL && !mSerifFontFamily.Equals(font)) {
@@ -892,7 +892,7 @@ String AwSettings::GetSerifFontFamilyLocked()
  * See {@link android.webkit.WebSettings#setCursiveFontFamily}.
  */
 void AwSettings::SetCursiveFontFamily(
-    /* [in] */ String font)
+    /* [in] */ const String& font)
 {
     AutoLock lock(mAwSettingsLock);
     if (font != NULL && !mCursiveFontFamily.Equals(font)) {
@@ -921,7 +921,7 @@ String AwSettings::GetCursiveFontFamilyLocked()
  * See {@link android.webkit.WebSettings#setFantasyFontFamily}.
  */
 void AwSettings::SetFantasyFontFamily(
-    /* [in] */ String font)
+    /* [in] */ const String& font)
 {
     AutoLock lock(mAwSettingsLock);
     if (font != null && !mFantasyFontFamily.equals(font)) {
@@ -1459,7 +1459,7 @@ void AwSettings::SetAppCacheEnabled(boolean flag)
  * See {@link android.webkit.WebSettings#setAppCachePath}.
  */
 void AwSettings::SetAppCachePath(
-    /* [in] */ String path)
+    /* [in] */ const String& path)
 {
     Boolean needToSync = FALSE;
     {
@@ -1561,7 +1561,7 @@ Boolean AwSettings::GetDatabaseEnabledLocked()
  * See {@link android.webkit.WebSettings#setDefaultTextEncodingName}.
  */
 void AwSettings::SetDefaultTextEncodingName(
-    /* [in] */ String encoding)
+    /* [in] */ const String& encoding)
 {
     AutoLock lock(mAwSettingsLock);
     if (encoding != NULL && !mDefaultTextEncoding.Equals(encoding)) {
@@ -1619,7 +1619,7 @@ Boolean AwSettings::GetMediaPlaybackRequiresUserGestureLocked()
  * See {@link android.webkit.WebSettings#setDefaultVideoPosterURL}.
  */
 void AwSettings::SetDefaultVideoPosterURL(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     AutoLock lock(mAwSettingsLock);
     if (mDefaultVideoPosterURL != NULL && !mDefaultVideoPosterURL.Equals(url) ||

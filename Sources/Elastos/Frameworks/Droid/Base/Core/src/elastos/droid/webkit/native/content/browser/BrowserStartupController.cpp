@@ -352,7 +352,7 @@ String BrowserStartupController::GetPlugins()
 
 void BrowserStartupController::NativeSetCommandLineFlags(
     /* [in] */ Int32 maxRenderProcesses,
-    /* [in] */ String pluginDescriptor)
+    /* [in] */ const String& pluginDescriptor)
 {
 }
 

@@ -7,7 +7,7 @@ namespace Chromium {
 
 //@Override
 ECode WebIconDatabaseAdapter::Open(
-    /* [in] */ String path)
+    /* [in] */ const String& path)
 {
     AwContents::SetShouldDownloadFavicons();
     return NOERROR;
@@ -29,7 +29,7 @@ ECode WebIconDatabaseAdapter::RemoveAllIcons()
 
 //@Override
 ECode WebIconDatabaseAdapter::RequestIconForPageUrl(
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ IIconListener* listener)
 {
     // Intentional no-op.
@@ -39,7 +39,7 @@ ECode WebIconDatabaseAdapter::RequestIconForPageUrl(
 //@Override
 ECode WebIconDatabaseAdapter::BulkRequestIconForPageUrl(
     /* [in] */ IContentResolver* cr,
-    /* [in] */ String where,
+    /* [in] */ const String& where,
     /* [in] */ IIconListener* listener)
 {
     // Intentional no-op: hidden in base class.
@@ -48,7 +48,7 @@ ECode WebIconDatabaseAdapter::BulkRequestIconForPageUrl(
 
 //@Override
 ECode WebIconDatabaseAdapter::RetainIconForPageUrl(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     // Intentional no-op.
     return NOERROR;
@@ -56,7 +56,7 @@ ECode WebIconDatabaseAdapter::RetainIconForPageUrl(
 
 //@Override
 ECode WebIconDatabaseAdapter::ReleaseIconForPageUrl(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     // Intentional no-op.
     return NOERROR;

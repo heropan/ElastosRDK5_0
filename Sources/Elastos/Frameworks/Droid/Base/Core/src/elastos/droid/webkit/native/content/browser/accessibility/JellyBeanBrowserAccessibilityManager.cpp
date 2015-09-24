@@ -29,7 +29,7 @@ ECode JellyBeanBrowserAccessibilityManager::InnerAccessibilityNodeProvider::Crea
 
 //@Override
 ECode JellyBeanBrowserAccessibilityManager::InnerAccessibilityNodeProvider::FindAccessibilityNodeInfosByText(
-    /* [in] */ String text,
+    /* [in] */ const String& text,
     /* [in] */ Int32 virtualViewId,
     /* [out] */ IObjectContainer** nodeInfos)
 {

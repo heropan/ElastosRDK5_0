@@ -39,7 +39,7 @@ class ContentViewClient
 {
 public:
     CARAPI_(void) OnUpdateTitle(
-        /* [in] */ String title);
+        /* [in] */ const String& title);
 
     /**
      * Called whenever the background color of the page changes as notified by WebKit.
@@ -101,7 +101,7 @@ public:
      * @param searchQuery The string to search for.
      */
     CARAPI_(void) PerformWebSearch(
-        /* [in] */ String searchQuery);
+        /* [in] */ const String& searchQuery);
 
     /**
      * If this returns {@code true} contextual web search attempts will be forwarded to
@@ -116,14 +116,14 @@ public:
      * @param selection The newly established selection.
      */
     CARAPI_(void) OnSelectionChanged(
-        /* [in] */ String selection);
+        /* [in] */ const String& selection);
 
     /**
      * Called when a new content intent is requested to be started.
      */
     CARAPI_(void) OnStartContentIntent(
         /* [in] */ IContext* context,
-        /* [in] */ String intentUrl);
+        /* [in] */ const String& intentUrl);
 
     CARAPI_(AutoPtr<ContentVideoViewClient>) GetContentVideoViewClient();
 
@@ -133,7 +133,7 @@ public:
      * @return true to prevent the resource from being loaded.
      */
     CARAPI_(Boolean) ShouldBlockMediaRequest(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     /**
      * Check whether a key should be propagated to the embedder or not.

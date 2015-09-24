@@ -77,7 +77,7 @@ private:
     public:
         ProgressView(
             /* [in] */ IContext* context,
-            /* [in] */ String videoLoadingText);
+            /* [in] */ const String& videoLoadingText);
 
         CAR_INTERFACE_DECL()
 

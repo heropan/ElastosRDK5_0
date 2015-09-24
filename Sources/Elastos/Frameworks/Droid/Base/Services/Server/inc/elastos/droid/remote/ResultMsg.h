@@ -26,7 +26,7 @@ public:
     CARAPI_(Int32) ToInt32();
 
     CARAPI_(AutoPtr<ResultMsg>) SetResult(
-        /* [in] */ String str);
+        /* [in] */ const String& str);
 
     CARAPI_(String) GetResult();
 

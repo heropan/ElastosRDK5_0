@@ -46,22 +46,22 @@ public:
 
     //@Override
     CARAPI_(void) SetCookie(
-        /* [in] */ String url,
-        /* [in] */ String value);
+        /* [in] */ const String& url,
+        /* [in] */ const String& value);
 
     //@Override
     CARAPI_(void) SetCookie(
-        /* [in] */ String url,
-        /* [in] */ String value,
+        /* [in] */ const String& url,
+        /* [in] */ const String& value,
         /* [in] */ IValueCallback* callback);
 
     //@Override
     CARAPI_(String) GetCookie(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     //@Override
     CARAPI_(String) GetCookie(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ Boolean privateBrowsing);
 
     //@Override
@@ -111,7 +111,7 @@ protected:
 
 private:
     static CARAPI_(String) FixupUrl(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
 private:
     static const String LOGTAG;

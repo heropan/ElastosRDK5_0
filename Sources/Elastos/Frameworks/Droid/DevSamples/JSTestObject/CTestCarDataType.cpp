@@ -190,7 +190,7 @@ ECode CTestCarDataType::Test_String(
 }
 
 ECode CTestCarDataType::Test_String_Ref(
-    /* [in] */ String * pInStr,
+    /* [in] */ const String& * pInStr,
     /* [out] */ String * pOutStr)
 {
     // TODO: Add your code here

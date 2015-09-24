@@ -68,19 +68,19 @@ public:
      * Set one origin to be allowed.
      */
     CARAPI_(void) Allow(
-        /* [in] */ String origin);
+        /* [in] */ const String& origin);
 
     /**
      * Set one origin to be denied.
      */
     CARAPI_(void) Deny(
-        /* [in] */ String origin);
+        /* [in] */ const String& origin);
 
     /**
      * Clear the stored permission for a particular origin.
      */
     CARAPI_(void) Clear(
-        /* [in] */ String origin);
+        /* [in] */ const String& origin);
 
     /**
      * Clear stored permissions for all origins.
@@ -91,19 +91,19 @@ public:
      * Synchronous method to get if an origin is set to be allowed.
      */
     CARAPI_(Boolean) IsOriginAllowed(
-        /* [in] */ String origin);
+        /* [in] */ const String& origin);
 
     /**
      * Returns true if the origin is either set to allowed or denied.
      */
     CARAPI_(Boolean) HasOrigin(
-        /* [in] */ String origin);
+        /* [in] */ const String& origin);
 
     /**
      * Asynchronous method to get if an origin set to be allowed.
      */
     CARAPI_(void) GetAllowed(
-        /* [in] */ String origin,
+        /* [in] */ const String& origin,
         /* [in] */ const IValueCallback* callback);
 
     /**
@@ -117,7 +117,7 @@ private:
      * Get the domain of an URL using the GURL library.
      */
     CARAPI_(String) GetOriginKey(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
 private:
     static const String PREF_PREFIX;

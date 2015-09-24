@@ -61,7 +61,7 @@ ECode AwContentsClientBridge::ClientCertificateRequestCallback::CancelRunnable::
 AwContentsClientBridge::ClientCertificateRequestCallback::ClientCertificateRequestCallback(
     /* [in] */ AwContentsClientBridge* owner,
     /* [in] */ Int32 id,
-    /* [in] */ String host,
+    /* [in] */ const String& host,
     /* [in] */ Int32 port)
     : mOwner(owner)
     , mId(id)
@@ -309,8 +309,8 @@ void AwContentsClientBridge::SelectClientCertificate(
 
 //@CalledByNative
 void AwContentsClientBridge::handleJsAlert(
-    /* [in] */ String url,
-    /* [in] */ String message,
+    /* [in] */ const String& url,
+    /* [in] */ const String& message,
     /* [in] */ Int32 id)
 {
     AutoPtr<JsResultHandler> handler = new JsResultHandler(this, id);
@@ -319,8 +319,8 @@ void AwContentsClientBridge::handleJsAlert(
 
 //@CalledByNative
 void AwContentsClientBridge::HandleJsConfirm(
-    /* [in] */ String url,
-    /* [in] */ String message,
+    /* [in] */ const String& url,
+    /* [in] */ const String& message,
     /* [in] */ Int32 id)
 {
     AutoPtr<JsResultHandler> handler = new JsResultHandler(this, id);
@@ -329,9 +329,9 @@ void AwContentsClientBridge::HandleJsConfirm(
 
 //@CalledByNative
 void AwContentsClientBridge::HandleJsPrompt(
-    /* [in] */ String url,
-    /* [in] */ String message,
-    /* [in] */ String defaultValue,
+    /* [in] */ const String& url,
+    /* [in] */ const String& message,
+    /* [in] */ const String& defaultValue,
     /* [in] */ Int32 id)
 {
     AutoPtr<JsResultHandler> handler = new JsResultHandler(this, id);
@@ -340,8 +340,8 @@ void AwContentsClientBridge::HandleJsPrompt(
 
 //@CalledByNative
 void AwContentsClientBridge::HandleJsBeforeUnload(
-    /* [in] */ String url,
-    /* [in] */ String message,
+    /* [in] */ const String& url,
+    /* [in] */ const String& message,
     /* [in] */ Int32 id)
 {
     AutoPtr<JsResultHandler> handler = new JsResultHandler(this, id);
@@ -350,14 +350,14 @@ void AwContentsClientBridge::HandleJsBeforeUnload(
 
 //@CalledByNative
 Boolean AwContentsClientBridge::ShouldOverrideUrlLoading(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     return mClient->ShouldOverrideUrlLoading(url);
 }
 
 void AwContentsClientBridge::ConfirmJsResult(
     /* [in] */ Int32 id,
-    /* [in] */ String prompt)
+    /* [in] */ const String& prompt)
 {
     if (mNativeContentsClientBridge == 0) return;
     NativeConfirmJsResult(mNativeContentsClientBridge, id, prompt);
@@ -391,7 +391,7 @@ void AwContentsClientBridge::NativeProvideClientCertificateResponse(
 void AwContentsClientBridge::NativeConfirmJsResult(
     /* [in] */ Int64 nativeAwContentsClientBridge,
     /* [in] */ Int32 id,
-    /* [in] */ String prompt)
+    /* [in] */ const String& prompt)
 {
 }
 

@@ -28,7 +28,7 @@ ContentUriUtils::ContentUriUtils()
 //@CalledByNative
 Int32 ContentUriUtils::OpenContentUriForRead(
     /* [in] */ IContext* context,
-    /* [in] */ String uriString)
+    /* [in] */ const String& uriString)
 {
     AutoPtr<IParcelFileDescriptor> pfd = GetParcelFileDescriptor(context, uriString);
     if (pfd != NULL) {
@@ -49,7 +49,7 @@ Int32 ContentUriUtils::OpenContentUriForRead(
 //@CalledByNative
 Boolean ContentUriUtils::ContentUriExists(
     /* [in] */ IContext* context,
-    /* [in] */ String uriString)
+    /* [in] */ const String& uriString)
 {
     AutoPtr<IParcelFileDescriptor> pfd = GetParcelFileDescriptor(context, uriString);
     if (pfd == NULL) {
@@ -67,7 +67,7 @@ Boolean ContentUriUtils::ContentUriExists(
  */
 AutoPtr<IParcelFileDescriptor> ContentUriUtils::GetParcelFileDescriptor(
     /* [in] */ IContext* context,
-    /* [in] */ String uriString)
+    /* [in] */ const String& uriString)
 {
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
@@ -98,7 +98,7 @@ AutoPtr<IParcelFileDescriptor> ContentUriUtils::GetParcelFileDescriptor(
 String ContentUriUtils::GetDisplayName(
     /* [in] */ IUri* uri,
     /* [in] */ IContentResolver* contentResolver,
-    /* [in] */ String columnField)
+    /* [in] */ const String& columnField)
 {
     if (contentResolver == NULL || uri == NULL) {
         return String("");

@@ -26,7 +26,7 @@ public:
         /* [in] */ ArrayOf<Float>* mappedButtons,
         /* [in] */ ArrayOf<Float>* rawAxes,
         /* [in] */ ArrayOf<Float>* rawButtons,
-        /* [in] */ String deviceName);
+        /* [in] */ const String& deviceName);
 
 private:
     static const String NVIDIA_SHIELD_DEVICE_NAME_PREFIX;

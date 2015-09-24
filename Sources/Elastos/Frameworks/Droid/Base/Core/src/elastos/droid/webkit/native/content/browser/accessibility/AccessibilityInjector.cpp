@@ -83,9 +83,9 @@ Boolean AccessibilityInjector::TextToSpeechWrapper::IsSpeaking()
 //@JavascriptInterface
 //@SuppressWarnings("unused")
 Int32 AccessibilityInjector::TextToSpeechWrapper::Speak(
-    /* [in] */ String text,
+    /* [in] */ const String& text,
     /* [in] */ Int32 queueMode,
-    /* [in] */ String jsonParams)
+    /* [in] */ const String& jsonParams)
 {
     // Try to pull the params from the JSON string.
     HashMap<String, String> params = null;
@@ -123,7 +123,7 @@ Int32 AccessibilityInjector::TextToSpeechWrapper::Stop()
 //@JavascriptInterface
 //@SuppressWarnings("unused")
 void AccessibilityInjector::TextToSpeechWrapper::Braille(
-    /* [in] */ String jsonString)
+    /* [in] */ const String& jsonString)
 {
     // try {
         AutoPtr<IJSONObject> jsonObj;
@@ -333,14 +333,14 @@ void AccessibilityInjector::SetScriptEnabled(
  */
 //@Override
 void AccessibilityInjector::DidStartLoading(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     mScriptInjected = FALSE;
 }
 
 //@Override
 void AccessibilityInjector::DidStopLoading(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     InjectAccessibilityScriptIntoPage();
 }

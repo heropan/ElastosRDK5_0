@@ -135,8 +135,8 @@ private:
     CARAPI_(Boolean) NoSpecificType();
 
     CARAPI_(Boolean) ShouldShowTypes(
-        /* [in] */ String allTypes,
-        /* [in] */ String specificType);
+        /* [in] */ const String& allTypes,
+        /* [in] */ const String& specificType);
 
     CARAPI_(Boolean) ShouldShowImageTypes();
 
@@ -145,7 +145,7 @@ private:
     CARAPI_(Boolean) ShouldShowAudioTypes();
 
     CARAPI_(Boolean) AcceptsSpecificType(
-        /* [in] */ String type);
+        /* [in] */ const String& type);
 
     CARAPI_(Boolean) CaptureCamera();
 
@@ -154,7 +154,7 @@ private:
     CARAPI_(Boolean) CaptureMicrophone();
 
     CARAPI_(Boolean) AcceptSpecificType(
-        /* [in] */ String accept);
+        /* [in] */ const String& accept);
 
     // @CalledByNative
     static CARAPI_(AutoPtr<SelectFileDialog>) Create(
@@ -162,8 +162,8 @@ private:
 
     CARAPI NativeOnFileSelected(
         /* [in] */ Int64 nativeSelectFileDialogImpl,
-        /* [in] */ String filePath,
-        /* [in] */ String displayName);
+        /* [in] */ const String& filePath,
+        /* [in] */ const String& displayName);
 
     CARAPI NativeOnFileNotSelected(
         /* [in] */ Int64 nativeSelectFileDialogImpl);

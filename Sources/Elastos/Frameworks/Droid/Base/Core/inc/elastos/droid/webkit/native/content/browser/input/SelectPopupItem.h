@@ -21,7 +21,7 @@ class SelectPopupItem
 {
 public:
     SelectPopupItem(
-        /* [in] */ String label,
+        /* [in] */ const String& label,
         /* [in] */ Int32 type);
 
     //@Override

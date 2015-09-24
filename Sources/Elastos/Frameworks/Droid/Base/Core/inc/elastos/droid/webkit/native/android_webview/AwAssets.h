@@ -28,7 +28,7 @@ public:
     //@CalledByNative
     static CARAPI_(AutoPtr< ArrayOf<Int64> >) OpenAsset(
         /* [in] */ IContext* context,
-        /* [in] */ String fileName);
+        /* [in] */ const String& fileName);
 
 private:
     static const String LOGTAG;

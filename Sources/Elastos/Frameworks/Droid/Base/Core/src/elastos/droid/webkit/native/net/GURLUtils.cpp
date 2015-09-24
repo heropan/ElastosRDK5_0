@@ -11,7 +11,7 @@ namespace Net {
 //                              GURLUtils
 //=====================================================================
 String GURLUtils::GetOrigin(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     // ==================before translated======================
     // return nativeGetOrigin(url);
@@ -20,7 +20,7 @@ String GURLUtils::GetOrigin(
 }
 
 String GURLUtils::GetScheme(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     // ==================before translated======================
     // return nativeGetScheme(url);
@@ -29,14 +29,14 @@ String GURLUtils::GetScheme(
 }
 
 String GURLUtils::NativeGetOrigin(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     assert(0);
     return String("");
 }
 
 String GURLUtils::NativeGetScheme(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     assert(0);
     return String("");

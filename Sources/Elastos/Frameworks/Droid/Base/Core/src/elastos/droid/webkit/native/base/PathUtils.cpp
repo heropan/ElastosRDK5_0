@@ -23,7 +23,7 @@ PathUtils::PathUtils()
  * @see Context#getDir(String, int)
  */
 void PathUtils::SetPrivateDataDirectorySuffix(
-    /* [in] */ String suffix)
+    /* [in] */ const String& suffix)
 {
     sDataDirectorySuffix = suffix;
 }

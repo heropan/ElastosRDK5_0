@@ -87,7 +87,7 @@ public:
      * @hide
      */
     CARAPI constructor(
-        /* [in] */ String address);
+        /* [in] */ const String& address);
 
     /**
      * Constructs a new {@code LinkAddress} from a string such as "192.0.2.5/24" or
@@ -98,7 +98,7 @@ public:
      * @hide
      */
     CARAPI constructor(
-        /* [in] */ String address,
+        /* [in] */ const String& address,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 scope);
 

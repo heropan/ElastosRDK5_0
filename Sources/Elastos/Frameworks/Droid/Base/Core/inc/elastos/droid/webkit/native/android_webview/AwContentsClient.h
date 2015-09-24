@@ -50,7 +50,7 @@ public:
         //@Override
         CARAPI_(void) DidFinishLoad(
             /* [in] */ Int64 frameId,
-            /* [in] */ String validatedUrl,
+            /* [in] */ const String& validatedUrl,
             /* [in] */ Boolean isMainFrame);
 
         //@Override
@@ -58,20 +58,20 @@ public:
             /* [in] */ Boolean isProvisionalLoad,
             /* [in] */ Boolean isMainFrame,
             /* [in] */ Int32 errorCode,
-            /* [in] */ String description,
-            /* [in] */ String failingUrl);
+            /* [in] */ const String& description,
+            /* [in] */ const String& failingUrl);
 
         //@Override
         CARAPI_(void) DidNavigateMainFrame(
-            /* [in] */ String url,
-            /* [in] */ String baseUrl,
+            /* [in] */ const String& url,
+            /* [in] */ const String& baseUrl,
             /* [in] */ Boolean isNavigationToDifferentPage,
             /* [in] */ Boolean isFragmentNavigation);
 
         //@Override
         CARAPI_(void) DidNavigateAnyFrame(
-            /* [in] */ String url,
-            /* [in] */ String baseUrl,
+            /* [in] */ const String& url,
+            /* [in] */ const String& baseUrl,
             /* [in] */ Boolean isReload);
 
     private:
@@ -146,7 +146,7 @@ public:
         /* [in] */ IValueCallback* callback) = 0;
 
     virtual CARAPI_(void) DoUpdateVisitedHistory(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ Boolean isReload) = 0;
 
     virtual CARAPI_(void) OnProgressChanged(
@@ -159,10 +159,10 @@ public:
         /* [in] */ IKeyEvent* event) = 0;
 
     virtual CARAPI_(Boolean) ShouldOverrideUrlLoading(
-        /* [in] */ String url) = 0;
+        /* [in] */ const String& url) = 0;
 
     virtual CARAPI_(void) OnLoadResource(
-        /* [in] */ String url) = 0;
+        /* [in] */ const String& url) = 0;
 
     virtual CARAPI_(void) OnUnhandledKeyEvent(
         /* [in] */ IKeyEvent* event) = 0;
@@ -172,8 +172,8 @@ public:
 
     virtual CARAPI_(void) OnReceivedHttpAuthRequest(
         /* [in] */ AwHttpAuthHandler* handler,
-        /* [in] */ String host,
-        /* [in] */ String realm) = 0;
+        /* [in] */ const String& host,
+        /* [in] */ const String& realm) = 0;
 
     virtual CARAPI_(void) OnReceivedSslError(
         /* [in] */ IValueCallback* callback,
@@ -188,19 +188,19 @@ public:
         /* [in] */ Int32 port);
 
     virtual CARAPI_(void) OnReceivedLoginRequest(
-        /* [in] */ String realm,
-        /* [in] */ String account,
-        /* [in] */ String args) = 0;
+        /* [in] */ const String& realm,
+        /* [in] */ const String& account,
+        /* [in] */ const String& args) = 0;
 
     virtual CARAPI_(void) OnFormResubmission(
         /* [in] */ IMessage* dontResend,
         /* [in] */ IMessage* resend) = 0;
 
     virtual CARAPI_(void) OnDownloadStart(
-        /* [in] */ String url,
-        /* [in] */ String userAgent,
-        /* [in] */ String contentDisposition,
-        /* [in] */ String mimeType,
+        /* [in] */ const String& url,
+        /* [in] */ const String& userAgent,
+        /* [in] */ const String& contentDisposition,
+        /* [in] */ const String& mimeType,
         /* [in] */ Int64 contentLength) = 0;
 
     // TODO(joth): Make abstract once this has rolled in downstream.
@@ -209,7 +209,7 @@ public:
         /* [in] */ IFileChooserParams* fileChooserParams);
 
     virtual CARAPI_(void) OnGeolocationPermissionsShowPrompt(
-        /* [in] */ String origin,
+        /* [in] */ const String& origin,
         /* [in] */ IGeolocationPermissionsCallback* callback) = 0;
 
     virtual CARAPI_(void) OnGeolocationPermissionsHidePrompt() = 0;
@@ -227,25 +227,25 @@ public:
         /* [in] */ Float newScale) = 0;
 
     virtual CARAPI_(void) OnReceivedTouchIconUrl(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ Boolean precomposed) = 0;
 
     virtual CARAPI_(void) OnReceivedIcon(
         /* [in] */ IBitmap* bitmap) = 0;
 
     virtual CARAPI_(void) OnReceivedTitle(
-        /* [in] */ String title) = 0;
+        /* [in] */ const String& title) = 0;
 
     virtual CARAPI_(void) OnPageStarted(
-        /* [in] */ String url) = 0;
+        /* [in] */ const String& url) = 0;
 
     virtual CARAPI_(void) OnPageFinished(
-        /* [in] */ String url) = 0;
+        /* [in] */ const String& url) = 0;
 
     virtual CARAPI_(void) OnReceivedError(
         /* [in] */ Int32 errorCode,
-        /* [in] */ String description,
-        /* [in] */ String failingUrl) = 0;
+        /* [in] */ const String& description,
+        /* [in] */ const String& failingUrl) = 0;
 
     // TODO (michaelbai): Remove this method once the same method remove from
     // WebViewContentsClientAdapter.
@@ -282,24 +282,24 @@ public:
 
 protected:
     virtual CARAPI_(void) HandleJsAlert(
-        /* [in] */ String url,
-        /* [in] */ String message,
+        /* [in] */ const String& url,
+        /* [in] */ const String& message,
         /* [in] */ JsResultReceiver* receiver);
 
     virtual CARAPI_(void) HandleJsBeforeUnload(
-        /* [in] */ String url,
-        /* [in] */ String message,
+        /* [in] */ const String& url,
+        /* [in] */ const String& message,
         /* [in] */ JsResultReceiver* receiver);
 
     virtual CARAPI_(void) HandleJsConfirm(
-        /* [in] */ String url,
-        /* [in] */ String message,
+        /* [in] */ const String& url,
+        /* [in] */ const String& message,
         /* [in] */ JsResultReceiver* receiver);
 
     virtual CARAPI_(void) HandleJsPrompt(
-        /* [in] */ String url,
-        /* [in] */ String message,
-        /* [in] */ String defaultValue,
+        /* [in] */ const String& url,
+        /* [in] */ const String& message,
+        /* [in] */ const String& defaultValue,
         /* [in] */ JsPromptResultReceiver* receiver);
 
     virtual CARAPI_(Boolean) OnCreateWindow(

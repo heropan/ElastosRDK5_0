@@ -288,7 +288,7 @@ Boolean ImeAdapter::DispatchKeyEvent(
 }
 
 Int32 ImeAdapter::ShouldSendKeyEventWithKeyCode(
-    /* [in] */ String text)
+    /* [in] */ const String& text)
 {
     if (text.GetLength() != 1) return COMPOSITION_KEY_CODE;
 
@@ -657,14 +657,14 @@ void ImeAdapter::NativeAppendBackgroundColorSpan(
 void ImeAdapter::NativeSetComposingText(
     /* [in] */ Int64 nativeImeAdapterAndroid,
     /* [in] */ ICharSequence* text,
-    /* [in] */ String textStr,
+    /* [in] */ const String& textStr,
     /* [in] */ Int32 newCursorPosition)
 {
 }
 
 void ImeAdapter::NativeCommitText(
     /* [in] */ Int64 nativeImeAdapterAndroid,
-    /* [in] */ String textStr)
+    /* [in] */ const String& textStr)
 {
 }
 

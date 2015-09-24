@@ -68,7 +68,7 @@ public:
       * @return One of the UNKNOWN_DIRECTION, RIGHT_TO_LEFT, and LEFT_TO_RIGHT.
       */
     static CARAPI_(Int32) GetFirstStrongCharacterDirection(
-        /* [in] */ String string);
+        /* [in] */ const String& string);
 
     /**
       * Jni binding to ui::TimeFormat::TimeRemaining. Converts milliseconds to
@@ -84,9 +84,9 @@ private:
 
     // @CalledByNative
     static CARAPI_(AutoPtr<ILocale>) GetJavaLocale(
-        /* [in] */ String language,
-        /* [in] */ String country,
-        /* [in] */ String variant);
+        /* [in] */ const String& language,
+        /* [in] */ const String& country,
+        /* [in] */ const String& variant);
 
     // @CalledByNative
     static CARAPI_(String) GetDisplayNameForLocale(
@@ -94,7 +94,7 @@ private:
         /* [in] */ ILocale* displayLocale);
 
     static CARAPI_(Int32) NativeGetFirstStrongCharacterDirection(
-        /* [in] */ String string);
+        /* [in] */ const String& string);
 
     static CARAPI_(String) NativeGetDurationString(
         /* [in] */ Int64 timeInMillis);

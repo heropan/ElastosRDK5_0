@@ -55,7 +55,7 @@ ECode WebStorageAdapter::GetOrigins(
 
 //@Override
 ECode WebStorageAdapter::GetUsageForOrigin(
-    /* [in] */ String origin,
+    /* [in] */ const String& origin,
     /* [in] */ IValueCallback* callback)
 {
     mQuotaManagerBridge->GetUsageForOrigin(origin, callback);
@@ -64,7 +64,7 @@ ECode WebStorageAdapter::GetUsageForOrigin(
 
 //@Override
 ECode WebStorageAdapter::GetQuotaForOrigin(
-    /* [in] */ String origin,
+    /* [in] */ const String& origin,
     /* [in] */ IValueCallback* callback)
 {
     mQuotaManagerBridge->GetQuotaForOrigin(origin, callback);
@@ -73,7 +73,7 @@ ECode WebStorageAdapter::GetQuotaForOrigin(
 
 //@Override
 ECode WebStorageAdapter::SetQuotaForOrigin(
-    /* [in] */ String origin,
+    /* [in] */ const String& origin,
     /* [in] */ Int64 quota)
 {
     // Intentional no-op for deprecated method.
@@ -82,7 +82,7 @@ ECode WebStorageAdapter::SetQuotaForOrigin(
 
 //@Override
 ECode WebStorageAdapter::DeleteOrigin(
-    /* [in] */ String origin)
+    /* [in] */ const String& origin)
 {
     mQuotaManagerBridge->DeleteOrigin(origin);
     return NOERROR;

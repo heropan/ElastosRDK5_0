@@ -33,7 +33,7 @@ public:
     //@CalledByNative
     static CARAPI_(Int32) OpenContentUriForRead(
         /* [in] */ IContext* context,
-        /* [in] */ String uriString);
+        /* [in] */ const String& uriString);
 
     /**
      * Check whether a content URI exists.
@@ -45,7 +45,7 @@ public:
     //@CalledByNative
     static CARAPI_(Boolean) ContentUriExists(
         /* [in] */ IContext* context,
-        /* [in] */ String uriString);
+        /* [in] */ const String& uriString);
 
     /**
      * Method to resolve the display name of a content URI.
@@ -59,7 +59,7 @@ public:
     static CARAPI_(String) GetDisplayName(
         /* [in] */ IUri* uri,
         /* [in] */ IContentResolver* contentResolver,
-        /* [in] */ String columnField);
+        /* [in] */ const String& columnField);
 
 private:
     // Prevent instantiation.
@@ -76,7 +76,7 @@ private:
      */
     static CARAPI_(AutoPtr<IParcelFileDescriptor>) GetParcelFileDescriptor(
         /* [in] */ IContext* context,
-        /* [in] */ String uriString);
+        /* [in] */ const String& uriString);
 };
 
 } // namespace Base

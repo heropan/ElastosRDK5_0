@@ -57,7 +57,7 @@ AwPrintDocumentAdapter::AwPrintDocumentAdapter(
  */
 AwPrintDocumentAdapter::AwPrintDocumentAdapter(
     /* [in] */ AwPdfExporter* pdfExporter,
-    /* [in] */ String documentName)
+    /* [in] */ const String& documentName)
     : mPdfExporter(pdfExporter)
     , mDocumentName(documentName)
 {

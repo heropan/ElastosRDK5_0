@@ -26,10 +26,10 @@ public:
     virtual CARAPI_(String) GetClientCertificateAlias() = 0;
 
     virtual CARAPI_(AutoPtr< ArrayOf<Byte> >) GetEncodedCertificateChain(
-        /* [in] */ String alias) = 0;
+        /* [in] */ const String& alias) = 0;
 
     virtual CARAPI_(Int32) GetPrivateKeyHandle(
-        /* [in] */ String alias) = 0;
+        /* [in] */ const String& alias) = 0;
 
     // Registers callbacks for service->client communication.
     virtual CARAPI SetClientCallbacks(

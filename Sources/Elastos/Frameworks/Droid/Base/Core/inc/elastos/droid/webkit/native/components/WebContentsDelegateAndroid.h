@@ -42,8 +42,8 @@ public:
       */
     // @CalledByNative
     virtual CARAPI OpenNewTab(
-        /* [in] */ String url,
-        /* [in] */ String extraHeaders,
+        /* [in] */ const String& url,
+        /* [in] */ const String& extraHeaders,
         /* [in] */ ArrayOf<Byte>* postData,
         /* [in] */ Int32 disposition,
         /* [in] */ Boolean isRendererInitiated);
@@ -87,7 +87,7 @@ public:
 
     // @CalledByNative
     virtual CARAPI OnUpdateUrl(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     // @CalledByNative
     virtual CARAPI_(Boolean) TakeFocus(
@@ -109,9 +109,9 @@ public:
     // @CalledByNative
     virtual CARAPI_(Boolean) AddMessageToConsole(
         /* [in] */ Int32 level,
-        /* [in] */ String message,
+        /* [in] */ const String& message,
         /* [in] */ Int32 lineNumber,
-        /* [in] */ String sourceId);
+        /* [in] */ const String& sourceId);
 
     /**
       * Report a form resubmission. The overwriter of this function should eventually call

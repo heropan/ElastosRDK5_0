@@ -21,7 +21,7 @@ ResourceExtractor::InnerFilenameFilter::InnerFilenameFilter(
 
 Boolean ResourceExtractor::InnerFilenameFilter::Accept(
     /* [in] */ IFile* dir,
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
     // ==================before translated======================
     // return name.startsWith(TIMESTAMP_PREFIX);

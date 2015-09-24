@@ -48,7 +48,7 @@ public:
       */
     // @CalledByNative
     virtual CARAPI DidStartLoading(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     /**
       * Called when the a page finishes loading.
@@ -56,7 +56,7 @@ public:
       */
     // @CalledByNative
     virtual CARAPI DidStopLoading(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     /**
       * Called when an error occurs while loading a page and/or the page fails to load.
@@ -69,8 +69,8 @@ public:
         /* [in] */ Boolean isProvisionalLoad,
         /* [in] */ Boolean isMainFrame,
         /* [in] */ Int32 errorCode,
-        /* [in] */ String description,
-        /* [in] */ String failingUrl);
+        /* [in] */ const String& description,
+        /* [in] */ const String& failingUrl);
 
     /**
       * Called when the main frame of the page has committed.
@@ -82,8 +82,8 @@ public:
       */
     // @CalledByNative
     virtual CARAPI DidNavigateMainFrame(
-        /* [in] */ String url,
-        /* [in] */ String baseUrl,
+        /* [in] */ const String& url,
+        /* [in] */ const String& baseUrl,
         /* [in] */ Boolean isNavigationToDifferentPage,
         /* [in] */ Boolean isFragmentNavigation);
 
@@ -101,8 +101,8 @@ public:
       */
     // @CalledByNative
     virtual CARAPI DidNavigateAnyFrame(
-        /* [in] */ String url,
-        /* [in] */ String baseUrl,
+        /* [in] */ const String& url,
+        /* [in] */ const String& baseUrl,
         /* [in] */ Boolean isReload);
 
     /**
@@ -120,7 +120,7 @@ public:
         /* [in] */ Int64 frameId,
         /* [in] */ Int64 parentFrameId,
         /* [in] */ Boolean isMainFrame,
-        /* [in] */ String validatedUrl,
+        /* [in] */ const String& validatedUrl,
         /* [in] */ Boolean isErrorPage,
         /* [in] */ Boolean isIframeSrcdoc);
 
@@ -137,7 +137,7 @@ public:
     virtual CARAPI DidCommitProvisionalLoadForFrame(
         /* [in] */ Int64 frameId,
         /* [in] */ Boolean isMainFrame,
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ Int32 transitionType);
 
     /**
@@ -149,7 +149,7 @@ public:
     // @CalledByNative
     virtual CARAPI DidFinishLoad(
         /* [in] */ Int64 frameId,
-        /* [in] */ String validatedUrl,
+        /* [in] */ const String& validatedUrl,
         /* [in] */ Boolean isMainFrame);
 
     /**

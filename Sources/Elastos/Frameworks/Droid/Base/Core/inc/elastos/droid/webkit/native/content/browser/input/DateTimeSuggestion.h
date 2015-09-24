@@ -24,8 +24,8 @@ public:
      */
     DateTimeSuggestion(
         /* [in] */ Double value,
-        /* [in] */ String localizedValue,
-        /* [in] */ String label);
+        /* [in] */ const String& localizedValue,
+        /* [in] */ const String& label);
 
     CARAPI_(Double) Value();
 

@@ -8,6 +8,13 @@
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashSet.h>
 
+using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IXmlResourceParser;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::Utility::IAttributeSet;
+
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashSet;
@@ -17,24 +24,30 @@ using Elastos::Utility::Jar::IJarEntry;
 using Elastos::Security::Cert::ICertificate;
 using Org::Xmlpull::V1::IXmlPullParser;
 
-using Elastos::Droid::Content::Res::ITypedArray;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Content::Res::IXmlResourceParser;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Utility::IDisplayMetrics;
-using Elastos::Droid::Utility::IAttributeSet;
-
 namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
 
 /**
- * Package archive parsing
+ * Parser for package files (APKs) on disk. This supports apps packaged either
+ * as a single "monolithic" APK, or apps packaged as a "cluster" of multiple
+ * APKs in a single directory.
+ * <p>
+ * Apps packaged as multiple APKs always consist of a single "base" APK (with a
+ * {@code null} split name) and zero or more "split" APKs (with unique split
+ * names). Any subset of those split APKs are a valid install, as long as the
+ * following constraints are met:
+ * <ul>
+ * <li>All APKs must have the exact same package name, version code, and signing
+ * certificates.
+ * <li>All APKs must have unique split names.
+ * <li>All installations must contain a single base APK.
+ * </ul>
  *
- * {@hide}
+ * @hide
  */
- class PackageParser
+class PackageParser
     : public Object
 {
 public:
@@ -97,6 +110,7 @@ public:
         Int32 mLabelRes;
         Int32 mIconRes;
         Int32 mLogoRes;
+        Int32 mBannerRes;
 
         String mTag;
         AutoPtr<ITypedArray> mSa;
@@ -125,23 +139,74 @@ public:
         Int32 mFlags;
     };
 
-    /* Light weight package info.
-     * @hide
+    /**
+     * Lightweight parsed details about a single package.
      */
     class PackageLite : public Object
     {
     public:
         PackageLite(
-            /* [in] */ const String& packageName,
-            /* [in] */ Int32 versionCode,
-            /* [in] */ Int32 installLocation,
-            /* [in] */ List< AutoPtr<IVerifierInfo> >* verifiers);
+            /* [in] */ const String& codePath,
+            /* [in] */ ApkLite* baseApk,
+            /* [in] */ ArrayOf<String>* splitNames,
+            /* [in] */ ArrayOf<String>* splitCodePaths);
+
+        AutoPtr<List<String> > GetAllCodePaths();
 
     public:
         String mPackageName;
         Int32 mVersionCode;
         Int32 mInstallLocation;
         AutoPtr< ArrayOf<IVerifierInfo*> > mVerifiers;
+
+        /** Names of any split APKs, ordered by parsed splitName */
+        AutoPtr<ArrayOf<String> > mSplitNames;
+
+        /**
+         * Path where this package was found on disk. For monolithic packages
+         * this is path to single base APK file; for cluster packages this is
+         * path to the cluster directory.
+         */
+        String mCodePath;
+
+        /** Path of base APK */
+        String mBaseCodePath;
+        /** Paths of any split APKs, ordered by parsed splitName */
+        AutoPtr<ArrayOf<String> > mSplitCodePaths;
+
+        Boolean mCoreApp;
+        Boolean mMultiArch;
+    };
+
+    /**
+     * Lightweight parsed details about a single APK file.
+     */
+
+    class ApkLite
+        : public Object
+    {
+    public:
+        ApkLite(
+            /* [in] */ String codePath,
+            /* [in] */ String packageName,
+            /* [in] */ String splitName,
+            /* [in] */ Int32 versionCode,
+            /* [in] */ Int32 installLocation,
+            /* [in] */ List<AutoPtr<IVerifierInfo> >* verifiers,
+            /* [in] */ ArrayOf<ISignature*>* signatures,
+            /* [in] */ Boolean coreApp,
+            /* [in] */ Boolean multiArch);
+
+    public:
+        String mCodePath;
+        String mPackageName;
+        String mSplitName;
+        Int32 mVersionCode;
+        Int32 mInstallLocation;
+        AutoPtr<ArrayOf<IVerifierInfo*> > mVerifiers;
+        AutoPtr<ArrayOf<ISignature*> > mSignatures;
+        Boolean mCoreApp;
+        Boolean mMultiArch;
     };
 
     class Package
@@ -605,12 +670,16 @@ public:
     };
 
 public:
-    PackageParser(
-        /* [in] */ const String& archiveSourcePath);
+    PackageParser();
 
     CARAPI_(void) SetSeparateProcesses(
         /* [in] */ ArrayOf<String>* procs);
 
+    /**
+     * Flag indicating this parser should only consider apps with
+     * {@code coreApp} manifest attribute to be valid apps. This is useful when
+     * creating a minimalist boot environment.
+     */
     CARAPI_(void) SetOnlyCoreApps(
         /* [in] */ Boolean onlyCoreApps);
 
@@ -629,6 +698,9 @@ public:
         /* [in] */ HashSet<String>* grantedPermissions,
         /* [in] */ PackageUserState* state);
 
+    static CARAPI_(Boolean) IsAvailable(
+        /* [in] */ PackageUserState* state);
+
     static CARAPI_(AutoPtr<IPackageInfo>) GeneratePackageInfo(
         /* [in] */ Package* c,
         /* [in] */ ArrayOf<Int32>* gids,
@@ -639,30 +711,71 @@ public:
         /* [in] */ PackageUserState* state,
         /* [in] */ Int32 userId);
 
-    CARAPI_(Int32) GetParseError();
-
-    CARAPI_(AutoPtr<Package>) ParsePackage(
-        /* [in] */ IFile* sourceFile,
-        /* [in] */ const String& destCodePath,
-        /* [in] */ IDisplayMetrics* metrics,
+    /**
+     * Parse only lightweight details about the package at the given location.
+     * Automatically detects if the package is a monolithic style (single APK
+     * file) or cluster style (directory of APKs).
+     * <p>
+     * This performs sanity checking on cluster style packages, such as
+     * requiring identical package name and version codes, a single base APK,
+     * and unique split names.
+     *
+     * @see PackageParser#parsePackage(File, int)
+     */
+    CARAPI ParsePackageLite(
+        /* [in] */ IFile* packageFile,
         /* [in] */ Int32 flags,
-        /* [in] */ Boolean isEpk = FALSE);
+        /* [out] */ PackageLite** pkgLite);
 
-    CARAPI_(Boolean) CollectCertificates(
+    /**
+     * Parse the package at the given location. Automatically detects if the
+     * package is a monolithic style (single APK file) or cluster style
+     * (directory of APKs).
+     * <p>
+     * This performs sanity checking on cluster style packages, such as
+     * requiring identical package name and version codes, a single base APK,
+     * and unique split names.
+     * <p>
+     * Note that this <em>does not</em> perform signature verification; that
+     * must be done separately in {@link #collectCertificates(Package, int)}.
+     *
+     * @see #parsePackageLite(File, int)
+     */
+    CARAPI ParsePackage(
+        /* [in] */ IFile* packageFile,
+        /* [in] */ Int32 flags,
+        /* [out] */ Package** pkgLite);
+
+    /**
+     * Gathers the {@link ManifestDigest} for {@code pkg} if it exists in the
+     * APK. If it successfully scanned the package and found the
+     * {@code AndroidManifest.xml}, {@code true} is returned.
+     */
+    CARAPI CollectManifestDigest(
+        /* [in] */ Package* pkg);
+
+    /**
+     * Collect certificates from all the APKs described in the given package,
+     * populating {@link Package#mSignatures}. This also asserts that all APK
+     * contents are signed correctly and consistently.
+     */
+    CARAPI CollectCertificates(
         /* [in] */ Package* pkg,
         /* [in] */ Int32 flags,
         /* [in] */ ArrayOf<Byte>* readBuffer);
 
-    /*
-     * Utility method that retrieves just the package name and install
-     * location from the apk location at the given file path.
-     * @param packageFilePath file location of the apk
-     * @param flags Special parse flags
-     * @return PackageLite object with package information or null on failure.
+    /**
+     * Utility method that retrieves lightweight details about a single APK
+     * file, including package name, split name, and install location.
+     *
+     * @param apkFile path to a single APK
+     * @param flags optional parse flags, such as
+     *            {@link #PARSE_COLLECT_CERTIFICATES}
      */
-    static CARAPI_(AutoPtr<PackageLite>) ParsePackageLite(
-        /* [in] */ const String& packageFilePath,
-        /* [in] */ Int32 flags);
+    static CARAPI ParseApkLite(
+        /* [in] */ IFile* apkFile,
+        /* [in] */ Int32 flags,
+        /* [out] */ PackageParser::ApkLite** apkLite);
 
     /**
      * Temporary.
@@ -715,40 +828,151 @@ public:
         /* [in] */ Boolean compatibilityModeEnabled);
 
 private:
-    static CARAPI_(Boolean) IsPackageFilename(
+    static CARAPI_(Boolean) IsApkFile(
+        /* [in] */ IFile* file);
+
+    static CARAPI_(Boolean) IsApkPath(
         /* [in] */ const String& name);
 
-    static CARAPI_(Boolean) CheckUseInstalled(
+    /**
+     * Returns true if the package is installed and not hidden, or if the caller
+     * explicitly wanted all uninstalled and hidden packages as well.
+     */
+    static CARAPI_(Boolean) CheckUseInstalledOrHidden(
         /* [in] */ Int32 flags,
         /* [in] */ PackageUserState* state);
 
-    CARAPI_(AutoPtr< ArrayOf<ICertificate*> >) LoadCertificates(
-        /* [in] */ IJarFile* jarFile,
-        /* [in] */ IJarEntry* je,
-        /* [in] */ ArrayOf<Byte>* readBuffer);
+    static CARAPI LoadCertificates(
+        /* [in] */ IStrictJarFile* jarFile,
+        /* [in] */ IZipEntry* je,
+        /* [in] */ ArrayOf<Byte>* readBuffer,
+        /* [in] */ ArrayOf<ICertificate*>** result);
 
     static CARAPI_(String) ValidateName(
         /* [in] */ const String& name,
         /* [in] */ Boolean requiresSeparator);
 
-    static CARAPI_(String) ParsePackageName(
+    static CARAPI ParsePackageSplitNames(
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 flags,
-        /* [out] */ ArrayOf<String>* outError);
+        /* [out, callee] */ ArrayOf<String>* pairString);
 
-    static CARAPI_(AutoPtr<PackageLite>) ParsePackageLite(
-        /* [in] */ IResources* res,
-        /* [in] */ IXmlPullParser* parser,
-        /* [in] */ IAttributeSet* attrs,
+    static CARAPI ParseMonolithicPackageLite(
+        /* [in] */ IFile* packageFile,
         /* [in] */ Int32 flags,
-        /* [out] */ ArrayOf<String>* outError);
+        /* [out] */ PackageLite** pkgLite);
 
-    CARAPI_(AutoPtr<Package>) ParsePackage(
+    static CARAPI ParseClusterPackageLite(
+        /* [in] */ IFile* packageFile,
+        /* [in] */ Int32 flags,
+        /* [out] */ PackageLite** pkgLite);
+
+    /**
+     * Parse all APKs contained in the given directory, treating them as a
+     * single package. This also performs sanity checking, such as requiring
+     * identical package name and version codes, a single base APK, and unique
+     * split names.
+     * <p>
+     * Note that this <em>does not</em> perform signature verification; that
+     * must be done separately in {@link #collectCertificates(Package, int)}.
+     */
+    CARAPI ParseClusterPackage(
+        /* [in] */ IFile* packageFile,
+        /* [in] */ Int32 flags,
+        /* [out] */ Package** pkgLite);
+
+    /**
+     * Parse the given APK file, treating it as as a single monolithic package.
+     * <p>
+     * Note that this <em>does not</em> perform signature verification; that
+     * must be done separately in {@link #collectCertificates(Package, int)}.
+     *
+     * @deprecated external callers should move to
+     *             {@link #parsePackage(File, int)}. Eventually this method will
+     *             be marked private.
+     */
+    CARAPI ParseMonolithicPackage(
+        /* [in] */ IFile* packageFile,
+        /* [in] */ Int32 flags,
+        /* [out] */ Package** pkgLite);
+
+    CARAPI LoadApkIntoAssetManager(
+        /* [in] */ IAssetManager* assets,
+        /* [in] */ const String& apkPath,
+        /* [in] */ Int32 flags,
+        /* [out] */ Int32* result);
+
+    CARAPI ParseBaseApk(
+        /* [in] */ IFile* apkFile,
+        /* [in] */ IAssetManager* assets,
+        /* [in] */ Int32 flags,
+        /* [out] */ Package** pkg);
+
+    CARAPI ParseSplitApk(
+        /* [in] */ Package* pkg,
+        /* [in] */ Int32 splitIndex,
+        /* [in] */ IAssetManager* assets,
+        /* [in] */ Int32 flags);
+
+    /**
+     * Parse the manifest of a <em>split APK</em>.
+     * <p>
+     * Note that split APKs have many more restrictions on what they're capable
+     * of doing, so many valid features of a base APK have been carefully
+     * omitted here.
+     */
+    CARAPI ParseSplitApk(
+        /* [in] */ Package* pkg,
         /* [in] */ IResources* res,
         /* [in] */ IXmlResourceParser* parser,
         /* [in] */ Int32 flags,
-        /* [out] */ ArrayOf<String>* outError);
+        /* [in] */ Int32 splitIndex,
+        /* [in] */ ArrayOf<String>* outError,
+        /* [out] */ Package** pkg);
+
+    static CARAPI CollectCertificates(
+        /* [in] */ Package* pkg,
+        /* [in] */ IFile* apkFile,
+        /* [in] */ Int32 flags);
+
+    static AutoPtr<ArrayOf<ISignature*> > ConvertToSignatures(
+        /* [in] */ ArrayOf< AutoPtr< ArrayOf<ICertificate*> > > * certs);
+
+    static CARAPI ParseApkLite(
+        /* [in] */ const String& codePath,
+        /* [in] */ IResources* res,
+        /* [in] */ IXmlResourceParser* parser,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 flags,
+        /* [in] */ ArrayOf<ISignature*>* signatures,
+        /* [out] */ ApkLite** apkLite);
+
+    /**
+     * Parse the manifest of a <em>base APK</em>.
+     * <p>
+     * When adding new features, carefully consider if they should also be
+     * supported by split APKs.
+     */
+    CARAPI ParseBaseApk(
+        /* [in] */ IResources* res,
+        /* [in] */ IXmlResourceParser* parser,
+        /* [in] */ Int32 flags,
+        /* [in] */ ArrayOf<String>* outError,
+        /* [out] */ Package** pkg);
+
+    CARAPI ParseUsesFeature(
+        /* [in] */ IResources* res,
+        /* [in] */ IAttributeSet* attrs,
+        /* [out] */ IFeatureInfo** info);
+
+    CARAPI ParseUsesPermission(
+        /* [in] */ Package* pkg,
+        /* [in] */ IResources* res,
+        /* [in] */ IXmlResourceParser* parser,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ ArrayOf<String>* outError,
+        /* [out] */ Boolean* result);
 
     static CARAPI_(String) BuildClassName(
         /* [in] */ const String& pkg,
@@ -774,6 +998,14 @@ private:
         /* [in] */ const String& defProc,
         /* [in] */ ICharSequence* procSeq,
         /* [out] */ ArrayOf<String>* outError);
+
+    CARAPI ParseKeySets(
+        /* [in] */ Package* owner,
+        /* [in] */ IResources* res,
+        /* [in] */ IXmlResourceParser* parser,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ ArrayOf<String>* outError,
+        /* [out] */ Boolean* result);
 
     CARAPI_(AutoPtr<PermissionGroup>) ParsePermissionGroup(
         /* [in] */ Package* owner,
@@ -804,7 +1036,14 @@ private:
         /* [in] */ IAttributeSet* attrs,
         /* [out] */ ArrayOf<String>* outError);
 
-    CARAPI_(Boolean) ParseApplication(
+    /**
+     * Parse the {@code application} XML tree at the current parse location in a
+     * <em>base APK</em> manifest.
+     * <p>
+     * When adding new features, carefully consider if they should also be
+     * supported by split APKs.
+     */
+    CARAPI_(Boolean) ParseBaseApplication(
         /* [in] */ PackageParser::Package* owner,
         /* [in] */ IResources* res,
         /* [in] */ IXmlPullParser* parser,
@@ -922,15 +1161,19 @@ public:
      */
     static const AutoPtr< ArrayOf<SplitPermissionInfo*> > SPLIT_PERMISSIONS;
 
-    static const Int32 PARSE_IS_SYSTEM;
-    static const Int32 PARSE_CHATTY;
-    static const Int32 PARSE_MUST_BE_APK;
-    static const Int32 PARSE_IGNORE_PROCESSES;
-    static const Int32 PARSE_FORWARD_LOCK;
-    static const Int32 PARSE_ON_SDCARD;
-    static const Int32 PARSE_IS_SYSTEM_DIR;
+    static const Int32 PARSE_IS_SYSTEM;// = 1<<0;
+    static const Int32 PARSE_CHATTY;// = 1<<1;
+    static const Int32 PARSE_MUST_BE_APK;// = 1<<2;
+    static const Int32 PARSE_IGNORE_PROCESSES;// = 1<<3;
+    static const Int32 PARSE_FORWARD_LOCK;// = 1<<4;
+    static const Int32 PARSE_ON_SDCARD;// = 1<<5;
+    static const Int32 PARSE_IS_SYSTEM_DIR;// = 1<<6;
+    static const Int32 PARSE_IS_PRIVILEGED;// = 1<<7;
+    static const Int32 PARSE_COLLECT_CERTIFICATES;// = 1<<8;
+    static const Int32 PARSE_TRUSTED_OVERLAY;// = 1<<9;
 
     static const Int32 CERTIFICATE_BUFFER_SIZE;
+
 private:
     static const Boolean DEBUG_JAR ;
     static const Boolean DEBUG_PARSER;
@@ -938,20 +1181,27 @@ private:
 
     static const String TAG;
 
+    // TODO: switch outError users to PackageParserException
+    // TODO: refactor "codePath" to "apkPath"
+
     /** File name in an APK for the Android manifest. */
     static const String ANDROID_MANIFEST_FILENAME;
 
+    /**
+     * @deprecated callers should move to explicitly passing around source path.
+     */
     String mArchiveSourcePath;
+
     AutoPtr< ArrayOf<String> > mSeparateProcesses;
     Boolean mOnlyCoreApps;
+    AutoPtr<IDisplayMetrics> mMetrics;
 
     static const Int32 SDK_VERSION;
-    static const String SDK_CODENAME;
+    static const AutoPtr< ArrayOf<String> > SDK_CODENAMES;
 
     Int32 mParseError;
 
     static Boolean sCompatibilityModeEnabled;
-    static const Int32 PARSE_DEFAULT_INSTALL_LOCATION;
 
     AutoPtr<ParsePackageItemArgs> mParseInstrumentationArgs;
     AutoPtr<ParseComponentArgs> mParseActivityArgs;
@@ -966,6 +1216,25 @@ private:
     static const Boolean RIGID_PARSER;
 
     static const String ANDROID_RESOURCES;
+
+    // private static final Comparator<String> sSplitNameComparator = new SplitNameComparator();
+
+    // /**
+    //  * Used to sort a set of APKs based on their split names, always placing the
+    //  * base APK (with {@code null} split name) first.
+    //  */
+    // private static class SplitNameComparator implements Comparator<String> {
+    //     @Override
+    //     public int compare(String lhs, String rhs) {
+    //         if (lhs == null) {
+    //             return -1;
+    //         } else if (rhs == null) {
+    //             return 1;
+    //         } else {
+    //             return lhs.compareTo(rhs);
+    //         }
+    //     }
+    // }
 };
 
 } // namespace Pm

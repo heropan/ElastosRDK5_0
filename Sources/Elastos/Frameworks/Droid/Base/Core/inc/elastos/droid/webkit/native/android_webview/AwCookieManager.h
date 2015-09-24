@@ -93,8 +93,8 @@ public:
      * Synchronous version of setCookie.
      */
     CARAPI_(void) SetCookie(
-        /* [in] */ String url,
-        /* [in] */ String value);
+        /* [in] */ const String& url,
+        /* [in] */ const String& value);
 
     /**
      * Deprecated synchronous version of removeSessionCookies.
@@ -185,16 +185,16 @@ private:
     CARAPI_(Boolean) NativeGetShouldAcceptCookies();
 
     CARAPI_(void) NativeSetCookie(
-        /* [in] */ String url,
-        /* [in] */ String value,
+        /* [in] */ const String& url,
+        /* [in] */ const String& value,
         /* [in] */ CookieCallback* callback);
 
     CARAPI_(void) NativeSetCookieSync(
-        /* [in] */ String url,
-        /* [in] */ String value);
+        /* [in] */ const String& url,
+        /* [in] */ const String& value);
 
     CARAPI_(String) NativeGetCookie(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     CARAPI_(void) NativeRemoveSessionCookies(
         /* [in] */ CookieCallback* callback);

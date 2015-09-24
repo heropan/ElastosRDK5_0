@@ -23,7 +23,7 @@ class WebIconDatabaseAdapter
 public:
     //@Override
     CARAPI Open(
-        /* [in] */ String path);
+        /* [in] */ const String& path);
 
     //@Override
     CARAPI Close();
@@ -33,22 +33,22 @@ public:
 
     //@Override
     CARAPI RequestIconForPageUrl(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ IIconListener* listener);
 
     //@Override
     CARAPI BulkRequestIconForPageUrl(
         /* [in] */ IContentResolver* cr,
-        /* [in] */ String where,
+        /* [in] */ const String& where,
         /* [in] */ IIconListener* listener);
 
     //@Override
     CARAPI RetainIconForPageUrl(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     //@Override
     CARAPI ReleaseIconForPageUrl(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 };
 
 } // namespace Chromium

@@ -12,7 +12,7 @@ namespace Ui {
 //=====================================================================
 ColorSuggestion::ColorSuggestion(
     /* [in] */ Int32 color,
-    /* [in] */ String label)
+    /* [in] */ const String& label)
 {
     // ==================before translated======================
     // mColor = color;

@@ -7,7 +7,7 @@ namespace Browser {
 namespace Input {
 
 SelectPopupItem::SelectPopupItem(
-    /* [in] */ String label,
+    /* [in] */ const String& label,
     /* [in] */ Int32 type)
     : mLabel(label)
     , mType(type)

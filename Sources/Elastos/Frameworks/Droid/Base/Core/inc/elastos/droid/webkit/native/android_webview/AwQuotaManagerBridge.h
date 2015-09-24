@@ -66,7 +66,7 @@ public:
      * Implements WebStorage.deleteOrigin(). Clear the storage of APIs 2-5 for the given origin.
      */
     CARAPI_(void) DeleteOrigin(
-        /* [in] */ String origin);
+        /* [in] */ const String& origin);
 
     /**
      * Implements WebStorage.getOrigins. Get the per origin usage and quota of APIs 2-5 in
@@ -80,7 +80,7 @@ public:
      * origin.
      */
     CARAPI_(void) GetQuotaForOrigin(
-        /* [in] */ String origin,
+        /* [in] */ const String& origin,
         /* [in] */ IValueCallback* callback);
 
     /**
@@ -88,7 +88,7 @@ public:
      * origin.
      */
     CARAPI_(void) GetUsageForOrigin(
-        /* [in] */ String origin,
+        /* [in] */ const String& origin,
         /* [in] */ IValueCallback* callback);
 
 private:
@@ -122,7 +122,7 @@ private:
 
     CARAPI_(void) NativeDeleteOrigin(
         /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl,
-        /* [in] */ String origin);
+        /* [in] */ const String& origin);
 
     CARAPI_(void) NativeGetOrigins(
         /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl,
@@ -130,7 +130,7 @@ private:
 
     CARAPI_(void) NativeGetUsageAndQuotaForOrigin(
         /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl,
-        /* [in] */ String origin,
+        /* [in] */ const String& origin,
         /* [in] */ Int32 callbackId,
         /* [in] */ Boolean isQuota);
 

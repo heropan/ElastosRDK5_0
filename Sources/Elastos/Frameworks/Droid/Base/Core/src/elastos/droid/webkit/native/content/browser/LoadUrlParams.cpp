@@ -19,14 +19,14 @@ const Int32 LoadUrlParams::UA_OVERRIDE_FALSE;
 const Int32 LoadUrlParams::UA_OVERRIDE_TRUE;
 
 LoadUrlParams::LoadUrlParams(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     // ==================before translated======================
     // this(url, PageTransitionTypes.PAGE_TRANSITION_LINK);
 }
 
 LoadUrlParams::LoadUrlParams(
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ Int32 transitionType)
     : :LoadUrlParams.
          mLoadUrlType = LOAD_TYPE_DEFAULT;
@@ -50,8 +50,8 @@ LoadUrlParams::LoadUrlParams(
 }
 
 AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParams(
-    /* [in] */ String data,
-    /* [in] */ String mimeType,
+    /* [in] */ const String& data,
+    /* [in] */ const String& mimeType,
     /* [in] */ Boolean isBase64Encoded)
 {
     // ==================before translated======================
@@ -62,10 +62,10 @@ AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParams(
 }
 
 AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParams(
-    /* [in] */ String data,
-    /* [in] */ String mimeType,
+    /* [in] */ const String& data,
+    /* [in] */ const String& mimeType,
     /* [in] */ Boolean isBase64Encoded,
-    /* [in] */ String charset)
+    /* [in] */ const String& charset)
 {
     // ==================before translated======================
     // StringBuilder dataUrl = new StringBuilder("data:");
@@ -89,11 +89,11 @@ AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParams(
 }
 
 AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParamsWithBaseUrl(
-    /* [in] */ String data,
-    /* [in] */ String mimeType,
+    /* [in] */ const String& data,
+    /* [in] */ const String& mimeType,
     /* [in] */ Boolean isBase64Encoded,
-    /* [in] */ String baseUrl,
-    /* [in] */ String historyUrl)
+    /* [in] */ const String& baseUrl,
+    /* [in] */ const String& historyUrl)
 {
     // ==================before translated======================
     // return createLoadDataParamsWithBaseUrl(data, mimeType, isBase64Encoded,
@@ -104,12 +104,12 @@ AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParamsWithBaseUrl(
 }
 
 AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParamsWithBaseUrl(
-    /* [in] */ String data,
-    /* [in] */ String mimeType,
+    /* [in] */ const String& data,
+    /* [in] */ const String& mimeType,
     /* [in] */ Boolean isBase64Encoded,
-    /* [in] */ String baseUrl,
-    /* [in] */ String historyUrl,
-    /* [in] */ String charset)
+    /* [in] */ const String& baseUrl,
+    /* [in] */ const String& historyUrl,
+    /* [in] */ const String& charset)
 {
     // ==================before translated======================
     // LoadUrlParams params = createLoadDataParams(data, mimeType, isBase64Encoded, charset);
@@ -129,7 +129,7 @@ AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParamsWithBaseUrl(
 }
 
 AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadHttpPostParams(
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ ArrayOf<Byte>* postData)
 {
     // ==================before translated======================
@@ -144,7 +144,7 @@ AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadHttpPostParams(
 }
 
 ECode LoadUrlParams::SetUrl(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     // ==================before translated======================
     // mUrl = url;
@@ -249,7 +249,7 @@ String LoadUrlParams::GetExtraHttpRequestHeadersString()
 }
 
 ECode LoadUrlParams::SetVerbatimHeaders(
-    /* [in] */ String headers)
+    /* [in] */ const String& headers)
 {
     // ==================before translated======================
     // mVerbatimHeaders = headers;
@@ -294,7 +294,7 @@ AutoPtr< ArrayOf<Byte> > LoadUrlParams::GetPostData()
 }
 
 ECode LoadUrlParams::SetBaseUrlForDataUrl(
-    /* [in] */ String baseUrl)
+    /* [in] */ const String& baseUrl)
 {
     // ==================before translated======================
     // mBaseUrlForDataUrl = baseUrl;
@@ -303,7 +303,7 @@ ECode LoadUrlParams::SetBaseUrlForDataUrl(
 }
 
 ECode LoadUrlParams::SetVirtualUrlForDataUrl(
-    /* [in] */ String virtualUrl)
+    /* [in] */ const String& virtualUrl)
 {
     // ==================before translated======================
     // mVirtualUrlForDataUrl = virtualUrl;
@@ -359,7 +359,7 @@ Boolean LoadUrlParams::IsBaseUrlDataScheme()
 }
 
 String LoadUrlParams::GetExtraHeadersString(
-    /* [in] */ String delimiter,
+    /* [in] */ const String& delimiter,
     /* [in] */ Boolean addTerminator)
 {
     // ==================before translated======================
@@ -402,7 +402,7 @@ ECode LoadUrlParams::InitializeConstants(
 }
 
 Boolean LoadUrlParams::NativeIsDataScheme(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     assert(0);
     return FALSE;

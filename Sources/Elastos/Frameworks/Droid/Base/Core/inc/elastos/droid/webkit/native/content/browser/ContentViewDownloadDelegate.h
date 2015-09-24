@@ -31,8 +31,8 @@ public:
      * @param mimeType Mime of the downloaded item.
      */
     virtual CARAPI_(void) OnDownloadStarted(
-        /* [in] */ String filename,
-        /* [in] */ String mimeType) = 0;
+        /* [in] */ const String& filename,
+        /* [in] */ const String& mimeType) = 0;
 
     /**
      * Notify the host application that a download has an extension indicating
@@ -41,7 +41,7 @@ public:
      * @param downloadId The download id.
      */
     virtual CARAPI_(void) OnDangerousDownload(
-        /* [in] */ String filename,
+        /* [in] */ const String& filename,
         /* [in] */ Int32 downloadId) = 0;
 };
 

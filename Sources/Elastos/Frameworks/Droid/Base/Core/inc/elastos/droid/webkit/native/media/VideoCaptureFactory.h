@@ -37,7 +37,7 @@ public:
     public:
         CamParams(
             /* [in] */ Int32 id,
-            /* [in] */ String name,
+            /* [in] */ const String& name,
             /* [in] */ Int32 width,
             /* [in] */ Int32 height);
 

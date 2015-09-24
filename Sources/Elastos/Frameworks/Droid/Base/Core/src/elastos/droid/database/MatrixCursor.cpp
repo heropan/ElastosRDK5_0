@@ -47,7 +47,7 @@ ECode MatrixCursor::RowBuilder::Add(
 }
 
 ECode MatrixCursor::RowBuilder::Add(
-    /* [in] */ String columnName,
+    /* [in] */ const String& columnName,
     /* [in] */ IInterface* value)
 {
     for (Int32 i = 0; i < mOwner->mColumnNames->GetLength(); i++) {

@@ -25,7 +25,7 @@ AutoPtr<IBitmap> BitmapHelper::CreateBitmap(
 }
 
 AutoPtr<IBitmap> BitmapHelper::DecodeDrawableResource(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Int32 reqWidth,
     /* [in] */ Int32 reqHeight)
 {

@@ -40,17 +40,17 @@ public:
 
     //@CalledByNative
     virtual CARAPI_(void) OnDownloadStart(
-        /* [in] */ String url,
-        /* [in] */ String userAgent,
-        /* [in] */ String contentDisposition,
-        /* [in] */ String mimeType,
+        /* [in] */ const String& url,
+        /* [in] */ const String& userAgent,
+        /* [in] */ const String& contentDisposition,
+        /* [in] */ const String& mimeType,
         /* [in] */ Int64 contentLength) = 0;
 
     //@CalledByNative
     virtual CARAPI_(void) NewLoginRequest(
-        /* [in] */ String realm,
-        /* [in] */ String account,
-        /* [in] */ String args) = 0;
+        /* [in] */ const String& realm,
+        /* [in] */ const String& account,
+        /* [in] */ const String& args) = 0;
 
     virtual CARAPI_(AutoPtr<AwWebResourceResponse>) ShouldInterceptRequest(
         /* [in] */ AwContentsClient::ShouldInterceptRequestParams params) = 0;
@@ -60,10 +60,10 @@ protected:
 
     //@CalledByNative
     virtual CARAPI_(AutoPtr<AwWebResourceResponse>) ShouldInterceptRequest(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ Boolean isMainFrame,
         /* [in] */ Boolean hasUserGesture,
-        /* [in] */ String method,
+        /* [in] */ const String& method,
         /* [in] */ ArrayOf<String>* requestHeaderNames,
         /* [in] */ ArrayOf<String>* requestHeaderValues);
 };

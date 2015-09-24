@@ -53,8 +53,8 @@ private:
             /* [in] */ const IHandler* resultHandler);
 
         CARAPI_(void) OnSmartClipDataExtracted(
-            /* [in] */ String text,
-            /* [in] */ String html,
+            /* [in] */ const String& text,
+            /* [in] */ const String& html,
             /* [in] */ IRect* clipRect);
 
     private:

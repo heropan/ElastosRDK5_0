@@ -248,8 +248,8 @@ public:
     {
     public:
         virtual CARAPI_(void) OnSmartClipDataExtracted(
-            /* [in] */ String text,
-            /* [in] */ String html,
+            /* [in] */ const String& text,
+            /* [in] */ const String& html,
             /* [in] */ IRect* clipRect) = 0;
     };
 
@@ -258,7 +258,7 @@ public:
     {
     public:
         virtual CARAPI_(void) HandleJavaScriptResult(
-            /* [in] */ String jsonResult) = 0;
+            /* [in] */ const String& jsonResult) = 0;
     };
 
 private:
@@ -383,8 +383,8 @@ private:
 
         //@Override
         CARAPI DidNavigateMainFrame(
-            /* [in] */ String url,
-            /* [in] */ String baseUrl,
+            /* [in] */ const String& url,
+            /* [in] */ const String& baseUrl,
             /* [in] */ Boolean isNavigationToDifferentPage,
             /* [in] */ Boolean isFragmentNavigation);
 
@@ -814,7 +814,7 @@ public:
      */
     //@VisibleForTesting
     CARAPI_(void) ShowInterstitialPage(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ InterstitialPageDelegateAndroid* delegate);
 
     /**
@@ -1038,7 +1038,7 @@ public:
      * main frame's document.
      */
     CARAPI_(void) AddStyleSheetByURL(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     /**
      * Injects the passed Javascript code in the current page and evaluates it.
@@ -1052,7 +1052,7 @@ public:
      *                 If no result is required, pass null.
      */
     CARAPI_(void) EvaluateJavaScript(
-        /* [in] */ String script,
+        /* [in] */ const String& script,
         /* [in] */ JavaScriptCallback* callback);
 
     /**
@@ -1062,7 +1062,7 @@ public:
      * @param script The Javascript to execute.
      */
     CARAPI_(void) EvaluateJavaScriptEvenIfNotYetNavigated(
-        /* [in] */ String script);
+        /* [in] */ const String& script);
 
     /**
      * To be called when the ContentView is shown.
@@ -1469,7 +1469,7 @@ public:
      */
     CARAPI_(void) AddJavascriptInterface(
         /* [in] */ IInterface* object,
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     /**
      * This method injects the supplied Java object into the ContentViewCore.
@@ -1515,7 +1515,7 @@ public:
      */
     CARAPI_(void) AddPossiblyUnsafeJavascriptInterface(
         /* [in] */ IInterface* object,
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [in] */ IAnnotation* requiredAnnotation);
 
     /**
@@ -1524,7 +1524,7 @@ public:
      * @param name The name of the interface to remove.
      */
     CARAPI_(void) RemoveJavascriptInterface(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     /**
      * Return the current scale of the ContentView.
@@ -1862,7 +1862,7 @@ private:
     CARAPI_(void) UpdateImeAdapter(
         /* [in] */ Int64 nativeImeAdapterAndroid,
         /* [in] */ Int32 textInputType,
-        /* [in] */ String text,
+        /* [in] */ const String& text,
         /* [in] */ Int32 selectionStart,
         /* [in] */ Int32 selectionEnd,
         /* [in] */ Int32 compositionStart,
@@ -1873,7 +1873,7 @@ private:
     //@SuppressWarnings("unused")
     //@CalledByNative
     CARAPI_(void) SetTitle(
-        /* [in] */ String title);
+        /* [in] */ const String& title);
 
     /**
      * Called (from native) when the <select> popup needs to be shown.
@@ -1910,7 +1910,7 @@ private:
     //@SuppressWarnings("unused")
     //@CalledByNative
     CARAPI_(void) OnSelectionChanged(
-        /* [in] */ String text);
+        /* [in] */ const String& text);
 
     //@SuppressWarnings("unused")
     //@CalledByNative
@@ -1928,7 +1928,7 @@ private:
     //@SuppressWarnings("unused")
     //@CalledByNative
     static CARAPI_(void) OnEvaluateJavaScriptResult(
-        /* [in] */ String jsonResult,
+        /* [in] */ const String& jsonResult,
         /* [in] */ JavaScriptCallback* callback);
 
     //@SuppressWarnings("unused")
@@ -1952,10 +1952,10 @@ private:
     CARAPI_(void) AddToNavigationHistory(
         /* [in] */ IInterface* history,
         /* [in] */ Int32 index,
-        /* [in] */ String url,
-        /* [in] */ String virtualUrl,
-        /* [in] */ String originalUrl,
-        /* [in] */ String title,
+        /* [in] */ const String& url,
+        /* [in] */ const String& virtualUrl,
+        /* [in] */ const String& originalUrl,
+        /* [in] */ const String& title,
         /* [in] */ IBitmap* favicon);
 
     //@CalledByNative
@@ -1967,8 +1967,8 @@ private:
 
     //@CalledByNative
     CARAPI_(void) OnSmartClipDataExtracted(
-        /* [in] */ String text,
-        /* [in] */ String html,
+        /* [in] */ const String& text,
+        /* [in] */ const String& html,
         /* [in] */ IRect* clipRect);
 
     /**
@@ -1995,7 +1995,7 @@ private:
 
     //@CalledByNative
     CARAPI_(Boolean) ShouldBlockMediaRequest(
-        /* [in] */ String url);
+        /* [in] */ const String& url);
 
     //@CalledByNative
     CARAPI_(void) OnNativeFlingStopped();
@@ -2008,16 +2008,16 @@ private:
 
     CARAPI_(void) NativeLoadUrl(
         /* [in] */ Int64 nativeContentViewCoreImpl,
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ Int32 loadUrlType,
         /* [in] */ Int32 transitionType,
-        /* [in] */ String referrerUrl,
+        /* [in] */ const String& referrerUrl,
         /* [in] */ Int32 referrerPolicy,
         /* [in] */ Int32 uaOverrideOption,
-        /* [in] */ String extraHeaders,
+        /* [in] */ const String& extraHeaders,
         /* [in] */ ArrayOf<Byte>* postData,
-        /* [in] */ String baseUrlForDataUrl,
-        /* [in] */ String virtualUrlForDataUrl,
+        /* [in] */ const String& baseUrlForDataUrl,
+        /* [in] */ const String& virtualUrlForDataUrl,
         /* [in] */ Boolean canLoadLocalResources,
         /* [in] */ Boolean isRendererInitiated);
 
@@ -2026,7 +2026,7 @@ private:
 
     CARAPI_(void) NativeShowInterstitialPage(
         /* [in] */ Int64 nativeContentViewCoreImpl,
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ Int64 nativeInterstitialPageDelegateAndroid);
 
     CARAPI_(Boolean) NativeIsShowingInterstitialPage(
@@ -2204,11 +2204,11 @@ private:
 
     CARAPI_(void) NativeAddStyleSheetByURL(
         /* [in] */ Int64 nativeContentViewCoreImpl,
-        /* [in] */ String stylesheetUrl);
+        /* [in] */ const String& stylesheetUrl);
 
     CARAPI_(void) NativeEvaluateJavaScript(
         /* [in] */ Int64 nativeContentViewCoreImpl,
-        /* [in] */ String script,
+        /* [in] */ const String& script,
         /* [in] */ JavaScriptCallback* callback,
         /* [in] */ Boolean startRenderer);
 
@@ -2245,12 +2245,12 @@ private:
     CARAPI_(void) NativeAddJavascriptInterface(
         /* [in] */ Int64 nativeContentViewCoreImpl,
         /* [in] */ IInterface* object,
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [in] */ IInterface* requiredAnnotation);
 
     CARAPI_(void) NativeRemoveJavascriptInterface(
         /* [in] */ Int64 nativeContentViewCoreImpl,
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     CARAPI_(Int32) NativeGetNavigationHistory(
         /* [in] */ Int64 nativeContentViewCoreImpl,

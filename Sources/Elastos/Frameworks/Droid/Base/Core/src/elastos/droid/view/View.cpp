@@ -14959,7 +14959,7 @@ AutoPtr<IViewPropertyAnimator> View::Animate()
  * @param transitionName The name of the View to uniquely identify it for Transitions.
  */
 ECode View::SetTransitionName(
-    /* [in] */ String transitionName)
+    /* [in] */ const String& transitionName)
 {
     mTransitionName = transitionName;
     return NOERROR;

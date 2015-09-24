@@ -44,28 +44,28 @@ public:
     CARAPI_(void) Clear();
 
     CARAPI_(void) Allow(
-        /* [in] */ String host,
+        /* [in] */ const String& host,
         /* [in] */ Int32 port,
         /* [in] */ AndroidPrivateKey* privateKey,
         /* [in] */ ArrayOf< ArrayOf<Byte> >* chain);
 
     CARAPI_(void) Deny(
-        /* [in] */ String host,
+        /* [in] */ const String& host,
         /* [in] */ Int32 port);
 
     CARAPI_(AutoPtr<Cert>) GetCertData(
-        /* [in] */ String host,
+        /* [in] */ const String& host,
         /* [in] */ Int32 port);
 
     CARAPI_(Boolean) IsDenied(
-        /* [in] */ String host,
+        /* [in] */ const String& host,
         /* [in] */ Int32 port);
 
 private:
     // TODO(sgurun) add a test for this. Not separating host and pair properly will be
     // a security issue.
     static CARAPI_(String) HostAndPort(
-        /* [in] */ String host,
+        /* [in] */ const String& host,
         /* [in] */ Int32 port);
 
 private:

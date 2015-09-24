@@ -51,7 +51,7 @@ private:
     static const Int32 EXCEPTION_THROWN_STATUS = -2;
 
     static CARAPI_(String) LogMessage(
-        /* [in] */ String method);
+        /* [in] */ const String& method);
 };
 
 } // namespace AndroidWebview

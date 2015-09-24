@@ -202,7 +202,7 @@ private:
 
     static CARAPI_(void) NativeSetCommandLineFlags(
         /* [in] */ Int32 maxRenderProcesses,
-        /* [in] */ String pluginDescriptor);
+        /* [in] */ const String& pluginDescriptor);
 
     // Is this an official build of Chrome? Only native code knows for sure. Official build
     // knowledge is needed very early in process startup.

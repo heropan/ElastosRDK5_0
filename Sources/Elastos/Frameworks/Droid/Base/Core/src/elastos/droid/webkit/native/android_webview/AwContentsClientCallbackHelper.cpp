@@ -9,10 +9,10 @@ namespace AndroidWebview {
 //==============================================================================
 
 AwContentsClientCallbackHelper::DownloadInfo::DownloadInfo(
-    /* [in] */ String url,
-    /* [in] */ String userAgent,
-    /* [in] */ String contentDisposition,
-    /* [in] */ String mimeType,
+    /* [in] */ const String& url,
+    /* [in] */ const String& userAgent,
+    /* [in] */ const String& contentDisposition,
+    /* [in] */ const String& mimeType,
     /* [in] */ Int64 contentLength)
     : mUrl(url)
     , mUserAgent(userAgent)
@@ -27,9 +27,9 @@ AwContentsClientCallbackHelper::DownloadInfo::DownloadInfo(
 //==============================================================================
 
 AwContentsClientCallbackHelper::LoginRequestInfo::LoginRequestInfo(
-    /* [in] */ String realm,
-    /* [in] */ String account,
-    /* [in] */ String args)
+    /* [in] */ const String& realm,
+    /* [in] */ const String& account,
+    /* [in] */ const String& args)
 {
     mRealm = realm;
     mAccount = account;
@@ -42,8 +42,8 @@ AwContentsClientCallbackHelper::LoginRequestInfo::LoginRequestInfo(
 
 AwContentsClientCallbackHelper::OnReceivedErrorInfo::OnReceivedErrorInfo(
     /* [in] */ Int32 errorCode,
-    /* [in] */ String description,
-    /* [in] */ String failingUrl)
+    /* [in] */ const String& description,
+    /* [in] */ const String& failingUrl)
     : mErrorCode(errorCode)
     , mDescription(description)
     , mFailingUrl(failingUrl)
@@ -163,7 +163,7 @@ AwContentsClientCallbackHelper::AwContentsClientCallbackHelper(
 }
 
 void AwContentsClientCallbackHelper::PostOnLoadResource(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(MSG_ON_LOAD_RESOURCE, url, (IMessage**)&msg);
@@ -171,7 +171,7 @@ void AwContentsClientCallbackHelper::PostOnLoadResource(
 }
 
 void AwContentsClientCallbackHelper::PostOnPageStarted(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(MSG_ON_PAGE_STARTED, url, (IMessage**)&msg);
@@ -179,10 +179,10 @@ void AwContentsClientCallbackHelper::PostOnPageStarted(
 }
 
 void AwContentsClientCallbackHelper::PostOnDownloadStart(
-    /* [in] */ String url,
-    /* [in] */ String userAgent,
-    /* [in] */ String contentDisposition,
-    /* [in] */ String mimeType,
+    /* [in] */ const String& url,
+    /* [in] */ const String& userAgent,
+    /* [in] */ const String& contentDisposition,
+    /* [in] */ const String& mimeType,
     /* [in] */ Int64 contentLength)
 {
     AutoPtr<DownloadInfo info> = new DownloadInfo(url, userAgent, contentDisposition, mimeType,
@@ -193,9 +193,9 @@ void AwContentsClientCallbackHelper::PostOnDownloadStart(
 }
 
 void AwContentsClientCallbackHelper::PostOnReceivedLoginRequest(
-    /* [in] */ String realm,
-    /* [in] */ String account,
-    /* [in] */ String args)
+    /* [in] */ const String& realm,
+    /* [in] */ const String& account,
+    /* [in] */ const String& args)
 {
     AutoPtr<LoginRequestInfo> info = new LoginRequestInfo(realm, account, args);
     AutoPtr<IMessage> msg;
@@ -205,8 +205,8 @@ void AwContentsClientCallbackHelper::PostOnReceivedLoginRequest(
 
 void AwContentsClientCallbackHelper::PostOnReceivedError(
     /* [in] */ Int32 errorCode,
-    /* [in] */ String description,
-    /* [in] */ String failingUrl)
+    /* [in] */ const String& description,
+    /* [in] */ const String& failingUrl)
 {
     AutoPtr<OnReceivedErrorInfo> info = new OnReceivedErrorInfo(errorCode, description, failingUrl);
     AutoPtr<IMessage> msg;

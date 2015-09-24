@@ -45,13 +45,13 @@ void DownloadController::SetDownloadNotificationService(
 //@CalledByNative
 void DownloadController::NewHttpGetDownload(
     /* [in] */ ContentViewCore* view,
-    /* [in] */ String url,
-    /* [in] */ String userAgent,
-    /* [in] */ String contentDisposition,
-    /* [in] */ String mimeType,
-    /* [in] */ String cookie,
-    /* [in] */ String referer,
-    /* [in] */ String filename,
+    /* [in] */ const String& url,
+    /* [in] */ const String& userAgent,
+    /* [in] */ const String& contentDisposition,
+    /* [in] */ const String& mimeType,
+    /* [in] */ const String& cookie,
+    /* [in] */ const String& referer,
+    /* [in] */ const String& filename,
     /* [in] */ Int64 contentLength)
 {
     AutoPtr<ContentViewDownloadDelegate> downloadDelegate = DownloadDelegateFromView(view);
@@ -82,8 +82,8 @@ void DownloadController::NewHttpGetDownload(
 //@CalledByNative
 void DownloadController::OnDownloadStarted(
     /* [in] */ ContentViewCore* view,
-    /* [in] */ String filename,
-    /* [in] */ String mimeType)
+    /* [in] */ const String& filename,
+    /* [in] */ const String& mimeType)
 {
     AutoPtr<ContentViewDownloadDelegate> downloadDelegate = DownloadDelegateFromView(view);
 
@@ -99,10 +99,10 @@ void DownloadController::OnDownloadStarted(
 //@CalledByNative
 void DownloadController::OnDownloadCompleted(
     /* [in] */ IContext* context,
-    /* [in] */ String url,
-    /* [in] */ String mimeType,
-    /* [in] */ String filename,
-    /* [in] */ String path,
+    /* [in] */ const String& url,
+    /* [in] */ const String& mimeType,
+    /* [in] */ const String& filename,
+    /* [in] */ const String& path,
     /* [in] */ Int64 contentLength,
     /* [in] */ Boolean successful,
     /* [in] */ Int32 downloadId)
@@ -130,10 +130,10 @@ void DownloadController::OnDownloadCompleted(
 //@CalledByNative
 void DownloadController::OnDownloadUpdated(
     /* [in] */ IContext* context,
-    /* [in] */ String url,
-    /* [in] */ String mimeType,
-    /* [in] */ String filename,
-    /* [in] */ String path,
+    /* [in] */ const String& url,
+    /* [in] */ const String& mimeType,
+    /* [in] */ const String& filename,
+    /* [in] */ const String& path,
     /* [in] */ Int64 contentLength,
     /* [in] */ Boolean successful,
     /* [in] */ Int32 downloadId,
@@ -164,7 +164,7 @@ void DownloadController::OnDownloadUpdated(
 //@CalledByNative
 void DownloadController::OnDangerousDownload(
     /* [in] */ ContentViewCore* view,
-    /* [in] */ String filename,
+    /* [in] */ const String& filename,
     /* [in] */ Int32 downloadId)
 {
     AutoPtr<ContentViewDownloadDelegate> downloadDelegate = DownloadDelegateFromView(view);

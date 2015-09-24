@@ -61,8 +61,8 @@ private:
     {
     private:
         CodecInfo(
-            /* [in] */ String codecType,
-            /* [in] */ String codecName,
+            /* [in] */ const String& codecType,
+            /* [in] */ const String& codecName,
             /* [in] */ Int32 direction);
 
         //@CalledByNative("CodecInfo")
@@ -121,7 +121,7 @@ private:
 private:
     MediaCodecBridge(
         /* [in] */ MediaCodec mediaCodec,
-        /* [in] */ String mime,
+        /* [in] */ const String& mime,
         /* [in] */ Boolean adaptivePlaybackSupported);
 
     /**
@@ -131,11 +131,11 @@ private:
     static CARAPI_(AutoPtr< ArrayOf<CodecInfo> > GetCodecsInfo();
 
     static CARAPI_(String) GetDecoderNameForMime(
-        /* [in] */ String mime);
+        /* [in] */ const String& mime);
 
     //@CalledByNative
     static CARAPI_(AutoPtr<MediaCodecBridge>) Create(
-        /* [in] */ String mime,
+        /* [in] */ const String& mime,
         /* [in] */ Boolean isSecure,
         /* [in] */ Int32 direction);
 
@@ -225,19 +225,19 @@ private:
 
     //@CalledByNative
     static CARAPI_(AutoPtr<IMediaFormat>) CreateAudioFormat(
-        /* [in] */ String mime,
+        /* [in] */ const String& mime,
         /* [in] */ Int32 sampleRate,
         /* [in] */ Int32 channelCount);
 
     //@CalledByNative
     static CARAPI_(AutoPtr<IMediaFormat>) CreateVideoDecoderFormat(
-        /* [in] */ String mime,
+        /* [in] */ const String& mime,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
     //@CalledByNative
     static CARAPI_(AutoPtr<IMediaFormat>) CreateVideoEncoderFormat(
-        /* [in] */ String mime,
+        /* [in] */ const String& mime,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Int32 bitRate,
@@ -252,7 +252,7 @@ private:
 
     static CARAPI_(Boolean) CodecSupportsAdaptivePlayback(
         /* [in] */ MediaCodec* mediaCodec,
-        /* [in] */ String mime);
+        /* [in] */ const String& mime);
 
     //@CalledByNative
     static CARAPI_(void) SetCodecSpecificData(

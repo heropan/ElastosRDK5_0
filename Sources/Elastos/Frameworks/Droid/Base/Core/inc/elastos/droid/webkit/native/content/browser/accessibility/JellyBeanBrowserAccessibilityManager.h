@@ -41,7 +41,7 @@ private:
 
         //@Override
         CARAPI FindAccessibilityNodeInfosByText(
-            /* [in] */ String text,
+            /* [in] */ const String& text,
             /* [in] */ Int32 virtualViewId,
             /* [out] */ IObjectContainer** nodeInfos);
 

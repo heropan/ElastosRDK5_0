@@ -36,7 +36,7 @@ public:
      * Set Data Reduction Proxy key for authentication.
      */
     static CARAPI_(void) SetDataReductionProxyKey(
-        /* [in] */ String key);
+        /* [in] */ const String& key);
 
     /*
      * Enable or disable data reduction proxy.
@@ -61,7 +61,7 @@ private:
         /* [in] */ IRunnable* callback);
 
     static CARAPI_(void) NativeSetDataReductionProxyKey(
-        /* [in] */ String key);
+        /* [in] */ const String& key);
 
     static CARAPI_(void) NativeSetDataReductionProxyEnabled(
         /* [in] */ Boolean enabled);
