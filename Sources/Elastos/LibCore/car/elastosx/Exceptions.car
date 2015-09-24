@@ -26,5 +26,5 @@ module
     // Elastosx.Net exception codes (Family: 0x30 - B0)
     const E_SSL_PEER_UNVERIFIED_EXCEPTION                           = 0xB1010000;
     const E_SSL_EXCEPTION                                           = 0xB1020000;
-
+    const E_SSL_PROTOCOL_EXCEPTION                                  = 0xB1030000;
 }
