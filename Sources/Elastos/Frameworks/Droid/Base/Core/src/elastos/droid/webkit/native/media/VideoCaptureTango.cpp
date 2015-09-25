@@ -1,15 +1,33 @@
+#include "elastos/droid/webkit/native/media/VideoCaptureTango.h"
+
+//#include "elastos/utility/CArrayList.h"
+//#include "elastos/io/nio/CByteBufferHelper.h"
+#include "elastos/utility/logging/Logger.h"
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::IImageFormat;
+using Elastos::Droid::Hardware::IHardwareCamera;
+
+//using Elastos::Utility::CArrayList;
+using Elastos::Utility::Concurrent::Locks::ILock;
+using Elastos::Utility::Concurrent::Locks::EIID_ILock;
+using Elastos::Utility::Logging::Logger;
+using Elastos::IO::IByteBufferHelper;
+using Elastos::IO::CByteBufferHelper;
+using Elastos::IO::IBuffer;
+using Elastos::IO::EIID_IBuffer;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Media {
 
-AutoPtr< ArrayOf<VideoCaptureFactory::CamParams> > VideoCaptureTango::s_CAM_PARAMS_Init()
+AutoPtr< ArrayOf<VideoCaptureFactory::CamParams*> > VideoCaptureTango::s_CAM_PARAMS_Init()
 {
-  AutoPtr< ArrayOf<VideoCaptureFactory::CamParams> > array = ArrayOf<VideoCaptureFactory::CamParams>::Alloc(3);
-  (*array)[0] = new VideoCaptureFactory::CamParams(DEPTH_CAMERA_ID, String("depth"), 320, 240);
-  (*array)[1] = new VideoCaptureFactory::CamParams(FISHEYE_CAMERA_ID, String("fisheye"), 640, 480),
-  (*array)[2] = new VideoCaptureFactory::CamParams(FOURMP_CAMERA_ID, String("4MP"), 1280, 720)};
+  AutoPtr< ArrayOf<VideoCaptureFactory::CamParams*> > array = ArrayOf<VideoCaptureFactory::CamParams*>::Alloc(3);
+  (*array)[0] = new VideoCaptureFactory::CamParams(VideoCaptureTango::DEPTH_CAMERA_ID, String("depth"), 320, 240);
+  (*array)[1] = new VideoCaptureFactory::CamParams(VideoCaptureTango::FISHEYE_CAMERA_ID, String("fisheye"), 640, 480);
+  (*array)[2] = new VideoCaptureFactory::CamParams(VideoCaptureTango::FOURMP_CAMERA_ID, String("4MP"), 1280, 720);
   return array;
 }
 
@@ -17,7 +35,7 @@ AutoPtr< ArrayOf<VideoCaptureFactory::CamParams> > VideoCaptureTango::s_CAM_PARA
 const Int32 VideoCaptureTango::DEPTH_CAMERA_ID;
 const Int32 VideoCaptureTango::FISHEYE_CAMERA_ID;
 const Int32 VideoCaptureTango::FOURMP_CAMERA_ID;
-const AutoPtr< ArrayOf<VideoCaptureFactory::CamParams> > VideoCaptureTango::s_CAM_PARAMS = s_CAM_PARAMS_Init();
+const AutoPtr< ArrayOf<VideoCaptureFactory::CamParams*> > VideoCaptureTango::s_CAM_PARAMS = VideoCaptureTango::s_CAM_PARAMS_Init();
 
 // SuperFrame size definitions. Note that total size is the amount of lines
 // multiplied by 3/2 due to Chroma components following.
@@ -56,21 +74,29 @@ AutoPtr<VideoCaptureFactory::CamParams> VideoCaptureTango::GetCamParams(
     return (*s_CAM_PARAMS)[index];
 }
 
-AutoPtr< ArrayOf<CaptureFormat> > VideoCaptureTango::GetDeviceSupportedFormats(
+AutoPtr< ArrayOf<VideoCapture::CaptureFormat*> > VideoCaptureTango::GetDeviceSupportedFormats(
   /* [in] */ Int32 id)
 {
-  ArrayList<CaptureFormat> formatList = new ArrayList<CaptureFormat>();
+  //ArrayList<CaptureFormat> formatList = new ArrayList<CaptureFormat>();
+  AutoPtr<ArrayOf<CaptureFormat*> > result;
   if (id == DEPTH_CAMERA_ID) {
-      formatList.add(new CaptureFormat(320, 180, 5, ImageFormat.YV12));
+      //formatList->add(new CaptureFormat(320, 180, 5, ImageFormat.YV12));
+      result = ArrayOf<CaptureFormat*>::Alloc(1);
+      result->Set(0, new CaptureFormat(320, 180, 5, IImageFormat::YV12));
   }
   else if (id == FISHEYE_CAMERA_ID) {
-      formatList.add(new CaptureFormat(640, 480, 30, ImageFormat.YV12));
+      result = ArrayOf<CaptureFormat*>::Alloc(1);
+      //formatList->add(new CaptureFormat(640, 480, 30, ImageFormat.YV12));
+      result->Set(0, new CaptureFormat(640, 480, 30, IImageFormat::YV12));
   }
   else if (id == FOURMP_CAMERA_ID) {
-      formatList.add(new CaptureFormat(1280, 720, 20, ImageFormat.YV12));
+      result = ArrayOf<CaptureFormat*>::Alloc(1);
+      //formatList->add(new CaptureFormat(1280, 720, 20, ImageFormat.YV12));
+      result->Set(0, new CaptureFormat(1280, 720, 20, IImageFormat::YV12));
   }
 
-  return formatList.toArray(new CaptureFormat[formatList.size()]);
+  //return formatList->ToArray(new CaptureFormat[formatList.size()]);
+  return result;
 }
 
 //@Override
@@ -99,7 +125,14 @@ void VideoCaptureTango::AllocateBuffers()
             (IByteBuffer**)&mFrameBuffer);
     // Prefill Chroma to their zero-equivalent for the cameras that only
     // provide Luma component.
-    Arrays.fill(mFrameBuffer.array(), CHROMA_ZERO_LEVEL);
+    AutoPtr<ArrayOf<Byte> > arrayByte;
+    mFrameBuffer->GetArray((ArrayOf<Byte>**)&arrayByte);
+    //Arrays.fill(mFrameBuffer.array(), CHROMA_ZERO_LEVEL);
+    Int32 length = arrayByte->GetLength();
+    for(Int32 i = 0; i < length; ++i) {
+        (*arrayByte)[i] = CHROMA_ZERO_LEVEL;
+    }
+
 }
 
 //@Override
@@ -110,16 +143,20 @@ void VideoCaptureTango::SetPreviewCallback(
 }
 
 //@Override
-void VideoCaptureTango::OnPreviewFrame(
+ECode VideoCaptureTango::OnPreviewFrame(
   /* [in] */ ArrayOf<Byte>* data,
-  /* [in] */ ICamera* camera)
+  /* [in] */ IHardwareCamera* camera)
 {
-    mPreviewBufferLock->Lock();
+    //mPreviewBufferLock->Lock();
+    AutoPtr<ILock> lock;
+    mPreviewBufferLock->Probe(EIID_ILock);
+    lock->Lock();
     AutoPtr<IByteBufferHelper> bfHelper;
     CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&bfHelper);
     //try {
         if (!mIsRunning) {
-            return;
+            lock->UnLock();
+            return NOERROR;
         }
 
         if (data->GetLength() == SF_WIDTH * SF_FULL_HEIGHT) {
@@ -152,8 +189,7 @@ void VideoCaptureTango::OnPreviewFrame(
                 }
 
                 for (Int32 j = 0;
-                     j < mCaptureFormat->mWidth * mCaptureFormat->mHeight -
-                             sizeY;
+                     j < mCaptureFormat->mWidth * mCaptureFormat->mHeight - sizeY;
                      ++j)
                   mFrameBuffer->Put((Byte)0);
             }
@@ -164,8 +200,8 @@ void VideoCaptureTango::OnPreviewFrame(
                 // unused. No need to write them explicitly since they're
                 // filled to 128 on creation.
                 AutoPtr<IByteBuffer> buffer;
-                buffer->Wrap(data, startY, sizeY, (IByteBuffer**)&buffer);
-                AutoPtr< ArrayOf<Byte> > array = ArrayOf<Byte>::Alloc(sizeY);
+                bfHelper->Wrap(data, startY, sizeY, (IByteBuffer**)&buffer);
+                AutoPtr< ArrayOf<Byte> > array;// = ArrayOf<Byte>::Alloc(sizeY);
                 mFrameBuffer->GetArray((ArrayOf<Byte>**)&array);
                 buffer->Get(array, 0, sizeY);
             }
@@ -188,31 +224,33 @@ void VideoCaptureTango::OnPreviewFrame(
                 //     mFrameBuffer.put(data[i]);
                 AutoPtr<IByteBuffer> buffer1;
                 bfHelper->Wrap(data, startY, sizeY, (IByteBuffer**)&buffer1);
-                AutoPtr< ArrayOf<Byte> > array1 = ArrayOf<Byte>::Alloc(sizeY);
+                AutoPtr< ArrayOf<Byte> > array1;// = ArrayOf<Byte>::Alloc(sizeY);
                 mFrameBuffer->GetArray((ArrayOf<Byte>**)&array1);
                 buffer1->Get(array1, 0, sizeY);
 
                 AutoPtr<IByteBuffer> buffer2;
                 bfHelper->Wrap(data, startU, sizeU, (IByteBuffer**)&buffer2);
-                AutoPtr< ArrayOf<Byte> > array2 = ArrayOf<Byte>::Alloc(sizeU);
+                AutoPtr< ArrayOf<Byte> > array2;// = ArrayOf<Byte>::Alloc(sizeU);
                 mFrameBuffer->GetArray((ArrayOf<Byte>**)&array2);
                 buffer2->Get(array2, sizeY, sizeU);
 
                 AutoPtr<IByteBuffer> buffer3;
                 bfHelper->Wrap(data, startV, sizeV, (IByteBuffer**)&buffer3);
-                AutoPtr< ArrayOf<Byte> > array3 = ArrayOf<Byte>::Alloc(sizeV);
+                AutoPtr< ArrayOf<Byte> > array3;// = ArrayOf<Byte>::Alloc(sizeV);
                 mFrameBuffer->GetArray((ArrayOf<Byte>**)&array3);
                 buffer3->Get(array3, sizeY + sizeU, sizeV);
             }
             else {
-                //Log.e(TAG, "Unknown camera, #id: " + mTangoCameraId);
-                return;
+                Logger::E(TAG, "Unknown camera, #id: %d", mTangoCameraId);
+                lock->UnLock();
+                return NOERROR;
             }
 
-            mFrameBuffer->Rewind();  // Important!
+            AutoPtr<IBuffer> ibuf = (IBuffer*)(mFrameBuffer->Probe(EIID_IBuffer));
+            ibuf->Rewind();  // Important!
             Int32 capacity;
-            mFrameBuffer->GetCapacity(&capacity);
-            AutoPtr< ArrayOf<Byte> > array = ArrayOf<Byte>::Alloc(capacity);
+            ibuf->GetCapacity(&capacity);
+            AutoPtr< ArrayOf<Byte> > array;// = ArrayOf<Byte>::Alloc(capacity);
             mFrameBuffer->GetArray((ArrayOf<Byte>**)&array);
             NativeOnFrameAvailable(mNativeVideoCaptureDeviceAndroid,
                                    array,
@@ -220,8 +258,9 @@ void VideoCaptureTango::OnPreviewFrame(
                                    rotation);
         }
     //} finally {
-        mPreviewBufferLock->Unlock();
+        lock->UnLock();
     //}
+    return NOERROR;
 }
 
 } // namespace Media

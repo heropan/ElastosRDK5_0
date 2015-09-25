@@ -1,11 +1,24 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_MEDIAPLAYERLISTENER_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_MEDIAPLAYERLISTENER_H__
+#include "ext/frameworkext.h"
+#include "elastos/droid/webkit/native/media/MediaPlayerBridge.h"
 
-// import android.content.Context;
-// import android.media.AudioManager;
-// import android.media.MediaPlayer;
-
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Media::IMediaPlayer;
+using Elastos::Droid::Media::IMediaPlayerOnPreparedListener;
+using Elastos::Droid::Media::EIID_IMediaPlayerOnPreparedListener;
+using Elastos::Droid::Media::IMediaPlayerOnCompletionListener;
+using Elastos::Droid::Media::EIID_IMediaPlayerOnCompletionListener;
+using Elastos::Droid::Media::IMediaPlayerOnBufferingUpdateListener;
+using Elastos::Droid::Media::EIID_IMediaPlayerOnBufferingUpdateListener;
+using Elastos::Droid::Media::IMediaPlayerOnSeekCompleteListener;
+using Elastos::Droid::Media::EIID_IMediaPlayerOnSeekCompleteListener;
+using Elastos::Droid::Media::IMediaPlayerOnVideoSizeChangedListener;
+using Elastos::Droid::Media::EIID_IMediaPlayerOnVideoSizeChangedListener;
+using Elastos::Droid::Media::IMediaPlayerOnErrorListener;
+using Elastos::Droid::Media::EIID_IMediaPlayerOnErrorListener;
+using Elastos::Droid::Media::IOnAudioFocusChangeListener;
+using Elastos::Droid::Media::EIID_IOnAudioFocusChangeListener;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
@@ -25,40 +38,42 @@ class MediaPlayerListener
     , public IMediaPlayerOnSeekCompleteListener
     , public IMediaPlayerOnVideoSizeChangedListener
     , public IMediaPlayerOnErrorListener
-    , public IAudioManagerOnAudioFocusChangeListener
+    , public IOnAudioFocusChangeListener
 {
 public:
+    CAR_INTERFACE_DECL();
     //@Override
-    CARAPI_(Boolean) OnError(
+    CARAPI OnError(
         /* [in] */ IMediaPlayer* mp,
         /* [in] */ Int32 what,
-        /* [in] */ Int32 extra);
+        /* [in] */ Int32 extra,
+        /* [out] */ Boolean *result);
 
     //@Override
-    CARAPI_(void) OnVideoSizeChanged(
+    CARAPI OnVideoSizeChanged(
         /* [in] */ IMediaPlayer* mp,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
     //@Override
-    CARAPI_(void) OnSeekComplete(
+    CARAPI OnSeekComplete(
         /* [in] */ IMediaPlayer* mp);
 
     //@Override
-    CARAPI_(void) OnBufferingUpdate(
+    CARAPI OnBufferingUpdate(
         /* [in] */ IMediaPlayer* mp,
         /* [in] */ Int32 percent);
 
     //@Override
-    CARAPI_(void) OnCompletion(
+    CARAPI OnCompletion(
         /* [in] */ IMediaPlayer* mp);
 
     //@Override
-    CARAPI_(void) OnPrepared(
+    CARAPI OnPrepared(
         /* [in] */ IMediaPlayer* mp);
 
     //@Override
-    CARAPI_(void) OnAudioFocusChange(
+    CARAPI OnAudioFocusChange(
         /* [in] */ Int32 focusChange);
 
     //@CalledByNative
@@ -69,8 +84,8 @@ private:
         /* [in] */ Int64 nativeMediaPlayerListener,
         /* [in] */ IContext* context);
 
-    //@CalledByNative
-    static CARAPI_(AutoPtr<IMediaPlayerListener> Create(
+    //@CalledByNative return IMediaPlayerListener
+    static CARAPI_(AutoPtr<IInterface>) Create(
         /* [in] */ Int64 nativeMediaPlayerListener,
         /* [in] */ IContext* context,
         /* [in] */ MediaPlayerBridge* mediaPlayerBridge);

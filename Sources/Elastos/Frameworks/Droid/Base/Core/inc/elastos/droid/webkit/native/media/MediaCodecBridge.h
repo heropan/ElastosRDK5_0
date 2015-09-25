@@ -1,20 +1,14 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_MEDIACODECBRIDGE_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_MEDIACODECBRIDGE_H__
+#include "ext/frameworkext.h"
 
-// import android.media.AudioFormat;
-// import android.media.AudioManager;
-// import android.media.AudioTrack;
-// import android.media.MediaCodec;
-// import android.media.MediaCodecInfo;
-// import android.media.MediaCodecList;
-// import android.media.MediaCrypto;
-// import android.media.MediaFormat;
-// import android.os.Build;
-// import android.os.Bundle;
-// import android.util.Log;
-// import android.view.Surface;
+using Elastos::Droid::Media::IAudioTrack;
+//TODO using Elastos::Droid::Media::IMediaCodec;
+//TODO using Elastos::Droid::Media::IMediaCrypto;
+ using Elastos::Droid::Media::IMediaFormat;
+using Elastos::Droid::View::ISurface;
 
+using Elastos::IO::IByteBuffer;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
@@ -34,11 +28,13 @@ namespace Media {
  */
 //@JNINamespace("media")
 class MediaCodecBridge
+:public Object
 {
-private:
+public:
     class DequeueInputResult
+    :public Object
     {
-    private:
+    public:
         DequeueInputResult(
             /* [in] */ Int32 status,
             /* [in] */ Int32 index);
@@ -58,8 +54,9 @@ private:
      * This class represents supported android codec information.
      */
     class CodecInfo
+    :public Object
     {
-    private:
+    public:
         CodecInfo(
             /* [in] */ const String& codecType,
             /* [in] */ const String& codecName,
@@ -81,8 +78,9 @@ private:
     };
 
     class DequeueOutputResult
+    :public Object
     {
-    private:
+    public:
         DequeueOutputResult(
             /* [in] */ Int32 status,
             /* [in] */ Int32 index,
@@ -120,27 +118,27 @@ private:
 
 private:
     MediaCodecBridge(
-        /* [in] */ MediaCodec mediaCodec,
-        /* [in] */ const String& mime,
+        /* [in] */ IMediaCodec* mediaCodec,
+        /* [in] */ String mime,
         /* [in] */ Boolean adaptivePlaybackSupported);
 
     /**
      * Get a list of supported android codec mimes.
      */
-    //@CalledByNative
-    static CARAPI_(AutoPtr< ArrayOf<CodecInfo> > GetCodecsInfo();
+    //@CalledByNative return CodecInfo
+    static CARAPI_(AutoPtr<ArrayOf<IInterface*> >) GetCodecsInfo();
 
     static CARAPI_(String) GetDecoderNameForMime(
         /* [in] */ const String& mime);
 
-    //@CalledByNative
-    static CARAPI_(AutoPtr<MediaCodecBridge>) Create(
-        /* [in] */ const String& mime,
+    //@CalledByNative return MediaCodecBridge
+    static CARAPI_(AutoPtr<IInterface>) Create(
+        /* [in] */ String mime,
         /* [in] */ Boolean isSecure,
         /* [in] */ Int32 direction);
 
     //@CalledByNative
-    CARAPI_(void) Release();
+    CARAPI_(void) ReleaseResources();
 
     //@CalledByNative
     CARAPI_(Boolean) Start();
@@ -220,24 +218,24 @@ private:
     CARAPI_(Boolean) ConfigureVideo(
         /* [in] */ IMediaFormat* format,
         /* [in] */ ISurface* surface,
-        /* [in] */ MediaCrypto* crypto,
+        /* [in] */ IMediaCrypto* crypto,
         /* [in] */ Int32 flags);
 
-    //@CalledByNative
-    static CARAPI_(AutoPtr<IMediaFormat>) CreateAudioFormat(
-        /* [in] */ const String& mime,
+    //@CalledByNative return IMediaFormat
+    static CARAPI_(AutoPtr<IInterface>) CreateAudioFormat(
+        /* [in] */ String mime,
         /* [in] */ Int32 sampleRate,
         /* [in] */ Int32 channelCount);
 
-    //@CalledByNative
-    static CARAPI_(AutoPtr<IMediaFormat>) CreateVideoDecoderFormat(
-        /* [in] */ const String& mime,
+    //@CalledByNative return IMediaFormat
+    static CARAPI_(AutoPtr<IInterface>) CreateVideoDecoderFormat(
+        /* [in] */ String mime,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
-    //@CalledByNative
-    static CARAPI_(AutoPtr<IMediaFormat>) CreateVideoEncoderFormat(
-        /* [in] */ const String& mime,
+    //@CalledByNative return IMediaFormat
+    static CARAPI_(AutoPtr<IInterface>) CreateVideoEncoderFormat(
+        /* [in] */ String mime,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Int32 bitRate,
@@ -251,7 +249,7 @@ private:
         /* [in] */ Int32 height);
 
     static CARAPI_(Boolean) CodecSupportsAdaptivePlayback(
-        /* [in] */ MediaCodec* mediaCodec,
+        /* [in] */ IMediaCodec* mediaCodec,
         /* [in] */ const String& mime);
 
     //@CalledByNative
@@ -324,8 +322,8 @@ private:
     // non-decreasing for the remaining frames.
     static const Int64 MAX_PRESENTATION_TIMESTAMP_SHIFT_US = 100000;
 
-    AutoPtr< ArrayOf<IByteBuffer> > mInputBuffers;
-    AutoPtr< ArrayOf<IByteBuffer> > mOutputBuffers;
+    AutoPtr< ArrayOf<IByteBuffer*> > mInputBuffers;
+    AutoPtr< ArrayOf<IByteBuffer*> > mOutputBuffers;
 
     AutoPtr<IMediaCodec> mMediaCodec;
     AutoPtr<IAudioTrack> mAudioTrack;

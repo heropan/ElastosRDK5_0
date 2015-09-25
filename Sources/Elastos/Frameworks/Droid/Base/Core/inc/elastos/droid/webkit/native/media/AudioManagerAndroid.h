@@ -2,25 +2,21 @@
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_AUDIOMANAGERANDROID_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_AUDIOMANAGERANDROID_H__
 
-// import android.bluetooth.BluetoothAdapter;
-// import android.bluetooth.BluetoothManager;
-// import android.content.BroadcastReceiver;
-// import android.content.ContentResolver;
-// import android.content.Context;
-// import android.content.Intent;
-// import android.content.IntentFilter;
-// import android.content.pm.PackageManager;
-// import android.database.ContentObserver;
-// import android.media.AudioFormat;
-// import android.media.AudioManager;
-// import android.media.AudioRecord;
-// import android.media.AudioTrack;
-// import android.media.audiofx.AcousticEchoCanceler;
-// import android.os.Build;
-// import android.os.Handler;
-// import android.os.HandlerThread;
-// import android.os.Process;
-// import android.provider.Settings;
+#include "ext/frameworkext.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+
+using Elastos::Droid::Content::IBroadcastReceiver;
+using Elastos::Droid::Content::BroadcastReceiver;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Database::ContentObserver;
+using Elastos::Droid::Database::IContentObserver;
+using Elastos::Droid::Os::IHandlerThread;
+using Elastos::Droid::Media::IAudioManager;
+
+
 // import android.util.Log;
 
 // import org.chromium.base.CalledByNative;
@@ -37,6 +33,7 @@ namespace Media {
 
 //@JNINamespace("media")
 class AudioManagerAndroid
+    : public Object
 {
 private:
     /**
@@ -54,16 +51,17 @@ private:
          * Checks if the method is called on the valid thread.
          * Assigns the current thread if no thread was assigned.
          */
-        CARAPI_(Boolean) CalledOnValidThread();
+        CARAPI_(Boolean) CalledOnValidThread() const;
 
     private:
-        const Int64 mThreadId;
+        /*TODO const*/ Int64 mThreadId;
     };
 
     /** Simple container for device information. */
     class AudioDeviceName
+        : public Object
     {
-    private:
+    public:
         AudioDeviceName(
             /* [in] */ Int32 id,
             /* [in] */ const String& name);
@@ -80,8 +78,7 @@ private:
     };
 
     class WiredHeadsetBroadcastReceiver
-        : public Object
-        , public IBroadcastReceiver
+        : public BroadcastReceiver
     {
     public:
         WiredHeadsetBroadcastReceiver(
@@ -102,8 +99,7 @@ private:
     };
 
     class BluetoothHeadsetBroadcastReceiver
-        : public Object
-        , public IBroadcastReceiver
+        : public BroadcastReceiver
     {
     public:
         BluetoothHeadsetBroadcastReceiver(
@@ -119,8 +115,7 @@ private:
     };
 
     class BluetoothScoIntentBroadcastReceiver
-        : public Object
-        , public IBroadcastReceiver
+        : public BroadcastReceiver
     {
     public:
         BluetoothScoIntentBroadcastReceiver(
@@ -136,8 +131,7 @@ private:
     };
 
     class InnerContentObserver
-        : public Object
-        , public IContentObserver
+        : public ContentObserver
     {
     public:
         InnerContentObserver(
@@ -213,7 +207,7 @@ private:
      * and android.Manifest.permission.RECORD_AUDIO.
      */
     //@CalledByNative
-    CARAPI_(AutoPtr< ArrayOf<AudioDeviceName> >) GetAudioInputDeviceNames();
+    CARAPI_(AutoPtr< ArrayOf<AutoPtr<IInterface> > >) GetAudioInputDeviceNames();
 
     //@CalledByNative
     CARAPI_(Int32) GetNativeOutputSampleRate();
@@ -423,6 +417,7 @@ private:
     static const AutoPtr< ArrayOf<String> > DEVICE_NAMES;
 
     // List of valid device types.
+    static Int32 devices[DEVICE_COUNT];
     static const AutoPtr< ArrayOf<Int32> > VALID_DEVICES;
 
     // Bluetooth audio SCO states. Example of valid state sequence:
@@ -477,12 +472,13 @@ private:
 
     // Lock to protect |mAudioDevices| and |mRequestedAudioDevice| which can
     // be accessed from the main thread and the audio manager thread.
-    const Object mLock;
+    /*TODO const*/ Object mLock;
 
     // Contains a list of currently available audio devices.
+    static AutoPtr< ArrayOf<Boolean> > mAudioDevices_Init();
     AutoPtr< ArrayOf<Boolean> > mAudioDevices;
 
-    const AutoPtr<IContentResolver> mContentResolver;
+    /*TODO const*/ AutoPtr<IContentResolver> mContentResolver;
     AutoPtr<IContentObserver> mSettingsObserver;
     AutoPtr<IHandlerThread> mSettingsObserverThread;
     Int32 mCurrentVolume;

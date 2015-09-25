@@ -1,3 +1,50 @@
+#include "elastos/droid/webkit/native/media/MediaPlayerBridge.h"
+
+#include "elastos/droid/os/CParcelFileDescriptorHelper.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/utility/CBase64InputStream.h"
+//TODO #include "elastos/droid/net/CUriHelper.h"
+//TODO #include "elastos/droid/media/CMediaPlayer.h"
+
+//TODO #include "elastos/io/CFileHelper.h"
+//TODO #include "elastos/io/CFileOutputStream.h"
+//TODO #include "elastos/io/CByteArrayInputStream.h"
+//TODO #include "elastos/utility/CHashMap.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/utility/logging/Logger.h"
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::View::ISurface;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Net::IUriHelper;
+//TODO using Elastos::Droid::Net:CUriHelper;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::AsyncTask;
+using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::Droid::Os::IParcelFileDescriptorHelper;
+using Elastos::Droid::Os::CParcelFileDescriptorHelper;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Utility::IBase64InputStream;
+using Elastos::Droid::Utility::CBase64InputStream;
+//TODO using Elastos::Droid::Utility::IBase64;
+using Elastos::Droid::Media::IMediaPlayer;
+//TODO using Elastos::Droid::Media::CMediaPlayer;
+
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::IO::IFile;
+using Elastos::IO::IFileDescriptor;
+using Elastos::IO::IFileHelper;
+//TODO using Elastos::IO::CFileHelper;
+using Elastos::IO::IFileOutputStream;
+//TODO using Elastos::IO::CFileOutputStream;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IOutputStream;
+using Elastos::IO::IByteArrayInputStream;
+//TODO using Elastos::IO::CByteArrayInputStream;
+using Elastos::Utility::IMap;
+//TODO using Elastos::Utility::CHashMap;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -19,29 +66,35 @@ MediaPlayerBridge::LoadDataUriTask::LoadDataUriTask(
 }
 
 //@Override
-Boolean MediaPlayerBridge::LoadDataUriTask::DoInBackground(Void... params)
+ECode MediaPlayerBridge::LoadDataUriTask::DoInBackground(
+    /* [in] */ ArrayOf<IInterface*>* params,
+    /* [out] */ IInterface** result)
 {
     AutoPtr<IFileOutputStream> fos;
     // try {
-        File::CreateTempFile(String("decoded"), String("mediadata"), (IFile**)&mTempFile);
-        CFileOutputStream::New(mTempFile, (IFileOutputStream**)&fos);
-        AutoPtr<ArrayOf<Byte> > data = mData->GetBytes();
-        AutoPtr<IInputStream> stream;
-        CByteArrayInputStream::New(data, (IInputStream**)&stream);
-        AutoPtr<IBase64InputStream> decoder;
-        CBase64InputStream::New(stream, Base64.DEFAULT, (IBase64InputStream**)&decoder);
-        AutoPtr< ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(1024);
-        Int32 len;
-        while ((decoder->Read(buffer, &len), len) != -1) {
-            fos->Write(buffer, 0, len);
-        }
-        decoder->Close();
+    AutoPtr<IFileHelper> fileHelper;
+    //TODO CFileHelper::AcquireSingleton((IFileHelper**)&fileHelper);
+    fileHelper->CreateTempFile(String("decoded"), String("mediadata"), (IFile**)&mTempFile);
+    //TODO CFileOutputStream::New(mTempFile, (IFileOutputStream**)&fos);
+    AutoPtr<ArrayOf<Byte> > data = mData.GetBytes();
+    AutoPtr<IInputStream> stream;
+    //TODO CByteArrayInputStream::New(data, (IInputStream**)&stream);
+    AutoPtr<IBase64InputStream> decoder;
+    CBase64InputStream::New(stream, IBase64::DEFAULT, (IBase64InputStream**)&decoder);
+    AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(1024);
+    Int32 len;
+    AutoPtr<IInputStream> decoderIS = IInputStream::Probe(decoder);
+    AutoPtr<IOutputStream> fosOS = IOutputStream::Probe(fos);
+    while ((decoderIS->Read(buffer, &len), len) != -1) {
+        fosOS->Write(buffer, 0, len);
+    }
+    decoderIS->Close();
     //    return true;
     // } catch (IOException e) {
     //     return false;
     // } finally {
     //     try {
-             if (fos != NULL) fos->Close();
+    if (fosOS != NULL) fosOS->Close();
     //     } catch (IOException e) {
     //         // Can't do anything.
     //     }
@@ -61,17 +114,17 @@ void MediaPlayerBridge::LoadDataUriTask::OnPostExecute(
 
     // try {
         AutoPtr<IUriHelper> helper;
-        CUriHelper::AcquireSingleton((IUriHelper**)&helper);
+        //TODO CUriHelper::AcquireSingleton((IUriHelper**)&helper);
         AutoPtr<IUri> uri;
         helper->FromFile(mTempFile, (IUri**)&uri);
-        GetLocalPlayer()->SetDataSource(mContext, uri);
+        mOwner->GetLocalPlayer()->SetDataSource(mContext, uri);
     // } catch (IOException e) {
     //     result = false;
     // }
 
     DeleteFile();
-    Assert (mNativeMediaPlayerBridge != 0);
-    NativeOnDidSetDataUriDataSource(mNativeMediaPlayerBridge, result);
+    assert (mOwner->mNativeMediaPlayerBridge != 0);
+    mOwner->NativeOnDidSetDataUriDataSource(mOwner->mNativeMediaPlayerBridge, result);
 }
 
 void MediaPlayerBridge::LoadDataUriTask::DeleteFile()
@@ -79,10 +132,12 @@ void MediaPlayerBridge::LoadDataUriTask::DeleteFile()
     if (mTempFile == NULL) return;
 
     Boolean bDelete = FALSE;
-    mTempFile->delete(&bDelete);
+    mTempFile->Delete(&bDelete);
+    String file;
+    mTempFile->ToString(&file);
     if (!bDelete) {
         // File will be deleted when MediaPlayer releases its handler.
-//        Log.e(TAG, "Failed to delete temporary file: " + mTempFile);
+        Logger::E(MediaPlayerBridge::TAG, "Failed to delete temporary file: %s", file.string());
         assert (FALSE);
     }
 }
@@ -136,12 +191,13 @@ MediaPlayerBridge::MediaPlayerBridge(
 {
 }
 
-//@CalledByNative
-AutoPtr<MediaPlayerBridge> MediaPlayerBridge::Create(
+//@CalledByNative return MediaPlayerBridge
+AutoPtr<IInterface> MediaPlayerBridge::Create(
     /* [in] */ Int64 nativeMediaPlayerBridge)
 {
     AutoPtr<MediaPlayerBridge> mpb = new MediaPlayerBridge(nativeMediaPlayerBridge);
-    return mpb;
+    AutoPtr<IInterface> result = mpb->Probe(EIID_IInterface);
+    return result;
 }
 
 //@CalledByNative
@@ -157,7 +213,8 @@ void MediaPlayerBridge::Destroy()
 AutoPtr<IMediaPlayer> MediaPlayerBridge::GetLocalPlayer()
 {
     if (mPlayer == NULL) {
-        mPlayer = new MediaPlayer();
+        //mPlayer = new MediaPlayer();
+        //TODO CMediaPlayer::New((IMediaPlayer**)&mPlayer);
     }
     return mPlayer;
 }
@@ -173,11 +230,16 @@ void MediaPlayerBridge::SetSurface(
 Boolean MediaPlayerBridge::PrepareAsync()
 {
     // try {
-        GetLocalPlayer()->PrepareAsync();
+        ECode ecode = GetLocalPlayer()->PrepareAsync();
     // } catch (IllegalStateException e) {
     //     Log.e(TAG, "Unable to prepare MediaPlayer.", e);
     //     return false;
     // }
+    if (FAILED(ecode))
+    {
+        Logger::E(TAG, "Unable to prepare MediaPlayer.ecode:0x%x", ecode);
+        return FALSE;
+    }
 
     return TRUE;
 }
@@ -223,9 +285,9 @@ Int32 MediaPlayerBridge::GetDuration()
 }
 
 //@CalledByNative
-void MediaPlayerBridge::Release()
+void MediaPlayerBridge::ReleaseReSources()
 {
-    GetLocalPlayer()->Release();
+    GetLocalPlayer()->ReleaseReSources();
 }
 
 //@CalledByNative
@@ -262,23 +324,60 @@ Boolean MediaPlayerBridge::SetDataSource(
     /* [in] */ const String& userAgent,
     /* [in] */ Boolean hideUrlLog)
 {
-    Uri uri = Uri.parse(url);
-    HashMap<String, String> headersMap = new HashMap<String, String>();
-    if (hideUrlLog) headersMap.put("x-hide-urls-from-log", "true");
-    if (!TextUtils.isEmpty(cookies)) headersMap.put("Cookie", cookies);
-    if (!TextUtils.isEmpty(userAgent)) headersMap.put("User-Agent", userAgent);
+    //Uri uri = Uri.parse(url);
+    AutoPtr<IUri> uri;
+    AutoPtr<IUriHelper> helper;
+    //TODO CUriHelper::AcquireSingleton((IUriHelper**)&helper);
+    helper->Parse(url, (IUri**)&uri);
+    //HashMap<String, String> headersMap = new HashMap<String, String>();
+    AutoPtr<IMap> headersMap;
+    //TODO CHashMap::New((IMap**)&headersMap);
+
+    if (hideUrlLog)
+    {
+        AutoPtr<ICharSequence> key;
+        AutoPtr<ICharSequence> value;
+        CString::New(String("x-hide-urls-from-log"), (ICharSequence**)&key);
+        CString::New(String("true"), (ICharSequence**)&value);
+        headersMap->Put(key, value);
+    }
+    if (!TextUtils::IsEmpty(cookies))
+    {
+        AutoPtr<ICharSequence> key;
+        AutoPtr<ICharSequence> value;
+        CString::New(String("Cookie"), (ICharSequence**)&key);
+        CString::New(cookies, (ICharSequence**)&value);
+        headersMap->Put(key, value);
+    }
+    if (!TextUtils::IsEmpty(userAgent))
+    {
+        AutoPtr<ICharSequence> key;
+        AutoPtr<ICharSequence> value;
+        CString::New(String("User-Agent"), (ICharSequence**)&key);
+        CString::New(userAgent, (ICharSequence**)&value);
+        headersMap->Put(key, value);
+    }
     // The security origin check is enforced for devices above K. For devices below K,
     // only anonymous media HTTP request (no cookies) may be considered same-origin.
     // Note that if the server rejects the request we must not consider it same-origin.
-    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-        headersMap.put("allow-cross-domain-redirect", "false");
+    if (Build::VERSION::SDK_INT > Build::VERSION_CODES::KITKAT) {
+        //headersMap.put("allow-cross-domain-redirect", "false");
+        AutoPtr<ICharSequence> key;
+        AutoPtr<ICharSequence> value;
+        CString::New(String("allow-cross-domain-redirect"), (ICharSequence**)&key);
+        CString::New(String("false"), (ICharSequence**)&value);
+        headersMap->Put(key, value);
     }
-    try {
-        getLocalPlayer().setDataSource(context, uri, headersMap);
-        return true;
-    } catch (Exception e) {
-        return false;
-    }
+    //try {
+        ECode ecode = GetLocalPlayer()->SetDataSource(context, uri, headersMap);
+        if (FAILED(ecode))
+        {
+            return FALSE;
+        }
+        return TRUE;
+    //} catch (Exception e) {
+    //    return false;
+    //}
 }
 
 //@CalledByNative
@@ -290,11 +389,32 @@ Boolean MediaPlayerBridge::SetDataSourceFromFd(
     // try {
         AutoPtr<IParcelFileDescriptorHelper> helper;
         CParcelFileDescriptorHelper::AcquireSingleton((IParcelFileDescriptorHelper**)&helper);
-        helper->AdoptFd(fd, (IParcelFileDescriptor**)&parcelFd);
+        AutoPtr<IParcelFileDescriptor> parcelFd;
+        ECode ecode = helper->AdoptFd(fd, (IParcelFileDescriptor**)&parcelFd);
+        if (FAILED(ecode))
+        {
+            Logger::E(TAG, "Failed to set data source from file descriptor: ecode:0x%x", ecode);
+            return FALSE;
+        }
         AutoPtr<IFileDescriptor> des;
-        parcelFd->GetFileDescriptor((IFileDescriptor**)&des);
-        GetLocalPlayer()->SetDataSource(des, offset, length);
-        parcelFd->Close();
+        ecode = parcelFd->GetFileDescriptor((IFileDescriptor**)&des);
+        if (FAILED(ecode))
+        {
+            Logger::E(TAG, "Failed to set data source from file descriptor: ecode:0x%x", ecode);
+            return FALSE;
+        }
+        ecode = GetLocalPlayer()->SetDataSource(des, offset, length);
+        if (FAILED(ecode))
+        {
+            Logger::E(TAG, "Failed to set data source from file descriptor: ecode:0x%x", ecode);
+            return FALSE;
+        }
+        ecode = parcelFd->Close();
+        if (FAILED(ecode))
+        {
+            Logger::E(TAG, "Failed to set data source from file descriptor: ecode:0x%x", ecode);
+            return FALSE;
+        }
         return TRUE;
     // } catch (IOException e) {
     //     Log.e(TAG, "Failed to set data source from file descriptor: " + e);
@@ -312,19 +432,31 @@ Boolean MediaPlayerBridge::SetDataUriDataSource(
         mLoadDataUriTask = NULL;
     }
 
-    if (!url.StartsWith("data:")) return FALSE;
+    if (!url.StartWith("data:")) return FALSE;
     Int32 headerStop = url.IndexOf(',');
     if (headerStop == -1) return FALSE;
     String header = url.Substring(0, headerStop);
     const String data = url.Substring(headerStop + 1);
 
     String headerContent = header.Substring(5);
-    AutoPtr< ArrayOf<String> > headerInfo = headerContent.Split(";");
-    if (headerInfo->GetLength() != 2) return FALSE;
-    if (!String("base64").Equals((*headerInfo)[1])) return FALSE;
+    //AutoPtr< ArrayOf<String> > headerInfo = headerContent.Split(";");
+    //if (headerInfo->GetLength() != 2) return FALSE;
+    //if (!String("base64").Equals((*headerInfo)[1])) return FALSE;
+    //TODO pay attention here
+    Int32 scStop = headerContent.IndexOf(";");
+    if (scStop == -1) return FALSE;
+    String codec = headerContent.Substring(scStop + 1);
+    scStop = codec.IndexOf(";");
+    if (scStop != -1)
+    {
+        codec = codec.Substring(0, scStop);
+    }
+    if (!String("base64").Equals(codec)) return FALSE;
 
-    mLoadDataUriTask = new LoadDataUriTask(context, data);
-    mLoadDataUriTask->Execute();
+    mLoadDataUriTask = new LoadDataUriTask(this, context, data);
+    //TODO is this OK, the params no use here
+    AutoPtr<ArrayOf<IInterface*> > params;
+    mLoadDataUriTask->Execute(params);
     return TRUE;
 }
 
@@ -370,13 +502,15 @@ void MediaPlayerBridge::SetOnVideoSizeChangedListener(
  * allowed on the media player.
  */
 //@CalledByNative
-AutoPtr<AllowedOperations> MediaPlayerBridge::GetAllowedOperations()
+AutoPtr<MediaPlayerBridge::AllowedOperations> MediaPlayerBridge::GetAllowedOperations()
 {
     AutoPtr<IMediaPlayer> player = GetLocalPlayer();
     Boolean canPause = TRUE;
     Boolean canSeekForward = TRUE;
     Boolean canSeekBackward = TRUE;
     // try {
+    /*TODO
+      //more check on this, because below code use the reflection function
         Method getMetadata = player.getClass().getDeclaredMethod(
                 "getMetadata", boolean.class, boolean.class);
         getMetadata.setAccessible(true);
@@ -410,6 +544,7 @@ AutoPtr<AllowedOperations> MediaPlayerBridge::GetAllowedOperations()
     //     Log.e(TAG, "Cannot find matching fields in Metadata class: " + e);
     // }
 
+    */
     AutoPtr<AllowedOperations> ret = new AllowedOperations(canPause, canSeekForward, canSeekBackward);
 
     return ret;

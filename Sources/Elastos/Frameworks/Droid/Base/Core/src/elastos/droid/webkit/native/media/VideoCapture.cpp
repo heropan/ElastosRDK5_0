@@ -1,3 +1,36 @@
+#include "elastos/droid/webkit/native/media/VideoCapture.h"
+#include "elastos/droid/webkit/native/media/ImageFormat.h"
+//TODO #include "elastos/droid/hardware/CHardwareCamera.h"
+#include "elastos/droid/hardware/CHardwareCameraHelper.h"
+//TODO#include "elastos/droid/opengl/CGLES20.h"
+//TODO#include "elastos/droid/graphics/CSurfaceTexture.h"
+#include "elastos/core/Math.h"
+#include "elastos/utility/logging/Logger.h"
+
+//TODO #include "elastos/utility/concurrent/locks/CReentrantLock.h"
+
+using Elastos::Droid::Graphics::IImageFormat;
+using Elastos::Droid::Hardware::ICameraSize;
+//TODO using Elastos::Droid::Hardware::CHardwareCamera;
+using Elastos::Droid::Hardware::EIID_IPreviewCallback;
+using Elastos::Droid::Hardware::IHardwareCameraHelper;
+using Elastos::Droid::Hardware::CHardwareCameraHelper;
+using Elastos::Droid::Opengl::IGLES20;
+//TODO using Elastos::Droid::Opengl::CGLES20;
+//TODO using Elastos::Droid::Graphics::CSurfaceTexture;
+using Elastos::Droid::View::IDisplay;
+using Elastos::Droid::Opengl::IGLES20;
+using Elastos::Droid::View::ISurface;
+using Elastos::Droid::View::IWindowManager;
+
+using Elastos::Core::Math;
+//TODO using Elastos::Utility::Concurrent::Locks::CReentrantLock;
+using Elastos::Utility::Concurrent::Locks::ILock;
+using Elastos::Utility::Concurrent::Locks::EIID_ILock;
+using Elastos::Utility::IList;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -46,6 +79,7 @@ Int32 VideoCapture::CaptureFormat::GetPixelFormat()
 
 const Int32 VideoCapture::GL_TEXTURE_EXTERNAL_OES;
 const String VideoCapture::TAG("VideoCapture");
+CAR_INTERFACE_IMPL(VideoCapture, Object, IPreviewCallback)
 
 // Lock to mutually exclude execution of OnPreviewFrame {start/stop}Capture.
 
@@ -54,15 +88,15 @@ VideoCapture::VideoCapture(
     /* [in] */ Int32 id,
     /* [in] */ Int64 nativeVideoCaptureDeviceAndroid)
     : mContext(context)
+    , mIsRunning(FALSE)
     , mId(id)
     , mNativeVideoCaptureDeviceAndroid(nativeVideoCaptureDeviceAndroid)
-    , mIsRunning(FALSE)
     , mCameraOrientation(0)
     , mCameraFacing(0)
     , mDeviceOrientation(0)
 {
 
-    CReentrantLock::New((IReentrantLock**)&mPreviewBufferLock);
+    //TODO CReentrantLock::New((IReentrantLock**)&mPreviewBufferLock);
 }
 
 //@CalledByNative
@@ -71,10 +105,13 @@ Boolean VideoCapture::Allocate(
     /* [in] */ Int32 height,
     /* [in] */ Int32 frameRate)
 {
-    // Log.d(TAG, "allocate: requested (" + width + "x" + height + ")@" +
-    //         frameRate + "fps");
+    Logger::D(TAG, "allocate: requested ( %d x %d)@%dfps",  width, height, frameRate);
     // try {
-        Camera->Open(mId, (ICamera**)&mCamera);
+    /*TODO
+    AutoPtr<IHardwareCameraHelper> helper;
+    CHardwareCameraHelper::AcquireSingleton((IHardwareCameraHelper**)&helper);
+    helper->Open(mId, (ICamera**)&mCamera);
+    */
     // } catch (RuntimeException ex) {
     //     Log.e(TAG, "allocate: Camera.open: " + ex);
     //     return false;
@@ -90,8 +127,7 @@ Boolean VideoCapture::Allocate(
     cameraInfo->GetOrientation(&mCameraOrientation);
     cameraInfo->GetFacing(&mCameraFacing);
     mDeviceOrientation = GetDeviceOrientation();
-    // Log.d(TAG, "allocate: orientation dev=" + mDeviceOrientation +
-    //           ", cam=" + mCameraOrientation + ", facing=" + mCameraFacing);
+    Logger::D(TAG, "allocate: orientation dev=%d, cam=%d, facing=%d", mDeviceOrientation, mCameraOrientation, mCameraFacing);
 
     AutoPtr<IParameters> parameters = GetCameraParameters(mCamera);
     if (parameters == NULL) {
@@ -101,18 +137,28 @@ Boolean VideoCapture::Allocate(
 
     // getSupportedPreviewFpsRange() returns a List with at least one
     // element, but when camera is in bad state, it can return null pointer.
-    List<int[]> listFpsRange = parameters.getSupportedPreviewFpsRange();
-    if (listFpsRange == null || listFpsRange.size() == 0) {
-//        Log.e(TAG, "allocate: no fps range found");
+    AutoPtr<IArrayList> listRange;
+    CArrayList::New((IArrayList**)&listRange);
+    //List<int[]> listFpsRange = parameters->GetSupportedPreviewFpsRange();
+    AutoPtr<ArrayOf<Int32> > fpsMinMax;
+    /*TODO the interface GetSupportedPreviewFpsRange is not stable
+    parameters->GetSupportedPreviewFpsRange((IList**)listRange);
+    Boolean emptyList;
+    listFpsRange->IsEmpty(&emptyList);
+    if (listFpsRange == NULL || emptyList) {
+        Logger::E(TAG, "allocate: no fps range found");
         return FALSE;
     }
 
     Int32 frameRateInMs = frameRate * 1000;
     // Use the first range as default.
-    AutoPtr< ArrayOf<Int> > fpsMinMax = listFpsRange.get(0);
+    AutoPtr<List<ArrayOf<Int32> > >::Iterator fpsRange = listFpsRange->Begin();
+    fpsMinMax = *fpsRange;
     Int32 newFrameRate = ((*fpsMinMax)[0] + 999) / 1000;
-    for (int[] fpsRange : listFpsRange) {
-        if (fpsRange[0] <= frameRateInMs && frameRateInMs <= fpsRange[1]) {
+    //for (int[] fpsRange : listFpsRange)
+    for (; it != infos->End(); ++it) {
+
+        if ((*fpsRange)[0] <= frameRateInMs && frameRateInMs <= (*fpsRange)[1]) {
             fpsMinMax = fpsRange;
             newFrameRate = frameRate;
             break;
@@ -120,12 +166,13 @@ Boolean VideoCapture::Allocate(
     }
 
     frameRate = newFrameRate;
-//    Log.d(TAG, "allocate: fps set to " + frameRate);
+    */
+    Logger::D(TAG, "allocate: fps set to %d", frameRate);
 
     // Calculate size.
-    AutoPtr< ArrayOf<ICameraSize*> > listCameraSize;
+    AutoPtr<ArrayOf<ICameraSize*> > listCameraSize;
     parameters->GetSupportedPreviewSizes((ArrayOf<ICameraSize*>**)&listCameraSize);
-    Int32 minDiff = Integer.MAX_VALUE;
+    Int32 minDiff = Elastos::Core::Math::INT32_MAX_VALUE;
     Int32 matchedWidth = width;
     Int32 matchedHeight = height;
 
@@ -133,13 +180,12 @@ Boolean VideoCapture::Allocate(
     Int32 length = listCameraSize->GetLength();
     for (Int32 i = 0; i < length; ++i) {
         size = (*listCameraSize)[i];
-        Int32 _width, _height;
-        size->GetWidth(&_width);
-        size->GetHeight(&_height);
-        Int32 diff = Math::Abs(_width - width) +
-                   Math::Abs(_height - height);
-//        Log.d(TAG, "allocate: supported (" +
-//              size.width + ", " + size.height + "), diff=" + diff);
+        Int32 _width = 0, _height = 0;
+        //TODO size->GetWidth(&_width);
+        //TODO size->GetHeight(&_height);
+        Int32 diff = Elastos::Core::Math::Abs(_width - width) +
+                   Elastos::Core::Math::Abs(_height - height);
+        Logger::D(TAG, "allocate: supported (%d, %d), diff=%d",  _width, _height, diff);
         // TODO(wjia): Remove this hack (forcing width to be multiple
         // of 32) by supporting stride in video frame buffer.
         // Right now, VideoCaptureController requires compact YV12
@@ -151,27 +197,28 @@ Boolean VideoCapture::Allocate(
         }
     }
 
-    if (minDiff == Integer.MAX_VALUE) {
-//        Log.e(TAG, "allocate: can not find a multiple-of-32 resolution");
+    if (minDiff == Elastos::Core::Math::INT32_MAX_VALUE) {
+        Logger::E(TAG, "allocate: can not find a multiple-of-32 resolution");
         return FALSE;
     }
 
-//    Log.d(TAG, "allocate: matched (" + matchedWidth + "x" + matchedHeight + ")");
+    Logger::D(TAG, "allocate: matched (%d x %d)",  matchedWidth, matchedHeight);
 
     Boolean isVideoStabilizationSupported;
     parameters->IsVideoStabilizationSupported(&isVideoStabilizationSupported);
     if (isVideoStabilizationSupported) {
-        // Log.d(TAG, "Image stabilization supported, currently: " +
-        //       parameters.getVideoStabilization() + ", setting it.");
+        Boolean enabled;
+        parameters->GetVideoStabilization(&enabled);
+        Logger::D(TAG, "Image stabilization supported, currently: %d, setting it.", enabled);
         parameters->SetVideoStabilization(TRUE);
     }
     else {
-        //Log.d(TAG, "Image stabilization not supported.");
+        Logger::D(TAG, "Image stabilization not supported.");
     }
 
     SetCaptureParameters(matchedWidth, matchedHeight, frameRate, parameters);
-    parameters->SetPreviewSize(mCaptureFormat.mWidth,
-                              mCaptureFormat.mHeight);
+    parameters->SetPreviewSize(mCaptureFormat->mWidth,
+                              mCaptureFormat->mHeight);
     parameters->SetPreviewFpsRange((*fpsMinMax)[0], (*fpsMinMax)[1]);
     parameters->SetPreviewFormat(mCaptureFormat->mPixelFormat);
     mCamera->SetParameters(parameters);
@@ -182,21 +229,21 @@ Boolean VideoCapture::Allocate(
 
     // Generate one texture pointer and bind it as an external texture.
     AutoPtr<IGLES20> gles20;
-    CGLES20::AcquireSingleton((IGLES20**)&gles20);
-    gles20->GlGenTextures(1, mGlTextures, 0);
-    gles20->GlBindTexture(GL_TEXTURE_EXTERNAL_OES, (*mGlTextures)[0]);
+    //TODO CGLES20::AcquireSingleton((IGLES20**)&gles20);
+    gles20->glGenTextures(1, mGlTextures, 0);
+    gles20->glBindTexture(GL_TEXTURE_EXTERNAL_OES, (*mGlTextures)[0]);
     // No mip-mapping with camera source.
-    gles20->GlTexParameterf(GL_TEXTURE_EXTERNAL_OES,
-            IGLES20::GL_TEXTURE_MIN_FILTER, IGLES20::GL_LINEAR);
-    gles20->GlTexParameterf(GL_TEXTURE_EXTERNAL_OES,
-            IGLES20::GL_TEXTURE_MAG_FILTER, IGLES20::GL_LINEAR);
+    gles20->glTexParameterf(GL_TEXTURE_EXTERNAL_OES,
+            IGLES20::_GL_TEXTURE_MIN_FILTER, IGLES20::_GL_LINEAR);
+    gles20->glTexParameterf(GL_TEXTURE_EXTERNAL_OES,
+            IGLES20::_GL_TEXTURE_MAG_FILTER, IGLES20::_GL_LINEAR);
     // Clamp to edge is only option.
-    gles20->GlTexParameteri(GL_TEXTURE_EXTERNAL_OES,
-            IGLES20::GL_TEXTURE_WRAP_S, IGLES20::GL_CLAMP_TO_EDGE);
-    gles20->GlTexParameteri(GL_TEXTURE_EXTERNAL_OES,
-            IGLES20::GL_TEXTURE_WRAP_T, IGLES20::GL_CLAMP_TO_EDGE);
+    gles20->glTexParameteri(GL_TEXTURE_EXTERNAL_OES,
+            IGLES20::_GL_TEXTURE_WRAP_S, IGLES20::_GL_CLAMP_TO_EDGE);
+    gles20->glTexParameteri(GL_TEXTURE_EXTERNAL_OES,
+            IGLES20::_GL_TEXTURE_WRAP_T, IGLES20::_GL_CLAMP_TO_EDGE);
 
-    CSurfaceTexture::New((*mGlTextures[0]), (ISurfaceTexture**)&mSurfaceTexture);
+    //TODO CSurfaceTexture::New((*mGlTextures[0]), (ISurfaceTexture**)&mSurfaceTexture);
     mSurfaceTexture->SetOnFrameAvailableListener(NULL);
     // try {
         mCamera->SetPreviewTexture(mSurfaceTexture);
@@ -214,18 +261,21 @@ Boolean VideoCapture::Allocate(
 Int32 VideoCapture::StartCapture()
 {
     if (mCamera == NULL) {
-//        Log.e(TAG, "startCapture: camera is null");
+        Logger::E(TAG, "startCapture: camera is null");
         return -1;
     }
 
-    mPreviewBufferLock->Lock();
+    AutoPtr<ILock> lock;
+    mPreviewBufferLock->Probe(EIID_ILock);
+    lock->Lock();
     //try {
         if (mIsRunning) {
+            lock->UnLock();
             return 0;
         }
         mIsRunning = TRUE;
     //} finally {
-        mPreviewBufferLock->Unlock();
+        lock->UnLock();
     //}
     SetPreviewCallback(this);
     // try {
@@ -242,18 +292,21 @@ Int32 VideoCapture::StartCapture()
 Int32 VideoCapture::StopCapture()
 {
     if (mCamera == NULL) {
-//        Log.e(TAG, "stopCapture: camera is null");
+        Logger::E(TAG, "stopCapture: camera is null");
         return 0;
     }
 
-    mPreviewBufferLock->Lock();
+    AutoPtr<ILock> lock;
+    mPreviewBufferLock->Probe(EIID_ILock);
+    lock->Lock();
     //try {
         if (!mIsRunning) {
+            lock->UnLock();
             return 0;
         }
         mIsRunning = FALSE;
     //} finally {
-        mPreviewBufferLock->Unlock();
+        lock->UnLock();
     //}
 
     mCamera->StopPreview();
@@ -273,8 +326,8 @@ void VideoCapture::Deallocate()
         mCamera->SetPreviewTexture(NULL);
         if (mGlTextures != NULL) {
             AutoPtr<IGLES20> gles20;
-            CGLES20::AcquireSingleton((IGLES20**)&gles20);
-            gles20->GlDeleteTextures(1, mGlTextures, 0);
+            //TODO CGLES20::AcquireSingleton((IGLES20**)&gles20);
+            gles20->glDeleteTextures(1, mGlTextures, 0);
         }
         mCaptureFormat = NULL;
         mCamera->Release();
@@ -304,9 +357,9 @@ Int32 VideoCapture::QueryFrameRate()
 }
 
 //@CalledByNative
-Int3 VideoCapture::GetColorspace()
+Int32 VideoCapture::GetColorspace()
 {
-    switch (mCaptureFormat->mPixelFormat) {
+    switch (mCaptureFormat->GetPixelFormat()) {
         case IImageFormat::YV12:
             return AndroidImageFormatList::ANDROID_IMAGEFORMAT_YV12;
         case IImageFormat::NV21:
@@ -324,7 +377,7 @@ Int32 VideoCapture::GetDeviceOrientation()
         AutoPtr<IWindowManager> wm;
         mContext->GetSystemService(
                 IContext::WINDOW_SERVICE,
-                (IWindowManager**)&wm);
+                (IInterface**)&wm);
 
         AutoPtr<IDisplay> display;
         wm->GetDefaultDisplay((IDisplay**)&display);
@@ -360,7 +413,7 @@ void VideoCapture::NativeOnFrameAvailable(
 }
 
 AutoPtr<IParameters> VideoCapture::GetCameraParameters(
-    /* [in] */ ICamera* camera)
+    /* [in] */ IHardwareCamera* camera)
 {
     AutoPtr<IParameters> parameters;
     // try {
@@ -378,11 +431,13 @@ AutoPtr<ICameraInfo> VideoCapture::GetCameraInfo(
     /* [in] */ Int32 id)
 {
     AutoPtr<ICameraInfo> cameraInfo;
-    CCameraInfo::New((ICameraInfo**)&cameraInfo);
+    //TODO CHardwareCamera::CameraInfo::New((ICameraInfo**)&cameraInfo);
     // try {
+    /*TODO
         AutoPtr<IHardwareCameraHelper> helper;
         CHardwareCameraHelper::AcquireSingleton((IHardwareCameraHelper**)&helper);
         helper->GetCameraInfo(id, cameraInfo);
+        */
     // } catch (RuntimeException ex) {
     //     Log.e(TAG, "getCameraInfo: Camera.getCameraInfo: " + ex);
     //     return null;

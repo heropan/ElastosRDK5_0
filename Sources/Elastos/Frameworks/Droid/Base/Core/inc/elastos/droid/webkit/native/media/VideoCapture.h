@@ -1,20 +1,15 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTURE_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTURE_H__
+#include "ext/frameworkext.h"
 
-// import android.content.Context;
-// import android.graphics.ImageFormat;
-// import android.graphics.SurfaceTexture;
-// import android.hardware.Camera;
-// import android.hardware.Camera.PreviewCallback;
-// import android.opengl.GLES20;
-// import android.util.Log;
-// import android.view.Surface;
-// import android.view.WindowManager;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::ISurfaceTexture;
+using Elastos::Droid::Hardware::IHardwareCamera;
+using Elastos::Droid::Hardware::ICameraInfo;
+using Elastos::Droid::Hardware::IParameters;
+using Elastos::Droid::Hardware::IPreviewCallback;
 
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-
+using Elastos::Utility::Concurrent::Locks::IReentrantLock;
 // import java.io.IOException;
 // import java.util.List;
 // import java.util.concurrent.locks.ReentrantLock;
@@ -30,10 +25,11 @@ namespace Media {
 //@JNINamespace("media")
 class VideoCapture
     : public Object
-    , public PreviewCallback
+    , public IPreviewCallback
 {
-protected:
+public:
     class CaptureFormat
+        : public Object
     {
     public:
         CaptureFormat(
@@ -51,13 +47,14 @@ protected:
         CARAPI_(Int32) GetPixelFormat();
 
     public:
-        Int3 mWidth;
+        Int32 mWidth;
         Int32 mHeight;
         const Int32 mFramerate;
         const Int32 mPixelFormat;
     };
 
 public:
+    CAR_INTERFACE_DECL();
     VideoCapture(
         /* [in] */ IContext* context,
         /* [in] */ Int32 id,
@@ -118,10 +115,10 @@ protected:
     CARAPI_(Int32) GetDeviceOrientation();
 
     static CARAPI_(AutoPtr<IParameters>) GetCameraParameters(
-        /* [in] */ ICamera* camera);
+        /* [in] */ IHardwareCamera* camera);
 
 protected:
-    AutoPtr<ICamera> mCamera;
+    AutoPtr<IHardwareCamera> mCamera;
     AutoPtr<CaptureFormat> mCaptureFormat;
 
     // Lock to mutually exclude execution of OnPreviewFrame {start/stop}Capture.
@@ -149,9 +146,17 @@ private:
         /* [in] */ Int32 id);
 };
 
+
+
 } // namespace Media
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
+template <>
+struct Conversion<Elastos::Droid::Webkit::Media::VideoCapture::CaptureFormat*, IInterface*>
+{
+        enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
 
 #endif//__ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTURE_H__

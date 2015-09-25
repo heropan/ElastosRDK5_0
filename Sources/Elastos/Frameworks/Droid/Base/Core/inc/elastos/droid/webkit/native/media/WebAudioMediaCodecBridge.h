@@ -1,15 +1,8 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_WEBAUDIOMEDIACODECBRIDGE_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_WEBAUDIOMEDIACODECBRIDGE_H__
-
-// import android.content.Context;
-// import android.media.MediaCodec;
-// import android.media.MediaCodec.BufferInfo;
-// import android.media.MediaExtractor;
-// import android.media.MediaFormat;
-// import android.os.ParcelFileDescriptor;
-// import android.util.Log;
-
+#include "ext/frameworkext.h"
+using Elastos::Droid::Content::IContext;
+using Elastos::IO::IByteBuffer;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
@@ -23,9 +16,10 @@ namespace Media {
 
 //@JNINamespace("media")
 class WebAudioMediaCodecBridge
+:public Object
 {
 public:
-    static const String LOG_TAG;
+    static const String TAG;
     // TODO(rtoy): What is the correct timeout value for reading
     // from a file in memory?
     static const Int64 TIMEOUT_MICROSECONDS = 500;

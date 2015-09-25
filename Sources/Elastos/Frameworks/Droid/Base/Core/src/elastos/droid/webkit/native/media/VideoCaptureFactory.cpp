@@ -1,3 +1,24 @@
+#include "elastos/droid/webkit/native/media/VideoCaptureFactory.h"
+#include "elastos/droid/webkit/native/media/VideoCaptureAndroid.h"
+#include "elastos/droid/webkit/native/media/VideoCaptureTango.h"
+
+//TODO #include "elastos/droid/hardware/CHardwareCamera.h"
+#include "elastos/droid/hardware/CHardwareCameraHelper.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/core/StringUtils.h"
+#include "elastos/utility/logging/Logger.h"
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Hardware::IHardwareCamera;
+using Elastos::Droid::Hardware::IHardwareCameraHelper;
+//TODO using Elastos::Droid::Hardware::CHardwareCamera;
+using Elastos::Droid::Hardware::CHardwareCameraHelper;
+
+//TODO using Elastos::EIID_IInterface;
+using Elastos::Core::StringUtils;
+using Elastos::Droid::Os::Build;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -24,7 +45,7 @@ VideoCaptureFactory::CamParams::CamParams(
 //             VideoCaptureFactory::ChromiumCameraInfo
 //===============================================================
 
-static AutoPtr< ArrayOf<String> > s_SPECIAL_DEVICE_LIST_Init()
+static AutoPtr<ArrayOf<AutoPtr<ArrayOf<String> > > > s_SPECIAL_DEVICE_LIST_Init()
 {
     AutoPtr< ArrayOf< AutoPtr< ArrayOf<String> > > > array = ArrayOf< AutoPtr< ArrayOf<String> > >::Alloc(1);
     AutoPtr< ArrayOf<String> > strs = ArrayOf<String>::Alloc(2);
@@ -42,7 +63,7 @@ static AutoPtr< ArrayOf<String> > s_SPECIAL_DEVICE_LIST_Init()
 // Note that these devices have no Camera.CameraInfo.
 const AutoPtr< ArrayOf< AutoPtr< ArrayOf<String> > > > VideoCaptureFactory::ChromiumCameraInfo::s_SPECIAL_DEVICE_LIST = s_SPECIAL_DEVICE_LIST_Init();
 const String VideoCaptureFactory::ChromiumCameraInfo::TAG("ChromiumCameraInfo");
-static Int32 VideoCaptureFactory::ChromiumCameraInfo::sNumberOfSystemCameras;
+Int32 VideoCaptureFactory::ChromiumCameraInfo::sNumberOfSystemCameras = -1;
 
 VideoCaptureFactory::ChromiumCameraInfo::ChromiumCameraInfo(
     /* [in] */ Int32 index)
@@ -56,9 +77,9 @@ Boolean VideoCaptureFactory::ChromiumCameraInfo::IsSpecialDevice()
     AutoPtr< ArrayOf<String> > device;
     Int32 length = s_SPECIAL_DEVICE_LIST->GetLength();
     for (Int32 i = 0; i < length; ++i) {
-        device = (*s_SPECIAL_DEVICE_LIST[i]);
-        if ((*device)[0].ContentEquals(android::os::Build::MODEL) &&
-                (*device)[1].ContentEquals(android::os::Build::DEVICE)) {
+        device = ((*s_SPECIAL_DEVICE_LIST)[i]);
+        if ((*device)[0].Equals(Build::MODEL) &&
+                (*device)[1].Equals(Build::DEVICE)) {
             return TRUE;
         }
     }
@@ -102,13 +123,12 @@ Int32 VideoCaptureFactory::ChromiumCameraInfo::GetNumberOfCameras(
         }
         else {
             sNumberOfSystemCameras = 0;
-            // Log.w(TAG, "Missing android.permission.CAMERA permission, "
-            //         + "no system camera available.");
+            Logger::W(TAG, "Missing android.permission.CAMERA permission, no system camera available.");
         }
     }
 
     if (IsSpecialDevice()) {
-//        Log.d(TAG, "Special device: " + android.os.Build.MODEL);
+        Logger::D(TAG, "Special device: %s", Build::MODEL.string());
         return sNumberOfSystemCameras +
                VideoCaptureTango::NumberOfCameras();
     }
@@ -118,11 +138,12 @@ Int32 VideoCaptureFactory::ChromiumCameraInfo::GetNumberOfCameras(
 }
 
 //@CalledByNative("ChromiumCameraInfo")
-AutoPtr<ChromiumCameraInfo> VideoCaptureFactory::ChromiumCameraInfo::GetAt(
+AutoPtr<IInterface> VideoCaptureFactory::ChromiumCameraInfo::GetAt(
     /* [in] */ Int32 index)
 {
     AutoPtr<ChromiumCameraInfo> info = new ChromiumCameraInfo(index);
-    return info;
+    AutoPtr<IInterface> result = info->Probe(EIID_IInterface);
+    return result;
 }
 
 //@CalledByNative("ChromiumCameraInfo")
@@ -142,14 +163,15 @@ String VideoCaptureFactory::ChromiumCameraInfo::GetDeviceName()
             return String("");
         }
 
-        // Log.d(TAG, "Camera enumerated: " + (mCameraInfo.facing ==
-        //         Camera.CameraInfo.CAMERA_FACING_FRONT ? "front" :
-        //         "back"));
-        String str("camera ");
-        str += mId;
-        str += ", facing ";
+        String enumerated("front");
         Int32 facing;
         mCameraInfo->GetFacing(&facing);
+        if (facing != ICameraInfo::CAMERA_FACING_FRONT)
+            enumerated = String("back");
+        Logger::D(TAG, "Camera enumerated: %s", enumerated.string());
+        String str("camera ");
+        str += StringUtils::ToString(mId);
+        str += ", facing ";
         str += (facing ==
                 ICameraInfo::CAMERA_FACING_FRONT ? "front" :
                 "back");
@@ -165,8 +187,9 @@ Int32 VideoCaptureFactory::ChromiumCameraInfo::GetOrientation()
         return ICameraInfo::CAMERA_FACING_BACK;
     }
     else {
-        Int orientation;
-        return (mCameraInfo == NULL ? 0 : (mCameraInfo->GetOrientation(&orientation), orientation));
+        Int32 orientation;
+        mCameraInfo->GetOrientation(&orientation);
+        return mCameraInfo == NULL ? 0 : orientation;
     }
 }
 
@@ -174,7 +197,7 @@ AutoPtr<ICameraInfo> VideoCaptureFactory::ChromiumCameraInfo::GetCameraInfo(
     /* [in] */ Int32 id)
 {
     AutoPtr<ICameraInfo> cameraInfo;
-    CCameraInfo::New((ICameraInfo**)&cameraInfo);
+    //TODO CHardwareCamera::CCameraInfo::New((ICameraInfo**)&cameraInfo);
     // try {
         AutoPtr<IHardwareCameraHelper> helper;
         CHardwareCameraHelper::AcquireSingleton((IHardwareCameraHelper**)&helper);
@@ -192,31 +215,44 @@ AutoPtr<ICameraInfo> VideoCaptureFactory::ChromiumCameraInfo::GetCameraInfo(
 
 // Factory methods.
 //@CalledByNative
-AutoPtr<VideoCapture> VideoCaptureFactory::CreateVideoCapture(
+AutoPtr<IInterface> VideoCaptureFactory::CreateVideoCapture(
     /* [in] */ IContext* context,
     /* [in] */ Int32 id,
     /* [in] */ Int64 nativeVideoCaptureDeviceAndroid)
 {
+  AutoPtr<VideoCapture> vc;
+  AutoPtr<IInterface> result;
   if (ChromiumCameraInfo::IsSpecialCamera(id)) {
-      AutoPtr<VideoCapture> vc = new VideoCaptureTango(context, ChromiumCameraInfo::ToSpecialCameraId(id),
+      vc = new VideoCaptureTango(context, ChromiumCameraInfo::ToSpecialCameraId(id),
               nativeVideoCaptureDeviceAndroid);
-      return vc;
   }
   else {
-      AutoPtr<VideoCapture> vc = new VideoCaptureAndroid(context, id,
+      vc = new VideoCaptureAndroid(context, id,
               nativeVideoCaptureDeviceAndroid);
-      return vc;
   }
+  if (vc.Get())
+  {
+      result = vc->Probe(EIID_IInterface);
+  }
+  return result;
 }
 
 //@CalledByNative
-AutoPtr< ArrayOf<VideoCapture::CaptureFormat> > VideoCaptureFactory::GetDeviceSupportedFormats(
+AutoPtr<ArrayOf<AutoPtr<IInterface> > > VideoCaptureFactory::GetDeviceSupportedFormats(
     /* [in] */ Int32 id)
 {
-    return ChromiumCameraInfo::IsSpecialCamera(id) ?
+    AutoPtr<ArrayOf<VideoCapture::CaptureFormat*> > cf =
+    ChromiumCameraInfo::IsSpecialCamera(id) ?
             VideoCaptureTango::GetDeviceSupportedFormats(
                     ChromiumCameraInfo::ToSpecialCameraId(id)) :
             VideoCaptureAndroid::GetDeviceSupportedFormats(id);
+    Int32 n = cf->GetLength();
+    AutoPtr<ArrayOf<AutoPtr<IInterface> > > result = ArrayOf<AutoPtr<IInterface> >::Alloc(n);
+    for(Int32 i = 0; i < n; ++i)
+    {
+        (*result)[i] = ((*cf)[i])->Probe(EIID_IInterface);
+    }
+    return result;
 }
 
 //@CalledByNative
@@ -228,7 +264,7 @@ Int32 VideoCaptureFactory::GetCaptureFormatWidth(
 
 //@CalledByNative
 Int32 VideoCaptureFactory::GetCaptureFormatHeight(
-    /* [in] */ VideoCapture::CaptureFormat format)
+    /* [in] */ VideoCapture::CaptureFormat* format)
 {
     return format->GetHeight();
 }

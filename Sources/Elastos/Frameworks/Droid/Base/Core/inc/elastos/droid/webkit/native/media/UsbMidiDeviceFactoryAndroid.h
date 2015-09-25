@@ -1,19 +1,18 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_USBMIDIDEVICEFACTORYANDROID_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_USBMIDIDEVICEFACTORYANDROID_H__
+#include "ext/frameworkext.h"
 
-// import android.app.PendingIntent;
-// import android.content.BroadcastReceiver;
-// import android.content.Context;
-// import android.content.Intent;
-// import android.content.IntentFilter;
-// import android.hardware.usb.UsbConstants;
-// import android.hardware.usb.UsbDevice;
-// import android.hardware.usb.UsbInterface;
-// import android.hardware.usb.UsbManager;
+#include "elastos/droid/content/BroadcastReceiver.h"
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Hardware::Usb::IUsbManager;
+using Elastos::Droid::Hardware::Usb::IUsbDevice;
+using Elastos::Droid::Content::BroadcastReceiver;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
+using Elastos::Utility::IList;
+using Elastos::Utility::ISet;
 
 // import java.util.ArrayList;
 // import java.util.HashSet;
@@ -32,11 +31,11 @@ namespace Media {
  */
 //@JNINamespace("media")
 class UsbMidiDeviceFactoryAndroid
+:public Object
 {
 private:
     class InnerBroadcastReceiver
-        : public Object
-        , public IBroadcastReceiver
+        : public BroadcastReceiver
     {
     public:
         InnerBroadcastReceiver(
@@ -62,8 +61,8 @@ public:
      * Constructs a UsbMidiDeviceAndroid.
      * @param nativePointer The native pointer to which the created factory is associated.
      */
-    //@CalledByNative
-    static CARAPI_(AutoPtr<UsbMidiDeviceFactoryAndroid>) Create(
+    //@CalledByNative return UsbMidiDeviceFactoryAndroid
+    static CARAPI_(AutoPtr<IInterface>) Create(
         /* [in] */ Int64 nativePointer);
 
     /**
@@ -98,7 +97,7 @@ private:
 
     static CARAPI_(void) NativeOnUsbMidiDeviceRequestDone(
         /* [in] */ Int64 nativeUsbMidiDeviceFactoryAndroid,
-        /* [in] */ ArrayOf<IInterface> devices);
+        /* [in] */ ArrayOf<IInterface*>* devices);
 
 private:
     /**
@@ -109,17 +108,19 @@ private:
     /**
      * A BroadcastReceiver for USB device permission requests.
      */
-    AutoPtr<IBroadcastReceiver> mReceiver;
+    AutoPtr<BroadcastReceiver> mReceiver;
 
     /**
      * Accessible USB-MIDI devices got so far.
      */
-    List<UsbMidiDeviceAndroid> mDevices;
+    //List<UsbMidiDeviceAndroid> mDevices;
+    AutoPtr<IList> mDevices;
 
     /**
      * Devices whose access permission requested but not resolved so far.
      */
-    Set<UsbDevice> mRequestedDevices;
+    //Set<IUsbDevice> mRequestedDevices;
+    AutoPtr<ISet> mRequestedDevices;
 
     /**
      * The identifier of this factory.
