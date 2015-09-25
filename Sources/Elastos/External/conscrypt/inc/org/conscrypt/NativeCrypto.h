@@ -5,6 +5,7 @@
 #include "Org.Conscrypt_server.h"
 
 using Elastos::Core::IArrayOf;
+using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IOutputStream;
 using Elastos::Security::Interfaces::IDSAPrivateKey;
 using Elastos::Security::Interfaces::IECPrivateKey;
@@ -1061,6 +1062,196 @@ public:
     static CARAPI SSL_get_servername(
         /* [in] */ Int64 sslRef,
         /* [out] */ String* result);
+
+    /**
+     * Enables NPN for all SSL connections in the context.
+     *
+     * <p>For clients this causes the NPN extension to be included in the
+     * ClientHello message.
+     *
+     * <p>For servers this causes the NPN extension to be included in the
+     * ServerHello message. The NPN extension will not be included in the
+     * ServerHello response if the client didn't include it in the ClientHello
+     * request.
+     *
+     * <p>In either case the caller should pass a non-null byte array of NPN
+     * protocols to {@link #SSL_do_handshake}.
+     */
+    static CARAPI SSL_CTX_enable_npn(
+        /* [in] */ Int64 ssl_ctx_address);
+
+    /**
+     * Disables NPN for all SSL connections in the context.
+     */
+    static CARAPI SSL_CTX_disable_npn(
+        /* [in] */ Int64 ssl_ctx_address);
+
+    /**
+     * For clients, sets the list of supported ALPN protocols in wire-format
+     * (length-prefixed 8-bit strings).
+     */
+    static CARAPI SSL_set_alpn_protos(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ ArrayOf<Byte>* protos,
+        /* [out] */ Int32* result);
+
+    /**
+     * Returns the selected ALPN protocol. If the server did not select a
+     * protocol, {@code null} will be returned.
+     */
+    static CARAPI SSL_get0_alpn_selected(
+        /* [in] */ Int64 ssl_address,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    /**
+     * Returns the sslSessionNativePointer of the negotiated session. If this is
+     * a server negotiation, supplying the {@code alpnProtocols} will enable
+     * ALPN negotiation.
+     */
+    static CARAPI SSL_do_handshake(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ISSLHandshakeCallbacks* shc,
+        /* [in] */ Int32 timeoutMillis,
+        /* [in] */ Boolean client_mode,
+        /* [in] */ ArrayOf<Byte>* npnProtocols,
+        /* [in] */ ArrayOf<Byte>* alpnProtocols,
+        /* [out] */ Int64* result);
+
+    /**
+     * Returns the sslSessionNativePointer of the negotiated session. If this is
+     * a server negotiation, supplying the {@code alpnProtocols} will enable
+     * ALPN negotiation.
+     */
+    static CARAPI SSL_do_handshake_bio(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ Int64 sourceBioRef,
+        /* [in] */ Int64 sinkBioRef,
+        /* [in] */ ISSLHandshakeCallbacks* shc,
+        /* [in] */ Boolean client_mode,
+        /* [in] */ ArrayOf<Byte>* npnProtocols,
+        /* [in] */ ArrayOf<Byte>* alpnProtocols,
+        /* [out] */ Int64* result);
+
+    static CARAPI SSL_get_npn_negotiated_protocol(
+        /* [in] */ Int64 ssl_address,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    /**
+     * Currently only intended for forcing renegotiation for testing.
+     * Not used within OpenSSLSocketImpl.
+     */
+    static CARAPI SSL_renegotiate(
+        /* [in] */ Int64 ssl_address);
+
+    /**
+     * Returns the local X509 certificate references. Must X509_free when done.
+     */
+    static CARAPI SSL_get_certificate(
+        /* [in] */ Int64 ssl_address,
+        /* [out, callee] */ ArrayOf<Int64>** result);
+
+    /**
+     * Returns the peer X509 certificate references. Must X509_free when done.
+     */
+    static CARAPI SSL_get_peer_cert_chain(
+        /* [in] */ Int64 ssl_address,
+        /* [out, callee] */ ArrayOf<Int64>** result);
+
+    /**
+     * Reads with the native SSL_read function from the encrypted data stream
+     * @return -1 if error or the end of the stream is reached.
+     */
+    static CARAPI SSL_read(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ISSLHandshakeCallbacks* shc,
+        /* [in] */ ArrayOf<Byte>* b,
+        /* [in] */ Int32 off,
+        /* [in] */ Int32 len,
+        /* [in] */ Int32 readTimeoutMillis,
+        /* [out] */ Int32* result);
+
+    static CARAPI SSL_read_BIO(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ ArrayOf<Byte>* dest,
+        /* [in] */ Int32 destOffset,
+        /* [in] */ Int32 destLength,
+        /* [in] */ Int64 sourceBioRef,
+        /* [in] */ Int64 sinkBioRef,
+        /* [in] */ ISSLHandshakeCallbacks* shc,
+        /* [out] */ Int32* result);
+
+    /**
+     * Writes with the native SSL_write function to the encrypted data stream.
+     */
+    static CARAPI SSL_write(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ISSLHandshakeCallbacks* shc,
+        /* [in] */ ArrayOf<Byte>* b,
+        /* [in] */ Int32 off,
+        /* [in] */ Int32 len,
+        /* [in] */ Int32 writeTimeoutMillis);
+
+    static CARAPI SSL_write_BIO(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ ArrayOf<Byte>* source,
+        /* [in] */ Int32 length,
+        /* [in] */ Int64 sinkBioRef,
+        /* [in] */ ISSLHandshakeCallbacks* shc,
+        /* [out] */ Int32* result);
+
+    static CARAPI SSL_interrupt(
+        /* [in] */ Int64 ssl_address);
+
+    static CARAPI SSL_shutdown(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ ISSLHandshakeCallbacks* shc);
+
+    static CARAPI SSL_shutdown_BIO(
+        /* [in] */ Int64 ssl_address,
+        /* [in] */ Int64 sourceBioRef,
+        /* [in] */ Int64 sinkBioRef,
+        /* [in] */ ISSLHandshakeCallbacks* shc);
+
+    static CARAPI SSL_get_shutdown(
+        /* [in] */ Int64 ssl_address,
+        /* [out] */ Int32* result);
+
+    static CARAPI SSL_free(
+        /* [in] */ Int64 ssl_address);
+
+    static CARAPI SSL_SESSION_session_id(
+        /* [in] */ Int64 ssl_session_address,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI SSL_SESSION_get_time(
+        /* [in] */ Int64 ssl_session_address,
+        /* [out] */ Int64* result);
+
+    static CARAPI SSL_SESSION_get_version(
+        /* [in] */ Int64 ssl_session_address,
+        /* [out] */ String* result);
+
+    static CARAPI SSL_SESSION_cipher(
+        /* [in] */ Int64 ssl_session_address,
+        /* [out] */ String* result);
+
+    static CARAPI SSL_SESSION_free(
+        /* [in] */ Int64 ssl_session_address);
+
+    static CARAPI I2d_SSL_SESSION(
+        /* [in] */ Int64 ssl_session_address,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    static CARAPI D2i_SSL_SESSION(
+        /* [in] */ ArrayOf<Byte>* data,
+        /* [out] */ Int64* result);
+
+    static CARAPI ERR_peek_last_error(
+        /* [out] */ Int64* error);
 
 private:
     static CARAPI X509_NAME_hash(
