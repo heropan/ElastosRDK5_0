@@ -47,7 +47,6 @@ module
     merge("net/NetworkRequest.car");
     merge("net/NetworkScoreManager.car");
     merge("net/NetworkScorerAppManager.car");
-    merge("net/NetworkScorerAppManagerHelper.car");
     merge("net/NetworkState.car");
     merge("net/NetworkStateTracker.car");
     merge("net/NetworkStats.car");
@@ -108,6 +107,7 @@ module
     interface Elastos.Droid.Os.IHandler;
 
     using interface Elastos.Core.IComparable;
+    using interface Elastos.Core.ICharSequence;
     using interface Elastos.IO.IFileDescriptor;
     using interface Elastos.Net.IInetAddress;
     using interface Elastos.Net.IInterfaceAddress;
@@ -492,6 +492,26 @@ module
 
         interface IParcelable;
         interface INetworkRequest;
+    }
+
+    class CNetworkScoreManager {
+        constructor(
+            [in] IContext* context);
+
+        interface INetworkScoreManager;
+    }
+
+    singleton class CNetworkScorerAppManager {
+        interface INetworkScorerAppManager;
+    }
+
+    class CNetworkScorerAppData {
+        constructor(
+            [in] String packageName,
+            [in] ICharSequence* scorerName,
+            [in] String configurationActivityClassName);
+
+        interface INetworkScorerAppData;
     }
 
     } // namespace Net
