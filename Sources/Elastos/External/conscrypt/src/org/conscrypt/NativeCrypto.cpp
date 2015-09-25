@@ -19,6 +19,13 @@
 #include <openssl/x509v3.h>
 #include <openssl/crypto/ecdsa/ecs_locl.h>
 
+#ifndef CONSCRYPT_UNBUNDLED
+/* If we're compiled unbundled from Android system image, we use the
+ * CompatibilityCloseMonitor
+ */
+#include "AsynchronousCloseMonitor.h"
+#endif
+
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CByte;
 using Elastos::Core::CInteger32;
@@ -462,6 +469,25 @@ static ECode ThrowExceptionIfNecessary(const char* location  __attribute__ ((unu
 }
 
 /**
+ * Throws an SocketTimeoutException with the given string as a message.
+ */
+static ECode ThrowSocketTimeoutException(const char* message)
+{
+    NATIVE_TRACE("throwSocketTimeoutException %s", message);
+    return E_SOCKET_TIMEOUT_EXCEPTION;
+}
+
+/**
+ * Throws a javax.net.ssl.SSLException with the given string as a message.
+ */
+static ECode ThrowSSLHandshakeExceptionStr(const char* message)
+{
+    NATIVE_TRACE("throwSSLExceptionStr %s", message);
+    return E_SSL_HANDSHAKE_EXCEPTION;
+}
+
+
+/**
  * Throws a javax.net.ssl.SSLException with the given string as a message.
  */
 static ECode ThrowSSLExceptionStr(const char* message)
@@ -642,6 +668,18 @@ static SSL* to_SSL(Int64 ssl_address, Boolean throwIfNull, ECode* ec)
         *ec = E_NULL_POINTER_EXCEPTION;
     }
     return ssl;
+}
+
+static SSL_SESSION* to_SSL_SESSION(Int64 ssl_session_address, Boolean throwIfNull, ECode* ec)
+{
+    *ec = NOERROR;
+    SSL_SESSION* ssl_session
+        = reinterpret_cast<SSL_SESSION*>(static_cast<uintptr_t>(ssl_session_address));
+    if ((ssl_session == NULL) && throwIfNull) {
+        NATIVE_TRACE("ssl_session == null");
+        *ec = E_NULL_POINTER_EXCEPTION;
+    }
+    return ssl_session;
 }
 
 static SSL_CIPHER* to_SSL_CIPHER(Int64 ssl_cipher_address, Boolean throwIfNull, ECode* ec)
@@ -856,6 +894,27 @@ static X509* X509_dup_nocopy(X509* x509)
     CRYPTO_add(&x509->references, 1, CRYPTO_LOCK_X509);
     return x509;
 }
+
+/*
+ * Sets the read and write BIO for an SSL connection and removes it when it goes out of scope.
+ * We hang on to BIO with a JNI GlobalRef and we want to remove them as soon as possible.
+ */
+class ScopedSslBio
+{
+public:
+    ScopedSslBio(SSL *ssl, BIO* rbio, BIO* wbio) : ssl_(ssl) {
+        SSL_set_bio(ssl_, rbio, wbio);
+        CRYPTO_add(&rbio->references,1,CRYPTO_LOCK_BIO);
+        CRYPTO_add(&wbio->references,1,CRYPTO_LOCK_BIO);
+    }
+
+    ~ScopedSslBio() {
+        SSL_set_bio(ssl_, NULL, NULL);
+    }
+
+private:
+    SSL* const ssl_;
+};
 
 /**
  * BIO for InputStream
@@ -7323,6 +7382,143 @@ public:
     }
 };
 
+/**
+ * Dark magic helper function that checks, for a given SSL session, whether it
+ * can SSL_read() or SSL_write() without blocking. Takes into account any
+ * concurrent attempts to close the SSLSocket from the Java side. This is
+ * needed to get rid of the hangs that occur when thread #1 closes the SSLSocket
+ * while thread #2 is sitting in a blocking read or write. The type argument
+ * specifies whether we are waiting for readability or writability. It expects
+ * to be passed either SSL_ERROR_WANT_READ or SSL_ERROR_WANT_WRITE, since we
+ * only need to wait in case one of these problems occurs.
+ *
+ * @param env
+ * @param type Either SSL_ERROR_WANT_READ or SSL_ERROR_WANT_WRITE
+ * @param fdObject The FileDescriptor, since appData->fileDescriptor should be NULL
+ * @param appData The application data structure with mutex info etc.
+ * @param timeout_millis The timeout value for select call, with the special value
+ *                0 meaning no timeout at all (wait indefinitely). Note: This is
+ *                the Java semantics of the timeout value, not the usual
+ *                select() semantics.
+ * @return The result of the inner select() call,
+ * THROW_SOCKETEXCEPTION if a SocketException was thrown, -1 on
+ * additional errors
+ */
+static int sslSelect(int type, IFileDescriptor* fdObject, AppData* appData, int timeout_millis)
+{
+    // This loop is an expanded version of the NET_FAILURE_RETRY
+    // macro. It cannot simply be used in this case because select
+    // cannot be restarted without recreating the fd_sets and timeout
+    // structure.
+    int result;
+    fd_set rfds;
+    fd_set wfds;
+    do {
+        NetFd fd(fdObject);
+        if (fd.IsClosed()) {
+            result = THROWN_EXCEPTION;
+            break;
+        }
+        int intFd = fd.Get();
+        NATIVE_TRACE("sslSelect type=%s fd=%d appData=%p timeout_millis=%d",
+                  (type == SSL_ERROR_WANT_READ) ? "READ" : "WRITE", intFd, appData, timeout_millis);
+
+        FD_ZERO(&rfds);
+        FD_ZERO(&wfds);
+
+        if (type == SSL_ERROR_WANT_READ) {
+            FD_SET(intFd, &rfds);
+        }
+        else {
+            FD_SET(intFd, &wfds);
+        }
+
+        FD_SET(appData->fdsEmergency[0], &rfds);
+
+        int maxFd = (intFd > appData->fdsEmergency[0]) ? intFd : appData->fdsEmergency[0];
+
+        // Build a struct for the timeout data if we actually want a timeout.
+        timeval tv;
+        timeval* ptv;
+        if (timeout_millis > 0) {
+            tv.tv_sec = timeout_millis / 1000;
+            tv.tv_usec = (timeout_millis % 1000) * 1000;
+            ptv = &tv;
+        }
+        else {
+            ptv = NULL;
+        }
+
+#ifndef CONSCRYPT_UNBUNDLED
+        AsynchronousCloseMonitor monitor(intFd);
+#else
+        CompatibilityCloseMonitor monitor(intFd);
+#endif
+        result = select(maxFd + 1, &rfds, &wfds, NULL, ptv);
+        NATIVE_TRACE("sslSelect %s fd=%d appData=%p timeout_millis=%d => %d",
+                  (type == SSL_ERROR_WANT_READ) ? "READ" : "WRITE",
+                  fd.Get(), appData, timeout_millis, result);
+        if (result == -1) {
+            if (fd.IsClosed()) {
+                result = THROWN_EXCEPTION;
+                break;
+            }
+            if (errno != EINTR) {
+                break;
+            }
+        }
+    } while (result == -1);
+
+    if (MUTEX_LOCK(appData->mutex) == -1) {
+        return -1;
+    }
+
+    if (result > 0) {
+        // We have been woken up by a token in the emergency pipe. We
+        // can't be sure the token is still in the pipe at this point
+        // because it could have already been read by the thread that
+        // originally wrote it if it entered sslSelect and acquired
+        // the mutex before we did. Thus we cannot safely read from
+        // the pipe in a blocking way (so we make the pipe
+        // non-blocking at creation).
+        if (FD_ISSET(appData->fdsEmergency[0], &rfds)) {
+            char token;
+            do {
+                read(appData->fdsEmergency[0], &token, 1);
+            } while (errno == EINTR);
+        }
+    }
+
+    // Tell the world that there is now one thread less waiting for the
+    // underlying network.
+    appData->waitingThreads--;
+
+    MUTEX_UNLOCK(appData->mutex);
+
+    return result;
+}
+
+/**
+ * Helper function that wakes up a thread blocked in select(), in case there is
+ * one. Is being called by sslRead() and sslWrite() as well as by JNI glue
+ * before closing the connection.
+ *
+ * @param data The application data structure with mutex info etc.
+ */
+static void sslNotify(AppData* appData)
+{
+    // Write a byte to the emergency pipe, so a concurrent select() can return.
+    // Note we have to restore the errno of the original system call, since the
+    // caller relies on it for generating error messages.
+    int errnoBackup = errno;
+    char token = '*';
+    do {
+        errno = 0;
+        write(appData->fdsEmergency[1], &token, 1);
+    } while (errno == EINTR);
+    errno = errnoBackup;
+}
+
 static AppData* toAppData(const SSL* ssl)
 {
     return reinterpret_cast<AppData*>(SSL_get_app_data(ssl));
@@ -7800,7 +7996,7 @@ ECode NativeCrypto::SSL_new(
      * SSL_VERIFY_NONE means don't send alerts and anything else means send
      * alerts.
      */
-    SSL_set_verify(ssl.get(), SSL_VERIFY_PEER, NULL);
+    ::SSL_set_verify(ssl.get(), SSL_VERIFY_PEER, NULL);
 
     NATIVE_TRACE("ssl_ctx=%p NativeCrypto_SSL_new => ssl=%p appData=%p", ssl_ctx, ssl.get(), appData);
     *result = (Int64) ssl.release();
@@ -8581,13 +8777,16 @@ ECode NativeCrypto::SSL_set_session(
 {
     ECode ec;
     SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
-    SSL_SESSION* ssl_session = to_SSL_SESSION(env, ssl_session_address, false);
-    JNI_TRACE("ssl=%p NativeCrypto_SSL_set_session ssl_session=%p", ssl, ssl_session);
     if (ssl == NULL) {
-        return;
+        return ec;
     }
+    SSL_SESSION* ssl_session = to_SSL_SESSION(ssl_session_address, FALSE, &ec);
+    if (ssl_session == NULL) {
+        return ec;
+    }
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_session ssl_session=%p", ssl, ssl_session);
 
-    int ret = SSL_set_session(ssl, ssl_session);
+    int ret = ::SSL_set_session(ssl, ssl_session);
     if (ret != 1) {
         /*
          * Translate the error, and throw if it turns out to be a real
@@ -8595,10 +8794,1748 @@ ECode NativeCrypto::SSL_set_session(
          */
         int sslErrorCode = SSL_get_error(ssl, ret);
         if (sslErrorCode != SSL_ERROR_ZERO_RETURN) {
-            throwSSLExceptionWithSslErrors(env, ssl, sslErrorCode, "SSL session set");
+            ec = ThrowSSLExceptionWithSslErrors(ssl, sslErrorCode, "SSL session set");
             SSL_clear(ssl);
         }
     }
+    return ec;
+}
+
+ECode NativeCrypto::SSL_set_session_creation_enabled(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ Boolean creationEnabled)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_session_creation_enabled creation_enabled=%d",
+              ssl, creationEnabled);
+    if (ssl == NULL) {
+        return ec;
+    }
+    ::SSL_set_session_creation_enabled(ssl, creationEnabled);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_set_tlsext_host_name(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ const String& hostname)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_tlsext_host_name hostname=%p",
+              ssl, hostname);
+    if (ssl == NULL) {
+        return ec;
+    }
+
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_tlsext_host_name hostnameChars=%s",
+              ssl, hostname.string());
+
+    int ret = ::SSL_ctrl(ssl,SSL_CTRL_SET_TLSEXT_HOSTNAME,TLSEXT_NAMETYPE_host_name,(char *)hostname.string());
+    if (ret != 1) {
+        ec = ThrowSSLExceptionWithSslErrors(ssl, SSL_ERROR_NONE, "Error setting host name");
+        SSL_clear(ssl);
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_tlsext_host_name => error", ssl);
+        return ec;
+    }
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_set_tlsext_host_name => ok", ssl);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_get_servername(
+    /* [in] */ Int64 ssl_address,
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_servername", ssl);
+    if (ssl == NULL) {
+        *result = NULL;
+        return ec;
+    }
+    const char* servername = ::SSL_get_servername(ssl, TLSEXT_NAMETYPE_host_name);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_servername => %s", ssl, servername);
+    *result = servername;
+    return NOERROR;
+}
+
+/**
+ * A common selection path for both NPN and ALPN since they're essentially the
+ * same protocol. The list of protocols in "primary" is considered the order
+ * which should take precedence.
+ */
+static int proto_select(SSL* ssl __attribute__ ((unused)),
+        unsigned char **out, unsigned char *outLength,
+        const unsigned char *primary, const unsigned int primaryLength,
+        const unsigned char *secondary, const unsigned int secondaryLength)
+{
+    if (primary != NULL && secondary != NULL) {
+        NATIVE_TRACE("primary=%p, length=%d", primary, primaryLength);
+
+        int status = ::SSL_select_next_proto(out, outLength, primary, primaryLength, secondary,
+                secondaryLength);
+        switch (status) {
+        case OPENSSL_NPN_NEGOTIATED:
+            NATIVE_TRACE("ssl=%p proto_select NPN/ALPN negotiated", ssl);
+            return SSL_TLSEXT_ERR_OK;
+            break;
+        case OPENSSL_NPN_UNSUPPORTED:
+            NATIVE_TRACE("ssl=%p proto_select NPN/ALPN unsupported", ssl);
+            break;
+        case OPENSSL_NPN_NO_OVERLAP:
+            NATIVE_TRACE("ssl=%p proto_select NPN/ALPN no overlap", ssl);
+            break;
+        }
+    }
+    else {
+        if (out != NULL && outLength != NULL) {
+            *out = NULL;
+            *outLength = 0;
+        }
+        NATIVE_TRACE("protocols=NULL");
+    }
+    return SSL_TLSEXT_ERR_NOACK;
+}
+
+/**
+ * Callback for the server to select an ALPN protocol.
+ */
+static int alpn_select_callback(SSL* ssl, const unsigned char **out, unsigned char *outlen,
+        const unsigned char *in, unsigned int inlen, void *)
+{
+    NATIVE_TRACE("ssl=%p alpn_select_callback", ssl);
+
+    AppData* appData = toAppData(ssl);
+    NATIVE_TRACE("AppData=%p", appData);
+
+    return proto_select(ssl, const_cast<unsigned char **>(out), outlen,
+            reinterpret_cast<unsigned char*>(appData->alpnProtocolsData),
+            appData->alpnProtocolsLength, in, inlen);
+}
+
+/**
+ * Callback for the client to select an NPN protocol.
+ */
+static int next_proto_select_callback(SSL* ssl, unsigned char** out, unsigned char* outlen,
+                                      const unsigned char* in, unsigned int inlen, void*)
+{
+    NATIVE_TRACE("ssl=%p next_proto_select_callback", ssl);
+
+    AppData* appData = toAppData(ssl);
+    NATIVE_TRACE("AppData=%p", appData);
+
+    // Enable False Start on the client if the server understands NPN
+    // http://www.imperialviolet.org/2012/04/11/falsestart.html
+    ::SSL_ctrl((ssl),SSL_CTRL_MODE,(SSL_MODE_HANDSHAKE_CUTTHROUGH),NULL);
+
+    return proto_select(ssl, out, outlen, in, inlen,
+            reinterpret_cast<unsigned char*>(appData->npnProtocolsData),
+            appData->npnProtocolsLength);
+}
+
+/**
+ * Callback for the server to advertise available protocols.
+ */
+static int next_protos_advertised_callback(SSL* ssl,
+        const unsigned char **out, unsigned int *outlen, void *)
+{
+    NATIVE_TRACE("ssl=%p next_protos_advertised_callback", ssl);
+    AppData* appData = toAppData(ssl);
+    unsigned char* npnProtocols = reinterpret_cast<unsigned char*>(appData->npnProtocolsData);
+    if (npnProtocols != NULL) {
+        *out = npnProtocols;
+        *outlen = appData->npnProtocolsLength;
+        return SSL_TLSEXT_ERR_OK;
+    }
+    else {
+        *out = NULL;
+        *outlen = 0;
+        return SSL_TLSEXT_ERR_NOACK;
+    }
+}
+
+ECode NativeCrypto::SSL_CTX_enable_npn(
+    /* [in] */ Int64 ssl_ctx_address)
+{
+    ECode ec;
+    SSL_CTX* ssl_ctx = to_SSL_CTX(ssl_ctx_address, TRUE, &ec);
+    if (ssl_ctx == NULL) {
+        return ec;
+    }
+    SSL_CTX_set_next_proto_select_cb(ssl_ctx, next_proto_select_callback, NULL); // client
+    SSL_CTX_set_next_protos_advertised_cb(ssl_ctx, next_protos_advertised_callback, NULL); // server
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_CTX_disable_npn(
+    /* [in] */ Int64 ssl_ctx_address)
+{
+    ECode ec;
+    SSL_CTX* ssl_ctx = to_SSL_CTX(ssl_ctx_address, TRUE, &ec);
+    if (ssl_ctx == NULL) {
+        return ec;
+    }
+    SSL_CTX_set_next_proto_select_cb(ssl_ctx, NULL, NULL); // client
+    SSL_CTX_set_next_protos_advertised_cb(ssl_ctx, NULL, NULL); // server
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_set_alpn_protos(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ ArrayOf<Byte>* protos,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    if (ssl == NULL) {
+        *result = 0;
+        return ec;
+    }
+
+    NATIVE_TRACE("ssl=%p SSL_set_alpn_protos protos=%p", ssl, protos);
+
+    if (protos == NULL) {
+        NATIVE_TRACE("ssl=%p SSL_set_alpn_protos protos=NULL", ssl);
+        *result = 1;
+        return NOERROR;
+    }
+
+    const unsigned char *tmp = reinterpret_cast<const unsigned char*>(protos->GetPayload());
+    int ret = ::SSL_set_alpn_protos(ssl, tmp, protos->GetLength());
+    NATIVE_TRACE("ssl=%p SSL_set_alpn_protos protos=%p => ret=%d", ssl, protos, ret);
+    *result = ret;
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_get0_alpn_selected(
+    /* [in] */ Int64 ssl_address,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p SSL_get0_alpn_selected", ssl);
+    if (ssl == NULL) {
+        *result = NULL;
+        return ec;
+    }
+    const Byte* npn;
+    unsigned npnLength;
+    ::SSL_get0_alpn_selected(ssl, reinterpret_cast<const unsigned char**>(&npn), &npnLength);
+    if (npnLength == 0) {
+        *result = NULL;
+        return NOERROR;
+    }
+    AutoPtr< ArrayOf<Byte> > selected = ArrayOf<Byte>::Alloc(npnLength);
+    selected->Copy(npn, npnLength);
+    *result = selected;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_do_handshake(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ IFileDescriptor* fdObject,
+    /* [in] */ ISSLHandshakeCallbacks* shc,
+    /* [in] */ Int32 timeout_millis,
+    /* [in] */ Boolean client_mode,
+    /* [in] */ ArrayOf<Byte>* npnProtocols,
+    /* [in] */ ArrayOf<Byte>* alpnProtocols,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake fd=%p shc=%p timeout_millis=%d client_mode=%d npn=%p",
+            ssl, fdObject, shc, timeout_millis, client_mode, npnProtocols);
+    if (ssl == NULL) {
+        *result = 0;
+        return NOERROR;
+    }
+    if (fdObject == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake fd == null => 0", ssl);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    if (shc == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake sslHandshakeCallbacks == null => 0", ssl);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    NetFd fd(fdObject);
+    if (fd.IsClosed()) {
+        // SocketException thrown by NetFd.isClosed
+        SSL_clear(ssl);
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake fd.isClosed() => 0", ssl);
+        *result = 0;
+        return NOERROR;
+    }
+
+    int ret = SSL_set_fd(ssl, fd.Get());
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake s=%d", ssl, fd.get());
+
+    if (ret != 1) {
+        SSL_clear(ssl);
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake SSL_set_fd => 0", ssl);
+        *result = 0;
+        return ThrowSSLExceptionWithSslErrors(ssl, SSL_ERROR_NONE,
+                "Error setting the file descriptor");
+    }
+
+    /*
+     * Make socket non-blocking, so SSL_connect SSL_read() and SSL_write() don't hang
+     * forever and we can use select() to find out if the socket is ready.
+     */
+    if (!setBlocking(fd.Get(), FALSE)) {
+        SSL_clear(ssl);
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake setBlocking => 0", ssl);
+        *result = 0;
+        return ThrowSSLExceptionStr("Unable to make socket non blocking");
+    }
+
+    AppData* appData = toAppData(ssl);
+    if (appData == NULL) {
+        SSL_clear(ssl);
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake appData => 0", ssl);
+        *result = 0;
+        return ThrowSSLExceptionStr("Unable to retrieve application data");
+    }
+
+    if (client_mode) {
+        ::SSL_set_connect_state(ssl);
+    }
+    else {
+        ::SSL_set_accept_state(ssl);
+        if (alpnProtocols != NULL) {
+            SSL_CTX_set_alpn_select_cb(SSL_get_SSL_CTX(ssl), alpn_select_callback, NULL);
+        }
+    }
+
+    ret = 0;
+    while (appData->aliveAndKicking) {
+        errno = 0;
+
+        if (!appData->SetCallbackState(shc, fdObject, npnProtocols, alpnProtocols)) {
+            // SocketException thrown by NetFd.isClosed
+            SSL_clear(ssl);
+            NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake setCallbackState => 0", ssl);
+            *result = 0;
+            return NOERROR;
+        }
+        ret = ::SSL_do_handshake(ssl);
+        appData->ClearCallbackState();
+        // cert_verify_callback threw exception
+//        if (env->ExceptionCheck()) {
+//            SSL_clear(ssl);
+//            NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake exception => 0", ssl);
+//            return 0;
+//        }
+        // success case
+        if (ret == 1) {
+            break;
+        }
+        // retry case
+        if (errno == EINTR) {
+            continue;
+        }
+        // error case
+        int sslError = SSL_get_error(ssl, ret);
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake ret=%d errno=%d sslError=%d timeout_millis=%d",
+                  ssl, ret, errno, sslError, timeout_millis);
+
+        /*
+         * If SSL_do_handshake doesn't succeed due to the socket being
+         * either unreadable or unwritable, we use sslSelect to
+         * wait for it to become ready. If that doesn't happen
+         * before the specified timeout or an error occurs, we
+         * cancel the handshake. Otherwise we try the SSL_connect
+         * again.
+         */
+        if (sslError == SSL_ERROR_WANT_READ || sslError == SSL_ERROR_WANT_WRITE) {
+            appData->waitingThreads++;
+            int selectResult = sslSelect(sslError, fdObject, appData, timeout_millis);
+
+            if (selectResult == THROWN_EXCEPTION) {
+                // SocketException thrown by NetFd.isClosed
+                SSL_clear(ssl);
+                NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake sslSelect => 0", ssl);
+                *result = 0;
+                return NOERROR;
+            }
+            if (selectResult == -1) {
+                SSL_clear(ssl);
+                NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake selectResult == -1 => 0", ssl);
+                *result = 0;
+                return ThrowSSLExceptionWithSslErrors(ssl, SSL_ERROR_SYSCALL, "handshake error",
+                        ThrowSSLHandshakeExceptionStr);
+            }
+            if (selectResult == 0) {
+                SSL_clear(ssl);
+                FreeOpenSslErrorState();
+                NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake selectResult == 0 => 0", ssl);
+                *result = 0;
+                return ThrowSocketTimeoutException("SSL handshake timed out");
+            }
+        }
+        else {
+            // ALOGE("Unknown error %d during handshake", error);
+            break;
+        }
+    }
+
+    // clean error. See SSL_do_handshake(3SSL) man page.
+    if (ret == 0) {
+        /*
+         * The other side closed the socket before the handshake could be
+         * completed, but everything is within the bounds of the TLS protocol.
+         * We still might want to find out the real reason of the failure.
+         */
+        int sslError = SSL_get_error(ssl, ret);
+        if (sslError == SSL_ERROR_NONE || (sslError == SSL_ERROR_SYSCALL && errno == 0)) {
+            ec = ThrowSSLHandshakeExceptionStr("Connection closed by peer");
+        }
+        else {
+            ec = ThrowSSLExceptionWithSslErrors(ssl, sslError, "SSL handshake terminated",
+                    ThrowSSLHandshakeExceptionStr);
+        }
+        SSL_clear(ssl);
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake clean error => 0", ssl);
+        *result = 0;
+        return ec;
+    }
+
+    // unclean error. See SSL_do_handshake(3SSL) man page.
+    if (ret < 0) {
+        /*
+         * Translate the error and throw exception. We are sure it is an error
+         * at this point.
+         */
+        int sslError = SSL_get_error(ssl, ret);
+        SSL_clear(ssl);
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake unclean error => 0", ssl);
+        *result = 0;
+        return ThrowSSLExceptionWithSslErrors(ssl, sslError, "SSL handshake aborted",
+                ThrowSSLHandshakeExceptionStr);
+    }
+    SSL_SESSION* ssl_session = SSL_get1_session(ssl);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake => ssl_session=%p", ssl, ssl_session);
+#ifdef WITH_JNI_TRACE_KEYS
+    debug_print_session_key(ssl_session);
+#endif
+    *result = (Int64) ssl_session;
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_do_handshake_bio(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ Int64 rbioRef,
+    /* [in] */ Int64 wbioRef,
+    /* [in] */ ISSLHandshakeCallbacks* shc,
+    /* [in] */ Boolean client_mode,
+    /* [in] */ ArrayOf<Byte>* npnProtocols,
+    /* [in] */ ArrayOf<Byte>* alpnProtocols,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    BIO* rbio = reinterpret_cast<BIO*>(rbioRef);
+    BIO* wbio = reinterpret_cast<BIO*>(wbioRef);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake_bio rbio=%p wbio=%p shc=%p client_mode=%d npn=%p",
+              ssl, rbio, wbio, shc, client_mode, npnProtocols);
+    if (ssl == NULL) {
+        *result = 0;
+        return ec;
+    }
+    if (shc == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake_bio sslHandshakeCallbacks == null => 0", ssl);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (rbio == NULL || wbio == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake_bio => rbio == null || wbio == NULL", ssl);
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    ScopedSslBio sslBio(ssl, rbio, wbio);
+
+    AppData* appData = toAppData(ssl);
+    if (appData == NULL) {
+        SSL_clear(ssl);
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake appData => 0", ssl);
+        *result = 0;
+        return ThrowSSLExceptionStr("Unable to retrieve application data");
+    }
+
+    if (!client_mode && alpnProtocols != NULL) {
+        SSL_CTX_set_alpn_select_cb(SSL_get_SSL_CTX(ssl), alpn_select_callback, NULL);
+    }
+
+    int ret = 0;
+    errno = 0;
+
+    if (!appData->SetCallbackState(shc, NULL, npnProtocols, alpnProtocols)) {
+        SSL_clear(ssl);
+        FreeOpenSslErrorState();
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake_bio setCallbackState => 0", ssl);
+        *result = 0;
+        return NOERROR;
+    }
+    ret = ::SSL_do_handshake(ssl);
+    appData->ClearCallbackState();
+    // cert_verify_callback threw exception
+//    if (env->ExceptionCheck()) {
+//        SSL_clear(ssl);
+//        freeOpenSslErrorState();
+//        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake_bio exception => 0", ssl);
+//        return 0;
+//    }
+
+    if (ret <= 0) { // error. See SSL_do_handshake(3SSL) man page.
+        // error case
+        int sslError = SSL_get_error(ssl, ret);
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake_bio ret=%d errno=%d sslError=%d",
+                  ssl, ret, errno, sslError);
+
+        /*
+         * If SSL_do_handshake doesn't succeed due to the socket being
+         * either unreadable or unwritable, we need to exit to allow
+         * the SSLEngine code to wrap or unwrap.
+         */
+        if (sslError == SSL_ERROR_NONE || (sslError == SSL_ERROR_SYSCALL && errno == 0)) {
+            SSL_clear(ssl);
+            FreeOpenSslErrorState();
+            ec = ThrowSSLHandshakeExceptionStr("Connection closed by peer");
+        }
+        else if (sslError != SSL_ERROR_WANT_READ && sslError != SSL_ERROR_WANT_WRITE) {
+            SSL_clear(ssl);
+            FreeOpenSslErrorState();
+            ec = ThrowSSLExceptionWithSslErrors(ssl, sslError, "SSL handshake terminated",
+                    ThrowSSLHandshakeExceptionStr);
+        }
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake_bio error => 0", ssl);
+        *result = 0;
+        return ec;
+    }
+
+    // success. handshake completed
+    SSL_SESSION* ssl_session = SSL_get1_session(ssl);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_do_handshake_bio => ssl_session=%p", ssl, ssl_session);
+#ifdef WITH_NATIVE_TRACE_KEYS
+    debug_print_session_key(ssl_session);
+#endif
+    *result = reinterpret_cast<uintptr_t>(ssl_session);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_get_npn_negotiated_protocol(
+    /* [in] */ Int64 ssl_address,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_npn_negotiated_protocol", ssl);
+    if (ssl == NULL) {
+        *result = NULL;
+        return ec;
+    }
+    const Byte* npn;
+    unsigned npnLength;
+    SSL_get0_next_proto_negotiated(ssl, reinterpret_cast<const unsigned char**>(&npn), &npnLength);
+    if (npnLength == 0) {
+        *result = NULL;
+        return NOERROR;
+    }
+    AutoPtr< ArrayOf<Byte> > byteArray = ArrayOf<Byte>::Alloc(npnLength);
+    byteArray->Copy(npn, npnLength);
+    *result = byteArray;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_renegotiate(
+    /* [in] */ Int64 ssl_address)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_renegotiate", ssl);
+    if (ssl == NULL) {
+        return ec;
+    }
+    int result = ::SSL_renegotiate(ssl);
+    if (result != 1) {
+        return ThrowSSLExceptionStr("Problem with SSL_renegotiate");
+    }
+    // first call asks client to perform renegotiation
+    int ret = ::SSL_do_handshake(ssl);
+    if (ret != 1) {
+        int sslError = SSL_get_error(ssl, ret);
+        return ThrowSSLExceptionWithSslErrors(ssl, sslError,
+                                       "Problem with SSL_do_handshake after SSL_renegotiate");
+    }
+    // if client agrees, set ssl state and perform renegotiation
+    ssl->state = SSL_ST_ACCEPT;
+    ::SSL_do_handshake(ssl);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_renegotiate =>", ssl);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_get_certificate(
+    /* [in] */ Int64 ssl_address,
+    /* [out, callee] */ ArrayOf<Int64>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_certificate", ssl);
+    if (ssl == NULL) {
+        *result = NULL;
+        return ec;
+    }
+    X509* certificate = ::SSL_get_certificate(ssl);
+    if (certificate == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_certificate => NULL", ssl);
+        // SSL_get_certificate can return NULL during an error as well.
+        FreeOpenSslErrorState();
+        *result = NULL;
+        return NOERROR;
+    }
+
+    Unique_sk_X509 chain(sk_X509_new_null());
+    if (chain.get() == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_certificate => threw exception", ssl);
+        *result = NULL;
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+    if (!sk_X509_push(chain.get(), X509_dup_nocopy(certificate))) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_certificate => NULL", ssl);
+        *result = NULL;
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+    STACK_OF(X509)* cert_chain = SSL_get_certificate_chain(ssl, certificate);
+    for (int i=0; i<sk_X509_num(cert_chain); i++) {
+        if (!sk_X509_push(chain.get(), X509_dup_nocopy(sk_X509_value(cert_chain, i)))) {
+            NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_certificate => NULL", ssl);
+            *result = NULL;
+            return E_OUT_OF_MEMORY_ERROR;
+        }
+    }
+
+    AutoPtr< ArrayOf<Int64> > refArray = getCertificateRefs(chain.get());
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_certificate => %p", ssl, refArray);
+    *result = refArray;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_get_peer_cert_chain(
+    /* [in] */ Int64 ssl_address,
+    /* [out, callee] */ ArrayOf<Int64>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_peer_cert_chain", ssl);
+    if (ssl == NULL) {
+        *result = NULL;
+        return ec;
+    }
+    STACK_OF(X509)* chain = ::SSL_get_peer_cert_chain(ssl);
+    Unique_sk_X509 chain_copy(NULL);
+    if (ssl->server) {
+        X509* x509 = SSL_get_peer_certificate(ssl);
+        if (x509 == NULL) {
+            NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_peer_cert_chain => NULL", ssl);
+            *result = NULL;
+            return ec;
+        }
+        chain_copy.reset(sk_X509_new_null());
+        if (chain_copy.get() == NULL) {
+            NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_peer_cert_chain => certificate dup error", ssl);
+            *result = NULL;
+            return E_OUT_OF_MEMORY_ERROR;
+        }
+        size_t chain_size = sk_X509_num(chain);
+        for (size_t i = 0; i < chain_size; i++) {
+            if (!sk_X509_push(chain_copy.get(), X509_dup_nocopy(sk_X509_value(chain, i)))) {
+                NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_peer_cert_chain => certificate chain push error", ssl);
+                *result = NULL;
+                return E_OUT_OF_MEMORY_ERROR;
+            }
+        }
+        if (!sk_X509_push(chain_copy.get(), X509_dup_nocopy(x509))) {
+            NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_peer_cert_chain => certificate push error", ssl);
+            *result = NULL;
+            return E_OUT_OF_MEMORY_ERROR;
+        }
+        chain = chain_copy.get();
+    }
+    AutoPtr< ArrayOf<Int64> > refArray = getCertificateRefs(chain);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_peer_cert_chain => %p", ssl, refArray);
+    *result = refArray;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+static int sslRead(SSL* ssl, IFileDescriptor* fdObject, ISSLHandshakeCallbacks* shc, char* buf, Int32 len,
+                   int* sslReturnCode, int* sslErrorCode, int read_timeout_millis)
+{
+    NATIVE_TRACE("ssl=%p sslRead buf=%p len=%d", ssl, buf, len);
+
+    if (len == 0) {
+        // Don't bother doing anything in this case.
+        return 0;
+    }
+
+    BIO* rbio = SSL_get_rbio(ssl);
+    BIO* wbio = SSL_get_wbio(ssl);
+
+    AppData* appData = toAppData(ssl);
+    NATIVE_TRACE("ssl=%p sslRead appData=%p", ssl, appData);
+    if (appData == NULL) {
+        return THROW_SSLEXCEPTION;
+    }
+
+    while (appData->aliveAndKicking) {
+        errno = 0;
+
+        if (MUTEX_LOCK(appData->mutex) == -1) {
+            return -1;
+        }
+
+        if (!SSL_is_init_finished(ssl) && !SSL_cutthrough_complete(ssl) &&
+               !SSL_renegotiate_pending(ssl)) {
+            NATIVE_TRACE("ssl=%p sslRead => init is not finished (state=0x%x)", ssl,
+                    SSL_get_state(ssl));
+            MUTEX_UNLOCK(appData->mutex);
+            return THROW_SSLEXCEPTION;
+        }
+
+        unsigned int bytesMoved = BIO_number_read(rbio) + BIO_number_written(wbio);
+
+        if (!appData->SetCallbackState(shc, fdObject, NULL, NULL)) {
+            MUTEX_UNLOCK(appData->mutex);
+            return THROWN_EXCEPTION;
+        }
+        int result = ::SSL_read(ssl, buf, len);
+        appData->ClearCallbackState();
+//        // callbacks can happen if server requests renegotiation
+//        if (env->ExceptionCheck()) {
+//            SSL_clear(ssl);
+//            NATIVE_TRACE("ssl=%p sslRead => THROWN_EXCEPTION", ssl);
+//            return THROWN_EXCEPTION;
+//        }
+        int sslError = SSL_ERROR_NONE;
+        if (result <= 0) {
+            sslError = SSL_get_error(ssl, result);
+            FreeOpenSslErrorState();
+        }
+        NATIVE_TRACE("ssl=%p sslRead SSL_read result=%d sslError=%d", ssl, result, sslError);
+#ifdef WITH_NATIVE_TRACE_DATA
+        for (int i = 0; i < result; i+= WITH_NATIVE_TRACE_DATA_CHUNK_SIZE) {
+            int n = result - i;
+            if (n > WITH_NATIVE_TRACE_DATA_CHUNK_SIZE) {
+                n = WITH_NATIVE_TRACE_DATA_CHUNK_SIZE;
+            }
+            NATIVE_TRACE("ssl=%p sslRead data: %d:\n%.*s", ssl, n, n, buf+i);
+        }
+#endif
+
+        // If we have been successful in moving data around, check whether it
+        // might make sense to wake up other blocked threads, so they can give
+        // it a try, too.
+        if (BIO_number_read(rbio) + BIO_number_written(wbio) != bytesMoved
+                && appData->waitingThreads > 0) {
+            sslNotify(appData);
+        }
+
+        // If we are blocked by the underlying socket, tell the world that
+        // there will be one more waiting thread now.
+        if (sslError == SSL_ERROR_WANT_READ || sslError == SSL_ERROR_WANT_WRITE) {
+            appData->waitingThreads++;
+        }
+
+        MUTEX_UNLOCK(appData->mutex);
+
+        switch (sslError) {
+            // Successfully read at least one byte.
+            case SSL_ERROR_NONE: {
+                return result;
+            }
+
+            // Read zero bytes. End of stream reached.
+            case SSL_ERROR_ZERO_RETURN: {
+                return -1;
+            }
+
+            // Need to wait for availability of underlying layer, then retry.
+            case SSL_ERROR_WANT_READ:
+            case SSL_ERROR_WANT_WRITE: {
+                int selectResult = sslSelect(sslError, fdObject, appData, read_timeout_millis);
+                if (selectResult == THROWN_EXCEPTION) {
+                    return THROWN_EXCEPTION;
+                }
+                if (selectResult == -1) {
+                    *sslReturnCode = -1;
+                    *sslErrorCode = sslError;
+                    return THROW_SSLEXCEPTION;
+                }
+                if (selectResult == 0) {
+                    return THROW_SOCKETTIMEOUTEXCEPTION;
+                }
+
+                break;
+            }
+
+            // A problem occurred during a system call, but this is not
+            // necessarily an error.
+            case SSL_ERROR_SYSCALL: {
+                // Connection closed without proper shutdown. Tell caller we
+                // have reached end-of-stream.
+                if (result == 0) {
+                    return -1;
+                }
+
+                // System call has been interrupted. Simply retry.
+                if (errno == EINTR) {
+                    break;
+                }
+
+                // Note that for all other system call errors we fall through
+                // to the default case, which results in an Exception.
+            }
+
+            // Everything else is basically an error.
+            default: {
+                *sslReturnCode = result;
+                *sslErrorCode = sslError;
+                return THROW_SSLEXCEPTION;
+            }
+        }
+    }
+
+    return -1;
+}
+
+ECode NativeCrypto::SSL_read(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ IFileDescriptor* fdObject,
+    /* [in] */ ISSLHandshakeCallbacks* shc,
+    /* [in] */ ArrayOf<Byte>* b,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int32 len,
+    /* [in] */ Int32 read_timeout_millis,
+    /* [out] */ Int32* readResult)
+{
+    VALIDATE_NOT_NULL(readResult);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_read fd=%p shc=%p b=%p offset=%d len=%d read_timeout_millis=%d",
+              ssl, fdObject, shc, b, offset, len, read_timeout_millis);
+    if (ssl == NULL) {
+        *readResult = 0;
+        return ec;
+    }
+    if (fdObject == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_read => fd == null", ssl);
+        *readResult = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    if (shc == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_read => sslHandshakeCallbacks == null", ssl);
+        *readResult = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (b == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_read => threw exception", ssl);
+        *readResult = 0;
+        return NOERROR;
+    }
+    int returnCode = 0;
+    int sslErrorCode = SSL_ERROR_NONE;;
+
+    int ret = sslRead(ssl, fdObject, shc, reinterpret_cast<char*>(b->GetPayload() + offset), len,
+                      &returnCode, &sslErrorCode, read_timeout_millis);
+
+    int result;
+    switch (ret) {
+        case THROW_SSLEXCEPTION:
+            // See sslRead() regarding improper failure to handle normal cases.
+            ec = ThrowSSLExceptionWithSslErrors(ssl, sslErrorCode, "Read error");
+            result = -1;
+            break;
+        case THROW_SOCKETTIMEOUTEXCEPTION:
+            ec = ThrowSocketTimeoutException("Read timed out");
+            result = -1;
+            break;
+        case THROWN_EXCEPTION:
+            // SocketException thrown by NetFd.isClosed
+            // or RuntimeException thrown by callback
+            result = -1;
+            break;
+        default:
+            result = ret;
+            break;
+    }
+
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_read => %d", ssl, result);
+    *readResult = result;
+    return ec;
+}
+
+ECode NativeCrypto::SSL_read_BIO(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ ArrayOf<Byte>* dest,
+    /* [in] */ Int32 destOffset,
+    /* [in] */ Int32 destLength,
+    /* [in] */ Int64 sourceBioRef,
+    /* [in] */ Int64 sinkBioRef,
+    /* [in] */ ISSLHandshakeCallbacks* shc,
+    /* [out] */ Int32* readResult)
+{
+    VALIDATE_NOT_NULL(readResult);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    BIO* rbio = reinterpret_cast<BIO*>(static_cast<uintptr_t>(sourceBioRef));
+    BIO* wbio = reinterpret_cast<BIO*>(static_cast<uintptr_t>(sinkBioRef));
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_read_BIO dest=%p sourceBio=%p sinkBio=%p shc=%p",
+              ssl, dest, rbio, wbio, shc);
+    if (ssl == NULL) {
+        *readResult = 0;
+        return ec;
+    }
+    if (rbio == NULL || wbio == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_read_BIO => rbio == null || wbio == null", ssl);
+        *readResult = -1;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    if (shc == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_read_BIO => sslHandshakeCallbacks == null", ssl);
+        *readResult = -1;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (dest == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_read_BIO => threw exception", ssl);
+        *readResult = -1;
+        return NOERROR;
+    }
+    if (destOffset < 0 || destOffset > ssize_t(dest->GetLength()) || destLength < 0
+            || destLength > (ssize_t) dest->GetLength() - destOffset) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_read_BIO => destOffset=%d, destLength=%d, size=%zd",
+                  destOffset, destLength, dest->GetLength());
+        *readResult = -1;
+        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    AppData* appData = toAppData(ssl);
+    if (appData == NULL) {
+        SSL_clear(ssl);
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_read_BIO => appData == NULL", ssl);
+        *readResult = -1;
+        return ThrowSSLExceptionStr("Unable to retrieve application data");
+    }
+
+    errno = 0;
+
+    if (MUTEX_LOCK(appData->mutex) == -1) {
+        *readResult = -1;
+        return NOERROR;
+    }
+
+    if (!appData->SetCallbackState(shc, NULL, NULL, NULL)) {
+        MUTEX_UNLOCK(appData->mutex);
+        SSL_clear(ssl);
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_read_BIO => set callback state failed", ssl);
+        *readResult = -1;
+        return ThrowSSLExceptionStr("Unable to set callback state");
+    }
+
+    ScopedSslBio sslBio(ssl, rbio, wbio);
+
+    int result = ::SSL_read(ssl, dest->GetPayload() + destOffset, destLength);
+    appData->ClearCallbackState();
+    // callbacks can happen if server requests renegotiation
+//    if (env->ExceptionCheck()) {
+//        SSL_clear(ssl);
+//        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_read_BIO => threw exception", ssl);
+//        return THROWN_EXCEPTION;
+//    }
+    int sslError = SSL_ERROR_NONE;
+    if (result <= 0) {
+        sslError = SSL_get_error(ssl, result);
+    }
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_read_BIO SSL_read result=%d sslError=%d", ssl, result, sslError);
+#ifdef WITH_NATIVE_TRACE_DATA
+    for (int i = 0; i < result; i+= WITH_NATIVE_TRACE_DATA_CHUNK_SIZE) {
+        int n = result - i;
+        if (n > WITH_NATIVE_TRACE_DATA_CHUNK_SIZE) {
+            n = WITH_NATIVE_TRACE_DATA_CHUNK_SIZE;
+        }
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_read_BIO data: %d:\n%.*s", ssl, n, n, buf+i);
+    }
+#endif
+
+    MUTEX_UNLOCK(appData->mutex);
+
+    switch (sslError) {
+        // Successfully read at least one byte.
+        case SSL_ERROR_NONE:
+            break;
+
+        // Read zero bytes. End of stream reached.
+        case SSL_ERROR_ZERO_RETURN:
+            result = -1;
+            break;
+
+        // Need to wait for availability of underlying layer, then retry.
+        case SSL_ERROR_WANT_READ:
+        case SSL_ERROR_WANT_WRITE:
+            result = 0;
+            break;
+
+        // A problem occurred during a system call, but this is not
+        // necessarily an error.
+        case SSL_ERROR_SYSCALL: {
+            // Connection closed without proper shutdown. Tell caller we
+            // have reached end-of-stream.
+            if (result == 0) {
+                result = -1;
+                break;
+            }
+            else if (errno == EINTR) {
+                // System call has been interrupted. Simply retry.
+                result = 0;
+                break;
+            }
+
+            // Note that for all other system call errors we fall through
+            // to the default case, which results in an Exception.
+        }
+
+        // Everything else is basically an error.
+        default: {
+            *readResult = -1;
+            return  ThrowSSLExceptionWithSslErrors(ssl, sslError, "Read error");
+        }
+    }
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_read_BIO => %d", ssl, result);
+    *readResult = result;
+    return NOERROR;
+}
+
+static int sslWrite(SSL* ssl, IFileDescriptor* fdObject, ISSLHandshakeCallbacks* shc, const char* buf, Int32 len,
+                    int* sslReturnCode, int* sslErrorCode, int write_timeout_millis)
+{
+    NATIVE_TRACE("ssl=%p sslWrite buf=%p len=%d write_timeout_millis=%d",
+              ssl, buf, len, write_timeout_millis);
+
+    if (len == 0) {
+        // Don't bother doing anything in this case.
+        return 0;
+    }
+
+    BIO* rbio = SSL_get_rbio(ssl);
+    BIO* wbio = SSL_get_wbio(ssl);
+
+    AppData* appData = toAppData(ssl);
+    NATIVE_TRACE("ssl=%p sslWrite appData=%p", ssl, appData);
+    if (appData == NULL) {
+        return THROW_SSLEXCEPTION;
+    }
+
+    int count = len;
+
+    while (appData->aliveAndKicking && ((len > 0) || (ssl->s3->wbuf.left > 0))) {
+        errno = 0;
+
+        if (MUTEX_LOCK(appData->mutex) == -1) {
+            return -1;
+        }
+
+        if (!SSL_is_init_finished(ssl) && !SSL_cutthrough_complete(ssl) &&
+               !SSL_renegotiate_pending(ssl)) {
+            NATIVE_TRACE("ssl=%p sslWrite => init is not finished (state=0x%x)", ssl,
+                    SSL_get_state(ssl));
+            MUTEX_UNLOCK(appData->mutex);
+            return THROW_SSLEXCEPTION;
+        }
+
+        unsigned int bytesMoved = BIO_number_read(rbio) + BIO_number_written(wbio);
+
+        if (!appData->SetCallbackState(shc, fdObject, NULL, NULL)) {
+            MUTEX_UNLOCK(appData->mutex);
+            return THROWN_EXCEPTION;
+        }
+        NATIVE_TRACE("ssl=%p sslWrite SSL_write len=%d left=%d", ssl, len, ssl->s3->wbuf.left);
+        int result = SSL_write(ssl, buf, len);
+        appData->ClearCallbackState();
+//        // callbacks can happen if server requests renegotiation
+//        if (env->ExceptionCheck()) {
+//            SSL_clear(ssl);
+//            NATIVE_TRACE("ssl=%p sslWrite exception => THROWN_EXCEPTION", ssl);
+//            return THROWN_EXCEPTION;
+//        }
+        int sslError = SSL_ERROR_NONE;
+        if (result <= 0) {
+            sslError = SSL_get_error(ssl, result);
+            FreeOpenSslErrorState();
+        }
+        NATIVE_TRACE("ssl=%p sslWrite SSL_write result=%d sslError=%d left=%d",
+                  ssl, result, sslError, ssl->s3->wbuf.left);
+#ifdef WITH_NATIVE_TRACE_DATA
+        for (int i = 0; i < result; i+= WITH_NATIVE_TRACE_DATA_CHUNK_SIZE) {
+            int n = result - i;
+            if (n > WITH_NATIVE_TRACE_DATA_CHUNK_SIZE) {
+                n = WITH_NATIVE_TRACE_DATA_CHUNK_SIZE;
+            }
+            NATIVE_TRACE("ssl=%p sslWrite data: %d:\n%.*s", ssl, n, n, buf+i);
+        }
+#endif
+
+        // If we have been successful in moving data around, check whether it
+        // might make sense to wake up other blocked threads, so they can give
+        // it a try, too.
+        if (BIO_number_read(rbio) + BIO_number_written(wbio) != bytesMoved
+                && appData->waitingThreads > 0) {
+            sslNotify(appData);
+        }
+
+        // If we are blocked by the underlying socket, tell the world that
+        // there will be one more waiting thread now.
+        if (sslError == SSL_ERROR_WANT_READ || sslError == SSL_ERROR_WANT_WRITE) {
+            appData->waitingThreads++;
+        }
+
+        MUTEX_UNLOCK(appData->mutex);
+
+        switch (sslError) {
+            // Successfully wrote at least one byte.
+            case SSL_ERROR_NONE: {
+                buf += result;
+                len -= result;
+                break;
+            }
+
+            // Wrote zero bytes. End of stream reached.
+            case SSL_ERROR_ZERO_RETURN: {
+                return -1;
+            }
+
+            // Need to wait for availability of underlying layer, then retry.
+            // The concept of a write timeout doesn't really make sense, and
+            // it's also not standard Java behavior, so we wait forever here.
+            case SSL_ERROR_WANT_READ:
+            case SSL_ERROR_WANT_WRITE: {
+                int selectResult = sslSelect(sslError, fdObject, appData, write_timeout_millis);
+                if (selectResult == THROWN_EXCEPTION) {
+                    return THROWN_EXCEPTION;
+                }
+                if (selectResult == -1) {
+                    *sslReturnCode = -1;
+                    *sslErrorCode = sslError;
+                    return THROW_SSLEXCEPTION;
+                }
+                if (selectResult == 0) {
+                    return THROW_SOCKETTIMEOUTEXCEPTION;
+                }
+
+                break;
+            }
+
+            // A problem occurred during a system call, but this is not
+            // necessarily an error.
+            case SSL_ERROR_SYSCALL: {
+                // Connection closed without proper shutdown. Tell caller we
+                // have reached end-of-stream.
+                if (result == 0) {
+                    return -1;
+                }
+
+                // System call has been interrupted. Simply retry.
+                if (errno == EINTR) {
+                    break;
+                }
+
+                // Note that for all other system call errors we fall through
+                // to the default case, which results in an Exception.
+            }
+
+            // Everything else is basically an error.
+            default: {
+                *sslReturnCode = result;
+                *sslErrorCode = sslError;
+                return THROW_SSLEXCEPTION;
+            }
+        }
+    }
+    NATIVE_TRACE("ssl=%p sslWrite => count=%d", ssl, count);
+
+    return count;
+}
+
+ECode NativeCrypto::SSL_write(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ IFileDescriptor* fdObject,
+    /* [in] */ ISSLHandshakeCallbacks* shc,
+    /* [in] */ ArrayOf<Byte>* b,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int32 len,
+    /* [in] */ Int32 write_timeout_millis)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_write fd=%p shc=%p b=%p offset=%d len=%d write_timeout_millis=%d",
+              ssl, fdObject, shc, b, offset, len, write_timeout_millis);
+    if (ssl == NULL) {
+        return ec;
+    }
+    if (fdObject == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_write => fd == null", ssl);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    if (shc == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_write => sslHandshakeCallbacks == null", ssl);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    if (b == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_write => threw exception", ssl);
+        return NOERROR;
+    }
+    int returnCode = 0;
+    int sslErrorCode = SSL_ERROR_NONE;
+    int ret = sslWrite(ssl, fdObject, shc, reinterpret_cast<const char*>(b->GetPayload() + offset),
+                       len, &returnCode, &sslErrorCode, write_timeout_millis);
+
+    switch (ret) {
+        case THROW_SSLEXCEPTION:
+            // See sslWrite() regarding improper failure to handle normal cases.
+            ec = ThrowSSLExceptionWithSslErrors(ssl, sslErrorCode, "Write error");
+            break;
+        case THROW_SOCKETTIMEOUTEXCEPTION:
+            ec = ThrowSocketTimeoutException("Write timed out");
+            break;
+        case THROWN_EXCEPTION:
+            // SocketException thrown by NetFd.isClosed
+            break;
+        default:
+            break;
+    }
+    return ec;
+}
+
+ECode NativeCrypto::SSL_write_BIO(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ ArrayOf<Byte>* source,
+    /* [in] */ Int32 len,
+    /* [in] */ Int64 sinkBioRef,
+    /* [in] */ ISSLHandshakeCallbacks* shc,
+    /* [out] */ Int32* writeResult)
+{
+    VALIDATE_NOT_NULL(writeResult);
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    BIO* wbio = reinterpret_cast<BIO*>(static_cast<uintptr_t>(sinkBioRef));
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_write_BIO source=%p len=%d wbio=%p shc=%p",
+              ssl, source, len, wbio, shc);
+    if (ssl == NULL) {
+        *writeResult = -1;
+        return ec;
+    }
+    if (wbio == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_write_BIO => wbio == null", ssl);
+        *writeResult = -1;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    if (shc == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_write_BIO => sslHandshakeCallbacks == null", ssl);
+        *writeResult = -1;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    AppData* appData = toAppData(ssl);
+    if (appData == NULL) {
+        SSL_clear(ssl);
+        FreeOpenSslErrorState();
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_write_BIO appData => NULL", ssl);
+        *writeResult = -1;
+        return ThrowSSLExceptionStr("Unable to retrieve application data");
+    }
+
+    errno = 0;
+
+    if (MUTEX_LOCK(appData->mutex) == -1) {
+        *writeResult = 0;
+        return NOERROR;
+    }
+
+    if (!appData->SetCallbackState(shc, NULL, NULL, NULL)) {
+        MUTEX_UNLOCK(appData->mutex);
+        SSL_clear(ssl);
+        FreeOpenSslErrorState();
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_write_BIO => appData can't set callback", ssl);
+        *writeResult = -1;
+        return ThrowSSLExceptionStr("Unable to set appdata callback");
+    }
+
+    if (source == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_write_BIO => threw exception", ssl);
+        *writeResult = -1;
+        return NOERROR;
+    }
+
+    Unique_BIO nullBio(BIO_new(BIO_s_null()));
+    ScopedSslBio sslBio(ssl, nullBio.get(), wbio);
+
+    int result = ::SSL_write(ssl, reinterpret_cast<const char*>(source->GetPayload()), len);
+    appData->ClearCallbackState();
+//    // callbacks can happen if server requests renegotiation
+//    if (env->ExceptionCheck()) {
+//        SSL_clear(ssl);
+//        freeOpenSslErrorState();
+//        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_write_BIO exception => exception pending (reneg)", ssl);
+//        return -1;
+//    }
+    int sslError = SSL_ERROR_NONE;
+    if (result <= 0) {
+        sslError = SSL_get_error(ssl, result);
+        FreeOpenSslErrorState();
+    }
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_write_BIO SSL_write result=%d sslError=%d left=%d",
+              ssl, result, sslError, ssl->s3->wbuf.left);
+#ifdef WITH_NATIVE_TRACE_DATA
+    for (int i = 0; i < result; i+= WITH_NATIVE_TRACE_DATA_CHUNK_SIZE) {
+        int n = result - i;
+        if (n > WITH_NATIVE_TRACE_DATA_CHUNK_SIZE) {
+            n = WITH_NATIVE_TRACE_DATA_CHUNK_SIZE;
+        }
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_write_BIO data: %d:\n%.*s", ssl, n, n, buf+i);
+    }
+#endif
+
+    MUTEX_UNLOCK(appData->mutex);
+
+    switch (sslError) {
+        case SSL_ERROR_NONE:
+            *writeResult = result;
+            return NOERROR;
+
+        // Wrote zero bytes. End of stream reached.
+        case SSL_ERROR_ZERO_RETURN:
+            *writeResult = -1;
+            return NOERROR;
+
+        case SSL_ERROR_WANT_READ:
+        case SSL_ERROR_WANT_WRITE:
+            *writeResult = 0;
+            return NOERROR;
+
+        case SSL_ERROR_SYSCALL: {
+            // Connection closed without proper shutdown. Tell caller we
+            // have reached end-of-stream.
+            if (result == 0) {
+                *writeResult = -1;
+                return NOERROR;
+            }
+
+            // System call has been interrupted. Simply retry.
+            if (errno == EINTR) {
+                *writeResult = 0;
+                return NOERROR;
+            }
+
+            // Note that for all other system call errors we fall through
+            // to the default case, which results in an Exception.
+        }
+
+        // Everything else is basically an error.
+        default: {
+            ec = ThrowSSLExceptionWithSslErrors(ssl, sslError, "Write error");
+            break;
+        }
+    }
+    *writeResult = -1;
+    return ec;
+}
+
+ECode NativeCrypto::SSL_interrupt(
+    /* [in] */ Int64 ssl_address)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, FALSE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_interrupt", ssl);
+    if (ssl == NULL) {
+        return ec;
+    }
+
+    /*
+     * Mark the connection as quasi-dead, then send something to the emergency
+     * file descriptor, so any blocking select() calls are woken up.
+     */
+    AppData* appData = toAppData(ssl);
+    if (appData != NULL) {
+        appData->aliveAndKicking = 0;
+
+        // At most two threads can be waiting.
+        sslNotify(appData);
+        sslNotify(appData);
+    }
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_shutdown(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ IFileDescriptor* fdObject,
+    /* [in] */ ISSLHandshakeCallbacks* shc)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, FALSE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_shutdown fd=%p shc=%p", ssl, fdObject, shc);
+    if (ssl == NULL) {
+        return ec;
+    }
+    if (fdObject == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_shutdown => fd == null", ssl);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    if (shc == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_shutdown => sslHandshakeCallbacks == null", ssl);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    AppData* appData = toAppData(ssl);
+    if (appData != NULL) {
+        if (!appData->SetCallbackState(shc, fdObject, NULL, NULL)) {
+            // SocketException thrown by NetFd.isClosed
+            SSL_clear(ssl);
+            FreeOpenSslErrorState();
+            return NOERROR;
+        }
+
+        /*
+         * Try to make socket blocking again. OpenSSL literature recommends this.
+         */
+        int fd = SSL_get_fd(ssl);
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_shutdown s=%d", ssl, fd);
+        if (fd != -1) {
+            setBlocking(fd, true);
+        }
+
+        int ret = ::SSL_shutdown(ssl);
+        appData->ClearCallbackState();
+//        // callbacks can happen if server requests renegotiation
+//        if (env->ExceptionCheck()) {
+//            SSL_clear(ssl);
+//            NATIVE_TRACE("ssl=%p NativeCrypto_SSL_shutdown => exception", ssl);
+//            return;
+//        }
+        switch (ret) {
+            case 0:
+                /*
+                 * Shutdown was not successful (yet), but there also
+                 * is no error. Since we can't know whether the remote
+                 * server is actually still there, and we don't want to
+                 * get stuck forever in a second SSL_shutdown() call, we
+                 * simply return. This is not security a problem as long
+                 * as we close the underlying socket, which we actually
+                 * do, because that's where we are just coming from.
+                 */
+                break;
+            case 1:
+                /*
+                 * Shutdown was successful. We can safely return. Hooray!
+                 */
+                break;
+            default:
+                /*
+                 * Everything else is a real error condition. We should
+                 * let the Java layer know about this by throwing an
+                 * exception.
+                 */
+                int sslError = SSL_get_error(ssl, ret);
+                ec = ThrowSSLExceptionWithSslErrors(ssl, sslError, "SSL shutdown failed");
+                break;
+        }
+    }
+
+    SSL_clear(ssl);
+    FreeOpenSslErrorState();
+    return ec;
+}
+
+ECode NativeCrypto::SSL_shutdown_BIO(
+    /* [in] */ Int64 ssl_address,
+    /* [in] */ Int64 rbioRef,
+    /* [in] */ Int64 wbioRef,
+    /* [in] */ ISSLHandshakeCallbacks* shc)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, FALSE, &ec);
+    BIO* rbio = reinterpret_cast<BIO*>(static_cast<uintptr_t>(rbioRef));
+    BIO* wbio = reinterpret_cast<BIO*>(static_cast<uintptr_t>(wbioRef));
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_shutdown rbio=%p wbio=%p shc=%p", ssl, rbio, wbio, shc);
+    if (ssl == NULL) {
+        return ec;
+    }
+    if (rbio == NULL || wbio == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_shutdown => rbio == null || wbio == null", ssl);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    if (shc == NULL) {
+        NATIVE_TRACE("ssl=%p NativeCrypto_SSL_shutdown => sslHandshakeCallbacks == null", ssl);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    AppData* appData = toAppData(ssl);
+    if (appData != NULL) {
+        if (!appData->SetCallbackState(shc, NULL, NULL, NULL)) {
+            // SocketException thrown by NetFd.isClosed
+            SSL_clear(ssl);
+            FreeOpenSslErrorState();
+            return NOERROR;
+        }
+
+        ScopedSslBio scopedBio(ssl, rbio, wbio);
+
+        int ret = ::SSL_shutdown(ssl);
+        appData->ClearCallbackState();
+//        // callbacks can happen if server requests renegotiation
+//        if (env->ExceptionCheck()) {
+//            SSL_clear(ssl);
+//            NATIVE_TRACE("ssl=%p NativeCrypto_SSL_shutdown => exception", ssl);
+//            return;
+//        }
+        switch (ret) {
+            case 0:
+                /*
+                 * Shutdown was not successful (yet), but there also
+                 * is no error. Since we can't know whether the remote
+                 * server is actually still there, and we don't want to
+                 * get stuck forever in a second SSL_shutdown() call, we
+                 * simply return. This is not security a problem as long
+                 * as we close the underlying socket, which we actually
+                 * do, because that's where we are just coming from.
+                 */
+                break;
+            case 1:
+                /*
+                 * Shutdown was successful. We can safely return. Hooray!
+                 */
+                break;
+            default:
+                /*
+                 * Everything else is a real error condition. We should
+                 * let the Java layer know about this by throwing an
+                 * exception.
+                 */
+                int sslError = SSL_get_error(ssl, ret);
+                ec = ThrowSSLExceptionWithSslErrors(ssl, sslError, "SSL shutdown failed");
+                break;
+        }
+    }
+
+    SSL_clear(ssl);
+    FreeOpenSslErrorState();
+    return ec;
+}
+
+ECode NativeCrypto::SSL_get_shutdown(
+    /* [in] */ Int64 ssl_address,
+    /* [out] */ Int32* result)
+{
+    ECode ec;
+    const SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_shutdown", ssl);
+    if (ssl == NULL) {
+        *result = 0;
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    int status = ::SSL_get_shutdown(ssl);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_get_shutdown => %d", ssl, status);
+    *result = status;
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_free(
+    /* [in] */ Int64 ssl_address)
+{
+    ECode ec;
+    SSL* ssl = to_SSL(ssl_address, TRUE, &ec);
+    NATIVE_TRACE("ssl=%p NativeCrypto_SSL_free", ssl);
+    if (ssl == NULL) {
+        return ec;
+    }
+
+    AppData* appData = toAppData(ssl);
+    SSL_set_app_data(ssl, NULL);
+    delete appData;
+    ::SSL_free(ssl);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_SESSION_session_id(
+    /* [in] */ Int64 ssl_session_address,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL_SESSION* ssl_session = to_SSL_SESSION(ssl_session_address, TRUE, &ec);
+    NATIVE_TRACE("ssl_session=%p NativeCrypto_SSL_SESSION_session_id", ssl_session);
+    if (ssl_session == NULL) {
+        *result = NULL;
+        return ec;
+    }
+    AutoPtr< ArrayOf<Byte> > byteArray = ArrayOf<Byte>::Alloc(ssl_session->session_id_length);
+    Byte* src = reinterpret_cast<Byte*>(ssl_session->session_id);
+    byteArray->Copy(src, ssl_session->session_id_length);
+    NATIVE_TRACE("ssl_session=%p NativeCrypto_SSL_SESSION_session_id => %p session_id_length=%d",
+             ssl_session, result, ssl_session->session_id_length);
+    *result = byteArray;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_SESSION_get_time(
+    /* [in] */ Int64 ssl_session_address,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL_SESSION* ssl_session = to_SSL_SESSION(ssl_session_address, TRUE, &ec);
+    NATIVE_TRACE("ssl_session=%p NativeCrypto_SSL_SESSION_get_time", ssl_session);
+    if (ssl_session == NULL) {
+        *result = 0;
+        return ec;
+    }
+    // result must be jlong, not long or *1000 will overflow
+    Int64 ret = ::SSL_SESSION_get_time(ssl_session);
+    ret *= 1000; // OpenSSL uses seconds, Java uses milliseconds.
+    NATIVE_TRACE("ssl_session=%p NativeCrypto_SSL_SESSION_get_time => %lld", ssl_session, ret);
+    *result = ret;
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_SESSION_get_version(
+    /* [in] */ Int64 ssl_session_address,
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL_SESSION* ssl_session = to_SSL_SESSION(ssl_session_address, TRUE, &ec);
+    NATIVE_TRACE("ssl_session=%p NativeCrypto_SSL_SESSION_get_version", ssl_session);
+    if (ssl_session == NULL) {
+        *result = NULL;
+        return ec;
+    }
+    const char* protocol = ::SSL_SESSION_get_version(ssl_session);
+    NATIVE_TRACE("ssl_session=%p NativeCrypto_SSL_SESSION_get_version => %s", ssl_session, protocol);
+    *result = protocol;
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_SESSION_cipher(
+    /* [in] */ Int64 ssl_session_address,
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL_SESSION* ssl_session = to_SSL_SESSION(ssl_session_address, TRUE, &ec);
+    NATIVE_TRACE("ssl_session=%p NativeCrypto_SSL_SESSION_cipher", ssl_session);
+    if (ssl_session == NULL) {
+        *result = NULL;
+        return ec;
+    }
+    const SSL_CIPHER* cipher = ssl_session->cipher;
+    const char* name = SSL_CIPHER_get_name(cipher);
+    NATIVE_TRACE("ssl_session=%p NativeCrypto_SSL_SESSION_cipher => %s", ssl_session, name);
+    *result = name;
+    return NOERROR;
+}
+
+ECode NativeCrypto::SSL_SESSION_free(
+    /* [in] */ Int64 ssl_session_address)
+{
+    ECode ec;
+    SSL_SESSION* ssl_session = to_SSL_SESSION(ssl_session_address, TRUE, &ec);
+    NATIVE_TRACE("ssl_session=%p NativeCrypto_SSL_SESSION_free", ssl_session);
+    if (ssl_session == NULL) {
+        return ec;
+    }
+    ::SSL_SESSION_free(ssl_session);
+    return NOERROR;
+}
+
+ECode NativeCrypto::I2d_SSL_SESSION(
+    /* [in] */ Int64 ssl_session_address,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    ECode ec;
+    SSL_SESSION* ssl_session = to_SSL_SESSION(ssl_session_address, TRUE, &ec);
+    NATIVE_TRACE("ssl_session=%p NativeCrypto_i2d_SSL_SESSION", ssl_session);
+    if (ssl_session == NULL) {
+        *result = NULL;
+        return ec;
+    }
+    return ASN1ToByteArray<SSL_SESSION, i2d_SSL_SESSION>(ssl_session, result);
+}
+
+ECode NativeCrypto::D2i_SSL_SESSION(
+    /* [in] */ ArrayOf<Byte>* bytes,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    NATIVE_TRACE("NativeCrypto_d2i_SSL_SESSION bytes=%p", bytes);
+
+    if (bytes == NULL) {
+        NATIVE_TRACE("NativeCrypto_d2i_SSL_SESSION => threw exception");
+        *result = 0;
+        return NOERROR;
+    }
+    const unsigned char* ucp = reinterpret_cast<const unsigned char*>(bytes->GetPayload());
+    SSL_SESSION* ssl_session = d2i_SSL_SESSION(NULL, &ucp, bytes->GetLength());
+
+    // Initialize SSL_SESSION cipher field based on cipher_id http://b/7091840
+    if (ssl_session != NULL) {
+        // based on ssl_get_prev_session
+        uint32_t cipher_id_network_order = htonl(ssl_session->cipher_id);
+        uint8_t* cipher_id_byte_pointer = reinterpret_cast<uint8_t*>(&cipher_id_network_order);
+        if (ssl_session->ssl_version >= SSL3_VERSION_MAJOR) {
+            cipher_id_byte_pointer += 2; // skip first two bytes for SSL3+
+        }
+        else {
+            cipher_id_byte_pointer += 1; // skip first byte for SSL2
+        }
+        ssl_session->cipher = SSLv23_method()->get_cipher_by_char(cipher_id_byte_pointer);
+        NATIVE_TRACE("NativeCrypto_d2i_SSL_SESSION cipher_id=%lx hton=%x 0=%x 1=%x cipher=%s",
+                  ssl_session->cipher_id, cipher_id_network_order,
+                  cipher_id_byte_pointer[0], cipher_id_byte_pointer[1],
+                  SSL_CIPHER_get_name(ssl_session->cipher));
+    }
+    else {
+        FreeOpenSslErrorState();
+    }
+
+    NATIVE_TRACE("NativeCrypto_d2i_SSL_SESSION => %p", ssl_session);
+    *result = reinterpret_cast<uintptr_t>(ssl_session);
+    return NOERROR;
+}
+
+ECode NativeCrypto::ERR_peek_last_error(
+    /* [out] */ Int64* error)
+{
+    VALIDATE_NOT_NULL(error);
+    *error = ::ERR_peek_last_error();
+    return NOERROR;
 }
 
 } // namespace Conscrypt

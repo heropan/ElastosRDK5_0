@@ -8,6 +8,7 @@ INCLUDES += $(MAKEDIR)/../../../inc
 INCLUDES += $(MAKEDIR)/../../../inc/org/conscrypt
 
 SOURCES = Org.Conscrypt.car
+SOURCES += AsynchronousCloseMonitor.cpp
 SOURCES += COpenSSLProvider.cpp
 SOURCES += CryptoUpcalls.cpp
 SOURCES += NativeCrypto.cpp
