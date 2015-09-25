@@ -468,6 +468,32 @@ module
         interface INetworkPolicyManagerHelper;
     }
 
+    class CNetworkQuotaInfo {
+        constructor(
+            [in] Int64 estimatedBytes,
+            [in] Int64 softLimitBytes,
+            [in] Int64 hardLimitBytes);
+
+        constructor(
+            [in] IParcel* parcel);
+
+        interface IParcelable;
+        interface INetworkQuotaInfo;
+    }
+
+    class CNetworkRequest {
+        constructor(
+            [in] INetworkCapabilities* nc,
+            [in] Int32 legacyType,
+            [in] Int32 rId);
+
+        constructor(
+            [in] INetworkRequest* that);
+
+        interface IParcelable;
+        interface INetworkRequest;
+    }
+
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos
