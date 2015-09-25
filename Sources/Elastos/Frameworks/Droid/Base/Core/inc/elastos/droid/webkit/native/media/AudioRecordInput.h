@@ -1,17 +1,16 @@
 
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_AUDIORECORDINPUT_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_AUDIORECORDINPUT_H__
+#include "ext/frameworkext.h"
 
+#include "elastos/core/Thread.h"
+
+using Elastos::Droid::Media::IAudioRecord;
+using Elastos::Droid::Media::Audiofx::IAcousticEchoCanceler;
+
+using Elastos::Core::Thread;
+using Elastos::IO::IByteBuffer;
 // import android.annotation.SuppressLint;
-// import android.media.AudioFormat;
-// import android.media.AudioRecord;
-// import android.media.MediaRecorder.AudioSource;
-// import android.media.audiofx.AcousticEchoCanceler;
-// import android.media.audiofx.AudioEffect;
-// import android.media.audiofx.AudioEffect.Descriptor;
-// import android.os.Process;
-// import android.util.Log;
-
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
@@ -26,15 +25,15 @@ namespace Media {
 // that class for general comments.
 //@JNINamespace("media")
 class AudioRecordInput
+:public Object
 {
 private:
     class AudioRecordThread
-        : public Object
-        , public IThread
+        : public Thread
     {
     public:
         AudioRecordThread(
-            /* [in] */ AudioRecordThread* owner);
+            /* [in] */ AudioRecordInput* owner);
 
         //@Override
         CARAPI Run();
@@ -42,7 +41,7 @@ private:
         CARAPI_(void) JoinRecordThread();
 
     private:
-        AudioRecordThread* mOwner;
+        AudioRecordInput* mOwner;
 
         // The "volatile" synchronization technique is discussed here:
         // http://stackoverflow.com/a/106787/299268
@@ -108,7 +107,7 @@ private:
     const Int32 mHardwareDelayBytes;
     const Boolean mUsePlatformAEC;
     AutoPtr<IByteBuffer> mBuffer;
-    AutoPtr<AudioRecord> mAudioRecord;
+    AutoPtr<IAudioRecord> mAudioRecord;
     AutoPtr<AudioRecordThread> mAudioRecordThread;
     AutoPtr<IAcousticEchoCanceler> mAEC;
 };

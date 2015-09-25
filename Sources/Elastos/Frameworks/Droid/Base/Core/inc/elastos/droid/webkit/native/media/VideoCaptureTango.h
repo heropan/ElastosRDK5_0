@@ -1,12 +1,15 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTURETANGO_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTURETANGO_H__
+#include "ext/frameworkext.h"
+#include "elastos/droid/webkit/native/media/VideoCapture.h"
+#include "elastos/droid/webkit/native/media/VideoCaptureFactory.h"
 
 // import android.content.Context;
 // import android.graphics.ImageFormat;
 // import android.hardware.Camera;
 // import android.util.Log;
 
+using Elastos::IO::IByteBuffer;
 // import java.nio.ByteBuffer;
 // import java.util.ArrayList;
 // import java.util.Arrays;
@@ -37,13 +40,13 @@ public:
     static CARAPI_(AutoPtr<VideoCaptureFactory::CamParams>) GetCamParams(
       /* [in] */ Int32 index);
 
-    static CARAPI_(AutoPtr< ArrayOf<CaptureFormat> >) GetDeviceSupportedFormats(
+    static CARAPI_(AutoPtr<ArrayOf<CaptureFormat*> >) GetDeviceSupportedFormats(
       /* [in] */ Int32 id);
 
     //@Override
-    CARAPI_(void) OnPreviewFrame(
+    CARAPI OnPreviewFrame(
       /* [in] */ ArrayOf<Byte>* data,
-      /* [in] */ ICamera* camera);
+      /* [in] */ IHardwareCamera* camera);
 
 protected:
     //@Override
@@ -61,6 +64,7 @@ protected:
       /* [in] */ IPreviewCallback* cb);
 
 private:
+    static AutoPtr< ArrayOf<VideoCaptureFactory::CamParams*> > s_CAM_PARAMS_Init();
     AutoPtr<IByteBuffer> mFrameBuffer;
     const Int32 mTangoCameraId;
 
@@ -68,7 +72,7 @@ private:
     static const Int32 DEPTH_CAMERA_ID = 0;
     static const Int32 FISHEYE_CAMERA_ID = 1;
     static const Int32 FOURMP_CAMERA_ID = 2;
-    static const AutoPtr< ArrayOf<VideoCaptureFactory::CamParams> > s_CAM_PARAMS;
+    static const AutoPtr< ArrayOf<VideoCaptureFactory::CamParams*> > s_CAM_PARAMS;
 
     // SuperFrame size definitions. Note that total size is the amount of lines
     // multiplied by 3/2 due to Chroma components following.

@@ -1,27 +1,24 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_MEDIAPLAYERBRIDGE_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_MEDIAPLAYERBRIDGE_H__
+#include "ext/frameworkext.h"
+#include "elastos/droid/os/AsyncTask.h"
 
-// import android.content.Context;
-// import android.media.MediaPlayer;
-// import android.net.Uri;
-// import android.os.AsyncTask;
-// import android.os.Build;
-// import android.os.ParcelFileDescriptor;
-// import android.text.TextUtils;
-// import android.util.Base64;
-// import android.util.Base64InputStream;
-// import android.util.Log;
-// import android.view.Surface;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::View::ISurface;
+using Elastos::Droid::Os::AsyncTask;
+using Elastos::Droid::Media::IMediaPlayer;
+using Elastos::Droid::Media::IMediaPlayerOnBufferingUpdateListener;
+using Elastos::Droid::Media::IMediaPlayerOnCompletionListener;
+using Elastos::Droid::Media::IMediaPlayerOnErrorListener;
+using Elastos::Droid::Media::IMediaPlayerOnPreparedListener;
+using Elastos::Droid::Media::IMediaPlayerOnSeekCompleteListener;
+using Elastos::Droid::Media::IMediaPlayerOnVideoSizeChangedListener;
 
+using Elastos::IO::IFile;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
-// import java.io.ByteArrayInputStream;
-// import java.io.File;
-// import java.io.FileOutputStream;
 // import java.io.IOException;
-// import java.io.InputStream;
 // import java.lang.reflect.InvocationTargetException;
 // import java.lang.reflect.Method;
 // import java.util.HashMap;
@@ -37,10 +34,11 @@ namespace Media {
 */
 //@JNINamespace("media")
 class MediaPlayerBridge
+:public Object
 {
 private:
     class LoadDataUriTask
-        : public AsyncTask <Void, Void, Boolean>
+        : public AsyncTask
     {
     public:
         LoadDataUriTask(
@@ -49,8 +47,9 @@ private:
             /* [in] */ const String& data);
 
         //@Override
-        CARAPI_(Boolean) DoInBackground(
-            /* [in] */ Void... params);
+        CARAPI DoInBackground(
+            /* [in] */ ArrayOf<IInterface*>* params,
+            /* [out] */ IInterface** result);
 
         //@Override
         CARAPI_(void) OnPostExecute(
@@ -69,6 +68,7 @@ private:
 
 protected:
     class AllowedOperations
+    :public Object
     {
     public:
         AllowedOperations(
@@ -125,7 +125,7 @@ protected:
     CARAPI_(Int32) GetDuration();
 
     //@CalledByNative
-    CARAPI_(void) Release();
+    CARAPI_(void) ReleaseReSources();
 
     //@CalledByNative
     CARAPI_(void) SetVolume(
@@ -186,8 +186,8 @@ protected:
     CARAPI_(AutoPtr<AllowedOperations>) GetAllowedOperations();
 
 private:
-    //@CalledByNative
-    static CARAPI_(AutoPtr<MediaPlayerBridge>) Create(
+    //@CalledByNative return IInterface
+    static CARAPI_(AutoPtr<IInterface>) Create(
         /* [in] */ Int64 nativeMediaPlayerBridge);
 
     CARAPI_(void) NativeOnDidSetDataUriDataSource(
@@ -202,6 +202,7 @@ private:
     AutoPtr<LoadDataUriTask> mLoadDataUriTask;
     AutoPtr<IMediaPlayer> mPlayer;
     Int64 mNativeMediaPlayerBridge;
+    friend class MediaPlayerListener;
 };
 
 } // namespace Media

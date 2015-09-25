@@ -1,3 +1,61 @@
+#include "elastos/droid/webkit/native/media/MediaCodecBridge.h"
+
+//TODO #include "elastos/droid/media/CMediaCodecListHelper.h"
+//TODO #include "elastos/droid/media/CMediaCodecHelper.h"
+//TODO #include "elastos/droid/media/CMediaCodecBufferInfo.h"
+//TODO #include "elastos/droid/media/CMediaFormatHelper.h"
+//TODO #include "elastos/droid/media/CAudioTrackHelper.h"
+//TODO #include "elastos/droid/media/CAudioTrack.h"
+//TODO #include "elastos/droid/media/CMediaCodecCryptoInfo.h"
+
+//TODO #include "elastos/io/CByteBufferHelper.h"
+#include "os/Build.h"
+#include "elastos/core/Math.h"
+#include "elastos/droid/os/CBundle.h"
+//TODO #include "elastos/utility/CHashMap.h"
+//TODO #include "elastos/utility/CArrayList.h"
+#include "elastos/utility/logging/Logger.h"
+
+using Elastos::Droid::Media::IAudioFormat;
+using Elastos::Droid::Media::IAudioManager;
+using Elastos::Droid::Media::IAudioTrack;
+//TODO using Elastos::Droid::Media::CAudioTrack;
+using Elastos::Droid::Media::IAudioTrackHelper;
+//TODO using Elastos::Droid::Media::CAudioTrackHelper;
+//TODO using Elastos::Droid::Media::IMediaCodec;
+using Elastos::Droid::Media::IMediaCodecHelper;
+//TODO using Elastos::Droid::Media::CMediaCodecHelper;
+//TODO using Elastos::Droid::Media::IMediaCodecInfo;
+using Elastos::Droid::Media::IMediaCodecCryptoInfo;
+//TODO using Elastos::Droid::Media::CMediaCodecCryptoInfo;
+using Elastos::Droid::Media::IMediaCodecList;
+using Elastos::Droid::Media::IMediaCodecListHelper;
+using Elastos::Droid::Media::IMediaCodecBufferInfo;
+//TODO using Elastos::Droid::Media::CMediaCodecBufferInfo;
+//TODO using Elastos::Droid::Media::CMediaCodecListHelper;
+//TODO using Elastos::Droid::Media::IMediaCrypto;
+using Elastos::Droid::Media::IMediaFormatHelper;
+//TODO using Elastos::Droid::Media::CMediaFormatHelper;
+using Elastos::Droid::Media::IMediaFormat;
+//TODO using Elastos::Droid::Media::ICodecCapabilities;
+using Elastos::Droid::View::ISurface;
+
+using Elastos::IO::IBuffer;
+using Elastos::IO::IByteBufferHelper;
+//TODO using Elastos::IO::CByteBufferHelper;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CString;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::CBundle;
+using Elastos::Utility::IMap;
+using Elastos::Utility::IHashMap;
+//TODO using Elastos::Utility::CHashMap;
+using Elastos::Utility::IArrayList;
+//TODO using Elastos::Utility::CArrayList;
+using Elastos::Utility::ICollection;
+
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -152,16 +210,13 @@ const Int32 MediaCodecBridge::MAX_ADAPTIVE_PLAYBACK_HEIGHT;
 const Int64 MediaCodecBridge::MAX_PRESENTATION_TIMESTAMP_SHIFT_US;
 
 MediaCodecBridge::MediaCodecBridge(
-    /* [in] */ MediaCodec* mediaCodec,
-    /* [in] */ const String& mime,
+    /* [in] */ IMediaCodec* mediaCodec,
+    /* [in] */ String mime,
     /* [in] */ Boolean adaptivePlaybackSupported)
-    : mFlushed(FALSE)
-    , mLastPresentationTimeUs(0)
-    , mAdaptivePlaybackSupported(FALSE)
-    , mMediaCodec(mediaCodec)
-    , mMime(mime)
-    , mLastPresentationTimeUs(0)
+    : mMediaCodec(mediaCodec)
     , mFlushed(TRUE)
+    , mLastPresentationTimeUs(0)
+    , mMime(mime)
     , mAdaptivePlaybackSupported(adaptivePlaybackSupported)
 {
     assert(mediaCodec != NULL);
@@ -171,50 +226,85 @@ MediaCodecBridge::MediaCodecBridge(
  * Get a list of supported android codec mimes.
  */
 //@CalledByNative
-AutoPtr< ArrayOf<CodecInfo> > MediaCodecBridge::GetCodecsInfo()
+AutoPtr<ArrayOf<IInterface*> > MediaCodecBridge::GetCodecsInfo()
 {
     // Return the first (highest-priority) codec for each MIME type.
-    Map<String, CodecInfo> encoderInfoMap = new HashMap<String, CodecInfo>();
-    Map<String, CodecInfo> decoderInfoMap = new HashMap<String, CodecInfo>();
-    int count = MediaCodecList.getCodecCount();
-    for (int i = 0; i < count; ++i) {
-        MediaCodecInfo info = MediaCodecList.getCodecInfoAt(i);
-        int direction =
-            info.isEncoder() ? MEDIA_CODEC_ENCODER : MEDIA_CODEC_DECODER;
-        String codecString = info.getName();
-        String[] supportedTypes = info.getSupportedTypes();
-        for (int j = 0; j < supportedTypes.length; ++j) {
-            Map<String, CodecInfo> map = info.isEncoder() ? encoderInfoMap : decoderInfoMap;
-            if (!map.containsKey(supportedTypes[j])) {
-                map.put(supportedTypes[j], new CodecInfo(
-                    supportedTypes[j], codecString, direction));
+    //Map<String, CodecInfo> encoderInfoMap = new HashMap<String, CodecInfo>();
+    //Map<String, CodecInfo> decoderInfoMap = new HashMap<String, CodecInfo>();
+    AutoPtr<IMap> encoderInfoMap;
+    //TODO CHashMap::New((IMap**)&encoderInfoMap);
+    AutoPtr<IMap> decoderInfoMap;
+    //TODO CHashMap::New((IMap**)&decoderInfoMap);
+    AutoPtr<IMediaCodecListHelper> mclHelper;
+    //TODO CMediaCodecListHelper::AcquireSingleton((IMediaCodecListHelper**)&mclHelper);
+
+    Int32 count;
+    mclHelper->GetCodecCount(&count);
+    for (Int32 i = 0; i < count; ++i) {
+        //MediaCodecInfo info = MediaCodecList.getCodecInfoAt(i);
+        AutoPtr<IMediaCodecInfo> info;
+        mclHelper->GetCodecInfoAt(i, (IMediaCodecInfo**)&info);
+
+        Boolean isEncoder;
+        info->IsEncoder(&isEncoder);
+        int direction = isEncoder ? MEDIA_CODEC_ENCODER : MEDIA_CODEC_DECODER;
+        String codecString;
+        info->GetName(&codecString);
+        //String[] supportedTypes = info.getSupportedTypes();
+        AutoPtr<ArrayOf<String> > supportedTypes;
+        info->GetSupportedTypes((ArrayOf<String>**)&supportedTypes);
+        for (Int32 j = 0; j < supportedTypes->GetLength(); ++j) {
+            //Map<String, CodecInfo> map = info.isEncoder() ? encoderInfoMap : decoderInfoMap;
+            AutoPtr<IMap> map = isEncoder? encoderInfoMap : decoderInfoMap;
+            Boolean haveKey;
+            AutoPtr<ICharSequence> typeString;
+            CString::New((*supportedTypes)[j], (ICharSequence**)&typeString);
+            map->ContainsKey(typeString, &haveKey);
+            if (!haveKey) {
+                AutoPtr<MediaCodecBridge::CodecInfo> codecInfo(
+                        new MediaCodecBridge::CodecInfo((*supportedTypes)[j], codecString, direction));
+                AutoPtr<IInterface> iCodecInfo = codecInfo->Probe(EIID_IInterface);
+                map->Put(typeString, iCodecInfo);
             }
         }
     }
-    ArrayList<CodecInfo> codecInfos = new ArrayList<CodecInfo>(
-        decoderInfoMap.size() + encoderInfoMap.size());
-    codecInfos.addAll(encoderInfoMap.values());
-    codecInfos.addAll(decoderInfoMap.values());
-    return codecInfos.toArray(new CodecInfo[codecInfos.size()]);
+    //ArrayList<CodecInfo> codecInfos = new ArrayList<CodecInfo>(decoderInfoMap.size() + encoderInfoMap.size());
+    Int32 decoderInfoMapSize, encoderInfoMapSize;
+    decoderInfoMap->GetSize(&decoderInfoMapSize);
+    encoderInfoMap->GetSize(&encoderInfoMapSize);
+    AutoPtr<IArrayList> codecInfos;
+    //TODO CArrayList::New(decoderInfoMapSize + encoderInfoMapSize, (IArrayList**)&codecInfos);
+    AutoPtr<ICollection> encoderValues, decoderValues;
+    //codecInfos.addAll(encoderInfoMap.values());
+    //codecInfos.addAll(decoderInfoMap.values());
+    encoderInfoMap->GetValues((ICollection**)&encoderValues);
+    decoderInfoMap->GetValues((ICollection**)&decoderValues);
+    Boolean encoderAddAll, decoderAddAll;
+    codecInfos->AddAll(encoderValues, &encoderAddAll);
+    codecInfos->AddAll(decoderValues, &decoderAddAll);
+    //return codecInfos.toArray(new CodecInfo[codecInfos.size()]);
+    AutoPtr<ArrayOf<IInterface*> > resCodecInfos;
+    codecInfos->ToArray((ArrayOf<IInterface*>**)&resCodecInfos);
+    return resCodecInfos;
 }
 
 String MediaCodecBridge::GetDecoderNameForMime(
     /* [in] */ const String& mime)
 {
-    AutoPtr<IMediaCodecList> mediaCodecList;
-    CMediaCodecList::AcquireSingleton((IMediaCodecList**)&mediaCodecList);
+    AutoPtr<IMediaCodecListHelper> mediaCodecListHelper;
+    //TODO CMediaCodecListHelper::AcquireSingleton((IMediaCodecList**)&mediaCodecListHelper);
     Int32 count;
-    mediaCodecList->GetCodecCount(&count);
+    mediaCodecListHelper->GetCodecCount(&count);
     for (Int32 i = 0; i < count; ++i) {
         AutoPtr<IMediaCodecInfo> info;
-        mediaCodecList->GetCodecInfoAt(i, (IMediaCodecInfo**)&info);
+        mediaCodecListHelper->GetCodecInfoAt(i, (IMediaCodecInfo**)&info);
         Boolean isEncoder = FALSE;
         info->IsEncoder(&isEncoder);
-        if (isEncoder()) {
+        if (isEncoder){
             continue;
         }
 
-        AutoPtr< ArrayOf<String> > supportedTypes;
+        AutoPtr<ArrayOf<String> > supportedTypes;
         info->GetSupportedTypes((ArrayOf<String>**)&supportedTypes);
         Int32 length = supportedTypes->GetLength();
         for (Int32 j = 0; j < length; ++j) {
@@ -230,37 +320,37 @@ String MediaCodecBridge::GetDecoderNameForMime(
 }
 
 //@CalledByNative
-AutoPtr<MediaCodecBridge> MediaCodecBridge::Create(
-    /* [in] */ const String& mime,
+AutoPtr<IInterface> MediaCodecBridge::Create(
+    /* [in] */ String mime,
     /* [in] */ Boolean isSecure,
     /* [in] */ Int32 direction)
 {
     // Creation of ".secure" codecs sometimes crash instead of throwing exceptions
     // on pre-JBMR2 devices.
-    if (isSecure && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    if (isSecure && Build::VERSION::SDK_INT < Build::VERSION_CODES::JELLY_BEAN_MR2) {
         return NULL;
     }
 
     AutoPtr<IMediaCodec> mediaCodec;
     Boolean adaptivePlaybackSupported = FALSE;
     AutoPtr<IMediaCodecHelper> mediaCodecHelper;
-    CMediaCodecHelper::AcquireSingleton((IMediaCodecHelper**)&mediaCodecHelper)
+    //TODO CMediaCodecHelper::AcquireSingleton((IMediaCodecHelper**)&mediaCodecHelper)
     // try {
         // |isSecure| only applies to video decoders.
-        if (mime.StartsWith("video") && isSecure && direction == MEDIA_CODEC_DECODER) {
+        if (mime.StartWith("video") && isSecure && direction == MEDIA_CODEC_DECODER) {
             String decoderName = GetDecoderNameForMime(mime);
-            if (decoderName == NULL) {
+            if (decoderName.IsNullOrEmpty()) {
                 return NULL;
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::KITKAT) {
                 // To work around an issue that we cannot get the codec info from the secure
                 // decoder, create an insecure decoder first so that we can query its codec
                 // info. http://b/15587335.
                 AutoPtr<IMediaCodec> insecureCodec;
                 mediaCodecHelper->CreateByCodecName(decoderName, (IMediaCodec**)&insecureCodec);
                 adaptivePlaybackSupported = CodecSupportsAdaptivePlayback(insecureCodec, mime);
-                insecureCodec->Release();
+                insecureCodec->ReleaseResources();
             }
             String _decoderName(decoderName);
             _decoderName += ".secure";
@@ -284,15 +374,16 @@ AutoPtr<MediaCodecBridge> MediaCodecBridge::Create(
         return NULL;
     }
 
-    AutoPtr<MediaCodecBridge> ret = new MediaCodecBridge(mediaCodec, mime, adaptivePlaybackSupported);
+    AutoPtr<MediaCodecBridge> mcb = new MediaCodecBridge(mediaCodec, mime, adaptivePlaybackSupported);
+    AutoPtr<IInterface> ret = mcb->Probe(EIID_IInterface);
     return ret;
 }
 
 //@CalledByNative
-void MediaCodecBridge::Release()
+void MediaCodecBridge::ReleaseResources()
 {
     // try {
-        mMediaCodec->Release();
+        mMediaCodec->ReleaseResources();
     // } catch (IllegalStateException e) {
     //     // The MediaCodec is stuck in a wrong state, possibly due to losing
     //     // the surface.
@@ -301,7 +392,7 @@ void MediaCodecBridge::Release()
 
     mMediaCodec = NULL;
     if (mAudioTrack != NULL) {
-        mAudioTrack->Release();
+        mAudioTrack->ReleaseResources();
     }
 }
 
@@ -310,35 +401,44 @@ Boolean MediaCodecBridge::Start()
 {
     // try {
         mMediaCodec->Start();
-        mMediaCodec->GetInputBuffers((ArrayOf<IByteBuffer>**)&mInputBuffers);
+        ECode ecode = mMediaCodec->GetInputBuffers((ArrayOf<IByteBuffer*>**)&mInputBuffers);
     // } catch (IllegalStateException e) {
     //     Log.e(TAG, "Cannot start the media codec", e);
     //     return false;
     // }
+        if (FAILED(ecode))
+        {
+            Logger::E(TAG, "Cannot start the media codec, ecode:0x%x", ecode);
+            return FALSE;
+        }
 
     return TRUE;
 }
 
 //@CalledByNative
-AutoPtr<DequeueInputResult> MediaCodecBridge::DequeueInputBuffer(
+AutoPtr<MediaCodecBridge::DequeueInputResult> MediaCodecBridge::DequeueInputBuffer(
     /* [in] */ Int64 timeoutUs)
 {
     Int32 status = MEDIA_CODEC_ERROR;
     Int32 index = -1;
     // try {
         Int32 indexOrStatus;
-        mMediaCodec->DequeueInputBuffer(timeoutUs, &indexOrStatus);
+        ECode ecode = mMediaCodec->DequeueInputBuffer(timeoutUs, &indexOrStatus);
+        if (FAILED(ecode))
+        {
+            Logger::E(TAG, "Failed to dequeue input buffer, ecode:0x%x", ecode);
+        }
         if (indexOrStatus >= 0) { // index!
             status = MEDIA_CODEC_OK;
             index = indexOrStatus;
         }
         else if (indexOrStatus == IMediaCodec::INFO_TRY_AGAIN_LATER) {
-//            Log.e(TAG, "dequeueInputBuffer: MediaCodec.INFO_TRY_AGAIN_LATER");
+            Logger::E(TAG, "dequeueInputBuffer: MediaCodec.INFO_TRY_AGAIN_LATER");
             status = MEDIA_CODEC_DEQUEUE_INPUT_AGAIN_LATER;
         }
         else {
-//            Log.e(TAG, "Unexpected index_or_status: " + indexOrStatus);
-            assert(FALSE);
+            Logger::E(TAG, "Unexpected index_or_status: %d", indexOrStatus);
+            //assert(FALSE);
         }
     // } catch (Exception e) {
     //     Log.e(TAG, "Failed to dequeue input buffer", e);
@@ -392,7 +492,7 @@ Int32 MediaCodecBridge::GetOutputWidth()
     AutoPtr<IMediaFormat> format;
     mMediaCodec->GetOutputFormat((IMediaFormat**)&format);
     Int32 width;
-    format->GetInt32(IMediaFormat::KEY_WIDTH, &width)
+    format->GetInt32(IMediaFormat::KEY_WIDTH, &width);
     return width;
 }
 
@@ -425,20 +525,35 @@ Int32 MediaCodecBridge::GetOutputBuffersCount()
 //@CalledByNative
 Int32 MediaCodecBridge::GetOutputBuffersCapacity()
 {
-    Int32 capacity;
-    return mOutputBuffers != NULL ? ((*mOutputBuffers)[0]->Capacity(&capacity), capacity) : -1;
+    if (mOutputBuffers == NULL)
+    {
+        return -1;
+    }
+    else
+    {
+        Int32 capacity;
+        AutoPtr<IBuffer> buf = IBuffer::Probe((*mOutputBuffers)[0]);
+        buf->GetCapacity(&capacity);
+        return capacity;
+    }
+    //return mOutputBuffers != NULL ? ((*mOutputBuffers)[0]->GetCapacity(&capacity), capacity) : -1;
 }
 
 //@CalledByNative
 Boolean MediaCodecBridge::GetOutputBuffers()
 {
     // try {
-        mMediaCodec->GetOutputBuffers((ArrayOf<IByteBuffer>**)&mOutputBuffers);
+        ECode ecode = mMediaCodec->GetOutputBuffers((ArrayOf<IByteBuffer*>**)&mOutputBuffers);
     // } catch (IllegalStateException e) {
     //     Log.e(TAG, "Cannot get output buffers", e);
     //     return false;
     // }
 
+    if(FAILED(ecode))
+    {
+        Logger::E(TAG, "Cannot get output buffers, ecode:0x%x", ecode);
+        return FALSE;
+    }
     return TRUE;
 }
 
@@ -452,11 +567,16 @@ Int32 MediaCodecBridge::QueueInputBuffer(
 {
     ResetLastPresentationTimeIfNeeded(presentationTimeUs);
     // try {
-        mMediaCodec->QueueInputBuffer(index, offset, size, presentationTimeUs, flags);
+    ECode ecode = mMediaCodec->QueueInputBuffer(index, offset, size, presentationTimeUs, flags);
     // } catch (Exception e) {
     //     Log.e(TAG, "Failed to queue input buffer", e);
     //     return MEDIA_CODEC_ERROR;
     // }
+    if(FAILED(ecode))
+    {
+        Logger::E(TAG, "Failed to queue input buffer, ecode:0x%x", ecode);
+        return FALSE;
+    }
 
     return MEDIA_CODEC_OK;
 }
@@ -494,10 +614,20 @@ Int32 MediaCodecBridge::QueueSecureInputBuffer(
     ResetLastPresentationTimeIfNeeded(presentationTimeUs);
     // try {
         AutoPtr<IMediaCodecCryptoInfo> cryptoInfo;
-        CMediaCodecCryptoInfo((IMediaCodecCryptoInfo**)&cryptoInfo);
+        //TODO CMediaCodecCryptoInfo::New((IMediaCodecCryptoInfo**)&cryptoInfo);
         cryptoInfo->Set(numSubSamples, numBytesOfClearData, numBytesOfEncryptedData,
                 keyId, iv, IMediaCodec::CRYPTO_MODE_AES_CTR);
-        mMediaCodec->QueueSecureInputBuffer(index, offset, cryptoInfo, presentationTimeUs, 0);
+        UInt32 ecode = mMediaCodec->QueueSecureInputBuffer(index, offset, cryptoInfo, presentationTimeUs, 0);
+        if(ecode == E_CRYPTO_EXCEPTION)
+        {
+            Logger::E(TAG, "MediaCodec.CryptoException with error code ,ecode:0x%x", ecode);
+            return MEDIA_CODEC_ERROR;
+        }
+        else
+        {
+            Logger::E(TAG, "Failed to queue secure input buffer, ecode:0x%x", ecode);
+            return MEDIA_CODEC_ERROR;
+        }
     // } catch (MediaCodec.CryptoException e) {
     //     Log.e(TAG, "Failed to queue secure input buffer", e);
     //     if (e.getErrorCode() == MediaCodec.CryptoException.ERROR_NO_KEY) {
@@ -519,26 +649,30 @@ void MediaCodecBridge::ReleaseOutputBuffer(
     /* [in] */ Boolean render)
 {
     // try {
-        mMediaCodec->ReleaseOutputBuffer(index, render);
+        ECode ecode = mMediaCodec->ReleaseOutputBuffer(index, render);
     // } catch (IllegalStateException e) {
     //     // TODO(qinmin): May need to report the error to the caller. crbug.com/356498.
     //     Log.e(TAG, "Failed to release output buffer", e);
     // }
+        if(FAILED(ecode))
+        {
+            Logger::E(TAG, "Failed to release output buffer,ecode:0x%x", ecode);
+        }
 }
 
 //@CalledByNative
-AutoPtr<DequeueOutputResult> MediaCodecBridge::DequeueOutputBuffer(
+AutoPtr<MediaCodecBridge::DequeueOutputResult> MediaCodecBridge::DequeueOutputBuffer(
     /* [in] */ Int64 timeoutUs)
 {
     AutoPtr<IMediaCodecBufferInfo> info;
-    CMediaCodecBufferInfo::New((IMediaCodecBufferInfo**)&info);
+    //TODO CMediaCodecBufferInfo::New((IMediaCodecBufferInfo**)&info);
     Int32 status = MEDIA_CODEC_ERROR;
     Int32 index = -1;
     // try {
         Int32 indexOrStatus;
         mMediaCodec->DequeueOutputBuffer(info, timeoutUs, &indexOrStatus);
         Int64 timeUs;
-        info->GetpresentationTimeUs(&timeUs);
+        info->GetPresentationTimeUs(&timeUs);
         if (timeUs < mLastPresentationTimeUs) {
             // TODO(qinmin): return a special code through DequeueOutputResult
             // to notify the native code the the frame has a wrong presentation
@@ -562,7 +696,7 @@ AutoPtr<DequeueOutputResult> MediaCodecBridge::DequeueOutputBuffer(
             status = MEDIA_CODEC_DEQUEUE_OUTPUT_AGAIN_LATER;
         }
         else {
-            //Log.e(TAG, "Unexpected index_or_status: " + indexOrStatus);
+            Logger::E(TAG, "Unexpected index_or_status: %d", indexOrStatus);
             assert(FALSE);
         }
     // } catch (IllegalStateException e) {
@@ -590,49 +724,54 @@ Boolean MediaCodecBridge::ConfigureVideo(
 {
     // try {
         if (mAdaptivePlaybackSupported) {
-            format->SetInteger(IMediaFormat::KEY_MAX_WIDTH, MAX_ADAPTIVE_PLAYBACK_WIDTH);
-            format->SetInteger(IMediaFormat::KEY_MAX_HEIGHT, MAX_ADAPTIVE_PLAYBACK_HEIGHT);
+            format->SetInt32(IMediaFormat::KEY_MAX_WIDTH, MAX_ADAPTIVE_PLAYBACK_WIDTH);
+            format->SetInt32(IMediaFormat::KEY_MAX_HEIGHT, MAX_ADAPTIVE_PLAYBACK_HEIGHT);
         }
 
-        mMediaCodec->Configure(format, surface, crypto, flags);
+        ECode ecode = mMediaCodec->Configure(format, surface, crypto, flags);
 
+        if (FAILED(ecode))
+        {
+            Logger::E(TAG, "Cannot configure the video codec,ecode:%d", ecode);
+            return FALSE;
+        }
         return TRUE;
     // } catch (IllegalStateException e) {
     //     Log.e(TAG, "Cannot configure the video codec", e);
     // }
 
-    return FALSE;
+    //return FALSE;
 }
 
 //@CalledByNative
-AutoPtr<IMediaFormat> MediaCodecBridge::CreateAudioFormat(
-    /* [in] */ const String& mime,
+AutoPtr<IInterface> MediaCodecBridge::CreateAudioFormat(
+    /* [in] */ String mime,
     /* [in] */ Int32 sampleRate,
     /* [in] */ Int32 channelCount)
 {
     AutoPtr<IMediaFormatHelper> helper;
-    CMediaFormatHelper::AcquireSingleton((IMediaFormatHelper**)&helper);
+    //TODO CMediaFormatHelper::AcquireSingleton((IMediaFormatHelper**)&helper);
     AutoPtr<IMediaFormat> format;
     helper->CreateAudioFormat(mime, sampleRate, channelCount, (IMediaFormat**)&format);
     return format;
 }
 
 //@CalledByNative
-AutoPtr<IMediaFormat> MediaCodecBridge::CreateVideoDecoderFormat(
-    /* [in] */ const String& mime,
+AutoPtr<IInterface> MediaCodecBridge::CreateVideoDecoderFormat(
+    /* [in] */ String mime,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
     AutoPtr<IMediaFormatHelper> helper;
-    CMediaFormatHelper::AcquireSingleton((IMediaFormatHelper**)&helper);
+    //TODO CMediaFormatHelper::AcquireSingleton((IMediaFormatHelper**)&helper);
     AutoPtr<IMediaFormat> format;
     helper->CreateVideoFormat(mime, width, height, (IMediaFormat**)&format);
     return format;
 }
 
 //@CalledByNative
-AutoPtr<IMediaFormat> MediaCodecBridge::CreateVideoEncoderFormat(
-    /* [in] */ const String& mime,
+AutoPtr<IInterface> MediaCodecBridge::CreateVideoEncoderFormat(
+    /* [in] */ String mime,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int32 bitRate,
@@ -641,7 +780,7 @@ AutoPtr<IMediaFormat> MediaCodecBridge::CreateVideoEncoderFormat(
     /* [in] */ Int32 colorFormat)
 {
     AutoPtr<IMediaFormatHelper> helper;
-    CMediaFormatHelper::AcquireSingleton((IMediaFormatHelper**)&helper);
+    //TODO CMediaFormatHelper::AcquireSingleton((IMediaFormatHelper**)&helper);
     AutoPtr<IMediaFormat> format;
     helper->CreateVideoFormat(mime, width, height, (IMediaFormat**)&format);
     format->SetInt32(IMediaFormat::KEY_BIT_RATE, bitRate);
@@ -665,7 +804,7 @@ Boolean MediaCodecBridge::CodecSupportsAdaptivePlayback(
     /* [in] */ IMediaCodec* mediaCodec,
     /* [in] */ const String& mime)
 {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || mediaCodec == null) {
+    if (Build::VERSION::SDK_INT < Build::VERSION_CODES::KITKAT || mediaCodec == NULL) {
         return FALSE;
     }
 
@@ -678,11 +817,13 @@ Boolean MediaCodecBridge::CodecSupportsAdaptivePlayback(
             return FALSE;
         }
 
-        AutoPtr<ICodecCapabilities> capabilities;
-        info->GetCapabilitiesForType(mime, (ICodecCapabilities**)&capabilities);
-        Boolean isFeatureSupported;
-        return (capabilities != NULL) && (capabilities->IsFeatureSupported(
-                ICodecCapabilities::FEATURE_AdaptivePlayback, &isFeatureSupported), isFeatureSupported);
+        //TODO below 5 line depends on ICodecCapabilities
+        //AutoPtr<ICodecCapabilities> capabilities;
+        //info->GetCapabilitiesForType(mime, (ICodecCapabilities**)&capabilities);
+        //Boolean isFeatureSupported;
+        //return (capabilities != NULL) && (capabilities->IsFeatureSupported(
+        //        ICodecCapabilities::FEATURE_AdaptivePlayback, &isFeatureSupported), isFeatureSupported);
+        return FALSE;//TODO replace by the above 5 lines
     // } catch (IllegalArgumentException e) {
     //       Log.e(TAG, "Cannot retrieve codec information", e);
     // }
@@ -704,9 +845,11 @@ void MediaCodecBridge::SetCodecSpecificData(
         name = "csd-1";
     }
 
-    if (name != NULL) {
+    if (!name.IsNullOrEmpty()) {
         AutoPtr<IByteBuffer> buf;
-        ByteBuffer::Wrap(bytes, (IByteBuffer**)&buf);
+        AutoPtr<IByteBufferHelper> bHelper;
+        //TODO CByteBufferHelper::New((IByteBufferHelper**)bHelper);
+        bHelper->Wrap(bytes, (IByteBuffer**)&buf);
         format->SetByteBuffer(name, buf);
     }
 }
@@ -715,7 +858,7 @@ void MediaCodecBridge::SetCodecSpecificData(
 void MediaCodecBridge::SetFrameHasADTSHeader(
     /* [in] */ IMediaFormat* format)
 {
-    format->SetInteger(IMediaFormat::KEY_IS_ADTS, 1);
+    format->SetInt32(IMediaFormat::KEY_IS_ADTS, 1);
 }
 
 //@CalledByNative
@@ -735,11 +878,14 @@ Boolean MediaCodecBridge::ConfigureAudio(
             Int32 channelConfig = GetAudioFormat(channelCount);
             // Using 16bit PCM for output. Keep this value in sync with
             // kBytesPerAudioOutputSample in media_codec_bridge.cc.
-            Int32 minBufferSize = /*AudioTrack.*/GetMinBufferSize(sampleRate, channelConfig,
-                    IAudioFormat::ENCODING_PCM_16BIT);
-            CAudioTrack::New(IAudioManager::STREAM_MUSIC, sampleRate, channelConfig,
-                    IAudioFormat::ENCODING_PCM_16BIT, minBufferSize, IAudioTrack::MODE_STREAM,
-                    (IAudioTrack**)&mAudioTrack);
+            AutoPtr<IAudioTrackHelper> atHelper;
+            //TODO CAudioTrackHelper::New((IAudioTrackHelper**)atHelper);
+            Int32 minBufferSize;
+            atHelper->GetMinBufferSize(sampleRate, channelConfig,
+                    IAudioFormat::ENCODING_PCM_16BIT, &minBufferSize);
+            //TODO CAudioTrack::New(IAudioManager::STREAM_MUSIC, sampleRate, channelConfig,
+            //TODO         IAudioFormat::ENCODING_PCM_16BIT, minBufferSize, IAudioTrack::MODE_STREAM,
+            //TODO         (IAudioTrack**)&mAudioTrack);
             Int32 state;
             mAudioTrack->GetState(&state);
             if (state == IAudioTrack::STATE_UNINITIALIZED) {
@@ -780,8 +926,8 @@ Int64 MediaCodecBridge::PlayOutputBuffer(
     Int32 size;
     mAudioTrack->Write(buf, 0, buf->GetLength(), &size);
     if (buf->GetLength() != size) {
-//        Log.i(TAG, "Failed to send all data to audio output, expected size: " +
-//                buf.length + ", actual size: " + size);
+        Logger::I(TAG, "Failed to send all data to audio output, expected size: %d, actual size is:%d",
+                buf->GetLength(), size);
     }
     // TODO(qinmin): Returning the head position allows us to estimate
     // the current presentation time in native code. However, it is
@@ -791,7 +937,7 @@ Int64 MediaCodecBridge::PlayOutputBuffer(
     // If the stream runs too long, getPlaybackHeadPosition() could
     // overflow. AudioTimestampHelper in MediaSourcePlayer has the same
     // issue. See http://crbug.com/358801.
-    Int64 position;
+    Int32 position;
     mAudioTrack->GetPlaybackHeadPosition(&position);
     return position;
 }
@@ -801,7 +947,8 @@ void MediaCodecBridge::SetVolume(
     /* [in] */ Double volume)
 {
     if (mAudioTrack != NULL) {
-        mAudioTrack->SetStereoVolume((Float) volume, (Float) volume);
+        Int32 res;
+        mAudioTrack->SetStereoVolume((Float) volume, (Float) volume, &res);
     }
 }
 
@@ -810,7 +957,7 @@ void MediaCodecBridge::ResetLastPresentationTimeIfNeeded(
 {
     if (mFlushed) {
         mLastPresentationTimeUs =
-                Math::Max(presentationTimeUs - MAX_PRESENTATION_TIMESTAMP_SHIFT_US, 0);
+                Elastos::Core::Math::Max(presentationTimeUs - MAX_PRESENTATION_TIMESTAMP_SHIFT_US, (Int64)0);
         mFlushed = FALSE;
     }
 }

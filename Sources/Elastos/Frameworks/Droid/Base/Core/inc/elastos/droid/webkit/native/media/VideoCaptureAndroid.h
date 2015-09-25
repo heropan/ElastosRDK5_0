@@ -1,6 +1,11 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTUREANDROID_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTUREANDROID_H__
+#include "ext/frameworkext.h"
+#include "elastos/droid/webkit/native/media/VideoCapture.h"
+
+using Elastos::Droid::Hardware::IHardwareCamera;
+using Elastos::Droid::Hardware::IParameters;
+using Elastos::Droid::Hardware::IPreviewCallback;
 
 // import android.content.Context;
 // import android.graphics.ImageFormat;
@@ -32,8 +37,9 @@ private:
     // good. Both are supposed to be temporary hacks.
     class BuggyDeviceHack
     {
-    private:
+    public:
         class IdAndSizes
+        :public Object
         {
         public:
             IdAndSizes(
@@ -56,9 +62,9 @@ private:
         static CARAPI_(Int32) GetImageFormat();
 
     private:
-        static const AutoPtr< ArrayOf<IdAndSizes> > s_CAPTURESIZE_BUGGY_DEVICE_LIST;
+        static const AutoPtr<ArrayOf<IdAndSizes*> > s_CAPTURESIZE_BUGGY_DEVICE_LIST;
 
-        static const AutoPtr< ArrayOf<String> > s_COLORSPACE_BUGGY_DEVICE_LIST;
+        static const AutoPtr<ArrayOf<String> > s_COLORSPACE_BUGGY_DEVICE_LIST;
     };
 
 public:
@@ -67,13 +73,13 @@ public:
         /* [in] */ Int32 id,
         /* [in] */ Int64 nativeVideoCaptureDeviceAndroid);
 
-    static CARAPI_(AutoPtr< ArrayOf<CaptureFormat> >) GetDeviceSupportedFormats(
+    static CARAPI_(AutoPtr< ArrayOf<VideoCapture::CaptureFormat*> >) GetDeviceSupportedFormats(
         /* [in] */ Int32 id);
 
     //@Override
-    CARAPI_(void) OnPreviewFrame(
+    CARAPI OnPreviewFrame(
         /* [in] */ ArrayOf<Byte>* data,
-        /* [in] */ ICamera* camera);
+        /* [in] */ IHardwareCamera* camera);
 
 protected:
     //@Override
@@ -81,18 +87,19 @@ protected:
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Int32 frameRate,
-        /* [in] */ ICameraParameters* cameraParameters);
+        /* [in] */ IParameters* cameraParameters);
 
     //@Override
     CARAPI_(void) AllocateBuffers();
 
     //@Override
     CARAPI_(void) SetPreviewCallback(
-        /* [in] */ ICameraPreviewCallback* cb);
+        /* [in] */ IPreviewCallback* cb);
 
     // TODO(wjia): investigate whether reading from texture could give better
     // performance and frame rate, using onFrameAvailable().
 
+    static AutoPtr<ArrayOf<BuggyDeviceHack::IdAndSizes*> > s_CAPTURESIZE_BUGGY_DEVICE_LIST_Init();
 private:
     Int32 mExpectedFrameSize;
     static const Int32 NUM_CAPTURE_BUFFERS = 3;
@@ -103,5 +110,11 @@ private:
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
+template <>
+struct Conversion<Elastos::Droid::Webkit::Media::VideoCaptureAndroid::BuggyDeviceHack::IdAndSizes*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
 
 #endif//__ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTUREANDROID_H__

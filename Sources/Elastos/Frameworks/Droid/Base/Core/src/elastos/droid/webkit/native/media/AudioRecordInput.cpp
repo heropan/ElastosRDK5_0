@@ -1,3 +1,32 @@
+#include "elastos/droid/webkit/native/media/AudioRecordInput.h"
+
+//TODO #include "elastos/droid/media/CAudioRecord.h"
+//TODO #include "elastos/droid/media/CAudioRecordHelper.h"
+//TODO #include "elastos/droid/media/audiofx/CAcousticEchoCancelerHelper.h"
+#include "elastos/droid/os/Process.h"
+
+//TODO #include "elastos/io/CByteBufferHelper.h"
+#include "elastos/core/Math.h"
+#include "elastos/utility/logging/Logger.h"
+
+using Elastos::Droid::Media::IAudioFormat;
+using Elastos::Droid::Media::IAudioSource;
+using Elastos::Droid::Media::Audiofx::IAudioEffect;
+using Elastos::Droid::Media::Audiofx::IAudioEffectDescriptor;
+using Elastos::Droid::Media::IAudioRecordHelper;
+using Elastos::Droid::Media::Audiofx::IAcousticEchoCancelerHelper;
+//TODO using Elastos::Droid::Media::Audiofx::CAcousticEchoCancelerHelper;
+//TODO using Elastos::Droid::Media::CAudioRecord;
+//TODO using Elastos::Droid::Media::CAudioRecordHelper;
+
+using Elastos::IO::IBuffer;
+using Elastos::IO::IByteBufferHelper;
+//TODO using Elastos::IO::CByteBufferHelper;
+using Elastos::Droid::Os::IProcess;
+using Elastos::Droid::Os::Process;
+using Elastos::Core::IThread;
+using Elastos::Utility::IUUID;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -9,34 +38,41 @@ namespace Media {
 //===============================================================
 
 AudioRecordInput::AudioRecordThread::AudioRecordThread(
-    /* [in] */ AudioRecordThread* owner)
+    /* [in] */ AudioRecordInput* owner)
     : mOwner(owner)
     , mKeepAlive(TRUE)
 {
 }
 
 //@Override
-void AudioRecordInput::AudioRecordThread::Run()
+ECode AudioRecordInput::AudioRecordThread::Run()
 {
     Process::SetThreadPriority(IProcess::THREAD_PRIORITY_URGENT_AUDIO);
     // try {
-        mAudioRecord->StartRecording();
+    ECode ecode = mOwner->mAudioRecord->StartRecording();
     // } catch (IllegalStateException e) {
     //     Log.e(TAG, "startRecording failed", e);
     //     return;
     // }
+    if (FAILED(ecode))
+    {
+        Logger::E(TAG, "startRecording failed, ecode:0x%x", ecode);
+        return ecode;
+    }
 
     while (mKeepAlive) {
         Int32 capacity;
-        mBuffer->Capacity(&capacity);
-        Int32 bytesRead = mAudioRecord->Read(mBuffer, capacity);
+        AutoPtr<IBuffer> buf = IBuffer::Probe(mOwner->mBuffer);
+        buf->GetCapacity(&capacity);
+        Int32 bytesRead;
+        mOwner->mAudioRecord->Read(mOwner->mBuffer, capacity, &bytesRead);
         if (bytesRead > 0) {
-            NativeOnData(mNativeAudioRecordInputStream, bytesRead,
-                         mHardwareDelayBytes);
+            mOwner->NativeOnData(mOwner->mNativeAudioRecordInputStream, bytesRead,
+                         mOwner->mHardwareDelayBytes);
         }
         else {
-//            Log.e(TAG, "read failed: " + bytesRead);
-            if (bytesRead == AudioRecord.ERROR_INVALID_OPERATION) {
+            Logger::E(TAG, "read failed: %d", bytesRead);
+            if (bytesRead == IAudioRecord::ERROR_INVALID_OPERATION) {
                 // This can happen if there is already an active
                 // AudioRecord (e.g. in another tab).
                 mKeepAlive = FALSE;
@@ -45,16 +81,23 @@ void AudioRecordInput::AudioRecordThread::Run()
     }
 
     // try {
-        mAudioRecord->Stop();
+    ecode = mOwner->mAudioRecord->Stop();
     // } catch (IllegalStateException e) {
     //     Log.e(TAG, "stop failed", e);
     // }
+    if(FAILED(ecode))
+    {
+        Logger::E(TAG, "stop failed, ecode:0x%x", ecode);
+    }
+    return ecode;
 }
 
 void AudioRecordInput::AudioRecordThread::JoinRecordThread()
 {
     mKeepAlive = FALSE;
-    while (IsAlive()) {
+    AutoPtr<IThread> thread = IThread::Probe(this);
+    Boolean alive;
+    while (thread->IsAlive(&alive), alive) {
         // try {
             Join();
         // } catch (InterruptedException e) {
@@ -73,7 +116,7 @@ const Boolean AudioRecordInput::DEBUG = FALSE;
 // We are unable to obtain a precise measurement of the hardware delay on
 // Android. This is a conservative lower-bound based on measurments. It
 // could surely be tightened with further testing.
-static const Int32 AudioRecordInput::HARDWARE_DELAY_MS;
+const Int32 AudioRecordInput::HARDWARE_DELAY_MS;
 
 AudioRecordInput::AudioRecordInput(
     /* [in] */ Int64 nativeAudioRecordInputStream,
@@ -93,7 +136,10 @@ AudioRecordInput::AudioRecordInput(
     // the underlying memory address. This avoids the need to copy from a
     // jbyteArray to native memory. More discussion of this here:
     // http://developer.android.com/training/articles/perf-jni.html
-    ByteBuffer::AllocateDirect(bytesPerBuffer, (IByteBuffer**)&mBuffer);
+    //ByteBuffer::AllocateDirect(bytesPerBuffer, (IByteBuffer**)&mBuffer);
+    AutoPtr<IByteBufferHelper> bbh;
+    //TODO CByteBufferHelper::AcquierSingleton((**IByteBufferHelper)&bbh);
+    bbh->AllocateDirect(bytesPerBuffer, (IByteBuffer**)&mBuffer);
 
     // Rather than passing the ByteBuffer with every OnData call (requiring
     // the potentially expensive GetDirectBufferAddress) we simply have the
@@ -124,7 +170,7 @@ AutoPtr<AudioRecordInput> AudioRecordInput::CreateAudioRecordInput(
 Boolean AudioRecordInput::Open()
 {
     if (mAudioRecord != NULL) {
-//        Log.e(TAG, "open() called twice without a close()");
+        Logger::E(TAG, "open() called twice without a close()");
         return FALSE;
     }
 
@@ -136,7 +182,7 @@ Boolean AudioRecordInput::Open()
         channelConfig = IAudioFormat::CHANNEL_IN_STEREO;
     }
     else {
-//        Log.e(TAG, "Unsupported number of channels: " + mChannels);
+        Logger::E(TAG, "Unsupported number of channels: %d", mChannels);
         return FALSE;
     }
 
@@ -148,7 +194,7 @@ Boolean AudioRecordInput::Open()
         audioFormat = IAudioFormat::ENCODING_PCM_16BIT;
     }
     else {
-//        Log.e(TAG, "Unsupported bits per sample: " + mBitsPerSample);
+        Logger::E(TAG, "Unsupported bits per sample: %d", mBitsPerSample);
         return FALSE;
     }
 
@@ -156,34 +202,40 @@ Boolean AudioRecordInput::Open()
     // Android documentation notes "this size doesn't guarantee a smooth
     // recording under load".
     AutoPtr<IAudioRecordHelper> arHelper;
-    CAudioRecordHelper::AcquireSingleton((IAudioRecordHelper**)&arHelper);
+    //TODO CAudioRecordHelper::AcquireSingleton((IAudioRecordHelper**)&arHelper);
     Int32 minBufferSize;
     arHelper->GetMinBufferSize(mSampleRate, channelConfig, audioFormat, &minBufferSize);
     if (minBufferSize < 0) {
-//        Log.e(TAG, "getMinBufferSize error: " + minBufferSize);
+        Logger::E(TAG, "getMinBufferSize error: %d", minBufferSize);
         return FALSE;
     }
 
     // We will request mBuffer.capacity() with every read call. The
     // underlying AudioRecord buffer should be at least this large.
     Int32 capacity;
-    mBuffer->Capacity(&capacity);
-    Int32 audioRecordBufferSizeInBytes = Math::Max(capacity, minBufferSize);
+    AutoPtr<IBuffer> buf = IBuffer::Probe(mBuffer);
+    buf->GetCapacity(&capacity);
+    Int32 audioRecordBufferSizeInBytes = Elastos::Core::Math::Max(capacity, minBufferSize);
     // try {
         // TODO(ajm): Allow other AudioSource types to be requested?
-        CAudioRecord::(IAudioSource::VOICE_COMMUNICATION,
-                                       mSampleRate,
-                                       channelConfig,
-                                       audioFormat,
-                                       audioRecordBufferSizeInBytes,
-                                       (IAudioRecord**)&mAudioRecord);
+    ECode ecode = NOERROR;
+    //TODO ecode = CAudioRecord::New(IAudioSource::VOICE_COMMUNICATION,
+    //                                   mSampleRate,
+    //                                   channelConfig,
+    //                                   audioFormat,
+   //                                    audioRecordBufferSizeInBytes,
+   //                                    (IAudioRecord**)&mAudioRecord);
     // } catch (IllegalArgumentException e) {
     //     Log.e(TAG, "AudioRecord failed", e);
     //     return false;
     // }
+    if(FAILED(ecode))
+    {
+        Logger::E(TAG, "create AudioRecord failed, ecode:0x%x, buffersize:%d", ecode, audioRecordBufferSizeInBytes);
+    }
 
     AutoPtr<IAcousticEchoCancelerHelper> aecHelper;
-    CAcousticEchoCancelerHelper::AcquireSingleton((IAcousticEchoCancelerHelper**)&aecHelper);
+    //TODO CAcousticEchoCancelerHelper::AcquireSingleton((IAcousticEchoCancelerHelper**)&aecHelper);
     Boolean isAvailable = FALSE;
     aecHelper->IsAvailable(&isAvailable);
     if (isAvailable) {
@@ -191,23 +243,32 @@ Boolean AudioRecordInput::Open()
         mAudioRecord->GetAudioSessionId(&id);
         aecHelper->Create(id, (IAcousticEchoCanceler**)&mAEC);
         if (mAEC == NULL) {
-//            Log.e(TAG, "AcousticEchoCanceler.create failed");
+            Logger::E(TAG, "AcousticEchoCanceler.create failed");
             return FALSE;
         }
 
         Int32 ret;
-        mAEC->SetEnabled(mUsePlatformAEC, &ret);
+        AutoPtr<IAudioEffect> iae = IAudioEffect::Probe(mAEC);
+        iae->SetEnabled(mUsePlatformAEC, &ret);
         if (ret != IAudioEffect::SUCCESS) {
-//            Log.e(TAG, "setEnabled error: " + ret);
+            Logger::E(TAG, "setEnabled error: %d", ret);
             return FALSE;
         }
 
         if (DEBUG) {
-            Descriptor descriptor = mAEC.getDescriptor();
-            Log.d(TAG, "AcousticEchoCanceler " +
-                    "name: " + descriptor.name + ", " +
-                    "implementor: " + descriptor.implementor + ", " +
-                    "uuid: " + descriptor.uuid);
+            AutoPtr<IAudioEffect> iae = IAudioEffect::Probe(mAEC);
+            AutoPtr<IAudioEffectDescriptor> descriptor;
+            iae->GetDescriptor((IAudioEffectDescriptor**)&descriptor);
+            String name, implementor, uuid;
+            AutoPtr<IUUID> iuuid;
+            descriptor->GetName(&name);
+            descriptor->GetImplementor(&implementor);
+            descriptor->GetUuid((IUUID**)&iuuid);
+            iuuid->ToString(&uuid);
+            Logger::D(TAG, "AcousticEchoCanceler \n\
+                    name: %s \n \
+                    implementor: %s \n \
+                    uuid: ", name.string(), implementor.string(), uuid.string());
         }
     }
 
@@ -218,7 +279,7 @@ Boolean AudioRecordInput::Open()
 void AudioRecordInput::Start()
 {
     if (mAudioRecord == NULL) {
-//        Log.e(TAG, "start() called before open().");
+        Logger::E(TAG, "start() called before open().");
         return;
     }
 
@@ -227,7 +288,7 @@ void AudioRecordInput::Start()
         return;
     }
 
-    mAudioRecordThread = new AudioRecordThread();
+    mAudioRecordThread = new AudioRecordThread(this);
     mAudioRecordThread->Start();
 }
 
@@ -248,7 +309,7 @@ void AudioRecordInput::Stop()
 void AudioRecordInput::Close()
 {
     if (mAudioRecordThread != NULL) {
-//        Log.e(TAG, "close() called before stop().");
+        Logger::E(TAG, "close() called before stop().");
         return;
     }
 
@@ -258,11 +319,12 @@ void AudioRecordInput::Close()
     }
 
     if (mAEC != NULL) {
-        mAEC->Release();
+        AutoPtr<IAudioEffect> iae = IAudioEffect::Probe(mAEC);
+        iae->ReleaseResources();
         mAEC = NULL;
     }
 
-    mAudioRecord->Release();
+    mAudioRecord->ReleaseResources();
     mAudioRecord = NULL;
 }
 

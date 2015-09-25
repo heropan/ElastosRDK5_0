@@ -1,3 +1,32 @@
+#include "elastos/droid/webkit/native/media/UsbMidiDeviceAndroid.h"
+
+//TODO #include "elastos/io/CByteBufferHelper.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/hardware/usb/CUsbRequest.h"
+
+using Elastos::Droid::Hardware::Usb::IUsbConstants;
+using Elastos::Droid::Hardware::Usb::IUsbDevice;
+using Elastos::Droid::Hardware::Usb::IUsbDeviceConnection;
+using Elastos::Droid::Hardware::Usb::IUsbEndpoint;
+using Elastos::Droid::Hardware::Usb::IUsbInterface;
+using Elastos::Droid::Hardware::Usb::IUsbManager;
+using Elastos::Droid::Hardware::Usb::IUsbRequest;
+using Elastos::Droid::Hardware::Usb::CUsbRequest;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Utility::ISparseArray;
+//TODO using Elastos::Droid::Utility::CSparseArray;
+
+using Elastos::IO::IBuffer;
+using Elastos::IO::IByteBuffer;
+using Elastos::IO::IByteBufferHelper;
+using Elastos::IO::CByteBufferHelper;
+using Elastos::Core::IThread;
+using Elastos::Core::EIID_IThread;
+using Elastos::Core::EIID_IRunnable;
 
 namespace Elastos {
 namespace Droid {
@@ -28,33 +57,36 @@ ECode UsbMidiDeviceAndroid::InnerThread::Run()
         request->GetEndpoint((IUsbEndpoint**)&endpoint);
         Int32 direction;
         endpoint->GetDirection(&direction);
-        if (direction != IUsbConstants::USB_DIR_IN) {
+        if (direction != IUsbConstants::_USB_DIR_IN) {
             continue;
         }
 
-        ByteBuffer buffer = bufferForEndpoints.get(endpoint);
-        Int32 length = GetInputDataLength(buffer);
+        //TODO
+        AutoPtr<IByteBuffer> byteBuffer = mOwner->mBufferForEndpoints[endpoint];
+        AutoPtr<IBuffer> iBuffer = IBuffer::Probe(byteBuffer);
+        Int32 length = GetInputDataLength(byteBuffer);
         if (length > 0) {
-            buffer->Rewind();
-            AutoPtr< ArrayOf<Byte> > bs = ArrayOf<Byte>::Alloc(length);
-            buffer->Get(bs, 0, length);
+            iBuffer->Rewind();
+            AutoPtr<ArrayOf<Byte> > bs = ArrayOf<Byte>::Alloc(length);
+            byteBuffer->Get(bs, 0, length);
             Int32 number;
             endpoint->GetEndpointNumber(&number);
-            PostOnDataEvent(number, bs);
+            mOwner->PostOnDataEvent(number, bs);
         }
 
-        buffer->Rewind();
+        iBuffer->Rewind();
         Int32 capacity;
-        buffer->Capacity(&capacity);
-        request->Queue(buffer, capacity);
+        iBuffer->GetCapacity(&capacity);
+        Boolean result;
+        request->Queue(byteBuffer, capacity, &result);
     }
-
     return NOERROR;
 }
 
 //===============================================================
 //            UsbMidiDeviceAndroid::InnerRunnable
 //===============================================================
+CAR_INTERFACE_IMPL(UsbMidiDeviceAndroid::InnerRunnable, Object, IRunnable);
 
 UsbMidiDeviceAndroid::InnerRunnable::InnerRunnable(
     /* [in] */ UsbMidiDeviceAndroid* owner,
@@ -68,7 +100,7 @@ UsbMidiDeviceAndroid::InnerRunnable::InnerRunnable(
 
 ECode UsbMidiDeviceAndroid::InnerRunnable::Run()
 {
-    if (mIsClosed) {
+    if (mOwner->mIsClosed) {
         return NOERROR;
     }
 
@@ -98,22 +130,39 @@ UsbMidiDeviceAndroid::UsbMidiDeviceAndroid(
     , mHasInputThread(FALSE)
     , mNativePointer(0)
 {
-    mConnection = manager.openDevice(device);
-    mEndpointMap = new SparseArray<UsbEndpoint>();
-    mRequestMap = new HashMap<UsbEndpoint, UsbRequest>();
+    //mConnection = manager->OpenDevice(device);
+    manager->OpenDevice(device, (IUsbDeviceConnection**)&mConnection);
+    //mEndpointMap = new SparseArray<UsbEndpoint>();
+    //TODO CSparseArray::New((ISparseArray**)&mEndpointMap);
+    //mRequestMap = new HashMap<UsbEndpoint, UsbRequest>();
     CHandler::New((IHandler**)&mHandler);
 
-    for (Int32 i = 0; i < device.getInterfaceCount(); ++i) {
-        UsbInterface iface = device.getInterface(i);
-        if (iface.getInterfaceClass() != UsbConstants.USB_CLASS_AUDIO ||
-            iface.getInterfaceSubclass() != MIDI_SUBCLASS) {
+    Int32 interfaceCount;
+    device->GetInterfaceCount(&interfaceCount);
+    for (Int32 i = 0; i < interfaceCount; ++i) {
+        AutoPtr<IUsbInterface> iface;
+        device->GetInterface(i, (IUsbInterface**)&iface);
+        Int32 interfaceClass, interfaceSubclass;
+        iface->GetInterfaceClass(&interfaceClass);
+        iface->GetInterfaceSubclass(&interfaceSubclass);
+        if (interfaceClass != IUsbConstants::_USB_CLASS_AUDIO ||
+            interfaceSubclass != MIDI_SUBCLASS) {
             continue;
         }
-        mConnection.claimInterface(iface, true);
-        for (int j = 0; j < iface.getEndpointCount(); ++j) {
-            UsbEndpoint endpoint = iface.getEndpoint(j);
-            if (endpoint.getDirection() == UsbConstants.USB_DIR_OUT) {
-                mEndpointMap.put(endpoint.getEndpointNumber(), endpoint);
+        Boolean result;
+        mConnection->ClaimInterface(iface, true, &result);
+        Int32 endpointCount;
+        iface->GetEndpointCount(&endpointCount);
+        for (Int32 j = 0; j < endpointCount; ++j) {
+            //UsbEndpoint endpoint = iface.getEndpoint(j);
+            AutoPtr<IUsbEndpoint> endpoint;
+            iface->GetEndpoint(j, (IUsbEndpoint**)&endpoint);
+            Int32 direction;
+            endpoint->GetDirection(&direction);
+            if (direction == IUsbConstants::_USB_DIR_OUT) {
+                Int32 endpointNumber;
+                endpoint->GetEndpointNumber(&endpointNumber);
+                mEndpointMap->Put(endpointNumber, endpoint);
             }
         }
     }
@@ -131,28 +180,52 @@ UsbMidiDeviceAndroid::UsbMidiDeviceAndroid(
 void UsbMidiDeviceAndroid::StartListen(
     /* [in] */ IUsbDevice* device)
 {
-    final Map<UsbEndpoint, ByteBuffer> bufferForEndpoints =
-        new HashMap<UsbEndpoint, ByteBuffer>();
+    //final Map<UsbEndpoint, ByteBuffer> bufferForEndpoints =
+    //    new HashMap<UsbEndpoint, ByteBuffer>();
 
-    for (Int32 i = 0; i < device.getInterfaceCount(); ++i) {
-        UsbInterface iface = device.getInterface(i);
-        if (iface.getInterfaceClass() != UsbConstants.USB_CLASS_AUDIO ||
-            iface.getInterfaceSubclass() != MIDI_SUBCLASS) {
+    Int32 interfaceCount;
+    device->GetInterfaceCount(&interfaceCount);
+    for (Int32 i = 0; i < interfaceCount; ++i) {
+        AutoPtr<IUsbInterface> iface;
+        device->GetInterface(i, (IUsbInterface**)&iface);
+        Int32 interfaceClass, interfaceSubclass;
+        iface->GetInterfaceClass(&interfaceClass);
+        iface->GetInterfaceSubclass(&interfaceSubclass);
+        if (interfaceClass != IUsbConstants::_USB_CLASS_AUDIO ||
+            interfaceSubclass != MIDI_SUBCLASS) {
             continue;
         }
-        for (int j = 0; j < iface.getEndpointCount(); ++j) {
-            UsbEndpoint endpoint = iface.getEndpoint(j);
-            if (endpoint.getDirection() == UsbConstants.USB_DIR_IN) {
-                ByteBuffer buffer = ByteBuffer.allocate(endpoint.getMaxPacketSize());
-                UsbRequest request = new UsbRequest();
-                request.initialize(mConnection, endpoint);
-                request.queue(buffer, buffer.remaining());
-                bufferForEndpoints.put(endpoint, buffer);
+        Int32 endpointCount;
+        iface->GetEndpointCount(&endpointCount);
+        for (int j = 0; j < endpointCount; ++j) {
+            //UsbEndpoint endpoint = iface.getEndpoint(j);
+            AutoPtr<IUsbEndpoint> endpoint;
+            iface->GetEndpoint(j, (IUsbEndpoint**)&endpoint);
+            Int32 endpointDirection;
+            endpoint->GetDirection(&endpointDirection);
+            if (endpointDirection == IUsbConstants::_USB_DIR_IN) {
+                //ByteBuffer buffer = ByteBuffer.allocate(endpoint.getMaxPacketSize());
+                Int32 capacity;
+                endpoint->GetMaxPacketSize(&capacity);
+                AutoPtr<IByteBuffer> byteBuffer;
+                AutoPtr<IByteBufferHelper> bbHelper;
+                CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&bbHelper);
+                bbHelper->Allocate(capacity, (IByteBuffer**)&byteBuffer);
+                //UsbRequest request = new UsbRequest();
+                AutoPtr<IUsbRequest> request;
+                CUsbRequest::New((IUsbRequest**)&request);
+                Boolean result;
+                request->Initialize(mConnection, endpoint, &result);
+                AutoPtr<IBuffer> buffer = IBuffer::Probe(byteBuffer);
+                Int32 remain;
+                buffer->GetRemaining(&remain);
+                request->Queue(byteBuffer, remain, &result);
+                mBufferForEndpoints[endpoint] =  byteBuffer;
             }
         }
     }
 
-    if (bufferForEndpoints.isEmpty()) {
+    if (mBufferForEndpoints.IsEmpty()) {
         return;
     }
 
@@ -170,7 +243,8 @@ void UsbMidiDeviceAndroid::PostOnDataEvent(
     /* [in] */ ArrayOf<Byte>* bs)
 {
     AutoPtr<IRunnable> runnable = new InnerRunnable(this, endpointNumber, bs);
-    mHandler->Post(runnable);
+    Boolean result;
+    mHandler->Post(runnable, &result);
 }
 
 /**
@@ -198,7 +272,9 @@ void UsbMidiDeviceAndroid::Send(
         return;
     }
 
-    UsbEndpoint endpoint = mEndpointMap.get(endpointNumber);
+    //UsbEndpoint endpoint = mEndpointMap.get(endpointNumber);
+    AutoPtr<IUsbEndpoint> endpoint;
+    mEndpointMap->Get(endpointNumber, (IInterface**)&endpoint);
     if (endpoint == NULL) {
         return;
     }
@@ -213,17 +289,30 @@ void UsbMidiDeviceAndroid::Send(
         //  https://code.google.com/p/android/issues/detail?id=59467
         //
         // TODO(yhirano): Delete this block once the problem is fixed.
-        const Int32 TIMEOUT = 100;
-        mConnection.bulkTransfer(endpoint, bs, 0, bs.length, TIMEOUT);
+        Int32 TIMEOUT = 100;
+        Int32 transferNum;
+        //TODO pay attention to the 2th parameter
+        mConnection->BulkTransfer(endpoint, *bs, bs->GetLength(), TIMEOUT, &transferNum);
     }
     else {
-        UsbRequest request = mRequestMap.get(endpoint);
-        if (request == null) {
-            request = new UsbRequest();
-            request.initialize(mConnection, endpoint);
-            mRequestMap.put(endpoint, request);
+        //UsbRequest request = mRequestMap.get(endpoint);
+        AutoPtr<IUsbRequest> request = mRequestMap[endpoint];
+        if (request == NULL) {
+            //request = new UsbRequest();
+            //request.initialize(mConnection, endpoint);
+            //mRequestMap.put(endpoint, request);
+            AutoPtr<IUsbRequest> request;
+            CUsbRequest::New((IUsbRequest**)&request);
+            Boolean result;
+            request->Initialize(mConnection, endpoint, &result);
+            mRequestMap[endpoint] =  request;
         }
-        request.queue(ByteBuffer.wrap(bs), bs.length);
+        Boolean result;
+        AutoPtr<IByteBufferHelper> bbHelper;
+        CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&bbHelper);
+        AutoPtr<IByteBuffer> ibyteBuffer;
+        bbHelper->Wrap(bs, (IByteBuffer**)&ibyteBuffer);
+        request->Queue(ibyteBuffer, bs->GetLength(), &result);
     }
 }
 
@@ -241,9 +330,9 @@ Boolean UsbMidiDeviceAndroid::ShouldUseBulkTransfer()
  * @return The descriptors bytes of this device.
  */
 //@CalledByNative
-AutoPtr< ArrayOf<Byte> > UsbMidiDeviceAndroid::GetDescriptors()
+AutoPtr<ArrayOf<Byte> > UsbMidiDeviceAndroid::GetDescriptors()
 {
-    AutoPtr< ArrayOf<Byte> > array
+    AutoPtr<ArrayOf<Byte> > array;
     if (mConnection == NULL) {
         array = ArrayOf<Byte>::Alloc(0);
         return array;
@@ -260,12 +349,17 @@ AutoPtr< ArrayOf<Byte> > UsbMidiDeviceAndroid::GetDescriptors()
 //@CalledByNative
 void UsbMidiDeviceAndroid::Close()
 {
-    mEndpointMap.clear();
-    for (UsbRequest request : mRequestMap.values()) {
-        request.close();
+    mEndpointMap->Clear();
+    HashMap<AutoPtr<IUsbEndpoint>, AutoPtr<IUsbRequest> >::Iterator iter =
+        mRequestMap.Begin();
+    //for (UsbRequest request : mRequestMap.values())
+    for(;iter != mRequestMap.End(); ++iter)
+    {
+        //request.close();
+        iter->mSecond->Close();
     }
-    mRequestMap.clear();
-    mConnection.close();
+    mRequestMap.Clear();
+    mConnection->Close();
     mNativePointer = 0;
     mIsClosed = true;
 }
@@ -279,12 +373,13 @@ Int32 UsbMidiDeviceAndroid::GetInputDataLength(
     /* [in] */ IByteBuffer* buffer)
 {
     Int32 position;
-    buffer->Position(&position);
+    AutoPtr<IBuffer> iBuffer = IBuffer::Probe(buffer);
+    iBuffer->GetPosition(&position);
     // We assume that the data length is always divisable by 4.
     for (Int32 i = 0; i < position; i += 4) {
         // Since Code Index Number 0 is reserved, it is not a valid USB-MIDI data.
         Int32 pos;
-        buffer->Get(i, &pos);
+        buffer->GetInt32(i, &pos);
         if (pos == 0) {
             return i;
         }

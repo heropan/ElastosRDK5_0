@@ -1,25 +1,34 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_USBMIDIDEVICEANDROID_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_USBMIDIDEVICEANDROID_H__
-
+#include "ext/frameworkext.h"
+#include "elastos/utility/etl/HashMap.h"
+#include "elastos/core/Thread.h"
 // import android.annotation.TargetApi;
-// import android.hardware.usb.UsbConstants;
-// import android.hardware.usb.UsbDevice;
-// import android.hardware.usb.UsbDeviceConnection;
-// import android.hardware.usb.UsbEndpoint;
-// import android.hardware.usb.UsbInterface;
-// import android.hardware.usb.UsbManager;
-// import android.hardware.usb.UsbRequest;
-// import android.os.Build;
-// import android.os.Handler;
-// import android.util.SparseArray;
+using Elastos::Droid::Hardware::Usb::IUsbManager;
+using Elastos::Droid::Hardware::Usb::IUsbDevice;
+using Elastos::Droid::Hardware::Usb::IUsbDeviceConnection;
+using Elastos::Droid::Hardware::Usb::IUsbEndpoint;
+using Elastos::Droid::Hardware::Usb::IUsbRequest;
+using Elastos::Droid::Os::IHandler;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
-
-// import java.nio.ByteBuffer;
 // import java.util.HashMap;
 // import java.util.Map;
+
+using Elastos::Core::IThread;
+using Elastos::Core::Thread;
+using Elastos::Core::IRunnable;
+using Elastos::IO::IByteBuffer;
+using Elastos::Droid::Utility::ISparseArray;
+using Elastos::Utility::Etl::HashMap;
+
+_ETL_NAMESPACE_BEGIN
+template<> struct Hash<AutoPtr<Elastos::Droid::Hardware::Usb::IUsbEndpoint> >
+{
+            size_t operator() (AutoPtr<IUsbEndpoint> x) const { return (size_t)x.Get(); }
+};
+_ETL_NAMESPACE_END
 
 namespace Elastos {
 namespace Droid {
@@ -32,11 +41,11 @@ namespace Media {
  */
 //@JNINamespace("media")
 class UsbMidiDeviceAndroid
+:public Object
 {
 private:
     class InnerThread
-        : public Object
-        , public IThread
+        : public Thread
     {
     public:
         InnerThread(
@@ -53,6 +62,7 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         InnerRunnable(
             /* [in] */ UsbMidiDeviceAndroid* owner,
             /* [in] */ Int32 endpointNumber,
@@ -62,8 +72,8 @@ private:
 
     private:
         UsbMidiDeviceAndroid* mOwner;
-        Int32 mEndpointNumber,
-        AutoPtr< ArrayOf<Byte> > mBs
+        Int32 mEndpointNumber;
+        AutoPtr<ArrayOf<Byte> > mBs;
     };
 
 public:
@@ -104,7 +114,7 @@ public:
      * @return The descriptors bytes of this device.
      */
     //@CalledByNative
-    CARAPI_(AutoPtr< ArrayOf<Byte> >) GetDescriptors();
+    CARAPI_(AutoPtr<ArrayOf<Byte> >) GetDescriptors();
 
     /**
      * Closes the device connection.
@@ -148,17 +158,19 @@ private:
     /**
      * A connection handle for this device.
      */
-    const AutoPtr<IUsbDeviceConnection> mConnection;
+    AutoPtr<IUsbDeviceConnection> mConnection;
 
     /**
      * A map from endpoint number to UsbEndpoint.
      */
-    const SparseArray<UsbEndpoint> mEndpointMap;
+    AutoPtr<ISparseArray> mEndpointMap;
 
     /**
      * A map from UsbEndpoint to UsbRequest associated to it.
      */
-    const Map<UsbEndpoint, UsbRequest> mRequestMap;
+    //AutoPtr<IMap> mRequestMap;
+    HashMap<AutoPtr<IUsbEndpoint>, AutoPtr<IUsbRequest> > mRequestMap;
+    HashMap<AutoPtr<IUsbEndpoint>, AutoPtr<IByteBuffer> > mBufferForEndpoints;
 
     /**
      * The handler used for posting events on the main thread.

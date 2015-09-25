@@ -1,3 +1,4 @@
+#include "elastos/droid/webkit/native/media/ImageFormat.h"
 
 namespace Elastos {
 namespace Droid {

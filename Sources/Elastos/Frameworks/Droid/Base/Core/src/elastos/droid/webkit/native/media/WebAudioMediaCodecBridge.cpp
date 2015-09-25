@@ -1,10 +1,44 @@
+#include "elastos/droid/webkit/native/media/WebAudioMediaCodecBridge.h"
+
+#include "elastos/droid/os/CParcelFileDescriptorHelper.h"
+//TODO #include "elastos/droid/media/CMediaExtractor.h"
+//TODO #include "elastos/droid/media/CMediaCodecBufferInfo.h"
+//TODO #include "elastos/droid/media/CMediaCodecHelper.h"
+
+//TODO #include "elastos/io/CByteBufferHelper.h"
+//TODO #include "elastos/io/CFileHelper.h"
+#include "elastos/utility/logging/Logger.h"
+
+using Elastos::Droid::Content::IContext;
+//TODO using Elastos::Droid::Media::IMediaCodec;
+using Elastos::Droid::Media::IMediaCodecBufferInfo;
+//TODO using Elastos::Droid::Media::CMediaCodecBufferInfo;
+using Elastos::Droid::Media::IMediaFormat;
+using Elastos::Droid::Media::IMediaExtractor;
+//TODO using Elastos::Droid::Media::CMediaExtractor;
+using Elastos::Droid::Media::IMediaCodecHelper;
+//TODO using Elastos::Droid::Media::CMediaCodecHelper;
+using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::Droid::Os::IParcelFileDescriptorHelper;
+using Elastos::Droid::Os::CParcelFileDescriptorHelper;
+
+using Elastos::IO::IFile;
+using Elastos::IO::IFileDescriptor;
+using Elastos::IO::IFileHelper;
+//TODO using Elastos::IO::CFileHelper;
+using Elastos::IO::IBuffer;
+using Elastos::IO::IByteBuffer;
+using Elastos::IO::IByteBufferHelper;
+//TODO using Elastos::IO::CByteBufferHelper;
+using Elastos::Utility::Logging::Logger;
+
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Media {
 
-const String WebAudioMediaCodecBridge::LOG_TAG("WebAudioMediaCodec");
+const String WebAudioMediaCodecBridge::TAG("WebAudioMediaCodec");
 
 // TODO(rtoy): What is the correct timeout value for reading
 // from a file in memory?
@@ -17,7 +51,9 @@ String WebAudioMediaCodecBridge::CreateTempFile(
     AutoPtr<IFile> outputDirectory;
     ctx->GetCacheDir((IFile**)&outputDirectory);
     AutoPtr<IFile> outputFile;
-    File::CreateTempFile(String("webaudio"), String(".dat"), outputDirectory,
+    AutoPtr<IFileHelper> fileHelper;
+    //TODO CFileHelper::AcquireSingleton((IFileHelper**)&fileHelper);
+    fileHelper->CreateTempFile(String("webaudio"), String(".dat"), outputDirectory,
         (IFile**)&outputFile);
 
     String str;
@@ -38,7 +74,7 @@ Boolean WebAudioMediaCodecBridge::DecodeAudioFile(
         return FALSE;
 
     AutoPtr<IMediaExtractor> extractor;
-    CMediaExtractor::New((IMediaExtractor**)&extractor);
+    //TODO CMediaExtractor::New((IMediaExtractor**)&extractor);
 
     AutoPtr<IParcelFileDescriptorHelper> parcelFileDescriptorHelper;
     CParcelFileDescriptorHelper::AcquireSingleton((IParcelFileDescriptorHelper**)&parcelFileDescriptorHelper);
@@ -57,7 +93,8 @@ Boolean WebAudioMediaCodecBridge::DecodeAudioFile(
     Int32 count;
     extractor->GetTrackCount(&count);
     if (count <= 0) {
-        encodedFD->DetachFd();
+        Int32 result;
+        encodedFD->DetachFd(&result);
         return FALSE;
     }
 
@@ -74,7 +111,7 @@ Boolean WebAudioMediaCodecBridge::DecodeAudioFile(
     Int32 outputChannelCount = inputChannelCount;
 
     Int32 sampleRate;
-    format->GetInteger(IMediaFormat::KEY_SAMPLE_RATE, &sampleRate);
+    format->GetInt32(IMediaFormat::KEY_SAMPLE_RATE, &sampleRate);
     String mime;
     format->GetString(IMediaFormat::KEY_MIME, &mime);
 
@@ -83,10 +120,14 @@ Boolean WebAudioMediaCodecBridge::DecodeAudioFile(
     format->ContainsKey(IMediaFormat::KEY_DURATION, &containsKey);
     if (containsKey) {
         // try {
-            format->GetInt64(IMediaFormat::KEY_DURATION, &durationMicroseconds);
+            ECode ecode = format->GetInt64(IMediaFormat::KEY_DURATION, &durationMicroseconds);
         // } catch (Exception e) {
-        //     Log.d(LOG_TAG, "Cannot get duration");
+        //     Log.d(TAG, "Cannot get duration");
         // }
+            if (FAILED(ecode))
+            {
+                Logger::D(TAG, "Cannot get duration");
+            }
     }
 
     // If the duration is too long, set to 0 to force the caller
@@ -97,28 +138,34 @@ Boolean WebAudioMediaCodecBridge::DecodeAudioFile(
         durationMicroseconds = 0;
     }
 
-    // Log.d(LOG_TAG, "Initial: Tracks: " + extractor.getTrackCount() +
-    //       " Format: " + format);
+    String formatStr;
+    format->ToString(&formatStr);
+    Logger::D(TAG, "Initial: Tracks: %d, Format:%s", count, formatStr.string());
 
     // Create decoder
     AutoPtr<IMediaCodec> codec;
     // try {
         AutoPtr<IMediaCodecHelper> mediaCodecHelper;
-        CMediaCodecHelper::AcquireSingleton((IMediaCodecHelper**)&mediaCodecHelper);
-        mediaCodecHelper->CreateDecoderByType(mime, (IMediaCodec**)&codec);
+        //TODO CMediaCodecHelper::AcquireSingleton((IMediaCodecHelper**)&mediaCodecHelper);
+        ECode ecode = mediaCodecHelper->CreateDecoderByType(mime, (IMediaCodec**)&codec);
     // } catch (Exception e) {
-    //     Log.w(LOG_TAG, "Failed to create MediaCodec for mime type: " + mime);
-    //     encodedFD.detachFd();
-    //     return false;
+        if (FAILED(ecode))
+        {
+            Logger::W(TAG, "Failed to create MediaCodec for mime type: %s", mime.string());
+            Int32 dfdRes;
+            encodedFD->DetachFd(&dfdRes);
+            return FALSE;
+        }
     // }
+
 
     codec->Configure(format, NULL /* surface */, NULL /* crypto */, 0 /* flags */);
     codec->Start();
 
-    AutoPtr< ArrayOf<IByteBuffer> > codecInputBuffers;
-    codec->GetInputBuffers((ArrayOf<IByteBuffer>**)&codecInputBuffers);
-    AutoPtr< ArrayOf<IByteBuffer> > codecOutputBuffers;
-    codec->GetOutputBuffers((ArrayOf<IByteBuffer>**)&codecOutputBuffers);
+    AutoPtr<ArrayOf<IByteBuffer*> > codecInputBuffers;
+    codec->GetInputBuffers((ArrayOf<IByteBuffer*>**)&codecInputBuffers);
+    AutoPtr<ArrayOf<IByteBuffer*> > codecOutputBuffers;
+    codec->GetOutputBuffers((ArrayOf<IByteBuffer*>**)&codecOutputBuffers);
 
     // A track must be selected and will be used to read samples.
     extractor->SelectTrack(0);
@@ -152,17 +199,18 @@ Boolean WebAudioMediaCodecBridge::DecodeAudioFile(
                                        0, /* offset */
                                        sampleSize,
                                        presentationTimeMicroSec,
-                                       sawInputEOS ? MediaCodec.BUFFER_FLAG_END_OF_STREAM : 0);
+                                       sawInputEOS ? IMediaCodec::BUFFER_FLAG_END_OF_STREAM : 0);
 
                 if (!sawInputEOS) {
-                    extractor->Advance();
+                    Boolean advRes;
+                    extractor->Advance(&advRes);
                 }
             }
         }
 
         // Output side
         AutoPtr<IMediaCodecBufferInfo> info;
-        CMediaCodecBufferInfo::New((IMediaCodecBufferInfo**)&info);
+        //TODO CMediaCodecBufferInfo::New((IMediaCodecBufferInfo**)&info);
         Int32 outputBufIndex;
         codec->DequeueOutputBuffer(info, TIMEOUT_MICROSECONDS, &outputBufIndex);
 
@@ -174,10 +222,8 @@ Boolean WebAudioMediaCodecBridge::DecodeAudioFile(
                 // catch any changes in format. But be sure to
                 // initialize it BEFORE we send any decoded audio,
                 // and only initialize once.
-//                Log.d(LOG_TAG, "Final:  Rate: " + sampleRate +
-//                      " Channels: " + inputChannelCount +
-//                      " Mime: " + mime +
-//                      " Duration: " + durationMicroseconds + " microsec");
+                Logger::D(TAG, "Final:  Rate: %d, Channels: %d, Mime: %s, Duration: %d microsec",
+                        sampleRate, inputChannelCount, mime.string(), durationMicroseconds);
 
                 NativeInitializeDestination(nativeMediaCodecBridge,
                                             inputChannelCount,
@@ -185,35 +231,42 @@ Boolean WebAudioMediaCodecBridge::DecodeAudioFile(
                                             durationMicroseconds);
                 destinationInitialized = TRUE;
             }
-
-            if (destinationInitialized && info.size > 0) {
-                NativeOnChunkDecoded(nativeMediaCodecBridge, buf, info.size,
+            Int32 infoSize;
+            info->GetSize(&infoSize);
+            if (destinationInitialized && infoSize > 0) {
+                NativeOnChunkDecoded(nativeMediaCodecBridge, buf, infoSize,
                                      inputChannelCount, outputChannelCount);
             }
 
-            buf->Clear();
+            AutoPtr<IBuffer> ibuf = IBuffer::Probe(buf);
+            ibuf->Clear();
             codec->ReleaseOutputBuffer(outputBufIndex, FALSE /* render */);
 
-            if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+            Int32 infoFlags;
+            info->GetFlags(&infoFlags);
+            if ((infoFlags & IMediaCodec::BUFFER_FLAG_END_OF_STREAM) != 0) {
                 sawOutputEOS = TRUE;
             }
         }
         else if (outputBufIndex == IMediaCodec::INFO_OUTPUT_BUFFERS_CHANGED) {
-            codec->GetOutputBuffers((ArrayOf<IByteBuffer>**)&codecOutputBuffers);
+            codec->GetOutputBuffers((ArrayOf<IByteBuffer*>**)&codecOutputBuffers);
         }
         else if (outputBufIndex == IMediaCodec::INFO_OUTPUT_FORMAT_CHANGED) {
             AutoPtr<IMediaFormat> newFormat;
             codec->GetOutputFormat((IMediaFormat**)&newFormat);
             newFormat->GetInt32(IMediaFormat::KEY_CHANNEL_COUNT, &outputChannelCount);
             newFormat->GetInt32(IMediaFormat::KEY_SAMPLE_RATE, &sampleRate);
-//            Log.d(LOG_TAG, "output format changed to " + newFormat);
+            String newFormatStr;
+            newFormat->ToString(&newFormatStr);
+            Logger::D(TAG, "output format changed to %s", newFormatStr.string());
         }
     }
 
-    encodedFD->DetachFd();
+    Int32 dfdRes;
+    encodedFD->DetachFd(&dfdRes);
 
     codec->Stop();
-    codec->Release();
+    codec->ReleaseResources();
     codec = NULL;
 
     return TRUE;

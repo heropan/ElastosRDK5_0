@@ -1,30 +1,36 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_MEDIADRMBRIDGE_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_MEDIADRMBRIDGE_H__
+#include "ext/frameworkext.h"
+#include "elastos/utility/etl/HashMap.h"
+#include "elastos/droid/os/AsyncTask.h"
 
-// import android.media.MediaCrypto;
-// import android.media.MediaDrm;
-// import android.os.AsyncTask;
-// import android.os.Build;
-// import android.os.Handler;
-// import android.util.Log;
+//TODO using Elastos::Droid::Media::IMediaCrypto;
+using Elastos::Droid::Media::IMediaDrmOnEventListener;
+using Elastos::Droid::Media::EIID_IMediaDrmOnEventListener;
+//TODO using Elastos::Droid::Media::IMediaDrm;
+using Elastos::Droid::Media::IMediaDrmKeyRequest;
 
-// import org.apache.http.HttpResponse;
+using Elastos::Droid::Os::AsyncTask;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Core::IRunnable;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Utility::IUUID;
+using Elastos::IO::IByteBuffer;
+
+using Elastos::Utility::Etl::HashMap;
 // import org.apache.http.client.ClientProtocolException;
-// import org.apache.http.client.HttpClient;
-// import org.apache.http.client.methods.HttpPost;
-// import org.apache.http.impl.client.DefaultHttpClient;
 // import org.apache.http.util.EntityUtils;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
 // import java.io.IOException;
-// import java.nio.ByteBuffer;
-// import java.nio.ByteOrder;
-// import java.util.ArrayDeque;
-// import java.util.HashMap;
-// import java.util.UUID;
 
+_ETL_NAMESPACE_BEGIN
+template<> struct Hash<AutoPtr<Elastos::IO::IByteBuffer> >
+{
+        size_t operator() (AutoPtr<IByteBuffer> x) const { return (size_t)x.Get(); }
+};
+_ETL_NAMESPACE_END
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -36,14 +42,16 @@ namespace Media {
  */
 //@JNINamespace("media")
 class MediaDrmBridge
+:public Object
 {
 private:
     /**
      *  This class contains data needed to call createSession().
      */
     class PendingCreateSessionData
+    :public Object
     {
-    private:
+    public:
         PendingCreateSessionData(
             /* [in] */ Int32 sessionId,
             /* [in] */ ArrayOf<Byte>* initData,
@@ -51,13 +59,13 @@ private:
 
         CARAPI_(Int32) SessionId();
 
-        CARAPI_(AutoPtr< ArrayOf<Byte> >) InitData();
+        CARAPI_(AutoPtr<ArrayOf<Byte> >) InitData();
 
         CARAPI_(String) MimeType();
 
     private:
         const Int32 mSessionId;
-        const AutoPtr< ArrayOf<Byte> > mInitData;
+        const AutoPtr<ArrayOf<Byte> > mInitData;
         const String mMimeType;
     };
 
@@ -66,6 +74,7 @@ private:
         , public IMediaDrmOnEventListener
     {
     public:
+        CAR_INTERFACE_DECL();
         MediaDrmListener(
             /* [in] */ MediaDrmBridge* owner);
 
@@ -81,7 +90,7 @@ private:
         MediaDrmBridge* mOwner;
     };
 
-    class PostRequestTask : public AsyncTask<String, Void, Void>
+    class PostRequestTask : public AsyncTask
     {
     public:
         PostRequestTask(
@@ -90,23 +99,24 @@ private:
 
     protected:
         //@Override
-        CARAPI_(Void) DoInBackground(String... urls);
+        CARAPI DoInBackground(
+            /* [in] */ ArrayOf<IInterface*>* params,
+            /* [out] */ IInterface** result);
 
         //@Override
-        CARAPI_(void) OnPostExecute(Void v);
+        CARAPI OnPostExecute(IInterface*);
 
     private:
-        CARAPI_(AutoPtr< ArrayOf<Byte> >) PostRequest(
+        CARAPI_(AutoPtr<ArrayOf<Byte> >) PostRequest(
             /* [in] */ const String& url,
             /* [in] */ ArrayOf<Byte>* drmRequest);
 
     private:
-        static final String TAG;
-
+        static const String MDB_PTAG;
         MediaDrmBridge* mOwner;
 
-        AutoPtr< ArrayOf<Byte> > mDrmRequest;
-        AutoPtr< ArrayOf<Byte> > mResponseBody;
+        AutoPtr<ArrayOf<Byte> > mDrmRequest;
+        AutoPtr<ArrayOf<Byte> > mResponseBody;
     };
 
     class ResumePendingOperationsRunnable
@@ -114,6 +124,7 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         ResumePendingOperationsRunnable(
             /* [in] */ MediaDrmBridge* owner);
 
@@ -128,6 +139,7 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         OnSessionCreatedRunnable(
             /* [in] */ MediaDrmBridge* owner,
             /* [in] */ Int32 sessionId,
@@ -137,8 +149,8 @@ private:
 
     private:
         MediaDrmBridge* mOwner;
-        Int32 mSessionId,
-        const String& mWebSessionId
+        Int32 mSessionId;
+        const String mWebSessionId;
     };
 
     class OnSessionMessageRunnable
@@ -146,6 +158,7 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         OnSessionMessageRunnable(
             /* [in] */ MediaDrmBridge* owner,
             /* [in] */ Int32 sessionId,
@@ -155,8 +168,8 @@ private:
 
     private:
         MediaDrmBridge* mOwner;
-        Int32 mSessionId,
-        AutoPtr<IMediaDrmKeyRequest> mRequest
+        Int32 mSessionId;
+        AutoPtr<IMediaDrmKeyRequest> mRequest;
     };
 
     class OnSessionReadyRunnable
@@ -164,6 +177,7 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         OnSessionReadyRunnable(
             /* [in] */ MediaDrmBridge* owner,
             /* [in] */ Int32 sessionId);
@@ -172,7 +186,7 @@ private:
 
     private:
         MediaDrmBridge* mOwner;
-        Int32 mSessionId
+        Int32 mSessionId;
     };
 
     class OnSessionClosedRunnable
@@ -180,6 +194,7 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         OnSessionClosedRunnable(
             /* [in] */ MediaDrmBridge* owner,
             /* [in] */ Int32 sessionId);
@@ -188,7 +203,7 @@ private:
 
     private:
         MediaDrmBridge* mOwner;
-        Int32 mSessionId
+        Int32 mSessionId;
     };
 
     class OnSessionErrorRunnable
@@ -196,6 +211,7 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         OnSessionErrorRunnable(
             /* [in] */ MediaDrmBridge* owner,
             /* [in] */ Int32 sessionId);
@@ -204,7 +220,7 @@ private:
 
     private:
         MediaDrmBridge* mOwner;
-        Int32 mSessionId
+        Int32 mSessionId;
     };
 
 public:
@@ -279,8 +295,8 @@ private:
      * @param securityLevel Security level to be used.
      * @param nativeMediaDrmBridge Native object of this class.
      */
-    //@CalledByNative
-    static CARAPI_(AutoPtr<MediaDrmBridge>) Create(
+    //@CalledByNative return MediaDrmBridge
+    static CARAPI_(AutoPtr<IInterface>) Create(
         /* [in] */ ArrayOf<Byte>* schemeUUID,
         /* [in] */ Int64 nativeMediaDrmBridge);
 
@@ -309,7 +325,7 @@ private:
      * Release the MediaDrmBridge object.
      */
     //@CalledByNative
-    CARAPI_(void) Release();
+    CARAPI_(void) ReleaseResources();
 
     /**
      * Get a key request.
@@ -320,10 +336,11 @@ private:
      *
      * @return the key request.
      */
-    CARAPI_(AutoPtr<IMediaDrmKeyRequest>) GetKeyRequest(
+    CARAPI GetKeyRequest(
         /* [in] */ IByteBuffer* session,
         /* [in] */ ArrayOf<Byte>* data,
-        /* [in] */ const String& mime);
+        /* [in] */ const String& mime,
+        /* [out] */ IMediaDrmKeyRequest** result);
 
     /**
      * Save data to |mPendingCreateSessionDataQueue| so that we can resume the
@@ -514,12 +531,13 @@ private:
     AutoPtr<IMediaCrypto> mMediaCrypto;
 
     // The map of all opened sessions to their session reference IDs.
-    HashMap<ByteBuffer, Integer> mSessionIds;
+    HashMap<AutoPtr<IByteBuffer>, Int32> mSessionIds;
     // The map of all opened sessions to their mime types.
-    HashMap<ByteBuffer, String> mSessionMimeTypes;
+    HashMap<AutoPtr<IByteBuffer>, String> mSessionMimeTypes;
 
     // The queue of all pending createSession() data.
-    ArrayDeque<PendingCreateSessionData> mPendingCreateSessionDataQueue;
+    //ArrayDeque<PendingCreateSessionData> mPendingCreateSessionDataQueue;
+    AutoPtr<IArrayDeque> mPendingCreateSessionDataQueue;
 
     Boolean mResetDeviceCredentialsPending;
 

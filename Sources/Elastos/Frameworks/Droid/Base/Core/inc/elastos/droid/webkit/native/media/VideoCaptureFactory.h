@@ -1,6 +1,8 @@
 
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTUREFACTORY_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTUREFACTORY_H__
+#include "ext/frameworkext.h"
+#include "elastos/droid/webkit/native/media/VideoCapture.h"
 
 // import android.content.Context;
 // import android.content.pm.PackageManager;
@@ -33,6 +35,7 @@ class VideoCaptureFactory
 {
 public:
     class CamParams
+    : public Object
     {
     public:
         CamParams(
@@ -49,8 +52,9 @@ public:
     };
 
     class ChromiumCameraInfo
+        :public Object
     {
-    private:
+    public:
         ChromiumCameraInfo(
             /* [in] */ Int32 index);
 
@@ -67,14 +71,15 @@ public:
             /* [in] */ IContext* appContext);
 
         //@CalledByNative("ChromiumCameraInfo")
-        static CARAPI_(AutoPtr<ChromiumCameraInfo>) GetAt(
+        //static CARAPI_(AutoPtr<ChromiumCameraInfo>) GetAt(
+        static CARAPI_(AutoPtr<IInterface>) GetAt(
             /* [in] */ Int32 index);
 
         //@CalledByNative("ChromiumCameraInfo")
         CARAPI_(Int32) GetId();
 
         //@CalledByNative("ChromiumCameraInfo")
-        CARAPI_((String) GetDeviceName();
+        CARAPI_(String) GetDeviceName();
 
         //@CalledByNative("ChromiumCameraInfo")
         CARAPI_(Int32) GetOrientation();
@@ -90,7 +95,7 @@ public:
 
         static const String TAG;
 
-        static Int32 sNumberOfSystemCameras = -1;
+        static Int32 sNumberOfSystemCameras;
 
         const Int32 mId;
         const AutoPtr<ICameraInfo> mCameraInfo;
@@ -99,13 +104,15 @@ public:
 public:
     // Factory methods.
     //@CalledByNative
-    static CARAPI_(AutoPtr<VideoCapture>) CreateVideoCapture(
+    //static CARAPI_(AutoPtr<VideoCapture>) CreateVideoCapture(
+    static CARAPI_(AutoPtr<IInterface>) CreateVideoCapture(
         /* [in] */ IContext* context,
         /* [in] */ Int32 id,
         /* [in] */ Int64 nativeVideoCaptureDeviceAndroid);
 
     //@CalledByNative
-    static CARAPI_(AutoPtr< ArrayOf<VideoCapture::CaptureFormat> >) GetDeviceSupportedFormats(
+    //static CARAPI_(AutoPtr<ArrayOf<VideoCapture::CaptureFormat> >) GetDeviceSupportedFormats(
+    static CARAPI_(AutoPtr<ArrayOf<AutoPtr<IInterface> > >) GetDeviceSupportedFormats(
         /* [in] */ Int32 id);
 
     //@CalledByNative
@@ -129,5 +136,12 @@ public:
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
+template <>
+struct Conversion<Elastos::Droid::Webkit::Media::VideoCaptureFactory::CamParams*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
+
 
 #endif//__ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTUREFACTORY_H__

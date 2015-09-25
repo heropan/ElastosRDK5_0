@@ -1,3 +1,57 @@
+#include "elastos/droid/webkit/native/media/AudioManagerAndroid.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/CHandlerThread.h"
+#include "elastos/droid/Manifest.h"
+#include "elastos/droid/content/CIntentFilter.h"
+//TODO #include "elastos/droid/provider/Settings.h"
+//TODO #include "elastos/droid/media/CAudioRecordHelper.h"
+//TODO #include "elastos/droid/media/CAudioTrackHelper.h"
+//TODO #include "elastos/droid/media/CAudioTrackHelper.h"
+//TODO #include "elastos/droid/media/audiofx/CAcousticEchoCanceler.h"
+//TODO #include "elastos/droid/bluetooth/CBluetoothAdapterHelper.h"
+//#include "elastos/core/Thread.h"
+#include "elastos/core/AutoLock.h"
+#include "elastos/core/IntegralToString.h"
+#include "elastos/core/StringToIntegral.h"
+#include "elastos/utility/logging/Logger.h"
+//#include "elastos/utility/etl/etl_list.h"
+//#include "stdlib.h"
+
+//TODO using Elastos::Droid::Bluetooth::IBluetoothAdapter;
+//TODO using Elastos::Droid::Bluetooth::IBluetoothManager;
+//TODO using Elastos::Droid::Bluetooth::IBluetoothAdapterHelper;
+//TODO using Elastos::Droid::Bluetooth::CBluetoothAdapterHelper;
+//TODO using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::CIntentFilter;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Media::IAudioFormat;
+using Elastos::Droid::Media::IAudioRecord;
+using Elastos::Droid::Media::IAudioManager;
+using Elastos::Droid::Media::IAudioRecordHelper;
+//using Elastos::Droid::Media::IAudioTrack;
+using Elastos::Droid::Media::IAudioTrackHelper;
+//TODO using Elastos::Droid::Media::CAudioTrackHelper;
+//using Elastos::Droid::Media::Audiofx::IAcousticEchoCanceler;
+using Elastos::Droid::Media::Audiofx::IAcousticEchoCancelerHelper;
+//TODO using Elastos::Droid::Media::Audiofx::CAcousticEchoCancelerHelper;
+using Elastos::Droid::Bluetooth::IBluetoothProfile;
+using Elastos::Droid::Bluetooth::IBluetoothHeadset;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Manifest;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::CHandlerThread;
+using Elastos::Droid::Os::IHandlerThread;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::Provider::ISettings;
+using Elastos::Core::IntegralToString;
+using Elastos::Core::StringToIntegral;
+
+using Elastos::Core::IThread;
+using Elastos::Core::EIID_IThread;
+using Elastos::Core::AutoLock;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -11,7 +65,7 @@ namespace Media {
 AudioManagerAndroid::NonThreadSafe::NonThreadSafe()
 {
     if (DEBUG) {
-        Thread::CurrentThread()->GetId(&mThreadId);
+        Thread::GetCurrentThread()->GetId(&mThreadId);
     }
     else {
         // Avoids "Unread field" issue reported by findbugs.
@@ -23,12 +77,12 @@ AudioManagerAndroid::NonThreadSafe::NonThreadSafe()
  * Checks if the method is called on the valid thread.
  * Assigns the current thread if no thread was assigned.
  */
-Boolean AudioManagerAndroid::NonThreadSafe::CalledOnValidThread()
+Boolean AudioManagerAndroid::NonThreadSafe::CalledOnValidThread() const
 {
     if (DEBUG) {
         Int64 id;
-        Thread::CurrentThread()->GetId(&id);
-        return mThreadId == id
+        Thread::GetCurrentThread()->GetId(&id);
+        return mThreadId == id;
     }
 
     return TRUE;
@@ -49,7 +103,7 @@ AudioManagerAndroid::AudioDeviceName::AudioDeviceName(
 //@CalledByNative("AudioDeviceName")
 String AudioManagerAndroid::AudioDeviceName::Id()
 {
-    return String.valueOf(mId);
+    return IntegralToString::ToString(mId);
 }
 
 //@CalledByNative("AudioDeviceName")
@@ -82,47 +136,48 @@ ECode AudioManagerAndroid::WiredHeadsetBroadcastReceiver::OnReceive(
     VALIDATE_NOT_NULL(intent);
 
     Int32 state;
-    intent->GetIntExtra(String("state"), STATE_UNPLUGGED, &state);
+    intent->GetInt32Extra(String("state"), STATE_UNPLUGGED, &state);
     if (DEBUG) {
         Int32 microphone;
-        intent->GetIntExtra(String("microphone"), HAS_NO_MIC, &microphone);
+        intent->GetInt32Extra(String("microphone"), HAS_NO_MIC, &microphone);
         String name;
         intent->GetStringExtra(String("name"), &name);
-        logd("BroadcastReceiver.onReceive: a=" + intent.getAction() +
-            ", s=" + state +
-            ", m=" + microphone +
-            ", n=" + name +
-            ", sb=" + isInitialStickyBroadcast());
+        String action;
+        intent->GetAction(&action);
+        Boolean isInitial;
+        IsInitialStickyBroadcast(&isInitial);
+        Logger::D(TAG, "BroadcastReceiver.onReceive: a=%s, s=%d, m=%d, n=%s, sb=%d",
+                action.string(), state, microphone, name.string(), isInitial);
     }
     switch (state) {
         case STATE_UNPLUGGED: {
-                AutoLock lock(mOwner->mLock);
+                AutoLock lock(&(mOwner->mLock));
                 // Wired headset and earpiece are mutually exclusive.
-                (*mAudioDevices)[DEVICE_WIRED_HEADSET] = FALSE;
-                if (HasEarpiece()) {
-                    (*mAudioDevices)[DEVICE_EARPIECE] = TRUE;
+                (*(mOwner->mAudioDevices))[DEVICE_WIRED_HEADSET] = FALSE;
+                if (mOwner->HasEarpiece()) {
+                    (*(mOwner->mAudioDevices))[DEVICE_EARPIECE] = TRUE;
                 }
             }
             break;
         case STATE_PLUGGED: {
-                AutoLock lock(mOwner->mLock);
+                AutoLock lock(&(mOwner->mLock));
                 // Wired headset and earpiece are mutually exclusive.
-                (*mAudioDevices)[DEVICE_WIRED_HEADSET] = TRUE;
-                (*mAudioDevices)[DEVICE_EARPIECE] = FALSE;
+                (*(mOwner->mAudioDevices))[DEVICE_WIRED_HEADSET] = TRUE;
+                (*(mOwner->mAudioDevices))[DEVICE_EARPIECE] = FALSE;
             }
             break;
         default:
-            Loge("Invalid state");
+            Loge(String("Invalid state"));
             break;
     }
 
     // Update the existing device selection, but only if a specific
     // device has already been selected explicitly.
-    if (DeviceHasBeenRequested()) {
-        UpdateDeviceActivation();
+    if (mOwner->DeviceHasBeenRequested()) {
+        mOwner->UpdateDeviceActivation();
     }
     else if (DEBUG) {
-        ReportUpdate();
+        mOwner->ReportUpdate();
     }
 
     return NOERROR;
@@ -150,52 +205,54 @@ ECode AudioManagerAndroid::BluetoothHeadsetBroadcastReceiver::OnReceive(
     // been detected, e.g. BT headset has been connected or
     // disconnected. This broadcast is *not* sticky.
     Int32 profileState;
-    intent->GetIntExtra(
-        android::bluetooth::BluetoothHeadset::EXTRA_STATE,
-        android::bluetooth::BluetoothHeadset::STATE_DISCONNECTED,
+    intent->GetInt32Extra(
+        String("android.bluetooth.profile.extra.STATE"),//TODO IBluetoothProfile::EXTRA_STATE,//IBluetoothHeadset
+        0,//IBluetoothProfile::STATE_DISCONNECTED,//IBluetoothHeadset::STATE_DISCONNECTED,
         &profileState);
 
     if (DEBUG) {
-        logd("BroadcastReceiver.onReceive: a=" + intent.getAction() +
-            ", s=" + profileState +
-            ", sb=" + isInitialStickyBroadcast());
+        String action;
+        intent->GetAction(&action);
+        Boolean isInitial;
+        IsInitialStickyBroadcast(&isInitial);
+        Logger::D(TAG, "BroadcastReceiver.onReceive: a=%s, s=%d, sb=%d", action.string(), profileState, isInitial);
     }
 
     switch (profileState) {
-        case android::bluetooth::BluetoothProfile::STATE_DISCONNECTED:
+        case 0://IBluetoothProfile::STATE_DISCONNECTED:
             // We do not have to explicitly call stopBluetoothSco()
             // since BT SCO will be disconnected automatically when
             // the BT headset is disabled.
             {
-                AutoLock lock(mOwner->mLock);
+                AutoLock lock(&(mOwner->mLock));
                 // Remove the BT device from the list of devices.
-                mAudioDevices[DEVICE_BLUETOOTH_HEADSET] = FALSE;
+                (*(mOwner->mAudioDevices))[DEVICE_BLUETOOTH_HEADSET] = FALSE;
             }
             break;
-        case android::bluetooth::BluetoothProfile::STATE_CONNECTED: {
-                AutoLock lock(mOwner->mLock);
+        case 2: {//IBluetoothProfile::STATE_CONNECTED: {
+                AutoLock lock(&(mOwner->mLock));
                 // Add the BT device to the list of devices.
-                mAudioDevices[DEVICE_BLUETOOTH_HEADSET] = TRUE;
+                (*(mOwner->mAudioDevices))[DEVICE_BLUETOOTH_HEADSET] = TRUE;
             }
             break;
-        case android::bluetooth::BluetoothProfile::STATE_CONNECTING:
+        case 1://IBluetoothProfile::STATE_CONNECTING:
             // Bluetooth service is switching from off to on.
             break;
-        case android::bluetooth::BluetoothProfile::STATE_DISCONNECTING:
+        case 3://IBluetoothProfile::STATE_DISCONNECTING:
             // Bluetooth service is switching from on to off.
             break;
         default:
-            Loge("Invalid state");
+            Loge(String("Invalid state"));
             break;
     }
 
     // Update the existing device selection, but only if a specific
     // device has already been selected explicitly.
-    if (DeviceHasBeenRequested()) {
-        UpdateDeviceActivation();
+    if (mOwner->DeviceHasBeenRequested()) {
+        mOwner->UpdateDeviceActivation();
     }
     else if (DEBUG) {
-        ReportUpdate();
+        mOwner->ReportUpdate();
     }
 
     return NOERROR;
@@ -220,33 +277,35 @@ ECode AudioManagerAndroid::BluetoothScoIntentBroadcastReceiver::OnReceive(
     VALIDATE_NOT_NULL(intent);
 
     Int32 state;
-    intent->GetIntExtra(
-        AudioManager::EXTRA_SCO_AUDIO_STATE,
-        AudioManager::SCO_AUDIO_STATE_DISCONNECTED,
+    intent->GetInt32Extra(
+        IAudioManager::EXTRA_SCO_AUDIO_STATE,
+        IAudioManager::SCO_AUDIO_STATE_DISCONNECTED,
         &state);
 
     if (DEBUG) {
-        logd("BroadcastReceiver.onReceive: a=" + intent.getAction() +
-            ", s=" + state +
-            ", sb=" + isInitialStickyBroadcast());
+        String action;
+        intent->GetAction(&action);
+        Boolean isInitial;
+        IsInitialStickyBroadcast(&isInitial);
+        Logger::D(TAG, "BroadcastReceiver.onReceive: a=%s, s=%d, sb=%d", action.string(), state,isInitial);
     }
 
     switch (state) {
-        case AudioManager::SCO_AUDIO_STATE_CONNECTED:
-            mBluetoothScoState = STATE_BLUETOOTH_SCO_ON;
+        case IAudioManager::SCO_AUDIO_STATE_CONNECTED:
+            mOwner->mBluetoothScoState = STATE_BLUETOOTH_SCO_ON;
             break;
-        case AudioManager::SCO_AUDIO_STATE_DISCONNECTED:
-            mBluetoothScoState = STATE_BLUETOOTH_SCO_OFF;
+        case IAudioManager::SCO_AUDIO_STATE_DISCONNECTED:
+            mOwner->mBluetoothScoState = STATE_BLUETOOTH_SCO_OFF;
             break;
-        case AudioManager::SCO_AUDIO_STATE_CONNECTING:
+        case IAudioManager::SCO_AUDIO_STATE_CONNECTING:
             // do nothing
             break;
         default:
-            Loge("Invalid state");
+            Loge(String("Invalid state"));
     }
 
     if (DEBUG) {
-        ReportUpdate();
+        mOwner->ReportUpdate();
     }
 
     return NOERROR;
@@ -266,12 +325,12 @@ AudioManagerAndroid::InnerContentObserver::InnerContentObserver(
 ECode AudioManagerAndroid::InnerContentObserver::OnChange(
     /* [in] */ Boolean selfChange)
 {
-    if (DEBUG) logd("SettingsObserver.onChange: " + selfChange);
-    super.onChange(selfChange);
+    if (DEBUG) Logger::D(TAG, "SettingsObserver.onChange: %d", selfChange);
+    ContentObserver::OnChange(selfChange);
 
     // Ensure that the observer is activated during communication mode.
     Int32 mode;
-    mAudioManager->GetMode(&mode, &mode);
+    mOwner->mAudioManager->GetMode(&mode);
     if (mode != IAudioManager::MODE_IN_COMMUNICATION) {
         // throw new IllegalStateException(
         //         "Only enable SettingsObserver in COMM mode");
@@ -283,11 +342,11 @@ ECode AudioManagerAndroid::InnerContentObserver::OnChange(
     // slider all the way down in communication mode but the callback
     // implementation can ensure that the volume is completely muted.
     Int32 volume;
-    mAudioManager->GetStreamVolume(
+    mOwner->mAudioManager->GetStreamVolume(
         IAudioManager::STREAM_VOICE_CALL,
         &volume);
-    if (DEBUG) logd("nativeSetMute: " + (volume == 0));
-    NativeSetMute(mNativeAudioManagerAndroid, (volume == 0));
+    if (DEBUG) Logger::D(TAG, "nativeSetMute: %d", (volume == 0));
+    mOwner->NativeSetMute(mOwner->mNativeAudioManagerAndroid, (volume == 0));
 
     return NOERROR;
 }
@@ -302,7 +361,7 @@ static AutoPtr< ArrayOf<T> > ArrayOf_Init(T array[])
     Int32 size = sizeof(T)/sizeof(T[0]);
     AutoPtr< ArrayOf<T> > retArray = ArrayOf<T>::Alloc(size);
     for (Int32 i = 0; i < size; ++i) {
-        (*retArray)[i] = array[i]
+        (*retArray)[i] = array[i];
     }
 
     return retArray;
@@ -321,7 +380,7 @@ static String models[] = {
     String("SM-N9005"),  // Galaxy Note 3
     String("SM-T310"),   // Galaxy Tab 3 8.0 (WiFi)
 };
-
+//TODO
 const AutoPtr< ArrayOf<String> > AudioManagerAndroid::SUPPORTED_AEC_MODELS = ArrayOf_Init(models);
 
 // Supported audio device types.
@@ -345,16 +404,18 @@ static String names[] = {
     String("Bluetooth headset"),  // Requires BLUETOOTH permission.
 };
 
+//TODO
 const AutoPtr< ArrayOf<String> > AudioManagerAndroid::DEVICE_NAMES = ArrayOf_Init(names);
 
-static Int32 devices[] = {
-    DEVICE_SPEAKERPHONE,
-    DEVICE_WIRED_HEADSET,
-    DEVICE_EARPIECE,
-    DEVICE_BLUETOOTH_HEADSET,
+Int32 AudioManagerAndroid::devices[4] = {
+    AudioManagerAndroid::DEVICE_SPEAKERPHONE,
+    AudioManagerAndroid::DEVICE_WIRED_HEADSET,
+    AudioManagerAndroid::DEVICE_EARPIECE,
+    AudioManagerAndroid::DEVICE_BLUETOOTH_HEADSET,
 };
 
 // List of valid device types.
+//TODO
 const AutoPtr< ArrayOf<Int32> > AudioManagerAndroid::VALID_DEVICES = ArrayOf_Init(devices);
 
 // Bluetooth audio SCO states. Example of valid state sequence:
@@ -372,7 +433,7 @@ const Int32 AudioManagerAndroid::DEFAULT_SAMPLING_RATE;
 // fails.
 const Int32 AudioManagerAndroid::DEFAULT_FRAME_PER_BUFFER;
 
-static AutoPtr< ArrayOf<Boolean> > mAudioDevices_Init()
+AutoPtr< ArrayOf<Boolean> > AudioManagerAndroid::mAudioDevices_Init()
 {
     AutoPtr< ArrayOf<Boolean> > array = ArrayOf<Boolean>::Alloc(DEVICE_COUNT);
     for (Int32 i = 0; i < DEVICE_COUNT; ++i) {
@@ -400,22 +461,22 @@ AudioManagerAndroid::AudioManagerAndroid(
     , mCurrentVolume(0)
 {
     mContext->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&mAudioManager);
-    mContext->GetContentResolver((IContentObserver**)&mContentResolver);
+    mContext->GetContentResolver((IContentResolver**)&mContentResolver);
 }
 
 Boolean AudioManagerAndroid::RunningOnJellyBeanOrHigher()
 {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
+    return Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN;
 }
 
 Boolean AudioManagerAndroid::RunningOnJellyBeanMR1OrHigher()
 {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1;
+    return Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR1;
 }
 
 Boolean AudioManagerAndroid::RunningOnJellyBeanMR2OrHigher()
 {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2;
+    return Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR2;
 }
 
 /** Construction */
@@ -424,7 +485,7 @@ AutoPtr<AudioManagerAndroid> AudioManagerAndroid::CreateAudioManagerAndroid(
     /* [in] */ IContext* context,
     /* [in] */ Int64 nativeAudioManagerAndroid)
 {
-    AutoPtr<AudioManagerAndroid> ret = AudioManagerAndroid(context, nativeAudioManagerAndroid);
+    AutoPtr<AudioManagerAndroid> ret(new AudioManagerAndroid(context, nativeAudioManagerAndroid));
     return ret;
 }
 
@@ -439,7 +500,7 @@ void AudioManagerAndroid::Init()
     CheckIfCalledOnValidThread();
 
     if (DEBUG) {
-        Logd("init");
+        Logd(String("init"));
     }
 
     if (DEBUG)  {
@@ -453,20 +514,20 @@ void AudioManagerAndroid::Init()
     // Check if process has MODIFY_AUDIO_SETTINGS and RECORD_AUDIO
     // permissions. Both are required for full functionality.
     mHasModifyAudioSettingsPermission = HasPermission(
-            android::Manifest::permission::MODIFY_AUDIO_SETTINGS);
+            Manifest::Permission::MODIFY_AUDIO_SETTINGS);
     if (DEBUG && !mHasModifyAudioSettingsPermission) {
-        Logd("MODIFY_AUDIO_SETTINGS permission is missing");
+        Logd(String("MODIFY_AUDIO_SETTINGS permission is missing"));
     }
     mHasRecordAudioPermission = HasPermission(
-            android::Manifest::permission::RECORD_AUDIO);
+            Manifest::Permission::RECORD_AUDIO);
     if (DEBUG && !mHasRecordAudioPermission) {
-        Logd("RECORD_AUDIO permission is missing");
+        Logd(String("RECORD_AUDIO permission is missing"));
     }
 
     // Initialize audio device list with things we know is always available.
-    mAudioDevices[DEVICE_EARPIECE] = HasEarpiece();
-    mAudioDevices[DEVICE_WIRED_HEADSET] = HasWiredHeadset();
-    mAudioDevices[DEVICE_SPEAKERPHONE] = TRUE;
+    (*mAudioDevices)[DEVICE_EARPIECE] = HasEarpiece();
+    (*mAudioDevices)[DEVICE_WIRED_HEADSET] = HasWiredHeadset();
+    (*mAudioDevices)[DEVICE_SPEAKERPHONE] = TRUE;
 
     // Register receivers for broadcast intents related to Bluetooth device
     // and Bluetooth SCO notifications. Requires BLUETOOTH permission.
@@ -491,7 +552,7 @@ void AudioManagerAndroid::Init()
 void AudioManagerAndroid::Close()
 {
     CheckIfCalledOnValidThread();
-    if (DEBUG) Logd("close");
+    if (DEBUG) Logd(String("close"));
     if (!mIsInitialized)
         return;
 
@@ -509,17 +570,16 @@ void AudioManagerAndroid::Close()
  * Required permission: android.Manifest.permission.MODIFY_AUDIO_SETTINGS.
  */
 //@CalledByNative
-void AudioManagerAndroid::SetCommunicationAudioModeOn(boolean on)
+void AudioManagerAndroid::SetCommunicationAudioModeOn(Boolean on)
 {
     if (DEBUG) {
-        Logd("setCommunicationAudioModeOn(" + on + ")");
+        Logger::D(TAG,"setCommunicationAudioModeOn(%d)", on);
     }
 
     // The MODIFY_AUDIO_SETTINGS permission is required to allow an
     // application to modify global audio settings.
     if (!mHasModifyAudioSettingsPermission) {
-//        Log.w(TAG, "MODIFY_AUDIO_SETTINGS is missing => client will run " +
-//                "with reduced functionality");
+        Logger::W(TAG, "MODIFY_AUDIO_SETTINGS is missing => client will run with reduced functionality");
         return;
     }
 
@@ -595,22 +655,26 @@ void AudioManagerAndroid::SetCommunicationAudioModeOn(boolean on)
 Boolean AudioManagerAndroid::SetDevice(
     /* [in] */ const String& deviceId)
 {
-    if (DEBUG) Logd("setDevice: " + deviceId);
+    if (DEBUG) Logger::D(TAG,"setDevice: %s", deviceId.string());
     if (!mIsInitialized)
         return FALSE;
     if (!mHasModifyAudioSettingsPermission || !mHasRecordAudioPermission) {
-//        Log.w(TAG, "Requires MODIFY_AUDIO_SETTINGS and RECORD_AUDIO");
-//        Log.w(TAG, "Selected device will not be available for recording");
+        Logger::W(TAG, "Requires MODIFY_AUDIO_SETTINGS and RECORD_AUDIO");
+        Logger::W(TAG, "Selected device will not be available for recording");
         return FALSE;
     }
 
-    Int32 intDeviceId = deviceId.isEmpty() ?
-        DEVICE_DEFAULT : Integer.parseInt(deviceId);
+
+    //Int32 intDeviceId = deviceId.IsNullOrEmpty() ?  DEVICE_DEFAULT : atoi(deviceId.string());
+    Int32 intDeviceId = DEVICE_DEFAULT;
+    if (!deviceId.IsNullOrEmpty()) {
+        StringToIntegral::Parse(deviceId, &intDeviceId);
+    }
 
     if (intDeviceId == DEVICE_DEFAULT) {
         AutoPtr< ArrayOf<Boolean> > devices;
         {
-            AutoLock lock(mLock);
+            AutoLock lock(&mLock);
             devices = mAudioDevices->Clone();
             mRequestedAudioDevice = DEVICE_DEFAULT;
         }
@@ -621,13 +685,13 @@ Boolean AudioManagerAndroid::SetDevice(
 
     // A non-default device is specified. Verify that it is valid
     // device, and if so, start using it.
-    List<Integer> validIds = Arrays.asList(VALID_DEVICES);
-    if (!validIds.contains(intDeviceId) || !mAudioDevices[intDeviceId]) {
+    //List<Integer> validIds = Arrays.asList(VALID_DEVICES);
+    if (!VALID_DEVICES->Contains(intDeviceId) || !(*mAudioDevices)[intDeviceId]) {
         return FALSE;
     }
 
     {
-        AutoLock lock(mLock);
+        AutoLock lock(&mLock);
         mRequestedAudioDevice = intDeviceId;
     }
 
@@ -644,34 +708,35 @@ Boolean AudioManagerAndroid::SetDevice(
  * and android.Manifest.permission.RECORD_AUDIO.
  */
 //@CalledByNative
-AutoPtr< ArrayOf<AudioDeviceName> > AudioManagerAndroid::GetAudioInputDeviceNames()
+AutoPtr< ArrayOf<AutoPtr<IInterface> > > AudioManagerAndroid::GetAudioInputDeviceNames()
 {
-    if (DEBUG) Logd("getAudioInputDeviceNames");
+    if (DEBUG) Logd(String("getAudioInputDeviceNames"));
     if (!mIsInitialized)
         return NULL;
     if (!mHasModifyAudioSettingsPermission || !mHasRecordAudioPermission) {
-//        Log.w(TAG, "Requires MODIFY_AUDIO_SETTINGS and RECORD_AUDIO");
-//        Log.w(TAG, "No audio device will be available for recording");
+        Logger::W(TAG, "Requires MODIFY_AUDIO_SETTINGS and RECORD_AUDIO");
+        Logger::W(TAG, "No audio device will be available for recording");
         return NULL;
     }
 
     AutoPtr< ArrayOf<Boolean> > devices;
     {
-        AutoLock lock(mLock);
+        AutoLock lock(&mLock);
         devices = mAudioDevices->Clone();
     }
-    List<String> list = new ArrayList<String>();
-    AutoPtr< ArrayOf<AudioDeviceName> > array = ArrayOf<AudioDeviceName>::Alloc(GetNumOfAudioDevices(devices));
+    //TODO List<String> list;// = new ArrayList<String>();
+    AutoPtr< ArrayOf<AutoPtr<IInterface> > > array = ArrayOf<AutoPtr<IInterface> >::Alloc(GetNumOfAudioDevices(devices));
     Int32 i = 0;
     for (Int32 id = 0; id < DEVICE_COUNT; ++id) {
         if ((*devices)[id]) {
-            (*array)[i] = new AudioDeviceName(id, DEVICE_NAMES[id]);
-            list.add(DEVICE_NAMES[id]);
+            AutoPtr<AudioDeviceName> dn = new AudioDeviceName(id, (*DEVICE_NAMES)[id]);
+            (*array)[i] = dn->Probe(EIID_IInterface);
+            //TODO list.Pushback(DEVICE_NAMES[id]);
             i++;
         }
     }
 
-    if (DEBUG) Logd("getAudioInputDeviceNames: " + list);
+    if (DEBUG) Logger::D(TAG, "getAudioInputDeviceNames: %s", "xxx");//TODO print the value in the list
 
     return array;
 }
@@ -683,8 +748,12 @@ Int32 AudioManagerAndroid::GetNativeOutputSampleRate()
         String sampleRateString;
         mAudioManager->GetProperty(
                 IAudioManager::PROPERTY_OUTPUT_SAMPLE_RATE, &sampleRateString);
-        return (sampleRateString == NULL ?
-                DEFAULT_SAMPLING_RATE : Integer.parseInt(sampleRateString));
+        //return (sampleRateString == NULL ?  DEFAULT_SAMPLING_RATE : atoi(sampleRateString.string()));
+        Int32 result = DEFAULT_SAMPLING_RATE;
+        if (!sampleRateString.IsNullOrEmpty()) {
+            StringToIntegral::Parse(sampleRateString, &result);
+        }
+        return result;
     }
     else {
         return DEFAULT_SAMPLING_RATE;
@@ -713,11 +782,11 @@ Int32 AudioManagerAndroid::GetMinInputFrameSize(
         return -1;
     }
 
-    AutoPtr<IAudioRecordHelper> helper;
-    CAudioRecordHelper::AcquireSingleton((IAudioRecordHelper**)&helper);
     Int32 result;
-    helper->GetMinBufferSize(
-            sampleRate, channelConfig, IAudioFormat::ENCODING_PCM_16BIT, &result);
+    AutoPtr<IAudioRecordHelper> helper;
+    //TODO
+    //CAudioRecordHelper::AcquireSingleton((IAudioRecordHelper**)&helper);
+    helper->GetMinBufferSize(sampleRate, channelConfig, IAudioFormat::ENCODING_PCM_16BIT, &result);
     result = result / 2 / channels;
 
     return result;
@@ -745,8 +814,12 @@ Int32 AudioManagerAndroid::GetMinOutputFrameSize(
         return -1;
     }
 
-    return /*AudioTrack.*/GetMinBufferSize(
-            sampleRate, channelConfig, AudioFormat.ENCODING_PCM_16BIT) / 2 / channels;
+
+    AutoPtr<IAudioTrackHelper> helper;
+    //TODO CAudioTrackHelper::AcquireSingleton((IAudioTrackHelper**)&helper);
+    Int32 result;
+    helper->GetMinBufferSize(sampleRate, channelConfig, IAudioFormat::ENCODING_PCM_16BIT, &result);
+    return result/2/channels;
 }
 
 //@CalledByNative
@@ -755,8 +828,7 @@ Boolean AudioManagerAndroid::IsAudioLowLatencySupported()
     AutoPtr<IPackageManager> pm;
     mContext->GetPackageManager((IPackageManager**)&pm);
     Boolean result = FALSE;
-    pm->HasSystemFeature(
-            IPackageManager::FEATURE_AUDIO_LOW_LATENCY, &result);
+    pm->HasSystemFeature(IPackageManager::FEATURE_AUDIO_LOW_LATENCY, &result);
     return result;
 }
 
@@ -765,8 +837,12 @@ Int32 AudioManagerAndroid::GetAudioLowLatencyOutputFrameSize()
 {
     String framesPerBuffer;
     mAudioManager->GetProperty(IAudioManager::PROPERTY_OUTPUT_FRAMES_PER_BUFFER, &framesPerBuffer);
-    return (framesPerBuffer == NULL ?
-            DEFAULT_FRAME_PER_BUFFER : Integer.parseInt(framesPerBuffer));
+    //return (framesPerBuffer == NULL ?  DEFAULT_FRAME_PER_BUFFER : atoi(framesPerBuffer));
+    Int32 result = DEFAULT_FRAME_PER_BUFFER;
+    if (!framesPerBuffer.IsNullOrEmpty()) {
+        StringToIntegral::Parse(framesPerBuffer, &result);
+    }
+    return result;
 }
 
 //@CalledByNative
@@ -778,17 +854,17 @@ Boolean AudioManagerAndroid::ShouldUseAcousticEchoCanceler()
     }
 
     // Verify that this device is among the supported/tested models.
-    List<String> supportedModels = Arrays.asList(SUPPORTED_AEC_MODELS);
-    if (!supportedModels.contains(Build.MODEL)) {
+    //List<String> supportedModels = Arrays.asList(SUPPORTED_AEC_MODELS);
+    if (!SUPPORTED_AEC_MODELS->Contains(Build::MODEL)) {
         return FALSE;
     }
 
     AutoPtr<IAcousticEchoCancelerHelper> helper;
-    CAcousticEchoCancelerHelper::AcquireSingleton((IAcousticEchoCancelerHelper**)&helper);
+    //TODO CAcousticEchoCancelerHelper::AcquireSingleton((IAcousticEchoCancelerHelper**)&helper);
     Boolean isAvailable = FALSE;
     helper->IsAvailable(&isAvailable);
     if (DEBUG && isAvailable) {
-        Logd("Approved for use of hardware acoustic echo canceler.");
+        Logger::D(TAG,"Approved for use of hardware acoustic echo canceler.");
     }
 
     // As a final check, verify that the device supports acoustic echo
@@ -802,7 +878,7 @@ Boolean AudioManagerAndroid::ShouldUseAcousticEchoCanceler()
  */
 void AudioManagerAndroid::CheckIfCalledOnValidThread()
 {
-    if (DEBUG && !mNonThreadSafe->CalledOnValidThread()) {
+    if (DEBUG && !mNonThreadSafe.CalledOnValidThread()) {
         // throw new IllegalStateException("Method is not called on valid thread");
         assert(0);
     }
@@ -816,7 +892,7 @@ void AudioManagerAndroid::RegisterBluetoothIntentsIfNeeded()
 {
     // Check if this process has the BLUETOOTH permission or not.
     mHasBluetoothPermission = HasPermission(
-            android::Manifest::permission::BLUETOOTH);
+            Manifest::Permission::BLUETOOTH);
 
     // Add a Bluetooth headset to the list of available devices if a BT
     // headset is detected and if we have the BLUETOOTH permission.
@@ -910,14 +986,13 @@ Boolean AudioManagerAndroid::HasWiredHeadset()
 Boolean AudioManagerAndroid::HasPermission(
     /* [in] */ const String& permission)
 {
-    Boolean result = FALSE;
-    Int32 permission;
+    Int32 result;
     mContext->CheckPermission(
             permission,
             Process::MyPid(),
-            Process::MyUid(), permission);
+            Process::MyUid(), &result);
 
-    return permission == IPackageManager::PERMISSION_GRANTED;
+    return result == IPackageManager::PERMISSION_GRANTED;
 }
 
 /**
@@ -928,7 +1003,7 @@ Boolean AudioManagerAndroid::HasPermission(
 Boolean AudioManagerAndroid::HasBluetoothHeadset()
 {
     if (!mHasBluetoothPermission) {
-//        Log.w(TAG, "hasBluetoothHeadset() requires BLUETOOTH permission");
+        Logger::W(TAG, "hasBluetoothHeadset() requires BLUETOOTH permission");
         return FALSE;
     }
 
@@ -937,6 +1012,7 @@ Boolean AudioManagerAndroid::HasBluetoothHeadset()
     // getDefaultAdapter() method; when running on JELLY_BEAN_MR2 (4.3) and
     // higher, retrieve it through getSystemService(String) with
     // BLUETOOTH_SERVICE.
+    /* TODO
     AutoPtr<IBluetoothAdapter> btAdapter;
     if (RunningOnJellyBeanMR2OrHigher()) {
         // Use BluetoothManager to get the BluetoothAdapter for
@@ -957,19 +1033,19 @@ Boolean AudioManagerAndroid::HasBluetoothHeadset()
         // Bluetooth not supported on this platform.
         return FALSE;
     }
+    */
 
-    Int32 profileConnectionState;
-    btAdapter->GetProfileConnectionState(
-            android::bluetooth::BluetoothProfile::HEADSET, &profileConnectionState);
+    Int32 profileConnectionState = 0;//IBluetoothProfile::STATE_DISCONNECTED
+    Boolean isEnabled = FALSE;
+    //TODO btAdapter->GetProfileConnectionState(1/*TODO IBluetoothProfile::HEADSET*/, &profileConnectionState);
 
     // Ensure that Bluetooth is enabled and that a device which supports the
     // headset and handsfree profile is connected.
     // TODO(henrika): it is possible that btAdapter.isEnabled() is
     // redundant. It might be sufficient to only check the profile state.
-    Boolean isEnabled = FALSE;
-    btAdapter->IsEnabled(&isEnabled);
+    //TODO btAdapter->IsEnabled(&isEnabled);
     return isEnabled && profileConnectionState ==
-        android::bluetooth::BluetoothProfile::STATE_CONNECTED;
+        2/*TODO IBluetoothProfile::STATE_CONNECTED*/;
 }
 
 /**
@@ -980,6 +1056,7 @@ Boolean AudioManagerAndroid::HasBluetoothHeadset()
 void AudioManagerAndroid::RegisterForWiredHeadsetIntentBroadcast()
 {
     AutoPtr<IIntentFilter> filter;
+    AutoPtr<IIntent> intent;
     CIntentFilter::New(IIntent::ACTION_HEADSET_PLUG, (IIntentFilter**)&filter);
 
     /** Receiver which handles changes in wired headset availability. */
@@ -988,7 +1065,7 @@ void AudioManagerAndroid::RegisterForWiredHeadsetIntentBroadcast()
     // Note: the intent we register for here is sticky, so it'll tell us
     // immediately what the last action was (plugged or unplugged).
     // It will enable us to set the speakerphone correctly.
-    mContext->RegisterReceiver(mWiredHeadsetReceiver, filter);
+    mContext->RegisterReceiver(mWiredHeadsetReceiver, filter, (IIntent**)&intent);
 }
 
 /** Unregister receiver for broadcasted ACTION_HEADSET_PLUG intent. */
@@ -1007,14 +1084,15 @@ void AudioManagerAndroid::UnregisterForWiredHeadsetIntentBroadcast()
 void AudioManagerAndroid::RegisterForBluetoothHeadsetIntentBroadcast()
 {
     AutoPtr<IIntentFilter> filter;
+    AutoPtr<IIntent> intent;
     CIntentFilter::New(
-        android::bluetooth::BluetoothHeadset::ACTION_CONNECTION_STATE_CHANGED,
+        String("android.bluetooth.headset.profile.action.CONNECTION_STATE_CHANGED"),//TODO IBluetoothHeadset::ACTION_CONNECTION_STATE_CHANGED,
         (IIntentFilter**)&filter);
 
     /** Receiver which handles changes in BT headset availability. */
     mBluetoothHeadsetReceiver = new BluetoothHeadsetBroadcastReceiver(this);
 
-    mContext->RegisterReceiver(mBluetoothHeadsetReceiver, filter);
+    mContext->RegisterReceiver(mBluetoothHeadsetReceiver, filter, (IIntent**)&intent);
 }
 
 void AudioManagerAndroid::UnregisterForBluetoothHeadsetIntentBroadcast()
@@ -1030,14 +1108,15 @@ void AudioManagerAndroid::UnregisterForBluetoothHeadsetIntentBroadcast()
 void AudioManagerAndroid::RegisterForBluetoothScoIntentBroadcast()
 {
     AutoPtr<IIntentFilter> filter;
+    AutoPtr<IIntent> intent;
     CIntentFilter::New(
-        AudioManager::ACTION_SCO_AUDIO_STATE_UPDATED,
+        IAudioManager::ACTION_SCO_AUDIO_STATE_UPDATED,
         (IIntentFilter**)&filter);
 
     /** BroadcastReceiver implementation which handles changes in BT SCO. */
     mBluetoothScoReceiver = new BluetoothScoIntentBroadcastReceiver(this);
 
-    mContext->RegisterReceiver(mBluetoothScoReceiver, filter);
+    mContext->RegisterReceiver(mBluetoothScoReceiver, filter, (IIntent**)&intent);
 }
 
 void AudioManagerAndroid::UnregisterForBluetoothScoIntentBroadcast()
@@ -1068,7 +1147,7 @@ void AudioManagerAndroid::StartBluetoothSco()
         return;
     }
 
-    if (DEBUG) logd("startBluetoothSco: turning BT SCO on...");
+    if (DEBUG) Logd(String("startBluetoothSco: turning BT SCO on..."));
     mBluetoothScoState = STATE_BLUETOOTH_SCO_TURNING_ON;
     mAudioManager->StartBluetoothSco();
 }
@@ -1090,11 +1169,11 @@ void AudioManagerAndroid::StopBluetoothSco()
     mAudioManager->IsBluetoothScoOn(&isBluetoothScoOn);
     if (!isBluetoothScoOn) {
         // TODO(henrika): can we do anything else than logging here?
-        loge("Unable to stop BT SCO since it is already disabled");
+        Loge(String("Unable to stop BT SCO since it is already disabled"));
         return;
     }
 
-    if (DEBUG) logd("stopBluetoothSco: turning BT SCO off...");
+    if (DEBUG) Logd(String("stopBluetoothSco: turning BT SCO off..."));
     mBluetoothScoState = STATE_BLUETOOTH_SCO_TURNING_OFF;
     mAudioManager->StopBluetoothSco();
 }
@@ -1107,7 +1186,7 @@ void AudioManagerAndroid::StopBluetoothSco()
 void AudioManagerAndroid::SetAudioDevice(
     /* [in] */ Int32 device)
 {
-    if (DEBUG) logd("setAudioDevice(device=" + device + ")");
+    if (DEBUG) Logger::D(TAG, "setAudioDevice(device=%d", device);
 
     // Ensure that the Bluetooth SCO audio channel is always disabled
     // unless the BT headset device is selected.
@@ -1131,7 +1210,7 @@ void AudioManagerAndroid::SetAudioDevice(
             SetSpeakerphoneOn(FALSE);
             break;
         default:
-            loge("Invalid audio device selection");
+            Loge(String("Invalid audio device selection"));
             break;
     }
 
@@ -1161,7 +1240,7 @@ Int32 AudioManagerAndroid::SelectDefaultDevice(
 /** Returns true if setDevice() has been called with a valid device id. */
 Boolean AudioManagerAndroid::DeviceHasBeenRequested()
 {
-    AutoLock lock(mLock);
+    AutoLock lock(&mLock);
     return (mRequestedAudioDevice != DEVICE_INVALID);
 }
 
@@ -1176,13 +1255,13 @@ void AudioManagerAndroid::UpdateDeviceActivation()
     Int32 requested = DEVICE_INVALID;
 
     {
-        AutoLock lock(mLock);
+        AutoLock lock(&mLock);
         requested = mRequestedAudioDevice;
         devices = mAudioDevices->Clone();
     }
 
     if (requested == DEVICE_INVALID) {
-        loge("Unable to activate device since no device is selected");
+        Loge(String("Unable to activate device since no device is selected"));
         return;
     }
 
@@ -1221,101 +1300,79 @@ Int32 AudioManagerAndroid::GetNumOfAudioDevices(
  */
 void AudioManagerAndroid::ReportUpdate()
 {
-    AutoLock lock(mLock);
-    List<String> devices = new ArrayList<String>();
+    AutoLock lock(&mLock);
+    List<String> devices;// = new ArrayList<String>();
     for (Int32 i = 0; i < DEVICE_COUNT; ++i) {
         if (mAudioDevices[i])
-            devices.add(DEVICE_NAMES[i]);
+            devices.PushBack((*DEVICE_NAMES)[i]);
     }
 
     if (DEBUG) {
-        logd("reportUpdate: requested=" + mRequestedAudioDevice +
-            ", btSco=" + mBluetoothScoState +
-            ", devices=" + devices);
+        Logger::D(TAG, "reportUpdate: requested=%d, btSco=%d", mRequestedAudioDevice, mBluetoothScoState);
+        for (Int32 i = 0; i < DEVICE_COUNT; ++i) {
+            Logger::D(TAG, "devices[%d]: %s", i, (*DEVICE_NAMES)[i].string());
+        }
     }
 }
 
 /** Information about the current build, taken from system properties. */
 void AudioManagerAndroid::LogDeviceInfo()
 {
-    logd("Android SDK: " + Build.VERSION.SDK_INT + ", " +
-        "Release: " + Build.VERSION.RELEASE + ", " +
-        "Brand: " + Build.BRAND + ", " +
-        "CPU_ABI: " + Build.CPU_ABI + ", " +
-        "Device: " + Build.DEVICE + ", " +
-        "Id: " + Build.ID + ", " +
-        "Hardware: " + Build.HARDWARE + ", " +
-        "Manufacturer: " + Build.MANUFACTURER + ", " +
-        "Model: " + Build.MODEL + ", " +
-        "Product: " + Build.PRODUCT);
+    Logger::D(TAG,"Android SDK: %d, Release: %s, Brand: %s, CPU_ABI:%s, Device:%s, \
+            Id:%s, Hardware:%s, Manufacturer:%s, Model:%s, Product:%s",
+            Build::VERSION::SDK_INT, Build::VERSION::RELEASE.string(), Build::BRAND.string(),
+        Build::CPU_ABI.string(), Build::DEVICE.string(), Build::ID.string(), Build::HARDWARE.string(),
+        Build::MANUFACTURER.string(), Build::MODEL.string(), Build::PRODUCT.string());
 }
 
 /** Trivial helper method for debug logging */
 void AudioManagerAndroid::Logd(
     /* [in] */ const String& msg)
 {
-//    Log.d(TAG, msg);
+    Logger::D(TAG, msg.string());
 }
 
 /** Trivial helper method for error logging */
 void AudioManagerAndroid::Loge(
     /* [in] */ const String& msg)
 {
-//    Log.e(TAG, msg);
+    Logger::E(TAG, msg.string());
 }
 
 /** Start thread which observes volume changes on the voice stream. */
 void AudioManagerAndroid::StartObservingVolumeChanges()
 {
-    if (DEBUG) logd("startObservingVolumeChanges");
+    if (DEBUG) Logd(String("startObservingVolumeChanges"));
     if (mSettingsObserverThread != NULL)
         return;
 
     CHandlerThread::New(String("SettingsObserver"), (IHandlerThread**)&mSettingsObserverThread);
-    mSettingsObserverThread->Start();
+    AutoPtr<IThread> thread = (IThread*)mSettingsObserverThread->Probe(EIID_IThread);
+    thread->Start();
 
-    mSettingsObserver = new ContentObserver(
-        new Handler(mSettingsObserverThread.getLooper())) {
+    mSettingsObserver = new InnerContentObserver(this);
 
-            @Override
-            public void onChange(boolean selfChange) {
-                if (DEBUG) logd("SettingsObserver.onChange: " + selfChange);
-                super.onChange(selfChange);
-
-                // Ensure that the observer is activated during communication mode.
-                if (mAudioManager.getMode() != AudioManager.MODE_IN_COMMUNICATION) {
-                    throw new IllegalStateException(
-                            "Only enable SettingsObserver in COMM mode");
-                }
-
-                // Get stream volume for the voice stream and deliver callback if
-                // the volume index is zero. It is not possible to move the volume
-                // slider all the way down in communication mode but the callback
-                // implementation can ensure that the volume is completely muted.
-                int volume = mAudioManager.getStreamVolume(
-                    AudioManager.STREAM_VOICE_CALL);
-                if (DEBUG) logd("nativeSetMute: " + (volume == 0));
-                nativeSetMute(mNativeAudioManagerAndroid, (volume == 0));
-            }
-    };
-
+    AutoPtr<IUri> uri;
+    //Uri::Parse(String("content://") + ISettings::AUTHORITY + String("/system"), (IUri**)&uri);
     mContentResolver->RegisterContentObserver(
-        Settings.System.CONTENT_URI, TRUE, mSettingsObserver);
+        uri/*TODO Settings::System::CONTENT_URI*/, TRUE, mSettingsObserver);
 }
 
 /** Quit observer thread and stop listening for volume changes. */
 void AudioManagerAndroid::StopObservingVolumeChanges()
 {
-    if (DEBUG) logd("stopObservingVolumeChanges");
+    if (DEBUG) Logd(String("stopObservingVolumeChanges"));
     if (mSettingsObserverThread == NULL)
         return;
 
     mContentResolver->UnregisterContentObserver(mSettingsObserver);
     mSettingsObserver = NULL;
 
-    mSettingsObserverThread->Quit();
+    Boolean result;
+    mSettingsObserverThread->Quit(&result);
     // try {
-        mSettingsObserverThread->Join();
+    AutoPtr<IThread> thread = (IThread*)mSettingsObserverThread->Probe(EIID_IThread);
+    thread->Join();
     // } catch (InterruptedException e) {
     //     Log.e(TAG, "Thread.join() exception: ", e);
     // }
@@ -1332,3 +1389,4 @@ void AudioManagerAndroid::NativeSetMute(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+

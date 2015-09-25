@@ -1,3 +1,7 @@
+#include "elastos/droid/webkit/native/media/MediaPlayerListener.h"
+
+using Elastos::Droid::Media::IAudioManager;
+using Elastos::Droid::Media::IMediaPlayer;
 
 namespace Elastos {
 namespace Droid {
@@ -15,6 +19,11 @@ const Int32 MediaPlayerListener::MEDIA_ERROR_INVALID_CODE;
 const Int32 MediaPlayerListener::MEDIA_ERROR_MALFORMED;
 const Int32 MediaPlayerListener::MEDIA_ERROR_TIMED_OUT;
 
+CAR_INTERFACE_IMPL_7(MediaPlayerListener, Object, IMediaPlayerOnPreparedListener, IMediaPlayerOnCompletionListener,
+        IMediaPlayerOnBufferingUpdateListener, IMediaPlayerOnSeekCompleteListener,
+        IMediaPlayerOnVideoSizeChangedListener,
+        IMediaPlayerOnErrorListener, IOnAudioFocusChangeListener);
+
 MediaPlayerListener::MediaPlayerListener(
     /* [in] */ Int64 nativeMediaPlayerListener,
     /* [in] */ IContext* context)
@@ -24,11 +33,14 @@ MediaPlayerListener::MediaPlayerListener(
 }
 
 //@Override
-Boolean MediaPlayerListener::OnError(
+ECode MediaPlayerListener::OnError(
     /* [in] */ IMediaPlayer* mp,
     /* [in] */ Int32 what,
-    /* [in] */ Int32 extra)
+    /* [in] */ Int32 extra,
+    /* [out] */ Boolean *result)
 {
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
     Int32 errorType;
     switch (what) {
         case IMediaPlayer::MEDIA_ERROR_UNKNOWN:
@@ -61,55 +73,62 @@ Boolean MediaPlayerListener::OnError(
 
     NativeOnMediaError(mNativeMediaPlayerListener, errorType);
 
-    return TRUE;
+    *result = TRUE;
+    return NOERROR;
 }
 
 //@Override
-void MediaPlayerListener::OnVideoSizeChanged(
+ECode MediaPlayerListener::OnVideoSizeChanged(
     /* [in] */ IMediaPlayer* mp,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
     NativeOnVideoSizeChanged(mNativeMediaPlayerListener, width, height);
+    return NOERROR;
 }
 
 //@Override
-void MediaPlayerListener::OnSeekComplete(
+ECode MediaPlayerListener::OnSeekComplete(
     /* [in] */ IMediaPlayer* mp)
 {
     NativeOnSeekComplete(mNativeMediaPlayerListener);
+    return NOERROR;
 }
 
 //@Override
-void MediaPlayerListener::OnBufferingUpdate(
+ECode MediaPlayerListener::OnBufferingUpdate(
     /* [in] */ IMediaPlayer* mp,
     /* [in] */ Int32 percent)
 {
     NativeOnBufferingUpdate(mNativeMediaPlayerListener, percent);
+    return NOERROR;
 }
 
 //@Override
-void MediaPlayerListener::OnCompletion(
+ECode MediaPlayerListener::OnCompletion(
     /* [in] */ IMediaPlayer* mp)
 {
     NativeOnPlaybackComplete(mNativeMediaPlayerListener);
+    return NOERROR;
 }
 
 //@Override
-void MediaPlayerListener::OnPrepared(
+ECode MediaPlayerListener::OnPrepared(
     /* [in] */ IMediaPlayer* mp)
 {
     NativeOnMediaPrepared(mNativeMediaPlayerListener);
+    return NOERROR;
 }
 
 //@Override
-void MediaPlayerListener::OnAudioFocusChange(
+ECode MediaPlayerListener::OnAudioFocusChange(
     /* [in] */ Int32 focusChange)
 {
     if (focusChange == IAudioManager::AUDIOFOCUS_LOSS ||
             focusChange == IAudioManager::AUDIOFOCUS_LOSS_TRANSIENT) {
         NativeOnMediaInterrupted(mNativeMediaPlayerListener);
     }
+    return NOERROR;
 }
 
 //@CalledByNative
@@ -118,21 +137,22 @@ void MediaPlayerListener::ReleaseResources()
     if (mContext != NULL) {
         // Unregister the wish for audio focus.
         AutoPtr<IAudioManager> am;
-        mContext->GetSystemService(IContext::AUDIO_SERVICE, (IAudioManager**)&am);
+        mContext->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&am);
         if (am != NULL) {
-            am->AbandonAudioFocus(this);
+            Int32 result;
+            am->AbandonAudioFocus(this, &result);
         }
     }
 }
 
-//@CalledByNative
-AutoPtr<IMediaPlayerListener> MediaPlayerListener::Create(
+//@CalledByNative return IMediaPlayerListener
+AutoPtr<IInterface> MediaPlayerListener::Create(
     /* [in] */ Int64 nativeMediaPlayerListener,
     /* [in] */ IContext* context,
-    /* [in] */ MediaPlayerBridge mediaPlayerBridge)
+    /* [in] */ MediaPlayerBridge* mediaPlayerBridge)
 {
-    AutoPtr<IMediaPlayerListener> listener;
-    CMediaPlayerListener::New(nativeMediaPlayerListener, context, (IInterface**)&listener);
+    AutoPtr<MediaPlayerListener> listener =
+        new MediaPlayerListener(nativeMediaPlayerListener, context);
     mediaPlayerBridge->SetOnBufferingUpdateListener(listener);
     mediaPlayerBridge->SetOnCompletionListener(listener);
     mediaPlayerBridge->SetOnErrorListener(listener);
@@ -142,13 +162,16 @@ AutoPtr<IMediaPlayerListener> MediaPlayerListener::Create(
 
     AutoPtr<IAudioManager> am;
     context->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&am);
+    Int32 result;
     am->RequestAudioFocus(
             listener,
             IAudioManager::STREAM_MUSIC,
             // Request permanent focus.
-            IAudioManager::AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
+            IAudioManager::AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK,
+            &result);
 
-    return listener;
+    AutoPtr<IInterface> iListener = listener->Probe(EIID_IInterface);
+    return iListener;
 }
 
 /**
