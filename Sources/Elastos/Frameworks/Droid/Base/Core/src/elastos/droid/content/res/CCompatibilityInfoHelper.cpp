@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/res/CCompatibilityInfoHelper.h"
-#include "content/res/CCompatibilityInfo.h"
+#include "elastos/droid/content/res/CCompatibilityInfoHelper.h"
+#include "elastos/droid/content/res/CCompatibilityInfo.h"
 
 namespace Elastos {
 namespace Droid {

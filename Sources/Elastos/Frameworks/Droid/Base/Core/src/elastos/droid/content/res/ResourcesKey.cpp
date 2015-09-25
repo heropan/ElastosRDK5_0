@@ -1,5 +1,5 @@
-#include "content/res/ResourcesKey.h"
-#include "content/res/CConfiguration.h"
+#include "elastos/droid/content/res/ResourcesKey.h"
+#include "elastos/droid/content/res/CConfiguration.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Math.h>
 

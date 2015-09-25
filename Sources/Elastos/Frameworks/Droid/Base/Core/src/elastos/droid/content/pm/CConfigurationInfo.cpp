@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/pm/CConfigurationInfo.h"
+#include "elastos/droid/content/pm/CConfigurationInfo.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

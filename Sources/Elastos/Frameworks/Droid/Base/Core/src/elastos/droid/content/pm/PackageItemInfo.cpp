@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/pm/PackageItemInfo.h"
-//#include "content/pm/PackageManager.h"
+#include "elastos/droid/content/pm/PackageItemInfo.h"
+//#include "elastos/droid/content/pm/PackageManager.h"
 
 using Elastos::Core::CString;
 

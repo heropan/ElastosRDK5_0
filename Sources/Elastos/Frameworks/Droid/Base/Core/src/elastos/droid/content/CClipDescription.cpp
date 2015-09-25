@@ -1,6 +1,6 @@
 
-#include "content/CClipDescription.h"
-#include "content/CClipDescriptionHelper.h"
+#include "elastos/droid/content/CClipDescription.h"
+#include "elastos/droid/content/CClipDescriptionHelper.h"
 // #include "text/TextUtils.h"
 #include <elastos/utility/etl/List.h>
 

@@ -1,5 +1,5 @@
 
-#include "content/pm/CContainerEncryptionParams.h"
+#include "elastos/droid/content/pm/CContainerEncryptionParams.h"
 #include <elastos/utility/Arrays.h>
 
 using Elastos::Utility::Arrays;

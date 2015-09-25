@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/res/CAssetFileDescriptorAutoCloseOutputStream.h"
+#include "elastos/droid/content/res/CAssetFileDescriptorAutoCloseOutputStream.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::IParcelFileDescriptor;

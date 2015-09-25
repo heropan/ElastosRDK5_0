@@ -1,5 +1,5 @@
-#include "content/CSyncRequest.h"
-#include "content/CSyncRequestBuilder.h"
+#include "elastos/droid/content/CSyncRequest.h"
+#include "elastos/droid/content/CSyncRequestBuilder.h"
 //#include "accounts/CAccount.h"
 #include "os/CBundle.h"
 

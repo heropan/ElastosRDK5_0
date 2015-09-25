@@ -1,6 +1,6 @@
 
-#include "content/CSyncResultHelper.h"
-#include "content/CSyncResult.h"
+#include "elastos/droid/content/CSyncResultHelper.h"
+#include "elastos/droid/content/CSyncResult.h"
 
 namespace Elastos {
 namespace Droid {

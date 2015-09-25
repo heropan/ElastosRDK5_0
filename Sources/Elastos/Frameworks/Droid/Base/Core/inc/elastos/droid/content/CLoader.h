@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CLOADER_H__
 
 #include "_Elastos_Droid_Content_CLoader.h"
-#include "content/Loader.h"
+#include "elastos/droid/content/Loader.h"
 
 namespace Elastos {
 namespace Droid {

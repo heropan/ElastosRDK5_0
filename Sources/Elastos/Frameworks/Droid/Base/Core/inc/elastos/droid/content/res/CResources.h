@@ -3,11 +3,11 @@
 #define __ELASTOS_DROID_CONTENT_RES_CRESOURCES_H__
 
 #include "_Elastos_Droid_Content_Res_CResources.h"
-#include "content/res/XmlBlock.h"
-#include "content/res/CAssetManager.h"
-#include "content/res/CConfiguration.h"
-#include "content/res/CCompatibilityInfo.h"
-#include "content/res/CTypedArray.h"
+#include "elastos/droid/content/res/XmlBlock.h"
+#include "elastos/droid/content/res/CAssetManager.h"
+#include "elastos/droid/content/res/CConfiguration.h"
+#include "elastos/droid/content/res/CCompatibilityInfo.h"
+#include "elastos/droid/content/res/CTypedArray.h"
 #include "utility/CDisplayMetrics.h"
 #include "utility/CTypedValue.h"
 #include "utility/Pools.h"

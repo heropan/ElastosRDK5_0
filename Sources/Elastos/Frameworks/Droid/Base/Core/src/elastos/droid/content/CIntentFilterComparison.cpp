@@ -1,5 +1,5 @@
 
-#include "content/CIntentFilterComparison.h"
+#include "elastos/droid/content/CIntentFilterComparison.h"
 #include <ext/frameworkdef.h>
 
 namespace Elastos {

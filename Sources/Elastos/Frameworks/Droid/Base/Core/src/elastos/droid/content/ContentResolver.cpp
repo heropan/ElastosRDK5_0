@@ -1,10 +1,10 @@
 
 
-#include "content/ContentResolver.h"
-#include "content/CContentResolverOpenResourceIdResult.h"
-#include "content/CContentProviderClient.h"
-#include "content/ContentProvider.h"
-//#include "content/res/CAssetFileDescriptor.h"
+#include "elastos/droid/content/ContentResolver.h"
+#include "elastos/droid/content/CContentResolverOpenResourceIdResult.h"
+#include "elastos/droid/content/CContentProviderClient.h"
+#include "elastos/droid/content/ContentProvider.h"
+//#include "elastos/droid/content/res/CAssetFileDescriptor.h"
 //#include "accounts/CAccount.h"
 //#include "app/ActivityManagerNative.h"
 //#include "app/AppGlobals.h"

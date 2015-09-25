@@ -1,5 +1,5 @@
 
-#include "content/pm/CManifestDigest.h"
+#include "elastos/droid/content/pm/CManifestDigest.h"
 #include "utility/CBase64.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/IntegralToString.h>

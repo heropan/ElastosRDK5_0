@@ -1,6 +1,6 @@
 
-#include "content/res/CConfigurationHelper.h"
-#include "content/res/CConfiguration.h"
+#include "elastos/droid/content/res/CConfigurationHelper.h"
+#include "elastos/droid/content/res/CConfiguration.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {

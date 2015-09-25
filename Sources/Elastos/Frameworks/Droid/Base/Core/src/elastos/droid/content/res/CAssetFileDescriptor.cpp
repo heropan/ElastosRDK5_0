@@ -1,8 +1,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/res/CAssetFileDescriptor.h"
-#include "content/res/CAssetFileDescriptorAutoCloseInputStream.h"
-#include "content/res/CAssetFileDescriptorAutoCloseOutputStream.h"
+#include "elastos/droid/content/res/CAssetFileDescriptor.h"
+#include "elastos/droid/content/res/CAssetFileDescriptorAutoCloseInputStream.h"
+#include "elastos/droid/content/res/CAssetFileDescriptorAutoCloseOutputStream.h"
 #include "os/CBundle.h"
 #include "os/CParcelFileDescriptor.h"
 #include "os/CParcelFileDescriptorAutoCloseInputStream.h"

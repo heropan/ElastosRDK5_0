@@ -1,5 +1,5 @@
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/pm/CVerifierDeviceIdentity.h"
+#include "elastos/droid/content/pm/CVerifierDeviceIdentity.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

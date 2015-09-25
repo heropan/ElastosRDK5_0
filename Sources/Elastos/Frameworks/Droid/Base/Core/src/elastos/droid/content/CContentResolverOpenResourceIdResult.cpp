@@ -1,5 +1,5 @@
 
-#include "content/CContentResolverOpenResourceIdResult.h"
+#include "elastos/droid/content/CContentResolverOpenResourceIdResult.h"
 #include <ext/frameworkdef.h>
 
 namespace Elastos {

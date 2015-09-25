@@ -1,6 +1,6 @@
 
-#include "content/CContentProviderHelper.h"
-#include "content/ContentProvider.h"
+#include "elastos/droid/content/CContentProviderHelper.h"
+#include "elastos/droid/content/ContentProvider.h"
 
 namespace Elastos {
 namespace Droid {

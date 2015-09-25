@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CINTENTHELPER_H__
 
 #include "_Elastos_Droid_Content_CIntentHelper.h"
-#include "content/Intent.h"
+#include "elastos/droid/content/Intent.h"
 #include <elastos/core/Singleton.h>
 
 namespace Elastos {

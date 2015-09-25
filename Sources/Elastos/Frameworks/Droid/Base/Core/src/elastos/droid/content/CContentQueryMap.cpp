@@ -1,6 +1,6 @@
 
-#include "content/CContentQueryMap.h"
-#include "content/CContentValues.h"
+#include "elastos/droid/content/CContentQueryMap.h"
+#include "elastos/droid/content/CContentValues.h"
 #include "os/CHandler.h"
 #include <elastos/core/CoreUtils.h>
 #include <elastos/core/AutoLock.h>

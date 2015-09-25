@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_INSTRUMENTATIONINFO_H__
 #define __ELASTOS_DROID_CONTENT_PM_INSTRUMENTATIONINFO_H__
 
-#include "content/pm/PackageItemInfo.h"
+#include "elastos/droid/content/pm/PackageItemInfo.h"
 
 namespace Elastos {
 namespace Droid {

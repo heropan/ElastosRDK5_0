@@ -1,6 +1,6 @@
 
-#include "content/CSyncStatusInfo.h"
-#include "content/ContentResolver.h"
+#include "elastos/droid/content/CSyncStatusInfo.h"
+#include "elastos/droid/content/ContentResolver.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 

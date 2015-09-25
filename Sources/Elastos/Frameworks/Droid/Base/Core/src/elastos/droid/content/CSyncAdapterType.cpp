@@ -1,5 +1,5 @@
 
-#include "content/CSyncAdapterType.h"
+#include "elastos/droid/content/CSyncAdapterType.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

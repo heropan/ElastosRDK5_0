@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CCURSORLOADER_H__
 
 #include "_Elastos_Droid_Content_CCursorLoader.h"
-#include "content/AsyncTaskLoader.h"
+#include "elastos/droid/content/AsyncTaskLoader.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Database::ICursor;

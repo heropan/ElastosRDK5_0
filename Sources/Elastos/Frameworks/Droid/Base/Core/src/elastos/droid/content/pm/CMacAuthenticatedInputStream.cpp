@@ -1,5 +1,5 @@
 
-#include "content/pm/CMacAuthenticatedInputStream.h"
+#include "elastos/droid/content/pm/CMacAuthenticatedInputStream.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {

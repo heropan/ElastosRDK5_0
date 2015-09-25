@@ -1,7 +1,7 @@
 
-#include "content/CContentProviderClient.h"
-#include "content/CContentProviderHelper.h"
-//#include "content/ContentResolver.h"
+#include "elastos/droid/content/CContentProviderClient.h"
+#include "elastos/droid/content/CContentProviderHelper.h"
+//#include "elastos/droid/content/ContentResolver.h"
 #include "os/CHandler.h"
 #include "os/Looper.h"
 #include <elastos/core/AutoLock.h>

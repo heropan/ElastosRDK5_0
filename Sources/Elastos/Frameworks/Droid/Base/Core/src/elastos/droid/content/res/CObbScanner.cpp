@@ -1,6 +1,6 @@
 
-#include "content/res/CObbScanner.h"
-#include "content/res/CObbInfo.h"
+#include "elastos/droid/content/res/CObbScanner.h"
+#include "elastos/droid/content/res/CObbInfo.h"
 #include <androidfw/ObbFile.h>
 #include <elastos/utility/logging/Slogger.h>
 

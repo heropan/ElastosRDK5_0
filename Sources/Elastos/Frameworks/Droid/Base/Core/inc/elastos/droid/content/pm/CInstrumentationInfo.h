@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CINSTRUMENTATIONINFO_H__
 
 #include "_Elastos_Droid_Content_Pm_CInstrumentationInfo.h"
-#include "content/pm/InstrumentationInfo.h"
+#include "elastos/droid/content/pm/InstrumentationInfo.h"
 
 namespace Elastos {
 namespace Droid {

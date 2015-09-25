@@ -1,6 +1,6 @@
 
-#include "content/CContentProviderTransport.h"
-#include "content/ContentProvider.h"
+#include "elastos/droid/content/CContentProviderTransport.h"
+#include "elastos/droid/content/ContentProvider.h"
 #include "os/Binder.h"
 #include "os/UserHandle.h"
 #include "os/CCancellationSignalHelper.h"

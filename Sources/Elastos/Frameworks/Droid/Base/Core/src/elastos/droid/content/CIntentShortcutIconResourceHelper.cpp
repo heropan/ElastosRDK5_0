@@ -1,6 +1,6 @@
 
-#include "content/CIntentShortcutIconResourceHelper.h"
-#include "content/CIntentShortcutIconResource.h"
+#include "elastos/droid/content/CIntentShortcutIconResourceHelper.h"
+#include "elastos/droid/content/CIntentShortcutIconResource.h"
 
 using Elastos::Droid::Content::Res::IResources;
 

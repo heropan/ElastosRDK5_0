@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_RES_CCOLORSTATELISTHELPER_H__
 
 #include "_Elastos_Droid_Content_Res_CColorStateListHelper.h"
-#include "content/res/CColorStateList.h"
+#include "elastos/droid/content/res/CColorStateList.h"
 #include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::Res::IColorStateList;

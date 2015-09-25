@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CRESTRICTIONENTRY_H__
 
 #include "_Elastos_Droid_Content_CRestrictionEntry.h"
-#include "content/RestrictionEntry.h"
+#include "elastos/droid/content/RestrictionEntry.h"
 
 namespace Elastos {
 namespace Droid {

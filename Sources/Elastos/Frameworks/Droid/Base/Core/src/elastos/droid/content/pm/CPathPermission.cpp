@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/pm/CPathPermission.h"
+#include "elastos/droid/content/pm/CPathPermission.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 
 #include "ext/frameworkdef.h"
-#include "content/res/CResourcesHelper.h"
-#include "content/res/CResources.h"
+#include "elastos/droid/content/res/CResourcesHelper.h"
+#include "elastos/droid/content/res/CResources.h"
 
 namespace Elastos {
 namespace Droid {

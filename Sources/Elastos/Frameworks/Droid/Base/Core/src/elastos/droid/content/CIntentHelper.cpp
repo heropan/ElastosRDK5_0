@@ -1,5 +1,5 @@
 
-#include "content/CIntentHelper.h"
+#include "elastos/droid/content/CIntentHelper.h"
 #include <ext/frameworkdef.h>
 
 namespace Elastos {

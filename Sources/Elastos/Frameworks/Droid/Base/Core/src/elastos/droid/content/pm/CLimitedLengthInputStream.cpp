@@ -1,5 +1,5 @@
 
-#include "content/pm/CLimitedLengthInputStream.h"
+#include "elastos/droid/content/pm/CLimitedLengthInputStream.h"
 #include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/ext/frameworkext.h"
 

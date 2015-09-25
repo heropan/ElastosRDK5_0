@@ -1,9 +1,9 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/pm/ResolveInfo.h"
-#include "content/pm/CActivityInfo.h"
-#include "content/pm/CProviderInfo.h"
-#include "content/pm/CServiceInfo.h"
+#include "elastos/droid/content/pm/ResolveInfo.h"
+#include "elastos/droid/content/pm/CActivityInfo.h"
+#include "elastos/droid/content/pm/CProviderInfo.h"
+#include "elastos/droid/content/pm/CServiceInfo.h"
 #include "os/UserHandle.h"
 #include <elastos/utility/logging/Slogger.h>
 

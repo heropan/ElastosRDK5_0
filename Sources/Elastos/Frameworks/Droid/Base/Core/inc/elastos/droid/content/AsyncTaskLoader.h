@@ -4,7 +4,7 @@
 
 #include <ext/frameworkext.h>
 #include "os/AsyncTask.h"
-#include "content/Loader.h"
+#include "elastos/droid/content/Loader.h"
 
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::AsyncTask;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_RES_XMLBLOCK_H__
 #define __ELASTOS_DROID_CONTENT_RES_XMLBLOCK_H__
 
-#include "content/res/StringBlock.h"
+#include "elastos/droid/content/res/StringBlock.h"
 
 using Elastos::Droid::Utility::IAttributeSet;
 

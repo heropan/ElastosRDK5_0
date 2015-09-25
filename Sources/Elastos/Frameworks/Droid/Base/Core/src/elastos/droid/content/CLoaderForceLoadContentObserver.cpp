@@ -1,5 +1,5 @@
 
-#include "content/CLoaderForceLoadContentObserver.h"
+#include "elastos/droid/content/CLoaderForceLoadContentObserver.h"
 #include "os/CHandler.h"
 
 using Elastos::Droid::Os::IHandler;

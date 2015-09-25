@@ -1,7 +1,7 @@
 
-#include "content/SyncAdaptersCache.h"
-#include "content/CSyncAdapterType.h"
-#include "content/CSyncAdapterTypeHelper.h"
+#include "elastos/droid/content/SyncAdaptersCache.h"
+#include "elastos/droid/content/CSyncAdapterType.h"
+#include "elastos/droid/content/CSyncAdapterTypeHelper.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

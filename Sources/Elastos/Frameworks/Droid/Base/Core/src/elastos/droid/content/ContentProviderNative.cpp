@@ -1,8 +1,8 @@
 
-#include "content/ContentProviderNative.h"
-//#include "content/CContentProviderOperation.h"
-//#include "content/CContentProviderResult.h"
-//***#include "content/res/CAssetFileDescriptor.h"
+#include "elastos/droid/content/ContentProviderNative.h"
+//#include "elastos/droid/content/CContentProviderOperation.h"
+//#include "elastos/droid/content/CContentProviderResult.h"
+//***#include "elastos/droid/content/res/CAssetFileDescriptor.h"
 //***#include "database/CBulkCursorToCursorAdaptor.h"
 //***#include "database/CCursorToBulkCursorAdaptor.h"
 //***#include "database/DatabaseUtils.h"

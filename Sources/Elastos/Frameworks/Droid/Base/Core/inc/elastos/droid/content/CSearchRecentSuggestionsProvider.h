@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CSEARCHRECENTSUGGESTIONSPROVIDER_H__
 
 #include "_Elastos_Droid_Content_CSearchRecentSuggestionsProvider.h"
-#include "content/ContentProvider.h"
+#include "elastos/droid/content/ContentProvider.h"
 #include "database/sqlite/SQLiteOpenHelper.h"
 
 using Elastos::Droid::Database::ICursor;

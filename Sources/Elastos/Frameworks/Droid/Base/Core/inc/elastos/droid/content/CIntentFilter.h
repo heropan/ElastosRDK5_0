@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CINTENTFILTER_H__
 
 #include "_Elastos_Droid_Content_CIntentFilter.h"
-#include "content/IntentFilter.h"
+#include "elastos/droid/content/IntentFilter.h"
 
 namespace Elastos {
 namespace Droid {

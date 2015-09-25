@@ -1,6 +1,6 @@
 
-#include "content/CIntentFilterHelper.h"
-#include "content/IntentFilter.h"
+#include "elastos/droid/content/CIntentFilterHelper.h"
+#include "elastos/droid/content/IntentFilter.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/pm/CPermissionInfoHelper.h"
-#include "content/pm/CPermissionInfo.h"
+#include "elastos/droid/content/pm/CPermissionInfoHelper.h"
+#include "elastos/droid/content/pm/CPermissionInfo.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,6 @@
 
-#include "content/CComponentNameHelper.h"
-#include "content/CComponentName.h"
+#include "elastos/droid/content/CComponentNameHelper.h"
+#include "elastos/droid/content/CComponentName.h"
 
 namespace Elastos {
 namespace Droid {

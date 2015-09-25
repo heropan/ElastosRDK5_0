@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/res/CAssetFileDescriptorAutoCloseInputStream.h"
+#include "elastos/droid/content/res/CAssetFileDescriptorAutoCloseInputStream.h"
 #include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Os::IParcelFileDescriptor;

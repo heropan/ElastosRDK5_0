@@ -1,6 +1,6 @@
 
-#include "content/CEntity.h"
-#include "content/CEntityNamedContentValues.h"
+#include "elastos/droid/content/CEntity.h"
+#include "elastos/droid/content/CEntityNamedContentValues.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

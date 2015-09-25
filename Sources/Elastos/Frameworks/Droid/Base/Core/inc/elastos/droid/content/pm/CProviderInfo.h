@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CPROVIDERINFO_H__
 
 #include "_Elastos_Droid_Content_Pm_CProviderInfo.h"
-#include "content/pm/ProviderInfo.h"
+#include "elastos/droid/content/pm/ProviderInfo.h"
 
 namespace Elastos {
 namespace Droid {

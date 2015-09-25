@@ -1,7 +1,7 @@
 
 #include "ext/frameworkdef.h"
-#include "content/CClipDataHelper.h"
-#include "content/CClipData.h"
+#include "elastos/droid/content/CClipDataHelper.h"
+#include "elastos/droid/content/CClipData.h"
 
 namespace Elastos {
 namespace Droid {

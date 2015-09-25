@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CACTIVITYINFO_H__
 
 #include "_Elastos_Droid_Content_Pm_CActivityInfo.h"
-#include "content/pm/ActivityInfo.h"
+#include "elastos/droid/content/pm/ActivityInfo.h"
 
 namespace Elastos {
 namespace Droid {

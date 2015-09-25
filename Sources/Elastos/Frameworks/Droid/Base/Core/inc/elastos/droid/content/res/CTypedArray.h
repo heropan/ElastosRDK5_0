@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_CONTENT_RES_CTYPEDARRAY_H__
 
 #include "_Elastos_Droid_Content_Res_CTypedArray.h"
-#include "content/res/XmlBlock.h"
-#include "content/res/CResources.h"
+#include "elastos/droid/content/res/XmlBlock.h"
+#include "elastos/droid/content/res/CResources.h"
 #include "utility/CTypedValue.h"
 
 using Elastos::Droid::Graphics::Drawable::IDrawable;

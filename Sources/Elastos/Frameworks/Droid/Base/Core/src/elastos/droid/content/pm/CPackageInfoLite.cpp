@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/pm/CPackageInfoLite.h"
+#include "elastos/droid/content/pm/CPackageInfoLite.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

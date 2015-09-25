@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_CONTENT_PM_PACKAGEPARSER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/IntentFilter.h"
-#include "content/pm/PackageUserState.h"
+#include "elastos/droid/content/IntentFilter.h"
+#include "elastos/droid/content/pm/PackageUserState.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashSet.h>
 
@@ -19,8 +19,7 @@ using Elastos::Core::ICharSequence;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashSet;
 using Elastos::IO::IFile;
-using Elastos::Utility::Jar::IJarFile;
-using Elastos::Utility::Jar::IJarEntry;
+using Elastos::Utility::Jar::IStrictJarFile;
 using Elastos::Security::Cert::ICertificate;
 using Org::Xmlpull::V1::IXmlPullParser;
 
@@ -28,6 +27,8 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 namespace Pm {
+
+typedef ArrayOf< AutoPtr< ArrayOf<ICertificate*> > > ICertificateArray2;
 
 /**
  * Parser for package files (APKs) on disk. This supports apps packaged either
@@ -209,6 +210,10 @@ public:
         Boolean mMultiArch;
     };
 
+    /**
+     * Representation of a full package parsed from APK files on disk. A package
+     * consists of a single base APK, and zero or more split APKs.
+     */
     class Package
         : public Object
     {
@@ -224,10 +229,61 @@ public:
         CARAPI_(Boolean) HasComponentClassName(
             /* [in] */ const String& name);
 
-        CARAPI_(String) ToString();
+        CARAPI ToString(
+            /* [out] */ String* str);
+
+        public List<String> getAllCodePaths() {
+            ArrayList<String> paths = new ArrayList<>();
+            paths.add(baseCodePath);
+            if (!ArrayUtils.isEmpty(splitCodePaths)) {
+                Collections.addAll(paths, splitCodePaths);
+            }
+            return paths;
+        }
+
+        /**
+         * Filtered set of {@link #getAllCodePaths()} that excludes
+         * resource-only APKs.
+         */
+        public List<String> getAllCodePathsExcludingResourceOnly() {
+            ArrayList<String> paths = new ArrayList<>();
+            if ((applicationInfo.flags & ApplicationInfo.FLAG_HAS_CODE) != 0) {
+                paths.add(baseCodePath);
+            }
+            if (!ArrayUtils.isEmpty(splitCodePaths)) {
+                for (int i = 0; i < splitCodePaths.length; i++) {
+                    if ((splitFlags[i] & ApplicationInfo.FLAG_HAS_CODE) != 0) {
+                        paths.add(splitCodePaths[i]);
+                    }
+                }
+            }
+            return paths;
+        }
 
     public:
         String mPackageName;
+
+        /** Names of any split APKs, ordered by parsed splitName */
+        AutoPtr<ArrayOf<String> > mSplitNames;
+
+        // TODO: work towards making these paths invariant
+
+        /**
+         * Path where this package was found on disk. For monolithic packages
+         * this is path to single base APK file; for cluster packages this is
+         * path to the cluster directory.
+         */
+        String mCodePath;
+
+        /** Path of base APK */
+        String mBaseCodePath;
+        /** Paths of any split APKs, ordered by parsed splitName */
+        AutoPtr<ArrayOf<String> > mSplitCodePaths;
+
+        /** Flags of any split APKs; ordered by parsed splitName */
+        AutoPtr<ArrayOf<Int32> > mSplitFlags;
+
+        Boolean baseHardwareAccelerated;
 
         AutoPtr<IApplicationInfo> mApplicationInfo;
 
@@ -244,9 +300,12 @@ public:
 
         AutoPtr< List<String> > mProtectedBroadcasts;
 
+        AutoPtr< List<String> > mLibraryNames;//
         AutoPtr< List<String> > mUsesLibraries;
         AutoPtr< List<String> > mUsesOptionalLibraries;
         AutoPtr< ArrayOf<String> > mUsesLibraryFiles;
+
+        AutoPtr< List< AutoPtr<ActivityIntentInfo> > > mPreferredActivityFilters;
 
         AutoPtr< List<String> > mOriginalPackages;
         String mRealPackage;
@@ -272,17 +331,18 @@ public:
 
         // Signatures that were read from the package.
         AutoPtr< ArrayOf<ISignature*> > mSignatures;
+        AutoPtr<ICertificateArray2> mCertificates;
 
         // For use by package manager service for quick lookup of
         // preferred up order.
         Int32 mPreferredOrder;
 
-        // For use by the package manager to keep track of the path to the
-        // file an app came from.
-        String mScanPath;
+        // For use by package manager to keep track of where it needs to do dexopt.
+        // public final ArraySet<String> mDexOptPerformed = new ArraySet<>(4);
+        AutoPtr<IArraySet> mDexOptPerformed;
 
-        // For use by package manager to keep track of where it has done dexopt.
-        Boolean mDidDexOpt;
+        // For use by package manager to keep track of when a package was last used.
+        Int64 mLastPackageUsageTimeInMills;
 
         // // User set enabled state.
         // Int32 mSetEnabled;
@@ -303,13 +363,52 @@ public:
          */
         AutoPtr< List< AutoPtr<IFeatureInfo> > > mReqFeatures;
 
+        // Applications requested feature groups
+        AutoPtr< List< AutoPtr<IFeatureGroupInfo> > > mFeatureGroups;
+
         Int32 mInstallLocation;
+
+        Boolean mCoreApp;
+
+        /* An app that's required for all users and cannot be uninstalled for a user */
+        Boolean mRequiredForAllUsers;
+
+        /* The restricted account authenticator type that is used by this application */
+        String mRestrictedAccountType;
+
+        /* The required account type without which this application will not function */
+        String mRequiredAccountType;
 
         /**
          * Digest suitable for comparing whether this package's manifest is the
          * same as another.
          */
         AutoPtr<IManifestDigest> mManifestDigest;
+
+        String mOverlayTarget;
+        Int32 mOverlayPriority;
+        Boolean mTrustedOverlay;
+
+        /**
+         * Data used to feed the KeySetManagerService
+         */
+        // public ArraySet<PublicKey> mSigningKeys;
+        // public ArraySet<String> mUpgradeKeySets;
+        // public ArrayMap<String, ArraySet<PublicKey>> mKeySetMapping;
+
+        AutoPtr<IArraySet> mSigningKeys;
+        AutoPtr<IArraySet> mUpgradeKeySets;
+        AutoPtr<IArrayMap> mKeySetMapping;
+
+        /**
+         * The install time abi override for this package, if any.
+         *
+         * TODO: This seems like a horrible place to put the abiOverride because
+         * this isn't something the packageParser parsers. However, this fits in with
+         * the rest of the PackageManager where package scanning randomly pushes
+         * and prods fields out of {@code this.applicationInfo}.
+         */
+        String mCpuAbiOverride;
 
         // for epk
         Boolean mIsEpk;
@@ -337,7 +436,11 @@ public:
 
         virtual CARAPI_(AutoPtr<IComponentName>) GetComponentName();
 
-        virtual CARAPI_(String) GetComponentShortName();
+        CARAPI_(void) AppendComponentShortName(
+            /* [in] */ StringBuilder* sb);
+
+        CARAPI_(PrintComponentShortName(
+            /* [in] */ IPrintWriter* pw);
 
         virtual CARAPI_(void) SetPackageName(
             /* [in] */ const String& PackageName);
@@ -372,7 +475,8 @@ public:
         CARAPI_(void) SetPackageName(
             /* [in] */ const String& PackageName);
 
-        CARAPI_(String) ToString();
+        CARAPI ToString(
+            /* [out] */ String* str);
 
     public:
         AutoPtr<IPermissionInfo> mInfo;
@@ -395,7 +499,8 @@ public:
         CARAPI_(void) SetPackageName(
             /* [in] */ const String& PackageName);
 
-        CARAPI_(String) ToString();
+        CARAPI ToString(
+            /* [out] */ String* str);
 
     public:
         AutoPtr<IPermissionGroupInfo> mInfo;
@@ -411,7 +516,8 @@ public:
         CARAPI_(void) SetPackageName(
             /* [in] */ const String& capName);
 
-        CARAPI_(String) ToString();
+        CARAPI ToString(
+            /* [out] */ String* str);
 
     public:
         AutoPtr<IActivityInfo> mInfo;
@@ -427,13 +533,14 @@ public:
         CARAPI_(void) SetPackageName(
             /* [in] */ const String& capName);
 
-        CARAPI_(String) ToString();
+        CARAPI ToString(
+            /* [out] */ String* str);
 
     public:
         AutoPtr<IServiceInfo> mInfo;
     };
 
-    class Provider : public Component<IntentInfo>
+    class Provider : public Component<ProviderIntentInfo>
     {
     public:
         Provider(
@@ -446,7 +553,8 @@ public:
         CARAPI_(void) SetPackageName(
             /* [in] */ const String& capName);
 
-        CARAPI_(String) ToString();
+        CARAPI ToString(
+            /* [out] */ String* str);
 
     public:
         AutoPtr<IProviderInfo> mInfo;
@@ -463,7 +571,8 @@ public:
         CARAPI_(void) SetPackageName(
             /* [in] */ const String& capName);
 
-        CARAPI_(String) ToString();
+        CARAPI ToString(
+            /* [out] */ String* str);
 
     public:
         AutoPtr<IInstrumentationInfo> mInfo;
@@ -643,6 +752,8 @@ public:
         AutoPtr<ICharSequence> mNonLocalizedLabel;
         Int32 mIcon;
         Int32 mLogo;
+        Int32 mBanner;
+        Int32 mPreferred;
     };
 
     class ActivityIntentInfo : public IntentInfo
@@ -651,7 +762,8 @@ public:
         ActivityIntentInfo(
             /* [in] */ Activity* activity);
 
-        CARAPI_(String) ToString();
+        CARAPI ToString(
+            /* [out] */ String* str);
 
     public:
         Activity* mActivity;
@@ -663,13 +775,29 @@ public:
         ServiceIntentInfo(
             /* [in] */ Service* service);
 
-        CARAPI_(String) ToString();
+        CARAPI ToString(
+            /* [out] */ String* str);
 
     public:
         Service* mService;
     };
 
+
+    class ProviderIntentInfo : public IntentInfo
+    {
+    public:
+        ProviderIntentInfo(
+            /* [in] */ Provider* service);
+
+        CARAPI ToString(
+            /* [out] */ String* str);
+
+    public:
+        Provider* mService;
+    };
+
 public:
+
     PackageParser();
 
     CARAPI_(void) SetSeparateProcesses(
@@ -794,6 +922,12 @@ public:
         /* [in] */ PackageUserState* state,
         /* [in] */ Int32 userId);
 
+    static CARAPI_(AutoPtr<IApplicationInfo>) GenerateApplicationInfo(
+        /* [in] */ IApplicationInfo* ai,
+        /* [in] */ Int32 flags,
+        /* [in] */ PackageUserState* state,
+        /* [in] */ Int32 userId);
+
     static CARAPI_(AutoPtr<IPermissionInfo>) GeneratePermissionInfo(
         /* [in] */ Permission* p,
         /* [in] */ Int32 flags);
@@ -804,6 +938,12 @@ public:
 
     static CARAPI_(AutoPtr<IActivityInfo>) GenerateActivityInfo(
         /* [in] */ Activity* activity,
+        /* [in] */ Int32 flags,
+        /* [in] */ PackageUserState* state,
+        /* [in] */ Int32 userId);
+
+    static CARAPI_(AutoPtr<IActivityInfo>) GenerateActivityInfo(
+        /* [in] */ IActivityInfo* ai,
         /* [in] */ Int32 flags,
         /* [in] */ PackageUserState* state,
         /* [in] */ Int32 userId);
@@ -827,7 +967,15 @@ public:
     static CARAPI_(void) SetCompatibilityModeEnabled(
         /* [in] */ Boolean compatibilityModeEnabled);
 
+    static CARAPI ReadFullyIgnoringContents(
+        /* [in] */ IInputStream* in,
+        /* [out] */ Int64* result);
+
+    static CloseQuietly(
+        /* [in] */ IStrictJarFile* jarFile);
+
 private:
+
     static CARAPI_(Boolean) IsApkFile(
         /* [in] */ IFile* file);
 
@@ -846,7 +994,7 @@ private:
         /* [in] */ IStrictJarFile* jarFile,
         /* [in] */ IZipEntry* je,
         /* [in] */ ArrayOf<Byte>* readBuffer,
-        /* [in] */ ArrayOf<ICertificate*>** result);
+        /* [in] */ ICertificateArray2** result);
 
     static CARAPI_(String) ValidateName(
         /* [in] */ const String& name,
@@ -934,10 +1082,11 @@ private:
     static CARAPI CollectCertificates(
         /* [in] */ Package* pkg,
         /* [in] */ IFile* apkFile,
-        /* [in] */ Int32 flags);
+        /* [in] */ Int32 flags,
+        /* [in] */ ArrayOf<Byte>* readBuffer);
 
     static AutoPtr<ArrayOf<ISignature*> > ConvertToSignatures(
-        /* [in] */ ArrayOf< AutoPtr< ArrayOf<ICertificate*> > > * certs);
+        /* [in] */ ICertificateArray2 * certs);
 
     static CARAPI ParseApkLite(
         /* [in] */ const String& codePath,
@@ -1007,27 +1156,30 @@ private:
         /* [in] */ ArrayOf<String>* outError,
         /* [out] */ Boolean* result);
 
-    CARAPI_(AutoPtr<PermissionGroup>) ParsePermissionGroup(
+    CARAPI ParsePermissionGroup(
         /* [in] */ Package* owner,
         /* [in] */ Int32 flags,
         /* [in] */ IResources* res,
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IAttributeSet* attrs,
-        /* [out] */ ArrayOf<String>* outError);
+        /* [out] */ ArrayOf<String>* outError,
+        /* [out] */ PermissionGroup** group);
 
-    CARAPI_(AutoPtr<Permission>) ParsePermission(
+    CARAPI ParsePermission(
         /* [in] */ Package* owner,
         /* [in] */ IResources* res,
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IAttributeSet* attrs,
-        /* [out] */ ArrayOf<String>* outError);
+        /* [out] */ ArrayOf<String>* outError,
+        /* [out] */ Permission** permission);
 
-    CARAPI_(AutoPtr<Permission>) ParsePermissionTree(
+    CARAPI ParsePermissionTree(
         /* [in] */ Package* owner,
         /* [in] */ IResources* res,
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IAttributeSet* attrs,
-        /* [out] */ ArrayOf<String>* outError);
+        /* [out] */ ArrayOf<String>* outError,
+        /* [out] */ Permission** permission);
 
     CARAPI_(AutoPtr<Instrumentation>) ParseInstrumentation(
         /* [in] */ Package* owner,
@@ -1044,12 +1196,30 @@ private:
      * supported by split APKs.
      */
     CARAPI_(Boolean) ParseBaseApplication(
-        /* [in] */ PackageParser::Package* owner,
+        /* [in] */ Package* owner,
         /* [in] */ IResources* res,
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 flags,
         /* [out] */ ArrayOf<String>* outError);
+
+    /**
+     * Parse the {@code application} XML tree at the current parse location in a
+     * <em>split APK</em> manifest.
+     * <p>
+     * Note that split APKs have many more restrictions on what they're capable
+     * of doing, so many valid features of a base APK have been carefully
+     * omitted here.
+     */
+    CARAPI ParseSplitApplication(
+        /* [in] */ Package* owner,
+        /* [in] */ IResources* res,
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 flags,
+        /* [in] */ Int32 splitIndex,
+        /* [out] */ ArrayOf<String>* outError,
+        /* [out] */ Boolean* result);
 
     CARAPI_(Boolean) ParsePackageItemInfo(
         /* [in] */ Package* owner,
@@ -1123,17 +1293,19 @@ private:
         /* [in] */ IResources* res,
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 flags,
-        /* [out] */ ArrayOf<String>* outError);
+        /* [in] */ Int32 flags);
+
+    static CARAPI ParsePublicKey(
+        /* [in] */ const String& encodedPublicKey,
+        /* [out] */ IPublicKey** key);
 
     CARAPI_(Boolean) ParseIntent(
         /* [in] */ IResources* res,
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 flags,
+        /* [in] */　Boolean allowGlobs
         /* [in] */ IntentInfo* outInfo,
-        /* [out] */ ArrayOf<String>* outError,
-        /* [in] */ Boolean isActivity);
+        /* [out] */ ArrayOf<String>* outError);
 
     static CARAPI_(Boolean) CopyNeeded(
         /* [in] */ Int32 flags,
@@ -1141,6 +1313,11 @@ private:
         /* [in] */ PackageUserState* state,
         /* [in] */ IBundle* metaData,
         /* [in] */ Int32 userId);
+
+    CARAPI UpdateApplicationInfo(
+        /* [in] */ IApplicationInfo* ai,
+        /* [in] */ Int32 flags,
+        /* [in] */ PackageUserState* state);
 
 public:
     /**
@@ -1203,6 +1380,8 @@ private:
 
     static Boolean sCompatibilityModeEnabled;
 
+    static const Int32 PARSE_DEFAULT_INSTALL_LOCATION;//PackageInfo.INSTALL_LOCATION_UNSPECIFIED;
+
     AutoPtr<ParsePackageItemArgs> mParseInstrumentationArgs;
     AutoPtr<ParseComponentArgs> mParseActivityArgs;
     AutoPtr<ParseComponentArgs> mParseActivityAliasArgs;
@@ -1217,24 +1396,26 @@ private:
 
     static const String ANDROID_RESOURCES;
 
-    // private static final Comparator<String> sSplitNameComparator = new SplitNameComparator();
+    /**
+     * Used to sort a set of APKs based on their split names, always placing the
+     * base APK (with {@code null} split name) first.
+     */
+    class SplitNameComparator
+        : public Object
+        , public IComparator {
+    public:
+        CAR_INTERFACE_DECL()
 
-    // /**
-    //  * Used to sort a set of APKs based on their split names, always placing the
-    //  * base APK (with {@code null} split name) first.
-    //  */
-    // private static class SplitNameComparator implements Comparator<String> {
-    //     @Override
-    //     public int compare(String lhs, String rhs) {
-    //         if (lhs == null) {
-    //             return -1;
-    //         } else if (rhs == null) {
-    //             return 1;
-    //         } else {
-    //             return lhs.compareTo(rhs);
-    //         }
-    //     }
-    // }
+        CARAPI Compare(
+            /* [in] */ ICharSequence* lhs,
+            /* [in] */ ICharSequence* rhs,
+            /* [out] */ Int32* result);
+    };
+
+    static const AutoPtr<IComparator> sSplitNameComparator;// = new SplitNameComparator();
+
+
+    static AtomicReference<byte[]> sBuffer = new AtomicReference<byte[]>();
 };
 
 } // namespace Pm
