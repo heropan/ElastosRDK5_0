@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CCONTEXTWRAPPER_H__
 
 #include "_Elastos_Droid_Content_CContextWrapper.h"
-#include "content/ContextWrapper.h"
+#include "elastos/droid/content/ContextWrapper.h"
 
 namespace Elastos {
 namespace Droid {

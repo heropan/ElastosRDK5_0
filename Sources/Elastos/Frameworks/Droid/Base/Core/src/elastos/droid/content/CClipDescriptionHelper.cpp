@@ -1,5 +1,5 @@
 
-#include "content/CClipDescriptionHelper.h"
+#include "elastos/droid/content/CClipDescriptionHelper.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_SYNCADAPTERSCACHE_H__
 
 #include <ext/frameworkext.h>
-#include "content/pm/RegisteredServicesCache.h"
+#include "elastos/droid/content/pm/RegisteredServicesCache.h"
 
 using namespace Elastos::Droid::Content::Pm;
 using namespace Elastos::Droid::Content::Res;

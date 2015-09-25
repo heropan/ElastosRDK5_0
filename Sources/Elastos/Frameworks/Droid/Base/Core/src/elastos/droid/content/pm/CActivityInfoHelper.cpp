@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/pm/CActivityInfoHelper.h"
-#include "content/pm/ActivityInfo.h"
+#include "elastos/droid/content/pm/CActivityInfoHelper.h"
+#include "elastos/droid/content/pm/ActivityInfo.h"
 
 namespace Elastos {
 namespace Droid {

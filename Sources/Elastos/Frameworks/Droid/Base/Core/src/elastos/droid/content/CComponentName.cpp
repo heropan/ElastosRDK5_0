@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/CComponentName.h"
+#include "elastos/droid/content/CComponentName.h"
 
 using Elastos::IO::IWriter;
 using Elastos::Core::EIID_ICloneable;

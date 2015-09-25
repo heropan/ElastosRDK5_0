@@ -1,5 +1,5 @@
 
-#include "content/CursorEntityIterator.h"
+#include "elastos/droid/content/CursorEntityIterator.h"
 
 namespace Elastos {
 namespace Droid {

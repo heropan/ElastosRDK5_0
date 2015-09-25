@@ -1,6 +1,6 @@
 
-#include "content/CDefaultDataHandler.h"
-#include "content/CContentValues.h"
+#include "elastos/droid/content/CDefaultDataHandler.h"
+#include "elastos/droid/content/CContentValues.h"
 //***#include "net/StringUri.h"
 
 using Elastos::Droid::Net::IUriBuilder;

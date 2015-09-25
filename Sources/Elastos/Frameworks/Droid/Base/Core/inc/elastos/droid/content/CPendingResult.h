@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CBROADCASTRECEIVERPENDINGRESULT_H__
 
 #include "_Elastos_Droid_Content_CPendingResult.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 namespace Elastos {
 namespace Droid {

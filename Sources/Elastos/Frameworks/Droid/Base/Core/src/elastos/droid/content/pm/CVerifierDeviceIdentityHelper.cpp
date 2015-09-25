@@ -1,7 +1,7 @@
 
 #include "ext/frameworkdef.h"
-#include "content/pm/CVerifierDeviceIdentityHelper.h"
-#include "content/pm/CVerifierDeviceIdentity.h"
+#include "elastos/droid/content/pm/CVerifierDeviceIdentityHelper.h"
+#include "elastos/droid/content/pm/CVerifierDeviceIdentity.h"
 
 using Elastos::Utility::IRandom;
 

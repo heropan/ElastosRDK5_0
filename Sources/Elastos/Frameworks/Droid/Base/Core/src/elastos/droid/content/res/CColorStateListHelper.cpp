@@ -1,6 +1,6 @@
 
-#include "content/res/CColorStateListHelper.h"
-#include "content/res/CColorStateList.h"
+#include "elastos/droid/content/res/CColorStateListHelper.h"
+#include "elastos/droid/content/res/CColorStateList.h"
 
 namespace Elastos {
 namespace Droid {

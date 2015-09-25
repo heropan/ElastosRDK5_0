@@ -1,5 +1,5 @@
 
-#include "content/res/StringBlock.h"
+#include "elastos/droid/content/res/StringBlock.h"
 //#include "graphics/CPaint.h"
 //#include "graphics/CRect.h"
 //#include "graphics/CColor.h"

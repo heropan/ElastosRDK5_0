@@ -1,5 +1,5 @@
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/pm/CVerificationParams.h"
+#include "elastos/droid/content/pm/CVerificationParams.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,4 +1,4 @@
-#include "content/RestrictionEntry.h"
+#include "elastos/droid/content/RestrictionEntry.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 

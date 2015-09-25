@@ -1,8 +1,8 @@
 
-#include "content/CContentProviderOperationBuilder.h"
-//#include "content/CIntegerMapWrapper.h"
-#include "content/CContentProviderOperation.h"
-//#include "content/CContentValues.h"
+#include "elastos/droid/content/CContentProviderOperationBuilder.h"
+//#include "elastos/droid/content/CIntegerMapWrapper.h"
+#include "elastos/droid/content/CContentProviderOperation.h"
+//#include "elastos/droid/content/CContentValues.h"
 #include <elastos/core/CoreUtils.h>
 #include <elastos/utility/logging/Logger.h>
 

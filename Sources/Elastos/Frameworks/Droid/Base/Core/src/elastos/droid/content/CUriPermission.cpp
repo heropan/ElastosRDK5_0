@@ -1,4 +1,4 @@
-#include "content/CUriPermission.h"
+#include "elastos/droid/content/CUriPermission.h"
 #include "net/Uri.h"
 
 using Elastos::Droid::Net::Uri;

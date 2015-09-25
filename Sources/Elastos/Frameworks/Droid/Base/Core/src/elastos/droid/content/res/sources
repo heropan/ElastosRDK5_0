@@ -6,8 +6,8 @@ include $(MAKEDIR)/../../../../../../../sources.inc
 C_DEFINES += -DDROID_CORE
 
 INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../../../inc/
 INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/content/pm
 
 SOURCES = CAssetFileDescriptor.cpp
 SOURCES += CAssetFileDescriptorAutoCloseInputStream.cpp

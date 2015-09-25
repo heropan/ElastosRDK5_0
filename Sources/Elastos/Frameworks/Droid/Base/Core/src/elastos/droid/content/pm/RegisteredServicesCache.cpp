@@ -1,8 +1,8 @@
 
-#include "content/pm/RegisteredServicesCache.h"
-#include "content/CComponentName.h"
-#include "content/CIntent.h"
-#include "content/CIntentFilter.h"
+#include "elastos/droid/content/pm/RegisteredServicesCache.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CIntentFilter.h"
 #include "os/UserHandle.h"
 #include "os/Handler.h"
 #include "os/CHandler.h"

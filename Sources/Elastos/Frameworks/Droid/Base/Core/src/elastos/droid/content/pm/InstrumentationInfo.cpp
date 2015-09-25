@@ -1,5 +1,5 @@
 
-#include "content/pm/InstrumentationInfo.h"
+#include "elastos/droid/content/pm/InstrumentationInfo.h"
 
 namespace Elastos {
 namespace Droid {

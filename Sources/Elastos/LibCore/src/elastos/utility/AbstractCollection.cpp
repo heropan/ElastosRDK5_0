@@ -274,8 +274,10 @@ ECode AbstractCollection::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    VALIDATE_NOT_NULL(contents);
     VALIDATE_NOT_NULL(outArray);
+    *outArray = NULL;
+    VALIDATE_NOT_NULL(contents);
+
     Int32 size;
     GetSize(&size);
     AutoPtr<ArrayOf<IInterface*> > array = size > contents->GetLength() ?

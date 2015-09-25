@@ -1,5 +1,5 @@
 
-#include "content/pm/CVerifierInfo.h"
+#include "elastos/droid/content/pm/CVerifierInfo.h"
 
 namespace Elastos {
 namespace Droid {

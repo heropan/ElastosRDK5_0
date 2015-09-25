@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CRESOLVEINFO_H__
 
 #include "_Elastos_Droid_Content_Pm_CResolveInfo.h"
-#include "content/pm/ResolveInfo.h"
+#include "elastos/droid/content/pm/ResolveInfo.h"
 
 namespace Elastos {
 namespace Droid {

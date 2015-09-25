@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CONTEXTWRAPPER_H__
 #define __ELASTOS_DROID_CONTENT_CONTEXTWRAPPER_H__
 
-#include "content/Context.h"
+#include "elastos/droid/content/Context.h"
 
 namespace Elastos {
 namespace Droid {

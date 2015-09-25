@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/res/CCompatibilityInfo.h"
-//#include "content/pm/CApplicationInfo.h"
+#include "elastos/droid/content/res/CCompatibilityInfo.h"
+//#include "elastos/droid/content/pm/CApplicationInfo.h"
 //#include "graphics/CPoint.h"
 //#include "graphics/CPointF.h"
 //#include "graphics/CRect.h"

@@ -1,5 +1,5 @@
 
-#include "content/CIntentShortcutIconResource.h"
+#include "elastos/droid/content/CIntentShortcutIconResource.h"
 #include <ext/frameworkdef.h>
 
 namespace Elastos {

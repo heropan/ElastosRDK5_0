@@ -1,15 +1,15 @@
 
-#include "content/pm/CComponentInfo.h"
-#include "content/pm/CActivityInfo.h"
-#include "content/pm/CApplicationInfo.h"
-#include "content/pm/CInstrumentationInfo.h"
-#include "content/pm/CLabeledIntent.h"
-#include "content/pm/CPackageItemInfo.h"
-#include "content/pm/CPermissionGroupInfo.h"
-#include "content/pm/CPermissionInfo.h"
-#include "content/pm/CProviderInfo.h"
-#include "content/pm/CResolveInfo.h"
-#include "content/pm/CServiceInfo.h"
+#include "elastos/droid/content/pm/CComponentInfo.h"
+#include "elastos/droid/content/pm/CActivityInfo.h"
+#include "elastos/droid/content/pm/CApplicationInfo.h"
+#include "elastos/droid/content/pm/CInstrumentationInfo.h"
+#include "elastos/droid/content/pm/CLabeledIntent.h"
+#include "elastos/droid/content/pm/CPackageItemInfo.h"
+#include "elastos/droid/content/pm/CPermissionGroupInfo.h"
+#include "elastos/droid/content/pm/CPermissionInfo.h"
+#include "elastos/droid/content/pm/CProviderInfo.h"
+#include "elastos/droid/content/pm/CResolveInfo.h"
+#include "elastos/droid/content/pm/CServiceInfo.h"
 
 namespace Elastos {
 namespace Droid {

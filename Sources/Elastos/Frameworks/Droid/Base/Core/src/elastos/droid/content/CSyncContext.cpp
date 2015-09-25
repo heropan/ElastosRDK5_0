@@ -1,5 +1,5 @@
 
-#include "content/CSyncContext.h"
+#include "elastos/droid/content/CSyncContext.h"
 #include "os/SystemClock.h"
 #include <ext/frameworkext.h>
 

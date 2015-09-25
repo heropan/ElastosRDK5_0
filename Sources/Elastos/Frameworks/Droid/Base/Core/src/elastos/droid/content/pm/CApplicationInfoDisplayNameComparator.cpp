@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/pm/CApplicationInfoDisplayNameComparator.h"
-#include "content/pm/CApplicationInfo.h"
+#include "elastos/droid/content/pm/CApplicationInfoDisplayNameComparator.h"
+#include "elastos/droid/content/pm/CApplicationInfo.h"
 
 using Elastos::Core::EIID_IComparator;
 using Elastos::Core::ICharSequence;

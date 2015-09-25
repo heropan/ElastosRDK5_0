@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_CPACKAGEITEMINFO_H__
 
 #include "_Elastos_Droid_Content_Pm_CPackageItemInfo.h"
-#include "content/pm/PackageItemInfo.h"
+#include "elastos/droid/content/pm/PackageItemInfo.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 
-#include "content/CSearchRecentSuggestionsProvider.h"
-#include "content/CUriMatcher.h"
-#include "content/ContentProvider.h"
+#include "elastos/droid/content/CSearchRecentSuggestionsProvider.h"
+#include "elastos/droid/content/CUriMatcher.h"
+#include "elastos/droid/content/ContentProvider.h"
 #include "R.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>

@@ -1,10 +1,10 @@
 
-#include "content/CLoader.h"
-#include "content/CPendingResult.h"
-#include "content/CContextWrapper.h"
-#include "content/CIntent.h"
-#include "content/CIntentFilter.h"
-#include "content/CRestrictionEntry.h"
+#include "elastos/droid/content/CLoader.h"
+#include "elastos/droid/content/CPendingResult.h"
+#include "elastos/droid/content/CContextWrapper.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/content/CRestrictionEntry.h"
 
 namespace Elastos {
 namespace Droid {

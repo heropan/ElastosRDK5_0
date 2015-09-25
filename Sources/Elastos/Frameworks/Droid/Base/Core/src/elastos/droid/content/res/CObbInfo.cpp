@@ -1,5 +1,5 @@
 
-#include "content/res/CObbInfo.h"
+#include "elastos/droid/content/res/CObbInfo.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 

@@ -1,5 +1,5 @@
 
-#include "content/CSyncStats.h"
+#include "elastos/droid/content/CSyncStats.h"
 #include <ext/frameworkext.h>
 #include <elastos/core/StringBuilder.h>
 

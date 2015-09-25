@@ -1,6 +1,6 @@
 
-#include "content/CContentResolverHelper.h"
-#include "content/ContentResolver.h"
+#include "elastos/droid/content/CContentResolverHelper.h"
+#include "elastos/droid/content/ContentResolver.h"
 
 namespace Elastos {
 namespace Droid {

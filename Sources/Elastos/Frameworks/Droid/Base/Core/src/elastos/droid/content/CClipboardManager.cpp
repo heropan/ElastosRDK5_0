@@ -1,6 +1,6 @@
 
-#include "content/CClipboardManager.h"
-#include "content/CClipDataHelper.h"
+#include "elastos/droid/content/CClipboardManager.h"
+#include "elastos/droid/content/CClipDataHelper.h"
 #include "os/ServiceManager.h"
 #include <elastos/core/AutoLock.h>
 

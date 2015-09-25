@@ -1,6 +1,6 @@
 
-#include "content/res/CTypedArray.h"
-#include "content/res/CAssetManager.h"
+#include "elastos/droid/content/res/CTypedArray.h"
+#include "elastos/droid/content/res/CAssetManager.h"
 //#include "internal/util/XmlUtils.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/AutoLock.h>

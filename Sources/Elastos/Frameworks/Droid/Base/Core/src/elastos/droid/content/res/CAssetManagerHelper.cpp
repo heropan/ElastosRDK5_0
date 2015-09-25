@@ -1,6 +1,6 @@
 
-#include "content/res/CAssetManagerHelper.h"
-#include "content/res/CAssetManager.h"
+#include "elastos/droid/content/res/CAssetManagerHelper.h"
+#include "elastos/droid/content/res/CAssetManager.h"
 
 namespace Elastos {
 namespace Droid {

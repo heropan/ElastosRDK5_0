@@ -1,6 +1,6 @@
 
-#include "content/CSyncAdapterTypeHelper.h"
-#include "content/CSyncAdapterType.h"
+#include "elastos/droid/content/CSyncAdapterTypeHelper.h"
+#include "elastos/droid/content/CSyncAdapterType.h"
 
 namespace Elastos {
 namespace Droid {

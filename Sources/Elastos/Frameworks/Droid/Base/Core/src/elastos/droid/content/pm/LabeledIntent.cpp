@@ -1,5 +1,5 @@
 
-#include "content/pm/LabeledIntent.h"
+#include "elastos/droid/content/pm/LabeledIntent.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {

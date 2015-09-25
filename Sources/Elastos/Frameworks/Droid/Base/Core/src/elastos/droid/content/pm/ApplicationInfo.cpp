@@ -1,4 +1,4 @@
-#include "content/pm/ApplicationInfo.h"
+#include "elastos/droid/content/pm/ApplicationInfo.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 

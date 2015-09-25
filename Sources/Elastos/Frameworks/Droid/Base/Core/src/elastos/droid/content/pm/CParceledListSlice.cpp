@@ -1,7 +1,7 @@
 
 #include <binder/Parcel.h>
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/pm/CParceledListSlice.h"
+#include "elastos/droid/content/pm/CParceledListSlice.h"
 #include "os/CParcel.h"
 
 using Elastos::Droid::Os::CParcel;

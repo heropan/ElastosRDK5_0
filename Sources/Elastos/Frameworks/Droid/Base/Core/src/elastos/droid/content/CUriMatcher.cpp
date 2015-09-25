@@ -1,5 +1,5 @@
 
-#include "content/CUriMatcher.h"
+#include "elastos/droid/content/CUriMatcher.h"
 
 using Elastos::Utility::IList;
 using Elastos::Utility::Regex::IPatternHelper;

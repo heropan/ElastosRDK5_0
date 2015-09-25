@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/pm/CPackageStats.h"
+#include "elastos/droid/content/pm/CPackageStats.h"
 
 namespace Elastos {
 namespace Droid {

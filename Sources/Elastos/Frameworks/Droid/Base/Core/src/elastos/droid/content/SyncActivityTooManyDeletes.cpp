@@ -1,6 +1,6 @@
 
-#include "content/SyncActivityTooManyDeletes.h"
-#include "content/ContentResolver.h"
+#include "elastos/droid/content/SyncActivityTooManyDeletes.h"
+#include "elastos/droid/content/ContentResolver.h"
 #include "os/CBundle.h"
 
 using Elastos::Droid::Os::CBundle;

@@ -1,6 +1,6 @@
 
-#include "content/CCursorLoader.h"
-#include "content/CLoaderForceLoadContentObserver.h"
+#include "elastos/droid/content/CCursorLoader.h"
+#include "elastos/droid/content/CLoaderForceLoadContentObserver.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/Arrays.h>
 

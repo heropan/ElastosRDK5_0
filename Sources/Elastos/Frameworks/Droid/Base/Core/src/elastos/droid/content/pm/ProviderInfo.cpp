@@ -1,4 +1,4 @@
-#include "content/pm/ProviderInfo.h"
+#include "elastos/droid/content/pm/ProviderInfo.h"
 
 namespace Elastos {
 namespace Droid {

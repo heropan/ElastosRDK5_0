@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/pm/CSignature.h"
+#include "elastos/droid/content/pm/CSignature.h"
 //#include "internal/utility/ArrayUtils.h"
 #include <elastos/utility/Arrays.h>
 #include <elastos/core/Math.h>

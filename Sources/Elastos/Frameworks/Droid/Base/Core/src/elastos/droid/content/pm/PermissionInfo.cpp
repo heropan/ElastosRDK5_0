@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/pm/PermissionInfo.h"
+#include "elastos/droid/content/pm/PermissionInfo.h"
 
 namespace Elastos {
 namespace Droid {
