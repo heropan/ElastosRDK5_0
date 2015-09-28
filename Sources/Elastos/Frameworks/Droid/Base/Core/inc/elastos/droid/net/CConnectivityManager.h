@@ -906,6 +906,8 @@ public:
     public:
         CAR_INTERFACE_DECL()
 
+        CARAPI constructor();
+
         /**
          * @hide
          * Called whenever the framework connects to a network that it may use to

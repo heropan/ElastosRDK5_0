@@ -1728,7 +1728,15 @@ ECode CConnectivityManager::RegisterNetworkAgent(
     return ec;
 }
 
+//================================================================================
+// CConnectivityManager::ConnectivityManagerNetworkCallback
+//================================================================================
 CAR_INTERFACE_IMPL(CConnectivityManager::ConnectivityManagerNetworkCallback, Object, IConnectivityManagerNetworkCallback)
+
+ECode CConnectivityManager::ConnectivityManagerNetworkCallback::constructor()
+{
+    return NOERROR;
+}
 
 ECode CConnectivityManager::ConnectivityManagerNetworkCallback::OnPreCheck(
     /* [in] */ INetwork* network)

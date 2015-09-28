@@ -1,4 +1,5 @@
 
+#include "elastos/droid/net/CConnectivityManagerNetworkCallback.h"
 #include "elastos/droid/net/CDhcpResults.h"
 #include "elastos/droid/net/CEthernetManager.h"
 #include "elastos/droid/net/CIpConfiguration.h"
@@ -26,10 +27,13 @@
 #include "elastos/droid/net/CNetworkRequest.h"
 #include "elastos/droid/net/CNetworkScoreManager.h"
 #include "elastos/droid/net/CNetworkScorerAppData.h"
+#include "elastos/droid/net/CNetworkRequestBuilder.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
+
+CAR_OBJECT_IMPL(CConnectivityManagerNetworkCallback)
 
 CAR_OBJECT_IMPL(CDhcpResults)
 
@@ -80,6 +84,8 @@ CAR_OBJECT_IMPL(CNetworkPolicyManager)
 CAR_OBJECT_IMPL(CNetworkQuotaInfo)
 
 CAR_OBJECT_IMPL(CNetworkRequest)
+
+CAR_OBJECT_IMPL(CNetworkRequestBuilder)
 
 CAR_OBJECT_IMPL(CNetworkScoreManager)
 

@@ -107,6 +107,117 @@ private:
 
 };
 
+
+/**
+ * Builder used to create {@link NetworkRequest} objects.  Specify the Network features
+ * needed in terms of {@link NetworkCapabilities} features
+ */
+class NetworkRequestBuilder
+    : public Object
+    , public INetworkRequestBuilder
+{
+public:
+    CAR_INTERFACE_DECL()
+
+    NetworkRequestBuilder();
+
+    /**
+     * Default constructor for Builder.
+     */
+    CARAPI constructor();
+
+    /**
+     * Build {@link NetworkRequest} give the current set of capabilities.
+     */
+    CARAPI Build(
+        /* [out] */ INetworkRequest** result);
+
+    /**
+     * Add the given capability requirement to this builder.  These represent
+     * the requested network's required capabilities.  Note that when searching
+     * for a network to satisfy a request, all capabilities requested must be
+     * satisfied.  See {@link NetworkCapabilities} for {@code NET_CAPABILITIY_*}
+     * definitions.
+     *
+     * @param capability The {@code NetworkCapabilities.NET_CAPABILITY_*} to add.
+     * @return The builder to facilitate chaining
+     *         {@code builder.addCapability(...).addCapability();}.
+     */
+    CARAPI AddCapability(
+        /* [in] */ Int32 capability,
+        /* [out] */ INetworkRequestBuilder** result);
+
+    /**
+     * Removes (if found) the given capability from this builder instance.
+     *
+     * @param capability The {@code NetworkCapabilities.NET_CAPABILITY_*} to remove.
+     * @return The builder to facilitate chaining.
+     */
+    CARAPI RemoveCapability(
+        /* [in] */ Int32 capability,
+        /* [out] */ INetworkRequestBuilder** result);
+
+    /**
+     * Adds the given transport requirement to this builder.  These represent
+     * the set of allowed transports for the request.  Only networks using one
+     * of these transports will satisfy the request.  If no particular transports
+     * are required, none should be specified here.  See {@link NetworkCapabilities}
+     * for {@code TRANSPORT_*} definitions.
+     *
+     * @param transportType The {@code NetworkCapabilities.TRANSPORT_*} to add.
+     * @return The builder to facilitate chaining.
+     */
+    CARAPI AddTransportType(
+        /* [in] */ Int32 transportType,
+        /* [out] */ INetworkRequestBuilder** result);
+
+    /**
+     * Removes (if found) the given transport from this builder instance.
+     *
+     * @param transportType The {@code NetworkCapabilities.TRANSPORT_*} to remove.
+     * @return The builder to facilitate chaining.
+     */
+    CARAPI RemoveTransportType(
+        /* [in] */ Int32 transportType,
+        /* [out] */ INetworkRequestBuilder** result);
+
+    /**
+     * @hide
+     */
+    CARAPI SetLinkUpstreamBandwidthKbps(
+        /* [in] */ Int32 upKbps,
+        /* [out] */ INetworkRequestBuilder** result);
+
+    /**
+     * @hide
+     */
+    CARAPI SetLinkDownstreamBandwidthKbps(
+        /* [in] */ Int32 downKbps,
+        /* [out] */ INetworkRequestBuilder** result);
+
+    /**
+     * Sets the optional bearer specific network specifier.
+     * This has no meaning if a single transport is also not specified, so calling
+     * this without a single transport set will generate an exception, as will
+     * subsequently adding or removing transports after this is set.
+     * </p>
+     * The interpretation of this {@code String} is bearer specific and bearers that use
+     * it should document their particulars.  For example, Bluetooth may use some sort of
+     * device id while WiFi could used ssid and/or bssid.  Cellular may use carrier spn.
+     *
+     * @param networkSpecifier An {@code String} of opaque format used to specify the bearer
+     *                         specific network specifier where the bearer has a choice of
+     *                         networks.
+     */
+    CARAPI SetNetworkSpecifier(
+        /* [in] */ const String& networkSpecifier,
+        /* [out] */ INetworkRequestBuilder** result);
+
+private:
+    CARAPI_(AutoPtr<INetworkCapabilities>) CreateNetworkCapabilities();
+    const AutoPtr<INetworkCapabilities> mNetworkCapabilities;
+};
+
 } // namespace Net
 } // namespace Droid
 } // namespace Elastos

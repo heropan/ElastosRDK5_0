@@ -128,6 +128,12 @@ module
         interface IConnectivityManagerHelper;
     }
 
+    class CConnectivityManagerNetworkCallback {
+        constructor();
+
+        interface IConnectivityManagerNetworkCallback;
+    }
+
     class CCredentials {
         constructor(
             [in] Int32 pid,
@@ -492,6 +498,12 @@ module
 
         interface IParcelable;
         interface INetworkRequest;
+    }
+
+    class CNetworkRequestBuilder {
+        constructor();
+
+        interface INetworkRequestBuilder;
     }
 
     class CNetworkScoreManager {
