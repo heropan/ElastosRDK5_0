@@ -76,6 +76,8 @@ public:
         /* [in] */ IView* parent,
         /* [in] */ PositionObserver* positionObserver);
 
+    CAR_INTERFACE_DECL();
+
     /** Allows the handle to be shown automatically when cursor position changes */
     CARAPI_(void) AllowAutomaticShowing();
 

@@ -1,6 +1,10 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "LocationProviderAdapter.h"
+#include "webkit/native/base/ThreadUtils.h"
+#include "webkit/native/content/browser/LocationProviderAdapter.h"
+#include <elastos/utility/concurrent/FutureTask.h>
+
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+using Elastos::Utility::Concurrent::FutureTask;
 
 namespace Elastos {
 namespace Droid {
@@ -9,40 +13,35 @@ namespace Content {
 namespace Browser {
 
 //=====================================================================
-//                LocationProviderAdapter::InnerRunnable
+//                LocationProviderAdapter::StartRunnable
 //=====================================================================
-LocationProviderAdapter::InnerRunnable::InnerRunnable(
-    /* [in] */ LocationProviderAdapter* owner)
+
+LocationProviderAdapter::StartRunnable::StartRunnable(
+    /* [in] */ LocationProviderAdapter* owner,
+    /* [in] */ const Boolean& gpsEnabled)
     : mOwner(owner)
+    , mGpsEnabled(gpsEnabled)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
-ECode LocationProviderAdapter::InnerRunnable::Run()
+ECode LocationProviderAdapter::StartRunnable::Run()
 {
-    // ==================before translated======================
-    // mImpl.start(gpsEnabled);
-    assert(0);
+    mOwner->mImpl->Start(mGpsEnabled);
     return NOERROR;
 }
 
 //=====================================================================
-//                LocationProviderAdapter::InnerRunnable
+//                LocationProviderAdapter::StopRunnable
 //=====================================================================
-LocationProviderAdapter::InnerRunnable::InnerRunnable(
+LocationProviderAdapter::StopRunnable::StopRunnable(
     /* [in] */ LocationProviderAdapter* owner)
     : mOwner(owner)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
-ECode LocationProviderAdapter::InnerRunnable::Run()
+ECode LocationProviderAdapter::StopRunnable::Run()
 {
-    // ==================before translated======================
-    // mImpl.stop();
-    assert(0);
+    mOwner->mImpl->Stop();
     return NOERROR;
 }
 
@@ -52,50 +51,30 @@ ECode LocationProviderAdapter::InnerRunnable::Run()
 AutoPtr<LocationProviderAdapter> LocationProviderAdapter::Create(
     /* [in] */ IContext* context)
 {
-    // ==================before translated======================
-    // return new LocationProviderAdapter(context);
-    assert(0);
-    AutoPtr<LocationProviderAdapter> empty;
-    return empty;
+    return new LocationProviderAdapter(context);
 }
 
 Boolean LocationProviderAdapter::Start(
     /* [in] */ const Boolean& gpsEnabled)
 {
-    // ==================before translated======================
-    // FutureTask<Void> task = new FutureTask<Void>(new Runnable() {
-    //     @Override
-    //     public void run() {
-    //         mImpl.start(gpsEnabled);
-    //     }
-    // }, null);
-    // ThreadUtils.runOnUiThread(task);
-    // return true;
-    assert(0);
-    return FALSE;
+    AutoPtr<IRunnable> runnable = new StartRunnable(this, gpsEnabled);
+    AutoPtr<FutureTask> task = new FutureTask(runnable, NULL);
+    ThreadUtils::RunOnUiThread(task);
+    return TRUE;
 }
 
 ECode LocationProviderAdapter::Stop()
 {
-    // ==================before translated======================
-    // FutureTask<Void> task = new FutureTask<Void>(new Runnable() {
-    //     @Override
-    //     public void run() {
-    //         mImpl.stop();
-    //     }
-    // }, null);
-    // ThreadUtils.runOnUiThread(task);
-    assert(0);
+    AutoPtr<IRunnable> runnable = new StopRunnable(this);
+    AutoPtr<FutureTask> task = new FutureTask(runnable, NULL);
+    ThreadUtils::RunOnUiThread(task);
     return NOERROR;
 }
 
 Boolean LocationProviderAdapter::IsRunning()
 {
-    // ==================before translated======================
-    // assert ThreadUtils.runningOnUiThread();
-    // return mImpl.isRunning();
-    assert(0);
-    return FALSE;
+    assert(ThreadUtils::RunningOnUiThread());
+    return mImpl->IsRunning();
 }
 
 ECode LocationProviderAdapter::NewLocationAvailable(
@@ -111,27 +90,22 @@ ECode LocationProviderAdapter::NewLocationAvailable(
     /* [in] */ Boolean hasSpeed,
     /* [in] */ Double speed)
 {
-    // ==================before translated======================
-    // nativeNewLocationAvailable(latitude, longitude, timestamp, hasAltitude, altitude,
-    //         hasAccuracy, accuracy, hasHeading, heading, hasSpeed, speed);
-    assert(0);
+    NativeNewLocationAvailable(latitude, longitude, timestamp, hasAltitude, altitude,
+             hasAccuracy, accuracy, hasHeading, heading, hasSpeed, speed);
     return NOERROR;
 }
 
 ECode LocationProviderAdapter::NewErrorAvailable(
     /* [in] */ const String& message)
 {
-    // ==================before translated======================
-    // nativeNewErrorAvailable(message);
-    assert(0);
+    NativeNewErrorAvailable(message);
     return NOERROR;
 }
 
 LocationProviderAdapter::LocationProviderAdapter(
     /* [in] */ IContext* context)
 {
-    // ==================before translated======================
-    // mImpl = LocationProviderFactory.get(context);
+    mImpl = LocationProviderFactory::Get(context);
 }
 
 ECode LocationProviderAdapter::NativeNewLocationAvailable(
@@ -147,14 +121,12 @@ ECode LocationProviderAdapter::NativeNewLocationAvailable(
     /* [in] */ Boolean hasSpeed,
     /* [in] */ Double speed)
 {
-    assert(0);
     return NOERROR;
 }
 
 ECode LocationProviderAdapter::NativeNewErrorAvailable(
     /* [in] */ const String& message)
 {
-    assert(0);
     return NOERROR;
 }
 
@@ -163,5 +135,3 @@ ECode LocationProviderAdapter::NativeNewErrorAvailable(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

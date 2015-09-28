@@ -20,7 +20,7 @@ namespace Input {
 /**
  * Wrapper around Android's InputMethodManager
  */
-class InputMethodManagerWrapper
+class InputMethodManagerWrapper : public Object
 {
 public:
     InputMethodManagerWrapper(

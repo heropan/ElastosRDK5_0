@@ -6,6 +6,7 @@
 #include "os/Build.h"
 #include "webkit/native/content/browser/ContentViewCore.h"
 #include "webkit/native/content/browser/SmartClipProvider.h"
+//#include "widget/FrameLayout.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
@@ -23,6 +24,7 @@ using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
 using Elastos::Droid::View::InputMethod::IEditorInfo;
 using Elastos::Droid::View::InputMethod::IInputConnection;
+//using Elastos::Droid::Widget::FrameLayout;
 using Elastos::Droid::Widget::IFrameLayout;
 
 // import org.chromium.base.TraceEvent;
@@ -38,14 +40,13 @@ namespace Browser {
  * exposes the various {@link View} functionality to it.
  */
 class ContentView
-    : public FrameLayout
-    , public ContentViewCore::InternalAccessDelegate
+    //: public FrameLayout
+    : public ContentViewCore::InternalAccessDelegate
     , public SmartClipProvider
 {
 private:
     class InnerSmartClipDataListener
-        : public Object
-        , public ContentViewCore::SmartClipDataListener
+        : public ContentViewCore::SmartClipDataListener
     {
     public:
         InnerSmartClipDataListener(
@@ -63,6 +64,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Creates an instance of a ContentView.
      * @param context The Context the view is running in, through which it can
@@ -171,7 +174,7 @@ public:
 
     // Implements SmartClipProvider
     //@Override
-    CARAPI_(void) ExtractSmartClipData(
+    CARAPI ExtractSmartClipData(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ Int32 width,
@@ -179,7 +182,7 @@ public:
 
     // Implements SmartClipProvider
     //@Override
-    CARAPI_(void) SetSmartClipResultHandler(
+    CARAPI SetSmartClipResultHandler(
         /* [in] */ const IHandler* resultHandler);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////

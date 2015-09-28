@@ -1,6 +1,18 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "PepperPluginManager.h"
+#include <elastos/core/StringBuffer.h>
+#include <elastos/utility/logging/Slogger.h>
+//TODO #include "content/CIntent.h"
+#include "webkit/native/content/browser/PepperPluginManager.h"
+
+using Elastos::Core::StringBuffer;
+//TODO using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
+using Elastos::Droid::Content::Pm::EIID_IPackageItemInfo;
+using Elastos::Utility::IList;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::IIterable;
+using Elastos::Utility::EIID_IIterable;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -11,6 +23,7 @@ namespace Browser {
 //=====================================================================
 //                         PepperPluginManager
 //=====================================================================
+
 const String PepperPluginManager::PEPPER_PLUGIN_ACTION("org.chromium.intent.PEPPERPLUGIN");
 const String PepperPluginManager::PEPPER_PLUGIN_ROOT("/system/lib/pepperplugin/");
 const String PepperPluginManager::LOGTAG("PepperPluginManager");
@@ -21,94 +34,129 @@ const String PepperPluginManager::DESCRIPTION("description");
 const String PepperPluginManager::VERSION("version");
 
 String PepperPluginManager::GetPlugins(
-    /* [in] */ const IContext* context)
+    /* [in] */ /*const*/ IContext* context)
 {
-    // ==================before translated======================
-    // StringBuffer ret = new StringBuffer();
-    // PackageManager pm = context.getPackageManager();
-    // List<ResolveInfo> plugins = pm.queryIntentServices(
-    //         new Intent(PEPPER_PLUGIN_ACTION),
-    //         PackageManager.GET_SERVICES | PackageManager.GET_META_DATA);
-    // for (ResolveInfo info : plugins) {
-    //     // Retrieve the plugin's service information.
-    //     ServiceInfo serviceInfo = info.serviceInfo;
-    //     if (serviceInfo == null || serviceInfo.metaData == null ||
-    //             serviceInfo.packageName == null) {
-    //         Log.e(LOGTAG, "Can't get service information from " + info);
-    //         continue;
-    //     }
-    //
-    //     // Retrieve the plugin's package information.
-    //     PackageInfo pkgInfo;
+    AutoPtr<StringBuffer> ret = new StringBuffer();
+    AutoPtr<IPackageManager> pm;
+    context->GetPackageManager((IPackageManager**)&pm);
+    AutoPtr<IList> plugins;
+    AutoPtr<IIntent> intent;
+    assert(0);
+    // TODO
+    // CIntent::New(PEPPER_PLUGIN_ACTION, (IIntent**)&intent);
+    pm->QueryIntentServices(intent,
+            IPackageManager::GET_SERVICES | IPackageManager::GET_META_DATA,
+            (IList**)&plugins);
+
+    AutoPtr<IIterable> iterable = (IIterable*)plugins->Probe(EIID_IIterable);
+    AutoPtr<IIterator> iter;
+    iterable->GetIterator((IIterator**)&iter);
+    Boolean bNext = FALSE;
+    for (iter->HasNext(&bNext); bNext; iter->HasNext(&bNext)) {
+        AutoPtr<IResolveInfo> info;
+        iter->GetNext((IInterface**)&info);
+        // Retrieve the plugin's service information.
+        AutoPtr<IServiceInfo> serviceInfo;
+        info->GetServiceInfo((IServiceInfo**)&serviceInfo);
+        AutoPtr<IBundle> metaData;
+        String packageName;
+        AutoPtr<IPackageItemInfo> packageItemInfo = (IPackageItemInfo*)serviceInfo->Probe(EIID_IPackageItemInfo);
+        if (serviceInfo == NULL || (packageItemInfo->GetMetaData((IBundle**)&metaData), metaData == NULL) ||
+                (packageItemInfo->GetPackageName(&packageName), packageName == NULL)) {
+            String strLog("Can't get service information from ");
+            String infoStr;
+            info->ToString(&infoStr);
+            strLog += infoStr;
+            Slogger::E(LOGTAG, strLog);
+            continue;
+        }
+
+        // Retrieve the plugin's package information.
+        AutoPtr<IPackageInfo> pkgInfo;
     //     try {
-    //         pkgInfo = pm.getPackageInfo(serviceInfo.packageName, 0);
+            packageItemInfo->GetPackageName(&packageName);
+            pm->GetPackageInfo(packageName, 0, (IPackageInfo**)&pkgInfo);
     //     } catch (NameNotFoundException e) {
     //         Log.e(LOGTAG, "Can't find plugin: " + serviceInfo.packageName);
     //         continue;
     //     }
-    //     if (pkgInfo == null ||
-    //             (pkgInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-    //         continue;
-    //     }
-    //     Log.i(LOGTAG, "The given plugin package is preloaded: " + serviceInfo.packageName);
-    //
-    //     String plugin = getPluginDescription(serviceInfo.metaData);
-    //     if (plugin == null) {
-    //         continue;
-    //     }
-    //     if (ret.length() > 0) {
-    //         ret.append(',');
-    //     }
-    //     ret.append(plugin);
-    // }
-    // return ret.toString();
-    assert(0);
-    return String("");
+
+        assert(0);
+        // TODO
+        // if (pkgInfo == NULL ||
+        //         (pkgInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+        //     continue;
+        // }
+
+        packageItemInfo->GetPackageName(&packageName);
+        String strLog("The given plugin package is preloaded: ");
+        strLog += packageName;
+        Slogger::I(LOGTAG, strLog);
+
+        packageItemInfo->GetMetaData((IBundle**)&metaData);
+        String plugin = GetPluginDescription(metaData);
+        if (plugin == NULL) {
+           continue;
+        }
+
+        if (ret->GetLength() > 0) {
+            ret->Append(',');
+        }
+
+        ret->Append(plugin);
+    }
+
+    return ret->ToString();
 }
 
 String PepperPluginManager::GetPluginDescription(
     /* [in] */ IBundle* metaData)
 {
-    // ==================before translated======================
-    // // Find the name of the plugin's shared library.
-    // String filename = metaData.getString(FILENAME);
-    // if (filename == null || filename.isEmpty()) {
-    //     return null;
-    // }
-    // // Find the mimetype of the plugin. Flash is handled in getFlashPath.
-    // String mimetype = metaData.getString(MIMETYPE);
-    // if (mimetype == null || mimetype.isEmpty()) {
-    //     return null;
-    // }
-    // // Assemble the plugin info, according to the format described in
-    // // pepper_plugin_list.cc.
-    // // (eg. path<#name><#description><#version>;mimetype)
-    // StringBuffer plugin = new StringBuffer(PEPPER_PLUGIN_ROOT);
-    // plugin.append(filename);
-    //
-    // // Find the (optional) name/description/version of the plugin.
-    // String name = metaData.getString(NAME);
-    // String description = metaData.getString(DESCRIPTION);
-    // String version = metaData.getString(VERSION);
-    //
-    // if (name != null && !name.isEmpty()) {
-    //     plugin.append("#");
-    //     plugin.append(name);
-    //     if (description != null && !description.isEmpty()) {
-    //         plugin.append("#");
-    //         plugin.append(description);
-    //         if (version != null && !version.isEmpty()) {
-    //             plugin.append("#");
-    //             plugin.append(version);
-    //         }
-    //     }
-    // }
-    // plugin.append(';');
-    // plugin.append(mimetype);
-    //
-    // return plugin.toString();
-    assert(0);
-    return String("");
+    // Find the name of the plugin's shared library.
+    String filename;
+    metaData->GetString(FILENAME, &filename);
+    if (filename == NULL || filename.IsEmpty()) {
+        return String(NULL);
+    }
+
+    // Find the mimetype of the plugin. Flash is handled in getFlashPath.
+    String mimetype;
+    metaData->GetString(MIMETYPE, &mimetype);
+    if (mimetype == NULL || mimetype.IsEmpty()) {
+        return String(NULL);
+    }
+
+    // Assemble the plugin info, according to the format described in
+    // pepper_plugin_list.cc.
+    // (eg. path<#name><#description><#version>;mimetype)
+    AutoPtr<StringBuffer> plugin = new StringBuffer(PEPPER_PLUGIN_ROOT);
+    plugin->Append(filename);
+
+    // Find the (optional) name/description/version of the plugin.
+    String name;
+    metaData->GetString(NAME, &name);
+    String description;
+    metaData->GetString(DESCRIPTION, &description);
+    String version;
+    metaData->GetString(VERSION, &version);
+
+    if (name != NULL && !name.IsEmpty()) {
+        plugin->Append("#");
+        plugin->Append(name);
+        if (description != NULL && !description.IsEmpty()) {
+            plugin->Append("#");
+            plugin->Append(description);
+            if (version != NULL && !version.IsEmpty()) {
+                plugin->Append("#");
+                plugin->Append(version);
+            }
+        }
+    }
+
+    plugin->Append(';');
+    plugin->Append(mimetype);
+
+    return plugin->ToString();
 }
 
 } // namespace Browser
@@ -116,5 +164,3 @@ String PepperPluginManager::GetPluginDescription(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

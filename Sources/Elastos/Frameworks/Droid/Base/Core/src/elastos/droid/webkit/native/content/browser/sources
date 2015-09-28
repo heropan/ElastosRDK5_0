@@ -2,10 +2,10 @@
 TARGET_NAME= browser
 TARGET_TYPE= lib
 
-include $(MAKEDIR)/../../../../../../../sources.inc
+include $(MAKEDIR)/../../../../../../../../../sources.inc
 
 INCLUDES += ../../../../
-INCLUDES += $(MAKEDIR)/../../../../../inc/
+INCLUDES += $(MAKEDIR)/../../../../../../../inc/elastos/droid
 
 C_DEFINES += -DDROID_CORE
 

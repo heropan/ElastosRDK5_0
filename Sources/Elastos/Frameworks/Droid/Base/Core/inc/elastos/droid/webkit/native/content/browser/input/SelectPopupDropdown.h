@@ -2,11 +2,17 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUPDROPDOWN_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUPDROPDOWN_H__
 
-// import android.content.Context;
-// import android.graphics.Rect;
-// import android.view.View;
-// import android.widget.AdapterView;
-// import android.widget.PopupWindow;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::Widget::IAdapterView;
+using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
+using Elastos::Droid::Widget::IPopupWindow;
+using Elastos::Droid::Widget::IPopupWindowOnDismissListener;
+
+using Elastos::Utility::IList;
 
 // import org.chromium.content.browser.ContentViewCore;
 // import org.chromium.content.browser.RenderCoordinates;
@@ -16,19 +22,36 @@
 
 // import java.util.List;
 
+
+namespace Elastos {
+namespace Droid {
+namespace Webkit {
+namespace Ui {
+
+class DropdownPopupWindow;
+
+} // namespace Ui
+} // namespace Webkit
+} // namespace Droid
+} // namespace Elastos
+
+using Elastos::Droid::Webkit::Ui::DropdownPopupWindow;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Content {
 namespace Browser {
+
+class ContentViewCore;
+
 namespace Input {
 
 /**
  * Handles the dropdown popup for the <select> HTML tag support.
  */
 class SelectPopupDropdown
-    : public Object,
-    , public SelectPopup
+    : public SelectPopup
 {
 private:
     class InnerAdapterViewOnItemClickListener
@@ -66,7 +89,7 @@ private:
 public:
     SelectPopupDropdown(
         /* [in] */ ContentViewCore* contentViewCore,
-        /* [in] */ List<SelectPopupItem> items,
+        /* [in] */ IList* items,
         /* [in] */ IRect* bounds,
         /* [in] */ ArrayOf<Int32>* selected);
 

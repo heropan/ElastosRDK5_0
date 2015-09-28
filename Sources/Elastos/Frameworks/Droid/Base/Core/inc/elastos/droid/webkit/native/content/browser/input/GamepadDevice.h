@@ -2,11 +2,14 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_GAMEPADDEVICE_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_GAMEPADDEVICE_H__
 
-// import android.os.SystemClock;
-// import android.view.InputDevice;
-// import android.view.InputDevice.MotionRange;
-// import android.view.KeyEvent;
-// import android.view.MotionEvent;
+#include "ext/frameworkext.h"
+#include "os/Build.h"
+
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::View::IInputDevice;
+using Elastos::Droid::View::IMotionRange;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IMotionEvent;
 
 // import java.util.Arrays;
 // import java.util.List;

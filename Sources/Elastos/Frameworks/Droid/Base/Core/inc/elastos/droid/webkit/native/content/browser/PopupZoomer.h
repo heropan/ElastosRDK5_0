@@ -50,7 +50,7 @@ public:
       * Interface to be implemented to listen for touch events inside the zoomed area.
       * The MotionEvent coordinates correspond to original unzoomed view.
       */
-    class OnTapListener
+    class OnTapListener : public Object
     {
     public:
         virtual CARAPI_(Boolean) OnSingleTap(
@@ -65,7 +65,7 @@ public:
     /**
       * Interface to be implemented to add and remove PopupZoomer to/from the view hierarchy.
       */
-    class OnVisibilityChangedListener
+    class OnVisibilityChangedListener : public Object
     {
     public:
         virtual CARAPI OnPopupZoomerShown(

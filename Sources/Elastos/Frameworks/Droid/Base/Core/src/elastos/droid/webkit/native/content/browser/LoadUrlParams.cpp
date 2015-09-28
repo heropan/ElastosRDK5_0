@@ -1,6 +1,15 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "LoadUrlParams.h"
+#include "webkit/native/content/browser/LoadUrlParams.h"
+#include "webkit/native/content/browser/PageTransitionTypes.h"
+#include <elastos/core/StringBuilder.h>
+
+using Elastos::Core::StringBuilder;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::ISet;
+using Elastos::Utility::IIterable;
+using Elastos::Utility::EIID_IIterable;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::IMapEntry;
 
 namespace Elastos {
 namespace Droid {
@@ -11,6 +20,7 @@ namespace Browser {
 //=====================================================================
 //                            LoadUrlParams
 //=====================================================================
+
 const Int32 LoadUrlParams::LOAD_TYPE_DEFAULT;
 const Int32 LoadUrlParams::LOAD_TYPE_BROWSER_INITIATED_HTTP_POST;
 const Int32 LoadUrlParams::LOAD_TYPE_DATA;
@@ -20,33 +30,21 @@ const Int32 LoadUrlParams::UA_OVERRIDE_TRUE;
 
 LoadUrlParams::LoadUrlParams(
     /* [in] */ const String& url)
+    : mUrl(url)
+    , mTransitionType(PageTransitionTypes::PAGE_TRANSITION_LINK)
+    , mLoadUrlType(LOAD_TYPE_DEFAULT)
+    , mUaOverrideOption(UA_OVERRIDE_INHERIT)
 {
-    // ==================before translated======================
-    // this(url, PageTransitionTypes.PAGE_TRANSITION_LINK);
 }
 
 LoadUrlParams::LoadUrlParams(
     /* [in] */ const String& url,
     /* [in] */ Int32 transitionType)
-    : :LoadUrlParams.
-         mLoadUrlType = LOAD_TYPE_DEFAULT;
-         mUaOverrideOption = UA_OVERRIDE_INHERIT;
-         mPostData = null;
-         mBaseUrlForDataUrl = null;
-         mVirtualUrlForDataUrl = null;
-     }
+    : mUrl(url)
+    , mTransitionType(transitionType)
+    , mLoadUrlType(LOAD_TYPE_DEFAULT)
+    , mUaOverrideOption(UA_OVERRIDE_INHERIT)
 {
-    // ==================before translated======================
-    // mUrl = url;
-    // mTransitionType = transitionType;
-    //
-    // // Initialize other fields to defaults matching defaults of the native
-    // // NavigationController::LoadUrlParams.
-    // mLoadUrlType = LOAD_TYPE_DEFAULT;
-    // mUaOverrideOption = UA_OVERRIDE_INHERIT;
-    // mPostData = null;
-    // mBaseUrlForDataUrl = null;
-    // mVirtualUrlForDataUrl = null;
 }
 
 AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParams(
@@ -54,11 +52,7 @@ AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParams(
     /* [in] */ const String& mimeType,
     /* [in] */ Boolean isBase64Encoded)
 {
-    // ==================before translated======================
-    // return createLoadDataParams(data, mimeType, isBase64Encoded, null);
-    assert(0);
-    AutoPtr<LoadUrlParams> empty;
-    return empty;
+    return CreateLoadDataParams(data, mimeType, isBase64Encoded, String(NULL));
 }
 
 AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParams(
@@ -67,25 +61,25 @@ AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParams(
     /* [in] */ Boolean isBase64Encoded,
     /* [in] */ const String& charset)
 {
-    // ==================before translated======================
-    // StringBuilder dataUrl = new StringBuilder("data:");
-    // dataUrl.append(mimeType);
-    // if (charset != null && !charset.isEmpty()) {
-    //     dataUrl.append(";charset=" + charset);
-    // }
-    // if (isBase64Encoded) {
-    //     dataUrl.append(";base64");
-    // }
-    // dataUrl.append(",");
-    // dataUrl.append(data);
-    //
-    // LoadUrlParams params = new LoadUrlParams(dataUrl.toString());
-    // params.setLoadType(LoadUrlParams.LOAD_TYPE_DATA);
-    // params.setTransitionType(PageTransitionTypes.PAGE_TRANSITION_TYPED);
-    // return params;
-    assert(0);
-    AutoPtr<LoadUrlParams> empty;
-    return empty;
+    AutoPtr<StringBuilder> dataUrl = new StringBuilder("data:");
+    dataUrl->Append(mimeType);
+    if (charset != NULL && !charset.IsEmpty()) {
+        dataUrl->Append(";charset=");
+        dataUrl->Append(charset);
+    }
+
+    if (isBase64Encoded) {
+        dataUrl->Append(";base64");
+    }
+
+    dataUrl->Append(",");
+    dataUrl->Append(data);
+
+    AutoPtr<LoadUrlParams> params = new LoadUrlParams(dataUrl->ToString());
+    params->SetLoadType(LoadUrlParams::LOAD_TYPE_DATA);
+    params->SetTransitionType(PageTransitionTypes::PAGE_TRANSITION_TYPED);
+
+    return params;
 }
 
 AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParamsWithBaseUrl(
@@ -95,12 +89,8 @@ AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParamsWithBaseUrl(
     /* [in] */ const String& baseUrl,
     /* [in] */ const String& historyUrl)
 {
-    // ==================before translated======================
-    // return createLoadDataParamsWithBaseUrl(data, mimeType, isBase64Encoded,
-    //         baseUrl, historyUrl, null);
-    assert(0);
-    AutoPtr<LoadUrlParams> empty;
-    return empty;
+    return CreateLoadDataParamsWithBaseUrl(data, mimeType, isBase64Encoded,
+             baseUrl, historyUrl, String(NULL));
 }
 
 AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParamsWithBaseUrl(
@@ -111,275 +101,222 @@ AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParamsWithBaseUrl(
     /* [in] */ const String& historyUrl,
     /* [in] */ const String& charset)
 {
-    // ==================before translated======================
-    // LoadUrlParams params = createLoadDataParams(data, mimeType, isBase64Encoded, charset);
-    // // For WebView compatibility, when the base URL has the 'data:'
-    // // scheme, we treat it as a regular data URL load and skip setting
+    AutoPtr<LoadUrlParams> params = CreateLoadDataParams(data, mimeType, isBase64Encoded, charset);
+
+    // For WebView compatibility, when the base URL has the 'data:'
+    // scheme, we treat it as a regular data URL load and skip setting
     // // baseUrl and historyUrl.
-    // // TODO(joth): we should just append baseURL and historyURL here, and move the
-    // // WebView specific transform up to a wrapper factory function in android_webview/.
-    // if (baseUrl == null || !baseUrl.toLowerCase(Locale.US).startsWith("data:")) {
-    //     params.setBaseUrlForDataUrl(baseUrl != null ? baseUrl : "about:blank");
-    //     params.setVirtualUrlForDataUrl(historyUrl != null ? historyUrl : "about:blank");
-    // }
-    // return params;
+    // TODO(joth): we should just append baseURL and historyURL here, and move the
+    // WebView specific transform up to a wrapper factory function in android_webview/.
     assert(0);
-    AutoPtr<LoadUrlParams> empty;
-    return empty;
+    // TODO
+    // if (baseUrl == NULL || !baseUrl.ToLowerCase(ILocale::US).StartsWith("data:")) {
+    //     params->SetBaseUrlForDataUrl(baseUrl != NULL ? baseUrl : String("about:blank"));
+    //     params->SetVirtualUrlForDataUrl(historyUrl != NULL ? historyUrl : String("about:blank"));
+    // }
+
+    return params;
 }
 
 AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadHttpPostParams(
     /* [in] */ const String& url,
     /* [in] */ ArrayOf<Byte>* postData)
 {
-    // ==================before translated======================
-    // LoadUrlParams params = new LoadUrlParams(url);
-    // params.setLoadType(LOAD_TYPE_BROWSER_INITIATED_HTTP_POST);
-    // params.setTransitionType(PageTransitionTypes.PAGE_TRANSITION_TYPED);
-    // params.setPostData(postData);
-    // return params;
-    assert(0);
-    AutoPtr<LoadUrlParams> empty;
-    return empty;
+    AutoPtr<LoadUrlParams> params = new LoadUrlParams(url);
+    params->SetLoadType(LOAD_TYPE_BROWSER_INITIATED_HTTP_POST);
+    params->SetTransitionType(PageTransitionTypes::PAGE_TRANSITION_TYPED);
+    params->SetPostData(postData);
+    return params;
 }
 
 ECode LoadUrlParams::SetUrl(
     /* [in] */ const String& url)
 {
-    // ==================before translated======================
-    // mUrl = url;
-    assert(0);
+    mUrl = url;
     return NOERROR;
 }
 
 String LoadUrlParams::GetUrl()
 {
-    // ==================before translated======================
-    // return mUrl;
-    assert(0);
+    return mUrl;
     return String("");
 }
 
 String LoadUrlParams::GetBaseUrl()
 {
-    // ==================before translated======================
-    // return mBaseUrlForDataUrl;
-    assert(0);
-    return String("");
+    return mBaseUrlForDataUrl;
 }
 
 ECode LoadUrlParams::SetLoadType(
     /* [in] */ Int32 loadType)
 {
-    // ==================before translated======================
-    // mLoadUrlType = loadType;
-    assert(0);
+    mLoadUrlType = loadType;
     return NOERROR;
 }
 
 ECode LoadUrlParams::SetTransitionType(
     /* [in] */ Int32 transitionType)
 {
-    // ==================before translated======================
-    // mTransitionType = transitionType;
-    assert(0);
+    mTransitionType = transitionType;
     return NOERROR;
 }
 
 Int32 LoadUrlParams::GetTransitionType()
 {
-    // ==================before translated======================
-    // return mTransitionType;
-    assert(0);
-    return 0;
+    return mTransitionType;
 }
 
 ECode LoadUrlParams::SetReferrer(
     /* [in] */ Referrer* referrer)
 {
-    VALIDATE_NOT_NULL(referrer);
-    // ==================before translated======================
-    // mReferrer = referrer;
-    assert(0);
+    mReferrer = referrer;
     return NOERROR;
 }
 
 AutoPtr<Referrer> LoadUrlParams::GetReferrer()
 {
-    // ==================before translated======================
-    // return mReferrer;
-    assert(0);
-    AutoPtr<Referrer> empty;
-    return empty;
+    return mReferrer;
 }
 
 ECode LoadUrlParams::SetExtraHeaders(
-    /* [in] */ IMap<String, String>* extraHeaders)
+    /* [in] */ IMap* extraHeaders)
 {
-    VALIDATE_NOT_NULL(extraHeaders);
-    // ==================before translated======================
-    // mExtraHeaders = extraHeaders;
-    assert(0);
-    return NOERROR;
+    mExtraHeaders = extraHeaders;
 }
 
-AutoPtr< IMap<String, String> > LoadUrlParams::GetExtraHeaders()
+AutoPtr<IMap> LoadUrlParams::GetExtraHeaders()
 {
-    // ==================before translated======================
-    // return mExtraHeaders;
-    assert(0);
-    AutoPtr< IMap<String, String> > empty;
-    return empty;
+    return mExtraHeaders;
 }
 
 String LoadUrlParams::GetExtraHeadersString()
 {
-    // ==================before translated======================
-    // return getExtraHeadersString("\n", false);
-    assert(0);
-    return String("");
+    return GetExtraHeadersString(String("\n"), FALSE);
 }
 
 String LoadUrlParams::GetExtraHttpRequestHeadersString()
 {
-    // ==================before translated======================
-    // return getExtraHeadersString("\r\n", true);
-    assert(0);
-    return String("");
+    return GetExtraHeadersString(String("\r\n"), TRUE);
 }
 
 ECode LoadUrlParams::SetVerbatimHeaders(
     /* [in] */ const String& headers)
 {
-    // ==================before translated======================
-    // mVerbatimHeaders = headers;
-    assert(0);
+    mVerbatimHeaders = headers;
     return NOERROR;
 }
 
 String LoadUrlParams::GetVerbatimHeaders()
 {
-    // ==================before translated======================
-    // return mVerbatimHeaders;
-    assert(0);
-    return String("");
+    return mVerbatimHeaders;
 }
 
 ECode LoadUrlParams::SetOverrideUserAgent(
     /* [in] */ Int32 uaOption)
 {
-    // ==================before translated======================
-    // mUaOverrideOption = uaOption;
-    assert(0);
+    mUaOverrideOption = uaOption;
     return NOERROR;
 }
 
 ECode LoadUrlParams::SetPostData(
     /* [in] */ ArrayOf<Byte>* postData)
 {
-    VALIDATE_NOT_NULL(postData);
-    // ==================before translated======================
-    // mPostData = postData;
-    assert(0);
+    mPostData = postData;
     return NOERROR;
 }
 
 AutoPtr< ArrayOf<Byte> > LoadUrlParams::GetPostData()
 {
-    // ==================before translated======================
-    // return mPostData;
-    assert(0);
-    AutoPtr< ArrayOf<Byte> > empty;
-    return empty;
+    return mPostData;
 }
 
 ECode LoadUrlParams::SetBaseUrlForDataUrl(
     /* [in] */ const String& baseUrl)
 {
-    // ==================before translated======================
-    // mBaseUrlForDataUrl = baseUrl;
-    assert(0);
+    mBaseUrlForDataUrl = baseUrl;
     return NOERROR;
 }
 
 ECode LoadUrlParams::SetVirtualUrlForDataUrl(
     /* [in] */ const String& virtualUrl)
 {
-    // ==================before translated======================
-    // mVirtualUrlForDataUrl = virtualUrl;
-    assert(0);
+    mVirtualUrlForDataUrl = virtualUrl;
     return NOERROR;
 }
 
 ECode LoadUrlParams::SetCanLoadLocalResources(
     /* [in] */ Boolean canLoad)
 {
-    // ==================before translated======================
-    // mCanLoadLocalResources = canLoad;
-    assert(0);
+    mCanLoadLocalResources = canLoad;
     return NOERROR;
 }
 
 Int32 LoadUrlParams::GetLoadUrlType()
 {
-    // ==================before translated======================
-    // return mLoadUrlType;
-    assert(0);
-    return 0;
+    return mLoadUrlType;
 }
 
 ECode LoadUrlParams::SetIsRendererInitiated(
     /* [in] */ Boolean rendererInitiated)
 {
-    // ==================before translated======================
-    // mIsRendererInitiated = rendererInitiated;
-    assert(0);
+    mIsRendererInitiated = rendererInitiated;
     return NOERROR;
 }
 
 Boolean LoadUrlParams::GetIsRendererInitiated()
 {
-    // ==================before translated======================
-    // return mIsRendererInitiated;
-    assert(0);
-    return FALSE;
+    return mIsRendererInitiated;
 }
 
 Boolean LoadUrlParams::IsBaseUrlDataScheme()
 {
-    // ==================before translated======================
-    // // If there's no base url set, but this is a data load then
-    // // treat the scheme as data:.
-    // if (mBaseUrlForDataUrl == null && mLoadUrlType == LOAD_TYPE_DATA) {
-    //     return true;
-    // }
-    // return nativeIsDataScheme(mBaseUrlForDataUrl);
-    assert(0);
-    return FALSE;
+    // If there's no base url set, but this is a data load then
+    // treat the scheme as data:.
+    if (mBaseUrlForDataUrl == NULL && mLoadUrlType == LOAD_TYPE_DATA) {
+        return TRUE;
+    }
+
+    return NativeIsDataScheme(mBaseUrlForDataUrl);
 }
 
 String LoadUrlParams::GetExtraHeadersString(
     /* [in] */ const String& delimiter,
     /* [in] */ Boolean addTerminator)
 {
-    // ==================before translated======================
-    // if (mExtraHeaders == null) return null;
-    //
-    // StringBuilder headerBuilder = new StringBuilder();
-    // for (Map.Entry<String, String> header : mExtraHeaders.entrySet()) {
-    //     if (headerBuilder.length() > 0) headerBuilder.append(delimiter);
-    //
-    //     // Header name should be lower case.
-    //     headerBuilder.append(header.getKey().toLowerCase(Locale.US));
-    //     headerBuilder.append(":");
-    //     headerBuilder.append(header.getValue());
-    // }
-    // if (addTerminator)
-    //     headerBuilder.append(delimiter);
-    //
-    // return headerBuilder.toString();
-    assert(0);
-    return String("");
+    if (mExtraHeaders == NULL) return String(NULL);
+
+    AutoPtr<StringBuilder> headerBuilder = new StringBuilder();
+    AutoPtr<ISet> set;
+    mExtraHeaders->GetEntrySet((ISet**)&set);
+    AutoPtr<IIterable> iterable = (IIterable*)set->Probe(EIID_IIterable);
+    AutoPtr<IIterator> iter;
+    iterable->GetIterator((IIterator**)&iter);
+    Boolean bHasNext = FALSE;
+    AutoPtr<IMapEntry> header;
+    for (iter->HasNext(&bHasNext); bHasNext; iter->HasNext(&bHasNext)) {
+        if (headerBuilder->GetLength() > 0) {
+            headerBuilder->Append(delimiter);
+        }
+
+        // Header name should be lower case.
+        AutoPtr<ICharSequence> key;
+        header->GetKey((IInterface**)&key);
+        assert(0);
+        // TODO
+        // headerBuilder.append(header.getKey().toLowerCase(Locale.US));
+        headerBuilder->Append(":");
+        AutoPtr<ICharSequence> value;
+        header->GetValue((IInterface**)&value);
+        String strValue;
+        value->ToString(&strValue);
+        headerBuilder->Append(strValue);
+    }
+
+    if (addTerminator) {
+        headerBuilder->Append(delimiter);
+    }
+
+    return headerBuilder->ToString();
 }
 
 ECode LoadUrlParams::InitializeConstants(
@@ -390,21 +327,19 @@ ECode LoadUrlParams::InitializeConstants(
     /* [in] */ Int32 ua_override_false,
     /* [in] */ Int32 ua_override_true)
 {
-    // ==================before translated======================
-    // assert LOAD_TYPE_DEFAULT == load_type_default;
-    // assert LOAD_TYPE_BROWSER_INITIATED_HTTP_POST == load_type_browser_initiated_http_post;
-    // assert LOAD_TYPE_DATA == load_type_data;
-    // assert UA_OVERRIDE_INHERIT == ua_override_inherit;
-    // assert UA_OVERRIDE_FALSE == ua_override_false;
-    // assert UA_OVERRIDE_TRUE == ua_override_true;
-    assert(0);
+    assert(LOAD_TYPE_DEFAULT == load_type_default);
+    assert(LOAD_TYPE_BROWSER_INITIATED_HTTP_POST == load_type_browser_initiated_http_post);
+    assert(LOAD_TYPE_DATA == load_type_data);
+    assert(UA_OVERRIDE_INHERIT == ua_override_inherit);
+    assert(UA_OVERRIDE_FALSE == ua_override_false);
+    assert(UA_OVERRIDE_TRUE == ua_override_true);
+
     return NOERROR;
 }
 
 Boolean LoadUrlParams::NativeIsDataScheme(
     /* [in] */ const String& url)
 {
-    assert(0);
     return FALSE;
 }
 
@@ -413,5 +348,3 @@ Boolean LoadUrlParams::NativeIsDataScheme(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

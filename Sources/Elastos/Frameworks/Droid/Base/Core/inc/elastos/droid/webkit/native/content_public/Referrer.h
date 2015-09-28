@@ -13,7 +13,7 @@ namespace Content_Public {
  * Container that holds together a referrer URL along with the referrer policy set on the
  * originating frame. This corresponds to native content/public/common/referrer.h.
  */
-class Referrer
+class Referrer : public Object
 {
 public:
     Referrer(String url, int policy);

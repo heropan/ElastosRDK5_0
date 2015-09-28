@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "PopupZoomer.h"
+#include "webkit/native/content/browser/PopupZoomer.h"
 
 namespace Elastos {
 namespace Droid {
@@ -15,8 +14,6 @@ PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::InnerGestureDetectorSi
     /* [in] */ PopupZoomer* owner)
     : mOwner(owner)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
 Boolean PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::OnScroll(
@@ -25,35 +22,31 @@ Boolean PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::OnScroll(
     /* [in] */ Float distanceX,
     /* [in] */ Float distanceY)
 {
-    // ==================before translated======================
-    // if (mAnimating) return true;
-    //
-    // if (isTouchOutsideArea(e1.getX(), e1.getY())) {
-    //     hide(true);
-    // } else {
-    //     scroll(distanceX, distanceY);
-    // }
-    // return true;
-    assert(0);
-    return FALSE;
+    if (mOwner->mAnimating) return TRUE;
+
+    Int32 x, y;
+    e1->GetX(&x);
+    e1->GetY(&y);
+    if (IsTouchOutsideArea(x, y)) {
+        Hide(TRUE);
+    }
+    else {
+        Scroll(distanceX, distanceY);
+    }
+
+    return TRUE;
 }
 
 Boolean PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::OnSingleTapUp(
     /* [in] */ IMotionEvent* e)
 {
-    // ==================before translated======================
-    // return handleTapOrPress(e, false);
-    assert(0);
-    return FALSE;
+    return HandleTapOrPress(e, FALSE);
 }
 
 ECode PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::OnLongPress(
     /* [in] */ IMotionEvent* e)
 {
-    VALIDATE_NOT_NULL(e);
-    // ==================before translated======================
-    // handleTapOrPress(e, true);
-    assert(0);
+    HandleTapOrPress(e, TRUE);
     return NOERROR;
 }
 
@@ -61,28 +54,37 @@ Boolean PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::HandleTapOrPre
     /* [in] */ IMotionEvent* e,
     /* [in] */ Boolean isLongPress)
 {
-    // ==================before translated======================
-    // if (mAnimating) return true;
-    //
-    // float x = e.getX();
-    // float y = e.getY();
-    // if (isTouchOutsideArea(x, y)) {
-    //     // User clicked on area outside the popup.
-    //     hide(true);
-    // } else if (mOnTapListener != null) {
-    //     PointF converted = convertTouchPoint(x, y);
-    //     MotionEvent event = MotionEvent.obtainNoHistory(e);
-    //     event.setLocation(converted.x, converted.y);
-    //     if (isLongPress) {
-    //         mOnTapListener.onLongPress(PopupZoomer.this, event);
-    //     } else {
-    //         mOnTapListener.onSingleTap(PopupZoomer.this, event);
-    //     }
-    //     hide(true);
-    // }
-    // return true;
-    assert(0);
-    return FALSE;
+    if (mAnimating) return TRUE;
+
+    Float x;
+    e->GetX(&x);
+    Float y;
+    e->GetY(&y);
+    if (IsTouchOutsideArea(x, y)) {
+        // User clicked on area outside the popup.
+        Hide(TRUE);
+    }
+    else if (mOnTapListener != NULL) {
+        AutoPtr<IPointF> converted = ConvertTouchPoint(x, y);
+        AutoPtr<IMotionEventHelper> motionEventHelper;
+        CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&motionEventHelper);
+        AutoPtr<IMotionEvent> event;
+        motionEventHelper->ObtainNoHistory(e, (IMotionEvent**)&event);
+        Float x, y;
+        converted->GetX(&x);
+        converted->GetY(&y);
+        event->SetLocation(x, y);
+        if (isLongPress) {
+            mOnTapListener->OnLongPress(mOwner, event);
+        }
+        else {
+            mOnTapListener->OnSingleTap(mOwner, event);
+        }
+
+        Hide(TRUE);
+    }
+
+    return TRUE;
 }
 
 //=====================================================================
@@ -90,20 +92,18 @@ Boolean PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::HandleTapOrPre
 //=====================================================================
 PopupZoomer::ReverseInterpolator::ReverseInterpolator(
     /* [in] */ IInterpolator* i)
+    : mInterpolator(i)
 {
-    // ==================before translated======================
-    // mInterpolator = i;
 }
 
 Float PopupZoomer::ReverseInterpolator::GetInterpolation(
     /* [in] */ Float input)
 {
-    // ==================before translated======================
-    // input = 1.0f - input;
-    // if (mInterpolator == null) return input;
-    // return mInterpolator.getInterpolation(input);
-    assert(0);
-    return 0.0f;
+    input = 1.0f - input;
+    if (mInterpolator == NULL) return input;
+    Float interpolation;
+    mInterpolator->GetInterpolation(input, &interpolation);
+    return interpolation;
 }
 
 //=====================================================================
@@ -615,5 +615,3 @@ Boolean PopupZoomer::IsTouchOutsideArea(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

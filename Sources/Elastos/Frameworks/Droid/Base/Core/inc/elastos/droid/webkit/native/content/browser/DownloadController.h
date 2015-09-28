@@ -2,7 +2,9 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DOWNLOADCONTROLLER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DOWNLOADCONTROLLER_H__
 
-// import android.content.Context;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::Content::IContext;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
@@ -13,19 +15,21 @@ namespace Webkit {
 namespace Content {
 namespace Browser {
 
+class DownloadInfo;
+
 /**
  * Java counterpart of android DownloadController.
  *
  * Its a singleton class instantiated by the C++ DownloadController.
  */
 //@JNINamespace("content")
-class DownloadController
+class DownloadController : public Object
 {
 public:
     /**
      * Class for notifying the application that download has completed.
      */
-    class DownloadNotificationService
+    class DownloadNotificationService : public Object
     {
     public:
         /**

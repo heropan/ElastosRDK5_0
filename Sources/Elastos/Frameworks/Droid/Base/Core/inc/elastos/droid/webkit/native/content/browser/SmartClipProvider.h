@@ -23,7 +23,7 @@ namespace Browser {
   * Please make sure implementation of them is somewhere in the view
   * hierarchy.
   */
-class SmartClipProvider
+class SmartClipProvider : public Object
 {
 public:
     /**

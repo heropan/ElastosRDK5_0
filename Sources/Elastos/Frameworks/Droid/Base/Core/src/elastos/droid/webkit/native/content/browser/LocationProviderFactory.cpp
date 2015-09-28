@@ -1,6 +1,15 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "LocationProviderFactory.h"
+#include <elastos/utility/logging/Slogger.h>
+#include "webkit/native/base/ThreadUtils.h"
+#include "webkit/native/content/browser/LocationProviderFactory.h"
+#include "webkit/native/content/browser/LocationProviderAdapter.h"
+//TODO #include "location/CCriteria.h"
+
+using Elastos::Core::ICharSequence;
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+//TODO using Elastos::Droid::Location::CCriteria;
+using Elastos::Utility::IList;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -9,21 +18,19 @@ namespace Content {
 namespace Browser {
 
 //=====================================================================
-//                LocationProviderFactory::InnerRunnable
+//     LocationProviderFactory::LocationProviderImpl::InnerRunnable
 //=====================================================================
-LocationProviderFactory::InnerRunnable::InnerRunnable(
-    /* [in] */ LocationProviderFactory* owner)
+LocationProviderFactory::LocationProviderImpl::InnerRunnable::InnerRunnable(
+    /* [in] */ LocationProviderFactory::LocationProviderImpl* owner,
+    /* [in] */ ILocation* location)
     : mOwner(owner)
+    , mLocation(location)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
-ECode LocationProviderFactory::InnerRunnable::Run()
+ECode LocationProviderFactory::LocationProviderImpl::InnerRunnable::Run()
 {
-    // ==================before translated======================
-    // updateNewLocation(location);
-    assert(0);
+    mOwner->UpdateNewLocation(mLocation);
     return NOERROR;
 }
 
@@ -34,49 +41,39 @@ const String LocationProviderFactory::LocationProviderImpl::TAG("LocationProvide
 
 LocationProviderFactory::LocationProviderImpl::LocationProviderImpl(
     /* [in] */ IContext* context)
+    : mContext(context)
 {
-    // ==================before translated======================
-    // mContext = context;
 }
 
 ECode LocationProviderFactory::LocationProviderImpl::Start(
     /* [in] */ Boolean gpsEnabled)
 {
-    // ==================before translated======================
-    // unregisterFromLocationUpdates();
-    // registerForLocationUpdates(gpsEnabled);
-    assert(0);
+    UnregisterFromLocationUpdates();
+    RegisterForLocationUpdates(gpsEnabled);
     return NOERROR;
 }
 
 ECode LocationProviderFactory::LocationProviderImpl::Stop()
 {
-    // ==================before translated======================
-    // unregisterFromLocationUpdates();
-    assert(0);
+    UnregisterFromLocationUpdates();
     return NOERROR;
 }
 
 Boolean LocationProviderFactory::LocationProviderImpl::IsRunning()
 {
-    // ==================before translated======================
-    // return mIsRunning;
-    assert(0);
-    return FALSE;
+    return mIsRunning;
 }
 
 ECode LocationProviderFactory::LocationProviderImpl::OnLocationChanged(
     /* [in] */ ILocation* location)
 {
-    VALIDATE_NOT_NULL(location);
-    // ==================before translated======================
-    // // Callbacks from the system location sevice are queued to this thread, so it's
-    // // possible that we receive callbacks after unregistering. At this point, the
-    // // native object will no longer exist.
-    // if (mIsRunning) {
-    //     updateNewLocation(location);
-    // }
-    assert(0);
+    // Callbacks from the system location sevice are queued to this thread, so it's
+    // possible that we receive callbacks after unregistering. At this point, the
+    // native object will no longer exist.
+    if (mIsRunning) {
+        UpdateNewLocation(location);
+    }
+
     return NOERROR;
 }
 
@@ -85,159 +82,181 @@ ECode LocationProviderFactory::LocationProviderImpl::OnStatusChanged(
     /* [in] */ Int32 status,
     /* [in] */ IBundle* extras)
 {
-    VALIDATE_NOT_NULL(extras);
-    assert(0);
     return NOERROR;
 }
 
 ECode LocationProviderFactory::LocationProviderImpl::OnProviderEnabled(
     /* [in] */ const String& provider)
 {
-    assert(0);
     return NOERROR;
 }
 
 ECode LocationProviderFactory::LocationProviderImpl::OnProviderDisabled(
     /* [in] */ const String& provider)
 {
-    assert(0);
     return NOERROR;
 }
 
 ECode LocationProviderFactory::LocationProviderImpl::UpdateNewLocation(
     /* [in] */ ILocation* location)
 {
-    VALIDATE_NOT_NULL(location);
-    // ==================before translated======================
-    // LocationProviderAdapter.newLocationAvailable(
-    //         location.getLatitude(), location.getLongitude(),
-    //         location.getTime() / 1000.0,
-    //         location.hasAltitude(), location.getAltitude(),
-    //         location.hasAccuracy(), location.getAccuracy(),
-    //         location.hasBearing(), location.getBearing(),
-    //         location.hasSpeed(), location.getSpeed());
-    assert(0);
+    Double latitude;
+    location->GetLatitude(&latitude);
+    Double longitude;
+    location->GetLongitude(&longitude);
+    Int64 timestamp;
+    location->GetTime(&timestamp);
+    Boolean hasAltitude;
+    location->HasAltitude(&hasAltitude);
+    Double altitude;
+    location->GetAltitude(&altitude);
+    Boolean hasAccuracy;
+    location->HasAccuracy(&hasAccuracy);
+    Float accuracy;
+    location->GetAccuracy(&accuracy);
+    Boolean hasHeading;
+    location->HasBearing(&hasHeading);
+    Float heading;
+    location->GetBearing(&heading);
+    Boolean hasSpeed;
+    location->HasSpeed(&hasSpeed);
+    Float speed;
+    location->GetSpeed(&speed);
+    LocationProviderAdapter::NewLocationAvailable(
+           latitude, longitude,
+           timestamp / 1000.0,
+           hasAltitude, altitude,
+           hasAccuracy, accuracy,
+           hasHeading, heading,
+           hasSpeed, speed);
+
     return NOERROR;
 }
 
 ECode LocationProviderFactory::LocationProviderImpl::EnsureLocationManagerCreated()
 {
-    // ==================before translated======================
-    // if (mLocationManager != null) return;
-    // mLocationManager = (LocationManager) mContext.getSystemService(
-    //         Context.LOCATION_SERVICE);
-    // if (mLocationManager == null) {
-    //     Log.e(TAG, "Could not get location manager.");
-    // }
-    assert(0);
+    if (mLocationManager != NULL) {
+        return NOERROR;
+    }
+
+    mContext->GetSystemService(
+            IContext::LOCATION_SERVICE,
+            (IInterface**)&mLocationManager);
+    if (mLocationManager == NULL) {
+        Slogger::E(TAG, "Could not get location manager.");
+    }
+
     return NOERROR;
 }
 
 ECode LocationProviderFactory::LocationProviderImpl::RegisterForLocationUpdates(
     /* [in] */ Boolean isGpsEnabled)
 {
-    // ==================before translated======================
-    // ensureLocationManagerCreated();
-    // if (usePassiveOneShotLocation()) return;
-    //
-    // assert !mIsRunning;
-    // mIsRunning = true;
-    //
-    // // We're running on the main thread. The C++ side is responsible to
-    // // bounce notifications to the Geolocation thread as they arrive in the mainLooper.
+    EnsureLocationManagerCreated();
+    if (UsePassiveOneShotLocation()) {
+        return NOERROR;
+    }
+
+    assert(!mIsRunning);
+    mIsRunning = TRUE;
+
+    // We're running on the main thread. The C++ side is responsible to
+    // bounce notifications to the Geolocation thread as they arrive in the mainLooper.
     // try {
-    //     Criteria criteria = new Criteria();
-    //     mLocationManager.requestLocationUpdates(0, 0, criteria, this,
-    //             ThreadUtils.getUiThreadLooper());
-    //     if (isGpsEnabled) {
-    //         criteria.setAccuracy(Criteria.ACCURACY_FINE);
-    //         mLocationManager.requestLocationUpdates(0, 0, criteria, this,
-    //                 ThreadUtils.getUiThreadLooper());
-    //     }
+        AutoPtr<ICriteria> criteria;
+        assert(0);
+        // TODO
+        // CCriteria::New((ICriteria**)&criteria);
+        mLocationManager->RequestLocationUpdates(0, 0, criteria, this,
+               ThreadUtils::GetUiThreadLooper());
+        if (isGpsEnabled) {
+            criteria->SetAccuracy(ICriteria::Criteria_ACCURACY_FINE);
+            mLocationManager->RequestLocationUpdates(0, 0, criteria, this,
+                    ThreadUtils::GetUiThreadLooper());
+        }
     // } catch (SecurityException e) {
     //     Log.e(TAG, "Caught security exception registering for location updates from " +
     //         "system. This should only happen in DumpRenderTree.");
     // } catch (IllegalArgumentException e) {
     //     Log.e(TAG, "Caught IllegalArgumentException registering for location updates.");
     // }
-    assert(0);
+
     return NOERROR;
 }
 
 ECode LocationProviderFactory::LocationProviderImpl::UnregisterFromLocationUpdates()
 {
-    // ==================before translated======================
-    // if (mIsRunning) {
-    //     mIsRunning = false;
-    //     mLocationManager.removeUpdates(this);
-    // }
-    assert(0);
+    if (mIsRunning) {
+        mIsRunning = FALSE;
+        mLocationManager->RemoveUpdates(this);
+    }
+
     return NOERROR;
 }
 
 Boolean LocationProviderFactory::LocationProviderImpl::UsePassiveOneShotLocation()
 {
-    // ==================before translated======================
-    // if (!isOnlyPassiveLocationProviderEnabled()) return false;
-    //
-    // // Do not request a location update if the only available location provider is
-    // // the passive one. Make use of the last known location and call
-    // // onLocationChanged directly.
-    // final Location location = mLocationManager.getLastKnownLocation(
-    //         LocationManager.PASSIVE_PROVIDER);
-    // if (location != null) {
-    //     ThreadUtils.runOnUiThread(new Runnable() {
-    //         @Override
-    //         public void run() {
-    //             updateNewLocation(location);
-    //         }
-    //     });
-    // }
-    // return true;
-    assert(0);
-    return FALSE;
+    if (!IsOnlyPassiveLocationProviderEnabled()) {
+        return FALSE;
+    }
+
+    // Do not request a location update if the only available location provider is
+    // the passive one. Make use of the last known location and call
+    // onLocationChanged directly.
+    AutoPtr<ILocation> location;
+    mLocationManager->GetLastKnownLocation(
+             ILocationManager::PASSIVE_PROVIDER,
+             (ILocation**)&location);
+
+    if (location != NULL) {
+        AutoPtr<IRunnable> runnable = new InnerRunnable(this, location);
+        ThreadUtils::RunOnUiThread(runnable);
+    }
+
+    return TRUE;
 }
 
 Boolean LocationProviderFactory::LocationProviderImpl::IsOnlyPassiveLocationProviderEnabled()
 {
-    // ==================before translated======================
-    // List<String> providers = mLocationManager.getProviders(true);
-    // return providers != null && providers.size() == 1
-    //         && providers.get(0).equals(LocationManager.PASSIVE_PROVIDER);
-    assert(0);
-    return FALSE;
+    AutoPtr<IList> providers;
+    mLocationManager->GetProviders(TRUE, (IList**)&providers);
+    Int32 size;
+    providers->GetSize(&size);
+    AutoPtr<ICharSequence> strC;
+    providers->Get(0, (IInterface**)&strC);
+    String str;
+    strC->ToString(&str);
+    return providers != NULL && size == 1
+            && str.Equals(ILocationManager::PASSIVE_PROVIDER);
 }
 
 //=====================================================================
 //                       LocationProviderFactory
 //=====================================================================
+
 AutoPtr<LocationProviderFactory::LocationProvider> LocationProviderFactory::sProviderImpl;
-
-ECode LocationProviderFactory::SetLocationProviderImpl(
-    /* [in] */  LocationProviderFactory)
-{
-    // ==================before translated======================
-    // assert sProviderImpl == null;
-    // sProviderImpl = provider;
-    assert(0);
-    return NOERROR;
-}
-
-AutoPtr<LocationProvider> LocationProviderFactory::Get(
-    /* [in] */ IContext* context)
-{
-    // ==================before translated======================
-    // if (sProviderImpl == null) {
-    //     sProviderImpl = new LocationProviderImpl(context);
-    // }
-    // return sProviderImpl;
-    assert(0);
-    AutoPtr<LocationProvider> empty;
-    return empty;
-}
 
 LocationProviderFactory::LocationProviderFactory()
 {
+}
+
+ECode LocationProviderFactory::SetLocationProviderImpl(
+    /* [in] */  LocationProviderFactory::LocationProvider* provider)
+{
+    assert(sProviderImpl == NULL);
+    sProviderImpl = provider;
+
+    return NOERROR;
+}
+
+AutoPtr<LocationProviderFactory::LocationProvider> LocationProviderFactory::Get(
+    /* [in] */ IContext* context)
+{
+    if (sProviderImpl == NULL) {
+        sProviderImpl = new LocationProviderImpl(context);
+    }
+
+    return sProviderImpl;
 }
 
 } // namespace Browser
@@ -245,5 +264,3 @@ LocationProviderFactory::LocationProviderFactory()
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

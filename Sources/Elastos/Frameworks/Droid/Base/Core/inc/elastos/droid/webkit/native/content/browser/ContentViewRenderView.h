@@ -2,13 +2,37 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWRENDERVIEW_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWRENDERVIEW_H__
 
-// import android.content.Context;
-// import android.graphics.Color;
-// import android.graphics.PixelFormat;
-// import android.view.Surface;
-// import android.view.SurfaceHolder;
-// import android.view.SurfaceView;
-// import android.widget.FrameLayout;
+#include "ext/frameworkext.h"
+//TODO #include "widget/FrameLayout.h"
+#include "os/Runnable.h"
+#include "webkit/native/content/browser/ContentReadbackHandler.h"
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::IColor;
+using Elastos::Droid::Graphics::IPixelFormat;
+using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::View::ISurface;
+using Elastos::Droid::View::ISurfaceHolder;
+using Elastos::Droid::View::ISurfaceHolderCallback;
+using Elastos::Droid::View::ISurfaceView;
+//TODO using Elastos::Droid::Widget::FrameLayout;
+using Elastos::Droid::Widget::IFrameLayout;
+
+namespace Elastos {
+namespace Droid {
+namespace Webkit {
+namespace Ui {
+namespace Base {
+
+class WindowAndroid;
+
+} // namespace Base
+} // namespace Ui
+} // namespace Webkit
+} // namespace Droid
+} // namespace Elastos
+
+using Elastos::Droid::Webkit::Ui::Base::WindowAndroid;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
@@ -28,7 +52,8 @@ namespace Browser {
  */
 //@JNINamespace("content")
 class ContentViewRenderView
-    : public FrameLayout
+    : public Object
+    //TODO : public FrameLayout
 {
 private:
     class InnerSurfaceHolderCallback
@@ -38,6 +63,8 @@ private:
     public:
         InnerSurfaceHolderCallback(
             /* [in] */ ContentViewRenderView* owner);
+
+        CAR_INTERFACE_DECL();
 
         //@Override
         CARAPI SurfaceChanged(
@@ -59,8 +86,7 @@ private:
     };
 
     class InnerContentReadbackHandler
-        : public Object
-        , public ContentReadbackHandler
+        : public ContentReadbackHandler
     {
     public:
         InnerContentReadbackHandler(
@@ -75,8 +101,7 @@ private:
     };
 
     class InnerRunnable
-        : public Object
-        , public IRunnable
+        : public Runnable
     {
     public:
         InnerRunnable(
@@ -86,7 +111,7 @@ private:
 
     private:
         ContentViewRenderView* mOwner;
-    }
+    };
 
 public:
     /**

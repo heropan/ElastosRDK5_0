@@ -14,7 +14,7 @@ namespace Browser {
 /**
  * Interface to be implemented by the embedder to handle file downloads.
  */
-class ContentViewDownloadDelegate
+class ContentViewDownloadDelegate : public Object
 {
 public:
     /**

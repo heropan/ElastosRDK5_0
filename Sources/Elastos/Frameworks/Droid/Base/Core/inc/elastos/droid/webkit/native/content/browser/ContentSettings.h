@@ -21,7 +21,7 @@ class ContentViewCore;
  * from ContentViewCore.getContentSettings().
  */
 //@JNINamespace("content")
-class ContentSettings
+class ContentSettings : public Object
 {
 
 public:

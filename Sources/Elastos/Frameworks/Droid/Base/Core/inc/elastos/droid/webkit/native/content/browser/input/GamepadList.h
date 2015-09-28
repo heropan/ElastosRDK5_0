@@ -2,16 +2,20 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_GAMEPADLIST_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_GAMEPADLIST_H__
 
+#include "ext/frameworkext.h"
+#include "os/Build.h"
+#include "webkit/native/content/browser/input/GamepadDevice.h"
+
 // import android.annotation.SuppressLint;
 // import android.annotation.TargetApi;
-// import android.content.Context;
-// import android.hardware.input.InputManager;
-// import android.hardware.input.InputManager.InputDeviceListener;
-// import android.os.Build;
-// import android.view.InputDevice;
-// import android.view.InputEvent;
-// import android.view.KeyEvent;
-// import android.view.MotionEvent;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Hardware::Input::IInputManager;
+using Elastos::Droid::Hardware::Input::IInputDeviceListener;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::View::IInputDevice;
+using Elastos::Droid::View::IInputEvent;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IMotionEvent;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;

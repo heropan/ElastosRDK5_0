@@ -14,7 +14,7 @@ namespace Input {
 /**
  * Handles the popup UI for the <select> HTML tag support.
  */
-class SelectPopup
+class SelectPopup : public Object
 {
 public:
     /**

@@ -29,6 +29,7 @@
 // import java.util.List;
 // import java.util.Map;
 
+using Elastos::Core::IInteger32;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Media::IMediaMetadataRetriever;
@@ -36,12 +37,12 @@ using Elastos::Droid::Net::IConnectivityManager;
 using Elastos::Droid::Net::INetworkInfo;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Text::ITextUtils;
-using Elastos::Droid::Util::ILog;
-using Elastos::Droid::Webkit::Base::PathUtils;
-using Elastos::Io::IFile;
+using Elastos::IO::IFile;
 using Elastos::Net::IURI;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::IHashMap;
+using Elastos::Utility::IList;
+using Elastos::Utility::IMap;
 
 namespace Elastos {
 namespace Droid {
@@ -92,10 +93,10 @@ public:
             /* [in] */ Object* obj);
 
     private:
-        /*const*/ Int32 mDurationInMilliseconds;
-        /*const*/ Int32 mWidth;
-        /*const*/ Int32 mHeight;
-        /*const*/ Boolean mSuccess;
+        const Int32 mDurationInMilliseconds;
+        const Int32 mWidth;
+        const Int32 mHeight;
+        const Boolean mSuccess;
     };
 
 public:
@@ -107,7 +108,7 @@ public:
 
     // @VisibleForTesting
     virtual CARAPI_(AutoPtr<MediaMetadata>) Extract(
-        /* [in] */ const IContext* context,
+        /* [in] */ /*const*/ IContext* context,
         /* [in] */ const String& url,
         /* [in] */ const String& cookies,
         /* [in] */ const String& userAgent);
@@ -154,7 +155,7 @@ public:
         /* [in] */ const String& path);
 
     // @VisibleForTesting
-    virtual CARAPI_(AutoPtr<Integer>) GetNetworkType(
+    virtual CARAPI_(AutoPtr<IInteger32>) GetNetworkType(
         /* [in] */ IContext* context);
 
     // @VisibleForTesting
@@ -168,8 +169,8 @@ public:
 
     // @VisibleForTesting
     virtual CARAPI Configure(
-        /* [in] */ const String& url,
-        /* [in] */ IMap<String, String>* headers);
+        /* [in] */ String url,
+        /* [in] */ IMap* headers);
 
     // @VisibleForTesting
     virtual CARAPI Configure(
@@ -182,7 +183,7 @@ public:
 private:
     // @CalledByNative
     static CARAPI_(AutoPtr<MediaMetadata>) ExtractMediaMetadata(
-        /* [in] */ const IContext* context,
+        /* [in] */ /*const*/ IContext* context,
         /* [in] */ const String& url,
         /* [in] */ const String& cookies,
         /* [in] */ const String& userAgent);
@@ -200,10 +201,10 @@ private:
     CARAPI_(Boolean) IsLoopbackAddress(
         /* [in] */ const String& host);
 
-    CARAPI_(AutoPtr< IList<String> >) GetRawAcceptableDirectories();
+    CARAPI_(AutoPtr<IList>) GetRawAcceptableDirectories();
 
-    CARAPI_(AutoPtr< IList<String> >) Canonicalize(
-        /* [in] */ IList<String>* paths);
+    CARAPI_(AutoPtr<IList>) Canonicalize(
+        /* [in] */ IList* paths);
 
 private:
     static const String TAG;

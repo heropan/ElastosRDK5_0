@@ -3,7 +3,9 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWCORE_H__
 
 #include "ext/frameworkext.h"
+#include "database/ContentObserver.h"
 #include "os/Build.h"
+#include "os/Handler.h"
 #include "os/SystemClock.h"
 //#include "text/TextUtils.h"
 #include "webkit/native/content/browser/ContentSettings.h"
@@ -30,6 +32,10 @@
 #include "webkit/native/content_public/browser/GestureStateListener.h"
 #include "webkit/native/ui/base/ViewAndroidDelegate.h"
 
+using Elastos::Utility::IHashSet;
+using Elastos::Utility::IMap;
+using Elastos::Utility::ISet;
+
 // import android.annotation.SuppressLint;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::ISearchManager;
@@ -39,6 +45,7 @@ using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Pm::IFeatureInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Database::ContentObserver;
 using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::ICanvas;
@@ -46,6 +53,7 @@ using Elastos::Droid::Graphics::IColor;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IResultReceiver;
@@ -154,7 +162,7 @@ public:
      * implementing container view.
      */
     //@SuppressWarnings("javadoc")
-    class InternalAccessDelegate
+    class InternalAccessDelegate : public Object
     {
     public:
         /**
@@ -221,7 +229,7 @@ public:
     /**
      * An interface for controlling visibility and state of embedder-provided zoom controls.
      */
-    class ZoomControlsDelegate
+    class ZoomControlsDelegate : public Object
     {
     public:
         /**
@@ -244,7 +252,7 @@ public:
      * An interface that allows the embedder to be notified when the results of
      * extractSmartClipData are available.
      */
-    class SmartClipDataListener
+    class SmartClipDataListener : public Object
     {
     public:
         virtual CARAPI_(void) OnSmartClipDataExtracted(
@@ -263,8 +271,7 @@ public:
 
 private:
     class InnerViewAndroidDelegate
-        : public Object
-        , public ViewAndroidDelegate
+        : public ViewAndroidDelegate
     {
     public:
         InnerViewAndroidDelegate(
@@ -295,8 +302,7 @@ private:
     };
 
     class InnerImeAdapterDelegate
-        : public Object
-        , public ImeAdapter::ImeAdapterDelegate
+        : public ImeAdapter::ImeAdapterDelegate
     {
     private:
         class InnerResultReceiver
@@ -337,8 +343,7 @@ private:
     };
 
     class InnerListener
-        : public Object
-        , public PositionObserver::Listener
+        : public PositionObserver::Listener
     {
     public:
         InnerListener(
@@ -353,8 +358,7 @@ private:
     };
 
     class InnerZoomControlsDelegate
-        : public Object
-        , public ZoomControlsDelegate
+        : public ZoomControlsDelegate
     {
     public:
         InnerZoomControlsDelegate(
@@ -374,8 +378,7 @@ private:
     };
 
     class InnerWebContentsObserverAndroid
-        : public Object
-        , public WebContentsObserverAndroid
+        : public WebContentsObserverAndroid
     {
     public:
         InnerWebContentsObserverAndroid(
@@ -397,13 +400,11 @@ private:
     };
 
     class InnerOnVisibilityChangedListener
-        : public Object
-        , public PopupZoomer::OnVisibilityChangedListener
+        : public PopupZoomer::OnVisibilityChangedListener
     {
     private:
         class OnPopupZoomerShownRunnable
-            : public Object
-            , public IRunnable
+            : public Runnable
         {
         public:
             OnPopupZoomerShownRunnable(
@@ -418,8 +419,7 @@ private:
         };
 
         class OnPopupZoomerHiddenRunnable
-            : public Object
-            , public IRunnable
+            : public Runnable
         {
         public:
             OnPopupZoomerHiddenRunnable(
@@ -437,21 +437,22 @@ private:
         InnerOnVisibilityChangedListener(
             /* [in] */ ContentViewCore* owner);
 
-        //@Override
-        CARAPI_(void) OnPopupZoomerShown(
-            /* [in] */ const PopupZoomer* zoomer);
+        CAR_INTERFACE_DECL();
 
         //@Override
-        CARAPI_(void) OnPopupZoomerHidden(
-            /* [in] */ const PopupZoomer* zoomer);
+        CARAPI OnPopupZoomerShown(
+            /* [in] */ PopupZoomer* zoomer);
+
+        //@Override
+        CARAPI OnPopupZoomerHidden(
+            /* [in] */ PopupZoomer* zoomer);
 
     private:
         ContentViewCore* mOwner;
     };
 
     class InnerOnTapListener
-        : public Object
-        , public PopupZoomer::OnTapListener
+        : public PopupZoomer::OnTapListener
     {
     public:
         InnerOnTapListener(
@@ -477,8 +478,7 @@ private:
     };
 
     class FakeMouseMoveRunnable
-        : public Object
-        , public IRunnable
+        : public Runnable
     {
     public:
         FakeMouseMoveRunnable(
@@ -493,14 +493,15 @@ private:
     };
 
     class InnerSelectionHandleController
-        : public Object
-        , public SelectionHandleController
+        : public SelectionHandleController
     {
     public:
         InnerSelectionHandleController(
             /* [in] */ ContentViewCore* owner,
             /* [in] */ IView* parent,
             /* [in] */ PositionObserver* positionObserver);
+
+        CAR_INTERFACE_DECL();
 
         //@Override
         CARAPI_(void) SelectBetweenCoordinates(
@@ -519,8 +520,7 @@ private:
     };
 
     class InnerInsertionHandleController
-        : public Object
-        , public InsertionHandleController
+        : public InsertionHandleController
     {
     public:
         InnerInsertionHandleController(
@@ -528,8 +528,12 @@ private:
             /* [in] */ IView* parent,
             /* [in] */ PositionObserver* positionObserver);
 
+        CAR_INTERFACE_DECL();
+
         //@Override
-        CARAPI_(void) SetCursorPosition(int x, int y);
+        CARAPI_(void) SetCursorPosition(
+            /* [in] */ Int32 x,
+            /* [in] */ Int32 y);
 
         //@Override
         CARAPI_(void) Paste();
@@ -546,8 +550,7 @@ private:
     };
 
     class InnerActionHandler
-        : public Object
-        , public SelectActionModeCallback::ActionHandler
+        : public SelectActionModeCallback::ActionHandler
     {
     public:
         InnerActionHandler(
@@ -595,8 +598,7 @@ private:
     };
 
     class DeferredHandleFadeInRunnable
-        : public Object
-        , public IRunnable
+        : public Runnable
     {
     public:
         DeferredHandleFadeInRunnable(
@@ -609,12 +611,14 @@ private:
     };
 
     class InnerContentObserver
-        : public Object
-        , public IHandler
+        : public ContentObserver
+        , public Handler
     {
     public:
         InnerContentObserver(
             /* [in] */ ContentViewCore* owner);
+
+        CAR_INTERFACE_DECL();
 
         CARAPI OnChange(
             /* [in] */ Boolean selfChange,
@@ -1458,6 +1462,7 @@ public:
      * @return the mapping of names to interface objects and corresponding annotation classes
      */
 //    CARAPI_(Map<String, Pair<Object, Class>>) GetJavascriptInterfaces();
+     CARAPI_(AutoPtr<IMap>) GetJavascriptInterfaces();
 
     /**
      * This will mimic {@link #addPossiblyUnsafeJavascriptInterface(Object, String, Class)}
@@ -1513,10 +1518,11 @@ public:
      *                           exposed.
      *
      */
-    CARAPI_(void) AddPossiblyUnsafeJavascriptInterface(
-        /* [in] */ IInterface* object,
-        /* [in] */ const String& name,
-        /* [in] */ IAnnotation* requiredAnnotation);
+    // TODO
+    // CARAPI_(void) AddPossiblyUnsafeJavascriptInterface(
+    //     /* [in] */ IInterface* object,
+    //     /* [in] */ const String& name,
+    //     /* [in] */ IAnnotation* requiredAnnotation);
 
     /**
      * Removes a previously added JavaScript interface with the given name.
@@ -1943,7 +1949,7 @@ private:
 
     //@CalledByNative
     CARAPI_(void) StartContentIntent(
-        /* [in] */ String* contentUrl);
+        /* [in] */ const String& contentUrl);
 
     /**
      * Callback factory method for nativeGetNavigationHistory().
@@ -1984,11 +1990,11 @@ private:
      */
     CARAPI_(void) ResetScrollInProgress();
 
-//    CARAPI_(Int64) NativeInit(
-//        /* [in] */ Int64 webContentsPtr,
-//        /* [in] */ Int64 viewAndroidPtr,
-//        /* [in] */ Int64 windowAndroidPtr,
-//        /* [in] */ HashSet<Object> retainedObjectSet);
+    CARAPI_(Int64) NativeInit(
+        /* [in] */ Int64 webContentsPtr,
+        /* [in] */ Int64 viewAndroidPtr,
+        /* [in] */ Int64 windowAndroidPtr,
+        /* [in] */ IHashSet* retainedObjectSet);
 
     //@CalledByNative
     CARAPI_(AutoPtr<ContentVideoViewClient>) GetContentVideoViewClient();
@@ -2335,6 +2341,7 @@ private:
     // is used by Android WebView to support WebChromeClient.onCreateWindow scenario.
 //    const Map<String, Pair<Object, Class>> mJavaScriptInterfaces =
 //            new HashMap<String, Pair<Object, Class>>();
+    AutoPtr<IMap> mJavaScriptInterfaces;
 
     // Additionally, we keep track of all Java bound JS objects that are in use on the
     // current page to ensure that they are not garbage collected until the page is
@@ -2343,6 +2350,7 @@ private:
     // on the interface object. Note we use HashSet rather than Set as the native side
     // expects HashSet (no bindings for interfaces).
 //    const HashSet<Object> mRetainedJavaScriptObjects = new HashSet<Object>();
+    AutoPtr<ISet> mRetainedJavaScriptObjects;
 
     const AutoPtr<IContext> mContext;
     AutoPtr<IViewGroup> mContainerView;

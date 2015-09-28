@@ -22,6 +22,7 @@ class DownloadInfo : public Object
 public:
     class Builder : public Object
     {
+        friend class DownloadInfo;
     public:
         virtual CARAPI_(AutoPtr<Builder>) SetUrl(
             /* [in] */ const String& url);
@@ -79,7 +80,7 @@ public:
           * @return A builder initialized with fields from downloadInfo object.
           */
         static CARAPI_(AutoPtr<Builder>) FromDownloadInfo(
-            /* [in] */ const DownloadInfo* downloadInfo);
+            /* [in] */ /*const*/ DownloadInfo* downloadInfo);
 
     private:
         String mUrl;

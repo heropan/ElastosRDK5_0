@@ -1,6 +1,6 @@
 // wuweizuo automatic build .cpp file from .java file.
 
-#include "DownloadInfo.h"
+#include "webkit/native/content/browser/DownloadInfo.h"
 
 namespace Elastos {
 namespace Droid {
@@ -11,371 +11,251 @@ namespace Browser {
 //=====================================================================
 //                        DownloadInfo::Builder
 //=====================================================================
-AutoPtr<Builder> DownloadInfo::Builder::SetUrl(
-    /* [in] */ const String& url)
+AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetUrl(
+    /* [in] */ String url)
 {
-    // ==================before translated======================
-    // mUrl = url;
-    // return this;
-    assert(0);
-    AutoPtr<Builder> empty;
-    return empty;
+    mUrl = url;
+    return this;
 }
 
-AutoPtr<Builder> DownloadInfo::Builder::SetUserAgent(
-    /* [in] */ const String& userAgent)
+AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetUserAgent(
+    /* [in] */ String userAgent)
 {
-    // ==================before translated======================
-    // mUserAgent = userAgent;
-    // return this;
-    assert(0);
-    AutoPtr<Builder> empty;
-    return empty;
+    mUserAgent = userAgent;
+    return this;
 }
 
-AutoPtr<Builder> DownloadInfo::Builder::SetMimeType(
-    /* [in] */ const String& mimeType)
+AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetMimeType(
+    /* [in] */ String mimeType)
 {
-    // ==================before translated======================
-    // mMimeType = mimeType;
-    // return this;
-    assert(0);
-    AutoPtr<Builder> empty;
-    return empty;
+    mMimeType = mimeType;
+    return this;
 }
 
-AutoPtr<Builder> DownloadInfo::Builder::SetCookie(
-    /* [in] */ const String& cookie)
+AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetCookie(
+    /* [in] */ String cookie)
 {
-    // ==================before translated======================
-    // mCookie = cookie;
-    // return this;
-    assert(0);
-    AutoPtr<Builder> empty;
-    return empty;
+    mCookie = cookie;
+    return this;
 }
 
-AutoPtr<Builder> DownloadInfo::Builder::SetFileName(
-    /* [in] */ const String& fileName)
+AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetFileName(
+    /* [in] */ String fileName)
 {
-    // ==================before translated======================
-    // mFileName = fileName;
-    // return this;
-    assert(0);
-    AutoPtr<Builder> empty;
-    return empty;
+    mFileName = fileName;
+    return this;
 }
 
-AutoPtr<Builder> DownloadInfo::Builder::SetDescription(
-    /* [in] */ const String& description)
+AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetDescription(
+    /* [in] */ String description)
 {
-    // ==================before translated======================
-    // mDescription = description;
-    // return this;
-    assert(0);
-    AutoPtr<Builder> empty;
-    return empty;
+    mDescription = description;
+    return this;
 }
 
-AutoPtr<Builder> DownloadInfo::Builder::SetFilePath(
-    /* [in] */ const String& filePath)
+AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetFilePath(
+    /* [in] */ String filePath)
 {
-    // ==================before translated======================
-    // mFilePath = filePath;
-    // return this;
-    assert(0);
-    AutoPtr<Builder> empty;
-    return empty;
+    mFilePath = filePath;
+    return this;
 }
 
-AutoPtr<Builder> DownloadInfo::Builder::SetReferer(
-    /* [in] */ const String& referer)
+AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetReferer(
+    /* [in] */ String referer)
 {
-    // ==================before translated======================
-    // mReferer = referer;
-    // return this;
-    assert(0);
-    AutoPtr<Builder> empty;
-    return empty;
+    mReferer = referer;
+    return this;
 }
 
-AutoPtr<Builder> DownloadInfo::Builder::SetContentLength(
+AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetContentLength(
     /* [in] */ Int64 contentLength)
 {
-    // ==================before translated======================
-    // mContentLength = contentLength;
-    // return this;
-    assert(0);
-    AutoPtr<Builder> empty;
-    return empty;
+    mContentLength = contentLength;
+    return this;
 }
 
-AutoPtr<Builder> DownloadInfo::Builder::SetIsGETRequest(
+AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetIsGETRequest(
     /* [in] */ Boolean isGETRequest)
 {
-    // ==================before translated======================
-    // mIsGETRequest = isGETRequest;
-    // return this;
-    assert(0);
-    AutoPtr<Builder> empty;
-    return empty;
+    mIsGETRequest = isGETRequest;
+    return this;
 }
 
-AutoPtr<Builder> DownloadInfo::Builder::SetHasDownloadId(
+AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetHasDownloadId(
     /* [in] */ Boolean hasDownloadId)
 {
-    // ==================before translated======================
-    // mHasDownloadId = hasDownloadId;
-    // return this;
-    assert(0);
-    AutoPtr<Builder> empty;
-    return empty;
+    mHasDownloadId = hasDownloadId;
+    return this;
 }
 
-AutoPtr<Builder> DownloadInfo::Builder::SetDownloadId(
+AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetDownloadId(
     /* [in] */ Int32 downloadId)
 {
-    // ==================before translated======================
-    // mDownloadId = downloadId;
-    // return this;
-    assert(0);
-    AutoPtr<Builder> empty;
-    return empty;
+    mDownloadId = downloadId;
+    return this;
 }
 
-AutoPtr<Builder> DownloadInfo::Builder::SetIsSuccessful(
+AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetIsSuccessful(
     /* [in] */ Boolean isSuccessful)
 {
-    // ==================before translated======================
-    // mIsSuccessful = isSuccessful;
-    // return this;
-    assert(0);
-    AutoPtr<Builder> empty;
-    return empty;
+    mIsSuccessful = isSuccessful;
+    return this;
 }
 
-AutoPtr<Builder> DownloadInfo::Builder::SetContentDisposition(
-    /* [in] */ const String& contentDisposition)
+AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetContentDisposition(
+    /* [in] */ String contentDisposition)
 {
-    // ==================before translated======================
-    // mContentDisposition = contentDisposition;
-    // return this;
-    assert(0);
-    AutoPtr<Builder> empty;
-    return empty;
+    mContentDisposition = contentDisposition;
+    return this;
 }
 
-AutoPtr<Builder> DownloadInfo::Builder::SetPercentCompleted(
+AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetPercentCompleted(
     /* [in] */ Int32 percentCompleted)
 {
-    // ==================before translated======================
-    // assert percentCompleted <= 100;
-    // mPercentCompleted = percentCompleted;
-    // return this;
-    assert(0);
-    AutoPtr<Builder> empty;
-    return empty;
+    assert(percentCompleted <= 100);
+    mPercentCompleted = percentCompleted;
+    return this;
 }
 
-AutoPtr<Builder> DownloadInfo::Builder::SetTimeRemainingInMillis(
+AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetTimeRemainingInMillis(
     /* [in] */ Int64 timeRemainingInMillis)
 {
-    // ==================before translated======================
-    // mTimeRemainingInMillis = timeRemainingInMillis;
-    // return this;
-    assert(0);
-    AutoPtr<Builder> empty;
-    return empty;
+    mTimeRemainingInMillis = timeRemainingInMillis;
+    return this;
 }
 
 AutoPtr<DownloadInfo> DownloadInfo::Builder::Build()
 {
-    // ==================before translated======================
-    // return new DownloadInfo(this);
-    assert(0);
-    AutoPtr<DownloadInfo> empty;
-    return empty;
+    return new DownloadInfo(this);
 }
 
-AutoPtr<Builder> DownloadInfo::Builder::FromDownloadInfo(
-    /* [in] */ const DownloadInfo* downloadInfo)
+AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::FromDownloadInfo(
+    /* [in] */ /*const*/ DownloadInfo* downloadInfo)
 {
-    // ==================before translated======================
-    // Builder builder = new Builder();
-    // builder
-    //         .setUrl(downloadInfo.getUrl())
-    //         .setUserAgent(downloadInfo.getUserAgent())
-    //         .setMimeType(downloadInfo.getMimeType())
-    //         .setCookie(downloadInfo.getCookie())
-    //         .setFileName(downloadInfo.getFileName())
-    //         .setDescription(downloadInfo.getDescription())
-    //         .setFilePath(downloadInfo.getFilePath())
-    //         .setReferer(downloadInfo.getReferer())
-    //         .setContentLength(downloadInfo.getContentLength())
-    //         .setHasDownloadId(downloadInfo.hasDownloadId())
-    //         .setDownloadId(downloadInfo.getDownloadId())
-    //         .setContentDisposition(downloadInfo.getContentDisposition())
-    //         .setIsGETRequest(downloadInfo.isGETRequest())
-    //         .setIsSuccessful(downloadInfo.isSuccessful())
-    //         .setPercentCompleted(downloadInfo.getPercentCompleted())
-    //         .setTimeRemainingInMillis(downloadInfo.getTimeRemainingInMillis());
-    // return builder;
-    assert(0);
-    AutoPtr<Builder> empty;
-    return empty;
+    AutoPtr<Builder> builder = new Builder();
+    builder->SetUrl(downloadInfo->GetUrl())
+           ->SetUserAgent(downloadInfo->GetUserAgent())
+           ->SetMimeType(downloadInfo->GetMimeType())
+           ->SetCookie(downloadInfo->GetCookie())
+           ->SetFileName(downloadInfo->GetFileName())
+           ->SetDescription(downloadInfo->GetDescription())
+           ->SetFilePath(downloadInfo->GetFilePath())
+           ->SetReferer(downloadInfo->GetReferer())
+           ->SetContentLength(downloadInfo->GetContentLength())
+           ->SetHasDownloadId(downloadInfo->HasDownloadId())
+           ->SetDownloadId(downloadInfo->GetDownloadId())
+           ->SetContentDisposition(downloadInfo->GetContentDisposition())
+           ->SetIsGETRequest(downloadInfo->IsGETRequest())
+           ->SetIsSuccessful(downloadInfo->IsSuccessful())
+           ->SetPercentCompleted(downloadInfo->GetPercentCompleted())
+           ->SetTimeRemainingInMillis(downloadInfo->GetTimeRemainingInMillis());
+
+    return builder;
 }
 
 //=====================================================================
 //                             DownloadInfo
 //=====================================================================
+
+DownloadInfo::DownloadInfo(
+    /* [in] */ DownloadInfo::Builder* builder)
+    : mUrl(builder->mUrl)
+    , mUserAgent(builder->mUserAgent)
+    , mMimeType(builder->mMimeType)
+    , mCookie(builder->mCookie)
+    , mFileName(builder->mFileName)
+    , mDescription(builder->mDescription)
+    , mFilePath(builder->mFilePath)
+    , mReferer(builder->mReferer)
+    , mContentLength(builder->mContentLength)
+    , mHasDownloadId(builder->mHasDownloadId)
+    , mDownloadId(builder->mDownloadId)
+    , mIsSuccessful(builder->mIsSuccessful)
+    , mIsGETRequest(builder->mIsGETRequest)
+    , mContentDisposition(builder->mContentDisposition)
+    , mPercentCompleted(builder->mPercentCompleted)
+    , mTimeRemainingInMillis(builder->mTimeRemainingInMillis)
+{
+}
+
 String DownloadInfo::GetUrl()
 {
-    // ==================before translated======================
-    // return mUrl;
-    assert(0);
-    return String("");
+    return mUrl;
 }
 
 String DownloadInfo::GetUserAgent()
 {
-    // ==================before translated======================
-    // return mUserAgent;
-    assert(0);
-    return String("");
+    return mUserAgent;
 }
 
 String DownloadInfo::GetMimeType()
 {
-    // ==================before translated======================
-    // return mMimeType;
-    assert(0);
-    return String("");
+    return mMimeType;
 }
 
 String DownloadInfo::GetCookie()
 {
-    // ==================before translated======================
-    // return mCookie;
-    assert(0);
-    return String("");
+    return mCookie;
 }
 
 String DownloadInfo::GetFileName()
 {
-    // ==================before translated======================
-    // return mFileName;
-    assert(0);
-    return String("");
+    return mFileName;
 }
 
 String DownloadInfo::GetDescription()
 {
-    // ==================before translated======================
-    // return mDescription;
-    assert(0);
-    return String("");
+    return mDescription;
 }
 
 String DownloadInfo::GetFilePath()
 {
-    // ==================before translated======================
-    // return mFilePath;
-    assert(0);
-    return String("");
+    return mFilePath;
 }
 
 String DownloadInfo::GetReferer()
 {
-    // ==================before translated======================
-    // return mReferer;
-    assert(0);
-    return String("");
+    return mReferer;
 }
 
 Int64 DownloadInfo::GetContentLength()
 {
-    // ==================before translated======================
-    // return mContentLength;
-    assert(0);
-    return 0;
+    return mContentLength;
 }
 
 Boolean DownloadInfo::IsGETRequest()
 {
-    // ==================before translated======================
-    // return mIsGETRequest;
-    assert(0);
-    return FALSE;
+    return mIsGETRequest;
 }
 
 Boolean DownloadInfo::HasDownloadId()
 {
-    // ==================before translated======================
-    // return mHasDownloadId;
-    assert(0);
-    return FALSE;
+    return mHasDownloadId;
 }
 
 Int32 DownloadInfo::GetDownloadId()
 {
-    // ==================before translated======================
-    // return mDownloadId;
-    assert(0);
-    return 0;
+    return mDownloadId;
 }
 
 Boolean DownloadInfo::IsSuccessful()
 {
-    // ==================before translated======================
-    // return mIsSuccessful;
-    assert(0);
-    return FALSE;
+    return mIsSuccessful;
 }
 
 String DownloadInfo::GetContentDisposition()
 {
-    // ==================before translated======================
-    // return mContentDisposition;
-    assert(0);
-    return String("");
+    return mContentDisposition;
 }
 
 Int32 DownloadInfo::GetPercentCompleted()
 {
-    // ==================before translated======================
-    // return mPercentCompleted;
-    assert(0);
-    return 0;
+    return mPercentCompleted;
 }
 
 Int64 DownloadInfo::GetTimeRemainingInMillis()
 {
-    // ==================before translated======================
-    // return mTimeRemainingInMillis;
-    assert(0);
-    return 0;
-}
-
-DownloadInfo::DownloadInfo(
-    /* [in] */ Builder* builder)
-{
-    // ==================before translated======================
-    // mUrl = builder.mUrl;
-    // mUserAgent = builder.mUserAgent;
-    // mMimeType = builder.mMimeType;
-    // mCookie = builder.mCookie;
-    // mFileName = builder.mFileName;
-    // mDescription = builder.mDescription;
-    // mFilePath = builder.mFilePath;
-    // mReferer = builder.mReferer;
-    // mContentLength = builder.mContentLength;
-    // mHasDownloadId = builder.mHasDownloadId;
-    // mDownloadId = builder.mDownloadId;
-    // mIsSuccessful = builder.mIsSuccessful;
-    // mIsGETRequest = builder.mIsGETRequest;
-    // mContentDisposition = builder.mContentDisposition;
-    // mPercentCompleted = builder.mPercentCompleted;
-    // mTimeRemainingInMillis = builder.mTimeRemainingInMillis;
+    return mTimeRemainingInMillis;
 }
 
 } // namespace Browser
@@ -383,5 +263,3 @@ DownloadInfo::DownloadInfo(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

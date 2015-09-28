@@ -1,36 +1,70 @@
 
 #include "webkit/native/content/browser/ContentViewCore.h"
+#include "webkit/native/content/browser/DeviceUtils.h"
+#include "webkit/native/content/browser/GestureEventType.h"
+#include "webkit/native/content/browser/ViewPositionObserver.h"
+#include "webkit/native/content/browser/input/GamepadList.h"
+#include "webkit/native/content/browser/input/HandleView.h"
+#include "webkit/native/content/browser/input/SelectPopupDialog.h"
+#include "webkit/native/content/browser/input/SelectPopupDropdown.h"
+#include "webkit/native/content/browser/input/SelectPopupItem.h"
 #include "webkit/native/content/common/ContentSwitches.h"
 #include "webkit/native/base/CommandLine.h"
+#include "webkit/native/base/TraceEvent.h"
 //TODO #include "content/CIntent.h"
 //TODO #include "content/CIntentHelper.h"
 #include "os/CHandler.h"
 #include "text/TextUtils.h"
 //TODO #include "text/CEditableFactory.h"
 //TODO #include "text/CSelection.h"
+//TODO #include "provider/CSettingsSecure.h"
 //TODO #include "widget/CView.h"
+//TODO #include "view/CMotionEventHelper.h"
+//TODO #include "utility/CArrayList.h"
 
+#include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::CStringWrapper;
+//using Elastos::Core::CStringWrapper;
 using Elastos::Utility::IList;
 using Elastos::Droid::App::EIID_IActivity;
 using Elastos::Droid::App::ISearchManager;
 //TODO using Elastos::Droid::Content::CIntent;
 //TODO using Elastos::Droid::Content::CIntentHelper;
 using Elastos::Droid::Content::IIntentHelper;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::CHandler;
+//TODO using Elastos::Droid::Provider::CSettingsSecure;
+using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Droid::Text::TextUtils;
 //TODO using Elastos::Droid::Text::CSelection;
 using Elastos::Droid::Text::ISelection;
 //TODO using Elastos::Droid::Text::CEditableFactory;
 using Elastos::Droid::Text::IEditableFactory;
+using Elastos::Droid::Text::ISpannable;
+using Elastos::Droid::Text::EIID_ISpannable;
 //TODO using Elastos::Droid::Widget::CView;
 using Elastos::Droid::Utility::IDisplayMetrics;
 
 using Elastos::Droid::Webkit::Content::Common::ContentSwitches;
+using Elastos::Droid::Webkit::Content::Browser::Input::GamepadList;
+using Elastos::Droid::Webkit::Content::Browser::Input::HandleView;
+using Elastos::Droid::Webkit::Content::Browser::Input::SelectPopupDialog;
+using Elastos::Droid::Webkit::Content::Browser::Input::SelectPopupDropdown;
+using Elastos::Droid::Webkit::Content::Browser::Input::SelectPopupItem;
 using Elastos::Droid::Webkit::Base::CommandLine;
+using Elastos::Droid::Webkit::Base::TraceEvent;
+
+using Elastos::Droid::View::Accessibility::EIID_IAccessibilityRecord;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Droid::View::EIID_IView;
+using Elastos::Droid::View::EIID_IInputEvent;
+using Elastos::Droid::View::EIID_IOnTouchModeChangeListener;
+using Elastos::Droid::View::IInputEvent;
+using Elastos::Droid::View::InputMethod::EIID_IInputConnection;
+//TODO using Elastos::Droid::View::CMotionEventHelper;
+using Elastos::Droid::View::IMotionEventHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -172,7 +206,7 @@ void ContentViewCore::InnerImeAdapterDelegate::OnDismissInput()
 //@Override
 AutoPtr<IView> ContentViewCore::InnerImeAdapterDelegate::GetAttachedView()
 {
-    return mOwner->mContainerView;
+    return (IView*)(mOwner->mContainerView->Probe(EIID_IView));
 }
 
 //@Override
@@ -319,21 +353,23 @@ ContentViewCore::InnerOnVisibilityChangedListener::InnerOnVisibilityChangedListe
 }
 
 //@Override
-void ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerShown(
-    /* [in] */ const PopupZoomer* zoomer)
+ECode ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerShown(
+    /* [in] */ PopupZoomer* zoomer)
 {
     assert(0);
 //    AutoPtr<IRunnable> runnable = new OnPopupZoomerShownRunnable(this, zoomer);
 //    mContainerViewAtCreation->Post(runnable);
+    return E_NOT_IMPLEMENTED;
 }
 
 //@Override
-void ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerHidden(
-    /* [in] */ const PopupZoomer* zoomer)
+ECode ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerHidden(
+    /* [in] */ PopupZoomer* zoomer)
 {
     assert(0);
 //    AutoPtr<IRunnable> runnable = new OnPopupZoomerHiddenRunnable(this, zoomer);
 //    mContainerViewAtCreation->Post(runnable);
+    return E_NOT_IMPLEMENTED;
 }
 
 //===========================================================================================
@@ -479,6 +515,8 @@ ContentViewCore::InnerSelectionHandleController::InnerSelectionHandleController(
 {
 }
 
+CAR_INTERFACE_IMPL(ContentViewCore::InnerSelectionHandleController, Object, IOnTouchModeChangeListener);
+
 //@Override
 void ContentViewCore::InnerSelectionHandleController::SelectBetweenCoordinates(
     /* [in] */ Int32 x1,
@@ -520,6 +558,8 @@ ContentViewCore::InnerInsertionHandleController::InnerInsertionHandleController(
     , mOwner(owner)
 {
 }
+
+CAR_INTERFACE_IMPL(ContentViewCore::InnerInsertionHandleController, Object, IOnTouchModeChangeListener);
 
 //@Override
 void ContentViewCore::InnerInsertionHandleController::SetCursorPosition(
@@ -885,11 +925,12 @@ ContentViewCore::ContentViewCore(
     AutoPtr<IEditableFactory> factory;
     // TODO
     //CEditableFactory::AcquireSingleton((IEditableFactory**)&factory);
-    factory->GetInstance(String(""), (IEditable**)&mEditable);
+    //factory->NewEditable(String(""), (IEditable**)&mEditable);
     AutoPtr<ISelection> select;
     // TODO
     //CSelection::AcquireSingleton((ISelection**)&select);
-    select->SetSelection(mEditable, 0);
+    AutoPtr<ISpannable> spannable = (ISpannable*)mEditable->Probe(EIID_ISpannable);
+    select->SetSelection2(spannable, 0);
 }
 
 /**
@@ -967,7 +1008,7 @@ AutoPtr<ImeAdapter> ContentViewCore::GetImeAdapterForTest()
 
 //@VisibleForTesting
 void ContentViewCore::SetAdapterInputConnectionFactory(
-    /* [in] */ AdapterInputConnectionFactory* factory)
+    /* [in] */ ImeAdapter::AdapterInputConnectionFactory* factory)
 {
     mAdapterInputConnectionFactory = factory;
 }
@@ -988,7 +1029,7 @@ AutoPtr<AdapterInputConnection> ContentViewCore::GetInputConnectionForTest()
 AutoPtr<ImeAdapter> ContentViewCore::CreateImeAdapter(
     /* [in] */ IContext* context)
 {
-    AutoPtr<ImeAdapterDelegate> imeAdapterDelegate = new InnerImeAdapterDelegate(this);
+    AutoPtr<ImeAdapter::ImeAdapterDelegate> imeAdapterDelegate = new InnerImeAdapterDelegate(this);
     AutoPtr<ImeAdapter> imeAdapter = new ImeAdapter(mInputMethodManagerWrapper, imeAdapterDelegate);
     return imeAdapter;
 }
@@ -1010,13 +1051,14 @@ AutoPtr<ImeAdapter> ContentViewCore::CreateImeAdapter(
 // to set the private browsing mode at a later point for the WebView implementation.
 // Note that the caller remains the owner of the nativeWebContents and is responsible for
 // deleting it after destroying the ContentViewCore.
+#if 0
 void ContentViewCore::Initialize(
     /* [in] */ IViewGroup* containerView,
     /* [in] */ InternalAccessDelegate* internalDispatcher,
     /* [in] */ Int64 nativeWebContents,
     /* [in] */ WindowAndroid* windowAndroid)
 {
-    setContainerView(containerView);
+    SetContainerView(containerView);
 
     mPositionListener = new InnerListener(this);
 
@@ -1045,6 +1087,7 @@ void ContentViewCore::Initialize(
 
     mWebContentsObserver = new InnerWebContentsObserverAndroid(this);
 }
+#endif
 
 /**
  * Sets a new container view for this {@link ContentViewCore}.
@@ -1076,22 +1119,25 @@ void ContentViewCore::SetContainerView(
     }
 
     mContainerView = containerView;
-    mPositionObserver = new ViewPositionObserver(mContainerView);
+    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    mPositionObserver = new ViewPositionObserver(view);
     String contentDescription("Web View");
-    if (R::string::accessibility_content_view == 0) {
+    assert(0);
+// TODO
+//    if (R::string::accessibility_content_view == 0) {
 //        Log.w(TAG, "Setting contentDescription to 'Web View' as no value was specified.");
-    }
-    else {
-        AutoPtr<IResources> res;
-        mContext->GetResources((IResources**)&res);
-        res->GetString(
-                R::string::accessibility_content_view,
-                &contentDescription);
-    }
+//    }
+//    else {
+//        AutoPtr<IResources> res;
+//        mContext->GetResources((IResources**)&res);
+//        res->GetString(
+//                R::string::accessibility_content_view,
+//                &contentDescription);
+//    }
 
-    mContainerView->SetContentDescription(contentDescription);
-    mContainerView->SetWillNotDraw(FALSE);
-    mContainerView->SetClickable(TRUE);
+//    view->SetContentDescription(contentDescription);
+    view->SetWillNotDraw(FALSE);
+    view->SetClickable(TRUE);
     TraceEvent::End();
 }
 
@@ -1123,8 +1169,8 @@ void ContentViewCore::InitPopupZoomer(
 
     // TODO(yongsheng): LONG_TAP is not enabled in PopupZoomer. So need to dispatch a LONG_TAP
     // gesture if a user completes a tap on PopupZoomer UI after a LONG_PRESS gesture.
-    AutoPtr<PopupZoomer::OnTapListener> listener = InnerOnTapListener(this, mContainerView);
-    mPopupZoomer.setOnTapListener(listener);
+    AutoPtr<PopupZoomer::OnTapListener> listener = new InnerOnTapListener(this, mContainerView);
+    mPopupZoomer->SetOnTapListener(listener);
 }
 
 /**
@@ -1140,15 +1186,19 @@ void ContentViewCore::Destroy()
     }
 
     mWebContents = NULL;
-    if (mViewAndroid != NULL) {
-        mViewAndroid->Destroy();
-    }
+    assert(0);
+    // TODO
+    // if (mViewAndroid != NULL) {
+    //     mViewAndroid->Destroy();
+    // }
     mNativeContentViewCore = 0;
     mContentSettings = NULL;
     mJavaScriptInterfaces->Clear();
     mRetainedJavaScriptObjects->Clear();
     UnregisterAccessibilityContentObserver();
-    mGestureStateListeners->Clear();
+    assert(0);
+    // TODO
+    // mGestureStateListeners->Clear();
     ScreenOrientationListener::GetInstance()->RemoveObserver(this);
 }
 
@@ -1185,7 +1235,7 @@ Int64 ContentViewCore::GetNativeContentViewCore()
 }
 
 void ContentViewCore::SetContentViewClient(
-    /* [in] */ IContentViewClient* client)
+    /* [in] */ ContentViewClient* client)
 {
     if (client == NULL) {
         //throw new IllegalArgumentException("The client can't be null.");
@@ -1245,7 +1295,7 @@ void ContentViewCore::LoadUrl(
             params->mUrl,
             params->mLoadUrlType,
             params->mTransitionType,
-            params->GetReferrer() != NULL ? params->GetReferrer()->GetUrl() : NULL,
+            params->GetReferrer() != NULL ? params->GetReferrer()->GetUrl() : String(NULL),
             params->GetReferrer() != NULL ? params->GetReferrer()->GetPolicy() : 0,
             params->mUaOverrideOption,
             params->GetExtraHeadersString(),
@@ -1277,7 +1327,7 @@ String ContentViewCore::GetUrl()
         return NativeGetURL(mNativeContentViewCore);
     }
 
-    return NULL;
+    return String(NULL);
 }
 
 /**
@@ -1287,7 +1337,7 @@ String ContentViewCore::GetUrl()
  */
 String ContentViewCore::GetTitle()
 {
-    return mWebContents == NULL ? NULL : mWebContents->GetTitle();
+    return mWebContents == NULL ? String(NULL) : mWebContents->GetTitle();
 }
 
 /**
@@ -1439,12 +1489,14 @@ void ContentViewCore::GoToOffset(
 }
 
 //@Override
-void ContentViewCore::GoToNavigationIndex(
+ECode ContentViewCore::GoToNavigationIndex(
     /* [in] */ Int32 index)
 {
     if (mWebContents != NULL) {
         mWebContents->GetNavigationController()->GoToNavigationIndex(index);
     }
+
+    return NOERROR;
 }
 
 /**
@@ -1572,20 +1624,20 @@ Boolean ContentViewCore::IsSPenSupported(
         sIsSPenSupported = DetectSPenSupport(context);
     }
 
-    return sIsSPenSupported.booleanValue();
+    return sIsSPenSupported/*.booleanValue()*/;
 }
 
 Boolean ContentViewCore::DetectSPenSupport(
     /* [in] */ IContext* context)
 {
-    if (!String("SAMSUNG").EqualsIgnoreCase(Build.MANUFACTURER)) {
+    if (!String("SAMSUNG").EqualsIgnoreCase(Build::MANUFACTURER)) {
         return FALSE;
     }
 
     AutoPtr<IPackageManager> pm;
     context->GetPackageManager((IPackageManager**)&pm);
     AutoPtr< ArrayOf<IFeatureInfo*> > infos;
-    infos->GetSystemAvailableFeatures((ArrayOf<IFeatureInfo*>**)&infos);
+    pm->GetSystemAvailableFeatures((ArrayOf<IFeatureInfo*>**)&infos);
     Int32 length = infos->GetLength();
     for (Int32 i = 0; i < length; ++i) {
         String name;
@@ -1631,7 +1683,7 @@ Int32 ContentViewCore::ConvertSPenEventAction(
 Boolean ContentViewCore::OnTouchEvent(
     /* [in] */ IMotionEvent* event)
 {
-    TraceEvent::Begin("onTouchEvent");
+    TraceEvent::Begin(String("onTouchEvent"));
     // try {
         CancelRequestToScrollFocusedEditableNodeIntoView();
 
@@ -1668,29 +1720,31 @@ Boolean ContentViewCore::OnTouchEvent(
         Int32 pointerCount;
         event->GetPointerCount(&pointerCount);
         Int32 eventTime;
-        event->GetEventTime(&eventTime);
+        assert(0);
+        // TODO
+        // event->GetEventTime(&eventTime);
         Int32 historySize;
         event->GetHistorySize(&historySize);
         Int32 actionIndex;
         event->GetActionIndex(&actionIndex);
-        Int32 x, y;
+        Float x, y;
         event->GetX(&x);
         event->GetY(&y);
-        Int32 x1, y1;
+        Float x1, y1;
         event->GetX(1, &x1);
         event->GetY(1, &y1);
         Int32 id0, id1;
         event->GetPointerId(0, &id0);
         event->GetPointerId(0, &id1);
-        Int32 major0, major1;
+        Float major0, major1;
         event->GetTouchMajor(&major0);
         event->GetTouchMajor(1, &major1);
-        Int32 rawX, rawY;
+        Float rawX, rawY;
         event->GetRawX(&rawX);
         event->GetRawY(&rawY);
         Int32 type0, type1;
-        event->GetToolType(0, type0);
-        event->GetToolType(1, type1);
+        event->GetToolType(0, &type0);
+        event->GetToolType(1, &type1);
         Int32 state;
         event->GetButtonState(&state);
         const Boolean consumed = NativeOnTouchEvent(mNativeContentViewCore, event,
@@ -1703,16 +1757,17 @@ Boolean ContentViewCore::OnTouchEvent(
                 major0, pointerCount > 1 ? major1 : 0,
                 rawX,rawY,
                 type0,
-                pointerCount > 1 ? type1 : MotionEvent.TOOL_TYPE_UNKNOWN,
+                pointerCount > 1 ? type1 : IMotionEvent::TOOL_TYPE_UNKNOWN,
                 state);
 
         if (offset != NULL) {
-            offset->Recycle();
+            AutoPtr<IInputEvent> inputEvent = (IInputEvent*)offset->Probe(EIID_IInputEvent);
+            inputEvent->Recycle();
         }
 
         return consumed;
     // } finally {
-    //     TraceEvent.end("onTouchEvent");
+         TraceEvent::End(String("onTouchEvent"));
     // }
 }
 
@@ -1735,11 +1790,13 @@ void ContentViewCore::OnFlingStartEventConsumed(
     mTouchScrollInProgress = FALSE;
     mPotentiallyActiveFlingCount++;
     TemporarilyHideTextHandles();
-    for (mGestureStateListenersIterator->Rewind();
-                mGestureStateListenersIterator->HasNext();) {
-        mGestureStateListenersIterator->Next()->OnFlingStartGesture(
-                vx, vy, ComputeVerticalScrollOffset(), ComputeVerticalScrollExtent());
-    }
+    assert(0);
+    // TODO
+    // for (mGestureStateListenersIterator->Rewind();
+    //             mGestureStateListenersIterator->HasNext();) {
+    //     mGestureStateListenersIterator->Next()->OnFlingStartGesture(
+    //             vx, vy, ComputeVerticalScrollOffset(), ComputeVerticalScrollExtent());
+    // }
 }
 
 //@SuppressWarnings("unused")
@@ -1749,10 +1806,12 @@ void ContentViewCore::OnFlingStartEventHadNoConsumer(
     /* [in] */ Int32 vy)
 {
     mTouchScrollInProgress = FALSE;
-    for (mGestureStateListenersIterator->Rewind();
-                mGestureStateListenersIterator->HasNext();) {
-        mGestureStateListenersIterator->Next()->OnUnhandledFlingStartEvent(vx, vy);
-    }
+    assert(0);
+    // TODO
+    // for (mGestureStateListenersIterator->Rewind();
+    //             mGestureStateListenersIterator->HasNext();) {
+    //     mGestureStateListenersIterator->Next()->OnUnhandledFlingStartEvent(vx, vy);
+    // }
 }
 
 //@SuppressWarnings("unused")
@@ -1777,10 +1836,12 @@ void ContentViewCore::OnScrollBeginEventAck()
 void ContentViewCore::OnScrollUpdateGestureConsumed()
 {
     mZoomControlsDelegate->InvokeZoomPicker();
-    for (mGestureStateListenersIterator->Rewind();
-            mGestureStateListenersIterator->HasNext();) {
-        mGestureStateListenersIterator->Next()->OnScrollUpdateGestureConsumed();
-    }
+    assert(0);
+    // TODO
+    // for (mGestureStateListenersIterator->Rewind();
+    //         mGestureStateListenersIterator->HasNext();) {
+    //     mGestureStateListenersIterator->Next()->OnScrollUpdateGestureConsumed();
+    // }
 }
 
 //@SuppressWarnings("unused")
@@ -1816,10 +1877,12 @@ void ContentViewCore::OnSingleTapEventAck(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
-    for (mGestureStateListenersIterator->Rewind();
-            mGestureStateListenersIterator->HasNext();) {
-        mGestureStateListenersIterator->Next()->OnSingleTap(consumed, x, y);
-    }
+    assert(0);
+    // TODO
+    // for (mGestureStateListenersIterator->Rewind();
+    //         mGestureStateListenersIterator->HasNext();) {
+    //     mGestureStateListenersIterator->Next()->OnSingleTap(consumed, x, y);
+    // }
 }
 
 //@SuppressWarnings("unused")
@@ -1899,7 +1962,9 @@ void ContentViewCore::CancelFling(
 void ContentViewCore::AddGestureStateListener(
     /* [in] */ GestureStateListener* listener)
 {
-    mGestureStateListeners->AddObserver(listener);
+    assert(0);
+    // TODO
+    // mGestureStateListeners->AddObserver(listener);
 }
 
 /**
@@ -1909,44 +1974,48 @@ void ContentViewCore::AddGestureStateListener(
 void ContentViewCore::RemoveGestureStateListener(
     /* [in] */ GestureStateListener* listener)
 {
-    mGestureStateListeners->RemoveObserver(listener);
+    assert(0);
+    // TODO
+    // mGestureStateListeners->RemoveObserver(listener);
 }
 
 void ContentViewCore::UpdateGestureStateListener(
     /* [in] */ Int32 gestureType)
 {
-    for (mGestureStateListenersIterator->Rewind();
-            mGestureStateListenersIterator->HasNext();) {
-        GestureStateListener listener = mGestureStateListenersIterator->Next();
-        switch (gestureType) {
-            case GestureEventType::PINCH_BEGIN:
-                listener->OnPinchStarted();
-                break;
-            case GestureEventType::PINCH_END:
-                listener->OnPinchEnded();
-                break;
-            case GestureEventType::FLING_END:
-                listener->OnFlingEndGesture(
-                        ComputeVerticalScrollOffset(),
-                        ComputeVerticalScrollExtent());
-                break;
-            case GestureEventType::FLING_CANCEL:
-                listener->OnFlingCancelGesture();
-                break;
-            case GestureEventType::SCROLL_START:
-                listener->OnScrollStarted(
-                        ComputeVerticalScrollOffset(),
-                        ComputeVerticalScrollExtent());
-                break;
-            case GestureEventType->SCROLL_END:
-                listener->OnScrollEnded(
-                        ComputeVerticalScrollOffset(),
-                        ComputeVerticalScrollExtent());
-                break;
-            default:
-                break;
-        }
-    }
+    assert(0);
+    // TODO
+    // for (mGestureStateListenersIterator->Rewind();
+    //         mGestureStateListenersIterator->HasNext();) {
+    //     GestureStateListener listener = mGestureStateListenersIterator->Next();
+    //     switch (gestureType) {
+    //         case GestureEventType::PINCH_BEGIN:
+    //             listener->OnPinchStarted();
+    //             break;
+    //         case GestureEventType::PINCH_END:
+    //             listener->OnPinchEnded();
+    //             break;
+    //         case GestureEventType::FLING_END:
+    //             listener->OnFlingEndGesture(
+    //                     ComputeVerticalScrollOffset(),
+    //                     ComputeVerticalScrollExtent());
+    //             break;
+    //         case GestureEventType::FLING_CANCEL:
+    //             listener->OnFlingCancelGesture();
+    //             break;
+    //         case GestureEventType::SCROLL_START:
+    //             listener->OnScrollStarted(
+    //                     ComputeVerticalScrollOffset(),
+    //                     ComputeVerticalScrollExtent());
+    //             break;
+    //         case GestureEventType->SCROLL_END:
+    //             listener->OnScrollEnded(
+    //                     ComputeVerticalScrollOffset(),
+    //                     ComputeVerticalScrollExtent());
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // }
 }
 
 /**
@@ -2075,7 +2144,9 @@ void ContentViewCore::ResetGestureDetection()
 //@SuppressWarnings("javadoc")
 void ContentViewCore::OnAttachedToWindow()
 {
-    SetAccessibilityState(mAccessibilityManager->IsEnabled());
+    Boolean result;
+    mAccessibilityManager->IsEnabled(&result);
+    SetAccessibilityState(result);
 
     ScreenOrientationListener::GetInstance()->AddObserver(this, mContext);
     GamepadList::OnAttachedToWindow(mContext);
@@ -2112,7 +2183,7 @@ void ContentViewCore::OnVisibilityChanged(
 /**
  * @see View#onCreateInputConnection(EditorInfo)
  */
-AutoPtr<InputConnection> ContentViewCore::OnCreateInputConnection(
+AutoPtr<IInputConnection> ContentViewCore::OnCreateInputConnection(
     /* [in] */ IEditorInfo* outAttrs)
 {
     if (!mImeAdapter->HasTextInputType()) {
@@ -2122,10 +2193,11 @@ AutoPtr<InputConnection> ContentViewCore::OnCreateInputConnection(
         outAttrs->SetImeOptions(IEditorInfo::IME_FLAG_NO_FULLSCREEN);
     }
 
-    mInputConnection = mAdapterInputConnectionFactory->Get(mContainerView, mImeAdapter,
+    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    mInputConnection = mAdapterInputConnectionFactory->Get(view, mImeAdapter,
             mEditable, outAttrs);
 
-    return mInputConnection;
+    return (IInputConnection*)mInputConnection->Probe(EIID_IInputConnection);
 }
 
 //@VisibleForTesting
@@ -2161,16 +2233,18 @@ void ContentViewCore::OnConfigurationChanged(
     newConfig->GetKeyboard(&keyboard);
     if (keyboard != IConfiguration::KEYBOARD_NOKEYS) {
         if (mNativeContentViewCore != 0) {
-            mImeAdapter->Attach(nativeGetNativeImeAdapter(mNativeContentViewCore),
+            mImeAdapter->Attach(NativeGetNativeImeAdapter(mNativeContentViewCore),
                     ImeAdapter::GetTextInputTypeNone());
         }
-        mInputMethodManagerWrapper->RestartInput(mContainerView);
+        AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+        mInputMethodManagerWrapper->RestartInput(view);
     }
     mContainerViewInternals->Super_onConfigurationChanged(newConfig);
 
     // To request layout has side effect, but it seems OK as it only happen in
     // onConfigurationChange and layout has to be changed in most case.
-    mContainerView->RequestLayout();
+    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    view->RequestLayout();
     TraceEvent::End();
 }
 
@@ -2241,17 +2315,24 @@ void ContentViewCore::UpdateAfterSizeChanged()
 
     // Execute a delayed form focus operation because the OSK was brought
     // up earlier.
-    if (!mFocusPreOSKViewportRect->IsEmpty()) {
+    Boolean isEmpty = FALSE;
+    mFocusPreOSKViewportRect->IsEmpty(&isEmpty);
+    if (!isEmpty) {
         AutoPtr<IRect> rect;
-        CRect::New((IRect**)&rect);
-        GetContainerView()->GetWindowVisibleDisplayFrame(rect);
+        assert(0);
+        // TODO
+        // CRect::New((IRect**)&rect);
+        AutoPtr<IView> view = (IView*)GetContainerView()->Probe(EIID_IView);
+        view->GetWindowVisibleDisplayFrame(rect);
         Boolean bFlag = FALSE;
         rect->Equals(mFocusPreOSKViewportRect, &bFlag);
         if (!bFlag) {
             // Only assume the OSK triggered the onSizeChanged if width was preserved.
             Int32 width;
             rect->GetWidth(&width);
-            if (width == mFocusPreOSKViewportRect->Width()) {
+            Int32 w;
+            mFocusPreOSKViewportRect->GetWidth(&w);
+            if (width == w) {
                 ScrollFocusedEditableNodeIntoView();
             }
             CancelRequestToScrollFocusedEditableNodeIntoView();
@@ -2371,8 +2452,9 @@ Boolean ContentViewCore::DispatchKeyEvent(
 Boolean ContentViewCore::OnHoverEvent(
     /* [in] */ IMotionEvent* event)
 {
-    TraceEvent::Begin("onHoverEvent");
+    TraceEvent::Begin(String("onHoverEvent"));
     AutoPtr<IMotionEvent> offset = CreateOffsetMotionEvent(event);
+    AutoPtr<IInputEvent> inputEvent = (IInputEvent*)offset->Probe(EIID_IInputEvent);
     //try {
         if (mBrowserAccessibilityManager != NULL) {
             return mBrowserAccessibilityManager->OnHoverEvent(offset);
@@ -2386,11 +2468,14 @@ Boolean ContentViewCore::OnHoverEvent(
             return TRUE;
         }
 
-        mContainerView->RemoveCallbacks(mFakeMouseMoveRunnable);
+        AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+        // assert(0);
+        // TODO
+        // view->RemoveCallbacks(mFakeMouseMoveRunnable);
         if (mNativeContentViewCore != 0) {
-            Int32 time;
-            offset->GetEventTime(&time);
-            Int32 x, y;
+            Int64 time;
+            inputEvent->GetEventTime(&time);
+            Float x, y;
             offset->GetX(&x);
             offset->GetY(&y);
             NativeSendMouseMoveEvent(mNativeContentViewCore, time,
@@ -2399,8 +2484,8 @@ Boolean ContentViewCore::OnHoverEvent(
 
         return TRUE;
     // } finally {
-        offset->Recycle();
-        TraceEvent::End("onHoverEvent");
+        inputEvent->Recycle();
+        TraceEvent::End(String("onHoverEvent"));
     // }
 }
 
@@ -2415,7 +2500,8 @@ Boolean ContentViewCore::OnGenericMotionEvent(
     }
 
     Int32 source;
-    event->GetSource(&source);
+    AutoPtr<IInputEvent> inputEvent = (IInputEvent*)event->Probe(EIID_IInputEvent);
+    inputEvent->GetSource(&source);
     if ((source & IInputDevice::SOURCE_CLASS_POINTER) != 0) {
         Int32 action;
         event->GetAction(&action);
@@ -2425,26 +2511,33 @@ Boolean ContentViewCore::OnGenericMotionEvent(
                     return FALSE;
                 }
 
-                Int32 time;
-                event->GetEventTime(&time);
-                Int32 x, y;
+                Int64 time;
+                inputEvent->GetEventTime(&time);
+                Float x, y;
                 event->GetX(&x);
                 event->GetY(&y);
-                Int32 value;
+                Float value;
                 event->GetAxisValue(IMotionEvent::AXIS_VSCROLL, &value);
                 NativeSendMouseWheelEvent(mNativeContentViewCore, time,
                         x, y,
                         value);
 
-                mContainerView->RemoveCallbacks(mFakeMouseMoveRunnable);
+                assert(0);
+                // TODO
+                // mContainerView->RemoveCallbacks(mFakeMouseMoveRunnable);
+
                 // Send a delayed onMouseMove event so that we end
                 // up hovering over the right position after the scroll.
                 AutoPtr<IMotionEventHelper> helper;
-                CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
+                assert(0);
+                // TODO
+                // CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
                 AutoPtr<IMotionEvent> eventFakeMouseMove;
                 helper->Obtain(event, (IMotionEvent**)&eventFakeMouseMove);
                 mFakeMouseMoveRunnable = new FakeMouseMoveRunnable(this, eventFakeMouseMove);
-                mContainerView->PostDelayed(mFakeMouseMoveRunnable, 250);
+                AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+                Boolean result;
+                view->PostDelayed(mFakeMouseMoveRunnable, 250, &result);
                 return TRUE;
         }
     }
@@ -2471,7 +2564,9 @@ AutoPtr<IMotionEvent> ContentViewCore::CreateOffsetMotionEvent(
 {
     AutoPtr<IMotionEvent> dst;
     AutoPtr<IMotionEventHelper> helper;
-    CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
+    // assert(0);
+    // TODO
+    // CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
     helper->Obtain(src, (IMotionEvent**)&dst);
     dst->OffsetLocation(mCurrentTouchOffsetX, mCurrentTouchOffsetY);
     return dst;
@@ -2490,7 +2585,7 @@ void ContentViewCore::ScrollBy(
 {
     if (mNativeContentViewCore != 0) {
         NativeScrollBy(mNativeContentViewCore,
-                SystemClock::UptimeMillis(), 0, 0, xPix, yPix);
+                SystemClock::GetUptimeMillis(), 0, 0, xPix, yPix);
     }
 }
 
@@ -2510,7 +2605,7 @@ void ContentViewCore::ScrollTo(
     const Float dxPix = xPix - xCurrentPix;
     const Float dyPix = yPix - yCurrentPix;
     if (dxPix != 0 || dyPix != 0) {
-        Int64 time = SystemClock::UptimeMillis();
+        Int64 time = SystemClock::GetUptimeMillis();
         NativeScrollBegin(mNativeContentViewCore, time,
                 xCurrentPix, yCurrentPix, -dxPix, -dyPix);
         NativeScrollBy(mNativeContentViewCore,
@@ -2601,7 +2696,8 @@ Boolean ContentViewCore::AwakenScrollBars(
     // side, calling this function may get us into a bad state where we keep drawing the
     // scrollBars, so disable it by always returning false.
     Int32 style;
-    mContainerView->GetScrollBarStyle(&style);
+    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    view->GetScrollBarStyle(&style);
     if (style == IView::SCROLLBARS_INSIDE_OVERLAY) {
         return FALSE;
     }
@@ -2615,20 +2711,22 @@ void ContentViewCore::UpdateForTapOrPress(
     /* [in] */ Float xPix,
     /* [in] */ Float yPix)
 {
-    if (type != GestureEventType.SINGLE_TAP_CONFIRMED
-            && type != GestureEventType.SINGLE_TAP_UP
-            && type != GestureEventType.LONG_PRESS
-            && type != GestureEventType.LONG_TAP) {
+    if (type != GestureEventType::SINGLE_TAP_CONFIRMED
+            && type != GestureEventType::SINGLE_TAP_UP
+            && type != GestureEventType::LONG_PRESS
+            && type != GestureEventType::LONG_TAP) {
         return;
     }
 
     Boolean bFocusable, bTouchMode, bFocused;
-    mContainerView->IsFocusable(&bFocusable);
-    mContainerView->IsFocusableInTouchMode(&bTouchMode);
-    mContainerView->IsFocused(&bFocused);
+    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    view->IsFocusable(&bFocusable);
+    view->IsFocusableInTouchMode(&bTouchMode);
+    view->IsFocused(&bFocused);
     if (bFocusable && bTouchMode
             && !bFocused)  {
-        mContainerView->RequestFocus();
+        Boolean result;
+        view->RequestFocus(&result);
     }
 
     if (!mPopupZoomer->IsShowing()) {
@@ -2737,8 +2835,10 @@ AutoPtr<ContentViewDownloadDelegate> ContentViewCore::GetDownloadDelegate()
 AutoPtr<SelectionHandleController> ContentViewCore::GetSelectionHandleController()
 {
     if (mSelectionHandleController == NULL) {
+        AutoPtr<IView> view = (IView*)GetContainerView()->Probe(EIID_IView);
         mSelectionHandleController = new InnerSelectionHandleController(this,
-                GetContainerView(), mPositionObserver);
+                view, mPositionObserver);
+    }
 
     return mSelectionHandleController;
 }
@@ -2746,8 +2846,9 @@ AutoPtr<SelectionHandleController> ContentViewCore::GetSelectionHandleController
 AutoPtr<InsertionHandleController> ContentViewCore::GetInsertionHandleController()
 {
     if (mInsertionHandleController == NULL) {
+        AutoPtr<IView> view = (IView*)GetContainerView()->Probe(EIID_IView);
         mInsertionHandleController = new InnerInsertionHandleController(this,
-                GetContainerView(), mPositionObserver);
+                view, mPositionObserver);
 
         mInsertionHandleController->HideAndDisallowAutomaticShowing();
     }
@@ -2808,10 +2909,14 @@ void ContentViewCore::ShowSelectActionBar()
 
     mActionMode = NULL;
     // On ICS, startActionMode throws an NPE when getParent() is null.
-    if (mContainerView->GetParent() != NULL) {
-        mActionMode = mContainerView->StartActionMode(
+    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    AutoPtr<IViewParent> parent;
+    view->GetParent((IViewParent**)&parent);
+    if (parent != NULL) {
+        view->StartActionMode(
                 GetContentViewClient()->GetSelectActionModeCallback(GetContext(), actionHandler,
-                        NativeIsIncognito(mNativeContentViewCore)));
+                        NativeIsIncognito(mNativeContentViewCore)),
+                (IActionMode**)&mActionMode);
     }
 
     mUnselectAllOnActionModeDismiss = TRUE;
@@ -2856,12 +2961,14 @@ void ContentViewCore::ClearSslPreferences()
 
 Boolean ContentViewCore::IsSelectionHandleShowing()
 {
-    return mSelectionHandleController != NULL && mSelectionHandleController->IsShowing();
+    Boolean isShowing;
+    return mSelectionHandleController != NULL && (mSelectionHandleController->IsShowing(&isShowing), isShowing);
 }
 
 Boolean ContentViewCore::IsInsertionHandleShowing()
 {
-    return mInsertionHandleController != NULL && mInsertionHandleController->IsShowing();
+    Boolean isShowing;
+    return mInsertionHandleController != NULL && (mInsertionHandleController->IsShowing(&isShowing), isShowing);
 }
 
 // Makes the insertion/selection handles invisible. They will fade back in shortly after the
@@ -2869,11 +2976,11 @@ Boolean ContentViewCore::IsInsertionHandleShowing()
 void ContentViewCore::TemporarilyHideTextHandles()
 {
     if (IsSelectionHandleShowing() && !mSelectionHandleController->IsDragging()) {
-        mSelectionHandleController->SetHandleVisibility(HandleView::INVISIBLE);
+        mSelectionHandleController->SetHandleVisibility(IView::INVISIBLE);
     }
 
     if (IsInsertionHandleShowing() && !mInsertionHandleController->IsDragging()) {
-        mInsertionHandleController->SetHandleVisibility(HandleView::INVISIBLE);
+        mInsertionHandleController->SetHandleVisibility(IView::INVISIBLE);
     }
 
     ScheduleTextHandleFadeIn();
@@ -2903,8 +3010,12 @@ void ContentViewCore::ScheduleTextHandleFadeIn()
         mDeferredHandleFadeInRunnable = new DeferredHandleFadeInRunnable(this);
     }
 
-    mContainerView->RemoveCallbacks(mDeferredHandleFadeInRunnable);
-    mContainerView->PostDelayed(mDeferredHandleFadeInRunnable, TEXT_HANDLE_FADE_IN_DELAY);
+    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    // assert(0);
+    // TODO
+    // view->RemoveCallbacks(mDeferredHandleFadeInRunnable);
+    Boolean result;
+    view->PostDelayed(mDeferredHandleFadeInRunnable, TEXT_HANDLE_FADE_IN_DELAY, &result);
 }
 
 /**
@@ -2929,9 +3040,12 @@ void ContentViewCore::HideImeIfNeeded()
     // We cannot trust ContentViewClient#onImeStateChangeRequested to
     // hide the input window because it has an empty default implementation.
     // So we need to explicitly hide the input method window here.
-    if (mInputMethodManagerWrapper->IsActive(mContainerView)) {
+    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    if (mInputMethodManagerWrapper->IsActive(view)) {
+        AutoPtr<IBinder> binder;
+        view->GetWindowToken((IBinder**)&binder);
         mInputMethodManagerWrapper->HideSoftInputFromWindow(
-                mContainerView->GetWindowToken(), 0, null);
+                binder, 0, NULL);
     }
 
     GetContentViewClient()->OnImeStateChangeRequested(FALSE);
@@ -2953,14 +3067,14 @@ void ContentViewCore::UpdateFrameInfo(
     /* [in] */ Float contentOffsetYCss,
     /* [in] */ Float overdrawBottomHeightCss)
 {
-    TraceEvent::Instant("ContentViewCore:updateFrameInfo");
+    TraceEvent::Instant(String("ContentViewCore:updateFrameInfo"));
 
     // Adjust contentWidth/Height to be always at least as big as
     // the actual viewport (as set by onSizeChanged).
     const Float deviceScale = mRenderCoordinates->GetDeviceScaleFactor();
-    contentWidth = Math::Max(contentWidth,
+    contentWidth = Elastos::Core::Math::Max(contentWidth,
             mViewportWidthPix / (deviceScale * pageScaleFactor));
-    contentHeight = Math::Max(contentHeight,
+    contentHeight = Elastos::Core::Math::Max(contentHeight,
             mViewportHeightPix / (deviceScale * pageScaleFactor));
     const Float contentOffsetYPix = mRenderCoordinates->FromDipToPix(contentOffsetYCss);
 
@@ -3003,12 +3117,14 @@ void ContentViewCore::UpdateFrameInfo(
             contentOffsetYPix);
 
     if (scrollChanged || contentOffsetChanged) {
-        for (mGestureStateListenersIterator->Rewind();
-                mGestureStateListenersIterator->HasNext();) {
-            mGestureStateListenersIterator->Next()->OnScrollOffsetOrExtentChanged(
-                    ComputeVerticalScrollOffset(),
-                    ComputeVerticalScrollExtent());
-        }
+        assert(0);
+        // TODO
+        // for (mGestureStateListenersIterator->Rewind();
+        //         mGestureStateListenersIterator->HasNext();) {
+        //     mGestureStateListenersIterator->Next()->OnScrollOffsetOrExtentChanged(
+        //             ComputeVerticalScrollOffset(),
+        //             ComputeVerticalScrollExtent());
+        // }
     }
 
     if (needTemporarilyHideHandles) {
@@ -3049,7 +3165,7 @@ void ContentViewCore::UpdateImeAdapter(
     TraceEvent::Begin();
     mSelectionEditable = (textInputType != ImeAdapter::GetTextInputTypeNone());
 
-    mImeAdapter::UpdateKeyboardVisibility(
+    mImeAdapter->UpdateKeyboardVisibility(
             nativeImeAdapterAndroid, textInputType, showImeIfNeeded);
 
     if (mInputConnection != NULL) {
@@ -3058,7 +3174,7 @@ void ContentViewCore::UpdateImeAdapter(
     }
 
     if (mActionMode != NULL) {
-        mActionMode::Invalidate();
+        mActionMode->Invalidate();
     }
 
     TraceEvent::End();
@@ -3088,15 +3204,27 @@ void ContentViewCore::ShowSelectPopup(
     /* [in] */ Boolean multiple,
     /* [in] */ ArrayOf<Int32>* selectedIndices)
 {
-    if (mContainerView->GetParent() == NULL || mContainerView->GetVisibility() != IView::VISIBLE) {
+    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    AutoPtr<IViewParent> parent;
+    view->GetParent((IViewParent**)&parent);
+    Int32 visibility;
+    if (parent == NULL || (view->GetVisibility(&visibility), visibility != IView::VISIBLE)) {
         SelectPopupMenuItems(NULL);
         return;
     }
 
     assert(items->GetLength() == enabled->GetLength());
-    List<SelectPopupItem> popupItems = new ArrayList<SelectPopupItem>();
-    for (Int32 i = 0; i < items.length; i++) {
-        popupItems.add(new SelectPopupItem(items[i], enabled[i]));
+    //List<SelectPopupItem> popupItems = new ArrayList<SelectPopupItem>();
+    AutoPtr<IList> popupItems;
+    // assert(0);
+    // TODO
+    // CArrayList::New((IList**)&popupItems);
+    for (Int32 i = 0; i < items->GetLength(); i++) {
+        AutoPtr<SelectPopupItem> item = new SelectPopupItem((*items)[i], (*enabled)[i]);
+        //popupItems.add(new SelectPopupItem(items[i], enabled[i]));
+        Boolean modified;
+        AutoPtr<IObject> iItem = (IObject*)item->Probe(EIID_IObject);
+        popupItems->Add(iItem, &modified);
     }
 
     HidePopups();
@@ -3173,10 +3301,14 @@ void ContentViewCore::OnSelectionBoundsChanged(
     /* [in] */ Boolean isAnchorFirst)
 {
     // All coordinates are in DIP.
-    Int32 x1 = anchorRectDip.left;
-    Int32 y1 = anchorRectDip.bottom;
-    Int32 x2 = focusRectDip.left;
-    Int32 y2 = focusRectDip.bottom;
+    Int32 x1;
+    anchorRectDip->GetLeft(&x1);
+    Int32 y1;
+    anchorRectDip->GetBottom(&y1);
+    Int32 x2;
+    focusRectDip->GetLeft(&x2);
+    Int32 y2;
+    focusRectDip->GetBottom(&y2);
 
     if (x1 != x2 || y1 != y2 ||
             (mSelectionHandleController != NULL && mSelectionHandleController->IsDragging())) {
@@ -3193,16 +3325,20 @@ void ContentViewCore::OnSelectionBoundsChanged(
             mEndHandlePoint->SetLocalDip(x1, y1);
         }
 
-        Boolean wereSelectionHandlesShowing = GetSelectionHandleController()->IsShowing();
+        Boolean wereSelectionHandlesShowing;
+        GetSelectionHandleController()->IsShowing(&wereSelectionHandlesShowing);
 
         GetSelectionHandleController()->OnSelectionChanged(anchorDir, focusDir);
         UpdateHandleScreenPositions();
         mHasSelection = TRUE;
 
-        if (!wereSelectionHandlesShowing && GetSelectionHandleController()->IsShowing()) {
+        Boolean isShowing;
+        if (!wereSelectionHandlesShowing && (GetSelectionHandleController()->IsShowing(&isShowing), isShowing)) {
             // TODO(cjhopman): Remove this when there is a better signal that long press caused
             // a selection. See http://crbug.com/150151.
-            mContainerView->PerformHapticFeedback(HapticFeedbackConstants::LONG_PRESS);
+            AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+            Boolean result;
+            view->PerformHapticFeedback(IHapticFeedbackConstants::LONG_PRESS, &result);
         }
 
     }
@@ -3219,11 +3355,12 @@ void ContentViewCore::OnSelectionBoundsChanged(
 
             GetInsertionHandleController()->OnCursorPositionChanged();
             UpdateHandleScreenPositions();
-            if (mInputMethodManagerWrapper->IsWatchingCursor(mContainerView)) {
+            AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+            if (mInputMethodManagerWrapper->IsWatchingCursor(view)) {
                 const Int32 xPix = (Int32) mInsertionHandlePoint->GetXPix();
                 const Int32 yPix = (Int32) mInsertionHandlePoint->GetYPix();
                 mInputMethodManagerWrapper->UpdateCursor(
-                        mContainerView, xPix, yPix, xPix, yPix);
+                        view, xPix, yPix, xPix, yPix);
             }
         }
         else {
@@ -3288,7 +3425,10 @@ void ContentViewCore::AttachImeAdapter()
 //@CalledByNative
 Boolean ContentViewCore::HasFocus()
 {
-    return mContainerView->HasFocus();
+    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    Boolean result;
+    view->HasFocus(&result);
+    return result;
 }
 
 /**
@@ -3386,7 +3526,7 @@ Boolean ContentViewCore::PinchByDelta(
         return FALSE;
     }
 
-    Int64 timeMs = SystemClock::UptimeMillis();
+    Int64 timeMs = SystemClock::GetUptimeMillis();
     Int32 xPix = GetViewportWidthPix() / 2;
     Int32 yPix = GetViewportHeightPix() / 2;
 
@@ -3417,7 +3557,7 @@ void ContentViewCore::InvokeZoomPicker()
 void ContentViewCore::SetAllowJavascriptInterfacesInspection(
     /* [in] */ Boolean allow)
 {
-    NsativeSetAllowJavascriptInterfacesInspection(mNativeContentViewCore, allow);
+    NativeSetAllowJavascriptInterfacesInspection(mNativeContentViewCore, allow);
 }
 
 /**
@@ -3426,7 +3566,7 @@ void ContentViewCore::SetAllowJavascriptInterfacesInspection(
  *
  * @return the mapping of names to interface objects and corresponding annotation classes
  */
-Map<String, Pair<Object, Class>> ContentViewCore::GetJavascriptInterfaces()
+AutoPtr<IMap> ContentViewCore::GetJavascriptInterfaces()
 {
     return mJavaScriptInterfaces;
 }
@@ -3443,7 +3583,9 @@ void ContentViewCore::AddJavascriptInterface(
     /* [in] */ IInterface* object,
     /* [in] */ const String& name)
 {
-    AddPossiblyUnsafeJavascriptInterface(object, name, JavascriptInterface.class);
+    assert(0);
+    // TODO
+    // AddPossiblyUnsafeJavascriptInterface(object, name, JavascriptInterface.class);
 }
 
 /**
@@ -3488,16 +3630,17 @@ void ContentViewCore::AddJavascriptInterface(
  *                           exposed.
  *
  */
-void ContentViewCore::AddPossiblyUnsafeJavascriptInterface(
-    /* [in] */ IInterface* object,
-    /* [in] */ const String& name,
-    /* [in] */ Annotation* requiredAnnotation)
-{
-    if (mNativeContentViewCore != 0 && object != null) {
-        mJavaScriptInterfaces.put(name, new Pair<Object, Class>(object, requiredAnnotation));
-        NativeAddJavascriptInterface(mNativeContentViewCore, object, name, requiredAnnotation);
-    }
-}
+// TODO
+// void ContentViewCore::AddPossiblyUnsafeJavascriptInterface(
+//     /* [in] */ IInterface* object,
+//     /* [in] */ String name,
+//     /* [in] */ Annotation* requiredAnnotation)
+// {
+//     if (mNativeContentViewCore != 0 && object != null) {
+//         mJavaScriptInterfaces.put(name, new Pair<Object, Class>(object, requiredAnnotation));
+//         NativeAddJavascriptInterface(mNativeContentViewCore, object, name, requiredAnnotation);
+//     }
+// }
 
 /**
  * Removes a previously added JavaScript interface with the given name.
@@ -3507,7 +3650,9 @@ void ContentViewCore::AddPossiblyUnsafeJavascriptInterface(
 void ContentViewCore::RemoveJavascriptInterface(
     /* [in] */ const String& name)
 {
-    mJavaScriptInterfaces->Remove(name);
+    assert(0);
+    // TODO
+    // mJavaScriptInterfaces->Remove(name);
     if (mNativeContentViewCore != 0) {
         NativeRemoveJavascriptInterface(mNativeContentViewCore, name);
     }
@@ -3545,10 +3690,11 @@ void ContentViewCore::StartContentIntent(
 }
 
 //@Override
-void ContentViewCore::OnAccessibilityStateChanged(
+ECode ContentViewCore::OnAccessibilityStateChanged(
     /* [in] */ Boolean enabled)
 {
     SetAccessibilityState(enabled);
+    return NOERROR;
 }
 
 /**
@@ -3613,16 +3759,16 @@ AutoPtr<BrowserAccessibilityManager> ContentViewCore::GetBrowserAccessibilityMan
  * Lazily initializes native accessibility here if it's allowed.
  * @return The AccessibilityNodeProvider, if available, or null otherwise.
  */
-AutoPtr<AccessibilityNodeProvider> ContentViewCore::GetAccessibilityNodeProvider()
+AutoPtr<IAccessibilityNodeProvider> ContentViewCore::GetAccessibilityNodeProvider()
 {
     if (mBrowserAccessibilityManager != NULL) {
-        return mBrowserAccessibilityManager.getAccessibilityNodeProvider();
+        return mBrowserAccessibilityManager->GetAccessibilityNodeProvider();
     }
 
     if (mNativeAccessibilityAllowed &&
             !mNativeAccessibilityEnabled &&
             mNativeContentViewCore != 0 &&
-            Build.VERSION.SDK_INT >= Build::VERSION_CODES.JELLY_BEAN) {
+            Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN) {
         mNativeAccessibilityEnabled = TRUE;
         NativeSetAccessibilityEnabled(mNativeContentViewCore, TRUE);
     }
@@ -3647,23 +3793,26 @@ void ContentViewCore::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     // Note: this is only used by the script-injecting accessibility code.
-    event->SetClassName(this.getClass().getName());
+    assert(0);
+    // TODO
+    // event->SetClassName(this.getClass().getName());
 
     // Identify where the top-left of the screen currently points to.
-    event->SetScrollX(mRenderCoordinates->GetScrollXPixInt());
-    event->SetScrollY(mRenderCoordinates->GetScrollYPixInt());
+    AutoPtr<IAccessibilityRecord> record = (IAccessibilityRecord*)event->Probe(EIID_IAccessibilityRecord);
+    record->SetScrollX(mRenderCoordinates->GetScrollXPixInt());
+    record->SetScrollY(mRenderCoordinates->GetScrollYPixInt());
 
     // The maximum scroll values are determined by taking the content dimensions and
     // subtracting off the actual dimensions of the ChromeView.
-    Int32 maxScrollXPix = Math::Max(0, mRenderCoordinates->GetMaxHorizontalScrollPixInt());
-    Int32 maxScrollYPix = Math::Max(0, mRenderCoordinates->GetMaxVerticalScrollPixInt());
-    event->SetScrollable(maxScrollXPix > 0 || maxScrollYPix > 0);
+    Int32 maxScrollXPix = Elastos::Core::Math::Max(0, mRenderCoordinates->GetMaxHorizontalScrollPixInt());
+    Int32 maxScrollYPix = Elastos::Core::Math::Max(0, mRenderCoordinates->GetMaxVerticalScrollPixInt());
+    record->SetScrollable(maxScrollXPix > 0 || maxScrollYPix > 0);
 
     // Setting the maximum scroll values requires API level 15 or higher.
     const Int32 SDK_VERSION_REQUIRED_TO_SET_SCROLL = 15;
-    if (Build.VERSION.SDK_INT >= SDK_VERSION_REQUIRED_TO_SET_SCROLL) {
-        event->SetMaxScrollX(maxScrollXPix);
-        event->SetMaxScrollY(maxScrollYPix);
+    if (Build::VERSION::SDK_INT >= SDK_VERSION_REQUIRED_TO_SET_SCROLL) {
+        record->SetMaxScrollX(maxScrollXPix);
+        record->SetMaxScrollY(maxScrollYPix);
     }
 }
 
@@ -3675,7 +3824,7 @@ Boolean ContentViewCore::IsDeviceAccessibilityScriptInjectionEnabled()
     // try {
         // On JellyBean and higher, native accessibility is the default so script
         // injection is only allowed if enabled via a flag.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN &&
+        if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN &&
                 !CommandLine::GetInstance()->HasSwitch(
                         ContentSwitches::ENABLE_ACCESSIBILITY_SCRIPT_INJECTION)) {
             return FALSE;
@@ -3686,30 +3835,44 @@ Boolean ContentViewCore::IsDeviceAccessibilityScriptInjectionEnabled()
         }
 
         Int32 result;
-        GetContext()->CheckCallingOrSelfPermission(
-                android::Manifest::permission::INTERNET, &result);
+        assert(0);
+        // TODO
+        // GetContext()->CheckCallingOrSelfPermission(
+        //         android::Manifest::permission::INTERNET, &result);
         if (result != IPackageManager::PERMISSION_GRANTED) {
             return FALSE;
         }
 
-        Field field = Settings.Secure.class.getField("ACCESSIBILITY_SCRIPT_INJECTION");
-        field.setAccessible(true);
-        String accessibilityScriptInjection = (String) field.get(null);
+        assert(0);
+        // TODO
+        // Field field = Settings.Secure.class.getField("ACCESSIBILITY_SCRIPT_INJECTION");
+        // field.setAccessible(true);
+        String accessibilityScriptInjection;//TODO = (String) field.get(null);
         AutoPtr<IContentResolver> contentResolver;
         GetContext()->GetContentResolver((IContentResolver**)&contentResolver);
 
+        AutoPtr<ISettingsSecure> settingsSecure;
+        assert(0);
+        // TODO
+        // CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
         if (mAccessibilityScriptInjectionObserver == NULL) {
             AutoPtr<IHandler> handle;
             CHandler::New((IHandler**)&handle);
-            AutoPtr<IContentObserver> contentObserver = new InnerContentObserver(this, handle);
+            AutoPtr<ContentObserver> _contentObserver = new InnerContentObserver(this);
+            _contentObserver->constructor(handle);
+            AutoPtr<IContentObserver> contentObserver = _contentObserver;
+            AutoPtr<IUri> uri;
+            settingsSecure->GetUriFor(accessibilityScriptInjection, (IUri**)&uri);
             contentResolver->RegisterContentObserver(
-                Settings.Secure.getUriFor(accessibilityScriptInjection),
+                uri,
                 FALSE,
                 contentObserver);
             mAccessibilityScriptInjectionObserver = contentObserver;
         }
 
-        return Settings::Secure::GetInt32(contentResolver, accessibilityScriptInjection, 0) == 1;
+        Int32 value;
+        settingsSecure->GetInt32(contentResolver, accessibilityScriptInjection, 0, &value);
+        return (value == 1);
     // } catch (NoSuchFieldException e) {
     //     // Do nothing, default to false.
     // } catch (IllegalAccessException e) {
@@ -3722,7 +3885,7 @@ Boolean ContentViewCore::IsDeviceAccessibilityScriptInjectionEnabled()
 /**
  * Returns whether or not accessibility injection is being used.
  */
-Boolean ContentViewCore::isInjectingAccessibilityScript()
+Boolean ContentViewCore::IsInjectingAccessibilityScript()
 {
     return mAccessibilityInjector->AccessibilityIsAvailable();
 }
@@ -3730,7 +3893,7 @@ Boolean ContentViewCore::isInjectingAccessibilityScript()
 /**
  * Returns true if accessibility is on and touch exploration is enabled.
  */
-Boolean ContentViewCore::isTouchExplorationEnabled()
+Boolean ContentViewCore::IsTouchExplorationEnabled()
 {
     return mTouchExplorationEnabled;
 }
@@ -3741,7 +3904,7 @@ Boolean ContentViewCore::isTouchExplorationEnabled()
  * Otherwise, if accessibility script injection is enabled, this will enable the injected
  * accessibility scripts. Native accessibility is enabled on demand.
  */
-void ContentViewCore::setAccessibilityState(
+void ContentViewCore::SetAccessibilityState(
     /* [in] */ Boolean state)
 {
     if (!state) {
@@ -3753,7 +3916,7 @@ void ContentViewCore::setAccessibilityState(
         Boolean useScriptInjection = IsDeviceAccessibilityScriptInjectionEnabled();
         SetInjectedAccessibility(useScriptInjection);
         mNativeAccessibilityAllowed = !useScriptInjection;
-        mTouchExplorationEnabled = mAccessibilityManager->IsTouchExplorationEnabled();
+        mAccessibilityManager->IsTouchExplorationEnabled(&mTouchExplorationEnabled);
     }
 }
 
@@ -3838,7 +4001,10 @@ void ContentViewCore::AddToNavigationHistory(
 {
     AutoPtr<NavigationEntry> entry = new NavigationEntry(
             index, url, virtualUrl, originalUrl, title, favicon);
-    ((NavigationHistory*) history)->AddEntry(entry);
+
+    assert(0);
+    // TODO don't kown (NavigationHistory*)history to (IInterface*) history way
+    // ((NavigationHistory*) history)->AddEntry(entry);
 }
 
 /**
@@ -3848,8 +4014,10 @@ AutoPtr<NavigationHistory> ContentViewCore::GetNavigationHistory()
 {
     AutoPtr<NavigationHistory> history = new NavigationHistory();
     if (mNativeContentViewCore != 0) {
-        Int32 currentIndex = NativeGetNavigationHistory(mNativeContentViewCore, history);
-        history->SetCurrentEntryIndex(currentIndex);
+        assert(0);
+        // TODO
+        // Int32 currentIndex = NativeGetNavigationHistory(mNativeContentViewCore, history);
+        // history->SetCurrentEntryIndex(currentIndex);
     }
 
     return history;
@@ -3862,8 +4030,10 @@ AutoPtr<NavigationHistory> ContentViewCore::GetDirectedNavigationHistory(
 {
     AutoPtr<NavigationHistory> history = new NavigationHistory();
     if (mNativeContentViewCore != 0) {
-        NativeGetDirectedNavigationHistory(
-            mNativeContentViewCore, history, isForward, itemLimit);
+        assert(0);
+        // TODO
+        // NativeGetDirectedNavigationHistory(
+        //     mNativeContentViewCore, history, isForward, itemLimit);
     }
     return history;
 }
@@ -3897,7 +4067,10 @@ AutoPtr<IRect> ContentViewCore::CreateRect(
     /* [in] */ Int32 bottom)
 {
     AutoPtr<IRect> rect;
-    CRect::New(x, y, right, bottomj, (IRect**)&rect);
+    assert(0);
+    // TODO
+    // CRect::New(x, y, right, bottomj, (IRect**)&rect);
+    return rect;
 }
 
 void ContentViewCore::ExtractSmartClipData(
@@ -3962,7 +4135,10 @@ void ContentViewCore::SetBackgroundOpaque(
  */
 Boolean ContentViewCore::OfferLongPressToEmbedder()
 {
-    return mContainerView->PerformLongClick();
+    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    Boolean result;
+    view->PerformLongClick(&result);
+    return result;
 }
 
 /**
@@ -3986,7 +4162,7 @@ void ContentViewCore::ResetScrollInProgress()
     }
 
     if (potentiallyActiveFlingCount > 0) {
-        UpdateGestureStateListener(GestureEventType.FLING_END);
+        UpdateGestureStateListener(GestureEventType::FLING_END);
     }
 }
 
@@ -3994,7 +4170,7 @@ Int64 ContentViewCore::NativeInit(
     /* [in] */ Int64 webContentsPtr,
     /* [in] */ Int64 viewAndroidPtr,
     /* [in] */ Int64 windowAndroidPtr,
-    /* [in] */ HashSet<Object> retainedObjectSet)
+    /* [in] */ IHashSet* retainedObjectSet)
 {
 }
 
@@ -4021,14 +4197,15 @@ void ContentViewCore::OnNativeFlingStopped()
         return;
     }
     mPotentiallyActiveFlingCount--;
-    UpdateGestureStateListener(GestureEventType.FLING_END);
+    UpdateGestureStateListener(GestureEventType::FLING_END);
 }
 
 //@Override
-void ContentViewCore::OnScreenOrientationChanged(
+ECode ContentViewCore::OnScreenOrientationChanged(
     /* [in] */ Int32 orientation)
 {
     SendOrientationChangeEvent(orientation);
+    return NOERROR;
 }
 
 AutoPtr<WebContents> ContentViewCore::NativeGetWebContentsAndroid(
@@ -4375,7 +4552,7 @@ void ContentViewCore::NativeAddJavascriptInterface(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ IInterface* object,
     /* [in] */ const String& name,
-    /* [in] */ Class requiredAnnotation)
+    /* [in] */ IInterface* requiredAnnotation)
 {
 }
 

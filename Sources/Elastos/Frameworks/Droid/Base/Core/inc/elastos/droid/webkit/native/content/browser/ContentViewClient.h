@@ -35,7 +35,7 @@ namespace Browser {
  *  the browser and we don't want a the browser-specific default implementation to accidentally leak
  *  over to WebView.
  */
-class ContentViewClient
+class ContentViewClient : public Object
 {
 public:
     CARAPI_(void) OnUpdateTitle(

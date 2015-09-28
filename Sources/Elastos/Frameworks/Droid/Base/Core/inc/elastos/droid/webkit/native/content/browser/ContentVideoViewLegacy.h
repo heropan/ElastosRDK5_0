@@ -36,7 +36,7 @@ public:
     /**
      * A listener for changes in the MediaController visibility.
      */
-    class MediaControlsVisibilityListener
+    class MediaControlsVisibilityListener : public Object
     {
     public:
         /**

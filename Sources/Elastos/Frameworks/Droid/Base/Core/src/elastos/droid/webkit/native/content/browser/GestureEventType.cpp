@@ -1,4 +1,6 @@
 
+#include "webkit/native/content/browser/GestureEventType.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {

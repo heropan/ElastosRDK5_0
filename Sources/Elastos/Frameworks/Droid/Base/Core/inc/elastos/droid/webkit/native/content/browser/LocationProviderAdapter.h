@@ -7,17 +7,17 @@
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOCATIONPROVIDERADAPTER_H_
 
 #include "ext/frameworkext.h"
+#include "os/Runnable.h"
+#include "webkit/native/content/browser/LocationProviderFactory.h"
 
 // package org.chromium.content.browser;
 // import android.content.Context;
 // import com.google.common.annotations.VisibleForTesting;
 // import org.chromium.base.CalledByNative;
-// import org.chromium.base.ThreadUtils;
-// import java.util.concurrent.FutureTask;
 
+using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Webkit::Base::ThreadUtils;
-using Elastos::Utility::Concurrent::IFutureTask;
+//using Elastos::Utility::Concurrent::IFutureTask;
 
 namespace Elastos {
 namespace Droid {
@@ -37,27 +37,27 @@ namespace Browser {
 class LocationProviderAdapter : public Object
 {
 public:
-    class InnerRunnable
-        : public Object
-        , public Runnable
+    class StartRunnable
+        : public Runnable
     {
     public:
-        InnerRunnable(
-            /* [in] */ LocationProviderAdapter* owner);
+        StartRunnable(
+            /* [in] */ LocationProviderAdapter* owner,
+            /* [in] */ const Boolean& gpsEnabled);
 
         // @Override
         CARAPI Run();
 
     private:
         LocationProviderAdapter* mOwner;
+        const Boolean& mGpsEnabled;
     };
 
-    class InnerRunnable
-        : public Object
-        , public Runnable
+    class StopRunnable
+        : public Runnable
     {
     public:
-        InnerRunnable(
+        StopRunnable(
             /* [in] */ LocationProviderAdapter* owner);
 
         // @Override
@@ -142,4 +142,3 @@ private:
 } // namespace Elastos
 
 #endif // _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOCATIONPROVIDERADAPTER_H_
-

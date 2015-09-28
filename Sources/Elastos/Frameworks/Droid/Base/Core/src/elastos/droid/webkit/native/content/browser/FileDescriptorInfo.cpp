@@ -1,6 +1,6 @@
 // wuweizuo automatic build .cpp file from .java file.
 
-#include "FileDescriptorInfo.h"
+#include "webkit/native/content/browser/FileDescriptorInfo.h"
 
 namespace Elastos {
 namespace Droid {
@@ -15,11 +15,10 @@ FileDescriptorInfo::FileDescriptorInfo(
     /* [in] */ Int32 id,
     /* [in] */ Int32 fd,
     /* [in] */ Boolean autoClose)
+    : mId(id)
+    , mFd(fd)
+    , mAutoClose(autoClose)
 {
-    // ==================before translated======================
-    // mId = id;
-    // mFd = fd;
-    // mAutoClose = autoClose;
 }
 
 } // namespace Browser
@@ -27,5 +26,3 @@ FileDescriptorInfo::FileDescriptorInfo(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

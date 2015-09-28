@@ -1,4 +1,8 @@
 
+#include "webkit/native/content/browser/ContentViewCore.h"
+#include "webkit/native/content/browser/DownloadController.h"
+#include "webkit/native/content/browser/DownloadInfo.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -7,7 +11,7 @@ namespace Browser {
 
 const String DownloadController::LOGTAG("DownloadController");
 AutoPtr<DownloadController> DownloadController::sInstance;
-AutoPtr<DownloadNotificationService> DownloadController::sDownloadNotificationService;
+AutoPtr<DownloadController::DownloadNotificationService> DownloadController::sDownloadNotificationService;
 
 DownloadController::DownloadController()
 {
@@ -31,7 +35,7 @@ AutoPtr<ContentViewDownloadDelegate> DownloadController::DownloadDelegateFromVie
 }
 
 void DownloadController::SetDownloadNotificationService(
-    /* [in] */ DownloadNotificationService* service)
+    /* [in] */ DownloadController::DownloadNotificationService* service)
 {
     sDownloadNotificationService = service;
 }

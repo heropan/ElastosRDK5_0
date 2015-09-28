@@ -1,4 +1,13 @@
 
+#include "webkit/native/content/browser/DeviceUtils.h"
+#include "webkit/native/content/common/ContentSwitches.h"
+#include "webkit/native/base/CommandLine.h"
+//TODO #include "webkit/native/ui/base/DeviceFormFactor.h"
+
+using Elastos::Droid::Webkit::Base::CommandLine;
+using Elastos::Droid::Webkit::Content::Common::ContentSwitches;
+//TODO using Elastos::Droid::Webkit::Ui::Base::DeviceFormFactor;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -14,7 +23,10 @@ namespace Browser {
 Boolean DeviceUtils::IsTablet(
     /* [in] */ IContext* context)
 {
-    return DeviceFormFactor::IsTablet(context);
+    assert(0);
+    // TODO
+    // return DeviceFormFactor::IsTablet(context);
+    return FALSE;
 }
 
 /**

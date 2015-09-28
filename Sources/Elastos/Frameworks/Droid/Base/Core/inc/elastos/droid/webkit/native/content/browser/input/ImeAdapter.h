@@ -4,6 +4,7 @@
 
 #include "ext/frameworkext.h"
 
+#include "os/Runnable.h"
 #include "os/SystemClock.h"
 #include "webkit/native/content/browser/input/AdapterInputConnection.h"
 
@@ -56,13 +57,13 @@ namespace Input {
  * lifetime of the object.
  */
 //@JNINamespace("content")
-class ImeAdapter
+class ImeAdapter : public Object
 {
 public:
     /**
      * Interface for the delegate that needs to be notified of IME changes.
      */
-    class ImeAdapterDelegate
+    class ImeAdapterDelegate : public Object
     {
     public:
         /**
@@ -90,7 +91,7 @@ public:
     /**
      * Default factory for AdapterInputConnection classes.
      */
-    class AdapterInputConnectionFactory
+    class AdapterInputConnectionFactory : public Object
     {
     public:
         virtual CARAPI_(AutoPtr<AdapterInputConnection>) Get(
@@ -102,8 +103,7 @@ public:
 
 private:
     class DelayedDismissInput
-        //: public Object
-        : public IRunnable
+        : public Runnable
     {
     public:
         DelayedDismissInput(

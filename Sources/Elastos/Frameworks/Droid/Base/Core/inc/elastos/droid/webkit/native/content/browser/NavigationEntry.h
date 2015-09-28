@@ -21,6 +21,7 @@ namespace Browser {
   */
 class NavigationEntry : public Object
 {
+  friend class ContentViewCore;
 public:
     /**
       * @return The index into the navigation history that this entry represents.

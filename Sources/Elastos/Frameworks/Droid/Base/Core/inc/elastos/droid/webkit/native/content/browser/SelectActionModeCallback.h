@@ -35,7 +35,7 @@ public:
       * An interface to retrieve information about the current selection, and also to perform
       * actions based on the selection or when the action bar is dismissed.
       */
-    class ActionHandler
+    class ActionHandler : public Object
     {
     public:
         /**
@@ -71,7 +71,8 @@ public:
         /**
           * @return true iff the current selection is editable (e.g. text within an input field).
           */
-        virtual CARAPI_(Boolean) IsSelectionEditable() = 0;
+        virtual CARAPI IsSelectionEditable(
+            /* [out] */ Boolean* result) = 0;
 
         /**
           * Called when the onDestroyActionMode of the SelectActionmodeCallback is called.
@@ -81,17 +82,20 @@ public:
         /**
           * @return Whether or not share is available.
           */
-        virtual CARAPI_(Boolean) IsShareAvailable() = 0;
+        virtual CARAPI IsShareAvailable(
+            /* [out] */ Boolean* result) = 0;
 
         /**
           * @return Whether or not web search is available.
           */
-        virtual CARAPI_(Boolean) IsWebSearchAvailable() = 0;
+        virtual CARAPI IsWebSearchAvailable(
+            /* [out] */ Boolean* result) = 0;
 
         /**
           * @return true if the current selection is of password type.
           */
-        virtual CARAPI_(Boolean) IsSelectionPassword() = 0;
+        virtual CARAPI IsSelectionPassword(
+            /* [out] */ Boolean* result) = 0;
     };
 
 public:

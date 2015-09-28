@@ -1,6 +1,30 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "MediaResourceGetter.h"
+#include "webkit/native/content/browser/MediaResourceGetter.h"
+#include "webkit/native/base/PathUtils.h"
+//TODO #include <elastos/core/CInteger32.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+//TODO #include "elastos/utility/CArrayList.h"
+#include "os/Build.h"
+//TODO #include "os/CParcelFileDescriptorHelper.h"
+#include "text/TextUtils.h"
+//TODO #include "utility/CHashMap.h"
+#include "Manifest.h"
+
+//TODO using Elastos::Core::CInteger32;
+using Elastos::Core::StringUtils;
+using Elastos::IO::IFileDescriptor;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::IParcelFileDescriptorHelper;
+//TODO using Elastos::Droid::Os::CParcelFileDescriptorHelper;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Webkit::Base::PathUtils;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::IIterable;
+using Elastos::Utility::EIID_IIterable;
+//TODO using Elastos::Utility::CArrayList;
+//TODO using Elastos::Utility::CHashMap;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -16,138 +40,122 @@ MediaResourceGetter::MediaMetadata::MediaMetadata(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Boolean success)
+    : mDurationInMilliseconds(durationInMilliseconds)
+    , mWidth(width)
+    , mHeight(height)
+    , mSuccess(success)
 {
-    // ==================before translated======================
-    // mDurationInMilliseconds = durationInMilliseconds;
-    // mWidth = width;
-    // mHeight = height;
-    // mSuccess = success;
 }
 
 Int32 MediaResourceGetter::MediaMetadata::GetDurationInMilliseconds()
 {
-    // ==================before translated======================
-    // return mDurationInMilliseconds;
-    assert(0);
-    return 0;
+    return mDurationInMilliseconds;
 }
 
 Int32 MediaResourceGetter::MediaMetadata::GetWidth()
 {
-    // ==================before translated======================
-    // return mWidth;
-    assert(0);
-    return 0;
+    return mWidth;
 }
 
 Int32 MediaResourceGetter::MediaMetadata::GetHeight()
 {
-    // ==================before translated======================
-    // return mHeight;
-    assert(0);
-    return 0;
+    return mHeight;
 }
 
 Boolean MediaResourceGetter::MediaMetadata::IsSuccess()
 {
-    // ==================before translated======================
-    // return mSuccess;
-    assert(0);
-    return FALSE;
+    return mSuccess;
 }
 
 String MediaResourceGetter::MediaMetadata::ToString()
 {
-    // ==================before translated======================
-    // return "MediaMetadata["
-    //         + "durationInMilliseconds=" + mDurationInMilliseconds
-    //         + ", width=" + mWidth
-    //         + ", height=" + mHeight
-    //         + ", success=" + mSuccess
-    //         + "]";
-    assert(0);
-    return String("");
+    String strRet("MediaMetadata[");
+        strRet += "durationInMilliseconds=";
+        strRet += StringUtils::ToString(mDurationInMilliseconds);
+        strRet += ", width=";
+        strRet += StringUtils::ToString(mWidth);
+        strRet += ", height=";
+        strRet += StringUtils::ToString(mHeight);
+        strRet += ", success=";
+        strRet += StringUtils::ToString(mSuccess);
+        strRet += "]";
+
+    return strRet;
 }
 
 Int32 MediaResourceGetter::MediaMetadata::HashCode()
 {
-    // ==================before translated======================
-    // final int prime = 31;
-    // int result = 1;
-    // result = prime * result + mDurationInMilliseconds;
-    // result = prime * result + mHeight;
-    // result = prime * result + (mSuccess ? 1231 : 1237);
-    // result = prime * result + mWidth;
-    // return result;
-    assert(0);
-    return 0;
+    const Int32 prime = 31;
+    Int32 result = 1;
+    result = prime * result + mDurationInMilliseconds;
+    result = prime * result + mHeight;
+    result = prime * result + (mSuccess ? 1231 : 1237);
+    result = prime * result + mWidth;
+    return result;
 }
 
 Boolean MediaResourceGetter::MediaMetadata::Equals(
     /* [in] */ Object* obj)
 {
-    // ==================before translated======================
-    // if (this == obj)
-    //     return true;
-    // if (obj == null)
-    //     return false;
-    // if (getClass() != obj.getClass())
-    //     return false;
-    // MediaMetadata other = (MediaMetadata)obj;
-    // if (mDurationInMilliseconds != other.mDurationInMilliseconds)
-    //     return false;
-    // if (mHeight != other.mHeight)
-    //     return false;
-    // if (mSuccess != other.mSuccess)
-    //     return false;
-    // if (mWidth != other.mWidth)
-    //     return false;
-    // return true;
+    if (this == obj)
+        return TRUE;
+    if (obj == NULL)
+        return FALSE;
+
     assert(0);
-    return FALSE;
+    // TODO
+    // if (getClass() != obj.getClass())
+    //     return FALSE;
+
+    AutoPtr<MediaMetadata> other = (MediaMetadata*)obj;
+    if (mDurationInMilliseconds != other->mDurationInMilliseconds)
+        return FALSE;
+    if (mHeight != other->mHeight)
+        return FALSE;
+    if (mSuccess != other->mSuccess)
+        return FALSE;
+    if (mWidth != other->mWidth)
+        return FALSE;
+
+    return TRUE;
 }
 
 //=====================================================================
 //                         MediaResourceGetter
 //=====================================================================
+
 const String MediaResourceGetter::TAG("MediaResourceGetter");
 
-AutoPtr<MediaMetadata> MediaResourceGetter::Extract(
+AutoPtr<MediaResourceGetter::MediaMetadata> MediaResourceGetter::Extract(
     /* [in] */ Int32 fd,
     /* [in] */ Int64 offset,
     /* [in] */ Int64 length)
 {
-    // ==================before translated======================
-    // if (!androidDeviceOk(android.os.Build.MODEL, android.os.Build.VERSION.SDK_INT)) {
-    //     return EMPTY_METADATA;
-    // }
-    //
-    // configure(fd, offset, length);
-    // return doExtractMetadata();
-    assert(0);
-    AutoPtr<MediaMetadata> empty;
-    return empty;
+    if (!AndroidDeviceOk(Build::MODEL, Build::VERSION::SDK_INT)) {
+        return EMPTY_METADATA;
+    }
+
+    Configure(fd, offset, length);
+
+    return DoExtractMetadata();
 }
 
-AutoPtr<MediaMetadata> MediaResourceGetter::Extract(
-    /* [in] */ const IContext* context,
+AutoPtr<MediaResourceGetter::MediaMetadata> MediaResourceGetter::Extract(
+    /* [in] */ /*const*/ IContext* context,
     /* [in] */ const String& url,
     /* [in] */ const String& cookies,
     /* [in] */ const String& userAgent)
 {
-    // ==================before translated======================
-    // if (!androidDeviceOk(android.os.Build.MODEL, android.os.Build.VERSION.SDK_INT)) {
-    //     return EMPTY_METADATA;
-    // }
-    //
-    // if (!configure(context, url, cookies, userAgent)) {
-    //     Log.e(TAG, "Unable to configure metadata extractor");
-    //     return EMPTY_METADATA;
-    // }
-    // return doExtractMetadata();
-    assert(0);
-    AutoPtr<MediaMetadata> empty;
-    return empty;
+    if (!AndroidDeviceOk(Build::MODEL, Build::VERSION::SDK_INT)) {
+        return EMPTY_METADATA;
+    }
+
+    if (!Configure(context, url, cookies, userAgent)) {
+        Slogger::E(TAG, "Unable to configure metadata extractor");
+        return EMPTY_METADATA;
+    }
+
+    return DoExtractMetadata();
 }
 
 Boolean MediaResourceGetter::Configure(
@@ -156,113 +164,143 @@ Boolean MediaResourceGetter::Configure(
     /* [in] */ const String& cookies,
     /* [in] */ const String& userAgent)
 {
-    // ==================before translated======================
-    // URI uri;
+    AutoPtr<IURI> uri;
     // try {
-    //     uri = URI.create(url);
+        assert(0);
+        // TODO
+        // uri = URI.create(url);
     // } catch (IllegalArgumentException  e) {
     //     Log.e(TAG, "Cannot parse uri.", e);
     //     return false;
     // }
-    // String scheme = uri.getScheme();
-    // if (scheme == null || scheme.equals("file")) {
-    //     File file = uriToFile(uri.getPath());
-    //     if (!file.exists()) {
-    //         Log.e(TAG, "File does not exist.");
-    //         return false;
-    //     }
-    //     if (!filePathAcceptable(file)) {
-    //         Log.e(TAG, "Refusing to read from unsafe file location.");
-    //         return false;
-    //     }
+
+    String scheme;
+    uri->GetScheme(&scheme);
+    if (scheme == NULL || scheme.Equals("file")) {
+        String path;
+        uri->GetPath(&path);
+        AutoPtr<IFile> file = UriToFile(path);
+        Boolean bExists = FALSE;
+        file->Exists(&bExists);
+        if (!bExists) {
+            Slogger::E(TAG, "File does not exist.");
+            return FALSE;
+        }
+
+        if (!FilePathAcceptable(file)) {
+            Slogger::E(TAG, "Refusing to read from unsafe file location.");
+            return FALSE;
+        }
     //     try {
-    //         configure(file.getAbsolutePath());
-    //         return true;
+            String p;
+            file->GetAbsolutePath(&p);
+            Configure(p);
+            return TRUE;
+    //     } catch (RuntimeException e) {
+    //         Log.e(TAG, "Error configuring data source", e);
+    //         return false;
+    //    }
+    } else {
+        String host;
+        uri->GetHost(&host);
+        if (!IsLoopbackAddress(host) && !IsNetworkReliable(context)) {
+            Slogger::W(TAG, "non-file URI can't be read due to unsuitable network conditions");
+           return FALSE;
+        }
+
+        AutoPtr<IMap> headersMap;
+        assert(0);
+        // TODO
+        // CHashMap::New((IMap**)&headersMap);
+        if (!TextUtils::IsEmpty(cookies)) {
+            assert(0);
+            // TODO
+            // headersMap.put("Cookie", cookies);
+        }
+
+        if (!TextUtils::IsEmpty(userAgent)) {
+            assert(0);
+            // TODO
+            // headersMap.put("User-Agent", userAgent);
+        }
+    //     try {
+            Configure(url, headersMap);
+            return TRUE;
     //     } catch (RuntimeException e) {
     //         Log.e(TAG, "Error configuring data source", e);
     //         return false;
     //     }
-    // } else {
-    //     final String host = uri.getHost();
-    //     if (!isLoopbackAddress(host) && !isNetworkReliable(context)) {
-    //         Log.w(TAG, "non-file URI can't be read due to unsuitable network conditions");
-    //         return false;
-    //     }
-    //     Map<String, String> headersMap = new HashMap<String, String>();
-    //     if (!TextUtils.isEmpty(cookies)) {
-    //         headersMap.put("Cookie", cookies);
-    //     }
-    //     if (!TextUtils.isEmpty(userAgent)) {
-    //         headersMap.put("User-Agent", userAgent);
-    //     }
-    //     try {
-    //         configure(url, headersMap);
-    //         return true;
-    //     } catch (RuntimeException e) {
-    //         Log.e(TAG, "Error configuring data source", e);
-    //         return false;
-    //     }
-    // }
-    assert(0);
-    return FALSE;
+    }
 }
 
 Boolean MediaResourceGetter::IsNetworkReliable(
     /* [in] */ IContext* context)
 {
-    // ==================before translated======================
-    // if (context.checkCallingOrSelfPermission(
-    //         android.Manifest.permission.ACCESS_NETWORK_STATE) !=
-    //         PackageManager.PERMISSION_GRANTED) {
-    //     Log.w(TAG, "permission denied to access network state");
-    //     return false;
-    // }
-    //
-    // Integer networkType = getNetworkType(context);
-    // if (networkType == null) {
-    //     return false;
-    // }
-    // switch (networkType.intValue()) {
-    //     case ConnectivityManager.TYPE_ETHERNET:
-    //     case ConnectivityManager.TYPE_WIFI:
-    //         Log.d(TAG, "ethernet/wifi connection detected");
-    //         return true;
-    //     case ConnectivityManager.TYPE_WIMAX:
-    //     case ConnectivityManager.TYPE_MOBILE:
-    //     default:
-    //         Log.d(TAG, "no ethernet/wifi connection detected");
-    //         return false;
-    // }
-    assert(0);
-    return FALSE;
+    Int32  permission;
+    context->CheckCallingOrSelfPermission(
+            Elastos::Droid::Manifest::Permission::ACCESS_NETWORK_STATE, &permission);
+    if (permission != IPackageManager::PERMISSION_GRANTED) {
+        Slogger::W(TAG, "permission denied to access network state");
+        return FALSE;
+    }
+
+    AutoPtr<IInteger32> networkType = GetNetworkType(context);
+    if (networkType == NULL) {
+        return FALSE;
+    }
+
+    Int32 intValue;
+    networkType->GetValue(&intValue);
+    switch (intValue) {
+        case IConnectivityManager::TYPE_ETHERNET:
+        case IConnectivityManager::TYPE_WIFI:
+            Slogger::D(TAG, "ethernet/wifi connection detected");
+            return TRUE;
+        case IConnectivityManager::TYPE_WIMAX:
+        case IConnectivityManager::TYPE_MOBILE:
+        default:
+            Slogger::D(TAG, "no ethernet/wifi connection detected");
+            return FALSE;
+    }
 }
 
 Boolean MediaResourceGetter::FilePathAcceptable(
     /* [in] */ IFile* file)
 {
-    // ==================before translated======================
-    // final String path;
+    String path;
     // try {
-    //     path = file.getCanonicalPath();
+        file->GetCanonicalPath(&path);
     // } catch (IOException e) {
     //     // Canonicalization has failed. Assume malicious, give up.
     //     Log.w(TAG, "canonicalization of file path failed");
     //     return false;
     // }
-    // // In order to properly match the roots we must also canonicalize the
-    // // well-known paths we are matching against. If we don't, then we can
-    // // get unusual results in testing systems or possibly on rooted devices.
-    // // Note that canonicalized directory paths always end with '/'.
-    // List<String> acceptablePaths = canonicalize(getRawAcceptableDirectories());
-    // acceptablePaths.add(getExternalStorageDirectory());
-    // Log.d(TAG, "canonicalized file path: " + path);
-    // for (String acceptablePath : acceptablePaths) {
-    //     if (path.startsWith(acceptablePath)) {
-    //         return true;
-    //     }
-    // }
-    // return false;
+
+    // In order to properly match the roots we must also canonicalize the
+    // well-known paths we are matching against. If we don't, then we can
+    // get unusual results in testing systems or possibly on rooted devices.
+    // Note that canonicalized directory paths always end with '/'.
+    AutoPtr<IList> acceptablePaths = Canonicalize(GetRawAcceptableDirectories());
     assert(0);
+    // TODO
+    // acceptablePaths->Add(GetExternalStorageDirectory());
+    String pathLog("canonicalized file path: ");
+    pathLog += path;
+    Slogger::D(TAG, pathLog);
+    AutoPtr<IIterable> iterable = (IIterable*)acceptablePaths->Probe(EIID_IIterable);
+    AutoPtr<IIterator> iter;
+    iterable->GetIterator((IIterator**)&iter);
+    Boolean bNext = FALSE;
+    for (iter->HasNext(&bNext); bNext; iter->HasNext(&bNext)) {
+        AutoPtr<ICharSequence> cs;
+        iter->GetNext((IInterface**)&cs);
+        String acceptablePath;
+        cs->ToString(&acceptablePath);
+        if (path.StartWith(acceptablePath)) {
+            return TRUE;
+        }
+    }
+
     return FALSE;
 }
 
@@ -270,51 +308,51 @@ Boolean MediaResourceGetter::AndroidDeviceOk(
     /* [in] */ const String& model,
     /* [in] */ const Int32& sdkVersion)
 {
-    // ==================before translated======================
-    // return !("GT-I9100".contentEquals(model) &&
-    //          sdkVersion < android.os.Build.VERSION_CODES.JELLY_BEAN);
-    assert(0);
-    return FALSE;
+    return !(String("GT-I9100")./*Content*/Equals(model) &&
+              sdkVersion < Build::VERSION_CODES::JELLY_BEAN);
 }
 
 AutoPtr<IFile> MediaResourceGetter::UriToFile(
     /* [in] */ const String& path)
 {
-    // ==================before translated======================
-    // return new File(path);
+    AutoPtr<IFile> file;
     assert(0);
-    AutoPtr<IFile> empty;
-    return empty;
+    // TODO
+    // CFile::New(path, (IFile**)&file);
+    return file;
 }
 
-AutoPtr<Integer> MediaResourceGetter::GetNetworkType(
+AutoPtr<IInteger32> MediaResourceGetter::GetNetworkType(
     /* [in] */ IContext* context)
 {
-    // ==================before translated======================
-    // // TODO(qinmin): use ConnectionTypeObserver to listen to the network type change.
-    // ConnectivityManager mConnectivityManager =
-    //         (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-    // if (mConnectivityManager == null) {
-    //     Log.w(TAG, "no connectivity manager available");
-    //     return null;
-    // }
-    // NetworkInfo info = mConnectivityManager.getActiveNetworkInfo();
-    // if (info == null) {
-    //     Log.d(TAG, "no active network");
-    //     return null;
-    // }
-    // return info.getType();
+    // TODO(qinmin): use ConnectionTypeObserver to listen to the network type change.
+    AutoPtr<IConnectivityManager> mConnectivityManager;
+    context->GetSystemService(IContext::CONNECTIVITY_SERVICE, (IInterface**)&mConnectivityManager);
+    if (mConnectivityManager == NULL) {
+        Slogger::W(TAG, "no connectivity manager available");
+        return NULL;
+    }
+
+    AutoPtr<INetworkInfo> info;
+    mConnectivityManager->GetActiveNetworkInfo((INetworkInfo**)&info);
+    if (info == NULL) {
+        Slogger::D(TAG, "no active network");
+        return NULL;
+    }
+
+    Int32 type;
+    info->GetType(&type);
+    AutoPtr<IInteger32> iType;
     assert(0);
-    AutoPtr<Integer> empty;
-    return empty;
+    // TODO
+    // CInteger32::New(type, (IInteger32**)&iType);
+
+    return iType;
 }
 
 String MediaResourceGetter::GetExternalStorageDirectory()
 {
-    // ==================before translated======================
-    // return PathUtils.getExternalStorageDirectory();
-    assert(0);
-    return String("");
+    return PathUtils::GetExternalStorageDirectory();
 }
 
 ECode MediaResourceGetter::Configure(
@@ -322,181 +360,188 @@ ECode MediaResourceGetter::Configure(
     /* [in] */ Int64 offset,
     /* [in] */ Int64 length)
 {
-    // ==================before translated======================
-    // ParcelFileDescriptor parcelFd = ParcelFileDescriptor.adoptFd(fd);
+    AutoPtr<IParcelFileDescriptorHelper> helper;
+    assert(0);
+    // TODO
+    // CParcelFileDescriptorHelper::AcquireSingleton((IParcelFileDescriptorHelper**)&helper);
+    AutoPtr<IParcelFileDescriptor> parcelFd;
+    helper->AdoptFd(fd, (IParcelFileDescriptor**)&parcelFd);
+
     // try {
-    //     mRetriever.setDataSource(parcelFd.getFileDescriptor(),
-    //             offset, length);
+        AutoPtr<IFileDescriptor> fileDescriptor;
+        parcelFd->GetFileDescriptor((IFileDescriptor**)&fileDescriptor);
+        mRetriever->SetDataSource(fileDescriptor,
+                offset, length);
     // } finally {
     //     try {
-    //         parcelFd.close();
+            parcelFd->Close();
     //     } catch (IOException e) {
     //         Log.e(TAG, "Failed to close file descriptor: " + e);
     //     }
     // }
-    assert(0);
+
     return NOERROR;
 }
 
 ECode MediaResourceGetter::Configure(
     /* [in] */ const String& url,
-    /* [in] */ IMap<String, String>* headers)
+    /* [in] */ IMap* headers)
 {
-    VALIDATE_NOT_NULL(headers);
-    // ==================before translated======================
-    // mRetriever.setDataSource(url, headers);
-    assert(0);
+    mRetriever->SetDataSource(url, headers);
     return NOERROR;
 }
 
 ECode MediaResourceGetter::Configure(
     /* [in] */ const String& path)
 {
-    // ==================before translated======================
-    // mRetriever.setDataSource(path);
-    assert(0);
+    mRetriever->SetDataSource(path);
     return NOERROR;
 }
 
 String MediaResourceGetter::ExtractMetadata(
     /* [in] */ Int32 key)
 {
-    // ==================before translated======================
-    // return mRetriever.extractMetadata(key);
-    assert(0);
-    return String("");
+    String Metadata;
+    mRetriever->ExtractMetadata(key, &Metadata);
+    return Metadata;
 }
 
-AutoPtr<MediaMetadata> MediaResourceGetter::ExtractMediaMetadata(
-    /* [in] */ const IContext* context,
+AutoPtr<MediaResourceGetter::MediaMetadata> MediaResourceGetter::ExtractMediaMetadata(
+    /* [in] */ /*const*/ IContext* context,
     /* [in] */ const String& url,
     /* [in] */ const String& cookies,
     /* [in] */ const String& userAgent)
 {
-    // ==================before translated======================
-    // return new MediaResourceGetter().extract(
-    //         context, url, cookies, userAgent);
-    assert(0);
-    AutoPtr<MediaMetadata> empty;
-    return empty;
+    AutoPtr<MediaResourceGetter> getter = new MediaResourceGetter();
+    return getter->Extract(
+             context, url, cookies, userAgent);
 }
 
-AutoPtr<MediaMetadata> MediaResourceGetter::ExtractMediaMetadataFromFd(
+AutoPtr<MediaResourceGetter::MediaMetadata> MediaResourceGetter::ExtractMediaMetadataFromFd(
     /* [in] */ Int32 fd,
     /* [in] */ Int64 offset,
     /* [in] */ Int64 length)
 {
-    // ==================before translated======================
-    // return new MediaResourceGetter().extract(fd, offset, length);
-    assert(0);
-    AutoPtr<MediaMetadata> empty;
-    return empty;
+    AutoPtr<MediaResourceGetter> getter = new MediaResourceGetter();
+    return getter->Extract(fd, offset, length);
 }
 
-AutoPtr<MediaMetadata> MediaResourceGetter::DoExtractMetadata()
+AutoPtr<MediaResourceGetter::MediaMetadata> MediaResourceGetter::DoExtractMetadata()
 {
-    // ==================before translated======================
     // try {
-    //     String durationString = extractMetadata(
-    //             MediaMetadataRetriever.METADATA_KEY_DURATION);
-    //     if (durationString == null) {
-    //         Log.w(TAG, "missing duration metadata");
-    //         return EMPTY_METADATA;
-    //     }
-    //
-    //     int durationMillis = 0;
+        String durationString = ExtractMetadata(
+                IMediaMetadataRetriever::METADATA_KEY_DURATION);
+        if (durationString == NULL) {
+            Slogger::W(TAG, "missing duration metadata");
+            return EMPTY_METADATA;
+        }
+
+        Int32 durationMillis = 0;
     //     try {
-    //         durationMillis = Integer.parseInt(durationString);
+            durationMillis = StringUtils::ParseInt32(durationString);
     //     } catch (NumberFormatException e) {
     //         Log.w(TAG, "non-numeric duration: " + durationString);
     //         return EMPTY_METADATA;
     //     }
     //
-    //     int width = 0;
-    //     int height = 0;
-    //     boolean hasVideo = "yes".equals(extractMetadata(
-    //             MediaMetadataRetriever.METADATA_KEY_HAS_VIDEO));
-    //     Log.d(TAG, (hasVideo ? "resource has video" : "resource doesn't have video"));
-    //     if (hasVideo) {
-    //         String widthString = extractMetadata(
-    //                 MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
-    //         if (widthString == null) {
-    //             Log.w(TAG, "missing video width metadata");
-    //             return EMPTY_METADATA;
-    //         }
+        Int32 width = 0;
+        Int32 height = 0;
+        Boolean hasVideo = String("yes").Equals(ExtractMetadata(
+                IMediaMetadataRetriever::METADATA_KEY_HAS_VIDEO));
+        Slogger::D(TAG, (hasVideo ? "resource has video" : "resource doesn't have video"));
+        if (hasVideo) {
+            String widthString = ExtractMetadata(
+                    IMediaMetadataRetriever::METADATA_KEY_VIDEO_WIDTH);
+            if (widthString == NULL) {
+                Slogger::W(TAG, "missing video width metadata");
+                return EMPTY_METADATA;
+            }
     //         try {
-    //             width = Integer.parseInt(widthString);
+                width = StringUtils::ParseInt32(widthString);
     //         } catch (NumberFormatException e) {
     //             Log.w(TAG, "non-numeric width: " + widthString);
     //             return EMPTY_METADATA;
     //         }
     //
-    //         String heightString = extractMetadata(
-    //                 MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
-    //         if (heightString == null) {
-    //             Log.w(TAG, "missing video height metadata");
-    //             return EMPTY_METADATA;
-    //         }
+            String heightString = ExtractMetadata(
+                    IMediaMetadataRetriever::METADATA_KEY_VIDEO_HEIGHT);
+            if (heightString == NULL) {
+                Slogger::W(TAG, "missing video height metadata");
+                return EMPTY_METADATA;
+            }
     //         try {
-    //             height = Integer.parseInt(heightString);
+                height = StringUtils::ParseInt32(heightString);
     //         } catch (NumberFormatException e) {
     //             Log.w(TAG, "non-numeric height: " + heightString);
     //             return EMPTY_METADATA;
     //         }
-    //     }
-    //     MediaMetadata result = new MediaMetadata(durationMillis, width, height, true);
-    //     Log.d(TAG, "extracted valid metadata: " + result.toString());
-    //     return result;
+        }
+        AutoPtr<MediaMetadata> result = new MediaMetadata(durationMillis, width, height, true);
+        String strLog("extracted valid metadata: ");
+        strLog += result->ToString();
+        Slogger::D(TAG, strLog);
+        return result;
     // } catch (RuntimeException e) {
     //     Log.e(TAG, "Unable to extract medata", e);
     //     return EMPTY_METADATA;
     // }
-    assert(0);
-    AutoPtr<MediaMetadata> empty;
-    return empty;
 }
 
 Boolean MediaResourceGetter::IsLoopbackAddress(
     /* [in] */ const String& host)
 {
-    // ==================before translated======================
-    // return host != null && (host.equalsIgnoreCase("localhost")  // typical hostname
-    //         || host.equals("127.0.0.1")  // typical IP v4 expression
-    //         || host.equals("[::1]"));  // typical IP v6 expression
-    assert(0);
-    return FALSE;
+    return host != NULL && (host.EqualsIgnoreCase("localhost")  // typical hostname
+            || host.Equals("127.0.0.1")  // typical IP v4 expression
+            || host.Equals("[::1]"));  // typical IP v6 expression
 }
 
-AutoPtr< IList<String> > MediaResourceGetter::GetRawAcceptableDirectories()
+AutoPtr<IList> MediaResourceGetter::GetRawAcceptableDirectories()
 {
-    // ==================before translated======================
-    // List<String> result = new ArrayList<String>();
+    AutoPtr<IList> result;
+    assert(0);
+    // TODO
+    // CArrayList::New((IList**)&result);
     // result.add("/mnt/sdcard/");
     // result.add("/sdcard/");
-    // return result;
-    assert(0);
-    AutoPtr< IList<String> > empty;
-    return empty;
+    return result;
 }
 
-AutoPtr< IList<String> > MediaResourceGetter::Canonicalize(
-    /* [in] */ IList<String>* paths)
+AutoPtr<IList> MediaResourceGetter::Canonicalize(
+    /* [in] */ IList* paths)
 {
-    // ==================before translated======================
-    // List<String> result = new ArrayList<String>(paths.size());
+    AutoPtr<IList> result;
+    Int32 size;
+    paths->GetSize(&size);
+    assert(0);
+    // TODO
+    // CArrayList::New(size, (IList**)&result);
+
     // try {
-    //     for (String path : paths) {
-    //         result.add(new File(path).getCanonicalPath());
-    //     }
-    //     return result;
+        AutoPtr<IIterable> iterable = (IIterable*)paths->Probe(EIID_IIterable);
+        AutoPtr<IIterator> iter;
+        paths->GetIterator((IIterator**)&iter);
+        AutoPtr<ICharSequence> pathCS;
+        Boolean bNext;
+        for (iter->HasNext(&bNext); bNext; iter->HasNext(&bNext)) {
+            iter->GetNext((IInterface**)&pathCS);
+            String path;
+            pathCS->ToString(&path);
+            AutoPtr<IFile> file;
+            assert(0);
+            // TODO
+            // CFile::New(path, (IFile**)&file);
+            String pathfile;
+            file->GetCanonicalPath(&pathfile);
+            assert(0);
+            // TODO
+            // result->Add(pathfile);
+        }
+        return result;
     // } catch (IOException e) {
     //     // Canonicalization has failed. Assume malicious, give up.
     //     Log.w(TAG, "canonicalization of file path failed");
     // }
     // return result;
-    assert(0);
-    AutoPtr< IList<String> > empty;
-    return empty;
 }
 
 } // namespace Browser
@@ -504,5 +549,3 @@ AutoPtr< IList<String> > MediaResourceGetter::Canonicalize(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

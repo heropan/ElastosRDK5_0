@@ -9,7 +9,7 @@
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::View::IView;
-using Elastos::Droid::View::IViewTreeObserver;
+using Elastos::Droid::View::IOnPreDrawListener;
 using Elastos::Utility::IArrayList;
 
 namespace Elastos {
@@ -22,20 +22,20 @@ namespace Browser {
   * Used to register listeners that can be notified of changes to the position of a view.
   */
 class ViewPositionObserver
-    : public Object
-    , public PositionObserver
+    : public PositionObserver
 {
 public:
     class InnerViewTreeObserverOnPreDrawListener
         : public Object
-        , public ViewTreeObserver::OnPreDrawListener
+        , public IOnPreDrawListener
     {
     public:
         InnerViewTreeObserverOnPreDrawListener(
             /* [in] */ ViewPositionObserver* owner);
 
         // @Override
-        CARAPI_(Boolean) OnPreDraw();
+        CARAPI OnPreDraw(
+          /* [out] */ Boolean* result);
 
     private:
         ViewPositionObserver* mOwner;
@@ -85,8 +85,9 @@ private:
     AutoPtr<IView> mView;
     // Absolute position of the container view relative to its parent window.
     AutoPtr< ArrayOf<Int32> > mPosition;
-    /*const*/ AutoPtr< IArrayList<Listener> > mListeners;
-    AutoPtr<ViewTreeObserver::OnPreDrawListener> mPreDrawListener;
+    ///*const*/ AutoPtr< IArrayList<Listener> > mListeners;
+    AutoPtr<IArrayList> mListeners;
+    AutoPtr<IOnPreDrawListener> mPreDrawListener;
 };
 
 } // namespace Browser

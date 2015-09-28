@@ -2,15 +2,21 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUPDIALOG_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUPDIALOG_H__
 
-// import android.app.AlertDialog;
-// import android.content.Context;
-// import android.content.DialogInterface;
-// import android.content.res.TypedArray;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::App::IAlertDialog;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IDialogInterface;
+using Elastos::Droid::Content::IDialogInterfaceOnClickListener;
+using Elastos::Droid::Content::IDialogInterfaceOnCancelListener;
+using Elastos::Droid::Content::Res::ITypedArray;
 // import android.util.SparseBooleanArray;
-// import android.view.View;
-// import android.widget.AdapterView;
-// import android.widget.AdapterView.OnItemClickListener;
-// import android.widget.ListView;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::Widget::IAdapterView;
+using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
+using Elastos::Droid::Widget::IListView;
+
+using Elastos::Utility::IList;
 
 // import org.chromium.content.R;
 // import org.chromium.content.browser.ContentViewCore;
@@ -28,8 +34,7 @@ namespace Input {
  * Handles the popup dialog for the <select> HTML tag support.
  */
 class SelectPopupDialog
-    : public Object,
-    , public SelectPopup
+    : public SelectPopup
 {
 private:
     class OkDialogInterfaceOnClickListener
@@ -68,7 +73,7 @@ private:
 
     class InnerAdapterViewOnItemClickListener
         : public Object
-        , public IIAdapterViewOnItemClickListener
+        , public IAdapterViewOnItemClickListener
     {
     public:
         InnerAdapterViewOnItemClickListener(
@@ -79,7 +84,7 @@ private:
             /* [in] */ IAdapterView* parent,
             /* [in] */ IView* v,
             /* [in] */ Int32 position,
-            /* [in] */ Int64 id)
+            /* [in] */ Int64 id);
 
     private:
         SelectPopupDialog* mOwner;
@@ -95,7 +100,7 @@ private:
             /* [in] */ SelectPopupDialog* owner);
 
         CARAPI OnCancel(
-            /* [in] */ IDialogInterface* dialog)
+            /* [in] */ IDialogInterface* dialog);
 
     private:
         SelectPopupDialog* mOwner;
@@ -104,7 +109,7 @@ private:
 public:
     SelectPopupDialog(
         /* [in] */ ContentViewCore* contentViewCore,
-        /* [in] */ List<SelectPopupItem> items,
+        /* [in] */ IList* items,
         /* [in] */ Boolean multiple,
         /* [in] */ ArrayOf<Int32>* selected);
 

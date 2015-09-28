@@ -2,14 +2,21 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DEVICESENSORS_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DEVICESENSORS_H__
 
-// import android.content.Context;
-// import android.hardware.Sensor;
-// import android.hardware.SensorEvent;
-// import android.hardware.SensorEventListener;
-// import android.hardware.SensorManager;
-// import android.os.Handler;
-// import android.os.HandlerThread;
+#include "ext/frameworkext.h"
+
+using Elastos::Core::IThread;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Hardware::ISensor;
+using Elastos::Droid::Hardware::ISensorEvent;
+using Elastos::Droid::Hardware::ISensorEventListener;
+using Elastos::Droid::Hardware::ISensorManager;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IHandlerThread;
 // import android.util.Log;
+
+using Elastos::Utility::ISet;
+using Elastos::Utility::IIterable;
+using Elastos::Utility::Concurrent::ICallable;
 
 // import com.google.common.annotations.VisibleForTesting;
 
@@ -41,7 +48,7 @@ public:
     /**
      * Need the an interface for SensorManager for testing.
      */
-    class SensorManagerProxy
+    class SensorManagerProxy : public Object
     {
     public:
         virtual CARAPI_(Boolean) RegisterListener(
@@ -56,8 +63,7 @@ public:
     };
 
     class SensorManagerProxyImpl
-        : public Object
-        , public SensorManagerProxy
+        : public SensorManagerProxy
     {
     public:
         SensorManagerProxyImpl(
@@ -88,6 +94,8 @@ private:
         InnerCallable(
             /* [in] */ DeviceSensors* owner);
 
+        CAR_INTERFACE_DECL();
+
         CARAPI Call(
             /* [out] */ IInterface** result);
 
@@ -96,6 +104,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Start listening for sensor events. If this object is already listening
      * for events, the old callback is unregistered first.
@@ -201,12 +211,12 @@ public:
     static const Int32 DEVICE_ORIENTATION = 0;
     static const Int32 DEVICE_MOTION = 1;
 
-    static const Set<Integer> DEVICE_ORIENTATION_SENSORS;
+    static /*const*/ AutoPtr<ISet> DEVICE_ORIENTATION_SENSORS;
 
-    static const Set<Integer> DEVICE_MOTION_SENSORS;
+    static /*const*/ AutoPtr<ISet> DEVICE_MOTION_SENSORS;
 
     //@VisibleForTesting
-    const Set<Integer> mActiveSensors;
+    const AutoPtr<ISet> mActiveSensors;
     Boolean mDeviceMotionIsActive;
     Boolean mDeviceOrientationIsActive;
 
@@ -252,12 +262,12 @@ private:
      *                            sensor in sensorTypes could be activated.
      */
     CARAPI_(Boolean) RegisterSensors(
-        /* [in] */ Set<Integer> sensorTypes,
+        /* [in] */ ISet* sensorTypes,
         /* [in] */ Int32 rateInMilliseconds,
         /* [in] */ Boolean failOnMissingSensor);
 
     CARAPI_(void) UnregisterSensors(
-        /* [in] */ Iterable<Integer> sensorTypes);
+        /* [in] */ IIterable* sensorTypes);
 
     CARAPI_(Boolean) RegisterForSensorType(
         /* [in] */ Int32 type,
@@ -317,14 +327,14 @@ private:
     const AutoPtr<IContext> mAppContext;
 
     // The lock to access the mHandler.
-    const Object mHandlerLock;
+    /*const*/ Object mHandlerLock;
 
     // Non-zero if and only if we're listening for events.
     // To avoid race conditions on the C++ side, access must be synchronized.
     Int64 mNativePtr;
 
     // The lock to access the mNativePtr.
-    const Object mNativePtrLock;
+    /*const*/ Object mNativePtrLock;
 
     // Holds a shortened version of the rotation vector for compatibility purposes.
     AutoPtr< ArrayOf<Float> > mTruncatedRotationVector;

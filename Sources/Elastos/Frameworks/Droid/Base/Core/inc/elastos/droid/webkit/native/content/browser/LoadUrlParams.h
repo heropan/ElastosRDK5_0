@@ -9,6 +9,7 @@
 #include "ext/frameworkext.h"
 #include "webkit/native/content_public/Referrer.h"
 
+using Elastos::Utility::IMap;
 using Elastos::Droid::Webkit::Content_Public::Referrer;
 
 // import org.chromium.base.CalledByNative;
@@ -176,13 +177,13 @@ public:
       * @param extraHeaders Extra HTTP headers for this load. Note that these
       *                     headers will never overwrite existing ones set by Chromium.
       */
-//    virtual CARAPI SetExtraHeaders(
-//        /* [in] */ IMap<String, String>* extraHeaders);
+    virtual CARAPI SetExtraHeaders(
+        /* [in] */ IMap* extraHeaders);
 
     /**
       * Return the extra headers as a map.
       */
-//    virtual CARAPI_(AutoPtr< IMap<String, String> >) GetExtraHeaders();
+    virtual CARAPI_(AutoPtr<IMap>) GetExtraHeaders();
 
     /**
       * Return the extra headers as a single String separated by "\n", or null if no extra header is
@@ -322,7 +323,7 @@ public:
     Boolean mIsRendererInitiated;
 
 private:
-//    AutoPtr< IMap<String, String> > mExtraHeaders;
+    AutoPtr<IMap> mExtraHeaders;
     String mVerbatimHeaders;
 };
 

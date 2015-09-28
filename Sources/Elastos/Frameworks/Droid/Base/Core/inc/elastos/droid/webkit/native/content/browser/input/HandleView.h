@@ -38,7 +38,8 @@ namespace Input {
  * hierarchy.
  *
  */
-class HandleView //: public View
+class HandleView : public Object
+    //: public View
 {
 private:
     class InnerListener

@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "NavigationEntry.h"
+#include "webkit/native/content/browser/NavigationEntry.h"
 
 namespace Elastos {
 namespace Droid {
@@ -11,64 +10,6 @@ namespace Browser {
 //=====================================================================
 //                           NavigationEntry
 //=====================================================================
-Int32 NavigationEntry::GetIndex()
-{
-    // ==================before translated======================
-    // return mIndex;
-    assert(0);
-    return 0;
-}
-
-String NavigationEntry::GetUrl()
-{
-    // ==================before translated======================
-    // return mUrl;
-    assert(0);
-    return String("");
-}
-
-String NavigationEntry::GetVirtualUrl()
-{
-    // ==================before translated======================
-    // return mVirtualUrl;
-    assert(0);
-    return String("");
-}
-
-String NavigationEntry::GetOriginalUrl()
-{
-    // ==================before translated======================
-    // return mOriginalUrl;
-    assert(0);
-    return String("");
-}
-
-String NavigationEntry::GetTitle()
-{
-    // ==================before translated======================
-    // return mTitle;
-    assert(0);
-    return String("");
-}
-
-AutoPtr<IBitmap> NavigationEntry::GetFavicon()
-{
-    // ==================before translated======================
-    // return mFavicon;
-    assert(0);
-    AutoPtr<IBitmap> empty;
-    return empty;
-}
-
-ECode NavigationEntry::UpdateFavicon(
-    /* [in] */ IBitmap* favicon)
-{
-    VALIDATE_NOT_NULL(favicon);
-    // ==================before translated======================
-    // mFavicon = favicon;
-    assert(0);
-    return NOERROR;
-}
 
 NavigationEntry::NavigationEntry(
     /* [in] */ Int32 index,
@@ -77,14 +18,50 @@ NavigationEntry::NavigationEntry(
     /* [in] */ const String& originalUrl,
     /* [in] */ const String& title,
     /* [in] */ IBitmap* favicon)
+    : mIndex(index)
+    , mUrl(url)
+    , mVirtualUrl(virtualUrl)
+    , mOriginalUrl(originalUrl)
+    , mTitle(title)
+    , mFavicon(favicon)
 {
-    // ==================before translated======================
-    // mIndex = index;
-    // mUrl = url;
-    // mVirtualUrl = virtualUrl;
-    // mOriginalUrl = originalUrl;
-    // mTitle = title;
-    // mFavicon = favicon;
+}
+
+Int32 NavigationEntry::GetIndex()
+{
+    return mIndex;
+}
+
+String NavigationEntry::GetUrl()
+{
+    return mUrl;
+}
+
+String NavigationEntry::GetVirtualUrl()
+{
+    return mVirtualUrl;
+}
+
+String NavigationEntry::GetOriginalUrl()
+{
+    return mOriginalUrl;
+}
+
+String NavigationEntry::GetTitle()
+{
+    return mTitle;
+}
+
+AutoPtr<IBitmap> NavigationEntry::GetFavicon()
+{
+    return mFavicon;
+}
+
+ECode NavigationEntry::UpdateFavicon(
+    /* [in] */ IBitmap* favicon)
+{
+    mFavicon = favicon;
+    return NOERROR;
 }
 
 } // namespace Browser
@@ -92,5 +69,3 @@ NavigationEntry::NavigationEntry(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

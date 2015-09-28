@@ -1,4 +1,9 @@
 
+#include "webkit/native/content/browser/ContentViewStatics.h"
+//TODO #include "webkit/native/net/ProxyChangeListener.h"
+
+//TODO using Elastos::Droid::Webkit::Net::ProxyChangeListener;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -22,7 +27,7 @@ String ContentViewStatics::FindAddress(
 
     String result = NativeFindAddress(addr);
 
-    return result == NULL || result.IsEmpty() ? NULL : result;
+    return result == NULL || result.IsEmpty() ? String(NULL) : result;
 }
 
 /**
@@ -44,7 +49,9 @@ void ContentViewStatics::SetWebKitSharedTimersSuspended(
  */
 void ContentViewStatics::EnablePlatformNotifications()
 {
-    ProxyChangeListener::SetEnabled(TRUE);
+    assert(0);
+    // TODO
+    // ProxyChangeListener::SetEnabled(TRUE);
 }
 
 /**
@@ -53,7 +60,9 @@ void ContentViewStatics::EnablePlatformNotifications()
  */
 void ContentViewStatics::DisablePlatformNotifications ()
 {
-    ProxyChangeListener::SetEnabled(FALSE);
+    assert(0);
+    // TODO
+    // ProxyChangeListener::SetEnabled(FALSE);
 }
 
 // Native functions

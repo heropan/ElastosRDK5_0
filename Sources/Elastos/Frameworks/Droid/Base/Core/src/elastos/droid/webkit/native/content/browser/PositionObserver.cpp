@@ -11,5 +11,3 @@ namespace Browser {
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

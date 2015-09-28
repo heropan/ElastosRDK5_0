@@ -23,13 +23,14 @@ namespace Input {
  * CursorController for selecting a range of text.
  */
 class SelectionHandleController
-    //: public Object
     : public CursorController
 {
 public:
     SelectionHandleController(
         /* [in] */ IView* parent,
         /* [in] */ PositionObserver* positionObserver);
+
+    CAR_INTERFACE_DECL();
 
     /** Automatically show selection anchors when text is selected. */
     CARAPI_(void) AllowAutomaticShowing();

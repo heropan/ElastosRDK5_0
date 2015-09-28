@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWSTATICS_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWSTATICS_H__
 
+#include "ext/frameworkdef.h"
+
 // import org.chromium.net.ProxyChangeListener;
 
 namespace Elastos {

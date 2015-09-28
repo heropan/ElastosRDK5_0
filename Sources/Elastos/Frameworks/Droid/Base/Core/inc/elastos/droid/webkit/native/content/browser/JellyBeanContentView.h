@@ -25,9 +25,7 @@ class ContentViewCore;
 /**
   * A version of {@link ContentView} that supports JellyBean features.
   */
-class JellyBeanContentView
-    : public Object
-    , public ContentView
+class JellyBeanContentView : public ContentView
 {
 public:
     JellyBeanContentView(

@@ -1,6 +1,7 @@
 // wuweizuo automatic build .cpp file from .java file.
 
-#include "JellyBeanContentView.h"
+#include "webkit/native/content/browser/ContentViewCore.h"
+#include "webkit/native/content/browser/JellyBeanContentView.h"
 
 namespace Elastos {
 namespace Droid {
@@ -14,37 +15,35 @@ namespace Browser {
 JellyBeanContentView::JellyBeanContentView(
     /* [in] */ IContext* context,
     /* [in] */ ContentViewCore* cvc)
+    : ContentView(context, cvc)
 {
-    // ==================before translated======================
-    // super(context, cvc);
 }
 
 Boolean JellyBeanContentView::PerformAccessibilityAction(
     /* [in] */ Int32 action,
     /* [in] */ IBundle* arguments)
 {
-    // ==================before translated======================
-    // if (mContentViewCore.supportsAccessibilityAction(action)) {
-    //     return mContentViewCore.performAccessibilityAction(action, arguments);
-    // }
-    //
-    // return super.performAccessibilityAction(action, arguments);
+    if (mContentViewCore->SupportsAccessibilityAction(action)) {
+        return mContentViewCore->PerformAccessibilityAction(action, arguments);
+    }
+
     assert(0);
+    // TODO
+    // return ContentView::PerformAccessibilityAction(action, arguments);
     return FALSE;
 }
 
 AutoPtr<IAccessibilityNodeProvider> JellyBeanContentView::GetAccessibilityNodeProvider()
 {
-    // ==================before translated======================
-    // AccessibilityNodeProvider provider = mContentViewCore.getAccessibilityNodeProvider();
-    // if (provider != null) {
-    //     return provider;
-    // } else {
-    //     return super.getAccessibilityNodeProvider();
-    // }
-    assert(0);
-    AutoPtr<IAccessibilityNodeProvider> empty;
-    return empty;
+    AutoPtr<IAccessibilityNodeProvider> provider = mContentViewCore->GetAccessibilityNodeProvider();
+    if (provider != NULL) {
+        return provider;
+    } else {
+        assert(0);
+        // TODO
+        // return ContentView::GetAccessibilityNodeProvider();
+        return NULL;
+    }
 }
 
 } // namespace Browser
@@ -52,5 +51,3 @@ AutoPtr<IAccessibilityNodeProvider> JellyBeanContentView::GetAccessibilityNodePr
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

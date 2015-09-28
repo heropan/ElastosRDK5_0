@@ -24,13 +24,13 @@ namespace Browser {
  * A class for reading back content.
  */
 //@JNINamespace("content")
-class ContentReadbackHandler
+class ContentReadbackHandler : public Object
 {
 public:
     /**
      * A callback interface for content readback into a bitmap.
      */
-    class GetBitmapCallback
+    class GetBitmapCallback : public Object
     {
     public:
         /**

@@ -2,7 +2,10 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUPITEM_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUPITEM_H__
 
-// import org.chromium.ui.DropdownItem;
+#include "ext/frameworkext.h"
+#include "webkit/native/ui/DropdownItem.h"
+
+using Elastos::Droid::Webkit::Ui::DropdownItem;
 
 namespace Elastos {
 namespace Droid {
@@ -16,7 +19,7 @@ namespace Input {
  * of an item belonging to a select popup dialog.
  */
 class SelectPopupItem
-    : public Object,
+    : public Object
     , public DropdownItem
 {
 public:

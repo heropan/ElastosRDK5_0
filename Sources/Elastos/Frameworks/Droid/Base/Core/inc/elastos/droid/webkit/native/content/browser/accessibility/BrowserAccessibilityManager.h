@@ -5,6 +5,7 @@
 #include "ext/frameworkext.h"
 #include "os/Build.h"
 
+using Elastos::Utility::IList;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Os::Build;
@@ -49,7 +50,7 @@ namespace Accessibility {
  * accessibility.
  */
 //@JNINamespace("content")
-class BrowserAccessibilityManager
+class BrowserAccessibilityManager : public Object
 {
 public:
     /**
@@ -84,9 +85,9 @@ protected:
     /**
      * @see AccessibilityNodeProvider#findAccessibilityNodeInfosByText(String, int)
      */
-//    virtual CARAPI_(List<AccessibilityNodeInfo>) FindAccessibilityNodeInfosByText(
-//        /* [in] */ const String& text,
-//        /* [in] */ Int32 virtualViewId);
+    virtual CARAPI_(AutoPtr<IList>) FindAccessibilityNodeInfosByText(
+        /* [in] */ String text,
+        /* [in] */ Int32 virtualViewId);
 
     /**
      * @see AccessibilityNodeProvider#performAction(int, int, Bundle)

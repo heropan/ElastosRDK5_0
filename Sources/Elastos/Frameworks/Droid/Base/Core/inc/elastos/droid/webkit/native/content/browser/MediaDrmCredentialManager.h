@@ -8,10 +8,6 @@
 
 #include "ext/frameworkext.h"
 
-// package org.chromium.content.browser;
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {

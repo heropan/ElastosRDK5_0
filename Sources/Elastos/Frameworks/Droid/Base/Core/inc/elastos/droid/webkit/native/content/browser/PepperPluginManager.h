@@ -38,7 +38,7 @@ public:
       * @return        Description string for plugins
       */
     static CARAPI_(String) GetPlugins(
-        /* [in] */ const IContext* context);
+        /* [in] */ /*const*/ IContext* context);
 
 private:
     static CARAPI_(String) GetPluginDescription(

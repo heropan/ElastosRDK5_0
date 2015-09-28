@@ -17,10 +17,10 @@ namespace Browser {
 /**
   * Used to register listeners that can be notified of changes to the position of a view.
   */
-class PositionObserver
+class PositionObserver : public Object
 {
 public:
-    class Listener
+    class Listener : public Object
     {
     public:
         /**

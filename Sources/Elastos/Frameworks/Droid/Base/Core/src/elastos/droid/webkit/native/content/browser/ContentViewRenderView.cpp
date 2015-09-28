@@ -1,4 +1,14 @@
 
+#include "webkit/native/content/browser/ContentViewRenderView.h"
+//TODO #include "view/CSurfaceView.h"
+//TODO #include "webkit/native/ui/base/WindowAndroid.h"
+//TODO #include "widget/CFrameLayoutLayoutParams.h"
+
+using Elastos::Droid::View::EIID_IView;
+//TODO using Elastos::Droid::View::CSurfaceView;
+using Elastos::Droid::Widget::IFrameLayoutLayoutParams;
+//TODO using Elastos::Droid::Widget::CFrameLayoutLayoutParams;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -24,14 +34,14 @@ ECode ContentViewRenderView::InnerSurfaceHolderCallback::SurfaceChanged(
 {
     VALIDATE_NOT_NULL(holder);
 
-    assert(mNativeContentViewRenderView != 0);
+    assert(mOwner->mNativeContentViewRenderView != 0);
 
     AutoPtr<ISurface> surface;
     holder->GetSurface((ISurface**)&surface);
-    NativeSurfaceChanged(mNativeContentViewRenderView,
+    mOwner->NativeSurfaceChanged(mOwner->mNativeContentViewRenderView,
             format, width, height, surface);
-    if (mContentViewCore != NULL) {
-        mContentViewCore->OnPhysicalBackingSizeChanged(
+    if (mOwner->mContentViewCore != NULL) {
+        mOwner->mContentViewCore->OnPhysicalBackingSizeChanged(
                 width, height);
     }
 
@@ -44,10 +54,10 @@ ECode ContentViewRenderView::InnerSurfaceHolderCallback::SurfaceCreated(
 {
     VALIDATE_NOT_NULL(holder);
 
-    assert(mNativeContentViewRenderView != 0);
-    NativeSurfaceCreated(mNativeContentViewRenderView);
+    assert(mOwner->mNativeContentViewRenderView != 0);
+    mOwner->NativeSurfaceCreated(mOwner->mNativeContentViewRenderView);
 
-    OnReadyToRender();
+    mOwner->OnReadyToRender();
 
     return NOERROR;
 }
@@ -58,8 +68,8 @@ ECode ContentViewRenderView::InnerSurfaceHolderCallback::SurfaceDestroyed(
 {
     VALIDATE_NOT_NULL(holder);
 
-    assert(mNativeContentViewRenderView != 0);
-    NativeSurfaceDestroyed(mNativeContentViewRenderView);
+    assert(mOwner->mNativeContentViewRenderView != 0);
+    mOwner->NativeSurfaceDestroyed(mOwner->mNativeContentViewRenderView);
 
     return NOERROR;
 }
@@ -92,7 +102,8 @@ ContentViewRenderView::InnerRunnable::InnerRunnable(
 
 ECode ContentViewRenderView::InnerRunnable::Run()
 {
-    mOwner->mSurfaceView->SetBackgroundResource(0);
+    AutoPtr<IView> view = (IView*)mOwner->mSurfaceView->Probe(EIID_IView);
+    view->SetBackgroundResource(0);
     return NOERROR;
 }
 
@@ -111,19 +122,21 @@ ContentViewRenderView::ContentViewRenderView(
     /* [in] */ IContext* context)
     : mNativeContentViewRenderView(0)
 {
-    super(context);
+    assert(0);
+    // TODO
+    // super(context);
 
-    mSurfaceView = CreateSurfaceView(GetContext());
-    mSurfaceView->SetZOrderMediaOverlay(TRUE);
+    // mSurfaceView = CreateSurfaceView(GetContext());
+    // mSurfaceView->SetZOrderMediaOverlay(TRUE);
 
-    SetSurfaceViewBackgroundColor(IColor::WHITE);
-    AutoPtr<IFrameLayoutLayoutParams> param;
-    CFrameLayoutLayoutParams::New(
-                    IFrameLayoutLayoutParams::MATCH_PARENT,
-                    IFrameLayoutLayoutParams::MATCH_PARENT,
-                    (IFrameLayoutLayoutParams**)&param);
-    AddView(mSurfaceView, param);
-    mSurfaceView->SetVisibility(GONE);
+    // SetSurfaceViewBackgroundColor(IColor::WHITE);
+    // AutoPtr<IFrameLayoutLayoutParams> param;
+    // CFrameLayoutLayoutParams::New(
+    //                 IFrameLayoutLayoutParams::MATCH_PARENT,
+    //                 IFrameLayoutLayoutParams::MATCH_PARENT,
+    //                 (IFrameLayoutLayoutParams**)&param);
+    // AddView(mSurfaceView, param);
+    // mSurfaceView->SetVisibility(GONE);
 }
 
 /**
@@ -134,17 +147,20 @@ ContentViewRenderView::ContentViewRenderView(
 void ContentViewRenderView::OnNativeLibraryLoaded(
     /* [in] */ WindowAndroid* rootWindow)
 {
-    assert !mSurfaceView.getHolder().getSurface().isValid() :
-            "Surface created before native library loaded.";
+//    assert !mSurfaceView.getHolder().getSurface().isValid() :
+//            "Surface created before native library loaded.";
     assert(rootWindow != NULL);
 
-    mNativeContentViewRenderView = NativeInit(rootWindow->GetNativePointer());
+    assert(0);
+    // TODO
+    // mNativeContentViewRenderView = NativeInit(rootWindow->GetNativePointer());
     assert(mNativeContentViewRenderView != 0);
     mSurfaceCallback = new InnerSurfaceHolderCallback(this);
     AutoPtr<ISurfaceHolder> surfaceHolder;
     mSurfaceView->GetHolder((ISurfaceHolder**)&surfaceHolder);
     surfaceHolder->AddCallback(mSurfaceCallback);
-    mSurfaceView->SetVisibility(VISIBLE);
+    AutoPtr<IView> view = (IView*)mSurfaceView->Probe(EIID_IView);
+    view->SetVisibility(IView::VISIBLE);
 
     mContentReadbackHandler = new InnerContentReadbackHandler(this);
 
@@ -169,7 +185,8 @@ void ContentViewRenderView::SetSurfaceViewBackgroundColor(
     /* [in] */ Int32 color)
 {
     if (mSurfaceView != NULL) {
-        mSurfaceView->SetBackgroundColor(color);
+        AutoPtr<IView> view = (IView*)mSurfaceView->Probe(EIID_IView);
+        view->SetBackgroundColor(color);
     }
 }
 
@@ -195,7 +212,9 @@ void ContentViewRenderView::SetCurrentContentViewCore(
     mContentViewCore = contentViewCore;
 
     if (mContentViewCore != NULL) {
-        mContentViewCore->OnPhysicalBackingSizeChanged(GetWidth(), GetHeight());
+        assert(0);
+        // TODO
+        // mContentViewCore->OnPhysicalBackingSizeChanged(GetWidth(), GetHeight());
         NativeSetCurrentContentViewCore(mNativeContentViewRenderView,
                                         mContentViewCore->GetNativeContentViewCore());
     }
@@ -221,7 +240,11 @@ void ContentViewRenderView::OnReadyToRender()
 AutoPtr<ISurfaceView> ContentViewRenderView::CreateSurfaceView(
     /* [in] */ IContext* context)
 {
-    return new SurfaceView(context);
+    AutoPtr<ISurfaceView> view;
+    assert(0);
+    // TODO
+    // CSurfaceView::New((ISurfaceView**)&view);
+    return view;
 }
 
 /**
@@ -243,7 +266,7 @@ Boolean ContentViewRenderView::IsInitialized()
 void ContentViewRenderView::SetOverlayVideoMode(
     /* [in] */ Boolean enabled)
 {
-    Int32 format = enabled ? PixelFormat.TRANSLUCENT : PixelFormat.OPAQUE;
+    Int32 format = enabled ? IPixelFormat::TRANSLUCENT : IPixelFormat::OPAQUE;
     AutoPtr<ISurfaceHolder> holder;
     mSurfaceView->GetHolder((ISurfaceHolder**)&holder);
     holder->SetFormat(format);
@@ -269,10 +292,13 @@ void ContentViewRenderView::OnCompositorLayout()
 void ContentViewRenderView::OnSwapBuffersCompleted()
 {
     AutoPtr<IDrawable> draw;
-    mSurfaceView->GetBackground((IDrawable**)&draw);
+    AutoPtr<IView> view = (IView*)mSurfaceView->Probe(EIID_IView);
+    view->GetBackground((IDrawable**)&draw);
     if (draw != NULL) {
         AutoPtr<IRunnable> runnable = new InnerRunnable(this);
-        Post(runnable);
+        assert(0);
+        // TODO
+        // Post(runnable);
     }
 }
 

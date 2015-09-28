@@ -2,7 +2,9 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DEVICEUTILS_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DEVICEUTILS_H__
 
-// import android.content.Context;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::Content::IContext;
 
 // import org.chromium.base.CommandLine;
 // import org.chromium.content.common.ContentSwitches;

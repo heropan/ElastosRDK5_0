@@ -1,6 +1,11 @@
 
 #include "webkit/native/content/browser/ContentVideoViewLegacy.h"
 
+using Elastos::Droid::View::EIID_IViewOnKeyListener;
+using Elastos::Droid::View::EIID_IViewOnTouchListener;
+using Elastos::Droid::Media::Session::EIID_IMediaController;
+using Elastos::Droid::Widget::EIID_IMediaPlayerControl;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
