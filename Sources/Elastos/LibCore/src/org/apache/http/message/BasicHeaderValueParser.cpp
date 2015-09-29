@@ -6,8 +6,12 @@
 #include "CParserCursor.h"
 #include "CBasicNameValuePair.h"
 #include "HTTP.h"
-#include <elastos/Logger.h>
+#include "elastos/core/CArrayOf.h"
+#include "elastos/utility/CArrayList.h"
+#include "Logger.h"
 
+using Elastos::Core::IArrayOf;
+using Elastos::Core::CArrayOf;
 using Elastos::Utility::IList;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
@@ -27,21 +31,22 @@ static AutoPtr<IBasicHeaderValueParser> InitDefault()
     return (IBasicHeaderValueParser*)parser.Get();
 }
 const AutoPtr<IBasicHeaderValueParser> BasicHeaderValueParser::DEFAULT = InitDefault();
-const Char32 BasicHeaderValueParser::PARAM_DELIMITER = ';';
-const Char32 BasicHeaderValueParser::ELEM_DELIMITER = ',';
+const Char32 BasicHeaderValueParser::PARAM_DELIMITER;
+const Char32 BasicHeaderValueParser::ELEM_DELIMITER;
 
-static AutoPtr< ArrayOf<Char32> > InitDelimiters()
+AutoPtr< ArrayOf<Char32> > BasicHeaderValueParser::InitDelimiters()
 {
     AutoPtr< ArrayOf<Char32> > delimiters = ArrayOf<Char32>::Alloc(2);
     (*delimiters)[0] = BasicHeaderValueParser::PARAM_DELIMITER;
     (*delimiters)[1] = BasicHeaderValueParser::ELEM_DELIMITER;
+    return delimiters;
 }
 const AutoPtr< ArrayOf<Char32> > BasicHeaderValueParser::ALL_DELIMITERS = InitDelimiters();
 
 CAR_INTERFACE_IMPL_2(BasicHeaderValueParser, Object, IBasicHeaderValueParser, IHeaderValueParser)
 
 ECode BasicHeaderValueParser::ParseElements(
-    /* [in] */ cosnt String& value,
+    /* [in] */ const String& value,
     /* [in] */ IHeaderValueParser* parser,
     /* [out] */ ArrayOf<IHeaderElement*>** elements)
 {
@@ -53,8 +58,9 @@ ECode BasicHeaderValueParser::ParseElements(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    if (parser == NULL)
-        parser = BasicHeaderValueParser::DEFAULT;
+    if (parser == NULL) {
+        parser = IHeaderValueParser::Probe(BasicHeaderValueParser::DEFAULT);
+    }
 
     AutoPtr<CCharArrayBuffer> buffer;
     CCharArrayBuffer::NewByFriend(value.GetLength(), (CCharArrayBuffer**)&buffer);
@@ -69,7 +75,7 @@ ECode BasicHeaderValueParser::ParseElements(
     /* [in] */ IParserCursor* cursor,
     /* [out, callee] */ ArrayOf<IHeaderElement*>** _elements)
 {
-    VALIDATE_NOT_NULL(elements)
+    VALIDATE_NOT_NULL(_elements)
     *_elements = NULL;
 
     if (buffer == NULL) {
@@ -91,7 +97,7 @@ ECode BasicHeaderValueParser::ParseElements(
         String name;
         element->GetName(&name);
         String value;
-        if (!(name.GetLength() == 0 && (element->GetValue(&value), value,IsNull()))) {
+        if (!(name.GetLength() == 0 && (element->GetValue(&value), value.IsNull()))) {
             elements->Add(element);
         }
     }
@@ -99,8 +105,8 @@ ECode BasicHeaderValueParser::ParseElements(
     elements->GetSize(&size);
     AutoPtr< ArrayOf<IInterface*> > array = ArrayOf<IInterface*>::Alloc(size);
     AutoPtr< ArrayOf<IInterface*> > out;
-    elements->ToArray(array, (AutoPtr< ArrayOf<IInterface*> >**)&out);
-    ArrayOf<IHeaderElement*> elems = ArrayOf<IHeaderElement*>::Alloc(out->GetLength());
+    elements->ToArray(array, (ArrayOf<IInterface*>**)&out);
+    AutoPtr< ArrayOf<IHeaderElement*> > elems = ArrayOf<IHeaderElement*>::Alloc(out->GetLength());
     for (Int32 i = 0; i < out->GetLength(); ++i) {
         elems->Set(i, IHeaderElement::Probe((*out)[i]));
     }
@@ -110,7 +116,7 @@ ECode BasicHeaderValueParser::ParseElements(
 }
 
 ECode BasicHeaderValueParser::ParseHeaderElement(
-    /* [in] */ cosnt String& value,
+    /* [in] */ const String& value,
     /* [in] */ IHeaderValueParser* parser,
     /* [out] */ IHeaderElement** element)
 {
@@ -122,8 +128,9 @@ ECode BasicHeaderValueParser::ParseHeaderElement(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    if (parser == NULL)
-        parser = BasicHeaderValueParser::DEFAULT;
+    if (parser == NULL) {
+        parser = IHeaderValueParser::Probe(BasicHeaderValueParser::DEFAULT);
+    }
 
     AutoPtr<CCharArrayBuffer> buffer;
     CCharArrayBuffer::NewByFriend(value.GetLength(), (CCharArrayBuffer**)&buffer);
@@ -158,7 +165,7 @@ ECode BasicHeaderValueParser::ParseHeaderElement(
         Int32 pos;
         cursor->GetPos(&pos);
         Char32 ch;
-        buffer->GetChar(pos - 1, &ch);
+        buffer->CharAt(pos - 1, &ch);
         if (ch != ELEM_DELIMITER) {
             ParseParameters(buffer, cursor, (ArrayOf<INameValuePair*>**)&params);
         }
@@ -170,17 +177,22 @@ ECode BasicHeaderValueParser::ParseHeaderElement(
 }
 
 ECode BasicHeaderValueParser::CreateHeaderElement(
-    /* [in] */ cosnt String& name,
-    /* [in] */ cosnt String& value,
+    /* [in] */ const String& name,
+    /* [in] */ const String& value,
     /* [in] */ ArrayOf<INameValuePair*>* params,
     /* [out] */ IHeaderElement** element)
 {
     VALIDATE_NOT_NULL(element)
-    return CBasicHeaderElement::New(name, value, params, element);
+    AutoPtr<IArrayOf> pairs;
+    CArrayOf::New(EIID_INameValuePair, params->GetLength(), (IArrayOf**)&pairs);
+    for (Int32 i = 0; i < params->GetLength(); ++i) {
+        pairs->Set(i, (*params)[i]);
+    }
+    return CBasicHeaderElement::New(name, value, pairs, element);
 }
 
 ECode BasicHeaderValueParser::ParseParameters(
-    /* [in] */ cosnt String& value,
+    /* [in] */ const String& value,
     /* [in] */ IHeaderValueParser* parser,
     /* [out] */ ArrayOf<INameValuePair*>** elements)
 {
@@ -192,8 +204,9 @@ ECode BasicHeaderValueParser::ParseParameters(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    if (parser == NULL)
-        parser = BasicHeaderValueParser::DEFAULT;
+    if (parser == NULL) {
+        parser = IHeaderValueParser::Probe(BasicHeaderValueParser::DEFAULT);
+    }
 
     AutoPtr<CCharArrayBuffer> buffer;
     CCharArrayBuffer::NewByFriend(value.GetLength(), (CCharArrayBuffer**)&buffer);
@@ -226,7 +239,7 @@ ECode BasicHeaderValueParser::ParseParameters(
 
     while (pos < indexTo) {
         Char32 ch;
-        buffer->GetChar(pos, &ch);
+        buffer->CharAt(pos, &ch);
         if (HTTP::IsWhitespace(ch)) {
             pos++;
         }
@@ -252,7 +265,7 @@ ECode BasicHeaderValueParser::ParseParameters(
         Int32 position;
         cursor->GetPos(&position);
         Char32 ch;
-        buffer->GetChar(position - 1, &ch);
+        buffer->CharAt(position - 1, &ch);
         if (ch == ELEM_DELIMITER) {
             break;
         }
@@ -260,10 +273,10 @@ ECode BasicHeaderValueParser::ParseParameters(
 
     Int32 size;
     params->GetSize(&size);
-    AutoPtr< ArrayOf<IInterface> > in = ArrayOf<IInterface>::Alloc(size);
-    AutoPtr< ArrayOf<IInterface> > out;
-    params->ToArray(in, (ArrayOf<IInterface>**)&out);
-    ArrayOf<INameValuePair*> pairs = ArrayOf<INameValuePair*>::Alloc(out->GetLength());
+    AutoPtr< ArrayOf<IInterface*> > in = ArrayOf<IInterface*>::Alloc(size);
+    AutoPtr< ArrayOf<IInterface*> > out;
+    params->ToArray(in, (ArrayOf<IInterface*>**)&out);
+    AutoPtr< ArrayOf<INameValuePair*> > pairs = ArrayOf<INameValuePair*>::Alloc(out->GetLength());
     for (Int32 i = 0; i < out->GetLength(); ++i) {
         pairs->Set(i, INameValuePair::Probe((*out)[i]));
     }
@@ -273,9 +286,9 @@ ECode BasicHeaderValueParser::ParseParameters(
 }
 
 ECode BasicHeaderValueParser::ParseNameValuePair(
-    /* [in] */ cosnt String& value,
+    /* [in] */ const String& value,
     /* [in] */ IHeaderValueParser* parser,
-    /* [out] */ INameValuePair* pair)
+    /* [out] */ INameValuePair** pair)
 {
     VALIDATE_NOT_NULL(pair)
     *pair = NULL;
@@ -285,8 +298,9 @@ ECode BasicHeaderValueParser::ParseNameValuePair(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    if (parser == NULL)
-        parser = BasicHeaderValueParser::DEFAULT;
+    if (parser == NULL) {
+        parser = IHeaderValueParser::Probe(BasicHeaderValueParser::DEFAULT);
+    }
 
     AutoPtr<CCharArrayBuffer> buffer;
     CCharArrayBuffer::NewByFriend(value.GetLength(), (CCharArrayBuffer**)&buffer);
@@ -299,7 +313,7 @@ ECode BasicHeaderValueParser::ParseNameValuePair(
 ECode BasicHeaderValueParser::ParseNameValuePair(
     /* [in] */ ICharArrayBuffer* buffer,
     /* [in] */ IParserCursor* cursor,
-    /* [out] */ INameValuePair* pair)
+    /* [out] */ INameValuePair** pair)
 {
     VALIDATE_NOT_NULL(pair)
     return ParseNameValuePair(buffer, cursor, ALL_DELIMITERS, pair);
@@ -348,7 +362,7 @@ ECode BasicHeaderValueParser::ParseNameValuePair(
     String name = String(NULL);
     while (pos < indexTo) {
         Char32 ch;
-        buffer->GetChar(pos, &ch);
+        buffer->CharAt(pos, &ch);
         if (ch == '=') {
             break;
         }
@@ -381,7 +395,7 @@ ECode BasicHeaderValueParser::ParseNameValuePair(
     Boolean escaped = FALSE;
     while (pos < indexTo) {
         Char32 ch;
-        buffer->GetChar(pos, &ch);
+        buffer->CharAt(pos, &ch);
         if (ch == '"' && !escaped) {
             qouted = !qouted;
         }
@@ -401,22 +415,22 @@ ECode BasicHeaderValueParser::ParseNameValuePair(
     Int32 i2 = pos;
     // Trim leading white spaces
     Char32 c;
-    while (i1 < i2 && (buffer->GetChar(i1, &c), HTTP::IsWhitespace(c))) {
+    while (i1 < i2 && (buffer->CharAt(i1, &c), HTTP::IsWhitespace(c))) {
         i1++;
     }
     // Trim trailing white spaces
-    while ((i2 > i1) && (buffer->GetChar(i2 - 1, &c), HTTP::IsWhitespace(c))) {
+    while ((i2 > i1) && (buffer->CharAt(i2 - 1, &c), HTTP::IsWhitespace(c))) {
         i2--;
     }
     // Strip away quotes if necessary
     Char32 c1, c2;
     if (((i2 - i1) >= 2)
-        && (buffer->GetChar(i1, &c1), c1 == '"')
-        && (buffer->GetCharAt(i2 - 1, &c2), c2 == '"')) {
+        && (buffer->CharAt(i1, &c1), c1 == '"')
+        && (buffer->CharAt(i2 - 1, &c2), c2 == '"')) {
         i1++;
         i2--;
     }
-    buffe->Substring(i1, i2, &value);
+    buffer->Substring(i1, i2, &value);
     if (terminated) {
         pos++;
     }
@@ -425,8 +439,8 @@ ECode BasicHeaderValueParser::ParseNameValuePair(
 }
 
 ECode BasicHeaderValueParser::CreateNameValuePair(
-    /* [in] */ cosnt String& name,
-    /* [in] */ cosnt String& value,
+    /* [in] */ const String& name,
+    /* [in] */ const String& value,
     /* [out] */ INameValuePair** pair)
 {
     VALIDATE_NOT_NULL(pair)

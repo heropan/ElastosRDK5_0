@@ -1,6 +1,8 @@
 
 #include "HttpTransportMetricsImpl.h"
 
+using Org::Apache::Http::IO::EIID_IHttpTransportMetrics;
+
 namespace Org {
 namespace Apache {
 namespace Http {
@@ -18,7 +20,7 @@ ECode HttpTransportMetricsImpl::GetBytesTransferred(
 {
     VALIDATE_NOT_NULL(number)
     *number = mBytesTransferred;
-    return VALIDATE_NOT_NULL;
+    return NOERROR;
 }
 
 void HttpTransportMetricsImpl::SetBytesTransferred(

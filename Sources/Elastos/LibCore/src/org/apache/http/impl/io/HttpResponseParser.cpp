@@ -2,7 +2,7 @@
 #include "HttpResponseParser.h"
 #include "CCharArrayBuffer.h"
 #include "CParserCursor.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IRequestLine;
@@ -51,7 +51,11 @@ ECode HttpResponseParser::ParseHead(
     CParserCursor::New(0, len, (IParserCursor**)&cursor);
     AutoPtr<IStatusLine> statusline;
     mLineParser->ParseStatusLine(mLineBuf, cursor, (IStatusLine**)&statusline);
-    return mResponseFactory->NewHttpResponse(statusline, message);
+    AutoPtr<IHttpResponse> response;
+    mResponseFactory->NewHttpResponse(statusline, NULL, (IHttpResponse**)&response);
+    *message = IHttpMessage::Probe(response);
+    REFCOUNT_ADD(*message)
+    return NOERROR;
 }
 
 } // namespace IO

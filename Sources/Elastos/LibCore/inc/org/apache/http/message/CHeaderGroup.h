@@ -5,6 +5,7 @@
 #include "_Org_Apache_Http_Message_CHeaderGroup.h"
 #include "BasicLineFormatter.h"
 
+using Elastos::Core::ICloneable;
 using Elastos::Utility::IList;
 using Org::Apache::Http::IHeaderIterator;
 using Org::Apache::Http::IHeader;
@@ -102,7 +103,7 @@ public:
      */
     CARAPI GetHeaders(
         /* [in] */ const String& name,
-        /* [out, callee] */ ArrayOf<IHeader*>* headers);
+        /* [out, callee] */ ArrayOf<IHeader*>** headers);
 
     /**
      * Gets the first header with the given name.
@@ -134,7 +135,7 @@ public:
      * @return an array of length >= 0
      */
     CARAPI GetAllHeaders(
-        /* [out, callee] */ ArrayOf<IHeader*>* allHeaders);
+        /* [out, callee] */ ArrayOf<IHeader*>** allHeaders);
 
     /**
      * Tests if headers with the given name are contained within this group.

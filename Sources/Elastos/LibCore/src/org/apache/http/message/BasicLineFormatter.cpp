@@ -2,8 +2,8 @@
 #include "BasicLineFormatter.h"
 #include "CBasicLineFormatter.h"
 #include "CCharArrayBuffer.h"
-#include <elastos/Logger.h>
-#include <elastos/core/StringUtils.h>
+#include "Logger.h"
+#include "elastos/core/StringUtils.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
@@ -53,7 +53,7 @@ ECode BasicLineFormatter::FormatProtocolVersion(
 
     AutoPtr<ICharArrayBuffer> buf;
     formatter->AppendProtocolVersion(NULL, version, (ICharArrayBuffer**)&buf);
-    return buf->ToString(formattedStr);
+    return IObject::Probe(buf)->ToString(formattedStr);
 }
 
 ECode BasicLineFormatter::AppendProtocolVersion(
@@ -99,7 +99,7 @@ ECode BasicLineFormatter::AppendProtocolVersion(
 
 ECode BasicLineFormatter::EstimateProtocolVersionLen(
     /* [in] */ IProtocolVersion* version,
-    /* [out] */ Int32 len)
+    /* [out] */ Int32* len)
 {
     VALIDATE_NOT_NULL(len)
     String protocol;
@@ -119,7 +119,7 @@ ECode BasicLineFormatter::FormatRequestLine(
 
     AutoPtr<ICharArrayBuffer> buf;
     formatter->FormatRequestLine(NULL, reqline, (ICharArrayBuffer**)&buf);
-    return buf->ToString(formattedStr);
+    return IObject::Probe(buf)->ToString(formattedStr);
 }
 
 ECode BasicLineFormatter::FormatRequestLine(
@@ -164,7 +164,8 @@ ECode BasicLineFormatter::DoFormatRequestLine(
     buffer->Append(' ');
     buffer->Append(uri);
     buffer->Append(' ');
-    AppendProtocolVersion(buffer, ver);
+    AutoPtr<ICharArrayBuffer> buf;
+    AppendProtocolVersion(buffer, ver, (ICharArrayBuffer**)&buf);
 
     return NOERROR;
 }
@@ -180,7 +181,7 @@ ECode BasicLineFormatter::FormatStatusLine(
 
     AutoPtr<ICharArrayBuffer> buf;
     formatter->FormatStatusLine(NULL, statline, (ICharArrayBuffer**)&buf);
-    return buf->ToString(formattedStr);
+    return IObject::Probe(buf)->ToString(formattedStr);
 }
 
 ECode BasicLineFormatter::FormatStatusLine(
@@ -221,7 +222,8 @@ ECode BasicLineFormatter::DoFormatStatusLine(
     }
     buffer->EnsureCapacity(len);
 
-    AppendProtocolVersion(buffer, ver);
+    AutoPtr<ICharArrayBuffer> buf;
+    AppendProtocolVersion(buffer, ver, (ICharArrayBuffer**)&buf);
     buffer->Append(' ');
     Int32 code;
     statline->GetStatusCode(&code);
@@ -244,7 +246,7 @@ ECode BasicLineFormatter::FormatHeader(
 
     AutoPtr<ICharArrayBuffer> buf;
     formatter->FormatHeader(NULL, header, (ICharArrayBuffer**)&buf);
-    return buf->ToString(formattedStr);
+    return IObject::Probe(buf)->ToString(formattedStr);
 }
 
 ECode BasicLineFormatter::FormatHeader(
@@ -290,7 +292,7 @@ ECode BasicLineFormatter::DoFormatHeader(
     buffer->EnsureCapacity(len);
 
     buffer->Append(name);
-    buffer->Append(": ");
+    buffer->Append(String(": "));
     if (!value.IsNull()) {
         buffer->Append(value);
     }

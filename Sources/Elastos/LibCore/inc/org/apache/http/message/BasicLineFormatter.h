@@ -209,7 +209,7 @@ protected:
      */
     CARAPI EstimateProtocolVersionLen(
         /* [in] */ IProtocolVersion* version,
-        /* [out] */ Int32 len);
+        /* [out] */ Int32* len);
 
     /**
      * Actually formats a request line.

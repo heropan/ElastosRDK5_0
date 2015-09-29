@@ -1,5 +1,6 @@
 
 #include "BasicLineParser.h"
+#include "CBasicLineParser.h"
 #include "CCharArrayBuffer.h"
 #include "CParserCursor.h"
 #include "HTTP.h"
@@ -23,8 +24,8 @@ namespace Message {
 
 static AutoPtr<IBasicLineParser> InitDefault()
 {
-    AutoPtr<BasicLineParser> parser;
-    BasicLineParser::NewByFriend((BasicLineParser**)&parser);
+    AutoPtr<CBasicLineParser> parser;
+    CBasicLineParser::NewByFriend((CBasicLineParser**)&parser);
     return (IBasicLineParser*)parser.Get();
 }
 const AutoPtr<IBasicLineParser> BasicLineParser::DEFAULT = InitDefault();
@@ -43,7 +44,7 @@ ECode BasicLineParser::ParseProtocolVersion(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    if (parser == NULL) parser = DEFAULT;
+    if (parser == NULL) parser = ILineParser::Probe(DEFAULT);
 
     AutoPtr<CCharArrayBuffer> buffer;
     CCharArrayBuffer::NewByFriend(value.GetLength(), (CCharArrayBuffer**)&buffer);
@@ -95,12 +96,12 @@ ECode BasicLineParser::ParseProtocolVersion(
     Boolean ok = TRUE;
     for (Int32 j = 0; ok && (j < protolength); j++) {
         Char32 ch;
-        buffer->GetChar(i + j, &ch);
+        buffer->CharAt(i + j, &ch);
         ok = (ch == protoname.GetChar(j));
     }
     if (ok) {
         Char32 ch;
-        buffer->GetChar(i + protolength, &ch);
+        buffer->CharAt(i + protolength, &ch);
         ok = (ch == '/');
     }
     if (!ok) {
@@ -201,7 +202,7 @@ ECode BasicLineParser::HasProtocolVersion(
         // beginning of line, tolerate leading whitespace
         Char32 ch;
         buffer->GetLength(&len);
-        while ((index < len) && (buffer->GetChar(index, &ch), HTTP::IsWhitespace(ch))) {
+        while ((index < len) && (buffer->CharAt(index, &ch), HTTP::IsWhitespace(ch))) {
              index++;
          }
     } // else within line, don't tolerate whitespace
@@ -216,12 +217,12 @@ ECode BasicLineParser::HasProtocolVersion(
     Boolean ok = TRUE;
     for (Int32 j = 0; ok && (j < protolength); j++) {
         Char32 ch;
-        buffer->GetChar(index + j, &ch);
+        buffer->CharAt(index + j, &ch);
         ok = (ch == protoname.GetChar(j));
     }
     if (ok) {
         Char32 ch;
-        buffer->GetChar(index + protolength, &ch);
+        buffer->CharAt(index + protolength, &ch);
         ok = (ch == '/');
     }
 
@@ -242,7 +243,7 @@ ECode BasicLineParser::ParseRequestLine(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    if (parser == NULL) parser = DEFAULT;
+    if (parser == NULL) parser = ILineParser::Probe(DEFAULT);
 
     AutoPtr<CCharArrayBuffer> buffer;
     CCharArrayBuffer::NewByFriend(value.GetLength(), (CCharArrayBuffer**)&buffer);
@@ -255,7 +256,7 @@ ECode BasicLineParser::ParseRequestLine(
 ECode BasicLineParser::ParseRequestLine(
     /* [in] */ ICharArrayBuffer* buffer,
     /* [in] */ IParserCursor* cursor,
-    /* [out] */ IRequestLine* requestLine)
+    /* [out] */ IRequestLine** requestLine)
 {
     VALIDATE_NOT_NULL(requestLine)
     *requestLine = NULL;
@@ -346,7 +347,7 @@ ECode BasicLineParser::ParseStatusLine(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    if (parser == NULL) parser = DEFAULT;
+    if (parser == NULL) parser = ILineParser::Probe(DEFAULT);
 
     AutoPtr<CCharArrayBuffer> buffer;
     CCharArrayBuffer::NewByFriend(value.GetLength(), (CCharArrayBuffer**)&buffer);
@@ -359,7 +360,7 @@ ECode BasicLineParser::ParseStatusLine(
 ECode BasicLineParser::ParseStatusLine(
     /* [in] */ ICharArrayBuffer* buffer,
     /* [in] */ IParserCursor* cursor,
-    /* [out] */ IStatusLine* statusLine)
+    /* [out] */ IStatusLine** statusLine)
 {
     VALIDATE_NOT_NULL(statusLine)
     *statusLine = NULL;
@@ -432,7 +433,7 @@ ECode BasicLineParser::CreateStatusLine(
 ECode BasicLineParser::ParseHeader(
     /* [in] */ const String& value,
     /* [in] */ ILineParser* parser,
-    /* [out] */ IHeader* header)
+    /* [out] */ IHeader** header)
 {
     VALIDATE_NOT_NULL(header)
     *header = NULL;
@@ -442,7 +443,7 @@ ECode BasicLineParser::ParseHeader(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    if (parser == NULL) parser = DEFAULT;
+    if (parser == NULL) parser = ILineParser::Probe(DEFAULT);
 
     AutoPtr<CCharArrayBuffer> buffer;
     CCharArrayBuffer::NewByFriend(value.GetLength(), (CCharArrayBuffer**)&buffer);
@@ -452,7 +453,7 @@ ECode BasicLineParser::ParseHeader(
 
 ECode BasicLineParser::ParseHeader(
     /* [in] */ ICharArrayBuffer* buffer,
-    /* [out] */ IHeader* header)
+    /* [out] */ IHeader** header)
 {
     VALIDATE_NOT_NULL(header)
     // the actual parser code is in the constructor of BufferedHeader
@@ -467,20 +468,25 @@ ECode BasicLineParser::SkipWhitespace(
     cursor->GetPos(&pos);
     cursor->GetUpperBound(&indexTo);
     Char32 ch;
-    while ((pos < indexTo) && (buffer->GetChar(pos, &ch), HTTP::IsWhitespace(ch))) {
+    while ((pos < indexTo) && (buffer->CharAt(pos, &ch), HTTP::IsWhitespace(ch))) {
         pos++;
     }
     return cursor->UpdatePos(pos);
 }
 
-ECode BasicLineParser::Init(
+ECode BasicLineParser::constructor(
     /* [in] */ IProtocolVersion* proto)
 {
     if (proto == NULL) {
-        proto = CHttpVersion::HTTP_1_1;
+        proto = IProtocolVersion::Probe(CHttpVersion::HTTP_1_1);
     }
     mProtocol = proto;
     return NOERROR;
+}
+
+ECode BasicLineParser::constructor()
+{
+    return constructor(NULL);
 }
 
 } // namespace Message

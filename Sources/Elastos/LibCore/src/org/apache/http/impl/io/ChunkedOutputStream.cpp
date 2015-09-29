@@ -1,7 +1,7 @@
 
 #include "ChunkedOutputStream.h"
-#include <elastos/Logger.h>
-#include <elastos/core/StringUtils.h>
+#include "Logger.h"
+#include "elastos/core/StringUtils.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
@@ -25,7 +25,7 @@ ChunkedOutputStream::ChunkedOutputStream(
 }
 
 ChunkedOutputStream::ChunkedOutputStream(
-    /* [in] */ ISessionInputBuffer* in)
+    /* [in] */ ISessionOutputBuffer* out)
     : OutputStream()
     , mOut(out)
     , mCachePosition(0)
@@ -114,6 +114,7 @@ ECode ChunkedOutputStream::Write(
         mCache->Copy(mCachePosition, src, off, len);
         mCachePosition += len;
     }
+    return NOERROR;
 }
 
 ECode ChunkedOutputStream::Flush()

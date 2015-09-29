@@ -1,7 +1,7 @@
 
-#include "ChunkedOutputStream.h"
-#include <elastos/Logger.h>
-#include <elastos/core/StringUtils.h>
+#include "ContentLengthOutputStream.h"
+#include "Logger.h"
+#include "elastos/core/StringUtils.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
@@ -12,7 +12,7 @@ namespace Http {
 namespace Impl {
 namespace IO {
 
-ChunkedOutputStream::ChunkedOutputStream(
+ContentLengthOutputStream::ContentLengthOutputStream(
     /* [in] */ ISessionOutputBuffer* out,
     /* [in] */ Int64 contentLength)
     : OutputStream()
@@ -21,12 +21,12 @@ ChunkedOutputStream::ChunkedOutputStream(
     , mClosed(FALSE)
 {
     if (out == NULL) {
-        Logger::E("ChunkedOutputStream", "Session output buffer may not be null");
+        Logger::E("ContentLengthOutputStream", "Session output buffer may not be null");
         assert(0);
         // throw new IllegalArgumentException("Session output buffer may not be null");
     }
     if (contentLength < 0) {
-        Logger::E("ChunkedOutputStream", "Content length may not be negative");
+        Logger::E("ContentLengthOutputStream", "Content length may not be negative");
         assert(0);
         // throw new IllegalArgumentException("Content length may not be negative");
     }
@@ -34,7 +34,7 @@ ChunkedOutputStream::ChunkedOutputStream(
     mContentLength = contentLength;
 }
 
-ECode ChunkedOutputStream::Close()
+ECode ContentLengthOutputStream::Close()
 {
     if (!mClosed) {
         mClosed = TRUE;
@@ -43,18 +43,18 @@ ECode ChunkedOutputStream::Close()
     return NOERROR;
 }
 
-ECode ChunkedOutputStream::Flush()
+ECode ContentLengthOutputStream::Flush()
 {
     return mOut->Flush();
 }
 
-ECode ChunkedOutputStream::Write(
+ECode ContentLengthOutputStream::Write(
     /* [in] */ ArrayOf<Byte>* b,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)
 {
     if (mClosed) {
-        Logger::E("ChunkedOutputStream", "Attempted write to closed stream.");
+        Logger::E("ContentLengthOutputStream", "Attempted write to closed stream.");
         return E_IO_EXCEPTION;
     }
     if (mTotal < mContentLength) {
@@ -68,17 +68,17 @@ ECode ChunkedOutputStream::Write(
     return NOERROR;
 }
 
-ECode ChunkedOutputStream::Write(
+ECode ContentLengthOutputStream::Write(
     /* [in] */ ArrayOf<Byte>* buffer)
 {
-    return Write(b, 0, b->GetLength());
+    return Write(buffer, 0, buffer->GetLength());
 }
 
-ECode ChunkedOutputStream::Write(
+ECode ContentLengthOutputStream::Write(
     /* [in] */ Int32 b)
 {
     if (mClosed) {
-        Logger::E("ChunkedOutputStream", "Attempted write to closed stream.");
+        Logger::E("ContentLengthOutputStream", "Attempted write to closed stream.");
         return E_IO_EXCEPTION;
     }
     if (mTotal < mContentLength) {

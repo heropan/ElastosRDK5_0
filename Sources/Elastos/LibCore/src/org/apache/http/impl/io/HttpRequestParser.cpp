@@ -2,10 +2,11 @@
 #include "HttpRequestParser.h"
 #include "CCharArrayBuffer.h"
 #include "CParserCursor.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IRequestLine;
+using Org::Apache::Http::IHttpRequest;
 using Org::Apache::Http::Message::IParserCursor;
 using Org::Apache::Http::Message::CParserCursor;
 using Org::Apache::Http::Utility::CCharArrayBuffer;
@@ -51,7 +52,11 @@ ECode HttpRequestParser::ParseHead(
     CParserCursor::New(0, len, (IParserCursor**)&cursor);
     AutoPtr<IRequestLine> requestline;
     mLineParser->ParseRequestLine(mLineBuf, cursor, (IRequestLine**)&requestline);
-    return mRequestFactory->NewHttpRequest(requestline, message);
+    AutoPtr<IHttpRequest> request;
+    mRequestFactory->NewHttpRequest(requestline, (IHttpRequest**)&request);
+    *message = IHttpMessage::Probe(request);
+    REFCOUNT_ADD(*message)
+    return NOERROR;
 }
 
 } // namespace IO

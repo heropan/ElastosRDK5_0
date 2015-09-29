@@ -47,7 +47,6 @@ AbstractMessageParser::AbstractMessageParser(
 CAR_INTERFACE_IMPL(AbstractMessageParser, Object, IHttpMessageParser)
 
 ECode AbstractMessageParser::ParseHeaders(
-    /* [in] */ AbstractMessageParser* host,
     /* [in] */ ISessionInputBuffer* inbuffer,
     /* [in] */ Int32 maxHeaderCount,
     /* [in] */ Int32 maxLineLen,
@@ -100,11 +99,11 @@ ECode AbstractMessageParser::ParseHeaders(
                 }
                 i++;
             }
-            if (host->mMaxLineLen > 0) {
+            if (maxLineLen > 0) {
                 Int32 len1, len2;
                 previous->GetLength(&len1);
                 current->GetLength(&len2);
-                if (len1 + 1 + len2 - i > host->mMaxLineLen) {
+                if (len1 + 1 + len2 - i > maxLineLen) {
                     Logger::E("AbstractMessageParser", "Maximum line length limit exceeded");
                     return E_IO_EXCEPTION;
                 }
@@ -119,7 +118,7 @@ ECode AbstractMessageParser::ParseHeaders(
             current = NULL;
         }
         Int32 size;
-        if (host->mMaxHeaderCount > 0 && (headerLines->GetSize(&size), size >= maxHeaderCount)) {
+        if (maxHeaderCount > 0 && (headerLines->GetSize(&size), size >= maxHeaderCount)) {
             Logger::E("AbstractMessageParser", "Maximum header count exceeded");
             return E_IO_EXCEPTION;
         }
@@ -161,7 +160,7 @@ ECode AbstractMessageParser::Parse(
     //     throw new ProtocolException(px.getMessage(), px);
     // }
     AutoPtr< ArrayOf<IHeader*> > headers;
-    ParseHeaders(this, mSessionBuffer, mMaxHeaderCount, mMaxLineLen, mLineParser, (ArrayOf<IHeader*>**)&headers);
+    ParseHeaders(mSessionBuffer, mMaxHeaderCount, mMaxLineLen, mLineParser, (ArrayOf<IHeader*>**)&headers);
     message->SetHeaders(headers);
     *_message = message;
     REFCOUNT_ADD(*_message)

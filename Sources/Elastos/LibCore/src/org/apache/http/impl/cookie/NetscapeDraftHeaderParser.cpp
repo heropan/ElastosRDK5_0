@@ -2,8 +2,11 @@
 #include "NetscapeDraftHeaderParser.h"
 #include "CBasicHeaderElement.h"
 #include "CArrayList.h"
+#include "CArrayOf.h"
 #include "Logger.h"
 
+using Elastos::Core::IArrayOf;
+using Elastos::Core::CArrayOf;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::IList;
@@ -69,7 +72,8 @@ ECode NetscapeDraftHeaderParser::ParseHeader(
     nvp->GetValue(&value);
     Int32 size;
     params->GetSize(&size);
-    AutoPtr< ArrayOf<INameValuePair*> > pairs = ArrayOf<INameValuePair*>::Alloc(size);
+    AutoPtr<IArrayOf> pairs;
+    CArrayOf::New(EIID_INameValuePair, size, (IArrayOf**)&pairs);
     AutoPtr<IIterator> it;
     params->GetIterator((IIterator**)&it);
     Int32 i = 0;

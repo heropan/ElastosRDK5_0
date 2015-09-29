@@ -3,7 +3,9 @@
 #include "CCharArrayBuffer.h"
 #include "CBasicListHeaderIterator.h"
 #include "CBasicHeader.h"
+#include "elastos/utility/CArrayList.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
@@ -22,6 +24,7 @@ CAR_OBJECT_IMPL(CHeaderGroup)
 ECode CHeaderGroup::Clear()
 {
     mHeaders->Clear();
+    return NOERROR;
 }
 
 ECode CHeaderGroup::AddHeader(
@@ -30,7 +33,7 @@ ECode CHeaderGroup::AddHeader(
     if (header == NULL) {
         return NOERROR;
     }
-    return mHeaders-Add(header);
+    return mHeaders->Add(header);
 }
 
 ECode CHeaderGroup::RemoveHeader(
@@ -84,13 +87,13 @@ ECode CHeaderGroup::GetCondensedHeader(
 {
     VALIDATE_NOT_NULL(condensedHeader)
     AutoPtr< ArrayOf<IHeader*> > headers;
-    GetHeaders(name, (ArrayOf<IHeader*>*)&headers);
+    GetHeaders(name, (ArrayOf<IHeader*>**)&headers);
 
     if (headers->GetLength() == 0) {
-        *condensedHeader = null;
+        *condensedHeader = NULL;
         return NOERROR;
     }
-    else if (header->GetLength() == 1) {
+    else if (headers->GetLength() == 1) {
         *condensedHeader = (*headers)[0];
         REFCOUNT_ADD(*condensedHeader)
         return NOERROR;
@@ -109,13 +112,13 @@ ECode CHeaderGroup::GetCondensedHeader(
 
         String str;
         IObject::Probe(valueBuffer)->ToString(&str);
-        return CBasicHeader::New(name.ToLowerCase(ILocale::ENGLISH), str, condensedHeader);
+        return CBasicHeader::New(name.ToLowerCase(/*ILocale::ENGLISH*/), str, condensedHeader);
     }
 }
 
 ECode CHeaderGroup::GetHeaders(
     /* [in] */ const String& name,
-    /* [out, callee] */ ArrayOf<IHeader*>* headers)
+    /* [out, callee] */ ArrayOf<IHeader*>** headers)
 {
     VALIDATE_NOT_NULL(headers)
     AutoPtr<IArrayList> al;
@@ -135,9 +138,9 @@ ECode CHeaderGroup::GetHeaders(
     }
 
     headersFound->GetSize(&size);
-    AutoPtr< ArrayOf<IInterface> > in = ArrayOf<IInterface>::Alloc(size);
-    AutoPtr< ArrayOf<IInterface> > out;
-    headersFound->ToArray(in, (ArrayOf<IInterface>**)&out);
+    AutoPtr< ArrayOf<IInterface*> > in = ArrayOf<IInterface*>::Alloc(size);
+    AutoPtr< ArrayOf<IInterface*> > out;
+    headersFound->ToArray(in, (ArrayOf<IInterface*>**)&out);
     AutoPtr< ArrayOf<IHeader*> > result = ArrayOf<IHeader*>::Alloc(out->GetLength());
     for (Int32 i = 0; i < out->GetLength(); ++i) {
         AutoPtr<IHeader> h = IHeader::Probe((*out)[i]);
@@ -196,14 +199,14 @@ ECode CHeaderGroup::GetLastHeader(
 }
 
 ECode CHeaderGroup::GetAllHeaders(
-    /* [out, callee] */ ArrayOf<IHeader*>* allHeaders)
+    /* [out, callee] */ ArrayOf<IHeader*>** allHeaders)
 {
     VALIDATE_NOT_NULL(allHeaders)
     Int32 size;
     mHeaders->GetSize(&size);
-    AutoPtr< ArrayOf<IInterface> > in = ArrayOf<IInterface>::Alloc(size);
-    AutoPtr< ArrayOf<IInterface> > out;
-    mHeaders->ToArray(in, (ArrayOf<IInterface>**)&out);
+    AutoPtr< ArrayOf<IInterface*> > in = ArrayOf<IInterface*>::Alloc(size);
+    AutoPtr< ArrayOf<IInterface*> > out;
+    mHeaders->ToArray(in, (ArrayOf<IInterface*>**)&out);
     AutoPtr< ArrayOf<IHeader*> > result = ArrayOf<IHeader*>::Alloc(out->GetLength());
     for (Int32 i = 0; i < out->GetLength(); ++i) {
         AutoPtr<IHeader> h = IHeader::Probe((*out)[i]);
@@ -266,7 +269,7 @@ ECode CHeaderGroup::Copy(
     VALIDATE_NOT_NULL(headerGroup)
     AutoPtr<CHeaderGroup> clone;
     CHeaderGroup::NewByFriend((CHeaderGroup**)&clone);
-    clone->mHeaders->AddAll(mHeaders);
+    clone->mHeaders->AddAll(0, ICollection::Probe(mHeaders));
     *headerGroup = clone;
     REFCOUNT_ADD(*headerGroup)
     return NOERROR;
@@ -278,7 +281,7 @@ ECode CHeaderGroup::Clone(
     VALIDATE_NOT_NULL(obj)
     AutoPtr<CHeaderGroup> clone;
     CHeaderGroup::NewByFriend((CHeaderGroup**)&clone);
-    clone->mHeaders->AddAll(mHeaders);
+    clone->mHeaders->AddAll(0, ICollection::Probe(mHeaders));
     *obj = clone->Probe(EIID_IInterface);
     REFCOUNT_ADD(*obj)
     return NOERROR;

@@ -135,10 +135,16 @@ public:
         /* [out] */ Int32* hashCode);
 
 protected:
-    CARAPI Init(
-        /* [in] */ String name,
-        /* [in] */ String value,
-        /* [in] */ ArrayOf<INameValuePair*>* parameters);
+    CARAPI constructor(
+        /* [in] */ const String& name,
+        /* [in] */ const String& value,
+        /* [in] */ IArrayOf* parameters);/*INameValuePair*/
+
+    CARAPI constructor(
+        /* [in] */ const String& name,
+        /* [in] */ const String& value);
+
+    CARAPI constructor();
 
     CARAPI_(void) CloneImpl(
         /* [in] */ BasicHeaderElement* obj);

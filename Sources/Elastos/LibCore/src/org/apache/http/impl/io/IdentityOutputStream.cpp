@@ -1,6 +1,6 @@
 
 #include "IdentityOutputStream.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 
@@ -52,7 +52,7 @@ ECode IdentityOutputStream::Write(
 ECode IdentityOutputStream::Write(
     /* [in] */ ArrayOf<Byte>* buffer)
 {
-    return Write(b, 0, b->GetLength());
+    return Write(buffer, 0, buffer->GetLength());
 }
 
 ECode IdentityOutputStream::Write(

@@ -2,9 +2,9 @@
 #include "IdentityInputStream.h"
 #include "CCharArrayBuffer.h"
 #include "AbstractMessageParser.h"
-#include <elastos/Logger.h>
-#include <elastos/core/Math.h>
-#include <elastos/core/StringUtils.h>
+#include "Logger.h"
+#include "elastos/core/Math.h"
+#include "elastos/core/StringUtils.h"
 
 using Elastos::Core::Math;
 using Elastos::Core::StringUtils;
@@ -72,11 +72,11 @@ ECode IdentityInputStream::Read(
 {
     VALIDATE_NOT_NULL(number)
     if (mClosed) {
-        *value = -1;
+        *number = -1;
         return NOERROR;
     }
     else {
-        return mIn->Read(b, off, len, value);
+        return mIn->Read(b, off, len, number);
     }
 }
 

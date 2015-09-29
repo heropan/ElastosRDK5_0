@@ -4,8 +4,10 @@
 #include "CCharArrayBuffer.h"
 #include "Logger.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::CArrayOf;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Utility::ICharArrayBuffer;
 using Org::Apache::Http::Utility::CCharArrayBuffer;
 
 namespace Org {
@@ -15,10 +17,10 @@ namespace Message {
 
 CAR_INTERFACE_IMPL_2(BasicHeaderElement, Object, IHeaderElement, ICloneable)
 
-ECode BasicHeaderElement::Init(
-    /* [in] */ String name,
-    /* [in] */ String value,
-    /* [in] */ IArrayOf* parameters)
+ECode BasicHeaderElement::constructor(
+    /* [in] */ const String& name,
+    /* [in] */ const String& value,
+    /* [in] */ IArrayOf* parameters)/*INameValuePair*/
 {
     if (name.IsNull()) {
         Logger::E("BasicHeaderElement", "Name may not be null");
@@ -30,9 +32,20 @@ ECode BasicHeaderElement::Init(
         mParameters = parameters;
     }
     else {
-        mParameters = NULL;
-        CArrayOf::New(0, (IArrayOf**)&mParameters);
+        CArrayOf::New(EIID_INameValuePair, 0, (IArrayOf**)&mParameters);
     }
+    return NOERROR;
+}
+
+ECode BasicHeaderElement::constructor(
+    /* [in] */ const String& name,
+    /* [in] */ const String& value)
+{
+    return constructor(name, value, NULL);
+}
+
+ECode BasicHeaderElement::constructor()
+{
     return NOERROR;
 }
 
@@ -53,11 +66,19 @@ ECode BasicHeaderElement::GetValue(
 }
 
 ECode BasicHeaderElement::GetParameters(
-    /* [out, callee] */ ArrayOf<INameValuePair*>** parameters)
+    /* [out, callee] */ ArrayOf<INameValuePair*>** _parameters)
 {
-    VALIDATE_NOT_NULL(parameters)
-    *parameters = mParameters;
-    REFCOUNT_ADD(*parameters)
+    VALIDATE_NOT_NULL(_parameters)
+    Int32 len;
+    mParameters->GetLength(&len);
+    AutoPtr< ArrayOf<INameValuePair*> > parameters = ArrayOf<INameValuePair*>::Alloc(len);
+    for (Int32 i = 0; i < len; i++) {
+        AutoPtr<IInterface> value;
+        mParameters->Get(i, (IInterface**)&value);
+        parameters->Set(i, INameValuePair::Probe(value));
+    }
+    *_parameters = parameters;
+    REFCOUNT_ADD(*_parameters)
     return NOERROR;
 }
 
@@ -119,17 +140,17 @@ ECode BasicHeaderElement::Equals(
         *equals = FALSE;
         return NOERROR;
     }
-    if ((IInterface*)this == obj) {
+    if (this->Probe(EIID_IInterface) == obj) {
         *equals = TRUE;
         return NOERROR;
     }
     AutoPtr<IHeaderElement> elem = IHeaderElement::Probe(obj);
     if (elem != NULL) {
-        AutoPtr<BasicHeaderElement> that = (BasicHeaderElement*)obj;
+        AutoPtr<BasicHeaderElement> that = (BasicHeaderElement*)(IObject*)obj;
         Boolean result;
         *equals = mName.Equals(that->mName)
                 && mValue.Equals(that->mValue)
-                && (IObject::Probe(mParameters)->Equals(that->mParameters, &result), result);
+                && (mParameters->DeepEquals(that->mParameters, &result), result);
         return NOERROR;
     }
     else {
@@ -157,7 +178,7 @@ ECode BasicHeaderElement::ToString(
         mParameters->Get(i, (IInterface**)&value);
         buffer->Append(value);
     }
-    return IObject(buffer)->ToString(string);
+    return IObject::Probe(buffer)->ToString(string);
 }
 
 ECode BasicHeaderElement::GetHashCode(

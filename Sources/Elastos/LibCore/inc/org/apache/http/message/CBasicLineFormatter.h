@@ -5,12 +5,6 @@
 #include "_Org_Apache_Http_Message_CBasicLineFormatter.h"
 #include "BasicLineFormatter.h"
 
-using Org::Apache::Http::IStatusLine;
-using Org::Apache::Http::IProtocolVersion;
-using Org::Apache::Http::IHeader;
-using Org::Apache::Http::IRequestLine;
-using Org::Apache::Http::Utility::ICharArrayBuffer;
-
 namespace Org {
 namespace Apache {
 namespace Http {
