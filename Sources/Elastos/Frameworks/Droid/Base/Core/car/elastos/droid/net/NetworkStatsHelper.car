@@ -10,7 +10,6 @@ module
     namespace Net {
 
     interface INetworkStatsHelper {
-
         /** {@link #iface} value when interface details unavailable. */
         GetIFACE_ALL(
             [out] String* result);

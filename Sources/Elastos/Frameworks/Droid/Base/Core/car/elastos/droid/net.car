@@ -526,6 +526,66 @@ module
         interface INetworkScorerAppData;
     }
 
+    class CNetworkState {
+        constructor(
+            [in] INetworkInfo* networkInfo,
+            [in] ILinkProperties* linkProperties,
+            [in] INetworkCapabilities* networkCapabilities);
+
+        constructor(
+            [in] INetworkInfo* networkInfo,
+            [in] ILinkProperties* linkProperties,
+            [in] INetworkCapabilities* networkCapabilities,
+            [in] String subscriberId,
+            [in] String networkId);
+
+        constructor(
+            [in] IParcel* parcel);
+
+        interface IParcelable;
+        interface INetworkState;
+    }
+
+    class CNetworkStats {
+        constructor(
+            [in] Int64 elapsedRealtime,
+            [in] Int32 initialSize);
+
+        constructor(
+            [in] IParcel* parcel);
+
+        interface IParcelable;
+        interface INetworkStats;
+    }
+
+    singleton class CNetworkStatsHelper {
+        interface INetworkStatsHelper;
+    }
+
+    class CNetworkStatsEntry {
+        constructor();
+
+        constructor(
+            [in] Int64 rxBytes,
+            [in] Int64 rxPackets,
+            [in] Int64 txBytes,
+            [in] Int64 txPackets,
+            [in] Int64 operations);
+
+        constructor(
+            [in] String iface,
+            [in] Int32 uid,
+            [in] Int32 set,
+            [in] Int32 tag,
+            [in] Int64 rxBytes,
+            [in] Int64 rxPackets,
+            [in] Int64 txBytes,
+            [in] Int64 txPackets,
+            [in] Int64 operations);
+
+        interface INetworkStatsEntry;
+    }
+
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos

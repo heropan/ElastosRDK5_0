@@ -28,6 +28,9 @@
 #include "elastos/droid/net/CNetworkScoreManager.h"
 #include "elastos/droid/net/CNetworkScorerAppData.h"
 #include "elastos/droid/net/CNetworkRequestBuilder.h"
+#include "elastos/droid/net/CNetworkState.h"
+#include "elastos/droid/net/CNetworkStats.h"
+#include "elastos/droid/net/CNetworkStatsEntry.h"
 
 namespace Elastos {
 namespace Droid {
@@ -90,6 +93,12 @@ CAR_OBJECT_IMPL(CNetworkRequestBuilder)
 CAR_OBJECT_IMPL(CNetworkScoreManager)
 
 CAR_OBJECT_IMPL(CNetworkScorerAppData)
+
+CAR_OBJECT_IMPL(CNetworkState)
+
+CAR_OBJECT_IMPL(CNetworkStats)
+
+CAR_OBJECT_IMPL(CNetworkStatsEntry)
 
 } // namespace Net
 } // namespace Droid
