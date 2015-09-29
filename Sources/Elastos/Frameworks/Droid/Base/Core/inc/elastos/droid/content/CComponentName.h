@@ -154,7 +154,7 @@ public:
         /* [in] */ IComponentName* component,
         /* [in] */ IParcel* dest);
 
-private:
+public:
     static CARAPI AppendShortClassName(
         /* [in] */ StringBuilder* sb,
         /* [in] */ const String& packageName,

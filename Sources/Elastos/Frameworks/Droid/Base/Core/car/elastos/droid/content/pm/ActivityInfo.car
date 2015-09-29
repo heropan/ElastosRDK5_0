@@ -617,6 +617,24 @@ module
         SetLaunchMode(
             [in] Int32 mode);
 
+        GetDocumentLaunchMode(
+            [out] Int32* mode);
+
+        SetDocumentLaunchMode(
+            [in] Int32 mode);
+
+        GetPersistableMode(
+            [out] Int32* mode);
+
+        SetPersistableMode(
+            [in] Int32 mode);
+
+        GetMaxRecents(
+            [out] Int32* max);
+
+        SetMaxRecents(
+            [in] Int32 max);
+
         GetPermission(
             [out] String* permission);
 

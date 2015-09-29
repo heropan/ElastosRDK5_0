@@ -79,7 +79,6 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-
     CARAPI GetTheme(
         /* [out] */ Int32* theme);
 
@@ -91,6 +90,24 @@ public:
 
     CARAPI SetLaunchMode(
         /* [in] */ Int32 mode);
+
+    CARAPI GetDocumentLaunchMode(
+        /* [out] */ Int32* mode);
+
+    CARAPI SetDocumentLaunchMode(
+        /* [in] */ Int32 mode);
+
+    CARAPI GetPersistableMode(
+        /* [out] */ Int32* mode);
+
+    CARAPI SetPersistableMode(
+        /* [in] */ Int32 mode);
+
+    CARAPI GetMaxRecents(
+        /* [out] */ Int32* max);
+
+    CARAPI SetMaxRecents(
+        /* [in] */ Int32 max);
 
     CARAPI GetPermission(
         /* [out] */ String* permission);
@@ -171,6 +188,35 @@ public:
      * {@link #LAUNCH_SINGLE_INSTANCE}.
      */
     Int32 mLaunchMode;
+
+    /**
+     * The document launch mode style requested by the activity. From the
+     * {@link android.R.attr#documentLaunchMode} attribute, one of
+     * {@link #DOCUMENT_LAUNCH_NONE}, {@link #DOCUMENT_LAUNCH_INTO_EXISTING},
+     * {@link #DOCUMENT_LAUNCH_ALWAYS}.
+     *
+     * <p>Modes DOCUMENT_LAUNCH_ALWAYS
+     * and DOCUMENT_LAUNCH_INTO_EXISTING are equivalent to {@link
+     * android.content.Intent#FLAG_ACTIVITY_NEW_DOCUMENT
+     * Intent.FLAG_ACTIVITY_NEW_DOCUMENT} with and without {@link
+     * android.content.Intent#FLAG_ACTIVITY_MULTIPLE_TASK
+     * Intent.FLAG_ACTIVITY_MULTIPLE_TASK} respectively.
+     */
+    Int32 mDocumentLaunchMode;
+
+    /**
+     * Value indicating how this activity is to be persisted across
+     * reboots for restoring in the Recents list.
+     * {@link android.R.attr#persistableMode}
+     */
+    Int32 mPersistableMode;
+
+
+    /**
+     * The maximum number of tasks rooted at this activity that can be in the recent task list.
+     * Refer to {@link android.R.attr#maxRecents}.
+     */
+    Int32 mMaxRecents;
 
     /**
      * Optional name of a permission required to be able to access this
@@ -258,19 +304,6 @@ public:
      * If defined, the activity named here is the logical parent of this activity.
      */
     String mParentActivityName;
-
-    /**
-     * Value indicating how this activity is to be persisted across
-     * reboots for restoring in the Recents list.
-     * {@link android.R.attr#persistableMode}
-     */
-    Int32 mPersistableMode;
-
-    /**
-     * The maximum number of tasks rooted at this activity that can be in the recent task list.
-     * Refer to {@link android.R.attr#maxRecents}.
-     */
-    Int32 mMaxRecents;
 };
 
 } // namespace Pm

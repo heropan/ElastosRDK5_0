@@ -890,7 +890,7 @@ ECode BitmapDrawable::ApplyTheme(
     assert(0 && "TODO");
     // t->ResolveAttributes(state->mThemeAttrs, layout, (ITypedArray**)&a);
     // try {
-    if (UpdateStateFromTypedArray(a) == E_XML_PULL_PARSER_EXCEPTION) {
+    if (UpdateStateFromTypedArray(a) == (ECode)E_XML_PULL_PARSER_EXCEPTION) {
         a->Recycle();
         return E_ANDROID_RUNTIME_EXCEPTION;
     }

@@ -5,21 +5,32 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/IntentFilter.h"
 #include "elastos/droid/content/pm/PackageUserState.h"
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashSet.h>
 
+using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Content::Res::IAssetManager;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Utility::IArraySet;
+using Elastos::Droid::Utility::IArrayMap;
 
+using Elastos::Core::IComparator;
 using Elastos::Core::ICharSequence;
+using Elastos::Core::StringBuilder;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashSet;
 using Elastos::IO::IFile;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IPrintWriter;
 using Elastos::Utility::Jar::IStrictJarFile;
+using Elastos::Utility::Zip::IZipEntry;
+using Elastos::Security::IPublicKey;
 using Elastos::Security::Cert::ICertificate;
 using Org::Xmlpull::V1::IXmlPullParser;
 
@@ -52,6 +63,7 @@ class PackageParser
     : public Object
 {
 public:
+    class ApkLite;
     class Package;
     class Permission;
     class PermissionGroup;
@@ -62,6 +74,7 @@ public:
     class IntentInfo;
     class ActivityIntentInfo;
     class ServiceIntentInfo;
+    class ProviderIntentInfo;
 
     /** @hide */
     class NewPermissionInfo : public Object
@@ -102,7 +115,8 @@ public:
             /* [in] */ Int32 nameRes,
             /* [in] */ Int32 labelRes,
             /* [in] */ Int32 iconRes,
-            /* [in] */ Int32 logoRes);
+            /* [in] */ Int32 logoRes,
+            /* [in] */ Int32 bannerRes);
 
     public:
         Package* mOwner;
@@ -127,6 +141,7 @@ public:
             /* [in] */ Int32 labelRes,
             /* [in] */ Int32 iconRes,
             /* [in] */ Int32 logoRes,
+            /* [in] */ Int32 bannerRes,
             /* [in] */ ArrayOf<String>* sepProcesses,
             /* [in] */ Int32 processRes,
             /* [in] */ Int32 descriptionRes,
@@ -232,33 +247,13 @@ public:
         CARAPI ToString(
             /* [out] */ String* str);
 
-        public List<String> getAllCodePaths() {
-            ArrayList<String> paths = new ArrayList<>();
-            paths.add(baseCodePath);
-            if (!ArrayUtils.isEmpty(splitCodePaths)) {
-                Collections.addAll(paths, splitCodePaths);
-            }
-            return paths;
-        }
+        AutoPtr<List<String> > GetAllCodePaths();
 
         /**
          * Filtered set of {@link #getAllCodePaths()} that excludes
          * resource-only APKs.
          */
-        public List<String> getAllCodePathsExcludingResourceOnly() {
-            ArrayList<String> paths = new ArrayList<>();
-            if ((applicationInfo.flags & ApplicationInfo.FLAG_HAS_CODE) != 0) {
-                paths.add(baseCodePath);
-            }
-            if (!ArrayUtils.isEmpty(splitCodePaths)) {
-                for (int i = 0; i < splitCodePaths.length; i++) {
-                    if ((splitFlags[i] & ApplicationInfo.FLAG_HAS_CODE) != 0) {
-                        paths.add(splitCodePaths[i]);
-                    }
-                }
-            }
-            return paths;
-        }
+        AutoPtr<List<String> > GetAllCodePathsExcludingResourceOnly();
 
     public:
         String mPackageName;
@@ -283,7 +278,7 @@ public:
         /** Flags of any split APKs; ordered by parsed splitName */
         AutoPtr<ArrayOf<Int32> > mSplitFlags;
 
-        Boolean baseHardwareAccelerated;
+        Boolean mBaseHardwareAccelerated;
 
         AutoPtr<IApplicationInfo> mApplicationInfo;
 
@@ -356,7 +351,7 @@ public:
         /*
          *  Applications hardware preferences
          */
-        List< AutoPtr<IConfigurationInfo> > mConfigPreferences;
+        AutoPtr <List< AutoPtr<IConfigurationInfo> > > mConfigPreferences;
 
         /*
          *  Applications requested features
@@ -439,7 +434,7 @@ public:
         CARAPI_(void) AppendComponentShortName(
             /* [in] */ StringBuilder* sb);
 
-        CARAPI_(PrintComponentShortName(
+        CARAPI_(void) PrintComponentShortName(
             /* [in] */ IPrintWriter* pw);
 
         virtual CARAPI_(void) SetPackageName(
@@ -584,168 +579,6 @@ public:
     public:
         IntentInfo();
 
-        CARAPI SetPriority(
-        /* [in] */ Int32 priority);
-
-        CARAPI GetPriority(
-            /* [out] */ Int32* priority);
-
-        CARAPI AddAction(
-            /* [in] */ const String& action);
-
-        CARAPI CountActions(
-            /* [out] */ Int32* count);
-
-        CARAPI GetAction(
-            /* [in] */ Int32 index,
-            /* [out] */ String* action);
-
-        CARAPI HasAction(
-            /* [in] */ const String& action,
-            /* [out] */ Boolean* hasAction);
-
-        CARAPI MatchAction(
-            /* [in] */ const String& action,
-            /* [out] */ Boolean* isMatched);
-
-        CARAPI GetActions(
-            /* [out, callee] */ ArrayOf<String>** actions);
-
-        CARAPI AddDataType(
-            /* [in] */ const String& type);
-
-        CARAPI HasDataType(
-            /* [in] */ const String& type,
-            /* [out] */ Boolean* hasDataType);
-
-        CARAPI CountDataTypes(
-            /* [out] */ Int32* Count);
-
-        CARAPI GetDataType(
-            /* [in] */ Int32 index,
-            /* [out] */ String* type);
-
-        CARAPI GetTypes(
-            /* [out, callee] */ ArrayOf<String>** types);
-
-        CARAPI AddDataScheme(
-            /* [in] */ const String& scheme);
-
-        CARAPI CountDataSchemes(
-            /* [out] */ Int32* count);
-
-        CARAPI GetDataScheme(
-            /* [in] */ Int32 index,
-            /* [out] */ String* scheme);
-
-        CARAPI HasDataScheme(
-            /* [in] */ const String& scheme,
-            /* [out] */ Boolean* hasDataScheme);
-
-        CARAPI GetSchemes(
-            /* [out, callee] */ ArrayOf<String>** schemes);
-
-        CARAPI AddDataAuthority(
-            /* [in] */ const String& host,
-            /* [in] */ const String& port);
-
-        CARAPI CountDataAuthorities(
-            /* [out] */ Int32* count);
-
-        CARAPI GetDataAuthority(
-            /* [in] */ Int32 index,
-            /* [out] */ IIntentFilterAuthorityEntry** authority);
-
-        CARAPI HasDataAuthority(
-            /* [in] */ IUri* Data,
-            /* [out] */ Boolean* hasDataAuthority);
-
-        CARAPI GetAuthorities(
-            /* [out, callee] */ ArrayOf<IIntentFilterAuthorityEntry *>** authorities);
-
-        CARAPI AddDataPath(
-            /* [in] */ const String& path,
-            /* [in] */ Int32 type);
-
-        CARAPI CountDataPaths(
-            /* [out] */ Int32* count);
-
-        CARAPI GetDataPath(
-            /* [in] */ Int32 index,
-            /* [out] */ IPatternMatcher** path);
-
-        CARAPI HasDataPath(
-            /* [in] */ const String& data,
-            /* [out] */ Boolean* hasDataPath);
-
-        CARAPI GetPaths(
-            /* [out, callee] */ ArrayOf<IPatternMatcher *>** paths);
-
-        CARAPI MatchDataAuthority(
-            /* [in] */ IUri* data,
-            /* [out] */ Int32* result);
-
-        CARAPI MatchData(
-            /* [in] */ const String& type,
-            /* [in] */ const String& scheme,
-            /* [in] */ IUri* data,
-            /* [out] */ Int32* result);
-
-        CARAPI AddCategory(
-            /* [in] */ const String& category);
-
-        CARAPI CountCategories(
-            /* [out] */ Int32* count);
-
-        CARAPI GetCategory(
-            /* [in] */ Int32 index,
-            /* [out] */ String* category);
-
-        CARAPI HasCategory(
-            /* [in] */ const String& category,
-            /* [out] */ Boolean* hasCategory);
-
-        CARAPI GetCategories(
-            /* [out, callee] */ ArrayOf<String>** categories);
-
-        CARAPI MatchCategories(
-            /* [in] */ ArrayOf<String>* categories,
-            /* [out] */ String* result);
-
-        CARAPI Match(
-            /* [in] */ IContentResolver* resolver,
-            /* [in] */ IIntent* intent,
-            /* [in] */ Boolean resolve,
-            /* [in] */ const String& logTag,
-            /* [out] */ Int32* result);
-
-        CARAPI Match(
-            /* [in] */ const String& action,
-            /* [in] */ const String& type,
-            /* [in] */ const String& scheme,
-            /* [in] */ IUri* data,
-            /* [in] */ ArrayOf<String>* categories,
-            /* [in] */ const String& logTag,
-            /* [out] */ Int32* result);
-
-        CARAPI ReadFromXml(
-            /* [in] */ IXmlPullParser* parser);
-
-        CARAPI WriteToXml(
-            /* [in] */ IXmlSerializer* serializer);
-
-        CARAPI Dump(
-            /* [in] */ IPrinter* du,
-            /* [in] */ const String& prefix);
-
-        CARAPI HasPartialTypes(
-            /* [out] */ Boolean* has);
-
-        using IntentFilter::Match;
-        using IntentFilter::HasCategory;
-        using IntentFilter::GetPriority;
-        using IntentFilter::CountActions;
-
     public:
         Boolean mHasDefault;
         Int32 mLabelRes;
@@ -787,13 +620,29 @@ public:
     {
     public:
         ProviderIntentInfo(
-            /* [in] */ Provider* service);
+            /* [in] */ Provider* provider);
 
         CARAPI ToString(
             /* [out] */ String* str);
 
     public:
-        Provider* mService;
+        Provider* mProvider;
+    };
+
+    /**
+     * Used to sort a set of APKs based on their split names, always placing the
+     * base APK (with {@code null} split name) first.
+     */
+    class SplitNameComparator
+        : public Object
+        , public IComparator {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI Compare(
+            /* [in] */ IInterface* lhs,
+            /* [in] */ IInterface* rhs,
+            /* [out] */ Int32* result);
     };
 
 public:
@@ -853,6 +702,7 @@ public:
     CARAPI ParsePackageLite(
         /* [in] */ IFile* packageFile,
         /* [in] */ Int32 flags,
+        /* [in] */ ArrayOf<Byte>* readBuffer,
         /* [out] */ PackageLite** pkgLite);
 
     /**
@@ -872,6 +722,7 @@ public:
     CARAPI ParsePackage(
         /* [in] */ IFile* packageFile,
         /* [in] */ Int32 flags,
+        /* [in] */ ArrayOf<Byte>* readBuffer,
         /* [out] */ Package** pkgLite);
 
     /**
@@ -903,6 +754,7 @@ public:
     static CARAPI ParseApkLite(
         /* [in] */ IFile* apkFile,
         /* [in] */ Int32 flags,
+        /* [in] */ ArrayOf<Byte>* readBuffer,
         /* [out] */ PackageParser::ApkLite** apkLite);
 
     /**
@@ -969,6 +821,7 @@ public:
 
     static CARAPI ReadFullyIgnoringContents(
         /* [in] */ IInputStream* in,
+        /* [in] */ ArrayOf<Byte>* readBuffer,
         /* [out] */ Int64* result);
 
     static CloseQuietly(
@@ -1004,16 +857,18 @@ private:
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 flags,
-        /* [out, callee] */ ArrayOf<String>* pairString);
+        /* [out, callee] */ ArrayOf<String>** pairString);
 
     static CARAPI ParseMonolithicPackageLite(
         /* [in] */ IFile* packageFile,
         /* [in] */ Int32 flags,
+        /* [in] */ ArrayOf<Byte>* readBuffer,
         /* [out] */ PackageLite** pkgLite);
 
     static CARAPI ParseClusterPackageLite(
         /* [in] */ IFile* packageFile,
         /* [in] */ Int32 flags,
+        /* [in] */ ArrayOf<Byte>* readBuffer,
         /* [out] */ PackageLite** pkgLite);
 
     /**
@@ -1028,6 +883,7 @@ private:
     CARAPI ParseClusterPackage(
         /* [in] */ IFile* packageFile,
         /* [in] */ Int32 flags,
+        /* [in] */ ArrayOf<Byte>* readBuffer,
         /* [out] */ Package** pkgLite);
 
     /**
@@ -1043,6 +899,7 @@ private:
     CARAPI ParseMonolithicPackage(
         /* [in] */ IFile* packageFile,
         /* [in] */ Int32 flags,
+        /* [in] */ ArrayOf<Byte>* readBuffer,
         /* [out] */ Package** pkgLite);
 
     CARAPI LoadApkIntoAssetManager(
@@ -1077,7 +934,7 @@ private:
         /* [in] */ Int32 flags,
         /* [in] */ Int32 splitIndex,
         /* [in] */ ArrayOf<String>* outError,
-        /* [out] */ Package** pkg);
+        /* [out] */ Package** result);
 
     static CARAPI CollectCertificates(
         /* [in] */ Package* pkg,
@@ -1230,7 +1087,8 @@ private:
         /* [in] */ Int32 nameRes,
         /* [in] */ Int32 labelRes,
         /* [in] */ Int32 iconRes,
-        /* [in] */ Int32 logoRes);
+        /* [in] */ Int32 logoRes,
+        /* [in] */ Int32 bannerRes);
 
     CARAPI_(AutoPtr<Activity>) ParseActivity(
         /* [in] */ Package* owner,
@@ -1303,7 +1161,7 @@ private:
         /* [in] */ IResources* res,
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */　Boolean allowGlobs
+        /* [in] */ Boolean allowGlobs,
         /* [in] */ IntentInfo* outInfo,
         /* [out] */ ArrayOf<String>* outError);
 
@@ -1314,7 +1172,7 @@ private:
         /* [in] */ IBundle* metaData,
         /* [in] */ Int32 userId);
 
-    CARAPI UpdateApplicationInfo(
+    static CARAPI UpdateApplicationInfo(
         /* [in] */ IApplicationInfo* ai,
         /* [in] */ Int32 flags,
         /* [in] */ PackageUserState* state);
@@ -1396,26 +1254,10 @@ private:
 
     static const String ANDROID_RESOURCES;
 
-    /**
-     * Used to sort a set of APKs based on their split names, always placing the
-     * base APK (with {@code null} split name) first.
-     */
-    class SplitNameComparator
-        : public Object
-        , public IComparator {
-    public:
-        CAR_INTERFACE_DECL()
-
-        CARAPI Compare(
-            /* [in] */ ICharSequence* lhs,
-            /* [in] */ ICharSequence* rhs,
-            /* [out] */ Int32* result);
-    };
-
     static const AutoPtr<IComparator> sSplitNameComparator;// = new SplitNameComparator();
 
 
-    static AtomicReference<byte[]> sBuffer = new AtomicReference<byte[]>();
+    // static AtomicReference<byte[]> sBuffer = new AtomicReference<byte[]>();
 };
 
 } // namespace Pm

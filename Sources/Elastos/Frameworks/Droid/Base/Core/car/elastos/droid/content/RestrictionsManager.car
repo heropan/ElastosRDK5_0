@@ -398,7 +398,7 @@ module
             [in] IPersistableBundle* request);
 
         CreateLocalApprovalIntent(
-            [in] IIntent* intent);
+            [out] IIntent** intent);
 
         /**
          * Called by the Restrictions Provider to deliver a response to an application.

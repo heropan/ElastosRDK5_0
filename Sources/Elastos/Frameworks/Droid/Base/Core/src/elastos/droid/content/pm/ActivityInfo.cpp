@@ -44,13 +44,14 @@ CAR_INTERFACE_IMPL_2(ActivityInfo, ComponentInfo, IActivityInfo, IParcelable)
 ActivityInfo::ActivityInfo()
     : mTheme(0)
     , mLaunchMode(0)
+    , mDocumentLaunchMode(0)
+    , mPersistableMode(0)
+    , mMaxRecents(0)
     , mFlags(0)
     , mScreenOrientation(SCREEN_ORIENTATION_UNSPECIFIED)
     , mConfigChanges(0)
     , mSoftInputMode(0)
     , mUiOptions(0)
-    , mPersistableMode(0)
-    , mMaxRecents(0)
 {}
 
 ActivityInfo::~ActivityInfo()
@@ -249,6 +250,51 @@ ECode ActivityInfo::SetLaunchMode(
     /* [in] */ Int32 mode)
 {
     mLaunchMode = mode;
+    return NOERROR;
+}
+
+ECode ActivityInfo::GetDocumentLaunchMode(
+    /* [out] */ Int32* mode)
+{
+    VALIDATE_NOT_NULL(mode);
+    *mode = mDocumentLaunchMode;
+    return NOERROR;
+}
+
+ECode ActivityInfo::SetDocumentLaunchMode(
+    /* [in] */ Int32 mode)
+{
+    mDocumentLaunchMode = mode;
+    return NOERROR;
+}
+
+ECode ActivityInfo::GetPersistableMode(
+    /* [out] */ Int32* mode)
+{
+    VALIDATE_NOT_NULL(mode);
+    *mode = mPersistableMode;
+    return NOERROR;
+}
+
+ECode ActivityInfo::SetPersistableMode(
+    /* [in] */ Int32 mode)
+{
+    mPersistableMode = mode;
+    return NOERROR;
+}
+
+ECode ActivityInfo::GetMaxRecents(
+    /* [out] */ Int32* max)
+{
+    VALIDATE_NOT_NULL(max);
+    *max = mMaxRecents;
+    return NOERROR;
+}
+
+ECode ActivityInfo::SetMaxRecents(
+    /* [in] */ Int32 max)
+{
+    mMaxRecents = max;
     return NOERROR;
 }
 

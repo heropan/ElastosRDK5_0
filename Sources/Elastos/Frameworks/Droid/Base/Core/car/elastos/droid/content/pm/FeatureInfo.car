@@ -12,7 +12,7 @@ module
      */
     /**
      * @Involve
-     * interface IFeatureInfo
+     * interface Parcelable
      */
     interface IFeatureInfo {
         /**
