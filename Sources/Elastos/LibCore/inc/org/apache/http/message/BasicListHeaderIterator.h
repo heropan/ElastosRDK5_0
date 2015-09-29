@@ -2,8 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICLISTHEADERITERATOR_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICLISTHEADERITERATOR_H_
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Utility::IIterator;
 using Org::Apache::Http::IHeaderIterator;
@@ -20,7 +19,7 @@ namespace Message {
  * @version $Revision: 584542 $
  */
 class BasicListHeaderIterator
-    , public Object
+    : public Object
     , public IBasicListHeaderIterator
     , public IHeaderIterator
     , public IIterator

@@ -65,17 +65,6 @@ public:
 
     CARAPI Clone(
         /* [out] */ IInterface** obj);
-
-    CARAPI constructor(
-        /* [in] */ const String& name,
-        /* [in] */ const String& value,
-        /* [in] */ ArrayOf<INameValuePair*>* parameters);
-
-    CARAPI constructor(
-        /* [in] */ const String& name,
-        /* [in] */ const String& value);
-
-    CARAPI constructor();
 };
 
 } // namespace Message

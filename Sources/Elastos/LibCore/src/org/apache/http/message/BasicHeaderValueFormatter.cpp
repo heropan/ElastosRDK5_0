@@ -2,7 +2,7 @@
 #include "BasicHeaderValueFormatter.h"
 #include "CBasicHeaderValueFormatter.h"
 #include "CCharArrayBuffer.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Utility::CCharArrayBuffer;
@@ -30,10 +30,11 @@ ECode BasicHeaderValueFormatter::FormatElements(
 {
     VALIDATE_NOT_NULL(elements)
     *elements = String(NULL);
-    if (formatter == NULL)
-        formatter = BasicHeaderValueFormatter::DEFAULT;
+    if (formatter == NULL) {
+        formatter = IHeaderValueFormatter::Probe(BasicHeaderValueFormatter::DEFAULT);
+    }
     AutoPtr<ICharArrayBuffer> buffer;
-    FAIL_RETURN(formatter->FormatElements(NULL, elems, quote, (ICharArrayBuffer**)&buffer);
+    FAIL_RETURN(formatter->FormatElements(NULL, elems, quote, (ICharArrayBuffer**)&buffer))
     IObject::Probe(buffer)->ToString(elements);
     return NOERROR;
 }
@@ -55,7 +56,7 @@ ECode BasicHeaderValueFormatter::FormatElements(
     Int32 len;
     EstimateElementsLen(elems, &len);
     if (buffer == NULL) {
-        CCharArrayBuffer(len, (ICharArrayBuffer**)&buffer);
+        CCharArrayBuffer::New(len, (ICharArrayBuffer**)&buffer);
     }
     else {
         buffer->EnsureCapacity(len);
@@ -65,7 +66,8 @@ ECode BasicHeaderValueFormatter::FormatElements(
         if (i > 0) {
             buffer->Append(String(", "));
         }
-        FormatHeaderElement(buffer, (*elems)[i], quote);
+        AutoPtr<ICharArrayBuffer> b;
+        FormatHeaderElement(buffer, (*elems)[i], quote, (ICharArrayBuffer**)&b);
     }
     *buf = buffer;
     REFCOUNT_ADD(*buf)
@@ -100,9 +102,10 @@ ECode BasicHeaderValueFormatter::FormatHeaderElement(
     /* [out] */ String* element)
 {
     VALIDATE_NOT_NULL(element)
-    *element = String(NULL)
-    if (formatter == NULL)
-        formatter = BasicHeaderValueFormatter::DEFAULT;
+    *element = String(NULL);
+    if (formatter == NULL) {
+        formatter = IHeaderValueFormatter::Probe(BasicHeaderValueFormatter::DEFAULT);
+    }
     AutoPtr<ICharArrayBuffer> buffer;
     FAIL_RETURN(formatter->FormatHeaderElement(NULL, elem, quote, (ICharArrayBuffer**)&buffer))
     IObject::Probe(buffer)->ToString(element);
@@ -148,7 +151,8 @@ ECode BasicHeaderValueFormatter::FormatHeaderElement(
             buffer->Append(String("; "));
             AutoPtr<INameValuePair> pair;
             elem->GetParameter(i, (INameValuePair**)&pair);
-            FormatNameValuePair(buffer, pair, quote);
+            AutoPtr<ICharArrayBuffer> b;
+            FormatNameValuePair(buffer, pair, quote, (ICharArrayBuffer**)&b);
         }
     }
 
@@ -201,8 +205,9 @@ ECode BasicHeaderValueFormatter::FormatParameters(
 {
     VALIDATE_NOT_NULL(parameters)
     *parameters = String(NULL);
-    if (formatter == NULL)
-        formatter = BasicHeaderValueFormatter::DEFAULT;
+    if (formatter == NULL) {
+        formatter = IHeaderValueFormatter::Probe(BasicHeaderValueFormatter::DEFAULT);
+    }
     AutoPtr<ICharArrayBuffer> buffer;
     FAIL_RETURN(formatter->FormatParameters(NULL, nvps, quote, (ICharArrayBuffer**)&buffer))
     IObject::Probe(buffer)->ToString(parameters);
@@ -236,7 +241,8 @@ ECode BasicHeaderValueFormatter::FormatParameters(
         if (i > 0) {
             buffer->Append(String("; "));
         }
-        FormatNameValuePair(buffer, (*nvps)[i], quote);
+        AutoPtr<ICharArrayBuffer> b;
+        FormatNameValuePair(buffer, (*nvps)[i], quote, (ICharArrayBuffer**)&b);
     }
 
     *buf = buffer;
@@ -272,10 +278,11 @@ ECode BasicHeaderValueFormatter::FormatNameValuePair(
     /* [out] */ String* pair)
 {
     VALIDATE_NOT_NULL(pair)
-    *pair = String(NULL)
+    *pair = String(NULL);
 
-    if (formatter == NULL)
-        formatter = BasicHeaderValueFormatter::DEFAULT;
+    if (formatter == NULL) {
+        formatter = IHeaderValueFormatter::Probe(BasicHeaderValueFormatter::DEFAULT);
+    }
     AutoPtr<ICharArrayBuffer> buffer;
     FAIL_RETURN(formatter->FormatNameValuePair(NULL, nvp, quote, (ICharArrayBuffer**)&buffer))
     IObject::Probe(buffer)->ToString(pair);
@@ -358,7 +365,7 @@ ECode BasicHeaderValueFormatter::DoFormatValue(
         buffer->Append('"');
     }
     for (Int32 i = 0; i < value.GetLength(); i++) {
-        Char32 ch = value.GetCharAt(i);
+        Char32 ch = value.GetChar(i);
         Boolean isUnsafe;
         if (IsUnsafe(ch, &isUnsafe), isUnsafe) {
             buffer->Append('\\');
@@ -368,6 +375,7 @@ ECode BasicHeaderValueFormatter::DoFormatValue(
     if (quote) {
         buffer->Append('"');
     }
+    return NOERROR;
 }
 
 ECode BasicHeaderValueFormatter::IsSeparator(
@@ -375,7 +383,7 @@ ECode BasicHeaderValueFormatter::IsSeparator(
     /* [out] */ Boolean* isSeparator)
 {
     VALIDATE_NOT_NULL(isSeparator)
-    *isSeparator = SEPARATORS.IndexOf(ch) >= 0;
+    *isSeparator = String(" ,;=()<>@:\\\"/[]?{}\t")/*SEPARATORS*/.IndexOf(ch) >= 0;
     return NOERROR;
 }
 
@@ -384,7 +392,7 @@ ECode BasicHeaderValueFormatter::IsUnsafe(
     /* [out] */ Boolean* isUnsafe)
 {
     VALIDATE_NOT_NULL(isUnsafe)
-    *isUnsafe = UNSAFE_CHARS.IndexOf(ch) >= 0;
+    *isUnsafe = String("\"\\")/*UNSAFE_CHARS*/.IndexOf(ch) >= 0;
     return NOERROR;
 }
 

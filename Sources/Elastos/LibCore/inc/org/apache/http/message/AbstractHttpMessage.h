@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_ABSTRACTHTTPMESSAGE_H_
 #define __ORG_APACHE_HTTP_MESSAGE_ABSTRACTHTTPMESSAGE_H_
 
-#include "elastos/core/Object.h"
+#include "Object.h"
 
 using Elastos::Core::IArrayOf;
 using Org::Apache::Http::IHttpMessage;

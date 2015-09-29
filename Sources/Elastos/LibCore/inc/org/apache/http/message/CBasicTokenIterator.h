@@ -22,14 +22,6 @@ CarClass(CBasicTokenIterator) , public BasicTokenIterator
 {
 public:
     CAR_OBJECT_DECL()
-
-    /**
-     * Creates a new instance of {@link BasicTokenIterator}.
-     *
-     * @param headerIterator    the iterator for the headers to tokenize
-     */
-    CARAPI constructor(
-        /* [in] */ IHeaderIterator* headerIterator);
 };
 
 } // namespace Message

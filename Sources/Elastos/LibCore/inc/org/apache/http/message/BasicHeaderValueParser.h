@@ -236,7 +236,7 @@ public:
     static CARAPI ParseNameValuePair(
         /* [in] */ const String& value,
         /* [in] */ IHeaderValueParser* parser,
-        /* [out] */ INameValuePair* pair);
+        /* [out] */ INameValuePair** pair);
 
     /**
      * Parses a name=value specification, where the = and value are optional.
@@ -251,7 +251,7 @@ public:
     CARAPI ParseNameValuePair(
         /* [in] */ ICharArrayBuffer* buffer,
         /* [in] */ IParserCursor* cursor,
-        /* [out] */ INameValuePair* pair);
+        /* [out] */ INameValuePair** pair);
 
     CARAPI ParseNameValuePair(
         /* [in] */ ICharArrayBuffer* buffer,
@@ -287,6 +287,8 @@ protected:
         /* [out] */ INameValuePair** pair);
 
 private:
+    static CARAPI_(AutoPtr< ArrayOf<Char32> >) InitDelimiters();
+
     CARAPI_(Boolean) IsOneOf(
         /* [in] */ Char32 ch,
         /* [in] */ ArrayOf<Char32>* chs);
@@ -301,8 +303,8 @@ public:
     static const AutoPtr<IBasicHeaderValueParser> DEFAULT;
 
 private:
-    static const Char32 PARAM_DELIMITER;
-    static const Char32 ELEM_DELIMITER;
+    static const Char32 PARAM_DELIMITER = ';';
+    static const Char32 ELEM_DELIMITER = ',';
     static const AutoPtr< ArrayOf<Char32> > ALL_DELIMITERS;
 };
 

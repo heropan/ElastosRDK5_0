@@ -2,10 +2,12 @@
 #include "AbstractHttpMessage.h"
 #include "CHeaderGroup.h"
 #include "CBasicHeader.h"
-#include <elastos/Logger.h>
+#include "CBasicHttpParams.h"
+#include "Logger.h"
 
 using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Params::CBasicHttpParams;
 
 namespace Org {
 namespace Apache {

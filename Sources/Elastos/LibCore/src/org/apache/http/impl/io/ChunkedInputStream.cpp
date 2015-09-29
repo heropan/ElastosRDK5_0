@@ -2,9 +2,9 @@
 #include "ChunkedInputStream.h"
 #include "CCharArrayBuffer.h"
 #include "AbstractMessageParser.h"
-#include <elastos/Logger.h>
-#include <elastos/core/Math.h>
-#include <elastos/core/StringUtils.h>
+#include "Logger.h"
+#include "elastos/core/Math.h"
+#include "elastos/core/StringUtils.h"
 
 using Elastos::Core::Math;
 using Elastos::Core::StringUtils;
@@ -74,17 +74,17 @@ ECode ChunkedInputStream::Read(
     }
 
     if (mEof) {
-        *value = -1;
+        *number = -1;
         return NOERROR;
     }
     if (mPos >= mChunkSize) {
         NextChunk();
         if (mEof) {
-            *value = -1;
+            *number = -1;
             return NOERROR;
         }
     }
-    len = Math::Min(len, mChunkSize - mPos);
+    len = Elastos::Core::Math::Min(len, mChunkSize - mPos);
     Int32 count;
     FAIL_RETURN(mIn->Read(b, off, len, &count))
     mPos += count;
@@ -141,7 +141,7 @@ ECode ChunkedInputStream::GetChunkSize(
     Int32 separator;
     mBuffer->IndexOf(';', &separator);
     if (separator < 0) {
-        mBuffer->GLength(&separator);
+        mBuffer->GetLength(&separator);
     }
     // try {
     String str;

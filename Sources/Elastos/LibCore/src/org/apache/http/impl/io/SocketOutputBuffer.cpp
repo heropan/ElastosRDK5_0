@@ -1,6 +1,6 @@
 
 #include "SocketOutputBuffer.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 
@@ -14,7 +14,7 @@ SocketOutputBuffer::SocketOutputBuffer(
     /* [in] */ ISocket* socket,
     /* [in] */ Int32 buffersize,
     /* [in] */ IHttpParams* params)
-    : AbstractSessionInputBuffer()
+    : AbstractSessionOutputBuffer()
 {
     if (socket == NULL) {
         Logger::E("SocketOutputBuffer", "Socket may not be null");
@@ -26,9 +26,9 @@ SocketOutputBuffer::SocketOutputBuffer(
     // 'buffersize' as a hint in the weakest sense, and always use
     // an 8KiB heap buffer and leave the kernel buffer size alone,
     // trusting the system to have set a network-appropriate default.
-    AutoPtr<IInputStream> in;
-    socket->GetInputStream((IInputStream**)&in);
-    Init(in, 8192, params);
+    AutoPtr<IOutputStream> out;
+    socket->GetOutputStream((IOutputStream**)&out);
+    Init(out, 8192, params);
     // END android-changed
 }
 

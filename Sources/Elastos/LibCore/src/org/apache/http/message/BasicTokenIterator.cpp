@@ -7,6 +7,7 @@
 using Elastos::Core::Character;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
+using Elastos::Utility::EIID_IIterator;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeader;
 
@@ -21,7 +22,7 @@ BasicTokenIterator::BasicTokenIterator()
 
 CAR_INTERFACE_IMPL_3(BasicTokenIterator, Object, IBasicTokenIterator, ITokenIterator, IIterator)
 
-ECode BasicTokenIterator::Init(
+ECode BasicTokenIterator::constructor(
     /* [in] */ IHeaderIterator* headerIterator)
 {
     if (headerIterator == NULL) {
@@ -98,7 +99,7 @@ ECode BasicTokenIterator::FindNext(
     }
     else {
         // called after a token, make sure there is a separator
-        FindTokenSeparator(from, &form);
+        FindTokenSeparator(from, &from);
     }
 
     Int32 start;
@@ -135,7 +136,7 @@ ECode BasicTokenIterator::FindTokenStart(
     *pos = -1;
 
     if (from < 0) {
-        Logger::E("BasicTokenIterator", "Search position must not be negative: %d", form);
+        Logger::E("BasicTokenIterator", "Search position must not be negative: %d", from);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -154,7 +155,7 @@ ECode BasicTokenIterator::FindTokenStart(
                 found = TRUE;
             }
             else {
-                Logger::E("BasicTokenIterator", "Invalid character before token (pos %d): %s", form, mCurrentHeader.string());
+                Logger::E("BasicTokenIterator", "Invalid character before token (pos %d): %s", from, mCurrentHeader.string());
                 return E_PARSE_EXCEPTION;
             }
         }
@@ -184,7 +185,7 @@ ECode BasicTokenIterator::FindTokenSeparator(
     *pos = -1;
 
     if (from < 0) {
-        Logger::E("BasicTokenIterator", "Search position must not be negative: %d", form);
+        Logger::E("BasicTokenIterator", "Search position must not be negative: %d", from);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -200,10 +201,10 @@ ECode BasicTokenIterator::FindTokenSeparator(
             from++;
         }
         else if (IsTokenChar(ch, &isTokenChar), isTokenChar) {
-            Logger::E("BasicTokenIterator", "Tokens without separator (pos %d): %s", form, mCurrentHeader.string());
+            Logger::E("BasicTokenIterator", "Tokens without separator (pos %d): %s", from, mCurrentHeader.string());
             return E_PARSE_EXCEPTION;
         }else {
-            Logger::E("BasicTokenIterator", "Invalid character after token (pos %d): %s", form, mCurrentHeader.string());
+            Logger::E("BasicTokenIterator", "Invalid character after token (pos %d): %s", from, mCurrentHeader.string());
             return E_PARSE_EXCEPTION;
         }
     }
@@ -220,7 +221,7 @@ ECode BasicTokenIterator::FindTokenEnd(
     *pos = -1;
 
     if (from < 0) {
-        Logger::E("BasicTokenIterator", "Search position must not be negative: %d", form);
+        Logger::E("BasicTokenIterator", "Search position must not be negative: %d", from);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -294,7 +295,7 @@ ECode BasicTokenIterator::IsHttpSeparator(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = (HTTP_SEPARATORS.IndexOf(ch) >= 0);
+    *result = (String(" ,;=()<>@:\\\"/[]?{}\t")/*HTTP_SEPARATORS*/.IndexOf(ch) >= 0);
     return NOERROR;
 }
 

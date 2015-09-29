@@ -20,7 +20,7 @@ class HttpResponseWriter : public AbstractMessageWriter
 public:
     HttpResponseWriter(
         /* [in] */ ISessionOutputBuffer* buffer,
-        /* [in] */ ILineFormatter* parser,
+        /* [in] */ ILineFormatter* formatter,
         /* [in] */ IHttpParams* params);
 
 protected:

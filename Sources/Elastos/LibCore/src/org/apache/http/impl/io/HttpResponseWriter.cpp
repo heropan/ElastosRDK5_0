@@ -1,7 +1,7 @@
 
 #include "HttpResponseWriter.h"
 #include "CCharArrayBuffer.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpResponse;
@@ -17,7 +17,7 @@ namespace IO {
 
 HttpResponseWriter::HttpResponseWriter(
     /* [in] */ ISessionOutputBuffer* buffer,
-    /* [in] */ ILineFormatter* parser,
+    /* [in] */ ILineFormatter* formatter,
     /* [in] */ IHttpParams* params)
     : AbstractMessageWriter(buffer, formatter, params)
 {}
@@ -27,9 +27,9 @@ ECode HttpResponseWriter::WriteHeadLine(
 {
     AutoPtr<IHttpResponse> response = IHttpResponse::Probe(message);
     AutoPtr<IStatusLine> statusLine;
-    request->GetStatusLine((IStatusLine**)&statusLine);
+    response->GetStatusLine((IStatusLine**)&statusLine);
     AutoPtr<ICharArrayBuffer> buffer;
-    mLineFormatter->FormatStatusLine(mLineBuf, statusLine, (ICharArrayBuffer**)&buffer);
+    mLineFormatter->FormatStatusLine(mLineBuffer, statusLine, (ICharArrayBuffer**)&buffer);
     return mSessionBuffer->WriteLine(buffer);
 }
 

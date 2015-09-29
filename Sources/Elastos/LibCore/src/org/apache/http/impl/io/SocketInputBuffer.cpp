@@ -1,6 +1,6 @@
 
 #include "SocketInputBuffer.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 
@@ -56,7 +56,7 @@ ECode SocketInputBuffer::IsDataAvailable(
         // } finally {
         //     socket.setSoTimeout(oldtimeout);
         // }
-        socket->SetSoTimeout(oldtimeout);
+        mSocket->SetSoTimeout(oldtimeout);
     }
     *isAvailable = result;
     return NOERROR;
@@ -82,7 +82,7 @@ ECode SocketInputBuffer::IsStale(
     // } finally {
     //     this.socket.setSoTimeout(oldTimeout);
     // }
-    socket->SetSoTimeout(oldtimeout);
+    mSocket->SetSoTimeout(oldtimeout);
     return NOERROR;
 }
 

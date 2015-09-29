@@ -94,9 +94,9 @@ public:
         /* [out] */ Boolean* result);
 
     static CARAPI ParseRequestLine(
-            /* [in] */ const String& value,
-            /* [in] */ ILineParser* parser,
-            /* [out] */ IRequestLine** requestLine);
+        /* [in] */ const String& value,
+        /* [in] */ ILineParser* parser,
+        /* [out] */ IRequestLine** requestLine);
 
     /**
      * Parses a request line.
@@ -112,7 +112,7 @@ public:
     CARAPI ParseRequestLine(
         /* [in] */ ICharArrayBuffer* buffer,
         /* [in] */ IParserCursor* cursor,
-        /* [out] */ IRequestLine* requestLine);
+        /* [out] */ IRequestLine** requestLine);
 
     static CARAPI ParseStatusLine(
         /* [in] */ const String& value,
@@ -133,12 +133,12 @@ public:
     CARAPI ParseStatusLine(
         /* [in] */ ICharArrayBuffer* buffer,
         /* [in] */ IParserCursor* cursor,
-        /* [out] */ IStatusLine* statusLine);
+        /* [out] */ IStatusLine** statusLine);
 
     static CARAPI ParseHeader(
         /* [in] */ const String& value,
         /* [in] */ ILineParser* parser,
-        /* [out] */ IHeader* header);
+        /* [out] */ IHeader** header);
 
     /**
      * Creates a header from a line.
@@ -157,7 +157,7 @@ public:
      */
     CARAPI ParseHeader(
         /* [in] */ ICharArrayBuffer* buffer,
-        /* [out] */ IHeader* header);
+        /* [out] */ IHeader** header);
 
 protected:
     /**
@@ -167,8 +167,13 @@ protected:
      *                  <code>null</code> for HTTP. The actual version
      *                  is not relevant, only the protocol name.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IProtocolVersion* proto);
+
+    /**
+     * Creates a new line parser for HTTP.
+     */
+    CARAPI constructor();
 
     /**
      * Creates a protocol version.

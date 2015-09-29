@@ -68,6 +68,8 @@ public:
      */
     CARAPI Close();
 
+    using InputStream::Read;
+
     /**
      * Read the next byte from the stream
      * @return The next byte or -1 if the end of stream has been reached.
@@ -93,6 +95,17 @@ public:
         /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 byteOffset,
         /* [in] */ Int32 byteCount,
+        /* [out] */ Int32* number);
+
+    /**
+     * Read more bytes from the stream.
+     * @param b The byte array to put the new data in.
+     * @return The number of bytes read into the buffer.
+     * @throws IOException If an IO problem occurs
+     * @see java.io.InputStream#read(byte[])
+     */
+    CARAPI Read(
+        /* [in] */ ArrayOf<Byte>* b,
         /* [out] */ Int32* number);
 
     /**

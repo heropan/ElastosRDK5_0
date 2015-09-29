@@ -73,7 +73,7 @@ public:
     CARAPI Remove();
 
 protected:
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IHeaderIterator* headerIterator);
 
     /**

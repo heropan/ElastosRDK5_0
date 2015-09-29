@@ -49,7 +49,7 @@ ECode ContentLengthInputStream::Close()
         //     // to read after closed!
         //     closed = true;
         // }
-        closed = TRUE;
+        mClosed = TRUE;
     }
     return NOERROR;
 }
@@ -85,7 +85,7 @@ ECode ContentLengthInputStream::Read(
     }
 
     if (mPos >= mContentLength) {
-        *value = -1;
+        *number = -1;
         return NOERROR;
     }
 
@@ -119,12 +119,12 @@ ECode ContentLengthInputStream::Skip(
     AutoPtr< ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(BUFFER_SIZE);
     // make sure we don't skip more bytes than are
     // still available
-    Int64 remaining = Math::Min(n, mContentLength - mPos);
+    Int64 remaining = Elastos::Core::Math::Min(n, mContentLength - mPos);
     // skip and keep track of the bytes actually skipped
     Int64 count = 0;
     while (remaining > 0) {
         Int32 l;
-        Read(buffer, 0, (Int32)Elastos::Core::Math::Min(BUFFER_SIZE, remaining));
+        Read(buffer, 0, Elastos::Core::Math::Min(BUFFER_SIZE, (Int32)remaining), &l);
         if (l == -1) {
             break;
         }
