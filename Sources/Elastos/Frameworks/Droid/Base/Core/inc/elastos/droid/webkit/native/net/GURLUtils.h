@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,8 +5,6 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_GURLUTILS_H_
 #define _ELASTOS_DROID_WEBKIT_NET_GURLUTILS_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
 
 // package org.chromium.net;
@@ -22,7 +19,7 @@ namespace Net {
   * Class to access the GURL library from java.
   */
 // @JNINamespace("net")
-class GURLUtils
+class GURLUtils : public Object
 {
 public:
     /**

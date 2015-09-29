@@ -1,6 +1,33 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "ValidationMessageBubble.h"
+#include "elastos/droid/webkit/native/components/ValidationMessageBubble.h"
+//#include "elastos/droid/view/View.h"
+#include "elastos/droid/text/TextUtils.h"
+//#include "elastos/droid/graphics/CPoint.h"
+//#include "elastos/droid/widget/CRelativeLayoutLayoutParams.h"
+#include "elastos/droid/webkit/native/content/browser/RenderCoordinates.h"
+//#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
+#include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
+
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewManager;
+using Elastos::Droid::View::IViewParent;
+using Elastos::Droid::View::IViewGroupLayoutParams;
+//using Elastos::Droid::View::View;
+using Elastos::Droid::View::EIID_IView;
+using Elastos::Droid::View::EIID_IViewGroup;
+using Elastos::Droid::View::EIID_IViewParent;
+using Elastos::Droid::View::EIID_IViewManager;
+using Elastos::Droid::Widget::ITextView;
+using Elastos::Droid::Widget::IRelativeLayoutLayoutParams;
+//using Elastos::Droid::Widget::CRelativeLayoutLayoutParams;
+using Elastos::Droid::Text::TextUtils;
+//using Elastos::Droid::Graphics::CPoint;
+//using Elastos::Droid::Webkit::Content::Browser::ContentViewCore;
+using Elastos::Droid::Webkit::Content::Browser::RenderCoordinates;
+using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -26,6 +53,31 @@ ValidationMessageBubble::ValidationMessageBubble(
     //         contentViewCore, (int) (anchor.centerX() - getAnchorOffset()), (int) anchor.bottom);
     // mPopup.showAtLocation(
     //         contentViewCore.getContainerView(), Gravity.NO_GRAVITY, origin.x, origin.y);
+
+	assert(0);
+/*
+	AutoPtr<IView> view;
+	View::Inflate(contentViewCore->GetContext(), R::layout::validation_message_bubble, NULL, (IView**)&view);
+	AutoPtr<IViewGroup> root;
+	view->Probe(EIID_IViewGroup, (IViewGroup**)&root);
+	mPopup = new PopupWindow(root);
+	UpdateTextViews(root, mainText, subText);
+	Measure(contentViewCore->GetRenderCoordinates());
+
+	Float centerX = 0.0f;
+	Float bottom = 0.0f;
+	anchor->GetCenterX(&centerX);
+	anchor->GetBottom(&bottom);
+	AutoPtr<IPoint> origin = AdjustWindowPosition(contentViewCore, (Int32)(centerX - GetAnchorOffset()), (Int32)bottom);
+
+	AutoPtr<IViewGroup> viewGroup = contentViewCore->GetContainerView();
+	AutoPtr<IView> viewTmp;
+	viewGroup->Probe(EIID_IView, (IView**)&viewTmp);
+	Int32 originX = 0;
+	Int32 originY = 0;
+	origin->GetX(&originX);
+	origin->GetY(&originY);
+	mPopup->ShowAtLocation(viewTmp, IGravity::NO_GRAVITY, originX, originY);*/
 }
 
 AutoPtr<ValidationMessageBubble> ValidationMessageBubble::CreateAndShow(
@@ -41,9 +93,10 @@ AutoPtr<ValidationMessageBubble> ValidationMessageBubble::CreateAndShow(
     // final RectF anchorPixInScreen = makePixRectInScreen(
     //         contentViewCore, anchorX, anchorY, anchorWidth, anchorHeight);
     // return new ValidationMessageBubble(contentViewCore, anchorPixInScreen, mainText, subText);
-    assert(0);
-    AutoPtr<ValidationMessageBubble> empty;
-    return empty;
+
+	AutoPtr<IRectF> anchorPixInScreen = MakePixRectInScreen(contentViewCore, anchorX, anchorY, anchorWidth, anchorHeight);
+	AutoPtr<ValidationMessageBubble> result = new ValidationMessageBubble(contentViewCore, anchorPixInScreen, mainText, subText);
+    return result;
 }
 
 ECode ValidationMessageBubble::Close()
@@ -52,7 +105,8 @@ ECode ValidationMessageBubble::Close()
     // if (mPopup == null) return;
     // mPopup.dismiss();
     // mPopup = null;
-    assert(0);
+
+	if (NULL == mPopup) assert(0);
     return NOERROR;
 }
 
@@ -70,7 +124,23 @@ ECode ValidationMessageBubble::SetPositionRelativeToAnchor(
     // Point origin = adjustWindowPosition(
     //         contentViewCore, (int) (anchor.centerX() - getAnchorOffset()), (int) anchor.bottom);
     // mPopup.update(origin.x, origin.y, mPopup.getWidth(), mPopup.getHeight());
-    assert(0);
+
+	AutoPtr<IRectF> anchor = MakePixRectInScreen(contentViewCore, anchorX, anchorY, anchorWidth, anchorHeight);
+	Float centerX = 0.0f;
+	Float bottom = 0.0f;
+	anchor->GetCenterX(&centerX);
+	anchor->GetBottom(&bottom);
+	AutoPtr<IPoint> origin = AdjustWindowPosition(contentViewCore, (Int32)(centerX - GetAnchorOffset()), (Int32)bottom);
+	Int32 originX = 0;
+	Int32 originY = 0;
+	origin->GetX(&originX);
+	origin->GetY(&originY);
+
+	Int32 width = 0;
+	Int32 height = 0;
+	mPopup->GetWidth(&width);
+	mPopup->GetHeight(&height);
+	mPopup->Update(originX, originY, width, height);
     return NOERROR;
 }
 
@@ -89,9 +159,25 @@ AutoPtr<IRectF> ValidationMessageBubble::MakePixRectInScreen(
     //         coordinates.fromLocalCssToPix(anchorY) + yOffset,
     //         coordinates.fromLocalCssToPix(anchorX + anchorWidth),
     //         coordinates.fromLocalCssToPix(anchorY + anchorHeight) + yOffset);
-    assert(0);
-    AutoPtr<IRectF> empty;
-    return empty;
+
+	/*
+	AutoPtr<RenderCoordinates> coordinates = contentViewCore->GetRenderCoordinates();
+    Float yOffset = GetWebViewOffsetYPixInScreen(contentViewCore);
+
+	AutoPtr<IRectF> result;
+	CRectF::New((IRectF**)&result);
+	IRectF->Set(
+		coordinates->FromLocalCssToPix(anchorX),
+		coordinates->FromLocalCssToPix(anchorY) + yOffset,
+		coordinates->FromLocalCssToPix(anchorX + anchorWidth),
+        coordinates->FromLocalCssToPix(anchorY + anchorHeight) + yOffset
+    );
+
+    return result;
+    */
+
+	AutoPtr<IRectF> empty;
+	return empty;
 }
 
 Float ValidationMessageBubble::GetWebViewOffsetYPixInScreen(
@@ -101,6 +187,21 @@ Float ValidationMessageBubble::GetWebViewOffsetYPixInScreen(
     // int[] location = new int[2];
     // contentViewCore.getContainerView().getLocationOnScreen(location);
     // return location[1] + contentViewCore.getRenderCoordinates().getContentOffsetYPix();
+
+	/*
+	Int32 screenX = 0;
+	Int32 screenY = 0;
+	AutoPtr<IViewGroup> viewGroup = contentViewCore->GetContainerView();
+	AutoPtr<IView> view;
+	viewGroup->Probe(EIID_View, (IView**)&view);
+	view->GetLocationOnScreen(&screenX, &screenY);
+
+	AutoPtr<RenderCoordinates> coordinates = contentViewCore->GetRenderCoordinates();
+	Float offsetYPix = coordinates->GetContentOffsetYPix();
+	Float result = screenY + offsetYPix;
+	return result;
+	*/
+
     assert(0);
     return 0.0f;
 }
@@ -119,7 +220,33 @@ ECode ValidationMessageBubble::UpdateTextViews(
     // } else {
     //     ((ViewGroup) subTextView.getParent()).removeView(subTextView);
     // }
-    assert(0);
+
+	AutoPtr<IView> rootView = IView::Probe(root);
+	AutoPtr<IView> viewTmp;
+	FAIL_RETURN(rootView->FindViewById(/*R::id::main_text*/-1, (IView**)&viewTmp));
+	AutoPtr<ITextView> textView = ITextView::Probe(viewTmp);
+
+	AutoPtr<ICharSequence> charSequence;
+	CString::New(mainText, (ICharSequence**)&charSequence);
+	textView->SetText(charSequence);
+
+	AutoPtr<IView> viewTmp1;
+	FAIL_RETURN(rootView->FindViewById(/*R::id::sub_text*/-1, (IView**)&viewTmp1));
+	AutoPtr<ITextView> subTextView = ITextView::Probe(viewTmp1);
+
+	AutoPtr<ICharSequence> charSequence1;
+	CString::New(subText, (ICharSequence**)&charSequence1);
+	if (TextUtils::IsEmpty(charSequence1)) {
+		subTextView->SetText(charSequence1);
+	}
+	else {
+		AutoPtr<IView> viewTmp2 = IView::Probe(subTextView);
+		AutoPtr<IViewParent> parent;
+		viewTmp2->GetParent((IViewParent**)&parent);
+		AutoPtr<IViewManager> viewManager = IViewManager::Probe(parent);
+		viewManager->RemoveView(viewTmp2);
+	}
+
     return NOERROR;
 }
 
@@ -139,7 +266,25 @@ ECode ValidationMessageBubble::Measure(
     //                 View.MeasureSpec.AT_MOST),
     //         View.MeasureSpec.makeMeasureSpec(coordinates.getLastFrameViewportHeightPixInt(),
     //                 View.MeasureSpec.AT_MOST));
-    assert(0);
+
+	mPopup->SetWindowLayoutMode(IViewGroupLayoutParams::WRAP_CONTENT, IViewGroupLayoutParams::WRAP_CONTENT);
+	AutoPtr<IView> contentView;
+	mPopup->GetContentView((IView**)&contentView);
+
+	AutoPtr<IRelativeLayoutLayoutParams> layoutParams;
+	//CRelativeLayoutLayoutParams::New(
+	//	IRelativeLayoutLayoutParams::WRAP_CONTENT,
+	//    IRelativeLayoutLayoutParams::WRAP_CONTENT,
+	//    (IRelativeLayoutLayoutParams**)&layoutParams
+	//);
+	AutoPtr<IViewGroupLayoutParams> layoutParamsTmp = IViewGroupLayoutParams::Probe(layoutParams);
+	contentView->SetLayoutParams(layoutParamsTmp);
+
+	//AutoPtr<View::MeasureSpec> measureSpec = new View::MeasureSpec;
+	Int32 measureWidth = 0;// = measureSpec->MakeMeasureSpec(coordinates->GetLastFrameViewportWidthPixInt(), View::MeasureSpec::AT_MOST);
+	Int32 measureHeight = 0;// = measureSpec->MakeMeasureSpec(coordinates->GetLastFrameViewportHeightPixInt(), View::MeasureSpec::AT_MOST);
+	contentView->Measure(measureWidth, measureHeight);
+
     return NOERROR;
 }
 
@@ -151,8 +296,20 @@ Float ValidationMessageBubble::GetAnchorOffset()
     // final int arrowWidth = root.findViewById(R.id.arrow_image).getMeasuredWidth();
     // return ApiCompatibilityUtils.isLayoutRtl(root) ?
     //         (width * 3 / 4 - arrowWidth / 2) : (width / 4 + arrowWidth / 2);
-    assert(0);
-    return 0.0f;
+
+	AutoPtr<IView> root;
+	mPopup->GetContentView((IView**)&root);
+	Int32 width = 0;
+	root->GetMeasuredWidth(&width);
+
+	AutoPtr<IView> viewTmp;
+	FAIL_RETURN(root->FindViewById(/*R::id::arrow_image*/-1, (IView**)&viewTmp));
+
+	Int32 arrowWidth = 0;
+	viewTmp->GetMeasuredWidth(&arrowWidth);
+
+	Float result = ApiCompatibilityUtils::IsLayoutRtl(root) ? (width * 3 / 4 - arrowWidth / 2) : (width / 4 + arrowWidth / 2);
+    return result;
 }
 
 AutoPtr<IPoint> ValidationMessageBubble::AdjustWindowPosition(
@@ -176,9 +333,32 @@ AutoPtr<IPoint> ValidationMessageBubble::AdjustWindowPosition(
     //     y = viewBottom - height;
     // }
     // return new Point(x, y);
-    assert(0);
-    AutoPtr<IPoint> empty;
-    return empty;
+
+	//AutoPtr<RenderCoordinates> coordinates = contentViewCore->GetRenderCoordinates();
+	Int32 viewWidth = 0;//coordinates->GetLastFrameViewportWidthPixInt();
+	Int32 viewBottom = 0;//(Int32)GetWebViewOffsetYPixInScreen(contentViewCore) +
+	//     coordinates->GetLastFrameViewportHeightPixInt();
+
+	AutoPtr<IView> contentView;
+	mPopup->GetContentView((IView**)&contentView);
+	Int32 width = 0;
+	Int32 height = 0;
+	contentView->GetMeasuredWidth(&width);
+	contentView->GetMeasuredHeight(&height);
+
+	if (x < 0) {
+		x = 0;
+	}
+	else if (x + width > viewWidth) {
+	 	x = viewWidth - width;
+	}
+	if (y + height > viewBottom) {
+	 	y = viewBottom - height;
+	}
+
+	AutoPtr<IPoint> result;
+	//CPoint::New(x, y, (IPoint**)&result);
+	return result;
 }
 
 } // namespace Components

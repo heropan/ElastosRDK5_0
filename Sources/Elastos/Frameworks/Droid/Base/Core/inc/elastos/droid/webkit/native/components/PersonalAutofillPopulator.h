@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -7,14 +6,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_COMPONENTS_PERSONALAUTOFILLPOPULATOR_H_
 #define _ELASTOS_DROID_WEBKIT_COMPONENTS_PERSONALAUTOFILLPOPULATOR_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/ContentResolver.h"
-#include "content/Context.h"
-#include "content/pm/PackageManager.h"
-#include "net/Uri.h"
-#include "provider/ContactsContract.h"
 
 // package org.chromium.components.browser.autofill;
 // import android.content.ContentResolver;
@@ -26,12 +18,10 @@
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
-using Elastos::Droid::Content::IContentResolver;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::Pm::IPackageManager;
-using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Provider::IContactsContract;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Database::ICursor;
 
 namespace Elastos {
 namespace Droid {
@@ -57,15 +47,13 @@ private:
         virtual CARAPI_(String) MimeType() = 0;
 
     private:
-        static CARAPI_(AutoPtr<IUri>) MiddleInitProfiledatauri();
+        static CARAPI_(AutoPtr<IUri>) MiddleInitProfiledataUri();
 
     public:
-        static AutoPtr<IUri> profileDataUri;
+        static AutoPtr<IUri> mProfileDataUri;
     };
 
-    class EmailProfileQuery
-        : public Object
-        , public ProfileQuery
+    class EmailProfileQuery : public ProfileQuery
     {
     public:
         // @Override
@@ -74,13 +62,11 @@ private:
         // @Override
         CARAPI_(String) MimeType();
 
-    private:
+    public:
         static const Int32 EMAIL_ADDRESS = 0;
     };
 
-    class PhoneProfileQuery
-        : public Object
-        , public ProfileQuery
+    class PhoneProfileQuery : public ProfileQuery
     {
     public:
         // @Override
@@ -89,13 +75,11 @@ private:
         // @Override
         CARAPI_(String) MimeType();
 
-    private:
+    public:
         static const Int32 NUMBER = 0;
     };
 
-    class AddressProfileQuery
-        : public Object
-        , public ProfileQuery
+    class AddressProfileQuery : public ProfileQuery
     {
     public:
         // @Override
@@ -104,7 +88,7 @@ private:
         // @Override
         CARAPI_(String) MimeType();
 
-    private:
+    public:
         static const Int32 STREET = 0;
         static const Int32 POBOX = 1;
         static const Int32 NEIGHBORHOOD = 2;
@@ -114,9 +98,7 @@ private:
         static const Int32 COUNTRY = 6;
     };
 
-    class NameProfileQuery
-        : public Object
-        , public ProfileQuery
+    class NameProfileQuery : public ProfileQuery
     {
     public:
         // @Override
@@ -125,7 +107,7 @@ private:
         // @Override
         CARAPI_(String) MimeType();
 
-    private:
+    public:
         static const Int32 GIVEN_NAME = 0;
         static const Int32 MIDDLE_NAME = 1;
         static const Int32 FAMILY_NAME = 2;

@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "ColorPickerAdvancedComponent.h"
+#include "elastos/droid/webkit/native/ui/ColorPickerAdvancedComponent.h"
 
 namespace Elastos {
 namespace Droid {
@@ -14,7 +13,7 @@ ColorPickerAdvancedComponent::ColorPickerAdvancedComponent(
     /* [in] */ const IView* rootView,
     /* [in] */ const Int32& textResourceId,
     /* [in] */ const Int32& seekBarMax,
-    /* [in] */ const IOnSeekBarChangeListener* seekBarListener)
+    /* [in] */ const ISeekBarOnSeekBarChangeListener* seekBarListener)
 {
     // ==================before translated======================
     // mGradientView = rootView.findViewById(R.id.gradient);

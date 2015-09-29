@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,16 +5,11 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_COLORPICKERDIALOG_H_
 #define _ELASTOS_DROID_WEBKIT_UI_COLORPICKERDIALOG_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "app/AlertDialog.h"
-#include "app/Dialog.h"
-#include "content/Context.h"
-#include "view/LayoutInflater.h"
-#include "view/View.h"
-#include "widget/Button.h"
-#include "widget/TextView.h"
+#include "elastos/droid/app/AlertDialog.h"
+#include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
+#include "elastos/droid/webkit/native/ui/ColorPickerAdvanced.h"
+#include "elastos/droid/webkit/native/ui/ColorPickerSimple.h"
 
 // package org.chromium.ui;
 // import android.app.AlertDialog;
@@ -27,14 +21,15 @@
 // import android.widget.Button;
 // import android.widget.TextView;
 
-using Elastos::Droid::App::IAlertDialog;
-using Elastos::Droid::App::IDialog;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::IDialogInterface;
-using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::App::AlertDialog;
+using Elastos::Droid::Webkit::Ui::OnColorChangedListener;
+using Elastos::Droid::Webkit::Ui::ColorPickerAdvanced;
+using Elastos::Droid::Webkit::Ui::ColorPickerSimple;
 using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewOnClickListener;
 using Elastos::Droid::Widget::IButton;
-using Elastos::Droid::Widget::ITextView;
+using Elastos::Droid::Content::IDialogInterface;
+using Elastos::Droid::Content::IDialogInterfaceOnClickListener;
 
 namespace Elastos {
 namespace Droid {
@@ -46,14 +41,13 @@ namespace Ui {
   * &lt;input type=color &gt; form element.
   */
 class ColorPickerDialog
-    : public Object
-    , public AlertDialog
+    : public AlertDialog
     , public OnColorChangedListener
 {
 public:
     class InnerDialogOnClickListener
         : public Object
-        , public Dialog::OnClickListener
+        , public IDialogInterfaceOnClickListener
     {
     public:
         InnerDialogOnClickListener(
@@ -68,12 +62,12 @@ public:
         ColorPickerDialog* mOwner;
     };
 
-    class InnerDialogOnClickListener
+    class InnerDialogOnClickListener1
         : public Object
-        , public Dialog::OnClickListener
+        , public IDialogInterfaceOnClickListener
     {
     public:
-        InnerDialogOnClickListener(
+        InnerDialogOnClickListener1(
             /* [in] */ ColorPickerDialog* owner);
 
         // @Override
@@ -87,7 +81,7 @@ public:
 
     class InnerDialogInterfaceOnCancelListener
         : public Object
-        , public DialogInterface::OnCancelListener
+        , public IDialogInterfaceOnCancelListener
     {
     public:
         InnerDialogInterfaceOnCancelListener(
@@ -103,7 +97,7 @@ public:
 
     class InnerButtonOnClickListener
         : public Object
-        , public Button::OnClickListener
+        , public IViewOnClickListener
     {
     public:
         InnerButtonOnClickListener(
@@ -125,10 +119,10 @@ public:
       * @param suggestions The list of suggestions.
       */
     ColorPickerDialog(
-        /* [in] */ IContext* context,
+        /* [in] */ Context* context,
         /* [in] */ OnColorChangedListener* listener,
         /* [in] */ Int32 color,
-        /* [in] */ ArrayOf<ColorSuggestion>* suggestions);
+        /* [in] */ ArrayOf<ColorSuggestion*>* suggestions);
 
     /**
       * Listens to the ColorPicker for when the user has changed the selected color, and

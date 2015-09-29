@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,17 +5,8 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_ANDROIDNETWORKLIBRARY_H_
 #define _ELASTOS_DROID_WEBKIT_NET_ANDROIDNETWORKLIBRARY_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "content/Intent.h"
-#include "telephony/CTelephonyManager.h"
-#include "elastos/net/Inet6Address.h"
-#include "elastos/net/InetAddress.h"
-#include "elastos/net/InterfaceAddress.h"
-#include "elastos/net/NetworkInterface.h"
-#include "elastos/net/URLConnection.h"
+#include "elastos/droid/webkit/native/net/AndroidCertVerifyResult.h"
 
 // package org.chromium.net;
 // import android.content.ActivityNotFoundException;
@@ -38,17 +28,8 @@
 // import java.security.cert.CertificateException;
 // import java.util.Enumeration;
 
-using Elastos::Droid::Content::IActivityNotFoundException;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Security::IKeyChain;
-using Elastos::Droid::Telephony::ITelephonyManager;
-using Elastos::Droid::Util::ILog;
-using Elastos::Net::IInet6Address;
-using Elastos::Net::IInetAddress;
-using Elastos::Net::IInterfaceAddress;
-using Elastos::Net::INetworkInterface;
-using Elastos::Net::IURLConnection;
+using Elastos::Droid::Webkit::Net::AndroidCertVerifyResult;
 
 namespace Elastos {
 namespace Droid {
@@ -58,7 +39,7 @@ namespace Net {
 /**
   * This class implements net utilities required by the net component.
   */
-class AndroidNetworkLibrary
+class AndroidNetworkLibrary : public Object
 {
 public:
     /**

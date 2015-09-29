@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "ColorPickerSimple.h"
+#include "elastos/droid/webkit/native/ui/ColorPickerSimple.h"
 
 namespace Elastos {
 namespace Droid {
@@ -38,7 +37,7 @@ ColorPickerSimple::ColorPickerSimple(
 }
 
 ECode ColorPickerSimple::Init(
-    /* [in] */ ArrayOf<ColorSuggestion>* suggestions,
+    /* [in] */ ArrayOf<ColorSuggestion*>* suggestions,
     /* [in] */ OnColorChangedListener* onColorChangedListener)
 {
     VALIDATE_NOT_NULL(suggestions);

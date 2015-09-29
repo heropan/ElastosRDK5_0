@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,14 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_BASE_CLIPBOARD_H_
 #define _ELASTOS_DROID_WEBKIT_UI_BASE_CLIPBOARD_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/CClipData.h"
-#include "content/CClipboardManager.h"
-#include "content/Context.h"
-#include "widget/Toast.h"
-#include "webkit/native/base/ApiCompatibilityUtils.h"
 
 // package org.chromium.ui.base;
 // import android.content.ClipData;
@@ -25,11 +17,9 @@
 // import org.chromium.base.JNINamespace;
 // import org.chromium.ui.R;
 
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IClipData;
 using Elastos::Droid::Content::IClipboardManager;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Widget::IToast;
-using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
 
 namespace Elastos {
 namespace Droid {

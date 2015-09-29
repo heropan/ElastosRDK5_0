@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "LocalizationUtils.h"
+#include "elastos/droid/webkit/native/ui/base/LocalizationUtils.h"
 
 namespace Elastos {
 namespace Droid {
@@ -14,7 +13,7 @@ namespace Base {
 const Int32 LocalizationUtils::UNKNOWN_DIRECTION;
 const Int32 LocalizationUtils::RIGHT_TO_LEFT;
 const Int32 LocalizationUtils::LEFT_TO_RIGHT;
-AutoPtr<Boolean> LocalizationUtils::sIsLayoutRtl;
+Boolean LocalizationUtils::sIsLayoutRtl;
 
 String LocalizationUtils::GetDefaultLocale()
 {

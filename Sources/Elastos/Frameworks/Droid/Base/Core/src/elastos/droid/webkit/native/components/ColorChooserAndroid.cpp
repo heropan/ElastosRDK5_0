@@ -1,6 +1,8 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "ColorChooserAndroid.h"
+#include "elastos/droid/webkit/native/components/ColorChooserAndroid.h"
+#include "elastos/droid/webkit/native/ui/ColorSuggestion.h"
+
+using Elastos::Droid::Webkit::Ui::ColorSuggestion;
 
 namespace Elastos {
 namespace Droid {
@@ -24,7 +26,14 @@ ECode ColorChooserAndroid::InnerOnColorChangedListener::OnColorChanged(
     // ==================before translated======================
     // mDialog.dismiss();
     // nativeOnColorChosen(mNativeColorChooserAndroid, color);
-    assert(0);
+
+	if (NULL != mOwner) {
+		mOwner->mDialog->Dismiss();
+    	NativeOnColorChosen(mOwner->mNativeColorChooserAndroid, color);
+	}
+    else {
+		assert(0);
+    }
     return NOERROR;
 }
 
@@ -35,7 +44,8 @@ ECode ColorChooserAndroid::CloseColorChooser()
 {
     // ==================before translated======================
     // mDialog.dismiss();
-    assert(0);
+
+    mDialog->Dismiss();
     return NOERROR;
 }
 
@@ -43,23 +53,25 @@ AutoPtr<ColorChooserAndroid> ColorChooserAndroid::CreateColorChooserAndroid(
     /* [in] */ Int64 nativeColorChooserAndroid,
     /* [in] */ ContentViewCore* contentViewCore,
     /* [in] */ Int32 initialColor,
-    /* [in] */ ArrayOf<ColorSuggestion>* suggestions)
+    /* [in] */ ArrayOf<ColorSuggestion*>* suggestions)
 {
     // ==================before translated======================
     // ColorChooserAndroid chooser = new ColorChooserAndroid(nativeColorChooserAndroid,
     //     contentViewCore.getContext(), initialColor, suggestions);
     // chooser.openColorChooser();
     // return chooser;
-    assert(0);
-    AutoPtr<ColorChooserAndroid> empty;
-    return empty;
+
+	AutoPtr<IContext> context = contentViewCore->GetContext();
+	AutoPtr<ColorChooserAndroid> chooser = new ColorChooserAndroid(nativeColorChooserAndroid,
+         context, initialColor, suggestions);
+    return chooser;
 }
 
 ColorChooserAndroid::ColorChooserAndroid(
     /* [in] */ Int64 nativeColorChooserAndroid,
     /* [in] */ IContext* context,
     /* [in] */ Int32 initialColor,
-    /* [in] */ ArrayOf<ColorSuggestion>* suggestions)
+    /* [in] */ ArrayOf<ColorSuggestion*>* suggestions)
 {
     // ==================before translated======================
     // OnColorChangedListener listener = new OnColorChangedListener() {
@@ -72,28 +84,33 @@ ColorChooserAndroid::ColorChooserAndroid(
     //
     // mNativeColorChooserAndroid = nativeColorChooserAndroid;
     // mDialog = new ColorPickerDialog(context, listener, initialColor, suggestions);
+
+	AutoPtr<OnColorChangedListener> listener = new InnerOnColorChangedListener(this);
+	mNativeColorChooserAndroid = nativeColorChooserAndroid;
+	mDialog = new ColorPickerDialog(context, listener, initialColor, suggestions);
 }
 
 ECode ColorChooserAndroid::OpenColorChooser()
 {
     // ==================before translated======================
     // mDialog.show();
-    assert(0);
+
+	mDialog->Show();
     return NOERROR;
 }
 
-AutoPtr< ArrayOf<ColorSuggestion> > ColorChooserAndroid::CreateColorSuggestionArray(
+AutoPtr< ArrayOf<ColorSuggestion*> > ColorChooserAndroid::CreateColorSuggestionArray(
     /* [in] */ Int32 size)
 {
     // ==================before translated======================
     // return new ColorSuggestion[size];
-    assert(0);
-    AutoPtr< ArrayOf<ColorSuggestion> > empty;
-    return empty;
+
+	AutoPtr< ArrayOf<ColorSuggestion*> > result = ArrayOf<ColorSuggestion*>::Alloc(size);
+    return result;
 }
 
 ECode ColorChooserAndroid::AddToColorSuggestionArray(
-    /* [in] */ ArrayOf<ColorSuggestion>* array,
+    /* [in] */ ArrayOf<ColorSuggestion*>* array,
     /* [in] */ Int32 index,
     /* [in] */ Int32 color,
     /* [in] */ const String& label)
@@ -101,7 +118,9 @@ ECode ColorChooserAndroid::AddToColorSuggestionArray(
     VALIDATE_NOT_NULL(array);
     // ==================before translated======================
     // array[index] = new ColorSuggestion(color, label);
-    assert(0);
+
+	AutoPtr<ColorSuggestion> item = new ColorSuggestion(color, label);
+    array->Set(index, item);
     return NOERROR;
 }
 

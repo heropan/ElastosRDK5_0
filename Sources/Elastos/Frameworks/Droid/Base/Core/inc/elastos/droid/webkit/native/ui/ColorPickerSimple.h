@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,12 +5,11 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_COLORPICKERSIMPLE_H_
 #define _ELASTOS_DROID_WEBKIT_UI_COLORPICKERSIMPLE_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "graphics/CColor.h"
-#include "widget/ListView.h"
+#include "elastos/droid/widget/ListView.h"
+#include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
+#include "elastos/droid/webkit/native/ui/ColorSuggestionListAdapter.h"
+#include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
 
 // package org.chromium.ui;
 // import android.content.Context;
@@ -20,24 +18,26 @@
 // import android.widget.ListView;
 // import org.chromium.ui.ColorSuggestionListAdapter.OnColorSuggestionClickListener;
 
+using Elastos::Droid::Widget::ListView;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Graphics::IColor;
-using Elastos::Droid::Util::IAttributeSet;
-using Elastos::Droid::Widget::IListView;
+using Elastos::Droid::Webkit::Ui::ColorSuggestionListAdapter;
+using Elastos::Droid::Webkit::Ui::OnColorChangedListener;
+using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
 
+class ColorSuggestion;
+
 /**
   * Draws a grid of (predefined) colors and allows the user to choose one of
   * those colors.
   */
 class ColorPickerSimple
-    : public Object
-    , public ListView
-    , public OnColorSuggestionClickListener
+    : public ListView
+    , public ColorSuggestionListAdapter::OnColorSuggestionClickListener
 {
 public:
     ColorPickerSimple(
@@ -61,7 +61,7 @@ public:
       *                               a color.
       */
     virtual CARAPI Init(
-        /* [in] */ ArrayOf<ColorSuggestion>* suggestions,
+        /* [in] */ ArrayOf<ColorSuggestion*>* suggestions,
         /* [in] */ OnColorChangedListener* onColorChangedListener);
 
     // @Override

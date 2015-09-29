@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "Clipboard.h"
+#include "elastos/droid/webkit/native/ui/base/Clipboard.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "DropdownAdapter.h"
+#include "elastos/droid/webkit/native/ui/DropdownAdapter.h"
 
 namespace Elastos {
 namespace Droid {
@@ -13,7 +12,7 @@ namespace Ui {
 DropdownAdapter::DropdownAdapter(
     /* [in] */ IContext* context,
     /* [in] */ IList<DropdownItem*>* items,
-    /* [in] */ ISet<Integer*>* separators)
+    /* [in] */ ISet<IInteger32*>* separators)
 {
     // ==================before translated======================
     // super(context, R.layout.dropdown_item, items);
@@ -24,8 +23,8 @@ DropdownAdapter::DropdownAdapter(
 
 DropdownAdapter::DropdownAdapter(
     /* [in] */ IContext* context,
-    /* [in] */ ArrayOf<DropdownItem>* items,
-    /* [in] */ ISet<Integer*>* separators)
+    /* [in] */ ArrayOf<DropdownItem*>* items,
+    /* [in] */ ISet<IInteger32*>* separators)
 {
     // ==================before translated======================
     // super(context, R.layout.dropdown_item, items);

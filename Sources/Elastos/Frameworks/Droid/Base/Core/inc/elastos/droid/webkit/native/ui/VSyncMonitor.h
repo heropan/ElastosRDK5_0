@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,14 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_VSYNCMONITOR_H_
 #define _ELASTOS_DROID_WEBKIT_UI_VSYNCMONITOR_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "os/Build.h"
-#include "os/Handler.h"
-#include "view/Choreographer.h"
-#include "webkit/native/base/TraceEvent.h"
 
 // package org.chromium.ui;
 // import android.annotation.SuppressLint;
@@ -24,13 +16,11 @@
 // import android.view.WindowManager;
 // import org.chromium.base.TraceEvent;
 
-using Elastos::Droid::Annotation::ISuppressLint;
+using Elastos::Core::IRunnable;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Os::IBuild;
-using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::View::IChoreographer;
-using Elastos::Droid::View::IWindowManager;
-using Elastos::Droid::Webkit::Base::TraceEvent;
+using Elastos::Droid::View::IFrameCallback;
+using Elastos::Droid::Os::IHandler;
 
 namespace Elastos {
 namespace Droid {
@@ -52,7 +42,7 @@ public:
     /**
       * VSync listener class
       */
-    class Listener
+    class Listener : public Object
     {
     public:
         /**
@@ -67,7 +57,7 @@ public:
 
     class InnerChoreographerFrameCallback
         : public Object
-        , public Choreographer::FrameCallback
+        , public IFrameCallback
     {
     public:
         InnerChoreographerFrameCallback(
@@ -83,7 +73,7 @@ public:
 
     class InnerRunnable
         : public Object
-        , public Runnable
+        , public IRunnable
     {
     public:
         InnerRunnable(
@@ -96,12 +86,12 @@ public:
         VSyncMonitor* mOwner;
     };
 
-    class InnerRunnable
+    class InnerRunnable1
         : public Object
-        , public Runnable
+        , public IRunnable
     {
     public:
-        InnerRunnable(
+        InnerRunnable1(
             /* [in] */ VSyncMonitor* owner);
 
         // @Override
@@ -119,7 +109,7 @@ public:
       */
     VSyncMonitor(
         /* [in] */ IContext* context,
-        /* [in] */  VSyncMonitor);
+        /* [in] */ Listener* listener);
 
     /**
       * Constructs a VSyncMonitor
@@ -129,7 +119,7 @@ public:
       */
     VSyncMonitor(
         /* [in] */ IContext* context,
-        /* [in] */ VSyncMonitor* ::Listener* listener,
+        /* [in] */ Listener* listener,
         /* [in] */ Boolean enableJBVSync);
 
     /**
@@ -192,15 +182,15 @@ private:
     Int32 mTriggerNextVSyncCount;
     // Choreographer is used to detect vsync on >= JB.
     /*const*/ AutoPtr<IChoreographer> mChoreographer;
-    /*const*/ AutoPtr<Choreographer::FrameCallback> mVSyncFrameCallback;
+    /*const*/ AutoPtr<IFrameCallback> mVSyncFrameCallback;
     // On ICS we just post a task through the handler (http://crbug.com/156397)
-    /*const*/ AutoPtr<Runnable> mVSyncRunnableCallback;
+    /*const*/ AutoPtr<IRunnable> mVSyncRunnableCallback;
     Int64 mGoodStartingPointNano;
     Int64 mLastPostedNano;
     // If the monitor is activated after having been idle, we synthesize the first vsync to reduce
     // latency.
     /*const*/ AutoPtr<IHandler> mHandler;
-    /*const*/ AutoPtr<Runnable> mSyntheticVSyncRunnable;
+    /*const*/ AutoPtr<IRunnable> mSyntheticVSyncRunnable;
     Int64 mLastVSyncCpuTimeNano;
 };
 

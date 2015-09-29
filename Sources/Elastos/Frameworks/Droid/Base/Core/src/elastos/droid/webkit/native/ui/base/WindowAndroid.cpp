@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "WindowAndroid.h"
+#include "elastos/droid/webkit/native/ui/base/WindowAndroid.h"
 
 namespace Elastos {
 namespace Droid {
@@ -148,12 +147,12 @@ ECode WindowAndroid::SendBroadcast(
     return NOERROR;
 }
 
-AutoPtr< IWeakReference< AutoPtr<IActivity> > > WindowAndroid::GetActivity()
+AutoPtr<IWeakReference> WindowAndroid::GetActivity()
 {
     // ==================before translated======================
     // return new WeakReference<Activity>(null);
     assert(0);
-    AutoPtr< IWeakReference< AutoPtr<IActivity> > > empty;
+    AutoPtr<IWeakReference> empty;
     return empty;
 }
 

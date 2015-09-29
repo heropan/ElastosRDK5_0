@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,26 +5,9 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_X509UTIL_H_
 #define _ELASTOS_DROID_WEBKIT_NET_X509UTIL_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/BroadcastReceiver.h"
-#include "content/Context.h"
-#include "content/Intent.h"
-#include "content/IntentFilter.h"
-#include "net/http/CX509TrustManagerExtensions.h"
-#include "os/Build.h"
-#include "util/CPair.h"
-#include "elastos/io/ByteArrayInputStream.h"
-#include "elastos/io/File.h"
-#include "elastos/security/KeyStore.h"
-#include "elastos/security/MessageDigest.h"
-#include "elastos/security/cert/Certificate.h"
-#include "elastos/security/cert/CertificateFactory.h"
-#include "elastos/security/cert/X509Certificate.h"
-#include "elastos/utility/Arrays.h"
-#include "elastos/utility/Collections.h"
-#include "elastos/utility/HashSet.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/webkit/native/net/AndroidCertVerifyResult.h"
 
 // package org.chromium.net;
 // import android.annotation.SuppressLint;
@@ -63,26 +45,20 @@
 // import javax.net.ssl.X509TrustManager;
 // import javax.security.auth.x500.X500Principal;
 
-using Elastos::Droid::Annotation::ISuppressLint;
-using Elastos::Droid::Content::IBroadcastReceiver;
+using Elastos::IO::IFile;
+using Elastos::Utility::IList;
+using Elastos::Utility::ISet;
+using Elastos::Security::Cert::IX509Certificate;
+using Elastos::Security::Cert::ICertificateFactory;
+using Elastos::Security::IKeyStore;
+using Elastosx::Security::Auth::X500::IX500Principal;
+using Elastosx::Net::Ssl::IX509TrustManager;
+using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Net::Http::IX509TrustManagerExtensions;
-using Elastos::Droid::Os::IBuild;
-using Elastos::Droid::Security::IKeyChain;
-using Elastos::Droid::Util::ILog;
-using Elastos::Droid::Util::IPair;
-using Elastos::Io::IByteArrayInputStream;
-using Elastos::Io::IFile;
-using Elastos::Security::IKeyStore;
-using Elastos::Security::IMessageDigest;
-using Elastos::Security::Cert::ICertificate;
-using Elastos::Security::Cert::ICertificateFactory;
-using Elastos::Security::Cert::IX509Certificate;
-using Elastos::Utility::IArrays;
-using Elastos::Utility::ICollections;
-using Elastos::Utility::IHashSet;
+using Elastos::Droid::Webkit::Net::AndroidCertVerifyResult;
 
 namespace Elastos {
 namespace Droid {
@@ -95,22 +71,39 @@ namespace Net {
 // @JNINamespace("net")
 class X509Util : public Object
 {
-public:
-    class TrustStorageListener
-        : public BroadcastReceiver
+private:
+    /**
+      * Interface that wraps one of X509TrustManager or
+      * X509TrustManagerExtensions to support platforms before the latter was
+      * added.
+      */
+    class X509TrustManagerImplementation : public Object
     {
+    public:
+        virtual CARAPI_(AutoPtr<IList>) CheckServerTrusted(
+            /* [in] */ ArrayOf<IX509Certificate>* chain,
+            /* [in] */ const String& authType,
+            /* [in] */ const String& host) = 0;
     };
 
-    class X509TrustManagerIceCreamSandwich
-        : public Object
-        , public X509TrustManagerImplementation
+public:
+    class TrustStorageListener : public BroadcastReceiver
+    {
+    public:
+        // @Override
+        CARAPI OnReceive(
+            /* [in] */ IContext* context,
+            /* [in] */ IIntent* intent);
+    };
+
+    class X509TrustManagerIceCreamSandwich : public X509TrustManagerImplementation
     {
     public:
         X509TrustManagerIceCreamSandwich(
             /* [in] */ IX509TrustManager* trustManager);
 
         // @Override
-        CARAPI_(AutoPtr< IList< AutoPtr<IX509Certificate> > >) CheckServerTrusted(
+        CARAPI_(AutoPtr<IList>) CheckServerTrusted(
             /* [in] */ ArrayOf<IX509Certificate>* chain,
             /* [in] */ const String& authType,
             /* [in] */ const String& host);
@@ -119,9 +112,7 @@ public:
         /*const*/ AutoPtr<IX509TrustManager> mTrustManager;
     };
 
-    class X509TrustManagerJellyBean
-        : public Object
-        , public X509TrustManagerImplementation
+    class X509TrustManagerJellyBean : public X509TrustManagerImplementation
     {
     public:
         // @SuppressLint("NewApi")
@@ -129,7 +120,7 @@ public:
             /* [in] */ IX509TrustManager* trustManager);
 
         // @Override
-        CARAPI_(AutoPtr< IList< AutoPtr<IX509Certificate> > >) CheckServerTrusted(
+        CARAPI_(AutoPtr<IList>) CheckServerTrusted(
             /* [in] */ ArrayOf<IX509Certificate>* chain,
             /* [in] */ const String& authType,
             /* [in] */ const String& host);
@@ -137,23 +128,6 @@ public:
     private:
         /*const*/ AutoPtr<IX509TrustManagerExtensions> mTrustManagerExtensions;
     };
-
-private:
-    /**
-      * Interface that wraps one of X509TrustManager or
-      * X509TrustManagerExtensions to support platforms before the latter was
-      * added.
-      */
-    class X509TrustManagerImplementation
-    {
-    public:
-        virtual CARAPI_(AutoPtr< IList< AutoPtr<IX509Certificate> > >) CheckServerTrusted(
-            /* [in] */ ArrayOf<IX509Certificate>* chain,
-            /* [in] */ const String& authType,
-            /* [in] */ const String& host) = 0;
-    };
-
-public:
     /**
       * Convert a DER encoded certificate to an X509Certificate.
       */
@@ -198,7 +172,7 @@ private:
       * used. Returns null if no created TrustManager was suitable.
       * @throws KeyStoreException, NoSuchAlgorithmException on error initializing the TrustManager.
       */
-    static CARAPI_(AutoPtr<X509TrustManagerImplementation>) CreateTrustManager(
+    static CARAPI_(AutoPtr<X509Util::X509TrustManagerImplementation>) CreateTrustManager(
         /* [in] */ IKeyStore* keyStore);
 
     /**
@@ -211,7 +185,7 @@ private:
       */
     static CARAPI ReloadDefaultTrustManager();
 
-    static CARAPI_(AutoPtr< ArrayOf<char> >) MiddleInitHexDigits();
+    static CARAPI_(AutoPtr< ArrayOf<Byte> >) MiddleInitHexDigits();
 
     static CARAPI_(String) HashPrincipal(
         /* [in] */ IX500Principal* principal);
@@ -248,7 +222,7 @@ private:
     /**
       * Trust manager backed up by the read-only system certificate store.
       */
-    static AutoPtr<X509TrustManagerImplementation> sDefaultTrustManager;
+    static AutoPtr<X509Util::X509TrustManagerImplementation> sDefaultTrustManager;
     /**
       * BroadcastReceiver that listens to change in the system keystore to invalidate certificate
       * caches.
@@ -258,7 +232,7 @@ private:
       * Trust manager backed up by a custom certificate store. We need such manager to plant test
       * root CA to the trust store in testing.
       */
-    static AutoPtr<X509TrustManagerImplementation> sTestTrustManager;
+    static AutoPtr<X509Util::X509TrustManagerImplementation> sTestTrustManager;
     static AutoPtr<IKeyStore> sTestKeyStore;
     /**
       * The system key store. This is used to determine whether a trust anchor is a system trust
@@ -277,8 +251,7 @@ private:
       * decoding the root from disk on every verification. Mirrors a similar in-memory cache in
       * Conscrypt's X509TrustManager implementation.
       */
-    static  Set<Pair<X500Principal;
-    static  PublicKey>> sSystemTrustAnchorCache;
+    static AutoPtr<ISet> sSystemTrustAnchorCache;
     /**
       * True if the system key store has been loaded. If the "AndroidCAStore" KeyStore instance
       * was not found, sSystemKeyStore may be null while sLoadedSystemKeyStore is true.
@@ -294,7 +267,7 @@ private:
       * the system does not allow to interact with the certificate store without user interaction.
       */
     static Boolean sDisableNativeCodeForTest;
-    static AutoPtr< ArrayOf<char> > HEX_DIGITS;
+    static AutoPtr< ArrayOf<Byte> > HEX_DIGITS;
 };
 
 } // namespace Net

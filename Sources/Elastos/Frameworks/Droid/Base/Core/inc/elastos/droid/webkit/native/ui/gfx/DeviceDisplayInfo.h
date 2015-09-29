@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,16 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_GFX_DEVICEDISPLAYINFO_H_
 #define _ELASTOS_DROID_WEBKIT_UI_GFX_DEVICEDISPLAYINFO_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "graphics/PixelFormat.h"
-#include "graphics/CPoint.h"
-#include "os/Build.h"
-#include "util/CDisplayMetrics.h"
-#include "view/Display.h"
-#include "view/CSurface.h"
 
 // package org.chromium.ui.gfx;
 // import android.content.Context;
@@ -30,13 +20,10 @@
 // import org.chromium.base.JNINamespace;
 
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Graphics::IPixelFormat;
-using Elastos::Droid::Graphics::IPoint;
-using Elastos::Droid::Os::IBuild;
-using Elastos::Droid::Util::IDisplayMetrics;
 using Elastos::Droid::View::IDisplay;
-using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::IWindowManager;
+using Elastos::Droid::Graphics::IPoint;
+using Elastos::Droid::Utility::IDisplayMetrics;
 
 namespace Elastos {
 namespace Droid {

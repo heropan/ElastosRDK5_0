@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "NetStringUtil.h"
+#include "elastos/droid/webkit/native/net/NetStringUtil.h"
 
 namespace Elastos {
 namespace Droid {

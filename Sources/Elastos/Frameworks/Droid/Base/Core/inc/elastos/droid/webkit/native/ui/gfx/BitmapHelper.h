@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,12 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_GFX_BITMAPHELPER_H_
 #define _ELASTOS_DROID_WEBKIT_UI_GFX_BITMAPHELPER_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/res/CResources.h"
-#include "graphics/CBitmap.h"
-#include "graphics/CBitmapFactory.h"
 
 // package org.chromium.ui.gfx;
 // import android.content.res.Resources;
@@ -20,9 +14,9 @@
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
-using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Graphics::BitmapConfig;
 using Elastos::Droid::Graphics::IBitmap;
-using Elastos::Droid::Graphics::IBitmapFactory;
+using Elastos::Droid::Graphics::IBitmapFactoryOptions;
 
 namespace Elastos {
 namespace Droid {
@@ -34,7 +28,7 @@ namespace Gfx {
   * Helper class to decode and sample down bitmap resources.
   */
 // @JNINamespace("gfx")
-class BitmapHelper
+class BitmapHelper : public Object
 {
 private:
     // @CalledByNative
@@ -60,7 +54,7 @@ private:
 
     // http://developer.android.com/training/displaying-bitmaps/load-bitmap.html
     static CARAPI_(Int32) CalculateInSampleSize(
-        /* [in] */ IBitmapFactory* ::Options* options,
+        /* [in] */ IBitmapFactoryOptions* options,
         /* [in] */ Int32 reqWidth,
         /* [in] */ Int32 reqHeight);
 
@@ -72,7 +66,7 @@ private:
       */
     // @CalledByNative
     static CARAPI_(Int32) GetBitmapFormatForConfig(
-        /* [in] */  Bitmap);
+        /* [in] */ BitmapConfig bitmapConfig);
 
     /**
       * Provides a matching Bitmap.Config for the enum config value passed.
@@ -80,7 +74,7 @@ private:
       * @param bitmapFormatValue The Bitmap Configuration enum value.
       * @return Matching Bitmap.Config  for the enum value passed.
       */
-    static CARAPI_(AutoPtr<IBitmap>) .Config getBitmapConfigForFormat(
+    static CARAPI_(BitmapConfig) GetBitmapConfigForFormat(
         /* [in] */ Int32 bitmapFormatValue);
 };
 

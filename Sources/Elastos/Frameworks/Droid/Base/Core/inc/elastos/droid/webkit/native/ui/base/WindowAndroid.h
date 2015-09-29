@@ -1,24 +1,12 @@
-// wuweizuo automatic build .h file from .java file.
-// Copyright 2012 The Chromium Authors. All rights reserved.
+    // Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef _ELASTOS_DROID_WEBKIT_UI_BASE_WINDOWANDROID_H_
 #define _ELASTOS_DROID_WEBKIT_UI_BASE_WINDOWANDROID_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "app/Activity.h"
-#include "app/CPendingIntent.h"
-#include "content/ContentResolver.h"
-#include "content/Context.h"
-#include "content/Intent.h"
-#include "os/CBundle.h"
-#include "util/SparseArray.h"
-#include "widget/Toast.h"
-#include "webkit/native/ui/VSyncMonitor.h"
-#include "elastos/utility/HashMap.h"
+#include "elastos/droid/webkit/native/ui/VSyncMonitor.h"
 
 // package org.chromium.ui.base;
 // import android.annotation.SuppressLint;
@@ -37,18 +25,15 @@
 // import java.lang.ref.WeakReference;
 // import java.util.HashMap;
 
-using Elastos::Droid::Annotation::ISuppressLint;
+using Elastos::Utility::IHashMap;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::IPendingIntent;
-using Elastos::Droid::Content::IContentResolver;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Util::ILog;
-using Elastos::Droid::Util::ISparseArray;
-using Elastos::Droid::Widget::IToast;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Droid::Webkit::Ui::VSyncMonitor;
-using Elastos::Utility::IHashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -63,9 +48,7 @@ namespace Base {
 class WindowAndroid : public Object
 {
 public:
-    class InnerVSyncMonitorListener
-        : public Object
-        , public VSyncMonitor::Listener
+    class InnerVSyncMonitorListener : public VSyncMonitor::Listener
     {
     public:
         InnerVSyncMonitorListener(
@@ -83,7 +66,7 @@ public:
     /**
       * An interface that intent callback objects have to implement.
       */
-    class IntentCallback
+    class IntentCallback : public Object
     {
     public:
         /**
@@ -203,7 +186,7 @@ public:
       *         the contained Activity can be null (either if it has been garbage collected or if
       *         this is in the context of a WebView that was not created using an Activity).
       */
-    virtual CARAPI_(AutoPtr< IWeakReference< AutoPtr<IActivity> > >) GetActivity();
+    virtual CARAPI_(AutoPtr<IWeakReference>) GetActivity();
 
     /**
       * @return The application context for this activity.
@@ -289,12 +272,11 @@ public:
 
 protected:
     AutoPtr<IContext> mApplicationContext;
-    AutoPtr< ISparseArray<IntentCallback> > mOutstandingIntents;
+    AutoPtr<ISparseArray> mOutstandingIntents;
     // Ideally, this would be a SparseArray<String>, but there's no easy way to store a
     // SparseArray<String> in a bundle during saveInstanceState(). So we use a HashMap and suppress
     // the Android lint warning "UseSparseArrays".
-     HashMap<Integer;
-     String> mIntentErrors;
+    AutoPtr<IHashMap> mIntentErrors;
 
 private:
     static const String TAG;

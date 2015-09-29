@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "NavigationParams.h"
+#include "elastos/droid/webkit/native/components/NavigationParams.h"
 
 namespace Elastos {
 namespace Droid {
@@ -11,11 +10,16 @@ namespace Components {
 //                           NavigationParams
 //=====================================================================
 NavigationParams::NavigationParams(
-    /* [in] */ const String& url,
-    /* [in] */ Boolean isPost,
-    /* [in] */ Boolean hasUserGesture,
-    /* [in] */ Int32 pageTransitionType,
-    /* [in] */ Boolean isRedirect)
+    /* [in] */ const String& url1,
+    /* [in] */ Boolean isPost1,
+    /* [in] */ Boolean hasUserGesture1,
+    /* [in] */ Int32 pageTransitionType1,
+    /* [in] */ Boolean isRedirect1)
+    : url(url1)
+    , isPost(isPost1)
+    , hasUserGesture(hasUserGesture1)
+    , pageTransitionType(pageTransitionType1)
+    , isRedirect(isRedirect1)
 {
     // ==================before translated======================
     // this.url = url;
@@ -35,9 +39,8 @@ AutoPtr<NavigationParams> NavigationParams::Create(
     // ==================before translated======================
     // return new NavigationParams(url, isPost, hasUserGesture, pageTransitionType,
     //         isRedirect);
-    assert(0);
-    AutoPtr<NavigationParams> empty;
-    return empty;
+    AutoPtr<NavigationParams> result = new NavigationParams(url, isPost, hasUserGesture, pageTransitionType, isRedirect);;
+    return result;
 }
 
 } // namespace Components

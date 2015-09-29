@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "ColorPickerMoreButton.h"
+#include "elastos/droid/webkit/native/ui/ColorPickerMoreButton.h"
 
 namespace Elastos {
 namespace Droid {

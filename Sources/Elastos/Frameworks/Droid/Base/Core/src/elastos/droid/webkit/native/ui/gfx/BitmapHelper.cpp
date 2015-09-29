@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "BitmapHelper.h"
+#include "elastos/droid/webkit/native/ui/gfx/BitmapHelper.h"
 
 namespace Elastos {
 namespace Droid {
@@ -48,7 +47,7 @@ AutoPtr<IBitmap> BitmapHelper::DecodeDrawableResource(
 }
 
 Int32 BitmapHelper::CalculateInSampleSize(
-    /* [in] */ IBitmapFactory* ::Options* options,
+    /* [in] */ IBitmapFactoryOptions* options,
     /* [in] */ Int32 reqWidth,
     /* [in] */ Int32 reqHeight)
 {
@@ -76,7 +75,7 @@ Int32 BitmapHelper::CalculateInSampleSize(
 }
 
 Int32 BitmapHelper::GetBitmapFormatForConfig(
-    /* [in] */  Bitmap)
+    /* [in] */ BitmapConfig bitmapConfig)
 {
     // ==================before translated======================
     // switch (bitmapConfig) {
@@ -95,7 +94,7 @@ Int32 BitmapHelper::GetBitmapFormatForConfig(
     return 0;
 }
 
-AutoPtr<IBitmap> BitmapHelper::.Config getBitmapConfigForFormat(
+BitmapConfig GetBitmapConfigForFormat(
     /* [in] */ Int32 bitmapFormatValue)
 {
     // ==================before translated======================
@@ -111,7 +110,7 @@ AutoPtr<IBitmap> BitmapHelper::.Config getBitmapConfigForFormat(
     //         return Bitmap.Config.ARGB_8888;
     // }
     assert(0);
-    AutoPtr<IBitmap> empty;
+    BitmapConfig empty;
     return empty;
 }
 

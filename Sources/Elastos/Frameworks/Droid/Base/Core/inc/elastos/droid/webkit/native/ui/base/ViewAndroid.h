@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,16 +5,17 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_BASE_VIEWANDROID_H_
 #define _ELASTOS_DROID_WEBKIT_UI_BASE_VIEWANDROID_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "view/View.h"
+#include "elastos/droid/webkit/native/ui/base/WindowAndroid.h"
+#include "elastos/droid/webkit/native/ui/base/ViewAndroidDelegate.h"
 
 // package org.chromium.ui.base;
 // import android.view.View;
 // import org.chromium.base.JNINamespace;
 
 using Elastos::Droid::View::IView;
+using Elastos::Droid::Webkit::Ui::Base::WindowAndroid;
+using Elastos::Droid::Webkit::Ui::Base::ViewAndroidDelegate;
 
 namespace Elastos {
 namespace Droid {

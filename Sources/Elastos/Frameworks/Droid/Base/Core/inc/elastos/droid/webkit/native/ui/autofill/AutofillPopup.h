@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,19 +5,9 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_AUTOFILL_AUTOFILLPOPUP_H_
 #define _ELASTOS_DROID_WEBKIT_UI_AUTOFILL_AUTOFILLPOPUP_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "view/View.h"
-#include "widget/AdapterView.h"
-#include "webkit/native/ui/DropdownAdapter.h"
-#include "webkit/native/ui/DropdownItem.h"
-#include "webkit/native/ui/DropdownPopupWindow.h"
-#include "webkit/native/ui/base/ViewAndroidDelegate.h"
-#include "elastos/utility/CArrayList.h"
-#include "elastos/utility/Arrays.h"
-#include "elastos/utility/HashSet.h"
+#include "elastos/droid/webkit/native/ui/DropdownPopupWindow.h"
+#include "elastos/droid/webkit/native/ui/autofill/AutofillSuggestion.h"
 
 // package org.chromium.ui.autofill;
 // import android.content.Context;
@@ -35,13 +24,10 @@
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IView;
+using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
 using Elastos::Droid::Widget::IAdapterView;
-using Elastos::Droid::Webkit::Ui::DropdownAdapter;
-using Elastos::Droid::Webkit::Ui::DropdownItem;
 using Elastos::Droid::Webkit::Ui::DropdownPopupWindow;
-using Elastos::Utility::IArrayList;
-using Elastos::Utility::IArrays;
-using Elastos::Utility::IHashSet;
+using Elastos::Droid::Webkit::Ui::Autofill::AutofillSuggestion;
 
 namespace Elastos {
 namespace Droid {
@@ -49,13 +35,15 @@ namespace Webkit {
 namespace Ui {
 namespace Autofill {
 
+class ViewAndroidDelegate;
+
 /**
   * The Autofill suggestion popup that lists relevant suggestions.
   */
 class AutofillPopup
     : public Object
     , public DropdownPopupWindow
-    , public AdapterView::OnItemClickListener
+    , public IAdapterViewOnItemClickListener
 {
 public:
     /**
@@ -94,7 +82,7 @@ public:
       * @param suggestions Autofill suggestion data.
       */
     virtual CARAPI FilterAndShow(
-        /* [in] */ ArrayOf<AutofillSuggestion>* suggestions);
+        /* [in] */ ArrayOf<AutofillSuggestion*>* suggestions);
 
     /**
       * Overrides the default dismiss behavior to request the controller to dismiss the view.

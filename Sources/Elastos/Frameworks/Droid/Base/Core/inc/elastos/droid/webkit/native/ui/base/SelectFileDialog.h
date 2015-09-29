@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,21 +5,9 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_BASE_SELECTFILEDIALOG_H_
 #define _ELASTOS_DROID_WEBKIT_UI_BASE_SELECTFILEDIALOG_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "app/Activity.h"
-#include "content/ContentResolver.h"
-#include "content/Intent.h"
-#include "net/Uri.h"
-#include "os/AsyncTask.h"
-#include "os/Environment.h"
-#include "provider/CMediaStore.h"
-#include "text/TextUtils.h"
-#include "webkit/native/base/ContentUriUtils.h"
-#include "elastos/io/File.h"
-#include "elastos/utility/CArrayList.h"
-#include "elastos/utility/Arrays.h"
+#include "elastos/droid/os/AsyncTask.h"
+#include "elastos/droid/webkit/native/ui/base/WindowAndroid.h"
 
 // package org.chromium.ui.base;
 // import android.app.Activity;
@@ -40,18 +27,14 @@
 // import java.util.Arrays;
 // import java.util.List;
 
-using Elastos::Droid::App::IActivity;
-using Elastos::Droid::Content::IContentResolver;
-using Elastos::Droid::Content::IIntent;
+using Elastos::IO::IFile;
+using Elastos::Utility::IList;
 using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Os::IAsyncTask;
-using Elastos::Droid::Os::IEnvironment;
-using Elastos::Droid::Provider::IMediaStore;
-using Elastos::Droid::Text::ITextUtils;
-using Elastos::Droid::Webkit::Base::ContentUriUtils;
-using Elastos::Io::IFile;
-using Elastos::Utility::IArrayList;
-using Elastos::Utility::IArrays;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Os::AsyncTask;
+using Elastos::Droid::Webkit::Ui::Base::WindowAndroid;
 
 namespace Elastos {
 namespace Droid {
@@ -64,14 +47,10 @@ namespace Base {
   * a set of accepted file types. The path of the selected file is passed to the native dialog.
   */
 // @JNINamespace("ui")
-class SelectFileDialog
-    : public Object
-    , public WindowAndroid::IntentCallback
+class SelectFileDialog : public WindowAndroid::IntentCallback
 {
 private:
-    class GetDisplayNameTask
-        : public Object
-        , public AsyncTask<Uri, Void, String[]>
+    class GetDisplayNameTask : public AsyncTask
     {
     public:
         GetDisplayNameTask(
@@ -80,8 +59,9 @@ private:
 
     protected:
         // @Override
-        CARAPI_(AutoPtr< ArrayOf<String> >) DoInBackground(
-            /* [in] */  Uri);
+        CARAPI DoInBackground(
+            /* [in] */ ArrayOf<IInterface*>* params,
+            /* [out] */ IInterface** result);
 
         // @Override
         CARAPI OnPostExecute(
@@ -115,7 +95,7 @@ private:
 
     /**
       * Creates and starts an intent based on the passed fileTypes and capture value.
-      * @param fileTypes MIME types requested (i.e. "image/*")
+      * @param fileTypes MIME types requested (i.e. "image")
       * @param capture The capture value as described in http://www.w3.org/TR/html-media-capture/
       * @param window The WindowAndroid that can show intents
       */
@@ -178,7 +158,7 @@ private:
     static const String ANY_TYPES;
     static const String CAPTURE_IMAGE_DIRECTORY;
     /*const*/ Int64 mNativeSelectFileDialog;
-    AutoPtr< IList<String> > mFileTypes;
+    AutoPtr<IList> mFileTypes;
     Boolean mCapture;
     AutoPtr<IUri> mCameraOutputUri;
 };

@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,15 +5,8 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_PROXYCHANGELISTENER_H_
 #define _ELASTOS_DROID_WEBKIT_NET_PROXYCHANGELISTENER_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/BroadcastReceiver.h"
-#include "content/Context.h"
-#include "content/Intent.h"
-#include "content/IntentFilter.h"
-#include "net/CProxy.h"
-#include "os/Build.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 // package org.chromium.net;
 // import android.content.BroadcastReceiver;
@@ -30,13 +22,9 @@
 // import java.lang.reflect.InvocationTargetException;
 // import java.lang.reflect.Method;
 
-using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::IIntentFilter;
-using Elastos::Droid::Net::IProxy;
-using Elastos::Droid::Os::IBuild;
-using Elastos::Droid::Util::ILog;
+using Elastos::Droid::Content::BroadcastReceiver;
 
 namespace Elastos {
 namespace Droid {
@@ -51,7 +39,7 @@ namespace Net {
 class ProxyChangeListener : public Object
 {
 public:
-    class Delegate
+    class Delegate : public Object
     {
     public:
         virtual CARAPI ProxySettingsChanged() = 0;
@@ -70,9 +58,7 @@ private:
         /*const*/ Int32 mPort;
     };
 
-    class ProxyReceiver
-        : public Object
-        , public BroadcastReceiver
+    class ProxyReceiver : public BroadcastReceiver
     {
     public:
         // @Override
@@ -87,7 +73,7 @@ private:
         // methods on it. If we fail, return an empty proxy config (meaning
         // 'direct').
         // TODO(sgurun): once android.net.ProxyInfo is public, rewrite this.
-        CARAPI_(AutoPtr<ProxyConfig>) ExtractNewProxy(
+        CARAPI_(AutoPtr<ProxyChangeListener::ProxyConfig>) ExtractNewProxy(
             /* [in] */ IIntent* intent);
     };
 
@@ -118,7 +104,7 @@ private:
         /* [in] */ IContext* context);
 
     CARAPI ProxySettingsChanged(
-        /* [in] */ ProxyConfig* cfg);
+        /* [in] */ ProxyChangeListener::ProxyConfig* cfg);
 
     CARAPI RegisterReceiver();
 

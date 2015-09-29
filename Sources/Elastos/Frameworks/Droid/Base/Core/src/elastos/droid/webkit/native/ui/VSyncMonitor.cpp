@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "VSyncMonitor.h"
+#include "elastos/droid/webkit/native/ui/VSyncMonitor.h"
 
 namespace Elastos {
 namespace Droid {
@@ -53,9 +52,9 @@ ECode VSyncMonitor::InnerRunnable::Run()
 }
 
 //=====================================================================
-//                     VSyncMonitor::InnerRunnable
+//                     VSyncMonitor::InnerRunnable1
 //=====================================================================
-VSyncMonitor::InnerRunnable::InnerRunnable(
+VSyncMonitor::InnerRunnable1::InnerRunnable1(
     /* [in] */ VSyncMonitor* owner)
     : mOwner(owner)
 {
@@ -63,7 +62,7 @@ VSyncMonitor::InnerRunnable::InnerRunnable(
     // mOwner = owner;
 }
 
-ECode VSyncMonitor::InnerRunnable::Run()
+ECode VSyncMonitor::InnerRunnable1::Run()
 {
     // ==================before translated======================
     // TraceEvent.begin("VSyncSynthetic");
@@ -84,7 +83,7 @@ const Int64 VSyncMonitor::NANOSECONDS_PER_MICROSECOND;
 
 VSyncMonitor::VSyncMonitor(
     /* [in] */ IContext* context,
-    /* [in] */  VSyncMonitor)
+    /* [in] */ Listener* listener)
 {
     // ==================before translated======================
     // this(context, listener, true);
@@ -92,7 +91,7 @@ VSyncMonitor::VSyncMonitor(
 
 VSyncMonitor::VSyncMonitor(
     /* [in] */ IContext* context,
-    /* [in] */ VSyncMonitor* ::Listener* listener,
+    /* [in] */ Listener* listener,
     /* [in] */ Boolean enableJBVSync)
 {
     // ==================before translated======================

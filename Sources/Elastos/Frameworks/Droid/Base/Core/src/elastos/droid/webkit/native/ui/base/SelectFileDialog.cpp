@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "SelectFileDialog.h"
+#include "elastos/droid/webkit/native/ui/base/SelectFileDialog.h"
 
 namespace Elastos {
 namespace Droid {
@@ -20,8 +19,9 @@ SelectFileDialog::GetDisplayNameTask::GetDisplayNameTask(
     // mIsMultiple = isMultiple;
 }
 
-AutoPtr< ArrayOf<String> > SelectFileDialog::GetDisplayNameTask::DoInBackground(
-    /* [in] */  Uri)
+ECode SelectFileDialog::GetDisplayNameTask::DoInBackground(
+	/* [in] */ ArrayOf<IInterface*>* params,
+    /* [out] */ IInterface** result)
 {
     // ==================before translated======================
     // mFilePaths = new String[uris.length];
@@ -33,8 +33,7 @@ AutoPtr< ArrayOf<String> > SelectFileDialog::GetDisplayNameTask::DoInBackground(
     // }
     // return displayNames;
     assert(0);
-    AutoPtr< ArrayOf<String> > empty;
-    return empty;
+    return NOERROR;
 }
 
 ECode SelectFileDialog::GetDisplayNameTask::OnPostExecute(

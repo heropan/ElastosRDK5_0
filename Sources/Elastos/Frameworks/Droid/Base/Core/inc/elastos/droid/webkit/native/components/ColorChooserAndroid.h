@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,14 +5,9 @@
 #ifndef _ELASTOS_DROID_WEBKIT_COMPONENTS_COLORCHOOSERANDROID_H_
 #define _ELASTOS_DROID_WEBKIT_COMPONENTS_COLORCHOOSERANDROID_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "webkit/native/content/browser/ContentViewCore.h"
-#include "webkit/native/ui/ColorPickerDialog.h"
-#include "webkit/native/ui/ColorSuggestion.h"
-#include "webkit/native/ui/OnColorChangedListener.h"
+#include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
+#include "elastos/droid/webkit/native/ui/ColorPickerDialog.h"
 
 // package org.chromium.components.web_contents_delegate_android;
 // import android.content.Context;
@@ -25,14 +19,16 @@
 // import org.chromium.ui.OnColorChangedListener;
 
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Webkit::Ui::ColorPickerDialog;
-using Elastos::Droid::Webkit::Ui::ColorSuggestion;
 using Elastos::Droid::Webkit::Ui::OnColorChangedListener;
+using Elastos::Droid::Webkit::Ui::ColorPickerDialog;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Components {
+
+class ContentViewCore;
+class ColorSuggestion;
 
 /**
   * ColorChooserAndroid communicates with the java ColorPickerDialog and the
@@ -63,23 +59,23 @@ public:
     virtual CARAPI CloseColorChooser();
 
     // @CalledByNative
-    static CARAPI_(AutoPtr<ColorChooserAndroid>) CreateColorChooserAndroid(
+    static CARAPI_(AutoPtr<ColorChooserAndroid*>) CreateColorChooserAndroid(
         /* [in] */ Int64 nativeColorChooserAndroid,
         /* [in] */ ContentViewCore* contentViewCore,
         /* [in] */ Int32 initialColor,
-        /* [in] */ ArrayOf<ColorSuggestion>* suggestions);
+        /* [in] */ ArrayOf<ColorSuggestion*>* suggestions);
 
 private:
     ColorChooserAndroid(
         /* [in] */ Int64 nativeColorChooserAndroid,
         /* [in] */ IContext* context,
         /* [in] */ Int32 initialColor,
-        /* [in] */ ArrayOf<ColorSuggestion>* suggestions);
+        /* [in] */ ArrayOf<ColorSuggestion*>* suggestions);
 
     CARAPI OpenColorChooser();
 
     // @CalledByNative
-    static CARAPI_(AutoPtr< ArrayOf<ColorSuggestion> >) CreateColorSuggestionArray(
+    static CARAPI_(AutoPtr< ArrayOf<ColorSuggestion*> >) CreateColorSuggestionArray(
         /* [in] */ Int32 size);
 
     /**
@@ -90,7 +86,7 @@ private:
       */
     // @CalledByNative
     static CARAPI AddToColorSuggestionArray(
-        /* [in] */ ArrayOf<ColorSuggestion>* array,
+        /* [in] */ ArrayOf<ColorSuggestion*>* array,
         /* [in] */ Int32 index,
         /* [in] */ Int32 color,
         /* [in] */ const String& label);

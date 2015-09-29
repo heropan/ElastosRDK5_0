@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,12 +5,12 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_INTERPOLATORS_BAKEDBEZIERINTERPOLATOR_H_
 #define _ELASTOS_DROID_WEBKIT_UI_INTERPOLATORS_BAKEDBEZIERINTERPOLATOR_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
 
 // package org.chromium.ui.interpolators;
 // import android.view.animation.Interpolator;
+
+using Elastos::Droid::View::Animation::IInterpolator;
 
 namespace Elastos {
 namespace Droid {
@@ -26,9 +25,11 @@ namespace Interpolators {
   */
 class BakedBezierInterpolator
     : public Object
-    , public Interpolator
+    , public IInterpolator
 {
 public:
+    CAR_INTERFACE_DECL();
+
     // @Override
     CARAPI_(Float) GetInterpolation(
         /* [in] */ Float input);

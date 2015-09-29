@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "ColorSuggestionListAdapter.h"
+#include "elastos/droid/webkit/native/ui/ColorSuggestionListAdapter.h"
 
 namespace Elastos {
 namespace Droid {
@@ -14,7 +13,7 @@ const Int32 ColorSuggestionListAdapter::COLORS_PER_ROW;
 
 ColorSuggestionListAdapter::ColorSuggestionListAdapter(
     /* [in] */ IContext* context,
-    /* [in] */ ArrayOf<ColorSuggestion>* suggestions)
+    /* [in] */ ArrayOf<ColorSuggestion*>* suggestions)
 {
     // ==================before translated======================
     // mContext = context;
@@ -97,13 +96,13 @@ Int64 ColorSuggestionListAdapter::GetItemId(
     return 0;
 }
 
-AutoPtr<Object> ColorSuggestionListAdapter::GetItem(
+AutoPtr<IInterface> ColorSuggestionListAdapter::GetItem(
     /* [in] */ Int32 position)
 {
     // ==================before translated======================
     // return null;
     assert(0);
-    AutoPtr<Object> empty;
+    AutoPtr<IInterface> empty;
     return empty;
 }
 

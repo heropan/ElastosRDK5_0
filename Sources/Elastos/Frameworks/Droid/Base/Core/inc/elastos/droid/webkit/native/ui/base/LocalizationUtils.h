@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,14 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_BASE_LOCALIZATIONUTILS_H_
 #define _ELASTOS_DROID_WEBKIT_UI_BASE_LOCALIZATIONUTILS_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/res/CConfiguration.h"
-#include "view/View.h"
-#include "webkit/native/base/ApiCompatibilityUtils.h"
-#include "webkit/native/base/ApplicationStatus.h"
-#include "elastos/utility/CLocale.h"
 
 // package org.chromium.ui.base;
 // import android.content.res.Configuration;
@@ -24,10 +16,6 @@
 // import org.chromium.base.JNINamespace;
 // import java.util.Locale;
 
-using Elastos::Droid::Content::Res::IConfiguration;
-using Elastos::Droid::View::IView;
-using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
-using Elastos::Droid::Webkit::Base::ApplicationStatus;
 using Elastos::Utility::ILocale;
 
 namespace Elastos {
@@ -106,7 +94,7 @@ public:
     static const Int32 LEFT_TO_RIGHT = 2;
 
 private:
-    static AutoPtr<Boolean> sIsLayoutRtl;
+    static Boolean sIsLayoutRtl;
 };
 
 } // namespace Base

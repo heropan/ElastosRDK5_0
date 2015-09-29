@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "ColorSuggestion.h"
+#include "elastos/droid/webkit/native/ui/ColorSuggestion.h"
 
 namespace Elastos {
 namespace Droid {

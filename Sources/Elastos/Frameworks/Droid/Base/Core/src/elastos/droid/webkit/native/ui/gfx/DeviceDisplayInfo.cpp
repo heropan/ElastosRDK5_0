@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "DeviceDisplayInfo.h"
+#include "elastos/droid/webkit/native/ui/gfx/DeviceDisplayInfo.h"
 
 namespace Elastos {
 namespace Droid {

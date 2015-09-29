@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,14 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_GFX_VIEWCONFIGURATIONHELPER_H_
 #define _ELASTOS_DROID_WEBKIT_UI_GFX_VIEWCONFIGURATIONHELPER_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "content/res/CConfiguration.h"
-#include "content/res/CResources.h"
-#include "util/CTypedValue.h"
-#include "view/CViewConfiguration.h"
 
 // package org.chromium.ui.gfx;
 // import android.content.ComponentCallbacks;
@@ -26,11 +18,9 @@
 // import org.chromium.base.JNINamespace;
 // import org.chromium.ui.R;
 
-using Elastos::Droid::Content::IComponentCallbacks;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IComponentCallbacks;
 using Elastos::Droid::Content::Res::IConfiguration;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Util::ITypedValue;
 using Elastos::Droid::View::IViewConfiguration;
 
 namespace Elastos {
@@ -50,7 +40,7 @@ class ViewConfigurationHelper : public Object
 public:
     class InnerComponentCallbacks
         : public Object
-        , public ComponentCallbacks
+        , public IComponentCallbacks
     {
     public:
         InnerComponentCallbacks(

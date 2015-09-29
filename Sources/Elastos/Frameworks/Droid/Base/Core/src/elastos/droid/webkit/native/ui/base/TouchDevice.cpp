@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "TouchDevice.h"
+#include "elastos/droid/webkit/native/ui/base/TouchDevice.h"
 
 namespace Elastos {
 namespace Droid {

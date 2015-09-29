@@ -4,20 +4,21 @@ TARGET_TYPE = lib
 include $(MAKEDIR)/../../../../../../../../sources.inc
 
 INCLUDES += ../../../
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid/webkit/native/ui
+INCLUDES += $(MAKEDIR)/../../../../../../inc/
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid/
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid/webkit/native/ui/
 
 C_DEFINES += -DDROID_CORE
 
-SOURCES = ColorPickerSimple.cpp
+#SOURCES = ColorPickerSimple.cpp                    # cannot compile
 SOURCES += DropdownDividerDrawable.cpp
 SOURCES += VSyncMonitor.cpp
 SOURCES += ColorSuggestion.cpp
-SOURCES += DropdownPopupWindow.cpp
+#SOURCES += DropdownPopupWindow.cpp                 # cannot compile
 SOURCES += UiUtils.cpp
 SOURCES += ColorPickerAdvancedComponent.cpp
-SOURCES += DropdownAdapter.cpp
+#SOURCES += DropdownAdapter.cpp                     # cannot compile
 SOURCES += ColorSuggestionListAdapter.cpp
-SOURCES += ColorPickerMoreButton.cpp
-SOURCES += ColorPickerAdvanced.cpp
-SOURCES += ColorPickerDialog.cpp
+#SOURCES += ColorPickerMoreButton.cpp               # cannot compile       
+#SOURCES += ColorPickerAdvanced.cpp                 # cannot compile    
+#SOURCES += ColorPickerDialog.cpp                   # cannot compile    

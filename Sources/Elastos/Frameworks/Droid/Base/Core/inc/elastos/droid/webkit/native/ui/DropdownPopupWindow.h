@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,17 +5,9 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_DROPDOWNPOPUPWINDOW_H_
 #define _ELASTOS_DROID_WEBKIT_UI_DROPDOWNPOPUPWINDOW_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "graphics/CRect.h"
-#include "view/View.h"
-#include "view/ViewGroup.h"
-#include "widget/LinearLayout.h"
-#include "widget/ListPopupWindow.h"
-#include "widget/PopupWindow.h"
-#include "webkit/native/ui/base/ViewAndroidDelegate.h"
+#include "elastos/droid/widget/ListPopupWindow.h"
+#include "elastos/droid/webkit/native/base/ViewAndroidDelegate.h"
 
 // package org.chromium.ui;
 // import android.content.Context;
@@ -31,14 +22,13 @@
 // import android.widget.PopupWindow;
 // import org.chromium.ui.base.ViewAndroidDelegate;
 
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Graphics::IRect;
-using Elastos::Droid::View::IView;
-using Elastos::Droid::View::IViewGroup;
-using Elastos::Droid::Widget::ILinearLayout;
+using Elastos::Droid::Widget::ListPopupWindow;
 using Elastos::Droid::Widget::IListAdapter;
-using Elastos::Droid::Widget::IListPopupWindow;
-using Elastos::Droid::Widget::IPopupWindow;
+using Elastos::Droid::Widget::IPopupWindowOnDismissListener;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewOnLayoutChangeListener;
+using Elastos::Droid::Webkit::Base::ViewAndroidDelegate;
 
 namespace Elastos {
 namespace Droid {
@@ -48,14 +38,12 @@ namespace Ui {
 /**
   * The dropdown list popup window.
   */
-class DropdownPopupWindow
-    : public Object
-    , public ListPopupWindow
+class DropdownPopupWindow : public ListPopupWindow
 {
 public:
     class InnerOnLayoutChangeListener
         : public Object
-        , public OnLayoutChangeListener
+        , public IViewOnLayoutChangeListener
     {
     public:
         InnerOnLayoutChangeListener(
@@ -79,7 +67,7 @@ public:
 
     class InnerPopupWindowOnDismissListener
         : public Object
-        , public PopupWindow::OnDismissListener
+        , public IPopupWindowOnDismissListener
     {
     public:
         InnerPopupWindowOnDismissListener(
@@ -125,7 +113,7 @@ public:
 
     // @Override
     CARAPI SetOnDismissListener(
-        /* [in] */  PopupWindow);
+        /* [in] */ IPopupWindowOnDismissListener* listener);
 
 private:
     /**
@@ -145,8 +133,8 @@ private:
     Float mAnchorHeight;
     Float mAnchorX;
     Float mAnchorY;
-    AutoPtr<IOnLayoutChangeListener> mLayoutChangeListener;
-    AutoPtr<PopupWindow::OnDismissListener> mOnDismissListener;
+    AutoPtr<IViewOnLayoutChangeListener> mLayoutChangeListener;
+    AutoPtr<IPopupWindowOnDismissListener> mOnDismissListener;
 };
 
 } // namespace Ui

@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "ColorPickerDialog.h"
+#include "elastos/droid/webkit/native/ui/ColorPickerDialog.h"
 
 namespace Elastos {
 namespace Droid {
@@ -30,9 +29,9 @@ ECode ColorPickerDialog::InnerDialogOnClickListener::OnClick(
 }
 
 //=====================================================================
-//            ColorPickerDialog::InnerDialogOnClickListener
+//            ColorPickerDialog::InnerDialogOnClickListener1
 //=====================================================================
-ColorPickerDialog::InnerDialogOnClickListener::InnerDialogOnClickListener(
+ColorPickerDialog::InnerDialogOnClickListener1::InnerDialogOnClickListener1(
     /* [in] */ ColorPickerDialog* owner)
     : mOwner(owner)
 {
@@ -40,7 +39,7 @@ ColorPickerDialog::InnerDialogOnClickListener::InnerDialogOnClickListener(
     // mOwner = owner;
 }
 
-ECode ColorPickerDialog::InnerDialogOnClickListener::OnClick(
+ECode ColorPickerDialog::InnerDialogOnClickListener1::OnClick(
     /* [in] */ IDialogInterface* dialogInterface,
     /* [in] */ Int32 i)
 {
@@ -97,10 +96,10 @@ ECode ColorPickerDialog::InnerButtonOnClickListener::OnClick(
 //                          ColorPickerDialog
 //=====================================================================
 ColorPickerDialog::ColorPickerDialog(
-    /* [in] */ IContext* context,
+    /* [in] */ Context* context,
     /* [in] */ OnColorChangedListener* listener,
     /* [in] */ Int32 color,
-    /* [in] */ ArrayOf<ColorSuggestion>* suggestions)
+    /* [in] */ ArrayOf<ColorSuggestion*>* suggestions)
 {
     // ==================before translated======================
     // super(context, 0);

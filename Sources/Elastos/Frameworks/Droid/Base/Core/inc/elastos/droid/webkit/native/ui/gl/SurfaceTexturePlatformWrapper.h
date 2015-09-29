@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,11 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_GL_SURFACETEXTUREPLATFORMWRAPPER_H_
 #define _ELASTOS_DROID_WEBKIT_UI_GL_SURFACETEXTUREPLATFORMWRAPPER_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "graphics/CSurfaceTexture.h"
-#include "os/Build.h"
 
 // package org.chromium.ui.gl;
 // import android.graphics.SurfaceTexture;
@@ -20,8 +15,6 @@
 // import org.chromium.base.JNINamespace;
 
 using Elastos::Droid::Graphics::ISurfaceTexture;
-using Elastos::Droid::Os::IBuild;
-using Elastos::Droid::Util::ILog;
 
 namespace Elastos {
 namespace Droid {
@@ -34,7 +27,7 @@ namespace Gl {
   * provide a stable JNI API.
   */
 // @JNINamespace("gfx")
-class SurfaceTexturePlatformWrapper
+class SurfaceTexturePlatformWrapper : public Object
 {
 private:
     // @CalledByNative

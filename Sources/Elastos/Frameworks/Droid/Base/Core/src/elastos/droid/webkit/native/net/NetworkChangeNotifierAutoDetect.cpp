@@ -1,11 +1,14 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "NetworkChangeNotifierAutoDetect.h"
+#include "elastos/droid/webkit/native/net/NetworkChangeNotifierAutoDetect.h"
+
+using Elastos::Droid::Content::EIID_IBroadcastReceiver;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Net {
+
+CAR_INTERFACE_IMPL(NetworkChangeNotifierAutoDetect, BroadcastReceiver, IBroadcastReceiver);
 
 //=====================================================================
 //     NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate
@@ -203,9 +206,10 @@ ECode NetworkChangeNotifierAutoDetect::OnReceive(
     return NOERROR;
 }
 
-ECode NetworkChangeNotifierAutoDetect::OnApplicationStateChange(
-    /* [in] */ Int32 newState)
-{
+// Inconsistent with ApplicationStatus.ApplicationStateListener, note it temporarily
+//ECode NetworkChangeNotifierAutoDetect::OnApplicationStateChange(
+//    /* [in] */ Int32 newState)
+//{
     // ==================before translated======================
     // if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES) {
     //     connectionTypeChanged();
@@ -213,9 +217,9 @@ ECode NetworkChangeNotifierAutoDetect::OnApplicationStateChange(
     // } else if (newState == ApplicationState.HAS_PAUSED_ACTIVITIES) {
     //     unregisterReceiver();
     // }
-    assert(0);
-    return NOERROR;
-}
+//    assert(0);
+//    return NOERROR;
+//}
 
 ECode NetworkChangeNotifierAutoDetect::RegisterReceiver()
 {

@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,11 +5,9 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_DEFAULTANDROIDKEYSTORE_H_
 #define _ELASTOS_DROID_WEBKIT_NET_DEFAULTANDROIDKEYSTORE_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "elastos/security/Signature.h"
-#include "elastos/security/spec/CECParameterSpec.h"
+#include "elastos/droid/webkit/native/net/AndroidKeyStore.h"
+#include "elastos/droid/webkit/native/net/AndroidPrivateKey.h"
 
 // package org.chromium.net;
 // import android.util.Log;
@@ -27,9 +24,9 @@
 // import java.security.interfaces.RSAPrivateKey;
 // import java.security.spec.ECParameterSpec;
 
-using Elastos::Droid::Util::ILog;
-using Elastos::Security::ISignature;
-using Elastos::Security::Spec::IECParameterSpec;
+using Elastos::Security::IPrivateKey;
+using Elastos::Droid::Webkit::Net::AndroidKeyStore;
+using Elastos::Droid::Webkit::Net::AndroidPrivateKey;
 
 namespace Elastos {
 namespace Droid {
@@ -39,14 +36,10 @@ namespace Net {
 /**
   * Simple implementation of the AndroidKeyStore for use with an in-process Java KeyStore.
   */
-class DefaultAndroidKeyStore
-    : public Object
-    , public AndroidKeyStore
+class DefaultAndroidKeyStore : public AndroidKeyStore
 {
 private:
-    class DefaultAndroidPrivateKey
-        : public Object
-        , public AndroidPrivateKey
+    class DefaultAndroidPrivateKey : public AndroidPrivateKey
     {
     public:
         DefaultAndroidPrivateKey(

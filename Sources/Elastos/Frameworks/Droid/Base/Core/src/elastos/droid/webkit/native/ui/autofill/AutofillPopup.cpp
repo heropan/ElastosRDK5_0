@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "AutofillPopup.h"
+#include "elastos/droid/webkit/native/ui/autofill/AutofillPopup.h"
 
 namespace Elastos {
 namespace Droid {
@@ -30,7 +29,7 @@ AutofillPopup::AutofillPopup(
 }
 
 ECode AutofillPopup::FilterAndShow(
-    /* [in] */ ArrayOf<AutofillSuggestion>* suggestions)
+    /* [in] */ ArrayOf<AutofillSuggestion*>* suggestions)
 {
     VALIDATE_NOT_NULL(suggestions);
     // ==================before translated======================
