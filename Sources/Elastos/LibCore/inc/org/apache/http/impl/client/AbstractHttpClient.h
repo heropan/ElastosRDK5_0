@@ -13,6 +13,7 @@ using Org::Apache::Http::IHttpResponse;
 using Org::Apache::Http::IHttpResponseInterceptor;
 using Org::Apache::Http::IHttpRequestInterceptor;
 using Org::Apache::Http::Auth::IAuthSchemeRegistry;
+using Org::Apache::Http::Client::IHttpClient;
 using Org::Apache::Http::Client::IAuthenticationHandler;
 using Org::Apache::Http::Client::ICookieStore;
 using Org::Apache::Http::Client::ICredentialsProvider;
@@ -21,7 +22,7 @@ using Org::Apache::Http::Client::IRedirectHandler;
 using Org::Apache::Http::Client::IRequestDirector;
 using Org::Apache::Http::Client::IResponseHandler;
 using Org::Apache::Http::Client::IUserTokenHandler;
-using Org::Apache::Http::Client::Method::IHttpUriRequest;
+using Org::Apache::Http::Client::Methods::IHttpUriRequest;
 using Org::Apache::Http::Conn::IClientConnectionManager;
 using Org::Apache::Http::Conn::IConnectionKeepAliveStrategy;
 using Org::Apache::Http::Conn::Routing::IHttpRoutePlanner;
@@ -30,6 +31,7 @@ using Org::Apache::Http::Params::IHttpParams;
 using Org::Apache::Http::Protocol::IBasicHttpProcessor;
 using Org::Apache::Http::Protocol::IHttpContext;
 using Org::Apache::Http::Protocol::IHttpRequestExecutor;
+using Org::Apache::Http::Protocol::IHttpProcessor;
 
 namespace Org {
 namespace Apache {

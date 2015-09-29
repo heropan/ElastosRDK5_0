@@ -2,10 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_COOKIE_DATEUTILS_H__
 #define __ORG_APACHE_HTTP_IMPL_COOKIE_DATEUTILS_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Utility::ITimeZone;
 using Elastos::Utility::IDate;
 using Elastos::Text::ISimpleDateFormat;
@@ -69,7 +67,7 @@ public:
      * @throws DateParseException if the value could not be parsed using any of the
      * supported date formats
      */
-    CARAPI ParseDate(
+    static CARAPI ParseDate(
         /* [in] */ const String& dateValue,
         /* [out] */ IDate** date);
 
@@ -83,7 +81,7 @@ public:
      *
      * @throws DateParseException if none of the dataFormats could parse the dateValue
      */
-    CARAPI ParseDate(
+    static CARAPI ParseDate(
         /* [in] */ const String& dateValue,
         /* [in] */ ArrayOf<String>* dateFormats,
         /* [out] */ IDate** date);
@@ -102,7 +100,7 @@ public:
      *
      * @throws DateParseException if none of the dataFormats could parse the dateValue
      */
-    CARAPI parseDate(
+    static CARAPI ParseDate(
         /* [in] */ const String& dateValue,
         /* [in] */ ArrayOf<String>* dateFormats,
         /* [in] */ IDate* startDate,
@@ -116,7 +114,7 @@ public:
      *
      * @see #PATTERN_RFC1123
      */
-    CARAPI FormatDate(
+    static CARAPI FormatDate(
         /* [in] */ IDate* date,
         /* [out] */ String* formatDate);
 
@@ -133,7 +131,7 @@ public:
      *
      * @see SimpleDateFormat
      */
-    CARAPI FormatDate(
+    static CARAPI FormatDate(
         /* [in] */ IDate* date,
         /* [in] */ const String& pattern,
         /* [out] */ String* formatDate);

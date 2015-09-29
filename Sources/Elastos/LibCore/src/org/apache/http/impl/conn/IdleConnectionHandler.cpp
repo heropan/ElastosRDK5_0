@@ -1,6 +1,9 @@
 
 #include "IdleConnectionHandler.h"
-#include <elastos/Logger.h>
+#include "CSystem.h"
+#include "Math.h"
+#include "CHashMap.h"
+#include "Logger.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -28,12 +31,13 @@ IdleConnectionHandler::TimeValues::TimeValues(
     , mTimeExpires(0)
 {
     mTimeAdded = now;
-    if(validDuration > 0) {
+    if (validDuration > 0) {
         Int64 millis;
-        validUnit->ToMillis(validDuration, &millis)
+        validUnit->ToMillis(validDuration, &millis);
         mTimeExpires = now + millis;
-    } else {
-        mTimeExpires = Math::INT64_MAX_VALUE;
+    }
+    else {
+        mTimeExpires = Elastos::Core::Math::INT64_MAX_VALUE;
     }
 }
 
@@ -63,7 +67,7 @@ void IdleConnectionHandler::Add(
     // }
 
     AutoPtr<TimeValues> timeValues = new TimeValues(timeAdded, validDuration, unit);
-    mConnectionToTimes->Put(connection, (IInterface*)timeValues);
+    mConnectionToTimes->Put(connection, timeValues->Probe(EIID_IInterface));
 }
 
 Boolean IdleConnectionHandler::Remove(
@@ -71,13 +75,12 @@ Boolean IdleConnectionHandler::Remove(
 {
     AutoPtr<IInterface> value;
     mConnectionToTimes->Remove(connection, (IInterface**)&value);
-    TimeValues times = mConnectionToTimes.remove(connection);
     if(value == NULL) {
         Logger::D("IdleConnectionHandler", "Removing a connection that never existed!");
         return TRUE;
     }
     else {
-        AutoPtr<TimeValues> times = (TimeValues*)value;
+        AutoPtr<TimeValues> times = (TimeValues*)(Object*)(IObject*)value.Get();
         AutoPtr<ISystem> system;
         CSystem::AcquireSingleton((ISystem**)&system);
         Int64 current;
@@ -115,7 +118,7 @@ void IdleConnectionHandler::CloseIdleConnections(
         AutoPtr<IHttpConnection> conn = IHttpConnection::Probe(key);
         AutoPtr<IInterface> value;
         mConnectionToTimes->Get(conn, (IInterface**)&value);
-        AutoPtr<TimeValues> times = (TimeValues*)value.Get();
+        AutoPtr<TimeValues> times = (TimeValues*)(Object*)(IObject*)value.Get();
         Int64 connectionTime = times->mTimeAdded;
         if (connectionTime <= idleTimeout) {
             // if (log.isDebugEnabled()) {
@@ -152,7 +155,7 @@ void IdleConnectionHandler::CloseExpiredConnections()
         AutoPtr<IHttpConnection> conn = IHttpConnection::Probe(key);
         AutoPtr<IInterface> value;
         mConnectionToTimes->Get(conn, (IInterface**)&value);
-        AutoPtr<TimeValues> times = (TimeValues*)value.Get();
+        AutoPtr<TimeValues> times = (TimeValues*)(Object*)(IObject*)value.Get();
         if(times->mTimeExpires <= now) {
             // if (log.isDebugEnabled()) {
             //     log.debug("Closing connection, expired @: "  + times.timeExpires);

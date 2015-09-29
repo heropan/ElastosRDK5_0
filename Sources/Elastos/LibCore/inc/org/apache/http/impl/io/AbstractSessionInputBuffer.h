@@ -82,7 +82,7 @@ private:
     String mCharset;
     Boolean mAscii;
     Int32 mMaxLineLen;
-    AutoPtr<HttpTransportMetricsImpl> metrics;
+    AutoPtr<HttpTransportMetricsImpl> mMetrics;
 };
 
 } // namespace IO

@@ -2,14 +2,25 @@
 TARGET_NAME= io
 TARGET_TYPE= lib
 
-INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/impl
-INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/impl/io
-INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/message
-INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/params
-INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/utility
-INCLUDES += $(MAKEDIR)../../../../../inc/elastos/io
+C_DEFINES += -DELASTOS_CORELIBRARY
 
-VPATH := $(MAKEDIR)../../../../../src/elastos/io
+include $(MAKEDIR)/../../../../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += ../../../../../corelibrary
+INCLUDES += $(MAKEDIR)/../../../../../../inc;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/core;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/io;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/libcore/io;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/utility/logging;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/impl;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/impl/io;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/message;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/params;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/util;
+
+VPATH := $(MAKEDIR)/../../../../../../src/elastos/io
 
 SOURCES = AbstractMessageParser.cpp
 SOURCES += AbstractMessageWriter.cpp

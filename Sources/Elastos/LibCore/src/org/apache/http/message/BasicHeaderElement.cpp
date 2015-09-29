@@ -1,7 +1,8 @@
 
 #include "BasicHeaderElement.h"
+#include "CArrayOf.h"
 #include "CCharArrayBuffer.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Core::CArrayOf;
 using Elastos::Utility::Logging::Logger;

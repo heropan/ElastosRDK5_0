@@ -2,10 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_DEFAULTREDIRECTHANDLER_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_DEFAULTREDIRECTHANDLER_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
+using Elastos::Net::IURI;
 using Org::Apache::Http::IHttpResponse;
 using Org::Apache::Http::Client::IRedirectHandler;
 using Org::Apache::Http::Protocol::IHttpContext;

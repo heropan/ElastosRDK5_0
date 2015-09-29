@@ -1,15 +1,19 @@
 
 #include "BasicCookieStore.h"
 #include "CCookieIdentityComparator.h"
-#include <elastos/Logger.h>
-#include <elastos/Utility/Collections.h>
+#include "CDate.h"
+#include "CArrayList.h"
+#include "Logger.h"
+#include "Collections.h"
+#include "AutoLock.h"
 
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::CDate;
 using Elastos::Utility::Collections;
-using Elastos::Utility::IIterable;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Client::IAuthenticationHandler;
+using Org::Apache::Http::Client::EIID_IAuthenticationHandler;
 using Org::Apache::Http::Cookie::CCookieIdentityComparator;
 
 namespace Org {
@@ -24,7 +28,7 @@ BasicCookieStore::BasicCookieStore()
     CCookieIdentityComparator::New((IComparator**)&mCookieComparator);
 }
 
-CAR_INTERFACE_DECL(BasicCookieStore, Object, IAuthenticationHandler)
+CAR_INTERFACE_IMPL(BasicCookieStore, Object, IAuthenticationHandler)
 
 ECode BasicCookieStore::AddCookie(
     /* [in] */ ICookie* cookie)
@@ -32,9 +36,8 @@ ECode BasicCookieStore::AddCookie(
     synchronized(this) {
         if (cookie != NULL) {
             // first remove any old cookie that is equivalent
-            AutoPtr<IIterable> able = IIterable::Probe(mCookies);
             AutoPtr<IIterator> it;
-            able->GetIterator((IIterator**)&it);
+            mCookies->GetIterator((IIterator**)&it);
             Boolean hasNext;
             while(it->HasNext(&hasNext), hasNext) {
                 AutoPtr<IInterface> value;
@@ -49,7 +52,7 @@ ECode BasicCookieStore::AddCookie(
             CDate::New((IDate**)&date);
             Boolean isExpired;
             if (cookie->IsExpired(date, &isExpired), !isExpired) {
-                cookies->Add(cookie);
+                mCookies->Add(cookie);
             }
         }
     }
@@ -57,7 +60,7 @@ ECode BasicCookieStore::AddCookie(
 }
 
 void BasicCookieStore::AddCookies(
-    /* [in] */ ArrayOf<ICookie>* cookies)
+    /* [in] */ ArrayOf<ICookie*>* cookies)
 {
     synchronized(this) {
         if (cookies != NULL) {
@@ -89,9 +92,8 @@ ECode BasicCookieStore::ClearExpired(
             return NOERROR;
         }
         Boolean removed = FALSE;
-        AutoPtr<IIterable> able = IIterable::Probe(mCookies);
         AutoPtr<IIterator> it;
-        able->GetIterator((IIterator**)&it);
+        mCookies->GetIterator((IIterator**)&it);
         Boolean hasNext;
         while(it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> value;
@@ -118,7 +120,7 @@ ECode BasicCookieStore::ToString(
 ECode BasicCookieStore::Clear()
 {
     synchronized(this) {
-        mCookie->Clear();
+        mCookies->Clear();
     }
     return NOERROR;
 }

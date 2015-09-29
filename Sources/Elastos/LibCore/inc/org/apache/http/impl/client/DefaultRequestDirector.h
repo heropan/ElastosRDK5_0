@@ -2,12 +2,10 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_DEFAULTREQUESTDIRECTOR_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_DEFAULTREQUESTDIRECTOR_H__
 
-#include <Org.Apache.Http_server.h>
 #include "RequestWrapper.h"
 #include "RoutedRequest.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Net::IURI;
 using Elastos::Utility::IMap;
 using Org::Apache::Http::IHttpResponse;
@@ -170,7 +168,7 @@ protected:
         /* [in] */ IHttpRoute* route,
         /* [in] */ Int32 hop,
         /* [in] */ IHttpContext* context,
-        /* [out] */ Boolean** result);
+        /* [out] */ Boolean* result);
 
     /**
      * Creates the CONNECT request for tunnelling.

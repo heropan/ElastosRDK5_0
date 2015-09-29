@@ -3,9 +3,10 @@
 #include "CCharArrayBuffer.h"
 #include "CByteArrayBuffer.h"
 #include "HttpProtocolParams.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::IO::EIID_ISessionInputBuffer;
 using Org::Apache::Http::Params::HttpProtocolParams;
 using Org::Apache::Http::Params::ICoreConnectionPNames;
 using Org::Apache::Http::Protocol::IHTTP;
@@ -55,6 +56,7 @@ ECode AbstractSessionInputBuffer::Init(
     mAscii = mCharset.EqualsIgnoreCase(IHTTP::US_ASCII) || mCharset.EqualsIgnoreCase(IHTTP::ASCII);
     params->GetInt32Parameter(ICoreConnectionPNames::MAX_LINE_LENGTH, -1, &mMaxLineLen);
     mMetrics = new HttpTransportMetricsImpl();
+    return NOERROR;
 }
 
 Int32 AbstractSessionInputBuffer::FillBuffer()
@@ -142,7 +144,7 @@ ECode AbstractSessionInputBuffer::Read(
     if (b == NULL) {
         *count = 0;
     }
-    return Read(b, 0, b->GetLength());
+    return Read(b, 0, b->GetLength(), count);
 }
 
 Int32 AbstractSessionInputBuffer::LocateLF()
@@ -219,14 +221,14 @@ ECode AbstractSessionInputBuffer::LineFromLineBuffer(
     Int32 l;
     mLinebuffer->GetLength(&l);
     if (l > 0) {
-        Byte b;
-        if (mLinebuffer->GetByte(l - 1, &b), b == IHTTP::LF) {
+        Int32 b;
+        if (mLinebuffer->ByteAt(l - 1, &b), b == IHTTP::LF) {
             l--;
             mLinebuffer->SetLength(l);
         }
         // discard CR if found
         if (l > 0) {
-            if (mLinebuffer->GetByteAt(l - 1, &b), b == IHTTP::CR) {
+            if (mLinebuffer->ByteAt(l - 1, &b), b == IHTTP::CR) {
                 l--;
                 mLinebuffer->SetLength(l);
             }
@@ -243,7 +245,7 @@ ECode AbstractSessionInputBuffer::LineFromLineBuffer(
         mLinebuffer->GetBuffer((ArrayOf<Byte>**)&bytes);
         assert(0);
         // String s = new String(bytes, 0, l, this.charset);
-        charbuffer->Append(s);
+        // charbuffer->Append(s);
     }
     *len = l;
     return NOERROR;
@@ -251,10 +253,10 @@ ECode AbstractSessionInputBuffer::LineFromLineBuffer(
 
 ECode AbstractSessionInputBuffer::LineFromReadBuffer(
     /* [in] */ ICharArrayBuffer* charbuffer,
-    /* [in] */ Int32 pos
+    /* [in] */ Int32 pos,
     /* [out] */ Int32* length)
 {
-    VALIDATE_NOT_NULL(len)
+    VALIDATE_NOT_NULL(length)
     Int32 off = mBufferpos;
     Int32 len;
     mBufferpos = pos + 1;
@@ -275,10 +277,10 @@ ECode AbstractSessionInputBuffer::LineFromReadBuffer(
         // NOT meant to be used anyway, there's no point optimizing it
         assert(0);
         // String s = new String(this.buffer, off, len, this.charset);
-        charbuffer->Append(s);
+        // charbuffer->Append(s);
     }
     *length = len;
-    return NOERROR
+    return NOERROR;
 }
 
 ECode AbstractSessionInputBuffer::ReadLine(

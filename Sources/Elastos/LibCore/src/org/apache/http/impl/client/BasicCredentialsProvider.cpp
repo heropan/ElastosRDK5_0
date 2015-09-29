@@ -1,10 +1,14 @@
 
 #include "BasicCredentialsProvider.h"
-#include <elastos/Logger.h>
+#include "CHashMap.h"
+#include "Logger.h"
+#include "AutoLock.h"
 
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::ISet;
+using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Client::EIID_ICredentialsProvider;
 
 namespace Org {
 namespace Apache {
@@ -17,7 +21,7 @@ BasicCredentialsProvider::BasicCredentialsProvider()
     CHashMap::New((IHashMap**)&mCredMap);
 }
 
-CAR_INTERFACE_DECL(BasicCredentialsProvider, Object, ICredentialsProvider)
+CAR_INTERFACE_IMPL(BasicCredentialsProvider, Object, ICredentialsProvider)
 
 ECode BasicCredentialsProvider::SetCredentials(
     /* [in] */ IAuthScope* authscope,
@@ -48,10 +52,12 @@ AutoPtr<ICredentials> BasicCredentialsProvider::MatchCredentials(
         AutoPtr<IAuthScope> bestMatch;
         AutoPtr<ISet> keySet;
         map->GetKeySet((ISet**)&keySet);
+        AutoPtr<IIterator> it;
+        keySet->GetIterator((IIterator**)&it);
         Boolean hasNext;
-        while (keySet->HasNext(&hasNext), hasNext) {
+        while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IAuthScope> current;
-            keySet->Get((IInterface**)&current);
+            it->GetNext((IInterface**)&current);
             Int32 factor;
             authscope->Match(current, &factor);
             if (factor > bestMatchFactor) {
@@ -72,14 +78,14 @@ ECode BasicCredentialsProvider::GetCredentials(
     /* [in] */ IAuthScope* authscope,
     /* [out] */ ICredentials** credentials)
 {
-    VALIDATE_NOT_NULL(cookies)
+    VALIDATE_NOT_NULL(credentials)
     *credentials = NULL;
     synchronized(this) {
         if (authscope == NULL) {
             Logger::E("BasicCredentialsProvider", "Authentication scope may not be null");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
-        *credentials = matchCredentials(mCredMap, authscope);
+        *credentials = MatchCredentials(mCredMap, authscope);
         REFCOUNT_ADD(*credentials)
     }
     return NOERROR;

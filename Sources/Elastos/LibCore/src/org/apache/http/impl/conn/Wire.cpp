@@ -1,8 +1,9 @@
 
 #include "Wire.h"
-#include <elastos/Logger.h>
-#include <elastos/Core/StringBuilder.h>
-#include <elastos/core/StringUtils.h>
+#include "Logger.h"
+#include "elastos/core/StringBuilder.h"
+#include "elastos/core/StringUtils.h"
+#include "elastos/io/CByteArrayInputStream.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -16,7 +17,7 @@ namespace Http {
 namespace Impl {
 namespace Conn {
 
-void Wire::Wire(
+void Wire::DoWire(
     /* [in] */ const String& header,
     /* [in] */ IInputStream* instream)
 {
@@ -27,11 +28,11 @@ void Wire::Wire(
             buffer.Append("[\\r]");
         }
         else if (ch == 10) {
-                buffer.Append("[\\n]\"");
-                buffer.Insert(0, "\"");
-                buffer.Insert(0, header);
-                // log.debug(buffer.toString());
-                buffer.SetLength(0);
+            buffer.Append("[\\n]\"");
+            buffer.Insert(0, String("\""));
+            buffer.Insert(0, header);
+            // log.debug(buffer.toString());
+            buffer.SetLength(0);
         }
         else if ((ch < 32) || (ch > 127)) {
             buffer.Append("[0x");
@@ -63,18 +64,18 @@ ECode Wire::Output(
         Logger::E("Wire", "Output may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    Wire(String(">> "), outstream);
+    DoWire(String(">> "), outstream);
     return NOERROR;
 }
 
 ECode Wire::Input(
-    /* [in] */ IInputStream instream)
+    /* [in] */ IInputStream* instream)
 {
     if (instream == NULL) {
         Logger::E("Wire", "Input may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    Wire(String("<< "), instream);
+    DoWire(String("<< "), instream);
     return NOERROR;
 }
 
@@ -88,9 +89,9 @@ ECode Wire::Output(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<IByteArrayInputStream> ins;
-    CByteArrayInputStream(b, off, len, (IByteArrayInputStream**)&ins);
+    CByteArrayInputStream::New(b, off, len, (IByteArrayInputStream**)&ins);
     AutoPtr<IInputStream> in = IInputStream::Probe(ins);
-    Wire(String(">> "), in);
+    DoWire(String(">> "), in);
     return NOERROR;
 }
 
@@ -104,9 +105,9 @@ ECode Wire::Input(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<IByteArrayInputStream> ins;
-    CByteArrayInputStream(b, off, len, (IByteArrayInputStream**)&ins);
+    CByteArrayInputStream::New(b, off, len, (IByteArrayInputStream**)&ins);
     AutoPtr<IInputStream> in = IInputStream::Probe(ins);
-    Wire(String("<< "), in);
+    DoWire(String("<< "), in);
     return NOERROR;
 }
 
@@ -118,9 +119,9 @@ ECode Wire::Output(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<IByteArrayInputStream> ins;
-    CByteArrayInputStream(b, (IByteArrayInputStream**)&ins);
+    CByteArrayInputStream::New(b, (IByteArrayInputStream**)&ins);
     AutoPtr<IInputStream> in = IInputStream::Probe(ins);
-    Wire(String(">> "), in);
+    DoWire(String(">> "), in);
     return NOERROR;
 }
 
@@ -132,9 +133,9 @@ ECode Wire::Input(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<IByteArrayInputStream> ins;
-    CByteArrayInputStream(b, (IByteArrayInputStream**)&ins);
+    CByteArrayInputStream::New(b, (IByteArrayInputStream**)&ins);
     AutoPtr<IInputStream> in = IInputStream::Probe(ins);
-    Wire(String("<< "), in);
+    DoWire(String("<< "), in);
     return NOERROR;
 }
 

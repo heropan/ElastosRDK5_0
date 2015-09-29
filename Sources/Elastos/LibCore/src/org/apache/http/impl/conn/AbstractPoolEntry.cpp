@@ -1,11 +1,12 @@
 
 #include "AbstractPoolEntry.h"
 #include "routing/CRouteTracker.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Conn::Routing::CRouteTracker;
+using Org::Apache::Http::Conn::Routing::IRouteInfo;
 
 namespace Org {
 namespace Apache {
@@ -67,18 +68,19 @@ ECode AbstractPoolEntry::Open(
     //@@@ verify route against planned route?
     mTracker = NULL;
     CRouteTracker::New(route, (IRouteTracker**)&mTracker);
+    AutoPtr<IRouteInfo> ri = IRouteInfo::Probe(route);
     AutoPtr<IHttpHost> proxy;
-    route->GetProxyHost((IHttpHost**)&proxy);
+    ri->GetProxyHost((IHttpHost**)&proxy);
 
     AutoPtr<IHttpHost> host = proxy;
     if (proxy == NULL) {
-        route->GetTargetHost((IHttpHost**)&host);
+        ri->GetTargetHost((IHttpHost**)&host);
     }
     AutoPtr<IInetAddress> addr;
-    route->GetLocalAddress((IInetAddress**)&addr);
+    ri->GetLocalAddress((IInetAddress**)&addr);
     mConnOperator->OpenConnection(mConnection, host, addr, context, params);
 
-    AutoPtr<IRouteTracker> localTracker = tracker; // capture volatile
+    AutoPtr<IRouteTracker> localTracker = mTracker; // capture volatile
 
     // If this tracker was reset while connecting,
     // fail early.
@@ -113,8 +115,9 @@ ECode AbstractPoolEntry::TunnelTarget(
         Logger::E("AbstractPoolEntry", "Connection not open.");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
+    AutoPtr<IRouteInfo> ri = IRouteInfo::Probe(mTracker);
     Boolean isTunnelled;
-    if (mTracker->IsTunnelled(), isTunnelled) {
+    if (ri->IsTunnelled(&isTunnelled), isTunnelled) {
         Logger::E("AbstractPoolEntry", "Connection is already tunnelled.");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
@@ -122,7 +125,7 @@ ECode AbstractPoolEntry::TunnelTarget(
     // LOG.debug?
 
     AutoPtr<IHttpHost> target;
-    tracker->GetTargetHost((IHttpHost**)&target);
+    ri->GetTargetHost((IHttpHost**)&target);
     mConnection->Update(NULL, target, secure, params);
     mTracker->TunnelTarget(secure);
     return NOERROR;
@@ -172,12 +175,12 @@ ECode AbstractPoolEntry::LayerProtocol(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Boolean isTunnelled;
-    if (mTracker->IsTunnelled(), !isTunnelled) {
+    if (IRouteInfo::Probe(mTracker)->IsTunnelled(&isTunnelled), !isTunnelled) {
         Logger::E("AbstractPoolEntry", "Protocol layering without a tunnel not supported.");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Boolean isLayered;
-    if (mTracker->IsLayered(&isLayered), isLayered) {
+    if (IRouteInfo::Probe(mTracker)->IsLayered(&isLayered), isLayered) {
         Logger::E("AbstractPoolEntry", "Multiple protocol layering not supported.");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
@@ -189,7 +192,7 @@ ECode AbstractPoolEntry::LayerProtocol(
     // layering on top of the connection will be tracked.
 
     AutoPtr<IHttpHost> target;
-    mTracker->GetTargetHost((IHttpHost**)&target);
+    IRouteInfo::Probe(mTracker)->GetTargetHost((IHttpHost**)&target);
 
     mConnOperator->UpdateSecureConnection(mConnection, target, context, params);
 

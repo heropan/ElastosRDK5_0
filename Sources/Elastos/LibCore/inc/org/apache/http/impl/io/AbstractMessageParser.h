@@ -54,6 +54,7 @@ public:
      * @throws IOException
      */
     static CARAPI ParseHeaders(
+        /* [in] */ AbstractMessageParser* host,
         /* [in] */ ISessionInputBuffer* inbuffer,
         /* [in] */ Int32 maxHeaderCount,
         /* [in] */ Int32 maxLineLen,

@@ -13,6 +13,8 @@ namespace Http {
 namespace Impl {
 namespace Cookie {
 
+class BestMatchSpec;
+
 /**
  * <p>RFC 2965 specific cookie management functions.</p>
  *
@@ -30,13 +32,15 @@ public:
 
     RFC2965Spec();
 
+    using CookieSpecBase::Parse;
+
     CARAPI Parse(
         /* [in] */ IHeader* header,
         /* [in] */ ICookieOrigin* origin,
         /* [out] */ IList** cookies);
 
     CARAPI Validate(
-        /* [in] */ IHeader* header,
+        /* [in] */ ICookie* cookie,
         /* [in] */ ICookieOrigin* origin);
 
     CARAPI Match(
@@ -48,7 +52,7 @@ public:
         /* [out] */ Int32* version);
 
     CARAPI GetVersionHeader(
-        /* [out] */ IHeader* header);
+        /* [out] */ IHeader** header);
 
 protected:
     /**
@@ -87,6 +91,9 @@ private:
      */
     static CARAPI_(AutoPtr<ICookieOrigin>) AdjustEffectiveHost(
         /* [in] */ ICookieOrigin* origin);
+
+private:
+    friend class BestMatchSpec;
 };
 
 } // namespace Cookie

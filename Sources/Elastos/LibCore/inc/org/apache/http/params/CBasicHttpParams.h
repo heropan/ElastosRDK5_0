@@ -5,6 +5,7 @@
 #include "_Org_Apache_Http_Params_CBasicHttpParams.h"
 #include "AbstractHttpParams.h"
 
+using Elastos::Core::ICloneable;
 using Elastos::Utility::IHashMap;
 
 namespace Org {
@@ -24,7 +25,7 @@ namespace Params {
  * @version $Revision: 610464 $
  */
 CarClass(CBasicHttpParams)
-    : AbstractHttpParams
+    , public AbstractHttpParams
     , public IBasicHttpParams
     , public ICloneable
 {

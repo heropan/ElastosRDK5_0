@@ -1,12 +1,15 @@
 
 #include "AbstractCookieSpec.h"
-#include <elastos/Logger.h>
+#include "CString.h"
+#include "CHashMap.h"
+#include "Logger.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
 using Elastos::Utility::IHashMap;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Cookie::EIID_ICookieSpec;
 
 namespace Org {
 namespace Apache {
@@ -37,7 +40,8 @@ ECode AbstractCookieSpec::RegisterAttribHandler(
     }
     AutoPtr<ICharSequence> cs;
     CString::New(name, (ICharSequence**)&cs);
-    mAttribHandlerMap->Put(name, handler);
+    mAttribHandlerMap->Put(cs, handler);
+    return NOERROR;
 }
 
 ECode AbstractCookieSpec::FindAttribHandler(

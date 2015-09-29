@@ -3,10 +3,7 @@
 #define __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_ROUTESPECIFICPOOL_H__
 
 #include "BasicPoolEntry.h"
-#include "WaitingThread.h"
-#include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 using Elastos::Utility::IQueue;
 using Elastos::Utility::ILinkedList;
@@ -18,6 +15,8 @@ namespace Http {
 namespace Impl {
 namespace Conn {
 namespace Tsccm {
+
+class WaitingThread;
 
 /**
  * A connection sub-pool for a specific route, used by {@link ConnPoolByRoute}.

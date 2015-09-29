@@ -10,7 +10,7 @@ using Org::Apache::Http::IHeader;
 using Org::Apache::Http::Cookie::ICookieSpec;
 using Org::Apache::Http::Cookie::ICookieOrigin;
 using Org::Apache::Http::Cookie::CCookiePathComparator;
-using Apache::Org::Http::Utility::ICharArrayBuffer;
+using Org::Apache::Http::Utility::ICharArrayBuffer;
 
 namespace Org {
 namespace Apache {
@@ -43,6 +43,8 @@ public:
 
     RFC2109Spec();
 
+    using CookieSpecBase::Parse;
+
     CARAPI Parse(
         /* [in] */ IHeader* header,
         /* [in] */ ICookieOrigin* origin,
@@ -60,7 +62,7 @@ public:
         /* [out] */ Int32* version);
 
     CARAPI GetVersionHeader(
-        /* [out] */ IHeader* header);
+        /* [out] */ IHeader** header);
 
 protected:
     /**
@@ -74,8 +76,8 @@ protected:
      */
     CARAPI_(void) FormatParamAsVer(
         /* [in] */ ICharArrayBuffer* buffer,
-        /* [in] */ const string name,
-        /* [in] */ const string value,
+        /* [in] */ const String& name,
+        /* [in] */ const String& value,
         /* [in] */ Int32 version);
 
     /**

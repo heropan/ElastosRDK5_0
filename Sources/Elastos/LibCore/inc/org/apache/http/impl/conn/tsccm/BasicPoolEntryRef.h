@@ -31,7 +31,7 @@ public:
      */
     BasicPoolEntryRef(
         /* [in] */ BasicPoolEntry* entry,
-        /* [in] */ IList* queue);
+        /* [in] */ IQueue* queue);
 
     CARAPI_(PInterface) Probe(
             /* [in] */ REIID riid);

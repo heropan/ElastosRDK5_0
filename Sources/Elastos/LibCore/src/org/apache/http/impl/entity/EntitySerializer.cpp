@@ -3,7 +3,7 @@
 #include "io/ChunkedOutputStream.h"
 #include "io/IdentityOutputStream.h"
 #include "io/ContentLengthOutputStream.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeader;

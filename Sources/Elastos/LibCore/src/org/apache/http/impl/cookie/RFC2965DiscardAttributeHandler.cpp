@@ -1,9 +1,9 @@
 
 #include "RFC2965DiscardAttributeHandler.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
-using Elastos::Utility::ILocale;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Cookie::EIID_ICookieAttributeHandler;
 using Org::Apache::Http::Cookie::ISetCookie2;
 
 namespace Org {
@@ -16,7 +16,7 @@ CAR_INTERFACE_IMPL(RFC2965DiscardAttributeHandler, Object, ICookieAttributeHandl
 
 ECode RFC2965DiscardAttributeHandler::Parse(
     /* [in] */ ISetCookie* cookie,
-    /* [in] */ String value)
+    /* [in] */ const String& value)
 {
     AutoPtr<ISetCookie2> cookie2 = ISetCookie2::Probe(cookie);
     if (cookie2 != NULL) {

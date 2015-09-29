@@ -11,15 +11,16 @@
 #include "CBufferedHeader.h"
 #include "CCharArrayBuffer.h"
 #include "DateUtils.h"
-#include <elastos/Logger.h>
-#include <elastos/core/Math.h>
-#include <elastos/core/StringUtils.h>
+#include "CCollections.h"
+#include "CArrayList.h"
+#include "Logger.h"
+#include "elastos/core/Math.h"
+#include "elastos/core/StringUtils.h"
 
 using Elastos::Core::Math;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
-using Elastos::Utility::CList;
 using Elastos::Utility::CCollections;
 using Elastos::Utility::ICollections;
 using Elastos::Utility::ICollection;
@@ -31,7 +32,6 @@ using Org::Apache::Http::Cookie::ISM;
 using Org::Apache::Http::Message::IParserCursor;
 using Org::Apache::Http::Message::CParserCursor;
 using Org::Apache::Http::Message::CBufferedHeader;
-using Org::Apache::Http::Message::IBufferedHeader;
 using Org::Apache::Http::Utility::CCharArrayBuffer;
 
 namespace Org {
@@ -54,6 +54,7 @@ static AutoPtr< ArrayOf<String> > InitPatterns()
     (*patterns)[0] = DateUtils::PATTERN_RFC1123;
     (*patterns)[1] = DateUtils::PATTERN_RFC1036;
     (*patterns)[2] = DateUtils::PATTERN_ASCTIME;
+    return patterns;
 }
 const AutoPtr< ArrayOf<String> > RFC2109Spec::DATE_PATTERNS = InitPatterns();
 
@@ -117,7 +118,7 @@ ECode RFC2109Spec::Parse(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr< ArrayOf<IHeaderElement*> > elems;
-    header->Getelements((ArrayOf<IHeaderElement*>**)&elems);
+    header->GetElements((ArrayOf<IHeaderElement*>**)&elems);
     return Parse(elems, origin, cookies);
 }
 
@@ -180,7 +181,7 @@ ECode RFC2109Spec::FormatCookies(
 AutoPtr<IList> RFC2109Spec::DoFormatOneHeader(
     /* [in] */ IList* cookies)
 {
-    Int32 version = Math::INT32_MAX_VALUE;
+    Int32 version = Elastos::Core::Math::INT32_MAX_VALUE;
     // Pick the lowest common denominator
     AutoPtr<IIterator> it;
     cookies->GetIterator((IIterator**)&it);
@@ -204,7 +205,6 @@ AutoPtr<IList> RFC2109Spec::DoFormatOneHeader(
     buffer->Append(StringUtils::ToString(version));
     it = NULL;
     cookies->GetIterator((IIterator**)&it);
-    Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> value;
         it->GetNext((IInterface**)&value);
@@ -213,12 +213,12 @@ AutoPtr<IList> RFC2109Spec::DoFormatOneHeader(
         FormatCookieAsVer(buffer, cookie, version);
     }
 
-    AutoPtr<IList> headers;
-    CList::New(1, (IList**)&headers);
-    AutoPtr<IBufferedHeader> header;
-    CBufferedHeader::New(buffer, (IBufferedHeader**)&header);
+    AutoPtr<IArrayList> headers;
+    CArrayList::New(1, (IArrayList**)&headers);
+    AutoPtr<IFormattedHeader> header;
+    CBufferedHeader::New(buffer, (IFormattedHeader**)&header);
     headers->Add(header);
-    return headers;
+    return IList::Probe(headers);
 }
 
 AutoPtr<IList> RFC2109Spec::DoFormatManyHeaders(
@@ -244,17 +244,17 @@ AutoPtr<IList> RFC2109Spec::DoFormatManyHeaders(
         buffer->Append(StringUtils::ToString(version));
         buffer->Append(String("; "));
         FormatCookieAsVer(buffer, cookie, version);
-        AutoPtr<IBufferedHeader> header;
-        CBufferedHeader::New(buffer, (IBufferedHeader**)&header);
+        AutoPtr<IFormattedHeader> header;
+        CBufferedHeader::New(buffer, (IFormattedHeader**)&header);
         IList::Probe(headers)->Add(header);
     }
-    return headers;
+    return IList::Probe(headers);
 }
 
 void RFC2109Spec::FormatParamAsVer(
     /* [in] */ ICharArrayBuffer* buffer,
-    /* [in] */ const string name,
-    /* [in] */ const string value,
+    /* [in] */ const String& name,
+    /* [in] */ const String& value,
     /* [in] */ Int32 version)
 {
     buffer->Append(name);
@@ -313,7 +313,7 @@ ECode RFC2109Spec::GetVersion(
 }
 
 ECode RFC2109Spec::GetVersionHeader(
-    /* [out] */ IHeader* header)
+    /* [out] */ IHeader** header)
 {
     VALIDATE_NOT_NULL(header)
     *header = NULL;

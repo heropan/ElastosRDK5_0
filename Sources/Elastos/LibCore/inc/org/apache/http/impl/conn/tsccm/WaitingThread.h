@@ -3,9 +3,8 @@
 #define __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_WAITINGTHREAD_H__
 
 #include "RouteSpecificPool.h"
-#include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
+using Elastos::Core::IThread;
 using Elastos::Utility::IDate;
 using Elastos::Utility::Concurrent::Locks::ICondition;
 

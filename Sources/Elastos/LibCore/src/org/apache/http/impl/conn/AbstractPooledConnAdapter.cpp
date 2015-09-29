@@ -1,6 +1,6 @@
 
 #include "AbstractPooledConnAdapter.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 
@@ -23,7 +23,7 @@ ECode AbstractPooledConnAdapter::AssertAttached()
         Logger::E("AbstractPooledConnAdapter", "Adapter is detached.");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
-    return NOERROR
+    return NOERROR;
 }
 
 void AbstractPooledConnAdapter::Detach()
@@ -81,11 +81,11 @@ ECode AbstractPooledConnAdapter::LayerProtocol(
 ECode AbstractPooledConnAdapter::Close()
 {
     if (mPoolEntry != NULL)
-        mPoolEntry->shutdownEntry();
+        mPoolEntry->ShutdownEntry();
 
     AutoPtr<IOperatedClientConnection> conn = GetWrappedConnection();
     if (conn != NULL) {
-        conn->Close();
+        IHttpConnection::Probe(conn)->Close();
     }
     return NOERROR;
 }
@@ -93,11 +93,11 @@ ECode AbstractPooledConnAdapter::Close()
 ECode AbstractPooledConnAdapter::Shutdown()
 {
     if (mPoolEntry != NULL)
-        mPoolEntry->shutdownEntry();
+        mPoolEntry->ShutdownEntry();
 
     AutoPtr<IOperatedClientConnection> conn = GetWrappedConnection();
     if (conn != NULL) {
-        conn->Shutdown();
+        IHttpConnection::Probe(conn)->Shutdown();
     }
     return NOERROR;
 }

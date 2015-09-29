@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_CBASICHEADERELEMENT_H_
 #define __ORG_APACHE_HTTP_MESSAGE_CBASICHEADERELEMENT_H_
 
-#include <Org.Apache.Http_server.h>
+#include "_Org_Apache_Http_Message_CBasicHeaderElement.h"
 #include "BasicHeaderElement.h"
 
 using Elastos::Core::IArrayOf;
@@ -67,13 +67,13 @@ public:
         /* [out] */ IInterface** obj);
 
     CARAPI constructor(
-        /* [in] */ cosnt String& name,
-        /* [in] */ cosnt String& value,
+        /* [in] */ const String& name,
+        /* [in] */ const String& value,
         /* [in] */ ArrayOf<INameValuePair*>* parameters);
 
     CARAPI constructor(
-        /* [in] */ cosnt String& name,
-        /* [in] */ cosnt String& value);
+        /* [in] */ const String& name,
+        /* [in] */ const String& value);
 
     CARAPI constructor();
 };

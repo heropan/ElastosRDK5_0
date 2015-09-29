@@ -1,13 +1,14 @@
 
 #include "RFC2965PortAttributeHandler.h"
-#include <elastos/Logger.h>
-#include <elastos/core/StringUtils.h>
+#include "CStringTokenizer.h"
+#include "Logger.h"
+#include "elastos/core/StringUtils.h"
 
 using Elastos::Core::StringUtils;
-using Elastos::Utility::ILocale;
 using Elastos::Utility::IStringTokenizer;
 using Elastos::Utility::CStringTokenizer;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Cookie::EIID_ICookieAttributeHandler;
 using Org::Apache::Http::Cookie::IClientCookie;
 using Org::Apache::Http::Cookie::ISetCookie;
 using Org::Apache::Http::Cookie::ISetCookie2;
@@ -69,7 +70,7 @@ Boolean RFC2965PortAttributeHandler::PortMatch(
 
 ECode RFC2965PortAttributeHandler::Parse(
     /* [in] */ ISetCookie* cookie,
-    /* [in] */ String portValue)
+    /* [in] */ const String& portValue)
 {
     if (cookie == NULL) {
         Logger::E("RFC2965PortAttributeHandler", "Cookie may not be null");

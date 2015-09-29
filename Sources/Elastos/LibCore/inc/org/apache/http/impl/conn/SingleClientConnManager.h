@@ -2,12 +2,10 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_SINGLECLIENTCONNMANAGER_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_SINGLECLIENTCONNMANAGER_H__
 
-#include <Org.Apache.Http_server.h>
 #include "AbstractPoolEntry.h"
 #include "AbstractPooledConnAdapter.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Net::ISocket;
 using Elastos::Utility::Concurrent::ITimeUnit;
 using Org::Apache::Http::Conn::IClientConnectionManager;
@@ -75,6 +73,9 @@ protected:
          * Shuts down the connection in this pool entry.
          */
         CARAPI Shutdown();
+
+    private:
+        friend class SingleClientConnManager;
     };
 
 
@@ -98,6 +99,9 @@ protected:
 
         CARAPI_(PInterface) Probe(
             /* [in] */ REIID riid);
+
+    private:
+        friend class SingleClientConnManager;
     };
 
 private:
@@ -107,7 +111,9 @@ private:
     {
     public:
         MyClientConnectionRequest(
-            /* [in] */ SingleClientConnManager* host);
+            /* [in] */ SingleClientConnManager* host,
+            /* [in] */ IHttpRoute* route,
+            /* [in] */ IObject* state);
 
         CAR_INTERFACE_DECL()
 
@@ -120,6 +126,8 @@ private:
 
     private:
         SingleClientConnManager* mHost;
+        AutoPtr<IHttpRoute> mRoute;
+        AutoPtr<IObject> mState;
     };
 
 public:
@@ -222,7 +230,7 @@ protected:
     Boolean mAlwaysShutDown;
 
     /** Indicates whether this connection manager is shut down. */
-    volatile Boolean mIsShutDown;
+    Boolean mIsShutDown;
 
 private:
     // private final Log log = LogFactory.getLog(getClass());

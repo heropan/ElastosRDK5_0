@@ -2,10 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_DEFAULTHTTPREQUESTRETRYHANDLER_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_DEFAULTHTTPREQUESTRETRYHANDLER_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Org::Apache::Http::Client::IHttpRequestRetryHandler;
 using Org::Apache::Http::Protocol::IHttpContext;
 
@@ -47,7 +45,7 @@ public:
     CARAPI RetryRequest(
         /* [in] */ ECode exception,
         /* [in] */ Int32 executionCount,
-        /* [in] */ IHttpContext* context
+        /* [in] */ IHttpContext* context,
         /* [out] */ Boolean* retried);
 
     /**

@@ -7,8 +7,8 @@
 #include "CBasicStatusLine.h"
 #include "CBufferedHeader.h"
 #include "CHttpVersion.h"
-#include <elastos/Logger.h>
-#include <elastos/core/StringUtils.h>
+#include "Logger.h"
+#include "elastos/core/StringUtils.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
@@ -420,7 +420,7 @@ ECode BasicLineParser::ParseStatusLine(
 }
 
 ECode BasicLineParser::CreateStatusLine(
-    /* [in] */ IProtocolVersion ver,
+    /* [in] */ IProtocolVersion* ver,
     /* [in] */ Int32 status,
     /* [in] */ const String& reason,
     /* [out] */ IStatusLine** statusLine)

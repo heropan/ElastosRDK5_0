@@ -3,9 +3,7 @@
 #define __ORG_APACHE_HTTP_IMPL_CONN_LOGGINGSESSIONINPUTBUFFER_H__
 
 #include "Wire.h"
-#include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Org::Apache::Http::IO::ISessionInputBuffer;
 using Org::Apache::Http::IO::IHttpTransportMetrics;
 using Org::Apache::Http::Utility::ICharArrayBuffer;

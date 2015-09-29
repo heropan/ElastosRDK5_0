@@ -1,8 +1,9 @@
 
 #include "RefQueueWorker.h"
-#include <elastos/Logger.h>
-#include <elastos/core/Thread.h>
+#include "Logger.h"
+#include "Thread.h"
 
+using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::Thread;
 using Elastos::Utility::Logging::Logger;
 
@@ -14,16 +15,18 @@ namespace Conn {
 namespace Tsccm {
 
 RefQueueWorker::RefQueueWorker(
-    /* [in] */ IList* queue,
+    /* [in] */ IQueue* queue,
     /* [in] */ IRefQueueHandler* handler)
 {
     if (queue == NULL) {
         Logger::E("RefQueueWorker", "Queue must not be null.");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        assert(0);
+        // return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (handler == NULL) {
         Logger::E("RefQueueWorker", "Handler must not be null.");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        assert(0);
+        // return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     mRefQueue   = queue;
@@ -41,8 +44,8 @@ ECode RefQueueWorker::Run()
     while (mWorkerThread == Thread::GetCurrentThread()) {
         // try {
         // remove the next reference and process it
-        AutoPtr<IInterface> value;
-        mRefQueue->Remove((IInterface**)&value);
+        AutoPtr<IInterface> ref;
+        mRefQueue->Remove((IInterface**)&ref);
         mRefHandler->HandleReference(ref);
         // } catch (InterruptedException e) {
         //     //@@@ is logging really necessary? this here is the
@@ -52,6 +55,7 @@ ECode RefQueueWorker::Run()
         //     }
         // }
     }
+    return NOERROR;
 }
 
 void RefQueueWorker::Shutdown()

@@ -2,11 +2,12 @@
 #include "AbstractMessageWriter.h"
 #include "BasicLineFormatter.h"
 #include "CCharArrayBuffer.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeaderIterator;
+using Org::Apache::Http::IO::EIID_IHttpMessageWriter;
 using Org::Apache::Http::Message::BasicLineFormatter;
 using Org::Apache::Http::Utility::CCharArrayBuffer;
 
@@ -27,8 +28,8 @@ AbstractMessageWriter::AbstractMessageWriter(
         // throw new IllegalArgumentException("Session output buffer may not be null");
     }
     mSessionBuffer = buffer;
-    CCharArrayBuffer::New(128, (ICharArrayBuffer**)&mLineBuf);
-    mLineFormatter = (formatter != NULL) ? formatter : BasicLineFormatterDEFAULT;
+    CCharArrayBuffer::New(128, (ICharArrayBuffer**)&mLineBuffer);
+    mLineFormatter = (formatter != NULL) ? formatter : ILineFormatter::Probe(BasicLineFormatter::DEFAULT);
 }
 
 CAR_INTERFACE_IMPL(AbstractMessageWriter, Object, IHttpMessageWriter)
@@ -42,7 +43,7 @@ ECode AbstractMessageWriter::Write(
     }
     WriteHeadLine(message);
     AutoPtr<IHeaderIterator> hi;
-    message->HeaderIterator((IHeaderIterator**)&hi);
+    message->GetHeaderIterator((IHeaderIterator**)&hi);
     AutoPtr<IIterator> it = IIterator::Probe(hi);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
@@ -50,11 +51,11 @@ ECode AbstractMessageWriter::Write(
         it->GetNext((IInterface**)&value);
         AutoPtr<IHeader> header = IHeader::Probe(value);
         AutoPtr<ICharArrayBuffer> buffer;
-        mLineFormatter->FormatHeader(mLineBuf, header, (ICharArrayBuffer**)&buffer);
+        mLineFormatter->FormatHeader(mLineBuffer, header, (ICharArrayBuffer**)&buffer);
         mSessionBuffer->WriteLine(buffer);
     }
-    mLineBuf->Clear();
-    mSessionBuffer->WriteLine(mLineBuf);
+    mLineBuffer->Clear();
+    mSessionBuffer->WriteLine(mLineBuffer);
     return NOERROR;
 }
 

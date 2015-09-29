@@ -2,10 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_DefaultUserTokenHandler_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_DefaultUserTokenHandler_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Security::IPrincipal;
 using Org::Apache::Http::Auth::IAuthState;
 using Org::Apache::Http::Client::IUserTokenHandler;
@@ -26,7 +24,7 @@ public:
 
     CARAPI GetUserToken(
         /* [in] */ IHttpContext* context,
-        /* [out] */ IObject** token);
+        /* [out] */ IInterface** token);
 
 private:
     static CARAPI GetAuthPrincipal(

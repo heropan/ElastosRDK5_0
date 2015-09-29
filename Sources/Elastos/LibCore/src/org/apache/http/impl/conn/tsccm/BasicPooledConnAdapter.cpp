@@ -1,6 +1,6 @@
 
 #include "BasicPooledConnAdapter.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 
@@ -29,7 +29,7 @@ PInterface BasicPooledConnAdapter::Probe(
         return reinterpret_cast<PInterface>(this);
     }
     else {
-        return AbstractPooledConnAdapter::Probe(riid)
+        return AbstractPooledConnAdapter::Probe(riid);
     }
 }
 

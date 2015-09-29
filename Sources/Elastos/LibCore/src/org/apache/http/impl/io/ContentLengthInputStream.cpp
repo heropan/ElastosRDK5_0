@@ -1,7 +1,7 @@
 
-#include "ChunkedInputStream.h"
-#include <elastos/Logger.h>
-#include <elastos/core/Math.h>
+#include "ContentLengthInputStream.h"
+#include "Logger.h"
+#include "elastos/core/Math.h"
 
 using Elastos::Core::Math;
 using Elastos::Utility::Logging::Logger;
@@ -12,9 +12,9 @@ namespace Http {
 namespace Impl {
 namespace IO {
 
-const Int32 ChunkedInputStream::BUFFER_SIZE;
+const Int32 ContentLengthInputStream::BUFFER_SIZE;
 
-ChunkedInputStream::ChunkedInputStream(
+ContentLengthInputStream::ContentLengthInputStream(
     /* [in] */ ISessionInputBuffer* in,
     /* [in] */ Int64 contentLength)
     : InputStream()
@@ -23,12 +23,12 @@ ChunkedInputStream::ChunkedInputStream(
     , mClosed(FALSE)
 {
     if (in == NULL) {
-        Logger::E("ChunkedInputStream", "Session input buffer may not be null");
+        Logger::E("ContentLengthInputStream", "Session input buffer may not be null");
         assert(0);
         // throw new IllegalArgumentException("Session input buffer may not be null");
     }
     if (contentLength < 0) {
-        Logger::E("ChunkedInputStream", "Content length may not be negative");
+        Logger::E("ContentLengthInputStream", "Content length may not be negative");
         assert(0);
         // throw new IllegalArgumentException("Content length may not be negative");
     }
@@ -36,7 +36,7 @@ ChunkedInputStream::ChunkedInputStream(
     mContentLength = contentLength;
 }
 
-ECode ChunkedInputStream::Close()
+ECode ContentLengthInputStream::Close()
 {
     if (!mClosed) {
         // try {
@@ -54,13 +54,13 @@ ECode ChunkedInputStream::Close()
     return NOERROR;
 }
 
-ECode ChunkedInputStream::Read(
+ECode ContentLengthInputStream::Read(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value)
     *value = -1;
     if (mClosed) {
-        Logger::E("ChunkedInputStream", "Attempted read from closed stream.");
+        Logger::E("ContentLengthInputStream", "Attempted read from closed stream.");
         return E_IO_EXCEPTION;
     }
     if (mPos >= mContentLength) {
@@ -71,7 +71,7 @@ ECode ChunkedInputStream::Read(
     return mIn->Read(value);
 }
 
-ECode ChunkedInputStream::Read(
+ECode ContentLengthInputStream::Read(
     /* [in] */ ArrayOf<Byte>* b,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len,
@@ -80,7 +80,7 @@ ECode ChunkedInputStream::Read(
     VALIDATE_NOT_NULL(number)
     *number = -1;
     if (mClosed) {
-        Logger::E("ChunkedInputStream", "Attempted read from closed stream.");
+        Logger::E("ContentLengthInputStream", "Attempted read from closed stream.");
         return E_IO_EXCEPTION;
     }
 
@@ -99,7 +99,7 @@ ECode ChunkedInputStream::Read(
     return NOERROR;
 }
 
-ECode ChunkedInputStream::Read(
+ECode ContentLengthInputStream::Read(
     /* [in] */ ArrayOf<Byte>* b,
     /* [out] */ Int32* number)
 {
@@ -107,7 +107,7 @@ ECode ChunkedInputStream::Read(
     return Read(b, 0, b->GetLength(), number);
 }
 
-ECode ChunkedInputStream::Skip(
+ECode ContentLengthInputStream::Skip(
     /* [in] */ Int64 n,
     /* [out] */ Int64* number)
 {
@@ -124,7 +124,7 @@ ECode ChunkedInputStream::Skip(
     Int64 count = 0;
     while (remaining > 0) {
         Int32 l;
-        Read(buffer, 0, (Int32)Math::Min(BUFFER_SIZE, remaining));
+        Read(buffer, 0, (Int32)Elastos::Core::Math::Min(BUFFER_SIZE, remaining));
         if (l == -1) {
             break;
         }

@@ -16,6 +16,8 @@ namespace Http {
 namespace Impl {
 namespace Cookie {
 
+class BestMatchSpec;
+
 /**
  * Cookie specification that strives to closely mimic (mis)behavior of
  * common web browser applications such as Microsoft Internet Explorer
@@ -33,6 +35,8 @@ public:
 
     BrowserCompatSpec();
 
+    using CookieSpecBase::Parse;
+
     CARAPI Parse(
         /* [in] */ IHeader* header,
         /* [in] */ ICookieOrigin* origin,
@@ -46,7 +50,7 @@ public:
         /* [out] */ Int32* version);
 
     CARAPI GetVersionHeader(
-        /* [out] */ IHeader* header);
+        /* [out] */ IHeader** header);
 
 private:
     CARAPI_(void) Init(
@@ -58,6 +62,8 @@ protected:
 
 private:
     AutoPtr< ArrayOf<String> > mDatepatterns;
+
+    friend class BestMatchSpec;
 };
 
 } // namespace Cookie

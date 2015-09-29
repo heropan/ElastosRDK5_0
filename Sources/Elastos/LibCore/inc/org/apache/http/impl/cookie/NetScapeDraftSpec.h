@@ -20,7 +20,9 @@ public:
     NetScapeDraftSpec(
         /* [in] */ ArrayOf<String>* datepatterns);
 
-    NetscapeDraftSpec();
+    NetScapeDraftSpec();
+
+    using CookieSpecBase::Parse;
 
     /**
       * Parses the Set-Cookie value into an array of <tt>Cookie</tt>s.
@@ -61,7 +63,7 @@ public:
         /* [out] */ Int32* version);
 
     CARAPI GetVersionHeader(
-        /* [out] */ IHeader* header);
+        /* [out] */ IHeader** header);
 
 private:
     CARAPI_(void) Init(

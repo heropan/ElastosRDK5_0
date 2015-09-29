@@ -2,14 +2,15 @@
 #include "DefaultHttpRoutePlanner.h"
 #include "params/ConnRouteParams.h"
 #include "routing/CHttpRoute.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Utility::Logging::Logger;
-using Org::Apache::Http::Message::IHttpMessage;
+using Org::Apache::Http::IHttpMessage;
 using Org::Apache::Http::Conn::Scheme::IScheme;
 using Org::Apache::Http::Conn::Params::ConnRouteParams;
 using Org::Apache::Http::Conn::Routing::CHttpRoute;
+using Org::Apache::Http::Conn::Routing::EIID_IHttpRoutePlanner;
 using Org::Apache::Http::Params::IHttpParams;
 
 namespace Org {
@@ -21,7 +22,7 @@ namespace Conn {
 DefaultHttpRoutePlanner::DefaultHttpRoutePlanner(
     /* [in] */ ISchemeRegistry* schreg)
 {
-    if (schemes == NULL) {
+    if (schreg == NULL) {
         Logger::E("DefaultHttpRoutePlanner", "Scheme registry must not be null.");
         assert(0);
         // return E_ILLEGAL_ARGUMENT_EXCEPTION;

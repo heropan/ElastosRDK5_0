@@ -1,9 +1,10 @@
 
 #include "DefaultClientConnection.h"
 #include "DefaultResponseParser.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Conn::EIID_IOperatedClientConnection;
 
 namespace Org {
 namespace Apache {
@@ -100,7 +101,7 @@ ECode DefaultClientConnection::Close()
 ECode DefaultClientConnection::CreateSessionInputBuffer(
     /* [in] */ ISocket* socket,
     /* [in] */ Int32 buffersize,
-    /* [in] */ IHttpParams* params
+    /* [in] */ IHttpParams* params,
     /* [out] */ ISessionInputBuffer** inputBuffer)
 {
     VALIDATE_NOT_NULL(inputBuffer)
@@ -118,7 +119,7 @@ ECode DefaultClientConnection::CreateSessionInputBuffer(
 ECode DefaultClientConnection::CreateSessionOutputBuffer(
     /* [in] */ ISocket* socket,
     /* [in] */ Int32 buffersize,
-    /* [in] */ IHttpParams* params
+    /* [in] */ IHttpParams* params,
     /* [out] */ ISessionOutputBuffer** outputBuffer)
 {
     VALIDATE_NOT_NULL(outputBuffer)

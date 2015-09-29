@@ -20,7 +20,7 @@ CAR_INTERFACE_DECL(DefaultUserTokenHandler, Object, IUserTokenHandler)
 
 ECode DefaultUserTokenHandler::GetUserToken(
     /* [in] */ IHttpContext* context,
-    /* [out] */ IObject** token)
+    /* [out] */ IInterface** token)
 {
     VALIDATE_NOT_NULL(token)
     AutoPtr<IPrincipal> userPrincipal;

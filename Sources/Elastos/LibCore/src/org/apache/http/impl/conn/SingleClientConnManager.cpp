@@ -1,14 +1,23 @@
 
 #include "SingleClientConnManager.h"
-#include <elastos/Logger.h>
+#include "DefaultClientConnectionOperator.h"
+#include "CSystem.h"
+#include "Math.h"
+#include "CTimeUnitHelper.h"
+#include "libcore/io/CSocketTaggerHelper.h"
+#include "Logger.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::Math;
+using Elastos::Utility::Concurrent::ITimeUnitHelper;
+using Elastos::Utility::Concurrent::CTimeUnitHelper;
 using Elastos::Utility::Logging::Logger;
 using Libcore::IO::ISocketTagger;
 using Libcore::IO::ISocketTaggerHelper;
 using Libcore::IO::CSocketTaggerHelper;
+using Org::Apache::Http::Conn::EIID_IClientConnectionRequest;
+using Org::Apache::Http::Conn::EIID_IClientConnectionManager;
 
 namespace Org {
 namespace Apache {
@@ -30,9 +39,10 @@ SingleClientConnManager::PoolEntry::PoolEntry(
 ECode SingleClientConnManager::PoolEntry::Close()
 {
     ShutdownEntry();
+    AutoPtr<IHttpConnection> conn = IHttpConnection::Probe(mConnection);
     Boolean isOpen;
-    if (mConnection->IsOpen(&isOpen), isOpen)
-        mConnection->Close();
+    if (conn->IsOpen(&isOpen), isOpen)
+        conn->Close();
 
     return NOERROR;
 }
@@ -40,9 +50,10 @@ ECode SingleClientConnManager::PoolEntry::Close()
 ECode SingleClientConnManager::PoolEntry::Shutdown()
 {
     ShutdownEntry();
+    AutoPtr<IHttpConnection> conn = IHttpConnection::Probe(mConnection);
     Boolean isOpen;
-    if (mConnection->IsOpen(&isOpen), isOpen)
-        mConnection->Shutdown();
+    if (conn->IsOpen(&isOpen), isOpen)
+        conn->Shutdown();
 
     return NOERROR;
 }
@@ -68,7 +79,7 @@ PInterface SingleClientConnManager::ConnAdapter::Probe(
         return reinterpret_cast<PInterface>(this);
     }
     else {
-        return AbstractPooledConnAdapter::Probe(riid)
+        return AbstractPooledConnAdapter::Probe(riid);
     }
 }
 
@@ -77,11 +88,15 @@ PInterface SingleClientConnManager::ConnAdapter::Probe(
 // SingleClientConnManager::MyClientConnectionRequest
 //==============================================================================
 SingleClientConnManager::MyClientConnectionRequest::MyClientConnectionRequest(
-    /* [in] */ SingleClientConnManager* host)
+    /* [in] */ SingleClientConnManager* host,
+    /* [in] */ IHttpRoute* route,
+    /* [in] */ IObject* state)
     : mHost(host)
+    , mRoute(route)
+    , mState(state)
 {}
 
-CAR_INTERFACE_DECL(SingleClientConnManager::MyClientConnectionRequest, Object, IClientConnectionRequest)
+CAR_INTERFACE_IMPL(SingleClientConnManager::MyClientConnectionRequest, Object, IClientConnectionRequest)
 
 ECode SingleClientConnManager::MyClientConnectionRequest::AbortRequest()
 {
@@ -95,16 +110,16 @@ ECode SingleClientConnManager::MyClientConnectionRequest::GetConnection(
     /* [out] */ IManagedClientConnection** connection)
 {
     VALIDATE_NOT_NULL(connection)
-    return mHost->GetConnection(route, state, connection);
+    return mHost->GetConnection(mRoute, mState, connection);
 }
 
 
 //==============================================================================
 // SingleClientConnManager
 //==============================================================================
-const String SingleClientConnManager::MISUSE_MESSAGE(
-        "Invalid use of SingleClientConnManager: connection still allocated.\n" +
-        "Make sure to release the connection before allocating another one.");
+const String SingleClientConnManager::MISUSE_MESSAGE =
+        String("Invalid use of SingleClientConnManager: connection still allocated.\n") +
+        String("Make sure to release the connection before allocating another one.");
 
 SingleClientConnManager::SingleClientConnManager(
     /* [in] */ IHttpParams* params,
@@ -166,7 +181,7 @@ ECode SingleClientConnManager::RequestConnection(
     /* [out] */ IClientConnectionRequest** request)
 {
     VALIDATE_NOT_NULL(request)
-    *request = (IClientConnectionRequest*)new ClientConnectionRequest();
+    *request = (IClientConnectionRequest*)new MyClientConnectionRequest(this, route, state);
     REFCOUNT_ADD(*request)
     return NOERROR;
 }
@@ -199,7 +214,7 @@ ECode SingleClientConnManager::GetConnection(
     CloseExpiredConnections();
 
     Boolean isOpen;
-    if (mUniquePoolEntry->mConnection->IsOpen(&isOpen), isOpen) {
+    if (IHttpConnection::Probe(mUniquePoolEntry->mConnection)->IsOpen(&isOpen), isOpen) {
         AutoPtr<IRouteTracker> tracker = mUniquePoolEntry->mTracker;
         if (tracker == NULL) {
             shutdown = TRUE;
@@ -241,7 +256,7 @@ ECode SingleClientConnManager::GetConnection(
         AutoPtr<ISocketTaggerHelper> helper;
         CSocketTaggerHelper::AcquireSingleton((ISocketTaggerHelper**)&helper);
         AutoPtr<ISocketTagger> tagger;
-        helper->Get((ISocketTagger**)*tagger);
+        helper->Get((ISocketTagger**)&tagger);
         tagger->Tag(socket);
     }
     // } catch (IOException iox) {
@@ -249,7 +264,7 @@ ECode SingleClientConnManager::GetConnection(
     // }
     // END android-changed
 
-    mManagedConn = new ConnAdapter(uniquePoolEntry, route, this);
+    mManagedConn = new ConnAdapter(mUniquePoolEntry, route, this);
 
     *connection = (IManagedClientConnection*)mManagedConn;
     REFCOUNT_ADD(*connection)
@@ -273,10 +288,12 @@ ECode SingleClientConnManager::ReleaseConnection(
     //     log.debug("Releasing connection " + conn);
     // }
 
-    if (sca->mPoolEntry == NULL) return NOERROR; // already released
-    AutoPtr<IClientConnectionManager> manager;
-    sca->GetManager((IClientConnectionManager**)&manager);
-    if (manager != NULL && manager != (IClientConnectionManager*)this) {
+    if (sca->mPoolEntry == NULL) {
+        return NOERROR; // already released
+    }
+
+    AutoPtr<IClientConnectionManager> manager = sca->GetManager();
+    if (manager != NULL && manager.Get() != (IClientConnectionManager*)this) {
         Logger::E("SingleClientConnManager", "Connection not obtained from this manager.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -329,14 +346,14 @@ ECode SingleClientConnManager::ReleaseConnection(
     mManagedConn = NULL;
     AutoPtr<CSystem> cs;
     CSystem::AcquireSingletonByFriend((CSystem**)&cs);
-    system->GetCurrentTimeMillis(&mLastReleaseTime);
+    cs->GetCurrentTimeMillis(&mLastReleaseTime);
     if(validDuration > 0) {
         Int64 millis;
         timeUnit->ToMillis(validDuration, &millis);
         mConnectionExpiresTime = millis + mLastReleaseTime;
     }
     else {
-        mConnectionExpiresTime = Math::INT64_MAX_VALUE;
+        mConnectionExpiresTime = Elastos::Core::Math::INT64_MAX_VALUE;
     }
     return NOERROR;
 }
@@ -347,13 +364,17 @@ ECode SingleClientConnManager::CloseExpiredConnections()
     CSystem::AcquireSingleton((ISystem**)&system);
     Int64 current;
     if(system->GetCurrentTimeMillis(&current), current >= mConnectionExpiresTime) {
-        CloseIdleConnections(0, ITimeUnit::MILLISECONDS);
+        AutoPtr<ITimeUnitHelper> helper;
+        CTimeUnitHelper::AcquireSingleton((ITimeUnitHelper**)&helper);
+        AutoPtr<ITimeUnit> milliseconds;
+        helper->GetMILLISECONDS((ITimeUnit**)&milliseconds);
+        CloseIdleConnections(0, milliseconds);
     }
     return NOERROR;
 }
 
 ECode SingleClientConnManager::CloseIdleConnections(
-    /* [in] */ Int64 validDuration,
+    /* [in] */ Int64 idletime,
     /* [in] */ ITimeUnit* tunit)
 {
     FAIL_RETURN(AssertStillUp())
@@ -365,13 +386,14 @@ ECode SingleClientConnManager::CloseIdleConnections(
     }
 
     Boolean isOpen;
-    if ((mManagedConn == NULL) && (uniquePoolEntry->mConnection->IsOpen(&isOpen), isOpen)) {
+    if ((mManagedConn == NULL)
+            && (IHttpConnection::Probe(mUniquePoolEntry->mConnection)->IsOpen(&isOpen), isOpen)) {
         AutoPtr<ISystem> system;
         CSystem::AcquireSingleton((ISystem**)&system);
         Int64 current;
         system->GetCurrentTimeMillis(&current);
         Int64 millis;
-        tunit->ToMillis(idletime, millis);
+        tunit->ToMillis(idletime, &millis);
         Int64 cutoff = current - millis;
         if (mLastReleaseTime <= cutoff) {
             // try {

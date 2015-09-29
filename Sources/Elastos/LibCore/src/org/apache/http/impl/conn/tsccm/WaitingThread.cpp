@@ -1,7 +1,7 @@
 
 #include "WaitingThread.h"
 #include "core/Thread.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Core::Thread;
 using Elastos::Utility::Logging::Logger;
@@ -20,7 +20,8 @@ WaitingThread::WaitingThread(
 {
     if (cond == NULL) {
         Logger::E("WaitingThread", "Condition must not be null.");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        assert(0);
+        // return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     mCond = cond;
@@ -59,7 +60,7 @@ ECode WaitingThread::Await(
 
     if (mAborted) {
         Logger::E("WaitingThread", "Operation interrupted");
-        return E_INTRRUPTED_EXCEPTION;
+        return E_INTERRUPTED_EXCEPTION;
     }
 
     mWaiter = Thread::GetCurrentThread();
@@ -75,7 +76,7 @@ ECode WaitingThread::Await(
     }
     if (mAborted) {
         Logger::E("WaitingThread", "Operation interrupted");
-        return E_INTRRUPTED_EXCEPTION;
+        return E_INTERRUPTED_EXCEPTION;
     }
     // } finally {
     //     this.waiter = null;

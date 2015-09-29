@@ -2,10 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_REFQUEUEWORKER_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_REFQUEUEWORKER_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 using Elastos::Core::IThread;
 using Elastos::Utility::IQueue;
@@ -38,7 +36,7 @@ public:
      * @param handler   the handler to pass the references to
      */
     RefQueueWorker(
-        /* [in] */ IList* queue,
+        /* [in] */ IQueue* queue,
         /* [in] */ IRefQueueHandler* handler);
 
     CAR_INTERFACE_DECL()
@@ -76,7 +74,7 @@ protected:
      * The thread executing this handler.
      * This attribute is also used as a shutdown indicator.
      */
-    volatile AutoPtr<IThread> mWorkerThread;
+    AutoPtr<IThread> mWorkerThread;
 
 private:
     // private final Log log = LogFactory.getLog(getClass());

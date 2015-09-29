@@ -2,10 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_COOKIE_BASICCLIENTCOOKIE_H__
 #define __ORG_APACHE_HTTP_IMPL_COOKIE_BASICCLIENTCOOKIE_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::ICloneable;
 using Elastos::Utility::IMap;
 using Elastos::Utility::IDate;
@@ -45,6 +43,8 @@ class BasicClientCookie
     , public ICloneable
 {
 public:
+    BasicClientCookie();
+
     /**
      * Default Constructor taking a name and a value. The value may be null.
      *
@@ -118,7 +118,7 @@ public:
      * @return Expiration {@link Date}, or <tt>null</tt>.
      */
     CARAPI GetExpiryDate(
-        /* [out] */ IDate* date);
+        /* [out] */ IDate** date);
 
     /**
      * Sets expiration date.
@@ -211,7 +211,7 @@ public:
      * Returns null. Cookies prior to RFC2965 do not set this attribute
      */
     CARAPI GetPorts(
-        /* [out, callee] */ ArrayOf<Int32>* ports);
+        /* [out, callee] */ ArrayOf<Int32>** ports);
 
     /**
      * Returns the version of the cookie specification to which this

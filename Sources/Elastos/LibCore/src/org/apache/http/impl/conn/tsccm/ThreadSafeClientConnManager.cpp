@@ -3,12 +3,17 @@
 #include "ConnPoolByRoute.h"
 #include "DefaultClientConnectionOperator.h"
 #include "BasicPooledConnAdapter.h"
-#include <elastos/Logger.h>
+#include "libcore/io/CSocketTaggerHelper.h"
+#include "AutoLock.h"
+#include "Logger.h"
 
 using Libcore::IO::ISocketTagger;
 using Libcore::IO::ISocketTaggerHelper;
 using Libcore::IO::CSocketTaggerHelper;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Conn::EIID_IManagedClientConnection;
+using Org::Apache::Http::Conn::EIID_IClientConnectionRequest;
+using Org::Apache::Http::Conn::EIID_IClientConnectionManager;
 using Org::Apache::Http::Conn::IOperatedClientConnection;
 using Org::Apache::Http::Impl::Conn::DefaultClientConnectionOperator;
 
@@ -31,7 +36,7 @@ ThreadSafeClientConnManager::MyClientConnectionRequest::MyClientConnectionReques
     , mHost(host)
 {}
 
-CAR_INTERFACE_DECL(ThreadSafeClientConnManager::MyClientConnectionRequest, Object, IClientConnectionRequest)
+CAR_INTERFACE_IMPL(ThreadSafeClientConnManager::MyClientConnectionRequest, Object, IClientConnectionRequest)
 
 ECode ThreadSafeClientConnManager::MyClientConnectionRequest::AbortRequest()
 {
@@ -58,7 +63,7 @@ ECode ThreadSafeClientConnManager::MyClientConnectionRequest::GetConnection(
 
     AutoPtr<IInterface> value;
     mRequest->GetPoolEntry(timeout, tunit, (IInterface**)&value);
-    AutoPtr<BasicPoolEntry> entry = (BasicPoolEntry*)value.Get();
+    AutoPtr<BasicPoolEntry> entry = reinterpret_cast<BasicPoolEntry*>(value->Probe(EIID_BasicPoolEntry));
     // BEGIN android-changed
     // When using a recycled Socket, we need to re-tag it with any
     // updated statistics options.
@@ -69,14 +74,15 @@ ECode ThreadSafeClientConnManager::MyClientConnectionRequest::GetConnection(
         AutoPtr<ISocketTaggerHelper> helper;
         CSocketTaggerHelper::AcquireSingleton((ISocketTaggerHelper**)&helper);
         AutoPtr<ISocketTagger> tagger;
-        helper->Get((ISocketTagger**)*tagger);
+        helper->Get((ISocketTagger**)&tagger);
         tagger->Tag(socket);
     }
     // } catch (IOException iox) {
     //     log.debug("Problem tagging socket.", iox);
     // }
     // END android-changed
-    *connection = (IManagedClientConnection*)new BasicPooledConnAdapter(mHost, entry);
+    AutoPtr<BasicPooledConnAdapter> adapter = new BasicPooledConnAdapter(mHost, entry);
+    *connection = (IManagedClientConnection*)adapter->Probe(EIID_IManagedClientConnection);
     REFCOUNT_ADD(*connection)
     return NOERROR;
 }
@@ -91,14 +97,15 @@ ThreadSafeClientConnManager::ThreadSafeClientConnManager(
 {
     if (params == NULL) {
         Logger::E("ThreadSafeClientConnManager", "HTTP parameters may not be null");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        assert(0);
+        // return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mSchemeRegistry = schreg;
     mConnOperator   = CreateConnectionOperator(schreg);
     mConnectionPool = CreateConnectionPool(params);
 }
 
-CAR_INTERFACE_DECL(ThreadSafeClientConnManager, Object, IClientConnectionManager)
+CAR_INTERFACE_IMPL(ThreadSafeClientConnManager, Object, IClientConnectionManager)
 
 ThreadSafeClientConnManager::~ThreadSafeClientConnManager()
 {
@@ -108,7 +115,7 @@ ThreadSafeClientConnManager::~ThreadSafeClientConnManager()
 AutoPtr<AbstractConnPool> ThreadSafeClientConnManager::CreateConnectionPool(
     /* [in] */ IHttpParams* params)
 {
-    AutoPtr<AbstractConnPool> acp = (AbstractConnPool*)new ConnPoolByRoute(mConnectionPool, params);
+    AutoPtr<AbstractConnPool> acp = (AbstractConnPool*)new ConnPoolByRoute(mConnOperator, params);
     Boolean conngc = TRUE; //@@@ check parameters to decide
     if (conngc) {
         acp->EnableConnectionGC();
@@ -117,7 +124,7 @@ AutoPtr<AbstractConnPool> ThreadSafeClientConnManager::CreateConnectionPool(
 }
 
 AutoPtr<IClientConnectionOperator> ThreadSafeClientConnManager::CreateConnectionOperator(
-    /* [in] */ ISchemeRegistry schreg)
+    /* [in] */ ISchemeRegistry* schreg)
 {
     return (IClientConnectionOperator*)new DefaultClientConnectionOperator(schreg);
 }
@@ -140,7 +147,7 @@ ECode ThreadSafeClientConnManager::RequestConnection(
 
     AutoPtr<IPoolEntryRequest> poolRequest = mConnectionPool->RequestPoolEntry(route, state);
 
-    *request = (IClientConnectionRequest*)new ClientConnectionRequest(route, poolRequest, this);
+    *request = (IClientConnectionRequest*)new MyClientConnectionRequest(route, poolRequest, this);
     REFCOUNT_ADD(*request)
     return NOERROR;
 }
@@ -156,7 +163,7 @@ ECode ThreadSafeClientConnManager::ReleaseConnection(
         Logger::E("ThreadSafeClientConnManager", "Connection class mismatch, connection not obtained from this manager.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    if ((hca->GetPoolEntry() != NULL) && (hca->GetManager() != (IClientConnectionManager*)this)) {
+    if ((hca->GetPoolEntry() != NULL) && (hca->GetManager().Get() != (IClientConnectionManager*)this)) {
         Logger::E("ThreadSafeClientConnManager", "Connection not obtained from this manager.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -165,14 +172,14 @@ ECode ThreadSafeClientConnManager::ReleaseConnection(
     // BEGIN android-changed
     // When recycling a Socket, we un-tag it to avoid collecting
     // statistics from future users.
-    AutoPtr<BasicPoolEntry> entry = hca->GetPoolEntry();
+    AutoPtr<BasicPoolEntry> entry = (BasicPoolEntry*)hca->GetPoolEntry().Get();
     AutoPtr<ISocket> socket;
     entry->GetConnection()->GetSocket((ISocket**)&socket);
     if (socket != NULL) {
         AutoPtr<ISocketTaggerHelper> helper;
         CSocketTaggerHelper::AcquireSingleton((ISocketTaggerHelper**)&helper);
         AutoPtr<ISocketTagger> tagger;
-        helper->Get((ISocketTagger**)*tagger);
+        helper->Get((ISocketTagger**)&tagger);
         tagger->Untag(socket);
     }
     // END android-changed
@@ -207,7 +214,7 @@ ECode ThreadSafeClientConnManager::ReleaseConnection(
     //         connectionPool.freeEntry(entry, reusable, validDuration, timeUnit);
     //     }
     // }
-    entry = hca->GetPoolEntry();
+    entry = (BasicPoolEntry*)hca->GetPoolEntry().Get();
     Boolean reusable;
     hca->IsMarkedReusable(&reusable);
     hca->Detach();
@@ -220,13 +227,14 @@ ECode ThreadSafeClientConnManager::ReleaseConnection(
 
 ECode ThreadSafeClientConnManager::Shutdown()
 {
-    return mConnectionPool->Shutdown();
+    mConnectionPool->Shutdown();
+    return NOERROR;
 }
 
 Int32 ThreadSafeClientConnManager::GetConnectionsInPool(
     /* [in] */ IHttpRoute* route)
 {
-    return ((ConnPoolByRoute*)mConnectionPool)->GetConnectionsInPool(route);
+    return ((ConnPoolByRoute*)mConnectionPool.Get())->GetConnectionsInPool(route);
 }
 
 Int32 ThreadSafeClientConnManager::GetConnectionsInPool()

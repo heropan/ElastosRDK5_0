@@ -3,9 +3,8 @@
 #define __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_BASICPOOLENTRY_H__
 
 #include "AbstractPoolEntry.h"
-#include "BasicPoolEntryRef.h"
 
-using Elastos::Utility::IList;
+using Elastos::Utility::IQueue;
 using Org::Apache::Http::Conn::Routing::IHttpRoute;
 using Org::Apache::Http::Conn::IOperatedClientConnection;
 using Org::Apache::Http::Conn::IClientConnectionOperator;
@@ -17,6 +16,12 @@ namespace Http {
 namespace Impl {
 namespace Conn {
 namespace Tsccm {
+
+class BasicPoolEntryRef;
+class AbstractConnPool;
+class ConnPoolByRoute;
+class RouteSpecificPool;
+class ThreadSafeClientConnManager;
 
 extern "C" const InterfaceID EIID_BasicPoolEntry;
 
@@ -37,7 +42,7 @@ public:
     BasicPoolEntry(
         /* [in] */ IClientConnectionOperator* op,
         /* [in] */ IHttpRoute* route,
-        /* [in] */ IList* queue);/* ReferenceQueue<Object> */
+        /* [in] */ IQueue* queue);/* ReferenceQueue<Object> */
 
     CARAPI_(PInterface) Probe(
             /* [in] */ REIID riid);
@@ -57,6 +62,11 @@ private:
      */
     AutoPtr<BasicPoolEntryRef> mReference;
 
+    friend class AbstractConnPool;
+    friend class BasicPoolEntryRef;
+    friend class ConnPoolByRoute;
+    friend class RouteSpecificPool;
+    friend class ThreadSafeClientConnManager;
 };
 
 } // namespace Tsccm

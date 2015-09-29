@@ -24,6 +24,8 @@ class BasicClientCookie2
     , public ISetCookie2
 {
 public:
+    BasicClientCookie2();
+
     /**
      * Default Constructor taking a name and a value. The value may be null.
      *
@@ -37,7 +39,7 @@ public:
     CAR_INTERFACE_DECL()
 
     CARAPI GetPorts(
-        /* [out, callee] */ ArrayOf<Int32>* ports);
+        /* [out, callee] */ ArrayOf<Int32>** ports);
 
     CARAPI SetPorts(
         /* [in] */ ArrayOf<Int32>* ports);
@@ -46,7 +48,7 @@ public:
         /* [out] */ String* commentURL);
 
     CARAPI SetCommentURL(
-        /* [in] */ String commentURL);
+        /* [in] */ const String& commentURL);
 
     CARAPI SetDiscard(
         /* [in] */ Boolean discard);

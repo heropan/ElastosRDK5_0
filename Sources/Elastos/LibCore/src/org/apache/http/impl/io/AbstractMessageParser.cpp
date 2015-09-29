@@ -1,13 +1,16 @@
 
 #include "AbstractMessageParser.h"
 #include "BasicLineParser.h"
-#include "CCharArrayBuffer.h"
-#include <elastos/Logger.h>
+#include "org/apache/http/util/CCharArrayBuffer.h"
+#include "elastos/utility/CArrayList.h"
+#include "Logger.h"
 
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::IO::EIID_IHttpMessageParser;
 using Org::Apache::Http::Message::BasicLineParser;
+using Org::Apache::Http::Params::ICoreConnectionPNames;
 using Org::Apache::Http::Utility::ICharArrayBuffer;
 using Org::Apache::Http::Utility::CCharArrayBuffer;
 
@@ -32,18 +35,19 @@ AbstractMessageParser::AbstractMessageParser(
     if (params == NULL) {
         Logger::E("AbstractMessageParser", "HTTP parameters may not be null");
         assert(0);
-        throw new IllegalArgumentException("HTTP parameters may not be null");
+        // throw new IllegalArgumentException("HTTP parameters may not be null");
     }
     mSessionBuffer = buffer;
     params->GetInt32Parameter(ICoreConnectionPNames::MAX_HEADER_COUNT, -1, &mMaxHeaderCount);
-    params.GetInt32Parameter(
-            ICoreConnectionPNames::MAX_LINE_LENGTH, -1, mMaxLineLen);
+    params->GetInt32Parameter(
+            ICoreConnectionPNames::MAX_LINE_LENGTH, -1, &mMaxLineLen);
     mLineParser = (parser != NULL) ? parser : ILineParser::Probe(BasicLineParser::DEFAULT);
 }
 
 CAR_INTERFACE_IMPL(AbstractMessageParser, Object, IHttpMessageParser)
 
 ECode AbstractMessageParser::ParseHeaders(
+    /* [in] */ AbstractMessageParser* host,
     /* [in] */ ISessionInputBuffer* inbuffer,
     /* [in] */ Int32 maxHeaderCount,
     /* [in] */ Int32 maxLineLen,
@@ -58,7 +62,7 @@ ECode AbstractMessageParser::ParseHeaders(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (parser == NULL) {
-        parser = BasicLineParser::DEFAULT;
+        parser = ILineParser::Probe(BasicLineParser::DEFAULT);
     }
 
     AutoPtr<IArrayList> headerLines;
@@ -83,24 +87,24 @@ ECode AbstractMessageParser::ParseHeaders(
         // Detect LWS-char see HTTP/1.0 or HTTP/1.1 Section 2.2
         // discussion on folded headers
         Char32 c1, c2;
-        if (((current->GetChar(0, &c1), c1 == ' ') || (current->GetCharAt(0, &c2), c2 == '\t')) && previous != NULL) {
+        if (((current->CharAt(0, &c1), c1 == ' ') || (current->CharAt(0, &c2), c2 == '\t')) && previous != NULL) {
             // we have continuation folded header
             // so append value
             Int32 i = 0;
             Int32 length;
             while (current->GetLength(&length), i < length) {
                 Char32 ch;
-                current->GetChar(i, *ch);
+                current->CharAt(i, &ch);
                 if (ch != ' ' && ch != '\t') {
                     break;
                 }
                 i++;
             }
-            if (mMaxLineLen > 0) {
+            if (host->mMaxLineLen > 0) {
                 Int32 len1, len2;
                 previous->GetLength(&len1);
                 current->GetLength(&len2);
-                if (len1 + 1 + len2 - i > mMaxLineLen) {
+                if (len1 + 1 + len2 - i > host->mMaxLineLen) {
                     Logger::E("AbstractMessageParser", "Maximum line length limit exceeded");
                     return E_IO_EXCEPTION;
                 }
@@ -115,7 +119,7 @@ ECode AbstractMessageParser::ParseHeaders(
             current = NULL;
         }
         Int32 size;
-        if (mMaxHeaderCount > 0 && (headerLines->GetSize(&size), size >= maxHeaderCount)) {
+        if (host->mMaxHeaderCount > 0 && (headerLines->GetSize(&size), size >= maxHeaderCount)) {
             Logger::E("AbstractMessageParser", "Maximum header count exceeded");
             return E_IO_EXCEPTION;
         }
@@ -157,7 +161,7 @@ ECode AbstractMessageParser::Parse(
     //     throw new ProtocolException(px.getMessage(), px);
     // }
     AutoPtr< ArrayOf<IHeader*> > headers;
-    ParseHeaders(mSessionBuffer, mMaxHeaderCount, mMaxLineLen, mLineParser, (ArrayOf<IHeader*>**)&headers);
+    ParseHeaders(this, mSessionBuffer, mMaxHeaderCount, mMaxLineLen, mLineParser, (ArrayOf<IHeader*>**)&headers);
     message->SetHeaders(headers);
     *_message = message;
     REFCOUNT_ADD(*_message)

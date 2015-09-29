@@ -2,10 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_ABSTRACTPOOLENTRY_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_ABSTRACTPOOLENTRY_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Org::Apache::Http::IHttpHost;
 using Org::Apache::Http::Conn::IOperatedClientConnection;
 using Org::Apache::Http::Conn::IClientConnectionOperator;
@@ -19,6 +17,8 @@ namespace Apache {
 namespace Http {
 namespace Impl {
 namespace Conn {
+
+class AbstractPooledConnAdapter;
 
 /**
  * A pool entry for use by connection manager implementations.
@@ -46,7 +46,7 @@ namespace Conn {
 class AbstractPoolEntry : public Object
 {
 public:
-    virtual ~AbstractClientConnAdapter() = 0;
+    virtual ~AbstractPoolEntry() = 0;
 
     /**
      * Returns the state object associated with this pool entry.
@@ -155,14 +155,15 @@ protected:
     //@@@ currently accessed from connection manager(s) as attribute
     //@@@ avoid that, derived classes should decide whether update is allowed
     //@@@ SCCM: yes, TSCCM: no
-    volatile AutoPtr<IHttpRoute> mRoute;
+    AutoPtr<IHttpRoute> mRoute;
 
     /** Connection state object */
-    volatile AutoPtr<IObject> mState;
+    AutoPtr<IObject> mState;
 
     /** The tracked route, or <code>null</code> before tracking starts. */
-    volatile AutoPtr<IRouteTracker> mTracker;
+    AutoPtr<IRouteTracker> mTracker;
 
+    friend class AbstractPooledConnAdapter;
 };
 
 } // namespace Conn

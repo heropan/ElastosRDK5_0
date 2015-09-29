@@ -1,9 +1,12 @@
 
 #include "RouteSpecificPool.h"
-#include <elastos/Logger.h>
+#include "WaitingThread.h"
+#include "CLinkedList.h"
+#include "Logger.h"
 
 using Elastos::Utility::CLinkedList;
 using Elastos::Utility::IListIterator;
+using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Conn::IOperatedClientConnection;
 
@@ -40,7 +43,7 @@ Int32 RouteSpecificPool::GetMaxEntries()
 Boolean RouteSpecificPool::IsUnused()
 {
     Boolean isEmpty;
-    return (numEntries < 1) && (mWaitingThreads->IsEmpty(&isEmpty), isEmpty);
+    return (mNumEntries < 1) && (mWaitingThreads->IsEmpty(&isEmpty), isEmpty);
 }
 
 Int32 RouteSpecificPool::GetCapacity()
@@ -66,12 +69,12 @@ AutoPtr<BasicPoolEntry> RouteSpecificPool::AllocEntry(
         while(it->HasPrevious(&hasPrevious), hasPrevious) {
             AutoPtr<IInterface> value;
             it->GetPrevious((IInterface**)&value);
-            AutoPtr<BasicPoolEntry> entry = (BasicPoolEntry*)value.Get();
+            AutoPtr<BasicPoolEntry> entry = reinterpret_cast<BasicPoolEntry*>(value->Probe(EIID_BasicPoolEntry));
             if (state != NULL) {
                 AutoPtr<IObject> entryState = entry->GetState();
                 Boolean equals;
                 if (state->Equals(entryState, &equals), equals) {
-                    it->Remove();
+                    IIterator::Probe(it)->Remove();
                     return entry;
                 }
             }
@@ -80,11 +83,11 @@ AutoPtr<BasicPoolEntry> RouteSpecificPool::AllocEntry(
     if (mfreeEntries->IsEmpty(&isEmpty), !isEmpty) {
         AutoPtr<IInterface> value;
         mfreeEntries->Remove((IInterface**)&value);
-        AutoPtr<BasicPoolEntry> entry = (BasicPoolEntry*)value.Get();
+        AutoPtr<BasicPoolEntry> entry = reinterpret_cast<BasicPoolEntry*>(value->Probe(EIID_BasicPoolEntry));
         entry->SetState(NULL);
         AutoPtr<IOperatedClientConnection> conn = entry->GetConnection();
         // try {
-        conn->Close();
+        IHttpConnection::Probe(conn)->Close();
         // } catch (IOException ex) {
         //     log.debug("I/O error closing connection", ex);
         // }
@@ -105,7 +108,7 @@ ECode RouteSpecificPool::FreeEntry(
         Logger::E("RouteSpecificPool", "No entry allocated for this pool. %p", mRoute.Get());
         return E_ILLEGAL_STATE_EXCEPTION;
     }
-    mfreeEntries->Add((IInterface*)entry);
+    mfreeEntries->Add(entry->Probe(EIID_IInterface));
     return NOERROR;
 }
 
@@ -115,7 +118,7 @@ ECode RouteSpecificPool::CreatedEntry(
     AutoPtr<IHttpRoute> plannedRoute = entry->GetPlannedRoute();
     Boolean equals;
     if (IObject::Probe(mRoute)->Equals(plannedRoute, &equals), !equals) {
-        Logger::Probe("RouteSpecificPool", "Entry not planned for this pool.\npool: %p\nplan: %p", mRoute.Get(), plannedRoute.Get());
+        Logger::E("RouteSpecificPool", "Entry not planned for this pool.\npool: %p\nplan: %p", mRoute.Get(), plannedRoute.Get());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -127,7 +130,7 @@ Boolean RouteSpecificPool::DeleteEntry(
     /* [in] */ BasicPoolEntry* entry)
 {
     Boolean found;
-    mfreeEntries->Remove((IInterface*)entry, &found);
+    mfreeEntries->Remove(entry->Probe(EIID_IInterface), &found);
     if (found)
         mNumEntries--;
     return found;
@@ -150,7 +153,7 @@ ECode RouteSpecificPool::QueueThread(
         Logger::E("RouteSpecificPool", "Waiting thread must not be null.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mWaitingThreads->Add(wt);
+    mWaitingThreads->Add(wt->Probe(EIID_IInterface));
     return NOERROR;
 }
 
@@ -165,7 +168,7 @@ AutoPtr<WaitingThread> RouteSpecificPool::NextThread()
 {
     AutoPtr<IInterface> value;
     mWaitingThreads->Peek((IInterface**)&value);
-    return (WaitingThread*)value.Get();
+    return (WaitingThread*)(Object*)(IObject*)value.Get();
 }
 
 void RouteSpecificPool::RemoveThread(
@@ -173,7 +176,8 @@ void RouteSpecificPool::RemoveThread(
 {
     if (wt == NULL) return;
 
-    mWaitingThreads->Remove((IInterface*)wt);
+    Boolean result;
+    mWaitingThreads->Remove(wt->Probe(EIID_IInterface), &result);
 }
 
 

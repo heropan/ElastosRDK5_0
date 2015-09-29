@@ -1,8 +1,10 @@
 
 #include "CookieSpecBase.h"
 #include "BasicClientCookie.h"
-#include <elastos/Logger.h>
+#include "CArrayList.h"
+#include "Logger.h"
 
+using Elastos::Core::IArrayOf;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::ICollection;
@@ -68,13 +70,13 @@ ECode CookieSpecBase::Parse(
         cookie->SetDomain(GetDefaultDomain(origin));
 
         // cycle through the parameters
-        AutoPtr< ArrayOf<INameValuePair> > attribs;
-        headerelement->GetParameters((ArrayOf<INameValuePair>**)*attribs);
+        AutoPtr< ArrayOf<INameValuePair*> > attribs;
+        headerelement->GetParameters((ArrayOf<INameValuePair*>**)&attribs);
         for (Int32 j = attribs->GetLength() - 1; j >= 0; j--) {
-            AutoPtr<INameValuePair> attrib = (*attribs)[j];
+            AutoPtr<INameValuePair> attrib = (*attribs)[i];
             String n;
             attrib->GetName(&n);
-            String s = n.ToLowerCase(ILocale::ENGLISH);
+            String s = n.ToLowerCase(/*ILocale::ENGLISH*/);
 
             String v;
             attrib->GetValue(&v);
@@ -86,9 +88,9 @@ ECode CookieSpecBase::Parse(
                 handler->Parse(cookie, v);
             }
         }
-        cookies->Add((IInterface*)cookie);
+        cookies->Add(cookie->Probe(EIID_IInterface));
     }
-    *_cookies = cookies;
+    *_cookies = IList::Probe(cookies);
     REFCOUNT_ADD(*_cookies)
     return NOERROR;
 }
@@ -110,7 +112,7 @@ ECode CookieSpecBase::Validate(
     AutoPtr<IIterator> it;
     coll->GetIterator((IIterator**)&it);
     Boolean hasNext;
-    while (coll->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> value;
         it->GetNext((IInterface**)&value);
         AutoPtr<ICookieAttributeHandler> handler = ICookieAttributeHandler::Probe(value);
@@ -140,7 +142,7 @@ ECode CookieSpecBase::Match(
     AutoPtr<IIterator> it;
     coll->GetIterator((IIterator**)&it);
     Boolean hasNext;
-    while (coll->HasNext(&hasNext), hasNext) {
+    while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> value;
         it->GetNext((IInterface**)&value);
         AutoPtr<ICookieAttributeHandler> handler = ICookieAttributeHandler::Probe(value);

@@ -1,13 +1,14 @@
 
 #include "LaxContentLengthStrategy.h"
-#include <elastos/Logger.h>
-#include <elastos/core/StringUtils.h>
+#include "Logger.h"
+#include "elastos/core/StringUtils.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeader;
-using Org::Apache::Http::Param::IHttpParams;
-using Org::Apache::Http::Param::ICoreProtocolPNames;
+using Org::Apache::Http::Entity::EIID_IContentLengthStrategy;
+using Org::Apache::Http::Params::IHttpParams;
+using Org::Apache::Http::Params::ICoreProtocolPNames;
 using Org::Apache::Http::Protocol::IHTTP;
 
 namespace Org {
@@ -87,8 +88,8 @@ ECode LaxContentLengthStrategy::DetermineLength(
     }
     else if (contentLengthHeader != NULL) {
         Int64 contentlen = -1;
-        AutoPtr< ArrayOf<IHeader> > headers;
-        message->GetHeaders(IHTTP::CONTENT_LEN, (ArrayOf<IHeader>**)&headers);
+        AutoPtr< ArrayOf<IHeader*> > headers;
+        message->GetHeaders(IHTTP::CONTENT_LEN, (ArrayOf<IHeader*>**)&headers);
         if (strict && headers->GetLength() > 1) {
             Logger::E("LaxContentLengthStrategy", "Multiple content length headers");
             return E_PROTOCOL_EXCEPTION;

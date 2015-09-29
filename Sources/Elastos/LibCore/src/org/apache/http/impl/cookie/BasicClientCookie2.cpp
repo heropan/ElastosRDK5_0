@@ -1,11 +1,17 @@
 
 #include "BasicClientCookie2.h"
 
+using Org::Apache::Http::Cookie::EIID_ISetCookie2;
+
 namespace Org {
 namespace Apache {
 namespace Http {
 namespace Impl {
 namespace Cookie {
+
+BasicClientCookie2::BasicClientCookie2()
+    : mDiscard(FALSE)
+{}
 
 BasicClientCookie2::BasicClientCookie2(
     /* [in] */ const String& name,
@@ -17,7 +23,7 @@ BasicClientCookie2::BasicClientCookie2(
 CAR_INTERFACE_IMPL(BasicClientCookie2, BasicClientCookie, ISetCookie2)
 
 ECode BasicClientCookie2::GetPorts(
-    /* [out, callee] */ ArrayOf<Int32>* ports)
+    /* [out, callee] */ ArrayOf<Int32>** ports)
 {
     VALIDATE_NOT_NULL(ports)
     *ports = mPorts;
@@ -41,7 +47,7 @@ ECode BasicClientCookie2::GetCommentURL(
 }
 
 ECode BasicClientCookie2::SetCommentURL(
-    /* [in] */ String commentURL)
+    /* [in] */ const String& commentURL)
 {
     mCommentURL = commentURL;
     return NOERROR;
@@ -69,7 +75,7 @@ ECode BasicClientCookie2::IsExpired(
 {
     VALIDATE_NOT_NULL(isExpired)
     Boolean result;
-    *isExpired = mDiscard && (BasicClientCookie::IsExpired(&result), result);
+    *isExpired = mDiscard && (BasicClientCookie::IsExpired(date, &result), result);
     return NOERROR;
 }
 
@@ -77,7 +83,7 @@ ECode BasicClientCookie2::Clone(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
-    AutoPtr<BasicClientCookie2> cookie = new BasicClientCookie2(mName, mValue);
+    AutoPtr<BasicClientCookie2> cookie = new BasicClientCookie2();
     CloneImpl(cookie);
     *object = cookie->Probe(EIID_IInterface);
     REFCOUNT_ADD(*object)
@@ -87,7 +93,7 @@ ECode BasicClientCookie2::Clone(
 ECode BasicClientCookie2::CloneImpl(
     /* [in] */ BasicClientCookie2* cookie)
 {
-    CloneImpl((BasicClientCookie*)cookie);
+    BasicClientCookie::CloneImpl((BasicClientCookie*)cookie);
     cookie->mCommentURL = mCommentURL;
     cookie->mPorts = mPorts->Clone();
     cookie->mDiscard = mDiscard;

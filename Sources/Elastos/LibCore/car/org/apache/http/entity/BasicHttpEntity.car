@@ -23,6 +23,7 @@ module
     /**
      * @Involve
      * interface IAbstractHttpEntity;
+     * interface IHttpEntity;
      */
     interface IBasicHttpEntity {
 

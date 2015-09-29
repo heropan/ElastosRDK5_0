@@ -2,7 +2,9 @@
 #include "BasicClientCookie.h"
 #include "StringBuilder.h"
 #include "StringUtils.h"
-#include <elastos/Logger.h>
+#include "CString.h"
+#include "CHashMap.h"
+#include "Logger.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
@@ -12,12 +14,21 @@ using Elastos::Utility::IHashMap;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::Logging::Logger;
+using Elastos::Core::EIID_ICloneable;
+using Org::Apache::Http::Cookie::EIID_ISetCookie;
+using Org::Apache::Http::Cookie::EIID_IClientCookie;
+using Org::Apache::Http::Cookie::EIID_ICookie;
 
 namespace Org {
 namespace Apache {
 namespace Http {
 namespace Impl {
 namespace Cookie {
+
+BasicClientCookie::BasicClientCookie()
+    : mIsSecure(FALSE)
+    , mCookieVersion(0)
+{}
 
 BasicClientCookie::BasicClientCookie(
     /* [in] */ const String& name,
@@ -86,7 +97,7 @@ ECode BasicClientCookie::GetCommentURL(
 }
 
 ECode BasicClientCookie::GetExpiryDate(
-    /* [out] */ IDate* date)
+    /* [out] */ IDate** date)
 {
     VALIDATE_NOT_NULL(date)
     *date = mCookieExpiryDate;
@@ -121,7 +132,7 @@ ECode BasicClientCookie::SetDomain(
     /* [in] */ const String& domain)
 {
     if (!domain.IsNull()) {
-        mCookieDomain = domain.ToLowerCase(ILocale::ENGLISH);
+        mCookieDomain = domain.ToLowerCase(/*ILocale::ENGLISH*/);
     } else {
         mCookieDomain = String(NULL);
     }
@@ -159,7 +170,7 @@ ECode BasicClientCookie::SetSecure(
 }
 
 ECode BasicClientCookie::GetPorts(
-    /* [out, callee] */ ArrayOf<Int32>* ports)
+    /* [out, callee] */ ArrayOf<Int32>** ports)
 {
     VALIDATE_NOT_NULL(ports)
     *ports = NULL;
@@ -218,7 +229,7 @@ ECode BasicClientCookie::GetAttribute(
     /* [out] */ String* attr)
 {
     VALIDATE_NOT_NULL(attr)
-    *attr = String(NULL)
+    *attr = String(NULL);
     AutoPtr<ICharSequence> cs;
     CString::New(name, (ICharSequence**)&cs);
     AutoPtr<IInterface> value;
@@ -246,7 +257,7 @@ ECode BasicClientCookie::Clone(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
-    AutoPtr<BasicClientCookie> cookie = new BasicClientCookie(mName, mValue);
+    AutoPtr<BasicClientCookie> cookie = new BasicClientCookie();
     CloneImpl(cookie);
     *object = cookie->Probe(EIID_IInterface);
     REFCOUNT_ADD(*object)
@@ -256,8 +267,10 @@ ECode BasicClientCookie::Clone(
 ECode BasicClientCookie::CloneImpl(
     /* [in] */ BasicClientCookie* cookie)
 {
+    cookie->mName = mName;
+    cookie->mValue = mValue;
     cookie->mCookieComment = mCookieComment;
-    cookie->mCookieDomain = mCookieDomain
+    cookie->mCookieDomain = mCookieDomain;
     cookie->mCookieExpiryDate = mCookieExpiryDate;
     cookie->mCookiePath = mCookiePath;
     cookie->mIsSecure = mIsSecure;

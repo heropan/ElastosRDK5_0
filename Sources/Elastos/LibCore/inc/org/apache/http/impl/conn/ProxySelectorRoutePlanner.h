@@ -2,13 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_PROXYSELECTORROUTEPLANNER_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_PROXYSELECTORROUTEPLANNER_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
-using Elastos::Net::IProxySelector;
-using Elastos::Net::InetSocketAddress;
-using Elastos::Net::IProxy;
+using Elastos::Net::IInetSocketAddress;
 using Elastos::Net::IProxySelector;
 using Elastos::Utility::IList;
 using Org::Apache::Http::IHttpHost;
@@ -122,7 +118,7 @@ protected:
         /* [in] */ IHttpHost* target,
         /* [in] */ IHttpRequest* request,
         /* [in] */ IHttpContext* context,
-        /* [out] */ IProxy** proxy);
+        /* [out] */ Elastos::Net::IProxy** proxy);
 
 private:
     /** The scheme registry. */

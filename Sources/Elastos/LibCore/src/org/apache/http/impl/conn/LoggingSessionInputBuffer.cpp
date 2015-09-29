@@ -1,8 +1,9 @@
 
 #include "LoggingSessionInputBuffer.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::IO::EIID_ISessionInputBuffer;
 
 namespace Org {
 namespace Apache {
@@ -36,8 +37,7 @@ ECode LoggingSessionInputBuffer::Read(
     VALIDATE_NOT_NULL(result)
     Int32 l;
     mIn->Read(b,  off,  len, &l);
-    Boolean enabled;
-    if ((mWire->Enabled(&enabled), enabled) && l > 0) {
+    if (mWire->Enabled() && l > 0) {
         mWire->Input(b, off, l);
     }
     *result = l;
@@ -50,8 +50,7 @@ ECode LoggingSessionInputBuffer::Read(
     VALIDATE_NOT_NULL(result)
     Int32 l;
     mIn->Read(&l);
-    Boolean enabled;
-    if ((mWire->Enabled(&enabled), enabled) && l > 0) {
+    if (mWire->Enabled() && l > 0) {
         mWire->Input(l);
     }
     *result = l;
@@ -65,8 +64,7 @@ ECode LoggingSessionInputBuffer::Read(
     VALIDATE_NOT_NULL(result)
     Int32 l;
     mIn->Read(b, &l);
-    Boolean enabled;
-    if ((mWire->Enabled(&enabled), enabled) && l > 0) {
+    if (mWire->Enabled() && l > 0) {
         mWire->Input(b, 0, l);
     }
     *result = l;
@@ -79,8 +77,7 @@ ECode LoggingSessionInputBuffer::ReadLine(
     VALIDATE_NOT_NULL(result)
     String s;
     mIn->ReadLine(&s);
-    Boolean enabled;
-    if ((mWire->Enabled(&enabled), enabled) && !s.IsNull()) {
+    if (mWire->Enabled() && !s.IsNull()) {
         mWire->Input(s + String("[EOL]"));
     }
     *result = s;
@@ -94,8 +91,7 @@ ECode LoggingSessionInputBuffer::ReadLine(
     VALIDATE_NOT_NULL(result)
     Int32 l;
     mIn->ReadLine(buffer, &l);
-    Boolean enabled;
-    if ((mWire->Enabled(&enabled), enabled) && l > 0) {
+    if (mWire->Enabled() && l > 0) {
         Int32 len;
         buffer->GetLength(&len);
         Int32 pos = len - l;

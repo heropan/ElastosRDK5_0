@@ -2,14 +2,17 @@
 #include "RequestWrapper.h"
 #include "HttpProtocolParams.h"
 #include "CBasicRequestLine.h"
-#include <elastos/Logger.h>
+#include "CURI.h"
+#include "Logger.h"
 
+using Elastos::Net::CURI;
 using Elastos::Utility::Logging::Logger;
-using Org::Apache::Http::IHttpParams;
 using Org::Apache::Http::IRequestLine;
 using Org::Apache::Http::IHttpMessage;
 using Org::Apache::Http::IHeader;
+using Org::Apache::Http::Client::Methods::EIID_IHttpUriRequest;
 using Org::Apache::Http::Message::CBasicRequestLine;
+using Org::Apache::Http::Params::IHttpParams;
 using Org::Apache::Http::Params::HttpProtocolParams;
 
 namespace Org {
@@ -30,12 +33,12 @@ RequestWrapper::RequestWrapper(
         // throw new IllegalArgumentException("HTTP request may not be null");
     }
     AutoPtr<IHttpParams> params;
-    request->GetParams((IHttpParams**)&params);
+    IHttpMessage::Probe(request)->GetParams((IHttpParams**)&params);
     SetParams(params);
     // Make a copy of the original URI
     AutoPtr<IHttpUriRequest> uriRequest = IHttpUriRequest::Probe(request);
     if (uriRequest != NULL) {
-        uriRequest->GetUri((IURI**)&mUri);
+        uriRequest->GetURI((IURI**)&mUri);
         uriRequest->GetMethod(&mMethod);
         mVersion = NULL;
     }
@@ -43,10 +46,10 @@ RequestWrapper::RequestWrapper(
         AutoPtr<IRequestLine> requestLine;
         request->GetRequestLine((IRequestLine**)&requestLine);
         // try {
-        AutoPtr<IURI> uri;
-        requestLine->GetUri((IURI**)&uri);
+        String uri;
+        requestLine->GetUri(&uri);
         if (FAILED(CURI::New(uri, (IURI**)&mUri))) {
-            Logger::E("RequestWrapper", "Invalid request URI: %p", uri.Get());
+            Logger::E("RequestWrapper", "Invalid request URI: %s", uri.string());
             assert(0);
         }
         // } catch (URISyntaxException ex) {
@@ -54,7 +57,7 @@ RequestWrapper::RequestWrapper(
         //             + requestLine.getUri(), ex);
         // }
         requestLine->GetMethod(&mMethod);
-        request->GetProtocolVersion((IProtocolVersion**)&mVersion);
+        IHttpMessage::Probe(request)->GetProtocolVersion((IProtocolVersion**)&mVersion);
     }
 }
 
@@ -65,7 +68,7 @@ void RequestWrapper::ResetHeaders()
     // Make a copy of original headers
     mHeadergroup->Clear();
     AutoPtr< ArrayOf<IHeader*> > headers;
-    mOriginal->GetAllHeaders((ArrayOf<IHeader*>**)&headers);
+    IHttpMessage::Probe(mOriginal)->GetAllHeaders((ArrayOf<IHeader*>**)&headers);
     SetHeaders(headers);
 }
 
@@ -134,8 +137,8 @@ ECode RequestWrapper::GetRequestLine(
     AutoPtr<IProtocolVersion> ver;
     GetProtocolVersion((IProtocolVersion**)&ver);
     String uritext = String(NULL);
-    if (uri != NULL) {
-        uri->ToASCIIString(&uritext);
+    if (mUri != NULL) {
+        mUri->ToASCIIString(&uritext);
     }
     if (uritext.IsNull() || uritext.GetLength() == 0) {
         uritext = String("/");

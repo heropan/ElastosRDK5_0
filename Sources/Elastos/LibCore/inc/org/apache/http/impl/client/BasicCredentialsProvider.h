@@ -2,10 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_BASICCREDENTIALSPROVIDER_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_BASICCREDENTIALSPROVIDER_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Utility::IHashMap;
 using Org::Apache::Http::Auth::IAuthScope;
 using Org::Apache::Http::Auth::ICredentials;

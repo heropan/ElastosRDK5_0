@@ -1,15 +1,20 @@
 
 #include "DefaultClientConnectionOperator.h"
 #include "DefaultClientConnection.h"
+#include "HttpConnectionParams.h"
 #include "scheme/CPlainSocketFactory.h"
-#include <elastos/Logger.h>
+#include "CInetAddressHelper.h"
+#include "Logger.h"
 
 using Elastos::Net::IInetAddressHelper;
 using Elastos::Net::CInetAddressHelper;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Conn::EIID_IClientConnectionOperator;
 using Org::Apache::Http::Conn::Scheme::IScheme;
 using Org::Apache::Http::Conn::Scheme::ISocketFactory;
 using Org::Apache::Http::Conn::Scheme::ILayeredSocketFactory;
+using Org::Apache::Http::Conn::Scheme::CPlainSocketFactory;
+using Org::Apache::Http::Params:: HttpConnectionParams;
 
 namespace Org {
 namespace Apache {
@@ -69,7 +74,7 @@ ECode DefaultClientConnectionOperator::OpenConnection(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Boolean isOpen;
-    if (conn->IsOpen(&isOpen), isOpen) {
+    if (IHttpConnection::Probe(conn)->IsOpen(&isOpen), isOpen) {
         Logger::E("DefaultClientConnection", "Connection must not be open.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -77,13 +82,13 @@ ECode DefaultClientConnectionOperator::OpenConnection(
     String name;
     target->GetSchemeName(&name);
     AutoPtr<IScheme> schm;
-    schemeRegistry->GetScheme(name);
+    mSchemeRegistry->GetScheme(name, (IScheme**)&schm);
     AutoPtr<ISocketFactory> sf;
     schm->GetSocketFactory((ISocketFactory**)&sf);
     AutoPtr<ISocketFactory> plain_sf;
     AutoPtr<ILayeredSocketFactory> layered_sf;
     if (ILayeredSocketFactory::Probe(sf) != NULL) {
-        plain_sf = sStaticPlainSocketFactory;
+        plain_sf = ISocketFactory::Probe(sStaticPlainSocketFactory);
         layered_sf = ILayeredSocketFactory::Probe(sf);
     }
     else {
@@ -95,7 +100,7 @@ ECode DefaultClientConnectionOperator::OpenConnection(
     AutoPtr< ArrayOf<IInetAddress*> > addresses;
     helper->GetAllByName(name, (ArrayOf<IInetAddress*>**)&addresses);
 
-    for (Int32 i = 0; i < addresses->GetLength; ++i) {
+    for (Int32 i = 0; i < addresses->GetLength(); ++i) {
         AutoPtr<ISocket> sock;
         plain_sf->CreateSocket((ISocket**)&sock);
         conn->Opening(sock, target);
@@ -183,7 +188,7 @@ ECode DefaultClientConnectionOperator::UpdateSecureConnection(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Boolean isOpen;
-    if (conn->IsOpen(&isOpen), !isOpen) {
+    if (IHttpConnection::Probe(conn)->IsOpen(&isOpen), !isOpen) {
         Logger::E("DefaultClientConnection", "Connection must be open.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -191,9 +196,9 @@ ECode DefaultClientConnectionOperator::UpdateSecureConnection(
     String name;
     target->GetSchemeName(&name);
     AutoPtr<IScheme> schm;
-    schemeRegistry->GetScheme(name, (IScheme**)&schm);
+    mSchemeRegistry->GetScheme(name, (IScheme**)&schm);
     AutoPtr<ISocketFactory> sf;
-    scheme->GetSocketFactory((ISocketFactory**)&sf);
+    schm->GetSocketFactory((ISocketFactory**)&sf);
     AutoPtr<ILayeredSocketFactory> lsf = ILayeredSocketFactory::Probe(sf);
     if (lsf == NULL) {
         String schemeName;
@@ -205,22 +210,45 @@ ECode DefaultClientConnectionOperator::UpdateSecureConnection(
     AutoPtr<ISocket> sock;
     // try {
     AutoPtr<ISocket> connSock;
-    conn->GetSocket((ISocket**)&connsock);
+    conn->GetSocket((ISocket**)&connSock);
     String hostname;
     target->GetHostName(&hostname);
     Int32 port;
     target->GetPort(&port);
     Int32 resolvePort;
-    schm->ResolvePort(&resolvePort);
-    lsf->CreateSocket(connsock, hostname, resolvePort, TRUE, (ISocket**)&sock);
+    schm->ResolvePort(port, &resolvePort);
+    lsf->CreateSocket(connSock, hostname, resolvePort, TRUE, (ISocket**)&sock);
     // } catch (ConnectException ex) {
     //     throw new HttpHostConnectException(target, ex);
     // }
     PrepareSocket(sock, context, params);
     Boolean isSecure;
-    lsf->IsSecure(sock, &isSecure);
+    ISocketFactory::Probe(lsf)->IsSecure(sock, &isSecure);
     conn->Update(sock, target, isSecure, params);
     //@@@ error handling: close the layered socket in case of exception?
+    return NOERROR;
+}
+
+ECode DefaultClientConnectionOperator::PrepareSocket(
+    /* [in] */ ISocket* sock,
+    /* [in] */ IHttpContext* context,
+    /* [in] */ IHttpParams* params)
+{
+    // context currently not used, but derived classes may need it
+    //@@@ is context allowed to be null?
+
+    Boolean result;
+    HttpConnectionParams::GetTcpNoDelay(params, &result);
+    sock->SetTcpNoDelay(result);
+    Int32 timeout;
+    HttpConnectionParams::GetSoTimeout(params, &timeout);
+    sock->SetSoTimeout(timeout);
+
+    Int32 linger;
+    HttpConnectionParams::GetLinger(params, &linger);
+    if (linger >= 0) {
+        sock->SetSoLinger(linger > 0, linger);
+    }
     return NOERROR;
 }
 

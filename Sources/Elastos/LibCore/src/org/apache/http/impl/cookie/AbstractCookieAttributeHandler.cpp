@@ -1,6 +1,8 @@
 
 #include "AbstractCookieAttributeHandler.h"
 
+using Org::Apache::Http::Cookie::EIID_ICookieAttributeHandler;
+
 namespace Org {
 namespace Apache {
 namespace Http {

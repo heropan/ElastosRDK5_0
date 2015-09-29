@@ -1,14 +1,19 @@
 
 #include "AbstractClientConnAdapter.h"
 #include "Thread.h"
-#include <elastos/Logger.h>
-#include <Math.h>
+#include "Logger.h"
+#include "CTimeUnitHelper.h"
+#include "Math.h"
 
 using Elastos::Core::Thread;
 using Elastos::Core::Math;
 using Elastos::Net::ISocket;
+using Elastos::Utility::Concurrent::ITimeUnitHelper;
+using Elastos::Utility::Concurrent::CTimeUnitHelper;
 using Elastos::Utility::Logging::Logger;
 using Elastosx::Net::Ssl::ISSLSocket;
+using Org::Apache::Http::Conn::EIID_IManagedClientConnection;
+using Org::Apache::Http::Conn::EIID_IConnectionReleaseTrigger;
 
 namespace Org {
 namespace Apache {
@@ -23,12 +28,12 @@ AbstractClientConnAdapter::AbstractClientConnAdapter(
     , mWrappedConnection(conn)
     , mMarkedReusable(FALSE)
     , mAborted(FALSE)
-    , mDuration(Math::INT64_MAX_VALUE)
+    , mDuration(Elastos::Core::Math::INT64_MAX_VALUE)
 {
     mExecutionThread = Thread::GetCurrentThread();
 }
 
-CAR_INTERFACE_IMPL_(AbstractClientConnAdapter, Object
+CAR_INTERFACE_IMPL_5(AbstractClientConnAdapter, Object
         , IManagedClientConnection
         , IHttpClientConnection
         , IHttpConnection
@@ -39,7 +44,7 @@ void AbstractClientConnAdapter::Detach()
 {
     mWrappedConnection = NULL;
     mConnManager = NULL; // base class attribute
-    mDuration = Math::INT64_MAX_VALUE;
+    mDuration = Elastos::Core::Math::INT64_MAX_VALUE;
 }
 
 AutoPtr<IOperatedClientConnection> AbstractClientConnAdapter::GetWrappedConnection()
@@ -80,7 +85,7 @@ ECode AbstractClientConnAdapter::IsOpen(
         *isOpen = FALSE;
         return NOERROR;
     }
-    return conn->IsOpen(isOpen);
+    return IHttpConnection::Probe(conn)->IsOpen(isOpen);
 }
 
 ECode AbstractClientConnAdapter::IsStale(
@@ -96,7 +101,7 @@ ECode AbstractClientConnAdapter::IsStale(
         *isStale = TRUE;
         return NOERROR;
     }
-    return conn->IsStale(isStale);
+    return IHttpConnection::Probe(conn)->IsStale(isStale);
 }
 
 ECode AbstractClientConnAdapter::SetSocketTimeout(
@@ -104,7 +109,7 @@ ECode AbstractClientConnAdapter::SetSocketTimeout(
 {
     AutoPtr<IOperatedClientConnection> conn = GetWrappedConnection();
     FAIL_RETURN(AssertValid(conn))
-    return conn->SetSocketTimeout(timeout);
+    return IHttpConnection::Probe(conn)->SetSocketTimeout(timeout);
 }
 
 ECode AbstractClientConnAdapter::GetSocketTimeout(
@@ -114,7 +119,7 @@ ECode AbstractClientConnAdapter::GetSocketTimeout(
     *timeout = 0;
     AutoPtr<IOperatedClientConnection> conn = GetWrappedConnection();
     FAIL_RETURN(AssertValid(conn))
-    return conn->GetSocketTimeout(timeout);
+    return IHttpConnection::Probe(conn)->GetSocketTimeout(timeout);
 }
 
 ECode AbstractClientConnAdapter::GetMetrics(
@@ -124,16 +129,16 @@ ECode AbstractClientConnAdapter::GetMetrics(
     *metrics = NULL;
     AutoPtr<IOperatedClientConnection> conn = GetWrappedConnection();
     FAIL_RETURN(AssertValid(conn))
-    return conn->GetMetrics(metrics);
+    return IHttpConnection::Probe(conn)->GetMetrics(metrics);
 }
 
 ECode AbstractClientConnAdapter::Flush()
 {
-    FAIL_RETURN(AssertNotAborted(conn))
+    FAIL_RETURN(AssertNotAborted())
     AutoPtr<IOperatedClientConnection> conn = GetWrappedConnection();
     FAIL_RETURN(AssertValid(conn))
 
-    return conn->Flush();
+    return IHttpClientConnection::Probe(conn)->Flush();
 }
 
 ECode AbstractClientConnAdapter::IsResponseAvailable(
@@ -142,22 +147,22 @@ ECode AbstractClientConnAdapter::IsResponseAvailable(
 {
     VALIDATE_NOT_NULL(isAvailable)
     *isAvailable = FALSE;
-    FAIL_RETURN(AssertNotAborted(conn))
+    FAIL_RETURN(AssertNotAborted())
     AutoPtr<IOperatedClientConnection> conn = GetWrappedConnection();
     FAIL_RETURN(AssertValid(conn))
 
-    return conn->IsResponseAvailable(timeout, isAvailable);
+    return IHttpClientConnection::Probe(conn)->IsResponseAvailable(timeout, isAvailable);
 }
 
 ECode AbstractClientConnAdapter::ReceiveResponseEntity(
     /* [in] */ IHttpResponse* response)
 {
-    FAIL_RETURN(AssertNotAborted(conn))
+    FAIL_RETURN(AssertNotAborted())
     AutoPtr<IOperatedClientConnection> conn = GetWrappedConnection();
     FAIL_RETURN(AssertValid(conn))
 
     UnmarkReusable();
-    return conn->ReceiveResponseEntity(response);
+    return IHttpClientConnection::Probe(conn)->ReceiveResponseEntity(response);
 }
 
 ECode AbstractClientConnAdapter::ReceiveResponseHeader(
@@ -165,34 +170,34 @@ ECode AbstractClientConnAdapter::ReceiveResponseHeader(
 {
     VALIDATE_NOT_NULL(httpResponse)
     *httpResponse = NULL;
-    FAIL_RETURN(AssertNotAborted(conn))
+    FAIL_RETURN(AssertNotAborted())
     AutoPtr<IOperatedClientConnection> conn = GetWrappedConnection();
     FAIL_RETURN(AssertValid(conn))
 
     UnmarkReusable();
-    return conn->ReceiveResponseHeader(httpResponse);
+    return IHttpClientConnection::Probe(conn)->ReceiveResponseHeader(httpResponse);
 }
 
 ECode AbstractClientConnAdapter::SendRequestEntity(
     /* [in] */ IHttpEntityEnclosingRequest* request)
 {
-    FAIL_RETURN(AssertNotAborted(conn))
+    FAIL_RETURN(AssertNotAborted())
     AutoPtr<IOperatedClientConnection> conn = GetWrappedConnection();
     FAIL_RETURN(AssertValid(conn))
 
     UnmarkReusable();
-    return conn->SendRequestEntity(request);
+    return IHttpClientConnection::Probe(conn)->SendRequestEntity(request);
 }
 
 ECode AbstractClientConnAdapter::SendRequestHeader(
     /* [in] */ IHttpRequest* request)
 {
-    FAIL_RETURN(AssertNotAborted(conn))
+    FAIL_RETURN(AssertNotAborted())
     AutoPtr<IOperatedClientConnection> conn = GetWrappedConnection();
     FAIL_RETURN(AssertValid(conn))
 
     UnmarkReusable();
-    return conn->SendRequestHeader(request);
+    return IHttpClientConnection::Probe(conn)->SendRequestHeader(request);
 }
 
 ECode AbstractClientConnAdapter::GetLocalAddress(
@@ -202,7 +207,7 @@ ECode AbstractClientConnAdapter::GetLocalAddress(
     *address = NULL;
     AutoPtr<IOperatedClientConnection> conn = GetWrappedConnection();
     FAIL_RETURN(AssertValid(conn))
-    return conn->GetLocalAddress(address);
+    return IHttpInetConnection::Probe(conn)->GetLocalAddress(address);
 }
 
 ECode AbstractClientConnAdapter::GetLocalPort(
@@ -212,7 +217,7 @@ ECode AbstractClientConnAdapter::GetLocalPort(
     *port = 0;
     AutoPtr<IOperatedClientConnection> conn = GetWrappedConnection();
     FAIL_RETURN(AssertValid(conn))
-    return conn->GetLocalPort(port);
+    return IHttpInetConnection::Probe(conn)->GetLocalPort(port);
 }
 
 ECode AbstractClientConnAdapter::GetRemoteAddress(
@@ -222,7 +227,7 @@ ECode AbstractClientConnAdapter::GetRemoteAddress(
     *address = NULL;
     AutoPtr<IOperatedClientConnection> conn = GetWrappedConnection();
     FAIL_RETURN(AssertValid(conn))
-    return conn->GetRemoteAddress(address);
+    return IHttpInetConnection::Probe(conn)->GetRemoteAddress(address);
 }
 
 ECode AbstractClientConnAdapter::GetRemotePort(
@@ -232,7 +237,7 @@ ECode AbstractClientConnAdapter::GetRemotePort(
     *port = 0;
     AutoPtr<IOperatedClientConnection> conn = GetWrappedConnection();
     FAIL_RETURN(AssertValid(conn))
-    return conn->GetRemotePort(port);
+    return IHttpInetConnection::Probe(conn)->GetRemotePort(port);
 }
 
 ECode AbstractClientConnAdapter::IsSecure(
@@ -249,7 +254,7 @@ ECode AbstractClientConnAdapter::GetSSLSession(
     /* [out] */ ISSLSession** session)
 {
     VALIDATE_NOT_NULL(session)
-    *session = NULL
+    *session = NULL;
     AutoPtr<IOperatedClientConnection> conn = GetWrappedConnection();
     FAIL_RETURN(AssertValid(conn))
     Boolean isOpen;
@@ -272,13 +277,13 @@ ECode AbstractClientConnAdapter::GetSSLSession(
 
 ECode AbstractClientConnAdapter::MarkReusable()
 {
-    markedReusable = TRUE;
+    mMarkedReusable = TRUE;
     return NOERROR;
 }
 
 ECode AbstractClientConnAdapter::UnmarkReusable()
 {
-    markedReusable = FALSE;
+    mMarkedReusable = FALSE;
     return NOERROR;
 }
 
@@ -286,7 +291,7 @@ ECode AbstractClientConnAdapter::IsMarkedReusable(
     /* [out] */ Boolean* isMarked)
 {
     VALIDATE_NOT_NULL(isMarked)
-    *isMarked = markedReusable;
+    *isMarked = mMarkedReusable;
     return NOERROR;
 }
 
@@ -306,7 +311,11 @@ ECode AbstractClientConnAdapter::SetIdleDuration(
 ECode AbstractClientConnAdapter::ReleaseConnection()
 {
     if (mConnManager != NULL) {
-        mConnManager->ReleaseConnection((IManagedClientConnection*)this, mDuration, ITimeUnit::MILLISECONDS);
+        AutoPtr<ITimeUnitHelper> helper;
+        CTimeUnitHelper::AcquireSingleton((ITimeUnitHelper**)&helper);
+        AutoPtr<ITimeUnit> milliseconds;
+        helper->GetMILLISECONDS((ITimeUnit**)&milliseconds);
+        mConnManager->ReleaseConnection((IManagedClientConnection*)this, mDuration, milliseconds);
     }
     return NOERROR;
 }
@@ -336,7 +345,7 @@ ECode AbstractClientConnAdapter::AbortConnection()
     // manager if #abortConnection() is called from the main execution
     // thread while there is no blocking I/O operation.
     Boolean equals;
-    if (IObject::Probe(mExecutionThread)->Equals(Thread::GurrentThread(), &equals), equals) {
+    if (IObject::Probe(mExecutionThread)->Equals(Thread::GetCurrentThread(), &equals), equals) {
         ReleaseConnection();
     }
     return NOERROR;

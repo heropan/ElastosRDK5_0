@@ -2,11 +2,13 @@
 #include "DefaultResponseParser.h"
 #include "CCharArrayBuffer.h"
 #include "CParserCursor.h"
-#include <elastos/Logger.h>
+#include "Math.h"
+#include "Logger.h"
 
 using Elastos::Core::Math;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IStatusLine;
+using Org::Apache::Http::IHttpResponse;
 using Org::Apache::Http::Conn::Params::IConnConnectionPNames;
 using Org::Apache::Http::Message::IParserCursor;
 using Org::Apache::Http::Message::CParserCursor;
@@ -34,7 +36,7 @@ DefaultResponseParser::DefaultResponseParser(
     }
     mResponseFactory = responseFactory;
     CCharArrayBuffer::New(128, (ICharArrayBuffer**)&mLineBuf);
-    params->GetInt32Parameter(IConnConnectionPNames::MAX_STATUS_LINE_GARBAGE, Math::INT64_MAX_VALUE, &mMaxGarbageLines);
+    params->GetInt32Parameter(IConnConnectionPNames::MAX_STATUS_LINE_GARBAGE, Elastos::Core::Math::INT64_MAX_VALUE, &mMaxGarbageLines);
 }
 
 ECode DefaultResponseParser::ParseHead(
@@ -75,7 +77,11 @@ ECode DefaultResponseParser::ParseHead(
     //create the status line from the status string
     AutoPtr<IStatusLine> statusline;
     mLineParser->ParseStatusLine(mLineBuf, cursor, (IStatusLine**)&statusline);
-    return mResponseFactory->NewHttpResponse(statusline, NULL, msg);
+    AutoPtr<IHttpResponse> hr;
+    mResponseFactory->NewHttpResponse(statusline, NULL, (IHttpResponse**)&hr);
+    *msg = IHttpMessage::Probe(hr);
+    REFCOUNT_ADD(*msg)
+    return NOERROR;
 }
 
 } // namespace Conn

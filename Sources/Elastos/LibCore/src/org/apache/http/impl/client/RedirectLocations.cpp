@@ -1,5 +1,6 @@
 
 #include "RedirectLocations.h"
+#include "CHashSet.h"
 
 using Elastos::Utility::IHashSet;
 using Elastos::Utility::CHashSet;
@@ -21,7 +22,7 @@ Boolean RedirectLocations::Contains(
     /* [in] */ IURI* uri)
 {
     Boolean result;
-    mUris->ContainsValue(uri, &result);
+    mUris->Contains(uri, &result);
     return result;
 }
 
@@ -34,7 +35,9 @@ void RedirectLocations::Add(
 Boolean RedirectLocations::Remove(
     /* [in] */ IURI* uri)
 {
-    mUris->Remove(uri);
+    Boolean result;
+    mUris->Remove(uri, &result);
+    return result;
 }
 
 } // namespace Client

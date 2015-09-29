@@ -13,8 +13,6 @@ namespace Client {
 EntityEnclosingRequestWrapper::EntityEnclosingRequestWrapper(
     /* [in] */ IHttpEntityEnclosingRequest* request)
     : RequestWrapper(IHttpRequest::Probe(request))
-    , mOriginal(request)
-    , mExecCount(0)
 {
     request->GetEntity((IHttpEntity**)&mEntity);
 }
@@ -57,7 +55,7 @@ Boolean EntityEnclosingRequestWrapper::IsRepeatable()
     if (mEntity == NULL) {
         return TRUE;
     }
-    else (mEntity != NULL) {
+    else {
         Boolean isRepeatable;
         mEntity->IsRepeatable(&isRepeatable);
         return isRepeatable;

@@ -1,6 +1,6 @@
 
-#ifndef __ORG_APACHE_HTTP_IMPL_CONN_ABSTRACTCLIENTCONNADAPTER_H__
-#define __ORG_APACHE_HTTP_IMPL_CONN_ABSTRACTCLIENTCONNADAPTER_H__
+#ifndef __ORG_APACHE_HTTP_IMPL_CONN_ABSTRACTPOOLEDCONNADAPTER_H__
+#define __ORG_APACHE_HTTP_IMPL_CONN_ABSTRACTPOOLEDCONNADAPTER_H__
 
 #include "AbstractClientConnAdapter.h"
 #include "AbstractPoolEntry.h"
@@ -89,9 +89,9 @@ protected:
      */
     CARAPI_(void) Detach();
 
-private:
+protected:
     /** The wrapped pool entry. */
-    volatile AutoPtr<AbstractPoolEntry> mPoolEntry;
+    AutoPtr<AbstractPoolEntry> mPoolEntry;
 };
 
 } // namespace Conn
@@ -100,4 +100,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __ORG_APACHE_HTTP_IMPL_CONN_ABSTRACTCLIENTCONNADAPTER_H__
+#endif // __ORG_APACHE_HTTP_IMPL_CONN_ABSTRACTPOOLEDCONNADAPTER_H__

@@ -29,6 +29,7 @@ module
      */
     /**
      * @Involve
+     * interface IHttpConnection;
      * interface IHttpClientConnection;
      * interface IHttpInetConnection;
      * interface IConnectionReleaseTrigger;

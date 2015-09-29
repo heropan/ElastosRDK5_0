@@ -1,11 +1,14 @@
 
 #include "BestMatchSpec.h"
-#include <elastos/Logger.h>
+#include "Math.h"
+#include "Logger.h"
 
 using Elastos::Core::Math;
+using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeaderElement;
 using Org::Apache::Http::INameValuePair;
+using Org::Apache::Http::Cookie::EIID_ICookieSpec;
 
 namespace Org {
 namespace Apache {
@@ -28,7 +31,7 @@ CAR_INTERFACE_IMPL(BestMatchSpec, Object, ICookieSpec)
 
 AutoPtr<RFC2965Spec> BestMatchSpec::GetStrict()
 {
-    if (mStrict == null) {
+    if (mStrict == NULL) {
          mStrict = new RFC2965Spec(mDatepatterns, mOneHeader);
     }
     return mStrict;
@@ -42,14 +45,14 @@ AutoPtr<BrowserCompatSpec> BestMatchSpec::GetCompat()
     return mCompat;
 }
 
-AutoPtr<NetscapeDraftSpec> BestMatchSpec::GetNetscape()
+AutoPtr<NetScapeDraftSpec> BestMatchSpec::GetNetscape()
 {
     if (mNetscape == NULL) {
         AutoPtr< ArrayOf<String> > patterns = mDatepatterns;
         if (patterns == NULL) {
             patterns = BrowserCompatSpec::DATE_PATTERNS;
         }
-        mNetscape = new NetscapeDraftSpec(patterns);
+        mNetscape = new NetScapeDraftSpec(patterns);
     }
     return mNetscape;
 }
@@ -70,8 +73,8 @@ ECode BestMatchSpec::Parse(
         Logger::E("BestMatchSpec", "Cookie origin may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AutoPtr< ArrayOf<IHeaderElement> > helems;
-    header->GetElements((ArrayOf<IHeaderElement>**)&helems);
+    AutoPtr< ArrayOf<IHeaderElement*> > helems;
+    header->GetElements((ArrayOf<IHeaderElement*>**)&helems);
     Boolean versioned = FALSE;
     Boolean netscape = FALSE;
     for (Int32 i = 0; i < helems->GetLength(); ++i) {
@@ -92,21 +95,21 @@ ECode BestMatchSpec::Parse(
     }
     // Do we have a cookie with a version attribute?
     if (versioned) {
-        return GetStrict()->Parse(helems, origin);
+        return GetStrict()->Parse(helems, origin, cookies);
     }
     else if (netscape) {
         // Need to parse the header again,
         // because Netscape draft cannot handle
         // comma separators
-        return GetNetscape()->Parse(header, origin);
+        return GetNetscape()->Parse(header, origin, cookies);
     }
     else {
-        return GetCompat()->Parse(helems, origin);
+        return GetCompat()->Parse(helems, origin, cookies);
     }
 }
 
 ECode BestMatchSpec::Validate(
-    /* [in] */ IHeader* header,
+    /* [in] */ ICookie* cookie,
     /* [in] */ ICookieOrigin* origin)
 {
     if (cookie == NULL) {
@@ -127,7 +130,7 @@ ECode BestMatchSpec::Validate(
 }
 
 ECode BestMatchSpec::Match(
-    /* [in] */ IHeader* header,
+    /* [in] */ ICookie* cookie,
     /* [in] */ ICookieOrigin* origin,
     /* [out] */ Boolean* result)
 {
@@ -143,10 +146,10 @@ ECode BestMatchSpec::Match(
     }
     Int32 version;
     if (cookie->GetVersion(&version), version > 0) {
-        return GetStrict()->Match(cookie, origin);
+        return GetStrict()->Match(cookie, origin, result);
     }
     else {
-        return GetCompat()->Match(cookie, origin);
+        return GetCompat()->Match(cookie, origin, result);
     }
 }
 
@@ -161,11 +164,11 @@ ECode BestMatchSpec::FormatCookies(
         Logger::E("BestMatchSpec", "List of cookie may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    Int32 version = Math::INT32_MAX_VALUE;
+    Int32 version = Elastos::Core::Math::INT32_MAX_VALUE;
     AutoPtr<IIterator> it;
     cookies->GetIterator((IIterator**)&it);
     Boolean hasNext;
-    While (it->HasNext(), hasNext) {
+    while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> value;
         it->GetNext((IInterface**)&value);
         AutoPtr<ICookie> cookie = ICookie::Probe(value);
@@ -175,10 +178,10 @@ ECode BestMatchSpec::FormatCookies(
         }
     }
     if (version > 0) {
-        return GetStrict()->FormatCookies(cookies);
+        return GetStrict()->FormatCookies(cookies, headers);
     }
     else {
-        return GetCompat()->FormatCookies(cookies);
+        return GetCompat()->FormatCookies(cookies, headers);
     }
 }
 
@@ -191,7 +194,7 @@ ECode BestMatchSpec::GetVersion(
 }
 
 ECode BestMatchSpec::GetVersionHeader(
-    /* [out] */ IHeader* header)
+    /* [out] */ IHeader** header)
 {
     VALIDATE_NOT_NULL(header)
     *header = NULL;

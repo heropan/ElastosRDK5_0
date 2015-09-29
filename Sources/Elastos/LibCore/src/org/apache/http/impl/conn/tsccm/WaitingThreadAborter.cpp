@@ -13,7 +13,7 @@ void WaitingThreadAborter::Abort()
     mAborted = TRUE;
 
     if (mWaitingThread != NULL)
-        mWaitingThrea->Iinterrupt();
+        mWaitingThread->Interrupt();
 }
 
 void WaitingThreadAborter::SetWaitingThread(

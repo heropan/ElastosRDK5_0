@@ -3,9 +3,7 @@
 #define __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_THREADSAFECLIENTCONNMANAGER_H__
 
 #include "AbstractConnPool.h"
-#include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::Concurrent::ITimeUnit;
 using Org::Apache::Http::Conn::IClientConnectionManager;
 using Org::Apache::Http::Conn::IClientConnectionOperator;
@@ -51,7 +49,7 @@ private:
         MyClientConnectionRequest(
             /* [in] */ IHttpRoute* route,
             /* [in] */ IPoolEntryRequest* request,
-            /* [in] */ SingleClientConnManager* host);
+            /* [in] */ ThreadSafeClientConnManager* host);
 
         CAR_INTERFACE_DECL()
 
@@ -65,7 +63,7 @@ private:
     private:
         AutoPtr<IHttpRoute> mRoute;
         AutoPtr<IPoolEntryRequest> mRequest;
-        SingleClientConnManager* mHost;
+        ThreadSafeClientConnManager* mHost;
     };
 
 public:
@@ -149,7 +147,7 @@ protected:
      * @return  the connection operator to use
      */
     CARAPI_(AutoPtr<IClientConnectionOperator>) CreateConnectionOperator(
-        /* [in] */ ISchemeRegistry schreg);
+        /* [in] */ ISchemeRegistry* schreg);
 
 protected:
     /** The schemes supported by this connection manager. */

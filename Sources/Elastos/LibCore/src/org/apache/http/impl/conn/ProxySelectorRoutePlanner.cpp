@@ -4,19 +4,29 @@
 #include "CHttpHost.h"
 #include "params/ConnRouteParams.h"
 #include "routing/CHttpRoute.h"
-#include <elastos/Logger.h>
+#include "CURI.h"
+#include "CProxyHelper.h"
+#include "Logger.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Net::ProxySelector;
 using Elastos::Net::IURI;
+using Elastos::Net::CURI;
 using Elastos::Net::ProxyType;
+using Elastos::Net::ProxyType_HTTP;
+using Elastos::Net::ProxyType_DIRECT;
+using Elastos::Net::ProxyType_SOCKS;
+using Elastos::Net::IProxyHelper;
+using Elastos::Net::CProxyHelper;
 using Elastos::Net::ISocketAddress;
 using Elastos::Utility::IList;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::CHttpHost;
+using Org::Apache::Http::IHttpMessage;
 using Org::Apache::Http::Conn::Params::ConnRouteParams;
 using Org::Apache::Http::Conn::Params::IConnRoutePNames;
+using Org::Apache::Http::Conn::Routing::EIID_IHttpRoutePlanner;
 using Org::Apache::Http::Conn::Routing::CHttpRoute;
 using Org::Apache::Http::Conn::Scheme::IScheme;
 using Org::Apache::Http::Params::IHttpParams;
@@ -58,7 +68,7 @@ ECode ProxySelectorRoutePlanner::DetermineRoute(
     /* [in] */ IHttpHost* target,
     /* [in] */ IHttpRequest* request,
     /* [in] */ IHttpContext* context,
-    /* [out] */ IHttpRoute** route)
+    /* [out] */ IHttpRoute** _route)
 {
     VALIDATE_NOT_NULL(_route)
     *_route = NULL;
@@ -70,7 +80,7 @@ ECode ProxySelectorRoutePlanner::DetermineRoute(
 
     // If we have a forced route, we can do without a target.
     AutoPtr<IHttpParams> params;
-    request->GetParams((IHttpParams**)&params);
+    IHttpMessage::Probe(request)->GetParams((IHttpParams**)&params);
     AutoPtr<IHttpRoute> route;
     ConnRouteParams::GetForcedRoute(params, (IHttpRoute**)&route);
     if (route != NULL) {
@@ -96,10 +106,11 @@ ECode ProxySelectorRoutePlanner::DetermineRoute(
     AutoPtr<IInterface> param;
     params->GetParameter(IConnRoutePNames::DEFAULT_PROXY, (IInterface**)&param);
     AutoPtr<IHttpHost> proxy;
+    Boolean isEquals;
     if (param == NULL) {
         DetermineProxy(target, request, context, (IHttpHost**)&proxy);
     }
-    else if (IObject::Probe(ConnRouteParams::NO_HOST)->Equals(param)) {
+    else if (IObject::Probe(ConnRouteParams::NO_HOST)->Equals(param, &isEquals), isEquals) {
         // value is explicitly unset
         proxy = NULL;
     }
@@ -149,9 +160,9 @@ ECode ProxySelectorRoutePlanner::DetermineProxy(
     AutoPtr<IURI> targetURI;
     // try {
     String uri;
-    target->ToUri(&uri);
+    target->ToURI(&uri);
     if (FAILED(CURI::New(uri, (IURI**)&targetURI))) {
-        Logger::E("ProxySelectorRoutePlanner", "Cannot convert host to URI: %p", target.Get());
+        Logger::E("ProxySelectorRoutePlanner", "Cannot convert host to URI: %p", target);
         return E_HTTP_EXCEPTION;
     }
     // } catch (URISyntaxException usx) {
@@ -159,10 +170,10 @@ ECode ProxySelectorRoutePlanner::DetermineProxy(
     //         ("Cannot convert host to URI: " + target, usx);
     // }
     AutoPtr<IList> proxies;
-    psel->Select(targetURI, (IList**)proxies);
+    psel->Select(targetURI, (IList**)&proxies);
 
-    AutoPtr<IProxy> p;
-    ChooseProxy(proxies, target, request, context, (IProxy**)&p);
+    AutoPtr<Elastos::Net::IProxy> p;
+    ChooseProxy(proxies, target, request, context, (Elastos::Net::IProxy**)&p);
 
     AutoPtr<IHttpHost> result;
     ProxyType type;
@@ -202,8 +213,8 @@ ECode ProxySelectorRoutePlanner::GetHost(
         return isa->GetHostName(host);
     }
     else {
-        AutoPtr<IInetSocketAddress> addr;
-        isa->GetAddress((IInetSocketAddress**)&addr);
+        AutoPtr<IInetAddress> addr;
+        isa->GetAddress((IInetAddress**)&addr);
         return addr->GetHostAddress(host);
     }
 }
@@ -213,7 +224,7 @@ ECode ProxySelectorRoutePlanner::ChooseProxy(
     /* [in] */ IHttpHost* target,
     /* [in] */ IHttpRequest* request,
     /* [in] */ IHttpContext* context,
-    /* [out] */ IProxy** proxy)
+    /* [out] */ Elastos::Net::IProxy** proxy)
 {
     VALIDATE_NOT_NULL(proxy)
     *proxy = NULL;
@@ -224,16 +235,16 @@ ECode ProxySelectorRoutePlanner::ChooseProxy(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<IProxy> result;
+    AutoPtr<Elastos::Net::IProxy> result;
 
     // check the list for one we can use
     AutoPtr<IIterator> it;
     proxies->GetIterator((IIterator**)&it);
     Boolean hasNest;
-    While (it->HasNext(&hasNest), hasNest) {
+    while (it->HasNext(&hasNest), hasNest) {
         AutoPtr<IInterface> value;
         it->GetNext((IInterface**)&value);
-        AutoPtr<IProxy> p = IProxy::Probe(value);
+        AutoPtr<Elastos::Net::IProxy> p = Elastos::Net::IProxy::Probe(value);
         ProxyType type;
         p->GetType(&type);
         switch (type) {
@@ -255,7 +266,7 @@ ECode ProxySelectorRoutePlanner::ChooseProxy(
         // socks proxies are not handled on the route planning level
         AutoPtr<IProxyHelper> helper;
         CProxyHelper::AcquireSingleton((IProxyHelper**)&helper);
-        helper->GetNO_PROXY((IProxy**)&result);
+        helper->GetNO_PROXY((Elastos::Net::IProxy**)&result);
     }
 
     *proxy = result;

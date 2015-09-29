@@ -2,11 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_ABSTRACTCLIENTCONNADAPTER_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_ABSTRACTCLIENTCONNADAPTER_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::IThread;
-using Elastos::Core::Object;
 using Elastos::Net::IInetAddress;
 using Elastos::Utility::Concurrent::ITimeUnit;
 using Elastosx::Net::Ssl::ISSLSession;
@@ -174,19 +172,19 @@ private:
      * This attribute MUST NOT be final, so the adapter can be detached
      * from the connection manager without keeping a hard reference there.
      */
-    volatile AutoPtr<IClientConnectionManager> mConnManager;
+    AutoPtr<IClientConnectionManager> mConnManager;
 
     /** The wrapped connection. */
-    volatile AutoPtr<IOperatedClientConnection> mWrappedConnection;
+    AutoPtr<IOperatedClientConnection> mWrappedConnection;
 
     /** The reusability marker. */
-    volatile Boolean mMarkedReusable;
+    Boolean mMarkedReusable;
 
     /** True if the connection has been aborted. */
-    volatile Boolean mAborted;
+    Boolean mAborted;
 
     /** The duration this is valid for while idle (in ms). */
-    volatile Int64 mDuration;
+    Int64 mDuration;
 };
 
 } // namespace Conn

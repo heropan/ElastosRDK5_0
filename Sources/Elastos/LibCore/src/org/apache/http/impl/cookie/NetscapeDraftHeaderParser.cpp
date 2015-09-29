@@ -1,14 +1,14 @@
 
 #include "NetscapeDraftHeaderParser.h"
 #include "CBasicHeaderElement.h"
-#include <elastos/Logger.h>
+#include "CArrayList.h"
+#include "Logger.h"
 
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::IList;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::INameValuePair;
-using Org::Apache::Http::Message::IBasicHeaderElement;
 using Org::Apache::Http::Message::CBasicHeaderElement;
 
 namespace Org {
@@ -81,11 +81,8 @@ ECode NetscapeDraftHeaderParser::ParseHeader(
         pairs->Set(i, pair);
         i++;
     }
-    AutoPtr<IBasicHeaderElement> bhe;
-    CBasicHeaderElement::New(name, value, pairs, (IBasicHeaderElement**)&bhe);
-    *element = IHeaderElement::Probe(bhe);
-    REFCOUNT_ADDREF(*element)
-    return NOERROR;
+
+    return CBasicHeaderElement::New(name, value, pairs, element);
 }
 
 } // namespace Cookie

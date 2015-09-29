@@ -1,9 +1,10 @@
 
 #include "RFC2965DomainAttributeHandler.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::ILocale;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Cookie::EIID_ICookieAttributeHandler;
 using Org::Apache::Http::Cookie::IClientCookie;
 
 namespace Org {
@@ -16,8 +17,9 @@ CAR_INTERFACE_IMPL(RFC2965DomainAttributeHandler, Object, ICookieAttributeHandle
 
 ECode RFC2965DomainAttributeHandler::Parse(
     /* [in] */ ISetCookie* cookie,
-    /* [in] */ String domain)
+    /* [in] */ const String& _domain)
 {
+    String domain = _domain;
     if (cookie == NULL) {
         Logger::E("RFC2965DomainAttributeHandler", "Cookie may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -30,14 +32,14 @@ ECode RFC2965DomainAttributeHandler::Parse(
         Logger::E("RFC2109VersionHandler", "Blank value for domain attribute");
         return E_MALFORMED_COOKIE_EXCEPTION;
     }
-    domain = domain.ToLowerCase(ILocale::ENGLISH);
+    domain = domain.ToLowerCase(/*ILocale::ENGLISH*/);
     if (!domain.StartWith(".")) {
         // Per RFC 2965 section 3.2.2
         // "... If an explicitly specified value does not start with
         // a dot, the user agent supplies a leading dot ..."
         // That effectively implies that the domain attribute
         // MAY NOT be an IP address of a host name
-        domain = String('.') + domain;
+        domain = String(".") + domain;
     }
     return cookie->SetDomain(domain);
 }
@@ -64,13 +66,13 @@ ECode RFC2965DomainAttributeHandler::Validate(
     }
     String host;
     origin->GetHost(&host);
-    host = host.ToLowerCase(ILocale::ENGLISH);
+    host = host.ToLowerCase(/*ILocale::ENGLISH*/);
     String domain;
     if (cookie->GetDomain(&domain), domain.IsNull()) {
         Logger::E("RFC2109VersionHandler", "Invalid cookie state: domain not specified");
         return E_MALFORMED_COOKIE_EXCEPTION;
     }
-    String cookieDomain = domain.ToLowerCase(ILocale::ENGLISH);
+    String cookieDomain = domain.ToLowerCase(/*ILocale::ENGLISH*/);
 
     AutoPtr<IClientCookie> clientCookie = IClientCookie::Probe(cookie);
     Boolean contains;
@@ -137,7 +139,7 @@ ECode RFC2965DomainAttributeHandler::Match(
     }
     String host;
     origin->GetHost(&host);
-    host = host.ToLowerCase(ILocale::ENGLISH);
+    host = host.ToLowerCase(/*ILocale::ENGLISH*/);
     String cookieDomain;
     cookie->GetDomain(&cookieDomain);
 

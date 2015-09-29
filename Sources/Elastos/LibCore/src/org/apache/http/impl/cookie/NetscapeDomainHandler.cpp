@@ -1,6 +1,7 @@
 
 #include "NetscapeDomainHandler.h"
-#include <elastos/Logger.h>
+#include "CStringTokenizer.h"
+#include "Logger.h"
 
 using Elastos::Utility::ILocale;
 using Elastos::Utility::IStringTokenizer;
@@ -53,7 +54,7 @@ ECode NetscapeDomainHandler::Validate(
 Boolean NetscapeDomainHandler::IsSpecialDomain(
     /* [in] */ const String& domain)
 {
-    String ucDomain = domain.ToUpperCase(ILocale::ENGLISH);
+    String ucDomain = domain.ToUpperCase(/*ILocale::ENGLISH*/);
     return ucDomain.EndWith(".COM")
             || ucDomain.EndWith(".EDU")
             || ucDomain.EndWith(".NET")
@@ -64,7 +65,7 @@ Boolean NetscapeDomainHandler::IsSpecialDomain(
 }
 
 ECode NetscapeDomainHandler::Match(
-    /* [in] */ ICookie* header,
+    /* [in] */ ICookie* cookie,
     /* [in] */ ICookieOrigin* origin,
     /* [out] */ Boolean* result)
 {

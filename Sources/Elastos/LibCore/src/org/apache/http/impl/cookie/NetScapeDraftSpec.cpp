@@ -10,10 +10,12 @@
 #include "CParserCursor.h"
 #include "CBufferedHeader.h"
 #include "CCharArrayBuffer.h"
-#include <elastos/Logger.h>
+#include "CArrayList.h"
+#include "Logger.h"
 
 using Elastos::Utility::IIterator;
-using Elastos::Utility::CList;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeaderElement;
 using Org::Apache::Http::IFormattedHeader;
@@ -33,20 +35,20 @@ namespace Cookie {
 
 const String NetScapeDraftSpec::EXPIRES_PATTERN("EEE, dd-MMM-yyyy HH:mm:ss z");
 
-NetscapeDraftSpec::NetScapeDraftSpec(
+NetScapeDraftSpec::NetScapeDraftSpec(
     /* [in] */ ArrayOf<String>* datepatterns)
     : CookieSpecBase()
 {
     Init(datepatterns);
 }
 
-NetscapeDraftSpec::NetscapeDraftSpec()
+NetScapeDraftSpec::NetScapeDraftSpec()
     : CookieSpecBase()
 {
     Init(NULL);
 }
 
-void NetscapeDraftSpec::Init(
+void NetScapeDraftSpec::Init(
     /* [in] */ ArrayOf<String>* datepatterns)
 {
     if (datepatterns != NULL) {
@@ -79,11 +81,11 @@ ECode NetScapeDraftSpec::Parse(
     *cookies = NULL;
 
     if (header == NULL) {
-        Logger::E("NetscapeDraftSpec", "Header may not be null");
+        Logger::E("NetScapeDraftSpec", "Header may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (origin == NULL) {
-        Logger::E("NetscapeDraftSpec", "Cookie origin may not be null");
+        Logger::E("NetScapeDraftSpec", "Cookie origin may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<NetscapeDraftHeaderParser> parser = NetscapeDraftHeaderParser::DEFAULT;
@@ -162,12 +164,12 @@ ECode NetScapeDraftSpec::FormatCookies(
         }
         i++;
     }
-    AutoPtr<IList> headers;
-    CList::New(1, (IList**)&headers);
-    AutoPtr<IBufferedHeader> header;
-    CBufferedHeader::New(buffer, (IBufferedHeader**)&header);
+    AutoPtr<IArrayList> headers;
+    CArrayList::New(1, (IArrayList**)&headers);
+    AutoPtr<IFormattedHeader> header;
+    CBufferedHeader::New(buffer, (IFormattedHeader**)&header);
     headers->Add(header);
-    *_headers = headers;
+    *_headers = IList::Probe(headers);
     REFCOUNT_ADD(*_headers)
     return NOERROR;
 }
@@ -181,7 +183,7 @@ ECode NetScapeDraftSpec::GetVersion(
 }
 
 ECode NetScapeDraftSpec::GetVersionHeader(
-    /* [out] */ IHeader* header)
+    /* [out] */ IHeader** header)
 {
     VALIDATE_NOT_NULL(header)
     *header = NULL;

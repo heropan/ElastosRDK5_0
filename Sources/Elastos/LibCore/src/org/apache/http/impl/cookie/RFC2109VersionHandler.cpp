@@ -1,7 +1,7 @@
 
 #include "RFC2109VersionHandler.h"
-#include <elastos/Logger.h>
-#include <elastos/core/StringUtils.h>
+#include "Logger.h"
+#include "elastos/core/StringUtils.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;

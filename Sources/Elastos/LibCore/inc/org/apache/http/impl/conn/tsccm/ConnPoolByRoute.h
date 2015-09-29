@@ -44,7 +44,7 @@ class ConnPoolByRoute : public AbstractConnPool
 {
 private:
     class MyPoolEntryRequest
-        : public object
+        : public Object
         , public IPoolEntryRequest
     {
     public:
@@ -94,9 +94,6 @@ public:
         /* [in] */ Boolean reusable,
         /* [in] */ Int64 validDuration,
         /* [in] */ ITimeUnit* timeUnit);
-
-    CARAPI_(void) NotifyWaitingThread(
-        /* [in] */ RouteSpecificPool* rospl);
 
     CARAPI_(void) DeleteClosedConnections();
 
@@ -187,7 +184,7 @@ protected:
         /* [in] */ IObject* state,
         /* [in] */ Int64 timeout,
         /* [in] */ ITimeUnit* tunit,
-        /* [in] */ WaitingThreadAborter* aborter
+        /* [in] */ WaitingThreadAborter* aborter,
         /* [out] */ BasicPoolEntry** poolEntry);
 
     /**

@@ -1,9 +1,10 @@
 
 #include "DefaultHttpRequestRetryHandler.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Core::IBoolean;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Client::EIID_IHttpRequestRetryHandler;
 using Org::Apache::Http::Protocol::IExecutionContext;
 
 namespace Org {
@@ -24,12 +25,12 @@ DefaultHttpRequestRetryHandler::DefaultHttpRequestRetryHandler()
     , mRequestSentRetryEnabled(FALSE)
 {}
 
-CAR_INTERFACE_DECL(DefaultHttpRequestRetryHandler, Object, IHttpRequestRetryHandler)
+CAR_INTERFACE_IMPL(DefaultHttpRequestRetryHandler, Object, IHttpRequestRetryHandler)
 
 ECode DefaultHttpRequestRetryHandler::RetryRequest(
     /* [in] */ ECode exception,
     /* [in] */ Int32 executionCount,
-    /* [in] */ IHttpContext* context
+    /* [in] */ IHttpContext* context,
     /* [out] */ Boolean* retried)
 {
     VALIDATE_NOT_NULL(retried)
@@ -46,22 +47,22 @@ ECode DefaultHttpRequestRetryHandler::RetryRequest(
         *retried = FALSE;
         return NOERROR;
     }
-    if (exception == (ECode)NO_HTTP_RESPONSE_EXCEPTION) {
+    if (exception == (ECode)E_NO_HTTP_RESPONSE_EXCEPTION) {
         // Retry if the server dropped connection on us
         *retried = TRUE;
         return NOERROR;
     }
-    if (exception == (ECode)INTERRUPTED_IO_EXCEPTION) {
+    if (exception == (ECode)E_INTERRUPTED_IO_EXCEPTION) {
         // Timeout
         *retried = FALSE;
         return NOERROR;
     }
-    if (exception == (ECode)UNKNOWN_HOST_EXCEPTION UnknownHostException) {
+    if (exception == (ECode)E_UNKNOWN_HOST_EXCEPTION) {
         // Unknown host
         *retried = FALSE;
         return NOERROR;
     }
-    if (exception == (ECode)SSL_HAND_SHAKE_EXCEPTION) {
+    if (exception == (ECode)E_SSL_HANDS_SHAKE_EXCEPTION) {
         // SSL handshake exception
         *retried = FALSE;
         return NOERROR;

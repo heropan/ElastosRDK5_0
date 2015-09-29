@@ -3,11 +3,13 @@
 #include "CCharArrayBuffer.h"
 #include "CByteArrayBuffer.h"
 #include "HttpProtocolParams.h"
-#include <elastos/Logger.h>
-#include <elastos/core/Math.h>
+#include "Logger.h"
+#include "elastos/core/Math.h"
 
 using Elastos::Core::Math;
+using Elastos::IO::IFlushable;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::IO::EIID_ISessionOutputBuffer;
 using Org::Apache::Http::Params::HttpProtocolParams;
 using Org::Apache::Http::Params::ICoreConnectionPNames;
 using Org::Apache::Http::Protocol::IHTTP;
@@ -26,6 +28,7 @@ static AutoPtr< ArrayOf<Byte> > InitCrlf()
     AutoPtr< ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(2);
     (*bytes)[0] = IHTTP::CR;
     (*bytes)[1] = IHTTP::LF;
+    return bytes;
 }
 const AutoPtr< ArrayOf<Byte> > AbstractSessionOutputBuffer::CRLF = InitCrlf();
 const Int32 AbstractSessionOutputBuffer::MAX_CHUNK;
@@ -59,8 +62,8 @@ ECode AbstractSessionOutputBuffer::Init(
     CByteArrayBuffer::New(buffersize, (IByteArrayBuffer**)&mBuffer);
     HttpProtocolParams::GetHttpElementCharset(params, &mCharset);
     mAscii = mCharset.EqualsIgnoreCase(IHTTP::US_ASCII) || mCharset.EqualsIgnoreCase(IHTTP::ASCII);
-    params->GetInt32Parameter(ICoreConnectionPNames::MAX_LINE_LENGTH, -1, &mMaxLineLen);
     mMetrics = new HttpTransportMetricsImpl();
+    return NOERROR;
 }
 
 ECode AbstractSessionOutputBuffer::FlushBuffer()
@@ -79,7 +82,7 @@ ECode AbstractSessionOutputBuffer::FlushBuffer()
 ECode AbstractSessionOutputBuffer::Flush()
 {
     FlushBuffer();
-    return mOutstream->Flush();
+    return IFlushable::Probe(mOutstream)->Flush();
 }
 
 ECode AbstractSessionOutputBuffer::Write(
@@ -114,7 +117,7 @@ ECode AbstractSessionOutputBuffer::Write(
         // buffer
         mBuffer->Append(b, off, len);
     }
-    return NOERROR
+    return NOERROR;
 }
 
 ECode AbstractSessionOutputBuffer::Write(
@@ -152,23 +155,23 @@ ECode AbstractSessionOutputBuffer::WriteLine(
 ECode AbstractSessionOutputBuffer::WriteLine(
     /* [in] */ ICharArrayBuffer* s)
 {
-    Boolean isNull;
-    if (s->IsNull(&isNull), isNull) {
+    if (s == NULL) {
         return NOERROR;
     }
     if (mAscii) {
         Int32 off = 0;
-        Int32 remaining = s.GetLength();
+        Int32 remaining;
+        s->GetLength(&remaining);
         while (remaining > 0) {
             Int32 capacity, len;
             mBuffer->GetCapacity(&capacity);
             mBuffer->GetLength(&len);
             Int32 chunk = capacity - len;
-            chunk = Math::Min(chunk, remaining);
+            chunk = Elastos::Core::Math::Min(chunk, remaining);
             if (chunk > 0) {
                 mBuffer->Append(s, off, chunk);
             }
-            Boolean isFull
+            Boolean isFull;
             if (mBuffer->IsFull(&isFull), isFull) {
                 FlushBuffer();
             }

@@ -1,14 +1,17 @@
 
 #include "DefaultConnectionKeepAliveStrategy.h"
 #include "CBasicHeaderElementIterator.h"
-#include <elastos/Logger.h>
-#include <elastos/core/StringUtils.h>
+#include "Logger.h"
+#include "StringUtils.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeaderIterator;
 using Org::Apache::Http::IHeaderElementIterator;
 using Org::Apache::Http::IHttpMessage;
+using Org::Apache::Http::Conn::EIID_IConnectionKeepAliveStrategy;
+using Org::Apache::Http::Message::CBasicHeaderElementIterator;
+using Org::Apache::Http::Protocol::IHTTP;
 
 namespace Org {
 namespace Apache {
@@ -16,7 +19,7 @@ namespace Http {
 namespace Impl {
 namespace Client {
 
-CAR_INTERFACE_DECL(DefaultConnectionKeepAliveStrategy, Object, IConnectionKeepAliveStrategy)
+CAR_INTERFACE_IMPL(DefaultConnectionKeepAliveStrategy, Object, IConnectionKeepAliveStrategy)
 
 ECode DefaultConnectionKeepAliveStrategy::GetKeepAliveDuration(
     /* [in] */ IHttpResponse* response,
@@ -32,7 +35,7 @@ ECode DefaultConnectionKeepAliveStrategy::GetKeepAliveDuration(
     }
     AutoPtr<IHttpMessage> message = IHttpMessage::Probe(response);
     AutoPtr<IHeaderIterator> hit;
-    message->HeaderIterator(IHTTP::CONN_KEEP_ALIVE, (IHeaderIterator**)&hit);
+    message->GetHeaderIterator(IHTTP::CONN_KEEP_ALIVE, (IHeaderIterator**)&hit);
     AutoPtr<IHeaderElementIterator> it;
     CBasicHeaderElementIterator::New(hit, (IHeaderElementIterator**)&it);
     Boolean hasNext;

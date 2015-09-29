@@ -1,8 +1,9 @@
 
 #include "BasicPathHandler.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Cookie::EIID_ICookieAttributeHandler;
 
 namespace Org {
 namespace Apache {
@@ -14,8 +15,9 @@ CAR_INTERFACE_IMPL(BasicPathHandler, Object, ICookieAttributeHandler)
 
 ECode BasicPathHandler::Parse(
     /* [in] */ ISetCookie* cookie,
-    /* [in] */ const String& value)
+    /* [in] */ const String& _value)
 {
+    String value = _value;
     if (cookie == NULL) {
         Logger::E("BasicPathHandler", "Cookie may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;

@@ -2,10 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_DEFAULTCONNECTIONKEEPALIVESTRATEGY_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_DEFAULTCONNECTIONKEEPALIVESTRATEGY_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Org::Apache::Http::IHttpResponse;
 using Org::Apache::Http::Conn::IConnectionKeepAliveStrategy;
 using Org::Apache::Http::Protocol::IHttpContext;

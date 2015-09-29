@@ -67,7 +67,7 @@ private:
     AutoPtr<IByteArrayBuffer> mBuffer;
     String mCharset;
     Boolean mAscii;
-    AutoPtr<HttpTransportMetricsImpl> metrics;
+    AutoPtr<HttpTransportMetricsImpl> mMetrics;
 };
 
 } // namespace IO

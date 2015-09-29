@@ -2,6 +2,8 @@
 #include "RFC2109SpecFactory.h"
 #include "RFC2109Spec.h"
 
+using Elastos::Core::ICharSequence;
+using Org::Apache::Http::Cookie::EIID_ICookieSpecFactory;
 using Org::Apache::Http::Cookie::Params::ICookieSpecPNames;
 
 namespace Org {
@@ -14,12 +16,12 @@ CAR_INTERFACE_IMPL(RFC2109SpecFactory, Object, ICookieSpecFactory)
 
 ECode RFC2109SpecFactory::NewInstance(
     /* [in] */ IHttpParams* params,
-    /* [out] */ ICookieSpec** spec);
+    /* [out] */ ICookieSpec** spec)
 {
     VALIDATE_NOT_NULL(spec)
     if (params != NULL) {
         AutoPtr<IInterface> param;
-        params->GetParameter(ICookieSpecPNames::DATE_PATTERNS, (IInterface**)&value);
+        params->GetParameter(ICookieSpecPNames::DATE_PATTERNS, (IInterface**)&param);
         AutoPtr<ICollection> collection = ICollection::Probe(param);
         AutoPtr< ArrayOf<IInterface*> > paramArray;
         collection->ToArray((ArrayOf<IInterface*>**)&paramArray);

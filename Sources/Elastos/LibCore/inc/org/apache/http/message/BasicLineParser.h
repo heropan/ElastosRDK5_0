@@ -2,8 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICLINEPARSER_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICLINEPARSER_H_
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Org::Apache::Http::IHeader;
 using Org::Apache::Http::IProtocolVersion;
@@ -38,7 +37,7 @@ namespace Message {
  * @author and others
  */
 class BasicLineParser
-    , public Object
+    : public Object
     , public IBasicLineParser
     , public ILineParser
 {
@@ -212,7 +211,7 @@ protected:
      * @return  a new status line with the given data
      */
     CARAPI CreateStatusLine(
-        /* [in] */ IProtocolVersion ver,
+        /* [in] */ IProtocolVersion* ver,
         /* [in] */ Int32 status,
         /* [in] */ const String& reason,
         /* [out] */ IStatusLine** statusLine);

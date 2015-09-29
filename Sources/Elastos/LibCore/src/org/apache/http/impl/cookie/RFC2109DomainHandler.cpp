@@ -1,9 +1,10 @@
 
 #include "RFC2109DomainHandler.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::ILocale;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Cookie::EIID_ICookieAttributeHandler;
 using Org::Apache::Http::Cookie::Params::ICookieSpecPNames;
 
 namespace Org {
@@ -16,7 +17,7 @@ CAR_INTERFACE_IMPL(RFC2109DomainHandler, Object, ICookieAttributeHandler)
 
 ECode RFC2109DomainHandler::Parse(
     /* [in] */ ISetCookie* cookie,
-    /* [in] */ String value)
+    /* [in] */ const String& value)
 {
     if (cookie == NULL) {
         Logger::E("RFC2109DomainHandler", "Cookie may not be null");
@@ -72,7 +73,7 @@ ECode RFC2109DomainHandler::Validate(
                     , domain.string());
             return E_MALFORMED_COOKIE_EXCEPTION;
         }
-        host = host.ToLowerCase(ILocale::ENGLISH);
+        host = host.ToLowerCase(/*ILocale::ENGLISH*/);
         if (!host.EndWith(domain)) {
             Logger::E("RFC2109DomainHandler", "Illegal domain attribute \"%s\". Domain of origin: \"%s\""
                     , domain.string(), host.string());

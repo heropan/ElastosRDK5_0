@@ -5,9 +5,7 @@
 #include "IdleConnectionHandler.h"
 #include "RefQueueWorker.h"
 #include "BasicPoolEntry.h"
-#include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::ISet;
 using Elastos::Utility::IQueue;
 using Elastos::Utility::Concurrent::Locks::IReentrantLock;
@@ -23,6 +21,8 @@ namespace Impl {
 namespace Conn {
 namespace Tsccm {
 
+class ThreadSafeClientConnManager;
+
 /**
  * An abstract connection pool.
  * It is used by the {@link ThreadSafeClientConnManager}.
@@ -35,6 +35,8 @@ class AbstractConnPool
     , public IRefQueueHandler
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Enables connection garbage collection (GC).
      * This method must be called immediately after creating the
@@ -74,7 +76,7 @@ public:
      * Returns a new {@link PoolEntryRequest}, from which a {@link BasicPoolEntry}
      * can be obtained, or the request can be aborted.
      */
-    virtual CARAPI_(AutoPtr<PoolEntryRequest>) RequestPoolEntry(
+    virtual CARAPI_(AutoPtr<IPoolEntryRequest>) RequestPoolEntry(
         /* [in] */ IHttpRoute* route,
         /* [in] */ IObject* state) = 0;
 
@@ -128,9 +130,7 @@ public:
 protected:
     AbstractConnPool();
 
-    virtual ~AbstractClientConnAdapter() = 0;
-
-    CAR_INTERFACE_DECL()
+    virtual ~AbstractConnPool() = 0;
 
     /**
      * Handles cleaning up for a lost pool entry with the given route.
@@ -178,15 +178,16 @@ protected:
      */
     AutoPtr<IQueue> mRefQueue;// ReferenceQueue<Object> mRefQueue;
 
+    /** Indicates whether this pool is shut down. */
+    Boolean mIsShutDown;
+
 private:
     /** A worker (thread) to track loss of pool entries to GC. */
     AutoPtr<RefQueueWorker> mRefWorker;
 
-
-    /** Indicates whether this pool is shut down. */
-    volatile Boolean mIsShutDown;
-
 // private final Log log = LogFactory.getLog(getClass());
+
+    friend class ThreadSafeClientConnManager;
 
 };
 

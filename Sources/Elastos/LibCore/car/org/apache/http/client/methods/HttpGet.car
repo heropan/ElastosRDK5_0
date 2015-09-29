@@ -32,6 +32,7 @@ module
     /**
      * @Involve
      * interface IHttpMessage;
+     * interface IHttpRequest;
      * interface IHttpUriRequest;
      * interface IAbortableHttpRequest;
      * interface ICloneable;

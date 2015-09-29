@@ -50,6 +50,9 @@ protected:
     CARAPI_(AutoPtr<AbstractPoolEntry>) GetPoolEntry();
 
     CARAPI_(void) Detach();
+
+private:
+    friend class ThreadSafeClientConnManager;
 };
 
 } // namespace Tsccm

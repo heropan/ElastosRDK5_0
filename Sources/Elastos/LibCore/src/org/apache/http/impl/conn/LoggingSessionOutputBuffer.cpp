@@ -1,8 +1,9 @@
 
 #include "LoggingSessionOutputBuffer.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::IO::EIID_ISessionOutputBuffer;
 
 namespace Org {
 namespace Apache {
@@ -25,8 +26,7 @@ ECode LoggingSessionOutputBuffer::Write(
     /* [in] */ Int32 len)
 {
     mOut->Write(b,  off,  len);
-    Boolean enabled;
-    if (mWire->Enabled(&enabled), enabled) {
+    if (mWire->Enabled()) {
         mWire->Output(b, off, len);
     }
     return NOERROR;
@@ -36,8 +36,7 @@ ECode LoggingSessionOutputBuffer::Write(
     /* [in] */ Int32 b)
 {
     mOut->Write(b);
-    Boolean enabled;
-    if (mWire->Enabled(&enabled), enabled) {
+    if (mWire->Enabled()) {
         mWire->Output(b);
     }
     return NOERROR;
@@ -47,8 +46,7 @@ ECode LoggingSessionOutputBuffer::Write(
     /* [in] */ ArrayOf<Byte>* b)
 {
     mOut->Write(b);
-    Boolean enabled;
-    if (mWire->Enabled(&enabled), enabled) {
+    if (mWire->Enabled()) {
         mWire->Output(b);
     }
     return NOERROR;
@@ -63,8 +61,7 @@ ECode LoggingSessionOutputBuffer::WriteLine(
     /* [in] */ ICharArrayBuffer* buffer)
 {
     mOut->WriteLine(buffer);
-    Boolean enabled;
-    if (mWire->Enabled(&enabled), enabled) {
+    if (mWire->Enabled()) {
         Int32 len;
         buffer->GetLength(&len);
         AutoPtr< ArrayOf<Char32> > cs;
@@ -72,7 +69,6 @@ ECode LoggingSessionOutputBuffer::WriteLine(
         String s(*cs, 0, len);
         mWire->Output(s + String("[EOL]"));
     }
-    *result = l;
     return NOERROR;
 }
 
@@ -80,8 +76,7 @@ ECode LoggingSessionOutputBuffer::WriteLine(
     /* [in] */ const String& s)
 {
     mOut->WriteLine(s);
-    Boolean enabled;
-    if (mWire->Enabled(&enabled), enabled) {
+    if (mWire->Enabled()) {
         mWire->Output(s + String("[EOL]"));
     }
     return NOERROR;

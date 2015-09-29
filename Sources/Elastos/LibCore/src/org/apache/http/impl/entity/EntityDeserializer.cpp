@@ -1,18 +1,22 @@
 
 #include "EntityDeserializer.h"
 #include "CBasicHttpEntity.h"
+#include "io/ContentLengthInputStream.h"
 #include "io/ChunkedInputStream.h"
 #include "io/IdentityInputStream.h"
 #include "io/ChunkedInputStream.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
-using Elastos::Utility::Logging::Logger;
 using Elastos::IO::IInputStream;
+using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeader;
+using Org::Apache::Http::Entity::IAbstractHttpEntity;
 using Org::Apache::Http::Entity::CBasicHttpEntity;
 using Org::Apache::Http::Impl::IO::ChunkedInputStream;
 using Org::Apache::Http::Impl::IO::IdentityInputStream;
 using Org::Apache::Http::Impl::IO::ChunkedInputStream;
+using Org::Apache::Http::Impl::IO::ContentLengthInputStream;
+using Org::Apache::Http::Protocol::IHTTP;
 
 namespace Org {
 namespace Apache {
@@ -45,19 +49,19 @@ ECode EntityDeserializer::DoDeserialize(
     Int64 len;
     mLenStrategy->DetermineLength(message, &len);
     if (len == IContentLengthStrategy::CHUNKED) {
-        entity->SetChunked(TRUE);
+        IAbstractHttpEntity::Probe(entity)->SetChunked(TRUE);
         entity->SetContentLength(-1);
         AutoPtr<IInputStream> input = (IInputStream*)new ChunkedInputStream(inbuffer);
         entity->SetContent(input);
     }
     else if (len == IContentLengthStrategy::IDENTITY) {
-        entity->SetChunked(FALSE);
+        IAbstractHttpEntity::Probe(entity)->SetChunked(FALSE);
         entity->SetContentLength(-1);
         AutoPtr<IInputStream> input = (IInputStream*)new IdentityInputStream(inbuffer);
         entity->SetContent(input);
     }
     else {
-        entity->SetChunked(FALSE);
+        IAbstractHttpEntity::Probe(entity)->SetChunked(FALSE);
         entity->SetContentLength(len);
         AutoPtr<IInputStream> input = (IInputStream*)new ContentLengthInputStream(inbuffer, len);
         entity->SetContent(input);
@@ -66,12 +70,12 @@ ECode EntityDeserializer::DoDeserialize(
     AutoPtr<IHeader> contentTypeHeader;
     message->GetFirstHeader(IHTTP::CONTENT_TYPE, (IHeader**)&contentTypeHeader);
     if (contentTypeHeader != NULL) {
-        entity->SetContentType(contentTypeHeader);
+        IAbstractHttpEntity::Probe(entity)->SetContentType(contentTypeHeader);
     }
     AutoPtr<IHeader> contentEncodingHeader;
     message->GetFirstHeader(IHTTP::CONTENT_ENCODING, (IHeader**)&contentEncodingHeader);
     if (contentEncodingHeader != NULL) {
-        entity->SetContentEncoding(contentEncodingHeader);
+        IAbstractHttpEntity::Probe(entity)->SetContentEncoding(contentEncodingHeader);
     }
     *_entity = entity;
     REFCOUNT_ADD(*_entity)

@@ -40,7 +40,7 @@ public:
     RequestWrapper(
         /* [in] */ IHttpRequest* request);
 
-    virtual ~RequestWrapper() = 0;
+    virtual ~RequestWrapper() {}
 
     CAR_INTERFACE_DECL()
 

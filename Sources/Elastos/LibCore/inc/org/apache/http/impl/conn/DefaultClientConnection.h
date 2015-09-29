@@ -6,6 +6,7 @@
 
 using Elastos::Net::ISocket;
 using Org::Apache::Http::IHttpHost;
+using Org::Apache::Http::Conn::IOperatedClientConnection;
 using Org::Apache::Http::Params::IHttpParams;
 
 namespace Org {
@@ -71,13 +72,13 @@ protected:
     CARAPI CreateSessionInputBuffer(
         /* [in] */ ISocket* socket,
         /* [in] */ Int32 buffersize,
-        /* [in] */ IHttpParams* params
+        /* [in] */ IHttpParams* params,
         /* [out] */ ISessionInputBuffer** inputBuffer);
 
     CARAPI CreateSessionOutputBuffer(
         /* [in] */ ISocket* socket,
         /* [in] */ Int32 buffersize,
-        /* [in] */ IHttpParams* params
+        /* [in] */ IHttpParams* params,
         /* [out] */ ISessionOutputBuffer** outputBuffer);
 
     CARAPI_(AutoPtr<IHttpMessageParser>) CreateResponseParser(
@@ -91,7 +92,7 @@ private:
     // final Log wireLog = LogFactory.getLog("org.apache.http.wire");
 
     /** The unconnected socket */
-    volatile AutoPtr<ISocket> mSocket;
+    AutoPtr<ISocket> mSocket;
 
     /** The target host of this connection. */
     AutoPtr<IHttpHost> mTargetHost;
@@ -100,7 +101,7 @@ private:
     Boolean mConnSecure;
 
     /** True if this connection was shutdown. */
-    volatile Boolean mShutdown;
+    Boolean mShutdown;
 };
 
 } // namespace Conn

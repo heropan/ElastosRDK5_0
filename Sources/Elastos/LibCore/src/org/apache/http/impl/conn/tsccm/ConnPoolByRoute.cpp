@@ -1,7 +1,12 @@
 
 #include "ConnPoolByRoute.h"
+#include "BasicPoolEntryRef.h"
 #include "params/ConnManagerParams.h"
-#include <elastos/Logger.h>
+#include "CSystem.h"
+#include "CLinkedList.h"
+#include "CHashMap.h"
+#include "CDate.h"
+#include "Logger.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -10,6 +15,8 @@ using Elastos::Utility::CLinkedList;
 using Elastos::Utility::IDate;
 using Elastos::Utility::CDate;
 using Elastos::Utility::IIterator;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::CHashMap;
 using Elastos::Utility::Concurrent::Locks::ILock;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Conn::Params::ConnManagerParams;
@@ -35,7 +42,7 @@ ConnPoolByRoute::MyPoolEntryRequest::MyPoolEntryRequest(
     , mHost(host)
 {}
 
-CAR_INTERFACE_DECL(ConnPoolByRoute::MyPoolEntryRequest, Object, IPoolEntryRequest)
+CAR_INTERFACE_IMPL(ConnPoolByRoute::MyPoolEntryRequest, Object, IPoolEntryRequest)
 
 ECode ConnPoolByRoute::MyPoolEntryRequest::GetPoolEntry(
     /* [in] */ Int64 timeout,
@@ -52,13 +59,13 @@ ECode ConnPoolByRoute::MyPoolEntryRequest::GetPoolEntry(
 
 ECode ConnPoolByRoute::MyPoolEntryRequest::AbortRequest()
 {
-    mHost->mPoolLock->Lock();
+    ILock::Probe(mHost->mPoolLock)->Lock();
     // try {
     mAborter->Abort();
     // } finally {
-    //     poolLock.unlock();
+    //     poolLock.UnLock();
     // }
-    mHost->mPoolLock->Unlock();
+    ILock::Probe(mHost->mPoolLock)->UnLock();
     return NOERROR;
 }
 
@@ -126,30 +133,30 @@ AutoPtr<RouteSpecificPool> ConnPoolByRoute::GetRoutePool(
     /* [in] */ Boolean create)
 {
     AutoPtr<RouteSpecificPool> rospl;
-    mPoolLock->Lock();
+    ILock::Probe(mPoolLock)->Lock();
     // try {
     AutoPtr<IInterface> value;
     mRouteToPool->Get(route, (IInterface**)&value);
     if (value != NULL) {
-        rospl = (RouteSpecificPool*)value.Get();
+        rospl = (RouteSpecificPool*)(Object*)(IObject*)value.Get();
     }
     if ((rospl == NULL) && create) {
         // no pool for this route yet (or anymore)
-        rospl = new RouteSpecificPool(route);
-        mRouteToPool->Put(route, rospl);
+        rospl = NewRouteSpecificPool(route);
+        mRouteToPool->Put(route, rospl->Probe(EIID_IInterface));
     }
 
     // } finally {
-    //     mPoolLock->unlock();
+    //     ILock::Probe(mPoolLock)->UnLock();
     // }
-    mPoolLock->Unlock();
+    ILock::Probe(mPoolLock)->UnLock();
     return rospl;
 }
 
 Int32 ConnPoolByRoute::GetConnectionsInPool(
     /* [in] */ IHttpRoute* route)
 {
-    mPoolLock->Lock();
+    ILock::Probe(mPoolLock)->Lock();
     // try {
     // don't allow a pool to be created here!
     AutoPtr<RouteSpecificPool> rospl = GetRoutePool(route, FALSE);
@@ -159,9 +166,9 @@ Int32 ConnPoolByRoute::GetConnectionsInPool(
     }
 
     // } finally {
-    //     mPoolLock->unlock();
+    //     ILock::Probe(mPoolLock)->UnLock();
     // }
-    mPoolLock->Unlock();
+    ILock::Probe(mPoolLock)->UnLock();
     return count;
 }
 
@@ -179,7 +186,7 @@ ECode ConnPoolByRoute::GetEntryBlocking(
     /* [in] */ IObject* state,
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* tunit,
-    /* [in] */ WaitingThreadAborter* aborter
+    /* [in] */ WaitingThreadAborter* aborter,
     /* [out] */ BasicPoolEntry** poolEntry)
 {
     VALIDATE_NOT_NULL(poolEntry)
@@ -196,7 +203,7 @@ ECode ConnPoolByRoute::GetEntryBlocking(
     }
 
     AutoPtr<BasicPoolEntry> entry;
-    mPoolLock->Lock();
+    ILock::Probe(mPoolLock)->Lock();
     // try {
 
     AutoPtr<RouteSpecificPool> rospl = GetRoutePool(route, TRUE);
@@ -257,7 +264,7 @@ ECode ConnPoolByRoute::GetEntryBlocking(
             Boolean success = FALSE;
             // try {
             rospl->QueueThread(waitingThread);
-            mWaitingThreads->Add((IInterface*)waitingThread);
+            mWaitingThreads->Add(waitingThread->Probe(EIID_IInterface));
             waitingThread->Await(deadline, &success);
             // } finally {
             //     // In case of 'success', we were woken up by the
@@ -268,7 +275,8 @@ ECode ConnPoolByRoute::GetEntryBlocking(
             //     waitingThreads.remove(waitingThread);
             // }
             rospl->RemoveThread(waitingThread);
-            mWaitingThreads->Remove((IInterface*)waitingThread);
+            Boolean result;
+            mWaitingThreads->Remove(waitingThread->Probe(EIID_IInterface), &result);
 
             // check for spurious wakeup vs. timeout
             if (!success && (deadline != NULL)) {
@@ -287,9 +295,9 @@ ECode ConnPoolByRoute::GetEntryBlocking(
     } // while no entry
 
     // } finally {
-    //     poolLock.unlock();
+    //     poolLock.UnLock();
     // }
-    mPoolLock->unlock();
+    ILock::Probe(mPoolLock)->UnLock();
     *poolEntry = entry;
     REFCOUNT_ADD(*poolEntry)
     return NOERROR;
@@ -307,26 +315,26 @@ void ConnPoolByRoute::FreeEntry(
     //             " [" + route + "][" + entry.getState() + "]");
     // }
 
-    mPoolLock->Lock();
+    ILock::Probe(mPoolLock)->Lock();
     // try {
     if (mIsShutDown) {
         // the pool is shut down, release the
         // connection's resources and get out of here
-        AutoPtr<IClientConnectionOperator> oper = entry->GetConnection();
-        CloseConnection(oper);
+        AutoPtr<IOperatedClientConnection> conn = entry->GetConnection();
+        CloseConnection(conn);
         return;
     }
 
     // no longer issued, we keep a hard reference now
-    AutoPtr<IInterface> ref = (IInterface*)entry->GetWeakRef();
+    AutoPtr<IInterface> ref = entry->GetWeakRef()->Probe(EIID_IInterface);
     mIssuedConnections->Remove(ref);
 
     AutoPtr<RouteSpecificPool> rospl = GetRoutePool(route, TRUE);
 
     if (reusable) {
         rospl->FreeEntry(entry);
-        mFreeConnections->Add((IInterface*)entry);
-        AutoPtr<IClientConnectionOperator> oper = entry->GetConnection();
+        mFreeConnections->Add(entry->Probe(EIID_IInterface));
+        AutoPtr<IOperatedClientConnection> oper = entry->GetConnection();
         AutoPtr<IHttpConnection> conn = IHttpConnection::Probe(oper);
         mIdleConnHandler->Add(conn, validDuration, timeUnit);
     }
@@ -337,9 +345,9 @@ void ConnPoolByRoute::FreeEntry(
 
     NotifyWaitingThread(rospl);
     // } finally {
-    //     poolLock.unlock();
+    //     poolLock.UnLock();
     // }
-    mPoolLock->Unlock();
+    ILock::Probe(mPoolLock)->UnLock();
 }
 
 AutoPtr<BasicPoolEntry> ConnPoolByRoute::GetFreeEntry(
@@ -347,7 +355,7 @@ AutoPtr<BasicPoolEntry> ConnPoolByRoute::GetFreeEntry(
     /* [in] */ IObject* state)
 {
     AutoPtr<BasicPoolEntry> entry;
-    mPoolLock->Lock();
+    ILock::Probe(mPoolLock)->Lock();
     // try {
     Boolean done = FALSE;
     while(!done) {
@@ -358,8 +366,9 @@ AutoPtr<BasicPoolEntry> ConnPoolByRoute::GetFreeEntry(
             //             + " [" + rospl.getRoute() + "][" + state + "]");
 
             // }
-            mFreeConnections->Remove((IInterface*)entry);
-            AutoPtr<IClientConnectionOperator> oper = entry->GetConnection();
+            Boolean result;
+            mFreeConnections->Remove(entry->Probe(EIID_IInterface), &result);
+            AutoPtr<IOperatedClientConnection> oper = entry->GetConnection();
             AutoPtr<IHttpConnection> conn = IHttpConnection::Probe(oper);
             Boolean valid = mIdleConnHandler->Remove(conn);
             if(!valid) {
@@ -376,7 +385,7 @@ AutoPtr<BasicPoolEntry> ConnPoolByRoute::GetFreeEntry(
                 mNumConnections--;
             }
             else {
-                AutoPtr<IInterface> ref = (IInterface*)entry->GetWeakRef();
+                AutoPtr<IInterface> ref = entry->GetWeakRef()->Probe(EIID_IInterface);
                 mIssuedConnections->Add(ref);
                 done = TRUE;
             }
@@ -391,9 +400,9 @@ AutoPtr<BasicPoolEntry> ConnPoolByRoute::GetFreeEntry(
         }
     }
     // } finally {
-    //     poolLock.unlock();
+    //     poolLock.UnLock();
     // }
-    mPoolLock->Unlock();
+    ILock::Probe(mPoolLock)->UnLock();
     return entry;
 }
 
@@ -409,17 +418,17 @@ AutoPtr<BasicPoolEntry> ConnPoolByRoute::CreateEntry(
     AutoPtr<IHttpRoute> route = rospl->GetRoute();
     AutoPtr<BasicPoolEntry> entry = new BasicPoolEntry(op, route, mRefQueue);
 
-    mPoolLock->Lock();
+    ILock::Probe(mPoolLock)->Lock();
     // try {
     rospl->CreatedEntry(entry);
     mNumConnections++;
 
-    AutoPtr<IInterface> ref = (IInterface*)entry->GetWeakRef();
+    AutoPtr<IInterface> ref = entry->GetWeakRef()->Probe(EIID_IInterface);
     mIssuedConnections->Add(ref);
     // } finally {
-    //     poolLock.unlock();
+    //     poolLock.UnLock();
     // }
-    mPoolLock->Unlock();
+    ILock::Probe(mPoolLock)->UnLock();
     return entry;
 }
 
@@ -433,10 +442,10 @@ void ConnPoolByRoute::DeleteEntry(
     //             + " [" + route + "][" + entry.getState() + "]");
     // }
 
-    mPoolLock->Lock();
+    ILock::Probe(mPoolLock)->Lock();
     // try {
-    AutoPtr<IClientConnectionOperator> oper = entry->GetConnection();
-    CloseConnection(oper);
+    AutoPtr<IOperatedClientConnection> operconn = entry->GetConnection();
+    CloseConnection(operconn);
 
     AutoPtr<RouteSpecificPool> rospl = GetRoutePool(route, TRUE);
     rospl->DeleteEntry(entry);
@@ -445,18 +454,18 @@ void ConnPoolByRoute::DeleteEntry(
         mRouteToPool->Remove((IInterface*)route);
     }
 
-    AutoPtr<IHttpConnection> conn = IHttpConnection::Probe(oper);
+    AutoPtr<IHttpConnection> conn = IHttpConnection::Probe(operconn);
     mIdleConnHandler->Remove(conn);// not idle, but dead
     // } finally {
-    //     poolLock.unlock();
+    //     poolLock.UnLock();
     // }
-    mPoolLock->Unlock();
+    ILock::Probe(mPoolLock)->UnLock();
 }
 
 void ConnPoolByRoute::DeleteLeastUsedEntry()
 {
     // try {
-    mPoolLock->Lock();
+    ILock::Probe(mPoolLock)->Lock();
 
     //@@@ with get() instead of remove, we could
     //@@@ leave the removing to deleteEntry()
@@ -464,7 +473,7 @@ void ConnPoolByRoute::DeleteLeastUsedEntry()
     mFreeConnections->Remove((IInterface**)&value);
     AutoPtr<BasicPoolEntry> entry;
     if (value != NULL) {
-        entry = reinterpret_cast<BasicPoolEntryRef*>(value->Probe(EIID_BasicPoolEntry));
+        entry = reinterpret_cast<BasicPoolEntry*>(value->Probe(EIID_BasicPoolEntry));
     }
 
     if (entry != NULL) {
@@ -474,15 +483,15 @@ void ConnPoolByRoute::DeleteLeastUsedEntry()
     //     log.debug("No free connection to delete.");
     // }
     // } finally {
-    //     poolLock.unlock();
+    //     poolLock.UnLock();
     // }
-    mPoolLock->Unlock();
+    ILock::Probe(mPoolLock)->UnLock();
 }
 
 void ConnPoolByRoute::HandleLostEntry(
     /* [in] */ IHttpRoute* route)
 {
-    mPoolLock->Lock();
+    ILock::Probe(mPoolLock)->Lock();
     // try {
     AutoPtr<RouteSpecificPool> rospl = GetRoutePool(route, TRUE);
     rospl->DropEntry();
@@ -493,9 +502,9 @@ void ConnPoolByRoute::HandleLostEntry(
     mNumConnections--;
     NotifyWaitingThread(rospl);
     // } finally {
-    //     poolLock.unlock();
+    //     poolLock.UnLock();
     // }
-    mPoolLock->Unlock();
+    ILock::Probe(mPoolLock)->UnLock();
 }
 
 void ConnPoolByRoute::NotifyWaitingThread(
@@ -508,7 +517,7 @@ void ConnPoolByRoute::NotifyWaitingThread(
     // it from all wait queues before interrupting.
     AutoPtr<WaitingThread> waitingThread;
 
-    mPoolLock->Lock();
+    ILock::Probe(mPoolLock)->Lock();
     // try {
     if ((rospl != NULL) && rospl->HasThread()) {
         // if (log.isDebugEnabled()) {
@@ -519,13 +528,13 @@ void ConnPoolByRoute::NotifyWaitingThread(
     }
     else {
         Boolean isEmpty;
-        if (waitingThreads->IsEmpty(&isEmpty), !isEmpty) {
+        if (mWaitingThreads->IsEmpty(&isEmpty), !isEmpty) {
             // if (log.isDebugEnabled()) {
             //     log.debug("Notifying thread waiting on any pool");
             // }
             AutoPtr<IInterface> value;
             mWaitingThreads->Remove((IInterface**)&value);
-            waitingThread = (WaitingThread*)value.Get();
+            waitingThread = (WaitingThread*)(Object*)(IObject*)value.Get();
         }
     }
     // else if (log.isDebugEnabled()) {
@@ -536,14 +545,14 @@ void ConnPoolByRoute::NotifyWaitingThread(
         waitingThread->Wakeup();
     }
     // } finally {
-    //     poolLock.unlock();
+    //     poolLock.UnLock();
     // }
-    mPoolLock->Unlock();
+    ILock::Probe(mPoolLock)->UnLock();
 }
 
 void ConnPoolByRoute::DeleteClosedConnections()
 {
-    mPoolLock->Lock();
+    ILock::Probe(mPoolLock)->Lock();
     // try {
     AutoPtr<IIterator> iter;
     mFreeConnections->GetIterator((IIterator**)&iter);
@@ -551,22 +560,22 @@ void ConnPoolByRoute::DeleteClosedConnections()
     while(iter->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> value;
         iter->GetNext((IInterface**)&value);
-        AutoPtr<BasicPoolEntry> entry = (BasicPoolEntry*)value.Get();
+        AutoPtr<BasicPoolEntry> entry = reinterpret_cast<BasicPoolEntry*>(value->Probe(EIID_BasicPoolEntry));
         Boolean isOpen;
-        if (entry->GetConnection()->IsOpen(&isOpen), !isOpen) {
+        if (IHttpConnection::Probe(entry->GetConnection())->IsOpen(&isOpen), !isOpen) {
             iter->Remove();
             DeleteEntry(entry);
         }
     }
     // } finally {
-    //     poolLock.unlock();
+    //     poolLock.UnLock();
     // }
-    mPoolLock->Unlock();
+    ILock::Probe(mPoolLock)->UnLock();
 }
 
 void ConnPoolByRoute::Shutdown()
 {
-    mPoolLock->Lock();
+    ILock::Probe(mPoolLock)->Lock();
     // try {
     AbstractConnPool::Shutdown();
 
@@ -578,28 +587,28 @@ void ConnPoolByRoute::Shutdown()
     while(iter->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> value;
         iter->GetNext((IInterface**)&value);
-        AutoPtr<BasicPoolEntry> entry = (BasicPoolEntry*)value.Get();
+        AutoPtr<BasicPoolEntry> entry = reinterpret_cast<BasicPoolEntry*>(value->Probe(EIID_BasicPoolEntry));
         iter->Remove();
-        AutoPtr<IClientConnectionOperator> oper = entry->GetConnection();
+        AutoPtr<IOperatedClientConnection> oper = entry->GetConnection();
         CloseConnection(oper);
     }
 
     // wake up all waiting threads
     AutoPtr<IIterator> iwth;
     mWaitingThreads->GetIterator((IIterator**)&iwth);
-    while(iwth->HasNext(&iwth), iwth) {
+    while(iwth->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> value;
         iwth->GetNext((IInterface**)&value);
-        AutoPtr<WaitingThread> waiter = (WaitingThread*)value.Get();
+        AutoPtr<WaitingThread> waiter = (WaitingThread*)(Object*)(IObject*)value.Get();
         iwth->Remove();
         waiter->Wakeup();
     }
 
     mRouteToPool->Clear();
     // } finally {
-    //     poolLock.unlock();
+    //     poolLock.UnLock();
     // }
-    mPoolLock->Unlock();
+    ILock::Probe(mPoolLock)->UnLock();
 }
 
 } // namespace Tsccm

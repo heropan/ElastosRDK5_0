@@ -2,7 +2,11 @@
 #include "AbstractConnPool.h"
 #include "BasicPoolEntry.h"
 #include "BasicPoolEntryRef.h"
-#include <elastos/Logger.h>
+#include "CThread.h"
+#include "CHashSet.h"
+#include "CLinkedList.h"
+#include "utility/concurrent/locks/CReentrantLock.h"
+#include "Logger.h"
 
 using Elastos::Core::IThread;
 using Elastos::Core::CThread;
@@ -11,6 +15,8 @@ using Elastos::Utility::CHashSet;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::ILinkedList;
 using Elastos::Utility::CLinkedList;
+using Elastos::Utility::Concurrent::Locks::ILock;
+using Elastos::Utility::Concurrent::Locks::CReentrantLock;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
@@ -41,7 +47,7 @@ ECode AbstractConnPool::EnableConnectionGC()
         Logger::E("AbstractConnPool", "Connection GC already enabled.");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
-    mPoolLock->Lock();
+    ILock::Probe(mPoolLock)->Lock();
     // try {
     if (mNumConnections > 0) { //@@@ is this check sufficient?
         Logger::E("AbstractConnPool", "Pool already in use.");
@@ -50,7 +56,7 @@ ECode AbstractConnPool::EnableConnectionGC()
     // } finally {
     //     poolLock.unlock();
     // }
-    mPoolLock->UnLock();
+    ILock::Probe(mPoolLock)->UnLock();
 
     AutoPtr<ILinkedList> list;
     CLinkedList::New((ILinkedList**)&list); // new ReferenceQueue<Object>();
@@ -60,7 +66,7 @@ ECode AbstractConnPool::EnableConnectionGC()
     CThread::New((IRunnable*)mRefWorker, (IThread**)&t); //@@@ use a thread factory
     t->SetDaemon(TRUE);
     String s;
-    IObject::Probe(this)->ToString(&s);
+    ((IObject*)this->Probe(EIID_IObject))->ToString(&s);
     t->SetName(String("RefQueueWorker@") + s);
     t->Start();
     return NOERROR;
@@ -75,13 +81,17 @@ ECode AbstractConnPool::GetEntry(
 {
     VALIDATE_NOT_NULL(entry)
 
-    return RequestPoolEntry(route, state)->GetPoolEntry(timeout, tunit, entry);
+    AutoPtr<IInterface> value;
+    RequestPoolEntry(route, state)->GetPoolEntry(timeout, tunit, (IInterface**)&value);
+    *entry = reinterpret_cast<BasicPoolEntry*>(value->Probe(EIID_BasicPoolEntry));
+    REFCOUNT_ADD(*entry)
+    return NOERROR;
 }
 
 ECode AbstractConnPool::HandleReference(
     /* [in] */ IInterface* ref)
 {
-    mPoolLock->Lock();
+    ILock::Probe(mPoolLock)->Lock();
     // try {
 
     AutoPtr<BasicPoolEntryRef> entryRef = reinterpret_cast<BasicPoolEntryRef*>(ref->Probe(EIID_BasicPoolEntryRef));
@@ -103,7 +113,7 @@ ECode AbstractConnPool::HandleReference(
     // } finally {
     //     poolLock.unlock();
     // }
-    mPoolLock->UnLock();
+    ILock::Probe(mPoolLock)->UnLock();
     return NOERROR;
 }
 
@@ -114,10 +124,10 @@ ECode AbstractConnPool::CloseIdleConnections(
     // idletime can be 0 or negative, no problem there
     if (tunit == NULL) {
         Logger::E("AbstractConnPool", "Time unit must not be null.");
-        return E_ILLEGAL_ILLEGAL_EXCEPTION;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    mPoolLock->Lock();
+    ILock::Probe(mPoolLock)->Lock();
     // try {
     Int64 millis;
     tunit->ToMillis(idletime, &millis);
@@ -125,30 +135,30 @@ ECode AbstractConnPool::CloseIdleConnections(
     // } finally {
     //     poolLock.unlock();
     // }
-    mPoolLock->UnLock();
+    ILock::Probe(mPoolLock)->UnLock();
     return NOERROR;
 }
 
 ECode AbstractConnPool::CloseExpiredConnections()
 {
-    mPoolLock->Lock();
+    ILock::Probe(mPoolLock)->Lock();
     // try {
     mIdleConnHandler->CloseExpiredConnections();
     // } finally {
     //     poolLock.unlock();
     // }
-    mPoolLock->UnLock();
+    ILock::Probe(mPoolLock)->UnLock();
     return NOERROR;
 }
 
 void AbstractConnPool::Shutdown()
 {
-    mPoolLock->Lock();
+    ILock::Probe(mPoolLock)->Lock();
     // try {
 
     if (mIsShutDown) {
-        mPoolLock->UnLock();
-        return NOERROR;
+        ILock::Probe(mPoolLock)->UnLock();
+        return;
     }
 
     // no point in monitoring GC anymore
@@ -169,7 +179,7 @@ void AbstractConnPool::Shutdown()
         iter->Remove();
         AutoPtr<IInterface> entryInt;
         per->Resolve(EIID_BasicPoolEntry,  (IInterface**)&entryInt);
-        AutoPtr<BasicPoolEntry> entry = reinterpret_cast<BasicPoolEntryRef*>(entryInt->Probe(EIID_BasicPoolEntry));
+        AutoPtr<BasicPoolEntry> entry = reinterpret_cast<BasicPoolEntry*>(entryInt->Probe(EIID_BasicPoolEntry));
         if (entry != NULL) {
             AutoPtr<IOperatedClientConnection> conn = entry->GetConnection();
             CloseConnection(conn);
@@ -185,7 +195,7 @@ void AbstractConnPool::Shutdown()
     // } finally {
     //     poolLock.unlock();
     // }
-    mPoolLock->UnLock();
+    ILock::Probe(mPoolLock)->UnLock();
 }
 
 ECode AbstractConnPool::CloseConnection(
@@ -193,7 +203,7 @@ ECode AbstractConnPool::CloseConnection(
 {
     if (conn != NULL) {
         // try {
-        conn->Close();
+        IHttpConnection::Probe(conn)->Close();
         // } catch (IOException ex) {
         //     log.debug("I/O error closing connection", ex);
         // }

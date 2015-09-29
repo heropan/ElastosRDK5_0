@@ -222,7 +222,7 @@ ECode BrowserCompatSpec::GetVersion(
 }
 
 ECode BrowserCompatSpec::GetVersionHeader(
-    /* [out] */ IHeader* header)
+    /* [out] */ IHeader** header)
 {
     VALIDATE_NOT_NULL(header)
     *header = NULL;

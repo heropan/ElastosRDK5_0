@@ -4,7 +4,7 @@
 
 #include "RFC2965Spec.h"
 #include "BrowserCompatSpec.h"
-#include "NetscapeDraftSpec.h"
+#include "NetScapeDraftSpec.h"
 
 using Elastos::Utility::IList;
 using Org::Apache::Http::IHeader;
@@ -37,11 +37,11 @@ public:
         /* [out] */ IList** cookies);
 
     CARAPI Validate(
-        /* [in] */ IHeader* header,
+        /* [in] */ ICookie* cookie,
         /* [in] */ ICookieOrigin* origin);
 
     CARAPI Match(
-        /* [in] */ IHeader* header,
+        /* [in] */ ICookie* cookie,
         /* [in] */ ICookieOrigin* origin,
         /* [out] */ Boolean* result);
 
@@ -53,14 +53,14 @@ public:
         /* [out] */ Int32* version);
 
     CARAPI GetVersionHeader(
-        /* [out] */ IHeader* header);
+        /* [out] */ IHeader** header);
 
 private:
     CARAPI_(AutoPtr<RFC2965Spec>) GetStrict();
 
     CARAPI_(AutoPtr<BrowserCompatSpec>) GetCompat();
 
-    CARAPI_(AutoPtr<NetscapeDraftSpec>) GetNetscape();
+    CARAPI_(AutoPtr<NetScapeDraftSpec>) GetNetscape();
 
 private:
     AutoPtr< ArrayOf<String> > mDatepatterns;
@@ -68,7 +68,7 @@ private:
 
     AutoPtr<RFC2965Spec> mStrict;
     AutoPtr<BrowserCompatSpec> mCompat;
-    AutoPtr<NetscapeDraftSpec> mNetscape;
+    AutoPtr<NetScapeDraftSpec> mNetscape;
 };
 
 } // namespace Cookie

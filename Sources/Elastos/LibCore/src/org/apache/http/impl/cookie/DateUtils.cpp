@@ -1,13 +1,22 @@
 
 #include "DateUtils.h"
-#include <elastos/Logger.h>
+#include "CString.h"
+#include "text/CSimpleDateFormat.h"
+#include "CTimeZoneHelper.h"
+#include "CCalendarHelper.h"
+#include "CLocale.h"
+#include "CHashMap.h"
+#include "Logger.h"
 
 using Elastos::Core::CString;
 using Elastos::Text::CSimpleDateFormat;
+using Elastos::Text::IDateFormat;
 using Elastos::Utility::CTimeZoneHelper;
 using Elastos::Utility::CCalendarHelper;
 using Elastos::Utility::ICalendar;
-using Elastos::Utility::ILocale
+using Elastos::Utility::CLocale;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::CHashMap;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
@@ -35,18 +44,18 @@ AutoPtr<ISimpleDateFormat> DateUtils::DateFormatHolder::FormatFor(
     AutoPtr<CString> cs;
     CString::NewByFriend(pattern, (CString**)&cs);
     AutoPtr<IInterface> value;
-    formats->Get(cs, (IInterface**)&value);
+    formats->Get(cs->Probe(EIID_IInterface), (IInterface**)&value);
     AutoPtr<ISimpleDateFormat> format = ISimpleDateFormat::Probe(value);
     if (format == NULL) {
         AutoPtr<CSimpleDateFormat> sdf;
-        CSimpleDateFormat::NewByFriend(pattern, ILocale::US, (CSimpleDateFormat**)&sdf);
+        CSimpleDateFormat::NewByFriend(pattern, CLocale::US, (CSimpleDateFormat**)&sdf);
         format = (ISimpleDateFormat*)sdf.Get();
         AutoPtr<CTimeZoneHelper> helper;
         CTimeZoneHelper::AcquireSingletonByFriend((CTimeZoneHelper**)&helper);
         AutoPtr<ITimeZone> timeZone;
         helper->GetTimeZone(String("GMT"), (ITimeZone**)&timeZone);
-        format->SetTimeZone(timeZone);
-        formats->Put(cs, format);
+        IDateFormat::Probe(format)->SetTimeZone(timeZone);
+        formats->Put(cs->Probe(EIID_IInterface), format);
     }
 
     return format;
@@ -57,9 +66,9 @@ AutoPtr<ISimpleDateFormat> DateUtils::DateFormatHolder::FormatFor(
 // DateUtils
 //==============================================================================
 
-static const String DateUtils::PATTERN_RFC1123("EEE, dd MMM yyyy HH:mm:ss zzz");
-static const String DateUtils::PATTERN_RFC1036("EEEE, dd-MMM-yy HH:mm:ss zzz");
-static const String DateUtils::PATTERN_ASCTIME("EEE MMM d HH:mm:ss yyyy");
+const String DateUtils::PATTERN_RFC1123("EEE, dd MMM yyyy HH:mm:ss zzz");
+const String DateUtils::PATTERN_RFC1036("EEEE, dd-MMM-yy HH:mm:ss zzz");
+const String DateUtils::PATTERN_ASCTIME("EEE MMM d HH:mm:ss yyyy");
 
 static AutoPtr<ITimeZone> InitGMT()
 {
@@ -69,7 +78,7 @@ static AutoPtr<ITimeZone> InitGMT()
     helper->GetTimeZone(String("GMT"), (ITimeZone**)&timeZone);
     return timeZone;
 }
-static const AutoPtr<ITimeZone> DateUtils::GMT = InitGMT();
+const AutoPtr<ITimeZone> DateUtils::GMT = InitGMT();
 
 static AutoPtr< ArrayOf<String> > InitDefaultPatterns()
 {
@@ -77,8 +86,9 @@ static AutoPtr< ArrayOf<String> > InitDefaultPatterns()
     (*patterns)[0] = DateUtils::PATTERN_RFC1036;
     (*patterns)[1] = DateUtils::PATTERN_RFC1123;
     (*patterns)[2] = DateUtils::PATTERN_ASCTIME;
+    return patterns;
 }
-static const AutoPtr< ArrayOf<String> > DateUtils::DEFAULT_PATTERNS = InitDefaultPatterns();
+const AutoPtr< ArrayOf<String> > DateUtils::DEFAULT_PATTERNS = InitDefaultPatterns();
 
 static AutoPtr<IDate> InitDefaultTwoDigitYearStart()
 {
@@ -86,40 +96,25 @@ static AutoPtr<IDate> InitDefaultTwoDigitYearStart()
     CCalendarHelper::AcquireSingletonByFriend((CCalendarHelper**)&helper);
     AutoPtr<ICalendar> calender;
     helper->GetInstance((ICalendar**)&calender);
-    calendar->SetTimeZone(DateUtils::GMT);
-    calendar->Set(2000, ICalendar::JANUARY, 1, 0, 0, 0);
-    calendar->Set(ICalendar::MILLISECOND, 0);
+    calender->SetTimeZone(DateUtils::GMT);
+    calender->Set(2000, ICalendar::JANUARY, 1, 0, 0, 0);
+    calender->Set(ICalendar::MILLISECOND, 0);
     AutoPtr<IDate> date;
-    calendar->GetTime((IDate**)&date);
+    calender->GetTime((IDate**)&date);
     return date;
 }
-static const AutoPtr<IDate> DateUtils::DEFAULT_TWO_DIGIT_YEAR_START = InitDefaultTwoDigitYearStart();
+const AutoPtr<IDate> DateUtils::DEFAULT_TWO_DIGIT_YEAR_START = InitDefaultTwoDigitYearStart();
 
 ECode DateUtils::ParseDate(
-    /* [in] */ const String& dateValue,
-    /* [out] */ IDate** date)
-{
-    VALIDATE_NOT_NULL(date)
-    return ParseDate(dateValue, NULL, NULL, date);
-}
-
-ECode DateUtils::ParseDate(
-    /* [in] */ const String& dateValue,
-    /* [in] */ ArrayOf<String>* dateFormats,
-    /* [out] */ IDate** date)
-{
-    VALIDATE_NOT_NULL(date)
-    return ParseDate(dateValue, dateFormats, NULL, date);
-}
-
-ECode DateUtils::parseDate(
-    /* [in] */ const String& dateValue,
+    /* [in] */ const String& _dateValue,
     /* [in] */ ArrayOf<String>* dateFormats,
     /* [in] */ IDate* startDate,
     /* [out] */ IDate** date)
 {
     VALIDATE_NOT_NULL(date)
     *date = NULL;
+
+    String dateValue = _dateValue;
 
     if (dateValue.IsNull()) {
         Logger::E("DateUtils", "dateValue is null");
@@ -144,7 +139,7 @@ ECode DateUtils::parseDate(
         dateParser->Set2DigitYearStart(startDate);
 
         // try {
-        return dateParser->Parse(dateValue, date);
+        return IDateFormat::Probe(dateParser)->Parse(dateValue, date);
         // } catch (ParseException pe) {
         //     // ignore this exception, we will try the next format
         // }
@@ -154,6 +149,23 @@ ECode DateUtils::parseDate(
     Logger::E("DateUtils", "Unable to parse the date %s", dateValue.string());
     return E_DATE_PARSE_EXCEPTION;
     // throw new DateParseException("Unable to parse the date " + dateValue);
+}
+
+ECode DateUtils::ParseDate(
+    /* [in] */ const String& dateValue,
+    /* [out] */ IDate** date)
+{
+    VALIDATE_NOT_NULL(date)
+    return ParseDate(dateValue, NULL, NULL, date);
+}
+
+ECode DateUtils::ParseDate(
+    /* [in] */ const String& dateValue,
+    /* [in] */ ArrayOf<String>* dateFormats,
+    /* [out] */ IDate** date)
+{
+    VALIDATE_NOT_NULL(date)
+    return ParseDate(dateValue, dateFormats, NULL, date);
 }
 
 ECode DateUtils::FormatDate(
@@ -170,7 +182,7 @@ ECode DateUtils::FormatDate(
     /* [out] */ String* formatDate)
 {
     VALIDATE_NOT_NULL(formatDate)
-    *formatDate = String(NULL)
+    *formatDate = String(NULL);
 
     if (date == NULL) {
         Logger::E("DateUtils", "date is null");
@@ -182,7 +194,7 @@ ECode DateUtils::FormatDate(
     }
 
     AutoPtr<ISimpleDateFormat> formatter = DateFormatHolder::FormatFor(pattern);
-    return formatter->Format(date, formatDate);
+    return IDateFormat::Probe(formatter)->Format(date, formatDate);
 }
 
 } // namespace Cookie

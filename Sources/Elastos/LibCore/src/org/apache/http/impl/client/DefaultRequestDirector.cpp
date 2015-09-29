@@ -1,5 +1,6 @@
 
 #include "DefaultRequestDirector.h"
+#include "EntityEnclosingRequestWrapper.h"
 #include "CAuthState.h"
 #include "HttpConnectionParams.h"
 #include "CBasicManagedEntity.h"
@@ -8,20 +9,24 @@
 #include "CBasicHttpRequest.h"
 #include "CHttpHost.h"
 #include "CAuthScope.h"
-#include "methods/CHttpGet.h"
-#include "params/ConnManagerParams.h"
-#include "params/HttpClientParams.h"
-#include "routing/CBasicRouteDirector.h"
-#include "utils/URIUtils.h"
-#include <elastos/Logger.h>
-#include <elastos/core/StringBuilder.h>
-#include <elastos/core/StringUtils.h>
+#include "CHttpGet.h"
+#include "ConnManagerParams.h"
+#include "HttpClientParams.h"
+#include "CBasicRouteDirector.h"
+#include "URIUtils.h"
+#include "CTimeUnitHelper.h"
+#include "Logger.h"
+#include "StringBuilder.h"
+#include "CString.h"
+#include "StringUtils.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
 using Elastos::Utility::ILocale;
+using Elastos::Utility::Concurrent::ITimeUnitHelper;
+using Elastos::Utility::Concurrent::CTimeUnitHelper;
 using Elastos::Utility::Concurrent::ITimeUnit;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpEntityEnclosingRequest;
@@ -37,9 +42,11 @@ using Org::Apache::Http::Auth::CAuthScope;
 using Org::Apache::Http::Auth::IAuthScheme;
 using Org::Apache::Http::Auth::IAuthScope;
 using Org::Apache::Http::Auth::ICredentials;
+using Org::Apache::Http::Client::EIID_IRequestDirector;
 using Org::Apache::Http::Client::ICredentialsProvider;
 using Org::Apache::Http::Client::Methods::IAbortableHttpRequest;
 using Org::Apache::Http::Client::Methods::IHttpUriRequest;
+using Org::Apache::Http::Client::Methods::IHttpGet;
 using Org::Apache::Http::Client::Methods::CHttpGet;
 using Org::Apache::Http::Client::Params::IClientPNames;
 using Org::Apache::Http::Client::Params::HttpClientParams;
@@ -52,6 +59,7 @@ using Org::Apache::Http::Conn::Routing::IHttpRoute;
 using Org::Apache::Http::Conn::Routing::IHttpRouteDirector;
 using Org::Apache::Http::Conn::Routing::IBasicRouteDirector;
 using Org::Apache::Http::Conn::Routing::CBasicRouteDirector;
+using Org::Apache::Http::Conn::Routing::IRouteInfo;
 using Org::Apache::Http::Conn::Scheme::IScheme;
 using Org::Apache::Http::Conn::Scheme::ISchemeRegistry;
 using Org::Apache::Http::Entity::CBufferedHttpEntity;
@@ -59,6 +67,7 @@ using Org::Apache::Http::Message::CBasicHttpRequest;
 using Org::Apache::Http::Params::HttpConnectionParams;
 using Org::Apache::Http::Params::HttpProtocolParams;
 using Org::Apache::Http::Protocol::IHTTP;
+using Org::Apache::Http::Protocol::IExecutionContext;
 
 namespace Org {
 namespace Apache {
@@ -167,18 +176,22 @@ ECode DefaultRequestDirector::RewriteRequestURI(
     /* [in] */ IHttpRoute* route)
 {
     // try {
-    AutoPtr<IURI> uri = request->GetURI();
+    AutoPtr<IURI> uri;
+    request->GetURI((IURI**)&uri);
     AutoPtr<IHttpHost> host;
     Boolean isTunnelled;
-    if ((route->GetProxyHost((IHttpHost**)&host), host != NULL) && (route->IsTunnelled(&isTunnelled), !isTunnelled)) {
+    AutoPtr<IRouteInfo> ri = IRouteInfo::Probe(route);
+    if ((ri->GetProxyHost((IHttpHost**)&host), host != NULL)
+            && (ri->IsTunnelled(&isTunnelled), !isTunnelled)) {
         // Make sure the request URI is absolute
         Boolean isAbsolute;
         if (uri->IsAbsolute(&isAbsolute), !isAbsolute) {
             AutoPtr<IHttpHost> target;
-            route->GetTargetHost((IHttpHost**)&target);
+            ri->GetTargetHost((IHttpHost**)&target);
             AutoPtr<IURI> temp = uri;
             uri = NULL;
-            FAIL_GOTO(URIUtils::RewriteURI(temp, target, (IURI**)&uri), failed)
+            ECode ec;
+            FAIL_GOTO(ec = URIUtils::RewriteURI(temp, target, (IURI**)&uri), failed)
             request->SetURI(uri);
             return NOERROR;
         }
@@ -188,8 +201,9 @@ ECode DefaultRequestDirector::RewriteRequestURI(
         Boolean isAbsolute;
         if (uri->IsAbsolute(&isAbsolute), isAbsolute) {
             AutoPtr<IURI> temp = uri;
-            uri = NULL
-            FAIL_GOTO(URIUtils::RewriteURI(temp, NULL, (IURI**)&uri), failed)
+            uri = NULL;
+            ECode ec;
+            FAIL_GOTO(ec = URIUtils::RewriteURI(temp, NULL, (IURI**)&uri), failed)
             request->SetURI(uri);
             return NOERROR;
         }
@@ -197,9 +211,9 @@ ECode DefaultRequestDirector::RewriteRequestURI(
 failed:
     AutoPtr<IRequestLine> line;
     request->GetRequestLine((IRequestLine**)&line);
-    AutoPtr<IURI> u;
-    line->GetURI((IURI**)&u);
-    Logger::E("DefaultRequestDirector", "Invalid URI: %p", u.Get());
+    String u;
+    line->GetUri(&u);
+    Logger::E("DefaultRequestDirector", "Invalid URI: %s", u.string());
     return E_PROTOCOL_EXCEPTION;
     // } catch (URISyntaxException ex) {
     //     throw new ProtocolException("Invalid URI: " +
@@ -218,14 +232,14 @@ ECode DefaultRequestDirector::Execute(
 
     AutoPtr<IHttpRequest> orig = request;
     AutoPtr<RequestWrapper> origWrapper = WrapRequest(orig);
-    origWrapper->SetParams(params);
+    origWrapper->SetParams(mParams);
     AutoPtr<IHttpRoute> origRoute;
     DetermineRoute(target, origWrapper, context, (IHttpRoute**)&origRoute);
 
     AutoPtr<RoutedRequest> roureq = new RoutedRequest(origWrapper, origRoute);
 
     Int64 timeout;
-    ConnManagerParams::GetTimeout(params, &timeout);
+    ConnManagerParams::GetTimeout(mParams, &timeout);
 
     Int32 execCount = 0;
 
@@ -250,30 +264,33 @@ ECode DefaultRequestDirector::Execute(
         // Allocate connection if needed
         if (mManagedConn == NULL) {
             AutoPtr<IClientConnectionRequest> connRequest;
-            connManager->RequestConnection(route, userToken, (IClientConnectionRequest**)&connRequest);
+            mConnManager->RequestConnection(route, userToken, (IClientConnectionRequest**)&connRequest);
             AutoPtr<IAbortableHttpRequest> abortableRequest = IAbortableHttpRequest::Probe(orig);
             if (abortableRequest != NULL) {
                 abortableRequest->SetConnectionRequest(connRequest);
             }
 
             // try {
-            FAIL_RETURN(connRequest->GetConnection(timeout, ITimeUnit::MILLISECONDS,
-                    (IManagedClientConnection**)&mManagedConn);)
+            AutoPtr<ITimeUnitHelper> helper;
+            CTimeUnitHelper::AcquireSingleton((ITimeUnitHelper**)&helper);
+            AutoPtr<ITimeUnit> milliseconds;
+            helper->GetMILLISECONDS((ITimeUnit**)&milliseconds);
+            FAIL_RETURN(connRequest->GetConnection(timeout, milliseconds, (IManagedClientConnection**)&mManagedConn))
             // } catch(InterruptedException interrupted) {
             //     InterruptedIOException iox = new InterruptedIOException();
             //     iox.initCause(interrupted);
             //     throw iox;
-            // }
+            //Org::Apache::Http::Conn::IManagedClientConnection }
             Boolean isEnabled;
-            if (HttpConnectionParams::IsStaleCheckingEnabled(params, &isEnabled), isEnabled) {
+            if (HttpConnectionParams::IsStaleCheckingEnabled(mParams, &isEnabled), isEnabled) {
                 // validate connection
                 Logger::D("DefaultRequestDirector", "Stale connection check");
                 Boolean isStale;
-                if (mManagedConn->IsStale(&isStale), isStale) {
+                if (IHttpConnection::Probe(mManagedConn)->IsStale(&isStale), isStale) {
                     Logger::D("DefaultRequestDirector", "Stale connection detected");
                     // BEGIN android-changed
                     // try {
-                    mManagedConn->Close();
+                    IHttpConnection::Probe(mManagedConn)->Close();
                     // } catch (IOException ignored) {
                     //     // SSLSocket's will throw IOException
                     //     // because they can't send a "close
@@ -289,20 +306,20 @@ ECode DefaultRequestDirector::Execute(
 
         AutoPtr<IAbortableHttpRequest> abortableRequest = IAbortableHttpRequest::Probe(orig);
         if (abortableRequest != NULL) {
-            abortableRequest->SetReleaseTrigger(mManagedConn);
+            abortableRequest->SetReleaseTrigger(IConnectionReleaseTrigger::Probe(mManagedConn));
         }
 
         // Reopen connection if needed
         Boolean isOpen;
-        if (mManagedConn->IsOpen(&isOpen), !isOpen) {
-            mManagedConn->Open(route, context, params);
+        if (IHttpConnection::Probe(mManagedConn)->IsOpen(&isOpen), !isOpen) {
+            mManagedConn->Open(route, context, mParams);
         }
         // BEGIN android-added
         else {
             // b/3241899 set the per request timeout parameter on reused connections
-            Int64 timeout;
-            HttpConnectionParams::GetSoTimeout(params, &timeout);
-            mManagedConn->SetSocketTimeout(timeout);
+            Int32 timeout;
+            HttpConnectionParams::GetSoTimeout(mParams, &timeout);
+            IHttpConnection::Probe(mManagedConn)->SetSocketTimeout(timeout);
         }
         // END android-added
 
@@ -326,28 +343,30 @@ ECode DefaultRequestDirector::Execute(
         RewriteRequestURI(wrapper, route);
 
         // Use virtual host if set
+        AutoPtr<IHttpParams> params;
+        wrapper->GetParams((IHttpParams**)&params);
         AutoPtr<IInterface> param;
-        wrapper->GetParams()->GetParameter(IClientPNames::VIRTUAL_HOST, (IInterface**)&param);
+        params->GetParameter(IClientPNames::VIRTUAL_HOST, (IInterface**)&param);
         target = IHttpHost::Probe(param);
 
         if (target == NULL) {
-            route->GetTargetHost((IHttpHost**)&target);
+            IRouteInfo::Probe(route)->GetTargetHost((IHttpHost**)&target);
         }
 
         AutoPtr<IHttpHost> proxy;
-        route->GetProxyHost((IHttpHost**)&proxy);
+        IRouteInfo::Probe(route)->GetProxyHost((IHttpHost**)&proxy);
 
         // Populate the execution context
         context->SetAttribute(IExecutionContext::HTTP_TARGET_HOST, (IInterface*)target);
         context->SetAttribute(IExecutionContext::HTTP_PROXY_HOST, (IInterface*)proxy.Get());
         context->SetAttribute(IExecutionContext::HTTP_CONNECTION, (IInterface*)mManagedConn.Get());
-        context->SetAttribute(ClientContext.TARGET_AUTH_STATE, (IInterface*)mTargetAuthState.Get());
-        context->SetAttribute(ClientContext.PROXY_AUTH_STATE, (IInterface*)mProxyAuthState.Get());
+        context->SetAttribute(IClientContext::TARGET_AUTH_STATE, (IInterface*)mTargetAuthState.Get());
+        context->SetAttribute(IClientContext::PROXY_AUTH_STATE, (IInterface*)mProxyAuthState.Get());
 
         // Run request protocol interceptors
-        mRequestExec->PreProcess(wrapper, mHttpProcessor, (IInterface*)context);
+        mRequestExec->PreProcess(wrapper, mHttpProcessor, context);
 
-        context->SetAttribute(IExecutionContext::HTTP_REQUEST, (IInterface*)wrapper.Get());
+        context->SetAttribute(IExecutionContext::HTTP_REQUEST, wrapper->Probe(EIID_IInterface));
 
         Boolean retrying = TRUE;
         while (retrying) {
@@ -365,10 +384,11 @@ ECode DefaultRequestDirector::Execute(
             //     this.log.debug("Attempt " + execCount + " to execute request");
             // }
             response = NULL;
-            ec = mRequestExec->Execute(wrapper, mManagedConn, context, (IHttpResponse**)&response);
+            ec = mRequestExec->Execute((IHttpRequest*)wrapper,
+                    IHttpClientConnection::Probe(mManagedConn), context, (IHttpResponse**)&response);
             if (ec == (ECode)E_IO_EXCEPTION) {
                 // this.log.debug("Closing the connection.");
-                mManagedConn->Close();
+                IHttpConnection::Probe(mManagedConn)->Close();
                 Boolean result;
                 if (mRetryHandler->RetryRequest(ec, execCount, context, &result), result) {
                     // if (this.log.isInfoEnabled()) {
@@ -388,7 +408,7 @@ ECode DefaultRequestDirector::Execute(
                 // If we have a direct route to the target host
                 // just re-open connection and re-try the request
                 Int32 count;
-                if (route->GetHopCount(&count), count == 1) {
+                if (IRouteInfo::Probe(route)->GetHopCount(&count), count == 1) {
                     Logger::D("DefaultRequestDirector", "Reopening the direct connection.");
                     mManagedConn->Open(route, context, params);
                 }
@@ -431,7 +451,7 @@ ECode DefaultRequestDirector::Execute(
         }
 
         // Run response protocol interceptors
-        response->SetParams(params);
+        IHttpMessage::Probe(response)->SetParams(params);
         mRequestExec->PostProcess(response, mHttpProcessor, context);
 
 
@@ -440,7 +460,11 @@ ECode DefaultRequestDirector::Execute(
             // Set the idle duration of this connection
             Int64 duration;
             mKeepAliveStrategy->GetKeepAliveDuration(response, context, &duration);
-            mManagedConn->SetIdleDuration(duration, ITimeUnit::MILLISECONDS);
+            AutoPtr<ITimeUnitHelper> helper;
+            CTimeUnitHelper::AcquireSingleton((ITimeUnitHelper**)&helper);
+            AutoPtr<ITimeUnit> milliseconds;
+            helper->GetMILLISECONDS((ITimeUnit**)&milliseconds);
+            mManagedConn->SetIdleDuration(duration, milliseconds);
         }
 
         AutoPtr<RoutedRequest> followup;
@@ -462,7 +486,7 @@ ECode DefaultRequestDirector::Execute(
                 mManagedConn->MarkReusable();
             }
             else {
-                mManagedConn->Close();
+                IHttpConnection::Probe(mManagedConn)->Close();
             }
             // check if we can use the same connection for the followup
             Boolean equals;
@@ -473,11 +497,12 @@ ECode DefaultRequestDirector::Execute(
             roureq = followup;
         }
 
-        userToken = NULL;
-        mUserTokenHandler->GetUserToken(context, (IObject**)&userToken);
+        AutoPtr<IInterface> ut;
+        mUserTokenHandler->GetUserToken(context, (IInterface**)&ut);
+        userToken = IObject::Probe(ut);
         context->SetAttribute(IClientContext::USER_TOKEN, (IInterface*)userToken.Get());
         if (mManagedConn != NULL) {
-            managedConn->SetState(userToken);
+            mManagedConn->SetState(userToken);
         }
     } // while not done
 
@@ -521,7 +546,7 @@ ECode DefaultRequestDirector::ReleaseConnection()
     // ConnectionManager directly.  This lets the connection control how
     // it is released.
     // try {
-    mManagedConn->ReleaseConnection();
+    IConnectionReleaseTrigger::Probe(mManagedConn)->ReleaseConnection();
     // } catch(IOException ignored) {
     //     this.log.debug("IOException releasing connection", ignored);
     // }
@@ -539,7 +564,7 @@ ECode DefaultRequestDirector::DetermineRoute(
 
     if (target == NULL) {
         AutoPtr<IHttpParams> params;
-        request->GetParams((IHttpParams**)&params);
+        IHttpMessage::Probe(request)->GetParams((IHttpParams**)&params);
         AutoPtr<IInterface> param;
         params->GetParameter(IClientPNames::DEFAULT_HOST, (IInterface**)&param);
         target = IHttpHost::Probe(param);
@@ -585,7 +610,7 @@ ECode DefaultRequestDirector::EstablishRoute(
     do {
         AutoPtr<IHttpRoute> fact;
         mManagedConn->GetRoute((IHttpRoute**)&fact);
-        rowdy->NextStep(route, fact, &step);
+        rowdy->NextStep(IRouteInfo::Probe(route), IRouteInfo::Probe(fact), &step);
 
         switch (step) {
 
@@ -608,14 +633,15 @@ ECode DefaultRequestDirector::EstablishRoute(
                 // of two proxies, where P1 must be tunnelled to P2.
                 // route: Source -> P1 -> P2 -> Target (3 hops)
                 // fact:  Source -> P1 -> Target       (2 hops)
+                AutoPtr<IRouteInfo> ri = IRouteInfo::Probe(fact);
                 Int32 count;
-                fact->GetHopCount(&count);
+                ri->GetHopCount(&count);
                 Int32 hop = count - 1; // the hop to establish
                 Boolean secure;
                 CreateTunnelToProxy(route, hop, context, &secure);
                 Logger::D("DefaultRequestDirector", "Tunnel to proxy created.");
                 AutoPtr<IHttpHost> target;
-                route->GetHopTarget((IHttpHost**)&target);
+                ri->GetHopTarget(hop, (IHttpHost**)&target);
                 mManagedConn->TunnelProxy(target, secure, mParams);
                 break;
             }
@@ -648,10 +674,11 @@ ECode DefaultRequestDirector::CreateTunnelToTarget(
     VALIDATE_NOT_NULL(result)
     *result = FALSE;
 
+    AutoPtr<IRouteInfo> ri = IRouteInfo::Probe(route);
     AutoPtr<IHttpHost> proxy;
-    route->GetProxyHost((IHttpHost**)&proxy);
+    ri->GetProxyHost((IHttpHost**)&proxy);
     AutoPtr<IHttpHost> target;
-    route->GetTargetHost((IHttpHost**)&target);
+    ri->GetTargetHost((IHttpHost**)&target);
     AutoPtr<IHttpResponse> response;
 
     Boolean done = FALSE;
@@ -660,21 +687,22 @@ ECode DefaultRequestDirector::CreateTunnelToTarget(
         done = TRUE;
 
         Boolean isOpen;
-        if (mManagedConn->IsOpen(&isOpen), !isOpen) {
+        if (IHttpConnection::Probe(mManagedConn)->IsOpen(&isOpen), !isOpen) {
             mManagedConn->Open(route, context, mParams);
         }
 
         AutoPtr<IHttpRequest> connect;
+        AutoPtr<IHttpMessage> hm = IHttpMessage::Probe(connect);
         CreateConnectRequest(route, context, (IHttpRequest**)&connect);
 
         String agent;
-        HttpProtocolParams::GetUserAgent(params, &agent);
+        HttpProtocolParams::GetUserAgent(mParams, &agent);
         if (!agent.IsNull()) {
-            connect->AddHeader(IHTTP::USER_AGENT, agent);
+            hm->AddHeader(IHTTP::USER_AGENT, agent);
         }
         String hostString;
         target->ToHostString(&hostString);
-        connect->AddHeader(IHTTP::TARGET_HOST, hostString);
+        hm->AddHeader(IHTTP::TARGET_HOST, hostString);
 
         AutoPtr<IAuthScheme> authScheme;
         mProxyAuthState->GetAuthScheme((IAuthScheme**)&authScheme);
@@ -688,7 +716,7 @@ ECode DefaultRequestDirector::CreateTunnelToTarget(
                 // try {
                 AutoPtr<IHeader> h;
                 authScheme->Authenticate(creds, connect, (IHeader**)&h);
-                connect->AddHeader(h);
+                hm->AddHeader(h);
                 // } catch (AuthenticationException ex) {
                 //     if (this.log.isErrorEnabled()) {
                 //         this.log.error("Proxy authentication error: " + ex.getMessage());
@@ -698,7 +726,7 @@ ECode DefaultRequestDirector::CreateTunnelToTarget(
         }
 
         response = NULL;
-        mRequestExec->Execute(connect, mManagedConn, context, (IHttpResponse**)&response);
+        mRequestExec->Execute(connect, IHttpClientConnection::Probe(mManagedConn), context, (IHttpResponse**)&response);
 
         AutoPtr<IStatusLine> statusLine;
         response->GetStatusLine((IStatusLine**)&statusLine);
@@ -714,7 +742,7 @@ ECode DefaultRequestDirector::CreateTunnelToTarget(
         AutoPtr<ICredentialsProvider> credsProvider = ICredentialsProvider::Probe(attr);
 
         Boolean isAuthenticating;
-        if (credsProvider != NULL && (HttpClientParams::IsAuthenticating(params, &isAuthenticating), isAuthenticating)) {
+        if (credsProvider != NULL && (HttpClientParams::IsAuthenticating(mParams, &isAuthenticating), isAuthenticating)) {
             Boolean isRequested;
             if (mProxyAuthHandler->IsAuthenticationRequested(response, context, &isRequested), isRequested) {
 
@@ -747,7 +775,7 @@ ECode DefaultRequestDirector::CreateTunnelToTarget(
                         }
                     }
                     else {
-                        mManagedConn->Close();
+                        IHttpConnection::Probe(mManagedConn)->Close();
                     }
 
                 }
@@ -772,11 +800,11 @@ ECode DefaultRequestDirector::CreateTunnelToTarget(
         response->GetEntity((IHttpEntity**)&entity);
         if (entity != NULL) {
             AutoPtr<IHttpEntity> bufferedEntity;
-            CBufferedHttpEntity(entity, (IHttpEntity**)&bufferedEntity);
+            CBufferedHttpEntity::New(entity, (IHttpEntity**)&bufferedEntity);
             response->SetEntity(bufferedEntity);
         }
 
-        mManagedConn->Close();
+        IHttpConnection::Probe(mManagedConn)->Close();
         Logger::E("DefaultRequestDirector", "CONNECT refused by proxy: %p, %p", statusLine.Get(), response.Get());
         return E_TUNNEL_REFUSED_EXCEPTION;
     }
@@ -795,7 +823,7 @@ ECode DefaultRequestDirector::CreateTunnelToProxy(
     /* [in] */ IHttpRoute* route,
     /* [in] */ Int32 hop,
     /* [in] */ IHttpContext* context,
-    /* [out] */ Boolean** result)
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = FALSE;
@@ -823,7 +851,7 @@ ECode DefaultRequestDirector::CreateConnectRequest(
     // Web proxy servers
 
     AutoPtr<IHttpHost> target;
-    route->GetTargetHost((IHttpHost**)&target);
+    IRouteInfo::Probe(route)->GetTargetHost((IHttpHost**)&target);
 
     String host;
     target->GetHostName(&host);
@@ -834,7 +862,7 @@ ECode DefaultRequestDirector::CreateConnectRequest(
         String schemeName;
         target->GetSchemeName(&schemeName);
         AutoPtr<IScheme> scheme;
-        registry->GetScheme((IScheme**)&scheme);
+        registry->GetScheme(schemeName, (IScheme**)&scheme);
         scheme->GetDefaultPort(&port);
     }
 
@@ -845,7 +873,7 @@ ECode DefaultRequestDirector::CreateConnectRequest(
 
     String authority = buffer.ToString();
     AutoPtr<IProtocolVersion> ver;
-    HttpProtocolParams::GetVersion(params, (IProtocolVersion**)&ver);
+    HttpProtocolParams::GetVersion(mParams, (IProtocolVersion**)&ver);
     return CBasicHttpRequest::New(String("CONNECT"), authority, ver, request);
 }
 
@@ -858,15 +886,15 @@ ECode DefaultRequestDirector::HandleResponse(
     VALIDATE_NOT_NULL(request)
     *request = NULL;
 
-    AutoPtr<IHttpRoute> route;
-    roureq->GetRoute((IHttpRoute**)&route);
+    AutoPtr<IHttpRoute> route = roureq->GetRoute();
     AutoPtr<IHttpHost> proxy;
-    route->GetProxyHost((IHttpHost**)proxy);
-    AutoPtr<RequestWrapper> request = roureq->GetRequest();
+    IRouteInfo::Probe(route)->GetProxyHost((IHttpHost**)&proxy);
+    AutoPtr<RequestWrapper> requestWrapper = roureq->GetRequest();
 
-    AutoPtr<IHttpParams> params = request->GetParams();
+    AutoPtr<IHttpParams> params;
+    requestWrapper->GetParams((IHttpParams**)&params);
     Boolean isRedirecting, isRedirectRequested;
-    if ((HttpClientParams::IsRedirecting(params), isRedirecting) &&
+    if ((HttpClientParams::IsRedirecting(params, &isRedirecting), isRedirecting) &&
             (mRedirectHandler->IsRedirectRequested(response, context, &isRedirectRequested), isRedirectRequested)) {
         if (mRedirectCount >= mMaxRedirects) {
             Logger::E("DefaultRequestDirector", "Maximum redirects (%d) exceeded", mMaxRedirects);
@@ -888,13 +916,12 @@ ECode DefaultRequestDirector::HandleResponse(
         AutoPtr<IHttpGet> redirect;
         CHttpGet::New(uri, (IHttpGet**)&redirect);
 
-        AutoPtr<IHttpRequest> orig;
-        request->GetOriginal((IHttpRequest**)&orig);
+        AutoPtr<IHttpRequest> orig = requestWrapper->GetOriginal();
         AutoPtr< ArrayOf<IHeader*> > headers;
         IHttpMessage::Probe(orig)->GetAllHeaders((ArrayOf<IHeader*>**)&headers);
         IHttpMessage::Probe(redirect)->SetHeaders(headers);
 
-        AutoPtr<RequestWrapper> wrapper = new RequestWrapper(redirect);
+        AutoPtr<RequestWrapper> wrapper = new RequestWrapper(IHttpRequest::Probe(redirect));
         wrapper->SetParams(params);
 
         AutoPtr<IHttpRoute> newRoute;
@@ -916,12 +943,12 @@ ECode DefaultRequestDirector::HandleResponse(
     Boolean isAuthenticating;
     if (credsProvider != NULL && (HttpClientParams::IsAuthenticating(params, &isAuthenticating), isAuthenticating)) {
         Boolean isAuthenticationRequested;
-        if (mUserTokenHandler->IsAuthenticationRequested(response, context, &isAuthenticationRequested), isAuthenticationRequested) {
+        if (mTargetAuthHandler->IsAuthenticationRequested(response, context, &isAuthenticationRequested), isAuthenticationRequested) {
             AutoPtr<IInterface> targetAttr;
             context->GetAttribute(IExecutionContext::HTTP_TARGET_HOST, (IInterface**)&targetAttr);
             AutoPtr<IHttpHost> target = IHttpHost::Probe(targetAttr);
             if (target == NULL) {
-                route->GetTargetHost((IHttpHost**)&target);
+                IRouteInfo::Probe(route)->GetTargetHost((IHttpHost**)&target);
             }
 
             Logger::D("DefaultRequestDirector", "Target requested authentication");
@@ -1006,8 +1033,9 @@ void DefaultRequestDirector::AbortConnection()
         // we got here as the result of an exception
         // no response will be returned, release the connection
         mManagedConn = NULL;
+        AutoPtr<IConnectionReleaseTrigger> crt = IConnectionReleaseTrigger::Probe(mcc);
         // try {
-        mcc->AbortConnection();
+        crt->AbortConnection();
         // } catch (IOException ex) {
         //     if (this.log.isDebugEnabled()) {
         //         this.log.debug(ex.getMessage(), ex);
@@ -1015,7 +1043,7 @@ void DefaultRequestDirector::AbortConnection()
         // }
         // ensure the connection manager properly releases this connection
         // try {
-        mcc->ReleaseConnection();
+        crt->ReleaseConnection();
         // } catch(IOException ignored) {
         //     this.log.debug("Error releasing connection", ignored);
         // }
@@ -1040,7 +1068,7 @@ ECode DefaultRequestDirector::ProcessChallenges(
     authScheme->GetSchemeName(&id);
 
     AutoPtr<ICharSequence> cs;
-    CString::New(id.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+    CString::New(id.ToLowerCase(/*ILocale::ENGLISH*/), (ICharSequence**)&cs);
     AutoPtr<IInterface> value;
     challenges->Get(cs, (IInterface**)&value);
     AutoPtr<IHeader> challenge = IHeader::Probe(value);
@@ -1080,7 +1108,7 @@ void DefaultRequestDirector::UpdateAuthState(
     AutoPtr<IAuthScope> authScope;
     String realm, schemeName;
     authScheme->GetRealm(&realm);
-    authScheme->GetHostName(&schemeName);
+    authScheme->GetSchemeName(&schemeName);
     CAuthScope::New(hostname, port, realm, schemeName, (IAuthScope**)&authScope);
 
     // if (this.log.isDebugEnabled()) {

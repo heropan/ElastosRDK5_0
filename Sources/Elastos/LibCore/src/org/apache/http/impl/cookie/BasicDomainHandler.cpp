@@ -1,8 +1,9 @@
 
 #include "BasicDomainHandler.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Cookie::EIID_ICookieAttributeHandler;
 
 namespace Org {
 namespace Apache {

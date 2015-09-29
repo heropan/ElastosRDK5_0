@@ -27,5 +27,6 @@ module
     const E_SSL_PEER_UNVERIFIED_EXCEPTION                           = 0xB1010000;
     const E_SSL_EXCEPTION                                           = 0xB1020000;
     const E_SSL_PROTOCOL_EXCEPTION                                  = 0xB1030000;
-    const E_SSL_HANDSHAKE_EXCEPTION                                 = 0xB1040000;
+    const E_SSL_KEY_EXCEPTION                                       = 0xB1040000;
+    const E_SSL_HANDS_SHAKE_EXCEPTION                               = 0xB1050000;
 }

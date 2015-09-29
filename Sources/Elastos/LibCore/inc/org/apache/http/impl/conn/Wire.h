@@ -2,10 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_WIRE_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_WIRE_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::IO::IInputStream;
 
 namespace Org {
@@ -32,7 +30,7 @@ public:
         /* [in] */ IInputStream* outstream);
 
     CARAPI Input(
-        /* [in] */ IInputStream instream);
+        /* [in] */ IInputStream* instream);
 
     CARAPI Output(
         /* [in] */ ArrayOf<Byte>* b,
@@ -63,7 +61,7 @@ public:
         /* [in] */ const String& s);
 
 private:
-    CARAPI_(void) Wire(
+    CARAPI_(void) DoWire(
         /* [in] */ const String& header,
         /* [in] */ IInputStream* instream);
 };

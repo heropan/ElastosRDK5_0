@@ -1,6 +1,6 @@
 
 #include "BasicPoolEntryRef.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 
@@ -16,7 +16,7 @@ extern "C" const InterfaceID EIID_BasicPoolEntryRef =
 
 BasicPoolEntryRef::BasicPoolEntryRef(
     /* [in] */ BasicPoolEntry* entry,
-    /* [in] */ IList* queue)
+    /* [in] */ IQueue* queue)
 {
     // super(entry, queue);
 
@@ -35,7 +35,7 @@ PInterface BasicPoolEntryRef::Probe(
         return reinterpret_cast<PInterface>(this);
     }
     else {
-        return Object::Probe(riid)
+        return Object::Probe(riid);
     }
 }
 

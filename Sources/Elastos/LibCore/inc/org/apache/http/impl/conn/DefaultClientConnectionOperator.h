@@ -2,11 +2,10 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_DEFAULTCLIENTCONNECTIONOPERATOR_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_DEFAULTCLIENTCONNECTIONOPERATOR_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Net::IInetAddress;
+using Elastos::Net::ISocket;
 using Org::Apache::Http::IHttpHost;
 using Org::Apache::Http::Conn::IOperatedClientConnection;
 using Org::Apache::Http::Conn::IClientConnectionOperator;
@@ -63,6 +62,21 @@ public:
     CARAPI UpdateSecureConnection(
         /* [in] */ IOperatedClientConnection* conn,
         /* [in] */ IHttpHost* target,
+        /* [in] */ IHttpContext* context,
+        /* [in] */ IHttpParams* params);
+
+protected:
+    /**
+     * Performs standard initializations on a newly created socket.
+     *
+     * @param sock      the socket to prepare
+     * @param context   the context for the connection
+     * @param params    the parameters from which to prepare the socket
+     *
+     * @throws IOException      in case of an IO problem
+     */
+    CARAPI PrepareSocket(
+        /* [in] */ ISocket* sock,
         /* [in] */ IHttpContext* context,
         /* [in] */ IHttpParams* params);
 

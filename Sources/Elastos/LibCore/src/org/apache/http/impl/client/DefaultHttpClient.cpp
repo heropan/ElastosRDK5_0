@@ -32,27 +32,35 @@
 #include "cookie/NetscapeDraftSpecFactory.h"
 #include "cookie/RFC2109SpecFactory.h"
 #include "cookie/RFC2965SpecFactory.h"
-#include "protocol/CRequestDefaultHeaders.h"
-#include "protocol/CRequestAddCookies.h"
-#include "protocol/CResponseProcessCookies.h"
-#include "protocol/CRequestTargetAuthentication.h"
-#include "protocol/CRequestProxyAuthentication.h"
-#include "scheme/CSchemeRegistry.h"
-#include "scheme/CScheme.h"
-#include "scheme/CPlainSocketFactory.h"
-#include "ssl/CSSLSocketFactory.h"
-#include <elastos/Logger.h>
+#include "CRequestDefaultHeaders.h"
+#include "CRequestAddCookies.h"
+#include "CResponseProcessCookies.h"
+#include "CRequestTargetAuthentication.h"
+#include "CRequestProxyAuthentication.h"
+#include "CSchemeRegistry.h"
+#include "CScheme.h"
+#include "CPlainSocketFactory.h"
+#include "CSSLSocketFactory.h"
+#include "core/ClassLoader.h"
+#include "Logger.h"
 
+using Elastos::Core::ClassLoader;
+using Elastos::Core::IClassLoader;
+using Elastos::Core::ICharSequence;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::CHttpVersion;
 using Org::Apache::Http::Auth::CAuthSchemeRegistry;
 using Org::Apache::Http::Client::Params::IClientPNames;
+using Org::Apache::Http::Client::Params::IAuthPolicy;
+using Org::Apache::Http::Client::Params::ICookiePolicy;
 using Org::Apache::Http::Client::Protocol::CRequestDefaultHeaders;
 using Org::Apache::Http::Client::Protocol::CRequestAddCookies;
 using Org::Apache::Http::Client::Protocol::CResponseProcessCookies;
 using Org::Apache::Http::Client::Protocol::CRequestProxyAuthentication;
 using Org::Apache::Http::Client::Protocol::CRequestTargetAuthentication;
+using Org::Apache::Http::Client::Protocol::IClientContext;
 using Org::Apache::Http::Cookie::CCookieSpecRegistry;
+using Org::Apache::Http::Conn::IClientConnectionManagerFactory;
 using Org::Apache::Http::Conn::Scheme::CSchemeRegistry;
 using Org::Apache::Http::Conn::Scheme::IScheme;
 using Org::Apache::Http::Conn::Scheme::CScheme;
@@ -113,8 +121,7 @@ ECode DefaultHttpClient::CreateHttpParams(
 
     AutoPtr<IHttpParams> params;
     CBasicHttpParams::New((IHttpParams**)&params);
-    // begin from this
-    HttpProtocolParams::SetVersion(params, CHttpVersion::HTTP_1_1);
+    HttpProtocolParams::SetVersion(params, IProtocolVersion::Probe(CHttpVersion::HTTP_1_1));
     HttpProtocolParams::SetContentCharset(params, IHTTP::DEFAULT_CONTENT_CHARSET);
 
     /*
@@ -126,11 +133,9 @@ ECode DefaultHttpClient::CreateHttpParams(
     HttpProtocolParams::SetUseExpectContinue(params, FALSE); // android-changed
 
     // determine the release version from packaged version info
-    AutoPtr< ArrayOf<String> > pckgs = ArrayOf<String>::Alloc(1);
-    (*pckgs)[0] = String("org.apache.http.client");
-    assert(0);
-    // AutoPtr<IVersionInfo> vi;
-    // VersionInfo::LoadVersionInfo(pckgs, getClass().getClassLoader(), (IVersionInfo**)&vi);
+    AutoPtr<IClassLoader> loader = ClassLoader::GetSystemClassLoader();//getClass().getClassLoader()
+    AutoPtr<IVersionInfo> vi;
+    VersionInfo::LoadVersionInfo(String("org.apache.http.client"), loader, (IVersionInfo**)&vi);
     String release = IVersionInfo::UNAVAILABLE;
     if (vi != NULL) {
         vi->GetRelease(&release);
@@ -146,7 +151,7 @@ ECode DefaultHttpClient::CreateHttpParams(
 ECode DefaultHttpClient::CreateRequestExecutor(
     /* [out] */ IHttpRequestExecutor** executor)
 {
-    VALIDATE_NOT_NULL(isComplete)
+    VALIDATE_NOT_NULL(executor)
     return CHttpRequestExecutor::New(executor);
 }
 
@@ -183,7 +188,7 @@ ECode DefaultHttpClient::CreateClientConnectionManager(
     factory = IClientConnectionManagerFactory::Probe(param);
     if (factory == NULL) { // then try getting its class name.
         param = NULL;
-        params->GetParameter(IClientPNames::CONNECTION_MANAGER_FACTORY_CLASS_NAME, (IInterface**)&value);
+        params->GetParameter(IClientPNames::CONNECTION_MANAGER_FACTORY_CLASS_NAME, (IInterface**)&param);
         AutoPtr<ICharSequence> cs = ICharSequence::Probe(param);
         String className;
         if (cs != NULL) {
@@ -343,8 +348,8 @@ ECode DefaultHttpClient::CreateHttpProcessor(
     CRequestAddCookies::New((IHttpRequestInterceptor**)&interceptor7);
     httpproc->AddInterceptor(interceptor7);
 
-    AutoPtr<IHttpRequestInterceptor> interceptor8;
-    CResponseProcessCookies::New((IHttpRequestInterceptor**)&interceptor8);
+    AutoPtr<IHttpResponseInterceptor> interceptor8;
+    CResponseProcessCookies::New((IHttpResponseInterceptor**)&interceptor8);
     httpproc->AddInterceptor(interceptor8);
 
     // HTTP authentication interceptors
@@ -357,7 +362,7 @@ ECode DefaultHttpClient::CreateHttpProcessor(
     httpproc->AddInterceptor(interceptor10);
 
     *processor = httpproc;
-    REFCOUNT_ADD(*httpproc)
+    REFCOUNT_ADD(*processor)
     return NOERROR;
 }
 

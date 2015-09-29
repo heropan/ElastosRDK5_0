@@ -94,7 +94,7 @@ public:
      * @param oparams   override parameters, or <code>null</code>
      */
     ClientParamsStack(
-        /* [in] */ ClientParamsStack stack,
+        /* [in] */ ClientParamsStack* stack,
         /* [in] */ IHttpParams* aparams,
         /* [in] */ IHttpParams* cparams,
         /* [in] */ IHttpParams* rparams,
@@ -138,7 +138,7 @@ public:
      *          <code>null</code> if it is not set anywhere in this stack
      */
     CARAPI GetParameter(
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [out] */ IInterface** parameter);
 
     /**
@@ -155,7 +155,7 @@ public:
      * @throws UnsupportedOperationException    always
      */
     CARAPI SetParameter(
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [in] */ IInterface* value,
         /* [out] */ IHttpParams** httpParams);
 
@@ -172,7 +172,7 @@ public:
      * @throws UnsupportedOperationException    always
      */
     CARAPI RemoveParameter(
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [out] */ Boolean* remove);
 
     /**

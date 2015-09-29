@@ -46,5 +46,6 @@ module
     const E_BUFFER_UNDERFLOW_EXCEPTION                  = 0xA2240000;
     const E_BUFFER_OVERFLOW_EXCEPTION                   = 0xA2250000;
     const E_OVERLAPPING_FILE_LOCK_EXCEPTION             = 0xA2260000;
+    const E_INTERRUPTED_IO_EXCEPTION                    = 0xA2270000;
 
 }

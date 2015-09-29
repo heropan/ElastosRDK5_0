@@ -31,7 +31,7 @@ public:
 
     CARAPI GetAttribute(
         /* [in] */ const String& id,
-        /* [out] */ Interface** attr);
+        /* [out] */ IInterface** attr);
 
     CARAPI RemoveAttribute(
         /* [in] */ const String& id,

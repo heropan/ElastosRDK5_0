@@ -2,12 +2,10 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_BASICCOOKIESTORE_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_BASICCOOKIESTORE_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
+using Elastos::Core::IComparator;
 using Elastos::Utility::IArrayList;
-using Elastos::Utility::IComparator;
 using Elastos::Utility::IDate;
 using Elastos::Utility::IList;
 using Org::Apache::Http::Client::ICookieStore;
@@ -66,7 +64,7 @@ public:
      *
      */
     CARAPI_(void) AddCookies(
-        /* [in] */ ArrayOf<ICookie>* cookies);
+        /* [in] */ ArrayOf<ICookie*>* cookies);
 
     /**
      * Returns an immutable array of {@link Cookie cookies} that this HTTP

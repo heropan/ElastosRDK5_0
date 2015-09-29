@@ -29,6 +29,7 @@ namespace Methods {
  */
 class HttpRequestBase
     : public AbstractHttpMessage
+    , public IHttpRequest
     , public IHttpUriRequest
     , public IAbortableHttpRequest
     , public ICloneable

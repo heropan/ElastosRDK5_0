@@ -2,10 +2,10 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICHEADERELEMENT_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICHEADERELEMENT_H_
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::IArrayOf;
+using Elastos::Core::ICloneable;
 using Org::Apache::Http::IHeaderElement;
 using Org::Apache::Http::INameValuePair;
 
@@ -59,7 +59,7 @@ namespace Message {
  * @since 4.0
  */
 class BasicHeaderElement
-    , public Object
+    : public Object
     , public IHeaderElement
     , public ICloneable
 {
@@ -92,7 +92,7 @@ public:
      * @return parameters as an array of {@link NameValuePair}s
      */
     CARAPI GetParameters(
-        /* [out] */ IArrayOf** parameters);
+        /* [out, callee] */ ArrayOf<INameValuePair*>** parameters);
 
     /**
      * Obtains the number of parameters.

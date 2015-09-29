@@ -1,7 +1,7 @@
 
 #include "BasicPoolEntry.h"
 #include "BasicPoolEntryRef.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 
@@ -18,7 +18,7 @@ extern "C" const InterfaceID EIID_BasicPoolEntry =
 BasicPoolEntry::BasicPoolEntry(
     /* [in] */ IClientConnectionOperator* op,
     /* [in] */ IHttpRoute* route,
-    /* [in] */ IList* queue)
+    /* [in] */ IQueue* queue)
     : AbstractPoolEntry(op, route)
 {
     if (route == NULL) {
@@ -36,7 +36,7 @@ PInterface BasicPoolEntry::Probe(
         return reinterpret_cast<PInterface>(this);
     }
     else {
-        return AbstractPoolEntry::Probe(riid)
+        return AbstractPoolEntry::Probe(riid);
     }
 }
 

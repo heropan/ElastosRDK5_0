@@ -1,9 +1,9 @@
 
 #include "DefaultTargetAuthenticationHandler.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
-using Org::Apache::Http::IStatusLIine;
+using Org::Apache::Http::IStatusLine;
 using Org::Apache::Http::IHttpStatus;
 using Org::Apache::Http::IHttpMessage;
 using Org::Apache::Http::IHeader;
@@ -30,8 +30,8 @@ ECode DefaultTargetAuthenticationHandler::IsAuthenticationRequested(
         Logger::E("DefaultTargetAuthenticationHandler", "HTTP response may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AutoPtr<IStatusLIine> statusLine;
-    response->GetStatusLine((IStatusLIine**)&statusLine);
+    AutoPtr<IStatusLine> statusLine;
+    response->GetStatusLine((IStatusLine**)&statusLine);
     Int32 status;
     statusLine->GetStatusCode(&status);
     *result = status == IHttpStatus::SC_UNAUTHORIZED;

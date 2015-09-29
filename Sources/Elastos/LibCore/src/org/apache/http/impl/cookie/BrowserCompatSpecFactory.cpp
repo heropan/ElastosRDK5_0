@@ -2,7 +2,9 @@
 #include "BrowserCompatSpecFactory.h"
 #include "BestMatchSpec.h"
 
+using Elastos::Core::ICharSequence;
 using Org::Apache::Http::Cookie::Params::ICookieSpecPNames;
+using Org::Apache::Http::Cookie::EIID_ICookieSpecFactory;
 
 namespace Org {
 namespace Apache {
@@ -14,12 +16,12 @@ CAR_INTERFACE_IMPL(BrowserCompatSpecFactory, Object, ICookieSpecFactory)
 
 ECode BrowserCompatSpecFactory::NewInstance(
     /* [in] */ IHttpParams* params,
-    /* [out] */ ICookieSpec** spec);
+    /* [out] */ ICookieSpec** spec)
 {
     VALIDATE_NOT_NULL(spec)
     if (params != NULL) {
         AutoPtr<IInterface> param;
-        params->GetParameter(ICookieSpecPNames::DATE_PATTERNS, (IInterface**)&value);
+        params->GetParameter(ICookieSpecPNames::DATE_PATTERNS, (IInterface**)&param);
         AutoPtr<ICollection> collection = ICollection::Probe(param);
         AutoPtr< ArrayOf<IInterface*> > paramArray;
         collection->ToArray((ArrayOf<IInterface*>**)&paramArray);

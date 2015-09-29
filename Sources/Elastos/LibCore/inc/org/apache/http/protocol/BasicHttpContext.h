@@ -2,8 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_PROTOCOL_BASICHTTPCONTEXT_H_
 #define __ORG_APACHE_HTTP_PROTOCOL_BASICHTTPCONTEXT_H_
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Utility::IMap;
 
@@ -32,7 +31,7 @@ public:
 
     CARAPI GetAttribute(
         /* [in] */ const String& id,
-        /* [out] */ Interface** attr);
+        /* [out] */ IInterface** attr);
 
     CARAPI SetAttribute(
         /* [in] */ const String& id,

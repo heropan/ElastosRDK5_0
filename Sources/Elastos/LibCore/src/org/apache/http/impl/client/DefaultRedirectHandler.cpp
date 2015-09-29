@@ -2,22 +2,25 @@
 #include "DefaultRedirectHandler.h"
 #include "RedirectLocations.h"
 #include "CHttpHost.h"
-#include "utils/URIUtils.h"
-#include <elastos/Logger.h>
+#include "net/CURI.h"
+#include "URIUtils.h"
+#include "Logger.h"
 
 using Elastos::Net::IURI;
 using Elastos::Net::CURI;
 using Elastos::Utility::Logging::Logger;
-using Org::Apache::Http::IStatusLIine;
-using Org::Apache::Http::IRequestLIine;
+using Org::Apache::Http::IStatusLine;
+using Org::Apache::Http::IRequestLine;
 using Org::Apache::Http::IHttpStatus;
 using Org::Apache::Http::IHttpRequest;
 using Org::Apache::Http::IHeader;
-using Org::Apache::Http::IHttpParams;
+using Org::Apache::Http::IHttpMessage;
 using Org::Apache::Http::IHttpHost;
 using Org::Apache::Http::CHttpHost;
+using Org::Apache::Http::Client::EIID_IRedirectHandler;
 using Org::Apache::Http::Client::Params::IClientPNames;
 using Org::Apache::Http::Client::Utils::URIUtils;
+using Org::Apache::Http::Params::IHttpParams;
 using Org::Apache::Http::Protocol::IExecutionContext;
 
 namespace Org {
@@ -42,11 +45,11 @@ ECode DefaultRedirectHandler::IsRedirectRequested(
         Logger::E("DefaultRedirectHandler", "HTTP response may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AutoPtr<IStatusLIine> statusLine;
-    response->GetStatusLine((IStatusLIine**)&statusLine);
+    AutoPtr<IStatusLine> statusLine;
+    response->GetStatusLine((IStatusLine**)&statusLine);
     Int32 status;
     statusLine->GetStatusCode(&status);
-    switch (statusCode) {
+    switch (status) {
         case IHttpStatus::SC_MOVED_TEMPORARILY:
         case IHttpStatus::SC_MOVED_PERMANENTLY:
         case IHttpStatus::SC_SEE_OTHER:
@@ -72,11 +75,11 @@ ECode DefaultRedirectHandler::GetLocationURI(
     }
     //get the location header to find out where to redirect to
     AutoPtr<IHeader> locationHeader;
-    response->GetFirstHeader(String("location"), (IHeader**)&locationHeader);
+    IHttpMessage::Probe(response)->GetFirstHeader(String("location"), (IHeader**)&locationHeader);
     if (locationHeader == NULL) {
         // got a redirect response, but no location header
-        AutoPtr<IStatusLIine> statusLine;
-        response->GetStatusLine((IStatusLIine**)&statusLine);
+        AutoPtr<IStatusLine> statusLine;
+        response->GetStatusLine((IStatusLine**)&statusLine);
         Logger::E("DefaultRedirectHandler", "Received redirect response %p  but no location header", statusLine.Get());
         return E_PROTOCOL_EXCEPTION;
     }
@@ -98,7 +101,7 @@ ECode DefaultRedirectHandler::GetLocationURI(
     // }
 
     AutoPtr<IHttpParams> params;
-    response->GetParams((IHttpParams**)&params);
+    IHttpMessage::Probe(response)->GetParams((IHttpParams**)&params);
     // rfc2616 demands the location value be a complete URI
     // Location       = "Location" ":" absoluteURI
     Boolean isAbsolute;
@@ -122,10 +125,10 @@ ECode DefaultRedirectHandler::GetLocationURI(
         AutoPtr<IHttpRequest> request = IHttpRequest::Probe(requestAttr);
 
         // try {
-        AutoPtr<IRequestLIine> requestLine;
-        request->GetRequestLine((IRequestLIine**)&requestLine);
-        AutoPtr<IURI> u;
-        requestLine->GetUri((IURI**)&u);
+        AutoPtr<IRequestLine> requestLine;
+        request->GetRequestLine((IRequestLine**)&requestLine);
+        String u;
+        requestLine->GetUri(&u);
         AutoPtr<IURI> requestURI;
         if (FAILED(CURI::New(u, (IURI**)&requestURI))) {
             return E_PROTOCOL_EXCEPTION;
@@ -151,10 +154,10 @@ ECode DefaultRedirectHandler::GetLocationURI(
         AutoPtr<RedirectLocations> redirectLocations;
         if (attr == NULL) {
             redirectLocations = new RedirectLocations();
-            context->SetAttribute(REDIRECT_LOCATIONS, (IInterface*)redirectLocations);
+            context->SetAttribute(REDIRECT_LOCATIONS, redirectLocations->Probe(EIID_IInterface));
         }
         else {
-            redirectLocations = (RedirectLocations*)attr;
+            redirectLocations = (RedirectLocations*)(Object*)(IObject*)attr.Get();
         }
 
         AutoPtr<IURI> redirectURI;
@@ -179,8 +182,7 @@ ECode DefaultRedirectHandler::GetLocationURI(
             redirectURI = uri;
         }
 
-        Boolean contains;
-        if (redirectLocations->Contains(redirectURI, &contains), contains) {
+        if (redirectLocations->Contains(redirectURI)) {
             Logger::E("DefaultRedirectHandler", "Circular redirect to '%p'", redirectURI.Get());
             return E_CIRCULAR_REDIRECT_EXCEPTION;
         }

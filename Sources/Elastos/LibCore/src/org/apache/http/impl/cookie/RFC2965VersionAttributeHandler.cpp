@@ -1,13 +1,14 @@
 
 #include "RFC2965VersionAttributeHandler.h"
-#include <elastos/Logger.h>
-#include <elastos/core/StringUtils.h>
+#include "CStringTokenizer.h"
+#include "Logger.h"
+#include "elastos/core/StringUtils.h"
 
 using Elastos::Core::StringUtils;
-using Elastos::Utility::ILocale;
 using Elastos::Utility::IStringTokenizer;
 using Elastos::Utility::CStringTokenizer;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::Cookie::EIID_ICookieAttributeHandler;
 using Org::Apache::Http::Cookie::IClientCookie;
 using Org::Apache::Http::Cookie::ISetCookie;
 using Org::Apache::Http::Cookie::ISetCookie2;
@@ -22,7 +23,7 @@ CAR_INTERFACE_IMPL(RFC2965VersionAttributeHandler, Object, ICookieAttributeHandl
 
 ECode RFC2965VersionAttributeHandler::Parse(
     /* [in] */ ISetCookie* cookie,
-    /* [in] */ String value)
+    /* [in] */ const String& value)
 {
     if (cookie == NULL) {
         Logger::E("RFC2965VersionAttributeHandler", "Cookie may not be null");
@@ -34,7 +35,7 @@ ECode RFC2965VersionAttributeHandler::Parse(
     }
     Int32 version = -1;
     // try {
-    version = StringUtils::ParseInt(value);
+    version = StringUtils::ParseInt32(value);
     // } catch (NumberFormatException e) {
     //     version = -1;
     // }

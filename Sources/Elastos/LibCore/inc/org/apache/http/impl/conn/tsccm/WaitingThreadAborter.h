@@ -3,9 +3,6 @@
 #define __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_WAITINGTHREADABORTER_H__
 
 #include "WaitingThread.h"
-#include <elastos/core/Object.h>
-
-using Elastos::Core::Object;
 
 namespace Org {
 namespace Apache {

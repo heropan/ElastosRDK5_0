@@ -2,10 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_IdleConnectionHandler_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_IdleConnectionHandler_H__
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Utility::IMap;
 using Elastos::Utility::Concurrent::ITimeUnit;
 using Org::Apache::Http::IHttpConnection;
@@ -44,6 +42,8 @@ private:
     private:
         Int64 mTimeAdded;
         Int64 mTimeExpires;
+
+        friend class IdleConnectionHandler;
     };
 
 public:

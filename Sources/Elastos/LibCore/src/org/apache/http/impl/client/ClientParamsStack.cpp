@@ -1,6 +1,6 @@
 
 #include "ClientParamsStack.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 
@@ -30,16 +30,16 @@ ClientParamsStack::ClientParamsStack(
 }
 
 ClientParamsStack::ClientParamsStack(
-    /* [in] */ ClientParamsStack stack,
+    /* [in] */ ClientParamsStack* stack,
     /* [in] */ IHttpParams* aparams,
     /* [in] */ IHttpParams* cparams,
     /* [in] */ IHttpParams* rparams,
     /* [in] */ IHttpParams* oparams)
 {
-    AutoPtr<IHttpParams> ap = (aparams != NULL) ? aparams : stack->GetApplicationParams();
-    AutoPtr<IHttpParams> cp = (cparams != NULL) ? cparams : stack->GetClientParams();
-    AutoPtr<IHttpParams> rp = (rparams != NULL) ? rparams : stack->GetRequestParams();
-    AutoPtr<IHttpParams> op = (oparams != NULL) ? oparams : stack->GetOverrideParams();
+    AutoPtr<IHttpParams> ap = (aparams != NULL) ? aparams : stack->GetApplicationParams().Get();
+    AutoPtr<IHttpParams> cp = (cparams != NULL) ? cparams : stack->GetClientParams().Get();
+    AutoPtr<IHttpParams> rp = (rparams != NULL) ? rparams : stack->GetRequestParams().Get();
+    AutoPtr<IHttpParams> op = (oparams != NULL) ? oparams : stack->GetOverrideParams().Get();
     Init(ap, cp, rp, op);
 }
 
@@ -76,7 +76,7 @@ AutoPtr<IHttpParams> ClientParamsStack::GetOverrideParams()
 }
 
 ECode ClientParamsStack::GetParameter(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [out] */ IInterface** parameter)
 {
     VALIDATE_NOT_NULL(parameter)
@@ -110,7 +110,7 @@ ECode ClientParamsStack::GetParameter(
 }
 
 ECode ClientParamsStack::SetParameter(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ IInterface* value,
     /* [out] */ IHttpParams** httpParams)
 {
@@ -121,7 +121,7 @@ ECode ClientParamsStack::SetParameter(
 }
 
 ECode ClientParamsStack::RemoveParameter(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [out] */ Boolean* remove)
 {
     VALIDATE_NOT_NULL(remove)

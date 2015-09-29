@@ -3,12 +3,19 @@
 #include "CDefaultedHttpContext.h"
 #include "DefaultRequestDirector.h"
 #include "ClientParamsStack.h"
+#include "CHttpHost.h"
+#include "AutoLock.h"
 #include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Net::IURI;
+using Org::Apache::Http::Client::EIID_IHttpClient;
+using Org::Apache::Http::IHttpMessage;
+using Org::Apache::Http::CHttpHost;
 using Org::Apache::Http::Protocol::IDefaultedHttpContext;
 using Org::Apache::Http::Protocol::CDefaultedHttpContext;
+using Org::Apache::Http::Protocol::IHttpRequestInterceptorList;
+using Org::Apache::Http::Protocol::IHttpResponseInterceptorList;
 
 namespace Org {
 namespace Apache {
@@ -23,7 +30,7 @@ AbstractHttpClient::AbstractHttpClient(
     , mConnManager(conman)
 {}
 
-CAR_INTERFACE_DECL(AbstractHttpClient, Object, IHttpClient)
+CAR_INTERFACE_IMPL(AbstractHttpClient, Object, IHttpClient)
 
 ECode AbstractHttpClient::GetParams(
     /* [out] */ IHttpParams** params)
@@ -169,10 +176,10 @@ ECode AbstractHttpClient::GetHttpRequestRetryHandler(
     VALIDATE_NOT_NULL(handler)
     synchronized(this) {
         if (mRetryHandler == NULL) {
-            CreateHttpRequestRetryHandler((IAuthSchemeRegistry**)&mRetryHandler);
+            CreateHttpRequestRetryHandler((IHttpRequestRetryHandler**)&mRetryHandler);
         }
-        *registry = mRetryHandler;
-        REFCOUNT_ADD(*registry)
+        *handler = mRetryHandler;
+        REFCOUNT_ADD(*handler)
     }
     return NOERROR;
 }
@@ -205,6 +212,7 @@ ECode AbstractHttpClient::SetRedirectHandler(
     synchronized(this) {
         mRedirectHandler = redirectHandler;
     }
+    return NOERROR;
 }
 
 ECode AbstractHttpClient::GetTargetAuthenticationHandler(
@@ -416,7 +424,7 @@ ECode AbstractHttpClient::RemoveResponseInterceptorByClass(
 {
     AutoPtr<IBasicHttpProcessor> processor;
     GetHttpProcessor((IBasicHttpProcessor**)&processor);
-    return IHttpResponseInterceptorList::Probe(processor)->RemoveResponseInterceptorByClass();
+    return IHttpResponseInterceptorList::Probe(processor)->RemoveResponseInterceptorByClass(clazz);
 }
 
 ECode AbstractHttpClient::AddRequestInterceptor(
@@ -482,7 +490,7 @@ ECode AbstractHttpClient::RemoveRequestInterceptorByClass(
 {
     AutoPtr<IBasicHttpProcessor> processor;
     GetHttpProcessor((IBasicHttpProcessor**)&processor);
-    return IHttpRequestInterceptorList::Probe(processor)->RemoveRequestInterceptorByClass();
+    return IHttpRequestInterceptorList::Probe(processor)->RemoveRequestInterceptorByClass(clazz);
 }
 
 ECode AbstractHttpClient::Execute(
@@ -506,7 +514,7 @@ ECode AbstractHttpClient::Execute(
     }
 
     AutoPtr<IHttpHost> host = DetermineTarget(request);
-    return Execute(host, request, context, response);
+    return Execute(host, IHttpRequest::Probe(request), context, response);
 }
 
 AutoPtr<IHttpHost> AbstractHttpClient::DetermineTarget(
@@ -519,7 +527,7 @@ AutoPtr<IHttpHost> AbstractHttpClient::DetermineTarget(
     AutoPtr<IURI> requestURI;
     request->GetURI((IURI**)&requestURI);
     Boolean isAbsolute;
-    if (requestURI->IsAbsolute(), isAbsolute) {
+    if (requestURI->IsAbsolute(&isAbsolute), isAbsolute) {
         String host, scheme;
         requestURI->GetHost(&host);
         requestURI->GetScheme(&scheme);
@@ -568,9 +576,9 @@ ECode AbstractHttpClient::Execute(
             execContext = defaultContext;
         }
         else {
-            AutoPtr<IDefaultedHttpContext> defaultContext;
-            CDefaultedHttpContext::New(context, defaultContext, (IHttpContext**)&defaultContext);
-            execContext = IHttpContext::Probe(defaultContext);
+            AutoPtr<IDefaultedHttpContext> dhc;
+            CDefaultedHttpContext::New(context, defaultContext, (IDefaultedHttpContext**)&dhc);
+            execContext = IHttpContext::Probe(dhc);
         }
         // Create a director for this request
         AutoPtr<IHttpRequestExecutor> executor;
@@ -599,7 +607,7 @@ ECode AbstractHttpClient::Execute(
         GetUserTokenHandler((IUserTokenHandler**)&userTokenHandler);
         AutoPtr<IHttpParams> params = DetermineParams(request);
         director = CreateClientRequestDirector(executor, man, strategy, keepAliveStrategy,
-                planner, copy, requestRetryHandler, redirectHandler, authenticationHandler,
+                planner, IHttpProcessor::Probe(copy), requestRetryHandler, redirectHandler, authenticationHandler,
                 proxyHandler, userTokenHandler, params);
     }
 
@@ -641,7 +649,7 @@ AutoPtr<IHttpParams> AbstractHttpClient::DetermineParams(
 {
     AutoPtr<IHttpParams> params, reqParams;
     GetParams((IHttpParams**)&params);
-    req->GetParams((IHttpParams**)&reqParams);
+    IHttpMessage::Probe(req)->GetParams((IHttpParams**)&reqParams);
     AutoPtr<IHttpParams> stack = (IHttpParams*)new ClientParamsStack(NULL, params, reqParams, NULL);
     return stack;
 }
@@ -663,7 +671,7 @@ ECode AbstractHttpClient::Execute(
 {
     VALIDATE_NOT_NULL(response)
     AutoPtr<IHttpHost> target = DetermineTarget(request);
-    return Execute(target, request, responseHandler, context, response);
+    return Execute(target, IHttpRequest::Probe(request), responseHandler, context, response);
 }
 
 ECode AbstractHttpClient::Execute(

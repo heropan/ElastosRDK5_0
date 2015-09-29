@@ -1,15 +1,15 @@
 
 #include "StrictContentLengthStrategy.h"
-#include <elastos/Logger.h>
-#include <elastos/core/StringUtils.h>
+#include "CHttpVersion.h"
+#include "Logger.h"
+#include "elastos/core/StringUtils.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IProtocolVersion;
-using Org::Apache::Http::IHttpVersion;
+using Org::Apache::Http::CHttpVersion;
 using Org::Apache::Http::IHeader;
-using Org::Apache::Http::Param::IHttpParams;
-using Org::Apache::Http::Param::ICoreProtocolPNames;
+using Org::Apache::Http::Entity::EIID_IContentLengthStrategy;
 using Org::Apache::Http::Protocol::IHTTP;
 
 namespace Org {
@@ -44,7 +44,7 @@ ECode StrictContentLengthStrategy::DetermineLength(
             AutoPtr<IProtocolVersion> ver;
             message->GetProtocolVersion((IProtocolVersion**)&ver);
             Boolean lessEquals;
-            if (ver->LessEquals(IHttpVersion::HTTP_1_0, &lessEquals)) {
+            if (ver->LessEquals(IProtocolVersion::Probe(CHttpVersion::HTTP_1_0), &lessEquals)) {
                 Logger::E("StrictContentLengthStrategy", "Chunked transfer encoding not allowed for %p", ver.Get());
                 return E_PROTOCOL_EXCEPTION;
             }

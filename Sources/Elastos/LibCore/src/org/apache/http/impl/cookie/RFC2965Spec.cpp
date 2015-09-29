@@ -10,19 +10,21 @@
 #include "CCharArrayBuffer.h"
 #include "CBufferedHeader.h"
 #include "DateUtils.h"
-#include <elastos/Logger.h>
-#include <elastos/core/StringUtils.h>
+#include "CArrayList.h"
+#include "Logger.h"
+#include "elastos/core/StringUtils.h"
+#include "elastos/utility/etl/etl_hashmap.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeaderElement;
 using Org::Apache::Http::INameValuePair;
 using Org::Apache::Http::Cookie::IClientCookie;
 using Org::Apache::Http::Cookie::ISM;
 using Org::Apache::Http::Cookie::CCookieOrigin;
-using Org::Apache::Http::Message::IBufferedHeader;
 using Org::Apache::Http::Message::CBufferedHeader;
 using Org::Apache::Http::Utility::CCharArrayBuffer;
 
@@ -92,7 +94,7 @@ AutoPtr<BasicClientCookie> RFC2965Spec::CreateCookie2(
 ECode RFC2965Spec::Parse(
     /* [in] */ IHeader* header,
     /* [in] */ ICookieOrigin* origin,
-    /* [out] */ IList** cookies)
+    /* [out] */ IList** _cookies)
 {
     VALIDATE_NOT_NULL(_cookies)
     *_cookies = NULL;
@@ -144,7 +146,7 @@ ECode RFC2965Spec::Parse(
             AutoPtr<INameValuePair> param = (*attribs)[j];
             String n;
             param->GetName(&n);
-            n = n.ToLowerCase(ILocale::ENGLISH);
+            n = n.ToLowerCase(/*ILocale::ENGLISH*/);
             attribmap[n] = param;
         }
         HashMap<String, AutoPtr<INameValuePair> >::Iterator it = attribmap.Begin();
@@ -152,7 +154,7 @@ ECode RFC2965Spec::Parse(
             AutoPtr<INameValuePair> attrib = it->mSecond;
             String s;
             attrib->GetName(&s);
-            s = s.ToLowerCase(ILocale::ENGLISH);
+            s = s.ToLowerCase(/*ILocale::ENGLISH*/);
 
             String v;
             attrib->GetValue(&v);
@@ -164,7 +166,7 @@ ECode RFC2965Spec::Parse(
                 handler->Parse(cookie, v);
             }
         }
-        cookies->Add(cookie);
+        cookies->Add(cookie->Probe(EIID_IInterface));
     }
     *_cookies = cookies;
     REFCOUNT_ADD(*_cookies)
@@ -204,7 +206,7 @@ ECode RFC2965Spec::Match(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     origin = AdjustEffectiveHost(origin);
-    return RFC2109Spec::Match(cookie, origin);
+    return RFC2109Spec::Match(cookie, origin, result);
 }
 
 void RFC2965Spec::FormatCookieAsVer(
@@ -218,7 +220,7 @@ void RFC2965Spec::FormatCookieAsVer(
     if (clientCookie!= NULL) {
         // Test if the port attribute as set by the origin server is not blank
         String s;
-        clientCookie->GetAttribute(IClientCookie::PORT_ATTR);
+        clientCookie->GetAttribute(IClientCookie::PORT_ATTR, &s);
         if (!s.IsNull()) {
             buffer->Append(String("; $Port"));
             buffer->Append(String("=\""));
@@ -237,7 +239,6 @@ void RFC2965Spec::FormatCookieAsVer(
             buffer->Append(String("\""));
         }
     }
-    return NOERROR;
 }
 
 AutoPtr<ICookieOrigin> RFC2965Spec::AdjustEffectiveHost(
@@ -282,7 +283,7 @@ ECode RFC2965Spec::GetVersion(
 }
 
 ECode RFC2965Spec::GetVersionHeader(
-    /* [out] */ IHeader* header)
+    /* [out] */ IHeader** header)
 {
     VALIDATE_NOT_NULL(header)
     AutoPtr<ICharArrayBuffer> buffer;
@@ -293,8 +294,8 @@ ECode RFC2965Spec::GetVersionHeader(
     Int32 version;
     GetVersion(&version);
     buffer->Append(StringUtils::ToString(version));
-    AutoPtr<IBufferedHeader> bh;
-    CBufferedHeader::New(buffer, (IBufferedHeader**)&bh);
+    AutoPtr<IFormattedHeader> bh;
+    CBufferedHeader::New(buffer, (IFormattedHeader**)&bh);
     *header = IHeader::Probe(bh);
     REFCOUNT_ADD(*header)
     return NOERROR;
