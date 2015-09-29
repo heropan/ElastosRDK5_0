@@ -1,37 +1,37 @@
 
-#include "net/CNetworkStatsEntry.h"
-#include <elastos/core/StringBuilder.h>
-#include <elastos/core/StringUtils.h>
-
-using Elastos::Core::StringUtils;
-using Elastos::Core::StringBuilder;
+#include "elastos/droid/net/NetworkStatsEntry.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
-CNetworkStatsEntry::CNetworkStatsEntry()
-{}
+CAR_INTERFACE_IMPL(NetworkStatsEntry, Object, INetworkStatsEntry)
 
-ECode CNetworkStatsEntry::constructor()
+ECode NetworkStatsEntry::constructor()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     return constructor(INetworkStats::IFACE_ALL, INetworkStats::UID_ALL,
         INetworkStats::SET_DEFAULT, INetworkStats::TAG_NONE, 0L, 0L, 0L, 0L, 0L);
+#endif
 }
 
-ECode CNetworkStatsEntry::constructor(
+ECode NetworkStatsEntry::constructor(
     /* [in] */ Int64 rxBytes,
     /* [in] */ Int64 rxPackets,
     /* [in] */ Int64 txBytes,
     /* [in] */ Int64 txPackets,
     /* [in] */ Int64 operations)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     return constructor(INetworkStats::IFACE_ALL, INetworkStats::UID_ALL,
         INetworkStats::SET_DEFAULT, INetworkStats::TAG_NONE,
         rxBytes, rxPackets, txBytes, txPackets, operations);
+#endif
 }
 
-ECode CNetworkStatsEntry::constructor(
+ECode NetworkStatsEntry::constructor(
     /* [in] */ const String& iface,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 set,
@@ -42,6 +42,8 @@ ECode CNetworkStatsEntry::constructor(
     /* [in] */ Int64 txPackets,
     /* [in] */ Int64 operations)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     mIface = iface;
     mUid = uid;
     mSet = set;
@@ -52,26 +54,35 @@ ECode CNetworkStatsEntry::constructor(
     mTxPackets = txPackets;
     mOperations = operations;
     return NOERROR;
+#endif
 }
 
-ECode CNetworkStatsEntry::IsNegative(
+ECode NetworkStatsEntry::IsNegative(
     /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     *result = mRxBytes < 0 || mRxPackets < 0 || mTxBytes < 0 || mTxPackets < 0 || mOperations < 0;
     return NOERROR;
+#endif
 }
 
-ECode CNetworkStatsEntry::IsEmpty(
+ECode NetworkStatsEntry::IsEmpty(
     /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     *result = mRxBytes == 0 && mRxPackets == 0 && mTxBytes == 0 && mTxPackets == 0
             && mOperations == 0;
     return NOERROR;
+#endif
 }
 
-ECode CNetworkStatsEntry::Add(
+ECode NetworkStatsEntry::Add(
     /* [in] */ INetworkStatsEntry* another)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Int64 num;
     another->GetRxBytes(&num);
     mRxBytes += num;
@@ -84,12 +95,14 @@ ECode CNetworkStatsEntry::Add(
     another->GetOperations(&num);
     mOperations += num;
     return NOERROR;
+#endif
 }
 
-//@Override
-ECode CNetworkStatsEntry::ToString(
+ECode NetworkStatsEntry::ToString(
     /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     StringBuilder builder;
     builder += String("iface=");
     builder += mIface;
@@ -111,143 +124,179 @@ ECode CNetworkStatsEntry::ToString(
     builder += StringUtils::ToString(mOperations);
     *result = builder.ToString();
     return NOERROR;
+#endif
 }
 
-ECode CNetworkStatsEntry::SetIface(
+ECode NetworkStatsEntry::Equals(
+    /* [in] */ IObject* o,
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                if (o instanceof Entry) {
+                    final Entry e = (Entry) o;
+                    return uid == e.uid && set == e.set && tag == e.tag && rxBytes == e.rxBytes
+                            && rxPackets == e.rxPackets && txBytes == e.txBytes
+                            && txPackets == e.txPackets && operations == e.operations
+                            && iface.equals(e.iface);
+                }
+                return false;
+
+#endif
+}
+
+ECode NetworkStatsEntry::GetIface(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    *result = mIface;
+    return NOERROR;
+}
+
+ECode NetworkStatsEntry::SetIface(
     /* [in] */ const String& iface)
 {
     mIface = iface;
     return NOERROR;
 }
 
-ECode CNetworkStatsEntry::GetIface(
-    /* [out] */ String* iface)
+
+ECode NetworkStatsEntry::GetUid(
+    /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(iface);
-    *iface = mIface;
+    VALIDATE_NOT_NULL(result);
+    *result = mUid;
     return NOERROR;
 }
 
-ECode CNetworkStatsEntry::SetUid(
+
+ECode NetworkStatsEntry::SetUid(
     /* [in] */ Int32 uid)
 {
     mUid = uid;
     return NOERROR;
 }
 
-ECode CNetworkStatsEntry::GetUid(
-    /* [out] */ Int32* uid)
+
+ECode NetworkStatsEntry::GetSet(
+    /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(uid);
-    *uid = mUid;
+    VALIDATE_NOT_NULL(result);
+    *result = mSet;
     return NOERROR;
 }
 
-ECode CNetworkStatsEntry::SetSet(
+
+ECode NetworkStatsEntry::SetSet(
     /* [in] */ Int32 set)
 {
     mSet = set;
     return NOERROR;
 }
 
-ECode CNetworkStatsEntry::GetSet(
-    /* [out] */ Int32* set)
+
+ECode NetworkStatsEntry::GetTag(
+    /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(set);
-    *set = mSet;
+    VALIDATE_NOT_NULL(result);
+    *result = mTag;
     return NOERROR;
 }
 
-ECode CNetworkStatsEntry::SetTag(
+
+ECode NetworkStatsEntry::SetTag(
     /* [in] */ Int32 tag)
 {
     mTag = tag;
     return NOERROR;
 }
 
-ECode CNetworkStatsEntry::GetTag(
-    /* [out] */ Int32* tag)
+
+ECode NetworkStatsEntry::GetRxBytes(
+    /* [out] */ Int64* result)
 {
-    VALIDATE_NOT_NULL(tag);
-    *tag = mTag;
+    VALIDATE_NOT_NULL(result);
+    *result = mRxBytes;
     return NOERROR;
 }
 
-ECode CNetworkStatsEntry::SetRxBytes(
+
+ECode NetworkStatsEntry::SetRxBytes(
     /* [in] */ Int64 rxBytes)
 {
     mRxBytes = rxBytes;
     return NOERROR;
 }
 
-ECode CNetworkStatsEntry::GetRxBytes(
-    /* [out] */ Int64* rxBytes)
+
+ECode NetworkStatsEntry::GetRxPackets(
+    /* [out] */ Int64* result)
 {
-    VALIDATE_NOT_NULL(rxBytes);
-    *rxBytes = mRxBytes;
+    VALIDATE_NOT_NULL(result);
+    *result = mRxPackets;
     return NOERROR;
 }
 
-ECode CNetworkStatsEntry::SetRxPackets(
+
+ECode NetworkStatsEntry::SetRxPackets(
     /* [in] */ Int64 rxPackets)
 {
     mRxPackets = rxPackets;
     return NOERROR;
 }
 
-ECode CNetworkStatsEntry::GetRxPackets(
-    /* [out] */ Int64* rxPackets)
+
+ECode NetworkStatsEntry::GetTxBytes(
+    /* [out] */ Int64* result)
 {
-    VALIDATE_NOT_NULL(rxPackets);
-    *rxPackets = mRxPackets;
+    VALIDATE_NOT_NULL(result);
+    *result = mTxBytes;
     return NOERROR;
 }
 
-ECode CNetworkStatsEntry::SetTxBytes(
+
+ECode NetworkStatsEntry::SetTxBytes(
     /* [in] */ Int64 txBytes)
 {
     mTxBytes = txBytes;
     return NOERROR;
 }
 
-ECode CNetworkStatsEntry::GetTxBytes(
-    /* [out] */ Int64* txBytes)
+
+ECode NetworkStatsEntry::GetTxPackets(
+    /* [out] */ Int64* result)
 {
-    VALIDATE_NOT_NULL(txBytes);
-    *txBytes = mTxBytes;
+    VALIDATE_NOT_NULL(result);
+    *result = mTxPackets;
     return NOERROR;
 }
 
-ECode CNetworkStatsEntry::SetTxPackets(
+
+ECode NetworkStatsEntry::SetTxPackets(
     /* [in] */ Int64 txPackets)
 {
     mTxPackets = txPackets;
     return NOERROR;
 }
 
-ECode CNetworkStatsEntry::GetTxPackets(
-    /* [out] */ Int64* txPackets)
+
+ECode NetworkStatsEntry::GetOperations(
+    /* [out] */ Int64* result)
 {
-    VALIDATE_NOT_NULL(txPackets);
-    *txPackets = mTxPackets;
+    VALIDATE_NOT_NULL(result);
+    *result = mOperations;
     return NOERROR;
 }
 
-ECode CNetworkStatsEntry::SetOperations(
+
+ECode NetworkStatsEntry::SetOperations(
     /* [in] */ Int64 operations)
 {
     mOperations = operations;
     return NOERROR;
 }
 
-ECode CNetworkStatsEntry::GetOperations(
-    /* [out] */ Int64* operations)
-{
-    VALIDATE_NOT_NULL(operations);
-    *operations = mOperations;
-    return NOERROR;
-}
-
 } // namespace Net
-} // namepsace Droid
+} // namespace Droid
 } // namespace Elastos

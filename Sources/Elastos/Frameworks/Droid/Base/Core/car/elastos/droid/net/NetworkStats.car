@@ -72,8 +72,7 @@ module
          * object can be recycled across multiple calls.
          */
         AddValues(
-            [in] INetworkStatsEntry* entry,
-            [out] INetworkStats** result);
+            [in] INetworkStatsEntry* entry);
 
         /**
          * Return specific stats entry.
@@ -112,8 +111,7 @@ module
             [in] Int64 rxPackets,
             [in] Int64 txBytes,
             [in] Int64 txPackets,
-            [in] Int64 operations,
-            [out] INetworkStats** result);
+            [in] Int64 operations);
 
         CombineValues(
             [in] String iface,
@@ -124,8 +122,7 @@ module
             [in] Int64 rxPackets,
             [in] Int64 txBytes,
             [in] Int64 txPackets,
-            [in] Int64 operations,
-            [out] INetworkStats** result);
+            [in] Int64 operations);
 
         /**
          * Combine given values with an existing row, or create a new row if
@@ -133,8 +130,7 @@ module
          * also be used to subtract values from existing rows.
          */
         CombineValues(
-            [in] INetworkStatsEntry* entry,
-            [out] INetworkStats** result);
+            [in] INetworkStatsEntry* entry);
 
         /**
          * Combine all values from another {@link NetworkStats} into this object.
