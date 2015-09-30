@@ -10,14 +10,14 @@ INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../inc/libcore;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/io;
+INCLUDES += $(MAKEDIR)/../../../inc/corelibrary;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 
-SOURCES = AsynchronousCloseMonitorNative.cpp
-SOURCES += CAsynchronousCloseMonitor.cpp
+SOURCES = CAsynchronousCloseMonitor.cpp
 SOURCES += CPosix.cpp
 SOURCES += NetworkUtilities.cpp
 SOURCES += SocketTagger.cpp

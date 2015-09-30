@@ -50,6 +50,7 @@ using Elastos::Utility::Logging::Logger;
 namespace Org {
 namespace Conscrypt {
 
+#undef LOG_TAG
 #define LOG_TAG "NativeCrypto"
 
 #undef WITH_NATIVE_TRACE
@@ -483,7 +484,7 @@ static ECode ThrowSocketTimeoutException(const char* message)
 static ECode ThrowSSLHandshakeExceptionStr(const char* message)
 {
     NATIVE_TRACE("throwSSLExceptionStr %s", message);
-    return E_SSL_HANDSHAKE_EXCEPTION;
+    return E_SSL_HAND_SHAKE_EXCEPTION;
 }
 
 

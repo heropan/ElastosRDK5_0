@@ -33,7 +33,7 @@
 #include <sys/un.h>
 #include <dns/resolv_netid.h>
 #include "CPosix.h"
-#include "AsynchronousCloseMonitorNative.h"
+#include "AsynchronousCloseMonitor.h"
 #include "io/CFileDescriptor.h"
 #include "NetworkUtilities.h"
 #include "droid/system/CStructPasswd.h"
@@ -72,7 +72,7 @@ using Elastos::Droid::System::CStructUtsname;
         { \
             Int32 _fd; \
             fd->GetDescriptor(&_fd); \
-            AsynchronousCloseMonitorNative _monitor(_fd); \
+            AsynchronousCloseMonitor _monitor(_fd); \
             _rc = syscall_name(_fd, __VA_ARGS__); \
             _syscallErrno = errno; \
             _wasSignaled = _monitor.WasSignaled(); \
@@ -105,7 +105,7 @@ using Elastos::Droid::System::CStructUtsname;
             Boolean _wasSignaled; \
             Int32 _syscallErrno; \
             { \
-                AsynchronousCloseMonitorNative _monitor(_fd); \
+                AsynchronousCloseMonitor _monitor(_fd); \
                 _rc = syscall_name(_fd, __VA_ARGS__); \
                 _syscallErrno = errno; \
                 _wasSignaled = _monitor.WasSignaled(); \
@@ -1450,9 +1450,9 @@ ECode CPosix::Poll(
         ++count;
     }
 
-    Vector<AsynchronousCloseMonitorNative*> monitors;
+    Vector<AsynchronousCloseMonitor*> monitors;
     for (size_t i = 0; i < count; ++i) {
-        monitors.PushBack(new AsynchronousCloseMonitorNative(fds[i].fd));
+        monitors.PushBack(new AsynchronousCloseMonitor(fds[i].fd));
     }
     int rc = poll(fds.get(), count, timeoutMs);
     for (size_t i = 0; i < monitors.GetSize(); ++i) {

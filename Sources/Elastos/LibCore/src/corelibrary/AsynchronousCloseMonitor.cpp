@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-#define LOG_TAG "AsynchronousCloseMonitorNative"
+#define LOG_TAG "AsynchronousCloseMonitor"
 
-#include "AsynchronousCloseMonitorNative.h"
-#include "cutils/log.h"
+#include "AsynchronousCloseMonitor.h"
+#include <elastos/core/Mutex.h>
+#include <elastos/utility/logging/Logger.h>
 
 #include <errno.h>
 #include <asm/signal.h>
-#include <string.h>
+
+using Elastos::Core::Mutex;
+using Elastos::Utility::Logging::Logger;
 
 /**
  * We use an intrusive doubly-linked list to keep track of blocked threads.
@@ -31,11 +34,9 @@
  * of blocked threads (not the number of threads actually blocked on the file descriptor in
  * question). For now at least, this seems like a good compromise for Android.
  */
-namespace Libcore {
-namespace IO {
 
-static pthread_mutex_t sBlockedThreadListMutex = PTHREAD_MUTEX_INITIALIZER;
-static AsynchronousCloseMonitorNative* sBlockedThreadList = NULL;
+static Mutex sBlockedThreadListMutex;
+static AsynchronousCloseMonitor* sBlockedThreadList = NULL;
 
 /**
  * The specific signal chosen here is arbitrary, but bionic needs to know so that SIGRTMIN
@@ -47,11 +48,13 @@ static const int BLOCKED_THREAD_SIGNAL = SIGUSR2;
 static const int BLOCKED_THREAD_SIGNAL = __SIGRTMIN + 2;
 #endif
 
-static void BlockedThreadSignalHandler(int /*signal*/) {
+static void BlockedThreadSignalHandler(int /*signal*/)
+{
     // Do nothing. We only sent this signal for its side-effect of interrupting syscalls.
 }
 
-void AsynchronousCloseMonitorNative::Init() {
+void AsynchronousCloseMonitor::Init()
+{
     // Ensure that the signal we send interrupts system calls but doesn't kill threads.
     // Using sigaction(2) lets us ensure that the SA_RESTART flag is not set.
     // (The whole reason we're sending this signal is to unblock system calls!)
@@ -61,14 +64,15 @@ void AsynchronousCloseMonitorNative::Init() {
     sa.sa_flags = 0;
     int rc = sigaction(BLOCKED_THREAD_SIGNAL, &sa, NULL);
     if (rc == -1) {
-        ALOGE("setting blocked thread signal handler failed: %s", strerror(errno));
+        Logger::E(LOG_TAG, "setting blocked thread signal handler failed: %s", strerror(errno));
     }
 }
 
-void AsynchronousCloseMonitorNative::SignalBlockedThreads(
-        /* [in] */ Int32 fd) {
-    ScopedPthreadMutexLock lock(&sBlockedThreadListMutex);
-    for (AsynchronousCloseMonitorNative* it = sBlockedThreadList; it != NULL; it = it->mNext) {
+void AsynchronousCloseMonitor::SignalBlockedThreads(
+    /* [in] */ Int32 fd)
+{
+    Mutex::AutoLock lock(&sBlockedThreadListMutex);
+    for (AsynchronousCloseMonitor* it = sBlockedThreadList; it != NULL; it = it->mNext) {
         if (it->mFd == fd) {
             it->mSignaled = TRUE;
             pthread_kill(it->mThread, BLOCKED_THREAD_SIGNAL);
@@ -77,13 +81,15 @@ void AsynchronousCloseMonitorNative::SignalBlockedThreads(
     }
 }
 
-Boolean AsynchronousCloseMonitorNative::WasSignaled() const {
+Boolean AsynchronousCloseMonitor::WasSignaled() const
+{
     return mSignaled;
 }
 
-AsynchronousCloseMonitorNative::AsynchronousCloseMonitorNative(
-        /* [in] */ Int32 fd) {
-    ScopedPthreadMutexLock lock(&sBlockedThreadListMutex);
+AsynchronousCloseMonitor::AsynchronousCloseMonitor(
+        /* [in] */ Int32 fd)
+{
+    Mutex::AutoLock lock(&sBlockedThreadListMutex);
     // Who are we, and what are we waiting for?
     mThread = pthread_self();
     mFd = fd;
@@ -97,18 +103,17 @@ AsynchronousCloseMonitorNative::AsynchronousCloseMonitorNative(
     sBlockedThreadList = this;
 }
 
-AsynchronousCloseMonitorNative::~AsynchronousCloseMonitorNative() {
-    ScopedPthreadMutexLock lock(&sBlockedThreadListMutex);
+AsynchronousCloseMonitor::~AsynchronousCloseMonitor()
+{
+    Mutex::AutoLock lock(&sBlockedThreadListMutex);
     // Unlink ourselves from the intrusive doubly-linked list...
     if (mNext != NULL) {
         mNext->mPrev = mPrev;
     }
     if (mPrev == NULL) {
         sBlockedThreadList = mNext;
-    } else {
+    }
+    else {
         mPrev->mNext = mNext;
     }
 }
-
-} // namespace IO
-} // namespace Libcore

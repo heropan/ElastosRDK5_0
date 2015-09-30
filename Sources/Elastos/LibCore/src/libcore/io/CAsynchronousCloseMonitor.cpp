@@ -1,5 +1,5 @@
 #include "CAsynchronousCloseMonitor.h"
-#include "AsynchronousCloseMonitorNative.h"
+#include "AsynchronousCloseMonitor.h"
 
 namespace Libcore {
 namespace IO {
@@ -13,7 +13,7 @@ ECode CAsynchronousCloseMonitor::SignalBlockedThreads(
 {
     Int32 iFd;
     fd->GetDescriptor(&iFd);
-    AsynchronousCloseMonitorNative::SignalBlockedThreads(iFd);
+    AsynchronousCloseMonitor::SignalBlockedThreads(iFd);
     return NOERROR;
 }
 

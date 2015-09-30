@@ -6,9 +6,9 @@ include $(MAKEDIR)/../../../../../LibCore/src/sources.inc
 
 INCLUDES += $(MAKEDIR)/../../../inc
 INCLUDES += $(MAKEDIR)/../../../inc/org/conscrypt
+INCLUDES += $(MAKEDIR)/../../../../../LibCore/inc/corelibrary
 
 SOURCES = Org.Conscrypt.car
-SOURCES += AsynchronousCloseMonitor.cpp
 SOURCES += COpenSSLProvider.cpp
 SOURCES += CryptoUpcalls.cpp
 SOURCES += NativeCrypto.cpp

@@ -2897,3 +2897,7 @@ EXPORTS
     _ZThn8_N8Elastosx3Net13SocketFactory5ProbeERKN7Elastos6_EMuidE
     _ZThn8_N8Elastosx3Net13SocketFactory6AddRefEv
     _ZThn8_N8Elastosx3Net13SocketFactory7ReleaseEv
+
+    ;;elastos/corelibary
+    _ZN24AsynchronousCloseMonitorC1Ei
+    _ZN24AsynchronousCloseMonitorD1Ev

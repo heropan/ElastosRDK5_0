@@ -17,8 +17,7 @@
 #ifndef __LIBCORE_IO_ASYNCHRONOUS_CLOSE_MONITOR_H_INCLUDED__
 #define __LIBCORE_IO_ASYNCHRONOUS_CLOSE_MONITOR_H_INCLUDED__
 
-#include "core/Object.h"
-#include "ScopedPthreadMutexLock.h"
+#include <elastos/core/Object.h>
 
 /**
  * AsynchronousCloseMonitor helps implement Java's asynchronous close semantics.
@@ -42,15 +41,13 @@
  *   monitor.wasSignaled();
  */
 
-namespace Libcore {
-namespace IO {
-
-class AsynchronousCloseMonitorNative {
+class AsynchronousCloseMonitor
+{
 public:
-    AsynchronousCloseMonitorNative(
+    AsynchronousCloseMonitor(
         /* [in] */ Int32 fd);
 
-    ~AsynchronousCloseMonitorNative();
+    ~AsynchronousCloseMonitor();
 
     CARAPI_(Boolean) WasSignaled() const;
 
@@ -60,17 +57,15 @@ public:
         /* [in] */ Int32 fd);
 
 private:
-    AsynchronousCloseMonitorNative* mPrev;
-    AsynchronousCloseMonitorNative* mNext;
+    AsynchronousCloseMonitor* mPrev;
+    AsynchronousCloseMonitor* mNext;
     pthread_t mThread;
     Int32 mFd;
     Boolean mSignaled;
 
     // Disallow copy and assignment.
-    AsynchronousCloseMonitorNative(const AsynchronousCloseMonitorNative&);
-    void operator=(const AsynchronousCloseMonitorNative&);
+    AsynchronousCloseMonitor(const AsynchronousCloseMonitor&);
+    void operator=(const AsynchronousCloseMonitor&);
 };
 
-} // namespace IO
-} // namespace Libcore
 #endif  // __LIBCORE_IO_ASYNCHRONOUS_CLOSE_MONITOR_H_INCLUDED__

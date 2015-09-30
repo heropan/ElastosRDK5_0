@@ -28,5 +28,5 @@ module
     const E_SSL_EXCEPTION                                           = 0xB1020000;
     const E_SSL_PROTOCOL_EXCEPTION                                  = 0xB1030000;
     const E_SSL_KEY_EXCEPTION                                       = 0xB1040000;
-    const E_SSL_HANDS_SHAKE_EXCEPTION                               = 0xB1050000;
+    const E_SSL_HAND_SHAKE_EXCEPTION                               = 0xB1050000;
 }
