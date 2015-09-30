@@ -1,182 +1,44 @@
 
-#include "net/CNetworkStatsHistory.h"
-#include "net/CNetworkStatsHistoryEntry.h"
-#include "net/CNetworkStatsEntry.h"
-#include "utility/ArrayUtils.h"
-#include <elastos/core/Math.h>
-
-using Elastos::IO::IDataInput;
-using Elastos::IO::IDataOutput;
-using Elastos::IO::CDataInputStream;
-using Elastos::Droid::Net::CNetworkStatsEntry;
-using Elastos::Droid::Net::CNetworkStatsHistoryEntry;
-using Elastos::Droid::Internal::Utility::ArrayUtils;
+#include "elastos/droid/net/NetworkStatsHistory.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
- const Int32 CNetworkStatsHistory::VERSION_INIT = 1;
- const Int32 CNetworkStatsHistory::VERSION_ADD_PACKETS = 2;
- const Int32 CNetworkStatsHistory::VERSION_ADD_ACTIVE = 3;
+CAR_INTERFACE_IMPL_2(NetworkStatsHistory, Object, IParcelable, INetworkStatsHistory)
 
-ECode CNetworkStatsHistory::DataStreamUtils::ReadFullLongArray(
-    /* [in] */ IDataInputStream* in,
-    /* [out] */ ArrayOf<Int64>** result)
-{
-    Int32 size;
-    IDataInput::Probe(in)->ReadInt32(&size);
-    AutoPtr< ArrayOf<Int64> > values = ArrayOf<Int64>::Alloc(size);
+const Int32 NetworkStatsHistory::VERSION_INIT = 1;
+const Int32 NetworkStatsHistory::VERSION_ADD_PACKETS = 2;
+const Int32 NetworkStatsHistory::VERSION_ADD_ACTIVE = 3;
 
-    for (int i = 0; i < values->GetLength(); i++) {
-        IDataInput::Probe(in)->ReadInt64(&(*values)[i]);
-    }
-    *result =values;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
-}
-
-ECode CNetworkStatsHistory::DataStreamUtils::ReadVarLong(
-    /* [in] */ IDataInputStream* in,
-    /* [out] */ Int64* values)
-{
-    Int32 shift = 0;
-    Int64 result = 0;
-    while (shift < 64) {
-        Byte b;
-        IDataInput::Probe(in)->ReadByte(&b);
-        result |= (Int64) (b & 0x7F) << shift;
-        if ((b & 0x80) == 0) {
-            *values = result;
-            return NOERROR;
-        }
-        shift += 7;
-    }
-    //throw new ProtocolException("malformed long");
-    return E_PROTOCOL_EXCEPTION;
-}
-
-ECode CNetworkStatsHistory::DataStreamUtils::WriteVarLong(
-    /* [in] */ IDataOutputStream* out,
-    /* [in] */ Int64 value)
-{
-    while (TRUE) {
-        if ((value & ~0x7FL) == 0) {
-            IDataOutput::Probe(out)->WriteByte((Int32) value);
-            return NOERROR;
-        }
-        else {
-            IDataOutput::Probe(out)->WriteByte(((int) value & 0x7F) | 0x80);
-            value >>= 7; //value >>>= 7;
-        }
-    }
-    return NOERROR;
-}
-
-ECode CNetworkStatsHistory::DataStreamUtils::ReadVarLongArray(
-    /* [in] */ IDataInputStream* in,
-    /* [out] */ ArrayOf<Int64>** result)
-{
-    Int32 size;
-    IDataInput::Probe(in)->ReadInt32(&size);
-    if (size == -1)
-    {
-        *result = NULL;
-        return NOERROR;
-    }
-    AutoPtr< ArrayOf<Int64> > values = ArrayOf<Int64>::Alloc(size);
-    for (int i = 0; i < values->GetLength(); i++) {
-        IDataInput::Probe(in)->ReadInt64(&(*values)[i]);
-    }
-    *result =values;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
-}
-
-ECode CNetworkStatsHistory::DataStreamUtils::WriteVarLongArray(
-    /* [in] */ IDataOutputStream* out,
-    /* [in] */ ArrayOf<Int64>* values,
-    /* [in] */ Int32 size)
-{
-    if (values == NULL) {
-        IDataOutput::Probe(out)->WriteInt32(-1);
-        return NOERROR;
-    }
-    if (size > values->GetLength()) {
-        //throw new IllegalArgumentException("size larger than length");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    IDataOutput::Probe(out)->WriteInt32(size);
-    for (int i = 0; i < size; i++) {
-        DataStreamUtils::WriteVarLong(out, (*values)[i]);
-    }
-    return NOERROR;
-}
-
-ECode CNetworkStatsHistory::ParcelUtils::ReadLongArray(
-    /* [in] */ IParcel* in,
-    /* [out] */ArrayOf<Int64>** result)
-{
-    Int32 size;
-    in->ReadInt32(&size);
-    if (size == -1)
-    {
-        *result = NULL;
-        return NOERROR;
-    }
-    AutoPtr< ArrayOf<Int64> > values = ArrayOf<Int64>::Alloc(size);
-    for (int i = 0; i < values->GetLength(); i++) {
-        in->ReadInt64(&(*values)[i]);
-    }
-    *result =values;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
-}
-ECode CNetworkStatsHistory::ParcelUtils::WriteLongArray(
-    /* [in] */ IParcel* out,
-    /* [in] */ ArrayOf<Int64>* values,
-    /* [in] */ Int32 size)
-{
-    if (values == NULL) {
-        out->WriteInt32(-1);
-        return NOERROR;
-    }
-    if (size > values->GetLength()) {
-        // throw new IllegalArgumentException("size larger than length");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    out->WriteInt32(size);
-    for (int i = 0; i < size; i++) {
-        out->WriteInt64((*values)[i]);
-    }
-    return NOERROR;
-}
-
-ECode CNetworkStatsHistory::constructor()
-{
-    return NOERROR;
-}
-
-ECode CNetworkStatsHistory::constructor(
+ECode NetworkStatsHistory::constructor(
     /* [in] */ Int64 bucketDuration)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     constructor(bucketDuration, 10, FIELD_ALL);
     return NOERROR;
+#endif
 }
 
-ECode CNetworkStatsHistory::constructor(
+ECode NetworkStatsHistory::constructor(
     /* [in] */ Int64 bucketDuration,
     /* [in] */ Int32 initialSize)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     constructor(bucketDuration, initialSize, FIELD_ALL);
     return NOERROR;
+#endif
 }
 
-ECode CNetworkStatsHistory::constructor(
+ECode NetworkStatsHistory::constructor(
     /* [in] */ Int64 bucketDuration,
     /* [in] */ Int32 initialSize,
     /* [in] */ Int32 fields)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     mBucketDuration = bucketDuration;
     mBucketStart = ArrayOf<Int64>::Alloc(initialSize);
 
@@ -201,24 +63,66 @@ ECode CNetworkStatsHistory::constructor(
     mBucketCount = 0;
     mTotalBytes = 0;
     return NOERROR;
+#endif
 }
 
-ECode CNetworkStatsHistory::constructor(
+ECode NetworkStatsHistory::constructor(
     /* [in] */ INetworkStatsHistory* existing,
     /* [in] */ Int64 bucketDuration)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Int32 resizeBuckets;
     existing->EstimateResizeBuckets(bucketDuration, &resizeBuckets);
     constructor(mBucketDuration, resizeBuckets);
     RecordEntireHistory(existing);
     return NOERROR;
+#endif
 }
 
+ECode NetworkStatsHistory::constructor(
+    /* [in] */ IParcel* in)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        bucketDuration = in.readLong();
+        bucketStart = readLongArray(in);
+        activeTime = readLongArray(in);
+        rxBytes = readLongArray(in);
+        rxPackets = readLongArray(in);
+        txBytes = readLongArray(in);
+        txPackets = readLongArray(in);
+        operations = readLongArray(in);
+        bucketCount = bucketStart.length;
+        totalBytes = in.readLong();
 
+#endif
+}
 
-ECode CNetworkStatsHistory::constructor(
+ECode NetworkStatsHistory::WriteToParcel(
+    /* [in] */ IParcel* out,
+    /* [in] */ Int32 flags)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        out.writeLong(bucketDuration);
+        writeLongArray(out, bucketStart, bucketCount);
+        writeLongArray(out, activeTime, bucketCount);
+        writeLongArray(out, rxBytes, bucketCount);
+        writeLongArray(out, rxPackets, bucketCount);
+        writeLongArray(out, txBytes, bucketCount);
+        writeLongArray(out, txPackets, bucketCount);
+        writeLongArray(out, operations, bucketCount);
+        out.writeLong(totalBytes);
+
+#endif
+}
+
+ECode NetworkStatsHistory::constructor(
     /* [in] */ IDataInputStream* in)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Int32 version;
     IDataInput::Probe(in)->ReadInt32(&version);
     switch (version) {
@@ -264,11 +168,14 @@ ECode CNetworkStatsHistory::constructor(
         return E_PROTOCOL_EXCEPTION;
     }
     return NOERROR;
+#endif
 }
 
-ECode CNetworkStatsHistory::WriteToStream(
+ECode NetworkStatsHistory::WriteToStream(
     /* [in] */ IDataOutputStream* out)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     IDataOutput::Probe(out)->WriteInt32(VERSION_ADD_ACTIVE);
     IDataOutput::Probe(out)->WriteInt64(mBucketDuration);
     DataStreamUtils::WriteVarLongArray(out, mBucketStart, mBucketCount);
@@ -279,28 +186,46 @@ ECode CNetworkStatsHistory::WriteToStream(
     DataStreamUtils::WriteVarLongArray(out, mTxPackets, mBucketCount);
     DataStreamUtils::WriteVarLongArray(out, mOperations, mBucketCount);
     return NOERROR;
+#endif
 }
 
-
-ECode CNetworkStatsHistory::GetSize(
+ECode NetworkStatsHistory::DescribeContents(
     /* [out] */ Int32* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return 0;
+
+#endif
+}
+
+ECode NetworkStatsHistory::Size(
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     *result = mBucketCount;
     return NOERROR;
+#endif
 }
 
-ECode CNetworkStatsHistory::GetBucketDuration(
+ECode NetworkStatsHistory::GetBucketDuration(
     /* [out] */ Int64* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     *result = mBucketDuration;
     return NOERROR;
+#endif
 }
 
-ECode CNetworkStatsHistory::GetStart(
+ECode NetworkStatsHistory::GetStart(
     /* [out] */ Int64* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     if (mBucketCount > 0) {
         *result = (*mBucketStart)[0];
@@ -309,11 +234,14 @@ ECode CNetworkStatsHistory::GetStart(
         *result = Elastos::Core::Math::INT64_MAX_VALUE;
     }
     return NOERROR;
+#endif
 }
 
-ECode CNetworkStatsHistory::GetEnd(
+ECode NetworkStatsHistory::GetEnd(
     /* [out] */ Int64* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(result);
     if (mBucketCount > 0) {
         *result = (*mBucketStart)[mBucketCount - 1] + mBucketDuration;
@@ -322,27 +250,26 @@ ECode CNetworkStatsHistory::GetEnd(
         *result = Elastos::Core::Math::INT64_MIN_VALUE;
     }
     return NOERROR;
+#endif
 }
 
-/**
- * Return total bytes represented by this history.
- */
-ECode CNetworkStatsHistory::GetTotalBytes(
+ECode NetworkStatsHistory::GetTotalBytes(
     /* [out] */ Int64* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(result);
     *result = mTotalBytes;
     return NOERROR;
+#endif
 }
 
-/**
- * Return index of bucket that contains or is immediately before the
- * requested time.
- */
-ECode CNetworkStatsHistory::GetIndexBefore(
+ECode NetworkStatsHistory::GetIndexBefore(
     /* [in] */ Int64 time,
     /* [out] */ Int32* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     Int32 index = mBucketStart->BinarySearch(time);
 
@@ -354,16 +281,15 @@ ECode CNetworkStatsHistory::GetIndexBefore(
     }
     *result = index < 0 ? 0 : (index > (mBucketCount - 1) ? (mBucketCount - 1) : index);
     return NOERROR;
+#endif
 }
 
-/**
- * Return index of bucket that contains or is immediately after the
- * requested time.
- */
-ECode CNetworkStatsHistory::GetIndexAfter(
+ECode NetworkStatsHistory::GetIndexAfter(
     /* [in] */ Int64 time,
     /* [out] */ Int32* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(result);
 
     Int32 index = mBucketStart->BinarySearch(time);
@@ -376,16 +302,16 @@ ECode CNetworkStatsHistory::GetIndexAfter(
 
     *result =index < 0 ? 0 : (index > (mBucketCount - 1) ? (mBucketCount - 1) : index);
     return NOERROR;
+#endif
 }
 
-/**
- * Return specific stats entry.
- */
-ECode CNetworkStatsHistory::GetValues(
+ECode NetworkStatsHistory::GetValues(
     /* [in] */ Int32 i,
     /* [in] */ INetworkStatsHistoryEntry* recycle,
     /* [out] */ INetworkStatsHistoryEntry** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<INetworkStatsHistoryEntry> entry;
@@ -405,19 +331,17 @@ ECode CNetworkStatsHistory::GetValues(
     *result = entry;
     REFCOUNT_ADD(*result);
     return NOERROR;
+#endif
 }
 
-/**
- * Record that data traffic occurred in the given time range. Will
- * distribute across internal buckets, creating new buckets as needed.
- */
-//@Deprecated
-ECode CNetworkStatsHistory::RecordData(
+ECode NetworkStatsHistory::RecordData(
     /* [in] */ Int64 start,
     /* [in] */ Int64 end,
     /* [in] */ Int64 rxBytes,
     /* [in] */ Int64 txBytes)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     AutoPtr<INetworkStatsEntry> networkStatsEntry;
     CNetworkStatsEntry::New(
     INetworkStats::IFACE_ALL, INetworkStats::UID_ALL, INetworkStats::SET_DEFAULT,
@@ -425,17 +349,16 @@ ECode CNetworkStatsHistory::RecordData(
     (INetworkStatsEntry**)&networkStatsEntry);
 
     return RecordData(start, end, networkStatsEntry);
+#endif
 }
 
-/**
- * Record that data traffic occurred in the given time range. Will
- * distribute across internal buckets, creating new buckets as needed.
- */
-ECode CNetworkStatsHistory::RecordData(
+ECode NetworkStatsHistory::RecordData(
     /* [in] */ Int64 start,
     /* [in] */ Int64 end,
     /* [in] */ INetworkStatsEntry* entry)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Int64 rxBytes;
     entry->GetRxBytes(&rxBytes);
     Int64 rxPackets;
@@ -500,29 +423,26 @@ ECode CNetworkStatsHistory::RecordData(
 
     mTotalBytes += rxBytes + txBytes;
     return NOERROR;
+#endif
 }
 
-/**
- * Record an entire {@link NetworkStatsHistory} into this history. Usually
- * for combining together stats for external reporting.
- */
-ECode CNetworkStatsHistory::RecordEntireHistory(
+ECode NetworkStatsHistory::RecordEntireHistory(
     /* [in] */ INetworkStatsHistory* input)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     RecordHistory(input, Elastos::Core::Math::INT64_MIN_VALUE, Elastos::Core::Math::INT64_MAX_VALUE);
     return NOERROR;
+#endif
 }
 
-/**
- * Record given {@link NetworkStatsHistory} into this history, copying only
- * buckets that atomically occur in the inclusive time range. Doesn't
- * interpolate across partial buckets.
- */
-ECode CNetworkStatsHistory::RecordHistory(
+ECode NetworkStatsHistory::RecordHistory(
     /* [in] */ INetworkStatsHistory* input,
     /* [in] */ Int64 start,
     /* [in] */ Int64 end)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     AutoPtr<INetworkStatsEntry> entry;
     CNetworkStatsEntry::New(INetworkStats::IFACE_ALL, INetworkStats::UID_ALL, INetworkStats::SET_DEFAULT, INetworkStats::TAG_NONE, 0L, 0L, 0L, 0L, 0L, (INetworkStatsEntry**)&entry);
     Int32 bucketCount;
@@ -558,15 +478,15 @@ ECode CNetworkStatsHistory::RecordHistory(
         RecordData(bucketStart, bucketEnd, entry);
     }
     return NOERROR;
+#endif
 }
 
-/**
- * Ensure that buckets exist for given time range, creating as needed.
- */
-void CNetworkStatsHistory::EnsureBuckets(
+ECode NetworkStatsHistory::EnsureBuckets(
     /* [in] */ Int64 start,
     /* [in] */ Int64 end)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     //normalize incoming range to bucket boundaries
     start -= start % mBucketDuration;
     end += (mBucketDuration - (end % mBucketDuration)) % mBucketDuration;
@@ -579,15 +499,15 @@ void CNetworkStatsHistory::EnsureBuckets(
             InsertBucket(~index, now);
         }
     }
+#endif
 }
 
-/**
- * Insert new bucket at requested index and starting time.
- */
-void CNetworkStatsHistory::InsertBucket(
+ECode NetworkStatsHistory::InsertBucket(
     /* [in] */ Int32 index,
     /* [in] */ Int64 start)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     // create more buckets when needed
     if (mBucketCount >= mBucketStart->GetLength()) {
         const Int32 newLength = Elastos::Core::Math::Max(mBucketStart->GetLength(), 10) * 3 / 2;
@@ -623,15 +543,14 @@ void CNetworkStatsHistory::InsertBucket(
     SetLong(mTxPackets, index, 0L);
     SetLong(mOperations, index, 0L);
     mBucketCount++;
+#endif
 }
 
-/**
- * Remove buckets older than requested cutoff.
- */
-//@Deprecated
-ECode CNetworkStatsHistory::RemoveBucketsBefore(
+ECode NetworkStatsHistory::RemoveBucketsBefore(
     /* [in] */ Int64 cutoff)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Int32 i;
     for (i = 0; i < mBucketCount; i++) {
         const Int64 curStart = (*mBucketStart)[i];
@@ -657,34 +576,31 @@ ECode CNetworkStatsHistory::RemoveBucketsBefore(
         // TODO: subtract removed values from totalBytes
     }
     return NOERROR;
-
+#endif
 }
 
-/**
- * Return interpolated data usage across the requested range. Interpolates
- * across buckets, so values may be rounded slightly.
- */
-ECode CNetworkStatsHistory::GetValues(
+ECode NetworkStatsHistory::GetValues(
     /* [in] */ Int64 start,
     /* [in] */ Int64 end,
     /* [in] */ INetworkStatsHistoryEntry* recycle,
     /* [out] */ INetworkStatsHistoryEntry** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     return GetValues(start, end, Elastos::Core::Math::INT64_MAX_VALUE, recycle, result);
+#endif
 }
 
-/**
- * Return interpolated data usage across the requested range. Interpolates
- * across buckets, so values may be rounded slightly.
- */
-ECode CNetworkStatsHistory::GetValues(
+ECode NetworkStatsHistory::GetValues(
     /* [in] */ Int64 start,
     /* [in] */ Int64 end,
     /* [in] */ Int64 now,
     /* [in] */ INetworkStatsHistoryEntry* recycle,
     /* [out] */ INetworkStatsHistoryEntry** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     AutoPtr<INetworkStatsHistoryEntry> entry;
     if (recycle != NULL)
@@ -748,17 +664,16 @@ ECode CNetworkStatsHistory::GetValues(
     *result = entry;
     REFCOUNT_ADD(*result);
     return NOERROR;
+#endif
 }
 
-/**
- * @deprecated only for temporary testing
- */
-//@Deprecated
-ECode CNetworkStatsHistory::GenerateRandom(
+ECode NetworkStatsHistory::GenerateRandom(
     /* [in] */ Int64 start,
     /* [in] */ Int64 end,
     /* [in] */ Int64 bytes)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     AutoPtr<IRandom> random;
     CRandom:: New((IRandom**)&random);
     Float fractionRx;
@@ -771,13 +686,10 @@ ECode CNetworkStatsHistory::GenerateRandom(
     Int64 operations = rxBytes / 2048;
 
     return GenerateRandom(start, end, rxBytes, rxPackets, txBytes, txPackets, operations, random);
+#endif
 }
 
-/**
- * @deprecated only for temporary testing
- */
-//@Deprecated
-ECode CNetworkStatsHistory::GenerateRandom(
+ECode NetworkStatsHistory::GenerateRandom(
     /* [in] */ Int64 start,
     /* [in] */ Int64 end,
     /* [in] */ Int64 rxBytes,
@@ -787,6 +699,8 @@ ECode CNetworkStatsHistory::GenerateRandom(
     /* [in] */ Int64 operations,
     /* [in] */ IRandom* r)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     EnsureBuckets(start, end);
 
     AutoPtr<INetworkStatsEntry> entry;
@@ -838,24 +752,30 @@ ECode CNetworkStatsHistory::GenerateRandom(
         RecordData(curStart, curEnd, entry);
     }
     return NOERROR;
+#endif
 }
 
-ECode CNetworkStatsHistory::RandomLong(
+ECode NetworkStatsHistory::RandomLong(
     /* [in] */ IRandom* r,
     /* [in] */ Int64 start,
     /* [in] */ Int64 end,
     /* [out] */ Int64* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Float nextFloat;
     r->NextFloat(&nextFloat);
     *result = (Int64) (start + (nextFloat * (end - start)));
     return NOERROR;
+#endif
 }
 
-ECode CNetworkStatsHistory::Dump(
-     /* [in] */ IIndentingPrintWriter* pw,
-     /* [in] */ Boolean fullHistory)
+ECode NetworkStatsHistory::Dump(
+    /* [in] */ IIndentingPrintWriter* pw,
+    /* [in] */ Boolean fullHistory)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     // pw->Print("NetworkStatsHistory: bucketDuration="); pw->Println(bucketDuration);
     // pw->IncreaseIndent();
 
@@ -879,12 +799,14 @@ ECode CNetworkStatsHistory::Dump(
     //return NOERROR;
     assert(0);
     return E_NOT_IMPLEMENTED;
+#endif
 }
 
-//@Override
-ECode CNetworkStatsHistory::ToString(
+ECode NetworkStatsHistory::ToString(
     /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     //AutoPtr<Elastos::IO::ICharArrayWriter> writer;
     //Elastos::IO::CCharArrayWriter::New((Elastos::IO::ICharArrayWriter**)&writer);
     //Dump(new IndentingPrintWriter(writer, "  "), FALSE);
@@ -892,28 +814,14 @@ ECode CNetworkStatsHistory::ToString(
     //return NOERROR;
     assert(0);
     return E_NOT_IMPLEMENTED;
+#endif
 }
 
-//@Override
-ECode CNetworkStatsHistory::WriteToParcel(
-    /* [in] */ IParcel* deset)
+ECode NetworkStatsHistory::ReadFromParcel(
+    /* [in] */ IParcel* parcel)
 {
-    VALIDATE_NOT_NULL(deset);
-    deset->WriteInt64(mBucketDuration);
-    ParcelUtils::WriteLongArray(deset, mBucketStart, mBucketCount);
-    ParcelUtils::WriteLongArray(deset, mActiveTime, mBucketCount);
-    ParcelUtils::WriteLongArray(deset, mRxBytes, mBucketCount);
-    ParcelUtils::WriteLongArray(deset, mRxPackets, mBucketCount);
-    ParcelUtils::WriteLongArray(deset, mTxBytes, mBucketCount);
-    ParcelUtils::WriteLongArray(deset, mTxPackets, mBucketCount);
-    ParcelUtils::WriteLongArray(deset, mOperations, mBucketCount);
-    deset->WriteInt64(mTotalBytes);
-    return NOERROR;
-}
-
-ECode CNetworkStatsHistory::ReadFromParcel(
-    /* [in] */ IParcel* source)
-{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(source);
 
     source->ReadInt64(&mBucketDuration);
@@ -927,106 +835,369 @@ ECode CNetworkStatsHistory::ReadFromParcel(
     mBucketCount = mBucketStart->GetLength();
     source->ReadInt64(&mTotalBytes);
     return NOERROR;
+#endif
 }
 
-ECode CNetworkStatsHistory::GetBucketCount(
-    /* [out] */ Int32* bucketCount)
+ECode NetworkStatsHistory::WriteToParcel(
+    /* [in] */ IParcel* dest)
 {
-    VALIDATE_NOT_NULL(bucketCount);
-    *bucketCount = mBucketCount;
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(deset);
+    deset->WriteInt64(mBucketDuration);
+    ParcelUtils::WriteLongArray(deset, mBucketStart, mBucketCount);
+    ParcelUtils::WriteLongArray(deset, mActiveTime, mBucketCount);
+    ParcelUtils::WriteLongArray(deset, mRxBytes, mBucketCount);
+    ParcelUtils::WriteLongArray(deset, mRxPackets, mBucketCount);
+    ParcelUtils::WriteLongArray(deset, mTxBytes, mBucketCount);
+    ParcelUtils::WriteLongArray(deset, mTxPackets, mBucketCount);
+    ParcelUtils::WriteLongArray(deset, mOperations, mBucketCount);
+    deset->WriteInt64(mTotalBytes);
     return NOERROR;
+#endif
 }
 
-ECode CNetworkStatsHistory::GetBucketStart(
-    /* [out, callee] */ ArrayOf<Int64>** bucketStart)
-{
-    VALIDATE_NOT_NULL(bucketStart);
-    *bucketStart = mBucketStart;
-    REFCOUNT_ADD(*bucketStart);
-    return NOERROR;
-}
-
-ECode CNetworkStatsHistory::GetRxBytes(
-    /* [out, callee] */ ArrayOf<Int64>** rxBytes)
-{
-    VALIDATE_NOT_NULL(rxBytes);
-    *rxBytes = mRxBytes;
-    REFCOUNT_ADD(*rxBytes);
-    return NOERROR;
-}
-
-ECode CNetworkStatsHistory::GetRxPackets(
-    /* [out, callee] */ ArrayOf<Int64>** rxPackets)
-{
-    VALIDATE_NOT_NULL(rxPackets);
-    *rxPackets = mRxPackets;
-    REFCOUNT_ADD(*rxPackets);
-    return NOERROR;
-}
-
-ECode CNetworkStatsHistory::GetTxBytes(
-    /* [out, callee] */ ArrayOf<Int64>** txBytes)
-{
-    VALIDATE_NOT_NULL(txBytes);
-    *txBytes = mTxBytes;
-    REFCOUNT_ADD(*txBytes);
-    return NOERROR;
-}
-
-ECode CNetworkStatsHistory::GetTxPackets(
-    /* [out, callee] */ ArrayOf<Int64>** txPackets)
-{
-    VALIDATE_NOT_NULL(txPackets);
-    *txPackets = mTxPackets;
-    REFCOUNT_ADD(*txPackets);
-    return NOERROR;
-}
-
-ECode CNetworkStatsHistory::GetOperations(
-    /* [out, callee] */ ArrayOf<Int64>** operations)
-{
-    VALIDATE_NOT_NULL(operations);
-    *operations = mOperations;
-    REFCOUNT_ADD(*operations);
-    return NOERROR;
-}
-
-Int64 CNetworkStatsHistory::GetLong(
+ECode NetworkStatsHistory::GetLong(
     /* [in] */ ArrayOf<Int64>* array,
     /* [in] */ Int32 i,
-    /* [in] */ Int64 value)
+    /* [in] */ Int64 value,
+    /* [out] */ Int64* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     return array != NULL ? (*array)[i] : value;
+#endif
 }
 
-void CNetworkStatsHistory::SetLong(
+ECode NetworkStatsHistory::SetLong(
     /* [in] */ ArrayOf<Int64>* array,
     /* [in] */ Int32 i,
     /* [in] */ Int64 value)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     if (array != NULL) array->Set(i, value);
+#endif
 }
 
-void CNetworkStatsHistory::AddLong(
+ECode NetworkStatsHistory::AddLong(
     /* [in] */ ArrayOf<Int64>* array,
     /* [in] */ Int32 i,
     /* [in] */ Int64 value)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     if (array != NULL) array->Set(i, (*array)[i] + value);
+#endif
 }
 
-ECode CNetworkStatsHistory::EstimateResizeBuckets(
+ECode NetworkStatsHistory::EstimateResizeBuckets(
     /* [in] */ Int64 newBucketDuration,
     /* [out] */ Int32* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Int32 size;
     GetSize(&size);
     Int64 bucketDuration;
     GetBucketDuration(&bucketDuration);
     *result = (Int32) (size * bucketDuration / newBucketDuration);
     return NOERROR;
+#endif
+}
+
+//=============================================================
+// NetworkStatsHistoryEntry
+//=============================================================
+CAR_INTERFACE_IMPL(NetworkStatsHistoryEntry, Object, INetworkStatsHistoryEntry)
+
+ECode NetworkStatsHistoryEntry::constructor()
+{
+    return NOERROR;
+}
+
+ECode NetworkStatsHistoryEntry::GetBucketDuration(
+    /* [out] */ Int64* bucketDuration)
+{
+    VALIDATE_NOT_NULL(bucketDuration);
+    *bucketDuration = mBucketDuration;
+    return NOERROR;
+}
+
+ECode NetworkStatsHistoryEntry::SetBucketDuration(
+    /* [in] */ Int64 bucketDuration)
+{
+    mBucketDuration = bucketDuration;
+    return NOERROR;
+}
+
+ECode NetworkStatsHistoryEntry::GetBucketStart(
+    /* [out] */ Int64* bucketStart)
+{
+    VALIDATE_NOT_NULL(bucketStart);
+    *bucketStart = mBucketStart;
+    return NOERROR;
+}
+
+ECode NetworkStatsHistoryEntry::SetBucketStart(
+    /* [in] */ Int64 bucketStart)
+{
+    mBucketStart = bucketStart;
+    return NOERROR;
+}
+
+ECode NetworkStatsHistoryEntry::GetActiveTime(
+    /* [out] */ Int64* activeTime)
+{
+    VALIDATE_NOT_NULL(activeTime);
+    *activeTime = mActiveTime;
+    return NOERROR;
+}
+
+ECode NetworkStatsHistoryEntry::SetActiveTime(
+    /* [in] */ Int64 activeTime)
+{
+    mActiveTime = activeTime;
+    return NOERROR;
+}
+
+ECode NetworkStatsHistoryEntry::GetRxBytes(
+    /* [out] */ Int64* rxBytes)
+{
+    VALIDATE_NOT_NULL(rxBytes);
+    *rxBytes = mRxBytes;
+    return NOERROR;
+}
+
+ECode NetworkStatsHistoryEntry::SetRxBytes(
+    /* [in] */ Int64 rxBytes)
+{
+    mRxBytes = rxBytes;
+    return NOERROR;
+}
+
+ECode NetworkStatsHistoryEntry::GetRxPackets(
+    /* [out] */ Int64* rxPackets)
+{
+    VALIDATE_NOT_NULL(rxPackets);
+    *rxPackets = mRxPackets;
+    return NOERROR;
+}
+
+ECode NetworkStatsHistoryEntry::SetRxPackets(
+    /* [in] */ Int64 rxPackets)
+{
+    mRxPackets = rxPackets;
+    return NOERROR;
+}
+
+ECode NetworkStatsHistoryEntry::GetTxBytes(
+    /* [out] */ Int64* txBytes)
+{
+    VALIDATE_NOT_NULL(txBytes);
+    *txBytes = mTxBytes;
+    return NOERROR;
+}
+
+ECode NetworkStatsHistoryEntry::SetTxBytes(
+    /* [in] */ Int64 txBytes)
+{
+    mTxBytes = txBytes;
+    return NOERROR;
+}
+
+ECode NetworkStatsHistoryEntry::GetTxPackets(
+    /* [out] */ Int64* txPackets)
+{
+    VALIDATE_NOT_NULL(txPackets);
+    *txPackets = mTxPackets;
+    return NOERROR;
+}
+
+ECode NetworkStatsHistoryEntry::SetTxPackets(
+    /* [in] */ Int64 txPackets)
+{
+    mTxPackets = txPackets;
+    return NOERROR;
+}
+
+ECode NetworkStatsHistoryEntry::GetOperations(
+    /* [out] */ Int64* operations)
+{
+    VALIDATE_NOT_NULL(operations);
+    *operations = mOperations;
+    return NOERROR;
+}
+
+ECode NetworkStatsHistoryEntry::SetOperations(
+    /* [in] */ Int64 operations)
+{
+    mOperations = operations;
+    return NOERROR;
+}
+
+//========================================================
+// NetworkStatsHistoryDataStreamUtils
+//========================================================
+ECode NetworkStatsHistoryDataStreamUtils::ReadFullLongArray(
+    /* [in] */ IDataInputStream* in,
+    /* [out, callee] */ ArrayOf<Int64>** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    Int32 size;
+    IDataInput::Probe(in)->ReadInt32(&size);
+    if (size < 0) return E_PROTOCOL_EXCEPTION;
+    AutoPtr< ArrayOf<Int64> > values = ArrayOf<Int64>::Alloc(size);
+
+    for (int i = 0; i < values->GetLength(); i++) {
+        IDataInput::Probe(in)->ReadInt64(&(*values)[i]);
+    }
+    *result =values;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+#endif
+}
+
+ECode NetworkStatsHistoryDataStreamUtils::ReadVarLong(
+    /* [in] */ IDataInputStream* in,
+    /* [out] */ Int64* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    Int32 shift = 0;
+    Int64 result = 0;
+    while (shift < 64) {
+        Byte b;
+        IDataInput::Probe(in)->ReadByte(&b);
+        result |= (Int64) (b & 0x7F) << shift;
+        if ((b & 0x80) == 0) {
+            *values = result;
+            return NOERROR;
+        }
+        shift += 7;
+    }
+    //throw new ProtocolException("malformed long");
+    return E_PROTOCOL_EXCEPTION;
+#endif
+}
+
+ECode NetworkStatsHistoryDataStreamUtils::WriteVarLong(
+    /* [in] */ IDataOutputStream* out,
+    /* [in] */ Int64 value)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    while (TRUE) {
+        if ((value & ~0x7FL) == 0) {
+            IDataOutput::Probe(out)->WriteByte((Int32) value);
+            return NOERROR;
+        }
+        else {
+            IDataOutput::Probe(out)->WriteByte(((int) value & 0x7F) | 0x80);
+            value >>= 7; //value >>>= 7;
+        }
+    }
+    return NOERROR;
+#endif
+}
+
+ECode NetworkStatsHistoryDataStreamUtils::ReadVarLongArray(
+    /* [in] */ IDataInputStream* in,
+    /* [out, callee] */ ArrayOf<Int64>** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    Int32 size;
+    IDataInput::Probe(in)->ReadInt32(&size);
+    if (size == -1)
+    {
+        *result = NULL;
+        return NOERROR;
+    }
+    if (size < 0) return E_PROTOCOL_EXCEPTION;
+    AutoPtr< ArrayOf<Int64> > values = ArrayOf<Int64>::Alloc(size);
+    for (int i = 0; i < values->GetLength(); i++) {
+        IDataInput::Probe(in)->ReadInt64(&(*values)[i]);
+    }
+    *result =values;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+#endif
+}
+
+ECode NetworkStatsHistoryDataStreamUtils::WriteVarLongArray(
+    /* [in] */ IDataOutputStream* out,
+    /* [in] */ ArrayOf<Int64>* values,
+    /* [in] */ Int32 size)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    if (values == NULL) {
+        IDataOutput::Probe(out)->WriteInt32(-1);
+        return NOERROR;
+    }
+    if (size > values->GetLength()) {
+        //throw new IllegalArgumentException("size larger than length");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    IDataOutput::Probe(out)->WriteInt32(size);
+    for (int i = 0; i < size; i++) {
+        DataStreamUtils::WriteVarLong(out, (*values)[i]);
+    }
+    return NOERROR;
+#endif
+}
+
+//==================================================
+// NetworkStatsHistoryParcelUtils
+//==================================================
+ECode NetworkStatsHistoryParcelUtils::ReadLongArray(
+    /* [in] */ IParcel* in,
+    /* [out, callee] */ ArrayOf<Int64>** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    Int32 size;
+    in->ReadInt32(&size);
+    if (size == -1)
+    {
+        *result = NULL;
+        return NOERROR;
+    }
+    AutoPtr< ArrayOf<Int64> > values = ArrayOf<Int64>::Alloc(size);
+    for (int i = 0; i < values->GetLength(); i++) {
+        in->ReadInt64(&(*values)[i]);
+    }
+    *result =values;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+#endif
+}
+
+ECode NetworkStatsHistoryParcelUtils::WriteLongArray(
+    /* [in] */ IParcel* out,
+    /* [in] */ ArrayOf<Int64>* values,
+    /* [in] */ Int32 size)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+    if (values == NULL) {
+        out->WriteInt32(-1);
+        return NOERROR;
+    }
+    if (size > values->GetLength()) {
+        // throw new IllegalArgumentException("size larger than length");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    out->WriteInt32(size);
+    for (int i = 0; i < size; i++) {
+        out->WriteInt64((*values)[i]);
+    }
+    return NOERROR;
+#endif
 }
 
 } // namespace Net
-} // namepsace Droid
+} // namespace Droid
 } // namespace Elastos
