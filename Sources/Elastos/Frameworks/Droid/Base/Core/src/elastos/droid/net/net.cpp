@@ -33,6 +33,7 @@
 #include "elastos/droid/net/CNetworkStatsEntry.h"
 #include "elastos/droid/net/CNetworkStatsHistory.h"
 #include "elastos/droid/net/CNetworkStatsHistoryEntry.h"
+#include "elastos/droid/net/CNetworkTemplate.h"
 
 namespace Elastos {
 namespace Droid {
@@ -105,6 +106,8 @@ CAR_OBJECT_IMPL(CNetworkStatsEntry)
 CAR_OBJECT_IMPL(CNetworkStatsHistory)
 
 CAR_OBJECT_IMPL(CNetworkStatsHistoryEntry)
+
+CAR_OBJECT_IMPL(CNetworkTemplate)
 
 } // namespace Net
 } // namespace Droid

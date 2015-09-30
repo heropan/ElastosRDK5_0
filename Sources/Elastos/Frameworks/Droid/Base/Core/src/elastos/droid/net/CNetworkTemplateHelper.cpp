@@ -1,11 +1,14 @@
-
-#include "ext/frameworkext.h"
-#include "net/CNetworkTemplate.h"
-#include "net/CNetworkTemplateHelper.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/CNetworkTemplateHelper.h"
+#include "elastos/droid/net/CNetworkTemplate.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
+
+CAR_INTERFACE_IMPL(CNetworkTemplateHelper, Singleton, INetworkTemplateHelper)
+
+CAR_SINGLETON_IMPL(CNetworkTemplateHelper)
 
 ECode CNetworkTemplateHelper::ForceAllNetworkTypes()
 {

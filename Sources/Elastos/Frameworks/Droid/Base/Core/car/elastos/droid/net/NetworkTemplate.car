@@ -57,42 +57,42 @@ module
         ForceAllNetworkTypes();
 
         /**
-             * Template to match {@link ConnectivityManager#TYPE_MOBILE} networks with
-             * the given IMSI.
-             */
+         * Template to match {@link ConnectivityManager#TYPE_MOBILE} networks with
+         * the given IMSI.
+         */
         BuildTemplateMobileAll(
             [in] String subscriberId,
             [out] INetworkTemplate** result);
 
         /**
-             * Template to match {@link ConnectivityManager#TYPE_MOBILE} networks with
-             * the given IMSI that roughly meet a "3G" definition, or lower.
-             */
+         * Template to match {@link ConnectivityManager#TYPE_MOBILE} networks with
+         * the given IMSI that roughly meet a "3G" definition, or lower.
+         */
         // @Deprecated
         BuildTemplateMobile3gLower(
             [in] String subscriberId,
             [out] INetworkTemplate** result);
 
         /**
-             * Template to match {@link ConnectivityManager#TYPE_MOBILE} networks with
-             * the given IMSI that roughly meet a "4G" definition.
-             */
+         * Template to match {@link ConnectivityManager#TYPE_MOBILE} networks with
+         * the given IMSI that roughly meet a "4G" definition.
+         */
         // @Deprecated
         BuildTemplateMobile4g(
             [in] String subscriberId,
             [out] INetworkTemplate** result);
 
         /**
-             * Template to match {@link ConnectivityManager#TYPE_MOBILE} networks,
-             * regardless of IMSI.
-             */
+         * Template to match {@link ConnectivityManager#TYPE_MOBILE} networks,
+         * regardless of IMSI.
+         */
         BuildTemplateMobileWildcard(
             [out] INetworkTemplate** result);
 
         /**
-             * Template to match all {@link ConnectivityManager#TYPE_WIFI} networks,
-             * regardless of SSID.
-             */
+         * Template to match all {@link ConnectivityManager#TYPE_WIFI} networks,
+         * regardless of SSID.
+         */
         BuildTemplateWifiWildcard(
             [out] INetworkTemplate** result);
 
@@ -101,17 +101,17 @@ module
             [out] INetworkTemplate** result);
 
         /**
-             * Template to match {@link ConnectivityManager#TYPE_WIFI} networks with the
-             * given SSID.
-             */
+         * Template to match {@link ConnectivityManager#TYPE_WIFI} networks with the
+         * given SSID.
+         */
         BuildTemplateWifi(
             [in] String networkId,
             [out] INetworkTemplate** result);
 
         /**
-             * Template to combine all {@link ConnectivityManager#TYPE_ETHERNET} style
-             * networks together.
-             */
+         * Template to combine all {@link ConnectivityManager#TYPE_ETHERNET} style
+         * networks together.
+         */
         BuildTemplateEthernet(
             [out] INetworkTemplate** result);
 

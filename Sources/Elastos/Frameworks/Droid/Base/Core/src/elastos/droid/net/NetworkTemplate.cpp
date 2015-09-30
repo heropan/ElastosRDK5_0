@@ -1,176 +1,205 @@
 
-#include "ext/frameworkext.h"
-#include "R.h"
-#include "content/res/CResources.h"
-#include "net/CNetworkTemplate.h"
-#include "net/CNetworkIdentity.h"
-#include "telephony/CTelephonyManagerHelper.h"
-#include "utility/ArrayUtils.h"
-#include <elastos/core/StringBuilder.h>
-#include <elastos/utility/logging/Slogger.h>
-
-using Elastos::Core::StringBuilder;
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Content::Res::CResources;
-using Elastos::Droid::Internal::Utility::ArrayUtils;
-using Elastos::Droid::Net::CNetworkIdentity;
-using Elastos::Droid::Telephony::ITelephonyManagerHelper;
-using Elastos::Droid::Telephony::CTelephonyManagerHelper;
+#include "elastos/droid/net/NetworkTemplate.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
-Boolean CNetworkTemplate::sForceAllNetworkTypes = FALSE;
-AutoPtr< ArrayOf<Int32> > CNetworkTemplate::DATA_USAGE_NETWORK_TYPES = NULL;
+CAR_INTERFACE_IMPL_2(NetworkTemplate, Object, IParcelable, INetworkTemplate)
 
-ECode CNetworkTemplate::constructor()
+Boolean NetworkTemplate::sForceAllNetworkTypes = FALSE;
+
+const AutoPtr<ArrayOf<Int32> > NetworkTemplate::DATA_USAGE_NETWORK_TYPES = CreateDataUsageNetworkTypes();
+
+AutoPtr<ArrayOf<Int32> > NetworkTemplate::CreateDataUsageNetworkTypes()
 {
-    return NOERROR;
+    AutoPtr<ArrayOf<Int32> > rev;
+#if 0 // TODO: Translate codes below
+    static {
+        DATA_USAGE_NETWORK_TYPES = Resources.getSystem().getIntArray(
+                com.android.internal.R.array.config_data_usage_network_types);
+    }
+#endif
+    return rev;
 }
 
-ECode CNetworkTemplate::constructor(
-    /* [in] */ Int32 matchRule,
-    /* [in] */ const String& subscriberId,
-    /* [in] */ const String& networkId)
-{
-    mMatchRule = matchRule;
-    mSubscriberId = subscriberId;
-    mNetworkId = networkId;
-    CResources::GetSystem()->GetIntArray(R::array::config_data_usage_network_types, (ArrayOf<Int32>**)&DATA_USAGE_NETWORK_TYPES);
-    return NOERROR;
-}
+NetworkTemplate::NetworkTemplate()
+{}
 
-// @VisibleForTesting
-ECode CNetworkTemplate::ForceAllNetworkTypes()
+ECode NetworkTemplate::ForceAllNetworkTypes()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     sForceAllNetworkTypes = TRUE;
     return NOERROR;
+#endif
 }
 
-/**
- * Template to match {@link ConnectivityManager#TYPE_MOBILE} networks with
- * the given IMSI.
- */
-ECode CNetworkTemplate::BuildTemplateMobileAll(
+ECode NetworkTemplate::BuildTemplateMobileAll(
     /* [in] */ const String& subscriberId,
     /* [out] */ INetworkTemplate** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     String str;
     AutoPtr<INetworkTemplate> networktemplate;
     CNetworkTemplate::New(MATCH_MOBILE_ALL, subscriberId, str, (INetworkTemplate**)&networktemplate);
     *result = networktemplate;
     REFCOUNT_ADD(*result);
     return NOERROR;
+#endif
 }
 
-/**
- * Template to match {@link ConnectivityManager#TYPE_MOBILE} networks with
- * the given IMSI that roughly meet a "3G" definition, or lower.
- */
-//@Deprecated
-ECode CNetworkTemplate::BuildTemplateMobile3gLower(
+ECode NetworkTemplate::BuildTemplateMobile3gLower(
     /* [in] */ const String& subscriberId,
     /* [out] */ INetworkTemplate** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     String str;
     AutoPtr<INetworkTemplate> networktemplate;
     CNetworkTemplate::New(MATCH_MOBILE_3G_LOWER, subscriberId, str, (INetworkTemplate**)&networktemplate);
     *result = networktemplate;
     REFCOUNT_ADD(*result);
     return NOERROR;
+#endif
 }
 
-/**
- * Template to match {@link ConnectivityManager#TYPE_MOBILE} networks with
- * the given IMSI that roughly meet a "4G" definition.
- */
-//@Deprecated
-ECode CNetworkTemplate::BuildTemplateMobile4g(
+ECode NetworkTemplate::BuildTemplateMobile4g(
     /* [in] */ const String& subscriberId,
     /* [out] */ INetworkTemplate** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     String str;
     AutoPtr<INetworkTemplate> networktemplate;
     CNetworkTemplate::New(MATCH_MOBILE_4G, subscriberId, str, (INetworkTemplate**)&networktemplate);
     *result = networktemplate;
     REFCOUNT_ADD(*result);
     return NOERROR;
+#endif
 }
 
-/**
- * Template to match {@link ConnectivityManager#TYPE_MOBILE} networks,
- * regardless of IMSI.
- */
-ECode CNetworkTemplate::BuildTemplateMobileWildcard(
+ECode NetworkTemplate::BuildTemplateMobileWildcard(
     /* [out] */ INetworkTemplate** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     String str;
     AutoPtr<INetworkTemplate> networktemplate;
     CNetworkTemplate::New(MATCH_MOBILE_WILDCARD, str, str, (INetworkTemplate**)&networktemplate);
     *result = networktemplate;
     REFCOUNT_ADD(*result);
     return NOERROR;
+#endif
 }
 
-/**
- * Template to match all {@link ConnectivityManager#TYPE_WIFI} networks,
- * regardless of SSID.
- */
-ECode CNetworkTemplate::BuildTemplateWifiWildcard(
+ECode NetworkTemplate::BuildTemplateWifiWildcard(
     /* [out] */ INetworkTemplate** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     String str;
     AutoPtr<INetworkTemplate> networktemplate;
     CNetworkTemplate::New(MATCH_WIFI_WILDCARD, str, str, (INetworkTemplate**)&networktemplate);
     *result = networktemplate;
     REFCOUNT_ADD(*result);
     return NOERROR;
+#endif
 }
 
-//@Deprecated
-ECode CNetworkTemplate::BuildTemplateWifi(
+ECode NetworkTemplate::BuildTemplateWifi(
     /* [out] */ INetworkTemplate** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     return BuildTemplateWifiWildcard(result);
+#endif
 }
 
-/**
- * Template to match {@link ConnectivityManager#TYPE_WIFI} networks with the
- * given SSID.
- */
-ECode CNetworkTemplate::BuildTemplateWifi(
+ECode NetworkTemplate::BuildTemplateWifi(
     /* [in] */ const String& networkId,
     /* [out] */ INetworkTemplate** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     String str;
     AutoPtr<INetworkTemplate> networktemplate;
     CNetworkTemplate::New(MATCH_WIFI, str, networkId, (INetworkTemplate**)&networktemplate);
     *result = networktemplate;
     REFCOUNT_ADD(*result);
     return NOERROR;
+#endif
 }
 
-/**
- * Template to combine all {@link ConnectivityManager#TYPE_ETHERNET} style
- * networks together.
- */
-ECode CNetworkTemplate::BuildTemplateEthernet(
+ECode NetworkTemplate::BuildTemplateEthernet(
     /* [out] */ INetworkTemplate** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     String str;
     AutoPtr<INetworkTemplate> networktemplate;
     CNetworkTemplate::New(MATCH_ETHERNET, str, str, (INetworkTemplate**)&networktemplate);
     *result = networktemplate;
     REFCOUNT_ADD(*result);
     return NOERROR;
+#endif
 }
 
+ECode NetworkTemplate::constructor(
+    /* [in] */ Int32 matchRule,
+    /* [in] */ const String& subscriberId,
+    /* [in] */ const String& networkId)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    mMatchRule = matchRule;
+    mSubscriberId = subscriberId;
+    mNetworkId = networkId;
+    CResources::GetSystem()->GetIntArray(R::array::config_data_usage_network_types, (ArrayOf<Int32>**)&DATA_USAGE_NETWORK_TYPES);
+    return NOERROR;
+#endif
+}
 
-//@Override
-ECode CNetworkTemplate::ToString(
+NetworkTemplate::NetworkTemplate(
+    /* [in] */ IParcel* in)
+{
+#if 0 // TODO: Translate codes below
+        mMatchRule = in.readInt();
+        mSubscriberId = in.readString();
+        mNetworkId = in.readString();
+
+#endif
+}
+
+ECode NetworkTemplate::WriteToParcel(
+    /* [in] */ IParcel* dest,
+    /* [in] */ Int32 flags)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        dest.writeInt(mMatchRule);
+        dest.writeString(mSubscriberId);
+        dest.writeString(mNetworkId);
+
+#endif
+}
+
+ECode NetworkTemplate::DescribeContents(
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return 0;
+
+#endif
+}
+
+ECode NetworkTemplate::ToString(
     /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
 
     StringBuilder builder("NetworkTemplate: ");
@@ -188,12 +217,14 @@ ECode CNetworkTemplate::ToString(
     }
     *result = builder.ToString();
     return NOERROR;
+#endif
 }
 
-//@Override
-ECode CNetworkTemplate::GetHashCode(
+ECode NetworkTemplate::GetHashCode(
     /* [out] */ Int32* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(result);
     Int32 hashCode = 1;
     hashCode = 31 * hashCode + mMatchRule;
@@ -201,71 +232,59 @@ ECode CNetworkTemplate::GetHashCode(
     hashCode = 31 * hashCode + mNetworkId.GetHashCode();
     *result = hashCode;
     return NOERROR;
+#endif
 }
 
-//@Override
-ECode CNetworkTemplate::Equals(
-    /* [in] */ INetworkTemplate* obj,
+ECode NetworkTemplate::Equals(
+    /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
-
-    if (INetworkTemplate::Probe(obj) != NULL) {
-        AutoPtr<INetworkTemplate> other = obj;
-        Int32 matchrule;
-        other->GetMatchRule(&matchrule);
-        String subscriberId;
-        other->GetSubscriberId(&subscriberId);
-        String networkId;
-        other->GetNetworkId(&networkId);
-        *result = mMatchRule == matchrule &&
-                  mSubscriberId.Equals(subscriberId) &&
-                  mNetworkId.Equals(networkId);
-        return NOERROR;
-    }
-    *result = FALSE;
-    return NOERROR;
-}
-
-ECode CNetworkTemplate::Equals(
-    /* [in] */ IInterface* obj,
-    /* [out] */ Boolean* result )
-{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     return Equals(INetworkTemplate::Probe(obj), result);
+#endif
 }
 
-ECode CNetworkTemplate::GetMatchRule(
+ECode NetworkTemplate::GetMatchRule(
     /* [out] */ Int32* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     *result = mMatchRule;
     return NOERROR;
+#endif
 }
 
-ECode CNetworkTemplate::GetSubscriberId(
+ECode NetworkTemplate::GetSubscriberId(
     /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     *result = mSubscriberId;
     return NOERROR;
+#endif
 }
 
-ECode CNetworkTemplate::GetNetworkId(
+ECode NetworkTemplate::GetNetworkId(
     /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     *result = mNetworkId;
     return NOERROR;
+#endif
 }
 
-/**
- * Test if given {@link NetworkIdentity} matches this template.
- */
-ECode CNetworkTemplate::Matches(
+ECode NetworkTemplate::Matches(
     /* [in] */ INetworkIdentity* ident,
     /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
 
     switch (mMatchRule) {
@@ -288,14 +307,15 @@ ECode CNetworkTemplate::Matches(
 //            throw new IllegalArgumentException("unknown network template");
     }
     return NOERROR;
+#endif
 }
 
-/**
- * Check if mobile network with matching IMSI.
- */
-Boolean CNetworkTemplate::MatchesMobile(
-    /* [in] */ INetworkIdentity* ident)
+ECode NetworkTemplate::MatchesMobile(
+    /* [in] */ INetworkIdentity* ident,
+    /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Int32 type;
     ident->GetType(&type);
     if (type == IConnectivityManager::TYPE_WIMAX) {
@@ -307,14 +327,15 @@ Boolean CNetworkTemplate::MatchesMobile(
         ident->GetSubscriberId(&subscriberid);
         return ((sForceAllNetworkTypes || bol) && mSubscriberId.Equals(subscriberid));
     }
+#endif
 }
 
-/**
- * Check if mobile network classified 3G or lower with matching IMSI.
- */
-Boolean CNetworkTemplate::MatchesMobile3gLower(
-    /* [in] */ INetworkIdentity* ident)
+ECode NetworkTemplate::MatchesMobile3gLower(
+    /* [in] */ INetworkIdentity* ident,
+    /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     EnsureSubtypeAvailable();
     Int32 type;
     ident->GetType(&type);
@@ -335,14 +356,15 @@ Boolean CNetworkTemplate::MatchesMobile3gLower(
         }
     }
     return FALSE;
+#endif
 }
 
-/**
- * Check if mobile network classified 4G with matching IMSI.
- */
-Boolean CNetworkTemplate::MatchesMobile4g(
-    /* [in] */ INetworkIdentity* ident)
+ECode NetworkTemplate::MatchesMobile4g(
+    /* [in] */ INetworkIdentity* ident,
+    /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     EnsureSubtypeAvailable();
     Int32 type;
     ident->GetType(&type);
@@ -362,14 +384,15 @@ Boolean CNetworkTemplate::MatchesMobile4g(
         }
     }
     return FALSE;
+#endif
 }
 
-/**
- * Check if matches Wi-Fi network template.
- */
-Boolean CNetworkTemplate::MatchesWifi(
-    /* [in] */ INetworkIdentity* ident)
+ECode NetworkTemplate::MatchesWifi(
+    /* [in] */ INetworkIdentity* ident,
+    /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     Int32 type;
     ident->GetType(&type);
     switch (type) {
@@ -381,25 +404,30 @@ Boolean CNetworkTemplate::MatchesWifi(
         default:
             return FALSE;
     }
+#endif
 }
 
-/**
- * Check if matches Ethernet network template.
- */
-Boolean CNetworkTemplate::MatchesEthernet(
-    /* [in] */ INetworkIdentity* ident)
+ECode NetworkTemplate::MatchesEthernet(
+    /* [in] */ INetworkIdentity* ident,
+    /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Int32 type;
     ident->GetType(&type);
     if (type == IConnectivityManager::TYPE_ETHERNET) {
         return TRUE;
     }
     return FALSE;
+#endif
 }
 
-Boolean CNetworkTemplate::MatchesMobileWildcard(
-    /* [in] */ INetworkIdentity* ident)
+ECode NetworkTemplate::MatchesMobileWildcard(
+    /* [in] */ INetworkIdentity* ident,
+    /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Int32 type;
     ident->GetType(&type);
     if (type == IConnectivityManager::TYPE_WIMAX) {
@@ -408,11 +436,15 @@ Boolean CNetworkTemplate::MatchesMobileWildcard(
         Boolean bol = ArrayUtils::Contains(DATA_USAGE_NETWORK_TYPES, type);
         return sForceAllNetworkTypes || bol;
     }
+#endif
 }
 
-Boolean CNetworkTemplate::MatchesWifiWildcard(
-    /* [in] */ INetworkIdentity* ident)
+ECode NetworkTemplate::MatchesWifiWildcard(
+    /* [in] */ INetworkIdentity* ident,
+    /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Int32 type;
     ident->GetType(&type);
     switch (type) {
@@ -422,11 +454,15 @@ Boolean CNetworkTemplate::MatchesWifiWildcard(
         default:
             return FALSE;
     }
+#endif
 }
 
-String CNetworkTemplate::GetMatchRuleName(
-    /* [in] */ Int32 matchRule)
+ECode NetworkTemplate::GetMatchRuleName(
+    /* [in] */ Int32 matchRule,
+    /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     switch (matchRule) {
         case MATCH_MOBILE_3G_LOWER:
             return String("MOBILE_3G_LOWER");
@@ -445,10 +481,13 @@ String CNetworkTemplate::GetMatchRuleName(
         default:
             return String("UNKNOWN");
     }
+#endif
 }
 
-ECode CNetworkTemplate::EnsureSubtypeAvailable()
+ECode NetworkTemplate::EnsureSubtypeAvailable()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     if (INetworkIdentity::COMBINE_SUBTYPE_ENABLED) {
         // throw new IllegalArgumentException(
         //         "Unable to enforce 3G_LOWER template on combined data.");
@@ -456,30 +495,60 @@ ECode CNetworkTemplate::EnsureSubtypeAvailable()
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NOERROR;
+#endif
 }
 
-//@Override
-ECode CNetworkTemplate::WriteToParcel(
+ECode NetworkTemplate::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(dest);
     dest->WriteInt32(mMatchRule);
     dest->WriteString(mSubscriberId);
     dest->WriteString(mNetworkId);
     return NOERROR;
+#endif
 }
 
-ECode CNetworkTemplate::ReadFromParcel(
+ECode NetworkTemplate::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(source);
     source->ReadInt32(&mMatchRule);
     source->ReadString(&mSubscriberId);
     source->ReadString(&mNetworkId);
     return NOERROR;
+#endif
 }
 
-
 } // namespace Net
-} // namepsace Droid
+} // namespace Droid
 } // namespace Elastos
+
+#if 0 // old CNetworkTemplate.cpp
+ECode CNetworkTemplate::Equals(
+    /* [in] */ INetworkTemplate* obj,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    if (INetworkTemplate::Probe(obj) != NULL) {
+        AutoPtr<INetworkTemplate> other = obj;
+        Int32 matchrule;
+        other->GetMatchRule(&matchrule);
+        String subscriberId;
+        other->GetSubscriberId(&subscriberId);
+        String networkId;
+        other->GetNetworkId(&networkId);
+        *result = mMatchRule == matchrule &&
+                  mSubscriberId.Equals(subscriberId) &&
+                  mNetworkId.Equals(networkId);
+        return NOERROR;
+    }
+    *result = FALSE;
+    return NOERROR;
+}
+#endif

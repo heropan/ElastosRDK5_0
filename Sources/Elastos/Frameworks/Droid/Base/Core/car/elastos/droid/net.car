@@ -627,6 +627,21 @@ module
 
         interface INetworkStatsHistoryEntry;
     }
+
+    class CNetworkTemplate {
+        constructor(
+            [in] Int32 matchRule,
+            [in] String subscriberId,
+            [in] String networkId);
+
+        interface IParcelable;
+        interface INetworkTemplate;
+    }
+
+    singleton class CNetworkTemplateHelper {
+        interface INetworkTemplateHelper;
+    }
+
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos
