@@ -586,6 +586,47 @@ module
         interface INetworkStatsEntry;
     }
 
+    class CNetworkStatsHistory {
+        constructor(
+            [in] Int64 bucketDuration);
+
+        constructor(
+            [in] Int64 bucketDuration,
+            [in] Int32 initialSize);
+
+        constructor(
+            [in] Int64 bucketDuration,
+            [in] Int32 initialSize,
+            [in] Int32 fields);
+
+        constructor(
+            [in] INetworkStatsHistory* existing,
+            [in] Int64 bucketDuration);
+
+        constructor(
+            [in] IParcel* parcel);
+
+        interface IParcelable;
+        interface INetworkStatsHistory;
+    }
+
+    singleton class CNetworkStatsHistoryHelper {
+        interface INetworkStatsHistoryHelper;
+    }
+
+    singleton class CNetworkStatsHistoryDataStreamUtils {
+        interface INetworkStatsHistoryDataStreamUtils;
+    }
+
+    singleton class CNetworkStatsHistoryParcelUtils {
+        interface INetworkStatsHistoryParcelUtils;
+    }
+
+    class CNetworkStatsHistoryEntry {
+        constructor();
+
+        interface INetworkStatsHistoryEntry;
+    }
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos
