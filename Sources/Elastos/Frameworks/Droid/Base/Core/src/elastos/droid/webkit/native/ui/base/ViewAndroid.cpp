@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "ViewAndroid.h"
+#include "elastos/droid/webkit/native/ui/base/ViewAndroid.h"
 
 namespace Elastos {
 namespace Droid {

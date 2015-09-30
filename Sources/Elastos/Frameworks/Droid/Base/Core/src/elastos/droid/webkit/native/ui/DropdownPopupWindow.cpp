@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "DropdownPopupWindow.h"
+#include "elastos/droid/webkit/native/ui/DropdownPopupWindow.h"
 
 namespace Elastos {
 namespace Droid {
@@ -157,7 +156,7 @@ ECode DropdownPopupWindow::Show()
 }
 
 ECode DropdownPopupWindow::SetOnDismissListener(
-    /* [in] */  PopupWindow)
+    /* [in] */ IPopupWindowOnDismissListener* listener)
 {
     // ==================before translated======================
     // mOnDismissListener = listener;

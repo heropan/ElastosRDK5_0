@@ -1,11 +1,36 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "X509Util.h"
+#include "elastos/droid/webkit/native/net/X509Util.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Net {
+
+//=====================================================================
+//              X509Util::TrustStorageListener
+//=====================================================================
+ECode X509Util::TrustStorageListener::OnReceive(
+	/* [in] */ IContext* context,
+	/* [in] */ IIntent* intent)
+{
+	// ==================before translated======================
+	// if (intent.getAction().equals(KeyChain.ACTION_STORAGE_CHANGED)) {
+	//     try {
+	//         reloadDefaultTrustManager();
+	//     }
+	//     catch (CertificateException e) {
+	//         Log.e(TAG, "Unable to reload the default TrustManager", e);
+	//     }
+	//     catch (KeyStoreException e) {
+	//         Log.e(TAG, "Unable to reload the default TrustManager", e);
+	//     }
+	//     catch (NoSuchAlgorithmException e) {
+	//         Log.e(TAG, "Unable to reload the default TrustManager", e);
+	//     }
+	// }
+	assert(0);
+    return NOERROR;
+}
 
 //=====================================================================
 //              X509Util::X509TrustManagerIceCreamSandwich
@@ -17,7 +42,7 @@ X509Util::X509TrustManagerIceCreamSandwich::X509TrustManagerIceCreamSandwich(
     // mTrustManager = trustManager;
 }
 
-AutoPtr< IList< AutoPtr<IX509Certificate> > > X509Util::X509TrustManagerIceCreamSandwich::CheckServerTrusted(
+AutoPtr<IList> X509Util::X509TrustManagerIceCreamSandwich::CheckServerTrusted(
     /* [in] */ ArrayOf<IX509Certificate>* chain,
     /* [in] */ const String& authType,
     /* [in] */ const String& host)
@@ -26,7 +51,7 @@ AutoPtr< IList< AutoPtr<IX509Certificate> > > X509Util::X509TrustManagerIceCream
     // mTrustManager.checkServerTrusted(chain, authType);
     // return Collections.<X509Certificate>emptyList();
     assert(0);
-    AutoPtr< IList< AutoPtr<IX509Certificate> > > empty;
+    AutoPtr<IList> empty;
     return empty;
 }
 
@@ -40,7 +65,7 @@ X509Util::X509TrustManagerJellyBean::X509TrustManagerJellyBean(
     // mTrustManagerExtensions = new X509TrustManagerExtensions(trustManager);
 }
 
-AutoPtr< IList< AutoPtr<IX509Certificate> > > X509Util::X509TrustManagerJellyBean::CheckServerTrusted(
+AutoPtr<IList> X509Util::X509TrustManagerJellyBean::CheckServerTrusted(
     /* [in] */ ArrayOf<IX509Certificate>* chain,
     /* [in] */ const String& authType,
     /* [in] */ const String& host)
@@ -48,7 +73,7 @@ AutoPtr< IList< AutoPtr<IX509Certificate> > > X509Util::X509TrustManagerJellyBea
     // ==================before translated======================
     // return mTrustManagerExtensions.checkServerTrusted(chain, authType, host);
     assert(0);
-    AutoPtr< IList< AutoPtr<IX509Certificate> > > empty;
+    AutoPtr<IList> empty;
     return empty;
 }
 
@@ -61,18 +86,17 @@ const String X509Util::OID_TLS_SERVER_AUTH("1.3.6.1.5.5.7.3.1");
 const String X509Util::OID_ANY_EKU("2.5.29.37.0");
 const String X509Util::OID_SERVER_GATED_NETSCAPE("2.16.840.1.113730.4.1");
 const String X509Util::OID_SERVER_GATED_MICROSOFT("1.3.6.1.4.1.311.10.3.3");
-AutoPtr<X509TrustManagerImplementation> X509Util::sDefaultTrustManager;
-AutoPtr<TrustStorageListener> X509Util::sTrustStorageListener;
-AutoPtr<X509TrustManagerImplementation> X509Util::sTestTrustManager;
+AutoPtr<X509Util::X509TrustManagerImplementation> X509Util::sDefaultTrustManager;
+AutoPtr<X509Util::TrustStorageListener> X509Util::sTrustStorageListener;
+AutoPtr<X509Util::X509TrustManagerImplementation> X509Util::sTestTrustManager;
 AutoPtr<IKeyStore> X509Util::sTestKeyStore;
 AutoPtr<IKeyStore> X509Util::sSystemKeyStore;
 AutoPtr<IFile> X509Util::sSystemCertificateDirectory;
- X509Util::Set<Pair<X500Principal;
- X509Util::PublicKey>> sSystemTrustAnchorCache;
+AutoPtr<ISet> X509Util::sSystemTrustAnchorCache;
 Boolean X509Util::sLoadedSystemKeyStore;
 const AutoPtr<Object> X509Util::sLock = new Object();
 Boolean X509Util::sDisableNativeCodeForTest = false;
-AutoPtr< ArrayOf<char> > X509Util::HEX_DIGITS = X509Util::MiddleInitHexDigits();
+AutoPtr< ArrayOf<Byte> > X509Util::HEX_DIGITS = X509Util::MiddleInitHexDigits();
 
 AutoPtr<IX509Certificate> X509Util::CreateCertificateFromBytes(
     /* [in] */ ArrayOf<Byte>* derBytes)
@@ -291,7 +315,7 @@ ECode X509Util::EnsureInitialized()
     return NOERROR;
 }
 
-AutoPtr<X509TrustManagerImplementation> X509Util::CreateTrustManager(
+AutoPtr<X509Util::X509TrustManagerImplementation> X509Util::CreateTrustManager(
     /* [in] */ IKeyStore* keyStore)
 {
     // ==================before translated======================
@@ -339,7 +363,7 @@ ECode X509Util::ReloadDefaultTrustManager()
     return NOERROR;
 }
 
-AutoPtr< ArrayOf<char> > X509Util::MiddleInitHexDigits()
+AutoPtr< ArrayOf<Byte> > X509Util::MiddleInitHexDigits()
 {
     // ==================before translated======================
     // ->WWZ_SIGN: ARRAY_INIT_START {
@@ -347,7 +371,7 @@ AutoPtr< ArrayOf<char> > X509Util::MiddleInitHexDigits()
     //          'a', 'b', 'c', 'd', 'e', 'f',
     // ->WWZ_SIGN: ARRAY_INIT_END }
     assert(0);
-    AutoPtr< ArrayOf<char> > empty;
+    AutoPtr< ArrayOf<Byte> > empty;
     return empty;
 }
 

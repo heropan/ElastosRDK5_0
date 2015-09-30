@@ -1,6 +1,17 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "PersonalAutofillPopulator.h"
+#include "elastos/droid/webkit/native/components/PersonalAutofillPopulator.h"
+#include "elastos/droid/provider/ContactsContractProfile.h"
+//wwz: #include "elastos/droid/net/CUriHelper.h"
+
+using Elastos::Droid::Net::IUriHelper;
+//wwz: using Elastos::Droid::Net::CUriHelper;
+using Elastos::Droid::Provider::ContactsContractProfile;
+using Elastos::Droid::Provider::IContactsContractContactsData;
+using Elastos::Droid::Provider::IContactsContractCommonDataKindsEmail;
+using Elastos::Droid::Provider::IContactsContractCommonDataKindsPhone;
+using Elastos::Droid::Provider::IContactsContractCommonDataKindsStructuredPostal;
+using Elastos::Droid::Provider::IContactsContractCommonDataKindsStructuredName;
+using Elastos::Droid::Content::Pm::IPackageManager;
 
 namespace Elastos {
 namespace Droid {
@@ -10,18 +21,25 @@ namespace Components {
 //=====================================================================
 //               PersonalAutofillPopulator::ProfileQuery
 //=====================================================================
-AutoPtr<IUri> PersonalAutofillPopulator::ProfileQuery::profileDataUri = PersonalAutofillPopulator::ProfileQuery::MiddleInitProfiledatauri();
+AutoPtr<IUri> PersonalAutofillPopulator::ProfileQuery::mProfileDataUri = PersonalAutofillPopulator::ProfileQuery::MiddleInitProfiledataUri();
 
-AutoPtr<IUri> PersonalAutofillPopulator::ProfileQuery::MiddleInitProfiledatauri()
+AutoPtr<IUri> PersonalAutofillPopulator::ProfileQuery::MiddleInitProfiledataUri()
 {
     // ==================before translated======================
     // ->WWZ_SIGN: FUNC_CALL_START {
     // ContactsContract.Profile.CONTENT_URI,
     //                  ContactsContract.Contacts.Data.CONTENT_DIRECTORY
     // ->WWZ_SIGN: FUNC_CALL_END }
-    assert(0);
-    AutoPtr<IUri> empty;
-    return empty;
+
+//	AutoPtr<IUriHelper> helper;
+//	CUriHelper::AcquireSingleton((IUriHelper**)&helper);
+//	AutoPtr<IUri> baseUri;
+//	ContactsContractProfile::GetCONTENT_URI((IUri**)&baseUri);
+//	AutoPtr<IUri> profileDataUri;
+//	helper->WithAppendedPath(baseUri, IContactsContractContactsData::CONTENT_DIRECTORY, (IUri**)&profileDataUri);
+//    return profileDataUri;
+	AutoPtr<IUri> empty;
+	return empty;
 }
 
 //=====================================================================
@@ -35,17 +53,19 @@ AutoPtr< ArrayOf<String> > PersonalAutofillPopulator::EmailProfileQuery::Project
     // return new String[] {
     //     ContactsContract.CommonDataKinds.Email.ADDRESS,
     // };
-    assert(0);
-    AutoPtr< ArrayOf<String> > empty;
-    return empty;
+
+	AutoPtr< ArrayOf<String> > result = ArrayOf<String>::Alloc(1);
+	result->Set(0, IContactsContractCommonDataKindsEmail::ADDRESS);
+    return result;
 }
 
 String PersonalAutofillPopulator::EmailProfileQuery::MimeType()
 {
     // ==================before translated======================
     // return ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE;
-    assert(0);
-    return String("");
+
+	String result = IContactsContractCommonDataKindsEmail::CONTENT_ITEM_TYPE;
+    return result;
 }
 
 //=====================================================================
@@ -59,17 +79,19 @@ AutoPtr< ArrayOf<String> > PersonalAutofillPopulator::PhoneProfileQuery::Project
     // return new String[] {
     //     ContactsContract.CommonDataKinds.Phone.NUMBER,
     // };
-    assert(0);
-    AutoPtr< ArrayOf<String> > empty;
-    return empty;
+
+	AutoPtr< ArrayOf<String> > result = ArrayOf<String>::Alloc(1);
+	result->Set(0, IContactsContractCommonDataKindsPhone::NUMBER);
+    return result;
 }
 
 String PersonalAutofillPopulator::PhoneProfileQuery::MimeType()
 {
     // ==================before translated======================
     // return ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE;
-    assert(0);
-    return String("");
+
+    String result = IContactsContractCommonDataKindsPhone::CONTENT_ITEM_TYPE;
+    return result;
 }
 
 //=====================================================================
@@ -95,17 +117,25 @@ AutoPtr< ArrayOf<String> > PersonalAutofillPopulator::AddressProfileQuery::Proje
     //         ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE,
     //         ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY,
     // };
-    assert(0);
-    AutoPtr< ArrayOf<String> > empty;
-    return empty;
+
+    AutoPtr< ArrayOf<String> > result = ArrayOf<String>::Alloc(7);
+	result->Set(0, IContactsContractCommonDataKindsStructuredPostal::STREET);
+	result->Set(1, IContactsContractCommonDataKindsStructuredPostal::POBOX);
+	result->Set(2, IContactsContractCommonDataKindsStructuredPostal::NEIGHBORHOOD);
+	result->Set(3, IContactsContractCommonDataKindsStructuredPostal::CITY);
+	result->Set(4, IContactsContractCommonDataKindsStructuredPostal::REGION);
+	result->Set(5, IContactsContractCommonDataKindsStructuredPostal::POSTCODE);
+	result->Set(6, IContactsContractCommonDataKindsStructuredPostal::COUNTRY);
+    return result;
 }
 
 String PersonalAutofillPopulator::AddressProfileQuery::MimeType()
 {
     // ==================before translated======================
     // return ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE;
-    assert(0);
-    return String("");
+
+    String result = IContactsContractCommonDataKindsStructuredPostal::CONTENT_ITEM_TYPE;
+    return result;
 }
 
 //=====================================================================
@@ -125,17 +155,22 @@ AutoPtr< ArrayOf<String> > PersonalAutofillPopulator::NameProfileQuery::Projecti
     //         ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME,
     //         ContactsContract.CommonDataKinds.StructuredName.SUFFIX
     // };
-    assert(0);
-    AutoPtr< ArrayOf<String> > empty;
-    return empty;
+
+	AutoPtr< ArrayOf<String> > result = ArrayOf<String>::Alloc(4);
+	result->Set(0, IContactsContractCommonDataKindsStructuredName::GIVEN_NAME);
+	result->Set(1, IContactsContractCommonDataKindsStructuredName::MIDDLE_NAME);
+	result->Set(2, IContactsContractCommonDataKindsStructuredName::FAMILY_NAME);
+	result->Set(3, IContactsContractCommonDataKindsStructuredName::SUFFIX);
+    return result;
 }
 
 String PersonalAutofillPopulator::NameProfileQuery::MimeType()
 {
     // ==================before translated======================
     // return ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE;
-    assert(0);
-    return String("");
+
+	String result = IContactsContractCommonDataKindsStructuredName::CONTENT_ITEM_TYPE;
+    return result;
 }
 
 //=====================================================================
@@ -153,6 +188,16 @@ PersonalAutofillPopulator::PersonalAutofillPopulator(
     //     populateAddress(contentResolver);
     //     populatePhone(contentResolver);
     // }
+
+	mHasPermissions = HasPermissions(context);
+	if (mHasPermissions) {
+		AutoPtr<IContentResolver> contentResolver;
+		context->GetContentResolver((IContentResolver**)&contentResolver);
+		PopulateName(contentResolver);
+		PopulateEmail(contentResolver);
+		PopulateAddress(contentResolver);
+		PopulatePhone(contentResolver);
+	}
 }
 
 AutoPtr<PersonalAutofillPopulator> PersonalAutofillPopulator::Create(
@@ -160,9 +205,9 @@ AutoPtr<PersonalAutofillPopulator> PersonalAutofillPopulator::Create(
 {
     // ==================before translated======================
     // return new PersonalAutofillPopulator(context);
-    assert(0);
-    AutoPtr<PersonalAutofillPopulator> empty;
-    return empty;
+
+	AutoPtr<PersonalAutofillPopulator> result = new PersonalAutofillPopulator(context);
+	return result;
 }
 
 AutoPtr<ICursor> PersonalAutofillPopulator::CursorFromProfileQuery(
@@ -178,9 +223,21 @@ AutoPtr<ICursor> PersonalAutofillPopulator::CursorFromProfileQuery(
     //         new String[]{query.mimeType()},
     //         sortDescriptor
     //         );
-    assert(0);
-    AutoPtr<ICursor> empty;
-    return empty;
+
+	String sortDescriptor = String(""); //wwz: IS_PRIMARY isnot exist now; IContactsContractContactsData::IS_PRIMARY + " DESC";
+	AutoPtr<ICursor> result;
+	AutoPtr< ArrayOf<String> > mimeType = ArrayOf<String>::Alloc(1);
+	mimeType->Set(0, query->MimeType());
+	contentResolver->Query(
+		query->mProfileDataUri,
+		query->Projection(),
+		/* wwz: mIMETYPE isnot exist; IContactsContractContactsData::MIMETYPE + */ String(" = ?"),
+		mimeType,
+		sortDescriptor,
+		(ICursor**)&result
+		);
+
+	return result;
 }
 
 Boolean PersonalAutofillPopulator::HasPermissions(
@@ -196,8 +253,21 @@ Boolean PersonalAutofillPopulator::HasPermissions(
     //     if (res != PackageManager.PERMISSION_GRANTED) return false;
     // }
     // return true;
-    assert(0);
-    return FALSE;
+
+	AutoPtr< ArrayOf<String> > permissions = ArrayOf<String>::Alloc(2);
+	String str0("android.permission.READ_CONTACTS");
+	String str1("android.permission.READ_PROFILE");
+	permissions->Set(0, str0);
+	permissions->Set(1, str1);
+	String permission("");
+	Int32 res = 0;
+	for (Int32 idx = 0; idx < permissions->GetLength(); ++idx) {
+		permission = (*permissions)[idx];
+		context->CheckCallingOrSelfPermission(permission, &res);
+		if (res != IPackageManager::PERMISSION_GRANTED) return FALSE;
+	}
+
+	return TRUE;
 }
 
 ECode PersonalAutofillPopulator::PopulateName(
@@ -214,7 +284,19 @@ ECode PersonalAutofillPopulator::PopulateName(
     //     mSuffix = nameCursor.getString(nameProfileQuery.SUFFIX);
     // }
     // nameCursor.close();
-    assert(0);
+
+	AutoPtr<NameProfileQuery> nameProfileQuery = new NameProfileQuery();
+	AutoPtr<ICursor> nameCursor = CursorFromProfileQuery(nameProfileQuery, contentResolver);
+	Boolean moveToNext = FALSE;
+	nameCursor->MoveToNext(&moveToNext);
+	if (moveToNext) {
+		nameCursor->GetString(nameProfileQuery->GIVEN_NAME, &mGivenName);
+		nameCursor->GetString(nameProfileQuery->MIDDLE_NAME, &mMiddleName);
+		nameCursor->GetString(nameProfileQuery->FAMILY_NAME, &mFamilyName);
+		nameCursor->GetString(nameProfileQuery->SUFFIX, &mSuffix);
+	}
+	//wwz: func Close isnot exist; nameCursor->Close();
+
     return NOERROR;
 }
 
@@ -230,7 +312,20 @@ ECode PersonalAutofillPopulator::PopulateEmail(
     //     mEmailAddresses[i] = emailCursor.getString(emailProfileQuery.EMAIL_ADDRESS);
     // }
     // emailCursor.close();
-    assert(0);
+
+	AutoPtr<EmailProfileQuery> emailProfileQuery = new EmailProfileQuery();
+	AutoPtr<ICursor> emailCursor = CursorFromProfileQuery(emailProfileQuery, contentResolver);
+	Int32 count = 0;
+	emailCursor->GetCount(&count);
+	mEmailAddresses = ArrayOf<String>::Alloc(count);
+	Boolean moveToNext = FALSE;
+	String item("");
+	for (Int32 i = 0; emailCursor->MoveToNext(&moveToNext), moveToNext; ++i) {
+		emailCursor->GetString(emailProfileQuery->EMAIL_ADDRESS, &item);
+		(*mEmailAddresses)[i] = item;
+	}
+	//wwz: func Close isnot exist; emailCursor->Close();
+
     return NOERROR;
 }
 
@@ -251,7 +346,22 @@ ECode PersonalAutofillPopulator::PopulateAddress(
     //     mCountry = addressCursor.getString(addressProfileQuery.COUNTRY);
     // }
     // addressCursor.close();
-    assert(0);
+
+	AutoPtr<AddressProfileQuery> addressProfileQuery = new AddressProfileQuery();
+	AutoPtr<ICursor> addressCursor = CursorFromProfileQuery(addressProfileQuery, contentResolver);
+	Boolean moveToNext = FALSE;
+	addressCursor->MoveToNext(&moveToNext);
+	if (moveToNext) {
+		addressCursor->GetString(addressProfileQuery->POBOX, &mPobox);
+		addressCursor->GetString(addressProfileQuery->STREET, &mStreet);
+		addressCursor->GetString(addressProfileQuery->NEIGHBORHOOD, &mNeighborhood);
+		addressCursor->GetString(addressProfileQuery->CITY, &mCity);
+		addressCursor->GetString(addressProfileQuery->REGION, &mRegion);
+		addressCursor->GetString(addressProfileQuery->POSTALCODE, &mPostalCode);
+		addressCursor->GetString(addressProfileQuery->COUNTRY, &mCountry);
+	}
+	//wwz: func Close isnot exist; addressCursor->Close();
+
     return NOERROR;
 }
 
@@ -267,7 +377,20 @@ ECode PersonalAutofillPopulator::PopulatePhone(
     //     mPhoneNumbers[i] = phoneCursor.getString(phoneProfileQuery.NUMBER);
     // }
     // phoneCursor.close();
-    assert(0);
+
+	AutoPtr<PhoneProfileQuery> phoneProfileQuery = new PhoneProfileQuery();
+	AutoPtr<ICursor> phoneCursor = CursorFromProfileQuery(phoneProfileQuery, contentResolver);
+	Int32 count = 0;
+	phoneCursor->GetCount(&count);
+	mPhoneNumbers = ArrayOf<String>::Alloc(count);
+	Boolean moveToNext = FALSE;
+	String item("");
+	for (Int32 i = 0; phoneCursor->MoveToNext(&moveToNext), moveToNext; ++i) {
+		phoneCursor->GetString(phoneProfileQuery->NUMBER, &item);
+		(*mPhoneNumbers)[i] = item;
+	}
+	//wwz: func Close isnot exist; phoneCursor->Close();
+
     return NOERROR;
 }
 
@@ -275,114 +398,112 @@ String PersonalAutofillPopulator::GetFirstName()
 {
     // ==================before translated======================
     // return mGivenName;
-    assert(0);
-    return String("");
+
+    return mGivenName;
 }
 
 String PersonalAutofillPopulator::GetLastName()
 {
     // ==================before translated======================
     // return mFamilyName;
-    assert(0);
-    return String("");
+
+	return mFamilyName;
 }
 
 String PersonalAutofillPopulator::GetMiddleName()
 {
     // ==================before translated======================
     // return mMiddleName;
-    assert(0);
-    return String("");
+
+	return mMiddleName;
 }
 
 String PersonalAutofillPopulator::GetSuffix()
 {
     // ==================before translated======================
     // return mSuffix;
-    assert(0);
-    return String("");
+
+	return mSuffix;
 }
 
 AutoPtr< ArrayOf<String> > PersonalAutofillPopulator::GetEmailAddresses()
 {
     // ==================before translated======================
     // return mEmailAddresses;
-    assert(0);
-    AutoPtr< ArrayOf<String> > empty;
-    return empty;
+
+	return mEmailAddresses;
 }
 
 String PersonalAutofillPopulator::GetStreet()
 {
     // ==================before translated======================
     // return mStreet;
-    assert(0);
-    return String("");
+
+	return mStreet;
 }
 
 String PersonalAutofillPopulator::GetPobox()
 {
     // ==================before translated======================
     // return mPobox;
-    assert(0);
-    return String("");
+
+	return mPobox;
 }
 
 String PersonalAutofillPopulator::GetNeighborhood()
 {
     // ==================before translated======================
     // return mNeighborhood;
-    assert(0);
-    return String("");
+
+	return mNeighborhood;
 }
 
 String PersonalAutofillPopulator::GetCity()
 {
     // ==================before translated======================
     // return mCity;
-    assert(0);
-    return String("");
+
+	return mCity;
 }
 
 String PersonalAutofillPopulator::GetRegion()
 {
     // ==================before translated======================
     // return mRegion;
-    assert(0);
-    return String("");
+
+	return mRegion;
 }
 
 String PersonalAutofillPopulator::GetPostalCode()
 {
     // ==================before translated======================
     // return mPostalCode;
-    assert(0);
-    return String("");
+
+	return mPostalCode;
 }
 
 String PersonalAutofillPopulator::GetCountry()
 {
     // ==================before translated======================
     // return mCountry;
-    assert(0);
-    return String("");
+
+	return mCountry;
 }
 
 AutoPtr< ArrayOf<String> > PersonalAutofillPopulator::GetPhoneNumbers()
 {
     // ==================before translated======================
     // return mPhoneNumbers;
-    assert(0);
-    AutoPtr< ArrayOf<String> > empty;
-    return empty;
+
+	return mPhoneNumbers;
 }
 
 Boolean PersonalAutofillPopulator::GetHasPermissions()
 {
     // ==================before translated======================
     // return mHasPermissions;
-    assert(0);
-    return FALSE;
+
+	return mHasPermissions;
 }
 
 } // namespace Components

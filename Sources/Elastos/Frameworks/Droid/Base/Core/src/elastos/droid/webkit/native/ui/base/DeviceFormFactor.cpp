@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "DeviceFormFactor.h"
+#include "elastos/droid/webkit/native/ui/base/DeviceFormFactor.h"
 
 namespace Elastos {
 namespace Droid {
@@ -12,7 +11,7 @@ namespace Base {
 //                           DeviceFormFactor
 //=====================================================================
 const Int32 DeviceFormFactor::MINIMUM_TABLET_WIDTH_DP;
-AutoPtr<Boolean> DeviceFormFactor::sIsTablet = null;
+Boolean DeviceFormFactor::sIsTablet = FALSE;
 
 Boolean DeviceFormFactor::IsTablet(
     /* [in] */ IContext* context)

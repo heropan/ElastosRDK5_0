@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "RemoteAndroidKeyStore.h"
+#include "elastos/droid/webkit/native/net/RemoteAndroidKeyStore.h"
 
 namespace Elastos {
 namespace Droid {
@@ -42,7 +41,7 @@ AutoPtr<AndroidKeyStore> RemoteAndroidKeyStore::RemotePrivateKey::GetKeyStore()
 const String RemoteAndroidKeyStore::TAG("AndroidKeyStoreRemoteImpl");
 
 RemoteAndroidKeyStore::RemoteAndroidKeyStore(
-    /* [in] */ IRemoteAndroidKeyStore* manager)
+    /* [in] */ RemoteAndroidKeyStore* manager)
 {
     // ==================before translated======================
     // mRemoteManager = manager;

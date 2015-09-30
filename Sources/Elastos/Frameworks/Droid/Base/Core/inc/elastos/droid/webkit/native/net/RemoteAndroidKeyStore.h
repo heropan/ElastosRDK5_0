@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,16 +5,16 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_REMOTEANDROIDKEYSTORE_H_
 #define _ELASTOS_DROID_WEBKIT_NET_REMOTEANDROIDKEYSTORE_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
+#include "elastos/droid/webkit/native/net/AndroidKeyStore.h"
+#include "elastos/droid/webkit/native/net/AndroidPrivateKey.h"
 
 // package org.chromium.net;
 // import android.os.RemoteException;
 // import android.util.Log;
 
-using Elastos::Droid::Os::IRemoteException;
-using Elastos::Droid::Util::ILog;
+using Elastos::Droid::Webkit::Net::AndroidKeyStore;
+using Elastos::Droid::Webkit::Net::AndroidPrivateKey;
 
 namespace Elastos {
 namespace Droid {
@@ -26,14 +25,10 @@ namespace Net {
   * Provides a remoted implementation of AndroidKeyStore where all calls are forwarded via
   * binder to an external process.
   */
-class RemoteAndroidKeyStore
-    : public Object
-    , public AndroidKeyStore
+class RemoteAndroidKeyStore : public AndroidKeyStore
 {
 private:
-    class RemotePrivateKey
-        : public Object
-        , public AndroidPrivateKey
+    class RemotePrivateKey : public AndroidPrivateKey
     {
     public:
         RemotePrivateKey(
@@ -54,7 +49,7 @@ private:
 
 public:
     RemoteAndroidKeyStore(
-        /* [in] */ IRemoteAndroidKeyStore* manager);
+        /* [in] */ RemoteAndroidKeyStore* manager);
 
     // @Override
     CARAPI_(AutoPtr< ArrayOf<Byte> >) GetRSAKeyModulus(
@@ -94,7 +89,7 @@ public:
 
 private:
     static const String TAG;
-    /*const*/ AutoPtr<IRemoteAndroidKeyStore> mRemoteManager;
+    /*const*/ AutoPtr<RemoteAndroidKeyStore> mRemoteManager;
 };
 
 } // namespace Net

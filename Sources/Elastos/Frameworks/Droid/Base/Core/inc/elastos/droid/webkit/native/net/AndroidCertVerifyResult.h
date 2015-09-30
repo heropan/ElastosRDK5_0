@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,12 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_ANDROIDCERTVERIFYRESULT_H_
 #define _ELASTOS_DROID_WEBKIT_NET_ANDROIDCERTVERIFYRESULT_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "elastos/security/cert/X509Certificate.h"
-#include "elastos/utility/CArrayList.h"
-#include "elastos/utility/Collections.h"
 
 // package org.chromium.net;
 // import org.chromium.base.CalledByNative;
@@ -22,9 +16,7 @@
 // import java.util.Collections;
 // import java.util.List;
 
-using Elastos::Security::Cert::IX509Certificate;
-using Elastos::Utility::IArrayList;
-using Elastos::Utility::ICollections;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -41,7 +33,7 @@ public:
     AndroidCertVerifyResult(
         /* [in] */ Int32 status,
         /* [in] */ Boolean isIssuedByKnownRoot,
-        /* [in] */ IList<IX509Certificate*>* certificateChain);
+        /* [in] */ IList* certificateChain);
 
     AndroidCertVerifyResult(
         /* [in] */ Int32 status);
@@ -67,7 +59,7 @@ private:
     /**
       * The properly ordered certificate chain used for verification.
       */
-    /*const*/ AutoPtr< IList<IX509Certificate> > mCertificateChain;
+    /*const*/ AutoPtr<IList> mCertificateChain;
 };
 
 } // namespace Net

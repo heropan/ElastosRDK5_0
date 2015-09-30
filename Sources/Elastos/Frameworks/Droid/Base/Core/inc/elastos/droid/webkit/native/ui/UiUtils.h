@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,17 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_UIUTILS_H_
 #define _ELASTOS_DROID_WEBKIT_UI_UIUTILS_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "graphics/CBitmap.h"
-#include "graphics/Canvas.h"
-#include "graphics/CRect.h"
-#include "view/SurfaceView.h"
-#include "view/View.h"
-#include "view/ViewGroup.h"
-#include "view/inputmethod/CInputMethodManager.h"
 
 // package org.chromium.ui;
 // import android.content.Context;
@@ -30,14 +19,10 @@
 // import android.view.inputmethod.InputMethodManager;
 
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Graphics::IBitmap;
-using Elastos::Droid::Graphics::ICanvas;
-using Elastos::Droid::Graphics::IRect;
-using Elastos::Droid::Util::ILog;
-using Elastos::Droid::View::ISurfaceView;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
-using Elastos::Droid::View::Inputmethod::IInputMethodManager;
+using Elastos::Droid::Graphics::BitmapConfig;
+using Elastos::Droid::Graphics::IBitmap;
 
 namespace Elastos {
 namespace Droid {
@@ -55,7 +40,7 @@ public:
       * A delegate that can be implemented to override whether or not keyboard detection will be
       * used.
       */
-    class KeyboardShowingDelegate
+    class KeyboardShowingDelegate : public Object
     {
     public:
         /**
@@ -141,7 +126,7 @@ public:
     static CARAPI_(AutoPtr<IBitmap>) GenerateScaledScreenshot(
         /* [in] */ IView* currentView,
         /* [in] */ Int32 maximumDimension,
-        /* [in] */  Bitmap);
+        /* [in] */ BitmapConfig bitmapConfig);
 
 private:
     /**
@@ -164,7 +149,7 @@ private:
     /** The minimum size of the bottom margin below the app to detect a keyboard. */
     static const Float KEYBOARD_DETECT_BOTTOM_THRESHOLD_DP;
     /** A delegate that allows disabling keyboard visibility detection. */
-    static AutoPtr<KeyboardShowingDelegate> sKeyboardShowingDelegate;
+    static AutoPtr<UiUtils::KeyboardShowingDelegate> sKeyboardShowingDelegate;
 };
 
 } // namespace Ui

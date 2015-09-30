@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,16 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_COLORPICKERADVANCEDCOMPONENT_H_
 #define _ELASTOS_DROID_WEBKIT_UI_COLORPICKERADVANCEDCOMPONENT_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "graphics/drawable/GradientDrawable.h"
-#include "os/Build.h"
-#include "view/View.h"
-#include "widget/SeekBar.h"
-#include "widget/TextView.h"
-#include "webkit/native/base/ApiCompatibilityUtils.h"
 
 // package org.chromium.ui;
 // import android.content.Context;
@@ -28,13 +18,11 @@
 // import android.widget.TextView;
 // import org.chromium.base.ApiCompatibilityUtils;
 
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Graphics::Drawable::IGradientDrawable;
-using Elastos::Droid::Os::IBuild;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Widget::ISeekBar;
 using Elastos::Droid::Widget::ITextView;
-using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
+using Elastos::Droid::Widget::ISeekBarOnSeekBarChangeListener;
+using Elastos::Droid::Graphics::Drawable::IGradientDrawable;
 
 namespace Elastos {
 namespace Droid {
@@ -62,7 +50,7 @@ public:
         /* [in] */ const IView* rootView,
         /* [in] */ const Int32& textResourceId,
         /* [in] */ const Int32& seekBarMax,
-        /* [in] */ const IOnSeekBarChangeListener* seekBarListener);
+        /* [in] */ const ISeekBarOnSeekBarChangeListener* seekBarListener);
 
     /**
       * @return The value represented by this component, maintained by the seek bar progress.

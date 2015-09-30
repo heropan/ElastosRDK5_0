@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,12 +5,9 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_NETWORKCHANGENOTIFIER_H_
 #define _ELASTOS_DROID_WEBKIT_NET_NETWORKCHANGENOTIFIER_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "webkit/native/base/ObserverList.h"
-#include "elastos/utility/CArrayList.h"
+#include "elastos/droid/webkit/native/net/NetworkChangeNotifierAutoDetect.h"
+// #include "elastos/droid/webkit/native/base/ObserverList.h" /* ObserverList cannot compile */
 
 // package org.chromium.net;
 // import android.content.Context;
@@ -21,9 +17,9 @@
 // import org.chromium.base.ObserverList;
 // import java.util.ArrayList;
 
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Webkit::Base::ObserverList;
 using Elastos::Utility::IArrayList;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Webkit::Net::NetworkChangeNotifierAutoDetect;
 
 namespace Elastos {
 namespace Droid {
@@ -48,16 +44,14 @@ public:
       * Alerted when the connection type of the network changes.
       * The alert is fired on the UI thread.
       */
-    class ConnectionTypeObserver
+    class ConnectionTypeObserver : public Object
     {
     public:
         virtual CARAPI OnConnectionTypeChanged(
             /* [in] */ Int32 connectionType) = 0;
     };
 
-    class InnerNetworkChangeNotifierAutoDetectObserver
-        : public Object
-        , public NetworkChangeNotifierAutoDetect::Observer
+    class InnerNetworkChangeNotifierAutoDetectObserver : public NetworkChangeNotifierAutoDetect::Observer
     {
     public:
         InnerNetworkChangeNotifierAutoDetectObserver(
@@ -192,8 +186,8 @@ public:
 
 private:
     /*const*/ AutoPtr<IContext> mContext;
-    /*const*/ AutoPtr< IArrayList<Long> > mNativeChangeNotifiers;
-    /*const*/ AutoPtr< ObserverList<ConnectionTypeObserver> > mConnectionTypeObservers;
+    /*const*/ AutoPtr<IArrayList> mNativeChangeNotifiers;
+    /*const*/ /* ObserverList cannot compile */ // AutoPtr< ObserverList<ConnectionTypeObserver> > mConnectionTypeObservers;
     AutoPtr<NetworkChangeNotifierAutoDetect> mAutoDetector;
     Int32 mCurrentConnectionType;
     static AutoPtr<NetworkChangeNotifier> sInstance;

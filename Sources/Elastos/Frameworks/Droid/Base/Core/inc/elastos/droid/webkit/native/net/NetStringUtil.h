@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,10 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_NETSTRINGUTIL_H_
 #define _ELASTOS_DROID_WEBKIT_NET_NETSTRINGUTIL_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "elastos/text/Normalizer.h"
 
 // package org.chromium.net;
 // import org.chromium.base.CalledByNative;
@@ -20,7 +16,7 @@
 // import java.nio.charset.CodingErrorAction;
 // import java.text.Normalizer;
 
-using Elastos::Text::INormalizer;
+using Elastos::IO::IByteBuffer;
 
 namespace Elastos {
 namespace Droid {
@@ -32,7 +28,7 @@ namespace Net {
   * icu.
   */
 // @JNINamespace("net::android")
-class NetStringUtil
+class NetStringUtil : public Object
 {
 private:
     /**

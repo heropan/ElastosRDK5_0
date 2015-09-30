@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,19 +5,10 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_NETWORKCHANGENOTIFIERAUTODETECT_H_
 #define _ELASTOS_DROID_WEBKIT_NET_NETWORKCHANGENOTIFIERAUTODETECT_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/BroadcastReceiver.h"
-#include "content/Context.h"
-#include "content/Intent.h"
-#include "content/IntentFilter.h"
-#include "net/CConnectivityManager.h"
-#include "net/wifi/CWifiInfo.h"
-#include "net/wifi/CWifiManager.h"
-#include "telephony/CTelephonyManager.h"
-#include "webkit/native/base/ApplicationState.h"
-#include "webkit/native/base/ApplicationStatus.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/content/IntentFilter.h"
+#include "elastos/droid/webkit/native/base/ApplicationStatus.h"
 
 // package org.chromium.net;
 // import android.content.BroadcastReceiver;
@@ -33,16 +23,12 @@
 // import org.chromium.base.ApplicationState;
 // import org.chromium.base.ApplicationStatus;
 
-using Elastos::Droid::Content::IBroadcastReceiver;
+using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::IntentFilter;
 using Elastos::Droid::Net::IConnectivityManager;
-using Elastos::Droid::Net::Wifi::IWifiInfo;
 using Elastos::Droid::Net::Wifi::IWifiManager;
-using Elastos::Droid::Telephony::ITelephonyManager;
-using Elastos::Droid::Util::ILog;
-using Elastos::Droid::Webkit::Base::ApplicationState;
 using Elastos::Droid::Webkit::Base::ApplicationStatus;
 
 namespace Elastos {
@@ -56,11 +42,12 @@ namespace Net {
   * ACCESS_NETWORK_STATE permission.
   */
 class NetworkChangeNotifierAutoDetect
-    : public Object
-    , public BroadcastReceiver
+    : public BroadcastReceiver
     , public ApplicationStatus::ApplicationStateListener
 {
 public:
+    CAR_INTERFACE_DECL();
+
     /** Queries the ConnectivityManager for information about the current connection. */
     class ConnectivityManagerDelegate : public Object
     {
@@ -102,7 +89,7 @@ public:
     /**
       * Observer notified on the UI thread whenever a new connection type was detected.
       */
-    class Observer
+    class Observer : public Object
     {
     public:
         virtual CARAPI OnConnectionTypeChanged(
@@ -110,9 +97,7 @@ public:
     };
 
 private:
-    class NetworkConnectivityIntentFilter
-        : public Object
-        , public IntentFilter
+    class NetworkConnectivityIntentFilter : public IntentFilter
     {
     public:
         NetworkConnectivityIntentFilter();
@@ -147,8 +132,9 @@ public:
 
     // ApplicationStatus.ApplicationStateListener
     // @Override
-    CARAPI OnApplicationStateChange(
-        /* [in] */ Int32 newState);
+    // Inconsistent with ApplicationStatus.ApplicationStateListener, note it temporarily
+    //CARAPI OnApplicationStateChange(
+    //    /* [in] */ Int32 newState);
 
 private:
     /**

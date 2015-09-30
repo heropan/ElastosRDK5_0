@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "UiUtils.h"
+#include "elastos/droid/webkit/native/ui/UiUtils.h"
 
 namespace Elastos {
 namespace Droid {
@@ -12,7 +11,7 @@ namespace Ui {
 //=====================================================================
 const String UiUtils::TAG("UiUtils");
 const Float UiUtils::KEYBOARD_DETECT_BOTTOM_THRESHOLD_DP = 100;
-AutoPtr<KeyboardShowingDelegate> UiUtils::sKeyboardShowingDelegate;
+AutoPtr<UiUtils::KeyboardShowingDelegate> UiUtils::sKeyboardShowingDelegate;
 
 ECode UiUtils::SetKeyboardShowingDelegate(
     /* [in] */ KeyboardShowingDelegate* delegate)
@@ -97,7 +96,7 @@ Int32 UiUtils::InsertAfter(
 AutoPtr<IBitmap> UiUtils::GenerateScaledScreenshot(
     /* [in] */ IView* currentView,
     /* [in] */ Int32 maximumDimension,
-    /* [in] */  Bitmap)
+    /* [in] */ BitmapConfig bitmapConfig)
 {
     // ==================before translated======================
     // Bitmap screenshot = null;

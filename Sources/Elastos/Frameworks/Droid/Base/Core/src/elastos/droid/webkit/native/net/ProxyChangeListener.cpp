@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "ProxyChangeListener.h"
+#include "elastos/droid/webkit/native/net/ProxyChangeListener.h"
 
 namespace Elastos {
 namespace Droid {
@@ -36,7 +35,7 @@ ECode ProxyChangeListener::ProxyReceiver::OnReceive(
     return NOERROR;
 }
 
-AutoPtr<ProxyConfig> ProxyChangeListener::ProxyReceiver::ExtractNewProxy(
+AutoPtr<ProxyChangeListener::ProxyConfig> ProxyChangeListener::ProxyReceiver::ExtractNewProxy(
     /* [in] */ IIntent* intent)
 {
     // ==================before translated======================
@@ -83,7 +82,7 @@ AutoPtr<ProxyConfig> ProxyChangeListener::ProxyReceiver::ExtractNewProxy(
     //     return null;
     // }
     assert(0);
-    AutoPtr<ProxyConfig> empty;
+    AutoPtr<ProxyChangeListener::ProxyConfig> empty;
     return empty;
 }
 
@@ -159,7 +158,7 @@ ProxyChangeListener::ProxyChangeListener(
 }
 
 ECode ProxyChangeListener::ProxySettingsChanged(
-    /* [in] */ ProxyConfig* cfg)
+    /* [in] */ ProxyChangeListener::ProxyConfig* cfg)
 {
     VALIDATE_NOT_NULL(cfg);
     // ==================before translated======================

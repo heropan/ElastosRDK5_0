@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "ViewConfigurationHelper.h"
+#include "elastos/droid/webkit/native/ui/gfx/ViewConfigurationHelper.h"
 
 namespace Elastos {
 namespace Droid {

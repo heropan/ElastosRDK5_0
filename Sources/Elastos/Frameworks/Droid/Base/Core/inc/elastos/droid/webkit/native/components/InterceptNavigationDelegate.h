@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,8 +5,6 @@
 #ifndef _ELASTOS_DROID_WEBKIT_COMPONENTS_INTERCEPTNAVIGATIONDELEGATE_H_
 #define _ELASTOS_DROID_WEBKIT_COMPONENTS_INTERCEPTNAVIGATIONDELEGATE_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
 
 // package org.chromium.components.navigation_interception;
@@ -18,7 +15,7 @@ namespace Droid {
 namespace Webkit {
 namespace Components {
 
-class InterceptNavigationDelegate
+class InterceptNavigationDelegate : public Object
 {
 public:
     /**

@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "AutofillSuggestion.h"
+#include "elastos/droid/webkit/native/ui/autofill/AutofillSuggestion.h"
 
 namespace Elastos {
 namespace Droid {

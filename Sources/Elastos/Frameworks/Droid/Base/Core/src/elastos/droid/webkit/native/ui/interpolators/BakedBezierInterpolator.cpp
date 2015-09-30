@@ -1,6 +1,7 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "BakedBezierInterpolator.h"
+#include "elastos/droid/webkit/native/ui/interpolators/BakedBezierInterpolator.h"
+
+using Elastos::Droid::View::Animation::EIID_IInterpolator;
 
 namespace Elastos {
 namespace Droid {
@@ -11,14 +12,16 @@ namespace Interpolators {
 //=====================================================================
 //                       BakedBezierInterpolator
 //=====================================================================
-const AutoPtr<BakedBezierInterpolator> BakedBezierInterpolator::TRANSFORM_CURVE = new BakedBezierInterpolator(TRANSFORM_VALUES);
-const AutoPtr<BakedBezierInterpolator> BakedBezierInterpolator::FADE_OUT_CURVE = new BakedBezierInterpolator(FADE_OUT_VALUES);
-const AutoPtr<BakedBezierInterpolator> BakedBezierInterpolator::FADE_IN_CURVE = new BakedBezierInterpolator(FADE_IN_VALUES);
-const AutoPtr<BakedBezierInterpolator> BakedBezierInterpolator::TRANSFORM_FOLLOW_THROUGH_CURVE = new BakedBezierInterpolator(TRANSFORM_FOLLOW_THROUGH_VALUES);
 AutoPtr< ArrayOf<Float> > BakedBezierInterpolator::TRANSFORM_VALUES = BakedBezierInterpolator::MiddleInitTransformValues();
 AutoPtr< ArrayOf<Float> > BakedBezierInterpolator::FADE_OUT_VALUES = BakedBezierInterpolator::MiddleInitFadeOutValues();
 AutoPtr< ArrayOf<Float> > BakedBezierInterpolator::FADE_IN_VALUES = BakedBezierInterpolator::MiddleInitFadeInValues();
 AutoPtr< ArrayOf<Float> > BakedBezierInterpolator::TRANSFORM_FOLLOW_THROUGH_VALUES = BakedBezierInterpolator::MiddleInitTransformFollowThroughValues();
+const AutoPtr<BakedBezierInterpolator> BakedBezierInterpolator::TRANSFORM_CURVE = new BakedBezierInterpolator(BakedBezierInterpolator::TRANSFORM_VALUES);
+const AutoPtr<BakedBezierInterpolator> BakedBezierInterpolator::FADE_OUT_CURVE = new BakedBezierInterpolator(BakedBezierInterpolator::FADE_OUT_VALUES);
+const AutoPtr<BakedBezierInterpolator> BakedBezierInterpolator::FADE_IN_CURVE = new BakedBezierInterpolator(BakedBezierInterpolator::FADE_IN_VALUES);
+const AutoPtr<BakedBezierInterpolator> BakedBezierInterpolator::TRANSFORM_FOLLOW_THROUGH_CURVE = new BakedBezierInterpolator(BakedBezierInterpolator::TRANSFORM_FOLLOW_THROUGH_VALUES);
+
+CAR_INTERFACE_IMPL(BakedBezierInterpolator, Object, IInterpolator);
 
 Float BakedBezierInterpolator::GetInterpolation(
     /* [in] */ Float input)
@@ -140,5 +143,4 @@ AutoPtr< ArrayOf<Float> > BakedBezierInterpolator::MiddleInitTransformFollowThro
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
 

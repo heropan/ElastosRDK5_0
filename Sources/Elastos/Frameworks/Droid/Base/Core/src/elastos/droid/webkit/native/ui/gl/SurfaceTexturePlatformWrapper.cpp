@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "SurfaceTexturePlatformWrapper.h"
+#include "elastos/droid/webkit/native/ui/gl/SurfaceTexturePlatformWrapper.h"
 
 namespace Elastos {
 namespace Droid {

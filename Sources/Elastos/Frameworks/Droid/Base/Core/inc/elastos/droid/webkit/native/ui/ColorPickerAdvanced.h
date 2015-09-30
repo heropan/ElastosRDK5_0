@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,15 +5,10 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_COLORPICKERADVANCED_H_
 #define _ELASTOS_DROID_WEBKIT_UI_COLORPICKERADVANCED_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "graphics/CColor.h"
-#include "view/LayoutInflater.h"
-#include "view/View.h"
-#include "widget/LinearLayout.h"
-#include "widget/SeekBar.h"
+#include "elastos/droid/widget/LinearLayout.h"
+#include "elastos/droid/webkit/native/ui/ColorPickerAdvancedComponent.h"
+#include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
 
 // package org.chromium.ui;
 // import android.content.Context;
@@ -26,13 +20,12 @@
 // import android.widget.SeekBar;
 // import android.widget.SeekBar.OnSeekBarChangeListener;
 
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Graphics::IColor;
-using Elastos::Droid::Util::IAttributeSet;
-using Elastos::Droid::View::ILayoutInflater;
-using Elastos::Droid::View::IView;
-using Elastos::Droid::Widget::ILinearLayout;
+using Elastos::Droid::Widget::LinearLayout;
 using Elastos::Droid::Widget::ISeekBar;
+using Elastos::Droid::Widget::ISeekBarOnSeekBarChangeListener;
+using Elastos::Droid::Webkit::Ui::ColorPickerAdvancedComponent;
+using Elastos::Droid::Webkit::Ui::OnColorChangedListener;
+using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
@@ -44,9 +37,8 @@ namespace Ui {
   * the Hue, Saturation and Value attributes.
   */
 class ColorPickerAdvanced
-    : public Object
-    , public LinearLayout
-    , public OnSeekBarChangeListener
+    : public LinearLayout
+    , public ISeekBarOnSeekBarChangeListener
 {
 public:
     ColorPickerAdvanced(
@@ -74,7 +66,7 @@ public:
     virtual CARAPI_(AutoPtr<ColorPickerAdvancedComponent>) CreateAndAddNewGradient(
         /* [in] */ Int32 textResourceId,
         /* [in] */ Int32 seekBarMax,
-        /* [in] */ IOnSeekBarChangeListener* seekBarListener);
+        /* [in] */ ISeekBarOnSeekBarChangeListener* seekBarListener);
 
     /**
       * Sets the listener for when the user changes the color.

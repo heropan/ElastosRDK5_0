@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,14 +5,8 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_COLORPICKERMOREBUTTON_H_
 #define _ELASTOS_DROID_WEBKIT_UI_COLORPICKERMOREBUTTON_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "graphics/Canvas.h"
-#include "graphics/CColor.h"
-#include "graphics/Paint.h"
-#include "widget/Button.h"
+#include "elastos/droid/widget/Button.h"
 
 // package org.chromium.ui;
 // import android.content.Context;
@@ -24,11 +17,10 @@
 // import android.widget.Button;
 
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Widget::Button;
 using Elastos::Droid::Graphics::ICanvas;
-using Elastos::Droid::Graphics::IColor;
 using Elastos::Droid::Graphics::IPaint;
-using Elastos::Droid::Util::IAttributeSet;
-using Elastos::Droid::Widget::IButton;
+using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
@@ -38,9 +30,7 @@ namespace Ui {
 /**
   * Simple class that draws a white border around a button, purely for a UI change.
   */
-class ColorPickerMoreButton
-    : public Object
-    , public Button
+class ColorPickerMoreButton : public Button
 {
 public:
     ColorPickerMoreButton(

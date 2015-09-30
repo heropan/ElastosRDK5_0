@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,10 +5,8 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_AUTOFILL_AUTOFILLSUGGESTION_H_
 #define _ELASTOS_DROID_WEBKIT_UI_AUTOFILL_AUTOFILLSUGGESTION_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "webkit/native/ui/DropdownItem.h"
+#include "elastos/droid/webkit/native/ui/DropdownItem.h"
 
 // package org.chromium.ui.autofill;
 // import org.chromium.ui.DropdownItem;
@@ -25,9 +22,7 @@ namespace Autofill {
 /**
   * Autofill suggestion container used to store information needed for each Autofill popup entry.
   */
-class AutofillSuggestion
-    : public Object
-    , public DropdownItem
+class AutofillSuggestion : public DropdownItem
 {
 public:
     /**

@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "ActivityWindowAndroid.h"
+#include "elastos/droid/webkit/native/ui/base/ActivityWindowAndroid.h"
 
 namespace Elastos {
 namespace Droid {
@@ -17,6 +16,7 @@ const String ActivityWindowAndroid::TAG("ActivityWindowAndroid");
 
 ActivityWindowAndroid::ActivityWindowAndroid(
     /* [in] */ IActivity* activity)
+    : WindowAndroid(NULL) // activity
 {
     // ==================before translated======================
     // super(activity.getApplicationContext());
@@ -106,13 +106,13 @@ Boolean ActivityWindowAndroid::OnActivityResult(
     return FALSE;
 }
 
-AutoPtr< IWeakReference< AutoPtr<IActivity> > > ActivityWindowAndroid::GetActivity()
+AutoPtr<IWeakReference> ActivityWindowAndroid::GetActivity()
 {
     // ==================before translated======================
     // // Return a new WeakReference to prevent clients from releasing our internal WeakReference.
     // return new WeakReference<Activity>(mActivityRef.get());
     assert(0);
-    AutoPtr< IWeakReference< AutoPtr<IActivity> > > empty;
+    AutoPtr<IWeakReference> empty;
     return empty;
 }
 

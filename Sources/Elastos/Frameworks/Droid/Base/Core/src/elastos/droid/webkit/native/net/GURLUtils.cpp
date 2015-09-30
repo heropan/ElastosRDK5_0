@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "GURLUtils.h"
+#include "elastos/droid/webkit/native/net/GURLUtils.h"
 
 namespace Elastos {
 namespace Droid {

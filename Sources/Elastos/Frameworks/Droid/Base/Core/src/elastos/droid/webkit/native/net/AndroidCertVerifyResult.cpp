@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "AndroidCertVerifyResult.h"
+#include "elastos/droid/webkit/native/net/AndroidCertVerifyResult.h"
 
 namespace Elastos {
 namespace Droid {
@@ -13,7 +12,7 @@ namespace Net {
 AndroidCertVerifyResult::AndroidCertVerifyResult(
     /* [in] */ Int32 status,
     /* [in] */ Boolean isIssuedByKnownRoot,
-    /* [in] */ IList<IX509Certificate*>* certificateChain)
+    /* [in] */ IList* certificateChain)
 {
     // ==================before translated======================
     // mStatus = status;

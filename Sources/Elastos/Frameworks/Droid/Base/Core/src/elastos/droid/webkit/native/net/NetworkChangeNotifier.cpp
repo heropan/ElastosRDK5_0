@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "NetworkChangeNotifier.h"
+#include "elastos/droid/webkit/native/net/NetworkChangeNotifier.h"
 
 namespace Elastos {
 namespace Droid {

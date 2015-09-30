@@ -1,4 +1,3 @@
-// wuweizuo automatic build .h file from .java file.
 // Copyright 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -6,19 +5,10 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_DROPDOWNADAPTER_H_
 #define _ELASTOS_DROID_WEBKIT_UI_DROPDOWNADAPTER_H_
 
-#include "elatypes.h"
-#include "elautoptr.h"
 #include "ext/frameworkext.h"
-#include "content/Context.h"
-#include "graphics/CColor.h"
-#include "graphics/Typeface.h"
-#include "text/TextUtils.h"
-#include "view/LayoutInflater.h"
-#include "view/View.h"
-#include "view/ViewGroup.h"
-#include "widget/ArrayAdapter.h"
-#include "widget/TextView.h"
-#include "webkit/native/base/ApiCompatibilityUtils.h"
+#include "elastos/utility/etl/List.h"
+#include "elastos/utility/etl/Set.h"
+#include "elastos/droid/widget/ArrayAdapter.h"
 
 // package org.chromium.ui;
 // import android.content.Context;
@@ -35,40 +25,36 @@
 // import java.util.List;
 // import java.util.Set;
 
+using Elastos::Utility::IList;
+using Elastos::Utility::ISet;
+using Elastos::Core::IInteger32;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Graphics::IColor;
-using Elastos::Droid::Graphics::ITypeface;
-using Elastos::Droid::Text::ITextUtils;
-using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
-using Elastos::Droid::Widget::IAbsListViewLayoutParams;
-using Elastos::Droid::Widget::IArrayAdapter;
-using Elastos::Droid::Widget::ITextView;
-using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
+using Elastos::Droid::Widget::ArrayAdapter;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
 
+class DropdownItem;
+
 /**
   * Dropdown item adapter for DropdownPopupWindow.
   */
-class DropdownAdapter
-    : public Object
-    , public ArrayAdapter<DropdownItem>
+class DropdownAdapter : public ArrayAdapter
 {
 public:
     DropdownAdapter(
         /* [in] */ IContext* context,
         /* [in] */ IList<DropdownItem*>* items,
-        /* [in] */ ISet<Integer*>* separators);
+        /* [in] */ ISet<IInteger32*>* separators);
 
     DropdownAdapter(
         /* [in] */ IContext* context,
-        /* [in] */ ArrayOf<DropdownItem>* items,
-        /* [in] */ ISet<Integer*>* separators);
+        /* [in] */ ArrayOf<DropdownItem*>* items,
+        /* [in] */ ISet<IInteger32*>* separators);
 
     // @Override
     CARAPI_(AutoPtr<IView>) GetView(
@@ -88,7 +74,7 @@ private:
 
 private:
     AutoPtr<IContext> mContext;
-    AutoPtr< ISet<Integer> > mSeparators;
+    AutoPtr< ISet<IInteger32*> > mSeparators;
     Boolean mAreAllItemsEnabled;
 };
 

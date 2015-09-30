@@ -1,6 +1,5 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "DropdownDividerDrawable.h"
+#include "elastos/droid/webkit/native/ui/DropdownDividerDrawable.h"
 
 namespace Elastos {
 namespace Droid {
@@ -27,14 +26,13 @@ ECode DropdownDividerDrawable::Draw(
     return NOERROR;
 }
 
-ECode DropdownDividerDrawable::OnBoundsChange(
+void DropdownDividerDrawable::OnBoundsChange(
     /* [in] */ IRect* bounds)
 {
-    VALIDATE_NOT_NULL(bounds);
+    //VALIDATE_NOT_NULL(bounds);
     // ==================before translated======================
     // mDividerRect.set(0, 0, bounds.width(), mDividerRect.height());
     assert(0);
-    return NOERROR;
 }
 
 ECode DropdownDividerDrawable::SetHeight(
