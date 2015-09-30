@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_STYLE_CABSOLUTESIZESPAN_H__
 
 #include "_Elastos_Droid_Text_Style_CAbsoluteSizeSpan.h"
-#include "text/style/AbsoluteSizeSpan.h"
+#include "elastos/droid/text/style/AbsoluteSizeSpan.h"
 
 
 

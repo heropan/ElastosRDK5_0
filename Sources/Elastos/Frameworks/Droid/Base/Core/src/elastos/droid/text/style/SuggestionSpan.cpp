@@ -1,5 +1,5 @@
-#include "text/style/SuggestionSpan.h"
-#include "text/CTextPaint.h"
+#include "elastos/droid/text/style/SuggestionSpan.h"
+#include "elastos/droid/text/CTextPaint.h"
 #include "content/res/CConfiguration.h"
 #include "os/SystemClock.h"
 #include "R.h"

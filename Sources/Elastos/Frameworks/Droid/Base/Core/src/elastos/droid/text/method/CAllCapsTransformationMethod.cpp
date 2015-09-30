@@ -1,5 +1,5 @@
 
-#include "text/method/CAllCapsTransformationMethod.h"
+#include "elastos/droid/text/method/CAllCapsTransformationMethod.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

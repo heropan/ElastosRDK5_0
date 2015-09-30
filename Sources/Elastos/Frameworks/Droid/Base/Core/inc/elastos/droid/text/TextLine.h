@@ -1,14 +1,11 @@
 #ifndef __ELASTOS_DROID_TEXT_TEXTLINE_H__
 #define __ELASTOS_DROID_TEXT_TEXTLINE_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
-#include "text/CTextPaint.h"
-#include "text/Layout.h"
-#include "text/SpanSet.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/text/CTextPaint.h"
+#include "elastos/droid/text/Layout.h"
+#include "elastos/droid/text/SpanSet.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Text::Style::IMetricAffectingSpan;
@@ -31,10 +28,13 @@ namespace Text {
  *
  * @hide
  */
-class TextLine : public ElRefBase
+class TextLine
+    : public Object
 {
 public:
     TextLine();
+
+    virtual ~TextLine();
 
     /**
      * Returns a new TextLine from the shared pool.

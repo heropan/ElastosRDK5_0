@@ -1,10 +1,10 @@
 
-#include "text/method/TextKeyListener.h"
-#include "text/method/CQwertyKeyListener.h"
-#include "text/method/CMultiTapKeyListener.h"
-#include "text/SpannableStringInternal.h"
-#include "text/Selection.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/text/method/TextKeyListener.h"
+#include "elastos/droid/text/method/CQwertyKeyListener.h"
+#include "elastos/droid/text/method/CMultiTapKeyListener.h"
+#include "elastos/droid/text/SpannableStringInternal.h"
+#include "elastos/droid/text/Selection.h"
+#include "elastos/droid/text/TextUtils.h"
 #include "provider/Settings.h"
 
 using Elastos::Droid::Database::IContentObserver;

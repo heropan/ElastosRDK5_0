@@ -2,6 +2,7 @@
 #include "elastos/droid/content/SyncAdaptersCache.h"
 #include "elastos/droid/content/CSyncAdapterType.h"
 #include "elastos/droid/content/CSyncAdapterTypeHelper.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
@@ -16,7 +17,7 @@ const String SyncAdaptersCache::SERVICE_META_DATA("android.content.SyncAdapter")
 const String SyncAdaptersCache::ATTRIBUTES_NAME("sync-adapter");
 const AutoPtr<SyncAdaptersCache::MySerializer> SyncAdaptersCache::sSerializer = new SyncAdaptersCache::MySerializer();
 
-CAR_INTERFACE_IMPL(SyncAdaptersCache::MySerializer, IXmlSerializerAndParser)
+CAR_INTERFACE_IMPL(SyncAdaptersCache::MySerializer, Object, IXmlSerializerAndParser)
 
 ECode SyncAdaptersCache::MySerializer::WriteAsXml(
     /* [in] */ IInterface* item,
@@ -67,18 +68,12 @@ ECode SyncAdaptersCache::ParseServiceAttributes(
     VALIDATE_NOT_NULL(syncAdapterType)
     *syncAdapterType = NULL;
 
-    AutoPtr<ITypedArray> sa;
-    AutoPtr<ArrayOf<Int32> > syncAdapterArray = ArrayOf<Int32>::Alloc(7);
-    (*syncAdapterArray)[0] = 0x01010225;
-    (*syncAdapterArray)[1] = 0x0101028f;
-    (*syncAdapterArray)[2] = 0x01010290;
-    (*syncAdapterArray)[3] = 0x01010291;
-    (*syncAdapterArray)[4] = 0x0101029b;
-    (*syncAdapterArray)[5] = 0x01010332;
-    (*syncAdapterArray)[6] = 0x01010333;
+    Int32 size = ARRAY_SIZE(R::styleable::SyncAdapter);
+    AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+    layout->Copy(R::styleable::SyncAdapter, size);
 
-    FAIL_RETURN(res->ObtainAttributes(attrs, (ArrayOf<Int32>*) syncAdapterArray /* com.android.internal.R.styleable.SyncAdapter */,
-            (ITypedArray**)&sa))
+    AutoPtr<ITypedArray> sa;
+    FAIL_RETURN(res->ObtainAttributes(attrs, layout, (ITypedArray**)&sa))
 
     String authority;
     ECode ec = NOERROR;
@@ -89,9 +84,9 @@ ECode SyncAdaptersCache::ParseServiceAttributes(
     Boolean allowParallelSyncs = FALSE;
     String settingsActivity;
     AutoPtr<ISyncAdapterType> adapterType;
-    ec = sa->GetString(2 /* com.android.internal.R.styleable.SyncAdapter_contentAuthority */, &authority);
+    ec = sa->GetString(R::styleable::SyncAdapter_contentAuthority, &authority);
     if (FAILED(ec)) goto EXIT;
-    ec = sa->GetString(1 /* com.android.internal.R.styleable.SyncAdapter_accountType */, &accountType);
+    ec = sa->GetString(R::styleable::SyncAdapter_accountType, &accountType);
     if (FAILED(ec)) goto EXIT;
 
     if (authority.IsNull() || accountType.IsNull()) {
@@ -99,19 +94,21 @@ ECode SyncAdaptersCache::ParseServiceAttributes(
         return NOERROR;
     }
 
-    ec = sa->GetBoolean(3 /* com.android.internal.R.styleable.SyncAdapter_userVisible */, TRUE, &userVisible);
+    ec = sa->GetBoolean(R::styleable::SyncAdapter_userVisible, TRUE, &userVisible);
     if (FAILED(ec)) goto EXIT;
-    ec = sa->GetBoolean(4 /* com.android.internal.R.styleable.SyncAdapter_supportsUploading */, TRUE, &supportsUploading);
+    ec = sa->GetBoolean(R::styleable::SyncAdapter_supportsUploading, TRUE, &supportsUploading);
     if (FAILED(ec)) goto EXIT;
-    ec = sa->GetBoolean(6 /* com.android.internal.R.styleable.SyncAdapter_isAlwaysSyncable */, FALSE, &isAlwaysSyncable);
+    ec = sa->GetBoolean(R::styleable::SyncAdapter_isAlwaysSyncable, FALSE, &isAlwaysSyncable);
     if (FAILED(ec)) goto EXIT;
-    ec = sa->GetBoolean(5 /* com.android.internal.R.styleable.SyncAdapter_allowParallelSyncs */, FALSE, &allowParallelSyncs);
+    ec = sa->GetBoolean(R::styleable::SyncAdapter_allowParallelSyncs, FALSE, &allowParallelSyncs);
     if (FAILED(ec)) goto EXIT;
-    ec = sa->GetString(0 /* com.android.internal.R.styleable.SyncAdapter_settingsActivity */, &settingsActivity);
+    ec = sa->GetString(R::styleable::SyncAdapter_settingsActivity, &settingsActivity);
     if (FAILED(ec)) goto EXIT;
-    ec = CSyncAdapterType::New(authority, accountType, userVisible, supportsUploading,
-            isAlwaysSyncable, allowParallelSyncs, settingsActivity, (ISyncAdapterType**)&adapterType);
+    ec = CSyncAdapterType::New((ISyncAdapterType**)&adapterType);
+    ((CSyncAdapterType*)adapterType.Get())->constructor(authority, accountType, userVisible, supportsUploading,
+            isAlwaysSyncable, allowParallelSyncs, settingsActivity);
     if (FAILED(ec)) goto EXIT;
+
     *syncAdapterType = adapterType.Get();
     REFCOUNT_ADD(*syncAdapterType);
 

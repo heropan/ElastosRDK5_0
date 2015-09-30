@@ -1,5 +1,5 @@
-#include "text/method/LinkMovementMethod.h"
-#include "text/Selection.h"
+#include "elastos/droid/text/method/LinkMovementMethod.h"
+#include "elastos/droid/text/Selection.h"
 //#include "os/ElObject.h"
 #include "view/CKeyEvent.h"
 #include <elastos/core/Math.h>

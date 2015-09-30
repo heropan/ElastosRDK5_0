@@ -1,6 +1,6 @@
 
-#include "text/CHtml.h"
-#include "text/Html.h"
+#include "elastos/droid/text/CHtml.h"
+#include "elastos/droid/text/Html.h"
 
 namespace Elastos {
 namespace Droid {

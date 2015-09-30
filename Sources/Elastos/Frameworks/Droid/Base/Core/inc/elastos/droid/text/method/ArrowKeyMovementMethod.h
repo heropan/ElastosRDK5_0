@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_TEXT_METHOD_ArrowKeyMovementMethod_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include "text/method/BaseMovementMethod.h"
+#include "elastos/droid/text/method/BaseMovementMethod.h"
 
 using Elastos::Droid::Text::ISpannable;
 using Elastos::Droid::View::IKeyEvent;

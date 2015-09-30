@@ -1,5 +1,5 @@
 #include "ext/frameworkext.h"
-#include "text/style/ScaleXSpan.h"
+#include "elastos/droid/text/style/ScaleXSpan.h"
 
 namespace Elastos {
 namespace Droid {

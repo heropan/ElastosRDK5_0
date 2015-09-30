@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_CSPANNABLESTRINGBUILDER_H__
 
 #include "_Elastos_Droid_Text_CSpannableStringBuilder.h"
-#include "text/SpannableStringBuilder.h"
+#include "elastos/droid/text/SpannableStringBuilder.h"
 
 namespace Elastos {
 namespace Droid {

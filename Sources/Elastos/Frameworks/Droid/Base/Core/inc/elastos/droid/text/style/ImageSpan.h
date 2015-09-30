@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_ImageSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_ImageSpan_H__
 
-#include "text/style/DynamicDrawableSpan.h"
+#include "elastos/droid/text/style/DynamicDrawableSpan.h"
 #include "Elastos.Droid.Core_server.h"
 
 using Elastos::Core::ICharSequence;

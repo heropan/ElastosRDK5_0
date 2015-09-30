@@ -1,5 +1,5 @@
-#include "text/style/AbsoluteSizeSpan.h"
-#include "text/CTextPaint.h"
+#include "elastos/droid/text/style/AbsoluteSizeSpan.h"
+#include "elastos/droid/text/CTextPaint.h"
 
 namespace Elastos {
 namespace Droid {

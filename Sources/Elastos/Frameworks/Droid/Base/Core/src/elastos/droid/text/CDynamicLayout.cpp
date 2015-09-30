@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
-#include "text/CDynamicLayout.h"
-#include "text/TextDirectionHeuristics.h"
+#include "elastos/droid/text/CDynamicLayout.h"
+#include "elastos/droid/text/TextDirectionHeuristics.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,10 +2,10 @@
 #define __ELASTOS_DROID_TEXT_DYNAMICLAYOUT_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include "text/Layout.h"
-#include "text/PackedIntVector.h"
-#include "text/PackedObjectVector.h"
-#include "text/CStaticLayout.h"
+#include "elastos/droid/text/Layout.h"
+#include "elastos/droid/text/PackedIntVector.h"
+#include "elastos/droid/text/PackedObjectVector.h"
+#include "elastos/droid/text/CStaticLayout.h"
 
 namespace Elastos {
 namespace Droid {
@@ -199,7 +199,18 @@ public:
     /**
      * @hide
      */
-    virtual CARAPI_(Int32) GetNumberOfBlocks();
+    CARAPI_(Int32) GetNumberOfBlocks();
+
+    /**
+     * @hide
+     */
+    CARAPI_(Int32) GetIndexFirstChangedBlock();
+
+    /**
+     * @hide
+     */
+    CARAPI SetIndexFirstChangedBlock(
+        /* [in] */ Int32 block);
 
     //@Override
     CARAPI_(Int32) GetLineCount();
@@ -371,6 +382,8 @@ private:
     AutoPtr< ArrayOf<Int32> > mBlockIndices;
     // Number of items actually currently being used in the above 2 arrays
     Int32 mNumberOfBlocks;
+    // The first index of the blocks whose locations are changed
+    Int32 mIndexFirstChangedBlock;
 
     Int32 mTopPadding, mBottomPadding;
 

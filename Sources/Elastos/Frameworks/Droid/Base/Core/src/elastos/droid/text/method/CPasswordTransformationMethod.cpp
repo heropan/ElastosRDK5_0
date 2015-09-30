@@ -1,8 +1,8 @@
 
 #include "ext/frameworkext.h"
-#include "text/method/CPasswordTransformationMethod.h"
-#include "text/method/CTextKeyListener.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/text/method/CPasswordTransformationMethod.h"
+#include "elastos/droid/text/method/CTextKeyListener.h"
+#include "elastos/droid/text/TextUtils.h"
 #include "view/View.h"
 #include "os/Handler.h"
 #include "os/SystemClock.h"

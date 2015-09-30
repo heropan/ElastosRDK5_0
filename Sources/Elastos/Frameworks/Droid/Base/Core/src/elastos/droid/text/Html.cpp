@@ -1,19 +1,19 @@
 
-#include "text/Html.h"
-#include "text/TextUtils.h"
-#include "text/AndroidBidi.h"
-#include "text/CSpannableStringBuilder.h"
-#include "text/style/CQuoteSpan.h"
-#include "text/style/CStyleSpan.h"
-#include "text/style/CTypefaceSpan.h"
-#include "text/style/CSuperscriptSpan.h"
-#include "text/style/CSubscriptSpan.h"
-#include "text/style/CUnderlineSpan.h"
-#include "text/style/CURLSpan.h"
-#include "text/style/CImageSpan.h"
-#include "text/style/CForegroundColorSpan.h"
-#include "text/style/CRelativeSizeSpan.h"
-#include "text/style/CTextAppearanceSpan.h"
+#include "elastos/droid/text/Html.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/text/AndroidBidi.h"
+#include "elastos/droid/text/CSpannableStringBuilder.h"
+#include "elastos/droid/text/style/CQuoteSpan.h"
+#include "elastos/droid/text/style/CStyleSpan.h"
+#include "elastos/droid/text/style/CTypefaceSpan.h"
+#include "elastos/droid/text/style/CSuperscriptSpan.h"
+#include "elastos/droid/text/style/CSubscriptSpan.h"
+#include "elastos/droid/text/style/CUnderlineSpan.h"
+#include "elastos/droid/text/style/CURLSpan.h"
+#include "elastos/droid/text/style/CImageSpan.h"
+#include "elastos/droid/text/style/CForegroundColorSpan.h"
+#include "elastos/droid/text/style/CRelativeSizeSpan.h"
+#include "elastos/droid/text/style/CTextAppearanceSpan.h"
 #include "content/res/CResourcesHelper.h"
 #include "utility/ArrayUtils.h"
 #include "utility/XmlUtils.h"
@@ -111,9 +111,9 @@ AutoPtr<ISpanned> Html::FromHtml(
 String Html::ToHtml(
     /* [in] */ ISpanned* text)
 {
-        StringBuilder out;
-        WithinHtml(&out, text);
-        return out.ToString();
+    StringBuilder out;
+    WithinHtml(&out, text);
+    return out.ToString();
 }
 
 String Html::EscapeHtml(
@@ -158,13 +158,13 @@ void Html::WithinHtml(
             }
         }
         if (needDiv) {
-            out->AppendString(String("<div ") + elements + String(">"));
+            out->Append(("<div ") + elements + String(">"));
         }
 
         WithinDiv(out, text, i, next);
 
         if (needDiv) {
-            out->AppendCStr("</div>");
+            out->Append("</div>");
         }
     }
 }
@@ -182,13 +182,13 @@ void Html::WithinDiv(
         text->GetSpans(i, next, EIID_IQuoteSpan, (ArrayOf<IInterface*>**)&quotes);
 
         for(Int32 j = 0; j < quotes->GetLength(); j++) {
-            out->AppendCStr("<blockquote>");
+            out->Append("<blockquote>");
         }
 
         WithinBlockquote(out, text, i, next);
 
         for(Int32 j = 0; j < quotes->GetLength(); j++) {
-            out->AppendCStr("</blockquote>\n");
+            out->Append("</blockquote>\n");
         }
     }
 }
@@ -199,7 +199,7 @@ String Html::GetOpenParaTagWithDirection(
     /* [in] */ Int32 end)
 {
     Int32 len = end - start;
-    AutoPtr< ArrayOf<Byte> > levels = ArrayOf<Byte>::Alloc(ArrayUtils::IdealByteArraySize(len));
+    AutoPtr< ArrayOf<Byte> > levels = ArrayUtils::NewUnpaddedByteArray(len);
     AutoPtr< ArrayOf<Char32> > buffer = TextUtils::Obtain(len);
     TextUtils::GetChars(text, start, end, buffer, 0);
 
@@ -240,7 +240,7 @@ void Html::WithinBlockquote(
         WithinParagraph(out, text, i, next - nl, nl, next == end);
     }
 
-    out->AppendCStr("</p>\n");
+    out->Append("</p>\n");
 }
 
 void Html::WithinParagraph(
@@ -264,10 +264,10 @@ void Html::WithinParagraph(
                 ((IStyleSpan*) (*style)[j])->GetStyle(&s);
 
                 if ((s & ITypeface::BOLD) != 0) {
-                    out->AppendCStr("<b>");
+                    out->Append("<b>");
                 }
                 if ((s & ITypeface::ITALIC) != 0) {
-                    out->AppendCStr("<i>");
+                    out->Append("<i>");
                 }
             }
             AutoPtr<ITypefaceSpan> typefaceSpan = ITypefaceSpan::Probe((*style)[j]);
@@ -276,52 +276,52 @@ void Html::WithinParagraph(
                 ((ITypefaceSpan*) (*style)[j])->GetFamily(&s);
 
                 if (s.Equals("monospace")) {
-                    out->AppendCStr("<tt>");
+                    out->Append("<tt>");
                 }
             }
             AutoPtr<ISuperscriptSpan> superscriptSpan = ISuperscriptSpan::Probe((*style)[j]);
             if (superscriptSpan != NULL) {
-                out->AppendCStr("<sup>");
+                out->Append("<sup>");
             }
             AutoPtr<ISubscriptSpan> subscriptSpan = ISubscriptSpan::Probe((*style)[j]);
             if (subscriptSpan != NULL) {
-                out->AppendCStr("<sub>");
+                out->Append("<sub>");
             }
             AutoPtr<IUnderlineSpan> underlineSpan = IUnderlineSpan::Probe((*style)[j]);
             if (underlineSpan != NULL) {
-                out->AppendCStr("<u>");
+                out->Append("<u>");
             }
             AutoPtr<IStrikethroughSpan> strikethroughSpan = IStrikethroughSpan::Probe((*style)[j]);
             if (strikethroughSpan != NULL) {
-                out->AppendCStr("<strike>");
+                out->Append("<strike>");
             }
             AutoPtr<IURLSpan> urlSpan = IURLSpan::Probe((*style)[j]);
             if (urlSpan != NULL) {
-                out->AppendCStr("<a href=\"");
+                out->Append("<a href=\"");
                 String strUrl;
                 out->AppendString((((IURLSpan*) (*style)[j])->GetURL(&strUrl), strUrl));
-                out->AppendCStr("\">");
+                out->Append("\">");
             }
             AutoPtr<IImageSpan> imageSpan = IImageSpan::Probe((*style)[j]);
             if (imageSpan != NULL) {
-                out->AppendCStr("<img src=\"");
+                out->Append("<img src=\"");
                 String strSource;
                 out->AppendString((((IImageSpan*) (*style)[j])->GetSource(&strSource), strSource));
-                out->AppendCStr("\">");
+                out->Append("\">");
 
                 // Don't output the dummy character underlying the image.
                 i = next;
             }
             AutoPtr<IAbsoluteSizeSpan> absoluteSizeSpan = IAbsoluteSizeSpan::Probe((*style)[j]);
             if (absoluteSizeSpan != NULL) {
-                out->AppendCStr("<font size =\"");
+                out->Append("<font size =\"");
                 Int32 nSize;
                 out->AppendInt32((((IAbsoluteSizeSpan*) (*style)[j])->GetSize(&nSize), nSize) / 6);
-                out->AppendCStr("\">");
+                out->Append("\">");
             }
             AutoPtr<IForegroundColorSpan> foregroundColorSpan = IForegroundColorSpan::Probe((*style)[j]);
             if (foregroundColorSpan != NULL) {
-                out->AppendCStr("<font color =\"#");
+                out->Append("<font color =\"#");
                 Int32 foregroundColor;
                 String color = StringUtils::Int32ToHexString(
                     (((IForegroundColorSpan*)(*style)[j])->GetForegroundColor(&foregroundColor), foregroundColor) + 0x01000000);
@@ -329,7 +329,7 @@ void Html::WithinParagraph(
                     color = String("0") + color;
                 }
                 out->AppendString(color);
-                out->AppendCStr("\">");
+                out->Append("\">");
             }
         }
 
@@ -338,31 +338,31 @@ void Html::WithinParagraph(
         for (Int32 j = style->GetLength() - 1; j >= 0; j--) {
             AutoPtr<IForegroundColorSpan> foregroundColorSpan = IForegroundColorSpan::Probe((*style)[j]);
             if (foregroundColorSpan != NULL) {
-                out->AppendCStr("</font>");
+                out->Append("</font>");
             }
             AutoPtr<IAbsoluteSizeSpan> absoluteSizeSpan = IAbsoluteSizeSpan::Probe((*style)[j]);
             if (absoluteSizeSpan != NULL) {
-                out->AppendCStr("</font>");
+                out->Append("</font>");
             }
             AutoPtr<IURLSpan> urlSpan = IURLSpan::Probe((*style)[j]);
             if (urlSpan != NULL) {
-                out->AppendCStr("</a>");
+                out->Append("</a>");
             }
             AutoPtr<IStrikethroughSpan> strikethroughSpan = IStrikethroughSpan::Probe((*style)[j]);
             if (strikethroughSpan != NULL) {
-                out->AppendCStr("</strike>");
+                out->Append("</strike>");
             }
             AutoPtr<IUnderlineSpan> underlineSpan = IUnderlineSpan::Probe((*style)[j]);
             if (underlineSpan != NULL) {
-                out->AppendCStr("</u>");
+                out->Append("</u>");
             }
             AutoPtr<ISubscriptSpan> subscriptSpan = ISubscriptSpan::Probe((*style)[j]);
             if (subscriptSpan != NULL) {
-                out->AppendCStr("</sub>");
+                out->Append("</sub>");
             }
             AutoPtr<ISuperscriptSpan> superscriptSpan = ISuperscriptSpan::Probe((*style)[j]);
             if (superscriptSpan != NULL) {
-                out->AppendCStr("</sup>");
+                out->Append("</sup>");
             }
             AutoPtr<ITypefaceSpan> typefaceSpan = ITypefaceSpan::Probe((*style)[j]);
             if (typefaceSpan != NULL) {
@@ -370,7 +370,7 @@ void Html::WithinParagraph(
                 ((ITypefaceSpan*) (*style)[j])->GetFamily(&s);
 
                 if (s.Equals("monospace")) {
-                    out->AppendCStr("</tt>");
+                    out->Append("</tt>");
                 }
             }
             AutoPtr<IStyleSpan> styleSpan = IStyleSpan::Probe((*style)[j]);
@@ -379,10 +379,10 @@ void Html::WithinParagraph(
                 ((IStyleSpan*) (*style)[j])->GetStyle(&s);
 
                 if ((s & ITypeface::BOLD) != 0) {
-                    out->AppendCStr("</b>");
+                    out->Append("</b>");
                 }
                 if ((s & ITypeface::ITALIC) != 0) {
-                    out->AppendCStr("</i>");
+                    out->Append("</i>");
                 }
             }
         }
@@ -391,14 +391,14 @@ void Html::WithinParagraph(
     String p = last ? String("") : String("</p>\n") + GetOpenParaTagWithDirection(text, start, end);
 
     if (nl == 1) {
-        out->AppendCStr("<br>\n");
+        out->Append("<br>\n");
     }
     else if (nl == 2) {
         out->AppendString(p);
     }
     else {
         for (Int32 i = 2; i < nl; i++) {
-            out->AppendCStr("<br>");
+            out->Append("<br>");
         }
         out->AppendString(p);
     }
@@ -415,21 +415,36 @@ void Html::WithinStyle(
         text->GetCharAt(i, &c);
 
         if (c == '<') {
-            out->AppendCStr("&lt;");
+            out->Append("&lt;");
         }
         else if (c == '>') {
-            out->AppendCStr("&gt;");
+            out->Append("&gt;");
         }
         else if (c == '&') {
-            out->AppendCStr("&amp;");
+            out->Append("&amp;");
+        }
+
+        else if (c >= 0xD800 && c <= 0xDFFF) {
+            if (c < 0xDC00 && i + 1 < end) {
+                char d = text.charAt(i + 1);
+                if (d >= 0xDC00 && d <= 0xDFFF) {
+                    i++;
+                    int codepoint = 0x010000 | (int) c - 0xD800 << 10 | (int) d - 0xDC00;
+                    out->Append("&#");
+                    out->Append(codepoint);
+                    out->Append(";");
+                }
+            }
         }
         else if (c > 0x7E || c < ' ') {
-            out->AppendString(String("&#") + StringUtils::Int32ToString((Int32) c) + String(";"));
+            out->Append("&#";
+            out->Append((Int32)c);
+            out->Append(";");
         }
         else if (c == ' ') {
             Char32 textChar;
             while (i + 1 < end && (text->GetCharAt(i + 1, &textChar), textChar) == ' ') {
-                out->AppendCStr("&nbsp;");
+                out->Append("&nbsp;");
                 i++;
             }
 
@@ -466,7 +481,6 @@ HtmlToSpannedConverter::Header::Header(
 
 /**************************HtmlToSpannedConverter*************************/
 AutoPtr< ArrayOf<Float> > HtmlToSpannedConverter::HEADER_SIZES; // = { 1.5f, 1.4f, 1.3f, 1.2f, 1.1f, 1f, };
-AutoPtr< HashMap<String, Int32> > HtmlToSpannedConverter::COLORS = HtmlToSpannedConverter::BuildColorMap();
 
 AutoPtr< ArrayOf<Float> > HtmlToSpannedConverter::InitStaticHeaderSizes()
 {
@@ -937,7 +951,7 @@ void HtmlToSpannedConverter::EndFont(
                 }
             }
             else {
-                Int32 c = GetHtmlColor(f->mColor);
+                Int32 c = Color::GetHtmlColor(f->mColor);
                 if (c != -1) {
                     AutoPtr<IForegroundColorSpan> foregroundColorSpan;
                     CForegroundColorSpan::New(c | 0xFF000000, (IForegroundColorSpan**)&foregroundColorSpan);
@@ -1141,47 +1155,6 @@ ECode HtmlToSpannedConverter::SkippedEntity(
     /* [in] */ const String& name)// throws SAXException
 {
     return NOERROR;
-}
-
-AutoPtr< HashMap<String, Int32> > HtmlToSpannedConverter::BuildColorMap()
-{
-    AutoPtr< HashMap<String, Int32> > map = new HashMap<String, Int32>();;
-    (*map)[String("aqua")] = 0x00FFFF;
-    (*map)[String("black")] = 0x000000;
-    (*map)[String("blue")] = 0x0000FF;
-    (*map)[String("fuchsia")] = 0xFF00FF;
-    (*map)[String("green")] = 0x008000;
-    (*map)[String("grey")] = 0x808080;
-    (*map)[String("lime")] = 0x00FF00;
-    (*map)[String("maroon")] = 0x800000;
-    (*map)[String("navy")] = 0x000080;
-    (*map)[String("olive")] = 0x808000;
-    (*map)[String("purple")] = 0x800080;
-    (*map)[String("red")] = 0xFF0000;
-    (*map)[String("silver")] = 0xC0C0C0;
-    (*map)[String("teal")] = 0x008080;
-    (*map)[String("white")] = 0xFFFFFF;
-    (*map)[String("yellow")] = 0xFFFF00;
-    return map;
-}
-
-Int32 HtmlToSpannedConverter::GetHtmlColor(
-    /* [in] */ const String& color)
-{
-    String colorLowerCase = color.ToLowerCase();
-    Int32 i = (COLORS->Find(colorLowerCase))->mSecond;
-    if (i != 0) {
-        return i;
-    }
-    else {
-        //try {
-            AutoPtr<ICharSequence> cs;
-            CString::New(color, (ICharSequence**)&cs);
-            return XmlUtils::ConvertValueToInt32(cs, -1);
-        //} catch (NumberFormatException nfe) {
-        //    return -1;
-        //}
-    }
 }
 
 } // namespace Text

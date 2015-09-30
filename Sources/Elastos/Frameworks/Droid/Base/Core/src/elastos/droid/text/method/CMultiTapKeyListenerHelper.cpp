@@ -1,6 +1,6 @@
 
-#include "text/method/CMultiTapKeyListenerHelper.h"
-#include "text/method/CMultiTapKeyListener.h"
+#include "elastos/droid/text/method/CMultiTapKeyListenerHelper.h"
+#include "elastos/droid/text/method/CMultiTapKeyListener.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

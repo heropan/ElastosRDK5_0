@@ -1,5 +1,5 @@
 
-#include "text/style/CSuggestionRangeSpan.h"
+#include "elastos/droid/text/style/CSuggestionRangeSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

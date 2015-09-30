@@ -1,5 +1,5 @@
-#include "text/LoginFilter.h"
-#include "text/CSpannableStringBuilder.h"
+#include "elastos/droid/text/LoginFilter.h"
+#include "elastos/droid/text/CSpannableStringBuilder.h"
 
 namespace Elastos {
 namespace Droid {

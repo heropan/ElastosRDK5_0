@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_LinkMovementMethod_H__
 #define __ELASTOS_DROID_TEXT_METHOD_LinkMovementMethod_H__
 
-#include "text/method/ScrollingMovementMethod.h"
+#include "elastos/droid/text/method/ScrollingMovementMethod.h"
 //#include "os/ElObject.h"
 
 namespace Elastos {

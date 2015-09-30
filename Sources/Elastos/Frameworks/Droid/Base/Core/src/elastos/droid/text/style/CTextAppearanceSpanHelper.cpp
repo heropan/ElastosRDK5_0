@@ -1,6 +1,6 @@
 
-#include "text/style/CTextAppearanceSpanHelper.h"
-#include "text/style/CTextAppearanceSpan.h"
+#include "elastos/droid/text/style/CTextAppearanceSpanHelper.h"
+#include "elastos/droid/text/style/CTextAppearanceSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

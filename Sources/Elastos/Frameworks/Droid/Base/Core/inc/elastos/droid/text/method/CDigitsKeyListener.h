@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Text_Method_CDigitsKeyListener.h"
 
-#include "text/method/DigitsKeyListener.h"
+#include "elastos/droid/text/method/DigitsKeyListener.h"
 
 
 

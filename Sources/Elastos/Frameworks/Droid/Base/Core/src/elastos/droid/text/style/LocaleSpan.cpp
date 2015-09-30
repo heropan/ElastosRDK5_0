@@ -1,5 +1,5 @@
 #include "ext/frameworkdef.h"
-#include "text/style/LocaleSpan.h"
+#include "elastos/droid/text/style/LocaleSpan.h"
 
 using Libcore::ICU::CLocale;
 

@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Text_Style_CSuggestionSpan.h"
 #include "ext/frameworkext.h"
-#include "text/style/SuggestionSpan.h"
+#include "elastos/droid/text/style/SuggestionSpan.h"
 
 
 #include "Elastos.Droid.Core_server.h"

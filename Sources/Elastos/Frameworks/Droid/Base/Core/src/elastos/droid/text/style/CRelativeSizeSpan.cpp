@@ -1,5 +1,5 @@
 
-#include "text/style/CRelativeSizeSpan.h"
+#include "elastos/droid/text/style/CRelativeSizeSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

@@ -1,5 +1,5 @@
 
-#include "text/style/CAbsoluteSizeSpan.h"
+#include "elastos/droid/text/style/CAbsoluteSizeSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

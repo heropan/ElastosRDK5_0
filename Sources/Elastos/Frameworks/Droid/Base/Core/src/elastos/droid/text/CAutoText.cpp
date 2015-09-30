@@ -1,5 +1,5 @@
 
-#include "text/CAutoText.h"
+#include "elastos/droid/text/CAutoText.h"
 #include "content/res/CResources.h"
 #include "utility/XmlUtils.h"
 #include "R.h"

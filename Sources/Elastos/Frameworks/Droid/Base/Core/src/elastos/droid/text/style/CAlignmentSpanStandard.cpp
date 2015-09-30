@@ -1,6 +1,6 @@
 
 #include "ext/frameworkdef.h"
-#include "text/style/CAlignmentSpanStandard.h"
+#include "elastos/droid/text/style/CAlignmentSpanStandard.h"
 
 namespace Elastos {
 namespace Droid {

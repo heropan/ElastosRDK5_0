@@ -1,4 +1,4 @@
-#include "text/style/ReplacementSpan.h"
+#include "elastos/droid/text/style/ReplacementSpan.h"
 
 namespace Elastos {
 namespace Droid {

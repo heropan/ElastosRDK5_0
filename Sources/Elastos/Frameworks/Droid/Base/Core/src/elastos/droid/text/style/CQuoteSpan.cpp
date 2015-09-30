@@ -1,5 +1,5 @@
 
-#include "text/style/CQuoteSpan.h"
+#include "elastos/droid/text/style/CQuoteSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

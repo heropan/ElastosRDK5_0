@@ -1,5 +1,5 @@
 
-#include "text/style/CIconMarginSpan.h"
+#include "elastos/droid/text/style/CIconMarginSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

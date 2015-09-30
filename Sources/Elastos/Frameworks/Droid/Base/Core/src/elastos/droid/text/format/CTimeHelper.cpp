@@ -1,8 +1,8 @@
 
-#include "text/format/CTimeHelper.h"
+#include "elastos/droid/text/format/CTimeHelper.h"
 
 #include "ext/frameworkext.h"
-#include "text/format/CTime.h"
+#include "elastos/droid/text/format/CTime.h"
 
 namespace Elastos {
 namespace Droid {

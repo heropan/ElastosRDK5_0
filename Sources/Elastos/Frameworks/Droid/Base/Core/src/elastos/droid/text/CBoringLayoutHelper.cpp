@@ -1,6 +1,6 @@
 
-#include "text/CBoringLayoutHelper.h"
-#include "text/CBoringLayout.h"
+#include "elastos/droid/text/CBoringLayoutHelper.h"
+#include "elastos/droid/text/CBoringLayout.h"
 
 namespace Elastos {
 namespace Droid {

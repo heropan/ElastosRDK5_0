@@ -1,9 +1,9 @@
 #include <elastos/core/Math.h>
 
-#include "text/method/BaseKeyListener.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/text/method/BaseKeyListener.h"
+#include "elastos/droid/text/TextUtils.h"
 #ifdef DROID_CORE
-#include "text/CSelection.h"
+#include "elastos/droid/text/CSelection.h"
 #include "view/CKeyEventHelper.h"
 #else
 #include "Elastos.Droid.Core.h"

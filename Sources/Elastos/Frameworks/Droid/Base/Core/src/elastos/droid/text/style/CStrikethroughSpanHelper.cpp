@@ -1,6 +1,6 @@
 
-#include "text/style/CStrikethroughSpanHelper.h"
-#include "text/style/CStrikethroughSpan.h"
+#include "elastos/droid/text/style/CStrikethroughSpanHelper.h"
+#include "elastos/droid/text/style/CStrikethroughSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_STYLE_CSPELLCHECKSPAN_H__
 
 #include "_Elastos_Droid_Text_Style_CSpellCheckSpan.h"
-#include "text/style/SpellCheckSpan.h"
+#include "elastos/droid/text/style/SpellCheckSpan.h"
 
 
 namespace Elastos {

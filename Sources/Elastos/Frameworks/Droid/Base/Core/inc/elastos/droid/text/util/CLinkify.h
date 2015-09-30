@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_UTILITY_CLINKIFY_H__
 
 #include "_Elastos_Droid_Text_Utility_CLinkify.h"
-#include "text/utility/Linkify.h"
+#include "elastos/droid/text/utility/Linkify.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Regex::IPattern;

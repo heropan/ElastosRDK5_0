@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_QWERTYKEYLISTENER_H__
 #define __ELASTOS_DROID_TEXT_METHOD_QWERTYKEYLISTENER_H__
 
-#include "text/method/BaseKeyListener.h"
+#include "elastos/droid/text/method/BaseKeyListener.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 

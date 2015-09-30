@@ -281,18 +281,7 @@ private:
     static CARAPI_(void) EndHeader(
         /* [in] */ ISpannableStringBuilder* text);
 
-    static AutoPtr< HashMap<String, Int32> > BuildColorMap();
-
     static CARAPI_(AutoPtr< ArrayOf<Float> >) InitStaticHeaderSizes();
-
-    /**
-     * Converts an HTML color (named or numeric) to an integer RGB value.
-     *
-     * @param color Non-null color string.
-     * @return A color value, or {@code -1} if the color string could not be interpreted.
-     */
-    static CARAPI_(Int32) GetHtmlColor(
-        /* [in] */ const String& color);
 
 private:
     static AutoPtr< ArrayOf<Float> > HEADER_SIZES; // = { 1.5f, 1.4f, 1.3f, 1.2f, 1.1f, 1f, };
@@ -302,8 +291,6 @@ private:
     AutoPtr<ISpannableStringBuilder> mSpannableStringBuilder;
     AutoPtr<IHtmlImageGetter> mImageGetter;
     AutoPtr<IHtmlTagHandler> mTagHandler;
-
-    static AutoPtr< HashMap<String, Int32> > COLORS;// = BuildColorMap();
 };
 
 } // namespace Text

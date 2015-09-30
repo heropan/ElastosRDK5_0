@@ -1,5 +1,5 @@
 #include "ext/frameworkext.h"
-#include "text/style/StrikethroughSpan.h"
+#include "elastos/droid/text/style/StrikethroughSpan.h"
 
 namespace Elastos {
 namespace Droid {

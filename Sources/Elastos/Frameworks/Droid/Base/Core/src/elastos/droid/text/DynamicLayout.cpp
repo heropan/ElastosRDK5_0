@@ -1,15 +1,17 @@
 
-#include "text/DynamicLayout.h"
-#include "text/CDynamicLayout.h"
-#include "text/TextDirectionHeuristics.h"
-#include "text/TextUtils.h"
-#include "text/CStaticLayout.h"
-#include "utility/ArrayUtils.h"
+#include "elastos/droid/text/DynamicLayout.h"
+#include "elastos/droid/text/CDynamicLayout.h"
+#include "elastos/droid/text/TextDirectionHeuristics.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/text/CStaticLayout.h"
+#include "internal/utility/ArrayUtils.h"
+#include "internal/utility/GrowingArrayUtils.h"
 
 using Elastos::Droid::Graphics::IPaintFontMetricsInt;
 using Elastos::Droid::Text::Style::IUpdateLayout;
 using Elastos::Droid::Text::Style::EIID_IWrapTogetherSpan;
 using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Droid::Internal::Utility::GrowingArrayUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -193,6 +195,7 @@ DynamicLayout::DynamicLayout()
     , mEllipsize(FALSE)
     , mEllipsizedWidth(0)
     , mNumberOfBlocks(0)
+    , mIndexFirstChangedBlock(0)
     , mTopPadding(0)
     , mBottomPadding(0)
 {}
@@ -745,7 +748,8 @@ void DynamicLayout::AddBlockAtOffset(
 
     if (mBlockEndLines == NULL) {
         // Initial creation of the array, no test on previous block ending line
-        mBlockEndLines = ArrayOf<Int32>::Alloc(ArrayUtils::IdealInt32ArraySize(1));
+        mBlockEndLines = ArrayUtils::NewUnpaddedIntArray(1);
+        // mBlockEndLines = ArrayOf<Int32>::Alloc(ArrayUtils::IdealInt32ArraySize(1));
         (*mBlockEndLines)[mNumberOfBlocks] = line;
         mNumberOfBlocks++;
         return;
@@ -753,14 +757,7 @@ void DynamicLayout::AddBlockAtOffset(
 
     Int32 previousBlockEndLine = (*mBlockEndLines)[mNumberOfBlocks - 1];
     if (line > previousBlockEndLine) {
-        if (mNumberOfBlocks == mBlockEndLines->GetLength()) {
-            // Grow the array if needed
-            AutoPtr< ArrayOf<Int32> > blockEndLines =
-                ArrayOf<Int32>::Alloc(ArrayUtils::IdealInt32ArraySize(mNumberOfBlocks + 1));
-            blockEndLines->Copy(mBlockEndLines);
-            mBlockEndLines = blockEndLines;
-        }
-        (*mBlockEndLines)[mNumberOfBlocks] = line;
+        mBlockEndLines = GrowingArrayUtils::Append(mBlockEndLines, mNumberOfBlocks, line);
         mNumberOfBlocks++;
     }
 }
@@ -813,9 +810,9 @@ void DynamicLayout::UpdateBlocks(
     }
 
     if (newNumberOfBlocks > mBlockEndLines->GetLength()) {
-        const Int32 newSize = ArrayUtils::IdealInt32ArraySize(newNumberOfBlocks);
-        AutoPtr< ArrayOf<Int32> > blockEndLines = ArrayOf<Int32>::Alloc(newSize);
-        AutoPtr< ArrayOf<Int32> > blockIndices = ArrayOf<Int32>::Alloc(newSize);
+        Int32 newSize = Elastos::Core::Math::Max(mBlockEndLines.length * 2, newNumberOfBlocks);
+        AutoPtr< ArrayOf<Int32> > blockEndLines = ArrayUtils::NewUnpaddedIntArray(newSize);
+        AutoPtr< ArrayOf<Int32> > blockIndices = ArrayOf<Int32>::Alloc(blockEndLines->GetLength());
         blockEndLines->Copy(mBlockEndLines, firstBlock);
         blockIndices->Copy(mBlockIndices, firstBlock);
         blockEndLines->Copy(firstBlock + numAddedBlocks, mBlockEndLines, lastBlock + 1, mNumberOfBlocks - lastBlock - 1);
@@ -829,10 +826,21 @@ void DynamicLayout::UpdateBlocks(
     }
 
     mNumberOfBlocks = newNumberOfBlocks;
-    const Int32 deltaLines = newLineCount - (endLine - startLine + 1);
-    for (Int32 i = firstBlock + numAddedBlocks; i < mNumberOfBlocks; i++) {
-        (*mBlockEndLines)[i] += deltaLines;
+    Int32 newFirstChangedBlock;
+    Int32 deltaLines = newLineCount - (endLine - startLine + 1);
+    if (deltaLines != 0) {
+        // Display list whose index is >= mIndexFirstChangedBlock is valid
+        // but it needs to update its drawing location.
+        newFirstChangedBlock = firstBlock + numAddedBlocks;
+        for (Int32 i = newFirstChangedBlock; i < mNumberOfBlocks; i++) {
+            (*mBlockEndLines)[i] += deltaLines;
+        }
     }
+    else {
+        newFirstChangedBlock = mNumberOfBlocks;
+    }
+    mIndexFirstChangedBlock = Elastos::Core::Math::Min(mIndexFirstChangedBlock, newFirstChangedBlock);
+
 
     Int32 blockIndex = firstBlock;
     if (createBlockBefore) {
@@ -891,6 +899,24 @@ AutoPtr< ArrayOf<Int32> > DynamicLayout::GetBlockIndices()
 Int32 DynamicLayout::GetNumberOfBlocks()
 {
     return mNumberOfBlocks;
+}
+
+/**
+ * @hide
+ */
+Int32 DynamicLayout::GetIndexFirstChangedBlock()
+{
+    return mIndexFirstChangedBlock;
+}
+
+/**
+ * @hide
+ */
+ECode DynamicLayout::SetIndexFirstChangedBlock(
+    /* [in] */ Int32 block)
+{
+    mIndexFirstChangedBlock = block;
+    return NOERROR;
 }
 
 //@Override

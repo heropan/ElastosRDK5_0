@@ -1,5 +1,5 @@
 
-#include "text/style/CSpellCheckSpan.h"
+#include "elastos/droid/text/style/CSpellCheckSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

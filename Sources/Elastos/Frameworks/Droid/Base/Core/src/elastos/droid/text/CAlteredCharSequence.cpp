@@ -1,6 +1,6 @@
 
-#include "text/CAlteredCharSequence.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/text/CAlteredCharSequence.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 #include "ext/frameworkext.h"

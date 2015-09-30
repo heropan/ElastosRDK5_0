@@ -11,6 +11,9 @@ namespace Droid {
 namespace Text {
 
 CarClass(CLengthFilter)
+    : public Object
+    , public IInputFilter
+    , public ILengthFilter
 {
 public:
     CLengthFilter();
@@ -27,6 +30,11 @@ public:
     CARAPI constructor(
         /* [in] */ Int32 max);
 
+    /**
+     * @return the maximum length enforced by this input filter
+     */
+    CARAPI GetMax(
+        /* [out] */ Int32* max);
 private:
     Int32 mMax;
 };

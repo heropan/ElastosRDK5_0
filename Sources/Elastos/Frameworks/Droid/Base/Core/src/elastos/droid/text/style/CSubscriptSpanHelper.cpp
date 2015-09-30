@@ -1,6 +1,6 @@
 
-#include "text/style/CSubscriptSpanHelper.h"
-#include "text/style/CSubscriptSpan.h"
+#include "elastos/droid/text/style/CSubscriptSpanHelper.h"
+#include "elastos/droid/text/style/CSubscriptSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

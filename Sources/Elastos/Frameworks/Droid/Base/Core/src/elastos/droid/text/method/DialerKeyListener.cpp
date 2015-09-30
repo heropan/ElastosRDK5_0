@@ -1,5 +1,5 @@
-#include "text/method/DialerKeyListener.h"
-#include "text/method/MetaKeyKeyListener.h"
+#include "elastos/droid/text/method/DialerKeyListener.h"
+#include "elastos/droid/text/method/MetaKeyKeyListener.h"
 #include "view/CKeyCharacterMap.h"
 
 using Elastos::Droid::View::CKeyCharacterMap;

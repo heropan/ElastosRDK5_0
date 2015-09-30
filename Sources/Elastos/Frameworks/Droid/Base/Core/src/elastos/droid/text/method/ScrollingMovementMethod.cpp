@@ -1,5 +1,5 @@
-#include "text/method/ScrollingMovementMethod.h"
-#include "text/method/Touch.h"
+#include "elastos/droid/text/method/ScrollingMovementMethod.h"
+#include "elastos/droid/text/method/Touch.h"
 
 using Elastos::Droid::View::IView;
 

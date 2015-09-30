@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_STYLE_CUNDERLINESPAN_H__
 
 #include "_Elastos_Droid_Text_Style_CUnderlineSpan.h"
-#include "text/style/UnderlineSpan.h"
+#include "elastos/droid/text/style/UnderlineSpan.h"
 
 
 

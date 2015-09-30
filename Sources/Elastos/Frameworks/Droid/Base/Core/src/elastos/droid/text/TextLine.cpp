@@ -1,9 +1,9 @@
 
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/core/Math.h>
-#include "text/TextLine.h"
-#include "text/TextUtils.h"
-#include "text/Layout.h"
+#include "elastos/droid/text/TextLine.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/text/Layout.h"
 #include "graphics/CRectF.h"
 #include "utility/ArrayUtils.h"
 #include <elastos/core/Character.h>

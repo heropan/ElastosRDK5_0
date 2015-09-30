@@ -1,4 +1,4 @@
-#include "text/CSpannedString.h"
+#include "elastos/droid/text/CSpannedString.h"
 
 using Elastos::Core::EIID_ICharSequence;
 

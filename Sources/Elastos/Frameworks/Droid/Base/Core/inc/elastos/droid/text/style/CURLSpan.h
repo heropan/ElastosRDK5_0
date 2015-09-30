@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_STYLE_CURLSPAN_H__
 
 #include "_Elastos_Droid_Text_Style_CURLSpan.h"
-#include "text/style/URLSpan.h"
+#include "elastos/droid/text/style/URLSpan.h"
 
 
 

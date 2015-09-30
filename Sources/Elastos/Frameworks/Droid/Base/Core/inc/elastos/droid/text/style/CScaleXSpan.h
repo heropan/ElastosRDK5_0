@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_STYLE_CSCALEXSPAN_H__
 
 #include "_Elastos_Droid_Text_Style_CScaleXSpan.h"
-#include "text/style/ScaleXSpan.h"
+#include "elastos/droid/text/style/ScaleXSpan.h"
 
 
 

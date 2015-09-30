@@ -1,5 +1,5 @@
 
-#include "text/SpannableStringInternal.h"
+#include "elastos/droid/text/SpannableStringInternal.h"
 #include <util/ArrayUtils.h>
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuffer.h>

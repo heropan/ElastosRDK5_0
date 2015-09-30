@@ -1,7 +1,7 @@
-#include "text/utility/Linkify.h"
-#include "text/CSpannableStringHelper.h"
-#include "text/method/CLinkMovementMethod.h"
-#include "text/style/CURLSpan.h"
+#include "elastos/droid/text/utility/Linkify.h"
+#include "elastos/droid/text/CSpannableStringHelper.h"
+#include "elastos/droid/text/method/CLinkMovementMethod.h"
+#include "elastos/droid/text/style/CURLSpan.h"
 //#include "webkit/CWebView.h"
 #include "utility/Patterns.h"
 #include <elastos/core/Character.h>

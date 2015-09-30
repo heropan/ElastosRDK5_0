@@ -2,8 +2,8 @@
 #define __ELASTOS_DROID_TEXT_STATICLAYOUT_H__
 
 #include "ext/frameworkext.h"
-#include "text/Layout.h"
-#include "text/MeasuredText.h"
+#include "elastos/droid/text/Layout.h"
+#include "elastos/droid/text/MeasuredText.h"
 
 using Elastos::Droid::Graphics::IPaintFontMetricsInt;
 using Elastos::Droid::Text::Style::ILineHeightSpan;

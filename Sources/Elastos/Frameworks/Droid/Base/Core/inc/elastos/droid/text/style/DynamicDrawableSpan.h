@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_DynamicDrawableSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_DynamicDrawableSpan_H__
 
-#include "text/style/ReplacementSpan.h"
+#include "elastos/droid/text/style/ReplacementSpan.h"
 
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 

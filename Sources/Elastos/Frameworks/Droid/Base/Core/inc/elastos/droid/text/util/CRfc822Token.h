@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_UTILITY_CRFC822TOKEN_H__
 
 #include "_Elastos_Droid_Text_Utility_CRfc822Token.h"
-#include "text/utility/Rfc822Token.h"
+#include "elastos/droid/text/utility/Rfc822Token.h"
 
 namespace Elastos {
 namespace Droid {

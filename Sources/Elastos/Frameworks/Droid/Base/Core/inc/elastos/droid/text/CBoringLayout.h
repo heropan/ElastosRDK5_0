@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_CBORINGLAYOUT_H__
 
 #include "_Elastos_Droid_Text_CBoringLayout.h"
-#include "text/BoringLayout.h"
+#include "elastos/droid/text/BoringLayout.h"
 
 
 namespace Elastos {

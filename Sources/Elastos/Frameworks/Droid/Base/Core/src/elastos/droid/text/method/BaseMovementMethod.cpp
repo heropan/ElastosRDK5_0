@@ -1,6 +1,6 @@
-#include "text/method/BaseMovementMethod.h"
-#include "text/method/MetaKeyKeyListener.h"
-#include "text/method/Touch.h"
+#include "elastos/droid/text/method/BaseMovementMethod.h"
+#include "elastos/droid/text/method/MetaKeyKeyListener.h"
+#include "elastos/droid/text/method/Touch.h"
 #include "view/CKeyEvent.h"
 #include <elastos/core/Math.h>
 

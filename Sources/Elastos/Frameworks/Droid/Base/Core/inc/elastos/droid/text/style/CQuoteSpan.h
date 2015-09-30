@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_STYLE_CQUOTESPAN_H__
 
 #include "_Elastos_Droid_Text_Style_CQuoteSpan.h"
-#include "text/style/QuoteSpan.h"
+#include "elastos/droid/text/style/QuoteSpan.h"
 
 
 

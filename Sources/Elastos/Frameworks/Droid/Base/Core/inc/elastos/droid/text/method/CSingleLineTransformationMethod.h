@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_METHOD_CSINGLELINETRANSFORMATIONMETHOD_H__
 
 #include "_Elastos_Droid_Text_Method_CSingleLineTransformationMethod.h"
-#include "text/method/ReplacementTransformationMethod.h"
+#include "elastos/droid/text/method/ReplacementTransformationMethod.h"
 
 namespace Elastos {
 namespace Droid {

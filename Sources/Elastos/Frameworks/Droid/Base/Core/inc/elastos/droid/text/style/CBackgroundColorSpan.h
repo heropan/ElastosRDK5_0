@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_STYLE_CBACKGROUNDCOLORSPAN_H__
 
 #include "_Elastos_Droid_Text_Style_CBackgroundColorSpan.h"
-#include "text/style/BackgroundColorSpan.h"
+#include "elastos/droid/text/style/BackgroundColorSpan.h"
 
 
 

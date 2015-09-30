@@ -1,6 +1,6 @@
-#include "text/method/MultiTapKeyListener.h"
-#include "text/method/CTextKeyListener.h"
-#include "text/Selection.h"
+#include "elastos/droid/text/method/MultiTapKeyListener.h"
+#include "elastos/droid/text/method/CTextKeyListener.h"
+#include "elastos/droid/text/Selection.h"
 #include "os/SystemClock.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/Character.h>

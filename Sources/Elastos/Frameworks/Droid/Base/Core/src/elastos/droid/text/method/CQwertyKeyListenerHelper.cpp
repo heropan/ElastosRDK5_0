@@ -1,6 +1,6 @@
 
-#include "text/method/CQwertyKeyListenerHelper.h"
-#include "text/method/CQwertyKeyListener.h"
+#include "elastos/droid/text/method/CQwertyKeyListenerHelper.h"
+#include "elastos/droid/text/method/CQwertyKeyListener.h"
 
 namespace Elastos {
 namespace Droid {

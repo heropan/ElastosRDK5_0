@@ -1,10 +1,23 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/CRestrictionsManager.h"
-
+#include "elastos/droid/content/CRestrictionEntry.h"
+#include "elastos/droid/content/pm/CApplicationInfo.h"
+#include "elastos/droid/utility/Xml.h"
+#include "R.h"
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::Pm::CApplicationInfo;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
+using Elastos::Droid::R;
+using Elastos::Droid::Utility::Xml;
+using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Os::IBaseBundle;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Logger;
-using Org::XmlPull::V1::IXmlPullParser;
+using Org::Xmlpull::V1::IXmlPullParser;
 
 namespace Elastos {
 namespace Droid {
@@ -53,13 +66,13 @@ ECode CRestrictionsManager::GetApplicationRestrictions(
 }
 
 ECode CRestrictionsManager::HasRestrictionsProvider(
-    /* [out] */ Boolean** provider)
+    /* [out] */ Boolean* provider)
 {
     VALIDATE_NOT_NULL(provider)
     *provider = FALSE;
     // try {
     if (mService != NULL) {
-        return mService->HasRestrictionsProvider();
+        return mService->HasRestrictionsProvider(provider);
     }
     // } catch (RemoteException re) {
     //     Logger::W(TAG, "Couldn't reach service");
@@ -74,13 +87,16 @@ ECode CRestrictionsManager::RequestPermission(
     /* [in] */ IPersistableBundle* request)
 {
     if (requestType.IsNull()) {
-        throw new NullPointerException("requestType cannot be NULL");
+        // throw new NullPointerException("requestType cannot be NULL");
+        return E_NULL_POINTER_EXCEPTION;
     }
     if (requestId.IsNull()) {
-        throw new NullPointerException("requestId cannot be NULL");
+        // throw new NullPointerException("requestId cannot be NULL");
+        return E_NULL_POINTER_EXCEPTION;
     }
     if (request == NULL) {
-        throw new NullPointerException("request cannot be NULL");
+        // throw new NullPointerException("request cannot be NULL");
+        return E_NULL_POINTER_EXCEPTION;
     }
     // try {
     if (mService != NULL) {
@@ -122,11 +138,12 @@ ECode CRestrictionsManager::NotifyPermissionResponse(
         // throw new NullPointerException("request cannot be NULL");
         return E_NULL_POINTER_EXCEPTION;
     }
-    if (!response.containsKey(REQUEST_KEY_ID)) {
+    Boolean bval;
+    if (IBaseBundle::Probe(response)->ContainsKey(REQUEST_KEY_ID, &bval), !bval) {
         // throw new IllegalArgumentException("REQUEST_KEY_ID must be specified");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    if (!response.containsKey(RESPONSE_KEY_RESULT)) {
+    if (IBaseBundle::Probe(response)->ContainsKey(RESPONSE_KEY_RESULT, &bval), !bval) {
         // throw new IllegalArgumentException("RESPONSE_KEY_RESULT must be specified");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -159,7 +176,7 @@ ECode CRestrictionsManager::GetManifestRestrictions(
     // } catch (NameNotFoundException pnfe) {
     //     throw new IllegalArgumentException("No such package " + packageName);
     // }
-    if (appInfo == NULL) {
+    if (appInfo.Get() == NULL) {
         return NOERROR;
     }
 
@@ -171,7 +188,7 @@ ECode CRestrictionsManager::GetManifestRestrictions(
     }
 
     AutoPtr<IXmlResourceParser> xml;
-    appInfo->LoadXmlMetaData(pgkMgr, IRestrictionsManager::META_DATA_APP_RESTRICTIONS, (IXmlResourceParser**)&xml);
+    IPackageItemInfo::Probe(appInfo)->LoadXmlMetaData(pgkMgr, IRestrictionsManager::META_DATA_APP_RESTRICTIONS, (IXmlResourceParser**)&xml);
     AutoPtr<IList> r;
     FAIL_RETURN(LoadManifestRestrictions(packageName, xml, (IList**)&r))
 
@@ -208,23 +225,24 @@ ECode CRestrictionsManager::LoadManifestRestrictions(
         if (tagType == IXmlPullParser::START_TAG) {
             parser->GetName(&name);
             if (name.Equals(TAG_RESTRICTION)) {
-                AutoPtr<IAttributeSet> attrSet = Xml::AsAttributeSet(xml);
+                AutoPtr<IAttributeSet> attrSet = Xml::AsAttributeSet(parser);
                 if (attrSet != NULL) {
-                    Int32 size = ARRAY_SIZE(R::styleable::RestrictionEntry);
-                    AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
-                    layout->Copy(R::styleable::RestrictionEntry, size);
+                    assert(0 && "TODO");
+                    // Int32 size = ARRAY_SIZE(R::styleable::RestrictionEntry);
+                    // AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+                    // layout->Copy(R::styleable::RestrictionEntry, size);
 
-                    AutoPtr<ITypedArray> a;
-                    FAIL_RETURN(appContext->ObtainStyledAttributes(attrSet, layout, (ITypedArray**)&a))
-                    restriction = NULL;
-                    FAIL_RETURN(LoadRestriction(appContext, a, (IRestrictionEntry**)&restriction))
-                    if (restriction != NULL) {
-                        restrictions->Add(restriction);
-                    }
+                    // AutoPtr<ITypedArray> a;
+                    // FAIL_RETURN(appContext->ObtainStyledAttributes(attrSet, layout, (ITypedArray**)&a))
+                    // restriction = NULL;
+                    // FAIL_RETURN(LoadRestriction(appContext, a, (IRestrictionEntry**)&restriction))
+                    // if (restriction != NULL) {
+                    //     restrictions->Add(restriction);
+                    // }
                 }
             }
         }
-        FAIL_RETURN(restriction->Next(&tagType))
+        FAIL_RETURN(parser->Next(&tagType))
     }
     // } catch (XmlPullParserException e) {
     //     Logger::W(TAG, "Reading restriction metadata for " + packageName, e);
@@ -234,7 +252,7 @@ ECode CRestrictionsManager::LoadManifestRestrictions(
     //     return NULL;
     // }
 
-    *result = restrictions;
+    *result = IList::Probe(restrictions);
     REFCOUNT_ADD(*result)
     return NOERROR;
 }
@@ -247,18 +265,15 @@ ECode CRestrictionsManager::LoadRestriction(
     VALIDATE_NOT_NULL(result)
     *result = NULL;
 
-    String key;
-    a->GetString(R::styleable::RestrictionEntry_key, &key);
-    Int32 restrictionType;
-    a->GetInt32(R::styleable::RestrictionEntry_restrictionType, -1, &restrictionType);
-    String title;
-    a->GetString(R::styleable::RestrictionEntry_title, &title);
-    String description;
-    a->GetString(R::styleable::RestrictionEntry_description, &description);
-    Int32 entries;
-    a->GetResourceId(R::styleable::RestrictionEntry_entries, 0, &entries);
-    Int32 entryValues;
-    a->GetResourceId(R::styleable::RestrictionEntry_entryValues, 0, &entryValues);
+    String key, title, description;
+    Int32 restrictionType, entries, entryValues;
+    assert(0 && "TODO");
+    // a->GetString(R::styleable::RestrictionEntry_key, &key);
+    // a->GetInt32(R::styleable::RestrictionEntry_restrictionType, -1, &restrictionType);
+    // a->GetString(R::styleable::RestrictionEntry_title, &title);
+    // a->GetString(R::styleable::RestrictionEntry_description, &description);
+    // a->GetResourceId(R::styleable::RestrictionEntry_entries, 0, &entries);
+    // a->GetResourceId(R::styleable::RestrictionEntry_entryValues, 0, &entryValues);
 
     if (restrictionType == -1) {
         Logger::W(TAG, "restrictionType cannot be omitted");
@@ -281,41 +296,42 @@ ECode CRestrictionsManager::LoadRestriction(
         restriction->SetChoiceValues(appContext, entryValues);
     }
 
-    String strval;
-    Int32 ival;
-    Boolean bval;
+    assert(0 && "TODO");
+    // String strval;
+    // Int32 ival;
+    // Boolean bval;
 
-    // Extract the default value based on the type
-    switch (restrictionType) {
-        case IRestrictionEntry::TYPE_NULL: // hidden
-        case IRestrictionEntry::TYPE_STRING:
-        case IRestrictionEntry::TYPE_CHOICE:
-            a->GetString(R::styleable::RestrictionEntry_defaultValue, &strval);
-            restriction->SetSelectedString(strval);
-            break;
-        case IRestrictionEntry::TYPE_INTEGER:
-            a->GetInt32(R::styleable::RestrictionEntry_defaultValue, 0, &ival);
-            restriction->GetInt32Value(ival);
-            break;
-        case IRestrictionEntry::TYPE_MULTI_SELECT:
-            Int32 resId;
-            a->GetResourceId(R::styleable::RestrictionEntry_defaultValue, 0, &resId);
-            if (resId != 0) {
-                AutoPtr<IResources> res;
-                appContext->GetResources((IResources**)&res);
-                AutoPtr<ArrayOf<String> > strArray;
-                res->GetStringArray((ArrayOf<String>**)&strArray);
-                restriction->SetAllSelectedStrings(strArray);
-            }
-            break;
-        case IRestrictionEntry::TYPE_BOOLEAN:
-            a->GetBoolean(R::styleable::RestrictionEntry_defaultValue, FALSE, &bval);
-            restriction->SetSelectedState(bval);
-            break;
-        default:
-            Logger::W(TAG, "Unknown restriction type %d", restrictionType);
-            break;
-    }
+    // // Extract the default value based on the type
+    // switch (restrictionType) {
+    //     case IRestrictionEntry::TYPE_NULL: // hidden
+    //     case IRestrictionEntry::TYPE_STRING:
+    //     case IRestrictionEntry::TYPE_CHOICE:
+    //         a->GetString(R::styleable::RestrictionEntry_defaultValue, &strval);
+    //         restriction->SetSelectedString(strval);
+    //         break;
+    //     case IRestrictionEntry::TYPE_INTEGER:
+    //         a->GetInt32(R::styleable::RestrictionEntry_defaultValue, 0, &ival);
+    //         restriction->GetInt32Value(ival);
+    //         break;
+    //     case IRestrictionEntry::TYPE_MULTI_SELECT:
+    //         Int32 resId;
+    //         a->GetResourceId(R::styleable::RestrictionEntry_defaultValue, 0, &resId);
+    //         if (resId != 0) {
+    //             AutoPtr<IResources> res;
+    //             appContext->GetResources((IResources**)&res);
+    //             AutoPtr<ArrayOf<String> > strArray;
+    //             res->GetStringArray((ArrayOf<String>**)&strArray);
+    //             restriction->SetAllSelectedStrings(strArray);
+    //         }
+    //         break;
+    //     case IRestrictionEntry::TYPE_BOOLEAN:
+    //         a->GetBoolean(R::styleable::RestrictionEntry_defaultValue, FALSE, &bval);
+    //         restriction->SetSelectedState(bval);
+    //         break;
+    //     default:
+    //         Logger::W(TAG, "Unknown restriction type %d", restrictionType);
+    //         break;
+    // }
 
     *result = restriction;
     REFCOUNT_ADD(*result)

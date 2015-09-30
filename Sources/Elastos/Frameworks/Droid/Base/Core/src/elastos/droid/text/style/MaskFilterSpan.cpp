@@ -1,5 +1,5 @@
 #include "ext/frameworkext.h"
-#include "text/style/MaskFilterSpan.h"
+#include "elastos/droid/text/style/MaskFilterSpan.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,6 @@
 
-#include "text/style/CURLSpanHelper.h"
-#include "text/style/CURLSpan.h"
+#include "elastos/droid/text/style/CURLSpanHelper.h"
+#include "elastos/droid/text/style/CURLSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

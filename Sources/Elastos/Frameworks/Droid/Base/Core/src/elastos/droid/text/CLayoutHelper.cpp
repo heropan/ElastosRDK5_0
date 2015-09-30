@@ -1,6 +1,6 @@
 #include "ext/frameworkext.h"
-#include "text/CLayoutHelper.h"
-#include "text/Layout.h"
+#include "elastos/droid/text/CLayoutHelper.h"
+#include "elastos/droid/text/Layout.h"
 
 namespace Elastos {
 namespace Droid {

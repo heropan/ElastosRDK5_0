@@ -1,4 +1,4 @@
-#include "text/style/QuoteSpan.h"
+#include "elastos/droid/text/style/QuoteSpan.h"
 
 using Elastos::Droid::Graphics::PaintStyle;
 using Elastos::Droid::Graphics::PaintStyle_FILL;

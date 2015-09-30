@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_RasterizerSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_RasterizerSpan_H__
 
-#include "text/style/CharacterStyle.h"
+#include "elastos/droid/text/style/CharacterStyle.h"
 
 using Elastos::Droid::Graphics::IRasterizer;
 

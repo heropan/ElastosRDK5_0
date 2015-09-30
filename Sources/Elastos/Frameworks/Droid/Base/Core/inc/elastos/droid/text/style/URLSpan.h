@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_URLSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_URLSpan_H__
 
-#include "text/style/ClickableSpan.h"
+#include "elastos/droid/text/style/ClickableSpan.h"
 
 namespace Elastos {
 namespace Droid {

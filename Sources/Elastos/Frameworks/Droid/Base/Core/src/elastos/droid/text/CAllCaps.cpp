@@ -1,8 +1,8 @@
 
 #include "ext/frameworkdef.h"
-#include "text/CAllCaps.h"
-#include "text/TextUtils.h"
-#include "text/CSpannableString.h"
+#include "elastos/droid/text/CAllCaps.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/text/CSpannableString.h"
 #include <elastos/core/Character.h>
 
 using Elastos::Core::Character;

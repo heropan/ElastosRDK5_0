@@ -2,11 +2,9 @@
 #ifndef __ELASTOS_DROID_TEXT_SPANSET_H__
 #define __ELASTOS_DROID_TEXT_SPANSET_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
+
 
 namespace Elastos {
 namespace Droid {
@@ -22,7 +20,7 @@ namespace Text {
  * @hide
  */
 template<typename E/*implements IInterface*/>
-class SpanSet : public ElRefBase
+class SpanSet : public Object
 {
 public:
     SpanSet(

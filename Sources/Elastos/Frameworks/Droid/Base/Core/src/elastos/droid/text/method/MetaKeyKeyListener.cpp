@@ -1,6 +1,6 @@
-#include "text/method/MetaKeyKeyListener.h"
+#include "elastos/droid/text/method/MetaKeyKeyListener.h"
 #ifdef DROID_CORE
-#include "text/CNoCopySpan.h"
+#include "elastos/droid/text/CNoCopySpan.h"
 #include "Elastos.Droid.Core_server.h"
 #else
 #include "Elastos.Droid.Core.h"

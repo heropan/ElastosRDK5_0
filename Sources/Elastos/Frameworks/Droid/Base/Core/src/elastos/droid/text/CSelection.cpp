@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
-#include "text/CSelection.h"
-#include "text/Selection.h"
+#include "elastos/droid/text/CSelection.h"
+#include "elastos/droid/text/Selection.h"
 
 namespace Elastos {
 namespace Droid {

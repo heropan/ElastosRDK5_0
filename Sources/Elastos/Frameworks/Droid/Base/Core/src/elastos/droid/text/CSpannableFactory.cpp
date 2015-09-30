@@ -1,6 +1,6 @@
 
-#include "text/CSpannableFactory.h"
-#include "text/CSpannableString.h"
+#include "elastos/droid/text/CSpannableFactory.h"
+#include "elastos/droid/text/CSpannableString.h"
 
 namespace Elastos {
 namespace Droid {

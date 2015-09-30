@@ -1,5 +1,5 @@
 
-#include "text/style/CLocaleSpan.h"
+#include "elastos/droid/text/style/CLocaleSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

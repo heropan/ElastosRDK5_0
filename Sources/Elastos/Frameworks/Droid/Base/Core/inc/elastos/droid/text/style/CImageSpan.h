@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_STYLE_CIMAGESPAN_H__
 
 #include "_Elastos_Droid_Text_Style_CImageSpan.h"
-#include "text/style/ImageSpan.h"
+#include "elastos/droid/text/style/ImageSpan.h"
 
 
 //

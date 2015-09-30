@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_ScrollingMovementMethod_H__
 #define __ELASTOS_DROID_TEXT_METHOD_ScrollingMovementMethod_H__
 
-#include "text/method/BaseMovementMethod.h"
+#include "elastos/droid/text/method/BaseMovementMethod.h"
 //#include "os/ElObject.h"
 
 namespace Elastos {

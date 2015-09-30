@@ -1,6 +1,6 @@
 
-#include "text/method/CTimeKeyListenerHelper.h"
-#include "text/method/CTimeKeyListener.h"
+#include "elastos/droid/text/method/CTimeKeyListenerHelper.h"
+#include "elastos/droid/text/method/CTimeKeyListener.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

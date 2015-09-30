@@ -1,5 +1,5 @@
 
-#include "text/method/CWordIterator.h"
+#include "elastos/droid/text/method/CWordIterator.h"
 #include "ext/frameworkext.h"
 
 using Libcore::ICU::ILocale;

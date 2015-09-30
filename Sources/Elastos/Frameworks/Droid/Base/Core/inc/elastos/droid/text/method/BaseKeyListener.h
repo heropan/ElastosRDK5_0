@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_BaseKeyListener_H__
 #define __ELASTOS_DROID_TEXT_METHOD_BaseKeyListener_H__
 
-#include "text/method/MetaKeyKeyListener.h"
+#include "elastos/droid/text/method/MetaKeyKeyListener.h"
 
 namespace Elastos {
 namespace Droid {

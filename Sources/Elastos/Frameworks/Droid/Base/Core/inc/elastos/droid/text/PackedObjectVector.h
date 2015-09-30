@@ -64,7 +64,8 @@ PackedObjectVector<E>::PackedObjectVector(
     , mRowGapStart(0)
     , mRowGapLength(mRows)
 {
-    mValues = ArrayOf<IInterface*>::Alloc(mRows * mColumns);
+    mValues = EmptyArray::OBJECT;
+    mRows = 0;
 }
 
 template<typename E>
@@ -151,9 +152,9 @@ Int32 PackedObjectVector<E>::Width()
 template<typename E>
 void PackedObjectVector<E>::GrowBuffer()
 {
-    Int32 newsize = Size() + 1;
-    newsize = ArrayUtils::IdealInt32ArraySize(newsize * mColumns) / mColumns;
-    AutoPtr< ArrayOf<IInterface*> > newvalues = ArrayOf<IInterface*>::Alloc(newsize * mColumns);
+    AutoPtr< ArrayOf<IInterface*> > newvalues = ArrayUtils::NewUnpaddedObjectArray(
+            GrowingArrayUtils::GrowSize(size()) * mColumns);
+    Int32 newsize = newvalues->GetLength() / mColumns;
 
     Int32 after = mRows - (mRowGapStart + mRowGapLength);
 

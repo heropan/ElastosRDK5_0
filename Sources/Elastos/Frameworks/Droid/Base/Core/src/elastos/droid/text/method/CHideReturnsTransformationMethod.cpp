@@ -1,5 +1,5 @@
 
-#include "text/method/CHideReturnsTransformationMethod.h"
+#include "elastos/droid/text/method/CHideReturnsTransformationMethod.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

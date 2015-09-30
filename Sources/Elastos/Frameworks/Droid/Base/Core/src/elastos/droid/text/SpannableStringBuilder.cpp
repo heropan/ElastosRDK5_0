@@ -1,10 +1,10 @@
 
-#include "text/SpannableStringBuilder.h"
-#include "text/CSpannableStringBuilder.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/text/SpannableStringBuilder.h"
+#include "elastos/droid/text/CSpannableStringBuilder.h"
+#include "elastos/droid/text/TextUtils.h"
 #include "utility/ArrayUtils.h"
 #include <elastos/core/StringBuffer.h>
-#include "text/Selection.h"
+#include "elastos/droid/text/Selection.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/Character.h>
 

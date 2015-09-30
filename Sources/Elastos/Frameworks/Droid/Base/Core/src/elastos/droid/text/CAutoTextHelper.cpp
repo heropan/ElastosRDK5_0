@@ -1,5 +1,5 @@
-#include "text/CAutoTextHelper.h"
-#include "text/CAutoText.h"
+#include "elastos/droid/text/CAutoTextHelper.h"
+#include "elastos/droid/text/CAutoText.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

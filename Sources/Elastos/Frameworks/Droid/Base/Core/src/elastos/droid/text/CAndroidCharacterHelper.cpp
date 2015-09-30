@@ -1,6 +1,6 @@
 
-#include "text/CAndroidCharacterHelper.h"
-#include "text/CAndroidCharacter.h"
+#include "elastos/droid/text/CAndroidCharacterHelper.h"
+#include "elastos/droid/text/CAndroidCharacter.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

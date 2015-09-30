@@ -1,6 +1,6 @@
 
-#include "text/style/CMaskFilterSpanHelper.h"
-#include "text/style/CMaskFilterSpan.h"
+#include "elastos/droid/text/style/CMaskFilterSpanHelper.h"
+#include "elastos/droid/text/style/CMaskFilterSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

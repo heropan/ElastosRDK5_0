@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_TimeKeyListener_H__
 #define __ELASTOS_DROID_TEXT_METHOD_TimeKeyListener_H__
 
-#include "text/method/NumberKeyListener.h"
+#include "elastos/droid/text/method/NumberKeyListener.h"
 
 namespace Elastos {
 namespace Droid {

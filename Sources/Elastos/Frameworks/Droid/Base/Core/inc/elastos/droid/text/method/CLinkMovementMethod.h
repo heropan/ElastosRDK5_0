@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_METHOD_CLINKMOVEMENTMETHOD_H__
 
 #include "_Elastos_Droid_Text_Method_CLinkMovementMethod.h"
-#include "text/method/LinkMovementMethod.h"
+#include "elastos/droid/text/method/LinkMovementMethod.h"
 
 
 namespace Elastos {

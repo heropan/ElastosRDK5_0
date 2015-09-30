@@ -1,4 +1,4 @@
-#include "text/style/MetricAffectingSpan.h"
+#include "elastos/droid/text/style/MetricAffectingSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {
@@ -70,7 +70,7 @@ ECode MetricAffectingSpan::Passthrough::UpdateMeasureState(
 {
     return mStyle->UpdateMeasureState(tp);
 }
-    
+
 ECode MetricAffectingSpan::Passthrough::GetUnderlying(
     /* [in] */ /*IMetricAffectingSpan*/ICharacterStyle** result)
 {

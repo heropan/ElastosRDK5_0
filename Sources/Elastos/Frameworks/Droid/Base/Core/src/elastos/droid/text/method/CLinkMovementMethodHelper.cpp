@@ -1,6 +1,6 @@
 
-#include "text/method/CLinkMovementMethodHelper.h"
-#include "text/method/CLinkMovementMethod.h"
+#include "elastos/droid/text/method/CLinkMovementMethodHelper.h"
+#include "elastos/droid/text/method/CLinkMovementMethod.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

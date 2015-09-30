@@ -1,5 +1,5 @@
-#include "text/SpannedString.h"
-#include "text/CSpannedString.h"
+#include "elastos/droid/text/SpannedString.h"
+#include "elastos/droid/text/CSpannedString.h"
 
 using Elastos::Core::EIID_ICharSequence;
 using Elastos::Droid::Text::CSpannedString;

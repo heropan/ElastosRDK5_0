@@ -1088,9 +1088,9 @@ module
 
 
 
-    // namespace Elastos {
-    // namespace Droid {
-    // namespace Text {
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
 
     // [deprecated]
     // class CAlteredCharSequence{
@@ -1144,13 +1144,13 @@ module
     //     interface IAutoTextHelper;
     // }
 
-    // [deprecated]
-    // class CLayoutDirections {
-    //     constructor(
-    //         [in] ArrayOf<Int32>* directions);
+    [deprecated]
+    class CLayoutDirections {
+        constructor(
+            [in] ArrayOf<Int32>* directions);
 
-    //     interface ILayoutDirections;
-    // }
+        interface ILayoutDirections;
+    }
 
     // [deprecated]
     // class CTextPaint {
@@ -1434,7 +1434,7 @@ module
     //     interface IHtml;
     // }
 
-    // } // namespace Text
-    // } // namepsace Droid
-    // } // namespace Elastos
+    } // namespace Text
+    } // namepsace Droid
+    } // namespace Elastos
 }

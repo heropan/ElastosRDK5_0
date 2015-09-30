@@ -1,5 +1,5 @@
 
-#include "text/method/CBaseMovementMethod.h"
+#include "elastos/droid/text/method/CBaseMovementMethod.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

@@ -1,5 +1,5 @@
 
-#include "text/TextDirectionHeuristics.h"
+#include "elastos/droid/text/TextDirectionHeuristics.h"
 
 namespace Elastos {
 namespace Droid {

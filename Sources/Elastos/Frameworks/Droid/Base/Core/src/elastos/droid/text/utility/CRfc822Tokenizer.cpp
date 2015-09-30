@@ -1,6 +1,6 @@
 #include "Elastos.Core.h"
-#include "text/util/CRfc822Tokenizer.h"
-#include "text/util/CRfc822Token.h"
+#include "elastos/droid/text/util/CRfc822Tokenizer.h"
+#include "elastos/droid/text/util/CRfc822Token.h"
 
 using Elastos::Core::CString;
 

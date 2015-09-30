@@ -1,5 +1,5 @@
 
-#include "text/style/CBulletSpan.h"
+#include "elastos/droid/text/style/CBulletSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

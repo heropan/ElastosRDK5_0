@@ -310,7 +310,7 @@ ECode CRational::CompareTo(
     CRational* another= (CRational*)IRational::Probe(obj);
     VALIDATE_NOT_NULL(another)
 
-    Boolean bval, bval2;
+    Boolean bval;
     if (Equals(obj, &bval), bval) {
         *result = 0;
         return NOERROR;

@@ -1,5 +1,5 @@
-#include "text/style/SuggestionRangeSpan.h"
-#include "text/CTextPaint.h"
+#include "elastos/droid/text/style/SuggestionRangeSpan.h"
+#include "elastos/droid/text/CTextPaint.h"
 
 namespace Elastos {
 namespace Droid {

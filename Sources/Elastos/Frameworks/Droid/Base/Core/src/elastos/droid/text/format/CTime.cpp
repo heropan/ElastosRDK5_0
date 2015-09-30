@@ -1,7 +1,7 @@
 
 #include "ext/frameworkdef.h"
-#include "text/format/CTime.h"
-#include "text/format/DateUtils.h"
+#include "elastos/droid/text/format/CTime.h"
+#include "elastos/droid/text/format/DateUtils.h"
 #include "content/res/CResources.h"
 #include "R.h"
 #include <elastos/core/Math.h>

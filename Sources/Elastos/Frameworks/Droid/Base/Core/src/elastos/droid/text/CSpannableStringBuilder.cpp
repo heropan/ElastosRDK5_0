@@ -1,5 +1,5 @@
 
-#include "text/CSpannableStringBuilder.h"
+#include "elastos/droid/text/CSpannableStringBuilder.h"
 
 namespace Elastos {
 namespace Droid {

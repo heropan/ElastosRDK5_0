@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_METHOD_CMULTITAPKEYLISTENER_H__
 
 #include "_Elastos_Droid_Text_Method_CMultiTapKeyListener.h"
-#include "text/method/MultiTapKeyListener.h"
+#include "elastos/droid/text/method/MultiTapKeyListener.h"
 
 
 

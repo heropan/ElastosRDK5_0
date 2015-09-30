@@ -1,5 +1,5 @@
 
-#include "text/method/CScrollingMovementMethod.h"
+#include "elastos/droid/text/method/CScrollingMovementMethod.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

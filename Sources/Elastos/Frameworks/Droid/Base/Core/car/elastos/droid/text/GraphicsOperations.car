@@ -40,7 +40,7 @@ module
             [in] Int32 contextEnd,
             [in] Float x,
             [in] Float y,
-            [in] Int32 flags,
+            [in] Boolean isRtl,
             [in] IPaint* p);
 
        /**

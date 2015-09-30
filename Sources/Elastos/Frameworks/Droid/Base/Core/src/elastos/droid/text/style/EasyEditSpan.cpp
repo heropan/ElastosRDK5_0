@@ -1,4 +1,4 @@
-#include "text/style/EasyEditSpan.h"
+#include "elastos/droid/text/style/EasyEditSpan.h"
 
 namespace Elastos {
 namespace Droid {

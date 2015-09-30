@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_METHOD_CARROWKEYMOVEMENTMETHOD_H__
 
 #include "_Elastos_Droid_Text_Method_CArrowKeyMovementMethod.h"
-#include "text/method/ArrowKeyMovementMethod.h"
+#include "elastos/droid/text/method/ArrowKeyMovementMethod.h"
 
 
 

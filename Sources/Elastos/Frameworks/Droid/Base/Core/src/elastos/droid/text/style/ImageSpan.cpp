@@ -1,4 +1,4 @@
-#include "text/style/ImageSpan.h"
+#include "elastos/droid/text/style/ImageSpan.h"
 #include "graphics/drawable/CBitmapDrawable.h"
 #include "graphics/CBitmapFactory.h"
 

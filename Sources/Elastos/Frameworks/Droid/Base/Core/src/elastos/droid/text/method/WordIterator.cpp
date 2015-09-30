@@ -1,4 +1,4 @@
-#include "text/method/WordIterator.h"
+#include "elastos/droid/text/method/WordIterator.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Character.h>

@@ -1,5 +1,5 @@
 
-#include "text/CNoCopySpan.h"
+#include "elastos/droid/text/CNoCopySpan.h"
 
 namespace Elastos {
 namespace Droid {

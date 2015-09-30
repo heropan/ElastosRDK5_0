@@ -1,6 +1,6 @@
-#include "text/method/DigitsKeyListener.h"
-#include "text/CSpannableStringBuilder.h"
-#include "text/method/CDigitsKeyListener.h"
+#include "elastos/droid/text/method/DigitsKeyListener.h"
+#include "elastos/droid/text/CSpannableStringBuilder.h"
+#include "elastos/droid/text/method/CDigitsKeyListener.h"
 
 using Elastos::Core::CString;
 using Elastos::Droid::Text::Method::CDigitsKeyListener;

@@ -1,6 +1,6 @@
 
-#include "text/style/CImageSpanHelper.h"
-#include "text/style/CImageSpan.h"
+#include "elastos/droid/text/style/CImageSpanHelper.h"
+#include "elastos/droid/text/style/CImageSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

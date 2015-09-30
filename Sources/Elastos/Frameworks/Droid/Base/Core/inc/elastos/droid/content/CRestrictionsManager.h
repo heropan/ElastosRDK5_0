@@ -123,7 +123,7 @@ public:
      * @return whether there is an active Restrictions Provider.
      */
     CARAPI HasRestrictionsProvider(
-        /* [out] */ Boolean** provider);
+        /* [out] */ Boolean* provider);
 
     /**
      * Called by an application to request permission for an operation. The contents of the

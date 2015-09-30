@@ -1,5 +1,5 @@
 
-#include "text/method/CTouch.h"
+#include "elastos/droid/text/method/CTouch.h"
 
 namespace Elastos {
 namespace Droid {

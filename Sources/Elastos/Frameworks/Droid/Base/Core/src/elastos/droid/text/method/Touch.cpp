@@ -1,5 +1,5 @@
-#include "text/method/Touch.h"
-#include "text/method/MetaKeyKeyListener.h"
+#include "elastos/droid/text/method/Touch.h"
+#include "elastos/droid/text/method/MetaKeyKeyListener.h"
 #include "view/CViewConfiguration.h"
 #include <elastos/core/Math.h>
 

@@ -1,6 +1,6 @@
 
-#include "text/method/CArrowKeyMovementMethodHelper.h"
-#include "text/method/CArrowKeyMovementMethod.h"
+#include "elastos/droid/text/method/CArrowKeyMovementMethodHelper.h"
+#include "elastos/droid/text/method/CArrowKeyMovementMethod.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

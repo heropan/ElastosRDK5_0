@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_TEXT_BORINGLAYOUT_H__
 #define __ELASTOS_DROID_TEXT_BORINGLAYOUT_H__
 
-#include "text/Layout.h"
-#include "text/CTextPaint.h"
+#include "elastos/droid/text/Layout.h"
+#include "elastos/droid/text/CTextPaint.h"
 
 namespace Elastos {
 namespace Droid {

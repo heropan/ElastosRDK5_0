@@ -1,5 +1,5 @@
-#include "text/style/ClickableSpan.h"
-#include "text/CTextPaint.h"
+#include "elastos/droid/text/style/ClickableSpan.h"
+#include "elastos/droid/text/CTextPaint.h"
 //#include "ext/frameworkext.h"
 
 namespace Elastos {

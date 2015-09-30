@@ -565,7 +565,8 @@ ECode PathParser::GetFloats(
     VALIDATE_NOT_NULL(floats)
     *floats = NULL;
 
-    if (s.GetChar(0) == 'z' | s.GetChar(0) == 'Z') {
+    Char32 firstChar = s.GetChar(0);
+    if (firstChar == 'z' || firstChar == 'Z') {
         *floats = ArrayOf<Float>::Alloc(0);
         REFCOUNT_ADD(*floats)
         return NOERROR;

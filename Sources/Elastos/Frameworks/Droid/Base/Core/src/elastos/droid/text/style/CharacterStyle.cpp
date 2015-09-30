@@ -1,5 +1,5 @@
-#include "text/style/CharacterStyle.h"
-#include "text/style/MetricAffectingSpan.h"
+#include "elastos/droid/text/style/CharacterStyle.h"
+#include "elastos/droid/text/style/MetricAffectingSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_TEXT_CSTATICLAYOUT_H__
 
 #include "_Elastos_Droid_Text_CStaticLayout.h"
-#include "text/StaticLayout.h"
+#include "elastos/droid/text/StaticLayout.h"
 
 
 namespace Elastos {

@@ -1,6 +1,6 @@
 
-#include "text/CAlteredCharSequenceHelper.h"
-#include "text/CAlteredCharSequence.h"
+#include "elastos/droid/text/CAlteredCharSequenceHelper.h"
+#include "elastos/droid/text/CAlteredCharSequence.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

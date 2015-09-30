@@ -1,6 +1,6 @@
 #include "ext/frameworkdef.h"
-#include "text/utility/CRfc822TokenizerHelper.h"
-#include "text/utility/CRfc822Tokenizer.h"
+#include "elastos/droid/text/utility/CRfc822TokenizerHelper.h"
+#include "elastos/droid/text/utility/CRfc822Tokenizer.h"
 
 namespace Elastos {
 namespace Droid {

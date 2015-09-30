@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_METHOD_CALLCAPSTRANSFORMATIONMETHOD_H__
 
 #include "_Elastos_Droid_Text_Method_CAllCapsTransformationMethod.h"
-#include "text/method/AllCapsTransformationMethod.h"
+#include "elastos/droid/text/method/AllCapsTransformationMethod.h"
 
 namespace Elastos {
 namespace Droid {

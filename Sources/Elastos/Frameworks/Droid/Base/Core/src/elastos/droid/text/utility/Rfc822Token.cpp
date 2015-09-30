@@ -1,4 +1,4 @@
-#include "text/utility/Rfc822Token.h"
+#include "elastos/droid/text/utility/Rfc822Token.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

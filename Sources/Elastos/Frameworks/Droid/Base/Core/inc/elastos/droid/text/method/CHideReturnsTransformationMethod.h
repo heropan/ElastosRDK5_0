@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_METHOD_CHIDERETURNSTRANSFORMATIONMETHOD_H__
 
 #include "_Elastos_Droid_Text_Method_CHideReturnsTransformationMethod.h"
-#include "text/method/HideReturnsTransformationMethod.h"
+#include "elastos/droid/text/method/HideReturnsTransformationMethod.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IView;

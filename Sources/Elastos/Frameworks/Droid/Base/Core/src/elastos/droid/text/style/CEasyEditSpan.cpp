@@ -1,5 +1,5 @@
 
-#include "text/style/CEasyEditSpan.h"
+#include "elastos/droid/text/style/CEasyEditSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

@@ -1,16 +1,18 @@
-#include "ext/frameworkext.h"
-#include "text/CLayoutDirections.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/text/CLayoutDirections.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 
+CAR_INTERFACE_IMPL(CLayoutDirections, Object, ILayoutDirections)
+
+CAR_OBJECT_IMPL(CLayoutDirections)
+
 ECode CLayoutDirections::constructor(
     /* [in] */ ArrayOf<Int32>* directions)
 {
-    if (directions != NULL) {
-        mDirections = directions->Clone();
-    }
+    mDirections = directions;
     return NOERROR;
 }
 

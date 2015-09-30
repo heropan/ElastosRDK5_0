@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_STYLE_CSTRIKETHROUGHSPAN_H__
 
 #include "_Elastos_Droid_Text_Style_CStrikethroughSpan.h"
-#include "text/style/StrikethroughSpan.h"
+#include "elastos/droid/text/style/StrikethroughSpan.h"
 
 
 

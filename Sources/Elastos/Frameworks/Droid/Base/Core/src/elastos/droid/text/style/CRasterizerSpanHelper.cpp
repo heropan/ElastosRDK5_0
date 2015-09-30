@@ -1,6 +1,6 @@
 
-#include "text/style/CRasterizerSpanHelper.h"
-#include "text/style/CRasterizerSpan.h"
+#include "elastos/droid/text/style/CRasterizerSpanHelper.h"
+#include "elastos/droid/text/style/CRasterizerSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

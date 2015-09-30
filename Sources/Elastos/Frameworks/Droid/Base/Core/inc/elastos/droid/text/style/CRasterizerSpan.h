@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_STYLE_CRASTERIZERSPAN_H__
 
 #include "_Elastos_Droid_Text_Style_CRasterizerSpan.h"
-#include "text/style/RasterizerSpan.h"
+#include "elastos/droid/text/style/RasterizerSpan.h"
 
 
 namespace Elastos {

@@ -1,5 +1,5 @@
 #include "ext/frameworkext.h"
-#include "text/style/ForegroundColorSpan.h"
+#include "elastos/droid/text/style/ForegroundColorSpan.h"
 
 namespace Elastos {
 namespace Droid {

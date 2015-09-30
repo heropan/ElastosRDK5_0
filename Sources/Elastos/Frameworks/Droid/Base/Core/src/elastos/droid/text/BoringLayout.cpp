@@ -1,10 +1,10 @@
 
-#include "text/TextDirectionHeuristics.h"
-#include "text/CBoringLayoutMetrics.h"
-#include "text/BoringLayout.h"
-#include "text/CBoringLayout.h"
-#include "text/TextUtils.h"
-#include "text/TextLine.h"
+#include "elastos/droid/text/TextDirectionHeuristics.h"
+#include "elastos/droid/text/CBoringLayoutMetrics.h"
+#include "elastos/droid/text/BoringLayout.h"
+#include "elastos/droid/text/CBoringLayout.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/text/TextLine.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Core::CString;
@@ -256,10 +256,6 @@ void BoringLayout::Init(
         spacing = mtbottom - mttop;
     } else {
         spacing = mtdescent - mtascent;
-    }
-
-    if (spacingmult != 1 || spacingadd != 0) {
-        spacing = (Int32)(spacing * spacingmult + spacingadd + 0.5f);
     }
 
     mBottom = spacing;

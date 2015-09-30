@@ -1,5 +1,5 @@
 
-#include "text/CTextPaint.h"
+#include "elastos/droid/text/CTextPaint.h"
 
 namespace Elastos {
 namespace Droid {

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_STYLE_CEASYEDITSPAN_H__
 
 #include "_Elastos_Droid_Text_Style_CEasyEditSpan.h"
-#include "text/style/EasyEditSpan.h"
+#include "elastos/droid/text/style/EasyEditSpan.h"
 
 
 namespace Elastos {

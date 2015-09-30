@@ -1,11 +1,11 @@
-#include "text/MeasuredText.h"
+#include "elastos/droid/text/MeasuredText.h"
 #include <elastos/utility/logging/Logger.h>
 #include "utility/ArrayUtils.h"
-#include "text/TextUtils.h"
-#include "text/TextDirectionHeuristics.h"
-#include "text/AndroidBidi.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/text/TextDirectionHeuristics.h"
+#include "elastos/droid/text/AndroidBidi.h"
 #ifdef DROID_CORE
-#include "text/CTextPaint.h"
+#include "elastos/droid/text/CTextPaint.h"
 #endif
 
 using Elastos::Utility::Logging::Logger;
@@ -105,10 +105,10 @@ void MeasuredText::SetPara(
     mPos = 0;
 
     if (mWidths == NULL || mWidths->GetLength() < len) {
-        mWidths = ArrayOf<Float>::Alloc(ArrayUtils::IdealFloatArraySize(len));
+        mWidths = ArrayUtils::NewUnpaddedFloatArray(len);//ArrayOf<Float>::Alloc(ArrayUtils::IdealFloatArraySize(len));
     }
     if (mChars == NULL || mChars->GetLength() < len) {
-        mChars = ArrayOf<Char32>::Alloc(ArrayUtils::IdealCharArraySize(len));
+        mChars = ArrayUtils::NewUnpaddedCharArray(len);//ArrayOf<Char32>::Alloc(ArrayUtils::IdealCharArraySize(len));
     }
     TextUtils::GetChars(text, start, end, mChars, 0);
 
@@ -145,7 +145,7 @@ void MeasuredText::SetPara(
     }
     else {
         if (mLevels == NULL || mLevels->GetLength() < len) {
-            mLevels = ArrayOf<Byte>::Alloc(ArrayUtils::IdealByteArraySize(len));
+            mLevels = ArrayUtils::NewUnpaddedByteArray(len);//ArrayOf<Byte>::Alloc(ArrayUtils::IdealByteArraySize(len));
         }
         Int32 bidiRequest;
         if (textDir == TextDirectionHeuristics::LTR) {
@@ -187,17 +187,16 @@ Float MeasuredText::AddStyleRun(
 
     Float retValue;
     if (mEasy) {
-        Int32 flags = mDir == ILayout::DIR_LEFT_TO_RIGHT
-            ? ICanvas::DIRECTION_LTR : ICanvas::DIRECTION_RTL;
-        return (paint->GetTextRunAdvances(*mChars, p, len, p, len, flags, mWidths, p, &retValue), retValue);
+        Boolean isRtl = mDir != Layout.DIR_LEFT_TO_RIGHT;
+        return (paint->GetTextRunAdvances(*mChars, p, len, p, len, isRtl, mWidths, p, &retValue), retValue);
     }
 
     Float totalAdvance = 0;
     Int32 level = (*mLevels)[p];
     for (Int32 q = p, i = p + 1, e = p + len;; ++i) {
         if (i == e || (*mLevels)[i] != level) {
-            Int32 flags = (level & 0x1) == 0 ? ICanvas::DIRECTION_LTR : ICanvas::DIRECTION_RTL;
-            paint->GetTextRunAdvances(*mChars, q, i - q, q, i - q, flags, mWidths, q, &retValue);
+            Boolean isRtl = (level & 0x1) != 0;
+            paint->GetTextRunAdvances(*mChars, q, i - q, q, i - q, isRtl, mWidths, q, &retValue);
             totalAdvance += retValue;
             if (i == e) {
                 break;

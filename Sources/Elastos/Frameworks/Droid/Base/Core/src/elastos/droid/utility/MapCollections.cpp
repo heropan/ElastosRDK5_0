@@ -274,7 +274,7 @@ ECode MapCollections::EntrySet::AddAll(
     Int32 oldSize = mHost->ColGetSize();
     AutoPtr<IIterator> it;
     collection->GetIterator((IIterator**)&it);
-    Boolean hashNext, contains;
+    Boolean hashNext;
     IMapEntry* me;
     while (it->HasNext(&hashNext), hashNext) {
         AutoPtr<IInterface> obj;

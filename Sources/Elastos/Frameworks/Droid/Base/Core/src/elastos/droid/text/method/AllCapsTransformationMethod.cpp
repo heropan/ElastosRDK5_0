@@ -1,4 +1,4 @@
-#include "text/method/AllCapsTransformationMethod.h"
+#include "elastos/droid/text/method/AllCapsTransformationMethod.h"
 #include "content/res/CConfiguration.h"
 #include <elastos/utility/logging/Logger.h>
 

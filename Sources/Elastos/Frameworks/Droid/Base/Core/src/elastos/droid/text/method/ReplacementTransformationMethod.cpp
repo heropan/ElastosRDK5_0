@@ -1,6 +1,6 @@
-#include "text/method/ReplacementTransformationMethod.h"
-#include "text/TextUtils.h"
-#include "text/CSpannedString.h"
+#include "elastos/droid/text/method/ReplacementTransformationMethod.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/text/CSpannedString.h"
 #include "ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_SPANNEDSTRING_H__
 #define __ELASTOS_DROID_TEXT_SPANNEDSTRING_H__
 
-#include "text/SpannableStringInternal.h"
+#include "elastos/droid/text/SpannableStringInternal.h"
 
 namespace Elastos {
 namespace Droid {

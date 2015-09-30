@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_METHOD_CSCROLLINGMOVEMENTMETHOD_H__
 
 #include "_Elastos_Droid_Text_Method_CScrollingMovementMethod.h"
-#include "text/method/ScrollingMovementMethod.h"
+#include "elastos/droid/text/method/ScrollingMovementMethod.h"
 
 
 namespace Elastos {

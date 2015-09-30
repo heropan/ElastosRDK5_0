@@ -1,7 +1,7 @@
-#include "text/AndroidBidi.h"
+#include "elastos/droid/text/AndroidBidi.h"
 #ifdef DROID_CORE
-#include "text/CLayoutDirections.h"
-#include "text/CLayoutHelper.h"
+#include "elastos/droid/text/CLayoutDirections.h"
+#include "elastos/droid/text/CLayoutHelper.h"
 #endif
 
 using Elastos::Droid::Text::CLayoutDirections;
@@ -65,6 +65,10 @@ AutoPtr<ILayoutDirections> AndroidBidi::Directions(
     /* [in] */ Int32 cstart,
     /* [in] */ Int32 len)
 {
+    if (len == 0) {
+        return Layout.DIRS_ALL_LEFT_TO_RIGHT;
+    }
+
     Int32 baseLevel = (dir == ILayout::DIR_LEFT_TO_RIGHT) ? 0 : 1;
     Int32 curLevel = (Int32)((*levels)[lstart]);
     Int32 minLevel = curLevel;

@@ -1,5 +1,5 @@
-#include "text/style/SuperscriptSpan.h"
-#include "text/CTextPaint.h"
+#include "elastos/droid/text/style/SuperscriptSpan.h"
+#include "elastos/droid/text/CTextPaint.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

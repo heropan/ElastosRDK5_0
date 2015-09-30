@@ -1,5 +1,5 @@
 
-#include "text/CBoringLayout.h"
+#include "elastos/droid/text/CBoringLayout.h"
 
 namespace Elastos {
 namespace Droid {

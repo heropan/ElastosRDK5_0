@@ -1,6 +1,6 @@
 
 #include "ext/frameworkext.h"
-#include "text/CSimpleStringSplitter.h"
+#include "elastos/droid/text/CSimpleStringSplitter.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;

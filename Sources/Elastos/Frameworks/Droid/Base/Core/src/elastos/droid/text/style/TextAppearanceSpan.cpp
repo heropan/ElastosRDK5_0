@@ -1,5 +1,5 @@
-#include "text/style/TextAppearanceSpan.h"
-#include "text/CTextPaint.h"
+#include "elastos/droid/text/style/TextAppearanceSpan.h"
+#include "elastos/droid/text/CTextPaint.h"
 #include "content/res/CColorStateList.h"
 #include "graphics/CTypeface.h"
 #include "R.h"

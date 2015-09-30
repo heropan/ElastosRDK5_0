@@ -1,5 +1,5 @@
 
-#include "text/CAndroidCharacter.h"
+#include "elastos/droid/text/CAndroidCharacter.h"
 
 namespace Elastos {
 namespace Droid {

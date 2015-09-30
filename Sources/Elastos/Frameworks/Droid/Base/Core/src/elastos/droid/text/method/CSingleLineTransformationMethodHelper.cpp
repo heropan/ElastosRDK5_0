@@ -1,6 +1,6 @@
 
-#include "text/method/CSingleLineTransformationMethodHelper.h"
-#include "text/method/CSingleLineTransformationMethod.h"
+#include "elastos/droid/text/method/CSingleLineTransformationMethodHelper.h"
+#include "elastos/droid/text/method/CSingleLineTransformationMethod.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

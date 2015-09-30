@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_STYLE_CMASKFILTERSPAN_H__
 
 #include "_Elastos_Droid_Text_Style_CMaskFilterSpan.h"
-#include "text/style/MaskFilterSpan.h"
+#include "elastos/droid/text/style/MaskFilterSpan.h"
 
 
 namespace Elastos {

@@ -1,4 +1,4 @@
-#include "text/style/StyleSpan.h"
+#include "elastos/droid/text/style/StyleSpan.h"
 #include "graphics/CTypeface.h"
 
 using Elastos::Droid::Graphics::ITypeface;

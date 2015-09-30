@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_CDYNAMICLAYOUT_H__
 
 #include "_Elastos_Droid_Text_CDynamicLayout.h"
-#include "text/DynamicLayout.h"
+#include "elastos/droid/text/DynamicLayout.h"
 
 
 namespace Elastos {

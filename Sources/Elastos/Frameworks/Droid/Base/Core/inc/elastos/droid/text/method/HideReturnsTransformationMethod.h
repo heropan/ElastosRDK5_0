@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_HideReturnsTransformationMethod_H__
 #define __ELASTOS_DROID_TEXT_METHOD_HideReturnsTransformationMethod_H__
 
-#include "text/method/ReplacementTransformationMethod.h"
+#include "elastos/droid/text/method/ReplacementTransformationMethod.h"
 #include "Elastos.Droid.Core_server.h"
 
 namespace Elastos {

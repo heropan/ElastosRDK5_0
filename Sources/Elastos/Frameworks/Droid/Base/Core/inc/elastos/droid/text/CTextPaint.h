@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Text_CTextPaint.h"
 #include "graphics/Paint.h"
-#include "text/TextPaint.h"
+#include "elastos/droid/text/TextPaint.h"
 
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::IPath;

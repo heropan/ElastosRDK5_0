@@ -1,6 +1,6 @@
 
-#include "text/utility/CLinkify.h"
-#include "text/utility/Linkify.h"
+#include "elastos/droid/text/utility/CLinkify.h"
+#include "elastos/droid/text/utility/Linkify.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,6 @@
 
-#include "text/CDynamicLayoutHelper.h"
-#include "text/CDynamicLayout.h"
+#include "elastos/droid/text/CDynamicLayoutHelper.h"
+#include "elastos/droid/text/CDynamicLayout.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,12 +1,8 @@
 #ifndef __ELASTOS_DROID_TEXT_LAYOUT_H__
 #define __ELASTOS_DROID_TEXT_LAYOUT_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
-#include "text/SpanSet.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/text/SpanSet.h"
 
 using Elastos::Core::ICharSequence;
 //using Elastos::Droid::Emoji::IEmojiFactory;
@@ -17,7 +13,6 @@ using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Text::Style::IParagraphStyle;
 using Elastos::Droid::Text::Style::ILineBackgroundSpan;
 
-extern "C" const InterfaceID EIID_Ellipsizer;
 
 namespace Elastos {
 namespace Droid {
@@ -31,13 +26,15 @@ namespace Text {
  * For text that will not change, use a {@link StaticLayout}.
  */
 class Layout
+    : public Object
+    , public ILayout
 {
 public:
     /**
      * @hide
      */
     /* package */
-    class TabStops : public ElRefBase
+    class TabStops : public Object
     {
     public:
         static CARAPI_(Float) NextDefaultStop(
@@ -66,23 +63,15 @@ public:
     };
 
     /* package */
-    class Ellipsizer : public ElRefBase
-                     , public IGetChars
+    class Ellipsizer
+        : public Object
+        , public IGetChars
     {
     public:
+        CAR_INTERFACE_DECL()
+
         Ellipsizer(
             /* [in] */ ICharSequence* s);
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
 
         virtual CARAPI GetCharAt(
             /* [in] */ Int32 off,
@@ -113,23 +102,15 @@ public:
     };
 
     /* package */
-    class SpannedEllipsizer : public Ellipsizer
-                            , public ISpanned
+    class SpannedEllipsizer
+        : public Ellipsizer
+        , public ISpanned
     {
     public:
+        CAR_INTERFACE_DECL()
+
         SpannedEllipsizer(
             /* [in] */ ICharSequence* display);
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
 
         virtual CARAPI GetChars(
             /* [in] */ Int32 start,
@@ -181,10 +162,11 @@ public:
     };
 
 public:
-    Layout() {}
+    CAR_INTERFACE_DECL()
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    Layout();
+
+    virtual ~Layout();
 
     /**
      * Return how wide a layout must be in order to display the
@@ -426,12 +408,30 @@ public:
         /* [in] */ Int32 offset);
 
     /**
+     * Get the primary horizontal position for the specified text offset, but
+     * optionally clamp it so that it doesn't exceed the width of the layout.
+     * @hide
+     */
+    CARAPI_(Float) GetPrimaryHorizontal(
+        /* [in] */ Int32 offset,
+        /* [in] */ Boolean clamped);
+
+    /**
      * Get the secondary horizontal position for the specified text offset.
      * This is the location where a new character would be inserted in
      * the direction other than the paragraph's primary direction.
      */
     virtual CARAPI_(Float) GetSecondaryHorizontal(
         /* [in] */ Int32 offset);
+
+    /**
+     * Get the secondary horizontal position for the specified text offset, but
+     * optionally clamp it so that it doesn't exceed the width of the layout.
+     * @hide
+     */
+    CARAPI_(Float) GetSecondaryHorizontal(
+        /* [in] */ Int32 offset,
+        /* [in] */ Boolean clamped);
 
     /**
      * Get the leftmost position that should be exposed for horizontal
@@ -523,6 +523,14 @@ public:
 
     virtual CARAPI_(Int32) GetOffsetToRightOf(
         /* [in] */ Int32 offset);
+
+    /**
+     * Determine whether we should clamp cursor position. Currently it's
+     * only robust for left-aligned displays.
+     * @hide
+     */
+    virtual CARAPI_(Boolean) ShouldClampCursor(
+        /* [in] */ Int32 line);
 
     /**
      * Fills in the specified Path with a representation of a cursor
@@ -721,12 +729,14 @@ private:
 
     CARAPI_(Float) GetHorizontal(
         /* [in] */ Int32 offset,
-        /* [in] */ Boolean trailing);
+        /* [in] */ Boolean trailing,
+        /* [in] */ Boolean clamped);
 
     CARAPI_(Float) GetHorizontal(
         /* [in] */ Int32 offset,
         /* [in] */ Boolean trailing,
-        /* [in] */ Int32 line);
+        /* [in] */ Int32 line,
+        /* [in] */ Boolean clamped);
 
     /**
      * Like {@link #getLineExtent(int,TabStops,boolean)} but determines the

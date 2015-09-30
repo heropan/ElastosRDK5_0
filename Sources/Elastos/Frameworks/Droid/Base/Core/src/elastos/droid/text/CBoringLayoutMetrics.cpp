@@ -1,6 +1,6 @@
 
 #include "ext/frameworkext.h"
-#include "text/CBoringLayoutMetrics.h"
+#include "elastos/droid/text/CBoringLayoutMetrics.h"
 
 namespace Elastos {
 namespace Droid {

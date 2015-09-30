@@ -1,5 +1,5 @@
 
-#include "text/style/CImageSpan.h"
+#include "elastos/droid/text/style/CImageSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

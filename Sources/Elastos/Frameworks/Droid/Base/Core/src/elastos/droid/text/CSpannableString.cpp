@@ -1,5 +1,5 @@
 
-#include "text/CSpannableString.h"
+#include "elastos/droid/text/CSpannableString.h"
 
 using Elastos::Core::EIID_ICharSequence;
 

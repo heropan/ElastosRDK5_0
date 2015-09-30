@@ -114,7 +114,7 @@ void CDisplayManager::AddPresentationDisplaysLocked(
         if (display != NULL) {
             Int32 flag;
             display->GetFlags(&flag);
-            if (flag & IDisplay::FLAG_PRESENTATION != 0) {
+            if ((flag & IDisplay::FLAG_PRESENTATION) != 0) {
                 Int32 type;
                 display->GetType(&type);
                 if (type == matchType) {

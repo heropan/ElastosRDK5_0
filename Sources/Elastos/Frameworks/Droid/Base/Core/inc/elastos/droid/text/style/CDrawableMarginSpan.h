@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_STYLE_CDRAWABLEMARGINSPAN_H__
 
 #include "_Elastos_Droid_Text_Style_CDrawableMarginSpan.h"
-#include "text/style/DrawableMarginSpan.h"
+#include "elastos/droid/text/style/DrawableMarginSpan.h"
 
 
 

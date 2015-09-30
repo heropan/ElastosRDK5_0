@@ -1,5 +1,5 @@
 #include "ext/frameworkext.h"
-#include "text/style/RasterizerSpan.h"
+#include "elastos/droid/text/style/RasterizerSpan.h"
 
 namespace Elastos {
 namespace Droid {

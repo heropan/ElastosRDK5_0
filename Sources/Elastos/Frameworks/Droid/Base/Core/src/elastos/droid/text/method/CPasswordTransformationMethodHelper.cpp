@@ -1,6 +1,6 @@
 
-#include "text/method/CPasswordTransformationMethodHelper.h"
-#include "text/method/CPasswordTransformationMethod.h"
+#include "elastos/droid/text/method/CPasswordTransformationMethodHelper.h"
+#include "elastos/droid/text/method/CPasswordTransformationMethod.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

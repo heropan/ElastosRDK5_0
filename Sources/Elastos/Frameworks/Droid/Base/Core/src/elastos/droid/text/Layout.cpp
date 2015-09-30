@@ -1,18 +1,20 @@
 
-#include "text/Layout.h"
-#include "text/TextUtils.h"
-#include "text/TextLine.h"
-#include "text/CTextPaint.h"
-#include "text/CSpannableString.h"
-#include "text/TextDirectionHeuristics.h"
-#include "text/CLayoutDirections.h"
-#include "text/MeasuredText.h"
-#include "text/AndroidBidi.h"
-#include "text/method/TextKeyListener.h"
-#include "text/method/CTextKeyListener.h"
+#include "elastos/droid/text/Layout.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/text/TextLine.h"
+#include "elastos/droid/text/CTextPaint.h"
+#include "elastos/droid/text/CSpannableString.h"
+#include "elastos/droid/text/TextDirectionHeuristics.h"
+#include "elastos/droid/text/CLayoutDirections.h"
+#include "elastos/droid/text/MeasuredText.h"
+#include "elastos/droid/text/AndroidBidi.h"
+#include "elastos/droid/text/method/TextKeyListener.h"
+#include "elastos/droid/text/method/CTextKeyListener.h"
 //#include "emoji/CEmojiFactoryHelper.h"
-#include "graphics/CRect.h"
-#include "utility/ArrayUtils.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/internal/utility/ArrayUtils.h"
+#include "elastos/droid/internal/utility/GrowingArrayUtils.h"
+
 #include <elastos/core/Math.h>
 
 using Elastos::Core::CString;
@@ -476,6 +478,16 @@ AutoPtr<IRect> Layout::sTempRect = InitsTempRect();
 AutoPtr<ILayoutDirections> Layout::DIRS_ALL_LEFT_TO_RIGHT = InitDIRS_ALL_LEFT_TO_RIGHT();
 AutoPtr<ILayoutDirections> Layout::DIRS_ALL_RIGHT_TO_LEFT = InitDIRS_ALL_RIGHT_TO_LEFT();
 
+CAR_INTERFACE_IMPL(Layout, Object, ILayout)
+
+Layout::Layout()
+{
+}
+
+Layout::~Layout()
+{
+}
+
 /**
  * Return how wide a layout must be in order to display the
  * specified text with one line per paragraph.
@@ -738,20 +750,39 @@ ECode Layout::DrawText(
             // Draw all leading margin spans.  Adjust left or right according
             // to the paragraph direction of the line.
             Int32 length = spans.Get()->GetLength();
-            for (Int32 n = 0; n < length; n++) {
-                if ((*spans)[n] != NULL && (*spans)[n]->Probe(EIID_ILeadingMarginSpan)) {
-                    AutoPtr<ILeadingMarginSpan> margin = (ILeadingMarginSpan*)((*spans)[n]->Probe(EIID_ILeadingMarginSpan));
-                    Boolean useFirstLineMargin = isFirstParaLine;
-                    if (margin != NULL && margin->Probe(EIID_ILeadingMarginSpan2)) {
-                        ILeadingMarginSpan2* margin2 = (ILeadingMarginSpan2*)(margin->Probe(EIID_ILeadingMarginSpan2));
-                        Int32 count;
-                        margin2->GetLeadingMarginLineCount(&count);
-                        Int32 tmp;
-                        sp->GetSpanStart(margin, &tmp);
-                        Int32 startLine = GetLineForOffset(tmp);
-                        useFirstLineMargin = i < startLine + count;
-                    }
+            // for (Int32 n = 0; n < length; n++) {
+            //     if ((*spans)[n] != NULL && (*spans)[n]->Probe(EIID_ILeadingMarginSpan)) {
+            //         AutoPtr<ILeadingMarginSpan> margin = (ILeadingMarginSpan*)((*spans)[n]->Probe(EIID_ILeadingMarginSpan));
+            //         Boolean useFirstLineMargin = isFirstParaLine;
+            //         if (margin != NULL && margin->Probe(EIID_ILeadingMarginSpan2)) {
+            //             ILeadingMarginSpan2* margin2 = (ILeadingMarginSpan2*)(margin->Probe(EIID_ILeadingMarginSpan2));
+            //             Int32 count;
+            //             margin2->GetLeadingMarginLineCount(&count);
+            //             Int32 tmp;
+            //             sp->GetSpanStart(margin, &tmp);
+            //             Int32 startLine = GetLineForOffset(tmp);
+            //             useFirstLineMargin = i < startLine + count;
+            //         }
 
+            Boolean useFirstLineMargin = isFirstParaLine;
+            for (Int32 n = 0; n < length; n++) {
+                ILeadingMarginSpan2* lms2 = ILeadingMarginSpan2::Probe((*spans)[n]);
+                if (lms2 != NULL) {
+                    Int32 count, tmp;
+                    lms2->GetLeadingMarginLineCount(&count);
+                    sp->GetSpanStart(margin, &tmp);
+                    Int32 startLine = GetLineForOffset(tmp);
+                    // if there is more than one LeadingMarginSpan2, use
+                    // the count that is greatest
+                    if (i < startLine + count) {
+                        useFirstLineMargin = true;
+                        break;
+                    }
+                }
+            }
+            for (Int32 n = 0; n < length; n++) {
+                ILeadingMarginSpan* margin = ILeadingMarginSpan::Probe((*spans)[n]);
+                if (margin != NULL) {
                     if (dir == ILayout::DIR_RIGHT_TO_LEFT) {
                         margin->DrawLeadingMargin(canvas, paint, right, dir, ltop,
                                                  lbaseline, lbottom, buf,
@@ -893,15 +924,9 @@ ECode Layout::DrawBackground(
                             if ((*spanStarts)[j] >= end || (*spanEnds)[j] <= start)
                                 continue;
 
-                            if (spansLength == spans->GetLength()) {
-                                // The spans array needs to be expanded
-                                Int32 newSize = ArrayUtils::IdealObjectArraySize(2 * spansLength);
-                                // IParagraphStyle
-                                AutoPtr< ArrayOf<IInterface*> > newSpans = ArrayOf<IInterface*>::Alloc(newSize);
-                                newSpans->Copy(spans, 0, spansLength);
-                                spans = newSpans;
-                            }
-                            (*spans)[spansLength++] = (IInterface*)((*lbSpans)[j]->Probe(EIID_IInterface));
+                            spans = GrowingArrayUtils::Append(
+                                    spans, spansLength, TO_IINTERFACE((*lbSpans)[i]));
+                            spansLength++;
                         }
                     }
                 }
@@ -1203,10 +1228,9 @@ Boolean Layout::IsRtlCharAt(
     Int32 lineStart = GetLineStart(line);
     for (Int32 i = 0; i < runs.Get()->GetLength(); i += 2) {
         Int32 start = lineStart + ((*(runs.Get()))[i] & ILayout::RUN_LENGTH_MASK);
-        // No need to test the end as an offset after the last run should return the value
-        // corresponding of the last run
-        if (offset >= start) {
-            Int32 level = ((*(runs.Get()))[i+1] /*>>>*/>> ILayout::RUN_LEVEL_SHIFT) & ILayout::RUN_LEVEL_MASK;
+        Int32 limit = start + ((*runs)[i+1] & RUN_LENGTH_MASK);
+        if (offset >= start && offset < limit) {
+            Int32 level = ((*runs)[i+1] /*>>>*/>> ILayout::RUN_LEVEL_SHIFT) & ILayout::RUN_LEVEL_MASK;
             return ((level & 1) != 0);
         }
     }
@@ -1277,8 +1301,15 @@ Boolean Layout::PrimaryIsTrailingPrevious(
 Float Layout::GetPrimaryHorizontal(
     /* [in] */ Int32 offset)
 {
+    return GetPrimaryHorizontal(offset, FALSE);
+}
+
+Float Layout::GetPrimaryHorizontal(
+    /* [in] */ Int32 offset,
+    /* [in] */ Boolean clamped)
+{
     Boolean trailing = PrimaryIsTrailingPrevious(offset);
-    return GetHorizontal(offset, trailing);
+    return GetHorizontal(offset, trailing, clamped);
 }
 
 /**
@@ -1289,23 +1320,32 @@ Float Layout::GetPrimaryHorizontal(
 Float Layout::GetSecondaryHorizontal(
     /* [in] */ Int32 offset)
 {
-    Boolean trailing = PrimaryIsTrailingPrevious(offset);
-    return GetHorizontal(offset, !trailing);
+    return GetSecondaryHorizontal(offset, FALSE);
 }
 
-Float Layout::GetHorizontal(
+Float Layout::GetSecondaryHorizontal(
     /* [in] */ Int32 offset,
-    /* [in] */ Boolean trailing)
+    /* [in] */ Boolean clamped)
 {
-    Int32 line = GetLineForOffset(offset);
-
-    return GetHorizontal(offset, trailing, line);
+    Boolean trailing = PrimaryIsTrailingPrevious(offset);
+    return GetHorizontal(offset, !trailing, clamped);
 }
 
 Float Layout::GetHorizontal(
     /* [in] */ Int32 offset,
     /* [in] */ Boolean trailing,
-    /* [in] */ Int32 line)
+    /* [in] */ Boolean clamped)
+{
+    Int32 line = GetLineForOffset(offset);
+
+    return GetHorizontal(offset, trailing, line, clamped);
+}
+
+Float Layout::GetHorizontal(
+    /* [in] */ Int32 offset,
+    /* [in] */ Boolean trailing,
+    /* [in] */ Int32 line,
+    /* [in] */ Boolean clamped)
 {
     Int32 start = GetLineStart(line);
     Int32 end = GetLineEnd(line);
@@ -1329,6 +1369,10 @@ Float Layout::GetHorizontal(
     tl->Set(mPaint, mText, start, end, dir, directions, hasTabOrEmoji, tabStops);
     Float wid = tl->Measure(offset - start, trailing, NULL);
     TextLine::Recycle(tl);
+
+    if (clamped && wid > mWidth) {
+        wid = mWidth;
+    }
 
     Int32 left = GetParagraphLeft(line);
     Int32 right = GetParagraphRight(line);
@@ -1411,7 +1455,7 @@ Float Layout::GetLineMax(
 {
     Float margin = GetParagraphLeadingMargin(line);
     Float signedExtent = GetLineExtent(line, FALSE);
-    return margin + signedExtent >= 0 ? signedExtent : -signedExtent;
+    return margin + (signedExtent >= 0 ? signedExtent : -signedExtent);
 }
 
 /**
@@ -1423,7 +1467,7 @@ Float Layout::GetLineWidth(
 {
     Float margin = GetParagraphLeadingMargin(line);
     Float signedExtent = GetLineExtent(line, TRUE);
-    return margin + signedExtent >= 0 ? signedExtent : -signedExtent;
+    return margin + (signedExtent >= 0 ? signedExtent : -signedExtent);
 }
 
 /**
@@ -1620,7 +1664,7 @@ Int32 Layout::GetOffsetForHorizontal(
 
     Float dist = Elastos::Core::Math::Abs(GetPrimaryHorizontal(max) - horiz);
 
-    if (dist < bestdist) {
+    if (dist <= bestdist) {
         bestdist = dist;
         best = max;
     }
@@ -1812,6 +1856,20 @@ Int32 Layout::GetOffsetAtStartOf(
     return offset;
 }
 
+Boolean Layout::ShouldClampCursor(
+        /* [in] */ Int32 line)
+{
+    // Only clamp cursor position in left-aligned displays.
+    switch (GetParagraphAlignment(line)) {
+        case LayoutAlignment_ALIGN_LEFT:
+            return TRUE;
+        case LayoutAlignment_ALIGN_NORMAL:
+            return GetParagraphDirection(line) > 0;
+        default:
+            return FALSE;
+    }
+}
+
 /**
  * Fills in the specified Path with a representation of a cursor
  * at the specified offset.  This will often be a vertical line
@@ -1829,8 +1887,9 @@ ECode Layout::GetCursorPath(
     Int32 top = GetLineTop(line);
     Int32 bottom = GetLineTop(line+1);
 
-    Float h1 = GetPrimaryHorizontal(point) - 0.5f;
-    Float h2 = IsLevelBoundary(point) ? GetSecondaryHorizontal(point) - 0.5f : h1;
+    Boolean clamped = ShouldClampCursor(line);
+    Float h1 = GetPrimaryHorizontal(point, clamped) - 0.5f;
+    Float h2 = IsLevelBoundary(point) ? GetSecondaryHorizontal(point, clamped) - 0.5f : h1;
 
     Int32 caps = CTextKeyListener::GetMetaState(editingBuffer, IMetaKeyKeyListener::META_SHIFT_ON) |
             CTextKeyListener::GetMetaState(editingBuffer, IMetaKeyKeyListener::META_SELECTING);
@@ -1927,8 +1986,8 @@ void Layout::AddSelection(
             Int32 en = Elastos::Core::Math::Min(end, there);
 
             if (st != en) {
-                Float h1 = GetHorizontal(st, FALSE, line);
-                Float h2 = GetHorizontal(en, TRUE, line);
+                Float h1 = GetHorizontal(st, FALSE, line, FALSE /* not clamped */);
+                Float h2 = GetHorizontal(en, TRUE, line, FALSE /* not clamped */);
 
                 Float left = Elastos::Core::Math::Min(h1, h2);
                 Float right = Elastos::Core::Math::Max(h1, h2);
@@ -2087,21 +2146,22 @@ Int32 Layout::GetParagraphLeadingMargin(
 
     Char32 ch;
     Boolean isFirstParaLine = lineStart == 0 || (spanned->GetCharAt(lineStart - 1, &ch), ch) == '\n';
+    Boolean useFirstLineMargin = isFirstParaLine;
 
     Int32 length = spans->GetLength();
     for (Int32 i = 0; i < length; i++) {
-        AutoPtr<ILeadingMarginSpan> span =
-                ILeadingMarginSpan::Probe((*spans)[i]);
-        Boolean useFirstLineMargin = isFirstParaLine;
-        if (span != NULL && span->Probe(EIID_ILeadingMarginSpan2)) {
-            Int32 spStart;
-            spanned->GetSpanStart(span, &spStart);
-            Int32 spanLine = GetLineForOffset(spStart);
-            Int32 count;
-            ILeadingMarginSpan2* span2 = ILeadingMarginSpan2::Probe(span);
-            span2->GetLeadingMarginLineCount(&count);
-            useFirstLineMargin = line < spanLine + count;
+        ILeadingMarginSpan2* lms2 = ILeadingMarginSpan2::Probe((*spans)[i]);
+        if (lms2 != NULL) {
+            Int32 spStart, spanLine, count;
+            spanned->GetSpanStart((*spans)[i], &spStart);
+            spanLine = GetLineForOffset(spStart);
+            lms2->GetLeadingMarginLineCount(&count);
+            // if there is more than one LeadingMarginSpan2, use the count that is greatest
+            useFirstLineMargin |= line < spanLine + count;
         }
+    }
+    for (Int32 i = 0; i < length; i++) {
+        ILeadingMarginSpan* span = ILeadingMarginSpan::Probe((*spans)[i]);
 
         Int32 tmp = 0;
         span->GetLeadingMargin(useFirstLineMargin, &tmp);
@@ -2137,6 +2197,22 @@ Float Layout::MeasurePara(
         Int32 len = mt->mLen;
         Boolean hasTabs = FALSE;
         AutoPtr<TabStops> tabStops;
+
+        // leading margins should be taken into account when measuring a paragraph
+        Int32 margin = 0;
+        ISpanned* spanned = ISpanned::Probe(text);
+        if (spanned != NULL) {
+            AutoPtr< ArrayOf<IInterface*> > spans = GetParagraphSpans(spanned, start, end, EIID_ILeadingMarginSpan);
+            if (spans != NULL) {
+                for (Int32 i = 0; i < spans->GetLength(); ++i) {
+                    ILeadingMarginSpan* lms = ILeadingMarginSpan::Probe((*spans)[i]);
+                    Int32 tmp = 0;
+                    lms->GetLeadingMargin(TRUE, &tmp);
+                    margin += tmp;
+                }
+            }
+        }
+
         for (Int32 i = 0; i < len; ++i) {
             if ((*chars)[i] == '\t') {
                 hasTabs = TRUE;
@@ -2156,7 +2232,7 @@ Float Layout::MeasurePara(
         }
 
         tl->Set(paint, text, start, end, dir, directions, hasTabs, tabStops);
-        Float result =  tl->Metrics(NULL);
+        Float result =  margin + tl->Metrics(NULL);
     //} finally {
         TextLine::Recycle(tl);
         MeasuredText::Recycle(mt);

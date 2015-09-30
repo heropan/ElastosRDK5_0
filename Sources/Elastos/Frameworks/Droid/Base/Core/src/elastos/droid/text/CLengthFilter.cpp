@@ -1,6 +1,6 @@
 
 #include "ext/frameworkext.h"
-#include "text/CLengthFilter.h"
+#include "elastos/droid/text/CLengthFilter.h"
 #include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
@@ -53,6 +53,14 @@ ECode CLengthFilter::constructor(
     /* [in] */ Int32 max)
 {
     mMax = max;
+    return NOERROR;
+}
+
+ECode CLengthFilter::GetMax(
+    /* [out] */ Int32* max)
+{
+    VALIDATE_NOT_NULL(max)
+    *max = mMax;
     return NOERROR;
 }
 

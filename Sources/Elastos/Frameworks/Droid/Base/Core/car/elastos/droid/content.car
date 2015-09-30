@@ -774,9 +774,9 @@ module
             interface IParcelable;
         }
 
-        //class CRestrictionsManager {
-        //    interface IRestrictionsManager;
-        //}
+        class CRestrictionsManager {
+            interface IRestrictionsManager;
+        }
 
         class CSyncAdapterType {
             constructor();

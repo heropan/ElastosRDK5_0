@@ -1,11 +1,11 @@
-#include "text/StaticLayout.h"
+#include "elastos/droid/text/StaticLayout.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/Character.h>
 #include "utility/ArrayUtils.h"
 #include "graphics/CPaintFontMetricsInt.h"
-#include "text/TextUtils.h"
-#include "text/TextDirectionHeuristics.h"
-#include "text/AndroidBidi.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/text/TextDirectionHeuristics.h"
+#include "elastos/droid/text/AndroidBidi.h"
 
 #include <elastos/utility/logging/Slogger.h>
 #include <unistd.h>

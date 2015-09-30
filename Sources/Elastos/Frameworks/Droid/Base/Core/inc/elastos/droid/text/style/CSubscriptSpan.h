@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_STYLE_CSUBSCRIPTSPAN_H__
 
 #include "_Elastos_Droid_Text_Style_CSubscriptSpan.h"
-#include "text/style/SubscriptSpan.h"
+#include "elastos/droid/text/style/SubscriptSpan.h"
 
 
 

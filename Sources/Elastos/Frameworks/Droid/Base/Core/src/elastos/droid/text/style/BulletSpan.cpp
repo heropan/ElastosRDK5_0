@@ -1,5 +1,5 @@
 #include "ext/frameworkdef.h"
-#include "text/style/BulletSpan.h"
+#include "elastos/droid/text/style/BulletSpan.h"
 #include "graphics/CPath.h"
 
 using Elastos::Droid::Graphics::CPath;

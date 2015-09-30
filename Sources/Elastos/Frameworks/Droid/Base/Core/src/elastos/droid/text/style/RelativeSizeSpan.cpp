@@ -1,5 +1,5 @@
 #include "ext/frameworkext.h"
-#include "text/style/RelativeSizeSpan.h"
+#include "elastos/droid/text/style/RelativeSizeSpan.h"
 
 namespace Elastos {
 namespace Droid {

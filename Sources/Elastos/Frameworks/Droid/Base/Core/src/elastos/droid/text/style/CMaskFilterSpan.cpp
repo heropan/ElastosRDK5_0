@@ -1,5 +1,5 @@
 
-#include "text/style/CMaskFilterSpan.h"
+#include "elastos/droid/text/style/CMaskFilterSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

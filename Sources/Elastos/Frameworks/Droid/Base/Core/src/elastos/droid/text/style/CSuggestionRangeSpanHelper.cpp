@@ -1,6 +1,6 @@
 
-#include "text/style/CSuggestionRangeSpanHelper.h"
-#include "text/style/CSuggestionRangeSpan.h"
+#include "elastos/droid/text/style/CSuggestionRangeSpanHelper.h"
+#include "elastos/droid/text/style/CSuggestionRangeSpan.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

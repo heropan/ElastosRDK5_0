@@ -1,4 +1,4 @@
-#include "text/style/DynamicDrawableSpan.h"
+#include "elastos/droid/text/style/DynamicDrawableSpan.h"
 #include "graphics/CRect.h"
 
 using Elastos::Droid::Graphics::IRect;

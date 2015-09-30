@@ -1,7 +1,7 @@
 #ifdef DROID_CORE
-#include "text/method/NumberKeyListener.h"
-#include "text/CSpannableStringBuilder.h"
-#include "text/Selection.h"
+#include "elastos/droid/text/method/NumberKeyListener.h"
+#include "elastos/droid/text/CSpannableStringBuilder.h"
+#include "elastos/droid/text/Selection.h"
 #endif
 
 #include <elastos/core/Math.h>

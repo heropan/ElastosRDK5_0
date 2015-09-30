@@ -1,4 +1,4 @@
-#include "text/method/HideReturnsTransformationMethod.h"
+#include "elastos/droid/text/method/HideReturnsTransformationMethod.h"
 
 namespace Elastos {
 namespace Droid {

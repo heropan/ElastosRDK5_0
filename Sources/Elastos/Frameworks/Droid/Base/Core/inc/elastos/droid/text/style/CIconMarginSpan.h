@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_STYLE_CICONMARGINSPAN_H__
 
 #include "_Elastos_Droid_Text_Style_CIconMarginSpan.h"
-#include "text/style/IconMarginSpan.h"
+#include "elastos/droid/text/style/IconMarginSpan.h"
 
 
 #include "Elastos.Droid.Core_server.h"

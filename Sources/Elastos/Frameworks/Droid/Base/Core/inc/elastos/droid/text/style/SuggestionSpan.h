@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_SuggestionSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_SuggestionSpan_H__
 
-#include "text/style/CharacterStyle.h"
+#include "elastos/droid/text/style/CharacterStyle.h"
 #include "Elastos.Droid.Core_server.h"
 
 using Libcore::ICU::ILocale;
