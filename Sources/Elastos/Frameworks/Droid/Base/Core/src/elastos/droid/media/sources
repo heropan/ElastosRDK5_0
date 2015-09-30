@@ -1,111 +1,112 @@
 
-TARGET_NAME= media
-TARGET_TYPE= lib
-
-include $(MAKEDIR)/../../../../../../sources.inc
-
-INCLUDES += ../
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid/media
-INCLUDES += $(PREBUILD_INC)/media
-INCLUDES += $(PREBUILD_INC)/system
-INCLUDES += $(PREBUILD_INC)/gui
-INCLUDES += $(PREBUILD_INC)/binder
-
-C_DEFINES += -DDROID_CORE
-
-SOURCES = CAmrInputStream.cpp
-SOURCES += AmrInputStream.cpp
-SOURCES += CAsyncPlayer.cpp
-
-SOURCES += CAudioManagerAudioFocusDispatcher.cpp
-SOURCES += CAudioManager.cpp
-SOURCES += CAudioManagerHelper.cpp
-
-SOURCES += CAudioRecord.cpp
-SOURCES += CAudioRecordHelper.cpp
-
-SOURCES += CAudioRoutesInfo.cpp
-
-SOURCES += CAudioService.cpp
-SOURCES += CAudioServiceHelper.cpp
-
-SOURCES += CAudioSystem.cpp
-SOURCES += CAudioSystemHelper.cpp
-
-SOURCES += CAudioTrack.cpp
-SOURCES += CAudioTrackHelper.cpp
-
-SOURCES += CCamcorderProfile.cpp
-SOURCES += CCamcorderProfileHelper.cpp
-
-SOURCES += CCameraProfileHelper.cpp
-
-SOURCES += CDecoderCapabilities.cpp
-SOURCES += CDecoderCapabilitiesHelper.cpp
-
-SOURCES += CEncoderCapabilities.cpp
-SOURCES += CEncoderCapabilitiesHelper.cpp
-
-SOURCES += CExifInterface.cpp
-
-SOURCES += CFace.cpp
-SOURCES += CFaceDetector.cpp
-
-SOURCES += CJetPlayer.cpp
-SOURCES += CJetPlayerHelper.cpp
-
-SOURCES += CMediaActionSound.cpp
-SOURCES += CMediaCodecBufferInfo.cpp
-SOURCES += CMediaCodecCryptoInfo.cpp
-SOURCES += CMediaCodec.cpp
-SOURCES += CMediaCodecHelper.cpp
-SOURCES += CMediaCodecInfo.cpp
-SOURCES += CMediaCodecList.cpp
-SOURCES += CMediaCrypto.cpp
-SOURCES += CMediaCryptoHelper.cpp
-SOURCES += CMediaExtractor.cpp
-SOURCES += CMediaFile.cpp
-SOURCES += CMediaFileType.cpp
-SOURCES += CMediaFormat.cpp
-SOURCES += CMediaFormatHelper.cpp
-SOURCES += CMediaInserter.cpp
-SOURCES += CMediaMetadataRetriever.cpp
-SOURCES += CMediaPlayer.cpp
-SOURCES += CMediaPlayerHelper.cpp
-SOURCES += CMediaPlayerTrackInfo.cpp
-SOURCES += CMediaPlayerSubInfo.cpp
-SOURCES += CTrackInfoVendor.cpp
-SOURCES += CMediaRecorder.cpp
-SOURCES += CMediaRecorderHelper.cpp
-SOURCES += CMediaRouter.cpp
-SOURCES += CMediaRouteInfo.cpp
-SOURCES += MediaRouteInfo.cpp
-SOURCES += CRouteCategory.cpp
-SOURCES += CUserRouteInfo.cpp
-SOURCES += CRouteGroup.cpp
-SOURCES += CMediaScanner.cpp
-SOURCES += CMediaScannerHelper.cpp
-SOURCES += CMediaScannerConnection.cpp
-SOURCES += CMediaScannerConnectionHelper.cpp
-SOURCES += CMediaSyncEvent.cpp
-SOURCES += CMediaSyncEventHelper.cpp
-SOURCES += CMetadata.cpp
-SOURCES += CMetadataHelper.cpp
-SOURCES += CMiniThumbFile.cpp
-SOURCES += CMiniThumbFileHelper.cpp
-SOURCES += CRemoteControlClient.cpp
-SOURCES += CRemoteDisplay.cpp
-SOURCES += CRemoteDisplayHelper.cpp
-SOURCES += CResampleInputStream.cpp
-SOURCES += CRingtone.cpp
-SOURCES += CRingtoneManager.cpp
-SOURCES += CRingtoneManagerHelper.cpp
-SOURCES += CSoundPool.cpp
-SOURCES += CTimedText.cpp
-SOURCES += CToneGenerator.cpp
-SOURCES += CCodecCapabilities.cpp
-SOURCES += CCodecProfileLevel.cpp
-SOURCES += ThumbnailUtils.cpp
-SOURCES += CThumbnailUtils.cpp
-SOURCES += Media_Utils.cpp
+#TARGET_NAME= media
+#TARGET_TYPE= lib
+#
+#include $(MAKEDIR)/../../../../../../sources.inc
+#
+#INCLUDES += ../
+#INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid
+#INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid/media
+#INCLUDES += $(PREBUILD_INC)/media
+#INCLUDES += $(PREBUILD_INC)/system
+#INCLUDES += $(PREBUILD_INC)/gui
+#INCLUDES += $(PREBUILD_INC)/binder
+#
+#C_DEFINES += -DDROID_CORE
+#
+#SOURCES = CAmrInputStream.cpp
+#SOURCES += AmrInputStream.cpp
+#SOURCES += CAsyncPlayer.cpp
+#
+#SOURCES += CAudioManagerAudioFocusDispatcher.cpp
+#SOURCES += CAudioManager.cpp
+#SOURCES += CAudioManagerHelper.cpp
+#
+#SOURCES += CAudioRecord.cpp
+#SOURCES += CAudioRecordHelper.cpp
+#
+#SOURCES += CAudioRoutesInfo.cpp
+#
+#SOURCES += CAudioService.cpp
+#SOURCES += CAudioServiceHelper.cpp
+#
+#SOURCES += CAudioSystem.cpp
+#SOURCES += CAudioSystemHelper.cpp
+#
+#SOURCES += CAudioTrack.cpp
+#SOURCES += CAudioTrackHelper.cpp
+#
+#SOURCES += CCamcorderProfile.cpp
+#SOURCES += CCamcorderProfileHelper.cpp
+#
+#SOURCES += CCameraProfileHelper.cpp
+#
+#SOURCES += CDecoderCapabilities.cpp
+#SOURCES += CDecoderCapabilitiesHelper.cpp
+#
+#SOURCES += CEncoderCapabilities.cpp
+#SOURCES += CEncoderCapabilitiesHelper.cpp
+#
+#SOURCES += CExifInterface.cpp
+#
+#SOURCES += CFace.cpp
+#SOURCES += CFaceDetector.cpp
+#
+#SOURCES += CJetPlayer.cpp
+#SOURCES += CJetPlayerHelper.cpp
+#
+#SOURCES += CMediaActionSound.cpp
+#SOURCES += CMediaCodecBufferInfo.cpp
+#SOURCES += CMediaCodecCryptoInfo.cpp
+#SOURCES += CMediaCodec.cpp
+#SOURCES += CMediaCodecHelper.cpp
+#SOURCES += CMediaCodecInfo.cpp
+#SOURCES += CMediaCodecList.cpp
+#SOURCES += CMediaCrypto.cpp
+#SOURCES += CMediaCryptoHelper.cpp
+#SOURCES += CMediaExtractor.cpp
+#SOURCES += CMediaFile.cpp
+#SOURCES += CMediaFileType.cpp
+#SOURCES += CMediaFormat.cpp
+#SOURCES += CMediaFormatHelper.cpp
+#SOURCES += CMediaInserter.cpp
+#SOURCES += CMediaMetadataRetriever.cpp
+#SOURCES += CMediaPlayer.cpp
+#SOURCES += CMediaPlayerHelper.cpp
+#SOURCES += CMediaPlayerTrackInfo.cpp
+#SOURCES += CMediaPlayerSubInfo.cpp
+#SOURCES += CTrackInfoVendor.cpp
+#SOURCES += CMediaRecorder.cpp
+#SOURCES += CMediaRecorderHelper.cpp
+#SOURCES += CMediaRouter.cpp
+#SOURCES += CMediaRouteInfo.cpp
+#SOURCES += MediaRouteInfo.cpp
+#SOURCES += CRouteCategory.cpp
+#SOURCES += CUserRouteInfo.cpp
+#SOURCES += CRouteGroup.cpp
+#SOURCES += CMediaScanner.cpp
+#SOURCES += CMediaScannerHelper.cpp
+#SOURCES += CMediaScannerConnection.cpp
+#SOURCES += CMediaScannerConnectionHelper.cpp
+#SOURCES += CMediaSyncEvent.cpp
+#SOURCES += CMediaSyncEventHelper.cpp
+#SOURCES += CMetadata.cpp
+#SOURCES += CMetadataHelper.cpp
+#SOURCES += CMiniThumbFile.cpp
+#SOURCES += CMiniThumbFileHelper.cpp
+#SOURCES += CRemoteControlClient.cpp
+#SOURCES += CRemoteDisplay.cpp
+#SOURCES += CRemoteDisplayHelper.cpp
+#SOURCES += CResampleInputStream.cpp
+#SOURCES += CRingtone.cpp
+#SOURCES += CRingtoneManager.cpp
+#SOURCES += CRingtoneManagerHelper.cpp
+#SOURCES += CSoundPool.cpp
+#SOURCES += CTimedText.cpp
+#SOURCES += CToneGenerator.cpp
+#SOURCES += CCodecCapabilities.cpp
+#SOURCES += CCodecProfileLevel.cpp
+#SOURCES += ThumbnailUtils.cpp
+#SOURCES += CThumbnailUtils.cpp
+#SOURCES += Media_Utils.cpp
+#

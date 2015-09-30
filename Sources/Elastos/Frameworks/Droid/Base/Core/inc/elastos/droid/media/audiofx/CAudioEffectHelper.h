@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CAudioEffectHelper.h"
 #include "ext/frameworkext.h"
+#include <elastos/core/Singleton.h>             // include 单例基类
 
 using Elastos::Utility::IUUID;
 
@@ -13,8 +14,14 @@ namespace Media {
 namespace Audiofx {
 
 CarClass(CAudioEffectHelper)
+    , public Singleton
+    , public IAudioEffectHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Query all effects available on the platform. Returns an array of
      * {@link android.media.audiofx.AudioEffect.Descriptor} objects
@@ -50,6 +57,58 @@ public:
     CARAPI IsError(
         /* [in] */ Int32 status,
         /* [out] */ Boolean* result);
+
+    /**
+     * @hide
+     */
+    CARAPI ByteArrayToInt32(
+        /* [in] */ ArrayOf<Byte>* valueBuf,
+        /* [out] */ Int32* result);
+
+    /**
+     * @hide
+     */
+    CARAPI ByteArrayToInt32(
+        /* [in] */ ArrayOf<Byte>* valueBuf,
+        /* [in] */ Int32 offset,
+        /* [out] */ Int32* result);
+
+    /**
+     * @hide
+     */
+    CARAPI Int32ToByteArray(
+        /* [in] */ Int32 value,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    /**
+     * @hide
+     */
+    CARAPI ByteArrayToInt16(
+        /* [in] */ ArrayOf<Byte>* valueBuf,
+        /* [out] */ Int16* result);
+
+    /**
+     * @hide
+     */
+    CARAPI ByteArrayToInt16(
+        /* [in] */ ArrayOf<Byte>* valueBuf,
+        /* [in] */ Int32 offset,
+        /* [out] */ Int16* result);
+
+    /**
+     * @hide
+     */
+    CARAPI Int16ToByteArray(
+        /* [in] */ Int16 value,
+        /* [out, callee] */ ArrayOf<Byte>** result);
+
+    /**
+     * @hide
+     */
+    CARAPI ConcatArrays(
+        /* [in] */ ArrayOf<Byte>* array1,
+        /* [in] */ ArrayOf<Byte>* array2,
+        /* [out, callee] */ ArrayOf<Byte>** result);
 };
 
 } // namespace Audiofx

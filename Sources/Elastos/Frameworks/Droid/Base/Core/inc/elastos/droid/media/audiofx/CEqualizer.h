@@ -3,8 +3,7 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CEqualizer.h"
 #include "ext/frameworkext.h"
-#include "media/media/audiofx/AudioEffect.h"
-
+#include "media/audiofx/AudioEffect.h"
 
 using Elastos::Droid::Media::Audiofx::AudioEffect;
 
@@ -32,7 +31,9 @@ namespace Audiofx {
  * effects.
  */
 
-CarClass(CEqualizer), public AudioEffect
+CarClass(CEqualizer)
+    , public AudioEffect
+    , public IEqualizer
 {
 private:
     /**
@@ -40,7 +41,7 @@ private:
      * super class.
      */
     class BaseParameterListener
-        : public ElRefBase
+        : public Object
         , public IAudioEffectOnParameterChangeListener
     {
     public:
@@ -61,7 +62,10 @@ private:
     };
 
 public:
-    IAUDIOEFFECT_METHODS_DECL()
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CEqualizer();
 
@@ -83,9 +87,6 @@ public:
     CARAPI constructor(
         /* [in] */ Int32 priority,
         /* [in] */ Int32 audioSession);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     /**
      * Gets the number of frequency bands supported by the Equalizer engine.

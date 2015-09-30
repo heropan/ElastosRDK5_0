@@ -10,6 +10,11 @@ module
     namespace Media {
     namespace Browse {
 
+    /**
+     * @Involve
+     * interface IParcelable
+     */
+    [local, parcelable]
     interface IMediaBrowserMediaItem {
         /**
          * Flag: Indicates that the item has children of its own.

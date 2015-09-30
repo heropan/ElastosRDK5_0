@@ -7,6 +7,10 @@ namespace Droid {
 namespace Media {
 namespace Audiofx {
 
+CAR_INTERFACE_IMPL(CNoiseSuppressorHelper, Singleton, INoiseSuppressorHelper)
+
+CAR_SINGLETON_IMPL(CNoiseSuppressorHelper)
+
 /**
  * Checks if the device implements acoustic echo cancellation.
  * @return true if the device implements acoustic echo cancellation, false otherwise.

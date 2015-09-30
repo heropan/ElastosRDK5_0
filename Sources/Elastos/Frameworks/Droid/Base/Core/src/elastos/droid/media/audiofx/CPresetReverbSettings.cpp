@@ -1,4 +1,4 @@
-#include "media/media/audiofx/CPresetReverbSettings.h"
+#include "media/audiofx/CPresetReverbSettings.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 
@@ -9,6 +9,10 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 namespace Audiofx {
+
+CAR_INTERFACE_IMPL(CPresetReverbSettings, Object, IPresetReverbSettings)
+
+CAR_OBJECT_IMPL(CPresetReverbSettings)
 
 CPresetReverbSettings::CPresetReverbSettings()
     : mPreset(0)

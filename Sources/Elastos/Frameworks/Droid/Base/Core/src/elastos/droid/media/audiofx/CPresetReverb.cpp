@@ -1,5 +1,6 @@
 #include "media/audiofx/CPresetReverb.h"
-#include "media/media/audiofx/CPresetReverbSettings.h"
+#include "media/audiofx/CPresetReverbSettings.h"
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Utility::IUUIDHelper;
 using Elastos::Utility::CUUIDHelper;
@@ -11,9 +12,11 @@ namespace Audiofx {
 
 const String CPresetReverb::TAG("PresetReverb");
 
-IAUDIOEFFECT_METHODS_IMPL(CPresetReverb, AudioEffect)
+CAR_INTERFACE_IMPL(CPresetReverb, AudioEffect, IPresetReverb)
 
-CAR_INTERFACE_IMPL(CPresetReverb::BaseParameterListener, IAudioEffectOnParameterChangeListener)
+CAR_OBJECT_IMPL(CPresetReverb)
+
+CAR_INTERFACE_IMPL(CPresetReverb::BaseParameterListener, Object, IAudioEffectOnParameterChangeListener)
 
 ECode CPresetReverb::BaseParameterListener::OnParameterChange(
     /* [in] */ IAudioEffect* effect,
@@ -23,7 +26,8 @@ ECode CPresetReverb::BaseParameterListener::OnParameterChange(
 {
     AutoPtr<IPresetReverbOnParameterChangeListener> l;
     {
-        AutoLock lock(&mHost->mParamListenerLock);
+        Object& lock = mHost->mParamListenerLock;
+        synchronized(lock);
         if (mHost->mParamListener != NULL) {
             l = mHost->mParamListener;
         }
@@ -60,13 +64,7 @@ ECode CPresetReverb::constructor(
     AutoPtr<IUUID> typeNULL;
     helper->FromString(IAudioEffect::EFFECT_TYPE_PRESET_REVERB, (IUUID**)&typeREVERB);
     helper->FromString(IAudioEffect::EFFECT_TYPE_NULL, (IUUID**)&typeNULL);
-    Init(typeREVERB, typeNULL, priority, audioSession);
-}
-
-PInterface CPresetReverb::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CPresetReverb::Probe(riid);
+    return AudioEffect::constructor(typeREVERB, typeNULL, priority, audioSession);
 }
 
 ECode CPresetReverb::SetPreset(
@@ -93,11 +91,11 @@ ECode CPresetReverb::GetPreset(
 ECode CPresetReverb::SetParameterListener(
         /* [in] */ IPresetReverbOnParameterChangeListener* listener)
 {
-    AutoLock lock(&mParamListenerLock);
+    synchronized(mParamListenerLock);
     if (mParamListener != NULL) {
         mParamListener = listener;
         mBaseParamListener = new BaseParameterListener(this);
-        SetParameterListener(mBaseParamListener);
+        AudioEffect::SetParameterListener(IAudioEffectOnParameterChangeListener::Probe(mBaseParamListener));
     }
     return NOERROR;
 }

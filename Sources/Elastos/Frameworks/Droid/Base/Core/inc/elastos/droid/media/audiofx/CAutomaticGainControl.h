@@ -4,8 +4,7 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CAutomaticGainControl.h"
 #include <ext/frameworkext.h>
-#include "media/media/audiofx/AudioEffect.h"
-
+#include "media/audiofx/AudioEffect.h"
 
 namespace Elastos {
 namespace Droid {
@@ -32,10 +31,15 @@ namespace Audiofx {
  * <p>See {@link android.media.audiofx.AudioEffect} class for more details on
  * controlling audio effects.
  */
-CarClass(CAutomaticGainControl), public AudioEffect
-{
+CarClass(CAutomaticGainControl)
+    , public AudioEffect
+    , public IAutomaticGainControl
+    {
 public:
-    IAUDIOEFFECT_METHODS_DECL()
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     /**
      * Checks if the device implements automatic gain control.
@@ -63,9 +67,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ Int32 audioSession);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
 private:
     const static String TAG;//= "AutomaticGainControl";

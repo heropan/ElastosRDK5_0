@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CVirtualizer.h"
 #include "ext/frameworkext.h"
-#include "media/media/audiofx/AudioEffect.h"
+#include "media/audiofx/AudioEffect.h"
 
 
 using Elastos::Droid::Media::Audiofx::AudioEffect;
@@ -33,7 +33,9 @@ namespace Audiofx {
  * audio effects.
  */
 
-CarClass(CVirtualizer), public AudioEffect
+CarClass(CVirtualizer)
+    , public AudioEffect
+    , public IVirtualizer
 {
 
 private:
@@ -42,7 +44,7 @@ private:
      * super class.
      */
     class BaseParameterListener
-        : public ElRefBase
+        : public Object
         , public IAudioEffectOnParameterChangeListener
     {
     public:
@@ -63,7 +65,10 @@ private:
     };
 
 public:
-    IAUDIOEFFECT_METHODS_DECL()
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CVirtualizer();
 
@@ -85,9 +90,6 @@ public:
     CARAPI constructor(
         /* [in] */ Int32 priority,
         /* [in] */ Int32 audioSession);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     /**
      * Indicates whether setting strength is supported. If this method returns false, only one
@@ -123,6 +125,101 @@ public:
         /* [out] */ Boolean* result);
 
     /**
+     * Checks if the combination of a channel mask and virtualization mode is supported by this
+     * virtualizer.
+     * Some virtualizer implementations may only support binaural processing (i.e. only support
+     * headphone output, see {@link #VIRTUALIZATION_MODE_BINAURAL}), some may support transaural
+     * processing (i.e. for speaker output, see {@link #VIRTUALIZATION_MODE_TRANSAURAL}) for the
+     * built-in speakers. Use this method to query the virtualizer implementation capabilities.
+     * @param inputChannelMask the channel mask of the content to virtualize.
+     * @param virtualizationMode the mode for which virtualization processing is to be performed,
+     *    one of {@link #VIRTUALIZATION_MODE_BINAURAL}, {@link #VIRTUALIZATION_MODE_TRANSAURAL}.
+     * @return true if the combination of channel mask and virtualization mode is supported, false
+     *    otherwise.
+     *    <br>An indication that a certain channel mask is not supported doesn't necessarily mean
+     *    you cannot play content with that channel mask, it more likely implies the content will
+     *    be downmixed before being virtualized. For instance a virtualizer that only supports a
+     *    mask such as {@link AudioFormat#CHANNEL_OUT_STEREO}
+     *    will still be able to process content with a mask of
+     *    {@link AudioFormat#CHANNEL_OUT_5POINT1}, but will downmix the content to stereo first, and
+     *    then will virtualize, as opposed to virtualizing each channel individually.
+     * @throws IllegalStateException
+     * @throws IllegalArgumentException
+     * @throws UnsupportedOperationException
+     */
+    CARAPI CanVirtualize(
+        /* [in] */ Int32 inputChannelMask,
+        /* [in] */ Int32 virtualizationMode,
+        /* [out] */ Boolean * result);
+
+    /**
+     * Queries the virtual speaker angles (azimuth and elevation) for a combination of a channel
+     * mask and virtualization mode.
+     * If the virtualization configuration (mask and mode) is supported (see
+     * {@link #canVirtualize(int, int)}, the array angles will contain upon return the
+     * definition of each virtual speaker and its azimuth and elevation angles relative to the
+     * listener.
+     * <br>Note that in some virtualizer implementations, the angles may be strength-dependent.
+     * @param inputChannelMask the channel mask of the content to virtualize.
+     * @param virtualizationMode the mode for which virtualization processing is to be performed,
+     *    one of {@link #VIRTUALIZATION_MODE_BINAURAL}, {@link #VIRTUALIZATION_MODE_TRANSAURAL}.
+     * @param angles a non-null array whose length is 3 times the number of channels in the channel
+     *    mask.
+     *    If the method indicates the configuration is supported, the array will contain upon return
+     *    triplets of values: for each channel <code>i</code> among the channels of the mask:
+     *    <ul>
+     *      <li>the element at index <code>3*i</code> in the array contains the speaker
+     *          identification (e.g. {@link AudioFormat#CHANNEL_OUT_FRONT_LEFT}),</li>
+     *      <li>the element at index <code>3*i+1</code> contains its corresponding azimuth angle
+     *          expressed in degrees, where 0 is the direction the listener faces, 180 is behind
+     *          the listener, and -90 is to her/his left,</li>
+     *      <li>the element at index <code>3*i+2</code> contains its corresponding elevation angle
+     *          where +90 is directly above the listener, 0 is the horizontal plane, and -90 is
+     *          directly below the listener.</li>
+     * @return true if the combination of channel mask and virtualization mode is supported, false
+     *    otherwise.
+     * @throws IllegalStateException
+     * @throws IllegalArgumentException
+     * @throws UnsupportedOperationException
+     */
+    CARAPI GetSpeakerAngles(
+        /* [in] */ Int32 inputChannelMask,
+        /* [in] */ Int32 virtualizationMode,
+        /* [in] */ ArrayOf<Int32> * angles,
+        /* [out] */ Boolean * result);
+
+    /**
+     * Forces the virtualizer effect to use the given processing mode.
+     * The effect must be enabled for the forced mode to be applied.
+     * @param virtualizationMode one of {@link #VIRTUALIZATION_MODE_BINAURAL},
+     *     {@link #VIRTUALIZATION_MODE_TRANSAURAL} to force a particular processing mode, or
+     *     {@value #VIRTUALIZATION_MODE_AUTO} to stop forcing a mode.
+     * @return true if the processing mode is supported, and it is successfully set, or
+     *     forcing was successfully disabled, false otherwise.
+     * @throws IllegalStateException
+     * @throws IllegalArgumentException
+     * @throws UnsupportedOperationException
+     */
+    CARAPI ForceVirtualizationMode(
+        /* [in] */ Int32 virtualizationMode,
+        /* [out] */ Boolean * result);
+
+    /**
+     * Return the virtualization mode being used, if any.
+     * @return the virtualization mode being used.
+     *     If virtualization is not active, the virtualization mode will be
+     *     {@link #VIRTUALIZATION_MODE_OFF}. Otherwise the value will be
+     *     {@link #VIRTUALIZATION_MODE_BINAURAL} or {@link #VIRTUALIZATION_MODE_TRANSAURAL}.
+     *     Virtualization may not be active either because the effect is not enabled or
+     *     because the current output device is not compatible with this virtualization
+     *     implementation.
+     * @throws IllegalStateException
+     * @throws UnsupportedOperationException
+     */
+    CARAPI GetVirtualizationMode(
+        /* [out] */ Int32 * result);
+
+    /**
      * Registers an OnParameterChangeListener interface.
      * @param listener OnParameterChangeListener interface registered
      */
@@ -152,7 +249,39 @@ public:
         /* [in] */ IVirtualizerSettings* settings);
 
 private:
+    /**
+     * Checks if a configuration is supported, and query the virtual speaker angles.
+     * @param inputChannelMask
+     * @param deviceType
+     * @param angles if non-null: array in which the angles will be written. If null, no angles
+     *    are returned
+     * @return true if the combination of channel mask and output device type is supported, false
+     *    otherwise
+     * @throws IllegalStateException
+     * @throws IllegalArgumentException
+     * @throws UnsupportedOperationException
+     */
+    CARAPI GetAnglesInt(
+        /* [in] */ Int32 inputChannelMask,
+        /* [in] */ Int32 deviceType,
+        /* [in] */ ArrayOf<Int32> * angles,
+        /* [out] */ Boolean * result);
+
+    static CARAPI GetDeviceForModeQuery(
+        /* [in] */ Int32 virtualizationMode,
+        /* [out] */ Int32 * result);
+
+    static CARAPI_(Int32) GetDeviceForModeForce(
+        /* [in] */ Int32 virtualizationMode);
+
+    static CARAPI_(Int32) DeviceToMode(
+        /* [in] */ Int32 deviceType);
+
+private:
     static const String TAG;
+
+    static const Boolean DEBUG;
+
     /**
      * Indicates if strength parameter is supported by the virtualizer engine
      */

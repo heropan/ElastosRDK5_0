@@ -316,7 +316,8 @@ module
          *    in case of failure.
          */
         GetMeasurementPeakRms(
-            [in] IVisualizerMeasurementPeakRms * measurement);
+            [in] IVisualizerMeasurementPeakRms * measurement,
+            [out] Int32 * result);
 
         /**
          * Registers an OnDataCaptureListener interface and specifies the rate at which the capture

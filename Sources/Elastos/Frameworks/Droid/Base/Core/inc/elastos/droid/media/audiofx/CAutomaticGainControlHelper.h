@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CAutomaticGainControlHelper.h"
 #include <ext/frameworkext.h>
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
@@ -31,8 +32,14 @@ namespace Audiofx {
  * controlling audio effects.
  */
 CarClass(CAutomaticGainControlHelper)
+    , public Singleton
+    , public IAutomaticGainControlHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Checks if the device implements automatic gain control.
      * @return true if the device implements automatic gain control, false otherwise.

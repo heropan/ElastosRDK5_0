@@ -1,5 +1,6 @@
 #include "media/audiofx/CEnvironmentalReverb.h"
 #include "media/audiofx/CEnvironmentalReverbSettings.h"
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Utility::IUUIDHelper;
 using Elastos::Utility::CUUIDHelper;
@@ -15,9 +16,11 @@ const Int32 CEnvironmentalReverb::PARAM_PROPERTIES = 10;
 
 const Int32 CEnvironmentalReverb::PROPERTY_SIZE = 26;
 
-IAUDIOEFFECT_METHODS_IMPL(CEnvironmentalReverb, AudioEffect)
+CAR_INTERFACE_IMPL(CEnvironmentalReverb, AudioEffect, IEnvironmentalReverb)
 
-CAR_INTERFACE_IMPL(CEnvironmentalReverb::BaseParameterListener, IAudioEffectOnParameterChangeListener)
+CAR_OBJECT_IMPL(CEnvironmentalReverb)
+
+CAR_INTERFACE_IMPL(CEnvironmentalReverb::BaseParameterListener, Object, IAudioEffectOnParameterChangeListener)
 
 ECode CEnvironmentalReverb::BaseParameterListener::OnParameterChange(
     /* [in] */ IAudioEffect* effect,
@@ -27,7 +30,8 @@ ECode CEnvironmentalReverb::BaseParameterListener::OnParameterChange(
 {
     AutoPtr<IEnvironmentalReverbOnParameterChangeListener> l;
     {
-        AutoLock lock(mHost->mParamListenerLock);
+        Object& lock = mHost->mParamListenerLock;
+        synchronized(lock);
         if (mHost->mParamListener != NULL) {
             l = mHost->mParamListener;
         }
@@ -63,13 +67,7 @@ ECode CEnvironmentalReverb::constructor(
     AutoPtr<IUUID> typeNULL;
     helper->FromString(IAudioEffect::EFFECT_TYPE_AEC, (IUUID**)&typeREVERB);
     helper->FromString(IAudioEffect::EFFECT_TYPE_NULL, (IUUID**)&typeNULL);
-    return Init(typeREVERB, typeNULL, priority, audioSession);
-}
-
-PInterface CEnvironmentalReverb::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CEnvironmentalReverb::Probe(riid);
+    return AudioEffect::constructor(typeREVERB, typeNULL, priority, audioSession);
 }
 
 ECode CEnvironmentalReverb::SetRoomLevel(
@@ -305,11 +303,11 @@ ECode CEnvironmentalReverb::GetDensity(
 ECode CEnvironmentalReverb::SetParameterListener(
     /* [in] */ IEnvironmentalReverbOnParameterChangeListener* listener)
 {
-    AutoLock lock(mParamListenerLock);
+    synchronized(mParamListenerLock);
     if (mParamListener != NULL) {
         mParamListener = listener;
         mBaseParamListener = new BaseParameterListener(this);
-        SetParameterListener(mBaseParamListener);
+        SetParameterListener(IEnvironmentalReverbOnParameterChangeListener::Probe(mBaseParamListener));
     }
     return NOERROR;
 }

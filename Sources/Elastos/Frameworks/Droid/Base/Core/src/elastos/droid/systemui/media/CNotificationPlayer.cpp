@@ -2,7 +2,7 @@
 #include <elastos/utility/logging/Logger.h>
 #include "os/SystemClock.h"
 #include "os/Looper.h"
-#include "media/media/CMediaPlayer.h"
+#include "media/CMediaPlayer.h"
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::SystemClock;

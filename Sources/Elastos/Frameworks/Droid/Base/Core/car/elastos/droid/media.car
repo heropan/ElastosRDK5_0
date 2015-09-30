@@ -169,6 +169,7 @@ module
     merge("media/VolumeProvider.car");
 
     interface Elastos.Core.IRunnable;
+    interface Elastos.Utility.IUUID;
     interface Elastos.Droid.Os.Storage.IStorageVolume;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IIContentProvider;
@@ -728,170 +729,195 @@ module
 //    } // namespace media
 //    } // namepsace Droid
 //    } // namespace Elastos
-//
-//    namespace Elastos {
-//    namespace Droid {
-//    namespace Media {
-//    namespace Audiofx {
-//
-//        class CAudioEffectDescriptor {
-//            constructor(
-//            [in] String type,
-//            [in] String uuid,
-//            [in] String connectMode,
-//            [in] String name,
-//            [in] String implementor);
-//
-//            interface IAudioEffectDescriptor;
-//        }
-//
-//        class CAudioEffect {
-//            constructor(
-//                [in] IUUID* type,
-//                [in] IUUID* uuid,
-//                [in] Int32 priority,
-//                [in] Int32 audioSession);
-//
-//            interface IAudioEffect;
-//        }
-//
-//        singleton class CAudioEffectHelper {
-//            interface IAudioEffectHelper;
-//        }
-//
-//        class CAcousticEchoCanceler {
-//            constructor(
-//                [in] Int32 audioSession);
-//
-//            interface IAcousticEchoCanceler;
-//        }
-//
-//        singleton class CAcousticEchoCancelerHelper {
-//            interface IAcousticEchoCancelerHelper;
-//        }
-//
-//        class CAutomaticGainControl {
-//            constructor(
-//                [in] Int32 audioSession);
-//
-//            interface IAutomaticGainControl;
-//        }
-//
-//        singleton class CAutomaticGainControlHelper {
-//            interface IAutomaticGainControlHelper;
-//        }
-//
-//        class CBassBoostSettings {
-//            constructor();
-//
-//            constructor(
-//                [in] String settings);
-//
-//            interface IBassBoostSettings;
-//        }
-//
-//        class CBassBoost {
-//            constructor(
-//                [in] Int32 priority,
-//                [in] Int32 audioSession);
-//
-//            interface IBassBoost;
-//        }
-//
-//        class CEnvironmentalReverbSettings {
-//            constructor();
-//
-//            constructor(
-//                [in] String settings);
-//
-//            interface IEnvironmentalReverbSettings;
-//        }
-//
-//        class CEnvironmentalReverb {
-//            constructor(
-//                [in] Int32 priority,
-//                [in] Int32 audioSession);
-//
-//            interface IEnvironmentalReverb;
-//        }
-//
-//        class CEqualizerSettings {
-//            constructor();
-//
-//            constructor(
-//                [in] String settings);
-//
-//            interface IEqualizerSettings;
-//        }
-//
-//        class CEqualizer {
-//            constructor(
-//                [in] Int32 priority,
-//                [in] Int32 audioSession);
-//
-//            interface IEqualizer;
-//        }
-//
-//        class CNoiseSuppressor {
-//            constructor(
-//                [in] Int32 audioSession);
-//
-//            interface INoiseSuppressor;
-//        }
-//
-//        singleton class CNoiseSuppressorHelper {
-//            interface INoiseSuppressorHelper;
-//        }
-//
-//        class CPresetReverbSettings {
-//            constructor();
-//
-//            constructor(
-//                [in] String settings);
-//
-//            interface IPresetReverbSettings;
-//        }
-//
-//        class CPresetReverb {
-//            constructor(
-//                [in] Int32 priority,
-//                [in] Int32 audioSession);
-//
-//            interface IPresetReverb;
-//        }
-//
-//        class CVirtualizerSettings {
-//            constructor();
-//
-//            constructor(
-//                [in] String settings);
-//
-//            interface IVirtualizerSettings;
-//        }
-//
-//        class CVirtualizer {
-//            constructor(
-//                [in] Int32 priority,
-//                [in] Int32 audioSession);
-//
-//            interface IVirtualizer;
-//        }
-//
-//        class CVisualizer {
-//            constructor(
-//                [in] Int32 audioSession);
-//
-//            interface IVisualizer;
-//        }
-//
-//        singleton class CVisualizerHelper {
-//            interface IVisualizerHelper;
-//        }
-//
-//    } // namespace audiofx
-//    } // namespace media
-//    } // namespace Droid
-//    } // namespace Elastos
+
+   namespace Elastos {
+   namespace Droid {
+   namespace Media {
+   namespace Audiofx {
+
+       class CAudioEffectDescriptor {
+           constructor(
+           [in] String type,
+           [in] String uuid,
+           [in] String connectMode,
+           [in] String name,
+           [in] String implementor);
+
+           interface IAudioEffectDescriptor;
+       }
+
+       class CAudioEffect {
+           constructor(
+               [in] IUUID* type,
+               [in] IUUID* uuid,
+               [in] Int32 priority,
+               [in] Int32 audioSession);
+
+           interface IAudioEffect;
+       }
+
+       singleton class CAudioEffectHelper {
+           interface IAudioEffectHelper;
+       }
+
+       class CAcousticEchoCanceler {
+           constructor(
+               [in] Int32 audioSession);
+
+           interface IAcousticEchoCanceler;
+       }
+
+       singleton class CAcousticEchoCancelerHelper {
+           interface IAcousticEchoCancelerHelper;
+       }
+
+       class CAutomaticGainControl {
+           constructor(
+               [in] Int32 audioSession);
+
+           interface IAutomaticGainControl;
+       }
+
+       singleton class CAutomaticGainControlHelper {
+           interface IAutomaticGainControlHelper;
+       }
+
+       class CBassBoostSettings {
+           constructor();
+
+           constructor(
+               [in] String settings);
+
+           interface IBassBoostSettings;
+       }
+
+       class CBassBoost {
+           constructor(
+               [in] Int32 priority,
+               [in] Int32 audioSession);
+
+           interface IBassBoost;
+       }
+
+       class CEnvironmentalReverbSettings {
+           constructor();
+
+           constructor(
+               [in] String settings);
+
+           interface IEnvironmentalReverbSettings;
+       }
+
+       class CEnvironmentalReverb {
+           constructor(
+               [in] Int32 priority,
+               [in] Int32 audioSession);
+
+           interface IEnvironmentalReverb;
+       }
+
+       class CEqualizerSettings {
+           constructor();
+
+           constructor(
+               [in] String settings);
+
+           interface IEqualizerSettings;
+       }
+
+       class CEqualizer {
+           constructor(
+               [in] Int32 priority,
+               [in] Int32 audioSession);
+
+           interface IEqualizer;
+       }
+
+       class CLoudnessEnhancerSettings {
+           constructor();
+
+           constructor(
+               [in] String settings);
+
+           interface ILoudnessEnhancerSettings;
+       }
+
+       class CLoudnessEnhancer {
+           constructor(
+               [in] Int32 audioSession);
+
+           constructor(
+               [in] Int32 priority,
+               [in] Int32 audioSession);
+
+           interface ILoudnessEnhancer;
+       }
+
+       class CNoiseSuppressor {
+           constructor(
+               [in] Int32 audioSession);
+
+           interface INoiseSuppressor;
+       }
+
+       singleton class CNoiseSuppressorHelper {
+           interface INoiseSuppressorHelper;
+       }
+
+       class CPresetReverbSettings {
+           constructor();
+
+           constructor(
+               [in] String settings);
+
+           interface IPresetReverbSettings;
+       }
+
+       class CPresetReverb {
+           constructor(
+               [in] Int32 priority,
+               [in] Int32 audioSession);
+
+           interface IPresetReverb;
+       }
+
+       class CVirtualizerSettings {
+           constructor();
+
+           constructor(
+               [in] String settings);
+
+           interface IVirtualizerSettings;
+       }
+
+       class CVirtualizer {
+           constructor(
+               [in] Int32 priority,
+               [in] Int32 audioSession);
+
+           interface IVirtualizer;
+       }
+
+       class CVisualizerMeasurementPeakRms {
+
+           interface IVisualizerMeasurementPeakRms;
+       }
+
+       class CVisualizer {
+           constructor(
+               [in] Int32 audioSession);
+
+           interface IVisualizer;
+       }
+
+       singleton class CVisualizerHelper {
+           interface IVisualizerHelper;
+       }
+
+   } // namespace audiofx
+   } // namespace media
+   } // namespace Droid
+   } // namespace Elastos
 
     namespace Elastos {
     namespace Droid {

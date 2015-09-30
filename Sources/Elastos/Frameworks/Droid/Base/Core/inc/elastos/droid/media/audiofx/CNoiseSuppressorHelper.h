@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CNoiseSuppressorHelper.h"
 #include <ext/frameworkext.h>
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
@@ -11,8 +12,14 @@ namespace Media {
 namespace Audiofx {
 
 CarClass(CNoiseSuppressorHelper)
+    , public Singleton
+    , public INoiseSuppressorHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Checks if the device implements noise suppression.
      * @return true if the device implements noise suppression, false otherwise.

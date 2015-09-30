@@ -1,4 +1,4 @@
-#include "media/media/audiofx/CVirtualizerSettings.h"
+#include "media/audiofx/CVirtualizerSettings.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 
@@ -9,6 +9,10 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 namespace Audiofx {
+
+CAR_INTERFACE_IMPL(CVirtualizerSettings, Object, IVirtualizerSettings)
+
+CAR_OBJECT_IMPL(CVirtualizerSettings)
 
 CVirtualizerSettings::CVirtualizerSettings()
     : mStrength(0)

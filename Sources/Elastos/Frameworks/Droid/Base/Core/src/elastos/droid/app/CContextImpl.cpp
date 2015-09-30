@@ -45,7 +45,7 @@
 #include "view/CContextThemeWrapper.h"
 #include "view/WindowManagerImpl.h"
 #include "view/CDisplayManagerAw.h"
-#include "media/media/CAudioManager.h"
+#include "media/CAudioManager.h"
 #include "database/sqlite/SQLiteDatabase.h"
 #include "accounts/CAccountManager.h"
 #include "privacy/CPrivacySettingsManager.h"

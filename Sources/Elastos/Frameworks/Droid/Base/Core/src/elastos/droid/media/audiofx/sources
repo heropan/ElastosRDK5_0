@@ -7,7 +7,7 @@ include $(MAKEDIR)/../../../../../../../sources.inc
 INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
 INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/media
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/media/media/audiofx
+INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/media/audiofx
 INCLUDES += $(PREBUILD_INC)/media
 INCLUDES += $(PREBUILD_INC)/system
 INCLUDES += $(PREBUILD_INC)/gui
@@ -29,12 +29,15 @@ SOURCES += CEnvironmentalReverbSettings.cpp
 SOURCES += CEnvironmentalReverb.cpp
 SOURCES += CEqualizerSettings.cpp
 SOURCES += CEqualizer.cpp
+SOURCES += CLoudnessEnhancerSettings.cpp
+SOURCES += CLoudnessEnhancer.cpp
 SOURCES += CNoiseSuppressor.cpp
 SOURCES += CNoiseSuppressorHelper.cpp
 SOURCES += CPresetReverbSettings.cpp
 SOURCES += CPresetReverb.cpp
 SOURCES += CVirtualizerSettings.cpp
 SOURCES += CVirtualizer.cpp
+SOURCES += CVisualizerMeasurementPeakRms.cpp
 SOURCES += CVisualizer.cpp
 SOURCES += CVisualizerHelper.cpp
 

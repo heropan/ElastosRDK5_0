@@ -3,7 +3,7 @@
 #include "R.h"
 #include "app/CActivityManager.h"
 #include "content/CComponentName.h"
-#include "media/media/CRingtoneManager.h"
+#include "media/CRingtoneManager.h"
 #include "os/CServiceManager.h"
 #include "provider/CSettingsGlobal.h"
 #include "provider/CSettingsSecure.h"

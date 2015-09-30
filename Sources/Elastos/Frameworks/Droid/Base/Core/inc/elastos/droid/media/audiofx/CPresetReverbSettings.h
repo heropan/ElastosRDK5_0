@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CPresetReverbSettings.h"
 #include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -16,9 +17,15 @@ namespace Audiofx {
  * all parameters in a single call.
  */
 CarClass(CPresetReverbSettings)
+    , public Object
+    , public IPresetReverbSettings
 {
 public:
     CPresetReverbSettings();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor();
 

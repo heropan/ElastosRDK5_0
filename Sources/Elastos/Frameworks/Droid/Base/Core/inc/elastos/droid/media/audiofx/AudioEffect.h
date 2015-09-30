@@ -3,12 +3,13 @@
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_AUDIOEFFECT_H__
 
 #include "ext/frameworkext.h"
-#include "os/HandlerBase.h"
+#include <elastos/core/Object.h>
+#include "os/Handler.h"
 
 using Elastos::Utility::IUUID;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessage;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
 
 namespace Elastos {
 namespace Droid {
@@ -46,6 +47,8 @@ namespace Audiofx {
  */
 
 class AudioEffect
+    : public Object
+    , public IAudioEffect
 {
 private:
     /**
@@ -53,7 +56,7 @@ private:
      * listeners
      */
     class NativeEventHandler
-        : public HandlerBase
+        : public Handler
     {
     public:
         NativeEventHandler(
@@ -68,18 +71,22 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     AudioEffect();
 
-    AudioEffect(
+    virtual ~AudioEffect();
+
+    // virtual CARAPI_(PInterface) Probe(
+    //     /* [in] */ REIID riid) = 0;
+
+    CARAPI constructor();
+
+    CARAPI constructor(
         /* [in] */ IUUID* type,
         /* [in] */ IUUID* uuid,
         /* [in] */ Int32 priority,
         /* [in] */ Int32 audioSession);
-
-    virtual ~AudioEffect();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
 
     /**
      * Releases the native AudioEffect resources. It is a good practice to
@@ -436,14 +443,14 @@ public:
     /**
      * @hide
      */
-    CARAPI ByteArrayToInt32(
+    static CARAPI ByteArrayToInt32(
         /* [in] */ ArrayOf<Byte>* valueBuf,
         /* [out] */ Int32* result);
 
     /**
      * @hide
      */
-    CARAPI ByteArrayToInt32(
+    static CARAPI ByteArrayToInt32(
         /* [in] */ ArrayOf<Byte>* valueBuf,
         /* [in] */ Int32 offset,
         /* [out] */ Int32* result);
@@ -451,21 +458,21 @@ public:
     /**
      * @hide
      */
-    CARAPI Int32ToByteArray(
+    static CARAPI Int32ToByteArray(
         /* [in] */ Int32 value,
         /* [out, callee] */ ArrayOf<Byte>** result);
 
     /**
      * @hide
      */
-    CARAPI ByteArrayToInt16(
+    static CARAPI ByteArrayToInt16(
         /* [in] */ ArrayOf<Byte>* valueBuf,
         /* [out] */ Int16* result);
 
     /**
      * @hide
      */
-    CARAPI ByteArrayToInt16(
+    static CARAPI ByteArrayToInt16(
         /* [in] */ ArrayOf<Byte>* valueBuf,
         /* [in] */ Int32 offset,
         /* [out] */ Int16* result);
@@ -473,14 +480,14 @@ public:
     /**
      * @hide
      */
-    CARAPI Int16ToByteArray(
+    static CARAPI Int16ToByteArray(
         /* [in] */ Int16 value,
         /* [out, callee] */ ArrayOf<Byte>** result);
 
     /**
      * @hide
      */
-    CARAPI ConcatArrays(
+    static CARAPI ConcatArrays(
         /* [in] */ ArrayOf<Byte>* array1,
         /* [in] */ ArrayOf<Byte>* array2,
         /* [out, callee] */ ArrayOf<Byte>** result);
@@ -629,8 +636,8 @@ private:
     Int32 mId;
 
     // accessed by native methods
-    Int32 mNativeAudioEffect;
-    Int32 mJniData;
+    Int64 mNativeAudioEffect;
+    Int64 mJniData;
 
     /**
      * Effect descriptor

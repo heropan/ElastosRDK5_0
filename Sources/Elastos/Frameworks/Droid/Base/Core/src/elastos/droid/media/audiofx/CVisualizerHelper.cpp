@@ -1,10 +1,14 @@
-#include "media/media/audiofx/CVisualizerHelper.h"
-#include "media/media/audiofx/CVisualizer.h"
+#include "media/audiofx/CVisualizerHelper.h"
+#include "media/audiofx/CVisualizer.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 namespace Audiofx {
+
+CAR_INTERFACE_IMPL(CVisualizerHelper, Singleton, IVisualizerHelper)
+
+CAR_SINGLETON_IMPL(CVisualizerHelper)
 
 /**
  * Returns the capture size range.

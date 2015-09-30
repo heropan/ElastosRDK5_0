@@ -3,7 +3,7 @@
 #include "webkit/HTML5Audio.h"
 #include "webkit/CWebViewCore.h"
 #include "webkit/CWebViewClassic.h"
-#include "media/media/CMediaPlayer.h"
+#include "media/CMediaPlayer.h"
 #include "os/CHandler.h"
 #include "os/CMessageHelper.h"
 #include <elastos/utility/logging/Logger.h>

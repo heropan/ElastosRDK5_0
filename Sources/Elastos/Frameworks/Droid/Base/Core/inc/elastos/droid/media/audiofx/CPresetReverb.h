@@ -3,8 +3,7 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CPresetReverb.h"
 #include "ext/frameworkext.h"
-#include "media/media/audiofx/AudioEffect.h"
-
+#include "media/audiofx/AudioEffect.h"
 
 using Elastos::Droid::Media::Audiofx::AudioEffect;
 
@@ -43,7 +42,9 @@ namespace Audiofx {
  * audio effects.
  */
 
-CarClass(CPresetReverb), public AudioEffect
+CarClass(CPresetReverb)
+    , public AudioEffect
+    , public IPresetReverb
 {
 
 private:
@@ -52,7 +53,7 @@ private:
      * super class.
      */
     class BaseParameterListener
-        : public ElRefBase
+        : public Object
         , public IAudioEffectOnParameterChangeListener
     {
     public:
@@ -73,7 +74,10 @@ private:
     };
 
 public:
-    IAUDIOEFFECT_METHODS_DECL()
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CPresetReverb();
 
@@ -96,9 +100,6 @@ public:
     CARAPI constructor(
         /* [in] */ Int32 priority,
         /* [in] */ Int32 audioSession);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     /**
      *  Enables a preset on the reverb.

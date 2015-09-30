@@ -1,4 +1,4 @@
-#include "media/media/audiofx/CEqualizerSettings.h"
+#include "media/audiofx/CEqualizerSettings.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 
@@ -9,6 +9,10 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 namespace Audiofx {
+
+CAR_INTERFACE_IMPL(CEqualizerSettings, Object, IEqualizerSettings)
+
+CAR_OBJECT_IMPL(CEqualizerSettings)
 
 CEqualizerSettings::CEqualizerSettings()
     : mCurPreset(0)
@@ -69,7 +73,7 @@ ECode CEqualizerSettings::constructor(
     mBandLevels = ArrayOf<Int16>::Alloc(mNumBands);
     for (int i = 0; i < mNumBands; i++) {
         key = (*values)[index++];
-        if (!key.Equals(String("band") + StringUtils::Int32ToString(i+1) + String("Level"))) {
+        if (!key.Equals(String("band") + StringUtils::ToString(i+1) + String("Level"))) {
            // throw new IllegalArgumentException("invalid key name: " + key);
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }

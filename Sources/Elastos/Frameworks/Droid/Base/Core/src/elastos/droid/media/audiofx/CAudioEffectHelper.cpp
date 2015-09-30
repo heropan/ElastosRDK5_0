@@ -1,5 +1,5 @@
-#include "media/media/audiofx/CAudioEffectHelper.h"
-#include "media/media/audiofx/AudioEffect.h"
+#include "media/audiofx/CAudioEffectHelper.h"
+#include "media/audiofx/AudioEffect.h"
 
 using Elastos::Droid::Media::Audiofx::AudioEffect;
 
@@ -7,6 +7,10 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 namespace Audiofx {
+
+CAR_INTERFACE_IMPL(CAudioEffectHelper, Singleton, IAudioEffectHelper)
+
+CAR_SINGLETON_IMPL(CAudioEffectHelper)
 
 ECode CAudioEffectHelper::QueryEffects(
     /* [out, callee] */ ArrayOf<IAudioEffectDescriptor*>** descriptors)
@@ -50,6 +54,57 @@ ECode CAudioEffectHelper::IsError(
     return AudioEffect::IsError(status, result);
 }
 
+ECode CAudioEffectHelper::ByteArrayToInt32(
+    /* [in] */ ArrayOf<Byte>* valueBuf,
+    /* [out] */ Int32* result)
+{
+    return AudioEffect::ByteArrayToInt32(valueBuf, result);
+}
+
+ECode CAudioEffectHelper::ByteArrayToInt32(
+    /* [in] */ ArrayOf<Byte>* valueBuf,
+    /* [in] */ Int32 offset,
+    /* [out] */ Int32* result)
+{
+    return AudioEffect::ByteArrayToInt32(valueBuf, offset, result);
+}
+
+ECode CAudioEffectHelper::Int32ToByteArray(
+    /* [in] */ Int32 value,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    return AudioEffect::Int32ToByteArray(value, result);
+}
+
+ECode CAudioEffectHelper::ByteArrayToInt16(
+    /* [in] */ ArrayOf<Byte>* valueBuf,
+    /* [out] */ Int16* result)
+{
+    return AudioEffect::ByteArrayToInt16(valueBuf, result);
+}
+
+ECode CAudioEffectHelper::ByteArrayToInt16(
+    /* [in] */ ArrayOf<Byte>* valueBuf,
+    /* [in] */ Int32 offset,
+    /* [out] */ Int16* result)
+{
+    return AudioEffect::ByteArrayToInt16(valueBuf, offset, result);
+}
+
+ECode CAudioEffectHelper::Int16ToByteArray(
+    /* [in] */ Int16 value,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    return AudioEffect::Int16ToByteArray(value, result);
+}
+
+ECode CAudioEffectHelper::ConcatArrays(
+    /* [in] */ ArrayOf<Byte>* array1,
+    /* [in] */ ArrayOf<Byte>* array2,
+    /* [out, callee] */ ArrayOf<Byte>** result)
+{
+    return AudioEffect::ConcatArrays(array1, array2, result);
+}
 } // namespace Audiofx
 } // namespace Media
 } // namepsace Droid

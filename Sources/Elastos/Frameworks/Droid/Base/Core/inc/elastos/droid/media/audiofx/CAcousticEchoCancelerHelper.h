@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CAcousticEchoCancelerHelper.h"
 #include <ext/frameworkext.h>
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
@@ -11,8 +12,14 @@ namespace Media {
 namespace Audiofx {
 
 CarClass(CAcousticEchoCancelerHelper)
+    , public Singleton
+    , public IAcousticEchoCancelerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Checks if the device implements acoustic echo cancellation.
      * @return true if the device implements acoustic echo cancellation, false otherwise.

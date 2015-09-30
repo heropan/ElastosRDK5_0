@@ -1,11 +1,15 @@
-#include "media/media/audiofx/CVisualizer.h"
+#include "media/audiofx/CVisualizer.h"
+#include "media/audiofx/CVisualizerMeasurementPeakRms.h"
 #include <elastos/utility/logging/Logger.h>
+#include <elastos/core/AutoLock.h>
 #include "os/CLooperHelper.h"
 #include "media/Visualizer.h"
 
 using Elastos::Core::IByte;
 using Elastos::Core::CByte;
-
+using Elastos::Core::EIID_IByte;
+using Elastos::Core::IArrayOf;
+using Elastos::Core::CArrayOf;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::ILooperHelper;
 using Elastos::Droid::Os::CLooperHelper;
@@ -20,11 +24,15 @@ const Int32 CVisualizer::NATIVE_EVENT_PCM_CAPTURE = 0;
 const Int32 CVisualizer::NATIVE_EVENT_FFT_CAPTURE = 1;
 const Int32 CVisualizer::NATIVE_EVENT_SERVER_DIED = 2;
 
+CAR_INTERFACE_IMPL(CVisualizer, Object, IVisualizer)
+
+CAR_OBJECT_IMPL(CVisualizer)
+
 CVisualizer::NativeEventHandler::NativeEventHandler(
     /* [in] */ CVisualizer* v,
     /* [in] */ ILooper* looper)
     : mVisualizer(v)
-    , HandlerBase(looper)
+    , Handler(looper)
 {
 }
 
@@ -58,27 +66,23 @@ void CVisualizer::NativeEventHandler::HandleCaptureMessage(
 {
     AutoPtr<IVisualizerOnDataCaptureListener> l;
     {
-        AutoLock lock(mVisualizer->mListenerLock);
+        Object& lock = mVisualizer->mListenerLock;
+        synchronized(lock);
         l = mVisualizer->mCaptureListener;
     }
     if (l != NULL) {
         AutoPtr< ArrayOf<Byte> > data;
-        AutoPtr<IObjectContainer> obj;
+        AutoPtr<IArrayOf> obj;
         msg->GetObj((IInterface**)&obj);
         Int32 count;
-        obj->GetObjectCount(&count);
+        obj->GetLength(&count);
         data = ArrayOf<Byte>::Alloc(count);
-        AutoPtr<IObjectEnumerator> enumerator;
-        obj->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-        Boolean hasNext = FALSE;
-        Int32 i = 0;
-        while(enumerator->MoveNext(&hasNext), hasNext) {
+        for(Int32 i = 0; i < count; i++) {
             AutoPtr<IByte> ib;
-            enumerator->Current((IInterface**)&ib);
+            obj->Get(i, (IInterface**)&ib);
             Byte b;
             ib->GetValue(&b);
             data->Set(i, b);
-            i++;
         }
 
         Int32 samplingRate;
@@ -105,7 +109,8 @@ void CVisualizer::NativeEventHandler::HandleServerDiedMessage(
 {
     AutoPtr<IVisualizerOnServerDiedListener> l;
     {
-        AutoLock lock(mVisualizer->mListenerLock);
+        Object& lock = mVisualizer->mListenerLock;
+        synchronized(lock);
         l = mVisualizer->mServerDiedListener;
     }
     if (l != NULL)
@@ -128,7 +133,7 @@ ECode CVisualizer::constructor(
     /* [in] */ Int32 audioSession)
 {
     AutoPtr<ArrayOf<Int32> > id = ArrayOf<Int32>::Alloc(1);
-    AutoLock lock(mStateLock);
+    synchronized(mStateLock);
     mState = IVisualizer::STATE_UNINITIALIZED;
 
     // native initialization
@@ -156,7 +161,7 @@ ECode CVisualizer::constructor(
 
 ECode CVisualizer::ReleaseResources()
 {
-    AutoLock lock(mStateLock);
+    synchronized(mStateLock);
     Native_Release();
     mState = IVisualizer::STATE_UNINITIALIZED;
     return NOERROR;
@@ -168,7 +173,7 @@ ECode CVisualizer::SetEnabled(
 {
     VALIDATE_NOT_NULL(result);
 
-    AutoLock lock(mStateLock);
+    synchronized(mStateLock);
     if (mState == IVisualizer::STATE_UNINITIALIZED) {
        // throw(new IllegalStateException("setEnabled() called in wrong state: "+mState));
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -190,7 +195,7 @@ ECode CVisualizer::GetEnabled(
 {
     VALIDATE_NOT_NULL(enabled);
 
-    AutoLock lock(mStateLock);
+    synchronized(mStateLock);
     if (mState == IVisualizer::STATE_UNINITIALIZED) {
         // throw(new IllegalStateException("getEnabled() called in wrong state: "+mState));
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -223,7 +228,7 @@ ECode CVisualizer::SetCaptureSize(
 {
     VALIDATE_NOT_NULL(result);
 
-    AutoLock lock(mStateLock);
+    synchronized(mStateLock);
     if (mState == IVisualizer::STATE_INITIALIZED) {
         // throw(new IllegalStateException("setCaptureSize() called in wrong state: "+mState));
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -238,7 +243,7 @@ ECode CVisualizer::GetCaptureSize(
 {
     VALIDATE_NOT_NULL(captureSize);
 
-    AutoLock lock(mStateLock);
+    synchronized(mStateLock);
     if (mState == IVisualizer::STATE_UNINITIALIZED) {
         // throw(new IllegalStateException("getCaptureSize() called in wrong state: "+mState));
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -253,7 +258,7 @@ ECode CVisualizer::SetScalingMode(
 {
     VALIDATE_NOT_NULL(result);
 
-    AutoLock lock(mStateLock);
+    synchronized(mStateLock);
     if (mState == STATE_UNINITIALIZED) {
         // throw(new IllegalStateException("setScalingMode() called in wrong state: "+ mState));
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -267,7 +272,7 @@ ECode CVisualizer::GetScalingMode(
 {
     VALIDATE_NOT_NULL(result);
 
-    AutoLock lock(mStateLock);
+    synchronized(mStateLock);
     if (mState == STATE_UNINITIALIZED) {
         // throw(new IllegalStateException("getScalingMode() called in wrong state: " + mState));
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -277,12 +282,39 @@ ECode CVisualizer::GetScalingMode(
 
 }
 
+CARAPI CVisualizer::SetMeasurementMode(
+    /* [in] */ Int32 mode,
+    /* [out] */ Int32* result)
+{
+    synchronized(mStateLock);
+    if (mState == IVisualizer::STATE_UNINITIALIZED) {
+        // throw(new IllegalStateException("setMeasurementMode() called in wrong state: "
+        //         + mState));
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    *result = Native_SetMeasurementMode(mode);
+    return NOERROR;
+}
+
+CARAPI CVisualizer::GetMeasurementMode(
+    /* [out] */ Int32* result)
+{
+    synchronized(mStateLock);
+    if (mState == IVisualizer::STATE_UNINITIALIZED) {
+        // throw(new IllegalStateException("getMeasurementMode() called in wrong state: "
+        //         + mState));
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    *result = Native_GetMeasurementMode();
+    return NOERROR;
+}
+
 ECode CVisualizer::GetSamplingRate(
     /* [out] */ Int32* samplingRate)
 {
     VALIDATE_NOT_NULL(samplingRate);
 
-    AutoLock lock(mStateLock);
+    synchronized(mStateLock);
     if (mState == IVisualizer::STATE_UNINITIALIZED) {
         // throw(new IllegalStateException("getSamplingRate() called in wrong state: "+mState));
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -297,7 +329,7 @@ ECode CVisualizer::GetWaveForm(
 {
     VALIDATE_NOT_NULL(result);
 
-    AutoLock lock(mStateLock);
+    synchronized(mStateLock);
     if (mState == IVisualizer::STATE_ENABLED) {
         // throw(new IllegalStateException("getWaveForm() called in wrong state: "+mState));
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -313,12 +345,33 @@ ECode CVisualizer::GetFft(
 {
     VALIDATE_NOT_NULL(result);
 
-    AutoLock lock(mStateLock);
+    synchronized(mStateLock);
     if (mState == IVisualizer::STATE_ENABLED) {
         // throw(new IllegalStateException("getFft() called in wrong state: "+mState));
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     *result = Native_GetFft(fft);
+    return NOERROR;
+}
+
+ECode CVisualizer::GetMeasurementPeakRms(
+    /* [in] */ IVisualizerMeasurementPeakRms * measurement,
+    /* [out] */ Int32 * result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    if (measurement == NULL) {
+        Logger::E(TAG, "Cannot store measurements in a NULL object");
+        *result = IVisualizer::ERROR_BAD_VALUE;
+        return NOERROR;
+    }
+    synchronized(mStateLock);
+    if (mState != IVisualizer::STATE_ENABLED) {
+        // throw (new IllegalStateException("getMeasurementPeakRms() called in wrong state: "
+        //         + mState));
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    *result = Native_GetPeakRms(measurement);
     return NOERROR;
 }
 
@@ -331,7 +384,7 @@ ECode CVisualizer::SetDataCaptureListener(
 {
     VALIDATE_NOT_NULL(result);
     {
-        AutoLock lock(mListenerLock);
+        synchronized(mListenerLock);
         mCaptureListener = listener;
     }
     if (listener == NULL) {
@@ -346,7 +399,7 @@ ECode CVisualizer::SetDataCaptureListener(
             AutoPtr<ILooper> mainLooper;
             AutoPtr<ILooperHelper> helper;
             CLooperHelper::AcquireSingleton((ILooperHelper**)&helper);
-            helper->MyLooper((ILooper**)&myLooper);
+            helper->GetMyLooper((ILooper**)&myLooper);
             helper->GetMainLooper((ILooper**)&mainLooper);
             if (myLooper != NULL) {
                 mNativeEventHandler = new NativeEventHandler(this, myLooper);
@@ -367,7 +420,7 @@ ECode CVisualizer::SetServerDiedListener(
     /* [in] */ IVisualizerOnServerDiedListener* listener,
     /* [out] */ Int32* result)
 {
-    AutoLock lock(mListenerLock);
+    synchronized(mListenerLock);
     mServerDiedListener = listener;
     *result = SUCCESS;
     return NOERROR;
@@ -482,8 +535,8 @@ void CVisualizer::captureCallback(
     }
 
     AutoPtr<IByte> byte;
-    AutoPtr<IObjectContainer> obj;
-    CObjectContainer::New((IObjectContainer**)&obj);
+    AutoPtr<IArrayOf> obj;
+    // CObjectContainer::New((IObjectContainer**)&obj);
 
     if (waveformSize != 0 && waveform != NULL) {
         AutoPtr<ArrayOf<Byte> > jArray;
@@ -493,9 +546,11 @@ void CVisualizer::captureCallback(
             Byte* nArray = jArray->GetPayload();
             memcpy(nArray, waveform, waveformSize);
 
+            CArrayOf::New(EIID_IByte, waveformSize,(IArrayOf**)&obj);
             for(Int32 i = 0; i < waveformSize; i++) {
+                byte = NULL;
                 CByte::New((*jArray)[i], (IByte**)&byte);
-                obj->Add((IInterface*)byte);
+                obj->Set(i, byte);
             }
 
             PostEventFromNative(callbackInfo->visualizer_ref, NATIVE_EVENT_PCM_CAPTURE, samplingrate, 0, obj);
@@ -510,9 +565,11 @@ void CVisualizer::captureCallback(
             Byte* nArray = jArray->GetPayload();
             memcpy(nArray, fft, fftSize);
 
+            CArrayOf::New(EIID_IByte, fftSize,(IArrayOf**)&obj);
             for(Int32 i = 0; i < fftSize; i++) {
+                byte = NULL;
                 CByte::New((*jArray)[i], (IByte**)&byte);
-                obj->Add((IInterface*)byte);
+                obj->Set(i, byte);
             }
 
             PostEventFromNative(callbackInfo->visualizer_ref, NATIVE_EVENT_FFT_CAPTURE, samplingrate, 0, obj);
@@ -682,6 +739,25 @@ Int32 CVisualizer::Native_GetScalingMode()
     return lpVisualizer->getScalingMode();
 }
 
+Int32 CVisualizer::Native_SetMeasurementMode(
+    /* [in] */ Int32 mode)
+{
+    android::Visualizer* lpVisualizer = (android::Visualizer *)mNativeVisualizer;
+    if (lpVisualizer == NULL) {
+        return VISUALIZER_ERROR_NO_INIT;
+    }
+    return translateError(lpVisualizer->setMeasurementMode(mode));
+}
+
+Int32 CVisualizer::Native_GetMeasurementMode()
+{
+    android::Visualizer* lpVisualizer = (android::Visualizer *)mNativeVisualizer;
+    if (lpVisualizer == NULL) {
+        return MEASUREMENT_MODE_NONE;
+    }
+    return lpVisualizer->getMeasurementMode();
+}
+
 Int32 CVisualizer::Native_GetSamplingRate()
 {
     android::Visualizer* lpVisualizer = (android::Visualizer *)mNativeVisualizer;
@@ -711,6 +787,25 @@ Int32 CVisualizer::Native_GetFft(
     }
 
     return translateError(lpVisualizer->getFft(fft->GetPayload()));
+}
+
+Int32 CVisualizer::Native_GetPeakRms(
+    /* [in] */ IVisualizerMeasurementPeakRms * measurement)
+{
+    android::Visualizer* lpVisualizer = (android::Visualizer *)mNativeVisualizer;
+    if (lpVisualizer == NULL) {
+        return VISUALIZER_ERROR_NO_INIT;
+    }
+    int32_t measurements[2];
+    Int32 status = translateError(
+                lpVisualizer->getIntMeasurements(MEASUREMENT_MODE_PEAK_RMS,
+                        2, measurements));
+    if (status == VISUALIZER_SUCCESS) {
+        // measurement worked, write the values to the java object
+        ((CVisualizerMeasurementPeakRms*)measurement)->mPeak = measurements[MEASUREMENT_IDX_PEAK];
+        ((CVisualizerMeasurementPeakRms*)measurement)->mRms = measurements[MEASUREMENT_IDX_RMS];
+    }
+    return status;
 }
 
 Int32 CVisualizer::Native_SetPeriodicCapture(

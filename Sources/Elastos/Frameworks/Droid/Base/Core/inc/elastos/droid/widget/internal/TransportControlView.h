@@ -5,7 +5,7 @@
 #include "widget/FrameLayout.h"
 
 #include <elastos/core/Math.h>
-#include "media/media/CAudioManager.h"
+#include "media/CAudioManager.h"
 #include "R.h"
 
 using Elastos::Droid::R;

@@ -1,8 +1,9 @@
-#include "media/media/audiofx/AudioEffect.h"
 #include <elastos/utility/logging/Logger.h>
+#include <elastos/core/AutoLock.h>
 #include "os/CLooperHelper.h"
+#include "media/audiofx/AudioEffect.h"
+#include "media/audiofx/CAudioEffectDescriptor.h"
 #include "media/AudioEffect.h"
-#include "media/media/audiofx/CAudioEffectDescriptor.h"
 
 #include <elastos.h>
 #include <cutils/log.h>
@@ -12,7 +13,9 @@
 
 using Elastos::Core::IByte;
 using Elastos::Core::CByte;
-
+using Elastos::Core::EIID_IByte;
+using Elastos::Core::IArrayOf;
+using Elastos::Core::CArrayOf;
 using Elastos::Utility::Logging::Logger;
 using Elastos::IO::ByteOrder;
 using Elastos::IO::IByteOrderHelper;
@@ -31,11 +34,13 @@ namespace Audiofx {
 
 const String AudioEffect::TAG("AudioEffect-JAVA");
 
+CAR_INTERFACE_IMPL(AudioEffect, Object, IAudioEffect)
+
 AudioEffect::NativeEventHandler::NativeEventHandler(
     /* [in] */ AudioEffect* ae,
     /* [in] */ ILooper* looper)
     : mAudioEffect(ae)
-    , HandlerBase(looper)
+    , Handler(looper)
 {
 }
 
@@ -54,10 +59,11 @@ ECode AudioEffect::NativeEventHandler::HandleMessage(
     AutoPtr<IAudioEffectOnControlStatusChangeListener> controlStatusChangeListener;
     AutoPtr<IAudioEffectOnParameterChangeListener> parameterChangeListener;
 
+    Object& lock = mAudioEffect->mListenerLock;
     switch (what) {
         case IAudioEffect::NATIVE_EVENT_ENABLED_STATUS:
             {
-                AutoLock lock(mAudioEffect->mListenerLock);
+                synchronized(lock);
                 enableStatusChangeListener = mAudioEffect->mEnableStatusChangeListener;
             }
             if (enableStatusChangeListener != NULL) {
@@ -66,7 +72,7 @@ ECode AudioEffect::NativeEventHandler::HandleMessage(
             break;
         case IAudioEffect::NATIVE_EVENT_CONTROL_STATUS:
             {
-                AutoLock lock(mAudioEffect->mListenerLock);
+                synchronized(lock);
                 controlStatusChangeListener = mAudioEffect->mControlChangeStatusListener;
             }
             if (controlStatusChangeListener != NULL) {
@@ -75,30 +81,43 @@ ECode AudioEffect::NativeEventHandler::HandleMessage(
             break;
         case IAudioEffect::NATIVE_EVENT_PARAMETER_CHANGED:
             {
-                AutoLock lock(mAudioEffect->mListenerLock);
+                synchronized(lock);
                 parameterChangeListener = mAudioEffect->mParameterChangeListener;
             }
             if (parameterChangeListener != NULL) {
                 // arg1 contains offset of parameter value from start of
                 // byte array
                 Int32 vOffset = arg1;
-                AutoPtr<IObjectContainer> obj;
+                // AutoPtr<IObjectContainer> obj;
+                // AutoPtr<ArrayOf<Byte> > p;
+                // msg->GetObj((IInterface**)&obj);
+                // Int32 count;
+                // obj->GetObjectCount(&count);
+                // p = ArrayOf<Byte>::Alloc(count);
+                // AutoPtr<IObjectEnumerator> enumerator;
+                // obj->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
+                // Boolean hasNext = FALSE;
+                // Int32 i = 0;
+                // while(enumerator->MoveNext(&hasNext), hasNext) {
+                //     AutoPtr<IByte> ib;
+                //     enumerator->Current((IInterface**)&ib);
+                //     Byte b;
+                //     ib->GetValue(&b);
+                //     p->Set(i, b);
+                //     i++;
+                // }
+                AutoPtr<IArrayOf> obj;
                 AutoPtr<ArrayOf<Byte> > p;
                 msg->GetObj((IInterface**)&obj);
                 Int32 count;
-                obj->GetObjectCount(&count);
+                obj->GetLength(&count);
                 p = ArrayOf<Byte>::Alloc(count);
-                AutoPtr<IObjectEnumerator> enumerator;
-                obj->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-                Boolean hasNext = FALSE;
-                Int32 i = 0;
-                while(enumerator->MoveNext(&hasNext), hasNext) {
+                for(Int32 i = 0; i < count; i++) {
                     AutoPtr<IByte> ib;
-                    enumerator->Current((IInterface**)&ib);
+                    obj->Get(i, (IInterface**)&ib);
                     Byte b;
                     ib->GetValue(&b);
                     p->Set(i, b);
-                    i++;
                 }
 
                 // See effect_param_t in EffectApi.h for psize and vsize
@@ -126,25 +145,20 @@ ECode AudioEffect::NativeEventHandler::HandleMessage(
 
 AudioEffect::AudioEffect()
     : mState(IAudioEffect::STATE_UNINITIALIZED)
-{}
-
-AudioEffect::AudioEffect(
-    /* [in] */ IUUID* type,
-    /* [in] */ IUUID* uuid,
-    /* [in] */ Int32 priority,
-    /* [in] */ Int32 audioSession)
-    : mState(IAudioEffect::STATE_UNINITIALIZED)
 {
-    Init(type, uuid, priority, audioSession);
 }
-
 
 AudioEffect::~AudioEffect()
 {
     NativeFinalize();
 }
 
-ECode AudioEffect::Init(
+ECode AudioEffect::constructor()
+{
+    return NOERROR;
+}
+
+ECode AudioEffect::constructor(
     /* [in] */ IUUID* type,
     /* [in] */ IUUID* uuid,
     /* [in] */ Int32 priority,
@@ -184,19 +198,18 @@ ECode AudioEffect::Init(
     mId = (*id)[0];
     mDescriptor = (*desc)[0];
 
-    AutoLock lock(mStateLock);
+    synchronized(mStateLock);
     mState = IAudioEffect::STATE_INITIALIZED;
     return NOERROR;
 }
 
 ECode AudioEffect::ReleaseResources()
 {
-    AutoLock lock(mStateLock);
+    synchronized(mStateLock);
     NativeRelease();
     mState = IAudioEffect::STATE_UNINITIALIZED;
     return NOERROR;
 }
-
 
 ECode AudioEffect::GetDescriptor(
     /* [out] */ IAudioEffectDescriptor** descriptor)
@@ -671,7 +684,7 @@ ECode AudioEffect::HasControl(
 ECode AudioEffect::SetEnableStatusListener(
     /* [in] */ IAudioEffectOnEnableStatusChangeListener* listener)
 {
-    AutoLock lock(mListenerLock);
+    synchronized(mListenerLock);
     mEnableStatusChangeListener = listener;
     if ((listener != NULL) && (mNativeEventHandler == NULL)) {
         CreateNativeEventHandler();
@@ -682,7 +695,7 @@ ECode AudioEffect::SetEnableStatusListener(
 ECode AudioEffect::SetControlStatusListener(
     /* [in] */ IAudioEffectOnControlStatusChangeListener* listener)
 {
-    AutoLock lock(mListenerLock);
+    synchronized(mListenerLock);
     mControlChangeStatusListener = listener;
     if ((listener != NULL) && (mNativeEventHandler == NULL)) {
         CreateNativeEventHandler();
@@ -693,7 +706,7 @@ ECode AudioEffect::SetControlStatusListener(
 ECode AudioEffect::SetParameterListener(
     /* [in] */ IAudioEffectOnParameterChangeListener* listener)
 {
-    AutoLock lock(mListenerLock);
+    synchronized(mListenerLock);
     mParameterChangeListener = listener;
     if ((listener != NULL) && (mNativeEventHandler == NULL)) {
         CreateNativeEventHandler();
@@ -707,7 +720,7 @@ void AudioEffect::CreateNativeEventHandler()
     AutoPtr<ILooper> mainLooper;
     AutoPtr<ILooperHelper> helper;
     CLooperHelper::AcquireSingleton((ILooperHelper**)&helper);
-    helper->MyLooper((ILooper**)&myLooper);
+    helper->GetMyLooper((ILooper**)&myLooper);
     helper->GetMainLooper((ILooper**)&mainLooper);
     if (myLooper != NULL) {
         mNativeEventHandler = new NativeEventHandler(this, myLooper);
@@ -806,7 +819,7 @@ void AudioEffect::effectCallback(
         return;
     }
 
-    AutoPtr<IObjectContainer> obj;
+    AutoPtr<IArrayOf> obj;
     AutoPtr<IByte> byte;
     switch (event) {
     case android::AudioEffect::EVENT_CONTROL_STATUS_CHANGED:
@@ -847,10 +860,11 @@ void AudioEffect::effectCallback(
         bytes = array->GetPayload();
         memcpy(bytes, p, size);
 
-        CObjectContainer::New((IObjectContainer**)&obj);
+        CArrayOf::New(EIID_IByte, size,(IArrayOf**)&obj);
         for(Int32 i = 0; i < size; i++) {
+            byte = NULL;
             CByte::New((*array)[i], (IByte**)&byte);
-            obj->Add((IInterface*)byte);
+            obj->Set(i, byte);
         }
 
         ALOGV("EVENT_PARAMETER_CHANGED");
@@ -1040,7 +1054,11 @@ Boolean AudioEffect::NativeGetEnabled()
     if (lpAudioEffect == NULL) {
         return FALSE;
     }
-    return (Boolean)lpAudioEffect->getEnabled();
+    if (lpAudioEffect->getEnabled()) {
+        return TRUE;
+    } else {
+        return FALSE;
+    }
 }
 
 Boolean AudioEffect::NativeHasControl()
@@ -1227,23 +1245,28 @@ AutoPtr<ArrayOf<IAudioEffectDescriptor* > > AudioEffect::NativeQueryEffects()
 {
     effect_descriptor_t desc;
     char str[EFFECT_STRING_LEN_MAX];
-    uint32_t numEffects = 0;
+    uint32_t totalEffectsCount = 0;
+    uint32_t returnedEffectsCount = 0;
     uint32_t i = 0;
     String jdescType;
     String jdescUuid;
     String jdescConnect;
     String jdescName;
     String jdescImplementor;
+    AutoPtr<ArrayOf<IAudioEffectDescriptor*> > ret;
 
-    android::AudioEffect::queryNumberEffects(&numEffects);
-    AutoPtr<ArrayOf<IAudioEffectDescriptor*> > ret = ArrayOf<IAudioEffectDescriptor*>::Alloc(numEffects);
-    if (ret == NULL) {
-        return ret;
+    if (android::AudioEffect::queryNumberEffects(&totalEffectsCount) != android::NO_ERROR) {
+        return NULL;
     }
 
-    ALOGV("queryEffects() numEffects: %d", numEffects);
+    AutoPtr<ArrayOf<IAudioEffectDescriptor*> > temp = ArrayOf<IAudioEffectDescriptor*>::Alloc(totalEffectsCount);
+    if (temp == NULL) {
+        return temp;
+    }
 
-    for (i = 0; i < numEffects; i++) {
+    ALOGV("queryEffects() totalEffectsCount: %d", totalEffectsCount);
+
+    for (i = 0; i < totalEffectsCount; i++) {
         if (android::AudioEffect::queryEffect(i, &desc) != android::NO_ERROR) {
             goto queryEffects_failure;
         }
@@ -1275,9 +1298,19 @@ AutoPtr<ArrayOf<IAudioEffectDescriptor* > > AudioEffect::NativeQueryEffects()
             goto queryEffects_failure;
         }
 
-        ret->Set(i, jdesc);
+        temp->Set(returnedEffectsCount++, jdesc);
    }
 
+    if (returnedEffectsCount == 0) {
+        goto queryEffects_failure;
+    }
+    ret = ArrayOf<IAudioEffectDescriptor*>::Alloc(returnedEffectsCount);
+    if (ret == NULL) {
+        goto queryEffects_failure;
+    }
+    for (i = 0; i < returnedEffectsCount; i++) {
+        ret->Set(i, (*temp)[i]);
+    }
     return ret;
 
 queryEffects_failure:
@@ -1354,7 +1387,7 @@ AutoPtr<ArrayOf<IAudioEffectDescriptor* > > AudioEffect::NativeQueryPreProcessin
 ECode AudioEffect::CheckState(
     /* [in] */ const String& methodName)
 {
-    AutoLock lock(mStateLock);
+    synchronized(mStateLock);
     if (mState != IAudioEffect::STATE_INITIALIZED) {
        // throw (new IllegalStateException(methodName
        //         + " called on uninitialized AudioEffect."));
@@ -1416,7 +1449,7 @@ ECode AudioEffect::ByteArrayToInt32(
     AutoPtr<IByteBuffer> converter;
     AutoPtr<IByteBufferHelper> tempByteBufferHelper;
     CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&tempByteBufferHelper);
-    tempByteBufferHelper->WrapArray(valueBuf,(IByteBuffer**)&converter);
+    tempByteBufferHelper->Wrap(valueBuf,(IByteBuffer**)&converter);
     AutoPtr<IByteOrderHelper> helper;
     CByteOrderHelper::AcquireSingleton((IByteOrderHelper**)&helper);
     ByteOrder nativeOrder;
@@ -1463,7 +1496,7 @@ ECode AudioEffect::ByteArrayToInt16(
     AutoPtr<IByteBuffer> converter;
     AutoPtr<IByteBufferHelper> tempByteBufferHelper;
     CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&tempByteBufferHelper);
-    tempByteBufferHelper->WrapArray(valueBuf,(IByteBuffer**)&converter);
+    tempByteBufferHelper->Wrap(valueBuf,(IByteBuffer**)&converter);
     AutoPtr<IByteOrderHelper> helper;
     CByteOrderHelper::AcquireSingleton((IByteOrderHelper**)&helper);
     ByteOrder nativeOrder;

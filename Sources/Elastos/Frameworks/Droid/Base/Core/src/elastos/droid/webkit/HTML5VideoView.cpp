@@ -1,6 +1,6 @@
 
 #include "content/CIntent.h"
-#include "media/media/CMediaPlayer.h"
+#include "media/CMediaPlayer.h"
 #include "net/Uri.h"
 #include "webkit/HTML5VideoView.h"
 #include "webkit/HTML5VideoViewProxy.h"

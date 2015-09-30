@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CVisualizerHelper.h"
 #include "ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
@@ -11,8 +12,14 @@ namespace Media {
 namespace Audiofx {
 
 CarClass(CVisualizerHelper)
+    , public Singleton
+    , public IVisualizerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Returns the capture size range.
      * @return the mininum capture size is returned in first array element and the maximum in second

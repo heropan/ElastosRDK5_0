@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CEqualizerSettings.h"
 #include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -16,9 +17,15 @@ namespace Audiofx {
  * all parameters in a single call.
  */
 CarClass(CEqualizerSettings)
+    , public Object
+    , public IEqualizerSettings
 {
 public:
     CEqualizerSettings();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor();
 

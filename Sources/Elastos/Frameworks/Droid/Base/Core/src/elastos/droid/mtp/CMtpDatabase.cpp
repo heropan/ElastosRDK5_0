@@ -5,7 +5,7 @@
 #include <elastos/utility/logging/Logger.h>
 #include "text/TextUtils.h"
 // TODO: Need CMediaScanner
-// #include "media/media/CMediaScanner.h"
+// #include "media/CMediaScanner.h"
 #include "content/CIntent.h"
 #include "content/CIntentFilter.h"
 #include "content/CContentValues.h"

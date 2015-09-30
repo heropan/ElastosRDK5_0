@@ -5,7 +5,7 @@
 #include "_Elastos_Droid_Media_CMediaRouteInfo.h"
 #include "MediaRouteInfo.h"
 #include "ext/frameworkext.h"
-#include "media/media/CMediaRouter.h"
+#include "media/CMediaRouter.h"
 
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 

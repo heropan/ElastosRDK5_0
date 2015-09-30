@@ -27,7 +27,7 @@
 #include "os/CMessage.h"
 #include "R.h"
 #include "swextend/gpio/CGpio.h"
-#include "media/media/CRingtoneManagerHelper.h"
+#include "media/CRingtoneManagerHelper.h"
 #include "view/CWindowManagerLayoutParams.h"
 #include "view/CViewConfiguration.h"
 #include "view/CKeyEvent.h"

@@ -4,8 +4,7 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CAcousticEchoCanceler.h"
 #include <ext/frameworkext.h>
-#include "media/media/audiofx/AudioEffect.h"
-
+#include "media/audiofx/AudioEffect.h"
 
 using Elastos::Droid::Media::Audiofx::AudioEffect;
 
@@ -34,10 +33,15 @@ namespace Audiofx {
  * <p>See {@link android.media.audiofx.AudioEffect} class for more details on
  * controlling audio effects.
  */
-CarClass(CAcousticEchoCanceler), public AudioEffect
+CarClass(CAcousticEchoCanceler)
+    , public AudioEffect
+    , public IAcousticEchoCanceler
 {
 public:
-    IAUDIOEFFECT_METHODS_DECL()
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     /**
      * Checks if the device implements acoustic echo cancellation.
@@ -65,9 +69,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ Int32 audioSession);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
 private:
     const static String TAG ;//= "AcousticEchoCanceler";

@@ -1,6 +1,7 @@
 
-#include "media/media/audiofx/CBassBoost.h"
-#include "media/media/audiofx/CBassBoostSettings.h"
+#include "media/audiofx/CBassBoost.h"
+#include "media/audiofx/CBassBoostSettings.h"
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Utility::IUUIDHelper;
 using Elastos::Utility::CUUIDHelper;
@@ -12,9 +13,11 @@ namespace Audiofx {
 
 const String CBassBoost::TAG("BassBoost");
 
-IAUDIOEFFECT_METHODS_IMPL(CBassBoost, AudioEffect)
+CAR_INTERFACE_IMPL(CBassBoost, AudioEffect, IBassBoost)
 
-CAR_INTERFACE_IMPL(CBassBoost::BaseParameterListener, IAudioEffectOnParameterChangeListener)
+CAR_OBJECT_IMPL(CBassBoost)
+
+CAR_INTERFACE_IMPL(CBassBoost::BaseParameterListener, Object, IAudioEffectOnParameterChangeListener)
 
 ECode CBassBoost::BaseParameterListener::OnParameterChange(
     /* [in] */ IAudioEffect* effect,
@@ -24,7 +27,8 @@ ECode CBassBoost::BaseParameterListener::OnParameterChange(
 {
     AutoPtr<IBassBoostOnParameterChangeListener> l;
     {
-        AutoLock lock(&mHost->mParamListenerLock);
+        Object& lock = mHost->mParamListenerLock;
+        synchronized(lock);
         if (mHost->mParamListener != NULL) {
             l = mHost->mParamListener;
         }
@@ -62,7 +66,7 @@ ECode CBassBoost::constructor(
     AutoPtr<IUUID> typeNULL;
     helper->FromString(IAudioEffect::EFFECT_TYPE_BASS_BOOST, (IUUID**)&typeBOOST);
     helper->FromString(IAudioEffect::EFFECT_TYPE_NULL, (IUUID**)&typeNULL);
-    Init(typeBOOST, typeNULL, priority, audioSession);
+    AudioEffect::constructor(typeBOOST, typeNULL, priority, audioSession);
 
     if (audioSession == 0) {
         //Log.w(TAG, "WARNING: attaching a BassBoost to global output mix is deprecated!");
@@ -74,12 +78,6 @@ ECode CBassBoost::constructor(
     CheckStatus(status);
     mStrengthSupported = (value[0] != 0);
     return NOERROR;
-}
-
-PInterface CBassBoost::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CBassBoost::Probe(riid);
 }
 
 ECode CBassBoost::GetStrengthSupported(
@@ -115,11 +113,11 @@ ECode CBassBoost::GetRoundedStrength(
 ECode CBassBoost::SetParameterListener(
     /* [in] */ IBassBoostOnParameterChangeListener* listener)
 {
-    AutoLock lock(&mParamListenerLock);
+    synchronized(mParamListenerLock);
     if (mParamListener != NULL) {
         mParamListener = listener;
         mBaseParamListener = new BaseParameterListener(this);
-        SetParameterListener(mBaseParamListener);
+        AudioEffect::SetParameterListener(IAudioEffectOnParameterChangeListener::Probe(mBaseParamListener));
     }
     return NOERROR;
 }

@@ -1,4 +1,4 @@
-#include "media/media/audiofx/CBassBoostSettings.h"
+#include "media/audiofx/CBassBoostSettings.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 
@@ -9,6 +9,10 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 namespace Audiofx {
+
+CAR_INTERFACE_IMPL(CBassBoostSettings, Object, IBassBoostSettings)
+
+CAR_OBJECT_IMPL(CBassBoostSettings)
 
 CBassBoostSettings::CBassBoostSettings()
     : mStrength(0)

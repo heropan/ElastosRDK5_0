@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CAudioEffect.h"
 #include "ext/frameworkext.h"
-#include "media/media/audiofx/AudioEffect.h"
+#include "media/audiofx/AudioEffect.h"
 
 using Elastos::Droid::Media::Audiofx::AudioEffect;
 using Elastos::Utility::IUUID;
@@ -44,9 +44,12 @@ namespace Audiofx {
  * appropiate listener.
  */
 
-CarClass(CAudioEffect) , public AudioEffect
+CarClass(CAudioEffect)
+    , public AudioEffect
 {
 public:
+    CAR_OBJECT_DECL()
+
     /**
      * Releases the native AudioEffect resources. It is a good practice to
      * release the effect engine when not in use as control can be returned to
@@ -356,58 +359,6 @@ public:
         /* [in] */ Int32 status);
 
     /**
-     * @hide
-     */
-    CARAPI ByteArrayToInt32(
-        /* [in] */ ArrayOf<Byte>* valueBuf,
-        /* [out] */ Int32* result);
-
-    /**
-     * @hide
-     */
-    CARAPI ByteArrayToInt32(
-        /* [in] */ ArrayOf<Byte>* valueBuf,
-        /* [in] */ Int32 offset,
-        /* [out] */ Int32* result);
-
-    /**
-     * @hide
-     */
-    CARAPI Int32ToByteArray(
-        /* [in] */ Int32 value,
-        /* [out, callee] */ ArrayOf<Byte>** result);
-
-    /**
-     * @hide
-     */
-    CARAPI ByteArrayToInt16(
-        /* [in] */ ArrayOf<Byte>* valueBuf,
-        /* [out] */ Int16* result);
-
-    /**
-     * @hide
-     */
-    CARAPI ByteArrayToInt16(
-        /* [in] */ ArrayOf<Byte>* valueBuf,
-        /* [in] */ Int32 offset,
-        /* [out] */ Int16* result);
-
-    /**
-     * @hide
-     */
-    CARAPI Int16ToByteArray(
-        /* [in] */ Int16 value,
-        /* [out, callee] */ ArrayOf<Byte>** result);
-
-    /**
-     * @hide
-     */
-    CARAPI ConcatArrays(
-        /* [in] */ ArrayOf<Byte>* array1,
-        /* [in] */ ArrayOf<Byte>* array2,
-        /* [out, callee] */ ArrayOf<Byte>** result);
-
-    /**
      * Class constructor.
      *
      * @param type type of effect engine created. See {@link #EFFECT_TYPE_ENV_REVERB},
@@ -445,9 +396,6 @@ public:
         /* [in] */ IUUID* uuid,
         /* [in] */ Int32 priority,
         /* [in] */ Int32 audioSession);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
 };
 

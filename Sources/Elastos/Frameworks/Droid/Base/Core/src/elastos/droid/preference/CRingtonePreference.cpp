@@ -1,7 +1,7 @@
 
 #include "CRingtonePreference.h"
 #include "content/CIntent.h"
-#include "media/media/CRingtoneManagerHelper.h"
+#include "media/CRingtoneManagerHelper.h"
 #include "net/Uri.h"
 #include "text/TextUtils.h"
 #include "R.h"

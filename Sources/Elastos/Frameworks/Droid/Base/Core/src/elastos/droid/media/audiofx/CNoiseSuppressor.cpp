@@ -14,7 +14,9 @@ namespace Audiofx {
 
 const String CNoiseSuppressor::TAG("CNoiseSuppressor");
 
-IAUDIOEFFECT_METHODS_IMPL(CNoiseSuppressor, AudioEffect)
+CAR_INTERFACE_IMPL(CNoiseSuppressor, AudioEffect, INoiseSuppressor)
+
+CAR_OBJECT_IMPL(CNoiseSuppressor)
 
 /**
  * Class constructor.
@@ -42,7 +44,7 @@ ECode CNoiseSuppressor::constructor(
     AutoPtr<IUUID> typeNULL;
     helper->FromString(IAudioEffect::EFFECT_TYPE_NS, (IUUID**)&typeNS);
     helper->FromString(IAudioEffect::EFFECT_TYPE_NULL, (IUUID**)&typeNULL);
-    Init(typeNS, typeNULL, 0, audioSession);
+    return AudioEffect::constructor(typeNS, typeNULL, 0, audioSession);
 }
 
 /**
@@ -61,12 +63,6 @@ ECode CNoiseSuppressor::IsAvailable(
     AutoPtr<IAudioEffectHelper> aeHelper;
     CAudioEffectHelper::AcquireSingleton((IAudioEffectHelper**)&aeHelper);
     return aeHelper->IsEffectTypeAvailable(typeNS, result);
-}
-
-PInterface CNoiseSuppressor::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CNoiseSuppressor::Probe(riid);
 }
 
 } // namespace Audiofx

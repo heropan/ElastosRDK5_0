@@ -3,11 +3,12 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CVisualizer.h"
 #include "ext/frameworkext.h"
-#include "os/HandlerBase.h"
+#include "os/Handler.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessage;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
 
 namespace Elastos {
 namespace Droid {
@@ -51,13 +52,15 @@ namespace Audiofx {
  */
 
 CarClass(CVisualizer)
+    , public Object
+    , public IVisualizer
 {
 private:
     /**
      * Helper class to handle the forwarding of native events to the appropriate listeners
      */
     class NativeEventHandler
-        : public HandlerBase
+        : public Handler
     {
     public:
         NativeEventHandler(
@@ -80,6 +83,10 @@ private:
 
 public:
     CVisualizer();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     virtual ~CVisualizer();
 
@@ -182,6 +189,28 @@ public:
         /* [out] */ Int32* result);
 
     /**
+     * Sets the combination of measurement modes to be performed by this audio effect.
+     * @param mode a mask of the measurements to perform. The valid values are
+     *     {@link #MEASUREMENT_MODE_NONE} (to cancel any measurement)
+     *     or {@link #MEASUREMENT_MODE_PEAK_RMS}.
+     * @return {@link #SUCCESS} in case of success, {@link #ERROR_BAD_VALUE} in case of failure.
+     * @throws IllegalStateException
+     */
+    CARAPI SetMeasurementMode(
+        /* [in] */ Int32 mode,
+        /* [out] */ Int32* result);
+
+    /**
+     * Returns the current measurement modes performed by this audio effect
+     * @return the mask of the measurements,
+     *     {@link #MEASUREMENT_MODE_NONE} (when no measurements are performed)
+     *     or {@link #MEASUREMENT_MODE_PEAK_RMS}.
+     * @throws IllegalStateException
+     */
+    CARAPI GetMeasurementMode(
+        /* [out] */ Int32* result);
+
+    /**
      * Returns the sampling rate of the captured audio.
      * @return the sampling rate in milliHertz.
      */
@@ -250,6 +279,20 @@ public:
     CARAPI GetFft(
         /* [in] */ ArrayOf<Byte>* fft,
         /* [out] */ Int32* result);
+
+    /**
+     * Retrieves the latest peak and RMS measurement.
+     * Sets the peak and RMS fields of the supplied {@link Visualizer.MeasurementPeakRms} to the
+     * latest measured values.
+     * @param measurement a non-null {@link Visualizer.MeasurementPeakRms} instance to store
+     *    the measurement values.
+     * @return {@link #SUCCESS} in case of success, {@link #ERROR_BAD_VALUE},
+     *    {@link #ERROR_NO_MEMORY}, {@link #ERROR_INVALID_OPERATION} or {@link #ERROR_DEAD_OBJECT}
+     *    in case of failure.
+     */
+    CARAPI GetMeasurementPeakRms(
+        /* [in] */ IVisualizerMeasurementPeakRms * measurement,
+        /* [out] */ Int32 * result);
 
     /**
      * Registers an OnDataCaptureListener interface and specifies the rate at which the capture
@@ -329,6 +372,11 @@ private:
 
     CARAPI_(Int32) Native_GetScalingMode();
 
+    CARAPI_(Int32) Native_SetMeasurementMode(
+        /* [in] */ Int32 mode);
+
+    CARAPI_(Int32) Native_GetMeasurementMode();
+
     CARAPI_(Int32) Native_GetSamplingRate();
 
     CARAPI_(Int32) Native_GetWaveForm(
@@ -336,6 +384,9 @@ private:
 
     CARAPI_(Int32) Native_GetFft(
         /* [in] */ ArrayOf<Byte>* fft);
+
+    CARAPI_(Int32) Native_GetPeakRms(
+        /* [in] */ IVisualizerMeasurementPeakRms * measurement);
 
     CARAPI_(Int32) Native_SetPeriodicCapture(
         /* [in] */ Int32 rate,
@@ -392,8 +443,8 @@ private:
     AutoPtr<IVisualizerOnServerDiedListener>  mServerDiedListener;
 
     // accessed by native methods
-    Int32 mNativeVisualizer;
-    Int32 mJniData;
+    Int64 mNativeVisualizer;
+    Int64 mJniData;
 };
 
 } // namespace audiofx

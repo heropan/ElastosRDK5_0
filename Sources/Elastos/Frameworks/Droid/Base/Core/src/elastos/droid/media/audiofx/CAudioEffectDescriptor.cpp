@@ -8,6 +8,16 @@ namespace Droid {
 namespace Media {
 namespace Audiofx {
 
+CAudioEffectDescriptor::CAudioEffectDescriptor()
+    : mConnectMode(String(NULL))
+    , mName(String(NULL))
+    , mImplementor(String(NULL))
+{}
+
+CAR_INTERFACE_IMPL(CAudioEffectDescriptor, Object, IAudioEffectDescriptor)
+
+CAR_OBJECT_IMPL(CAudioEffectDescriptor)
+
 ECode CAudioEffectDescriptor::constructor(
     /* [in] */ const String& type,
     /* [in] */ const String& uuid,

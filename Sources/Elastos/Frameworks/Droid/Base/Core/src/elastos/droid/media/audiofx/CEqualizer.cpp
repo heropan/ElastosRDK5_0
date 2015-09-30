@@ -1,5 +1,6 @@
-#include "media/media/audiofx/CEqualizer.h"
-#include "media/media/audiofx/CEqualizerSettings.h"
+#include "media/audiofx/CEqualizer.h"
+#include "media/audiofx/CEqualizerSettings.h"
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Utility::IUUIDHelper;
 using Elastos::Utility::CUUIDHelper;
@@ -12,9 +13,11 @@ namespace Audiofx {
 const String CEqualizer::TAG("BassBoost");
 const Int32 CEqualizer::PARAM_PROPERTIES = 9;
 
-IAUDIOEFFECT_METHODS_IMPL(CEqualizer, AudioEffect)
+CAR_INTERFACE_IMPL(CEqualizer, AudioEffect, IEqualizer)
 
-CAR_INTERFACE_IMPL(CEqualizer::BaseParameterListener, IAudioEffectOnParameterChangeListener)
+CAR_OBJECT_IMPL(CEqualizer)
+
+CAR_INTERFACE_IMPL(CEqualizer::BaseParameterListener, Object, IAudioEffectOnParameterChangeListener)
 
 ECode CEqualizer::BaseParameterListener::OnParameterChange(
     /* [in] */ IAudioEffect* effect,
@@ -24,7 +27,8 @@ ECode CEqualizer::BaseParameterListener::OnParameterChange(
 {
     AutoPtr<IEqualizerOnParameterChangeListener> l;
     {
-        AutoLock lock(&mHost->mParamListenerLock);
+        Object& lock = mHost->mParamListenerLock;
+        synchronized(lock);
         if (mHost->mParamListener != NULL) {
             l = mHost->mParamListener;
         }
@@ -71,7 +75,7 @@ ECode CEqualizer::constructor(
     AutoPtr<IUUID> typeNULL;
     helper->FromString(IAudioEffect::EFFECT_TYPE_EQUALIZER, (IUUID**)&typeEQUALIZER);
     helper->FromString(IAudioEffect::EFFECT_TYPE_NULL, (IUUID**)&typeNULL);
-    Init(typeEQUALIZER, typeNULL, priority, audioSession);
+    AudioEffect::constructor(typeEQUALIZER, typeNULL, priority, audioSession);
 
     if (audioSession == 0) {
         //Log.w(TAG, "WARNING: attaching an Equalizer to global output mix is deprecated!");
@@ -107,12 +111,6 @@ ECode CEqualizer::constructor(
     return NOERROR;
 }
 
-PInterface CEqualizer::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CEqualizer::Probe(riid);
-}
-
 ECode CEqualizer::GetNumberOfBands(
     /* [out] */ Int16* numBands)
 {
@@ -122,13 +120,13 @@ ECode CEqualizer::GetNumberOfBands(
         *numBands = mNumBands;
         return NOERROR;
     }
-    ArrayOf_<Int32,1> param;
-    param[0] = IEqualizer::PARAM_NUM_BANDS;
-    ArrayOf_<Int16,1> result;
+    AutoPtr<ArrayOf<Int32> > param = ArrayOf<Int32>::Alloc(1);
+    (*param)[0] = IEqualizer::PARAM_NUM_BANDS;
+    AutoPtr<ArrayOf<Int16> > result = ArrayOf<Int16>::Alloc(1);
     Int32 status;
-    GetParameter(&param, &result, &status);
+    GetParameter(param, result, &status);
     FAIL_RETURN(CheckStatus(status));
-    mNumBands = result[0];
+    mNumBands = (*result)[0];
     *numBands = mNumBands;
     return NOERROR;
 }
@@ -153,14 +151,14 @@ ECode CEqualizer::SetBandLevel(
     /* [in] */ Int16 band,
     /* [in] */ Int16 level)
 {
-    ArrayOf_<Int32,2> param;
-    ArrayOf_<Int16,1> value;
+    AutoPtr<ArrayOf<Int32> > param = ArrayOf<Int32>::Alloc(2);
+    AutoPtr<ArrayOf<Int16> > value = ArrayOf<Int16>::Alloc(2);
 
-    param[0] = IEqualizer::PARAM_BAND_LEVEL;
-    param[1] = (Int32) band;
-    value[0] = level;
+    (*param)[0] = IEqualizer::PARAM_BAND_LEVEL;
+    (*param)[1] = (Int32) band;
+    (*value)[0] = level;
     Int32 status;
-    GetParameter(&param, &value, &status);
+    GetParameter(param, value, &status);
     FAIL_RETURN(CheckStatus(status));
     return NOERROR;
 }
@@ -171,15 +169,15 @@ ECode CEqualizer::GetBandLevel(
 {
     VALIDATE_NOT_NULL(bandLevel);
 
-    ArrayOf_<Int32,2> param;
-    ArrayOf_<Int16,1> result;
+    AutoPtr<ArrayOf<Int32> > param = ArrayOf<Int32>::Alloc(2);
+    AutoPtr<ArrayOf<Int32> > result = ArrayOf<Int32>::Alloc(1);
 
-    param[0] = IEqualizer::PARAM_BAND_LEVEL;
-    param[1] = (Int32) band;
+    (*param)[0] = IEqualizer::PARAM_BAND_LEVEL;
+    (*param)[1] = (Int32) band;
     Int32 status;
-    GetParameter(&param, &result, &status);
+    GetParameter(param, result, &status);
     FAIL_RETURN(CheckStatus(status));
-    *bandLevel = result[0];
+    *bandLevel = (*result)[0];
     return NOERROR;
 }
 
@@ -189,15 +187,15 @@ ECode CEqualizer::GetCenterFreq(
 {
     VALIDATE_NOT_NULL(centerFreq);
 
-    ArrayOf_<Int32,2> param;
-    ArrayOf_<Int32,1> result;
+    AutoPtr<ArrayOf<Int32> > param = ArrayOf<Int32>::Alloc(2);
+    AutoPtr<ArrayOf<Int32> > result = ArrayOf<Int32>::Alloc(1);
 
-    param[0] = IEqualizer::PARAM_CENTER_FREQ;
-    param[1] = (Int32) band;
+    (*param)[0] = IEqualizer::PARAM_CENTER_FREQ;
+    (*param)[1] = (Int32) band;
     Int32 status;
-    GetParameter(&param, &result, &status);
+    GetParameter(param, result, &status);
     FAIL_RETURN(CheckStatus(status));
-    *centerFreq = result[0];
+    *centerFreq = (*result)[0];
     return NOERROR;
 }
 
@@ -207,13 +205,13 @@ ECode CEqualizer::GetBandFreqRange(
 {
     VALIDATE_NOT_NULL(bandFreqRange);
 
-    ArrayOf_<Int32,2> param;
+    AutoPtr<ArrayOf<Int32> > param = ArrayOf<Int32>::Alloc(2);
     AutoPtr<ArrayOf<Int32> > result = ArrayOf<Int32>::Alloc(2);
 
-    param[0] = IEqualizer::PARAM_BAND_FREQ_RANGE;
-    param[1] = (Int32) band;
+    (*param)[0] = IEqualizer::PARAM_BAND_FREQ_RANGE;
+    (*param)[1] = (Int32) band;
     Int32 status;
-    GetParameter(&param, result, &status);
+    GetParameter(param, result, &status);
     FAIL_RETURN(CheckStatus(status));
     *bandFreqRange = result;
     REFCOUNT_ADD(*bandFreqRange);
@@ -226,15 +224,15 @@ ECode CEqualizer::GetBand(
 {
     VALIDATE_NOT_NULL(band);
 
-    ArrayOf_<Int32,2> param;
-    ArrayOf_<Int16,1> result;
+    AutoPtr<ArrayOf<Int32> > param = ArrayOf<Int32>::Alloc(2);
+    AutoPtr<ArrayOf<Int16> > result = ArrayOf<Int16>::Alloc(1);
 
-    param[0] = IEqualizer::PARAM_GET_BAND;
-    param[1] = frequency;
+    (*param)[0] = IEqualizer::PARAM_GET_BAND;
+    (*param)[1] = frequency;
     Int32 status;
-    GetParameter(&param, &result, &status);
+    GetParameter(param, result, &status);
     FAIL_RETURN(CheckStatus(status));
-    *band = result[0];
+    *band = (*result)[0];
     return NOERROR;
 }
 
@@ -243,11 +241,11 @@ ECode CEqualizer::GetCurrentPreset(
 {
     VALIDATE_NOT_NULL(preset);
 
-    ArrayOf_<Int16,1> result;
+    AutoPtr<ArrayOf<Int16> > result = ArrayOf<Int16>::Alloc(1);
     Int32 status;
-    GetParameter(IEqualizer::PARAM_CURRENT_PRESET, &result, &status);
+    GetParameter(IEqualizer::PARAM_CURRENT_PRESET, result, &status);
     FAIL_RETURN(CheckStatus(status));
-    *preset = result[0];
+    *preset = (*result)[0];
     return NOERROR;
 }
 
@@ -264,11 +262,11 @@ ECode CEqualizer::GetNumberOfPresets(
 {
     VALIDATE_NOT_NULL(numPresets);
 
-    ArrayOf_<Int16,1> result;
+    AutoPtr<ArrayOf<Int16> > result = ArrayOf<Int16>::Alloc(1);
     Int32 status;
-    GetParameter(IEqualizer::PARAM_GET_NUM_OF_PRESETS, &result, &status);
+    GetParameter(IEqualizer::PARAM_GET_NUM_OF_PRESETS, result, &status);
     FAIL_RETURN(CheckStatus(status));
-    *numPresets = result[0];
+    *numPresets = (*result)[0];
     return NOERROR;
 }
 
@@ -289,11 +287,11 @@ ECode CEqualizer::GetPresetName(
 ECode CEqualizer::SetParameterListener(
     /* [in] */ IEqualizerOnParameterChangeListener* listener)
 {
-    AutoLock lock(mParamListenerLock);
+    synchronized(mParamListenerLock);
     if (mParamListener != NULL) {
         mParamListener = listener;
         mBaseParamListener = new BaseParameterListener(this);
-        SetParameterListener(mBaseParamListener);
+        AudioEffect::SetParameterListener(IAudioEffectOnParameterChangeListener::Probe(mBaseParamListener));
     }
     return NOERROR;
 }

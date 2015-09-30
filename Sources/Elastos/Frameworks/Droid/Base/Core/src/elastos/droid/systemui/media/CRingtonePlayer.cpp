@@ -3,7 +3,7 @@
 #include "os/ServiceManager.h"
 #include "os/Binder.h"
 #include "os/CBinderHelper.h"
-#include "media/media/CRingtone.h"
+#include "media/CRingtone.h"
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::ServiceManager;

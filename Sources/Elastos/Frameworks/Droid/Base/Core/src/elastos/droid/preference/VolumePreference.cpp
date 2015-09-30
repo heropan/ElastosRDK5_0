@@ -1,7 +1,7 @@
 
 #include "VolumePreference.h"
 #include "CVolumePreferenceSavedState.h"
-#include "media/media/CRingtoneManagerHelper.h"
+#include "media/CRingtoneManagerHelper.h"
 #include "os/CHandler.h"
 #include "provider/Settings.h"
 #include "R.h"

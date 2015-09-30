@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CBassBoost.h"
 #include "ext/frameworkext.h"
-#include "media/media/audiofx/AudioEffect.h"
+#include "media/audiofx/AudioEffect.h"
 
 
 using Elastos::Droid::Media::Audiofx::AudioEffect;
@@ -32,7 +32,9 @@ namespace Audiofx {
  * controlling audio effects.
  */
 
-CarClass(CBassBoost), public AudioEffect
+CarClass(CBassBoost)
+    , public AudioEffect
+    , public IBassBoost
 {
 
 private:
@@ -41,7 +43,7 @@ private:
      * super class.
      */
     class BaseParameterListener
-        : public ElRefBase
+        : public Object
         , public IAudioEffectOnParameterChangeListener
     {
     public:
@@ -62,7 +64,10 @@ private:
     };
 
 public:
-    IAUDIOEFFECT_METHODS_DECL()
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CBassBoost();
 
@@ -84,9 +89,6 @@ public:
     CARAPI constructor(
         /* [in] */ Int32 priority,
         /* [in] */ Int32 audioSession);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     /**
      * Indicates whether setting strength is supported. If this method returns false, only one

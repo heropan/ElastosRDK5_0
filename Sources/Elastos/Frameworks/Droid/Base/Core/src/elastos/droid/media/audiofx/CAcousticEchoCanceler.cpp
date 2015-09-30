@@ -14,7 +14,9 @@ namespace Audiofx {
 
 const String CAcousticEchoCanceler::TAG("AcousticEchoCanceler");
 
-IAUDIOEFFECT_METHODS_IMPL(CAcousticEchoCanceler, AudioEffect)
+CAR_INTERFACE_IMPL(CAcousticEchoCanceler, AudioEffect, IAcousticEchoCanceler)
+
+CAR_OBJECT_IMPL(CAcousticEchoCanceler)
 
 /**
  * Class constructor.
@@ -42,7 +44,7 @@ ECode CAcousticEchoCanceler::constructor(
     AutoPtr<IUUID> typeNULL;
     helper->FromString(IAudioEffect::EFFECT_TYPE_AEC, (IUUID**)&typeAEC);
     helper->FromString(IAudioEffect::EFFECT_TYPE_NULL, (IUUID**)&typeNULL);
-    Init(typeAEC, typeNULL, 0, audioSession);
+    return AudioEffect::constructor(typeAEC, typeNULL, 0, audioSession);
 }
 
 /**
@@ -61,12 +63,6 @@ ECode CAcousticEchoCanceler::IsAvailable(
     AutoPtr<IAudioEffectHelper> aeHelper;
     CAudioEffectHelper::AcquireSingleton((IAudioEffectHelper**)&aeHelper);
     return aeHelper->IsEffectTypeAvailable(typeAGC, result);
-}
-
-PInterface CAcousticEchoCanceler::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CAcousticEchoCanceler::Probe(riid);
 }
 
 } // namespace Audiofx

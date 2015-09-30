@@ -57,6 +57,21 @@ module
          * {@link android.media.audiofx.Virtualizer.OnParameterChangeListener}
          */
         const Int32 PARAM_STRENGTH = 1;
+        /**
+         * @hide
+         * Parameter ID to query the virtual speaker angles for a channel mask / device configuration.
+         */
+        const Int32 PARAM_VIRTUAL_SPEAKER_ANGLES = 2;
+        /**
+         * @hide
+         * Parameter ID to force the virtualization mode to be that of a specific device
+         */
+        const Int32 PARAM_FORCE_VIRTUALIZATION_MODE = 3;
+        /**
+         * @hide
+         * Parameter ID to query the current virtualization mode.
+         */
+        const Int32 PARAM_VIRTUALIZATION_MODE = 4;
 
         /**
          * A virtualization mode indicating virtualization processing is not active.

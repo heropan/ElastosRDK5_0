@@ -8,7 +8,7 @@
 #include <elastos/core/StringUtils.h>
 #include "provider/CMediaStoreVideoMedia.h"
 #include "provider/CMediaStoreImagesMedia.h"
-#include "media/media/CMiniThumbFile.h"
+#include "media/CMiniThumbFile.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;

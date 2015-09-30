@@ -1,4 +1,4 @@
-#include "media/media/audiofx/CEnvironmentalReverbSettings.h"
+#include "media/audiofx/CEnvironmentalReverbSettings.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 
@@ -9,6 +9,10 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 namespace Audiofx {
+
+CAR_INTERFACE_IMPL(CEnvironmentalReverbSettings, Object, IEnvironmentalReverbSettings)
+
+CAR_OBJECT_IMPL(CEnvironmentalReverbSettings)
 
 CEnvironmentalReverbSettings::CEnvironmentalReverbSettings()
     : mRoomLevel(0)

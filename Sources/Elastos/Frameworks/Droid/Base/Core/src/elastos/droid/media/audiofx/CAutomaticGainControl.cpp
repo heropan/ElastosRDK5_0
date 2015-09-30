@@ -14,7 +14,9 @@ namespace Audiofx {
 
 const String CAutomaticGainControl::TAG("AutomaticGainControl");
 
-IAUDIOEFFECT_METHODS_IMPL(CAutomaticGainControl, AudioEffect)
+CAR_INTERFACE_IMPL(CAutomaticGainControl, AudioEffect, IAutomaticGainControl)
+
+CAR_OBJECT_IMPL(CAutomaticGainControl)
 
 /**
  * Class constructor.
@@ -42,7 +44,7 @@ ECode CAutomaticGainControl::constructor(
     AutoPtr<IUUID> typeNULL;
     helper->FromString(IAudioEffect::EFFECT_TYPE_AGC, (IUUID**)&typeAGC);
     helper->FromString(IAudioEffect::EFFECT_TYPE_NULL, (IUUID**)&typeNULL);
-    Init(typeAGC, typeNULL, 0, audioSession);
+    return AudioEffect::constructor(typeAGC, typeNULL, 0, audioSession);
 }
 
 /**
@@ -61,12 +63,6 @@ ECode CAutomaticGainControl::IsAvailable(
     AutoPtr<IAudioEffectHelper> aeHelper;
     CAudioEffectHelper::AcquireSingleton((IAudioEffectHelper**)&aeHelper);
     return aeHelper->IsEffectTypeAvailable(typeAGC, result);
-}
-
-PInterface CAutomaticGainControl::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CAutomaticGainControl::Probe(riid);
 }
 
 } // namespace Audiofx

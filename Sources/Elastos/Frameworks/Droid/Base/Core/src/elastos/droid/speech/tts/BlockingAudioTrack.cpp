@@ -1,5 +1,5 @@
 #include "speech/tts/BlockingAudioTrack.h"
-#include "media/media/CAudioTrack.h"
+#include "media/CAudioTrack.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 #include <unistd.h> //for Method: unsigned sleep(unsigned)

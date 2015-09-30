@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CAudioEffectDescriptor.h"
 #include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::IUUID;
 
@@ -27,8 +28,16 @@ namespace Audiofx {
  * enumeration.
  */
 CarClass(CAudioEffectDescriptor)
+    , public Object
+    , public IAudioEffectDescriptor
 {
 public:
+    CAudioEffectDescriptor();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ const String& type,
         /* [in] */ const String& uuid,
