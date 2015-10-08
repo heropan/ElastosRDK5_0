@@ -4,10 +4,10 @@
 #include "elastos/utility/etl/HashMap.h"
 #include "elastos/droid/os/AsyncTask.h"
 
-//TODO using Elastos::Droid::Media::IMediaCrypto;
+using Elastos::Droid::Media::IMediaCrypto;
 using Elastos::Droid::Media::IMediaDrmOnEventListener;
 using Elastos::Droid::Media::EIID_IMediaDrmOnEventListener;
-//TODO using Elastos::Droid::Media::IMediaDrm;
+using Elastos::Droid::Media::IMediaDrm;
 using Elastos::Droid::Media::IMediaDrmKeyRequest;
 
 using Elastos::Droid::Os::AsyncTask;

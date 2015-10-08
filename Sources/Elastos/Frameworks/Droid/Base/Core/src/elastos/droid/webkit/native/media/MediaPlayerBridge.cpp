@@ -26,7 +26,7 @@ using Elastos::Droid::Os::CParcelFileDescriptorHelper;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Utility::IBase64InputStream;
 using Elastos::Droid::Utility::CBase64InputStream;
-//TODO using Elastos::Droid::Utility::IBase64;
+using Elastos::Droid::Utility::IBase64;
 using Elastos::Droid::Media::IMediaPlayer;
 //TODO using Elastos::Droid::Media::CMediaPlayer;
 

@@ -10,7 +10,7 @@
 #include "elastos/utility/logging/Logger.h"
 
 using Elastos::Droid::Content::IContext;
-//TODO using Elastos::Droid::Media::IMediaCodec;
+using Elastos::Droid::Media::IMediaCodec;
 using Elastos::Droid::Media::IMediaCodecBufferInfo;
 //TODO using Elastos::Droid::Media::CMediaCodecBufferInfo;
 using Elastos::Droid::Media::IMediaFormat;

@@ -3,9 +3,9 @@
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::Media::IAudioTrack;
-//TODO using Elastos::Droid::Media::IMediaCodec;
-//TODO using Elastos::Droid::Media::IMediaCrypto;
- using Elastos::Droid::Media::IMediaFormat;
+using Elastos::Droid::Media::IMediaCodec;
+using Elastos::Droid::Media::IMediaCrypto;
+using Elastos::Droid::Media::IMediaFormat;
 using Elastos::Droid::View::ISurface;
 
 using Elastos::IO::IByteBuffer;
