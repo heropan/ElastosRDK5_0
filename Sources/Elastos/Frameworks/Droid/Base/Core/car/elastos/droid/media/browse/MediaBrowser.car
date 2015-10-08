@@ -83,7 +83,7 @@ module
         OnConnectionFailed();
     }
 
-    [deprecated]
+    [local, deprecated]
     interface IMediaBrowserSubscriptionCallback {
         /**
          * Called when the list of children is loaded or updated.
@@ -100,6 +100,7 @@ module
      * was constructed.
      * </p>
      */
+    [local]
     interface IMediaBrowser {
         /**
          * Connects to the media browse service.
