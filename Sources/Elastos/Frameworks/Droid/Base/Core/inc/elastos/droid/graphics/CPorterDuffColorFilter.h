@@ -9,11 +9,16 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CarClass(CPorterDuffColorFilter), public ColorFilter
+CarClass(CPorterDuffColorFilter)
+    , public ColorFilter
+    , public IPorterDuffColorFilter
 {
 public:
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
+    CPorterDuffColorFilter();
 
     /**
      * Create a colorfilter that uses the specified color and porter-duff mode.
@@ -26,15 +31,77 @@ public:
         /* [in] */ Int32 srcColor,
         /* [in] */ PorterDuffMode mode);
 
-private:
-    static CARAPI_(Int32) NativeCreatePorterDuffFilter(
-        /* [in] */ Int32 srcColor,
-        /* [in] */ PorterDuffMode porterDuffMode);
+    /**
+     * Returns the ARGB color used to tint the source pixels when this filter
+     * is applied.
+     *
+     * @see Color
+     * @see #setColor(int)
+     *
+     * @hide
+     */
+    CARAPI GetColor(
+        /* [out] */ Int32* color);
 
-    static CARAPI_(Int32) NCreatePorterDuffFilter(
-        /* [in] */ Int32 nativeFilter,
+    /**
+     * Specifies the color to tint the source pixels with when this color
+     * filter is applied.
+     *
+     * @param color An ARGB {@link Color color}
+     *
+     * @see Color
+     * @see #getColor()
+     * @see #getMode()
+     *
+     * @hide
+     */
+    CARAPI SetColor(
+        /* [in] */ Int32 color);
+
+    /**
+     * Returns the Porter-Duff mode used to composite this color filter's
+     * color with the source pixel when this filter is applied.
+     *
+     * @see PorterDuff
+     * @see #setMode(android.graphics.PorterDuff.Mode)
+     *
+     * @hide
+     */
+    CARAPI GetMode(
+        /* [out] */ PorterDuffMode* mode);
+
+    /**
+     * Specifies the Porter-Duff mode to use when compositing this color
+     * filter's color with the source pixel at draw time.
+     *
+     * @see PorterDuff
+     * @see #getMode()
+     * @see #getColor()
+     *
+     * @hide
+     */
+    CARAPI SetMode(
+        /* [in] */ PorterDuffMode mode);
+
+    // @Override
+    CARAPI Equals(
+        /* [in] */ IInterface* object,
+        /* [out] */ Boolean* equals);
+
+    // @Override
+    CARAPI GetHashCode(
+        /* [out] */ Int32* code);
+
+private:
+    CARAPI_(void) Update();
+
+    static CARAPI_(Int64) NativeCreatePorterDuffFilter(
         /* [in] */ Int32 srcColor,
-        /* [in] */ PorterDuffMode porterDuffMode);
+        /* [in] */ Int32 porterDuffMode);
+
+private:
+    Int32 mColor;
+    PorterDuffMode mMode;
 };
 
 } // namespace Graphics

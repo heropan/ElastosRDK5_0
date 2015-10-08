@@ -1,11 +1,13 @@
 
 #include "graphics/CEmbossMaskFilter.h"
 #include <skia/effects/SkBlurMaskFilter.h>
+#include <skia/effects/SkBlurMask.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CEmbossMaskFilter);
 ECode CEmbossMaskFilter::constructor(
     /* [in] */ const ArrayOf<Float>& direction,
     /* [in] */ Float ambient,
@@ -33,23 +35,41 @@ PInterface CEmbossMaskFilter::Probe(
     return MaskFilter::Probe(riid);
 }
 
-Int32 CEmbossMaskFilter::NativeConstructor(
+UInt32 CEmbossMaskFilter::AddRef()
+{
+    return MaskFilter::AddRef();
+}
+
+UInt32 CEmbossMaskFilter::Release()
+{
+    return MaskFilter::Release();
+}
+
+ECode CEmbossMaskFilter::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    return MaskFilter::GetInterfaceID(object, iid);
+}
+
+Int64 CEmbossMaskFilter::NativeConstructor(
     /* [in] */ const ArrayOf<Float>& dirArray,
     /* [in] */ Float ambient,
     /* [in] */ Float specular,
     /* [in] */ Float blurRadius)
 {
     SkScalar direction[3];
-    for (Int32 i = 0; i < 3; i++) {
-        direction[i] = SkFloatToScalar(dirArray[i]);
+
+    float* values = dirArray.GetPayload();
+    for (int i = 0; i < 3; i++) {
+        direction[i] = values[i];
     }
 
-    SkMaskFilter* filter = SkBlurMaskFilter::CreateEmboss(
-            direction,
-            SkFloatToScalar(ambient),
-            SkFloatToScalar(specular),
-            SkFloatToScalar(blurRadius));
-    return reinterpret_cast<Int32>(filter);
+    SkScalar sigma = SkBlurMask::ConvertRadiusToSigma(blurRadius);
+    SkMaskFilter* filter =  SkBlurMaskFilter::CreateEmboss(sigma,
+            direction, ambient, specular);
+    assert(filter != NULL);
+    return reinterpret_cast<Int64>(filter);
 }
 
 } // namespace Graphics

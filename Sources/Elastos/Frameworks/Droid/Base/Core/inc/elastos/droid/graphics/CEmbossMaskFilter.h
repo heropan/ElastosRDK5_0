@@ -16,6 +16,8 @@ CarClass(CEmbossMaskFilter)
 public:
     CAR_OBJECT_DECL();
 
+    CAR_INTERFACE_DECL();
+
     /**
      * Create an emboss maskfilter
      *
@@ -31,11 +33,8 @@ public:
         /* [in] */ Float specular,
         /* [in] */ Float blurRadius);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
 private:
-    static CARAPI_(Int32) NativeConstructor(
+    static CARAPI_(Int64) NativeConstructor(
         /* [in] */ const ArrayOf<Float>& dirArray,
         /* [in] */ Float ambient,
         /* [in] */ Float specular,

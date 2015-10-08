@@ -2,14 +2,23 @@
 #define __ELASTOS_DROID_GRAPHICS_CPAINTFONTMETRICSINT_H__
 
 #include "_Elastos_Droid_Graphics_CPaintFontMetricsInt.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
 CarClass(CPaintFontMetricsInt)
+    , public Object
+    , public IPaintFontMetricsInt
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     CPaintFontMetricsInt();
 
     CARAPI GetTop(

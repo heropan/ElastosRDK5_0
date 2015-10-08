@@ -3,8 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_AUTODECODERCANCEL_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <skia/images/SkImageDecoder.h>
-
+#include <skia/core/SkImageDecoder.h>
 
 namespace Elastos {
 namespace Droid {

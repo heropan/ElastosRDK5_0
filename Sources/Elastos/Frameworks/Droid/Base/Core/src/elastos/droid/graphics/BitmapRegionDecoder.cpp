@@ -1,37 +1,66 @@
 
 #include "ext/frameworkext.h"
 #include "graphics/BitmapRegionDecoder.h"
+// #include "content/res/CAssetManager.h"
 #include "graphics/CRect.h"
 #include "graphics/AutoDecoderCancel.h"
 #include "graphics/Utils.h"
 #include "graphics/CreateOutputStreamAdaptor.h"
 #include "graphics/GraphicsNative.h"
 #include "graphics/NBitmapFactory.h"
+#include <elastos/core/AutoLock.h>
+#include <skia/core/SkData.h>
 #include <skia/core/SkTemplates.h>
-#include <skia/core/SkTScopedPtr.h>
-#include <skia/images/SkBitmapRegionDecoder.h>
-#include <skia/images/SkImageDecoder.h>
+#include <skia/core/SkImageDecoder.h>
 #include <androidfw/Asset.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
+// using Elastos::Droid::Content::Res::CAssetManager;
+using Elastos::Droid::Content::Res::IAssetInputStream;
+using Elastos::Core::AutoLock;
 using Elastos::IO::IBufferedInputStream;
 using Elastos::IO::CBufferedInputStream;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
 
-using Elastos::Droid::Content::Res::IAssetInputStream;
-
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CAR_INTERFACE_IMPL(BitmapRegionDecoder, Object, BitmapRegionDecoder);
+class SkBitmapRegionDecoder {
+public:
+    SkBitmapRegionDecoder(SkImageDecoder* decoder, int width, int height) {
+        fDecoder = decoder;
+        fWidth = width;
+        fHeight = height;
+    }
+    ~SkBitmapRegionDecoder() {
+        SkDELETE(fDecoder);
+    }
+
+    bool decodeRegion(SkBitmap* bitmap, const SkIRect& rect,
+                      SkColorType pref, int sampleSize) {
+        fDecoder->setSampleSize(sampleSize);
+        return fDecoder->decodeSubset(bitmap, rect, pref);
+    }
+
+    SkImageDecoder* getDecoder() const { return fDecoder; }
+    int getWidth() const { return fWidth; }
+    int getHeight() const { return fHeight; }
+
+private:
+    SkImageDecoder* fDecoder;
+    int fWidth;
+    int fHeight;
+};
+
+CAR_INTERFACE_IMPL(BitmapRegionDecoder, Object, IBitmapRegionDecoder);
 /*  Private constructor that must receive an already allocated native
 region decoder int (pointer).
 */
 BitmapRegionDecoder::BitmapRegionDecoder(
-    /* [in] */ Int32 decoder)
+    /* [in] */ Int64 decoder)
     : mNativeBitmapRegionDecoder(decoder)
     , mRecycled(FALSE)
 {}
@@ -46,7 +75,7 @@ BitmapRegionDecoder::~BitmapRegionDecoder()
 }
 
 ECode BitmapRegionDecoder::NewInstance(
-    /* [in] */ const ArrayOf<Byte>& data,
+    /* [in] */ ArrayOf<Byte>* data,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [in] */ Boolean isShareable,
@@ -54,7 +83,7 @@ ECode BitmapRegionDecoder::NewInstance(
 {
     VALIDATE_NOT_NULL(decoder);
 
-    if ((offset | length) < 0 || data.GetLength() < offset + length) {
+    if ((offset | length) < 0 || data->GetLength() < offset + length) {
         // throw new ArrayIndexOutOfBoundsException();
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -86,8 +115,9 @@ ECode BitmapRegionDecoder::NewInstance(
     }
 
     if (IAssetInputStream::Probe(is.Get()) != NULL) {
-        Int32 value;
-        IAssetInputStream::Probe(is.Get())->GetAssetInt32(&value);
+        Int64 value;
+        assert(0 && "TODO");
+        // ((CAssetManager::AssetInputStream*)IAssetInputStream::Probe(is.Get()))->GetNativeAsset(&value);
         return NativeNewInstance(value, isShareable, decoder);
     }
     else {
@@ -145,7 +175,7 @@ ECode BitmapRegionDecoder::DecodeRegion(
 
     AutoLock lock(mNativeLock);
 
-    FAIL_RETURN(CheckRecycled("decodeRegion called on recycled region decoder"));
+    FAIL_RETURN(CheckRecycled(String("decodeRegion called on recycled region decoder")));
     Int32 width, height;
     GetWidth(&width);
     GetHeight(&height);
@@ -167,7 +197,7 @@ ECode BitmapRegionDecoder::GetWidth(
 
     AutoLock lock(mNativeLock);
 
-    FAIL_RETURN(CheckRecycled("getWidth called on recycled region decoder"));
+    FAIL_RETURN(CheckRecycled(String("getWidth called on recycled region decoder")));
     *width = NativeGetWidth(mNativeBitmapRegionDecoder);
     return NOERROR;
 }
@@ -180,7 +210,7 @@ ECode BitmapRegionDecoder::GetHeight(
 
     AutoLock lock(mNativeLock);
 
-    FAIL_RETURN(CheckRecycled("getHeight called on recycled region decoder"));
+    FAIL_RETURN(CheckRecycled(String("getHeight called on recycled region decoder")));
     *height = NativeGetHeight(mNativeBitmapRegionDecoder);
     return NOERROR;
 }
@@ -226,7 +256,7 @@ ECode BitmapRegionDecoder::IsRecycled(
 * has already been recycled.
 */
 ECode BitmapRegionDecoder::CheckRecycled(
-    /* [in] */ CString errorMessage)
+    /* [in] */ const String& errorMessage)
 {
     if (mRecycled) {
         // throw new IllegalStateException(errorMessage);
@@ -235,31 +265,8 @@ ECode BitmapRegionDecoder::CheckRecycled(
     return NOERROR;
 }
 
-static SkMemoryStream* BuildSkMemoryStream(
-    /* [in] */ SkStream *stream)
-{
-    size_t bufferSize = 4096;
-    size_t streamLen = 0;
-    size_t len;
-    char* data = (char*)sk_malloc_throw(bufferSize);
-
-    while ((len = stream->read(data + streamLen,
-                    bufferSize - streamLen)) != 0) {
-        streamLen += len;
-        if (streamLen == bufferSize) {
-            bufferSize *= 2;
-            data = (char*)sk_realloc_throw(data, bufferSize);
-        }
-    }
-    data = (char*)sk_realloc_throw(data, streamLen);
-
-    SkMemoryStream* streamMem = new SkMemoryStream();
-    streamMem->setMemoryOwned(data, streamLen);
-    return streamMem;
-}
-
-static ECode DoBuildTileIndex(
-    /* [in] */ SkStream* stream,
+static ECode CreateBitmapRegionDecoder(
+    /* [in] */ SkStreamRewindable* stream,
     /* [out] */ IBitmapRegionDecoder** _decoder)
 {
     assert(_decoder != NULL);
@@ -281,13 +288,16 @@ static ECode DoBuildTileIndex(
         //         decoder->getFormatName());
         // doThrowIOE(env, msg);
         // return nullObjectReturn("decoder->buildTileIndex returned false");
-        *_decoder = NULL;
+        // *_decoder = NULL;
+        SkDELETE(decoder);
         return E_IO_EXCEPTION;
     }
 
-    SkBitmapRegionDecoder *bm = new SkBitmapRegionDecoder(decoder, stream, width, height);
+    SkBitmapRegionDecoder *bm = new SkBitmapRegionDecoder(decoder, width, height);
 
-    return GraphicsNative::CreateBitmapRegionDecoder(bm, _decoder);
+    assert(0 && "TODO");
+    // return GraphicsNative::CreateBitmapRegionDecoder(bm, _decoder);
+    return NOERROR;
 }
 
 static Boolean OptionsCancel(IBitmapFactoryOptions* options)
@@ -300,7 +310,7 @@ static Boolean OptionsCancel(IBitmapFactoryOptions* options)
 }
 
 ECode BitmapRegionDecoder::NativeDecodeRegion(
-    /* [in] */ Int32 brd,
+    /* [in] */ Int64 brdHandle,
     /* [in] */ Int32 startX,
     /* [in] */ Int32 startY,
     /* [in] */ Int32 width,
@@ -308,12 +318,14 @@ ECode BitmapRegionDecoder::NativeDecodeRegion(
     /* [in] */ IBitmapFactoryOptions* options,
     /* [out] */ IBitmap** bitmap)
 {
+    SkBitmapRegionDecoder *brd = reinterpret_cast<SkBitmapRegionDecoder*>(brdHandle);
     AutoPtr<IBitmap> tileBitmap;
     SkImageDecoder* decoder = ((SkBitmapRegionDecoder*)brd)->getDecoder();
     Int32 sampleSize = 1;
-    SkBitmap::Config prefConfig = SkBitmap::kNo_Config;
+    SkColorType prefColorType = kUnknown_SkColorType;
     Boolean doDither = TRUE;
     Boolean preferQualityOverSpeed = FALSE;
+    Boolean requireUnpremultiplied = FALSE;
 
     if (NULL != options) {
         options->GetInSampleSize(&sampleSize);
@@ -324,15 +336,18 @@ ECode BitmapRegionDecoder::NativeDecodeRegion(
 
         BitmapConfig config;
         options->GetInPreferredConfig(&config);
-        prefConfig = GraphicsNative::GetNativeBitmapConfig(config);
+        prefColorType = GraphicsNative::GetNativeBitmapColorType(config);
         options->GetInDither(&doDither);
         options->GetInPreferQualityOverSpeed(&preferQualityOverSpeed);
         // Get the bitmap for re-use if it exists.
         options->GetInBitmap((IBitmap**)&tileBitmap);
+        options->GetInPremultiplied(&requireUnpremultiplied);
+        requireUnpremultiplied = !requireUnpremultiplied;
     }
 
     decoder->setDitherImage(doDither);
     decoder->setPreferQualityOverSpeed(preferQualityOverSpeed);
+    decoder->setRequireUnpremultipliedColors(requireUnpremultiplied);
     AutoDecoderCancel adc(options, decoder);
 
     // To fix the race condition in case "requestCancelDecode"
@@ -349,7 +364,7 @@ ECode BitmapRegionDecoder::NativeDecodeRegion(
     region.fRight = startX + width;
     region.fBottom = startY + height;
     SkBitmap* nativeBitmap = NULL;
-    SkTScopedPtr<SkBitmap> adb;
+    SkAutoTDelete<SkBitmap> adb;
 
     if (tileBitmap != NULL) {
         // Re-use bitmap.
@@ -360,7 +375,7 @@ ECode BitmapRegionDecoder::NativeDecodeRegion(
         adb.reset(nativeBitmap);
     }
 
-    if (!((SkBitmapRegionDecoder*)brd)->decodeRegion(nativeBitmap, region, prefConfig, sampleSize)) {
+    if (!((SkBitmapRegionDecoder*)brd)->decodeRegion(nativeBitmap, region, prefColorType, sampleSize)) {
         *bitmap = NULL;
         return NOERROR;
     }
@@ -372,7 +387,8 @@ ECode BitmapRegionDecoder::NativeDecodeRegion(
         // TODO: set the mimeType field with the data from the codec.
         // but how to reuse a set of strings, rather than allocating new one
         // each time?
-        options->SetOutMimeType(NBitmapFactory::GetMimeTypeString(decoder->getFormat()));
+        assert(0 && "TODO");
+        // options->SetOutMimeType(NBitmapFactory::GetMimeTypeString(decoder->getFormat()));
     }
 
    if (tileBitmap != NULL) {
@@ -382,37 +398,42 @@ ECode BitmapRegionDecoder::NativeDecodeRegion(
     }
 
     // detach bitmap from its autotdeleter, since we want to own it now
-    adb.release();
+    adb.detach();
 
     GraphicsNative::DroidPixelAllocator* allocator = (GraphicsNative::DroidPixelAllocator*)decoder->getAllocator();
     AutoPtr< ArrayOf<Byte> > buff = allocator->getStorageObjAndReset();
     AutoPtr<CBitmap> bitmapObj;
-    FAIL_RETURN(GraphicsNative::CreateBitmap(nativeBitmap, buff, FALSE, NULL, NULL, -1, (CBitmap**)&bitmapObj));
+    Int32 bitmapCreateFlags = 0;
+    if (!requireUnpremultiplied) bitmapCreateFlags |= GraphicsNative::kBitmapCreateFlag_Premultiplied;
+    FAIL_RETURN(GraphicsNative::CreateBitmap(nativeBitmap, buff, bitmapCreateFlags, NULL, NULL, -1, (CBitmap**)&bitmapObj));
     *bitmap = (IBitmap*)bitmapObj.Get();
     REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 
 Int32 BitmapRegionDecoder::NativeGetWidth(
-    /* [in] */ Int32 brd)
+    /* [in] */ Int64 brdHandle)
 {
-    return ((SkBitmapRegionDecoder*)brd)->getWidth();
+    SkBitmapRegionDecoder *brd = reinterpret_cast<SkBitmapRegionDecoder*>(brdHandle);
+    return static_cast<Int32>(brd->getWidth());
 }
 
 Int32 BitmapRegionDecoder::NativeGetHeight(
-    /* [in] */ Int32 brd)
+    /* [in] */ Int64 brdHandle)
 {
-    return ((SkBitmapRegionDecoder*)brd)->getHeight();
+    SkBitmapRegionDecoder *brd = reinterpret_cast<SkBitmapRegionDecoder*>(brdHandle);
+    return static_cast<Int32>(brd->getHeight());
 }
 
 void BitmapRegionDecoder::NativeClean(
-    /* [in] */ Int32 brd)
+    /* [in] */ Int64 brdHandle)
 {
-    delete (SkBitmapRegionDecoder*)brd;
+    SkBitmapRegionDecoder *brd = reinterpret_cast<SkBitmapRegionDecoder*>(brdHandle);
+    delete brd;
 }
 
 ECode BitmapRegionDecoder::NativeNewInstance(
-    /* [in] */ const ArrayOf<Byte>& data,
+    /* [in] */ ArrayOf<Byte>* data,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [in] */ Boolean isShareable,
@@ -422,8 +443,11 @@ ECode BitmapRegionDecoder::NativeNewInstance(
     share it, but that means adding a globalref to the java array object
     For now we just always copy the array's data if isShareable.
     */
-    SkStream* stream = new SkMemoryStream(data.GetPayload() + offset, length, TRUE);
-    return DoBuildTileIndex(stream, decoder);
+    SkMemoryStream* stream = new SkMemoryStream(data->GetPayload() + offset, length, TRUE);
+
+    ECode ec = CreateBitmapRegionDecoder(stream, decoder);
+    SkSafeUnref(stream); // the decoder now holds a reference
+    return ec;
 }
 
 ECode BitmapRegionDecoder::NativeNewInstance(
@@ -437,43 +461,18 @@ ECode BitmapRegionDecoder::NativeNewInstance(
 
     Int32 descriptor;
     fd->GetDescriptor(&descriptor);
-    SkStream *stream = NULL;
     struct stat fdStat;
-    Int32 newFD;
     if (fstat(descriptor, &fdStat) == -1) {
         *decoder = NULL;
         return E_IO_EXCEPTION;
     }
 
-    if (isShareable &&
-            S_ISREG(fdStat.st_mode) &&
-            (newFD = ::dup(descriptor)) != -1) {
-        SkFDStream* fdStream = new SkFDStream(newFD, true);
-        if (!fdStream->isValid()) {
-            fdStream->unref();
-            *decoder = NULL;
-            return NOERROR;
-        }
-        stream = fdStream;
-    }
-    else {
-        /* Restore our offset when we leave, so we can be called more than once
-           with the same descriptor. This is only required if we didn't dup the
-           file descriptor, but it is OK to do it all the time.
-        */
-        AutoFDSeek as(descriptor);
+    SkAutoTUnref<SkData> data(SkData::NewFromFD(descriptor));
+    SkMemoryStream* stream = new SkMemoryStream(data);
 
-        SkFDStream* fdStream = new SkFDStream(descriptor, false);
-        if (!fdStream->isValid()) {
-            fdStream->unref();
-            *decoder = NULL;
-            return NOERROR;
-        }
-        stream = BuildSkMemoryStream(fdStream);
-        fdStream->unref();
-    }
-
-    return DoBuildTileIndex(stream, decoder);
+    ECode ec = CreateBitmapRegionDecoder(stream, decoder);
+    SkSafeUnref(stream); // the decoder now holds a reference
+    return ec;
 }
 
 ECode BitmapRegionDecoder::NativeNewInstance(
@@ -482,30 +481,31 @@ ECode BitmapRegionDecoder::NativeNewInstance(
     /* [in] */ Boolean isShareable,
     /* [out] */ IBitmapRegionDecoder** decoder)
 {
+    // for now we don't allow shareable with java inputstreams
+    SkStreamRewindable* stream = CopyJavaInputStream(is, storage);
+
     ECode ec = NOERROR;
     *decoder = NULL;
-    SkStream* stream = CreateInputStreamAdaptor(is, storage, 1024);
-
     if (stream) {
-        // for now we don't allow shareable with java inputstreams
-        SkMemoryStream *mStream = BuildSkMemoryStream(stream);
-        ec = DoBuildTileIndex(mStream, decoder);
-        stream->unref();
+        ec = CreateBitmapRegionDecoder(stream, decoder);
+        stream->unref(); // the decoder now holds a reference
     }
-    return ec;
+    return NOERROR;
 }
 
 ECode BitmapRegionDecoder::NativeNewInstance(
-    /* [in] */ Int32 nativeAsset,
+    /* [in] */ Int64 nativeAsset,
     /* [in] */ Boolean isShareable,
     /* [out] */ IBitmapRegionDecoder** decoder)
 {
-    SkStream* stream, *assStream;
     android::Asset* asset = reinterpret_cast<android::Asset*>(nativeAsset);
-    assStream = new AssetStreamAdaptor(asset);
-    stream = BuildSkMemoryStream(assStream);
-    assStream->unref();
-    return DoBuildTileIndex(stream, decoder);
+    SkAutoTUnref<SkMemoryStream> stream(CopyAssetToStream(asset));
+    if (NULL == stream.get()) {
+        return NULL;
+    }
+
+    // The decoder now holds a reference to stream.
+    return CreateBitmapRegionDecoder(stream.get(), decoder);
 }
 
 } // namespace Graphics

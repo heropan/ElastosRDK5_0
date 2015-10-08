@@ -7,6 +7,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_SINGLETON_IMPL(CMovieHelper);
+CAR_INTERFACE_IMPL(CMovieHelper, Singleton, IMovieHelper);
 ECode CMovieHelper::DecodeFile(
     /* [in] */ const String& pathName,
     /* [out] */ IMovie** movie)
@@ -26,7 +28,7 @@ ECode CMovieHelper::DecodeStream(
 }
 
 ECode CMovieHelper::DecodeByteArray(
-    /* [in] */ const ArrayOf<Byte>& data,
+    /* [in] */ ArrayOf<Byte>* data,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [out] */ IMovie** movie)

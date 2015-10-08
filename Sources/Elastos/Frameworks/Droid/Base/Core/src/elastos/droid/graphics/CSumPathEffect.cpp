@@ -6,13 +6,14 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CSumPathEffect);
 ECode CSumPathEffect::constructor(
     /* [in] */ IPathEffect* first,
     /* [in] */ IPathEffect* second)
 {
     mNativeInstance = NativeCreate((
-            (PathEffect*)first->Probe(EIID_PathEffect))->mNativeInstance,
-            ((PathEffect*)second->Probe(EIID_PathEffect))->mNativeInstance);
+            (PathEffect*)(IPathEffect*)first->Probe(EIID_PathEffect))->mNativeInstance,
+            ((PathEffect*)(IPathEffect*)second->Probe(EIID_PathEffect))->mNativeInstance);
     return NOERROR;
 }
 
@@ -22,16 +23,37 @@ PInterface CSumPathEffect::Probe(
     if (riid == EIID_PathEffect) {
         return reinterpret_cast<PInterface>((PathEffect*)this);
     }
-    return _CSumPathEffect::Probe(riid);
+    else if (riid == EIID_ISumPathEffect) {
+        return (ISumPathEffect*)this;
+    }
+    return PathEffect::Probe(riid);
 }
 
-Int32 CSumPathEffect::NativeCreate(
-    /* [in] */ Int32 first,
-    /* [in] */ Int32 second)
+UInt32 CSumPathEffect::AddRef()
 {
-    SkPathEffect* skFirst = reinterpret_cast<SkPathEffect*>(first);
-    SkPathEffect* skSecond = reinterpret_cast<SkPathEffect*>(second);
-    return reinterpret_cast<Int32>(new SkSumPathEffect(skFirst, skSecond));
+    return PathEffect::AddRef();
+}
+
+UInt32 CSumPathEffect::Release()
+{
+    return PathEffect::Release();
+}
+
+ECode CSumPathEffect::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    return PathEffect::GetInterfaceID(object, iid);
+}
+
+Int64 CSumPathEffect::NativeCreate(
+    /* [in] */ Int64 firstHandle,
+    /* [in] */ Int64 secondHandle)
+{
+    SkPathEffect* first = reinterpret_cast<SkPathEffect*>(firstHandle);
+    SkPathEffect* second = reinterpret_cast<SkPathEffect*>(secondHandle);
+    SkPathEffect* effect = SkSumPathEffect::Create(first, second);
+    return reinterpret_cast<Int64>(effect);
 }
 
 } // namespace Graphics

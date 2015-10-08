@@ -3,14 +3,26 @@
 #define __ELASTOS_DROID_GRAPHICS_CREGION_H__
 
 #include "_Elastos_Droid_Graphics_CRegion.h"
+#include "utility/Pools.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Droid::Utility::Pools;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
 CarClass(CRegion)
+    , public Object
+    , public IRegion
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     ~CRegion();
 
     CARAPI constructor();
@@ -28,7 +40,8 @@ public:
         /* [in] */ Int32 bottom);
 
     CARAPI constructor(
-        /* [in] */ Int32 ni);
+        /* [in] */ Int64 ni,
+        /* [in] */ Int32 dummy);
 
     /** Set the region to the empty region
      */
@@ -280,6 +293,30 @@ public:
     CARAPI ToString(
         /* [out] */ String* str);
 
+    /**
+     * @return An instance from a pool if such or a new one.
+     *
+     * @hide
+     */
+    static CARAPI_(AutoPtr<IRegion>) Obtain();
+
+    /**
+     * @return An instance from a pool if such or a new one.
+     *
+     * @param other Region to copy values from for initialization.
+     *
+     * @hide
+     */
+    static CARAPI_(AutoPtr<IRegion>) Obtain(
+        /* [in] */ IRegion* other);
+
+    /**
+     * Recycles an instance.
+     *
+     * @hide
+     */
+    CARAPI Recycle();
+
     CARAPI GetNativeRegion(
         /* [out] */ Handle32* region);
 
@@ -289,44 +326,44 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    /*package*/ CARAPI_(Int32) Ni();
+    /*package*/ CARAPI_(Int64) Ni();
 
 private:
     static CARAPI_(Boolean) NativeEquals(
-        /* [in] */ Int32 region1,
-        /* [in] */ Int32 region2);
+        /* [in] */ Int64 region1,
+        /* [in] */ Int64 region2);
 
-    static CARAPI_(Int32) NativeConstructor();
+    static CARAPI_(Int64) NativeConstructor();
 
     static CARAPI_(void) NativeDestructor(
-        /* [in] */ Int32 region);
+        /* [in] */ Int64 region);
 
-    static CARAPI_(Boolean) NativeSetRegion(
-        /* [in] */ Int32 dst,
-        /* [in] */ Int32 src);
+    static CARAPI_(void) NativeSetRegion(
+        /* [in] */ Int64 dst,
+        /* [in] */ Int64 src);
 
     static CARAPI_(Boolean) NativeSetRect(
-        /* [in] */ Int32 dst,
+        /* [in] */ Int64 dst,
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
         /* [in] */ Int32 bottom);
 
     static CARAPI_(Boolean) NativeSetPath(
-        /* [in] */ Int32 dst,
-        /* [in] */ Int32 path,
-        /* [in] */ Int32 clip);
+        /* [in] */ Int64 dst,
+        /* [in] */ Int64 path,
+        /* [in] */ Int64 clip);
 
     static CARAPI_(Boolean) NativeGetBounds(
-        /* [in] */ Int32 region,
+        /* [in] */ Int64 region,
         /* [out] */ IRect* rect);
 
     static CARAPI_(Boolean) NativeGetBoundaryPath(
-        /* [in] */ Int32 region,
-        /* [out] */ Int32 path);
+        /* [in] */ Int64 region,
+        /* [out] */ Int64 path);
 
     static CARAPI_(Boolean) NativeOp(
-        /* [in] */ Int32 dst,
+        /* [in] */ Int64 dst,
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
@@ -334,29 +371,34 @@ private:
         /* [in] */ RegionOp op);
 
     static CARAPI_(Boolean) NativeOp(
-        /* [in] */ Int32 dst,
+        /* [in] */ Int64 dst,
         /* [in] */ IRect* rect,
-        /* [in] */ Int32 region,
+        /* [in] */ Int64 region,
         /* [in] */ RegionOp op);
 
     static CARAPI_(Boolean) NativeOp(
-        /* [in] */ Int32 dst,
-        /* [in] */ Int32 region1,
-        /* [in] */ Int32 region2,
+        /* [in] */ Int64 dst,
+        /* [in] */ Int64 region1,
+        /* [in] */ Int64 region2,
         /* [in] */ RegionOp op);
 
-    static CARAPI_(Int32) NativeCreateFromParcel(
+    static CARAPI_(Int64) NativeCreateFromParcel(
         /* [in] */ IParcel* parcel);
 
     static CARAPI_(Boolean) NativeWriteToParcel(
-        /* [in] */ Int32 region,
+        /* [in] */ Int64 region,
         /* [out] */ IParcel* parcel);
 
     static CARAPI_(String) NativeToString(
-        /* [in] */ Int32 region);
+        /* [in] */ Int64 region);
 
 public:
-    Int32 mNativeRegion;
+    Int64 mNativeRegion;
+
+private:
+    static const Int32 MAX_POOL_SIZE;
+
+    static AutoPtr<Pools::SynchronizedPool<IRegion> > sPool;
 };
 
 } // namespace Graphics

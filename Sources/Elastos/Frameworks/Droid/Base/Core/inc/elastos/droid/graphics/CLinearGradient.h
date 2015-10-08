@@ -9,9 +9,17 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CarClass(CLinearGradient), public Shader
+CarClass(CLinearGradient)
+    , public Shader
+    , public ILinearGradient
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
+    CLinearGradient();
+
     /** Create a shader that draws a linear gradient along a line.
      *  @param x0           The x-coordinate for the start of the gradient line
      *  @param y0           The y-coordinate for the start of the gradient line
@@ -50,54 +58,52 @@ public:
         /* [in] */ Int32 color1,
         /* [in] */ ShaderTileMode tile);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+private:
+    CARAPI_(Int64) NativeCreate1(
+        /* [in] */ Float x0,
+        /* [in] */ Float y0,
+        /* [in] */ Float x1,
+        /* [in] */ Float y1,
+        /* [in] */ const ArrayOf<Int32>& colors,
+        /* [in] */ const ArrayOf<Float>* positions,
+        /* [in] */ ShaderTileMode tileMode);
 
-    CARAPI GetLocalMatrix(
-        /* [in, out] */ IMatrix* localM,
-        /* [out] */ Boolean* result);
+    CARAPI_(Int64) NativeCreate2(
+        /* [in] */ Float x0,
+        /* [in] */ Float y0,
+        /* [in] */ Float x1,
+        /* [in] */ Float y1,
+        /* [in] */ Int32 color0,
+        /* [in] */ Int32 color1,
+        /* [in] */ ShaderTileMode tileMode);
 
-    CARAPI SetLocalMatrix(
-        /* [in] */ IMatrix* localM);
+protected:
+    /**
+     * @hide
+     */
+    // @Override
+    CARAPI_(AutoPtr<IShader>) Copy();
 
 private:
-    CARAPI_(Int32) NativeCreate1(
-        /* [in] */ Float x0,
-        /* [in] */ Float y0,
-        /* [in] */ Float x1,
-        /* [in] */ Float y1,
-        /* [in] */ const ArrayOf<Int32>& colors,
-        /* [in] */ const ArrayOf<Float>* positions,
-        /* [in] */ ShaderTileMode tileMode);
+    static const Int32 TYPE_COLORS_AND_POSITIONS;
+    static const Int32 TYPE_COLOR_START_AND_COLOR_END;
 
-    CARAPI_(Int32) NativeCreate2(
-        /* [in] */ Float x0,
-        /* [in] */ Float y0,
-        /* [in] */ Float x1,
-        /* [in] */ Float y1,
-        /* [in] */ Int32 color0,
-        /* [in] */ Int32 color1,
-        /* [in] */ ShaderTileMode tileMode);
+    /**
+     * Type of the LinearGradient: can be either TYPE_COLORS_AND_POSITIONS or
+     * TYPE_COLOR_START_AND_COLOR_END.
+     */
+    Int32 mType;
 
-    CARAPI_(Int32) NativePostCreate1(
-        /* [in] */ Int32 shader,
-        /* [in] */ Float x0,
-        /* [in] */ Float y0,
-        /* [in] */ Float x1,
-        /* [in] */ Float y1,
-        /* [in] */ const ArrayOf<Int32>& colors,
-        /* [in] */ const ArrayOf<Float>* positions,
-        /* [in] */ ShaderTileMode tileMode);
+    Float mX0;
+    Float mY0;
+    Float mX1;
+    Float mY1;
+    AutoPtr<ArrayOf<Int32> > mColors;
+    AutoPtr<ArrayOf<Float> > mPositions;
+    Int32 mColor0;
+    Int32 mColor1;
 
-    CARAPI_(Int32) NativePostCreate2(
-        /* [in] */ Int32 shader,
-        /* [in] */ Float x0,
-        /* [in] */ Float y0,
-        /* [in] */ Float x1,
-        /* [in] */ Float y1,
-        /* [in] */ Int32 color0,
-        /* [in] */ Int32 color1,
-        /* [in] */ ShaderTileMode tileMode);
+    ShaderTileMode mTileMode;
 };
 
 } // namespace Graphics

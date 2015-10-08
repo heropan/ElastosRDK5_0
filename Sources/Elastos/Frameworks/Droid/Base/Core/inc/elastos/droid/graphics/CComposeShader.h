@@ -16,25 +16,9 @@ CarClass(CComposeShader)
 public:
     CAR_OBJECT_DECL();
 
-    CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
+    CAR_INTERFACE_DECL();
 
-    /**
-     * Return true if the shader has a non-identity local matrix.
-     * @param localM If not null, it is set to the shader's local matrix.
-     * @return true if the shader has a non-identity local matrix
-     */
-    CARAPI GetLocalMatrix(
-        /* [in] */ IMatrix* localM,
-        /* [out] */ Boolean* result);
-
-    /**
-     * Set the shader's local matrix. Passing null will reset the shader's
-     * matrix to identity
-     * @param localM The shader's new local matrix, or null to specify identity
-     */
-    CARAPI SetLocalMatrix(
-        /* [in] */ IMatrix* localM);
+    CComposeShader();
 
     /**
      * Create a new compose shader, given shaders A, B, and a combining mode.
@@ -65,30 +49,36 @@ public:
         /* [in] */ IShader* shaderB,
         /* [in] */ PorterDuffMode mode);
 
+protected:
+    /**
+     * @hide
+     */
+    // @Override
+    CARAPI_(AutoPtr<IShader>) Copy();
+
 private:
-    static CARAPI_(Int32) NativeCreate1(
-        /* [in] */ Int32 nativeShaderA,
-        /* [in] */ Int32 nativeShaderB,
-        /* [in] */ Int32 nativeMode);
+    static CARAPI_(Int64) NativeCreate1(
+        /* [in] */ Int64 nativeShaderA,
+        /* [in] */ Int64 nativeShaderB,
+        /* [in] */ Int64 nativeMode);
 
-    static CARAPI_(Int32) NativeCreate2(
-        /* [in] */ Int32 nativeShaderA,
-        /* [in] */ Int32 nativeShaderB,
-        /* [in] */ Int32 porterDuffMode);
-
-    static CARAPI_(Int32) NativePostCreate1(
-        /* [in] */ Int32 nativeShader,
-        /* [in] */ Int32 nativeSkiaShaderA,
-        /* [in] */ Int32 nativeSkiaShaderB,
-        /* [in] */ Int32 nativeMode);
-
-    static CARAPI_(Int32) NativePostCreate2(
-        /* [in] */ Int32 nativeShader,
-        /* [in] */ Int32 nativeSkiaShaderA,
-        /* [in] */ Int32 nativeSkiaShaderB,
+    static CARAPI_(Int64) NativeCreate2(
+        /* [in] */ Int64 nativeShaderA,
+        /* [in] */ Int64 nativeShaderB,
         /* [in] */ Int32 porterDuffMode);
 
 private:
+    static const Int32 TYPE_XFERMODE;
+    static const Int32 TYPE_PORTERDUFFMODE;
+
+    /**
+     * Type of the ComposeShader: can be either TYPE_XFERMODE or TYPE_PORTERDUFFMODE
+     */
+    Int32 mType;
+
+    AutoPtr<IXfermode> mXferMode;
+    PorterDuffMode mPorterDuffMode;
+
     /**
      * Hold onto the shaders to avoid GC.
      */

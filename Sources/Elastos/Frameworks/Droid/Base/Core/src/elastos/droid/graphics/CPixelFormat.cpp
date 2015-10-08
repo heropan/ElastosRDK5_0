@@ -6,6 +6,7 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CPixelFormat);
 ECode CPixelFormat::FormatHasAlpha(
     /* [in] */ Int32 format,
     /* [out] */ Boolean* result)

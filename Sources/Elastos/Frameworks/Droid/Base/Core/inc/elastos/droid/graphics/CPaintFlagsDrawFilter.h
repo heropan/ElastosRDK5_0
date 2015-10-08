@@ -17,15 +17,18 @@ namespace Graphics {
  * @param clearBits These bits will be cleared in the paint's flags
  * @param setBits These bits will be set in the paint's flags
  */
-CarClass(CPaintFlagsDrawFilter), public DrawFilter
+CarClass(CPaintFlagsDrawFilter)
+    , public DrawFilter
+    , public IPaintFlagsDrawFilter
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI constructor(
         /* [in] */ Int32 clearBits,
         /* [in] */ Int32 setBits);
-
-    CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
 
 private:
     static CARAPI_(Int32) NativeConstructor(

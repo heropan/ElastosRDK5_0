@@ -1,7 +1,6 @@
 
 #include "graphics/ColorFilter.h"
 #include <SkColorFilter.h>
-#include <SkiaColorFilter.h>
 
 namespace Elastos {
 namespace Droid {
@@ -14,27 +13,14 @@ extern const InterfaceID EIID_ColorFilter =
 CAR_INTERFACE_IMPL(ColorFilter, Object, IColorFilter);
 ColorFilter::~ColorFilter()
 {
-    Finalizer(mNativeInstance, mNativeColorFilter);
+    DestroyFilter(mNativeInstance);
 }
 
-void ColorFilter::Finalizer(
-    /* [in] */ Int32 nativeInstance,
-    /* [in] */ Int32 nativeColorFilter)
+void ColorFilter::DestroyFilter(
+    /* [in] */ Int64 native_instance)
 {
-    SkColorFilter* obj = reinterpret_cast<SkColorFilter*>(nativeInstance);
-    android::uirenderer::SkiaColorFilter* filter =
-            reinterpret_cast<android::uirenderer::SkiaColorFilter*>(nativeColorFilter);
-
-    SkSafeUnref(obj);
-    // filter == NULL when not !USE_OPENGL_RENDERER, so no need to delete outside the ifdef
-#ifdef USE_OPENGL_RENDERER
-    if (android::uirenderer::Caches::hasInstance()) {
-        android::uirenderer::Caches::getInstance().resourceCache.destructor(filter);
-    }
-    else {
-        delete filter;
-    }
-#endif
+    SkColorFilter* filter = reinterpret_cast<SkColorFilter *>(native_instance);
+    if (filter) SkSafeUnref(filter);
 }
 
 } // namespace Graphics

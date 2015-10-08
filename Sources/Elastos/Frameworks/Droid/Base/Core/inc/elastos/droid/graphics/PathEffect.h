@@ -2,9 +2,10 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_PATHEFFECT_H__
 #define __ELASTOS_DROID_GRAPHICS_PATHEFFECT_H__
 
-#include <elastos.h>
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
-using namespace Elastos;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -30,10 +31,10 @@ public:
 
 private:
     static CARAPI_(void) NativeDestructor(
-        /* [in] */ Int32 nativeInstance);
+        /* [in] */ Int64 nativeInstance);
 
 public:
-    Int32 mNativeInstance;
+    Int64 mNativeInstance;
 };
 
 } // namespace Graphics

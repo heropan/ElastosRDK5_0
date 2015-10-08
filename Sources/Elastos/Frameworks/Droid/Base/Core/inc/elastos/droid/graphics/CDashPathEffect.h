@@ -16,6 +16,8 @@ CarClass(CDashPathEffect)
 public:
     CAR_OBJECT_DECL();
 
+    CAR_INTERFACE_DECL();
+
     /**
      * The intervals array must contain an even number of entries (>=2), with
      * the even indices specifying the "on" intervals, and the odd indices
@@ -33,11 +35,8 @@ public:
         /* [in] */ const ArrayOf<Float>& intervals,
         /* [in] */ Float phase);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
 private:
-    static CARAPI_(Int32) NativeCreate(
+    static CARAPI_(Int64) NativeCreate(
         /* [in] */ const ArrayOf<Float>& intervals,
         /* [in] */ Float phase);
 };

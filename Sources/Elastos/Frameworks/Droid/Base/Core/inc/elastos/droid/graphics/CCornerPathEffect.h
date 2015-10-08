@@ -16,6 +16,8 @@ CarClass(CCornerPathEffect)
 public:
     CAR_OBJECT_DECL();
 
+    CAR_INTERFACE_DECL();
+
     /**
      * Transforms geometries that are drawn (either STROKE or FILL styles) by
      * replacing any sharp angles between line segments into rounded angles of
@@ -25,11 +27,8 @@ public:
     CARAPI constructor(
         /* [in] */ Float radius);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
 private:
-    static CARAPI_(Int32) NativeCreate(
+    static CARAPI_(Int64) NativeCreate(
         /* [in] */ Float radius);
 };
 

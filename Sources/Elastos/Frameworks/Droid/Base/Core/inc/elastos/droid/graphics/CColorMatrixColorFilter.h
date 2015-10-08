@@ -16,12 +16,9 @@ CarClass(CColorMatrixColorFilter)
 public:
     CAR_OBJECT_DECL();
 
-    CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid);
+    CAR_INTERFACE_DECL();
 
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface* object,
-        /* [out] */ InterfaceID* iid);
+    CColorMatrixColorFilter();
 
     /**
      * Create a colorfilter that transforms colors through a 4x5 color matrix.
@@ -43,16 +40,63 @@ public:
     CARAPI constructor(
         /* [in] */ const ArrayOf<Float>& array);
 
-    CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
+    /**
+     * Returns the {@link ColorMatrix} used by this filter. The returned
+     * value is never null. Modifying the returned matrix does not have
+     * any effect until you call {@link #setColorMatrix(ColorMatrix)}.
+     *
+     * @see #setColorMatrix(ColorMatrix)
+     *
+     * @hide
+     */
+    CARAPI GetColorMatrix(
+        /* [out] */ IColorMatrix** matrix);
+
+    /**
+     * Specifies the color matrix used by this filter. If the specified
+     * color matrix is null, this filter's color matrix will be reset to
+     * the identity matrix.
+     *
+     * @param matrix A {@link ColorMatrix} or null
+     *
+     * @see #getColorMatrix()
+     * @see android.graphics.ColorMatrix#reset()
+     * @see #setColorMatrix(float[])
+     *
+     * @hide
+     */
+    CARAPI SetColorMatrix(
+        /* [in] */ IColorMatrix* matrix);
+
+    /**
+     * Specifies the color matrix used by this filter. If the specified
+     * color matrix is null, this filter's color matrix will be reset to
+     * the identity matrix.
+     *
+     * @param array Array of floats used to transform colors, treated as a 4x5
+     *              matrix. The first 20 entries of the array are copied into
+     *              the filter. See {@link ColorMatrix}.
+     *
+     * @see #getColorMatrix()
+     * @see android.graphics.ColorMatrix#reset()
+     * @see #setColorMatrix(ColorMatrix)
+     *
+     * @throws ArrayIndexOutOfBoundsException if the specified array's
+     *         length is < 20
+     *
+     * @hide
+     */
+    CARAPI SetColorMatrix(
+        /* [in] */ ArrayOf<Float>* array);
 
 private:
-    static CARAPI_(Int32) NativeColorMatrixFilter(
-        /* [in] */ const ArrayOf<Float>& array);
+    CARAPI_(void) Update();
 
-    static CARAPI_(Int32) NColorMatrixFilter(
-        /* [in] */ Int32 nativeFilter,
-        /* [in] */ const ArrayOf<Float>& array);
+    static CARAPI_(Int64) NativeColorMatrixFilter(
+        /* [in] */ ArrayOf<Float>* array);
+
+private:
+    AutoPtr<IColorMatrix> mMatrix;
 };
 
 } // namespace Graphics

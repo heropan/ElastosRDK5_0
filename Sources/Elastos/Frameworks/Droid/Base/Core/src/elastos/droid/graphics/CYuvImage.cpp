@@ -3,8 +3,8 @@
 #include "graphics/CRect.h"
 #include "graphics/CYuvImage.h"
 #include "graphics/CreateOutputStreamAdaptor.h"
-#include "graphics/YuvToJpegEncoder.h"
-#include <SkStream.h>
+// #include "graphics/YuvToJpegEncoder.h"
+#include <skia/core/SkStream.h>
 
 namespace Elastos {
 namespace Droid {
@@ -12,6 +12,8 @@ namespace Graphics {
 
 const Int32 CYuvImage::WORKING_COMPRESS_STORAGE;
 
+CAR_OBJECT_IMPL(CYuvImage);
+CAR_INTERFACE_IMPL(CYuvImage, Object, IYuvImage);
 ECode CYuvImage::constructor(
     /* [in] */ ArrayOf<Byte>* yuv,
     /* [in] */ Int32 format,
@@ -233,13 +235,15 @@ Boolean CYuvImage::NativeCompressToJpeg(
 
     Int32* imgOffsets = offsets->GetPayload();
     Int32* imgStrides = strides->GetPayload();
-    YuvToJpegEncoder* encoder = YuvToJpegEncoder::Create(format, imgStrides);
-    if (encoder == NULL) {
-        return FALSE;
-    }
-    encoder->Encode(strm, yuv, width, height, imgOffsets, quality);
 
-    delete encoder;
+    assert(0 && "TODO");
+    // YuvToJpegEncoder* encoder = YuvToJpegEncoder::Create(format, imgStrides);
+    // if (encoder == NULL) {
+    //     return FALSE;
+    // }
+    // encoder->Encode(strm, yuv, width, height, imgOffsets, quality);
+
+    // delete encoder;
     return TRUE;
 }
 

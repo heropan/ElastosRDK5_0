@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_GRAPHICS_CINTERPOLATOR_H__
 
 #include "_Elastos_Droid_Graphics_CInterpolator.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -60,7 +63,7 @@ public:
     CARAPI SetKeyFrame(
         /* [in] */ Int32 index,
         /* [in] */ Int32 msec,
-        /* [in] */ const ArrayOf<Float>& values);
+        /* [in] */ ArrayOf<Float>* values);
 
     /**
      * Assign the keyFrame (specified by index) a time value and an array of key
@@ -75,7 +78,7 @@ public:
     CARAPI SetKeyFrame(
         /* [in] */ Int32 index,
         /* [in] */ Int32 msec,
-        /* [in] */ const ArrayOf<Float>& values,
+        /* [in] */ ArrayOf<Float>* values,
         /* [in] */ ArrayOf<Float>* blendArray);
 
     /**
@@ -89,7 +92,7 @@ public:
 
     /**
      * Calls timeToValues(msec, values) with the msec set to now (by calling
-     * (int)SystemClock.uptimeMillis().)
+     * (Int32)SystemClock.uptimeMillis().)
      */
     CARAPI TimeToValues(
         /* [out] */ ArrayOf<Float>* values,
@@ -111,13 +114,43 @@ public:
         /* [out] */ ArrayOf<Float>* values,
         /* [out] */ InterpolatorResult* result);
 
-    virtual ~CInterpolator();
+    ~CInterpolator();
+
+private:
+    static CARAPI_(Int64) NativeConstructor(
+        /* [in] */ Int32 valueCount,
+        /* [in] */ Int32 frameCount);
+
+    static CARAPI_(void) NativeDestructor(
+        /* [in] */ Int64 native_instance);
+
+    static CARAPI_(void) NativeReset(
+        /* [in] */ Int64 native_instance,
+        /* [in] */ Int32 valueCount,
+        /* [in] */ Int32 frameCount);
+
+    static CARAPI_(void) NativeSetKeyFrame(
+        /* [in] */ Int64 native_instance,
+        /* [in] */ Int32 index,
+        /* [in] */ Int32 msec,
+        /* [in] */ ArrayOf<Float>* values,
+        /* [in] */ ArrayOf<Float>* blend);
+
+    static CARAPI_(void) NativeSetRepeatMirror(
+        /* [in] */ Int64 native_instance,
+        /* [in] */ Float repeatCount,
+        /* [in] */ Boolean mirror);
+
+    static CARAPI_(Int32) NativeTimeToValues(
+        /* [in] */ Int64 native_instance,
+        /* [in] */ Int32 msec,
+        /* [in] */ ArrayOf<Float>* values);
 
 private:
     Int32 mValueCount;
     Int32 mFrameCount;
     Int32 mSkInstance;
-    Int32 native_instance;
+    Int64 mNativeInstance;
 };
 
 } // namespace Graphics

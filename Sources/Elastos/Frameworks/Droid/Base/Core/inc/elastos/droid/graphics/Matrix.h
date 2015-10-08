@@ -4,7 +4,9 @@
 
 #include "Elastos.Droid.Core_server.h"
 #include <Elastos.CoreLibrary.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::IStringBuilder;
 using Elastos::IO::IPrintWriter;
 
@@ -14,9 +16,19 @@ namespace Graphics {
 
 extern const InterfaceID EIID_Matrix;
 
+/**
+ * The Matrix class holds a 3x3 matrix for transforming coordinates.
+ * Matrix does not have a constructor, so it must be explicitly initialized
+ * using either reset() - to construct an identity matrix, or one of the set..()
+ * functions (e.g. setTranslate, setRotate, etc.).
+ */
 class Matrix
+    : public Object
+    , public IMatrix
 {
 public:
+    CAR_INTERFACE_DECL();
+
     virtual ~Matrix();
 
     /**
@@ -25,6 +37,15 @@ public:
      */
     virtual CARAPI IsIdentity(
         /* [out] */ Boolean* isIdentity);
+
+    /**
+     * Gets whether this matrix is affine. An affine matrix preserves
+     * straight lines and has no perspective.
+     *
+     * @return Whether the matrix is affine.
+     */
+    virtual CARAPI IsAffine(
+        /* [out] */ Boolean* affine);
 
     /* Returns true if will map a rectangle to another rectangle. This can be
      * true if the matrix is identity, scale-only, or rotates a multiple of 90
@@ -310,7 +331,7 @@ public:
      * @return true if the matrix was set to the specified transformation
      */
     virtual CARAPI SetPolyToPoly(
-        /* [in] */ const ArrayOf<Float>& src,
+        /* [in] */ ArrayOf<Float>* src,
         /* [in] */ Int32 srcIndex,
         /* [out] */ ArrayOf<Float>* dst,
         /* [in] */ Int32 dstIndex,
@@ -340,7 +361,7 @@ public:
     virtual CARAPI MapPoints(
         /* [out] */ ArrayOf<Float>* dst,
         /* [in] */ Int32 dstIndex,
-        /* [in] */ const ArrayOf<Float>& src,
+        /* [in] */ ArrayOf<Float>* src,
         /* [in] */ Int32 srcIndex,
         /* [in] */ Int32 pointCount);
 
@@ -358,7 +379,7 @@ public:
     virtual CARAPI MapVectors(
         /* [out] */ ArrayOf<Float>* dst,
         /* [in] */ Int32 dstIndex,
-        /* [in] */ const ArrayOf<Float>& src,
+        /* [in] */ ArrayOf<Float>* src,
         /* [in] */ Int32 srcIndex,
         /* [in] */ Int32 vectorCount);
 
@@ -372,7 +393,7 @@ public:
      */
     virtual CARAPI MapPoints(
         /* [out] */ ArrayOf<Float>* dst,
-        /* [in] */ const ArrayOf<Float>& src);
+        /* [in] */ ArrayOf<Float>* src);
 
     /**
      * Apply this matrix to the array of 2D vectors specified by src, and write
@@ -384,7 +405,7 @@ public:
      */
     virtual CARAPI MapVectors(
         /* [out] */ ArrayOf<Float>* dst,
-        /* [in] */ const ArrayOf<Float>& src);
+        /* [in] */ ArrayOf<Float>* src);
 
     /**
      * Apply this matrix to the array of 2D points, and write the transformed
@@ -450,7 +471,7 @@ public:
         the same values.
     */
     virtual CARAPI SetValues(
-        /* [in] */ const ArrayOf<Float>& values);
+        /* [in] */ ArrayOf<Float>* values);
 
     virtual CARAPI ToString(
         /* [out] */ String* str) ;
@@ -471,234 +492,236 @@ public:
     virtual CARAPI ToShortString(
         /* [in] */ IStringBuilder* sb);
 
-    /*package*/ CARAPI_(Int32) Ni();
+    /*package*/ CARAPI_(Int64) Ni();
 
-protected:
-    CARAPI Init();
+    CARAPI constructor();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IMatrix* src);
 
 private:
     // private helper to perform range checks on arrays of "points"
     static CARAPI CheckPointArrays(
-        /* [in] */ const ArrayOf<Float>& src,
+        /* [in] */ ArrayOf<Float>* src,
         /* [in] */ Int32 srcIndex,
         /* [in] */ ArrayOf<Float>* dst,
         /* [in] */ Int32 dstIndex,
         /* [in] */ Int32 pointCount);
 
-    static CARAPI_(Int32) NativeCreate(
-        /* [in] */ Int32 nSrc);
+    static CARAPI_(Int64) NativeCreate(
+        /* [in] */ Int64 nSrc);
 
     static CARAPI_(Boolean) NativeIsIdentity(
-        /* [in] */ Int32 nObj);
+        /* [in] */ Int64 nObj);
 
     static CARAPI_(Boolean) NativeRectStaysRect(
-        /* [in] */ Int32 nObj);
+        /* [in] */ Int64 nObj);
+
+    static CARAPI_(Boolean) NativeIsAffine(
+        /* [in] */ Int64 native_object);
 
     static CARAPI_(void) NativeReset(
-        /* [in] */ Int32 nObj);
+        /* [in] */ Int64 nObj);
 
     static CARAPI_(void) NativeSet(
-        /* [in] */ Int32 nObj,
-        /* [in] */ Int32 nOther);
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 nOther);
 
     static CARAPI_(void) NativeSetTranslate(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ Float dx,
         /* [in] */ Float dy);
 
     static CARAPI_(void) NativeSetScale(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ Float sx,
         /* [in] */ Float sy,
         /* [in] */ Float px,
         /* [in] */ Float py);
 
     static CARAPI_(void) NativeSetScale(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ Float sx,
         /* [in] */ Float sy);
 
     static CARAPI_(void) NativeSetRotate(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ Float degrees,
         /* [in] */ Float px,
         /* [in] */ Float py);
 
     static CARAPI_(void) NativeSetRotate(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ Float degrees);
 
     static CARAPI_(void) NativeSetSinCos(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ Float sinValue,
         /* [in] */ Float cosValue,
         /* [in] */ Float px,
         /* [in] */ Float py);
 
     static CARAPI_(void) NativeSetSinCos(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ Float sinValue,
         /* [in] */ Float cosValue);
 
     static CARAPI_(void) NativeSetSkew(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ Float kx,
         /* [in] */ Float ky,
         /* [in] */ Float px,
         /* [in] */ Float py);
 
     static CARAPI_(void) NativeSetSkew(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ Float kx,
         /* [in] */ Float ky);
 
-    static CARAPI_(Boolean) NativeSetConcat(
-        /* [in] */ Int32 nObj,
-        /* [in] */ Int32 nA,
-        /* [in] */ Int32 nB);
+    static CARAPI_(void) NativeSetConcat(
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 nA,
+        /* [in] */ Int64 nB);
 
-    static CARAPI_(Boolean) NativePreTranslate(
-        /* [in] */ Int32 nObj,
+    static CARAPI_(void) NativePreTranslate(
+        /* [in] */ Int64 nObj,
         /* [in] */ Float dx,
         /* [in] */ Float dy);
 
-    static CARAPI_(Boolean) NativePreScale(
-        /* [in] */ Int32 nObj,
+    static CARAPI_(void) NativePreScale(
+        /* [in] */ Int64 nObj,
         /* [in] */ Float sx,
         /* [in] */ Float sy,
         /* [in] */ Float px,
         /* [in] */ Float py);
 
-    static CARAPI_(Boolean) NativePreScale(
-        /* [in] */ Int32 nObj,
+    static CARAPI_(void) NativePreScale(
+        /* [in] */ Int64 nObj,
         /* [in] */ Float sx,
         /* [in] */ Float sy);
 
-    static CARAPI_(Boolean) NativePreRotate(
-        /* [in] */ Int32 nObj,
+    static CARAPI_(void) NativePreRotate(
+        /* [in] */ Int64 nObj,
         /* [in] */ Float degrees,
         /* [in] */ Float px,
         /* [in] */ Float py);
 
-    static CARAPI_(Boolean) NativePreRotate(
-        /* [in] */ Int32 nObj,
+    static CARAPI_(void) NativePreRotate(
+        /* [in] */ Int64 nObj,
         /* [in] */ Float degrees);
 
-    static CARAPI_(Boolean) NativePreSkew(
-        /* [in] */ Int32 nObj,
+    static CARAPI_(void) NativePreSkew(
+        /* [in] */ Int64 nObj,
         /* [in] */ Float kx,
         /* [in] */ Float ky,
         /* [in] */ Float px,
         /* [in] */ Float py);
 
-    static CARAPI_(Boolean) NativePreSkew(
-        /* [in] */ Int32 nObj,
+    static CARAPI_(void) NativePreSkew(
+        /* [in] */ Int64 nObj,
         /* [in] */ Float kx,
         /* [in] */ Float ky);
 
-    static CARAPI_(Boolean) NativePreConcat(
-        /* [in] */ Int32 nObj,
-        /* [in] */ Int32 nOther);
+    static CARAPI_(void) NativePreConcat(
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 nOther);
 
-    static CARAPI_(Boolean) NativePostTranslate(
-        /* [in] */ Int32 nObj,
+    static CARAPI_(void) NativePostTranslate(
+        /* [in] */ Int64 nObj,
         /* [in] */ Float dx,
         /* [in] */ Float dy);
 
-    static CARAPI_(Boolean) NativePostScale(
-        /* [in] */ Int32 nObj,
+    static CARAPI_(void) NativePostScale(
+        /* [in] */ Int64 nObj,
         /* [in] */ Float sx,
         /* [in] */ Float sy,
         /* [in] */ Float px,
         /* [in] */ Float py);
 
-    static CARAPI_(Boolean) NativePostScale(
-        /* [in] */ Int32 nObj,
+    static CARAPI_(void) NativePostScale(
+        /* [in] */ Int64 nObj,
         /* [in] */ Float sx,
         /* [in] */ Float sy);
 
-    static CARAPI_(Boolean) NativePostRotate(
-        /* [in] */ Int32 nObj,
+    static CARAPI_(void) NativePostRotate(
+        /* [in] */ Int64 nObj,
         /* [in] */ Float degrees,
         /* [in] */ Float px,
         /* [in] */ Float py);
 
-    static CARAPI_(Boolean) NativePostRotate(
-        /* [in] */ Int32 nObj,
+    static CARAPI_(void) NativePostRotate(
+        /* [in] */ Int64 nObj,
         /* [in] */ Float degrees);
 
-    static CARAPI_(Boolean) NativePostSkew(
-        /* [in] */ Int32 nObj,
+    static CARAPI_(void) NativePostSkew(
+        /* [in] */ Int64 nObj,
         /* [in] */ Float kx,
         /* [in] */ Float ky,
         /* [in] */ Float px,
         /* [in] */ Float py);
 
-    static CARAPI_(Boolean) NativePostSkew(
-        /* [in] */ Int32 nObj,
+    static CARAPI_(void) NativePostSkew(
+        /* [in] */ Int64 nObj,
         /* [in] */ Float kx,
         /* [in] */ Float ky);
 
-    static CARAPI_(Boolean) NativePostConcat(
-        /* [in] */ Int32 nObj,
-        /* [in] */ Int32 nOther);
+    static CARAPI_(void) NativePostConcat(
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 nOther);
 
     static CARAPI_(Boolean) NativeSetRectToRect(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ IRectF* src,
         /* [in] */ IRectF* dst,
         /* [in] */ Int32 stf);
 
     static CARAPI_(Boolean) NativeSetPolyToPoly(
-        /* [in] */ Int32 nObj,
-        /* [in] */ const ArrayOf<Float>& src,
+        /* [in] */ Int64 nObj,
+        /* [in] */ ArrayOf<Float>* src,
         /* [in] */ Int32 srcIndex,
         /* [out] */ ArrayOf<Float>* dst,
         /* [in] */ Int32 dstIndex,
         /* [in] */ Int32 ptCount);
 
     static CARAPI_(Boolean) NativeInvert(
-        /* [in] */ Int32 nObj,
-        /* [in] */ Int32 inverse);
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 inverse);
 
     static CARAPI_(void) NativeMapPoints(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [out] */ ArrayOf<Float>* dst,
         /* [in] */ Int32 dstIndex,
-        /* [in] */ const ArrayOf<Float>& src,
+        /* [in] */ ArrayOf<Float>* src,
         /* [in] */ Int32 srcIndex,
         /* [in] */ Int32 ptCount,
         /* [in] */ Boolean isPts);
 
     static CARAPI_(Boolean) NativeMapRect(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ IRectF* dst,
         /* [in] */ IRectF* src);
 
     static CARAPI_(Float) NativeMapRadius(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ Float radius);
 
     static CARAPI_(void) NativeGetValues(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [out] */ ArrayOf<Float>* values);
 
     static CARAPI_(void) NativeSetValues(
-        /* [in] */ Int32 nObj,
-        /* [in] */ const ArrayOf<Float>& values);
+        /* [in] */ Int64 nObj,
+        /* [in] */ ArrayOf<Float>* values);
 
     static CARAPI_(Boolean) NativeEquals(
-        /* [in] */ Int32 nA,
-        /* [in] */ Int32 nB);
+        /* [in] */ Int64 nA,
+        /* [in] */ Int64 nB);
 
     static CARAPI_(void) NativeFinalizer(
-        /* [in] */ Int32 nObj);
+        /* [in] */ Int64 nObj);
 
 public:
-    Int32 mNativeInstance;
+    Int64 mNativeInstance;
 };
 
 } // namespace Graphics

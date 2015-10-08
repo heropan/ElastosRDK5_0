@@ -8,33 +8,27 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+const Int32 CComposeShader::TYPE_XFERMODE = 1;
+const Int32 CComposeShader::TYPE_PORTERDUFFMODE = 2;
+
 CAR_OBJECT_IMPL(CComposeShader);
+CComposeShader::CComposeShader()
+    : mType(0)
+    , mPorterDuffMode(-1)
+{}
+
 ECode CComposeShader::constructor(
     /* [in] */ IShader* shaderA,
     /* [in] */ IShader* shaderB,
     /* [in] */ IXfermode* mode)
 {
+    mType = TYPE_XFERMODE;
     mShaderA = shaderA;
     mShaderB = shaderB;
-    mNativeInstance = NativeCreate1(
-                ((Shader*)shaderA->Probe(EIID_Shader))->mNativeInstance,
-                ((Shader*)shaderB->Probe(EIID_Shader))->mNativeInstance,
-                (mode != NULL) ? ((Xfermode*)mode->Probe(EIID_Xfermode))->mNativeInstance : 0);
-    if (IPorterDuffXfermode::Probe(mode) != NULL) {
-        PorterDuffMode pdMode;
-        IPorterDuffXfermode::Probe(mode)->GetMode(&pdMode);
-        mNativeShader = NativePostCreate2(mNativeInstance,
-                ((Shader*)shaderA->Probe(EIID_Shader))->mNativeInstance,
-                ((Shader*)shaderB->Probe(EIID_Shader))->mNativeInstance, pdMode != -1 ? pdMode : 0);
-        return NOERROR;
-    }
-    else {
-        mNativeShader = NativePostCreate1(mNativeInstance,
-                ((Shader*)shaderA->Probe(EIID_Shader))->mNativeInstance,
-                ((Shader*)shaderB->Probe(EIID_Shader))->mNativeInstance,
-                (mode != NULL) ? ((Xfermode*)mode->Probe(EIID_Xfermode))->mNativeInstance : 0);
-        return NOERROR;
-    }
+    mXferMode = mode;
+    Init(NativeCreate1(((Shader*)(IShader*)shaderA->Probe(EIID_Shader))->mNativeInstance,
+            ((Shader*)(IShader*)shaderB->Probe(EIID_Shader))->mNativeInstance,
+            (mode != NULL) ? ((Xfermode*)(IXfermode*)mode->Probe(EIID_Xfermode))->mNativeInstance : 0));
 }
 
 ECode CComposeShader::constructor(
@@ -42,16 +36,13 @@ ECode CComposeShader::constructor(
     /* [in] */ IShader* shaderB,
     /* [in] */ PorterDuffMode mode)
 {
+    mType = TYPE_PORTERDUFFMODE;
     mShaderA = shaderA;
     mShaderB = shaderB;
-    mNativeInstance = NativeCreate2(
-                ((Shader*)shaderA->Probe(EIID_Shader))->mNativeInstance,
-                ((Shader*)shaderB->Probe(EIID_Shader))->mNativeInstance,
-                mode);
-    mNativeShader = NativePostCreate2(mNativeInstance,
-            ((Shader*)shaderA->Probe(EIID_Shader))->mNativeInstance,
-            ((Shader*)shaderB->Probe(EIID_Shader))->mNativeInstance,
-            mode);
+    mPorterDuffMode = mode;
+    Init(NativeCreate2(((Shader*)(IShader*)shaderA->Probe(EIID_Shader))->mNativeInstance,
+            ((Shader*)(IShader*)shaderB->Probe(EIID_Shader))->mNativeInstance,
+            mode));
     return NOERROR;
 }
 
@@ -67,77 +58,71 @@ PInterface CComposeShader::Probe(
     return Shader::Probe(riid);
 }
 
-ECode CComposeShader::GetLocalMatrix(
-    /* [in] */ IMatrix* localM,
-    /* [out] */ Boolean* result)
+UInt32 CComposeShader::AddRef()
 {
-    VALIDATE_NOT_NULL(result);
-
-    *result = Shader::GetLocalMatrix(localM);
-    return NOERROR;
+    return Shader::AddRef();
 }
 
-ECode CComposeShader::SetLocalMatrix(
-    /* [in] */ IMatrix* localM)
+UInt32 CComposeShader::Release()
 {
-    return Shader::SetLocalMatrix(localM);
+    return Shader::Release();
 }
 
-Int32 CComposeShader::NativeCreate1(
-    /* [in] */ Int32 nativeShaderA,
-    /* [in] */ Int32 nativeShaderB,
-    /* [in] */ Int32 nativeMode)
+ECode CComposeShader::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
-    return (Int32)new SkComposeShader(
-                (SkShader*)nativeShaderA,
-                (SkShader*)nativeShaderB,
-                (SkXfermode*)nativeMode);
+    return Shader::GetInterfaceID(object, iid);
 }
 
-Int32 CComposeShader::NativeCreate2(
-    /* [in] */ Int32 nativeShaderA,
-    /* [in] */ Int32 nativeShaderB,
-    /* [in] */ Int32 porterDuffMode)
+AutoPtr<IShader> CComposeShader::Copy()
 {
-    SkAutoUnref au(SkPorterDuff::CreateXfermode((SkPorterDuff::Mode)porterDuffMode));
-    return (Int32)new SkComposeShader(
-                (SkShader*)nativeShaderA,
-                (SkShader*)nativeShaderB,
-                (SkXfermode*)au.get());
-}
-
-Int32 CComposeShader::NativePostCreate1(
-    /* [in] */ Int32 nativeShader,
-    /* [in] */ Int32 nativeSkiaShaderA,
-    /* [in] */ Int32 nativeSkiaShaderB,
-    /* [in] */ Int32 nativeMode)
-{
-#ifdef USE_OPENGL_RENDERER
-    SkXfermode::Mode skiaMode;
-    if (!SkXfermode::IsMode((SkXfermode*)nativeMode, &skiaMode)) {
-        // TODO: Support other modes
-        skiaMode = SkXfermode::kSrcOver_Mode;
+    AutoPtr<IComposeShader> copy;
+    switch (mType) {
+        case TYPE_XFERMODE:
+            CComposeShader::New(((Shader*)(IShader*)mShaderA->Probe(EIID_Shader))->Copy(),
+                    ((Shader*)(IShader*)mShaderB->Probe(EIID_Shader))->Copy(),
+                    mXferMode, (IComposeShader**)&copy);
+            break;
+        case TYPE_PORTERDUFFMODE:
+            CComposeShader::New(((Shader*)(IShader*)mShaderA->Probe(EIID_Shader))->Copy(),
+                    ((Shader*)(IShader*)mShaderB->Probe(EIID_Shader))->Copy(),
+                    mPorterDuffMode, (IComposeShader**)&copy);
+            break;
+        default:
+            // throw new IllegalArgumentException(
+            //         "ComposeShader should be created with either Xfermode or PorterDuffMode");
+            assert(0 && "ComposeShader should be created with either Xfermode or PorterDuffMode");
+            // return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return (Int32)new SkiaComposeShader((SkiaShader*)nativeSkiaShaderA,
-            (SkiaShader*)nativeSkiaShaderB, skiaMode, (SkShader*)nativeShader);
-#else
-    return 0;
-#endif
+    CopyLocalMatrix(IShader::Probe(copy));
+    return IShader::Probe(copy);
 }
 
-Int32 CComposeShader::NativePostCreate2(
-    /* [in] */ Int32 nativeShader,
-    /* [in] */ Int32 nativeSkiaShaderA,
-    /* [in] */ Int32 nativeSkiaShaderB,
-    /* [in] */ Int32 porterDuffMode)
+Int64 CComposeShader::NativeCreate1(
+    /* [in] */ Int64 shaderAHandle,
+    /* [in] */ Int64 shaderBHandle,
+    /* [in] */ Int64 modeHandle)
 {
-#ifdef USE_OPENGL_RENDERER
-    SkXfermode::Mode mode = SkPorterDuff::ToXfermodeMode((SkPorterDuff::Mode)porterDuffMode);
-    return (Int32)new SkiaComposeShader((SkiaShader*)nativeSkiaShaderA,
-            (SkiaShader*)nativeSkiaShaderB, mode, (SkShader*)nativeShader);
-#else
-    return 0;
-#endif
+    SkShader* shaderA = reinterpret_cast<SkShader *>(shaderAHandle);
+    SkShader* shaderB = reinterpret_cast<SkShader *>(shaderBHandle);
+    SkXfermode* mode = reinterpret_cast<SkXfermode *>(modeHandle);
+    SkShader* shader = new SkComposeShader(shaderA, shaderB, mode);
+    return reinterpret_cast<Int64>(shader);
+}
+
+Int64 CComposeShader::NativeCreate2(
+    /* [in] */ Int64 shaderAHandle,
+    /* [in] */ Int64 shaderBHandle,
+    /* [in] */ Int32 porterDuffModeHandle)
+{
+    SkShader* shaderA = reinterpret_cast<SkShader *>(shaderAHandle);
+    SkShader* shaderB = reinterpret_cast<SkShader *>(shaderBHandle);
+    SkPorterDuff::Mode porterDuffMode = static_cast<SkPorterDuff::Mode>(porterDuffModeHandle);
+    SkAutoUnref au(SkPorterDuff::CreateXfermode(porterDuffMode));
+    SkXfermode* mode = (SkXfermode*) au.get();
+    SkShader* shader = new SkComposeShader(shaderA, shaderB, mode);
+    return reinterpret_cast<Int64>(shader);
 }
 
 } // namespace Graphics

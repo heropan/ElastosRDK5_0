@@ -23,17 +23,17 @@ public:
 
     virtual ~ColorFilter();
 
-private:
-    static CARAPI_(void) Finalizer(
-        /* [in] */ Int32 nativeInstance,
-        /* [in] */ Int32 nativeColorFilter);
+protected:
+    static CARAPI_(void) DestroyFilter(
+        /* [in] */ Int64 native_instance);
 
 public:
-    Int32 mNativeInstance;
     /**
+     * Holds the pointer to the native SkColorFilter instance.
+     *
      * @hide
      */
-    Int32 mNativeColorFilter;
+    Int64 mNativeInstance;
 };
 
 } // namespace Graphics

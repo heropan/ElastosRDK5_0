@@ -9,8 +9,6 @@
 #include "graphics/NBitmapFactory.h"
 #include <skia/core/SkTemplates.h>
 #include <skia/core/SkPixelRef.h>
-#include <skia/images/SkBitmapRegionDecoder.h>
-#include <skia/core/SkTScopedPtr.h>
 
 namespace Elastos {
 namespace Droid {
@@ -29,7 +27,7 @@ CLargeBitmap::~CLargeBitmap()
 }
 
 ECode CLargeBitmap::constructor(
-    /* [in] */ Int32 lbm)
+    /* [in] */ Int64 lbm)
 {
     mNativeLargeBitmap = lbm;
     mRecycled = FALSE;
@@ -43,7 +41,7 @@ ECode CLargeBitmap::DecodeRegion(
 {
     VALIDATE_NOT_NULL(bitmap);
 
-    FAIL_RETURN(CheckRecycled("decodeRegion called on recycled large bitmap"));
+    FAIL_RETURN(CheckRecycled(String("decodeRegion called on recycled large bitmap")));
 
     CRect* rect = (CRect*)_rect;
     Int32 width;
@@ -65,7 +63,7 @@ ECode CLargeBitmap::GetWidth(
 {
     VALIDATE_NOT_NULL(length);
 
-    FAIL_RETURN(CheckRecycled("getWidth called on recycled large bitmap"));
+    FAIL_RETURN(CheckRecycled(String("getWidth called on recycled large bitmap")));
     *length = NativeGetWidth(mNativeLargeBitmap);
     return NOERROR;
 }
@@ -75,7 +73,7 @@ ECode CLargeBitmap::GetHeight(
 {
     VALIDATE_NOT_NULL(height);
 
-    FAIL_RETURN(CheckRecycled("getHeight called on recycled large bitmap"));
+    FAIL_RETURN(CheckRecycled(String("getHeight called on recycled large bitmap")));
     *height =  NativeGetHeight(mNativeLargeBitmap);
     return NOERROR;
 }
@@ -99,7 +97,7 @@ ECode CLargeBitmap::IsRecycled(
 }
 
 ECode CLargeBitmap::CheckRecycled(
-    /* [in] */ CString errorMessage)
+    /* [in] */ const String& errorMessage)
 {
     if (mRecycled) {
         // throw new IllegalStateException(errorMessage);
@@ -109,7 +107,7 @@ ECode CLargeBitmap::CheckRecycled(
 }
 
 ECode CLargeBitmap::NativeDecodeRegion(
-    /* [in] */ Int32 lbm,
+    /* [in] */ Int64 lbm,
     /* [in] */ Int32 startX,
     /* [in] */ Int32 startY,
     /* [in] */ Int32 width,
@@ -119,106 +117,124 @@ ECode CLargeBitmap::NativeDecodeRegion(
 {
     VALIDATE_NOT_NULL(bitmap);
 
-    AutoPtr<IBitmap> tileBitmap;
-    SkImageDecoder* decoder = ((SkBitmapRegionDecoder*)lbm)->getDecoder();
-    Int32 sampleSize = 1;
-    SkBitmap::Config prefConfig = SkBitmap::kNo_Config;
-    bool doDither = true;
-    bool preferQualityOverSpeed = false;
-    CBitmapFactoryOptions* optObj = (CBitmapFactoryOptions*)options;
+    assert(0 && "TODO");
+    // SkBitmapRegionDecoder *brd = reinterpret_cast<SkBitmapRegionDecoder*>(lbm);
+    // AutoPtr<IBitmap> tileBitmap;
+    // SkImageDecoder* decoder = brd->getDecoder();
+    // Int32 sampleSize = 1;
+    // SkColorType prefColorType = kUnknown_SkColorType;
+    // bool doDither = true;
+    // bool preferQualityOverSpeed = false;
+    // bool requireUnpremultiplied = false;
+    // CBitmapFactoryOptions* optObj = (CBitmapFactoryOptions*)options;
 
-    if (NULL != optObj) {
-        sampleSize = optObj->mInSampleSize;
-        // initialize these, in case we fail later on
-        optObj->mOutWidth = -1;
-        optObj->mOutHeight = -1;
-        optObj->mOutMimeType = NULL;
+    // if (NULL != optObj) {
+    //     sampleSize = optObj->mInSampleSize;
+    //     // initialize these, in case we fail later on
+    //     optObj->mOutWidth = -1;
+    //     optObj->mOutHeight = -1;
+    //     optObj->mOutMimeType = NULL;
 
-        prefConfig = GraphicsNative::GetNativeBitmapConfig(optObj->mInPreferredConfig);
-        doDither = (bool)optObj->mInDither;
-        preferQualityOverSpeed = (bool)optObj->mInPreferQualityOverSpeed;
-        // Get the bitmap for re-use if it exists.
-        tileBitmap = optObj->mInBitmap;
-    }
+    //     prefColorType = GraphicsNative::GetNativeBitmapColorType(optObj->mInPreferredConfig);
+    //     doDither = (bool)optObj->mInDither;
+    //     preferQualityOverSpeed = (bool)optObj->mInPreferQualityOverSpeed;
+    //     // Get the bitmap for re-use if it exists.
+    //     tileBitmap = optObj->mInBitmap;
+    //     requireUnpremultiplied = optObj->mInPremultiplied;
+    //     requireUnpremultiplied = !requireUnpremultiplied;
+    // }
 
-    decoder->setDitherImage(doDither);
-    decoder->setPreferQualityOverSpeed(preferQualityOverSpeed);
-    AutoDecoderCancel adc(options, decoder);
+    // decoder->setDitherImage(doDither);
+    // decoder->setPreferQualityOverSpeed(preferQualityOverSpeed);
+    // decoder->setRequireUnpremultipliedColors(requireUnpremultiplied);
+    // AutoDecoderCancel adc(options, decoder);
 
-    // To fix the race condition in case "requestCancelDecode"
-    // happens earlier than AutoDecoderCancel object is added
-    // to the gAutoDecoderCancelMutex linked list.
-    if (NULL != optObj && optObj->mCancel) {
-        *bitmap = NULL;
-        return NOERROR;
-    }
+    // // To fix the race condition in case "requestCancelDecode"
+    // // happens earlier than AutoDecoderCancel object is added
+    // // to the gAutoDecoderCancelMutex linked list.
+    // if (NULL != optObj && optObj->mCancel) {
+    //     *bitmap = NULL;
+    //     return NOERROR;
+    // }
 
-    SkIRect region;
-    region.fLeft = startX;
-    region.fTop = startY;
-    region.fRight = startX + width;
-    region.fBottom = startY + height;
-    SkBitmap* nbitmap = NULL;
-    SkTScopedPtr<SkBitmap> adb;
+    // SkIRect region;
+    // region.fLeft = startX;
+    // region.fTop = startY;
+    // region.fRight = startX + width;
+    // region.fBottom = startY + height;
+    // SkBitmap* nbitmap = NULL;
+    // SkAutoTDelete<SkBitmap> adb;
 
-    if (tileBitmap != NULL) {
-        // Re-use bitmap.
-        nbitmap = GraphicsNative::GetNativeBitmap(tileBitmap);
-    }
-    if (nbitmap == NULL) {
-        nbitmap = new SkBitmap;
-        adb.reset(nbitmap);
-    }
+    // if (tileBitmap != NULL) {
+    //     // Re-use bitmap.
+    //     nbitmap = GraphicsNative::GetNativeBitmap(tileBitmap);
+    // }
+    // if (nbitmap == NULL) {
+    //     nbitmap = new SkBitmap;
+    //     adb.reset(nbitmap);
+    // }
 
-    if (!((SkBitmapRegionDecoder*)lbm)->decodeRegion(nbitmap, region, prefConfig, sampleSize)) {
-        *bitmap = NULL;
-        return NOERROR;
-    }
+    // if (!((SkBitmapRegionDecoder*)lbm)->decodeRegion(nbitmap, region, prefColorType, sampleSize)) {
+    //     *bitmap = NULL;
+    //     return NOERROR;
+    // }
 
-    // update options (if any)
-    if (NULL != optObj) {
-        optObj->mOutWidth = nbitmap->width();
-        optObj->mOutHeight = nbitmap->height();
-        // TODO: set the mimeType field with the data from the codec.
-        // but how to reuse a set of strings, rather than allocating new one
-        // each time?
-        optObj->mOutMimeType = NBitmapFactory::GetMimeTypeString(decoder->getFormat());
-    }
+    // // update options (if any)
+    // if (NULL != optObj) {
+    //     optObj->mOutWidth = nbitmap->width();
+    //     optObj->mOutHeight = nbitmap->height();
+    //     // TODO: set the mimeType field with the data from the codec.
+    //     // but how to reuse a set of strings, rather than allocating new one
+    //     // each time?
+    //     optObj->mOutMimeType = NBitmapFactory::GetMimeTypeString(decoder->getFormat());
+    // }
 
-    if (tileBitmap != NULL) {
-        *bitmap = tileBitmap;
-        REFCOUNT_ADD(*bitmap);
-        return NOERROR;
-    }
+    // if (tileBitmap != NULL) {
+    //     *bitmap = tileBitmap;
+    //     REFCOUNT_ADD(*bitmap);
+    //     return NOERROR;
+    // }
 
-    // detach bitmap from its autotdeleter, since we want to own it now
-    adb.release();
+    // // detach bitmap from its autotdeleter, since we want to own it now
+    // adb.detach();
 
-    GraphicsNative::DroidPixelAllocator* allocator = (GraphicsNative::DroidPixelAllocator*)decoder->getAllocator();
-    AutoPtr< ArrayOf<Byte> > buff = allocator->getStorageObjAndReset();
-    AutoPtr<CBitmap> bitmapObj;
-    ECode ec = GraphicsNative::CreateBitmap(nbitmap, buff, FALSE, NULL, NULL, -1, (CBitmap**)&bitmapObj);
-    *bitmap = (IBitmap*)bitmapObj.Get();
-    REFCOUNT_ADD(*bitmap);
+    // GraphicsNative::DroidPixelAllocator* allocator = (GraphicsNative::DroidPixelAllocator*)decoder->getAllocator();
+    // AutoPtr< ArrayOf<Byte> > buff = allocator->getStorageObjAndReset();
+    // AutoPtr<CBitmap> bitmapObj;
+
+    // int bitmapCreateFlags = 0;
+    // if (!requireUnpremultiplied) bitmapCreateFlags |= GraphicsJNI::kBitmapCreateFlag_Premultiplied;
+    // ECode ec = GraphicsNative::CreateBitmap(bitmap, buff, bitmapCreateFlags, NULL, NULL, -1, (CBitmap**)&bitmapObj);
+
+    // *bitmap = (IBitmap*)bitmapObj.Get();
+    // REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 
 Int32 CLargeBitmap::NativeGetWidth(
-    /* [in] */ Int32 lbm)
+    /* [in] */ Int64 brdHandle)
 {
-    return ((SkBitmapRegionDecoder*)lbm)->getWidth();
+    assert(0 && "TODO");
+    // SkBitmapRegionDecoder *brd = reinterpret_cast<SkBitmapRegionDecoder*>(brdHandle);
+    // return static_cast<Int32>(brd->getWidth());
+    return 0;
 }
 
 Int32 CLargeBitmap::NativeGetHeight(
-    /* [in] */ Int32 lbm)
+    /* [in] */ Int64 brdHandle)
 {
-    return ((SkBitmapRegionDecoder*)lbm)->getHeight();
+    assert(0 && "TODO");
+    // SkBitmapRegionDecoder *brd = reinterpret_cast<SkBitmapRegionDecoder*>(brdHandle);
+    // return static_cast<Int32>(brd->getHeight());
+    return 0;
 }
 
 void CLargeBitmap::NativeClean(
-    /* [in] */ Int32 lbm)
+    /* [in] */ Int64 brdHandle)
 {
-    delete (SkBitmapRegionDecoder*)lbm;
+    assert(0 && "TODO");
+    // SkBitmapRegionDecoder *brd = reinterpret_cast<SkBitmapRegionDecoder*>(brdHandle);
+    // delete brd;
 }
 
 } // namespace Graphics

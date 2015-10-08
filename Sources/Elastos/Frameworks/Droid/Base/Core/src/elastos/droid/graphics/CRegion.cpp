@@ -12,6 +12,12 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+const Int32 CRegion::MAX_POOL_SIZE = 10;
+AutoPtr<Pools::SynchronizedPool<IRegion> > CRegion::sPool =
+        new Pools::SynchronizedPool<IRegion>(MAX_POOL_SIZE);
+
+CAR_OBJECT_IMPL(CRegion);
+CAR_INTERFACE_IMPL_2(CRegion, Object, IRegion, IParcelable);
 ECode CRegion::constructor()
 {
     mNativeRegion = NativeConstructor();
@@ -47,7 +53,8 @@ ECode CRegion::constructor(
 }
 
 ECode CRegion::constructor(
-    /* [in] */ Int32 ni)
+    /* [in] */ Int64 ni,
+    /* [in] */ Int32 dummy)
 {
     if ((SkRegion*)ni == NULL) {
         //throw new RuntimeException();
@@ -75,7 +82,8 @@ ECode CRegion::Set(
 {
     VALIDATE_NOT_NULL(result);
 
-    *result = NativeSetRegion(mNativeRegion, ((CRegion*)src)->mNativeRegion);
+    NativeSetRegion(mNativeRegion, ((CRegion*)src)->mNativeRegion);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -440,6 +448,32 @@ ECode CRegion::ToString(
     return NOERROR;
 }
 
+AutoPtr<IRegion> CRegion::Obtain()
+{
+    assert(0 && "TODO");
+    // Region region = sPool.acquire();
+    // return (region != null) ? region : new Region();
+    return NULL;
+}
+
+AutoPtr<IRegion> CRegion::Obtain(
+    /* [in] */ IRegion* other)
+{
+    assert(0 && "TODO");
+    // Region region = obtain();
+    // region.set(other);
+    // return region;
+    return NULL;
+}
+
+ECode CRegionRecycle()
+{
+    assert(0 && "TODO");
+    // SetEmpty();
+    // sPool.release(this);
+    return NOERROR;
+}
+
 ECode CRegion::GetNativeRegion(
     /* [out] */ Handle32* region)
 {
@@ -466,107 +500,132 @@ ECode CRegion::WriteToParcel(
     return NOERROR;
 }
 
-Int32 CRegion::Ni()
+Int64 CRegion::Ni()
 {
     return mNativeRegion;
 }
 
 Boolean CRegion::NativeEquals(
-    /* [in] */ Int32 region1,
-    /* [in] */ Int32 region2)
+    /* [in] */ Int64 region1,
+    /* [in] */ Int64 region2)
 {
-    return *(SkRegion*)region1 == *(SkRegion*)region2;
+    const SkRegion *r1 = reinterpret_cast<SkRegion*>(region1);
+    const SkRegion *r2 = reinterpret_cast<SkRegion*>(region2);
+    return (*r1 == *r2);
 }
 
-Int32 CRegion::NativeConstructor()
+Int64 CRegion::NativeConstructor()
 {
-    return (Int32)new SkRegion;
+    return reinterpret_cast<Int64>(new SkRegion);
 }
 
 void CRegion::NativeDestructor(
-    /* [in] */ Int32 region)
+    /* [in] */ Int64 regionHandle)
 {
+    SkRegion* region = reinterpret_cast<SkRegion*>(regionHandle);
     SkASSERT(region);
-    delete (SkRegion*)region;
+    delete region;
 }
 
-Boolean CRegion::NativeSetRegion(
-    /* [in] */ Int32 dst,
-    /* [in] */ Int32 src)
+void CRegion::NativeSetRegion(
+    /* [in] */ Int64 dstHandle,
+    /* [in] */ Int64 srcHandle)
 {
+    SkRegion* dst = reinterpret_cast<SkRegion*>(dstHandle);
+    const SkRegion* src = reinterpret_cast<SkRegion*>(srcHandle);
     SkASSERT(dst && src);
-    *(SkRegion*)dst = *(SkRegion*)src;
-    return TRUE;
+    *dst = *src;
 }
 
 Boolean CRegion::NativeSetRect(
-    /* [in] */ Int32 dst,
+    /* [in] */ Int64 dstHandle,
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom)
 {
-    return ((SkRegion*)dst)->setRect(left, top, right, bottom);
+    SkRegion* dst = reinterpret_cast<SkRegion*>(dstHandle);
+    bool result = dst->setRect(left, top, right, bottom);
+    return result;
 }
 
 Boolean CRegion::NativeSetPath(
-    /* [in] */ Int32 dst,
-    /* [in] */ Int32 path,
-    /* [in] */ Int32 clip)
+    /* [in] */ Int64 dstHandle,
+    /* [in] */ Int64 pathHandle,
+    /* [in] */ Int64 clipHandle)
 {
+    SkRegion*       dst  = reinterpret_cast<SkRegion*>(dstHandle);
+    const SkPath*   path = reinterpret_cast<SkPath*>(pathHandle);
+    const SkRegion* clip = reinterpret_cast<SkRegion*>(clipHandle);
     SkASSERT(dst && path && clip);
-    return ((SkRegion*)dst)->setPath(*(SkPath*)path, *(SkRegion*)clip);
+    bool result = dst->setPath(*path, *clip);
+    return result;
 }
 
 Boolean CRegion::NativeGetBounds(
-    /* [in] */ Int32 region,
-    /* [out] */ IRect* rect)
+    /* [in] */ Int64 regionHandle,
+    /* [out] */ IRect* rectBounds)
 {
-    GraphicsNative::SkIRect2IRect(((SkRegion*)region)->getBounds(), rect);
-    return !((SkRegion*)region)->isEmpty();
+    SkRegion* region = reinterpret_cast<SkRegion*>(regionHandle);
+    GraphicsNative::SkIRect2IRect(region->getBounds(), rectBounds);
+    bool result = !region->isEmpty();
+    return result;
 }
 
 Boolean CRegion::NativeGetBoundaryPath(
-    /* [in] */ Int32 region,
-    /* [out] */ Int32 path)
+    /* [in] */ Int64 regionHandle,
+    /* [out] */ Int64 pathHandle)
 {
-    return ((SkRegion*)region)->getBoundaryPath((SkPath*)path);
+    const SkRegion* region = reinterpret_cast<SkRegion*>(regionHandle);
+    SkPath*   path = reinterpret_cast<SkPath*>(pathHandle);
+    bool result = region->getBoundaryPath(path);
+    return result;
 }
 
 Boolean CRegion::NativeOp(
-    /* [in] */ Int32 dst,
+    /* [in] */ Int64 dstHandle,
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom,
     /* [in] */ RegionOp op)
 {
+    SkRegion* dst = reinterpret_cast<SkRegion*>(dstHandle);
     SkIRect ir;
+
     ir.set(left, top, right, bottom);
-    return ((SkRegion*)dst)->op(ir, (SkRegion::Op)op);
+    bool result = dst->op(ir, (SkRegion::Op)op);
+    return result;
 }
 
 Boolean CRegion::NativeOp(
-    /* [in] */ Int32 dst,
+    /* [in] */ Int64 dstHandle,
     /* [in] */ IRect* rect,
-    /* [in] */ Int32 region,
+    /* [in] */ Int64 regionHandle,
     /* [in] */ RegionOp op)
 {
-    SkIRect ir;
+    SkRegion* dst = reinterpret_cast<SkRegion*>(dstHandle);
+    const SkRegion* region = reinterpret_cast<SkRegion*>(regionHandle);
+    SkIRect    ir;
     GraphicsNative::IRect2SkIRect(rect, &ir);
-    return ((SkRegion*)dst)->op(ir, *(SkRegion*)region, (SkRegion::Op)op);
+    bool result = dst->op(ir, *region, (SkRegion::Op)op);
+    return result;
 }
 
 Boolean CRegion::NativeOp(
-    /* [in] */ Int32 dst,
-    /* [in] */ Int32 region1,
-    /* [in] */ Int32 region2,
+    /* [in] */ Int64 dstHandle,
+    /* [in] */ Int64 region1Handle,
+    /* [in] */ Int64 region2Handle,
     /* [in] */ RegionOp op)
 {
-    return ((SkRegion*)dst)->op(*(SkRegion*)region1, *(SkRegion*)region2, (SkRegion::Op)op);
+    SkRegion* dst = reinterpret_cast<SkRegion*>(dstHandle);
+    const SkRegion* region1 = reinterpret_cast<SkRegion*>(region1Handle);
+    const SkRegion* region2 = reinterpret_cast<SkRegion*>(region2Handle);
+    bool result = dst->op(*region1, *region2, (SkRegion::Op)op);
+    return result;
 }
 
-Int32 CRegion::NativeCreateFromParcel(
+Int64 CRegion::NativeCreateFromParcel(
     /* [in] */ IParcel* parcel)
 {
     if (parcel == NULL) {
@@ -579,15 +638,16 @@ Int32 CRegion::NativeCreateFromParcel(
 
     SkRegion* region = new SkRegion;
     size_t size = p->readInt32();
-    region->unflatten(p->readInplace(size));
+    region->readFromMemory(p->readInplace(size), size);
 
-    return (Int32)region;
+    return reinterpret_cast<Int64>(region);
 }
 
 Boolean CRegion::NativeWriteToParcel(
-    /* [in] */ Int32 region,
+    /* [in] */ Int64 regionHandle,
     /* [out] */ IParcel* parcel)
 {
+    const SkRegion* region = reinterpret_cast<SkRegion*>(regionHandle);
     if (parcel == NULL) {
         return FALSE;
     }
@@ -596,15 +656,15 @@ Boolean CRegion::NativeWriteToParcel(
     parcel->GetElementPayload(&data);
     android::Parcel* p = (android::Parcel*)data;
 
-    size_t size = ((SkRegion*)region)->flatten(NULL);
+    size_t size = region->writeToMemory(NULL);
     p->writeInt32(size);
-    ((SkRegion*)region)->flatten(p->writeInplace(size));
+    region->writeToMemory(p->writeInplace(size));
 
     return TRUE;
 }
 
 String CRegion::NativeToString(
-    /* [in] */ Int32 region)
+    /* [in] */ Int64 region)
 {
     char* str = ((SkRegion*)region)->toString();
     if (str == NULL) {

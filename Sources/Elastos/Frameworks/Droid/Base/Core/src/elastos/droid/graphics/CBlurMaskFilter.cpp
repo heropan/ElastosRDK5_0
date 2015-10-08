@@ -1,5 +1,6 @@
 
 #include "graphics/CBlurMaskFilter.h"
+#include <skia/effects/SkBlurMask.h>
 #include <skia/effects/SkBlurMaskFilter.h>
 
 namespace Elastos {
@@ -7,7 +8,6 @@ namespace Droid {
 namespace Graphics {
 
 CAR_OBJECT_IMPL(CBlurMaskFilter);
-CAR_INTERFACE_IMPL(CBlurMaskFilter, MaskFilter, IBlurMaskFilter);
 ECode CBlurMaskFilter::constructor(
     /* [in] */ Float radius,
     /* [in] */ Int32 style)
@@ -22,17 +22,37 @@ PInterface CBlurMaskFilter::Probe(
     if (riid == EIID_MaskFilter) {
         return reinterpret_cast<PInterface>((MaskFilter*)this);
     }
-    return _CBlurMaskFilter::Probe(riid);
+    if (riid == EIID_IBlurMaskFilter) {
+        return (IBlurMaskFilter*)this;
+    }
+    return MaskFilter::Probe(riid);
 }
 
-Int32 CBlurMaskFilter::NativeConstructor(
-    /* [in] */ Float radius,
-    /* [in] */ Int32 style)
+UInt32 CBlurMaskFilter::AddRef()
 {
-    SkMaskFilter* filter = SkBlurMaskFilter::Create(
-            SkFloatToScalar(radius), (SkBlurMaskFilter::BlurStyle)style);
-    assert(filter != NULL);
-    return reinterpret_cast<Int32>(filter);
+    return MaskFilter::AddRef();
+}
+
+UInt32 CBlurMaskFilter::Release()
+{
+    return MaskFilter::Release();
+}
+
+ECode CBlurMaskFilter::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    return MaskFilter::GetInterfaceID(object, iid);
+}
+
+Int64 CBlurMaskFilter::NativeConstructor(
+    /* [in] */ Float radius,
+    /* [in] */ Int32 blurStyle)
+{
+    SkScalar sigma = SkBlurMask::ConvertRadiusToSigma(radius);
+    SkMaskFilter* filter = SkBlurMaskFilter::Create((SkBlurStyle)blurStyle, sigma);
+    assert(filter);
+    return reinterpret_cast<Int64>(filter);
 }
 
 } // namespace Graphics

@@ -29,12 +29,29 @@ PInterface CDiscretePathEffect::Probe(
     return PathEffect::Probe(riid);
 }
 
-Int32 CDiscretePathEffect::NativeCreate(
+UInt32 CDiscretePathEffect::AddRef()
+{
+    return PathEffect::AddRef();
+}
+
+UInt32 CDiscretePathEffect::Release()
+{
+    return PathEffect::Release();
+}
+
+ECode CDiscretePathEffect::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    return PathEffect::GetInterfaceID(object, iid);
+}
+
+Int64 CDiscretePathEffect::NativeCreate(
     /* [in] */ Float length,
     /* [in] */ Float deviation)
 {
-    return reinterpret_cast<Int32>(new SkDiscretePathEffect(
-            SkFloatToScalar(length), SkFloatToScalar(deviation)));
+    SkPathEffect* effect = SkDiscretePathEffect::Create(length, deviation);
+    return reinterpret_cast<Int64>(effect);
 }
 
 } // namespace Graphics

@@ -32,20 +32,35 @@ PInterface CDashPathEffect::Probe(
     return PathEffect::Probe(riid);
 }
 
-Int32 CDashPathEffect::NativeCreate(
-    /* [in] */ const ArrayOf<Float>& intervals,
+UInt32 CDashPathEffect::AddRef()
+{
+    return PathEffect::AddRef();
+}
+
+UInt32 CDashPathEffect::Release()
+{
+    return PathEffect::Release();
+}
+
+ECode CDashPathEffect::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    return PathEffect::GetInterfaceID(object, iid);
+}
+
+Int64 CDashPathEffect::NativeCreate(
+    /* [in] */ const ArrayOf<Float>& intervalArray,
     /* [in] */ Float phase)
 {
-    Int32 count = intervals.GetLength() & ~1;  // even number
-    Float* values = intervals.GetPayload();
-
-    SkAutoSTMalloc<32, SkScalar> storage(count);
-    SkScalar* nativeIntervals = storage.get();
-    for (int i = 0; i < count; i++) {
-        nativeIntervals[i] = SkFloatToScalar(values[i]);
-    }
-    return reinterpret_cast<Int32>(new SkDashPathEffect(
-            nativeIntervals, count, SkFloatToScalar(phase)));
+    int         count = intervalArray.GetLength() & ~1;  // even number
+#ifdef SK_SCALAR_IS_FLOAT
+    SkScalar*   intervals = intervalArray.GetPayload();
+#else
+    #error Need to convert float array to SkScalar array before calling the following function.
+#endif
+    SkPathEffect* effect = SkDashPathEffect::Create(intervals, count, phase);
+    return reinterpret_cast<Int64>(effect);
 }
 
 } // namespace Graphics

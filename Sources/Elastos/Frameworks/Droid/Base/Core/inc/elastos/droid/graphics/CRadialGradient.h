@@ -9,9 +9,17 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CarClass(CRadialGradient), public Shader
+CarClass(CRadialGradient)
+    , public Shader
+    , public IRadialGradient
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
+    CRadialGradient();
+
     /** Create a shader that draws a radial gradient given the center and radius.
         @param x        The x-coordinate of the center of the radius
         @param y        The y-coordinate of the center of the radius
@@ -46,18 +54,15 @@ public:
         /* [in] */ Int32 color1,
         /* [in] */ ShaderTileMode tile);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI GetLocalMatrix(
-        /* [in ,out] */ IMatrix* localM,
-        /* [out] */ Boolean* result);
-
-    CARAPI SetLocalMatrix(
-        /* [in] */ IMatrix* localM);
+protected:
+    /**
+     * @hide
+     */
+    // @Override
+    CARAPI_(AutoPtr<IShader>) Copy();
 
 private:
-    static CARAPI_(Int32) NativeCreate1(
+    static CARAPI_(Int64) NativeCreate1(
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ Float radius,
@@ -65,7 +70,7 @@ private:
         /* [in] */ ArrayOf<Float>* positions,
         /* [in] */ ShaderTileMode tile);
 
-    static CARAPI_(Int32) NativeCreate2(
+    static CARAPI_(Int64) NativeCreate2(
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ Float radius,
@@ -73,23 +78,25 @@ private:
         /* [in] */ Int32 color1,
         /* [in] */ ShaderTileMode tile);
 
-    static CARAPI_(Int32) NativePostCreate1(
-        /* [in] */ Int32 nativeShader,
-        /* [in] */ Float x,
-        /* [in] */ Float y,
-        /* [in] */ Float radius,
-        /* [in] */ const ArrayOf<Int32>& colors,
-        /* [in] */ ArrayOf<Float>* positions,
-        /* [in] */ ShaderTileMode tileMode);
+private:
+    static const Int32 TYPE_COLORS_AND_POSITIONS;
+    static const Int32 TYPE_COLOR_CENTER_AND_COLOR_EDGE;
 
-    static CARAPI_(Int32) NativePostCreate2(
-        /* [in] */ Int32 nativeShader,
-        /* [in] */ Float x,
-        /* [in] */ Float y,
-        /* [in] */ Float radius,
-        /* [in] */ Int32 color0,
-        /* [in] */ Int32 color1,
-        /* [in] */ ShaderTileMode tileMode);
+    /**
+     * Type of the RadialGradient: can be either TYPE_COLORS_AND_POSITIONS or
+     * TYPE_COLOR_CENTER_AND_COLOR_EDGE.
+     */
+    Int32 mType;
+
+    Float mX;
+    Float mY;
+    Float mRadius;
+    AutoPtr<ArrayOf<Int32> > mColors;
+    AutoPtr<ArrayOf<Float> > mPositions;
+    Int32 mCenterColor;
+    Int32 mEdgeColor;
+
+    ShaderTileMode mTileMode;
 };
 
 } // namespace Graphics

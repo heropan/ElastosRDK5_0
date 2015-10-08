@@ -1,5 +1,4 @@
 
-#include "ext/frameworkext.h"
 #include "graphics/CRegionIterator.h"
 #include "graphics/CRegion.h"
 #include "graphics/CRect.h"
@@ -23,6 +22,8 @@ struct RgnIterPair
     SkRegion::Iterator fIter;  // an iterator acting upon the copy (fRgn)
 };
 
+CAR_OBJECT_IMPL(CRegionIterator);
+CAR_INTERFACE_IMPL(CRegionIterator, Object, IRegionIterator);
 CRegionIterator::~CRegionIterator()
 {
     NativeDestructor(mNativeIter);
@@ -49,29 +50,31 @@ ECode CRegionIterator::Next(
     return NOERROR;
 }
 
-Int32 CRegionIterator::NativeConstructor(
-    /* [in] */ Int32 nativeRegion)
+Int64 CRegionIterator::NativeConstructor(
+    /* [in] */ Int64 regionHandle)
 {
-    SkASSERT(nativeRegion);
-    return (Int32)new RgnIterPair(*(SkRegion*)nativeRegion);
+    const SkRegion* region = reinterpret_cast<SkRegion*>(regionHandle);
+    SkASSERT(region);
+    return reinterpret_cast<Int64>(new RgnIterPair(*region));
 }
 
 void CRegionIterator::NativeDestructor(
-    /* [in] */ Int32 nativeIter)
+    /* [in] */ Int64 pairHandle)
 {
-    SkASSERT(nativeIter);
-    delete (RgnIterPair*)nativeIter;
+    RgnIterPair* pair = reinterpret_cast<RgnIterPair*>(pairHandle);
+    SkASSERT(pair);
+    delete pair;
 }
 
 Boolean CRegionIterator::NativeNext(
-    /* [in] */ Int32 nativeIter,
+    /* [in] */ Int64 pairHandle,
     /* [in] */ IRect* r)
 {
+    RgnIterPair* pair = reinterpret_cast<RgnIterPair*>(pairHandle);
     // the caller has checked that rectObject is not nul
-    SkASSERT(nativeIter);
+    SkASSERT(pair);
     SkASSERT(r);
 
-    RgnIterPair* pair = (RgnIterPair*)nativeIter;
     if (!pair->fIter.done()) {
         GraphicsNative::SkIRect2IRect(pair->fIter.rect(), r);
         pair->fIter.next();

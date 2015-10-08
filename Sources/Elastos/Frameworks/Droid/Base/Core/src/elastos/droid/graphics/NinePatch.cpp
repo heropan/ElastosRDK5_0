@@ -22,32 +22,61 @@ extern ECode NinePatch_Draw(SkCanvas* canvas, const SkRect& bounds,
 
 static const char* TAG = "NinePatch";
 
-NinePatch::NinePatch()
+CAR_INTERFACE_IMPL(NinePatch, Object, INinePatch);
+NinePatch::~NinePatch()
 {
-    CRectF::New((IRectF**)&mRect);
+    NativeFinalize(mNativeChunk);
 }
 
-ECode NinePatch::Init(
+ECode NinePatch::constructor(
+    /* [in] */ IBitmap* bitmap,
+    /* [in] */ ArrayOf<Byte>* chunk)
+{
+    return constructor(bitmap, chunk, String(NULL));
+}
+
+ECode NinePatch::constructor(
     /* [in] */ IBitmap* bitmap,
     /* [in] */ ArrayOf<Byte>* chunk,
     /* [in] */ const String& srcName)
 {
     mBitmap = bitmap;
-    mChunk = chunk;
     mSrcName = srcName;
-    return ValidateNinePatchChunk(((CBitmap*)mBitmap.Get())->Ni(), chunk);
+    assert(0 && "TODO");
+    // mNativeChunk = ValidateNinePatchChunk(mBitmap.ni(), chunk);
+    return NOERROR;
 }
 
-ECode NinePatch::Init(
-    /* [in] */ NinePatch* patch)
+ECode NinePatch::constructor(
+    /* [in] */ INinePatch* patch)
 {
-    mBitmap = patch->mBitmap;
-    mChunk = patch->mChunk;
-    mSrcName = patch->mSrcName;
-    if (patch->mPaint != NULL) {
-        FAIL_RETURN(CPaint::New(patch->mPaint.Get(), (IPaint**)&mPaint));
-    }
-    return ValidateNinePatchChunk(((CBitmap*)mBitmap.Get())->Ni(), mChunk);
+    assert(0 && "TODO");
+    // mBitmap = patch.mBitmap;
+    // mSrcName = patch.mSrcName;
+    // if (patch.mPaint != null) {
+    //     mPaint = new Paint(patch.mPaint);
+    // }
+    // // No need to validate the 9patch chunk again, it was done by
+    // // the instance we're copying from
+    // mNativeChunk = patch.mNativeChunk;
+    return NOERROR;
+}
+
+ECode NinePatch::GetName(
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name);
+    *name = mSrcName;
+    return NOERROR;
+}
+
+ECode NinePatch::GetPaint(
+    /* [out] */ IPaint** paint)
+{
+    VALIDATE_NOT_NULL(paint);
+    *paint = mPaint;
+    REFCOUNT_ADD(*paint);
+    return NOERROR;
 }
 
 ECode NinePatch::SetPaint(
@@ -57,41 +86,31 @@ ECode NinePatch::SetPaint(
     return NOERROR;
 }
 
+ECode NinePatch::GetBitmap(
+    /* [out] */ IBitmap** bitmap)
+{
+    VALIDATE_NOT_NULL(bitmap);
+    *bitmap = mBitmap;
+    REFCOUNT_ADD(*bitmap);
+    return NOERROR;
+}
+
 ECode NinePatch::Draw(
     /* [in] */ ICanvas* canvas,
     /* [in] */ IRectF* location)
 {
-    Boolean isAccelerated;
-    canvas->IsHardwareAccelerated(&isAccelerated);
-    if (!isAccelerated) {
-        return NativeDraw(((Canvas*)canvas->Probe(EIID_Canvas))->mNativeCanvas,
-            location, ((CBitmap*)mBitmap.Get())->Ni(), mChunk.Get(),
-            mPaint != NULL ? ((Paint*)mPaint->Probe(EIID_Paint))->mNativePaint : 0,
-            ((Canvas*)canvas->Probe(EIID_Canvas))->mDensity,
-            ((CBitmap*)mBitmap.Get())->mDensity);
-    }
-    else {
-        return canvas->DrawPatch(mBitmap, *mChunk, location, mPaint);
-    }
+    assert(0 && "TODO");
+    // canvas.drawPatch(this, location, mPaint);
+    return NOERROR;
 }
 
 ECode NinePatch::Draw(
     /* [in] */ ICanvas* canvas,
     /* [in] */ IRect* location)
 {
-    Boolean isAccelerated;
-    canvas->IsHardwareAccelerated(&isAccelerated);
-    if (!isAccelerated) {
-        return NativeDraw(((Canvas*)canvas->Probe(EIID_Canvas))->mNativeCanvas,
-            location, ((CBitmap*)mBitmap.Get())->Ni(), mChunk.Get(),
-            mPaint != NULL ? ((Paint*)mPaint->Probe(EIID_Paint))->mNativePaint : 0,
-            ((Canvas*)canvas->Probe(EIID_Canvas))->mDensity,
-            ((CBitmap*)mBitmap.Get())->mDensity);
-    }
-    else {
-        mRect->Set(location);
-        return canvas->DrawPatch(mBitmap, *mChunk, mRect, mPaint);
-    }
+    assert(0 && "TODO");
+    // return canvas->DrawPatch(this, location, mPaint);
+    return NOERROR;
 }
 
 ECode NinePatch::Draw(
@@ -99,25 +118,37 @@ ECode NinePatch::Draw(
     /* [in] */ IRect* location,
     /* [in] */ IPaint* paint)
 {
-    Boolean isAccelerated;
-    canvas->IsHardwareAccelerated(&isAccelerated);
-    if (!isAccelerated) {
-    return NativeDraw(((Canvas*)canvas->Probe(EIID_Canvas))->mNativeCanvas, location,
-            ((CBitmap*)mBitmap.Get())->Ni(), mChunk.Get(),
-            paint != NULL ? ((Paint*)paint->Probe(EIID_Paint))->mNativePaint : 0,
-            ((Canvas*)canvas->Probe(EIID_Canvas))->mDensity,
-            ((CBitmap*)mBitmap.Get())->mDensity);
-    }
-    else {
-        mRect->Set(location);
-        return canvas->DrawPatch(mBitmap, *mChunk, mRect, paint);
-    }
+    assert(0 && "TODO");
+    // canvas.drawPatch(this, location, paint);
+    return NOERROR;
+}
+
+void NinePatch::DrawSoftware(
+    /* [in] */ ICanvas* canvas,
+    /* [in] */ IRectF* location,
+    /* [in] */ IPaint* paint)
+{
+    assert(0 && "TODO");
+    // nativeDraw(canvas.getNativeCanvasWrapper(), location, mBitmap.ni(), mNativeChunk,
+    //         paint != null ? paint.mNativePaint : 0, canvas.mDensity, mBitmap.mDensity);
+}
+
+void NinePatch::DrawSoftware(
+    /* [in] */ ICanvas* canvas,
+    /* [in] */ IRect* location,
+    /* [in] */ IPaint* paint)
+{
+    assert(0 && "TODO");
+    // nativeDraw(canvas.getNativeCanvasWrapper(), location, mBitmap.ni(), mNativeChunk,
+    //         paint != null ? paint.mNativePaint : 0, canvas.mDensity, mBitmap.mDensity);
 }
 
 ECode NinePatch::GetDensity(
     /* [out] */ Int32* density)
 {
-    return mBitmap->GetDensity(density);
+    assert(0 && "TODO");
+    // return mBitmap.mDensity;
+    return NOERROR;
 }
 
 ECode NinePatch::GetWidth(
@@ -133,167 +164,81 @@ ECode NinePatch::GetHeight(
 }
 
 ECode NinePatch::HasAlpha(
-    /* [out] */ Boolean* hasAlpha)
+    /* [out] */ Boolean * has)
 {
-    return mBitmap->HasAlpha(hasAlpha);
+    return mBitmap->HasAlpha(has);
 }
 
 ECode NinePatch::GetTransparentRegion(
-    /* [in] */ IRect* location,
+    /* [in] */ IRect* bounds,
     /* [out] */ IRegion** region)
 {
-    Int32 r = NativeGetTransparentRegion(((CBitmap*)mBitmap.Get())->Ni(), mChunk.Get(), location);
-    if (r == 0) {
-        *region = NULL;
-        return NOERROR;
-    }
-    return CRegion::New(r, region);
+    assert(0 && "TODO");
+    // Int64 r = nativeGetTransparentRegion(mBitmap.ni(), mNativeChunk, bounds);
+    // return r != 0 ? new Region(r) : null;
+    return NOERROR;
 }
 
 Boolean NinePatch::IsNinePatchChunk(
     /* [in] */ ArrayOf<Byte>* chunk)
 {
-    if (NULL == chunk) {
-        return FALSE;
-    }
-    if (chunk->GetLength() < (Int32)sizeof(android::Res_png_9patch)) {
-        return FALSE;
-    }
-    Byte* array = chunk->GetPayload();
-    if (array != NULL) {
-        const android::Res_png_9patch* chunk =
-                reinterpret_cast<const android::Res_png_9patch*>(array);
-        int8_t wasDeserialized = chunk->wasDeserialized;
-        return wasDeserialized != -1;
-    }
+    assert(0 && "TODO: need jni codes.");
     return FALSE;
 }
 
-ECode NinePatch::ValidateNinePatchChunk(
-    /* [in] */ Int32 bitmap,
-    /* [in] */ ArrayOf<Byte>* chunk)
+ECode NinePatch::IsNinePatchChunk(
+    /* [in] */ ArrayOf<Byte>* chunk,
+    /* [out] */ Boolean* result)
 {
-    if (chunk->GetLength() < (Int32)sizeof(android::Res_png_9patch)) {
-        Logger::E(TAG, "Array too small for chunk.");
-        return E_RUNTIME_EXCEPTION;
-    }
+    assert(0 && "TODO: need jni codes.");
     return NOERROR;
 }
 
-static ECode native_draw(
-    /* [in] */ SkCanvas* canvas,
-    /* [in] */ SkRect& bounds,
-    /* [in] */ const SkBitmap* bitmap,
-    /* [in] */ ArrayOf<Byte>* chunkObj,
-    /* [in] */ const SkPaint* paint,
+Int64 NinePatch::ValidateNinePatchChunk(
+    /* [in] */ Int64 bitmap,
+    /* [in] */ ArrayOf<Byte>* chunk)
+{
+    assert(0 && "TODO: need jni codes.");
+    return -1;
+}
+
+void NinePatch::NativeFinalize(
+    /* [in] */ Int64 chunk)
+{
+    assert(0 && "TODO: need jni codes.");
+}
+
+void NinePatch::NativeDraw(
+    /* [in] */ Int64 canvas_instance,
+    /* [in] */ IRectF* loc,
+    /* [in] */ Int64 bitmap_instance,
+    /* [in] */ Int64 c,
+    /* [in] */ Int64 paint_instance_or_null,
     /* [in] */ Int32 destDensity,
     /* [in] */ Int32 srcDensity)
 {
-    ECode ec = NOERROR;
-    Int32 chunkSize = chunkObj->GetLength();
-    void* storage = chunkObj->GetPayload();
-    // need to deserialize the chunk
-    android::Res_png_9patch* chunk = static_cast<android::Res_png_9patch*>(storage);
-    assert(chunkSize == (Int32)chunk->serializedSize());
-    // this relies on deserialization being done in place
-    android::Res_png_9patch::deserialize(chunk);
-
-    if (destDensity == srcDensity || destDensity == 0
-            || srcDensity == 0) {
-        // Logger::V(TAG, "Drawing unscaled 9-patch: (%g,%g)-(%g,%g)",
-        //         SkScalarToFloat(bounds.fLeft), SkScalarToFloat(bounds.fTop),
-        //         SkScalarToFloat(bounds.fRight), SkScalarToFloat(bounds.fBottom));
-        ec = NinePatch_Draw(canvas, bounds, *bitmap, *chunk, paint, NULL);
-    }
-    else {
-        canvas->save();
-
-        SkScalar scale = SkFloatToScalar(destDensity / (float)srcDensity);
-        canvas->translate(bounds.fLeft, bounds.fTop);
-        canvas->scale(scale, scale);
-
-        bounds.fRight = SkScalarDiv(bounds.fRight-bounds.fLeft, scale);
-        bounds.fBottom = SkScalarDiv(bounds.fBottom-bounds.fTop, scale);
-        bounds.fLeft = bounds.fTop = 0;
-
-        Logger::V(TAG, "Drawing scaled 9-patch: (%g,%g)-(%g,%g) srcDensity=%d destDensity=%d",
-                SkScalarToFloat(bounds.fLeft), SkScalarToFloat(bounds.fTop),
-                SkScalarToFloat(bounds.fRight), SkScalarToFloat(bounds.fBottom),
-                srcDensity, destDensity);
-
-        ec = NinePatch_Draw(canvas, bounds, *bitmap, *chunk, paint, NULL);
-
-        canvas->restore();
-    }
-
-    return ec;
+    assert(0 && "TODO: need jni codes.");
 }
 
-ECode NinePatch::NativeDraw(
-    /* [in] */ Int32 canvas,
-    /* [in] */ IRectF* boundsRect,
-    /* [in] */ Int32 bitmap,
-    /* [in] */ ArrayOf<Byte>* c,
-    /* [in] */ Int32 paint, // may be null
+void NinePatch::NativeDraw(
+    /* [in] */ Int64 canvas_instance,
+    /* [in] */ IRect* loc,
+    /* [in] */ Int64 bitmap_instance,
+    /* [in] */ Int64 c,
+    /* [in] */ Int64 paint_instance_or_null,
     /* [in] */ Int32 destDensity,
     /* [in] */ Int32 srcDensity)
 {
-    SkASSERT(canvas);
-    SkASSERT(boundsRect);
-    SkASSERT(bitmap);
-    SkASSERT(c);
-    // paint is optional
-
-    SkRect bounds;
-    GraphicsNative::IRectF2SkRect(boundsRect, &bounds);
-
-    return native_draw((SkCanvas*)canvas, bounds, (SkBitmap*)bitmap, c,
-            (SkPaint*)paint, destDensity, srcDensity);
+    assert(0 && "TODO: need jni codes.");
 }
 
-ECode NinePatch::NativeDraw(
-    /* [in] */ Int32 canvas,
-    /* [in] */ IRect* boundsRect,
-    /* [in] */ Int32 bitmap,
-    /* [in] */ ArrayOf<Byte>* c,
-    /* [in] */ Int32 paint, // may be null
-    /* [in] */ Int32 destDensity,
-    /* [in] */ Int32 srcDensity)
+Int64 NinePatch::NativeGetTransparentRegion(
+    /* [in] */ Int64 bitmap,
+    /* [in] */ Int64 chunk,
+    /* [in] */ IRect* location)
 {
-    SkASSERT(canvas);
-    SkASSERT(boundsRect);
-    SkASSERT(bitmap);
-    SkASSERT(c);
-    // paint is optional
-
-    SkRect bounds;
-    GraphicsNative::IRect2SkRect(boundsRect, &bounds);
-
-    return native_draw((SkCanvas*)canvas, bounds, (SkBitmap*)bitmap, c,
-            (SkPaint*)paint, destDensity, srcDensity);
-}
-
-Int32 NinePatch::NativeGetTransparentRegion(
-    /* [in] */ Int32 bitmap,
-    /* [in] */ ArrayOf<Byte>* chunkObj,
-    /* [in] */ IRect* boundsRect)
-{
-    SkASSERT(bitmap);
-    SkASSERT(chunkObj);
-    SkASSERT(boundsRect);
-
-    SkRect bounds;
-    GraphicsNative::IRect2SkRect(boundsRect, &bounds);
-    Int32 chunkSize = chunkObj->GetLength();
-    void* storage = chunkObj->GetPayload();
-    // need to deserialize the chunk
-    android::Res_png_9patch* chunk = static_cast<android::Res_png_9patch*>(storage);
-    assert(chunkSize == (Int32)chunk->serializedSize());
-    // this relies on deserialization being done in place
-    android::Res_png_9patch::deserialize(chunk);
-    SkRegion* region = NULL;
-    NinePatch_Draw(NULL, bounds, *(SkBitmap*)bitmap, *chunk, NULL, &region);
-    return (Int32)region;
+    assert(0 && "TODO: need jni codes.");
+    return -1;
 }
 
 } // namespace Graphics

@@ -31,6 +31,22 @@ public:
     CARAPI GetBitsPerPixel(
         /* [in] */ Int32 format,
         /* [out] */ Int32* bits);
+
+    /**
+     * Determine whether or not this is a public-visible {@code format}.
+     *
+     * <p>In particular, {@code @hide} formats will return {@code false}.</p>
+     *
+     * <p>Any other formats (including UNKNOWN) will return {@code false}.</p>
+     *
+     * @param format an integer format
+     * @return a boolean
+     *
+     * @hide
+     */
+    CARAPI IsPublicFormat(
+        /* [in] */ Int32 format,
+        /* [out] */ Boolean* is);
 };
 
 } // namespace Graphics

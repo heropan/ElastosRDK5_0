@@ -6,6 +6,7 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CPixelXorXfermode);
 ECode CPixelXorXfermode::constructor(
     /* [in] */ Int32 opColor)
 {
@@ -19,13 +20,33 @@ PInterface CPixelXorXfermode::Probe(
     if (riid == EIID_Xfermode) {
         return reinterpret_cast<PInterface>((Xfermode*)this);
     }
-    return _CPixelXorXfermode::Probe(riid);
+    else if (riid == EIID_IPixelXorXfermode) {
+        return (IPixelXorXfermode*)this;
+    }
+    return Xfermode::Probe(riid);
 }
 
-Int32 CPixelXorXfermode::NativeCreate(
+UInt32 CPixelXorXfermode::AddRef()
+{
+    return Xfermode::AddRef();
+}
+
+UInt32 CPixelXorXfermode::Release()
+{
+    return Xfermode::Release();
+}
+
+ECode CPixelXorXfermode::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    return Xfermode::GetInterfaceID(object, iid);
+}
+
+Int64 CPixelXorXfermode::NativeCreate(
     /* [in] */ Int32 opColor)
 {
-    return (Int32)new SkPixelXorXfermode(opColor);
+    return reinterpret_cast<Int64>(SkPixelXorXfermode::Create(opColor));
 }
 
 } // namespace Graphics

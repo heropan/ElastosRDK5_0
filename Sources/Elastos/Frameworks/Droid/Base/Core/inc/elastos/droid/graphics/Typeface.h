@@ -5,11 +5,13 @@
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/utility/etl/HashMap.h>
-
-using Elastos::Utility::Etl::HashMap;
-using Elastos::IO::IFile;
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::Res::IAssetManager;
+using Elastos::Core::Object;
+using Elastos::Utility::IMap;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::IO::IFile;
 
 namespace Elastos {
 namespace Droid {
@@ -24,16 +26,32 @@ extern const InterfaceID EIID_Typeface;
  * how text appears when drawn (and measured).
  */
 class Typeface
+    : public Object
+    , public ITypeface
 {
 public:
+    CAR_INTERFACE_DECL();
+
     /** Returns the typeface's intrinsic style attributes */
-    virtual CARAPI_(Int32) GetStyle();
+    virtual CARAPI GetStyle(
+        /* [out] */ Int32* style);
 
     /** Returns true if getStyle() has the BOLD bit set. */
-    CARAPI_(Boolean) IsBold();
+    CARAPI IsBold(
+        /* [out] */ Boolean* result);
 
     /** Returns true if getStyle() has the ITALIC bit set. */
-    CARAPI_(Boolean) IsItalic();
+    CARAPI IsItalic(
+        /* [out] */ Boolean* result);
+
+    // @Override
+    virtual CARAPI Equals(
+        /* [in] */ IInterface* o,
+        /* [out] */ Boolean* e);
+
+    // @Override
+    virtual CARAPI GetHashCode(
+        /* [out] */ Int32* code);
 
     /**
      * Create a typeface object given a family name, and option style information.
@@ -108,53 +126,83 @@ public:
         /* [out] */ ITypeface** typeface);
 
     /**
-     * Set the global gamma coefficients for black and white text. This call is
-     * usually a no-op in shipping products, and only exists for testing during
-     * development.
+     * Create a new typeface from an array of font families.
      *
-     * @param blackGamma gamma coefficient for black text
-     * @param whiteGamma gamma coefficient for white text
-     *
-     * @hide - this is just for calibrating devices, not for normal apps
+     * @param families array of font families
+     * @hide
      */
-    static CARAPI_(void) SetGammaForText(
-        /* [in] */ Float blackGamma,
-        /* [in] */ Float whiteGamma);
+    static CARAPI CreateFromFamilies(
+        /* [in]*/ ArrayOf<IFontFamily>* families,
+        /* [out]*/ ITypeface** typeface);
+
+    /**
+     * Create a new typeface from an array of font families, including
+     * also the font families in the fallback list.
+     *
+     * @param families array of font families
+     * @hide
+     */
+    static CARAPI CreateFromFamiliesWithDefault(
+        /* [in]*/ ArrayOf<IFontFamily>* families,
+        /* [out]*/ ITypeface** typeface);
 
 protected:
     Typeface();
 
     // don't allow clients to call this directly
-    CARAPI Init(
-        /* [in] */ Int32 ni);
+    CARAPI constructor(
+        /* [in] */ Int64 ni);
 
     virtual ~Typeface();
 
 private:
-    static CARAPI_(Int32) NativeCreate(
-        /* [in] */ const String& familyName,
+    static CARAPI_(void) SetDefault(
+        /* [in] */ ITypeface* t);
+
+    static CARAPI_(Int64) NativeCreateFromTypeface(
+        /* [in] */ Int64 native_instance,
         /* [in] */ Int32 style);
 
-    static CARAPI_(Int32) NativeCreateFromTypeface(
-        /* [in] */ Int32 nOther,
-        /* [in] */ Int32 style);
+    static CARAPI_(Int64) NativeCreateWeightAlias(
+        /* [in] */ Int64 native_instance,
+        /* [in] */ Int32 weight);
 
     static CARAPI_(void) NativeUnref(
-        /* [in] */ Int32 nObj);
+        /* [in] */ Int64 native_instance);
 
     static CARAPI_(Int32) NativeGetStyle(
-        /* [in] */ Int32 nObj);
+        /* [in] */ Int64 native_instance);
 
-    static CARAPI_(Int32) NativeCreateFromAsset(
-        /* [in] */ IAssetManager* mgr,
-        /* [in] */ const String& path);
+    static CARAPI_(Int64) NativeCreateFromArray(
+        /* [in] */ ArrayOf<Int64>* familyArray);
 
-    static CARAPI_(Int32) NativeCreateFromFile(
-        /* [in] */ const String& path);
+    static CARAPI_(void) NativeSetDefault(
+        /* [in] */ Int64 native_instance);
 
     static CARAPI_(AutoPtr< ArrayOf<ITypeface*> >) StaticInit();
 
+    // static CARAPI_(AutoPtr<IFontFamily>) MakeFamilyFromParsed(
+    //     /* [in] */ FontListParser.Family family)
+    // {
+    //     FontFamily fontFamily = new FontFamily(family.lang, family.variant);
+    //     for (FontListParser.Font font : family.fonts) {
+    //         fontFamily.addFontWeightStyle(font.fontName, font.weight, font.isItalic);
+    //     }
+    //     return fontFamily;
+    // }
+
+    /*
+     * (non-Javadoc)
+     *
+     * This should only be called once, from the static class initializer block.
+     */
+    static CARAPI_(void) Init();
+
+    static CARAPI_(AutoPtr<IFile>) GetSystemFontConfigLocation();
+
 public:
+    static const String TAG;
+
     /** The default NORMAL typeface object */
     static AutoPtr<ITypeface> DEFAULT;
     /**
@@ -175,8 +223,14 @@ public:
     typedef HashMap<Int32, AutoPtr<ITypeface> > TypefaceMap;
     static HashMap<Int32, AutoPtr<TypefaceMap> > sTypefaceCache;
 
+    static AutoPtr<ITypeface> sDefaultTypeface;
+    static AutoPtr<IMap> sSystemFontMap;
+    static AutoPtr<ArrayOf<AutoPtr<IFontFamily> > > sFallbackFonts;
+
+    static const String FONTS_CONFIG;
+
     /* package */
-    Int32 mNativeInstance;
+    Int64 mNativeInstance;
 
 private:
     Int32 mStyle;

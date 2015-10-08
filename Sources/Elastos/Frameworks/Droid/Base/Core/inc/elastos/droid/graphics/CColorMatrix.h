@@ -96,7 +96,7 @@ public:
      * Assign the array of floats into this matrix, copying all of its values.
      */
     CARAPI Set(
-        /* [in] */ const ArrayOf<Float>& src);
+        /* [in] */ ArrayOf<Float>* src);
 
     /**
      * Set this colormatrix to the concatenation of the two specified

@@ -5,8 +5,6 @@
 #include "_Elastos_Droid_Graphics_Drawable_CMipmapDrawable.h"
 #include "graphics/drawable/MipmapDrawable.h"
 
-
-
 namespace Elastos {
 namespace Droid {
 namespace Graphics {

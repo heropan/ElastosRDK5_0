@@ -7,6 +7,7 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_INTERFACE_IMPL(PixelFormat, Object, IPixelFormat);
 Boolean PixelFormat::FormatHasAlpha(
     /* [in] */ Int32 format)
 {
@@ -27,39 +28,58 @@ ECode PixelFormat::GetPixelFormatInfo(
     /* [in] */ Int32 format,
     /* [in] */ IPixelFormat* infoObj)
 {
-    android::PixelFormatInfo info;
-    android::status_t err;
-
-    // we need this for backward compatibility with PixelFormat's
-    // deprecated constants
+    PixelFormat* info = (PixelFormat*)infoObj;
     switch (format) {
-    case HAL_PIXEL_FORMAT_YCbCr_422_SP:
-        // defined as the bytes per pixel of the Y plane
-        info.bytesPerPixel = 1;
-        info.bitsPerPixel = 16;
-        goto done;
-    case HAL_PIXEL_FORMAT_YCrCb_420_SP:
-        // defined as the bytes per pixel of the Y plane
-        info.bytesPerPixel = 1;
-        info.bitsPerPixel = 12;
-        goto done;
-    case HAL_PIXEL_FORMAT_YCbCr_422_I:
-        // defined as the bytes per pixel of the Y plane
-        info.bytesPerPixel = 1;
-        info.bitsPerPixel = 16;
-        goto done;
+        case RGBA_8888:
+        case RGBX_8888:
+            info->mBitsPerPixel = 32;
+            info->mBytesPerPixel = 4;
+            break;
+        case RGB_888:
+            info->mBitsPerPixel = 24;
+            info->mBytesPerPixel = 3;
+            break;
+        case RGB_565:
+        case RGBA_5551:
+        case RGBA_4444:
+        case LA_88:
+            info->mBitsPerPixel = 16;
+            info->mBytesPerPixel = 2;
+            break;
+        case A_8:
+        case L_8:
+        case RGB_332:
+            info->mBitsPerPixel = 8;
+            info->mBytesPerPixel = 1;
+            break;
+        case YCbCr_422_SP:
+        case YCbCr_422_I:
+            info->mBitsPerPixel = 16;
+            info->mBytesPerPixel = 1;
+            break;
+        case YCbCr_420_SP:
+            info->mBitsPerPixel = 12;
+            info->mBytesPerPixel = 1;
+            break;
+        default:
+            // throw new IllegalArgumentException("unknown pixel format " + format);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-
-    err = android::getPixelFormatInfo(format, &info);
-    if (err < 0) {
-        // jniThrowException(env, "java/lang/IllegalArgumentException", NULL);
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-done:
-    ((PixelFormat*)(CPixelFormat*)infoObj)->mBytesPerPixel = info.bytesPerPixel;
-    ((PixelFormat*)(CPixelFormat*)infoObj)->mBitsPerPixel = info.bitsPerPixel;
     return NOERROR;
+}
+
+Boolean PixelFormat::IsPublicFormat(
+    /* [in] */ Int32 format)
+{
+    switch (format) {
+        case RGBA_8888:
+        case RGBX_8888:
+        case RGB_888:
+        case RGB_565:
+            return TRUE;
+    }
+
+    return FALSE;
 }
 
 } // namespace Graphics

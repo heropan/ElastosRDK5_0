@@ -1,3 +1,4 @@
+DIRS += graphics
 DIRS += os
 DIRS += net
 DIRS += utility
@@ -5,7 +6,6 @@ DIRS += content
 DIRS += media
 DIRS += mtp
 DIRS += graphics
-#DIRS += graphics/drawable/shapes
 DIRS += text
 #DIRS += app
 DIRS += hardware

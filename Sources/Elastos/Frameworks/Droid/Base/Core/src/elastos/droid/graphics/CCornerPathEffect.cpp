@@ -26,11 +26,28 @@ PInterface CCornerPathEffect::Probe(
     return PathEffect::Probe(riid);
 }
 
-Int32 CCornerPathEffect::NativeCreate(
+UInt32 CCornerPathEffect::AddRef()
+{
+    return PathEffect::AddRef();
+}
+
+UInt32 CCornerPathEffect::Release()
+{
+    return PathEffect::Release();
+}
+
+ECode CCornerPathEffect::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    return PathEffect::GetInterfaceID(object, iid);
+}
+
+Int64 CCornerPathEffect::NativeCreate(
     /* [in] */ Float radius)
 {
-    return reinterpret_cast<Int32>(new SkCornerPathEffect(
-            SkFloatToScalar(radius)));
+    SkPathEffect* effect = SkCornerPathEffect::Create(radius);
+    return reinterpret_cast<Int64>(effect);
 }
 
 } // namespace Graphics

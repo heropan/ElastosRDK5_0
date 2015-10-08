@@ -73,9 +73,9 @@ ECode CColorMatrix::Set(
 }
 
 ECode CColorMatrix::Set(
-    /* [in] */ const ArrayOf<Float>& src)
+    /* [in] */ ArrayOf<Float>* src)
 {
-    mArray->Copy(0, &src, 0, 20);
+    mArray->Copy(0, src, 0, 20);
     return NOERROR;
 }
 
@@ -102,7 +102,7 @@ ECode CColorMatrix::SetRotate(
     /* [in] */ Float degrees)
 {
     Reset();
-    Float radians = degrees * (Float)Elastos::Core::Math::DOUBLE_PI / 180;
+    Float radians = degrees * (Float)Elastos::Core::Math::PI / 180;
     Float cosine = (Float)Elastos::Core::Math::Cos((Double)radians);
     Float sine = (Float)Elastos::Core::Math::Sin((Double)radians);
     ArrayOf<Float>& a = *mArray;

@@ -17,6 +17,10 @@ SkStream* CreateInputStreamAdaptor(
     /* [in] */ ArrayOf<Byte>* storage,
     /* [in] */ Int32 markSize = 0);
 
+SkStreamRewindable* CopyJavaInputStream(
+    /* [in] */ IInputStream* stream,
+    /* [in] */ ArrayOf<Byte>* storage);
+
 SkWStream* CreateOutputStreamAdaptor(
     /* [in] */ IOutputStream* stream,
     /* [in] */ ArrayOf<Byte>* storage);

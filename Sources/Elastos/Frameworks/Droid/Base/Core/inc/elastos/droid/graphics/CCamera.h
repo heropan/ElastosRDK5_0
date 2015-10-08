@@ -79,13 +79,14 @@ private:
     CARAPI_(void) NativeDestructor();
 
     CARAPI_(void) NativeGetMatrix(
-        /* [in] */ Int32 nativeMatrix);
+        /* [in] */ Int64 nativeMatrix);
 
     CARAPI_(void) NativeApplyToCanvas(
-        /* [in] */ Int32 nativeCanvas);
+        /* [in] */ Int64 nativeCanvas);
 
 private:
-    Int32 mNativeInstance;
+    Int64 mNativeInstance;
+    AutoPtr<IMatrix> mMatrix;
 };
 
 } // namespace Graphics

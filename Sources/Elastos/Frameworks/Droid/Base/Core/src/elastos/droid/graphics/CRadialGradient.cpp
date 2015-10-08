@@ -1,12 +1,24 @@
 
 #include "graphics/CRadialGradient.h"
 #include <skia/effects/SkGradientShader.h>
-#include <skia/core/SkTemplates.h>
-#include <hwui/SkiaShader.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
+
+const Int32 CRadialGradient::TYPE_COLORS_AND_POSITIONS = 1;
+const Int32 CRadialGradient::TYPE_COLOR_CENTER_AND_COLOR_EDGE = 2;
+
+CAR_OBJECT_IMPL(CRadialGradient);
+CRadialGradient::CRadialGradient()
+    : mType(0)
+    , mX(0)
+    , mY(0)
+    , mRadius(0)
+    , mCenterColor(0)
+    , mEdgeColor(0)
+    , mTileMode(-1)
+{}
 
 ECode CRadialGradient::constructor(
     /* [in] */ Float x,
@@ -28,8 +40,14 @@ ECode CRadialGradient::constructor(
 //        throw new IllegalArgumentException("color and position arrays must be of equal length");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mNativeInstance = NativeCreate1(x, y, radius, colors, positions, tile);
-    mNativeShader = NativePostCreate1(mNativeInstance, x, y, radius, colors, positions, tile);
+    mType = TYPE_COLORS_AND_POSITIONS;
+    mX = x;
+    mY = y;
+    mRadius = radius;
+    mColors = const_cast<ArrayOf<Int32>* >(&colors);
+    mPositions = positions;
+    mTileMode = tile;
+    Init(NativeCreate1(x, y, radius, colors, positions, tile));
     return NOERROR;
 }
 
@@ -37,16 +55,22 @@ ECode CRadialGradient::constructor(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float radius,
-    /* [in] */ Int32 color0,
-    /* [in] */ Int32 color1,
+    /* [in] */ Int32 centerColor,
+    /* [in] */ Int32 edgeColor,
     /* [in] */ ShaderTileMode tile)
 {
     if (radius <= 0) {
 //        throw new IllegalArgumentException("radius must be > 0");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mNativeInstance = NativeCreate2(x, y, radius, color0, color1, tile);
-    mNativeShader = NativePostCreate2(mNativeInstance, x, y, radius, color0, color1, tile);
+    mType = TYPE_COLOR_CENTER_AND_COLOR_EDGE;
+    mX = x;
+    mY = y;
+    mRadius = radius;
+    mCenterColor = centerColor;
+    mEdgeColor = edgeColor;
+    mTileMode = tile;
+    Init(NativeCreate2(x, y, radius, centerColor, edgeColor, tile));
     return NOERROR;
 }
 
@@ -56,26 +80,50 @@ PInterface CRadialGradient::Probe(
     if (riid == EIID_Shader) {
         return reinterpret_cast<PInterface>((Shader*)this);
     }
-    return _CRadialGradient::Probe(riid);
+    else if (riid == EIID_IRadialGradient) {
+        return (IRadialGradient*)this;
+    }
+    return Shader::Probe(riid);
 }
 
-ECode CRadialGradient::GetLocalMatrix(
-    /* [in ,out] */ IMatrix* localM,
-    /* [out] */ Boolean* result)
+UInt32 CRadialGradient::AddRef()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = Shader::GetLocalMatrix(localM);
-    return NOERROR;
+    return Shader::AddRef();
 }
 
-ECode CRadialGradient::SetLocalMatrix(
-    /* [in] */ IMatrix* localM)
+UInt32 CRadialGradient::Release()
 {
-    Shader::SetLocalMatrix(localM);
-    return NOERROR;
+    return Shader::Release();
 }
 
-Int32 CRadialGradient::NativeCreate1(
+ECode CRadialGradient::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    return Shader::GetInterfaceID(object, iid);
+}
+
+AutoPtr<IShader> CRadialGradient::Copy()
+{
+    AutoPtr<IRadialGradient> copy;
+    assert(0 && "TODO");
+    // switch (mType) {
+    //     case TYPE_COLORS_AND_POSITIONS:
+    //         copy = new RadialGradient(mX, mY, mRadius, mColors.clone(),
+    //                 mPositions != null ? mPositions.clone() : null, mTileMode);
+    //         break;
+    //     case TYPE_COLOR_CENTER_AND_COLOR_EDGE:
+    //         copy = new RadialGradient(mX, mY, mRadius, mCenterColor, mEdgeColor, mTileMode);
+    //         break;
+    //     default:
+    //         throw new IllegalArgumentException("RadialGradient should be created with either " +
+    //                 "colors and positions or center color and edge color");
+    // }
+    CopyLocalMatrix(IShader::Probe(copy));
+    return IShader::Probe(copy);
+}
+
+Int64 CRadialGradient::NativeCreate1(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float radius,
@@ -84,32 +132,30 @@ Int32 CRadialGradient::NativeCreate1(
     /* [in] */ ShaderTileMode tile)
 {
     SkPoint center;
-    center.set(SkFloatToScalar(x), SkFloatToScalar(y));
+    center.set(x, y);
 
     size_t count = (size_t)colors.GetLength();
     const Int32* colorValues = colors.GetPayload();
 
-    SkAutoSTMalloc<8, SkScalar> storage(positions ? count : 0);
-    SkScalar* pos = NULL;
+    // AutoJavaFloatArray autoPos(env, posArray, count);
+#ifdef SK_SCALAR_IS_FLOAT
+    SkScalar* pos = positions->GetPayload();
+#else
+    #error Need to convert float array to SkScalar array before calling the following function.
+#endif
 
-    if (positions) {
-        const Float* posValues = positions->GetPayload();
-        pos = (SkScalar*)storage.get();
-        for (size_t i = 0; i < count; i++)
-            pos[i] = SkFloatToScalar(posValues[i]);
-    }
-
-    SkShader* shader = SkGradientShader::CreateRadial(center,
-            SkFloatToScalar(radius),
-            reinterpret_cast<const SkColor*>(colorValues),
-            pos, count,
+    SkShader* shader = SkGradientShader::CreateRadial(center, radius,
+            reinterpret_cast<const SkColor*>(colorValues), pos, count,
             static_cast<SkShader::TileMode>(tile));
+    // env->ReleaseIntArrayElements(colorArray, const_cast<jint*>(colorValues),
+    //                              JNI_ABORT);
 
+    // ThrowIAE_IfNull(env, shader);
     assert(shader != NULL);
-    return (Int32)shader;
+    return reinterpret_cast<Int64>(shader);
 }
 
-Int32 CRadialGradient::NativeCreate2(
+Int64 CRadialGradient::NativeCreate2(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float radius,
@@ -118,85 +164,16 @@ Int32 CRadialGradient::NativeCreate2(
     /* [in] */ ShaderTileMode tile)
 {
     SkPoint center;
-    center.set(SkFloatToScalar(x), SkFloatToScalar(y));
+    center.set(x, y);
 
     SkColor colors[2];
     colors[0] = color0;
     colors[1] = color1;
 
-    SkShader* s = SkGradientShader::CreateRadial(center, SkFloatToScalar(radius), colors, NULL,
+    SkShader* s = SkGradientShader::CreateRadial(center, radius, colors, NULL,
             2, (SkShader::TileMode)tile);
     assert(s != NULL);
-    return (Int32)s;
-}
-
-Int32 CRadialGradient::NativePostCreate1(
-    /* [in] */ Int32 nativeShader,
-    /* [in] */ Float x,
-    /* [in] */ Float y,
-    /* [in] */ Float radius,
-    /* [in] */ const ArrayOf<Int32>& colors,
-    /* [in] */ ArrayOf<Float>* positions,
-    /* [in] */ ShaderTileMode tileMode)
-{
-#ifdef USE_OPENGL_RENDERER
-    Int32 count = colors.GetLength();
-    const Int32* colorValues = colors.GetPayload();
-
-    Float* storedPositions = new Float[count];
-    UInt32* storedColors = new UInt32[count];
-    for (size_t i = 0; i < count; i++) {
-        storedColors[i] = static_cast<UInt32>(colorValues[i]);
-    }
-
-    if (positions) {
-        assert(positions->GetLength() >= count);
-        const float* posValues = positions->GetPayload();
-        for (size_t i = 0; i < count; i++) {
-            storedPositions[i] = posValues[i];
-        }
-    }
-    else {
-        storedPositions[0] = 0.0f;
-        const Float step = 1.0f / (count - 1);
-        for (size_t i = 1; i < count - 1; i++) {
-            storedPositions[i] = step * i;
-        }
-        storedPositions[count - 1] = 1.0f;
-    }
-
-    return (Int32)new SkiaCircularGradientShader(x, y, radius, storedColors,
-            storedPositions, count, (SkShader*)nativeShader, (SkShader::TileMode)tileMode,
-            NULL, (nativeShader->getFlags() & SkShader::kOpaqueAlpha_Flag) == 0);
-#else
-    return 0;
-#endif
-}
-
-Int32 CRadialGradient::NativePostCreate2(
-    /* [in] */ Int32 nativeShader,
-    /* [in] */ Float x,
-    /* [in] */ Float y,
-    /* [in] */ Float radius,
-    /* [in] */ Int32 color0,
-    /* [in] */ Int32 color1,
-    /* [in] */ ShaderTileMode tileMode)
-{
-#ifdef USE_OPENGL_RENDERER
-    Float* storedPositions = new Float[2];
-    storedPositions[0] = 0.0f;
-    storedPositions[1] = 1.0f;
-
-    UInt32* storedColors = new UInt32[2];
-    storedColors[0] = static_cast<UInt32>(color0);
-    storedColors[1] = static_cast<UInt32>(color1);
-
-    return (Int32)new SkiaCircularGradientShader(x, y, radius, storedColors,
-            storedPositions, 2, (SkShader*)nativeShader, (SkShader::TileMode) tileMode,
-            NULL, (nativeShader->getFlags() & SkShader::kOpaqueAlpha_Flag) == 0);
-#else
-    return 0;
-#endif
+    return reinterpret_cast<Int64>(s);
 }
 
 } // namespace Graphics

@@ -4,17 +4,25 @@
 
 #include "_Elastos_Droid_Graphics_CTypefaceHelper.h"
 #include <Elastos.CoreLibrary.h>
+#include <elastos/core/Singleton.h>
 
-using Elastos::IO::IFile;
 using Elastos::Droid::Content::Res::IAssetManager;
+using Elastos::Core::Singleton;
+using Elastos::IO::IFile;
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
 CarClass(CTypefaceHelper)
+    , public Singleton
+    , public ITypefaceHelper
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_SINGLETON_DECL();
+
     /**
      * Create a typeface object given a family name, and option style information.
      * If null is passed for the name, then the "default" font will be chosen.
@@ -87,19 +95,13 @@ public:
         /* [in]*/ const String& path,
         /* [out] */ ITypeface** typeface);
 
-    /**
-     * Set the global gamma coefficients for black and white text. This call is
-     * usually a no-op in shipping products, and only exists for testing during
-     * development.
-     *
-     * @param blackGamma gamma coefficient for black text
-     * @param whiteGamma gamma coefficient for white text
-     *
-     * @hide - this is just for calibrating devices, not for normal apps
-     */
-    CARAPI SetGammaForText(
-        /* [in] */ Float blackGamma,
-        /* [in] */ Float whiteGamma);
+    CARAPI CreateFromFamilies(
+        /* [in]*/ ArrayOf<IFontFamily>* families,
+        /* [out]*/ ITypeface** typeface);
+
+    CARAPI CreateFromFamiliesWithDefault(
+        /* [in]*/ ArrayOf<IFontFamily>* families,
+        /* [out]*/ ITypeface** typeface);
 };
 
 } // namespace Graphics

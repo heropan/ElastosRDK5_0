@@ -9,15 +9,15 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CPicture::_RecordingCanvas::_RecordingCanvas(
+CPicture::RecordingCanvas::RecordingCanvas(
     /* [in] */ CPicture* pict,
-    /* [in] */ Int32 nativeCanvas)
+    /* [in] */ Int64 nativeCanvas)
 {
-    Canvas::Init(nativeCanvas);
+    Canvas::constructor(nativeCanvas);
     mPicture = pict;
 }
 
-ECode CPicture::_RecordingCanvas::SetBitmap(
+ECode CPicture::RecordingCanvas::SetBitmap(
     /* [in] */ IBitmap* bitmap)
 {
 //    throw new RuntimeException(
@@ -25,7 +25,7 @@ ECode CPicture::_RecordingCanvas::SetBitmap(
     return E_RUNTIME_EXCEPTION;
 }
 
-ECode CPicture::_RecordingCanvas::DrawPicture(
+ECode CPicture::RecordingCanvas::DrawPicture(
     /* [in] */ IPicture* picture)
 {
     if (mPicture == picture) {
@@ -36,63 +36,14 @@ ECode CPicture::_RecordingCanvas::DrawPicture(
     return Canvas::DrawPicture(picture);
 }
 
-CPicture::RecordingCanvas::RecordingCanvas(
-    /* [in] */ CPicture* pict,
-    /* [in] */ Int32 nativeCanvas)
-    : _RecordingCanvas(pict, nativeCanvas)
-{
-}
-
-ICANVAS_METHODS_IMPL(CPicture::RecordingCanvas, CPicture::_RecordingCanvas);
-
-PInterface CPicture::RecordingCanvas::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(ICanvas*)this;
-    }
-    else if (riid == EIID_Canvas) {
-        return reinterpret_cast<PInterface>((Canvas*)this);
-    }
-    else if (riid == EIID_ICanvas) {
-        return (ICanvas*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 CPicture::RecordingCanvas::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CPicture::RecordingCanvas::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CPicture::RecordingCanvas::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(ICanvas*)this) {
-        *pIID = EIID_ICanvas;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
-
 ////////////////////////////////////////////////////////////
 // CPicture
-const Int32 CPicture::WORKING_STREAM_STORAGE;
+const Int32 CPicture::WORKING_STREAM_STORAGE = 16 * 1024;
 
+CAR_OBJECT_IMPL(CPicture);
+CAR_INTERFACE_IMPL(CPicture, Object, IPicture);
 CPicture::CPicture()
-    : mCreatedFromStream(FALSE)
-    , mNativePicture(0)
+    : mNativePicture(0)
 {}
 
 CPicture::~CPicture()
@@ -102,26 +53,24 @@ CPicture::~CPicture()
 
 ECode CPicture::constructor()
 {
-    return constructor(NativeConstructor(0), FALSE);
+    return constructor(NativeConstructor(0));
 }
 
 ECode CPicture::constructor(
     /* [in] */ IPicture* src)
 {
     return constructor(NativeConstructor(
-            src != NULL ? ((CPicture*)src)->mNativePicture : NULL), FALSE);
+            src != NULL ? ((CPicture*)src)->mNativePicture : NULL));
 }
 
 ECode CPicture::constructor(
-    /* [in] */ Int32 nativePicture,
-    /* [in] */ Boolean fromStream)
+    /* [in] */ Int64 nativePicture)
 {
     if (nativePicture == 0) {
 //        throw new RuntimeException();
         return E_RUNTIME_EXCEPTION;
     }
     mNativePicture = nativePicture;
-    mCreatedFromStream = fromStream;
     return NOERROR;
 }
 
@@ -131,7 +80,7 @@ ECode CPicture::BeginRecording(
     /* [out] */ ICanvas** canvas)
 {
     VALIDATE_NOT_NULL(canvas);
-    Int32 ni = NativeBeginRecording(mNativePicture, width, height);
+    Int64 ni = NativeBeginRecording(mNativePicture, width, height);
     mRecordingCanvas = new RecordingCanvas(this, ni);
     *canvas = mRecordingCanvas;
     REFCOUNT_ADD(*canvas);
@@ -151,7 +100,7 @@ ECode CPicture::GetWidth(
     /* [out] */ Int32* width)
 {
     VALIDATE_NOT_NULL(width);
-    *width = ((SkPicture*)mNativePicture)->width();
+    *width = NativeGetWidth(mNativePicture);
     return NOERROR;
 }
 
@@ -159,17 +108,24 @@ ECode CPicture::GetHeight(
     /* [out] */ Int32* height)
 {
     VALIDATE_NOT_NULL(height);
-    *height = ((SkPicture*)mNativePicture)->height();
+    *height = NativeGetHeight(mNativePicture);
     return NOERROR;
 }
 
 ECode CPicture::Draw(
     /* [in] */ ICanvas* canvas)
 {
+    Boolean is = FALSE;
+    if (canvas->IsHardwareAccelerated(&is), is) {
+        // throw new IllegalArgumentException(
+        //         "Picture playback is only supported on software canvas.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
     if (mRecordingCanvas != NULL) {
         EndRecording();
     }
-    NativeDraw(((Canvas*)canvas->Probe(EIID_Canvas))->mNativeCanvas,
+    NativeDraw(((Canvas*)(ICanvas*)canvas->Probe(EIID_Canvas))->mNativeCanvasWrapper,
             mNativePicture);
     return NOERROR;
 }
@@ -179,8 +135,9 @@ AutoPtr<IPicture> CPicture::CreateFromStream(
 {
     AutoPtr<IPicture> picture;
     AutoPtr< ArrayOf<Byte> > storage = ArrayOf<Byte>::Alloc(WORKING_STREAM_STORAGE);
-    Int32 ni = NativeCreateFromStream(stream, storage.Get());
-    CPicture::New(ni, TRUE, (IPicture**)&picture);
+    Int64 ni = NativeCreateFromStream(stream, storage.Get());
+    assert(0 && "TODO");
+    // CPicture::New((Int64)ni, (IPicture**)&picture);
     return picture;
 }
 
@@ -208,84 +165,106 @@ ECode CPicture::GetNativePicture(
     return NOERROR;
 }
 
-Int32 CPicture::Ni()
-{
-    return mNativePicture;
-}
-
-Int32 CPicture::NativeConstructor(
-    /* [in] */ Int32 nativeSrcOr0)
+Int64 CPicture::NativeConstructor(
+    /* [in] */ Int64 nativeSrcOr0)
 {
     if (nativeSrcOr0) {
-        return (Int32)new SkPicture(*(SkPicture*)nativeSrcOr0);
+        return (Int64)new SkPicture(*(SkPicture*)nativeSrcOr0);
     }
     else {
-        return (Int32)new SkPicture;
+        return (Int64)new SkPicture;
     }
 }
 
-Int32 CPicture::NativeCreateFromStream(
+Int64 CPicture::NativeCreateFromStream(
     /* [in] */ IInputStream* stream,
     /* [in] */ ArrayOf<Byte>* storage)
 {
-    SkPicture* picture = NULL;
-    SkStream* strm = CreateSkiaInputStreamAdaptor(stream, storage);
-    if (strm) {
-        picture = new SkPicture(strm);
-        delete strm;
-    }
-    return (Int32)picture;
+    assert(0 && "TODO");
+    // Picture* picture = NULL;
+    // SkStream* strm = CreateSkiaInputStreamAdaptor(env, jstream, jstorage);
+    // if (strm) {
+    //     picture = Picture::CreateFromStream(strm);
+    //     delete strm;
+    // }
+    // return reinterpret_cast<Int64>(picture);
+    return NOERROR;
 }
 
-Int32 CPicture::NativeBeginRecording(
-    /* [in] */ Int32 nativePicture,
+Int32 CPicture::NativeGetWidth(
+    /* [in] */ Int64 nativePicture)
+{
+    assert(0 && "TODO");
+    // Picture* pict = reinterpret_cast<Picture*>(nativePicture);
+    // return static_cast<Int32>(pict->width());
+    return -1;
+}
+
+Int32 CPicture::NativeGetHeight(
+    /* [in] */ Int64 nativePicture)
+{
+    assert(0 && "TODO");
+    // Picture* pict = reinterpret_cast<Picture*>(nativePicture);
+    // return static_cast<Int32>(pict->height());
+    return -1;
+}
+
+Int64 CPicture::NativeBeginRecording(
+    /* [in] */ Int64 nativePicture,
     /* [in] */ Int32 w,
     /* [in] */ Int32 h)
 {
-    // beginRecording does not ref its return value, it just returns it.
-    SkCanvas* canvas = ((SkPicture*)nativePicture)->beginRecording(w, h);
-    // the java side will wrap this guy in a Canvas.java, which will call
-    // unref in its finalizer, so we have to ref it here, so that both that
-    // Canvas.java and our picture can both be owners
-    canvas->ref();
-    return (Int32)canvas;
+    assert(0 && "TODO");
+    // Picture* pict = reinterpret_cast<Picture*>(nativePicture);
+    // Canvas* canvas = pict->beginRecording(w, h);
+    // return reinterpret_cast<Int64>(canvas);
+    return -1;
 }
 
 void CPicture::NativeEndRecording(
-    /* [in] */ Int32 nativePicture)
+    /* [in] */ Int64 nativePicture)
 {
-    ((SkPicture*)nativePicture)->endRecording();
+    assert(0 && "TODO");
+    // Picture* pict = reinterpret_cast<Picture*>(nativePicture);
+    // pict->endRecording();
 }
 
 void CPicture::NativeDraw(
-    /* [in] */ Int32 nativeCanvas,
-    /* [in] */ Int32 nativePicture)
+    /* [in] */ Int64 nativeCanvas,
+    /* [in] */ Int64 nativePicture)
 {
-    SkASSERT(nativeCanvas);
-    SkASSERT(nativePicture);
-    ((SkPicture*)nativePicture)->draw((SkCanvas*)nativeCanvas);
+    assert(0 && "TODO");
+    // Canvas* canvas = reinterpret_cast<Canvas*>(nativeCanvas);
+    // Picture* picture = reinterpret_cast<Picture*>(nativePicture);
+    // SkASSERT(canvas);
+    // SkASSERT(picture);
+    // picture->draw(canvas);
 }
 
 Boolean CPicture::NativeWriteToStream(
-    /* [in] */ Int32 nativePicture,
+    /* [in] */ Int64 nativePicture,
     /* [in] */ IOutputStream* stream,
     /* [in] */ ArrayOf<Byte>* storage)
 {
-    SkWStream* strm = CreateSkiaOutputStreamAdaptor(stream, storage);
+    assert(0 && "TODO");
+    // Picture* picture = reinterpret_cast<Picture*>(nativePicture);
+    // SkWStream* strm = CreateSkiaOutputStreamAdaptor(stream, storage);
 
-    if (NULL != strm) {
-        ((SkPicture*)nativePicture)->serialize(strm);
-        delete strm;
-        return TRUE;
-    }
+    // if (NULL != strm) {
+    //     picture->serialize(strm);
+    //     delete strm;
+    //     return TRUE;
+    // }
     return FALSE;
 }
 
 void CPicture::NativeDestructor(
-    /* [in] */ Int32 nativePicture)
+    /* [in] */ Int64 nativePicture)
 {
-    SkASSERT(nativePicture);
-    delete (SkPicture*)nativePicture;
+    assert(0 && "TODO");
+    // Picture* picture = reinterpret_cast<Picture*>(nativePicture);
+    // SkASSERT(picture);
+    // delete picture;
 }
 
 } // namespace Graphics

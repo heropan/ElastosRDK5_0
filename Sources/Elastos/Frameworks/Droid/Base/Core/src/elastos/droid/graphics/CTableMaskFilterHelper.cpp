@@ -7,6 +7,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_SINGLETON_IMPL(CTableMaskFilterHelper);
+CAR_INTERFACE_IMPL(CTableMaskFilterHelper, Singleton, ITableMaskFilterHelper);
 ECode CTableMaskFilterHelper::CreateClipTable(
     /* [in] */ Int32 min,
     /* [in] */ Int32 max,

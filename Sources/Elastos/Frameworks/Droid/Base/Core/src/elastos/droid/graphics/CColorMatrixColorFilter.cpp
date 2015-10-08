@@ -1,5 +1,6 @@
 
 #include "graphics/CColorMatrixColorFilter.h"
+#include "graphics/CColorMatrix.h"
 #include <skia/effects/SkColorMatrixFilter.h>
 #include <skia/core/SkColorFilter.h>
 
@@ -8,14 +9,17 @@ namespace Droid {
 namespace Graphics {
 
 CAR_OBJECT_IMPL(CColorMatrixColorFilter);
-CAR_INTERFACE_IMPL(CColorMatrixColorFilter, ColorFilter, IColorMatrixColorFilter);
+
+CColorMatrixColorFilter::CColorMatrixColorFilter()
+{
+    CColorMatrix::New((IColorMatrix**)&mMatrix);
+}
+
 ECode CColorMatrixColorFilter::constructor(
     /* [in] */ IColorMatrix* matrix)
 {
-    AutoPtr< ArrayOf<Float> > array;
-    matrix->GetArray((ArrayOf<Float>**)&array);
-    mNativeInstance = NativeColorMatrixFilter(*array);
-    mNativeColorFilter = NColorMatrixFilter(mNativeInstance, *array);
+    mMatrix->Set(matrix);
+    Update();
     return NOERROR;
 }
 
@@ -27,8 +31,8 @@ ECode CColorMatrixColorFilter::constructor(
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    mNativeInstance = NativeColorMatrixFilter(array);
-    mNativeColorFilter = NColorMatrixFilter(mNativeInstance, array);
+    mMatrix->Set(const_cast<ArrayOf<Float>*>(&array));
+    Update();
     return NOERROR;
 }
 
@@ -61,47 +65,72 @@ ECode CColorMatrixColorFilter::GetInterfaceID(
     return ColorFilter::GetInterfaceID(object, iid);
 }
 
-Int32 CColorMatrixColorFilter::NativeColorMatrixFilter(
-    /* [in] */ const ArrayOf<Float>& _array)
+UInt32 CColorMatrixColorFilter::AddRef()
 {
-    if (_array.GetLength() < 20) {
-        sk_throw();
-    }
-    const Float* src = _array.GetPayload();
-
-#ifdef SK_SCALAR_IS_FIXED
-    SkFixed array[20];
-    for (Int32 i = 0; i < 20; i++) {
-        array[i] = SkFloatToScalar(src[i]);
-    }
-    return (Int32)new SkColorMatrixFilter(array);
-#else
-    return (Int32)new SkColorMatrixFilter(src);
-#endif
+    return ColorFilter::AddRef();
 }
 
-Int32 CColorMatrixColorFilter::NColorMatrixFilter(
-    /* [in] */ Int32 nativeFilter,
-    /* [in] */ const ArrayOf<Float>& array)
+UInt32 CColorMatrixColorFilter::Release()
 {
-#ifdef USE_OPENGL_RENDERER
-    const Float* src = array.GetPayload();
+    return ColorFilter::Release();
+}
 
-    float* colorMatrix = new float[16];
-    memcpy(colorMatrix, src, 4 * sizeof(float));
-    memcpy(&colorMatrix[4], &src[5], 4 * sizeof(float));
-    memcpy(&colorMatrix[8], &src[10], 4 * sizeof(float));
-    memcpy(&colorMatrix[12], &src[15], 4 * sizeof(float));
+ECode CColorMatrixColorFilter::GetColorMatrix(
+    /* [out] */ IColorMatrix** matrix)
+{
+    VALIDATE_NOT_NULL(matrix);
+    *matrix = mMatrix;
+    REFCOUNT_ADD(*matrix);
+    return NOERROR;
+}
 
-    float* colorVector = new float[4];
-    colorVector[0] = src[4];
-    colorVector[1] = src[9];
-    colorVector[2] = src[14];
-    colorVector[3] = src[19];
+ECode CColorMatrixColorFilter::SetColorMatrix(
+    /* [in] */ IColorMatrix* matrix)
+{
+    if (matrix == NULL) {
+        mMatrix->Reset();
+    } else if (matrix != mMatrix.Get()) {
+        mMatrix->Set(matrix);
+    }
+    Update();
+    return NOERROR;
+}
 
-    return (Int32)new SkiaColorMatrixFilter((SkColorFilter*)nativeFilter, colorMatrix, colorVector);
+ECode CColorMatrixColorFilter::SetColorMatrix(
+    /* [in] */ ArrayOf<Float>* array)
+{
+    if (array == NULL) {
+        mMatrix->Reset();
+    } else {
+        if (array->GetLength() < 20) {
+            // throw new ArrayIndexOutOfBoundsException();
+            return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+        }
+
+        mMatrix->Set(array);
+    }
+    Update();
+    return NOERROR;
+}
+
+void CColorMatrixColorFilter::Update()
+{
+    AutoPtr<ArrayOf<Float> > colorMatrix;
+    mMatrix->GetArray((ArrayOf<Float>**)&colorMatrix);
+    DestroyFilter(mNativeInstance);
+    mNativeInstance = NativeColorMatrixFilter(colorMatrix);
+}
+
+Int64 CColorMatrixColorFilter::NativeColorMatrixFilter(
+    /* [in] */ ArrayOf<Float>* array)
+{
+    assert(array != NULL);
+    const Float* src = array->GetPayload();
+
+#ifdef SK_SCALAR_IS_FLOAT
+    return reinterpret_cast<Int64>(SkColorMatrixFilter::Create(src));
 #else
-    return 0;
+    SkASSERT(false);
 #endif
 }
 

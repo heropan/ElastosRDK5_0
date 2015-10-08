@@ -31,8 +31,9 @@ public:
      * @param localM If not null, it is set to the shader's local matrix.
      * @return true if the shader has a non-identity local matrix
      */
-    virtual CARAPI_(Boolean) GetLocalMatrix(
-        /* [in, out] */ IMatrix* localM);
+    virtual CARAPI GetLocalMatrix(
+        /* [in, out] */ IMatrix* localM,
+        /* [out] */ Boolean* has);
 
     /**
      * Set the shader's local matrix. Passing null will reset the shader's
@@ -42,19 +43,38 @@ public:
     virtual CARAPI SetLocalMatrix(
         /* [in] */ IMatrix* localM);
 
+    /**
+     * @hide
+     */
+    virtual CARAPI_(AutoPtr<IShader>) Copy();
+
+protected:
+    /**
+     * Initialization step that should be called by subclasses in their
+     * constructors. Calling again may result in memory leaks.
+     * @hide
+     */
+    virtual CARAPI_(void) Init(
+        /* [in] */ Int64 ni);
+
+    /**
+     * @hide
+     */
+    virtual CARAPI_(void) CopyLocalMatrix(
+        /* [in] */ IShader* dest);
+
+    /* package */ CARAPI_(Int64) GetNativeInstance();
+
 private:
     static CARAPI_(void) NativeDestructor(
-        /* [in] */ Int32 shader,
-        /* [in] */ Int32 skiaShader);
+        /* [in] */ Int64 shader);
 
     static CARAPI_(void) NativeSetLocalMatrix(
-        /* [in] */ Int32 shader,
-        /* [in] */ Int32 skiaShader,
-        /* [in] */ Int32 matrix);
+        /* [in] */ Int64 shader,
+        /* [in] */ Int64 matrix);
 
 public:
-    Int32 mNativeInstance;
-    Int32 mNativeShader;
+    Int64 mNativeInstance;
 
 private:
     AutoPtr<IMatrix> mLocalMatrix;

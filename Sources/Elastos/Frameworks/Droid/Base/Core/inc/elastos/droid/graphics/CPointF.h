@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_GRAPHICS_CPOINTF_H__
 
 #include "_Elastos_Droid_Graphics_CPointF.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -12,8 +15,15 @@ namespace Graphics {
  * PointF holds two float coordinates
  */
 CarClass(CPointF)
+    , public Object
+    , public IPointF
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     CARAPI constructor();
 
     CARAPI constructor(

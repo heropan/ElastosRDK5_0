@@ -2,9 +2,10 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_RASTERIZER_H__
 #define __ELASTOS_DROID_GRAPHICS_RASTERIZER_H__
 
-#include <elastos.h>
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
-using namespace Elastos;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -19,14 +20,16 @@ class Rasterizer
     friend class Paint;
 
 public:
+    CAR_INTERFACE_DECL();
+
     ~Rasterizer();
 
 private:
     static CARAPI_(void) Finalizer(
-        /* [in] */ Int32 nativeInstance);
+        /* [in] */ Int64 nativeInstance);
 
 protected:
-    Int32 mNativeInstance;
+    Int64 mNativeInstance;
 };
 
 } // namespace Graphics

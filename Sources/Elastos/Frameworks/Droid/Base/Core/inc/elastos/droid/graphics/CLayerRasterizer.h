@@ -9,9 +9,15 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CarClass(CLayerRasterizer), public Rasterizer
+CarClass(CLayerRasterizer)
+    , public Rasterizer
+    , public ILayerRasterizer
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI constructor();
 
     /**
@@ -28,15 +34,12 @@ public:
     CARAPI AddLayer(
         /* [in] */ IPaint* paint);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
 private:
-    static CARAPI_(Int32) NativeConstructor();
+    static CARAPI_(Int64) NativeConstructor();
 
     static CARAPI_(void) NativeAddLayer(
-        /* [in] */ Int32 nativeLayer,
-        /* [in] */ Int32 nativePaint,
+        /* [in] */ Int64 nativeLayer,
+        /* [in] */ Int64 nativePaint,
         /* [in] */ Float dx,
         /* [in] */ Float dy);
 };

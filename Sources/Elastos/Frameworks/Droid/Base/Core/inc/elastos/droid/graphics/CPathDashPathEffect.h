@@ -8,9 +8,15 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CarClass(CPathDashPathEffect), public PathEffect
+CarClass(CPathDashPathEffect)
+    , public PathEffect
+    , public IPathDashPathEffect
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     /**
     * Dash the drawn path by stamping it with the specified shape. This only
     * applies to drawings when the paint's style is STROKE or STROKE_AND_FILL.
@@ -27,12 +33,9 @@ public:
         /* [in] */ Float phase,
         /* [in] */ PathDashPathEffectStyle style);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
 private:
-    static CARAPI_(Int32) NativeCreate(
-        /* [in] */ Int32 nativePath,
+    static CARAPI_(Int64) NativeCreate(
+        /* [in] */ Int64 nativePath,
         /* [in] */ Float advance,
         /* [in] */ Float phase,
         /* [in] */ Int32 nativeStyle);

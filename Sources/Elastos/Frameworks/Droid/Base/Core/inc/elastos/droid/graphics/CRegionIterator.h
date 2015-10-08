@@ -3,14 +3,24 @@
 #define __ELASTOS_DROID_GRAPHICS_CREGIONITERATOR_H__
 
 #include "_Elastos_Droid_Graphics_CRegionIterator.h"
+#include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
 CarClass(CRegionIterator)
+    , public Object
+    , public IRegionIterator
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     ~CRegionIterator();
 
     /**
@@ -33,18 +43,18 @@ public:
         /* [out] */ Boolean* result);
 
 private:
-    static CARAPI_(Int32) NativeConstructor(
-        /* [in] */ Int32 nativeRegion);
+    static CARAPI_(Int64) NativeConstructor(
+        /* [in] */ Int64 nativeRegion);
 
     static CARAPI_(void) NativeDestructor(
-        /* [in] */ Int32 nativeIter);
+        /* [in] */ Int64 nativeIter);
 
     static CARAPI_(Boolean) NativeNext(
-        /* [in] */ Int32 nativeIter,
+        /* [in] */ Int64 nativeIter,
         /* [in] */ IRect* r);
 
 private:
-    Int32 mNativeIter;
+    Int64 mNativeIter;
 };
 
 } // namespace Graphics

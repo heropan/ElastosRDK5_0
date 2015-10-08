@@ -15,17 +15,20 @@ namespace Graphics {
  * this mode *always* returns an opaque color (alpha == 255). Thus it is
  * not really usefull for operating on blended colors.
  */
-CarClass(CPixelXorXfermode), public Xfermode
+CarClass(CPixelXorXfermode)
+    , public Xfermode
+    , public IPixelXorXfermode
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI constructor(
         /* [in] */ Int32 opColor);
 
-    CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
-
 private:
-    static CARAPI_(Int32) NativeCreate(
+    static CARAPI_(Int64) NativeCreate(
         /* [in] */ Int32 opColor);
 };
 

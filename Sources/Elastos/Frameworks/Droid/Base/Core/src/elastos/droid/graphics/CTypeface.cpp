@@ -6,10 +6,11 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CTypeface);
 ECode CTypeface::constructor(
-    /* [in] */ Int32 ni)
+    /* [in] */ Int64 ni)
 {
-    return Typeface::Init(ni);
+    return Typeface::constructor(ni);
 }
 
 PInterface CTypeface::Probe(
@@ -18,31 +19,10 @@ PInterface CTypeface::Probe(
     if (riid == EIID_Typeface) {
         return reinterpret_cast<PInterface>((Typeface*)this);
     }
-    return _CTypeface::Probe(riid);
-}
-
-ECode CTypeface::GetStyle(
-    /* [out] */ Int32* style)
-{
-    VALIDATE_NOT_NULL(style);
-    *style = Typeface::GetStyle();
-    return NOERROR;
-}
-
-ECode CTypeface::IsBold(
-    /* [out] */ Boolean* isBold)
-{
-    VALIDATE_NOT_NULL(isBold);
-    *isBold = Typeface::IsBold();
-    return NOERROR;
-}
-
-ECode CTypeface::IsItalic(
-    /* [out] */ Boolean* isItalic)
-{
-    VALIDATE_NOT_NULL(isItalic);
-    *isItalic = Typeface::IsItalic();
-    return NOERROR;
+    else if (riid == EIID_ITypeface) {
+        return (ITypeface*)this;
+    }
+    return Typeface::Probe(riid);
 }
 
 } // namespace Graphics

@@ -15,29 +15,26 @@ namespace Graphics {
 extern const InterfaceID EIID_Matrix =
     { 0x1fd9701, 0x2074, 0x4dde, { 0x98, 0xa8, 0x81, 0xd5, 0xfe, 0xb5, 0xc1, 0x40 } };
 
+CAR_INTERFACE_IMPL(Matrix, Object, IMatrix);
 Matrix::~Matrix()
 {
     NativeFinalizer(mNativeInstance);
 }
 
-ECode Matrix::Init()
+ECode Matrix::constructor()
 {
     mNativeInstance = NativeCreate(0);
     return NOERROR;
 }
 
-ECode Matrix::Init(
+ECode Matrix::constructor(
     /* [in] */ IMatrix* src)
 {
-    Int32 nSrc = src != NULL? ((Matrix*)src->Probe(EIID_Matrix))->mNativeInstance : NULL;
+    Int32 nSrc = src != NULL? ((Matrix*)(IMatrix*)src->Probe(EIID_Matrix))->mNativeInstance : NULL;
     mNativeInstance = NativeCreate(nSrc);
     return NOERROR;
 }
 
-/**
- * Returns true if the matrix is identity.
- * This maybe faster than testing if (getType() == 0)
- */
 ECode Matrix::IsIdentity(
     /* [out] */ Boolean* isIdentity)
 {
@@ -45,10 +42,14 @@ ECode Matrix::IsIdentity(
     return NOERROR;
 }
 
-/* Returns true if will map a rectangle to another rectangle. This can be
- * true if the matrix is identity, scale-only, or rotates a multiple of 90
- * degrees.
- */
+ECode Matrix::IsAffine(
+    /* [out] */ Boolean* affine)
+{
+    VALIDATE_NOT_NULL(affine);
+    *affine = NativeIsAffine(mNativeInstance);
+    return NOERROR;
+}
+
 ECode Matrix::RectStaysRect(
     /* [out] */ Boolean* result)
 {
@@ -67,7 +68,7 @@ ECode Matrix::Set(
         Reset();
     }
     else {
-        NativeSet(mNativeInstance, ((Matrix*)src->Probe(EIID_Matrix))->mNativeInstance);
+        NativeSet(mNativeInstance, ((Matrix*)(IMatrix*)src->Probe(EIID_Matrix))->mNativeInstance);
     }
     return NOERROR;
 }
@@ -78,8 +79,13 @@ ECode Matrix::Equals(
     /* [in] */ IMatrix* obj,
     /* [out] */ Boolean* isEqual)
 {
-    *isEqual = obj != NULL &&
-               NativeEquals(mNativeInstance, ((Matrix*)obj->Probe(EIID_Matrix))->mNativeInstance);
+    VALIDATE_NOT_NULL(isEqual);
+    //if (obj == this) return true;     -- NaN value would mean matrix != itself
+    if (obj != NULL) {
+        *isEqual = FALSE;
+        return NOERROR;
+    }
+    *isEqual = NativeEquals(mNativeInstance, ((Matrix*)(IMatrix*)obj->Probe(EIID_Matrix))->mNativeInstance);
     return NOERROR;
 }
 
@@ -87,7 +93,12 @@ ECode Matrix::GetHashCode(
     /* [out] */ Int32* hash)
 {
     VALIDATE_NOT_NULL(hash);
-    *hash = (Int32)mNativeInstance;
+    // This should generate the hash code by performing some arithmetic operation on all
+    // the matrix elements -- our equals() does an element-by-element comparison, and we
+    // need to ensure that the hash code for two equal objects is the same.  We're not
+    // really using this at the moment, so we take the easy way out.
+    return 44;
+    *hash = 44/*(Int32)mNativeInstance*/;
     return NOERROR;
 }
 
@@ -213,9 +224,11 @@ ECode Matrix::SetConcat(
     /* [in] */ IMatrix* b,
     /* [out] */ Boolean* result)
 {
-    *result = NativeSetConcat(mNativeInstance,
-            ((Matrix*)a->Probe(EIID_Matrix))->mNativeInstance,
-            ((Matrix*)b->Probe(EIID_Matrix))->mNativeInstance);
+    VALIDATE_NOT_NULL(result);
+    NativeSetConcat(mNativeInstance,
+            ((Matrix*)(IMatrix*)a->Probe(EIID_Matrix))->mNativeInstance,
+            ((Matrix*)(IMatrix*)b->Probe(EIID_Matrix))->mNativeInstance);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -228,7 +241,9 @@ ECode Matrix::PreTranslate(
     /* [in] */ Float dy,
     /* [out] */ Boolean* result)
 {
-    *result = NativePreTranslate(mNativeInstance, dx, dy);
+    VALIDATE_NOT_NULL(result);
+    NativePreTranslate(mNativeInstance, dx, dy);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -243,7 +258,9 @@ ECode Matrix::PreScale(
     /* [in] */ Float py,
     /* [out] */ Boolean* result)
 {
-    *result = NativePreScale(mNativeInstance, sx, sy, px, py);
+    VALIDATE_NOT_NULL(result);
+    NativePreScale(mNativeInstance, sx, sy, px, py);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -256,7 +273,9 @@ ECode Matrix::PreScale(
     /* [in] */ Float sy,
     /* [out] */ Boolean* result)
 {
-    *result = NativePreScale(mNativeInstance, sx, sy);
+    VALIDATE_NOT_NULL(result);
+    NativePreScale(mNativeInstance, sx, sy);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -270,7 +289,9 @@ ECode Matrix::PreRotate(
     /* [in] */ Float py,
     /* [out] */ Boolean* result)
 {
-    *result = NativePreRotate(mNativeInstance, degrees, px, py);
+    VALIDATE_NOT_NULL(result);
+    NativePreRotate(mNativeInstance, degrees, px, py);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -282,7 +303,9 @@ ECode Matrix::PreRotate(
     /* [in] */ Float degrees,
     /* [out] */ Boolean* result)
 {
-    *result = NativePreRotate(mNativeInstance, degrees);
+    VALIDATE_NOT_NULL(result);
+    NativePreRotate(mNativeInstance, degrees);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -297,7 +320,9 @@ ECode Matrix::PreSkew(
     /* [in] */ Float py,
     /* [out] */ Boolean* result)
 {
-    *result = NativePreSkew(mNativeInstance, kx, ky, px, py);
+    VALIDATE_NOT_NULL(result);
+    NativePreSkew(mNativeInstance, kx, ky, px, py);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -310,7 +335,9 @@ ECode Matrix::PreSkew(
     /* [in] */ Float ky,
     /* [out] */ Boolean* result)
 {
-    *result = NativePreSkew(mNativeInstance, kx, ky);
+    VALIDATE_NOT_NULL(result);
+    NativePreSkew(mNativeInstance, kx, ky);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -322,7 +349,9 @@ ECode Matrix::PreConcat(
     /* [in] */ IMatrix* other,
     /* [out] */ Boolean* result)
 {
-    *result = NativePreConcat(mNativeInstance, ((Matrix*)other->Probe(EIID_Matrix))->mNativeInstance);
+    VALIDATE_NOT_NULL(result);
+    NativePreConcat(mNativeInstance, ((Matrix*)(IMatrix*)other->Probe(EIID_Matrix))->mNativeInstance);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -335,7 +364,9 @@ ECode Matrix::PostTranslate(
     /* [in] */ Float dy,
     /* [out] */ Boolean* result)
 {
-    *result = NativePostTranslate(mNativeInstance, dx, dy);
+    VALIDATE_NOT_NULL(result);
+    NativePostTranslate(mNativeInstance, dx, dy);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -350,7 +381,9 @@ ECode Matrix::PostScale(
     /* [in] */ Float py,
     /* [out] */ Boolean* result)
 {
-    *result = NativePostScale(mNativeInstance, sx, sy, px, py);
+    VALIDATE_NOT_NULL(result);
+    NativePostScale(mNativeInstance, sx, sy, px, py);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -363,7 +396,9 @@ ECode Matrix::PostScale(
     /* [in] */ Float sy,
     /* [out] */ Boolean* result)
 {
-    *result = NativePostScale(mNativeInstance, sx, sy);
+    VALIDATE_NOT_NULL(result);
+    NativePostScale(mNativeInstance, sx, sy);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -377,7 +412,9 @@ ECode Matrix::PostRotate(
     /* [in] */ Float py,
     /* [out] */ Boolean* result)
 {
-    *result = NativePostRotate(mNativeInstance, degrees, px, py);
+    VALIDATE_NOT_NULL(result);
+    NativePostRotate(mNativeInstance, degrees, px, py);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -389,7 +426,9 @@ ECode Matrix::PostRotate(
     /* [in] */ Float degrees,
     /* [out] */ Boolean* result)
 {
-    *result = NativePostRotate(mNativeInstance, degrees);
+    VALIDATE_NOT_NULL(result);
+    NativePostRotate(mNativeInstance, degrees);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -404,7 +443,9 @@ ECode Matrix::PostSkew(
     /* [in] */ Float py,
     /* [out] */ Boolean* result)
 {
-    *result = NativePostSkew(mNativeInstance, kx, ky, px, py);
+    VALIDATE_NOT_NULL(result);
+    NativePostSkew(mNativeInstance, kx, ky, px, py);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -417,7 +458,9 @@ ECode Matrix::PostSkew(
     /* [in] */ Float ky,
     /* [out] */ Boolean* result)
 {
-    *result = NativePostSkew(mNativeInstance, kx, ky);
+    VALIDATE_NOT_NULL(result);
+    NativePostSkew(mNativeInstance, kx, ky);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -429,7 +472,9 @@ ECode Matrix::PostConcat(
     /* [in] */ IMatrix* other,
     /* [out] */ Boolean* result)
 {
-    *result = NativePostConcat(mNativeInstance, ((Matrix*)other->Probe(EIID_Matrix))->mNativeInstance);
+    VALIDATE_NOT_NULL(result);
+    NativePostConcat(mNativeInstance, ((Matrix*)(IMatrix*)other->Probe(EIID_Matrix))->mNativeInstance);
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -460,7 +505,7 @@ ECode Matrix::SetRectToRect(
 
 // private helper to perform range checks on arrays of "points"
 ECode Matrix::CheckPointArrays(
-    /* [in] */ const ArrayOf<Float>& src,
+    /* [in] */ ArrayOf<Float>* src,
     /* [in] */ Int32 srcIndex,
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ Int32 dstIndex,
@@ -473,7 +518,7 @@ ECode Matrix::CheckPointArrays(
     Int32 srcStop = srcIndex + (pointCount << 1);
     Int32 dstStop = dstIndex + (pointCount << 1);
     if ((pointCount | srcIndex | dstIndex | srcStop | dstStop) < 0 ||
-            srcStop > src.GetLength() || dstStop > dst->GetLength()) {
+            srcStop > src->GetLength() || dstStop > dst->GetLength()) {
 //        throw new ArrayIndexOutOfBoundsException();
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -493,7 +538,7 @@ ECode Matrix::CheckPointArrays(
  * @return true if the matrix was set to the specified transformation
  */
 ECode Matrix::SetPolyToPoly(
-    /* [in] */ const ArrayOf<Float>& src,
+    /* [in] */ ArrayOf<Float>* src,
     /* [in] */ Int32 srcIndex,
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ Int32 dstIndex,
@@ -519,7 +564,7 @@ ECode Matrix::Invert(
     /* [in] */ IMatrix* inverse,
     /* [out] */ Boolean* result)
 {
-    *result = NativeInvert(mNativeInstance, ((Matrix*)inverse->Probe(EIID_Matrix))->mNativeInstance);
+    *result = NativeInvert(mNativeInstance, ((Matrix*)(IMatrix*)inverse->Probe(EIID_Matrix))->mNativeInstance);
     return NOERROR;
 }
 
@@ -537,7 +582,7 @@ ECode Matrix::Invert(
 ECode Matrix::MapPoints(
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ Int32 dstIndex,
-    /* [in] */ const ArrayOf<Float>& src,
+    /* [in] */ ArrayOf<Float>* src,
     /* [in] */ Int32 srcIndex,
     /* [in] */ Int32 pointCount)
 {
@@ -565,7 +610,7 @@ ECode Matrix::MapPoints(
 ECode Matrix::MapVectors(
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ Int32 dstIndex,
-    /* [in] */ const ArrayOf<Float>& src,
+    /* [in] */ ArrayOf<Float>* src,
     /* [in] */ Int32 srcIndex,
     /* [in] */ Int32 vectorCount)
 {
@@ -585,10 +630,10 @@ ECode Matrix::MapVectors(
  */
 ECode Matrix::MapPoints(
     /* [out] */ ArrayOf<Float>* dst,
-    /* [in] */ const ArrayOf<Float>& src)
+    /* [in] */ ArrayOf<Float>* src)
 {
     if (dst == NULL) return E_NULL_POINTER_EXCEPTION;
-    if (dst->GetLength() != src.GetLength()) {
+    if (dst->GetLength() != src->GetLength()) {
 //        throw new ArrayIndexOutOfBoundsException();
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -608,10 +653,10 @@ ECode Matrix::MapPoints(
  */
 ECode Matrix::MapVectors(
     /* [out] */ ArrayOf<Float>* dst,
-    /* [in] */ const ArrayOf<Float>& src)
+    /* [in] */ ArrayOf<Float>* src)
 {
     if (dst == NULL) return E_NULL_POINTER_EXCEPTION;
-    if (dst->GetLength() != src.GetLength()) {
+    if (dst->GetLength() != src->GetLength()) {
 //        throw new ArrayIndexOutOfBoundsException();
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -627,7 +672,7 @@ ECode Matrix::MapVectors(
 ECode Matrix::MapPoints(
     /* [in, out] */ ArrayOf<Float>* pts)
 {
-    return MapPoints(pts, 0, *pts, 0, pts->GetLength() >> 1);
+    return MapPoints(pts, 0, pts, 0, pts->GetLength() >> 1);
 }
 
 /**
@@ -642,7 +687,7 @@ ECode Matrix::MapPoints(
 ECode Matrix::MapVectors(
     /* [in, out] */ ArrayOf<Float>* vecs)
 {
-    return MapVectors(vecs, 0, *vecs, 0, vecs->GetLength() >> 1);
+    return MapVectors(vecs, 0, vecs, 0, vecs->GetLength() >> 1);
 }
 
 /**
@@ -715,9 +760,9 @@ ECode Matrix::GetValues(
     the same values.
 */
 ECode Matrix::SetValues(
-    /* [in] */ const ArrayOf<Float>& values)
+    /* [in] */ ArrayOf<Float>* values)
 {
-    if (values.GetLength() < 9) {
+    if (values->GetLength() < 9) {
 //        throw new ArrayIndexOutOfBoundsException();
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -752,26 +797,26 @@ ECode Matrix::ToShortString(
 ECode Matrix::ToShortString(
     /* [in] */ IStringBuilder* sb)
 {
-    ArrayOf_<Float, 9> values;
-    FAIL_RETURN(GetValues(&values));
+    AutoPtr<ArrayOf<Float> > values = ArrayOf<Float>::Alloc(9);
+    FAIL_RETURN(GetValues(values));
     sb->AppendChar('[');
-    sb->AppendFloat(values[0]);
-    sb->AppendString(String(", "));
-    sb->AppendFloat(values[1]);
-    sb->AppendString(String(", "));
-    sb->AppendFloat(values[2]);
-    sb->AppendString(String("]["));
-    sb->AppendFloat(values[3]);
-    sb->AppendString(String(", "));
-    sb->AppendFloat(values[4]);
-    sb->AppendString(String(", "));
-    sb->AppendFloat(values[5]);
-    sb->AppendString(String("]["));
-    sb->AppendFloat(values[6]);
-    sb->AppendString(String(", "));
-    sb->AppendFloat(values[7]);
-    sb->AppendString(String(", "));
-    sb->AppendFloat(values[8]);
+    sb->Append((*values)[0]);
+    sb->Append(String(", "));
+    sb->Append((*values)[1]);
+    sb->Append(String(", "));
+    sb->Append((*values)[2]);
+    sb->Append(String("]["));
+    sb->Append((*values)[3]);
+    sb->Append(String(", "));
+    sb->Append((*values)[4]);
+    sb->Append(String(", "));
+    sb->Append((*values)[5]);
+    sb->Append(String("]["));
+    sb->Append((*values)[6]);
+    sb->Append(String(", "));
+    sb->Append((*values)[7]);
+    sb->Append(String(", "));
+    sb->Append((*values)[8]);
     sb->AppendChar(']');
     return NOERROR;
 }
@@ -783,366 +828,342 @@ ECode Matrix::ToShortString(
 ECode Matrix::PrintShortString(
      /* [in] */ IPrintWriter* pw)
 {
-    ArrayOf_<Float, 9> values;
-    FAIL_RETURN(GetValues(&values));
+    AutoPtr<ArrayOf<Float> > values = ArrayOf<Float>::Alloc(9);
+    FAIL_RETURN(GetValues(values));
     pw->PrintChar('[');
-    pw->PrintFloat(values[0]);
-    pw->PrintString(String(", "));
-    pw->PrintFloat(values[1]);
-    pw->PrintString(String(", "));
-    pw->PrintFloat(values[2]);
-    pw->PrintString(String("]["));
-    pw->PrintFloat(values[3]);
-    pw->PrintString(String(", "));
-    pw->PrintFloat(values[4]);
-    pw->PrintString(String(", "));
-    pw->PrintFloat(values[5]);
-    pw->PrintString(String("]["));
-    pw->PrintFloat(values[6]);
-    pw->PrintString(String(", "));
-    pw->PrintFloat(values[7]);
-    pw->PrintString(String(", "));
-    pw->PrintFloat(values[8]);
+    pw->Print((*values)[0]);
+    pw->Print(String(", "));
+    pw->Print((*values)[1]);
+    pw->Print(String(", "));
+    pw->Print((*values)[2]);
+    pw->Print(String("]["));
+    pw->Print((*values)[3]);
+    pw->Print(String(", "));
+    pw->Print((*values)[4]);
+    pw->Print(String(", "));
+    pw->Print((*values)[5]);
+    pw->Print(String("]["));
+    pw->Print((*values)[6]);
+    pw->Print(String(", "));
+    pw->Print((*values)[7]);
+    pw->Print(String(", "));
+    pw->Print((*values)[8]);
     pw->PrintChar(']');
     return NOERROR;
 }
 
-Int32 Matrix::NativeCreate(
-    /* [in] */ Int32 nSrc)
+Int64 Matrix::NativeCreate(
+    /* [in] */ Int64 nSrc)
 {
+    const SkMatrix* src = reinterpret_cast<SkMatrix*>(nSrc);
     SkMatrix* obj = new SkMatrix();
-    if (nSrc) {
-        *obj = *(SkMatrix*)nSrc;
-    }
-    else {
+    if (src)
+        *obj = *src;
+    else
         obj->reset();
-    }
-    return (Int32)obj;
+    return reinterpret_cast<Int64>(obj);
 }
 
 Boolean Matrix::NativeIsIdentity(
-    /* [in] */ Int32 nObj)
+    /* [in] */ Int64 nObj)
 {
-    return ((SkMatrix*)nObj)->isIdentity();
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    return obj->isIdentity() ? TRUE : FALSE;
 }
 
 Boolean Matrix::NativeRectStaysRect(
-    /* [in] */ Int32 nObj)
+    /* [in] */ Int64 objHandle)
 {
-    return ((SkMatrix*)nObj)->rectStaysRect();
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(objHandle);
+    return obj->rectStaysRect() ? TRUE : FALSE;
 }
 
 void Matrix::NativeReset(
-    /* [in] */ Int32 nObj)
+    /* [in] */ Int64 nObj)
 {
-    ((SkMatrix*)nObj)->reset();
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->reset();
 }
 
 void Matrix::NativeSet(
-    /* [in] */ Int32 nObj,
-    /* [in] */ Int32 nOther)
+    /* [in] */ Int64 objHandle,
+    /* [in] */ Int64 otherHandle)
 {
-    *(SkMatrix*)nObj = *(SkMatrix*)nOther;
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(objHandle);
+    SkMatrix* other = reinterpret_cast<SkMatrix*>(otherHandle);
+    *obj = *other;
 }
 
 void Matrix::NativeSetTranslate(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
     /* [in] */ Float dx,
     /* [in] */ Float dy)
 {
-    SkScalar dx_ = SkFloatToScalar(dx);
-    SkScalar dy_ = SkFloatToScalar(dy);
-    ((SkMatrix*)nObj)->setTranslate(dx_, dy_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->setTranslate(dx, dy);
 }
 
 void Matrix::NativeSetScale(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
     /* [in] */ Float sx,
     /* [in] */ Float sy,
     /* [in] */ Float px,
     /* [in] */ Float py)
 {
-    SkScalar sx_ = SkFloatToScalar(sx);
-    SkScalar sy_ = SkFloatToScalar(sy);
-    SkScalar px_ = SkFloatToScalar(px);
-    SkScalar py_ = SkFloatToScalar(py);
-    ((SkMatrix*)nObj)->setScale(sx_, sy_, px_, py_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->setScale(sx, sy, px, py);
 }
 
 void Matrix::NativeSetScale(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
     /* [in] */ Float sx,
     /* [in] */ Float sy)
 {
-    SkScalar sx_ = SkFloatToScalar(sx);
-    SkScalar sy_ = SkFloatToScalar(sy);
-    ((SkMatrix*)nObj)->setScale(sx_, sy_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->setScale(sx, sy);
 }
 
 void Matrix::NativeSetRotate(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
     /* [in] */ Float degrees,
     /* [in] */ Float px,
     /* [in] */ Float py)
 {
-    SkScalar degrees_ = SkFloatToScalar(degrees);
-    SkScalar px_ = SkFloatToScalar(px);
-    SkScalar py_ = SkFloatToScalar(py);
-    ((SkMatrix*)nObj)->setRotate(degrees_, px_, py_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->setRotate(degrees, px, py);
 }
 
 void Matrix::NativeSetRotate(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
     /* [in] */ Float degrees)
 {
-    SkScalar degrees_ = SkFloatToScalar(degrees);
-    ((SkMatrix*)nObj)->setRotate(degrees_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->setRotate(degrees);
 }
 
 void Matrix::NativeSetSinCos(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
     /* [in] */ Float sinValue,
     /* [in] */ Float cosValue,
     /* [in] */ Float px,
     /* [in] */ Float py)
 {
-    SkScalar sinValue_ = SkFloatToScalar(sinValue);
-    SkScalar cosValue_ = SkFloatToScalar(cosValue);
-    SkScalar px_ = SkFloatToScalar(px);
-    SkScalar py_ = SkFloatToScalar(py);
-    ((SkMatrix*)nObj)->setSinCos(sinValue_, cosValue_, px_, py_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->setSinCos(sinValue, cosValue, px, py);
 }
 
 void Matrix::NativeSetSinCos(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
     /* [in] */ Float sinValue,
     /* [in] */ Float cosValue)
 {
-    SkScalar sinValue_ = SkFloatToScalar(sinValue);
-    SkScalar cosValue_ = SkFloatToScalar(cosValue);
-    ((SkMatrix*)nObj)->setSinCos(sinValue_, cosValue_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->setSinCos(sinValue, cosValue);
 }
 
 void Matrix::NativeSetSkew(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
     /* [in] */ Float kx,
     /* [in] */ Float ky,
     /* [in] */ Float px,
     /* [in] */ Float py)
 {
-    SkScalar kx_ = SkFloatToScalar(kx);
-    SkScalar ky_ = SkFloatToScalar(ky);
-    SkScalar px_ = SkFloatToScalar(px);
-    SkScalar py_ = SkFloatToScalar(py);
-    ((SkMatrix*)nObj)->setSkew(kx_, ky_, px_, py_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->setSkew(kx, ky, px, py);
 }
 
 void Matrix::NativeSetSkew(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
     /* [in] */ Float kx,
     /* [in] */ Float ky)
 {
-    SkScalar kx_ = SkFloatToScalar(kx);
-    SkScalar ky_ = SkFloatToScalar(ky);
-    ((SkMatrix*)nObj)->setSkew(kx_, ky_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->setSkew(kx, ky);
 }
 
-Boolean Matrix::NativeSetConcat(
-    /* [in] */ Int32 nObj,
-    /* [in] */ Int32 nA,
-    /* [in] */ Int32 nB)
+void Matrix::NativeSetConcat(
+    /* [in] */ Int64 objHandle,
+    /* [in] */ Int64 aHandle,
+    /* [in] */ Int64 bHandle)
 {
-    return ((SkMatrix*)nObj)->setConcat(*(SkMatrix*)nA, *(SkMatrix*)nB);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(objHandle);
+    SkMatrix* a = reinterpret_cast<SkMatrix*>(aHandle);
+    SkMatrix* b = reinterpret_cast<SkMatrix*>(bHandle);
+    obj->setConcat(*a, *b);
 }
 
-Boolean Matrix::NativePreTranslate(
-    /* [in] */ Int32 nObj,
+void Matrix::NativePreTranslate(
+    /* [in] */ Int64 nObj,
     /* [in] */ Float dx,
     /* [in] */ Float dy)
 {
-    SkScalar dx_ = SkFloatToScalar(dx);
-    SkScalar dy_ = SkFloatToScalar(dy);
-    return ((SkMatrix*)nObj)->preTranslate(dx_, dy_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->preTranslate(dx, dy);
 }
 
-Boolean Matrix::NativePreScale(
-    /* [in] */ Int32 nObj,
+void Matrix::NativePreScale(
+    /* [in] */ Int64 nObj,
     /* [in] */ Float sx,
     /* [in] */ Float sy,
     /* [in] */ Float px,
     /* [in] */ Float py)
 {
-    SkScalar sx_ = SkFloatToScalar(sx);
-    SkScalar sy_ = SkFloatToScalar(sy);
-    SkScalar px_ = SkFloatToScalar(px);
-    SkScalar py_ = SkFloatToScalar(py);
-    return ((SkMatrix*)nObj)->preScale(sx_, sy_, px_, py_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->preScale(sx, sy, px, py);
 }
 
-Boolean Matrix::NativePreScale(
-    /* [in] */ Int32 nObj,
+void Matrix::NativePreScale(
+    /* [in] */ Int64 nObj,
     /* [in] */ Float sx,
     /* [in] */ Float sy)
 {
-    SkScalar sx_ = SkFloatToScalar(sx);
-    SkScalar sy_ = SkFloatToScalar(sy);
-    return ((SkMatrix*)nObj)->preScale(sx_, sy_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->preScale(sx, sy);
 }
 
-Boolean Matrix::NativePreRotate(
-    /* [in] */ Int32 nObj,
+void Matrix::NativePreRotate(
+    /* [in] */ Int64 nObj,
     /* [in] */ Float degrees,
     /* [in] */ Float px,
     /* [in] */ Float py)
 {
-    SkScalar degrees_ = SkFloatToScalar(degrees);
-    SkScalar px_ = SkFloatToScalar(px);
-    SkScalar py_ = SkFloatToScalar(py);
-    return ((SkMatrix*)nObj)->preRotate(degrees_, px_, py_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->preRotate(degrees, px, py);
 }
 
-Boolean Matrix::NativePreRotate(
-    /* [in] */ Int32 nObj,
+void Matrix::NativePreRotate(
+    /* [in] */ Int64 nObj,
     /* [in] */ Float degrees)
 {
-    SkScalar degrees_ = SkFloatToScalar(degrees);
-    return ((SkMatrix*)nObj)->preRotate(degrees_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->preRotate(degrees);
 }
 
-Boolean Matrix::NativePreSkew(
-    /* [in] */ Int32 nObj,
+void Matrix::NativePreSkew(
+    /* [in] */ Int64 nObj,
     /* [in] */ Float kx,
     /* [in] */ Float ky,
     /* [in] */ Float px,
     /* [in] */ Float py)
 {
-    SkScalar kx_ = SkFloatToScalar(kx);
-    SkScalar ky_ = SkFloatToScalar(ky);
-    SkScalar px_ = SkFloatToScalar(px);
-    SkScalar py_ = SkFloatToScalar(py);
-    return ((SkMatrix*)nObj)->preSkew(kx_, ky_, px_, py_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->preSkew(kx, ky, px, py);
 }
 
-Boolean Matrix::NativePreSkew(
-    /* [in] */ Int32 nObj,
+void Matrix::NativePreSkew(
+    /* [in] */ Int64 nObj,
     /* [in] */ Float kx,
     /* [in] */ Float ky)
 {
-    SkScalar kx_ = SkFloatToScalar(kx);
-    SkScalar ky_ = SkFloatToScalar(ky);
-    return ((SkMatrix*)nObj)->preSkew(kx_, ky_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->preSkew(kx, ky);
 }
 
-Boolean Matrix::NativePreConcat(
-    /* [in] */ Int32 nObj,
-    /* [in] */ Int32 nOther)
+void Matrix::NativePreConcat(
+    /* [in] */ Int64 objHandle,
+    /* [in] */ Int64 otherHandle)
 {
-    return ((SkMatrix*)nObj)->preConcat(*(SkMatrix*)nOther);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(objHandle);
+    SkMatrix* other = reinterpret_cast<SkMatrix*>(otherHandle);
+    obj->preConcat(*other);
 }
 
-Boolean Matrix::NativePostTranslate(
-    /* [in] */ Int32 nObj,
+void Matrix::NativePostTranslate(
+    /* [in] */ Int64 nObj,
     /* [in] */ Float dx,
     /* [in] */ Float dy)
 {
-    SkScalar dx_ = SkFloatToScalar(dx);
-    SkScalar dy_ = SkFloatToScalar(dy);
-    return ((SkMatrix*)nObj)->postTranslate(dx_, dy_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->postTranslate(dx, dy);
 }
 
-Boolean Matrix::NativePostScale(
-    /* [in] */ Int32 nObj,
+void Matrix::NativePostScale(
+    /* [in] */ Int64 nObj,
     /* [in] */ Float sx,
     /* [in] */ Float sy,
     /* [in] */ Float px,
     /* [in] */ Float py)
 {
-    SkScalar sx_ = SkFloatToScalar(sx);
-    SkScalar sy_ = SkFloatToScalar(sy);
-    SkScalar px_ = SkFloatToScalar(px);
-    SkScalar py_ = SkFloatToScalar(py);
-    return ((SkMatrix*)nObj)->postScale(sx_, sy_, px_, py_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->postScale(sx, sy, px, py);
 }
 
-Boolean Matrix::NativePostScale(
-    /* [in] */ Int32 nObj,
+void Matrix::NativePostScale(
+    /* [in] */ Int64 nObj,
     /* [in] */ Float sx,
     /* [in] */ Float sy)
 {
-    SkScalar sx_ = SkFloatToScalar(sx);
-    SkScalar sy_ = SkFloatToScalar(sy);
-    return ((SkMatrix*)nObj)->postScale(sx_, sy_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->postScale(sx, sy);
 }
 
-Boolean Matrix::NativePostRotate(
-    /* [in] */ Int32 nObj,
+void Matrix::NativePostRotate(
+    /* [in] */ Int64 nObj,
     /* [in] */ Float degrees,
     /* [in] */ Float px,
     /* [in] */ Float py)
 {
-    SkScalar degrees_ = SkFloatToScalar(degrees);
-    SkScalar px_ = SkFloatToScalar(px);
-    SkScalar py_ = SkFloatToScalar(py);
-    return ((SkMatrix*)nObj)->postRotate(degrees_, px_, py_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->postRotate(degrees, px, py);
 }
 
-Boolean Matrix::NativePostRotate(
-    /* [in] */ Int32 nObj,
+void Matrix::NativePostRotate(
+    /* [in] */ Int64 nObj,
     /* [in] */ Float degrees)
 {
-    SkScalar degrees_ = SkFloatToScalar(degrees);
-    return ((SkMatrix*)nObj)->postRotate(degrees_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->postRotate(degrees);
 }
 
-Boolean Matrix::NativePostSkew(
-    /* [in] */ Int32 nObj,
+void Matrix::NativePostSkew(
+    /* [in] */ Int64 nObj,
     /* [in] */ Float kx,
     /* [in] */ Float ky,
     /* [in] */ Float px,
     /* [in] */ Float py)
 {
-    SkScalar kx_ = SkFloatToScalar(kx);
-    SkScalar ky_ = SkFloatToScalar(ky);
-    SkScalar px_ = SkFloatToScalar(px);
-    SkScalar py_ = SkFloatToScalar(py);
-    return ((SkMatrix*)nObj)->postSkew(kx_, ky_, px_, py_);
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    obj->postSkew(kx, ky, px, py);
 }
 
-Boolean Matrix::NativePostSkew(
-    /* [in] */ Int32 nObj,
+void Matrix::NativePostSkew(
+    /* [in] */ Int64 nObj,
     /* [in] */ Float kx,
     /* [in] */ Float ky)
 {
-    SkScalar kx_ = SkFloatToScalar(kx);
-    SkScalar ky_ = SkFloatToScalar(ky);
-    return ((SkMatrix*)nObj)->postSkew(kx_, ky_);
+    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(nObj);
+    matrix->postSkew(kx, ky);
 }
 
-Boolean Matrix::NativePostConcat(
-    /* [in] */ Int32 nObj,
-    /* [in] */ Int32 nOther)
+void Matrix::NativePostConcat(
+    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 nOther)
 {
-    return ((SkMatrix*)nObj)->postConcat(*(SkMatrix*)nOther);
+    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(nObj);
+    SkMatrix* other = reinterpret_cast<SkMatrix*>(nOther);
+    matrix->postConcat(*other);
 }
 
 Boolean Matrix::NativeSetRectToRect(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
     /* [in] */ IRectF* src,
     /* [in] */ IRectF* dst,
-    /* [in] */ Int32 stf)
+    /* [in] */ Int32 stfHandle)
 {
+    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(nObj);
+    SkMatrix::ScaleToFit stf = static_cast<SkMatrix::ScaleToFit>(stfHandle);
     SkRect src_;
     GraphicsNative::IRectF2SkRect(src, &src_);
     SkRect dst_;
     GraphicsNative::IRectF2SkRect(dst, &dst_);
-    return ((SkMatrix*)nObj)->setRectToRect(src_, dst_, (SkMatrix::ScaleToFit)stf);
+    return matrix->setRectToRect(src_, dst_, stf) ? TRUE : FALSE;
 }
 
 Boolean Matrix::NativeSetPolyToPoly(
-    /* [in] */ Int32 nObj,
-    /* [in] */ const ArrayOf<Float>& src,
+    /* [in] */ Int64 nObj,
+    /* [in] */ ArrayOf<Float>* _src,
     /* [in] */ Int32 srcIndex,
-    /* [out] */ ArrayOf<Float>* dst,
+    /* [out] */ ArrayOf<Float>* _dst,
     /* [in] */ Int32 dstIndex,
     /* [in] */ Int32 ptCount)
 {
@@ -1150,87 +1171,70 @@ Boolean Matrix::NativeSetPolyToPoly(
     SkASSERT(dstIndex >= 0);
     SkASSERT(ptCount <= 4);
 
-    SkASSERT(src.GetLength() >= srcIndex + (ptCount << 1));
-    SkASSERT(dst->GetLength() >= dstIndex + (ptCount << 1));
+    SkASSERT(_src->GetLength() >= srcIndex + (ptCount << 1));
+    SkASSERT(_dst->GetLength() >= dstIndex + (ptCount << 1));
 
-    float* src_ = src.GetPayload() + srcIndex;
-    float* dst_ = dst->GetPayload() + dstIndex;
+    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(nObj);
+    SkASSERT(srcIndex >= 0);
+    SkASSERT(dstIndex >= 0);
+    SkASSERT((unsigned)ptCount <= 4);
 
-#ifdef SK_SCALAR_IS_FIXED
-    SkPoint srcPt[4], dstPt[4];
-    for (Int32 i = 0; i < ptCount; i++) {
-        Int32 x = i << 1;
-        Int32 y = x + 1;
-        srcPt[i].set(SkFloatToScalar(src_[x]), SkFloatToScalar(src_[y]));
-        dstPt[i].set(SkFloatToScalar(dst_[x]), SkFloatToScalar(dst_[y]));
-    }
-    return ((SkMatrix*)nObj)->setPolyToPoly(srcPt, dstPt, ptCount);
+    // AutoJavaFloatArray autoSrc(env, jsrc, srcIndex + (ptCount << 1), kRO_JNIAccess);
+    // AutoJavaFloatArray autoDst(env, jdst, dstIndex + (ptCount << 1), kRW_JNIAccess);
+    Float* src = _src->GetPayload() + srcIndex;
+    Float* dst = _dst->GetPayload() + dstIndex;
+    bool result;
+
+#ifdef SK_SCALAR_IS_FLOAT
+    result = matrix->setPolyToPoly((const SkPoint*)src, (const SkPoint*)dst,
+                                 ptCount);
 #else
-    return ((SkMatrix*)nObj)->setPolyToPoly((const SkPoint*)src_, (const SkPoint*)dst_,
-                               ptCount);
+    SkASSERT(FALSE);
 #endif
+    return result ? TRUE : FALSE;
 }
 
 Boolean Matrix::NativeInvert(
-    /* [in] */ Int32 nObj,
-    /* [in] */ Int32 inverse)
+    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 inverseHandle)
 {
-    return ((SkMatrix*)nObj)->invert((SkMatrix*)inverse);
+    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(nObj);
+    SkMatrix* inverse = reinterpret_cast<SkMatrix*>(inverseHandle);
+    return matrix->invert(inverse);
 }
 
 void Matrix::NativeMapPoints(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 matrixHandle,
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ Int32 dstIndex,
-    /* [in] */ const ArrayOf<Float>& src,
+    /* [in] */ ArrayOf<Float>* src,
     /* [in] */ Int32 srcIndex,
     /* [in] */ Int32 ptCount,
     /* [in] */ Boolean isPts)
 {
     SkASSERT(ptCount >= 0);
-    SkASSERT(src.GetLength() >= srcIndex + (ptCount << 1));
+    SkASSERT(src->GetLength() >= srcIndex + (ptCount << 1));
     SkASSERT(dst->GetLength() >= dstIndex + (ptCount << 1));
-    float* srcArray = src.GetPayload() + srcIndex;
-    float* dstArray = dst->GetPayload() + dstIndex;
 
-#ifdef SK_SCALAR_IS_FIXED
-    // we allocate twice the count, 1 set for src, 1 for dst
-    SkAutoSTMalloc<32, SkPoint> storage(ptCount * 2);
-    SkPoint* pts = storage.get();
-    SkPoint* srcPt = pts;
-    SkPoint* dstPt = pts + ptCount;
-
-    Int32 i;
-    for (i = 0; i < ptCount; i++) {
-        srcPt[i].set(SkFloatToScalar(srcArray[i << 1]),
-                     SkFloatToScalar(srcArray[(i << 1) + 1]));
-    }
-
-    if (isPts) {
-        ((SkMatrix*)nObj)->mapPoints(dstPt, srcPt, ptCount);
-    }
-    else {
-        ((SkMatrix*)nObj)->mapVectors(dstPt, srcPt, ptCount);
-    }
-
-    for (i = 0; i < ptCount; i++) {
-        dstArray[i << 1]  = SkScalarToFloat(dstPt[i].fX);
-        dstArray[(i << 1) + 1]  = SkScalarToFloat(dstPt[i].fY);
-    }
+    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixHandle);
+    // AutoJavaFloatArray autoSrc(env, src, srcIndex + (ptCount << 1), kRO_JNIAccess);
+    // AutoJavaFloatArray autoDst(env, dst, dstIndex + (ptCount << 1), kRW_JNIAccess);
+    Float* srcArray = src->GetPayload() + srcIndex;
+    Float* dstArray = dst->GetPayload() + dstIndex;
+#ifdef SK_SCALAR_IS_FLOAT
+    if (isPts)
+        matrix->mapPoints((SkPoint*)dstArray, (const SkPoint*)srcArray,
+                          ptCount);
+    else
+        matrix->mapVectors((SkVector*)dstArray, (const SkVector*)srcArray,
+                           ptCount);
 #else
-    if (isPts) {
-        ((SkMatrix*)nObj)->mapPoints((SkPoint*)dstArray, (const SkPoint*)srcArray,
-                        ptCount);
-    }
-    else {
-        ((SkMatrix*)nObj)->mapVectors((SkVector*)dstArray, (const SkVector*)srcArray,
-                         ptCount);
-    }
+    SkASSERT(FALSE);
 #endif
 }
 
 Boolean Matrix::NativeMapRect(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
     /* [in] */ IRectF* dst,
     /* [in] */ IRectF* src)
 {
@@ -1242,72 +1246,77 @@ Boolean Matrix::NativeMapRect(
 }
 
 Float Matrix::NativeMapRadius(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 matrixHandle,
     /* [in] */ Float radius)
 {
-    return SkScalarToFloat(((SkMatrix*)nObj)->mapRadius(SkFloatToScalar(radius)));
+    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixHandle);
+    Float result;
+    result = SkScalarToFloat(matrix->mapRadius(radius));
+    return static_cast<Float>(result);
 }
 
 void Matrix::NativeGetValues(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 matrixHandle,
     /* [out] */ ArrayOf<Float>* values)
 {
     SkASSERT(values->GetLength() >= 9);
+    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixHandle);
+    // AutoJavaFloatArray autoValues(env, values, 9, kRW_JNIAccess);
     float* dst = values->GetPayload();
-
-#ifdef SK_SCALAR_IS_FIXED
-    for (Int32 i = 0; i < 6; i++) {
-        dst[i] = SkFixedToFloat(((SkMatrix*)nObj)->get(i));
-    }
-    for (Int32 j = 6; j < 9; j++) {
-        dst[j] = SkFractToFloat(((SkMatrix*)nObj)->get(j));
+#ifdef SK_SCALAR_IS_FLOAT
+    for (int i = 0; i < 9; i++) {
+        dst[i] = matrix->get(i);
     }
 #else
-    for (Int32 i = 0; i < 9; i++) {
-        dst[i] = ((SkMatrix*)nObj)->get(i);
-    }
+    SkASSERT(FALSE);
 #endif
 }
 
 void Matrix::NativeSetValues(
-    /* [in] */ Int32 nObj,
-    /* [in] */ const ArrayOf<Float>& values)
+    /* [in] */ Int64 matrixHandle,
+    /* [in] */ ArrayOf<Float>* values)
 {
-    SkASSERT(values.GetLength() >= 9);
-    const float* src = values.GetPayload();
+    SkASSERT(values->GetLength() >= 9);
+    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixHandle);
+    // AutoJavaFloatArray autoValues(env, values, 9, kRO_JNIAccess);
+    const float* src = values->GetPayload();
 
-#ifdef SK_SCALAR_IS_FIXED
-    for (Int32 i = 0; i < 6; i++) {
-        ((SkMatrix*)nObj)->set(i, SkFloatToFixed(src[i]));
-    }
-    for (Int32 j = 6; j < 9; j++) {
-        ((SkMatrix*)nObj)->set(j, SkFloatToFract(src[j]));
+#ifdef SK_SCALAR_IS_FLOAT
+    for (int i = 0; i < 9; i++) {
+        matrix->set(i, src[i]);
     }
 #else
-    for (Int32 i = 0; i < 9; i++) {
-        ((SkMatrix*)nObj)->set(i, src[i]);
-    }
+    SkASSERT(FALSE);
 #endif
 }
 
 Boolean Matrix::NativeEquals(
-    /* [in] */ Int32 nA,
-    /* [in] */ Int32 nB)
+    /* [in] */ Int64 aHandle,
+    /* [in] */ Int64 bHandle)
 {
-    return *(SkMatrix*)nA == *(SkMatrix*)nB;
+    const SkMatrix* a = reinterpret_cast<SkMatrix*>(aHandle);
+    const SkMatrix* b = reinterpret_cast<SkMatrix*>(bHandle);
+    return *a == *b;
 }
 
 void Matrix::NativeFinalizer(
-    /* [in] */ Int32 nObj)
+    /* [in] */ Int64 nObj)
 {
-    delete (SkMatrix*)nObj;
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(nObj);
+    delete obj;
 }
 
-Int32 Matrix::Ni()
+Int64 Matrix::Ni()
 {
     return mNativeInstance;
 }
 
+Boolean Matrix::NativeIsAffine(
+    /* [in] */ Int64 objHandle)
+{
+    SkMatrix* obj = reinterpret_cast<SkMatrix*>(objHandle);
+    return obj->asAffine(NULL) ? TRUE : FALSE;
+}
 
 } // namespace Graphics
 } // namepsace Droid

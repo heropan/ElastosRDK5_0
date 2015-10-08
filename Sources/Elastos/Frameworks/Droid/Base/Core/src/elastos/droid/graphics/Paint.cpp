@@ -10,9 +10,9 @@
 #include "graphics/MaskFilter.h"
 #include "graphics/Typeface.h"
 #include "graphics/Rasterizer.h"
-#include "graphics/TemporaryBuffer.h"
-#include "graphics/TextLayout.h"
-#include "graphics/TextLayoutCache.h"
+// #include "graphics/TemporaryBuffer.h"
+// #include "graphics/TextLayout.h"
+// #include "graphics/TextLayoutCache.h"
 #include "graphics/GraphicsNative.h"
 #include "text/TextUtils.h"
 #include <elastos/core/Math.h>
@@ -26,8 +26,8 @@
 using Elastos::Core::Character;
 using Elastos::Core::IString;
 using Elastos::Utility::Logging::Logger;
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Text::ISpannedString;
@@ -72,19 +72,15 @@ AutoPtr<ILocale> Paint::GetDefaultLocale()
     return locale;
 }
 
-const Int32 Paint::DEFAULT_PAINT_FLAGS;
-const Int32 Paint::BIDI_MAX_FLAG_VALUE;
-const Int32 Paint::BIDI_FLAG_MASK;
-const Int32 Paint::CURSOR_OPT_MAX_VALUE;
+const Int32 Paint::DEFAULT_PAINT_FLAGS = IPaint::DEV_KERN_TEXT_FLAG | IPaint::EMBEDDED_BITMAP_TEXT_FLAG;
+const Int32 Paint::BIDI_MAX_FLAG_VALUE = IPaint::BIDI_FORCE_RTL;
+const Int32 Paint::BIDI_FLAG_MASK = 0x7;
+const Int32 Paint::CURSOR_OPT_MAX_VALUE = IPaint::CURSOR_AT;
 
 CAR_INTERFACE_IMPL(Paint, Object, IPaint);
 Paint::Paint()
     : mNativePaint(0)
-    , mHasShadow(FALSE)
-    , mShadowDx(0)
-    , mShadowDy(0)
-    , mShadowRadius(0)
-    , mShadowColor(0)
+    , mNativeTypeface(0)
     , mBidiFlags(IPaint::BIDI_DEFAULT_LTR)
     , mHasCompatScaling(FALSE)
     , mCompatScaling(0)
@@ -129,7 +125,7 @@ ECode Paint::constructor(
     /* [in] */ IPaint* paint)
 {
     VALIDATE_NOT_NULL(paint);
-    Paint* paint_ = (Paint*)paint->Probe(EIID_Paint);
+    Paint* paint_ = (Paint*)(IPaint*)paint->Probe(EIID_Paint);
     mNativePaint = NativeInitWithPaint(paint_->mNativePaint);
     SetClassVariablesFrom(paint_);
     return NOERROR;
@@ -152,6 +148,7 @@ ECode Paint::Reset()
     mRasterizer = NULL;
     mShader = NULL;
     mTypeface = NULL;
+    mNativeTypeface = 0;
     mXfermode = NULL;
 
     mHasCompatScaling = FALSE;
@@ -159,15 +156,11 @@ ECode Paint::Reset()
 
     mInvCompatScaling = 1;
 
-    mHasShadow = FALSE;
-    mShadowDx = 0;
-    mShadowDy = 0;
-    mShadowRadius = 0;
-    mShadowColor = 0;
-
     mBidiFlags = IPaint::BIDI_DEFAULT_LTR;
     AutoPtr<ILocale> locale = GetDefaultLocale();
     SetTextLocale(locale);
+    SetElegantTextHeight(FALSE);
+    mFontFeatureSettings = NULL;
     return NOERROR;
 }
 
@@ -180,7 +173,7 @@ ECode Paint::Set(
     /* [in] */ IPaint* src)
 {
     assert(src != NULL);
-    Paint* src_ = (Paint*)src->Probe(EIID_Paint);
+    Paint* src_ = (Paint*)(IPaint*)src->Probe(EIID_Paint);
     if (this != src_) {
         assert(src_ != NULL);
         // copy over the native settings
@@ -198,21 +191,24 @@ void Paint::SetClassVariablesFrom(
     mPathEffect = paint->mPathEffect;
     mRasterizer = paint->mRasterizer;
     mShader = paint->mShader;
+
+    if (paint->mShader != NULL) {
+        mShader = ((Shader*)paint->mShader.Get())->Copy();
+    } else {
+        mShader = NULL;
+    }
+
     mTypeface = paint->mTypeface;
+    mNativeTypeface = paint->mNativeTypeface;
     mXfermode = paint->mXfermode;
 
     mHasCompatScaling = paint->mHasCompatScaling;
     mCompatScaling = paint->mCompatScaling;
     mInvCompatScaling = paint->mInvCompatScaling;
 
-    mHasShadow = paint->mHasShadow;
-    mShadowDx = paint->mShadowDx;
-    mShadowDy = paint->mShadowDy;
-    mShadowRadius = paint->mShadowRadius;
-    mShadowColor = paint->mShadowColor;
-
     mBidiFlags = paint->mBidiFlags;
     mLocale = paint->mLocale;
+    mFontFeatureSettings = paint->mFontFeatureSettings;
 }
 
 /** @hide */
@@ -656,7 +652,7 @@ ECode Paint::GetStrokeWidth(
 ECode Paint::SetStrokeWidth(
     /* [in] */ Float width)
 {
-    ((SkPaint*)mNativePaint)->setStrokeWidth(SkFloatToScalar(width));
+    assert(0 && "TODO: need jni codes.");
     return NOERROR;
 }
 
@@ -684,7 +680,7 @@ ECode Paint::GetStrokeMiter(
 ECode Paint::SetStrokeMiter(
     /* [in] */ Float miter)
 {
-    ((SkPaint*)mNativePaint)->setStrokeMiter(SkFloatToScalar(miter));
+    assert(0 && "TODO: need jni codes.");
     return NOERROR;
 }
 
@@ -785,9 +781,9 @@ ECode Paint::GetShader(
 ECode Paint::SetShader(
     /* [in] */ IShader* shader)
 {
-    Int32 shaderNative = 0;
+    Int64 shaderNative = 0;
     if (shader != NULL) {
-        Shader* s = (Shader*)shader->Probe(EIID_Shader);
+        Shader* s = (Shader*)(IShader*)shader->Probe(EIID_Shader);
         assert(s != NULL);
         shaderNative = s->mNativeInstance;
     }
@@ -818,9 +814,9 @@ ECode Paint::GetColorFilter(
 ECode Paint::SetColorFilter(
     /* [in] */ IColorFilter* filter)
 {
-    Int32 filterNative = 0;
+    Int64 filterNative = 0;
     if (filter != NULL) {
-        ColorFilter* cf = (ColorFilter*)filter->Probe(EIID_ColorFilter);
+        ColorFilter* cf = (ColorFilter*)(IColorFilter*)filter->Probe(EIID_ColorFilter);
         assert(cf != NULL);
         filterNative = cf->mNativeInstance;
     }
@@ -854,9 +850,9 @@ ECode Paint::GetXfermode(
 ECode Paint::SetXfermode(
     /* [in] */ IXfermode* xfermode)
 {
-    Int32 xfermodeNative = 0;
+    Int64 xfermodeNative = 0;
     if (xfermode != NULL) {
-        Xfermode* x = (Xfermode*)xfermode->Probe(EIID_Xfermode);
+        Xfermode* x = (Xfermode*)(IXfermode*)xfermode->Probe(EIID_Xfermode);
         assert(x != NULL);
         xfermodeNative = x->mNativeInstance;
     }
@@ -890,9 +886,9 @@ ECode Paint::GetPathEffect(
 ECode Paint::SetPathEffect(
     /* [in] */ IPathEffect* effect)
 {
-    Int32 effectNative = 0;
+    Int64 effectNative = 0;
     if (effect != NULL) {
-        PathEffect* pe = (PathEffect*)effect->Probe(EIID_PathEffect);
+        PathEffect* pe = (PathEffect*)(IPathEffect*)effect->Probe(EIID_PathEffect);
         assert(pe != NULL);
         effectNative = pe->mNativeInstance;
     }
@@ -927,9 +923,9 @@ ECode Paint::GetMaskFilter(
 ECode Paint::SetMaskFilter(
     /* [in] */ IMaskFilter* maskfilter)
 {
-    Int32 maskfilterNative = 0;
+    Int64 maskfilterNative = 0;
     if (maskfilter != NULL) {
-        MaskFilter* mf = (MaskFilter*)maskfilter->Probe(EIID_MaskFilter);
+        MaskFilter* mf = (MaskFilter*)(IMaskFilter*)maskfilter->Probe(EIID_MaskFilter);
         assert(mf != NULL);
         maskfilterNative = mf->mNativeInstance;
     }
@@ -966,13 +962,14 @@ ECode Paint::GetTypeface(
 ECode Paint::SetTypeface(
     /* [in] */ ITypeface* typeface)
 {
-    Int32 typefaceNative = 0;
+    Int64 typefaceNative = 0;
     if (typeface != NULL) {
-        Typeface* t = (Typeface*)typeface->Probe(EIID_Typeface);
+        Typeface* t = (Typeface*)(ITypeface*)typeface->Probe(EIID_Typeface);
         typefaceNative = t->mNativeInstance;
     }
     NativeSetTypeface(mNativePaint, typefaceNative);
     mTypeface = typeface;
+    mNativeTypeface = typefaceNative;
     return NOERROR;
 }
 
@@ -1004,9 +1001,9 @@ ECode Paint::GetRasterizer(
 ECode Paint::SetRasterizer(
     /* [in] */ IRasterizer* rasterizer)
 {
-    Int32 rasterizerNative = 0;
+    Int64 rasterizerNative = 0;
     if (rasterizer != NULL) {
-        Rasterizer* r = (Rasterizer*)rasterizer->Probe(EIID_Rasterizer);
+        Rasterizer* r = (Rasterizer*)(IRasterizer*)rasterizer->Probe(EIID_Rasterizer);
         assert(r != NULL);
         rasterizerNative = r->mNativeInstance;
     }
@@ -1024,33 +1021,10 @@ ECode Paint::SetShadowLayer(
     /* [in] */ Float radius,
     /* [in] */ Float dx,
     /* [in] */ Float dy,
-    /* [in] */ Int32 color)
+    /* [in] */ Int32 shadowColor)
 {
-    mHasShadow = radius > 0.0f;
-    mShadowRadius = radius;
-    mShadowDx = dx;
-    mShadowDy = dy;
-    mShadowColor = color;
-    NativeSetShadowLayer(radius, dx, dy, color);
+    NativeSetShadowLayer(mNativePaint, radius, dx, dy, shadowColor);
     return NOERROR;
-}
-
-void Paint::NativeSetShadowLayer(
-    /* [in] */ Float radius,
-    /* [in] */ Float dx,
-    /* [in] */ Float dy,
-    /* [in] */ Int32 color)
-{
-    SkPaint* paint = (SkPaint*)mNativePaint;
-    if (radius <= 0) {
-        paint->setLooper(NULL);
-    }
-    else {
-        paint->setLooper(new SkBlurDrawLooper(SkFloatToScalar(radius),
-                                                     SkFloatToScalar(dx),
-                                                     SkFloatToScalar(dy),
-                                                     (SkColor)color))->unref();
-    }
 }
 
 /**
@@ -1058,8 +1032,14 @@ void Paint::NativeSetShadowLayer(
  */
 ECode Paint::ClearShadowLayer()
 {
-    mHasShadow = FALSE;
-    NativeSetShadowLayer(0, 0, 0, 0);
+    return SetShadowLayer(0, 0, 0, 0);
+}
+
+ECode Paint::HasShadowLayer(
+    /* [out] */ Boolean* has)
+{
+    VALIDATE_NOT_NULL(has);
+    *has = NativeHasShadowLayer(mNativePaint);
     return NOERROR;
 }
 
@@ -1117,6 +1097,20 @@ ECode Paint::SetTextLocale(
     return NOERROR;
 }
 
+ECode Paint::IsElegantTextHeight(
+    /* [out] */ Boolean* isElegantTextHeight)
+{
+    assert(0 && "TODO: need jni codes.");
+    return NOERROR;
+}
+
+ECode Paint::SetElegantTextHeight(
+    /* [in] */ Boolean elegant)
+{
+    assert(0 && "TODO: need jni codes.");
+    return NOERROR;
+}
+
 /**
  * Return the paint's text size.
  *
@@ -1137,7 +1131,7 @@ ECode Paint::GetTextSize(
 ECode Paint::SetTextSize(
     /* [in] */ Float textSize)
 {
-    ((SkPaint*)mNativePaint)->setTextSize(SkFloatToScalar(textSize));
+    assert(0 && "TODO: need jni codes.");
     return NOERROR;
 }
 
@@ -1164,7 +1158,7 @@ ECode Paint::GetTextScaleX(
 ECode Paint::SetTextScaleX(
     /* [in] */ Float scaleX)
 {
-     ((SkPaint*)mNativePaint)->setTextScaleX(SkFloatToScalar(scaleX));
+     assert(0 && "TODO: need jni codes.");
      return NOERROR;
 }
 
@@ -1190,7 +1184,48 @@ ECode Paint::GetTextSkewX(
 ECode Paint::SetTextSkewX(
     /* [in] */ Float skewX)
 {
-    ((SkPaint*)mNativePaint)->setTextSkewX(SkFloatToScalar(skewX));
+    assert(0 && "TODO: need jni codes.");
+    return NOERROR;
+}
+
+ECode Paint::GetLetterSpacing(
+    /* [out] */ Float* spacing)
+{
+    VALIDATE_NOT_NULL(spacing);
+    assert(0 && "TODO");
+    // *spacing = native_getLetterSpacing(mNativePaint);
+    return NOERROR;
+}
+
+ECode Paint::SetLetterSpacing(
+    /* [in] */ Float letterSpacing)
+{
+    assert(0 && "TODO");
+    // native_setLetterSpacing(mNativePaint, letterSpacing);
+    return NOERROR;
+}
+
+ECode Paint::GetFontFeatureSettings(
+    /* [out] */ String* settings)
+{
+    VALIDATE_NOT_NULL(settings);
+    *settings = mFontFeatureSettings;
+    return NOERROR;
+}
+
+ECode Paint::SetFontFeatureSettings(
+    /* [in] */ const String& settings)
+{
+    assert(0 && "TODO");
+    // if (settings != null && settings.equals("")) {
+    //     settings = null;
+    // }
+    // if ((settings == null && mFontFeatureSettings == null)
+    //         || (settings != null && settings.equals(mFontFeatureSettings))) {
+    //     return;
+    // }
+    // mFontFeatureSettings = settings;
+    // native_setFontFeatureSettings(mNativePaint, settings);
     return NOERROR;
 }
 
@@ -1279,21 +1314,7 @@ ECode Paint::GetFontMetricsInt(
     /* [in] */ IPaintFontMetricsInt* fmi,
     /* [out] */ Int32* spacing)
 {
-    SkPaint::FontMetrics metrics;
-
-    ((SkPaint*)mNativePaint)->getFontMetrics(&metrics);
-    Int32 ascent = SkScalarRound(metrics.fAscent);
-    Int32 descent = SkScalarRound(metrics.fDescent);
-    Int32 leading = SkScalarRound(metrics.fLeading);
-
-    if (fmi) {
-        fmi->SetTop(SkScalarFloor(metrics.fTop));
-        fmi->SetAscent(ascent);
-        fmi->SetDescent(descent);
-        fmi->SetBottom(SkScalarCeil(metrics.fBottom));
-        fmi->SetLeading(leading);
-    }
-    *spacing = descent - ascent + leading;
+    assert(0 && "TODO: need jni codes.");
     return NOERROR;
 }
 
@@ -1327,29 +1348,31 @@ ECode Paint::GetFontSpacing(
  * @return      The width of the text
  */
 ECode Paint::MeasureText(
-    /* [in] */ const ArrayOf<Char32>& text,
+    /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
     /* [out] */ Float* width)
 {
-    if ((index | count) < 0 || index + count > text.GetLength()) {
+    if ((index | count) < 0 || index + count > text->GetLength()) {
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    if (text.GetLength() == 0 || count == 0) {
+    if (text->GetLength() == 0 || count == 0) {
         *width = 0;
         return NOERROR;
     }
     if (!mHasCompatScaling) {
-        *width = NativeMeasureText(text, index, count);
+        assert(0 && "TODO");
+        // *width = (float) Math.ceil(NativeMeasureText(text, index, count, mBidiFlags));
         return NOERROR;
     }
     Float oldSize;
     GetTextSize(&oldSize);
     SetTextSize(oldSize * mCompatScaling);
-    Float w = NativeMeasureText(text, index, count);
+    Float w = NativeMeasureText(text, index, count, mBidiFlags);
     SetTextSize(oldSize);
-    *width = w * mInvCompatScaling;
+    assert(0 && "TODO");
+    // *width = (float) Math.ceil(w * mInvCompatScaling);
     return NOERROR;
 }
 
@@ -1380,16 +1403,18 @@ ECode Paint::MeasureText(
         return NOERROR;
     }
     if (!mHasCompatScaling) {
-        *width = NativeMeasureText(text, start, end);
+        assert(0 && "TODO");
+        // *width = (float) Math.ceil(NativeMeasureText(text, start, end, mBidiFlags));
         return NOERROR;
     }
 
     Float oldSize;
     GetTextSize(&oldSize);
     SetTextSize(oldSize * mCompatScaling);
-    Float w = NativeMeasureText(text, start, end);
+    Float w = NativeMeasureText(text, start, end, mBidiFlags);
     SetTextSize(oldSize);
-    *width = w * mInvCompatScaling;
+    assert(0 && "TODO");
+    // *width = (float) Math.ceil(w * mInvCompatScaling);
     return NOERROR;
 }
 
@@ -1414,15 +1439,17 @@ ECode Paint::MeasureText(
     }
 
     if (!mHasCompatScaling) {
-        *width = NativeMeasureText(text);
+        assert(0 && "TODO");
+        // *width = (float) Math.ceil(NativeMeasureText(text, mBidiFlags));
         return NOERROR;
     }
     Float oldSize;
     GetTextSize(&oldSize);
     SetTextSize(oldSize * mCompatScaling);
-    Float w = NativeMeasureText(text);
+    Float w = NativeMeasureText(text, mBidiFlags);
     SetTextSize(oldSize);
-    *width = w * mInvCompatScaling;
+    assert(0 && "TODO");
+    // *width = (float) Math.ceil(w * mInvCompatScaling);
     return NOERROR;
 }
 
@@ -1465,11 +1492,13 @@ ECode Paint::MeasureText(
     //     return ((GraphicsOperations)text).measureText(start, end, this);
     // }
 
-    AutoPtr< ArrayOf<Char32> > buf = TemporaryBuffer::Obtain(end - start);
-    TextUtils::GetChars(text, start, end, buf, 0);
-    ECode ec = MeasureText(*buf, 0, end - start, width);
-    TemporaryBuffer::Recycle(buf);
-    return ec;
+    assert(0 && "TODO");
+    // AutoPtr< ArrayOf<Char32> > buf = TemporaryBuffer::Obtain(end - start);
+    // TextUtils::GetChars(text, start, end, buf, 0);
+    // ECode ec = MeasureText(buf, 0, end - start, width);
+    // TemporaryBuffer::Recycle(buf);
+    // return ec;
+    return NOERROR;
 }
 
 /**
@@ -1488,30 +1517,30 @@ ECode Paint::MeasureText(
  *         abs(count).
  */
 ECode Paint::BreakText(
-    /* [in] */ const ArrayOf<Char32>& text,
+    /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
     /* [in] */ Float maxWidth,
     /* [in] */ ArrayOf<Float>* measuredWidth,
     /* [out] */ Int32* number)
 {
-    if (index < 0 || text.GetLength() - index < Elastos::Core::Math::Abs(count)) {
+    if (index < 0 || text->GetLength() - index < Elastos::Core::Math::Abs(count)) {
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    if (text.GetLength() == 0 || count == 0) {
+    if (text->GetLength() == 0 || count == 0) {
         *number = 0;
         return NOERROR;
     }
     if (!mHasCompatScaling) {
-        *number = NativeBreakText(text, index, count, maxWidth, measuredWidth);
+        *number = NativeBreakText(mNativePaint, mNativeTypeface, text, index, count, maxWidth, mBidiFlags, measuredWidth);
         return NOERROR;
     }
 
     Float oldSize;
     GetTextSize(&oldSize);
     SetTextSize(oldSize * mCompatScaling);
-    Int32 res = NativeBreakText(text, index, count, maxWidth * mCompatScaling,
+    Int32 res = NativeBreakText(mNativePaint, mNativeTypeface, text, index, count, maxWidth * mCompatScaling, mBidiFlags,
             measuredWidth);
     SetTextSize(oldSize);
     if (measuredWidth != NULL) (*measuredWidth)[0] *= mInvCompatScaling;
@@ -1563,19 +1592,21 @@ ECode Paint::BreakText(
     //                      measuredWidth);
     // }
 
-    AutoPtr< ArrayOf<Char32> > buf = TemporaryBuffer::Obtain(end - start);
+    assert(0 && "TODO");
+    AutoPtr< ArrayOf<Char32> > buf/* = TemporaryBuffer::Obtain(end - start)*/;
 
     TextUtils::GetChars(text, start, end, buf, 0);
 
     ECode ec;
     if (measureForwards) {
-        ec = BreakText(*buf, 0, end - start, maxWidth, measuredWidth, number);
+        ec = BreakText(buf, 0, end - start, maxWidth, measuredWidth, number);
     }
     else {
-        ec = BreakText(*buf, 0, -(end - start), maxWidth, measuredWidth, number);
+        ec = BreakText(buf, 0, -(end - start), maxWidth, measuredWidth, number);
     }
 
-    TemporaryBuffer::Recycle(buf);
+    assert(0 && "TODO");
+    // TemporaryBuffer::Recycle(buf);
     return ec;
 }
 
@@ -1612,15 +1643,15 @@ ECode Paint::BreakText(
         return NOERROR;
     }
     if (!mHasCompatScaling) {
-        *number = NativeBreakText(text, measureForwards, maxWidth, measuredWidth);
+        *number = NativeBreakText(mNativePaint, mNativeTypeface, text, measureForwards, maxWidth, mBidiFlags, measuredWidth);
         return NOERROR;
     }
 
     Float oldSize;
     GetTextSize(&oldSize);
     SetTextSize(oldSize * mCompatScaling);
-    Int32 res = NativeBreakText(text, measureForwards, maxWidth * mCompatScaling,
-            measuredWidth);
+    Int32 res = NativeBreakText(mNativePaint, mNativeTypeface, text, measureForwards, maxWidth * mCompatScaling,
+            mBidiFlags, measuredWidth);
     SetTextSize(oldSize);
     if (measuredWidth != NULL) (*measuredWidth)[0] *= mInvCompatScaling;
     *number = res;
@@ -1638,30 +1669,30 @@ ECode Paint::BreakText(
  * @return         the actual number of widths returned.
  */
 ECode Paint::GetTextWidths(
-    /* [in] */ const ArrayOf<Char32>& text,
+    /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
     /* [out] */ ArrayOf<Float>* widths,
     /* [out] */ Int32* number)
 {
-    if ((index | count) < 0 || index + count > text.GetLength()
+    if ((index | count) < 0 || index + count > text->GetLength()
             || count > widths->GetLength()) {
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    if (text.GetLength() == 0 || count == 0) {
+    if (text->GetLength() == 0 || count == 0) {
         *number = 0;
         return NOERROR;
     }
     if (!mHasCompatScaling) {
-        *number = NativeGetTextWidths(mNativePaint, text, index, count, widths);
+        *number = NativeGetTextWidths(mNativePaint, mNativeTypeface, text, index, count, mBidiFlags, widths);
         return NOERROR;
     }
 
     Float oldSize;
     GetTextSize(&oldSize);
     SetTextSize(oldSize * mCompatScaling);
-    Int32 res = NativeGetTextWidths(mNativePaint, text, index, count, widths);
+    Int32 res = NativeGetTextWidths(mNativePaint, mNativeTypeface, text, index, count, mBidiFlags, widths);
     SetTextSize(oldSize);
     for (Int32 i = 0; i < res; i++) {
         (*widths)[i] *= mInvCompatScaling;
@@ -1716,11 +1747,13 @@ ECode Paint::GetTextWidths(
     //                                                          widths, this);
     // }
 
-    AutoPtr< ArrayOf<Char32> > buf = TemporaryBuffer::Obtain(end - start);
-    TextUtils::GetChars(text, start, end, buf, 0);
-    ECode ec = GetTextWidths(*buf, 0, end - start, widths, number);
-    TemporaryBuffer::Recycle(buf);
-    return ec;
+    assert(0 && "TODO");
+    // AutoPtr< ArrayOf<Char32> > buf = TemporaryBuffer::Obtain(end - start);
+    // TextUtils::GetChars(text, start, end, buf, 0);
+    // ECode ec = GetTextWidths(buf, 0, end - start, widths, number);
+    // TemporaryBuffer::Recycle(buf);
+    // return ec;
+    return NOERROR;
 }
 
 /**
@@ -1756,13 +1789,13 @@ ECode Paint::GetTextWidths(
         return NOERROR;
     }
     if (!mHasCompatScaling) {
-        *number = NativeGetTextWidths(mNativePaint, text, start, end, widths);
+        *number = NativeGetTextWidths(mNativePaint, mNativeTypeface, text, start, end, mBidiFlags, widths);
         return NOERROR;
     }
     Float oldSize;
     GetTextSize(&oldSize);
     SetTextSize(oldSize * mCompatScaling);
-    Int32 res = NativeGetTextWidths(mNativePaint, text, start, end, widths);
+    Int32 res = NativeGetTextWidths(mNativePaint, mNativeTypeface, text, start, end, mBidiFlags, widths);
     SetTextSize(oldSize);
     for (Int32 i = 0; i < res; i++) {
         (*widths)[i] *= mInvCompatScaling;
@@ -1787,91 +1820,40 @@ ECode Paint::GetTextWidths(
     return GetTextWidths(text, 0, text.GetLength(), widths, number);
 }
 
-ECode Paint::GetTextGlyphs(
-    /* [in] */ const String& text,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [in] */ Int32 contextStart,
-    /* [in] */ Int32 contextEnd,
-    /* [in] */ Int32 flags,
-    /* [out] */ ArrayOf<Char32>* glyphs,
-    /* [out] */ Int32* number)
-{
-    if (text.IsNull()) {
-        Logger::E(TAG, "text cannot be null");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    if (flags != IPaint::DIRECTION_LTR && flags != IPaint::DIRECTION_RTL) {
-        Logger::E(TAG, "unknown flags value:%d\n", flags);
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    if ((start | end | contextStart | contextEnd | (end - start)
-            | (start - contextStart) | (contextEnd - end) | (text.GetLength() - end)
-            | (text.GetLength() - contextEnd)) < 0) {
-        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-    if (!glyphs && end - start > glyphs->GetLength()) {
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-    *number = NativeGetTextGlyphs(mNativePaint, text, start, end, contextStart, contextEnd,
-                flags, glyphs);
-    return NOERROR;
-}
-
 ECode Paint::GetTextRunAdvances(
-    /* [in] */ const ArrayOf<Char32>& chars,
+    /* [in] */ ArrayOf<Char32>* chars,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
     /* [in] */ Int32 contextIndex,
     /* [in] */ Int32 contextCount,
-    /* [in] */ Int32 flags,
+    /* [in] */ Boolean isRtl,
     /* [in] */ ArrayOf<Float>* advances,
     /* [in] */ Int32 advancesIndex,
     /* [out] */ Float* advance)
 {
-    return GetTextRunAdvances(chars, index, count, contextIndex, contextCount, flags,
-                advances, advancesIndex, 0 /* use Harfbuzz*/, advance);
-}
-
-ECode Paint::GetTextRunAdvances(
-    /* [in] */ const ArrayOf<Char32>& chars,
-    /* [in] */ Int32 index,
-    /* [in] */ Int32 count,
-    /* [in] */ Int32 contextIndex,
-    /* [in] */ Int32 contextCount,
-    /* [in] */ Int32 flags,
-    /* [in] */ ArrayOf<Float>* advances,
-    /* [in] */ Int32 advancesIndex,
-    /* [in] */ Int32 reserved,
-    /* [out] */ Float* advance)
-{
-    if (flags != IPaint::DIRECTION_LTR && flags != IPaint::DIRECTION_RTL) {
-        Logger::E(TAG, "unknown flags value:%d\n", flags);
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
     if ((index | count | contextIndex | contextCount | advancesIndex
             | (index - contextIndex) | (contextCount - count)
             | ((contextIndex + contextCount) - (index + count))
-            | (chars.GetLength() - (contextIndex + contextCount))
+            | (chars->GetLength() - (contextIndex + contextCount))
             | (advances == NULL ? 0 :
                 (advances->GetLength() - (advancesIndex + count)))) < 0) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    if (chars.GetLength() == 0 || count == 0){
+    if (chars->GetLength() == 0 || count == 0){
         *advance = 0;
         return NOERROR;
     }
     if (!mHasCompatScaling) {
-        *advance = NativeGetTextRunAdvances(mNativePaint, chars, index, count,
-                contextIndex, contextCount, flags, advances, advancesIndex, reserved);
+        *advance = NativeGetTextRunAdvances(mNativePaint, mNativeTypeface, chars, index, count,
+                contextIndex, contextCount, isRtl, advances, advancesIndex);
         return NOERROR;
     }
 
     Float oldSize;
     GetTextSize(&oldSize);
     SetTextSize(oldSize * mCompatScaling);
-    Float res = NativeGetTextRunAdvances(mNativePaint, chars, index, count,
-                contextIndex, contextCount, flags, advances, advancesIndex, reserved);
+    Float res = NativeGetTextRunAdvances(mNativePaint, mNativeTypeface, chars, index, count,
+                contextIndex, contextCount, isRtl, advances, advancesIndex);
     SetTextSize(oldSize);
 
     if (advances != NULL) {
@@ -1889,25 +1871,9 @@ ECode Paint::GetTextRunAdvances(
     /* [in] */ Int32 end,
     /* [in] */ Int32 contextStart,
     /* [in] */ Int32 contextEnd,
-    /* [in] */ Int32 flags,
+    /* [in] */ Boolean isRtl,
     /* [in] */ ArrayOf<Float>* advances,
     /* [in] */ Int32 advancesIndex,
-    /* [out] */ Float* advance)
-{
-     return GetTextRunAdvances(text, start, end, contextStart, contextEnd, flags,
-            advances, advancesIndex, 0 /* use Harfbuzz */, advance);
-}
-
-ECode Paint::GetTextRunAdvances(
-    /* [in] */ ICharSequence* text,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [in] */ Int32 contextStart,
-    /* [in] */ Int32 contextEnd,
-    /* [in] */ Int32 flags,
-    /* [in] */ ArrayOf<Float>* advances,
-    /* [in] */ Int32 advancesIndex,
-    /* [in] */ Int32 reserved,
     /* [out] */ Float* advance)
 {
     if (text == NULL) {
@@ -1926,12 +1892,12 @@ ECode Paint::GetTextRunAdvances(
 
 //  if (text instanceof String) {
 //        return getTextRunAdvances((String) text, start, end,
-//                contextStart, contextEnd, flags, advances, advancesIndex, reserved);
+//                contextStart, contextEnd, isRtl, advances, advancesIndex);
 //    }
 //    if (text instanceof SpannedString ||
 //        text instanceof SpannableString) {
 //        return getTextRunAdvances(text.toString(), start, end,
-//                contextStart, contextEnd, flags, advances, advancesIndex, reserved);
+//                contextStart, contextEnd, isRtl, advances, advancesIndex);
 //  }
 //    if (text instanceof GraphicsOperations) {
 //        return ((GraphicsOperations) text).getTextRunAdvances(start, end,
@@ -1944,12 +1910,14 @@ ECode Paint::GetTextRunAdvances(
 
     Int32 contextLen = contextEnd - contextStart;
     Int32 len = end - start;
-    AutoPtr< ArrayOf<Char32> > buf = TemporaryBuffer::Obtain(contextLen);
-    TextUtils::GetChars(text, contextStart, contextEnd, buf, 0);
-    ECode ec = GetTextRunAdvances(*buf, start - contextStart, len,
-            0, contextLen, flags, advances, advancesIndex, reserved, advance);
-    TemporaryBuffer::Recycle(buf);
-    return ec;
+    assert(0 && "TODO");
+    // AutoPtr< ArrayOf<Char32> > buf = TemporaryBuffer::Obtain(contextLen);
+    // TextUtils::GetChars(text, contextStart, contextEnd, buf, 0);
+    // ECode ec = GetTextRunAdvances(buf, start - contextStart, len,
+    //         0, contextLen, isRtl, advances, advancesIndex, advance);
+    // TemporaryBuffer::Recycle(buf);
+    // return ec;
+    return NOERROR;
 }
 
 ECode Paint::GetTextRunAdvances(
@@ -1958,33 +1926,13 @@ ECode Paint::GetTextRunAdvances(
     /* [in] */ Int32 end,
     /* [in] */ Int32 contextStart,
     /* [in] */ Int32 contextEnd,
-    /* [in] */ Int32 flags,
+    /* [in] */ Boolean isRtl,
     /* [in] */ ArrayOf<Float>* advances,
     /* [in] */ Int32 advancesIndex,
-    /* [out] */ Float* advance)
-{
-    return GetTextRunAdvances(text, start, end, contextStart, contextEnd, flags,
-            advances, advancesIndex, 0 /* use Harfbuzz*/, advance);
-}
-
-ECode Paint::GetTextRunAdvances(
-    /* [in] */ const String& text,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [in] */ Int32 contextStart,
-    /* [in] */ Int32 contextEnd,
-    /* [in] */ Int32 flags,
-    /* [in] */ ArrayOf<Float>* advances,
-    /* [in] */ Int32 advancesIndex,
-    /* [in] */ Int32 reserved,
     /* [out] */ Float* advance)
 {
     if (text.IsNull()) {
         Logger::E(TAG, "text cannot be null");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    if (flags != IPaint::DIRECTION_LTR && flags != IPaint::DIRECTION_RTL) {
-        Logger::E(TAG, "unknown flags value:%d\n", flags);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if ((start | end | contextStart | contextEnd | advancesIndex | (end - start)
@@ -2001,16 +1949,16 @@ ECode Paint::GetTextRunAdvances(
     }
 
     if (!mHasCompatScaling) {
-        *advance = NativeGetTextRunAdvances(mNativePaint, text, start, end,
-                contextStart, contextEnd, flags, advances, advancesIndex, reserved);
+        *advance = NativeGetTextRunAdvances(mNativePaint, mNativeTypeface, text, start, end,
+                contextStart, contextEnd, isRtl, advances, advancesIndex);
         return NOERROR;
     }
 
     float oldSize;
     GetTextSize(&oldSize);
     SetTextSize(oldSize * mCompatScaling);
-    Float totalAdvance = NativeGetTextRunAdvances(mNativePaint, text, start, end,
-                contextStart, contextEnd, flags, advances, advancesIndex, reserved);
+    Float totalAdvance = NativeGetTextRunAdvances(mNativePaint, mNativeTypeface, text, start, end,
+                contextStart, contextEnd, isRtl, advances, advancesIndex);
     SetTextSize(oldSize);
 
    if (advances != NULL) {
@@ -2024,10 +1972,10 @@ ECode Paint::GetTextRunAdvances(
 }
 
 ECode Paint::GetTextRunCursor(
-    /* [in] */ const ArrayOf<Char32>& text,
+    /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 contextStart,
     /* [in] */ Int32 contextLength,
-    /* [in] */ Int32 flags,
+    /* [in] */ Int32 dir,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 cursorOpt,
     /* [out] */ Int32* position)
@@ -2035,13 +1983,13 @@ ECode Paint::GetTextRunCursor(
     Int32 contextEnd = contextStart + contextLength;
     if (((contextStart | contextEnd | offset | (contextEnd - contextStart)
         | (offset - contextStart) | (contextEnd - offset)
-        | (text.GetLength() - contextEnd) | cursorOpt) < 0)
+        | (text->GetLength() - contextEnd) | cursorOpt) < 0)
         || cursorOpt > CURSOR_OPT_MAX_VALUE) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
     *position = NativeGetTextRunCursor(mNativePaint, text,
-        contextStart, contextLength, flags, offset, cursorOpt);
+        contextStart, contextLength, dir, offset, cursorOpt);
     return NOERROR;
 }
 
@@ -2049,7 +1997,7 @@ ECode Paint::GetTextRunCursor(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 contextStart,
     /* [in] */ Int32 contextEnd,
-    /* [in] */ Int32 flags,
+    /* [in] */ Int32 dir,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 cursorOpt,
     /* [out] */ Int32* position)
@@ -2058,26 +2006,28 @@ ECode Paint::GetTextRunCursor(
         String str;
         text->ToString(&str);
        return GetTextRunCursor(str, contextStart, contextEnd,
-               flags, offset, cursorOpt, position);
+               dir, offset, cursorOpt, position);
    }
    if (IGraphicsOperations::Probe(text)) {
        return IGraphicsOperations::Probe(text)->GetTextRunCursor(
-               contextStart, contextEnd, flags, offset, cursorOpt, (IPaint*)this->Probe(EIID_Paint), position);
+               contextStart, contextEnd, dir, offset, cursorOpt, (IPaint*)this->Probe(EIID_Paint), position);
    }
 
     Int32 contextLen = contextEnd - contextStart;
-    AutoPtr< ArrayOf<Char32> > buf = TemporaryBuffer::Obtain(contextLen);
-    TextUtils::GetChars(text, contextStart, contextEnd, buf, 0);
-    ECode ec = GetTextRunCursor(*buf, 0, contextLen, flags, offset - contextStart, cursorOpt, position);
-    TemporaryBuffer::Recycle(buf);
-    return ec;
+    assert(0 && "TODO");
+    // AutoPtr< ArrayOf<Char32> > buf = TemporaryBuffer::Obtain(contextLen);
+    // TextUtils::GetChars(text, contextStart, contextEnd, buf, 0);
+    // ECode ec = GetTextRunCursor(buf, 0, contextLen, dir, offset - contextStart, cursorOpt, position);
+    // TemporaryBuffer::Recycle(buf);
+    // return ec;
+    return NOERROR;
 }
 
 ECode Paint::GetTextRunCursor(
     /* [in] */ const String& text,
     /* [in] */ Int32 contextStart,
     /* [in] */ Int32 contextEnd,
-    /* [in] */ Int32 flags,
+    /* [in] */ Int32 dir,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 cursorOpt,
     /* [out] */ Int32* position)
@@ -2090,7 +2040,7 @@ ECode Paint::GetTextRunCursor(
     }
 
     *position = NativeGetTextRunCursor(mNativePaint, text,
-            contextStart, contextEnd, flags, offset, cursorOpt);
+            contextStart, contextEnd, dir, offset, cursorOpt);
     return NOERROR;
 }
 
@@ -2108,17 +2058,17 @@ ECode Paint::GetTextRunCursor(
  *                 be allocated by the caller.
  */
 ECode Paint::GetTextPath(
-    /* [in] */ const ArrayOf<Char32>& text,
+    /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ IPath* path)
 {
-    if ((index | count) < 0 || index + count > text.GetLength()) {
+    if ((index | count) < 0 || index + count > text->GetLength()) {
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    NativeGetTextPath(mNativePaint, mBidiFlags, text, index, count, x, y, ((CPath*)path)->Ni());
+    NativeGetTextPath(mNativePaint, mNativeTypeface, mBidiFlags, text, index, count, x, y, ((CPath*)path)->Ni());
     return NOERROR;
 }
 
@@ -2146,7 +2096,7 @@ ECode Paint::GetTextPath(
     if ((start | end | (end - start) | (text.GetLength() - end)) < 0) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    NativeGetTextPath(mNativePaint, mBidiFlags, text, start, end, x, y, ((CPath*)path)->Ni());
+    NativeGetTextPath(mNativePaint, mNativeTypeface, mBidiFlags, text, start, end, x, y, ((CPath*)path)->Ni());
     return NOERROR;
 }
 
@@ -2173,7 +2123,7 @@ ECode Paint::GetTextBounds(
 //        throw new NullPointerException("need bounds Rect");
         return E_NULL_POINTER_EXCEPTION;
     }
-    NativeGetStringBounds(mNativePaint, text, start, end, bounds);
+    NativeGetStringBounds(mNativePaint, mNativeTypeface, text, start, end, mBidiFlags, bounds);
     return NOERROR;
 }
 
@@ -2188,154 +2138,154 @@ ECode Paint::GetTextBounds(
  *               allocated by the caller.
  */
 ECode Paint::GetTextBounds(
-    /* [in] */ const ArrayOf<Char32>& text,
+    /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
     /* [in] */ IRect* bounds)
 {
-    if ((index | count) < 0 || index + count > text.GetLength()) {
+    if ((index | count) < 0 || index + count > text->GetLength()) {
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     if (bounds == NULL) {
 //        throw new NullPointerException("need bounds Rect");
         return E_NULL_POINTER_EXCEPTION;
     }
-    NativeGetCharArrayBounds(mNativePaint, text, index, count, bounds);
+    NativeGetCharArrayBounds(mNativePaint, mNativeTypeface, text, index, count, mBidiFlags, bounds);
     return NOERROR;
 }
 
-Int32 Paint::NativeInit()
+Int64 Paint::NativeInit()
 {
     SkPaint* obj = new SkPaint();
     DefaultSettingsForElastos(obj);
     return (Int32)obj;
 }
 
-Int32 Paint::NativeInitWithPaint(
-    /* [in] */ Int32 nObj)
+Int64 Paint::NativeInitWithPaint(
+    /* [in] */ Int64 nObj)
 {
     SkPaint* obj = new SkPaint(*(SkPaint*)nObj);
-    return (Int32)obj;
+    return (Int64)obj;
 }
 
 void Paint::NativeReset(
-    /* [in] */ Int32 nObj)
+    /* [in] */ Int64 nObj)
 {
     ((SkPaint*)nObj)->reset();
     DefaultSettingsForElastos((SkPaint*)nObj);
 }
 
 void Paint::NativeSet(
-    /* [in] */ Int32 nDst,
-    /* [in] */ Int32 nSrc)
+    /* [in] */ Int64 nDst,
+    /* [in] */ Int64 nSrc)
 {
     *(SkPaint*)nDst = *(SkPaint*)nSrc;
 }
 
 Int32 Paint::NativeGetStyle(
-    /* [in] */ Int32 nObj)
+    /* [in] */ Int64 nObj)
 {
     return ((SkPaint*)nObj)->getStyle();
 }
 
 void Paint::NativeSetStyle(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
     /* [in] */ PaintStyle style)
 {
     ((SkPaint*)nObj)->setStyle((SkPaint::Style)style);
 }
 
 Int32 Paint::NativeGetStrokeCap(
-    /* [in] */ Int32 nObj)
+    /* [in] */ Int64 nObj)
 {
     return ((SkPaint*)nObj)->getStrokeCap();
 }
 
 void Paint::NativeSetStrokeCap(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
     /* [in] */ PaintCap cap)
 {
     ((SkPaint*)nObj)->setStrokeCap((SkPaint::Cap)cap);
 }
 
 Int32 Paint::NativeGetStrokeJoin(
-    /* [in] */ Int32 nObj)
+    /* [in] */ Int64 nObj)
 {
     return ((SkPaint*)nObj)->getStrokeJoin();
 }
 
 void Paint::NativeSetStrokeJoin(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
     /* [in] */ PaintJoin join)
 {
     ((SkPaint*)nObj)->setStrokeJoin((SkPaint::Join)join);
 }
 
 Boolean Paint::NativeGetFillPath(
-    /* [in] */ Int32 nObj,
-    /* [in] */ Int32 src,
-    /* [in] */ Int32 dst)
+    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 src,
+    /* [in] */ Int64 dst)
 {
     return ((SkPaint*)nObj)->getFillPath(*(SkPath*)src, (SkPath*)dst);
 }
 
-Int32 Paint::NativeSetShader(
-    /* [in] */ Int32 nObj,
-    /* [in] */ Int32 shader)
+Int64 Paint::NativeSetShader(
+    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 shader)
 {
-    return (Int32)((SkPaint*)nObj)->setShader((SkShader*)shader);
+    return (Int64)((SkPaint*)nObj)->setShader((SkShader*)shader);
 }
 
-Int32 Paint::NativeSetColorFilter(
-    /* [in] */ Int32 nObj,
-    /* [in] */ Int32 filter)
+Int64 Paint::NativeSetColorFilter(
+    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 filter)
 {
     return (Int32)((SkPaint*)nObj)->setColorFilter((SkColorFilter*)filter);
 }
 
-Int32 Paint::NativeSetXfermode(
-    /* [in] */ Int32 nObj,
-    /* [in] */ Int32 xfermode)
+Int64 Paint::NativeSetXfermode(
+    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 xfermode)
 {
-    return (Int32)((SkPaint*)nObj)->setXfermode((SkXfermode*)xfermode);
+    return (Int64)((SkPaint*)nObj)->setXfermode((SkXfermode*)xfermode);
 }
 
-Int32 Paint::NativeSetPathEffect(
-    /* [in] */ Int32 nObj,
-    /* [in] */ Int32 effect)
+Int64 Paint::NativeSetPathEffect(
+    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 effect)
 {
-    return (Int32)((SkPaint*)nObj)->setPathEffect((SkPathEffect*)effect);
+    return (Int64)((SkPaint*)nObj)->setPathEffect((SkPathEffect*)effect);
 }
 
-Int32 Paint::NativeSetMaskFilter(
-    /* [in] */ Int32 nObj,
-    /* [in] */ Int32 maskfilter)
+Int64 Paint::NativeSetMaskFilter(
+    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 maskfilter)
 {
     return (Int32)((SkPaint*)nObj)->setMaskFilter((SkMaskFilter*)maskfilter);
 }
 
-Int32 Paint::NativeSetTypeface(
-    /* [in] */ Int32 nObj,
-    /* [in] */ Int32 typeface)
+Int64 Paint::NativeSetTypeface(
+    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 typeface)
 {
-    return (Int32)((SkPaint*)nObj)->setTypeface((SkTypeface*)typeface);
+    return (Int64)((SkPaint*)nObj)->setTypeface((SkTypeface*)typeface);
 }
 
-Int32 Paint::NativeSetRasterizer(
-    /* [in] */ Int32 nObj,
-    /* [in] */ Int32 rasterizer)
+Int64 Paint::NativeSetRasterizer(
+    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 rasterizer)
 {
-    return (Int32)((SkPaint*)nObj)->setRasterizer((SkRasterizer*)rasterizer);
+    return (Int64)((SkPaint*)nObj)->setRasterizer((SkRasterizer*)rasterizer);
 }
 
 Int32 Paint::NativeGetTextAlign(
-    /* [in] */ Int32 nObj)
+    /* [in] */ Int64 nObj)
 {
     return ((SkPaint*)nObj)->getTextAlign();
 }
 
 void Paint::NativeSetTextAlign(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
     /* [in] */ PaintAlign align)
 {
     ((SkPaint*)nObj)->setTextAlign((SkPaint::Align)align);
@@ -2389,256 +2339,98 @@ static void ToLanguageTag(
 
 //anthony native, can't implement
 void Paint::NativeSetTextLocale(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
     /* [in] */ const String& locale)
 {
-    char langTag[ULOC_FULLNAME_CAPACITY];
-    ToLanguageTag(langTag, ULOC_FULLNAME_CAPACITY, locale.string());
-    ((SkPaint*)nObj)->setLanguage(SkLanguage(langTag));
+    assert(0 && "TODO: need jni codes.");
 }
 
 Float Paint::NativeMeasureText(
-    /* [in] */ const ArrayOf<Char32>& text,
+    /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 index,
-    /* [in] */ Int32 count)
+    /* [in] */ Int32 count,
+    /* [in] */ Int32 bidiFlags)
 {
-    if ((index | count) < 0 || (size_t)(index + count) > text.GetLength()) {
-//        doThrow(env, "java/lang/ArrayIndexOutOfBoundsException");
-        return 0;
-    }
-    if (count == 0) {
-        return 0;
-    }
+    assert(0 && "TODO: need jni codes.");
 
-    SkPaint* paint = (SkPaint*)mNativePaint;
-    Float result = 0;
-
-    AutoPtr< ArrayOf<Char16> > char16Array = ArrayOf<Char16>::Alloc(text.GetLength());
-    for (Int32 i = 0; i < text.GetLength(); ++i) {
-        (*char16Array)[i] = (Char16)text[i];
-    }
-    android::TextLayout::getTextRunAdvances(paint, char16Array->GetPayload(), index, count,
-            char16Array->GetLength(), paint->getFlags(), NULL /* dont need all advances */, &result);
-
-    return result;
+    return 0.f;
 }
 
 Float Paint::NativeMeasureText(
-    /* [in] */ const String& text,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
-{
-    size_t textLength = text.GetLength();
-    int count = end - start;
-    if ((start | count) < 0 || (size_t)end > textLength) {
-        // doThrowAIOOBE(env);
-        return 0;
-    }
-    if (count == 0) {
-        return 0;
-    }
-
-    AutoPtr< ArrayOf<Char32> > textArray = text.GetChars();
-    AutoPtr< ArrayOf<Char16> > char16Array = ArrayOf<Char16>::Alloc(textArray->GetLength());
-    for (Int32 i = 0; i < textArray->GetLength(); ++i) {
-        (*char16Array)[i] = (Char16)(*textArray)[i];
-    }
-    SkPaint* paint = (SkPaint*)mNativePaint;
-    Float width = 0;
-
-    android::TextLayout::getTextRunAdvances(paint, char16Array->GetPayload(), start, count, textLength,
-            paint->getFlags(), NULL /* dont need all advances */, &width);
-
-    return width;
-}
-
-Float Paint::NativeMeasureText(
-    /* [in] */ const String& text)
-{
-    size_t textLength = text.GetLength();
-    if (textLength == 0) {
-        return 0;
-    }
-
-    AutoPtr< ArrayOf<Char32> > textArray = text.GetChars();
-    AutoPtr< ArrayOf<Char16> > char16Array = ArrayOf<Char16>::Alloc(textArray->GetLength());
-    for (Int32 i = 0; i < textArray->GetLength(); ++i) {
-        (*char16Array)[i] = (Char16)(*textArray)[i];
-    }
-    SkPaint* paint = (SkPaint*)mNativePaint;
-    Float width = 0;
-
-    android::TextLayout::getTextRunAdvances(paint, char16Array->GetPayload(), 0, textLength, textLength,
-            paint->getFlags(), NULL /* dont need all advances */, &width);
-
-    return width;
-}
-
-static Int32 DoBreakText(
-    /* [in] */ SkPaint& paint,
-    /* [in] */ const ArrayOf<Char32>& text,
-    /* [in] */ Int32 index,
-    /* [in] */ Int32 count,
-    /* [in] */ Float maxWidth,
-    /* [in] */ ArrayOf<Float>* measuredWidth,
-    /* [in] */ SkPaint::TextBufferDirection tbd)
-{
-    AutoPtr< ArrayOf<Char16> > char16Array = ArrayOf<Char16>::Alloc(text.GetLength() - index);
-    for (Int32 i = index; i < text.GetLength(); ++i) {
-        (*char16Array)[i] = (Char16)text[i];
-    }
-    android::sp<android::TextLayoutValue> value =
-            android::TextLayoutEngine::getInstance().getValue(&paint,
-                char16Array->GetPayload(), 0, count, count, paint.getFlags());
-    if (value == NULL) {
-        return 0;
-    }
-    SkScalar     measured;
-    size_t       bytes = paint.breakText(value->getGlyphs(), value->getGlyphsCount() << 1,
-                               SkFloatToScalar(maxWidth), &measured, tbd);
-    SkASSERT((bytes & 1) == 0);
-
-    if (measuredWidth && measuredWidth->GetLength() > 0) {
-        (*measuredWidth)[0] = SkScalarToFloat(measured);
-    }
-    return bytes >> 1;
-}
-
-Int32 Paint::NativeBreakText(
-    /* [in] */ const ArrayOf<Char32>& text,
-    /* [in] */ Int32 index,
-    /* [in] */ Int32 count,
-    /* [in] */ Float maxWidth,
-    /* [in] */ ArrayOf<Float>* measuredWidth)
-{
-    SkPaint::TextBufferDirection tbd;
-    if (count < 0) {
-        tbd = SkPaint::kBackward_TextBufferDirection;
-        count = -count;
-    }
-    else {
-        tbd = SkPaint::kForward_TextBufferDirection;
-    }
-
-    if ((index < 0) || (index + count > text.GetLength())) {
-//        doThrow(env, "java/lang/ArrayIndexOutOfBoundsException");
-        return 0;
-    }
-
-    SkPaint* paint = (SkPaint*)mNativePaint;
-    count = DoBreakText(*paint, text, index, count, maxWidth,
-            measuredWidth, tbd);
-    return count;
-}
-
-Int32 Paint::NativeBreakText(
-    /* [in] */ const String& text,
-    /* [in] */ Boolean measureForwards,
-    /* [in] */ Float maxWidth,
-    /* [in] */ ArrayOf<Float>* measuredWidth)
-{
-    SkPaint::TextBufferDirection tbd = measureForwards ?
-            SkPaint::kForward_TextBufferDirection :
-            SkPaint::kBackward_TextBufferDirection;
-
-    SkPaint* paint = (SkPaint*)mNativePaint;
-    AutoPtr< ArrayOf<Char32> > textArray = text.GetChars();
-    Int32 count = DoBreakText(*paint, *textArray, 0, textArray->GetLength(), maxWidth,
-            measuredWidth, tbd);
-    return count;
-}
-
-static Int32 DoTextWidths(
-    /* [in] */ SkPaint* paint,
-    /* [in] */ const ArrayOf<Char32>& text,
-    /* [in] */ Int32 index,
-    /* [in] */ Int32 count,
-    /* [in] */ ArrayOf<Float>* widths)
-{
-    if (count < 0 || !widths) {
-        // doThrowAIOOBE(env);
-        return 0;
-    }
-    if (count == 0) {
-        return 0;
-    }
-    if (count > widths->GetLength()) {
-        // doThrowAIOOBE(env);
-        return 0;
-    }
-
-    AutoPtr< ArrayOf<Char16> > char16Array = ArrayOf<Char16>::Alloc(text.GetLength() - index);
-    for (Int32 i = index; i < text.GetLength(); ++i) {
-        (*char16Array)[i] = (Char16)text[i];
-    }
-    android::TextLayout::getTextRunAdvances(paint, char16Array->GetPayload(), 0, count, count,
-            paint->getFlags(), widths->GetPayload(), NULL /* dont need totalAdvance */);
-
-    return count;
-}
-
-Int32 Paint::NativeGetTextWidths(
-    /* [in] */ Int32 nObj,
-    /* [in] */ const ArrayOf<Char32>& text,
-    /* [in] */ Int32 index,
-    /* [in] */ Int32 count,
-    /* [out] */ ArrayOf<Float>* widths)
-{
-    count = DoTextWidths((SkPaint*)nObj, text, index, count, widths);
-    return count;
-}
-
-Int32 Paint::NativeGetTextWidths(
-    /* [in] */ Int32 nObj,
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
-    /* [out] */ ArrayOf<Float>* widths)
+    /* [in] */ Int32 bidiFlags)
 {
-    AutoPtr< ArrayOf<Char32> > textArray = text.GetChars();
-    Int32 count = DoTextWidths((SkPaint*)nObj, *textArray, start, end - start, widths);
-    return count;
+    assert(0 && "TODO: need jni codes.");
+
+    return 0.f;
 }
 
-static Int32 DoTextGlyphs(
-    /* [in] */ SkPaint* paint,
-    /* [in] */ const ArrayOf<Char32>& text,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 count,
-    /* [in] */ Int32 contextCount,
-    /* [in] */ Int32 flags,
-    /* [in] */ ArrayOf<Char32>* glyphs)
+Float Paint::NativeMeasureText(
+    /* [in] */ const String& text,
+    /* [in] */ Int32 bidiFlags)
 {
-    if ((start | count | contextCount) < 0 || contextCount < count || !glyphs) {
-        // doThrowAIOOBE(env);
-        return 0;
-    }
-    if (count == 0) {
-        return 0;
-    }
-    if (count > glyphs->GetLength()) {
-        // doThrowAIOOBE(env);
-        return 0;
-    }
+    assert(0 && "TODO: need jni codes.");
 
-    AutoPtr< ArrayOf<Char16> > char16Array = ArrayOf<Char16>::Alloc(text.GetLength());
-    for (Int32 i = 0; i < text.GetLength(); ++i) {
-        (*char16Array)[i] = (Char16)text[i];
-    }
+    return 0.f;
+}
 
-    android::sp<android::TextLayoutValue> value = android::TextLayoutEngine::getInstance().getValue(
-            paint, char16Array->GetPayload(), start, count, contextCount, flags);
-    const Char16* shapedGlyphs = value->getGlyphs();
-    size_t glyphsCount = value->getGlyphsCount();
-    for (Int32 i = 0; i < glyphsCount; ++i) {
-        (*glyphs)[i] = shapedGlyphs[i];
-    }
+Int32 Paint::NativeBreakText(
+    /* [in] */ Int64 native_object,
+    /* [in] */ Int64 native_typeface,
+    /* [in] */ ArrayOf<Char32>* text,
+    /* [in] */ Int32 index,
+    /* [in] */ Int32 count,
+    /* [in] */ Float maxWidth,
+    /* [in] */ Int32 bidiFlags,
+    /* [in] */ ArrayOf<Float>* measuredWidth)
+{
+    assert(0 && "TODO: need jni codes.");
+    return -1;
+}
 
-    return glyphsCount;
+Int32 Paint::NativeBreakText(
+    /* [in] */ Int64 native_object,
+    /* [in] */ Int64 native_typeface,
+    /* [in] */ const String& text,
+    /* [in] */ Boolean measureForwards,
+    /* [in] */ Float maxWidth,
+    /* [in] */ Int32 bidiFlags,
+    /* [in] */ ArrayOf<Float>* measuredWidth)
+{
+    assert(0 && "TODO: need jni codes.");
+    return -1;
+}
+
+Int32 Paint::NativeGetTextWidths(
+    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 native_typeface,
+    /* [in] */ ArrayOf<Char32>* text,
+    /* [in] */ Int32 index,
+    /* [in] */ Int32 count,
+    /* [in] */ Int32 bidiFlags,
+    /* [out] */ ArrayOf<Float>* widths)
+{
+    assert(0 && "TODO: need jni codes.");
+    return -1;
+}
+
+Int32 Paint::NativeGetTextWidths(
+    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 native_typeface,
+    /* [in] */ const String& text,
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end,
+    /* [in] */ Int32 bidiFlags,
+    /* [out] */ ArrayOf<Float>* widths)
+{
+    assert(0 && "TODO: need jni codes.");
+    return -1;
 }
 
 Int32 Paint::NativeGetTextGlyphs(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -2647,209 +2439,61 @@ Int32 Paint::NativeGetTextGlyphs(
     /* [in] */ Int32 flags,
     /* [out] */ ArrayOf<Char32>* glyphs)
 {
-    AutoPtr< ArrayOf<Char32> > textArray = text.GetChars();
-    Int32 count = DoTextGlyphs((SkPaint*)nObj, *textArray, start,
-            end - start, contextEnd - contextStart, flags, glyphs);
-    return count;
-}
-
-static Float DoTextRunAdvances(
-    /* [in] */ SkPaint *paint,
-    /* [in] */ const ArrayOf<Char32>& text,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 count,
-    /* [in] */ Int32 contextCount,
-    /* [in] */ Int32 flags,
-    /* [in] */ ArrayOf<Float>* advances,
-    /* [in] */ Int32 advancesIndex)
-{
-    if ((start | count | contextCount | advancesIndex) < 0 || contextCount < count) {
-        // doThrowAIOOBE(env);
-        return 0;
-    }
-    if (count == 0) {
-        return 0;
-    }
-    if (advances) {
-        if (count > advances->GetLength()) {
-            // doThrowAIOOBE(env);
-            return 0;
-        }
-    }
-    Float advancesArray[count];
-    Float totalAdvance = 0;
-
-    AutoPtr< ArrayOf<Char16> > char16Array = ArrayOf<Char16>::Alloc(text.GetLength());
-    for (Int32 i = 0; i < text.GetLength(); ++i) {
-        (*char16Array)[i] = (Char16)text[i];
-    }
-
-    android::TextLayout::getTextRunAdvances(paint, char16Array->GetPayload(), start, count,
-            contextCount, flags, advancesArray, &totalAdvance);
-
-    if (advances != NULL) {
-        memcpy(advances->GetPayload() + advancesIndex, advancesArray, count * sizeof(Float));
-    }
-    return totalAdvance;
-}
-
-static Float DoTextRunAdvancesICU(
-    /* [in] */ SkPaint *paint,
-    /* [in] */ const ArrayOf<Char32>& text,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 count,
-    /* [in] */ Int32 contextCount,
-    /* [in] */ Int32 flags,
-    /* [in] */ ArrayOf<Float>* advances,
-    /* [in] */ Int32 advancesIndex)
-{
-    if ((start | count | contextCount | advancesIndex) < 0 || contextCount < count) {
-        // doThrowAIOOBE(env);
-        return 0;
-    }
-    if (count == 0) {
-        return 0;
-    }
-    if (advances) {
-        if (count > advances->GetLength()) {
-            // doThrowAIOOBE(env);
-            return 0;
-        }
-    }
-
-    Float advancesArray[count];
-    Float totalAdvance = 0;
-
-    AutoPtr< ArrayOf<Char16> > char16Array = ArrayOf<Char16>::Alloc(text.GetLength());
-    for (Int32 i = 0; i < text.GetLength(); ++i) {
-        (*char16Array)[i] = (Char16)text[i];
-    }
-
-    android::TextLayout::getTextRunAdvancesICU(paint, char16Array->GetPayload(),
-            start, count, contextCount, flags, advancesArray, totalAdvance);
-
-    if (advances != NULL) {
-        memcpy(advances->GetPayload() + advancesIndex, advancesArray, count * sizeof(Float));
-    }
-    return totalAdvance;
+    assert(0 && "TODO: need jni codes.");
+    return -1;
 }
 
 Float Paint::NativeGetTextRunAdvances(
-    /* [in] */ Int32 paint,
-    /* [in] */ const ArrayOf<Char32>& text,
+    /* [in] */ Int64 paint,
+    /* [in] */ Int64 native_typeface,
+    /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
     /* [in] */ Int32 contextIndex,
     /* [in] */ Int32 contextCount,
-    /* [in] */ Int32 flags,
+    /* [in] */ Boolean isRtl,
     /* [in] */ ArrayOf<Float>* advances,
-    /* [in] */ Int32 advancesIndex,
-    /* [in] */ Int32 reserved)
+    /* [in] */ Int32 advancesIndex)
 {
-    Float result = (reserved == 0) ?
-            DoTextRunAdvances((SkPaint*)paint, text, index,
-                    count, contextCount, flags, advances, advancesIndex) :
-            DoTextRunAdvancesICU((SkPaint*)paint, text, index,
-                    count, contextCount, flags, advances, advancesIndex);
-    return result;
+    assert(0 && "TODO: need jni codes.");
+    return 0.f;
 }
 
 Float Paint::NativeGetTextRunAdvances(
-    /* [in] */ Int32 paint,
+    /* [in] */ Int64 paint,
+    /* [in] */ Int64 native_typeface,
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ Int32 contextStart,
     /* [in] */ Int32 contextEnd,
-    /* [in] */ Int32 flags,
+    /* [in] */ Boolean isRtl,
     /* [in] */ ArrayOf<Float>* advances,
-    /* [in] */ Int32 advancesIndex,
-    /* [in] */ Int32 reserved)
+    /* [in] */ Int32 advancesIndex)
 {
-    AutoPtr< ArrayOf<Char32> > textArray = text.GetChars();
-    Float result = (reserved == 0) ?
-            DoTextRunAdvances((SkPaint*)paint, *textArray, start,
-                    end - start, contextEnd - contextStart, flags, advances, advancesIndex) :
-            DoTextRunAdvancesICU((SkPaint*)paint, *textArray, start,
-                    end - start, contextEnd - contextStart, flags, advances, advancesIndex);
-    return result;
+    assert(0 && "TODO: need jni codes.");
+    return 0.f;
 }
 
 enum MoveOpt {
     AFTER, AT_OR_AFTER, BEFORE, AT_OR_BEFORE, AT
 };
 
-static Int32 DoTextRunCursor(
-    /* [in] */ SkPaint* paint,
-    /* [in] */ const ArrayOf<Char32>& text,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 count,
-    /* [in] */ Int32 flags,
-    /* [in] */ Int32 offset,
-    /* [in] */ Int32 opt)
-{
-    Float scalarArray[count];
-
-    AutoPtr< ArrayOf<Char16> > char16Array = ArrayOf<Char16>::Alloc(text.GetLength());
-    for (Int32 i = 0; i < text.GetLength(); ++i) {
-        (*char16Array)[i] = (Char16)text[i];
-    }
-    android::TextLayout::getTextRunAdvances(paint, char16Array->GetPayload(), start,
-            count, start + count, flags, scalarArray, NULL /* dont need totalAdvance */);
-
-    Int32 pos = offset - start;
-    switch (opt) {
-    case AFTER:
-      if (pos < count) {
-        pos += 1;
-      }
-      // fall through
-    case AT_OR_AFTER:
-      while (pos < count && scalarArray[pos] == 0) {
-        ++pos;
-      }
-      break;
-    case BEFORE:
-      if (pos > 0) {
-        --pos;
-      }
-      // fall through
-    case AT_OR_BEFORE:
-      while (pos > 0 && scalarArray[pos] == 0) {
-        --pos;
-      }
-      break;
-    case AT:
-    default:
-      if (scalarArray[pos] == 0) {
-        pos = -1;
-      }
-      break;
-    }
-
-    if (pos != -1) {
-      pos += start;
-    }
-
-    return pos;
-}
-
 Int32 Paint::NativeGetTextRunCursor(
-    /* [in] */ Int32 paint,
-    /* [in] */ const ArrayOf<Char32>& text,
+    /* [in] */ Int64 paint,
+    /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 contextStart,
     /* [in] */ Int32 contextCount,
     /* [in] */ Int32 flags,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 cursorOpt)
 {
-    Int32 result = DoTextRunCursor((SkPaint*)paint, text, contextStart, contextCount, flags,
-            offset, cursorOpt);
-    return result;
+    assert(0 && "TODO: need jni codes.");
+    return -1;
 }
 
 Int32 Paint::NativeGetTextRunCursor(
-    /* [in] */ Int32 paint,
+    /* [in] */ Int64 paint,
     /* [in] */ const String& text,
     /* [in] */ Int32 contextStart,
     /* [in] */ Int32 contextEnd,
@@ -2857,105 +2501,104 @@ Int32 Paint::NativeGetTextRunCursor(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 cursorOpt)
 {
-    AutoPtr< ArrayOf<Char32> > textArray = text.GetChars();
-    Int32 result = DoTextRunCursor((SkPaint*)paint, *textArray, contextStart,
-            contextEnd - contextStart, flags, offset, cursorOpt);
-    return result;
-}
-
-static void DoGetTextPath(
-    /* [in] */ SkPaint* paint,
-    /* [in] */ const ArrayOf<Char32>& text,
-    /* [in] */ Int32 index,
-    /* [in] */ Int32 count,
-    /* [in] */ Int32 bidiFlags,
-    /* [in] */ Float x,
-    /* [in] */ Float y,
-    /* [in] */ SkPath *path)
-{
-    AutoPtr< ArrayOf<Char16> > char16Array = ArrayOf<Char16>::Alloc(text.GetLength() - index);
-    for (Int32 i = index; i < text.GetLength(); ++i) {
-        (*char16Array)[i] = (Char16)text[i];
-    }
-    android::TextLayout::getTextPath(paint, char16Array->GetPayload(), count, bidiFlags, x, y, path);
+    assert(0 && "TODO: need jni codes.");
+    return -1;
 }
 
 void Paint::NativeGetTextPath(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 native_typeface,
     /* [in] */ Int32 bidiFlags,
-    /* [in] */ const ArrayOf<Char32>& text,
+    /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
     /* [in] */ Float x,
     /* [in] */ Float y,
-    /* [in] */ Int32 path)
+    /* [in] */ Int64 path)
 {
-    DoGetTextPath((SkPaint*)nObj, text, index, count, bidiFlags, x, y, (SkPath*)path);
+    assert(0 && "TODO: need jni codes.");
 }
 
 void Paint::NativeGetTextPath(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 native_typeface,
     /* [in] */ Int32 bidiFlags,
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ Float x,
     /* [in] */ Float y,
-    /* [in] */ Int32 path)
+    /* [in] */ Int64 path)
 {
-    AutoPtr< ArrayOf<Char32> > textArray = text.GetChars();
-    DoGetTextPath((SkPaint*)nObj, *textArray, start, end - start, bidiFlags, x, y, (SkPath*)path);
-}
-
-static void DoTextBounds(
-    /* [in] */ const ArrayOf<Char32>& text,
-    /* [in] */ Int32 index,
-    /* [in] */ Int32 count,
-    /* [in] */ IRect* bounds,
-    /* [in] */ const SkPaint& paint)
-{
-    SkRect r = SkRect::MakeXYWH(0,0,0,0);
-    SkIRect ir;
-
-    AutoPtr< ArrayOf<Char16> > char16Array = ArrayOf<Char16>::Alloc(text.GetLength());
-    for (Int32 i = index; i < text.GetLength(); ++i) {
-        (*char16Array)[i] = (Char16)text[i];
-    }
-    android::sp<android::TextLayoutValue> value = android::TextLayoutEngine::getInstance().getValue(&paint,
-            char16Array->GetPayload(), 0, count, count, paint.getFlags());
-    if (value == NULL) {
-        return;
-    }
-    paint.measureText(value->getGlyphs(), value->getGlyphsCount() << 1, &r);
-    r.roundOut(&ir);
-    GraphicsNative::SkIRect2IRect(ir, bounds);
+    assert(0 && "TODO: need jni codes.");
 }
 
 void Paint::NativeGetStringBounds(
-    /* [in] */ Int32 nObj,
+    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 native_typeface,
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
+    /* [in] */ Int32 bidiFlags,
     /* [in] */ IRect* bounds)
 {
-    AutoPtr< ArrayOf<Char32> > textArray = text.GetChars();
-    DoTextBounds(*textArray, start, end - start, bounds, *(SkPaint*)nObj);
+    assert(0 && "TODO: need jni codes.");
 }
 
 void Paint::NativeGetCharArrayBounds(
-    /* [in] */ Int32 nObj,
-    /* [in] */ const ArrayOf<Char32>& text,
+    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 native_typeface,
+    /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
+    /* [in] */ Int32 bidiFlags,
     /* [in] */ IRect* bounds)
 {
-    DoTextBounds(text, index, count, bounds, *(SkPaint*)nObj);
+    assert(0 && "TODO: need jni codes.");
 }
 
 void Paint::NativeFinalizer(
-    /* [in] */ Int32 nObj)
+    /* [in] */ Int64 nObj)
 {
     delete (SkPaint*)nObj;
+}
+
+void Paint::NativeSetShadowLayer(
+    /* [in] */ Int64 native_object,
+    /* [in] */ Float radius,
+    /* [in] */ Float dx,
+    /* [in] */ Float dy,
+    /* [in] */ Int32 color)
+{
+    assert(0 && "TODO: need jni codes.");
+}
+
+Boolean Paint::NativeHasShadowLayer(
+    /* [in] */ Int64 native_object)
+{
+    assert(0 && "TODO: need jni codes.");
+    return FALSE;
+}
+
+Float Paint::NativeGetLetterSpacing(
+    /* [in] */ Int64 native_object)
+{
+    assert(0 && "TODO: need jni codes.");
+    return 0.f;
+}
+
+void Paint::NativeSetLetterSpacing(
+    /* [in] */ Int64 native_object,
+    /* [in] */ Float letterSpacing)
+{
+    assert(0 && "TODO: need jni codes.");
+}
+
+void Paint::NativeSetFontFeatureSettings(
+    /* [in] */ Int64 native_object,
+    /* [in] */ const String& settings)
+{
+    assert(0 && "TODO: need jni codes.");
 }
 
 } // namespace Graphics

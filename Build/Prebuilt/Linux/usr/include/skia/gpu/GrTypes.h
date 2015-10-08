@@ -274,7 +274,7 @@ enum GrPixelConfig {
      * Premultiplied. Byte order is b,g,r,a.
      */
     kBGRA_8888_GrPixelConfig,
-    /** 
+    /**
      * ETC1 Compressed Data
      */
     kETC1_GrPixelConfig,
@@ -289,7 +289,7 @@ static const int kGrPixelConfigCnt = kLast_GrPixelConfig + 1;
 
 // Aliases for pixel configs that match skia's byte order.
 #ifndef SK_CPU_LENDIAN
-    #error "Skia gpu currently assumes little endian"
+//    #error "Skia gpu currently assumes little endian"
 #endif
 #if SK_PMCOLOR_BYTE_ORDER(B,G,R,A)
     static const GrPixelConfig kSkia8888_GrPixelConfig = kBGRA_8888_GrPixelConfig;
@@ -636,7 +636,7 @@ enum GrGLBackendState {
 
 /**
  * Returns the data size for the given compressed pixel config
- */ 
+ */
 static inline size_t GrCompressedFormatDataSize(GrPixelConfig config,
                                                 int width, int height) {
     SkASSERT(GrPixelConfigIsCompressed(config));

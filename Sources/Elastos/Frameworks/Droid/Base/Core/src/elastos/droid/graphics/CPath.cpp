@@ -20,10 +20,11 @@ const PathFillType CPath::sFillTypeArray[4] = {
     PathFillType_INVERSE_EVEN_ODD
 };
 
+CAR_OBJECT_IMPL(CPath);
+CAR_INTERFACE_IMPL(CPath, Object, IPath);
 CPath::CPath()
     : mNativePath(0)
     , mIsSimplePath(FALSE)
-    , mDetectSimplePaths(FALSE)
     , mLastDirection(-1)
 {}
 
@@ -35,14 +36,13 @@ CPath::~CPath()
 ECode CPath::constructor()
 {
     mNativePath = Init1();
-    // mDetectSimplePaths = HardwareRenderer::IsAvailable();
     return NOERROR;
 }
 
 ECode CPath::constructor(
     /* [in] */ IPath* src)
 {
-    Int32 valNative = 0;
+    Int64 valNative = 0;
     if (src != NULL) {
         valNative = ((CPath*)src)->mNativePath;
         mIsSimplePath = ((CPath*)src)->mIsSimplePath;
@@ -51,7 +51,6 @@ ECode CPath::constructor(
         }
     }
     mNativePath = Init2(valNative);
-    // mDetectSimplePaths = HardwareRenderer::IsAvailable();
     return NOERROR;
 }
 
@@ -62,12 +61,14 @@ ECode CPath::constructor(
 ECode CPath::Reset()
 {
     mIsSimplePath = TRUE;
-    if (mDetectSimplePaths) {
-        mLastDirection = -1;
-        if (mRects != NULL) mRects->SetEmpty();
-    }
+    mLastDirection = -1;
+    if (mRects != NULL) mRects->SetEmpty();
+    // We promised not to change this, so preserve it around the native
+    // call, which does now reset fill type.
+    PathFillType fillType;
+    GetFillType(&fillType);
     NativeReset(mNativePath);
-    return NOERROR;
+    return SetFillType(fillType);
 }
 
 /**
@@ -77,10 +78,8 @@ ECode CPath::Reset()
 ECode CPath::Rewind()
 {
     mIsSimplePath = TRUE;
-    if (mDetectSimplePaths) {
-        mLastDirection = -1;
-        if (mRects != NULL) mRects->SetEmpty();
-    }
+    mLastDirection = -1;
+    if (mRects != NULL) mRects->SetEmpty();
     NativeRewind(mNativePath);
     return NOERROR;
 }
@@ -96,6 +95,39 @@ ECode CPath::Set(
         NativeSet(mNativePath, path->mNativePath);
     }
     return NOERROR;
+}
+
+ECode CPath::Op(
+    /* [in] */ IPath* path,
+    /* [in] */ PathOp op,
+    /* [out] */ Boolean* succeeded)
+{
+    VALIDATE_NOT_NULL(succeeded);
+    assert(0 && "TODO");
+    return Op(this, path, op, succeeded);
+}
+
+ECode CPath::Op(
+    /* [in] */ IPath* path1,
+    /* [in] */ IPath* path2,
+    /* [in] */ PathOp op,
+    /* [out] */ Boolean* succeeded)
+{
+    VALIDATE_NOT_NULL(succeeded);
+    assert(0 && "TODO");
+    // if (NativeOp(path1.mNativePath, path2.mNativePath, op.ordinal(), this.mNativePath)) {
+    //     isSimplePath = false;
+    //     rects = null;
+    //     return true;
+    // }
+    *succeeded = FALSE;
+    return NOERROR;
+}
+
+ECode CPath::IsConvex(
+    /* [out] */ Boolean* isConvex)
+{
+    return NativeIsConvex(mNativePath);
 }
 
 /**
@@ -136,7 +168,7 @@ ECode CPath::IsInverseFillType(
     VALIDATE_NOT_NULL(isInverseFillType);
 
     Int32 ft = NativeGetFillType(mNativePath);
-    *isInverseFillType = (ft & 2) != 0;
+    *isInverseFillType = (ft & PathFillType_INVERSE_WINDING) != 0;
     return NOERROR;
 }
 
@@ -146,7 +178,7 @@ ECode CPath::IsInverseFillType(
 ECode CPath::ToggleInverseFillType()
 {
     Int32 ft = NativeGetFillType(mNativePath);
-    ft ^= 2;
+    ft ^= PathFillType_INVERSE_WINDING;
     NativeSetFillType(mNativePath, ft);
     return NOERROR;
 }
@@ -390,8 +422,8 @@ ECode CPath::ArcTo(
     /* [in] */ Float sweepAngle,
     /* [in] */ Boolean forceMoveTo)
 {
-    mIsSimplePath = FALSE;
-    NativeArcTo(mNativePath, oval, startAngle, sweepAngle, forceMoveTo);
+    assert(0 && "TODO");
+    // arcTo(oval.left, oval.top, oval.right, oval.bottom, startAngle, sweepAngle, forceMoveTo);
     return NOERROR;
 }
 
@@ -411,8 +443,23 @@ ECode CPath::ArcTo(
     /* [in] */ Float startAngle,
     /* [in] */ Float sweepAngle)
 {
+    assert(0 && "TODO");
+    // arcTo(oval.left, oval.top, oval.right, oval.bottom, startAngle, sweepAngle, false);
+    return NOERROR;
+}
+
+ECode CPath::ArcTo(
+    /* [in] */ Float left,
+    /* [in] */ Float top,
+    /* [in] */ Float right,
+    /* [in] */ Float bottom,
+    /* [in] */ Float startAngle,
+    /* [in] */ Float sweepAngle,
+    /* [in] */ Boolean forceMoveTo)
+{
     mIsSimplePath = FALSE;
-    NativeArcTo(mNativePath, oval, startAngle, sweepAngle, FALSE);
+    assert(0 && "TODO");
+    // NativeArcTo(mNativePath, left, top, right, bottom, startAngle, sweepAngle, forceMoveTo);
     return NOERROR;
 }
 
@@ -434,20 +481,18 @@ void CPath::DetectSimplePath(
     /* [in] */ Float bottom,
     /* [in] */ PathDirection dir)
 {
-    if (mDetectSimplePaths) {
-        if (mLastDirection == -1) {
-            mLastDirection = dir;
+    if (mLastDirection == -1) {
+        mLastDirection = dir;
+    }
+    if (mLastDirection != dir) {
+        mIsSimplePath = FALSE;
+    }
+    else {
+        if (mRects == NULL) {
+            CRegion::New((IRegion**)&mRects);
         }
-        if (mLastDirection != dir) {
-            mIsSimplePath = FALSE;
-        }
-        else {
-            if (mRects == NULL) {
-                CRegion::New((IRegion**)&mRects);
-            }
-            Boolean result;
-            mRects->Op((Int32)left, (Int32)top, (Int32)right, (Int32)bottom, RegionOp_UNION, &result);
-        }
+        Boolean result;
+        mRects->Op((Int32)left, (Int32)top, (Int32)right, (Int32)bottom, RegionOp_UNION, &result);
     }
 }
 
@@ -461,13 +506,8 @@ ECode CPath::AddRect(
     /* [in] */ IRectF* rect,
     /* [in] */ PathDirection dir)
 {
-    if (rect == NULL) {
-//        throw new NullPointerException("need rect parameter");
-        return E_NULL_POINTER_EXCEPTION;
-    }
-    CRectF* rectObj = (CRectF*)rect;
-    DetectSimplePath(rectObj->mLeft, rectObj->mTop, rectObj->mRight, rectObj->mBottom, dir);
-    NativeAddRect(mNativePath, rect, dir);
+    assert(0 && "TODO");
+    // AddRect(rect.left, rect.top, rect.right, rect.bottom, dir);
     return NOERROR;
 }
 
@@ -492,22 +532,25 @@ ECode CPath::AddRect(
     return NOERROR;
 }
 
-/**
- * Add a closed oval contour to the path
- *
- * @param oval The bounds of the oval to add as a closed contour to the path
- * @param dir  The direction to wind the oval's contour
- */
 ECode CPath::AddOval(
     /* [in] */ IRectF* oval,
     /* [in] */ PathDirection dir)
 {
-    if (oval == NULL) {
-//        throw new NullPointerException("need oval parameter");
-        return E_NULL_POINTER_EXCEPTION;
-    }
+    assert(0 && "TODO");
+    // AddOval(oval.left, oval.top, oval.right, oval.bottom, dir);
+    return NOERROR;
+}
+
+ECode CPath::AddOval(
+    /* [in] */ Float left,
+    /* [in] */ Float top,
+    /* [in] */ Float right,
+    /* [in] */ Float bottom,
+    /* [in] */ PathDirection dir)
+{
     mIsSimplePath = FALSE;
-    NativeAddOval(mNativePath, oval, dir);
+    assert(0 && "TODO");
+    // native_addOval(mNativePath, left, top, right, bottom, dir.nativeInt);
     return NOERROR;
 }
 
@@ -542,12 +585,22 @@ ECode CPath::AddArc(
     /* [in] */ Float startAngle,
     /* [in] */ Float sweepAngle)
 {
-    if (oval == NULL) {
-//        throw new NullPointerException("need oval parameter");
-        return E_NULL_POINTER_EXCEPTION;
-    }
+    assert(0 && "TODO");
+    // AddArc(oval.left, oval.top, oval.right, oval.bottom, startAngle, sweepAngle);
+    return NOERROR;
+}
+
+ECode CPath::AddArc(
+    /* [in] */ Float left,
+    /* [in] */ Float top,
+    /* [in] */ Float right,
+    /* [in] */ Float bottom,
+    /* [in] */ Float startAngle,
+    /* [in] */ Float sweepAngle)
+{
     mIsSimplePath = FALSE;
-    NativeAddArc(mNativePath, oval, startAngle, sweepAngle);
+    assert(0 && "TODO");
+    // native_addArc(mNativePath, left, top, right, bottom, startAngle, sweepAngle);
     return NOERROR;
 }
 
@@ -565,12 +618,23 @@ ECode CPath::AddRoundRect(
     /* [in] */ Float ry,
     /* [in] */ PathDirection dir)
 {
-    if (rect == NULL) {
-//        throw new NullPointerException("need rect parameter");
-        return E_NULL_POINTER_EXCEPTION;
-    }
+    assert(0 && "TODO");
+    // AddRoundRect(rect.left, rect.top, rect.right, rect.bottom, rx, ry, dir);
+    return NOERROR;
+}
+
+ECode CPath::AddRoundRect(
+    /* [in] */ Float left,
+    /* [in] */ Float top,
+    /* [in] */ Float right,
+    /* [in] */ Float bottom,
+    /* [in] */ Float rx,
+    /* [in] */ Float ry,
+    /* [in] */ PathDirection dir)
+{
     mIsSimplePath = FALSE;
-    NativeAddRoundRect(mNativePath, rect, rx, ry, dir);
+    assert(0 && "TODO");
+    // native_addRoundRect(mNativePath, left, top, right, bottom, rx, ry, dir.nativeInt);
     return NOERROR;
 }
 
@@ -585,19 +649,32 @@ ECode CPath::AddRoundRect(
  */
 ECode CPath::AddRoundRect(
     /* [in] */ IRectF* rect,
-    /* [in] */ const ArrayOf<Float>& radii,
+    /* [in] */ ArrayOf<Float>* radii,
     /* [in] */ PathDirection dir)
 {
     if (rect == NULL) {
 //        throw new NullPointerException("need rect parameter");
         return E_NULL_POINTER_EXCEPTION;
     }
-    if (radii.GetLength() < 8) {
-//        throw new ArrayIndexOutOfBoundsException("radii[] needs 8 values");
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-    mIsSimplePath = FALSE;
-    NativeAddRoundRect(mNativePath, rect, radii, dir);
+    assert(0 && "TODO");
+    // addRoundRect(rect.left, rect.top, rect.right, rect.bottom, radii, dir);
+    return NOERROR;
+}
+
+ECode CPath::AddRoundRect(
+    /* [in] */ Float left,
+    /* [in] */ Float top,
+    /* [in] */ Float right,
+    /* [in] */ Float bottom,
+    /* [in] */ ArrayOf<Float>* radii,
+    /* [in] */ PathDirection dir)
+{
+    assert(0 && "TODO");
+    // if (radii.length < 8) {
+    //     throw new ArrayIndexOutOfBoundsException("radii[] needs 8 values");
+    // }
+    // mIsSimplePath = false;
+    // native_addRoundRect(mNativePath, left, top, right, bottom, radii, dir.nativeInt);
     return NOERROR;
 }
 
@@ -641,7 +718,7 @@ ECode CPath::AddPath(
 {
     if (!((CPath*)src)->mIsSimplePath) mIsSimplePath = FALSE;
     NativeAddPath(mNativePath, ((CPath*)src)->mNativePath,
-            ((Matrix*)matrix->Probe(EIID_Matrix))->mNativeInstance);
+            ((Matrix*)(IMatrix*)matrix->Probe(EIID_Matrix))->mNativeInstance);
     return NOERROR;
 }
 
@@ -658,7 +735,7 @@ ECode CPath::Offset(
     /* [in] */ Float dy,
     /* [in] */ IPath* dst)
 {
-    Int32 dstNative = 0;
+    Int64 dstNative = 0;
     if (dst != NULL) {
         dstNative = ((CPath*)dst)->mNativePath;
         ((CPath*)dst)->mIsSimplePath = FALSE;
@@ -709,12 +786,12 @@ ECode CPath::Transform(
     /* [in] */ IMatrix* matrix,
     /* [in] */ IPath* dst)
 {
-    Int32 dstNative = 0;
+    Int64 dstNative = 0;
     if (dst != NULL) {
         ((CPath*)dst)->mIsSimplePath = FALSE;
         dstNative = ((CPath*)dst)->mNativePath;
     }
-    NativeTransform(mNativePath, ((Matrix*)matrix->Probe(EIID_Matrix))->mNativeInstance, dstNative);
+    NativeTransform(mNativePath, ((Matrix*)(IMatrix*)matrix->Probe(EIID_Matrix))->mNativeInstance, dstNative);
     return NOERROR;
 }
 
@@ -727,66 +804,82 @@ ECode CPath::Transform(
     /* [in] */ IMatrix* matrix)
 {
     mIsSimplePath = FALSE;
-    NativeTransform(mNativePath, ((Matrix*)matrix->Probe(EIID_Matrix))->mNativeInstance);
+    NativeTransform(mNativePath, ((Matrix*)(IMatrix*)matrix->Probe(EIID_Matrix))->mNativeInstance);
     return NOERROR;
 }
 
-Int32 CPath::Ni()
+Int64 CPath::Ni()
 {
     return mNativePath;
 }
 
-Int32 CPath::Init1()
+ECode CPath::Approximate(
+    /* [in] */ Float acceptableError,
+    /* [out] */ ArrayOf<Float>** array)
 {
-    return (Int32)new SkPath();
+    assert(0 && "TODO");
+    // return native_approximate(mNativePath, acceptableError);
+    return NOERROR;
 }
 
-Int32 CPath::Init2(
-    /* [in] */ Int32 nPath)
+Int64 CPath::Init1()
 {
-    return (Int32)new SkPath(*(SkPath*)nPath);
+    return (Int64)new SkPath();
+}
+
+Int64 CPath::Init2(
+    /* [in] */ Int64 nPath)
+{
+    return (Int64)new SkPath(*(SkPath*)nPath);
 }
 
 void CPath::NativeReset(
-    /* [in] */ Int32 nPath)
+    /* [in] */ Int64 nPath)
 {
     ((SkPath*)nPath)->reset();
 }
 
 void CPath::NativeRewind(
-    /* [in] */ Int32 nPath)
+    /* [in] */ Int64 nPath)
 {
     ((SkPath*)nPath)->rewind();
 }
 
 void CPath::NativeSet(
-    /* [in] */ Int32 nDst,
-    /* [in] */ Int32 nSrc)
+    /* [in] */ Int64 nDst,
+    /* [in] */ Int64 nSrc)
 {
-    *(SkPath*)nDst = *(SkPath*)nSrc;
+    assert(0 && "Need jni codes.");
+}
+
+Boolean CPath::NativeIsConvex(
+    /* [in] */ Int64 nPath)
+{
+    assert(0 && "Need jni codes.");
+    return FALSE;
 }
 
 Int32 CPath::NativeGetFillType(
-    /* [in] */ Int32 nPath)
+    /* [in] */ Int64 nPath)
 {
     return ((SkPath*)nPath)->getFillType();
 }
 
 void CPath::NativeSetFillType(
-    /* [in] */ Int32 nPath,
+    /* [in] */ Int64 nPath,
     /* [in] */ PathFillType ft)
 {
     ((SkPath*)nPath)->setFillType((SkPath::FillType)ft);
 }
 
 Boolean CPath::NativeIsEmpty(
-    /* [in] */ Int32 nPath)
+    /* [in] */ Int64 nPath)
 {
     return ((SkPath*)nPath)->isEmpty();
 }
 
 Boolean CPath::NativeIsRect(
-    /* [in] */ Int32 nPath,
+    /* [in] */ Int64 nPath,
     /* [in] */ IRectF* rect)
 {
     SkRect rect_;
@@ -796,7 +889,7 @@ Boolean CPath::NativeIsRect(
 }
 
 void CPath::NativeComputeBounds(
-    /* [in] */ Int32 nPath,
+    /* [in] */ Int64 nPath,
     /* [in] */ IRectF* bounds)
 {
     const SkRect& bounds_ = ((SkPath*)nPath)->getBounds();
@@ -804,82 +897,66 @@ void CPath::NativeComputeBounds(
 }
 
 void CPath::NativeIncReserve(
-    /* [in] */ Int32 nPath,
+    /* [in] */ Int64 nPath,
     /* [in] */ Int32 extraPtCount)
 {
     ((SkPath*)nPath)->incReserve(extraPtCount);
 }
 
 void CPath::NativeMoveTo(
-    /* [in] */ Int32 nPath,
+    /* [in] */ Int64 nPath,
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    SkScalar x_ = SkFloatToScalar(x);
-    SkScalar y_ = SkFloatToScalar(y);
-    ((SkPath*)nPath)->moveTo(x_, y_);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeRMoveTo(
-    /* [in] */ Int32 nPath,
+    /* [in] */ Int64 nPath,
     /* [in] */ Float dx,
     /* [in] */ Float dy)
 {
-    SkScalar dx_ = SkFloatToScalar(dx);
-    SkScalar dy_ = SkFloatToScalar(dy);
-    ((SkPath*)nPath)->rMoveTo(dx_, dy_);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeLineTo(
-    /* [in] */ Int32 nPath,
+    /* [in] */ Int64 nPath,
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    SkScalar x_ = SkFloatToScalar(x);
-    SkScalar y_ = SkFloatToScalar(y);
-    ((SkPath*)nPath)->lineTo(x_, y_);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeRLineTo(
-    /* [in] */ Int32 nPath,
+    /* [in] */ Int64 nPath,
     /* [in] */ Float dx,
     /* [in] */ Float dy)
 {
-    SkScalar dx_ = SkFloatToScalar(dx);
-    SkScalar dy_ = SkFloatToScalar(dy);
-    ((SkPath*)nPath)->rLineTo(dx_, dy_);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeQuadTo(
-    /* [in] */ Int32 nPath,
+    /* [in] */ Int64 nPath,
     /* [in] */ Float x1,
     /* [in] */ Float y1,
     /* [in] */ Float x2,
     /* [in] */ Float y2)
 {
-    SkScalar x1_ = SkFloatToScalar(x1);
-    SkScalar y1_ = SkFloatToScalar(y1);
-    SkScalar x2_ = SkFloatToScalar(x2);
-    SkScalar y2_ = SkFloatToScalar(y2);
-    ((SkPath*)nPath)->quadTo(x1_, y1_, x2_, y2_);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeRQuadTo(
-    /* [in] */ Int32 nPath,
+    /* [in] */ Int64 nPath,
     /* [in] */ Float dx1,
     /* [in] */ Float dy1,
     /* [in] */ Float dx2,
     /* [in] */ Float dy2)
 {
-    SkScalar dx1_ = SkFloatToScalar(dx1);
-    SkScalar dy1_ = SkFloatToScalar(dy1);
-    SkScalar dx2_ = SkFloatToScalar(dx2);
-    SkScalar dy2_ = SkFloatToScalar(dy2);
-    ((SkPath*)nPath)->rQuadTo(dx1_, dy1_, dx2_, dy2_);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeCubicTo(
-    /* [in] */ Int32 nPath,
+    /* [in] */ Int64 nPath,
     /* [in] */ Float x1,
     /* [in] */ Float y1,
     /* [in] */ Float x2,
@@ -887,17 +964,11 @@ void CPath::NativeCubicTo(
     /* [in] */ Float x3,
     /* [in] */ Float y3)
 {
-    SkScalar x1_ = SkFloatToScalar(x1);
-    SkScalar y1_ = SkFloatToScalar(y1);
-    SkScalar x2_ = SkFloatToScalar(x2);
-    SkScalar y2_ = SkFloatToScalar(y2);
-    SkScalar x3_ = SkFloatToScalar(x3);
-    SkScalar y3_ = SkFloatToScalar(y3);
-    ((SkPath*)nPath)->cubicTo(x1_, y1_, x2_, y2_, x3_, y3_);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeRCubicTo(
-    /* [in] */ Int32 nPath,
+    /* [in] */ Int64 nPath,
     /* [in] */ Float x1,
     /* [in] */ Float y1,
     /* [in] */ Float x2,
@@ -905,200 +976,164 @@ void CPath::NativeRCubicTo(
     /* [in] */ Float x3,
     /* [in] */ Float y3)
 {
-    SkScalar x1_ = SkFloatToScalar(x1);
-    SkScalar y1_ = SkFloatToScalar(y1);
-    SkScalar x2_ = SkFloatToScalar(x2);
-    SkScalar y2_ = SkFloatToScalar(y2);
-    SkScalar x3_ = SkFloatToScalar(x3);
-    SkScalar y3_ = SkFloatToScalar(y3);
-    ((SkPath*)nPath)->rCubicTo(x1_, y1_, x2_, y2_, x3_, y3_);
+    assert(0 && "TODO: Need jni codes.");
 }
 
+
 void CPath::NativeArcTo(
-    /* [in] */ Int32 nPath,
-    /* [in] */ IRectF* oval,
+    /* [in] */ Int64 nPath,
+    /* [in] */ Float left,
+    /* [in] */ Float top,
+    /* [in] */ Float right,
+    /* [in] */ Float bottom,
     /* [in] */ Float startAngle,
     /* [in] */ Float sweepAngle,
     /* [in] */ Boolean forceMoveTo)
 {
-    SkRect oval_;
-    GraphicsNative::IRectF2SkRect(oval, &oval_);
-    SkScalar startAngle_ = SkFloatToScalar(startAngle);
-    SkScalar sweepAngle_ = SkFloatToScalar(sweepAngle);
-    ((SkPath*)nPath)->arcTo(oval_, startAngle_, sweepAngle_, forceMoveTo);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeClose(
-    /* [in] */ Int32 nPath)
+    /* [in] */ Int64 nPath)
 {
     ((SkPath*)nPath)->close();
 }
 
 void CPath::NativeAddRect(
-    /* [in] */ Int32 nPath,
-    /* [in] */ IRectF* rect,
-    /* [in] */ PathDirection dir)
-{
-    SkRect rect_;
-    GraphicsNative::IRectF2SkRect(rect, &rect_);
-    ((SkPath*)nPath)->addRect(rect_, (SkPath::Direction)dir);
-}
-
-void CPath::NativeAddRect(
-    /* [in] */ Int32 nPath,
+    /* [in] */ Int64 nPath,
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
     /* [in] */ PathDirection dir)
 {
-    SkScalar left_ = SkFloatToScalar(left);
-    SkScalar top_ = SkFloatToScalar(top);
-    SkScalar right_ = SkFloatToScalar(right);
-    SkScalar bottom_ = SkFloatToScalar(bottom);
-    ((SkPath*)nPath)->addRect(left_, top_, right_, bottom_, (SkPath::Direction)dir);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeAddOval(
-    /* [in] */ Int32 nPath,
-    /* [in] */ IRectF* oval,
-    /* [in] */ PathDirection dir)
+    /* [in] */ Int64 nPath,
+    /* [in] */ Float left,
+    /* [in] */ Float top,
+    /* [in] */ Float right,
+    /* [in] */ Float bottom,
+    /* [in] */ Int32 dir)
 {
-    SkRect oval_;
-    GraphicsNative::IRectF2SkRect(oval, &oval_);
-    ((SkPath*)nPath)->addOval(oval_, (SkPath::Direction)dir);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeAddCircle(
-    /* [in] */ Int32 nPath,
+    /* [in] */ Int64 nPath,
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float radius,
     /* [in] */ PathDirection dir)
 {
-    SkScalar x_ = SkFloatToScalar(x);
-    SkScalar y_ = SkFloatToScalar(y);
-    SkScalar radius_ = SkFloatToScalar(radius);
-    ((SkPath*)nPath)->addCircle(x_, y_, radius_, (SkPath::Direction)dir);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeAddArc(
-    /* [in] */ Int32 nPath,
-    /* [in] */ IRectF* oval,
+    /* [in] */ Int64 nPath,
+    /* [in] */ Float left,
+    /* [in] */ Float top,
+    /* [in] */ Float right,
+    /* [in] */ Float bottom,
     /* [in] */ Float startAngle,
     /* [in] */ Float sweepAngle)
 {
-    SkRect oval_;
-    GraphicsNative::IRectF2SkRect(oval, &oval_);
-    SkScalar startAngle_ = SkFloatToScalar(startAngle);
-    SkScalar sweepAngle_ = SkFloatToScalar(sweepAngle);
-    ((SkPath*)nPath)->addArc(oval_, startAngle_, sweepAngle_);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeAddRoundRect(
-    /* [in] */ Int32 nPath,
-    /* [in] */ IRectF* rect,
+    /* [in] */ Int64 nPath,
+    /* [in] */ Float left,
+    /* [in] */ Float top,
+    /* [in] */ Float right,
+    /* [in] */ Float bottom,
     /* [in] */ Float rx,
     /* [in] */ Float ry,
-    /* [in] */ PathDirection dir)
+    /* [in] */ Int32 dir)
 {
-    SkRect rect_;
-    GraphicsNative::IRectF2SkRect(rect, &rect_);
-    SkScalar rx_ = SkFloatToScalar(rx);
-    SkScalar ry_ = SkFloatToScalar(ry);
-    ((SkPath*)nPath)->addRoundRect(rect_, rx_, ry_, (SkPath::Direction)dir);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeAddRoundRect(
-    /* [in] */ Int32 nPath,
-    /* [in] */ IRectF* rect,
-    /* [in] */ const ArrayOf<Float>& radii,
-    /* [in] */ PathDirection dir)
+    /* [in] */ Int64 nPath,
+    /* [in] */ Float left,
+    /* [in] */ Float top,
+    /* [in] */ Float right,
+    /* [in] */ Float bottom,
+    /* [in] */ ArrayOf<Float>* radii,
+    /* [in] */ Int32 dir)
 {
-    SkRect rect_;
-    GraphicsNative::IRectF2SkRect(rect, &rect_);
-    SkScalar dst[8];
-
-    for (Int32 i = 0; i < 8; i++) {
-        dst[i] = SkFloatToScalar(radii[i]);
-    }
-    ((SkPath*)nPath)->addRoundRect(rect_, dst, (SkPath::Direction)dir);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeAddPath(
-    /* [in] */ Int32 nPath,
-    /* [in] */ Int32 src,
+    /* [in] */ Int64 nPath,
+    /* [in] */ Int64 src,
     /* [in] */ Float dx,
     /* [in] */ Float dy)
 {
-    SkScalar dx_ = SkFloatToScalar(dx);
-    SkScalar dy_ = SkFloatToScalar(dy);
-    ((SkPath*)nPath)->addPath(*(SkPath*)src, dx_, dy_);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeAddPath(
-    /* [in] */ Int32 nPath,
-    /* [in] */ Int32 src)
+    /* [in] */ Int64 nPath,
+    /* [in] */ Int64 src)
 {
     ((SkPath*)nPath)->addPath(*(SkPath*)src);
 }
 
 void CPath::NativeAddPath(
-    /* [in] */ Int32 nPath,
-    /* [in] */ Int32 src,
-    /* [in] */ Int32 matrix)
+    /* [in] */ Int64 nPath,
+    /* [in] */ Int64 src,
+    /* [in] */ Int64 matrix)
 {
     ((SkPath*)nPath)->addPath(*(SkPath*)src, *(SkMatrix*)matrix);
 }
 
 void CPath::NativeOffset(
-    /* [in] */ Int32 nPath,
+    /* [in] */ Int64 nPath,
     /* [in] */ Float dx,
     /* [in] */ Float dy,
     /* [in] */ Int32 dst_path)
 {
-    SkScalar dx_ = SkFloatToScalar(dx);
-    SkScalar dy_ = SkFloatToScalar(dy);
-    ((SkPath*)nPath)->offset(dx_, dy_, (SkPath*)dst_path);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeOffset(
-    /* [in] */ Int32 nPath,
+    /* [in] */ Int64 nPath,
     /* [in] */ Float dx,
     /* [in] */ Float dy)
 {
-    SkScalar dx_ = SkFloatToScalar(dx);
-    SkScalar dy_ = SkFloatToScalar(dy);
-    ((SkPath*)nPath)->offset(dx_, dy_);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeSetLastPoint(
-    /* [in] */ Int32 nPath,
+    /* [in] */ Int64 nPath,
     /* [in] */ Float dx,
     /* [in] */ Float dy)
 {
-    SkScalar dx_ = SkFloatToScalar(dx);
-    SkScalar dy_ = SkFloatToScalar(dy);
-    ((SkPath*)nPath)->setLastPt(dx_, dy_);
+    assert(0 && "TODO: Need jni codes.");
 }
 
 void CPath::NativeTransform(
-    /* [in] */ Int32 nPath,
-    /* [in] */ Int32 matrix,
-    /* [in] */ Int32 dst_path)
+    /* [in] */ Int64 nPath,
+    /* [in] */ Int64 matrix,
+    /* [in] */ Int64 dst_path)
 {
     ((SkPath*)nPath)->transform(*(SkMatrix*)matrix, (SkPath*)dst_path);
 }
 
 void CPath::NativeTransform(
-    /* [in] */ Int32 nPath,
-    /* [in] */ Int32 matrix)
+    /* [in] */ Int64 nPath,
+    /* [in] */ Int64 matrix)
 {
     ((SkPath*)nPath)->transform(*(SkMatrix*)matrix);
 }
 
 void CPath::NativeFinalizer(
-    /* [in] */ Int32 nPath)
+    /* [in] */ Int64 nPath)
 {
 #ifdef USE_OPENGL_RENDERER
     if (android::uirenderer::Caches::hasInstance()) {
@@ -1107,6 +1142,24 @@ void CPath::NativeFinalizer(
     }
 #endif
     delete (SkPath*)nPath;
+}
+
+Boolean CPath::NativeOp(
+    /* [in] */ Int64 path1,
+    /* [in] */ Int64 path2,
+    /* [in] */ Int32 op,
+    /* [in] */ Int64 result)
+{
+    assert(0 && "TODO: Need jni codes.");
+    return FALSE;
+}
+
+AutoPtr<ArrayOf<Float> > CPath::NativeApproximate(
+    /* [in] */ Int64 nPath,
+    /* [in] */ Float error)
+{
+    assert(0 && "TODO: Need jni codes.");
+    return NULL;
 }
 
 } // namespace Graphics

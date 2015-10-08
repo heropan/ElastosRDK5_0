@@ -18,9 +18,9 @@ CarClass(CAvoidXfermode)
     , public IAvoidXfermode
 {
 public:
-    CAR_INTERFACE_DECL();
-
     CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
 
     /** This xfermode draws, or doesn't draw, based on the destination's
      * distance from an op-color.
@@ -41,9 +41,6 @@ public:
         /* [in] */ Int32 opColor,
         /* [in] */ Int32 tolerance,
         /* [in] */ Int32 mode);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
 private:
     static CARAPI_(Int64) NativeCreate(

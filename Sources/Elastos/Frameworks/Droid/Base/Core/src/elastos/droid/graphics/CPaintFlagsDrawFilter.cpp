@@ -7,6 +7,7 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CPaintFlagsDrawFilter);
 ECode CPaintFlagsDrawFilter::constructor(
     /* [in] */ Int32 clearBits,
     /* [in] */ Int32 setBits)
@@ -23,7 +24,27 @@ PInterface CPaintFlagsDrawFilter::Probe(
     if (riid == EIID_DrawFilter) {
         return reinterpret_cast<PInterface>((DrawFilter*)this);
     }
-    return _CPaintFlagsDrawFilter::Probe(riid);
+    else if (riid == EIID_IPaintFlagsDrawFilter) {
+        return (IPaintFlagsDrawFilter*)this;
+    }
+    return DrawFilter::Probe(riid);
+}
+
+UInt32 CPaintFlagsDrawFilter::AddRef()
+{
+    return DrawFilter::AddRef();
+}
+
+UInt32 CPaintFlagsDrawFilter::Release()
+{
+    return DrawFilter::Release();
+}
+
+ECode CPaintFlagsDrawFilter::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    return DrawFilter::GetInterfaceID(object, iid);
 }
 
 Int32 CPaintFlagsDrawFilter::NativeConstructor(

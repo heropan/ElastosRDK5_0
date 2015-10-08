@@ -6,6 +6,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CPaintFontMetrics);
+CAR_INTERFACE_IMPL(CPaintFontMetrics, Object, IPaintFontMetrics);
 ECode CPaintFontMetrics::GetTop(
     /* [out] */ Float* top)
 {

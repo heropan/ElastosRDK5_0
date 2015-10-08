@@ -38,29 +38,28 @@ ECode CCamera::Translate(
     /* [in] */ Float y,
     /* [in] */ Float z)
 {
-    ((Sk3DView*)mNativeInstance)->translate(
-            SkFloatToScalar(x), SkFloatToScalar(y), SkFloatToScalar(z));
+    ((Sk3DView*)mNativeInstance)->translate(x, y, z);
     return NOERROR;
 }
 
 ECode CCamera::RotateX(
     /* [in] */ Float deg)
 {
-    ((Sk3DView*)mNativeInstance)->rotateX(SkFloatToScalar(deg));
+    ((Sk3DView*)mNativeInstance)->rotateX(deg);
     return NOERROR;
 }
 
 ECode CCamera::RotateY(
     /* [in] */ Float deg)
 {
-    ((Sk3DView*)mNativeInstance)->rotateY(SkFloatToScalar(deg));
+    ((Sk3DView*)mNativeInstance)->rotateY(deg);
     return NOERROR;
 }
 
 ECode CCamera::RotateZ(
     /* [in] */ Float deg)
 {
-    ((Sk3DView*)mNativeInstance)->rotateZ(SkFloatToScalar(deg));
+    ((Sk3DView*)mNativeInstance)->rotateZ(deg);
     return NOERROR;
 }
 
@@ -80,9 +79,9 @@ ECode CCamera::Rotate(
     /* [in] */ Float y,
     /* [in] */ Float z)
 {
-    ((Sk3DView*)mNativeInstance)->rotateX(SkFloatToScalar(x));
-    ((Sk3DView*)mNativeInstance)->rotateY(SkFloatToScalar(y));
-    ((Sk3DView*)mNativeInstance)->rotateZ(SkFloatToScalar(z));
+    ((Sk3DView*)mNativeInstance)->rotateX(x);
+    ((Sk3DView*)mNativeInstance)->rotateY(y);
+    ((Sk3DView*)mNativeInstance)->rotateZ(z);
     return NOERROR;
 }
 
@@ -140,22 +139,29 @@ ECode CCamera::SetLocation(
     /* [in] */ Float y,
     /* [in] */ Float z)
 {
-    ((Sk3DView*)mNativeInstance)->setCameraLocation(
-            SkFloatToScalar(x), SkFloatToScalar(y), SkFloatToScalar(z));
+    ((Sk3DView*)mNativeInstance)->setCameraLocation(x, y, z);
     return NOERROR;
 }
 
 ECode CCamera::GetMatrix(
     /* [in] */ IMatrix* matrix)
 {
-    NativeGetMatrix(((Matrix*)matrix->Probe(EIID_Matrix))->mNativeInstance);
+    NativeGetMatrix(((Matrix*)(IMatrix*)matrix->Probe(EIID_Matrix))->mNativeInstance);
     return NOERROR;
 }
 
 ECode CCamera::ApplyToCanvas(
     /* [in] */ ICanvas* canvas)
 {
-    NativeApplyToCanvas(((Canvas*)canvas->Probe(EIID_Canvas))->mNativeCanvas);
+    assert(0 && "TODO");
+    // Boolean is = FALSE;
+    // if (canvas->IsHardwareAccelerated(&is), is) {
+    //     if (mMatrix == NULL) mMatrix = new Matrix();
+    //     GetMatrix(mMatrix);
+    //     canvas->Concat(mMatrix);
+    // } else {
+    //     NativeApplyToCanvas(canvas->GetNativeCanvasWrapper());
+    // }
     return NOERROR;
 }
 
@@ -167,17 +173,14 @@ ECode CCamera::DotWithNormal(
 {
     VALIDATE_NOT_NULL(result);
 
-    SkScalar dot = ((Sk3DView*)mNativeInstance)->dotWithNormal(
-                            SkFloatToScalar(dx),
-                            SkFloatToScalar(dy),
-                            SkFloatToScalar(dz));
+    SkScalar dot = ((Sk3DView*)mNativeInstance)->dotWithNormal(dx, dy, dz);
     *result = SkScalarToFloat(dot);
     return NOERROR;
 }
 
 void CCamera::NativeConstructor()
 {
-    mNativeInstance = (Int32)new Sk3DView;
+    mNativeInstance = (Int64)new Sk3DView;
 }
 
 void CCamera::NativeDestructor()
@@ -186,15 +189,20 @@ void CCamera::NativeDestructor()
 }
 
 void CCamera::NativeGetMatrix(
-    /* [in] */ Int32 nativeMatrix)
+    /* [in] */ Int64 nativeMatrix)
 {
-    ((Sk3DView*)mNativeInstance)->getMatrix((SkMatrix*)nativeMatrix);
+    SkMatrix* native_matrix =  reinterpret_cast<SkMatrix*>(nativeMatrix);
+    Sk3DView* v = reinterpret_cast<Sk3DView*>(mNativeInstance);
+    v->getMatrix(native_matrix);
 }
 
 void CCamera::NativeApplyToCanvas(
-    /* [in] */ Int32 nativeCanvas)
+    /* [in] */ Int64 nativeCanvas)
 {
-    ((Sk3DView*)mNativeInstance)->applyToCanvas((SkCanvas*)nativeCanvas);
+    assert(0 && "TODO");
+    // android::SkCanvas* canvas = reinterpret_cast<android::Canvas*>(nativeCanvas)->getSkCanvas();
+    // Sk3DView* v = reinterpret_cast<Sk3DView*>(mNativeInstance);
+    // v->applyToCanvas(canvas);
 }
 
 } // namespace Graphics

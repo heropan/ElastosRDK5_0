@@ -109,20 +109,6 @@ module
             [out] ITypeface** typeface);
 
         /**
-         * Set the global gamma coefficients for black and white text. This call is
-         * usually a no-op in shipping products, and only exists for testing during
-         * development.
-         *
-         * @param blackGamma gamma coefficient for black text
-         * @param whiteGamma gamma coefficient for white text
-         *
-         * @hide - this is just for calibrating devices, not for normal apps
-         */
-        SetGammaForText(
-            [in] Float blackGamma,
-            [in] Float whiteGamma);
-
-        /**
          * Create a new typeface from an array of font families.
          *
          * @param families array of font families

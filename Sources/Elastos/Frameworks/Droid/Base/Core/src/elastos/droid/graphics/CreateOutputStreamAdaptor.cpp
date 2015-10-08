@@ -44,7 +44,7 @@ public:
             }
 
             Int32 n;
-            ECode ec = mInputStream->ReadBytes(mByteArray, 0, requested, &n);
+            ECode ec = mInputStream->Read(mByteArray, 0, requested, &n);
             if (FAILED(ec)) {
                 SkDebugf("---- read threw an exception\n");
                 return 0;
@@ -121,6 +121,12 @@ public:
         return this->doRead(buffer, size);
     }
 
+    virtual bool isAtEnd() const {
+        assert(0 && "TODO: need jni codes.");
+        return false;
+        // return fIsAtEnd;
+    }
+
 private:
     AutoPtr<IInputStream> mInputStream;
     AutoPtr< ArrayOf<Byte> > mByteArray;     // the caller owns this object
@@ -137,6 +143,19 @@ SkStream* CreateInputStreamAdaptor(
         stream->Mark(markSize);
     }
     return new InputStreamAdaptor(stream, storage);
+}
+
+SkStreamRewindable* CopyJavaInputStream(
+    /* [in] */ IInputStream* stream,
+    /* [in] */ ArrayOf<Byte>* storage)
+{
+    SkAutoTUnref<SkStream> adaptor(CreateInputStreamAdaptor(stream, storage));
+    if (NULL == adaptor.get()) {
+        return NULL;
+    }
+    assert(0 && "TODO: need jni codes.");
+    // return adaptor_to_mem_stream(adaptor.get());
+    return NULL;
 }
 
 class SkOutputStream : public SkWStream
@@ -164,7 +183,7 @@ public:
 
             memcpy(storage->GetPayload(), buffer, requested);
 
-            ECode ec = mOutputStream->WriteBytes(*storage, 0, requested);
+            ECode ec = mOutputStream->Write(storage, 0, requested);
             if (FAILED(ec)) {
                 SkDebugf("------- write threw an exception\n");
                 return false;
@@ -192,7 +211,9 @@ SkWStream* CreateOutputStreamAdaptor(
     /* [in] */ IOutputStream* stream,
     /* [in] */ ArrayOf<Byte>* storage)
 {
-    return new SkOutputStream(stream, storage);
+    assert(0 && "TODO: need jni codes.");
+    // return new SkOutputStream(stream, storage);
+    return NULL;
 }
 
 } // namespace Graphics

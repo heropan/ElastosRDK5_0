@@ -7,6 +7,18 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+const Int32 CSweepGradient::TYPE_COLORS_AND_POSITIONS = 1;
+const Int32 CSweepGradient::TYPE_COLOR_START_AND_COLOR_END = 2;
+
+CAR_OBJECT_IMPL(CSweepGradient);
+CSweepGradient::CSweepGradient()
+    : mType(0)
+    , mCx(0)
+    , mCy(0)
+    , mColor0(0)
+    , mColor1(0)
+{}
+
 ECode CSweepGradient::constructor(
     /* [in] */ Float cx,
     /* [in] */ Float cy,
@@ -22,8 +34,12 @@ ECode CSweepGradient::constructor(
 //                    "color and position arrays must be of equal length");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mNativeInstance = NativeCreate1(cx, cy, colors, positions);
-    mNativeShader = NativePostCreate1(mNativeInstance, cx, cy, colors, positions);
+    mType = TYPE_COLORS_AND_POSITIONS;
+    mCx = cx;
+    mCy = cy;
+    mColors = const_cast<ArrayOf<Int32>* >(&colors);
+    mPositions = positions;
+    Init(NativeCreate1(cx, cy, colors, positions));
     return NOERROR;
 }
 
@@ -33,9 +49,33 @@ ECode CSweepGradient::constructor(
     /* [in] */ Int32 color0,
     /* [in] */ Int32 color1)
 {
-    mNativeInstance = NativeCreate2(cx, cy, color0, color1);
-    mNativeShader = NativePostCreate2(mNativeInstance, cx, cy, color0, color1);
+    mType = TYPE_COLOR_START_AND_COLOR_END;
+    mCx = cx;
+    mCy = cy;
+    mColor0 = color0;
+    mColor1 = color1;
+    Init(NativeCreate2(cx, cy, color0, color1));
     return NOERROR;
+}
+
+AutoPtr<IShader> CSweepGradient::Copy()
+{
+    AutoPtr<ISweepGradient> copy;
+    assert(0 && "TODO");
+    // switch (mType) {
+    //     case TYPE_COLORS_AND_POSITIONS:
+    //         copy = new SweepGradient(mCx, mCy, mColors.clone(),
+    //                 mPositions != null ? mPositions.clone() : null);
+    //         break;
+    //     case TYPE_COLOR_START_AND_COLOR_END:
+    //         copy = new SweepGradient(mCx, mCy, mColor0, mColor1);
+    //         break;
+    //     default:
+    //         throw new IllegalArgumentException("SweepGradient should be created with either " +
+    //                 "colors and positions or start color and end color");
+    // }
+    CopyLocalMatrix(IShader::Probe(copy));
+    return IShader::Probe(copy);
 }
 
 PInterface CSweepGradient::Probe(
@@ -44,25 +84,30 @@ PInterface CSweepGradient::Probe(
     if (riid == EIID_Shader) {
         return reinterpret_cast<PInterface>((Shader*)this);
     }
-    return _CSweepGradient::Probe(riid);
+    else if (riid == EIID_ISweepGradient) {
+        return (ISweepGradient*)this;
+    }
+    return Shader::Probe(riid);
 }
 
-ECode CSweepGradient::GetLocalMatrix(
-    /* [in ,out] */ IMatrix* localM,
-    /* [out] */ Boolean* result)
+UInt32 CSweepGradient::AddRef()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = Shader::GetLocalMatrix(localM);
-    return NOERROR;
+    return Shader::AddRef();
 }
 
-ECode CSweepGradient::SetLocalMatrix(
-    /* [in] */ IMatrix* localM)
+UInt32 CSweepGradient::Release()
 {
-    return Shader::SetLocalMatrix(localM);
+    return Shader::Release();
 }
 
-Int32 CSweepGradient::NativeCreate1(
+ECode CSweepGradient::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    return Shader::GetInterfaceID(object, iid);
+}
+
+Int64 CSweepGradient::NativeCreate1(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ const ArrayOf<Int32>& colors,
@@ -71,26 +116,23 @@ Int32 CSweepGradient::NativeCreate1(
     size_t count = (size_t)colors.GetLength();
     const Int32* colValues = colors.GetPayload();
 
-    SkAutoSTMalloc<8, SkScalar> storage(positions ? count : 0);
-    SkScalar* pos = NULL;
+    // AutoJavaFloatArray autoPos(env, jpositions, count);
+#ifdef SK_SCALAR_IS_FLOAT
+    SkScalar* pos = positions->GetPayload();
+#else
+    #error Need to convert float array to SkScalar array before calling the following function.
+#endif
 
-    if (NULL != positions) {
-        const Float* posValues = positions->GetPayload();
-        pos = (SkScalar*)storage.get();
-        for (size_t i = 0; i < count; i++) {
-            pos[i] = SkFloatToScalar(posValues[i]);
-        }
-    }
-
-    SkShader* shader = SkGradientShader::CreateSweep(SkFloatToScalar(x),
-            SkFloatToScalar(y),
-            reinterpret_cast<const SkColor*>(colValues),
-            pos, count);
+    SkShader* shader = SkGradientShader::CreateSweep(x, y,
+            reinterpret_cast<const SkColor*>(colValues), pos, count);
+    // env->ReleaseIntArrayElements(jcolors, const_cast<Int32*>(colValues),
+    //                              JNI_ABORT);
+    // ThrowIAE_IfNull(env, shader);
     assert(shader != NULL);
-    return (Int32)shader;
+    return reinterpret_cast<Int64>(shader);
 }
 
-Int32 CSweepGradient::NativeCreate2(
+Int64 CSweepGradient::NativeCreate2(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Int32 color0,
@@ -99,75 +141,9 @@ Int32 CSweepGradient::NativeCreate2(
     SkColor colors[2];
     colors[0] = color0;
     colors[1] = color1;
-    SkShader* s = SkGradientShader::CreateSweep(
-            SkFloatToScalar(x), SkFloatToScalar(y), colors, NULL, 2);
+    SkShader* s = SkGradientShader::CreateSweep(x, y, colors, NULL, 2);
     assert(s != NULL);
-    return (Int32)s;
-}
-
-Int32 CSweepGradient::NativePostCreate1(
-    /* [in] */ Int32 nativeShader,
-    /* [in] */ Float cx,
-    /* [in] */ Float cy,
-    /* [in] */ const ArrayOf<Int32>& colors,
-    /* [in] */ ArrayOf<Float>* positions)
-{
-#ifdef USE_OPENGL_RENDERER
-    size_t count = colors->GetLength();
-    const Int32* colorValues = colors->GetPayload();
-
-    Float* storedPositions = new Float[count];
-    uint32_t* storedColors = new uint32_t[count];
-    for (size_t i = 0; i < count; i++) {
-        storedColors[i] = static_cast<uint32_t>(colorValues[i]);
-    }
-
-    if (posArray) {
-        const Float* posValues = positions->GetPayload();
-        for (size_t i = 0; i < count; i++) {
-            storedPositions[i] = posValues[i];
-        }
-    } else {
-        storedPositions[0] = 0.0f;
-        const Float step = 1.0f / (count - 1);
-        for (size_t i = 1; i < count - 1; i++) {
-            storedPositions[i] = step * i;
-        }
-        storedPositions[count - 1] = 1.0f;
-    }
-
-    SkiaShader* skiaShader = new SkiaSweepGradientShader(x, y, storedColors, storedPositions, count,
-            shader, NULL, (shader->getFlags() & SkShader::kOpaqueAlpha_Flag) == 0);
-
-    return (Int32)skiaShader;
-#else
-    return 0;
-#endif
-}
-
-Int32 CSweepGradient::NativePostCreate2(
-    /* [in] */ Int32 nativeShader,
-    /* [in] */ Float cx,
-    /* [in] */ Float cy,
-    /* [in] */ Int32 color0,
-    /* [in] */ Int32 color1)
-{
-#ifdef USE_OPENGL_RENDERER
-    float* storedPositions = new float[2];
-    storedPositions[0] = 0.0f;
-    storedPositions[1] = 1.0f;
-
-    uint32_t* storedColors = new uint32_t[2];
-    storedColors[0] = static_cast<uint32_t>(color0);
-    storedColors[1] = static_cast<uint32_t>(color1);
-
-    SkiaShader* skiaShader = new SkiaSweepGradientShader(x, y, storedColors, storedPositions, 2,
-            shader, NULL, (shader->getFlags() & SkShader::kOpaqueAlpha_Flag) == 0);
-
-    return (Int32)skiaShader;
-#else
-    return 0;
-#endif
+    return reinterpret_cast<Int64>(s);
 }
 
 } // namespace Graphics

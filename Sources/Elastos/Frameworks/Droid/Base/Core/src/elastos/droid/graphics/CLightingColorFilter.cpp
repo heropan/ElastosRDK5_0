@@ -1,18 +1,26 @@
 
 #include "graphics/CLightingColorFilter.h"
 #include <skia/core/SkColorFilter.h>
-#include <hwui/SkiaColorFilter.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CLightingColorFilter);
+
+CLightingColorFilter::CLightingColorFilter()
+    : mMul(0)
+    , mAdd(0)
+{
+}
+
 ECode CLightingColorFilter::constructor(
     /* [in] */ Int32 mul,
     /* [in] */ Int32 add)
 {
-    mNativeInstance = NativeCreateLightingFilter(mul, add);
-    mNativeColorFilter = NCreateLightingFilter(mNativeInstance, mul, add);
+    mMul = mul;
+    mAdd = add;
+    Update();
     return NOERROR;
 }
 
@@ -22,26 +30,72 @@ PInterface CLightingColorFilter::Probe(
     if (riid == EIID_ColorFilter) {
         return reinterpret_cast<PInterface>((ColorFilter*)this);
     }
-    return _CLightingColorFilter::Probe(riid);
+    else if (riid == EIID_ILightingColorFilter) {
+        return (ILightingColorFilter*)this;
+    }
+    return ColorFilter::Probe(riid);
 }
 
-Int32 CLightingColorFilter::NativeCreateLightingFilter(
+UInt32 CLightingColorFilter::AddRef()
+{
+    return ColorFilter::AddRef();
+}
+
+UInt32 CLightingColorFilter::Release()
+{
+    return ColorFilter::Release();
+}
+
+ECode CLightingColorFilter::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    return ColorFilter::GetInterfaceID(object, iid);
+}
+
+ECode CLightingColorFilter::GetColorMultiply(
+    /* [out] */ Int32* colorMultiply)
+{
+    VALIDATE_NOT_NULL(colorMultiply);
+    *colorMultiply = mMul;
+    return NOERROR;
+}
+
+ECode CLightingColorFilter::SetColorMultiply(
+    /* [in] */ Int32 mul)
+{
+    mMul = mul;
+    Update();
+    return NOERROR;
+}
+
+ECode CLightingColorFilter::GetColorAdd(
+    /* [out] */ Int32* color)
+{
+    VALIDATE_NOT_NULL(color);
+    *color = mAdd;
+    return NOERROR;
+}
+
+ECode CLightingColorFilter::SetColorAdd(
+    /* [in] */ Int32 add)
+{
+    mAdd = add;
+    Update();
+    return NOERROR;
+}
+
+void CLightingColorFilter::Update()
+{
+    DestroyFilter(mNativeInstance);
+    mNativeInstance = NativeCreateLightingFilter(mMul, mAdd);
+}
+
+Int64 CLightingColorFilter::NativeCreateLightingFilter(
     /* [in] */ Int32 mul,
     /* [in] */ Int32 add)
 {
-    return (Int32)SkColorFilter::CreateLightingFilter(mul, add);
-}
-
-Int32 CLightingColorFilter::NCreateLightingFilter(
-    /* [in] */ Int32 skFilter,
-    /* [in] */ Int32 mul,
-    /* [in] */ Int32 add)
-{
-#ifdef USE_OPENGL_RENDERER
-        return (Int32)new SkiaLightingFilter((SkColorFilter*)skFilter, mul, add);
-#else
-        return 0;
-#endif
+    return reinterpret_cast<Int64>(SkColorFilter::CreateLightingFilter(mul, add));
 }
 
 } // namespace Graphics

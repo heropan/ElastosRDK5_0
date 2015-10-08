@@ -9,9 +9,17 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CarClass(CSweepGradient), public Shader
+CarClass(CSweepGradient)
+    , public Shader
+    , public ISweepGradient
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
+    CSweepGradient();
+
     /**
      * A subclass of Shader that draws a sweep gradient around a center point.
      *
@@ -46,42 +54,42 @@ public:
         /* [in] */ Int32 color0,
         /* [in] */ Int32 color1);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI GetLocalMatrix(
-        /* [in ,out] */ IMatrix* localM,
-        /* [out] */ Boolean* result);
-
-    CARAPI SetLocalMatrix(
-        /* [in] */ IMatrix* localM);
+protected:
+    /**
+     * @hide
+     */
+    // @Override
+    CARAPI_(AutoPtr<IShader>) Copy();
 
 private:
-    static CARAPI_(Int32) NativeCreate1(
+    static CARAPI_(Int64) NativeCreate1(
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ const ArrayOf<Int32>& colors,
         /* [in] */ ArrayOf<Float>* positions);
 
-    static CARAPI_(Int32) NativeCreate2(
+    static CARAPI_(Int64) NativeCreate2(
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ Int32 color0,
         /* [in] */ Int32 color1);
 
-    static CARAPI_(Int32) NativePostCreate1(
-        /* [in] */ Int32 nativeShader,
-        /* [in] */ Float cx,
-        /* [in] */ Float cy,
-        /* [in] */ const ArrayOf<Int32>& colors,
-        /* [in] */ ArrayOf<Float>* positions);
+private:
+    static const Int32 TYPE_COLORS_AND_POSITIONS;
+    static const Int32 TYPE_COLOR_START_AND_COLOR_END;
 
-    static CARAPI_(Int32) NativePostCreate2(
-        /* [in] */ Int32 nativeShader,
-        /* [in] */ Float cx,
-        /* [in] */ Float cy,
-        /* [in] */ Int32 color0,
-        /* [in] */ Int32 color1);
+    /**
+     * Type of the LinearGradient: can be either TYPE_COLORS_AND_POSITIONS or
+     * TYPE_COLOR_START_AND_COLOR_END.
+     */
+    Int32 mType;
+
+    Float mCx;
+    Float mCy;
+    AutoPtr<ArrayOf<Int32> > mColors;
+    AutoPtr<ArrayOf<Float> > mPositions;
+    Int32 mColor0;
+    Int32 mColor1;
 };
 
 } // namespace Graphics

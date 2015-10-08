@@ -5,8 +5,6 @@
 #include "_Elastos_Droid_Graphics_CPicture.h"
 #include "graphics/Canvas.h"
 
-
-
 using Elastos::IO::IInputStream;
 
 namespace Elastos {
@@ -23,14 +21,17 @@ namespace Graphics {
  * playback without incurring any java-call overhead.
  */
 CarClass(CPicture)
+    , public Object
+    , public IPicture
 {
 private:
-    class _RecordingCanvas : public Canvas
+    class RecordingCanvas
+        : public Canvas
     {
     public:
-        _RecordingCanvas(
+        RecordingCanvas(
             /* [in] */ CPicture* pic,
-            /* [in] */ Int32 nativeCanvas);
+            /* [in] */ Int64 nativeCanvas);
 
         CARAPI SetBitmap(
             /* [in] */ IBitmap* bitmap);
@@ -43,31 +44,14 @@ private:
         CPicture* mPicture;
     };
 
-    class RecordingCanvas
-        : public ElRefBase
-        , public _RecordingCanvas
-        , public ICanvas
-    {
-    public:
-        RecordingCanvas(
-            /* [in] */ CPicture* pic,
-            /* [in] */ Int32 nativeCanvas);
-
-        ICANVAS_METHODS_DECL();
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
-    };
-
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
+    /**
+     * Creates an empty picture that is ready to record.
+     */
     CPicture();
 
     ~CPicture();
@@ -83,8 +67,7 @@ public:
         /* [in] */ IPicture* src);
 
     CARAPI constructor(
-        /* [in] */ Int32 nativePicture,
-        /* [in] */ Boolean fromStream);
+        /* [in] */ Int64 nativePicture);
 
     /**
      * To record a picture, call beginRecording() and then draw into the Canvas
@@ -156,45 +139,46 @@ public:
     CARAPI GetNativePicture(
         /* [out] */ Handle32* natviePicture);
 
-    /*package*/ CARAPI_(Int32) Ni();
-
 private:
     // return empty picture if src is 0, or a copy of the native src
-    static CARAPI_(Int32) NativeConstructor(
-        /* [in] */ Int32 nativeSrcOr0);
+    static CARAPI_(Int64) NativeConstructor(
+        /* [in] */ Int64 nativeSrcOr0);
 
-    static CARAPI_(Int32) NativeCreateFromStream(
+    static CARAPI_(Int64) NativeCreateFromStream(
         /* [in] */ IInputStream* stream,
         /* [in] */ ArrayOf<Byte>* storage);
 
-    static CARAPI_(Int32) NativeBeginRecording(
-        /* [in] */ Int32 nativePicture,
+    static CARAPI_(Int32) NativeGetWidth(
+        /* [in] */ Int64 nativePicture);
+
+    static CARAPI_(Int32) NativeGetHeight(
+        /* [in] */ Int64 nativePicture);
+
+    static CARAPI_(Int64) NativeBeginRecording(
+        /* [in] */ Int64 nativePicture,
         /* [in] */ Int32 w,
         /* [in] */ Int32 h);
 
     static CARAPI_(void) NativeEndRecording(
-        /* [in] */ Int32 nativePicture);
+        /* [in] */ Int64 nativePicture);
 
     static CARAPI_(void) NativeDraw(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 nativePicture);
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Int64 nativePicture);
 
     static CARAPI_(Boolean) NativeWriteToStream(
-        /* [in] */ Int32 nativePicture,
+        /* [in] */ Int64 nativePicture,
         /* [in] */ IOutputStream* stream,
         /* [in] */ ArrayOf<Byte>* storage);
 
     static CARAPI_(void) NativeDestructor(
-        /* [in] */ Int32 nativePicture);
-
-public:
-    Boolean mCreatedFromStream;
+        /* [in] */ Int64 nativePicture);
 
 private:
     AutoPtr<ICanvas> mRecordingCanvas;
-    Int32 mNativePicture;
+    Int64 mNativePicture;
 
-    static const Int32 WORKING_STREAM_STORAGE = 16 * 1024;
+    static const Int32 WORKING_STREAM_STORAGE;
 };
 
 } // namespace Graphics

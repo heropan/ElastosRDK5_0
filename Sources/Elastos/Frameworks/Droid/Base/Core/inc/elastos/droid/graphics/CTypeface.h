@@ -20,23 +20,13 @@ namespace Graphics {
 CarClass(CTypeface), public Typeface
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI constructor(
-        /* [in] */ Int32 ni);
+        /* [in] */ Int64 ni);
 
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
-
-    /** Returns the typeface's intrinsic style attributes */
-    CARAPI GetStyle(
-        /* [out] */ Int32* style);
-
-    /** Returns true if getStyle() has the BOLD bit set. */
-    CARAPI IsBold(
-        /* [out] */ Boolean* isBold);
-
-    /** Returns true if getStyle() has the ITALIC bit set. */
-    CARAPI IsItalic(
-        /* [out] */ Boolean* isItalic);
 };
 
 } // namespace Graphics

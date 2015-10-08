@@ -3,26 +3,20 @@
 #define __ELASTOS_DROID_GRAPHICS_INSETS_H__
 
 #include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
 class Insets
-    : public ElRefBase
+    : public Object
     , public IInsets
 {
 public:
-    CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+    CAR_INTERFACE_DECL();
 
     /**
      * Return an Insets instance with the appropriate values.

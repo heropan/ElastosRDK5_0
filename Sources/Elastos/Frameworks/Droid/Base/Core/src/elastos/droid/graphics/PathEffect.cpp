@@ -17,7 +17,7 @@ PathEffect::~PathEffect()
 }
 
 void PathEffect::NativeDestructor(
-    /* [in] */ Int32 nativeInstance)
+    /* [in] */ Int64 nativeInstance)
 {
     SkPathEffect* obj = reinterpret_cast<SkPathEffect*>(nativeInstance);
     SkSafeUnref(obj);

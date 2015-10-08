@@ -7,6 +7,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_SINGLETON_IMPL(CPointFHelper);
+CAR_INTERFACE_IMPL(CPointFHelper, Singleton, IPointFHelper);
 ECode CPointFHelper::Length(
     /* [in] */ Float x,
     /* [in] */ Float y,

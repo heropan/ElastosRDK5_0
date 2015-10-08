@@ -11,10 +11,14 @@ namespace Droid {
 namespace Graphics {
 
 CarClass(CPathMeasure)
+    , public Object
+    , public IPathMeasure
 {
-private:
-
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     ~CPathMeasure();
 
     /**
@@ -121,45 +125,45 @@ public:
         /* [out] */ Boolean* result);
 
 private:
-    static CARAPI_(Int32) NativeCreate(
-        /* [in] */ Int32 nativePath,
+    static CARAPI_(Int64) NativeCreate(
+        /* [in] */ Int64 nativePath,
         /* [in] */ Boolean forceClosed);
 
     static CARAPI_(void) NativeSetPath(
-        /* [in] */ Int32 nativeInstance,
-        /* [in] */ Int32 nativePath,
+        /* [in] */ Int64 nativeInstance,
+        /* [in] */ Int64 nativePath,
         /* [in] */ Boolean forceClosed);
 
     static CARAPI_(Float) NativeGetLength(
-        /* [in] */ Int32 nativeInstance);
+        /* [in] */ Int64 nativeInstance);
 
     static CARAPI_(Boolean) NativeGetPosTan(
-        /* [in] */ Int32 nativeInstance,
+        /* [in] */ Int64 nativeInstance,
         /* [in] */ Float distance,
         /* [out] */ ArrayOf<Float>* pos,
         /* [out] */ ArrayOf<Float>* tan);
 
     static CARAPI_(Boolean) NativeGetMatrix(
-        /* [in] */ Int32 nativeInstance,
+        /* [in] */ Int64 nativeInstance,
         /* [in] */ Float distance,
-        /* [in, out] */ Int32 nativeMatrix,
+        /* [in, out] */ Int64 nativeMatrix,
         /* [in] */ Int32 flags);
 
     static CARAPI_(Boolean) NativeGetSegment(
-        /* [in] */ Int32 nativeInstance,
+        /* [in] */ Int64 nativeInstance,
         /* [in] */ Float startF,
         /* [in] */ Float stopF,
-        /* [in, out] */ Int32 nativePath,
+        /* [in, out] */ Int64 nativePath,
         /* [in] */ Boolean startWithMoveTo);
 
     static CARAPI_(Boolean) NativeIsClosed(
-        /* [in] */ Int32 nativeInstance);
+        /* [in] */ Int64 nativeInstance);
 
     static CARAPI_(Boolean) NativeNextContour(
-        /* [in] */ Int32 nativeInstance);
+        /* [in] */ Int64 nativeInstance);
 
     static CARAPI_(void) NativeDestroy(
-        /* [in] */ Int32 nativeInstance);
+        /* [in] */ Int64 nativeInstance);
 
 public:
     Int32 mNativeInstance;

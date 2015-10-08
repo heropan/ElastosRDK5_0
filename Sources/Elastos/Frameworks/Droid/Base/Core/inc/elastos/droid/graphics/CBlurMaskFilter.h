@@ -20,9 +20,9 @@ CarClass(CBlurMaskFilter)
     , public IBlurMaskFilter
 {
 public:
-    CAR_INTERFACE_DECL();
-
     CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
 
     /**
      * Create a blur maskfilter.
@@ -35,11 +35,8 @@ public:
         /* [in] */ Float radius,
         /* [in] */ Int32 style);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
 private:
-    static CARAPI_(Int32) NativeConstructor(
+    static CARAPI_(Int64) NativeConstructor(
         /* [in] */ Float radius,
         /* [in] */ Int32 style);
 };

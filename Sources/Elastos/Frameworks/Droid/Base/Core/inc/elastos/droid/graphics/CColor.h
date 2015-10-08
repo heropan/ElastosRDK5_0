@@ -56,7 +56,7 @@ public:
      * @return the resulting argb color
     */
     CARAPI HSVToColor(
-        /* [in] */ const ArrayOf<Float>& hsv,
+        /* [in] */ ArrayOf<Float>* hsv,
         /* [out] */ Int32* color);
 
     /**
@@ -72,7 +72,7 @@ public:
     */
     CARAPI HSVToColor(
         /* [in] */ Int32 alpha,
-        /* [in] */ const ArrayOf<Float>& hsv,
+        /* [in] */ ArrayOf<Float>* hsv,
         /* [out] */ Int32* color);
 
     /**
@@ -215,7 +215,7 @@ public:
      * @hide Pending API council
      */
     CARAPI HSBtoColor(
-        /* [in] */ const ArrayOf<Float>& hsb,
+        /* [in] */ ArrayOf<Float>* hsb,
         /* [out] */ Int32* color);
 
     /**
@@ -237,6 +237,18 @@ public:
         /* [in] */ Float b,
         /* [out] */ Int32* color);
 
+    /**
+     * Converts an HTML color (named or numeric) to an integer RGB value.
+     *
+     * @param color Non-null color string.
+     *
+     * @return A color value, or {@code -1} if the color string could not be interpreted.
+     *
+     * @hide
+     */
+    static CARAPI_(Int32) GetHtmlColor(
+        /* [in] */ const String& color);
+
 private:
     static CARAPI_(void) NativeRGBToHSV(
         /* [in] */ Int32 red,
@@ -246,7 +258,7 @@ private:
 
     static CARAPI_(Int32) NativeHSVToColor(
         /* [in] */ Int32 alpha,
-        /* [in] */ const ArrayOf<Float>& hsv);
+        /* [in] */ ArrayOf<Float>* hsv);
 
     CARAPI_(Float) Constrain(
         /* [in] */ Float amount,

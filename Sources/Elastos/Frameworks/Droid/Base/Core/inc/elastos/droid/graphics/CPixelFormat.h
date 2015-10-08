@@ -9,9 +9,12 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CarClass(CPixelFormat), PixelFormat
+CarClass(CPixelFormat)
+    , public PixelFormat
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI FormatHasAlpha(
         /* [in] */ Int32 format,
         /* [out] */ Boolean* result);

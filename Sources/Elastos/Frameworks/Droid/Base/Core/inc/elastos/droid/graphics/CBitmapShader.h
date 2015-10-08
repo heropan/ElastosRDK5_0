@@ -14,46 +14,27 @@ CarClass(CBitmapShader)
     , public IBitmapShader
 {
 public:
-    CAR_INTERFACE_DECL();
-
     CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
 
     CARAPI constructor(
         /* [in] */ IBitmap* bitmap,
         /* [in] */ ShaderTileMode tileX,
         /* [in] */ ShaderTileMode tileY);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
+protected:
     /**
-     * Return true if the shader has a non-identity local matrix.
-     * @param localM If not null, it is set to the shader's local matrix.
-     * @return true if the shader has a non-identity local matrix
+     * @hide
      */
-    CARAPI GetLocalMatrix(
-        /* [in ,out] */ IMatrix* localM,
-        /* [out] */ Boolean* result);
-
-    /**
-     * Set the shader's local matrix. Passing null will reset the shader's
-     * matrix to identity
-     * @param localM The shader's new local matrix, or null to specify identity
-     */
-    CARAPI SetLocalMatrix(
-        /* [in] */ IMatrix* localM);
+    // @Override
+    virtual CARAPI_(AutoPtr<IShader>) Copy();
 
 private:
-    static CARAPI_(Int32) NativeCreate(
-        /* [in] */ Int32 nBitmap,
+    static CARAPI_(Int64) NativeCreate(
+        /* [in] */ Int64 nBitmap,
         /* [in] */ Int32 tileModeX,
         /* [in] */ Int32 tileModeY);
-
-    static CARAPI_(Int32) NativePostCreate(
-        /* [in] */ Int32 native_shader,
-        /* [in] */ Int32 native_bitmap,
-        /* [in] */ Int32 shaderTileModeX,
-        /* [in] */ Int32 shaderTileModeY);
 
 public:
     /**
@@ -61,6 +42,9 @@ public:
      * @hide
      */
     AutoPtr<IBitmap> mBitmap;
+
+    ShaderTileMode mTileX;
+    ShaderTileMode mTileY;
 };
 
 } // namespace Graphics

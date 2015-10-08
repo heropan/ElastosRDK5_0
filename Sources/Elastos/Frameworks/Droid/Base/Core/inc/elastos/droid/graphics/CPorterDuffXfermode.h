@@ -9,9 +9,15 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CarClass(CPorterDuffXfermode), public Xfermode
+CarClass(CPorterDuffXfermode)
+    , public Xfermode
+    , public IPorterDuffXfermode
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     /**
      * Create an xfermode that uses the specified porter-duff mode.
      *
@@ -19,9 +25,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ PorterDuffMode mode);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     CARAPI GetMode(
         /* [out] */ PorterDuffMode* mode);

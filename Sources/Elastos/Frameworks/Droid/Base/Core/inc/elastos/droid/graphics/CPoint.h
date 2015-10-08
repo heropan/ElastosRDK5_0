@@ -2,15 +2,26 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CPOINT_H__
 #define __ELASTOS_DROID_GRAPHICS_CPOINT_H__
 
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Graphics_CPoint.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
 CarClass(CPoint)
+    , public Object
+    , public IPoint
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     CARAPI constructor();
 
     CARAPI constructor(

@@ -8,7 +8,7 @@
 #include <elautoptr.h>
 
 using Elastos::Core::ICharSequence;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Droid {
@@ -563,6 +563,15 @@ public:
     virtual CARAPI ClearShadowLayer();
 
     /**
+     * Checks if the paint has a shadow layer attached
+     *
+     * @return true if the paint has a shadow layer attached and false otherwise
+     * @hide
+     */
+    virtual CARAPI HasShadowLayer(
+        /* [out] */ Boolean* has);
+
+    /**
      * Return the paint's Align value for drawing text. This controls how the
      * text is positioned relative to its origin. LEFT align means that all of
      * the text will be drawn to the right of its origin (i.e. the origin
@@ -622,6 +631,24 @@ public:
          /* [in] */ ILocale* locale);
 
     /**
+     * Get the elegant metrics flag.
+     *
+     * @return true if elegant metrics are enabled for text drawing.
+     */
+    CARAPI IsElegantTextHeight(
+        /* [out] */ Boolean* isElegantTextHeight);
+
+    /**
+     * Set the paint's elegant height metrics flag. This setting selects font
+     * variants that have not been compacted to fit Latin-based vertical
+     * metrics, and also increases top and bottom bounds to provide more space.
+     *
+     * @param elegant set the paint's elegant metrics flag for drawing text.
+     */
+    CARAPI SetElegantTextHeight(
+        /* [in] */ Boolean elegant);
+
+    /**
      * Return the paint's text size.
      *
      * @return the paint's text size.
@@ -673,6 +700,44 @@ public:
      */
     virtual CARAPI SetTextSkewX(
         /* [in] */ Float skewX);
+
+    /**
+     * Return the paint's letter-spacing for text. The default value
+     * is 0.
+     *
+     * @return         the paint's letter-spacing for drawing text.
+     */
+    virtual CARAPI GetLetterSpacing(
+        /* [out] */ Float* spacing);
+
+    /**
+     * Set the paint's letter-spacing for text. The default value
+     * is 0.  The value is in 'EM' units.  Typical values for slight
+     * expansion will be around 0.05.  Negative values tighten text.
+     *
+     * @param letterSpacing set the paint's letter-spacing for drawing text.
+     */
+    virtual CARAPI SetLetterSpacing(
+        /* [in] */ Float letterSpacing);
+
+    /**
+     * Get font feature settings.  Default is null.
+     *
+     * @return the paint's currently set font feature settings.
+     */
+    virtual CARAPI GetFontFeatureSettings(
+        /* [out] */ String* settings);
+
+    /**
+     * Set font feature settings.
+     *
+     * The format is the same as the CSS font-feature-settings attribute:
+     * http://dev.w3.org/csswg/css-fonts/#propdef-font-feature-settings
+     *
+     * @param settings the font feature settings string to use, may be null.
+     */
+    virtual CARAPI SetFontFeatureSettings(
+        /* [in] */ const String& settings);
 
     /**
      * Return the distance above (negative) the baseline (ascent) based on the
@@ -750,7 +815,7 @@ public:
      * @return      The width of the text
      */
     virtual CARAPI MeasureText(
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
         /* [out] */ Float* width);
@@ -809,7 +874,7 @@ public:
      *         abs(count).
      */
     virtual CARAPI BreakText(
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
         /* [in] */ Float maxWidth,
@@ -875,7 +940,7 @@ public:
      * @return         the actual number of widths returned.
      */
     virtual CARAPI GetTextWidths(
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
         /* [out] */ ArrayOf<Float>* widths,
@@ -928,35 +993,6 @@ public:
         /* [in] */ ArrayOf<Float>* widths,
         /* [out] */ Int32* number);
 
-    /* Return the glyph Ids for the characters in the string.
-     *
-     * @param text   The text to measure
-     * @param start  The index of the first char to to measure
-     * @param end    The end of the text slice to measure
-     * @param contextStart the index of the first character to use for shaping context,
-     * must be <= start
-     * @param contextEnd the index past the last character to use for shaping context,
-     * must be >= end
-     * @param flags the flags to control the advances, either {@link #DIRECTION_LTR}
-     * or {@link #DIRECTION_RTL}
-     * @param glyphs array to receive the glyph Ids of the characters.
-     *               Must be at least a large as the text.
-     * @return       the number of glyphs in the returned array
-     *
-     * @hide
-     *
-     * Used only for BiDi / RTL Tests
-     */
-    virtual CARAPI GetTextGlyphs(
-        /* [in] */ const String& text,
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end,
-        /* [in] */ Int32 contextStart,
-        /* [in] */ Int32 contextEnd,
-        /* [in] */ Int32 flags,
-        /* [out] */ ArrayOf<Char32>* glyphs,
-        /* [out] */ Int32* number);
-
     /**
      * Convenience overload that takes a char array instead of a
      * String.
@@ -965,49 +1001,12 @@ public:
      * @hide
      */
     virtual CARAPI GetTextRunAdvances(
-        /* [in] */ const ArrayOf<Char32>& chars,
+        /* [in] */ ArrayOf<Char32>* chars,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
         /* [in] */ Int32 contextIndex,
         /* [in] */ Int32 contextCount,
-        /* [in] */ Int32 flags,
-        /* [in] */ ArrayOf<Float>* advances,
-        /* [in] */ Int32 advancesIndex,
-        /* [out] */ Float* advance);
-
-    /**
-     * Convenience overload that takes a char array instead of a
-     * String.
-     *
-     * @see #getTextRunAdvances(String, int, int, int, int, int, float[], int, int)
-     * @hide
-     */
-    virtual CARAPI GetTextRunAdvances(
-        /* [in] */ const ArrayOf<Char32>& chars,
-        /* [in] */ Int32 index,
-        /* [in] */ Int32 count,
-        /* [in] */ Int32 contextIndex,
-        /* [in] */ Int32 contextCount,
-        /* [in] */ Int32 flags,
-        /* [in] */ ArrayOf<Float>* advances,
-        /* [in] */ Int32 advancesIndex,
-        /* [in] */ Int32 reserved,
-        /* [out] */ Float* advance);
-
-    /**
-     * Convenience overload that takes a CharSequence instead of a
-     * String.
-     *
-     * @see #getTextRunAdvances(String, int, int, int, int, int, float[], int)
-     * @hide
-     */
-    virtual CARAPI GetTextRunAdvances(
-        /* [in] */ ICharSequence* text,
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end,
-        /* [in] */ Int32 contextStart,
-        /* [in] */ Int32 contextEnd,
-        /* [in] */ Int32 flags,
+        /* [in] */ Boolean isRtl,
         /* [in] */ ArrayOf<Float>* advances,
         /* [in] */ Int32 advancesIndex,
         /* [out] */ Float* advance);
@@ -1025,10 +1024,9 @@ public:
         /* [in] */ Int32 end,
         /* [in] */ Int32 contextStart,
         /* [in] */ Int32 contextEnd,
-        /* [in] */ Int32 flags,
+        /* [in] */ Boolean isRtl,
         /* [in] */ ArrayOf<Float>* advances,
         /* [in] */ Int32 advancesIndex,
-        /* [in] */ Int32 reserved,
         /* [out] */ Float* advance);
 
     /**
@@ -1079,64 +1077,9 @@ public:
         /* [in] */ Int32 end,
         /* [in] */ Int32 contextStart,
         /* [in] */ Int32 contextEnd,
-        /* [in] */ Int32 flags,
+        /* [in] */ Boolean isRtl,
         /* [in] */ ArrayOf<Float>* advances,
         /* [in] */ Int32 advancesIndex,
-        /* [out] */ Float* advance);
-
-    /**
-     * Returns the total advance width for the characters in the run
-     * between start and end, and if advances is not null, the advance
-     * assigned to each of these characters (java chars).
-     *
-     * <p>The trailing surrogate in a valid surrogate pair is assigned
-     * an advance of 0.  Thus the number of returned advances is
-     * always equal to count, not to the number of unicode codepoints
-     * represented by the run.
-     *
-     * <p>In the case of conjuncts or combining marks, the total
-     * advance is assigned to the first logical character, and the
-     * following characters are assigned an advance of 0.
-     *
-     * <p>This generates the sum of the advances of glyphs for
-     * characters in a reordered cluster as the width of the first
-     * logical character in the cluster, and 0 for the widths of all
-     * other characters in the cluster.  In effect, such clusters are
-     * treated like conjuncts.
-     *
-     * <p>The shaping bounds limit the amount of context available
-     * outside start and end that can be used for shaping analysis.
-     * These bounds typically reflect changes in bidi level or font
-     * metrics across which shaping does not occur.
-     *
-     * @param text the text to measure. Cannot be null.
-     * @param start the index of the first character to measure
-     * @param end the index past the last character to measure
-     * @param contextStart the index of the first character to use for shaping context,
-     * must be <= start
-     * @param contextEnd the index past the last character to use for shaping context,
-     * must be >= end
-     * @param flags the flags to control the advances, either {@link #DIRECTION_LTR}
-     * or {@link #DIRECTION_RTL}
-     * @param advances array to receive the advances, must have room for all advances,
-     * can be null if only total advance is needed
-     * @param advancesIndex the position in advances at which to put the
-     * advance corresponding to the character at start
-     * @param reserved int reserved value
-     * @return the total advance
-     *
-     * @hide
-     */
-    virtual CARAPI GetTextRunAdvances(
-        /* [in] */ const String& text,
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end,
-        /* [in] */ Int32 contextStart,
-        /* [in] */ Int32 contextEnd,
-        /* [in] */ Int32 flags,
-        /* [in] */ ArrayOf<Float>* advances,
-        /* [in] */ Int32 advancesIndex,
-        /* [in] */ Int32 reserved,
         /* [out] */ Float* advance);
 
     /**
@@ -1166,10 +1109,10 @@ public:
      * @hide
      */
     virtual CARAPI GetTextRunCursor(
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 contextStart,
         /* [in] */ Int32 contextLength,
-        /* [in] */ Int32 flags,
+        /* [in] */ Int32 dir,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 cursorOpt,
         /* [out] */ Int32* position);
@@ -1204,7 +1147,7 @@ public:
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 contextStart,
         /* [in] */ Int32 contextEnd,
-        /* [in] */ Int32 flags,
+        /* [in] */ Int32 dir,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 cursorOpt,
         /* [out] */ Int32* position);
@@ -1239,7 +1182,7 @@ public:
         /* [in] */ const String& text,
         /* [in] */ Int32 contextStart,
         /* [in] */ Int32 contextEnd,
-        /* [in] */ Int32 flags,
+        /* [in] */ Int32 dir,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 cursorOpt,
         /* [out] */ Int32* position);
@@ -1258,7 +1201,7 @@ public:
      *                 be allocated by the caller.
      */
     virtual CARAPI GetTextPath(
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
         /* [in] */ Float x,
@@ -1313,12 +1256,11 @@ public:
      *               allocated by the caller.
      */
     virtual CARAPI GetTextBounds(
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
         /* [in] */ IRect* bounds);
 
-protected:
     CARAPI constructor();
 
     CARAPI constructor(
@@ -1335,105 +1277,103 @@ private:
     CARAPI_(void) SetClassVariablesFrom(
         /* [in] */ Paint* paint);
 
-    CARAPI_(void) NativeSetShadowLayer(
-        /* [in] */ Float radius,
-        /* [in] */ Float dx,
-        /* [in] */ Float dy,
-        /* [in] */ Int32 color);
+    static CARAPI_(Int64) NativeInit();
 
-    static CARAPI_(Int32) NativeInit();
-
-    static CARAPI_(Int32) NativeInitWithPaint(
-        /* [in] */ Int32 nObj);
+    static CARAPI_(Int64) NativeInitWithPaint(
+        /* [in] */ Int64 nObj);
 
     static CARAPI_(void) NativeReset(
-        /* [in] */ Int32 nObj);
+        /* [in] */ Int64 nObj);
 
     static CARAPI_(void) NativeSet(
-        /* [in] */ Int32 nDst,
-        /* [in] */ Int32 nSrc);
+        /* [in] */ Int64 nDst,
+        /* [in] */ Int64 nSrc);
 
     static CARAPI_(Int32) NativeGetStyle(
-        /* [in] */ Int32 nObj);
+        /* [in] */ Int64 nObj);
 
     static CARAPI_(void) NativeSetStyle(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ PaintStyle style);
 
     static CARAPI_(Int32) NativeGetStrokeCap(
-        /* [in] */ Int32 nObj);
+        /* [in] */ Int64 nObj);
 
     static CARAPI_(void) NativeSetStrokeCap(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ PaintCap cap);
 
     static CARAPI_(Int32) NativeGetStrokeJoin(
-        /* [in] */ Int32 nObj);
+        /* [in] */ Int64 nObj);
 
     static CARAPI_(void) NativeSetStrokeJoin(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ PaintJoin join);
 
     static CARAPI_(Boolean) NativeGetFillPath(
-        /* [in] */ Int32 nObj,
-        /* [in] */ Int32 src,
-        /* [in] */ Int32 dst);
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 src,
+        /* [in] */ Int64 dst);
 
-    static CARAPI_(Int32) NativeSetShader(
-        /* [in] */ Int32 nObj,
-        /* [in] */ Int32 shader);
+    static CARAPI_(Int64) NativeSetShader(
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 shader);
 
-    static CARAPI_(Int32) NativeSetColorFilter(
-        /* [in] */ Int32 nObj,
-        /* [in] */ Int32 filter);
+    static CARAPI_(Int64) NativeSetColorFilter(
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 filter);
 
-    static CARAPI_(Int32) NativeSetXfermode(
-        /* [in] */ Int32 nObj,
-        /* [in] */ Int32 xfermode);
+    static CARAPI_(Int64) NativeSetXfermode(
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 xfermode);
 
-    static CARAPI_(Int32) NativeSetPathEffect(
-        /* [in] */ Int32 nObj,
-        /* [in] */ Int32 effect);
+    static CARAPI_(Int64) NativeSetPathEffect(
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 effect);
 
-    static CARAPI_(Int32) NativeSetMaskFilter(
-        /* [in] */ Int32 nObj,
-        /* [in] */ Int32 maskfilter);
+    static CARAPI_(Int64) NativeSetMaskFilter(
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 maskfilter);
 
-    static CARAPI_(Int32) NativeSetTypeface(
-        /* [in] */ Int32 nObj,
-        /* [in] */ Int32 typeface);
+    static CARAPI_(Int64) NativeSetTypeface(
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 typeface);
 
-    static CARAPI_(Int32) NativeSetRasterizer(
-        /* [in] */ Int32 nObj,
-        /* [in] */ Int32 rasterizer);
+    static CARAPI_(Int64) NativeSetRasterizer(
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 rasterizer);
 
     static CARAPI_(Int32) NativeGetTextAlign(
-        /* [in] */ Int32 nObj);
+        /* [in] */ Int64 nObj);
 
     static CARAPI_(void) NativeSetTextAlign(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ PaintAlign align);
 
     static CARAPI_(void) NativeSetTextLocale(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ const String& locale);
 
     static CARAPI_(Int32) NativeGetTextWidths(
-        /* [in] */ Int32 nObj,
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 native_typeface,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
+        /* [in] */ Int32 bidiFlags,
         /* [out] */ ArrayOf<Float>* widths);
 
     static CARAPI_(Int32) NativeGetTextWidths(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 native_typeface,
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
+        /* [in] */ Int32 bidiFlags,
         /* [out] */ ArrayOf<Float>* widths);
 
     static CARAPI_(Int32) NativeGetTextGlyphs(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -1443,31 +1383,31 @@ private:
         /* [out] */ ArrayOf<Char32>* glyphs);
 
     static CARAPI_(Float) NativeGetTextRunAdvances(
-        /* [in] */ Int32 paint,
+        /* [in] */ Int64 paint,
+        /* [in] */ Int64 native_typeface,
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ Int32 contextStart,
         /* [in] */ Int32 contextEnd,
-        /* [in] */ Int32 flags,
+        /* [in] */ Boolean isRtl,
         /* [in] */ ArrayOf<Float>* advances,
-        /* [in] */ Int32 advancesIndex,
-        /* [in] */ Int32 reserved);
+        /* [in] */ Int32 advancesIndex);
 
     static CARAPI_(Float) NativeGetTextRunAdvances(
-        /* [in] */ Int32 paint,
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ Int64 paint,
+        /* [in] */ Int64 native_typeface,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
         /* [in] */ Int32 contextIndex,
         /* [in] */ Int32 contextCount,
-        /* [in] */ Int32 flags,
+        /* [in] */ Boolean isRtl,
         /* [in] */ ArrayOf<Float>* advances,
-        /* [in] */ Int32 advancesIndex,
-        /* [in] */ Int32 reserved);
+        /* [in] */ Int32 advancesIndex);
 
     static CARAPI_(Int32) NativeGetTextRunCursor(
-        /* [in] */ Int32 paint,
+        /* [in] */ Int64 paint,
         /* [in] */ const String& text,
         /* [in] */ Int32 contextStart,
         /* [in] */ Int32 contextEnd,
@@ -1476,8 +1416,8 @@ private:
         /* [in] */ Int32 cursorOpt);
 
     static CARAPI_(Int32) NativeGetTextRunCursor(
-        /* [in] */ Int32 paint,
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ Int64 paint,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 contextStart,
         /* [in] */ Int32 contextCount,
         /* [in] */ Int32 flags,
@@ -1485,66 +1425,102 @@ private:
         /* [in] */ Int32 cursorOpt);
 
     static CARAPI_(void) NativeGetTextPath(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 native_typeface,
         /* [in] */ Int32 bidiFlags,
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
         /* [in] */ Float x,
         /* [in] */ Float y,
-        /* [in] */ Int32 path);
+        /* [in] */ Int64 path);
 
     static CARAPI_(void) NativeGetTextPath(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 native_typeface,
         /* [in] */ Int32 bidiFlags,
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ Float x,
         /* [in] */ Float y,
-        /* [in] */ Int32 path);
+        /* [in] */ Int64 path);
 
     static CARAPI_(void) NativeGetStringBounds(
-        /* [in] */ Int32 nObj,
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 native_typeface,
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
+        /* [in] */ Int32 bidiFlags,
         /* [in] */ IRect* bounds);
 
     static CARAPI_(void) NativeGetCharArrayBounds(
-        /* [in] */ Int32 nObj,
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ Int64 nObj,
+        /* [in] */ Int64 native_typeface,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
+        /* [in] */ Int32 bidiFlags,
         /* [in] */ IRect* bounds);
 
     static CARAPI_(void) NativeFinalizer(
-        /* [in] */ Int32 nativePaint);
+        /* [in] */ Int64 nativePaint);
+
+    static CARAPI_(void) NativeSetShadowLayer(
+        /* [in] */ Int64 native_object,
+        /* [in] */ Float radius,
+        /* [in] */ Float dx,
+        /* [in] */ Float dy,
+        /* [in] */ Int32 color);
+
+    static CARAPI_(Boolean) NativeHasShadowLayer(
+        /* [in] */ Int64 native_object);
+
+    static CARAPI_(Float) NativeGetLetterSpacing(
+        /* [in] */ Int64 native_object);
+
+    static CARAPI_(void) NativeSetLetterSpacing(
+        /* [in] */ Int64 native_object,
+        /* [in] */ Float letterSpacing);
+
+    static CARAPI_(void) NativeSetFontFeatureSettings(
+        /* [in] */ Int64 native_object,
+        /* [in] */ const String& settings);
 
     CARAPI_(Float) NativeMeasureText(
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
-        /* [in] */ Int32 count);
+        /* [in] */ Int32 count,
+        /* [in] */ Int32 bidiFlags);
 
     CARAPI_(Float) NativeMeasureText(
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
-        /* [in] */ Int32 end);
+        /* [in] */ Int32 end,
+        /* [in] */ Int32 bidiFlags);
 
     CARAPI_(Float) NativeMeasureText(
-        /* [in] */ const String& text);
+        /* [in] */ const String& text,
+        /* [in] */ Int32 bidiFlags);
 
-    CARAPI_(Int32) NativeBreakText(
-        /* [in] */ const ArrayOf<Char32>& text,
+    static CARAPI_(Int32) NativeBreakText(
+        /* [in] */ Int64 native_object,
+        /* [in] */ Int64 native_typeface,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
         /* [in] */ Float maxWidth,
+        /* [in] */ Int32 bidiFlags,
         /* [in] */ ArrayOf<Float>* measuredWidth);
 
     CARAPI_(Int32) NativeBreakText(
+        /* [in] */ Int64 native_object,
+        /* [in] */ Int64 native_typeface,
         /* [in] */ const String& text,
         /* [in] */ Boolean measureForwards,
         /* [in] */ Float maxWidth,
+        /* [in] */ Int32 bidiFlags,
         /* [in] */ ArrayOf<Float>* measuredWidth);
 
     CARAPI_(AutoPtr<ILocale>) GetDefaultLocale();
@@ -1552,11 +1528,11 @@ private:
 public:
     Int32 mNativePaint;
 
-    Boolean mHasShadow;
-    Float mShadowDx;
-    Float mShadowDy;
-    Float mShadowRadius;
-    Int32 mShadowColor;
+    /**
+     * @hide
+     */
+    Int64 mNativeTypeface;
+
     Int32 mBidiFlags;
 
     static const PaintStyle sStyleArray[];
@@ -1565,7 +1541,7 @@ public:
     static const PaintAlign sAlignArray[];
 
     // we use this when we first create a paint
-    static const Int32 DEFAULT_PAINT_FLAGS = IPaint::DEV_KERN_TEXT_FLAG;
+    static const Int32 DEFAULT_PAINT_FLAGS;
 
 private:
     AutoPtr<IColorFilter> mColorFilter;
@@ -1581,23 +1557,24 @@ private:
     Float mInvCompatScaling;
 
     AutoPtr<ILocale> mLocale;
+    String      mFontFeatureSettings;
 
     /**
      * Maximum Bidi flag value.
      * @hide
      */
-    static const Int32 BIDI_MAX_FLAG_VALUE = IPaint::BIDI_FORCE_RTL;
+    static const Int32 BIDI_MAX_FLAG_VALUE;
 
     /**
      * Mask for bidi flags.
      * @hide
      */
-    static const Int32 BIDI_FLAG_MASK = 0x7;
+    static const Int32 BIDI_FLAG_MASK;
 
    /**
     * Maximum cursor option value.
     */
-    static const Int32 CURSOR_OPT_MAX_VALUE = IPaint::CURSOR_AT;
+    static const Int32 CURSOR_OPT_MAX_VALUE;
 };
 
 } // namespace Graphics

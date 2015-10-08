@@ -16,6 +16,8 @@ CarClass(CDiscretePathEffect)
 public:
     CAR_OBJECT_DECL();
 
+    CAR_INTERFACE_DECL();
+
     /**
      * Chop the path into lines of segmentLength, randomly deviating from the
      * original path by deviation.
@@ -24,11 +26,8 @@ public:
         /* [in] */ Float segmentLength,
         /* [in] */ Float deviation);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
 private:
-    static CARAPI_(Int32) NativeCreate(
+    static CARAPI_(Int64) NativeCreate(
         /* [in] */ Float length,
         /* [in] */ Float deviation);
 };

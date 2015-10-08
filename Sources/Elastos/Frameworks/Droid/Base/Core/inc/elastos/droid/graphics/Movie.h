@@ -4,7 +4,9 @@
 
 #include "Elastos.Droid.Core_server.h"
 #include <Elastos.CoreLibrary.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::IO::IInputStream;
 
 namespace Elastos {
@@ -12,25 +14,16 @@ namespace Droid {
 namespace Graphics {
 
 class Movie
-    : public ElRefBase
+    : public Object
     , public IMovie
 {
 public:
+    CAR_INTERFACE_DECL();
+
     Movie(
-        /* [in] */ Int32 nativeMovie);
+        /* [in] */ Int64 nativeMovie);
 
-    ~Movie();
-
-    CARAPI_(PInterface) Probe(
-    /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+    virtual ~Movie();
 
     CARAPI GetWidth(
         /* [out] */ Int32* width);
@@ -64,7 +57,7 @@ public:
         /* [out] */ IMovie** movie);
 
     static CARAPI DecodeByteArray(
-        /* [in] */ const ArrayOf<Byte>& data,
+        /* [in] */ ArrayOf<Byte>* data,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [out] */ IMovie** movie);
@@ -79,10 +72,16 @@ private:
         /* [out] */IMovie** movie);
 
     static CARAPI_(void) NativeDestructor(
-        /* [in] */ Int32 nativeMovie);
+        /* [in] */ Int64 nativeMovie);
+
+    static CARAPI_(AutoPtr<IMovie>) NativeDecodeAsset(
+        /* [in] */ Int64 asset);
+
+    static CARAPI_(AutoPtr<IMovie>) NativeDecodeStream(
+        /* [in] */ IInputStream* is);
 
 private:
-    Int32 mNativeMovie;
+    Int64 mNativeMovie;
 };
 
 } // namespace Graphics

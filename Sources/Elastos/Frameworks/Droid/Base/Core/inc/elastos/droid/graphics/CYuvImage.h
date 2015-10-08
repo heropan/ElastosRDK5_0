@@ -3,7 +3,9 @@
 
 #include "_Elastos_Droid_Graphics_CYuvImage.h"
 #include <Elastos.CoreLibrary.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::IO::IOutputStream;
 
 namespace Elastos {
@@ -20,8 +22,14 @@ namespace Graphics {
  * region by left, top, width and height.
  */
 CarClass(CYuvImage)
+    , public Object
+    , public IYuvImage
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     /**
      * Construct an YuvImage.
      *

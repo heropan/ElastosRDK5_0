@@ -133,7 +133,7 @@ public:
      *         the color array's length is less than the number of pixels.
      */
     CARAPI CreateBitmap(
-        /* [in] */ const ArrayOf<Int32>& colors,
+        /* [in] */ ArrayOf<Int32>* colors,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
         /* [in] */ Int32 width,
@@ -157,7 +157,7 @@ public:
      *         the color array's length is less than the number of pixels.
      */
     CARAPI CreateBitmap(
-        /* [in] */ const ArrayOf<Int32>& colors,
+        /* [in] */ ArrayOf<Int32>* colors,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ BitmapConfig config,
@@ -203,7 +203,7 @@ public:
      */
     CARAPI CreateBitmap(
         /* [in] */ IDisplayMetrics* display,
-        /* [in] */ const ArrayOf<Int32>& colors,
+        /* [in] */ ArrayOf<Int32>* colors,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
         /* [in] */ Int32 width,
@@ -230,7 +230,7 @@ public:
      */
     CARAPI CreateBitmap(
         /* [in] */ IDisplayMetrics* display,
-        /* [in] */ const ArrayOf<Int32>& colors,
+        /* [in] */ ArrayOf<Int32>* colors,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ BitmapConfig config,
@@ -271,18 +271,41 @@ public:
         /* [out] */ IBitmap** bitmap);
 
     CARAPI DecodeByteArray(
-        /* [in] */ const ArrayOf<Byte>& data,
+        /* [in] */ ArrayOf<Byte>* data,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [in] */ IBitmapFactoryOptions* opts,
         /* [out] */ IBitmap** bitmap);
 
     CARAPI DecodeByteArray(
-        /* [in] */ const ArrayOf<Byte>& data,
+        /* [in] */ ArrayOf<Byte>* data,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [out] */ IBitmap** bitmap);
 
+    /**
+     * Decode an input stream into a bitmap. If the input stream is null, or
+     * cannot be used to decode a bitmap, the function returns null.
+     * The stream's position will be where ever it was after the encoded data
+     * was read.
+     *
+     * @param is The input stream that holds the raw data to be decoded into a
+     *           bitmap.
+     * @param outPadding If not null, return the padding rect for the bitmap if
+     *                   it exists, otherwise set padding to [-1,-1,-1,-1]. If
+     *                   no bitmap is returned (null) then padding is
+     *                   unchanged.
+     * @param opts null-ok; Options that control downsampling and whether the
+     *             image should be completely decoded, or just is size returned.
+     * @return The decoded bitmap, or null if the image data could not be
+     *         decoded, or, if opts is non-null, if opts requested only the
+     *         size be returned (in opts.outWidth and opts.outHeight)
+     *
+     * <p class="note">Prior to {@link android.os.Build.VERSION_CODES#KITKAT},
+     * if {@link InputStream#markSupported is.markSupported()} returns true,
+     * <code>is.mark(1024)</code> would be called. As of
+     * {@link android.os.Build.VERSION_CODES#KITKAT}, this is no longer the case.</p>
+     */
     CARAPI DecodeStream(
         /* [in] */ IInputStream* is,
         /* [in] */ IRect* outPadding,
@@ -314,24 +337,16 @@ public:
         /* [out] */ IBitmap** bitmap);
 
 private:
-    static CARAPI_(AutoPtr<IBitmap>) FinishDecode(
-        /* [in] */ IBitmap* bm,
-        /* [in] */ IRect* outPadding,
-        /* [in] */ IBitmapFactoryOptions* opts);
+    // static CARAPI_(AutoPtr<IBitmap>) FinishDecode(
+    //     /* [in] */ IBitmap* bm,
+    //     /* [in] */ IRect* outPadding,
+    //     /* [in] */ IBitmapFactoryOptions* opts);
 
     static CARAPI_(AutoPtr<IBitmap>) NativeDecodeStream(
         /* [in] */ IInputStream* is,
         /* [in] */ ArrayOf<Byte>* storage,
         /* [in] */ IRect* padding,
         /* [in] */ IBitmapFactoryOptions* opts);
-
-    static CARAPI_(AutoPtr<IBitmap>) NativeDecodeStream(
-        /* [in] */ IInputStream* is,
-        /* [in] */ ArrayOf<Byte>* storage,
-        /* [in] */ IRect* padding,
-        /* [in] */ IBitmapFactoryOptions* opts,
-        /* [in] */ Boolean applyScale,
-        /* [in] */ Float scale);
 
     static CARAPI_(AutoPtr<IBitmap>) NativeDecodeFileDescriptor(
         /* [in] */ IFileDescriptor* fd,
@@ -339,33 +354,45 @@ private:
         /* [in] */ IBitmapFactoryOptions* opts);
 
     static CARAPI_(AutoPtr<IBitmap>) NativeDecodeAsset(
-        /* [in] */ Int32 asset,
+        /* [in] */ Int64 asset,
         /* [in] */ IRect* padding,
         /* [in] */ IBitmapFactoryOptions* opts);
 
-    static CARAPI_(AutoPtr<IBitmap>) NativeDecodeAsset(
-        /* [in] */ Int32 asset,
-        /* [in] */ IRect* padding,
-        /* [in] */ IBitmapFactoryOptions* opts,
-        /* [in] */ Boolean applyScale,
-        /* [in] */ Float scale);
-
     static CARAPI_(AutoPtr<IBitmap>) NativeDecodeByteArray(
-        /* [in] */ const ArrayOf<Byte>& data,
+        /* [in] */ ArrayOf<Byte>* data,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [in] */ IBitmapFactoryOptions* opts);
 
-    static CARAPI_(void) NativeScaleNinePatch(
-        /* [in] */ const ArrayOf<Byte>& chunkObject,
-        /* [in] */ Float scale,
-        /* [in] */ IRect* padding);
+    // static CARAPI_(void) NativeScaleNinePatch(
+    //     /* [in] */ ArrayOf<Byte>* chunkObject,
+    //     /* [in] */ Float scale,
+    //     /* [in] */ IRect* padding);
 
     static CARAPI_(Boolean) NativeIsSeekable(
         /* [in] */ IFileDescriptor* fd);
 
+    /**
+     * Set the newly decoded bitmap's density based on the Options.
+     */
+    static CARAPI_(void) SetDensityFromOptions(
+        /* [in] */ IBitmap* outputBitmap,
+        /* [in] */ IBitmapFactoryOptions* opts);
+
+    /**
+     * Private helper function for decoding an InputStream natively. Buffers the input enough to
+     * do a rewind as needed, and supplies temporary storage if necessary. is MUST NOT be null.
+     */
+    static CARAPI_(AutoPtr<IBitmap>) DecodeStreamInternal(
+        /* [in] */ IInputStream* is,
+        /* [in] */ IRect* outPadding,
+        /* [in] */ IBitmapFactoryOptions* opts);
+
 private:
+    //ACTIONS_CODE_START(lishiyuan, comment: sync)
+    //private static final int DECODE_BUFFER_SIZE = 16 * 1024;
     static const Int32 DECODE_BUFFER_SIZE;
+    //ACTIONS_CODE_END
 };
 
 } // namespace Graphics

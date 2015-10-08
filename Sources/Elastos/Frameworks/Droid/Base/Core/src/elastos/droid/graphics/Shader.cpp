@@ -2,7 +2,6 @@
 #include "graphics/Shader.h"
 #include "graphics/CMatrix.h"
 #include <skia/core/SkShader.h>
-#include <hwui/SkiaShader.h>
 
 namespace Elastos {
 namespace Droid {
@@ -15,60 +14,85 @@ extern const InterfaceID EIID_Shader =
 CAR_INTERFACE_IMPL(Shader, Object, IShader);
 Shader::~Shader()
 {
-    NativeDestructor(mNativeInstance, mNativeShader);
+    NativeDestructor(mNativeInstance);
 }
 
-Boolean Shader::GetLocalMatrix(
-    /* [in, out] */ IMatrix* localM)
+ECode Shader::GetLocalMatrix(
+    /* [in, out] */ IMatrix* localM,
+    /* [out] */ Boolean* has)
 {
+    VALIDATE_NOT_NULL(has);
     if (mLocalMatrix != NULL) {
         localM->Set(mLocalMatrix);
         Boolean result;
         mLocalMatrix->IsIdentity(&result);
-        return !result;
+        *has = !result;
+        return NOERROR;
     }
-    return FALSE;
+    *has = FALSE;
+    return NOERROR;
 }
 
 ECode Shader::SetLocalMatrix(
     /* [in] */ IMatrix* localM)
 {
     mLocalMatrix = localM;
-    NativeSetLocalMatrix(mNativeInstance, mNativeShader,
-            localM == NULL ? 0 : ((Matrix*)localM->Probe(EIID_Matrix))->mNativeInstance);
+    NativeSetLocalMatrix(mNativeInstance,
+            localM == NULL ? 0 : ((Matrix*)(IMatrix*)localM->Probe(EIID_Matrix))->mNativeInstance);
     return NOERROR;
 }
 
-void Shader::NativeDestructor(
-    /* [in] */ Int32 shader,
-    /* [in] */ Int32 skiaShader)
+void Shader::Init(
+    /* [in] */ Int64 ni)
 {
-    SkSafeUnref((SkShader*)shader);
-    // skiaShader == NULL when not !USE_OPENGL_RENDERER, so no need to delete it outside the ifdef
-#ifdef USE_OPENGL_RENDERER
-    if (android::uirenderer::Caches::hasInstance()) {
-        android::uirenderer::Caches::getInstance().resourceCache.destructor((SkiaShader*)skiaShader);
+    mNativeInstance = ni;
+}
+
+AutoPtr<IShader> Shader::Copy()
+{
+    AutoPtr<IShader> copy = new Shader();
+    CopyLocalMatrix(copy);
+    return copy;
+}
+
+void Shader::CopyLocalMatrix(
+    /* [in] */ IShader* dest)
+{
+    if (mLocalMatrix != NULL) {
+        AutoPtr<IMatrix> lm = new Matrix();
+        Boolean has = FALSE;
+        GetLocalMatrix(lm, &has);
+        dest->SetLocalMatrix(lm);
     } else {
-        delete (SkiaShader*)skiaShader;
+        dest->SetLocalMatrix(NULL);
     }
-#endif
+}
+
+Int64 Shader::GetNativeInstance()
+{
+    return mNativeInstance;
+}
+
+void Shader::NativeDestructor(
+    /* [in] */ Int64 shaderHandle)
+{
+    SkShader* shader = reinterpret_cast<SkShader*>(shaderHandle);
+    SkSafeUnref(shader);
 }
 
 void Shader::NativeSetLocalMatrix(
-    /* [in] */ Int32 shader,
-    /* [in] */ Int32 skiaShader,
-    /* [in] */ Int32 matrix)
+    /* [in] */ Int64 shaderHandle,
+    /* [in] */ Int64 matrixHandle)
 {
+    SkShader* shader       = reinterpret_cast<SkShader*>(shaderHandle);
+    const SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixHandle);
     if (shader) {
-        if (0 == matrix) {
-            ((SkShader*)shader)->resetLocalMatrix();
+        if (matrix) {
+            shader->setLocalMatrix(*matrix);
+        } else {
+            shader->resetLocalMatrix();
         }
-        else {
-            ((SkShader*)shader)->setLocalMatrix(*(SkMatrix*)matrix);
-        }
-#ifdef USE_OPENGL_RENDERER
-        ((SkiaShader*)skiaShader)->setMatrix((SkMatrix*)matrix);
-#endif
+        shader->setGenerationID(shader->getGenerationID() + 1);
     }
 }
 

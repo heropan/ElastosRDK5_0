@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_GRAPHICS_CBITMAPFACTORYOPTIONS_H__
 
 #include "_Elastos_Droid_Graphics_CBitmapFactoryOptions.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -85,6 +88,12 @@ public:
     CARAPI SetInScaled(
         /* [in] */ Boolean scaled);
 
+    CARAPI GetInPremultiplied(
+        /* [out] */ Boolean* premultiplied);
+
+    CARAPI SetInPremultiplied(
+        /* [in] */ Boolean premultiplied);
+
     CARAPI GetInPurgeable(
         /* [out] */ Boolean* purgeable);
 
@@ -139,22 +148,54 @@ private:
 public:
     /**
      * If set, decode methods that take the Options object will attempt to
-     * reuse this bitmap when loading content. If the decode operation cannot
-     * use this bitmap, the decode method will return <code>null</code> and
-     * will throw an IllegalArgumentException. The
-     * current implementation necessitates that the reused bitmap be of the
-     * same size as the source content and in jpeg or png format (whether as a
-     * resource or as a stream). The {@link android.graphics.Bitmap.Config
-     * configuration} of the reused bitmap will override the setting of
-     * {@link #inPreferredConfig}, if set.
+     * reuse this bitmap when loading content. If the decode operation
+     * cannot use this bitmap, the decode method will return
+     * <code>null</code> and will throw an IllegalArgumentException. The
+     * current implementation necessitates that the reused bitmap be
+     * mutable, and the resulting reused bitmap will continue to remain
+     * mutable even when decoding a resource which would normally result in
+     * an immutable bitmap.</p>
      *
      * <p>You should still always use the returned Bitmap of the decode
      * method and not assume that reusing the bitmap worked, due to the
      * constraints outlined above and failure situations that can occur.
      * Checking whether the return value matches the value of the inBitmap
-     * set in the Options structure is a way to see if the bitmap was reused,
-     * but in all cases you should use the returned Bitmap to make sure
-     * that you are using the bitmap that was used as the decode destination.</p>
+     * set in the Options structure will indicate if the bitmap was reused,
+     * but in all cases you should use the Bitmap returned by the decoding
+     * function to ensure that you are using the bitmap that was used as the
+     * decode destination.</p>
+     *
+     * <h3>Usage with BitmapFactory</h3>
+     *
+     * <p>As of {@link android.os.Build.VERSION_CODES#KITKAT}, any
+     * mutable bitmap can be reused by {@link BitmapFactory} to decode any
+     * other bitmaps as long as the resulting {@link Bitmap#getByteCount()
+     * byte count} of the decoded bitmap is less than or equal to the {@link
+     * Bitmap#getAllocationByteCount() allocated byte count} of the reused
+     * bitmap. This can be because the intrinsic size is smaller, or its
+     * size post scaling (for density / sample size) is smaller.</p>
+     *
+     * <p class="note">Prior to {@link android.os.Build.VERSION_CODES#KITKAT}
+     * additional constraints apply: The image being decoded (whether as a
+     * resource or as a stream) must be in jpeg or png format. Only equal
+     * sized bitmaps are supported, with {@link #inSampleSize} set to 1.
+     * Additionally, the {@link android.graphics.Bitmap.Config
+     * configuration} of the reused bitmap will override the setting of
+     * {@link #inPreferredConfig}, if set.</p>
+     *
+     * <h3>Usage with BitmapRegionDecoder</h3>
+     *
+     * <p>BitmapRegionDecoder will draw its requested content into the Bitmap
+     * provided, clipping if the output content size (post scaling) is larger
+     * than the provided Bitmap. The provided Bitmap's width, height, and
+     * {@link Bitmap.Config} will not be changed.
+     *
+     * <p class="note">BitmapRegionDecoder support for {@link #inBitmap} was
+     * introduced in {@link android.os.Build.VERSION_CODES#JELLY_BEAN}. All
+     * formats supported by BitmapRegionDecoder support Bitmap reuse via
+     * {@link #inBitmap}.</p>
+     *
+     * @see Bitmap#reconfigure(int,int, android.graphics.Bitmap.Config)
      */
     AutoPtr<IBitmap> mInBitmap;
 
@@ -179,9 +220,8 @@ public:
      * pixel in the decoded bitmap. For example, inSampleSize == 4 returns
      * an image that is 1/4 the width/height of the original, and 1/16 the
      * number of pixels. Any value <= 1 is treated the same as 1. Note: the
-     * decoder will try to fulfill this request, but the resulting bitmap
-     * may have different dimensions that precisely what has been requested.
-     * Also, powers of 2 are often faster/easier for the decoder to honor.
+     * decoder uses a final value based on powers of 2, any other value will
+     * be rounded down to the nearest power of 2.
      */
     Int32 mInSampleSize;
 
@@ -199,10 +239,38 @@ public:
 
 
     /**
+     * If true (which is the default), the resulting bitmap will have its
+     * color channels pre-multipled by the alpha channel.
+     *
+     * <p>This should NOT be set to false for images to be directly drawn by
+     * the view system or through a {@link Canvas}. The view system and
+     * {@link Canvas} assume all drawn images are pre-multiplied to simplify
+     * draw-time blending, and will throw a RuntimeException when
+     * un-premultiplied are drawn.</p>
+     *
+     * <p>This is likely only useful if you want to manipulate raw encoded
+     * image data, e.g. with RenderScript or custom OpenGL.</p>
+     *
+     * <p>This does not affect bitmaps without an alpha channel.</p>
+     *
+     * <p>Setting this flag to false while setting {@link #inScaled} to true
+     * may result in incorrect colors.</p>
+     *
+     * @see Bitmap#hasAlpha()
+     * @see Bitmap#isPremultiplied()
+     * @see #inScaled
+     */
+    Boolean mInPremultiplied;
+
+    /**
      * If dither is true, the decoder will attempt to dither the decoded
      * image.
      */
     Boolean mInDither;
+
+    //ACTIONS_CODE_START(lishiyuan, comment: sync)
+    Boolean mNewOptsFlag;
+    //ACTIONS_CODE_END
 
     /**
      * The pixel density to use for the bitmap.  This will always result
@@ -283,36 +351,64 @@ public:
      * rather than relying on the graphics system scaling it each time it
      * is drawn to a Canvas.
      *
+     * <p>BitmapRegionDecoder ignores this flag, and will not scale output
+     * based on density. (though {@link #inSampleSize} is supported)</p>
+     *
      * <p>This flag is turned on by default and should be turned off if you need
      * a non-scaled version of the bitmap.  Nine-patch bitmaps ignore this
      * flag and are always scaled.
+     *
+     * <p>If {@link #inPremultiplied} is set to false, and the image has alpha,
+     * setting this flag to true may result in incorrect colors.
      */
     Boolean mInScaled;
 
     /**
-     * If this is set to true, then the resulting bitmap will allocate its
+     * @deprecated As of {@link android.os.Build.VERSION_CODES#LOLLIPOP}, this is
+     * ignored.
+     *
+     * In {@link android.os.Build.VERSION_CODES#KITKAT} and below, if this
+     * is set to true, then the resulting bitmap will allocate its
      * pixels such that they can be purged if the system needs to reclaim
      * memory. In that instance, when the pixels need to be accessed again
      * (e.g. the bitmap is drawn, getPixels() is called), they will be
      * automatically re-decoded.
      *
-     * For the re-decode to happen, the bitmap must have access to the
+     * <p>For the re-decode to happen, the bitmap must have access to the
      * encoded data, either by sharing a reference to the input
      * or by making a copy of it. This distinction is controlled by
      * inInputShareable. If this is true, then the bitmap may keep a shallow
      * reference to the input. If this is false, then the bitmap will
      * explicitly make a copy of the input data, and keep that. Even if
      * sharing is allowed, the implementation may still decide to make a
-     * deep copy of the input data.
+     * deep copy of the input data.</p>
+     *
+     * <p>While inPurgeable can help avoid big Dalvik heap allocations (from
+     * API level 11 onward), it sacrifices performance predictability since any
+     * image that the view system tries to draw may incur a decode delay which
+     * can lead to dropped frames. Therefore, most apps should avoid using
+     * inPurgeable to allow for a fast and fluid UI. To minimize Dalvik heap
+     * allocations use the {@link #inBitmap} flag instead.</p>
+     *
+     * <p class="note"><strong>Note:</strong> This flag is ignored when used
+     * with {@link #decodeResource(Resources, int,
+     * android.graphics.BitmapFactory.Options)} or {@link #decodeFile(String,
+     * android.graphics.BitmapFactory.Options)}.</p>
      */
+    // @Deprecated
     Boolean mInPurgeable;
 
     /**
-     * This field works in conjuction with inPurgeable. If inPurgeable is
-     * false, then this field is ignored. If inPurgeable is true, then this
-     * field determines whether the bitmap can share a reference to the
-     * input data (inputstream, array, etc.) or if it must make a deep copy.
+     * @deprecated As of {@link android.os.Build.VERSION_CODES#LOLLIPOP}, this is
+     * ignored.
+     *
+     * In {@link android.os.Build.VERSION_CODES#KITKAT} and below, this
+     * field works in conjuction with inPurgeable. If inPurgeable is false,
+     * then this field is ignored. If inPurgeable is true, then this field
+     * determines whether the bitmap can share a reference to the input
+     * data (inputstream, array, etc.) or if it must make a deep copy.
      */
+    // @Deprecated
     Boolean mInInputShareable;
 
     /**
@@ -325,16 +421,22 @@ public:
     Boolean mInPreferQualityOverSpeed;
 
     /**
-     * The resulting width of the bitmap, set independent of the state of
-     * inJustDecodeBounds. However, if there is an error trying to decode,
-     * outWidth will be set to -1.
+     * The resulting width of the bitmap. If {@link #inJustDecodeBounds} is
+     * set to false, this will be width of the output bitmap after any
+     * scaling is applied. If true, it will be the width of the input image
+     * without any accounting for scaling.
+     *
+     * <p>outWidth will be set to -1 if there is an error trying to decode.</p>
      */
     Int32 mOutWidth;
 
     /**
-     * The resulting height of the bitmap, set independent of the state of
-     * inJustDecodeBounds. However, if there is an error trying to decode,
-     * outHeight will be set to -1.
+     * The resulting height of the bitmap. If {@link #inJustDecodeBounds} is
+     * set to false, this will be height of the output bitmap after any
+     * scaling is applied. If true, it will be the height of the input image
+     * without any accounting for scaling.
+     *
+     * <p>outHeight will be set to -1 if there is an error trying to decode.</p>
      */
     Int32 mOutHeight;
 

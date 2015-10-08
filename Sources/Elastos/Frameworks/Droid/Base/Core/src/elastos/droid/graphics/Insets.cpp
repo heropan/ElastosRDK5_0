@@ -9,6 +9,7 @@ namespace Graphics {
 
 const AutoPtr<Insets> Insets::NONE = new Insets(0, 0, 0, 0);
 
+CAR_INTERFACE_IMPL(Insets, Object, IInsets);
 Insets::Insets(
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
@@ -19,37 +20,6 @@ Insets::Insets(
     , mRight(right)
     , mBottom(bottom)
 {}
-
-PInterface Insets::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IInsets*)this;
-    }
-    else if (riid == EIID_IInsets) {
-        return (IInsets*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 Insets::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Insets::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Insets::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    assert(0);
-    return E_NOT_IMPLEMENTED;
-}
 
 AutoPtr<Insets> Insets::Of(
     /* [in] */ Int32 left,

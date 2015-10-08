@@ -3,16 +3,23 @@
 #define __ELASTOS_DROID_GRAPHICS_CPATH_H__
 
 #include "_Elastos_Droid_Graphics_CPath.h"
+#include <elastos/core/Object.h>
 
-
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
 CarClass(CPath)
+    , public Object
+    , public IPath
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     CPath();
 
     ~CPath();
@@ -38,6 +45,58 @@ public:
     */
     CARAPI Set(
         /* [in] */ IPath* src);
+
+    /**
+     * Set this path to the result of applying the Op to this path and the specified path.
+     * The resulting path will be constructed from non-overlapping contours.
+     * The curve order is reduced where possible so that cubics may be turned
+     * into quadratics, and quadratics maybe turned into lines.
+     *
+     * @param path The second operand (for difference, the subtrahend)
+     *
+     * @return True if operation succeeded, false otherwise and this path remains unmodified.
+     *
+     * @see Op
+     * @see #op(Path, Path, android.graphics.Path.Op)
+     */
+    CARAPI Op(
+        /* [in] */ IPath* path,
+        /* [in] */ PathOp op,
+        /* [out] */ Boolean* succeeded);
+
+    /**
+     * Set this path to the result of applying the Op to the two specified paths.
+     * The resulting path will be constructed from non-overlapping contours.
+     * The curve order is reduced where possible so that cubics may be turned
+     * into quadratics, and quadratics maybe turned into lines.
+     *
+     * @param path1 The first operand (for difference, the minuend)
+     * @param path2 The second operand (for difference, the subtrahend)
+     *
+     * @return True if operation succeeded, false otherwise and this path remains unmodified.
+     *
+     * @see Op
+     * @see #op(Path, android.graphics.Path.Op)
+     */
+    CARAPI Op(
+        /* [in] */ IPath* path1,
+        /* [in] */ IPath* path2,
+        /* [in] */ PathOp op,
+        /* [out] */ Boolean* succeeded);
+
+    /**
+     * Returns the path's convexity, as defined by the content of the path.
+     * <p>
+     * A path is convex if it has a single contour, and only ever curves in a
+     * single direction.
+     * <p>
+     * This function will calculate the convexity of the path from its control
+     * points, and cache the result.
+     *
+     * @return True if the path is convex.
+     */
+    CARAPI IsConvex(
+        /* [out] */ Boolean* isConvex);
 
     /**
      * Return the path's fill type. This defines how "inside" is
@@ -267,6 +326,27 @@ public:
         /* [in] */ Float sweepAngle);
 
     /**
+     * Append the specified arc to the path as a new contour. If the start of
+     * the path is different from the path's current last point, then an
+     * automatic lineTo() is added to connect the current contour to the
+     * start of the arc. However, if the path is empty, then we call moveTo()
+     * with the first point of the arc.
+     *
+     * @param startAngle  Starting angle (in degrees) where the arc begins
+     * @param sweepAngle  Sweep angle (in degrees) measured clockwise, treated
+     *                    mod 360.
+     * @param forceMoveTo If true, always begin a new contour with the arc
+     */
+    CARAPI ArcTo(
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
+        /* [in] */ Float startAngle,
+        /* [in] */ Float sweepAngle,
+        /* [in] */ Boolean forceMoveTo);
+
+    /**
      * Close the current contour. If the current point is not equal to the
      * first point of the contour, a line segment is automatically added.
      */
@@ -309,6 +389,18 @@ public:
         /* [in] */ PathDirection dir);
 
     /**
+     * Add a closed oval contour to the path
+     *
+     * @param dir The direction to wind the oval's contour
+     */
+    CARAPI AddOval(
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
+        /* [in] */ PathDirection dir);
+
+    /**
      * Add a closed circle contour to the path
      *
      * @param x   The x-coordinate of the center of a circle to add to the path
@@ -335,6 +427,20 @@ public:
         /* [in] */ Float sweepAngle);
 
     /**
+     * Add the specified arc to the path as a new contour.
+     *
+     * @param startAngle Starting angle (in degrees) where the arc begins
+     * @param sweepAngle Sweep angle (in degrees) measured clockwise
+     */
+    CARAPI AddArc(
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
+        /* [in] */ Float startAngle,
+        /* [in] */ Float sweepAngle);
+
+    /**
         * Add a closed round-rectangle contour to the path
      *
      * @param rect The bounds of a round-rectangle to add to the path
@@ -344,6 +450,22 @@ public:
      */
     CARAPI AddRoundRect(
         /* [in] */ IRectF* rect,
+        /* [in] */ Float rx,
+        /* [in] */ Float ry,
+        /* [in] */ PathDirection dir);
+
+    /**
+     * Add a closed round-rectangle contour to the path
+     *
+     * @param rx   The x-radius of the rounded corners on the round-rectangle
+     * @param ry   The y-radius of the rounded corners on the round-rectangle
+     * @param dir  The direction to wind the round-rectangle's contour
+     */
+    CARAPI AddRoundRect(
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
         /* [in] */ Float rx,
         /* [in] */ Float ry,
         /* [in] */ PathDirection dir);
@@ -359,7 +481,23 @@ public:
      */
     CARAPI AddRoundRect(
         /* [in] */ IRectF* rect,
-        /* [in] */ const ArrayOf<Float>& radii,
+        /* [in] */ ArrayOf<Float>* radii,
+        /* [in] */ PathDirection dir);
+
+    /**
+     * Add a closed round-rectangle contour to the path. Each corner receives
+     * two radius values [X, Y]. The corners are ordered top-left, top-right,
+     * bottom-right, bottom-left
+     *
+     * @param radii Array of 8 values, 4 pairs of [X,Y] radii
+     * @param dir  The direction to wind the round-rectangle's contour
+     */
+    CARAPI AddRoundRect(
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
+        /* [in] */ ArrayOf<Float>* radii,
         /* [in] */ PathDirection dir);
 
     /**
@@ -443,7 +581,29 @@ public:
     CARAPI Transform(
         /* [in] */ IMatrix* matrix);
 
-    /*package*/ CARAPI_(Int32) Ni();
+    /*package*/ CARAPI_(Int64) Ni();
+
+    /**
+     * Approximate the <code>Path</code> with a series of line segments.
+     * This returns float[] with the array containing point components.
+     * There are three components for each point, in order:
+     * <ul>
+     *     <li>Fraction along the length of the path that the point resides</li>
+     *     <li>The x coordinate of the point</li>
+     *     <li>The y coordinate of the point</li>
+     * </ul>
+     * <p>Two points may share the same fraction along its length when there is
+     * a move action within the Path.</p>
+     *
+     * @param acceptableError The acceptable error for a line on the
+     *                        Path. Typically this would be 0.5 so that
+     *                        the error is less than half a pixel.
+     * @return An array of components for points approximating the Path.
+     * @hide
+     */
+    CARAPI Approximate(
+        /* [in] */ Float acceptableError,
+        /* [out] */ ArrayOf<Float>** array);
 
 private:
     CARAPI_(void) DetectSimplePath(
@@ -453,79 +613,82 @@ private:
         /* [in] */ Float bottom,
         /* [in] */ PathDirection dir);
 
-    static CARAPI_(Int32) Init1();
+    static CARAPI_(Int64) Init1();
 
-    static CARAPI_(Int32) Init2(
-        /* [in] */ Int32 nPath);
+    static CARAPI_(Int64) Init2(
+        /* [in] */ Int64 nPath);
 
     static CARAPI_(void) NativeReset(
-        /* [in] */ Int32 nPath);
+        /* [in] */ Int64 nPath);
 
     static CARAPI_(void) NativeRewind(
-        /* [in] */ Int32 nPath);
+        /* [in] */ Int64 nPath);
 
     static CARAPI_(void) NativeSet(
-        /* [in] */ Int32 nDst,
-        /* [in] */ Int32 nSrc);
+        /* [in] */ Int64 nDst,
+        /* [in] */ Int64 nSrc);
+
+    static CARAPI_(Boolean) NativeIsConvex(
+        /* [in] */ Int64 nPath);
 
     static CARAPI_(Int32) NativeGetFillType(
-        /* [in] */ Int32 nPath);
+        /* [in] */ Int64 nPath);
 
     static CARAPI_(void) NativeSetFillType(
-        /* [in] */ Int32 nPath,
+        /* [in] */ Int64 nPath,
         /* [in] */ PathFillType ft);
 
     static CARAPI_(Boolean) NativeIsEmpty(
-        /* [in] */ Int32 nPath);
+        /* [in] */ Int64 nPath);
 
     static CARAPI_(Boolean) NativeIsRect(
-        /* [in] */ Int32 nPath,
+        /* [in] */ Int64 nPath,
         /* [in] */ IRectF* rect);
 
     static CARAPI_(void) NativeComputeBounds(
-        /* [in] */ Int32 nPath,
+        /* [in] */ Int64 nPath,
         /* [in] */ IRectF* bounds);
 
     static CARAPI_(void) NativeIncReserve(
-        /* [in] */ Int32 nPath,
+        /* [in] */ Int64 nPath,
         /* [in] */ Int32 extraPtCount);
 
     static CARAPI_(void) NativeMoveTo(
-        /* [in] */ Int32 nPath,
+        /* [in] */ Int64 nPath,
         /* [in] */ Float x,
         /* [in] */ Float y);
 
     static CARAPI_(void) NativeRMoveTo(
-        /* [in] */ Int32 nPath,
+        /* [in] */ Int64 nPath,
         /* [in] */ Float dx,
         /* [in] */ Float dy);
 
     static CARAPI_(void) NativeLineTo(
-        /* [in] */ Int32 nPath,
+        /* [in] */ Int64 nPath,
         /* [in] */ Float x,
         /* [in] */ Float y);
 
     static CARAPI_(void) NativeRLineTo(
-        /* [in] */ Int32 nPath,
+        /* [in] */ Int64 nPath,
         /* [in] */ Float dx,
         /* [in] */ Float dy);
 
     static CARAPI_(void) NativeQuadTo(
-        /* [in] */ Int32 nPath,
+        /* [in] */ Int64 nPath,
         /* [in] */ Float x1,
         /* [in] */ Float y1,
         /* [in] */ Float x2,
         /* [in] */ Float y2);
 
     static CARAPI_(void) NativeRQuadTo(
-        /* [in] */ Int32 nPath,
+        /* [in] */ Int64 nPath,
         /* [in] */ Float dx1,
         /* [in] */ Float dy1,
         /* [in] */ Float dx2,
         /* [in] */ Float dy2);
 
     static CARAPI_(void) NativeCubicTo(
-        /* [in] */ Int32 nPath,
+        /* [in] */ Int64 nPath,
         /* [in] */ Float x1,
         /* [in] */ Float y1,
         /* [in] */ Float x2,
@@ -534,7 +697,7 @@ private:
         /* [in] */ Float y3);
 
     static CARAPI_(void) NativeRCubicTo(
-        /* [in] */ Int32 nPath,
+        /* [in] */ Int64 nPath,
         /* [in] */ Float x1,
         /* [in] */ Float y1,
         /* [in] */ Float x2,
@@ -543,22 +706,20 @@ private:
         /* [in] */ Float y3);
 
     static CARAPI_(void) NativeArcTo(
-        /* [in] */ Int32 nPath,
-        /* [in] */ IRectF* oval,
+        /* [in] */ Int64 nPath,
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
         /* [in] */ Float startAngle,
         /* [in] */ Float sweepAngle,
         /* [in] */ Boolean forceMoveTo);
 
     static CARAPI_(void) NativeClose(
-        /* [in] */ Int32 nPath);
+        /* [in] */ Int64 nPath);
 
     static CARAPI_(void) NativeAddRect(
-        /* [in] */ Int32 nPath,
-        /* [in] */ IRectF* rect,
-        /* [in] */ PathDirection dir);
-
-    static CARAPI_(void) NativeAddRect(
-        /* [in] */ Int32 nPath,
+        /* [in] */ Int64 nPath,
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
@@ -566,85 +727,106 @@ private:
         /* [in] */ PathDirection dir);
 
     static CARAPI_(void) NativeAddOval(
-        /* [in] */ Int32 nPath,
-        /* [in] */ IRectF* oval,
-        /* [in] */ PathDirection dir);
+        /* [in] */ Int64 nPath,
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
+        /* [in] */ Int32 dir);
 
     static CARAPI_(void) NativeAddCircle(
-        /* [in] */ Int32 nPath,
+        /* [in] */ Int64 nPath,
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ Float radius,
         /* [in] */ PathDirection dir);
 
     static CARAPI_(void) NativeAddArc(
-        /* [in] */ Int32 nPath,
-        /* [in] */ IRectF* oval,
+        /* [in] */ Int64 nPath,
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
         /* [in] */ Float startAngle,
         /* [in] */ Float sweepAngle);
 
     static CARAPI_(void) NativeAddRoundRect(
-        /* [in] */ Int32 nPath,
-        /* [in] */ IRectF* rect,
+        /* [in] */ Int64 nPath,
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
         /* [in] */ Float rx,
         /* [in] */ Float ry,
-        /* [in] */ PathDirection dir);
+        /* [in] */ Int32 dir);
 
     static CARAPI_(void) NativeAddRoundRect(
-        /* [in] */ Int32 nPath,
-        /* [in] */ IRectF* rect,
-        /* [in] */ const ArrayOf<Float>& radii,
-        /* [in] */ PathDirection dir);
+        /* [in] */ Int64 nPath,
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
+        /* [in] */ ArrayOf<Float>* radii,
+        /* [in] */ Int32 dir);
 
     static CARAPI_(void) NativeAddPath(
-        /* [in] */ Int32 nPath,
-        /* [in] */ Int32 src,
+        /* [in] */ Int64 nPath,
+        /* [in] */ Int64 src,
         /* [in] */ Float dx,
         /* [in] */ Float dy);
 
     static CARAPI_(void) NativeAddPath(
-        /* [in] */ Int32 nPath,
-        /* [in] */ Int32 src);
+        /* [in] */ Int64 nPath,
+        /* [in] */ Int64 src);
 
     static CARAPI_(void) NativeAddPath(
-        /* [in] */ Int32 nPath,
-        /* [in] */ Int32 src,
-        /* [in] */ Int32 matrix);
+        /* [in] */ Int64 nPath,
+        /* [in] */ Int64 src,
+        /* [in] */ Int64 matrix);
 
     static CARAPI_(void) NativeOffset(
-        /* [in] */ Int32 nPath,
+        /* [in] */ Int64 nPath,
         /* [in] */ Float dx,
         /* [in] */ Float dy,
         /* [in] */ Int32 dst_path);
 
     static CARAPI_(void) NativeOffset(
-        /* [in] */ Int32 nPath,
+        /* [in] */ Int64 nPath,
         /* [in] */ Float dx,
         /* [in] */ Float dy);
 
     static CARAPI_(void) NativeSetLastPoint(
-        /* [in] */ Int32 nPath,
+        /* [in] */ Int64 nPath,
         /* [in] */ Float dx,
         /* [in] */ Float dy);
 
     static CARAPI_(void) NativeTransform(
-        /* [in] */ Int32 nPath,
-        /* [in] */ Int32 matrix,
-        /* [in] */ Int32 dst_path);
+        /* [in] */ Int64 nPath,
+        /* [in] */ Int64 matrix,
+        /* [in] */ Int64 dst_path);
 
     static CARAPI_(void) NativeTransform(
-        /* [in] */ Int32 nPath,
-        /* [in] */ Int32 matrix);
+        /* [in] */ Int64 nPath,
+        /* [in] */ Int64 matrix);
 
     static CARAPI_(void) NativeFinalizer(
-        /* [in] */ Int32 nPath);
+        /* [in] */ Int64 nPath);
+
+    static CARAPI_(Boolean) NativeOp(
+        /* [in] */ Int64 path1,
+        /* [in] */ Int64 path2,
+        /* [in] */ Int32 op,
+        /* [in] */ Int64 result);
+
+    static CARAPI_(AutoPtr<ArrayOf<Float> >) NativeApproximate(
+        /* [in] */ Int64 nPath,
+        /* [in] */ Float error);
 
 public:
-    Int32 mNativePath;
+    Int64 mNativePath;
     Boolean mIsSimplePath;
 
     AutoPtr<IRegion> mRects;
-    Boolean mDetectSimplePaths;
     PathDirection mLastDirection;
 
     // these must be in the same order as their native values

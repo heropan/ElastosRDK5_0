@@ -17,6 +17,7 @@ String NBitmapFactory::GetMimeTypeString(
         { SkImageDecoder::kICO_Format,  String("image/x-ico") },
         { SkImageDecoder::kJPEG_Format, String("image/jpeg") },
         { SkImageDecoder::kPNG_Format,  String("image/png") },
+        { SkImageDecoder::kWEBP_Format, String("image/webp") },
         { SkImageDecoder::kWBMP_Format, String("image/vnd.wap.wbmp") }
     };
 

@@ -7,6 +7,7 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CPathDashPathEffect);
 ECode CPathDashPathEffect::constructor(
     /* [in] */ IPath* shape,
     /* [in] */ Float advance,
@@ -27,23 +28,40 @@ PInterface CPathDashPathEffect::Probe(
     if (riid == EIID_PathEffect) {
         return reinterpret_cast<PInterface>((PathEffect*)this);
     }
-    return _CPathDashPathEffect::Probe(riid);
+    else if (riid == EIID_IPathDashPathEffect) {
+        return (IPathDashPathEffect*)this;
+    }
+    return PathEffect::Probe(riid);
 }
 
-Int32 CPathDashPathEffect::NativeCreate(
-    /* [in] */ Int32 nativePath,
+UInt32 CPathDashPathEffect::AddRef()
+{
+    return PathEffect::AddRef();
+}
+
+UInt32 CPathDashPathEffect::Release()
+{
+    return PathEffect::Release();
+}
+
+ECode CPathDashPathEffect::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    return PathEffect::GetInterfaceID(object, iid);
+}
+
+Int64 CPathDashPathEffect::NativeCreate(
+    /* [in] */ Int64 nativePath,
     /* [in] */ Float advance,
     /* [in] */ Float phase,
     /* [in] */ Int32 nativeStyle)
 {
-    SkPath* skPath = reinterpret_cast<SkPath*>(nativePath);
-    SkASSERT(skPath != NULL);
-
-    return reinterpret_cast<Int32>(new SkPath1DPathEffect(
-                    *skPath,
-                    SkFloatToScalar(advance),
-                    SkFloatToScalar(phase),
-                    (SkPath1DPathEffect::Style)nativeStyle));
+    const SkPath* shape = reinterpret_cast<SkPath*>(nativePath);
+    SkASSERT(shape != NULL);
+    SkPathEffect* effect = SkPath1DPathEffect::Create(*shape, advance, phase,
+            (SkPath1DPathEffect::Style)nativeStyle);
+    return reinterpret_cast<Int64>(effect);
 }
 
 } // namespace Graphics

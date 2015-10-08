@@ -37,6 +37,16 @@ public:
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
+    /** @hide */
+    virtual CARAPI SetHighContrastText(
+        /* [in] */ Boolean highContrastText);
+
+    /** @hide */
+    virtual CARAPI InsertReorderBarrier();
+
+    /** @hide */
+    virtual CARAPI InsertInorderBarrier();
+
     virtual CARAPI IsOpaque(
         /* [out] */ Boolean* isOpaque);
 
@@ -74,6 +84,14 @@ public:
         /* [in] */ Int32 saveFlags,
         /* [out] */ Int32* count);
 
+    /**
+     * Convenience for saveLayer(bounds, paint, {@link #ALL_SAVE_FLAG})
+     */
+    virtual CARAPI SaveLayer(
+        /* [in] */ /*@Nullable*/ IRectF* bounds,
+        /* [in] */ /*@Nullable*/ IPaint* paint,
+        /* [out] */ Int32* count);
+
     virtual CARAPI SaveLayer(
         /* [in] */ Float left,
         /* [in] */ Float top,
@@ -83,10 +101,29 @@ public:
         /* [in] */ Int32 saveFlags,
         /* [out] */ Int32* count);
 
+    /**
+     * Convenience for saveLayer(left, top, right, bottom, paint, {@link #ALL_SAVE_FLAG})
+     */
+    virtual CARAPI SaveLayer(
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
+        /* [in] */ /*@Nullable*/ IPaint* paint,
+        /* [out] */ Int32* count);
+
     virtual CARAPI SaveLayerAlpha(
         /* [in] */ IRectF* bounds,
         /* [in] */ Int32 alpha,
         /* [in] */ Int32 saveFlags,
+        /* [out] */ Int32* count);
+
+    /**
+     * Convenience for saveLayerAlpha(bounds, alpha, {@link #ALL_SAVE_FLAG})
+     */
+    virtual CARAPI SaveLayerAlpha(
+        /* [in] */ /*@Nullable*/ IRectF* bounds,
+        /* [in] */ Int32 alpha,
         /* [out] */ Int32* count);
 
     virtual CARAPI SaveLayerAlpha(
@@ -96,6 +133,17 @@ public:
         /* [in] */ Float bottom,
         /* [in] */ Int32 alpha,
         /* [in] */ Int32 saveFlags,
+        /* [out] */ Int32* count);
+
+    /**
+     * Helper for saveLayerAlpha(left, top, right, bottom, alpha, {@link #ALL_SAVE_FLAG})
+     */
+    virtual CARAPI SaveLayerAlpha(
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
+        /* [in] */ Int32 alpha,
         /* [out] */ Int32* count);
 
     virtual CARAPI Restore();
@@ -255,13 +303,13 @@ public:
         /* [in] */ IPaint* paint);
 
     virtual CARAPI DrawPoints(
-        /* [in] */ const ArrayOf<Float>& pts,
+        /* [in] */ ArrayOf<Float>* pts,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [in] */ IPaint* paint);
 
     virtual CARAPI DrawPoints(
-        /* [in] */ const ArrayOf<Float>& pts,
+        /* [in] */ ArrayOf<Float>* pts,
         /* [in] */ IPaint* paint);
 
     virtual CARAPI DrawPoint(
@@ -277,13 +325,13 @@ public:
         /* [in] */ IPaint* paint);
 
     virtual CARAPI DrawLines(
-        /* [in] */ const ArrayOf<Float>& pts,
+        /* [in] */ ArrayOf<Float>* pts,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [in] */ IPaint* paint);
 
     virtual CARAPI DrawLines(
-        /* [in] */ const ArrayOf<Float>& pts,
+        /* [in] */ ArrayOf<Float>* pts,
         /* [in] */ IPaint* paint);
 
     virtual CARAPI DrawRect(
@@ -305,6 +353,17 @@ public:
         /* [in] */ IRectF* oval,
         /* [in] */ IPaint* paint);
 
+    /**
+     * Draw the specified oval using the specified paint. The oval will be
+     * filled or framed based on the Style in the paint.
+     */
+    virtual CARAPI DrawOval(
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
+        /* [in] */ /*@NonNull*/ IPaint* paint);
+
     virtual CARAPI DrawCircle(
         /* [in] */ Float cx,
         /* [in] */ Float cy,
@@ -318,19 +377,80 @@ public:
         /* [in] */ Boolean useCenter,
         /* [in] */ IPaint* paint);
 
+    /**
+     * <p>Draw the specified arc, which will be scaled to fit inside the
+     * specified oval.</p>
+     *
+     * <p>If the start angle is negative or >= 360, the start angle is treated
+     * as start angle modulo 360.</p>
+     *
+     * <p>If the sweep angle is >= 360, then the oval is drawn
+     * completely. Note that this differs slightly from SkPath::arcTo, which
+     * treats the sweep angle modulo 360. If the sweep angle is negative,
+     * the sweep angle is treated as sweep angle modulo 360</p>
+     *
+     * <p>The arc is drawn clockwise. An angle of 0 degrees correspond to the
+     * geometric angle of 0 degrees (3 o'clock on a watch.)</p>
+     *
+     * @param startAngle Starting angle (in degrees) where the arc begins
+     * @param sweepAngle Sweep angle (in degrees) measured clockwise
+     * @param useCenter If true, include the center of the oval in the arc, and
+                        close it if it is being stroked. This will draw a wedge
+     * @param paint      The paint used to draw the arc
+     */
+    virtual CARAPI DrawArc(
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
+        /* [in] */ Float startAngle,
+        /* [in] */ Float sweepAngle,
+        /* [in] */ Boolean useCenter,
+        /* [in] */ /*@NonNull*/ IPaint* paint);
+
     virtual CARAPI DrawRoundRect(
         /* [in] */ IRectF* rect,
         /* [in] */ Float rx,
         /* [in] */ Float ry,
         /* [in] */ IPaint* paint);
 
+    /**
+     * Draw the specified round-rect using the specified paint. The roundrect
+     * will be filled or framed based on the Style in the paint.
+     *
+     * @param rx    The x-radius of the oval used to round the corners
+     * @param ry    The y-radius of the oval used to round the corners
+     * @param paint The paint used to draw the roundRect
+     */
+    virtual CARAPI DrawRoundRect(
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
+        /* [in] */ Float rx,
+        /* [in] */ Float ry,
+        /* [in] */ /*@NonNull*/ IPaint* paint);
+
     virtual CARAPI DrawPath(
         /* [in] */ IPath* path,
         /* [in] */ IPaint* paint);
 
+    /**
+     * Draws the specified bitmap as an N-patch (most often, a 9-patches.)
+     *
+     * @param patch The ninepatch object to render
+     * @param dst The destination rectangle.
+     * @param paint The paint to draw the bitmap with. may be null
+     *
+     * @hide
+     */
     virtual CARAPI DrawPatch(
-        /* [in] */ IBitmap* bitmap,
-        /* [in] */ const ArrayOf<Byte>& chunks,
+        /* [in] */ /*@NonNull*/ INinePatch* patch,
+        /* [in] */ /*@NonNull*/ IRect* dst,
+        /* [in] */ /*@Nullable*/ IPaint* paint);
+
+    virtual CARAPI DrawPatch(
+        /* [in] */ /*@NonNull*/ INinePatch* patch,
         /* [in] */ IRectF* dst,
         /* [in] */ IPaint* paint);
 
@@ -353,7 +473,7 @@ public:
         /* [in] */ IPaint* paint);
 
     virtual CARAPI DrawBitmap(
-        /* [in] */ const ArrayOf<Int32>& colors,
+        /* [in] */ ArrayOf<Int32>* colors,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
         /* [in] */ Float x,
@@ -364,7 +484,7 @@ public:
         /* [in] */ IPaint* paint);
 
     virtual CARAPI DrawBitmap(
-        /* [in] */ const ArrayOf<Int32>& colors,
+        /* [in] */ ArrayOf<Int32>* colors,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
         /* [in] */ Int32 x,
@@ -383,7 +503,7 @@ public:
         /* [in] */ IBitmap* bitmap,
         /* [in] */ Int32 meshWidth,
         /* [in] */ Int32 meshHeight,
-        /* [in] */ const ArrayOf<Float>& verts,
+        /* [in] */ ArrayOf<Float>* verts,
         /* [in] */ Int32 vertOffset,
         /* [in] */ ArrayOf<Int32>* colors,
         /* [in] */ Int32 colorOffset,
@@ -392,7 +512,7 @@ public:
     virtual CARAPI DrawVertices(
         /* [in] */ CanvasVertexMode mode,
         /* [in] */ Int32 vertexCount,
-        /* [in] */ const ArrayOf<Float>& verts,
+        /* [in] */ ArrayOf<Float>* verts,
         /* [in] */ Int32 vertOffset,
         /* [in] */ ArrayOf<Float>* texs,
         /* [in] */ Int32 texOffset,
@@ -404,7 +524,7 @@ public:
         /* [in] */ IPaint* paint);
 
     virtual CARAPI DrawText(
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
         /* [in] */ Float x,
@@ -434,14 +554,14 @@ public:
         /* [in] */ IPaint* paint);
 
     virtual CARAPI DrawTextRun(
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
         /* [in] */ Int32 contextIndex,
         /* [in] */ Int32 contextCount,
         /* [in] */ Float x,
         /* [in] */ Float y,
-        /* [in] */ Int32 dir,
+        /* [in] */ Boolean isRtl,
         /* [in] */ IPaint* paint);
 
     virtual CARAPI DrawTextRun(
@@ -452,23 +572,23 @@ public:
         /* [in] */ Int32 contextEnd,
         /* [in] */ Float x,
         /* [in] */ Float y,
-        /* [in] */ Int32 dir,
+        /* [in] */ Boolean isRtl,
         /* [in] */ IPaint* paint);
 
     virtual CARAPI DrawPosText(
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
-        /* [in] */ const ArrayOf<Float>& pos,
+        /* [in] */ ArrayOf<Float>* pos,
         /* [in] */ IPaint* paint);
 
     virtual CARAPI DrawPosText(
         /* [in] */ const String& text,
-        /* [in] */ const ArrayOf<Float>& pos,
+        /* [in] */ ArrayOf<Float>* pos,
         /* [in] */ IPaint* paint);
 
     virtual CARAPI DrawTextOnPath(
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
         /* [in] */ IPath* path,
@@ -500,9 +620,23 @@ public:
     CARAPI GetNativeCanvas(
         /* [out] */ Handle32* natvieCanvas);
 
+    /**
+     * Releases the resources associated with this canvas.
+     *
+     * @hide
+     */
+    virtual CARAPI ReleaseResources();
+
     static CARAPI_(void) FreeCaches();
 
     static CARAPI_(void) FreeTextLayoutCaches();
+
+    /** @hide */
+    CARAPI_(Int64) GetNativeCanvasWrapper();
+
+    /** @hide */
+    CARAPI_(Boolean) IsRecordingFor(
+        /* [in] */ IInterface* o);
 
 protected:
     CARAPI constructor();
@@ -511,7 +645,7 @@ protected:
         /* [in] */ IBitmap* bitmap);
 
     CARAPI constructor(
-        /* [in] */ Int32 nativeCanvas);
+        /* [in] */ Int64 nativeCanvas);
 
     // virtual CARAPI_(AutoPtr<IGL>) GetGL();
 
@@ -521,56 +655,87 @@ protected:
         /* [in] */ Int32 count);
 
 private:
-    static CARAPI ThrowIfRecycled(
+    static CARAPI ThrowIfCannotDraw(
         /* [in] */ IBitmap* bitmap);
 
-    CARAPI_(Int32) InitRaster(
-        /* [in] */ Int32 bitmap);
+    CARAPI_(Int64) InitRaster(
+        /* [in] */ Int64 bitmap);
 
     static CARAPI_(void) NativeSetBitmap(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 nativeBitmap);
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Int64 nativeBitmap,
+        /* [in] */ Boolean copyState);
+
+    static CARAPI_(Boolean) NativeIsOpaque(
+        /* [in] */ Int64 canvasHandle);
+
+    static CARAPI_(Int32) NativeGetWidth(
+        /* [in] */ Int64 canvasHandle);
+
+    static CARAPI_(Int32) NativeGetHeight(
+        /* [in] */ Int64 canvasHandle);
+
+    static CARAPI_(Int32) NativeSave(
+        /* [in] */ Int64 canvasHandle,
+        /* [in] */ Int32 saveFlags);
 
     static CARAPI_(Int32) NativeSaveLayer(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ IRectF* bounds,
-        /* [in] */ Int32 nativePaint,
-        /* [in] */ Int32 flags);
-
-    static CARAPI_(Int32) NativeSaveLayer(
-        /* [in] */ Int32 nativeCanvas,
+        /* [in] */ Int64 nativeCanvas,
         /* [in] */ Float l,
         /* [in] */ Float t,
         /* [in] */ Float r,
         /* [in] */ Float b,
-        /* [in] */ Int32 nativePaint,
+        /* [in] */ Int64 nativePaint,
         /* [in] */ Int32 flags);
 
     static CARAPI_(Int32) NativeSaveLayerAlpha(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ IRectF* bounds,
-        /* [in] */ Int32 alpha,
-        /* [in] */ Int32 flags);
-
-    static CARAPI_(Int32) NativeSaveLayerAlpha(
-        /* [in] */ Int32 nativeCanvas,
+        /* [in] */ Int64 nativeCanvas,
         /* [in] */ Float l,
         /* [in] */ Float t,
         /* [in] */ Float r,
         /* [in] */ Float b,
         /* [in] */ Int32 alpha,
         /* [in] */ Int32 flags);
+
+    static CARAPI_(void) NativeRestore(
+        /* [in] */ Int64 canvasHandle);
+
+    static CARAPI_(void) NativeRestoreToCount(
+        /* [in] */ Int64 canvasHandle,
+        /* [in] */ Int32 saveCount);
+
+    static CARAPI_(Int32) NativeGetSaveCount(
+        /* [in] */ Int64 canvasHandle);
+
+    static CARAPI_(void) NativeTranslate(
+        /* [in] */ Int64 canvasHandle,
+        /* [in] */ Float dx,
+        /* [in] */ Float dy);
+
+    static CARAPI_(void) NativeScale(
+        /* [in] */ Int64 canvasHandle,
+        /* [in] */ Float sx,
+        /* [in] */ Float sy);
+
+    static CARAPI_(void) NativeRotate(
+        /* [in] */ Int64 canvasHandle,
+        /* [in] */ Float degrees);
+
+    static CARAPI_(void) NativeSkew(
+        /* [in] */ Int64 canvasHandle,
+        /* [in] */ Float sx,
+        /* [in] */ Float sy);
 
     static CARAPI_(void) NativeConcat(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 nativeMatrix);
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Int64 nativeMatrix);
 
     static CARAPI_(void) NativeSetMatrix(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 nativeMatrix);
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Int64 nativeMatrix);
 
     static CARAPI_(Boolean) NativeClipRect(
-        /* [in] */ Int32 nativeCanvas,
+        /* [in] */ Int64 nativeCanvas,
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
@@ -578,111 +743,118 @@ private:
         /* [in] */ RegionOp op);
 
     static CARAPI_(Boolean) NativeClipPath(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 nativePath,
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Int64 nativePath,
         /* [in] */ RegionOp op);
 
     static CARAPI_(Boolean) NativeClipRegion(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 nativeRegion,
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Int64 nativeRegion,
         /* [in] */ RegionOp op);
 
     static CARAPI_(void) NativeSetDrawFilter(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 nativeFilter);
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Int64 nativeFilter);
 
     static CARAPI_(Boolean) NativeGetClipBounds(
-        /* [in] */ Int32 nativeCanvas,
+        /* [in] */ Int64 nativeCanvas,
         /* [in] */ IRect* bounds);
 
     static CARAPI_(void) NativeGetCTM(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 nativeMatrix);
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Int64 nativeMatrix);
 
     static CARAPI_(Boolean) NativeQuickReject(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ IRectF* rect,
-        /* [in] */ CanvasEdgeType edgeType);
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Int64 nativePath);
 
     static CARAPI_(Boolean) NativeQuickReject(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 nativePath,
-        /* [in] */ CanvasEdgeType edgeType);
-
-    static CARAPI_(Boolean) NativeQuickReject(
-        /* [in] */ Int32 nativeCanvas,
+        /* [in] */ Int64 nativeCanvas,
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
-        /* [in] */ Float bottom,
-        /* [in] */ CanvasEdgeType edgeType);
-
-    static CARAPI_(void) NativeDrawRGB(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 r,
-        /* [in] */ Int32 g,
-        /* [in] */ Int32 b);
-
-    static CARAPI_(void) NativeDrawARGB(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 a,
-        /* [in] */ Int32 r,
-        /* [in] */ Int32 g,
-        /* [in] */ Int32 b);
+        /* [in] */ Float bottom);
 
     static CARAPI_(void) NativeDrawColor(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 color);
-
-    static CARAPI_(void) NativeDrawColor(
-        /* [in] */ Int32 nativeCanvas,
+        /* [in] */ Int64 nativeCanvas,
         /* [in] */ Int32 color,
-        /* [in] */ PorterDuffMode mode);
+        /* [in] */ Int32 mode);
 
     static CARAPI_(void) NativeDrawPaint(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 nativePaint);
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Int64 nativePaint);
+
+    static CARAPI_(void) NativeDrawPoint(
+        /* [in] */ Int64 canvasHandle,
+        /* [in] */ Float x,
+        /* [in] */ Float y,
+        /* [in] */ Int64 paintHandle);
+
+    static CARAPI_(void) NativeDrawPoints(
+        /* [in] */ Int64 canvasHandle,
+        /* [in] */ ArrayOf<Float>* pts,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 count,
+        /* [in] */ Int64 paintHandle);
 
     static CARAPI_(void) NativeDrawLine(
-        /* [in] */ Int32 nativeCanvas,
+        /* [in] */ Int64 nativeCanvas,
         /* [in] */ Float startX,
         /* [in] */ Float startY,
         /* [in] */ Float stopX,
         /* [in] */ Float stopY,
-        /* [in] */ Int32 nativePaint);
+        /* [in] */ Int64 nativePaint);
+
+    static CARAPI_(void) NativeDrawLines(
+        /* [in] */ Int64 canvasHandle,
+        /* [in] */ ArrayOf<Float>* pts,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 count,
+        /* [in] */ Int64 paintHandle);
 
     static CARAPI_(void) NativeDrawRect(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ IRectF* rect,
-        /* [in] */ Int32 nativePaint);
-
-    static CARAPI_(void) NativeDrawRect(
-        /* [in] */ Int32 nativeCanvas,
+        /* [in] */ Int64 nativeCanvas,
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
         /* [in] */ Float bottom,
-        /* [in] */ Int32 nativePaint);
+        /* [in] */ Int64 nativePaint);
 
     static CARAPI_(void) NativeDrawOval(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ IRectF* oval,
-        /* [in] */ Int32 nativePaint);
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
+        /* [in] */ Int64 nativePaint);
 
     static CARAPI_(void) NativeDrawCircle(
-        /* [in] */ Int32 nativeCanvas,
+        /* [in] */ Int64 nativeCanvas,
         /* [in] */ Float cx,
         /* [in] */ Float cy,
         /* [in] */ Float radius,
-        /* [in] */ Int32 nativePaint);
+        /* [in] */ Int64 nativePaint);
 
     static CARAPI_(void) NativeDrawArc(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ IRectF* oval,
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
         /* [in] */ Float startAngle,
-        /* [in] */ Float sweepAngle,
+        /* [in] */ Float sweep,
         /* [in] */ Boolean useCenter,
-        /* [in] */ Int32 nativePaint);
+        /* [in] */ Int64 nativePaint);
+
+    static CARAPI_(void) NativeDrawRoundRect(
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom,
+        /* [in] */ Float rx,
+        /* [in] */ Float ry,
+        /* [in] */ Int64 nativePaint);
 
     static CARAPI_(void) NativeDrawRoundRect(
         /* [in] */ Int32 nativeCanvas,
@@ -692,41 +864,38 @@ private:
         /* [in] */ Int32 nativePaint);
 
     static CARAPI_(void) NativeDrawPath(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 nativePath,
-        /* [in] */ Int32 nativePaint);
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Int64 nativePath,
+        /* [in] */ Int64 nativePaint);
 
-    static CARAPI_(void) NativeDrawBitmap(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 nativeBitmap,
+    CARAPI_(void) NativeDrawBitmap(
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Int64 nativeBitmap,
         /* [in] */ Float left,
         /* [in] */ Float top,
-        /* [in] */ Int32 nativePaint,
+        /* [in] */ Int64 nativePaint,
         /* [in] */ Int32 canvasDensity,
         /* [in] */ Int32 screenDensity,
         /* [in] */ Int32 bitmapDensity);
 
-    static CARAPI_(void) NativeDrawBitmap(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 nativeBitmap,
-        /* [in] */ IRect* src,
-        /* [in] */ IRectF* dst,
-        /* [in] */ Int32 nativePaint,
+    CARAPI_(void) NativeDrawBitmap(
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Int64 nativeBitmap,
+        /* [in] */ Float srcLeft,
+        /* [in] */ Float srcTop,
+        /* [in] */ Float srcRight,
+        /* [in] */ Float srcBottom,
+        /* [in] */ Float dstLeft,
+        /* [in] */ Float dstTop,
+        /* [in] */ Float dstRight,
+        /* [in] */ Float dstBottom,
+        /* [in] */ Int64 nativePaintOrZero,
         /* [in] */ Int32 screenDensity,
         /* [in] */ Int32 bitmapDensity);
 
     static CARAPI_(void) NativeDrawBitmap(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 nativeBitmap,
-        /* [in] */ IRect* src,
-        /* [in] */ IRect* dst,
-        /* [in] */ Int32 nativePaint,
-        /* [in] */ Int32 screenDensity,
-        /* [in] */ Int32 bitmapDensity);
-
-    static CARAPI_(void) NativeDrawBitmap(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ const ArrayOf<Int32>& colors,
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ ArrayOf<Int32>* colors,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
         /* [in] */ Float x,
@@ -734,30 +903,30 @@ private:
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Boolean hasAlpha,
-        /* [in] */ Int32 nativePaint);
+        /* [in] */ Int64 nativePaint);
 
     static CARAPI_(void) NativeDrawBitmapMatrix(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 nativeBitmap,
-        /* [in] */ Int32 nativeMatrix,
-        /* [in] */ Int32 nativePaint);
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Int64 nativeBitmap,
+        /* [in] */ Int64 nativeMatrix,
+        /* [in] */ Int64 nativePaint);
 
     static CARAPI_(void) NativeDrawBitmapMesh(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 nativeBitmap,
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ Int64 nativeBitmap,
         /* [in] */ Int32 meshWidth,
         /* [in] */ Int32 meshHeight,
-        /* [in] */ const ArrayOf<Float>& verts,
+        /* [in] */ ArrayOf<Float>* verts,
         /* [in] */ Int32 vertIndex,
         /* [in] */ ArrayOf<Int32>* colors,
         /* [in] */ Int32 colorIndex,
-        /* [in] */ Int32 nativePaint);
+        /* [in] */ Int64 nativePaint);
 
     static CARAPI_(void) NativeDrawVertices(
-        /* [in] */ Int32 nativeCanvas,
+        /* [in] */ Int64 nativeCanvas,
         /* [in] */ CanvasVertexMode mode,
         /* [in] */ Int32 vertexCount,
-        /* [in] */ const ArrayOf<Float>& verts,
+        /* [in] */ ArrayOf<Float>* verts,
         /* [in] */ Int32 vertIndex,
         /* [in] */ ArrayOf<Float>* texs,
         /* [in] */ Int32 texIndex,
@@ -766,50 +935,30 @@ private:
         /* [in] */ ArrayOf<Int16>* indices,
         /* [in] */ Int32 indexIndex,
         /* [in] */ Int32 indexCount,
-        /* [in] */ Int32 nativePaint);
+        /* [in] */ Int64 nativePaint);
 
     static CARAPI_(void) NativeDrawText(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ Int32 flags,
-        /* [in] */ Int32 nativePaint);
+        /* [in] */ Int64 nativePaint);
 
     static CARAPI_(void) NativeDrawText(
-        /* [in] */ Int32 nativeCanvas,
+        /* [in] */ Int64 nativeCanvas,
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ Int32 flags,
-        /* [in] */ Int32 nativePaint);
-
-    static CARAPI_(void) NativeDrawPosText(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ const ArrayOf<Char32>& text,
-        /* [in] */ Int32 index,
-        /* [in] */ Int32 count,
-        /* [in] */ const ArrayOf<Float>& pos,
-        /* [in] */ Int32 nativePaint);
+        /* [in] */ Int64 nativePaint);
 
     static CARAPI_(void) NativeDrawTextRun(
-        /* [in] */ Int32 canvas,
-        /* [in] */ const ArrayOf<Char32>& text,
-        /* [in] */ Int32 index,
-        /* [in] */ Int32 count,
-        /* [in] */ Int32 contextIndex,
-        /* [in] */ Int32 contextCount,
-        /* [in] */ Float x,
-        /* [in] */ Float y,
-        /* [in] */ Int32 dirFlags,
-        /* [in] */ Int32 paint);
-
-    static CARAPI_(void) NativeDrawTextRun(
-        /* [in] */ Int32 canvas,
+        /* [in] */ Int64 nativeCanvas,
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -817,44 +966,58 @@ private:
         /* [in] */ Int32 contextEnd,
         /* [in] */ Float x,
         /* [in] */ Float y,
-        /* [in] */ Int32 dirFlags,
-        /* [in] */ Int32 paint);
+        /* [in] */ Boolean isRtl,
+        /* [in] */ Int64 nativePaint,
+        /* [in] */ Int64 nativeTypeface);
 
-    static CARAPI_(void) NativeDrawPosText(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ const String& text,
-        /* [in] */ const ArrayOf<Float>& pos,
-        /* [in] */ Int32 nativePaint);
+    static CARAPI_(void) NativeDrawTextRun(
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ ArrayOf<Char32>* text,
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 count,
+        /* [in] */ Int32 contextStart,
+        /* [in] */ Int32 contextCount,
+        /* [in] */ Float x,
+        /* [in] */ Float y,
+        /* [in] */ Boolean isRtl,
+        /* [in] */ Int64 nativePaint,
+        /* [in] */ Int64 nativeTypeface);
 
     static CARAPI_(void) NativeDrawTextOnPath(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ const ArrayOf<Char32>& text,
+        /* [in] */ Int64 nativeCanvas,
+        /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
-        /* [in] */ Int32 nativePath,
+        /* [in] */ Int64 nativePath,
         /* [in] */ Float hOffset,
         /* [in] */ Float vOffset,
         /* [in] */ Int32 bidiFlags,
-        /* [in] */ Int32 nativePaint);
+        /* [in] */ Int64 nativePaint,
+        /* [in] */ Int64 nativeTypeface);
 
     static CARAPI_(void) NativeDrawTextOnPath(
-        /* [in] */ Int32 nativeCanvas,
+        /* [in] */ Int64 nativeCanvas,
         /* [in] */ const String& text,
-        /* [in] */ Int32 nativePath,
+        /* [in] */ Int64 nativePath,
         /* [in] */ Float hOffset,
         /* [in] */ Float vOffset,
         /* [in] */ Int32 bidiFlags,
-        /* [in] */ Int32 nativePaint);
-
-    static CARAPI_(void) NativeDrawPicture(
-        /* [in] */ Int32 nativeCanvas,
-        /* [in] */ Int32 nativePicture);
+        /* [in] */ Int64 nativePaint,
+        /* [in] */ Int64 nativeTypeface);
 
     static CARAPI_(void) NativeFinalizer(
-        /* [in] */ Int32 nativeCanvas);
+        /* [in] */ Int64 nativeCanvas);
+
+    /**
+     * setBitmap() variant for native callers with a raw bitmap handle.
+     */
+    CARAPI_(void) SetNativeBitmap(
+        /* [in] */ Int64 bitmapHandle);
+
+    CARAPI Dispose();
 
 public:
-    Int32 mNativeCanvas;
+    Int64 mNativeCanvasWrapper;
 
     Int32 mDensity;
 

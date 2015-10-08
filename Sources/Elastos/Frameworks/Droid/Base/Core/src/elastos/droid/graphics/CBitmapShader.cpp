@@ -10,17 +10,25 @@ namespace Droid {
 namespace Graphics {
 
 CAR_OBJECT_IMPL(CBitmapShader);
-CAR_INTERFACE_IMPL(CBitmapShader, Shader, IBitmapShader);
 ECode CBitmapShader::constructor(
     /* [in] */ IBitmap* bitmap,
     /* [in] */ ShaderTileMode tileX,
     /* [in] */ ShaderTileMode tileY)
 {
     mBitmap = bitmap;
-    Int32 b = ((CBitmap*)bitmap)->Ni();
-    mNativeInstance = NativeCreate(b, tileX, tileY);
-    mNativeShader = NativePostCreate(mNativeInstance, b, tileX, tileY);
+    mTileX = tileX;
+    mTileY = tileY;
+    Int64 b = ((CBitmap*)bitmap)->Ni();
+    Init(NativeCreate(b, (Int32)tileX, (Int32)tileY));
     return NOERROR;
+}
+
+AutoPtr<IShader> CBitmapShader::Copy()
+{
+    AutoPtr<IBitmapShader> copy;
+    CBitmapShader::New(mBitmap, mTileX, mTileY, (IBitmapShader**)&copy);
+    CopyLocalMatrix(IShader::Probe(copy));
+    return IShader::Probe(copy);
 }
 
 PInterface CBitmapShader::Probe(
@@ -29,50 +37,39 @@ PInterface CBitmapShader::Probe(
     if (riid == EIID_Shader) {
         return reinterpret_cast<PInterface>((Shader*)this);
     }
-    return _CBitmapShader::Probe(riid);
+    else if (riid == EIID_IBitmapShader) {
+        return ((IBitmapShader*)this);
+    }
+    return Shader::Probe(riid);
 }
 
-ECode CBitmapShader::GetLocalMatrix(
-    /* [in ,out] */ IMatrix* localM,
-    /* [out] */ Boolean* result)
+UInt32 CBitmapShader::AddRef()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = Shader::GetLocalMatrix(localM);
-    return NOERROR;
+    return Shader::AddRef();
 }
 
-ECode CBitmapShader::SetLocalMatrix(
-    /* [in] */ IMatrix* localM)
+UInt32 CBitmapShader::Release()
 {
-    Shader::SetLocalMatrix(localM);
-    return NOERROR;
+    return Shader::Release();
 }
 
-Int32 CBitmapShader::NativeCreate(
-    /* [in] */ Int32 nBitmap,
+ECode CBitmapShader::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    return Shader::GetInterfaceID(object, iid);
+}
+
+Int64 CBitmapShader::NativeCreate(
+    /* [in] */ Int64 bitmapHandle,
     /* [in] */ Int32 tileModeX,
     /* [in] */ Int32 tileModeY)
 {
-    SkShader* s = SkShader::CreateBitmapShader(*(SkBitmap*)nBitmap,
+    const SkBitmap* bitmap = reinterpret_cast<SkBitmap*>(bitmapHandle);
+    SkShader* s = SkShader::CreateBitmapShader(*bitmap,
             (SkShader::TileMode)tileModeX,
             (SkShader::TileMode)tileModeY);
-    return (Int32)s;
-}
-
-Int32 CBitmapShader::NativePostCreate(
-        /* [in] */ Int32 shader,
-        /* [in] */ Int32 bitmap,
-        /* [in] */ Int32 shaderTileModeX,
-        /* [in] */ Int32 shaderTileModeY)
-{
-#ifdef USE_OPENGL_RENDERER
-    SkiaShader* skiaShader = new SkiaBitmapShader((SkBitmap*)bitmap, (SkShader*)shader,
-            static_cast<SkShader::TileMode>(tileModeX), static_cast<SkShader::TileMode>(tileModeY),
-            NULL, (((SkShader*)shader)->getFlags() & SkShader::kOpaqueAlpha_Flag) == 0);
-    return (Int32)skiaShader;
-#else
-    return 0;
-#endif
+    return reinterpret_cast<Int64>(s);
 }
 
 } // namespace Graphics

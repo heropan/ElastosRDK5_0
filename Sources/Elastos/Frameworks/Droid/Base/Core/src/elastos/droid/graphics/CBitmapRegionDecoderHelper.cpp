@@ -28,7 +28,7 @@ CAR_INTERFACE_IMPL(CBitmapRegionDecoderHelper, Singleton, IBitmapRegionDecoderHe
 *
 */
 ECode CBitmapRegionDecoderHelper::NewInstance(
-    /* [in] */ const ArrayOf<Byte>& data,
+    /* [in] */ ArrayOf<Byte>* data,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [in] */ Boolean isShareable,

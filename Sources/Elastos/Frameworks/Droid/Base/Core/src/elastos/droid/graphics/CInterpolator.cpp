@@ -19,7 +19,7 @@ ECode CInterpolator::constructor(
 {
     mValueCount = valueCount;
     mFrameCount = 2;
-    native_instance = (Int32)(new SkInterpolator(valueCount, 2));
+    mNativeInstance = NativeConstructor(valueCount, 2);
     return NOERROR;
 }
 
@@ -29,14 +29,13 @@ ECode CInterpolator::constructor(
 {
     mValueCount = valueCount;
     mFrameCount = frameCount;
-    native_instance = (Int32)(new SkInterpolator(valueCount, frameCount));
+    mNativeInstance = NativeConstructor(valueCount, frameCount);
     return NOERROR;
 }
 
 CInterpolator::~CInterpolator()
 {
-    if((SkInterpolator*)native_instance)
-        delete (SkInterpolator*)native_instance;
+    NativeDestructor(mNativeInstance);
 }
 
 ECode CInterpolator::GetKeyFrameCount(
@@ -66,14 +65,14 @@ ECode CInterpolator::Reset(
 {
     mValueCount = valueCount;
     mFrameCount = frameCount;
-    ((SkInterpolator*)native_instance)->reset(valueCount, frameCount);
+    NativeReset(mNativeInstance, valueCount, frameCount);
     return NOERROR;
 }
 
 ECode CInterpolator::SetKeyFrame(
     /* [in] */ Int32 index,
     /* [in] */ Int32 msec,
-    /* [in] */ const ArrayOf<Float>& values)
+    /* [in] */ ArrayOf<Float>* values)
 {
     SetKeyFrame(index, msec, values, NULL);
     return NOERROR;
@@ -82,37 +81,20 @@ ECode CInterpolator::SetKeyFrame(
 ECode CInterpolator::SetKeyFrame(
     /* [in] */ Int32 index,
     /* [in] */ Int32 msec,
-    /* [in] */ const ArrayOf<Float>& values,
+    /* [in] */ ArrayOf<Float>* values,
     /* [in] */ ArrayOf<Float>* blendArray)
 {
     if (index < 0 || index >= mFrameCount) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    if (values.GetLength() < mValueCount) {
+    if (values->GetLength() < mValueCount) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     if (blendArray != NULL && blendArray->GetLength() < 4) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    SkScalar    blendStorage[4];
-    SkScalar*   blend = NULL;
 
-    Int32 i, n = values.GetLength();
-
-    SkAutoSTMalloc<16, SkScalar>  storage(n);
-    SkScalar* scalars = storage.get();
-
-    for (i = 0; i < n; i++)
-        scalars[i] = SkFloatToScalar(values[i]);
-
-    if (blendArray != NULL) {
-
-        for (i = 0; i < 4; i++)
-            blendStorage[i] = SkFloatToScalar((*blendArray)[i]);
-        blend = blendStorage;
-    }
-
-    ((SkInterpolator*)native_instance)->setKeyFrame(index, msec, scalars, blend);
+    NativeSetKeyFrame(mNativeInstance, index, msec, values, blendArray);
     return NOERROR;
 }
 
@@ -120,11 +102,9 @@ ECode CInterpolator::SetRepeatMirror(
     /* [in] */ Float repeatCount,
     /* [in] */ Boolean mirror)
 {
-    if (repeatCount > 32000)
-        repeatCount = 32000;
-
-    ((SkInterpolator*)native_instance)->setRepeatCount(SkFloatToScalar(repeatCount));
-    ((SkInterpolator*)native_instance)->setMirror(mirror != 0);
+    if (repeatCount >= 0) {
+        NativeSetRepeatMirror(mNativeInstance, repeatCount, mirror);
+    }
     return NOERROR;
 }
 
@@ -145,23 +125,92 @@ ECode CInterpolator::TimeToValues(
     if (values != NULL && values->GetLength() < mValueCount) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    SkInterpolatorBase::Result skResult;
 
-    skResult = ((SkInterpolator*)native_instance)->timeToValues(msec, (SkScalar*)values->GetPayload());
-
-    if (values) {
-        Int32 n = values->GetLength();
-        for (Int32 i = 0; i < n; i++) {
-            (*values)[i] = SkScalarToFloat(*(SkScalar*)&(*values)[i]);
-        }
-    }
-
-    switch (skResult) {
+    switch (NativeTimeToValues(mNativeInstance, msec, values)) {
         case 0: *result = InterpolatorResult_NORMAL;
         case 1: *result = InterpolatorResult_FREEZE_START;
         default: *result = InterpolatorResult_FREEZE_END;
     }
     return NOERROR;
+}
+
+Int64 CInterpolator::NativeConstructor(
+    /* [in] */ Int32 valueCount,
+    /* [in] */ Int32 frameCount)
+{
+    return reinterpret_cast<Int64>(new SkInterpolator(valueCount, frameCount));
+}
+
+void CInterpolator::NativeDestructor(
+    /* [in] */ Int64 interpHandle)
+{
+    SkInterpolator* interp = reinterpret_cast<SkInterpolator*>(interpHandle);
+    delete interp;
+}
+
+void CInterpolator::NativeReset(
+    /* [in] */ Int64 interpHandle,
+    /* [in] */ Int32 valueCount,
+    /* [in] */ Int32 frameCount)
+{
+    SkInterpolator* interp = reinterpret_cast<SkInterpolator*>(interpHandle);
+    interp->reset(valueCount, frameCount);
+}
+
+void CInterpolator::NativeSetKeyFrame(
+    /* [in] */ Int64 interpHandle,
+    /* [in] */ Int32 index,
+    /* [in] */ Int32 msec,
+    /* [in] */ ArrayOf<Float>* valueArray,
+    /* [in] */ ArrayOf<Float>* blendArray)
+{
+    SkInterpolator* interp = reinterpret_cast<SkInterpolator*>(interpHandle);
+
+    // AutoJavaFloatArray autoValues(env, valueArray);
+    // AutoJavaFloatArray autoBlend(env, blendArray, 4);
+    assert(blendArray->GetLength() >= 4);
+#ifdef SK_SCALAR_IS_FLOAT
+    SkScalar* scalars = valueArray->GetPayload();
+    SkScalar* blend = blendArray->GetPayload();
+#else
+    #error Need to convert float array to SkScalar array before calling the following function.
+#endif
+
+    interp->setKeyFrame(index, msec, scalars, blend);
+}
+
+void CInterpolator::NativeSetRepeatMirror(
+    /* [in] */ Int64 interpHandle,
+    /* [in] */ Float repeatCount,
+    /* [in] */ Boolean mirror)
+{
+    SkInterpolator* interp = reinterpret_cast<SkInterpolator*>(interpHandle);
+    if (repeatCount > 32000)
+        repeatCount = 32000;
+
+    interp->setRepeatCount(repeatCount);
+    interp->setMirror(mirror != 0);
+}
+
+Int32 CInterpolator::NativeTimeToValues(
+    /* [in] */ Int64 interpHandle,
+    /* [in] */ Int32 msec,
+    /* [in] */ ArrayOf<Float>* valueArray)
+{
+    SkInterpolator* interp = reinterpret_cast<SkInterpolator*>(interpHandle);
+    SkInterpolatorBase::Result result;
+
+    float* values = valueArray ? valueArray->GetPayload() : NULL;
+    result = interp->timeToValues(msec, (SkScalar*)values);
+
+    if (valueArray) {
+        int n = valueArray->GetLength();
+        for (int i = 0; i < n; i++) {
+            values[i] = SkScalarToFloat(*(SkScalar*)&values[i]);
+        }
+    }
+
+    return static_cast<Int32>(result);
 }
 
 } // namespace Graphics

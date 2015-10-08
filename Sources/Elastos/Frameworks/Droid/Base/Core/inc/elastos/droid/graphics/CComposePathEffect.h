@@ -14,9 +14,9 @@ CarClass(CComposePathEffect)
     , public IComposePathEffect
 {
 public:
-    CAR_INTERFACE_DECL();
-
     CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
 
     /**
      * Construct a PathEffect whose effect is to apply first the inner effect
@@ -26,13 +26,10 @@ public:
         /* [in] */ IPathEffect* outerpe,
         /* [in] */ IPathEffect* innerpe);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
 private:
-    static CARAPI_(Int32) NativeCreate(
-        /* [in] */ Int32 outerpe,
-        /* [in] */ Int32 innerpe);
+    static CARAPI_(Int64) NativeCreate(
+        /* [in] */ Int64 outerpe,
+        /* [in] */ Int64 innerpe);
 };
 
 } // namespace Graphics

@@ -1,12 +1,12 @@
 
 #ifndef __ELASTOS_DROID_GRAPHICS_CSURFACETEXTURE_H__
-#define __CSUMPATHEFFECT_H__
+#define __ELASTOS_DROID_GRAPHICS_CSURFACETEXTURE_H__
 
 #include "_Elastos_Droid_Graphics_CSurfaceTexture.h"
-#include "os/HandlerBase.h"
-#include <gui/SurfaceTexture.h>
+#include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::ILooper;
 
 namespace Elastos {
 namespace Droid {
@@ -51,25 +51,14 @@ namespace Graphics {
  * #updateTexImage} should not be called directly from the callback.
  */
 CarClass(CSurfaceTexture)
+    , public Object
+    , public ISurfaceTexture
 {
-private:
-    class EventHandler : public HandlerBase
-    {
-    public:
-        EventHandler(
-            /* [in] */ ILooper* looper,
-            /* [in] */ CSurfaceTexture* host)
-            : HandlerBase(looper)
-            , mHost(host)
-        {}
-
-        CARAPI HandleMessage(
-            /* [in] */ IMessage* msg);
-    private:
-        CSurfaceTexture* mHost;
-    };
-
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     CSurfaceTexture();
 
     ~CSurfaceTexture();
@@ -82,20 +71,51 @@ public:
     CARAPI constructor(
         /* [in] */ Int32 texName);
 
-   /**
-    * Construct a new SurfaceTexture to stream images to a given OpenGL texture.
-    *
-    * @param texName the OpenGL texture object name (e.g. generated via glGenTextures)
-    * @param allowSynchronousMode whether the SurfaceTexture can run in the synchronous mode.
-    *      When the image stream comes from OpenGL, SurfaceTexture may run in the synchronous
-    *      mode where the producer side may be blocked to avoid skipping frames. To avoid the
-    *      thread block, set allowSynchronousMode to false.
-    *
-    * @hide
-    */
+    /**
+     * Construct a new SurfaceTexture to stream images to a given OpenGL texture.
+     *
+     * In single buffered mode the application is responsible for serializing access to the image
+     * content buffer. Each time the image content is to be updated, the
+     * {@link #releaseTexImage()} method must be called before the image content producer takes
+     * ownership of the buffer. For example, when producing image content with the NDK
+     * ANativeWindow_lock and ANativeWindow_unlockAndPost functions, {@link #releaseTexImage()}
+     * must be called before each ANativeWindow_lock, or that call will fail. When producing
+     * image content with OpenGL ES, {@link #releaseTexImage()} must be called before the first
+     * OpenGL ES function call each frame.
+     *
+     * @param texName the OpenGL texture object name (e.g. generated via glGenTextures)
+     * @param singleBufferMode whether the SurfaceTexture will be in single buffered mode.
+     *
+     * @throws Surface.OutOfResourcesException If the SurfaceTexture cannot be created.
+     */
     CARAPI constructor(
         /* [in] */ Int32 texName,
-        /* [in] */ Boolean allowSynchronousMode);
+        /* [in] */ Boolean singleBufferMode);
+
+    /**
+     * Construct a new SurfaceTexture to stream images to a given OpenGL texture.
+     *
+     * In single buffered mode the application is responsible for serializing access to the image
+     * content buffer. Each time the image content is to be updated, the
+     * {@link #releaseTexImage()} method must be called before the image content producer takes
+     * ownership of the buffer. For example, when producing image content with the NDK
+     * ANativeWindow_lock and ANativeWindow_unlockAndPost functions, {@link #releaseTexImage()}
+     * must be called before each ANativeWindow_lock, or that call will fail. When producing
+     * image content with OpenGL ES, {@link #releaseTexImage()} must be called before the first
+     * OpenGL ES function call each frame.
+     *
+     * Unlike {@link #SurfaceTexture(int, boolean)}, which takes an OpenGL texture object name,
+     * this constructor creates the SurfaceTexture in detached mode. A texture name must be passed
+     * in using {@link #attachToGLContext} before calling {@link #releaseTexImage()} and producing
+     * image content using OpenGL ES.
+     *
+     * @param singleBufferMode whether the SurfaceTexture will be in single buffered mode.
+     *
+     * @throws Surface.OutOfResourcesException If the SurfaceTexture cannot be created.
+     * @hide
+     */
+    CARAPI constructor(
+        /* [in] */ Boolean singleBufferMode);
 
     /**
      * Register a callback to be invoked when a new image frame becomes available to the
@@ -105,6 +125,24 @@ public:
      */
     CARAPI SetOnFrameAvailableListener(
         /* [in] */ IOnFrameAvailableListener* listener);
+
+    /**
+     * Register a callback to be invoked when a new image frame becomes available to the
+     * SurfaceTexture.
+     * <p>
+     * If a handler is specified, the callback will be invoked on that handler's thread.
+     * If no handler is specified, then the callback may be called on an arbitrary thread,
+     * so it is not safe to call {@link #updateTexImage} without first binding the OpenGL ES
+     * context to the thread invoking the callback.
+     * </p>
+     *
+     * @param listener The listener to use, or null to remove the listener.
+     * @param handler The handler on which the listener should be invoked, or null
+     * to use an arbitrary thread.
+     */
+    CARAPI SetOnFrameAvailableListener(
+        /* [in] */ /*@Nullable*/ IOnFrameAvailableListener* listener,
+        /* [in] */ /*@Nullable*/ IHandler* handler);
 
     /**
      * Set the default size of the image buffers.  The image producer may override the buffer size,
@@ -135,6 +173,13 @@ public:
      * It will implicitly bind its texture to the GL_TEXTURE_EXTERNAL_OES texture target.
      */
     CARAPI UpdateTexImage();
+
+    /**
+     * Releases the the texture content. This is needed in single buffered mode to allow the image
+     * content producer to take ownership of the image buffer.
+     * For more information see {@link #SurfaceTexture(int, boolean)}.
+     */
+    CARAPI ReleaseTexImage();
 
     /**
      * Detach the SurfaceTexture from the OpenGL ES context that owns the OpenGL ES texture object.
@@ -181,7 +226,7 @@ public:
      *     16 elements.
      */
     CARAPI GetTransformMatrix(
-        /* [in] */ const ArrayOf<Float>& mtx);
+        /* [in] */ ArrayOf<Float>* mtx);
 
     /**
      * Retrieve the timestamp associated with the texture image set by the most recent call to
@@ -216,20 +261,24 @@ public:
     CARAPI ReleaseBuffers();
 
     static CARAPI_(void) PostEventFromNative(
-            /* [in] */ CSurfaceTexture* stRef);
+            /* [in] */ IWeakReference/*<SurfaceTexture>*/* weakSelf);
 
     CARAPI GetSurfaceTexture(
         /* [out] */ Int32* texture);
 
 private:
     CARAPI NativeInit(
+        /* [in] */ Boolean isDetached,
         /* [in] */ Int32 texName,
-        /* [in] */ Boolean allowSynchronousMode);
+        /* [in] */ Boolean singleBufferMode,
+        /* [in] */ IWeakReference/*<SurfaceTexture>*/* weakSelf) /*throws Surface.OutOfResourcesException*/;
+
+    CARAPI NativeReleaseTexImage();
 
     CARAPI_(void) NativeFinalize();
 
     CARAPI_(void) NativeGetTransformMatrix(
-        /* [in] */ const ArrayOf<Float>& mtx);
+        /* [in] */ ArrayOf<Float>* mtx);
 
     CARAPI_(Int64) NativeGetTimestamp();
 
@@ -252,19 +301,20 @@ public:
     /**
      * This field is used by native code, do not access or modify.
      */
-    Int32 mSurfaceTexture;
+    Int64 mSurfaceTexture;
+    Int64  mProducer;
+    Int64  mFrameAvailableListener;
 
 private:
-    AutoPtr<IHandler> mEventHandler;
-
-    AutoPtr<IOnFrameAvailableListener> mOnFrameAvailableListener;
+    AutoPtr<ILooper> mCreatorLooper;
+    AutoPtr<IHandler> mOnFrameAvailableHandler;
 };
 
-android::sp<android::SurfaceTexture> SurfaceTexture_getSurfaceTexture(
-    /* [in] */ CSurfaceTexture* thiz);
+// android::sp<android::SurfaceTexture> SurfaceTexture_getSurfaceTexture(
+//     /* [in] */ CSurfaceTexture* thiz);
 
 } // namespace Graphics
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CSUMPATHEFFECT_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CSURFACETEXTURE_H__

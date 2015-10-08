@@ -9,9 +9,15 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-CarClass(CSumPathEffect), public PathEffect
+CarClass(CSumPathEffect)
+    , public PathEffect
+    , public ISumPathEffect
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     /**
      * Construct a PathEffect whose effect is to apply two effects, in sequence.
      * (e.g. first(path) + second(path))
@@ -20,13 +26,10 @@ public:
         /* [in] */ IPathEffect* first,
         /* [in] */ IPathEffect* second);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
 private:
-    static CARAPI_(Int32) NativeCreate(
-        /* [in] */ Int32 first,
-        /* [in] */ Int32 second);
+    static CARAPI_(Int64) NativeCreate(
+        /* [in] */ Int64 first,
+        /* [in] */ Int64 second);
 };
 
 } // namespace Graphics

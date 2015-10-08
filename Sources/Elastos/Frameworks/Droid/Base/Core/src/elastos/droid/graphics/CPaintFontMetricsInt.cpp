@@ -6,6 +6,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_OBJECT_IMPL(CPaintFontMetricsInt);
+CAR_INTERFACE_IMPL(CPaintFontMetricsInt, Object, IPaintFontMetricsInt);
 CPaintFontMetricsInt::CPaintFontMetricsInt()
     : mTop(0)
     , mAscent(0)

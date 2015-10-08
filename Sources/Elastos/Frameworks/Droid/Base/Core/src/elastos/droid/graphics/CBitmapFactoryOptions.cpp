@@ -15,10 +15,12 @@ CBitmapFactoryOptions::CBitmapFactoryOptions()
     , mInSampleSize(0)
     , mInPreferredConfig(BitmapConfig_ARGB_8888)
     , mInDither(FALSE)
+    , mNewOptsFlag(FALSE)
     , mInDensity(0)
     , mInTargetDensity(0)
     , mInScreenDensity(0)
     , mInScaled(TRUE)
+    , mInPremultiplied(TRUE)
     , mInPurgeable(FALSE)
     , mInInputShareable(FALSE)
     , mInPreferQualityOverSpeed(FALSE)
@@ -187,6 +189,21 @@ ECode CBitmapFactoryOptions::SetInScaled(
     /* [in] */ Boolean scaled)
 {
     mInScaled = scaled;
+    return NOERROR;
+}
+
+ECode CBitmapFactoryOptions::GetInPremultiplied(
+    /* [out] */ Boolean* premultiplied)
+{
+    VALIDATE_NOT_NULL(*premultiplied);
+    *premultiplied = mInPremultiplied;
+    return NOERROR;
+}
+
+ECode CBitmapFactoryOptions::SetInPremultiplied(
+    /* [in] */ Boolean premultiplied)
+{
+    mInPremultiplied = premultiplied;
     return NOERROR;
 }
 

@@ -13,7 +13,7 @@ namespace Graphics {
 
 static AutoPtr<HashMap<String, Int32> > InitColorNameMap()
 {
-    AutoPtr<HashMap<String, Int32> > map = new HashMap<String, Int32>(11);
+    AutoPtr<HashMap<String, Int32> > map = new HashMap<String, Int32>(23);
     assert(map != NULL);
     (*map)[String("black")] = IColor::BLACK;
     (*map)[String("darkgray")] = IColor::DKGRAY;
@@ -26,6 +26,18 @@ static AutoPtr<HashMap<String, Int32> > InitColorNameMap()
     (*map)[String("yellow")] = IColor::YELLOW;
     (*map)[String("cyan")] = IColor::CYAN;
     (*map)[String("magenta")] = IColor::MAGENTA;
+    (*map)[String("aqua")] =  0xFF00FFFF;
+    (*map)[String("fuchsia")] =  0xFFFF00FF;
+    (*map)[String("darkgrey")] =  IColor::DKGRAY;
+    (*map)[String("grey")] =  IColor::GRAY;
+    (*map)[String("lightgrey")] =  IColor::LTGRAY;
+    (*map)[String("lime")] =  0xFF00FF00;
+    (*map)[String("maroon")] =  0xFF800000;
+    (*map)[String("navy")] =  0xFF000080;
+    (*map)[String("olive")] =  0xFF808000;
+    (*map)[String("purple")] =  0xFF800080;
+    (*map)[String("silver")] =  0xFFC0C0C0;
+    (*map)[String("teal")] =  0xFF008080;
     return map;
 }
 
@@ -218,12 +230,29 @@ ECode CColor::ParseColor(
 }
 
 ECode CColor::HSBtoColor(
-    /* [in] */ const ArrayOf<Float>& hsb,
+    /* [in] */ ArrayOf<Float>* hsb,
     /* [out] */ Int32* color)
 {
     VALIDATE_NOT_NULL(color);
 
-    return HSBtoColor(hsb[0], hsb[1], hsb[2], color);
+    return HSBtoColor((*hsb)[0], (*hsb)[1], (*hsb)[2], color);
+}
+
+Int32 CColor::GetHtmlColor(
+    /* [in] */ const String& color)
+{
+    assert(0 && "TODO");
+    // Integer i = sColorNameMap.get(color.toLowerCase(Locale.ROOT));
+    // if (i != null) {
+    //     return i;
+    // } else {
+    //     try {
+    //         return XmlUtils.convertValueToInt(color, -1);
+    //     } catch (NumberFormatException nfe) {
+    //         return -1;
+    //     }
+    // }
+    return -1;
 }
 
 ECode CColor::HSBtoColor(
@@ -314,7 +343,7 @@ ECode CColor::ColorToHSV(
 }
 
 ECode CColor::HSVToColor(
-    /* [in] */ const ArrayOf<Float>& hsv,
+    /* [in] */ ArrayOf<Float>* hsv,
     /* [out] */ Int32* color)
 {
     VALIDATE_NOT_NULL(color);
@@ -324,12 +353,12 @@ ECode CColor::HSVToColor(
 
 ECode CColor::HSVToColor(
     /* [in] */ Int32 alpha,
-    /* [in] */ const ArrayOf<Float>& hsv,
+    /* [in] */ ArrayOf<Float>* hsv,
     /* [out] */ Int32* color)
 {
     VALIDATE_NOT_NULL(color);
 
-    if (hsv.GetLength() < 3) {
+    if (hsv->GetLength() < 3) {
         // throw new RuntimeException("3 components required for hsv");
         return E_RUNTIME_EXCEPTION;
     }
@@ -359,21 +388,20 @@ void CColor::NativeRGBToHSV(
 
 Int32 CColor::NativeHSVToColor(
     /* [in] */ Int32 alpha,
-    /* [in] */ const ArrayOf<Float>& hsvArray)
+    /* [in] */ ArrayOf<Float>* hsvArray)
 {
-    if (hsvArray.GetLength() < 3) {
+    if (hsvArray->GetLength() < 3) {
         sk_throw();
         return 0;
     }
 
-    Float* values = hsvArray.GetPayload();
-    SkScalar hsv[3];
+#ifdef SK_SCALAR_IS_FLOAT
+    SkScalar*   hsv = hsvArray->GetPayload();
+#else
+    #error Need to convert float array to SkScalar array before calling the following function.
+#endif
 
-    for (Int32 i = 0; i < 3; i++) {
-        hsv[i] = SkFloatToScalar(values[i]);
-    }
-
-    return SkHSVToColor(alpha, hsv);
+    return static_cast<Int32>(SkHSVToColor(alpha, hsv));
 }
 
 Float CColor::Constrain(

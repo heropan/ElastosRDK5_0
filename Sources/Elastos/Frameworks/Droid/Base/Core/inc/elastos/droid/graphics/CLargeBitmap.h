@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_GRAPHICS_CLARGEBITMAP_H__
 
 #include "_Elastos_Droid_Graphics_CLargeBitmap.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -22,7 +25,7 @@ public:
     ~CLargeBitmap();
 
      CARAPI constructor(
-        /* [in] */ Int32 lbm);
+        /* [in] */ Int64 lbm);
 
     /**
      * Decodes a rectangle region in the image specified by rect.
@@ -72,10 +75,10 @@ private:
      * has already been recycled.
      */
     CARAPI CheckRecycled(
-        /* [in] */ CString errorMessage);
+        /* [in] */ const String& errorMessage);
 
     static CARAPI NativeDecodeRegion(
-        /* [in] */ Int32 brd,
+        /* [in] */ Int64 brd,
         /* [in] */ Int32 startX,
         /* [in] */ Int32 startY,
         /* [in] */ Int32 width,
@@ -84,16 +87,16 @@ private:
         /* [out] */ IBitmap** bitmap);
 
     static CARAPI_(Int32) NativeGetWidth(
-        /* [in] */ Int32 lbm);
+        /* [in] */ Int64 lbm);
 
     static CARAPI_(Int32) NativeGetHeight(
-        /* [in] */ Int32 lbm);
+        /* [in] */ Int64 lbm);
 
     static CARAPI_(void) NativeClean(
-        /* [in] */ Int32 lbm);
+        /* [in] */ Int64 lbm);
 
 private:
-    Int32 mNativeLargeBitmap;
+    Int64 mNativeLargeBitmap;
     Boolean mRecycled;
 };
 

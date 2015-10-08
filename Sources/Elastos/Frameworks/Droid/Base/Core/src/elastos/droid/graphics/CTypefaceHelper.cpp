@@ -7,6 +7,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+CAR_SINGLETON_IMPL(CTypefaceHelper);
+CAR_INTERFACE_IMPL(CTypefaceHelper, Singleton, ITypefaceHelper);
 ECode CTypefaceHelper::Create(
     /* [in] */ const String& familyName,
     /* [in] */ Int32 style,
@@ -58,12 +60,20 @@ ECode CTypefaceHelper::CreateFromFile(
     return Typeface::CreateFromFile(path, typeface);
 }
 
-ECode CTypefaceHelper::SetGammaForText(
-    /* [in] */ Float blackGamma,
-    /* [in] */ Float whiteGamma)
+ECode CTypefaceHelper::CreateFromFamilies(
+    /* [in]*/ ArrayOf<IFontFamily>* families,
+    /* [out]*/ ITypeface** typeface)
 {
-    Typeface::SetGammaForText(blackGamma, whiteGamma);
-    return NOERROR;
+    VALIDATE_NOT_NULL(typeface);
+    return Typeface::CreateFromFamilies(families, typeface);
+}
+
+ECode CTypefaceHelper::CreateFromFamiliesWithDefault(
+    /* [in]*/ ArrayOf<IFontFamily>* families,
+    /* [out]*/ ITypeface** typeface)
+{
+    VALIDATE_NOT_NULL(typeface);
+    return Typeface::CreateFromFamiliesWithDefault(families, typeface);
 }
 
 } // namespace Graphics

@@ -3,10 +3,12 @@
 #define __ELASTOS_DROID_GRAPHICS_CBITMAP_H__
 
 #include "_Elastos_Droid_Graphics_CBitmap.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Core::Object;
 using Elastos::IO::IBuffer;
 using Elastos::IO::IOutputStream;
-using Elastos::Droid::Utility::IDisplayMetrics;
 
 #ifdef __cplusplus
 extern "C"
@@ -21,13 +23,13 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-struct ElaBitmapCallback
-{
-    AutoPtr<IInterface> (*createBitmap)(Int32 nativeBitmap, ArrayOf<Byte>* buffer, Boolean isMutable,
-                                                        ArrayOf<Byte>* ninePatchChunk, Int32 density);
-    AutoPtr<IInterface> (*createBitmap2)(Int32 nativeBitmap, ArrayOf<Byte>* buffer, Boolean isMutable,
-                                    ArrayOf<Byte>* ninePatchChunk, ArrayOf<Int32>* layoutbounds, Int32 density);
-};
+// struct ElaBitmapCallback
+// {
+//     AutoPtr<IInterface> (*createBitmap)(Int32 nativeBitmap, ArrayOf<Byte>* buffer, Boolean isMutable,
+//                                                         ArrayOf<Byte>* ninePatchChunk, Int32 density);
+//     AutoPtr<IInterface> (*createBitmap2)(Int32 nativeBitmap, ArrayOf<Byte>* buffer, Boolean isMutable,
+//                                     ArrayOf<Byte>* ninePatchChunk, ArrayOf<Int32>* layoutbounds, Int32 density);
+// };
 
 CarClass(CBitmap)
     , public Object
@@ -46,19 +48,15 @@ public:
     CARAPI constructor();
 
     CARAPI constructor(
-        /* [in] */ Int32 nativeBitmap,
+        /* [in] */ Int64 nativeBitmap,
         /* [in] */ ArrayOf<Byte>* buffer,
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height,
+        /* [in] */ Int32 density,
         /* [in] */ Boolean isMutable,
+        /* [in] */ Boolean requestPremultiplied,
         /* [in] */ ArrayOf<Byte>* ninePatchChunk,
-        /* [in] */ Int32 density);
-
-    CARAPI constructor(
-        /* [in] */ Int32 nativeBitmap,
-        /* [in] */ ArrayOf<Byte>* buffer,
-        /* [in] */ Boolean isMutable,
-        /* [in] */ ArrayOf<Byte>* ninePatchChunk,
-        /* [in] */ ArrayOf<Int32>* layoutBounds,
-        /* [in] */ Int32 density);
+        /* [in] */ INinePatchInsetStruct* ninePatchInsets);
 
     static CARAPI_(void) SetDefaultDensity(
         /* [in] */ Int32 density);
@@ -104,17 +102,89 @@ public:
     CARAPI SetDensity(
         /* [in] */ Int32 density);
 
-    CARAPI SetNinePatchChunk(
-        /* [in] */ ArrayOf<Byte>* chunk);
+    /**
+     * <p>Modifies the bitmap to have a specified width, height, and {@link
+     * Config}, without affecting the underlying allocation backing the bitmap.
+     * Bitmap pixel data is not re-initialized for the new configuration.</p>
+     *
+     * <p>This method can be used to avoid allocating a new bitmap, instead
+     * reusing an existing bitmap's allocation for a new configuration of equal
+     * or lesser size. If the Bitmap's allocation isn't large enough to support
+     * the new configuration, an IllegalArgumentException will be thrown and the
+     * bitmap will not be modified.</p>
+     *
+     * <p>The result of {@link #getByteCount()} will reflect the new configuration,
+     * while {@link #getAllocationByteCount()} will reflect that of the initial
+     * configuration.</p>
+     *
+     * <p>Note: This may change this result of hasAlpha(). When converting to 565,
+     * the new bitmap will always be considered opaque. When converting from 565,
+     * the new bitmap will be considered non-opaque, and will respect the value
+     * set by setPremultiplied().</p>
+     *
+     * <p>WARNING: This method should NOT be called on a bitmap currently used
+     * by the view system. It does not make guarantees about how the underlying
+     * pixel buffer is remapped to the new config, just that the allocation is
+     * reused. Additionally, the view system does not account for bitmap
+     * properties being modifying during use, e.g. while attached to
+     * drawables.</p>
+     *
+     * @see #setWidth(int)
+     * @see #setHeight(int)
+     * @see #setConfig(Config)
+     */
+    CARAPI Reconfigure(
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height,
+        /* [in] */ BitmapConfig config);
 
     /**
-     * Sets the layout bounds as an array of left, top, right, bottom integers
-     * @param bounds the array containing the padding values
+     * <p>Convenience method for calling {@link #reconfigure(int, int, Config)}
+     * with the current height and config.</p>
      *
-     * @hide
+     * <p>WARNING: this method should not be used on bitmaps currently used by
+     * the view system, see {@link #reconfigure(int, int, Config)} for more
+     * details.</p>
+     *
+     * @see #reconfigure(int, int, Config)
+     * @see #setHeight(int)
+     * @see #setConfig(Config)
      */
-    CARAPI SetLayoutBounds(
-        /* [in] */ ArrayOf<Int32>* bounds);
+    CARAPI SetWidth(
+        /* [in] */ Int32 width);
+
+    /**
+     * <p>Convenience method for calling {@link #reconfigure(int, int, Config)}
+     * with the current width and config.</p>
+     *
+     * <p>WARNING: this method should not be used on bitmaps currently used by
+     * the view system, see {@link #reconfigure(int, int, Config)} for more
+     * details.</p>
+     *
+     * @see #reconfigure(int, int, Config)
+     * @see #setWidth(int)
+     * @see #setConfig(Config)
+     */
+    CARAPI SetHeight(
+        /* [in] */ Int32 height);
+
+    /**
+     * <p>Convenience method for calling {@link #reconfigure(int, int, Config)}
+     * with the current height and width.</p>
+     *
+     * <p>WARNING: this method should not be used on bitmaps currently used by
+     * the view system, see {@link #reconfigure(int, int, Config)} for more
+     * details.</p>
+     *
+     * @see #reconfigure(int, int, Config)
+     * @see #setWidth(int)
+     * @see #setHeight(int)
+     */
+    CARAPI SetConfig(
+        /* [in] */ BitmapConfig config);
+
+    CARAPI SetNinePatchChunk(
+        /* [in] */ ArrayOf<Byte>* chunk);
 
     /**
      * Free the native object associated with this bitmap, and clear the
@@ -298,7 +368,7 @@ public:
      *         the color array's length is less than the number of pixels.
      */
     static CARAPI CreateBitmap(
-        /* [in] */ const ArrayOf<Int32>& colors,
+        /* [in] */ ArrayOf<Int32>* colors,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
         /* [in] */ Int32 width,
@@ -328,7 +398,7 @@ public:
      */
     static CARAPI CreateBitmap(
         /* [in] */ IDisplayMetrics* display,
-        /* [in] */ const ArrayOf<Int32>& colors,
+        /* [in] */ ArrayOf<Int32>* colors,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
         /* [in] */ Int32 width,
@@ -352,7 +422,7 @@ public:
      *         the color array's length is less than the number of pixels.
      */
     static CARAPI CreateBitmap(
-        /* [in] */ const ArrayOf<Int32>& colors,
+        /* [in] */ ArrayOf<Int32>* colors,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ BitmapConfig config,
@@ -377,7 +447,7 @@ public:
      */
     static CARAPI CreateBitmap(
         /* [in] */ IDisplayMetrics* display,
-        /* [in] */ const ArrayOf<Int32>& colors,
+        /* [in] */ ArrayOf<Int32>* colors,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ BitmapConfig config,
@@ -386,12 +456,12 @@ public:
     CARAPI GetNinePatchChunk(
         /* [out, callee] */ ArrayOf<Byte>** data);
 
-    /**
-     * @hide
-     * @return the layout padding [left, right, top, bottom]
-     */
-    CARAPI GetLayoutBounds(
-        /* [out, callee] */ ArrayOf<Int32>** bounds);
+    CARAPI GetOpticalInsets(
+        /* [in] */ /*@NonNull*/ IRect* outInsets);
+
+    /** @hide */
+    CARAPI GetNinePatchInsets(
+        /* [out] */ INinePatchInsetStruct** inset);
 
     CARAPI Compress(
         /* [in] */ BitmapCompressFormat format,
@@ -419,8 +489,30 @@ public:
      * @return true if the underlying pixels have been pre-multiplied, false
      *         otherwise
      */
-     CARAPI IsPremultiplied(
+    CARAPI IsPremultiplied(
          /* [out] */ Boolean* isPremultiplied);
+    /**
+     * Sets whether the bitmap should treat its data as pre-multiplied.
+     *
+     * <p>Bitmaps are always treated as pre-multiplied by the view system and
+     * {@link Canvas} for performance reasons. Storing un-pre-multiplied data in
+     * a Bitmap (through {@link #setPixel}, {@link #setPixels}, or {@link
+     * BitmapFactory.Options#inPremultiplied BitmapFactory.Options.inPremultiplied})
+     * can lead to incorrect blending if drawn by the framework.</p>
+     *
+     * <p>This method will not affect the behavior of a bitmap without an alpha
+     * channel, or if {@link #hasAlpha()} returns false.</p>
+     *
+     * <p>Calling {@link #createBitmap} or {@link #createScaledBitmap} with a source
+     * Bitmap whose colors are not pre-multiplied may result in a RuntimeException,
+     * since those functions require drawing the source, which is not supported for
+     * un-pre-multiplied Bitmaps.</p>
+     *
+     * @see Bitmap#isPremultiplied()
+     * @see BitmapFactory.Options#inPremultiplied
+     */
+    CARAPI SetPremultiplied(
+        /* [in] */ Boolean premultiplied);
 
     CARAPI GetWidth(
         /* [out] */ Int32* width);
@@ -465,6 +557,23 @@ public:
      */
     CARAPI GetByteCount(
         /* [out] */ Int32* bytes);
+
+    /**
+     * Returns the size of the allocated memory used to store this bitmap's pixels.
+     *
+     * <p>This can be larger than the result of {@link #getByteCount()} if a bitmap is reused to
+     * decode other bitmaps of smaller size, or by manual reconfiguration. See {@link
+     * #reconfigure(int, int, Config)}, {@link #setWidth(int)}, {@link #setHeight(int)}, {@link
+     * #setConfig(Bitmap.Config)}, and {@link BitmapFactory.Options#inBitmap
+     * BitmapFactory.Options.inBitmap}. If a bitmap is not modified in this way, this value will be
+     * the same as that returned by {@link #getByteCount()}.</p>
+     *
+     * <p>This value will not change over the lifetime of a Bitmap.</p>
+     *
+     * @see #reconfigure(int, int, Config)
+     */
+    CARAPI GetAllocationByteCount(
+        /* [out] */ Int32* count);
 
     CARAPI GetConfig(
         /* [out] */ BitmapConfig* config);
@@ -561,7 +670,7 @@ public:
      *         to receive the specified number of pixels.
      */
     CARAPI GetPixels(
-        /* [in] */ const ArrayOf<Int32>& pixels,
+        /* [in] */ ArrayOf<Int32>* pixels,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
         /* [in] */ Int32 x,
@@ -598,7 +707,7 @@ public:
      *         to receive the specified number of pixels.
      */
     CARAPI SetPixels(
-        /* [in] */ const ArrayOf<Int32>& pixels,
+        /* [in] */ ArrayOf<Int32>* pixels,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
         /* [in] */ Int32 x,
@@ -634,22 +743,22 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    CARAPI_(Int32) Ni();
+    CARAPI_(Int64) Ni();
 
-    static AutoPtr<IInterface> CreateBitmap(
-        /* [in] */ Int32 nativeBitmap,
-        /* [in] */ ArrayOf<Byte>* buffer,
-        /* [in] */ Boolean isMutable,
-        /* [in] */ ArrayOf<Byte>* ninePatchChunk,
-        /* [in] */ Int32 density);
+    // static AutoPtr<IInterface> CreateBitmap(
+    //     /* [in] */ Int32 nativeBitmap,
+    //     /* [in] */ ArrayOf<Byte>* buffer,
+    //     /* [in] */ Boolean isMutable,
+    //     /* [in] */ ArrayOf<Byte>* ninePatchChunk,
+    //     /* [in] */ Int32 density);
 
-    static AutoPtr<IInterface> CreateBitmap(
-        /* [in] */ Int32 nativeBitmap,
-        /* [in] */ ArrayOf<Byte>* buffer,
-        /* [in] */ Boolean isMutable,
-        /* [in] */ ArrayOf<Byte>* ninePatchChunk,
-        /* [in] */ ArrayOf<Int32>* layoutbounds,
-        /* [in] */ Int32 density);
+    // static AutoPtr<IInterface> CreateBitmap(
+    //     /* [in] */ Int32 nativeBitmap,
+    //     /* [in] */ ArrayOf<Byte>* buffer,
+    //     /* [in] */ Boolean isMutable,
+    //     /* [in] */ ArrayOf<Byte>* ninePatchChunk,
+    //     /* [in] */ ArrayOf<Int32>* layoutbounds,
+    //     /* [in] */ Int32 density);
 
     static CARAPI_(BitmapConfig) NativeToConfig(
         /* [in] */ Int32 ni);
@@ -660,7 +769,7 @@ private:
      * has already been recycled.
      */
     CARAPI CheckRecycled(
-        /* [in] */ CString errorMessage);
+        /* [in] */ const String& errorMessage);
 
     static CARAPI CheckXYSign(
         /* [in] */ Int32 x,
@@ -724,10 +833,10 @@ private:
         /* [in] */ Int32 height,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
-        /* [in] */ const ArrayOf<Int32>& pixels);
+        /* [in] */ ArrayOf<Int32>* pixels);
 
     static CARAPI NativeCreate(
-        /* [in] */ const ArrayOf<Int32>* colors,
+        /* [in] */ ArrayOf<Int32>* colors,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
         /* [in] */ Int32 width,
@@ -737,48 +846,50 @@ private:
         /* [out] */ CBitmap** bitmap);
 
     static CARAPI NativeCopy(
-        /* [in] */ Int32 srcBitmap,
+        /* [in] */ Int64 srcBitmap,
         /* [in] */ Int32 nativeConfig,
         /* [in] */ Boolean isMutable,
         /* [out] */ CBitmap** bitmap);
 
     static CARAPI_(void) NativeDestructor(
-        /* [in] */ Int32 nativeBitmap);
+        /* [in] */ Int64 nativeBitmap);
 
     static CARAPI_(Boolean) NativeRecycle(
-        /* [in] */ Int32 nativeBitmap);
+        /* [in] */ Int64 nativeBitmap);
+
+    static CARAPI NativeReconfigure(
+        /* [in] */ Int64 nativeBitmap,
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height,
+        /* [in] */ Int32 config,
+        /* [in] */ Int32 allocSize,
+        /* [in] */ Boolean isPremultiplied);
 
     static CARAPI_(Boolean) NativeCompress(
-        /* [in] */ Int32 nativeBitmap,
+        /* [in] */ Int64 nativeBitmap,
         /* [in] */ Int32 format,
         /* [in] */ Int32 quality,
         /* [in] */ IOutputStream* stream,
         /* [in] */ ArrayOf<Byte>* tempStorage);
 
     static CARAPI_(void) NativeErase(
-        /* [in] */ Int32 nativeBitmap,
+        /* [in] */ Int64 nativeBitmap,
         /* [in] */ Int32 color);
 
-    static CARAPI_(Int32) NativeWidth(
-        /* [in] */ Int32 nativeBitmap);
-
-    static CARAPI_(Int32) NativeHeight(
-        /* [in] */ Int32 nativeBitmap);
-
     static CARAPI_(Int32) NativeRowBytes(
-        /* [in] */ Int32 nativeBitmap);
+        /* [in] */ Int64 nativeBitmap);
 
     static CARAPI_(Int32) NativeConfig(
-        /* [in] */ Int32 nativeBitmap);
+        /* [in] */ Int64 nativeBitmap);
 
     static CARAPI_(Int32) NativeGetPixel(
-        /* [in] */ Int32 nativeBitmap,
+        /* [in] */ Int64 nativeBitmap,
         /* [in] */ Int32 x,
         /* [in] */ Int32 y);
 
     static CARAPI_(void) NativeGetPixels(
-        /* [in] */ Int32 nativeBitmap,
-        /* [in] */ const ArrayOf<Int32>& pixels,
+        /* [in] */ Int64 nativeBitmap,
+        /* [in] */ ArrayOf<Int32>* pixels,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
         /* [in] */ Int32 x,
@@ -787,14 +898,14 @@ private:
         /* [in] */ Int32 height);
 
     static CARAPI_(void) NativeSetPixel(
-        /* [in] */ Int32 nativeBitmap,
+        /* [in] */ Int64 nativeBitmap,
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ Int32 color);
 
     static CARAPI_(void) NativeSetPixels(
-        /* [in] */ Int32 nativeBitmap,
-        /* [in] */ const ArrayOf<Int32>& colors,
+        /* [in] */ Int64 nativeBitmap,
+        /* [in] */ ArrayOf<Int32>* colors,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
         /* [in] */ Int32 x,
@@ -803,52 +914,70 @@ private:
         /* [in] */ Int32 height);
 
     static CARAPI_(void) NativeCopyPixelsToBuffer(
-        /* [in] */ Int32 nativeBitmap,
+        /* [in] */ Int64 nativeBitmap,
         /* [in] */ IBuffer* dst);
 
     static CARAPI_(void) NativeCopyPixelsFromBuffer(
-        /* [in] */ Int32 nativeBitmap,
+        /* [in] */ Int64 nativeBitmap,
         /* [in] */ IBuffer* src);
 
     static CARAPI_(Int32) NativeGenerationId(
-        /* [in] */ Int32 nativeBitmap);
+        /* [in] */ Int64 nativeBitmap);
 
     static CARAPI NativeCreateFromParcel(
         /* [in] */ IParcel* p,
         /* [in] */ CBitmap* bitmap);
 
     static CARAPI_(Boolean) NativeWriteToParcel(
-        /* [in] */ Int32 nativeBitmap,
+        /* [in] */ Int64 nativeBitmap,
         /* [in] */ Boolean isMutable,
         /* [in] */ Int32 density,
         /* [in] */ IParcel* p);
 
     static CARAPI NativeExtractAlpha(
-        /* [in] */ Int32 nativeBitmap,
-        /* [in] */ Int32 nativePaint,
+        /* [in] */ Int64 nativeBitmap,
+        /* [in] */ Int64 nativePaint,
         /* [in] */ ArrayOf<Int32>* offsetXY,
         /* [out] */ CBitmap** bitmap);
 
     static CARAPI_(void) NativePrepareToDraw(
-        /* [in] */ Int32 nativeBitmap);
+        /* [in] */ Int64 nativeBitmap);
 
     static CARAPI_(Boolean) NativeHasAlpha(
-        /* [in] */ Int32 nativeBitmap);
+        /* [in] */ Int64 nativeBitmap);
+
+    static CARAPI_(Boolean) NativeIsPremultiplied(
+        /* [in] */ Int64 nativeBitmap);
+
+    static CARAPI NativeSetPremultiplied(
+        /* [in] */ Int64 nativeBitmap,
+        /* [in] */ Boolean isPremul);
 
     static CARAPI_(void) NativeSetHasAlpha(
-        /* [in] */ Int32 bitmap,
-        /* [in] */ Boolean hasAlpha);
+        /* [in] */ Int64 bitmap,
+        /* [in] */ Boolean hasAlpha,
+        /* [in] */ Boolean requestPremul);
 
     static CARAPI_(Boolean) NativeHasMipMap(
-        /* [in] */ Int32 nativeBitmap);
+        /* [in] */ Int64 nativeBitmap);
 
     static CARAPI_(void) NativeSetHasMipMap(
-        /* [in] */ Int32 bitmap,
+        /* [in] */ Int64 bitmap,
         /* [in] */ Boolean hasMipMap);
 
     static CARAPI_(Boolean) NativeSameAs(
-        /* [in] */ Int32 nb0,
-        /* [in] */ Int32 nb1);
+        /* [in] */ Int64 nb0,
+        /* [in] */ Int64 nb1);
+
+    /**
+     * Native bitmap has been reconfigured, so set premult and cached
+     * width/height values
+     */
+    // @SuppressWarnings({"UnusedDeclaration"}) // called from JNI
+    CARAPI_(void) Reinit(
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height,
+        /* [in] */ Boolean requestPremultiplied);
 
 public:
     /**
@@ -865,7 +994,7 @@ public:
      *
      * @hide
      */
-    Int32 mNativeBitmap;
+    Int64 mNativeBitmap;
 
     /**
      * Backing buffer for the Bitmap.
@@ -880,9 +1009,26 @@ public:
     Int32           mDensity;
 
 private:
+    // @SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"}) // Keep to finalize native resources
+    // AutoPtr<BitmapFinalizer> mFinalizer;
+
     Boolean         mIsMutable;
+    /**
+     * Represents whether the Bitmap's content is requested to be pre-multiplied.
+     * Note that isPremultiplied() does not directly return this value, because
+     * isPremultiplied() may never return true for a 565 Bitmap or a bitmap
+     * without alpha.
+     *
+     * setPremultiplied() does directly set the value so that setConfig() and
+     * setPremultiplied() aren't order dependent, despite being setters.
+     *
+     * The native bitmap's premultiplication state is kept up to date by
+     * pushing down this preference for every config change.
+     */
+    Boolean mRequestPremultiplied;
+
     AutoPtr< ArrayOf<Byte> >  mNinePatchChunk;   // may be null
-    AutoPtr< ArrayOf<Int32> >  mLayoutBounds;   // may be null
+    AutoPtr<INinePatchInsetStruct> mNinePatchInsets;   // may be null
     Int32           mWidth;
     Int32           mHeight;
     Boolean         mRecycled;

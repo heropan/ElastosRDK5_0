@@ -2,7 +2,10 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWFILTER_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWFILTER_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -17,8 +20,12 @@ extern const InterfaceID EIID_DrawFilter;
  * drawn.
  */
 class DrawFilter
+    : public Object
+    , public IDrawFilter
 {
 public:
+    CAR_INTERFACE_DECL();
+
     virtual ~DrawFilter();
 
 private:

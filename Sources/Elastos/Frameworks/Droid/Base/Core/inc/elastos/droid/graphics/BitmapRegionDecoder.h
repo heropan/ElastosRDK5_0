@@ -42,7 +42,7 @@ public:
      * @throws IOException if the image format is not supported or can not be decoded.
      */
     static CARAPI NewInstance(
-        /* [in] */ const ArrayOf<Byte>& data,
+        /* [in] */ ArrayOf<Byte>* data,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [in] */ Boolean isShareable,
@@ -109,13 +109,13 @@ public:
 
 private:
     BitmapRegionDecoder(
-        /* [in] */ Int32 decoder);
+        /* [in] */ Int64 decoder);
 
     CARAPI CheckRecycled(
-        /* [in] */ CString errorMessage);
+        /* [in] */ const String& errorMessage);
 
     static CARAPI NativeDecodeRegion(
-        /* [in] */ Int32 brd,
+        /* [in] */ Int64 brd,
         /* [in] */ Int32 start_x,
         /* [in] */ Int32 start_y,
         /* [in] */ Int32 width,
@@ -124,16 +124,16 @@ private:
         /* [out] */ IBitmap** bitmap);
 
     static CARAPI_(Int32) NativeGetWidth(
-        /* [in] */ Int32 brd);
+        /* [in] */ Int64 Int64);
 
     static CARAPI_(Int32) NativeGetHeight(
-        /* [in] */ Int32 brd);
+        /* [in] */ Int64 Int64);
 
     static CARAPI_(void) NativeClean(
-        /* [in] */ Int32 brd);
+        /* [in] */ Int64 Int64);
 
     static CARAPI NativeNewInstance(
-        /* [in] */ const ArrayOf<Byte>& data,
+        /* [in] */ ArrayOf<Byte>* data,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [in] */ Boolean isShareable,
@@ -151,12 +151,12 @@ private:
         /* [out] */ IBitmapRegionDecoder** decoder);
 
     static CARAPI NativeNewInstance(
-        /* [in] */ Int32 nativeAsset,
+        /* [in] */ Int64 nativeAsset,
         /* [in] */ Boolean isShareable,
         /* [out] */ IBitmapRegionDecoder** decoder);
 
 private:
-    Int32 mNativeBitmapRegionDecoder;
+    Int64 mNativeBitmapRegionDecoder;
     Boolean mRecycled;
     Object mNativeLock;
 };

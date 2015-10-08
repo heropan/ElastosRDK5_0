@@ -11,15 +11,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-ECode CSurfaceTexture::EventHandler::HandleMessage(
-    /* [in] */ IMessage* msg)
-{
-    if (mHost->mOnFrameAvailableListener != NULL) {
-        return mHost->mOnFrameAvailableListener->OnFrameAvailable(mHost);
-    }
-    return NOERROR;
-}
-
+CAR_OBJECT_IMPL(CSurfaceTexture);
+CAR_INTERFACE_IMPL(CSurfaceTexture, Object, ISurfaceTexture);
 CSurfaceTexture::CSurfaceTexture()
     : mSurfaceTexture(0)
 {}
@@ -37,25 +30,49 @@ ECode CSurfaceTexture::constructor(
 
 ECode CSurfaceTexture::constructor(
     /* [in] */ Int32 texName,
-    /* [in] */ Boolean allowSynchronousMode)
+    /* [in] */ Boolean singleBufferMode)
 {
-    AutoPtr<ILooper> looper;
-    if ((looper = Looper::GetMyLooper()) != NULL) {
-        mEventHandler = new EventHandler(looper, this);
-    }
-    else if ((looper = Looper::GetMainLooper()) != NULL) {
-        mEventHandler = new EventHandler(looper, this);
-    }
-    else {
-        mEventHandler = NULL;
-    }
-    return NativeInit(texName, allowSynchronousMode);
+    assert(0 && "TODO");
+    // mCreatorLooper = Looper.myLooper();
+    // nativeInit(false, texName, singleBufferMode, new WeakReference<SurfaceTexture>(this));
+    return NOERROR;
+}
+
+ECode CSurfaceTexture::constructor(
+    /* [in] */ Boolean singleBufferMode)
+{
+    assert(0 && "TODO");
+    // mCreatorLooper = Looper.myLooper();
+    // nativeInit(true, 0, singleBufferMode, new WeakReference<SurfaceTexture>(this));
+    return NOERROR;
 }
 
 ECode CSurfaceTexture::SetOnFrameAvailableListener(
     /* [in] */ IOnFrameAvailableListener* listener)
 {
-    mOnFrameAvailableListener = listener;
+    return SetOnFrameAvailableListener(listener, NULL);
+}
+
+ECode CSurfaceTexture::SetOnFrameAvailableListener(
+    /* [in] */ /*@Nullable*/ IOnFrameAvailableListener* listener,
+    /* [in] */ /*@Nullable*/ IHandler* handler)
+{
+    assert(0 && "TODO");
+    // if (listener != null) {
+    //     // Although we claim the thread is arbitrary, earlier implementation would
+    //     // prefer to send the callback on the creating looper or the main looper
+    //     // so we preserve this behavior here.
+    //     Looper looper = handler != null ? handler.getLooper() :
+    //             mCreatorLooper != null ? mCreatorLooper : Looper.getMainLooper();
+    //     mOnFrameAvailableHandler = new Handler(looper, null, true /*async*/) {
+    //         @Override
+    //         public void handleMessage(Message msg) {
+    //             listener.onFrameAvailable(SurfaceTexture.this);
+    //         }
+    //     };
+    // } else {
+    //     mOnFrameAvailableHandler = null;
+    // }
     return NOERROR;
 }
 
@@ -70,6 +87,11 @@ ECode CSurfaceTexture::SetDefaultBufferSize(
 ECode CSurfaceTexture::UpdateTexImage()
 {
     return NativeUpdateTexImage();
+}
+
+ECode CSurfaceTexture::ReleaseTexImage()
+{
+    return NativeReleaseTexImage();
 }
 
 ECode CSurfaceTexture::DetachFromGLContext()
@@ -87,18 +109,18 @@ ECode CSurfaceTexture::AttachToGLContext(
 {
     Int32 err = NativeAttachToGLContext(texName);
     if (err != 0) {
-        //throw new RuntimeException("Error during detachFromGLContext (see logcat for details)");
+        //throw new RuntimeException("Error during attachToGLContext (see logcat for details)");
         return E_RUNTIME_EXCEPTION;
     }
     return NOERROR;
 }
 
 ECode CSurfaceTexture::GetTransformMatrix(
-    /* [in] */ const ArrayOf<Float>& mtx)
+    /* [in] */ ArrayOf<Float>* mtx)
 {
     // Note we intentionally don't check mtx for null, so this will result in a
     // NullPointerException. But it's safe because it happens before the call to native.
-    if (mtx.GetLength() != 16) {
+    if (mtx->GetLength() != 16) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     NativeGetTransformMatrix(mtx);
@@ -120,17 +142,16 @@ ECode CSurfaceTexture::ReleaseBuffers()
 }
 
 void CSurfaceTexture::PostEventFromNative(
-    /* [in] */ CSurfaceTexture* selfRef)
+    /* [in] */ IWeakReference/*<SurfaceTexture>*/* weakSelf)
 {
-    // WeakReference weakSelf = (WeakReference)selfRef;
-    if (selfRef == NULL) {
-        return;
-    }
-
-    if (selfRef->mEventHandler != NULL) {
-        Boolean result;
-        selfRef->mEventHandler->SendEmptyMessage(0, &result);
-    }
+    assert(0 && "TODO");
+    // SurfaceTexture st = weakSelf.get();
+    // if (st != null) {
+    //     Handler handler = st.mOnFrameAvailableHandler;
+    //     if (handler != null) {
+    //         handler.sendEmptyMessage(0);
+    //     }
+    // }
 }
 
 ECode CSurfaceTexture::GetSurfaceTexture(
@@ -142,134 +163,244 @@ ECode CSurfaceTexture::GetSurfaceTexture(
 
 // ----------------------------------------------------------------------------
 
-static void SurfaceTexture_setSurfaceTexture(
-    /* [in] */ CSurfaceTexture* thiz,
-    /* [in] */ const android::sp<android::SurfaceTexture>& surfaceTexture)
-{
-    android::SurfaceTexture* const p = (android::SurfaceTexture*)thiz->mSurfaceTexture;
-    if (surfaceTexture.get()) {
-        surfaceTexture->incStrong(thiz);
-    }
-    if (p) {
-        p->decStrong(thiz);
-    }
-    thiz->mSurfaceTexture = (Int32)surfaceTexture.get();
-}
+// static void SurfaceTexture_setSurfaceTexture(
+//     /* [in] */ CSurfaceTexture* thiz,
+//     /* [in] */ const android::sp<GLConsumer>& surfaceTexture)
+// {
+//     GLConsumer* const p = (GLConsumer*)thiz->mSurfaceTexture;
+//     if (surfaceTexture.get()) {
+//         surfaceTexture->incStrong(thiz);
+//     }
+//     if (p) {
+//         p->decStrong(thiz);
+//     }
+//     thiz->mSurfaceTexture = (Int32)surfaceTexture.get();
+// }
 
-android::sp<android::SurfaceTexture> SurfaceTexture_getSurfaceTexture(
-    /* [in] */ CSurfaceTexture* thiz)
-{
-    android::sp<android::SurfaceTexture> surfaceTexture((android::SurfaceTexture*)thiz->mSurfaceTexture);
-    return surfaceTexture;
-}
+// static void SurfaceTexture_setProducer(
+//     /* [in] */ CSurfaceTexture* thiz,
+//     /* [in] */ const android::sp<IGraphicBufferProducer>& producer)
+// {
+//     assert(0 && "TODO");
+//     // IGraphicBufferProducer* const p =
+//     //     (IGraphicBufferProducer*)env->GetLongField(thiz, fields.producer);
+//     // if (producer.get()) {
+//     //     producer->incStrong((void*)SurfaceTexture_setProducer);
+//     // }
+//     // if (p) {
+//     //     p->decStrong((void*)SurfaceTexture_setProducer);
+//     // }
+//     // env->SetLongField(thiz, fields.producer, (jlong)producer.get());
+// }
+
+// static void SurfaceTexture_setFrameAvailableListener(
+//     /* [in] */ CSurfaceTexture* thiz,
+//     /* [in] */ android::sp<GLConsumer::FrameAvailableListener> listener)
+// {
+//     assert(0 && "TODO");
+//     // GLConsumer::FrameAvailableListener* const p =
+//     //     (GLConsumer::FrameAvailableListener*)
+//     //         env->GetLongField(thiz, fields.frameAvailableListener);
+//     // if (listener.get()) {
+//     //     listener->incStrong((void*)SurfaceTexture_setSurfaceTexture);
+//     // }
+//     // if (p) {
+//     //     p->decStrong((void*)SurfaceTexture_setSurfaceTexture);
+//     // }
+//     // env->SetLongField(thiz, fields.frameAvailableListener, (jlong)listener.get());
+// }
+
+// android::sp<GLConsumer> SurfaceTexture_getSurfaceTexture(
+//     /* [in] */ CSurfaceTexture* thiz)
+// {
+//     android::sp<android::SurfaceTexture> surfaceTexture((android::SurfaceTexture*)thiz->mSurfaceTexture);
+//     return surfaceTexture;
+// }
+
+// android::sp<GLConsumer> SurfaceTexture_getSurfaceTexture(
+//     /* [in] */ CSurfaceTexture* thiz)
+// {
+//     return (GLConsumer*)thiz->mSurfaceTexture;
+// }
+
+// android::sp<IGraphicBufferProducer> SurfaceTexture_getProducer(
+//     /* [in] */ CSurfaceTexture* thiz)
+// {
+//     assert(0 && "TODO");
+//     // return (IGraphicBufferProducer*)env->GetLongField(thiz, fields.producer);
+//     return NULL;
+// }
+
+// android::sp<ANativeWindow> android_SurfaceTexture_getNativeWindow(
+//     /* [in] */ CSurfaceTexture* thiz)
+// {
+//     assert(0 && "TODO");
+//     // android::sp<GLConsumer> surfaceTexture(SurfaceTexture_getSurfaceTexture(env, thiz));
+//     // android::sp<IGraphicBufferProducer> producer(SurfaceTexture_getProducer(env, thiz));
+//     // android::sp<Surface> surfaceTextureClient(surfaceTexture != NULL ? new Surface(producer) : NULL);
+//     // return surfaceTextureClient;
+//     return NULL;
+// }
 
 // ----------------------------------------------------------------------------
 
-class DroidSurfaceTextureContext : public android::SurfaceTexture::FrameAvailableListener
-{
-public:
-    DroidSurfaceTextureContext(CSurfaceTexture* weakThiz);
-    virtual ~DroidSurfaceTextureContext();
-    virtual void onFrameAvailable();
+// class DroidSurfaceTextureContext : public android::SurfaceTexture::FrameAvailableListener
+// {
+// public:
+//     DroidSurfaceTextureContext(CSurfaceTexture* weakThiz);
+//     virtual ~DroidSurfaceTextureContext();
+//     virtual void onFrameAvailable();
 
-private:
-    //TODO: should be weak reference
-    CSurfaceTexture* mWeakThiz;
-};
+// private:
+//     //TODO: should be weak reference
+//     CSurfaceTexture* mWeakThiz;
+// };
 
-DroidSurfaceTextureContext::DroidSurfaceTextureContext(
-        CSurfaceTexture* weakThiz) : mWeakThiz(weakThiz)
-{}
+// DroidSurfaceTextureContext::DroidSurfaceTextureContext(
+//         CSurfaceTexture* weakThiz) : mWeakThiz(weakThiz)
+// {}
 
-DroidSurfaceTextureContext::~DroidSurfaceTextureContext()
-{
-    mWeakThiz = NULL;
-}
+// DroidSurfaceTextureContext::~DroidSurfaceTextureContext()
+// {
+//     mWeakThiz = NULL;
+// }
 
-void DroidSurfaceTextureContext::onFrameAvailable()
-{
-    CSurfaceTexture::PostEventFromNative(mWeakThiz);
-}
+// void DroidSurfaceTextureContext::onFrameAvailable()
+// {
+//     CSurfaceTexture::PostEventFromNative(mWeakThiz);
+// }
 
 ECode CSurfaceTexture::NativeInit(
+    /* [in] */ Boolean isDetached,
     /* [in] */ Int32 texName,
-    /* [in] */ Boolean allowSynchronousMode)
+    /* [in] */ Boolean singleBufferMode,
+    /* [in] */ IWeakReference/*<SurfaceTexture>*/* weakSelf) /*throws Surface.OutOfResourcesException*/
 {
-    android::sp<android::SurfaceTexture> surfaceTexture(new android::SurfaceTexture(texName, allowSynchronousMode));
-    if (surfaceTexture == 0) {
-        // jniThrowException(env, OutOfResourcesException,
-        //         "Unable to create native SurfaceTexture");
-        return E_OUT_OF_RESOURCES_EXCEPTION;
-    }
-    SurfaceTexture_setSurfaceTexture(this, surfaceTexture);
+    assert(0 && "TODO");
+    // android::sp<IGraphicBufferProducer> producer;
+    // android::sp<IGraphicBufferConsumer> consumer;
+    // BufferQueue::createBufferQueue(&producer, &consumer);
 
-    android::sp<DroidSurfaceTextureContext> ctx(new DroidSurfaceTextureContext(this));
-    surfaceTexture->setFrameAvailableListener(ctx);
+    // if (singleBufferMode) {
+    //     consumer->disableAsyncBuffer();
+    //     consumer->setDefaultMaxBufferCount(1);
+    // }
 
+    // android::sp<GLConsumer> surfaceTexture;
+    // if (isDetached) {
+    //     surfaceTexture = new GLConsumer(consumer, GL_TEXTURE_EXTERNAL_OES,
+    //             true, true);
+    // } else {
+    //     surfaceTexture = new GLConsumer(consumer, texName,
+    //             GL_TEXTURE_EXTERNAL_OES, true, true);
+    // }
+
+    // if (surfaceTexture == 0) {
+    //     jniThrowException(env, OutOfResourcesException,
+    //             "Unable to create native SurfaceTexture");
+    //     return;
+    // }
+    // SurfaceTexture_setSurfaceTexture(env, thiz, surfaceTexture);
+    // SurfaceTexture_setProducer(env, thiz, producer);
+
+    // jclass clazz = env->GetObjectClass(thiz);
+    // if (clazz == NULL) {
+    //     jniThrowRuntimeException(env,
+    //             "Can't find android/graphics/SurfaceTexture");
+    //     return;
+    // }
+
+    // android::sp<JNISurfaceTextureContext> ctx(new JNISurfaceTextureContext(env, weakThiz,
+    //         clazz));
+    // surfaceTexture->setFrameAvailableListener(ctx);
+    // SurfaceTexture_setFrameAvailableListener(env, thiz, ctx);
+    return NOERROR;
+}
+
+ECode CSurfaceTexture::NativeReleaseTexImage()
+{
+    assert(0 && "TODO");
+    // android::sp<GLConsumer> surfaceTexture(SurfaceTexture_getSurfaceTexture(env, thiz));
+    // status_t err = surfaceTexture->releaseTexImage();
+    // if (err == INVALID_OPERATION) {
+    //     jniThrowException(env, IllegalStateException, "Unable to release texture contents (see "
+    //             "logcat for details)");
+    // } else if (err < 0) {
+    //     jniThrowRuntimeException(env, "Error during updateTexImage (see logcat for details)");
+    // }
     return NOERROR;
 }
 
 void CSurfaceTexture::NativeFinalize()
 {
-    android::sp<android::SurfaceTexture> surfaceTexture(SurfaceTexture_getSurfaceTexture(this));
-    surfaceTexture->setFrameAvailableListener(0);
-    SurfaceTexture_setSurfaceTexture(this, 0);
+    assert(0 && "TODO");
+    // android::sp<GLConsumer> surfaceTexture(SurfaceTexture_getSurfaceTexture(this));
+    // surfaceTexture->setFrameAvailableListener(0);
+    // SurfaceTexture_setFrameAvailableListener(env, thiz, 0);
+    // SurfaceTexture_setSurfaceTexture(env, thiz, 0);
+    // SurfaceTexture_setProducer(env, thiz, 0);
 }
 
 void CSurfaceTexture::NativeGetTransformMatrix(
-    /* [in] */ const ArrayOf<Float>& mtx)
+    /* [in] */ ArrayOf<Float>* mtx)
 {
-    android::sp<android::SurfaceTexture> surfaceTexture(SurfaceTexture_getSurfaceTexture(this));
-    surfaceTexture->getTransformMatrix(mtx.GetPayload());
+    assert(0 && "TODO");
+    // android::sp<GLConsumer> surfaceTexture(SurfaceTexture_getSurfaceTexture(this));
+    // surfaceTexture->getTransformMatrix(mtx.GetPayload());
 }
 
 Int64 CSurfaceTexture::NativeGetTimestamp()
 {
-    android::sp<android::SurfaceTexture> surfaceTexture(SurfaceTexture_getSurfaceTexture(this));
-    return surfaceTexture->getTimestamp();
+    assert(0 && "TODO");
+    // android::sp<GLConsumer> surfaceTexture(SurfaceTexture_getSurfaceTexture(this));
+    // return surfaceTexture->getTimestamp();
 }
 
 void CSurfaceTexture::NativeSetDefaultBufferSize(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    android::sp<android::SurfaceTexture> surfaceTexture(SurfaceTexture_getSurfaceTexture(this));
-    surfaceTexture->setDefaultBufferSize(width, height);
+    assert(0 && "TODO");
+    // android::sp<GLConsumer> surfaceTexture(SurfaceTexture_getSurfaceTexture(this));
+    // surfaceTexture->setDefaultBufferSize(width, height);
 }
 
 ECode CSurfaceTexture::NativeUpdateTexImage()
 {
-    android::sp<android::SurfaceTexture> surfaceTexture(SurfaceTexture_getSurfaceTexture(this));
-    android::status_t err = surfaceTexture->updateTexImage();
-
-    if (err == android::INVALID_OPERATION) {
-        //jniThrowException(env, IllegalStateException, "Unable to update texture contents (see logcat for details)");
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-    else if (err < 0) {
-        //jniThrowRuntimeException(env, "Error during updateTexImage (see logcat for details)");
-        return E_RUNTIME_EXCEPTION;
-    }
-    return NOERROR;
+    assert(0 && "TODO");
+    // android::sp<GLConsumer> surfaceTexture(SurfaceTexture_getSurfaceTexture(this));
+    // status_t err = surfaceTexture->updateTexImage();
+    // if (err == android::INVALID_OPERATION) {
+    //     // jniThrowException(env, IllegalStateException, "Unable to update texture contents (see "
+    //     //         "logcat for details)");
+    //     return E_ILLEGAL_STATE_EXCEPTION;
+    // } else if (err < 0) {
+    //     // jniThrowRuntimeException(env, "Error during updateTexImage (see logcat for details)");
+    //     return E_RUNTIME_EXCEPTION;
+    // }
+    // return NOERROR;
 }
 
 Int32 CSurfaceTexture::NativeDetachFromGLContext()
 {
-    android::sp<android::SurfaceTexture> surfaceTexture(SurfaceTexture_getSurfaceTexture(this));
-    return surfaceTexture->detachFromContext();
+    assert(0 && "TODO");
+    // android::sp<GLConsumer> surfaceTexture(SurfaceTexture_getSurfaceTexture(this));
+    // return surfaceTexture->detachFromContext();
 }
 
 Int32 CSurfaceTexture::NativeAttachToGLContext(
     /* [in] */ Int32 texName)
 {
-    android::sp<android::SurfaceTexture> surfaceTexture(SurfaceTexture_getSurfaceTexture(this));
-    return surfaceTexture->attachToContext((GLuint)texName);
+    assert(0 && "TODO");
+    // android::sp<GLConsumer> surfaceTexture(SurfaceTexture_getSurfaceTexture(this));
+    // return surfaceTexture->attachToContext((GLuint)tex);
 }
 
 void CSurfaceTexture::NativeRelease()
 {
-    android::sp<android::SurfaceTexture> surfaceTexture(SurfaceTexture_getSurfaceTexture(this));
-    surfaceTexture->abandon();
+    assert(0 && "TODO");
+    // android::sp<GLConsumer> surfaceTexture(SurfaceTexture_getSurfaceTexture(this));
+    // surfaceTexture->abandon();
 }
 
 } // namespace Graphics
