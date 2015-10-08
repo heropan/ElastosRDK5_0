@@ -27,12 +27,12 @@ ECode ColorChooserAndroid::InnerOnColorChangedListener::OnColorChanged(
     // mDialog.dismiss();
     // nativeOnColorChosen(mNativeColorChooserAndroid, color);
 
-	if (NULL != mOwner) {
-		mOwner->mDialog->Dismiss();
-    	NativeOnColorChosen(mOwner->mNativeColorChooserAndroid, color);
-	}
+    if (NULL != mOwner) {
+        mOwner->mDialog->Dismiss();
+        NativeOnColorChosen(mOwner->mNativeColorChooserAndroid, color);
+    }
     else {
-		assert(0);
+        assert(0);
     }
     return NOERROR;
 }
@@ -61,8 +61,8 @@ AutoPtr<ColorChooserAndroid> ColorChooserAndroid::CreateColorChooserAndroid(
     // chooser.openColorChooser();
     // return chooser;
 
-	AutoPtr<IContext> context = contentViewCore->GetContext();
-	AutoPtr<ColorChooserAndroid> chooser = new ColorChooserAndroid(nativeColorChooserAndroid,
+    AutoPtr<IContext> context = contentViewCore->GetContext();
+    AutoPtr<ColorChooserAndroid> chooser = new ColorChooserAndroid(nativeColorChooserAndroid,
          context, initialColor, suggestions);
     return chooser;
 }
@@ -85,9 +85,9 @@ ColorChooserAndroid::ColorChooserAndroid(
     // mNativeColorChooserAndroid = nativeColorChooserAndroid;
     // mDialog = new ColorPickerDialog(context, listener, initialColor, suggestions);
 
-	AutoPtr<OnColorChangedListener> listener = new InnerOnColorChangedListener(this);
-	mNativeColorChooserAndroid = nativeColorChooserAndroid;
-	mDialog = new ColorPickerDialog(context, listener, initialColor, suggestions);
+    AutoPtr<OnColorChangedListener> listener = new InnerOnColorChangedListener(this);
+    mNativeColorChooserAndroid = nativeColorChooserAndroid;
+    mDialog = new ColorPickerDialog(context, listener, initialColor, suggestions);
 }
 
 ECode ColorChooserAndroid::OpenColorChooser()
@@ -95,7 +95,7 @@ ECode ColorChooserAndroid::OpenColorChooser()
     // ==================before translated======================
     // mDialog.show();
 
-	mDialog->Show();
+    mDialog->Show();
     return NOERROR;
 }
 
@@ -105,7 +105,7 @@ AutoPtr< ArrayOf<ColorSuggestion*> > ColorChooserAndroid::CreateColorSuggestionA
     // ==================before translated======================
     // return new ColorSuggestion[size];
 
-	AutoPtr< ArrayOf<ColorSuggestion*> > result = ArrayOf<ColorSuggestion*>::Alloc(size);
+    AutoPtr< ArrayOf<ColorSuggestion*> > result = ArrayOf<ColorSuggestion*>::Alloc(size);
     return result;
 }
 
@@ -119,7 +119,7 @@ ECode ColorChooserAndroid::AddToColorSuggestionArray(
     // ==================before translated======================
     // array[index] = new ColorSuggestion(color, label);
 
-	AutoPtr<ColorSuggestion> item = new ColorSuggestion(color, label);
+    AutoPtr<ColorSuggestion> item = new ColorSuggestion(color, label);
     array->Set(index, item);
     return NOERROR;
 }
@@ -136,5 +136,4 @@ ECode ColorChooserAndroid::NativeOnColorChosen(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
 

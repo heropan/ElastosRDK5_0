@@ -1,5 +1,19 @@
 
 #include "elastos/droid/webkit/native/net/NetStringUtil.h"
+//#include "elastos/io/charset/CCodingErrorAction.h"
+
+using Elastos::IO::ICharBuffer;
+using Elastos::IO::Charset::ICharset;
+using Elastos::IO::Charset::ICharsetDecoder;
+using Elastos::IO::Charset::ICharsetHelper;
+using Elastos::IO::Charset::CCharsetHelper;
+using Elastos::IO::Charset::ICodingErrorAction;
+using Elastos::IO::Charset::CCodingErrorAction;
+using Elastos::Text::INormalizer;
+using Elastos::Text::CNormalizerHelper;
+using Elastos::Text::NormalizerForm_NFC;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -22,8 +36,28 @@ String NetStringUtil::ConvertToUnicode(
     // } catch (Exception e) {
     //     return null;
     // }
-    assert(0);
-    return String("");
+
+    //try {
+        AutoPtr<ICharset> charset;
+        AutoPtr<ICharsetHelper> helper;
+        CCharsetHelper::AcquireSingleton((ICharsetHelper**)&helper);
+        helper->ForName(charset_name, (ICharset**)&charset);
+
+        // question: interface ICharsetDecoder was deprecated in car file and
+        // which can be used instead.
+        AutoPtr<ICharsetDecoder> decoder;
+        charset->NewDecoder((ICharsetDecoder**)&decoder);
+        AutoPtr<ICharBuffer> charBuffer;
+        decoder->Decode(text, (ICharBuffer**)&charBuffer);
+        // On invalid characters, this will throw an exception.
+
+        AutoPtr< ArrayOf<Char32> > tmp;
+        charBuffer->GetArray((ArrayOf<Char32>**)&tmp);
+        String result(*tmp);
+        return result;
+    //} catch (Exception e) {
+    //    return null;
+    //}
 }
 
 String NetStringUtil::ConvertToUnicodeAndNormalize(
@@ -35,8 +69,21 @@ String NetStringUtil::ConvertToUnicodeAndNormalize(
     // if (unicodeString == null)
     //     return unicodeString;
     // return Normalizer.normalize(unicodeString, Normalizer.Form.NFC);
-    assert(0);
-    return String("");
+
+    String unicodeString = ConvertToUnicode(text, charset_name);
+    if (unicodeString == String(""))
+        return unicodeString;
+
+    AutoPtr<INormalizer> normalizer;
+    CNormalizerHelper::AcquireSingleton((INormalizer**)&normalizer);
+
+    String result;
+    // question: how do convert String to ICharSequence, Normalize function
+    // first param need a variable of ICharSequence type.
+    AutoPtr<ICharSequence> charSquenceStr;
+    CString::New(unicodeString, (ICharSequence**)&charSquenceStr);
+    normalizer->Normalize(charSquenceStr, NormalizerForm_NFC, &result);
+    return result;
 }
 
 String NetStringUtil::ConvertToUnicodeWithSubstitutions(
@@ -60,8 +107,40 @@ String NetStringUtil::ConvertToUnicodeWithSubstitutions(
     // } catch (Exception e) {
     //     return null;
     // }
+
     assert(0);
-    return String("");
+    //try {
+        AutoPtr<ICharset> charset;
+        AutoPtr<ICharsetHelper> helper;
+        CCharsetHelper::AcquireSingleton((ICharsetHelper**)&helper);
+        helper->ForName(charset_name, (ICharset**)&charset);
+
+        // TODO(mmenke):  Investigate if Charset.decode() can be used
+        // instead.  The question is whether it uses the proper replace
+        // character.  JDK CharsetDecoder docs say U+FFFD is the default,
+        // but Charset.decode() docs say it uses the "charset's default
+        // replacement byte array".
+        AutoPtr<ICharsetDecoder> decoder;
+        charset->NewDecoder((ICharsetDecoder**)&decoder);
+
+        AutoPtr<ICodingErrorAction> errorActionReplace;
+        //CCodingErrorAction::GetREPLACE((ICodingErrorAction**)&errorActionReplace);
+
+        decoder->OnMalformedInput((ICodingErrorAction*)&errorActionReplace);
+        decoder->OnUnmappableCharacter((ICodingErrorAction*)&errorActionReplace);
+        decoder->ReplaceWith(String("\uFFFD"));
+
+        AutoPtr<ICharBuffer> charBuffer;
+        decoder->Decode(text, (ICharBuffer**)&charBuffer);
+        // On invalid characters, this will throw an exception.
+
+        AutoPtr< ArrayOf<Char32> > tmp;
+        charBuffer->GetArray((ArrayOf<Char32>**)&tmp);
+        String result(*tmp);
+        return result;
+    //} catch (Exception e) {
+    //    return null;
+    //}
 }
 
 } // namespace Net

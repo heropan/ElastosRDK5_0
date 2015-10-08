@@ -22,7 +22,9 @@ ECode NetworkChangeNotifier::InnerNetworkChangeNotifierAutoDetectObserver::OnCon
 {
     // ==================before translated======================
     // updateCurrentConnectionType(newConnectionType);
-    assert(0);
+
+    assert(NULL == mOwner);
+    mOwner->UpdateCurrentConnectionType(newConnectionType);
     return NOERROR;
 }
 
@@ -47,17 +49,19 @@ AutoPtr<NetworkChangeNotifier> NetworkChangeNotifier::Init(
     //     sInstance = new NetworkChangeNotifier(context);
     // }
     // return sInstance;
-    assert(0);
-    AutoPtr<NetworkChangeNotifier> empty;
-    return empty;
+
+    if (sInstance.Get() == NULL) {
+        sInstance = new NetworkChangeNotifier(context);
+    }
+    return sInstance;
 }
 
 Boolean NetworkChangeNotifier::IsInitialized()
 {
     // ==================before translated======================
     // return sInstance != null;
-    assert(0);
-    return FALSE;
+
+    return Boolean(sInstance != NULL);
 }
 
 ECode NetworkChangeNotifier::ResetInstanceForTests(
@@ -66,7 +70,8 @@ ECode NetworkChangeNotifier::ResetInstanceForTests(
     VALIDATE_NOT_NULL(context);
     // ==================before translated======================
     // sInstance = new NetworkChangeNotifier(context);
-    assert(0);
+
+    sInstance = new NetworkChangeNotifier(context);
     return NOERROR;
 }
 
@@ -74,8 +79,8 @@ Int32 NetworkChangeNotifier::GetCurrentConnectionType()
 {
     // ==================before translated======================
     // return mCurrentConnectionType;
-    assert(0);
-    return 0;
+
+    return mCurrentConnectionType;
 }
 
 ECode NetworkChangeNotifier::AddNativeObserver(
@@ -83,7 +88,8 @@ ECode NetworkChangeNotifier::AddNativeObserver(
 {
     // ==================before translated======================
     // mNativeChangeNotifiers.add(nativeChangeNotifier);
-    assert(0);
+
+    mNativeChangeNotifiers->PushBack(nativeChangeNotifier);
     return NOERROR;
 }
 
@@ -92,7 +98,8 @@ ECode NetworkChangeNotifier::RemoveNativeObserver(
 {
     // ==================before translated======================
     // mNativeChangeNotifiers.remove(nativeChangeNotifier);
-    assert(0);
+
+    mNativeChangeNotifiers->Remove(nativeChangeNotifier);
     return NOERROR;
 }
 
@@ -101,9 +108,9 @@ AutoPtr<NetworkChangeNotifier> NetworkChangeNotifier::GetInstance()
     // ==================before translated======================
     // assert sInstance != null;
     // return sInstance;
-    assert(0);
-    AutoPtr<NetworkChangeNotifier> empty;
-    return empty;
+
+    assert (NULL == sInstance);
+    return sInstance;
 }
 
 ECode NetworkChangeNotifier::SetAutoDetectConnectivityState(
@@ -111,7 +118,8 @@ ECode NetworkChangeNotifier::SetAutoDetectConnectivityState(
 {
     // ==================before translated======================
     // getInstance().setAutoDetectConnectivityStateInternal(shouldAutoDetect);
-    assert(0);
+
+    GetInstance()->SetAutoDetectConnectivityStateInternal(shouldAutoDetect);
     return NOERROR;
 }
 
@@ -121,7 +129,9 @@ ECode NetworkChangeNotifier::ForceConnectivityState(
     // ==================before translated======================
     // setAutoDetectConnectivityState(false);
     // getInstance().forceConnectivityStateInternal(networkAvailable);
-    assert(0);
+
+    SetAutoDetectConnectivityState(FALSE);
+    GetInstance()->ForceConnectivityStateInternal(networkAvailable);
     return NOERROR;
 }
 
@@ -135,7 +145,18 @@ ECode NetworkChangeNotifier::NotifyObserversOfConnectionTypeChange(
     // for (ConnectionTypeObserver observer : mConnectionTypeObservers) {
     //     observer.onConnectionTypeChanged(newConnectionType);
     // }
-    assert(0);
+
+    Int64 nativeChangeNotifier;
+    for (Int32 i=0; i<(Int32)mNativeChangeNotifiers->GetSize(); ++i)
+    {
+        nativeChangeNotifier = (*mNativeChangeNotifiers)[i];
+        NativeNotifyConnectionTypeChanged(nativeChangeNotifier, newConnectionType);
+    }
+    //for (Int32 i=0; i<mConnectionTypeObservers->GetLength(); ++i)
+    //{
+    //    AutoPtr<ConnectionTypeObserver> observer = (*mConnectionTypeObservers)[i];
+    //    observer->OnConnectionTypeChanged(newConnectionType);
+    //}
     return NOERROR;
 }
 
@@ -145,7 +166,8 @@ ECode NetworkChangeNotifier::AddConnectionTypeObserver(
     VALIDATE_NOT_NULL(observer);
     // ==================before translated======================
     // getInstance().addConnectionTypeObserverInternal(observer);
-    assert(0);
+
+    GetInstance()->AddConnectionTypeObserverInternal(observer);
     return NOERROR;
 }
 
@@ -155,7 +177,8 @@ ECode NetworkChangeNotifier::RemoveConnectionTypeObserver(
     VALIDATE_NOT_NULL(observer);
     // ==================before translated======================
     // getInstance().removeConnectionTypeObserverInternal(observer);
-    assert(0);
+
+    GetInstance()->RemoveConnectionTypeObserverInternal(observer);
     return NOERROR;
 }
 
@@ -163,9 +186,8 @@ AutoPtr<NetworkChangeNotifierAutoDetect> NetworkChangeNotifier::GetAutoDetectorF
 {
     // ==================before translated======================
     // return getInstance().mAutoDetector;
-    assert(0);
-    AutoPtr<NetworkChangeNotifierAutoDetect> empty;
-    return empty;
+
+    return GetInstance()->mAutoDetector;
 }
 
 Boolean NetworkChangeNotifier::IsOnline()
@@ -173,8 +195,9 @@ Boolean NetworkChangeNotifier::IsOnline()
     // ==================before translated======================
     // int connectionType = getInstance().getCurrentConnectionType();
     // return connectionType != CONNECTION_UNKNOWN && connectionType != CONNECTION_NONE;
-    assert(0);
-    return FALSE;
+
+    Int32 connectionType = GetInstance()->GetCurrentConnectionType();
+    return Boolean(connectionType != CONNECTION_UNKNOWN && connectionType != CONNECTION_NONE);
 }
 
 NetworkChangeNotifier::NetworkChangeNotifier(
@@ -184,6 +207,10 @@ NetworkChangeNotifier::NetworkChangeNotifier(
     // mContext = context.getApplicationContext();
     // mNativeChangeNotifiers = new ArrayList<Long>();
     // mConnectionTypeObservers = new ObserverList<ConnectionTypeObserver>();
+
+    context->GetApplicationContext((IContext**)&mContext);
+    mNativeChangeNotifiers = new List<Int64>();
+    //mConnectionTypeObservers = new ObserverList<ConnectionTypeObserver*>();
 }
 
 ECode NetworkChangeNotifier::DestroyAutoDetector()
@@ -193,7 +220,11 @@ ECode NetworkChangeNotifier::DestroyAutoDetector()
     //     mAutoDetector.destroy();
     //     mAutoDetector = null;
     // }
-    assert(0);
+
+    if (mAutoDetector.Get() != NULL) {
+        mAutoDetector->Destroy();
+        mAutoDetector = NULL;
+    }
     return NOERROR;
 }
 
@@ -216,7 +247,17 @@ ECode NetworkChangeNotifier::SetAutoDetectConnectivityStateInternal(
     // } else {
     //     destroyAutoDetector();
     // }
-    assert(0);
+
+    if (shouldAutoDetect) {
+        if (NULL == mAutoDetector) {
+            AutoPtr<NetworkChangeNotifierAutoDetect::Observer> innerObserver = new InnerNetworkChangeNotifierAutoDetectObserver(this);
+            mAutoDetector = new NetworkChangeNotifierAutoDetect(innerObserver, mContext);
+            UpdateCurrentConnectionType(mAutoDetector->GetCurrentConnectionType());
+        }
+    }
+    else {
+        DestroyAutoDetector();
+    }
     return NOERROR;
 }
 
@@ -228,7 +269,11 @@ ECode NetworkChangeNotifier::ForceConnectivityStateInternal(
     // if (connectionCurrentlyExists != forceOnline) {
     //     updateCurrentConnectionType(forceOnline ? CONNECTION_UNKNOWN : CONNECTION_NONE);
     // }
-    assert(0);
+
+    Boolean connectionCurrentlyExists = Boolean(mCurrentConnectionType != CONNECTION_NONE);
+    if (connectionCurrentlyExists != forceOnline) {
+        UpdateCurrentConnectionType(forceOnline ? CONNECTION_UNKNOWN : CONNECTION_NONE);
+    }
     return NOERROR;
 }
 
@@ -238,7 +283,9 @@ ECode NetworkChangeNotifier::UpdateCurrentConnectionType(
     // ==================before translated======================
     // mCurrentConnectionType = newConnectionType;
     // notifyObserversOfConnectionTypeChange(newConnectionType);
-    assert(0);
+
+    mCurrentConnectionType = newConnectionType;
+    NotifyObserversOfConnectionTypeChange(newConnectionType);
     return NOERROR;
 }
 
@@ -248,7 +295,8 @@ ECode NetworkChangeNotifier::AddConnectionTypeObserverInternal(
     VALIDATE_NOT_NULL(observer);
     // ==================before translated======================
     // mConnectionTypeObservers.addObserver(observer);
-    assert(0);
+
+    //--mConnectionTypeObservers->AddObserver(observer);
     return NOERROR;
 }
 
@@ -258,7 +306,8 @@ ECode NetworkChangeNotifier::RemoveConnectionTypeObserverInternal(
     VALIDATE_NOT_NULL(observer);
     // ==================before translated======================
     // mConnectionTypeObservers.removeObserver(observer);
-    assert(0);
+
+    //--mConnectionTypeObservers->RemoveObserver(observer);
     return NOERROR;
 }
 

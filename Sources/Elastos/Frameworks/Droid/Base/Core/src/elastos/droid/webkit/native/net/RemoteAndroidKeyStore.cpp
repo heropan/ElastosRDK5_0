@@ -12,6 +12,8 @@ namespace Net {
 RemoteAndroidKeyStore::RemotePrivateKey::RemotePrivateKey(
     /* [in] */ Int32 handle,
     /* [in] */ RemoteAndroidKeyStore* store)
+    : mHandle(handle)
+    , mStore(store)
 {
     // ==================before translated======================
     // mHandle = handle;
@@ -22,17 +24,16 @@ Int32 RemoteAndroidKeyStore::RemotePrivateKey::GetHandle()
 {
     // ==================before translated======================
     // return mHandle;
-    assert(0);
-    return 0;
+
+    return mHandle;
 }
 
 AutoPtr<AndroidKeyStore> RemoteAndroidKeyStore::RemotePrivateKey::GetKeyStore()
 {
     // ==================before translated======================
     // return mStore;
-    assert(0);
-    AutoPtr<AndroidKeyStore> empty;
-    return empty;
+
+    return mStore;
 }
 
 //=====================================================================
@@ -42,6 +43,7 @@ const String RemoteAndroidKeyStore::TAG("AndroidKeyStoreRemoteImpl");
 
 RemoteAndroidKeyStore::RemoteAndroidKeyStore(
     /* [in] */ RemoteAndroidKeyStore* manager)
+    : mRemoteManager(manager)
 {
     // ==================before translated======================
     // mRemoteManager = manager;
@@ -59,9 +61,16 @@ AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetRSAKeyModulus(
     //     e.printStackTrace();
     //     return null;
     // }
-    assert(0);
-    AutoPtr< ArrayOf<Byte> > empty;
-    return empty;
+
+    RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
+    //try {
+        //Log.d(TAG, "getRSAKeyModulus");
+        AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->GetRSAKeyModulus((AndroidPrivateKey*)remoteKey->GetHandle());
+        return ret;
+    //} catch (RemoteException e) {
+    //    e.printStackTrace();
+    //    return null;
+    //}
 }
 
 AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetDSAKeyParamQ(
@@ -76,9 +85,16 @@ AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetDSAKeyParamQ(
     //     e.printStackTrace();
     //     return null;
     // }
-    assert(0);
-    AutoPtr< ArrayOf<Byte> > empty;
-    return empty;
+
+    RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
+    //try {
+        //Log.d(TAG, "getDSAKeyParamQ");
+        AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->GetDSAKeyParamQ((AndroidPrivateKey*)remoteKey->GetHandle());
+        return ret;
+    //} catch (RemoteException e) {
+    //    e.printStackTrace();
+    //    return null;
+    //}
 }
 
 AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetECKeyOrder(
@@ -93,9 +109,16 @@ AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetECKeyOrder(
     //     e.printStackTrace();
     //     return null;
     // }
-    assert(0);
-    AutoPtr< ArrayOf<Byte> > empty;
-    return empty;
+
+    RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
+    //try {
+        //Log.d(TAG, "getECKeyOrder");
+        AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->GetECKeyOrder((AndroidPrivateKey*)remoteKey->GetHandle());
+        return ret;
+    //} catch (RemoteException e) {
+    //    e.printStackTrace();
+    //    return null;
+    //}
 }
 
 AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::RawSignDigestWithPrivateKey(
@@ -111,9 +134,16 @@ AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::RawSignDigestWithPrivateKey(
     //     e.printStackTrace();
     //     return null;
     // }
-    assert(0);
-    AutoPtr< ArrayOf<Byte> > empty;
-    return empty;
+
+    RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
+    //try {
+        //Log.d(TAG, "rawSignDigestWithPrivateKey");
+        AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->RawSignDigestWithPrivateKey((AndroidPrivateKey*)remoteKey->GetHandle(), message);
+        return ret;
+    //} catch (RemoteException e) {
+    //    e.printStackTrace();
+    //    return null;
+    //}
 }
 
 Int32 RemoteAndroidKeyStore::GetPrivateKeyType(
@@ -128,8 +158,15 @@ Int32 RemoteAndroidKeyStore::GetPrivateKeyType(
     //     e.printStackTrace();
     //     return 0;
     // }
-    assert(0);
-    return 0;
+
+    RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
+    //try {
+        //Log.d(TAG, "getPrivateKeyType");
+        return mRemoteManager->GetPrivateKeyType((AndroidPrivateKey*)remoteKey->GetHandle());
+    //} catch (RemoteException e) {
+    //    e.printStackTrace();
+    //    return 0;
+    //}
 }
 
 AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetPrivateKeyEncodedBytes(
@@ -139,9 +176,10 @@ AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetPrivateKeyEncodedBytes(
     // // This should not be called as it's only for older versions of Android.
     // assert false;
     // return null;
-    assert(0);
-    AutoPtr< ArrayOf<Byte> > empty;
-    return empty;
+
+    // This should not be called as it's only for older versions of Android.
+    assert (FALSE);
+    return NULL;
 }
 
 Int64 RemoteAndroidKeyStore::GetOpenSSLHandleForPrivateKey(
@@ -151,7 +189,9 @@ Int64 RemoteAndroidKeyStore::GetOpenSSLHandleForPrivateKey(
     // // This should not be called as it's only for older versions of Android.
     // assert false;
     // return 0;
-    assert(0);
+
+    // This should not be called as it's only for older versions of Android.
+    assert (FALSE);
     return 0;
 }
 
@@ -166,9 +206,17 @@ AutoPtr<AndroidPrivateKey> RemoteAndroidKeyStore::CreateKey(
     //     e.printStackTrace();
     //     return null;
     // }
-    assert(0);
-    AutoPtr<AndroidPrivateKey> empty;
-    return empty;
+
+    assert (0);
+    //try {
+        /* java file mRemoteManager is belong type IRemoteAndroidKeyStore that suffix is .aidl file */
+        Int32 handle;// = mRemoteManager->GetPrivateKeyHandle(alias);
+        AutoPtr<AndroidPrivateKey> ret = new RemotePrivateKey(handle, this);
+        return ret;
+    //} catch (RemoteException e) {
+    //    e.printStackTrace();
+    //    return null;
+    //}
 }
 
 ECode RemoteAndroidKeyStore::ReleaseKey(
@@ -183,7 +231,14 @@ ECode RemoteAndroidKeyStore::ReleaseKey(
     // } catch (RemoteException e) {
     //     e.printStackTrace();
     // }
-    assert(0);
+
+    RemotePrivateKey* remoteKey = (RemotePrivateKey*) key;
+    //try {
+        //Log.d(TAG, "releaseKey");
+        mRemoteManager->ReleaseKey((AndroidPrivateKey*)remoteKey->GetHandle());
+    //} catch (RemoteException e) {
+    //    e.printStackTrace();
+    //}
     return NOERROR;
 }
 

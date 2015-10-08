@@ -14,6 +14,9 @@ AutofillSuggestion::AutofillSuggestion(
     /* [in] */ const String& name,
     /* [in] */ const String& label,
     /* [in] */ Int32 uniqueId)
+    : mLabel(name)
+    , mSublabel(label)
+    , mUniqueId(uniqueId)
 {
     // ==================before translated======================
     // mLabel = name;
@@ -25,31 +28,31 @@ String AutofillSuggestion::GetLabel()
 {
     // ==================before translated======================
     // return mLabel;
-    assert(0);
-    return String("");
+
+    return mLabel;
 }
 
 String AutofillSuggestion::GetSublabel()
 {
     // ==================before translated======================
     // return mSublabel;
-    assert(0);
-    return String("");
+
+    return mSublabel;
 }
 
 Boolean AutofillSuggestion::IsEnabled()
 {
     // ==================before translated======================
     // return true;
-    assert(0);
-    return FALSE;
+
+    return TRUE;
 }
 
 Boolean AutofillSuggestion::IsGroupHeader()
 {
     // ==================before translated======================
     // return false;
-    assert(0);
+
     return FALSE;
 }
 
@@ -57,8 +60,8 @@ Int32 AutofillSuggestion::GetUniqueId()
 {
     // ==================before translated======================
     // return mUniqueId;
-    assert(0);
-    return 0;
+
+    return mUniqueId;
 }
 
 } // namespace Autofill

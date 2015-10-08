@@ -14,8 +14,8 @@ String GURLUtils::GetOrigin(
 {
     // ==================before translated======================
     // return nativeGetOrigin(url);
-    assert(0);
-    return String("");
+
+    return NativeGetOrigin(url);
 }
 
 String GURLUtils::GetScheme(
@@ -23,8 +23,8 @@ String GURLUtils::GetScheme(
 {
     // ==================before translated======================
     // return nativeGetScheme(url);
-    assert(0);
-    return String("");
+
+    return NativeGetScheme(url);
 }
 
 String GURLUtils::NativeGetOrigin(

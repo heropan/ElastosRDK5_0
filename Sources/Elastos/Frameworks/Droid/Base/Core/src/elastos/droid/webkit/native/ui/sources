@@ -22,3 +22,9 @@ SOURCES += ColorSuggestionListAdapter.cpp
 #SOURCES += ColorPickerMoreButton.cpp               # cannot compile       
 #SOURCES += ColorPickerAdvanced.cpp                 # cannot compile    
 #SOURCES += ColorPickerDialog.cpp                   # cannot compile    
+
+LIBRARIES += autofill/autofill.lib
+LIBRARIES += base/base.lib
+LIBRARIES += gfx/gfx.lib
+LIBRARIES += gl/gl.lib
+LIBRARIES += interpolators/interpolators.lib 

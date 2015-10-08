@@ -1,5 +1,21 @@
 
 #include "elastos/droid/webkit/native/net/ProxyChangeListener.h"
+//#include "elastos/core/CSystem.h"
+#include "elastos/droid/os/Build.h"
+//#include "elastos/droid/net/CProxyProperties.h"
+#include "elastos/droid/content/CIntentFilter.h"
+
+using Elastos::Core::ISystem;
+//using Elastos::Core::CSystem;
+//using Elastos::Net::IProxy;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Net::IProxyProperties;
+using Elastos::Droid::Net::IProxyInfo;
+using Elastos::Droid::Net::IProxyInfoHelper;
+//using Elastos::Droid::Net::CProxyProperties;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::CIntentFilter;
 
 namespace Elastos {
 namespace Droid {
@@ -12,6 +28,8 @@ namespace Net {
 ProxyChangeListener::ProxyConfig::ProxyConfig(
     /* [in] */ const String& host,
     /* [in] */ Int32 port)
+    : mHost(host)
+    , mPort(port)
 {
     // ==================before translated======================
     // mHost = host;
@@ -21,6 +39,12 @@ ProxyChangeListener::ProxyConfig::ProxyConfig(
 //=====================================================================
 //                  ProxyChangeListener::ProxyReceiver
 //=====================================================================
+ProxyChangeListener::ProxyReceiver::ProxyReceiver(
+    /* [in] */ ProxyChangeListener* owner)
+    : mOwner(owner)
+{
+}
+
 ECode ProxyChangeListener::ProxyReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
@@ -31,7 +55,15 @@ ECode ProxyChangeListener::ProxyReceiver::OnReceive(
     // if (intent.getAction().equals(Proxy.PROXY_CHANGE_ACTION)) {
     //     proxySettingsChanged(extractNewProxy(intent));
     // }
+
+    assert(NULL == mOwner);
     assert(0);
+    String action;
+    intent->GetAction(&action);
+    if (action.Equals(String("")/*IProxy::PROXY_CHANGE_ACTION*/)) {
+        AutoPtr<ProxyChangeListener::ProxyConfig> config = ExtractNewProxy(intent);
+        mOwner->ProxySettingsChanged(config);
+    }
     return NOERROR;
 }
 
@@ -81,9 +113,68 @@ AutoPtr<ProxyChangeListener::ProxyConfig> ProxyChangeListener::ProxyReceiver::Ex
     //     Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
     //     return null;
     // }
+
+    assert(NULL == mOwner);
     assert(0);
-    AutoPtr<ProxyChangeListener::ProxyConfig> empty;
-    return empty;
+    //try {
+        const String GET_HOST_NAME("getHost");
+        const String GET_PORT_NAME("getPort");
+        String sClassName;
+        String sProxyInfo;
+        if (Build::VERSION::SDK_INT <= Build::VERSION_CODES::KITKAT) {
+            sClassName = String("android.net.ProxyProperties");
+            sProxyInfo = String("proxy");
+        }
+        else {
+            sClassName = String("android.net.ProxyInfo");
+            sProxyInfo = String("android.intent.extra.PROXY_INFO");
+        }
+
+        // question: reflection
+        AutoPtr<IInterface> props;
+        AutoPtr<IBundle> extras;
+        intent->GetExtras((IBundle**)&extras);
+        extras->Get(sProxyInfo, (IInterface**)&props);
+        if (NULL == props) {
+            AutoPtr<ProxyChangeListener::ProxyConfig> ret = NULL;
+            return ret;
+        }
+
+        // question: reflection
+        AutoPtr<IProxyProperties> proxyProperties;
+        AutoPtr<IProxyInfo> proxyInfo;
+        String host;
+        Int32 port;
+        if (Build::VERSION::SDK_INT <= Build::VERSION_CODES::KITKAT) {
+            //CProxyProperties::New((IProxyProperties**)&proxyProperties);
+            proxyProperties->GetHost(&host);
+            proxyProperties->GetPort(&port);
+        }
+        else {
+            AutoPtr<IProxyInfoHelper> helper;
+            //--CProxyInfoHelper::AcquireSingleton((IProxyInfoHelper**)&helper);
+            //--helper->GetInstance((IProxyInfo**)&proxyInfo);
+            proxyInfo->GetHost(&host);
+            proxyInfo->GetPort(&port);
+        }
+        AutoPtr<ProxyChangeListener::ProxyConfig> result = new ProxyChangeListener::ProxyConfig(host, port);
+        return result;
+    //} catch (ClassNotFoundException ex) {
+    //    Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
+    //    return null;
+    //} catch (NoSuchMethodException ex) {
+    //    Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
+    //    return null;
+    //} catch (IllegalAccessException ex) {
+    //    Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
+    //    return null;
+    //} catch (InvocationTargetException ex) {
+    //    Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
+    //    return null;
+    //} catch (NullPointerException ex) {
+    //    Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
+    //    return null;
+    //}
 }
 
 //=====================================================================
@@ -97,7 +188,8 @@ ECode ProxyChangeListener::SetEnabled(
 {
     // ==================before translated======================
     // sEnabled = enabled;
-    assert(0);
+
+    sEnabled = enabled;
     return NOERROR;
 }
 
@@ -107,7 +199,8 @@ ECode ProxyChangeListener::SetDelegateForTesting(
     VALIDATE_NOT_NULL(delegate);
     // ==================before translated======================
     // mDelegate = delegate;
-    assert(0);
+
+    mDelegate = delegate;
     return NOERROR;
 }
 
@@ -116,9 +209,9 @@ AutoPtr<ProxyChangeListener> ProxyChangeListener::Create(
 {
     // ==================before translated======================
     // return new ProxyChangeListener(context);
-    assert(0);
-    AutoPtr<ProxyChangeListener> empty;
-    return empty;
+
+    AutoPtr<ProxyChangeListener> result = new ProxyChangeListener(context);
+    return result;
 }
 
 String ProxyChangeListener::GetProperty(
@@ -126,8 +219,13 @@ String ProxyChangeListener::GetProperty(
 {
     // ==================before translated======================
     // return System.getProperty(property);
+
     assert(0);
-    return String("");
+    String result;
+    AutoPtr<ISystem> sys;
+    //CSystem::New((ISystem**)&sys);
+    sys->GetProperty(property, &result);
+    return result;
 }
 
 ECode ProxyChangeListener::Start(
@@ -137,7 +235,10 @@ ECode ProxyChangeListener::Start(
     // assert mNativePtr == 0;
     // mNativePtr = nativePtr;
     // registerReceiver();
-    assert(0);
+
+    assert(0 == mNativePtr);
+    mNativePtr = nativePtr;
+    RegisterReceiver();
     return NOERROR;
 }
 
@@ -146,12 +247,15 @@ ECode ProxyChangeListener::Stop()
     // ==================before translated======================
     // mNativePtr = 0;
     // unregisterReceiver();
-    assert(0);
+
+    mNativePtr = 0;
+    UnregisterReceiver();
     return NOERROR;
 }
 
 ProxyChangeListener::ProxyChangeListener(
     /* [in] */ IContext* context)
+    : mContext(context)
 {
     // ==================before translated======================
     // mContext = context;
@@ -178,7 +282,26 @@ ECode ProxyChangeListener::ProxySettingsChanged(
     // } else {
     //     nativeProxySettingsChanged(mNativePtr);
     // }
+
     assert(0);
+    // question: return ECode what value is, return NOERROR temporarily
+    if (!sEnabled) {
+        return NOERROR;
+    }
+    if (mDelegate != NULL) {
+        mDelegate->ProxySettingsChanged();
+    }
+    if (0 == mNativePtr) {
+        return NOERROR;
+    }
+    // Note that this code currently runs on a MESSAGE_LOOP_UI thread, but
+    // the C++ code must run the callbacks on the network thread.
+    if (cfg != NULL) {
+        NativeProxySettingsChangedTo(mNativePtr, cfg->mHost, cfg->mPort);
+    }
+    else {
+        NativeProxySettingsChanged(mNativePtr);
+    }
     return NOERROR;
 }
 
@@ -192,7 +315,20 @@ ECode ProxyChangeListener::RegisterReceiver()
     // filter.addAction(Proxy.PROXY_CHANGE_ACTION);
     // mProxyReceiver = new ProxyReceiver();
     // mContext.getApplicationContext().registerReceiver(mProxyReceiver, filter);
+
     assert(0);
+    // question: return ECode what value is, return NOERROR temporarily
+    if (mProxyReceiver != NULL) {
+        return NOERROR;
+    }
+    AutoPtr<IIntentFilter> filter;
+    CIntentFilter::New((IIntentFilter**)&filter);
+    //--filter->AddAction(IProxy::PROXY_CHANGE_ACTION);
+    mProxyReceiver = new ProxyReceiver(this);
+    AutoPtr<IContext> context;
+    mContext->GetApplicationContext((IContext**)&context);
+    AutoPtr<IIntent> intent;
+    context->RegisterReceiver(mProxyReceiver, filter, (IIntent**)&intent);
     return NOERROR;
 }
 
@@ -204,7 +340,12 @@ ECode ProxyChangeListener::UnregisterReceiver()
     // }
     // mContext.unregisterReceiver(mProxyReceiver);
     // mProxyReceiver = null;
-    assert(0);
+
+    if (mProxyReceiver == NULL) {
+        return NOERROR;
+    }
+    mContext->UnregisterReceiver(mProxyReceiver);
+    mProxyReceiver = NULL;
     return NOERROR;
 }
 

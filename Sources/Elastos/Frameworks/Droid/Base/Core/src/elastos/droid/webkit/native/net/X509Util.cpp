@@ -1,5 +1,56 @@
 
 #include "elastos/droid/webkit/native/net/X509Util.h"
+#include "elastos/core/IntegralToString.h"
+//#include "elastos/core/AutoLock.h"
+//#include "elastos/core/CSystem.h"
+//#include "elastos/security/cert/CCertificateFactoryHelper.h"
+//#include "elastos/security/CKeyStoreHelper.h"
+//#include "elastos/security/CMessageDigestHelper.h"
+//#include "elastos/io/CFile.h"
+//#include "elastosx/net/ssl/CTrustManagerFactoryHelper.h"
+//#include "elastosx/security/auth/x500/CX500Principal.h"
+//#include "elastosx/utility/CHashSet.h"
+//#include "elastos/droid/net/http/CX509TrustManagerExtensions.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/utility/CPairHelper.h"
+//#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/webkit/native/net/CertVerifyStatusAndroid.h"
+
+using Elastos::Core::IntegralToString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::ISystem;
+//using Elastos::Core::CSystem;
+//using Elastos::Core::AutoLock;
+using Elastos::IO::IInputStream;
+using Elastos::IO::CFile;
+using Elastosx::Net::Ssl::ITrustManager;
+using Elastosx::Net::Ssl::ITrustManagerFactory;
+using Elastosx::Net::Ssl::ITrustManagerFactoryHelper;
+using Elastosx::Net::Ssl::CTrustManagerFactoryHelper;
+using Elastos::Security::Cert::ICertificate;
+using Elastos::Security::Cert::ICertificateFactory;
+using Elastos::Security::Cert::ICertificateFactoryHelper;
+using Elastos::Security::IKeyStoreHelper;
+using Elastos::Security::IMessageDigest;
+using Elastos::Security::IMessageDigestHelper;
+using Elastos::Security::CMessageDigestHelper;
+using Elastos::Security::IPrincipal;
+//using Elastos::Security::CKeyStoreHelper;
+//using Elastos::Security::Cert::CCertificateFactoryHelper;
+//using Elastosx::Security::Auth::X500::CX500Principal;
+//using Elastos::Utility::CHashSet;
+using Elastos::Droid::Utility::IPair;
+using Elastos::Droid::Utility::IPairHelper;
+using Elastos::Droid::Utility::CPairHelper;
+using Elastos::Droid::Keystore::Security::IKeyChain;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::IBroadcastReceiver;
+//using Elastos::Droid::Content::CIntentFilter;
+using Elastos::Droid::Os::Build;
+//using Elastos::Droid::Net::Http::CX509TrustManagerExtensions;
+using Elastos::Droid::Webkit::Net::CertVerifyStatusAndroid;
 
 namespace Elastos {
 namespace Droid {
@@ -28,7 +79,23 @@ ECode X509Util::TrustStorageListener::OnReceive(
 	//         Log.e(TAG, "Unable to reload the default TrustManager", e);
 	//     }
 	// }
-	assert(0);
+
+    String action;
+    intent->GetAction(&action);
+    if (action.Equals(IKeyChain::ACTION_STORAGE_CHANGED)) {
+        //try {
+            ReloadDefaultTrustManager();
+        //}
+        //catch (CertificateException e) {
+        //    Log.e(TAG, "Unable to reload the default TrustManager", e);
+        //}
+        //catch (KeyStoreException e) {
+        //    Log.e(TAG, "Unable to reload the default TrustManager", e);
+        //}
+        //catch (NoSuchAlgorithmException e) {
+        //    Log.e(TAG, "Unable to reload the default TrustManager", e);
+        //}
+    }
     return NOERROR;
 }
 
@@ -37,22 +104,26 @@ ECode X509Util::TrustStorageListener::OnReceive(
 //=====================================================================
 X509Util::X509TrustManagerIceCreamSandwich::X509TrustManagerIceCreamSandwich(
     /* [in] */ IX509TrustManager* trustManager)
+    : mTrustManager(trustManager)
 {
     // ==================before translated======================
     // mTrustManager = trustManager;
 }
 
 AutoPtr<IList> X509Util::X509TrustManagerIceCreamSandwich::CheckServerTrusted(
-    /* [in] */ ArrayOf<IX509Certificate>* chain,
+    /* [in] */ ArrayOf<IX509Certificate*>* chain,
     /* [in] */ const String& authType,
     /* [in] */ const String& host)
 {
     // ==================before translated======================
     // mTrustManager.checkServerTrusted(chain, authType);
     // return Collections.<X509Certificate>emptyList();
+
     assert(0);
-    AutoPtr<IList> empty;
-    return empty;
+    mTrustManager->CheckServerTrusted(chain, authType);
+    AutoPtr<IList> result;
+    //CArrayList::New((IList**)&result);
+    return result;
 }
 
 //=====================================================================
@@ -63,18 +134,23 @@ X509Util::X509TrustManagerJellyBean::X509TrustManagerJellyBean(
 {
     // ==================before translated======================
     // mTrustManagerExtensions = new X509TrustManagerExtensions(trustManager);
+
+    assert(0);
+    //--CX509TrustManagerExtensions::New(trustManager, (IX509TrustManagerExtensions**)&mTrustManagerExtensions);
 }
 
 AutoPtr<IList> X509Util::X509TrustManagerJellyBean::CheckServerTrusted(
-    /* [in] */ ArrayOf<IX509Certificate>* chain,
+    /* [in] */ ArrayOf<IX509Certificate*>* chain,
     /* [in] */ const String& authType,
     /* [in] */ const String& host)
 {
     // ==================before translated======================
     // return mTrustManagerExtensions.checkServerTrusted(chain, authType, host);
+
     assert(0);
-    AutoPtr<IList> empty;
-    return empty;
+    AutoPtr<IList> result;
+    //--mTrustManagerExtensions->CheckServerTrusted(chain, authType, host, (IList**)&result); /* car func define failed */
+    return result;
 }
 
 //=====================================================================
@@ -105,9 +181,16 @@ AutoPtr<IX509Certificate> X509Util::CreateCertificateFromBytes(
     // ensureInitialized();
     // return (X509Certificate) sCertificateFactory.generateCertificate(
     //         new ByteArrayInputStream(derBytes));
+
     assert(0);
-    AutoPtr<IX509Certificate> empty;
-    return empty;
+    EnsureInitialized();
+    AutoPtr<IInputStream> inputStream;
+    //--constructor IInputStream
+    AutoPtr<ICertificate> cert;
+    sCertificateFactory->GenerateCertificate(inputStream, (ICertificate**)&cert);
+    //--AutoPtr<IX509Certificate> result = IX509Certificate::Probe(&cert);
+    AutoPtr<IX509Certificate> result;
+    return result;
 }
 
 ECode X509Util::AddTestRootCertificate(
@@ -122,7 +205,20 @@ ECode X509Util::AddTestRootCertificate(
     //             "root_cert_" + Integer.toString(sTestKeyStore.size()), rootCert);
     //     reloadTestTrustManager();
     // }
+
     assert(0);
+    EnsureInitialized();
+    AutoPtr<IX509Certificate> rootCert = CreateCertificateFromBytes(rootCertBytes);
+    {
+        //--AutoLock lock(&sLock);
+        Int32 size = 0;
+        sTestKeyStore->GetSize(&size);
+        String sSize = IntegralToString::ToString(size);
+
+        AutoPtr<ICertificate> certificate;//-- = ICertificate::Probe(&rootCert);
+        sTestKeyStore->SetCertificateEntry(String("root_cert_") + sSize, (ICertificate*)&certificate);
+        ReloadTestTrustManager();
+    }
     return NOERROR;
 }
 
@@ -138,7 +234,16 @@ ECode X509Util::ClearTestRootCertificates()
     //         // No IO operation is attempted.
     //     }
     // }
+
     assert(0);
+    EnsureInitialized();
+    //--Object::AutoLock lock(sLock);
+    //try {
+        sTestKeyStore->Load(NULL, NULL);
+        ReloadTestTrustManager();
+    //} catch (IOException e) {
+        // No IO operation is attempted.
+    //}
     return NOERROR;
 }
 
@@ -168,7 +273,39 @@ Boolean X509Util::VerifyKeyUsage(
     // }
     //
     // return false;
+
     assert(0);
+    AutoPtr<IList> ekuOids;
+    //try {
+        certificate->GetExtendedKeyUsage((IList**)&ekuOids);
+    //} catch (NullPointerException e) {
+        // getExtendedKeyUsage() can crash due to an Android platform bug. This probably
+        // happens when the EKU extension data is malformed so return false here.
+        // See http://crbug.com/233610
+    //    return false;
+    //}
+    if (NULL == ekuOids)
+        return TRUE;
+
+    String ekuOid;
+    Int32 ekuSize = 0;
+    ekuOids->GetSize(&ekuSize);
+    for (Int32 i=0; i<ekuSize; ++i) {
+        AutoPtr<IInterface> item;
+        ekuOids->Get(i, (IInterface**)&item);
+
+        // need say IX509Certificate's func GetExtendedKeyUsage how to set data to interface
+        // think setting ICharSequence as String temp
+        AutoPtr<ICharSequence> charSequence = ICharSequence::Probe(item);
+        charSequence->ToString(&ekuOid);
+        if (ekuOid.Equals(OID_TLS_SERVER_AUTH) ||
+            ekuOid.Equals(OID_ANY_EKU) ||
+            ekuOid.Equals(OID_SERVER_GATED_NETSCAPE) ||
+            ekuOid.Equals(OID_SERVER_GATED_MICROSOFT)) {
+            return TRUE;
+        }
+    }
+
     return FALSE;
 }
 
@@ -249,9 +386,89 @@ AutoPtr<AndroidCertVerifyResult> X509Util::VerifyServerCertificates(
     //     return new AndroidCertVerifyResult(CertVerifyStatusAndroid.VERIFY_OK,
     //                                        isIssuedByKnownRoot, verifiedChain);
     // }
+
     assert(0);
-    AutoPtr<AndroidCertVerifyResult> empty;
-    return empty;
+
+    // old if expression has throw, use assert instead temporary
+    assert(NULL == certChain);
+    assert(0 == certChain->GetLength());
+    AutoPtr< ArrayOf<Byte> > firstItem = (*certChain)[0];
+    assert(NULL == firstItem);
+
+    //try {
+        EnsureInitialized();
+    //} catch (CertificateException e) {
+    //    return new AndroidCertVerifyResult(CertVerifyStatusAndroid.VERIFY_FAILED);
+    //}
+
+    AutoPtr< ArrayOf< AutoPtr<IX509Certificate> > > serverCertificates = ArrayOf< AutoPtr<IX509Certificate> >::Alloc(certChain->GetLength());
+    //try {
+        for (Int32 i = 0; i < certChain->GetLength(); ++i) {
+            AutoPtr<IX509Certificate> item = CreateCertificateFromBytes((*certChain)[i]);
+            serverCertificates->Set(i, item);
+        }
+    //} catch (CertificateException e) {
+    //    return new AndroidCertVerifyResult(CertVerifyStatusAndroid.VERIFY_UNABLE_TO_PARSE);
+    //}
+
+    // Expired and not yet valid certificates would be rejected by the trust managers, but the
+    // trust managers report all certificate errors using the general CertificateException. In
+    // order to get more granular error information, cert validity time range is being checked
+    // separately.
+    //try {
+        (*serverCertificates)[0]->CheckValidity();
+        if (!VerifyKeyUsage((*serverCertificates)[0])) {
+            AutoPtr<AndroidCertVerifyResult> ret = new AndroidCertVerifyResult(CertVerifyStatusAndroid::VERIFY_INCORRECT_KEY_USAGE);
+            return ret;
+        }
+    //} catch (CertificateExpiredException e) {
+    //    return new AndroidCertVerifyResult(CertVerifyStatusAndroid.VERIFY_EXPIRED);
+    //} catch (CertificateNotYetValidException e) {
+    //    return new AndroidCertVerifyResult(CertVerifyStatusAndroid.VERIFY_NOT_YET_VALID);
+    //} catch (CertificateException e) {
+    //    return new AndroidCertVerifyResult(CertVerifyStatusAndroid.VERIFY_FAILED);
+    //}
+
+    //--Object::AutoLock lock(sLock);
+    // If no trust manager was found, fail without crashing on the null pointer.
+    if (sDefaultTrustManager == NULL) {
+        AutoPtr<AndroidCertVerifyResult> ret = new AndroidCertVerifyResult(CertVerifyStatusAndroid::VERIFY_FAILED);
+        return ret;
+    }
+
+    AutoPtr<IList> verifiedChain;
+    //try {
+        ArrayOf<IX509Certificate*>* tmpChain;
+        //AutoPtr< ArrayOf< AutoPtr<IX509Certificate> > > serverCertificates;
+        //verifiedChain = sDefaultTrustManager->CheckServerTrusted(serverCertificates, authType, host);
+        verifiedChain = sDefaultTrustManager->CheckServerTrusted(tmpChain, authType, host);
+    //} catch (CertificateException eDefaultManager) {
+    //    try {
+    //        verifiedChain = sTestTrustManager->CheckServerTrusted(serverCertificates, authType, host);
+    //    } catch (CertificateException eTestManager) {
+            // Neither of the trust managers confirms the validity of the certificate chain,
+            // log the error message returned by the system trust manager.
+    //        Log.i(TAG, "Failed to validate the certificate chain, error: " +
+    //                  eDefaultManager.getMessage());
+    //        return new AndroidCertVerifyResult(
+    //                CertVerifyStatusAndroid.VERIFY_NO_TRUSTED_ROOT);
+    //    }
+    //}
+
+    Boolean isIssuedByKnownRoot = FALSE;
+    Int32 verifiedSize = 0;
+    verifiedChain->GetSize(&verifiedSize);
+    if (verifiedSize > 0) {
+        AutoPtr<IInterface> tmp;
+        verifiedChain->Get(verifiedSize - 1, (IInterface**)&tmp);
+        //--AutoPtr<IX509Certificate> root = IX509Certificate::Probe(&tmp);
+        AutoPtr<IX509Certificate> root;
+        isIssuedByKnownRoot = IsKnownRoot((IX509Certificate*)&root);
+    }
+
+    AutoPtr<AndroidCertVerifyResult> ret = new AndroidCertVerifyResult(CertVerifyStatusAndroid::VERIFY_OK,
+        isIssuedByKnownRoot, verifiedChain);
+    return ret;
 }
 
 ECode X509Util::SetDisableNativeCodeForTest(
@@ -259,7 +476,8 @@ ECode X509Util::SetDisableNativeCodeForTest(
 {
     // ==================before translated======================
     // sDisableNativeCodeForTest = disabled;
-    assert(0);
+
+    sDisableNativeCodeForTest = disabled;
     return NOERROR;
 }
 
@@ -311,7 +529,72 @@ ECode X509Util::EnsureInitialized()
     //                 new IntentFilter(KeyChain.ACTION_STORAGE_CHANGED));
     //     }
     // }
+
     assert(0);
+    //--AutoLock lock(sLock);
+    if (sCertificateFactory == NULL) {
+        AutoPtr<ICertificateFactoryHelper> helper;
+        //CCertificateFactoryHelper::AcquireSingleton((ICertificateFactoryHelper**)&helper);
+        helper->GetInstance(String("X.509"), (ICertificateFactory**)&sCertificateFactory);
+    }
+    if (sDefaultTrustManager == NULL) {
+        sDefaultTrustManager = X509Util::CreateTrustManager(NULL);
+    }
+    if (!sLoadedSystemKeyStore) {
+        //try {
+            AutoPtr<IKeyStoreHelper> helper;
+            //CKeyStoreHelper::AcquireSingleton((IKeyStoreHelper**)&helper);
+            helper->GetInstance(String("AndroidCAStore"), (IKeyStore**)&sSystemKeyStore);
+            //try {
+                sSystemKeyStore->Load(NULL, NULL);
+            //} catch (IOException e) {
+                // No IO operation is attempted.
+            //}
+            String sysEnv;
+            AutoPtr<ISystem> sys;
+            //CSystem::New((ISystem**)&sys);
+            sys->GetEnv(String("ANDROID_ROOT") + String("/etc/security/cacerts"), &sysEnv);
+            //CFile::New(sysEnv, (IFile**)&sSystemCertificateDirectory);
+        //} catch (KeyStoreException e) {
+            // Could not load AndroidCAStore. Continue anyway; isKnownRoot will always
+            // return false.
+        //}
+        if (FALSE != sDisableNativeCodeForTest)
+            NativeRecordCertVerifyCapabilitiesHistogram(sSystemKeyStore != NULL);
+        sLoadedSystemKeyStore = TRUE;
+    }
+    if (NULL == sSystemTrustAnchorCache) {
+        //--CHashSet::New((ISet**)&sSystemTrustAnchorCache);
+    }
+
+    if (NULL == sTestKeyStore) {
+        AutoPtr<IKeyStoreHelper> keyStore;
+        //CKeyStoreHelper::AcquireSingleton((IKeyStoreHelper**)&keyStore);
+        String defaultType;
+        keyStore->GetDefaultType(&defaultType);
+        keyStore->GetInstance(defaultType, (IKeyStore**)&sTestKeyStore);
+        //try {
+            sTestKeyStore->Load(NULL, NULL);
+        //} catch (IOException e) {
+            // No IO operation is attempted.
+        //}
+    }
+    if (NULL == sTestTrustManager) {
+        sTestTrustManager = X509Util::CreateTrustManager(sTestKeyStore);
+    }
+    if (!sDisableNativeCodeForTest && NULL == sTrustStorageListener) {
+        sTrustStorageListener = new TrustStorageListener();
+
+        AutoPtr<IIntentFilter> intentFilter;
+        //--CIntentFilter::New(IKeyChain::ACTION_STORAGE_CHANGED, (IIntentFilter**)&intentFilter);
+
+        AutoPtr<IIntent> intent;
+        CIntent::New((IIntent**)&intent);
+
+        NativeGetApplicationContext()->RegisterReceiver((IBroadcastReceiver*)&sTrustStorageListener,
+            (IIntentFilter*)&intentFilter, (IIntent**)&intent);
+    }
+
     return NOERROR;
 }
 
@@ -339,16 +622,49 @@ AutoPtr<X509Util::X509TrustManagerImplementation> X509Util::CreateTrustManager(
     // }
     // Log.e(TAG, "Could not find suitable trust manager");
     // return null;
+
     assert(0);
-    AutoPtr<X509TrustManagerImplementation> empty;
-    return empty;
+    AutoPtr<ITrustManagerFactoryHelper> helper;
+    CTrustManagerFactoryHelper::AcquireSingleton((ITrustManagerFactoryHelper**)&helper);
+    String algorithm;
+    helper->GetDefaultAlgorithm(&algorithm);
+
+    AutoPtr<ITrustManagerFactory> tmf;
+    helper->GetInstance(algorithm, (ITrustManagerFactory**)&tmf);
+    tmf->Init((IKeyStore*)&keyStore);
+
+    AutoPtr< ArrayOf< AutoPtr<ITrustManager> > > managers;
+    tmf->GetTrustManagers((ArrayOf<ITrustManager*>**)&managers);
+    for (Int32 i=0; i<managers->GetLength(); ++i) {
+        AutoPtr<ITrustManager> tm = (*managers)[i];
+        AutoPtr<IX509TrustManager> x509tm = IX509TrustManager::Probe(tm);
+        if (NULL != x509tm) {
+            //try {
+                if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR1) {
+                    AutoPtr<X509TrustManagerImplementation> ret = new X509TrustManagerJellyBean((IX509TrustManager*)&x509tm);
+                    return ret;
+                }
+                else {
+                    AutoPtr<X509TrustManagerImplementation> ret = new X509TrustManagerIceCreamSandwich((IX509TrustManager*)&x509tm);
+                    return ret;
+                }
+            //} catch (IllegalArgumentException e) {
+            //    String className = tm.getClass().getName();
+            //    Log.e(TAG, "Error creating trust manager (" + className + "): " + e);
+            //}
+        }
+    }
+
+    //Log.e(TAG, "Could not find suitable trust manager");
+    return NULL;
 }
 
 ECode X509Util::ReloadTestTrustManager()
 {
     // ==================before translated======================
     // sTestTrustManager = X509Util.createTrustManager(sTestKeyStore);
-    assert(0);
+
+    sTestTrustManager = X509Util::CreateTrustManager(sTestKeyStore);
     return NOERROR;
 }
 
@@ -359,7 +675,11 @@ ECode X509Util::ReloadDefaultTrustManager()
     // sSystemTrustAnchorCache = null;
     // nativeNotifyKeyChainChanged();
     // ensureInitialized();
-    assert(0);
+
+    sDefaultTrustManager = NULL;
+    sSystemTrustAnchorCache = NULL;
+    NativeNotifyKeyChainChanged();
+    EnsureInitialized();
     return NOERROR;
 }
 
@@ -370,9 +690,16 @@ AutoPtr< ArrayOf<Byte> > X509Util::MiddleInitHexDigits()
     // '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
     //          'a', 'b', 'c', 'd', 'e', 'f',
     // ->WWZ_SIGN: ARRAY_INIT_END }
-    assert(0);
-    AutoPtr< ArrayOf<Byte> > empty;
-    return empty;
+
+    Byte tmps[] = {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        'a', 'b', 'c', 'd', 'e', 'f'};
+    const Int32 length = sizeof(tmps) / sizeof(tmps[0]);
+    AutoPtr< ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(length);
+    for (Int32 i=0; i<length; ++i) {
+        result->Set(i, tmps[i]);
+    }
+    return result;
 }
 
 String X509Util::HashPrincipal(
@@ -388,8 +715,29 @@ String X509Util::HashPrincipal(
     //     hexChars[2 * i + 1] = HEX_DIGITS[digest[3 - i] & 0xf];
     // }
     // return new String(hexChars);
+
     assert(0);
-    return String("");
+    // Android hashes a principal as the first four bytes of its MD5 digest, encoded in
+    // lowercase hex and reversed. Verified in 4.2, 4.3, and 4.4.
+    AutoPtr<IMessageDigestHelper> helper;
+    CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
+    AutoPtr<IMessageDigest> msgDigest;
+    helper->GetInstance(String("MD5"), (IMessageDigest**)&msgDigest);
+
+    AutoPtr< ArrayOf<Byte> > encoded;
+    principal->GetEncoded((ArrayOf<Byte>**)&encoded);
+
+    AutoPtr< ArrayOf<Byte> > digest;
+    msgDigest->Digest((ArrayOf<Byte>*)&encoded, (ArrayOf<Byte>**)&digest);
+
+    AutoPtr< ArrayOf<Byte> > dig = ArrayOf<Byte>::Alloc(8);
+    for (Int32 i = 0; i < 4; ++i) {
+        (*dig)[2 * i] = (*HEX_DIGITS)[((*HEX_DIGITS)[3 - i] >> 4) & 0xf];
+        (*dig)[2 * i + 1] = (*HEX_DIGITS)[(*HEX_DIGITS)[3 - i] & 0xf];
+    }
+
+    String result(*dig);
+    return result;
 }
 
 Boolean X509Util::IsKnownRoot(
@@ -448,7 +796,91 @@ Boolean X509Util::IsKnownRoot(
     // }
     //
     // return false;
+
     assert(0);
+    // Could not find the system key store. Conservatively report false.
+    if (sSystemKeyStore == NULL)
+        return FALSE;
+
+    // Check the in-memory cache first; avoid decoding the anchor from disk
+    // if it has been seen before.
+    AutoPtr<IX500Principal> principal;
+    //--CX500Principal::New((IX500Principal**)&principal);
+    root->GetSubjectX500Principal((IX500Principal**)&principal);
+
+    AutoPtr<IPublicKey> publicKey;
+    //--CPublicKey::New((IPublicKey**)&publicKey);
+    AutoPtr<ICertificate> certificate = ICertificate::Probe(root);
+    certificate->GetPublicKey((IPublicKey**)&publicKey);
+
+    AutoPtr<IPairHelper> helper;
+    CPairHelper::AcquireSingleton((IPairHelper**)&helper);
+    AutoPtr<IPair> key;
+    helper->Create(principal, publicKey, (IPair**)&key);
+    Boolean contain = FALSE;
+    sSystemTrustAnchorCache->Contains(key, &contain);
+    if (contain)
+        return TRUE;
+
+    // Note: It is not sufficient to call sSystemKeyStore.getCertificiateAlias. If the server
+    // supplies a copy of a trust anchor, X509TrustManagerExtensions returns the server's
+    // version rather than the system one. getCertificiateAlias will then fail to find an anchor
+    // name. This is fixed upstream in https://android-review.googlesource.com/#/c/91605/
+    //
+    // TODO(davidben): When the change trickles into an Android release, query sSystemKeyStore
+    // directly.
+
+    // System trust anchors are stored under a hash of the principal. In case of collisions,
+    // a number is appended.
+    String hash = HashPrincipal(principal);
+    AutoPtr<IX509Certificate> x509Cert = NULL;
+    for (Int32 i = 0; TRUE; ++i) {
+        String alias = hash + String(".") + Char32(i);
+
+        AutoPtr<IFile> tmpFile;
+        //CFile::New(sSystemCertificateDirectory, alias, (IFile**)&tmpFile);
+
+        Boolean exists = FALSE;
+        tmpFile->Exists(&exists);
+        if (!exists)
+            break;
+
+        AutoPtr<ICertificate> anchor;
+        sSystemKeyStore->GetCertificate(String("system:") + alias, (ICertificate**)&anchor);
+        // It is possible for this to return null if the user deleted a trust anchor. In
+        // that case, the certificate remains in the system directory but is also added to
+        // another file. Continue iterating as there may be further collisions after the
+        // deleted anchor.
+        if (anchor == NULL)
+            continue;
+
+        x509Cert = IX509Certificate::Probe(anchor);
+        if (NULL != x509Cert) {
+            // This should never happen.
+            //String className = anchor.getClass().getName();
+            String className("X509Certificate");
+            //Log.e(TAG, "Anchor " + alias + " not an X509Certificate: " + className);
+            continue;
+        }
+
+        // If the subject and public key match, this is a system root.
+        AutoPtr<IX500Principal> anchorx509Principal;
+        x509Cert->GetSubjectX500Principal((IX500Principal**)&anchorx509Principal);
+
+        AutoPtr<IPublicKey> anchorx509PublicKey;
+        //--CPublicKey::New((IPublicKey**)&anchorx509PublicKey);
+        anchor->GetPublicKey((IPublicKey**)&anchorx509PublicKey);
+
+        AutoPtr<IPrincipal> principalTmp = IPrincipal::Probe(principal);
+        Boolean equalPrincipal = FALSE;
+        principalTmp->Equals(anchorx509Principal, &equalPrincipal);
+
+        if (equalPrincipal /* cannot find func equals && publicKey->Equals(anchorx509PublicKey)*/) {
+            sSystemTrustAnchorCache->Add(key);
+            return TRUE;
+        }
+    }
+
     return FALSE;
 }
 
@@ -476,5 +908,4 @@ AutoPtr<IContext> X509Util::NativeGetApplicationContext()
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
 

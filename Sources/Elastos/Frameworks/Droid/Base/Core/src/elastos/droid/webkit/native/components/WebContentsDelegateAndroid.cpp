@@ -27,7 +27,7 @@ Int32 WebContentsDelegateAndroid::GetMostRecentProgress()
     // ==================before translated======================
     // return mMostRecentProgress;
 
-	return mMostRecentProgress;
+    return mMostRecentProgress;
 }
 
 ECode WebContentsDelegateAndroid::OpenNewTab(
@@ -154,7 +154,7 @@ const ECode WebContentsDelegateAndroid::NotifyLoadProgressChanged(
     // mMostRecentProgress = (int) (100.0 * progress);
     // onLoadProgressChanged(mMostRecentProgress);
 
-	mMostRecentProgress = (Int32)(100.0 * progress);
+    mMostRecentProgress = (Int32)(100.0 * progress);
     OnLoadProgressChanged(mMostRecentProgress);
     return NOERROR;
 }
@@ -163,5 +163,4 @@ const ECode WebContentsDelegateAndroid::NotifyLoadProgressChanged(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
 

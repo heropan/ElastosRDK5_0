@@ -54,13 +54,16 @@ private:
             /* [in] */ Int32 port);
 
     public:
-        /*const*/ String mHost;
-        /*const*/ Int32 mPort;
+        const String mHost;
+        const Int32 mPort;
     };
 
     class ProxyReceiver : public BroadcastReceiver
     {
     public:
+        ProxyReceiver(
+            /* [in] */ ProxyChangeListener* owner);
+
         // @Override
         CARAPI OnReceive(
             /* [in] */ IContext* context,
@@ -75,6 +78,9 @@ private:
         // TODO(sgurun): once android.net.ProxyInfo is public, rewrite this.
         CARAPI_(AutoPtr<ProxyChangeListener::ProxyConfig>) ExtractNewProxy(
             /* [in] */ IIntent* intent);
+
+    private:
+        ProxyChangeListener* mOwner;
     };
 
 public:

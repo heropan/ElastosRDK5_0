@@ -53,9 +53,9 @@ private:
 
     public:
         // The actual Java key being wrapped.
-        /*const*/ AutoPtr<IPrivateKey> mKey;
+        const AutoPtr<IPrivateKey> mKey;
         // Key store handling this key.
-        /*const*/ AutoPtr<DefaultAndroidKeyStore> mStore;
+        const AutoPtr<DefaultAndroidKeyStore> mStore;
     };
 
 public:

@@ -8,6 +8,8 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/webkit/native/net/AndroidCertVerifyResult.h"
+#include "elastos/utility/etl/List.h"
+#include "elastos/utility/etl/Pair.h"
 
 // package org.chromium.net;
 // import android.annotation.SuppressLint;
@@ -46,11 +48,12 @@
 // import javax.security.auth.x500.X500Principal;
 
 using Elastos::IO::IFile;
-using Elastos::Utility::IList;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::ISet;
 using Elastos::Security::Cert::IX509Certificate;
 using Elastos::Security::Cert::ICertificateFactory;
 using Elastos::Security::IKeyStore;
+using Elastos::Security::IPublicKey;
 using Elastosx::Security::Auth::X500::IX500Principal;
 using Elastosx::Net::Ssl::IX509TrustManager;
 using Elastos::Droid::Content::BroadcastReceiver;
@@ -81,7 +84,7 @@ private:
     {
     public:
         virtual CARAPI_(AutoPtr<IList>) CheckServerTrusted(
-            /* [in] */ ArrayOf<IX509Certificate>* chain,
+            /* [in] */ ArrayOf<IX509Certificate*>* chain,
             /* [in] */ const String& authType,
             /* [in] */ const String& host) = 0;
     };
@@ -104,12 +107,12 @@ public:
 
         // @Override
         CARAPI_(AutoPtr<IList>) CheckServerTrusted(
-            /* [in] */ ArrayOf<IX509Certificate>* chain,
+            /* [in] */ ArrayOf<IX509Certificate*>* chain,
             /* [in] */ const String& authType,
             /* [in] */ const String& host);
 
     private:
-        /*const*/ AutoPtr<IX509TrustManager> mTrustManager;
+        const AutoPtr<IX509TrustManager> mTrustManager;
     };
 
     class X509TrustManagerJellyBean : public X509TrustManagerImplementation
@@ -121,7 +124,7 @@ public:
 
         // @Override
         CARAPI_(AutoPtr<IList>) CheckServerTrusted(
-            /* [in] */ ArrayOf<IX509Certificate>* chain,
+            /* [in] */ ArrayOf<IX509Certificate*>* chain,
             /* [in] */ const String& authType,
             /* [in] */ const String& host);
 

@@ -1,5 +1,9 @@
 
 #include "elastos/droid/webkit/native/ui/base/ActivityWindowAndroid.h"
+#include "elastos/droid/content/CIntent.h"
+
+using Elastos::Droid::Content::IIntentSender;
+using Elastos::Droid::Content::CIntent;
 
 namespace Elastos {
 namespace Droid {
@@ -16,11 +20,17 @@ const String ActivityWindowAndroid::TAG("ActivityWindowAndroid");
 
 ActivityWindowAndroid::ActivityWindowAndroid(
     /* [in] */ IActivity* activity)
-    : WindowAndroid(NULL) // activity
+    : WindowAndroid(NULL) // WindowAndroid(context)
 {
     // ==================before translated======================
     // super(activity.getApplicationContext());
     // mActivityRef = new WeakReference<Activity>(activity);
+
+    AutoPtr<IContext> tmp = IContext::Probe(activity);
+    AutoPtr<IContext> context;
+    tmp->GetApplicationContext((IContext**)&context);
+
+    //mActivityRef = IWeakReference::Probe();
 }
 
 Int32 ActivityWindowAndroid::ShowCancelableIntent(
@@ -43,8 +53,27 @@ Int32 ActivityWindowAndroid::ShowCancelableIntent(
     //
     // storeCallbackData(requestCode, callback, errorId);
     // return requestCode;
+
     assert(0);
-    return 0;
+    AutoPtr<IActivity> activity;
+    //--mActivityRef->Get((IActivity**)&activity);
+    if (NULL == activity)
+        return START_INTENT_FAILURE;
+
+    Int32 requestCode = GenerateNextRequestCode();
+
+    //try {
+        AutoPtr<IIntentSender> sender;
+        intent->GetIntentSender((IIntentSender**)&sender);
+        AutoPtr<IIntent> newIntent;
+        CIntent::New((IIntent**)&newIntent);
+        //-- hasno matching func activity->StartIntentSenderForResult(sender, requestCode, newIntent, 0, 0, 0);
+    //} catch (SendIntentException e) {
+    //    return START_INTENT_FAILURE;
+    //}
+
+    StoreCallbackData(requestCode, callback, errorId);
+    return requestCode;
 }
 
 Int32 ActivityWindowAndroid::ShowCancelableIntent(
@@ -66,8 +95,27 @@ Int32 ActivityWindowAndroid::ShowCancelableIntent(
     //
     // storeCallbackData(requestCode, callback, errorId);
     // return requestCode;
+
     assert(0);
-    return 0;
+    AutoPtr<IActivity> activity;
+    //--mActivityRef->Get((IActivity**)&activity);
+    if (NULL == activity)
+        return START_INTENT_FAILURE;
+
+    Int32 requestCode = GenerateNextRequestCode();
+
+    //try {
+        AutoPtr<IIntentSender> sender;
+        //intent->GetIntentSender((IIntentSender**)&sender);
+        AutoPtr<IIntent> newIntent;
+        CIntent::New((IIntent**)&newIntent);
+        //-- hasno matching func activity->StartIntentSenderForResult(sender, requestCode, newIntent, 0, 0, 0);
+    //} catch (SendIntentException e) {
+    //    return START_INTENT_FAILURE;
+    //}
+
+    StoreCallbackData(requestCode, callback, errorId);
+    return requestCode;
 }
 
 ECode ActivityWindowAndroid::CancelIntent(
