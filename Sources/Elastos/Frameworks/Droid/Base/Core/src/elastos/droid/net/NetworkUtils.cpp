@@ -1,4 +1,362 @@
 
+#include "elastos/droid/net/NetworkUtils.h"
+
+namespace Elastos {
+namespace Droid {
+namespace Net {
+
+const String NetworkUtils::TAG = String("NetworkUtils");
+
+ECode NetworkUtils::ResetConnections(
+    /* [in] */ const String& interfaceName,
+    /* [in] */ Int32 mask,
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+#endif
+}
+
+ECode NetworkUtils::RunDhcp(
+    /* [in] */ const String& interfaceName,
+    /* [in] */ IDhcpResults* dhcpResults,
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+#endif
+}
+
+ECode NetworkUtils::RunDhcpRenew(
+    /* [in] */ const String& interfaceName,
+    /* [in] */ IDhcpResults* dhcpResults,
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+#endif
+}
+
+ECode NetworkUtils::StopDhcp(
+    /* [in] */ const String& interfaceName,
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+#endif
+}
+
+ECode NetworkUtils::ReleaseDhcpLease(
+    /* [in] */ const String& interfaceName,
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+#endif
+}
+
+ECode NetworkUtils::GetDhcpError(
+    /* [out] */ String* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+#endif
+}
+
+ECode NetworkUtils::BindProcessToNetwork(
+    /* [in] */ Int32 netId,
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+#endif
+}
+
+ECode NetworkUtils::GetNetworkBoundToProcess(
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+#endif
+}
+
+ECode NetworkUtils::BindProcessToNetworkForHostResolution(
+    /* [in] */ Int32 netId,
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+#endif
+}
+
+ECode NetworkUtils::BindSocketToNetwork(
+    /* [in] */ Int32 socketfd,
+    /* [in] */ Int32 netId,
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+#endif
+}
+
+ECode NetworkUtils::ProtectFromVpn(
+    /* [in] */ Int32 socketfd,
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+#endif
+}
+
+ECode NetworkUtils::IntToInetAddress(
+    /* [in] */ Int32 hostAddress,
+    /* [out] */ IInetAddress** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        byte[] addressBytes = { (byte)(0xff & hostAddress),
+                                (byte)(0xff & (hostAddress >> 8)),
+                                (byte)(0xff & (hostAddress >> 16)),
+                                (byte)(0xff & (hostAddress >> 24)) };
+        try {
+           return InetAddress.getByAddress(addressBytes);
+        } catch (UnknownHostException e) {
+           throw new AssertionError();
+        }
+
+#endif
+}
+
+ECode NetworkUtils::InetAddressToInt(
+    /* [in] */ IInet4Address* inetAddr,
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        byte [] addr = inetAddr.getAddress();
+        return ((addr[3] & 0xff) << 24) | ((addr[2] & 0xff) << 16) |
+                ((addr[1] & 0xff) << 8) | (addr[0] & 0xff);
+
+#endif
+}
+
+ECode NetworkUtils::PrefixLengthToNetmaskInt(
+    /* [in] */ Int32 prefixLength,
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (prefixLength < 0 || prefixLength > 32) {
+            throw new IllegalArgumentException("Invalid prefix length (0 <= prefix <= 32)");
+        }
+        int value = 0xffffffff << (32 - prefixLength);
+        return Integer.reverseBytes(value);
+
+#endif
+}
+
+ECode NetworkUtils::NetmaskIntToPrefixLength(
+    /* [in] */ Int32 netmask,
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return Integer.bitCount(netmask);
+
+#endif
+}
+
+ECode NetworkUtils::NumericToInetAddress(
+    /* [in] */ const String& addrString,
+    /* [out] */ IInetAddress** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return InetAddress.parseNumericAddress(addrString);
+
+#endif
+}
+
+ECode NetworkUtils::ParcelInetAddress(
+    /* [in] */ IParcel* parcel,
+    /* [in] */ IInetAddress* address,
+    /* [in] */ Int32 flags)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        byte[] addressArray = (address != null) ? address.getAddress() : null;
+        parcel.writeByteArray(addressArray);
+
+#endif
+}
+
+ECode NetworkUtils::UnparcelInetAddress(
+    /* [in] */ IParcel* in,
+    /* [out] */ IInetAddress** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        byte[] addressArray = in.createByteArray();
+        if (addressArray == null) {
+            return null;
+        }
+        try {
+            return InetAddress.getByAddress(addressArray);
+        } catch (UnknownHostException e) {
+            return null;
+        }
+
+#endif
+}
+
+ECode NetworkUtils::MaskRawAddress(
+    /* [in] */ ArrayOf<Byte>* array,
+    /* [in] */ Int32 prefixLength)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (prefixLength < 0 || prefixLength > array.length * 8) {
+            throw new RuntimeException("IP address with " + array.length +
+                    " bytes has invalid prefix length " + prefixLength);
+        }
+        int offset = prefixLength / 8;
+        int remainder = prefixLength % 8;
+        byte mask = (byte)(0xFF << (8 - remainder));
+        if (offset < array.length) array[offset] = (byte)(array[offset] & mask);
+        offset++;
+        for (; offset < array.length; offset++) {
+            array[offset] = 0;
+        }
+
+#endif
+}
+
+ECode NetworkUtils::GetNetworkPart(
+    /* [in] */ IInetAddress* address,
+    /* [in] */ Int32 prefixLength,
+    /* [out] */ IInetAddress** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        byte[] array = address.getAddress();
+        maskRawAddress(array, prefixLength);
+        InetAddress netPart = null;
+        try {
+            netPart = InetAddress.getByAddress(array);
+        } catch (UnknownHostException e) {
+            throw new RuntimeException("getNetworkPart error - " + e.toString());
+        }
+        return netPart;
+
+#endif
+}
+
+ECode NetworkUtils::ParseIpAndMask(
+    /* [in] */ const String& ipAndMaskString,
+    /* [out] */ IPair** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        InetAddress address = null;
+        int prefixLength = -1;
+        try {
+            String[] pieces = ipAndMaskString.split("/", 2);
+            prefixLength = Integer.parseInt(pieces[1]);
+            address = InetAddress.parseNumericAddress(pieces[0]);
+        } catch (NullPointerException e) {            // Null string.
+        } catch (ArrayIndexOutOfBoundsException e) {  // No prefix length.
+        } catch (NumberFormatException e) {           // Non-numeric prefix.
+        } catch (IllegalArgumentException e) {        // Invalid IP address.
+        }
+        if (address == null || prefixLength == -1) {
+            throw new IllegalArgumentException("Invalid IP address and mask " + ipAndMaskString);
+        }
+        return new Pair<InetAddress, Integer>(address, prefixLength);
+
+#endif
+}
+
+ECode NetworkUtils::AddressTypeMatches(
+    /* [in] */ IInetAddress* left,
+    /* [in] */ IInetAddress* right,
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return (((left instanceof Inet4Address) && (right instanceof Inet4Address)) ||
+                ((left instanceof Inet6Address) && (right instanceof Inet6Address)));
+
+#endif
+}
+
+ECode NetworkUtils::HexToInet6Address(
+    /* [in] */ const String& addrHexString,
+    /* [out] */ IInetAddress** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        try {
+            return numericToInetAddress(String.format(Locale.US, "%s:%s:%s:%s:%s:%s:%s:%s",
+                    addrHexString.substring(0,4),   addrHexString.substring(4,8),
+                    addrHexString.substring(8,12),  addrHexString.substring(12,16),
+                    addrHexString.substring(16,20), addrHexString.substring(20,24),
+                    addrHexString.substring(24,28), addrHexString.substring(28,32)));
+        } catch (Exception e) {
+            Log.e("NetworkUtils", "error in hexToInet6Address(" + addrHexString + "): " + e);
+            throw new IllegalArgumentException(e);
+        }
+
+#endif
+}
+
+ECode NetworkUtils::MakeStrings(
+    /* [in] */ ICollection* addrs,
+    /* [out, callee] */ ArrayOf<String>** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        String[] result = new String[addrs.size()];
+        int i = 0;
+        for (InetAddress addr : addrs) {
+            result[i++] = addr.getHostAddress();
+        }
+        return result;
+
+#endif
+}
+
+ECode NetworkUtils::TrimV4AddrZeros(
+    /* [in] */ const String& addr,
+    /* [out] */ String* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (addr == null) return null;
+        String[] octets = addr.split("\\.");
+        if (octets.length != 4) return addr;
+        StringBuilder builder = new StringBuilder(16);
+        String result = null;
+        for (int i = 0; i < 4; i++) {
+            try {
+                if (octets[i].length() > 3) return addr;
+                builder.append(Integer.parseInt(octets[i]));
+            } catch (NumberFormatException e) {
+                return addr;
+            }
+            if (i < 3) builder.append('.');
+        }
+        result = builder.toString();
+        return result;
+
+#endif
+}
+
+
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
+
+#if 0 // old NetworkUtils.cpp
 #include "net/NetworkUtils.h"
 #ifdef DROID_CORE
 #include "net/CRouteInfo.h"
@@ -493,3 +851,4 @@ Boolean NetworkUtils::NativeRunDhcpCommon(
 } // namespace Net
 } // namepsace Droid
 } // namespace Elastos
+#endif

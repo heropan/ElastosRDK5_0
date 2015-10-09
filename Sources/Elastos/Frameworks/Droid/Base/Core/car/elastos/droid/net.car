@@ -642,6 +642,10 @@ module
         interface INetworkTemplateHelper;
     }
 
+    singleton class CNetworkUtils {
+        interface INetworkUtils;
+    }
+
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos

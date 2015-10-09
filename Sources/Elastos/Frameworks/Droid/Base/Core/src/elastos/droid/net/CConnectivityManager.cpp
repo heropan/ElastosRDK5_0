@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/net/CConnectivityManager.h"
-// #include "net/NetworkUtils.h"
+#include "elastos/droid/net/CNetworkUtils.h"
 #include "elastos/droid/os/CBinder.h"
 #include <elastos/core/StringUtils.h>
 // #include "CHashMap.h"
@@ -25,7 +25,7 @@ using Elastos::Utility::ISet;
 using Elastos::Utility::IIterator;
 using Elastos::Droid::Os::IServiceManager;
 // using Elastos::Droid::Os::CServiceManager;
-// using Elastos::Droid::Net::CNetworkUtilsHelper;
+using Elastos::Droid::Net::CNetworkUtils;
 using Elastos::Droid::Internal::Telephony::IITelephony;
 using Elastos::Droid::Os::INetworkActivityListener;
 using Elastos::Utility::IMap;
@@ -935,12 +935,8 @@ ECode CConnectivityManager::RequestRouteToHost(
     *result = FALSE;
 
     AutoPtr<IInetAddress> inetAddress;
-    AutoPtr<INetworkUtilsHelper> networkUtilsHelper;
-#if 0 // TODO: Waiting for CNetworkUtilsHelper
-    CNetworkUtilsHelper::AcquireSingleton((INetworkUtilsHelper**)&networkUtilsHelper);
-#else
-    assert(0);
-#endif
+    AutoPtr<INetworkUtils> networkUtilsHelper;
+    CNetworkUtils::AcquireSingleton((INetworkUtils**)&networkUtilsHelper);
     FAIL_RETURN(networkUtilsHelper->IntToInetAddress(hostAddress, (IInetAddress**)&inetAddress))
     return RequestRouteToHostAddress(networkType, inetAddress, result);
 }
@@ -1998,12 +1994,8 @@ ECode CConnectivityManager::SetProcessDefaultNetwork(
         network->GetNetId(&netId);
     }
     Int32 netBound;
-    AutoPtr<INetworkUtilsHelper> networkUtilsHelper;
-#if 0 // TODO: Waiting for CNetworkUtilsHelper
-    CNetworkUtilsHelper::AcquireSingleton((INetworkUtilsHelper**)&networkUtilsHelper);
-#else
-    assert(0);
-#endif
+    AutoPtr<INetworkUtils> networkUtilsHelper;
+    CNetworkUtils::AcquireSingleton((INetworkUtils**)&networkUtilsHelper);
     FAIL_RETURN(networkUtilsHelper->GetNetworkBoundToProcess(&netBound))
     if (netBound == netId) {
         *result = TRUE;
@@ -2042,12 +2034,8 @@ ECode CConnectivityManager::GetProcessDefaultNetwork(
     VALIDATE_NOT_NULL(*result)
     *result = NULL;
 
-    AutoPtr<INetworkUtilsHelper> networkUtilsHelper;
-#if 0 // TODO: Waiting for CNetworkUtilsHelper
-    CNetworkUtilsHelper::AcquireSingleton((INetworkUtilsHelper**)&networkUtilsHelper);
-#else
-    assert(0);
-#endif
+    AutoPtr<INetworkUtils> networkUtilsHelper;
+    CNetworkUtils::AcquireSingleton((INetworkUtils**)&networkUtilsHelper);
     Int32 netId;
     networkUtilsHelper->GetNetworkBoundToProcess(&netId);
     if (NETID_UNSET == netId) {
@@ -2073,12 +2061,8 @@ ECode CConnectivityManager::SetProcessDefaultNetworkForHostResolution(
     if (NULL == network) {
         network->GetNetId(&netId);
     }
-    AutoPtr<INetworkUtilsHelper> networkUtilsHelper;
-#if 0 // TODO: Waiting for CNetworkUtilsHelper
-    CNetworkUtilsHelper::AcquireSingleton((INetworkUtilsHelper**)&networkUtilsHelper);
-#else
-    assert(0);
-#endif
+    AutoPtr<INetworkUtils> networkUtilsHelper;
+    CNetworkUtils::AcquireSingleton((INetworkUtils**)&networkUtilsHelper);
     networkUtilsHelper->BindProcessToNetworkForHostResolution(netId, result);
     return NOERROR;
 }

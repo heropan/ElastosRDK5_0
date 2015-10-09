@@ -1,8 +1,9 @@
 
-#ifndef __ELASTOS_DROID_NET_NETWORKUTILS_H__
-#define __ELASTOS_DROID_NET_NETWORKUTILS_H__
+#ifndef __ELASTOS_DROID_NET_CNETWORKUTILS_H__
+#define __ELASTOS_DROID_NET_CNETWORKUTILS_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include "_Elastos_Droid_Net_CNetworkUtils.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Net::IInet4Address;
 using Elastos::Droid::Utility::IPair;
@@ -18,10 +19,14 @@ namespace Net {
  *
  * {@hide}
  */
-class NetworkUtils
+CarClass(CNetworkUtils)
+    , public Singleton
+    , public INetworkUtils
 {
 public:
     CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     /**
      * Reset IPv6 or IPv4 sockets that are connected via the named interface.
@@ -29,7 +34,7 @@ public:
      * @param interfaceName is the interface to reset
      * @param mask {@see #RESET_IPV4_ADDRESSES} and {@see #RESET_IPV6_ADDRESSES}
      */
-    static CARAPI ResetConnections(
+    CARAPI ResetConnections(
         /* [in] */ const String& interfaceName,
         /* [in] */ Int32 mask,
         /* [out] */ Int32* result);
@@ -44,7 +49,7 @@ public:
      * the IP address information.
      * @return {@code true} for success, {@code false} for failure
      */
-    static CARAPI RunDhcp(
+    CARAPI RunDhcp(
         /* [in] */ const String& interfaceName,
         /* [in] */ IDhcpResults* dhcpResults,
         /* [out] */ Boolean* result);
@@ -57,7 +62,7 @@ public:
      * the IP address information.
      * @return {@code true} for success, {@code false} for failure
      */
-    static CARAPI RunDhcpRenew(
+    CARAPI RunDhcpRenew(
         /* [in] */ const String& interfaceName,
         /* [in] */ IDhcpResults* dhcpResults,
         /* [out] */ Boolean* result);
@@ -68,7 +73,7 @@ public:
      * should be stopped
      * @return {@code true} for success, {@code false} for failure
      */
-    static CARAPI StopDhcp(
+    CARAPI StopDhcp(
         /* [in] */ const String& interfaceName,
         /* [out] */ Boolean* result);
 
@@ -78,7 +83,7 @@ public:
      * be released
      * @return {@code true} for success, {@code false} for failure
      */
-    static CARAPI ReleaseDhcpLease(
+    CARAPI ReleaseDhcpLease(
         /* [in] */ const String& interfaceName,
         /* [out] */ Boolean* result);
 
@@ -88,7 +93,7 @@ public:
      * used in logging.
      * @return the most recent error message, if any
      */
-    static CARAPI GetDhcpError(
+    CARAPI GetDhcpError(
         /* [out] */ String* result);
 
     /**
@@ -99,7 +104,7 @@ public:
      * is by design so an application doesn't accidentally use sockets it thinks are still bound to
      * a particular {@code Network}.  Passing NETID_UNSET clears the binding.
      */
-    static CARAPI BindProcessToNetwork(
+    CARAPI BindProcessToNetwork(
         /* [in] */ Int32 netId,
         /* [out] */ Boolean* result);
 
@@ -107,7 +112,7 @@ public:
      * Return the netId last passed to {@link #bindProcessToNetwork}, or NETID_UNSET if
      * {@link #unbindProcessToNetwork} has been called since {@link #bindProcessToNetwork}.
      */
-    static CARAPI GetNetworkBoundToProcess(
+    CARAPI GetNetworkBoundToProcess(
         /* [out] */ Int32* result);
 
     /**
@@ -117,7 +122,7 @@ public:
      *
      * @deprecated This is strictly for legacy usage to support startUsingNetworkFeature().
      */
-    static CARAPI BindProcessToNetworkForHostResolution(
+    CARAPI BindProcessToNetworkForHostResolution(
         /* [in] */ Int32 netId,
         /* [out] */ Boolean* result);
 
@@ -126,7 +131,7 @@ public:
      * overrides any binding via {@link #bindProcessToNetwork}.
      * @return 0 on success or negative errno on failure.
      */
-    static CARAPI BindSocketToNetwork(
+    CARAPI BindSocketToNetwork(
         /* [in] */ Int32 socketfd,
         /* [in] */ Int32 netId,
         /* [out] */ Int32* result);
@@ -136,7 +141,7 @@ public:
      * this socket will go directly to the underlying network, so its traffic will not be
      * forwarded through the VPN.
      */
-    static CARAPI ProtectFromVpn(
+    CARAPI ProtectFromVpn(
         /* [in] */ Int32 socketfd,
         /* [out] */ Boolean* result);
 
@@ -144,7 +149,7 @@ public:
      * Convert a IPv4 address from an integer to an InetAddress.
      * @param hostAddress an int corresponding to the IPv4 address in network byte order
      */
-    static CARAPI IntToInetAddress(
+    CARAPI IntToInetAddress(
         /* [in] */ Int32 hostAddress,
         /* [out] */ IInetAddress** result);
 
@@ -153,7 +158,7 @@ public:
      * @param inetAddr is an InetAddress corresponding to the IPv4 address
      * @return the IP address as an integer in network byte order
      */
-    static CARAPI InetAddressToInt(
+    CARAPI InetAddressToInt(
         /* [in] */ IInet4Address* inetAddr,
         /* [out] */ Int32* result);
 
@@ -162,7 +167,7 @@ public:
      * @param prefixLength
      * @return the IPv4 netmask as an integer in network byte order
      */
-    static CARAPI PrefixLengthToNetmaskInt(
+    CARAPI PrefixLengthToNetmaskInt(
         /* [in] */ Int32 prefixLength,
         /* [out] */ Int32* result);
 
@@ -171,7 +176,7 @@ public:
      * @param netmask as an integer in network byte order
      * @return the network prefix length
      */
-    static CARAPI NetmaskIntToPrefixLength(
+    CARAPI NetmaskIntToPrefixLength(
         /* [in] */ Int32 netmask,
         /* [out] */ Int32* result);
 
@@ -183,7 +188,7 @@ public:
      * @return the InetAddress
      * @hide
      */
-    static CARAPI NumericToInetAddress(
+    CARAPI NumericToInetAddress(
         /* [in] */ const String& addrString,
         /* [out] */ IInetAddress** result);
 
@@ -191,7 +196,7 @@ public:
      * Writes an InetAddress to a parcel. The address may be null. This is likely faster than
      * calling writeSerializable.
      */
-    static CARAPI ParcelInetAddress(
+    CARAPI ParcelInetAddress(
         /* [in] */ IParcel* parcel,
         /* [in] */ IInetAddress* address,
         /* [in] */ Int32 flags);
@@ -200,14 +205,14 @@ public:
      * Reads an InetAddress from a parcel. Returns null if the address that was written was null
      * or if the data is invalid.
      */
-    static CARAPI UnparcelInetAddress(
+    CARAPI UnparcelInetAddress(
         /* [in] */ IParcel* in,
         /* [out] */ IInetAddress** result);
 
     /**
      *  Masks a raw IP address byte array with the specified prefix length.
      */
-    static CARAPI MaskRawAddress(
+    CARAPI MaskRawAddress(
         /* [in] */ ArrayOf<Byte>* array,
         /* [in] */ Int32 prefixLength);
 
@@ -216,7 +221,7 @@ public:
      * @param address the IP address to mask with
      * @param prefixLength the prefixLength used to mask the IP
      */
-    static CARAPI GetNetworkPart(
+    CARAPI GetNetworkPart(
         /* [in] */ IInetAddress* address,
         /* [in] */ Int32 prefixLength,
         /* [out] */ IInetAddress** result);
@@ -225,7 +230,7 @@ public:
      * Utility method to parse strings such as "192.0.2.5/24" or "2001:db8::cafe:d00d/64".
      * @hide
      */
-    static CARAPI ParseIpAndMask(
+    CARAPI ParseIpAndMask(
         /* [in] */ const String& ipAndMaskString,
         /* [out] */ IPair** result);
 
@@ -233,7 +238,7 @@ public:
      * Check if IP address type is consistent between two InetAddress.
      * @return true if both are the same type.  False otherwise.
      */
-    static CARAPI AddressTypeMatches(
+    CARAPI AddressTypeMatches(
         /* [in] */ IInetAddress* left,
         /* [in] */ IInetAddress* right,
         /* [out] */ Boolean* result);
@@ -245,7 +250,7 @@ public:
      * @param addrHexString a 32 character hex string representing an IPv6 addr
      * @return addr an InetAddress representation for the string
      */
-    static CARAPI HexToInet6Address(
+    CARAPI HexToInet6Address(
         /* [in] */ const String& addrHexString,
         /* [out] */ IInetAddress** result);
 
@@ -254,7 +259,7 @@ public:
      * @param addrs a Collection of InetAddresses
      * @return an array of Strings containing their host addresses
      */
-    static CARAPI MakeStrings(
+    CARAPI MakeStrings(
         /* [in] */ ICollection* addrs,
         /* [out, callee] */ ArrayOf<String>** result);
 
@@ -267,16 +272,14 @@ public:
      * @param addr a string representing an ip addr
      * @return a string propertly trimmed
      */
-    static CARAPI TrimV4AddrZeros(
+    CARAPI TrimV4AddrZeros(
         /* [in] */ const String& addr,
         /* [out] */ String* result);
-
-private:
-    static const String TAG;
 
 };
 
 } // namespace Net
 } // namespace Droid
 } // namespace Elastos
-#endif // __ELASTOS_DROID_NET_NETWORKUTILS_H__
+
+#endif //  __ELASTOS_DROID_NET_CNETWORKUTILS_H__
