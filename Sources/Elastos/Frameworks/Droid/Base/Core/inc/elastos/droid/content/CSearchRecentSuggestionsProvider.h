@@ -33,18 +33,18 @@ class CSearchRecentSuggestionsProvider
         DatabaseHelper();
 
         CARAPI constructor(
-            /*[in]*/ IContext* context,
-            /*[in]*/ Int32 newVersion);
+            /* [in] */ IContext* context,
+            /* [in] */ Int32 newVersion);
 
         virtual ~DatabaseHelper();
 
         CARAPI OnCreate(
-            /*[in]*/ ISQLiteDatabase* db);
+            /* [in] */ ISQLiteDatabase* db);
 
         CARAPI OnUpgrade(
-            /*[in]*/ ISQLiteDatabase* db,
-            /*[in]*/ Int32 oldVersion,
-            /*[in]*/ Int32 newVersion);
+            /* [in] */ ISQLiteDatabase* db,
+            /* [in] */ Int32 oldVersion,
+            /* [in] */ Int32 newVersion);
 
     private:
         Int32 mNewVersion;

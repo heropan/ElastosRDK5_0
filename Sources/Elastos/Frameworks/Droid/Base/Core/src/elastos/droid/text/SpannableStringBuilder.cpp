@@ -19,6 +19,8 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
+static const String TAG("SpannableStringBuilder");
+
 AutoPtr< ArrayOf<IInputFilter*> > SpannableStringBuilder::NO_FILTERS = ArrayOf<IInputFilter*>::Alloc(0);
 
 const Int32 SpannableStringBuilder::MARK;
@@ -103,23 +105,17 @@ ECode SpannableStringBuilder::Init(
     mFilters = NO_FILTERS;
     Int32 srclen = end - start;
 
-    Int32 len = ArrayUtils::IdealInt32ArraySize(srclen + 1);
-    mText = ArrayOf<Char32>::Alloc(len);
+    // mText = ArrayUtils::NewUnpaddedCharArray(GrowingArrayUtils::GrowSize(srclen));
     mGapStart = srclen;
-    mGapLength = len - srclen;
+    mGapLength = mText->GetLength() - srclen;
 
-    for (Int32 i = start; i < end; i++) {
-        Char32 ch;
-        text->GetCharAt(i, &ch);
-        (*mText)[i - start] = ch;
-    }
+    TextUtils::GetChars(text, start, end, mText, 0);
 
     mSpanCount = 0;
-    Int32 alloc = ArrayUtils::IdealInt32ArraySize(0);
-    mSpans = ArrayOf<IInterface*>::Alloc(alloc);
-    mSpanStarts = ArrayOf<Int32>::Alloc(alloc);
-    mSpanEnds = ArrayOf<Int32>::Alloc(alloc);
-    mSpanFlags = ArrayOf<Int32>::Alloc(alloc);
+    mSpans = EmptyArray::OBJECT;
+    mSpanStarts = EmptyArray::INT32;
+    mSpanEnds = EmptyArray::INT32;
+    mSpanFlags = EmptyArray::INT32;
 
     if (ISpanned::Probe(text)) {
         AutoPtr<ISpanned> sp = ISpanned::Probe(text);
@@ -258,6 +254,18 @@ ECode SpannableStringBuilder::ClearSpans()
     }
 
     return NOERROR;
+}
+
+ECode SpannableStringBuilder::Append(
+    /* [in] */ ICharSequence* text,
+    /* [in] */ IInterface* what,
+    /* [in] */ Int32 flags)
+{
+    VALIDATE_NOT_NULL(text);
+    Int32 length = GetLength();
+    FAIL_RETURN(Append(text))
+
+    return SetSpan(what, start, GetLength(), flags);
 }
 
 ECode SpannableStringBuilder::Append(
@@ -716,7 +724,7 @@ ECode SpannableStringBuilder::DrawTextRun(
     /* [in] */ Int32 contextEnd,
     /* [in] */ Float x,
     /* [in] */ Float y,
-    /* [in] */ Int32 flags,
+    /* [in] */ Boolean isRtl,
     /* [in] */ IPaint* p)
 {
     assert(c != NULL);
@@ -726,14 +734,14 @@ ECode SpannableStringBuilder::DrawTextRun(
     Int32 contextLen = contextEnd - contextStart;
     Int32 len = end - start;
     if (contextEnd <= mGapStart) {
-        c->DrawTextRun(*mText, start, len, contextStart, contextLen, x, y, flags, p);
+        c->DrawTextRun(*mText, start, len, contextStart, contextLen, x, y, isRtl, p);
     } else if (contextStart >= mGapStart) {
         c->DrawTextRun(*mText, start + mGapLength, len, contextStart + mGapLength,
-                contextLen, x, y, flags, p);
+                contextLen, x, y, isRtl, p);
     } else {
         AutoPtr< ArrayOf<Char32> > buf = TextUtils::Obtain(contextLen);
         GetChars(contextStart, contextEnd, buf, 0);
-        c->DrawTextRun(*buf, start - contextStart, len, 0, contextLen, x, y, flags, p);
+        c->DrawTextRun(*buf, start - contextStart, len, 0, contextLen, x, y, isRtl, p);
         TextUtils::Recycle(buf);
     }
 
@@ -794,7 +802,7 @@ Float SpannableStringBuilder::GetTextRunAdvances(
     /* [in] */ Int32 end,
     /* [in] */ Int32 contextStart,
     /* [in] */ Int32 contextEnd,
-    /* [in] */ Int32 flags,
+    /* [in] */ Boolean isRtl,
     /* [in] */ ArrayOf<Float>* advances,
     /* [in] */ Int32 advancesPos,
     /* [in] */ IPaint* p)
@@ -808,52 +816,17 @@ Float SpannableStringBuilder::GetTextRunAdvances(
 
     if (end <= mGapStart) {
         p->GetTextRunAdvances(*mText, start, len, contextStart, contextLen,
-                flags, advances, advancesPos, &ret);
+                isRtl, advances, advancesPos, &ret);
     } else if (start >= mGapStart) {
         p->GetTextRunAdvances(*mText, start + mGapLength, len,
-                contextStart + mGapLength, contextLen, flags, advances,
+                contextStart + mGapLength, contextLen, isRtl, advances,
                 advancesPos, &ret);
     } else {
         AutoPtr< ArrayOf<Char32> > buf = TextUtils::Obtain(contextLen);
         GetChars(contextStart, contextEnd, buf, 0);
 
         p->GetTextRunAdvances(*buf, start - contextStart, len,
-               0, contextLen, flags, advances, advancesPos, &ret);
-        TextUtils::Recycle(buf);
-    }
-
-    return ret;
-}
-
-Float SpannableStringBuilder::GetTextRunAdvances(
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [in] */ Int32 contextStart,
-    /* [in] */ Int32 contextEnd,
-    /* [in] */ Int32 flags,
-    /* [in] */ ArrayOf<Float>* advances,
-    /* [in] */ Int32 advancesPos,
-    /* [in] */ IPaint* p,
-    /* [in] */ Int32 reserved)
-{
-    assert(p != NULL);
-
-    Float ret = 0.f;
-
-    Int32 contextLen = contextEnd - contextStart;
-    Int32 len = end - start;
-
-    if (end <= mGapStart) {
-        p->GetTextRunAdvances(*mText, start, len, contextStart, contextLen,
-                flags, advances, advancesPos, reserved, &ret);
-    } else if (start >= mGapStart) {
-        p->GetTextRunAdvances(*mText, start + mGapLength, len,
-                contextStart + mGapLength, contextLen, flags, advances, advancesPos, reserved, &ret);
-    } else {
-        AutoPtr< ArrayOf<Char32> > buf = TextUtils::Obtain(contextLen);
-        GetChars(contextStart, contextEnd, buf, 0);
-        p->GetTextRunAdvances(*buf, start - contextStart, len,
-               0, contextLen, flags, advances, advancesPos, reserved, &ret);
+               0, contextLen, isRtl, advances, advancesPos, &ret);
         TextUtils::Recycle(buf);
     }
 
@@ -863,7 +836,7 @@ Float SpannableStringBuilder::GetTextRunAdvances(
 Int32 SpannableStringBuilder::GetTextRunCursor(
     /* [in] */ Int32 contextStart,
     /* [in] */ Int32 contextEnd,
-    /* [in] */ Int32 flags,
+    /* [in] */ Int32 dir,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 cursorOpt,
     /* [in] */ IPaint* p)
@@ -875,15 +848,15 @@ Int32 SpannableStringBuilder::GetTextRunCursor(
     Int32 contextLen = contextEnd - contextStart;
     if (contextEnd <= mGapStart) {
         p->GetTextRunCursor(*mText, contextStart, contextLen,
-                flags, offset, cursorOpt, &ret);
+                dir, offset, cursorOpt, &ret);
     } else if (contextStart >= mGapStart) {
         p->GetTextRunCursor(*mText, contextStart + mGapLength, contextLen,
-                flags, offset + mGapLength, cursorOpt, &ret);
+                dir, offset + mGapLength, cursorOpt, &ret);
         ret -= mGapLength;
     } else {
         AutoPtr< ArrayOf<Char32> > buf = TextUtils::Obtain(contextLen);
         GetChars(contextStart, contextEnd, buf, 0);
-        p->GetTextRunCursor(*buf, 0, contextLen, flags, offset - contextStart, cursorOpt, &ret);
+        p->GetTextRunCursor(*buf, 0, contextLen, dir, offset - contextStart, cursorOpt, &ret);
         ret += contextStart;
         TextUtils::Recycle(buf);
     }
@@ -911,12 +884,16 @@ ECode SpannableStringBuilder::ResizeFor(
     /* [in] */ Int32 size)
 {
     Int32 oldLength = mText->GetLength();
-    Int32 newLength = ArrayUtils::IdealCharArraySize(size + 1);
-    Int32 delta = newLength - oldLength;
-    if (delta == 0) return NOERROR;
+    if (size + 1 <= oldLength) {
+        return NOERROR;
+    }
 
-    AutoPtr< ArrayOf<Char32> > newText = ArrayOf<Char32>::Alloc(newLength);
+    AutoPtr< ArrayOf<Char32> > newText = ArrayUtils::NewUnpaddedCharArray(GrowingArrayUtils::GrowSize(size));
     newText->Copy(mText, mGapStart);
+
+    Int32 newLength = newText.length;
+    Int32 delta = newLength - oldLength;
+
     Int32 after = oldLength - (mGapStart + mGapLength);
     newText->Copy(newLength - after, mText, oldLength - after, after);
     mText = newText;
@@ -1516,34 +1493,10 @@ ECode SpannableStringBuilder::SetSpan(
         }
     }
 
-    if (mSpanCount + 1 >= mSpans->GetLength()) {
-        Int32 newsize = ArrayUtils::IdealInt32ArraySize(mSpanCount + 1);
-        AutoPtr<ArrayOf<IInterface*> > newspans = ArrayOf<IInterface*>::Alloc(newsize);
-        AutoPtr<ArrayOf<Int32> > newspanstarts = ArrayOf<Int32>::Alloc(newsize);
-        AutoPtr<ArrayOf<Int32> > newspanends = ArrayOf<Int32>::Alloc(newsize);
-        AutoPtr<ArrayOf<Int32> > newspanflags = ArrayOf<Int32>::Alloc(newsize);
-
-        newspans->Copy(mSpans, 0, mSpanCount);
-
-        assert(mSpanStarts != NULL);
-        newspanstarts->Copy(mSpanStarts, 0, mSpanCount);
-
-        newspanends->Copy(mSpanEnds, 0, mSpanCount);
-
-        newspanflags->Copy(mSpanFlags, 0, mSpanCount);
-
-        mSpans = newspans;
-        mSpanStarts = newspanstarts;
-        mSpanEnds = newspanends;
-
-        mSpanFlags = newspanflags;
-    }
-
-    mSpans->Set(mSpanCount, what);
-    (*mSpanStarts)[mSpanCount] = start;
-
-    (*mSpanEnds)[mSpanCount] = end;
-    (*mSpanFlags)[mSpanCount] = flags;
+    mSpans = GrowingArrayUtils::Append(mSpans, mSpanCount, what);
+    mSpanStarts = GrowingArrayUtils::Append(mSpanStarts, mSpanCount, start);
+    mSpanEnds = GrowingArrayUtils::Append(mSpanEnds, mSpanCount, end);
+    mSpanFlags = GrowingArrayUtils::Append(mSpanFlags, mSpanCount, flags);
     mSpanCount++;
 
     if (send) {
@@ -1552,6 +1505,63 @@ ECode SpannableStringBuilder::SetSpan(
 
     return NOERROR;
 }
+
+// Same as SpannableStringInternal
+ECode SpannableStringBuilder::Equals(
+    /* [in] */ IInterface* o,
+    /* [out] */ Boolean* result)
+{
+    assert(0 && "TODO");
+    // if (o instanceof Spanned &&
+    //         toString().equals(o.toString())) {
+    //     Spanned other = (Spanned) o;
+    //     // Check span data
+    //     Object[] otherSpans = other.getSpans(0, other.length(), Object.class);
+    //     if (mSpanCount == otherSpans.length) {
+    //         for (int i = 0; i < mSpanCount; ++i) {
+    //             Object thisSpan = mSpans[i];
+    //             Object otherSpan = otherSpans[i];
+    //             if (thisSpan == this) {
+    //                 if (other != otherSpan ||
+    //                         getSpanStart(thisSpan) != other.getSpanStart(otherSpan) ||
+    //                         getSpanEnd(thisSpan) != other.getSpanEnd(otherSpan) ||
+    //                         getSpanFlags(thisSpan) != other.getSpanFlags(otherSpan)) {
+    //                     return false;
+    //                 }
+    //             } else if (!thisSpan.equals(otherSpan) ||
+    //                     getSpanStart(thisSpan) != other.getSpanStart(otherSpan) ||
+    //                     getSpanEnd(thisSpan) != other.getSpanEnd(otherSpan) ||
+    //                     getSpanFlags(thisSpan) != other.getSpanFlags(otherSpan)) {
+    //                 return false;
+    //             }
+    //         }
+    //         return true;
+    //     }
+    // }
+    // return false;
+    return NOERROR;
+}
+
+// Same as SpannableStringInternal
+ECode SpannableStringBuilder::GetHashCode(
+    /* [out] */ Int32* result)
+{
+    assert(0 && "TODO");
+    // int hash = toString().hashCode();
+    // hash = hash * 31 + mSpanCount;
+    // for (int i = 0; i < mSpanCount; ++i) {
+    //     Object span = mSpans[i];
+    //     if (span != this) {
+    //         hash = hash * 31 + span.hashCode();
+    //     }
+    //     hash = hash * 31 + getSpanStart(span);
+    //     hash = hash * 31 + getSpanEnd(span);
+    //     hash = hash * 31 + getSpanFlags(span);
+    // }
+    // return hash;
+    return NOERROR;
+}
+
 
 } // namespace Text
 } // namepsace Droid

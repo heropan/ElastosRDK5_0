@@ -16,52 +16,52 @@ CarClass(CBoringLayoutHelper)
     ILAYOUTHELPER_METHODS_DECL()
 
     CARAPI Make(
-        /*[in]*/ ICharSequence* source,
-        /*[in]*/ ITextPaint* paint,
-        /*[in]*/ Int32 outerwidth,
-        /*[in]*/ LayoutAlignment align,
-        /*[in]*/ Float spacingmult,
-        /*[in]*/ Float spacingadd,
-        /*[in]*/ IBoringLayoutMetrics* metrics,
-        /*[in]*/ Boolean includepad,
-        /*[out]*/ IBoringLayout** ret);
+        /* [in] */ ICharSequence* source,
+        /* [in] */ ITextPaint* paint,
+        /* [in] */ Int32 outerwidth,
+        /* [in] */ LayoutAlignment align,
+        /* [in] */ Float spacingmult,
+        /* [in] */ Float spacingadd,
+        /* [in] */ IBoringLayoutMetrics* metrics,
+        /* [in] */ Boolean includepad,
+        /* [out] */ IBoringLayout** ret);
 
     CARAPI Make(
-        /*[in]*/ ICharSequence* source,
-        /*[in]*/ ITextPaint* paint,
-        /*[in]*/ Int32 outerwidth,
-        /*[in]*/ LayoutAlignment align,
-        /*[in]*/ Float spacingmult,
-        /*[in]*/ Float spacingadd,
-        /*[in]*/ IBoringLayoutMetrics* metrics,
-        /*[in]*/ Boolean includepad,
-        /*[in]*/ TextUtilsTruncateAt ellipsize,
-        /*[in]*/ Int32 ellipsizedWidth,
-        /*[out]*/ IBoringLayout** ret);
+        /* [in] */ ICharSequence* source,
+        /* [in] */ ITextPaint* paint,
+        /* [in] */ Int32 outerwidth,
+        /* [in] */ LayoutAlignment align,
+        /* [in] */ Float spacingmult,
+        /* [in] */ Float spacingadd,
+        /* [in] */ IBoringLayoutMetrics* metrics,
+        /* [in] */ Boolean includepad,
+        /* [in] */ TextUtilsTruncateAt ellipsize,
+        /* [in] */ Int32 ellipsizedWidth,
+        /* [out] */ IBoringLayout** ret);
 
     CARAPI IsBoring(
-        /*[in]*/ ICharSequence* text,
-        /*[in]*/ ITextPaint* paint,
-        /*[out]*/ IBoringLayoutMetrics** ret);
+        /* [in] */ ICharSequence* text,
+        /* [in] */ ITextPaint* paint,
+        /* [out] */ IBoringLayoutMetrics** ret);
 
     CARAPI IsBoring(
-        /*[in]*/ ICharSequence* text,
-        /*[in]*/ ITextPaint* paint,
-        /*[in]*/ ITextDirectionHeuristic* textDir,
-        /*[out]*/ IBoringLayoutMetrics** ret);
+        /* [in] */ ICharSequence* text,
+        /* [in] */ ITextPaint* paint,
+        /* [in] */ ITextDirectionHeuristic* textDir,
+        /* [out] */ IBoringLayoutMetrics** ret);
 
     CARAPI IsBoring(
-        /*[in]*/ ICharSequence* text,
-        /*[in]*/ ITextPaint* paint,
-        /*[in]*/ IBoringLayoutMetrics* metrics,
-        /*[out]*/ IBoringLayoutMetrics** ret);
+        /* [in] */ ICharSequence* text,
+        /* [in] */ ITextPaint* paint,
+        /* [in] */ IBoringLayoutMetrics* metrics,
+        /* [out] */ IBoringLayoutMetrics** ret);
 
     CARAPI IsBoring(
-        /*[in]*/ ICharSequence* text,
-        /*[in]*/ ITextPaint* paint,
-        /*[in]*/ ITextDirectionHeuristic* textDir,
-        /*[in]*/ IBoringLayoutMetrics* metrics,
-        /*[out]*/ IBoringLayoutMetrics** ret);
+        /* [in] */ ICharSequence* text,
+        /* [in] */ ITextPaint* paint,
+        /* [in] */ ITextDirectionHeuristic* textDir,
+        /* [in] */ IBoringLayoutMetrics* metrics,
+        /* [out] */ IBoringLayoutMetrics** ret);
 };
 
 } // namespace Text

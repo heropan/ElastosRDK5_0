@@ -108,7 +108,7 @@ PreferenceFragment::PreferenceFragment()
 }
 
 ECode PreferenceFragment::OnCreate(
-    /*[in]*/ IBundle* savedInstanceState)
+    /* [in] */ IBundle* savedInstanceState)
 {
     Fragment::OnCreate(savedInstanceState);
     AutoPtr<IActivity> activity;
@@ -119,17 +119,17 @@ ECode PreferenceFragment::OnCreate(
 }
 
 ECode PreferenceFragment::OnCreateView(
-    /*[in]*/ ILayoutInflater* inflater,
-    /*[in]*/ IViewGroup* container,
-    /*[in]*/ IBundle* savedInstanceState,
-    /*[out]*/ IView** view)
+    /* [in] */ ILayoutInflater* inflater,
+    /* [in] */ IViewGroup* container,
+    /* [in] */ IBundle* savedInstanceState,
+    /* [out] */ IView** view)
 {
     VALIDATE_NOT_NULL(view)
     return inflater->Inflate(R::layout::preference_list_fragment, container, FALSE, view);
 }
 
 ECode PreferenceFragment::OnActivityCreated(
-    /*[in]*/ IBundle* savedInstanceState)
+    /* [in] */ IBundle* savedInstanceState)
 {
     Fragment::OnActivityCreated(savedInstanceState);
 
@@ -185,7 +185,7 @@ ECode PreferenceFragment::OnDestroy()
 }
 
 ECode PreferenceFragment::OnSaveInstanceState(
-      /*[in]*/ IBundle* outState)
+      /* [in] */ IBundle* outState)
 {
     Fragment::OnSaveInstanceState(outState);
 
@@ -201,9 +201,9 @@ ECode PreferenceFragment::OnSaveInstanceState(
 }
 
 ECode PreferenceFragment::OnActivityResult(
-     /*[in]*/ Int32 requestCode,
-     /*[in]*/ Int32 resultCode,
-     /*[in]*/ IIntent* data)
+     /* [in] */ Int32 requestCode,
+     /* [in] */ Int32 resultCode,
+     /* [in] */ IIntent* data)
 {
     Fragment::OnActivityResult(requestCode, resultCode, data);
     mPreferenceManager->DispatchActivityResult(requestCode, resultCode, data);
@@ -211,7 +211,7 @@ ECode PreferenceFragment::OnActivityResult(
 }
 
 ECode PreferenceFragment::GetPreferenceManager(
-    /*[out]*/ IPreferenceManager** preferencemanager)
+    /* [out] */ IPreferenceManager** preferencemanager)
 {
     VALIDATE_NOT_NULL(preferencemanager)
     *preferencemanager = mPreferenceManager;
@@ -220,7 +220,7 @@ ECode PreferenceFragment::GetPreferenceManager(
 }
 
 ECode PreferenceFragment::SetPreferenceScreen(
-    /*[in]*/ IPreferenceScreen* preferenceScreen)
+    /* [in] */ IPreferenceScreen* preferenceScreen)
 {
     Boolean result;
     if ((mPreferenceManager->SetPreferences(preferenceScreen, &result), result) && preferenceScreen != NULL) {
@@ -233,7 +233,7 @@ ECode PreferenceFragment::SetPreferenceScreen(
 }
 
 ECode PreferenceFragment::GetPreferenceScreen(
-    /*[out]*/ IPreferenceScreen** preferencescreen)
+    /* [out] */ IPreferenceScreen** preferencescreen)
 {
     VALIDATE_NOT_NULL(preferencescreen)
     AutoPtr<IPreferenceScreen> s;
@@ -244,7 +244,7 @@ ECode PreferenceFragment::GetPreferenceScreen(
 }
 
 ECode PreferenceFragment::AddPreferencesFromIntent(
-    /*[in]*/ IIntent* intent)
+    /* [in] */ IIntent* intent)
 {
     RequirePreferenceManager();
     AutoPtr<IPreferenceScreen> rootPreferences;
@@ -256,7 +256,7 @@ ECode PreferenceFragment::AddPreferencesFromIntent(
 }
 
 ECode PreferenceFragment::AddPreferencesFromResource(
-        /*[in]*/ Int32 preferencesResId)
+        /* [in] */ Int32 preferencesResId)
 {
     RequirePreferenceManager();
 
@@ -271,9 +271,9 @@ ECode PreferenceFragment::AddPreferencesFromResource(
 }
 
 ECode PreferenceFragment::OnPreferenceTreeClick(
-    /*[in]*/ IPreferenceScreen* preferenceScreen,
-    /*[in]*/ IPreference* preference,
-    /*[out]*/ Boolean* result)
+    /* [in] */ IPreferenceScreen* preferenceScreen,
+    /* [in] */ IPreference* preference,
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     String fragment;
@@ -288,8 +288,8 @@ ECode PreferenceFragment::OnPreferenceTreeClick(
 }
 
 ECode PreferenceFragment::FindPreference(
-    /*[in]*/ const String& key,
-    /*[out]*/ IPreference** preference)
+    /* [in] */ const String& key,
+    /* [out] */ IPreference** preference)
 {
     VALIDATE_NOT_NULL(preference)
     if (mPreferenceManager == NULL) {
@@ -331,7 +331,7 @@ void PreferenceFragment::BindPreferences()
 }
 
 ECode PreferenceFragment::GetListView(
-    /*[out]*/ IListView** listview)
+    /* [out] */ IListView** listview)
 {
     VALIDATE_NOT_NULL(listview)
     EnsureList();

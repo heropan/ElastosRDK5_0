@@ -140,7 +140,7 @@ private:
             /* [out] */ Boolean* succeeded);
 
         CARAPI GetPosition(
-            /*[out]*/ Int32* position);
+            /* [out] */ Int32* position);
 
         CARAPI MoveToPrevious(
             /* [out] */ Boolean* succeeded);

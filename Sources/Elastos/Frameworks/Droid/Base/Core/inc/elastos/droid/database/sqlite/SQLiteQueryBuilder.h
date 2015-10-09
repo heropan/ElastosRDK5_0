@@ -41,7 +41,7 @@ public:
      * @param distinct if true the query is DISTINCT, otherwise it isn't
      */
     virtual CARAPI SetDistinct(
-        /*[in]*/ Boolean distinct);
+        /* [in] */ Boolean distinct);
 
     /**
      * Returns the list of tables being queried

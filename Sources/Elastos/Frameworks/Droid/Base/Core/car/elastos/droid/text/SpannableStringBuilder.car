@@ -1,6 +1,8 @@
 
 module
 {
+    using interface Elastos.Core.ICharSequence;
+
     interface Elastos.Droid.Graphics.ICanvas;
     interface Elastos.Droid.Graphics.IPaint;
 
@@ -44,7 +46,7 @@ module
             [in] Int32 contextEnd,
             [in] Float x,
             [in] Float y,
-            [in] Int32 flags,
+            [in] Boolean isRtl,
             [in] IPaint* p);
 
         /**
@@ -91,11 +93,24 @@ module
         GetTextRunCursor(
             [in] Int32 contextStart,
             [in] Int32 contextEnd,
-            [in] Int32 flags,
+            [in] Int32 dir,
             [in] Int32 offset,
             [in] Int32 cursorOpt,
             [in] IPaint* p,
             [out] Int32* cursor);
+
+        /**
+         * Appends the character sequence {@code text} and spans {@code what} over the appended part.
+         * See {@link Spanned} for an explanation of what the flags mean.
+         * @param text the character sequence to append.
+         * @param what the object to be spanned over the appended text.
+         * @param flags see {@link Spanned}.
+         * @return this {@code SpannableStringBuilder}.
+         */
+        Append(
+            [in] ICharSequence* text,
+            [in] IInterface* what,
+            [in] Int32 flags);
     }
 
     }//namespace Text

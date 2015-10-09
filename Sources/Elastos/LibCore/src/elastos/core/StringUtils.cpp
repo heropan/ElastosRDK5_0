@@ -10,11 +10,16 @@
 #include "CSplitter.h"
 #include "Math.h"
 #include "StringBuilder.h"
+#include "CFormatter.h"
+#include "CLocale.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
 using Elastos::Core::Character;
 using Elastos::Core::StringBuilder;
+using Elastos::Utility::IFormatter;
+using Elastos::Utility::CFormatter;
+using Elastos::Utility::CLocale;
 using Elastos::Utility::Regex::IPatternHelper;
 using Elastos::Utility::Regex::CPatternHelper;
 using Elastos::Utility::Regex::ISplitter;
@@ -605,6 +610,35 @@ ECode StringUtils::ParsePositiveInt64(
         return E_NUMBER_FORMAT_EXCEPTION;
     }
     return StringToIntegral::Parse(input, 0, radix, FALSE, result);
+}
+
+String StringUtils::Format(
+    /* [in] */ const String& input,
+    /* [in] */ const String& format,
+    /* [in] */ ArrayOf<IInterface*>* args)
+{
+    return Format(CLocale::GetDefault(), input, format, args);
+}
+
+String StringUtils::Format(
+    /* [in] */ ILocale* locale,
+    /* [in] */ const String& input,
+    /* [in] */ const String& format,
+    /* [in] */ ArrayOf<IInterface*>* args)
+{
+    assert(!format.IsNull());
+    // if (format == null) {
+    //     throw new NullPointerException("format == null");
+    // }
+    Int32 bufferSize = format.GetLength() + (args == NULL ? 0 : args->GetLength() * 10);
+    AutoPtr<IAppendable> sb = new StringBuilder(bufferSize);
+
+    AutoPtr<IFormatter> f;
+    CFormatter::New(sb, locale, (IFormatter**)&f);
+    f->Format(format, args);
+    String result;
+    f->ToString(&result);
+    return result;
 }
 
 } // namespace Core

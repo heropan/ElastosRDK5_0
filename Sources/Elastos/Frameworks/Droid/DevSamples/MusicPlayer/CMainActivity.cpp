@@ -534,7 +534,7 @@ ECode CMainActivity::GetClassID(
 }
 
 ECode CMainActivity::OnTick(
-    /*[in]*/ Int32 progress)
+    /* [in] */ Int32 progress)
 {
     if (!mIsSeekBarMoving) {
         mSeekBarMusic->SetProgress(progress);

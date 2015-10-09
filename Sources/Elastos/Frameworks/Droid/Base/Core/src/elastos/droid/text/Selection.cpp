@@ -157,10 +157,6 @@ void Selection::RemoveSelection(
  * Moving the selection within the layout
  */
 
-/**
- * Move the cursor to the buffer offset physically above the current
- * offset, or return FALSE if the cursor is already on the top line.
- */
 Boolean Selection::MoveUp(
     /* [in] */ ISpannable* text,
     /* [in] */ ILayout* layout)
@@ -202,21 +198,23 @@ Boolean Selection::MoveUp(
             SetSelection(text, move);
             return TRUE;
         }
+        else if (end != 0) {
+            SetSelection(text, 0);
+            return TRUE;
+        }
     }
 
     return FALSE;
 }
 
-/**
- * Move the cursor to the buffer offset physically below the current
- * offset, or return FALSE if the cursor is already on the bottom line.
- */
 Boolean Selection::MoveDown(
     /* [in] */ ISpannable* text,
     /* [in] */ ILayout* layout)
 {
     Int32 start = GetSelectionStart(text);
     Int32 end = GetSelectionEnd(text);
+    Int32 len;
+    text->GetLength(&len);
 
     if (start != end) {
         Int32 min = Elastos::Core::Math::Min(start, end);
@@ -224,8 +222,7 @@ Boolean Selection::MoveDown(
 
         SetSelection(text, max);
 
-        Int32 len;
-        if (min == 0 && max == (text->GetLength(&len), len)) {
+        if (min == 0 && max == len) {
             return FALSE;
         }
 
@@ -252,6 +249,10 @@ Boolean Selection::MoveDown(
             }
 
             SetSelection(text, move);
+            return TRUE;
+        }
+        else if (end != len) {
+            SetSelection(text, len);
             return TRUE;
         }
     }

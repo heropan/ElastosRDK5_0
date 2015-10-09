@@ -130,7 +130,7 @@ void TextLine::Set(
 
     if (mCharsValid) {
         if (mChars == NULL || mChars->GetLength() < mLen) {
-            mChars = ArrayOf<Char32>::Alloc(ArrayUtils::IdealCharArraySize(mLen));
+            mChars = ArrayUtils::NewUnpaddedCharArray(mLen);
         }
 
         TextUtils::GetChars(text, start, limit, mChars, 0);
@@ -677,16 +677,16 @@ Int32 TextLine::GetOffsetBeforeAfter(
         }
     }
 
-    Int32 flags = runIsRtl ? IPaint::DIRECTION_RTL : IPaint::DIRECTION_LTR;
+    Int32 dir = runIsRtl ? IPaint::DIRECTION_RTL : IPaint::DIRECTION_LTR;
     Int32 cursorOpt = after ? IPaint::CURSOR_AFTER : IPaint::CURSOR_BEFORE;
     Int32 temp;
     if (mCharsValid) {
         wp->GetTextRunCursor(*mChars, spanStart, spanLimit - spanStart,
-                flags, offset, cursorOpt, &temp);
+                dir, offset, cursorOpt, &temp);
         return temp;
     } else {
         wp->GetTextRunCursor(mText, mStart + spanStart,
-                mStart + spanLimit, flags, mStart + offset, cursorOpt, &temp);
+                mStart + spanLimit, dir, mStart + offset, cursorOpt, &temp);
         return temp - mStart;
     }
 }
@@ -753,15 +753,14 @@ Float TextLine::HandleText(
     wp->GetBgColor(&bgColor);
     wp->GetUnderlineColor(&underlineColor);
     if (needWidth || (c != NULL && (bgColor != 0 || underlineColor != 0 || runIsRtl))) {
-        Int32 flags = runIsRtl ? IPaint::DIRECTION_RTL : IPaint::DIRECTION_LTR;
         if (mCharsValid) {
             wp->GetTextRunAdvances(*(mChars.Get()), start, runLen,
-                    contextStart, contextLen, flags, NULL, 0, &ret);
+                    contextStart, contextLen, runIsRtl, NULL, 0, &ret);
         } else {
             Int32 delta = mStart;
             wp->GetTextRunAdvances(mText, delta + start,
                     delta + end, delta + contextStart, delta + contextEnd,
-                    flags, NULL, 0, &ret);
+                    runIsRtl, NULL, 0, &ret);
         }
     }
 
@@ -993,11 +992,11 @@ void TextLine::DrawTextRun(
         Int32 count = end - start;
         Int32 contextCount = contextEnd - contextStart;
         c->DrawTextRun(*(mChars.Get()), start, count, contextStart, contextCount,
-                x, y, flags, wp);
+                x, y, runIsRtl, wp);
     } else {
         Int32 delta = mStart;
         c->DrawTextRun(mText, delta + start, delta + end,
-                delta + contextStart, delta + contextEnd, x, y, flags, wp);
+                delta + contextStart, delta + contextEnd, x, y, runIsRtl, wp);
     }
 }
 

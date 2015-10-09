@@ -8,7 +8,7 @@ namespace View {
 namespace Menu {
 
 ECode CMenuBuilder::constructor(
-    /*[in]*/ IContext* context)
+    /* [in] */ IContext* context)
 {
     MenuBuilderBase::Init(context);
     return NOERROR;

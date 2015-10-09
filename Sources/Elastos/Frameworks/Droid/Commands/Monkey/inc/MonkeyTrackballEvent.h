@@ -14,10 +14,10 @@ protected:
     MonkeyTrackballEvent();
 
     MonkeyTrackballEvent(
-        /*[in]*/ Int32 action);
+        /* [in] */ Int32 action);
 
     CARAPI Init(
-        /*[in]*/ Int32 action);
+        /* [in] */ Int32 action);
 
     CARAPI_(String) GetTypeLabel();
 };

@@ -54,7 +54,7 @@ SQLiteQueryBuilder::~SQLiteQueryBuilder()
 }
 
 ECode SQLiteQueryBuilder::SetDistinct(
-    /*[in]*/ Boolean distinct)
+    /* [in] */ Boolean distinct)
 {
     mDistinct = distinct;
     return NOERROR;

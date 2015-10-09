@@ -139,16 +139,16 @@ public:
         /* [in] */REIID riid) = 0;
 
     CARAPI OnCreate(
-        /*[in]*/ IBundle* savedInstanceState);
+        /* [in] */ IBundle* savedInstanceState);
 
     CARAPI OnCreateView(
-        /*[in]*/ ILayoutInflater* inflater,
-        /*[in]*/ IViewGroup* container,
-        /*[in]*/ IBundle* savedInstanceState,
-        /*[out]*/ IView** view);
+        /* [in] */ ILayoutInflater* inflater,
+        /* [in] */ IViewGroup* container,
+        /* [in] */ IBundle* savedInstanceState,
+        /* [out] */ IView** view);
 
     CARAPI OnActivityCreated(
-        /*[in]*/ IBundle* savedInstanceState);
+        /* [in] */ IBundle* savedInstanceState);
 
     CARAPI OnStart();
 
@@ -159,7 +159,7 @@ public:
     CARAPI OnDestroy();
 
     CARAPI OnSaveInstanceState(
-        /*[in]*/ IBundle* outState);
+        /* [in] */ IBundle* outState);
 
     CARAPI OnActivityResult(
         /* [in] */ Int32 requestCode,
@@ -171,7 +171,7 @@ public:
      * @return The {@link PreferenceManager}.
      */
     CARAPI GetPreferenceManager(
-        /*[out]*/ IPreferenceManager** preferencemanager);
+        /* [out] */ IPreferenceManager** preferencemanager);
 
     /**
      * Sets the root of the preference hierarchy that this fragment is showing.
@@ -179,7 +179,7 @@ public:
      * @param preferenceScreen The root {@link PreferenceScreen} of the preference hierarchy.
      */
     CARAPI SetPreferenceScreen(
-        /*[in]*/ IPreferenceScreen* preferenceScreen);
+        /* [in] */ IPreferenceScreen* preferenceScreen);
 
     /**
      * Gets the root of the preference hierarchy that this fragment is showing.
@@ -188,7 +188,7 @@ public:
      *         hierarchy.
      */
     CARAPI GetPreferenceScreen(
-        /*[out]*/ IPreferenceScreen** preferencescreen);
+        /* [out] */ IPreferenceScreen** preferencescreen);
 
     /**
      * Adds preferences from activities that match the given {@link Intent}.
@@ -196,7 +196,7 @@ public:
      * @param intent The {@link Intent} to query activities.
      */
     CARAPI AddPreferencesFromIntent(
-        /*[in]*/ IIntent* intent);
+        /* [in] */ IIntent* intent);
 
     /**
      * Inflates the given XML resource and adds the preference hierarchy to the current
@@ -205,15 +205,15 @@ public:
      * @param preferencesResId The XML resource ID to inflate.
      */
     CARAPI AddPreferencesFromResource(
-        /*[in]*/ Int32 preferencesResId);
+        /* [in] */ Int32 preferencesResId);
 
     /**
      * {@inheritDoc}
      */
     CARAPI OnPreferenceTreeClick(
-        /*[in]*/ IPreferenceScreen* preferenceScreen,
-        /*[in]*/ IPreference* preference,
-        /*[out]*/ Boolean* result);
+        /* [in] */ IPreferenceScreen* preferenceScreen,
+        /* [in] */ IPreference* preference,
+        /* [out] */ Boolean* result);
 
     /**
      * Finds a {@link Preference} based on its key.
@@ -223,12 +223,12 @@ public:
      * @see PreferenceGroup#findPreference(CharSequence)
      */
     CARAPI FindPreference(
-        /*[in]*/ const String& key,
-        /*[out]*/ IPreference** preference);
+        /* [in] */ const String& key,
+        /* [out] */ IPreference** preference);
 
     /** @hide */
     CARAPI GetListView(
-        /*[out]*/ IListView** listview);
+        /* [out] */ IListView** listview);
 
 private:
     CARAPI RequirePreferenceManager();

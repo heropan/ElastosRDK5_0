@@ -15,7 +15,7 @@ public:
         /* [in] */ IWeakReference* host);
 
     CARAPI OnTick(
-        /*[in]*/ Int32 duration);
+        /* [in] */ Int32 duration);
 
     CARAPI OnCompletion();
 

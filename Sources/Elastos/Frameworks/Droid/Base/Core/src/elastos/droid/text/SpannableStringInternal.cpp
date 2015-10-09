@@ -115,9 +115,8 @@ ECode SpannableStringInternal::SetSpan(
     }
 
     if (mSpanCount + 1 >= mSpans->GetLength()) {
-        Int32 newsize = ArrayUtils::IdealInt32ArraySize(mSpanCount + 1);
-        AutoPtr<ArrayOf<IInterface*> > newtags = ArrayOf<IInterface*>::Alloc(newsize);
-        AutoPtr<ArrayOf<Int32> > newdata = ArrayOf<Int32>::Alloc(newsize * 3);
+        AutoPtr<ArrayOf<IInterface*> > newtags = ArrayUtils::NewUnpaddedObjectArray(GrowingArrayUtils::GrowSize(mSpanCount));
+        AutoPtr<ArrayOf<Int32> > newdata = ArrayOf<Int32>::Alloc(newtags->GetLength() * 3);
 
         newtags->Copy(0, mSpans, 0, mSpanCount);
         newdata->Copy(0, mSpanData, 0, mSpanCount * 3);
@@ -456,9 +455,9 @@ ECode SpannableStringInternal::Init(
         mText = str.Substring(start, end);
     }
 
-    Int32 initial = ArrayUtils::IdealInt32ArraySize(0);
-    mSpans = ArrayOf<IInterface*>::Alloc(initial);
-    mSpanData = ArrayOf<Int32>::Alloc(initial * 3);
+    mSpans = EmptyArray::OBJECT;
+    mSpanData = EmptyArray::INT32;
+
     if (ISpanned::Probe(source)) {
         AutoPtr<ISpanned> sp = ISpanned::Probe(source);
         AutoPtr<ArrayOf<IInterface*> > spans;
@@ -480,6 +479,62 @@ ECode SpannableStringInternal::Init(
             }
         }
     }
+    return NOERROR;
+}
+
+// Same as SpannableStringBuilder
+// @Override
+ECode SpannableStringInternal::Equals(
+    /* [in] */ IInterface* o,
+    /* [out] */ Boolean* result)
+{
+    assert(0 && "TODO");
+    if (o instanceof Spanned &&
+            toString().equals(o.toString())) {
+        Spanned other = (Spanned) o;
+        // Check span data
+        Object[] otherSpans = other.getSpans(0, other.length(), Object.class);
+        if (mSpanCount == otherSpans.length) {
+            for (int i = 0; i < mSpanCount; ++i) {
+                Object thisSpan = mSpans[i];
+                Object otherSpan = otherSpans[i];
+                if (thisSpan == this) {
+                    if (other != otherSpan ||
+                            getSpanStart(thisSpan) != other.getSpanStart(otherSpan) ||
+                            getSpanEnd(thisSpan) != other.getSpanEnd(otherSpan) ||
+                            getSpanFlags(thisSpan) != other.getSpanFlags(otherSpan)) {
+                        return false;
+                    }
+                } else if (!thisSpan.equals(otherSpan) ||
+                        getSpanStart(thisSpan) != other.getSpanStart(otherSpan) ||
+                        getSpanEnd(thisSpan) != other.getSpanEnd(otherSpan) ||
+                        getSpanFlags(thisSpan) != other.getSpanFlags(otherSpan)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+// Same as SpannableStringBuilder
+ECode SpannableStringInternal::GetHashCode(
+    /* [out] */ Int32* result)
+{
+    assert(0 && "TODO");
+    // int hash = toString().hashCode();
+    // hash = hash * 31 + mSpanCount;
+    // for (int i = 0; i < mSpanCount; ++i) {
+    //     Object span = mSpans[i];
+    //     if (span != this) {
+    //         hash = hash * 31 + span.hashCode();
+    //     }
+    //     hash = hash * 31 + getSpanStart(span);
+    //     hash = hash * 31 + getSpanEnd(span);
+    //     hash = hash * 31 + getSpanFlags(span);
+    // }
+    // return hash;
     return NOERROR;
 }
 

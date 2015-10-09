@@ -9,6 +9,10 @@ INCLUDES += $(MAKEDIR)/../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
+SOURCES += text.cpp
+SOURCES += AlteredCharSequence.cpp
+SOURCES += CAlteredCharSequenceHelper.cpp
+
 #SOURCES += CBidiFormatter.cpp
 
 #SOURCES = TextUtils.cpp
@@ -43,15 +47,14 @@ SOURCES += CLayoutDirections.cpp
 #SOURCES += CSpannableString.cpp
 #SOURCES += CSpannableStringHelper.cpp
 #SOURCES += CAllCaps.cpp
-#SOURCES += CAlteredCharSequence.cpp
-#SOURCES += CAlteredCharSequenceHelper.cpp
+
 #SOURCES += CAndroidCharacter.cpp
 #SOURCES += CAndroidCharacterHelper.cpp
 #SOURCES += Annotation.cpp
 #SOURCES += CAnnotation.cpp
 #SOURCES += CAutoText.cpp
 #SOURCES += CAutoTextHelper.cpp
-#SOURCES += CSimpleStringSplitter.cpp
+SOURCES += CSimpleStringSplitter.cpp
 #SOURCES += SpannedString.cpp
 #SOURCES += CSpannedString.cpp
 #SOURCES += CSpannedStringHelper.cpp

@@ -59,7 +59,7 @@ module
         GetIterator(
             [out] IIterator** it);
 
-        NextString(
+        GetNext(
             [out] String* str);
     }
 

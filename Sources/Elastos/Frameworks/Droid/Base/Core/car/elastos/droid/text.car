@@ -118,6 +118,8 @@ module
     merge("text/utility/Rfc822Token.car");
     merge("text/utility/Rfc822Tokenizer.car");
 
+    using interface Elastos.Utility.IIterator;
+
     // namespace Elastos {
     // namespace Droid {
     // namespace Text {
@@ -1092,21 +1094,23 @@ module
     namespace Droid {
     namespace Text {
 
-    // [deprecated]
-    // class CAlteredCharSequence{
-    //     interface IAlteredCharSequence;
-    //     //interface ICharSequence;//be extends by IGetChars
-    //     interface IGetChars;
-    //     constructor(
-    //         [in] ICharSequence* source,
-    //         [in] ArrayOf<Char32>* sub,
-    //         [in] Int32 substart,
-    //         [in] Int32 subend);
-    // }
+    [deprecated]
+    class CAlteredCharSequence{
 
-    // singleton class CAlteredCharSequenceHelper{
-    //     interface IAlteredCharSequenceHelper;
-    // }
+        constructor(
+            [in] ICharSequence* source,
+            [in] ArrayOf<Char32>* sub,
+            [in] Int32 substart,
+            [in] Int32 subend);
+
+        interface IAlteredCharSequence;
+        interface IGetChars;
+        interface ICharSequence;
+    }
+
+    singleton class CAlteredCharSequenceHelper{
+        interface IAlteredCharSequenceHelper;
+    }
 
     // class CAndroidCharacter{
     //     interface IAndroidCharacter;
@@ -1423,12 +1427,14 @@ module
     //     interface IInputFilter;
     // }
 
-    // class CSimpleStringSplitter {
-    //     constructor(
-    //         [in] Char32 delimiter);
+    class CSimpleStringSplitter {
+        constructor(
+            [in] Char32 delimiter);
 
-    //     interface ISimpleStringSplitter;
-    // }
+        interface ISimpleStringSplitter;
+        interface IStringSplitter;
+        interface IIterator;
+    }
 
     // singleton class CHtml{
     //     interface IHtml;

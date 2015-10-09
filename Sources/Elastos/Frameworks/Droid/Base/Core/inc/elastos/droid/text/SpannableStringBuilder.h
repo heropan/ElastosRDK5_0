@@ -39,10 +39,7 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    virtual ~SpannableStringBuilder();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    ~SpannableStringBuilder();
 
 public:
 
@@ -52,60 +49,65 @@ public:
     /**
      * Return the char at the specified offset within the buffer.
      */
-    virtual CARAPI GetCharAt(
+    CARAPI GetCharAt(
         /* [in] */ Int32 where,
         /* [out] */ Char32* c);
 
     /**
      * Return the number of chars in the buffer.
      */
-    virtual CARAPI_(Int32) GetLength();
+    CARAPI_(Int32) GetLength();
 
     // Documentation from interface
-    virtual CARAPI Insert(
+    CARAPI Insert(
         /* [in] */ Int32 where,
         /* [in] */ ICharSequence* tb,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
     // Documentation from interface
-    virtual CARAPI Insert(
+    CARAPI Insert(
         /* [in] */ Int32 where,
         /* [in] */ ICharSequence* tb);
 
     // Documentation from interface
-    virtual CARAPI Delete(
+    CARAPI Delete(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
     // Documentation from interface
-    virtual CARAPI Clear();
+    CARAPI Clear();
 
     // Documentation from interface
-    virtual CARAPI ClearSpans();
+    CARAPI ClearSpans();
+
+    CARAPI Append(
+        /* [in] */ ICharSequence* text,
+        /* [in] */ IInterface* what,
+        /* [in] */ Int32 flags);
 
     // Documentation from interface
-    virtual CARAPI Append(
+    CARAPI Append(
         /* [in] */ ICharSequence* text);
 
     // Documentation from interface
-    virtual CARAPI Append(
+    CARAPI Append(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
     // Documentation from interface
-    virtual CARAPI Append(
+    CARAPI Append(
         /* [in] */ Char32 text);
 
     // Documentation from interface
-    virtual CARAPI Replace(
+    CARAPI Replace(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ ICharSequence* tb);
 
     // Documentation from interface
-    virtual CARAPI Replace(
+    CARAPI Replace(
         /* [in] */ const Int32 start,
         /* [in] */ const Int32 end,
         /* [in] */ ICharSequence* tb,
@@ -117,7 +119,7 @@ public:
      * The flags determine how the span will behave when text is
      * inserted at the start or end of the span's range.
      */
-    virtual CARAPI SetSpan(
+    CARAPI SetSpan(
         /* [in] */ IInterface* what,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -126,28 +128,28 @@ public:
     /**
      * Remove the specified markup object from the buffer.
      */
-    virtual CARAPI RemoveSpan(
+    CARAPI RemoveSpan(
         /* [in] */ IInterface* what);
 
     /**
      * Return the buffer offset of the beginning of the specified
      * markup object, or -1 if it is not attached to this buffer.
      */
-    virtual CARAPI_(Int32) GetSpanStart(
+    CARAPI_(Int32) GetSpanStart(
         /* [in] */ IInterface* what);
 
     /**
      * Return the buffer offset of the end of the specified
      * markup object, or -1 if it is not attached to this buffer.
      */
-    virtual CARAPI_(Int32) GetSpanEnd(
+    CARAPI_(Int32) GetSpanEnd(
         /* [in] */ IInterface* what);
 
     /**
      * Return the flags of the end of the specified
      * markup object, or 0 if it is not attached to this buffer.
      */
-    virtual CARAPI_(Int32) GetSpanFlags(
+    CARAPI_(Int32) GetSpanFlags(
         /* [in] */ IInterface* what);
 
     /**
@@ -156,7 +158,7 @@ public:
      * a list of all the spans regardless of type.
      */
     //@SuppressWarnings("unchecked")
-    virtual CARAPI_(AutoPtr< ArrayOf<IInterface*> >) GetSpans(
+    CARAPI_(AutoPtr< ArrayOf<IInterface*> >) GetSpans(
         /* [in] */ Int32 queryStart,
         /* [in] */ Int32 queryEnd,
         /* [in] */ const InterfaceID& kind);
@@ -166,7 +168,7 @@ public:
      * equal to <code>limit</code> where a span of the specified type
      * begins or ends.
      */
-    virtual CARAPI_(Int32) NextSpanTransition(
+    CARAPI_(Int32) NextSpanTransition(
         /* [in] */ Int32 start,
         /* [in] */ Int32 limit,
         /* [in] */ const InterfaceID& kind);
@@ -175,7 +177,7 @@ public:
      * Return a new CharSequence containing a copy of the specified
      * range of this buffer, including the overlapping spans.
      */
-    virtual CARAPI SubSequence(
+    CARAPI SubSequence(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out] */ ICharSequence** cs);
@@ -184,7 +186,7 @@ public:
      * Copy the specified range of chars from this buffer into the
      * specified array, beginning at the specified offset.
      */
-    virtual CARAPI GetChars(
+    CARAPI GetChars(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ ArrayOf<Char32>* dest,
@@ -194,14 +196,14 @@ public:
      * Return a String containing a copy of the chars in this buffer.
      */
     //@Override
-    virtual CARAPI_(String) ToString();
+    CARAPI_(String) ToString();
 
     /**
      * Return a String containing a copy of the chars in this buffer, limited to the
      * [start, end[ range.
      * @hide
      */
-    virtual CARAPI_(String) Substring(
+    CARAPI_(String) Substring(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
@@ -209,7 +211,7 @@ public:
      * Don't call this yourself -- exists for Canvas to use internally.
      * {@hide}
      */
-    virtual CARAPI DrawText(
+    CARAPI DrawText(
         /* [in] */ ICanvas* c,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -221,7 +223,7 @@ public:
      * Don't call this yourself -- exists for Canvas to use internally.
      * {@hide}
      */
-    virtual CARAPI DrawTextRun(
+    CARAPI DrawTextRun(
         /* [in] */ ICanvas* c,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -229,14 +231,14 @@ public:
         /* [in] */ Int32 contextEnd,
         /* [in] */ Float x,
         /* [in] */ Float y,
-        /* [in] */ Int32 flags,
+        /* [in] */ Boolean isRtl,
         /* [in] */ IPaint* p);
 
     /**
      * Don't call this yourself -- exists for Paint to use internally.
      * {@hide}
      */
-    virtual CARAPI MeasureText(
+    CARAPI MeasureText(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ IPaint* p,
@@ -246,7 +248,7 @@ public:
      * Don't call this yourself -- exists for Paint to use internally.
      * {@hide}
      */
-    virtual CARAPI GetTextWidths(
+    CARAPI GetTextWidths(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ ArrayOf<Float>* widths,
@@ -257,30 +259,15 @@ public:
      * Don't call this yourself -- exists for Paint to use internally.
      * {@hide}
      */
-    virtual CARAPI_(Float) GetTextRunAdvances(
+    CARAPI_(Float) GetTextRunAdvances(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ Int32 contextStart,
         /* [in] */ Int32 contextEnd,
-        /* [in] */ Int32 flags,
+        /* [in] */ Boolean isRtl,
         /* [in] */ ArrayOf<Float>* advances,
         /* [in] */ Int32 advancesPos,
         /* [in] */ IPaint* p);
-
-    /**
-     * Don't call this yourself -- exists for Paint to use internally.
-     * {@hide}
-     */
-    virtual CARAPI_(Float) GetTextRunAdvances(
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end,
-        /* [in] */ Int32 contextStart,
-        /* [in] */ Int32 contextEnd,
-        /* [in] */ Int32 flags,
-        /* [in] */ ArrayOf<Float>* advances,
-        /* [in] */ Int32 advancesPos,
-        /* [in] */ IPaint* p,
-        /* [in] */ Int32 reserved);
 
     /**
      * Returns the next cursor position in the run.  This avoids placing the cursor between
@@ -298,7 +285,7 @@ public:
      *
      * @param contextStart the start index of the context
      * @param contextEnd the (non-inclusive) end index of the context
-     * @param flags either DIRECTION_RTL or DIRECTION_LTR
+     * @param dir either DIRECTION_RTL or DIRECTION_LTR
      * @param offset the cursor position to move from
      * @param cursorOpt how to move the cursor, one of CURSOR_AFTER,
      * CURSOR_AT_OR_AFTER, CURSOR_BEFORE,
@@ -308,39 +295,43 @@ public:
      * @deprecated This is an internal method, refrain from using it in your code
      */
     //@Deprecated
-    virtual CARAPI_(Int32) GetTextRunCursor(
+    CARAPI_(Int32) GetTextRunCursor(
         /* [in] */ Int32 contextStart,
         /* [in] */ Int32 contextEnd,
-        /* [in] */ Int32 flags,
+        /* [in] */ Int32 dir,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 cursorOpt,
         /* [in] */ IPaint* p);
 
     // Documentation from interface
-    virtual CARAPI SetFilters(
+    CARAPI SetFilters(
         /* [in] */ ArrayOf<IInputFilter*>* filters);
 
     // Documentation from interface
-    virtual CARAPI_(AutoPtr< ArrayOf<IInputFilter*> >) GetFilters();
+    CARAPI_(AutoPtr< ArrayOf<IInputFilter*> >) GetFilters();
+
+    CARAPI Equals(
+        /* [in] */ IInterface* o,
+        /* [out] */ Boolean* result);
 
 protected:
     /**
      * Create a new SpannableStringBuilder with empty contents
      */
-    virtual CARAPI Init();
+    CARAPI Init();
 
     /**
      * Create a new SpannableStringBuilder containing a copy of the
      * specified text, including its spans if any.
      */
-    virtual CARAPI Init(
+    CARAPI Init(
         /* [in] */ ICharSequence* text);
 
     /**
      * Create a new SpannableStringBuilder containing a copy of the
      * specified slice of the specified text, including its spans if any.
      */
-    virtual CARAPI Init(
+    CARAPI Init(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);

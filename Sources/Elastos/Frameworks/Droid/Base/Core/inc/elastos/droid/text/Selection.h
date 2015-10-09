@@ -86,7 +86,8 @@ public:
 
     /**
      * Move the cursor to the buffer offset physically above the current
-     * offset, or return FALSE if the cursor is already on the top line.
+     * offset, to the beginning if it is on the top line but not at the
+     * start, or return false if the cursor is already on the top line.
      */
     static CARAPI_(Boolean) MoveUp(
         /* [in] */ ISpannable* text,
@@ -94,7 +95,9 @@ public:
 
     /**
      * Move the cursor to the buffer offset physically below the current
-     * offset, or return FALSE if the cursor is already on the bottom line.
+     * offset, to the end of the buffer if it is on the bottom line but
+     * not at the end, or return false if the cursor is already at the
+     * end of the buffer.
      */
     static CARAPI_(Boolean) MoveDown(
         /* [in] */ ISpannable* text,

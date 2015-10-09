@@ -247,7 +247,7 @@ ECode CursorWrapper::MoveToNext(
 }
 
 ECode CursorWrapper::GetPosition(
-    /*[out]*/ Int32* position)
+    /* [out] */ Int32* position)
 {
     VALIDATE_NOT_NULL(position)
     return mCursor->GetPosition(position);

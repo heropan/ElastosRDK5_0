@@ -581,7 +581,7 @@ void WifiMonitor::MonitorThread::HandleP2pEvents(
 }
 
 void WifiMonitor::MonitorThread::HandleHostApEvents(
-    /*[in]*/ const String& dataString)
+    /* [in] */ const String& dataString)
 {
     AutoPtr< ArrayOf<String> > tokens;
     StringUtils::Split(dataString, String(" "), (ArrayOf<String>**)&tokens);
@@ -606,7 +606,7 @@ void WifiMonitor::MonitorThread::HandleHostApEvents(
 }
 
 void WifiMonitor::MonitorThread::HandleSupplicantStateChange(
-    /*[in]*/ const String& dataString)
+    /* [in] */ const String& dataString)
 {
     AutoPtr<IWifiSsid> wifiSsid;
 

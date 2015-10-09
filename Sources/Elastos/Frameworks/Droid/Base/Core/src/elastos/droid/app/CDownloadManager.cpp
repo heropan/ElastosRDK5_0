@@ -465,7 +465,7 @@ ECode CDownloadManager::CursorTranslator::MoveToNext(
 }
 
 ECode CDownloadManager::CursorTranslator::GetPosition(
-    /*[out]*/ Int32* position)
+    /* [out] */ Int32* position)
 {
     return CursorWrapper::GetPosition(position);
 }

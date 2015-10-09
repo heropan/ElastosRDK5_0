@@ -141,7 +141,7 @@ public:
         /* [out] */ Boolean* succeeded);
 
     virtual CARAPI GetPosition(
-        /*[out]*/ Int32* position);
+        /* [out] */ Int32* position);
 
     virtual CARAPI MoveToPrevious(
         /* [out] */ Boolean* succeeded);

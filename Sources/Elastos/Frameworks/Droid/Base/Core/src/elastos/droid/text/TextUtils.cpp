@@ -1,50 +1,43 @@
 
-#include "ext/frameworkext.h"
 #include "elastos/droid/text/TextUtils.h"
+//#include "elastos/droid/text/MeasuredText.h"
+//#include "elastos/droid/text/TextDirectionHeuristics.h"
+//#include "elastos/droid/text/CSpannedString.h"
+//#include "elastos/droid/text/CSpannableString.h"
+//#include "elastos/droid/text/CSpannableStringBuilder.h"
+//#include "elastos/droid/text/CAnnotation.h"
+//#include "elastos/droid/text/style/CAlignmentSpanStandard.h"
+//#include "elastos/droid/text/style/CForegroundColorSpan.h"
+//#include "elastos/droid/text/style/CRelativeSizeSpan.h"
+//#include "elastos/droid/text/style/CScaleXSpan.h"
+//#include "elastos/droid/text/style/CStrikethroughSpan.h"
+//#include "elastos/droid/text/style/CUnderlineSpan.h"
+//#include "elastos/droid/text/style/CStyleSpan.h"
+//#include "elastos/droid/text/style/CBulletSpan.h"
+//#include "elastos/droid/text/style/CQuoteSpan.h"
+//#include "elastos/droid/text/style/CLeadingMarginSpanStandard.h"
+//#include "elastos/droid/text/style/CURLSpan.h"
+//#include "elastos/droid/text/style/CBackgroundColorSpan.h"
+//#include "elastos/droid/text/style/CTypefaceSpan.h"
+//#include "elastos/droid/text/style/CSuperscriptSpan.h"
+//#include "elastos/droid/text/style/CSubscriptSpan.h"
+//#include "elastos/droid/text/style/CAbsoluteSizeSpan.h"
+//#include "elastos/droid/text/style/CTextAppearanceSpan.h"
+//#include "elastos/droid/text/style/CSuggestionSpan.h"
+//#include "elastos/droid/text/style/CSpellCheckSpan.h"
+//#include "elastos/droid/text/style/CSuggestionRangeSpan.h"
+//#include "elastos/droid/text/style/CEasyEditSpan.h"
+//#include "elastos/droid/text/style/CLocaleSpan.h"
+#include "elastos/droid/content/res/CResources.h"
+#include "elastos/droid/content/res/CResourcesHelper.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/Character.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
-#include "R.h"
-#include "elastos/droid/text/MeasuredText.h"
-#include "elastos/droid/text/TextDirectionHeuristics.h"
-#ifdef DROID_CORE
-#include "elastos/droid/text/CSpannedString.h"
-#include "elastos/droid/text/CSpannableString.h"
-#include "elastos/droid/text/CSpannableStringBuilder.h"
-#include "elastos/droid/text/CAnnotation.h"
-#include "elastos/droid/text/style/CAlignmentSpanStandard.h"
-#include "elastos/droid/text/style/CForegroundColorSpan.h"
-#include "elastos/droid/text/style/CRelativeSizeSpan.h"
-#include "elastos/droid/text/style/CScaleXSpan.h"
-#include "elastos/droid/text/style/CStrikethroughSpan.h"
-#include "elastos/droid/text/style/CUnderlineSpan.h"
-#include "elastos/droid/text/style/CStyleSpan.h"
-#include "elastos/droid/text/style/CBulletSpan.h"
-#include "elastos/droid/text/style/CQuoteSpan.h"
-#include "elastos/droid/text/style/CLeadingMarginSpanStandard.h"
-#include "elastos/droid/text/style/CURLSpan.h"
-#include "elastos/droid/text/style/CBackgroundColorSpan.h"
-#include "elastos/droid/text/style/CTypefaceSpan.h"
-#include "elastos/droid/text/style/CSuperscriptSpan.h"
-#include "elastos/droid/text/style/CSubscriptSpan.h"
-#include "elastos/droid/text/style/CAbsoluteSizeSpan.h"
-#include "elastos/droid/text/style/CTextAppearanceSpan.h"
-#include "elastos/droid/text/style/CSuggestionSpan.h"
-#include "elastos/droid/text/style/CSpellCheckSpan.h"
-#include "elastos/droid/text/style/CSuggestionRangeSpan.h"
-#include "elastos/droid/text/style/CEasyEditSpan.h"
-#include "elastos/droid/text/style/CLocaleSpan.h"
-#include "content/res/CResources.h"
-#include "content/res/CResourcesHelper.h"
-#endif
+#include <elastos/core/CoreUtils.h>
 
-using Elastos::Core::Character;
-using Elastos::Core::CString;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::IStringBuffer;
-using Elastos::Core::EIID_ICharSequence;
-using Elastos::Core::IStringBuilder;
-using Elastos::Droid::R;
 using namespace Elastos::Droid::Text::Style;
+using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Res::IResourcesHelper;
@@ -55,6 +48,15 @@ using Libcore::ICU::CICUUtil;
 using Libcore::ICU::ILocaleHelper;
 using Libcore::ICU::CLocaleHelper;
 
+using Elastos::Core::Character;
+using Elastos::Core::CString;
+using Elastos::Core::CoreUtils;
+using Elastos::Core::StringUtils;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::IStringBuffer;
+using Elastos::Core::IStringBuilder;
+using Elastos::Core::EIID_ICharSequence;
+
 namespace Elastos {
 namespace Droid {
 namespace Text {
@@ -62,69 +64,94 @@ namespace Text {
 const Char32 TextUtils::FIRST_RIGHT_TO_LEFT;
 const Char32 TextUtils::ZWNBS_CHAR;
 
-Mutex TextUtils::sLock;
+Object TextUtils::sLock;
 AutoPtr< ArrayOf<Char32> > TextUtils::sTemp;
 AutoPtr< ArrayOf<String> > TextUtils::EMPTY_STRING_ARRAY = ArrayOf<String>::Alloc(0);
-String TextUtils::ARAB_SCRIPT_SUBTAG = String("Arab");
-String TextUtils::HEBR_SCRIPT_SUBTAG = String("Hebr");
+String TextUtils::ARAB_SCRIPT_SUBTAG("Arab");
+String TextUtils::HEBR_SCRIPT_SUBTAG("Hebr");
+const String TextUtils::TAG("TextUtils");
 
-/**
- * Initializes the splitter. setString may be called later.
- * @param delimiter the delimeter on which to split
- */
-TextUtils::SimpleStringSplitter::SimpleStringSplitter(
-    /* [in] */ Char32 delimiter)
-    : mDelimiter(delimiter)
-    , mPosition(0)
-    , mLength(0)
-{}
 
-/**
- * Sets the string to split
- * @param string the string to split
- */
-ECode TextUtils::SimpleStringSplitter::SetString(
-    /* [in] */ const String& string)
+//===========================================================================
+// TextUtils::Reverser
+//===========================================================================
+TextUtils::Reverser::Reverser(
+    /* [in] */ ICharSequence* source,
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end)
+    : mSource(source)
+    , mStart(start)
+    , mEnd(end)
 {
-    mString = string;
-    mPosition = 0;
-    mLength = mString.GetLength();
+}
+
+ECode TextUtils::Reverser::GetLength(
+    /* [out] */ Int32* len)
+{
+    VALIDATE_NOT_NULL(len)
+    *len = mEnd - mStart;
     return NOERROR;
 }
 
-//        public Iterator<String> iterator();
-
-ECode TextUtils::SimpleStringSplitter::HasNext(
-    /* [out] */ Boolean* result)
+ECode TextUtils::Reverser::SubSequence(
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end,
+    /* [out] */ ICharSequence** csq)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = mPosition < mLength;
+    VALIDATE_NOT_NULL(csq)
+    AutoPtr<ArrayOf<Char32> > buf = ArrayOf<Char32>::Alloc(end - start);
+    FAIL_RETURN(GetChars(start, end, buf, 0))
+
+    String str(buf);
+    return CString::New(str, csq);
+}
+
+ECode TextUtils::Reverser::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info)
+    AutoPtr<ICharSequence> sub;
+    SubSequence(0, GetLength(), (ICharSequence**)&sub);
+    return sub->ToString(info);
+}
+
+ECode TextUtils::Reverser::GetCharAt(
+    /* [in] */ Int32 offset,
+    /* [out] */ Char32* ch)
+{
+    VALIDATE_NOT_NULL(ch)
+
+    Char32 orig;
+    mSource->GetCharAt(mEnd - 1 - off, &orig);
+    assert(0 && "TODO");
+    // *ch = AndroidCharacter::GetMirror(orig);
     return NOERROR;
 }
 
-ECode TextUtils::SimpleStringSplitter::Next(
-    /* [out] */ String* str)
+ECode TextUtils::Reverser::GetChars(
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end,
+    /* [in] */ ArrayOf<Char32>* dest,
+    /* [in] */ Int32 destoff)
 {
-    VALIDATE_NOT_NULL(str);
+    TextUtils::GetChars(mSource, start + mStart, end + mStart, dest, destoff);
+    assert(0 && "TODO");
+    // AndroidCharacter::Mirror(dest, 0, end - start);
 
-    Int32 end = mString.IndexOf(mDelimiter, mPosition);
-    if (end == -1) {
-        end = mLength;
+    Int32 len = end - start;
+    Int32 n = (end - start) / 2;
+    for (Int32 i = 0; i < n; i++) {
+        Char32 tmp = (*dest)[destoff + i];
+
+        (*dest)[destoff + i] = (*dest)[destoff + len - i - 1];
+        (*dest)[destoff + len - i - 1] = tmp;
     }
-    if (mPosition > end) {
-        *str = NULL;
-        return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-    *str = mString.Substring(mPosition, end);
-    mPosition = end + 1; // Skip the delimiter.
     return NOERROR;
 }
 
-ECode TextUtils::SimpleStringSplitter::Remove()
-{
-    return E_UNSUPPORTED_OPERATION_EXCEPTION;
-}
-
+//===========================================================================
+// TextUtils
+//===========================================================================
 void TextUtils::GetChars(
     /* [in] */ ICharSequence* s,
     /* [in] */ Int32 start,
@@ -152,8 +179,8 @@ void TextUtils::GetChars(
 
     }
     else {
+        Char32 ch;
         for (Int32 i = start; i < end; i++) {
-            Char32 ch;
             s->GetCharAt(i, &ch);
             (*dest)[destoff++] = ch;
         }
@@ -172,10 +199,10 @@ Int32 TextUtils::IndexOf(
     /* [in] */ Char32 ch,
     /* [in] */ Int32 start)
 {
+    assert(c != NULL);
     Int32 len;
     s->GetLength(&len);
     return IndexOf(s, ch, start, len);
-
 }
 
 Int32 TextUtils::IndexOf(
@@ -228,6 +255,7 @@ Int32 TextUtils::LastIndexOf(
     /* [in] */ ICharSequence* s,
     /* [in] */ Char32 ch)
 {
+    assert(s != NULL);
     Int32 len;
     s->GetLength(&len);
     return LastIndexOf(s, ch, len - 1);
@@ -259,6 +287,8 @@ Int32 TextUtils::LastIndexOf(
     /* [in] */ Int32 start,
     /* [in] */ Int32 last)
 {
+    assert(s != NULL);
+
     if (last < 0) {
         return -1;
     }
@@ -315,6 +345,7 @@ Int32 TextUtils::IndexOf(
     /* [in] */ ICharSequence* s,
     /* [in] */ ICharSequence* needle)
 {
+    assert(s != NULL);
     Int32 len;
     s->GetLength(&len);
     return IndexOf(s, needle, 0, len);
@@ -325,6 +356,7 @@ Int32 TextUtils::IndexOf(
     /* [in] */ ICharSequence* needle,
     /* [in] */ Int32 start)
 {
+    assert(s != NULL);
     Int32 len;
     s->GetLength(&len);
     return IndexOf(s, needle, start, len);
@@ -336,6 +368,9 @@ Int32 TextUtils::IndexOf(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
+    assert(s != NULL);
+    assert(needle != NULL);
+
     Int32 nlen;
     needle->GetLength(&nlen);
     if (nlen == 0) {
@@ -371,10 +406,17 @@ Boolean TextUtils::RegionMatches(
     /* [in] */ Int32 ooffset,
     /* [in] */ Int32 len)
 {
-    AutoPtr< ArrayOf<Char32> > temp = Obtain(2 * len);
+    Int32 tempLen = 2 * len;
+    if (tempLen < len) {
+        // Integer overflow; len is unreasonably large
+        // throw new IndexOutOfBoundsException();
+        return FALSE;
+    }
 
-   GetChars(one, toffset, toffset + len, temp, 0);
-   GetChars(two, ooffset, ooffset + len, temp, len);
+    AutoPtr< ArrayOf<Char32> > temp = Obtain(tempLen);
+
+    GetChars(one, toffset, toffset + len, temp, 0);
+    GetChars(two, ooffset, ooffset + len, temp, len);
 
     Boolean match = TRUE;
     for (Int32 i = 0; i < len; i++) {
@@ -388,13 +430,6 @@ Boolean TextUtils::RegionMatches(
     return match;
 }
 
-/**
- * Create a new String object containing the given range of characters
- * from the source string.  This is different than simply calling
- * {@link CharSequence#subSequence(int, int) CharSequence.subSequence}
- * in that it does not preserve any style runs in the source sequence,
- * allowing a more efficient implementation.
- */
 String TextUtils::Substring(
     /* [in] */ ICharSequence* source,
     /* [in] */ Int32 start,
@@ -421,70 +456,89 @@ String TextUtils::Substring(
     return ret;
 }
 
-/**
- * Returns list of multiple {@link CharSequence} joined into a single
- * {@link CharSequence} separated by localized delimiter such as ", ".
- *
- * @hide
- */
-//    public static CharSequence join(Iterable<CharSequence> list);
+AutoPtr<ICharSequence> TextUtils::Join(
+    /* [in] */ IIterable* list)
+{
+    AutoPtr<IResources> res= CResources::GetSystem();
+    AutoPtr<ICharSequence> delimiter;
+    res->GetText(R::string::list_delimeter, (ICharSequence**)&delimiter);
+        return Join(delimiter, list);
+}
 
-/**
- * Returns a string containing the tokens joined by delimiters.
- * @param tokens an array objects to be joined. Strings will be formed from
- *     the objects by calling object.toString().
- */
 String TextUtils::Join(
     /* [in] */ ICharSequence* delimiter,
-    /* [in] */ IObjectContainer* tokens)
+    /* [in] */ ArrayOf<IIterable>* tokens)
 {
     StringBuilder sb;
     Boolean firstTime = TRUE;
-    AutoPtr<IObjectEnumerator> enumerator;
-    tokens->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-    Boolean hasNext = FALSE;
-    while (enumerator->MoveNext(&hasNext), hasNext) {
-        AutoPtr<IInterface> token;
-        enumerator->Current((IInterface**)&token);
+
+    for (Int32 i = 0; i < tokens->GetLength(); ++i) {
         if (firstTime) {
             firstTime = FALSE;
-        } else {
-            sb.AppendCharSequence(delimiter);
         }
-        sb.AppendObject(token);
+        else {
+            sb.Append(delimiter);
+        }
+
+        sb.Append((*tokens)[i]);
     }
+
     return sb.ToString();
 }
 
-/**
- * Returns a string containing the tokens joined by delimiters.
- * @param tokens an array objects to be joined. Strings will be formed from
- *     the objects by calling object.toString().
- */
-//    public static String join(CharSequence delimiter, Iterable tokens);
+String TextUtils::Join(
+    /* [in] */ ICharSequence* delimiter,
+    /* [in] */ IIterable* tokens)
+{
+    StringBuilder sb;
+    Boolean firstTime = TRUE;
 
-/**
- * String.split() returns [''] when the string to be split is empty. This returns []. This does
- * not remove any empty strings from the result. For example split("a,", ","  ) returns {"a", ""}.
- *
- * @param text the string to split
- * @param expression the regular expression to match
- * @return an array of strings. The array will be empty if text is empty
- *
- * @throws NullPointerException if expression or text is NULL
- */
-//    public static String[] split(String text, String expression);
+    AutoPtr<IIterator> it;
+    tokens->GetIterator((IIterator**)&it);
+    Boolean hasNext;
+    while (it->HasNext(&hasNext), hasNext) {
+        if (firstTime) {
+            firstTime = FALSE;
+        }
+        else {
+            sb.Append(delimiter);
+        }
 
-/**
- * Splits a string on a pattern. String.split() returns [''] when the string to be
- * split is empty. This returns []. This does not remove any empty strings from the result.
- * @param text the string to split
- * @param pattern the regular expression to match
- * @return an array of strings. The array will be empty if text is empty
- *
- * @throws NullPointerException if expression or text is NULL
- */
-//    public static String[] split(String text, Pattern pattern);
+        AutoPtr<IInterface> token;
+        it->GetNext((IInterface**)&token);
+        sb.Append(token);
+    }
+
+    return sb.ToString();
+}
+
+AutoPtr<ArrayOf<String> > TextUtils::Split(
+    /* [in] */ const String& text,
+    /* [in] */ const String& expression)
+{
+    if (text.GetLength() == 0) {
+        return EMPTY_STRING_ARRAY;
+    }
+
+    AutoPtr<ArrayOf<String> > result;
+    StringUtils::Split(text, expression, (ArrayOf<String> **)&result);
+    return result;
+}
+
+AutoPtr<ArrayOf<String> > TextUtils::Split(
+    /* [in] */ const String& text,
+    /* [in] */ IPattern* pattern)
+{
+    assert(pattern != NULL);
+
+    if (text.GetLength() == 0) {
+        return EMPTY_STRING_ARRAY;
+    }
+
+    AutoPtr<ICharSequence> seq = CoreUtils::Convert(text);
+    AutoPtr<ArrayOf<String> > result;
+    return pattern->Split(seq, -1, (ArrayOf<String>**)&result);
+}
 
 AutoPtr<ICharSequence> TextUtils::StringOrSpannedString(
     /* [in] */ ICharSequence* source)
@@ -494,25 +548,17 @@ AutoPtr<ICharSequence> TextUtils::StringOrSpannedString(
 
     if (ISpannedString::Probe(source)) {
         return source;
-    } else if (ISpanned::Probe(source)) {
+    }
+    else if (ISpanned::Probe(source)) {
         AutoPtr<ISpannedString> ss;
         CSpannedString::New(source, (ISpannedString**)&ss);
         AutoPtr<ICharSequence> result = ICharSequence::Probe(ss.Get());
         return result;
     }
 
-    String str;
-    source->ToString(&str);
-    AutoPtr<ICharSequence> result;
-    CString::New(str, (ICharSequence**)&result);
-    return result;
+    return CoreUtils::Convert(str);
 }
 
-/**
- * Returns true if the string is NULL or 0-length.
- * @param str the string to be examined
- * @return true if str is NULL or zero length
- */
 Boolean TextUtils::IsEmpty(
     /* [in] */ ICharSequence* str)
 {
@@ -531,11 +577,6 @@ Boolean TextUtils::IsEmpty(
     return str.IsNullOrEmpty();
 }
 
-/**
- * Returns the length that the specified CharSequence would have if
- * spaces and control characters were trimmed from the start and end,
- * as by {@link String#trim}.
- */
 Int32 TextUtils::GetTrimmedLength(
     /* [in] */ ICharSequence* s)
 {
@@ -556,31 +597,25 @@ Int32 TextUtils::GetTrimmedLength(
     return end - start;
 }
 
-/**
- * Returns true if a and b are equal, including if they are both NULL.
- * <p><i>Note: In platform versions 1.1 and earlier, this method only worked well if
- * both the arguments were instances of String.</i></p>
- * @param a first CharSequence to check
- * @param b second CharSequence to check
- * @return true if a and b are equal
- */
 Boolean TextUtils::Equals(
     /* [in] */ ICharSequence* a,
     /* [in] */ ICharSequence* b)
 {
     if (a == b) return TRUE;
+
     Int32 len1, len2;
     if (a != NULL && b != NULL && (a->GetLength(&len1), b->GetLength(&len2), len1 == len2)) {
 //        if (a instanceof String && b instanceof String) {
 //            return a.equals(b);
 //        } else {
-            for (Int32 i = 0; i < len1; i++) {
-                Char32 ch1, ch2;
-                a->GetCharAt(i, &ch1);
-                b->GetCharAt(i, &ch2);
-                if (ch1 != ch2) return FALSE;
-            }
-            return TRUE;
+        Char32 ch1, ch2;
+        for (Int32 i = 0; i < len1; i++) {
+
+            a->GetCharAt(i, &ch1);
+            b->GetCharAt(i, &ch2);
+            if (ch1 != ch2) return FALSE;
+        }
+        return TRUE;
 //        }
     }
     return FALSE;
@@ -605,15 +640,10 @@ AutoPtr<ICharSequence> TextUtils::GetReverse(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    assert(0);
-    //    return new Reverser(source, start, end);
-    return NULL;
+    AutoPtr<ICharSequence> csq = new Reverser(source, start, end);
+    return csq;
 }
 
-/**
- * Flatten a CharSequence and whatever styles can be copied across processes
- * into the parcel.
- */
 ECode TextUtils::WriteToParcel(
     /* [in] */ ICharSequence* cs,
     /* [in] */ IParcel* p)
@@ -624,7 +654,6 @@ ECode TextUtils::WriteToParcel(
         String str;
         cs->ToString(&str);
         FAIL_RETURN(p->WriteString(str));
-
 
         AutoPtr<ISpanned> sp = ISpanned::Probe(cs);
         AutoPtr<ArrayOf<IInterface*> > os;
@@ -650,11 +679,19 @@ ECode TextUtils::WriteToParcel(
 
             AutoPtr<IParcelableSpan> ps = IParcelableSpan::Probe(prop);
             if (ps != NULL) {
-                Int32 typeId;
+                Int32 spanTypeId;
                 ps->GetSpanTypeId(&typeId);
-                FAIL_RETURN(p->WriteInt32(typeId));
-                FAIL_RETURN(IParcelable::Probe(ps)->WriteToParcel(p));
-                FAIL_RETURN(WriteWhere(p, sp, o));
+
+                if (spanTypeId < FIRST_SPAN || spanTypeId > LAST_SPAN) {
+                    String str = Object::ToString(ps);
+                    Logger::E(TAG, "external class \"%s\" is attempting to"
+                        " use the frameworks-only ParcelableSpan interface", str.string());
+                }
+                else {
+                    FAIL_RETURN(p->WriteInt32(typeId));
+                    FAIL_RETURN(IParcelable::Probe(ps)->WriteToParcel(p));
+                    FAIL_RETURN(WriteWhere(p, sp, o));
+                }
             }
         }
 
@@ -673,6 +710,21 @@ ECode TextUtils::WriteToParcel(
    }
 
    return NOERROR;
+}
+
+ECode TextUtils::WriteWhere(
+    /* [in] */ IParcel* p,
+    /* [in] */ ISpanned* sp,
+    /* [in] */ IInterface* o)
+{
+    Int32 start, end, flags;
+    sp->GetSpanStart(o, &start);
+    FAIL_RETURN(p->WriteInt32(start));
+    sp->GetSpanEnd(o, &end);
+    FAIL_RETURN(p->WriteInt32(end));
+    sp->GetSpanFlags(o, &flags);
+    FAIL_RETURN(p->WriteInt32(flags));
+    return NOERROR;
 }
 
 ECode TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(
@@ -700,136 +752,142 @@ ECode TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(
     }
 
     AutoPtr<ISpannableString> sp;
-    CSpannableString::New(cs, (ISpannableString**)&sp);
+    assert(0 && "TODO");
+    // CSpannableString::New(cs, (ISpannableString**)&sp);
 
-    while (TRUE) {
-        FAIL_RETURN(p->ReadInt32(&kind));
+    // while (TRUE) {
+    //     FAIL_RETURN(p->ReadInt32(&kind));
 
-        if (kind == 0)
-            break;
+    //     if (kind == 0)
+    //         break;
 
-        AutoPtr<IInterface> object;
-        switch (kind) {
-        case ITextUtils::ALIGNMENT_SPAN:
-            CAlignmentSpanStandard::New(p, (IAlignmentSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     AutoPtr<IInterface> object;
+    //     switch (kind) {
+    //     case ITextUtils::ALIGNMENT_SPAN:
+    //         CAlignmentSpanStandard::New(p, (IAlignmentSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::FOREGROUND_COLOR_SPAN:
-            CForegroundColorSpan::New(p, (IForegroundColorSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::FOREGROUND_COLOR_SPAN:
+    //         CForegroundColorSpan::New(p, (IForegroundColorSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::RELATIVE_SIZE_SPAN:
-            CRelativeSizeSpan::New(p, (IRelativeSizeSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::RELATIVE_SIZE_SPAN:
+    //         CRelativeSizeSpan::New(p, (IRelativeSizeSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::SCALE_X_SPAN:
-            CScaleXSpan::New(p, (IScaleXSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::SCALE_X_SPAN:
+    //         CScaleXSpan::New(p, (IScaleXSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::STRIKETHROUGH_SPAN:
-            CStrikethroughSpan::New(p, (IStrikethroughSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::STRIKETHROUGH_SPAN:
+    //         CStrikethroughSpan::New(p, (IStrikethroughSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::UNDERLINE_SPAN:
-            CUnderlineSpan::New(p, (IUnderlineSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::UNDERLINE_SPAN:
+    //         CUnderlineSpan::New(p, (IUnderlineSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::STYLE_SPAN:
-            CStyleSpan::New(p, (IStyleSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::STYLE_SPAN:
+    //         CStyleSpan::New(p, (IStyleSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::BULLET_SPAN:
-            CBulletSpan::New(p, (IBulletSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::BULLET_SPAN:
+    //         CBulletSpan::New(p, (IBulletSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::QUOTE_SPAN:
-            CQuoteSpan::New(p, (IQuoteSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::QUOTE_SPAN:
+    //         CQuoteSpan::New(p, (IQuoteSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::LEADING_MARGIN_SPAN:
-            CLeadingMarginSpanStandard::New(p, (ILeadingMarginSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-        break;
+    //     case ITextUtils::LEADING_MARGIN_SPAN:
+    //         CLeadingMarginSpanStandard::New(p, (ILeadingMarginSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //     break;
 
-        case ITextUtils::URL_SPAN:
-            CURLSpan::New(p, (IURLSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::URL_SPAN:
+    //         CURLSpan::New(p, (IURLSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::BACKGROUND_COLOR_SPAN:
-            CBackgroundColorSpan::New(p, (IBackgroundColorSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::BACKGROUND_COLOR_SPAN:
+    //         CBackgroundColorSpan::New(p, (IBackgroundColorSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::TYPEFACE_SPAN:
-            CTypefaceSpan::New(p, (ITypefaceSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::TYPEFACE_SPAN:
+    //         CTypefaceSpan::New(p, (ITypefaceSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::SUPERSCRIPT_SPAN:
-            CSuperscriptSpan::New(p, (ISuperscriptSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::SUPERSCRIPT_SPAN:
+    //         CSuperscriptSpan::New(p, (ISuperscriptSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::SUBSCRIPT_SPAN:
-            CSubscriptSpan::New(p, (ISubscriptSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::SUBSCRIPT_SPAN:
+    //         CSubscriptSpan::New(p, (ISubscriptSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::ABSOLUTE_SIZE_SPAN:
-            CAbsoluteSizeSpan::New(p, (IAbsoluteSizeSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::ABSOLUTE_SIZE_SPAN:
+    //         CAbsoluteSizeSpan::New(p, (IAbsoluteSizeSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::TEXT_APPEARANCE_SPAN:
-            CTextAppearanceSpan::New(p, (ITextAppearanceSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::TEXT_APPEARANCE_SPAN:
+    //         CTextAppearanceSpan::New(p, (ITextAppearanceSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::ANNOTATION:
-            CAnnotation::New(p, (IAnnotation**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::ANNOTATION:
+    //         CAnnotation::New(p, (IAnnotation**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::SUGGESTION_SPAN:
-            CSuggestionSpan::New(p, (ISuggestionSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::SUGGESTION_SPAN:
+    //         CSuggestionSpan::New(p, (ISuggestionSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::SPELL_CHECK_SPAN:
-            CSpellCheckSpan::New(p, (ISpellCheckSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::SPELL_CHECK_SPAN:
+    //         CSpellCheckSpan::New(p, (ISpellCheckSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::SUGGESTION_RANGE_SPAN:
-            CSuggestionRangeSpan::New(p, (ISuggestionRangeSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::SUGGESTION_RANGE_SPAN:
+    //         CSuggestionRangeSpan::New(p, (ISuggestionRangeSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::EASY_EDIT_SPAN:
-            CEasyEditSpan::New((IEasyEditSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::EASY_EDIT_SPAN:
+    //         CEasyEditSpan::New(p, (IEasyEditSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        case ITextUtils::LOCALE_SPAN:
-            CLocaleSpan::New(p, (ILocaleSpan**)&object);
-            FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
-            break;
+    //     case ITextUtils::LOCALE_SPAN:
+    //         CLocaleSpan::New(p, (ILocaleSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
 
-        default:
-            // throw new RuntimeException("bogus span encoding " + kind);
-            return E_RUNTIME_EXCEPTION;
-        }
-    }
+    //     case ITextUtils::TTS_SPAN:
+    //         CTtsSpan::New(p, (ITtsSpan**)&object);
+    //         FAIL_RETURN(ReadSpan(p, ISpannable::Probe(sp), object));
+    //         break;
+
+    //     default:
+    //         // throw new RuntimeException("bogus span encoding " + kind);
+    //         return E_RUNTIME_EXCEPTION;
+    //     }
+    // }
 
     *csq = ICharSequence::Probe(sp);
     REFCOUNT_ADD(*csq);
@@ -850,37 +908,95 @@ AutoPtr<ArrayOf<ICharSequence*> > TextUtils::CHAR_SEQUENCE_CREATOR::NewArray(
  */
 //    public static void dumpSpans(CharSequence cs, Printer printer, String prefix);
 
-/**
- * Return a new CharSequence in which each of the source strings is
- * replaced by the corresponding element of the destinations.
- */
-//    public static CharSequence replace(CharSequence template,
-//                                       String[] sources,
-//                                       CharSequence[] destinations);
 
-/**
- * Replace instances of "^1", "^2", etc. in the
- * <code>template</code> CharSequence with the corresponding
- * <code>values</code>.  "^^" is used to produce a single caret in
- * the output.  Only up to 9 replacement values are supported,
- * "^10" will be produce the first replacement value followed by a
- * '0'.
- *
- * @param template the input text containing "^1"-style
- * placeholder values.  This object is not modified; a copy is
- * returned.
- *
- * @param values CharSequences substituted into the template.  The
- * first is substituted for "^1", the second for "^2", and so on.
- *
- * @return the new CharSequence produced by doing the replacement
- *
- * @throws IllegalArgumentException if the template requests a
- * value that was not provided, or if more than 9 values are
- * provided.
- */
-//    public static CharSequence expandTemplate(CharSequence template,
-//                                              CharSequence... values);
+AutoPtr<ICharSequence> TextUtils::Replace(
+    /* [in] */ ICharSequence* temp,
+    /* [in] */ ArrayOf<String>* sources,
+    /* [in] */ ArrayOf<ICharSequence*>* destinations)
+{
+    AutoPtr<ISpannableStringBuilder> tb;
+    assert(0 && "TODO");
+    // CSpannableStringBuilder::New(temp, (ISpannableStringBuilder**)&tb);
+    ICharSequence* csq = ICharSequence::Probe(tb);
+
+    for (Int32 i = 0; i < sources.length; i++) {
+        Int32 where = IndexOf(csq, (*sources)[i]);
+
+        if (where >= 0)
+            tb->SetSpan((*sources)[i], where, where + (*sources)[i].GetLength(),
+                       ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+
+    Int32 start, end;
+    for (Int32 i = 0; i < sources.length; i++) {
+        tb->GetSpanStart((*sources)[i], &start);
+        tb->GetSpanEnd((*sources)[i], &end);
+
+        if (start >= 0) {
+            tb->Replace(start, end, (*destinations)[i]);
+        }
+    }
+
+    return csq;
+}
+
+AutoPtr<ICharSequence> TextUtils::ExpandTemplate(
+    /* [in] */ ICharSequence* temp,
+    /* [in] */ ArrayOf<ICharSequence*>* values)
+{
+    if (values->GetLength() > 9) {
+        Logger::E(TAG, "TextUtils::ExpandTemplate : max of 9 values are supported");
+        return NULL;
+    }
+
+    AutoPtr<ISpannableStringBuilder> ssb;
+    assert(0 && "TODO");
+    // CSpannableStringBuilder::New(temp, (ISpannableStringBuilder**)&ssb);
+    ICharSequence* csq = ICharSequence::Probe(ssb);
+
+    // try {
+    Int32 i = 0, length;
+    Char32 ch;
+    while ((csq->GetLength(&length), length) > i) {
+        csq->GetCharAt(i, &ch);
+        if (ch == '^') {
+            Char32 next;
+            csq->GetCharAt(i+1, &next);
+            if (next == '^') {
+                ssb->Delete(i+1, i+2);
+                ++i;
+                continue;
+            }
+            else if (Character::IsDigit(next)) {
+                Int32 which = Character::GetNumericValue(next) - 1;
+                if (which < 0) {
+                    // throw new IllegalArgumentException(
+                    //     "template requests value ^" + (which+1));
+                    Logger::E(TAG, "IllegalArgumentException template requests value ^%d", (which + 1));
+                    return NULL;
+                }
+                if (which >= values->GetLength()) {
+                    // throw new IllegalArgumentException(
+                    //     "template requests value ^" + (which+1) +
+                    //     "; only " + values.length + " provided");
+                    Logger::E(TAG, "IllegalArgumentException template requests value ^%d; only %d provided.",
+                        (which + 1), values->GetLength());
+                    return NULL;
+                }
+
+                ssb->Replace(i, i + 2, (*values)[which]);
+                (*values)[which]->GetLength(&length);
+                i += length;
+                continue;
+            }
+        }
+        ++i;
+    }
+    // } catch (IndexOutOfBoundsException ignore) {
+    //     // happens when ^ is the last character in the string.
+    // }
+    return csq;
+}
 
 Int32 TextUtils::GetOffsetBefore(
     /* [in] */ ICharSequence* text,
@@ -981,17 +1097,18 @@ Int32 TextUtils::GetOffsetAfter(
     return offset;
 }
 
-/**
- * Copies the spans from the region <code>start...end</code> in
- * <code>source</code> to the region
- * <code>destoff...destoff+end-start</code> in <code>dest</code>.
- * Spans in <code>source</code> that begin before <code>start</code>
- * or end after <code>end</code> but overlap this range are trimmed
- * as if they began at <code>start</code> or ended at <code>end</code>.
- *
- * @throws IndexOutOfBoundsException if any of the copied spans
- * are out of range in <code>dest</code>.
- */
+ECode TextUtils::ReadSpan(
+    /* [in] */ IParcel* p,
+    /* [in] */ ISpannable* sp,
+    /* [in] */ IInterface* o)
+{
+    Int32 start, end, flags;
+    FAIL_RETURN(p->ReadInt32(&start));
+    FAIL_RETURN(p->ReadInt32(&end));
+    FAIL_RETURN(p->ReadInt32(&flags));
+    return sp->SetSpan(o, start, end, flags);
+}
+
 void TextUtils::CopySpansFrom(
     /* [in] */ ISpanned* source,
     /* [in] */ Int32 start,
@@ -1024,12 +1141,6 @@ void TextUtils::CopySpansFrom(
     }
 }
 
-/**
- * Returns the original text if it fits in the specified width
- * given the properties of the specified Paint,
- * or, if it does not fit, a truncated
- * copy with ellipsis character added at the specified edge or center.
- */
 AutoPtr<ICharSequence> TextUtils::Ellipsize(
     /* [in] */ ICharSequence* text,
     /* [in] */ ITextPaint* p,
@@ -1039,18 +1150,6 @@ AutoPtr<ICharSequence> TextUtils::Ellipsize(
     return Ellipsize(text, p, avail, where, FALSE, NULL);
 }
 
-/**
- * Returns the original text if it fits in the specified width
- * given the properties of the specified Paint,
- * or, if it does not fit, a copy with ellipsis character added
- * at the specified edge or center.
- * If <code>preserveLength</code> is specified, the returned copy
- * will be padded with zero-width spaces to preserve the original
- * length and offsets instead of truncating.
- * If <code>callback</code> is non-NULL, it will be called to
- * report the start and end of the ellipsized range.  TextDirection
- * is determined by the first strong directional character.
- */
 AutoPtr<ICharSequence> TextUtils::Ellipsize(
     /* [in] */ ICharSequence* text,
     /* [in] */ ITextPaint* paint,
@@ -1082,19 +1181,6 @@ AutoPtr<ICharSequence> TextUtils::Ellipsize(
     return rst;
 }
 
-/**
- * Returns the original text if it fits in the specified width
- * given the properties of the specified Paint,
- * or, if it does not fit, a copy with ellipsis character added
- * at the specified edge or center.
- * If <code>preserveLength</code> is specified, the returned copy
- * will be padded with zero-width spaces to preserve the original
- * length and offsets instead of truncating.
- * If <code>callback</code> is non-NULL, it will be called to
- * report the start and end of the ellipsized range.
- *
- * @hide
- */
 AutoPtr<ICharSequence> TextUtils::Ellipsize(
    /* [in] */ ICharSequence* text,
    /* [in] */ ITextPaint* paint,
@@ -1205,26 +1291,127 @@ AutoPtr<ICharSequence> TextUtils::Ellipsize(
    //}
 }
 
-/**
- * Converts a CharSequence of the comma-separated form "Andy, Bob,
- * Charles, David" that is too wide to fit into the specified width
- * into one like "Andy, Bob, 2 more".
- *
- * @param text the text to truncate
- * @param p the Paint with which to measure the text
- * @param avail the horizontal width available for the text
- * @param oneMore the string for "1 more" in the current locale
- * @param more the string for "%d more" in the current locale
- */
-//    public static CharSequence commaEllipsize(CharSequence text,
-//                                              TextPaint p, float avail,
-//                                              String oneMore,
-//                                              String more);
-/**
- * @hide
- */
-//    public static CharSequence commaEllipsize(CharSequence text, TextPaint p,
-//         float avail, String oneMore, String more, TextDirectionHeuristic textDir);
+AutoPtr<ICharSequence> TextUtils::CommaEllipsize(
+    /* [in] */ ICharSequence* text,
+    /* [in] */ ITextPaint* p,
+    /* [in] */ Float avail,
+    /* [in] */ const String& oneMore,
+    /* [in] */ const String& more)
+{
+    return CommaEllipsize(text, p, avail, oneMore, more,
+            TextDirectionHeuristics::FIRSTSTRONG_LTR);
+}
+
+AutoPtr<ICharSequence> TextUtils::CommaEllipsize(
+    /* [in] */ ICharSequence* text,
+    /* [in] */ ITextPaint* p,
+    /* [in] */ Float avail,
+    /* [in] */ const String& oneMore,
+    /* [in] */ const String& more,
+    /* [in] */ ITextDirectionHeuristic* textDir)
+{
+    AutoPtr<MeasuredText> mt = MeasuredText::Obtain();
+    // try {
+    Int32 len;
+    text->GetLength(&len);
+    Float width = SetPara(mt, p, text, 0, len, textDir);
+    if (width <= avail) {
+        return text;
+    }
+
+    AutoPtr<ArrayOf<Char32> > buf = mt->mChars;
+
+    Int32 commaCount = 0;
+    for (Int32 i = 0; i < len; i++) {
+        if ((&buf)[i] == ',') {
+            commaCount++;
+        }
+    }
+
+    Int32 remaining = commaCount + 1;
+
+    Int32 ok = 0;
+    String okFormat("");
+
+    Int32 w = 0;
+    Int32 count = 0;
+    AutoPtr<ArrayOf<Float> > widths = mt->mWidths;
+
+    AutoPtr<MeasuredText> tempMt = MeasuredText::Obtain();
+    for (Int32 i = 0; i < len; i++) {
+        w += (*widths)[i];
+
+        if ((*buf)[i] == ',') {
+            count++;
+
+            String format;
+            // XXX should not insert spaces, should be part of string
+            // XXX should use plural rules and not assume English plurals
+            if (--remaining == 1) {
+                format += " ";
+                format += oneMore;
+            } else {
+                format += " ";
+                AutoPtr<IInteger32> iobj = CoreUtils::Convert(remaining);
+                format += StringUtils::Format(more, TO_IINTERFACE(iobj));
+            }
+
+            // XXX this is probably ok, but need to look at it more
+            tempMt->SetPara(format, 0, format->GetLength(), textDir);
+            Float moreWid = tempMt->AddStyleRun(p, tempMt.mLen, NULL);
+
+            if (w + moreWid <= avail) {
+                ok = i + 1;
+                okFormat = format;
+            }
+        }
+    }
+    MeasuredText::Recycle(tempMt);
+
+    AutoPtr<ISpannableStringBuilder> out;
+    assert(0 && "TODO");
+    // CSpannableStringBuilder(okFormat, (ISpannableStringBuilder**)&out);
+    out->Insert(0, text, 0, ok);
+
+    // } finally {
+    MeasuredText::Recycle(mt);
+    // }
+
+    return out;
+}
+
+Float TextUtils::SetPara(
+   /* [in] */ MeasuredText* mt,
+   /* [in] */ ITextPaint* paint,
+   /* [in] */ ICharSequence* text,
+   /* [in] */ Int32 start,
+   /* [in] */ Int32 end,
+   /* [in] */ ITextDirectionHeuristic* textDir)
+{
+    assert(mt != NULL && text != NULL);
+    mt->SetPara(text, start, end, textDir);
+
+    Float width;
+    AutoPtr<ISpanned> sp = ISpanned::Probe(text);
+
+    Int32 len = end - start;
+    if (sp == NULL) {
+        width = mt->AddStyleRun(paint, len, NULL);
+    }
+    else {
+        width = 0;
+        Int32 spanEnd;
+        for (Int32 spanStart = 0; spanStart < len; spanStart = spanEnd) {
+            sp->NextSpanTransition(spanStart, len, EIID_IMetricAffectingSpan, &spanEnd);
+            AutoPtr<ArrayOf<IInterface*> > spans, spansResult;//IMetricAffectingSpan
+            sp->GetSpans(spanStart, spanEnd, EIID_IMetricAffectingSpan, (ArrayOf<IInterface*>**)&spans);
+            spansResult = TextUtils::RemoveEmptySpans(spans, sp, EIID_IMetricAffectingSpan);
+            width += mt->AddStyleRun(paint, spansResult, spanEnd - spanStart, NULL);
+        }
+    }
+
+    return width;
+}
 
 /* package */
 Boolean TextUtils::DoesNotNeedBidi(
@@ -1258,21 +1445,6 @@ Boolean TextUtils::DoesNotNeedBidi(
     return TRUE;
 }
 
-Int32 TextUtils::IdealCharArraySize(
-    /*[in] */ Int32 size)
-{
-    Int32 need = size * 4;
-    Int32 result = need;
-    for (Int32 i = 4; i < 32; i++) {
-        if (need <= (1 << i) - 12) {
-            result = (1 << i) - 12;
-            break;
-        }
-    }
-
-    return result / 4;
-}
-
 /* package */
 AutoPtr< ArrayOf<Char32> > TextUtils::Obtain(
     /* [in] */ Int32 len)
@@ -1286,7 +1458,7 @@ AutoPtr< ArrayOf<Char32> > TextUtils::Obtain(
     }
 
     if (buf == NULL || buf->GetLength() < len) {
-        buf = ArrayOf<Char32>::Alloc(IdealCharArraySize(len));
+        buf = ArrayUtils::NewUnpaddedCharArray(len);
     }
 
     return buf;
@@ -1309,7 +1481,40 @@ void TextUtils::Recycle(
  * @param s the string to be encoded
  * @return the encoded string
  */
-//    public static String htmlEncode(String s);
+String TextUtils::HtmlEncode(
+    /* [in] */ const String& s)
+{
+    AutoPtr<ArrayOf<Char32> > chars = s.GetChars();
+    StringBuilder sb;
+    Char32 c;
+    for (Int32 i = 0; i < chars->GetLength(); i++) {
+        c = (*chars)[i];
+        switch (c) {
+        case '<':
+            sb.Append("&lt;"); //$NON-NLS-1$
+            break;
+        case '>':
+            sb.Append("&gt;"); //$NON-NLS-1$
+            break;
+        case '&':
+            sb.Append("&amp;"); //$NON-NLS-1$
+            break;
+        case '\'':
+            //http://www.w3.org/TR/xhtml1
+            // The named character reference &apos; (the apostrophe, U+0027) was introduced in
+            // XML 1.0 but does not appear in HTML. Authors should therefore use &#39; instead
+            // of &apos; to work as expected in HTML 4 user agents.
+            sb.Append("&#39;"); //$NON-NLS-1$
+            break;
+        case '"':
+            sb.Append("&quot;"); //$NON-NLS-1$
+            break;
+        default:
+            sb.Append(c);
+        }
+    }
+    return sb.ToString();
+}
 
 /**
  * Returns a CharSequence concatenating the specified CharSequences,
@@ -1364,47 +1569,79 @@ AutoPtr<ICharSequence> TextUtils::Concat(
     return result;
 }
 
-/**
- * Returns whether the given CharSequence contains any printable characters.
- */
-//    public static boolean isGraphic(CharSequence str);
+Boolean TextUtils::IsGraphic(
+    /* [in] */ ICharSequence* str)
+{
+    Int32 len;
+    str->GetLength(&len);
+    Char32 ch;
+    for (Int32 i = 0; i < len; i++) {
+        str->GetCharAt(i, &ch);
+        Int32 gc = Character::GetType(ch);
+        if (gc != Character::CONTROL
+                && gc != Character::FORMAT
+                && gc != Character::SURROGATE
+                && gc != Character::UNASSIGNED
+                && gc != Character::LINE_SEPARATOR
+                && gc != Character::PARAGRAPH_SEPARATOR
+                && gc != Character::SPACE_SEPARATOR) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
 
-/**
- * Returns whether this character is a printable character.
- */
-//    public static boolean isGraphic(char c);
-/**
- * Returns whether the given CharSequence contains only digits.
- */
-//    public static boolean isDigitsOnly(CharSequence str);
+Boolean TextUtils::IsGraphic(
+    /* [in] */ Char32 c)
+{
+    Int32 gc = Character::getType(c);
+    return     gc != Character::CONTROL
+            && gc != Character::FORMAT
+            && gc != Character::SURROGATE
+            && gc != Character::UNASSIGNED
+            && gc != Character::LINE_SEPARATOR
+            && gc != Character::PARAGRAPH_SEPARATOR
+            && gc != Character::SPACE_SEPARATOR;
+}
 
-/**
- * @hide
- */
-//    public static boolean isPrintableAscii(final char c);
+Boolean TextUtils::IsDigitsOnly(
+    /* [in] */ ICharSequence* str)
+{
+    Int32 len;
+    str->GetLength(&len);
+    Char32 ch;
+    for (Int32 i = 0; i < len; i++) {
+        str->GetCharAt(i, &ch);
+        if (!Character::IsDigit(ch)) {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
 
-/**
- * @hide
- */
-//    public static boolean isPrintableAsciiOnly(final CharSequence str);
+Boolean TextUtils::IsPrintableAscii(
+    /* [in] */ Char32 c)
+{
+    Int32 asciiFirst = 0x20;
+    Int32 asciiLast = 0x7E;  // included
+    return (asciiFirst <= c && c <= asciiLast) || c == '\r' || c == '\n';
+}
 
-/**
- * Determine what caps mode should be in effect at the current offset in
- * the text.  Only the mode bits set in <var>reqModes</var> will be
- * checked.  Note that the caps mode flags here are explicitly defined
- * to match those in {@link InputType}.
- *
- * @param cs The text that should be checked for caps modes.
- * @param off Location in the text at which to check.
- * @param reqModes The modes to be checked: may be any combination of
- * {@link #CAP_MODE_CHARACTERS}, {@link #CAP_MODE_WORDS}, and
- * {@link #CAP_MODE_SENTENCES}.
- *
- * @return Returns the actual capitalization modes that can be in effect
- * at the current position, which is any combination of
- * {@link #CAP_MODE_CHARACTERS}, {@link #CAP_MODE_WORDS}, and
- * {@link #CAP_MODE_SENTENCES}.
- */
+Boolean TextUtils::IsPrintableAsciiOnly(
+    /* [in] */ ICharSequence* str)
+{
+    Int32 len;
+    str->GetLength(&len);
+    Char32 ch;
+    for (Int32 i = 0; i < len; i++) {
+        str->GetCharAt(i, &ch);
+        if (!IsPrintableAscii(ch)) {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
 Int32 TextUtils::GetCapsMode(
     /* [in] */ ICharSequence* cs,
     /* [in] */ Int32 off,
@@ -1524,23 +1761,6 @@ Boolean TextUtils::DelimitedStringContains(
     return FALSE;
 }
 
-/**
- * Removes empty spans from the <code>spans</code> array.
- *
- * When parsing a Spanned using {@link Spanned#nextSpanTransition(int, int, Class)}, empty spans
- * will (correctly) create span transitions, and calling getSpans on a slice of text bounded by
- * one of these transitions will (correctly) include the empty overlapping span.
- *
- * However, these empty spans should not be taken into account when layouting or rendering the
- * string and this method provides a way to filter getSpans' results accordingly.
- *
- * @param spans A list of spans retrieved using {@link Spanned#getSpans(int, int, Class)} from
- * the <code>spanned</code>
- * @param spanned The Spanned from which spans were extracted
- * @return A subset of spans where empty spans ({@link Spanned#getSpanStart(Object)}  ==
- * {@link Spanned#getSpanEnd(Object)} have been removed. The initial order is preserved
- * @hide
- */
 AutoPtr< ArrayOf<IInterface*> > TextUtils::RemoveEmptySpans(
     /* [in] */ ArrayOf<IInterface*>* spans,
     /* [in] */ ISpanned* spanned,
@@ -1585,12 +1805,6 @@ AutoPtr< ArrayOf<IInterface*> > TextUtils::RemoveEmptySpans(
     }
 }
 
-/**
- * Pack 2 int values into a long, useful as a return value for a range
- * @see #unpackRangeStartFromLong(long)
- * @see #unpackRangeEndFromLong(long)
- * @hide
- */
 Int64 TextUtils::PackRangeInInt64(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -1598,40 +1812,18 @@ Int64 TextUtils::PackRangeInInt64(
     return (((Int64) start) << 32) | end;
 }
 
-/**
- * Get the start value from a range packed in a long by {@link #packRangeInLong(int, int)}
- * @see #unpackRangeEndFromLong(long)
- * @see #packRangeInLong(int, int)
- * @hide
- */
 Int32 TextUtils::UnpackRangeStartFromInt64(
     /* [in] */ Int64 range)
 {
     return (Int32)(((UInt64)range) >> 32);
 }
 
-/**
- * Get the end value from a range packed in a long by {@link #packRangeInLong(int, int)}
- * @see #unpackRangeStartFromLong(long)
- * @see #packRangeInLong(int, int)
- * @hide
- */
 Int32 TextUtils::UnpackRangeEndFromInt64(
     /* [in] */ Int64 range)
 {
     return (Int32) (range & 0x00000000FFFFFFFFll);
 }
 
-/**
- * Return the layout direction for a given Locale
- *
- * @param locale the Locale for which we want the layout direction. Can be NULL.
- * @return the layout direction. This may be one of:
- * {@link android.view.View#LAYOUT_DIRECTION_LTR} or
- * {@link android.view.View#LAYOUT_DIRECTION_RTL}.
- *
- * Be careful: this code will need to be updated when vertical scripts will be supported
- */
 Int32 TextUtils::GetLayoutDirectionFromLocale(
     /* [in] */ ILocale* locale)
 {
@@ -1641,13 +1833,11 @@ Int32 TextUtils::GetLayoutDirectionFromLocale(
     helper->GetROOT((ILocale**)&root);
     Boolean result;
     if (locale != NULL && !(locale->Equals(root, &result), result)) {
-        AutoPtr<IICUUtil> icuHelper;
         String scriptSubtag;
+        AutoPtr<IICUUtil> icuHelper;
         CICUUtil::AcquireSingleton((IICUUtil**)&icuHelper);
-        locale->ToString(&scriptSubtag);
-        icuHelper->AddLikelySubtags(scriptSubtag, &scriptSubtag);
-        icuHelper->GetScript(scriptSubtag, &scriptSubtag);
-
+        icuHelper->AddLikelySubtags(locale);
+        icuHelper->GetScript(&scriptSubtag);
         if (scriptSubtag.IsNull()) {
             return GetLayoutDirectionFromFirstChar(locale);
         }
@@ -1658,83 +1848,12 @@ Int32 TextUtils::GetLayoutDirectionFromLocale(
         }
     }
 
-    return IView::LAYOUT_DIRECTION_LTR;
+    // If forcing into RTL layout mode, return RTL as default, else LTR
+    Boolean bval;
+    SystemProperties::GetBoolean(ISettingsGlobal::DEVELOPMENT_FORCE_RTL, FALSE, &bval);
+    return bval ? IView::LAYOUT_DIRECTION_RTL : IView::LAYOUT_DIRECTION_LTR;
 }
 
-ECode TextUtils::WriteWhere(
-    /* [in] */ IParcel* p,
-    /* [in] */ ISpanned* sp,
-    /* [in] */ IInterface* o)
-{
-    Int32 start, end, flags;
-    sp->GetSpanStart(o, &start);
-    FAIL_RETURN(p->WriteInt32(start));
-    sp->GetSpanEnd(o, &end);
-    FAIL_RETURN(p->WriteInt32(end));
-    sp->GetSpanFlags(o, &flags);
-    FAIL_RETURN(p->WriteInt32(flags));
-    return NOERROR;
-}
-
-ECode TextUtils::ReadSpan(
-    /* [in] */ IParcel* p,
-    /* [in] */ ISpannable* sp,
-    /* [in] */ IInterface* o)
-{
-    Int32 start, end, flags;
-    FAIL_RETURN(p->ReadInt32(&start));
-    FAIL_RETURN(p->ReadInt32(&end));
-    FAIL_RETURN(p->ReadInt32(&flags));
-    return sp->SetSpan(o, start, end, flags);
-}
-
-Float TextUtils::SetPara(
-   /* [in] */ MeasuredText* mt,
-   /* [in] */ ITextPaint* paint,
-   /* [in] */ ICharSequence* text,
-   /* [in] */ Int32 start,
-   /* [in] */ Int32 end,
-   /* [in] */ ITextDirectionHeuristic* textDir)
-{
-    assert(mt != NULL && text != NULL);
-    mt->SetPara(text, start, end, textDir);
-
-    Float width;
-    AutoPtr<ISpanned> sp = ISpanned::Probe(text);
-
-    Int32 len = end - start;
-    if (sp == NULL) {
-        width = mt->AddStyleRun(paint, len, NULL);
-    }
-    else {
-        width = 0;
-        Int32 spanEnd;
-        for (Int32 spanStart = 0; spanStart < len; spanStart = spanEnd) {
-            sp->NextSpanTransition(spanStart, len, EIID_IMetricAffectingSpan, &spanEnd);
-            AutoPtr<ArrayOf<IInterface*> > spans, spansResult;//IMetricAffectingSpan
-            sp->GetSpans(spanStart, spanEnd, EIID_IMetricAffectingSpan, (ArrayOf<IInterface*>**)&spans);
-            spansResult = TextUtils::RemoveEmptySpans(spans, sp, EIID_IMetricAffectingSpan);
-            width += mt->AddStyleRun(paint, spansResult, spanEnd - spanStart, NULL);
-        }
-    }
-
-    return width;
-}
-
-/**
- * Fallback algorithm to detect the locale direction. Rely on the fist char of the
- * localized locale name. This will not work if the localized locale name is in English
- * (this is the case for ICU 4.4 and "Urdu" script)
- *
- * @param locale
- * @return the layout direction. This may be one of:
- * {@link View#LAYOUT_DIRECTION_LTR} or
- * {@link View#LAYOUT_DIRECTION_RTL}.
- *
- * Be careful: this code will need to be updated when vertical scripts will be supported
- *
- * @hide
- */
 Int32 TextUtils::GetLayoutDirectionFromFirstChar(
     /* [in] */ ILocale* locale)
 {

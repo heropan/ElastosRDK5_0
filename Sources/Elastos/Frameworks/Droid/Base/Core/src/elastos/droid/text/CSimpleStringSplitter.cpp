@@ -1,5 +1,5 @@
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/text/CSimpleStringSplitter.h"
 
 using Elastos::Core::ICharSequence;
@@ -9,6 +9,16 @@ using Elastos::Utility::EIID_IIterator;
 namespace Elastos {
 namespace Droid {
 namespace Text {
+
+CAR_INTERFACE_IMPL_3(CSimpleStringSplitter, Object, ISimpleStringSplitter, IStringSplitter, IIterator)
+
+CAR_OBJECT_IMPL(CSimpleStringSplitter)
+
+CSimpleStringSplitter::CSimpleStringSplitter()
+    : mDelimiter(' ')
+    , mPosition(0)
+    , mLength(0)
+{}
 
 ECode CSimpleStringSplitter::constructor(
     /*  [in] */ Char32 delimiter)
@@ -43,7 +53,7 @@ ECode CSimpleStringSplitter::HasNext(
     return NOERROR;
 }
 
-ECode CSimpleStringSplitter::NextString(
+ECode CSimpleStringSplitter::GetNext(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
@@ -64,12 +74,12 @@ ECode CSimpleStringSplitter::NextString(
     return NOERROR;
 }
 
-ECode CSimpleStringSplitter::Next(
+ECode CSimpleStringSplitter::GetNext(
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj);
     String str;
-    NextString(&str);
+    GetNext(&str);
 
     AutoPtr<ICharSequence> seq;
     CString::New(str, (ICharSequence**)&seq);

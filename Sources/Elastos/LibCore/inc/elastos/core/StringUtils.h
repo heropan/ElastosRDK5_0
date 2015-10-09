@@ -1,8 +1,15 @@
 #ifndef __ELASTOS_CORE_STRINGUTILS_H__
 #define __ELASTOS_CORE_STRINGUTILS_H__
 
+#ifdef ELASTOS_CORELIBRARY
+#include "Elastos.CoreLibrary_server.h"
+#else
+#include "Elastos.CoreLibrary.h"
+#endif
 #include <elastos.h>
 #include <elstring.h>
+
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Core {
@@ -196,6 +203,55 @@ public:
         /* [in] */ const String& input,
         /* [in] */ const Int32 radix,
         /* [out] */ Int64* result);
+
+    /**
+     * Returns a localized formatted string, using the supplied format and arguments,
+     * using the user's default locale.
+     *
+     * <p>If you're formatting a string other than for human
+     * consumption, you should use the {@code format(Locale, String, Object...)}
+     * overload and supply {@code Locale.US}. See
+     * "<a href="../util/Locale.html#default_locale">Be wary of the default locale</a>".
+     *
+     * @param format the format string (see {@link java.util.Formatter#format})
+     * @param args
+     *            the list of arguments passed to the formatter. If there are
+     *            more arguments than required by {@code format},
+     *            additional arguments are ignored.
+     * @return the formatted string.
+     * @throws NullPointerException if {@code format == null}
+     * @throws java.util.IllegalFormatException
+     *             if the format is invalid.
+     * @since 1.5
+     */
+    static CARAPI_(String) Format(
+        /* [in] */ const String& input,
+        /* [in] */ const String& format,
+        /* [in] */ ArrayOf<IInterface*>* args);
+
+
+    /**
+     * Returns a formatted string, using the supplied format and arguments,
+     * localized to the given locale.
+     *
+     * @param locale
+     *            the locale to apply; {@code null} value means no localization.
+     * @param format the format string (see {@link java.util.Formatter#format})
+     * @param args
+     *            the list of arguments passed to the formatter. If there are
+     *            more arguments than required by {@code format},
+     *            additional arguments are ignored.
+     * @return the formatted string.
+     * @throws NullPointerException if {@code format == null}
+     * @throws java.util.IllegalFormatException
+     *             if the format is invalid.
+     * @since 1.5
+     */
+    static CARAPI_(String) Format(
+        /* [in] */ ILocale* locale,
+        /* [in] */ const String& input,
+        /* [in] */ const String& format,
+        /* [in] */ ArrayOf<IInterface*>* args);
 
 private:
     StringUtils();

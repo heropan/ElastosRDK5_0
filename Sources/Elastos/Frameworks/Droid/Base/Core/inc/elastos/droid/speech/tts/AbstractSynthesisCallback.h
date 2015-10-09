@@ -45,22 +45,22 @@ public:
 
 public:
     CARAPI GetMaxBufferSize(
-        /*[out]*/ Int32* ret);
+        /* [out] */ Int32* ret);
 
     CARAPI Start(
-        /*[in]*/ Int32 sampleRateInHz,
-        /*[in]*/ Int32 audioFormat,
-        /*[in]*/ Int32 channelCount,
-        /*[out]*/ Int32* ret);
+        /* [in] */ Int32 sampleRateInHz,
+        /* [in] */ Int32 audioFormat,
+        /* [in] */ Int32 channelCount,
+        /* [out] */ Int32* ret);
 
     CARAPI AudioAvailable(
-        /*[in]*/ ArrayOf<Byte>* buffer,
-        /*[in]*/ Int32 offset,
-        /*[in]*/ Int32 length,
-        /*[out]*/ Int32* ret);
+        /* [in] */ ArrayOf<Byte>* buffer,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 length,
+        /* [out] */ Int32* ret);
 
     CARAPI Done(
-        /*[out]*/ Int32* ret);
+        /* [out] */ Int32* ret);
 
     CARAPI Error();
 };

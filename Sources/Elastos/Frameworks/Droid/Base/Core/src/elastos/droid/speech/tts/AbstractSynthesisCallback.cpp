@@ -47,7 +47,7 @@ ECode AbstractSynthesisCallback::GetInterfaceID(
 }
 
 ECode AbstractSynthesisCallback::GetMaxBufferSize(
-    /*[out]*/ Int32* ret)
+    /* [out] */ Int32* ret)
 {
     VALIDATE_NOT_NULL(ret);
     *ret = SynthesisCallback::GetMaxBufferSize();
@@ -55,10 +55,10 @@ ECode AbstractSynthesisCallback::GetMaxBufferSize(
 }
 
 ECode AbstractSynthesisCallback::Start(
-    /*[in]*/ Int32 sampleRateInHz,
-    /*[in]*/ Int32 audioFormat,
-    /*[in]*/ Int32 channelCount,
-    /*[out]*/ Int32* ret)
+    /* [in] */ Int32 sampleRateInHz,
+    /* [in] */ Int32 audioFormat,
+    /* [in] */ Int32 channelCount,
+    /* [out] */ Int32* ret)
 {
     VALIDATE_NOT_NULL(ret);
     *ret = SynthesisCallback::Start(sampleRateInHz, audioFormat, channelCount);
@@ -66,10 +66,10 @@ ECode AbstractSynthesisCallback::Start(
 }
 
 ECode AbstractSynthesisCallback::AudioAvailable(
-    /*[in]*/ ArrayOf<Byte>* buffer,
-    /*[in]*/ Int32 offset,
-    /*[in]*/ Int32 length,
-    /*[out]*/ Int32* ret)
+    /* [in] */ ArrayOf<Byte>* buffer,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int32 length,
+    /* [out] */ Int32* ret)
 {
     VALIDATE_NOT_NULL(ret);
     *ret = SynthesisCallback::AudioAvailable(buffer, offset, length);
@@ -77,7 +77,7 @@ ECode AbstractSynthesisCallback::AudioAvailable(
 }
 
 ECode AbstractSynthesisCallback::Done(
-    /*[out]*/ Int32* ret)
+    /* [out] */ Int32* ret)
 {
     VALIDATE_NOT_NULL(ret);
     *ret = SynthesisCallback::Done();

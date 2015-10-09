@@ -5,7 +5,7 @@
 #include "_Elastos_Droid_Content_Res_CTypedArray.h"
 #include "elastos/droid/content/res/XmlBlock.h"
 #include "elastos/droid/content/res/CResources.h"
-#include "utility/CTypedValue.h"
+#include "elastos/droid/utility/CTypedValue.h"
 
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Utility::CTypedValue;

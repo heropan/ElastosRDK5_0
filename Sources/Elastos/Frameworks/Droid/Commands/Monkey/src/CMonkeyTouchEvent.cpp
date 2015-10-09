@@ -145,7 +145,7 @@ ECode CMonkeyTouchEvent::constructor(
 }
 
 PInterface CMonkeyTouchEvent::Probe(
-    /*[in]*/ REIID riid)
+    /* [in] */ REIID riid)
 {
     return _CMonkeyTouchEvent::Probe(riid);
 }

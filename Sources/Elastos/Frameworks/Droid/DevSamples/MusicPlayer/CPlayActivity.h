@@ -116,7 +116,7 @@ public:
         /* [in] */ IComponentName* name);
 
     ECode OnTick(
-        /*[in]*/ Int32 duration);
+        /* [in] */ Int32 duration);
 
     ECode OnCompletion();
 

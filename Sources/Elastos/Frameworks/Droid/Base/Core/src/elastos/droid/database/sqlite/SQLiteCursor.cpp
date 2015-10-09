@@ -23,18 +23,18 @@ SQLiteCursor::SQLiteCursor()
 {}
 
 ECode SQLiteCursor::constructor(
-    /*[in]*/ ISQLiteDatabase* db,
-    /*[in]*/ ISQLiteCursorDriver* driver,
-    /*[in]*/ const String& editTable,
-    /*[in]*/ ISQLiteQuery* query)
+    /* [in] */ ISQLiteDatabase* db,
+    /* [in] */ ISQLiteCursorDriver* driver,
+    /* [in] */ const String& editTable,
+    /* [in] */ ISQLiteQuery* query)
 {
     return constructor(driver, editTable, query);
 }
 
 ECode SQLiteCursor::constructor(
-    /*[in]*/ ISQLiteCursorDriver* driver,
-    /*[in]*/ const String& editTable,
-    /*[in]*/ ISQLiteQuery* query)
+    /* [in] */ ISQLiteCursorDriver* driver,
+    /* [in] */ const String& editTable,
+    /* [in] */ ISQLiteQuery* query)
 {
     if (query == NULL) {
         //throw new IllegalArgumentException("query object cannot be null");

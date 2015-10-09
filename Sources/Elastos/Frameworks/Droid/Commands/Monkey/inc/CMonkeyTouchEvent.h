@@ -75,7 +75,7 @@ public:
         /* [in] */ Int32 action);
 
     PInterface Probe(
-    /*[in]*/ REIID riid);
+    /* [in] */ REIID riid);
 };
 
 } // namespace Monkey

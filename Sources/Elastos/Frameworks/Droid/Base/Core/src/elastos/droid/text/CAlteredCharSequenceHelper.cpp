@@ -1,11 +1,14 @@
 
 #include "elastos/droid/text/CAlteredCharSequenceHelper.h"
-#include "elastos/droid/text/CAlteredCharSequence.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/text/AlteredCharSequence.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
+
+CAR_INTERFACE_IMPL(CAlteredCharSequenceHelper, Object, IAlteredCharSequenceHelper)
+
+CAR_SINGLETON_IMPL(CAlteredCharSequenceHelper)
 
 ECode CAlteredCharSequenceHelper::Make(
     /* [in] */ ICharSequence* source,
@@ -15,7 +18,7 @@ ECode CAlteredCharSequenceHelper::Make(
     /* [out] */ IAlteredCharSequence** ret)
 {
     VALIDATE_NOT_NULL(ret);
-    AutoPtr<IAlteredCharSequence> acs = CAlteredCharSequence::Make(source, sub, substart, subend);
+    AutoPtr<IAlteredCharSequence> acs = AlteredCharSequence::Make(source, sub, substart, subend);
     *ret = acs;
     REFCOUNT_ADD(*ret);
     return NOERROR;

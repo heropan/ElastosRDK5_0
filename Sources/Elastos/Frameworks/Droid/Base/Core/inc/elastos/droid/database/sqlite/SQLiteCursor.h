@@ -43,10 +43,10 @@ public:
      *     cursor is finalized
      */
     CARAPI constructor(
-        /*[in]*/ ISQLiteDatabase* db,
-        /*[in]*/ ISQLiteCursorDriver* driver,
-        /*[in]*/ const String& editTable,
-        /*[in]*/ ISQLiteQuery* query);
+        /* [in] */ ISQLiteDatabase* db,
+        /* [in] */ ISQLiteCursorDriver* driver,
+        /* [in] */ const String& editTable,
+        /* [in] */ ISQLiteQuery* query);
 
     /**
      * Execute a query and provide access to its result set through a Cursor
@@ -59,9 +59,9 @@ public:
      * @param query the {@link SQLiteQuery} object associated with this cursor object.
      */
     CARAPI constructor(
-        /*[in]*/ ISQLiteCursorDriver* driver,
-        /*[in]*/ const String& editTable,
-        /*[in]*/ ISQLiteQuery* query);
+        /* [in] */ ISQLiteCursorDriver* driver,
+        /* [in] */ const String& editTable,
+        /* [in] */ ISQLiteQuery* query);
 
     ~SQLiteCursor();
 

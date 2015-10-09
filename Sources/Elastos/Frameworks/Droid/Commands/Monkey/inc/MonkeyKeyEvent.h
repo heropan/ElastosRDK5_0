@@ -20,21 +20,21 @@ protected:
     MonkeyKeyEvent();
 
     MonkeyKeyEvent(
-        /*[in]*/ Int32 action,
-        /*[in]*/ Int32 keyCode);
+        /* [in] */ Int32 action,
+        /* [in] */ Int32 keyCode);
 
     MonkeyKeyEvent(
-        /*[in]*/ Int64 downTime,
-        /*[in]*/ Int64 eventTime,
-        /*[in]*/ Int32 action,
-        /*[in]*/ Int32 keyCode,
-        /*[in]*/ Int32 repeatCount,
-        /*[in]*/ Int32 metaState,
-        /*[in]*/ Int32 device,
-        /*[in]*/ Int32 scanCode);
+        /* [in] */ Int64 downTime,
+        /* [in] */ Int64 eventTime,
+        /* [in] */ Int32 action,
+        /* [in] */ Int32 keyCode,
+        /* [in] */ Int32 repeatCount,
+        /* [in] */ Int32 metaState,
+        /* [in] */ Int32 device,
+        /* [in] */ Int32 scanCode);
 
     MonkeyKeyEvent(
-        /*[in]*/ IKeyEvent *keyEvent);
+        /* [in] */ IKeyEvent *keyEvent);
 
     virtual CARAPI_(Int32) InjectEvent(
         /* [in] */ IIWindowManager *iwm,
@@ -42,21 +42,21 @@ protected:
         /* [in] */ Int32 verbose);
 
     CARAPI Init(
-        /*[in]*/ Int32 action,
-        /*[in]*/ Int32 keyCode);
+        /* [in] */ Int32 action,
+        /* [in] */ Int32 keyCode);
 
     CARAPI Init(
-        /*[in]*/ Int64 downTime,
-        /*[in]*/ Int64 eventTime,
-        /*[in]*/ Int32 action,
-        /*[in]*/ Int32 keyCode,
-        /*[in]*/ Int32 repeatCount,
-        /*[in]*/ Int32 metaState,
-        /*[in]*/ Int32 device,
-        /*[in]*/ Int32 scanCode);
+        /* [in] */ Int64 downTime,
+        /* [in] */ Int64 eventTime,
+        /* [in] */ Int32 action,
+        /* [in] */ Int32 keyCode,
+        /* [in] */ Int32 repeatCount,
+        /* [in] */ Int32 metaState,
+        /* [in] */ Int32 device,
+        /* [in] */ Int32 scanCode);
 
     CARAPI Init(
-        /*[in]*/ IKeyEvent *keyEvent);
+        /* [in] */ IKeyEvent *keyEvent);
 
     CARAPI_(Int32) GetKeyCode();
 

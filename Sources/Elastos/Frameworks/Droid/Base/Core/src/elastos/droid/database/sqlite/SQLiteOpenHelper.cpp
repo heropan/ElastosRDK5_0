@@ -28,19 +28,19 @@ SQLiteOpenHelper::SQLiteOpenHelper()
 {}
 
 ECode SQLiteOpenHelper::constructor(
-    /*[in]*/ IContext* context,
-    /*[in]*/ const String& name,
-    /*[in]*/ ISQLiteDatabaseCursorFactory* factory,
-    /*[in]*/ Int32 version)
+    /* [in] */ IContext* context,
+    /* [in] */ const String& name,
+    /* [in] */ ISQLiteDatabaseCursorFactory* factory,
+    /* [in] */ Int32 version)
 {
     return constructor(context, name, factory, version, NULL);
 }
 
 ECode SQLiteOpenHelper::constructor(
-    /*[in]*/ IContext* context,
-    /*[in]*/ const String& name,
-    /*[in]*/ ISQLiteDatabaseCursorFactory* factory,
-    /*[in]*/ Int32 version,
+    /* [in] */ IContext* context,
+    /* [in] */ const String& name,
+    /* [in] */ ISQLiteDatabaseCursorFactory* factory,
+    /* [in] */ Int32 version,
     /* [in] */ IDatabaseErrorHandler* errorHandler)
 {
     if (version < 1) {
@@ -57,7 +57,7 @@ ECode SQLiteOpenHelper::constructor(
 }
 
 ECode SQLiteOpenHelper::GetDatabaseName(
-    /*[out]*/ String* name)
+    /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name)
     *name = mName;
@@ -65,7 +65,7 @@ ECode SQLiteOpenHelper::GetDatabaseName(
 }
 
 ECode SQLiteOpenHelper::SetWriteAheadLoggingEnabled(
-    /*[in]*/ Boolean enabled)
+    /* [in] */ Boolean enabled)
 {
     synchronized (mLock) {
         if (mEnableWriteAheadLogging != enabled) {
@@ -88,7 +88,7 @@ ECode SQLiteOpenHelper::SetWriteAheadLoggingEnabled(
 }
 
 ECode SQLiteOpenHelper::GetWritableDatabase(
-    /*[out]*/ ISQLiteDatabase** database)
+    /* [out] */ ISQLiteDatabase** database)
 {
     ECode ec = NOERROR;
     synchronized (mLock) {
@@ -98,7 +98,7 @@ ECode SQLiteOpenHelper::GetWritableDatabase(
 }
 
 ECode SQLiteOpenHelper::GetReadableDatabase(
-        /*[out]*/ ISQLiteDatabase** database)
+        /* [out] */ ISQLiteDatabase** database)
 {
     ECode ec = NOERROR;
     synchronized (mLock) {
@@ -108,8 +108,8 @@ ECode SQLiteOpenHelper::GetReadableDatabase(
 }
 
 ECode SQLiteOpenHelper::GetDatabaseLocked(
-    /*[in]*/ Boolean writable,
-    /*[out]*/ ISQLiteDatabase** database)
+    /* [in] */ Boolean writable,
+    /* [out] */ ISQLiteDatabase** database)
 {
     VALIDATE_NOT_NULL(database)
     *database = NULL;
@@ -256,15 +256,15 @@ ECode SQLiteOpenHelper::Close()
 }
 
 ECode SQLiteOpenHelper::OnConfigure(
-    /*[in]*/ ISQLiteDatabase* db)
+    /* [in] */ ISQLiteDatabase* db)
 {
     return NOERROR;
 }
 
 ECode SQLiteOpenHelper::OnDowngrade(
-    /*[in]*/ ISQLiteDatabase* db,
-    /*[in]*/ Int32 oldVersion,
-    /*[in]*/ Int32 newVersion)
+    /* [in] */ ISQLiteDatabase* db,
+    /* [in] */ Int32 oldVersion,
+    /* [in] */ Int32 newVersion)
 {
     // throw new SQLiteException("Can't downgrade database from version " +
     //             oldVersion + " to " + newVersion);
@@ -273,7 +273,7 @@ ECode SQLiteOpenHelper::OnDowngrade(
 }
 
 ECode SQLiteOpenHelper::OnOpen(
-    /*[in]*/ ISQLiteDatabase* db)
+    /* [in] */ ISQLiteDatabase* db)
 {
     return NOERROR;
 }

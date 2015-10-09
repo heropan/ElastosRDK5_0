@@ -20,9 +20,6 @@ public:
 
     virtual ~SpannableStringInternal();
 
-    virtual CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid) = 0;
-
     virtual CARAPI_(Int32) GetLength();
 
     virtual CARAPI_(Char32) GetCharAt(
@@ -67,6 +64,13 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 limit,
         /* [in] */ const InterfaceID& kind);
+
+    CARAPI Equals(
+        /* [in] */ IInterface* o,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetHashCode(
+        /* [out] */ Int32* result);
 
 public:
     /* package */

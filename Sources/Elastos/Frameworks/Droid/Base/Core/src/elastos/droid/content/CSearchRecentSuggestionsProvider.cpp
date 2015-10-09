@@ -38,8 +38,8 @@ CSearchRecentSuggestionsProvider::DatabaseHelper::~DatabaseHelper()
 {}
 
 ECode CSearchRecentSuggestionsProvider::DatabaseHelper::constructor(
-    /*[in]*/ IContext* context,
-    /*[in]*/ Int32 newVersion)
+    /* [in] */ IContext* context,
+    /* [in] */ Int32 newVersion)
 {
     FAIL_RETURN(SQLiteOpenHelper::constructor(context, sDatabaseName, NULL, newVersion))
     mNewVersion = newVersion;
@@ -47,7 +47,7 @@ ECode CSearchRecentSuggestionsProvider::DatabaseHelper::constructor(
 }
 
 ECode CSearchRecentSuggestionsProvider::DatabaseHelper::OnCreate(
-    /*[in]*/ ISQLiteDatabase* db)
+    /* [in] */ ISQLiteDatabase* db)
 {
     StringBuilder sb;
     sb += "CREATE TABLE suggestions (";
@@ -64,9 +64,9 @@ ECode CSearchRecentSuggestionsProvider::DatabaseHelper::OnCreate(
 }
 
 ECode CSearchRecentSuggestionsProvider::DatabaseHelper::OnUpgrade(
-    /*[in]*/ ISQLiteDatabase* db,
-    /*[in]*/ Int32 oldVersion,
-    /*[in]*/ Int32 newVersion)
+    /* [in] */ ISQLiteDatabase* db,
+    /* [in] */ Int32 oldVersion,
+    /* [in] */ Int32 newVersion)
 {
     Logger::W("CSearchRecentSuggestionsProvider::DatabaseHelper", "Upgrading database from version %s to %s, which will destroy all old data",
             StringUtils::ToString(oldVersion).string(), StringUtils::ToString(newVersion).string());

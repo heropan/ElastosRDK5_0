@@ -30,13 +30,13 @@ public:
     {
     public:
         DbStats(
-            /*[in]*/ const String& dbName,
-            /*[in]*/ Int64 pageCount,
-            /*[in]*/ Int64 pageSize,
-            /*[in]*/ Int32 lookaside,
-            /*[in]*/ Int32 hits,
-            /*[in]*/ Int32 misses,
-            /*[in]*/ Int32 cachesize);
+            /* [in] */ const String& dbName,
+            /* [in] */ Int64 pageCount,
+            /* [in] */ Int64 pageSize,
+            /* [in] */ Int32 lookaside,
+            /* [in] */ Int32 hits,
+            /* [in] */ Int32 misses,
+            /* [in] */ Int32 cachesize);
 
     public:
         /** name of the database */
@@ -113,7 +113,7 @@ public:
      * @hide
      */
     static CARAPI_(Boolean) ShouldLogSlowQuery(
-        /*[in]*/ Int64 elapsedTimeMillis);
+        /* [in] */ Int64 elapsedTimeMillis);
 
     /**
      * return all pager and database stats for the current process.
@@ -127,8 +127,8 @@ public:
      * @param args Command-line arguments supplied to dumpsys dbinfo
      */
     static CARAPI_(void) Dump(
-        /*[in]*/ IPrinter* printer,
-        /*[in]*/ const ArrayOf<String>& args);
+        /* [in] */ IPrinter* printer,
+        /* [in] */ const ArrayOf<String>& args);
 
 private:
     SQLiteDebug();

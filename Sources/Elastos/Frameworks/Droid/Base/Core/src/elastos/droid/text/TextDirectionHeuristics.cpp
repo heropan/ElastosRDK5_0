@@ -34,6 +34,10 @@ static AutoPtr<ITextDirectionHeuristic> ANYRTL_LTR_init()
 }
 #endif
 
+const Int32 TextDirectionHeuristics::STATE_TRUE = 0;
+const Int32 TextDirectionHeuristics::STATE_FALSE = 1;
+const Int32 TextDirectionHeuristics::STATE_UNKNOWN = 2;
+
 AutoPtr<ITextDirectionHeuristic> TextDirectionHeuristics::LTR =
         new TextDirectionHeuristics::TextDirectionHeuristicInternal(NULL /* no algorithm */, FALSE);//LTRInit();
 
@@ -63,61 +67,34 @@ AutoPtr<TextDirectionHeuristics::TextDirectionHeuristicLocale> TextDirectionHeur
 AutoPtr<TextDirectionHeuristics::FirstStrong> TextDirectionHeuristics::FirstStrong::sInstance
         = new TextDirectionHeuristics::FirstStrong();
 
-TextDirectionHeuristics::TriState TextDirectionHeuristics::IsRtlText(
+
+Int32 TextDirectionHeuristics::IsRtlText(
     /* [in] */ Int32 directionality)
-{/*
-    switch (directionality) {
-        case Character::DIRECTIONALITY_LEFT_TO_RIGHT:
-            return TriState_FALSE;
-
-        case Character::DIRECTIONALITY_RIGHT_TO_LEFT:
-        case Character::DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC:
-            return TriState_TRUE;
-
-        default:
-            return TriState_UNKNOWN;
-    }*/
-
+{
     if (directionality == Character::DIRECTIONALITY_LEFT_TO_RIGHT) {
-        return TriState_FALSE;
+        return State_FALSE;
     } else if (directionality == Character::DIRECTIONALITY_RIGHT_TO_LEFT
             || directionality == Character::DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC) {
-        return TriState_TRUE;
+        return State_TRUE;
     } else {
-        return TriState_UNKNOWN;
+        return State_UNKNOWN;
     }
 }
 
-TextDirectionHeuristics::TriState TextDirectionHeuristics::IsRtlTextOrFormat(
+Int32 TextDirectionHeuristics::IsRtlTextOrFormat(
     /* [in] */ Int32 directionality)
-{/*
-    switch (directionality) {
-        case Character::DIRECTIONALITY_LEFT_TO_RIGHT:
-        case Character::DIRECTIONALITY_LEFT_TO_RIGHT_EMBEDDING:
-        case Character::DIRECTIONALITY_LEFT_TO_RIGHT_OVERRIDE:
-            return TriState_FALSE;
-
-        case Character::DIRECTIONALITY_RIGHT_TO_LEFT:
-        case Character::DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC:
-        case Character::DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING:
-        case Character::DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE:
-            return TriState_TRUE;
-
-        default:
-            return TriState_UNKNOWN;
-    }*/
-
+{
     if (directionality == Character::DIRECTIONALITY_LEFT_TO_RIGHT
      || directionality == Character::DIRECTIONALITY_LEFT_TO_RIGHT_EMBEDDING
      || directionality == Character::DIRECTIONALITY_LEFT_TO_RIGHT_OVERRIDE) {
-        return TriState_FALSE;
+        return State_FALSE;
     } else if (directionality == Character::DIRECTIONALITY_RIGHT_TO_LEFT
             || directionality == Character::DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC
             || directionality == Character::DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING
             || directionality == Character::DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE) {
-        return TriState_TRUE;
+        return State_TRUE;
     } else {
-        return TriState_UNKNOWN;
+        return State_UNKNOWN;
     }
 }
 

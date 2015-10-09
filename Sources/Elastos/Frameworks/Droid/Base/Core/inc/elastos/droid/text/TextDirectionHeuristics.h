@@ -13,9 +13,15 @@ namespace Droid {
 namespace Text {
 
 /**
- * Some objects that implement TextDirectionHeuristic.
+ * Some objects that implement {@link TextDirectionHeuristic}. Use these with
+ * the {@link BidiFormatter#unicodeWrap unicodeWrap()} methods in {@link BidiFormatter}.
+ * Also notice that these direction heuristics correspond to the same types of constants
+ * provided in the {@link android.view.View} class for {@link android.view.View#setTextDirection
+ * setTextDirection()}, such as {@link android.view.View#TEXT_DIRECTION_RTL}.
+ * <p>To support versions lower than {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR2},
+ * you can use the support library's {@link android.support.v4.text.TextDirectionHeuristicsCompat}
+ * class.
  *
- * @hide
  */
 class TextDirectionHeuristics
 {
@@ -58,12 +64,12 @@ private:
 
     class TextDirectionAlgorithm;
 
-    enum TriState
-    {
-        TriState_TRUE = TRUE,
-        TriState_FALSE = FALSE,
-        TriState_UNKNOWN = -1
-    };
+    /**
+     * State constants for taking care about true / false / unknown
+     */
+    static const Int32 STATE_TRUE;// = 0;
+    static const Int32 STATE_FALSE;// = 1;
+    static const Int32 STATE_UNKNOWN;// = 2;
 
     /**
      * Computes the text direction based on an algorithm.  Subclasses implement
@@ -475,10 +481,9 @@ private:
 
 private:
 
-    static CARAPI_(TriState) IsRtlText(
-        /* [in] */ Int32 directionality);
+    static Int32 IsRtlText(int directionality);
 
-    static CARAPI_(TriState) IsRtlTextOrFormat(
+    static Int32 IsRtlTextOrFormat(
         /* [in] */ Int32 directionality);
 };
 

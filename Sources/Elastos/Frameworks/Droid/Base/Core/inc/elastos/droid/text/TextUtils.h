@@ -1,16 +1,12 @@
 #ifndef __ELASTOS_DROID_TEXT_TEXTUTILS_H__
 #define __ELASTOS_DROID_TEXT_TEXTUTILS_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
-
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::IIterable;
+using Elastos::Utility::Regex::IPattern;
 
 namespace Elastos {
 namespace Droid {
@@ -20,49 +16,46 @@ class MeasuredText;
 
 class TextUtils
 {
-public:
-
-    /**
-     * A simple string splitter.
-     *
-     * <p>If the final character in the string to split is the delimiter then no empty string will
-     * be returned for the empty string after that delimeter. That is, splitting <tt>"a,b,"</tt> on
-     * comma will return <tt>"a", "b"</tt>, not <tt>"a", "b", ""</tt>.
-     */
-    class SimpleStringSplitter : public ElRefBase
+private:
+    class Reverser
+        : public Object
+        , public ICharSequence
+        , public IGetChars
     {
     public:
-        /**
-         * Initializes the splitter. setString may be called later.
-         * @param delimiter the delimeter on which to split
-         */
-        SimpleStringSplitter(
-            /* [in] */ Char32 delimiter);
+        Reverser(
+            /* [in] */ ICharSequence* source,
+            /* [in] */ Int32 start,
+            /* [in] */ Int32 end);
 
-        /**
-         * Sets the string to split
-         * @param string the string to split
-         */
-        virtual CARAPI SetString(
-            /* [in] */ const String& string);
+        CARAPI GetLength(
+            /* [out] */ Int32* len);
 
-//        public Iterator<String> iterator();
+        CARAPI SubSequence(
+            /* [in] */ Int32 start,
+            /* [in] */ Int32 end,
+            /* [out] */ ICharSequence** csq);
 
-        virtual CARAPI HasNext(
-            /* [out] */ Boolean* result);
+        CARAPI ToString(
+            /* [out] */ String* info);
 
-        virtual CARAPI Next(
-            /* [out] */ String* str);
+        CARAPI GetCharAt(
+            /* [in] */ Int32 offset,
+            /* [out] */ Char32* ch);
 
-        virtual CARAPI Remove();
+        CARAPI GetChars(
+            /* [in] */ Int32 start,
+            /* [in] */ Int32 end,
+            /* [in] */ ArrayOf<Char32>* dest,
+            /* [in] */ Int32 destoff);
 
     private:
-        String mString;
-        Char32 mDelimiter;
-        Int32 mPosition;
-        Int32 mLength;
+        AutoPtr<ICharSequence> mSource;
+        Int32 mStart;
+        Int32 mEnd;
     };
 
+public:
     class CHAR_SEQUENCE_CREATOR {
     public:
         static CARAPI CreateFromParcel(
@@ -73,7 +66,6 @@ public:
             /* [in] */ Int32 size);
     };
 
-public:
     static CARAPI_(void) GetChars(
         /* [in] */ ICharSequence* s,
         /* [in] */ Int32 start,
@@ -151,7 +143,18 @@ public:
      *
      * @hide
      */
-//    public static CharSequence join(Iterable<CharSequence> list);
+    //public static CharSequence join(Iterable<CharSequence> list) {
+    static AutoPtr<ICharSequence> Join(
+        /* [in] */ IIterable* list);
+
+    /**
+     * Returns a string containing the tokens joined by delimiters.
+     * @param tokens an array objects to be joined. Strings will be formed from
+     *     the objects by calling object.toString().
+     */
+    static CARAPI_(String) Join(
+        /* [in] */ ICharSequence* delimiter,
+        /* [in] */ ArrayOf<IIterable>* tokens);
 
     /**
      * Returns a string containing the tokens joined by delimiters.
@@ -163,13 +166,6 @@ public:
         /* [in] */ IIterable* tokens);
 
     /**
-     * Returns a string containing the tokens joined by delimiters.
-     * @param tokens an array objects to be joined. Strings will be formed from
-     *     the objects by calling object.toString().
-     */
-//    public static String join(CharSequence delimiter, Iterable tokens);
-
-    /**
      * String.split() returns [''] when the string to be split is empty. This returns []. This does
      * not remove any empty strings from the result. For example split("a,", ","  ) returns {"a", ""}.
      *
@@ -179,7 +175,9 @@ public:
      *
      * @throws NullPointerException if expression or text is null
      */
-//    public static String[] split(String text, String expression);
+    static AutoPtr<ArrayOf<String> > Split(
+        /* [in] */ const String& text,
+        /* [in] */ const String& expression);
 
     /**
      * Splits a string on a pattern. String.split() returns [''] when the string to be
@@ -191,6 +189,10 @@ public:
      * @throws NullPointerException if expression or text is null
      */
 //    public static String[] split(String text, Pattern pattern);
+
+    static AutoPtr<ArrayOf<String> > Split(
+        /* [in] */ const String& text,
+        /* [in] */ IPattern* pattern);
 
     static CARAPI_(AutoPtr<ICharSequence>) StringOrSpannedString(
         /* [in] */ ICharSequence* source);
@@ -257,9 +259,10 @@ public:
      * Return a new CharSequence in which each of the source strings is
      * replaced by the corresponding element of the destinations.
      */
-//    public static CharSequence replace(CharSequence template,
-//                                       String[] sources,
-//                                       CharSequence[] destinations);
+    static AutoPtr<ICharSequence> Replace(
+        /* [in] */ ICharSequence* temp,
+        /* [in] */ ArrayOf<String>* sources,
+        /* [in] */ ArrayOf<ICharSequence*>* destinations);
 
     /**
      * Replace instances of "^1", "^2", etc. in the
@@ -282,8 +285,9 @@ public:
      * value that was not provided, or if more than 9 values are
      * provided.
      */
-//    public static CharSequence expandTemplate(CharSequence template,
-//                                              CharSequence... values);
+    static AutoPtr<ICharSequence> ExpandTemplate(
+        /* [in] */ ICharSequence* temp,
+        /* [in] */ ArrayOf<ICharSequence*>* values);
 
     static CARAPI_(Int32) GetOffsetBefore(
         /* [in] */ ICharSequence* text,
@@ -378,15 +382,23 @@ public:
      * @param oneMore the string for "1 more" in the current locale
      * @param more the string for "%d more" in the current locale
      */
-//    public static CharSequence commaEllipsize(CharSequence text,
-//                                              TextPaint p, float avail,
-//                                              String oneMore,
-//                                              String more);
+    static AutoPtr<ICharSequence> CommaEllipsize(
+        /* [in] */ ICharSequence* text,
+        /* [in] */ ITextPaint* p,
+        /* [in] */ Float avail,
+        /* [in] */ const String& oneMore,
+        /* [in] */ const String& more);
+
     /**
      * @hide
      */
-//    public static CharSequence commaEllipsize(CharSequence text, TextPaint p,
-//         float avail, String oneMore, String more, TextDirectionHeuristic textDir);
+    static AutoPtr<ICharSequence> CommaEllipsize(
+        /* [in] */ ICharSequence* text,
+        /* [in] */ ITextPaint* p,
+        /* [in] */ Float avail,
+        /* [in] */ const String& oneMore,
+        /* [in] */ const String& more,
+        /* [in] */ ITextDirectionHeuristic* textDir);
 
     /* package */
     static CARAPI_(Boolean) DoesNotNeedBidi(
@@ -425,26 +437,31 @@ public:
     /**
      * Returns whether the given CharSequence contains any printable characters.
      */
-//    public static boolean isGraphic(CharSequence str);
+    static Boolean IsGraphic(
+        /* [in] */ ICharSequence* str);
 
     /**
      * Returns whether this character is a printable character.
      */
-//    public static boolean isGraphic(char c);
+    static Boolean IsGraphic(
+        /* [in] */ Char32 c);
     /**
      * Returns whether the given CharSequence contains only digits.
      */
-//    public static boolean isDigitsOnly(CharSequence str);
+    static Boolean IsDigitsOnly(
+        /* [in] */ ICharSequence* str);
 
     /**
      * @hide
      */
-//    public static boolean isPrintableAscii(final char c);
+    static Boolean IsPrintableAscii(
+        /* [in] */ Char32 c);
 
     /**
      * @hide
      */
-//    public static boolean isPrintableAsciiOnly(final CharSequence str);
+    static Boolean IsPrintableAsciiOnly(
+        /* [in] */ ICharSequence* str);
 
     /**
      * Determine what caps mode should be in effect at the current offset in
@@ -568,9 +585,8 @@ public:
 //            = InputType_TYPE_TEXT_FLAG_CAP_SENTENCES;
 
 private:
-    TextUtils() {}
-
-//    private static void writeWhere(Parcel p, Spanned sp, Object o);
+    TextUtils();
+    TextUtils(const TextUtils& other);
 
     static CARAPI WriteWhere(
         /* [in] */ IParcel* p,
@@ -607,10 +623,11 @@ private:
     static CARAPI_(Int32) GetLayoutDirectionFromFirstChar(
         /* [in] */ ILocale* locale);
 
-    static CARAPI_(Int32) IdealCharArraySize(
-        /*[in] */ Int32 size);
-
+    static String HtmlEncode(
+        /* [in] */ const String& s);;
 private:
+    static const String TAG;// = "TextUtils";
+
     static const Char32 FIRST_RIGHT_TO_LEFT = 0x0590;//'\u0590';
 
     static Object sLock;

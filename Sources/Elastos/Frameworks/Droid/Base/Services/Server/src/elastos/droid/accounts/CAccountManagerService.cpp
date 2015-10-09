@@ -218,7 +218,7 @@ ECode CAccountManagerService::DatabaseHelper::OnConfigure(
 }
 
 ECode CAccountManagerService::DatabaseHelper::OnCreate(
-    /*[in]*/ ISQLiteDatabase* db)
+    /* [in] */ ISQLiteDatabase* db)
 {
     db->ExecSQL(String("CREATE TABLE ") + CAccountManagerService::TABLE_ACCOUNTS
             + String(" ( ") + CAccountManagerService::ACCOUNTS_ID
@@ -292,9 +292,9 @@ void CAccountManagerService::DatabaseHelper::CreateGrantsTable(
 }
 
 ECode CAccountManagerService::DatabaseHelper::OnUpgrade(
-    /*[in]*/ ISQLiteDatabase* db,
-    /*[in]*/ Int32 oldVersion,
-    /*[in]*/ Int32 newVersion)
+    /* [in] */ ISQLiteDatabase* db,
+    /* [in] */ Int32 oldVersion,
+    /* [in] */ Int32 newVersion)
 {
     Slogger::E(CAccountManagerService::TAG,
             "upgrade from version %d to version %d", oldVersion, newVersion);
@@ -333,7 +333,7 @@ ECode CAccountManagerService::DatabaseHelper::OnDowngrade(
 }
 
 ECode CAccountManagerService::DatabaseHelper::OnOpen(
-    /*[in]*/ ISQLiteDatabase* db)
+    /* [in] */ ISQLiteDatabase* db)
 {
     // if (Log.isLoggable(TAG, Log.VERBOSE)) Log.v(TAG, "opened database " + DATABASE_NAME);
     return NOERROR;

@@ -46,13 +46,10 @@ const Int32 StaticLayout::TAB_MASK;
 
 const Int32 StaticLayout::TAB_INCREMENT;
 
-const Char32 StaticLayout::CHAR_FIRST_CJK;
-
 const Char32 StaticLayout::CHAR_NEW_LINE;
 const Char32 StaticLayout::CHAR_TAB;
 const Char32 StaticLayout::CHAR_SPACE;
-const Char32 StaticLayout::CHAR_SLASH;
-const Char32 StaticLayout::CHAR_HYPHEN;
+const Char32 StaticLayout::CHAR_ZWSP;
 
 const Double StaticLayout::EXTRA_ROUNDING;
 
@@ -265,8 +262,8 @@ StaticLayout::StaticLayout(
         mEllipsizedWidth = outerwidth;
     }
 
-    mLines = ArrayOf<Int32>::Alloc(ArrayUtils::IdealInt32ArraySize(2 * mColumns));
-    mLineDirections = ArrayOf<ILayoutDirections*>::Alloc(ArrayUtils::IdealInt32ArraySize(2 * mColumns));
+    mLineDirections = ArrayUtils::NewUnpaddedArray(2 * mColumns);
+    mLines = ArrayOf<Int32>::Alloc(mLineDirections->GetLength);
     mMaximumVisibleLineCount = maxLines;
 
     mMeasured = MeasuredText::Obtain();
@@ -293,8 +290,8 @@ StaticLayout::StaticLayout(
     Layout::Init(text, NULL, 0, ALIGN_NONE, 0.0f, 0.0f);
 
     mColumns = COLUMNS_ELLIPSIZE;
-    mLines = ArrayOf<Int32>::Alloc(ArrayUtils::IdealInt32ArraySize(2 * mColumns));
-    mLineDirections = ArrayOf<ILayoutDirections*>::Alloc(ArrayUtils::IdealInt32ArraySize(2 * mColumns));
+    mLineDirections = ArrayUtils::NewUnpaddedArray(2 * mColumns);
+    mLines = ArrayOf<Int32>::Alloc(mLineDirections->GetLength);
     // FIXME This is never recycled
     mMeasured = MeasuredText::Obtain();
 }
@@ -314,6 +311,12 @@ void StaticLayout::Generate(
     /* [in] */ Float ellipsizedWidth,
     /* [in] */ TextUtilsTruncateAt ellipsize)
 {
+    AutoPtr< ArrayOf<Int32> > breakOpp;
+    AutoPtr<ILocale> locale;
+    paint->GetTextLocale((ILocale**)&locale);
+    String localeLanguageTag;
+    locale->ToLanguageTag(&localeLanguageTag);
+
     mLineCount = 0;
 
     Int32 v = 0;
@@ -323,12 +326,10 @@ void StaticLayout::Generate(
     AutoPtr< ArrayOf<Int32> > chooseHtv;
 
     AutoPtr<MeasuredText> measured = mMeasured;
-
     AutoPtr<ISpanned> spanned;
     if (ISpanned::Probe(source))
         spanned = ISpanned::Probe(source);
 
-    Int32 DEFAULT_DIR = ILayout::DIR_LEFT_TO_RIGHT; // XXX
     Int32 paraEnd;
     for (Int32 paraStart = bufStart; paraStart <= bufEnd; paraStart = paraEnd) {
         paraEnd = TextUtils::IndexOf(source, CHAR_NEW_LINE, paraStart, bufEnd);
@@ -355,16 +356,14 @@ void StaticLayout::Generate(
                 restWidth -= tempWidth;
 
                 // LeadingMarginSpan2 is odd.  The count affects all
-                // leading margin spans, not just this particular one,
-                // and start from the top of the span, not the top of the
-                // paragraph.
+                // leading margin spans, not just this particular one
                 if (lms->Probe(EIID_ILeadingMarginSpan2)) {
                     AutoPtr<ILeadingMarginSpan2> lms2 = (ILeadingMarginSpan2*)(lms->Probe(EIID_ILeadingMarginSpan2));
                     Int32 temp = 0;
                     spanned->GetSpanStart(lms2, &temp);
                     Int32 lmsFirstLine = GetLineForOffset(temp);
                     lms2->GetLeadingMarginLineCount(&temp);
-                    firstWidthLineLimit = lmsFirstLine + temp;
+                    firstWidthLineLimit = Elastos::Core::Math::Max(firstWidthLineLimit, lmsFirstLine + temp);
                 }
             }
 
@@ -374,7 +373,7 @@ void StaticLayout::Generate(
             if (length != 0) {
                 if (chooseHtv == NULL ||
                     chooseHtv->GetLength() < length) {
-                    chooseHtv = ArrayOf<Int32>::Alloc(ArrayUtils::IdealInt32ArraySize(length));
+                    chooseHtv = ArrayUtils::NewUnpaddedIntArray(chooseHt->GetLength());
                 }
 
                 for (Int32 i = 0; i < length; i++) {
@@ -404,6 +403,9 @@ void StaticLayout::Generate(
         Int32 dir = measured->mDir;
         Boolean easy = measured->mEasy;
 
+        breakOpp = nLineBreakOpportunities(localeLanguageTag, chs, paraEnd - paraStart, breakOpp);
+        int breakOppIndex = 0;
+
         Int32 width = firstWidth;
 
         Float w = 0;
@@ -421,6 +423,8 @@ void StaticLayout::Generate(
         Int32 fit = paraStart;
         Float fitWidth = w;
         Int32 fitAscent = 0, fitDescent = 0, fitTop = 0, fitBottom = 0;
+        // same as fitWidth but not including any trailing whitespace
+        Float fitWidthGraphing = w;
 
         Boolean hasTabOrEmoji = FALSE;
         Boolean hasTab = FALSE;
@@ -514,7 +518,7 @@ void StaticLayout::Generate(
                     w += (*widths)[j - paraStart];
                 }
 
-                Boolean isSpaceOrTab = c == CHAR_SPACE || c == CHAR_TAB;
+                Boolean isSpaceOrTab = c == CHAR_SPACE || c == CHAR_TAB || c == CHAR_ZWSP;
 
                 if (w <= width || isSpaceOrTab) {
                     fitWidth = w;
@@ -529,18 +533,15 @@ void StaticLayout::Generate(
                     if (fmBottom > fitBottom)
                         fitBottom = fmBottom;
 
-                    // From the Unicode Line Breaking Algorithm (at least approximately)
-                    Boolean isLineBreak = isSpaceOrTab ||
-                            // / is class SY and - is class HY, except when followed by a digit
-                            ((c == CHAR_SLASH || c == CHAR_HYPHEN) &&
-                            (j + 1 >= spanEnd || !Character::IsDigit((*chs)[j + 1 - paraStart]))) ||
-                            // Ideographs are class ID: breakpoints when adjacent, except for NS
-                            // (non-starters), which can be broken after but not before
-                            (c >= CHAR_FIRST_CJK && IsIdeographic(c, TRUE) &&
-                            j + 1 < spanEnd && IsIdeographic((*chs)[j + 1 - paraStart], FALSE));
+                    while ((*breakOpp)[breakOppIndex] != -1
+                            && (*breakOpp)[breakOppIndex] < j - paraStart + 1) {
+                        breakOppIndex++;
+                    }
+                    Boolean isLineBreak = breakOppIndex < breakOpp->GetLength() &&
+                            (*breakOpp)[breakOppIndex] == j - paraStart + 1;
 
                     if (isLineBreak) {
-                        okWidth = w;
+                        okWidth = fitWidthGraphing;
                         ok = j + 1;
 
                         if (fitTop < okTop)
@@ -553,7 +554,7 @@ void StaticLayout::Generate(
                             okBottom = fitBottom;
                     }
                 } else {
-                    Boolean moreChars = (j + 1 < spanEnd);
+                    Boolean moreChars;
                     Int32 endPos;
                     Int32 above, below, top, bottom;
                     Float currentTextWidth;
@@ -565,6 +566,7 @@ void StaticLayout::Generate(
                         top = okTop;
                         bottom = okBottom;
                         currentTextWidth = okWidth;
+                        moreChars = (j + 1 < spanEnd);
                     } else if (fit != here) {
                         endPos = fit;
                         above = fitAscent;
@@ -572,13 +574,21 @@ void StaticLayout::Generate(
                         top = fitTop;
                         bottom = fitBottom;
                         currentTextWidth = fitWidth;
+                        moreChars = (j + 1 < spanEnd);
                     } else {
+                        // must make progress, so take next character
                         endPos = here + 1;
-                        fm->GetAscent(&above);
-                        fm->GetDescent(&below);
-                        fm->GetTop(&top);
-                        fm->GetBottom(&bottom);
+                        // but to deal properly with clusters
+                        // take all zero width characters following that
+                        while (endPos < spanEnd && (*widths)[endPos - paraStart] == 0) {
+                            endPos++;
+                        }
+                        above = fmAscent;
+                        below = fmDescent;
+                        top = fmTop;
+                        bottom = fmBottom;
                         currentTextWidth = (*widths)[here - paraStart];
+                        moreChars = (endPos < spanEnd);
                     }
 
                     v = Out(source, here, endPos,
@@ -592,6 +602,7 @@ void StaticLayout::Generate(
                     j = here - 1; // restart j-span loop from here, compensating for the j++
                     ok = fit = here;
                     w = 0;
+                    fitWidthGraphing = w;
                     fitAscent = fitDescent = fitTop = fitBottom = 0;
                     okAscent = okDescent = okTop = okBottom = 0;
 
@@ -608,7 +619,7 @@ void StaticLayout::Generate(
                     }
 
                     if (mLineCount >= mMaximumVisibleLineCount) {
-                        break;
+                        return;
                     }
                 }
             }
@@ -666,7 +677,7 @@ void StaticLayout::Generate(
                 v,
                 spacingmult, spacingadd, NULL,
                 NULL, fm, FALSE,
-                needMultiply, NULL, DEFAULT_DIR, TRUE, bufEnd,
+                needMultiply, measured->mLevels, measured->mDir, measured->mEasy, bufEnd,
                 includepad, trackpad, NULL,
                 NULL, bufStart, ellipsize,
                 ellipsizedWidth, 0, paint, FALSE);
@@ -988,101 +999,6 @@ ECode StaticLayout::Init(
     return NOERROR;
 }
 
-
-/**
- * Returns true if the specified character is one of those specified
- * as being Ideographic (class ID) by the Unicode Line Breaking Algorithm
- * (http://www.unicode.org/unicode/reports/tr14/), and is therefore OK
- * to break between a pair of.
- *
- * @param includeNonStarters also return true for category NS
- *                           (non-starters), which can be broken
- *                           after but not before.
- */
-Boolean StaticLayout::IsIdeographic(
-    /* [in] */ Char32 c,
-    /* [in] */ Boolean includeNonStarters)
-{
-    if (c >= /*'\u2E80'*/0x2E80 && c <= /*'\u2FFF'*/0x2FFF) {
-        return TRUE; // CJK, KANGXI RADICALS, DESCRIPTION SYMBOLS
-    }
-    if (c == 0x3000/*'\u3000'*/) {
-        return TRUE; // IDEOGRAPHIC SPACE
-    }
-    if (c >= /*'\u3040'*/0x3040 && c <= /*'\u309F'*/0x309F) {
-        if (!includeNonStarters) {
-            switch (c) {
-            case /*'\u3041'*/0x3041: //  # HIRAGANA LETTER SMALL A
-            case /*'\u3043'*/0x3043: //  # HIRAGANA LETTER SMALL I
-            case /*'\u3045'*/0x3045: //  # HIRAGANA LETTER SMALL U
-            case /*'\u3047'*/0x3047: //  # HIRAGANA LETTER SMALL E
-            case /*'\u3049'*/0x3049: //  # HIRAGANA LETTER SMALL O
-            case /*'\u3063'*/0x3063: //  # HIRAGANA LETTER SMALL TU
-            case /*'\u3083'*/0x3083: //  # HIRAGANA LETTER SMALL YA
-            case /*'\u3085'*/0x3085: //  # HIRAGANA LETTER SMALL YU
-            case /*'\u3087'*/0x3087: //  # HIRAGANA LETTER SMALL YO
-            case /*'\u308E'*/0x308E: //  # HIRAGANA LETTER SMALL WA
-            case /*'\u3095'*/0x3095: //  # HIRAGANA LETTER SMALL KA
-            case /*'\u3096'*/0x3096: //  # HIRAGANA LETTER SMALL KE
-            case /*'\u309B'*/0x309B: //  # KATAKANA-HIRAGANA VOICED SOUND MARK
-            case /*'\u309C'*/0x309C: //  # KATAKANA-HIRAGANA SEMI-VOICED SOUND MARK
-            case /*'\u309D'*/0x309D: //  # HIRAGANA ITERATION MARK
-            case /*'\u309E'*/0x309E: //  # HIRAGANA VOICED ITERATION MARK
-                return FALSE;
-            }
-        }
-        return TRUE; // Hiragana (except small characters)
-    }
-    if (c >= /*'\u30A0'*/0x30A0 && c <= /*'\u30FF'*/0x30FF) {
-        if (!includeNonStarters) {
-            switch (c) {
-            case /*'\u30A0'*/0x30A0: //  # KATAKANA-HIRAGANA DOUBLE HYPHEN
-            case /*'\u30A1'*/0x30A1: //  # KATAKANA LETTER SMALL A
-            case /*'\u30A3'*/0x30A3: //  # KATAKANA LETTER SMALL I
-            case /*'\u30A5'*/0x30A5: //  # KATAKANA LETTER SMALL U
-            case /*'\u30A7'*/0x30A7: //  # KATAKANA LETTER SMALL E
-            case /*'\u30A9'*/0x30A9: //  # KATAKANA LETTER SMALL O
-            case /*'\u30C3'*/0x30C3: //  # KATAKANA LETTER SMALL TU
-            case /*'\u30E3'*/0x30E3: //  # KATAKANA LETTER SMALL YA
-            case /*'\u30E5'*/0x30E5: //  # KATAKANA LETTER SMALL YU
-            case /*'\u30E7'*/0x30E7: //  # KATAKANA LETTER SMALL YO
-            case /*'\u30EE'*/0x30EE: //  # KATAKANA LETTER SMALL WA
-            case /*'\u30F5'*/0x30F5: //  # KATAKANA LETTER SMALL KA
-            case /*'\u30F6'*/0x30F6: //  # KATAKANA LETTER SMALL KE
-            case /*'\u30FB'*/0x30FB: //  # KATAKANA MIDDLE DOT
-            case /*'\u30FC'*/0x30FC: //  # KATAKANA-HIRAGANA PROLONGED SOUND MARK
-            case /*'\u30FD'*/0x30FD: //  # KATAKANA ITERATION MARK
-            case /*'\u30FE'*/0x30FE: //  # KATAKANA VOICED ITERATION MARK
-                return FALSE;
-            }
-        }
-        return TRUE; // Katakana (except small characters)
-    }
-    if (c >= /*'\u3400'*/0x3400 && c <= /*'\u4DB5'*/0x4DB5) {
-        return TRUE; // CJK UNIFIED IDEOGRAPHS EXTENSION A
-    }
-    if (c >= /*'\u4E00'*/0x4E00 && c <= /*'\u9FBB'*/0x9FBB) {
-        return TRUE; // CJK UNIFIED IDEOGRAPHS
-    }
-    if (c >= /*'\uF900'*/0xF900 && c <= /*'\uFAD9'*/0xFAD9) {
-        return TRUE; // CJK COMPATIBILITY IDEOGRAPHS
-    }
-    if (c >= /*'\uA000'*/0xA000 && c <= /*'\uA48F'*/0xA48F) {
-        return TRUE; // YI SYLLABLES
-    }
-    if (c >= /*'\uA490'*/0xA490 && c <= /*'\uA4CF'*/0xA4CF) {
-        return TRUE; // YI RADICALS
-    }
-    if (c >= /*'\uFE62'*/0xFE62 && c <= /*'\uFE66'*/0xFE66) {
-        return TRUE; // SMALL PLUS SIGN to SMALL EQUALS SIGN
-    }
-    if (c >= /*'\uFF10'*/0xFF10 && c <= /*'\uFF19'*/0xFF19) {
-        return TRUE; // WIDE DIGITS
-    }
-
-    return FALSE;
-}
-
 Int32 StaticLayout::Out(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
@@ -1120,15 +1036,14 @@ Int32 StaticLayout::Out(
     AutoPtr< ArrayOf<Int32> > lines = mLines;
 
     if (want >= lines->GetLength()) {
-        Int32 nlen = ArrayUtils::IdealInt32ArraySize(want + 1);
-        AutoPtr< ArrayOf<Int32> > grow = ArrayOf<Int32>::Alloc(nlen);
+        AutoPtr< ArrayOf<ILayoutDirections*> > grow2 = ArrayUtils::NewUnpaddedArray(GrowingArrayUtils::GrowSize(want));
+        grow2->Copy(mLineDirections);
+        mLineDirections = grow2;
+
+        AutoPtr< ArrayOf<Int32> > grow = ArrayOf<Int32>::Alloc(grow2->GetLength());
         grow->Copy(lines);
         mLines = grow;
         lines = grow;
-
-        AutoPtr< ArrayOf<ILayoutDirections*> > grow2 = ArrayOf<ILayoutDirections*>::Alloc(nlen);
-        grow2->Copy(mLineDirections);
-        mLineDirections = grow2;
     }
 
     if (chooseHt != NULL) {
@@ -1154,7 +1069,10 @@ Int32 StaticLayout::Out(
         fm->GetBottom(&bottom);
     }
 
-    if (j == 0) {
+    Boolean firstLine = (j == 0);
+    Boolean currentLineIsTheLastVisibleOne = (j + 1 == mMaximumVisibleLineCount);
+    Boolean lastLine = currentLineIsTheLastVisibleOne || (end == bufEnd);
+    if (firstLine) {
         if (trackPad) {
             mTopPadding = top - above;
         }
@@ -1163,7 +1081,10 @@ Int32 StaticLayout::Out(
             above = top;
         }
     }
-    if (end == bufEnd) {
+
+    Int32 extra;
+
+    if (lastLine) {
         if (trackPad) {
             mBottomPadding = bottom - below;
         }
@@ -1173,9 +1094,7 @@ Int32 StaticLayout::Out(
         }
     }
 
-    Int32 extra;
-
-    if (needMultiply) {
+    if (needMultiply && !lastLine) {
         Double ex = (below - above) * (spacingmult - 1) + spacingadd;
         if (ex >= 0) {
             extra = (Int32)(ex + EXTRA_ROUNDING);
@@ -1214,8 +1133,6 @@ Int32 StaticLayout::Out(
     if (ellipsize != TextUtilsTruncateAt_NONE) {
         // If there is only one line, then do any type of ellipsis except when it is MARQUEE
         // if there are multiple lines, just allow END ellipsis on the last line
-        Boolean firstLine = (j == 0);
-        Boolean currentLineIsTheLastVisibleOne = (j + 1 == mMaximumVisibleLineCount);
         Boolean forceEllipsis = moreChars && (mLineCount + 1 == mMaximumVisibleLineCount);
 
         Boolean doEllipsis =
@@ -1350,6 +1267,16 @@ void StaticLayout::CalculateEllipsis(
     (*mLines)[mColumns * line + ELLIPSIS_START] = ellipsisStart;
     (*mLines)[mColumns * line + ELLIPSIS_COUNT] = ellipsisCount;
 }
+
+AutoPtr<ArrayOf<Int32> > StaticLayout::nLineBreakOpportunities(
+    /* [in] */ const String& locale,
+    /* [in] */ ArrayOf<Char32>* text,
+    /* [in] */ Int32 length,
+    /* [in] */ ArrayOf<Int32>* recycle)
+{
+
+}
+
 
 } // namespace Text
 } // namepsace Droid

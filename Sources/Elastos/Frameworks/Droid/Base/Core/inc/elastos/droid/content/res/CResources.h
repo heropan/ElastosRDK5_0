@@ -8,9 +8,9 @@
 #include "elastos/droid/content/res/CConfiguration.h"
 #include "elastos/droid/content/res/CCompatibilityInfo.h"
 #include "elastos/droid/content/res/CTypedArray.h"
-#include "utility/CDisplayMetrics.h"
-#include "utility/CTypedValue.h"
-#include "utility/Pools.h"
+#include "elastos/droid/utility/CDisplayMetrics.h"
+#include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/droid/utility/Pools.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Os::IBundle;

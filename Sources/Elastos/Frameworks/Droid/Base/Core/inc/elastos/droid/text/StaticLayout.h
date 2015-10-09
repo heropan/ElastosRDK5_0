@@ -271,19 +271,6 @@ protected:
         /* [in] */ ICharSequence* text);
 
 private:
-    /**
-     * Returns true if the specified character is one of those specified
-     * as being Ideographic (class ID) by the Unicode Line Breaking Algorithm
-     * (http://www.unicode.org/unicode/reports/tr14/), and is therefore OK
-     * to break between a pair of.
-     *
-     * @param includeNonStarters also return true for category NS
-     *                           (non-starters), which can be broken
-     *                           after but not before.
-     */
-    static CARAPI_(Boolean) IsIdeographic(
-        /* [in] */ Char32 c,
-        /* [in] */ Boolean includeNonStarters);
 
     CARAPI_(Int32) Out(
         /* [in] */ ICharSequence* text,
@@ -328,6 +315,15 @@ private:
         /* [in] */ ITextPaint* paint,
         /* [in] */ Boolean forceEllipsis);
 
+    // returns an array with terminal sentinel value -1 to indicate end
+    // this is so that arrays can be recycled instead of allocating new arrays
+    // every time
+    static /*native*/ AutoPtr<ArrayOf<Int32> > nLineBreakOpportunities(
+        /* [in] */ const String& locale,
+        /* [in] */ ArrayOf<Char32>* text,
+        /* [in] */ Int32 length,
+        /* [in] */ ArrayOf<Int32>* recycle);
+
 private:
     Int32 mLineCount;
     Int32 mTopPadding;
@@ -355,13 +351,10 @@ private:
 
     static const Int32 TAB_INCREMENT = 20; // same as Layout, but that's private
 
-    static const Char32 CHAR_FIRST_CJK = 0x2E80;
-
     static const Char32 CHAR_NEW_LINE = '\n';
     static const Char32 CHAR_TAB = '\t';
     static const Char32 CHAR_SPACE = ' ';
-    static const Char32 CHAR_SLASH = '/';
-    static const Char32 CHAR_HYPHEN = '-';
+    static const Char32 CHAR_ZWSP = 0x200B;
 
     static const Double EXTRA_ROUNDING = 0.5;
 

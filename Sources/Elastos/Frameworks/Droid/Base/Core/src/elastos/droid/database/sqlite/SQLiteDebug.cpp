@@ -20,13 +20,13 @@ namespace Database {
 namespace Sqlite {
 
 SQLiteDebug::DbStats::DbStats(
-    /*[in]*/ const String& dbName,
-    /*[in]*/ Int64 pageCount,
-    /*[in]*/ Int64 pageSize,
-    /*[in]*/ Int32 lookaside,
-    /*[in]*/ Int32 hits,
-    /*[in]*/ Int32 misses,
-    /*[in]*/ Int32 cachesize)
+    /* [in] */ const String& dbName,
+    /* [in] */ Int64 pageCount,
+    /* [in] */ Int64 pageSize,
+    /* [in] */ Int32 lookaside,
+    /* [in] */ Int32 hits,
+    /* [in] */ Int32 misses,
+    /* [in] */ Int32 cachesize)
     : mDbName(dbName)
     , mPageSize(pageSize / 1024)
     , mDbSize((pageCount * pageSize) / 1024)
@@ -72,7 +72,7 @@ SQLiteDebug::SQLiteDebug()
 {}
 
 Boolean SQLiteDebug::ShouldLogSlowQuery(
-    /*[in]*/ Int64 elapsedTimeMillis)
+    /* [in] */ Int64 elapsedTimeMillis)
 {
     Int32 slowQueryMillis;
     SystemProperties::GetInt32(String("db.log.slow_query_threshold"), -1, &slowQueryMillis);
@@ -88,8 +88,8 @@ AutoPtr<SQLiteDebug::PagerStats> SQLiteDebug::GetDatabaseInfo()
 }
 
 void SQLiteDebug::Dump(
-    /*[in]*/ IPrinter* printer,
-    /*[in]*/ const ArrayOf<String>& args)
+    /* [in] */ IPrinter* printer,
+    /* [in] */ const ArrayOf<String>& args)
 {
     Boolean verbose = FALSE;
     for(Int32 i=0; i < args.GetLength(); i++) {

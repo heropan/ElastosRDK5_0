@@ -14,7 +14,7 @@ ECode CMainActivityListener::constructor(
 }
 
 ECode CMainActivityListener::OnTick(
-    /*[in]*/ Int32 duration)
+    /* [in] */ Int32 duration)
 {
     AutoPtr<IActivity> activity;
     mHost->Resolve(EIID_IActivity, (IInterface**)&activity);
