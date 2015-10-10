@@ -9,7 +9,6 @@
 using Elastos::Droid::Utility::CArrayMap;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
-using Elastos::Utility::CObjectMap;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::IList;
 using Elastos::Utility::CArrayList;
