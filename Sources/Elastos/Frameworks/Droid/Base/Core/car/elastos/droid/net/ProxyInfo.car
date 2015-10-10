@@ -22,7 +22,7 @@ module
      */
     /**
      * @Involved
-     * interface ;
+     * interface IParcelable;
      */
     interface IProxyInfo {
         /**
