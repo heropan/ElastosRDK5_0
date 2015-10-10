@@ -41,6 +41,8 @@ module
     merge("crypto/spec/IRC5ParameterSpec.car");
     merge("crypto/spec/ISecretKeySpec.car");
 
+    interface Elastos.IO.ICloseable;
+    interface Elastos.IO.IFlushable;
     interface Elastos.IO.IInputStream;
     interface Elastos.IO.IOutputStream;
     interface Elastos.IO.IFilterInputStream;
@@ -50,13 +52,15 @@ module
     interface Elastos.Security.IProvider;
     interface Elastos.Security.IAlgorithmParameters;
     interface Elastos.Security.Spec.IAlgorithmParameterSpec;
+    interface Elastos.Security.Spec.IKeySpec;
     interface Elastos.Math.IBigInteger;
+    interface Elastosx.Crypto.ISecretKey;
 
    namespace Elastosx {
    namespace Crypto {
 
     [deprecated]
-    class CCipher {                        // 声明 CAR 类
+    class CCipher {
         constructor(
             [in] ICipherSpi* cipherSpi,
             [in] IProvider* provider,
@@ -67,11 +71,11 @@ module
             [in] ArrayOf<String> * transformParts,
             [in] IProvider* provider);
 
-        interface ICipher;              // 接口声明
+        interface ICipher;
     }
 
-    singleton class CCipherHelper {     // 声明单例 CAR 类
-        interface ICipherHelper;        // 接口声明
+    singleton class CCipherHelper {
+        interface ICipherHelper;
     }
 
     class CCipherInputStream {
@@ -84,6 +88,8 @@ module
 
         interface ICipherInputStream;
         interface IFilterInputStream;
+        interface IInputStream;
+        interface ICloseable;
     }
 
     class CCipherOutputStream {
@@ -96,6 +102,9 @@ module
 
         interface ICipherOutputStream;
         interface IFilterOutputStream;
+        interface IOutputStream;
+        interface IFlushable;
+        interface ICloseable;
     }
 
     [deprecated]
@@ -210,6 +219,7 @@ module
                 [in] Int32 offset);
 
             interface IDESKeySpec;
+            interface IKeySpec;
         }
 
         singleton class CDESKeySpecHelper {
@@ -226,6 +236,7 @@ module
                 [in] Int32 offset);
 
             interface IDESedeKeySpec;
+            interface IKeySpec;
         }
 
         singleton class CDESedeKeySpecHelper {
@@ -238,6 +249,7 @@ module
                 [in] Int32 exponentSize);
 
             interface IDHGenParameterSpec;
+            interface IAlgorithmParameterSpec;
         }
 
         class CDHParameterSpec {
@@ -251,6 +263,7 @@ module
                 [in] Int32 l);
 
             interface IDHParameterSpec;
+            interface IAlgorithmParameterSpec;
         }
 
         class CDHPrivateKeySpec {
@@ -260,6 +273,7 @@ module
                 [in] IBigInteger * g);
 
             interface IDHPrivateKeySpec;
+            interface IKeySpec;
         }
 
         class CDHPublicKeySpec {
@@ -269,6 +283,7 @@ module
                 [in] IBigInteger * g);
 
             interface IDHPublicKeySpec;
+            interface IKeySpec;
         }
 
         [deprecated]
@@ -284,6 +299,7 @@ module
                 [in] Int32 byteCount);
 
             interface IGCMParameterSpec;
+            interface IAlgorithmParameterSpec;
         }
 
         [deprecated]
@@ -297,6 +313,7 @@ module
                 [in] Int32 byteCount);
 
             interface IIvParameterSpec;
+            interface IAlgorithmParameterSpec;
         }
 
         class COAEPParameterSpec {
@@ -309,6 +326,7 @@ module
                 [in] IPSource * pSrc);
 
             interface IOAEPParameterSpec;
+            interface IAlgorithmParameterSpec;
         }
 
         singleton class COAEPParameterSpecHelper {
@@ -332,6 +350,7 @@ module
                 [in] Int32 iterationCount);
 
             interface IPBEKeySpec;
+            interface IKeySpec;
         }
 
         [deprecated]
@@ -341,6 +360,7 @@ module
                 [in] Int32 iterationCount);
 
             interface IPBEParameterSpec;
+            interface IAlgorithmParameterSpec;
         }
 
         class CPSource {
@@ -379,6 +399,7 @@ module
                 [in] Int32 offset);
 
             interface IRC2ParameterSpec;
+            interface IAlgorithmParameterSpec;
         }
 
         [deprecated]
@@ -402,6 +423,7 @@ module
                 [in] Int32 offset);
 
             interface IRC5ParameterSpec;
+            interface IAlgorithmParameterSpec;
         }
 
         [deprecated]
@@ -414,9 +436,11 @@ module
                 [in] ArrayOf<Byte> * key,
                 [in] Int32 offset,
                 [in] Int32 len,
-                [in] Int32 algorithm);
+                [in] String algorithm);
 
             interface ISecretKeySpec;
+            interface ISecretKey;
+            interface IKeySpec;
         }
 
     }

@@ -44,7 +44,7 @@ ECode CSecretKeySpec::constructor(
     /* [in] */ ArrayOf<Byte> * key,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 len,
-    /* [in] */ Int32 algorithm)
+    /* [in] */ const String& algorithm)
 {
     if (key == NULL) {
         // throw new IllegalArgumentException("key == NULL");

@@ -69,7 +69,7 @@ public:
         /* [in] */ ArrayOf<Byte> * key,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 len,
-        /* [in] */ Int32 algorithm);
+        /* [in] */ const String& algorithm);
 
     /**
      * Returns the algorithm name.

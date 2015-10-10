@@ -48,10 +48,11 @@ String DateIntervalFormat::FormatDateRange(
     /* [in] */ Int64 startMs,
     /* [in] */ Int64 endMs,
     /* [in] */ Int32 flags,
-    /* [in] */ String& olsonId)
+    /* [in] */ const String& olsonId)
 {
+    String id = olsonId;
     if ((flags & IDateIntervalFormat::FORMAT_UTC) != 0) {
-        olsonId = "UTC";
+        id = String("UTC");
     }
     AutoPtr<ITimeZone> tz;
     if (!olsonId.IsNull()) {

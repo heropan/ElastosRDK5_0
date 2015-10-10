@@ -41,7 +41,7 @@ public:
         /* [in] */ Int64 startMs,
         /* [in] */ Int64 endMs,
         /* [in] */ Int32 flags,
-        /* [in] */ String& olsonId);
+        /* [in] */ const String& olsonId);
 
     static CARAPI_(String) FormatDateRange(
         /* [in] */ ILocale* locale,

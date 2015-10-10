@@ -35,7 +35,7 @@ module
             [in] Int64 startMs,
             [in] Int64 endMs,
             [in] Int32 flags,
-            [in] String* olsonId,
+            [in] String olsonId,
             [out] String* rst);
 
         // This is our slightly more sensible internal API. (A truly sane replacement would take a

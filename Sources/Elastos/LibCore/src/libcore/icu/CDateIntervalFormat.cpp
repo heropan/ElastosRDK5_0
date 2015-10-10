@@ -13,13 +13,12 @@ ECode CDateIntervalFormat::FormatDateRange(
     /* [in] */ Int64 startMs,
     /* [in] */ Int64 endMs,
     /* [in] */ Int32 flags,
-    /* [in] */ String* olsonId,
+    /* [in] */ const String& olsonId,
     /* [out] */ String* rst)
 {
-    VALIDATE_NOT_NULL(olsonId);
     VALIDATE_NOT_NULL(rst);
 
-    *rst = DateIntervalFormat::FormatDateRange(startMs, endMs, flags, *olsonId);
+    *rst = DateIntervalFormat::FormatDateRange(startMs, endMs, flags, olsonId);
     return NOERROR;
 }
 

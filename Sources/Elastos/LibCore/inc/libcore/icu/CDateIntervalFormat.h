@@ -25,7 +25,7 @@ public:
         /* [in] */ Int64 startMs,
         /* [in] */ Int64 endMs,
         /* [in] */ Int32 flags,
-        /* [in] */ String* olsonId,
+        /* [in] */ const String& olsonId,
         /* [out] */ String* rst);
 
     CARAPI FormatDateRange(
