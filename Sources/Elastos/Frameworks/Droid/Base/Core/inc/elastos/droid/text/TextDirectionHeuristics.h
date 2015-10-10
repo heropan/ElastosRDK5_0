@@ -7,6 +7,7 @@
 #include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -32,10 +33,14 @@ public:
     static AutoPtr<ITextDirectionHeuristic> GetFIRSTSTRONG_LTR();
     static AutoPtr<ITextDirectionHeuristic> GetFIRSTSTRONG_RTL();
 
-    static AutoPtr<ITextDirectionHeuristic> GetNYRTL_LTR();
+    static AutoPtr<ITextDirectionHeuristic> GetANYRTL_LTR();
     static AutoPtr<ITextDirectionHeuristic> GetLOCALE();
 
 private:
+    static const Int32 STATE_TRUE;// = 0;
+    static const Int32 STATE_FALSE;// = 1;
+    static const Int32 STATE_UNKNOWN;// = 2;
+
     /** Always decides that the direction is left to right. */
     static AutoPtr<ITextDirectionHeuristic> LTR;
 
@@ -83,8 +88,8 @@ private:
          * Returns whether the range of text is RTL according to the algorithm.
          *
          */
-        virtual CARAPI_(TriState) CheckRtl(
-            /* [in] */ ArrayOf<Char32>* text,
+        virtual CARAPI_(Int32) CheckRtl(
+            /* [in] */ ICharSequence* text,
             /* [in] */ Int32 start,
             /* [in] */ Int32 count) = 0;
 
@@ -122,24 +127,6 @@ private:
             /* [in] */ Int32 start,
             /* [in] */ Int32 count,
             /* [out] */ Boolean* result);
-        {
-            VALIDATE_NOT_NULL(result);
-            *result = FALSE;
-
-            if (chars == NULL || start < 0 || count < 0 || chars->GetLength() - count < start) {
-//                throw new IllegalArgumentException();
-                return E_ILLEGAL_ARGUMENT_EXCEPTION;
-            }
-
-            if (mAlgorithm == NULL) {
-                *result = DefaultIsRtl();
-                return NOERROR;
-            }
-
-            *result = DoCheck(chars, start, count);
-
-            return NOERROR;
-        }
 
     protected:
 
@@ -151,7 +138,7 @@ private:
     private:
 
         CARAPI_(Boolean) DoCheck(
-            /* [in] */ ArrayOf<Char32>* chars,
+            /* [in] */ ICharSequence* chars,
             /* [in] */ Int32 start,
             /* [in] */ Int32 count);
 
@@ -201,14 +188,16 @@ private:
         }
 
         //@Override
-        CARAPI_(TriState) CheckRtl(
-            /* [in] */ ArrayOf<Char32>* text,
+        CARAPI_(Int32) CheckRtl(
+            /* [in] */ ICharSequence* text,
             /* [in] */ Int32 start,
             /* [in] */ Int32 count)
         {
-            TriState result = TriState_UNKNOWN;
-            for (Int32 i = start, e = start + count; i < e && result == TriState_UNKNOWN; ++i) {
-                result = IsRtlTextOrFormat(Character::GetDirectionality((*text)[i]));
+            Int32 result = TextDirectionHeuristics::STATE_UNKNOWN;
+            String str = Object::ToString(text);
+            AutoPtr<ArrayOf<Char32> > chars = str.GetChars();
+            for (Int32 i = start, e = start + count; i < e && result == TextDirectionHeuristics::STATE_UNKNOWN; ++i) {
+                result = IsRtlTextOrFormat(Character::GetDirectionality((*chars)[i]));
             }
             return result;
         }
@@ -254,23 +243,25 @@ private:
         }
 
         //@Override
-        CARAPI_(TriState) CheckRtl(
-            /* [in] */ ArrayOf<Char32>* text,
+        CARAPI_(Int32) CheckRtl(
+            /* [in] */ ICharSequence* text,
             /* [in] */ Int32 start,
             /* [in] */ Int32 count)
         {
+            String str = Object::ToString(text);
+            AutoPtr<ArrayOf<Char32> > chars = str.GetChars();
             Boolean haveUnlookedFor = false;
             for (Int32 i = start, e = start + count; i < e; ++i) {
-                switch (IsRtlText(Character::GetDirectionality((*text)[i]))) {
+                switch (IsRtlText(Character::GetDirectionality((*chars)[i]))) {
                     case TRUE:
                         if (mLookForRtl) {
-                            return TriState_TRUE;
+                            return TextDirectionHeuristics::STATE_TRUE;
                         }
                         haveUnlookedFor = TRUE;
                         break;
                     case FALSE:
                         if (!mLookForRtl) {
-                            return TriState_FALSE;
+                            return TextDirectionHeuristics::STATE_FALSE;
                         }
                         haveUnlookedFor = TRUE;
                         break;
@@ -279,9 +270,9 @@ private:
                 }
             }
             if (haveUnlookedFor) {
-                return mLookForRtl ? TriState_FALSE : TriState_TRUE;
+                return mLookForRtl ? TextDirectionHeuristics::STATE_FALSE : TextDirectionHeuristics::STATE_TRUE;
             }
-            return TriState_UNKNOWN;
+            return TextDirectionHeuristics::STATE_UNKNOWN;
         }
 
         virtual ~AnyStrong()
@@ -342,11 +333,6 @@ private:
 
     static Int32 IsRtlTextOrFormat(
         /* [in] */ Int32 directionality);
-
-private:
-    static const Int32 STATE_TRUE;// = 0;
-    static const Int32 STATE_FALSE;// = 1;
-    static const Int32 STATE_UNKNOWN;// = 2;
 };
 
 } // namespace Text

@@ -145,6 +145,12 @@ public:
     CARAPI GetInternationalCurrencySymbol(
         /* [out] */ String* internationalCurrencySymbol);
 
+    CARAPI GetTimeFormat12(
+        /* [out] */ String* format); // "hh:mm a"
+
+    CARAPI GetTimeFormat24(
+        /* [out] */ String* format); // "HH:mm"
+
     CARAPI GetNumberPattern(
         /* [out] */ String* numberPattern);
 

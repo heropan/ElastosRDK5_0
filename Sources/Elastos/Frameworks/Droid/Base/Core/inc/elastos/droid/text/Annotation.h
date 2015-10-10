@@ -4,8 +4,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/core/Object.h"
 
-using Elastos::Droid::Os::IParcelable;
-
 namespace Elastos {
 namespace Droid {
 namespace Text {
@@ -23,8 +21,6 @@ class Annotation
 {
 public:
     CAR_INTERFACE_DECL()
-
-    CAR_OBJECT_DECL()
 
     Annotation();
 

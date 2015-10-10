@@ -79,4 +79,8 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::Text::MeasuredText, IInterface)
+
+
 #endif //__ELASTOS_DROID_TEXT_MEASUREDTEXT_H__

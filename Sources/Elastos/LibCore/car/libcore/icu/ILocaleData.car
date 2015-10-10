@@ -159,6 +159,13 @@ module
         GetInternationalCurrencySymbol(
             [out] String* internationalCurrencySymbol);
 
+        // Used by android.text.format.DateFormat.getTimeFormat.
+        GetTimeFormat12(
+            [out] String* format); // "hh:mm a"
+
+        GetTimeFormat24(
+            [out] String* format); // "HH:mm"
+
         //
         // Used by DecimalFormat and NumberFormat.
         //

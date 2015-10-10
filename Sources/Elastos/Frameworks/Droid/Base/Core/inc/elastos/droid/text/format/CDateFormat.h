@@ -28,9 +28,18 @@ public:
         /* [in] */ IContext* context,
         /* [out] */ Boolean* result);
 
+    CARAPI GetBestDateTimePattern(
+        /* [in] */ ILocale* locale,
+        /* [in] */ const String& skeleton,
+        /* [out] */ String* pattern);
+
     CARAPI GetTimeFormat(
         /* [in] */ IContext* context,
         /* [out] */ Elastos::Text::IDateFormat** format);
+
+    CARAPI GetTimeFormatString(
+        /* [in] */ IContext* context,
+        /* [out] */ String* format);
 
     CARAPI GetDateFormat(
         /* [in] */ IContext* context,

@@ -12,6 +12,7 @@ module
      * @Involve
      * interface Elastos.Droid.Graphics.IPaint
      */
+    [deprecated]
     interface ITextPaint {
         /**
          * Copy the fields from tp into this TextPaint, including the
@@ -20,21 +21,56 @@ module
         Set(
             [in] ITextPaint* tp);
 
-        /**
-         * Defines a custom underline for this Paint.
-         * @param color underline solid color
-         * @param thickness underline thickness
-         * @hide
-         */
-        SetUnderlineText(
-            [in] Int32 color,
-            [in] Float thickness);
+        // Special value 0 means no background paint
+        SetBgColor(
+            [in] Int32 bgColor);
+
+        GetBgColor(
+            [out] Int32* bgColor);
+
+        SetBaselineShift(
+            [in] Int32 baselineShift);
+
+        GetBaselineShift(
+            [out] Int32* baselineShift);
+
+        SetLinkColor(
+            [in] Int32 linkColor);
+
+        GetLinkColor(
+            [out] Int32* linkColor);
+
+        SetDrawableState(
+            [in] ArrayOf<Int32>* drawableState);
+
+        GetDrawableState(
+            [out, callee] ArrayOf<Int32>* drawableState);
 
         SetDensity(
             [in] Float density);
 
         GetDensity(
             [out] Float* density);
+
+        /**
+         * Special value 0 means no custom underline
+         * @hide
+         */
+        SetUnderlineColor(
+            [in] Int32 underlineColor);
+
+        GetUnderlineColor(
+            [out] Int32* underlineColor);
+
+        /**
+         * Defined as a multiplier of the default underline thickness. Use 1.0f for default thickness.
+         * @hide
+         */
+        SetUnderlineThickness(
+            [in] Float underlineThickness);
+
+        GetUnderlineThickness(
+            [out] Float* underlineThickness);
     }
 
     } // namespace Text

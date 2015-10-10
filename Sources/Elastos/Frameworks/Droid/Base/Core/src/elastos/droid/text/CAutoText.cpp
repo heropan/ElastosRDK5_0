@@ -1,7 +1,7 @@
 
 #include "elastos/droid/text/CAutoText.h"
 #include "elastos/droid/content/res/CResources.h"
-#include "elastos/droid/utility/XmlUtils.h"
+// #include "elastos/droid/internal/utility/XmlUtils.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/StringBuilder.h>
 
@@ -11,7 +11,7 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
-using Elastos::Droid::Utility::XmlUtils;
+// using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Droid::R;
 
 namespace Elastos {
@@ -28,7 +28,7 @@ const Int32 CAutoText::TRIE_ROOT = 0;
 const Int32 CAutoText::INCREMENT = 1024;
 const Int32 CAutoText::DEFAULT = 14337; // Size of the Trie 13 Aug 2007
 const Int32 CAutoText::RIGHT = 9300; // Size of 'right' 13 Aug 2007
-Mutex CAutoText::sLock;
+Object CAutoText::sLock;
 
 Boolean CAutoText::sInited = FALSE;
 AutoPtr<IAutoText> CAutoText::sInstance;
@@ -41,11 +41,6 @@ CAutoText::CAutoText()
     : mTrieUsed(TRIE_ROOT)
     , mSize(0)
 {
-}
-
-ECode CAutoText::constructor()
-{
-    return NOERROR;
 }
 
 ECode CAutoText::constructor(
@@ -93,8 +88,10 @@ AutoPtr<IAutoText> CAutoText::GetInstance(
         Boolean bEqual;
         if (!(locale->Equals((((CAutoText*)(instance.Get()))->mLocale).Get(), &bEqual), bEqual)) {
             instance = NULL;
-            CAutoText::New(res, (IAutoText**)&instance);
-            sInstance = instance;
+            AutoPtr<CAutoText> instance;
+            CAutoText::NewByFriend((CAutoText**)&instance);
+            instance->constructor(res);
+            sInstance = (IAutoText*)instance.Get();
         }
     }
     return instance;
@@ -166,25 +163,27 @@ void CAutoText::Init(
     mTrieUsed = TRIE_ROOT + 1;
 
 //    try {
-        XmlUtils::BeginDocument(parser.Get(), String("words"));
+    assert(0 && "TODO");
+        // XmlUtils::BeginDocument(parser.Get(), String("words"));
         String odest("");
         Char32 ooff = 0;
 
+        IXmlPullParser* xpp = IXmlPullParser::Probe(parser);
         while (TRUE) {
-            XmlUtils::NextElement(parser.Get());
+            // XmlUtils::NextElement(parser.Get());
 
             String element;
-            parser->GetName(&element);
+            xpp->GetName(&element);
             if (element.IsNull() || !(element.Equals("word"))) {
                 break;
             }
 
             String src;
-            parser->GetAttributeValue(String(NULL), String("src"), &src);
+            xpp->GetAttributeValue(String(NULL), String("src"), &src);
             Int32 next;
-            if ((parser->Next(&next), next) == IXmlPullParser::TEXT) {
+            if ((xpp->Next(&next), next) == IXmlPullParser::TEXT) {
                 String dest;
-                parser->GetText(&dest);
+                xpp->GetText(&dest);
                 Char32 off;
 
                 if (dest.Equals(odest)) {
@@ -195,7 +194,7 @@ void CAutoText::Init(
                     right->GetLength(&rightLen);
                     off = (Char32) rightLen;
                     right->AppendChar((Char32) dest.GetLength());
-                    right->AppendString(dest);
+                    right->Append(dest);
                 }
 
                 Add(src, off);

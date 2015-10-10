@@ -5,9 +5,11 @@
 //#include "elastos/droid/text/CTextPaint.h"
 //#include "elastos/droid/internal/utility/ArrayUtils.h"
 #include <elastos/utility/logging/Logger.h>
+#include <elastos/core/AutoLock.h>
 
-using Elastos::Droid::Internal::Utility::ArrayUtils;
+// using Elastos::Droid::Internal::Utility::ArrayUtils;
 using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IPaint;
 // using Elastos::Droid::Text::CTextPaint;
 using Elastos::Droid::Text::Style::IReplacementSpan;
 using Elastos::Droid::Text::Style::EIID_IMetricAffectingSpan;
@@ -177,27 +179,29 @@ Float MeasuredText::AddStyleRun(
     /* [in] */ IPaintFontMetricsInt* fm)
 {
     assert(paint != NULL);
+    IPaint* p = IPaint::Probe(paint);
 
     if (fm != NULL) {
         Int32 spacing;
-        paint->GetFontMetricsInt(fm, &spacing);
+        p->GetFontMetricsInt(fm, &spacing);
     }
 
-    Int32 p = mPos;
-    mPos = p + len;
+    Int32 pos = mPos;
+    mPos = pos + len;
 
     Float retValue;
     if (mEasy) {
-        Boolean isRtl = mDir != Layout.DIR_LEFT_TO_RIGHT;
-        return (paint->GetTextRunAdvances(*mChars, p, len, p, len, isRtl, mWidths, p, &retValue), retValue);
+        assert(0 && "TODO");
+        // Boolean isRtl = (mDir != Layout::DIR_LEFT_TO_RIGHT);
+        // return (p->GetTextRunAdvances(mChars, pos, len, pos, len, isRtl, mWidths, pos, &retValue), retValue);
     }
 
     Float totalAdvance = 0;
-    Int32 level = (*mLevels)[p];
-    for (Int32 q = p, i = p + 1, e = p + len;; ++i) {
+    Int32 level = (*mLevels)[pos];
+    for (Int32 q = pos, i = pos + 1, e = pos + len;; ++i) {
         if (i == e || (*mLevels)[i] != level) {
             Boolean isRtl = (level & 0x1) != 0;
-            paint->GetTextRunAdvances(*mChars, q, i - q, q, i - q, isRtl, mWidths, q, &retValue);
+            p->GetTextRunAdvances(mChars, q, i - q, q, i - q, isRtl, mWidths, q, &retValue);
             totalAdvance += retValue;
             if (i == e) {
                 break;
@@ -215,12 +219,12 @@ Float MeasuredText::AddStyleRun(
     /* [in] */ Int32 len,
     /* [in] */ IPaintFontMetricsInt* fm)
 {
-    AutoPtr<ITextPaint> workPaint = mWorkPaint;
+    ITextPaint* workPaint = mWorkPaint.Get();
     workPaint->Set(paint);
     // XXX paint should not have a baseline shift, but...
-    workPaint->SetBaselineShift(0);
+    // workPaint->SetBaselineShift(0);
 
-    AutoPtr<IReplacementSpan> replacement = NULL;
+    AutoPtr<IReplacementSpan> replacement;
     for (Int32 i = 0; i < spans->GetLength(); i++) {
         AutoPtr<IMetricAffectingSpan> span = IMetricAffectingSpan::Probe((*spans)[i]);
         if (IReplacementSpan::Probe(span)) {
@@ -230,6 +234,7 @@ Float MeasuredText::AddStyleRun(
         }
     }
 
+    IPaint* p = IPaint::Probe(workPaint);
     Float wid;
     if (replacement == NULL) {
         wid = AddStyleRun(workPaint, len, fm);
@@ -237,7 +242,7 @@ Float MeasuredText::AddStyleRun(
     else {
         // Use original text.  Shouldn't matter.
         Int32 intWid;
-        replacement->GetSize(workPaint, mText, mTextStart + mPos,
+        replacement->GetSize(p, mText, mTextStart + mPos,
                 mTextStart + mPos + len, fm, &intWid);
         wid = intWid;
         AutoPtr< ArrayOf<Float> > w = mWidths;
@@ -249,7 +254,7 @@ Float MeasuredText::AddStyleRun(
 
     if (fm != NULL) {
         Int32 baselineShift;
-        workPaint->GetBaselineShift(&baselineShift);
+        // workPaint->GetBaselineShift(&baselineShift);
         if (baselineShift < 0) {
             Int32 top, ascent;
             fm->GetTop(&top);

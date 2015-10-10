@@ -31,61 +31,61 @@ public:
         /* [in] */ IPaint* p);
 
     // Special value 0 means no background paint
-    virtual CARAPI SetBgColor(
+    CARAPI SetBgColor(
         /* [in] */ Int32 bgColor);
 
-    virtual CARAPI GetBgColor(
+    CARAPI GetBgColor(
         /* [out] */ Int32* color);
 
-    virtual CARAPI SetBaselineShift(
+    CARAPI SetBaselineShift(
         /* [in] */ Int32 baselineShift);
 
-    virtual CARAPI GetBaselineShift(
+    CARAPI GetBaselineShift(
         /* [out] */ Int32* shift);
 
-    virtual CARAPI SetLinkColor(
+    CARAPI SetLinkColor(
         /* [in] */ Int32 linkColor);
 
-    virtual CARAPI GetLinkColor(
+    CARAPI GetLinkColor(
         /* [out] */ Int32* color);
 
-    virtual CARAPI SetDrawableState(
+    CARAPI SetDrawableState(
         /* [in] */ ArrayOf<Int32>* drawableState);
 
-    virtual CARAPI GetDrawableState(
+    CARAPI GetDrawableState(
         /* [out, callee] */ ArrayOf<Int32>** state);
 
-    virtual CARAPI SetDensity(
+    CARAPI SetDensity(
         /* [in] */ Float density);
 
-    virtual CARAPI GetDensity(
+    CARAPI GetDensity(
         /* [out] */ Float* density);
 
     /**
      * Special value 0 means no custom underline
      * @hide
      */
-    virtual CARAPI SetUnderlineColor(
+    CARAPI SetUnderlineColor(
         /* [in] */ Int32 underlineColor);
 
-    virtual CARAPI GetUnderlineColor(
+    CARAPI GetUnderlineColor(
         /* [out] */ Int32* color);
 
     /**
      * Defined as a multiplier of the default underline thickness. Use 1.0f for default thickness.
      * @hide
      */
-    virtual CARAPI SetUnderlineThickness(
+    CARAPI SetUnderlineThickness(
         /* [in] */ Float underlineThickness);
 
-    virtual CARAPI GetUnderlineThickness(
+    CARAPI GetUnderlineThickness(
         /* [out] */ Float* underlineThickness);
 
     /**
      * Copy the fields from tp into this TextPaint, including the
      * fields inherited from Paint.
      */
-    virtual CARAPI Set(
+    CARAPI Set(
         /* [in] */ ITextPaint* tp);
 
     /**
@@ -94,7 +94,7 @@ public:
      * @param thickness underline thickness
      * @hide
      */
-    virtual CARAPI SetUnderlineText(
+    CARAPI SetUnderlineText(
         /* [in] */ Int32 color,
         /* [in] */ Float thickness);
 

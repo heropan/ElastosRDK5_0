@@ -3,21 +3,17 @@
 #define __ELASTOS_DROID_TEXT_CEDITABLEFACTORY_H__
 
 #include "_Elastos_Droid_Text_CEditableFactory.h"
-#include <elastos/core/Singleton.h>
-
-using Elastos::Core::ICharSequence;
+#include <elastos/droid/text/EditableFactory.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 
-CarClass(CEditableFactory)
+CarClass(EditableFactory)
+    , public EditableFactory
 {
 public:
-    CARAPI NewEditable(
-        /* [in] */ ICharSequence* source,
-        /* [out] */ IEditable** editable);
-
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Text

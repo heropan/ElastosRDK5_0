@@ -419,6 +419,22 @@ ECode LocaleData::GetInternationalCurrencySymbol(
     return NOERROR;
 }
 
+ECode LocaleData::GetTimeFormat12(
+    /* [out] */ String* format)
+{
+    VALIDATE_NOT_NULL(format);
+    *format = mTimeFormat12;
+    return NOERROR;
+}
+
+ECode LocaleData::GetTimeFormat24(
+    /* [out] */ String* format)
+{
+    VALIDATE_NOT_NULL(format);
+    *format = mTimeFormat24;
+    return NOERROR;
+}
+
 ECode LocaleData::GetNumberPattern(
     /* [out] */ String* numberPattern)
 {

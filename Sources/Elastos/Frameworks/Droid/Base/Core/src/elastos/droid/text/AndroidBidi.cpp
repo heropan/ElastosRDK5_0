@@ -65,7 +65,9 @@ AutoPtr<ILayoutDirections> AndroidBidi::Directions(
     /* [in] */ Int32 len)
 {
     if (len == 0) {
-        return ILayout::DIRS_ALL_LEFT_TO_RIGHT;
+        assert(0 && "TODO");
+        return NULL;
+        // return Layout::DIRS_ALL_LEFT_TO_RIGHT;
     }
 
     Int32 baseLevel = (dir == ILayout::DIR_LEFT_TO_RIGHT) ? 0 : 1;
@@ -210,7 +212,7 @@ Int32 AndroidBidi::RunBidi(
     if (chs != NULL && info != NULL) {
         UErrorCode status = U_ZERO_ERROR;
         UBiDi* bidi = ubidi_openSized(n, 0, &status);
-        ubidi_setPara(bidi, chs, n, dir, NULL, &status);
+        ubidi_setPara(bidi, (const UChar*)chs->GetPayload(), n, dir, NULL, &status);
         if (U_SUCCESS(status)) {
             for (Int32 i = 0; i < n; ++i) {
               (*info)[i] = ubidi_getLevelAt(bidi, i);

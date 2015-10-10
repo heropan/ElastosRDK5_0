@@ -6,7 +6,9 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
-ILAYOUTHELPER_METHODS_IMPL(CBoringLayoutHelper, CBoringLayout, CBoringLayout)
+CAR_INTERFACE_IMPL(CBoringLayoutHelper, Singleton, IBoringLayoutHelper)
+
+CAR_SINGLETON_IMPL(CBoringLayoutHelper)
 
 CARAPI CBoringLayoutHelper::Make(
     /* [in] */ ICharSequence* source,

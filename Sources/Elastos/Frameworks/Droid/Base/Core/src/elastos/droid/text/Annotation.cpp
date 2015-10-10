@@ -7,8 +7,6 @@ namespace Text {
 
 CAR_INTERFACE_IMPL_3(Annotation, Object, IAnnotation, IParcelableSpan, IParcelable)
 
-CAR_OBJECT_IMPL(Annotation)
-
 Annotation::Annotation()
 {}
 
@@ -65,7 +63,7 @@ ECode Annotation::GetValue(
 {
     VALIDATE_NOT_NULL(value)
     *value = mValue;
-    return NOERROR
+    return NOERROR;
 }
 
 ECode Annotation::ReadFromParcel(

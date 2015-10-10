@@ -158,16 +158,17 @@ ECode TextPaint::Set(
     //assert(tp != NULL);
     VALIDATE_NOT_NULL(tp);
 
-    Paint::Set(tp);
+    IPaint* p = IPaint::Probe(tp);
+    Paint::Set(p);
 
-    tp->GetBgColor(&mBgColor);
-    tp->GetBaselineShift(&mBaselineShift);
-    tp->GetLinkColor(&mLinkColor);
-    mDrawableState = NULL;
-    tp->GetDrawableState((ArrayOf<Int32>**)&mDrawableState);
-    tp->GetDensity(&mDensity);
-    tp->GetUnderlineColor(&mUnderlineColor);
-    tp->GetUnderlineThickness(&mUnderlineThickness);
+    // tp->GetBgColor(&mBgColor);
+    // tp->GetBaselineShift(&mBaselineShift);
+    // tp->GetLinkColor(&mLinkColor);
+    // mDrawableState = NULL;
+    // tp->GetDrawableState((ArrayOf<Int32>**)&mDrawableState);
+    // tp->GetDensity(&mDensity);
+    // tp->GetUnderlineColor(&mUnderlineColor);
+    // tp->GetUnderlineThickness(&mUnderlineThickness);
 
     return NOERROR;
 }

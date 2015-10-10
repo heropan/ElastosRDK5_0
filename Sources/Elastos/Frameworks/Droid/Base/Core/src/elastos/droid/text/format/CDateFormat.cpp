@@ -2,6 +2,12 @@
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/text/format/CDateFormat.h"
 
+using Libcore::ICU::IICUUtil;
+using Libcore::ICU::CICUUtil;
+using Libcore::ICU::ILocaleData;
+using Libcore::ICU::ILocaleDataHelper;
+using Libcore::ICU::CLocaleDataHelper;
+
 namespace Elastos {
 namespace Droid {
 namespace Text {
@@ -20,6 +26,16 @@ ECode CDateFormat::Is24HourFormat(
     return NOERROR;
 }
 
+ECode CDateFormat::GetBestDateTimePattern(
+    /* [in] */ ILocale* locale,
+    /* [in] */ const String& skeleton,
+    /* [out] */ String* pattern)
+{
+    AutoPtr<IICUUtil> icu;
+    CICUUtil::AcquireSingleton((IICUUtil**)&icu);
+    return icu->GetBestDateTimePattern(skeleton, locale);
+}
+
 ECode CDateFormat::GetTimeFormat(
     /* [in] */ IContext* context,
     /* [out] */ Elastos::Text::IDateFormat** format)
@@ -29,6 +45,31 @@ ECode CDateFormat::GetTimeFormat(
     *format = f;
     REFCOUNT_ADD(*format);
     return NOERROR;
+}
+
+ECode CDateFormat::GetTimeFormatString(
+    /* [in] */ IContext* context,
+    /* [out] */ String* format)
+{
+    VALIDATE_NOT_NULL(format)
+    AutoPtr<ILocaleDataHelper> helper;
+    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
+
+    AutoPtr<IResources> res;
+    context->GetResources((IResources**)&res);
+    AutoPtr<IConfiguration> config;
+    res->GetConfiguration((IConfiguration**)&config);
+    AutoPtr<ILocale> locale;
+    config->GetLocale((ILocale**)&locale);
+    AutoPtr<ILocaleData> d;
+    helper->Get(locale, (ILocaleData**)&d);
+    Boolean bval;
+    Is24HourFormat(context, &bval);
+    if (bval) {
+        return d->GetTimeFormat24(format);
+    }
+
+    return d->GetTimeFormat12(format);
 }
 
 ECode CDateFormat::GetDateFormat(

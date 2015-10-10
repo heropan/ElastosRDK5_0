@@ -4,10 +4,15 @@
 #include "_Elastos_Droid_Text_Format_CTimeFormatter.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
+#include <elastos/core/StringBuilder.h>
 
+using Elastos::Core::StringBuilder;
+using Elastos::Core::ICharSequence;
 using Elastos::Utility::ILocale;
 using Elastos::IO::ICharBuffer;
 using Libcore::ICU::ILocaleData;
+using Libcore::Utility::IZoneInfoWallTime;
+using Libcore::Utility::IZoneInfo;
 
 namespace Elastos {
 namespace Droid {

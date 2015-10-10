@@ -1,5 +1,8 @@
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/text/CBidiFormatter.h"
+#include <elastos/core/StringBuilder.h>
+
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
@@ -8,7 +11,9 @@ namespace Text {
 static String StringFromChar32(
     /* [in] */ Char32 ch)
 {
-    return Character.toString(ch);
+    StringBuilder sb(4);
+    sb.AppendChar(ch);
+    return sb.ToString();
 }
 
 // private static TextDirectionHeuristic DEFAULT_TEXT_DIRECTION_HEURISTIC = FIRSTSTRONG_LTR;

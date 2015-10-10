@@ -6,7 +6,7 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
-CAR_INTERFACE_IMPL(CAutoTextHelper, Singelton, IAutoTextHelper)
+CAR_INTERFACE_IMPL(CAutoTextHelper, Singleton, IAutoTextHelper)
 
 CAR_SINGLETON_IMPL(CAutoTextHelper)
 

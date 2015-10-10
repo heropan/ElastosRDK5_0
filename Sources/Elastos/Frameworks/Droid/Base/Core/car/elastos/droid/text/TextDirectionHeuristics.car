@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Droid.Text.ITextDirectionHeuristic;
+
     namespace Elastos {
     namespace Droid {
     namespace Text {
@@ -17,7 +19,23 @@ module
      *
      */
     interface ITextDirectionHeuristics {
-        // GET static members
+        GetLTR(
+            [out] ITextDirectionHeuristic** tdh);
+
+        GetRTL(
+            [out] ITextDirectionHeuristic** tdh);
+
+        GetFIRSTSTRONG_LTR(
+            [out] ITextDirectionHeuristic** tdh);
+
+        GetFIRSTSTRONG_RTL(
+            [out] ITextDirectionHeuristic** tdh);
+
+        GetNYRTL_LTR(
+            [out] ITextDirectionHeuristic** tdh);
+
+        GetLOCALE(
+            [out] ITextDirectionHeuristic** tdh);
     }
 
     } // namespace Text

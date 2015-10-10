@@ -5,13 +5,22 @@
 #include "_Elastos_Droid_Text_CBoringLayoutMetrics.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Droid::Graphics::IPaintFontMetrics;
+
 namespace Elastos {
 namespace Droid {
 namespace Text {
 
 CarClass(CBoringLayoutMetrics)
+    , public Object
+    , public IBoringLayoutMetrics
+    , public IPaintFontMetrics
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CBoringLayoutMetrics();
 
     CARAPI GetTop(
