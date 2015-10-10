@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_TEXT_FORMAT_CDATEFORMAT_H__
 
 #include "_Elastos_Droid_Text_Format_CDateFormat.h"
-#include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/text/format/DateFormat.h"
 #include <elastos/core/Singleton.h>
 

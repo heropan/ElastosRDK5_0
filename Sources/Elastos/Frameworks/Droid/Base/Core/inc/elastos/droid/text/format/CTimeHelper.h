@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_TEXT_FORMAT_CTIMEHELPER_H__
 
 #include "_Elastos_Droid_Text_Format_CTimeHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Droid {
@@ -10,8 +13,14 @@ namespace Text {
 namespace Format {
 
 CarClass(CTimeHelper)
+    , public Singleton
+    , public ITimeHelper
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI Compare(
         /* [in] */ ITime* a,
         /* [in] */ ITime* b,

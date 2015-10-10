@@ -1,19 +1,15 @@
 #include "elastos/droid/text/format/Formatter.h"
-#include "R.h"
-#include "net/NetworkUtils.h"
+// #include "R.h"
+// #include "elastos/droid/net/NetworkUtils.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
-using Elastos::Droid::Net::NetworkUtils;
+// using Elastos::Droid::Net::NetworkUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Format {
-
-Int32 Format::SECONDS_PER_MINUTE = 60;
-Int32 Format::SECONDS_PER_HOUR = 60 * 60;
-Int32 Format::SECONDS_PER_DAY = 24 * 60 * 60;
 
 String Formatter::FormatFileSize(
     /* [in] */ IContext* context,
@@ -39,25 +35,27 @@ String Formatter::FormatFileSize(
     }
 
     Float result = number;
-    Int32 suffix = R::string::byteShort;
+    Int32 suffix;
+    assert(0 && "TODO");
+    // suffix = R::string::byteShort;
     if (result > 900) {
-        suffix = R::string::kilobyteShort;
+        // suffix = R::string::kilobyteShort;
         result = result / 1024;
     }
     if (result > 900) {
-        suffix = R::string::megabyteShort;
+        // suffix = R::string::megabyteShort;
         result = result / 1024;
     }
     if (result > 900) {
-        suffix = R::string::gigabyteShort;
+        // suffix = R::string::gigabyteShort;
         result = result / 1024;
     }
     if (result > 900) {
-        suffix = R::string::terabyteShort;
+        // suffix = R::string::terabyteShort;
         result = result / 1024;
     }
     if (result > 900) {
-        suffix = R::string::petabyteShort;
+        // suffix = R::string::petabyteShort;
         result = result / 1024;
     }
     String value;
@@ -95,7 +93,8 @@ String Formatter::FormatFileSize(
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
     String ret;
-    res->GetString(R::string::fileSizeSuffix, args, &ret);
+    assert(0 && "TODO");
+    // res->GetString(R::string::fileSizeSuffix, args, &ret);
     return ret;
 }
 
@@ -104,16 +103,15 @@ String Formatter::FormatIpAddress(
 {
     String ret;
     AutoPtr<IInetAddress> ina;
-    NetworkUtils::Int32ToInetAddress(ipv4Address, (IInetAddress**)&ina);
+    // NetworkUtils::Int32ToInetAddress(ipv4Address, (IInetAddress**)&ina);
     ina->GetHostAddress(&ret);
     return ret;
 }
 
-String FormatShortElapsedTime(
+String Formatter::FormatShortElapsedTime(
     /* [in] */ IContext* context,
     /* [in] */ Int64 millis)
 {
-    VALIDATE_NOT_NULL(ret)
     Int64 secondsLong = millis / 1000;
 
     Int32 days = 0, hours = 0, minutes = 0;

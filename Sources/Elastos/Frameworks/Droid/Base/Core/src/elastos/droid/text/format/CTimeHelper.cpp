@@ -1,13 +1,15 @@
-
 #include "elastos/droid/text/format/CTimeHelper.h"
-
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/text/format/CTime.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Format {
+
+CAR_SINGLETON_IMPL(CTimeHelper)
+
+CAR_INTERFACE_IMPL(CTimeHelper, Singleton, ITimeHelper)
 
 ECode CTimeHelper::Compare(
     /* [in] */ ITime* a,

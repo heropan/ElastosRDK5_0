@@ -2,15 +2,19 @@
 #define __ELASTOS_DROID_TEXT_FORMAT_CTIMEFORMATTER_H__
 
 #include "_Elastos_Droid_Text_Format_CTimeFormatter.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::ILocale;
+using Elastos::IO::ICharBuffer;
+using Libcore::ICU::ILocaleData;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Format {
 
-CARClass(CTimeFormatter)
+CarClass(CTimeFormatter)
     , public Object
     , public ITimeFormatter
 {
@@ -21,10 +25,15 @@ public:
 
     CTimeFormatter();
 
-    CARAPI_(String) Format(
+    virtual ~CTimeFormatter();
+
+    constructor();
+
+    CARAPI Format(
         /* [in] */ const String& pattern,
         /* [in] */ IZoneInfoWallTime* wallTime,
-        /* [in] */ IZoneInfo* zoneInfo);
+        /* [in] */ IZoneInfo* zoneInfo,
+        /* [out] */ String* result);
 
 private:
     CARAPI_(String) LocalizeDigits(
@@ -106,4 +115,4 @@ private:
 } // namespace Text
 } // namespace Droid
 } // namespace Elastos
-#endif //__ELASTOS_DROID_TEXT_FORMAT_CTIMEFORMATTER_H__
+#endif //__ELASTOS_DROID_TEXT_FORMAT_TIMEFORMATTER_H__

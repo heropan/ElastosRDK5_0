@@ -120,67 +120,73 @@ module
 
     using interface Elastos.Utility.IIterator;
 
-    // namespace Elastos {
-    // namespace Droid {
-    // namespace Text {
-    // namespace Format {
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Format {
 
-    // singleton class CDateFormat{
-    //     interface IDateFormat;
-    // }
+    singleton class CDateFormat {
+        interface IDateFormat;
+    }
 
-    // singleton class CDateUtils{
-    //     interface IDateUtils;
-    // }
+    singleton class CDateUtils {
+        interface IDateUtils;
+    }
 
-    // singleton class CFormatter{
-    //     interface IFormatter;
-    // }
+    singleton class CFormatter{
+        interface IFormatter;
+    }
 
-    // /**
-    //  * An alternative to the {@link java.util.Calendar} and
-    //  * {@link java.util.GregorianCalendar} classes. An instance of the Time class represents
-    //  * a moment in time, specified with second precision. It is modelled after
-    //  * struct tm, and in fact, uses struct tm to implement most of the
-    //  * functionality.
-    //  */
-    // class CTime{
-    //     interface ITime;
+    /**
+     * An alternative to the {@link java.util.Calendar} and
+     * {@link java.util.GregorianCalendar} classes. An instance of the Time class represents
+     * a moment in time, specified with second precision. It is modelled after
+     * struct tm, and in fact, uses struct tm to implement most of the
+     * functionality.
+     */
+    class CTime {
+        /**
+         * Construct a Time object in the timezone named by the string
+         * argument "timezone". The time is initialized to Jan 1, 1970.
+         * @param timezone string containing the timezone to use.
+         * @see TimeZone
+         */
+        constructor(
+             [in] String timezone);
 
-    //     /**
-    //      * Construct a Time object in the timezone named by the string
-    //      * argument "timezone". The time is initialized to Jan 1, 1970.
-    //      * @param timezone string containing the timezone to use.
-    //      * @see TimeZone
-    //      */
-    //     constructor(
-    //         [in] String timezone);
+        /**
+         * Construct a Time object in the default timezone. The time is initialized to
+         * Jan 1, 1970.
+         */
+        constructor();
 
-    //     /**
-    //      * Construct a Time object in the default timezone. The time is initialized to
-    //      * Jan 1, 1970.
-    //      */
-    //     constructor();
+         /**
+          * A copy constructor.  Construct a Time object by copying the given
+          * Time object.  No normalization occurs.
+          *
+          * @param other
+          */
+        constructor(
+            [in]ITime* other);
 
-    //     /**
-    //      * A copy constructor.  Construct a Time object by copying the given
-    //      * Time object.  No normalization occurs.
-    //      *
-    //      * @param other
-    //      */
-    //     constructor(
-    //         [in]ITime* other);
-    // }
 
-    // singleton class CTimeHelper{
-    //     interface ITimeHelper;
-    // }
+        interface ITime;
+    }
 
-    // }//namespace Format
-    // }//namespace Text
-    // }//namespace Droid
-    // }//namespace Elastos
+    singleton class CTimeHelper{
+         interface ITimeHelper;
+    }
 
+    class CTimeFormatter {
+        constructor();
+
+        interface ITimeFormatter;
+    }
+
+    } // namespace Format
+    } // namespace Text
+    } // namespace Droid
+    } // namespace Elastos
 
 
     // namespace Elastos {

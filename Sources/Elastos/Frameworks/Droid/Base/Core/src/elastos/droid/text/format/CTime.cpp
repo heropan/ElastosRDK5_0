@@ -1,27 +1,33 @@
-
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/text/format/CTime.h"
 #include "elastos/droid/text/format/DateUtils.h"
-#include "content/res/CResources.h"
-#include "R.h"
+#include "elastos/droid/text/format/CTimeFormatter.h"
+#include "elastos/droid/content/res/CResources.h"
+// #include "R.h"
 #include <elastos/core/Math.h>
-#include <elastos/core/System.h>
-#include <cutils/tztime.h>
+#include <elastos/core/Object.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::CResources;
+using Elastos::Droid::Text::Format::CTimeFormatter;
 using Elastos::Core::Character;
-using Elastos::Core::System;
+using Elastos::Core::CSystem;
+using Elastos::Core::ISystem;
 using Elastos::Utility::CTimeZoneHelper;
 using Elastos::Utility::ITimeZoneHelper;
 using Elastos::Utility::ITimeZone;
-using Libcore::ICU::ILocale;
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::ILocaleData;
-using Libcore::ICU::ILocaleDataHelper;
-using Libcore::ICU::CLocale;
-using Libcore::ICU::CLocaleHelper;
-using Libcore::ICU::CLocaleDataHelper;
+using Elastos::Utility::ILocale;
+using Libcore::Utility::CZoneInfoWallTime;
+using Libcore::Utility::ITzData;
+using Libcore::Utility::CZoneInfoDB;
+using Libcore::Utility::IZoneInfoDB;
+// using Libcore::ICU::ILocaleHelper;
+// using Libcore::ICU::ILocaleData;
+// using Libcore::ICU::ILocaleDataHelper;
+// using Libcore::ICU::CLocale;
+// using Libcore::ICU::CLocaleHelper;
+// using Libcore::ICU::CLocaleDataHelper;
 
 
 namespace Elastos {
@@ -103,7 +109,7 @@ ECode CTime::constructor(
     /* [in] */ ITime* other)
 {
     CTime* other_ = (CTime*)other;
-    Initialize(other_->mTimeZone);
+    Initialize(((CTime*)other_)->mTimezone);
     return Set(other);
 }
 
@@ -111,7 +117,7 @@ ECode CTime::constructor(
 ECode CTime::Initialize(
     /* [in] */ const String& timezoneId)
 {
-    mTimeZone = timezoneId;
+    mTimezone = timezoneId;
     mYear = 1970;
     mMonthDay = 1;
     // Set the daylight-saving indicator to the unknown value -1 so that
@@ -120,6 +126,7 @@ ECode CTime::Initialize(
 
     // A reusable object that performs the date/time calculations.
     mCalculator = new TimeCalculator(timezoneId);
+    return NOERROR;
 }
 
 ECode CTime::Normalize(
@@ -140,7 +147,7 @@ ECode CTime::SwitchTimezone(
     mCalculator->CopyFieldsFromTime(THIS_PROBE(ITime));
     mCalculator->SwitchTimezone(timezone);
     mCalculator->CopyFieldsToTime(THIS_PROBE(ITime));
-    mTimeZone = timezone;
+    mTimezone = timezone;
     return NOERROR;
 }
 
@@ -203,7 +210,7 @@ ECode CTime::Clear(
         //throw new NullPointerException("timezone is null!");
         return E_NULL_POINTER_EXCEPTION;
     }
-    mTimeZone = timezone;
+    mTimezone = timezone;
     mAllDay = FALSE;
     mSecond = 0;
     mMinute = 0;
@@ -232,8 +239,8 @@ ECode CTime::Compare(
         //throw new NullPointerException("b == null");
         return E_NULL_POINTER_EXCEPTION;
     }
-    AutoPtr<TimeCalculator> aCalculator = (CTime*)a->mCalculator;
-    AutoPtr<TimeCalculator> bCalculator = (CTime*)b->mCalculator;
+    AutoPtr<TimeCalculator> aCalculator = ((CTime*)a)->mCalculator;
+    AutoPtr<TimeCalculator> bCalculator = ((CTime*)b)->mCalculator;
     aCalculator->CopyFieldsFromTime(a);
     bCalculator->CopyFieldsFromTime(b);
 
@@ -247,7 +254,7 @@ ECode CTime::Format(
 {
     VALIDATE_NOT_NULL(ret)
     mCalculator->CopyFieldsFromTime(THIS_PROBE(ITime));
-    *ret = mCalculator->Format(format);
+    *ret = mCalculator->Format(const_cast<String&>(format));
     return NOERROR;
 }
 
@@ -257,7 +264,7 @@ ECode CTime::ToString(
     VALIDATE_NOT_NULL(ret)
     // toString() uses its own TimeCalculator rather than the shared one. Otherwise crazy stuff
     // happens during debugging when the debugger calls toString().
-    AutoPtr<TimeCalculator> timeCalculator = new TimeCalculator(mTimeZone);
+    AutoPtr<TimeCalculator> timeCalculator = new TimeCalculator(mTimezone);
     mCalculator->CopyFieldsFromTime(THIS_PROBE(ITime));
     *ret = mCalculator->ToStringInternal();
     return NOERROR;
@@ -274,7 +281,7 @@ ECode CTime::Parse(
         return  E_NULL_POINTER_EXCEPTION;
     }
     if (ParseInternal(s)) {
-            mTimeZone = ITime::TIMEZONE_UTC;
+            mTimezone = ITime::TIMEZONE_UTC;
             *ret = TRUE;
             return NOERROR;
         }
@@ -378,7 +385,7 @@ Int32 CTime::GetChar(
 {
     Char32 c = s.GetChar(spos);
     if (Character::IsDigit(c)) {
-        return Character::GetNumericValue(c) * mul
+        return Character::GetNumericValue(c) * mul;
     } else {
         // throw new TimeFormatException("Parse error at pos=" + spos);
         return E_TIME_FORMAT_EXCEPTION;
@@ -396,7 +403,7 @@ ECode CTime::Parse3339(
         return E_NULL_POINTER_EXCEPTION;
     }
     if (Parse3339Internal(s)) {
-        mTimeZone = ITime::TIMEZONE_UTC;
+        mTimezone = ITime::TIMEZONE_UTC;
         *ret = TRUE;
         return NOERROR;
      }
@@ -521,7 +528,7 @@ Boolean CTime::Parse3339Internal(
         mMinute = minute;
 
         if (offset != 0) {
-            Int32 ret;
+            Int64 ret;
             Normalize(FALSE, &ret);
         }
     } else {
@@ -551,8 +558,11 @@ String CTime::GetCurrentTimezone()
 
 ECode CTime::SetToNow()
 {
+    AutoPtr<ISystem> asSystem;
+    CSystem::AcquireSingleton((ISystem**)&asSystem);
     Int64 millis;
-    return Set((CSystem::GetCurrentTimeMillis(&millis), millis));
+    asSystem->GetCurrentTimeMillis(&millis);
+    return Set(millis);
 }
 
 ECode CTime::ToMillis(
@@ -568,7 +578,7 @@ ECode CTime::Set(
     /* [in] */ Int64 millis)
 {
     mAllDay = FALSE;
-    mCalculator->mTimeZone = mTimeZone;
+    mCalculator->mTimeZone = mTimezone;
     mCalculator->SetTimeInMillis(millis);
     mCalculator->CopyFieldsToTime(THIS_PROBE(ITime));
     return NOERROR;
@@ -587,7 +597,7 @@ ECode CTime::Set(
     /* [in] */ ITime* that)
 {
     CTime* thatTime = (CTime*)that;
-    mTimeZone = thatTime->mTimeZone;
+    mTimezone = thatTime->mTimezone;
     mAllDay = thatTime->mAllDay;
     mSecond = thatTime->mSecond;
     mMinute = thatTime->mMinute;
@@ -602,7 +612,7 @@ ECode CTime::Set(
     return NOERROR;
 }
 
-ECod CTime::Set(
+ECode CTime::Set(
     /* [in] */ Int32 second,
     /* [in] */ Int32 minute,
     /* [in] */ Int32 hour,
@@ -696,7 +706,7 @@ ECode CTime::Format3339(
     if (mAllDay) {
         return Format(Y_M_D, ret);
     }
-    else if ((ITime::TIMEZONE_UTC).Equals(mTimeZone)) {
+    else if ((ITime::TIMEZONE_UTC).Equals(mTimezone)) {
         return Format(Y_M_D_T_H_M_S_000_Z, ret);
     }
     else {
@@ -942,7 +952,7 @@ ECode CTime::GetGmtoff(
 ECode CTime::SetTimeZone(
     /* [in] */ const String& timezone)
 {
-    mTimeZone = timezone;
+    mTimezone = timezone;
     return NOERROR;
 }
 
@@ -950,14 +960,14 @@ ECode CTime::GetTimeZone(
     /* [out] */ String* timezone)
 {
     VALIDATE_NOT_NULL(timezone);
-    *timezone = mTimeZone;
+    *timezone = mTimezone;
     return NOERROR;
 }
 
 CTime::TimeCalculator::TimeCalculator(
-    /* [in] */ const String& timezonId)
+    /* [in] */ const String& timezoneId)
 {
-    mZoneInfo = LookupZoneInfo(timezoneId);
+    LookupZoneInfo(timezoneId, (IZoneInfo**)&mZoneInfo);
     CZoneInfoWallTime::New((IZoneInfoWallTime**)&mWallTime);
 }
 
@@ -968,7 +978,9 @@ Int64 CTime::TimeCalculator::ToMillis(
         mWallTime->SetIsDst(-1);
     }
 
-    Int32 r = mWallTime->MkTime(mZoneInfo);
+    Int32 r ;
+    mWallTime->Mktime(mZoneInfo, &r);
+
     if (r == -1) {
         return -1;
     }
@@ -982,11 +994,11 @@ ECode CTime::TimeCalculator::SetTimeInMillis(
     Int32 intSeconds = (Int32) (millis / 1000);
 
     UpdateZoneInfoFromTimeZone();
-    return mWallTime->LocalTime(intSeconds, mZoneInfo);
+    return mWallTime->Localtime(intSeconds, mZoneInfo);
 }
 
 String CTime::TimeCalculator::Format(
-    /* [in] */ const String& format)
+    /* [in] */ String& format)
 {
     if (format.IsNull())
     {
@@ -995,32 +1007,38 @@ String CTime::TimeCalculator::Format(
     AutoPtr<ITimeFormatter> formatter;
     CTimeFormatter::New((ITimeFormatter**)&formatter);
     assert(0 && "TODO");
-    return formatter->Format(format, mWallTime, mZoneInfo);
+    String ret;
+    formatter->Format(const_cast<const Elastos::String&>(format),
+            mWallTime.Get(), mZoneInfo, &ret);
+    return ret;
 }
 
 ECode CTime::TimeCalculator::UpdateZoneInfoFromTimeZone()
 {
-    String zoneInfoID = mZoneInfo->GetID();
-    Boolean isEquals = FALSE;
-    if (!(zoneInfoID->Equals(mTimeZone,&isEquals), isEquals))
+    String zoneInfoID;
+    ITimeZone::Probe(mZoneInfo)->GetID(&zoneInfoID);
+    if (!zoneInfoID.Equals(mTimeZone))
     {
-        mZoneInfo = LookupZoneInfo(mTimeZone);
+        LookupZoneInfo(mTimeZone, (IZoneInfo**)&mZoneInfo);
     }
     return NOERROR;
 }
 
 ECode CTime::TimeCalculator::LookupZoneInfo(
     /* [in] */ const String& timezoneId ,
-    /* [out] */ ZoneInfo** ret)
+    /* [out] */ IZoneInfo** ret)
 {
     VALIDATE_NOT_NULL(ret)
     // try {
+    AutoPtr<IZoneInfoDB> zoneInfoDB;
+    CZoneInfoDB::AcquireSingleton((IZoneInfoDB**)&zoneInfoDB);
+    AutoPtr<ITzData> tzdata;
+    zoneInfoDB->GetInstance((ITzData**)&tzdata);
     AutoPtr<IZoneInfo> zoneInfo;
-    AutoPtr<TzData> tzdata = CZoneInfoDB::GetInstance();
-    tzdata->MakeTimeZone(timezoneId, &zoneInfo);
+    tzdata->MakeTimeZone(timezoneId, (IZoneInfo**)&zoneInfo);
     if (zoneInfo == NULL)
     {
-        tzdata->MakeTimeZone("GMT", &zoneInfo);
+        tzdata->MakeTimeZone(String("GMT"), (IZoneInfo**)&zoneInfo);
     }
     if (zoneInfo == NULL)
     {
@@ -1028,7 +1046,7 @@ ECode CTime::TimeCalculator::LookupZoneInfo(
         return E_ASSERTION_ERROR;
     }
     *ret = zoneInfo;
-    REFCOUNT_ADD()
+    REFCOUNT_ADD(*ret)
     return NOERROR;
     // } catch (IOException e) {
     // This should not ever be thrown.
@@ -1040,60 +1058,66 @@ ECode CTime::TimeCalculator::SwitchTimezone(
     /* [in] */ const String& timezone)
 {
     Int32 seconds;
-    mWallTime->Mktime(zoneInfo, &seconds);
+    mWallTime->Mktime(mZoneInfo, &seconds);
     mTimeZone = timezone;
     UpdateZoneInfoFromTimeZone();
-    return mWallTime->Localtime(seconds, zoneInfo)
+    return mWallTime->Localtime(seconds, mZoneInfo);
 }
 
 String CTime::TimeCalculator::Format2445(
     /* [in] */ Boolean hasTime)
 {
-    AutoPtr<ArrayOf<Char32> > buf = new Char32[hasTime ? 16 : 8];
+    AutoPtr<ArrayOf<Char32> > buf;
+    if (hasTime)
+    {
+        buf = ArrayOf<Char32>::Alloc(16);
+    } else {
+        buf = ArrayOf<Char32>::Alloc(8);
+    }
     Int32 n;
     mWallTime->GetYear(&n);
 
-    buf[0] = ToChar(n / 1000);
+    (*buf)[0] = ToChar(n / 1000);
     n %= 1000;
-    buf[1] = ToChar(n / 100);
+    (*buf)[1] = ToChar(n / 100);
     n %= 100;
-    buf[2] = ToChar(n / 10);
+    (*buf)[2] = ToChar(n / 10);
     n %= 10;
-    buf[3] = ToChar(n);
+    (*buf)[3] = ToChar(n);
 
     Int32 n1;
     mWallTime->GetMonth(&n1);
     n = n1 + 1;
-    buf[4] = ToChar(n / 10);
-    buf[5] = ToChar(n % 10);
+    (*buf)[4] = ToChar(n / 10);
+    (*buf)[5] = ToChar(n % 10);
 
     mWallTime->GetMonthDay(&n);
-    buf[6] = ToChar(n / 10);
-    buf[7] = ToChar(n % 10);
+    (*buf)[6] = ToChar(n / 10);
+    (*buf)[7] = ToChar(n % 10);
 
     if (!hasTime) {
         assert(0 && "TODO");
         // return new String(buf, 0, 8);
     }
 
-    buf[8] = 'T';
+    (*buf)[8] = 'T';
 
     mWallTime->GetHour(&n);
-    buf[9] = ToChar(n / 10);
-    buf[10] = ToChar(n % 10);
+    (*buf)[9] = ToChar(n / 10);
+    (*buf)[10] = ToChar(n % 10);
 
     mWallTime->GetMinute(&n);
-    buf[11] = ToChar(n / 10);
-    buf[12] = ToChar(n % 10);
+    (*buf)[11] = ToChar(n / 10);
+    (*buf)[12] = ToChar(n % 10);
 
     mWallTime->GetSecond(&n);
-    buf[13] = ToChar(n / 10);
-    buf[14] = ToChar(n % 10);
+    (*buf)[13] = ToChar(n / 10);
+    (*buf)[14] = ToChar(n % 10);
 
     if (ITime::TIMEZONE_UTC.Equals(mTimeZone))
     {
         // The letter 'Z' is appended to the end.
-        buf[15] = 'Z';
+        (*buf)[15] = 'Z';
         assert(0 && "TODO");
         // return new String(buf, 0, 16);
     } else {
@@ -1220,9 +1244,12 @@ ECode CTime::TimeCalculator::CopyFieldsToTime(
     mWallTime->GetYearDay(&tm->mYearDay);
 
     // < 0: DST status unknown, 0: is not in DST, 1: is in DST
-    mWallTime->GetIsDst(&tm->mIsDst);
+    mWallTime->GetIsDst(&(tm->mIsDst));
     // This is in seconds and includes any DST offset too.
-    return mWallTime->GetGmtOffset(&tm->mGmtoff);
+    Int32 gmtoff;
+    mWallTime->GetGmtOffset(&gmtoff);
+    tm->mGmtoff = gmtoff;
+    return NOERROR;
 }
 
 ECode CTime::TimeCalculator::CopyFieldsFromTime(
@@ -1244,7 +1271,7 @@ ECode CTime::TimeCalculator::CopyFieldsFromTime(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    mTimeZone = tm->mTimeZone;
+    mTimeZone = tm->mTimezone;
     return UpdateZoneInfoFromTimeZone();
 }
 

@@ -1,32 +1,35 @@
 #include "elastos/droid/text/format/DateUtils.h"
 #include "elastos/droid/text/format/DateFormat.h"
 #include "elastos/droid/text/format/CTime.h"
-#include "content/res/CResourcesHelper.h"
-#include "content/res/CResources.h"
-#include "os/SystemClock.h"
-#include "R.h"
+#include "elastos/droid/content/res/CResourcesHelper.h"
+#include "elastos/droid/content/res/CResources.h"
+// #include "R.h"
 #include <elastos/core/Math.h>
 
-using Elastos::Droid::R;
-using Elastos::Droid::Os::SystemClock;
+// using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::CResourcesHelper;
 using Elastos::Droid::Content::Res::IResourcesHelper;
-
-using Libcore::ICU::ILocale;
-using Libcore::ICU::ILocaleHelper;
 using Libcore::ICU::ILocaleData;
 using Libcore::ICU::ILocaleDataHelper;
-using Libcore::ICU::CLocale;
-using Libcore::ICU::CLocaleHelper;
 using Libcore::ICU::CLocaleDataHelper;
+using Libcore::ICU::IDateIntervalFormat;
+using Libcore::ICU::CDateIntervalFormat;
 using Elastos::Core::CString;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
+using Elastos::Core::IAppendable;
+using Elastos::Core::CInteger64;
+using Elastos::Core::IInteger64;
+using Elastos::Core::EIID_IAppendable;
 using Elastos::Text::IDateFormat;
 using Elastos::Text::IDateFormatHelper;
 using Elastos::Text::CDateFormatHelper;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocale;
+using Elastos::Utility::CLocaleHelper;
 using Elastos::Utility::IFormatter;
 using Elastos::Utility::CFormatter;   //java.util.Formatter
 using Elastos::Utility::CGregorianCalendar;
@@ -37,6 +40,7 @@ using Elastos::Utility::ICalendarHelper;
 using Elastos::Utility::CTimeZoneHelper;
 using Elastos::Utility::ITimeZoneHelper;
 using Elastos::Utility::ITimeZone;
+
 
 namespace Elastos {
 namespace Droid {
@@ -49,7 +53,7 @@ namespace Format {
 // {showTime, showYear, showWeekDay}.  For example, if showYear and
 // showWeekDay are both true, then the index would be 3.
 /** @deprecated do not use. */
-const Int32 DateUtils::sSameYearTable = NULL;
+const AutoPtr<ArrayOf<Int32> > DateUtils::sSameYearTable = NULL;
 
 // This table is used to lookup the resource string id of a format string
 // used for formatting a start and end date that fall in the same month.
@@ -57,29 +61,17 @@ const Int32 DateUtils::sSameYearTable = NULL;
 // {showTime, showYear, showWeekDay}.  For example, if showYear and
 // showWeekDay are both true, then the index would be 3.
 /** @deprecated do not use. */
-const Int32 DateUtils::sSameMonthTable = NULL;
+const AutoPtr<ArrayOf<Int32> > DateUtils::sSameMonthTable = NULL;
 
 Object DateUtils::sLock;
 AutoPtr<IConfiguration> DateUtils::sLastConfig = NULL;
-AutoPtr<Elastos::Text::IDateFormat> DateUtils::sStatusTimeFormat = NULL;
 String DateUtils::sElapsedFormatMMSS = String(NULL);
 String DateUtils::sElapsedFormatHMMSS = String(NULL);
-
-const String DateUtils::FAST_FORMAT_HMMSS("%1$d:%2$02d:%3$02d");
-const String DateUtils::FAST_FORMAT_MMSS("%1$02d:%2$02d");
-const Char32 DateUtils::TIME_SEPARATOR = ':';
 
 AutoPtr<ITime> DateUtils::sNowTime = NULL;
 AutoPtr<ITime> DateUtils::sThenTime = NULL;
 
-Mutex DateUtils::sLockDateUtilsClass;
-
-CAR_INTERFACE_IMPL_2(DateUtils, Object, IDateUtils);
-
-String DateUtils::ToString()
-{
-    return String("DateUtils");
-}
+Object DateUtils::sLockDateUtilsClass;
 
 String DateUtils::GetDayOfWeekString(
 /* [in] */ Int32 dayOfWeek,
@@ -275,22 +267,24 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeTimeSpanString(
 
     Int32 resId;
     Int64 count;
+    AutoPtr<ICharSequence> cs;
     if ( (duration < IDateUtils::MINUTE_IN_MILLIS) && (minResolution < IDateUtils::MINUTE_IN_MILLIS) ) {
         count = duration / IDateUtils::SECOND_IN_MILLIS;
         if (past) {
             if (abbrevRelative) {
-                resId = R::plurals::abbrev_num_seconds_ago;
+                assert(0 && "TODO");
+                // resId = R::plurals::abbrev_num_seconds_ago;
             }
             else {
-                resId = R::plurals::num_seconds_ago;
+                // resId = R::plurals::num_seconds_ago;
             }
         }
         else {
             if (abbrevRelative) {
-                resId = R::plurals::abbrev_in_num_seconds;
+                // resId = R::plurals::abbrev_in_num_seconds;
             }
             else {
-                resId = R::plurals::in_num_seconds;
+                // resId = R::plurals::in_num_seconds;
             }
         }
     }
@@ -298,18 +292,18 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeTimeSpanString(
         count = duration / IDateUtils::MINUTE_IN_MILLIS;
         if (past) {
             if (abbrevRelative) {
-                resId = R::plurals::abbrev_num_minutes_ago;
+                // resId = R::plurals::abbrev_num_minutes_ago;
             }
             else {
-                resId = R::plurals::num_minutes_ago;
+                // resId = R::plurals::num_minutes_ago;
             }
         }
         else {
             if (abbrevRelative) {
-                resId = R::plurals::abbrev_in_num_minutes;
+                // resId = R::plurals::abbrev_in_num_minutes;
             }
             else {
-                resId = R::plurals::in_num_minutes;
+                // resId = R::plurals::in_num_minutes;
             }
         }
     }
@@ -317,28 +311,29 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeTimeSpanString(
         count = duration / IDateUtils::HOUR_IN_MILLIS;
         if (past) {
             if (abbrevRelative) {
-                resId = R::plurals::abbrev_num_hours_ago;
+                // resId = R::plurals::abbrev_num_hours_ago;
             }
             else {
-                resId = R::plurals::num_hours_ago;
+                // resId = R::plurals::num_hours_ago;
             }
         }
         else {
             if (abbrevRelative) {
-                resId = R::plurals::abbrev_in_num_hours;
+                // resId = R::plurals::abbrev_in_num_hours;
             }
             else {
-                resId = R::plurals::in_num_hours;
+                // resId = R::plurals::in_num_hours;
             }
         }
     }
     else if (duration < IDateUtils::WEEK_IN_MILLIS && minResolution < IDateUtils::WEEK_IN_MILLIS) {
-        return GetRelativeDayString(r, time, now);
+        String rdret = GetRelativeDayString(r, time, now);
+        CString::New(rdret, (ICharSequence**)&cs);
+        return cs;
     } else {
         // We know that we won't be showing the time, so it is safe to pass
         // in a null context.
         String fdrRet = FormatDateRange(NULL, time, time, flags);
-        AutoPtr<ICharSequence> cs;
         CString::New(fdrRet, (ICharSequence**)&cs);
         return cs;
     }
@@ -349,7 +344,6 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeTimeSpanString(
     String retVal;
     retVal.AppendFormat(format.string(), count);
 
-    AutoPtr<ICharSequence> cs;
     CString::New(retVal, (ICharSequence**)&cs);
     return cs;
 }
@@ -387,7 +381,8 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeDateTimeString(
     if (duration < transitionResolution) {
         AutoPtr<ICharSequence> relativeClause = GetRelativeTimeSpanString(time, now, minResolution, flags);
         String raw;
-        r->GetString(R::string::relative_time, &raw);
+        assert(0 && "TODO");
+        // r->GetString(R::string::relative_time, &raw);
         String strRelativeClause, strTimeClause;
         relativeClause->ToString(&strRelativeClause);
         timeClause->ToString(&strTimeClause);
@@ -396,7 +391,7 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeDateTimeString(
     else {
         AutoPtr<ICharSequence> dateClause = GetRelativeTimeSpanString(c, time, FALSE);
         String raw;
-        r->GetString(R::string::date_time, &raw);
+        // r->GetString(R::string::date_time, &raw);
         String strDateClause, strTimeClause;
         dateClause->ToString(&strDateClause);
         timeClause->ToString(&strTimeClause);
@@ -413,21 +408,26 @@ String DateUtils::GetRelativeDayString(
         /* [in] */ Int64 day,
         /* [in] */ Int64 today)
 {
-    VALIDATE_NOT_NULL(r)
     AutoPtr<IConfiguration> config;
     r->GetConfiguration((IConfiguration**)&config);
     AutoPtr<ILocale> locale;
     config->GetLocale((ILocale**)&locale);
     if (NULL == locale) {
-        locale->GetDefault((ILocale**)&locale);
-
+        AutoPtr<ILocaleHelper> localeHelper;
+        CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
+        localeHelper->GetDefault((ILocale**)&locale);
     }
     // TODO: use TimeZone.getOffset instead.
     AutoPtr<ITime> startTime;
     CTime::New((ITime**)&startTime);
     startTime->Set(day);
-    Int64 startTimeGmtoff, currentTimeGmtoff;
+    Int64 startTimeGmtoff;
     startTime->GetGmtoff(&startTimeGmtoff);
+
+    AutoPtr<ITime> currentTime;
+    CTime::New((ITime**)&currentTime);
+    currentTime->Set(today);
+    Int64 currentTimeGmtoff;
     currentTime->GetGmtoff(&currentTimeGmtoff);
 
     Int32 startDay = CTime::GetJulianDay(day, startTimeGmtoff);
@@ -437,30 +437,35 @@ String DateUtils::GetRelativeDayString(
     Boolean past = (today > day);
 
     // TODO: some locales name other days too, such as de_DE's "Vorgestern" (today - 2).
+    AutoPtr<ILocaleDataHelper> ldHelper;
+    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&ldHelper);
+    AutoPtr<ILocaleData> ld;
+    ldHelper->Get(locale, (ILocaleData**)&ld);
     if (days == 1) {
         if (past) {
             String strYesterday;
-            localeDate->GetYesterday(&strYesterday);
+            ld->GetYesterday(&strYesterday);
             return strYesterday;
         }
         else {
             String strTomorrow;
-            localeDate->GetTomorrow(&strTomorrow);
+            ld->GetTomorrow(&strTomorrow);
             return strTomorrow;
         }
     }
     else if (days == 0) {
         String strToday;
-        localeDate->GetToday(&strToday);
+        ld->GetToday(&strToday);
         return strToday;
     }
 
     Int32 resId;
     if (past) {
-        resId = R::plurals::num_days_ago;
+        assert(0 && "TODO");
+        // resId = R::plurals::num_days_ago;
     }
     else {
-        resId = R::plurals::in_num_days;
+        // resId = R::plurals::in_num_days;
     }
 
     String format;
@@ -487,8 +492,9 @@ ECode DateUtils::InitFormatStringsLocked()
     if (sLastConfig == NULL || (sLastConfig->Equals(cfg.Get(), &bLastConfigEquals), !bLastConfigEquals))
     {
        sLastConfig = cfg;
-       r->GetString(R::string::elapsed_time_short_format_mm_ss, &sElapsedFormatMMSS);
-       r->GetString(R::string::elapsed_time_short_format_h_mm_ss, &sElapsedFormatHMMSS);
+       assert(0 && "TODO");
+       // r->GetString(R::string::elapsed_time_short_format_mm_ss, &sElapsedFormatMMSS);
+       // r->GetString(R::string::elapsed_time_short_format_h_mm_ss, &sElapsedFormatHMMSS);
     }
     return NOERROR;
 }
@@ -503,16 +509,17 @@ AutoPtr<ICharSequence> DateUtils::FormatDuration(
     String rStr;
     if (millis >= IDateUtils::HOUR_IN_MILLIS) {
         Int32 hours = (Int32) ((millis + 1800000) / IDateUtils::HOUR_IN_MILLIS);
-        res->GetQuantityString(
-                R::plurals::duration_hours, hours, &rStr);
+        assert(0 && "TODO");
+        // res->GetQuantityString(
+        //         R::plurals::duration_hours, hours, &rStr);
     } else if (millis >= IDateUtils::MINUTE_IN_MILLIS) {
         Int32 minutes = (Int32) ((millis + 30000) / IDateUtils::MINUTE_IN_MILLIS);
-        res->GetQuantityString(
-                R::plurals::duration_minutes, minutes, &rStr);
+        // res->GetQuantityString(
+        //         R::plurals::duration_minutes, minutes, &rStr);
     } else {
         Int32 seconds = (Int32) ((millis + 500) / IDateUtils::SECOND_IN_MILLIS);
-        res->GetQuantityString(
-                R::plurals::duration_seconds, seconds, &rStr);
+        // res->GetQuantityString(
+        //         R::plurals::duration_seconds, seconds, &rStr);
     }
     AutoPtr<ICharSequence> rst;
     CString::New(rStr, (ICharSequence**)&rst);
@@ -543,12 +550,50 @@ String DateUtils::FormatElapsedTime(
     }
     seconds = elapsedSeconds;
 
-    String result;
-    if (hours > 0) {
-        return FormatElapsedTime(recycle, sElapsedFormatHMMSS, hours, minutes, seconds);
+    // Create a StringBuilder if we weren't given one to recycle.
+    // TODO: if we cared, we could have a thread-local temporary StringBuilder.
+    AutoPtr<StringBuilder> sb = new StringBuilder(recycle);
+    Int32 sbLen;
+    sb->GetLength(&sbLen);
+    if (sbLen == 0) {
+        sb = new StringBuilder(8);
+    } else {
+        sb->SetLength(0);
     }
-    else {
-        return FormatElapsedTime(recycle, sElapsedFormatMMSS, minutes, seconds);
+
+    // Format the broken-down time in a locale-appropriate way.
+    // TODO: use icu4c when http://unicode.org/cldr/trac/ticket/3407 is fixed.
+    AutoPtr<ILocaleHelper> localeHelp;
+    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelp);
+    AutoPtr<ILocale> defaultLocale;
+    localeHelp->GetDefault((ILocale**)&defaultLocale);
+    using Elastos::Utility::IFormatter;
+    AutoPtr<IFormatter> f;
+    CFormatter::New(IAppendable::Probe(sb), defaultLocale, (IFormatter**)&f);
+    InitFormatStrings();
+
+    AutoPtr<IInteger64> hours_, minutes_, seconds_;
+    CInteger64::New(hours, (IInteger64**)&hours_);
+    CInteger64::New(minutes, (IInteger64**)&minutes_);
+    CInteger64::New(seconds, (IInteger64**)&seconds_);
+
+    AutoPtr<ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
+    args->Set(0, hours_);
+    args->Set(1, minutes_);
+    args->Set(2, seconds_);
+
+    AutoPtr<ArrayOf<IInterface*> > args_ = ArrayOf<IInterface*>::Alloc(2);
+    args_->Set(0, hours_);
+    args_->Set(1, minutes_);
+    String ret;
+    if (hours > 0) {
+        f->Format(sElapsedFormatHMMSS, args);
+        f->ToString(&ret);
+        return ret;
+    } else {
+        f->Format(sElapsedFormatMMSS, args_);
+        f->ToString(&ret);
+        return ret;
     }
 }
 
@@ -587,7 +632,7 @@ AutoPtr<ICharSequence> DateUtils::FormatSameDayTime(
     }
 
     String ret;
-    f->FormatDate(thenDate, &ret);
+    f->Format(thenDate, &ret);
     AutoPtr<ICharSequence> cs;
     CString::New(ret, (ICharSequence**)&cs);
     return cs;
@@ -621,88 +666,6 @@ Boolean DateUtils::IsToday(
             && (thenMonthDay == newMonthDay);
 }
 
-String DateUtils::WriteDateTime(
-    /* [in] */ ICalendar* cal)
-{
-    AutoPtr<ITimeZone> tz;
-    AutoPtr<ITimeZoneHelper> tzh;
-    CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&tzh);
-    tzh->GetGMT((ITimeZone**)&tz);
-
-    AutoPtr<IGregorianCalendar> c;
-    CGregorianCalendar::New(tz, (IGregorianCalendar**)&c);
-    Int64 timeInMillis;
-    cal->GetTimeInMillis(&timeInMillis);
-    c->SetTimeInMillis(timeInMillis);
-    return WriteDateTime(c, TRUE);
-}
-
-String DateUtils::WriteDateTime(
-    /* [in] */ ICalendar* cal,
-    /* [in] */ Boolean zulu)
-{
-    StringBuilder sb;
-    sb.EnsureCapacity(16);
-    if (zulu) {
-        sb.Append("               Z");    //Java:    sb.setLength(16);    sb.setCharAt(15, 'Z');
-    }
-    else {
-        sb.Append("               ");//Java:    sb.setLength(15);
-    }
-    String strTemp = sb.ToString();
-    return WriteDateTime(cal, &strTemp);
-}
-
-String DateUtils::WriteDateTime(
-    /* [in] */ ICalendar* cal,
-    /* [in,out] */ String* sb)
-{
-    Int32 n;
-    StringBuilder sbTemp;
-    sbTemp.AppendString(*sb);
-
-    cal->Get(ICalendar::YEAR, &n);
-    sbTemp.SetChar(3, (Char32)('0'+n%10));
-    n /= 10;
-    sbTemp.SetChar(2, (Char32)('0'+n%10));
-    n /= 10;
-    sbTemp.SetChar(1, (Char32)('0'+n%10));
-    n /= 10;
-    sbTemp.SetChar(0, (Char32)('0'+n%10));
-
-    cal->Get(ICalendar::MONTH, &n);
-    n = n + 1;
-    sbTemp.SetChar(5, (Char32)('0'+n%10));
-    n /= 10;
-    sbTemp.SetChar(4, (Char32)('0'+n%10));
-
-    cal->Get(ICalendar::DAY_OF_MONTH, &n);
-    sbTemp.SetChar(7, (Char32)('0'+n%10));
-    n /= 10;
-    sbTemp.SetChar(6, (Char32)('0'+n%10));
-
-    sbTemp.SetChar(8, 'T');
-
-    cal->Get(ICalendar::HOUR_OF_DAY, &n);
-    sbTemp.SetChar(10, (Char32)('0'+n%10));
-    n /= 10;
-    sbTemp.SetChar(9, (Char32)('0'+n%10));
-
-    cal->Get(ICalendar::MINUTE, &n);
-    sbTemp.SetChar(12, (Char32)('0'+n%10));
-    n /= 10;
-    sbTemp.SetChar(11, (Char32)('0'+n%10));
-
-    cal->Get(ICalendar::SECOND, &n);
-    sbTemp.SetChar(14, (Char32)('0'+n%10));
-    n /= 10;
-    sbTemp.SetChar(13, (Char32)('0'+n%10));
-
-    *sb = sbTemp.ToString();
-
-    return *sb;
-}
-
 String DateUtils::FormatDateRange(
     /* [in] */ IContext* context,
     /* [in] */ Int64 startMillis,
@@ -716,7 +679,7 @@ String DateUtils::FormatDateRange(
     localeHelp->GetDefault((ILocale**)&locale);
     AutoPtr<Elastos::Utility::IFormatter> f;
     AutoPtr<IAppendable> appendable = (IAppendable*)s.Probe(EIID_IAppendable);
-    CFormatter::New(appendable, locale, (IFormatter**)&f);
+    CFormatter::New(appendable.Get(), locale.Get(), (Elastos::Utility::IFormatter**)&f);
     AutoPtr<Elastos::Utility::IFormatter> fRet = FormatDateRange(context, f, startMillis, endMillis, flags);
     String ret;
     fRet->ToString(&ret);
@@ -761,11 +724,11 @@ AutoPtr<Elastos::Utility::IFormatter> DateUtils::FormatDateRange(
         AutoPtr<IAppendable> appendable;
         formatter->GetOut((IAppendable**)&appendable);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(range, (ICharSequence**)&cs);
+        CString::New(range, (ICharSequence**)&cs);
         appendable->Append(cs);
     } catch () {
         // throw new AssertionError(impossible);
-        return E_ASSERTION_ERROR;
+        // return E_ASSERTION_ERROR;
     }
     return formatter;
 }
@@ -815,7 +778,8 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeTimeSpanString(
             // Same day
             Int32 flags = IDateUtils::FORMAT_SHOW_TIME;
             result = FormatDateRange(c, millis, millis, flags);
-            prepositionId = R::string::preposition_for_time;
+            assert(0 && "TODO");
+            // prepositionId = R::string::preposition_for_time;
         }
         else if (nowYear != thenYear) {
             // Different years
@@ -823,13 +787,13 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeTimeSpanString(
             result = FormatDateRange(c, millis, millis, flags);
 
             // This is a date (like "10/31/2008" so use the date preposition)
-            prepositionId = R::string::preposition_for_date;
+            // prepositionId = R::string::preposition_for_date;
         }
         else {
             // Default
             Int32 flags = IDateUtils::FORMAT_SHOW_DATE | IDateUtils::FORMAT_ABBREV_MONTH;
             result = FormatDateRange(c, millis, millis, flags);
-            prepositionId = R::string::preposition_for_date;
+            // prepositionId = R::string::preposition_for_date;
         }
         if (withPreposition) {
             AutoPtr<IResources> res;

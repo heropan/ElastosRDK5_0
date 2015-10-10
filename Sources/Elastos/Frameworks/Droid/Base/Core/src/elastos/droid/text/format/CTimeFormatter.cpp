@@ -1,5 +1,4 @@
 #include "CTimeFormatter.h"
-#include "_Elastos_CTimeFormatter.h"
 
 namespace Elastos {
 namespace Droid {
@@ -16,9 +15,16 @@ const Int32 CTimeFormatter::DAYSPERLYEAR = 366;
 const Int32 CTimeFormatter::DAYSPERNYEAR = 365;
 
 CAR_INTERFACE_IMPL(CTimeFormatter, Object, ITimeFormatter)
+
 CAR_OBJECT_IMPL(CTimeFormatter)
 
-CTimeFormatter::CTiemFormatter()
+CTimeFormatter::CTimeFormatter()
+{}
+
+CTimeFormatter::~CTimeFormatter()
+{}
+
+CTimeFormatter::constructor()
 {
     synchronized (mLock) {
     AutoPtr<ILocale> locale_;
@@ -53,9 +59,11 @@ CTimeFormatter::CTiemFormatter()
 String CTiemFormatter::Format(
     /* [in] */ const String& pattern,
     /* [in] */ IZoneInfoWallTime* wallTime,
-    /* [in] */ IZoneInfo* zoneInfo)
+    /* [in] */ IZoneInfo* zoneInfo,
+    /* [out] */ String* result)
 {
-    try {
+  VALIDATE_NOT_NULL(result)
+  try {
     StringBuilder stringBuilder;
 
     mOutputBuilder = stringBuilder;

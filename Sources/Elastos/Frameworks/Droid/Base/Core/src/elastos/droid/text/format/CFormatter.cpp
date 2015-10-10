@@ -1,14 +1,13 @@
-
 #include "elastos/droid/text/format/CFormatter.h"
 #include "elastos/droid/text/format/Formatter.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Format {
 
-CAR_INTERFACE_DECL(CFormatter, Singleton, IFormatter)
+CAR_INTERFACE_IMPL(CFormatter, Singleton, IFormatter)
 CAR_SINGLETON_IMPL(CFormatter)
 
 ECode CFormatter::FormatFileSize(
@@ -46,7 +45,7 @@ ECode CFormatter::FormatShortElapsedTime(
      /* [out] */ String* ret)
 {
     VALIDATE_NOT_NULL(ret)
-    *ret = Formatter::FormatShortElapsedTime(context, millis, ret);
+    *ret = Formatter::FormatShortElapsedTime(context, millis);
     return NOERROR;
 }
 

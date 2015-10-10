@@ -3,9 +3,12 @@
 #define __ELASTOS_DROID_TEXT_FORMAT_CTIME_H__
 
 #include "_Elastos_Droid_Text_Format_CTime.h"
+#include <elastos/core/Object.h>
 
-using Libcore::ICU::ILocale;
 using Elastos::Droid::Text::Format::ITime;
+using Elastos::Utility::ILocale;
+using Libcore::Utility::IZoneInfo;
+using Libcore::Utility::IZoneInfoWallTime;
 
 namespace Elastos {
 namespace Droid {
@@ -24,9 +27,13 @@ CarClass(CTime)
     , public ITime
 {
 private:
-    static class TimeCalculator {
+    class TimeCalculator
+        : public Object
+    {
         public:
-            TimeCalculator(String timezoneId);
+            // CAR_INTERFACE_DECL()
+
+            TimeCalculator(const String& timezoneId);
 
             CARAPI_(Int64) ToMillis(
                 /* [in] */ Boolean ignoreDst);
@@ -35,7 +42,7 @@ private:
                 /* [in] */ Int64 millis);
 
             CARAPI_(String) Format(
-                /* [in] */ const String& format);
+                /* [in] */ String& format);
 
             CARAPI SwitchTimezone(
                 /* [in] */ const String& timezone);
@@ -60,21 +67,19 @@ private:
 
             CARAPI LookupZoneInfo(
                 /* [in] */ const String& timezoneId,
-                /* [out] */ ZoneInfo** ret);
+                /* [out] */ IZoneInfo** ret);
 
             CARAPI_(Char32) ToChar(
                 /* [in] */ Int32 n);
 
         public:
-            assert(0 && "TODO");
-            //public final ZoneInfo.WallTime wallTime;
             const AutoPtr<IZoneInfoWallTime> mWallTime;
             String mTimeZone;
 
         private:
             // Information about the current timezone.
             AutoPtr<IZoneInfo> mZoneInfo;
-        };
+    };
 public:
     CAR_INTERFACE_DECL()
 

@@ -9,7 +9,8 @@ using Elastos::Droid::Text::ISpannableStringBuilder;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::ICalendar;
 using Elastos::Utility::IDate;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
+using Libcore::ICU::ILocaleData;
 
 namespace Elastos {
 namespace Droid {

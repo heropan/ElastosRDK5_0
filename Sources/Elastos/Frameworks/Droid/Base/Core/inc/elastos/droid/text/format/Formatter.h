@@ -74,9 +74,9 @@ private:
         /* [in] */ Boolean shorter);
 
 private:
-    static const Int32 SECONDS_PER_MINUTE;
-    static const Int32 SECONDS_PER_HOUR;
-    static const Int32 SECONDS_PER_DAY;
+    static const Int32 SECONDS_PER_MINUTE = 60;
+    static const Int32 SECONDS_PER_HOUR = 60 * 60;
+    static const Int32 SECONDS_PER_DAY = 24 * 60 * 60;
 };
 
 

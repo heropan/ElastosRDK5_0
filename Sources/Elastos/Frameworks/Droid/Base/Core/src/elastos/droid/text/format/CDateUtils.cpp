@@ -1,14 +1,14 @@
 
 #include "elastos/droid/text/format/CDateUtils.h"
 #include "elastos/droid/text/format/DateUtils.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Format {
 
-CAR_INTERFACE_DECL(CDateUtils, Singleton, IDateUtils)
+CAR_INTERFACE_IMPL(CDateUtils, Singleton, IDateUtils)
 
 CAR_SINGLETON_IMPL(CDateUtils)
 
@@ -211,26 +211,6 @@ ECode CDateUtils::GetRelativeTimeSpanString(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ICharSequence> cRet = DateUtils::GetRelativeTimeSpanString(c, millis);
     *ret = cRet;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
-}
-
-ECode CDateUtils::GetSameMonthTable(
-    /* [out, callee] */ ArrayOf<Int32>** ret)
-{
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr< ArrayOf<Int32> > sameMT = DateUtils::GetSameMonthTable();
-    *ret = sameMT;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
-}
-
-ECode CDateUtils::GetSameYearTable(
-    /* [out, callee] */ ArrayOf<Int32>** ret)
-{
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr< ArrayOf<Int32> > sameYT = DateUtils::GetSameYearTable();
-    *ret = sameYT;
     REFCOUNT_ADD(*ret);
     return NOERROR;
 }
