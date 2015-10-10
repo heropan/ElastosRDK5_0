@@ -1,19 +1,20 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_DEFAULTVIDEOPOSTERREQUESTHANDLER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_DEFAULTVIDEOPOSTERREQUESTHANDLER_H__
+#include "ext/frameworkext.h"
+//TODO #include "elastos/droid/webkit/native/android_webview/AwContentsClient.h"
+#include "elastos/droid/webkit/native/android_webview/AwWebResourceResponse.h"
+#include "elastos/droid/os/AsyncTask.h"
 
-// import android.graphics.Bitmap;
-// import android.os.AsyncTask;
-// import android.util.Log;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Os::AsyncTask;
 
-// import org.chromium.base.ThreadUtils;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IOutputStream;
+//TODO using Elastos::IO::IPipedOutputStream;
+class IPipedOutputStream;//TODO remove when above line is ok
 
 // import java.io.IOException;
-// import java.io.InputStream;
-// import java.io.OutputStream;
-// import java.io.PipedInputStream;
-// import java.io.PipedOutputStream;
-// import java.util.Random;
+class AwContentsClient;
 
 namespace Elastos {
 namespace Droid {
@@ -35,6 +36,7 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         UIRunnable(
             /* [in] */ DefaultVideoPosterRequestHandler* owner,
             /* [in] */ IPipedOutputStream* outputStream,
@@ -53,6 +55,7 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         AsyncTaskRunnable(
             /* [in] */ DefaultVideoPosterRequestHandler* owner,
             /* [in] */ IBitmap* defaultVideoPoster,
@@ -84,7 +87,7 @@ public:
 
 private:
     static CARAPI_(AutoPtr<IInputStream>) GetInputStream(
-        /* [in] */ const AwContentsClient* contentClient);
+        /* [in] */ AwContentsClient* contentClient, DefaultVideoPosterRequestHandler* pThis);
 
     static CARAPI_(void) CloseOutputStream(
         /* [in] */ IOutputStream* outputStream);
@@ -97,7 +100,8 @@ private:
 private:
     static const String TAG;
     String mDefaultVideoPosterURL;
-    AutoPtr<AwContentsClient> mContentClient;
+    //TODO AutoPtr<AwContentsClient> mContentClient;
+    AwContentsClient *mContentClient;//TODO remove when above line is ok
 };
 
 } // namespace AndroidWebview

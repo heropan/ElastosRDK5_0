@@ -1,12 +1,12 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWBROWSERCONTEXT_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWBROWSERCONTEXT_H__
+#include "ext/frameworkext.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewStatics.h"
 
-// import android.content.Context;
-// import android.content.SharedPreferences;
-
-// import org.chromium.content.browser.ContentViewStatics;
-// import org.chromium.net.DefaultAndroidKeyStore;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::ISharedPreferences;
+using Elastos::Droid::Webkit::Content::Browser::ContentViewStatics;
+using Elastos::Droid::Webkit::Net::DefaultAndroidKeyStore;
 
 namespace Elastos {
 namespace Droid {

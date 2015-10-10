@@ -1,14 +1,17 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_CLIENTCERTLOOKUPTABLE_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_CLIENTCERTLOOKUPTABLE_H__
+#include "ext/frameworkext.h"
+#include "elastos/droid/webkit/native/net/AndroidPrivateKey.h"
+#include "elastos/utility/etl/Map.h"
+#include "elastos/utility/etl/Set.h"
 
-// import org.chromium.net.AndroidPrivateKey;
+using Elastos::Droid::Webkit::Net::AndroidPrivateKey;
+using Elastos::Utility::Etl::Map;
+using Elastos::Utility::Etl::Set;
 
 // import java.util.Arrays;
 // import java.util.HashMap;
 // import java.util.HashSet;
-// import java.util.Map;
-// import java.util.Set;
 
 namespace Elastos {
 namespace Droid {
@@ -20,21 +23,23 @@ namespace AndroidWebview {
  * thread-safe. All accesses are done on UI thread.
  */
 class ClientCertLookupTable
+:public Object
 {
 public:
     /**
      * A container for the certificate data.
      */
     class Cert
+    :public Object
     {
     public:
         Cert(
             /* [in] */ AndroidPrivateKey* privateKey,
-            /* [in] */ ArrayOf< ArrayOf<Byte> >* certChain);
+            /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* certChain);
 
     public:
         AutoPtr<AndroidPrivateKey> privateKey;
-        AutoPtr< ArrayOf< ArrayOf<Byte> > > certChain;
+        AutoPtr<ArrayOf<AutoPtr<ArrayOf<Byte> > > > certChain;
     };
 
 public:
@@ -47,7 +52,7 @@ public:
         /* [in] */ const String& host,
         /* [in] */ Int32 port,
         /* [in] */ AndroidPrivateKey* privateKey,
-        /* [in] */ ArrayOf< ArrayOf<Byte> >* chain);
+        /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* chain);
 
     CARAPI_(void) Deny(
         /* [in] */ const String& host,
@@ -69,8 +74,8 @@ private:
         /* [in] */ Int32 port);
 
 private:
-    const Map<String, Cert> mCerts;
-    const Set<String> mDenieds;
+    Map<String, AutoPtr<Cert> > mCerts;
+    Set<String> mDenieds;
 };
 
 } // namespace AndroidWebview

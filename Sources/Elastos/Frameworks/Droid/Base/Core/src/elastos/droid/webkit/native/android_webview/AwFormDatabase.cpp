@@ -1,3 +1,4 @@
+#include "elastos/droid/webkit/native/android_webview/AwFormDatabase.h"
 
 namespace Elastos {
 namespace Droid {
@@ -19,6 +20,7 @@ void AwFormDatabase::ClearFormData()
 //--------------------------------------------------------------------------------------------
 Boolean AwFormDatabase::NativeHasFormData()
 {
+    return FALSE;
 }
 
 void AwFormDatabase::NativeClearFormData()

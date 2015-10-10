@@ -1,3 +1,25 @@
+#include "elastos/droid/webkit/native/android_webview/DefaultVideoPosterRequestHandler.h"
+
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+#include "elastos/core/StringUtils.h"
+//TODO #include "elastos/io/CPipedInputStream.h"
+//TODO #include "elastos/io/CPipedOutputStream.h"
+#include "elastos/utility/logging/Logger.h"
+//TODO #include "elastos/utility/CRandom.h"
+
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+using Elastos::Droid::Graphics::BitmapCompressFormat_PNG;
+
+using Elastos::Core::StringUtils;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::IO::IPipedInputStream;
+using Elastos::IO::IFlushable;
+using Elastos::IO::IOutputStream;
+//TODO using Elastos::IO::CPipedInputStream;
+//TODO using Elastos::IO::CPipedOutputStream;
+using Elastos::Utility::IRandom;
+//TODO using Elastos::Utility::CRandom;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -7,6 +29,7 @@ namespace AndroidWebview {
 //================================================================================
 //                 DefaultVideoPosterRequestHandler::UIRunnable
 //================================================================================
+CAR_INTERFACE_IMPL(DefaultVideoPosterRequestHandler::UIRunnable, Object, IRunnable);
 
 DefaultVideoPosterRequestHandler::UIRunnable::UIRunnable(
     /* [in] */ DefaultVideoPosterRequestHandler* owner,
@@ -20,13 +43,15 @@ DefaultVideoPosterRequestHandler::UIRunnable::UIRunnable(
 
 ECode DefaultVideoPosterRequestHandler::UIRunnable::Run()
 {
-    AutoPtr<IBitmap> defaultVideoPoster = mContentClient->GetDefaultVideoPoster();
+    AutoPtr<IBitmap> defaultVideoPoster; //TODO = mContentClient->GetDefaultVideoPoster();
+    AutoPtr<IOutputStream> outputStream;
+    //TODO outputStream = IOutputStream::Probe(mOutputStream);
     if (defaultVideoPoster == NULL) {
-        CloseOutputStream(mOutputStream);
-        return;
+        CloseOutputStream(outputStream);
+        return NOERROR;
     }
 
-    AutoPtr<IRunnable> runnable =  new AsyncTaskRunnable(this, defaultVideoPoster, mOutputStream);
+    AutoPtr<IRunnable> runnable =  new AsyncTaskRunnable(mOwner, defaultVideoPoster, mOutputStream);
     AsyncTask::THREAD_POOL_EXECUTOR->Execute(runnable);
 
     return NOERROR;
@@ -35,6 +60,7 @@ ECode DefaultVideoPosterRequestHandler::UIRunnable::Run()
 //================================================================================
 //               DefaultVideoPosterRequestHandler::AsyncTaskRunnable
 //================================================================================
+CAR_INTERFACE_IMPL(DefaultVideoPosterRequestHandler::AsyncTaskRunnable, Object, IRunnable);
 
 DefaultVideoPosterRequestHandler::AsyncTaskRunnable::AsyncTaskRunnable(
     /* [in] */ DefaultVideoPosterRequestHandler* owner,
@@ -49,14 +75,30 @@ DefaultVideoPosterRequestHandler::AsyncTaskRunnable::AsyncTaskRunnable(
 ECode DefaultVideoPosterRequestHandler::AsyncTaskRunnable::Run()
 {
     // try {
-        mDefaultVideoPoster->Compress(BitmapCompressFormat_PNG, 100,
-                mOutputStream);
-        mOutputStream->Flush();
+    AutoPtr<IOutputStream> outputStream;
+    //TODO outputStream = IOutputStream::Probe(mOutputStream);
+    Boolean result;
+    ECode ecode = mDefaultVideoPoster->Compress(BitmapCompressFormat_PNG, 100, outputStream, &result);
+    if (FAILED(ecode))
+    {
+        Logger::E(TAG, "DefaultVideoPosterRequestHandler::AsyncTaskRunnable::Run, compress ecode:0x%x", ecode);
+        CloseOutputStream(outputStream);
+        return ecode;
+    }
+    AutoPtr<IFlushable> outputStreamFlush = IFlushable::Probe(outputStream);
+    ecode = outputStreamFlush->Flush();
+    if (FAILED(ecode))
+    {
+        Logger::E(TAG, "DefaultVideoPosterRequestHandler::AsyncTaskRunnable::Run, flush ecode:0x%x", ecode);
+        CloseOutputStream(outputStream);
+        return ecode;
+    }
     // } catch (IOException e) {
     //     Log.e(TAG, null, e);
     // } finally {
     //     closeOutputStream(outputStream);
     // }
+    CloseOutputStream(outputStream);
 
     return NOERROR;
 }
@@ -75,20 +117,21 @@ DefaultVideoPosterRequestHandler::DefaultVideoPosterRequestHandler(
 }
 
 AutoPtr<IInputStream> DefaultVideoPosterRequestHandler::GetInputStream(
-    /* [in] */ const AwContentsClient* contentClient)
+    /* [in] */ AwContentsClient* contentClient, DefaultVideoPosterRequestHandler* pThis)
 {
     AutoPtr<IPipedInputStream> inputStream;
-    CPipedInputStream::New((IPipedInputStream**)&inputStream);
+    //TODO CPipedInputStream::New((IPipedInputStream**)&inputStream);
     AutoPtr<IPipedOutputStream> outputStream;
-    CPipedOutputStream::New(inputStream, (IPipedOutputStream**)&outputStream);
+    //TODO CPipedOutputStream::New(inputStream, (IPipedOutputStream**)&outputStream);
 
     // Send the request to UI thread to callback to the client, and if it provides a
     // valid bitmap bounce on to the worker thread pool to compress it into the piped
     // input/output stream.
-    AutoPtr<IRunnable> runnable = new UIRunnable(this, outputStream, contentClient);
+    AutoPtr<IRunnable> runnable = new UIRunnable(pThis, outputStream, contentClient);
     ThreadUtils::RunOnUiThread(runnable);
 
-    return inputStream;
+    AutoPtr<IInputStream> input = IInputStream::Probe(inputStream);
+    return input;
 }
 
 void DefaultVideoPosterRequestHandler::CloseOutputStream(
@@ -96,7 +139,7 @@ void DefaultVideoPosterRequestHandler::CloseOutputStream(
     // try {
         outputStream->Close();
     // } catch (IOException e) {
-    //     Log.e(TAG, null, e);
+        Logger::E(TAG, "DefaultVideoPosterRequestHandler::CloseOutputStream Close error");
     // }
 }
 
@@ -113,7 +156,8 @@ AutoPtr<AwWebResourceResponse> DefaultVideoPosterRequestHandler::ShouldIntercept
     if (!mDefaultVideoPosterURL.Equals(url)) return NULL;
 
     // try {
-        AutoPtr<AwWebResourceResponse> response = new AwWebResourceResponse(String("image/png"), NULL, GetInputStream(mContentClient));
+    //TODO how to handle the IOEXCEPTION
+        AutoPtr<AwWebResourceResponse> response = new AwWebResourceResponse(String("image/png"), String(), GetInputStream(mContentClient, this));
         return response;
     // } catch (IOException e) {
     //     Log.e(TAG, null, e);
@@ -132,8 +176,11 @@ String DefaultVideoPosterRequestHandler::GetDefaultVideoPosterURL()
 String DefaultVideoPosterRequestHandler::GenerateDefaulVideoPosterURL()
 {
     AutoPtr<IRandom> randomGenerator;
-    CRandom::New((IRandom**)&randomGenerator);
-    String path = String.valueOf(randomGenerator.nextLong());
+    //TODO CRandom::New((IRandom**)&randomGenerator);
+    //String path = String.valueOf(randomGenerator.nextLong());
+    Int64 randomNumber;
+    randomGenerator->NextInt64(&randomNumber);
+    String path = StringUtils::ToString(randomNumber);
     // The scheme of this URL should be kept in sync with kAndroidWebViewVideoPosterScheme
     // on the native side (see android_webview/common/url_constants.h)
     String strRet("android-webview-video-poster:default_video_poster/");

@@ -1,15 +1,18 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPRINTDOCUMENTADAPTER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPRINTDOCUMENTADAPTER_H__
+#include "ext/frameworkext.h"
+#include "elastos/droid/webkit/native/android_webview/AwPdfExporter.h"
 
-// import android.os.Bundle;
-// import android.os.CancellationSignal;
-// import android.os.ParcelFileDescriptor;
-// import android.print.PageRange;
-// import android.print.PrintAttributes;
-// import android.print.PrintDocumentAdapter;
-// import android.print.PrintDocumentInfo;
-// import android.webkit.ValueCallback;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::ICancellationSignal;
+using Elastos::Droid::Os::IParcelFileDescriptor;
+//TODO using Elastos::Droid::Webkit::IValueCallback;
+//TODO using Elastos::Droid::Print::IPageRange;
+//TODO using Elastos::Droid::Print::IPrintAttributes;
+//TODO using Elastos::Droid::Print::IPrintDocumentAdapter;
+//TODO using Elastos::Droid::Print::IWriteResultCallback;//defined in PrintDocumentAdapter.java
+//TODO using Elastos::Droid::Print::ILayoutResultCallback;//defined in PrintDocumentAdapter.java
+//TODO using Elastos::Droid::Print::IPrintDocumentInfo;
 
 namespace Elastos {
 namespace Droid {
@@ -21,24 +24,26 @@ namespace AndroidWebview {
  * system class PrintDocumentAdapter and hides all printing details from
  * the developer.
  */
-class AwPrintDocumentAdapter : public PrintDocumentAdapter
+class AwPrintDocumentAdapter
+//TODO : public PrintDocumentAdapter
 {
-private:
+public:
     class InnerValueCallback
         : public Object
-        , public IValueCallback
+        //TODO , public IValueCallback
     {
     public:
+        //TODO CAR_INTERFACE_DECL();
         InnerValueCallback(
             /* [in] */ AwPrintDocumentAdapter* owner,
-            /* [in] */ WriteResultCallback* callback);
+            /* [in] */ /*TODO IWriteResultCallback*/IInterface* callback);
 
         CARAPI OnReceiveValue(
             /* [in] */ Boolean value);
 
     private:
         AwPrintDocumentAdapter* mOwner;
-        WriteResultCallback* mCallback;
+        AutoPtr</*TODO IWriteResultCallback*/IInterface> mCallback;
     };
 
 public:
@@ -63,22 +68,22 @@ public:
 
     //@Override
     CARAPI_(void) OnLayout(
-        /* [in] */ IPrintAttributes* oldAttributes,
-        /* [in] */ IPrintAttributes* newAttributes,
+        /* [in] */ /*TODO IPrintAttributes*/IInterface* oldAttributes,
+        /* [in] */ /*TODO IPrintAttributes*/IInterface* newAttributes,
         /* [in] */ ICancellationSignal* cancellationSignal,
-        /* [in] */ LayoutResultCallback* callback,
+        /* [in] */ /*TODO ILayoutResultCallback*/IInterface* callback,
         /* [in] */ IBundle* metadata);
 
     //@Override
     CARAPI_(void) OnWrite(
-        /* [in] */ ArrayOf<IPageRange>* pages,
+        /* [in] */ ArrayOf</*TODO IPageRange*/IInterface*>* pages,
         /* [in] */ IParcelFileDescriptor* destination,
         /* [in] */ ICancellationSignal* cancellationSignal,
-        /* [in] */ const WriteResultCallback* callback);
+        /* [in] */ /*TODO IWriteResultCallback*/IInterface* callback);
 
 private:
     AutoPtr<AwPdfExporter> mPdfExporter;
-    AutoPtr<IPrintAttributes> mAttributes;
+    AutoPtr</*TODO IPrintAttributes*/IInterface> mAttributes;
     String mDocumentName;
 };
 

@@ -1,10 +1,8 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_PERMISSION_AWPERMISSIONREQUEST_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_PERMISSION_AWPERMISSIONREQUEST_H__
+#include "ext/frameworkext.h"
 
-// import android.net.Uri;
-// import android.util.Log;
-
+using Elastos::Droid::Net::IUri;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 // import org.chromium.base.ThreadUtils;
@@ -20,16 +18,17 @@ namespace Permission {
  * by native side.
  */
 //@JNINamespace("android_webview")
-public class AwPermissionRequest
+class AwPermissionRequest
+:public Object
 {
 public:
     CARAPI_(AutoPtr<IUri>) GetOrigin();
 
     CARAPI_(Int64) GetResources();
 
-    CARAPI_(void) Grant();
+    CARAPI Grant();
 
-    CARAPI_(void) Deny();
+    CARAPI Deny();
 
 protected:
     //@Override
@@ -42,8 +41,8 @@ private:
         /* [in] */ IUri* origin,
         /* [in] */ Int64 resources);
 
-    //@CalledByNative
-    static CARAPI_(AutoPtr<AwPermissionRequest>) Create(
+    //@CalledByNative return AwPermissionRequest
+    static CARAPI_(AutoPtr<IInterface>) Create(
         /* [in] */ Int64 nativeAwPermissionRequest,
         /* [in] */ const String& url,
         /* [in] */ Int64 resources);
@@ -51,7 +50,7 @@ private:
     //@CalledByNative
     CARAPI_(void) DetachNativeInstance();
 
-    CARAPI_(void) Validate();
+    CARAPI Validate();
 
     CARAPI_(void) NativeOnAccept(
         /* [in] */ Int64 nativeAwPermissionRequest,

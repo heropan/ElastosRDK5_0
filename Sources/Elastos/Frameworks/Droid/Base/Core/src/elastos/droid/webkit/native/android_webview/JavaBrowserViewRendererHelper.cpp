@@ -1,3 +1,13 @@
+#include "elastos/droid/webkit/native/android_webview/JavaBrowserViewRendererHelper.h"
+
+//TODO #include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/utility/logging/Logger.h"
+#include "elastos/core/Math.h"
+
+//TODO using Elastos::Droid::Graphics::CBitmapFactory;
+using Elastos::Droid::Graphics::IBitmapFactory;
+using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -16,8 +26,8 @@ JavaBrowserViewRendererHelper::JavaBrowserViewRendererHelper()
  * |canvas| is optional and if supplied indicates the Canvas that this Bitmap will be
  * drawn into. Note the Canvas will not be modified in any way.
  */
-//@CalledByNative
-AutoPtr<IBitmap> JavaBrowserViewRendererHelper::CreateBitmap(
+//@CalledByNative IBitmap
+AutoPtr<IInterface> JavaBrowserViewRendererHelper::CreateBitmap(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ ICanvas* canvas)
@@ -28,16 +38,20 @@ AutoPtr<IBitmap> JavaBrowserViewRendererHelper::CreateBitmap(
         Int32 w, h;
         canvas->GetMaximumBitmapWidth(&w);
         canvas->GetMaximumBitmapHeight(&h);
-        width = Math::Min(width, w);
-        height = Math::Min(height, h);
+        width = Elastos::Core::Math::Min(width, w);
+        height = Elastos::Core::Math::Min(height, h);
     }
 
     AutoPtr<IBitmap> bitmap;
+    AutoPtr<IBitmapFactory> bitmapFactory;
+    //TODO CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
     // try {
-        bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        ECode ecode = bitmapFactory->CreateBitmap(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
     // } catch (OutOfMemoryError e) {
     //     android.util.Log.w(LOGTAG, "Error allocating bitmap");
     // }
+        if (FAILED(ecode))
+            Logger::W(LOGTAG, "Error allocation bitmap");
 
     return bitmap;
 }
@@ -54,7 +68,7 @@ void JavaBrowserViewRendererHelper::DrawBitmapIntoCanvas(
     /* [in] */ Int32 scroll_y)
 {
     canvas->Translate(scroll_x, scroll_y);
-    canvas->DrawBitmap(bitmap, 0, 0, NULL);
+    canvas->DrawBitmap(bitmap, 0.0, 0.0, NULL);
 }
 
 } // namespace AndroidWebview

@@ -1,10 +1,18 @@
+#include "elastos/droid/webkit/native/android_webview/AwPdfExporter.h"
+
+#include "elastos/utility/logging/Logger.h"
+
+using Elastos::Utility::Logging::Logger;
+//TODO using Elastos::Droid::Print::IMargins;
+//TODO using Elastos::Droid::Print::IMediaSize;
+//TODO using Elastos::Droid::Print::IResolution;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace AndroidWebview {
 
-static const String AwPdfExporter::TAG("AwPdfExporter");
+const String AwPdfExporter::TAG("AwPdfExporter");
 
 AwPdfExporter::AwPdfExporter(
     /* [in] */ IViewGroup* containerView)
@@ -19,48 +27,57 @@ void AwPdfExporter::SetContainerView(
     mContainerView = containerView;
 }
 
-void AwPdfExporter::ExportToPdf(
-    /* [in] */ const IParcelFileDescriptor* fd,
-    /* [in] */ IPrintAttributes* attributes,
-    /* [in] */ IValueCallback* resultCallback,
+ECode AwPdfExporter::ExportToPdf(
+    /* [in] */ IParcelFileDescriptor* fd,
+    /* [in] */ /*TODO IPrintAttributes*/IInterface* attributes,
+    /* [in] */ /*TODO IValueCallback*/IInterface* resultCallback,
     /* [in] */ ICancellationSignal* cancellationSignal)
 {
     if (fd == NULL) {
-//        throw new IllegalArgumentException("fd cannot be null");
-        assert(0);
+        //throw new IllegalArgumentException("fd cannot be null");
+        Logger::E(TAG, "fd cannot be null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     if (resultCallback == NULL) {
-//        throw new IllegalArgumentException("resultCallback cannot be null");
-        assert(0);
+        //throw new IllegalArgumentException("resultCallback cannot be null");
+        Logger::E(TAG, "resultCallback cannot be null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     if (mResultCallback != NULL) {
-//        throw new IllegalStateException("printing is already pending");
-        assert(0);
+        //throw new IllegalStateException("printing is already pending");
+        Logger::E(TAG, "printing is already pending");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<IMediaSize> mediaSize;
-    if (attributes->GetMediaSize((IMediaSize**)&mediaSize), mediaSize == NULL) {
-//        throw new  IllegalArgumentException("attributes must specify a media size");
-        assert(0);
+    //TODO AutoPtr<IMediaSize> mediaSize;
+    //TODO if (attributes->GetMediaSize((IMediaSize**)&mediaSize), mediaSize == NULL)
+    {
+        //throw new  IllegalArgumentException("attributes must specify a media size");
+        Logger::E(TAG, "attributes must specify a media size");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<IResolution> resolution;
-    if (attributes->GetResolution((IResolution**)&resolution), resolution == NULL) {
-//        throw new IllegalArgumentException("attributes must specify print resolution");
-        assert(0);
+    //TODO AutoPtr<IResolution> resolution;
+    //TODO if (attributes->GetResolution((IResolution**)&resolution), resolution == NULL)
+    {
+        //throw new IllegalArgumentException("attributes must specify print resolution");
+        Logger::E(TAG, "attributes must specify print resolution");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<IMargins> margins;
-    if (attributes->GetMinMargins((IMargins**)&margins), margins == NULL) {
-//        throw new IllegalArgumentException("attributes must specify margins");
-        assert(0);
+    //TODO AutoPtr<IMargins> margins;
+    //TODO if (attributes->GetMinMargins((IMargins**)&margins), margins == NULL)
+    {
+        //throw new IllegalArgumentException("attributes must specify margins");
+        Logger::E(TAG, "attributes must specify margins");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     if (mNativeAwPdfExporter == 0) {
-        resultCallback->OnReceiveValue(FALSE);
-        return;
+        //TODO resultCallback->OnReceiveValue(FALSE);
+        return NOERROR;
     }
 
     mResultCallback = resultCallback;
@@ -80,34 +97,34 @@ void AwPdfExporter::SetNativeAwPdfExporter(
     // Handle the cornercase that Webview.Destroy is called before the native side
     // has a chance to complete the pdf exporting.
     if (nativePdfExporter == 0 && mResultCallback != NULL) {
-        mResultCallback->OnReceiveValue(FALSE);
+        //TODO mResultCallback->OnReceiveValue(FALSE);
         mResultCallback = NULL;
     }
 }
 
 Int32 AwPdfExporter::GetPrintDpi(
-    /* [in] */ IPrintAttributes* attributes)
+    /* [in] */ /*TODO IPrintAttributes*/IInterface* attributes)
 {
     // TODO(sgurun) android print attributes support horizontal and
     // vertical DPI. Chrome has only one DPI. Revisit this.
-    AutoPtr<IResolution> resolution;
-    attributes->GetResolution((IResolution**)&resolution);
-    Int32 horizontalDpi;
-    resolution->GetHorizontalDpi(&horizontalDpi);
-    Int32 verticalDpi;
-    resolution->GetVerticalDpi(&verticalDpi);
+    //TODO AutoPtr<IResolution> resolution;
+    //TODO attributes->GetResolution((IResolution**)&resolution);
+    Int32 horizontalDpi = 0;
+    //TODO resolution->GetHorizontalDpi(&horizontalDpi);
+    Int32 verticalDpi = 0;
+    //TODO resolution->GetVerticalDpi(&verticalDpi);
     if (horizontalDpi != verticalDpi) {
-//        Log.w(TAG, "Horizontal and vertical DPIs differ. Using horizontal DPI " +
-//                " hDpi=" + horizontalDpi + " vDPI=" + verticalDpi);
+        Logger::W(TAG, "Horizontal and vertical DPIs differ. Using horizontal DPI \
+                       hDpi=%d, vDPI=%d.", horizontalDpi, verticalDpi);
     }
     return horizontalDpi;
 }
 
 //@CalledByNative
-void AwPdfExporter::didExportPdf(
+void AwPdfExporter::DidExportPdf(
     /* [in] */ Boolean success)
 {
-    mResultCallback->OnReceiveValue(success);
+    //TODO mResultCallback->OnReceiveValue(success);
     mResultCallback = NULL;
     mAttributes = NULL;
     // The caller should close the file.
@@ -117,20 +134,20 @@ void AwPdfExporter::didExportPdf(
 //@CalledByNative
 Int32 AwPdfExporter::GetPageWidth()
 {
-    AutoPtr<IMediaSize> mediaSize;
-    mAttributes->GetMediaSize((IMediaSize**)&mediaSize);
-    Int32 mils;
-    mediaSize->GetWidthMils(&mils);
+    //TODO AutoPtr<IMediaSize> mediaSize;
+    //TODO mAttributes->GetMediaSize((IMediaSize**)&mediaSize);
+    Int32 mils = 0;
+    //TODO mediaSize->GetWidthMils(&mils);
     return mils;
 }
 
 //@CalledByNative
 Int32 AwPdfExporter::GetPageHeight()
 {
-    AutoPtr<IMediaSize> mediaSize;
-    mAttributes->GetMediaSize((IMediaSize**)&mediaSize);
-    Int32 mils;
-    mediaSize->GetHeightMils(&mils);
+    //TODO AutoPtr<IMediaSize> mediaSize;
+    //TODO mAttributes->GetMediaSize((IMediaSize**)&mediaSize);
+    Int32 mils = 0;
+    //TODO mediaSize->GetHeightMils(&mils);
     return mils;
 }
 
@@ -143,40 +160,40 @@ Int32 AwPdfExporter::GetDpi()
 //@CalledByNative
 Int32 AwPdfExporter::GetLeftMargin()
 {
-    AutoPtr<IMargins> margins;
-    mAttributes->GetMinMargins((IMargins**)&margins);
-    Int32 mils;
-    margins->GetLeftMils(&mils);
+    //TODO AutoPtr<IMargins> margins;
+    //TODO mAttributes->GetMinMargins((IMargins**)&margins);
+    Int32 mils = 0;
+    //TODO margins->GetLeftMils(&mils);
     return mils;
 }
 
 //@CalledByNative
 Int32 AwPdfExporter::GetRightMargin()
 {
-    AutoPtr<IMargins> margins;
-    mAttributes->GetMinMargins((IMargins**)&margins);
-    Int32 mils;
-    margins->GetRightMils(&mils);
+    //TODO AutoPtr<IMargins> margins;
+    //TODO mAttributes->GetMinMargins((IMargins**)&margins);
+    Int32 mils = 0;
+    //TODO margins->GetRightMils(&mils);
     return mils;
 }
 
 //@CalledByNative
 Int32 AwPdfExporter::GetTopMargin()
 {
-    AutoPtr<IMargins> margins;
-    mAttributes->GetMinMargins((IMargins**)&margins);
-    Int32 mils;
-    margins->GetTopMils(&mils);
+    //TODO AutoPtr<IMargins> margins;
+    //TODO mAttributes->GetMinMargins((IMargins**)&margins);
+    Int32 mils = 0;
+    //TODO margins->GetTopMils(&mils);
     return mils;
 }
 
 //@CalledByNative
 Int32 AwPdfExporter::GetBottomMargin()
 {
-    AutoPtr<IMargins> margins;
-    mAttributes->GetMinMargins((IMargins**)&margins);
-    Int32 mils;
-    margins->GetBottomMils(&mils);
+    //TODO AutoPtr<IMargins> margins;
+    //TODO mAttributes->GetMinMargins((IMargins**)&margins);
+    Int32 mils = 0;
+    //TODO margins->GetBottomMils(&mils);
     return mils;
 }
 

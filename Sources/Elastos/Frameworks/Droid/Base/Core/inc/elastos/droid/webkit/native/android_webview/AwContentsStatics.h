@@ -1,12 +1,11 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSSTATICS_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSSTATICS_H__
+#include "ext/frameworkext.h"
+#include "elastos/droid/webkit/native/android_webview/ClientCertLookupTable.h"
 
+using Elastos::Core::IRunnable;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
-// import org.chromium.base.ThreadUtils;
-
-// import java.lang.Runnable;
 
 namespace Elastos {
 namespace Droid {
@@ -50,9 +49,9 @@ public:
         /* [in] */ Boolean recordFullDocument);
 
 private:
-    //@CalledByNative
+    //@CalledByNative parameter callback is IRunnable
     static CARAPI_(void) ClientCertificatesCleared(
-        /* [in] */ IRunnable* callback);
+        /* [in] */ IInterface* callback);
 
     //--------------------------------------------------------------------------------------------
     //  Native methods

@@ -1,3 +1,11 @@
+#include "elastos/droid/webkit/native/android_webview/ExternalVideoSurfaceContainer.h"
+#include "elastos/core/Math.h"
+
+using Elastos::Droid::View::IViewGroupLayoutParams;
+using Elastos::Droid::View::IViewManager;
+using Elastos::Droid::View::EIID_IViewManager;
+using Elastos::Droid::View::EIID_ISurfaceHolderCallback;
+using Elastos::Droid::View::EIID_IView;
 
 namespace Elastos {
 namespace Droid {
@@ -7,11 +15,12 @@ namespace AndroidWebview {
 //===============================================================
 //    ExternalVideoSurfaceContainer::NoPunchingSurfaceView
 //===============================================================
+CAR_INTERFACE_IMPL(ExternalVideoSurfaceContainer, Object, ISurfaceHolderCallback);
 
 ExternalVideoSurfaceContainer::NoPunchingSurfaceView::NoPunchingSurfaceView(
     /* [in] */ IContext* context)
+    //TODO :SurfaceView(context)
 {
-    super(context);
 }
 // SurfaceView.dispatchDraw implementation punches a hole in the view hierarchy.
 // Disable this by making this a no-op.
@@ -19,7 +28,7 @@ ExternalVideoSurfaceContainer::NoPunchingSurfaceView::NoPunchingSurfaceView(
 ECode ExternalVideoSurfaceContainer::NoPunchingSurfaceView::DispatchDraw(
     /* [in] */ ICanvas* canvas)
 {
-    retun NOERROR;
+    return NOERROR;
 }
 
 //===============================================================
@@ -40,8 +49,8 @@ AutoPtr<ExternalVideoSurfaceContainer> ExternalVideoSurfaceContainer::Factory::C
 //===============================================================
 
 const Int32 ExternalVideoSurfaceContainer::INVALID_PLAYER_ID;
-WeakReference<ExternalVideoSurfaceContainer> ExternalVideoSurfaceContainer::sActiveContainer;
-AutoPtr<Factory> ExternalVideoSurfaceContainer::sFactory = new Factory();
+AutoPtr<IWeakReference> ExternalVideoSurfaceContainer::sActiveContainer;
+AutoPtr<ExternalVideoSurfaceContainer::Factory> ExternalVideoSurfaceContainer::sFactory = new Factory();
 
 ExternalVideoSurfaceContainer::ExternalVideoSurfaceContainer(
     /* [in] */ Int64 nativeExternalVideoSurfaceContainer,
@@ -70,12 +79,15 @@ void ExternalVideoSurfaceContainer::SetFactory(
     sFactory = factory;
 }
 
-//@CalledByNative
-AutoPtr<ExternalVideoSurfaceContainer> ExternalVideoSurfaceContainer::Create(
+//@CalledByNative return ExternalVideoSurfaceContainer
+AutoPtr<IInterface> ExternalVideoSurfaceContainer::Create(
     /* [in] */ Int64 nativeExternalVideoSurfaceContainer,
     /* [in] */ ContentViewCore* contentViewCore)
 {
-    return sFactory::Create(nativeExternalVideoSurfaceContainer, contentViewCore);
+    AutoPtr<ExternalVideoSurfaceContainer> externalVideoSurfaceContainer =
+        sFactory->Create(nativeExternalVideoSurfaceContainer, contentViewCore);
+    AutoPtr<IInterface> result = externalVideoSurfaceContainer->Probe(EIID_IInterface);
+    return result;
 }
 
 /**
@@ -121,47 +133,63 @@ void ExternalVideoSurfaceContainer::Destroy()
 
 void ExternalVideoSurfaceContainer::InitializeCurrentPositionOfSurfaceView()
 {
-    mX = Integer.MIN_VALUE;
-    mY = Integer.MIN_VALUE;
+    mX = Elastos::Core::Math::INT32_MAX_VALUE;
+    mY = Elastos::Core::Math::INT32_MIN_VALUE;
     mWidth = 0;
     mHeight = 0;
 }
 
 void ExternalVideoSurfaceContainer::SetActiveContainer(
-    /* [in] */ ExternalVideoSurfaceContainer container)
+    /* [in] */ ExternalVideoSurfaceContainer* container)
 {
-    AutoPtr<ExternalVideoSurfaceContainer> activeContainer = sActiveContainer.get();
-    if (activeContainer != NULL) {
-        activeContainer.removeSurfaceView();
+    AutoPtr<IInterface> ws;
+    sActiveContainer->Resolve(EIID_IInterface, (IInterface**)&ws);
+    if (ws != NULL) {
+        AutoPtr<ExternalVideoSurfaceContainer> activeContainer =
+            (ExternalVideoSurfaceContainer*)(IObject*)ws->Probe(EIID_IObject);
+        activeContainer->RemoveSurfaceView();
     }
-    sActiveContainer = new WeakReference<ExternalVideoSurfaceContainer>(container);
+    //sActiveContainer = new WeakReference<ExternalVideoSurfaceContainer>(container);
+    sActiveContainer = NULL;
+    AutoPtr<IWeakReferenceSource> source = IWeakReferenceSource::Probe((IWeakReferenceSource*)container);
+    source->GetWeakReference((IWeakReference**)&sActiveContainer);
 }
 
 void ExternalVideoSurfaceContainer::ReleaseIfActiveContainer(
     /* [in] */ ExternalVideoSurfaceContainer* container)
 {
-    AutoPtr<ExternalVideoSurfaceContainer> activeContainer = sActiveContainer.get();
-    if (activeContainer == container) {
-        SetActiveContainer(NULL);
+    AutoPtr<IInterface> ws;
+    sActiveContainer->Resolve(EIID_IInterface, (IInterface**)&ws);
+    if (ws != NULL) {
+        AutoPtr<ExternalVideoSurfaceContainer> activeContainer =
+            (ExternalVideoSurfaceContainer*)(IObject*)ws->Probe(EIID_IObject);
+        if (activeContainer.Get() == container) {
+            SetActiveContainer(NULL);
+        }
     }
 }
 
 void ExternalVideoSurfaceContainer::CreateSurfaceView()
 {
-    mSurfaceView = new NoPunchingSurfaceView(mContentViewCore->GetContext());
+    ///TODO remove the type-cast
+    mSurfaceView = (ISurfaceView*)(new NoPunchingSurfaceView(mContentViewCore->GetContext()));
     AutoPtr<ISurfaceHolder> holder;
     mSurfaceView->GetHolder((ISurfaceHolder**)&holder);
     holder->AddCallback(this);
     // SurfaceHoder.surfaceCreated() will be called after the SurfaceView is attached to
     // the Window and becomes visible.
-    mContentViewCore->GetContainerView()->AddView(mSurfaceView);
+    AutoPtr<IView> view = (IView*)(mSurfaceView->Probe(EIID_IView));
+    mContentViewCore->GetContainerView()->AddView(view);
 }
 
 void ExternalVideoSurfaceContainer::RemoveSurfaceView()
 {
     // SurfaceHoder.surfaceDestroyed() will be called in ViewGroup.removeView()
     // as soon as the SurfaceView is detached from the Window.
-    mContentViewCore->GetContainerView()->RemoveView(mSurfaceView);
+    AutoPtr<IViewGroup> viewGroup = mContentViewCore->GetContainerView();
+    AutoPtr<IViewManager> viewManager = (IViewManager*)(viewGroup->Probe(EIID_IViewManager));
+    AutoPtr<IView> view = (IView*)(mSurfaceView->Probe(EIID_IView));
+    viewManager->RemoveView(view);
     mSurfaceView = NULL;
 }
 
@@ -206,8 +234,8 @@ void ExternalVideoSurfaceContainer::OnFrameInfoUpdated()
 void ExternalVideoSurfaceContainer::LayOutSurfaceView()
 {
     AutoPtr<RenderCoordinates> renderCoordinates = mContentViewCore->GetRenderCoordinates();
-    RenderCoordinates::NormalizedPoint topLeft = renderCoordinates->CreateNormalizedPoint();
-    RenderCoordinates::NormalizedPoint bottomRight = renderCoordinates->CreateNormalizedPoint();
+    AutoPtr<RenderCoordinates::NormalizedPoint> topLeft = renderCoordinates->CreateNormalizedPoint();
+    AutoPtr<RenderCoordinates::NormalizedPoint> bottomRight = renderCoordinates->CreateNormalizedPoint();
     topLeft->SetAbsoluteCss(mLeft, mTop);
     bottomRight->SetAbsoluteCss(mRight, mBottom);
     Float top = topLeft->GetYPix();
@@ -215,23 +243,24 @@ void ExternalVideoSurfaceContainer::LayOutSurfaceView()
     Float bottom = bottomRight->GetYPix();
     Float right = bottomRight->GetXPix();
 
-    Int32 x = Math::Round(left + renderCoordinates->GetScrollXPix());
-    Int32 y = Math::Round(top + renderCoordinates->GetScrollYPix());
-    Int32 width = Math::Round(right - left);
-    Int32 height = Math::Round(bottom - top);
+    Int32 x = Elastos::Core::Math::Round(left + renderCoordinates->GetScrollXPix());
+    Int32 y = Elastos::Core::Math::Round(top + renderCoordinates->GetScrollYPix());
+    Int32 width = Elastos::Core::Math::Round(right - left);
+    Int32 height = Elastos::Core::Math::Round(bottom - top);
     if (mX == x && mY == y && mWidth == width && mHeight == height) return;
     mX = x;
     mY = y;
     mWidth = width;
     mHeight = height;
 
-    mSurfaceView->SetX(x);
-    mSurfaceView->SetY(y);
+    AutoPtr<IView> view = (IView*)(mSurfaceView->Probe(EIID_IView));
+    view->SetX(x);
+    view->SetY(y);
     AutoPtr<IViewGroupLayoutParams> layoutParams;
-    mSurfaceView->GetLayoutParams((IViewGroupLayoutParams**)&layoutParams);
+    view->GetLayoutParams((IViewGroupLayoutParams**)&layoutParams);
     layoutParams->SetWidth(width);
     layoutParams->SetHeight(height);
-    mSurfaceView->RequestLayout();
+    view->RequestLayout();
 }
 
 // SurfaceHolder.Callback methods.

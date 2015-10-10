@@ -17,7 +17,7 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::ISurface;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Net::IUriHelper;
-//TODO using Elastos::Droid::Net:CUriHelper;
+//TODO using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::AsyncTask;
 using Elastos::Droid::Os::IParcelFileDescriptor;
