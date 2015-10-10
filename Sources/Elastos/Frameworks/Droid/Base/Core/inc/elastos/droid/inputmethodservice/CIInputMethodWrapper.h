@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CIINPUTMETHODWRAPPER_H__
 
 #include "_Elastos_Droid_InputMethodService_CIInputMethodWrapper.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;

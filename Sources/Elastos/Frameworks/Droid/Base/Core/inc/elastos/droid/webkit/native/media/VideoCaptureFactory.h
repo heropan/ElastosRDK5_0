@@ -1,7 +1,7 @@
 
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTUREFACTORY_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTUREFACTORY_H__
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/media/VideoCapture.h"
 
 // import android.content.Context;

@@ -1,7 +1,7 @@
 #include "elastos/droid/text/method/ReplacementTransformationMethod.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/text/CSpannedString.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::CString;

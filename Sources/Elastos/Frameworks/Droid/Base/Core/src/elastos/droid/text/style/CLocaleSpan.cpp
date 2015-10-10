@@ -1,6 +1,6 @@
 
 #include "elastos/droid/text/style/CLocaleSpan.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

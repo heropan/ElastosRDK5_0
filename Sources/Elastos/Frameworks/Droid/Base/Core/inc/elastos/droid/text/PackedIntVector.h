@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_TEXT_PACKEDINTVECTOR_H__
 
 #include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {

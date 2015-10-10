@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_CINPUTDEVICE_H__
 
 #include "_Elastos_Droid_View_CInputDevice.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_DEVICEMOTIONSERVICE_H__
 #define __ELASTOS_DROID_WEBKIT_DEVICEMOTIONSERVICE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Content::IContext;

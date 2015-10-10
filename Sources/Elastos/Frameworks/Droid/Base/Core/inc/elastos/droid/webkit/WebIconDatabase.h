@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_WEBICONDATABASE_H__
 #define __ELASTOS_DROID_WEBKIT_WEBICONDATABASE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "webkit/WebViewFactory.h"
 
 using Elastos::Droid::Graphics::IBitmap;

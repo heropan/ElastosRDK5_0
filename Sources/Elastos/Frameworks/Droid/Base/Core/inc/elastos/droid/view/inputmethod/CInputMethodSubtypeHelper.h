@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTMETHODSUBTYPEHELPER_H__
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTMETHODSUBTYPEHELPER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_View_InputMethod_CInputMethodSubtypeHelper.h"
 #include <elastos/utility/etl/List.h>
 

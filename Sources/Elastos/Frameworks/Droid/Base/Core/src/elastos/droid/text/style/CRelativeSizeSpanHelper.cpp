@@ -1,7 +1,7 @@
 
 #include "elastos/droid/text/style/CRelativeSizeSpanHelper.h"
 #include "elastos/droid/text/style/CRelativeSizeSpan.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

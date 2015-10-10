@@ -1,7 +1,6 @@
 module
 {
     merge("text/AlteredCharSequence.car");
-    merge("text/AndroidBidi.car");
     merge("text/AndroidCharacter.car");
     merge("text/Annotation.car");
     merge("text/AutoText.car");
@@ -17,7 +16,6 @@ module
     merge("text/InputType.car");
     merge("text/Layout.car");
     merge("text/LoginFilter.car");
-    merge("text/MeasuredText.car");
     merge("text/NoCopySpan.car");
     merge("text/PackedIntVector.car");
     merge("text/PackedObjectVector.car");
@@ -119,6 +117,9 @@ module
     merge("text/utility/Rfc822Tokenizer.car");
 
     using interface Elastos.Utility.IIterator;
+    using interface Elastos.Utility.ILocale;
+
+    interface Elastos.Droid.Graphics.IPaint;
 
     namespace Elastos {
     namespace Droid {
@@ -1118,41 +1119,49 @@ module
         interface IAlteredCharSequenceHelper;
     }
 
-    // class CAndroidCharacter{
-    //     interface IAndroidCharacter;
-    // }
+    singleton class CAndroidCharacter{
+        interface IAndroidCharacter;
+    }
 
-    // singleton class CAndroidCharacterHelper{
-    //     interface IAndroidCharacterHelper;
-    // }
+    class CAnnotation{
+        constructor();
 
-    // class CAnnotation{
-    //     interface IAnnotation;
-    //     interface IParcelableSpan;
-    //     interface IParcelable;
+        constructor(
+            [in] String key,
+            [in] String value);
 
-    //     constructor();
+        interface IAnnotation;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
 
-    //     //public
-    //     constructor(
-    //         [in] String key,
-    //         [in] String value);
+    class CAutoText{
+        interface IAutoText;
+    }
 
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-    // }
+    singleton class CAutoTextHelper{
+        interface IAutoTextHelper;
+    }
 
-    // class CAutoText{
-    //     interface IAutoText;
-    //     //private
-    //     constructor(
-    //         [in] IResources* resources);
-    // }
+    class CBidiFormatter {
+        interface IBidiFormatter;
+    }
 
-    // singleton class CAutoTextHelper{
-    //     interface IAutoTextHelper;
-    // }
+    singleton class CBidiFormatterHelper{
+        interface IBidiFormatterHelper;
+    }
+
+    class CBidiFormatterBuilder {
+        constructor();
+
+        constructor(
+            [in] Boolean rtlContext);
+
+        constructor(
+            [in] ILocale* locale);
+
+        interface IBidiFormatterBuilder;
+    }
 
     [deprecated]
     class CLayoutDirections {
@@ -1162,19 +1171,18 @@ module
         interface ILayoutDirections;
     }
 
-    // [deprecated]
-    // class CTextPaint {
+    class CTextPaint {
+        constructor();
 
-    //     constructor();
+        constructor(
+            [in] Int32 flags);
 
-    //     constructor(
-    //         [in] Int32 flags);
+        constructor(
+            [in] IPaint* p);
 
-    //     constructor(
-    //         [in] IPaint* p);
-
-    //     interface ITextPaint;
-    // }
+        interface ITextPaint;
+        interface IPaint;
+    }
 
     // class CBoringLayout {
     //     constructor(
@@ -1273,13 +1281,6 @@ module
 
     // singleton class CSpannableFactory {
     //     interface ISpannableFactory;
-    // }
-
-    // class CLengthFilter {
-    //     constructor(
-    //         [in] Int32 max);
-
-    //     interface IInputFilter;
     // }
 
     // class CNoCopySpan {
@@ -1429,9 +1430,19 @@ module
     //  * This filter will capitalize all the lower case letters that are added
     //  * through edits.
     //  */
-    // class CAllCaps {
+    // class CAllCapsFilter {
+    //     interface IAllCapsFilter;
     //     interface IInputFilter;
     // }
+
+    /**
+     * This filter will constrain edits not to make the length of the text
+     * greater than the specified length.
+     */
+    //class CLengthFilter {
+    //     interface ILengthFilter;
+    //     interface IInputFilter;
+    //}
 
     class CSimpleStringSplitter {
         constructor(

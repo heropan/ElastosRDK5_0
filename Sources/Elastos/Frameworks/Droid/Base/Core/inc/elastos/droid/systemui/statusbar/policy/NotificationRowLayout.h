@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_NOTIFICATIONROWLAYOUT_H__
 
 #include "widget/LinearLayout.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTEVENTRECEIVER_H__
 #define __ELASTOS_DROID_VIEW_INPUTEVENTRECEIVER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <utils/Looper.h>
 #include <androidfw/InputTransport.h>
 #include "os/NativeMessageQueue.h"

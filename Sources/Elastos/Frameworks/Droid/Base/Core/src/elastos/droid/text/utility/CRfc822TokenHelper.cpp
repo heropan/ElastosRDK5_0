@@ -1,7 +1,7 @@
 
 #include "elastos/droid/text/utility/CRfc822TokenHelper.h"
 #include "elastos/droid/text/utility/CRfc822Token.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

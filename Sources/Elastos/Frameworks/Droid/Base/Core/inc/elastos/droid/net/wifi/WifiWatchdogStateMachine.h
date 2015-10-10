@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_WIFIWATCHDOGSTATEMACHINE_H__
 #define  __ELASTOS_DROID_NET_WIFI_WIFIWATCHDOGSTATEMACHINE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "utility/AsyncChannel.h"
 #include "utility/State.h"
 #include "utility/StateMachine.h"

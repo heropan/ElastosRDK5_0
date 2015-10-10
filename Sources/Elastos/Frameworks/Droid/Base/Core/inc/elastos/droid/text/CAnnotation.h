@@ -9,26 +9,11 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
-CarClass(CAnnotation), public Annotation
+CarClass(CAnnotation)
+    , public Annotation
 {
 public:
-    IPARCELABLESPAN_METHODS_DECL()
-
-    CARAPI GetKey(
-        /* [out] */ String* ret);
-
-    CARAPI GetValue(
-        /* [out] */ String* ret);
-
-    CARAPI constructor(
-        /* [in] */ const String& key,
-        /* [in] */ const String& value);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ IParcel* src);
-
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Text

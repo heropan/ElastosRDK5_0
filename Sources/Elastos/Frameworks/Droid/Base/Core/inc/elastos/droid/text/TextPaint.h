@@ -1,9 +1,10 @@
 #ifndef __ELASTOS_DROID_TEXT_TEXTPAINT_H__
 #define __ELASTOS_DROID_TEXT_TEXTPAINT_H__
 
-#include "graphics/Paint.h"
+#include "elastos/droid/graphics/Paint.h"
 
 using Elastos::Droid::Graphics::IPaint;
+using Elastos::Droid::Graphics::Paint;
 
 namespace Elastos {
 namespace Droid {
@@ -13,20 +14,21 @@ namespace Text {
  * TextPaint is an extension of Paint that leaves room for some extra
  * data used during text measuring and drawing.
  */
-class TextPaint : public Elastos::Droid::Graphics::Paint
+class TextPaint
+    : public Elastos::Droid::Graphics::Paint
 {
 public:
     TextPaint();
 
-    TextPaint(
-        /* [in] */ Int32 flags);
-
-    TextPaint(
-        /* [in] */ IPaint* p);
-
     virtual ~TextPaint();
 
-public:
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ Int32 flags);
+
+    CARAPI constructor(
+        /* [in] */ IPaint* p);
 
     // Special value 0 means no background paint
     virtual CARAPI SetBgColor(
@@ -97,15 +99,6 @@ public:
         /* [in] */ Float thickness);
 
     using Paint::SetUnderlineText;
-
-protected:
-    virtual CARAPI Init();
-
-    virtual CARAPI Init(
-        /* [in] */ Int32 flags);
-
-    virtual CARAPI Init(
-        /* [in] */ IPaint* p);
 
 public:
     // Special value 0 means no background paint

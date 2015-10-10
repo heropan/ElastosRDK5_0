@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_TEXT_CLENGTHFILTER_H__
 
 #include "_Elastos_Droid_Text_CLengthFilter.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 
@@ -12,10 +13,14 @@ namespace Text {
 
 CarClass(CLengthFilter)
     : public Object
-    , public IInputFilter
     , public ILengthFilter
+    , public IInputFilter
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CLengthFilter();
 
     CARAPI Filter(

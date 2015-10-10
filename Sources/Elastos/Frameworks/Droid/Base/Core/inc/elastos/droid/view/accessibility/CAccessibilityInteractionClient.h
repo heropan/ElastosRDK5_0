@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYINTERACTIONCLIENT_H__
 #define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYINTERACTIONCLIENT_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_View_Accessibility_CAccessibilityInteractionClient.h"
 #include "view/accessibility/AccessibilityNodeInfoCache.h"
 #include <elastos/Core/Object.h>

@@ -1,6 +1,6 @@
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_MEDIAPLAYERBRIDGE_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_MEDIAPLAYERBRIDGE_H__
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/AsyncTask.h"
 
 using Elastos::Droid::Content::IContext;

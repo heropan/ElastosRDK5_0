@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_HTML5VIDEOFULLSCREEN_H__
 #define __ELASTOS_DROID_WEBKIT_HTML5VIDEOFULLSCREEN_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "webkit/HTML5VideoView.h"
 
 #include "widget/MediaController.h"

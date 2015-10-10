@@ -9,9 +9,9 @@ module
     merge("../../../car/elastos/droid/os.car");
     merge("../../../car/elastos/droid/animation.car");
     merge("../../../car/elastos/droid/database.car");
+    merge("../../../car/elastos/droid/graphics.car");
     merge("../../../car/elastos/droid/text.car");
     merge("../../../car/elastos/droid/content.car");
-    merge("../../../car/elastos/droid/graphics.car");
     merge("../../../car/elastos/droid/location.car");
     merge("../../../car/elastos/droid/view.car");
     merge("../../../car/elastos/droid/hardware.car");

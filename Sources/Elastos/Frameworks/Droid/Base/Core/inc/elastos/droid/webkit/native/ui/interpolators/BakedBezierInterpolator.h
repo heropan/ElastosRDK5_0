@@ -5,7 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_INTERPOLATORS_BAKEDBEZIERINTERPOLATOR_H_
 #define _ELASTOS_DROID_WEBKIT_UI_INTERPOLATORS_BAKEDBEZIERINTERPOLATOR_H_
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 // package org.chromium.ui.interpolators;
 // import android.view.animation.Interpolator;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_VIEWSTATESERIALIZER_H__
 #define __ELASTOS_DROID_WEBKIT_VIEWSTATESERIALIZER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IInputStream;

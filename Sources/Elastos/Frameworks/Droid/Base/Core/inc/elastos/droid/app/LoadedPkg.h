@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_LOADEDPKG_H__
 #define __ELASTOS_DROID_APP_LOADEDPKG_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "app/CActivityThread.h"
 #include "content/BroadcastReceiver.h"
 #include "os/Runnable.h"

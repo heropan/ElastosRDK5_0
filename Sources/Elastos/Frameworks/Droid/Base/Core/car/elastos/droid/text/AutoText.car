@@ -11,7 +11,8 @@ module
     /**
      * This class accesses a dictionary of corrections to frequent misspellings.
      */
-    interface IAutoText {}
+    interface IAutoText {
+    }
 
     [local]
     interface IAutoTextHelper {

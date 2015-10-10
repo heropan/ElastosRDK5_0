@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_REMOTEVIEWSADAPTER_H__
 #define __ELASTOS_DROID_WIDGET_REMOTEVIEWSADAPTER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "widget/BaseAdapter.h"
 #include "widget/FrameLayout.h"
 #include "os/CHandlerThread.h"

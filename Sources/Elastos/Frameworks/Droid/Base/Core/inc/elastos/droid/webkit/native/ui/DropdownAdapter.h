@@ -5,7 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_DROPDOWNADAPTER_H_
 #define _ELASTOS_DROID_WEBKIT_UI_DROPDOWNADAPTER_H_
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/utility/etl/List.h"
 #include "elastos/utility/etl/Set.h"
 #include "elastos/droid/widget/ArrayAdapter.h"

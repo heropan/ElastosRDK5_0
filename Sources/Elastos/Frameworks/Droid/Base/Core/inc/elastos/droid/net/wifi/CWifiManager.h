@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CWIFIMANAGER_H__
 #define  __ELASTOS_DROID_NET_WIFI_CWIFIMANAGER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Net_Wifi_CWifiManager.h"
 #include "os/HandlerBase.h"
 #include "utility/AsyncChannel.h"

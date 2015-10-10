@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_PREFERENCE_H__
 #define __ELASTOS_DROID_PREFERENCE_PREFERENCE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "R.h"
 #include <elastos/utility/etl/List.h>
 

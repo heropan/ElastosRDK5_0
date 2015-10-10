@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_GALLERY_H__
 #define __ELASTOS_DROID_WIDGET_GALLERY_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "os/Runnable.h"
 #include "widget/AbsSpinner.h"
 #include "widget/Scroller.h"

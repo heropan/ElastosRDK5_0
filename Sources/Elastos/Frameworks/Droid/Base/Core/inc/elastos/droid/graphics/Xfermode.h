@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_XFERMODE_H__
 #define __ELASTOS_DROID_GRAPHICS_XFERMODE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;

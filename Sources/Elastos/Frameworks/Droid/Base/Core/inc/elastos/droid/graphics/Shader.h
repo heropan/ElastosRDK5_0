@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_SHADER_H__
 #define __ELASTOS_DROID_GRAPHICS_SHADER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"
 
 namespace Elastos {

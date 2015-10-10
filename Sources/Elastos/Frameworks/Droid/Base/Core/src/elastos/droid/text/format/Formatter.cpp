@@ -1,5 +1,5 @@
 #include "elastos/droid/text/format/Formatter.h"
-// #include "R.h"
+#include "elastos/droid/R.h"
 // #include "elastos/droid/net/NetworkUtils.h"
 
 using Elastos::Core::ICharSequence;

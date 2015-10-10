@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_APICOMPATIBILITYUTILS_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_APICOMPATIBILITYUTILS_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::Res::IConfiguration;

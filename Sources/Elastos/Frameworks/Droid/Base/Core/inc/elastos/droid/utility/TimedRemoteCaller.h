@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_TIMED_REMOTED_CALLER_H__
 #define __ELASTOS_DROID_UTILITY_TIMED_REMOTED_CALLER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "os/SystemClock.h"
 #include <elastos/core/Object.h>
 #include <elastos/core/AutoLock.h>

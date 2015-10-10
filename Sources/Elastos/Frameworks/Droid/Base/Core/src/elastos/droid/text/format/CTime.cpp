@@ -3,7 +3,7 @@
 #include "elastos/droid/text/format/DateUtils.h"
 #include "elastos/droid/text/format/CTimeFormatter.h"
 #include "elastos/droid/content/res/CResources.h"
-// #include "R.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/Object.h>
 #include <elastos/core/Character.h>

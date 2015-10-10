@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_TEXT_CEDITABLEFACTORY_H__
 
 #include "_Elastos_Droid_Text_CEditableFactory.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::ICharSequence;
 

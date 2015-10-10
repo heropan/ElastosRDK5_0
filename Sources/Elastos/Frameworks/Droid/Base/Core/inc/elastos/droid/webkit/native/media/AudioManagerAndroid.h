@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_AUDIOMANAGERANDROID_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_AUDIOMANAGERANDROID_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/database/ContentObserver.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 

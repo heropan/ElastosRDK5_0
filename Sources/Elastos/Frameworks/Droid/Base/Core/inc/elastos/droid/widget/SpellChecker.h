@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_SPELLCHECKER_H__
 #define __ELASTOS_DROID_WIDGET_SPELLCHECKER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Libcore::ICU::ILocale;
 using Elastos::Droid::Text::IEditable;

@@ -1,10 +1,14 @@
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/text/CAutoTextHelper.h"
 #include "elastos/droid/text/CAutoText.h"
-#include "ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
+
+CAR_INTERFACE_IMPL(CAutoTextHelper, Singelton, IAutoTextHelper)
+
+CAR_SINGLETON_IMPL(CAutoTextHelper)
 
 ECode CAutoTextHelper::Get(
     /* [in] */ ICharSequence* src,

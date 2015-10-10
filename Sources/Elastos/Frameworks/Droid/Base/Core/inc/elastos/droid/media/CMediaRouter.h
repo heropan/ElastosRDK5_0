@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_CMEDIAROUTER_H__
 
 #include "_Elastos_Droid_Media_CMediaRouter.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 #include "content/BroadcastReceiver.h"

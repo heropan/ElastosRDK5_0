@@ -23,6 +23,8 @@ private:
         , public IGetChars
     {
     public:
+        CAR_INTERFACE_DECL()
+
         Reverser(
             /* [in] */ ICharSequence* source,
             /* [in] */ Int32 start,
@@ -154,7 +156,7 @@ public:
      */
     static CARAPI_(String) Join(
         /* [in] */ ICharSequence* delimiter,
-        /* [in] */ ArrayOf<IIterable>* tokens);
+        /* [in] */ ArrayOf<IIterable*>* tokens);
 
     /**
      * Returns a string containing the tokens joined by delimiters.

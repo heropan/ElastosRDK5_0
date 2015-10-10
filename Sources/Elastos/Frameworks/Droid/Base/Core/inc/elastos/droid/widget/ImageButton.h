@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_IMAGEBUTTON_H__
 
 #include "widget/ImageView.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "R.h"
 
 using Elastos::Droid::R;

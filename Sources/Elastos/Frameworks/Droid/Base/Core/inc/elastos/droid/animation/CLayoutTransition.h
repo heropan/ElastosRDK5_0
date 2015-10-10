@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_ANIMATION_CLAYOUTTRANSITION_H__
 
 #include "_Elastos_Droid_Animation_CLayoutTransition.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 #include "animation/AnimatorListenerAdapter.h"

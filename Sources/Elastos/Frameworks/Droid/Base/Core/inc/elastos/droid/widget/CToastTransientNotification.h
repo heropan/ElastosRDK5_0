@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CTOASTTRANSIENTNOTIFICATION_H__
 
 #include "_Elastos_Droid_Widget_CToastTransientNotification.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "os/Runnable.h"
 
 using Elastos::Droid::Os::Runnable;

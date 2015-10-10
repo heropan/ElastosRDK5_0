@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CAUDIOEFFECTHELPER_H__
 
 #include "_Elastos_Droid_Media_Audiofx_CAudioEffectHelper.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Singleton.h>             // include 单例基类
 
 using Elastos::Utility::IUUID;

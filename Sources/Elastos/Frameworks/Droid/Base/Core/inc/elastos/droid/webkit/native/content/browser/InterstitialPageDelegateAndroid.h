@@ -6,7 +6,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INTERSTITIALPAGEDELEGATEANDROID_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INTERSTITIALPAGEDELEGATEANDROID_H_
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;

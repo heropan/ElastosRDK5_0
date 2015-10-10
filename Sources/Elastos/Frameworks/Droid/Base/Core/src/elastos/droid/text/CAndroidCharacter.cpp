@@ -5,20 +5,23 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
+CAR_INTERFACE_IMPL(CAndroidCharacter, Object, IAndroidCharacter)
+
+CAR_SINGLETON_IMPL(CAndroidCharacter)
+
 ECode CAndroidCharacter::GetDirectionalities(
     /* [in] */ ArrayOf<Char32>* src,
     /* [in] */ ArrayOf<Byte>* dest,
     /* [in] */ Int32 count)
 {
-    // TODO: Add your code here
     return E_NOT_IMPLEMENTED;
 }
 
-Int32 CAndroidCharacter::GetEastAsianWidth(
-    /* [in] */ Char32 input)
+ECode CAndroidCharacter::GetEastAsianWidth(
+    /* [in] */ Char32 input,
+    /* [out] */ Int32* result)
 {
-    // TODO: Add your code here
-    return 0;
+    return NOERROR;
 }
 
 ECode CAndroidCharacter::GetEastAsianWidths(
@@ -27,24 +30,25 @@ ECode CAndroidCharacter::GetEastAsianWidths(
     /* [in] */ Int32 count,
     /* [in] */ ArrayOf<Byte>* dest)
 {
-    // TODO: Add your code here
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
-Boolean CAndroidCharacter::Mirror(
+ECode CAndroidCharacter::Mirror(
     /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 start,
-    /* [in] */ Int32 count)
+    /* [in] */ Int32 count,
+    /* [out] */ Boolean* result)
 {
     // TODO: Add your code here
-    return FALSE;
+    return NOERROR;
 }
 
-Char32 CAndroidCharacter::GetMirror(
-    /* [in] */ Char32 ch)
+ECode CAndroidCharacter::GetMirror(
+    /* [in] */ Char32 ch,
+    /* [out] */ Char32* result)
 {
     // TODO: Add your code here
-    return ' ';
+    return NOERROR;
 }
 
 } // namespace Text

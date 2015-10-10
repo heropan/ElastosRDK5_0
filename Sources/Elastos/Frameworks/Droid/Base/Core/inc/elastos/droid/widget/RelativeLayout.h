@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_RELATIVELAYOUT_H__
 #define __ELASTOS_DROID_WIDGET_RELATIVELAYOUT_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "view/ViewGroup.h"
 #include "widget/CRelativeLayoutLayoutParams.h"
 #include <elastos/utility/etl/Set.h>

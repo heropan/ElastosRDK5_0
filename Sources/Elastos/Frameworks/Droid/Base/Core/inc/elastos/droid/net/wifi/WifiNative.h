@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_WIFINATIVE_H__
 #define  __ELASTOS_DROID_NET_WIFI_WIFINATIVE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Net::Wifi::P2p::IWifiP2pConfig;
 using Elastos::Droid::Net::Wifi::P2p::IWifiP2pGroup;

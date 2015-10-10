@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_SPLINE_H__
 #define __ELASTOS_DROID_UTILITY_SPLINE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 namespace Elastos {

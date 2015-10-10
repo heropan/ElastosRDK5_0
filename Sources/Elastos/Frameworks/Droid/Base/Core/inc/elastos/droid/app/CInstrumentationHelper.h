@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CINSTRUMENTATIONHELPER_H__
 
 #include "_Elastos_Droid_App_CInstrumentationHelper.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Core::IClassLoader;
 using Elastos::Droid::Content::IContext;

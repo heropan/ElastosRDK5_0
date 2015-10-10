@@ -1,7 +1,7 @@
 
 #include "elastos/droid/text/method/CDigitsKeyListenerHelper.h"
 #include "elastos/droid/text/method/CDigitsKeyListener.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

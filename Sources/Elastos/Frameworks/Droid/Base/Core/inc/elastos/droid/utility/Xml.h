@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_XML_H__
 #define __ELASTOS_DROID_UTILITY_XML_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::IO::IReader;
 using Elastos::IO::IInputStream;

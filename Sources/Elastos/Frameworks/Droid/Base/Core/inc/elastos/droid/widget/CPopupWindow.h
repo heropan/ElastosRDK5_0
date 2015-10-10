@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CPOPUPWINDOW_H__
 
 #include "_Elastos_Droid_Widget_CPopupWindow.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 
 using Elastos::Droid::Os::IBinder;

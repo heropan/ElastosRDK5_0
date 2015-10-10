@@ -1,7 +1,6 @@
 #ifndef __ELASTOS_DROID_TEXT_DYNAMICLAYOUT_H__
 #define __ELASTOS_DROID_TEXT_DYNAMICLAYOUT_H__
 
-#include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/text/Layout.h"
 #include "elastos/droid/text/PackedIntVector.h"
 #include "elastos/droid/text/PackedObjectVector.h"

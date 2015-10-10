@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_WIFICONFIGSTORE_H__
 #define  __ELASTOS_DROID_NET_WIFI_WIFICONFIGSTORE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "net/DhcpInfoInternal.h"
 #include "net/wifi/NetworkUpdateResult.h"
 #include "net/wifi/WifiNative.h"

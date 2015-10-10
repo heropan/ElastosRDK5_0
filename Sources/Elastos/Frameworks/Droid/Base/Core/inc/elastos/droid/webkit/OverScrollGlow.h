@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_OVERSCROLLGLOW_H__
 #define __ELASTOS_DROID_WEBKIT_OVERSCROLLGLOW_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Widget::IEdgeEffect;

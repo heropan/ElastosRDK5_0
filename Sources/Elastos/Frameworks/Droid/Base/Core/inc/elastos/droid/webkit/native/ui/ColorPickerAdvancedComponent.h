@@ -5,7 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_COLORPICKERADVANCEDCOMPONENT_H_
 #define _ELASTOS_DROID_WEBKIT_UI_COLORPICKERADVANCEDCOMPONENT_H_
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 // package org.chromium.ui;
 // import android.content.Context;

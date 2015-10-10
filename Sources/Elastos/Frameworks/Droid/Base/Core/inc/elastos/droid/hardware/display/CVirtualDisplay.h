@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_HARDWARE_DISPLAY_CVIRTUALDISPLAY_H__
 
 #include "_Elastos_Droid_Hardware_Display_CVirtualDisplay.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::View::ISurface;

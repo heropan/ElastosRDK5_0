@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_WIFIMONITOR_H__
 #define  __ELASTOS_DROID_NET_WIFI_WIFIMONITOR_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "net/wifi/WifiNative.h"
 #include "utility/StateMachine.h"
 

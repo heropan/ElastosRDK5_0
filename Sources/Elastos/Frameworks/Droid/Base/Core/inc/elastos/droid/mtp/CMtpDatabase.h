@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MTP_CMTPDATABASE_H__
 
 #include "_Elastos_Droid_Mtp_CMtpDatabase.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>

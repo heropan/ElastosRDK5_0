@@ -6,7 +6,7 @@
 #include "location/CListenerTransport.h"
 #endif
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

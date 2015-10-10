@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GESTURE_INSTANCELEARNER_H__
 #define __ELASTOS_DROID_GESTURE_INSTANCELEARNER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "gesture/Learner.h"
 
 using Elastos::Core::IComparator;

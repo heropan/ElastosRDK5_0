@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_PPPOE_CPPPOEMONITOR_H__
 
 #include "_Elastos_Droid_Net_Pppoe_CPppoeMonitor.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "CPppoeStateTracker.h"
 
 using Elastos::Droid::Net::Pppoe::IPppoeStateTracker;

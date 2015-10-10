@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CBASSBOOST_H__
 
 #include "_Elastos_Droid_Media_Audiofx_CBassBoost.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "media/audiofx/AudioEffect.h"
 
 

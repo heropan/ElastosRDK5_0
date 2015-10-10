@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_CSQLITEBULKCURSORDESCRIPTOR_H__
 #define __ELASTOS_DROID_DATABASE_CSQLITEBULKCURSORDESCRIPTOR_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Database_CBulkCursorDescriptor.h"
 #include <elastos/core/Object.h>
 

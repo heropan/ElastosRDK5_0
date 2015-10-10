@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_WEBSETTINGSCLASSIC_H__
 #define __ELASTOS_DROID_WEBKIT_WEBSETTINGSCLASSIC_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "os/HandlerBase.h"
 #include "webkit/BrowserFrame.h"
 #include "webkit/WebSettings.h"

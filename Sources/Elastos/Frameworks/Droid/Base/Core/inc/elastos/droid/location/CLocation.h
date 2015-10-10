@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_LOCATION_CLOCATION_H__
 #define __ELASTOS_DROID_LOCATION_CLOCATION_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Location_CLocation.h"
 
 using Elastos::Droid::Os::IBundle;

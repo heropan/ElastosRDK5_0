@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CLOUDNESSENHANCER_H__
 
 #include "_Elastos_Droid_Media_Audiofx_CLoudnessEnhancer.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "media/audiofx/AudioEffect.h"
 
 

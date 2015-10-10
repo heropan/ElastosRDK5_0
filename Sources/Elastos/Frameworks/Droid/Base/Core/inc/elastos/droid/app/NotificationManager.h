@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_NOTIFICATIONMANAGER_H__
 #define __ELASTOS_DROID_APP_NOTIFICATIONMANAGER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IUserHandle;

@@ -5,7 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_COLORPICKERDIALOG_H_
 #define _ELASTOS_DROID_WEBKIT_UI_COLORPICKERDIALOG_H_
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/app/AlertDialog.h"
 #include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
 #include "elastos/droid/webkit/native/ui/ColorPickerAdvanced.h"

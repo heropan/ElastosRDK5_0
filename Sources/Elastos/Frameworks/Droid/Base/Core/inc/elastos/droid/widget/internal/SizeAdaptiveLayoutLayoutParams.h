@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_INTERNAL_SIZEADAPTIVELAYOUTLAYOUTPARAMS_H__
 
 #include "view/ViewGroupLayoutParams.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroupLayoutParams;

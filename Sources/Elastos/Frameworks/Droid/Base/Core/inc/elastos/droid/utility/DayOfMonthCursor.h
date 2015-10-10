@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_DAY_OF_MONTH_CURSOR_H__
 #define __ELASTOS_DROID_UTILITY_DAY_OF_MONTH_CURSOR_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "utility/MonthDisplayHelper.h"
 
 namespace Elastos {

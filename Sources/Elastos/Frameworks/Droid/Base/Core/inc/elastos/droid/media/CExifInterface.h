@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_CEXIFINTERFACE_H__
 
 #include "_Elastos_Droid_Media_CExifInterface.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Text::ISimpleDateFormat;

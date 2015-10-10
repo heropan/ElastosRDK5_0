@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_EXPANDABLELISTCONNECTOR_H__
 #define __ELASTOS_DROID_WIDGET_EXPANDABLELISTCONNECTOR_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "widget/ExpandableListPosition.h"
 #include "widget/BaseAdapter.h"
 #include "widget/GroupMetadata.h"

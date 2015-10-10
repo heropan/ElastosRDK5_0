@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CALENDARCONTRACT_H__
 #define __ELASTOS_DROID_PROVIDER_CALENDARCONTRACT_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Net::IUri;
 

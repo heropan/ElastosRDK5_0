@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CCOMMANDQUEUE_H__
 
 #include "_Elastos_Droid_SystemUI_StatusBar_CCommandQueue.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "os/HandlerBase.h"
 
 using Elastos::Droid::Os::IBinder;

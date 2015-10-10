@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_POWERSTATUSRECEIVER_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_POWERSTATUSRECEIVER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IContext;

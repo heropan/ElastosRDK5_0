@@ -1,8 +1,8 @@
 
 #include "elastos/droid/text/CAutoText.h"
-#include "content/res/CResources.h"
-#include "utility/XmlUtils.h"
-#include "R.h"
+#include "elastos/droid/content/res/CResources.h"
+#include "elastos/droid/utility/XmlUtils.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
@@ -28,10 +28,14 @@ const Int32 CAutoText::TRIE_ROOT = 0;
 const Int32 CAutoText::INCREMENT = 1024;
 const Int32 CAutoText::DEFAULT = 14337; // Size of the Trie 13 Aug 2007
 const Int32 CAutoText::RIGHT = 9300; // Size of 'right' 13 Aug 2007
-Mutex CAutoText::sAutoTextLock;
+Mutex CAutoText::sLock;
 
 Boolean CAutoText::sInited = FALSE;
 AutoPtr<IAutoText> CAutoText::sInstance;
+
+CAR_INTERFACE_IMPL(CAutoText, Object, IAutoText)
+
+CAR_OBJECT_IMPL(CAutoText)
 
 CAutoText::CAutoText()
     : mTrieUsed(TRIE_ROOT)
@@ -62,7 +66,8 @@ AutoPtr<IAutoText> CAutoText::GetStaticInstance()
         AutoPtr<IResources> res = CResources::GetSystem();
 
         AutoPtr<CAutoText> instance;
-        CAutoText::NewByFriend(res, (CAutoText**)&instance);
+        CAutoText::NewByFriend((CAutoText**)&instance);
+        instance->constructor(res);
         sInstance = (IAutoText*)instance.Get();
     }
     return sInstance;
@@ -83,7 +88,7 @@ AutoPtr<IAutoText> CAutoText::GetInstance(
     AutoPtr<IAutoText> instance;
 
     {
-        AutoLock lock(sAutoTextLock);
+        AutoLock lock(sLock);
         instance = GetStaticInstance();
         Boolean bEqual;
         if (!(locale->Equals((((CAutoText*)(instance.Get()))->mLocale).Get(), &bEqual), bEqual)) {

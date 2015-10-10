@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_POWERMONITOR_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_POWERMONITOR_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "webkit/native/base/ApplicationStatus.h"
 
 using Elastos::Droid::Content::IContext;

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SWEXTEND_CGPIO_H__
 
 #include "_Elastos_Droid_Swextend_CGpio.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "IGpioService.h"
 
 namespace Elastos {

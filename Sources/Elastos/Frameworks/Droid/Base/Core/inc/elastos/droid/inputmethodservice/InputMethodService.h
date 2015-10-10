@@ -5,7 +5,7 @@
 #ifdef DROID_CORE
 #include "inputmethodservice/CSoftInputWindow.h"
 #include "inputmethodservice/AbstractInputMethodImpl.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "inputmethodservice/AbstractInputMethodService.h"
 #include "inputmethodservice/AbstractInputMethodSessionImpl.h"
 #include "view/ViewTreeObserver.h"

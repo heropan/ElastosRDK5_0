@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEW_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEW_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "os/Build.h"
 #include "webkit/native/content/browser/ContentViewCore.h"
 #include "webkit/native/content/browser/SmartClipProvider.h"

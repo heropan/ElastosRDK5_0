@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_INTERNAL_CONTENT_CNATIVELIBRARYHELPERHANDLE_H__
 
 #include "_Elastos_Droid_Internal_Content_CNativeLibraryHelperHandle.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Content::Pm::IPackageLite;

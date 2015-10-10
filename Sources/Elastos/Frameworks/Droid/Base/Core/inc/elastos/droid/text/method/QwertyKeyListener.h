@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_METHOD_QWERTYKEYLISTENER_H__
 
 #include "elastos/droid/text/method/BaseKeyListener.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 
 extern "C" const InterfaceID EIID_Replaced;

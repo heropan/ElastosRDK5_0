@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_SSLCERTLOOKUPTABLE_H__
 #define __ELASTOS_DROID_WEBKIT_SSLCERTLOOKUPTABLE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Net::Http::ISslError;

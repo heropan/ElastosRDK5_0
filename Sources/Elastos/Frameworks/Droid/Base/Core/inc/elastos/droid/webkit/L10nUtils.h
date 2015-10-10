@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_L10NUTILS_H__
 #define __ELASTOS_DROID_WEBKIT_L10NUTILS_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Content::IContext;

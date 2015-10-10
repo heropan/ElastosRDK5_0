@@ -1,7 +1,7 @@
 
 #include "elastos/droid/text/style/CSuperscriptSpanHelper.h"
 #include "elastos/droid/text/style/CSuperscriptSpan.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

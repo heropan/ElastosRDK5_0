@@ -12,7 +12,6 @@ module
      * @Involve
      * interface Elastos.Droid.Graphics.IPaint
      */
-    [deprecated]
     interface ITextPaint {
         /**
          * Copy the fields from tp into this TextPaint, including the

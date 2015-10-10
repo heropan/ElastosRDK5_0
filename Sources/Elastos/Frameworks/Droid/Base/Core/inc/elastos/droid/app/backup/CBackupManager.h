@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_APP_BACKUP_CBACKUPMANAGER_H__
 
 #include "_Elastos_Droid_App_Backup_CBackupManager.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::App::Backup::IIBackupManager;
 using Elastos::Droid::Content::IContext;

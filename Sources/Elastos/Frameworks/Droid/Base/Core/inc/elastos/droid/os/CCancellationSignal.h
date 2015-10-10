@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_OS_CCANCELLATIONSIGNAL_H__
 
 #include "_Elastos_Droid_Os_CCancellationSignal.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 namespace Elastos {

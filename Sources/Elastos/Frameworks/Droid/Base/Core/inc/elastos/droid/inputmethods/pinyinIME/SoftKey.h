@@ -2,7 +2,7 @@
 #ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_SOFTKEY_H__
 #define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_SOFTKEY_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Inputmethods::PinyinIME::ISoftKey;

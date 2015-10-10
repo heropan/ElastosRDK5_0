@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_NOTIFICATIONSTYLE_H__
 #define __ELASTOS_DROID_APP_NOTIFICATIONSTYLE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Widget::IRemoteViews;

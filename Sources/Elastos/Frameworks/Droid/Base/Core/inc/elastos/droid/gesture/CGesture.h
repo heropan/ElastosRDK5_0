@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GESTURE_CGESTURE_H__
 #define __ELASTOS_DROID_GESTURE_CGESTURE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Gesture_CGesture.h"
 #include <elastos/utility/etl/List.h>
 

@@ -12,16 +12,24 @@ C_DEFINES += -DDROID_CORE
 SOURCES += text.cpp
 SOURCES += AlteredCharSequence.cpp
 SOURCES += CAlteredCharSequenceHelper.cpp
+SOURCES += AndroidBidi.cpp
+SOURCES += CAndroidCharacter.cpp
+SOURCES += Annotation.cpp
+SOURCES += CAutoText.cpp
+SOURCES += CAutoTextHelper.cpp
+SOURCES += CBidiFormatter.cpp
+SOURCES += CBidiFormatterHelper.cpp
+SOURCES += CBidiFormatterBuilder.cpp
+SOURCES += CLayoutDirections.cpp
+SOURCES += MeasuredText.cpp
 
-#SOURCES += CBidiFormatter.cpp
-#SOURCES = TextUtils.cpp
-#SOURCES += MeasuredText.cpp
-#SOURCES += AndroidBidi.cpp
+SOURCES += CSimpleStringSplitter.cpp
+SOURCES += TextPaint.cpp
+SOURCES = TextUtils.cpp
+
+
 #SOURCES += TextDirectionHeuristics.cpp
-#SOURCES += TextPaint.cpp
-#SOURCES += CTextPaint.cpp
 #SOURCES += TextLine.cpp
-#SOURCES += CLayoutDirections.cpp
 #SOURCES += Layout.cpp
 #SOURCES += CLayoutHelper.cpp
 #SOURCES += BoringLayout.cpp
@@ -46,14 +54,6 @@ SOURCES += CAlteredCharSequenceHelper.cpp
 #SOURCES += CSpannableString.cpp
 #SOURCES += CSpannableStringHelper.cpp
 #SOURCES += CAllCaps.cpp
-
-#SOURCES += CAndroidCharacter.cpp
-#SOURCES += CAndroidCharacterHelper.cpp
-#SOURCES += Annotation.cpp
-#SOURCES += CAnnotation.cpp
-#SOURCES += CAutoText.cpp
-#SOURCES += CAutoTextHelper.cpp
-SOURCES += CSimpleStringSplitter.cpp
 #SOURCES += SpannedString.cpp
 #SOURCES += CSpannedString.cpp
 #SOURCES += CSpannedStringHelper.cpp

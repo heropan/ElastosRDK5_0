@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_PREFERENCE_CPREFERENCEMANAGER_H__
 
 #include "_Elastos_Droid_Preference_CPreferenceManager.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Core::ICharSequence;

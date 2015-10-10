@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_ACCESSIBILITYSERVICE_CACCESSIBILITYSERVICE_H__
 #define __ELASTOS_DROID_ACCESSIBILITYSERVICE_CACCESSIBILITYSERVICE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "app/Service.h"
 
 #include "content/Context.h"

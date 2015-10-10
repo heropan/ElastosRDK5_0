@@ -1,6 +1,6 @@
 #include "elastos/droid/text/style/TypefaceSpan.h"
 #include "graphics/CTypeface.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Graphics::ITypeface;
 using Elastos::Droid::Graphics::CTypeface;

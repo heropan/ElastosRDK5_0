@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_ADAPTERINPUTCONNECTION_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_ADAPTERINPUTCONNECTION_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 #include "os/SystemClock.h"
 //#include "webkit/native/content/browser/input/ImeAdapter.h"

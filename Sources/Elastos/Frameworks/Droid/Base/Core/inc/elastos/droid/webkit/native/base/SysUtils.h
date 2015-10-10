@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_SYSUTILS_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_SYSUTILS_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "os/Build.h"
 
 using Elastos::Droid::Os::Build;

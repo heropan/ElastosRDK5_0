@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_OS_CSTRICTMODE_H__
 
 #include "_Elastos_Droid_Os_CStrictMode.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/Core/Object.h>
 #include <elastos/utility/etl/HashMap.h>

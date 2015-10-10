@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_UTILITY_Rfc822Token_H__
 #define __ELASTOS_DROID_TEXT_UTILITY_Rfc822Token_H__
 
-//#include "ext/frameworkext.h"
+//#include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"
 
 namespace Elastos {

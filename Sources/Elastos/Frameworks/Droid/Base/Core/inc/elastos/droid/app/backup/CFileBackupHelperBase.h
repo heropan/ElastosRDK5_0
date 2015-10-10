@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_BACKUP_CFILEBACKUPHELPERBASE_H__
 
 #include "_Elastos_Droid_App_Backup_CFileBackupHelperBase.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "app/backup/FileBackupHelperBase.h"
 
 using Elastos::IO::IFile;

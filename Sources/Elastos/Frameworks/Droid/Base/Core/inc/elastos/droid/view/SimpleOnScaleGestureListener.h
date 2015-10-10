@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_SIMPLEONSCALEGESTURELISTENER_H__
 #define __ELASTOS_DROID_VIEW_SIMPLEONSCALEGESTURELISTENER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

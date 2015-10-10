@@ -16,32 +16,20 @@ TextPaint::TextPaint()
 {
 }
 
-TextPaint::TextPaint(
-    /* [in] */ Int32 flags)
-    : mBgColor(0)
-    , mBaselineShift(0)
-    , mLinkColor(0)
-    , mDensity(1.0f)
-    , mUnderlineColor(0)
-    , mUnderlineThickness(0)
-{
-    Paint::Init(flags);
-}
-
-TextPaint::TextPaint(
-    /* [in] */ IPaint* p)
-    : mBgColor(0)
-    , mBaselineShift(0)
-    , mLinkColor(0)
-    , mDensity(1.0f)
-    , mUnderlineColor(0)
-    , mUnderlineThickness(0)
-{
-    Paint::Init(p);
-}
-
 TextPaint::~TextPaint()
 {
+}
+
+ECode TextPaint::constructor(
+    /* [in] */ Int32 flags)
+{
+    return Paint::constructor(flags);
+}
+
+ECode TextPaint::constructor(
+    /* [in] */ IPaint* p)
+{
+    return Paint::constructor(p);
 }
 
 // Special value 0 means no background paint
@@ -199,24 +187,6 @@ ECode TextPaint::SetUnderlineText(
     return NOERROR;
 }
 
-ECode TextPaint::Init()
-{
-    Paint::Init();
-    return NOERROR;
-}
-
-ECode TextPaint::Init(
-    /* [in] */ Int32 flags)
-{
-    Paint::Init(flags);
-    return NOERROR;
-}
-
-ECode TextPaint::Init(
-    /* [in] */ IPaint* p)
-{
-    return Paint::Init(p);
-}
 
 } // namespace Text
 } // namepsace Droid

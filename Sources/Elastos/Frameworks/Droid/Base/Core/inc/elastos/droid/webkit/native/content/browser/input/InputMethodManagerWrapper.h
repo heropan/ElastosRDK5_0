@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_INPUTMETHODMANAGERWRAPPER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_INPUTMETHODMANAGERWRAPPER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IBinder;

@@ -1,7 +1,7 @@
 
 #include "elastos/droid/text/style/CTypefaceSpanHelper.h"
 #include "elastos/droid/text/style/CTypefaceSpan.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

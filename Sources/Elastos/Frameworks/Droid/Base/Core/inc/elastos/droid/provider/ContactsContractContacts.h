@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CONTACTSCONTRACTCONTACTS_H__
 #define __ELASTOS_DROID_PROVIDER_CONTACTSCONTRACTCONTACTS_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::Droid::Net::IUri;

@@ -1,7 +1,7 @@
 
 #include "elastos/droid/text/style/CUnderlineSpanHelper.h"
 #include "elastos/droid/text/style/CUnderlineSpan.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

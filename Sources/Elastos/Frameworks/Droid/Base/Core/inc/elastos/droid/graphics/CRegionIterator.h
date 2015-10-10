@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_CREGIONITERATOR_H__
 
 #include "_Elastos_Droid_Graphics_CRegionIterator.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;

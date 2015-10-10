@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_INTERNAL_HTTP_CHTTPDATETIME_H__
 
 #include "_Elastos_Droid_Net_Internal_Http_CHttpDateTime.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Utility::Regex::IPattern;
 

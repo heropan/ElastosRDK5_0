@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_INSETDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_INSETDRAWABLE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "graphics/drawable/Drawable.h"
 #include "graphics/CRect.h"
 

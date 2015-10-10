@@ -1,6 +1,6 @@
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTURE_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTURE_H__
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::ISurfaceTexture;

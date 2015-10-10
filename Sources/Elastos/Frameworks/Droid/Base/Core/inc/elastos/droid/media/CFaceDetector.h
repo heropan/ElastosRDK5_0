@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_CFACEDETECTOR_H__
 
 #include "_Elastos_Droid_Media_CFaceDetector.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Graphics::IPointF;
 using Elastos::Droid::Graphics::IBitmap;

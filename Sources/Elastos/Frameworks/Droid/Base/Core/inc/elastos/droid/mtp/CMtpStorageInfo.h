@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MTP_CMTPSTORAGEINFO_H__
 #define __ELASTOS_DROID_MTP_CMTPSTORAGEINFO_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Mtp_CMtpStorageInfo.h"
 #include <elastos/core/Object.h>
 

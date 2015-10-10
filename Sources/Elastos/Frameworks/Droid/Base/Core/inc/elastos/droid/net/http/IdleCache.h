@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_IDLECACHE_H__
 #define __ELASTOS_DROID_NET_HTTP_IDLECACHE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "Connection.h"
 
 using namespace Org::Apache::Http;

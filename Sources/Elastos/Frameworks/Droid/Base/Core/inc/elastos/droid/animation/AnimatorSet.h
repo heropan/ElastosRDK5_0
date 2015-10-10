@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_ANIMATION_ANIMATORSET_H__
 
 #include "animation/Animator.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "AnimatorListenerAdapter.h"
 #include <elastos/utility/etl/HashMap.h>
 

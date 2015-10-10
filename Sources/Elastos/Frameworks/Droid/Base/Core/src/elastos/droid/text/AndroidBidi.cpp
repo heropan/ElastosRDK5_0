@@ -1,11 +1,10 @@
 #include "elastos/droid/text/AndroidBidi.h"
-#ifdef DROID_CORE
-#include "elastos/droid/text/CLayoutDirections.h"
-#include "elastos/droid/text/CLayoutHelper.h"
-#endif
+//#include "elastos/droid/text/CLayoutDirections.h"
+//#include "elastos/droid/text/CLayoutHelper.h"
+#include "unicode/ubidi.h"
 
-using Elastos::Droid::Text::CLayoutDirections;
-using Elastos::Droid::Text::CLayoutHelper;
+//using Elastos::Droid::Text::CLayoutDirections;
+//using Elastos::Droid::Text::CLayoutHelper;
 using Elastos::Droid::Text::ILayoutHelper;
 
 namespace Elastos {
@@ -66,7 +65,7 @@ AutoPtr<ILayoutDirections> AndroidBidi::Directions(
     /* [in] */ Int32 len)
 {
     if (len == 0) {
-        return Layout.DIRS_ALL_LEFT_TO_RIGHT;
+        return ILayout::DIRS_ALL_LEFT_TO_RIGHT;
     }
 
     Int32 baseLevel = (dir == ILayout::DIR_LEFT_TO_RIGHT) ? 0 : 1;
@@ -105,7 +104,8 @@ AutoPtr<ILayoutDirections> AndroidBidi::Directions(
 
     if (runCount == 1 && minLevel == baseLevel) {
         AutoPtr<ILayoutHelper> helper;
-        CLayoutHelper::AcquireSingleton((ILayoutHelper**)&helper);
+        assert(0 && "TODO");
+        // CLayoutHelper::AcquireSingleton((ILayoutHelper**)&helper);
         AutoPtr<ILayoutDirections> dir;
         // we're done, only one run on this line
         if ((minLevel & 1) != 0) {
@@ -191,18 +191,39 @@ AutoPtr<ILayoutDirections> AndroidBidi::Directions(
     }
 
     AutoPtr<ILayoutDirections> directions;
-    CLayoutDirections::New(ld, (ILayoutDirections**)&directions);
+    assert(0 && "TODO");
+    // CLayoutDirections::New(ld, (ILayoutDirections**)&directions);
     return directions;
 }
 
 Int32 AndroidBidi::RunBidi(
-        /* [in] */ Int32 dir,
-        /* [in] */ ArrayOf<Char32>* chs,
-        /* [in] */ ArrayOf<Byte>* chInfo,
-        /* [in] */ Int32 n,
-        /* [in] */ Boolean haveInfo)
+    /* [in] */ Int32 dir,
+    /* [in] */ ArrayOf<Char32>* chs,
+    /* [in] */ ArrayOf<Byte>* info,
+    /* [in] */ Int32 n,
+    /* [in] */ Boolean haveInfo)
 {
-    return 0;
+    // Parameters are checked on java side
+    // Failures from GetXXXArrayElements indicate a serious out-of-memory condition
+    // that we don't bother to report, we're probably dead anyway.
+    Int32 result = 0;
+    if (chs != NULL && info != NULL) {
+        UErrorCode status = U_ZERO_ERROR;
+        UBiDi* bidi = ubidi_openSized(n, 0, &status);
+        ubidi_setPara(bidi, chs, n, dir, NULL, &status);
+        if (U_SUCCESS(status)) {
+            for (Int32 i = 0; i < n; ++i) {
+              (*info)[i] = ubidi_getLevelAt(bidi, i);
+            }
+            result = ubidi_getParaLevel(bidi);
+        }
+        else {
+            // jniThrowException(env, "java/lang/RuntimeException", NULL);
+            return 0;
+        }
+        ubidi_close(bidi);
+    }
+    return result;
 }
 
 } // namespace Text

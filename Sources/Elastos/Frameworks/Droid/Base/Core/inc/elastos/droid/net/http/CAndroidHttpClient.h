@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENT_H__
 
 #include "_Elastos_Droid_Net_Http_CAndroidHttpClient.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 // #include "DefaultHttpClient.h"
 
 using namespace Elastos::Core;

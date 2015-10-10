@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_EDITOR_H__
 #define __ELASTOS_DROID_WIDGET_EDITOR_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "view/ViewTreeObserver.h"
 #include "view/ViewGroup.h"
 

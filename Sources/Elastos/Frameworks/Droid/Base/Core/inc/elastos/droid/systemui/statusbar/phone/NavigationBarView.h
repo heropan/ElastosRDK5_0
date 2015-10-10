@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_NAVIGATIONBARVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_NAVIGATIONBARVIEW_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "os/Runnable.h"
 #include "widget/LinearLayout.h"
 #include "systemui/statusbar/DelegateViewHelper.h"

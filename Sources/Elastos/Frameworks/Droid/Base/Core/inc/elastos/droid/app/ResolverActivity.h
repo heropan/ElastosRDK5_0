@@ -6,7 +6,7 @@
 #include "content/PackageMonitor.h"
 
 #include "widget/BaseAdapter.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Internal::App::IResolverActivity;

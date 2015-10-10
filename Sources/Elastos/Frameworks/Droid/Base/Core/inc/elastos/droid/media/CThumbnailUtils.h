@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_CTHUMBNAILUTILS_H__
 
 #include "_Elastos_Droid_Media_CThumbnailUtils.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IBitmap;

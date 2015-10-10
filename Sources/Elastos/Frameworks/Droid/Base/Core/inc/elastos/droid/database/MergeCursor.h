@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_MERGECURSOR_H__
 #define __ELASTOS_DROID_DATABASE_MERGECURSOR_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "database/AbstractCursor.h"
 #include <elastos/core/Object.h>
 

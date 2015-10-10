@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OS_CCANCELLATIONSIGNALHELPER_H__
 #define __ELASTOS_DROID_OS_CCANCELLATIONSIGNALHELPER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Os_CCancellationSignalHelper.h"
 #include <elastos/core/Singleton.h>
 

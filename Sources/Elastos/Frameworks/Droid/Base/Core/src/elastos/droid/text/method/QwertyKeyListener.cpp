@@ -8,7 +8,7 @@
 #include "elastos/droid/text/CAutoText.h"
 #include "view/CKeyCharacterMap.h"
 #include "view/CKeyEvent.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/Character.h>
 #include <stdio.h>

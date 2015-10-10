@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_MENU_MENUDIALOGHELPER_H__
 
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "view/menu/ListMenuPresenter.h"
 
 using Elastos::Droid::Content::IDialogInterfaceOnClickListener;

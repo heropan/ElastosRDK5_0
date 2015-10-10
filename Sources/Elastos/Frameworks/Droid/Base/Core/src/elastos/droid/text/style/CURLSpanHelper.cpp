@@ -1,7 +1,7 @@
 
 #include "elastos/droid/text/style/CURLSpanHelper.h"
 #include "elastos/droid/text/style/CURLSpan.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITECONNECTIONPOOL_H__
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITECONNECTIONPOOL_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"
 #include "database/sqlite/SQLiteConnection.h"
 #include "database/sqlite/SQLiteDatabaseConfiguration.h"

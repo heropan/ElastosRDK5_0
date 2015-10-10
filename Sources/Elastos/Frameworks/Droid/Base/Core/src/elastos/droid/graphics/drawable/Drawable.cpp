@@ -30,6 +30,7 @@ using Elastos::Droid::Utility::StateSet;
 using Elastos::Droid::Utility::CDisplayMetrics;
 using Elastos::Droid::Utility::Xml;
 using Elastos::Droid::R;
+using Elastos::Droid::Graphics::PorterDuffMode_NONE;
 
 namespace Elastos {
 namespace Droid {
@@ -997,7 +998,7 @@ AutoPtr<IPorterDuffColorFilter> Drawable::UpdateTintFilter(
     /* [in] */ IColorStateList* tint,
     /* [in] */ PorterDuffMode tintMode)
 {
-    if (tint == NULL || tintMode == NULL) {
+    if (tint == NULL || tintMode == PorterDuffMode_NONE) {
         return NULL;
     }
 

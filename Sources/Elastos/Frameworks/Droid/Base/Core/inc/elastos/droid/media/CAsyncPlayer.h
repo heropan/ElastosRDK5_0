@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_CASYNCPLAYER_H__
 
 #include "_Elastos_Droid_Media_CAsyncPlayer.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Content::IContext;

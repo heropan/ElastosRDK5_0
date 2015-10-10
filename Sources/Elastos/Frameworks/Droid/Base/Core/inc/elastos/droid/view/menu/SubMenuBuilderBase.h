@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_MENU_SUBMENUBUILDERBASE_H__
 #define __ELASTOS_DROID_VIEW_MENU_SUBMENUBUILDERBASE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "view/menu/MenuBuilderBase.h"
 
 namespace Elastos {

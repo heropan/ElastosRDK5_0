@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTSETTINGS_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTSETTINGS_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;

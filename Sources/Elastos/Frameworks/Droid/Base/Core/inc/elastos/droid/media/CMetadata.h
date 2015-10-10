@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_CMETADATA_H__
 
 #include "_Elastos_Droid_Media_CMetadata.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::IDate;

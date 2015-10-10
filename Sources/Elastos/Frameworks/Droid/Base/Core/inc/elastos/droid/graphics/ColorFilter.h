@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_COLORFILTER_H__
 #define __ELASTOS_DROID_GRAPHICS_COLORFILTER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;

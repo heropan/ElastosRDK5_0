@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_OPENGL_GLWRAPPERBASE_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastosx::Microedition::Khronos::Opengles::IGL;
 using Elastosx::Microedition::Khronos::Opengles::IGL10;

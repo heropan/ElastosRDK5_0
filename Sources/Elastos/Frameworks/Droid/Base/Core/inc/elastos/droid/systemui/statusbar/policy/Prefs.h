@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_POLICY_PREFS_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_POLICY_PREFS_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::ISharedPreferences;

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_HARDWARE_INPUT_CINPUTMANAGER_H__
 
 #include "_Elastos_Droid_Hardware_Input_CInputManager.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "os/Handler.h"
 #include "os/Vibrator.h"
 #include <elastos/core/Object.h>

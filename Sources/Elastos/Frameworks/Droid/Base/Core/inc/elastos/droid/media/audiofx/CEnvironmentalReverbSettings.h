@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CENVIRONMENTALREVERBSETTINGS_H__
 
 #include "_Elastos_Droid_Media_Audiofx_CEnvironmentalReverbSettings.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 namespace Elastos {

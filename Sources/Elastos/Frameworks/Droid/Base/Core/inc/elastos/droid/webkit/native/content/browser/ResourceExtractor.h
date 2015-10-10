@@ -6,7 +6,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_RESOURCEEXTRACTOR_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_RESOURCEEXTRACTOR_H_
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "os/AsyncTask.h"
 
 using Elastos::IO::IFile;

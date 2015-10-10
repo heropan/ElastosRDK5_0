@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_TEXT_TEXTDIRECTIONHEURISTICS_H__
 #define __ELASTOS_DROID_TEXT_TEXTDIRECTIONHEURISTICS_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 #include <elastos/core/Character.h>
-//#include "view/View.h"
 
 using Elastos::Core::Character;
 
@@ -26,6 +26,17 @@ namespace Text {
 class TextDirectionHeuristics
 {
 public:
+
+    static AutoPtr<ITextDirectionHeuristic> GetLTR();
+    static AutoPtr<ITextDirectionHeuristic> GetRTL();
+
+    static AutoPtr<ITextDirectionHeuristic> GetFIRSTSTRONG_LTR();
+    static AutoPtr<ITextDirectionHeuristic> GetFIRSTSTRONG_RTL();
+
+    static AutoPtr<ITextDirectionHeuristic> GetNYRTL_LTR();
+    static AutoPtr<ITextDirectionHeuristic> GetLOCALE();
+
+private:
     /** Always decides that the direction is left to right. */
     static AutoPtr<ITextDirectionHeuristic> LTR;
 
@@ -62,66 +73,42 @@ public:
 
 private:
 
-    class TextDirectionAlgorithm;
-
     /**
-     * State constants for taking care about true / false / unknown
+     * Interface for an algorithm to guess the direction of a paragraph of text.
+     *
      */
-    static const Int32 STATE_TRUE;// = 0;
-    static const Int32 STATE_FALSE;// = 1;
-    static const Int32 STATE_UNKNOWN;// = 2;
+    class TextDirectionAlgorithm : public Object
+    {
+    public:
+        /**
+         * Returns whether the range of text is RTL according to the algorithm.
+         *
+         */
+        virtual CARAPI_(TriState) CheckRtl(
+            /* [in] */ ArrayOf<Char32>* text,
+            /* [in] */ Int32 start,
+            /* [in] */ Int32 count) = 0;
+
+        virtual ~TextDirectionAlgorithm()
+        {}
+    };
 
     /**
      * Computes the text direction based on an algorithm.  Subclasses implement
      * {@link #defaultIsRtl} to handle cases where the algorithm cannot determine the
      * direction from the text alone.
      */
-    class TextDirectionHeuristicImpl : public ElRefBase,
-                                       public ITextDirectionHeuristic
+    class TextDirectionHeuristicImpl
+        : public Object
+        , public ITextDirectionHeuristic
     {
     public:
+        CAR_INTERFACE_DECL()
+
         TextDirectionHeuristicImpl(
             /* [in] */ TextDirectionAlgorithm* algorithm)
              : mAlgorithm(algorithm)
         {
-        }
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid)
-        {
-            if (riid == EIID_IInterface) {
-                return (IInterface*)(ITextDirectionHeuristic*)this;
-            }
-            else if (riid == EIID_ITextDirectionHeuristic) {
-                return (ITextDirectionHeuristic*)this;
-            }
-
-            return NOERROR;
-        }
-
-        CARAPI_(UInt32) AddRef()
-        {
-            return ElRefBase::AddRef();
-        }
-
-        CARAPI_(UInt32) Release()
-        {
-            return ElRefBase::Release();
-        }
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid)
-        {
-            VALIDATE_NOT_NULL(iid);
-            if (object == (IInterface*)(ITextDirectionHeuristic*)this) {
-                *iid = EIID_ITextDirectionHeuristic;
-            }
-            else {
-                return E_ILLEGAL_ARGUMENT_EXCEPTION;
-            }
-
-            return NOERROR;
         }
 
         //@Override
@@ -129,7 +116,13 @@ private:
             /* [in] */ ArrayOf<Char32>* chars,
             /* [in] */ Int32 start,
             /* [in] */ Int32 count,
-            /* [out] */ Boolean* result)
+            /* [out] */ Boolean* result);
+
+        CARAPI IsRtl(
+            /* [in] */ ICharSequence* chars,
+            /* [in] */ Int32 start,
+            /* [in] */ Int32 count,
+            /* [out] */ Boolean* result);
         {
             VALIDATE_NOT_NULL(result);
             *result = FALSE;
@@ -161,128 +154,43 @@ private:
         CARAPI_(Boolean) DoCheck(
             /* [in] */ ArrayOf<Char32>* chars,
             /* [in] */ Int32 start,
-            /* [in] */ Int32 count)
-        {
-            TriState state = mAlgorithm->CheckRtl(chars, start, count);
-            switch(state) {
-                case TriState_TRUE:
-                    return TRUE;
-                case TriState_FALSE:
-                    return FALSE;
-                default:
-                    return DefaultIsRtl();
-            }
-        }
+            /* [in] */ Int32 count);
 
         AutoPtr<TextDirectionAlgorithm> mAlgorithm;
     };
 
-    class TextDirectionHeuristicInternal : public TextDirectionHeuristicImpl
+    class TextDirectionHeuristicInternal
+        : public TextDirectionHeuristicImpl
     {
         friend class TextDirectionHeuristics;
+
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid)
-        {
-            if (riid == EIID_IInterface) {
-                return (IInterface*)(ITextDirectionHeuristic*)this;
-            }
-            else if (riid == EIID_ITextDirectionHeuristic) {
-                return (ITextDirectionHeuristic*)this;
-            }
-
-            return NOERROR;
-        }
-
-        CARAPI_(UInt32) AddRef()
-        {
-            return ElRefBase::AddRef();
-        }
-
-        CARAPI_(UInt32) Release()
-        {
-            return ElRefBase::Release();
-        }
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid)
-        {
-            VALIDATE_NOT_NULL(iid);
-            if (object == (IInterface*)(ITextDirectionHeuristic*)this) {
-                *iid = EIID_ITextDirectionHeuristic;
-            }
-            else {
-                return E_ILLEGAL_ARGUMENT_EXCEPTION;
-            }
-
-            return NOERROR;
-        }
-
-    protected:
         //@Override
         CARAPI_(Boolean) DefaultIsRtl()
         {
             return mDefaultIsRtl;
         }
 
-    private:
-
         TextDirectionHeuristicInternal(
             /* [in] */ TextDirectionAlgorithm* algorithm,
-            /* [in] */ Boolean defaultIsRtl) : TextDirectionHeuristicImpl(algorithm)
+            /* [in] */ Boolean defaultIsRtl)
+            : TextDirectionHeuristicImpl(algorithm)
         {
             mDefaultIsRtl = defaultIsRtl;
         }
 
+    private:
         Boolean mDefaultIsRtl;
     };
 
     /**
-     * Interface for an algorithm to guess the direction of a paragraph of text.
-     *
+     * Algorithm that uses the first strong directional character to determine the paragraph
+     * direction. This is the standard Unicode Bidirectional algorithm.
      */
-    class TextDirectionAlgorithm : public ElRefBase
+    class FirstStrong
+        : public TextDirectionAlgorithm
     {
     public:
-        CARAPI_(UInt32) AddRef()
-        {
-            return ElRefBase::AddRef();
-        }
-
-        CARAPI_(UInt32) Release()
-        {
-            return ElRefBase::Release();
-        }
-
-        /**
-         * Returns whether the range of text is RTL according to the algorithm.
-         *
-         */
-        virtual CARAPI_(TriState) CheckRtl(
-            /* [in] */ ArrayOf<Char32>* text,
-            /* [in] */ Int32 start,
-            /* [in] */ Int32 count) = 0;
-    };
-
-    /**
-     * Algorithm that uses the first strong directional character to determine
-     * the paragraph direction.  This is the standard Unicode Bidirectional
-     * algorithm.
-     *
-     */
-    class FirstStrong : public TextDirectionAlgorithm
-    {
-    public:
-        CARAPI_(UInt32) AddRef()
-        {
-            return ElRefBase::AddRef();
-        }
-
-        CARAPI_(UInt32) Release()
-        {
-            return ElRefBase::Release();
-        }
 
         static CARAPI_(AutoPtr<FirstStrong>) GetInstance()
         {
@@ -324,19 +232,10 @@ private:
      * direction of text.
      *
      */
-    class AnyStrong : public TextDirectionAlgorithm
+    class AnyStrong
+        : public TextDirectionAlgorithm
     {
     public:
-        CARAPI_(UInt32) AddRef()
-        {
-            return ElRefBase::AddRef();
-        }
-
-        CARAPI_(UInt32) Release()
-        {
-            return ElRefBase::Release();
-        }
-
         static CARAPI_(AutoPtr<AnyStrong>) GetRTLInstance()
         {
             if (sRTLInstance == NULL) {
@@ -392,7 +291,8 @@ private:
 
     private:
         AnyStrong(
-            /* [in] */ Boolean lookForRtl) : mLookForRtl(lookForRtl)
+            /* [in] */ Boolean lookForRtl)
+            : mLookForRtl(lookForRtl)
         {
         }
 
@@ -405,54 +305,18 @@ private:
     /**
      * Algorithm that uses the Locale direction to force the direction of a paragraph.
      */
-    class TextDirectionHeuristicLocale : public TextDirectionHeuristicImpl
+    class TextDirectionHeuristicLocale
+        : public TextDirectionHeuristicImpl
     {
     public:
 
-        TextDirectionHeuristicLocale() : TextDirectionHeuristicImpl(NULL)
+        TextDirectionHeuristicLocale()
+            : TextDirectionHeuristicImpl(NULL)
         {
         }
 
         ~TextDirectionHeuristicLocale()
         {
-        }
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid)
-        {
-            if (riid == EIID_IInterface) {
-                return (IInterface*)(ITextDirectionHeuristic*)this;
-            }
-            else if (riid == EIID_ITextDirectionHeuristic) {
-                return (ITextDirectionHeuristic*)this;
-            }
-
-            return NOERROR;
-        }
-
-        CARAPI_(UInt32) AddRef()
-        {
-            return ElRefBase::AddRef();
-        }
-
-        CARAPI_(UInt32) Release()
-        {
-            return ElRefBase::Release();
-        }
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid)
-        {
-            VALIDATE_NOT_NULL(iid);
-            if (object == (IInterface*)(ITextDirectionHeuristic*)this) {
-                *iid = EIID_ITextDirectionHeuristic;
-            }
-            else {
-                return E_ILLEGAL_ARGUMENT_EXCEPTION;
-            }
-
-            return NOERROR;
         }
 
         static AutoPtr<TextDirectionHeuristicLocale> GetInstance()
@@ -466,14 +330,7 @@ private:
 
     protected:
         //@Override
-        CARAPI_(Boolean) DefaultIsRtl()
-        {
-//            Int32 dir = TextUtils.getLayoutDirectionFromLocale(java.util.Locale.getDefault());
-//            return (dir == View::LAYOUT_DIRECTION_RTL);
-
-
-            return FALSE;//temp
-        }
+        CARAPI_(Boolean) DefaultIsRtl();
 
     private:
         static AutoPtr<TextDirectionHeuristicLocale> sInstance;// = new TextDirectionHeuristicLocale();
@@ -481,10 +338,16 @@ private:
 
 private:
 
-    static Int32 IsRtlText(int directionality);
+    static Int32 IsRtlText(
+        /* [in] */ Int32 directionality);
 
     static Int32 IsRtlTextOrFormat(
         /* [in] */ Int32 directionality);
+
+private:
+    static const Int32 STATE_TRUE;// = 0;
+    static const Int32 STATE_FALSE;// = 1;
+    static const Int32 STATE_UNKNOWN;// = 2;
 };
 
 } // namespace Text

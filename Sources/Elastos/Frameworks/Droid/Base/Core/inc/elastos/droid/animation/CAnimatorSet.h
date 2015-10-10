@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_ANIMATION_CANIMATORSET_H__
 
 #include "_Elastos_Droid_Animation_CAnimatorSet.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "animation/Animator.h"
 #include "animation/AnimatorSet.h"
 

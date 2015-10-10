@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_TEXT_CBORINGLAYOUTHELPER_H__
 
 #include "_Elastos_Droid_Text_CBoringLayoutHelper.h"
+#include <elastos/core/Singleton.h>
 
 
 using Elastos::Core::ICharSequence;

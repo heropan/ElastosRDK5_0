@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_HARDWARE_USB_USBDEVICECONNECTION_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/logging/Logger.h>
 

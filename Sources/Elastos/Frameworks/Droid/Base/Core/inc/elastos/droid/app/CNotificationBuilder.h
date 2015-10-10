@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_APP_CNOTIFICATIONBUILDER_H__
 
 #include "_Elastos_Droid_App_CNotificationBuilder.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

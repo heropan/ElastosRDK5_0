@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_OS_STORAGE_CSTORAGEMANAGERHELPER_H__
 
 #include "_Elastos_Droid_Os_Storage_CStorageManagerHelper.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Content::IContext;
 

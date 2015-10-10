@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_TEXT_CNOCOPYSPAN_H__
 
 #include "_Elastos_Droid_Text_CNoCopySpan.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {

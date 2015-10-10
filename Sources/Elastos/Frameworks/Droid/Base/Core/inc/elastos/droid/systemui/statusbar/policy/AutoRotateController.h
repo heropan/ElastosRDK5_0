@@ -1,6 +1,6 @@
 
 #include "Elastos.Droid.Core_server.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Widget::ICompoundButton;

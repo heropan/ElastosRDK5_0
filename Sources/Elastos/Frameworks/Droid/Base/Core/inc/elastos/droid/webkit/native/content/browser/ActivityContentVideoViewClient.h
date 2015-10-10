@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACTIVITYCONTENTVIDEOVIEWCLIENT_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACTIVITYCONTENTVIDEOVIEWCLIENT_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "webkit/native/content/browser/ContentVideoViewClient.h"
 
 // import android.annotation.SuppressLint;

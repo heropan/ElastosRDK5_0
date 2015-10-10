@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_APP_BACKUP_CABSOLUTEFILEBACKUPHELPER_H__
 
 #include "_Elastos_Droid_App_Backup_CAbsoluteFileBackupHelper.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "app/backup/FileBackupHelperBase.h"
 
 using Elastos::Droid::Content::IContext;

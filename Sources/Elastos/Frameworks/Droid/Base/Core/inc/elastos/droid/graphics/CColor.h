@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CCOLOR_H__
 #define __ELASTOS_DROID_GRAPHICS_CCOLOR_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Graphics_CColor.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>

@@ -1,6 +1,6 @@
 #include "elastos/droid/text/style/URLSpan.h"
 #include "net/Uri.h"
-#include "content/CIntent.h"
+#include "elastos/droid/content/CIntent.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;

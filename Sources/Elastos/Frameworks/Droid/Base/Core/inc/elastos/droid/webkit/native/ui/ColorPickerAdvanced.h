@@ -5,7 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_COLORPICKERADVANCED_H_
 #define _ELASTOS_DROID_WEBKIT_UI_COLORPICKERADVANCED_H_
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/LinearLayout.h"
 #include "elastos/droid/webkit/native/ui/ColorPickerAdvancedComponent.h"
 #include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"

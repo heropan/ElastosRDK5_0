@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_ACCESSIBILITYSERVICE_CUITESTAUTOMATIONBRIDGE_H__
 
 #include "_Elastos_Droid_AccessibilityService_CUiTestAutomationBridge.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;

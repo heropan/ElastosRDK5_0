@@ -6,6 +6,7 @@
 #else
 #include "Elastos.Droid.Core.h"
 #endif
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 

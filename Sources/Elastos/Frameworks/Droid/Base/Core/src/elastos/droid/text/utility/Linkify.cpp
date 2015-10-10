@@ -3,7 +3,7 @@
 #include "elastos/droid/text/method/CLinkMovementMethod.h"
 #include "elastos/droid/text/style/CURLSpan.h"
 //#include "webkit/CWebView.h"
-#include "utility/Patterns.h"
+#include "elastos/droid/utility/Patterns.h"
 #include <elastos/core/Character.h>
 
 using Elastos::Core::Character;

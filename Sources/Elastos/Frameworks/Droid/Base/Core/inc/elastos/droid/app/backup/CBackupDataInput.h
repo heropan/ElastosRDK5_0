@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_APP_BACKUP_CBACKUPDATAINPUT_H__
 
 #include "_Elastos_Droid_App_Backup_CBackupDataInput.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::IO::IFileDescriptor;
 

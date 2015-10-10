@@ -486,6 +486,7 @@ ECode CRegion::GetNativeRegion(
 ECode CRegion::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
+    NativeDestructor(mNativeRegion);
     mNativeRegion = NativeCreateFromParcel(source);
     return NOERROR;
 }

@@ -3,20 +3,31 @@
 #define __ELASTOS_DROID_TEXT_CAUTOTEXT_H__
 
 #include "_Elastos_Droid_Text_CAutoText.h"
-#include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Object.h>
 
-using Libcore::ICU::ILocale;
-using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::View::IView;
+using Elastos::Utility::ILocale;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 
 CarClass(CAutoText)
+    , public Object
+    , public IAutoText
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CAutoText();
+
+    CARAPI constructor(
+        /* [in] */ IResources* resources);
+
     static CARAPI_(String) Get(
         /* [in] */ ICharSequence* src,
         /* [in] */ Int32 start,
@@ -25,14 +36,6 @@ public:
 
     static CARAPI_(Int32) GetSize(
         /* [in] */ IView* view);
-
-    CAutoText();
-
-    CARAPI constructor(
-        /* [in] */ IResources* resources);
-
-protected:
-    CARAPI constructor();
 
 private:
     /**
@@ -81,8 +84,7 @@ private:
 
     static const Int32 RIGHT;// = 9300; // Size of 'right' 13 Aug 2007
 
-    //private static Object sLock = new Object();
-    static Object sAutoTextLock;
+    static Object sLock;
 
     static AutoPtr<IAutoText> sInstance;// = new AutoText(Resources.getSystem());
     static Boolean sInited;

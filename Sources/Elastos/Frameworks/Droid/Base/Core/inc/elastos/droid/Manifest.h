@@ -8,7 +8,7 @@
 #ifndef __ELASTOS_DROID_Elastos_Droid_Manifest_H__
 #define __ELASTOS_DROID_Elastos_Droid_Manifest_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_YUVTOJPEGENCODER_H__
 #define __ELASTOS_DROID_GRAPHICS_YUVTOJPEGENCODER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <skia/core/SkStream.h>
 extern "C" {
 #include <jpeg/jpeglib.h>

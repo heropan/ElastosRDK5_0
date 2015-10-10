@@ -1,11 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_AndroidBidi_H__
 #define __ELASTOS_DROID_TEXT_AndroidBidi_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
@@ -16,7 +12,8 @@ namespace Text {
  * @hide
  */
 /* package */
-class AndroidBidi {
+class AndroidBidi
+{
 public:
     static CARAPI_(Int32) Bidi(
         /* [in] */ Int32 dir,
@@ -52,6 +49,10 @@ private:
         /* [in] */ ArrayOf<Byte>* chInfo,
         /* [in] */ Int32 n,
         /* [in] */ Boolean haveInfo);
+
+private:
+    AndroidBidi();
+    AndroidBidi(const AndroidBidi&);
 };
 
 } // namespace Text

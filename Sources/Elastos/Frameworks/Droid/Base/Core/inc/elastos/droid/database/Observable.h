@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_OBSERVABLE_H__
 #define __ELASTOS_DROID_DATABASE_OBSERVABLE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/Object.h>
 

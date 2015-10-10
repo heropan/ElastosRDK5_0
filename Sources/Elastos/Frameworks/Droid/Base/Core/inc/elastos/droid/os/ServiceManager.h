@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OS_SERVICEMANAGER_H__
 #define __ELASTOS_DROID_OS_SERVICEMANAGER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

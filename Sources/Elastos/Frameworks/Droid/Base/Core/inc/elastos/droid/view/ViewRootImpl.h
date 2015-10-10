@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_VIEWROOTIMPL_H__
 #define __ELASTOS_DROID_VIEW_VIEWROOTIMPL_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "view/CWindowManagerLayoutParams.h"
 #include "view/View.h"
 #include "view/CSurface.h"

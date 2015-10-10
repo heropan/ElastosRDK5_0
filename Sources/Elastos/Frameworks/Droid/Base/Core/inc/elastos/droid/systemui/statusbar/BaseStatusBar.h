@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_BASESTATUSBAR_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_BASESTATUSBAR_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "database/ContentObserver.h"
 #include "os/HandlerBase.h"
 #include "content/BroadcastReceiver.h"

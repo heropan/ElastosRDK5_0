@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_HTTP_CHEADERS_H__
 
 #include "_Elastos_Droid_Net_Http_CHeaders.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 
 using namespace Elastos::Core;

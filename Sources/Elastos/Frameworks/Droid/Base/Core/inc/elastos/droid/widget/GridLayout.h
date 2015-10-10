@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_GRIDLAYOUT_H__
 #define __ELASTOS_DROID_WIDGET_GRIDLAYOUT_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "view/ViewGroup.h"
 #include <elastos/core/Math.h>
 #include <R.h>

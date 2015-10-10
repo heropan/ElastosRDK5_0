@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITECONNECTION_H__
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITECONNECTION_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"
 #include "utility/LruCache.h"
 #include "database/sqlite/SQLiteDebug.h"

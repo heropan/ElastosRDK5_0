@@ -1,6 +1,6 @@
 
 #include "elastos/droid/text/TextUtils.h"
-//#include "elastos/droid/text/MeasuredText.h"
+#include "elastos/droid/text/MeasuredText.h"
 //#include "elastos/droid/text/TextDirectionHeuristics.h"
 //#include "elastos/droid/text/CSpannedString.h"
 //#include "elastos/droid/text/CSpannableString.h"
@@ -28,6 +28,7 @@
 //#include "elastos/droid/text/style/CSuggestionRangeSpan.h"
 //#include "elastos/droid/text/style/CEasyEditSpan.h"
 //#include "elastos/droid/text/style/CLocaleSpan.h"
+#include "elastos/droid/os/SystemProperties.h"
 #include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/content/res/CResourcesHelper.h"
 #include "elastos/droid/R.h"
@@ -35,19 +36,27 @@
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/CoreUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
 using namespace Elastos::Droid::Text::Style;
+using Elastos::Droid::Text::TextUtilsTruncateAt_START;
+using Elastos::Droid::Text::TextUtilsTruncateAt_END;
+using Elastos::Droid::Text::TextUtilsTruncateAt_END_SMALL;
+using Elastos::Droid::Text::TextUtilsTruncateAt_MIDDLE;
 using Elastos::Droid::R;
+using Elastos::Droid::Provider::ISettingsGlobal;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Res::IResourcesHelper;
 using Elastos::Droid::Content::Res::CResourcesHelper;
 using Elastos::Droid::View::IView;
+using Elastos::Droid::Os::SystemProperties;
 using Libcore::ICU::IICUUtil;
 using Libcore::ICU::CICUUtil;
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
-
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::Logging::Logger;
 using Elastos::Core::Character;
 using Elastos::Core::CString;
 using Elastos::Core::CoreUtils;
@@ -75,6 +84,9 @@ const String TextUtils::TAG("TextUtils");
 //===========================================================================
 // TextUtils::Reverser
 //===========================================================================
+
+CAR_INTERFACE_IMPL_2(TextUtils::Reverser, Object, ICharSequence, IGetChars)
+
 TextUtils::Reverser::Reverser(
     /* [in] */ ICharSequence* source,
     /* [in] */ Int32 start,
@@ -102,7 +114,7 @@ ECode TextUtils::Reverser::SubSequence(
     AutoPtr<ArrayOf<Char32> > buf = ArrayOf<Char32>::Alloc(end - start);
     FAIL_RETURN(GetChars(start, end, buf, 0))
 
-    String str(buf);
+    String str(*buf);
     return CString::New(str, csq);
 }
 
@@ -111,12 +123,14 @@ ECode TextUtils::Reverser::ToString(
 {
     VALIDATE_NOT_NULL(info)
     AutoPtr<ICharSequence> sub;
-    SubSequence(0, GetLength(), (ICharSequence**)&sub);
+    Int32 length;
+    GetLength(&length);
+    SubSequence(0, length, (ICharSequence**)&sub);
     return sub->ToString(info);
 }
 
 ECode TextUtils::Reverser::GetCharAt(
-    /* [in] */ Int32 offset,
+    /* [in] */ Int32 off,
     /* [out] */ Char32* ch)
 {
     VALIDATE_NOT_NULL(ch)
@@ -164,18 +178,18 @@ void TextUtils::GetChars(
     if (IStringBuffer::Probe(s)) {
         IStringBuffer* sb = IStringBuffer::Probe(s);
         sb->GetChars(start, end, dest, destoff);
-        sb->ToString(&str);
+        str = Object::ToString(sb);
     }
     else if (IStringBuilder::Probe(s)) {
         IStringBuilder* sb = IStringBuilder::Probe(s);
         sb->GetChars(start, end, dest, destoff);
-        sb->ToString(&str);
+        str = Object::ToString(sb);
 
     }
     else if (IGetChars::Probe(s)) {
         IGetChars* sb = IGetChars::Probe(s);
         sb->GetChars(start, end, dest, destoff);
-        sb->ToString(&str);
+        str = Object::ToString(sb);
 
     }
     else {
@@ -199,7 +213,7 @@ Int32 TextUtils::IndexOf(
     /* [in] */ Char32 ch,
     /* [in] */ Int32 start)
 {
-    assert(c != NULL);
+    assert(s != NULL);
     Int32 len;
     s->GetLength(&len);
     return IndexOf(s, ch, start, len);
@@ -462,12 +476,14 @@ AutoPtr<ICharSequence> TextUtils::Join(
     AutoPtr<IResources> res= CResources::GetSystem();
     AutoPtr<ICharSequence> delimiter;
     res->GetText(R::string::list_delimeter, (ICharSequence**)&delimiter);
-        return Join(delimiter, list);
+    String str = Join(delimiter.Get(), list);
+    AutoPtr<ICharSequence> csq = CoreUtils::Convert(str);
+    return csq;
 }
 
 String TextUtils::Join(
     /* [in] */ ICharSequence* delimiter,
-    /* [in] */ ArrayOf<IIterable>* tokens)
+    /* [in] */ ArrayOf<IIterable*>* tokens)
 {
     StringBuilder sb;
     Boolean firstTime = TRUE;
@@ -537,7 +553,8 @@ AutoPtr<ArrayOf<String> > TextUtils::Split(
 
     AutoPtr<ICharSequence> seq = CoreUtils::Convert(text);
     AutoPtr<ArrayOf<String> > result;
-    return pattern->Split(seq, -1, (ArrayOf<String>**)&result);
+    pattern->Split(seq, -1, (ArrayOf<String>**)&result);
+    return result;
 }
 
 AutoPtr<ICharSequence> TextUtils::StringOrSpannedString(
@@ -551,11 +568,12 @@ AutoPtr<ICharSequence> TextUtils::StringOrSpannedString(
     }
     else if (ISpanned::Probe(source)) {
         AutoPtr<ISpannedString> ss;
-        CSpannedString::New(source, (ISpannedString**)&ss);
+        // CSpannedString::New(source, (ISpannedString**)&ss);
         AutoPtr<ICharSequence> result = ICharSequence::Probe(ss.Get());
         return result;
     }
 
+    String str = Object::ToString(source);
     return CoreUtils::Convert(str);
 }
 
@@ -679,10 +697,10 @@ ECode TextUtils::WriteToParcel(
 
             AutoPtr<IParcelableSpan> ps = IParcelableSpan::Probe(prop);
             if (ps != NULL) {
-                Int32 spanTypeId;
+                Int32 typeId;
                 ps->GetSpanTypeId(&typeId);
 
-                if (spanTypeId < FIRST_SPAN || spanTypeId > LAST_SPAN) {
+                if (typeId < ITextUtils::FIRST_SPAN || typeId > ITextUtils::LAST_SPAN) {
                     String str = Object::ToString(ps);
                     Logger::E(TAG, "external class \"%s\" is attempting to"
                         " use the frameworks-only ParcelableSpan interface", str.string());
@@ -918,22 +936,27 @@ AutoPtr<ICharSequence> TextUtils::Replace(
     assert(0 && "TODO");
     // CSpannableStringBuilder::New(temp, (ISpannableStringBuilder**)&tb);
     ICharSequence* csq = ICharSequence::Probe(tb);
+    ISpannable* spannable = ISpannable::Probe(tb);
+    ISpanned* spanned = ISpanned::Probe(tb);
+    IEditable* enditable = IEditable::Probe(tb);
 
-    for (Int32 i = 0; i < sources.length; i++) {
-        Int32 where = IndexOf(csq, (*sources)[i]);
+    for (Int32 i = 0; i < sources->GetLength(); i++) {
+        ICharSequence* src = CoreUtils::Convert((*sources)[i]);
+        Int32 where = IndexOf(csq, src);
 
         if (where >= 0)
-            tb->SetSpan((*sources)[i], where, where + (*sources)[i].GetLength(),
-                       ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable->SetSpan(src, where, where + (*sources)[i].GetLength(),
+                ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     Int32 start, end;
-    for (Int32 i = 0; i < sources.length; i++) {
-        tb->GetSpanStart((*sources)[i], &start);
-        tb->GetSpanEnd((*sources)[i], &end);
+    for (Int32 i = 0; i < sources->GetLength(); i++) {
+        ICharSequence* src = CoreUtils::Convert((*sources)[i]);
+        spanned->GetSpanStart(src, &start);
+        spanned->GetSpanEnd(src, &end);
 
         if (start >= 0) {
-            tb->Replace(start, end, (*destinations)[i]);
+            enditable->Replace(start, end, (*destinations)[i]);
         }
     }
 
@@ -953,6 +976,7 @@ AutoPtr<ICharSequence> TextUtils::ExpandTemplate(
     assert(0 && "TODO");
     // CSpannableStringBuilder::New(temp, (ISpannableStringBuilder**)&ssb);
     ICharSequence* csq = ICharSequence::Probe(ssb);
+    IEditable* enditable = IEditable::Probe(ssb);
 
     // try {
     Int32 i = 0, length;
@@ -963,7 +987,7 @@ AutoPtr<ICharSequence> TextUtils::ExpandTemplate(
             Char32 next;
             csq->GetCharAt(i+1, &next);
             if (next == '^') {
-                ssb->Delete(i+1, i+2);
+                enditable->Delete(i+1, i+2);
                 ++i;
                 continue;
             }
@@ -984,7 +1008,7 @@ AutoPtr<ICharSequence> TextUtils::ExpandTemplate(
                     return NULL;
                 }
 
-                ssb->Replace(i, i + 2, (*values)[which]);
+                enditable->Replace(i, i + 2, (*values)[which]);
                 (*values)[which]->GetLength(&length);
                 i += length;
                 continue;
@@ -1171,13 +1195,14 @@ AutoPtr<ICharSequence> TextUtils::Ellipsize(
         resources->GetString(R::string::ellipsis, &ellipsis);
     }
 
-    AutoPtr<ICharSequence> rst = Ellipsize(text, paint, avail, where, preserveLength, callback,
-            TextDirectionHeuristics::FIRSTSTRONG_LTR,
-            ellipsis);
-    if(rst == NULL) {
-        String sNull("");
-        CString::New(sNull, (ICharSequence**)&rst);
-    }
+    AutoPtr<ICharSequence> rst;
+    assert(0 && "TODO");
+    // rst = Ellipsize(text, paint, avail, where, preserveLength, callback,
+    //     TextDirectionHeuristics::FIRSTSTRONG_LTR, ellipsis);
+    // if(rst == NULL) {
+    //     String sNull("");
+    //     CString::New(sNull, (ICharSequence**)&rst);
+    // }
     return rst;
 }
 
@@ -1198,94 +1223,95 @@ AutoPtr<ICharSequence> TextUtils::Ellipsize(
 
     AutoPtr<MeasuredText> mt = MeasuredText::Obtain();
     //try {
-        Float width = SetPara(mt, paint, text, 0, len, textDir);
+    Float width = SetPara(mt, paint, text, 0, len, textDir);
 
-        if (width <= avail) {
-            if (callback != NULL) {
-                callback->Ellipsized(0, 0);
-            }
-            MeasuredText::Recycle(mt);
-            return text;
-        }
-
-        // XXX assumes ellipsis string does not require shaping and
-        // is unaffected by style
-        Float ellipsiswid;
-        paint->MeasureText(ellipsis, &ellipsiswid);
-        avail -= ellipsiswid;
-
-        Int32 left = 0;
-        Int32 right = len;
-        if (avail < 0) {
-            // it all goes
-        } else if (where == TextUtilsTruncateAt_START) {
-            right = len - mt->BreakText(len, FALSE, avail);
-        } else if (where == TextUtilsTruncateAt_END
-            || where == TextUtilsTruncateAt_END_SMALL) {
-            left = mt->BreakText(len, TRUE, avail);
-        } else {
-            right = len - mt->BreakText(len, FALSE, avail / 2);
-            avail -= mt->Measure(right, len);
-            left = mt->BreakText(right, TRUE, avail);
-        }
-
+    if (width <= avail) {
         if (callback != NULL) {
-            callback->Ellipsized(left, right);
+            callback->Ellipsized(0, 0);
         }
-
-        AutoPtr<ArrayOf<Char32> > buf = mt->mChars;
-        AutoPtr<ISpanned> sp = ISpanned::Probe(text);
-
-        Int32 remaining = len - (right - left);
-        if (preserveLength) {
-            if (remaining > 0) { // else eliminate the ellipsis too
-               (*buf)[left++] = ellipsis.GetChar(0);
-            }
-            for (Int32 i = left; i < right; i++) {
-               (*buf)[i] = ZWNBS_CHAR;
-            }
-
-            StringBuilder sb;
-            sb.AppendChars(*buf, 0, len);
-            AutoPtr<ICharSequence> s = sb.ToCharSequence();
-            if (sp == NULL) {
-                MeasuredText::Recycle(mt);
-                return s;
-            }
-
-            AutoPtr<ISpannableString> ss;
-            CSpannableString::New(s, (ISpannableString**)&ss);
-            CopySpansFrom(sp, 0, len, EIID_IInterface, ss, 0);
-            MeasuredText::Recycle(mt);
-            return ss;
-        }
-
-        if (remaining == 0) {
-            AutoPtr<ICharSequence> seq;
-            CString::New(String(""), (ICharSequence**)&seq);
-            MeasuredText::Recycle(mt);
-            return seq;
-        }
-
-        if (sp == NULL) {
-            Int32 length = remaining + ellipsis.GetByteLength();
-            StringBuilder sb(length);
-            sb.AppendChars(*buf, 0, left);
-            sb.Append(ellipsis);
-            sb.AppendChars(*buf, right, len - right);
-            MeasuredText::Recycle(mt);
-            return sb.ToCharSequence();
-        }
-
-        AutoPtr<ISpannableStringBuilder> ssb;
-        CSpannableStringBuilder::New((ISpannableStringBuilder**)&ssb);
-        ssb->Append(text, 0, left);
-        AutoPtr<ICharSequence> elpSeq;
-        CString::New(ellipsis, (ICharSequence**)&elpSeq);
-        ssb->Append(elpSeq);
-        ssb->Append(text, right, len);
         MeasuredText::Recycle(mt);
-        return ssb;
+        return text;
+    }
+
+    assert(0 && "TODO");
+    // // XXX assumes ellipsis string does not require shaping and
+    // // is unaffected by style
+    // Float ellipsiswid;
+    // paint->MeasureText(ellipsis, &ellipsiswid);
+    // avail -= ellipsiswid;
+
+    // Int32 left = 0;
+    // Int32 right = len;
+    // if (avail < 0) {
+    //     // it all goes
+    // } else if (where == TextUtilsTruncateAt_START) {
+    //     right = len - mt->BreakText(len, FALSE, avail);
+    // } else if (where == TextUtilsTruncateAt_END
+    //     || where == TextUtilsTruncateAt_END_SMALL) {
+    //     left = mt->BreakText(len, TRUE, avail);
+    // } else {
+    //     right = len - mt->BreakText(len, FALSE, avail / 2);
+    //     avail -= mt->Measure(right, len);
+    //     left = mt->BreakText(right, TRUE, avail);
+    // }
+
+    // if (callback != NULL) {
+    //     callback->Ellipsized(left, right);
+    // }
+
+    // AutoPtr<ArrayOf<Char32> > buf = mt->mChars;
+    // AutoPtr<ISpanned> sp = ISpanned::Probe(text);
+
+    // Int32 remaining = len - (right - left);
+    // if (preserveLength) {
+    //     if (remaining > 0) { // else eliminate the ellipsis too
+    //        (*buf)[left++] = ellipsis.GetChar(0);
+    //     }
+    //     for (Int32 i = left; i < right; i++) {
+    //        (*buf)[i] = ZWNBS_CHAR;
+    //     }
+
+    //     StringBuilder sb;
+    //     sb.AppendChars(*buf, 0, len);
+    //     AutoPtr<ICharSequence> s = sb.ToCharSequence();
+    //     if (sp == NULL) {
+    //         MeasuredText::Recycle(mt);
+    //         return s;
+    //     }
+
+    //     AutoPtr<ISpannableString> ss;
+    //     CSpannableString::New(s, (ISpannableString**)&ss);
+    //     CopySpansFrom(sp, 0, len, EIID_IInterface, ss, 0);
+    //     MeasuredText::Recycle(mt);
+    //     return ss;
+    // }
+
+    // if (remaining == 0) {
+    //     AutoPtr<ICharSequence> seq;
+    //     CString::New(String(""), (ICharSequence**)&seq);
+    //     MeasuredText::Recycle(mt);
+    //     return seq;
+    // }
+
+    // if (sp == NULL) {
+    //     Int32 length = remaining + ellipsis.GetByteLength();
+    //     StringBuilder sb(length);
+    //     sb.AppendChars(*buf, 0, left);
+    //     sb.Append(ellipsis);
+    //     sb.AppendChars(*buf, right, len - right);
+    //     MeasuredText::Recycle(mt);
+    //     return sb.ToCharSequence();
+    // }
+
+    AutoPtr<ISpannableStringBuilder> ssb;
+    // CSpannableStringBuilder::New((ISpannableStringBuilder**)&ssb);
+    // ssb->Append(text, 0, left);
+    // AutoPtr<ICharSequence> elpSeq;
+    // CString::New(ellipsis, (ICharSequence**)&elpSeq);
+    // ssb->Append(elpSeq);
+    // ssb->Append(text, right, len);
+    // MeasuredText::Recycle(mt);
+    return ICharSequence::Probe(ssb);
    //} finally {
       // MeasuredText.recycle(mt);
    //}
@@ -1298,8 +1324,10 @@ AutoPtr<ICharSequence> TextUtils::CommaEllipsize(
     /* [in] */ const String& oneMore,
     /* [in] */ const String& more)
 {
-    return CommaEllipsize(text, p, avail, oneMore, more,
-            TextDirectionHeuristics::FIRSTSTRONG_LTR);
+    assert(0 && "TODO");
+    // return CommaEllipsize(text, p, avail, oneMore, more,
+    //         TextDirectionHeuristics::FIRSTSTRONG_LTR);
+    return NULL;
 }
 
 AutoPtr<ICharSequence> TextUtils::CommaEllipsize(
@@ -1310,74 +1338,74 @@ AutoPtr<ICharSequence> TextUtils::CommaEllipsize(
     /* [in] */ const String& more,
     /* [in] */ ITextDirectionHeuristic* textDir)
 {
-    AutoPtr<MeasuredText> mt = MeasuredText::Obtain();
-    // try {
-    Int32 len;
-    text->GetLength(&len);
-    Float width = SetPara(mt, p, text, 0, len, textDir);
-    if (width <= avail) {
-        return text;
-    }
-
-    AutoPtr<ArrayOf<Char32> > buf = mt->mChars;
-
-    Int32 commaCount = 0;
-    for (Int32 i = 0; i < len; i++) {
-        if ((&buf)[i] == ',') {
-            commaCount++;
-        }
-    }
-
-    Int32 remaining = commaCount + 1;
-
-    Int32 ok = 0;
-    String okFormat("");
-
-    Int32 w = 0;
-    Int32 count = 0;
-    AutoPtr<ArrayOf<Float> > widths = mt->mWidths;
-
-    AutoPtr<MeasuredText> tempMt = MeasuredText::Obtain();
-    for (Int32 i = 0; i < len; i++) {
-        w += (*widths)[i];
-
-        if ((*buf)[i] == ',') {
-            count++;
-
-            String format;
-            // XXX should not insert spaces, should be part of string
-            // XXX should use plural rules and not assume English plurals
-            if (--remaining == 1) {
-                format += " ";
-                format += oneMore;
-            } else {
-                format += " ";
-                AutoPtr<IInteger32> iobj = CoreUtils::Convert(remaining);
-                format += StringUtils::Format(more, TO_IINTERFACE(iobj));
-            }
-
-            // XXX this is probably ok, but need to look at it more
-            tempMt->SetPara(format, 0, format->GetLength(), textDir);
-            Float moreWid = tempMt->AddStyleRun(p, tempMt.mLen, NULL);
-
-            if (w + moreWid <= avail) {
-                ok = i + 1;
-                okFormat = format;
-            }
-        }
-    }
-    MeasuredText::Recycle(tempMt);
-
-    AutoPtr<ISpannableStringBuilder> out;
     assert(0 && "TODO");
-    // CSpannableStringBuilder(okFormat, (ISpannableStringBuilder**)&out);
-    out->Insert(0, text, 0, ok);
-
-    // } finally {
-    MeasuredText::Recycle(mt);
+    // AutoPtr<MeasuredText> mt = MeasuredText::Obtain();
+    // // try {
+    // Int32 len;
+    // text->GetLength(&len);
+    // Float width = SetPara(mt, p, text, 0, len, textDir);
+    // if (width <= avail) {
+    //     return text;
     // }
 
-    return out;
+    // AutoPtr<ArrayOf<Char32> > buf = mt->mChars;
+
+    // Int32 commaCount = 0;
+    // for (Int32 i = 0; i < len; i++) {
+    //     if ((&buf)[i] == ',') {
+    //         commaCount++;
+    //     }
+    // }
+
+    // Int32 remaining = commaCount + 1;
+
+    // Int32 ok = 0;
+    // String okFormat("");
+
+    // Int32 w = 0;
+    // Int32 count = 0;
+    // AutoPtr<ArrayOf<Float> > widths = mt->mWidths;
+
+    // AutoPtr<MeasuredText> tempMt = MeasuredText::Obtain();
+    // for (Int32 i = 0; i < len; i++) {
+    //     w += (*widths)[i];
+
+    //     if ((*buf)[i] == ',') {
+    //         count++;
+
+    //         String format;
+    //         // XXX should not insert spaces, should be part of string
+    //         // XXX should use plural rules and not assume English plurals
+    //         if (--remaining == 1) {
+    //             format += " ";
+    //             format += oneMore;
+    //         } else {
+    //             format += " ";
+    //             AutoPtr<IInteger32> iobj = CoreUtils::Convert(remaining);
+    //             format += StringUtils::Format(more, TO_IINTERFACE(iobj));
+    //         }
+
+    //         // XXX this is probably ok, but need to look at it more
+    //         tempMt->SetPara(format, 0, format->GetLength(), textDir);
+    //         Float moreWid = tempMt->AddStyleRun(p, tempMt.mLen, NULL);
+
+    //         if (w + moreWid <= avail) {
+    //             ok = i + 1;
+    //             okFormat = format;
+    //         }
+    //     }
+    // }
+    // MeasuredText::Recycle(tempMt);
+
+    AutoPtr<ISpannableStringBuilder> out;
+    // CSpannableStringBuilder(okFormat, (ISpannableStringBuilder**)&out);
+    // out->Insert(0, text, 0, ok);
+
+    // // } finally {
+    // MeasuredText::Recycle(mt);
+    // }
+
+    return ICharSequence::Probe(out);
 }
 
 Float TextUtils::SetPara(
@@ -1405,7 +1433,7 @@ Float TextUtils::SetPara(
             sp->NextSpanTransition(spanStart, len, EIID_IMetricAffectingSpan, &spanEnd);
             AutoPtr<ArrayOf<IInterface*> > spans, spansResult;//IMetricAffectingSpan
             sp->GetSpans(spanStart, spanEnd, EIID_IMetricAffectingSpan, (ArrayOf<IInterface*>**)&spans);
-            spansResult = TextUtils::RemoveEmptySpans(spans, sp, EIID_IMetricAffectingSpan);
+            spansResult = RemoveEmptySpans(spans, sp, EIID_IMetricAffectingSpan);
             width += mt->AddStyleRun(paint, spansResult, spanEnd - spanStart, NULL);
         }
     }
@@ -1457,9 +1485,10 @@ AutoPtr< ArrayOf<Char32> > TextUtils::Obtain(
         sTemp = NULL;
     }
 
-    if (buf == NULL || buf->GetLength() < len) {
-        buf = ArrayUtils::NewUnpaddedCharArray(len);
-    }
+    assert(0 && "TODO");
+    // if (buf == NULL || buf->GetLength() < len) {
+    //     buf = ArrayUtils::NewUnpaddedCharArray(len);
+    // }
 
     return buf;
 }
@@ -1510,7 +1539,7 @@ String TextUtils::HtmlEncode(
             sb.Append("&quot;"); //$NON-NLS-1$
             break;
         default:
-            sb.Append(c);
+            sb.AppendChar(c);
         }
     }
     return sb.ToString();
@@ -1543,7 +1572,7 @@ AutoPtr<ICharSequence> TextUtils::Concat(
 
     StringBuilder sb;
     for (Int32 i = 0; i < len; ++i) {
-        sb.AppendCharSequence((*text)[i]);
+        sb.Append((*text)[i]);
     }
 
     if (!spanned) {
@@ -1552,19 +1581,21 @@ AutoPtr<ICharSequence> TextUtils::Concat(
     }
     AutoPtr<ISpannableString> ss;
     AutoPtr<ICharSequence> s = sb.ToCharSequence();
-    CSpannableString::New(s, (ISpannableString**)&ss);
+    assert(0 && "TODO");
+    // CSpannableString::New(s, (ISpannableString**)&ss);
     Int32 off = 0;
     Int32 iLen;
     for (Int32 i = 0; i < len; ++i) {
         (*text)[i]->GetLength(&iLen);
         if (ISpanned::Probe((*text)[i])) {
-            CopySpansFrom(ISpanned::Probe((*text)[i]), 0, iLen, EIID_IInterface , ss, off);
+            CopySpansFrom(ISpanned::Probe((*text)[i]), 0, iLen, EIID_IInterface , ISpannable::Probe(ss), off);
         }
 
         off += iLen;
     }
     AutoPtr<ISpannedString> span;
-    CSpannedString::New(ss,(ISpannedString**)&span);
+    assert(0 && "TODO");
+    // CSpannedString::New(ss,(ISpannedString**)&span);
     result = ICharSequence::Probe(span.Get());
     return result;
 }
@@ -1594,7 +1625,7 @@ Boolean TextUtils::IsGraphic(
 Boolean TextUtils::IsGraphic(
     /* [in] */ Char32 c)
 {
-    Int32 gc = Character::getType(c);
+    Int32 gc = Character::GetType(c);
     return     gc != Character::CONTROL
             && gc != Character::FORMAT
             && gc != Character::SURROGATE
@@ -1773,7 +1804,7 @@ AutoPtr< ArrayOf<IInterface*> > TextUtils::RemoveEmptySpans(
     Int32 count = 0;
 
     for (Int32 i = 0; i < spans->GetLength(); i++) {
-        AutoPtr<IInterface> span = (*spans)[i];
+        IInterface* span = (*spans)[i];
         Int32 start, end;
         spanned->GetSpanStart(span, &start);
         spanned->GetSpanEnd(span, &end);
@@ -1836,8 +1867,9 @@ Int32 TextUtils::GetLayoutDirectionFromLocale(
         String scriptSubtag;
         AutoPtr<IICUUtil> icuHelper;
         CICUUtil::AcquireSingleton((IICUUtil**)&icuHelper);
-        icuHelper->AddLikelySubtags(locale);
-        icuHelper->GetScript(&scriptSubtag);
+        AutoPtr<ILocale> target;
+        icuHelper->AddLikelySubtags(locale, (ILocale**)&target);
+        target->GetScript(&scriptSubtag);
         if (scriptSubtag.IsNull()) {
             return GetLayoutDirectionFromFirstChar(locale);
         }

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_LRUCACHE_H__
 #define __ELASTOS_DROID_UTILITY_LRUCACHE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/logging/Slogger.h>

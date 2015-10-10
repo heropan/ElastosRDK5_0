@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_VIEW_CSURFACEVIEWWINDOW_H__
 
 #include "_Elastos_Droid_View_CSurfaceViewWindow.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Os::IBundle;

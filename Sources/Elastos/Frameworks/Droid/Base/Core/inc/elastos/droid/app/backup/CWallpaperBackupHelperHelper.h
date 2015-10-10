@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_APP_BACKUP_CWALLPAPERBACKUPHELPERHELPER_H__
 
 #include "_Elastos_Droid_App_Backup_CWallpaperBackupHelperHelper.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

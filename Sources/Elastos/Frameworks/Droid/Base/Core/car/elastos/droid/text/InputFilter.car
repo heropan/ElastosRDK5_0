@@ -48,7 +48,7 @@ module
      * @Involve
      * interface IInputFilter
      */
-    interface IInputFilterAllCaps {
+    interface IAllCapsFilter {
     }
 
     /**
@@ -58,7 +58,7 @@ module
      * @Involve
      * interface IInputFilter
      */
-    interface IInputFilterLengthFilter {
+    interface ILengthFilter {
         /**
          * @return the maximum length enforced by this input filter
          */

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_SIMPLEADAPTER_H__
 #define __ELASTOS_DROID_WIDGET_SIMPLEADAPTER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "widget/BaseAdapter.h"
 #include "widget/Filter.h"
 #include <elastos/utility/etl/List.h>

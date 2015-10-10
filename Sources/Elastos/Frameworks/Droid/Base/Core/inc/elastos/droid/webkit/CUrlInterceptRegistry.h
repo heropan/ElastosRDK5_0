@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CURLINTERCEPTREGISTRY_H__
 
 #include "_Elastos_Droid_Webkit_CUrlInterceptRegistry.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

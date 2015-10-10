@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_POLICY_CLOCK_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_POLICY_CLOCK_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "widget/TextView.h"
 #include "content/BroadcastReceiver.h"
 

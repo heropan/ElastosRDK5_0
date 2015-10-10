@@ -13715,7 +13715,6 @@ ECode CActivityManagerService::GetServices(
         for (; it != infoList->End(); ++it) {
             IInterface* obj = (IInterface*)((*it).Get());
             (*services)->Add(obj);
-            REFCOUNT_ADD(obj);
         }
 
         infoList = NULL;

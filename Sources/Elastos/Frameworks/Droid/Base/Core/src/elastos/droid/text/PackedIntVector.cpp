@@ -1,6 +1,6 @@
 
 #include "elastos/droid/text/PackedIntVector.h"
-#include "utility/ArrayUtils.h"
+#include "elastos/droid/utility/ArrayUtils.h"
 
 using Elastos::Droid::Internal::Utility::ArrayUtils;
 

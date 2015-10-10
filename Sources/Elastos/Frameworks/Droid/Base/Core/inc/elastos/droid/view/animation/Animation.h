@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_ANIMATION_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_ANIMATION_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 #include "os/Runnable.h"

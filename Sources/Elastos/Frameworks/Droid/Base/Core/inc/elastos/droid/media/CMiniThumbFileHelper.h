@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_CMINITHUMBFILEHELPER_H__
 
 #include "_Elastos_Droid_Media_CMiniThumbFileHelper.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Net::IUri;
 

@@ -1,6 +1,6 @@
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_IMAGEFORMAT_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_IMAGEFORMAT_H__
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

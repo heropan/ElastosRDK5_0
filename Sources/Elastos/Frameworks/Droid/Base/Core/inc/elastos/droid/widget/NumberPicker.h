@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_NUMBERPICKER_H__
 
 #include <elastos/core/Math.h>
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "view/VelocityTracker.h"
 #include "view/accessibility/AccessibilityNodeProvider.h"
 #include "text/method/NumberKeyListener.h"

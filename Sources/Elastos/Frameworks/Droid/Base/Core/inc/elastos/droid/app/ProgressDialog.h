@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_PROGRESSDIALOG_H__
 #define __ELASTOS_DROID_APP_PROGRESSDIALOG_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "app/AlertDialog.h"
 #include "R.h"
 

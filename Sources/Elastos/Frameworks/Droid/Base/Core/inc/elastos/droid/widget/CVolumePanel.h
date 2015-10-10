@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_CVOLUMEPANEL_H__
 
 #include "_Elastos_Droid_Widget_CVolumePanel.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 #include "os/Handler.h"
 #include "database/ContentObserver.h"

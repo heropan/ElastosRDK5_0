@@ -1,6 +1,6 @@
 #include "elastos/droid/text/style/BackgroundColorSpan.h"
 #include "elastos/droid/text/CTextPaint.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

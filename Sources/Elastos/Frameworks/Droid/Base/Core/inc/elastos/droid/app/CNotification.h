@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CNOTIFICATION_H__
 
 #include "_Elastos_Droid_App_CNotification.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using namespace Elastos::Core;
 

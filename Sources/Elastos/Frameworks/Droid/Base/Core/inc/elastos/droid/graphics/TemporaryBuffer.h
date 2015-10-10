@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_TEMPORARYBUFFER_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

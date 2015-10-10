@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_EGLOBJECTHANDLE_H__
 #define __ELASTOS_DROID_OPENGL_EGLOBJECTHANDLE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_DEADZONE_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_DEADZONE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "os/Runnable.h"
 #include "view/View.h"
 

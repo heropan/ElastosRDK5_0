@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_View_H__
 #define __ELASTOS_DROID_VIEW_View_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "graphics/CRect.h"
 #include "graphics/CRectF.h"
 #include "view/CSurface.h"

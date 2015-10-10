@@ -1,7 +1,7 @@
 #include "elastos/droid/text/StaticLayout.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/Character.h>
-#include "utility/ArrayUtils.h"
+#include "elastos/droid/utility/ArrayUtils.h"
 #include "graphics/CPaintFontMetricsInt.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/text/TextDirectionHeuristics.h"

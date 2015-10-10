@@ -5,7 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_COMPONENTS_NAVIGATIONPARAMS_H_
 #define _ELASTOS_DROID_WEBKIT_COMPONENTS_NAVIGATIONPARAMS_H_
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 // package org.chromium.components.navigation_interception;
 // import org.chromium.base.CalledByNative;

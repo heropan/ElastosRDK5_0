@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_VIEW_CACCESSIBILITYINTERACTIONCONNECTION_H__
 
 #include "_Elastos_Droid_View_CAccessibilityInteractionConnection.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::View::Accessibility::IAccessibilityInteractionConnection;

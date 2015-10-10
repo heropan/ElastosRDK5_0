@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_OS_BATTERYSTATSIMPL_H__
 #define __ELASTOS_DROID_INTERNAL_OS_BATTERYSTATSIMPL_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "os/BatteryStats.h"
 #include "os/HandlerBase.h"
 #include <elastos/utility/etl/HashSet.h>

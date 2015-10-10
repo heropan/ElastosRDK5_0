@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Net_Pppoe_CPppoeManager.h"
 #include "CPppoeStateTracker.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Net::Pppoe::IIPppoeManager;
 using Elastos::Droid::Os::IHandler;

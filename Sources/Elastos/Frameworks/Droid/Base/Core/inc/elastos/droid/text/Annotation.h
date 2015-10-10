@@ -1,44 +1,61 @@
 #ifndef __ELASTOS_DROID_TEXT_Annotation_H__
 #define __ELASTOS_DROID_TEXT_Annotation_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/core/Object.h"
+
+using Elastos::Droid::Os::IParcelable;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 
-class Annotation {
+/**
+ * Annotations are simple key-value pairs that are preserved across
+ * TextView save/restore cycles and can be used to keep application-specific
+ * data that needs to be maintained for regions of text.
+ */
+class Annotation
+    : public Object
+    , public IAnnotation
+    , public IParcelableSpan
+    , public IParcelable
+{
 public:
-    Annotation(
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    Annotation();
+
+    virtual ~Annotation();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
         /* [in] */ const String& key,
         /* [in] */ const String& value);
 
-    Annotation(
-        /* [in] */ IParcel* src);
-
     CARAPI_(Int32) GetSpanTypeId();
 
-    CARAPI_(Int32) DescribeContents();
+    CARAPI GetSpanTypeId(
+        /* [out] */ Int32* id);
+
+    CARAPI_(String) GetKey();
+
+    CARAPI_(String) GetValue();
+
+    CARAPI GetKey(
+        /* [out] */ String* key);
+
+    CARAPI GetValue(
+        /* [out] */ String* value);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
-
-    CARAPI_(String) GetKey();
-
-    CARAPI_(String) GetValue();
-
-protected:
-    void Init(
-        /* [in] */ const String& key,
-        /* [in] */ const String& value);
-
-    void Init(
-        /* [in] */ IParcel* src);
-
-    Annotation();
 
 private:
     String mKey;

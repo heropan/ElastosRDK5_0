@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_CAUTOTEXTHELPER_H__
 
 #include "_Elastos_Droid_Text_CAutoTextHelper.h"
-#include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IView;
@@ -13,8 +13,14 @@ namespace Droid {
 namespace Text {
 
 CarClass(CAutoTextHelper)
+    , public Singleton
+    , public IAutoTextHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI Get(
         /* [in] */ ICharSequence* src,
         /* [in] */ Int32 start,

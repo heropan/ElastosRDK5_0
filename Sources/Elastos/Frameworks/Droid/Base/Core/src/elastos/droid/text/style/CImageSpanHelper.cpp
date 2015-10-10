@@ -1,7 +1,7 @@
 
 #include "elastos/droid/text/style/CImageSpanHelper.h"
 #include "elastos/droid/text/style/CImageSpan.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

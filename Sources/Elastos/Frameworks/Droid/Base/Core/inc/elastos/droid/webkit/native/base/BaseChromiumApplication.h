@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_BASECHROMIUMAPPLICATION_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_BASECHROMIUMAPPLICATION_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "webkit/native/base/WindowCallbackWrapper.h"
 //#include "app/Application.h"
 

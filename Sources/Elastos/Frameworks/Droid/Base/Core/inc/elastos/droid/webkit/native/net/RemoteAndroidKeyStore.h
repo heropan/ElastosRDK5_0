@@ -5,7 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_REMOTEANDROIDKEYSTORE_H_
 #define _ELASTOS_DROID_WEBKIT_NET_REMOTEANDROIDKEYSTORE_H_
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/net/AndroidKeyStore.h"
 #include "elastos/droid/webkit/native/net/AndroidPrivateKey.h"
 

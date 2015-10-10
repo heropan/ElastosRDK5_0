@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_LOCATION_CLOCATIONREQUEST_H__
 
 #include "_Elastos_Droid_Location_CLocationRequest.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

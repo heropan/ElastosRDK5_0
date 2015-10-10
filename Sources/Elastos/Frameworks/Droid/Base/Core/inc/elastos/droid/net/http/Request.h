@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_REQUEST_H__
 #define __ELASTOS_DROID_NET_HTTP_REQUEST_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "Connection.h"
 

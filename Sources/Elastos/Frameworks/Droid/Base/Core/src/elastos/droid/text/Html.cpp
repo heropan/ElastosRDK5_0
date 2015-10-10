@@ -14,10 +14,10 @@
 #include "elastos/droid/text/style/CForegroundColorSpan.h"
 #include "elastos/droid/text/style/CRelativeSizeSpan.h"
 #include "elastos/droid/text/style/CTextAppearanceSpan.h"
-#include "content/res/CResourcesHelper.h"
-#include "utility/ArrayUtils.h"
-#include "utility/XmlUtils.h"
-#include "R.h"
+#include "elastos/droid/content/res/CResourcesHelper.h"
+#include "elastos/droid/utility/ArrayUtils.h"
+#include "elastos/droid/utility/XmlUtils.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Character.h>
 

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_IMEADAPTER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_IMEADAPTER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 #include "os/Runnable.h"
 #include "os/SystemClock.h"

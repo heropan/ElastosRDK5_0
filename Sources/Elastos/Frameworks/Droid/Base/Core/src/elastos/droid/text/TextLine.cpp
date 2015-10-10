@@ -5,7 +5,7 @@
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/text/Layout.h"
 #include "graphics/CRectF.h"
-#include "utility/ArrayUtils.h"
+#include "elastos/droid/utility/ArrayUtils.h"
 #include <elastos/core/Character.h>
 
 using Elastos::Core::Character;

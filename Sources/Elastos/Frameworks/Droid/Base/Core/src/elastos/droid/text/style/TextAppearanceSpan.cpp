@@ -1,8 +1,8 @@
 #include "elastos/droid/text/style/TextAppearanceSpan.h"
 #include "elastos/droid/text/CTextPaint.h"
-#include "content/res/CColorStateList.h"
+#include "elastos/droid/content/res/CColorStateList.h"
 #include "graphics/CTypeface.h"
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Content::Res::CColorStateList;

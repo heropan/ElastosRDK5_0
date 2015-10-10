@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CPRESETREVERB_H__
 
 #include "_Elastos_Droid_Media_Audiofx_CPresetReverb.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "media/audiofx/AudioEffect.h"
 
 using Elastos::Droid::Media::Audiofx::AudioEffect;

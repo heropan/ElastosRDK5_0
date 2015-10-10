@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_SPINNER_H__
 #define __ELASTOS_DROID_WIDGET_SPINNER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "widget/AbsSpinner.h"
 #include "widget/ListPopupWindow.h"
 

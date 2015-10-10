@@ -5,7 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_DROPDOWNDIVIDERDRAWABLE_H_
 #define _ELASTOS_DROID_WEBKIT_UI_DROPDOWNDIVIDERDRAWABLE_H_
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/drawable/Drawable.h"
 
 // package org.chromium.ui;

@@ -2,7 +2,7 @@
 #ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CPINYINSETTINGS_H__
 #define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CPINYINSETTINGS_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Inputmethods_PinyinIME_CPinyinSettings.h"
 
 using Elastos::Droid::Content::ISharedPreferences;

@@ -1,7 +1,8 @@
 #ifndef __ELASTOS_DROID_TEXT_PACKEDOBJECTVECTOR_H__
 #define __ELASTOS_DROID_TEXT_PACKEDOBJECTVECTOR_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include <elastos/core/Object.h>
 #include "utility/ArrayUtils.h"
 
 using Elastos::Droid::Internal::Utility::ArrayUtils;

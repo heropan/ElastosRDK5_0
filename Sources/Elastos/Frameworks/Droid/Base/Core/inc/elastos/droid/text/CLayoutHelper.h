@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_TEXT_CLAYOUTHELPER_H__
 
 #include "_Elastos_Droid_Text_CLayoutHelper.h"
-
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::ICharSequence;
 

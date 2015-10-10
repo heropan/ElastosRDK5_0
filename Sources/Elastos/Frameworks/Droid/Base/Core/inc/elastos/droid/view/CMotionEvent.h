@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_CMOTIONEVENT_H__
 
 #include "_Elastos_Droid_View_CMotionEvent.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "view/InputEvent.h"
 #include <androidfw/Input.h>

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_Html_H__
 #define __ELASTOS_DROID_TEXT_Html_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/core/StringBuilder.h>
 

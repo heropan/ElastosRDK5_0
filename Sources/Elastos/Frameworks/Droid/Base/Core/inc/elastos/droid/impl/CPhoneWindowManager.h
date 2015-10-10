@@ -6,7 +6,7 @@
 #include "app/CProgressDialog.h"
 #include "content/BroadcastReceiver.h"
 #include "database/ContentObserver.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "graphics/CRect.h"
 #include "graphics/CRect.h"
 #include "impl/BootAnimationView.h"

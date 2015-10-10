@@ -5,7 +5,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_COMMON_CONTENTSWITCHES_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_COMMON_CONTENTSWITCHES_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

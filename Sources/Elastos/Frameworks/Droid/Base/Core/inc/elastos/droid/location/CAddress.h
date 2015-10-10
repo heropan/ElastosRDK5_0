@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_LOCATION_CADDRESS_H__
 #define __ELASTOS_DROID_LOCATION_CADDRESS_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Location_CAddress.h"
 #include <elastos/utility/etl/HashMap.h>
 

@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "elastos/droid/text/CAllCaps.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/text/CAllCapsFilter.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/text/CSpannableString.h"
 #include <elastos/core/Character.h>
@@ -12,7 +12,11 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
-ECode CAllCaps::Filter(
+CAR_INTERFACE_IMPL_2(CAllCapsFilter, Object, IAllCapsFilter, IAllCapsFilter)
+
+CAR_OBJECT_IMPL(CAllCapsFilter)
+
+ECode CAllCapsFilter::Filter(
     /* [in] */ ICharSequence* source,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,

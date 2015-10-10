@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_MULTIAUTOCOMPLETETEXTVIEW_H__
 #define __ELASTOS_DROID_WIDGET_MULTIAUTOCOMPLETETEXTVIEW_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "widget/AutoCompleteTextView.h"
 
 using Elastos::Droid::Content::IContext;

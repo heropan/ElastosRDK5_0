@@ -5,7 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_ANDROIDNETWORKLIBRARY_H_
 #define _ELASTOS_DROID_WEBKIT_NET_ANDROIDNETWORKLIBRARY_H_
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/net/AndroidCertVerifyResult.h"
 
 // package org.chromium.net;

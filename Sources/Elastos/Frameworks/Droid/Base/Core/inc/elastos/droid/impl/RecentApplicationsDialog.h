@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_RECENTAPPLICATIONSDIALOG_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_RECENTAPPLICATIONSDIALOG_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "app/Dialog.h"
 #include "content/BroadcastReceiver.h"
 

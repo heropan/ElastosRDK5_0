@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_KEYBOARDVIEW_H__
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_KEYBOARDVIEW_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 //#include "view/GestureDetector.h"
 // #include "view/View.h"
 #include "os/Handler.h"

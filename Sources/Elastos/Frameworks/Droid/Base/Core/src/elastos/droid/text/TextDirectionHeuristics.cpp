@@ -1,62 +1,38 @@
 
 #include "elastos/droid/text/TextDirectionHeuristics.h"
+#include "elastos/droid/text/TextUtils.h"
+
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
-#if 0
-static AutoPtr<ITextDirectionHeuristic> LTRInit()
-{
-    return new TextDirectionHeuristics::TextDirectionHeuristicInternal(NULL /* no algorithm */, FALSE);
-}
-
-static AutoPtr<ITextDirectionHeuristic> RTLInit()
-{
-    return new TextDirectionHeuristics::TextDirectionHeuristicInternal(NULL /* no algorithm */, TRUE);
-}
-
-static AutoPtr<ITextDirectionHeuristic> FIRSTSTRONG_LTR_init()
-{
-    return new TextDirectionHeuristics::TextDirectionHeuristicInternal(
-        TextDirectionHeuristics::TextDirectionHeuristicInternal::FirstStrong::GetINSTANCE(), FALSE);
-}
-
-static AutoPtr<ITextDirectionHeuristic> FIRSTSTRONG_RTL_init()
-{
-    return new TextDirectionHeuristics::TextDirectionHeuristicInternal(
-        TextDirectionHeuristics::TextDirectionHeuristicInternal::FirstStrong::GetINSTANCE(), TRUE);
-}
-
-static AutoPtr<ITextDirectionHeuristic> ANYRTL_LTR_init()
-{
-    return new TextDirectionHeuristics::TextDirectionHeuristicInternal(
-        TextDirectionHeuristics::TextDirectionHeuristicInternal::AnyStrong::GetINSTANCE_RTL(), FALSE);
-}
-#endif
 
 const Int32 TextDirectionHeuristics::STATE_TRUE = 0;
 const Int32 TextDirectionHeuristics::STATE_FALSE = 1;
 const Int32 TextDirectionHeuristics::STATE_UNKNOWN = 2;
 
-AutoPtr<ITextDirectionHeuristic> TextDirectionHeuristics::LTR =
-        new TextDirectionHeuristics::TextDirectionHeuristicInternal(NULL /* no algorithm */, FALSE);//LTRInit();
+AutoPtr<ITextDirectionHeuristic> TextDirectionHeuristics::LTR;
+        // new TextDirectionHeuristics::TextDirectionHeuristicInternal(NULL /* no algorithm */, FALSE);
 
 AutoPtr<ITextDirectionHeuristic> TextDirectionHeuristics::RTL =
-        new TextDirectionHeuristics::TextDirectionHeuristicInternal(NULL /* no algorithm */, TRUE);//RTLInit();
+        // new TextDirectionHeuristics::TextDirectionHeuristicInternal(NULL /* no algorithm */, TRUE);
 
 AutoPtr<ITextDirectionHeuristic> TextDirectionHeuristics::FIRSTSTRONG_LTR =
-       new TextDirectionHeuristics::TextDirectionHeuristicInternal(
-            TextDirectionHeuristics::FirstStrong::GetInstance(), FALSE);//FIRSTSTRONG_LTR_init();
+       // new TextDirectionHeuristics::TextDirectionHeuristicInternal(
+       //      TextDirectionHeuristics::FirstStrong::GetInstance(), FALSE);
 
 AutoPtr<ITextDirectionHeuristic> TextDirectionHeuristics::FIRSTSTRONG_RTL =
-       new TextDirectionHeuristics::TextDirectionHeuristicInternal(
-        TextDirectionHeuristics::FirstStrong::GetInstance(), TRUE);//FIRSTSTRONG_RTL_init();
+       // new TextDirectionHeuristics::TextDirectionHeuristicInternal(
+       //  TextDirectionHeuristics::FirstStrong::GetInstance(), TRUE);
 
 AutoPtr<ITextDirectionHeuristic> TextDirectionHeuristics::ANYRTL_LTR =
-       new TextDirectionHeuristics::TextDirectionHeuristicInternal(
-        TextDirectionHeuristics::AnyStrong::GetLTRInstance(), FALSE);//ANYRTL_LTR_init();
+       // new TextDirectionHeuristics::TextDirectionHeuristicInternal(
+       //  TextDirectionHeuristics::AnyStrong::GetLTRInstance(), FALSE);
 
-AutoPtr<ITextDirectionHeuristic> TextDirectionHeuristics::LOCALE = TextDirectionHeuristics::TextDirectionHeuristicLocale::GetInstance();
+AutoPtr<ITextDirectionHeuristic> TextDirectionHeuristics::LOCALE;
+       //  = TextDirectionHeuristics::TextDirectionHeuristicLocale::GetInstance();
 
 AutoPtr<TextDirectionHeuristics::AnyStrong> TextDirectionHeuristics::AnyStrong::sRTLInstance = new TextDirectionHeuristics::AnyStrong(TRUE);
 AutoPtr<TextDirectionHeuristics::AnyStrong> TextDirectionHeuristics::AnyStrong::sLTRInstance = new TextDirectionHeuristics::AnyStrong(FALSE);
@@ -68,34 +44,136 @@ AutoPtr<TextDirectionHeuristics::FirstStrong> TextDirectionHeuristics::FirstStro
         = new TextDirectionHeuristics::FirstStrong();
 
 
+AutoPtr<ITextDirectionHeuristic> TextDirectionHeuristics::GetLTR()
+{
+    return new TextDirectionHeuristics::TextDirectionHeuristicInternal(NULL /* no algorithm */, FALSE);
+}
+
+AutoPtr<ITextDirectionHeuristic> TextDirectionHeuristics::GetRTL()
+{
+    return new TextDirectionHeuristics::TextDirectionHeuristicInternal(NULL /* no algorithm */, TRUE);
+}
+
+AutoPtr<ITextDirectionHeuristic> TextDirectionHeuristics::GetFIRSTSTRONG_LTR()
+{
+    return new TextDirectionHeuristics::TextDirectionHeuristicInternal(
+        TextDirectionHeuristics::TextDirectionHeuristicInternal::FirstStrong::GetINSTANCE(), FALSE);
+}
+
+AutoPtr<ITextDirectionHeuristic> TextDirectionHeuristics::GetFIRSTSTRONG_RTL()
+{
+    return new TextDirectionHeuristics::TextDirectionHeuristicInternal(
+        TextDirectionHeuristics::TextDirectionHeuristicInternal::FirstStrong::GetINSTANCE(), TRUE);
+}
+
+AutoPtr<ITextDirectionHeuristic> TextDirectionHeuristics::GetANYRTL_LTR()
+{
+    return new TextDirectionHeuristics::TextDirectionHeuristicInternal(
+        TextDirectionHeuristics::TextDirectionHeuristicInternal::AnyStrong::GetLTRInstance(), FALSE);
+}
+
+AutoPtr<ITextDirectionHeuristic> TextDirectionHeuristics::GetLOCALE()
+{
+    return TextDirectionHeuristics::TextDirectionHeuristicLocale::GetInstance();
+}
+
 Int32 TextDirectionHeuristics::IsRtlText(
     /* [in] */ Int32 directionality)
 {
-    if (directionality == Character::DIRECTIONALITY_LEFT_TO_RIGHT) {
-        return State_FALSE;
-    } else if (directionality == Character::DIRECTIONALITY_RIGHT_TO_LEFT
-            || directionality == Character::DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC) {
-        return State_TRUE;
-    } else {
-        return State_UNKNOWN;
+    switch (directionality) {
+        case Character::DIRECTIONALITY_LEFT_TO_RIGHT:
+            return STATE_FALSE;
+        case Character::DIRECTIONALITY_RIGHT_TO_LEFT:
+        case Character::DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC:
+            return STATE_TRUE;
+        default:
+            return STATE_UNKNOWN;
     }
 }
 
 Int32 TextDirectionHeuristics::IsRtlTextOrFormat(
     /* [in] */ Int32 directionality)
 {
-    if (directionality == Character::DIRECTIONALITY_LEFT_TO_RIGHT
-     || directionality == Character::DIRECTIONALITY_LEFT_TO_RIGHT_EMBEDDING
-     || directionality == Character::DIRECTIONALITY_LEFT_TO_RIGHT_OVERRIDE) {
-        return State_FALSE;
-    } else if (directionality == Character::DIRECTIONALITY_RIGHT_TO_LEFT
-            || directionality == Character::DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC
-            || directionality == Character::DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING
-            || directionality == Character::DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE) {
-        return State_TRUE;
-    } else {
-        return State_UNKNOWN;
+    switch (directionality) {
+        case Character::DIRECTIONALITY_LEFT_TO_RIGHT:
+        case Character::DIRECTIONALITY_LEFT_TO_RIGHT_EMBEDDING:
+        case Character::DIRECTIONALITY_LEFT_TO_RIGHT_OVERRIDE:
+            return STATE_FALSE;
+        case Character::DIRECTIONALITY_RIGHT_TO_LEFT:
+        case Character::DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC:
+        case Character::DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING:
+        case Character::DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE:
+            return STATE_TRUE;
+        default:
+            return STATE_UNKNOWN;
     }
+}
+
+//============================================================
+// TextDirectionHeuristics::TextDirectionHeuristicImpl
+//============================================================
+
+ECode TextDirectionHeuristics::TextDirectionHeuristicImpl::IsRtl(
+    /* [in] */ ArrayOf<Char32>* chars,
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 count,
+    /* [out] */ Boolean* result)
+{
+    return IsRtl(CharBuffer.wrap(array), start, count);
+}
+
+ECode TextDirectionHeuristics::TextDirectionHeuristicImpl::IsRtl(
+    /* [in] */ ICharSequence* cs,
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 count,
+    /* [out] */ Boolean* result);
+{
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+
+    if (cs == NULL || start < 0 || count < 0 || chars->GetLength() - count < start) {
+//                throw new IllegalArgumentException();
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    if (mAlgorithm == NULL) {
+        *result = DefaultIsRtl();
+        return NOERROR;
+    }
+
+    *result = DoCheck(chars, start, count);
+
+    return NOERROR;
+}
+
+Boolean TextDirectionHeuristics::DoCheck(
+    /* [in] */ ArrayOf<Char32>* chars,
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 count)
+{
+    TriState state = mAlgorithm->CheckRtl(chars, start, count);
+    switch(state) {
+        case TriState_TRUE:
+            return TRUE;
+        case TriState_FALSE:
+            return FALSE;
+        default:
+            return DefaultIsRtl();
+    }
+}
+
+//============================================================
+// TextDirectionHeuristics::TextDirectionHeuristicLocale
+//============================================================
+
+Boolean TextDirectionHeuristics::TextDirectionHeuristicLocale::DefaultIsRtl()
+{
+    AutoPtr<ILocale> locale;
+    AutoPtr<ILocaleHelper> helper;
+    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&helper);
+    helper->GetDefault((ILocale**)&locale);
+   Int32 dir = TextUtils::GetLayoutDirectionFromLocale(locale);
+   return (dir == IView::LAYOUT_DIRECTION_RTL);
 }
 
 } // namespace Text

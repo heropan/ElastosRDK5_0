@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_MENU_MENUBUILDERBASE_H__
 
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "widget/BaseAdapter.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>

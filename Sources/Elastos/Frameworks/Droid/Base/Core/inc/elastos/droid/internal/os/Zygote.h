@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_OS_ZYGOTE_H__
 #define __ELASTOS_DROID_INTERNAL_OS_ZYGOTE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::System::IZygoteHooks;
 using Elastos::Core::IStringBuilder;

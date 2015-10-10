@@ -15,6 +15,7 @@ CAR_OBJECT_IMPL(CStatFs)
 ECode CStatFs::Restat(
     /* [in] */ const String& path)
 {
+    mStat = NULL;
     return DoStat(path, (IStructStatVfs**)&mStat);
 }
 

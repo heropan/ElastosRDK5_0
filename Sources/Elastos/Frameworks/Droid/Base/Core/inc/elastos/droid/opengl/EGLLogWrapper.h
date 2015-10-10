@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_EGLLOGWRAPPER_H__
 #define __ELASTOS_DROID_OPENGL_EGLLOGWRAPPER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::IO::IWriter;
 using Elastosx::Microedition::Khronos::Egl::IEGL;

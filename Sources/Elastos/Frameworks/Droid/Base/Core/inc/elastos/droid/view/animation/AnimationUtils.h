@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_ANIMATIONUTILS_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_ANIMATIONUTILS_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "os/SystemClock.h"
 #include "utility/Xml.h"
 

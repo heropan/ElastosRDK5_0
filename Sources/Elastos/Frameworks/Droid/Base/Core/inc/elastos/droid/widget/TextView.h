@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_TEXTVIEW_H__
 #define __ELASTOS_DROID_WIDGET_TEXTVIEW_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "os/HandlerBase.h"
 #include "os/Runnable.h"
 #include "view/View.h"

@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_TEXT_CSPANNEDSTRINGHELPER_H__
 
 #include "_Elastos_Droid_Text_CSpannedStringHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::ICharSequence;
 

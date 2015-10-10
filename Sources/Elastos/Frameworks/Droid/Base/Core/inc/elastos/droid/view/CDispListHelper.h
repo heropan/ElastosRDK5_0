@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_VIEW_CDISPLISTHELPER_H__
 
 #include "_Elastos_Droid_View_CDispListHelper.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "Elastos.Core.h"
 #include <elastos/utility/logging/Logger.h>
