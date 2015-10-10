@@ -1,15 +1,17 @@
 
 #ifndef __ELASTOS_DROID_HARDWARE_LEGACYSENSORMANAGER_H__
-#define  __ELASTOS_DROID_HARDWARE_LEGACYSENSORMANAGER_H__
+#define __ELASTOS_DROID_HARDWARE_LEGACYSENSORMANAGER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/Object.h>
 
-using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::View::IIWindowManager;
 using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::IRotationWatcher;
-
+using Elastos::Core::Object;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -21,14 +23,11 @@ class LegacyListener;
 } // namespace Droid
 } // namespace Elastos
 
-#define DEFINE_HASH_FUNC_FOR_PTR_USING_ADDR_LEGACYLISTENER
-DEFINE_HASH_FUNC_FOR_PTR_USING_ADDR(Elastos::Droid::Hardware::LegacyListener);
-#endif  //DEFINE_HASH_FUNC_FOR_PTR_USING_ADDR_LEGACYLISTENER
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Hardware::ISensorListener);
 
 namespace Elastos {
 namespace Droid {
 namespace Hardware {
-
 
 class CLegacySensorManagerRotationWatcher;
 
@@ -36,11 +35,13 @@ class CLegacySensorManagerRotationWatcher;
  * Helper class for implementing the legacy sensor manager API.
  * @hide
  */
-class LegacySensorManager: public ElRefBase
+class LegacySensorManager
+    : public Object
+    , public ILegacySensorManager
 {
     friend class CLegacySensorManagerRotationWatcher;
 public:
-    class LmsFilter: public ElRefBase
+    class LmsFilter : public Object
     {
     public:
         LmsFilter();
@@ -48,10 +49,6 @@ public:
         Float Filter(
             /* [in] */ Int64 time,
             /* [in] */ Float in);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
 
     private:
         static const Int32 SENSORS_RATE_MS;
@@ -64,21 +61,21 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     LegacySensorManager(
         /* [in] */ ISensorManager* sensorManager);
 
-    CARAPI_(UInt32) AddRef();
+    CARAPI GetSensors(
+        /* [out] */ Int32* num);
 
-    CARAPI_(UInt32) Release();
-
-    CARAPI_(Int32) GetSensors();
-
-    CARAPI_(Boolean) RegisterListener(
+    CARAPI RegisterListener(
         /* [in] */ ISensorListener* listener,
         /* [in] */ Int32 sensors,
-        /* [in] */ Int32 rate);
+        /* [in] */ Int32 rate,
+        /* [out] */ Boolean* result);
 
-    CARAPI_(void) UnregisterListener(
+    CARAPI UnregisterListener(
         /* [in] */ ISensorListener* listener,
         /* [in] */ Int32 sensors);
 
@@ -117,23 +114,14 @@ private:
 };
 
 class LegacyListener
-    : public ElRefBase
+    : public Object
     , public ISensorEventListener
 {
 public:
+    CAR_INTERFACE_DECL()
+
     LegacyListener(
         /* [in] */ ISensorListener* target);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
 
     CARAPI_(Boolean) RegisterSensor(
         /* [in] */ Int32 legacyType);
@@ -183,6 +171,5 @@ private:
 } // namespace Hardware
 } // namespace Droid
 } // namespace Elastos
-
 
 #endif  //__ELASTOS_DROID_HARDWARE_LEGACYSENSORMANAGER_H__

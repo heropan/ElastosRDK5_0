@@ -1,6 +1,5 @@
 
-#include "hardware/CSensorManager.h"
-
+#include "elastos/droid/hardware/CSensorManager.h"
 
 namespace Elastos {
 namespace Droid {

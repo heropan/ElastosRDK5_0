@@ -1,9 +1,13 @@
-#include "hardware/CLegacySensorManagerRotationWatcher.h"
-#include "hardware/LegacySensorManager.h"
+#include "elastos/droid/hardware/CLegacySensorManagerRotationWatcher.h"
+#include "elastos/droid/hardware/LegacySensorManager.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Hardware {
+
+CAR_INTERFACE_IMPL(CLegacySensorManagerRotationWatcher, Object, IRotationWatcher);
+
+CAR_OBJECT_IMPL(CLegacySensorManagerRotationWatcher);
 
 CLegacySensorManagerRotationWatcher::CLegacySensorManagerRotationWatcher()
 {}

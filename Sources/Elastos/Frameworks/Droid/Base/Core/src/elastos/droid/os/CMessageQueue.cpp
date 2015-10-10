@@ -887,6 +887,15 @@ Boolean CMessageQueue::NativeIsIdling()
     //return nativeMessageQueue->getLooper()->isIdling();
 }
 
+ECode CMessageQueue::GetMPtr(
+    /* [out] */ Int64* handle)
+{
+    VALIDATE_NOT_NULL(handle);
+
+    *handle = mPtr;
+    return NOERROR;
+}
+
 } // namespace Os
 } // namespace Droid
 } // Elastos

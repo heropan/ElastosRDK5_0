@@ -1,11 +1,10 @@
 
 #ifndef __ELASTOS_DROID_HARDWARE_CSENSORMANAGER_H__
-#define  __ELASTOS_DROID_HARDWARE_CSENSORMANAGER_H__
+#define __ELASTOS_DROID_HARDWARE_CSENSORMANAGER_H__
 
 #include "_Elastos_Droid_Hardware_CSensorManager.h"
-#include "hardware/LegacySensorManager.h"
-#include "hardware/SensorManager.h"
-
+#include "elastos/droid/hardware/LegacySensorManager.h"
+#include "elastos/droid/hardware/SensorManager.h"
 
 namespace Elastos {
 namespace Droid {

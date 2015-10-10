@@ -1,6 +1,6 @@
 
-#include "hardware/SerialManager.h"
-#include "hardware/SerialPort.h"
+#include "elastos/droid/hardware/SerialManager.h"
+#include "elastos/droid/hardware/SerialPort.h"
 
 using Elastos::Droid::Os::IParcelFileDescriptor;
 
@@ -67,7 +67,6 @@ ECode SerialManager::OpenSerialPort(
     *port = NULL;
     return NOERROR;
 }
-
 
 } // namespace Hardware
 } // namespace Droid

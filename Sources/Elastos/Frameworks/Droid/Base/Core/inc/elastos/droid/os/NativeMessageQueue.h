@@ -8,12 +8,15 @@
 #include "Elastos.Droid.Core.h"
 #endif
 #include <utils/Looper.h>
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
-class MessageQueue : public ElRefBase
+class MessageQueue : public Object
 {
 public:
     /* Gets the message queue's looper. */

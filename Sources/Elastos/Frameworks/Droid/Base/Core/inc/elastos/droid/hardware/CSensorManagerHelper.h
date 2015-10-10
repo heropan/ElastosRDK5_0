@@ -1,16 +1,24 @@
 
 #ifndef __ELASTOS_DROID_HARDWARE_CSENSORMANAGERHELPER_H__
-#define  __ELASTOS_DROID_HARDWARE_CSENSORMANAGERHELPER_H__
+#define __ELASTOS_DROID_HARDWARE_CSENSORMANAGERHELPER_H__
 
 #include "_Elastos_Droid_Hardware_CSensorManagerHelper.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Hardware {
 
 CarClass(CSensorManagerHelper)
+    , public Singleton
+    , public ISensorManagerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetRotationMatrix(
         /* [in] */ ArrayOf<Float>* R,
         /* [in] */ ArrayOf<Float>* I,
@@ -169,17 +177,6 @@ public:
     CARAPI GetQuaternionFromVector(
         /* [in] */ ArrayOf<Float>* Q,
         /* [in] */ ArrayOf<Float>* rv);
-
-private:
-    static CARAPI_(Boolean) RemapCoordinateSystemImpl(
-        /* [in] */ ArrayOf<Float>* inR,
-        /* [in] */ Int32 X,
-        /* [in] */ Int32 Y,
-        /* [in] */ ArrayOf<Float>* outR);
-
-private:
-    static AutoPtr<ArrayOf<Float> > mTempMatrix;
-    static Object mTempMatrixLock;
 };
 
 

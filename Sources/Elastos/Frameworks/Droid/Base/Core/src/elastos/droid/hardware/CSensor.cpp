@@ -1,10 +1,10 @@
 
-#include "hardware/CSensor.h"
-#include "os/Build.h"
+#include "elastos/droid/hardware/CSensor.h"
+#include "elastos/droid/os/Build.h"
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::StringBuilder;
 using Elastos::Droid::Os::Build;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {

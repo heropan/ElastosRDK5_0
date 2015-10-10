@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_HARDWARE_SERIALMANAGER_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
@@ -66,4 +66,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__ELASTOS_DROID_HARDWARE_SERIALMANAGER_H__
+#endif //__ELASTOS_DROID_HARDWARE_SERIALMANAGER_H__

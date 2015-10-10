@@ -16,6 +16,8 @@ module
     merge("hardware/SensorEventListener2.car");
     merge("hardware/TriggerEvent.car");
     merge("hardware/TriggerEventListener.car");
+    merge("hardware/LegacySensorManager.car");
+    merge("hardware/IConsumerIrService.car");
 
     merge("hardware/display/DisplayManager.car");
     merge("hardware/display/DisplayManagerGlobal.car");
@@ -115,36 +117,37 @@ module
 
     interface Elastos.Droid.View.IDisplay;
     interface Elastos.Droid.View.ISurface;
+    interface Elastos.Droid.View.IRotationWatcher;
     interface Elastos.Droid.Content.IContext;
 
     namespace Elastos {
     namespace Droid {
     namespace Hardware {
 
-        // class CConsumerIrManager {
-        //     constructor(
-        //         [in] IContext* context);
+        class CConsumerIrManager {
+            constructor(
+                [in] IContext* context);
 
-        //     interface IConsumerIrManager;
-        // }
+            interface IConsumerIrManager;
+        }
 
-        // class CCarrierFrequencyRange {
-        //     constructor(
-        //         [in] Int32 min,
-        //         [in] Int32 max);
+        class CCarrierFrequencyRange {
+            constructor(
+                [in] Int32 min,
+                [in] Int32 max);
 
-        //     interface ICarrierFrequencyRange;
-        // }
+            interface ICarrierFrequencyRange;
+        }
 
-        // class CGeomagneticField {
-        //     constructor(
-        //         [in] Float gdLatitudeDeg,
-        //         [in] Float gdLongitudeDeg,
-        //         [in] Float altitudeMeters,
-        //         [in] Int64 timeMillis);
+        class CGeomagneticField {
+            constructor(
+                [in] Float gdLatitudeDeg,
+                [in] Float gdLongitudeDeg,
+                [in] Float altitudeMeters,
+                [in] Int64 timeMillis);
 
-        //     interface IGeomagneticField;
-        // }
+            interface IGeomagneticField;
+        }
 
         class CSensorEvent {
             constructor(
@@ -159,29 +162,47 @@ module
             interface ISensor;
         }
 
-        // singleton class CSensorManagerHelper {
-        //     interface ISensorManagerHelper;
-        // }
+        singleton class CSensorManagerHelper {
+            interface ISensorManagerHelper;
+        }
 
-        // class CHardwareCamera {
-        //     constructor();
+        class CHardwareCamera {
+            constructor();
 
-        //     constructor(
-        //         [in] Int32 cameraId);
+            /** used by Camera#open, Camera#open(int) */
+            constructor(
+                [in] Int32 cameraId);
 
-        //     interface IHardwareCamera;
-        // }
+            /**
+             * Create a legacy camera object.
+             *
+             * @param cameraId The hardware camera to access, between 0 and
+             * {@link #getNumberOfCameras()}-1.
+             * @param halVersion The HAL API version this camera device to be opened as.
+             */
+            constructor(
+                [in] Int32 cameraId,
+                [in] Int32 halVersion);
+
+            interface IHardwareCamera;
+        }
 
         singleton class CHardwareCameraHelper {
             interface IHardwareCameraHelper;
         }
 
-        // class CTriggerEvent {
-        //     constructor(
-        //         [in] Int32 size);
+        class CTriggerEvent {
+            constructor(
+                [in] Int32 size);
 
-        //     interface ITriggerEvent;
-        // }
+            interface ITriggerEvent;
+        }
+
+        class CLegacySensorManagerRotationWatcher{
+            constructor();
+
+            interface IRotationWatcher;
+        }
 
     namespace Display {
         /**
