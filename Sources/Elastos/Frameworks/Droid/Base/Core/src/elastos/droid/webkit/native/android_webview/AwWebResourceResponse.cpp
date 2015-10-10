@@ -1,3 +1,4 @@
+#include "elastos/droid/webkit/native/android_webview/AwWebResourceResponse.h"
 
 namespace Elastos {
 namespace Droid {
@@ -21,21 +22,28 @@ AwWebResourceResponse::AwWebResourceResponse(
     /* [in] */ IInputStream* data,
     /* [in] */ Int32 statusCode,
     /* [in] */ const String& reasonPhrase,
-    /* [in] */ Map<String, String> responseHeaders)
+    /* [in] */ Map<String, String> &responseHeaders)
     : mMimeType(mimeType)
     , mCharset(encoding)
     , mData(data)
     , mStatusCode(statusCode)
     , mReasonPhrase(reasonPhrase)
 {
-    if (responseHeaders != null) {
-        mResponseHeaderNames = new String[responseHeaders.size()];
-        mResponseHeaderValues = new String[responseHeaders.size()];
+    Int32 size = responseHeaders.GetSize();
+    //if (responseHeaders != null)
+    if (size > 0)
+    {
+        mResponseHeaderNames = ArrayOf<String>::Alloc(size);//new String[responseHeaders.size()];
+        mResponseHeaderValues = ArrayOf<String>::Alloc(size);//new String[responseHeaders.size()];
         int i = 0;
-        for (Map.Entry<String, String> entry : responseHeaders.entrySet()) {
-            mResponseHeaderNames[i] = entry.getKey();
-            mResponseHeaderValues[i] = entry.getValue();
-            i++;
+        Map<String, String>::Iterator iter = responseHeaders.Begin();
+        //for (Map.Entry<String, String> entry : responseHeaders.entrySet())
+        while (iter != responseHeaders.End())
+        {
+            (*mResponseHeaderNames)[i] = iter->mFirst;//entry.getKey();
+            (*mResponseHeaderValues)[i] = iter->mSecond;//entry.getValue();
+            ++iter;
+            ++i;
         }
     }
 }
@@ -71,13 +79,13 @@ String AwWebResourceResponse::GetReasonPhrase()
 }
 
 //@CalledByNative
-AutoPtr< ArrayOf<String> > AwWebResourceResponse::GetResponseHeaderNames()
+AutoPtr<ArrayOf<String> > AwWebResourceResponse::GetResponseHeaderNames()
 {
     return mResponseHeaderNames;
 }
 
 //@CalledByNative
-AutoPtr< ArrayOf<String> > AwWebResourceResponse::GetResponseHeaderValues()
+AutoPtr<ArrayOf<String> > AwWebResourceResponse::GetResponseHeaderValues()
 {
     return mResponseHeaderValues;
 }

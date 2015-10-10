@@ -1,3 +1,15 @@
+#include "elastos/droid/webkit/native/android_webview/permission/AwPermissionRequest.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+
+//TODO #include "elastos/droid/net/CUriHelper.h"
+#include "elastos/utility/logging/Logger.h"
+
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Net::IUriHelper;
+//TODO using Elastos::Droid::Net::CUriHelper;
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -11,10 +23,10 @@ AwPermissionRequest::AwPermissionRequest(
     /* [in] */ Int64 nativeAwPermissionRequest,
     /* [in] */ IUri* origin,
     /* [in] */ Int64 resources)
-    : mNativeAwPermissionRequest(nativeAwPermissionRequest)
-    , mOrigin(origin)
+    : mOrigin(origin)
     , mResources(resources)
     , mProcessed(FALSE)
+    , mNativeAwPermissionRequest(nativeAwPermissionRequest)
 {
 }
 
@@ -22,13 +34,13 @@ AwPermissionRequest::AwPermissionRequest(
 AwPermissionRequest::~AwPermissionRequest()
 {
     if (mNativeAwPermissionRequest == 0) return;
-//    Log.e(TAG, "Neither grant() nor deny() has been called, "
-//            + "the permission request is denied by default.");
+    Logger::E(TAG, "Neither grant() nor deny() has been called,\
+                    the permission request is denied by default.");
     Deny();
 }
 
-//@CalledByNative
-AutoPtr<AwPermissionRequest> AwPermissionRequest::Create(
+//@CalledByNative return AwPermissionRequest
+AutoPtr<IInterface> AwPermissionRequest::Create(
     /* [in] */ Int64 nativeAwPermissionRequest,
     /* [in] */ const String& url,
     /* [in] */ Int64 resources)
@@ -36,11 +48,12 @@ AutoPtr<AwPermissionRequest> AwPermissionRequest::Create(
     if (nativeAwPermissionRequest == 0) return NULL;
 
     AutoPtr<IUriHelper> helper;
-    CUriHelper::AcquireSingleton((IUriHelper**)&helper);
+    //TODO CUriHelper::AcquireSingleton((IUriHelper**)&helper);
     AutoPtr<IUri> origin;
     helper->Parse(url, (IUri**)&origin);
     AutoPtr<AwPermissionRequest> request = new AwPermissionRequest(nativeAwPermissionRequest, origin, resources);
-    return request;
+    AutoPtr<IInterface> result = request->Probe(EIID_IInterface);
+    return result;
 }
 
 
@@ -55,20 +68,26 @@ Int64 AwPermissionRequest::GetResources()
     return mResources;
 }
 
-void AwPermissionRequest::Grant()
+ECode AwPermissionRequest::Grant()
 {
-    Validate();
+    ECode validate = Validate();
+    if (FAILED(validate))
+        return validate;
     if (mNativeAwPermissionRequest != 0)
         NativeOnAccept(mNativeAwPermissionRequest, TRUE);
     mProcessed = TRUE;
+    return NOERROR;
 }
 
-void AwPermissionRequest::Deny()
+ECode AwPermissionRequest::Deny()
 {
-    Validate();
+    ECode validate = Validate();
+    if (FAILED(validate))
+        return validate;
     if (mNativeAwPermissionRequest != 0)
         NativeOnAccept(mNativeAwPermissionRequest, FALSE);
     mProcessed = TRUE;
+    return NOERROR;
 }
 
 //@CalledByNative
@@ -77,18 +96,23 @@ void AwPermissionRequest::DetachNativeInstance()
     mNativeAwPermissionRequest = 0;
 }
 
-void AwPermissionRequest::Validate()
+ECode AwPermissionRequest::Validate()
 {
     if (!ThreadUtils::RunningOnUiThread()) {
         // throw new IllegalStateException(
         //         "Either grant() or deny() should be called on UI thread");
-        assert(0);
+        //assert(0);
+        Logger::E(TAG, "Either grant() or deny() should be called on UI thread");
+        return E_ILLEGAL_STATE_EXCEPTION;
     }
 
     if (mProcessed) {
         // throw new IllegalStateException("Either grant() or deny() has been already called.");
-        assert(0);
+        //assert(0);
+        Logger::E(TAG, "Either grant() or deny() has been already called.");
+        return E_ILLEGAL_STATE_EXCEPTION;
     }
+    return NOERROR;
 }
 
 void AwPermissionRequest::NativeOnAccept(

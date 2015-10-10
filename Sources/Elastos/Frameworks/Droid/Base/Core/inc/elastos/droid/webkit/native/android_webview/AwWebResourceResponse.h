@@ -1,11 +1,15 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWWEBRESOURCERESPONSE_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWWEBRESOURCERESPONSE_H__
+#include "ext/frameworkext.h"
+#include "elastos/utility/etl/Map.h"
+
+using Elastos::IO::IInputStream;
+using Elastos::Utility::Etl::Map;
+
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
-// import java.io.InputStream;
 // import java.util.Map;
 
 namespace Elastos {
@@ -18,12 +22,13 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwWebResourceResponse
+:public Object
 {
 public:
     AwWebResourceResponse(
         /* [in] */ const String& mimeType,
         /* [in] */ const String& encoding,
-        /* [in] */ InputStream data);
+        /* [in] */ IInputStream* data);
 
     AwWebResourceResponse(
         /* [in] */ const String& mimeType,
@@ -31,7 +36,7 @@ public:
         /* [in] */ IInputStream* data,
         /* [in] */ Int32 statusCode,
         /* [in] */ const String& reasonPhrase,
-        /* [in] */ Map<String, String> responseHeaders);
+        /* [in] */ Map<String, String> &responseHeaders);
 
     //@CalledByNative
     virtual CARAPI_(String) GetMimeType();
@@ -49,10 +54,10 @@ public:
     virtual CARAPI_(String) GetReasonPhrase();
 
     //@CalledByNative
-    virtual CARAPI_(AutoPtr< ArrayOf<String> >) GetResponseHeaderNames();
+    virtual CARAPI_(AutoPtr<ArrayOf<String> >) GetResponseHeaderNames();
 
     //@CalledByNative
-    virtual CARAPI_(AutoPtr< ArrayOf<String> >) GetResponseHeaderValues();
+    virtual CARAPI_(AutoPtr<ArrayOf<String> >) GetResponseHeaderValues();
 
 private:
     String mMimeType;
@@ -60,8 +65,8 @@ private:
     AutoPtr<IInputStream> mData;
     Int32 mStatusCode;
     String mReasonPhrase;
-    AutoPtr< ArrayOf<String> > mResponseHeaderNames;
-    AutoPtr< ArrayOf<String> > mResponseHeaderValues;
+    AutoPtr<ArrayOf<String> > mResponseHeaderNames;
+    AutoPtr<ArrayOf<String> > mResponseHeaderValues;
 };
 
 } // namespace AndroidWebview

@@ -1,20 +1,25 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_EXTERNALVIDEOSURFACECONTAINER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_EXTERNALVIDEOSURFACECONTAINER_H__
+#include "ext/frameworkext.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
+#include "elastos/droid/webkit/native/content/browser/RenderCoordinates.h"
+//TODO #include "elastos/droid/view/SurfaceView.h"
 
-// import android.content.Context;
-// import android.graphics.Canvas;
-// import android.view.Surface;
-// import android.view.SurfaceHolder;
-// import android.view.SurfaceView;
-// import android.view.ViewGroup;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::View::ISurface;
+using Elastos::Droid::View::ISurfaceHolder;
+using Elastos::Droid::View::ISurfaceHolderCallback;
+using Elastos::Droid::View::ISurfaceView;
+//TODO using Elastos::Droid::View::SurfaceView;
+using Elastos::Droid::View::IViewGroup;
 
 // import com.google.common.annotations.VisibleForTesting;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
-// import org.chromium.content.browser.ContentViewCore;
-// import org.chromium.content.browser.RenderCoordinates;
+using Elastos::Droid::Webkit::Content::Browser::ContentViewCore;
+using Elastos::Droid::Webkit::Content::Browser::RenderCoordinates;
 
 // import java.lang.ref.WeakReference;
 
@@ -46,11 +51,14 @@ class ExternalVideoSurfaceContainer
     : public Object
     , public ISurfaceHolderCallback
 {
+public:
+    CAR_INTERFACE_DECL();
 private:
     // Because WebView does hole-punching by itself, instead, the hole-punching logic
     // in SurfaceView can clear out some web elements like media control or subtitle.
     // So we need to disable its hole-punching logic.
-    class NoPunchingSurfaceView : public SurfaceView
+    class NoPunchingSurfaceView
+    //TODO : public SurfaceView
     {
     public:
         NoPunchingSurfaceView(
@@ -68,12 +76,13 @@ public:
     /**
      * Factory class to facilitate dependency injection.
      */
-    public static class Factory {
-        public ExternalVideoSurfaceContainer create(
-                long nativeExternalVideoSurfaceContainer, ContentViewCore contentViewCore) {
-            return new ExternalVideoSurfaceContainer(
-                    nativeExternalVideoSurfaceContainer, contentViewCore);
-        }
+    class Factory
+    :public Object
+    {
+        public:
+            static AutoPtr<ExternalVideoSurfaceContainer> Create(
+                /* [in] */Int64 nativeExternalVideoSurfaceContainer,
+                /* [in] */ContentViewCore* contentViewCore);
     };
 
 public:
@@ -174,8 +183,8 @@ private:
         /* [in] */ Int64 nativeExternalVideoSurfaceContainerImpl,
         /* [in] */ Int32 playerId);
 
-    //@CalledByNative
-    static CARAPI_(AutoPtr<ExternalVideoSurfaceContainer>) Create(
+    //@CalledByNative return ExternalVideoSurfaceContainer
+    static CARAPI_(AutoPtr<IInterface>) Create(
         /* [in] */ Int64 nativeExternalVideoSurfaceContainer,
         /* [in] */ ContentViewCore* contentViewCore);
 
@@ -185,8 +194,8 @@ private:
     // kick the first one off.
     // To support the mulitple video surfaces seems impractical, because z-order between
     // the multiple SurfaceViews is non-deterministic.
-    static WeakReference<ExternalVideoSurfaceContainer> sActiveContainer =
-            new WeakReference<ExternalVideoSurfaceContainer>(null);
+    //static WeakReference<ExternalVideoSurfaceContainer> sActiveContainer = new WeakReference<ExternalVideoSurfaceContainer>(null);
+    static AutoPtr<IWeakReference> sActiveContainer;
 
     const Int64 mNativeExternalVideoSurfaceContainer;
     const AutoPtr<ContentViewCore> mContentViewCore;

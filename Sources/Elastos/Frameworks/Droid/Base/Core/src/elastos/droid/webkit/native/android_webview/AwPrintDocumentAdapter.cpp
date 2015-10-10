@@ -1,3 +1,8 @@
+#include "elastos/droid/webkit/native/android_webview/AwPrintDocumentAdapter.h"
+
+//TODO using Elastos::Droid::Print::IPrintDocumentInfo;
+//TODO using Elastos::Droid::Print::IPrintDocumentInfoBuilder;
+//TODO using Elastos::Droid::Print::CPrintDocumentInfoBuilder;
 
 namespace Elastos {
 namespace Droid {
@@ -7,10 +12,11 @@ namespace AndroidWebview {
 //===============================================================
 //          AwPrintDocumentAdapter::InnerValueCallback
 //===============================================================
+//TODO CAR_INTERFACE_IMPL(AwPrintDocumentAdapter::InnerValueCallback, Object, IValueCallback);
 
 AwPrintDocumentAdapter::InnerValueCallback::InnerValueCallback(
     /* [in] */ AwPrintDocumentAdapter* owner,
-    /* [in] */ WriteResultCallback* callback)
+    /* [in] */ /*TODO IWriteResultCallback*/IInterface* callback)
     : mOwner(owner)
     , mCallback(callback)
 {
@@ -20,13 +26,13 @@ ECode AwPrintDocumentAdapter::InnerValueCallback::OnReceiveValue(
     /* [in] */ Boolean value)
 {
     if (value) {
-        AutoPtr< ArrayOf<IPageRange> > pageRange = ArrayOf<IPageRange>::Alloc(1);
-        (*pageRange)[0] = IPageRange::ALL_PAGES;
-        callback->OnWriteFinished(pageRange);
+        //TODO AutoPtr<ArrayOf<IPageRange*> > pageRange = ArrayOf<IPageRange*>::Alloc(1);
+        //TODO (*pageRange)[0] = IPageRange::ALL_PAGES;
+        //TODO callback->OnWriteFinished(pageRange);
     }
     else {
         // TODO(sgurun) provide a localized error message
-        callback->OnWriteFailed(NULL);
+        //TODO callback->OnWriteFailed(NULL);
     }
 
     return NOERROR;
@@ -66,30 +72,36 @@ AwPrintDocumentAdapter::AwPrintDocumentAdapter(
 
 //@Override
 void AwPrintDocumentAdapter::OnLayout(
-    /* [in] */ IPrintAttributes* oldAttributes,
-    /* [in] */ IPrintAttributes* newAttributes,
+    /* [in] */ /*TODO IPrintAttributes*/IInterface* oldAttributes,
+    /* [in] */ /*TODO IPrintAttributes*/IInterface* newAttributes,
     /* [in] */ ICancellationSignal* cancellationSignal,
-    /* [in] */ LayoutResultCallback* callback,
+    /* [in] */ /*TODO ILayoutResultCallback*/IInterface* callback,
     /* [in] */ IBundle* metadata)
 {
     mAttributes = newAttributes;
-    PrintDocumentInfo documentInfo = new PrintDocumentInfo
-            .Builder(mDocumentName)
-            .build();
+    //TODO AutoPtr<IPrintDocumentInfoBuilder> builder;
+    //TODO CPrintDocumentInfoBuilder::New(mDocumentName, (IPrintDocumentInfoBuilder**)&builder);
+    //TODO AutoPtr<IPrintDocumentInfo> documentInfo = builder->Build();
     // TODO(sgurun) once componentization is done, do layout changes and
     // generate PDF here, set the page range information to documentinfo
     // and call onLayoutFinished with true/false depending on whether
     // layout actually changed.
-    callback->OnLayoutFinished(documentInfo, TRUE);
+
+    //TODO callback->OnLayoutFinished(documentInfo, TRUE);
 }
 
 //@Override
 void AwPrintDocumentAdapter::OnWrite(
-    /* [in] */ ArrayOf<IPageRange>* pages,
+    /* [in] */ ArrayOf</*TODO IPageRange*/IInterface*>* pages,
     /* [in] */ IParcelFileDescriptor* destination,
     /* [in] */ ICancellationSignal* cancellationSignal,
-    /* [in] */ const WriteResultCallback* callback)
+    /* [in] */ /*TODO IWriteResultCallback*/IInterface* callback)
 {
-    AutoPtr<IValueCallback> valueCallback = new InnerValueCallback(this, callback);
+    AutoPtr</*TODO IValueCallback*/IInterface> valueCallback;//TODO = new InnerValueCallback(this, callback);
     mPdfExporter->ExportToPdf(destination, mAttributes, valueCallback, cancellationSignal);
+}
+
+}
+}
+}
 }

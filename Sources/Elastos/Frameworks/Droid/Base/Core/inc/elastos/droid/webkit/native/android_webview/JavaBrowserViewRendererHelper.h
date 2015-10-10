@@ -1,9 +1,9 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_JAVABROWSERVIEWRENDERERHELPER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_JAVABROWSERVIEWRENDERERHELPER_H__
+#include "ext/frameworkext.h"
 
-// import android.graphics.Bitmap;
-// import android.graphics.Canvas;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Graphics::ICanvas;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
@@ -30,8 +30,8 @@ private:
      * |canvas| is optional and if supplied indicates the Canvas that this Bitmap will be
      * drawn into. Note the Canvas will not be modified in any way.
      */
-    //@CalledByNative
-    static CARAPI_(AutoPtr<IBitmap>) CreateBitmap(
+    //@CalledByNative return IBitmap
+    static CARAPI_(AutoPtr<IInterface>) CreateBitmap(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ ICanvas* canvas);

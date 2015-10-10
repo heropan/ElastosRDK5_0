@@ -1,13 +1,13 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPDFEXPORTER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPDFEXPORTER_H__
+#include "ext/frameworkext.h"
 
-// import android.os.CancellationSignal;
-// import android.os.ParcelFileDescriptor;
+using Elastos::Droid::Os::ICancellationSignal;
+using Elastos::Droid::Os::IParcelFileDescriptor;
+//TODO using Elastos::Droid::Print::IPrintAttributes;
 // import android.print.PrintAttributes;
-// import android.util.Log;
-// import android.view.ViewGroup;
-// import android.webkit.ValueCallback;
+using Elastos::Droid::View::IViewGroup;
+//TODO using Elastos::Droid::Webkit::IValueCallback;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
@@ -23,6 +23,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwPdfExporter
+:public Object
 {
 public:
     AwPdfExporter(
@@ -31,10 +32,10 @@ public:
     virtual CARAPI_(void) SetContainerView(
         /* [in] */ IViewGroup* containerView);
 
-    virtual CARAPI_(void) ExportToPdf(
-        /* [in] */ const IParcelFileDescriptor* fd,
-        /* [in] */ IPrintAttributes* attributes,
-        /* [in] */ IValueCallback* resultCallback,
+    virtual CARAPI ExportToPdf(
+        /* [in] */ IParcelFileDescriptor* fd,
+        /* [in] */ /*TODO IPrintAttributes*/IInterface* attributes,
+        /* [in] */ /*TODO IValueCallback*/IInterface* resultCallback,
         /* [in] */ ICancellationSignal* cancellationSignal);
 
 private:
@@ -43,7 +44,7 @@ private:
         /* [in] */ Int64 nativePdfExporter);
 
     static CARAPI_(Int32) GetPrintDpi(
-        /* [in] */ IPrintAttributes* attributes);
+        /* [in] */ /*TODO IPrintAttributes*/IInterface* attributes);
 
     //@CalledByNative
     CARAPI_(void) DidExportPdf(
@@ -80,8 +81,10 @@ private:
     Int64 mNativeAwPdfExporter;
     // TODO(sgurun) result callback should return an int/object indicating errors.
     // potential errors: invalid print parameters, already pending, IO error
-    AutoPtr<IValueCallback> mResultCallback;
-    AutoPtr<IPrintAttributes> mAttributes;
+    //TODO AutoPtr<IValueCallback> mResultCallback;
+    AutoPtr<IInterface> mResultCallback;//TODO removed if above line is ok
+    //TODO AutoPtr<IPrintAttributes> mAttributes;
+    AutoPtr<IInterface> mAttributes;//TODO removed if above line is ok
     AutoPtr<IParcelFileDescriptor> mFd;
     // Maintain a reference to the top level object (i.e. WebView) since in a common
     // use case (offscreen webview) application may expect the framework's print manager

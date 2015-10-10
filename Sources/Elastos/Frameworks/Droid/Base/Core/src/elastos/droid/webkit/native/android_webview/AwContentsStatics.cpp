@@ -1,11 +1,16 @@
+#include "elastos/droid/webkit/native/android_webview/AwContentsStatics.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+using Elastos::Core::EIID_IRunnable;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace AndroidWebview {
 
-static AutoPtr<ClientCertLookupTable> AwContentsStatics::sClientCertLookupTable;
-static String AwContentsStatics::sUnreachableWebDataUrl;
+AutoPtr<ClientCertLookupTable> AwContentsStatics::sClientCertLookupTable;
+String AwContentsStatics::sUnreachableWebDataUrl;
 
 /**
  * Return the client certificate lookup table.
@@ -31,11 +36,13 @@ void AwContentsStatics::ClearClientCertPreferences(
 }
 
 //@CalledByNative
-void AwContentsStatics::clientCertificatesCleared(
-    /* [in] */ IRunnable* callback)
+//param callback is IRunnable
+void AwContentsStatics::ClientCertificatesCleared(
+    /* [in] */ IInterface* callback)
 {
     if (callback == NULL) return;
-    callback->Run();
+    AutoPtr<IRunnable> runCallback = (IRunnable*)(callback->Probe(EIID_IRunnable));
+    runCallback->Run();
 }
 
 /**
@@ -60,13 +67,13 @@ void AwContentsStatics::SetDataReductionProxyEnabled(
 
 String AwContentsStatics::GetUnreachableWebDataUrl()
 {
-    if (sUnreachableWebDataUrl == NULL) {
+    if (sUnreachableWebDataUrl.IsNullOrEmpty()) {
         sUnreachableWebDataUrl = NativeGetUnreachableWebDataUrl();
     }
     return sUnreachableWebDataUrl;
 }
 
-void AwContentsStatics::setRecordFullDocument(
+void AwContentsStatics::SetRecordFullDocument(
     /* [in] */ Boolean recordFullDocument)
 {
     NativeSetRecordFullDocument(recordFullDocument);
@@ -92,6 +99,7 @@ void AwContentsStatics::NativeSetDataReductionProxyEnabled(
 
 String AwContentsStatics::NativeGetUnreachableWebDataUrl()
 {
+    return String();
 }
 
 void AwContentsStatics::NativeSetRecordFullDocument(
