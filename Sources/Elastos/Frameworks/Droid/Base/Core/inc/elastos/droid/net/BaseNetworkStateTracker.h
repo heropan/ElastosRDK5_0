@@ -50,7 +50,8 @@ public:
     virtual CARAPI GetLinkQualityInfo(
         /* [out] */ ILinkQualityInfo** result);
 
-    virtual CARAPI CaptivePortalCheckComplete();
+    virtual CARAPI CaptivePortalCheckCompleted(
+        /* [in] */ Boolean isCaptive);
 
     virtual CARAPI SetRadio(
         /* [in] */ Boolean turnOn,
@@ -68,13 +69,13 @@ public:
     virtual CARAPI IsPrivateDnsRouteSet(
         /* [out] */ Boolean* result);
 
-    virtual CARAPI SetPrivateDnsRoute(
+    virtual CARAPI PrivateDnsRouteSet(
         /* [in] */ Boolean enabled);
 
     virtual CARAPI IsDefaultRouteSet(
         /* [out] */ Boolean* result);
 
-    virtual CARAPI SetDefaultRoute(
+    virtual CARAPI DefaultRouteSet(
         /* [in] */ Boolean enabled);
 
     virtual CARAPI IsTeardownRequested(

@@ -656,6 +656,37 @@ module
         interface IProxy;
     }
 
+    class CProxyDataTracker {
+        constructor();
+
+        interface IBaseNetworkStateTracker;
+        interface INetworkStateTracker;
+        interface IProxyDataTracker;
+    }
+
+    class CProxyInfo {
+        constructor(
+            [in] String host,
+            [in] Int32 port,
+            [in] String exclList);
+
+        constructor(
+            [in] IUri* pacFileUrl);
+
+        constructor(
+            [in] String sPacFileUrl);
+
+        constructor(
+            [in] IUri* pacFileUrl,
+            [in] Int32 localProxyPort);
+
+        constructor(
+            [in] IProxyInfo* source);
+
+        interface IParcelable;
+        interface IProxyInfo;
+    }
+
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos

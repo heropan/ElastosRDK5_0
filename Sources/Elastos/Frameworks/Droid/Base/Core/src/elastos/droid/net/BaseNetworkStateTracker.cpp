@@ -153,7 +153,8 @@ ECode BaseNetworkStateTracker::GetLinkQualityInfo(
     return NOERROR;
 }
 
-ECode BaseNetworkStateTracker::CaptivePortalCheckComplete()
+ECode BaseNetworkStateTracker::CaptivePortalCheckCompleted(
+    /* [in] */ Boolean isCaptive)
 {
     // not implemented
     return NOERROR;
@@ -201,7 +202,7 @@ ECode BaseNetworkStateTracker::IsPrivateDnsRouteSet(
     return mPrivateDnsRouteSet->Get(result);
 }
 
-ECode BaseNetworkStateTracker::SetPrivateDnsRoute(
+ECode BaseNetworkStateTracker::PrivateDnsRouteSet(
     /* [in] */ Boolean enabled)
 {
     return mPrivateDnsRouteSet->Set(enabled);
@@ -216,7 +217,7 @@ ECode BaseNetworkStateTracker::IsDefaultRouteSet(
     return mDefaultRouteSet->Get(result);
 }
 
-ECode BaseNetworkStateTracker::SetDefaultRoute(
+ECode BaseNetworkStateTracker::DefaultRouteSet(
     /* [in] */ Boolean enabled)
 {
     return mDefaultRouteSet->Set(enabled);
