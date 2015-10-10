@@ -112,6 +112,7 @@ Int32 TextDirectionHeuristics::IsRtlTextOrFormat(
 //============================================================
 // TextDirectionHeuristics::TextDirectionHeuristicImpl
 //============================================================
+CAR_INTERFACE_IMPL(TextDirectionHeuristics::TextDirectionHeuristicImpl, Object, ITextDirectionHeuristic)
 
 ECode TextDirectionHeuristics::TextDirectionHeuristicImpl::IsRtl(
     /* [in] */ ArrayOf<Char32>* chars,

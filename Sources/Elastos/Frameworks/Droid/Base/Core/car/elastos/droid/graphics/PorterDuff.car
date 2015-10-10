@@ -6,7 +6,7 @@ module
     namespace Graphics {
 
     enum PorterDuffMode {
-        PorterDuffMode_NONE        = -1;
+        PorterDuffMode_NONE        = -1,
 
         /** [0, 0] */
         PorterDuffMode_CLEAR       = 0x00,

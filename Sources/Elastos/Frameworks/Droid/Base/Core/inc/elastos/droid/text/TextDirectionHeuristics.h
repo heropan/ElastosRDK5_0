@@ -26,7 +26,6 @@ namespace Text {
 class TextDirectionHeuristics
 {
 public:
-
     static AutoPtr<ITextDirectionHeuristic> GetLTR();
     static AutoPtr<ITextDirectionHeuristic> GetRTL();
 
