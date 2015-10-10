@@ -4,6 +4,7 @@ TARGET_TYPE= lib
 include $(MAKEDIR)/../../../../../../sources.inc
 
 INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../../../inc
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid
 
 C_DEFINES += -DDROID_CORE
@@ -11,15 +12,19 @@ C_DEFINES += -DDROID_CORE
 SOURCES += SerialPort.cpp
 SOURCES += SerialManager.cpp
 SOURCES += CSensor.cpp
-SOURCES += CSensorEvent.cpp
-#SOURCES += LegacySensorManager.cpp
-#SOURCES += CSensorManager.cpp
-#SOURCES += SensorManager.cpp
-#SOURCES += CSensorManagerHelper.cpp
-#SOURCES += CSystemSensorManager.cpp
-#SOURCES += GeomagneticField.cpp
+SOURCES += SensorEvent.cpp
+SOURCES += LegacySensorManager.cpp
+SOURCES += SensorManager.cpp
+SOURCES += CSensorManagerHelper.cpp
+SOURCES += SystemSensorManager.cpp
+SOURCES += GeomagneticField.cpp
 SOURCES += CHardwareCameraHelper.cpp
-#SOURCES += CHardwareCamera.cpp
-#SOURCES += CLegacySensorManagerRotationWatcher.cpp
+SOURCES += HardwareCamera.cpp
+SOURCES += CLegacySensorManagerRotationWatcher.cpp
+SOURCES += CCarrierFrequencyRange.cpp
+SOURCES += CConsumerIrManager.cpp
+SOURCES += CameraInfo.cpp
+SOURCES += CTriggerEvent.cpp
+SOURCES += hardware.cpp
 
 LIBRARIES += display/display.lib

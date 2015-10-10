@@ -4,6 +4,7 @@ module
     using interface Elastos.Core.IInteger32;
     using interface Elastos.Utility.IList;
 
+    interface Elastos.Droid.View.ISurface;
     interface Elastos.Droid.View.ISurfaceHolder;
     interface Elastos.Droid.Graphics.ISurfaceTexture;
 
@@ -598,7 +599,7 @@ module
             [out, callee] ArrayOf<IInteger32*>* rates);
 
         /**
-         * Sets the maximum and maximum preview fps. This controls the rate of
+         * Sets the minimum and maximum preview fps. This controls the rate of
          * preview frames received in {@link PreviewCallback}. The minimum and
          * maximum preview fps must be one of the elements from {@link
          * #getSupportedPreviewFpsRange}.
@@ -787,21 +788,24 @@ module
          * JPEG {@link PictureCallback}. The camera driver may set orientation
          * in the EXIF header without rotating the picture. Or the driver may
          * rotate the picture and the EXIF thumbnail. If the Jpeg picture is
-         * rotated, the orientation in the EXIF header will be missing or 1
-         * (row #0 is top and column #0 is left side).
+         * rotated, the orientation in the EXIF header will be missing or 1 (row
+         * #0 is top and column #0 is left side).
          *
-         * <p>If applications want to rotate the picture to match the orientation
-         * of what users see, apps should use {@link
-         * android.view.OrientationEventListener} and {@link CameraInfo}.
-         * The value from OrientationEventListener is relative to the natural
-         * orientation of the device. CameraInfo.orientation is the angle
-         * between camera orientation and natural device orientation. The sum
-         * of the two is the rotation angle for back-facing camera. The
-         * difference of the two is the rotation angle for front-facing camera.
-         * Note that the JPEG pictures of front-facing cameras are not mirrored
-         * as in preview display.
+         * <p>
+         * If applications want to rotate the picture to match the orientation
+         * of what users see, apps should use
+         * {@link android.view.OrientationEventListener} and
+         * {@link android.hardware.Camera.CameraInfo}. The value from
+         * OrientationEventListener is relative to the natural orientation of
+         * the device. CameraInfo.orientation is the angle between camera
+         * orientation and natural device orientation. The sum of the two is the
+         * rotation angle for back-facing camera. The difference of the two is
+         * the rotation angle for front-facing camera. Note that the JPEG
+         * pictures of front-facing cameras are not mirrored as in preview
+         * display.
          *
-         * <p>For example, suppose the natural orientation of the device is
+         * <p>
+         * For example, suppose the natural orientation of the device is
          * portrait. The device is rotated 270 degrees clockwise, so the device
          * orientation is 270. Suppose a back-facing camera sensor is mounted in
          * landscape and the top side of the camera sensor is aligned with the
@@ -1669,7 +1673,11 @@ module
      * Callback interface for camera error notification.
      *
      * @see #setErrorCallback(ErrorCallback)
+     *
+     * @deprecated We recommend using the new {@link android.hardware.camera2} API for new
+     *             applications.
      */
+    //@Deprecated
     interface ICameraErrorCallback {
         /**
          * Callback for camera errors.
@@ -1699,7 +1707,10 @@ module
     /**
      * Callback interface for face detected in the preview frame.
      *
+     * @deprecated We recommend using the new {@link android.hardware.camera2} API for new
+     *             applications.
      */
+    //@Deprecated
     [deprecated]
     interface IFaceDetectionListener {
         /**
@@ -1719,7 +1730,11 @@ module
      *
      * @see #setZoomChangeListener(OnZoomChangeListener)
      * @see #startSmoothZoom(int)
+     *
+     * @deprecated We recommend using the new {@link android.hardware.camera2} API for new
+     *             applications.
      */
+    //@Deprecated
     interface IOnZoomChangeListener {
         /**
          * Called when the zoom value has changed during a smooth zoom.
@@ -1740,7 +1755,11 @@ module
      * Callback interface used to signal the moment of actual image capture.
      *
      * @see #takePicture(ShutterCallback, PictureCallback, PictureCallback, PictureCallback)
+     *
+     * @deprecated We recommend using the new {@link android.hardware.camera2} API for new
+     *             applications.
      */
+    //@Deprecated
     interface IShutterCallback {
         /**
          * Called as near as possible to the moment when a photo is captured
@@ -1756,7 +1775,11 @@ module
      * Callback interface used to supply image data from a photo capture.
      *
      * @see #takePicture(ShutterCallback, PictureCallback, PictureCallback, PictureCallback)
+     *
+     * @deprecated We recommend using the new {@link android.hardware.camera2} API for new
+     *             applications.
      */
+    //@Deprecated
     [deprecated]
     interface IPictureCallback {
         /**
@@ -1779,7 +1802,11 @@ module
      * Parameters#FOCUS_MODE_CONTINUOUS_VIDEO} and {@link
      * Parameters#FOCUS_MODE_CONTINUOUS_PICTURE}. Applications can show
      * autofocus animation based on this.</p>
+     *
+     * @deprecated We recommend using the new {@link android.hardware.camera2} API for new
+     *             applications.
      */
+    //@Deprecated
     interface IAutoFocusMoveCallback {
         /**
          * Called when the camera auto focus starts or stops.
@@ -1805,7 +1832,10 @@ module
      * manifest element.</p>
      *
      * @see #autoFocus(AutoFocusCallback)
+     * @deprecated We recommend using the new {@link android.hardware.camera2} API for new
+     *             applications.
      */
+    //@Deprecated
     interface IAutoFocusCallback {
         /**
          * Called when the camera auto focus completes.  If the camera
@@ -1835,7 +1865,11 @@ module
      * @see #setOneShotPreviewCallback(Camera.PreviewCallback)
      * @see #setPreviewCallbackWithBuffer(Camera.PreviewCallback)
      * @see #startPreview()
+     *
+     * @deprecated We recommend using the new {@link android.hardware.camera2} API for new
+     *             applications.
      */
+    //@Deprecated
     [deprecated]
     interface IPreviewCallback {
         /**
@@ -1860,6 +1894,13 @@ module
             [in] IHardwareCamera* camera);
     }
 
+    /**
+     * Information about a camera
+     *
+     * @deprecated We recommend using the new {@link android.hardware.camera2} API for new
+     *             applications.
+     */
+    //@Deprecated
     interface ICameraInfo {
         /**
          * The facing of the camera is opposite to that of the screen.
@@ -1975,7 +2016,11 @@ module
      * <p>For more information about using cameras, read the
      * <a href="{@docRoot}guide/topics/media/camera.html">Camera</a> developer guide.</p>
      * </div>
+     *
+     * @deprecated We recommend using the new {@link android.hardware.camera2} API for new
+     *             applications.
      */
+    //@Deprecated
     [deprecated]
     interface IHardwareCamera {
         /**
@@ -1995,6 +2040,12 @@ module
         const String ACTION_NEW_VIDEO = "android.hardware.action.NEW_VIDEO";
 
         /**
+         * Camera HAL device API version 1.0
+         * @hide
+         */
+        const Int32 CAMERA_HAL_API_VERSION_1_0 = 0x100;
+
+        /**
          * Unspecified camera error.
          * @see Camera.ErrorCallback
          */
@@ -2006,6 +2057,24 @@ module
          * @see Camera.ErrorCallback
          */
         const Int32 CAMERA_ERROR_SERVER_DIED = 100;
+
+        /**
+         * Connect to the camera service using #connectLegacy
+         *
+         * <p>
+         * This acts the same as normal except that it will return
+         * the detailed error code if open fails instead of
+         * converting everything into {@code NO_INIT}.</p>
+         *
+         * <p>Intended to use by the camera2 shim only, do <i>not</i> use this for other code.</p>
+         *
+         * @return a detailed errno error code, or {@code NO_ERROR} on success
+         *
+         * @hide
+         */
+        CameraInitUnspecified(
+            [in] Int32 cameraId,
+            [out] Int32* result);
 
         /**
          * Disconnects and releases the Camera object resources.
@@ -2096,6 +2165,12 @@ module
          */
         SetPreviewDisplay(
             [in] ISurfaceHolder* holder);
+
+        /**
+         * @hide
+         */
+        SetPreviewSurface(
+            [in] ISurface* surface);
 
         /**
          * Sets the {@link SurfaceTexture} to be used for live preview.
@@ -2303,6 +2378,85 @@ module
          */
         AddRawImageCallbackBuffer(
             [in] ArrayOf<Byte>* callbackBuffer);
+
+        /**
+         * <p>Create a {@link android.renderscript RenderScript}
+         * {@link android.renderscript.Allocation Allocation} to use as a
+         * destination of preview callback frames. Use
+         * {@link #setPreviewCallbackAllocation setPreviewCallbackAllocation} to use
+         * the created Allocation as a destination for camera preview frames.</p>
+         *
+         * <p>The Allocation will be created with a YUV type, and its contents must
+         * be accessed within Renderscript with the {@code rsGetElementAtYuv_*}
+         * accessor methods. Its size will be based on the current
+         * {@link Parameters#getPreviewSize preview size} configured for this
+         * camera.</p>
+         *
+         * @param rs the RenderScript context for this Allocation.
+         * @param usage additional usage flags to set for the Allocation. The usage
+         *   flag {@link android.renderscript.Allocation#USAGE_IO_INPUT} will always
+         *   be set on the created Allocation, but additional flags may be provided
+         *   here.
+         * @return a new YUV-type Allocation with dimensions equal to the current
+         *   preview size.
+         * @throws RSIllegalArgumentException if the usage flags are not compatible
+         *   with an YUV Allocation.
+         * @see #setPreviewCallbackAllocation
+         * @hide
+         */
+        // CARAPI CreatePreviewAllocation(
+        //     [in] IRenderScript* rs,
+        //     [in] Int32 usage,
+        //     [out] IRenderScriptAllocation** result);
+
+        /**
+         * <p>Set an {@link android.renderscript.Allocation Allocation} as the
+         * target of preview callback data. Use this method for efficient processing
+         * of camera preview data with RenderScript. The Allocation must be created
+         * with the {@link #createPreviewAllocation createPreviewAllocation }
+         * method.</p>
+         *
+         * <p>Setting a preview allocation will disable any active preview callbacks
+         * set by {@link #setPreviewCallback setPreviewCallback} or
+         * {@link #setPreviewCallbackWithBuffer setPreviewCallbackWithBuffer}, and
+         * vice versa. Using a preview allocation still requires an active standard
+         * preview target to be set, either with
+         * {@link #setPreviewTexture setPreviewTexture} or
+         * {@link #setPreviewDisplay setPreviewDisplay}.</p>
+         *
+         * <p>To be notified when new frames are available to the Allocation, use
+         * {@link android.renderscript.Allocation#setIoInputNotificationHandler Allocation.setIoInputNotificationHandler}. To
+         * update the frame currently accessible from the Allocation to the latest
+         * preview frame, call
+         * {@link android.renderscript.Allocation#ioReceive Allocation.ioReceive}.</p>
+         *
+         * <p>To disable preview into the Allocation, call this method with a
+         * {@code null} parameter.</p>
+         *
+         * <p>Once a preview allocation is set, the preview size set by
+         * {@link Parameters#setPreviewSize setPreviewSize} cannot be changed. If
+         * you wish to change the preview size, first remove the preview allocation
+         * by calling {@code setPreviewCallbackAllocation(null)}, then change the
+         * preview size, create a new preview Allocation with
+         * {@link #createPreviewAllocation createPreviewAllocation}, and set it as
+         * the new preview callback allocation target.</p>
+         *
+         * <p>If you are using the preview data to create video or still images,
+         * strongly consider using {@link android.media.MediaActionSound} to
+         * properly indicate image capture or recording start/stop to the user.</p>
+         *
+         * @param previewAllocation the allocation to use as destination for preview
+         * @throws IOException if configuring the camera to use the Allocation for
+         *   preview fails.
+         * @throws IllegalArgumentException if the Allocation's dimensions or other
+         *   parameters don't meet the requirements.
+         * @see #createPreviewAllocation
+         * @see #setPreviewCallback
+         * @see #setPreviewCallbackWithBuffer
+         * @hide
+         */
+        //CARAPI SetPreviewCallbackAllocation(
+        //    [in] IRenderScriptAllocation* previewAllocation);
 
         /**
          * Starts camera auto-focus and registers a callback function to run when
@@ -2527,6 +2681,25 @@ module
             [out] Boolean* success);
 
         /**
+         * Disable the shutter sound unconditionally.
+         *
+         * <p>
+         * This is only guaranteed to work for legacy cameras
+         * (i.e. initialized with {@link #cameraInitUnspecified}). Trying to call this on
+         * a regular camera will force a conditional check in the camera service.
+         * </p>
+         *
+         * @return {@code true} if the shutter sound state was successfully
+         *         changed. {@code false} if the shutter sound state could not be
+         *         changed. {@code true} is also returned if shutter sound playback
+         *         is already set to the requested state.
+         *
+         * @hide
+         */
+        DisableShutterSound(
+            [out] Boolean* success);
+
+        /**
          * Registers a listener to be notified when the zoom value is updated by the
          * camera driver during smooth zoom.
          *
@@ -2684,13 +2857,73 @@ module
             [out] IParameters** para);
 
         /**
-        * checking if the camera is opened.
-        *
-        * @return true if the camera is opened.
-        *
-        */
-        IsPlayingCamera(
-            [out] Boolean* para);
+         * @hide
+         */
+        CheckInitErrors(
+            [in] Int32 err,
+            [out] Boolean* result);
+
+        /**
+         * @hide
+         */
+        OpenUninitialized(
+           [out] IHardwareCamera** camera);
+
+        /**
+         * Returns a copied {@link Parameters}; for shim use only.
+         *
+         * @param parameters a non-{@code null} parameters
+         * @return a Parameter object, with all the parameters copied from {@code parameters}.
+         *
+         * @throws NullPointerException if {@code parameters} was {@code null}
+         * @hide
+         */
+        GetParametersCopy(
+            [in] IParameters* parameters,
+            [out] IParameters** para);
+
+        /**
+         * Creates a new Camera object to access a particular hardware camera with
+         * given hal API version. If the same camera is opened by other applications
+         * or the hal API version is not supported by this device, this will throw a
+         * RuntimeException.
+         * <p>
+         * You must call {@link #release()} when you are done using the camera,
+         * otherwise it will remain locked and be unavailable to other applications.
+         * <p>
+         * Your application should only have one Camera object active at a time for
+         * a particular hardware camera.
+         * <p>
+         * Callbacks from other methods are delivered to the event loop of the
+         * thread which called open(). If this thread has no event loop, then
+         * callbacks are delivered to the main application event loop. If there is
+         * no main application event loop, callbacks are not delivered.
+         * <p class="caution">
+         * <b>Caution:</b> On some devices, this method may take a long time to
+         * complete. It is best to call this method from a worker thread (possibly
+         * using {@link android.os.AsyncTask}) to avoid blocking the main
+         * application UI thread.
+         *
+         * @param cameraId The hardware camera to access, between 0 and
+         * {@link #getNumberOfCameras()}-1.
+         * @param halVersion The HAL API version this camera device to be opened as.
+         * @return a new Camera object, connected, locked and ready for use.
+         *
+         * @throws IllegalArgumentException if the {@code halVersion} is invalid
+         *
+         * @throws RuntimeException if opening the camera fails (for example, if the
+         * camera is in use by another process or device policy manager has disabled
+         * the camera).
+         *
+         * @see android.app.admin.DevicePolicyManager#getCameraDisabled(android.content.ComponentName)
+         * @see #CAMERA_HAL_API_VERSION_1_0
+         *
+         * @hide
+         */
+        OpenLegacy(
+            [in] Int32 cameraId,
+            [in] Int32 halVersion,
+            [out] IHardwareCamera** camera);
     }
 
     } // namespace Hardware

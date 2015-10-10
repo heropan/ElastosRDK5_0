@@ -6,11 +6,9 @@ module
     namespace Hardware {
 
     /**
-     * <p>
      * This class represents a {@link android.hardware.Sensor Sensor} event and
      * holds informations such as the sensor's type, the time-stamp, accuracy and of
      * course the sensor's {@link SensorEvent#values data}.
-     * </p>
      *
      * <p>
      * <u>Definition of the coordinate system used by the SensorEvent API.</u>
@@ -51,20 +49,23 @@ module
         GetValues(
             [out, callee] ArrayOf<Float>* values);
 
-        SetOriginalValue(
-            [in] ArrayOf<Float>* values);
-
-        GetOriginalValue(
-            [out, callee] ArrayOf<Float>* values);
-
         GetSensor(
             [out] ISensor** sensor);
+
+        SetSensor(
+            [in] ISensor* sensor);
 
         GetAccuracy(
             [out] Int32* accuracy);
 
+        SetAccuracy(
+            [in] Int32 accuracy);
+
         GetTimestamp(
             [out] Int64* timestamp);
+
+        SetTimestamp(
+            [in] Int64 timestamp);
     }
 
     } // namespace Hardware

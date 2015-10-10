@@ -212,6 +212,7 @@ private:
 
 friend class CSensorManagerHelper;
 friend class CSystemSensorManager;
+friend class SystemSensorManager;
 };
 
 } // namespace Hardware

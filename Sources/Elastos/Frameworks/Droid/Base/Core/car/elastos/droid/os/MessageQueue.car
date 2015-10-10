@@ -82,6 +82,9 @@ module
 
         GetNativeMessageQueue(
             [out] Handle32* queue);
+
+        GetMPtr(
+            [out] Int64* handle);
     }
 
     } // namespace Os

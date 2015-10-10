@@ -1,7 +1,8 @@
 
-#include "hardware/GeomagneticField.h"
+#include "elastos/droid/hardware/GeomagneticField.h"
 #include <elastos/core/Math.h>
 
+using Elastos::Utility::ICalendar;
 using Elastos::Utility::IGregorianCalendar;
 using Elastos::Utility::CGregorianCalendar;
 
@@ -80,6 +81,7 @@ const Int64 GeomagneticField::BASE_TIME = GeomagneticField::InitPara();
 AutoPtr<ArrayOf<FloatArray> > GeomagneticField::SCHMIDT_QUASI_NORM_FACTORS =
     GeomagneticField::ComputeSchmidtQuasiNormFactors(13/*G_COEFF.length*/);
 
+CAR_INTERFACE_IMPL(GeomagneticField, Object, IGeomagneticField);
 
 GeomagneticField::LegendreTable::LegendreTable(
     /* [in] */ Int32 maxN,
@@ -127,17 +129,16 @@ GeomagneticField::LegendreTable::LegendreTable(
     }
 }
 
-UInt32 GeomagneticField::LegendreTable::AddRef()
-{
-    return ElRefBase::AddRef();
-}
+GeomagneticField::GeomagneticField()
+    : mX(0)
+    , mY(0)
+    , mZ(0)
+    , mGcLatitudeRad(0)
+    , mGcLongitudeRad(0)
+    , mGcRadiusKm(0)
+{}
 
-UInt32 GeomagneticField::LegendreTable::Release()
-{
-    return ElRefBase::Release();
-}
-
-GeomagneticField::GeomagneticField(
+ECode GeomagneticField::constructor(
     /* [in] */ Float gdLatitudeDeg,
     /* [in] */ Float gdLongitudeDeg,
     /* [in] */ Float altitudeMeters,
@@ -158,7 +159,7 @@ GeomagneticField::GeomagneticField(
     // sin(latitude), which is the same as cos(PI/2 - latitude), except the
     // derivate will be negated.
     AutoPtr<LegendreTable> legendre = new LegendreTable(MAX_N - 1,
-                    (Float) (Elastos::Core::Math::DOUBLE_PI / 2.0 - mGcLatitudeRad));
+                    (Float) (Elastos::Core::Math::PI / 2.0 - mGcLatitudeRad));
 
     // Compute a table of (EARTH_REFERENCE_RADIUS_KM / radius)^n for i in
     // 0..MAX_N-2 (this is much faster than calling Math.pow MAX_N+1 times).
@@ -240,51 +241,73 @@ GeomagneticField::GeomagneticField(
     mY = gcY;
     mZ = (Float) (- gcX * Elastos::Core::Math::Sin(latDiffRad)
                   + gcZ * Elastos::Core::Math::Cos(latDiffRad));
+
+    return NOERROR;
 }
 
-UInt32 GeomagneticField::AddRef()
+ECode GeomagneticField::GetX(
+    /* [out] */ Float* value)
 {
-    return ElRefBase::AddRef();
+    VALIDATE_NOT_NULL(value);
+
+    *value = mX;
+    return NOERROR;
 }
 
-UInt32 GeomagneticField::Release()
+ECode GeomagneticField::GetY(
+    /* [out] */ Float* value)
 {
-    return ElRefBase::Release();
+    VALIDATE_NOT_NULL(value);
+
+    *value = mY;
+    return NOERROR;
 }
 
-Float GeomagneticField::GetX()
+ECode GeomagneticField::GetZ(
+    /* [out] */ Float* value)
 {
-    return mX;
+    VALIDATE_NOT_NULL(value);
+
+    *value = mZ;
+    return NOERROR;
 }
 
-Float GeomagneticField::GetY()
+ECode GeomagneticField::GetDeclination(
+    /* [out] */ Float* value)
 {
-    return mY;
+    VALIDATE_NOT_NULL(value);
+
+    *value = (Float) Elastos::Core::Math::ToDegrees(Elastos::Core::Math::Atan2(mY, mX));
+    return NOERROR;
 }
 
-Float GeomagneticField::GetZ()
+ECode GeomagneticField::GetInclination(
+    /* [out] */ Float* value)
 {
-    return mZ;
+    VALIDATE_NOT_NULL(value);
+
+    Float strength;
+    FAIL_RETURN(GetHorizontalStrength(&strength))
+    *value = (Float) Elastos::Core::Math::ToDegrees(Elastos::Core::Math::Atan2(mZ, strength));
+    return NOERROR;
 }
 
-Float GeomagneticField::GetDeclination()
+ECode GeomagneticField::GetHorizontalStrength(
+    /* [out] */ Float* value)
 {
-    return (Float) Elastos::Core::Math::ToDegrees(Elastos::Core::Math::Atan2(mY, mX));
+    VALIDATE_NOT_NULL(value);
+
+    *value = (Float) Elastos::Core::Math::Sqrt(mX * mX + mY * mY);
+    return NOERROR;
 }
 
-Float GeomagneticField::GetInclination()
+ECode GeomagneticField::GetFieldStrength(
+    /* [out] */ Float* value)
 {
-    return (Float) Elastos::Core::Math::ToDegrees(Elastos::Core::Math::Atan2(mZ, GetHorizontalStrength()));
-}
+    VALIDATE_NOT_NULL(value);
 
-Float GeomagneticField::GetHorizontalStrength()
-{
-    return (Float) Elastos::Core::Math::Sqrt(mX * mX + mY * mY);
-}
-
-Float GeomagneticField::GetFieldStrength()
-{
-    return (Float) Elastos::Core::Math::Sqrt(mX * mX + mY * mY + mZ * mZ);
+    *value = (Float) Elastos::Core::Math::Sqrt(mX * mX + mY * mY + mZ * mZ);
+    return NOERROR;
 }
 
 void GeomagneticField::ComputeGeocentricCoordinates(
@@ -339,7 +362,7 @@ Int32 GeomagneticField::InitPara()
     AutoPtr<IGregorianCalendar> calendar;
     CGregorianCalendar::New(2010, 1, 1, (IGregorianCalendar**)&calendar);
     Int64 baseTime = 0;
-    calendar->GetTimeInMillis(&baseTime);
+    ICalendar::Probe(calendar)->GetTimeInMillis(&baseTime);
     return baseTime;
 }
 

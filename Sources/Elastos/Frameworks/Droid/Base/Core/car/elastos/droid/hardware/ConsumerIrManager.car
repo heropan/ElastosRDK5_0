@@ -24,15 +24,15 @@ module
     }
 
     /**
-     * Class that operates consumer infrared on the device.
-     *
-     * <p>
-     * To obtain an instance of the system infrared transmitter, call
-     * {@link android.content.Context#getSystemService(java.lang.String)
-     * Context.getSystemService()} with
-     * {@link android.content.Context#CONSUMER_IR_SERVICE} as the argument.
-     * </p>
-     */
+    * Class that operates consumer infrared on the device.
+    *
+    * <p>
+    * To obtain an instance of the system infrared transmitter, call
+    * {@link android.content.Context#getSystemService(java.lang.String)
+    * Context.getSystemService()} with
+    * {@link android.content.Context#CONSUMER_IR_SERVICE} as the argument.
+    * </p>
+    */
     [deprecated]
     interface IConsumerIrManager {
 

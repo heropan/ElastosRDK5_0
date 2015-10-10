@@ -101,6 +101,9 @@ public:
         /* [in] */ Int64 when,
         /* [out] */ Int32* result);
 
+    CARAPI GetMPtr(
+        /* [out] */ Int64* handle);
+
 private:
     // Disposes of the underlying message queue.
     // Must only be called on the looper thread or the finalizer.

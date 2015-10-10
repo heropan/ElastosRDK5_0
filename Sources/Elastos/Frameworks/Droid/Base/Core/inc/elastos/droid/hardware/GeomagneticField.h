@@ -1,9 +1,11 @@
 
 #ifndef __ELASTOS_DROID_HARDWARE_GEOMAGNETICFIELD_H__
-#define  __ELASTOS_DROID_HARDWARE_GEOMAGNETICFIELD_H__
+#define __ELASTOS_DROID_HARDWARE_GEOMAGNETICFIELD_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -21,14 +23,16 @@ namespace Hardware {
  * produce acceptable results for several years after that. Future versions of
  * Android may use a newer version of the model.
  */
-class GeomagneticField: public ElRefBase
+class GeomagneticField
+    : public Object
+    , public IGeomagneticField
 {
 private:
     /**
      * Utility class to compute a table of Gauss-normalized associated Legendre
      * functions P_n^m(cos(theta))
      */
-    class LegendreTable: public ElRefBase
+    class LegendreTable: public Object
     {
     public:
         /**
@@ -42,10 +46,6 @@ private:
             /* [in] */ Int32 maxN,
             /* [in] */ Float thetaRad);
 
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
     public:
         // These are the Gauss-normalized associated Legendre functions -- that
         // is, they are normal Legendre functions multiplied by
@@ -58,6 +58,9 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    GeomagneticField();
     /**
      * Estimate the magnetic field at a given point and time.
      *
@@ -72,53 +75,56 @@ public:
      *            since January 1, 1970. (approximate is fine -- the declination
      *            changes very slowly).
      */
-    GeomagneticField(
+    CARAPI constructor(
         /* [in] */ Float gdLatitudeDeg,
         /* [in] */ Float gdLongitudeDeg,
         /* [in] */ Float altitudeMeters,
         /* [in] */ Int64 timeMillis);
 
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
     /**
      * @return The X (northward) component of the magnetic field in nanoteslas.
      */
-    CARAPI_(Float) GetX();
+    CARAPI GetX(
+        /* [out] */ Float* value);
 
     /**
      * @return The Y (eastward) component of the magnetic field in nanoteslas.
      */
-    CARAPI_(Float) GetY();
+    CARAPI GetY(
+        /* [out] */ Float* value);
 
     /**
      * @return The Z (downward) component of the magnetic field in nanoteslas.
      */
-    CARAPI_(Float) GetZ();
+    CARAPI GetZ(
+        /* [out] */ Float* value);
 
     /**
      * @return The declination of the horizontal component of the magnetic
      *         field from true north, in degrees (i.e. positive means the
      *         magnetic field is rotated east that much from true north).
      */
-    CARAPI_(Float) GetDeclination();
+    CARAPI GetDeclination(
+        /* [out] */ Float* value);
 
     /**
      * @return The inclination of the magnetic field in degrees -- positive
      *         means the magnetic field is rotated downwards.
      */
-    CARAPI_(Float) GetInclination();
+    CARAPI GetInclination(
+        /* [out] */ Float* value);
 
     /**
      * @return  Horizontal component of the field strength in nonoteslas.
      */
-    CARAPI_(Float) GetHorizontalStrength();
+    CARAPI GetHorizontalStrength(
+        /* [out] */ Float* value);
 
     /**
      * @return  Total field strength in nanoteslas.
      */
-    CARAPI_(Float) GetFieldStrength();
+    CARAPI GetFieldStrength(
+        /* [out] */ Float* value);
 
 
 private:

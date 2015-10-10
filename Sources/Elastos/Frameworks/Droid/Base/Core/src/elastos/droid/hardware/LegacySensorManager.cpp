@@ -1,10 +1,10 @@
 
-#include "hardware/LegacySensorManager.h"
-#include "hardware/CSensorEvent.h"
-#include "hardware/CSensorManager.h"
-#include "hardware/CLegacySensorManagerRotationWatcher.h"
+#include "elastos/droid/hardware/LegacySensorManager.h"
+#include "elastos/droid/hardware/CSensorEvent.h"
+#include "elastos/droid/hardware/SensorManager.h"
+#include "elastos/droid/hardware/CLegacySensorManagerRotationWatcher.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include <elastos/core/Math.h>
-#include "os/ServiceManager.h"
 
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::View::EIID_IRotationWatcher;
@@ -27,16 +27,6 @@ LegacySensorManager::LmsFilter::LmsFilter()
 {
     mV = ArrayOf<Float>::Alloc(COUNT * 2);
     mT = ArrayOf<Int64>::Alloc(COUNT * 2);
-}
-
-UInt32 LegacySensorManager::LmsFilter::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 LegacySensorManager::LmsFilter::Release()
-{
-    return ElRefBase::Release();
 }
 
 Float LegacySensorManager::LmsFilter::Filter(
@@ -94,6 +84,8 @@ Float LegacySensorManager::LmsFilter::Filter(
     return f;
 }
 
+CAR_INTERFACE_IMPL(LegacyListener, Object, ISensorEventListener);
+
 LegacyListener::LegacyListener(
     /* [in] */ ISensorListener* target)
     : mTarget(target)
@@ -101,42 +93,6 @@ LegacyListener::LegacyListener(
 {
     mValues = ArrayOf<Float>::Alloc(6);
     mYawfilter = new LegacySensorManager::LmsFilter();
-}
-
-UInt32 LegacyListener::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 LegacyListener::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface LegacyListener::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_ISensorEventListener == riid) {
-        return (ISensorEventListener *)this;
-    }
-
-    return NULL;
-}
-
-ECode LegacyListener::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(ISensorEventListener*)this) {
-        *pIID = EIID_ISensorEventListener;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
 }
 
 Boolean LegacyListener::RegisterSensor(
@@ -309,14 +265,16 @@ Int32 LegacyListener::GetLegacySensorType(
     return 0;
 }
 
+CAR_INTERFACE_IMPL(LegacySensorManager, Object, ILegacySensorManager);
+
 LegacySensorManager::LegacySensorManager(
     /* [in] */ ISensorManager* sensorManager)
 {
     mSensorManager = sensorManager;
 
-    {
+    assert(0);
+    //synchronized(SensorManager::mLock) {
         assert(mSensorManager != NULL);
-        AutoLock lock(CSensorManager::mLock);
         if (!sInitialized) {
             sWindowManager = (IIWindowManager*)ServiceManager::GetService(String("window")).Get();
             // sWindowManager = IWindowManager.Stub.asInterface(
@@ -332,24 +290,16 @@ LegacySensorManager::LegacySensorManager(
                 // }
             }
         }
-    }
+    //}
 }
 
-UInt32 LegacySensorManager::AddRef()
+ECode LegacySensorManager::GetSensors(
+    /* [out] */ Int32* num)
 {
-    return ElRefBase::AddRef();
-}
+    VALIDATE_NOT_NULL(num);
 
-UInt32 LegacySensorManager::Release()
-{
-    return ElRefBase::Release();
-}
-
-Int32 LegacySensorManager::GetSensors()
-{
-    Int32 result = 0;
     AutoPtr<ArrayOf<ISensor*> > fullList;
-    ((CSensorManager*)mSensorManager.Get())->GetFullSensorList((ArrayOf<ISensor*>**)&fullList);
+    ((SensorManager*)mSensorManager.Get())->GetFullSensorList((ArrayOf<ISensor*>**)&fullList);
 
     assert(fullList != NULL);
     for (Int32 i = 0; i < fullList->GetLength(); i++) {
@@ -359,41 +309,43 @@ Int32 LegacySensorManager::GetSensors()
 
         switch (type) {
             case ISensor::TYPE_ACCELEROMETER:
-                result |= ISensorManager::SENSOR_ACCELEROMETER;
+                *num |= ISensorManager::SENSOR_ACCELEROMETER;
                 break;
             case ISensor::TYPE_MAGNETIC_FIELD:
-                result |= ISensorManager::SENSOR_MAGNETIC_FIELD;
+                *num |= ISensorManager::SENSOR_MAGNETIC_FIELD;
                 break;
             case ISensor::TYPE_ORIENTATION:
-                result |= ISensorManager::SENSOR_ORIENTATION
+                *num |= ISensorManager::SENSOR_ORIENTATION
                         | ISensorManager::SENSOR_ORIENTATION_RAW;
                 break;
         }
     }
 
-    return result;
+    return NOERROR;
 }
 
-Boolean LegacySensorManager::RegisterListener(
+ECode LegacySensorManager::RegisterListener(
     /* [in] */ ISensorListener* listener,
     /* [in] */ Int32 sensors,
-    /* [in] */ Int32 rate)
+    /* [in] */ Int32 rate,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
+
     if (listener == NULL) {
         return FALSE;
     }
-    Boolean result = FALSE;
-    result = RegisterLegacyListener(ISensorManager::SENSOR_ACCELEROMETER,
+    *result = RegisterLegacyListener(ISensorManager::SENSOR_ACCELEROMETER,
             ISensor::TYPE_ACCELEROMETER, listener, sensors, rate) || result;
-    result = RegisterLegacyListener(ISensorManager::SENSOR_MAGNETIC_FIELD,
+    *result = RegisterLegacyListener(ISensorManager::SENSOR_MAGNETIC_FIELD,
             ISensor::TYPE_MAGNETIC_FIELD, listener, sensors, rate) || result;
-    result = RegisterLegacyListener(ISensorManager::SENSOR_ORIENTATION_RAW,
+    *result = RegisterLegacyListener(ISensorManager::SENSOR_ORIENTATION_RAW,
             ISensor::TYPE_ORIENTATION, listener, sensors, rate) || result;
-    result = RegisterLegacyListener(ISensorManager::SENSOR_ORIENTATION,
+    *result = RegisterLegacyListener(ISensorManager::SENSOR_ORIENTATION,
             ISensor::TYPE_ORIENTATION, listener, sensors, rate) || result;
-    result = RegisterLegacyListener(ISensorManager::SENSOR_TEMPERATURE,
+    *result = RegisterLegacyListener(ISensorManager::SENSOR_TEMPERATURE,
             ISensor::TYPE_TEMPERATURE, listener, sensors, rate) || result;
-    return result;
+    return NOERROR;
 }
 
 Boolean LegacySensorManager::RegisterLegacyListener(
@@ -414,10 +366,9 @@ Boolean LegacySensorManager::RegisterLegacyListener(
             // that the invariants around listeners are maintained.  This is safe
             // because neither RegisterLegacyListener nor UnregisterLegacyListener
             // are called reentrantly while sensors are being registered or unregistered.
-            {
+            synchronized(mLegacyListenersMapLock) {
                 AutoPtr<ISensorListener> l = listener;
 
-                AutoLock lock(mLegacyListenersMapLock);
                 // If we don't already have one, create a LegacyListener
                 // to wrap this listener and process the events as
                 // they are expected by legacy apps.
@@ -447,12 +398,12 @@ Boolean LegacySensorManager::RegisterLegacyListener(
     return result;
 }
 
-void LegacySensorManager::UnregisterListener(
+ECode LegacySensorManager::UnregisterListener(
     /* [in] */ ISensorListener* listener,
     /* [in] */ Int32 sensors)
 {
     if (listener == NULL) {
-        return;
+        return NOERROR;
     }
     UnregisterLegacyListener(ISensorManager::SENSOR_ACCELEROMETER, ISensor::TYPE_ACCELEROMETER,
             listener, sensors);
@@ -464,6 +415,7 @@ void LegacySensorManager::UnregisterListener(
             listener, sensors);
     UnregisterLegacyListener(ISensorManager::SENSOR_TEMPERATURE, ISensor::TYPE_TEMPERATURE,
             listener, sensors);
+    return NOERROR;
 }
 
 void LegacySensorManager::UnregisterLegacyListener(
@@ -482,9 +434,8 @@ void LegacySensorManager::UnregisterLegacyListener(
             // that the invariants around listeners are maintained.  This is safe
             // because neither RegisterLegacyListener nor UnregisterLegacyListener
             // are called re-entrantly while sensors are being registered or unregistered.
-            {
+            synchronized(mLegacyListenersMapLock) {
                 AutoPtr<ISensorListener> l = listener;
-                AutoLock lock(mLegacyListenersMapLock);
                 // do we know about this listener?
                 HashMap<AutoPtr<ISensorListener>, AutoPtr<LegacyListener> >::Iterator it;
                 it = mLegacyListenersMap.Find(l);
@@ -513,18 +464,18 @@ void LegacySensorManager::UnregisterLegacyListener(
 void LegacySensorManager::OnRotationChanged(
     /* [in] */ Int32 rotation)
 {
-    {
-        AutoLock lock(CSensorManager::mLock);
+    assert(0);
+    //synchronized(SensorManager::mLock) {
         sRotation  = rotation;
-    }
+    //}
 }
 
 Int32 LegacySensorManager::GetRotation()
 {
-    {
-        AutoLock lock(CSensorManager::mLock);
+    assert(0);
+    //synchronized(SensorManager::mLock) {
         return sRotation;
-    }
+    //}
 }
 
 
