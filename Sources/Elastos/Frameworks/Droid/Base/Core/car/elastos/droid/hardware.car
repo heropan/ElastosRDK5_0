@@ -38,6 +38,13 @@ module
     merge("hardware/input/InputManagerInternal.car");
     merge("hardware/input/KeyboardLayout.car");
     merge("hardware/input/TouchCalibration.car");
+
+    merge("hardware/soundtrigger/IRecognitionStatusCallback.car");
+    merge("hardware/soundtrigger/KeyphraseEnrollmentInfo.car");
+    merge("hardware/soundtrigger/KeyphraseMetadata.car");
+    merge("hardware/soundtrigger/SoundTrigger.car");
+    merge("hardware/soundtrigger/SoundTriggerModule.car");
+
     merge("hardware/usb/IUsbManager.car");
     merge("hardware/usb/UsbAccessory.car");
     merge("hardware/usb/UsbConstants.car");
