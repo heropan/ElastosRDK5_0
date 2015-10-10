@@ -21,6 +21,21 @@ module
      */
     interface IProxy {
         /**
+         * Used to notify an app that's caching the default connection proxy
+         * that either the default connection or its proxy has changed.
+         * The intent will have the following extra value:</p>
+         * <ul>
+         *   <li><em>EXTRA_PROXY_INFO</em> - The ProxyProperties for the proxy.  Non-null,
+         *                                   though if the proxy is undefined the host string
+         *                                   will be empty.
+         * </ul>
+         *
+         * <p class="note">This is a protected intent that can only be sent by the system
+         */
+        // @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String PROXY_CHANGE_ACTION = "android.intent.action.PROXY_CHANGE";
+
+        /**
          * Intent extra included with {@link #PROXY_CHANGE_ACTION} intents.
          * It describes the new proxy being used (as a {@link ProxyInfo} object).
          */
@@ -44,9 +59,6 @@ module
         /** @hide */
         const Int32 PROXY_EXCLLIST_INVALID = 5;
 
-    }
-
-    interface IProxyHelper {
         /**
          * Return the proxy object to be used for the URL given as parameter.
          * @param ctx A Context used to get the settings for the proxy host.

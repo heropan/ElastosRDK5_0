@@ -646,6 +646,16 @@ module
         interface INetworkUtils;
     }
 
+    class CPacProxySelector {
+        constructor();
+
+        interface IPacProxySelector;
+    }
+
+    singleton class CProxy {
+        interface IProxy;
+    }
+
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos
