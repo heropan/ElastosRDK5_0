@@ -3,9 +3,9 @@
 #include "elastos/droid/text/method/CPasswordTransformationMethod.h"
 #include "elastos/droid/text/method/CTextKeyListener.h"
 #include "elastos/droid/text/TextUtils.h"
-#include "view/View.h"
-#include "os/Handler.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

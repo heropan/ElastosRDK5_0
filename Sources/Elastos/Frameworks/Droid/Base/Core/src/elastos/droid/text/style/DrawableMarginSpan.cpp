@@ -1,5 +1,5 @@
 #include "elastos/droid/text/style/DrawableMarginSpan.h"
-#include "graphics/CPaintFontMetricsInt.h"
+#include "elastos/droid/graphics/CPaintFontMetricsInt.h"
 
 using Elastos::Droid::Graphics::CPaintFontMetricsInt;
 

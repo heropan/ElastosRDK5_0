@@ -1,6 +1,6 @@
 #include "elastos/droid/text/method/DialerKeyListener.h"
 #include "elastos/droid/text/method/MetaKeyKeyListener.h"
-#include "view/CKeyCharacterMap.h"
+#include "elastos/droid/view/CKeyCharacterMap.h"
 
 using Elastos::Droid::View::CKeyCharacterMap;
 using Elastos::Droid::View::IKeyData;

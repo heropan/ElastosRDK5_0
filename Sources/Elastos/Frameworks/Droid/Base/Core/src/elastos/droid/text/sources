@@ -25,11 +25,12 @@ SOURCES += MeasuredText.cpp
 
 SOURCES += CSimpleStringSplitter.cpp
 SOURCES += TextDirectionHeuristics.cpp
+SOURCES += TextLine.cpp
 SOURCES += TextPaint.cpp
 SOURCES += TextUtils.cpp
+SOURCES += CTextUtils.cpp
 
 
-#SOURCES += TextLine.cpp
 #SOURCES += Layout.cpp
 #SOURCES += CLayoutHelper.cpp
 #SOURCES += BoringLayout.cpp

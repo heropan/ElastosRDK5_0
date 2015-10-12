@@ -9,7 +9,7 @@ module
         GetLength(
             [out] Int32* length);
 
-        CharAt(
+        GetCharAt(
             [in] Int32 i,
             [out] Char32* ret);
 
@@ -47,13 +47,13 @@ module
         GetSpans(
             [in] Int32 queryStart,
             [in] Int32 queryEnd,
-            [in] ClassID* kind,
+            [in] InterfaceID kind,
             [out, callee] ArrayOf<IInterface*>* spans);
 
         NextSpanTransition(
             [in] Int32 start,
             [in] Int32 limit,
-            [in] ClassID* kind,
+            [in] InterfaceID kind,
             [out] Int32* ret);
     }
 

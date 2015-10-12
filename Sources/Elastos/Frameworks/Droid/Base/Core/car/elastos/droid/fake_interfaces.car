@@ -76,33 +76,6 @@ module
 
     }}} // Elastos.Droid.Graphics
 
-    namespace Elastos {
-    namespace Droid {
-    namespace Text {
-
-        namespace Layout {
-
-            interface IDirections {}
-
-            interface ITabStops {}
-
-        }//Layout
-
-    }
-    }
-    }
-
-
-    namespace Elastos {
-    namespace io {
-    namespace nio {
-
-        interface ICharArrayBuffer {}
-
-    } // namespace nio
-    } // namespace io
-    } // namespace Elastos
-
     //
     // Elastos.Droid.webkit
     //
@@ -217,11 +190,6 @@ module
     namespace Bluetooth {
         interface IBluetoothHeadset {}
     }}} // Elastos.Droid.Bluetooth
-
-    namespace Elastos {
-    namespace Utility {
-        interface IHashtable {}
-    }}  // Elastos.Utility
 
     namespace Org {
     namespace Conscrypt {

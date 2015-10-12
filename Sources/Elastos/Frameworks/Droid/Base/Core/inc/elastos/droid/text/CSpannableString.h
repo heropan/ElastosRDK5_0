@@ -20,9 +20,6 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
     CARAPI GetLength(
         /* [out] */ Int32* number);
 

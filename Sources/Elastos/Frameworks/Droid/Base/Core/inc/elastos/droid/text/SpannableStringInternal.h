@@ -12,59 +12,71 @@ namespace Droid {
 namespace Text {
 
 class SpannableStringInternal
+    : public Object
+    , public ISpannableStringInternal
 {
 public:
-    SpannableStringInternal(
+    CAR_INTERFACE_DECL()
+
+    SpannableStringInternal();
+
+    virtual ~SpannableStringInternal();
+
+    CARAPI constructor(
         /* [in] */ ICharSequence* source,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    virtual ~SpannableStringInternal();
+    CARAPI GetLength(
+        /* [out] */ Int32* length);
 
-    virtual CARAPI_(Int32) GetLength();
+    CARAPI GetCharAt(
+        /* [in] */ Int32 i,
+        /* [out] */ Char32* ch);
 
-    virtual CARAPI_(Char32) GetCharAt(
-        /* [in] */ Int32 i);
-
-    virtual CARAPI ToString(
+    CARAPI ToString(
         /* [out] */ String* str);
 
-    virtual CARAPI GetChars(
+    CARAPI GetChars(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out] */ ArrayOf<Char32>* dest,
         /* [in] */ Int32 off);
 
     /* package */
-    virtual CARAPI SetSpan(
+    CARAPI SetSpan(
         /* [in] */ IInterface* what,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ Int32 flags);
 
     /* package */
-    virtual CARAPI RemoveSpan(
+    CARAPI RemoveSpan(
         /* [in] */ IInterface* what);
 
-    virtual CARAPI_(Int32) GetSpanStart(
-        /* [in] */ IInterface* what);
+    CARAPI GetSpanStart(
+        /* [in] */ IInterface* what,
+        /* [out] */ Int32* result);
 
-    virtual CARAPI_(Int32) GetSpanEnd(
-        /* [in] */ IInterface* what);
+    CARAPI GetSpanEnd(
+        /* [in] */ IInterface* what,
+        /* [out] */ Int32* result);
 
-    virtual CARAPI_(Int32) GetSpanFlags(
-        /* [in] */ IInterface* what);
+    CARAPI GetSpanFlags(
+        /* [in] */ IInterface* what,
+        /* [out] */ Int32* result);
 
-    virtual CARAPI GetSpans(
+    CARAPI GetSpans(
         /* [in] */ Int32 queryStart,
         /* [in] */ Int32 queryEnd,
         /* [in] */ const InterfaceID& kind,
         /* [out, callee] */ ArrayOf<IInterface*>** objs);
 
-    virtual CARAPI_(Int32) NextSpanTransition(
+    CARAPI NextSpanTransition(
         /* [in] */ Int32 start,
         /* [in] */ Int32 limit,
-        /* [in] */ const InterfaceID& kind);
+        /* [in] */ const InterfaceID& kind,
+        /* [out] */ Int32* result);
 
     CARAPI Equals(
         /* [in] */ IInterface* o,
@@ -73,40 +85,30 @@ public:
     CARAPI GetHashCode(
         /* [out] */ Int32* result);
 
-public:
-    /* package */
-    static /*const*/ AutoPtr< ArrayOf<IInterface*> > EMPTY;
-
 protected:
-    SpannableStringInternal();
-
-    virtual CARAPI Init(
-        /* [in] */ ICharSequence* source,
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end);
 
     CARAPI_(Boolean) IsSpanEquals(
         /* [in] */ IInterface* lhs,
         /* [in] */ IInterface* rhs);
 private:
-    CARAPI_(void) SendSpanAdded(
+    CARAPI SendSpanAdded(
         /* [in] */ IInterface* what,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    CARAPI_(void) SendSpanRemoved(
+    CARAPI SendSpanRemoved(
         /* [in] */ IInterface* what,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    CARAPI_(void) SendSpanChanged(
+    CARAPI SendSpanChanged(
         /* [in] */ IInterface* what,
         /* [in] */ Int32 s,
         /* [in] */ Int32 e,
         /* [in] */ Int32 st,
         /* [in] */ Int32 en);
 
-    static CARAPI_(void) Region(
+    static CARAPI Region(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out] */ String* str);
@@ -115,6 +117,10 @@ private:
         /* [in] */ const char* operation,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
+
+public:
+    /* package */
+    static const AutoPtr< ArrayOf<IInterface*> > EMPTY;
 
 private:
     String mText;
