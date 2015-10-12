@@ -1,6 +1,6 @@
 #include "elastos/droid/text/style/ImageSpan.h"
-#include "graphics/drawable/CBitmapDrawable.h"
-#include "graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/drawable/CBitmapDrawable.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
 
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Graphics::IBitmapFactory;

@@ -4,7 +4,7 @@
 #include "elastos/droid/text/TextUtils.h"
 #ifdef DROID_CORE
 #include "elastos/droid/text/CSelection.h"
-#include "view/CKeyEventHelper.h"
+#include "elastos/droid/view/CKeyEventHelper.h"
 #else
 #include "Elastos.Droid.Core.h"
 #endif

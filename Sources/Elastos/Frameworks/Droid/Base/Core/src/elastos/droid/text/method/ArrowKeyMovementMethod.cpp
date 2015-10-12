@@ -4,9 +4,9 @@
 #include "elastos/droid/text/method/CWordIterator.h"
 #include "elastos/droid/text/method/Touch.h"
 #include "elastos/droid/text/Selection.h"
-#include "graphics/CRect.h"
-#include "view/CKeyEvent.h"
-//#include "os/ElObject.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/view/CKeyEvent.h"
+//#include "elastos/droid/os/ElObject.h"
 //#include <elastos/Core/Object.h>
 
 using Elastos::Droid::Text::ISelectionPositionIterator;

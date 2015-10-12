@@ -1,7 +1,7 @@
 #include "elastos/droid/text/style/SuggestionSpan.h"
 #include "elastos/droid/text/CTextPaint.h"
 #include "elastos/droid/content/res/CConfiguration.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>

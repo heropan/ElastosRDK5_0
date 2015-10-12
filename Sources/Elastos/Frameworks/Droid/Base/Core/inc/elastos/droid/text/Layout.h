@@ -34,7 +34,8 @@ public:
      * @hide
      */
     /* package */
-    class TabStops : public Object
+    class TabStops
+        : public Object
     {
     public:
         static CARAPI_(Float) NextDefaultStop(
@@ -44,10 +45,6 @@ public:
         TabStops(
             /* [in] */ Int32 increment,
             /* [in] */ ArrayOf<IInterface*>* spans);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
 
         virtual CARAPI_(void) Reset(
             /* [in] */ Int32 increment,

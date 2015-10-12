@@ -1,5 +1,5 @@
 #include "elastos/droid/text/style/StyleSpan.h"
-#include "graphics/CTypeface.h"
+#include "elastos/droid/graphics/CTypeface.h"
 
 using Elastos::Droid::Graphics::ITypeface;
 using Elastos::Droid::Graphics::CTypeface;

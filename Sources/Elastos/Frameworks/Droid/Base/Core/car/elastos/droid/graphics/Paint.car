@@ -935,13 +935,13 @@ module
          * @hide
          */
         GetTextRunCursor(
-         [in] ICharSequence* text,
-         [in] Int32 contextStart,
-         [in] Int32 contextEnd,
-         [in] Int32 flags,
-         [in] Int32 offset,
-         [in] Int32 cursorOpt,
-         [out] Int32* position);
+             [in] ICharSequence* text,
+             [in] Int32 contextStart,
+             [in] Int32 contextEnd,
+             [in] Int32 flags,
+             [in] Int32 offset,
+             [in] Int32 cursorOpt,
+             [out] Int32* position);
 
         /**
          * Returns the next cursor position in the run.  This avoids placing the

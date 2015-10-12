@@ -73,42 +73,6 @@ Layout::Ellipsizer::Ellipsizer(
 {
 }
 
-PInterface Layout::Ellipsizer::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(ICharSequence*)this;
-    }
-    else if (riid == Elastos::Core::EIID_ICharSequence) {
-        return (ICharSequence*)this;
-    }
-    else if (riid == EIID_IGetChars) {
-        return (IGetChars*)this;
-    }
-    else if (riid == EIID_Ellipsizer) {
-        return reinterpret_cast<PInterface>(this);
-    }
-
-    return NULL;
-}
-
-UInt32 Layout::Ellipsizer::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Layout::Ellipsizer::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Layout::Ellipsizer::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
 ECode Layout::Ellipsizer::GetCharAt(
     /* [in] */ Int32 off,
     /* [out] */ Char32* ch)
@@ -189,16 +153,6 @@ Layout::TabStops::TabStops(
     , mIncrement(0)
 {
     Reset(increment, spans);
-}
-
-UInt32 Layout::TabStops::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Layout::TabStops::Release()
-{
-    return ElRefBase::Release();
 }
 
 void Layout::TabStops::Reset(
@@ -282,40 +236,6 @@ Layout::SpannedEllipsizer::SpannedEllipsizer(
     : Ellipsizer(display)
 {
     mSpanned = ISpanned::Probe(display);
-}
-
-PInterface Layout::SpannedEllipsizer::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_ISpanned) {
-        return (PInterface)(ISpanned*)this;
-    }
-    else if (riid == EIID_IGetChars) {
-        return (PInterface)(IGetChars*)this;
-    }
-    else if (riid == EIID_ICharSequence) {
-        return (PInterface)(ICharSequence*)(IGetChars*)this;
-    }
-
-    return Ellipsizer::Probe(riid);
-}
-
-UInt32 Layout::SpannedEllipsizer::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Layout::SpannedEllipsizer::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Layout::SpannedEllipsizer::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    assert(0 && "TODO");
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode Layout::SpannedEllipsizer::GetChars(

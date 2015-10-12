@@ -2,12 +2,12 @@
 #define __ELASTOS_DROID_TEXT_TEXTLINE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/text/CTextPaint.h"
 #include "elastos/droid/text/Layout.h"
 #include "elastos/droid/text/SpanSet.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IPaintFontMetricsInt;
 using Elastos::Droid::Text::Style::IMetricAffectingSpan;
 using Elastos::Droid::Text::Style::ICharacterStyle;
 using Elastos::Droid::Text::Style::IReplacementSpan;
@@ -367,7 +367,7 @@ private:
         /* [in] */ Int32 y);
 
 private:
-    static const Boolean DEBUG = FALSE;
+    static const Boolean DEBUG;
 
     AutoPtr<ITextPaint> mPaint;
     AutoPtr<ICharSequence> mText;
@@ -394,5 +394,7 @@ private:
 } // namespace Text
 } // namepsace Droid
 } // namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::Text::TextLine, IInterface)
 
 #endif //__ELASTOS_DROID_TEXT_TEXTLINE_H__

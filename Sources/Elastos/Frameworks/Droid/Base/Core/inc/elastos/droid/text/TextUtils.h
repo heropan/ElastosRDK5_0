@@ -68,7 +68,8 @@ public:
             /* [in] */ Int32 size);
     };
 
-    static CARAPI_(void) GetChars(
+public:
+    static CARAPI GetChars(
         /* [in] */ ICharSequence* s,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -245,8 +246,8 @@ public:
      * into the parcel.
      */
     static CARAPI WriteToParcel(
-            /* [in] */ ICharSequence* cs,
-            /* [in] */ IParcel* p);
+        /* [in] */ ICharSequence* cs,
+        /* [in] */ IParcel* p);
 
 //    public static final Parcelable.Creator<CharSequence> CHAR_SEQUENCE_CREATOR;
 
@@ -310,7 +311,7 @@ public:
      * @throws IndexOutOfBoundsException if any of the copied spans
      * are out of range in <code>dest</code>.
      */
-    static CARAPI_(void) CopySpansFrom(
+    static CARAPI CopySpansFrom(
         /* [in] */ ISpanned* source,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -427,7 +428,8 @@ public:
      * @param s the string to be encoded
      * @return the encoded string
      */
-//    public static String htmlEncode(String s);
+    static String HtmlEncode(
+        /* [in] */ const String& s);
 
     /**
      * Returns a CharSequence concatenating the specified CharSequences,
@@ -625,8 +627,6 @@ private:
     static CARAPI_(Int32) GetLayoutDirectionFromFirstChar(
         /* [in] */ ILocale* locale);
 
-    static String HtmlEncode(
-        /* [in] */ const String& s);;
 private:
     static const String TAG;// = "TextUtils";
 

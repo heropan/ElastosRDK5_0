@@ -2,7 +2,7 @@
 #include <elastos/core/Math.h>
 #include <elastos/core/Character.h>
 #include "elastos/droid/utility/ArrayUtils.h"
-#include "graphics/CPaintFontMetricsInt.h"
+#include "elastos/droid/graphics/CPaintFontMetricsInt.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/text/TextDirectionHeuristics.h"
 #include "elastos/droid/text/AndroidBidi.h"

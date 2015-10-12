@@ -166,14 +166,14 @@ ECode TextUtils::Reverser::GetChars(
 //===========================================================================
 // TextUtils
 //===========================================================================
-void TextUtils::GetChars(
+ECode TextUtils::GetChars(
     /* [in] */ ICharSequence* s,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ ArrayOf<Char32>* dest,
     /* [in] */ Int32 destoff)
 {
-    assert(s != NULL);
+    VALIDATE_NOT_NULL(s)
     String str;
     if (IStringBuffer::Probe(s)) {
         IStringBuffer* sb = IStringBuffer::Probe(s);
@@ -199,6 +199,7 @@ void TextUtils::GetChars(
             (*dest)[destoff++] = ch;
         }
     }
+    return NOERROR;
 }
 
 Int32 TextUtils::IndexOf(
@@ -1133,7 +1134,7 @@ ECode TextUtils::ReadSpan(
     return sp->SetSpan(o, start, end, flags);
 }
 
-void TextUtils::CopySpansFrom(
+ECode TextUtils::CopySpansFrom(
     /* [in] */ ISpanned* source,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1163,6 +1164,7 @@ void TextUtils::CopySpansFrom(
         dest->SetSpan((*spans)[i], st - start + destoff,
                 en - start + destoff, fl);
     }
+    return NOERROR;
 }
 
 AutoPtr<ICharSequence> TextUtils::Ellipsize(

@@ -6,7 +6,7 @@
 
 using Elastos::Utility::IList;
 using Elastos::Utility::IArrayList;
-using Elastos::Utility::IHashtable;
+using Elastos::Utility::IHashTable;
 using Elastos::Utility::ICollection;
 using Elastos::Net::IInetAddress;
 
@@ -622,7 +622,7 @@ private:
 
     // Stores the properties of links that are "stacked" above this link.
     // Indexed by interface name to allow modification and to prevent duplicates being added.
-    AutoPtr<IHashtable> mStackedLinks;
+    AutoPtr<IHashTable> mStackedLinks;
 
 
 };

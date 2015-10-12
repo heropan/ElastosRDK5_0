@@ -1,12 +1,12 @@
 
-#include "Elastos.Droid.Core_server.h"
-#include <elastos/core/Math.h>
 #include "elastos/droid/text/TextLine.h"
 #include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/text/Layout.h"
-#include "graphics/CRectF.h"
-#include "elastos/droid/utility/ArrayUtils.h"
+#include "elastos/droid/text/CTextPaint.h"
+#include "elastos/droid/graphics/CRectF.h"
+// #include "elastos/droid/internal/utility/ArrayUtils.h"
 #include <elastos/core/Character.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Core::Character;
 using Elastos::Droid::Graphics::IRectF;
@@ -15,7 +15,7 @@ using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::PaintStyle;
 using Elastos::Droid::Graphics::PaintStyle_FILL;
 using Elastos::Droid::Graphics::IPaintFontMetricsInt;
-using Elastos::Droid::Internal::Utility::ArrayUtils;
+// using Elastos::Droid::Internal::Utility::ArrayUtils;
 using Elastos::Droid::Text::Style::EIID_IMetricAffectingSpan;
 using Elastos::Droid::Text::Style::EIID_ICharacterStyle;
 using Elastos::Droid::Text::Style::EIID_IReplacementSpan;
@@ -24,10 +24,10 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
-const Boolean TextLine::DEBUG;
+const Boolean TextLine::DEBUG = FALSE;
 AutoPtr< ArrayOf<TextLine*> > TextLine::sCached = ArrayOf<TextLine*>::Alloc(3);
 const Int32 TextLine::TAB_INCREMENT;
-Mutex TextLine::sCachedLock;
+Object TextLine::sCachedLock;
 
 TextLine::TextLine()
     : mStart(0)
@@ -128,9 +128,10 @@ void TextLine::Set(
 
     mCharsValid = hasReplacement || hasTabs || directions != Layout::DIRS_ALL_LEFT_TO_RIGHT;
 
+    assert(0 && "TODO");
     if (mCharsValid) {
         if (mChars == NULL || mChars->GetLength() < mLen) {
-            mChars = ArrayUtils::NewUnpaddedCharArray(mLen);
+            // mChars = ArrayUtils::NewUnpaddedCharArray(mLen);
         }
 
         TextUtils::GetChars(text, start, limit, mChars, 0);
@@ -632,6 +633,7 @@ Int32 TextLine::GetOffsetBeforeAfter(
     }
 
     AutoPtr<ITextPaint> wp = mWorkPaint;
+    ITextPaint* p = ITextPaint::Probe(wp);
     wp->Set(mPaint);
 
     Int32 spanStart = runStart;
@@ -681,11 +683,11 @@ Int32 TextLine::GetOffsetBeforeAfter(
     Int32 cursorOpt = after ? IPaint::CURSOR_AFTER : IPaint::CURSOR_BEFORE;
     Int32 temp;
     if (mCharsValid) {
-        wp->GetTextRunCursor(*mChars, spanStart, spanLimit - spanStart,
+        p->GetTextRunCursor(*mChars, spanStart, spanLimit - spanStart,
                 dir, offset, cursorOpt, &temp);
         return temp;
     } else {
-        wp->GetTextRunCursor(mText, mStart + spanStart,
+        p->GetTextRunCursor(mText, mStart + spanStart,
                 mStart + spanLimit, dir, mStart + offset, cursorOpt, &temp);
         return temp - mStart;
     }
@@ -992,11 +994,11 @@ void TextLine::DrawTextRun(
         Int32 count = end - start;
         Int32 contextCount = contextEnd - contextStart;
         c->DrawTextRun(*(mChars.Get()), start, count, contextStart, contextCount,
-                x, y, runIsRtl, wp);
+                x, y, runIsRtl, IPaint::Probe(wp));
     } else {
         Int32 delta = mStart;
         c->DrawTextRun(mText, delta + start, delta + end,
-                delta + contextStart, delta + contextEnd, x, y, runIsRtl, wp);
+                delta + contextStart, delta + contextEnd, x, y, runIsRtl, IPaint::Probe(wp));
     }
 }
 

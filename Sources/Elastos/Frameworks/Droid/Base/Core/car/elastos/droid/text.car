@@ -21,7 +21,6 @@ module
     merge("text/PackedObjectVector.car");
     merge("text/ParcelableSpan.car");
     merge("text/Selection.car");
-    merge("text/SpanSet.car");
     merge("text/SpanWatcher.car");
     merge("text/Spannable.car");
     merge("text/SpannableString.car");
@@ -32,7 +31,6 @@ module
     merge("text/StaticLayout.car");
     merge("text/TextDirectionHeuristic.car");
     merge("text/TextDirectionHeuristics.car");
-    merge("text/TextLine.car");
     merge("text/TextPaint.car");
     merge("text/TextUtils.car");
     merge("text/TextWatcher.car");
@@ -1181,6 +1179,10 @@ module
 
         interface ITextPaint;
         interface IPaint;
+    }
+
+    singleton class CTextUtils {
+        interface ITextUtils;
     }
 
     // class CBoringLayout {
