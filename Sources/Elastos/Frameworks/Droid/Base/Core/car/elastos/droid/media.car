@@ -170,10 +170,13 @@ module
 
     interface Elastos.Core.IRunnable;
     interface Elastos.Utility.IUUID;
+    interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.Storage.IStorageVolume;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Content.IIContentProvider;
     interface Elastos.Droid.Hardware.Usb.IUsbDevice;
+    interface Elastos.Droid.Media.IMediaDescription;
 
 //        // media/media/AmrInputStream
 //        class CAmrInputStream {
@@ -765,6 +768,7 @@ module
                [in] Int32 audioSession);
 
            interface IAcousticEchoCanceler;
+           interface IAudioEffect;
        }
 
        singleton class CAcousticEchoCancelerHelper {
@@ -776,6 +780,7 @@ module
                [in] Int32 audioSession);
 
            interface IAutomaticGainControl;
+           interface IAudioEffect;
        }
 
        singleton class CAutomaticGainControlHelper {
@@ -797,6 +802,7 @@ module
                [in] Int32 audioSession);
 
            interface IBassBoost;
+           interface IAudioEffect;
        }
 
        class CEnvironmentalReverbSettings {
@@ -814,6 +820,7 @@ module
                [in] Int32 audioSession);
 
            interface IEnvironmentalReverb;
+           interface IAudioEffect;
        }
 
        class CEqualizerSettings {
@@ -840,6 +847,7 @@ module
                [in] String settings);
 
            interface ILoudnessEnhancerSettings;
+           interface IAudioEffect;
        }
 
        class CLoudnessEnhancer {
@@ -851,6 +859,7 @@ module
                [in] Int32 audioSession);
 
            interface ILoudnessEnhancer;
+           interface IAudioEffect;
        }
 
        class CNoiseSuppressor {
@@ -858,6 +867,7 @@ module
                [in] Int32 audioSession);
 
            interface INoiseSuppressor;
+           interface IAudioEffect;
        }
 
        singleton class CNoiseSuppressorHelper {
@@ -879,6 +889,7 @@ module
                [in] Int32 audioSession);
 
            interface IPresetReverb;
+           interface IAudioEffect;
        }
 
        class CVirtualizerSettings {
@@ -896,6 +907,7 @@ module
                [in] Int32 audioSession);
 
            interface IVirtualizer;
+           interface IAudioEffect;
        }
 
        class CVisualizerMeasurementPeakRms {
@@ -915,7 +927,44 @@ module
        }
 
    } // namespace audiofx
-   } // namespace media
+   } // namespace Media
+   } // namespace Droid
+   } // namespace Elastos
+
+   namespace Elastos {
+   namespace Droid {
+   namespace Media {
+   namespace Browse {
+
+       class CMediaBrowserMediaItem {
+           constructor(
+                [in] IMediaDescription * description,
+                [in] Int32 flags);
+
+           interface IMediaBrowserMediaItem;
+           interface IParcelable;
+       }
+
+       class CMediaBrowserConnectionCallback {
+            interface IMediaBrowserConnectionCallback;
+       }
+
+       class CMediaBrowserSubscriptionCallback {
+            interface IMediaBrowserSubscriptionCallback;
+       }
+
+       class CMediaBrowser {
+            constructor(
+                [in] IContext * context,
+                [in] IComponentName * serviceComponent,
+                [in] IMediaBrowserConnectionCallback * cb,
+                [in] IBundle * rootHints);
+
+            interface IMediaBrowser;
+       }
+
+   } // namespace Browse
+   } // namespace Media
    } // namespace Droid
    } // namespace Elastos
 

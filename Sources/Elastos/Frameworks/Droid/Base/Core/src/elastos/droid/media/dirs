@@ -1,1 +1,2 @@
 DIRS += audiofx
+DIRS += browse

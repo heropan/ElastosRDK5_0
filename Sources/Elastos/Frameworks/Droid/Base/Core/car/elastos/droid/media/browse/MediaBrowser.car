@@ -4,6 +4,7 @@ module
     interface Elastos.Droid.Media.Session.IMediaSessionToken;
     interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Utility.IList;
 
     namespace Elastos {
     namespace Droid {
@@ -90,7 +91,17 @@ module
          */
         OnChildrenLoaded(
             [in] String parentId,
-            [in] ArrayOf<IMediaBrowserMediaItem*> * children);
+            [in] IList * children);
+
+        /**
+         * Called when the id doesn't exist or other errors in subscribing.
+         * <p>
+         * If this is called, the subscription remains until {@link MediaBrowser#unsubscribe}
+         * called, because some errors may heal themselves.
+         * </p>
+         */
+        OnError(
+            [in] String id);
     }
 
     /**
