@@ -3,17 +3,22 @@
 #define __ELASTOS_DROID_VIEW_ACTIONMODE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elautoptr.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-class ActionMode : public IActionMode
+class ActionMode
+    : public Object
+    , public IActionMode
 {
 public:
+    CAR_INTERFACE_DECL()
+
     ActionMode();
 
     /**

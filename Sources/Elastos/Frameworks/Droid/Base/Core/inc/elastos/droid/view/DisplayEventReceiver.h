@@ -3,7 +3,9 @@
 #define __ELASTOS_DROID_VIEW_DISPLAYEVENTRECEIVER_H__
 
 #include "view/NativeDisplayEventReceiver.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Droid::Os::IMessageQueue;
 using Elastos::Droid::Os::ILooper;
 
@@ -20,10 +22,14 @@ namespace View {
  *
  * @hide
  */
-class DisplayEventReceiver : public ElRefBase
+class DisplayEventReceiver
+    : public Object
+    , public IDisplayEventReceiver
 {
     friend class NativeDisplayEventReceiver;
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Creates a display event receiver.
      *
@@ -38,7 +44,7 @@ public:
     /**
      * Disposes the receiver.
      */
-    virtual CARAPI_(void) Dispose();
+    virtual CARAPI Dispose();
 
     /**
      * Called when a vertical sync pulse is received.
@@ -51,7 +57,7 @@ public:
      * {@link Surface#BUILT_IN_DISPLAY_ID_MAIN}.
      * @param frame The frame number.  Increases by one for each vertical sync interval.
      */
-    virtual CARAPI_(void) OnVsync(
+    virtual CARAPI OnVsync(
         /* [in] */ Int64 timestampNanos,
         /* [in] */ Int32 builtInDisplayId,
         /* [in] */ Int32 frame);
@@ -65,7 +71,7 @@ public:
      * {@link Surface#BUILT_IN_DISPLAY_ID_HDMI}.
      * @param connected True if the display is connected, false if it disconnected.
      */
-    virtual CARAPI_(void) OnHotplug(
+    virtual CARAPI OnHotplug(
         /* [in] */ Int64 timestampNanos,
         /* [in] */ Int32 builtInDisplayId,
         /* [in] */ Boolean connected);

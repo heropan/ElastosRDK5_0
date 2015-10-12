@@ -5,6 +5,8 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
+CAR_INTERFACE_IMPL(ActionMode, Object, IActionMode)
+
 ActionMode::ActionMode()
     : mTitleOptionalHint(FALSE)
 {

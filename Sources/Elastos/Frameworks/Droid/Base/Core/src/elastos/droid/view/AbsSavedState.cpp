@@ -1,6 +1,6 @@
 
 #include "view/AbsSavedState.h"
-#include "view/CEmptyAbsSavedState.h"
+// #include "view/CEmptyAbsSavedState.h"
 
 namespace Elastos {
 namespace Droid {
@@ -8,9 +8,10 @@ namespace View {
 
 static AutoPtr<IAbsSavedState> InitEmptySs()
 {
-    AutoPtr<IAbsSavedState> rst;
-    CEmptyAbsSavedState::New((IAbsSavedState**)&rst);
-    return rst;
+    // AutoPtr<CEmptyAbsSavedState> rst;
+    // CEmptyAbsSavedState::NewByFriend((CEmptyAbsSavedState**)&rst);
+    // return rst;
+    return NULL;
 }
 
 const AutoPtr<IAbsSavedState> AbsSavedState::EMPTY_STATE = InitEmptySs();

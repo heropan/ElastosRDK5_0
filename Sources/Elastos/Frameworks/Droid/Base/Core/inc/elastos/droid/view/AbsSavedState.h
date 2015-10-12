@@ -4,12 +4,16 @@
 
 #include "Elastos.Droid.Core_server.h"
 #include <ext/frameworkext.h>
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
 class AbsSavedState
+    : public Object
 {
 protected:
     AbsSavedState();

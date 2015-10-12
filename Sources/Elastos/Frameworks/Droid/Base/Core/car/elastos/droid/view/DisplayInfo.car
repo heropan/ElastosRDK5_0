@@ -93,6 +93,30 @@ module
         SetLogicalHeight(
             [in] Int32 logicalHeight);
 
+        GetOverscanLeft(
+            [out] Int32* left);
+
+        GetOverscanTop(
+            [out] Int32* top);
+
+        GetOverscanRight(
+            [out] Int32* right);
+
+        GetOverscanBottom(
+            [out] Int32* bottom);
+
+        SetOverscanLeft(
+            [in] Int32 left);
+
+        SetOverscanTop(
+            [in] Int32 top);
+
+        SetOverscanRight(
+            [in] Int32 right);
+
+        SetOverscanBottom(
+            [in] Int32 bottom);
+
         GetRotation(
             [out] Int32* rotation);
 
@@ -141,23 +165,23 @@ module
         SetPresentationDeadlineNanos(
             [in] Int64 nanos);
 
-        GetRate(
-            [out] Int32* rates);
+        GetState(
+            [out] Int32* state);
 
-        SetRate(
-            [in] Int32 rates);
+        SetState(
+            [in] Int32 state);
 
         GetOwnerUid(
-            [out] Int32* rates);
+            [out] Int32* uid);
 
         SetOwnerUid(
-            [in] Int32 rates);
+            [in] Int32 uid);
 
         GetOwnerPackageName(
-            [out] String* rates);
+            [out] String* name);
 
         SetOwnerPackageName(
-            [in] String rates);
+            [in] String name);
 
         CopyFrom(
             [in] IDisplayInfo* otherObj);

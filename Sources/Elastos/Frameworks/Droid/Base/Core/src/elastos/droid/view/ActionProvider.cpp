@@ -5,14 +5,59 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-PInterface ActionProvider::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IActionProvider == riid) {
-        return (IActionProvider*)this;
-    }
+CAR_INTERFACE_IMPL(ActionProvider, Object, IActionProvider)
 
-    return NULL;
+ECode ActionProvider::OnCreateActionView(
+        /* [out] */ IView** view)
+{
+    VALIDATE_NOT_NULL(view)
+    AutoPtr<IView> rst = OnCreateActionView();
+    *view = rst;
+    REFCOUNT_ADD(*view)
+    return NOERROR;
+}
+
+ECode ActionProvider::OnCreateActionView(
+    /* [in] */ IMenuItem* forItem,
+    /* [out] */ IView** view)
+{
+    VALIDATE_NOT_NULL(view)
+    AutoPtr<IView> rst = OnCreateActionView(forItem);
+    *view = rst;
+    REFCOUNT_ADD(*view)
+    return NOERROR;
+}
+
+ECode ActionProvider::OverridesItemVisibility(
+    /* [out] */ Boolean* visibility)
+{
+    VALIDATE_NOT_NULL(visibility)
+    *visibility = OverridesItemVisibility();
+    return NOERROR;
+}
+
+ECode ActionProvider::IsVisible(
+    /* [out] */ Boolean* visible)
+{
+    VALIDATE_NOT_NULL(visible)
+    *visible = IsVisible();
+    return NOERROR;
+}
+
+ECode ActionProvider::OnPerformDefaultAction(
+    /* [out] */ Boolean* rst)
+{
+    VALIDATE_NOT_NULL(rst)
+    *rst = OnPerformDefaultAction();
+    return NOERROR;
+}
+
+ECode ActionProvider::HasSubMenu(
+    /* [out] */ Boolean* rst)
+{
+    VALIDATE_NOT_NULL(rst)
+    *rst = HasSubMenu();
+    return NOERROR;
 }
 
 AutoPtr<IView> ActionProvider::OnCreateActionView(

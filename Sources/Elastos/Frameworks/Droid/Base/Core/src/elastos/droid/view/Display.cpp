@@ -1,17 +1,24 @@
 
 #include "view/Display.h"
+#include "view/DisplayAdjustments.h"
 #include "ext/frameworkext.h"
-#include "utility/CDisplayMetrics.h"
 #include "os/SystemClock.h"
+#include "utility/CDisplayMetrics.h"
+#include "content/res/CCompatibilityInfoHelper.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
 
+using Elastos::Core::AutoLock;
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Utility::CDisplayMetrics;
 using Elastos::Utility::Logging::Logger;
+using Elastos::Droid::Content::Res::ICompatibilityInfoHelper;
+using Elastos::Droid::Content::Res::CCompatibilityInfoHelper;
+using Elastos::Droid::Os::IProcess;
 
 namespace Elastos {
 namespace Droid {
@@ -21,16 +28,15 @@ const char* Display::TAG = "Display";
 const Boolean Display::DEBUG;
 const Int32 Display::CACHED_APP_SIZE_DURATION_MILLIS;
 
-CAR_INTERFACE_IMPL(Display, IDisplay);
+CAR_INTERFACE_IMPL(Display, Object, IDisplay);
 
 Display::Display(
     /* [in] */ IDisplayManagerGlobal* global,
     /* [in] */ Int32 displayId,
     /* [in] */ IDisplayInfo* displayInfo /*not NULL*/,
-    /* [in] */ ICompatibilityInfoHolder* compatibilityInfo)
+    /* [in] */ IDisplayAdjustments* daj)
     : mGlobal(global)
     , mDisplayId(displayId)
-    , mCompatibilityInfo(compatibilityInfo)
     , mDisplayInfo(displayInfo)
     , mIsValid(TRUE)
     , mLastCachedAppSizeUpdate(0)
@@ -38,11 +44,14 @@ Display::Display(
     , mCachedAppHeightCompat(0)
 {
     assert(displayInfo);
+    mDisplayAdjustments = new DisplayAdjustments(daj);
     // Cache properties that cannot change as Int64 as the display is valid.
     displayInfo->GetLayerStack(&mLayerStack);
     displayInfo->GetFlags(&mFlags);
     displayInfo->GetType(&mType);
     displayInfo->GetAddress(&mAddress);
+    displayInfo->GetOwnerUid(&mOwnerUid);
+    displayInfo->GetOwnerPackageName(&mOwnerPackageName);
     CDisplayMetrics::New((IDisplayMetrics**)&mTempMetrics);
 }
 
@@ -116,13 +125,53 @@ ECode Display::GetAddress(
     return NOERROR;
 }
 
-ECode Display::GetCompatibilityInfo(
-    /* [out] */ ICompatibilityInfoHolder** compatibilityInfo)
-{
-    VALIDATE_NOT_NULL(compatibilityInfo);
-    *compatibilityInfo =  mCompatibilityInfo;
-    REFCOUNT_ADD(*compatibilityInfo);
 
+/**
+ * Gets the UID of the application that owns this display, or zero if it is
+ * owned by the system.
+ * <p>
+ * If the display is private, then only the owner can use it.
+ * </p>
+ *
+ * @hide
+ */
+ECode Display::GetOwnerUid(
+    /* [out] */ Int32* uid)
+{
+    VALIDATE_NOT_NULL(uid)
+    *uid = mOwnerUid;
+    return NOERROR;
+}
+
+/**
+ * Gets the package name of the application that owns this display, or null if it is
+ * owned by the system.
+ * <p>
+ * If the display is private, then only the owner can use it.
+ * </p>
+ *
+ * @hide
+ */
+ECode Display::GetOwnerPackageName(
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name)
+    *name = mOwnerPackageName;
+    return NOERROR;
+}
+
+/**
+ * Gets the compatibility info used by this display instance.
+ *
+ * @return The display adjustments holder, or null if none is required.
+ * @hide
+ */
+ECode Display::GetDisplayAdjustments(
+    /* [out] */ IDisplayAdjustments** daj)
+{
+    VALIDATE_NOT_NULL(daj)
+    *daj = mDisplayAdjustments;
+    REFCOUNT_ADD(*daj)
     return NOERROR;
 }
 
@@ -141,7 +190,7 @@ ECode Display::GetSize(
 {
     AutoLock lock(mSelfLock);
     UpdateDisplayInfoLocked();
-    mDisplayInfo->GetAppMetrics(mTempMetrics.Get(), mCompatibilityInfo);
+    mDisplayInfo->GetAppMetrics(mTempMetrics.Get(), mDisplayAdjustments);
     Int32 widthPixels, heightPixels;
     mTempMetrics->GetWidthPixels(&widthPixels);
     mTempMetrics->GetHeightPixels(&heightPixels);
@@ -155,7 +204,7 @@ ECode Display::GetRectSize(
 {
     AutoLock lock(mSelfLock);
     UpdateDisplayInfoLocked();
-    mDisplayInfo->GetAppMetrics(mTempMetrics.Get(), mCompatibilityInfo);
+    mDisplayInfo->GetAppMetrics(mTempMetrics.Get(), mDisplayAdjustments);
     Int32 widthPixels, heightPixels;
     mTempMetrics->GetWidthPixels(&widthPixels);
     mTempMetrics->GetHeightPixels(&heightPixels);
@@ -218,6 +267,27 @@ ECode Display::GetHeight(
     return NOERROR;
 }
 
+/**
+ * @hide
+ * Return a rectangle defining the insets of the overscan region of the display.
+ * Each field of the rectangle is the number of pixels the overscan area extends
+ * into the display on that side.
+ */
+ECode Display::GetOverscanInsets(
+    /* [in] */ IRect* outRect)
+{
+    AutoLock lock(mSelfLock);
+    UpdateDisplayInfoLocked();
+    Int32 left, top, right, bottom;
+    mDisplayInfo->GetOverscanLeft(&left);
+    mDisplayInfo->GetOverscanTop(&top);
+    mDisplayInfo->GetOverscanRight(&right);
+    mDisplayInfo->GetOverscanBottom(&bottom);
+
+    outRect->Set(left, top, right, bottom);
+    return NOERROR;
+}
+
 ECode Display::GetRotation(
     /* [out] */ Int32* rotation)
 {
@@ -252,12 +322,58 @@ ECode Display::GetRefreshRate(
     return mDisplayInfo->GetRefreshRate(refreshRate);
 }
 
+/**
+ * Get the supported refresh rates of this display in frames per second.
+ */
+ECode Display::GetSupportedRefreshRates(
+    /* [out, callee] */ ArrayOf<Float>** rates)
+{
+    VALIDATE_NOT_NULL(rates)
+    AutoLock lock(mSelfLock);
+    UpdateDisplayInfoLocked();
+    AutoPtr<ArrayOf<Float> > refreshRates;
+    mDisplayInfo->GetSupportedRefreshRates((ArrayOf<Float>**)&refreshRates);
+    *rates = ArrayOf<Float>::Alloc(refreshRates->GetLength());
+    (*rates)->Copy(refreshRates, refreshRates->GetLength());
+    REFCOUNT_ADD(*rates);
+    return NOERROR;
+}
+
+/**
+ * Gets the app VSYNC offset, in nanoseconds.  This is a positive value indicating
+ * the phase offset of the VSYNC events provided by Choreographer relative to the
+ * display refresh.  For example, if Choreographer reports that the refresh occurred
+ * at time N, it actua`lly occurred at (N - appVsyncOffset).
+ * <p>
+ * Apps generally do not need to be aware of this.  It's only useful for fine-grained
+ * A/V synchronization.
+ */
+ECode Display::GetAppVsyncOffsetNanos(
+    /* [out] */ Int64* nanos)
+{
+    VALIDATE_NOT_NULL(nanos)
+    AutoLock lock(mSelfLock);
+    UpdateDisplayInfoLocked();
+    mDisplayInfo->GetAppVsyncOffsetNanos(nanos);
+    return NOERROR;
+}
+
+ECode Display::GetPresentationDeadlineNanos(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result)
+    AutoLock lock(mSelfLock);
+    UpdateDisplayInfoLocked();
+    mDisplayInfo->GetPresentationDeadlineNanos(result);
+    return NOERROR;
+}
+
 ECode Display::GetMetrics(
     /* [in] */ IDisplayMetrics* outMetrics)
 {
     AutoLock lock(mSelfLock);
     UpdateDisplayInfoLocked();
-    mDisplayInfo->GetAppMetrics(outMetrics, mCompatibilityInfo);
+    mDisplayInfo->GetAppMetrics(outMetrics, mDisplayAdjustments);
 
     return NOERROR;
 }
@@ -280,19 +396,68 @@ ECode Display::GetRealMetrics(
 {
     AutoLock lock(mSelfLock);
     UpdateDisplayInfoLocked();
-    return mDisplayInfo->GetLogicalMetrics(outMetrics, NULL);
+    AutoPtr<ICompatibilityInfoHelper> helper;
+    CCompatibilityInfoHelper::AcquireSingleton((ICompatibilityInfoHelper**)&helper);
+    AutoPtr<ICompatibilityInfo> info;
+    helper->GetDefault((ICompatibilityInfo**)&info);
+    AutoPtr<IBinder> token;
+    mDisplayAdjustments->GetActivityToken((IBinder**)&token);
+    return mDisplayInfo->GetLogicalMetrics(outMetrics, info, token);
 }
 
-ECode Display::GetRawWidth(
-    /* [out] */ Int32* width)
+/**
+ * Gets the state of the display, such as whether it is on or off.
+ *
+ * @return The state of the display: one of {@link #STATE_OFF}, {@link #STATE_ON},
+ * {@link #STATE_DOZE}, {@link #STATE_DOZE_SUSPEND}, or {@link #STATE_UNKNOWN}.
+ */
+ECode Display::GetState(
+    /* [out] */ Int32* state)
 {
-    return mDisplayInfo->GetLogicalWidth(width);
+    VALIDATE_NOT_NULL(state)
+    AutoLock lock(mSelfLock);
+    UpdateDisplayInfoLocked();
+    *state = STATE_UNKNOWN;
+    if(mIsValid){
+        mDisplayInfo->GetState(state);
+    }
+    return NOERROR;
 }
 
-ECode Display::GetRawHeight(
-    /* [out] */ Int32* height)
+/**
+ * Returns true if the specified UID has access to this display.
+ * @hide
+ */
+ECode Display::HasAccess(
+    /* [in] */ Int32 uid,
+    /* [out] */ Boolean* result)
 {
-    return mDisplayInfo->GetLogicalHeight(height);
+    *result = Display::HasAccess(uid, mFlags, mOwnerUid);
+    return NOERROR;
+}
+
+/** @hide */
+Boolean Display::HasAccess(
+    /* [in] */ Int32 uid,
+    /* [in] */ Int32 flags,
+    /* [in] */ Int32 ownerUid)
+{
+    return (flags & Display::FLAG_PRIVATE) == 0
+            || uid == ownerUid
+            || uid == IProcess::SYSTEM_UID
+            || uid == 0;
+}
+
+/**
+ * Returns true if the display is a public presentation display.
+ * @hide
+ */
+ECode Display::IsPublicPresentation(
+        /* [out] */ Boolean* result)
+{
+    *result = (mFlags & (FLAG_PRIVATE | FLAG_PRESENTATION)) ==
+            FLAG_PRESENTATION;
+    return NOERROR;
 }
 
 void Display::UpdateDisplayInfoLocked()
@@ -326,7 +491,7 @@ void Display::UpdateCachedAppSizeIfNeededLocked()
     Int64 now = SystemClock::GetUptimeMillis();
     if (now > mLastCachedAppSizeUpdate + CACHED_APP_SIZE_DURATION_MILLIS) {
         UpdateDisplayInfoLocked();
-        mDisplayInfo->GetAppMetrics(mTempMetrics.Get(), mCompatibilityInfo);
+        mDisplayInfo->GetAppMetrics(mTempMetrics.Get(), mDisplayAdjustments);
         mTempMetrics->GetWidthPixels(&mCachedAppWidthCompat);
         mTempMetrics->GetHeightPixels(&mCachedAppHeightCompat);
         mLastCachedAppSizeUpdate = now;
@@ -339,7 +504,7 @@ void Display::UpdateCachedAppSizeIfNeededLocked()
 // {
 //     AutoLock lock(mSelfLock);
 //     UpdateDisplayInfoLocked();
-//     mDisplayInfo->GetAppMetrics(mTempMetrics.Get(), mCompatibilityInfo);
+//     mDisplayInfo->GetAppMetrics(mTempMetrics.Get(), mDisplayAdjustments);
 //     return "Display id " + mDisplayId + ": " + mDisplayInfo
 //             + ", " + mTempMetrics + ", isValid=" + mIsValid;
 // }
@@ -358,8 +523,33 @@ String Display::TypeToString(
             return String("WIFI");
         case TYPE_OVERLAY:
             return String("OVERLAY");
+        case TYPE_VIRTUAL:
+            return String("TYPE_VIRTUAL");
         default:
-            return StringUtils::Int32ToString(type);
+            return StringUtils::ToString(type);
+    }
+}
+
+
+    /**
+     * @hide
+     */
+String Display::StateToString(
+    /* [in] */ Int32 state)
+{
+    switch (state) {
+        case STATE_UNKNOWN:
+            return String("UNKNOWN");
+        case STATE_OFF:
+            return String("OFF");
+        case STATE_ON:
+            return String("ON");
+        case STATE_DOZE:
+            return String("DOZE");
+        case STATE_DOZE_SUSPEND:
+            return String("DOZE_SUSPEND");
+        default:
+            return StringUtils::ToString(state);
     }
 }
 

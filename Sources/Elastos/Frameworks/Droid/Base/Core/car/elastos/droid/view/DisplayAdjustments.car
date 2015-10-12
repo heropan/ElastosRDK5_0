@@ -12,9 +12,6 @@ module
     interface IDisplayAdjustments {
         const Boolean DEVELOPMENT_RESOURCES_DEPEND_ON_ACTIVITY_TOKEN = FALSE;
 
-        GetDEFAULT_DISPLAY_ADJUSTMENTS(
-            [out] IDisplayAdjustments** da);
-
         SetCompatibilityInfo(
             [in] ICompatibilityInfo* compatInfo);
 
@@ -26,6 +23,11 @@ module
 
         GetActivityToken(
             [out] IBinder** token);
+    }
+
+    interface IDisplayAdjustmentsHelper {
+        GetDEFAULT_DISPLAY_ADJUSTMENTS(
+            [out] IDisplayAdjustments** da);
     }
 
     } // namespace View

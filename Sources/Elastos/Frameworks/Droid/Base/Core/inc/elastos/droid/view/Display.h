@@ -14,9 +14,9 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-class Display :
-    public ElRefBase,
-    public IDisplay
+class Display
+    : public Object
+    , public IDisplay
 {
 public:
     /**
@@ -24,6 +24,9 @@ public:
      */
     static CARAPI_(String) TypeToString(
         /* [in] */ Int32 type);
+
+    static CARAPI_(String) StateToString(
+        /* [in] */ Int32 state);
 
 public:
     CAR_INTERFACE_DECL();
@@ -40,7 +43,7 @@ public:
         /* [in] */ IDisplayManagerGlobal* global,
         /* [in] */ Int32 displayId,
         /* [in] */ IDisplayInfo* displayInfo /*not NULL*/,
-        /* [in] */ ICompatibilityInfoHolder* compatibilityInfo);
+        /* [in] */ IDisplayAdjustments* daj);
 
     /**
      * Gets the display id.
@@ -128,13 +131,37 @@ public:
         /* [out] */ String* address);
 
     /**
-     * Gets the compatibility info used by this display instance.
+     * Gets the UID of the application that owns this display, or zero if it is
+     * owned by the system.
+     * <p>
+     * If the display is private, then only the owner can use it.
+     * </p>
      *
-     * @return The compatibility info holder, or NULL if none is required.
      * @hide
      */
-    CARAPI GetCompatibilityInfo(
-        /* [out] */ ICompatibilityInfoHolder** compatibilityInfo);
+    CARAPI GetOwnerUid(
+        /* [out] */ Int32* uid);
+
+    /**
+     * Gets the package name of the application that owns this display, or null if it is
+     * owned by the system.
+     * <p>
+     * If the display is private, then only the owner can use it.
+     * </p>
+     *
+     * @hide
+     */
+    CARAPI GetOwnerPackageName(
+        /* [out] */ String* name);
+
+    /**
+     * Gets the compatibility info used by this display instance.
+     *
+     * @return The display adjustments holder, or null if none is required.
+     * @hide
+     */
+    CARAPI GetDisplayAdjustments(
+        /* [out] */ IDisplayAdjustments** daj);
 
     /**
      * Gets the name of the display.
@@ -236,6 +263,15 @@ public:
         /* [out] */ Int32* height);
 
     /**
+     * @hide
+     * Return a rectangle defining the insets of the overscan region of the display.
+     * Each field of the rectangle is the number of pixels the overscan area extends
+     * into the display on that side.
+     */
+    CARAPI GetOverscanInsets(
+        /* [in] */ IRect* outRect);
+
+    /**
      * Returns the rotation of the screen from its "natural" orientation.
      * The returned value may be {@link Surface#ROTATION_0 Surface.ROTATION_0}
      * (no rotation), {@link Surface#ROTATION_90 Surface.ROTATION_90},
@@ -281,6 +317,39 @@ public:
         /* [out] */ Float* refreshRate);
 
     /**
+     * Get the supported refresh rates of this display in frames per second.
+     */
+    CARAPI GetSupportedRefreshRates(
+        /* [out, callee] */ ArrayOf<Float>** rates);
+
+    /**
+     * Gets the app VSYNC offset, in nanoseconds.  This is a positive value indicating
+     * the phase offset of the VSYNC events provided by Choreographer relative to the
+     * display refresh.  For example, if Choreographer reports that the refresh occurred
+     * at time N, it actua`lly occurred at (N - appVsyncOffset).
+     * <p>
+     * Apps generally do not need to be aware of this.  It's only useful for fine-grained
+     * A/V synchronization.
+     */
+    CARAPI GetAppVsyncOffsetNanos(
+        /* [out] */ Int64* nanos);
+
+    /**
+     * This is how far in advance a buffer must be queued for presentation at
+     * a given time.  If you want a buffer to appear on the screen at
+     * time N, you must submit the buffer before (N - presentationDeadline).
+     * <p>
+     * The desired presentation time for GLES rendering may be set with
+     * {@link android.opengl.EGLExt#eglPresentationTimeANDROID}.  For video decoding, use
+     * {@link android.media.MediaCodec#releaseOutputBuffer(int, long)}.  Times are
+     * expressed in nanoseconds, using the system monotonic clock
+     * ({@link System#nanoTime}).
+     */
+    CARAPI GetPresentationDeadlineNanos(
+        /* [out] */ Int64* result);
+
+
+    /**
      * Gets display metrics that describe the size and density of this display.
      * <p>
      * The size is adjusted based on the current rotation of the display.
@@ -313,6 +382,32 @@ public:
         /* [in] */ IPoint* outSize);
 
     /**
+     * Gets the state of the display, such as whether it is on or off.
+     *
+     * @return The state of the display: one of {@link #STATE_OFF}, {@link #STATE_ON},
+     * {@link #STATE_DOZE}, {@link #STATE_DOZE_SUSPEND}, or {@link #STATE_UNKNOWN}.
+     */
+    CARAPI GetState(
+        /* [out] */ Int32* state);
+
+    /**
+     * Returns true if the specified UID has access to this display.
+     * @hide
+     */
+    CARAPI HasAccess(
+        /* [in] */ Int32 uid,
+        /* [out] */ Boolean* result);
+
+    /** @hide */
+    static Boolean HasAccess(
+        /* [in] */ Int32 uid,
+        /* [in] */ Int32 flags,
+        /* [in] */ Int32 ownerUid);
+
+    CARAPI IsPublicPresentation(
+        /* [out] */ Boolean* result);
+
+    /**
      * Gets display metrics based on the real size of this display.
      * <p>
      * The size is adjusted based on the current rotation of the display.
@@ -325,13 +420,6 @@ public:
      */
     CARAPI GetRealMetrics(
         /* [in] */ IDisplayMetrics* outMetrics);
-
-    CARAPI GetRawWidth(
-        /* [out] */ Int32* width);
-
-    CARAPI GetRawHeight(
-        /* [out] */ Int32* height);
-
 
 private:
     CARAPI_(void) UpdateDisplayInfoLocked();
@@ -354,7 +442,10 @@ private:
     Int32 mFlags;
     Int32 mType;
     String mAddress;
-    AutoPtr<ICompatibilityInfoHolder> mCompatibilityInfo;
+    // AutoPtr<ICompatibilityInfoHolder> mCompatibilityInfo;
+    Int32 mOwnerUid;
+    String mOwnerPackageName;
+    AutoPtr<IDisplayAdjustments> mDisplayAdjustments;
 
     AutoPtr<IDisplayInfo> mDisplayInfo; // never NULL
     Boolean mIsValid;

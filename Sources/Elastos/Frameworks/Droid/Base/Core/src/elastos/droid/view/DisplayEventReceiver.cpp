@@ -14,6 +14,8 @@ namespace View {
 
 const char* DisplayEventReceiver::TAG = "DisplayEventReceiver";
 
+CAR_INTERFACE_IMPL(DisplayEventReceiver, Object, IDisplayEventReceiver)
+
 DisplayEventReceiver::DisplayEventReceiver(
     /* [in] */ ILooper* looper)
 {
@@ -51,9 +53,10 @@ void DisplayEventReceiver::NativeInit()
     }
 }
 
-void DisplayEventReceiver::Dispose()
+ECode DisplayEventReceiver::Dispose()
 {
     Dispose(FALSE);
+    return NOERROR;
 }
 
 void DisplayEventReceiver::Dispose(
@@ -73,18 +76,20 @@ void DisplayEventReceiver::Dispose(
     mMessageQueue = NULL;
 }
 
-void DisplayEventReceiver::OnVsync(
+ECode DisplayEventReceiver::OnVsync(
     /* [in] */ Int64 timestampNanos,
     /* [in] */ Int32 builtInDisplayId,
     /* [in] */ Int32 frame)
 {
+    return NOERROR;
 }
 
-void DisplayEventReceiver::OnHotplug(
+ECode DisplayEventReceiver::OnHotplug(
     /* [in] */ Int64 timestampNanos,
     /* [in] */ Int32 builtInDisplayId,
     /* [in] */ Boolean connected)
 {
+    return NOERROR;
 }
 
 ECode DisplayEventReceiver::ScheduleVsync()

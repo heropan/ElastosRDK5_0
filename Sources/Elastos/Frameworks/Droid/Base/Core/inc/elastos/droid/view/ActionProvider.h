@@ -2,8 +2,12 @@
 #ifndef __ELASTOS_DROID_VIEW_ACTIONPROVIDER_H__
 #define  __ELASTOS_DROID_VIEW_ACTIONPROVIDER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 
+#include "elastos/droid/ext/frameworkext.h"
+#include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IActionProvider;
 
@@ -48,10 +52,12 @@ namespace View {
  * @see MenuItem#getActionProvider()
  */
 class ActionProvider
+    : public Object
+    , public IActionProvider
 {
 public:
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CAR_INTERFACE_DECL()
+
     /**
      * Factory method called by the Android framework to create new action views.
      *
@@ -64,6 +70,9 @@ public:
      * @deprecated use {@link #onCreateActionView(MenuItem)}
      */
     virtual CARAPI_(AutoPtr<IView>) OnCreateActionView() = 0;
+
+    virtual CARAPI OnCreateActionView(
+            /* [out] */ IView** view);
 
     /**
      * Factory method called by the Android framework to create new action views.
@@ -80,6 +89,10 @@ public:
     virtual CARAPI_(AutoPtr<IView>) OnCreateActionView(
         /* [in] */ IMenuItem* forItem);
 
+    virtual CARAPI OnCreateActionView(
+        /* [in] */ IMenuItem* forItem,
+        /* [out] */ IView** view);
+
     /**
      * The result of this method determines whether or not {@link #isVisible()} will be used
      * by the {@link MenuItem} this ActionProvider is bound to help determine its visibility.
@@ -89,6 +102,9 @@ public:
      * @see #isVisible()
      */
     virtual CARAPI_(Boolean) OverridesItemVisibility();
+
+    virtual CARAPI OverridesItemVisibility(
+        /* [out] */ Boolean* visibility);
 
     /**
      * If {@link #overridesItemVisibility()} returns true, the return value of this method
@@ -101,6 +117,9 @@ public:
      *         it is invisible. The default implementation returns true.
      */
     virtual CARAPI_(Boolean) IsVisible();
+
+    virtual CARAPI IsVisible(
+        /* [out] */ Boolean* visible);
 
     /**
      * If this ActionProvider is associated with an item in a menu,
@@ -147,6 +166,9 @@ public:
      */
     virtual CARAPI_(Boolean) OnPerformDefaultAction();
 
+    virtual CARAPI OnPerformDefaultAction(
+        /* [out] */ Boolean* rst);
+
     /**
      * Determines if this ActionProvider has a submenu associated with it.
      *
@@ -158,6 +180,9 @@ public:
      * @return true if the item backed by this provider should have an associated submenu
      */
     virtual CARAPI_(Boolean) HasSubMenu();
+
+    virtual CARAPI HasSubMenu(
+        /* [out] */ Boolean* rst);
 
     /**
      * Called to prepare an associated submenu for the menu item backed by this ActionProvider.
