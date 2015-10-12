@@ -37,6 +37,7 @@
 #include "elastos/droid/net/CPacProxySelector.h"
 #include "elastos/droid/net/CProxyDataTracker.h"
 #include "elastos/droid/net/CProxyInfo.h"
+#include "elastos/droid/net/CRouteInfo.h"
 
 namespace Elastos {
 namespace Droid {
@@ -117,6 +118,8 @@ CAR_OBJECT_IMPL(CPacProxySelector)
 CAR_OBJECT_IMPL(CProxyDataTracker)
 
 CAR_OBJECT_IMPL(CProxyInfo)
+
+CAR_OBJECT_IMPL(CRouteInfo)
 
 } // namespace Net
 } // namespace Droid

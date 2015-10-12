@@ -1,43 +1,39 @@
 
-#include "net/CRouteInfo.h"
-#include "net/CRouteInfoHelper.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/RouteInfo.h"
+#include "elastos/droid/net/CRouteInfoHelper.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
+CAR_INTERFACE_IMPL(CRouteInfoHelper, Singleton, IRouteInfoHelper)
+
+CAR_SINGLETON_IMPL(CRouteInfoHelper)
+
 ECode CRouteInfoHelper::MakeHostRoute(
     /* [in] */ IInetAddress* host,
-    /* [out] */ IRouteInfo** info)
+    /* [in] */ const String& iface,
+    /* [out] */ IRouteInfo** result)
 {
-    VALIDATE_NOT_NULL(info);
-    return CRouteInfo::MakeHostRoute(host, NULL, info);
+    return RouteInfo::MakeHostRoute(host, iface, result);
 }
 
 ECode CRouteInfoHelper::MakeHostRoute(
     /* [in] */ IInetAddress* host,
     /* [in] */ IInetAddress* gateway,
-    /* [out] */ IRouteInfo** info)
+    /* [in] */ const String& iface,
+    /* [out] */ IRouteInfo** result)
 {
-    VALIDATE_NOT_NULL(info);
-    return CRouteInfo::MakeHostRoute(host, gateway, info);
+    return RouteInfo::MakeHostRoute(host, gateway, iface, result);
 }
 
-/**
-* Find the route from a Collection of routes that best matches a given address.
-* May return null if no routes are applicable.
-* @param routes a Collection of RouteInfos to chose from
-* @param dest the InetAddress your trying to get to
-* @return the RouteInfo from the Collection that best fits the given address
-*/
-//To-do: confirm the use of Collection<> (that is originally used here) in Elastos and replace List<>
 ECode CRouteInfoHelper::SelectBestRoute(
-    /* [in] */ IObjectContainer* routes,
+    /* [in] */ ICollection* routes,
     /* [in] */ IInetAddress* dest,
     /* [out] */ IRouteInfo** info)
 {
-    VALIDATE_NOT_NULL(info);
-    return CRouteInfo::SelectBestRoute(routes, dest, info);
+    return RouteInfo::SelectBestRoute(routes, dest, info);
 }
 
 } //namespace Net

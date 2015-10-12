@@ -54,6 +54,10 @@ module
      *
      * @since 4.0
      */
+    /**
+     * @Involved
+     * interface IParcelable;
+     */
     interface IRouteInfo {
 
         /**

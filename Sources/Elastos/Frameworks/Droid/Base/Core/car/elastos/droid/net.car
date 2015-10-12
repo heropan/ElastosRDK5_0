@@ -687,6 +687,52 @@ module
         interface IProxyInfo;
     }
 
+    class CRouteInfo {
+        constructor(
+            [in] IIpPrefix* destination,
+            [in] IInetAddress* gateway,
+            [in] String iface,
+            [in] Int32 type);
+
+        constructor(
+            [in] IIpPrefix* destination,
+            [in] IInetAddress* gateway,
+            [in] String iface);
+
+        constructor(
+            [in] ILinkAddress* destination2,
+            [in] IInetAddress* gateway,
+            [in] String iface);
+
+        constructor(
+            [in] IIpPrefix* destination,
+            [in] IInetAddress* gateway);
+
+        constructor(
+            [in] ILinkAddress* destination2,
+            [in] IInetAddress* gateway);
+
+        constructor(
+            [in] IInetAddress* gateway);
+
+        constructor(
+            [in] IIpPrefix* destination);
+
+        constructor(
+            [in] ILinkAddress* destination2);
+
+        constructor(
+            [in] IIpPrefix* destination,
+            [in] Int32 type);
+
+        interface IParcelable;
+        interface IRouteInfo;
+    }
+
+    singleton class CRouteInfoHelper {
+        interface IRouteInfoHelper;
+    }
+
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos
@@ -1608,8 +1654,8 @@ module
 //            CARAPI constructor();
 //
 //            CARAPI constructor(
-//                [in] const String& sn,
-//                [in] const String& rt,
+//                [in] String sn,
+//                [in] String rt,
 //                [in] IDnsSdTxtRecord* tr);
 //
 //            interface INsdServiceInfo;

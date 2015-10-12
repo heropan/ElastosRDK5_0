@@ -223,5 +223,8 @@ module
         interface IHashtable {}
     }}  // Elastos.Utility
 
-
+    namespace Org {
+    namespace Conscrypt {
+        interface IPSKKeyManager {}
+    }} // Org.Conscrypt
 }
