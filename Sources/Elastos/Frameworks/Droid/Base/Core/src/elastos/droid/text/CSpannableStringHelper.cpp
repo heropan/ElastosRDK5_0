@@ -5,6 +5,10 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
+CAR_INTERFACE_IMPL(CSpannableStringHelper, Singleton, ISpannableStringHelper)
+
+CAR_SINGLETON_IMPL(CSpannableStringHelper)
+
 ECode CSpannableStringHelper::ValueOf(
     /* [in] */ ICharSequence* source,
     /* [out] */ ISpannableString** spannedString)

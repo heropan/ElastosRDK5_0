@@ -12,10 +12,8 @@ module
      * For mutable text, see {@link SpannableStringBuilder}.
      *
      * @Involve
-     * interface ISpanned
-     * interface ISpannable
-     * interface IGetChars
      * interface ICharSequence
+     * interface IGetChars
      * interface ISpannable
      */
     interface ISpannableString {

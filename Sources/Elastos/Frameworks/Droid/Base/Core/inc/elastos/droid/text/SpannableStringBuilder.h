@@ -7,7 +7,6 @@
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IPaint;
-//using Elastos::Utility::IObjectContainer;
 
 namespace Elastos {
 namespace Droid {
@@ -17,30 +16,45 @@ namespace Text {
  * This is the class for text whose content and markup can both be changed.
  */
 class SpannableStringBuilder
+    : public Object
+    , public ISpannableStringBuilder
+    , public ICharSequence
+    , public IGetChars
+    , public ISpannable
+    , public ISpanned
+    , public IEditable
+    , public IAppendable
+    , public IGraphicsOperations
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    SpannableStringBuilder();
+
+    virtual ~SpannableStringBuilder();
+
     /**
      * Create a new SpannableStringBuilder with empty contents
      */
-    SpannableStringBuilder();
+    CARAPI constructor();
 
     /**
      * Create a new SpannableStringBuilder containing a copy of the
      * specified text, including its spans if any.
      */
-    SpannableStringBuilder(
+    CARAPI constructor(
         /* [in] */ ICharSequence* text);
 
     /**
      * Create a new SpannableStringBuilder containing a copy of the
      * specified slice of the specified text, including its spans if any.
      */
-    SpannableStringBuilder(
+    CARAPI constructor(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
-
-    ~SpannableStringBuilder();
 
 public:
 
@@ -57,7 +71,8 @@ public:
     /**
      * Return the number of chars in the buffer.
      */
-    CARAPI_(Int32) GetLength();
+    CARAPI GetLength(
+        /* [out] */ Int32* length);
 
     // Documentation from interface
     CARAPI Insert(
@@ -136,22 +151,25 @@ public:
      * Return the buffer offset of the beginning of the specified
      * markup object, or -1 if it is not attached to this buffer.
      */
-    CARAPI_(Int32) GetSpanStart(
-        /* [in] */ IInterface* what);
+    CARAPI GetSpanStart(
+        /* [in] */ IInterface* what,
+        /* [out] */ Int32* start);
 
     /**
      * Return the buffer offset of the end of the specified
      * markup object, or -1 if it is not attached to this buffer.
      */
-    CARAPI_(Int32) GetSpanEnd(
-        /* [in] */ IInterface* what);
+    CARAPI GetSpanEnd(
+        /* [in] */ IInterface* what,
+        /* [out] */ Int32* end);
 
     /**
      * Return the flags of the end of the specified
      * markup object, or 0 if it is not attached to this buffer.
      */
-    CARAPI_(Int32) GetSpanFlags(
-        /* [in] */ IInterface* what);
+    CARAPI GetSpanFlags(
+        /* [in] */ IInterface* what,
+        /* [out] */ Int32* flags);
 
     /**
      * Return an array of the spans of the specified type that overlap
@@ -159,20 +177,22 @@ public:
      * a list of all the spans regardless of type.
      */
     //@SuppressWarnings("unchecked")
-    CARAPI_(AutoPtr< ArrayOf<IInterface*> >) GetSpans(
+    CARAPI GetSpans(
         /* [in] */ Int32 queryStart,
         /* [in] */ Int32 queryEnd,
-        /* [in] */ const InterfaceID& kind);
+        /* [in] */ const InterfaceID& kind,
+        /* [out, callee] */ ArrayOf<IInterface*>** spans);
 
     /**
      * Return the next offset after <code>start</code> but less than or
      * equal to <code>limit</code> where a span of the specified type
      * begins or ends.
      */
-    CARAPI_(Int32) NextSpanTransition(
+    CARAPI NextSpanTransition(
         /* [in] */ Int32 start,
         /* [in] */ Int32 limit,
-        /* [in] */ const InterfaceID& kind);
+        /* [in] */ const InterfaceID& kind,
+        /* [out] */ Int32* result);
 
     /**
      * Return a new CharSequence containing a copy of the specified
@@ -197,7 +217,8 @@ public:
      * Return a String containing a copy of the chars in this buffer.
      */
     //@Override
-    CARAPI_(String) ToString();
+    CARAPI ToString(
+        /* [out] */ String* result);
 
     /**
      * Return a String containing a copy of the chars in this buffer, limited to the
@@ -309,33 +330,14 @@ public:
         /* [in] */ ArrayOf<IInputFilter*>* filters);
 
     // Documentation from interface
-    CARAPI_(AutoPtr< ArrayOf<IInputFilter*> >) GetFilters();
+    CARAPI GetFilters(
+        /* [out, callee] */ ArrayOf<IInputFilter*>** filters);
 
     CARAPI Equals(
         /* [in] */ IInterface* o,
         /* [out] */ Boolean* result);
 
 protected:
-    /**
-     * Create a new SpannableStringBuilder with empty contents
-     */
-    CARAPI Init();
-
-    /**
-     * Create a new SpannableStringBuilder containing a copy of the
-     * specified text, including its spans if any.
-     */
-    CARAPI Init(
-        /* [in] */ ICharSequence* text);
-
-    /**
-     * Create a new SpannableStringBuilder containing a copy of the
-     * specified slice of the specified text, including its spans if any.
-     */
-    CARAPI Init(
-        /* [in] */ ICharSequence* text,
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end);
 
     CARAPI_(Boolean) IsSpanEquals(
         /* [in] */ IInterface* lhs,

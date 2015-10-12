@@ -7,9 +7,10 @@
 #include <elastos/core/Character.h>
 #include <elastos/core/Math.h>
 #include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::Character;
 using Elastos::Droid::Graphics::IRectF;
+using Elastos::Droid::Graphics::CRectF;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::PaintStyle;
@@ -19,6 +20,9 @@ using Elastos::Droid::Graphics::IPaintFontMetricsInt;
 using Elastos::Droid::Text::Style::EIID_IMetricAffectingSpan;
 using Elastos::Droid::Text::Style::EIID_ICharacterStyle;
 using Elastos::Droid::Text::Style::EIID_IReplacementSpan;
+
+using Elastos::Core::Character;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -82,9 +86,7 @@ AutoPtr<TextLine> TextLine::Recycle(
         tl->mReplacementSpanSpanSet->Recycle();
     }
 
-    //synchronized(sCached)
-    {
-        AutoLock lock(sCachedLock);
+    synchronized(sCachedLock) {
         for (Int32 i = 0; i < sCached->GetLength(); ++i) {
             if ((*sCached)[i] == NULL) {
                 sCached->Set(i, tl);
@@ -95,7 +97,7 @@ AutoPtr<TextLine> TextLine::Recycle(
     return NULL;
 }
 
-void TextLine::Set(
+ECode TextLine::Set(
     /* [in] */ ITextPaint* paint,
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
@@ -112,10 +114,10 @@ void TextLine::Set(
     mDir = dir;
     mDirections = directions;
     if (mDirections == NULL) {
-        assert(0 && "Directions cannot be null");
-//        throw new IllegalArgumentException("Directions cannot be null");
+        Logger::E("TextLine", "Directions cannot be null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    assert(mDirections != NULL);
+
     mHasTabs = hasTabs;
     mSpanned = NULL;
 
@@ -155,6 +157,7 @@ void TextLine::Set(
         }
     }
     mTabs = tabStops;
+    return NOERROR;
 }
 
 void TextLine::Draw(
@@ -198,6 +201,7 @@ void TextLine::Draw(
             if (mHasTabs && j < runLimit) {
                 codept = (*(mChars.Get()))[j];
                 if (codept >= 0xd800 && codept < 0xdc00 && j + 1 < runLimit) {
+                    assert(0 && "TODO");
 //                    codept = Character::CodePointAt(mChars, j);
 /*                    if (codept >= Layout::MIN_EMOJI && codept <= Layout::MAX_EMOJI) {
                         bm = Layout::EMOJI_FACTORY->GetBitmapFromAndroidPua(codept);
@@ -214,7 +218,8 @@ void TextLine::Draw(
 
                 if (codept == '\t') {
                     h = mDir * NextTab(h * mDir);
-                } else if (bm != NULL) {
+                }
+                else if (bm != NULL) {
                     Float bmAscent = Ascent(j);
                     Int32 bitmapHeight;
                     bm->GetHeight(&bitmapHeight);
@@ -224,14 +229,10 @@ void TextLine::Draw(
                     Float width = temp * scale;
 
                     if (emojiRect == NULL) {
-                        //emojiRect = new RectF();
-//                        CRectF::New((IRectF**)&emojiRect);
+                        CRectF::New((IRectF**)&emojiRect);
                     }
-
-                    assert(emojiRect != NULL);
-                    emojiRect->Set(x + h, y + bmAscent,
-                            x + h + width, y);
-                    c->DrawBitmap(bm, NULL, emojiRect, mPaint);
+                    emojiRect->Set(x + h, y + bmAscent, x + h + width, y);
+                    c->DrawBitmap(bm, NULL, emojiRect, IPaint::Probe(mPaint));
                     h += width;
                     j++;
                 }
@@ -289,12 +290,12 @@ Float TextLine::Measure(
             if (mHasTabs && j < runLimit) {
                 codept = (*chars)[j];
                 if (codept >= 0xd800 && codept < 0xdc00 && j + 1 < runLimit) {
-                    //TODO
+                    assert(0 && "TODO");
                     // codept = Character::CodePointAt(chars, j);
                     if (codept >= Layout::MIN_EMOJI && codept <= Layout::MAX_EMOJI) {
-                        //TODO
                         // bm = Layout::EMOJI_FACTORY->GetBitmapFromAndroidPua(codept);
-                    } else if (codept > 0xffff) {
+                    }
+                    else if (codept > 0xffff) {
                         ++j;
                         continue;
                     }
@@ -633,7 +634,7 @@ Int32 TextLine::GetOffsetBeforeAfter(
     }
 
     AutoPtr<ITextPaint> wp = mWorkPaint;
-    ITextPaint* p = ITextPaint::Probe(wp);
+    IPaint* p = IPaint::Probe(wp);
     wp->Set(mPaint);
 
     Int32 spanStart = runStart;
@@ -683,7 +684,7 @@ Int32 TextLine::GetOffsetBeforeAfter(
     Int32 cursorOpt = after ? IPaint::CURSOR_AFTER : IPaint::CURSOR_BEFORE;
     Int32 temp;
     if (mCharsValid) {
-        p->GetTextRunCursor(*mChars, spanStart, spanLimit - spanStart,
+        p->GetTextRunCursor(mChars, spanStart, spanLimit - spanStart,
                 dir, offset, cursorOpt, &temp);
         return temp;
     } else {
@@ -716,7 +717,7 @@ void TextLine::ExpandMetricsFromPaint(
     fmi->GetLeading(&previousLeading);
 
     Int32 spacing = 0;
-    wp->GetFontMetricsInt(fmi, &spacing);
+    IPaint::Probe(wp)->GetFontMetricsInt(fmi, &spacing);
 
     UpdateMetrics(fmi, previousTop, previousAscent, previousDescent, previousBottom,
             previousLeading);
@@ -750,17 +751,18 @@ Float TextLine::HandleText(
 
     Float ret = 0;
 
+    IPaint* p = IPaint::Probe(wp);
     Int32 contextLen = contextEnd - contextStart;
     Int32 bgColor, underlineColor;
     wp->GetBgColor(&bgColor);
     wp->GetUnderlineColor(&underlineColor);
     if (needWidth || (c != NULL && (bgColor != 0 || underlineColor != 0 || runIsRtl))) {
         if (mCharsValid) {
-            wp->GetTextRunAdvances(*(mChars.Get()), start, runLen,
+            p->GetTextRunAdvances(mChars, start, runLen,
                     contextStart, contextLen, runIsRtl, NULL, 0, &ret);
         } else {
             Int32 delta = mStart;
-            wp->GetTextRunAdvances(mText, delta + start,
+            p->GetTextRunAdvances(mText, delta + start,
                     delta + end, delta + contextStart, delta + contextEnd,
                     runIsRtl, NULL, 0, &ret);
         }
@@ -773,16 +775,16 @@ Float TextLine::HandleText(
 
         if (bgColor != 0) {
             Int32 previousColor;
-            wp->GetColor(&previousColor);
+            p->GetColor(&previousColor);
             PaintStyle previousStyle;
-            wp->GetStyle(&previousStyle);
+            p->GetStyle(&previousStyle);
 
-            wp->SetColor(bgColor);
-            wp->SetStyle(PaintStyle_FILL);
-            c->DrawRect(x, top, x + ret, bottom, wp);
+            p->SetColor(bgColor);
+            p->SetStyle(PaintStyle_FILL);
+            c->DrawRect(x, top, x + ret, bottom, p);
 
-            wp->SetStyle(previousStyle);
-            wp->SetColor(previousColor);
+            p->SetStyle(previousStyle);
+            p->SetColor(previousColor);
         }
 
         Int32 underlineColor;
@@ -792,29 +794,29 @@ Float TextLine::HandleText(
             Int32 baselineShift;
             Float textSize;
             wp->GetBaselineShift(&baselineShift);
-            wp->GetTextSize(&textSize);
+            p->GetTextSize(&textSize);
             Float underlineTop = y + baselineShift + (1.0f / 9.0f) * textSize;
 
             Int32 previousColor;
-            wp->GetColor(&previousColor);
+            p->GetColor(&previousColor);
             PaintStyle previousStyle;
-            wp->GetStyle(&previousStyle);
+            p->GetStyle(&previousStyle);
             Boolean previousAntiAlias;
-            wp->IsAntiAlias(&previousAntiAlias);
+            p->IsAntiAlias(&previousAntiAlias);
 
-            wp->SetStyle(PaintStyle_FILL);
-            wp->SetAntiAlias(TRUE);
+            p->SetStyle(PaintStyle_FILL);
+            p->SetAntiAlias(TRUE);
 
             Int32 underlineColor;
             Float underlineThickness;
             wp->GetUnderlineColor(&underlineColor);
-            wp->SetColor(underlineColor);
+            p->SetColor(underlineColor);
             wp->GetUnderlineThickness(&underlineThickness);
-            c->DrawRect(x, underlineTop, x + ret, underlineTop + underlineThickness, wp);
+            c->DrawRect(x, underlineTop, x + ret, underlineTop + underlineThickness, p);
 
-            wp->SetStyle(previousStyle);
-            wp->SetColor(previousColor);
-            wp->SetAntiAlias(previousAntiAlias);
+            p->SetStyle(previousStyle);
+            p->SetColor(previousColor);
+            p->SetAntiAlias(previousAntiAlias);
         }
 
         Int32 baselineShift;
@@ -842,6 +844,7 @@ Float TextLine::HandleReplacement(
 {
     assert(replacement != NULL);
 
+    IPaint* p = IPaint::Probe(wp);
     Float ret = 0;
 
     Int32 textStart = mStart + start;
@@ -865,7 +868,7 @@ Float TextLine::HandleReplacement(
         }
 
         Int32 v;
-        replacement->GetSize(wp, mText, textStart, textLimit, fmi, &v);
+        replacement->GetSize(p, mText, textStart, textLimit, fmi, &v);
         ret = (Float)v;
 
         if (needUpdateMetrics) {
@@ -879,7 +882,7 @@ Float TextLine::HandleReplacement(
             x -= ret;
         }
         replacement->Draw(c, mText, textStart, textLimit,
-                x, top, y, bottom, wp);
+                x, top, y, bottom, p);
     }
 
     return runIsRtl ? -ret : ret;
@@ -946,7 +949,7 @@ Float TextLine::HandleRun(
             } else {
                 // We might have a replacement that uses the draw
                 // state, otherwise measure state would suffice.
-                span->UpdateDrawState(wp);
+                ICharacterStyle::Probe(span)->UpdateDrawState(wp);
             }
         }
 
@@ -993,7 +996,7 @@ void TextLine::DrawTextRun(
     if (mCharsValid) {
         Int32 count = end - start;
         Int32 contextCount = contextEnd - contextStart;
-        c->DrawTextRun(*(mChars.Get()), start, count, contextStart, contextCount,
+        c->DrawTextRun(mChars, start, count, contextStart, contextCount,
                 x, y, runIsRtl, IPaint::Probe(wp));
     } else {
         Int32 delta = mStart;

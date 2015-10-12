@@ -65,7 +65,7 @@ public:
      * @param hasTabs true if the line might contain tabs or emoji
      * @param tabStops the tabStops. Can be null.
      */
-    virtual CARAPI_(void) Set(
+    virtual CARAPI Set(
         /* [in] */ ITextPaint* paint,
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,

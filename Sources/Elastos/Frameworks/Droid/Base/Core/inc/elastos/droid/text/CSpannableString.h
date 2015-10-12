@@ -9,9 +9,19 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
-CarClass(CSpannableString), public SpannableStringInternal
+CarClass(CSpannableString)
+    , public SpannableStringInternal
+    , public ISpannableString
+    , public ICharSequence
+    , public IGetChars
+    , public ISpannable
+    , public ISpanned
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ ICharSequence* source);
 
