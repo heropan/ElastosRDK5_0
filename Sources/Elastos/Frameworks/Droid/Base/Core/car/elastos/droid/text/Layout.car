@@ -254,7 +254,6 @@ module
         GetBottomPadding(
             [out] Int32* number);
 
-
         /**
          * Returns true if the character at offset and the preceding character
          * are at different run levels (and thus there's a split caret).

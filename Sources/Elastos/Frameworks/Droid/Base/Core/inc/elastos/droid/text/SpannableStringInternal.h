@@ -13,11 +13,8 @@ namespace Text {
 
 class SpannableStringInternal
     : public Object
-    , public ISpannableStringInternal
 {
 public:
-    CAR_INTERFACE_DECL()
-
     SpannableStringInternal();
 
     virtual ~SpannableStringInternal();

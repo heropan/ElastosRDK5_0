@@ -24,6 +24,9 @@ SOURCES += CLayoutDirections.cpp
 SOURCES += MeasuredText.cpp
 
 SOURCES += CSimpleStringSplitter.cpp
+SOURCES += SpannableStringInternal.cpp
+#SOURCES += CSpannableString.cpp
+#SOURCES += CSpannableStringHelper.cpp
 SOURCES += TextDirectionHeuristics.cpp
 SOURCES += TextLine.cpp
 SOURCES += TextPaint.cpp
@@ -51,9 +54,7 @@ SOURCES += CTextUtils.cpp
 #SOURCES += CNoCopySpan.cpp
 #SOURCES += Selection.cpp
 #SOURCES += CSelection.cpp
-#SOURCES += SpannableStringInternal.cpp
-#SOURCES += CSpannableString.cpp
-#SOURCES += CSpannableStringHelper.cpp
+
 #SOURCES += CAllCaps.cpp
 #SOURCES += SpannedString.cpp
 #SOURCES += CSpannedString.cpp

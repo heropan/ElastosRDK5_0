@@ -25,7 +25,6 @@ module
     merge("text/Spannable.car");
     merge("text/SpannableString.car");
     merge("text/SpannableStringBuilder.car");
-    merge("text/SpannableStringInternal.car");
     merge("text/Spanned.car");
     merge("text/SpannedString.car");
     merge("text/StaticLayout.car");
@@ -1397,11 +1396,6 @@ module
     //     constructor(
     //         [in] ICharSequence* source);
 
-    //     constructor(
-    //         [in] ICharSequence* source,
-    //         [in] Int32 start,
-    //         [in] Int32 end);
-
     //     interface ISpannedString;
     //     interface IGetChars;
     // }
@@ -1417,6 +1411,9 @@ module
 
     //     interface ISpannableString;
     //     interface IGetChars;
+    //     interface ISpanned;
+    //     interface ISpannable;
+    //     interface ICharSequence;
     // }
 
     // singleton class CSpannedStringHelper {

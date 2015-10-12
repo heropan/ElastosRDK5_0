@@ -46,11 +46,11 @@ public:
             /* [in] */ Int32 increment,
             /* [in] */ ArrayOf<IInterface*>* spans);
 
-        virtual CARAPI_(void) Reset(
+        CARAPI Reset(
             /* [in] */ Int32 increment,
             /* [in] */ ArrayOf<IInterface*>* spans);
 
-        virtual CARAPI_(Float) NextTab(
+        CARAPI_(Float) NextTab(
             /* [in] */ Float h);
 
     private:
@@ -166,6 +166,51 @@ public:
     virtual ~Layout();
 
     /**
+     * Subclasses of Layout use this constructor to set the display text,
+     * width, and other standard properties.
+     * @param text the text to render
+     * @param paint the default paint for the layout.  Styles can override
+     * various attributes of the paint.
+     * @param width the wrapping width for the text.
+     * @param align whether to left, right, or center the text.  Styles can
+     * override the alignment.
+     * @param spacingMult factor by which to scale the font size to get the
+     * default line spacing
+     * @param spacingAdd amount to add to the default line spacing
+     */
+    CARAPI constructor(
+        /* [in] */ ICharSequence* text,
+        /* [in] */ ITextPaint* paint,
+        /* [in] */ Int32 width,
+        /* [in] */ LayoutAlignment align,
+        /* [in] */ Float spacingMult,
+        /* [in] */ Float spacingAdd);
+
+    /**
+     * Subclasses of Layout use this constructor to set the display text,
+     * width, and other standard properties.
+     * @param text the text to render
+     * @param paint the default paint for the layout.  Styles can override
+     * various attributes of the paint.
+     * @param width the wrapping width for the text.
+     * @param align whether to left, right, or center the text.  Styles can
+     * override the alignment.
+     * @param spacingMult factor by which to scale the font size to get the
+     * default line spacing
+     * @param spacingAdd amount to add to the default line spacing
+     *
+     * @hide
+     */
+    CARAPI constructor(
+        /* [in] */ ICharSequence* text,
+        /* [in] */ ITextPaint* paint,
+        /* [in] */ Int32 width,
+        /* [in] */ LayoutAlignment align,
+        /* [in] */ ITextDirectionHeuristic* textDir,
+        /* [in] */ Float spacingMult,
+        /* [in] */ Float spacingAdd);
+
+    /**
      * Return how wide a layout must be in order to display the
      * specified text with one line per paragraph.
      */
@@ -186,7 +231,7 @@ public:
     /**
      * Replace constructor properties of this Layout with new ones.  Be careful.
      */
-    virtual CARAPI ReplaceWith(
+    CARAPI ReplaceWith(
         /* [in] */ ICharSequence* text,
         /* [in] */ ITextPaint* paint,
         /* [in] */ Int32 width,
@@ -194,11 +239,12 @@ public:
         /* [in] */ Float spacingmult,
         /* [in] */ Float spacingadd);
 
+
     /**
      * Draw this Layout on the specified Canvas.
      */
-    virtual CARAPI Draw(
-        /* [in] */ ICanvas* c);
+    CARAPI Draw(
+        /* [in] */  ICanvas* c);
 
     /**
      * Draw this Layout on the specified canvas, with the highlight path drawn
@@ -210,100 +256,115 @@ public:
      * @param cursorOffsetVertical the amount to temporarily translate the
      *        canvas while rendering the highlight
      */
-    virtual CARAPI Draw(
-        /* [in] */ ICanvas* canvas,
-        /* [in] */ IPath* highlight,
-        /* [in] */ IPaint* highlightPaint,
-        /* [in] */ Int32 cursorOffsetVertical);
+    CARAPI Draw(
+        /* [in] */  ICanvas* canvas,
+        /* [in] */  IPath* highlight,
+        /* [in] */  IPaint* highlightPaint,
+        /* [in] */  Int32 cursorOffsetVertical);
 
     /**
      * @hide
      */
-    virtual CARAPI DrawText(
-        /* [in] */ ICanvas* canvas,
-        /* [in] */ Int32 firstLine,
-        /* [in] */ Int32 lastLine);
+    CARAPI DrawText(
+        /* [in] */  ICanvas* canvas,
+        /* [in] */  Int32 firstLine,
+        /* [in] */  Int32 lastLine);
 
     /**
      * @hide
      */
-    virtual CARAPI DrawBackground(
-        /* [in] */ ICanvas* canvas,
-        /* [in] */ IPath* highlight,
-        /* [in] */ IPaint* highlightPaint,
-        /* [in] */ Int32 cursorOffsetVertical,
-        /* [in] */ Int32 firstLine,
-        /* [in] */ Int32 lastLine);
+    CARAPI DrawBackground(
+        /* [in] */  ICanvas* canvas,
+        /* [in] */  IPath* highlight,
+        /* [in] */  IPaint* highlightPaint,
+        /* [in] */  Int32 cursorOffsetVertical,
+        /* [in] */  Int32 firstLine,
+        /* [in] */  Int32 lastLine);
 
     /**
      * @param canvas
      * @return The range of lines that need to be drawn, possibly empty.
      * @hide
      */
-    virtual CARAPI_(Int64) GetLineRangeForDraw(
-        /* [in] */ ICanvas* canvas);
+    CARAPI GetLineRangeForDraw(
+        /* [in] */  ICanvas* canvas,
+        /* [out] */  Int64* range);
 
     /**
      * Return the text that is displayed by this Layout.
      */
-    virtual CARAPI_(AutoPtr<ICharSequence>) GetText();
+    CARAPI GetText(
+        /* [out] */  ICharSequence** text);
 
     /**
      * Return the base Paint properties for this layout.
      * Do NOT change the paint, which may result in funny
      * drawing for this layout.
      */
-    virtual CARAPI_(AutoPtr<ITextPaint>) GetPaint();
+    CARAPI GetPaint(
+        /* [out] */  ITextPaint** paint);
 
     /**
      * Return the width of this layout.
      */
-    virtual CARAPI_(Int32) GetWidth();
+    CARAPI GetWidth(
+        /* [out] */  Int32* width);
 
     /**
      * Return the width to which this Layout is ellipsizing, or
      * {@link #getWidth} if it is not doing anything special.
      */
-    virtual CARAPI_(Int32) GetEllipsizedWidth();
+    CARAPI GetEllipsizedWidth(
+        /* [out] */  Int32* width);
 
     /**
      * Increase the width of this layout to the specified width.
      * Be careful to use this only when you know it is appropriate&mdash;
      * it does not cause the text to reflow to use the full new width.
      */
-    virtual CARAPI IncreaseWidthTo(
-        /* [in] */ Int32 wid);
+    CARAPI IncreaseWidthTo(
+        /* [in] */  Int32 wid);
 
     /**
      * Return the total height of this layout.
      */
-    virtual CARAPI_(Int32) GetHeight();
+    CARAPI GetHeight(
+        /* [out] */  Int32* height);
 
     /**
      * Return the base alignment of this layout.
      */
-    virtual CARAPI_(LayoutAlignment) GetAlignment();
+    CARAPI GetAlignment(
+        /* [out] */  LayoutAlignment* alignment);
 
     /**
      * Return what the text height is multiplied by to get the line height.
      */
-    virtual CARAPI_(Float) GetSpacingMultiplier();
+    CARAPI GetSpacingMultiplier(
+        /* [out] */  Float* spacingMutlt);
 
     /**
      * Return the number of units of leading that are added to each line.
      */
-    virtual CARAPI_(Float) GetSpacingAdd();
+    CARAPI GetSpacingAdd(
+        /* [out] */  Float* spacingAdd);
 
     /**
      * Return the heuristic used to determine paragraph text direction.
      * @hide
      */
-    virtual CARAPI_(AutoPtr<ITextDirectionHeuristic>) GetTextDirectionHeuristic();
+    CARAPI GetTextDirectionHeuristic(
+        /* [out] */  ITextDirectionHeuristic** textDir);
 
     /**
      * Return the number of lines of text in this layout.
      */
-    virtual CARAPI_(Int32) GetLineCount() = 0;
+    CARAPI GetLineCount(
+        /* [out] */  Int32* number)
+    {
+        assert(0  && "E_NOT_IMPLEMENTED : subclass must implements this method.");
+        return E_NOT_IMPLEMENTED;
+    }
 
     /**
      * Return the baseline for the specified line (0&hellip;getLineCount() - 1)
@@ -313,9 +374,10 @@ public:
      * @param bounds Optional. If not null, it returns the extent of the line
      * @return the Y-coordinate of the baseline
      */
-    virtual CARAPI_(Int32) GetLineBounds(
-        /* [in] */ Int32 line,
-        /* [in] */ IRect* bounds);
+    CARAPI GetLineBounds(
+        /* [in] */  Int32 line,
+        /* [in] */  IRect* bounds,
+        /* [out] */  Int32* baseline);
 
     /**
      * Return the vertical position of the top of the specified line
@@ -323,38 +385,63 @@ public:
      * If the specified line is equal to the line count, returns the
      * bottom of the last line.
      */
-    virtual CARAPI_(Int32) GetLineTop(
-        /* [in] */ Int32 line) = 0;
+    CARAPI GetLineTop(
+        /* [in] */  Int32 line,
+        /* [out] */  Int32* pos)
+    {
+        assert(0  && "E_NOT_IMPLEMENTED : subclass must implements this method.");
+        return E_NOT_IMPLEMENTED;
+    }
 
     /**
      * Return the descent of the specified line(0&hellip;getLineCount() - 1).
      */
-    virtual CARAPI_(Int32) GetLineDescent(
-        /* [in] */ Int32 line) = 0;
+    CARAPI GetLineDescent(
+        /* [in] */  Int32 line,
+        /* [out] */  Int32* descent)
+    {
+        assert(0  && "E_NOT_IMPLEMENTED : subclass must implements this method.");
+        return E_NOT_IMPLEMENTED;
+    }
 
     /**
      * Return the text offset of the beginning of the specified line (
      * 0&hellip;getLineCount()). If the specified line is equal to the line
      * count, returns the length of the text.
      */
-    virtual CARAPI_(Int32) GetLineStart(
-        /* [in] */ Int32 line) = 0;
+    CARAPI GetLineStart(
+        /* [in] */  Int32 line,
+        /* [out] */  Int32* offset)
+    {
+        assert(0  && "E_NOT_IMPLEMENTED : subclass must implements this method.");
+        return E_NOT_IMPLEMENTED;
+    }
 
     /**
      * Returns the primary directionality of the paragraph containing the
      * specified line, either 1 for left-to-right lines, or -1 for right-to-left
      * lines (see {@link #DIR_LEFT_TO_RIGHT}, {@link #DIR_RIGHT_TO_LEFT}).
      */
-    virtual CARAPI_(Int32) GetParagraphDirection(
-        /* [in] */ Int32 line) = 0;
+    CARAPI GetParagraphDirection(
+        /* [in] */  Int32 line,
+        /* [out] */  Int32* direction)
+    {
+        assert(0  && "E_NOT_IMPLEMENTED : subclass must implements this method.");
+        return E_NOT_IMPLEMENTED;
+    }
 
     /**
      * Returns whether the specified line contains one or more
      * characters that need to be handled specially, like tabs
      * or emoji.
      */
-    virtual CARAPI_(Boolean) GetLineContainsTab(
-        /* [in] */ Int32 line) = 0;
+    CARAPI GetLineContainsTab(
+        /* [in] */  Int32 line,
+        /* [out] */  Boolean* result)
+    {
+        assert(0  && "E_NOT_IMPLEMENTED : subclass must implements this method.");
+        return E_NOT_IMPLEMENTED;
+    }
 
     /**
      * Returns the directional run information for the specified line.
@@ -363,20 +450,35 @@ public:
      *
      * <p>NOTE: this is inadequate to support bidirectional text, and will change.
      */
-    virtual CARAPI_(AutoPtr<ILayoutDirections>) GetLineDirections(
-        /* [in] */ Int32 line) = 0;
+    CARAPI GetLineDirections(
+        /* [in] */  Int32 line,
+        /* [out] */  ILayoutDirections** dirctions)
+    {
+        assert(0  && "E_NOT_IMPLEMENTED : subclass must implements this method.");
+        return E_NOT_IMPLEMENTED;
+    }
 
     /**
      * Returns the (negative) number of extra pixels of ascent padding in the
      * top line of the Layout.
      */
-    virtual CARAPI_(Int32) GetTopPadding() = 0;
+    CARAPI GetTopPadding(
+        /* [out] */  Int32* number)
+    {
+        assert(0  && "E_NOT_IMPLEMENTED : subclass must implements this method.");
+        return E_NOT_IMPLEMENTED;
+    }
 
     /**
      * Returns the number of extra pixels of descent padding in the
      * bottom line of the Layout.
      */
-    virtual CARAPI_(Int32) GetBottomPadding() = 0;
+    CARAPI GetBottomPadding(
+        /* [out] */  Int32* number)
+    {
+        assert(0  && "E_NOT_IMPLEMENTED : subclass must implements this method.");
+        return E_NOT_IMPLEMENTED;
+    }
 
     /**
      * Returns true if the character at offset and the preceding character
@@ -385,78 +487,88 @@ public:
      * @return true if at a level boundary
      * @hide
      */
-    virtual CARAPI_(Boolean) IsLevelBoundary(
-        /* [in] */ Int32 offset);
+    CARAPI IsLevelBoundary(
+        /* [in] */  Int32 offset,
+        /* [out] */  Boolean* flag);
 
     /**
      * Returns true if the character at offset is right to left (RTL).
      * @param offset the offset
      * @return true if the character is RTL, false if it is LTR
      */
-    virtual CARAPI_(Boolean) IsRtlCharAt(
-        /* [in] */ Int32 offset);
+    CARAPI IsRtlCharAt(
+        /* [in] */  Int32 offset,
+        /* [out] */  Boolean* flag);
 
     /**
      * Get the primary horizontal position for the specified text offset.
      * This is the location where a new character would be inserted in
      * the paragraph's primary direction.
      */
-    virtual CARAPI_(Float) GetPrimaryHorizontal(
-        /* [in] */ Int32 offset);
+    CARAPI GetPrimaryHorizontal(
+        /* [in] */  Int32 offset,
+        /* [out] */  Float* pos);
 
     /**
      * Get the primary horizontal position for the specified text offset, but
      * optionally clamp it so that it doesn't exceed the width of the layout.
      * @hide
      */
-    CARAPI_(Float) GetPrimaryHorizontal(
-        /* [in] */ Int32 offset,
-        /* [in] */ Boolean clamped);
+    CARAPI GetPrimaryHorizontal(
+        /* [in] */  Int32 offset,
+        /* [in] */  Boolean clamped,
+        /* [out] */  Float* pos);
 
     /**
      * Get the secondary horizontal position for the specified text offset.
      * This is the location where a new character would be inserted in
      * the direction other than the paragraph's primary direction.
      */
-    virtual CARAPI_(Float) GetSecondaryHorizontal(
-        /* [in] */ Int32 offset);
+    CARAPI GetSecondaryHorizontal(
+        /* [in] */  Int32 offset,
+        /* [out] */  Float* pos);
 
     /**
      * Get the secondary horizontal position for the specified text offset, but
      * optionally clamp it so that it doesn't exceed the width of the layout.
      * @hide
      */
-    CARAPI_(Float) GetSecondaryHorizontal(
-        /* [in] */ Int32 offset,
-        /* [in] */ Boolean clamped);
+    CARAPI GetSecondaryHorizontal(
+        /* [in] */  Int32 offset,
+        /* [in] */  Boolean clamped,
+        /* [out] */  Float* pos);
 
     /**
      * Get the leftmost position that should be exposed for horizontal
      * scrolling on the specified line.
      */
-    virtual CARAPI_(Float) GetLineLeft(
-        /* [in] */ Int32 line);
+    CARAPI GetLineLeft(
+        /* [in] */  Int32 line,
+        /* [out] */  Float* pos);
 
     /**
      * Get the rightmost position that should be exposed for horizontal
      * scrolling on the specified line.
      */
-    virtual CARAPI_(Float) GetLineRight(
-        /* [in] */ Int32 line);
+    CARAPI GetLineRight(
+        /* [in] */  Int32 line,
+        /* [out] */  Float* pos);
 
     /**
      * Gets the unsigned horizontal extent of the specified line, including
      * leading margin indent, but excluding trailing whitespace.
      */
-    virtual CARAPI_(Float) GetLineMax(
-        /* [in] */ Int32 line);
+    CARAPI GetLineMax(
+        /* [in] */  Int32 line,
+        /* [out] */  Float* extent);
 
     /**
      * Gets the unsigned horizontal extent of the specified line, including
      * leading margin indent and trailing whitespace.
      */
-    virtual CARAPI_(Float) GetLineWidth(
-        /* [in] */ Int32 line);
+    CARAPI GetLineWidth(
+        /* [in] */  Int32 line,
+        /* [out] */  Float* extent);
 
     /**
      * Get the line number corresponding to the specified vertical position.
@@ -464,70 +576,81 @@ public:
      * below the bottom of the text, you get the last line.
      */
     // FIXME: It may be faster to do a linear search for layouts without many lines.
-    virtual CARAPI_(Int32) GetLineForVertical(
-        /* [in] */ Int32 vertical);
+    CARAPI GetLineForVertical(
+        /* [in] */  Int32 vertical,
+        /* [out] */  Int32* number);
 
     /**
      * Get the line number on which the specified text offset appears.
      * If you ask for a position before 0, you get 0; if you ask for a position
      * beyond the end of the text, you get the last line.
      */
-    virtual CARAPI_(Int32) GetLineForOffset(
-        /* [in] */ Int32 offset);
+    CARAPI GetLineForOffset(
+        /* [in] */  Int32 offset,
+        /* [out] */  Int32* number);
 
     /**
      * Get the character offset on the specified line whose position is
      * closest to the specified horizontal position.
      */
-    virtual CARAPI_(Int32) GetOffsetForHorizontal(
-        /* [in] */ Int32 line,
-        /* [in] */ Float horiz);
+    CARAPI GetOffsetForHorizontal(
+        /* [in] */  Int32 line,
+        /* [in] */  Float horiz,
+        /* [out] */  Int32* offset);
 
     /**
      * Return the text offset after the last character on the specified line.
      */
-    virtual CARAPI_(Int32) GetLineEnd(
-        /* [in] */ Int32 line);
+    CARAPI GetLineEnd(
+        /* [in] */  Int32 line,
+        /* [out] */  Int32* end);
 
     /**
      * Return the text offset after the last visible character (so whitespace
      * is not counted) on the specified line.
      */
-    virtual CARAPI_(Int32) GetLineVisibleEnd(
-        /* [in] */ Int32 line);
+    CARAPI GetLineVisibleEnd(
+        /* [in] */  Int32 line,
+        /* [out] */  Int32* offset);
 
     /**
      * Return the vertical position of the bottom of the specified line.
      */
-    virtual CARAPI_(Int32) GetLineBottom(
-        /* [in] */ Int32 line);
+    CARAPI GetLineBottom(
+        /* [in] */  Int32 line,
+        /* [out] */  Int32* pos);
 
     /**
      * Return the vertical position of the baseline of the specified line.
      */
-    virtual CARAPI_(Int32) GetLineBaseline(
-        /* [in] */ Int32 line);
+    CARAPI GetLineBaseline(
+        /* [in] */  Int32 line,
+        /* [out] */  Int32* pos);
 
     /**
      * Get the ascent of the text on the specified line.
      * The return value is negative to match the Paint.ascent() convention.
      */
-    virtual CARAPI_(Int32) GetLineAscent(
-        /* [in] */ Int32 line);
+    CARAPI GetLineAscent(
+        /* [in] */  Int32 line,
+        /* [out] */  Int32* ascent);
 
-    virtual CARAPI_(Int32) GetOffsetToLeftOf(
-        /* [in] */ Int32 offset);
+    CARAPI GetOffsetToLeftOf(
+        /* [in] */  Int32 offset,
+        /* [out] */  Int32* retOffset);
 
-    virtual CARAPI_(Int32) GetOffsetToRightOf(
-        /* [in] */ Int32 offset);
+    CARAPI GetOffsetToRightOf(
+        /* [in] */  Int32 offset,
+        /* [out] */  Int32* retOffset);
 
     /**
      * Determine whether we should clamp cursor position. Currently it's
      * only robust for left-aligned displays.
      * @hide
      */
-    virtual CARAPI_(Boolean) ShouldClampCursor(
-        /* [in] */ Int32 line);
+    CARAPI ShouldClampCursor(
+        /* [in] */  Int32 line,
+        /* [out] */  Boolean* cursor);
 
     /**
      * Fills in the specified Path with a representation of a cursor
@@ -535,10 +658,10 @@ public:
      * but can be multiple discontinuous lines in text with multiple
      * directionalities.
      */
-    virtual CARAPI GetCursorPath(
-        /* [in] */ Int32 point,
-        /* [in] */ IPath* dest,
-        /* [in] */ ICharSequence* editingBuffer);
+    CARAPI GetCursorPath(
+        /* [in] */  Int32 point,
+        /* [in] */  IPath* dest,
+        /* [in] */  ICharSequence* editingBuffer);
 
     /**
      * Fills in the specified Path with a representation of a highlight
@@ -546,163 +669,57 @@ public:
      * or a potentially discontinuous set of rectangles.  If the start
      * and end are the same, the returned path is empty.
      */
-    virtual CARAPI GetSelectionPath(
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end,
-        /* [in] */ IPath* dest);
+    CARAPI GetSelectionPath(
+        /* [in] */  Int32 start,
+        /* [in] */  Int32 end,
+        /* [in] */  IPath* dest);
 
     /**
      * Get the alignment of the specified paragraph, taking into account
      * markup attached to it.
      */
-    virtual CARAPI_(LayoutAlignment) GetParagraphAlignment(
-        /* [in] */ Int32 line);
+    CARAPI GetParagraphAlignment(
+        /* [in] */  Int32 line,
+        /* [out] */  LayoutAlignment* align);
 
     /**
      * Get the left edge of the specified paragraph, inset by left margins.
      */
-    virtual CARAPI_(Int32) GetParagraphLeft(
-        /* [in] */ Int32 line);
+    CARAPI GetParagraphLeft(
+        /* [in] */  Int32 line,
+        /* [out] */  Int32* leftEdge);
 
     /**
      * Get the right edge of the specified paragraph, inset by right margins.
      */
-    virtual CARAPI_(Int32) GetParagraphRight(
-        /* [in] */ Int32 line);
-
-    /* package */
-    static CARAPI_(Float) MeasurePara(
-        /* [in] */ ITextPaint* paint,
-        /* [in] */ ICharSequence* text,
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end);
-
-    /**
-     * Returns the position of the next tab stop after h on the line.
-     *
-     * @param text the text
-     * @param start start of the line
-     * @param end limit of the line
-     * @param h the current horizontal offset
-     * @param tabs the tabs, can be null.  If it is null, any tabs in effect
-     * on the line will be used.  If there are no tabs, a default offset
-     * will be used to compute the tab stop.
-     * @return the offset of the next tab stop.
-     */
-    static CARAPI_(Float) NextTab(
-        /* [in] */ ICharSequence* text,
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end,
-        /* [in] */ Float h,
-        /* [in] */ ArrayOf<IInterface*>* tabs);
-
-     /**
-     * Returns the same as <code>text.getSpans()</code>, except where
-     * <code>start</code> and <code>end</code> are the same and are not
-     * at the very beginning of the text, in which case an empty array
-     * is returned instead.
-     * <p>
-     * This is needed because of the special case that <code>getSpans()</code>
-     * on an empty range returns the spans adjacent to that range, which is
-     * primarily for the sake of <code>TextWatchers</code> so they will get
-     * notifications when text goes from empty to non-empty.  But it also
-     * has the unfortunate side effect that if the text ends with an empty
-     * paragraph, that paragraph accidentally picks up the styles of the
-     * preceding paragraph (even though those styles will not be picked up
-     * by new text that is inserted into the empty paragraph).
-     * <p>
-     * The reason it just checks whether <code>start</code> and <code>end</code>
-     * is the same is that the only time a line can contain 0 characters
-     * is if it is the final paragraph of the Layout; otherwise any line will
-     * contain at least one printing or newline character.  The reason for the
-     * additional check if <code>start</code> is greater than 0 is that
-     * if the empty paragraph is the entire content of the buffer, paragraph
-     * styles that are already applied to the buffer will apply to text that
-     * is inserted into it.
-     */
-    static CARAPI_(AutoPtr< ArrayOf<IInterface*> >) GetParagraphSpans(
-        /* [in] */ ISpanned* text,
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end,
-        /* [in] */ const InterfaceID& type);
+    CARAPI GetParagraphRight(
+        /* [in] */  Int32 line,
+        /* [out] */  Int32* rigthEdge);
 
     /**
      * Return the offset of the first character to be ellipsized away,
      * relative to the start of the line.  (So 0 if the beginning of the
      * line is ellipsized, not getLineStart().)
      */
-    virtual CARAPI_(Int32) GetEllipsisStart(
-        /* [in] */ Int32 line) = 0;
+    CARAPI GetEllipsisStart(
+        /* [in] */  Int32 line,
+        /* [out] */  Int32* ellipsisStart)
+    {
+        assert(0  && "E_NOT_IMPLEMENTED : subclass must implements this method.");
+        return E_NOT_IMPLEMENTED;
+    }
 
     /**
      * Returns the number of characters to be ellipsized away, or 0 if
      * no ellipsis is to take place.
      */
-    virtual CARAPI_(Int32) GetEllipsisCount(
-        /* [in] */ Int32 line) = 0;
-
-protected:
-    /**
-     * Subclasses of Layout use this constructor to set the display text,
-     * width, and other standard properties.
-     * @param text the text to render
-     * @param paint the default paint for the layout.  Styles can override
-     * various attributes of the paint.
-     * @param width the wrapping width for the text.
-     * @param align whether to left, right, or center the text.  Styles can
-     * override the alignment.
-     * @param spacingMult factor by which to scale the font size to get the
-     * default line spacing
-     * @param spacingAdd amount to add to the default line spacing
-     */
-    Layout(
-        /* [in] */ ICharSequence* text,
-        /* [in] */ ITextPaint* paint,
-        /* [in] */ Int32 width,
-        /* [in] */ LayoutAlignment align,
-        /* [in] */ Float spacingMult,
-        /* [in] */ Float spacingAdd);
-
-    /**
-     * Subclasses of Layout use this constructor to set the display text,
-     * width, and other standard properties.
-     * @param text the text to render
-     * @param paint the default paint for the layout.  Styles can override
-     * various attributes of the paint.
-     * @param width the wrapping width for the text.
-     * @param align whether to left, right, or center the text.  Styles can
-     * override the alignment.
-     * @param spacingMult factor by which to scale the font size to get the
-     * default line spacing
-     * @param spacingAdd amount to add to the default line spacing
-     *
-     * @hide
-     */
-    Layout(
-        /* [in] */ ICharSequence* text,
-        /* [in] */ ITextPaint* paint,
-        /* [in] */ Int32 width,
-        /* [in] */ LayoutAlignment align,
-        /* [in] */ ITextDirectionHeuristic* textDir,
-        /* [in] */ Float spacingMult,
-        /* [in] */ Float spacingAdd);
-
-    virtual CARAPI Init(
-        /* [in] */ ICharSequence* text,
-        /* [in] */ ITextPaint* paint,
-        /* [in] */ Int32 width,
-        /* [in] */ LayoutAlignment align,
-        /* [in] */ Float spacingMult,
-        /* [in] */ Float spacingAdd);
-
-    virtual CARAPI Init(
-        /* [in] */ ICharSequence* text,
-        /* [in] */ ITextPaint* paint,
-        /* [in] */ Int32 width,
-        /* [in] */ LayoutAlignment align,
-        /* [in] */ ITextDirectionHeuristic* textDir,
-        /* [in] */ Float spacingMult,
-        /* [in] */ Float spacingAdd);
+    CARAPI GetEllipsisCount(
+        /* [in] */  Int32 line,
+        /* [out] */  Int32* ellipsisiCount)
+    {
+        assert(0  && "E_NOT_IMPLEMENTED : subclass must implements this method.");
+        return E_NOT_IMPLEMENTED;
+    }
 
     virtual CARAPI_(Boolean) IsSpanned();
 

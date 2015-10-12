@@ -3,14 +3,14 @@
 //#include "elastos/droid/internal/utility/ArrayUtils.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuffer.h>
-#include <elastos/utility/EmptyArray.h>
-#include <elastos/utility/Logging/Logger.h>
+#include <libcore/utility/EmptyArray.h>
+#include <elastos/utility/logging/Logger.h>
 
 // using Elastos::Droid::Internal::Utility::ArrayUtils;
 using Elastos::Core::IComparable;
 using Elastos::Core::StringBuffer;
-using Elastos::Utility::EmptyArray;
 using Elastos::Utility::Logging::Logger;
+using Libcore::Utility::EmptyArray;
 
 namespace Elastos {
 namespace Droid {
@@ -21,8 +21,6 @@ const Int32 SpannableStringInternal::START;
 const Int32 SpannableStringInternal::END;
 const Int32 SpannableStringInternal::FLAGS;
 const Int32 SpannableStringInternal::COLUMNS;
-
-CAR_INTERFACE_IMPL(SpannableStringInternal, Object, ISpannableStringInternal)
 
 SpannableStringInternal::SpannableStringInternal()
     : mSpanCount(0)
@@ -169,16 +167,17 @@ ECode SpannableStringInternal::SetSpan(
         }
     }
 
-    if (mSpanCount + 1 >= mSpans->GetLength()) {
-        AutoPtr<ArrayOf<IInterface*> > newtags = ArrayUtils::NewUnpaddedObjectArray(GrowingArrayUtils::GrowSize(mSpanCount));
-        AutoPtr<ArrayOf<Int32> > newdata = ArrayOf<Int32>::Alloc(newtags->GetLength() * 3);
+    assert(0 && "TODO");
+    // if (mSpanCount + 1 >= mSpans->GetLength()) {
+    //     AutoPtr<ArrayOf<IInterface*> > newtags = ArrayUtils::NewUnpaddedObjectArray(GrowingArrayUtils::GrowSize(mSpanCount));
+    //     AutoPtr<ArrayOf<Int32> > newdata = ArrayOf<Int32>::Alloc(newtags->GetLength() * 3);
 
-        newtags->Copy(0, mSpans, 0, mSpanCount);
-        newdata->Copy(0, mSpanData, 0, mSpanCount * 3);
+    //     newtags->Copy(0, mSpans, 0, mSpanCount);
+    //     newdata->Copy(0, mSpanData, 0, mSpanCount * 3);
 
-        mSpans = newtags;
-        mSpanData = newdata;
-    }
+    //     mSpans = newtags;
+    //     mSpanData = newdata;
+    // }
 
     mSpans->Set(mSpanCount, what);
     (*mSpanData)[mSpanCount * COLUMNS + START] = start;
@@ -259,7 +258,7 @@ ECode SpannableStringInternal::GetSpanStart(
         }
     }
 
-    return NOERROR
+    return NOERROR;
 }
 
 ECode SpannableStringInternal::GetSpanEnd(
@@ -352,7 +351,9 @@ ECode SpannableStringInternal::GetSpans(
                 Int32 j;
 
                 for (j = 0; j < count; j++) {
-                    Int32 p = GetSpanFlags((*ret)[j]) & ISpanned::SPAN_PRIORITY;
+                    Int32 p;
+                    GetSpanFlags((*ret)[j], &p);
+                    p &= ISpanned::SPAN_PRIORITY;
 
                     if (prio > p) {
                         break;
@@ -497,7 +498,8 @@ ECode SpannableStringInternal::CheckRange(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    Int32 len = GetLength();
+    Int32 len;
+    GetLength(&len);
 
     if (start > len || end > len) {
 //        throw new IndexOutOfBoundsException(operation + " " +
@@ -531,7 +533,7 @@ ECode SpannableStringInternal::Equals(
         ISpanned* other = spanned;
         // Check span data
         Int32 length;
-        other->GetLength(&length);
+        ICharSequence::Probe(other)->GetLength(&length);
         AutoPtr<ArrayOf<IInterface*> > otherSpans;
         other->GetSpans(0, length, EIID_IInterface, (ArrayOf<IInterface*>**)&otherSpans);
         Int32 as, ae, af, bs, be, bf;
@@ -542,10 +544,10 @@ ECode SpannableStringInternal::Equals(
 
                 GetSpanStart(thisSpan, &as);
                 GetSpanEnd(thisSpan, &ae);
-                GetSpanFlags(thisSpan, &as);
+                GetSpanFlags(thisSpan, &af);
                 other->GetSpanStart(otherSpan, &bs);
                 other->GetSpanEnd(otherSpan, &be);
-                other->GetSpanFlags(otherSpan, &bs);
+                other->GetSpanFlags(otherSpan, &bf);
 
                 if (thisSpan == TO_IINTERFACE(this)) {
                     if (other != ISpanned::Probe(otherSpan)
@@ -553,7 +555,7 @@ ECode SpannableStringInternal::Equals(
                         return NOERROR;
                     }
                 }
-                else if (!Object::Equals(thisSpan, otherSpan) ||
+                else if (!Object::Equals(thisSpan, otherSpan)
                     || as != bs || ae != be || af != bf) {
                     return NOERROR;
                 }
