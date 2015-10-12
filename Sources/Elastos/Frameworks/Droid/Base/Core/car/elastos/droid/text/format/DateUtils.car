@@ -646,7 +646,7 @@ module
         // showWeekDay are both true, then the index would be 3.
         /** @deprecated do not use. */
         GetSameMonthTable(
-            [out, callee]ArrayOf<Int32>* sameMonthTable);
+            [out, callee] ArrayOf<Int32>* sameMonthTable);
 
         // This table is used to lookup the resource string id of a format string
         // used for formatting a start and end date that fall in the same year.
@@ -655,7 +655,7 @@ module
         // showWeekDay are both true, then the index would be 3.
         /** @deprecated do not use. */
         GetSameYearTable(
-            [out, callee]ArrayOf<Int32>* sameYearTable);
+            [out, callee] ArrayOf<Int32>* sameYearTable);
 
         /**
          * @return true if the supplied when is today else false

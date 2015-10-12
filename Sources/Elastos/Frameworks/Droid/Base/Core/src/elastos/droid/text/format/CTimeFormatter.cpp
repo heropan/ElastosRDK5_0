@@ -24,36 +24,37 @@ CTimeFormatter::CTimeFormatter()
 CTimeFormatter::~CTimeFormatter()
 {}
 
-CTimeFormatter::constructor()
+ECode CTimeFormatter::constructor()
 {
-    synchronized (mLock) {
-    AutoPtr<ILocale> locale_;
-    CLocale::New((ILocale**)&locale_);
-    AutoPtr<ILocale> locale = locale_->GetDefault();
+    // synchronized (mLock) {
+    //     AutoPtr<ILocale> locale_;
+    //     CLocale::New((ILocale**)&locale_);
+    //     AutoPtr<ILocale> locale = locale_->GetDefault();
 
-    Boolean isEqual = FALSE;
-    locale->Equals(IInterface::Probe(sLocale), &isEqual);
-    if (sLocale == null || !isEqual) {
-        sLocale = locale;
-        AutoPtr<ILocaleDataHelper> localeDataHelper;
-        CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper);
-        localeDataHelper->Get(locale, (ILocale**)&sLocaleData);
+    //     Boolean isEqual = FALSE;
+    //     locale->Equals(IInterface::Probe(sLocale), &isEqual);
+    //     if (sLocale == null || !isEqual) {
+    //         sLocale = locale;
+    //         AutoPtr<ILocaleDataHelper> localeDataHelper;
+    //         CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper);
+    //         localeDataHelper->Get(locale, (ILocale**)&sLocaleData);
 
-        AutoPtr<IResources> r;
-        AutoPtr<IResourcesHelper> resourcesHelper;
-        CResourcesHelper::AcquireSingleton((resourcesHelper**)&resourcesHelper);
-        resourcesHelper->GetSystem((IResources**)&r);
+    //         AutoPtr<IResources> r;
+    //         AutoPtr<IResourcesHelper> resourcesHelper;
+    //         CResourcesHelper::AcquireSingleton((resourcesHelper**)&resourcesHelper);
+    //         resourcesHelper->GetSystem((IResources**)&r);
 
-        r->GetString(com.android.internal.R.string.time_of_day, &sTimeOnlyFormat)
-        r->GetString(com.android.internal.R.string.month_day_year, &sDateOnlyFormat)
-        r->GetString(com.android.internal.R.string.date_and_time, &sDateTimeFormat)
-    }
+    //         r->GetString(com.android.internal.R.string.time_of_day, &sTimeOnlyFormat)
+    //         r->GetString(com.android.internal.R.string.month_day_year, &sDateOnlyFormat)
+    //         r->GetString(com.android.internal.R.string.date_and_time, &sDateTimeFormat)
+    //     }
 
-    mDateTimeFormat = sDateTimeFormat;
-    mTimeOnlyFormat = sTimeOnlyFormat;
-    mDateOnlyFormat = sDateOnlyFormat;
-    mLocaleData = sLocaleData;
-    }
+    //     mDateTimeFormat = sDateTimeFormat;
+    //     mTimeOnlyFormat = sTimeOnlyFormat;
+    //     mDateOnlyFormat = sDateOnlyFormat;
+    //     mLocaleData = sLocaleData;
+    // }
+    return NOERROR;
 }
 
 String CTiemFormatter::Format(
@@ -62,28 +63,30 @@ String CTiemFormatter::Format(
     /* [in] */ IZoneInfo* zoneInfo,
     /* [out] */ String* result)
 {
-  VALIDATE_NOT_NULL(result)
-  try {
-    StringBuilder stringBuilder;
+    VALIDATE_NOT_NULL(result)
+    // try {
+    //   StringBuilder stringBuilder;
 
-    mOutputBuilder = stringBuilder;
-    // This uses the US locale because number localization is handled separately (see below)
-    // and locale sensitive strings are output directly using outputBuilder.
-    CFormatter::New(IAppendable::Probe(stringBuilder), CLocale::US, (IFormatter**)&mNumberFormatter);
+    //   mOutputBuilder = stringBuilder;
+    //   // This uses the US locale because number localization is handled separately (see below)
+    //   // and locale sensitive strings are output directly using outputBuilder.
+    //   CFormatter::New(IAppendable::Probe(stringBuilder), CLocale::US, (IFormatter**)&mNumberFormatter);
 
-    FormatInternal(pattern, wallTime, zoneInfo);
-    String result;
-    stringBuilder.ToString(&result);
-    // This behavior is the source of a bug since some formats are defined as being
-    // in ASCII and not localized.
-    if (mLocaleData->mZeroDigit != '0') {
-        result = LocalizeDigits(result);
-    }
-    return result;
-} finally {
-    mOutputBuilder = NULL;
-    mNumberFormatter = NULL;
-}
+    //   FormatInternal(pattern, wallTime, zoneInfo);
+    //   String result;
+    //   stringBuilder.ToString(&result);
+    //   // This behavior is the source of a bug since some formats are defined as being
+    //   // in ASCII and not localized.
+    //   if (mLocaleData->mZeroDigit != '0') {
+    //     result = LocalizeDigits(result);
+    //   }
+    //   return result;
+    // } finally {
+    //   mOutputBuilder = NULL;
+    //   mNumberFormatter = NULL;
+    // }
+
+    return String("");
 }
 
 String CTiemFormatter::LocalizeDigits(

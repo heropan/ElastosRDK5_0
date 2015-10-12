@@ -121,22 +121,22 @@ module
 
     interface Elastos.Droid.Graphics.IPaint;
 
-    namespace Elastos {
-    namespace Droid {
-    namespace Text {
-    namespace Format {
+    //namespace Elastos {
+    //namespace Droid {
+    //namespace Text {
+    //namespace Format {
 
-    singleton class CDateFormat {
-        interface IDateFormat;
-    }
+    //singleton class CDateFormat {
+    //    interface IDateFormat;
+    //}
 
-    singleton class CDateUtils {
-        interface IDateUtils;
-    }
+    //singleton class CDateUtils {
+    //    interface IDateUtils;
+    //}
 
-    singleton class CFormatter{
-        interface IFormatter;
-    }
+    //singleton class CFormatter{
+    //    interface IFormatter;
+    //}
 
     /**
      * An alternative to the {@link java.util.Calendar} and
@@ -145,21 +145,21 @@ module
      * struct tm, and in fact, uses struct tm to implement most of the
      * functionality.
      */
-    class CTime {
+    //class CTime {
         /**
          * Construct a Time object in the timezone named by the string
          * argument "timezone". The time is initialized to Jan 1, 1970.
          * @param timezone string containing the timezone to use.
          * @see TimeZone
          */
-        constructor(
-             [in] String timezone);
+        //constructor(
+        //     [in] String timezone);
 
         /**
          * Construct a Time object in the default timezone. The time is initialized to
          * Jan 1, 1970.
          */
-        constructor();
+        //constructor();
 
          /**
           * A copy constructor.  Construct a Time object by copying the given
@@ -167,27 +167,26 @@ module
           *
           * @param other
           */
-        constructor(
-            [in]ITime* other);
+        //constructor(
+        //    [in]ITime* other);
 
+        //interface ITime;
+    //}
 
-        interface ITime;
-    }
+    //singleton class CTimeHelper{
+    //     interface ITimeHelper;
+    //}
 
-    singleton class CTimeHelper{
-         interface ITimeHelper;
-    }
+    //class CTimeFormatter {
+    //    constructor();
 
-    class CTimeFormatter {
-        constructor();
+    //    interface ITimeFormatter;
+    //}
 
-        interface ITimeFormatter;
-    }
-
-    } // namespace Format
-    } // namespace Text
-    } // namespace Droid
-    } // namespace Elastos
+    //} // namespace Format
+    //} // namespace Text
+    //} // namespace Droid
+    //} // namespace Elastos
 
 
     // namespace Elastos {

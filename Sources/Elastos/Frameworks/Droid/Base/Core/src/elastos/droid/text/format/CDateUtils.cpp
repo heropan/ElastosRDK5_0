@@ -245,6 +245,24 @@ ECode CDateUtils::TimeString(
     return NOERROR;
 }
 
+ECode CDateUtils::GetSameMonthTable(
+    /* [out, callee] */ ArrayOf<Int32>** sameMonthTable)
+{
+    VALIDATE_NOT_NULL(sameMonthTable)
+    *sameMonthTable = DateUtils::sSameMonthTable;
+    REFCOUNT_ADD(*sameMonthTable)
+    return NOERROR;
+}
+
+ECode CDateUtils::GetSameYearTable(
+    /* [out, callee] */ ArrayOf<Int32>** sameYearTable)
+{
+    VALIDATE_NOT_NULL(sameYearTable)
+    *sameYearTable = DateUtils::sSameYearTable;
+    REFCOUNT_ADD(*sameYearTable)
+    return NOERROR;
+}
+
 } // namespace Format
 } // namespace Text
 } // namepsace Droid
