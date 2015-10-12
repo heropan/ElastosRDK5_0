@@ -87,6 +87,8 @@ module
     using interface Elastos.IO.IFlushable;
     using interface Elastos.IO.IInputStream;
     using interface Elastos.IO.IOutputStream;
+    using interface Elastos.IO.IFileInputStream;
+    using interface Elastos.IO.IFileOutputStream;
     using interface Elastos.Utility.IUUID;
 
     // interface Elastos.Droid.Os.ILooper;
@@ -353,6 +355,7 @@ module
             [in] IParcelFileDescriptor* pfd);
 
         interface IParcelFileDescriptorAutoCloseInputStream;
+        interface IFileInputStream;
         interface IInputStream;
         interface ICloseable;
     }
@@ -362,6 +365,7 @@ module
            [in] IParcelFileDescriptor* pfd);
 
         interface IParcelFileDescriptorAutoCloseOutputStream;
+        interface IFileOutputStream;
         interface IOutputStream;
         interface ICloseable;
         interface IFlushable;

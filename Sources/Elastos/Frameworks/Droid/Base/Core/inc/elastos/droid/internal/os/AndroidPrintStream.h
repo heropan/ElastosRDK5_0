@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_DROID_INTERNAL_OS_BASECOMMAND_H__
-#define __ELASTOS_DROID_INTERNAL_OS_BASECOMMAND_H__
+#ifndef __ELASTOS_DROID_INTERNAL_OS_ANDROIDPRINTSTREAM_H__
+#define __ELASTOS_DROID_INTERNAL_OS_ANDROIDPRINTSTREAM_H__
 
 #include "internal/os/LoggingPrintStream.h"
 
@@ -36,4 +36,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_INTERNAL_OS_BASECOMMAND_H__
+#endif //__ELASTOS_DROID_INTERNAL_OS_ANDROIDPRINTSTREAM_H__

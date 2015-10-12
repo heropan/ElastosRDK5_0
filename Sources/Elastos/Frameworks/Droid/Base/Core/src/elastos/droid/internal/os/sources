@@ -4,6 +4,7 @@ TARGET_TYPE = lib
 include $(MAKEDIR)/../../../../../../../sources.inc
 
 INCLUDES += ../..
+INCLUDES += $(MAKEDIR)/../../../../../inc/
 INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
 
 C_DEFINES += -DDROID_CORE
@@ -14,6 +15,9 @@ SOURCES += BackgroundThread.cpp
 SOURCES += BaseCommand.cpp
 SOURCES += CAtomicFile.cpp
 SOURCES += CBackgroundThreadHelper.cpp
+SOURCES += CBatteryStatsHelperHelper.cpp
+SOURCES += CBatterySipper.cpp
+SOURCES += CBatteryStatsHelper.cpp
 SOURCES += CZygoteInit.cpp
 SOURCES += CHandlerCaller.cpp
 SOURCES += RuntimeInit.cpp
@@ -23,3 +27,4 @@ SOURCES += CSomeArgsHelper.cpp
 SOURCES += ZygoteConnection.cpp
 SOURCES += Zygote.cpp
 SOURCES += LoggingPrintStream.cpp
+SOURCES += InstallerConnection.cpp

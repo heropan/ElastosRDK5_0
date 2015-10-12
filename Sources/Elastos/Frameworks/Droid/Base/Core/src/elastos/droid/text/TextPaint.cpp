@@ -20,6 +20,11 @@ TextPaint::~TextPaint()
 {
 }
 
+ECode TextPaint::constructor()
+{
+    return Paint::constructor();
+}
+
 ECode TextPaint::constructor(
     /* [in] */ Int32 flags)
 {

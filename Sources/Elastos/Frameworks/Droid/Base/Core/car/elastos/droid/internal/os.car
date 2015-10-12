@@ -4,6 +4,7 @@ module
     merge("os/BackgroundThread.car");
     merge("os/BaseCommand.car");
     merge("os/BatterySipper.car");
+    merge("os/BatteryStatsHelper.car");
     merge("os/BatteryStatsImpl.car");
     merge("os/BinderInternal.car");
     merge("os/HandlerCaller.car");
@@ -20,7 +21,9 @@ module
     merge("os/ZygoteInit.car");
 
     using interface Elastos.IO.IFile;
+    using interface Elastos.Core.IComparable;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Os.IBatteryStatsUid;
     interface Elastos.Droid.Os.ILooper;
 
     namespace Elastos {
@@ -35,6 +38,42 @@ module
         interface IAtomicFile;
     }
 
+    singleton class CBackgroundThreadHelper {
+        interface IBackgroundThreadHelper;
+    }
+
+    [local, deprecated]
+    class CBatterySipper {
+        constructor(
+            [in] BatterySipperDrainType drainType,
+            [in] IBatteryStatsUid* uid,
+            [in] ArrayOf<Double>* values);
+
+        interface IBatterySipper;
+        interface IComparable;
+    }
+
+    [local]
+    class CBatteryStatsHelper {
+         constructor(
+            [in] IContext* context);
+
+        constructor(
+            [in] IContext* context,
+            [in] Boolean collectBatteryBroadcast);
+
+        constructor(
+            [in] IContext* context,
+            [in] Boolean collectBatteryBroadcast,
+            [in] Boolean wifiOnly);
+
+        interface IBatteryStatsHelper;
+    }
+
+    singleton class CBatteryStatsHelperHelper {
+        interface IBatteryStatsHelperHelper;
+    }
+
     [local]
     class CHandlerCaller {
         constructor(
@@ -47,10 +86,6 @@ module
         interface IHandlerCaller;
     }
 
-    singleton class CZygoteInit {
-        interface IZygoteInit;
-    }
-
     singleton class CRuntimeInit {
         interface IRuntimeInit;
     }
@@ -59,8 +94,8 @@ module
         interface ISomeArgsHelper;
     }
 
-    singleton class CBackgroundThreadHelper {
-        interface IBackgroundThreadHelper;
+    singleton class CZygoteInit {
+        interface IZygoteInit;
     }
 
     } // namespace Os

@@ -199,16 +199,6 @@ module
     namespace Droid {
     namespace Hardware {
 
-        namespace Soundtrigger {
-            interface IIRecognitionStatusCallback {}
-
-            interface ISoundTriggerModuleProperties {}
-
-            interface ISoundTriggerKeyphraseSoundModel {}
-
-            interface ISoundTriggerRecognitionConfig {}
-        }
-
         namespace Hdmi {
             interface IHdmiDeviceInfo {}
         }

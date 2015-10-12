@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_IO_LOGGINGPRINTSTREAM_H__
-#define __ELASTOS_IO_LOGGINGPRINTSTREAM_H__
+#ifndef __ELASTOS_DROID_INTERNAL_OS_LOGGINGPRINTSTREAM_H__
+#define __ELASTOS_DROID_INTERNAL_OS_LOGGINGPRINTSTREAM_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/core/StringBuilder.h>
@@ -187,4 +187,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_IO_LOGGINGPRINTSTREAM_H__
+#endif //__ELASTOS_DROID_INTERNAL_OS_LOGGINGPRINTSTREAM_H__

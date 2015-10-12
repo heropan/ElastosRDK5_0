@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_INTERNAL_OS_ELASTOS_DROID_INTERNAL_RUNTIMEINIT_H__
-#define __ELASTOS_DROID_INTERNAL_OS_ELASTOS_DROID_INTERNAL_RUNTIMEINIT_H__
+#ifndef __ELASTOS_DROID_INTERNAL_OS_RUNTIMEINIT_H__
+#define __ELASTOS_DROID_INTERNAL_OS_RUNTIMEINIT_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/core/Singleton.h>
@@ -110,4 +110,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__RUNTIMEINIT_H__
+#endif //__ELASTOS_DROID_INTERNAL_OS_RUNTIMEINIT_H__

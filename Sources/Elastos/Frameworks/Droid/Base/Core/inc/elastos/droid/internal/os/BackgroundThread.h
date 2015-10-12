@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_OS_BACKGROUNDTHREAD_H__
-#define __ELASTOS_DROID_OS_BACKGROUNDTHREAD_H__
+#ifndef __ELASTOS_DROID_INTERNAL_OS_BACKGROUNDTHREAD_H__
+#define __ELASTOS_DROID_INTERNAL_OS_BACKGROUNDTHREAD_H__
 
 #include "os/HandlerThread.h"
 
@@ -42,4 +42,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_OS_BACKGROUNDTHREAD_H__
+#endif //__ELASTOS_DROID_INTERNAL_OS_BACKGROUNDTHREAD_H__
