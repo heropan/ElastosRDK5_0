@@ -51,11 +51,11 @@ private:
     /**
       * The verification status. One of the values in CertVerifyStatusAndroid.
       */
-    /*const*/ Int32 mStatus;
+    const Int32 mStatus;
     /**
       * True if the root CA in the chain is in the system store.
       */
-    /*const*/ Boolean mIsIssuedByKnownRoot;
+    const Boolean mIsIssuedByKnownRoot;
     /**
       * The properly ordered certificate chain used for verification.
       */

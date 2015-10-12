@@ -1,5 +1,8 @@
 
 #include "elastos/droid/webkit/native/ui/autofill/AutofillPopup.h"
+#include "elastos/utility/Arrays.h"
+
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace Droid {
@@ -19,6 +22,9 @@ AutofillPopup::AutofillPopup(
     /* [in] */ IContext* context,
     /* [in] */ ViewAndroidDelegate* viewAndroidDelegate,
     /* [in] */ AutofillPopupDelegate* autofillCallback)
+    : DropdownPopupWindow(context, viewAndroidDelegate)
+    , mContext(context)
+    , mAutofillCallback(autofillCallback)
 {
     // ==================before translated======================
     // super(context, viewAndroidDelegate);
@@ -26,6 +32,8 @@ AutofillPopup::AutofillPopup(
     // mAutofillCallback = autofillCallback;
     //
     // setOnItemClickListener(this);
+
+    SetOnItemClickListener(this);
 }
 
 ECode AutofillPopup::FilterAndShow(
@@ -48,7 +56,31 @@ ECode AutofillPopup::FilterAndShow(
     // }
     // setAdapter(new DropdownAdapter(mContext, cleanedData, separators));
     // show();
+
     assert(0);
+    AutoPtr<IList> tmpSuggestion;
+    Arrays<AutofillSuggestion*>::AsList(suggestions, (IList**)&tmpSuggestion);
+
+    mSuggestions = new List< AutoPtr<AutofillSuggestion> >(suggestions);
+    // Remove the AutofillSuggestions with IDs that are not supported by Android
+    AutoPtr< ArrayOf< AutoPtr<DropdownItem> > > cleanedData = ArrayOf< AutoPtr<DropdownItem> >::Alloc(1);
+    AutoPtr<IHashSet> separators;
+    CHashSet::New((IHashSet**)&separators);
+
+    for (Int32 i = 0; i < suggestions->GetLength(); ++i) {
+        Int32 itemId = (*suggestions)[i]->mUniqueId;
+        if (itemId > 0 || itemId == ITEM_ID_AUTOCOMPLETE_ENTRY ||
+                itemId == ITEM_ID_PASSWORD_ENTRY || itemId == ITEM_ID_DATA_LIST_ENTRY) {
+            cleanedData->Append(suggestions[i]);
+        }
+        else if (itemId == ITEM_ID_SEPARATOR_ENTRY) {
+            separators->Append(cleanedData->GetLength());
+        }
+    }
+
+    AutoPtr<DropdownAdapter> dropDownAdapter = new DropdownAdapter(mContext, cleanedData, separators);
+    SetAdapter(dropDownAdapter);
+    Show();
     return NOERROR;
 }
 

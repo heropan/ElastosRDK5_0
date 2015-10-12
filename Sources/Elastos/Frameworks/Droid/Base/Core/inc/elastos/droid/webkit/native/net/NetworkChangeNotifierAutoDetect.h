@@ -135,6 +135,8 @@ public:
     // Inconsistent with ApplicationStatus.ApplicationStateListener, note it temporarily
     //CARAPI OnApplicationStateChange(
     //    /* [in] */ Int32 newState);
+    virtual CARAPI_(void) OnApplicationStateChange(
+        /* [in] */ Int32 newState);
 
 private:
     /**

@@ -6,6 +6,7 @@
 #define _ELASTOS_DROID_WEBKIT_UI_AUTOFILL_AUTOFILLPOPUP_H_
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/utility/etl/List.h"
 #include "elastos/droid/webkit/native/ui/DropdownPopupWindow.h"
 #include "elastos/droid/webkit/native/ui/autofill/AutofillSuggestion.h"
 
@@ -22,6 +23,7 @@
 // import java.util.HashSet;
 // import java.util.List;
 
+using Elastos::Droid::Utility::List;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
@@ -116,7 +118,7 @@ private:
     static const Int32 ITEM_ID_DATA_LIST_ENTRY = -6;
     /*const*/ AutoPtr<IContext> mContext;
     /*const*/ AutoPtr<AutofillPopupDelegate> mAutofillCallback;
-    AutoPtr< IList<AutofillSuggestion> > mSuggestions;
+    AutoPtr< List< AutoPtr<AutofillSuggestion> > > mSuggestions;
 };
 
 } // namespace Autofill

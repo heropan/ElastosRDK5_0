@@ -42,9 +42,9 @@ private:
 
     public:
         // Reference to the key on a remote store.
-        /*const*/ Int32 mHandle;
+        const Int32 mHandle;
         // Key store handling this key.
-        /*const*/ AutoPtr<RemoteAndroidKeyStore> mStore;
+        const AutoPtr<RemoteAndroidKeyStore> mStore;
     };
 
 public:
@@ -89,7 +89,7 @@ public:
 
 private:
     static const String TAG;
-    /*const*/ AutoPtr<RemoteAndroidKeyStore> mRemoteManager;
+    const AutoPtr<RemoteAndroidKeyStore> mRemoteManager;
 };
 
 } // namespace Net

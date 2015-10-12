@@ -48,4 +48,3 @@ AutoPtr<NavigationParams> NavigationParams::Create(
 } // namespace Droid
 } // namespace Elastos
 
-

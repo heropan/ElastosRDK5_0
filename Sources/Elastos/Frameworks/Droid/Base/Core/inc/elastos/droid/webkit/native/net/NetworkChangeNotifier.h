@@ -6,6 +6,7 @@
 #define _ELASTOS_DROID_WEBKIT_NET_NETWORKCHANGENOTIFIER_H_
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/utility/etl/List.h>
 #include "elastos/droid/webkit/native/net/NetworkChangeNotifierAutoDetect.h"
 // #include "elastos/droid/webkit/native/base/ObserverList.h" /* ObserverList cannot compile */
 
@@ -17,9 +18,10 @@
 // import org.chromium.base.ObserverList;
 // import java.util.ArrayList;
 
-using Elastos::Utility::IArrayList;
+using Elastos::Utility::CArrayList;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Webkit::Net::NetworkChangeNotifierAutoDetect;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
@@ -183,12 +185,12 @@ public:
     static const Int32 CONNECTION_4G = 5;
     static const Int32 CONNECTION_NONE = 6;
     static const Int32 CONNECTION_BLUETOOTH = 7;
+    AutoPtr<NetworkChangeNotifierAutoDetect> mAutoDetector;
 
 private:
     /*const*/ AutoPtr<IContext> mContext;
-    /*const*/ AutoPtr<IArrayList> mNativeChangeNotifiers;
-    /*const*/ /* ObserverList cannot compile */ // AutoPtr< ObserverList<ConnectionTypeObserver> > mConnectionTypeObservers;
-    AutoPtr<NetworkChangeNotifierAutoDetect> mAutoDetector;
+    /*const*/ AutoPtr< List<Int64> > mNativeChangeNotifiers;
+    /*const*/ //AutoPtr< /*CArrayList*/ List<ConnectionTypeObserver> > mConnectionTypeObservers;
     Int32 mCurrentConnectionType;
     static AutoPtr<NetworkChangeNotifier> sInstance;
 };
