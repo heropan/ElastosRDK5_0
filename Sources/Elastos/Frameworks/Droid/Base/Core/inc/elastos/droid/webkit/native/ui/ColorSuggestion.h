@@ -31,14 +31,20 @@ public:
         /* [in] */ const String& label);
 
 public:
-    /*const*/ Int32 mColor;
-    /*const*/ String mLabel;
+    const Int32 mColor;
+    const String mLabel;
 };
 
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
+template <>
+struct Conversion<Elastos::Droid::Webkit::Ui::ColorSuggestion*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
 
 #endif // _ELASTOS_DROID_WEBKIT_UI_COLORSUGGESTION_H_
 

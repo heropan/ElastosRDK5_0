@@ -2,14 +2,10 @@
 #include "elastos/droid/webkit/native/net/X509Util.h"
 #include "elastos/core/IntegralToString.h"
 //#include "elastos/core/AutoLock.h"
-//#include "elastos/core/CSystem.h"
 //#include "elastos/security/cert/CCertificateFactoryHelper.h"
 //#include "elastos/security/CKeyStoreHelper.h"
 //#include "elastos/security/CMessageDigestHelper.h"
-//#include "elastos/io/CFile.h"
 //#include "elastosx/net/ssl/CTrustManagerFactoryHelper.h"
-//#include "elastosx/security/auth/x500/CX500Principal.h"
-//#include "elastosx/utility/CHashSet.h"
 //#include "elastos/droid/net/http/CX509TrustManagerExtensions.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/os/Build.h"
@@ -20,7 +16,7 @@
 using Elastos::Core::IntegralToString;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::ISystem;
-//using Elastos::Core::CSystem;
+using Elastos::Core::CSystem;
 //using Elastos::Core::AutoLock;
 using Elastos::IO::IInputStream;
 using Elastos::IO::CFile;
@@ -38,8 +34,7 @@ using Elastos::Security::CMessageDigestHelper;
 using Elastos::Security::IPrincipal;
 //using Elastos::Security::CKeyStoreHelper;
 //using Elastos::Security::Cert::CCertificateFactoryHelper;
-//using Elastosx::Security::Auth::X500::CX500Principal;
-//using Elastos::Utility::CHashSet;
+using Elastos::Utility::CHashSet;
 using Elastos::Droid::Utility::IPair;
 using Elastos::Droid::Utility::IPairHelper;
 using Elastos::Droid::Utility::CPairHelper;
@@ -401,7 +396,7 @@ AutoPtr<AndroidCertVerifyResult> X509Util::VerifyServerCertificates(
     //    return new AndroidCertVerifyResult(CertVerifyStatusAndroid.VERIFY_FAILED);
     //}
 
-    AutoPtr< ArrayOf< AutoPtr<IX509Certificate> > > serverCertificates = ArrayOf< AutoPtr<IX509Certificate> >::Alloc(certChain->GetLength());
+    AutoPtr< ArrayOf<IX509Certificate*> > serverCertificates = ArrayOf<IX509Certificate*>::Alloc(certChain->GetLength());
     //try {
         for (Int32 i = 0; i < certChain->GetLength(); ++i) {
             AutoPtr<IX509Certificate> item = CreateCertificateFromBytes((*certChain)[i]);
@@ -552,9 +547,9 @@ ECode X509Util::EnsureInitialized()
             //}
             String sysEnv;
             AutoPtr<ISystem> sys;
-            //CSystem::New((ISystem**)&sys);
+            CSystem::AcquireSingleton((ISystem**)&sys);
             sys->GetEnv(String("ANDROID_ROOT") + String("/etc/security/cacerts"), &sysEnv);
-            //CFile::New(sysEnv, (IFile**)&sSystemCertificateDirectory);
+            CFile::New(sysEnv, (IFile**)&sSystemCertificateDirectory);
         //} catch (KeyStoreException e) {
             // Could not load AndroidCAStore. Continue anyway; isKnownRoot will always
             // return false.
@@ -564,7 +559,7 @@ ECode X509Util::EnsureInitialized()
         sLoadedSystemKeyStore = TRUE;
     }
     if (NULL == sSystemTrustAnchorCache) {
-        //--CHashSet::New((ISet**)&sSystemTrustAnchorCache);
+        CHashSet::New((ISet**)&sSystemTrustAnchorCache);
     }
 
     if (NULL == sTestKeyStore) {
@@ -805,12 +800,10 @@ Boolean X509Util::IsKnownRoot(
     // Check the in-memory cache first; avoid decoding the anchor from disk
     // if it has been seen before.
     AutoPtr<IX500Principal> principal;
-    //--CX500Principal::New((IX500Principal**)&principal);
     root->GetSubjectX500Principal((IX500Principal**)&principal);
 
-    AutoPtr<IPublicKey> publicKey;
-    //--CPublicKey::New((IPublicKey**)&publicKey);
     AutoPtr<ICertificate> certificate = ICertificate::Probe(root);
+    AutoPtr<IPublicKey> publicKey;
     certificate->GetPublicKey((IPublicKey**)&publicKey);
 
     AutoPtr<IPairHelper> helper;
@@ -838,7 +831,7 @@ Boolean X509Util::IsKnownRoot(
         String alias = hash + String(".") + Char32(i);
 
         AutoPtr<IFile> tmpFile;
-        //CFile::New(sSystemCertificateDirectory, alias, (IFile**)&tmpFile);
+        CFile::New(sSystemCertificateDirectory, alias, (IFile**)&tmpFile);
 
         Boolean exists = FALSE;
         tmpFile->Exists(&exists);
@@ -868,7 +861,6 @@ Boolean X509Util::IsKnownRoot(
         x509Cert->GetSubjectX500Principal((IX500Principal**)&anchorx509Principal);
 
         AutoPtr<IPublicKey> anchorx509PublicKey;
-        //--CPublicKey::New((IPublicKey**)&anchorx509PublicKey);
         anchor->GetPublicKey((IPublicKey**)&anchorx509PublicKey);
 
         AutoPtr<IPrincipal> principalTmp = IPrincipal::Probe(principal);

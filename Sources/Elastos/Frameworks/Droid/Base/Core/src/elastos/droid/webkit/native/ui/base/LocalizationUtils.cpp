@@ -1,16 +1,12 @@
 
 #include "elastos/droid/webkit/native/ui/base/LocalizationUtils.h"
-//#include "elastos/droid/content/CResources.h"
-//#include "elastos/droid/content/CConfiguration.h"
 #include "elastos/droid/webkit/native/base/ApplicationStatus.h"
 #include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
 
 using Elastos::Utility::CLocale;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
-//using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Res::IConfiguration;
-//using Elastos::Droid::Content::Res::CConfiguration;
 using Elastos::Droid::Webkit::Base::ApplicationStatus;
 using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
 
@@ -88,11 +84,9 @@ Boolean LocalizationUtils::IsLayoutRtl()
     if (FALSE == sIsLayoutRtl) {
         AutoPtr<IContext> context = ApplicationStatus::GetApplicationContext();
         AutoPtr<IResources> resources;
-        //CResources::New((IResources**)&resources);
         context->GetResources((IResources**)&resources);
 
         AutoPtr<IConfiguration> configuration;
-        //CConfiguration::New((IConfiguration**)&resources);
         resources->GetConfiguration((IConfiguration**)&configuration);
 
         Int32 layoutDirect = ApiCompatibilityUtils::GetLayoutDirection(configuration);

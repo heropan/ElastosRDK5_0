@@ -8,6 +8,8 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
 #include "elastos/droid/webkit/native/ui/ColorPickerDialog.h"
+#include "elastos/droid/webkit/native/ui/ColorSuggestion.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
 
 // package org.chromium.components.web_contents_delegate_android;
 // import android.content.Context;
@@ -21,14 +23,13 @@
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Webkit::Ui::OnColorChangedListener;
 using Elastos::Droid::Webkit::Ui::ColorPickerDialog;
+using Elastos::Droid::Webkit::Ui::ColorSuggestion;
+using Elastos::Droid::Webkit::Content::Browser::ContentViewCore;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Components {
-
-class ContentViewCore;
-class ColorSuggestion;
 
 /**
   * ColorChooserAndroid communicates with the java ColorPickerDialog and the
@@ -38,9 +39,7 @@ class ColorSuggestion;
 class ColorChooserAndroid : public Object
 {
 public:
-    class InnerOnColorChangedListener
-        : public Object
-        , public OnColorChangedListener
+    class InnerOnColorChangedListener : public OnColorChangedListener
     {
     public:
         InnerOnColorChangedListener(
@@ -59,7 +58,7 @@ public:
     virtual CARAPI CloseColorChooser();
 
     // @CalledByNative
-    static CARAPI_(AutoPtr<ColorChooserAndroid*>) CreateColorChooserAndroid(
+    static CARAPI_(AutoPtr<ColorChooserAndroid>) CreateColorChooserAndroid(
         /* [in] */ Int64 nativeColorChooserAndroid,
         /* [in] */ ContentViewCore* contentViewCore,
         /* [in] */ Int32 initialColor,

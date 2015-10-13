@@ -1,6 +1,8 @@
 
 #include "elastos/droid/webkit/native/ui/gl/SurfaceTextureListener.h"
 
+using Elastos::Droid::Graphics::EIID_IOnFrameAvailableListener;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -10,12 +12,17 @@ namespace Gl {
 //=====================================================================
 //                        SurfaceTextureListener
 //=====================================================================
+CAR_INTERFACE_IMPL(SurfaceTextureListener, Object, IOnFrameAvailableListener)
+
 SurfaceTextureListener::SurfaceTextureListener(
     /* [in] */ Int64 nativeSurfaceTextureListener)
 {
     // ==================before translated======================
     // assert nativeSurfaceTextureListener != 0;
     // mNativeSurfaceTextureListener = nativeSurfaceTextureListener;
+
+    assert (nativeSurfaceTextureListener != 0);
+    mNativeSurfaceTextureListener = nativeSurfaceTextureListener;
 }
 
 ECode SurfaceTextureListener::OnFrameAvailable(
@@ -24,7 +31,8 @@ ECode SurfaceTextureListener::OnFrameAvailable(
     VALIDATE_NOT_NULL(surfaceTexture);
     // ==================before translated======================
     // nativeFrameAvailable(mNativeSurfaceTextureListener);
-    assert(0);
+
+    NativeFrameAvailable(mNativeSurfaceTextureListener);
     return NOERROR;
 }
 
@@ -36,7 +44,13 @@ ECode SurfaceTextureListener::Finalize()
     // } finally {
     //     super.finalize();
     // }
-    assert(0);
+
+    //try {
+        NativeDestroy(mNativeSurfaceTextureListener);
+    //}
+    // finally {
+        //SurfaceTexture::OnFrameAvailableListener::Finalize();
+    //}
     return NOERROR;
 }
 

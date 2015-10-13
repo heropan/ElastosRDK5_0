@@ -22,8 +22,8 @@ AutofillPopup::AutofillPopup(
     /* [in] */ IContext* context,
     /* [in] */ ViewAndroidDelegate* viewAndroidDelegate,
     /* [in] */ AutofillPopupDelegate* autofillCallback)
-    //: DropdownPopupWindow(context, viewAndroidDelegate)
-    : mContext(context)
+    : DropdownPopupWindow(context, viewAndroidDelegate)
+    , mContext(context)
     , mAutofillCallback(autofillCallback)
 {
     // ==================before translated======================

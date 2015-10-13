@@ -6,7 +6,7 @@
 #define _ELASTOS_DROID_WEBKIT_UI_COLORPICKERSIMPLE_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/widget/ListView.h"
+//#include "elastos/droid/widget/ListView.h"
 #include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
 #include "elastos/droid/webkit/native/ui/ColorSuggestionListAdapter.h"
 #include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
@@ -18,11 +18,11 @@
 // import android.widget.ListView;
 // import org.chromium.ui.ColorSuggestionListAdapter.OnColorSuggestionClickListener;
 
-using Elastos::Droid::Widget::ListView;
+//using Elastos::Droid::Widget::ListView;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Webkit::Ui::ColorSuggestionListAdapter;
 using Elastos::Droid::Webkit::Ui::OnColorChangedListener;
-using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
@@ -36,8 +36,8 @@ class ColorSuggestion;
   * those colors.
   */
 class ColorPickerSimple
-    : public ListView
-    , public ColorSuggestionListAdapter::OnColorSuggestionClickListener
+    //: public ListView
+    : public ColorSuggestionListAdapter::OnColorSuggestionClickListener
 {
 public:
     ColorPickerSimple(

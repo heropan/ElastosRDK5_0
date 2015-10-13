@@ -4,6 +4,8 @@
 
 using Elastos::Droid::View::IViewConfigurationHelper;
 //using Elastos::Droid::View::CViewConfigurationHelper;
+using Elastos::Droid::Content::EIID_IComponentCallbacks;
+using Elastos::Droid::Content::Res::IResources;
 
 namespace Elastos {
 namespace Droid {
@@ -14,6 +16,8 @@ namespace Gfx {
 //=====================================================================
 //           ViewConfigurationHelper::InnerComponentCallbacks
 //=====================================================================
+CAR_INTERFACE_IMPL(ViewConfigurationHelper::InnerComponentCallbacks, Object, IComponentCallbacks)
+
 ViewConfigurationHelper::InnerComponentCallbacks::InnerComponentCallbacks(
     /* [in] */ ViewConfigurationHelper* owner)
     : mOwner(owner)
@@ -75,7 +79,9 @@ ECode ViewConfigurationHelper::RegisterListener()
     //             public void onLowMemory() {
     //             }
     //         });
-    assert(0);
+
+    AutoPtr<InnerComponentCallbacks> componentCallBacks = new InnerComponentCallbacks(this);
+    mAppContext->RegisterComponentCallbacks(componentCallBacks);
     return NOERROR;
 }
 
@@ -94,7 +100,27 @@ ECode ViewConfigurationHelper::UpdateNativeViewConfigurationIfNecessary()
     //         getScaledDoubleTapSlop(),
     //         getScaledMinScalingSpan(),
     //         getScaledMinScalingTouchMajor());
+
+
     assert(0);
+    AutoPtr<IViewConfigurationHelper> helper;
+    //CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
+
+    AutoPtr<IViewConfiguration> configuration;
+    helper->Get(mAppContext, (IViewConfiguration**)&configuration);
+
+    if (mViewConfiguration == configuration)
+        return NOERROR;
+
+    mViewConfiguration = configuration;
+    NativeUpdateSharedViewConfiguration(
+        GetScaledMaximumFlingVelocity(),
+        GetScaledMinimumFlingVelocity(),
+        GetScaledTouchSlop(),
+        GetScaledDoubleTapSlop(),
+        GetScaledMinScalingSpan(),
+        GetScaledMinScalingTouchMajor());
+
     return NOERROR;
 }
 
@@ -102,64 +128,96 @@ Int32 ViewConfigurationHelper::GetDoubleTapTimeout()
 {
     // ==================before translated======================
     // return ViewConfiguration.getDoubleTapTimeout();
+
     assert(0);
-    return 0;
+    AutoPtr<IViewConfigurationHelper> helper;
+    //CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
+
+    Int32 result = 0;
+    helper->GetDoubleTapTimeout(&result);
+    return result;
 }
 
 Int32 ViewConfigurationHelper::GetLongPressTimeout()
 {
     // ==================before translated======================
     // return ViewConfiguration.getLongPressTimeout();
+
     assert(0);
-    return 0;
+    AutoPtr<IViewConfigurationHelper> helper;
+    //CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
+
+    Int32 result = 0;
+    helper->GetLongPressTimeout(&result);
+    return result;
 }
 
 Int32 ViewConfigurationHelper::GetTapTimeout()
 {
     // ==================before translated======================
     // return ViewConfiguration.getTapTimeout();
+
     assert(0);
-    return 0;
+    AutoPtr<IViewConfigurationHelper> helper;
+    //CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
+
+    Int32 result = 0;
+    helper->GetTapTimeout(&result);
+    return result;
 }
 
 Float ViewConfigurationHelper::GetScrollFriction()
 {
     // ==================before translated======================
     // return ViewConfiguration.getScrollFriction();
+
     assert(0);
-    return 0.0f;
+    AutoPtr<IViewConfigurationHelper> helper;
+    //CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
+
+    Float result = 0.0f;
+    helper->GetScrollFriction(&result);
+    return result;
 }
 
 Int32 ViewConfigurationHelper::GetScaledMaximumFlingVelocity()
 {
     // ==================before translated======================
     // return mViewConfiguration.getScaledMaximumFlingVelocity();
-    assert(0);
-    return 0;
+
+    Int32 result = 0;
+    mViewConfiguration->GetScaledMaximumFlingVelocity(&result);
+    return result;
 }
 
 Int32 ViewConfigurationHelper::GetScaledMinimumFlingVelocity()
 {
     // ==================before translated======================
     // return mViewConfiguration.getScaledMinimumFlingVelocity();
-    assert(0);
-    return 0;
+
+    Int32 result = 0;
+    mViewConfiguration->GetScaledMinimumFlingVelocity(&result);
+    return result;
 }
 
 Int32 ViewConfigurationHelper::GetScaledTouchSlop()
 {
     // ==================before translated======================
     // return mViewConfiguration.getScaledTouchSlop();
-    assert(0);
-    return 0;
+
+    Int32 result = 0;
+    mViewConfiguration->GetScaledTouchSlop(&result);
+    return result;
 }
 
 Int32 ViewConfigurationHelper::GetScaledDoubleTapSlop()
 {
     // ==================before translated======================
     // return mViewConfiguration.getScaledDoubleTapSlop();
-    assert(0);
-    return 0;
+
+    Int32 result = 0;
+    mViewConfiguration->GetScaledDoubleTapSlop(&result);
+    return result;
 }
 
 Int32 ViewConfigurationHelper::GetScaledMinScalingSpan()
@@ -176,8 +234,24 @@ Int32 ViewConfigurationHelper::GetScaledMinScalingSpan()
     //     return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, MIN_SCALING_SPAN_MM,
     //             res.getDisplayMetrics());
     // }
-    assert(0);
-    return 0;
+
+    AutoPtr<IResources> res;
+    mAppContext->GetResources((IResources**)&res);
+
+    Int32 id = 0;
+    res->GetIdentifier(String("config_minScalingSpan"), String("dimen"), String("android"), &id);
+    if (id == 0)
+        id = -1;/*R::dimen.config_min_scaling_span;*/
+    //try {
+        Int32 dimensionPixelSize = 0;
+        res->GetDimensionPixelSize(id, &dimensionPixelSize);
+        return dimensionPixelSize;
+    //}
+    //catch (Resources.NotFoundException e) {
+    //    assert false : "MinScalingSpan resource lookup failed.";
+    //    return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, MIN_SCALING_SPAN_MM,
+    //                res.getDisplayMetrics());
+    //}
 }
 
 Int32 ViewConfigurationHelper::GetScaledMinScalingTouchMajor()
@@ -194,8 +268,24 @@ Int32 ViewConfigurationHelper::GetScaledMinScalingTouchMajor()
     //     return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
     //             MIN_SCALING_TOUCH_MAJOR_DIP, res.getDisplayMetrics());
     // }
-    assert(0);
-    return 0;
+
+    AutoPtr<IResources> res;
+    mAppContext->GetResources((IResources**)&res);
+
+    Int32 id = 0;
+    res->GetIdentifier(String("config_minScalingTouchMajor"), String("dimen"), String("android"), &id);
+    if (id == 0)
+        id = -1;/*R::dimen::config_min_scaling_touch_major;*/
+    //try {
+        Int32 dimensionPixelSize = 0;
+        res->GetDimensionPixelSize(id, &dimensionPixelSize);
+        return dimensionPixelSize;
+    //}
+    //catch (Resources.NotFoundException e) {
+    //    assert false : "MinScalingTouchMajor resource lookup failed.";
+    //    return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+    //                MIN_SCALING_TOUCH_MAJOR_DIP, res.getDisplayMetrics());
+    //}
 }
 
 AutoPtr<ViewConfigurationHelper> ViewConfigurationHelper::CreateWithListener(
@@ -205,9 +295,11 @@ AutoPtr<ViewConfigurationHelper> ViewConfigurationHelper::CreateWithListener(
     // ViewConfigurationHelper viewConfigurationHelper = new ViewConfigurationHelper(context);
     // viewConfigurationHelper.registerListener();
     // return viewConfigurationHelper;
+
     assert(0);
-    AutoPtr<ViewConfigurationHelper> empty;
-    return empty;
+    AutoPtr<ViewConfigurationHelper> viewConfigurationHelper = new ViewConfigurationHelper(context);
+    viewConfigurationHelper->RegisterListener();
+    return viewConfigurationHelper;
 }
 
 ECode ViewConfigurationHelper::NativeUpdateSharedViewConfiguration(

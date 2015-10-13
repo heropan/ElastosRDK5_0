@@ -8,7 +8,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/utility/etl/List.h"
 #include "elastos/utility/etl/Set.h"
-#include "elastos/droid/widget/ArrayAdapter.h"
+//#include "elastos/droid/widget/ArrayAdapter.h"
 
 // package org.chromium.ui;
 // import android.content.Context;
@@ -31,7 +31,7 @@ using Elastos::Core::IInteger32;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
-using Elastos::Droid::Widget::ArrayAdapter;
+//using Elastos::Droid::Widget::ArrayAdapter;
 
 namespace Elastos {
 namespace Droid {
@@ -43,18 +43,18 @@ class DropdownItem;
 /**
   * Dropdown item adapter for DropdownPopupWindow.
   */
-class DropdownAdapter : public ArrayAdapter
+class DropdownAdapter// : public ArrayAdapter
 {
 public:
     DropdownAdapter(
         /* [in] */ IContext* context,
-        /* [in] */ IList<DropdownItem*>* items,
-        /* [in] */ ISet<IInteger32*>* separators);
+        /* [in] */ IList* items,
+        /* [in] */ ISet* separators);
 
     DropdownAdapter(
         /* [in] */ IContext* context,
         /* [in] */ ArrayOf<DropdownItem*>* items,
-        /* [in] */ ISet<IInteger32*>* separators);
+        /* [in] */ ISet* separators);
 
     // @Override
     CARAPI_(AutoPtr<IView>) GetView(
@@ -74,7 +74,7 @@ private:
 
 private:
     AutoPtr<IContext> mContext;
-    AutoPtr< ISet<IInteger32*> > mSeparators;
+    AutoPtr<ISet> mSeparators;
     Boolean mAreAllItemsEnabled;
 };
 

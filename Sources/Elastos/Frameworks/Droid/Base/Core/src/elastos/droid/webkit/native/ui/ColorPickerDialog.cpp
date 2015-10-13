@@ -1,5 +1,17 @@
 
 #include "elastos/droid/webkit/native/ui/ColorPickerDialog.h"
+//#include "elastos/core/CString.h"
+//#include "elastos/droid/view/CLayoutInflater.h"
+
+using Elastos::Core::ICharSequence;
+//using Elastos::Core::CString;
+using Elastos::Droid::View::ILayoutInflater;
+//using Elastos::Droid::View::CLayoutInflater;
+using Elastos::Droid::View::EIID_IViewOnClickListener;
+using Elastos::Droid::Content::EIID_IDialogInterface;
+using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
+using Elastos::Droid::Content::EIID_IDialogInterfaceOnCancelListener;
+
 
 namespace Elastos {
 namespace Droid {
@@ -7,9 +19,11 @@ namespace Webkit {
 namespace Ui {
 
 //=====================================================================
-//            ColorPickerDialog::InnerDialogOnClickListener
+//            ColorPickerDialog::InnerOnClickListener
 //=====================================================================
-ColorPickerDialog::InnerDialogOnClickListener::InnerDialogOnClickListener(
+CAR_INTERFACE_IMPL(ColorPickerDialog::InnerOnClickListener, Object, IDialogInterfaceOnClickListener)
+
+ColorPickerDialog::InnerOnClickListener::InnerOnClickListener(
     /* [in] */ ColorPickerDialog* owner)
     : mOwner(owner)
 {
@@ -17,21 +31,25 @@ ColorPickerDialog::InnerDialogOnClickListener::InnerDialogOnClickListener(
     // mOwner = owner;
 }
 
-ECode ColorPickerDialog::InnerDialogOnClickListener::OnClick(
+ECode ColorPickerDialog::InnerOnClickListener::OnClick(
     /* [in] */ IDialogInterface* dialogInterface,
     /* [in] */ Int32 i)
 {
     VALIDATE_NOT_NULL(dialogInterface);
     // ==================before translated======================
     // tryNotifyColorSet(mCurrentColor);
-    assert(0);
+
+    assert(NULL == mOwner);
+    mOwner->TryNotifyColorSet(mOwner->mCurrentColor);
     return NOERROR;
 }
 
 //=====================================================================
-//            ColorPickerDialog::InnerDialogOnClickListener1
+//            ColorPickerDialog::InnerOnClickListener1
 //=====================================================================
-ColorPickerDialog::InnerDialogOnClickListener1::InnerDialogOnClickListener1(
+CAR_INTERFACE_IMPL(ColorPickerDialog::InnerOnClickListener1, Object, IDialogInterfaceOnClickListener)
+
+ColorPickerDialog::InnerOnClickListener1::InnerOnClickListener1(
     /* [in] */ ColorPickerDialog* owner)
     : mOwner(owner)
 {
@@ -39,21 +57,25 @@ ColorPickerDialog::InnerDialogOnClickListener1::InnerDialogOnClickListener1(
     // mOwner = owner;
 }
 
-ECode ColorPickerDialog::InnerDialogOnClickListener1::OnClick(
+ECode ColorPickerDialog::InnerOnClickListener1::OnClick(
     /* [in] */ IDialogInterface* dialogInterface,
     /* [in] */ Int32 i)
 {
     VALIDATE_NOT_NULL(dialogInterface);
     // ==================before translated======================
     // tryNotifyColorSet(mInitialColor);
-    assert(0);
+
+    assert(NULL == mOwner);
+    mOwner->TryNotifyColorSet(mOwner->mInitialColor);
     return NOERROR;
 }
 
 //=====================================================================
-//       ColorPickerDialog::InnerDialogInterfaceOnCancelListener
+//       ColorPickerDialog::InnerOnCancelListener
 //=====================================================================
-ColorPickerDialog::InnerDialogInterfaceOnCancelListener::InnerDialogInterfaceOnCancelListener(
+CAR_INTERFACE_IMPL(ColorPickerDialog::InnerOnCancelListener, Object, IDialogInterfaceOnCancelListener)
+
+ColorPickerDialog::InnerOnCancelListener::InnerOnCancelListener(
     /* [in] */ ColorPickerDialog* owner)
     : mOwner(owner)
 {
@@ -61,19 +83,23 @@ ColorPickerDialog::InnerDialogInterfaceOnCancelListener::InnerDialogInterfaceOnC
     // mOwner = owner;
 }
 
-ECode ColorPickerDialog::InnerDialogInterfaceOnCancelListener::OnCancel(
+ECode ColorPickerDialog::InnerOnCancelListener::OnCancel(
     /* [in] */ IDialogInterface* arg0)
 {
     VALIDATE_NOT_NULL(arg0);
     // ==================before translated======================
     // tryNotifyColorSet(mInitialColor);
-    assert(0);
+
+    assert(NULL == mOwner);
+    mOwner->TryNotifyColorSet(mOwner->mInitialColor);
     return NOERROR;
 }
 
 //=====================================================================
 //            ColorPickerDialog::InnerButtonOnClickListener
 //=====================================================================
+CAR_INTERFACE_IMPL(ColorPickerDialog::InnerButtonOnClickListener, Object, IViewOnClickListener)
+
 ColorPickerDialog::InnerButtonOnClickListener::InnerButtonOnClickListener(
     /* [in] */ ColorPickerDialog* owner)
     : mOwner(owner)
@@ -88,7 +114,9 @@ ECode ColorPickerDialog::InnerButtonOnClickListener::OnClick(
     VALIDATE_NOT_NULL(v);
     // ==================before translated======================
     // showAdvancedView();
-    assert(0);
+
+    assert(NULL == mOwner);
+    mOwner->ShowAdvancedView();
     return NOERROR;
 }
 
@@ -96,10 +124,14 @@ ECode ColorPickerDialog::InnerButtonOnClickListener::OnClick(
 //                          ColorPickerDialog
 //=====================================================================
 ColorPickerDialog::ColorPickerDialog(
-    /* [in] */ Context* context,
+    /* [in] */ IContext* context,
     /* [in] */ OnColorChangedListener* listener,
     /* [in] */ Int32 color,
     /* [in] */ ArrayOf<ColorSuggestion*>* suggestions)
+    //: AlertDialog(context, 0)
+    : mListener(listener)
+    , mInitialColor(color)
+    , mCurrentColor(mInitialColor)
 {
     // ==================before translated======================
     // super(context, 0);
@@ -175,6 +207,79 @@ ColorPickerDialog::ColorPickerDialog(
     // mSimpleColorPicker.init(suggestions, this);
     //
     // updateCurrentColor(mInitialColor);
+
+    assert(0);
+    // Initialize title
+    AutoPtr<IInterface> interfaceTmp;
+    context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&interfaceTmp);
+    AutoPtr<ILayoutInflater> inflater = ILayoutInflater::Probe(interfaceTmp);
+
+    AutoPtr<IView> title;
+    inflater->Inflate(-1/*R::layout::color_picker_dialog_title*/, NULL, (IView**)&title);
+    //SetCustomTitle(title);
+
+    title->FindViewById(-1/*R::id::selected_color_view*/, (IView**)&mCurrentColorView);
+
+    AutoPtr<IView> titleTextTmp;
+    title->FindViewById(-1/*R::id::title*/, (IView**)&titleTextTmp);
+    AutoPtr<ITextView> titleText = ITextView::Probe(titleTextTmp);
+
+    AutoPtr<ICharSequence> charSequence;
+    //CString sTmp(""/*R::string::color_picker_dialog_title*/);
+    //Int32 length = 0;
+    //sTmp->GetLength(&length);
+    //sTmp->SubSequence(0, length-1, (ICharSequence**)&charSequence);
+    titleText->SetText(charSequence/*R::string::color_picker_dialog_title*/);
+
+    // Initialize Set/Cancel buttons
+    String positiveButtonText;
+    context->GetString(-1/*R::string::color_picker_button_set*/, &positiveButtonText);
+    AutoPtr<InnerOnClickListener> positiveOnClickListener = new InnerOnClickListener(this);
+    //SetButton(BUTTON_POSITIVE, positiveButtonText, positiveOnClickListener);
+
+    // Note that with the color picker there's not really any such thing as
+    // "cancelled".
+    // The color picker flow only finishes when we return a color, so we
+    // have to always
+    // return something. The concept of "cancelled" in this case just means
+    // returning
+    // the color that we were initialized with.
+    String negativeButtonText;
+    context->GetString(-1/*R::string::color_picker_button_cancel*/, &negativeButtonText);
+    AutoPtr<InnerOnClickListener1> negativeListener = new InnerOnClickListener1(this);
+    //SetButton(BUTTON_NEGATIVE, negativeButtonText, negativeListener);
+
+    AutoPtr<InnerOnCancelListener> onCancelListener = new InnerOnCancelListener(this);
+    //SetOnCancelListener(onCancelListener);
+
+    // Initialize main content view
+    AutoPtr<IView> content;
+    inflater->Inflate(-1/*R::layout::color_picker_dialog_content*/, NULL, (IView**)&content);
+    //SetView(content);
+
+    // Initialize More button.
+    AutoPtr<IView> viewTmp;
+    content->FindViewById(-1/*R::id::more_colors_button*/, (IView**)&viewTmp);
+    mMoreButton = IButton::Probe(viewTmp);
+
+    AutoPtr<InnerOnClickListener> onClickListener = new InnerOnClickListener(this);
+    //mMoreButton->SetOnClickListener(onClickListener);
+
+    // Initialize advanced color view (hidden initially).
+    AutoPtr<IView> viewTmp1;
+    content->FindViewById(-1/*R::id::color_picker_advanced*/, (IView**)&viewTmp1);
+    //AutoPtr<ILinearLayout> linearLayoutTmp = ILinearLayout::Probe(viewTmp1);
+    //mAdvancedColorPicker = (ColorPickerAdvanced*)viewTmp1;
+    //mAdvancedColorPicker->SetVisibility(IView::GONE);
+
+    // Initialize simple color view (default view).
+    AutoPtr<IView> viewTmp2;
+    content->FindViewById(-1/*R::id::color_picker_simple*/, (IView**)&viewTmp2);
+    //AutoPtr<IListView> listViewTmp = IListView::Probe(viewTmp2);
+    //mAdvancedColorPicker = (ColorPickerSimple*)viewTmp2;
+    mSimpleColorPicker->Init(suggestions, this);
+
+    UpdateCurrentColor(mInitialColor);
 }
 
 ECode ColorPickerDialog::OnColorChanged(
@@ -182,7 +287,8 @@ ECode ColorPickerDialog::OnColorChanged(
 {
     // ==================before translated======================
     // updateCurrentColor(color);
-    assert(0);
+
+    UpdateCurrentColor(color);
     return NOERROR;
 }
 
@@ -200,7 +306,20 @@ ECode ColorPickerDialog::ShowAdvancedView()
     // mAdvancedColorPicker.setVisibility(View.VISIBLE);
     // mAdvancedColorPicker.setListener(this);
     // mAdvancedColorPicker.setColor(mCurrentColor);
-    assert(0);
+
+    // Only need to hide the borders, not the Views themselves, since the Views are
+    // contained within the borders.
+    AutoPtr<IView> buttonBorder;
+    //FindViewById(-1/*R::id::more_colors_button_border*/, (IView**)&buttonBorder);
+    buttonBorder->SetVisibility(IView::GONE);
+
+    AutoPtr<IView> simpleView;
+    //FindViewById(-1/*R::id::color_picker_simple*/, (IView**)&simpleView);
+    simpleView->SetVisibility(IView::GONE);
+
+    //mAdvancedColorPicker->SetVisibility(IView::VISIBLE);
+    mAdvancedColorPicker->SetListener(this);
+    mAdvancedColorPicker->SetColor(mCurrentColor);
     return NOERROR;
 }
 
@@ -209,7 +328,9 @@ ECode ColorPickerDialog::TryNotifyColorSet(
 {
     // ==================before translated======================
     // if (mListener != null) mListener.onColorChanged(color);
-    assert(0);
+
+    if (mListener != NULL)
+        mListener->OnColorChanged(color);
     return NOERROR;
 }
 
@@ -219,7 +340,10 @@ ECode ColorPickerDialog::UpdateCurrentColor(
     // ==================before translated======================
     // mCurrentColor = color;
     // if (mCurrentColorView != null) mCurrentColorView.setBackgroundColor(color);
-    assert(0);
+
+    mCurrentColor = color;
+    if (mCurrentColorView != NULL)
+        mCurrentColorView->SetBackgroundColor(color);
     return NOERROR;
 }
 

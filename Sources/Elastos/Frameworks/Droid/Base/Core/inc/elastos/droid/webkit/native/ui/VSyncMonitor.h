@@ -60,6 +60,8 @@ public:
         , public IFrameCallback
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerChoreographerFrameCallback(
             /* [in] */ VSyncMonitor* owner);
 
@@ -71,12 +73,14 @@ public:
         VSyncMonitor* mOwner;
     };
 
-    class InnerRunnable
+    class InnerVSyncTimerRunnable
         : public Object
         , public IRunnable
     {
     public:
-        InnerRunnable(
+        CAR_INTERFACE_DECL()
+
+        InnerVSyncTimerRunnable(
             /* [in] */ VSyncMonitor* owner);
 
         // @Override
@@ -86,12 +90,14 @@ public:
         VSyncMonitor* mOwner;
     };
 
-    class InnerRunnable1
+    class InnerVSyncSyntheticRunnable
         : public Object
         , public IRunnable
     {
     public:
-        InnerRunnable1(
+        CAR_INTERFACE_DECL()
+
+        InnerVSyncSyntheticRunnable(
             /* [in] */ VSyncMonitor* owner);
 
         // @Override

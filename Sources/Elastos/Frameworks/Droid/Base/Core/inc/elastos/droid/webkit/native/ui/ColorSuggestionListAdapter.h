@@ -38,10 +38,14 @@ class ColorSuggestion;
   * The adapter used to populate ColorPickerSimple.
   */
 class ColorSuggestionListAdapter
-    : public BaseAdapter
+    // BaseAdapter parent hasno Object
+    : public Object
+    , public BaseAdapter
     , public IViewOnClickListener
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
       * The callback used to indicate the user has clicked on a suggestion.
       */

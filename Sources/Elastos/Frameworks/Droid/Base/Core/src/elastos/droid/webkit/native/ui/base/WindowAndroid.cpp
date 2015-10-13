@@ -1,13 +1,10 @@
 
 #include "elastos/droid/webkit/native/ui/base/WindowAndroid.h"
 //#include "elastos/core/CString.h"
-//#include "elastos/io/CSerializable.h"
 //#include "elastos/droid/widget/CToastHelper.h"
-//#include "elastos/droid/content/pm/CPackageManager.h"
 
 using Elastos::Utility::CHashMap;
 using Elastos::IO::ISerializable;
-//using Elastos::IO::CSerializable;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
@@ -16,7 +13,6 @@ using Elastos::Droid::Widget::IToast;
 using Elastos::Droid::Widget::IToastHelper;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IResolveInfo;
-//using Elastos::Droid::Content::Pm::CPackageManager;
 //using Elastos::Droid::Widget::CToastHelper;
 
 namespace Elastos {
@@ -256,7 +252,6 @@ ECode WindowAndroid::RestoreInstanceState(
 
     if (bundle == NULL) return NOERROR;
     AutoPtr<ISerializable> errors;
-    //CSerializable::New((ISerializable**)&errors);
     bundle->GetSerializable(WINDOW_CALLBACK_ERRORS, (ISerializable**)&errors);
 
     IInterface* interfaceTmp = (IInterface*)errors;
@@ -286,7 +281,6 @@ Boolean WindowAndroid::CanResolveActivity(
 
     assert(0);
     AutoPtr<IPackageManager> packageManager;
-    //CPackageManager::New((IPackageManager**)&packageManager);
     mApplicationContext->GetPackageManager((IPackageManager**)&packageManager);
 
     AutoPtr<IResolveInfo> resolveInfo;

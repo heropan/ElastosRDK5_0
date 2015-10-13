@@ -17,7 +17,7 @@ namespace Ui {
 /**
   * The callback used to indicate the user changed the color.
   */
-class OnColorChangedListener
+class OnColorChangedListener : public Object
 {
 public:
     /**

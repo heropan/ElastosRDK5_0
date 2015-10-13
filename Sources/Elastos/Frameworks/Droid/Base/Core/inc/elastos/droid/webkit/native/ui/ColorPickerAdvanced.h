@@ -6,7 +6,7 @@
 #define _ELASTOS_DROID_WEBKIT_UI_COLORPICKERADVANCED_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/widget/LinearLayout.h"
+//#include "elastos/droid/widget/LinearLayout.h"
 #include "elastos/droid/webkit/native/ui/ColorPickerAdvancedComponent.h"
 #include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
 
@@ -20,12 +20,13 @@
 // import android.widget.SeekBar;
 // import android.widget.SeekBar.OnSeekBarChangeListener;
 
-using Elastos::Droid::Widget::LinearLayout;
+//using Elastos::Droid::Widget::LinearLayout;
 using Elastos::Droid::Widget::ISeekBar;
 using Elastos::Droid::Widget::ISeekBarOnSeekBarChangeListener;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Webkit::Ui::ColorPickerAdvancedComponent;
 using Elastos::Droid::Webkit::Ui::OnColorChangedListener;
-using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
@@ -34,11 +35,11 @@ namespace Ui {
 
 /**
   * Represents a more advanced way for the user to choose a color, based on selecting each of
-  * the Hue, Saturation and Value attributes.
+  * the Hue, Saturation and Value attributes.s
   */
 class ColorPickerAdvanced
-    : public LinearLayout
-    , public ISeekBarOnSeekBarChangeListener
+    //: public LinearLayout
+    : public ISeekBarOnSeekBarChangeListener
 {
 public:
     ColorPickerAdvanced(

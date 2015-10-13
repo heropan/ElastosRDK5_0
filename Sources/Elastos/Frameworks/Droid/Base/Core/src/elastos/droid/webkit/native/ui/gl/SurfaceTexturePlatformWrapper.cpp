@@ -1,5 +1,14 @@
 
 #include "elastos/droid/webkit/native/ui/gl/SurfaceTexturePlatformWrapper.h"
+#include "elastos/droid/graphics/CSurfaceTexture.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/webkit/native/ui/gl/SurfaceTextureListener.h"
+
+using Elastos::Droid::Graphics::ISurfaceTexture;
+using Elastos::Droid::Graphics::CSurfaceTexture;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::View::ISurfaceTextureListener;
+using Elastos::Droid::Webkit::Ui::Gl::SurfaceTextureListener;
 
 namespace Elastos {
 namespace Droid {
@@ -17,9 +26,10 @@ AutoPtr<ISurfaceTexture> SurfaceTexturePlatformWrapper::Create(
 {
     // ==================before translated======================
     // return new SurfaceTexture(textureId);
-    assert(0);
-    AutoPtr<ISurfaceTexture> empty;
-    return empty;
+
+    AutoPtr<ISurfaceTexture> surfaceTexture;
+    CSurfaceTexture::New(textureId, (ISurfaceTexture**)&surfaceTexture);
+    return surfaceTexture;
 }
 
 AutoPtr<ISurfaceTexture> SurfaceTexturePlatformWrapper::CreateSingleBuffered(
@@ -28,9 +38,11 @@ AutoPtr<ISurfaceTexture> SurfaceTexturePlatformWrapper::CreateSingleBuffered(
     // ==================before translated======================
     // assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
     // return new SurfaceTexture(textureId, true);
-    assert(0);
-    AutoPtr<ISurfaceTexture> empty;
-    return empty;
+
+    assert (Build::VERSION::SDK_INT >= Build::VERSION_CODES::KITKAT);
+    AutoPtr<ISurfaceTexture> surfaceTexture;
+    CSurfaceTexture::New(textureId, TRUE, (ISurfaceTexture**)&surfaceTexture);
+    return surfaceTexture;
 }
 
 ECode SurfaceTexturePlatformWrapper::Destroy(
@@ -40,7 +52,9 @@ ECode SurfaceTexturePlatformWrapper::Destroy(
     // ==================before translated======================
     // surfaceTexture.setOnFrameAvailableListener(null);
     // surfaceTexture.release();
-    assert(0);
+
+    surfaceTexture->SetOnFrameAvailableListener(NULL);
+    surfaceTexture->Release();
     return NOERROR;
 }
 
@@ -52,7 +66,9 @@ ECode SurfaceTexturePlatformWrapper::SetFrameAvailableCallback(
     // ==================before translated======================
     // surfaceTexture.setOnFrameAvailableListener(
     //         new SurfaceTextureListener(nativeSurfaceTextureListener));
-    assert(0);
+
+    AutoPtr<SurfaceTextureListener> surfaceTextureListener = new SurfaceTextureListener(nativeSurfaceTextureListener);
+    surfaceTexture->SetOnFrameAvailableListener((IOnFrameAvailableListener*)surfaceTextureListener);
     return NOERROR;
 }
 
@@ -66,7 +82,13 @@ ECode SurfaceTexturePlatformWrapper::UpdateTexImage(
     // } catch (RuntimeException e) {
     //     Log.e(TAG, "Error calling updateTexImage", e);
     // }
-    assert(0);
+
+    //try {
+        surfaceTexture->UpdateTexImage();
+    //}
+    // catch (RuntimeException e) {
+    //    Log.e(TAG, "Error calling updateTexImage", e);
+    //}
     return NOERROR;
 }
 
@@ -77,7 +99,9 @@ ECode SurfaceTexturePlatformWrapper::ReleaseTexImage(
     // ==================before translated======================
     // assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
     // surfaceTexture.releaseTexImage();
-    assert(0);
+
+    assert (Build::VERSION::SDK_INT >= Build::VERSION_CODES::KITKAT);
+    surfaceTexture->ReleaseTexImage();
     return NOERROR;
 }
 
@@ -89,7 +113,8 @@ ECode SurfaceTexturePlatformWrapper::SetDefaultBufferSize(
     VALIDATE_NOT_NULL(surfaceTexture);
     // ==================before translated======================
     // surfaceTexture.setDefaultBufferSize(width, height);
-    assert(0);
+
+    surfaceTexture->SetDefaultBufferSize(width, height);
     return NOERROR;
 }
 
@@ -101,7 +126,8 @@ ECode SurfaceTexturePlatformWrapper::GetTransformMatrix(
     VALIDATE_NOT_NULL(matrix);
     // ==================before translated======================
     // surfaceTexture.getTransformMatrix(matrix);
-    assert(0);
+
+    surfaceTexture->GetTransformMatrix(matrix);
     return NOERROR;
 }
 

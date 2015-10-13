@@ -1,5 +1,12 @@
 
 #include "elastos/droid/webkit/native/ui/ColorPickerAdvanced.h"
+#include "elastos/core/Math.h"
+#include "elastos/droid/graphics/CColor.h"
+
+using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::Graphics::IColor;
+using Elastos::Droid::Graphics::CColor;
+using Elastos::Droid::Widget::ILinearLayout;
 
 namespace Elastos {
 namespace Droid {
@@ -19,28 +26,52 @@ const Int32 ColorPickerAdvanced::VALUE_COLOR_COUNT;
 ColorPickerAdvanced::ColorPickerAdvanced(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
+    //: LinearLayout(context, attrs)
+    : mHueDetails(NULL)
+    , mSaturationDetails(NULL)
+    , mValueDetails(NULL)
+    , mOnColorChangedListener(NULL)
+    , mCurrentColor(0)
 {
     // ==================before translated======================
     // super(context, attrs);
     // init();
+
+    Init();
 }
 
 ColorPickerAdvanced::ColorPickerAdvanced(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
+    //: LinearLayout(context, attrs, defStyle)
+    : mHueDetails(NULL)
+    , mSaturationDetails(NULL)
+    , mValueDetails(NULL)
+    , mOnColorChangedListener(NULL)
+    , mCurrentColor(0)
 {
     // ==================before translated======================
     // super(context, attrs, defStyle);
     // init();
+
+    Init();
 }
 
 ColorPickerAdvanced::ColorPickerAdvanced(
     /* [in] */ IContext* context)
+    //: LinearLayout(context)
+    : mHueDetails(NULL)
+    , mSaturationDetails(NULL)
+    , mValueDetails(NULL)
+    , mOnColorChangedListener(NULL)
+    , mCurrentColor(0)
 {
     // ==================before translated======================
     // super(context);
     // init();
+
+    Init();
 }
 
 AutoPtr<ColorPickerAdvancedComponent> ColorPickerAdvanced::CreateAndAddNewGradient(
@@ -58,9 +89,23 @@ AutoPtr<ColorPickerAdvancedComponent> ColorPickerAdvanced::CreateAndAddNewGradie
     //         textResourceId,
     //         seekBarMax,
     //         seekBarListener);
+
     assert(0);
-    AutoPtr<ColorPickerAdvancedComponent> empty;
-    return empty;
+    //LinearLayout* linearLayout = (LinearLayout*)this;
+    IView* view = NULL;//(LinearLayout*)linearLayout;
+
+    AutoPtr<IContext> content;
+    view->GetContext((IContext**)&content);
+
+    AutoPtr<IInterface> interfaceTmp;
+    content->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&interfaceTmp);
+    AutoPtr<ILayoutInflater> inflater = ILayoutInflater::Probe(interfaceTmp);
+
+    AutoPtr<IView> newComponent;
+    inflater->Inflate(-1/*R::Layout::color_picker_advanced_component*/, NULL, (IView**)&newComponent);
+    //AddView(newComponent);
+    AutoPtr<ColorPickerAdvancedComponent> result = new ColorPickerAdvancedComponent(newComponent, textResourceId, seekBarMax, seekBarListener);
+    return result;
 }
 
 ECode ColorPickerAdvanced::SetListener(
@@ -69,7 +114,8 @@ ECode ColorPickerAdvanced::SetListener(
     VALIDATE_NOT_NULL(onColorChangedListener);
     // ==================before translated======================
     // mOnColorChangedListener = onColorChangedListener;
-    assert(0);
+
+    mOnColorChangedListener = onColorChangedListener;
     return NOERROR;
 }
 
@@ -77,8 +123,8 @@ Int32 ColorPickerAdvanced::GetColor()
 {
     // ==================before translated======================
     // return mCurrentColor;
-    assert(0);
-    return 0;
+
+    return mCurrentColor;
 }
 
 ECode ColorPickerAdvanced::SetColor(
@@ -88,7 +134,12 @@ ECode ColorPickerAdvanced::SetColor(
     // mCurrentColor = color;
     // Color.colorToHSV(mCurrentColor, mCurrentHsvValues);
     // refreshGradientComponents();
-    assert(0);
+
+    mCurrentColor = color;
+    AutoPtr<IColor> colorHsv;
+    CColor::AcquireSingleton((IColor**)&colorHsv);
+    colorHsv->ColorToHSV(mCurrentColor, mCurrentHsvValues);
+    RefreshGradientComponents();
     return NOERROR;
 }
 
@@ -112,7 +163,23 @@ ECode ColorPickerAdvanced::OnProgressChanged(
     //
     //     notifyColorChanged();
     // }
-    assert(0);
+
+    if (fromUser) {
+        (*mCurrentHsvValues)[0] = mHueDetails->GetValue();
+        (*mCurrentHsvValues)[1] = mSaturationDetails->GetValue() / 100.0f;
+        (*mCurrentHsvValues)[2] = mValueDetails->GetValue() / 100.0f;
+
+        AutoPtr<IColor> color;
+        CColor::AcquireSingleton((IColor**)&color);
+        color->HSVToColor(mCurrentHsvValues, &mCurrentColor);
+
+        UpdateHueGradient();
+        UpdateSaturationGradient();
+        UpdateValueGradient();
+
+        NotifyColorChanged();
+    }
+
     return NOERROR;
 }
 
@@ -122,7 +189,7 @@ ECode ColorPickerAdvanced::OnStartTrackingTouch(
     VALIDATE_NOT_NULL(seekBar);
     // ==================before translated======================
     // // Do nothing.
-    assert(0);
+
     return NOERROR;
 }
 
@@ -132,7 +199,7 @@ ECode ColorPickerAdvanced::OnStopTrackingTouch(
     VALIDATE_NOT_NULL(seekBar);
     // ==================before translated======================
     // // Do nothing.
-    assert(0);
+
     return NOERROR;
 }
 
@@ -140,9 +207,9 @@ AutoPtr< ArrayOf<Float> > ColorPickerAdvanced::MiddleInitMcurrenthsvvalues()
 {
     // ==================before translated======================
     // float[] result = new float[3];
-    assert(0);
-    AutoPtr< ArrayOf<Float> > empty;
-    return empty;
+
+    AutoPtr< ArrayOf<Float> > result = ArrayOf<Float>::Alloc(3);
+    return result;
 }
 
 ECode ColorPickerAdvanced::Init()
@@ -157,7 +224,18 @@ ECode ColorPickerAdvanced::Init()
     // mValueDetails = createAndAddNewGradient(R.string.color_picker_value,
     //         VALUE_SEEK_BAR_MAX, this);
     // refreshGradientComponents();
+
     assert(0);
+    //SetOrientation(ILinearLayout::VERTICAL);
+
+    mHueDetails = CreateAndAddNewGradient(-1/*R::string::color_picker_hue*/,
+            HUE_SEEK_BAR_MAX, this);
+    mSaturationDetails = CreateAndAddNewGradient(-1/*R::string::color_picker_saturation*/,
+            SATURATION_SEEK_BAR_MAX, this);
+    mValueDetails = CreateAndAddNewGradient(-1/*R::string::color_picker_value*/,
+            VALUE_SEEK_BAR_MAX, this);
+    RefreshGradientComponents();
+
     return NOERROR;
 }
 
@@ -167,7 +245,10 @@ ECode ColorPickerAdvanced::NotifyColorChanged()
     // if (mOnColorChangedListener != null) {
     //     mOnColorChangedListener.onColorChanged(getColor());
     // }
-    assert(0);
+
+    if (NULL != mOnColorChangedListener) {
+        mOnColorChangedListener->OnColorChanged(GetColor());
+    }
     return NOERROR;
 }
 
@@ -185,7 +266,21 @@ ECode ColorPickerAdvanced::UpdateHueGradient()
     //     newColors[i] = Color.HSVToColor(tempHsvValues);
     // }
     // mHueDetails.setGradientColors(newColors);
-    assert(0);
+
+    AutoPtr< ArrayOf<Float> > tempHsvValues = ArrayOf<Float>::Alloc(3);
+    (*tempHsvValues)[1] = (*mCurrentHsvValues)[1];
+    (*tempHsvValues)[2] = (*mCurrentHsvValues)[2];
+
+    AutoPtr< ArrayOf<Int32> > newColors = ArrayOf<Int32>::Alloc(HUE_COLOR_COUNT);
+    AutoPtr<IColor> color;
+    CColor::AcquireSingleton((IColor**)&color);
+    Int32 colorTemp = 0;
+    for (Int32 i = 0; i < HUE_COLOR_COUNT; ++i) {
+        (*tempHsvValues)[0] = i * 60.0f;
+        color->HSVToColor(tempHsvValues, &colorTemp);
+        (*newColors)[i] = colorTemp;
+    }
+    mHueDetails->SetGradientColors(newColors);
     return NOERROR;
 }
 
@@ -204,7 +299,23 @@ ECode ColorPickerAdvanced::UpdateSaturationGradient()
     // tempHsvValues[1] = 1.0f;
     // newColors[1] = Color.HSVToColor(tempHsvValues);
     // mSaturationDetails.setGradientColors(newColors);
-    assert(0);
+
+    AutoPtr< ArrayOf<Float> > tempHsvValues = ArrayOf<Float>::Alloc(3);
+    (*tempHsvValues)[0] = (*mCurrentHsvValues)[0];
+    (*tempHsvValues)[1] = 0.0f;
+    (*tempHsvValues)[2] = (*mCurrentHsvValues)[2];
+
+    AutoPtr< ArrayOf<Int32> > newColors = ArrayOf<Int32>::Alloc(SATURATION_COLOR_COUNT);
+    Int32 hsvColor = 0;
+    AutoPtr<IColor> color;
+    CColor::AcquireSingleton((IColor**)&color);
+    color->HSVToColor(tempHsvValues, &hsvColor);
+    (*newColors)[0] = hsvColor;
+
+    (*tempHsvValues)[1] = 1.0f;
+    color->HSVToColor(tempHsvValues, &hsvColor);
+    (*newColors)[1] = hsvColor;
+    mSaturationDetails->SetGradientColors(newColors);
     return NOERROR;
 }
 
@@ -223,7 +334,23 @@ ECode ColorPickerAdvanced::UpdateValueGradient()
     // tempHsvValues[2] = 1.0f;
     // newColors[1] = Color.HSVToColor(tempHsvValues);
     // mValueDetails.setGradientColors(newColors);
-    assert(0);
+
+    AutoPtr< ArrayOf<Float> > tempHsvValues = ArrayOf<Float>::Alloc(3);
+    (*tempHsvValues)[0] = (*mCurrentHsvValues)[0];
+    (*tempHsvValues)[1] = (*mCurrentHsvValues)[1];
+    (*tempHsvValues)[2] = 0.0f;
+
+    AutoPtr< ArrayOf<Int32> > newColors = ArrayOf<Int32>::Alloc(VALUE_COLOR_COUNT);
+    Int32 hsvColor = 0;
+    AutoPtr<IColor> color;
+    CColor::AcquireSingleton((IColor**)&color);
+    color->HSVToColor(tempHsvValues, &hsvColor);
+    (*newColors)[0] = hsvColor;
+
+    (*tempHsvValues)[2] = 1.0f;
+    color->HSVToColor(tempHsvValues, &hsvColor);
+    (*newColors)[1] = hsvColor;
+    mValueDetails->SetGradientColors(newColors);
     return NOERROR;
 }
 
@@ -250,7 +377,26 @@ ECode ColorPickerAdvanced::RefreshGradientComponents()
     // updateHueGradient();
     // updateSaturationGradient();
     // updateValueGradient();
-    assert(0);
+
+    // Round and bound the saturation value.
+    Int32 saturationValue = Elastos::Core::Math::Round((*mCurrentHsvValues)[1] * 100.0f);
+    saturationValue = Elastos::Core::Math::Min(saturationValue, SATURATION_SEEK_BAR_MAX);
+    saturationValue = Elastos::Core::Math::Max(saturationValue, 0);
+
+    // Round and bound the Value amount.
+    Int32 valueValue = Elastos::Core::Math::Round((*mCurrentHsvValues)[2] * 100.0f);
+    valueValue = Elastos::Core::Math::Min(valueValue, VALUE_SEEK_BAR_MAX);
+    valueValue = Elastos::Core::Math::Max(valueValue, 0);
+
+    // Don't need to round the hue value since its possible values match the seek bar
+    // range directly.
+    mHueDetails->SetValue((*mCurrentHsvValues)[0]);
+    mSaturationDetails->SetValue(saturationValue);
+    mValueDetails->SetValue(valueValue);
+
+    UpdateHueGradient();
+    UpdateSaturationGradient();
+    UpdateValueGradient();
     return NOERROR;
 }
 

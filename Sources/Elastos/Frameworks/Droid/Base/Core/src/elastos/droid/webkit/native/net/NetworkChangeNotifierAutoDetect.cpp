@@ -1,15 +1,11 @@
 
 #include "elastos/droid/webkit/native/net/NetworkChangeNotifierAutoDetect.h"
-#include "elastos/droid/net/CNetworkInfo.h"
-//#include "elastos/droid/net/wifi/CWifiInfo.h"
 #include "elastos/droid/webkit/native/base/ApplicationStatus.h"
 #include "elastos/droid/webkit/native/base/ApplicationState.h"
 #include "elastos/droid/webkit/native/net/NetworkChangeNotifier.h"
 
 using Elastos::Droid::Net::INetworkInfo;
-using Elastos::Droid::Net::CNetworkInfo;
 using Elastos::Droid::Net::Wifi::IWifiInfo;
-//using Elastos::Droid::Net::Wifi::CWifiInfo;
 using Elastos::Droid::Telephony::ITelephonyManager;
 using Elastos::Droid::Content::EIID_IBroadcastReceiver;
 using Elastos::Droid::Content::IIntent;
@@ -53,7 +49,6 @@ Boolean NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate::ActiveNetw
 
     assert(0);
     AutoPtr<INetworkInfo> info;
-    //CNetworkInfo::New((INetworkInfo**)&info); // class has no only one param creating func?
     mConnectivityManager->GetActiveNetworkInfo((INetworkInfo**)&info);
     return Boolean(info != NULL);
 }
@@ -65,7 +60,6 @@ Boolean NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate::IsConnecte
 
     assert(0);
     AutoPtr<INetworkInfo> info;
-    //CNetworkInfo::New((INetworkInfo**)&info); // class has no only one param creating func?
     mConnectivityManager->GetActiveNetworkInfo((INetworkInfo**)&info);
     Boolean isConntected = FALSE;
     info->IsConnected(&isConntected);
@@ -79,7 +73,6 @@ Int32 NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate::GetNetworkTy
 
     assert(0);
     AutoPtr<INetworkInfo> info;
-    //CNetworkInfo::New((INetworkInfo**)&info); // class has no only one param creating func?
     mConnectivityManager->GetActiveNetworkInfo((INetworkInfo**)&info);
     Int32 type = 0;
     info->GetType(&type);
@@ -93,7 +86,6 @@ Int32 NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate::GetNetworkSu
 
     assert(0);
     AutoPtr<INetworkInfo> info;
-    //CNetworkInfo::New((INetworkInfo**)&info); // class has no only one param creating func?
     mConnectivityManager->GetActiveNetworkInfo((INetworkInfo**)&info);
     Int32 type = 0;
     info->GetSubtype(&type);
@@ -134,7 +126,6 @@ String NetworkChangeNotifierAutoDetect::WifiManagerDelegate::GetWifiSSID()
 
     assert(0);
     AutoPtr<IWifiInfo> wifiInfo;
-    //CWifiInfo::New((IWifiInfo**)&wifiInfo);
     //mWifiManager->GetConnectionInfo((IWifiInfo**)&wifiInfo);
     if (wifiInfo == NULL)
         return String("");

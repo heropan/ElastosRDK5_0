@@ -1,12 +1,11 @@
 
 #include "elastos/droid/webkit/native/net/ProxyChangeListener.h"
-//#include "elastos/core/CSystem.h"
 #include "elastos/droid/os/Build.h"
 //#include "elastos/droid/net/CProxyProperties.h"
 #include "elastos/droid/content/CIntentFilter.h"
 
 using Elastos::Core::ISystem;
-//using Elastos::Core::CSystem;
+using Elastos::Core::CSystem;
 //using Elastos::Net::IProxy;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::IBundle;
@@ -223,7 +222,7 @@ String ProxyChangeListener::GetProperty(
     assert(0);
     String result;
     AutoPtr<ISystem> sys;
-    //CSystem::New((ISystem**)&sys);
+    CSystem::AcquireSingleton((ISystem**)&sys);
     sys->GetProperty(property, &result);
     return result;
 }

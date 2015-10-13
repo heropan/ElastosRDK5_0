@@ -2,16 +2,12 @@
 #include "elastos/droid/webkit/native/ui/gfx/DeviceDisplayInfo.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/graphics/PixelFormat.h"
-#include "elastos/droid/content/res/CResources.h"
-#include "elastos/droid/content/res/CConfiguration.h"
 
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Graphics::PixelFormat;
 using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Res::IConfiguration;
-using Elastos::Droid::Content::Res::CConfiguration;
 using Elastos::Droid::View::ISurface;
 
 namespace Elastos {
@@ -235,11 +231,9 @@ Int32 DeviceDisplayInfo::GetSmallestDIPWidth()
     // return mAppContext.getResources().getConfiguration().smallestScreenWidthDp;
 
     AutoPtr<IResources> resources;
-    CResources::New((IResources**)&resources);
     mAppContext->GetResources((IResources**)&resources);
 
     AutoPtr<IConfiguration> configuration;
-    CConfiguration::New((IConfiguration**)&configuration);
     resources->GetConfiguration((IConfiguration**)&configuration);
 
     Int32 screenWidthDp = 0;

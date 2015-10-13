@@ -119,7 +119,6 @@ AutoPtr< ArrayOf<Byte> > DefaultAndroidKeyStore::GetDSAKeyParamQ(
     AutoPtr<IDSAKey> dsaKey = (IDSAKey*)javaKey->Probe(EIID_IDSAKey);
     if (dsaKey != NULL) {
         AutoPtr<IDSAParams> params;
-        //CDSAParams::New((IDSAParams**)&params);
         dsaKey->GetParams((IDSAParams**)&params);
 
         AutoPtr<IBigInteger> bigInteger;
@@ -151,7 +150,6 @@ AutoPtr< ArrayOf<Byte> > DefaultAndroidKeyStore::GetECKeyOrder(
     AutoPtr<IECKey> eckkey = (IECKey*)javaKey->Probe(EIID_IECKey);
     if (eckkey != NULL) {
         AutoPtr<IECParameterSpec> params;
-        //CECParameterSpec::New((IECParameterSpec**)&params);
         eckkey->GetParams((IECParameterSpec**)&params);
 
         AutoPtr<IBigInteger> bigInteger;
@@ -402,7 +400,7 @@ Int64 DefaultAndroidKeyStore::GetOpenSSLHandleForPrivateKey(
 
     // question: how to using reflection mechanism to initialize a class
     //Class<?> superClass;
-    //--AutoPtr<IOpen IOpenSSLRSAPrivateKey> superClass;
+    //--AutoPtr<IOpenSSLRSAPrivateKey> superClass;
     //--COpenSSLRSAPrivateKey::New((IOpenSSLRSAPrivateKey**)&superClass);
     //try {
         //superClass = Class.forName(

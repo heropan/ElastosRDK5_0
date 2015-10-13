@@ -6,7 +6,7 @@
 #define _ELASTOS_DROID_WEBKIT_UI_COLORPICKERMOREBUTTON_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/widget/Button.h"
+//#include "elastos/droid/widget/Button.h"
 
 // package org.chromium.ui;
 // import android.content.Context;
@@ -17,7 +17,7 @@
 // import android.widget.Button;
 
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Widget::Button;
+//using Elastos::Droid::Widget::Button;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Utility::IAttributeSet;
@@ -30,7 +30,7 @@ namespace Ui {
 /**
   * Simple class that draws a white border around a button, purely for a UI change.
   */
-class ColorPickerMoreButton : public Button
+class ColorPickerMoreButton //: public Button
 {
 public:
     ColorPickerMoreButton(

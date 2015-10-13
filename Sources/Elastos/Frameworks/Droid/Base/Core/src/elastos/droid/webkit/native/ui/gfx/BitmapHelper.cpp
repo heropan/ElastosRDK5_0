@@ -4,7 +4,6 @@
 //#include "elastos/droid/graphics/CBitmapHelper.h"
 #include "elastos/droid/graphics/CBitmapFactoryOptions.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"
-#include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/content/res/CResourcesHelper.h"
 #include "elastos/droid/webkit/native/ui/gfx/BitmapFormat.h"
 
@@ -20,7 +19,6 @@ using Elastos::Droid::Graphics::BitmapConfig_RGB_565;
 using Elastos::Droid::Graphics::BitmapConfig_ARGB_4444;
 using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
 using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Res::IResourcesHelper;
 using Elastos::Droid::Content::Res::CResourcesHelper;
 using Elastos::Droid::Webkit::Ui::Gfx::BitmapFormat;
@@ -74,8 +72,6 @@ AutoPtr<IBitmap> BitmapHelper::DecodeDrawableResource(
 
     assert(0);
     AutoPtr<IResources> res;
-    CResources::New((IResources**)&res);
-
     AutoPtr<IResourcesHelper> helper;
     CResourcesHelper::AcquireSingleton((IResourcesHelper**)&helper);
     helper->GetSystem((IResources**)&res);
@@ -92,7 +88,6 @@ AutoPtr<IBitmap> BitmapHelper::DecodeDrawableResource(
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
 
     AutoPtr<IBitmap> bitmap;
-    //CBitmap::New((IBitmap**)&bitmap);
     bitmapFactory->DecodeResource(res, resId, options, (IBitmap**)&bitmap);
 
     options->SetInSampleSize(CalculateInSampleSize(options, reqWidth, reqHeight));
@@ -100,7 +95,6 @@ AutoPtr<IBitmap> BitmapHelper::DecodeDrawableResource(
     options->SetInPreferredConfig(BitmapConfig_ARGB_8888);
 
     AutoPtr<IBitmap> result;
-    //CBitmap::New((IBitmap**)&result);
     bitmapFactory->DecodeResource(res, resId, options, (IBitmap**)&result);
     return result;
 }

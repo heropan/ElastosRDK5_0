@@ -1,8 +1,5 @@
 
 #include "elastos/droid/webkit/native/components/ColorChooserAndroid.h"
-#include "elastos/droid/webkit/native/ui/ColorSuggestion.h"
-
-using Elastos::Droid::Webkit::Ui::ColorSuggestion;
 
 namespace Elastos {
 namespace Droid {
@@ -27,13 +24,10 @@ ECode ColorChooserAndroid::InnerOnColorChangedListener::OnColorChanged(
     // mDialog.dismiss();
     // nativeOnColorChosen(mNativeColorChooserAndroid, color);
 
-    if (NULL != mOwner) {
-        mOwner->mDialog->Dismiss();
-        NativeOnColorChosen(mOwner->mNativeColorChooserAndroid, color);
-    }
-    else {
-        assert(0);
-    }
+    assert(NULL == mOwner);
+    assert(NULL == mOwner->mDialog);
+    //mOwner->mDialog->Dismiss();
+    mOwner->NativeOnColorChosen(mOwner->mNativeColorChooserAndroid, color);
     return NOERROR;
 }
 
@@ -45,7 +39,7 @@ ECode ColorChooserAndroid::CloseColorChooser()
     // ==================before translated======================
     // mDialog.dismiss();
 
-    mDialog->Dismiss();
+    //mDialog->Dismiss();
     return NOERROR;
 }
 
@@ -95,7 +89,7 @@ ECode ColorChooserAndroid::OpenColorChooser()
     // ==================before translated======================
     // mDialog.show();
 
-    mDialog->Show();
+    //mDialog->Show();
     return NOERROR;
 }
 

@@ -43,6 +43,7 @@ public:
         , public IComponentCallbacks
     {
     public:
+        CAR_INTERFACE_DECL()
         InnerComponentCallbacks(
             /* [in] */ ViewConfigurationHelper* owner);
 

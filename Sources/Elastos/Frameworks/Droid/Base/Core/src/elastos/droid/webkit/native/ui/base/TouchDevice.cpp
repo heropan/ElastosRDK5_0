@@ -1,9 +1,7 @@
 
 #include "elastos/droid/webkit/native/ui/base/TouchDevice.h"
-//#include "elastos/droid/server/pm/CPackageManagerService.h"
 
 using Elastos::Droid::Content::Pm::IPackageManager;
-//using Elastos::Droid::Pm::CPackageManagerService;
 
 namespace Elastos {
 namespace Droid {
@@ -44,7 +42,6 @@ Int32 TouchDevice::MaxTouchPoints(
 
     assert(0);
     AutoPtr<IPackageManager> packageManager;
-    //CPackageManagerService::New((IPackageManager**)&packageManager);
     context->GetPackageManager((IPackageManager**)&packageManager);
 
     Boolean hasSystemFeature = FALSE;

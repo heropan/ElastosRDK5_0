@@ -38,8 +38,7 @@ namespace Ui {
 /**
   * The dropdown list popup window.
   */
-class DropdownPopupWindow
-    //: public ListPopupWindow
+class DropdownPopupWindow //: public ListPopupWindow
 {
 public:
     class InnerOnLayoutChangeListener
@@ -47,6 +46,8 @@ public:
         , public IViewOnLayoutChangeListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnLayoutChangeListener(
             /* [in] */ DropdownPopupWindow* owner);
 
@@ -71,6 +72,8 @@ public:
         , public IPopupWindowOnDismissListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerPopupWindowOnDismissListener(
             /* [in] */ DropdownPopupWindow* owner);
 

@@ -1,5 +1,28 @@
 
 #include "elastos/droid/webkit/native/ui/ColorSuggestionListAdapter.h"
+//#include "elastos/droid/widget/CLinearLayout.h"
+//#include "elastos/droid/view/CViewGroupLayoutParams.h"
+//#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/webkit/native/ui/ColorSuggestion.h"
+#include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
+
+using Elastos::Droid::Widget::ILinearLayout;
+//using Elastos::Droid::Widget::CLinearLayout;
+using Elastos::Droid::View::IViewGroupLayoutParams;
+//using Elastos::Droid::View::CViewGroupLayoutParams;
+using Elastos::Droid::View::EIID_IViewOnClickListener;
+using Elastos::Droid::View::IViewManager;
+using Elastos::Droid::Graphics::IColor;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Widget::ILinearLayoutLayoutParams;
+//using Elastos::Droid::Widget::CLinearLayoutLayoutParams;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::Graphics::Drawable::IGradientDrawable;
+using Elastos::Droid::Graphics::Drawable::ILayerDrawable;
+using Elastos::Droid::Webkit::Ui::ColorSuggestion;
+using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -11,9 +34,14 @@ namespace Ui {
 //=====================================================================
 const Int32 ColorSuggestionListAdapter::COLORS_PER_ROW;
 
+CAR_INTERFACE_IMPL(ColorSuggestionListAdapter, Object, IViewOnClickListener)
+//CAR_INTERFACE_IMPL(ColorSuggestionListAdapter, BaseAdapter, IViewOnClickListener)
+
 ColorSuggestionListAdapter::ColorSuggestionListAdapter(
     /* [in] */ IContext* context,
     /* [in] */ ArrayOf<ColorSuggestion*>* suggestions)
+    : mContext(context)
+    , mSuggestions(suggestions)
 {
     // ==================before translated======================
     // mContext = context;
@@ -26,7 +54,8 @@ ECode ColorSuggestionListAdapter::SetOnColorSuggestionClickListener(
     VALIDATE_NOT_NULL(listener);
     // ==================before translated======================
     // mListener = listener;
-    assert(0);
+
+    mListener = listener;
     return NOERROR;
 }
 
@@ -43,7 +72,20 @@ ECode ColorSuggestionListAdapter::OnClick(
     //     return;
     // }
     // mListener.onColorSuggestionClick(suggestion);
-    assert(0);
+
+    if (NULL == mListener) {
+        return NOERROR;
+    }
+
+    AutoPtr<IInterface> interfaceTmp;
+    v->GetTag((IInterface**)&interfaceTmp);
+    IObject* objectTmp = IObject::Probe(interfaceTmp);
+    ColorSuggestion* suggestion = (ColorSuggestion*)objectTmp;
+    if (NULL == suggestion) {
+        return NOERROR;
+    }
+
+    mListener->OnColorSuggestionClick(suggestion);
     return NOERROR;
 }
 
@@ -82,9 +124,56 @@ AutoPtr<IView> ColorSuggestionListAdapter::GetView(
     //     setUpColorButton(layout.getChildAt(i), position * COLORS_PER_ROW + i);
     // }
     // return layout;
+
     assert(0);
-    AutoPtr<IView> empty;
-    return empty;
+    AutoPtr<ILinearLayout> layout;
+    AutoPtr<ILinearLayout> maybelinear = ILinearLayout::Probe(convertView);
+    if (NULL != convertView && NULL != maybelinear) {
+        layout = maybelinear;
+    }
+    else {
+        //CLinearLayout::New(mContext, (ILinearLayout**)&layout);
+        AutoPtr<IViewGroupLayoutParams> params;
+        //CViewGroupLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT, (IViewGroupLayoutParams**)&params);
+
+        //layout->SetLayoutParams(params);
+        layout->SetOrientation(ILinearLayout::HORIZONTAL);
+        //layout->SetBackgroundColor(IColor::WHITE);
+
+        Int32 buttonHeight = 0;
+        AutoPtr<IResources> resource;
+        mContext->GetResources((IResources**)&resource);
+        resource->GetDimensionPixelOffset(-1/*R::dimen::color_button_height*/, &buttonHeight);
+
+        AutoPtr<IViewManager> viewManager = IViewManager::Probe(layout);
+
+        for (Int32 i = 0; i < COLORS_PER_ROW; ++i) {
+            AutoPtr<IView> button;
+            //CView::New(mContext, (IView**)&button);
+
+            AutoPtr<ILinearLayoutLayoutParams> layoutParams;
+            //CLinearLayoutLayoutParams::New(0, buttonHeight, 1f, (ILinearLayoutLayoutParams**)&layoutParams);
+
+            //ApiCompatibilityUtils::SetMarginStart(layoutParams, -1);
+            if (i == COLORS_PER_ROW - 1) {
+                //ApiCompatibilityUtils::SetMarginEnd(layoutParams, -1);
+            }
+            AutoPtr<IViewGroupLayoutParams> viewGroupLayoutParams = IViewGroupLayoutParams::Probe(layoutParams);
+            button->SetLayoutParams(viewGroupLayoutParams);
+            button->SetBackgroundResource(-1/*R::drawable::color_button_background*/);
+            viewManager->AddView(button, NULL); // is addView(Parm1) or addView(Parm1, Param2)
+        }
+    }
+
+    AutoPtr<IViewGroup> viewGroup = IViewGroup::Probe(layout);
+    for (Int32 i = 0; i < COLORS_PER_ROW; ++i) {
+        AutoPtr<IView> child;
+        viewGroup->GetChildAt(i, (IView**)&child);
+        SetUpColorButton(child, position * COLORS_PER_ROW + i);
+    }
+
+    AutoPtr<IView> result = IView::Probe(layout);
+    return result;
 }
 
 Int64 ColorSuggestionListAdapter::GetItemId(
@@ -92,8 +181,8 @@ Int64 ColorSuggestionListAdapter::GetItemId(
 {
     // ==================before translated======================
     // return position;
-    assert(0);
-    return 0;
+
+    return position;
 }
 
 AutoPtr<IInterface> ColorSuggestionListAdapter::GetItem(
@@ -101,17 +190,16 @@ AutoPtr<IInterface> ColorSuggestionListAdapter::GetItem(
 {
     // ==================before translated======================
     // return null;
-    assert(0);
-    AutoPtr<IInterface> empty;
-    return empty;
+
+    return NULL;
 }
 
 Int32 ColorSuggestionListAdapter::GetCount()
 {
     // ==================before translated======================
     // return (mSuggestions.length + COLORS_PER_ROW - 1) / COLORS_PER_ROW;
-    assert(0);
-    return 0;
+
+    return (mSuggestions->GetLength() + COLORS_PER_ROW - 1) / COLORS_PER_ROW;
 }
 
 ECode ColorSuggestionListAdapter::SetUpColorButton(
@@ -139,7 +227,40 @@ ECode ColorSuggestionListAdapter::SetUpColorButton(
     // }
     // button.setContentDescription(description);
     // button.setOnClickListener(this);
-    assert(0);
+
+    AutoPtr<IView> viewTmp = IView::Probe(button);
+    if (index >= mSuggestions->GetLength()) {
+        viewTmp->SetTag(NULL);
+        viewTmp->SetContentDescription(NULL);
+        button->SetVisibility(IView::INVISIBLE);
+        return NOERROR;
+    }
+
+    AutoPtr<IObject> objectTmp = (IObject*)(*mSuggestions)[index];
+    AutoPtr<IInterface> interfaceTmp = (IInterface*)objectTmp;
+    viewTmp->SetTag(interfaceTmp);
+    viewTmp->SetVisibility(IView::VISIBLE);
+
+    AutoPtr<ColorSuggestion> suggestion = (*mSuggestions)[index];
+    AutoPtr<IDrawable> layersTmp;
+    viewTmp->GetBackground((IDrawable**)&layersTmp);
+    AutoPtr<ILayerDrawable> layers = ILayerDrawable::Probe(layersTmp);
+
+    AutoPtr<IDrawable> swatchTmp;
+    layers->FindDrawableByLayerId(-1/*R::id::color_button_swatch*/, (IDrawable**)&swatchTmp);
+    AutoPtr<IGradientDrawable> swatch = IGradientDrawable::Probe(swatchTmp);
+
+    swatch->SetColor(suggestion->mColor);
+    String description = suggestion->mLabel;
+    if (TextUtils::IsEmpty(description)) {
+        description.AppendFormat("#%06X", (0xFFFFFF & suggestion->mColor));
+    }
+
+    //CString strTmp(description);
+    AutoPtr<ICharSequence> charSequence;
+    //strTmp.SubSequence(0, description.GetLength()-1, (ICharSequence**)&charSequence);
+    viewTmp->SetContentDescription(charSequence);
+    viewTmp->SetOnClickListener(this);
     return NOERROR;
 }
 

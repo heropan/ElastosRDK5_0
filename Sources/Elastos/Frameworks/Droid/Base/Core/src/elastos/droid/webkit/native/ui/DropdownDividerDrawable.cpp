@@ -1,5 +1,11 @@
 
 #include "elastos/droid/webkit/native/ui/DropdownDividerDrawable.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CRect.h"
+
+using Elastos::Droid::Graphics::CPaint;
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Graphics::IPixelFormat;
 
 namespace Elastos {
 namespace Droid {
@@ -14,6 +20,9 @@ DropdownDividerDrawable::DropdownDividerDrawable()
     // ==================before translated======================
     // mPaint = new Paint();
     // mDividerRect = new Rect();
+
+    CPaint::New((IPaint**)&mPaint);
+    CRect::New((IRect**)&mDividerRect);
 }
 
 ECode DropdownDividerDrawable::Draw(
@@ -22,7 +31,8 @@ ECode DropdownDividerDrawable::Draw(
     VALIDATE_NOT_NULL(canvas);
     // ==================before translated======================
     // canvas.drawRect(mDividerRect, mPaint);
-    assert(0);
+
+    canvas->DrawRect(mDividerRect, mPaint);
     return NOERROR;
 }
 
@@ -32,7 +42,14 @@ void DropdownDividerDrawable::OnBoundsChange(
     //VALIDATE_NOT_NULL(bounds);
     // ==================before translated======================
     // mDividerRect.set(0, 0, bounds.width(), mDividerRect.height());
+
     assert(0);
+    Int32 width = 0;
+    Int32 height = 0;
+    bounds->GetWidth(&width);
+    mDividerRect->GetHeight(&height);
+    mDividerRect->Set(0, 0, width, height);
+    //return NOERROR;
 }
 
 ECode DropdownDividerDrawable::SetHeight(
@@ -40,7 +57,10 @@ ECode DropdownDividerDrawable::SetHeight(
 {
     // ==================before translated======================
     // mDividerRect.set(0, 0, mDividerRect.right, height);
-    assert(0);
+
+    Int32 right = 0;
+    mDividerRect->GetRight(&right);
+    mDividerRect->Set(0, 0, right, height);
     return NOERROR;
 }
 
@@ -49,7 +69,8 @@ ECode DropdownDividerDrawable::SetColor(
 {
     // ==================before translated======================
     // mPaint.setColor(color);
-    assert(0);
+
+    mPaint->SetColor(color);
     return NOERROR;
 }
 
@@ -72,8 +93,15 @@ Int32 DropdownDividerDrawable::GetOpacity()
 {
     // ==================before translated======================
     // return PixelFormat.OPAQUE;
+
+    return IPixelFormat::OPAQUE;
+}
+
+ECode DropdownDividerDrawable::GetOpacity(
+    /* [out] */ Int32* opacity)
+{
     assert(0);
-    return 0;
+    return NOERROR;
 }
 
 } // namespace Ui

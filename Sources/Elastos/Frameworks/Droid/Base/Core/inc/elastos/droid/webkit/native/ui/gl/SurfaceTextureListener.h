@@ -29,6 +29,7 @@ class SurfaceTextureListener
     , public IOnFrameAvailableListener
 {
 public:
+    CAR_INTERFACE_DECL()
     SurfaceTextureListener(
         /* [in] */ Int64 nativeSurfaceTextureListener);
 

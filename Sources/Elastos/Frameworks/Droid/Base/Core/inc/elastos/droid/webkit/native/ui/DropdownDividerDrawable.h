@@ -58,6 +58,10 @@ public:
     // @Override
     CARAPI_(Int32) GetOpacity();
 
+    // it is a pure function in parent class Drawable
+    CARAPI GetOpacity(
+        /* [out] */ Int32* opacity);
+
 private:
     AutoPtr<IPaint> mPaint;
     AutoPtr<IRect> mDividerRect;

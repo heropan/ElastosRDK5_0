@@ -12,5 +12,5 @@ C_DEFINES += -DDROID_CORE
 SOURCES = ValidationMessageBubble.cpp
 SOURCES += WebContentsDelegateAndroid.cpp
 SOURCES += PersonalAutofillPopulator.cpp
-#SOURCES += ColorChooserAndroid.cpp  # this donot compile, rely on dialog.h
+SOURCES += ColorChooserAndroid.cpp
 SOURCES += NavigationParams.cpp

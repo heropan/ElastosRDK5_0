@@ -1,17 +1,13 @@
 
 #include "elastos/droid/webkit/native/ui/base/Clipboard.h"
 #include "elastos/droid/content/CClipDataHelper.h"
-#include "elastos/droid/content/CClipData.h"
-#include "elastos/droid/content/CClipDataItem.h"
 #include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
 using Elastos::Droid::Content::IClipDataHelper;
 using Elastos::Droid::Content::CClipDataHelper;
-using Elastos::Droid::Content::CClipData;
 using Elastos::Droid::Content::IClipDataItem;
-using Elastos::Droid::Content::CClipDataItem;
 using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
 
 namespace Elastos {
@@ -61,7 +57,6 @@ ECode Clipboard::SetText(
     //textTmp.SubSequence(0, textTmpLength-1, (ICharSequence**)&textCharSequence);
 
     AutoPtr<IClipData> clipData;
-    CClipData::New((IClipData**)&clipData);
     helper->NewPlainText(labelCharSequence, textCharSequence, (IClipData**)&clipData);
     SetPrimaryClipNoException(clipData);
     return NOERROR;
@@ -104,7 +99,6 @@ ECode Clipboard::SetHTMLText(
         //textTmp.SubSequence(0, textTmpLength-1, (ICharSequence**)&textCharSequence);
 
         AutoPtr<IClipData> clipData;
-        CClipData::New((IClipData**)&clipData);
         helper->NewHtmlText(labelCharSequence, textCharSequence, html, (IClipData**)&clipData);
         SetPrimaryClipNoException(clipData);
     }
@@ -146,7 +140,6 @@ String Clipboard::GetCoercedText()
 
     assert(0);
     AutoPtr<IClipData> clip;
-    CClipData::New((IClipData**)&clip);
     mClipboardManager->GetPrimaryClip((IClipData**)&clip);
 
     Int32 itemCount = 0;
@@ -181,14 +174,12 @@ String Clipboard::GetHTMLText()
     assert(0);
     if (IsHTMLClipboardSupported()) {
         AutoPtr<IClipData> clip;
-        CClipData::New((IClipData**)&clip);
         mClipboardManager->GetPrimaryClip((IClipData**)&clip);
 
         Int32 itemCount;
         clip->GetItemCount(&itemCount);
         if (clip != NULL && itemCount > 0) {
             AutoPtr<IClipDataItem> clipDataItem;
-            //CClipDataItem::New((IClipDataItem**)&clipDataItem);
             clip->GetItemAt(0, (IClipDataItem**)&clipDataItem);
 
             String result;

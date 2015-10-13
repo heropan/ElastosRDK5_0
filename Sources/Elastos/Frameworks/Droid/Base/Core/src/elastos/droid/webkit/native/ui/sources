@@ -8,18 +8,18 @@ INCLUDES += $(MAKEDIR)/../../../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
-#SOURCES = ColorPickerSimple.cpp                    # cannot compile
+SOURCES = ColorPickerSimple.cpp                    
 SOURCES += DropdownDividerDrawable.cpp
 SOURCES += VSyncMonitor.cpp
 SOURCES += ColorSuggestion.cpp
-#SOURCES += DropdownPopupWindow.cpp                 # cannot compile
+SOURCES += DropdownPopupWindow.cpp                 
 SOURCES += UiUtils.cpp
 SOURCES += ColorPickerAdvancedComponent.cpp
-#SOURCES += DropdownAdapter.cpp                     # cannot compile
+SOURCES += DropdownAdapter.cpp                     
 SOURCES += ColorSuggestionListAdapter.cpp
-#SOURCES += ColorPickerMoreButton.cpp               # cannot compile
-#SOURCES += ColorPickerAdvanced.cpp                 # cannot compile
-#SOURCES += ColorPickerDialog.cpp                   # cannot compile
+SOURCES += ColorPickerMoreButton.cpp                 
+SOURCES += ColorPickerAdvanced.cpp              
+SOURCES += ColorPickerDialog.cpp               
 
 LIBRARIES += autofill/autofill.lib
 LIBRARIES += base/base.lib

@@ -1,10 +1,7 @@
 
 #include "elastos/droid/webkit/native/components/PersonalAutofillPopulator.h"
 #include "elastos/droid/provider/ContactsContractProfile.h"
-//wwz: #include "elastos/droid/net/CUriHelper.h"
 
-using Elastos::Droid::Net::IUriHelper;
-//wwz: using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Provider::ContactsContractProfile;
 using Elastos::Droid::Provider::IContactsContractContactsData;
 using Elastos::Droid::Provider::IContactsContractCommonDataKindsEmail;
@@ -31,15 +28,10 @@ AutoPtr<IUri> PersonalAutofillPopulator::ProfileQuery::MiddleInitProfiledataUri(
     //                  ContactsContract.Contacts.Data.CONTENT_DIRECTORY
     // ->WWZ_SIGN: FUNC_CALL_END }
 
-//  AutoPtr<IUriHelper> helper;
-//  CUriHelper::AcquireSingleton((IUriHelper**)&helper);
-//  AutoPtr<IUri> baseUri;
-//  ContactsContractProfile::GetCONTENT_URI((IUri**)&baseUri);
-//  AutoPtr<IUri> profileDataUri;
-//  helper->WithAppendedPath(baseUri, IContactsContractContactsData::CONTENT_DIRECTORY, (IUri**)&profileDataUri);
-//    return profileDataUri;
-    AutoPtr<IUri> empty;
-    return empty;
+    assert(0);
+    AutoPtr<IUri> uri;
+    //Uri::WithAppendedPath(ContactsContract.Profile.CONTENT_URI, ContactsContract.Contacts.Data.CONTENT_DIRECTORY, (IUri**)&uri);
+    return uri;
 }
 
 //=====================================================================
