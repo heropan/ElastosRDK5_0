@@ -1,3 +1,4 @@
+#include "elastos/droid/webkit/native/android_webview/FullScreenView.h"
 
 namespace Elastos {
 namespace Droid {
@@ -29,28 +30,32 @@ Boolean FullScreenView::InternalAccessAdapter::Super_onKeyUp(
     /* [in] */ Int32 keyCode,
     /* [in] */ IKeyEvent* event)
 {
-    return FullScreenView.super.onKeyUp(keyCode, event);
+    //return FullScreenView.super.onKeyUp(keyCode, event);
+    return FALSE;//TODO return (AbsoluteLayout*)mOwner->onKeyUp(keyCode, event);
 }
 
 //@Override
 Boolean FullScreenView::InternalAccessAdapter::Super_dispatchKeyEventPreIme(
     /* [in] */ IKeyEvent* event)
 {
-    return FullScreenView.super.dispatchKeyEventPreIme(event);
+    //return FullScreenView.super.dispatchKeyEventPreIme(event);
+    return FALSE;//TODO (AbsoluteLayout*)&mOwner->DispatchKeyEventPreIme(event);
 }
 
 //@Override
 Boolean FullScreenView::InternalAccessAdapter::Super_dispatchKeyEvent(
     /* [in] */ IKeyEvent* event)
 {
-    return FullScreenView.super.dispatchKeyEvent(event);
+    //return FullScreenView.super.dispatchKeyEvent(event);
+    return FALSE;//TODO (AbsoluteLayout*)&mOwner->DispatchKeyEventPreIme(event);
 }
 
 //@Override
 Boolean FullScreenView::InternalAccessAdapter::Super_onGenericMotionEvent(
     /* [in] */ IMotionEvent* event)
 {
-    return FullScreenView.super.onGenericMotionEvent(event);
+    //return FullScreenView.super.onGenericMotionEvent(event);
+    return FALSE;//TODO (AbsoluteLayout*)&mOwner->OnGenericMotionEvent(event);
 }
 
 //@Override
@@ -63,7 +68,8 @@ void FullScreenView::InternalAccessAdapter::Super_onConfigurationChanged(
 //@Override
 Int32 FullScreenView::InternalAccessAdapter::Super_getScrollBarStyle()
 {
-    return FullScreenView.super.getScrollBarStyle();
+    //return FullScreenView.super.getScrollBarStyle();
+    return 0;//TODO (AbsoluteLayout*)&mOwner->GetScrollBarStyle();
 }
 
 //@Override
@@ -118,7 +124,7 @@ void FullScreenView::InternalAccessAdapter::SetMeasuredDimension(
     /* [in] */ Int32 measuredWidth,
     /* [in] */ Int32 measuredHeight)
 {
-    mOwner->SetMeasuredDimension(measuredWidth, measuredHeight);
+    //TODO mOwner->SetMeasuredDimension(measuredWidth, measuredHeight);
 }
 
 //===============================================================
@@ -128,13 +134,13 @@ void FullScreenView::InternalAccessAdapter::SetMeasuredDimension(
 FullScreenView::FullScreenView(
     /* [in] */ IContext* context,
     /* [in] */ AwViewMethods* awViewMethods)
+    //TODO :AbsoluteLayout(context)
 {
-    super(context);
     SetAwViewMethods(awViewMethods);
-    mInternalAccessAdapter = new InternalAccessAdapter();
+    mInternalAccessAdapter = new FullScreenView::InternalAccessAdapter(this);
 }
 
-AutoPtr<InternalAccessAdapter> FullScreenView::GetInternalAccessAdapter()
+AutoPtr<FullScreenView::InternalAccessAdapter> FullScreenView::GetInternalAccessAdapter()
 {
     return mInternalAccessAdapter;
 }
@@ -166,7 +172,7 @@ Boolean FullScreenView::RequestFocus(
     /* [in] */ IRect* previouslyFocusedRect)
 {
     mAwViewMethods->RequestFocus();
-    return super.requestFocus(direction, previouslyFocusedRect);
+    return FALSE;//TODO AbsoluteLayout::RequestFocus(direction, previouslyFocusedRect);
 }
 
 //@Override
@@ -174,7 +180,7 @@ void FullScreenView::SetLayerType(
     /* [in] */ Int32 layerType,
     /* [in] */ IPaint* paint)
 {
-    super.setLayerType(layerType, paint);
+    //TODO AbsoluteLayout::SetLayerType(layerType, paint);
     mAwViewMethods->SetLayerType(layerType, paint);
 }
 
@@ -231,14 +237,14 @@ void FullScreenView::OnConfigurationChanged(
 //@Override
 void FullScreenView::OnAttachedToWindow()
 {
-    super.onAttachedToWindow();
+    //TODO AbsoluteLayout::OnAttachedToWindow();
     mAwViewMethods->OnAttachedToWindow();
 }
 
 //@Override
 void FullScreenView::OnDetachedFromWindow()
 {
-    super.onDetachedFromWindow();
+    //TODO AbsoluteLayout::OnDetachedFromWindow();
     mAwViewMethods->OnDetachedFromWindow();
 }
 
@@ -246,7 +252,7 @@ void FullScreenView::OnDetachedFromWindow()
 void FullScreenView::OnWindowFocusChanged(
     /* [in] */ Boolean hasWindowFocus)
 {
-    super.onWindowFocusChanged(hasWindowFocus);
+    //TODO AbsoluteLayout::OnWindowFocusChanged(hasWindowFocus);
     mAwViewMethods->OnWindowFocusChanged(hasWindowFocus);
 }
 
@@ -256,7 +262,7 @@ void FullScreenView::OnFocusChanged(
     /* [in] */ Int32 direction,
     /* [in] */ IRect* previouslyFocusedRect)
 {
-    super.onFocusChanged(focused, direction, previouslyFocusedRect);
+    //TODO AbsoluteLayout::OnFocusChanged(focused, direction, previouslyFocusedRect);
     mAwViewMethods->OnFocusChanged(
             focused, direction, previouslyFocusedRect);
 }
@@ -268,7 +274,7 @@ void FullScreenView::OnSizeChanged(
     /* [in] */ Int32 ow,
     /* [in] */ Int32 oh)
 {
-    super.onSizeChanged(w, h, ow, oh);
+    //TODO AbsoluteLayout::OnSizeChanged(w, h, ow, oh);
     mAwViewMethods->OnSizeChanged(w, h, ow, oh);
 }
 
@@ -277,7 +283,7 @@ void FullScreenView::OnVisibilityChanged(
     /* [in] */ IView* changedView,
     /* [in] */ Int32 visibility)
 {
-    super.onVisibilityChanged(changedView, visibility);
+    //TODO AbsoluteLayout::OnVisibilityChanged(changedView, visibility);
     mAwViewMethods->OnVisibilityChanged(changedView, visibility);
 }
 
@@ -285,7 +291,7 @@ void FullScreenView::OnVisibilityChanged(
 void FullScreenView::OnWindowVisibilityChanged(
     /* [in] */ Int32 visibility)
 {
-    super.onWindowVisibilityChanged(visibility);
+    //TODO AbsoluteLayout::OnWindowVisibilityChanged(visibility);
     mAwViewMethods->OnWindowVisibilityChanged(visibility);
 }
 

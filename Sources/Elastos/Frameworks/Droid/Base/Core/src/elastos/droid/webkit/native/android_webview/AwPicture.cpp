@@ -1,3 +1,6 @@
+#include "elastos/droid/webkit/native/android_webview/AwPicture.h"
+
+using Elastos::Core::EIID_IRunnable;
 
 namespace Elastos {
 namespace Droid {
@@ -7,6 +10,7 @@ namespace AndroidWebview {
 //===============================================================
 //                 AwPicture::DestroyRunnable
 //===============================================================
+CAR_INTERFACE_IMPL(AwPicture::DestroyRunnable, Object, IRunnable);
 
 AwPicture::DestroyRunnable::DestroyRunnable(
     /* [in] */ Int64 nativeAwPicture)
@@ -18,6 +22,7 @@ AwPicture::DestroyRunnable::DestroyRunnable(
 ECode AwPicture::DestroyRunnable::Run()
 {
     NativeDestroy(mNativeAwPicture);
+    return NOERROR;
 }
 
 //===============================================================
@@ -33,7 +38,7 @@ AwPicture::AwPicture(
     : mNativeAwPicture(nativeAwPicture)
 {
     AutoPtr<IRunnable> runnable = new DestroyRunnable(nativeAwPicture);
-    mCleanupReference = new CleanupReference(this, runnable);
+    //TODO mCleanupReference = new CleanupReference(this, runnable);
 }
 
 //@Override
@@ -46,9 +51,10 @@ AutoPtr<ICanvas> AwPicture::BeginRecording(
 }
 
 //@Override
-void AwPicture::EndRecording()
+ECode AwPicture::EndRecording()
 {
     // Intentional no-op. The native picture ended recording prior to java c'tor call.
+    return NOERROR;
 }
 
 //@Override
@@ -64,18 +70,20 @@ Int32 AwPicture::GetHeight()
 }
 
 //@Override
-void AwPicture::Draw(
+ECode AwPicture::Draw(
     /* [in] */ ICanvas* canvas)
 {
     NativeDraw(mNativeAwPicture, canvas);
+    return NOERROR;
 }
 
 //@Override
 //@SuppressWarnings("deprecation")
-void AwPicture::WriteToStream(
+ECode AwPicture::WriteToStream(
     /* [in] */ IOutputStream* stream)
 {
     UnsupportedOperation();
+    return E_NOT_IMPLEMENTED;
 }
 
 void AwPicture::UnsupportedOperation()
@@ -92,11 +100,13 @@ void AwPicture::NativeDestroy(
 Int32 AwPicture::NativeGetWidth(
     /* [in] */ Int64 nativeAwPicture)
 {
+    return 0;
 }
 
 Int32 AwPicture::NativeGetHeight(
     /* [in] */ Int64 nativeAwPicture)
 {
+    return 0;
 }
 
 void AwPicture::NativeDraw(

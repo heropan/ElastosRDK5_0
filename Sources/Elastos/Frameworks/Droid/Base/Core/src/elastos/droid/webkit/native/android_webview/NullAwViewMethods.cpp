@@ -1,12 +1,13 @@
+#include "elastos/droid/webkit/native/android_webview/NullAwViewMethods.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace AndroidWebview {
 
-AwViewMethods::NullAwViewMethods(
-    /* [in] */ AwContents* awContents,
-    /* [in] */ InternalAccessDelegate* internalAccessAdapter,
+NullAwViewMethods::NullAwViewMethods(
+    /* [in] */ /*TODO AwContents*/IInterface* awContents,
+    /* [in] */ /*TODO InternalAccessDelegate*/IInterface* internalAccessAdapter,
     /* [in] */ IView* containerView)
     : mAwContents(awContents)
     , mInternalAccessAdapter(internalAccessAdapter)
@@ -15,32 +16,31 @@ AwViewMethods::NullAwViewMethods(
 }
 
 //@Override
-void AwViewMethods::OnDraw(
+void NullAwViewMethods::OnDraw(
     /* [in] */ ICanvas* canvas)
 {
-    canvas->DrawColor(mAwContents->GetEffectiveBackgroundColor());
+    canvas->DrawColor(/*TODO mAwContents->GetEffectiveBackgroundColor()*/0);
 }
 
 //@Override
-void AwViewMethods::OnMeasure(
+void NullAwViewMethods::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
-    // When the containerView is using the NullAwViewMethods then it is not
+    // When the containerView is using the NullNullAwViewMethods then it is not
     // attached to the AwContents. As such, we don't have any contents to measure
     // and using the last measured dimension is the best we can do.
-    mInternalAccessAdapter->SetMeasuredDimension(
-            mContainerView->GetMeasuredWidth(), mContainerView->GetMeasuredHeight());
+    //TODO mInternalAccessAdapter->SetMeasuredDimension(mContainerView->GetMeasuredWidth(), mContainerView->GetMeasuredHeight());
 }
 
 //@Override
-void AwViewMethods::RequestFocus()
+void NullAwViewMethods::RequestFocus()
 {
     // Intentional no-op.
 }
 
 //@Override
-void AwViewMethods::SetLayerType(
+void NullAwViewMethods::SetLayerType(
     /* [in] */ Int32 layerType,
     /* [in] */ IPaint* paint)
 {
@@ -48,14 +48,14 @@ void AwViewMethods::SetLayerType(
 }
 
 //@Override
-AutoPtr<IInputConnection> AwViewMethods::OnCreateInputConnection(
+AutoPtr<IInputConnection> NullAwViewMethods::OnCreateInputConnection(
     /* [in] */ IEditorInfo* outAttrs)
 {
     return NULL; // Intentional no-op.
 }
 
 //@Override
-Boolean AwViewMethods::OnKeyUp(
+Boolean NullAwViewMethods::OnKeyUp(
     /* [in] */ Int32 keyCode,
     /* [in] */ IKeyEvent* event)
 {
@@ -63,61 +63,61 @@ Boolean AwViewMethods::OnKeyUp(
 }
 
 //@Override
-Boolean AwViewMethods::DispatchKeyEvent(
+Boolean NullAwViewMethods::DispatchKeyEvent(
     /* [in] */ IKeyEvent* event)
 {
     return FALSE; // Intentional no-op.
 }
 
 //@Override
-Boolean AwViewMethods::OnTouchEvent(
+Boolean NullAwViewMethods::OnTouchEvent(
     /* [in] */ IMotionEvent* event)
 {
     return FALSE; // Intentional no-op.
 }
 
 //@Override
-Boolean AwViewMethods::OnHoverEvent(
+Boolean NullAwViewMethods::OnHoverEvent(
     /* [in] */ IMotionEvent* event)
 {
     return FALSE; // Intentional no-op.
 }
 
 //@Override
-Boolean AwViewMethods::OnGenericMotionEvent(
+Boolean NullAwViewMethods::OnGenericMotionEvent(
     /* [in] */ IMotionEvent* event)
 {
     return FALSE; // Intentional no-op.
 }
 
 //@Override
-void AwViewMethods::OnConfigurationChanged(
+void NullAwViewMethods::OnConfigurationChanged(
     /* [in] */ IConfiguration* newConfig)
 {
     // Intentional no-op.
 }
 
 //@Override
-void AwViewMethods::OnAttachedToWindow()
+void NullAwViewMethods::OnAttachedToWindow()
 {
     // Intentional no-op.
 }
 
 //@Override
-void AwViewMethods::OnDetachedFromWindow()
+void NullAwViewMethods::OnDetachedFromWindow()
 {
     // Intentional no-op.
 }
 
 //@Override
-void AwViewMethods::OnWindowFocusChanged(
+void NullAwViewMethods::OnWindowFocusChanged(
     /* [in] */ Boolean hasWindowFocus)
 {
     // Intentional no-op.
 }
 
 //@Override
-void AwViewMethods::OnFocusChanged(
+void NullAwViewMethods::OnFocusChanged(
     /* [in] */ Boolean focused,
     /* [in] */ Int32 direction,
     /* [in] */ IRect* previouslyFocusedRect)
@@ -126,7 +126,7 @@ void AwViewMethods::OnFocusChanged(
 }
 
 //@Override
-void AwViewMethods::OnSizeChanged(
+void NullAwViewMethods::OnSizeChanged(
     /* [in] */ Int32 w,
     /* [in] */ Int32 h,
     /* [in] */ Int32 ow,
@@ -136,7 +136,7 @@ void AwViewMethods::OnSizeChanged(
 }
 
 //@Override
-void AwViewMethods::OnVisibilityChanged(
+void NullAwViewMethods::OnVisibilityChanged(
     /* [in] */ IView* changedView,
     /* [in] */ Int32 visibility)
 {
@@ -144,7 +144,7 @@ void AwViewMethods::OnVisibilityChanged(
 }
 
 //@Override
-void AwViewMethods::OnWindowVisibilityChanged(
+void NullAwViewMethods::OnWindowVisibilityChanged(
     /* [in] */ Int32 visibility)
 {
     // Intentional no-op.

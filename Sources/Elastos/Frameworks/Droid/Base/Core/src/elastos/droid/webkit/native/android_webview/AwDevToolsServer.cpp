@@ -1,3 +1,4 @@
+#include "elastos/droid/webkit/native/android_webview/AwDevToolsServer.h"
 
 namespace Elastos {
 namespace Droid {
@@ -6,7 +7,7 @@ namespace AndroidWebview {
 
 AwDevToolsServer::AwDevToolsServer()
 {
-    mNativeDevToolsServer = nativeInitRemoteDebugging();
+    mNativeDevToolsServer = NativeInitRemoteDebugging();
 }
 
 void AwDevToolsServer::Destroy() {
@@ -22,6 +23,7 @@ void AwDevToolsServer::SetRemoteDebuggingEnabled(
 
 Int64 AwDevToolsServer::NativeInitRemoteDebugging()
 {
+    return 0;
 }
 
 void AwDevToolsServer::NativeDestroyRemoteDebugging(

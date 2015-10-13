@@ -1,3 +1,23 @@
+#include "elastos/droid/webkit/native/android_webview/AwBrowserProcess.h"
+#include "elastos/droid/webkit/native/android_webview/AwResource.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+#include "elastos/droid/webkit/native/base/PathUtils.h"
+#include "elastos/droid/webkit/native/content/browser/BrowserStartupController.h"
+#include "elastos/droid/webkit/native/media/MediaDrmBridge.h"
+//#include "elastos/utility/CUUIDHelper.h"
+#include "elastos/utility/logging/Logger.h"
+
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+using Elastos::Droid::Webkit::Base::PathUtils;
+using Elastos::Droid::Webkit::Content::Browser::BrowserStartupController;
+using Elastos::Droid::Webkit::Media::MediaDrmBridge;
+
+using Elastos::Core::StringUtils;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Utility::IUUID;
+using Elastos::Utility::IUUIDHelper;
+using Elastos::Utility::CUUIDHelper;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -7,12 +27,11 @@ namespace AndroidWebview {
 //===============================================================
 //               AwBrowserProcess::InnerRunnable
 //===============================================================
+CAR_INTERFACE_IMPL(AwBrowserProcess::InnerRunnable, Object, IRunnable);
 
 AwBrowserProcess::InnerRunnable::InnerRunnable(
-    /* [in] */ AwBrowserProcess* owner,
-    /* [in] */ const IContext* context)
-    : mOwner(owner)
-    , mContext(context)
+    /* [in] */ IContext* context)
+    : mContext(context)
 {
 }
 
@@ -25,6 +44,7 @@ ECode AwBrowserProcess::InnerRunnable::Run()
     //} catch (ProcessInitException e) {
     //    throw new RuntimeException("Cannot initialize WebView", e);
     //}
+    return NOERROR;
 }
 
 //===============================================================
@@ -41,12 +61,16 @@ const String AwBrowserProcess::TAG("AwBrowserProcess");
  */
 void AwBrowserProcess::LoadLibrary()
 {
-    PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
+    PathUtils::SetPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
+    /*
     try {
         LibraryLoader.loadNow();
     } catch (ProcessInitException e) {
         throw new RuntimeException("Cannot load WebView", e);
     }
+    */
+    Logger::E(TAG, "AwBrowserProcess::LoadLibrary, why load library...?");
+    assert(0);
 }
 
 /**
@@ -56,25 +80,31 @@ void AwBrowserProcess::LoadLibrary()
  * @param context The Android application context
  */
 void AwBrowserProcess::Start(
-    /* [in] */ const IContext* context)
+    /* [in] */ IContext* context)
 {
     // We must post to the UI thread to cover the case that the user
     // has invoked Chromium startup by using the (thread-safe)
     // CookieManager rather than creating a WebView.
-    AutoPtr<IRunnable> runnable = new InnerRunnable(this, context);
+    AutoPtr<IRunnable> runnable = new InnerRunnable(context);
     ThreadUtils::RunOnUiThreadBlocking(runnable);
 }
 
 void AwBrowserProcess::InitializePlatformKeySystem()
 {
-    AutoPtr< ArrayOf<String> > mappings = AwResource::GetConfigKeySystemUuidMapping();
-    Int32 length = mapping->GetLength();
+    AutoPtr<ArrayOf<String> > mappings = AwResource::GetConfigKeySystemUuidMapping();
+    Int32 length = mappings->GetLength();
     for (Int32 i = 0; i < length; ++i) {
         //try {
-            String fragments[] = mapping.split(",");
-            String keySystem = fragments[0].trim();
-            UUID uuid = UUID.fromString(fragments[1]);
-            MediaDrmBridge.addKeySystemUuidMapping(keySystem, uuid);
+        //String fragments[] = mapping.split(",");
+        AutoPtr<ArrayOf<String> > fragments;
+        StringUtils::Split((*mappings)[i], ",", (ArrayOf<String>**)&fragments);
+        String keySystem = (*fragments)[0].Trim();
+        //UUID uuid = UUID.fromString(fragments[1]);
+        AutoPtr<IUUID> uuid;
+        AutoPtr<IUUIDHelper> helper;
+        CUUIDHelper::AcquireSingleton((IUUIDHelper**)&helper);
+        helper->FromString((*fragments)[1], (IUUID**)&uuid);
+        MediaDrmBridge::AddKeySystemUuidMapping(keySystem, uuid);
         //} catch (java.lang.RuntimeException e) {
         //    Log.e(TAG, "Can't parse key-system mapping: " + mapping);
         //}

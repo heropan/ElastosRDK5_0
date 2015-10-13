@@ -1,8 +1,6 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_ERRORCODECONVERSIONHELPER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_ERRORCODECONVERSIONHELPER_H__
-
-// import org.chromium.net.NetError;
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
@@ -46,7 +44,7 @@ class ErrorCodeConversionHelper
     static const Int32 ERROR_FILE_NOT_FOUND = -14;
     // Too many requests during this load
     static const Int32 ERROR_TOO_MANY_REQUESTS = -15;
-
+public:
     static CARAPI_(Int32) ConvertErrorCode(
         /* [in] */ Int32 netError);
 };

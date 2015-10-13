@@ -1,18 +1,16 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWRESOURCE_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWRESOURCE_H__
+#include "elastos/droid/ext/frameworkext.h"
 
-// import android.content.res.Resources;
-// import android.util.SparseArray;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Utility::ISparseArray;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
 // import java.io.IOException;
-// import java.io.InputStreamReader;
 // import java.lang.ref.SoftReference;
 // import java.util.NoSuchElementException;
-// import java.util.Scanner;
 
 namespace Elastos {
 namespace Droid {
@@ -25,6 +23,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview::AwResource")
 class AwResource
+:public Object
 {
 public:
     static CARAPI_(void) SetResources(
@@ -49,7 +48,7 @@ public:
     //@CalledByNative
     static CARAPI_(String) GetLoadErrorPageContent();
 
-    static CARAPI_(AutoPtr< Array<String> >) GetConfigKeySystemUuidMapping();
+    static CARAPI_(AutoPtr<ArrayOf<String> >) GetConfigKeySystemUuidMapping();
 
 private:
     static CARAPI_(String) GetResource(
@@ -78,7 +77,8 @@ private:
     static AutoPtr<IResources> sResources;
 
     // Loading some resources is expensive, so cache the results.
-    static SparseArray<SoftReference<String>> sResourceCache;
+    //static SparseArray<SoftReference<String>> sResourceCache;
+    static AutoPtr<ISparseArray> sResourceCache;//TODO
 
     static const Int32 TYPE_STRING = 0;
     static const Int32 TYPE_RAW = 1;

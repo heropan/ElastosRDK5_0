@@ -1,6 +1,6 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWHTTPAUTHHANDLER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWHTTPAUTHHANDLER_H__
+#include "elastos/droid/ext/frameworkext.h"
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
@@ -12,6 +12,7 @@ namespace AndroidWebview {
 
 //@JNINamespace("android_webview")
 class AwHttpAuthHandler
+:public Object
 {
 public:
     CARAPI_(void) Proceed(
@@ -22,8 +23,8 @@ public:
 
     CARAPI_(Boolean) IsFirstAttempt();
 
-    //@CalledByNative
-    static CARAPI_(AutoPtr<AwHttpAuthHandler>) Create(
+    //@CalledByNative return AwHttpAuthHandler
+    static CARAPI_(AutoPtr<IInterface>) Create(
         /* [in] */ Int64 nativeAwAuthHandler,
         /* [in] */ Boolean firstAttempt);
 

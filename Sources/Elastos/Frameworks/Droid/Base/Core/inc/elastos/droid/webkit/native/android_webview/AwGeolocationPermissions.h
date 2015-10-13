@@ -1,15 +1,13 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWGEOLOCATIONPERMISSIONS_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWGEOLOCATIONPERMISSIONS_H__
+#include "ext/frameworkext.h"
 
-// import android.content.SharedPreferences;
-// import android.webkit.ValueCallback;
+using Elastos::Droid::Content::ISharedPreferences;
+//TODO using Elastos::Droid::Webkit::IValueCallback;
 
-// import org.chromium.base.ThreadUtils;
-// import org.chromium.net.GURLUtils;
-
+using Elastos::Core::IRunnable;
+using Elastos::Utility::ISet;
 // import java.util.HashSet;
-// import java.util.Set;
 
 namespace Elastos {
 namespace Droid {
@@ -22,6 +20,7 @@ namespace AndroidWebview {
  * Callbacks are posted on the UI thread.
  */
 class AwGeolocationPermissions
+:public Object
 {
 private:
     class GetAllowedRunnable
@@ -29,16 +28,17 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         GetAllowedRunnable(
             /* [in] */ AwGeolocationPermissions* owner,
-            /* [in] */ IValueCallback* callback,
+            /* [in] */ /*TODO IValueCallback*/IInterface* callback,
             /* [in] */ Boolean finalAllowed);
 
         CARAPI Run();
 
     private:
         AwGeolocationPermissions* mOwner;
-        IValueCallback* mCallback;
+        /*TODO IValueCallback*/IInterface* mCallback;
         Boolean mFinalAllowed;
     };
 
@@ -47,17 +47,17 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         GetOriginsRunnable(
             /* [in] */ AwGeolocationPermissions* owner,
-            /* [in] */ IValueCallback* callback,
-            /* [in] */ Set<String>* origins);
+            /* [in] */ /*TODO IValueCallback*/IInterface* callback);
 
         CARAPI Run();
 
     private:
         AwGeolocationPermissions* mOwner;
-        IValueCallback* mCallback;
-        Set<String>* mOrigins
+        /*TODO IValueCallback*/IInterface* mCallback;
+        AutoPtr<ISet> mOrigins;
     };
 
 public:
@@ -104,13 +104,13 @@ public:
      */
     CARAPI_(void) GetAllowed(
         /* [in] */ const String& origin,
-        /* [in] */ const IValueCallback* callback);
+        /* [in] */ /*TODO IValueCallback*/IInterface* callback);
 
     /**
      * Async method to get the domains currently allowed or denied.
      */
     CARAPI_(void) GetOrigins(
-        /* [in] */ const IValueCallback* callback);
+        /* [in] */ /*TODO IValueCallback*/IInterface* callback);
 
 private:
     /**
@@ -121,7 +121,7 @@ private:
 
 private:
     static const String PREF_PREFIX;
-    const AutoPtr<ISharedPreferences> mSharedPreferences;
+    AutoPtr<ISharedPreferences> mSharedPreferences;
 };
 
 } // namespace AndroidWebview

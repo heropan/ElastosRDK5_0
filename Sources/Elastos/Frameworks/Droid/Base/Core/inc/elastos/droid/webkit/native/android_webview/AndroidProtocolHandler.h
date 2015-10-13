@@ -1,19 +1,17 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_ANDROIDPROTOCOLHANDLER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_ANDROIDPROTOCOLHANDLER_H__
+#include "elastos/droid/ext/frameworkext.h"
 
-// import android.content.Context;
-// import android.content.res.AssetManager;
-// import android.net.Uri;
-// import android.util.Log;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IAssetManager;
+using Elastos::Droid::Net::IUri;
+using Elastos::IO::IInputStream;
 // import android.util.TypedValue;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
 // import java.io.IOException;
-// import java.io.InputStream;
-// import java.net.URLConnection;
 // import java.util.List;
 
 namespace Elastos {
@@ -27,6 +25,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AndroidProtocolHandler
+:public Object
 {
 public:
     /**
@@ -35,9 +34,9 @@ public:
      * @param url The url to load.
      * @return An InputStream to the Android resource.
      */
-    //@CalledByNative
-    static CARAPI_(AutoPtr<IInputStream>) Open(
-        /* [in] */ IContext* context,
+    //@CalledByNative return IInputStream IContext
+    static CARAPI_(AutoPtr<IInterface>) Open(
+        /* [in] */ IInterface* context,
         /* [in] */ const String& url);
 
     /**
@@ -47,10 +46,10 @@ public:
      * @param url The url from which the stream was opened.
      * @return The mime type or null if the type is unknown.
      */
-    //@CalledByNative
+    //@CalledByNative IContext IInputStream
     static CARAPI_(String) GetMimeType(
-        /* [in] */ IContext* context,
-        /* [in] */ IInputStream* stream,
+        /* [in] */ IInterface* context,
+        /* [in] */ IInterface* stream,
         /* [in] */ const String& url);
 
     /**

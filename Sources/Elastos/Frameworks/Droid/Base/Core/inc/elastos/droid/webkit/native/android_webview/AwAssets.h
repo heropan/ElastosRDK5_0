@@ -1,11 +1,8 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWASSETS_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWASSETS_H__
+#include "ext/frameworkext.h"
 
-// import android.content.Context;
-// import android.content.res.AssetFileDescriptor;
-// import android.content.res.AssetManager;
-// import android.util.Log;
+using Elastos::Droid::Content::IContext;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
@@ -26,7 +23,7 @@ class AwAssets
 {
 public:
     //@CalledByNative
-    static CARAPI_(AutoPtr< ArrayOf<Int64> >) OpenAsset(
+    static CARAPI_(AutoPtr<ArrayOf<Int64> >) OpenAsset(
         /* [in] */ IContext* context,
         /* [in] */ const String& fileName);
 

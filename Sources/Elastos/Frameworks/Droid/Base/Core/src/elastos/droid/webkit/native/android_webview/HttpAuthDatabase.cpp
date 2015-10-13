@@ -1,3 +1,17 @@
+#include "elastos/droid/webkit/native/android_webview/HttpAuthDatabase.h"
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/core/AutoLock.h"
+#include "elastos/utility/logging/Logger.h"
+
+using Elastos::Droid::Content::IContentValues;
+using Elastos::Droid::Content::CContentValues;
+using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
+
+using Elastos::IO::ICloseable;
+using Elastos::Core::IThread;
+using Elastos::Core::AutoLock;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -28,16 +42,17 @@ ECode HttpAuthDatabase::InnerThread::Run()
 //                      HttpAuthDatabase
 //===============================================================
 
-AutoPtr< ArrayOf<String> > ID_PROJECTION_Init()
+AutoPtr<ArrayOf<String> > HttpAuthDatabase::ID_PROJECTION_Init()
 {
-    AutoPtr< ArrayOf<String> > strArray = ArrayOf<String>::Alloc(1);
-    (*strArray)[0] = ID_COL;
+    AutoPtr<ArrayOf<String> > strArray = ArrayOf<String>::Alloc(1);
+    (*strArray)[0] = HttpAuthDatabase::ID_COL;
+    return strArray;
 }
 
 const String HttpAuthDatabase::LOGTAG("HttpAuthDatabase");
 const Int32 HttpAuthDatabase::DATABASE_VERSION;
 const String HttpAuthDatabase::ID_COL("_id");
-const AutoPtr< ArrayOf<String> > HttpAuthDatabase::ID_PROJECTION = ID_PROJECTION_Init();
+const AutoPtr<ArrayOf<String> > HttpAuthDatabase::ID_PROJECTION = HttpAuthDatabase::ID_PROJECTION_Init();
 
 // column id strings for "httpauth" table
 const String HttpAuthDatabase::HTTPAUTH_TABLE_NAME("httpauth");
@@ -72,7 +87,7 @@ void HttpAuthDatabase::InitOnBackgroundThread(
     /* [in] */ IContext* context,
     /* [in] */ const String& databaseFile)
 {
-    AutoLock lock(mInitializedLock);
+    AutoLock lock(&mInitializedLock);
     if (mInitialized) {
         return;
     }
@@ -95,7 +110,13 @@ void HttpAuthDatabase::InitDatabase(
     /* [in] */ const String& databaseFile)
 {
     // try {
-        context->OpenOrCreateDatabase(databaseFile, 0, NULL, (ISQLiteDatabase**)&mDatabase);
+    ECode ecode = context->OpenOrCreateDatabase(databaseFile, 0, NULL, (ISQLiteDatabase**)&mDatabase);
+    if (FAILED(ecode)) {
+        Boolean deleteRes;
+        ecode = context->DeleteDatabase(databaseFile, &deleteRes);
+        if(deleteRes)
+            ecode = context->OpenOrCreateDatabase(databaseFile, 0, NULL, (ISQLiteDatabase**)&mDatabase);
+    }
     // } catch (SQLiteException e) {
     //     // try again by deleting the old db and create a new one
     //     if (context.deleteDatabase(databaseFile)) {
@@ -105,7 +126,7 @@ void HttpAuthDatabase::InitDatabase(
 
     if (mDatabase == NULL) {
         // Not much we can do to recover at this point
-//        Log.e(LOGTAG, "Unable to open or create " + databaseFile);
+        Logger::E(LOGTAG, "Unable to open or create %s", databaseFile.string());
         return;
     }
 
@@ -119,6 +140,7 @@ void HttpAuthDatabase::InitDatabase(
         // } finally {
         //     mDatabase.endTransaction();
         // }
+        mDatabase->EndTransaction();
     }
 }
 
@@ -141,7 +163,7 @@ void HttpAuthDatabase::CreateTable()
     sql += HTTPAUTH_HOST_COL;
     sql += ", ";
     sql += HTTPAUTH_REALM_COL;
-    sql += ") ON CONFLICT REPLACE);"
+    sql += ") ON CONFLICT REPLACE);";
 
     mDatabase->ExecSQL(sql);
 
@@ -157,10 +179,12 @@ void HttpAuthDatabase::CreateTable()
 Boolean HttpAuthDatabase::WaitForInit()
 {
     {
-        AutoLock lock(mInitializedLock);
+        AutoLock lock(&mInitializedLock);
         while (!mInitialized) {
             // try {
-                mInitializedLock->Wait();
+            ECode ecode = mInitializedLock.Wait();
+            if (FAILED(ecode))
+                Logger::E(LOGTAG, "Caught exception while checking initialization, ecode:0x%x", ecode);
             // } catch (InterruptedException e) {
             //     Log.e(LOGTAG, "Caught exception while checking initialization", e);
             // }
@@ -185,17 +209,18 @@ void HttpAuthDatabase::SetHttpAuthUsernamePassword(
     /* [in] */ const String& username,
     /* [in] */ const String& password)
 {
-    if (host == NULL || realm == NULL || !WaitForInit()) {
+    if (host.IsNullOrEmpty()|| realm.IsNullOrEmpty() || !WaitForInit()) {
         return;
     }
 
     AutoPtr<IContentValues> c;
-    CContentValues()::New((IContentValues**)&c);
+    CContentValues::New((IContentValues**)&c);
     c->Put(HTTPAUTH_HOST_COL, host);
     c->Put(HTTPAUTH_REALM_COL, realm);
     c->Put(HTTPAUTH_USERNAME_COL, username);
     c->Put(HTTPAUTH_PASSWORD_COL, password);
-    mDatabase->Insert(HTTPAUTH_TABLE_NAME, HTTPAUTH_HOST_COL, c);
+    Int64 rowID;
+    mDatabase->Insert(HTTPAUTH_TABLE_NAME, HTTPAUTH_HOST_COL, c, &rowID);
 }
 
 /**
@@ -208,15 +233,15 @@ void HttpAuthDatabase::SetHttpAuthUsernamePassword(
  * @return a String[] if found where String[0] is username (which can be null) and
  *         String[1] is password.  Null is returned if it can't find anything.
  */
-AutoPtr< ArrayOf<String> > HttpAuthDatabase::GetHttpAuthUsernamePassword(
+AutoPtr<ArrayOf<String> > HttpAuthDatabase::GetHttpAuthUsernamePassword(
     /* [in] */ const String& host,
     /* [in] */ const String& realm)
 {
-    if (host == NULL || realm == NULL || !WaitForInit()) {
+    if (host.IsNullOrEmpty()|| realm.IsNullOrEmpty() || !WaitForInit()) {
         return NULL;
     }
 
-    AutoPtr< ArrayOf<String> > columns = ArrayOf<String> >::Alloc(2);
+    AutoPtr<ArrayOf<String> > columns = ArrayOf<String>::Alloc(2);
     (*columns)[0] = HTTPAUTH_USERNAME_COL;
     (*columns)[1] = HTTPAUTH_PASSWORD_COL;
 
@@ -227,14 +252,14 @@ AutoPtr< ArrayOf<String> > HttpAuthDatabase::GetHttpAuthUsernamePassword(
     selection += HTTPAUTH_REALM_COL;
     selection += " == ?)";
 
-    AutoPtr< ArrayOf<String> > ret;
+    AutoPtr<ArrayOf<String> > ret;
     AutoPtr<ICursor> cursor;
     // try {
-        AutoPtr< ArrayOf<String> > hostRealm = ArrayOf<String>::Alloc(2);
+        AutoPtr<ArrayOf<String> > hostRealm = ArrayOf<String>::Alloc(2);
         (*hostRealm)[0] = host;
         (*hostRealm)[1] = realm;
         mDatabase->Query(HTTPAUTH_TABLE_NAME, columns, selection,
-                hostRealm, NULL, NULL, NULL, (ICursor**)&cursor);
+                hostRealm, String(NULL), String(NULL), String(NULL), String(NULL), (ICursor**)&cursor);
         Boolean bMoveToFirst = FALSE;
         cursor->MoveToFirst(&bMoveToFirst);
         if (bMoveToFirst) {
@@ -253,6 +278,8 @@ AutoPtr< ArrayOf<String> > HttpAuthDatabase::GetHttpAuthUsernamePassword(
     // } finally {
     //     if (cursor != null) cursor.close();
     // }
+    AutoPtr<ICloseable> cursorClose = ICloseable::Probe(cursor);
+    cursorClose->Close();
 
     return ret;
 }
@@ -271,14 +298,16 @@ Boolean HttpAuthDatabase::HasHttpAuthUsernamePassword()
     AutoPtr<ICursor> cursor;
     Boolean ret = FALSE;
     // try {
-        mDatabase->Query(HTTPAUTH_TABLE_NAME, ID_PROJECTION, NULL, NULL, NULL, NULL,
-                NULL, (ICursor**)&cursor);
+        mDatabase->Query(HTTPAUTH_TABLE_NAME, ID_PROJECTION, String(NULL), NULL, String(NULL), String(NULL),
+                String(NULL), (ICursor**)&cursor);
         cursor->MoveToFirst(&ret);
     // } catch (IllegalStateException e) {
     //     Log.e(LOGTAG, "hasEntries", e);
     // } finally {
     //     if (cursor != null) cursor.close();
     // }
+    AutoPtr<ICloseable> cursorClose = ICloseable::Probe(cursor);
+    cursorClose->Close();
     return ret;
 }
 
@@ -290,7 +319,8 @@ void HttpAuthDatabase::ClearHttpAuthUsernamePassword()
     if (!WaitForInit()) {
         return;
     }
-    mDatabase->Delete(HTTPAUTH_TABLE_NAME, NULL, NULL);
+    Int32 value;
+    mDatabase->Delete(HTTPAUTH_TABLE_NAME, String(NULL), NULL, &value);
 }
 
 } // namespace AndroidWebview

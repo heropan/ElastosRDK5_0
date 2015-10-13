@@ -2,11 +2,20 @@
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWBROWSERCONTEXT_H__
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewStatics.h"
+#include "elastos/droid/webkit/native/android_webview/AwGeolocationPermissions.h"
+#include "elastos/droid/webkit/native/android_webview/AwCookieManager.h"
+#include "elastos/droid/webkit/native/android_webview/AwFormDatabase.h"
+#include "elastos/droid/webkit/native/android_webview/HttpAuthDatabase.h"
+#include "elastos/droid/webkit/native/net/DefaultAndroidKeyStore.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::ISharedPreferences;
 using Elastos::Droid::Webkit::Content::Browser::ContentViewStatics;
 using Elastos::Droid::Webkit::Net::DefaultAndroidKeyStore;
+using Elastos::Droid::Webkit::AndroidWebview::AwGeolocationPermissions;
+using Elastos::Droid::Webkit::AndroidWebview::AwCookieManager;
+using Elastos::Droid::Webkit::AndroidWebview::AwFormDatabase;
+using Elastos::Droid::Webkit::AndroidWebview::HttpAuthDatabase;
 
 namespace Elastos {
 namespace Droid {

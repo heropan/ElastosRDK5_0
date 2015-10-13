@@ -1,16 +1,16 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWVIEWMETHODS_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWVIEWMETHODS_H__
+#include "elastos/droid/ext/frameworkext.h"
 
-// import android.content.res.Configuration;
-// import android.graphics.Canvas;
-// import android.graphics.Paint;
-// import android.graphics.Rect;
-// import android.view.KeyEvent;
-// import android.view.MotionEvent;
-// import android.view.View;
-// import android.view.inputmethod.EditorInfo;
-// import android.view.inputmethod.InputConnection;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IPaint;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::InputMethod::IEditorInfo;
+using Elastos::Droid::View::InputMethod::IInputConnection;
 
 namespace Elastos {
 namespace Droid {
@@ -25,6 +25,7 @@ namespace AndroidWebview {
  * in fullscreen mode.
  */
 class AwViewMethods
+:public Object
 {
 public:
     /**

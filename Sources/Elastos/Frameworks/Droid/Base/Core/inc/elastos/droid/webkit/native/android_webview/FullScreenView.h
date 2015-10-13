@@ -1,18 +1,21 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_FULLSCREENVIEW_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_FULLSCREENVIEW_H__
+#include "elastos/droid/ext/frameworkext.h"
+//TODO #include "elastos/droid/widget/AbsoluteLayout.h"
+//TODO #include "elastos/droid/webkit/native/android_webview/AwContents.h"
+#include "elastos/droid/webkit/native/android_webview/AwViewMethods.h"
 
-// import android.content.Context;
-// import android.content.res.Configuration;
-// import android.graphics.Canvas;
-// import android.graphics.Paint;
-// import android.graphics.Rect;
-// import android.view.KeyEvent;
-// import android.view.MotionEvent;
-// import android.view.View;
-// import android.view.inputmethod.EditorInfo;
-// import android.view.inputmethod.InputConnection;
-// import android.widget.AbsoluteLayout;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IPaint;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::InputMethod::IInputConnection;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::InputMethod::IEditorInfo;
+//TODO using Elastos::Droid::Widget::AbsoluteLayout;
 
 namespace Elastos {
 namespace Droid {
@@ -23,11 +26,14 @@ namespace AndroidWebview {
  * A view that is used to render the web contents in fullscreen mode, ie.
  * html controls and subtitles, over the {@link ContentVideoView}.
  */
-public class FullScreenView : public AbsoluteLayout
+class FullScreenView
+//TODO : public AbsoluteLayout
 {
 private:
     // AwContents.InternalAccessDelegate implementation --------------------------------------
-    class InternalAccessAdapter : public AwContents::InternalAccessDelegate
+    class InternalAccessAdapter
+    :public Object //TODO remove this line when below line is ok
+    //TODO : public AwContents::InternalAccessDelegate
     {
     public:
         InternalAccessAdapter(
@@ -134,7 +140,7 @@ public:
         /* [in] */ IPaint* paint);
 
     //@Override
-    CARAPI_(AutoPtr<IInputConnection>) OnCreateInputConnection(final EditorInfo outAttrs);
+    CARAPI_(AutoPtr<IInputConnection>) OnCreateInputConnection(IEditorInfo* outAttrs);
 
     //@Override
     CARAPI_(Boolean) OnKeyUp(

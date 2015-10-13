@@ -1,29 +1,27 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSCLIENTBRIDGE_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSCLIENTBRIDGE_H__
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/net/AndroidPrivateKey.h"
+#include "elastos/droid/webkit/native/net/DefaultAndroidKeyStore.h"
+#include "elastos/droid/webkit/native/android_webview/ClientCertLookupTable.h"
 
-// import android.net.http.SslCertificate;
-// import android.net.http.SslError;
-// import android.util.Log;
-// import android.webkit.ValueCallback;
+//TODO using Elastos::Droid::Webkit::IValueCallback;
+using Elastos::Droid::Webkit::Net::AndroidPrivateKey;
+using Elastos::Droid::Webkit::Net::DefaultAndroidKeyStore;
+using Elastos::Core::IRunnable;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
-// import org.chromium.base.ThreadUtils;
-// import org.chromium.net.AndroidPrivateKey;
-// import org.chromium.net.DefaultAndroidKeyStore;
-
-// import java.security.Principal;
-// import java.security.PrivateKey;
+using Elastos::Security::IPrincipal;
+using Elastos::Security::IPrivateKey;
+using Elastos::Security::Cert::IX509Certificate;
 // import java.security.cert.CertificateEncodingException;
-// import java.security.cert.X509Certificate;
-
-// import javax.security.auth.x500.X500Principal;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace AndroidWebview {
+class AwContentsClient;
 
 /**
  * This class handles the JNI communication logic for the the AwContentsClient class.
@@ -34,6 +32,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwContentsClientBridge
+:public Object
 {
 public:
     /**
@@ -43,24 +42,26 @@ public:
      * is a programming error and causes an exception.
      */
     class ClientCertificateRequestCallback
+    :public Object
     {
-    private:
+    public:
         class ProceedRunnable
             : public Object
             , public IRunnable
         {
         public:
+            CAR_INTERFACE_DECL();
             ProceedRunnable(
                 /* [in] */ ClientCertificateRequestCallback* owner,
-                /* [in] */ const IPrivateKey* privateKey,
-                /* [in] */ const ArrayOf<IX509Certificate>* chain);
+                /* [in] */ IPrivateKey* privateKey,
+                /* [in] */ ArrayOf<IX509Certificate*>* chain);
 
             CARAPI Run();
 
         private:
             ClientCertificateRequestCallback* mOwner;
-            const IPrivateKey* mPrivateKey,
-            const ArrayOf<IX509Certificate>* mChain;
+            IPrivateKey* mPrivateKey;
+            ArrayOf<IX509Certificate*>* mChain;
         };
 
         class IgnoreRunnable
@@ -68,6 +69,7 @@ public:
             , public IRunnable
         {
         public:
+            CAR_INTERFACE_DECL();
             IgnoreRunnable(
                 /* [in] */ ClientCertificateRequestCallback* owner);
 
@@ -82,6 +84,7 @@ public:
             , public IRunnable
         {
         public:
+            CAR_INTERFACE_DECL();
             CancelRunnable(
                 /* [in] */ ClientCertificateRequestCallback* owner);
 
@@ -99,8 +102,8 @@ public:
             /* [in] */ Int32 port);
 
         virtual CARAPI_(void) Proceed(
-            /* [in] */ const IPrivateKey* privateKey,
-            /* [in] */ const ArrayOf<IX509Certificate>* chain);
+            /* [in] */ IPrivateKey* privateKey,
+            /* [in] */ ArrayOf<IX509Certificate*>* chain);
 
         virtual CARAPI_(void) Ignore();
 
@@ -109,17 +112,17 @@ public:
     private:
         CARAPI_(void) ProceedOnUiThread(
             /* [in] */ IPrivateKey* privateKey,
-            /* [in] */ ArrayOf<IX509Certificate>* chain);
+            /* [in] */ ArrayOf<IX509Certificate*>* chain);
 
         CARAPI_(void) IgnoreOnUiThread();
 
         CARAPI_(void) CancelOnUiThread();
 
-        CARAPI_(void) CheckIfCalled();
+        CARAPI CheckIfCalled();
 
         CARAPI_(void) ProvideResponse(
             /* [in] */ AndroidPrivateKey* androidKey,
-            /* [in] */ ArrayOf< AutoPtr< ArrayOf<Byte> > >* certChain);
+            /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* certChain);
 
     private:
         AwContentsClientBridge* mOwner;
@@ -133,14 +136,17 @@ public:
 private:
     class InnerValueCallback
         : public Object
-        , public IValueCallback
+        //TODO , public IValueCallback
     {
+    public:
+        //TODO CAR_INTERFACE_DECL();
     private:
         class InnerRunnable
             : public Object
             , public IRunnable
         {
         public:
+            CAR_INTERFACE_DECL();
             InnerRunnable(
                 /* [in] */ InnerValueCallback* owner,
                 /* [in] */ IInterface* value,
@@ -191,11 +197,11 @@ protected:
     // Intentionally not private for testing the native peer of this class.
     //@CalledByNative
     virtual CARAPI_(void) SelectClientCertificate(
-        /* [in] */ const Int32 id,
-        /* [in] */ const ArrayOf<String>* keyTypes,
-        /* [in] */ ArrayOf< AutoPtr< ArrayOf<Byte> > >* encodedPrincipals,
+        /* [in] */ Int32 id,
+        /* [in] */ ArrayOf<String>* keyTypes,
+        /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* encodedPrincipals,
         /* [in] */ const String& host,
-        /* [in] */ const Int32 port);
+        /* [in] */ Int32 port);
 
 private:
     // Used by the native peer to set/reset a weak ref to the native peer.
@@ -214,7 +220,7 @@ private:
         /* [in] */ Int32 certError,
         /* [in] */ ArrayOf<Byte>* derBytes,
         /* [in] */ const String& url,
-        /* [in] */ const Int32 id);
+        /* [in] */ Int32 id);
 
     CARAPI_(void) ProceedSslError(
         /* [in] */ Boolean proceed,
@@ -260,7 +266,7 @@ private:
     CARAPI_(void) NativeProvideClientCertificateResponse(
         /* [in] */ Int64 nativeAwContentsClientBridge,
         /* [in] */ Int32 id,
-        /* [in] */ ArrayOf< AutoPtr< ArrayOf<Byte> > >* certChain,
+        /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* certChain,
         /* [in] */ AndroidPrivateKey* androidKey);
 
     CARAPI_(void) NativeConfirmJsResult(
@@ -273,7 +279,9 @@ private:
         /* [in] */ Int32 id);
 
 private:
-    AutoPtr<AwContentsClient> mClient;
+    AwContentsClientBridge(const AwContentsClientBridge&);
+    AwContentsClientBridge& operator= (const AwContentsClientBridge&);
+    AwContentsClient* mClient;
     // The native peer of this object.
     Int64 mNativeContentsClientBridge;
 

@@ -1,6 +1,6 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_JSRESULTRECEIVER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_JSRESULTRECEIVER_H__
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
@@ -18,9 +18,9 @@ namespace AndroidWebview {
 class JsResultReceiver
 {
 public:
-    virtual CARAPI_(void) Confirm() = 0;
+    virtual CARAPI Confirm() = 0;
 
-    virtual CARAPI_(void) Cancel() = 0;
+    virtual CARAPI Cancel() = 0;
 };
 
 } // namespace AndroidWebview

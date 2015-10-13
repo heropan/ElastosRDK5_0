@@ -1,13 +1,9 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_SSLUTIL_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_SSLUTIL_H__
+#include "elastos/droid/ext/frameworkext.h"
 
-// import android.net.http.SslCertificate;
-// import android.net.http.SslError;
-// import android.util.Log;
-
-// import org.chromium.net.NetError;
-// import org.chromium.net.X509Util;
+using Elastos::Droid::Net::Http::ISslCertificate;
+using Elastos::Droid::Net::Http::ISslError;
 
 // import java.security.KeyStoreException;
 // import java.security.NoSuchAlgorithmException;

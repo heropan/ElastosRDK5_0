@@ -1,3 +1,22 @@
+#include "elastos/droid/webkit/native/android_webview/AwContentsClientBridge.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentsClient.h"
+#include "elastos/droid/webkit/native/android_webview/JsResultHandler.h"
+#include "elastos/droid/webkit/native/android_webview/SslUtil.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+//TODO #include "elastosx/security/auth/x500/CX500Principal.h"
+#include "elastos/utility/logging/Logger.h"
+
+using Elastos::Droid::Net::Http::ISslCertificate;
+using Elastos::Droid::Net::Http::ISslError;
+using Elastos::Security::Cert::ICertificate;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Core::IBoolean;
+using Elastos::Core::EIID_IBoolean;
+using Elastos::Core::EIID_IRunnable;
+
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+using Elastosx::Security::Auth::X500::IX500Principal;
+using Elastosx::Security::Auth::X500::CX500Principal;
 
 namespace Elastos {
 namespace Droid {
@@ -7,11 +26,12 @@ namespace AndroidWebview {
 //========================================================================================
 //       AwContentsClientBridge::ClientCertificateRequestCallback::ProceedRunnable
 //========================================================================================
+CAR_INTERFACE_IMPL(AwContentsClientBridge::ClientCertificateRequestCallback::ProceedRunnable, Object, IRunnable);
 
 AwContentsClientBridge::ClientCertificateRequestCallback::ProceedRunnable::ProceedRunnable(
     /* [in] */ ClientCertificateRequestCallback* owner,
-    /* [in] */ const IPrivateKey* privateKey,
-    /* [in] */ const ArrayOf<IX509Certificate>* chain)
+    /* [in] */ IPrivateKey* privateKey,
+    /* [in] */ ArrayOf<IX509Certificate*>* chain)
     : mOwner(owner)
 {
 }
@@ -25,6 +45,7 @@ ECode AwContentsClientBridge::ClientCertificateRequestCallback::ProceedRunnable:
 //========================================================================================
 //       AwContentsClientBridge::ClientCertificateRequestCallback::IgnoreRunnable
 //========================================================================================
+CAR_INTERFACE_IMPL(AwContentsClientBridge::ClientCertificateRequestCallback::IgnoreRunnable, Object, IRunnable);
 
 AwContentsClientBridge::ClientCertificateRequestCallback::IgnoreRunnable::IgnoreRunnable(
     /* [in] */ ClientCertificateRequestCallback* owner)
@@ -32,7 +53,7 @@ AwContentsClientBridge::ClientCertificateRequestCallback::IgnoreRunnable::Ignore
 {
 }
 
-ECode AwContentsClientBridge::ClientCertificateRequestCallback::IgnoreRunnableRun()
+ECode AwContentsClientBridge::ClientCertificateRequestCallback::IgnoreRunnable::Run()
 {
     mOwner->IgnoreOnUiThread();
     return NOERROR;
@@ -41,6 +62,7 @@ ECode AwContentsClientBridge::ClientCertificateRequestCallback::IgnoreRunnableRu
 //========================================================================================
 //       AwContentsClientBridge::ClientCertificateRequestCallback::CancelRunnable
 //========================================================================================
+CAR_INTERFACE_IMPL(AwContentsClientBridge::ClientCertificateRequestCallback::CancelRunnable, Object, IRunnable);
 
 AwContentsClientBridge::ClientCertificateRequestCallback::CancelRunnable::CancelRunnable(
     /* [in] */ ClientCertificateRequestCallback* owner)
@@ -72,8 +94,8 @@ AwContentsClientBridge::ClientCertificateRequestCallback::ClientCertificateReque
 }
 
 void AwContentsClientBridge::ClientCertificateRequestCallback::Proceed(
-    /* [in] */ const IPrivateKey* privateKey,
-    /* [in] */ const ArrayOf<IX509Certificate>* chain)
+    /* [in] */ IPrivateKey* privateKey,
+    /* [in] */ ArrayOf<IX509Certificate*>* chain)
 {
     AutoPtr<IRunnable> runnable = new ProceedRunnable(this, privateKey, chain);
     ThreadUtils::RunOnUiThread(runnable);
@@ -81,7 +103,7 @@ void AwContentsClientBridge::ClientCertificateRequestCallback::Proceed(
 
 void AwContentsClientBridge::ClientCertificateRequestCallback::Ignore()
 {
-    AutoPtr<IRunnable> runnable = new IgnoreRunnableRun(this);
+    AutoPtr<IRunnable> runnable = new IgnoreRunnable(this);
     ThreadUtils::RunOnUiThread(runnable);
 }
 
@@ -93,68 +115,88 @@ void AwContentsClientBridge::ClientCertificateRequestCallback::Cancel()
 
 void AwContentsClientBridge::ClientCertificateRequestCallback::ProceedOnUiThread(
     /* [in] */ IPrivateKey* privateKey,
-    /* [in] */ ArrayOf<X509Certificate>* chain)
+    /* [in] */ ArrayOf<IX509Certificate*>* chain)
 {
-    CheckIfCalled();
+    ECode ecode = CheckIfCalled();
+    if (FAILED(ecode))
+    {
+        Logger::E(TAG, "ClientCertificateRequestCallback::ProceedOnUiThread");
+        return;
+    }
 
-    AutoPtr<AndroidPrivateKey> key = mLocalKeyStore->CreateKey(privateKey);
+    AutoPtr<AndroidPrivateKey> key = mOwner->mLocalKeyStore->CreateKey(privateKey);
 
     if (key == NULL || chain == NULL || chain->GetLength() == 0) {
-//        Log.w(TAG, "Empty client certificate chain?");
+        Logger::W(TAG, "Empty client certificate chain?");
         ProvideResponse(NULL, NULL);
         return;
     }
     // Encode the certificate chain.
-    AutoPtr< ArrayOf< AutoPtr< ArrayOf<Byte> > > > encodedChain = ArrayOf< AutoPtr< ArrayOf<Byte> > >::Alloc(chain->GetLength());
+    AutoPtr<ArrayOf<AutoPtr<ArrayOf<Byte> > > > encodedChain = ArrayOf<AutoPtr<ArrayOf<Byte> > >::Alloc(chain->GetLength());
     //try {
         for (Int32 i = 0; i < chain->GetLength(); ++i) {
-            (*encodedChain)[i] = (*chain)[i]->GetEncoded();
+            AutoPtr<ICertificate> certificate = ICertificate::Probe((*chain)[i]);
+            certificate->GetEncoded((ArrayOf<Byte>**)&((*encodedChain)[i]));
         }
     //} catch (CertificateEncodingException e) {
     //    Log.w(TAG, "Could not retrieve encoded certificate chain: " + e);
     //    provideResponse(null, null);
     //    return;
     //}
-    mLookupTable->Allow(mHost, mPort, key, encodedChain);
+    mOwner->mLookupTable->Allow(mHost, mPort, key, encodedChain);
     ProvideResponse(key, encodedChain);
 }
 
 void AwContentsClientBridge::ClientCertificateRequestCallback::IgnoreOnUiThread()
 {
-    CheckIfCalled();
+    ECode ecode = CheckIfCalled();
+    if (FAILED(ecode))
+    {
+        Logger::E(TAG, "ClientCertificateRequestCallback::IgnoreOnUiThread");
+        return;
+    }
     ProvideResponse(NULL, NULL);
 }
 
 void AwContentsClientBridge::ClientCertificateRequestCallback::CancelOnUiThread()
 {
-    CheckIfCalled();
-    mLookupTable->Deny(mHost, mPort);
+    ECode ecode = CheckIfCalled();
+    if (FAILED(ecode))
+    {
+        Logger::E(TAG, "ClientCertificateRequestCallback::CancelOnUiThread");
+        return;
+    }
+    mOwner->mLookupTable->Deny(mHost, mPort);
     ProvideResponse(NULL, NULL);
 }
 
-void AwContentsClientBridge::ClientCertificateRequestCallback::CheckIfCalled()
+ECode AwContentsClientBridge::ClientCertificateRequestCallback::CheckIfCalled()
 {
     if (mIsCalled) {
-        throw new IllegalStateException("The callback was already called.");
+        //throw new IllegalStateException("The callback was already called.");
+        Logger::E(TAG, "The callback was already called");
+        return E_ILLEGAL_STATE_EXCEPTION;
     }
     mIsCalled = TRUE;
+    return NOERROR;
 }
 
 void AwContentsClientBridge::ClientCertificateRequestCallback::ProvideResponse(
     /* [in] */ AndroidPrivateKey* androidKey,
-    /* [in] */ ArrayOf< AutoPtr<ArrayOf<byte> > >* certChain)
+    /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* certChain)
 {
-    if (mNativeContentsClientBridge == 0) {
+    if (mOwner->mNativeContentsClientBridge == 0) {
         return;
     }
 
-    NativeProvideClientCertificateResponse(mNativeContentsClientBridge, mId,
+    mOwner->NativeProvideClientCertificateResponse(mOwner->mNativeContentsClientBridge, mId,
             certChain, androidKey);
 }
 
 //=========================================================================
 //               AwContentsClientBridge::InnerValueCallback
 //=========================================================================
+//TODO CAR_INTERFACE_IMPL(AwContentsClientBridge::InnerValueCallback, Object, IValueCallback);
 
 AwContentsClientBridge::InnerValueCallback::InnerValueCallback(
     /* [in] */ AwContentsClientBridge* owner,
@@ -175,6 +217,7 @@ ECode AwContentsClientBridge::InnerValueCallback::OnReceiveValue(
 //=========================================================================
 //         AwContentsClientBridge::InnerValueCallback::InnerRunnable
 //=========================================================================
+CAR_INTERFACE_IMPL(AwContentsClientBridge::InnerValueCallback::InnerRunnable, Object, IRunnable);
 
 AwContentsClientBridge::InnerValueCallback::InnerRunnable::InnerRunnable(
     /* [in] */ InnerValueCallback* owner,
@@ -188,10 +231,10 @@ AwContentsClientBridge::InnerValueCallback::InnerRunnable::InnerRunnable(
 
 ECode AwContentsClientBridge::InnerValueCallback::InnerRunnable::Run()
 {
-    AutoPtr<IBoolean> iValue = mValue->Probe(EIID_IBoolean);
+    AutoPtr<IBoolean> iValue = (IBoolean*)(mValue->Probe(EIID_IBoolean));
     Boolean value;
     iValue->GetValue(&value);
-    mOwner->ProceedSslError(value, mId);
+    mOwner->mOwner->ProceedSslError(value, mId);
     return NOERROR;
 }
 
@@ -206,16 +249,16 @@ const String AwContentsClientBridge::TAG("AwContentsClientBridge");
 AwContentsClientBridge::AwContentsClientBridge(
     /* [in] */ DefaultAndroidKeyStore* keyStore,
     /* [in] */ ClientCertLookupTable* table)
-    : mLocalKeyStore(keyStore)
+    : mNativeContentsClientBridge(0)
+    , mLocalKeyStore(keyStore)
     , mLookupTable(table)
-    , mNativeContentsClientBridge(0)
 {
 }
 
 AwContentsClientBridge::AwContentsClientBridge(
     /* [in] */ AwContentsClient* client,
     /* [in] */ DefaultAndroidKeyStore* keyStore,
-    /* [in] */ ClientCertLookupTable table)
+    /* [in] */ ClientCertLookupTable* table)
     : mNativeContentsClientBridge(0)
 {
     assert(client != NULL);
@@ -243,15 +286,15 @@ Boolean AwContentsClientBridge::AllowCertificateError(
     /* [in] */ Int32 certError,
     /* [in] */ ArrayOf<Byte>* derBytes,
     /* [in] */ const String& url,
-    /* [in] */ const Int32 id)
+    /* [in] */ Int32 id)
 {
-    const AutoPtr<ISslCertificate> cert = SslUtil::GetCertificateFromDerBytes(derBytes);
+    AutoPtr<ISslCertificate> cert = SslUtil::GetCertificateFromDerBytes(derBytes);
     if (cert == NULL) {
         // if the certificate or the client is null, cancel the request
         return FALSE;
     }
-    const AutoPtr<ISslError> sslError = SslUtil::SslErrorFromNetErrorCode(certError, cert, url);
-    AutoPtr<IValueCallback> callback = new InnerValueCallback(this, id);
+    AutoPtr<ISslError> sslError = SslUtil::SslErrorFromNetErrorCode(certError, cert, url);
+    AutoPtr</*TODO IValueCallback*/IInterface> callback;//TODO  = new InnerValueCallback(this, id);
     mClient->OnReceivedSslError(callback, sslError);
     return TRUE;
 }
@@ -268,8 +311,8 @@ void AwContentsClientBridge::ProceedSslError(
 //@CalledByNative
 void AwContentsClientBridge::SelectClientCertificate(
     /* [in] */ Int32 id,
-    /* [in] */ const ArrayOf<String>* keyTypes,
-    /* [in] */ ArrayOf< AutoPtr< ArrayOf<Byte> > >* encodedPrincipals,
+    /* [in] */ ArrayOf<String>* keyTypes,
+    /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* encodedPrincipals,
     /* [in] */ const String& host,
     /* [in] */ Int32 port)
 {
@@ -282,16 +325,21 @@ void AwContentsClientBridge::SelectClientCertificate(
     }
     if (cert != NULL) {
         NativeProvideClientCertificateResponse(mNativeContentsClientBridge, id,
-                cert.certChain, cert.privateKey);
+                cert->certChain, cert->privateKey);
         return;
     }
     // Build the list of principals from encoded versions.
-    AutoPtr< ArrayOf<IPrincipal> > principals;
+    AutoPtr<ArrayOf<IPrincipal*> > principals;
     if (encodedPrincipals->GetLength() > 0) {
-        principals = ArrayOf<IPrincipal>::Alloc(encodedPrincipals->GetLength());
-        for (Int32 n = 0; n < encodedPrincipals.length; n++) {
+        principals = ArrayOf<IPrincipal*>::Alloc(encodedPrincipals->GetLength());
+        for (Int32 n = 0; n < encodedPrincipals->GetLength(); ++n) {
             //try {
-                principals[n] = new X500Principal(encodedPrincipals[n]);
+                //(*principals)[n] = new CX500Principal(encodedPrincipals[n]);
+            AutoPtr<IX500Principal> ixp;
+            String name((char*)((*encodedPrincipals)[n]->GetPayload()));
+            CX500Principal::New(name, (IX500Principal**)&ixp);
+            AutoPtr<IPrincipal> p = IPrincipal::Probe(ixp);
+            principals->Set(n, p);
             //} catch (IllegalArgumentException e) {
             //    Log.w(TAG, "Exception while decoding issuers list: " + e);
             //    nativeProvideClientCertificateResponse(mNativeContentsClientBridge, id,
@@ -302,13 +350,13 @@ void AwContentsClientBridge::SelectClientCertificate(
 
     }
 
-    const AutoPtr<ClientCertificateRequestCallback> callback =
-            new ClientCertificateRequestCallback(id, host, port);
+    AutoPtr<ClientCertificateRequestCallback> callback =
+            new ClientCertificateRequestCallback(this, id, host, port);
     mClient->OnReceivedClientCertRequest(callback, keyTypes, principals, host, port);
 }
 
 //@CalledByNative
-void AwContentsClientBridge::handleJsAlert(
+void AwContentsClientBridge::HandleJsAlert(
     /* [in] */ const String& url,
     /* [in] */ const String& message,
     /* [in] */ Int32 id)
@@ -383,7 +431,7 @@ void AwContentsClientBridge::NativeProceedSslError(
 void AwContentsClientBridge::NativeProvideClientCertificateResponse(
     /* [in] */ Int64 nativeAwContentsClientBridge,
     /* [in] */ Int32 id,
-    /* [in] */ ArrayOf< AutoPtr< ArrayOf<Byte> > >* certChain,
+    /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* certChain,
     /* [in] */ AndroidPrivateKey* androidKey)
 {
 }

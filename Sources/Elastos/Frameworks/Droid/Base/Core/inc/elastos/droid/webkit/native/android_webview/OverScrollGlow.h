@@ -1,11 +1,11 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_OVERSCROLLGLOW_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_OVERSCROLLGLOW_H__
+#include "elastos/droid/ext/frameworkext.h"
 
-// import android.content.Context;
-// import android.graphics.Canvas;
-// import android.view.View;
-// import android.widget.EdgeEffect;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::Widget::IEdgeEffect;
 
 namespace Elastos {
 namespace Droid {

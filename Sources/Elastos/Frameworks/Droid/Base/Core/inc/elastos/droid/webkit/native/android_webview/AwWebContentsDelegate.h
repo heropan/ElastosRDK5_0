@@ -1,12 +1,13 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWWEBCONTENTSDELEGATE_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWWEBCONTENTSDELEGATE_H__
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/components/WebContentsDelegateAndroid.h"
 
 // import com.google.common.annotations.VisibleForTesting;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
-// import org.chromium.components.web_contents_delegate_android.WebContentsDelegateAndroid;
+using Elastos::Droid::Webkit::Components::WebContentsDelegateAndroid;
 
 namespace Elastos {
 namespace Droid {
@@ -42,15 +43,15 @@ public:
 
     //@Override
     //@CalledByNative
-    CARAPI_(void) CloseContents() = 0;
+    CARAPI CloseContents() = 0;
 
     //@Override
     //@CalledByNative
-    CARAPI_(void) ActivateContents() = 0;
+    CARAPI ActivateContents() = 0;
 
     //@Override
     //@CalledByNative
-    CARAPI_(void) ToggleFullscreenModeForTab(
+    CARAPI ToggleFullscreenModeForTab(
         /* [in] */ Boolean enterFullscreen) = 0;
 
 protected:

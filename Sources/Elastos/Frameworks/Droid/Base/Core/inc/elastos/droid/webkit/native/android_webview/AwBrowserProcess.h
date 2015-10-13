@@ -1,18 +1,12 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWBROWSERPROCESS_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWBROWSERPROCESS_H__
+#include "elastos/droid/ext/frameworkext.h"
 
-// import android.content.Context;
-// import android.util.Log;
+using Elastos::Droid::Content::IContext;
+using Elastos::Core::IRunnable;
 
-// import org.chromium.base.PathUtils;
-// import org.chromium.base.ThreadUtils;
 // import org.chromium.base.library_loader.LibraryLoader;
 // import org.chromium.base.library_loader.ProcessInitException;
-// import org.chromium.content.browser.BrowserStartupController;
-// import org.chromium.media.MediaDrmBridge;
-
-// import java.util.UUID;
 
 namespace Elastos {
 namespace Droid {
@@ -24,21 +18,21 @@ namespace AndroidWebview {
  */
 class AwBrowserProcess
 {
-private:
+public:
     class InnerRunnable
         : public Object
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         InnerRunnable(
-            /* [in] */ AwBrowserProcess* owner,
-            /* [in] */ const IContext* context);
+            /* [in] */ IContext* context);
 
         CARAPI Run();
 
     private:
         AwBrowserProcess* mOwner;
-        const IContext* mContext
+        AutoPtr<IContext> mContext;
     };
 
 public:
@@ -56,7 +50,7 @@ public:
      * @param context The Android application context
      */
     static CARAPI_(void) Start(
-        /* [in] */ const IContext* context);
+        /* [in] */ IContext* context);
 
 private:
     static const String PRIVATE_DATA_DIRECTORY_SUFFIX;

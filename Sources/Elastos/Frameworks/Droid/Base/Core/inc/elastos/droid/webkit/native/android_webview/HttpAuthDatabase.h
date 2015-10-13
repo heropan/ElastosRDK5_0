@@ -1,11 +1,11 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_HTTPAUTHDATABASE_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_HTTPAUTHDATABASE_H__
+#include "ext/frameworkext.h"
+#include "elastos/core/Thread.h"
 
-// import android.content.ContentValues;
-// import android.content.Context;
-// import android.database.Cursor;
-// import android.database.sqlite.SQLiteDatabase;
+using Elastos::Droid::Content::IContext;
+using Elastos::Core::Thread;
+using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
 // import android.database.sqlite.SQLiteException;
 // import android.util.Log;
 
@@ -30,10 +30,11 @@ namespace AndroidWebview {
  * sufficiently in advance of the first blocking usage of the API.
  */
 class HttpAuthDatabase
+:public Object
 {
 private:
     class InnerThread
-        : public ThreadBase
+    : public Thread
     {
     public:
         InnerThread(
@@ -45,8 +46,8 @@ private:
 
     private:
         HttpAuthDatabase* mOwner;
-        IContext* mContext,
-        const String& mDatabaseFile
+        IContext* mContext;
+        String mDatabaseFile;
     };
 
 public:
@@ -86,7 +87,7 @@ public:
      * @return a String[] if found where String[0] is username (which can be null) and
      *         String[1] is password.  Null is returned if it can't find anything.
      */
-    CARAPI_(AutoPtr< ArrayOf<String> >) GetHttpAuthUsernamePassword(
+    CARAPI_(AutoPtr<ArrayOf<String> >) GetHttpAuthUsernamePassword(
         /* [in] */ const String& host,
         /* [in] */ const String& realm);
 
@@ -134,6 +135,7 @@ private:
     CARAPI_(Boolean) WaitForInit();
 
 private:
+    static AutoPtr<ArrayOf<String> > ID_PROJECTION_Init();
     static const String LOGTAG;
 
     static const Int32 DATABASE_VERSION = 1;
@@ -142,7 +144,7 @@ private:
 
     static const String ID_COL;
 
-    static const AutoPtr< ArrayOf<String> > ID_PROJECTION;
+    static const AutoPtr<ArrayOf<String> > ID_PROJECTION;
 
     // column id strings for "httpauth" table
     static const String HTTPAUTH_TABLE_NAME;
@@ -156,7 +158,7 @@ private:
      */
     Boolean mInitialized;
 
-    const Object mInitializedLock;
+    Object mInitializedLock;
 };
 
 } // namespace AndroidWebview

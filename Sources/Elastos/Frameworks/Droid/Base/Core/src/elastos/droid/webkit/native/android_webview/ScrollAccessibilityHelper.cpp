@@ -1,3 +1,12 @@
+#include "elastos/droid/webkit/native/android_webview/ScrollAccessibilityHelper.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/utility/logging/Logger.h"
+
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::EIID_IHandlerCallback;
+using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
+
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -7,8 +16,9 @@ namespace AndroidWebview {
 //===============================================================
 //          ScrollAccessibilityHelper::HandlerCallback
 //===============================================================
+CAR_INTERFACE_IMPL(ScrollAccessibilityHelper::HandlerCallback, Object, IHandlerCallback);
 
-const Int32 ScrollAccessibilityHelper::HandlerCallback::MSG_VIEW_SCROLLED = 1;
+const Int32 ScrollAccessibilityHelper::HandlerCallback::MSG_VIEW_SCROLLED;
 
 ScrollAccessibilityHelper::HandlerCallback::HandlerCallback(
     /* [in] */ ScrollAccessibilityHelper* owner,
@@ -30,10 +40,11 @@ ECode ScrollAccessibilityHelper::HandlerCallback::HandleMessage(
     msg->GetWhat(&what);
     switch(what) {
         case MSG_VIEW_SCROLLED:
-            mMsgViewScrolledQueued = FALSE;
+            mOwner->mMsgViewScrolledQueued = FALSE;
             mEventSender->SendAccessibilityEvent(IAccessibilityEvent::TYPE_VIEW_SCROLLED);
             break;
         default:
+            Logger::W("ScrollAccessibilityHelper", "HandlerCallback::HandleMessage");
             assert(0);
             // throw new IllegalStateException(
             //         "AccessibilityInjector: unhandled message: " + msg.what);
@@ -52,7 +63,7 @@ ScrollAccessibilityHelper::ScrollAccessibilityHelper(
     : mMsgViewScrolledQueued(FALSE)
 {
     AutoPtr<IHandlerCallback> callback = new HandlerCallback(this, eventSender);
-    CHandler::New(callback, (IHandler**)&mHandler);
+    CHandler::New(callback, FALSE, (IHandler**)&mHandler);
 }
 
 /**
@@ -69,7 +80,8 @@ void ScrollAccessibilityHelper::PostViewScrolledAccessibilityEventCallback()
 
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(HandlerCallback::MSG_VIEW_SCROLLED, (IMessage**)&msg);
-    mHandler->SendMessageDelayed(msg, SEND_RECURRING_ACCESSIBILITY_EVENTS_INTERVAL_MILLIS);
+    Boolean result;
+    mHandler->SendMessageDelayed(msg, SEND_RECURRING_ACCESSIBILITY_EVENTS_INTERVAL_MILLIS, &result);
 }
 
 void ScrollAccessibilityHelper::RemovePostedViewScrolledAccessibilityEventCallback()

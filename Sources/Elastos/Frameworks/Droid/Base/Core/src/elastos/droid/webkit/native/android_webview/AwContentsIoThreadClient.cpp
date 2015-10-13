@@ -1,3 +1,4 @@
+#include "elastos/droid/webkit/native/android_webview/AwContentsIoThreadClient.h"
 
 namespace Elastos {
 namespace Droid {
@@ -14,14 +15,15 @@ AutoPtr<AwWebResourceResponse> AwContentsIoThreadClient::ShouldInterceptRequest(
     /* [in] */ ArrayOf<String>* requestHeaderValues)
 {
     AutoPtr<AwContentsClient::ShouldInterceptRequestParams> params =
-        new AwContentsClient.ShouldInterceptRequestParams();
+        new AwContentsClient::ShouldInterceptRequestParams();
     params->url = url;
     params->isMainFrame = isMainFrame;
     params->hasUserGesture = hasUserGesture;
     params->method = method;
-    params.requestHeaders = new ArrayMap<String, String>(requestHeaderNames.length);
-    for (Int32 i = 0; i < requestHeaderNames.length; ++i) {
-        params.requestHeaders.put(requestHeaderNames[i], requestHeaderValues[i]);
+    //params->requestHeaders = new ArrayMap<String, String>(requestHeaderNames.length);
+    for (Int32 i = 0; i < requestHeaderNames->GetLength(); ++i) {
+        //params->requestHeaders.put(requestHeaderNames[i], requestHeaderValues[i]);
+        params->requestHeaders[(*requestHeaderNames)[i]] = (*requestHeaderValues)[i];
     }
     return ShouldInterceptRequest(params);
 }

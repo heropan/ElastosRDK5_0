@@ -15,6 +15,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwFormDatabase
+:public Object
 {
 public:
     static CARAPI_(Boolean) HasFormData();

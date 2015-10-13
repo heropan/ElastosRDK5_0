@@ -1,3 +1,4 @@
+#include "elastos/droid/webkit/native/android_webview/AwAutofillClient.h"
 
 namespace Elastos {
 namespace Droid {
@@ -15,15 +16,17 @@ AwAutofillClient::InnerAutofillPopupDelegate::InnerAutofillPopupDelegate(
 }
 
 //@Override
-void AwAutofillClient::InnerAutofillPopupDelegate::RequestHide()
+ECode AwAutofillClient::InnerAutofillPopupDelegate::RequestHide()
 {
+    return NOERROR;
 }
 
 //@Override
-void AwAutofillClient::InnerAutofillPopupDelegate::SuggestionSelected(
+ECode AwAutofillClient::InnerAutofillPopupDelegate::SuggestionSelected(
     /* [in] */ Int32 listIndex)
 {
-    mOwner->NativeSuggestionSelected(mNativeAwAutofillClient, listIndex);
+    mOwner->NativeSuggestionSelected(mOwner->mNativeAwAutofillClient, listIndex);
+    return NOERROR;
 }
 
 //===============================================================
@@ -36,12 +39,13 @@ AwAutofillClient::AwAutofillClient(
 {
 }
 
-//@CalledByNative
-AutoPtr<AwAutofillClient> AwAutofillClient::Create(
+//@CalledByNative AwAutofillClient
+AutoPtr<IInterface> AwAutofillClient::Create(
     /* [in] */ Int64 nativeClient)
 {
     AutoPtr<AwAutofillClient> client = new AwAutofillClient(nativeClient);
-    return client;
+    AutoPtr<IInterface> result = client->Probe(EIID_IInterface);
+    return result;
 }
 
 void AwAutofillClient::Init(
@@ -57,12 +61,12 @@ void AwAutofillClient::ShowAutofillPopup(
     /* [in] */ Float y,
     /* [in] */ Float width,
     /* [in] */ Float height,
-    /* [in] */ ArrayOf<AutofillSuggestion>* suggestions)
+    /* [in] */ ArrayOf<AutofillSuggestion*>* suggestions)
 {
     if (mContentViewCore == NULL) return;
 
     if (mAutofillPopup == NULL) {
-        AutoPtr<AutofillPopupDelegate> delegate = new InnerAutofillPopupDelegate(this);
+        AutoPtr<AutofillPopup::AutofillPopupDelegate> delegate = new InnerAutofillPopupDelegate(this);
         mAutofillPopup = new AutofillPopup(
             mContentViewCore->GetContext(),
             mContentViewCore->GetViewAndroidDelegate(),
@@ -82,11 +86,11 @@ void AwAutofillClient::HideAutofillPopup()
     mAutofillPopup = NULL;
 }
 
-//@CalledByNative
-AutoPtr< ArrayOf<AutofillSuggestion> > AwAutofillClient::CreateAutofillSuggestionArray(
+//@CalledByNative ArrayOf AutofillSuggestion
+AutoPtr<ArrayOf<IInterface*> > AwAutofillClient::CreateAutofillSuggestionArray(
     /* [in] */ Int32 size)
 {
-    AutoPtr< ArrayOf<AutofillSuggestion> > array = ArrayOf<AutofillSuggestion>::Alloc(size);
+    AutoPtr<ArrayOf<IInterface*> > array = ArrayOf<IInterface*>::Alloc(size);
     return array;
 }
 
@@ -97,15 +101,18 @@ AutoPtr< ArrayOf<AutofillSuggestion> > AwAutofillClient::CreateAutofillSuggestio
  * @param label Label of the suggestion.
  * @param uniqueId Unique suggestion id.
  */
-//@CalledByNative
+//@CalledByNative ArrayOf AutofillSuggestion
 void AwAutofillClient::AddToAutofillSuggestionArray(
-    /* [in] */ ArrayOf<AutofillSuggestion>* array,
+    /* [in] */ ArrayOf<IInterface*>* array,
     /* [in] */ Int32 index,
     /* [in] */ const String& name,
     /* [in] */ const String& label,
     /* [in] */ Int32 uniqueId)
 {
-    (*array)[index] = new AutofillSuggestion(name, label, uniqueId);
+    AutoPtr<AutofillSuggestion> autofillSuggestion = new AutofillSuggestion(name, label, uniqueId);
+    AutoPtr<IInterface> suggestionInterface = autofillSuggestion->Probe(EIID_IInterface);
+    //(*array)[index] = new AutofillSuggestion(name, label, uniqueId);
+    array->Set(index, suggestionInterface.Get());
 }
 
 void AwAutofillClient::NativeSuggestionSelected(

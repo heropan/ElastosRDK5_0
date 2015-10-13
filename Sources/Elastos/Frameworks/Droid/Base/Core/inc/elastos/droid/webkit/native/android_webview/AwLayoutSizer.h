@@ -1,8 +1,7 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWLAYOUTSIZER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWLAYOUTSIZER_H__
+#include "elastos/droid/ext/frameworkext.h"
 
-// import android.view.View;
 // import android.view.View.MeasureSpec;
 
 namespace Elastos {
@@ -20,17 +19,18 @@ public:
      * Delegate interface through which the AwLayoutSizer communicates with the view it's sizing.
      */
     class Delegate
+    :public Object
     {
     public:
-        CARAPI_(void) RequestLayout() = 0;
+        virtual CARAPI_(void) RequestLayout() = 0;
 
-        CARAPI_(void) SetMeasuredDimension(
+        virtual CARAPI_(void) SetMeasuredDimension(
             /* [in] */ Int32 measuredWidth,
             /* [in] */ Int32 measuredHeight) = 0;
 
-        CARAPI_(Boolean) IsLayoutParamsHeightWrapContent() = 0;
+        virtual CARAPI_(Boolean) IsLayoutParamsHeightWrapContent() = 0;
 
-        CARAPI_(void) SetForceZeroLayoutHeight(
+        virtual CARAPI_(void) SetForceZeroLayoutHeight(
             /* [in] */ Boolean forceZeroHeight) = 0;
     };
 

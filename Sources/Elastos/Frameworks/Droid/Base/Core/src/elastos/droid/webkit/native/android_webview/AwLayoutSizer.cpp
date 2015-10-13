@@ -1,3 +1,8 @@
+#include "elastos/droid/webkit/native/android_webview/AwLayoutSizer.h"
+//TODO #include "elastos/droid/view/View.h"
+
+using Elastos::Droid::View::IView;
+//TODO using Elastos::Droid::View::View;
 
 namespace Elastos {
 namespace Droid {
@@ -88,7 +93,7 @@ void AwLayoutSizer::DoUpdate(
     // We want to request layout only if the size or scale change, however if any of the
     // measurements are 'fixed', then changing the underlying size won't have any effect, so we
     // ignore changes to dimensions that are 'fixed'.
-    const Int32 heightPix = (Int32) (heightCss * mPageScaleFactor * mDIPScale);
+    Int32 heightPix = (Int32) (heightCss * mPageScaleFactor * mDIPScale);
     Boolean pageScaleChanged = mPageScaleFactor != pageScaleFactor;
     Boolean contentHeightChangeMeaningful = !mHeightMeasurementIsFixed &&
         (!mHeightMeasurementLimited || heightPix < mHeightMeasurementLimit);
@@ -120,10 +125,10 @@ void AwLayoutSizer::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
-    Int32 heightMode = MeasureSpec::GetMode(heightMeasureSpec);
-    Int32 heightSize = MeasureSpec::GetSize(heightMeasureSpec);
-    Int32 widthMode = MeasureSpec::GetMode(widthMeasureSpec);
-    Int32 widthSize = MeasureSpec::GetSize(widthMeasureSpec);
+    Int32 heightMode = 0;//TODO View::MeasureSpec::GetMode(heightMeasureSpec);
+    Int32 heightSize = 0;//TODO View::MeasureSpec::GetSize(heightMeasureSpec);
+    Int32 widthMode = 0;//TODO View::MeasureSpec::GetMode(widthMeasureSpec);
+    Int32 widthSize = 0;//TODO View::MeasureSpec::GetSize(widthMeasureSpec);
 
     Int32 contentHeightPix = (Int32) (mContentHeightCss * mPageScaleFactor * mDIPScale);
     Int32 contentWidthPix = (Int32) (mContentWidthCss * mPageScaleFactor * mDIPScale);
@@ -132,10 +137,10 @@ void AwLayoutSizer::OnMeasure(
     Int32 measuredWidth = contentWidthPix;
 
     // Always use the given size unless unspecified. This matches WebViewClassic behavior.
-    mWidthMeasurementIsFixed = (widthMode != MeasureSpec::UNSPECIFIED);
-    mHeightMeasurementIsFixed = (heightMode == MeasureSpec::EXACTLY);
+    mWidthMeasurementIsFixed = (widthMode != (0 << 30)/*TODO View::MeasureSpec::UNSPECIFIED*/);
+    mHeightMeasurementIsFixed = (heightMode == (1 << 30)/*TODO View::MeasureSpec::EXACTLY*/);
     mHeightMeasurementLimited =
-        (heightMode == IMeasureSpec::AT_MOST) && (contentHeightPix > heightSize);
+        (heightMode == (2 << 30)/*TODO View::MeasureSpec::AT_MOST*/) && (contentHeightPix > heightSize);
     mHeightMeasurementLimit = heightSize;
 
     if (mHeightMeasurementIsFixed || mHeightMeasurementLimited) {

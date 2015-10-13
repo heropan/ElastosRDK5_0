@@ -1,32 +1,39 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSCLIENT_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSCLIENT_H__
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/android_webview/permission/AwPermissionRequest.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
+#include "elastos/droid/webkit/native/content/browser/WebContentsObserverAndroid.h"
+#include "elastos/droid/webkit/native/android_webview/AwWebResourceResponse.h"
+#include "elastos/droid/webkit/native/android_webview/JsResultReceiver.h"
+#include "elastos/droid/webkit/native/android_webview/JsPromptResultReceiver.h"
+#include "elastos/droid/webkit/native/android_webview/AwHttpAuthHandler.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentsClientBridge.h"
+#include "elastos/utility/etl/Map.h"
 
-// import android.content.pm.ActivityInfo;
-// import android.graphics.Bitmap;
-// import android.graphics.Picture;
-// import android.net.http.SslError;
-// import android.os.Looper;
-// import android.os.Message;
-// import android.util.ArrayMap;
-// import android.view.KeyEvent;
-// import android.view.View;
-// import android.webkit.ConsoleMessage;
-// import android.webkit.GeolocationPermissions;
-// import android.webkit.ValueCallback;
-// import android.webkit.WebChromeClient;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Graphics::IPicture;
+using Elastos::Droid::Net::Http::ISslError;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IView;
+//TODO using Elastos::Droid::Webkit::IConsoleMessage;
+//TODO using Elastos::Droid::Webkit::IGeolocationPermissionsCallback;
+//TODO using Elastos::Droid::Webkit::IValueCallback;
+//TODO using Elastos::Droid::Webkit::IWebChromeClientCustomViewCallback;
 
-// import org.chromium.android_webview.permission.AwPermissionRequest;
-// import org.chromium.content.browser.ContentViewCore;
-// import org.chromium.content.browser.WebContentsObserverAndroid;
-// import org.chromium.net.NetError;
-
-// import java.security.Principal;
+using Elastos::Utility::Etl::Map;
+using Elastos::Droid::Webkit::AndroidWebview::Permission::AwPermissionRequest;
+using Elastos::Droid::Webkit::Content::Browser::ContentViewCore;
+using Elastos::Droid::Webkit::Content::Browser::WebContentsObserverAndroid;
+using Elastos::Security::IPrincipal;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace AndroidWebview {
+class AwContentsClientCallbackHelper;
 
 /**
  * Base-class that an AwContents embedder derives from to receive callbacks.
@@ -38,9 +45,11 @@ namespace AndroidWebview {
  * i.e.: all methods in this class should either be final, or abstract.
  */
 class AwContentsClient
+:public Object
 {
 public:
-    class AwWebContentsObserver : public WebContentsObserverAndroid
+    class AwWebContentsObserver
+    : public WebContentsObserverAndroid
     {
     public:
         AwWebContentsObserver(
@@ -48,13 +57,13 @@ public:
             /* [in] */ ContentViewCore* contentViewCore);
 
         //@Override
-        CARAPI_(void) DidFinishLoad(
+        CARAPI DidFinishLoad(
             /* [in] */ Int64 frameId,
             /* [in] */ const String& validatedUrl,
             /* [in] */ Boolean isMainFrame);
 
         //@Override
-        CARAPI_(void) DidFailLoad(
+        CARAPI DidFailLoad(
             /* [in] */ Boolean isProvisionalLoad,
             /* [in] */ Boolean isMainFrame,
             /* [in] */ Int32 errorCode,
@@ -62,14 +71,14 @@ public:
             /* [in] */ const String& failingUrl);
 
         //@Override
-        CARAPI_(void) DidNavigateMainFrame(
+        CARAPI DidNavigateMainFrame(
             /* [in] */ const String& url,
             /* [in] */ const String& baseUrl,
             /* [in] */ Boolean isNavigationToDifferentPage,
             /* [in] */ Boolean isFragmentNavigation);
 
         //@Override
-        CARAPI_(void) DidNavigateAnyFrame(
+        CARAPI DidNavigateAnyFrame(
             /* [in] */ const String& url,
             /* [in] */ const String& baseUrl,
             /* [in] */ Boolean isReload);
@@ -104,6 +113,7 @@ public:
      * Parameters for the {@link AwContentsClient#shouldInterceptRequest} method.
      */
     struct ShouldInterceptRequestParams
+    :public Object
     {
         ShouldInterceptRequestParams()
             : isMainFrame(FALSE)
@@ -120,7 +130,7 @@ public:
         // Method used (GET/POST/OPTIONS)
         String method;
         // Headers that would have been sent to server.
-        ArrayMap<String, String> requestHeaders;
+        Map<String, String> requestHeaders;
     };
 
 public:
@@ -130,26 +140,26 @@ public:
     AwContentsClient(
         /* [in] */ ILooper* looper);
 
-    virtual CARAPI_(void) InstallWebContentsObserver(
+    virtual CARAPI InstallWebContentsObserver(
         /* [in] */ ContentViewCore* contentViewCore);
 
-    virtual CARAPI_(AutoPtr<AwContentsClientCallbackHelper>) GetCallbackHelper();
+    virtual CARAPI_(AwContentsClientCallbackHelper*) GetCallbackHelper();
 
     virtual CARAPI_(Int32) GetCachedRendererBackgroundColor();
 
     virtual CARAPI_(Boolean) IsCachedRendererBackgroundColorValid();
 
-    virtual CARAPI_(void) OnBackgroundColorChanged(
+    virtual CARAPI OnBackgroundColorChanged(
         /* [in] */ Int32 color);
 
-    virtual CARAPI_(void) GetVisitedHistory(
-        /* [in] */ IValueCallback* callback) = 0;
+    virtual CARAPI GetVisitedHistory(
+        /* [in] */ /*TODO IValueCallback*/IInterface* callback) = 0;
 
-    virtual CARAPI_(void) DoUpdateVisitedHistory(
+    virtual CARAPI DoUpdateVisitedHistory(
         /* [in] */ const String& url,
         /* [in] */ Boolean isReload) = 0;
 
-    virtual CARAPI_(void) OnProgressChanged(
+    virtual CARAPI OnProgressChanged(
         /* [in] */ Int32 progress) = 0;
 
     virtual CARAPI_(AutoPtr<AwWebResourceResponse>) ShouldInterceptRequest(
@@ -161,42 +171,42 @@ public:
     virtual CARAPI_(Boolean) ShouldOverrideUrlLoading(
         /* [in] */ const String& url) = 0;
 
-    virtual CARAPI_(void) OnLoadResource(
+    virtual CARAPI OnLoadResource(
         /* [in] */ const String& url) = 0;
 
-    virtual CARAPI_(void) OnUnhandledKeyEvent(
+    virtual CARAPI OnUnhandledKeyEvent(
         /* [in] */ IKeyEvent* event) = 0;
 
     virtual CARAPI_(Boolean) OnConsoleMessage(
-        /* [in] */ IConsoleMessage* consoleMessage) = 0;
+        /* [in] */ /*TODO IConsoleMessage*/IInterface* consoleMessage) = 0;
 
-    virtual CARAPI_(void) OnReceivedHttpAuthRequest(
+    virtual CARAPI OnReceivedHttpAuthRequest(
         /* [in] */ AwHttpAuthHandler* handler,
         /* [in] */ const String& host,
         /* [in] */ const String& realm) = 0;
 
-    virtual CARAPI_(void) OnReceivedSslError(
-        /* [in] */ IValueCallback* callback,
+    virtual CARAPI OnReceivedSslError(
+        /* [in] */ /*TODO IValueCallback*/IInterface* callback,
         /* [in] */ ISslError* error) = 0;
 
     // TODO(sgurun): Make abstract once this has rolled in downstream.
-    virtual CARAPI_(void) OnReceivedClientCertRequest(
-        /* [in] */ const AwContentsClientBridge::ClientCertificateRequestCallback* callback,
-        /* [in] */ const ArrayOf<String>* keyTypes,
-        /* [in] */ const ArrayOf<IPrincipal>* principals,
+    virtual CARAPI OnReceivedClientCertRequest(
+        /* [in] */ AwContentsClientBridge::ClientCertificateRequestCallback* callback,
+        /* [in] */ ArrayOf<String>* keyTypes,
+        /* [in] */ ArrayOf<IPrincipal*>* principals,
         /* [in] */ const String& host,
         /* [in] */ Int32 port);
 
-    virtual CARAPI_(void) OnReceivedLoginRequest(
+    virtual CARAPI OnReceivedLoginRequest(
         /* [in] */ const String& realm,
         /* [in] */ const String& account,
         /* [in] */ const String& args) = 0;
 
-    virtual CARAPI_(void) OnFormResubmission(
+    virtual CARAPI OnFormResubmission(
         /* [in] */ IMessage* dontResend,
         /* [in] */ IMessage* resend) = 0;
 
-    virtual CARAPI_(void) OnDownloadStart(
+    virtual CARAPI OnDownloadStart(
         /* [in] */ const String& url,
         /* [in] */ const String& userAgent,
         /* [in] */ const String& contentDisposition,
@@ -204,63 +214,63 @@ public:
         /* [in] */ Int64 contentLength) = 0;
 
     // TODO(joth): Make abstract once this has rolled in downstream.
-    virtual CARAPI_(void) ShowFileChooser(
-        /* [in] */ IValueCallback* uploadFilePathsCallback,
-        /* [in] */ IFileChooserParams* fileChooserParams);
+    virtual CARAPI ShowFileChooser(
+        /* [in] */ /*TODO IValueCallback*/IInterface* uploadFilePathsCallback,
+        /* [in] */ FileChooserParams* fileChooserParams);
 
-    virtual CARAPI_(void) OnGeolocationPermissionsShowPrompt(
+    virtual CARAPI OnGeolocationPermissionsShowPrompt(
         /* [in] */ const String& origin,
-        /* [in] */ IGeolocationPermissionsCallback* callback) = 0;
+        /* [in] */ /*TODO IGeolocationPermissionsCallback*/IInterface* callback) = 0;
 
-    virtual CARAPI_(void) OnGeolocationPermissionsHidePrompt() = 0;
+    virtual CARAPI OnGeolocationPermissionsHidePrompt() = 0;
 
     // TODO(michaelbai): Change the abstract once merged
-    virtual CARAPI_(void) OnPermissionRequest(
+    virtual CARAPI OnPermissionRequest(
         /* [in] */ AwPermissionRequest* awPermissionRequest);
 
     // TODO(michaelbai): Change the abstract once merged
-    virtual CARAPI_(void) OnPermissionRequestCanceled(
+    virtual CARAPI OnPermissionRequestCanceled(
         /* [in] */ AwPermissionRequest* awPermissionRequest);
 
-    virtual CARAPI_(void) OnScaleChangedScaled(
+    virtual CARAPI OnScaleChangedScaled(
         /* [in] */ Float oldScale,
         /* [in] */ Float newScale) = 0;
 
-    virtual CARAPI_(void) OnReceivedTouchIconUrl(
+    virtual CARAPI OnReceivedTouchIconUrl(
         /* [in] */ const String& url,
         /* [in] */ Boolean precomposed) = 0;
 
-    virtual CARAPI_(void) OnReceivedIcon(
+    virtual CARAPI OnReceivedIcon(
         /* [in] */ IBitmap* bitmap) = 0;
 
-    virtual CARAPI_(void) OnReceivedTitle(
+    virtual CARAPI OnReceivedTitle(
         /* [in] */ const String& title) = 0;
 
-    virtual CARAPI_(void) OnPageStarted(
+    virtual CARAPI OnPageStarted(
         /* [in] */ const String& url) = 0;
 
-    virtual CARAPI_(void) OnPageFinished(
+    virtual CARAPI OnPageFinished(
         /* [in] */ const String& url) = 0;
 
-    virtual CARAPI_(void) OnReceivedError(
+    virtual CARAPI OnReceivedError(
         /* [in] */ Int32 errorCode,
         /* [in] */ const String& description,
         /* [in] */ const String& failingUrl) = 0;
 
     // TODO (michaelbai): Remove this method once the same method remove from
     // WebViewContentsClientAdapter.
-    virtual CARAPI_(void) OnShowCustomView(
+    virtual CARAPI OnShowCustomView(
         /* [in] */ IView* view,
         /* [in] */ Int32 requestedOrientation,
-        /* [in] */ IWebChromeClientCustomViewCallback* callback);
+        /* [in] */ /*TODO IWebChromeClientCustomViewCallback*/IInterface* callback);
 
     // TODO (michaelbai): This method should be abstract, having empty body here
     // makes the merge to the Android easy.
-    virtual CARAPI_(void) OnShowCustomView(
+    virtual CARAPI OnShowCustomView(
         /* [in] */ IView* view,
-        /* [in] */ IWebChromeClientCustomViewCallback* callback);
+        /* [in] */ /*TODO IWebChromeClientCustomViewCallback*/IInterface* callback);
 
-    virtual CARAPI_(void) onHideCustomView() = 0;
+    virtual CARAPI OnHideCustomView() = 0;
 
     virtual CARAPI_(AutoPtr<IBitmap>) GetDefaultVideoPoster() = 0;
 
@@ -268,7 +278,7 @@ public:
     //                              Other WebView-specific methods
     //--------------------------------------------------------------------------------------------
     //
-    virtual CARAPI_(void) OnFindResultReceived(
+    virtual CARAPI OnFindResultReceived(
         /* [in] */ Int32 activeMatchOrdinal,
         /* [in] */ Int32 numberOfMatches,
         /* [in] */ Boolean isDoneCounting) = 0;
@@ -277,11 +287,11 @@ public:
      * Called whenever there is a new content picture available.
      * @param picture New picture.
      */
-    virtual CARAPI_(void) OnNewPicture(
+    virtual CARAPI OnNewPicture(
         /* [in] */ IPicture* picture) = 0;
 
 protected:
-    virtual CARAPI_(void) HandleJsAlert(
+    virtual CARAPI HandleJsAlert(
         /* [in] */ const String& url,
         /* [in] */ const String& message,
         /* [in] */ JsResultReceiver* receiver);
@@ -306,9 +316,9 @@ protected:
         /* [in] */ Boolean isDialog,
         /* [in] */ Boolean isUserGesture);
 
-    virtual CARAPI_(void) OnCloseWindow();
+    virtual CARAPI OnCloseWindow();
 
-    virtual CARAPI_(void) OnRequestFocus();
+    virtual CARAPI OnRequestFocus();
 
     virtual CARAPI_(AutoPtr<IView>) GetVideoLoadingProgressView();
 
@@ -316,7 +326,7 @@ private:
     CARAPI_(void) Init(
         /* [in] */ ILooper* looper);
 
-    AutoPtr<AwContentsClientCallbackHelper> mCallbackHelper;
+    AwContentsClientCallbackHelper* mCallbackHelper;
 
     AutoPtr<AwWebContentsObserver> mWebContentsObserver;
 
@@ -325,6 +335,9 @@ private:
     Int32 mCachedRendererBackgroundColor;
 
     static const Int32 INVALID_COLOR = 0;
+
+    friend class AwContentsClientBridge;
+    friend class AwContentViewClient;
 };
 
 } // namespace AndroidWebview

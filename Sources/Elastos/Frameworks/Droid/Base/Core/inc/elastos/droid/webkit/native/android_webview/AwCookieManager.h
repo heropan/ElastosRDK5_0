@@ -1,11 +1,12 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCOOKIEMANAGER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCOOKIEMANAGER_H__
+#include "ext/frameworkext.h"
 
-// import android.os.Handler;
-// import android.os.Looper;
-// import android.webkit.ValueCallback;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::ILooper;
+//TODO using Elastos::Droid::Webkit::IValueCallback;
 
+using Elastos::Core::IRunnable;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
@@ -21,8 +22,9 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwCookieManager
+:public Object
 {
-private:
+public:
     /**
      * CookieCallback is a bridge that knows how to call a ValueCallback on its original thread.
      * We need to arrange for the users ValueCallback#onReceiveValue to be called on the original
@@ -32,6 +34,7 @@ private:
      * on the handler of the original thread which in turn calls ValueCallback#onReceiveValue.
      */
     class CookieCallback
+    :public Object
     {
     private:
         class InnerRunnable
@@ -39,6 +42,7 @@ private:
             , public IRunnable
         {
         public:
+            CAR_INTERFACE_DECL();
             InnerRunnable(
                 /* [in] */ CookieCallback* owner,
                 /* [in] */ IInterface* t);
@@ -52,17 +56,18 @@ private:
 
     public:
         CookieCallback(
-            /* [in] */ IValueCallback* callback,
+            /* [in] */ /*TODO IValueCallback*/IInterface* callback,
             /* [in] */ IHandler* handler);
 
-        static CARAPI_(AutoPtr<CookieCallback>) Convert(
-            /* [in] */ IValueCallback* callback);
+        static ECode Convert(
+            /* [in] */ /*TODO IValueCallback*/IInterface* callback,
+            /* [out] */ CookieCallback** cookieCallback);
 
         CARAPI_(void) OnReceiveValue(
-            /* [in] */ const IInterface* t);
+            /* [in] */ IInterface* t);
 
     private:
-        AutoPtr<IValueCallback> mCallback;
+        AutoPtr</*TODO IValueCallback*/IInterface> mCallback;
         AutoPtr<IHandler> mHandler;
     };
 
@@ -114,10 +119,10 @@ public:
      * @param value The value for set-cookie: in http response header.
      * @param callback A callback called with the success status after the cookie is set.
      */
-    CARAPI_(void) SetCookie(
+    CARAPI SetCookie(
         /* [in] */ const String& url,
         /* [in] */ const String& value,
-        /* [in] */ const IValueCallback* callback);
+        /* [in] */ /*TODO IValueCallback*/IInterface* callback);
 
     /**
      * Get cookie(s) for a given url so that it can be set to "cookie:" in http
@@ -133,16 +138,16 @@ public:
      * The value of the callback is true iff at least one cookie was removed.
      * @param callback A callback called after the cookies (if any) are removed.
      */
-    CARAPI_(void) RemoveSessionCookies(
-        /* [in] */ IValueCallback* callback);
+    CARAPI RemoveSessionCookies(
+        /* [in] */ /*TODO IValueCallback*/IInterface* callback);
 
     /**
      * Remove all cookies.
      * The value of the callback is true iff at least one cookie was removed.
      * @param callback A callback called after the cookies (if any) are removed.
      */
-    CARAPI_(void) RemoveAllCookies(
-        /* [in] */ IValueCallback* callback);
+    CARAPI RemoveAllCookies(
+        /* [in] */ /*TODO IValueCallback*/IInterface* callback);
 
     /**
      *  Return true if there are stored cookies.
@@ -173,9 +178,9 @@ public:
     CARAPI_(void) SetAcceptFileSchemeCookies(
         /* [in] */ Boolean accept);
 
-    //@CalledByNative
+    //@CalledByNative input callback is CookieCallback
     static CARAPI_(void) InvokeBooleanCookieCallback(
-        /* [in] */ ICookieCallback* callback,
+        /* [in] */ IInterface* callback,
         /* [in] */ Boolean result);
 
 private:

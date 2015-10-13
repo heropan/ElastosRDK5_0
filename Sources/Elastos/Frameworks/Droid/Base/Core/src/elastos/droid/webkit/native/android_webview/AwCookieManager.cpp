@@ -1,3 +1,16 @@
+#include "elastos/droid/webkit/native/android_webview/AwCookieManager.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/CLooperHelper.h"
+#include "elastos/utility/logging/Logger.h"
+
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::ILooperHelper;
+using Elastos::Droid::Os::CLooperHelper;
+
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Core::IBoolean;
+using Elastos::Core::CBoolean;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -5,9 +18,11 @@ namespace Webkit {
 namespace AndroidWebview {
 
 //===============================================================
-//       AwBrowserProcess::CookieCallback::InnerRunnable
+//       AwCookieManager::CookieCallback::InnerRunnable
 //===============================================================
-AwBrowserProcess::CookieCallback::InnerRunnable::InnerRunnable(
+CAR_INTERFACE_IMPL(AwCookieManager::CookieCallback::InnerRunnable, Object, IRunnable);
+
+AwCookieManager::CookieCallback::InnerRunnable::InnerRunnable(
     /* [in] */ CookieCallback* owner,
     /* [in] */ IInterface* t)
     : mOwner(owner)
@@ -15,67 +30,83 @@ AwBrowserProcess::CookieCallback::InnerRunnable::InnerRunnable(
 {
 }
 
-ECode AwBrowserProcess::CookieCallback::InnerRunnable::Run()
+ECode AwCookieManager::CookieCallback::InnerRunnable::Run()
 {
-    return mOwner->mCallback->OnReceiveValue(mT);
+    //TODO return mOwner->mCallback->OnReceiveValue(mT);
+    return NOERROR;//TODO remove this
 }
 
 //===============================================================
-//               AwBrowserProcess::CookieCallback
+//               AwCookieManager::CookieCallback
 //===============================================================
 
-AwBrowserProcess::CookieCallback::CookieCallback(
-    /* [in] */ IValueCallback* callback,
+AwCookieManager::CookieCallback::CookieCallback(
+    /* [in] */ /*TODO IValueCallback*/IInterface* callback,
     /* [in] */ IHandler* handler)
     : mCallback(callback)
     , mHandler(handler)
 {
 }
 
-AutoPtr<CookieCallback> AwBrowserProcess::CookieCallback::Convert(
-    /* [in] */ IValueCallback* callback)
+ECode AwCookieManager::CookieCallback::Convert(
+    /* [in] */ /*TODO IValueCallback*/IInterface* callback,
+    /* [out] */ CookieCallback** cookieCallback)
 {
+    VALIDATE_NOT_NULL(cookieCallback);
+    *cookieCallback = NULL;
     if (callback == NULL) {
-        return NULL;
+        return NOERROR;
     }
 
     // if (Looper.myLooper() == null) {
     //   throw new IllegalStateException(
     //       "CookieCallback.convert should be called on a thread with a running Looper.");
     // }
+    AutoPtr<ILooper> looper;
+    AutoPtr<ILooperHelper> looperHelper;
+    CLooperHelper::AcquireSingleton((ILooperHelper**)&looperHelper);
+    looperHelper->GetMyLooper((ILooper**)&looper);
+    if (looper == NULL)
+    {
+        Logger::E("AwCookieManager", "AwCookieManager::CookieCallback::Convert");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
 
     AutoPtr<IHandler> handler;
     CHandler::New((IHandler**)&handler);
-    AutoPtr<CookieCallback> cookieCallback = new CookieCallback(callback, handler);
+    AutoPtr<CookieCallback> cookieCB= new CookieCallback(callback, handler);
 
-    return cookieCallback;
+    *cookieCallback = cookieCB;
+    REFCOUNT_ADD(*cookieCallback);
+    return NOERROR;
 }
 
-void AwBrowserProcess::CookieCallback::OnReceiveValue(
-    /* [in] */ const IInterface* t)
+void AwCookieManager::CookieCallback::OnReceiveValue(
+    /* [in] */ IInterface* t)
 {
     AutoPtr<IRunnable> runnable = new InnerRunnable(this, t);
-    mHandler->Post(runnable);
+    Boolean result;
+    mHandler->Post(runnable, &result);
 }
 
 //===============================================================
-//                      AwBrowserProcess
+//                      AwCookieManager
 //===============================================================
 
 // TODO(hjd): remove after landing android update to use new calls.
-void AwBrowserProcess::RemoveExpiredCookie()
+void AwCookieManager::RemoveExpiredCookie()
 {
-    removeExpiredCookies();
+    RemoveExpiredCookies();
 }
 
 // TODO(hjd): remove after landing android update to use new calls.
-void AwBrowserProcess::RemoveAllCookie()
+void AwCookieManager::RemoveAllCookie()
 {
     RemoveAllCookies();
 }
 
 // TODO(hjd): remove after landing android update to use new calls.
-void AwBrowserProcess::RemoveSessionCookie()
+void AwCookieManager::RemoveSessionCookie()
 {
     RemoveSessionCookies();
 }
@@ -84,7 +115,7 @@ void AwBrowserProcess::RemoveSessionCookie()
  * Control whether cookie is enabled or disabled
  * @param accept TRUE if accept cookie
  */
-void AwBrowserProcess::SetAcceptCookie(
+void AwCookieManager::SetAcceptCookie(
     /* [in] */ Boolean accept)
 {
     NativeSetShouldAcceptCookies(accept);
@@ -94,7 +125,7 @@ void AwBrowserProcess::SetAcceptCookie(
  * Return whether cookie is enabled
  * @return TRUE if accept cookie
  */
-Boolean void AwBrowserProcess::AcceptCookie()
+Boolean AwCookieManager::AcceptCookie()
 {
     return NativeGetShouldAcceptCookies();
 }
@@ -102,7 +133,7 @@ Boolean void AwBrowserProcess::AcceptCookie()
 /**
  * Synchronous version of setCookie.
  */
-void AwBrowserProcess::SetCookie(
+void AwCookieManager::SetCookie(
     /* [in] */ const String& url,
     /* [in] */ const String& value)
 {
@@ -112,7 +143,7 @@ void AwBrowserProcess::SetCookie(
 /**
  * Deprecated synchronous version of removeSessionCookies.
  */
-void AwBrowserProcess::removeSessionCookies()
+void AwCookieManager::RemoveSessionCookies()
 {
     NativeRemoveSessionCookiesSync();
 }
@@ -120,7 +151,7 @@ void AwBrowserProcess::removeSessionCookies()
 /**
  * Deprecated synchronous version of removeAllCookies.
  */
-void AwBrowserProcess::RemoveAllCookies()
+void AwCookieManager::RemoveAllCookies()
 {
     NativeRemoveAllCookiesSync();
 }
@@ -133,13 +164,21 @@ void AwBrowserProcess::RemoveAllCookies()
  * @param value The value for set-cookie: in http response header.
  * @param callback A callback called with the success status after the cookie is set.
  */
-void AwBrowserProcess::SetCookie(
+ECode AwCookieManager::SetCookie(
     /* [in] */ const String& url,
     /* [in] */ const String& value,
-    /* [in] */ const IValueCallback* callback)
+    /* [in] */ /*TODO IValueCallback*/IInterface* callback)
 {
     //try {
-        NativeSetCookie(url, value, CookieCallback->Convert(callback));
+    AutoPtr<CookieCallback> cookieCallback;
+    ECode ecode = CookieCallback::Convert(callback, (CookieCallback**)&cookieCallback);
+    if (FAILED(ecode))
+    {
+        Logger::E("AwCookieManager", "AwCookieManager::SetCookie");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    NativeSetCookie(url, value, cookieCallback);
+    return NOERROR;
     //} catch (IllegalStateException e) {
     //    throw new IllegalStateException(
     //            "SetCookie must be called on a thread with a running Looper.");
@@ -152,12 +191,21 @@ void AwBrowserProcess::SetCookie(
  * @param url The url needs cookie
  * @return The cookies in the format of NAME=VALUE [; NAME=VALUE]
  */
-String AwBrowserProcess::GetCookie(
+String AwCookieManager::GetCookie(
     /* [in] */ const String& url)
 {
-    String cookie = NativeGetCookie(url.ToString());
+    String cookie = NativeGetCookie(url);
     // Return null if the string is empty to match legacy behavior
-    return cookie == NULL || cookie.Trim().IsEmpty() ? NULL : cookie;
+    //return cookie == NULL || cookie.Trim().IsEmpty() ? NULL : cookie;
+    if (cookie.IsNullOrEmpty())
+    {
+        return String(NULL);
+    }
+    if (cookie.Trim().IsEmpty())
+    {
+        return String(NULL);
+    }
+    return cookie;
 }
 
 /**
@@ -165,11 +213,19 @@ String AwBrowserProcess::GetCookie(
  * The value of the callback is true iff at least one cookie was removed.
  * @param callback A callback called after the cookies (if any) are removed.
  */
-void AwBrowserProcess::RemoveSessionCookies(
-    /* [in] */ IValueCallback* callback)
+ECode AwCookieManager::RemoveSessionCookies(
+    /* [in] */ /*TODO IValueCallback*/IInterface* callback)
 {
     //try {
-        NativeRemoveSessionCookies(CookieCallback::Convert(callback));
+    AutoPtr<CookieCallback> cookieCallback;
+    ECode ecode = CookieCallback::Convert(callback, (CookieCallback**)&cookieCallback);
+    if (FAILED(ecode))
+    {
+        Logger::E("AwCookieManager", "AwCookieManager::RemoveSessionCookies");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    NativeRemoveSessionCookies(cookieCallback);
+    return NOERROR;
     //} catch (IllegalStateException e) {
     //    throw new IllegalStateException(
     //            "removeSessionCookies must be called on a thread with a running Looper.");
@@ -181,11 +237,19 @@ void AwBrowserProcess::RemoveSessionCookies(
  * The value of the callback is true iff at least one cookie was removed.
  * @param callback A callback called after the cookies (if any) are removed.
  */
-void AwBrowserProcess::RemoveAllCookies(
-    /* [in] */ IValueCallback* callback)
+ECode AwCookieManager::RemoveAllCookies(
+    /* [in] */ /*TODO IValueCallback*/IInterface* callback)
 {
     //try {
-        NativeRemoveAllCookies(CookieCallback::Convert(callback));
+    AutoPtr<CookieCallback> cookieCallback;
+    ECode ecode = CookieCallback::Convert(callback, (CookieCallback**)&cookieCallback);
+    if (FAILED(ecode))
+    {
+        Logger::E("AwCookieManager", "AwCookieManager::RemoveSessionCookies");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    NativeRemoveAllCookies(cookieCallback);
+    return NOERROR;
     //} catch (IllegalStateException e) {
     //    throw new IllegalStateException(
     //            "removeAllCookies must be called on a thread with a running Looper.");
@@ -195,7 +259,7 @@ void AwBrowserProcess::RemoveAllCookies(
 /**
  *  Return true if there are stored cookies.
  */
-Boolean AwBrowserProcess::HasCookies()
+Boolean AwCookieManager::HasCookies()
 {
     return NativeHasCookies();
 }
@@ -203,12 +267,12 @@ Boolean AwBrowserProcess::HasCookies()
 /**
  * Remove all expired cookies
  */
-void AwBrowserProcess::RemoveExpiredCookies()
+void AwCookieManager::RemoveExpiredCookies()
 {
     NativeRemoveExpiredCookies();
 }
 
-void AwBrowserProcess::FlushCookieStore()
+void AwCookieManager::FlushCookieStore()
 {
     NativeFlushCookieStore();
 }
@@ -216,7 +280,7 @@ void AwBrowserProcess::FlushCookieStore()
 /**
  * Whether cookies are accepted for file scheme URLs.
  */
-Boolean AwBrowserProcess::AllowFileSchemeCookies()
+Boolean AwCookieManager::AllowFileSchemeCookies()
 {
     return NativeAllowFileSchemeCookies();
 }
@@ -230,82 +294,89 @@ Boolean AwBrowserProcess::AllowFileSchemeCookies()
  * Note that calls to this method will have no effect if made after a WebView or CookieManager
  * instance has been created.
  */
-void AwBrowserProcess::SetAcceptFileSchemeCookies(
+void AwCookieManager::SetAcceptFileSchemeCookies(
     /* [in] */ Boolean accept)
 {
     NativeSetAcceptFileSchemeCookies(accept);
 }
 
 //@CalledByNative
-void AwBrowserProcess::InvokeBooleanCookieCallback(
-    /* [in] */ CookieCallback* callback,
+void AwCookieManager::InvokeBooleanCookieCallback(
+    /* [in] */ IInterface* callback,
     /* [in] */ Boolean result)
 {
-    callback->OnReceiveValue(result);
+    AutoPtr<CookieCallback> cookieCB = (CookieCallback*)IObject::Probe(callback);
+    AutoPtr<IBoolean> res;
+    CBoolean::New(result, (IBoolean**)&res);
+    cookieCB->OnReceiveValue(res);
 }
 
-void AwBrowserProcess::NativeSetShouldAcceptCookies(
+void AwCookieManager::NativeSetShouldAcceptCookies(
     /* [in] */ Boolean accept)
 {
 }
 
-Boolean AwBrowserProcess::NativeGetShouldAcceptCookies()
+Boolean AwCookieManager::NativeGetShouldAcceptCookies()
 {
+    return FALSE;
 }
 
-void AwBrowserProcess::NativeSetCookie(
+void AwCookieManager::NativeSetCookie(
     /* [in] */ const String& url,
     /* [in] */ const String& value,
     /* [in] */ CookieCallback* callback)
 {
 }
 
-void AwBrowserProcess::NativeSetCookieSync(
+void AwCookieManager::NativeSetCookieSync(
     /* [in] */ const String& url,
     /* [in] */ const String& value)
 {
 }
 
-String AwBrowserProcess::NativeGetCookie(
+String AwCookieManager::NativeGetCookie(
     /* [in] */ const String& url)
 {
+    return String(NULL);
 }
 
-void AwBrowserProcess::NativeRemoveSessionCookies(
+void AwCookieManager::NativeRemoveSessionCookies(
     /* [in] */ CookieCallback* callback)
 {
 }
 
-void AwBrowserProcess::NativeRemoveSessionCookiesSync()
+void AwCookieManager::NativeRemoveSessionCookiesSync()
 {
 }
 
-void AwBrowserProcess::NativeRemoveAllCookies(
+void AwCookieManager::NativeRemoveAllCookies(
     /* [in] */ CookieCallback* callback)
 {
 }
 
-void AwBrowserProcess::NativeRemoveAllCookiesSync()
+void AwCookieManager::NativeRemoveAllCookiesSync()
 {
 }
 
-void AwBrowserProcess::NativeRemoveExpiredCookies()
+void AwCookieManager::NativeRemoveExpiredCookies()
 {
 }
 
-void AwBrowserProcess::NativeFlushCookieStore()
+void AwCookieManager::NativeFlushCookieStore()
 {
 }
 
-Boolean AwBrowserProcess::NativeHasCookies()
+Boolean AwCookieManager::NativeHasCookies()
 {
+    return FALSE;
 }
 
-Boolean AwBrowserProcess::NativeAllowFileSchemeCookies()
+Boolean AwCookieManager::NativeAllowFileSchemeCookies()
 {
+    return FALSE;
 }
 
-void AwBrowserProcess::NativeSetAcceptFileSchemeCookies(
+void AwCookieManager::NativeSetAcceptFileSchemeCookies(
     /* [in] */ Boolean accept)
 {
 }

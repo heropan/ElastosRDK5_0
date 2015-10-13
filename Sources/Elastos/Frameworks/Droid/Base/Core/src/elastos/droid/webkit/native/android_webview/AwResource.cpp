@@ -1,3 +1,7 @@
+#include "elastos/droid/webkit/native/android_webview/AwResource.h"
+
+using Elastos::IO::IInputStreamReader;
+using Elastos::Utility::IScanner;
 
 namespace Elastos {
 namespace Droid {
@@ -56,7 +60,7 @@ String AwResource::GetLoadErrorPageContent()
     return GetResource(RAW_LOAD_ERROR, TYPE_RAW);
 }
 
-AutoPtr<ArrayOf< <String> > AwResource::GetConfigKeySystemUuidMapping()
+AutoPtr<ArrayOf<String> > AwResource::GetConfigKeySystemUuidMapping()
 {
     // No need to cache, since this should be called only once.
     return sResources.getStringArray(STRING_ARRAY_CONFIG_KEY_SYSTEM_UUID_MAPPING);

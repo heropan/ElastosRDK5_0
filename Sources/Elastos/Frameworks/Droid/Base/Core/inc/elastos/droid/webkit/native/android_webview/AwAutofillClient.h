@@ -1,12 +1,17 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWAUTOFILLCLIENT_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWAUTOFILLCLIENT_H__
+#include "ext/frameworkext.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
+#include "elastos/droid/webkit/native/ui/autofill/AutofillPopup.h"
+#include "elastos/droid/webkit/native/ui/autofill/AutofillSuggestion.h"
+
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::Webkit::Content::Browser::ContentViewCore;
+using Elastos::Droid::Webkit::Ui::Autofill::AutofillPopup;
+using Elastos::Droid::Webkit::Ui::Autofill::AutofillSuggestion;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
-// import org.chromium.content.browser.ContentViewCore;
-// import org.chromium.ui.autofill.AutofillPopup;
-// import org.chromium.ui.autofill.AutofillSuggestion;
 
 namespace Elastos {
 namespace Droid {
@@ -19,19 +24,21 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwAutofillClient
+:public Object
 {
 private:
-    class InnerAutofillPopupDelegate : public AutofillPopupDelegate
+    class InnerAutofillPopupDelegate
+    : public AutofillPopup::AutofillPopupDelegate
     {
     public:
         InnerAutofillPopupDelegate(
             /* [in] */ AwAutofillClient* owner);
 
         //@Override
-        CARAPI_(void) RequestHide();
+        CARAPI RequestHide();
 
         //@Override
-        CARAPI_(void) SuggestionSelected(
+        CARAPI SuggestionSelected(
             /* [in] */ Int32 listIndex);
 
     private:
@@ -39,8 +46,8 @@ private:
     };
 
 public:
-    //@CalledByNative
-    static CARAPI_(AutoPtr<AwAutofillClient>) Create(
+    //@CalledByNative AwAutofillClient
+    static CARAPI_(AutoPtr<IInterface>) Create(
         /* [in] */ Int64 nativeClient);
 
     virtual CARAPI_(void) Init(
@@ -59,10 +66,10 @@ private:
         /* [in] */ Float y,
         /* [in] */ Float width,
         /* [in] */ Float height,
-        /* [in] */ ArrayOf<AutofillSuggestion>* suggestions);
+        /* [in] */ ArrayOf<AutofillSuggestion*>* suggestions);
 
-    //@CalledByNative
-    static CARAPI_(AutoPtr< ArrayOf<AutofillSuggestion> >) CreateAutofillSuggestionArray(
+    //@CalledByNative ArrayOf AutofillSuggestion
+    static CARAPI_(AutoPtr<ArrayOf<IInterface*> >) CreateAutofillSuggestionArray(
         /* [in] */ Int32 size);
 
     /**
@@ -72,9 +79,9 @@ private:
      * @param label Label of the suggestion.
      * @param uniqueId Unique suggestion id.
      */
-    //@CalledByNative
+    //@CalledByNative ArrayOf AutofillSuggestion
     static CARAPI_(void) AddToAutofillSuggestionArray(
-        /* [in] */ ArrayOf<AutofillSuggestion>* array,
+        /* [in] */ ArrayOf<IInterface*>* array,
         /* [in] */ Int32 index,
         /* [in] */ const String& name,
         /* [in] */ const String& label,

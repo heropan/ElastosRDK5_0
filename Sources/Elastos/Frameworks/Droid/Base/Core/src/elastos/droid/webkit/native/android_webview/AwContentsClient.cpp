@@ -1,3 +1,15 @@
+#include "elastos/droid/webkit/native/android_webview/AwContentsClient.h"
+#include "elastos/droid/webkit/native/net/NetError.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentsStatics.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentsClientBridge.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentsClientCallbackHelper.h"
+#include "elastos/droid/webkit/native/android_webview/ErrorCodeConversionHelper.h"
+#include "elastos/droid/os/CLooperHelper.h"
+
+using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Os::ILooperHelper;
+using Elastos::Droid::Os::CLooperHelper;
+using Elastos::Droid::Webkit::Net::NetError;
 
 namespace Elastos {
 namespace Droid {
@@ -9,27 +21,30 @@ namespace AndroidWebview {
 //===============================================================
 
 AwContentsClient::AwWebContentsObserver::AwWebContentsObserver(
+    /* [in] */ AwContentsClient* owner,
     /* [in] */ ContentViewCore* contentViewCore)
     : WebContentsObserverAndroid(contentViewCore)
+    , mOwner(owner)
 {
 }
 
 //@Override
-void AwContentsClient::AwWebContentsObserver::DidFinishLoad(
+ECode AwContentsClient::AwWebContentsObserver::DidFinishLoad(
     /* [in] */ Int64 frameId,
     /* [in] */ const String& validatedUrl,
     /* [in] */ Boolean isMainFrame)
 {
     String unreachableWebDataUrl = AwContentsStatics::GetUnreachableWebDataUrl();
     Boolean isErrorUrl =
-            unreachableWebDataUrl != NULL && unreachableWebDataUrl.Equals(validatedUrl);
+            (!unreachableWebDataUrl.IsNull() && unreachableWebDataUrl.Equals(validatedUrl));
     if (isMainFrame && !isErrorUrl) {
-        AwContentsClient::OnPageFinished(validatedUrl);
+        mOwner->OnPageFinished(validatedUrl);
     }
+    return NOERROR;
 }
 
 //@Override
-void AwContentsClient::AwWebContentsObserver::DidFailLoad(
+ECode AwContentsClient::AwWebContentsObserver::DidFailLoad(
     /* [in] */ Boolean isProvisionalLoad,
     /* [in] */ Boolean isMainFrame,
     /* [in] */ Int32 errorCode,
@@ -44,36 +59,40 @@ void AwContentsClient::AwWebContentsObserver::DidFailLoad(
             //
             // The Android WebView does not notify the embedder of these situations using
             // this error code with the WebViewClient.onReceivedError callback.
-            AwContentsClient::OnReceivedError(
+            mOwner->OnReceivedError(
                     ErrorCodeConversionHelper::ConvertErrorCode(errorCode), description,
                             failingUrl);
         }
         // Need to call onPageFinished after onReceivedError (if there is an error) for
         // backwards compatibility with the classic webview.
-        AwContentsClient::OnPageFinished(failingUrl);
+        mOwner->OnPageFinished(failingUrl);
     }
+    return NOERROR;
 }
 
 //@Override
-void AwContentsClient::AwWebContentsObserver::DidNavigateMainFrame(
+ECode AwContentsClient::AwWebContentsObserver::DidNavigateMainFrame(
     /* [in] */ const String& url,
     /* [in] */ const String& baseUrl,
-    /* [in] */ Boolean isNavigationToDifferentPage, boolean isFragmentNavigation)
+    /* [in] */ Boolean isNavigationToDifferentPage,
+    /* [in] */ Boolean isFragmentNavigation)
 {
     // This is here to emulate the Classic WebView firing onPageFinished for main frame
     // navigations where only the hash fragment changes.
     if (isFragmentNavigation) {
-        AwContentsClient::OnPageFinished(url);
+        mOwner->OnPageFinished(url);
     }
+    return NOERROR;
 }
 
 //@Override
-void AwContentsClient::AwWebContentsObserver::DidNavigateAnyFrame(
+ECode AwContentsClient::AwWebContentsObserver::DidNavigateAnyFrame(
     /* [in] */ const String& url,
     /* [in] */ const String& baseUrl,
     /* [in] */ Boolean isReload)
 {
-    AwContentsClient::DoUpdateVisitedHistory(url, isReload);
+    mOwner->DoUpdateVisitedHistory(url, isReload);
+    return NOERROR;
 }
 
 //===============================================================
@@ -87,7 +106,7 @@ AwContentsClient::AwContentsClient()
     AutoPtr<ILooperHelper> helper;
     CLooperHelper::AcquireSingleton((ILooperHelper**)&helper);
     AutoPtr<ILooper> looper;
-    helper->MyLooper((ILooper**)&looper);
+    helper->GetMyLooper((ILooper**)&looper);
     Init(looper);
 }
 
@@ -105,23 +124,24 @@ void AwContentsClient::Init(
     mCachedRendererBackgroundColor = INVALID_COLOR;
 }
 
-void AwContentsClient::InstallWebContentsObserver(
+ECode AwContentsClient::InstallWebContentsObserver(
     /* [in] */ ContentViewCore* contentViewCore)
 {
     if (mWebContentsObserver != NULL) {
         mWebContentsObserver->DetachFromWebContents();
     }
-    mWebContentsObserver = new AwWebContentsObserver(contentViewCore);
+    mWebContentsObserver = new AwWebContentsObserver(this, contentViewCore);
+    return NOERROR;
 }
 
-AutoPtr<AwContentsClientCallbackHelper> AwContentsClient::GetCallbackHelper()
+AwContentsClientCallbackHelper* AwContentsClient::GetCallbackHelper()
 {
     return mCallbackHelper;
 }
 
 Int32 AwContentsClient::GetCachedRendererBackgroundColor()
 {
-    assert(isCachedRendererBackgroundColorValid());
+    assert(IsCachedRendererBackgroundColorValid());
     return mCachedRendererBackgroundColor;
 }
 
@@ -130,62 +150,68 @@ Boolean AwContentsClient::IsCachedRendererBackgroundColorValid()
     return mCachedRendererBackgroundColor != INVALID_COLOR;
 }
 
-void AwContentsClient::OnBackgroundColorChanged(
+ECode AwContentsClient::OnBackgroundColorChanged(
     /* [in] */ Int32 color)
 {
     // Avoid storing the sentinal INVALID_COLOR (note that both 0 and 1 are both
     // fully transparent so this transpose makes no visible difference).
-    mCachedRendererBackgroundColor = color == INVALID_COLOR ? 1 : color;
+    mCachedRendererBackgroundColor = (color == INVALID_COLOR ? 1 : color);
+    return NOERROR;
 }
 
 
 // TODO(sgurun): Make abstract once this has rolled in downstream.
-void AwContentsClient::OnReceivedClientCertRequest(
-    /* [in] */ const AwContentsClientBridge::ClientCertificateRequestCallback* callback,
-    /* [in] */ const ArrayOf<String>* keyTypes,
-    /* [in] */ const ArrayOf<IPrincipal>* principals,
+ECode AwContentsClient::OnReceivedClientCertRequest(
+    /* [in] */ AwContentsClientBridge::ClientCertificateRequestCallback* callback,
+    /* [in] */ ArrayOf<String>* keyTypes,
+    /* [in] */ ArrayOf<IPrincipal*>* principals,
     /* [in] */ const String& host,
     /* [in] */ Int32 port)
 {
+    return NOERROR;
 }
 
 
 // TODO(joth): Make abstract once this has rolled in downstream.
-void AwContentsClient::ShowFileChooser(
-    /* [in] */ IValueCallback* uploadFilePathsCallback,
-    /* [in] */ FileChooserParams fileChooserParams)
+ECode AwContentsClient::ShowFileChooser(
+    /* [in] */ /*TODO IValueCallback*/IInterface* uploadFilePathsCallback,
+    /* [in] */ FileChooserParams* fileChooserParams)
 {
+    return NOERROR;
 }
 
 // TODO(michaelbai): Change the abstract once merged
-void AwContentsClient::OnPermissionRequest(
+ECode AwContentsClient::OnPermissionRequest(
     /* [in] */ AwPermissionRequest* awPermissionRequest)
 {
+    return NOERROR;
 }
 
 // TODO(michaelbai): Change the abstract once merged
-void AwContentsClient::OnPermissionRequestCanceled(
+ECode AwContentsClient::OnPermissionRequestCanceled(
     /* [in] */ AwPermissionRequest* awPermissionRequest)
 {
+    return NOERROR;
 }
 
 
 // TODO (michaelbai): Remove this method once the same method remove from
 // WebViewContentsClientAdapter.
-void AwContentsClient::OnShowCustomView(
+ECode AwContentsClient::OnShowCustomView(
     /* [in] */ IView* view,
     /* [in] */ Int32 requestedOrientation,
-    /* [in] */ IWebChromeClientCustomViewCallback* callback)
+    /* [in] */ /*TODO IWebChromeClientCustomViewCallback*/IInterface* callback)
 {
+    return NOERROR;
 }
 
 // TODO (michaelbai): This method should be abstract, having empty body here
 // makes the merge to the Android easy.
-void AwContentsClient::OnShowCustomView(
+ECode AwContentsClient::OnShowCustomView(
     /* [in] */ IView* view,
-    /* [in] */ IWebChromeClientCustomViewCallback* callback)
+    /* [in] */ /*TODO IWebChromeClientCustomViewCallback*/IInterface* callback)
 {
-    OnShowCustomView(view, IActivityInfo::SCREEN_ORIENTATION_UNSPECIFIED, callback);
+    return OnShowCustomView(view, IActivityInfo::SCREEN_ORIENTATION_UNSPECIFIED, callback);
 }
 
 } // namespace AndroidWebview

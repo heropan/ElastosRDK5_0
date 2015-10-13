@@ -1,14 +1,16 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPICTURE_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPICTURE_H__
+#include "elastos/droid/ext/frameworkext.h"
+//TODO #include "elastos/droid/webkit/native/content/common/CleanupReference.h"
 
-// import android.graphics.Canvas;
-// import android.graphics.Picture;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IPicture;
+//TODO using Elastos::Droid::Webkit::Content::Common::CleanupReference;
+using Elastos::Core::IRunnable;
+using Elastos::IO::IOutputStream;
+
 
 // import org.chromium.base.JNINamespace;
-// import org.chromium.content.common.CleanupReference;
-
-// import java.io.OutputStream;
 
 namespace Elastos {
 namespace Droid {
@@ -20,7 +22,7 @@ namespace AndroidWebview {
 //@JNINamespace("android_webview")
 class AwPicture
     : public Object
-    , public Picture
+    , public IPicture
 {
 private:
     // There is no explicit destroy method on Picture base-class, so cleanup is always
@@ -30,10 +32,11 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         //@Override
         CARAPI Run();
 
-    private:
+    public:
         DestroyRunnable(
             /* [in] */ Int64 nativeAwPicture);
 
@@ -54,7 +57,7 @@ public:
         /* [in] */ Int32 height);
 
     //@Override
-    CARAPI_(void) EndRecording();
+    CARAPI EndRecording();
 
     //@Override
     CARAPI_(Int32) GetWidth();
@@ -63,12 +66,12 @@ public:
     CARAPI_(Int32) GetHeight();
 
     //@Override
-    CARAPI_(void) Draw(
+    CARAPI Draw(
         /* [in] */ ICanvas* canvas);
 
     //@Override
     //@SuppressWarnings("deprecation")
-    CARAPI_(void) WriteToStream(
+    CARAPI WriteToStream(
         /* [in] */ IOutputStream* stream);
 
 private:
@@ -84,11 +87,11 @@ private:
         /* [in] */ Int64 nativeAwPicture);
 
     CARAPI_(void) NativeDraw(
-        /* [in] */ Int64 nativeAwPicture, Canvas canvas);
+        /* [in] */ Int64 nativeAwPicture, ICanvas* canvas);
 
 private:
     Int64 mNativeAwPicture;
-    AutoPtr<CleanupReference> mCleanupReference;
+    AutoPtr</*TODO CleanupReference*/IInterface> mCleanupReference;
 };
 
 } // namespace AndroidWebview

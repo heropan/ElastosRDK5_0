@@ -1,11 +1,11 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_SCROLLACCESSIBILITYHELPER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_SCROLLACCESSIBILITYHELPER_H__
+#include "elastos/droid/ext/frameworkext.h"
 
-// import android.os.Handler;
-// import android.os.Message;
-// import android.view.View;
-// import android.view.accessibility.AccessibilityEvent;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IHandlerCallback;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::View::IView;
 
 namespace Elastos {
 namespace Droid {
@@ -21,12 +21,13 @@ namespace AndroidWebview {
  */
 class ScrollAccessibilityHelper
 {
-private:
+public:
     class HandlerCallback
         : public Object
         , public IHandlerCallback
     {
     public:
+        CAR_INTERFACE_DECL();
         static const Int32 MSG_VIEW_SCROLLED = 1;
 
         HandlerCallback(

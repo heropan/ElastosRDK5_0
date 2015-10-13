@@ -1,18 +1,19 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_NULLAWVIEWMETHODS_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_NULLAWVIEWMETHODS_H__
+#include "elastos/droid/ext/frameworkext.h"
+//TODO #include "elastos/droid/webkit/native/android_webview/AwContents.h"
+#include "elastos/droid/webkit/native/android_webview/AwViewMethods.h"
 
-// import android.content.res.Configuration;
-// import android.graphics.Canvas;
-// import android.graphics.Paint;
-// import android.graphics.Rect;
-// import android.view.KeyEvent;
-// import android.view.MotionEvent;
-// import android.view.View;
-// import android.view.inputmethod.EditorInfo;
-// import android.view.inputmethod.InputConnection;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IPaint;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::InputMethod::IEditorInfo;
+using Elastos::Droid::View::InputMethod::IInputConnection;
 
-// import org.chromium.android_webview.AwContents.InternalAccessDelegate;
 
 namespace Elastos {
 namespace Droid {
@@ -28,8 +29,8 @@ class NullAwViewMethods : public AwViewMethods
 {
 public:
     NullAwViewMethods(
-        /* [in] */ AwContents* awContents,
-        /* [in] */ InternalAccessDelegate* internalAccessAdapter,
+        /* [in] */ /*TODO AwContents*/IInterface* awContents,
+        /* [in] */ /*TODO AwContents::InternalAccessDelegate*/IInterface* internalAccessAdapter,
         /* [in] */ IView* containerView);
 
     //@Override
@@ -92,7 +93,7 @@ public:
     CARAPI_(void) OnFocusChanged(
         /* [in] */ Boolean focused,
         /* [in] */ Int32 direction,
-        /* [in] */ IRect previouslyFocusedRect);
+        /* [in] */ IRect* previouslyFocusedRect);
 
     //@Override
     CARAPI_(void) OnSizeChanged(
@@ -111,8 +112,10 @@ public:
         /* [in] */ Int32 visibility);
 
 private:
-    AutoPtr<AwContents> mAwContents;
-    AutoPtr<InternalAccessDelegate> mInternalAccessAdapter;
+    NullAwViewMethods(const NullAwViewMethods&);
+    NullAwViewMethods& operator=(const NullAwViewMethods&);
+    /*TODO AwContents*/IInterface* mAwContents;
+    AutoPtr</*TODO InternalAccessDelegate*/IInterface> mInternalAccessAdapter;
     AutoPtr<IView> mContainerView;
 };
 

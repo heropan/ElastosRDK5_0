@@ -1,3 +1,8 @@
+#include "elastos/droid/webkit/native/android_webview/InputStreamUtil.h"
+#include "elastos/core/Math.h"
+#include "elastos/utility/logging/Logger.h"
+
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -24,7 +29,9 @@ void InputStreamUtil::Close(
     /* [in] */ IInputStream* stream)
 {
     // try {
-        stream->Close();
+        ECode ecode = stream->Close();
+        if (FAILED(ecode))
+            Logger::E(LOGTAG, "InputStreamUtil::Close, ecode:0x%x", ecode);
     // } catch (IOException e) {
     //     Log.e(LOGTAG, logMessage("close"), e);
     // }
@@ -36,8 +43,13 @@ Int32 InputStreamUtil::Available(
 {
     // try {
         Int32 available;
-        stream->Available(&available);
-        return Math::Max(CALL_FAILED_STATUS, available);
+        ECode ecode = stream->Available(&available);
+        if (FAILED(ecode))
+        {
+            Logger::E(LOGTAG, "InputStreamUtil::Available, ecode:0x%x", ecode);
+            return EXCEPTION_THROWN_STATUS;
+        }
+        return Elastos::Core::Math::Max(CALL_FAILED_STATUS, available);
     // } catch (IOException e) {
     //     Log.e(LOGTAG, logMessage("available"), e);
     //     return EXCEPTION_THROWN_STATUS;
@@ -53,8 +65,13 @@ Int32 InputStreamUtil::Read(
 {
     // try {
         Int32 length;
-        stream->Read(b, off, len, &length)
-        return Math::Max(CALL_FAILED_STATUS, length);
+        ECode ecode = stream->Read(b, off, len, &length);
+        if (FAILED(ecode))
+        {
+            Logger::E(LOGTAG, "InputStreamUtil::Read, ecode:0x%x", ecode);
+            return EXCEPTION_THROWN_STATUS;
+        }
+        return Elastos::Core::Math::Max(CALL_FAILED_STATUS, length);
     // } catch (IOException e) {
     //     Log.e(LOGTAG, logMessage("read"), e);
     //     return EXCEPTION_THROWN_STATUS;
@@ -67,9 +84,14 @@ Int64 InputStreamUtil::Skip(
     /* [in] */ Int64 n)
 {
     // try {
-        Int32 skip;
-        stream->Skip(n, &skip);
-        return Math::Max(CALL_FAILED_STATUS, skip);
+        Int64 skip;
+        ECode ecode = stream->Skip(n, &skip);
+        if (FAILED(ecode))
+        {
+            Logger::E(LOGTAG, "InputStreamUtil::Skip, ecode:0x%x", ecode);
+            return EXCEPTION_THROWN_STATUS;
+        }
+        return Elastos::Core::Math::Max((Int64)CALL_FAILED_STATUS, skip);
     // } catch (IOException e) {
     //     Log.e(LOGTAG, logMessage("skip"), e);
     //     return EXCEPTION_THROWN_STATUS;

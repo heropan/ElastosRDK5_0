@@ -1,6 +1,6 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTS_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTS_H__
+#include "elastos/droid/ext/frameworkext.h"
 
 // import android.annotation.SuppressLint;
 // import android.app.Activity;

@@ -1,13 +1,14 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWQUOTAMANAGERBRIDGE_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWQUOTAMANAGERBRIDGE_H__
+#include "ext/frameworkext.h"
+#include "elastos/utility/etl/HashMap.h"
 
-// import android.util.SparseArray;
-// import android.webkit.ValueCallback;
+//TODO using Elastos::Droid::Webkit::IValueCallback;
+using Elastos::Droid::Utility::ISparseArray;
+using Elastos::Utility::Etl::HashMap;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
-// import org.chromium.base.ThreadUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -22,6 +23,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwQuotaManagerBridge
+:public Object
 {
 public:
     /**
@@ -29,6 +31,7 @@ public:
      * are optimized for JNI convenience and need to be converted.
      */
     class Origins
+    :public Object
     {
     public:
         Origins(
@@ -38,9 +41,9 @@ public:
 
     private:
         // Origin, usage, and quota data in parallel arrays of same length.
-        const AutoPtr< ArrayOf<String> > mOrigins;
-        const AutoPtr< ArrayOf<Int64> > mUsages;
-        const AutoPtr< ArrayOf<Int64> > mQuotas;
+        AutoPtr<ArrayOf<String> > mOrigins;
+        AutoPtr<ArrayOf<Int64> > mUsages;
+        AutoPtr<ArrayOf<Int64> > mQuotas;
     };
 
 public:
@@ -73,7 +76,7 @@ public:
      * aggregate.
      */
     CARAPI_(void) GetOrigins(
-        /* [in] */ IValueCallback* callback);
+        /* [in] */ /*TODO IValueCallback*/IInterface* callback);
 
     /**
      * Implements WebStorage.getQuotaForOrigin. Get the quota of APIs 2-5 in aggregate for given
@@ -81,7 +84,7 @@ public:
      */
     CARAPI_(void) GetQuotaForOrigin(
         /* [in] */ const String& origin,
-        /* [in] */ IValueCallback* callback);
+        /* [in] */ /*TODO IValueCallback*/IInterface* callback);
 
     /**
      * Implements WebStorage.getUsageForOrigin. Get the usage of APIs 2-5 in aggregate for given
@@ -89,7 +92,7 @@ public:
      */
     CARAPI_(void) GetUsageForOrigin(
         /* [in] */ const String& origin,
-        /* [in] */ IValueCallback* callback);
+        /* [in] */ /*TODO IValueCallback*/IInterface* callback);
 
 private:
     AwQuotaManagerBridge(
@@ -144,9 +147,12 @@ private:
     // The Java callbacks are saved here. An incrementing callback id is generated for each saved
     // callback and is passed to the native side to identify callback.
     Int32 mNextId;
-    SparseArray<ValueCallback<Origins>> mPendingGetOriginCallbacks;
-    SparseArray<ValueCallback<Long>> mPendingGetQuotaForOriginCallbacks;
-    SparseArray<ValueCallback<Long>> mPendingGetUsageForOriginCallbacks;
+    //AutoPtr<ISparseArray> mPendingGetOriginCallbacks;TODO map replace this
+    HashMap<Int32, AutoPtr</*TODO IValueCallback*/IInterface> > mPendingGetOriginCallbacks;
+    //AutoPtr<ISparseArray> mPendingGetQuotaForOriginCallbacks;TODO
+    HashMap<Int32, AutoPtr</*TODO IValueCallback*/IInterface> > mPendingGetQuotaForOriginCallbacks;
+    //AutoPtr<ISparseArray> mPendingGetUsageForOriginCallbacks;TODO
+    HashMap<Int32, AutoPtr</*TODO IValueCallback*/IInterface> > mPendingGetUsageForOriginCallbacks;
 };
 
 } // namespace AndroidWebview

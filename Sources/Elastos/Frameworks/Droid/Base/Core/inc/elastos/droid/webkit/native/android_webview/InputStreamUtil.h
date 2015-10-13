@@ -1,9 +1,8 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_INPUTSTREAMUTIL_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_INPUTSTREAMUTIL_H__
+#include "elastos/droid/ext/frameworkext.h"
 
-// import android.util.Log;
-
+using Elastos::IO::IInputStream;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
@@ -20,6 +19,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class InputStreamUtil
+:public Object
 {
 public:
     //@CalledByNative

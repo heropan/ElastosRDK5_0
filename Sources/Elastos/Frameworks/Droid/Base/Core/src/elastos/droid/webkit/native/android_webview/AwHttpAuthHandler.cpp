@@ -1,3 +1,4 @@
+#include "elastos/droid/webkit/native/android_webview/AwHttpAuthHandler.h"
 
 namespace Elastos {
 namespace Droid {
@@ -35,13 +36,14 @@ Boolean AwHttpAuthHandler::IsFirstAttempt()
      return mFirstAttempt;
 }
 
-//@CalledByNative
-AutoPtr<AwHttpAuthHandler> AwHttpAuthHandler::Create(
+//@CalledByNative return AwHttpAuthHandler
+AutoPtr<IInterface> AwHttpAuthHandler::Create(
     /* [in] */ Int64 nativeAwAuthHandler,
     /* [in] */ Boolean firstAttempt)
 {
     AutoPtr<AwHttpAuthHandler> handler = new AwHttpAuthHandler(nativeAwAuthHandler, firstAttempt);
-    return handler;
+    AutoPtr<IInterface> result = handler->Probe(EIID_IInterface);
+    return result;
 }
 
 //@CalledByNative

@@ -1,3 +1,18 @@
+#include "elastos/droid/webkit/native/android_webview/AwContentViewClient.h"
+#include "elastos/droid/webkit/native/base/CommandLine.h"
+#include "elastos/droid/webkit/native/content/browser/ContentVideoView.h"
+#include "elastos/droid/webkit/native/content/common/ContentSwitches.h"
+//TODO #include "elastos/droid/widget/CFrameLayout.h"
+#include "elastos/droid/webkit/URLUtil.h"
+
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::EIID_IViewOnAttachStateChangeListener;
+//TODO using Elastos::Droid::Webkit::EIID_IWebChromeClientCustomViewCallback;
+using Elastos::Droid::Webkit::URLUtil;
+using Elastos::Droid::Webkit::Base::CommandLine;
+using Elastos::Droid::Webkit::Content::Browser::ContentVideoView;
+using Elastos::Droid::Webkit::Content::Common::ContentSwitches;
+//TODO using Elastos::Droid::Widget::CFrameLayout;
 
 namespace Elastos {
 namespace Droid {
@@ -7,6 +22,7 @@ namespace AndroidWebview {
 //=======================================================================================================
 //         AwContentViewClient::AwContentVideoViewClient::InnerWebChromeClientCustomViewCallback
 //=======================================================================================================
+//TODO CAR_INTERFACE_IMPL(AwContentViewClient::AwContentVideoViewClient::InnerWebChromeClientCustomViewCallback, Object, IWebChromeClientCustomViewCallback);
 
 AwContentViewClient::AwContentVideoViewClient::InnerWebChromeClientCustomViewCallback::InnerWebChromeClientCustomViewCallback(
     /* [in] */ AwContentVideoViewClient* owner)
@@ -26,6 +42,7 @@ ECode AwContentViewClient::AwContentVideoViewClient::InnerWebChromeClientCustomV
 //=======================================================================================================
 //          AwContentViewClient::AwContentVideoViewClient::InnerViewOnAttachStateChangeListener
 //=======================================================================================================
+CAR_INTERFACE_IMPL(AwContentViewClient::AwContentVideoViewClient::InnerViewOnAttachStateChangeListener, Object, IViewOnAttachStateChangeListener);
 
 AwContentViewClient::AwContentVideoViewClient::InnerViewOnAttachStateChangeListener::InnerViewOnAttachStateChangeListener(
     /* [in] */ AwContentVideoViewClient* owner,
@@ -47,11 +64,14 @@ ECode AwContentViewClient::AwContentVideoViewClient::InnerViewOnAttachStateChang
 ECode AwContentViewClient::AwContentVideoViewClient::InnerViewOnAttachStateChangeListener::OnViewAttachedToWindow(
     /* [in] */ IView* v)
 {
-    if (mAwContents->IsFullScreen()) {
-        return;
+    //TODO if (mAwContents->IsFullScreen())
+    if (FALSE)
+    {
+        return NOERROR;
     }
 
-    viewGroup->AddView(mAwContents->EnterFullScreen());
+    AutoPtr<IViewGroup> viewGroup = IViewGroup::Probe(mViewGroup);
+    viewGroup->AddView((IView*)0/*TODO mAwContents->EnterFullScreen()*/);
 
     return NOERROR;
 }
@@ -70,7 +90,7 @@ AwContentViewClient::AwContentVideoViewClient::AwContentVideoViewClient(
 Boolean AwContentViewClient::AwContentVideoViewClient::OnShowCustomView(
     /* [in] */ IView* view)
 {
-    AutoPtr<IWebChromeClientCustomViewCallback> cb = new InnerWebChromeClientCustomViewCallback(this);
+    AutoPtr</*TODO IWebChromeClientCustomViewCallback*/IInterface> cb ;//TODO = new InnerWebChromeClientCustomViewCallback(this);
     // TODO(igsolla): remove the legacy path (kept as a fallback if things go awry).
     if (!AreHtmlControlsEnabled()) {
         OnShowCustomViewLegacy(view, cb);
@@ -83,36 +103,38 @@ Boolean AwContentViewClient::AwContentVideoViewClient::OnShowCustomView(
 
 void AwContentViewClient::AwContentVideoViewClient::OnShowCustomViewLegacy(
     /* [in] */ IView* view,
-    /* [in] */ IWebChromeClientCustomViewCallback* cb)
+    /* [in] */ /*TODO IWebChromeClientCustomViewCallback*/IInterface* cb)
 {
-    mAwContentsClient->OnShowCustomView(view, cb);
+    mOwner->mAwContentsClient->OnShowCustomView(view, cb);
 }
 
 void AwContentViewClient::AwContentVideoViewClient::OnShowCustomView(
     /* [in] */ IView* view,
-    /* [in] */ IWebChromeClientCustomViewCallback* cb)
+    /* [in] */ /*TODO IWebChromeClientCustomViewCallback*/IInterface* cb)
 {
-    AutoPtr<IFrameLayout> viewGroup;
-    CFrameLayout::New(mContext, (IFrameLayout**)&viewGroup);
+    AutoPtr<IFrameLayout> frameLayout;
+    //TODO CFrameLayout::New(mContext, (IFrameLayout**)&frameLayout);
+    AutoPtr<IViewGroup> viewGroup = IViewGroup::Probe(frameLayout);
     viewGroup->AddView(view);
-    AutoPtr<IViewOnAttachStateChangeListener> listener = new InnerViewOnAttachStateChangeListener(this, viewGroup);
-    viewGroup->AddOnAttachStateChangeListener(listener);
-    mAwContentsClient->OnShowCustomView(viewGroup, cb);
+    AutoPtr<IViewOnAttachStateChangeListener> listener = new InnerViewOnAttachStateChangeListener(this, frameLayout);
+    AutoPtr<IView> v = IView::Probe(frameLayout);
+    v->AddOnAttachStateChangeListener(listener);
+    mOwner->mAwContentsClient->OnShowCustomView(v, cb);
 }
 
 //@Override
 void AwContentViewClient::AwContentVideoViewClient::OnDestroyContentVideoView()
 {
     if (AreHtmlControlsEnabled()) {
-        mAwContents->ExitFullScreen();
+        //TODO mAwContents->ExitFullScreen();
     }
-    mAwContentsClient->OnHideCustomView();
+    mOwner->mAwContentsClient->OnHideCustomView();
 }
 
 //@Override
 AutoPtr<IView> AwContentViewClient::AwContentVideoViewClient::GetVideoLoadingProgressView()
 {
-    return mAwContentsClient->GetVideoLoadingProgressView();
+    return mOwner->mAwContentsClient->GetVideoLoadingProgressView();
 }
 
 //===============================================================
@@ -121,8 +143,8 @@ AutoPtr<IView> AwContentViewClient::AwContentVideoViewClient::GetVideoLoadingPro
 
 AwContentViewClient::AwContentViewClient(
     /* [in] */ AwContentsClient* awContentsClient,
-    /* [in] */ AwSettings* awSettings,
-    /* [in] */ AwContents* awContents,
+    /* [in] */ /*TODO AwSettings*/IInterface* awSettings,
+    /* [in] */ /*TODO AwContents*/IInterface* awContents,
     /* [in] */ IContext* context)
     : mAwContentsClient(awContentsClient)
     , mAwSettings(awSettings)
@@ -164,7 +186,7 @@ Boolean AwContentViewClient::ShouldOverrideKeyEvent(
 //@Override
 AutoPtr<ContentVideoViewClient> AwContentViewClient::GetContentVideoViewClient()
 {
-    AutoPtr<ContentVideoViewClient> cvvc = new AwContentVideoViewClient();
+    AutoPtr<ContentVideoViewClient> cvvc = new AwContentVideoViewClient(this);
     return cvvc;
 }
 
@@ -172,8 +194,8 @@ AutoPtr<ContentVideoViewClient> AwContentViewClient::GetContentVideoViewClient()
 Boolean AwContentViewClient::ShouldBlockMediaRequest(
     /* [in] */ const String& url)
 {
-    return mAwSettings != NULL ?
-            mAwSettings->GetBlockNetworkLoads() && URLUtil::IsNetworkUrl(url) : TRUE;
+    //TODO return mAwSettings != NULL ?  mAwSettings->GetBlockNetworkLoads() && URLUtil::IsNetworkUrl(url) : TRUE;
+    return FALSE;
 }
 
 Boolean AwContentViewClient::AreHtmlControlsEnabled()

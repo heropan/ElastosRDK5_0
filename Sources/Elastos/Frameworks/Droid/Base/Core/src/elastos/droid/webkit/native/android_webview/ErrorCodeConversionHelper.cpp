@@ -1,3 +1,7 @@
+#include "elastos/droid/webkit/native/android_webview/ErrorCodeConversionHelper.h"
+#include "elastos/droid/webkit/native/net/NetError.h"
+
+using Elastos::Droid::Webkit::Net::NetError;
 
 namespace Elastos {
 namespace Droid {
@@ -5,39 +9,39 @@ namespace Webkit {
 namespace AndroidWebview {
 
 // Success
-const Int32 ErrorCodeConversionHelper::ERROR_OK = 0;
+const Int32 ErrorCodeConversionHelper::ERROR_OK;
 // Generic error
-const Int32 ErrorCodeConversionHelper::ERROR_UNKNOWN = -1;
+const Int32 ErrorCodeConversionHelper::ERROR_UNKNOWN;
 // Server or proxy hostname lookup failed
-const Int32 ErrorCodeConversionHelper::ERROR_HOST_LOOKUP = -2;
+const Int32 ErrorCodeConversionHelper::ERROR_HOST_LOOKUP;
 // Unsupported authentication scheme (not basic or digest)
-const Int32 ErrorCodeConversionHelper::ERROR_UNSUPPORTED_AUTH_SCHEME = -3;
+const Int32 ErrorCodeConversionHelper::ERROR_UNSUPPORTED_AUTH_SCHEME;
 // User authentication failed on server
-const Int32 ErrorCodeConversionHelper::ERROR_AUTHENTICATION = -4;
+const Int32 ErrorCodeConversionHelper::ERROR_AUTHENTICATION;
 // User authentication failed on proxy
-const Int32 ErrorCodeConversionHelper::ERROR_PROXY_AUTHENTICATION = -5;
+const Int32 ErrorCodeConversionHelper::ERROR_PROXY_AUTHENTICATION;
 // Failed to connect to the server
-const Int32 ErrorCodeConversionHelper::ERROR_CONNECT = -6;
+const Int32 ErrorCodeConversionHelper::ERROR_CONNECT;
 // Failed to read or write to the server
-const Int32 ErrorCodeConversionHelper::ERROR_IO = -7;
+const Int32 ErrorCodeConversionHelper::ERROR_IO;
 // Connection timed out
-const Int32 ErrorCodeConversionHelper::ERROR_TIMEOUT = -8;
+const Int32 ErrorCodeConversionHelper::ERROR_TIMEOUT;
 // Too many redirects
-const Int32 ErrorCodeConversionHelper::ERROR_REDIRECT_LOOP = -9;
+const Int32 ErrorCodeConversionHelper::ERROR_REDIRECT_LOOP;
 // Unsupported URI scheme
-const Int32 ErrorCodeConversionHelper::ERROR_UNSUPPORTED_SCHEME = -10;
+const Int32 ErrorCodeConversionHelper::ERROR_UNSUPPORTED_SCHEME;
 // Failed to perform SSL handshake
-const Int32 ErrorCodeConversionHelper::ERROR_FAILED_SSL_HANDSHAKE = -11;
+const Int32 ErrorCodeConversionHelper::ERROR_FAILED_SSL_HANDSHAKE;
 // Malformed URL
-const Int32 ErrorCodeConversionHelper::ERROR_BAD_URL = -12;
+const Int32 ErrorCodeConversionHelper::ERROR_BAD_URL;
 // Generic file error
-const Int32 ErrorCodeConversionHelper::ERROR_FILE = -13;
+const Int32 ErrorCodeConversionHelper::ERROR_FILE;
 // File not found
-const Int32 ErrorCodeConversionHelper::ERROR_FILE_NOT_FOUND = -14;
+const Int32 ErrorCodeConversionHelper::ERROR_FILE_NOT_FOUND;
 // Too many requests during this load
-const Int32 ErrorCodeConversionHelper::ERROR_TOO_MANY_REQUESTS = -15;
+const Int32 ErrorCodeConversionHelper::ERROR_TOO_MANY_REQUESTS;
 
-Int32 ErrorCodeConversionHelper::convertErrorCode(
+Int32 ErrorCodeConversionHelper::ConvertErrorCode(
     /* [in] */ Int32 netError)
 {
     // Note: many NetError.Error constants don't have an obvious mapping.

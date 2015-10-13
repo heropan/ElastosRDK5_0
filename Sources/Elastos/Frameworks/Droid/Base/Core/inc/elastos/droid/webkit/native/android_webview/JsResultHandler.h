@@ -1,16 +1,21 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_JSRESULTHANDLER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_JSRESULTHANDLER_H__
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/android_webview/JsResultReceiver.h"
+#include "elastos/droid/webkit/native/android_webview/JsPromptResultReceiver.h"
 
+using Elastos::Core::IRunnable;
 // import org.chromium.base.ThreadUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace AndroidWebview {
+class AwContentsClientBridge;
 
 class JsResultHandler
-    : public JsResultReceiver
+    : public Object
+    , public JsResultReceiver
     , public JsPromptResultReceiver
 {
 private:
@@ -19,6 +24,7 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         ConfirmRunnable(
             /* [in] */ JsResultHandler* owner,
             /* [in] */ const String& promptResult);
@@ -27,7 +33,7 @@ private:
 
     private:
         JsResultHandler* mOwner;
-        const String& mPromptResult;
+        String mPromptResult;
     };
 
     class CancelRunnable
@@ -35,6 +41,7 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         CancelRunnable(
             /* [in] */ JsResultHandler* owner);
 
@@ -50,19 +57,21 @@ public:
         /* [in] */ Int32 id);
 
     //@Override
-    CARAPI_(void) Confirm();
+    CARAPI Confirm();
 
     //@Override
-    CARAPI_(void) Confirm(
+    CARAPI Confirm(
         /* [in] */ const String& promptResult);
 
     //@Override
-    CARAPI_(void) Cancel();
+    CARAPI Cancel();
 
 private:
-    AutoPtr<AwContentsClientBridge> mBridge;
+    JsResultHandler(const JsResultHandler&);
+    JsResultHandler& operator=(const JsResultHandler&);
+    AwContentsClientBridge* mBridge;
     const Int32 mId;
-}
+};
 
 } // namespace AndroidWebview
 } // namespace Webkit

@@ -1,3 +1,10 @@
+#include "elastos/droid/webkit/native/android_webview/AwQuotaManagerBridge.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+
+//using Elastos::Droid::Utility::CSparseArray;TODO now use hashmap replace this
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+using Elastos::Core::IInteger64;
+using Elastos::Core::CInteger64;
 
 namespace Elastos {
 namespace Droid {
@@ -26,19 +33,19 @@ AutoPtr<AwQuotaManagerBridge> AwQuotaManagerBridge::sInstance;
 
 AwQuotaManagerBridge::AwQuotaManagerBridge(
     /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl)
-    : mNextId(0)
-    , mNativeAwQuotaManagerBridgeImpl(nativeAwQuotaManagerBridgeImpl)
+    : mNativeAwQuotaManagerBridgeImpl(nativeAwQuotaManagerBridgeImpl)
+    , mNextId(0)
 {
-    mPendingGetOriginCallbacks =
-            new SparseArray<ValueCallback<Origins>>();
-    mPendingGetQuotaForOriginCallbacks = new SparseArray<ValueCallback<Long>>();
-    mPendingGetUsageForOriginCallbacks = new SparseArray<ValueCallback<Long>>();
+    //mPendingGetOriginCallbacks = new SparseArray<ValueCallback<Origins>>();TODO
+    //mPendingGetQuotaForOriginCallbacks = new SparseArray<ValueCallback<Long>>();TODO
+    //mPendingGetUsageForOriginCallbacks = new SparseArray<ValueCallback<Long>>();TODO
     NativeInit(mNativeAwQuotaManagerBridgeImpl);
 }
 
 // TODO(boliu): This should be obtained from Java AwBrowserContext that owns this.
 Int64 AwQuotaManagerBridge::NativeGetDefaultNativeAwQuotaManagerBridge()
 {
+    return 0;
 }
 
 AutoPtr<AwQuotaManagerBridge> AwQuotaManagerBridge::GetInstance()
@@ -89,12 +96,12 @@ void AwQuotaManagerBridge::DeleteOrigin(
  * aggregate.
  */
 void AwQuotaManagerBridge::GetOrigins(
-    /* [in] */ IValueCallback* callback)
+    /* [in] */ /*TODO IValueCallback*/IInterface* callback)
 {
     Int32 callbackId = GetNextId();
-    assert mPendingGetOriginCallbacks.get(callbackId) == null;
-    mPendingGetOriginCallbacks.put(callbackId, callback);
-    nativeGetOrigins(mNativeAwQuotaManagerBridgeImpl, callbackId);
+    assert(mPendingGetOriginCallbacks[callbackId] == NULL);
+    mPendingGetOriginCallbacks[callbackId] =  callback;
+    NativeGetOrigins(mNativeAwQuotaManagerBridgeImpl, callbackId);
 }
 
 /**
@@ -102,11 +109,11 @@ void AwQuotaManagerBridge::GetOrigins(
  * origin.
  */
 void AwQuotaManagerBridge::GetQuotaForOrigin(
-    /* [in] */ const String& origin, ValueCallback<Long> callback)
+    /* [in] */ const String& origin, /*TODO IValueCallback*/IInterface* callback)
 {
-    Int32 callbackId = getNextId();
-    assert mPendingGetQuotaForOriginCallbacks.get(callbackId) == null;
-    mPendingGetQuotaForOriginCallbacks.put(callbackId, callback);
+    Int32 callbackId = GetNextId();
+    assert(mPendingGetQuotaForOriginCallbacks[callbackId] == NULL);
+    mPendingGetQuotaForOriginCallbacks[callbackId] = callback;
     NativeGetUsageAndQuotaForOrigin(mNativeAwQuotaManagerBridgeImpl, origin, callbackId, true);
 }
 
@@ -116,11 +123,11 @@ void AwQuotaManagerBridge::GetQuotaForOrigin(
  */
 void AwQuotaManagerBridge::GetUsageForOrigin(
     /* [in] */ const String& origin,
-    /* [in] */ IValueCallback* callback)
+    /* [in] */ /*TODO IValueCallback*/IInterface* callback)
 {
     Int32 callbackId = GetNextId();
-    assert mPendingGetUsageForOriginCallbacks.get(callbackId) == null;
-    mPendingGetUsageForOriginCallbacks.put(callbackId, callback);
+    assert(mPendingGetUsageForOriginCallbacks[callbackId] == NULL);
+    mPendingGetUsageForOriginCallbacks[callbackId]  = callback;
     NativeGetUsageAndQuotaForOrigin(mNativeAwQuotaManagerBridgeImpl, origin, callbackId, false);
 }
 
@@ -131,10 +138,9 @@ void AwQuotaManagerBridge::OnGetOriginsCallback(
     /* [in] */ ArrayOf<Int64>* usages,
     /* [in] */ ArrayOf<Int64>* quotas)
 {
-    assert mPendingGetOriginCallbacks.get(callbackId) != null;
-    mPendingGetOriginCallbacks.get(callbackId).onReceiveValue(
-        new Origins(origin, usages, quotas));
-    mPendingGetOriginCallbacks.remove(callbackId);
+    assert(mPendingGetOriginCallbacks[callbackId] != NULL);
+    //TODO mPendingGetOriginCallbacks[callbackId]->OnReceiveValue(new Origins(origin, usages, quotas));
+    mPendingGetOriginCallbacks.Erase(callbackId);
 }
 
 //@CalledByNative
@@ -145,14 +151,18 @@ void AwQuotaManagerBridge::OnGetUsageAndQuotaForOriginCallback(
     /* [in] */ Int64 quota)
 {
     if (isQuota) {
-        assert mPendingGetQuotaForOriginCallbacks.get(callbackId) != null;
-        mPendingGetQuotaForOriginCallbacks.get(callbackId).onReceiveValue(quota);
-        mPendingGetQuotaForOriginCallbacks.remove(callbackId);
+        assert(mPendingGetQuotaForOriginCallbacks[callbackId] != NULL);
+        AutoPtr<IInteger64> iQuota;
+        CInteger64::New(quota, (IInteger64**)&iQuota);
+        //TODO mPendingGetQuotaForOriginCallbacks[callbackId]->OnReceiveValue(iQuota);
+        mPendingGetQuotaForOriginCallbacks.Erase(callbackId);
     }
     else {
-        assert mPendingGetUsageForOriginCallbacks.get(callbackId) != null;
-        mPendingGetUsageForOriginCallbacks.get(callbackId).onReceiveValue(usage);
-        mPendingGetUsageForOriginCallbacks.remove(callbackId);
+        assert(mPendingGetUsageForOriginCallbacks[callbackId] != NULL);
+        AutoPtr<IInteger64> iUsage;
+        CInteger64::New(usage, (IInteger64**)&iUsage);
+        //TODO mPendingGetUsageForOriginCallbacks[callbackId]->OnReceiveValue(iUsage);
+        mPendingGetUsageForOriginCallbacks.Erase(callbackId);
     }
 }
 

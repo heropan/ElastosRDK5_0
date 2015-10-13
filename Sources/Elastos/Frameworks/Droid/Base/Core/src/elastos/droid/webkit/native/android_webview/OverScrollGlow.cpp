@@ -1,3 +1,8 @@
+#include "elastos/droid/webkit/native/android_webview/OverScrollGlow.h"
+//TODO #include "elastos/droid/widget/CEdgeEffect.h"
+#include "elastos/core/Math.h"
+
+//TODO using Elastos::Droid::Widget::CEdgeEffect;
 
 namespace Elastos {
 namespace Droid {
@@ -7,15 +12,15 @@ namespace AndroidWebview {
 OverScrollGlow::OverScrollGlow(
     /* [in] */ IContext* context,
     /* [in] */ IView* host)
-    : mOverScrollDeltaX(0)
+    : mHostView(host)
+    , mOverScrollDeltaX(0)
     , mOverScrollDeltaY(0)
     , mShouldPull(FALSE)
-    , mHostView(host)
 {
-    CEdgeEffect::New(context, (IEdgeEffect**)&mEdgeGlowTop);
-    CEdgeEffect::New(context, (IEdgeEffect**)&mEdgeGlowBottom);
-    CEdgeEffect::New(context, (IEdgeEffect**)&mEdgeGlowLeft);
-    CEdgeEffect::New(context, (IEdgeEffect**)&mEdgeGlowRight);
+    //TODO CEdgeEffect::New(context, (IEdgeEffect**)&mEdgeGlowTop);
+    //TODO CEdgeEffect::New(context, (IEdgeEffect**)&mEdgeGlowBottom);
+    //TODO CEdgeEffect::New(context, (IEdgeEffect**)&mEdgeGlowLeft);
+    //TODO CEdgeEffect::New(context, (IEdgeEffect**)&mEdgeGlowRight);
 }
 
 void OverScrollGlow::SetShouldPull(
@@ -46,8 +51,8 @@ void OverScrollGlow::PullGlow(
 
     // Only show overscroll bars if there was no movement in any direction
     // as a result of scrolling.
-    Int32 x, y;
-    if ((mHostView->GetScrollX(&x), oldX == x) && (mHostView->GetScrollY(&y), oldY == y)) {
+    Int32 scrollX, scrollY;
+    if ((mHostView->GetScrollX(&scrollX), oldX == scrollX) && (mHostView->GetScrollY(&scrollY), oldY == scrollY)) {
         // Don't show left/right glows if we fit the whole content.
         // Also don't show if there was vertical movement.
         if (maxX > 0) {
@@ -126,7 +131,7 @@ void OverScrollGlow::AbsorbGlow(
     Int32 mode;
     if (rangeY > 0 || (mHostView->GetOverScrollMode(&mode), mode == IView::OVER_SCROLL_ALWAYS)) {
         if (y < 0 && oldY >= 0) {
-            mEdgeGlowTop->OnAbsorb((Int32) currentFlingVelocity);
+            mEdgeGlowTop->OnAbsorb((Int32)currentFlingVelocity);
             Boolean bFinish = FALSE;
             mEdgeGlowBottom->IsFinished(&bFinish);
             if (!bFinish) {
@@ -134,7 +139,7 @@ void OverScrollGlow::AbsorbGlow(
             }
         }
         else if (y > rangeY && oldY <= rangeY) {
-            mEdgeGlowBottom->OnAbsorb((Int32) currentFlingVelocity);
+            mEdgeGlowBottom->OnAbsorb((Int32)currentFlingVelocity);
             Boolean bFinish = FALSE;
             mEdgeGlowTop->IsFinished(&bFinish);
             if (!bFinish) {
@@ -145,7 +150,7 @@ void OverScrollGlow::AbsorbGlow(
 
     if (rangeX > 0) {
         if (x < 0 && oldX >= 0) {
-            mEdgeGlowLeft->OnAbsorb((Int32) currentFlingVelocity);
+            mEdgeGlowLeft->OnAbsorb((Int32)currentFlingVelocity);
             Boolean bFinish = FALSE;
             mEdgeGlowRight->IsFinished(&bFinish);
             if (!bFinish) {
@@ -153,7 +158,7 @@ void OverScrollGlow::AbsorbGlow(
             }
         }
         else if (x > rangeX && oldX <= rangeX) {
-            mEdgeGlowRight->OnAbsorb((Int32) currentFlingVelocity);
+            mEdgeGlowRight->OnAbsorb((Int32)currentFlingVelocity);
             Boolean bFinish = FALSE;
             mEdgeGlowLeft->IsFinished(&bFinish);
             if (!bFinish) {
@@ -206,7 +211,7 @@ Boolean OverScrollGlow::DrawEdgeGlows(
         Int32 restoreCount;
         canvas->Save(&restoreCount);
 
-        canvas->Translate(scrollX, Math::Min(0, scrollY));
+        canvas->Translate(scrollX, Elastos::Core::Math::Min(0, scrollY));
         mEdgeGlowTop->SetSize(width, height);
         Boolean res;
         mEdgeGlowTop->Draw(canvas, &res);
@@ -220,7 +225,7 @@ Boolean OverScrollGlow::DrawEdgeGlows(
         Int32 restoreCount;
         canvas->Save(&restoreCount);
 
-        canvas->Translate(-width + scrollX, Math::Max(maxScrollY, scrollY) + height);
+        canvas->Translate(-width + scrollX, Elastos::Core::Math::Max(maxScrollY, scrollY) + height);
         canvas->Rotate(180, width, 0);
         mEdgeGlowBottom->SetSize(width, height);
         Boolean res;
@@ -230,13 +235,13 @@ Boolean OverScrollGlow::DrawEdgeGlows(
     }
 
     Boolean bLeft = FALSE;
-    mEdgeGlowLeft->IsFinished(&bLeft)
+    mEdgeGlowLeft->IsFinished(&bLeft);
     if (!bLeft) {
         Int32 restoreCount;
         canvas->Save(&restoreCount);
 
         canvas->Rotate(270);
-        canvas->Translate(-height - scrollY, Math::Min(0, scrollX));
+        canvas->Translate(-height - scrollY, Elastos::Core::Math::Min(0, scrollX));
         mEdgeGlowLeft->SetSize(height, width);
         Boolean res = FALSE;
         mEdgeGlowLeft->Draw(canvas, &res);
@@ -245,13 +250,13 @@ Boolean OverScrollGlow::DrawEdgeGlows(
     }
 
     Boolean bRight = FALSE;
-    mEdgeGlowRight->IsFinished(&bRight)
+    mEdgeGlowRight->IsFinished(&bRight);
     if (!bRight) {
         Int32 restoreCount;
         canvas->Save(&restoreCount);
 
         canvas->Rotate(90);
-        canvas->Translate(scrollY, -(Math::Max(scrollX, maxScrollX) + width));
+        canvas->Translate(scrollY, -(Elastos::Core::Math::Max(scrollX, maxScrollX) + width));
         mEdgeGlowRight->SetSize(height, width);
         Boolean res = FALSE;
         mEdgeGlowRight->Draw(canvas, &res);

@@ -1,19 +1,21 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTVIEWCLIENT_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTVIEWCLIENT_H__
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/content/browser/ContentVideoViewClient.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewClient.h"
+//TODO #include "elastos/droid/webkit/native/android_webview/AwSettings.h"
+//TODO #include "elastos/droid/webkit/native/android_webview/AwContents.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentsClient.h"
 
-// import android.content.Context;
-// import android.view.KeyEvent;
-// import android.view.View;
-// import android.webkit.URLUtil;
-// import android.webkit.WebChromeClient;
-// import android.widget.FrameLayout;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewOnAttachStateChangeListener;
+//TODO using Elastos::Droid::Webkit::IWebChromeClientCustomViewCallback;
+using Elastos::Droid::Widget::IFrameLayout;
 
-// import org.chromium.base.CommandLine;
-// import org.chromium.content.browser.ContentVideoView;
-// import org.chromium.content.browser.ContentVideoViewClient;
-// import org.chromium.content.browser.ContentViewClient;
-// import org.chromium.content.common.ContentSwitches;
+using Elastos::Droid::Webkit::Content::Browser::ContentVideoViewClient;
+using Elastos::Droid::Webkit::Content::Browser::ContentViewClient;
 
 namespace Elastos {
 namespace Droid {
@@ -25,15 +27,16 @@ namespace AndroidWebview {
  */
 class AwContentViewClient : public ContentViewClient
 {
-private:
+public:
     class AwContentVideoViewClient : public ContentVideoViewClient
     {
-    private:
+    public:
         class InnerWebChromeClientCustomViewCallback
             : public Object
-            , public IWebChromeClientCustomViewCallback
+            //TODO , public IWebChromeClientCustomViewCallback
         {
         public:
+            CAR_INTERFACE_DECL();
             InnerWebChromeClientCustomViewCallback(
                 /* [in] */ AwContentVideoViewClient* owner);
 
@@ -48,6 +51,7 @@ private:
             , public IViewOnAttachStateChangeListener
         {
         public:
+            CAR_INTERFACE_DECL();
             InnerViewOnAttachStateChangeListener(
                 /* [in] */ AwContentVideoViewClient* owner,
                 /* [in] */ IFrameLayout* viewGroup);
@@ -82,11 +86,11 @@ private:
     private:
         CARAPI_(void) OnShowCustomViewLegacy(
             /* [in] */ IView* view,
-            /* [in] */ IWebChromeClientCustomViewCallback* cb);
+            /* [in] */ /*TODO IWebChromeClientCustomViewCallback*/IInterface* cb);
 
         CARAPI_(void) OnShowCustomView(
             /* [in] */ IView* view,
-            /* [in] */ IWebChromeClientCustomViewCallback* cb);
+            /* [in] */ /*TODO IWebChromeClientCustomViewCallback*/IInterface* cb);
 
     private:
         AwContentViewClient* mOwner;
@@ -95,8 +99,8 @@ private:
 public:
     AwContentViewClient(
         /* [in] */ AwContentsClient* awContentsClient,
-        /* [in] */ AwSettings* awSettings,
-        /* [in] */ AwContents* awContents,
+        /* [in] */ /*TODO AwSettings*/IInterface* awSettings,
+        /* [in] */ /*TODO AwContents*/IInterface* awContents,
         /* [in] */ IContext* context);
 
     //@Override
@@ -128,8 +132,8 @@ private:
 
 private:
     AutoPtr<AwContentsClient> mAwContentsClient;
-    AutoPtr<AwSettings> mAwSettings;
-    AutoPtr<AwContents> mAwContents;
+    AutoPtr</*TODO AwSettings*/IInterface> mAwSettings;
+    AutoPtr</*TODO AwContents*/IInterface> mAwContents;
     AutoPtr<IContext> mContext;
 };
 

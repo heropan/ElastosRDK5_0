@@ -1,3 +1,9 @@
+#include "elastos/droid/webkit/native/android_webview/JsResultHandler.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentsClientBridge.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Droid::Webkit::Base::ThreadUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -7,6 +13,7 @@ namespace AndroidWebview {
 //===============================================================
 //               JsResultHandler::ConfirmRunnable
 //===============================================================
+CAR_INTERFACE_IMPL(JsResultHandler::ConfirmRunnable, Object, IRunnable);
 
 JsResultHandler::ConfirmRunnable::ConfirmRunnable(
     /* [in] */ JsResultHandler* owner,
@@ -28,6 +35,7 @@ ECode JsResultHandler::ConfirmRunnable::Run()
 //===============================================================
 //               JsResultHandler::CancelRunnable
 //===============================================================
+CAR_INTERFACE_IMPL(JsResultHandler::CancelRunnable, Object, IRunnable);
 
 JsResultHandler::CancelRunnable::CancelRunnable(
     /* [in] */ JsResultHandler* owner)
@@ -37,9 +45,9 @@ JsResultHandler::CancelRunnable::CancelRunnable(
 
 ECode JsResultHandler::CancelRunnable::Run()
 {
-    if (mBridge != NULL)
-        mBridge->CancelJsResult(mId);
-    mBridge = NULL;
+    if (mOwner->mBridge != NULL)
+        mOwner->mBridge->CancelJsResult(mOwner->mId);
+    mOwner->mBridge = NULL;
 
     return NOERROR;
 }
@@ -57,24 +65,26 @@ JsResultHandler::JsResultHandler(
 }
 
 //@Override
-void JsResultHandler::Confirm()
+ECode JsResultHandler::Confirm()
 {
-    Confirm(NULL);
+    return Confirm(String(NULL));
 }
 
 //@Override
-void JsResultHandler::Confirm(
+ECode JsResultHandler::Confirm(
     /* [in] */ const String& promptResult)
 {
     AutoPtr<IRunnable> runnable =  new ConfirmRunnable(this, promptResult);
     ThreadUtils::RunOnUiThread(runnable);
+    return NOERROR;
 }
 
 //@Override
-void JsResultHandler::Cancel()
+ECode JsResultHandler::Cancel()
 {
     AutoPtr<IRunnable> runnable =  new CancelRunnable(this);
     ThreadUtils::RunOnUiThread(runnable);
+    return NOERROR;
 }
 
 } // namespace AndroidWebview

@@ -1,16 +1,16 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSCLIENTCALLBACKHELPER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSCLIENTCALLBACKHELPER_H__
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentsClient.h"
 
-// import android.graphics.Picture;
-// import android.os.Handler;
-// import android.os.Looper;
-// import android.os.Message;
-// import android.os.SystemClock;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Utility::Concurrent::ICallable;
 
 // import com.google.common.annotations.VisibleForTesting;
 
-// import java.util.concurrent.Callable;
 
 namespace Elastos {
 namespace Droid {
@@ -23,13 +23,14 @@ namespace AndroidWebview {
  * Most callbacks do no go through here, but get forwarded to AwContentsClient directly. The
  * messages processed here may originate from the IO or UI thread.
  */
- class AwContentsClientCallbackHelper
- {
- private:
+class AwContentsClientCallbackHelper
+{
+public:
     // TODO(boliu): Consider removing DownloadInfo and LoginRequestInfo by using native
     // MessageLoop to post directly to AwContents.
 
-    class DownloadInfo : public Object
+    class DownloadInfo
+    : public Object
     {
     public:
         DownloadInfo(
@@ -48,6 +49,7 @@ namespace AndroidWebview {
     };
 
     class LoginRequestInfo
+    :public Object
     {
     public:
         LoginRequestInfo(
@@ -62,6 +64,7 @@ namespace AndroidWebview {
     };
 
     class OnReceivedErrorInfo
+    :public Object
     {
     public:
         OnReceivedErrorInfo(
@@ -80,14 +83,14 @@ namespace AndroidWebview {
     public:
         //@Override
         CARAPI HandleMessage(
+
             /* [in] */ IMessage* msg);
 
-    private:
         MyHandler(
             /* [in] */ AwContentsClientCallbackHelper* owner,
             /* [in] */ ILooper* looper);
-
-        AwContentsClientCallbackHelper* owner;
+    private:
+        AwContentsClientCallbackHelper* mOwner;
     };
 
 public:
@@ -126,6 +129,10 @@ public:
         /* [in] */ Float newScale);
 
 private:
+    AwContentsClientCallbackHelper(const AwContentsClientCallbackHelper&);
+    AwContentsClientCallbackHelper &operator= (const AwContentsClientCallbackHelper&);
+    Int32 FloatToIntBits(
+        /* [in] */ Float value);
     static const Int32 MSG_ON_LOAD_RESOURCE = 1;
     static const Int32 MSG_ON_PAGE_STARTED = 2;
     static const Int32 MSG_ON_DOWNLOAD_START = 3;
@@ -141,9 +148,9 @@ private:
     // True when a onNewPicture callback is currenly in flight.
     Boolean mHasPendingOnNewPicture;
 
-    const AutoPtr<AwContentsClient> mContentsClient;
+    AutoPtr<AwContentsClient> mContentsClient;
 
-    const AutoPtr<IHandler> mHandler;
+    AutoPtr<IHandler> mHandler;
 };
 
 } // namespace AndroidWebview

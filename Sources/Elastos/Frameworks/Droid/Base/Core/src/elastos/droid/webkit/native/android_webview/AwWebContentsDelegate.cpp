@@ -1,3 +1,4 @@
+#include "elastos/droid/webkit/native/android_webview/AwWebContentsDelegate.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,10 +1,11 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSIOTHREADCLIENT_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSIOTHREADCLIENT_H__
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentsClient.h"
+#include "elastos/droid/webkit/native/android_webview/AwWebResourceResponse.h"
 
 // import android.util.ArrayMap;
 
-// import org.chromium.android_webview.AwContentsClient;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
@@ -21,6 +22,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwContentsIoThreadClient
+:public Object
 {
 public:
     //@CalledByNative
@@ -53,7 +55,7 @@ public:
         /* [in] */ const String& args) = 0;
 
     virtual CARAPI_(AutoPtr<AwWebResourceResponse>) ShouldInterceptRequest(
-        /* [in] */ AwContentsClient::ShouldInterceptRequestParams params) = 0;
+        /* [in] */ AwContentsClient::ShouldInterceptRequestParams* params) = 0;
 
 protected:
     // Protected methods ---------------------------------------------------------------------------

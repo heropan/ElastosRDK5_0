@@ -1,3 +1,23 @@
+#include "elastos/droid/webkit/native/android_webview/AndroidProtocolHandler.h"
+//TODO #include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/utility/logging/Logger.h"
+
+using Elastos::Droid::Content::EIID_IContext;
+using Elastos::Droid::Content::Res::IAssetManager;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Net::IUriHelper;
+//TODO using Elastos::Droid::Net::CUriHelper;
+using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Droid::Utility::CTypedValue;
+using Elastos::Net::IURLConnection;
+using Elastos::Net::IURLConnectionHelper;
+//TODO using Elastos::Net::CURLConnectionHelper;
+using Elastos::Core::StringUtils;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::IList;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -14,11 +34,12 @@ const String AndroidProtocolHandler::CONTENT_SCHEME("content");
  * @param url The url to load.
  * @return An InputStream to the Android resource.
  */
-//@CalledByNative
-AutoPtr<IInputStream> AndroidProtocolHandler::Open(
-    /* [in] */ IContext* context,
+//@CalledByNative return IInputStream IContext
+AutoPtr<IInterface> AndroidProtocolHandler::Open(
+    /* [in] */ IInterface* icontext,
     /* [in] */ const String& url)
 {
+    AutoPtr<IContext> context = IContext::Probe(icontext);
     AutoPtr<IUri> uri = VerifyUrl(url);
     if (uri == NULL) {
         return NULL;
@@ -29,15 +50,18 @@ AutoPtr<IInputStream> AndroidProtocolHandler::Open(
         String scheme;
         uri->GetScheme(&scheme);
         if (scheme.Equals(FILE_SCHEME)) {
-            if (path.StartsWith(NativeGetAndroidAssetPath())) {
-                return OpenAsset(context, uri);
+            if (path.StartWith(NativeGetAndroidAssetPath())) {
+                AutoPtr<IInputStream> inputStream = OpenAsset(context, uri);
+                return inputStream;
             }
-            else if (path.StartsWith(NativeGetAndroidResourcePath())) {
-                return OpenResource(context, uri);
+            else if (path.StartWith(NativeGetAndroidResourcePath())) {
+                AutoPtr<IInputStream> inputStream = OpenResource(context, uri);
+                return inputStream;
             }
         }
         else if (scheme.Equals(CONTENT_SCHEME)) {
-            return OpenContent(context, uri);
+            AutoPtr<IInputStream> inputStream = OpenContent(context, uri);
+            return inputStream;
         }
     //} catch (Exception ex) {
     //    Log.e(TAG, "Error opening inputstream: " + url);
@@ -50,11 +74,15 @@ Int32 AndroidProtocolHandler::GetFieldId(
     /* [in] */ const String& assetType,
     /* [in] */ const String& assetName)
 {
+    /*TODO
     Class<?> d = context.getClassLoader()
         .loadClass(context.getPackageName() + ".R$" + assetType);
     java.lang.reflect.Field field = d.getField(assetName);
     int id = field.getInt(null);
-    return id;
+    */
+    Logger::E(TAG, "AndroidProtocolHandler::GetFieldId not impl");
+    assert(0);
+    return 0;
 }
 
 Int32 AndroidProtocolHandler::GetValueType(
@@ -62,7 +90,7 @@ Int32 AndroidProtocolHandler::GetValueType(
     /* [in] */ Int32 fieldId)
 {
     AutoPtr<ITypedValue> value;
-    CTypedValue((ITypedValue**)&value);
+    CTypedValue::New((ITypedValue**)&value);
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
     res->GetValue(fieldId, value, TRUE);
@@ -79,26 +107,38 @@ AutoPtr<IInputStream> AndroidProtocolHandler::OpenResource(
     uri->GetScheme(&scheme);
     String path;
     uri->GetPath(&path);
-    assert(scheme.equals(FILE_SCHEME));
+    assert(scheme.Equals(FILE_SCHEME));
     assert(path != NULL);
-    assert(path.StartsWith(NativeGetAndroidResourcePath()));
+    assert(path.StartWith(NativeGetAndroidResourcePath()));
     // The path must be of the form "/android_res/asset_type/asset_name.ext".
-    AutoPtr< ArrayOf<String> > pathSegments;
-    uri->GetPathSegments((ArrayOf<String>**)&pathSegments);
-    if (pathSegments->Size() != 3) {
-//        Log.e(TAG, "Incorrect resource path: " + uri);
+    AutoPtr<ArrayOf<IInterface*> > pathSegments;
+    AutoPtr<IList> pathSegmentsList;
+    uri->GetPathSegments((Elastos::Utility::IList**)&pathSegmentsList);
+    pathSegmentsList->ToArray((ArrayOf<IInterface*>**)&pathSegments);
+    Int32 size = pathSegments->GetLength();
+    if (size != 3) {
+        Logger::E(TAG, "Incorrect resource path: %s", path.string());
         return NULL;
     }
-    String assetPath = (*pathSegments)[0];
-    String assetType = (*pathSegments)[1];
-    String assetName = (*pathSegments)[2];
-    if (!("/" + assetPath + "/").equals(nativeGetAndroidResourcePath())) {
-        Log.e(TAG, "Resource path does not start with " + nativeGetAndroidResourcePath() +
-              ": " + uri);
-        return null;
+    AutoPtr<ICharSequence> csq0 = ICharSequence::Probe((*pathSegments)[0]);
+    String assetPath;
+    csq0->ToString(&assetPath);
+    AutoPtr<ICharSequence> csq1 = ICharSequence::Probe((*pathSegments)[1]);
+    String assetType;
+    csq1->ToString(&assetType);
+    AutoPtr<ICharSequence> csq2 = ICharSequence::Probe((*pathSegments)[2]);
+    String assetName;
+    csq2->ToString(&assetName);
+    String strRes = String("/") + assetPath + String("/");
+    if (!strRes.Equals(NativeGetAndroidResourcePath())) {
+        Logger::E(TAG, "Resource path does not start with %s:%s", NativeGetAndroidResourcePath().string(),
+               path.string());
+        return NULL;
     }
     // Drop the file extension.
-    assetName = assetName.split("\\.")[0];
+    AutoPtr<ArrayOf<String> > splitOut;
+    StringUtils::Split(assetName, String("\\."), (ArrayOf<String>**)&splitOut);
+    assetName = (*splitOut)[0];
     //try {
         // Use the application context for resolving the resource package name so that we do
         // not use the browser's own resources. Note that if 'context' here belongs to the
@@ -115,11 +155,11 @@ AutoPtr<IInputStream> AndroidProtocolHandler::OpenResource(
             AutoPtr<IResources> res;
             context->GetResources((IResources**)&res);
             AutoPtr<IInputStream> inputStream;
-            res->OpenRawResource(fieldId, (IInputStream**)inputstream);
-            return inputstream;
+            res->OpenRawResource(fieldId, (IInputStream**)&inputStream);
+            return inputStream;
         }
         else {
-//            Log.e(TAG, "Asset not of type string: " + uri);
+            Logger::E(TAG, "Asset not of type string: %s", path.string());
             return NULL;
         }
     //} catch (ClassNotFoundException e) {
@@ -142,9 +182,10 @@ AutoPtr<IInputStream> AndroidProtocolHandler::OpenAsset(
     uri->GetScheme(&scheme);
     uri->GetPath(&pathStr);
     assert(scheme.Equals(FILE_SCHEME));
-    assert(pathStr != NULL);
-    assert(pathStr.StartsWith(NativeGetAndroidAssetPath()));
-    String path = pathStr.ReplaceFirst(NativeGetAndroidAssetPath(), "");
+    assert(!pathStr.IsNull());
+    assert(pathStr.StartWith(NativeGetAndroidAssetPath()));
+    String path;
+    StringUtils::ReplaceFirst(pathStr, NativeGetAndroidAssetPath(), String(""), &path);
     //try {
         AutoPtr<IAssetManager> assets;
         context->GetAssets((IAssetManager**)&assets);
@@ -183,15 +224,17 @@ AutoPtr<IInputStream> AndroidProtocolHandler::OpenContent(
  * @param url The url from which the stream was opened.
  * @return The mime type or null if the type is unknown.
  */
-//@CalledByNative
+//@CalledByNative IContext, IInputStream
 String AndroidProtocolHandler::GetMimeType(
-    /* [in] */ IContext* context,
-    /* [in] */ IInputStream* stream,
+    /* [in] */ IInterface* icontext,
+    /* [in] */ IInterface* istream,
     /* [in] */ const String& url)
 {
+    AutoPtr<IContext> context = IContext::Probe(icontext);
+    AutoPtr<IInputStream> stream = IInputStream::Probe(istream);
     AutoPtr<IUri> uri = VerifyUrl(url);
     if (uri == NULL) {
-        return NULL;
+        return String(NULL);
     }
     //try {
         String path;
@@ -208,23 +251,23 @@ String AndroidProtocolHandler::GetMimeType(
             // Asset files may have a known extension.
         }
         else if (scheme.Equals(FILE_SCHEME) &&
-                   path.StartsWith(NativeGetAndroidAssetPath())) {
+                   path.StartWith(NativeGetAndroidAssetPath())) {
             AutoPtr<IURLConnectionHelper> helper;
-            CURLConnectionHelper::AcquireSingleton((IURLConnectionHelper**)&helper);
+            //TODO CURLConnectionHelper::AcquireSingleton((IURLConnectionHelper**)&helper);
             String mimeType;
             helper->GuessContentTypeFromName(path, &mimeType);
-            if (mimeType != NULL) {
+            if (!mimeType.IsNull()) {
                 return mimeType;
             }
         }
     //} catch (Exception ex) {
 //        Log.e(TAG, "Unable to get mime type" + url);
-        return NULL;
-    }
+//        return NULL;
+//    }
     // Fall back to sniffing the type from the stream.
     //try {
         AutoPtr<IURLConnectionHelper> helper;
-        CURLConnectionHelper::AcquireSingleton((IURLConnectionHelper**)&helper);
+        //TODO CURLConnectionHelper::AcquireSingleton((IURLConnectionHelper**)&helper);
 
         String type;
         helper->GuessContentTypeFromStream(stream, &type);
@@ -241,22 +284,22 @@ String AndroidProtocolHandler::GetMimeType(
 AutoPtr<IUri> AndroidProtocolHandler::VerifyUrl(
     /* [in] */ const String& url)
 {
-    if (url == NULL) {
+    if (url.IsNull()) {
         return NULL;
     }
 
     AutoPtr<IUriHelper> helper;
-    CUriHelper::AcquireSingleton((IUriHelper**)&helper);
+    //TODO CUriHelper::AcquireSingleton((IUriHelper**)&helper);
     AutoPtr<IUri> uri;
     helper->Parse(url, (IUri**)&uri);
     if (uri == NULL) {
-//        Log.e(TAG, "Malformed URL: " + url);
+        Logger::E(TAG, "Malformed URL: %s", url.string());
         return NULL;
     }
     String path;
     uri->GetPath(&path);
-    if (path == NULL || path.GetLength() == 0) {
-//        Log.e(TAG, "URL does not have a path: " + url);
+    if (path.IsNullOrEmpty()) {
+        Logger::E(TAG, "URL does not have a path: %s", url.string());
         return NULL;
     }
     return uri;
@@ -274,14 +317,18 @@ void AndroidProtocolHandler::SetResourceContextForTesting(
 }
 
 void AndroidProtocolHandler::NativeSetResourceContextForTesting(
-    /* [in] */ IContext* context);
+    /* [in] */ IContext* context)
+{
+}
 
 String AndroidProtocolHandler::NativeGetAndroidAssetPath()
 {
+    return String(NULL);
 }
 
 String AndroidProtocolHandler::NativeGetAndroidResourcePath()
 {
+    return String(NULL);
 }
 
 } // namespace AndroidWebview
