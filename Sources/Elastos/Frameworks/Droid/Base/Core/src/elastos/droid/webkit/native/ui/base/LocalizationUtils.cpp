@@ -1,5 +1,18 @@
 
 #include "elastos/droid/webkit/native/ui/base/LocalizationUtils.h"
+//#include "elastos/droid/content/CResources.h"
+//#include "elastos/droid/content/CConfiguration.h"
+#include "elastos/droid/webkit/native/base/ApplicationStatus.h"
+#include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
+
+using Elastos::Utility::CLocale;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IResources;
+//using Elastos::Droid::Content::Res::CResources;
+using Elastos::Droid::Content::Res::IConfiguration;
+//using Elastos::Droid::Content::Res::CConfiguration;
+using Elastos::Droid::Webkit::Base::ApplicationStatus;
+using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -34,8 +47,28 @@ String LocalizationUtils::GetDefaultLocale()
     //     language = "fil";
     // }
     // return country.isEmpty() ? language : language + "-" + country;
-    assert(0);
-    return String("");
+
+    AutoPtr<ILocale> locale;
+    CLocale::New((ILocale**)&locale);
+    String language;
+    String country;
+    locale->GetLanguage(&language);
+    locale->GetCountry(&country);
+
+    // Android uses deprecated lanuages codes for Hebrew and Indonesian but Chromium uses the
+    // updated codes. Also, Android uses "tl" while Chromium uses "fil" for Tagalog/Filipino.
+    // So apply a mapping.
+    // See http://developer.android.com/reference/java/util/Locale.html
+    if (String("iw") == language) {
+        language = String("he");
+    }
+    else if (String("in") == language) {
+        language = String("id");
+    }
+    else if (String("tl") == language) {
+        language = String("fil");
+    }
+    return country.IsEmpty() ? language : language + String("-") + country;
 }
 
 Boolean LocalizationUtils::IsLayoutRtl()
@@ -50,8 +83,23 @@ Boolean LocalizationUtils::IsLayoutRtl()
     // }
     //
     // return sIsLayoutRtl.booleanValue();
+
     assert(0);
-    return FALSE;
+    if (FALSE == sIsLayoutRtl) {
+        AutoPtr<IContext> context = ApplicationStatus::GetApplicationContext();
+        AutoPtr<IResources> resources;
+        //CResources::New((IResources**)&resources);
+        context->GetResources((IResources**)&resources);
+
+        AutoPtr<IConfiguration> configuration;
+        //CConfiguration::New((IConfiguration**)&resources);
+        resources->GetConfiguration((IConfiguration**)&configuration);
+
+        Int32 layoutDirect = ApiCompatibilityUtils::GetLayoutDirection(configuration);
+        sIsLayoutRtl = (Boolean)(layoutDirect == IView::LAYOUT_DIRECTION_RTL);
+    }
+
+    return sIsLayoutRtl;
 }
 
 Int32 LocalizationUtils::GetFirstStrongCharacterDirection(
@@ -59,8 +107,8 @@ Int32 LocalizationUtils::GetFirstStrongCharacterDirection(
 {
     // ==================before translated======================
     // return nativeGetFirstStrongCharacterDirection(string);
-    assert(0);
-    return 0;
+
+    return NativeGetFirstStrongCharacterDirection(string);
 }
 
 String LocalizationUtils::GetDurationString(
@@ -68,8 +116,8 @@ String LocalizationUtils::GetDurationString(
 {
     // ==================before translated======================
     // return nativeGetDurationString(timeInMillis);
-    assert(0);
-    return String("");
+
+    return NativeGetDurationString(timeInMillis);
 }
 
 LocalizationUtils::LocalizationUtils()
@@ -85,9 +133,10 @@ AutoPtr<ILocale> LocalizationUtils::GetJavaLocale(
 {
     // ==================before translated======================
     // return new Locale(language, country, variant);
-    assert(0);
-    AutoPtr<ILocale> empty;
-    return empty;
+
+    AutoPtr<ILocale> locale;
+    CLocale::New(language, country, variant, (ILocale**)&locale);
+    return locale;
 }
 
 String LocalizationUtils::GetDisplayNameForLocale(
@@ -96,8 +145,10 @@ String LocalizationUtils::GetDisplayNameForLocale(
 {
     // ==================before translated======================
     // return locale.getDisplayName(displayLocale);
-    assert(0);
-    return String("");
+
+    String result;
+    locale->GetDisplayName(displayLocale, &result);
+    return result;
 }
 
 Int32 LocalizationUtils::NativeGetFirstStrongCharacterDirection(

@@ -13,20 +13,26 @@ namespace Base {
 ViewAndroid::ViewAndroid(
     /* [in] */ WindowAndroid* nativeWindow,
     /* [in] */ ViewAndroidDelegate* viewAndroidDelegate)
+    : mNativeViewAndroid(0)
+    , mViewAndroidDelegate(viewAndroidDelegate)
+    , mWindowAndroid(nativeWindow)
+    , mKeepScreenOnCount(0)
+    , mKeepScreenOnView(NULL)
 {
     // ==================before translated======================
     // mWindowAndroid = nativeWindow;
     // mViewAndroidDelegate = viewAndroidDelegate;
     // mNativeViewAndroid = nativeInit(mWindowAndroid.getNativePointer());
+
+    mNativeViewAndroid = NativeInit(mWindowAndroid->GetNativePointer());
 }
 
 AutoPtr<ViewAndroidDelegate> ViewAndroid::GetViewAndroidDelegate()
 {
     // ==================before translated======================
     // return mViewAndroidDelegate;
-    assert(0);
-    AutoPtr<ViewAndroidDelegate> empty;
-    return empty;
+
+    return mViewAndroidDelegate;
 }
 
 ECode ViewAndroid::Destroy()
@@ -36,7 +42,11 @@ ECode ViewAndroid::Destroy()
     //     nativeDestroy(mNativeViewAndroid);
     //     mNativeViewAndroid = 0;
     // }
-    assert(0);
+
+    if (mNativeViewAndroid != 0) {
+        NativeDestroy(mNativeViewAndroid);
+        mNativeViewAndroid = 0;
+    }
     return NOERROR;
 }
 
@@ -44,8 +54,8 @@ Int64 ViewAndroid::GetNativePointer()
 {
     // ==================before translated======================
     // return mNativeViewAndroid;
-    assert(0);
-    return 0;
+
+    return mNativeViewAndroid;
 }
 
 ECode ViewAndroid::IncrementKeepScreenOnCount()
@@ -57,7 +67,13 @@ ECode ViewAndroid::IncrementKeepScreenOnCount()
     //     mViewAndroidDelegate.setAnchorViewPosition(mKeepScreenOnView, 0, 0, 0, 0);
     //     mKeepScreenOnView.setKeepScreenOn(true);
     // }
-    assert(0);
+
+    mKeepScreenOnCount++;
+    if (mKeepScreenOnCount == 1) {
+        mKeepScreenOnView = mViewAndroidDelegate->AcquireAnchorView();
+        mViewAndroidDelegate->SetAnchorViewPosition(mKeepScreenOnView, 0, 0, 0, 0);
+        mKeepScreenOnView->SetKeepScreenOn(TRUE);
+    }
     return NOERROR;
 }
 
@@ -70,7 +86,13 @@ ECode ViewAndroid::DecrementKeepScreenOnCount()
     //     mViewAndroidDelegate.releaseAnchorView(mKeepScreenOnView);
     //     mKeepScreenOnView = null;
     // }
-    assert(0);
+
+    assert (mKeepScreenOnCount > 0);
+    --mKeepScreenOnCount;
+    if (mKeepScreenOnCount == 0) {
+        mViewAndroidDelegate->ReleaseAnchorView(mKeepScreenOnView);
+        mKeepScreenOnView = NULL;
+    }
     return NOERROR;
 }
 

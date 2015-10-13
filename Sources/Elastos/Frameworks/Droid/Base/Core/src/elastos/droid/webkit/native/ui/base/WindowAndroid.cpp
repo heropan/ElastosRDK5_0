@@ -1,5 +1,23 @@
 
 #include "elastos/droid/webkit/native/ui/base/WindowAndroid.h"
+//#include "elastos/core/CString.h"
+//#include "elastos/io/CSerializable.h"
+//#include "elastos/droid/widget/CToastHelper.h"
+//#include "elastos/droid/content/pm/CPackageManager.h"
+
+using Elastos::Utility::CHashMap;
+using Elastos::IO::ISerializable;
+//using Elastos::IO::CSerializable;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IInteger32;
+using Elastos::Core::CInteger32;
+//using Elastos::Core::CStriing;
+using Elastos::Droid::Widget::IToast;
+using Elastos::Droid::Widget::IToastHelper;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IResolveInfo;
+//using Elastos::Droid::Content::Pm::CPackageManager;
+//using Elastos::Droid::Widget::CToastHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -27,7 +45,10 @@ ECode WindowAndroid::InnerVSyncMonitorListener::OnVSync(
     // if (mNativeWindowAndroid != 0) {
     //     nativeOnVSync(mNativeWindowAndroid, vsyncTimeMicros);
     // }
-    assert(0);
+
+    if (mOwner->mNativeWindowAndroid != 0) {
+        mOwner->NativeOnVSync(mOwner->mNativeWindowAndroid, vsyncTimeMicros);
+    }
     return NOERROR;
 }
 
@@ -47,6 +68,16 @@ WindowAndroid::WindowAndroid(
     // mOutstandingIntents = new SparseArray<IntentCallback>();
     // mIntentErrors = new HashMap<Integer, String>();
     // mVSyncMonitor = new VSyncMonitor(context, mVSyncListener);
+
+    assert(0);
+    AutoPtr<IContext> applicationContext;
+    context->GetApplicationContext((IContext**)&applicationContext);
+    assert (context == applicationContext);
+    mApplicationContext = context;
+
+    //mOutstandingIntents = SparseArray<IntentCallback>::Alloc(1);
+    CHashMap::New((IHashMap**)&mIntentErrors);
+    mVSyncMonitor = new VSyncMonitor(context, mVSyncListener);
 }
 
 Boolean WindowAndroid::ShowIntent(
@@ -56,8 +87,8 @@ Boolean WindowAndroid::ShowIntent(
 {
     // ==================before translated======================
     // return showCancelableIntent(intent, callback, errorId) >= 0;
-    assert(0);
-    return FALSE;
+
+    return (ShowCancelableIntent(intent, callback, errorId) >= 0);
 }
 
 Boolean WindowAndroid::ShowIntent(
@@ -67,8 +98,8 @@ Boolean WindowAndroid::ShowIntent(
 {
     // ==================before translated======================
     // return showCancelableIntent(intent, callback, errorId) >= 0;
-    assert(0);
-    return FALSE;
+
+    return (ShowCancelableIntent(intent, callback, errorId) >= 0);
 }
 
 Int32 WindowAndroid::ShowCancelableIntent(
@@ -79,8 +110,9 @@ Int32 WindowAndroid::ShowCancelableIntent(
     // ==================before translated======================
     // Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
     // return START_INTENT_FAILURE;
-    assert(0);
-    return 0;
+
+    // Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
+    return START_INTENT_FAILURE;
 }
 
 Int32 WindowAndroid::ShowCancelableIntent(
@@ -91,8 +123,9 @@ Int32 WindowAndroid::ShowCancelableIntent(
     // ==================before translated======================
     // Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
     // return START_INTENT_FAILURE;
-    assert(0);
-    return 0;
+
+    // Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
+    return START_INTENT_FAILURE;
 }
 
 ECode WindowAndroid::CancelIntent(
@@ -100,7 +133,8 @@ ECode WindowAndroid::CancelIntent(
 {
     // ==================before translated======================
     // Log.d(TAG, "Can't cancel intent as context is not an Activity: " + requestCode);
-    assert(0);
+
+    // Log.d(TAG, "Can't cancel intent as context is not an Activity: " + requestCode);
     return NOERROR;
 }
 
@@ -113,8 +147,20 @@ Boolean WindowAndroid::RemoveIntentCallback(
     // mOutstandingIntents.remove(requestCode);
     // mIntentErrors.remove(requestCode);
     // return true;
+
     assert(0);
-    return FALSE;
+    Object* objTmp = (Object*)callback;
+    IObject* objTmp1 = (IObject*)objTmp;
+    IInterface* interfaceTmp = (IInterface*)objTmp1;
+    Int32 requestCode = 0;
+    mOutstandingIntents->IndexOfValue(interfaceTmp, &requestCode);
+    if (requestCode < 0) return FALSE;
+    mOutstandingIntents->Remove(requestCode);
+
+    AutoPtr<IInteger32> requestCodeTmp;
+    CInteger32::New(requestCode, (IInteger32**)&requestCodeTmp);
+    mIntentErrors->Remove(requestCodeTmp);
+    return TRUE;
 }
 
 ECode WindowAndroid::ShowError(
@@ -124,7 +170,19 @@ ECode WindowAndroid::ShowError(
     // if (error != null) {
     //     Toast.makeText(mApplicationContext, error, Toast.LENGTH_SHORT).show();
     // }
-    assert(0);
+
+    if (!error.IsEmpty()) {
+        AutoPtr<IToastHelper> helper;
+        //CToastHelper::AcquierSingleton((IToastHelper**)&helper);
+
+        AutoPtr<ICharSequence> charSequence;
+        //CString sTmp(error);
+        //sTmp.SubSequence(0, error.GetLength(), (ICharSequence**)&charSequence);
+
+        AutoPtr<IToast> toast;
+        helper->MakeText(mApplicationContext, charSequence, IToast::LENGTH_SHORT, (IToast**)&toast);
+        toast->Show();
+    }
     return NOERROR;
 }
 
@@ -133,7 +191,10 @@ ECode WindowAndroid::ShowError(
 {
     // ==================before translated======================
     // showError(mApplicationContext.getString(resId));
-    assert(0);
+
+    String str;
+    mApplicationContext->GetString(resId, &str);
+    ShowError(str);
     return NOERROR;
 }
 
@@ -143,7 +204,8 @@ ECode WindowAndroid::SendBroadcast(
     VALIDATE_NOT_NULL(intent);
     // ==================before translated======================
     // mApplicationContext.sendBroadcast(intent);
-    assert(0);
+
+    mApplicationContext->SendBroadcast(intent);
     return NOERROR;
 }
 
@@ -151,18 +213,19 @@ AutoPtr<IWeakReference> WindowAndroid::GetActivity()
 {
     // ==================before translated======================
     // return new WeakReference<Activity>(null);
-    assert(0);
-    AutoPtr<IWeakReference> empty;
-    return empty;
+
+    IWeakReferenceSource* source = IWeakReferenceSource::Probe((IWeakReferenceSource *)NULL);
+    AutoPtr<IWeakReference> wr;
+    source->GetWeakReference((IWeakReference**)&wr);
+    return wr;
 }
 
 AutoPtr<IContext> WindowAndroid::GetApplicationContext()
 {
     // ==================before translated======================
     // return mApplicationContext;
-    assert(0);
-    AutoPtr<IContext> empty;
-    return empty;
+
+    return mApplicationContext;
 }
 
 ECode WindowAndroid::SaveInstanceState(
@@ -171,7 +234,9 @@ ECode WindowAndroid::SaveInstanceState(
     VALIDATE_NOT_NULL(bundle);
     // ==================before translated======================
     // bundle.putSerializable(WINDOW_CALLBACK_ERRORS, mIntentErrors);
-    assert(0);
+
+    AutoPtr<ISerializable> serialize = ISerializable::Probe(mIntentErrors);
+    bundle->PutSerializable(WINDOW_CALLBACK_ERRORS, (ISerializable*)serialize);
     return NOERROR;
 }
 
@@ -188,7 +253,17 @@ ECode WindowAndroid::RestoreInstanceState(
     //     HashMap<Integer, String> intentErrors = (HashMap<Integer, String>) errors;
     //     mIntentErrors = intentErrors;
     // }
-    assert(0);
+
+    if (bundle == NULL) return NOERROR;
+    AutoPtr<ISerializable> errors;
+    //CSerializable::New((ISerializable**)&errors);
+    bundle->GetSerializable(WINDOW_CALLBACK_ERRORS, (ISerializable**)&errors);
+
+    IInterface* interfaceTmp = (IInterface*)errors;
+    AutoPtr<IHashMap> hashMap = IHashMap::Probe(interfaceTmp);
+    if (hashMap != NULL) {
+        mIntentErrors = hashMap;
+    }
     return NOERROR;
 }
 
@@ -199,7 +274,7 @@ Boolean WindowAndroid::OnActivityResult(
 {
     // ==================before translated======================
     // return false;
-    assert(0);
+
     return FALSE;
 }
 
@@ -208,8 +283,15 @@ Boolean WindowAndroid::CanResolveActivity(
 {
     // ==================before translated======================
     // return mApplicationContext.getPackageManager().resolveActivity(intent, 0) != null;
+
     assert(0);
-    return FALSE;
+    AutoPtr<IPackageManager> packageManager;
+    //CPackageManager::New((IPackageManager**)&packageManager);
+    mApplicationContext->GetPackageManager((IPackageManager**)&packageManager);
+
+    AutoPtr<IResolveInfo> resolveInfo;
+    //-- car hasno define this func: packageManager->ResolveActivity(intent, 0, (IResolveInfo**)&resolveInfo);
+    return resolveInfo != NULL;
 }
 
 ECode WindowAndroid::Destroy()
@@ -219,7 +301,11 @@ ECode WindowAndroid::Destroy()
     //     nativeDestroy(mNativeWindowAndroid);
     //     mNativeWindowAndroid = 0;
     // }
-    assert(0);
+
+    if (mNativeWindowAndroid != 0) {
+        NativeDestroy(mNativeWindowAndroid);
+        mNativeWindowAndroid = 0;
+    }
     return NOERROR;
 }
 
@@ -230,8 +316,11 @@ Int64 WindowAndroid::GetNativePointer()
     //     mNativeWindowAndroid = nativeInit(mVSyncMonitor.getVSyncPeriodInMicroseconds());
     // }
     // return mNativeWindowAndroid;
-    assert(0);
-    return 0;
+
+    if (mNativeWindowAndroid == 0) {
+        mNativeWindowAndroid = NativeInit(mVSyncMonitor->GetVSyncPeriodInMicroseconds());
+    }
+    return mNativeWindowAndroid;
 }
 
 ECode WindowAndroid::ShowCallbackNonExistentError(
@@ -239,7 +328,8 @@ ECode WindowAndroid::ShowCallbackNonExistentError(
 {
     // ==================before translated======================
     // showError(error);
-    assert(0);
+
+    ShowError(error);
     return NOERROR;
 }
 
@@ -247,7 +337,8 @@ ECode WindowAndroid::RequestVSyncUpdate()
 {
     // ==================before translated======================
     // mVSyncMonitor.requestUpdate();
-    assert(0);
+
+    mVSyncMonitor->RequestUpdate();
     return NOERROR;
 }
 

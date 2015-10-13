@@ -1,5 +1,29 @@
 
 #include "elastos/droid/webkit/native/ui/gfx/BitmapHelper.h"
+#include "elastos/core/Math.h"
+//#include "elastos/droid/graphics/CBitmapHelper.h"
+#include "elastos/droid/graphics/CBitmapFactoryOptions.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/content/res/CResources.h"
+#include "elastos/droid/content/res/CResourcesHelper.h"
+#include "elastos/droid/webkit/native/ui/gfx/BitmapFormat.h"
+
+using Elastos::Core::Math;
+using Elastos::Droid::Graphics::IBitmapHelper;
+//using Elastos::Droid::Graphics::CBitmapHelper;
+using Elastos::Droid::Graphics::IBitmapFactory;
+using Elastos::Droid::Graphics::CBitmapFactory;
+using Elastos::Droid::Graphics::IBitmapFactoryOptions;
+using Elastos::Droid::Graphics::CBitmapFactoryOptions;
+using Elastos::Droid::Graphics::BitmapConfig_ALPHA_8;
+using Elastos::Droid::Graphics::BitmapConfig_RGB_565;
+using Elastos::Droid::Graphics::BitmapConfig_ARGB_4444;
+using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::CResources;
+using Elastos::Droid::Content::Res::IResourcesHelper;
+using Elastos::Droid::Content::Res::CResourcesHelper;
+using Elastos::Droid::Webkit::Ui::Gfx::BitmapFormat;
 
 namespace Elastos {
 namespace Droid {
@@ -18,9 +42,15 @@ AutoPtr<IBitmap> BitmapHelper::CreateBitmap(
     // ==================before translated======================
     // Bitmap.Config bitmapConfig = getBitmapConfigForFormat(bitmapFormatValue);
     // return Bitmap.createBitmap(width, height, bitmapConfig);
+
     assert(0);
-    AutoPtr<IBitmap> empty;
-    return empty;
+    BitmapConfig bitmapConfig = GetBitmapConfigForFormat(bitmapFormatValue);
+
+    AutoPtr<IBitmapHelper> helper;
+    //CBitmapHelper::AcquireSingleton((IBitmapHelper**)&helper);
+    AutoPtr<IBitmap> bitmap;
+    helper->CreateBitmap(width, height, bitmapConfig, (IBitmap**)&bitmap);
+    return bitmap;
 }
 
 AutoPtr<IBitmap> BitmapHelper::DecodeDrawableResource(
@@ -41,9 +71,38 @@ AutoPtr<IBitmap> BitmapHelper::DecodeDrawableResource(
     // options.inJustDecodeBounds = false;
     // options.inPreferredConfig = Bitmap.Config.ARGB_8888;
     // return BitmapFactory.decodeResource(res, resId, options);
+
     assert(0);
-    AutoPtr<IBitmap> empty;
-    return empty;
+    AutoPtr<IResources> res;
+    CResources::New((IResources**)&res);
+
+    AutoPtr<IResourcesHelper> helper;
+    CResourcesHelper::AcquireSingleton((IResourcesHelper**)&helper);
+    helper->GetSystem((IResources**)&res);
+
+    Int32 resId;
+    res->GetIdentifier(name, String(""), String(""), &resId);
+    if (resId == 0) return NULL;
+
+    AutoPtr<IBitmapFactoryOptions> options;
+    CBitmapFactoryOptions::New((IBitmapFactoryOptions**)&options);
+
+    options->SetInJustDecodeBounds(TRUE);
+    AutoPtr<IBitmapFactory> bitmapFactory;
+    CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
+
+    AutoPtr<IBitmap> bitmap;
+    //CBitmap::New((IBitmap**)&bitmap);
+    bitmapFactory->DecodeResource(res, resId, options, (IBitmap**)&bitmap);
+
+    options->SetInSampleSize(CalculateInSampleSize(options, reqWidth, reqHeight));
+    options->SetInJustDecodeBounds(FALSE);
+    options->SetInPreferredConfig(BitmapConfig_ARGB_8888);
+
+    AutoPtr<IBitmap> result;
+    //CBitmap::New((IBitmap**)&result);
+    bitmapFactory->DecodeResource(res, resId, options, (IBitmap**)&result);
+    return result;
 }
 
 Int32 BitmapHelper::CalculateInSampleSize(
@@ -70,8 +129,20 @@ Int32 BitmapHelper::CalculateInSampleSize(
     // }
     //
     // return inSampleSize;
+
     assert(0);
-    return 0;
+    Int32 height = 0;
+    options->GetOutHeight(&height);
+    Int32 width = 0;
+    options->GetOutWidth(&width);
+
+    Int32 inSampleSize = 1;
+    if (height > reqHeight || width > reqWidth) {
+        const Int32 heightRatio = Elastos::Core::Math::Round((float)((float) height / (float) reqHeight));
+        const Int32 widthRatio = Elastos::Core::Math::Round((float)((float) width / (float) reqWidth));
+        inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+    }
+    return inSampleSize;
 }
 
 Int32 BitmapHelper::GetBitmapFormatForConfig(
@@ -90,8 +161,19 @@ Int32 BitmapHelper::GetBitmapFormatForConfig(
     //     default:
     //         return BitmapFormat.FORMAT_NO_CONFIG;
     // }
-    assert(0);
-    return 0;
+
+    switch (bitmapConfig) {
+        case BitmapConfig_ALPHA_8:
+            return BitmapFormat::FORMAT_ALPHA_8;
+        case BitmapConfig_ARGB_4444:
+            return BitmapFormat::FORMAT_ARGB_4444;
+        case BitmapConfig_ARGB_8888:
+            return BitmapFormat::FORMAT_ARGB_8888;
+        case BitmapConfig_RGB_565:
+            return BitmapFormat::FORMAT_RGB_565;
+        default:
+            return BitmapFormat::FORMAT_NO_CONFIG;
+    }
 }
 
 BitmapConfig GetBitmapConfigForFormat(
@@ -109,9 +191,18 @@ BitmapConfig GetBitmapConfigForFormat(
     //     default:
     //         return Bitmap.Config.ARGB_8888;
     // }
-    assert(0);
-    BitmapConfig empty;
-    return empty;
+
+    switch (bitmapFormatValue) {
+        case BitmapFormat::FORMAT_ALPHA_8:
+            return BitmapConfig_ALPHA_8;
+        case BitmapFormat::FORMAT_ARGB_4444:
+            return BitmapConfig_ARGB_4444;
+        case BitmapFormat::FORMAT_RGB_565:
+            return BitmapConfig_RGB_565;
+        case BitmapFormat::FORMAT_ARGB_8888:
+        default:
+            return BitmapConfig_ARGB_8888;
+    }
 }
 
 } // namespace Gfx

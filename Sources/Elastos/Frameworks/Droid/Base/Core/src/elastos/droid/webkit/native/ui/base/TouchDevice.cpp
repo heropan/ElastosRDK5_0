@@ -1,5 +1,9 @@
 
 #include "elastos/droid/webkit/native/ui/base/TouchDevice.h"
+//#include "elastos/droid/server/pm/CPackageManagerService.h"
+
+using Elastos::Droid::Content::Pm::IPackageManager;
+//using Elastos::Droid::Pm::CPackageManagerService;
 
 namespace Elastos {
 namespace Droid {
@@ -37,8 +41,39 @@ Int32 TouchDevice::MaxTouchPoints(
     // } else {
     //     return 0;
     // }
+
     assert(0);
-    return 0;
+    AutoPtr<IPackageManager> packageManager;
+    //CPackageManagerService::New((IPackageManager**)&packageManager);
+    context->GetPackageManager((IPackageManager**)&packageManager);
+
+    Boolean hasSystemFeature = FALSE;
+    packageManager->HasSystemFeature(IPackageManager::FEATURE_TOUCHSCREEN_MULTITOUCH_JAZZHAND, &hasSystemFeature);
+
+    Boolean hasSystemFeature1 = FALSE;
+    packageManager->HasSystemFeature(IPackageManager::FEATURE_TOUCHSCREEN_MULTITOUCH_DISTINCT, &hasSystemFeature1);
+
+    Boolean hasSystemFeature2 = FALSE;
+    packageManager->HasSystemFeature(IPackageManager::FEATURE_TOUCHSCREEN_MULTITOUCH, &hasSystemFeature2);
+
+    Boolean hasSystemFeature3 = FALSE;
+    packageManager->HasSystemFeature(IPackageManager::FEATURE_TOUCHSCREEN, &hasSystemFeature3);
+
+    if (hasSystemFeature) {
+        return 5;
+    }
+     else if (hasSystemFeature1) {
+        return 2;
+    }
+     else if (hasSystemFeature2) {
+        return 2;
+    }
+     else if (hasSystemFeature3) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
 }
 
 } // namespace Base

@@ -11,5 +11,5 @@ INCLUDES += $(MAKEDIR)/../../../../../../../inc/elastos/droid/webkit/native/ui/a
 
 C_DEFINES += -DDROID_CORE
 
-#SOURCES = AutofillPopup.cpp   # cannot compile
+SOURCES = AutofillPopup.cpp   # cannot compile
 SOURCES += AutofillSuggestion.cpp

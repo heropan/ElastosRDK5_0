@@ -1,5 +1,31 @@
 
 #include "elastos/droid/webkit/native/ui/base/SelectFileDialog.h"
+#include "elastos/utility/Arrays.h"
+#include "elastos/core/IntegralToString.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/os/CEnvironment.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/webkit/native/base/ContentUriUtils.h"
+
+using Elastos::Core::ICharSequence;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
+using Elastos::Core::IntegralToString;
+using Elastos::Utility::Arrays;
+using Elastos::IO::IFile;
+using Elastos::IO::CFile;
+using Elastos::IO::IFileHelper;
+using Elastos::IO::CFileHelper;
+using Elastos::Droid::Net::Uri;
+using Elastos::Droid::Os::IEnvironment;
+using Elastos::Droid::Os::CEnvironment;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Provider::IMediaStore;
+using Elastos::Droid::Provider::IMediaStoreMediaColumns;
+using Elastos::Droid::Provider::IMediaStoreAudioMedia;
+using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Webkit::Base::ContentUriUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -11,8 +37,12 @@ namespace Base {
 //                 SelectFileDialog::GetDisplayNameTask
 //=====================================================================
 SelectFileDialog::GetDisplayNameTask::GetDisplayNameTask(
+    /* [in] */ SelectFileDialog* owner,
     /* [in] */ IContentResolver* contentResolver,
     /* [in] */ Boolean isMultiple)
+    : mOwner(owner)
+    , mContentResolver(contentResolver)
+    , mIsMultiple(isMultiple)
 {
     // ==================before translated======================
     // mContentResolver = contentResolver;
@@ -32,7 +62,23 @@ ECode SelectFileDialog::GetDisplayNameTask::DoInBackground(
     //             uris[i], mContentResolver, MediaStore.MediaColumns.DISPLAY_NAME);
     // }
     // return displayNames;
+
     assert(0);
+    *result = NULL;
+    mFilePaths = ArrayOf<String>::Alloc(params->GetLength());
+    AutoPtr< ArrayOf<String> > dispalyNames = ArrayOf<String>::Alloc(params->GetLength());
+    AutoPtr<ICharSequence> charSequecneTmp;
+    String sTmp;
+    AutoPtr<IUri> uriTmp;
+    for (Int32 i = 0; i < params->GetLength(); ++i) {
+        charSequecneTmp = ICharSequence::Probe((*params)[i]);
+        charSequecneTmp->ToString(&sTmp);
+        (*mFilePaths)[i] = sTmp;
+
+        uriTmp = IUri::Probe((*params)[i]);
+        assert(0); // java source will return a array
+        (*dispalyNames)[i] = ContentUriUtils::GetDisplayName(uriTmp, mContentResolver, IMediaStoreMediaColumns::DISPLAY_NAME);
+    }
     return NOERROR;
 }
 
@@ -44,7 +90,11 @@ ECode SelectFileDialog::GetDisplayNameTask::OnPostExecute(
     // if (!mIsMultiple) {
     //     nativeOnFileSelected(mNativeSelectFileDialog, mFilePaths[0], result[0]);
     // }
-    assert(0);
+
+    assert(NULL == mOwner);
+    if (!mIsMultiple) {
+        mOwner->NativeOnFileSelected(mOwner->mNativeSelectFileDialog, (*mFilePaths)[0], (*result)[0]);
+    }
     return NOERROR;
 }
 
@@ -102,12 +152,56 @@ ECode SelectFileDialog::OnIntentCompleted(
     //
     // onFileNotSelected();
     // window.showError(R.string.opening_file_error);
+
     assert(0);
+    if (resultCode != IActivity::RESULT_OK) {
+        OnFileNotSelected();
+        return NOERROR;
+    }
+
+    if (NULL == results) {
+        // If we have a successful return but no data, then assume this is the camera returning
+        // the photo that we requested.
+        String path;
+        mCameraOutputUri->GetPath(&path);
+        NativeOnFileSelected(mNativeSelectFileDialog, path, String(""));
+
+        // Broadcast to the media scanner that there's a new photo on the device so it will
+        // show up right away in the gallery (rather than waiting until the next time the media
+        // scanner runs).
+        AutoPtr<IIntent> intent;
+        CIntent::New(IIntent::ACTION_MEDIA_SCANNER_SCAN_FILE, mCameraOutputUri, (IIntent**)&intent);
+        window->SendBroadcast(intent);
+        return NOERROR;
+    }
+
+    AutoPtr<IUri> url;
+    results->GetData((IUri**)&url);
+    String scheme;
+    url->GetScheme(&scheme);
+    if (IContentResolver::SCHEME_FILE == scheme) {
+        String specifyPart;
+        url->GetSchemeSpecificPart(&specifyPart);
+        NativeOnFileSelected(mNativeSelectFileDialog, specifyPart, String(""));
+        return NOERROR;
+    }
+
+    results->GetScheme(&scheme);
+    if (IContentResolver::SCHEME_CONTENT == scheme) {
+        AutoPtr<GetDisplayNameTask> task = new GetDisplayNameTask(this, contentResolver, FALSE);
+        AutoPtr<IRunnable> runnable = IRunnable::Probe(url);
+        task->Execute(runnable);
+        return NOERROR;
+    }
+
+    OnFileNotSelected();
+    window->ShowError(String("")/*R::string::opening_file_error*/);
     return NOERROR;
 }
 
 SelectFileDialog::SelectFileDialog(
     /* [in] */ Int64 nativeSelectFileDialog)
+    : mNativeSelectFileDialog(nativeSelectFileDialog)
 {
     // ==================before translated======================
     // mNativeSelectFileDialog = nativeSelectFileDialog;
@@ -178,7 +272,85 @@ ECode SelectFileDialog::SelectFile(
     // if (!window.showIntent(chooser, this, R.string.low_memory_error)) {
     //     onFileNotSelected();
     // }
+
     assert(0);
+    Arrays::AsList(fileTypes, (IList**)&mFileTypes);
+    mCapture = capture;
+
+    AutoPtr<IIntent> chooser;
+    AutoPtr<IIntent> camera;
+    CIntent::New(IIntent::ACTION_CHOOSER, (IIntent**)&chooser);
+    CIntent::New(IMediaStore::ACTION_IMAGE_CAPTURE, (IIntent**)&camera);
+
+    Uri::FromFile(GetFileForImageCapture(), (IUri**)&mCameraOutputUri);
+    String cameraOutputUriStr;
+    mCameraOutputUri->ToSafeString(&cameraOutputUriStr);
+    camera->PutExtra(IMediaStore::EXTRA_OUTPUT, cameraOutputUriStr);
+
+    AutoPtr<IIntent> camcorder;
+    AutoPtr<IIntent> soundRecorder;
+    CIntent::New(IMediaStore::ACTION_VIDEO_CAPTURE, (IIntent**)&camcorder);
+    CIntent::New(IMediaStoreAudioMedia::RECORD_SOUND_ACTION, (IIntent**)&soundRecorder);
+
+    // Quick check - if the |capture| parameter is set and |fileTypes| has the appropriate MIME
+    // type, we should just launch the appropriate intent. Otherwise build up a chooser based on
+    // the accept type and then display that to the user.
+    if (CaptureCamera()) {
+        if (window->ShowIntent(camera, this, -1/*R::string::low_memory_error*/))
+            return NOERROR;
+    }
+    else if (CaptureCamcorder()) {
+        if (window->ShowIntent(camcorder, this, -1/*R::string::low_memory_error*/))
+            return NOERROR;
+    }
+    else if (CaptureMicrophone()) {
+        if (window->ShowIntent(soundRecorder, this, -1/*R::string::low_memory_error*/))
+            return NOERROR;
+    }
+
+    AutoPtr<IIntent> getContentIntent;
+    CIntent::New(IIntent::ACTION_GET_CONTENT, (IIntent**)&getContentIntent);
+    getContentIntent->AddCategory(IIntent::CATEGORY_OPENABLE);
+
+    AutoPtr<IArrayList> extraIntents;
+    //CArrayList::New((IArrayList**)&extraIntents);
+    if (!NoSpecificType()) {
+        // Create a chooser based on the accept type that was specified in the webpage. Note
+        // that if the web page specified multiple accept types, we will have built a generic
+        // chooser above.
+        if (ShouldShowImageTypes()) {
+            extraIntents->Add(camera);
+            getContentIntent->SetType(ALL_IMAGE_TYPES);
+        }
+        else if (ShouldShowVideoTypes()) {
+            extraIntents->Add(camcorder);
+            getContentIntent->SetType(ALL_VIDEO_TYPES);
+        }
+        else if (ShouldShowAudioTypes()) {
+            extraIntents->Add(soundRecorder);
+            getContentIntent->SetType(ALL_AUDIO_TYPES);
+        }
+    }
+
+    Int32 length = 0;
+    extraIntents->GetSize(&length);
+    if (0 == length) {
+        // We couldn't resolve an accept type, so fallback to a generic chooser.
+        getContentIntent->SetType(ANY_TYPES);
+        extraIntents->Add(camera);
+        extraIntents->Add(camcorder);
+        extraIntents->Add(soundRecorder);
+    }
+
+    AutoPtr< ArrayOf< AutoPtr<IInterface> > > toArray;
+    //extraIntents->ToArray(&toArray);
+    assert(0);
+    //chooser->PutExtra(IIntent::EXTRA_INITIAL_INTENTS, &toArray);
+    //chooser->PutExtra(IIntent::EXTRA_INTENT, getContentIntent);
+
+    if (!window->ShowIntent(chooser, this, -1/*R::string::low_memory_error*/)) {
+        OnFileNotSelected();
+    }
     return NOERROR;
 }
 
@@ -195,16 +367,52 @@ AutoPtr<IFile> SelectFileDialog::GetFileForImageCapture()
     // File photoFile = new File(cameraDataDir.getAbsolutePath() +
     //         File.separator + System.currentTimeMillis() + ".jpg");
     // return photoFile;
+
     assert(0);
-    AutoPtr<IFile> empty;
-    return empty;
+    AutoPtr<IEnvironment> environment;
+    CEnvironment::AcquireSingleton((IEnvironment**)&environment);
+    AutoPtr<IFile> externalDataDir;
+    environment->GetExternalStoragePublicDirectory(IEnvironment::DIRECTORY_DCIM, (IFile**)&externalDataDir);
+
+    String absolutePath;
+    externalDataDir->GetAbsolutePath(&absolutePath);
+
+    AutoPtr<IFileHelper> fileHelper;
+    CFileHelper::AcquireSingleton((IFileHelper**)&fileHelper);
+    String separator;
+    fileHelper->GetSeparator(&separator);
+
+    AutoPtr<IFile> cameraDataDir;
+    CFile::New(absolutePath + separator + CAPTURE_IMAGE_DIRECTORY, (IFile**)&cameraDataDir);
+
+    Boolean exist;
+    cameraDataDir->Exists(&exist);
+
+    Boolean mkdir;
+    cameraDataDir->Mkdirs(&mkdir);
+    if (!exist && !mkdir) {
+        cameraDataDir = externalDataDir;
+    }
+
+    cameraDataDir->GetAbsolutePath(&absolutePath);
+
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    Int64 currTimeMill = 0;
+    system->GetCurrentTimeMillis(&currTimeMill);
+
+    String strCurrTimeMill = IntegralToString::ToString(currTimeMill);
+    AutoPtr<IFile> photoFile;
+    CFile::New(absolutePath + separator + strCurrTimeMill + String(".jpg"), (IFile**)&photoFile);
+    return photoFile;
 }
 
 ECode SelectFileDialog::OnFileNotSelected()
 {
     // ==================before translated======================
     // nativeOnFileNotSelected(mNativeSelectFileDialog);
-    assert(0);
+
+    NativeOnFileNotSelected(mNativeSelectFileDialog);
     return NOERROR;
 }
 
@@ -216,8 +424,16 @@ Boolean SelectFileDialog::NoSpecificType()
     // // specified, we will fallback to a generic chooser (unless a capture parameter has been
     // // specified, in which case we'll try to satisfy that first.
     // return mFileTypes.size() != 1 || mFileTypes.contains(ANY_TYPES);
+
     assert(0);
-    return FALSE;
+    Int32 size = 0;
+    mFileTypes->GetSize(&size);
+    AutoPtr<ICharSequence> charSequence;
+    //CString strTmp(ANY_TYPES);
+    //strTmp->SubSequence(0, ANY_TYPES->GetLength(), (ICharSequence**)&charSequence);
+    Boolean isContain = FALSE;
+    mFileTypes->Contains(charSequence, &isContain);
+    return (size != 1 || isContain);
 }
 
 Boolean SelectFileDialog::ShouldShowTypes(
@@ -227,32 +443,39 @@ Boolean SelectFileDialog::ShouldShowTypes(
     // ==================before translated======================
     // if (noSpecificType() || mFileTypes.contains(allTypes)) return true;
     // return acceptSpecificType(specificType);
-    assert(0);
-    return FALSE;
+
+    AutoPtr<ICharSequence> charSequence;
+    //CString strTmp(allTypes);
+    //strTmp->SubSequence(0, allTypes->GetLength(), (ICharSequence**)&charSequence);
+    Boolean isContain = FALSE;
+    mFileTypes->Contains(charSequence, &isContain);
+    if (NoSpecificType() || isContain)
+        return TRUE;
+    return AcceptSpecificType(specificType);
 }
 
 Boolean SelectFileDialog::ShouldShowImageTypes()
 {
     // ==================before translated======================
     // return shouldShowTypes(ALL_IMAGE_TYPES, IMAGE_TYPE);
-    assert(0);
-    return FALSE;
+
+    return ShouldShowTypes(ALL_IMAGE_TYPES, IMAGE_TYPE);
 }
 
 Boolean SelectFileDialog::ShouldShowVideoTypes()
 {
     // ==================before translated======================
     // return shouldShowTypes(ALL_VIDEO_TYPES, VIDEO_TYPE);
-    assert(0);
-    return FALSE;
+
+    return ShouldShowTypes(ALL_VIDEO_TYPES, VIDEO_TYPE);
 }
 
 Boolean SelectFileDialog::ShouldShowAudioTypes()
 {
     // ==================before translated======================
     // return shouldShowTypes(ALL_AUDIO_TYPES, AUDIO_TYPE);
-    assert(0);
-    return FALSE;
+
+    return ShouldShowTypes(ALL_AUDIO_TYPES, AUDIO_TYPE);
 }
 
 Boolean SelectFileDialog::AcceptsSpecificType(
@@ -260,32 +483,41 @@ Boolean SelectFileDialog::AcceptsSpecificType(
 {
     // ==================before translated======================
     // return mFileTypes.size() == 1 && TextUtils.equals(mFileTypes.get(0), type);
-    assert(0);
-    return FALSE;
+
+    Int32 size = 0;
+    mFileTypes->GetSize(&size);
+
+    AutoPtr<IInterface> itemTmp;
+    mFileTypes->Get(0, (IInterface**)&itemTmp);
+    ICharSequence* charSequence = ICharSequence::Probe(itemTmp);
+
+    String item;
+    charSequence->ToString(&item);
+    return (size == 1 && TextUtils::Equals(item, type));
 }
 
 Boolean SelectFileDialog::CaptureCamera()
 {
     // ==================before translated======================
     // return mCapture && acceptsSpecificType(ALL_IMAGE_TYPES);
-    assert(0);
-    return FALSE;
+
+    return (mCapture && AcceptsSpecificType(ALL_IMAGE_TYPES));
 }
 
 Boolean SelectFileDialog::CaptureCamcorder()
 {
     // ==================before translated======================
     // return mCapture && acceptsSpecificType(ALL_VIDEO_TYPES);
-    assert(0);
-    return FALSE;
+
+    return (mCapture && AcceptsSpecificType(ALL_VIDEO_TYPES));
 }
 
 Boolean SelectFileDialog::CaptureMicrophone()
 {
     // ==================before translated======================
     // return mCapture && acceptsSpecificType(ALL_AUDIO_TYPES);
-    assert(0);
-    return FALSE;
+
+    return (mCapture && AcceptsSpecificType(ALL_AUDIO_TYPES));
 }
 
 Boolean SelectFileDialog::AcceptSpecificType(
@@ -298,7 +530,23 @@ Boolean SelectFileDialog::AcceptSpecificType(
     //     }
     // }
     // return false;
-    assert(0);
+
+    Int32 size = 0;
+    mFileTypes->GetSize(&size);
+
+    AutoPtr<IInterface> interfaceTmp;
+    AutoPtr<ICharSequence> charSequenceTmp;
+    String type;
+    for (Int32 i=0; i<size; ++i)
+    {
+        mFileTypes->Get(i, (IInterface**)&interfaceTmp);
+        charSequenceTmp = ICharSequence::Probe(interfaceTmp);
+        charSequenceTmp->ToString(&type);
+        if (type.StartWith(accept)) {
+            return TRUE;
+        }
+    }
+
     return FALSE;
 }
 
@@ -307,8 +555,8 @@ AutoPtr<SelectFileDialog> SelectFileDialog::Create(
 {
     // ==================before translated======================
     // return new SelectFileDialog(nativeSelectFileDialog);
-    assert(0);
-    AutoPtr<SelectFileDialog> empty;
+
+    AutoPtr<SelectFileDialog> empty = new SelectFileDialog(nativeSelectFileDialog);
     return empty;
 }
 

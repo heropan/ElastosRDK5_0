@@ -7,7 +7,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/utility/etl/List.h"
-#include "elastos/droid/webkit/native/ui/DropdownPopupWindow.h"
+//#include "elastos/droid/webkit/native/ui/DropdownPopupWindow.h"
 #include "elastos/droid/webkit/native/ui/autofill/AutofillSuggestion.h"
 
 // package org.chromium.ui.autofill;
@@ -23,12 +23,12 @@
 // import java.util.HashSet;
 // import java.util.List;
 
-using Elastos::Droid::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
 using Elastos::Droid::Widget::IAdapterView;
-using Elastos::Droid::Webkit::Ui::DropdownPopupWindow;
+//using Elastos::Droid::Webkit::Ui::DropdownPopupWindow;
 using Elastos::Droid::Webkit::Ui::Autofill::AutofillSuggestion;
 
 namespace Elastos {
@@ -44,14 +44,14 @@ class ViewAndroidDelegate;
   */
 class AutofillPopup
     : public Object
-    , public DropdownPopupWindow
+    //, public DropdownPopupWindow
     , public IAdapterViewOnItemClickListener
 {
 public:
     /**
       * An interface to handle the touch interaction with an AutofillPopup object.
       */
-    class AutofillPopupDelegate
+    class AutofillPopupDelegate : public Object
     {
     public:
         /**

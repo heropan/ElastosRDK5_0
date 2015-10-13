@@ -22,8 +22,8 @@ AutofillPopup::AutofillPopup(
     /* [in] */ IContext* context,
     /* [in] */ ViewAndroidDelegate* viewAndroidDelegate,
     /* [in] */ AutofillPopupDelegate* autofillCallback)
-    : DropdownPopupWindow(context, viewAndroidDelegate)
-    , mContext(context)
+    //: DropdownPopupWindow(context, viewAndroidDelegate)
+    : mContext(context)
     , mAutofillCallback(autofillCallback)
 {
     // ==================before translated======================
@@ -33,7 +33,8 @@ AutofillPopup::AutofillPopup(
     //
     // setOnItemClickListener(this);
 
-    SetOnItemClickListener(this);
+    assert(0);
+    //SetOnItemClickListener(this);
 }
 
 ECode AutofillPopup::FilterAndShow(
@@ -57,7 +58,7 @@ ECode AutofillPopup::FilterAndShow(
     // setAdapter(new DropdownAdapter(mContext, cleanedData, separators));
     // show();
 
-    assert(0);
+    assert(0);/*
     AutoPtr<IList> tmpSuggestion;
     Arrays<AutofillSuggestion*>::AsList(suggestions, (IList**)&tmpSuggestion);
 
@@ -80,7 +81,7 @@ ECode AutofillPopup::FilterAndShow(
 
     AutoPtr<DropdownAdapter> dropDownAdapter = new DropdownAdapter(mContext, cleanedData, separators);
     SetAdapter(dropDownAdapter);
-    Show();
+    Show();*/
     return NOERROR;
 }
 

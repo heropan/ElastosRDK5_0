@@ -41,7 +41,7 @@ public:
       * @param context for accessing the clipboard
       */
     Clipboard(
-        /* [in] */ const IContext* context);
+        /* [in] */ IContext* context);
 
     /**
       * Emulates the behavior of the now-deprecated
@@ -104,7 +104,7 @@ private:
       */
     // @CalledByNative
     static CARAPI_(AutoPtr<Clipboard>) Create(
-        /* [in] */ const IContext* context);
+        /* [in] */ IContext* context);
 
     /**
       * Emulates the behavior of the now-deprecated

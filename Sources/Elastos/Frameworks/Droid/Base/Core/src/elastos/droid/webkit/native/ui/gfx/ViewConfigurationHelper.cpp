@@ -1,5 +1,9 @@
 
 #include "elastos/droid/webkit/native/ui/gfx/ViewConfigurationHelper.h"
+//#include "elastos/droid/view/CViewConfigurationHelper.h"
+
+using Elastos::Droid::View::IViewConfigurationHelper;
+//using Elastos::Droid::View::CViewConfigurationHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -24,7 +28,9 @@ ECode ViewConfigurationHelper::InnerComponentCallbacks::OnConfigurationChanged(
     VALIDATE_NOT_NULL(configuration);
     // ==================before translated======================
     // updateNativeViewConfigurationIfNecessary();
-    assert(0);
+
+    assert(NULL == mOwner);
+    mOwner->UpdateNativeViewConfigurationIfNecessary();
     return NOERROR;
 }
 
@@ -46,6 +52,13 @@ ViewConfigurationHelper::ViewConfigurationHelper(
     // ==================before translated======================
     // mAppContext = context.getApplicationContext();
     // mViewConfiguration = ViewConfiguration.get(mAppContext);
+
+    assert(0);
+    context->GetApplicationContext((IContext**)&mAppContext);
+
+    AutoPtr<IViewConfigurationHelper> helper;
+    //CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
+    helper->Get(mAppContext, (IViewConfiguration**)&mViewConfiguration);
 }
 
 ECode ViewConfigurationHelper::RegisterListener()

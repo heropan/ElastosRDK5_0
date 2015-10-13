@@ -54,6 +54,7 @@ private:
     {
     public:
         GetDisplayNameTask(
+            /* [in] */ SelectFileDialog* owner,
             /* [in] */ IContentResolver* contentResolver,
             /* [in] */ Boolean isMultiple);
 
@@ -68,6 +69,7 @@ private:
             /* [in] */ ArrayOf<String>* result);
 
     public:
+        SelectFileDialog* mOwner;
         AutoPtr< ArrayOf<String> > mFilePaths;
         /*const*/ AutoPtr<IContentResolver> mContentResolver;
         /*const*/ Boolean mIsMultiple;

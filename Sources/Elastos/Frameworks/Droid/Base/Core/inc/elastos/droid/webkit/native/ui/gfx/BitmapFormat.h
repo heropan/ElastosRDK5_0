@@ -15,11 +15,11 @@ namespace Gfx {
 class BitmapFormat : public Object
 {
 public:
-    /*const*/ Int32 FORMAT_NO_CONFIG;
-    /*const*/ Int32 FORMAT_ALPHA_8;
-    /*const*/ Int32 FORMAT_ARGB_4444;
-    /*const*/ Int32 FORMAT_ARGB_8888;
-    /*const*/ Int32 FORMAT_RGB_565;
+    static const Int32 FORMAT_NO_CONFIG = 0;
+    static const Int32 FORMAT_ALPHA_8 = 1;
+    static const Int32 FORMAT_ARGB_4444 = 2;
+    static const Int32 FORMAT_ARGB_8888 = 3;
+    static const Int32 FORMAT_RGB_565 = 4;
 };
 
 } // namespace Gfx
