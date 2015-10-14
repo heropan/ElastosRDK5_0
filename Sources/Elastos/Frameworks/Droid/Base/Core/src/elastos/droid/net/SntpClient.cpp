@@ -1,3 +1,187 @@
+
+#include "elastos/droid/net/SntpClient.h"
+
+namespace Elastos {
+namespace Droid {
+namespace Net {
+
+CAR_INTERFACE_IMPL(SntpClient, Object, ISntpClient)
+
+const String SntpClient::TAG = String("SntpClient");
+const Int32 SntpClient::REFERENCE_TIME_OFFSET = 16;
+const Int32 SntpClient::ORIGINATE_TIME_OFFSET = 24;
+const Int32 SntpClient::RECEIVE_TIME_OFFSET = 32;
+const Int32 SntpClient::TRANSMIT_TIME_OFFSET = 40;
+const Int32 SntpClient::NTP_PACKET_SIZE = 48;
+const Int32 SntpClient::NTP_PORT = 123;
+const Int32 SntpClient::NTP_MODE_CLIENT = 3;
+const Int32 SntpClient::NTP_VERSION = 3;
+const Int64 SntpClient::OFFSET_1900_TO_1970 = ((365L * 70L) + 17L) * 24L * 60L * 60L;
+
+ECode SntpClient::constructor()
+{
+    return NOERROR;
+}
+
+ECode SntpClient::RequestTime(
+    /* [in] */ const String& host,
+    /* [in] */ Int32 timeout,
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        DatagramSocket socket = null;
+        try {
+            socket = new DatagramSocket();
+            socket.setSoTimeout(timeout);
+            InetAddress address = InetAddress.getByName(host);
+            byte[] buffer = new byte[NTP_PACKET_SIZE];
+            DatagramPacket request = new DatagramPacket(buffer, buffer.length, address, NTP_PORT);
+            // set mode = 3 (client) and version = 3
+            // mode is in low 3 bits of first byte
+            // version is in bits 3-5 of first byte
+            buffer[0] = NTP_MODE_CLIENT | (NTP_VERSION << 3);
+            // get current time and write it to the request packet
+            long requestTime = System.currentTimeMillis();
+            long requestTicks = SystemClock.elapsedRealtime();
+            writeTimeStamp(buffer, TRANSMIT_TIME_OFFSET, requestTime);
+            socket.send(request);
+            // read the response
+            DatagramPacket response = new DatagramPacket(buffer, buffer.length);
+            socket.receive(response);
+            long responseTicks = SystemClock.elapsedRealtime();
+            long responseTime = requestTime + (responseTicks - requestTicks);
+            // extract the results
+            long originateTime = readTimeStamp(buffer, ORIGINATE_TIME_OFFSET);
+            long receiveTime = readTimeStamp(buffer, RECEIVE_TIME_OFFSET);
+            long transmitTime = readTimeStamp(buffer, TRANSMIT_TIME_OFFSET);
+            long roundTripTime = responseTicks - requestTicks - (transmitTime - receiveTime);
+            // receiveTime = originateTime + transit + skew
+            // responseTime = transmitTime + transit - skew
+            // clockOffset = ((receiveTime - originateTime) + (transmitTime - responseTime))/2
+            //             = ((originateTime + transit + skew - originateTime) +
+            //                (transmitTime - (transmitTime + transit - skew)))/2
+            //             = ((transit + skew) + (transmitTime - transmitTime - transit + skew))/2
+            //             = (transit + skew - transit + skew)/2
+            //             = (2 * skew)/2 = skew
+            long clockOffset = ((receiveTime - originateTime) + (transmitTime - responseTime))/2;
+            // if (false) Log.d(TAG, "round trip: " + roundTripTime + " ms");
+            // if (false) Log.d(TAG, "clock offset: " + clockOffset + " ms");
+            // save our results - use the times on this side of the network latency
+            // (response rather than request time)
+            mNtpTime = responseTime + clockOffset;
+            mNtpTimeReference = responseTicks;
+            mRoundTripTime = roundTripTime;
+        } catch (Exception e) {
+            if (false) Log.d(TAG, "request time failed: " + e);
+            return false;
+        } finally {
+            if (socket != null) {
+                socket.close();
+            }
+        }
+        return true;
+
+#endif
+}
+
+ECode SntpClient::GetNtpTime(
+    /* [out] */ Int64* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return mNtpTime;
+
+#endif
+}
+
+ECode SntpClient::GetNtpTimeReference(
+    /* [out] */ Int64* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return mNtpTimeReference;
+
+#endif
+}
+
+ECode SntpClient::GetRoundTripTime(
+    /* [out] */ Int64* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return mRoundTripTime;
+
+#endif
+}
+
+ECode SntpClient::Read32(
+    /* [in] */ ArrayOf<Byte>* buffer,
+    /* [in] */ Int32 offset,
+    /* [out] */ Int64* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        byte b0 = buffer[offset];
+        byte b1 = buffer[offset+1];
+        byte b2 = buffer[offset+2];
+        byte b3 = buffer[offset+3];
+        // convert signed bytes to unsigned values
+        int i0 = ((b0 & 0x80) == 0x80 ? (b0 & 0x7F) + 0x80 : b0);
+        int i1 = ((b1 & 0x80) == 0x80 ? (b1 & 0x7F) + 0x80 : b1);
+        int i2 = ((b2 & 0x80) == 0x80 ? (b2 & 0x7F) + 0x80 : b2);
+        int i3 = ((b3 & 0x80) == 0x80 ? (b3 & 0x7F) + 0x80 : b3);
+        return ((long)i0 << 24) + ((long)i1 << 16) + ((long)i2 << 8) + (long)i3;
+
+#endif
+}
+
+ECode SntpClient::ReadTimeStamp(
+    /* [in] */ ArrayOf<Byte>* buffer,
+    /* [in] */ Int32 offset,
+    /* [out] */ Int64* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        long seconds = read32(buffer, offset);
+        long fraction = read32(buffer, offset + 4);
+        return ((seconds - OFFSET_1900_TO_1970) * 1000) + ((fraction * 1000L) / 0x100000000L);
+
+#endif
+}
+
+ECode SntpClient::WriteTimeStamp(
+    /* [in] */ ArrayOf<Byte>* buffer,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int64 time)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        long seconds = time / 1000L;
+        long milliseconds = time - seconds * 1000L;
+        seconds += OFFSET_1900_TO_1970;
+        // write seconds in big endian format
+        buffer[offset++] = (byte)(seconds >> 24);
+        buffer[offset++] = (byte)(seconds >> 16);
+        buffer[offset++] = (byte)(seconds >> 8);
+        buffer[offset++] = (byte)(seconds >> 0);
+        long fraction = milliseconds * 0x100000000L / 1000L;
+        // write fraction in big endian format
+        buffer[offset++] = (byte)(fraction >> 24);
+        buffer[offset++] = (byte)(fraction >> 16);
+        buffer[offset++] = (byte)(fraction >> 8);
+        // low order bits should be random data
+        buffer[offset++] = (byte)(Math.random() * 255.0);
+
+#endif
+}
+
+
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
+
+#if 0 // old CSntpClient.cpp
 #include "net/CSntpClient.h"
 #include "ext/frameworkext.h"
 #include <elastos/core/Math.h>
@@ -261,3 +445,4 @@ void CSntpClient::WriteTimeStamp(
 } //namespace Net
 } //namespace Droid
 } //namespace Elastos
+#endif

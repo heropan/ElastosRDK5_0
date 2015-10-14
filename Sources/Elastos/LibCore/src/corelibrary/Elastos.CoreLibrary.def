@@ -2901,3 +2901,35 @@ EXPORTS
     ;;elastos/corelibary
     _ZN24AsynchronousCloseMonitorC1Ei
     _ZN24AsynchronousCloseMonitorD1Ev
+
+    ;;elastosx/net/ssl/SSLSocketFactory
+    _ZN8Elastosx3Net3Ssl16SSLSocketFactory10GetDefaultEPPNS0_14ISocketFactoryE
+    _ZN8Elastosx3Net3Ssl16SSLSocketFactory14GetInterfaceIDEP10IInterfacePN7Elastos6_EMuidE
+    _ZN8Elastosx3Net3Ssl16SSLSocketFactory5ProbeERKN7Elastos6_EMuidE
+    _ZN8Elastosx3Net3Ssl16SSLSocketFactory6AddRefEv
+    _ZN8Elastosx3Net3Ssl16SSLSocketFactory7ReleaseEv
+    _ZN8Elastosx3Net3Ssl16SSLSocketFactoryC1Ev
+    _ZN8Elastosx3Net3Ssl16SSLSocketFactoryC2Ev
+    _ZN8Elastosx3Net3Ssl16SSLSocketFactoryD0Ev
+    _ZN8Elastosx3Net3Ssl16SSLSocketFactoryD1Ev
+    _ZN8Elastosx3Net3Ssl16SSLSocketFactoryD2Ev
+    _ZThn12_N8Elastosx3Net3Ssl16SSLSocketFactory14GetInterfaceIDEP10IInterfacePN7Elastos6_EMuidE
+    _ZThn12_N8Elastosx3Net3Ssl16SSLSocketFactory5ProbeERKN7Elastos6_EMuidE
+    _ZThn12_N8Elastosx3Net3Ssl16SSLSocketFactory6AddRefEv
+    _ZThn12_N8Elastosx3Net3Ssl16SSLSocketFactory7ReleaseEv
+    _ZThn16_N8Elastosx3Net3Ssl16SSLSocketFactory14GetInterfaceIDEP10IInterfacePN7Elastos6_EMuidE
+    _ZThn16_N8Elastosx3Net3Ssl16SSLSocketFactory5ProbeERKN7Elastos6_EMuidE
+    _ZThn16_N8Elastosx3Net3Ssl16SSLSocketFactory6AddRefEv
+    _ZThn16_N8Elastosx3Net3Ssl16SSLSocketFactory7ReleaseEv
+    _ZThn24_N8Elastosx3Net3Ssl16SSLSocketFactory14GetInterfaceIDEP10IInterfacePN7Elastos6_EMuidE
+    _ZThn24_N8Elastosx3Net3Ssl16SSLSocketFactory5ProbeERKN7Elastos6_EMuidE
+    _ZThn24_N8Elastosx3Net3Ssl16SSLSocketFactory6AddRefEv
+    _ZThn24_N8Elastosx3Net3Ssl16SSLSocketFactory7ReleaseEv
+    _ZThn28_N8Elastosx3Net3Ssl16SSLSocketFactory14GetInterfaceIDEP10IInterfacePN7Elastos6_EMuidE
+    _ZThn28_N8Elastosx3Net3Ssl16SSLSocketFactory5ProbeERKN7Elastos6_EMuidE
+    _ZThn28_N8Elastosx3Net3Ssl16SSLSocketFactory6AddRefEv
+    _ZThn28_N8Elastosx3Net3Ssl16SSLSocketFactory7ReleaseEv
+    _ZThn8_N8Elastosx3Net3Ssl16SSLSocketFactory14GetInterfaceIDEP10IInterfacePN7Elastos6_EMuidE
+    _ZThn8_N8Elastosx3Net3Ssl16SSLSocketFactory5ProbeERKN7Elastos6_EMuidE
+    _ZThn8_N8Elastosx3Net3Ssl16SSLSocketFactory6AddRefEv
+    _ZThn8_N8Elastosx3Net3Ssl16SSLSocketFactory7ReleaseEv

@@ -2,7 +2,7 @@
 #ifndef __ELASTOSX_NET_SSL_SSLSOCKETFACTORY_H__
 #define __ELASTOSX_NET_SSL_SSLSOCKETFACTORY_H__
 
-#include "SocketFactory.h"
+#include <elastosx/net/SocketFactory.h>
 
 namespace Elastosx {
 namespace Net {
@@ -70,6 +70,11 @@ public:
         /* [in] */ Int32 port,
         /* [in] */ Boolean autoClose,
         /* [out] */ ISocket** sock) = 0;
+
+protected:
+    SSLSocketFactory();
+
+    virtual ~SSLSocketFactory();
 
 private:
     // FIXME EXPORT CONTROL

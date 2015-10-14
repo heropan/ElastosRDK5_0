@@ -3,7 +3,6 @@ module
 {
 
     interface Elastos.Droid.Net.ILinkAddress;
-
     interface Elastos.Droid.Os.IParcel;
 
     using interface Elastos.Net.IInetAddress;

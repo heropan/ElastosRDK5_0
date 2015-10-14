@@ -108,9 +108,12 @@ module
 
     using interface Elastos.Core.IComparable;
     using interface Elastos.Core.ICharSequence;
+    using interface Elastos.IO.IFile;
     using interface Elastos.IO.IFileDescriptor;
     using interface Elastos.Net.IInetAddress;
     using interface Elastos.Net.IInterfaceAddress;
+    using interface Elastosx.Net.ISocketFactory;
+    using interface Elastosx.Net.Ssl.ISSLSocketFactory;
 
     namespace Elastos {
     namespace Droid {
@@ -731,6 +734,72 @@ module
 
     singleton class CRouteInfoHelper {
         interface IRouteInfoHelper;
+    }
+
+    [deprecated]
+    class CRssiCurve {
+        constructor(
+            [in] Int32 start,
+            [in] Int32 bucketWidth,
+            [in] ArrayOf<Byte>* rssiBuckets);
+
+        interface IParcelable;
+        interface IRssiCurve;
+    }
+
+    class CSSLCertificateSocketFactory {
+        constructor(
+            [in] Int32 handshakeTimeoutMillis);
+
+        interface ISSLSocketFactory;
+        interface ISocketFactory;
+        interface ISSLCertificateSocketFactory;
+    }
+
+    singleton class CSSLCertificateSocketFactoryHelper {
+        interface ISSLCertificateSocketFactoryHelper;
+    }
+
+    class CSSLSessionCache {
+        constructor(
+            [in] IInterface* cache);
+
+        constructor(
+            [in] IFile* dir);
+
+        constructor(
+            [in] IContext* context);
+
+        interface ISSLSessionCache;
+    }
+
+    singleton class CSSLSessionCacheHelper {
+        interface ISSLSessionCacheHelper;
+    }
+
+    class CSamplingDataTracker {
+        constructor();
+
+        interface ISamplingDataTracker;
+    }
+
+    singleton class CSamplingDataTrackerHelper {
+        interface ISamplingDataTrackerHelper;
+    }
+
+    class CSamplingDataTrackerSamplingSnapshot {
+        constructor();
+
+        interface ISamplingDataTrackerSamplingSnapshot;
+    }
+
+    class CScoredNetwork {
+        constructor(
+            [in] INetworkKey* networkKey,
+            [in] IRssiCurve* rssiCurve);
+
+        interface IParcelable;
+        interface IScoredNetwork;
     }
 
     } // namespace Net

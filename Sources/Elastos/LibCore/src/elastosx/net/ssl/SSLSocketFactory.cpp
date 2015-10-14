@@ -20,6 +20,12 @@ Object SSLSocketFactory::sLock;
 
 CAR_INTERFACE_IMPL(SSLSocketFactory, SocketFactory, ISSLSocketFactory)
 
+SSLSocketFactory::SSLSocketFactory()
+{}
+
+SSLSocketFactory::~SSLSocketFactory()
+{}
+
 ECode SSLSocketFactory::GetDefault(
         /* [out] */ ISocketFactory** factory)
 {

@@ -194,5 +194,7 @@ module
     namespace Org {
     namespace Conscrypt {
         interface IPSKKeyManager {}
+        interface IOpenSSLSocketImpl {}
+        interface ISSLClientSessionCache {}
     }} // Org.Conscrypt
 }

@@ -18,7 +18,7 @@ module
      */
     interface ISamplingDataTracker {
         // Protects sampling data from concurrent access
-        GetSamplingDataLock(
+        GetSAMPLING_DATA_LOCK(
             [out] IInterface** o);
 
         StartSampling(

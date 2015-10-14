@@ -38,6 +38,14 @@
 #include "elastos/droid/net/CProxyDataTracker.h"
 #include "elastos/droid/net/CProxyInfo.h"
 #include "elastos/droid/net/CRouteInfo.h"
+#include "elastos/droid/net/CRssiCurve.h"
+#include "elastos/droid/net/CSSLCertificateSocketFactory.h"
+#include "elastos/droid/net/CSSLSessionCache.h"
+#include "elastos/droid/net/CSamplingDataTracker.h"
+#include "elastos/droid/net/CSamplingDataTrackerSamplingSnapshot.h"
+#include "elastos/droid/net/CScoredNetwork.h"
+// #include "elastos/droid/net/CSntpClient.h"
+// #include "elastos/droid/net/CStaticIpConfiguration.h"
 
 namespace Elastos {
 namespace Droid {
@@ -120,6 +128,22 @@ CAR_OBJECT_IMPL(CProxyDataTracker)
 CAR_OBJECT_IMPL(CProxyInfo)
 
 CAR_OBJECT_IMPL(CRouteInfo)
+
+CAR_OBJECT_IMPL(CRssiCurve)
+
+CAR_OBJECT_IMPL(CSSLCertificateSocketFactory)
+
+CAR_OBJECT_IMPL(CSSLSessionCache)
+
+CAR_OBJECT_IMPL(CSamplingDataTracker)
+
+CAR_OBJECT_IMPL(CSamplingDataTrackerSamplingSnapshot)
+
+CAR_OBJECT_IMPL(CScoredNetwork)
+
+// CAR_OBJECT_IMPL(CSntpClient)
+
+// CAR_OBJECT_IMPL(CStaticIpConfiguration)
 
 } // namespace Net
 } // namespace Droid

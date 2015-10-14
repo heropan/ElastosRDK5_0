@@ -3,23 +3,55 @@
 #define __ELASTOS_DROID_NET_CSSLCERTIFICATESOCKETFACTORYHELPER_H__
 
 #include "_Elastos_Droid_Net_CSSLCertificateSocketFactoryHelper.h"
-#include "CSSLCertificateSocketFactory"
+#include <elastos/core/Singleton.h>
 
-using namespace Org::Apache::Http::Conn::Ssl;
-
+using Elastosx::Net::ISocketFactory;
 using Elastos::Net::ISocket;
-using Elastos::Net::ISocketFactory;
-//using Elastos::Net::ISSLSocketFactory;
-using Elastos::Net::ISSLSessionCache;
-
+using Elastosx::Net::Ssl::ISSLSocketFactory;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
+/**
+ * SSLSocketFactory implementation with several extra features:
+ *
+ * <ul>
+ * <li>Timeout specification for SSL handshake operations
+ * <li>Hostname verification in most cases (see WARNINGs below)
+ * <li>Optional SSL session caching with {@link SSLSessionCache}
+ * <li>Optionally bypass all SSL certificate checks
+ * </ul>
+ *
+ * The handshake timeout does not apply to actual TCP socket connection.
+ * If you want a connection timeout as well, use {@link #createSocket()}
+ * and {@link Socket#connect(SocketAddress, int)}, after which you
+ * must verify the identity of the server you are connected to.
+ *
+ * <p class="caution"><b>Most {@link SSLSocketFactory} implementations do not
+ * verify the server's identity, allowing man-in-the-middle attacks.</b>
+ * This implementation does check the server's certificate hostname, but only
+ * for createSocket variants that specify a hostname.  When using methods that
+ * use {@link InetAddress} or which return an unconnected socket, you MUST
+ * verify the server's identity yourself to ensure a secure connection.</p>
+ *
+ * <p>One way to verify the server's identity is to use
+ * {@link HttpsURLConnection#getDefaultHostnameVerifier()} to get a
+ * {@link HostnameVerifier} to verify the certificate hostname.
+ *
+ * <p>On development devices, "setprop socket.relaxsslcheck yes" bypasses all
+ * SSL certificate and hostname checks for testing purposes.  This setting
+ * requires root access.
+ */
 CarClass(CSSLCertificateSocketFactoryHelper)
+    , public Singleton
+    , public ISSLCertificateSocketFactoryHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Returns a new socket factory instance with an optional handshake timeout.
      *
@@ -29,7 +61,7 @@ public:
      */
     CARAPI GetDefault(
         /* [in] */ Int32 handshakeTimeoutMillis,
-        /* [out] */ ISocketFactory** socketFactory);
+        /* [out] */ ISocketFactory** result);
 
     /**
      * Returns a new socket factory instance with an optional handshake timeout
@@ -43,7 +75,7 @@ public:
     CARAPI GetDefault(
         /* [in] */ Int32 handshakeTimeoutMillis,
         /* [in] */ ISSLSessionCache* cache,
-        /* [out] */ Elastos::Net::Ssl::ISSLSocketFactory** sslSocketFactory);
+        /* [out] */ ISSLSocketFactory** result);
 
     /**
      * Returns a new instance of a socket factory with all SSL security checks
@@ -60,7 +92,7 @@ public:
     CARAPI GetInsecure(
         /* [in] */ Int32 handshakeTimeoutMillis,
         /* [in] */ ISSLSessionCache* cache,
-        /* [out] */ Elastos::Net::Ssl::ISSLSocketFactory** sslSocketFactory);
+        /* [out] */ ISSLSocketFactory** result);
 
     /**
      * Returns a socket factory (also named SSLSocketFactory, but in a different
@@ -74,7 +106,7 @@ public:
     CARAPI GetHttpSocketFactory(
         /* [in] */ Int32 handshakeTimeoutMillis,
         /* [in] */ ISSLSessionCache* cache,
-        /* [out] */ Org::Apache::Http::Conn::Ssl::ISSLSocketFactory** sslSocketFactory);
+        /* [out] */ Org::Apache::Http::Conn::SSL::ISSLSocketFactory** result);
 
     /**
      * Verify the hostname of the certificate used by the other end of a
@@ -93,11 +125,17 @@ public:
      *
      * @hide
      */
-     CARAPI VerifyHostname(
+    CARAPI VerifyHostname(
         /* [in] */ ISocket* socket,
         /* [in] */ const String& hostname);
 
-private:
+    /**
+     * Returns an array containing the concatenation of length-prefixed byte
+     * strings.
+     */
+    CARAPI ToLengthPrefixedList(
+        /* [in] */ ArrayOf<Byte>* items,
+        /* [out, callee] */ ArrayOf<Byte>** result);
 
 };
 

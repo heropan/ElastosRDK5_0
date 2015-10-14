@@ -21,6 +21,9 @@ module
      * no super interface
      */
     interface ISSLSessionCache {
+    }
+
+    interface ISSLSessionCacheHelper {
         /**
          * Installs a {@link SSLSessionCache} on a {@link SSLContext}. The cache will
          * be used on all socket factories created by this context (including factories
