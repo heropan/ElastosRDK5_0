@@ -24,14 +24,14 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    CARAPI GetLength(
+    virtual CARAPI GetLength(
         /* [out] */ Int32* length);
 
-    CARAPI GetCharAt(
+    virtual CARAPI GetCharAt(
         /* [in] */ Int32 i,
         /* [out] */ Char32* ch);
 
-    CARAPI ToString(
+    virtual CARAPI ToString(
         /* [out] */ String* str);
 
     CARAPI GetChars(
@@ -87,6 +87,7 @@ protected:
     CARAPI_(Boolean) IsSpanEquals(
         /* [in] */ IInterface* lhs,
         /* [in] */ IInterface* rhs);
+
 private:
     CARAPI SendSpanAdded(
         /* [in] */ IInterface* what,

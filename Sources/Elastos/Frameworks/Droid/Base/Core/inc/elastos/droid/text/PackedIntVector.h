@@ -15,7 +15,8 @@ namespace Text {
  * offsetting the values in segments of a given column.
  */
 
-class PackedIntVector : public ElRefBase
+class PackedIntVector
+    : public Object
 {
 public:
     /**
@@ -27,7 +28,7 @@ public:
     PackedIntVector(
         /* [in] */ Int32 columns);
 
-    ~PackedIntVector();
+    virtual ~PackedIntVector();
 
     /**
      * Returns the value at the specified row and column.
@@ -41,7 +42,7 @@ public:
      *         (row &lt; 0 || row >= size()) or the column is out of range
      *         (column &lt; 0 || column >= width()).
      */
-    virtual CARAPI_(Int32) GetValue(
+    CARAPI_(Int32) GetValue(
         /* [in] */ Int32 row,
         /* [in] */ Int32 column);
 
@@ -55,7 +56,7 @@ public:
      *         (row &lt; 0 || row >= size()) or the column is out of range
      *         (column &lt; 0 || column >= width()).
      */
-    virtual CARAPI_(void) SetValue(
+    CARAPI_(void) SetValue(
         /* [in] */ Int32 row,
         /* [in] */ Int32 column,
         /* [in] */ Int32 value);
@@ -72,7 +73,7 @@ public:
      *         (startRow &lt; 0 || startRow > size()) or the column
      *         is out of range (column &lt; 0 || column >= width()).
      */
-    virtual CARAPI_(void) AdjustValuesBelow(
+    CARAPI_(void) AdjustValuesBelow(
         /* [in] */ Int32 startRow,
         /* [in] */ Int32 column,
         /* [in] */ Int32 delta);
@@ -90,7 +91,7 @@ public:
      *         (row &lt; 0 || row > size()) or if the length of the
      *         values array is too small (values.length < width()).
      */
-    virtual CARAPI_(void) InsertAt(
+    CARAPI_(void) InsertAt(
         /* [in] */ Int32 row,
         /* [in] */ ArrayOf<Int32>* values);
 
@@ -105,7 +106,7 @@ public:
      *         are out of range (row &lt; 0 || count &lt; 0 ||
      *         row + count > size()).
      */
-    virtual CARAPI_(void) DeleteAt(
+    CARAPI_(void) DeleteAt(
         /* [in] */ Int32 row,
         /* [in] */ Int32 count);
 
@@ -115,7 +116,7 @@ public:
      *
      * @return the number of rows.
      */
-    virtual CARAPI_(Int32) Size();
+    CARAPI_(Int32) Size();
 
     /**
      * Returns the width of the PackedIntVector.  This number is set
@@ -123,7 +124,7 @@ public:
      *
      * @return the number of columns.
      */
-    virtual CARAPI_(Int32) Width();
+    CARAPI_(Int32) Width();
 
 private:
     /**

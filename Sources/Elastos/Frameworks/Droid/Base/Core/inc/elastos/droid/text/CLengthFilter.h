@@ -12,7 +12,7 @@ namespace Droid {
 namespace Text {
 
 CarClass(CLengthFilter)
-    : public Object
+    , public Object
     , public ILengthFilter
     , public IInputFilter
 {

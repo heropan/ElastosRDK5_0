@@ -222,7 +222,7 @@ Float MeasuredText::AddStyleRun(
     ITextPaint* workPaint = mWorkPaint.Get();
     workPaint->Set(paint);
     // XXX paint should not have a baseline shift, but...
-    // workPaint->SetBaselineShift(0);
+    workPaint->SetBaselineShift(0);
 
     AutoPtr<IReplacementSpan> replacement;
     for (Int32 i = 0; i < spans->GetLength(); i++) {
@@ -254,7 +254,7 @@ Float MeasuredText::AddStyleRun(
 
     if (fm != NULL) {
         Int32 baselineShift;
-        // workPaint->GetBaselineShift(&baselineShift);
+        workPaint->GetBaselineShift(&baselineShift);
         if (baselineShift < 0) {
             Int32 top, ascent;
             fm->GetTop(&top);

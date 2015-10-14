@@ -1,8 +1,8 @@
 
 #include "elastos/droid/text/PackedIntVector.h"
-#include "elastos/droid/utility/ArrayUtils.h"
+// #include "elastos/droid/internal/utility/ArrayUtils.h"
 
-using Elastos::Droid::Internal::Utility::ArrayUtils;
+// using Elastos::Droid::Internal::Utility::ArrayUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -168,8 +168,9 @@ Int32 PackedIntVector::Width()
 void PackedIntVector::GrowBuffer()
 {
     Int32 columns = mColumns;
-    AutoPtr<ArrayOf<Int32> > newvalues = ArrayUtils::NewUnpaddedIntArray(
-            GrowingArrayUtils::GrowSize(size()) * columns);
+    AutoPtr<ArrayOf<Int32> > newvalues;
+    assert(0 && "TODO");
+    // newvalues = ArrayUtils::NewUnpaddedIntArray(GrowingArrayUtils::GrowSize(size()) * columns);
     Int32 newsize = newvalues->GetLength() / columns;
 
     AutoPtr<ArrayOf<Int32> > valuegap = mValueGap;

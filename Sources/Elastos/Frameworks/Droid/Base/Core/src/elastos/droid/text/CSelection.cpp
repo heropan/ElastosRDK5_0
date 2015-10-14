@@ -7,6 +7,10 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
+CAR_INTERFACE_IMPL(CSelection, Singleton, ISelection)
+
+CAR_SINGLETON_IMPL(CSelection)
+
 ECode CSelection::GetSelectionStart(
     /* [in] */ ICharSequence* text,
     /* [out] */ Int32* start)
@@ -223,7 +227,7 @@ ECode CSelection::MoveToFollowing(
     /* [in] */ ISpannable* text,
     /* [in] */ ISelectionPositionIterator* iter,
     /* [in] */ Boolean extendSelection,
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     Boolean ret = Selection::MoveToFollowing(text, iter, extendSelection);
     if (result) *result = ret;

@@ -17,54 +17,12 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
-// {6A565FF4-9481-4C51-B29D-53E8E20C8D3A}
-static const InterfaceID EIID_ChangeWatcher =
-    { 0x6a565ff4, 0x9481, 0x4c51, { 0xb2, 0x9d, 0x53, 0xe8, 0xe2, 0xc, 0x8d, 0x3a } };
+CAR_INTERFACE_IMPL_3(DynamicLayout::ChangeWatcher, Object, ITextWatcher, ISpanWatcher, INoCopySpan, )
 
 DynamicLayout::ChangeWatcher::ChangeWatcher(
     /* [in] */ IWeakReference* layout)
     : mLayout(layout)
 {
-}
-
-PInterface DynamicLayout::ChangeWatcher::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(ISpanWatcher*)this;
-    }
-    else if (riid == EIID_ITextWatcher) {
-        return (ITextWatcher*)this;
-    }
-    else if (riid == EIID_ISpanWatcher) {
-        return (ISpanWatcher*)this;
-    }
-    else if (riid == EIID_INoCopySpan) {
-        return (INoCopySpan*)(ISpanWatcher*)this;
-    }
-    else if (riid == EIID_ChangeWatcher) {
-        return reinterpret_cast<PInterface>(this);
-    }
-
-    return NULL;
-}
-
-UInt32 DynamicLayout::ChangeWatcher::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 DynamicLayout::ChangeWatcher::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode DynamicLayout::ChangeWatcher::GetInterfaceID(
-    /* [in] */ IInterface *objects,
-    /* [out] */ InterfaceID *IID)
-{
-    assert(0);
-    return E_NOT_IMPLEMENTED;
 }
 
 void DynamicLayout::ChangeWatcher::Reflow(
@@ -174,6 +132,8 @@ const Int32 DynamicLayout::DIR_SHIFT;
 const Int32 DynamicLayout::TAB_MASK;
 const Int32 DynamicLayout::ELLIPSIS_UNDEFINED;
 
+CAR_INTERFACE_IMPL(CStaticLayout, Layout, IStaticLayout)
+
 AutoPtr<CStaticLayout> DynamicLayout::GetStaticLayout()
 {
     if (!sIsStaticLayoutInited) {
@@ -204,7 +164,7 @@ DynamicLayout::DynamicLayout()
  * Make a layout for the specified text that will be updated as
  * the text is changed.
  */
-DynamicLayout::DynamicLayout(
+ECode DynamicLayout::constructor(
     /* [in] */ ICharSequence* base,
     /* [in] */ ITextPaint* paint,
     /* [in] */ Int32 width,
@@ -212,15 +172,9 @@ DynamicLayout::DynamicLayout(
     /* [in] */ Float spacingmult,
     /* [in] */ Float spacingadd,
     /* [in] */ Boolean includepad)
-    : mIncludePad(FALSE)
-    , mEllipsize(FALSE)
-    , mEllipsizedWidth(0)
-    , mNumberOfBlocks(0)
-    , mTopPadding(0)
-    , mBottomPadding(0)
 {
-    Init(base, base, paint, width, align, spacingmult, spacingadd,
-             includepad);
+    return constructor(base, base, paint, width, align, spacingmult, spacingadd,
+        includepad);
 }
 
 /**
@@ -228,7 +182,7 @@ DynamicLayout::DynamicLayout(
  * being the primary example of a transformation)
  * that will be updated as the base text is changed.
  */
-DynamicLayout::DynamicLayout(
+ECode DynamicLayout::constructor(
     /* [in] */ ICharSequence* base,
     /* [in] */ ICharSequence* display,
     /* [in] */ ITextPaint* paint,
@@ -237,15 +191,9 @@ DynamicLayout::DynamicLayout(
     /* [in] */ Float spacingmult,
     /* [in] */ Float spacingadd,
     /* [in] */ Boolean includepad)
-    : mIncludePad(FALSE)
-    , mEllipsize(FALSE)
-    , mEllipsizedWidth(0)
-    , mNumberOfBlocks(0)
-    , mTopPadding(0)
-    , mBottomPadding(0)
 {
-    Init(base, display, paint, width, align, spacingmult, spacingadd,
-             includepad, -1, 0);
+    return constructor(base, display, paint, width, align, spacingmult, spacingadd,
+        includepad, -1, 0);
 }
 
 /**
@@ -255,7 +203,7 @@ DynamicLayout::DynamicLayout(
  * If ellipsize is non-null, the Layout will ellipsize the text
  * down to ellipsizedWidth.
  */
-DynamicLayout::DynamicLayout(
+ECode DynamicLayout::constructor(
     /* [in] */ ICharSequence* base,
     /* [in] */ ICharSequence* display,
     /* [in] */ ITextPaint* paint,
@@ -266,15 +214,9 @@ DynamicLayout::DynamicLayout(
     /* [in] */ Boolean includepad,
     /* [in] */ TextUtilsTruncateAt ellipsize,
     /* [in] */ Int32 ellipsizedWidth)
-    : mIncludePad(FALSE)
-    , mEllipsize(FALSE)
-    , mEllipsizedWidth(0)
-    , mNumberOfBlocks(0)
-    , mTopPadding(0)
-    , mBottomPadding(0)
 {
-    Init(base, display, paint, width, align, TextDirectionHeuristics::FIRSTSTRONG_LTR,
-                spacingmult, spacingadd, includepad, ellipsize, ellipsizedWidth);
+    return constructor(base, display, paint, width, align, TextDirectionHeuristics::FIRSTSTRONG_LTR,
+        spacingmult, spacingadd, includepad, ellipsize, ellipsizedWidth);
 }
 
 /**
@@ -286,99 +228,7 @@ DynamicLayout::DynamicLayout(
  * *
  * *@hide
  */
-DynamicLayout::DynamicLayout(
-    /* [in] */ ICharSequence* base,
-    /* [in] */ ICharSequence* display,
-    /* [in] */ ITextPaint* paint,
-    /* [in] */ Int32 width,
-    /* [in] */ LayoutAlignment align,
-    /* [in] */ ITextDirectionHeuristic* textDir,
-    /* [in] */ Float spacingmult,
-    /* [in] */ Float spacingadd,
-    /* [in] */ Boolean includepad,
-    /* [in] */ TextUtilsTruncateAt ellipsize,
-    /* [in] */ Int32 ellipsizedWidth)
-    : mIncludePad(FALSE)
-    , mEllipsize(FALSE)
-    , mEllipsizedWidth(0)
-    , mNumberOfBlocks(0)
-    , mTopPadding(0)
-    , mBottomPadding(0)
-{
-    Init(base, display, paint, width, align,
-         textDir, spacingmult, spacingadd,
-         includepad, ellipsize, ellipsizedWidth);
-}
-
-/**
- * Make a layout for the specified text that will be updated as
- * the text is changed.
- */
-ECode DynamicLayout::Init(
-    /* [in] */ ICharSequence* base,
-    /* [in] */ ITextPaint* paint,
-    /* [in] */ Int32 width,
-    /* [in] */ LayoutAlignment align,
-    /* [in] */ Float spacingmult,
-    /* [in] */ Float spacingadd,
-    /* [in] */ Boolean includepad)
-{
-    return Init(base, base, paint, width, align, spacingmult, spacingadd,
-             includepad);
-}
-
-/**
- * Make a layout for the transformed text (password transformation
- * being the primary example of a transformation)
- * that will be updated as the base text is changed.
- */
-ECode DynamicLayout::Init(
-    /* [in] */ ICharSequence* base,
-    /* [in] */ ICharSequence* display,
-    /* [in] */ ITextPaint* paint,
-    /* [in] */ Int32 width,
-    /* [in] */ LayoutAlignment align,
-    /* [in] */ Float spacingmult,
-    /* [in] */ Float spacingadd,
-    /* [in] */ Boolean includepad)
-{
-    return Init(base, display, paint, width, align, spacingmult, spacingadd,
-             includepad, -1, 0);
-}
-
-/**
- * Make a layout for the transformed text (password transformation
- * being the primary example of a transformation)
- * that will be updated as the base text is changed.
- * If ellipsize is non-null, the Layout will ellipsize the text
- * down to ellipsizedWidth.
- */
-ECode DynamicLayout::Init(
-    /* [in] */ ICharSequence* base,
-    /* [in] */ ICharSequence* display,
-    /* [in] */ ITextPaint* paint,
-    /* [in] */ Int32 width,
-    /* [in] */ LayoutAlignment align,
-    /* [in] */ Float spacingmult,
-    /* [in] */ Float spacingadd,
-    /* [in] */ Boolean includepad,
-    /* [in] */ TextUtilsTruncateAt ellipsize,
-    /* [in] */ Int32 ellipsizedWidth)
-{
-    return Init(base, display, paint, width, align, TextDirectionHeuristics::FIRSTSTRONG_LTR,
-                spacingmult, spacingadd, includepad, ellipsize, ellipsizedWidth);
-}
-
-/**
- * Make a layout for the transformed text (password transformation
- * being the primary example of a transformation)
- * that will be updated as the base text is changed.
- * If ellipsize is non-null, the Layout will ellipsize the text
- * down to ellipsizedWidth.
- * *
- * *@hide
- */
-ECode DynamicLayout::Init(
+ECode DynamicLayout::constructor(
     /* [in] */ ICharSequence* base,
     /* [in] */ ICharSequence* display,
     /* [in] */ ITextPaint* paint,
@@ -762,14 +612,14 @@ void DynamicLayout::AddBlockAtOffset(
     }
 }
 
-void DynamicLayout::UpdateBlocks(
+ECode DynamicLayout::UpdateBlocks(
     /* [in] */ Int32 startLine,
     /* [in] */ Int32 endLine,
     /* [in] */ Int32 newLineCount)
 {
     if (mBlockEndLines == NULL) {
         CreateBlocks();
-        return;
+        return NOERROR;
     }
 
     Int32 firstBlock = -1;
@@ -806,7 +656,7 @@ void DynamicLayout::UpdateBlocks(
         (*(mBlockEndLines.Get()))[0] = 0;
         (*(mBlockIndices.Get()))[0] = INVALID_BLOCK_INDEX;
         mNumberOfBlocks = 1;
-        return;
+        return NOERROR;
     }
 
     if (newNumberOfBlocks > mBlockEndLines->GetLength()) {
@@ -859,13 +709,15 @@ void DynamicLayout::UpdateBlocks(
         (*mBlockEndLines)[blockIndex] = lastBlockEndLine + deltaLines;
         (*mBlockIndices)[blockIndex] = INVALID_BLOCK_INDEX;
     }
+
+    return NOERROR;
 }
 
 /**
  * This package private method is used for test purposes only
  * @hide
  */
-void DynamicLayout::SetBlocksDataForTest(
+ECode DynamicLayout::SetBlocksDataForTest(
     /* [in] */ ArrayOf<Int32>* blockEndLines,
     /* [in] */ ArrayOf<Int32>* blockIndices,
     /* [in] */ Int32 numberOfBlocks)
@@ -875,38 +727,51 @@ void DynamicLayout::SetBlocksDataForTest(
     mBlockEndLines->Copy(blockEndLines);
     mBlockIndices->Copy(blockIndices);
     mNumberOfBlocks = numberOfBlocks;
+    return NOERROR;
 }
 
 /**
  * @hide
  */
-AutoPtr< ArrayOf<Int32> > DynamicLayout::GetBlockEndLines()
+ECode DynamicLayout::GetBlockEndLines(
+    /* [out, calllee] */ ArrayOf<Int32>** result)
 {
-    return mBlockEndLines;
+    VALIDATENOT_NULL(result)
+    *result = mBlockEndLines;
+    return NOERROR;
 }
 
 /**
  * @hide
  */
-AutoPtr< ArrayOf<Int32> > DynamicLayout::GetBlockIndices()
+ECode DynamicLayout::GetBlockIndices(
+    /* [out, calllee] */ ArrayOf<Int32>** result)
 {
-    return mBlockIndices;
+    VALIDATENOT_NULL(result)
+    *result = mBlockIndices;
+    return NOERROR;
 }
 
 /**
  * @hide
  */
-Int32 DynamicLayout::GetNumberOfBlocks()
+ECode DynamicLayout::GetNumberOfBlocks(
+    /* [out] */ Int32* result)
 {
-    return mNumberOfBlocks;
+    VALIDATENOT_NULL(result)
+    *result = mNumberOfBlocks;
+    return NOERROR;
 }
 
 /**
  * @hide
  */
-Int32 DynamicLayout::GetIndexFirstChangedBlock()
+ECode DynamicLayout::GetIndexFirstChangedBlock(
+    /* [out] */ Int32* result)
 {
-    return mIndexFirstChangedBlock;
+    VALIDATENOT_NULL(result)
+    *result = mIndexFirstChangedBlock;
+    return NOERROR;
 }
 
 /**
@@ -920,96 +785,137 @@ ECode DynamicLayout::SetIndexFirstChangedBlock(
 }
 
 //@Override
-Int32 DynamicLayout::GetLineCount()
+ECode DynamicLayout::GetLineCount(
+    /* [out] */ Int32* result)
 {
-    return mInts->Size() - 1;
+    VALIDATENOT_NULL(result)
+    *result = mInts->Size() - 1;
+    return NOERROR;
 }
 
 //@Override
-Int32 DynamicLayout::GetLineTop(
-    /* [in] */ Int32 line)
+ECode DynamicLayout::GetLineTop(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
-    return mInts->GetValue(line, TOP);
+    VALIDATENOT_NULL(result)
+    *result = mInts->GetValue(line, TOP);
+    return NOERROR;
 }
 
 //@Override
-Int32 DynamicLayout::GetLineDescent(
-    /* [in] */ Int32 line)
+ECode DynamicLayout::GetLineDescent(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
-    return mInts->GetValue(line, DESCENT);
+    VALIDATENOT_NULL(result)
+    *result = mInts->GetValue(line, DESCENT);
+    return NOERROR;
 }
 
 //@Override
-Int32 DynamicLayout::GetLineStart(
-    /* [in] */ Int32 line)
+ECode DynamicLayout::GetLineStart(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
-    return mInts->GetValue(line, START) & START_MASK;
+    VALIDATENOT_NULL(result)
+    *result = mInts->GetValue(line, START) & START_MASK;
+    return NOERROR;
 }
 
 //@Override
-Boolean DynamicLayout::GetLineContainsTab(
-    /* [in] */ Int32 line)
+ECode DynamicLayout::GetLineContainsTab(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
-    return (mInts->GetValue(line, TAB) & TAB_MASK) != 0;
+    VALIDATENOT_NULL(result)
+    *result = (mInts->GetValue(line, TAB) & TAB_MASK) != 0;
+    return NOERROR;
 }
 
 //@Override
-Int32 DynamicLayout::GetParagraphDirection(
-    /* [in] */ Int32 line)
+ECode DynamicLayout::GetParagraphDirection(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
-    return mInts->GetValue(line, DIR) >> DIR_SHIFT;
+    VALIDATENOT_NULL(result)
+    *result = mInts->GetValue(line, DIR) >> DIR_SHIFT;
+    return NOERROR;
 }
 
 //@Override
-AutoPtr<ILayoutDirections> DynamicLayout::GetLineDirections(
-    /* [in] */ Int32 line)
+ECode DynamicLayout::GetLineDirections(
+    /* [in] */ Int32 line,
+    /* [out] */ ILayoutDirections** result)
 {
+    VALIDATENOT_NULL(result)
+
     assert(line >= 0);
     AutoPtr<ILayoutDirections> ld;
     if (mObjects != NULL) {
         ld = mObjects->GetValue(line, 0);
     }
-    return ld;
+    *result = ld;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 //@Override
-Int32 DynamicLayout::GetTopPadding()
+ECode DynamicLayout::GetTopPadding(
+    /* [out] */ Int32* result)
 {
-    return mTopPadding;
+    VALIDATENOT_NULL(result)
+    *result = mTopPadding;
+    return NOERROR;
 }
 
 //@Override
-Int32 DynamicLayout::GetBottomPadding()
+ECode DynamicLayout::GetBottomPadding(
+    /* [out] */ Int32* result)
 {
-    return mBottomPadding;
+    VALIDATENOT_NULL(result)
+    *result = mBottomPadding;
+    return NOERROR;
 }
 
 //@Override
-Int32 DynamicLayout::GetEllipsizedWidth()
+ECode DynamicLayout::GetEllipsizedWidth(
+    /* [out] */ Int32* result)
 {
-    return mEllipsizedWidth;
+    VALIDATENOT_NULL(result)
+    *result = mEllipsizedWidth;
+    return NOERROR;
 }
 
 //@Override
-Int32 DynamicLayout::GetEllipsisStart(
-    /* [in] */ Int32 line)
+ECode DynamicLayout::GetEllipsisStart(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
+    VALIDATENOT_NULL(result)
+    *result = 0;
     if (mEllipsizeAt == -1) {
-        return 0;
+        return NOERROR;
     }
 
-    return mInts->GetValue(line, ELLIPSIS_START);
+    *result = mInts->GetValue(line, ELLIPSIS_START);
+    return NOERROR;
 }
 
 //@Override
-Int32 DynamicLayout::GetEllipsisCount(
-    /* [in] */ Int32 line)
+ECode DynamicLayout::GetEllipsisCount(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
+    VALIDATENOT_NULL(result)
+    *result = 0;
+
     if (mEllipsizeAt == -1) {
-        return 0;
+        return NOERROR;
     }
 
-    return mInts->GetValue(line, ELLIPSIS_COUNT);
+    *result = mInts->GetValue(line, ELLIPSIS_COUNT);
+    return NOERROR;
 }
 
 } // namespace Text

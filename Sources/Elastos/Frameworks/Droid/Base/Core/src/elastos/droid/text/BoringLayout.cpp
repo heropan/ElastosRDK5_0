@@ -17,12 +17,7 @@ namespace Text {
 
 const Char32 BoringLayout::FIRST_RIGHT_TO_LEFT = 0x0590;//'\u0590';
 
-PInterface BoringLayout::Probe(
-    /* [in] */ REIID riid)
-{
-    assert(0);
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL_2(BoringLayout, Layout, IBoringLayout, ITextUtilsEllipsizeCallback)
 
 AutoPtr<IBoringLayout> BoringLayout::Make(
     /* [in] */ ICharSequence* source,
@@ -34,11 +29,11 @@ AutoPtr<IBoringLayout> BoringLayout::Make(
     /* [in] */ IBoringLayoutMetrics* metrics,
     /* [in] */ Boolean includepad)
 {
-    AutoPtr<IBoringLayout> layout;
-    ASSERT_SUCCEEDED(CBoringLayout::New(source, paint, outerwidth, align,
-        spacingmult, spacingadd, metrics, includepad, (IBoringLayout**)&layout));
+    AutoPtr<CBoringLayout> layout;
+    ASSERT_SUCCEEDED(CBoringLayout::NewByFriend(source, paint, outerwidth, align,
+        spacingmult, spacingadd, metrics, includepad, (CBoringLayout**)&layout));
 
-    return layout;
+    return (IBoringLayout*)layout.Get();
 }
 
 AutoPtr<IBoringLayout> BoringLayout::Make(
@@ -53,19 +48,14 @@ AutoPtr<IBoringLayout> BoringLayout::Make(
     /* [in] */ TextUtilsTruncateAt ellipsize,
     /* [in] */ Int32 ellipsizedWidth)
 {
-    AutoPtr<IBoringLayout> layout;
-    ASSERT_SUCCEEDED(CBoringLayout::New(source, paint, outerwidth, align,
+    AutoPtr<CBoringLayout> layout;
+    ASSERT_SUCCEEDED(CBoringLayout::NewByFriend(source, paint, outerwidth, align,
         spacingmult, spacingadd, metrics, includepad, ellipsize,
-        ellipsizedWidth, (IBoringLayout**)&layout));
+        ellipsizedWidth, (CBoringLayout**)&layout));
 
-    return layout;
+    return (IBoringLayout*)layout.Get();
 }
 
-/**
- * Returns a BoringLayout for the specified text, potentially reusing
- * this one if it is already suitable.  The caller must make sure that
- * no one is still using this Layout.
- */
 ECode BoringLayout::ReplaceOrMake(
     /* [in] */ ICharSequence* source,
     /* [in] */ ITextPaint* paint,
@@ -77,7 +67,7 @@ ECode BoringLayout::ReplaceOrMake(
     /* [in] */ Boolean includepad,
     /* [out] */ IBoringLayout** layout)
 {
-    assert(layout != NULL);
+    VALIDATE_NOT_NULL(layout)
 
     ReplaceWith(source, paint, outerwidth, align, spacingmult,
         spacingadd);
@@ -93,12 +83,7 @@ ECode BoringLayout::ReplaceOrMake(
     return NOERROR;
 }
 
-/**
- * Returns a BoringLayout for the specified text, potentially reusing
- * this one if it is already suitable.  The caller must make sure that
- * no one is still using this Layout.
- */
-CARAPI BoringLayout::ReplaceOrMake(
+ECode BoringLayout::ReplaceOrMake(
     /* [in] */ ICharSequence* source,
     /* [in] */ ITextPaint* paint,
     /* [in] */ Int32 outerwidth,
@@ -111,13 +96,12 @@ CARAPI BoringLayout::ReplaceOrMake(
     /* [in] */ Int32 ellipsizedWidth,
     /* [out] */ IBoringLayout** layout)
 {
-    assert(layout != NULL);
+    VALIDATE_NOT_NULL(layout)
 
     Boolean trust = FALSE;
 
     if (ellipsize == TextUtilsTruncateAt_NONE || ellipsize == TextUtilsTruncateAt_MARQUEE) {
-        ReplaceWith(source, paint, outerwidth, align, spacingmult,
-                    spacingadd);
+        ReplaceWith(source, paint, outerwidth, align, spacingmult, spacingadd);
 
         mEllipsizedWidth = outerwidth;
         mEllipsizedStart = 0;
@@ -125,9 +109,9 @@ CARAPI BoringLayout::ReplaceOrMake(
         trust = TRUE;
     } else {
        ReplaceWith(TextUtils::Ellipsize(source, paint, ellipsizedWidth,
-                                      ellipsize, TRUE, (ITextUtilsEllipsizeCallback*)this->Probe(EIID_ITextUtilsEllipsizeCallback)),
-                   paint, outerwidth, align, spacingmult,
-                   spacingadd);
+            ellipsize, TRUE, THIS_PROBE(ITextUtilsEllipsizeCallback)),
+            paint, outerwidth, align, spacingmult,
+            spacingadd);
 
         mEllipsizedWidth = ellipsizedWidth;
         trust = FALSE;
@@ -150,7 +134,7 @@ BoringLayout::BoringLayout()
      , mEllipsizedCount(0)
 {}
 
-BoringLayout::BoringLayout(
+ECode BoringLayout::constructor(
     /* [in] */ ICharSequence* source,
     /* [in] */ ITextPaint* paint,
     /* [in] */ Int32 outerwidth,
@@ -159,19 +143,16 @@ BoringLayout::BoringLayout(
     /* [in] */ Float spacingadd,
     /* [in] */ IBoringLayoutMetrics* metrics,
     /* [in] */ Boolean includepad)
-    : Layout(source, paint, outerwidth, align, spacingmult, spacingadd)
-    , mTopPadding(0)
-    , mBottomPadding(0)
-    , mMax(0)
-    , mEllipsizedWidth(outerwidth)
-    , mEllipsizedStart(0)
-    , mEllipsizedCount(0)
 {
-    Init(source, paint, outerwidth, align, spacingmult, spacingadd,
+    FAIL_RETURN(Layout::constructor(source, paint, outerwidth, align, spacingmult, spacingadd))
+    mEllipsizedWidth = outerwidth;
+    mEllipsizedStart = 0;
+    mEllipsizedCount = 0;
+    return Init(source, paint, outerwidth, align, spacingmult, spacingadd,
         metrics, includepad, TRUE);
 }
 
-BoringLayout::BoringLayout(
+ECode BoringLayout::constructor(
     /* [in] */ ICharSequence* source,
     /* [in] */ ITextPaint* paint,
     /* [in] */ Int32 outerwidth,
@@ -182,19 +163,13 @@ BoringLayout::BoringLayout(
     /* [in] */ Boolean includepad,
     /* [in] */ TextUtilsTruncateAt ellipsize,
     /* [in] */ Int32 ellipsizedWidth)
-    : mTopPadding(0)
-    , mBottomPadding(0)
-    , mMax(0)
-    , mEllipsizedWidth(0)
-    , mEllipsizedStart(0)
-    , mEllipsizedCount(0)
 {
     /*
      * It is silly to have to call super() and then replaceWith(),
      * but we can't use "this" for the callback until the call to
      * super() finishes.
      */
-    Layout::Init(source, paint, outerwidth, align, spacingmult, spacingadd);
+    FAIL_RETURN(Layout::Init(source, paint, outerwidth, align, spacingmult, spacingadd))
 
     Boolean trust = FALSE;
 
@@ -203,10 +178,10 @@ BoringLayout::BoringLayout(
         mEllipsizedStart = 0;
         mEllipsizedCount = 0;
         trust = TRUE;
-    } else {
-        assert(0);
+    }
+    else {
         ReplaceWith(TextUtils::Ellipsize(source, paint, ellipsizedWidth,
-                     ellipsize, TRUE, (ITextUtilsEllipsizeCallback*)this->Probe(EIID_ITextUtilsEllipsizeCallback)),
+                     ellipsize, TRUE, THIS_PROBE(ITextUtilsEllipsizeCallback)),
                    paint, outerwidth, align, spacingmult,
                    spacingadd);
 
@@ -214,11 +189,11 @@ BoringLayout::BoringLayout(
         trust = FALSE;
     }
 
-    Init(GetText(), paint, outerwidth, align, spacingmult, spacingadd,
+    return Init(GetText(), paint, outerwidth, align, spacingmult, spacingadd,
          metrics, includepad, trust);
 }
 
-void BoringLayout::Init(
+ECode BoringLayout::Init(
     /* [in] */ ICharSequence* source,
     /* [in] */ ITextPaint* paint,
     /* [in] */ Int32 outerwidth,
@@ -229,17 +204,17 @@ void BoringLayout::Init(
     /* [in] */ Boolean includepad,
     /* [in] */ Boolean trustWidth)
 {
-    assert(source != NULL);
+    VALIDATE_NOT_NULL(source)
     Int32 spacing;
 
-    mDirect = NULL;
+    mDirect = String(NULL);
 
     IObject* obj = IObject::Probe(source);
     if (obj != NULL) {
         ClassID clsid;
         obj->GetClassID(&clsid);
 
-        if (clsid == ECLSID_CStringWrapper && align == Elastos::Droid::Text::ALIGN_NORMAL) {
+        if (clsid == ECLSID_CString && align == Elastos::Droid::Text::ALIGN_NORMAL) {
             source->ToString(&mDirect);
         }
     }
@@ -278,7 +253,7 @@ void BoringLayout::Init(
         Int32 length = 0;
         source->GetLength(&length);
         line->Set(paint, source, 0, length, ILayout::DIR_LEFT_TO_RIGHT,
-                Layout::DIRS_ALL_LEFT_TO_RIGHT, FALSE, NULL);
+            Layout::DIRS_ALL_LEFT_TO_RIGHT, FALSE, NULL);
         mMax = (Int32) Elastos::Core::Math::Ceil(line->Metrics(NULL));
         TextLine::Recycle(line);
     }
@@ -287,73 +262,9 @@ void BoringLayout::Init(
         mTopPadding = mttop - mtascent;
         mBottomPadding = mtbottom - mtdescent;
     }
-}
-
-ECode BoringLayout::_Init(
-    /* [in] */ ICharSequence* source,
-    /* [in] */ ITextPaint* paint,
-    /* [in] */ Int32 outerwidth,
-    /* [in] */ LayoutAlignment align,
-    /* [in] */ Float spacingmult,
-    /* [in] */ Float spacingadd,
-    /* [in] */ IBoringLayoutMetrics* metrics,
-    /* [in] */ Boolean includepad)
-{
-    Layout::Init(source, paint, outerwidth, align, spacingmult, spacingadd);
-    mEllipsizedWidth = outerwidth;
-    mEllipsizedStart = 0;
-    mEllipsizedCount = 0;
-    Init(source, paint, outerwidth, align, spacingmult, spacingadd,
-        metrics, includepad, TRUE);
-
     return NOERROR;
 }
 
-ECode BoringLayout::_Init(
-    /* [in] */ ICharSequence* source,
-    /* [in] */ ITextPaint* paint,
-    /* [in] */ Int32 outerwidth,
-    /* [in] */ LayoutAlignment align,
-    /* [in] */ Float spacingmult,
-    /* [in] */ Float spacingadd,
-    /* [in] */ IBoringLayoutMetrics* metrics,
-    /* [in] */ Boolean includepad,
-    /* [in] */ TextUtilsTruncateAt ellipsize,
-    /* [in] */ Int32 ellipsizedWidth)
-{
-    /*
-     * It is silly to have to call super() and then replaceWith(),
-     * but we can't use "this" for the callback until the call to
-     * super() finishes.
-     */
-    Layout::Init(source, paint, outerwidth, align, spacingmult, spacingadd);
-
-    Boolean trust = FALSE;
-
-    if (ellipsize == TextUtilsTruncateAt_NONE || ellipsize == TextUtilsTruncateAt_MARQUEE) {
-        mEllipsizedWidth = outerwidth;
-        mEllipsizedStart = 0;
-        mEllipsizedCount = 0;
-        trust = TRUE;
-    } else {
-        ReplaceWith(TextUtils::Ellipsize(source, paint, ellipsizedWidth,
-                     ellipsize, TRUE, (ITextUtilsEllipsizeCallback*)this->Probe(EIID_ITextUtilsEllipsizeCallback)),
-                   paint, outerwidth, align, spacingmult,
-                   spacingadd);
-
-        mEllipsizedWidth = ellipsizedWidth;
-        trust = FALSE;
-    }
-
-    Init(GetText(), paint, outerwidth, align, spacingmult, spacingadd,
-         metrics, includepad, trust);
-
-    return NOERROR;
-}
-
-/**
- * Returns null if not boring; the width, ascent, and descent if boring.
- */
 AutoPtr<IBoringLayoutMetrics> BoringLayout::IsBoring(
     /* [in] */ ICharSequence* text,
     /* [in] */ ITextPaint* paint)
@@ -361,10 +272,6 @@ AutoPtr<IBoringLayoutMetrics> BoringLayout::IsBoring(
     return IsBoring(text, paint, TextDirectionHeuristics::FIRSTSTRONG_LTR, NULL);
 }
 
-/**
- * Returns null if not boring; the width, ascent, and descent if boring.
- * @hide
- */
 AutoPtr<IBoringLayoutMetrics> BoringLayout::IsBoring(
     /* [in] */ ICharSequence* text,
     /* [in] */ ITextPaint* paint,
@@ -373,11 +280,6 @@ AutoPtr<IBoringLayoutMetrics> BoringLayout::IsBoring(
     return IsBoring(text, paint, textDir, NULL);
 }
 
-/**
- * Returns null if not boring; the width, ascent, and descent in the
- * provided Metrics object (or a new one if the provided one was null)
- * if boring.
- */
 AutoPtr<IBoringLayoutMetrics> BoringLayout::IsBoring(
     /* [in] */ ICharSequence* text,
     /* [in] */ ITextPaint* paint,
@@ -386,12 +288,6 @@ AutoPtr<IBoringLayoutMetrics> BoringLayout::IsBoring(
     return IsBoring(text, paint, TextDirectionHeuristics::FIRSTSTRONG_LTR, metrics);
 }
 
-/**
- * Returns null if not boring; the width, ascent, and descent in the
- * provided Metrics object (or a new one if the provided one was null)
- * if boring.
- * @hide
- */
 AutoPtr<IBoringLayoutMetrics> BoringLayout::IsBoring(
     /* [in] */ ICharSequence* text,
     /* [in] */ ITextPaint* paint,
@@ -462,117 +358,142 @@ outer:
     }
 }
 
-//@Override
-Int32 BoringLayout::GetHeight()
+ECode BoringLayout::GetHeight(
+    /* [out] */ Int32* result)
 {
-    return mBottom;
+    VALIDATE_NOT_NULL(result)
+    *result = mBottom;
+    return NOERROR;
 }
 
-//@Override
-Int32 BoringLayout::GetLineCount()
+ECode BoringLayout::GetLineCount(
+    /* [out] */ Int32* result)
 {
-    return 1;
+    VALIDATE_NOT_NULL(result)
+    *result = 1;
+    return NOERROR;
 }
 
-//@Override
-Int32 BoringLayout::GetLineTop(
-    /* [in] */ Int32 line)
+ECode BoringLayout::GetLineTop(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
-    if (line == 0)
-        return 0;
-    else
-        return mBottom;
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+    if (line != 0)
+        *result = mBottom;
+    return NOERROR;
 }
 
-//@Override
-Int32 BoringLayout::GetLineDescent(
-    /* [in] */ Int32 line)
+ECode BoringLayout::GetLineDescent(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
-    return mDesc;
+    VALIDATE_NOT_NULL(result)
+    *result = mDesc;
+    return NOERROR;
 }
 
-//@Override
-Int32 BoringLayout::GetLineStart(
-    /* [in] */ Int32 line)
+ECode BoringLayout::GetLineStart(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
-    if (line == 0) {
-        return 0;
-    } else {
-        Int32 len;
-        GetText()->GetLength(&len);
-        return len;
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+    if (line != 0) {
+        AutoPtr<ICharSequence> csq;
+        GetText((ICharSequence**)&csq);
+        csq->GetLength(result);
     }
+    return NOERROR;
 }
 
-//@Override
-Int32 BoringLayout::GetParagraphDirection(
-    /* [in] */ Int32 line)
+ECode BoringLayout::GetParagraphDirection(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
-    return ILayout::DIR_LEFT_TO_RIGHT;
+    VALIDATE_NOT_NULL(result)
+    *result = ILayout::DIR_LEFT_TO_RIGHT;
+    return NOERROR;
 }
 
-//@Override
-Boolean BoringLayout::GetLineContainsTab(
-    /* [in] */ Int32 line)
+ECode BoringLayout::GetLineContainsTab(
+    /* [in] */ Int32 line,
+    /* [out] */ Boolean* result)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    return NOERROR;
 }
 
-//@Override
-Float BoringLayout::GetLineMax(
-    /* [in] */ Int32 line)
+ECode BoringLayout::GetLineMax(
+    /* [in] */ Int32 line,
+    /* [out] */ Float* result)
 {
-    return mMax;
+    VALIDATE_NOT_NULL(result)
+    *result = mMax;
+    return NOERROR;
 }
 
-//@Override
-AutoPtr<ILayoutDirections> BoringLayout::GetLineDirections(
-    /* [in] */ Int32 line)
+ECode BoringLayout::GetLineDirections(
+    /* [in] */ Int32 line,
+    /* [out] */ ILayoutDirections** result)
 {
-    return Layout::DIRS_ALL_LEFT_TO_RIGHT;
+    VALIDATE_NOT_NULL(result)
+    *result = Layout::DIRS_ALL_LEFT_TO_RIGHT;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
-//@Override
-Int32 BoringLayout::GetTopPadding()
+ECode BoringLayout::GetTopPadding(
+    /* [out] */ Int32* result)
 {
-    return mTopPadding;
+    VALIDATE_NOT_NULL(result)
+    *result = mTopPadding;
+    return NOERROR;
 }
 
-//@Override
-Int32 BoringLayout::GetBottomPadding()
+ECode BoringLayout::GetBottomPadding(
+    /* [out] */ Int32* result)
 {
-    return mBottomPadding;
+    VALIDATE_NOT_NULL(result)
+    *result = mBottomPadding;
+    return NOERROR;
 }
 
-//@Override
-Int32 BoringLayout::GetEllipsisCount(
-    /* [in] */ Int32 line)
+ECode BoringLayout::GetEllipsisCount(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
-    return mEllipsizedCount;
+    VALIDATE_NOT_NULL(result)
+    *result = mEllipsizedCount;
+    return NOERROR;
 }
 
-//@Override
-Int32 BoringLayout::GetEllipsisStart(
-    /* [in] */ Int32 line)
+ECode BoringLayout::GetEllipsisStart(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
-    return mEllipsizedStart;
+    VALIDATE_NOT_NULL(result)
+    *result = mEllipsizedStart;
+    return NOERROR;
 }
 
-//@Override
-Int32 BoringLayout::GetEllipsizedWidth()
+ECode BoringLayout::GetEllipsizedWidth(
+    /* [out] */ Int32* result)
 {
-    return mEllipsizedWidth;
+    VALIDATE_NOT_NULL(result)
+    *result = mEllipsizedWidth;
+    return NOERROR;
 }
 
-// Override draw so it will be faster.
-//@Override
 ECode BoringLayout::Draw(
     /* [in] */ ICanvas* c,
     /* [in] */ IPath* highlight,
     /* [in] */ IPaint* highlightpaint,
     /* [in] */ Int32 cursorOffset)
 {
-    assert(c != NULL);
+    VALIDATE_NOT_NULL(c)
 
     if (!mDirect.IsNull() && highlight == NULL) {
         c->DrawText(mDirect, 0, mBottom - mDesc, mPaint);
@@ -583,9 +504,6 @@ ECode BoringLayout::Draw(
     return NOERROR;
 }
 
-/**
- * Callback for the ellipsizer to report what region it ellipsized.
- */
 ECode BoringLayout::Ellipsized(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

@@ -17,7 +17,6 @@ module
     merge("text/Layout.car");
     merge("text/LoginFilter.car");
     merge("text/NoCopySpan.car");
-    merge("text/PackedIntVector.car");
     merge("text/PackedObjectVector.car");
     merge("text/ParcelableSpan.car");
     merge("text/Selection.car");
@@ -1091,8 +1090,6 @@ module
     // } // namepsace Droid
     // } // namespace Elastos
 
-
-
     namespace Elastos {
     namespace Droid {
     namespace Text {
@@ -1283,13 +1280,13 @@ module
     //     interface ISpannableFactory;
     // }
 
-    // class CNoCopySpan {
-    //     interface INoCopySpan;
-    // }
+    class CNoCopySpanConcrete {
+        interface INoCopySpan;
+    }
 
-    // singleton class CSelection {
-    //     interface ISelection;
-    // }
+    singleton class CSelection {
+        interface ISelection;
+    }
 
     // class CStaticLayout {
     //     constructor(
@@ -1390,57 +1387,65 @@ module
 
     //     interface ISpannableStringBuilder;
     //     interface IGetChars;
-    // }
-
-    // class CSpannedString{
-    //     constructor(
-    //         [in] ICharSequence* source);
-
-    //     interface ISpannedString;
-    //     interface IGetChars;
-    // }
-
-    // class CSpannableString {
-    //     constructor(
-    //         [in] ICharSequence* source);
-
-    //     constructor(
-    //         [in] ICharSequence* source,
-    //         [in] Int32 start,
-    //         [in] Int32 end);
-
-    //     interface ISpannableString;
-    //     interface IGetChars;
-    //     interface ISpanned;
     //     interface ISpannable;
+    //     interface Spanned;
+    //     interface IEditable;
+    //     interface IAppendable;
+    //     interface IGraphicsOperations;
     //     interface ICharSequence;
     // }
 
-    // singleton class CSpannedStringHelper {
-    //     interface ISpannedStringHelper;
-    // }
+    class CSpannedString{
+        constructor(
+            [in] ICharSequence* source);
 
-    // singleton class CSpannableStringHelper {
-    //     interface ISpannableStringHelper;
-    // }
+        constructor(
+            [in] ICharSequence* source,
+            [in] Int32 start,
+            [in] Int32 end);
 
-    // /**
-    //  * This filter will capitalize all the lower case letters that are added
-    //  * through edits.
-    //  */
-    // class CAllCapsFilter {
-    //     interface IAllCapsFilter;
-    //     interface IInputFilter;
-    // }
+        interface ISpannedString;
+        interface IGetChars;
+        interface ISpanned;
+        interface ICharSequence;
+    }
 
-    /**
-     * This filter will constrain edits not to make the length of the text
-     * greater than the specified length.
-     */
-    //class CLengthFilter {
-    //     interface ILengthFilter;
-    //     interface IInputFilter;
-    //}
+    singleton class CSpannedStringHelper {
+        interface ISpannedStringHelper;
+    }
+
+    class CSpannableString {
+        constructor(
+            [in] ICharSequence* source);
+
+        constructor(
+            [in] ICharSequence* source,
+            [in] Int32 start,
+            [in] Int32 end);
+
+        interface ISpannableString;
+        interface IGetChars;
+        interface ISpanned;
+        interface ISpannable;
+        interface ICharSequence;
+    }
+
+    singleton class CSpannableStringHelper {
+        interface ISpannableStringHelper;
+    }
+
+    class CAllCapsFilter {
+        interface IAllCapsFilter;
+        interface IInputFilter;
+    }
+
+    class CLengthFilter {
+        constructor(
+            [in] Int32 max);
+
+        interface ILengthFilter;
+        interface IInputFilter;
+    }
 
     class CSimpleStringSplitter {
         constructor(

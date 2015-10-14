@@ -43,7 +43,7 @@ ECode CAllCapsFilter::Filter(
                 AutoPtr<ISpannableString> sp;
                 FAIL_RETURN(CSpannableString::New(charS, (ISpannableString**)&sp));
                 TextUtils::CopySpansFrom(ISpanned::Probe(source),
-                        start, end, EIID_IInterface, sp, 0);
+                        start, end, EIID_IInterface, ISpannable::Probe(sp), 0);
                 *cs = ICharSequence::Probe(sp);
                 REFCOUNT_ADD(*cs);
                 return NOERROR;

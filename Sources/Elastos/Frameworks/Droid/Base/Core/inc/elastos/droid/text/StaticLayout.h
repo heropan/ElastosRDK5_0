@@ -12,7 +12,6 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
-
 /**
  * StaticLayout is a Layout for text that will not be edited after it
  * is laid out.  Use {@link DynamicLayout} for text that may change.
@@ -23,15 +22,14 @@ namespace Text {
  * float, float, android.graphics.Paint)
  * Canvas.drawText()} directly.</p>
  */
-class StaticLayout : public Layout {
-
+class StaticLayout
+    : public Layout
+    , public IStaticLayout
+{
 public:
-
-    static const String TAG;// = "StaticLayout";
-
     StaticLayout();
 
-    StaticLayout(
+    CARAPI constructor(
         /* [in] */ ICharSequence* source,
         /* [in] */ ITextPaint* paint,
         /* [in] */ Int32 width,
@@ -43,7 +41,7 @@ public:
     /**
      * @hide
      */
-    StaticLayout(
+    CARAPI constructor(
         /* [in] */ ICharSequence* source,
         /* [in] */ ITextPaint* paint,
         /* [in] */ Int32 width,
@@ -53,7 +51,7 @@ public:
         /* [in] */ Float spacingadd,
         /* [in] */ Boolean includepad);
 
-    StaticLayout(
+    CARAPI constructor(
         /* [in] */ ICharSequence* source,
         /* [in] */ Int32 bufstart,
         /* [in] */ Int32 bufend,
@@ -67,7 +65,7 @@ public:
     /**
      * @hide
      */
-    StaticLayout(
+    CARAPI constructor(
         /* [in] */ ICharSequence* source,
         /* [in] */ Int32 bufstart,
         /* [in] */ Int32 bufend,
@@ -79,7 +77,7 @@ public:
         /* [in] */ Float spacingadd,
         /* [in] */ Boolean includepad);
 
-    StaticLayout(
+    CARAPI constructor(
         /* [in] */ ICharSequence* source,
         /* [in] */ Int32 bufstart,
         /* [in] */ Int32 bufend,
@@ -95,7 +93,7 @@ public:
     /**
      * @hide
      */
-    StaticLayout(
+    CARAPI constructor(
         /* [in] */ ICharSequence* source,
         /* [in] */ Int32 bufstart,
         /* [in] */ Int32 bufend,
@@ -111,12 +109,12 @@ public:
         /* [in] */ Int32 maxLines) ;
 
     /* package */
-    StaticLayout(
+    CARAPI constructor(
         /* [in] */ ICharSequence* text);
 
 public:
     /* package */
-    virtual CARAPI_(void) Generate(
+    CARAPI Generate(
         /* [in] */ ICharSequence* source,
         /* [in] */ Int32 bufStart,
         /* [in] */ Int32 bufEnd,
@@ -135,140 +133,69 @@ public:
     // The logic mirrors that of Layout.getLineForVertical
     // FIXME: It may be faster to do a linear search for layouts without many lines.
     //@Override
-    CARAPI_(Int32) GetLineForVertical(
-        /* [in] */ Int32 vertical);
+    CARAPI GetLineForVertical(
+        /* [in] */ Int32 vertical,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetLineCount();
+    CARAPI GetLineCount(
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetLineTop(
-        /* [in] */ Int32 line);
+    CARAPI GetLineTop(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetLineDescent(
-        /* [in] */ Int32 line);
+    CARAPI GetLineDescent(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetLineStart(
-        /* [in] */ Int32 line);
+    CARAPI GetLineStart(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetParagraphDirection(
-        /* [in] */ Int32 line);
+    CARAPI GetParagraphDirection(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Boolean) GetLineContainsTab(
-        /* [in] */ Int32 line);
+    CARAPI GetLineContainsTab(
+        /* [in] */ Int32 line,
+        /* [out] */ Boolean* result);
 
     //@Override
-    CARAPI_(AutoPtr<ILayoutDirections>) GetLineDirections(
-        /* [in] */ Int32 line);
+    CARAPI GetLineDirections(
+        /* [in] */ Int32 line,
+        /* [out] */ ILayoutDirections** result);
 
     //@Override
-    CARAPI_(Int32) GetTopPadding();
+    CARAPI GetTopPadding(
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetBottomPadding();
+    CARAPI GetBottomPadding(
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetEllipsisCount(
-        /* [in] */ Int32 line);
+    CARAPI GetEllipsisCount(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetEllipsisStart(
-        /* [in] */ Int32 line);
+    CARAPI GetEllipsisStart(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetEllipsizedWidth();
+    CARAPI GetEllipsizedWidth(,
+        /* [out] */ Int32* result);
 
-    virtual CARAPI_(void) Prepare();
+    CARAPI Prepare();
 
-    virtual CARAPI_(void) Finish();
-
-protected:
-    CARAPI Init(
-        /* [in] */ ICharSequence* source,
-        /* [in] */ ITextPaint* paint,
-        /* [in] */ Int32 width,
-        /* [in] */ LayoutAlignment align,
-        /* [in] */ Float spacingmult,
-        /* [in] */ Float spacingadd,
-        /* [in] */ Boolean includepad);
-
-    /**
-     * @hide
-     */
-    CARAPI Init(
-        /* [in] */ ICharSequence* source,
-        /* [in] */ ITextPaint* paint,
-        /* [in] */ Int32 width,
-        /* [in] */ LayoutAlignment align,
-        /* [in] */ ITextDirectionHeuristic* textDir,
-        /* [in] */ Float spacingmult,
-        /* [in] */ Float spacingadd,
-        /* [in] */ Boolean includepad);
-
-    CARAPI Init(
-        /* [in] */ ICharSequence* source,
-        /* [in] */ Int32 bufstart,
-        /* [in] */ Int32 bufend,
-        /* [in] */ ITextPaint* paint,
-        /* [in] */ Int32 outerwidth,
-        /* [in] */ LayoutAlignment align,
-        /* [in] */ Float spacingmult,
-        /* [in] */ Float spacingadd,
-        /* [in] */ Boolean includepad);
-
-    /**
-     * @hide
-     */
-    CARAPI Init(
-        /* [in] */ ICharSequence* source,
-        /* [in] */ Int32 bufstart,
-        /* [in] */ Int32 bufend,
-        /* [in] */ ITextPaint* paint,
-        /* [in] */ Int32 outerwidth,
-        /* [in] */ LayoutAlignment align,
-        /* [in] */ ITextDirectionHeuristic* textDir,
-        /* [in] */ Float spacingmult,
-        /* [in] */ Float spacingadd,
-        /* [in] */ Boolean includepad);
-
-    CARAPI Init(
-        /* [in] */ ICharSequence* source,
-        /* [in] */ Int32 bufstart,
-        /* [in] */ Int32 bufend,
-        /* [in] */ ITextPaint* paint,
-        /* [in] */ Int32 outerwidth,
-        /* [in] */ LayoutAlignment align,
-        /* [in] */ Float spacingmult,
-        /* [in] */ Float spacingadd,
-        /* [in] */ Boolean includepad,
-        /* [in] */ TextUtilsTruncateAt ellipsize,
-        /* [in] */ Int32 ellipsizedWidth);
-
-    /**
-     * @hide
-     */
-    CARAPI Init(
-        /* [in] */ ICharSequence* source,
-        /* [in] */ Int32 bufstart,
-        /* [in] */ Int32 bufend,
-        /* [in] */ ITextPaint* paint,
-        /* [in] */ Int32 outerwidth,
-        /* [in] */ LayoutAlignment align,
-        /* [in] */ ITextDirectionHeuristic* textDir,
-        /* [in] */ Float spacingmult,
-        /* [in] */ Float spacingadd,
-        /* [in] */ Boolean includepad,
-        /* [in] */ TextUtilsTruncateAt ellipsize,
-        /* [in] */ Int32 ellipsizedWidth,
-        /* [in] */ Int32 maxLines) ;
-
-    /* package */
-    CARAPI Init(
-        /* [in] */ ICharSequence* text);
+    CARAPI Finish();
 
 private:
 
@@ -323,6 +250,9 @@ private:
         /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 length,
         /* [in] */ ArrayOf<Int32>* recycle);
+
+public:
+    static const String TAG;// = "StaticLayout";
 
 private:
     Int32 mLineCount;

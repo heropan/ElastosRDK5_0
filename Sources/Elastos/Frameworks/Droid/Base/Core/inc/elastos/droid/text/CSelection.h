@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TEXT_CSELECTION_H__
 
 #include "_Elastos_Droid_Text_CSelection.h"
-#include <elastos/core/Object.h>
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::ICharSequence;
 
@@ -11,9 +11,19 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
+/**
+ * Utility class for manipulating cursors and selections in CharSequences.
+ * A cursor is a selection where the start and end are at the same offset.
+ */
 CarClass(CSelection)
+    , public Singleton
+    , public ISelection
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetSelectionStart(
         /* [in] */ ICharSequence* text,
         /* [out] */ Int32* start);
@@ -113,7 +123,7 @@ public:
         /* [in] */ ISpannable* text,
         /* [in] */ ISelectionPositionIterator* iter,
         /* [in] */ Boolean extendSelection,
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI GetSelectionStartObject(
         /* [out] */ IInterface** start);

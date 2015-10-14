@@ -7,46 +7,10 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
-AutoPtr<IInterface> Selection::SELECTION_START = new Selection::SelectionObject();
-AutoPtr<IInterface> Selection::SELECTION_END = new Selection::SelectionObject();
+AutoPtr<IInterface> Selection::SELECTION_START = (INoCopySpan*)new Selection::SelectionObject();
+AutoPtr<IInterface> Selection::SELECTION_END = (INoCopySpan*)new Selection::SelectionObject();
 
-PInterface Selection::SelectionObject::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)this;
-    }
-    else if (riid == EIID_INoCopySpan) {
-        return (INoCopySpan*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 Selection::SelectionObject::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Selection::SelectionObject::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Selection::SelectionObject::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* IID)
-{
-    VALIDATE_NOT_NULL(IID);
-
-    if (object == (INoCopySpan*)this) {
-        *IID = EIID_INoCopySpan;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(Selection::SelectionObject, Object, INoCopySpan)
 
 /*
  * Retrieving the selection
@@ -97,8 +61,9 @@ void Selection::SetSelection(
     /* [in] */ Int32 start,
     /* [in] */ Int32 stop)
 {
-    Int32 ostart = GetSelectionStart(text);
-    Int32 oend = GetSelectionEnd(text);
+    ICharSequence* csq = ICharSequence::Probe(text);
+    Int32 ostart = GetSelectionStart(csq);
+    Int32 oend = GetSelectionEnd(csq);
 
     if (ostart != start || oend != stop) {
         text->SetSpan(
@@ -126,7 +91,7 @@ void Selection::SelectAll(
     /* [in] */ ISpannable* text)
 {
     Int32 len;
-    text->GetLength(&len);
+    ICharSequence::Probe(text)->GetLength(&len);
     SetSelection(text, 0, len);
 }
 
@@ -138,7 +103,7 @@ void Selection::ExtendSelection(
     /* [in] */ Int32 index)
 {
     Int32 start;
-    text->GetSpanStart(SELECTION_END, &start);
+    ISpanned::Probe(text)->GetSpanStart(SELECTION_END, &start);
     if (start != index)
         text->SetSpan(SELECTION_END, index, index, ISpanned::SPAN_POINT_POINT);
 }
@@ -161,8 +126,9 @@ Boolean Selection::MoveUp(
     /* [in] */ ISpannable* text,
     /* [in] */ ILayout* layout)
 {
-    Int32 start = GetSelectionStart(text);
-    Int32 end = GetSelectionEnd(text);
+    ICharSequence* csq = ICharSequence::Probe(text);
+    Int32 start = GetSelectionStart(csq);
+    Int32 end = GetSelectionEnd(csq);
 
     if (start != end) {
         Int32 min = Elastos::Core::Math::Min(start, end);
@@ -171,7 +137,7 @@ Boolean Selection::MoveUp(
         SetSelection(text, min);
 
         Int32 len;
-        if (min == 0 && max == (text->GetLength(&len), len)) {
+        if (min == 0 && max == (csq->GetLength(&len), len)) {
             return FALSE;
         }
 
@@ -211,10 +177,11 @@ Boolean Selection::MoveDown(
     /* [in] */ ISpannable* text,
     /* [in] */ ILayout* layout)
 {
-    Int32 start = GetSelectionStart(text);
-    Int32 end = GetSelectionEnd(text);
+    ICharSequence* csq = ICharSequence::Probe(text);
+    Int32 start = GetSelectionStart(csq);
+    Int32 end = GetSelectionEnd(csq);
     Int32 len;
-    text->GetLength(&len);
+    csq->GetLength(&len);
 
     if (start != end) {
         Int32 min = Elastos::Core::Math::Min(start, end);
@@ -269,8 +236,9 @@ Boolean Selection::MoveLeft(
     /* [in] */ ISpannable* text,
     /* [in] */ ILayout* layout)
 {
-    Int32 start = GetSelectionStart(text);
-    Int32 end = GetSelectionEnd(text);
+    ICharSequence* csq = ICharSequence::Probe(text);
+    Int32 start = GetSelectionStart(csq);
+    Int32 end = GetSelectionEnd(csq);
 
     if (start != end) {
         SetSelection(text, ChooseHorizontal(layout, -1, start, end));
@@ -298,8 +266,9 @@ Boolean Selection::MoveRight(
     /* [in] */ ISpannable* text,
     /* [in] */ ILayout* layout)
 {
-    Int32 start = GetSelectionStart(text);
-    Int32 end = GetSelectionEnd(text);
+    ICharSequence* csq = ICharSequence::Probe(text);
+    Int32 start = GetSelectionStart(csq);
+    Int32 end = GetSelectionEnd(csq);
 
     if (start != end) {
         SetSelection(text, ChooseHorizontal(layout, 1, start, end));
@@ -325,7 +294,8 @@ Boolean Selection::ExtendUp(
     /* [in] */ ISpannable* text,
     /* [in] */ ILayout* layout)
 {
-    Int32 end = GetSelectionEnd(text);
+    ICharSequence* csq = ICharSequence::Probe(text);
+    Int32 end = GetSelectionEnd(csq);
     Int32 line;
     layout->GetLineForOffset(end, &line);
 
@@ -362,11 +332,10 @@ Boolean Selection::ExtendDown(
     /* [in] */ ISpannable* text,
     /* [in] */ ILayout* layout)
 {
-    Int32 end = GetSelectionEnd(text);
-    Int32 line;
+    ICharSequence* csq = ICharSequence::Probe(text);
+    Int32 end = GetSelectionEnd(csq);
+    Int32 len, line, lineCount;
     layout->GetLineForOffset(end, &line);
-    Int32 len;
-    Int32 lineCount;
     layout->GetLineCount(&lineCount);
     if (line < lineCount - 1) {
         Int32 move;
@@ -385,7 +354,7 @@ Boolean Selection::ExtendDown(
         ExtendSelection(text, move);
         return TRUE;
     }
-    else if (end != (text->GetLength(&len), len)) {
+    else if (end != (csq->GetLength(&len), len)) {
         ExtendSelection(text, len);
         return TRUE;
     }
@@ -401,7 +370,8 @@ Boolean Selection::ExtendLeft(
     /* [in] */ ISpannable* text,
     /* [in] */ ILayout* layout)
 {
-    Int32 end = GetSelectionEnd(text);
+    ICharSequence* csq = ICharSequence::Probe(text);
+    Int32 end = GetSelectionEnd(csq);
     Int32 to;
     layout->GetOffsetToLeftOf(end, &to);
 
@@ -421,7 +391,8 @@ Boolean Selection::ExtendRight(
     /* [in] */ ISpannable* text,
     /* [in] */ ILayout* layout)
 {
-    Int32 end = GetSelectionEnd(text);
+    ICharSequence* csq = ICharSequence::Probe(text);
+    Int32 end = GetSelectionEnd(csq);
     Int32 to;
     layout->GetOffsetToRightOf(end, &to);
 
@@ -477,8 +448,10 @@ Boolean Selection::MoveToPreceding(
 {
     assert(iter != NULL);
 
+    ICharSequence* csq = ICharSequence::Probe(text);
+    Int32 end = GetSelectionEnd(csq);
     Int32 offset;
-    iter->Preceding(GetSelectionEnd(text), &offset);
+    iter->Preceding(end, &offset);
 //    if (offset != ISelectionPositionIterator::DONE) {
         if (extendSelection) {
             ExtendSelection(text, offset);
@@ -497,8 +470,10 @@ Boolean Selection::MoveToFollowing(
 {
     assert(iter != NULL);
 
+    ICharSequence* csq = ICharSequence::Probe(text);
+    Int32 end = GetSelectionEnd(csq);
     Int32 offset;
-    iter->Following(GetSelectionEnd(text), &offset);
+    iter->Following(end, &offset);
 //    if (offset != ISelectionPositionIterator::DONE) {
         if (extendSelection) {
             ExtendSelection(text, offset);
@@ -514,10 +489,10 @@ Int32 Selection::FindEdge(
     /* [in] */ ILayout* layout,
     /* [in] */ Int32 dir)
 {
-    Int32 pt = GetSelectionEnd(text);
-    Int32 line;
+    ICharSequence* csq = ICharSequence::Probe(text);
+    Int32 pt = GetSelectionEnd(csq);
+    Int32 line, pdir;
     layout->GetLineForOffset(pt, &line);
-    Int32 pdir;
     layout->GetParagraphDirection(line, &pdir);
 
     if (dir * pdir < 0) {
@@ -526,9 +501,8 @@ Int32 Selection::FindEdge(
         return start;
     }
     else {
-        Int32 end;
+        Int32 end, lineCount;
         layout->GetLineEnd(line, &end);
-        Int32 lineCount;
         layout->GetLineCount(&lineCount);
         if (line == lineCount - 1)
             return end;
@@ -543,9 +517,8 @@ Int32 Selection::ChooseHorizontal(
     /* [in] */ Int32 off1,
     /* [in] */ Int32 off2)
 {
-    Int32 line1;
+    Int32 line1, line2;
     layout->GetLineForOffset(off1, &line1);
-    Int32 line2;
     layout->GetLineForOffset(off2, &line2);
 
     if (line1 == line2) {
@@ -577,9 +550,8 @@ Int32 Selection::ChooseHorizontal(
         // This only checks at one end, but it's not clear what the
         // right thing to do is if the ends don't agree.  Even if it
         // is wrong it should still not be too bad.
-        Int32 line;
+        Int32 line, textdir;
         layout->GetLineForOffset(off1, &line);
-        Int32 textdir;
         layout->GetParagraphDirection(line, &textdir);
 
         if (textdir == direction) {

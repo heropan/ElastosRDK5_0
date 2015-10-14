@@ -1,21 +1,29 @@
 #include "elastos/droid/text/CSpannedString.h"
 
 using Elastos::Core::EIID_ICharSequence;
+using Elastos::Droid::Text::CSpannedString;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 
-PInterface CSpannedString::Probe(
-    /* [in] */ REIID riid)
+CAR_INTERFACE_IMPL_4(CSpannedString, SpannableStringInternal, ISpannedString, ICharSequence, IGetChars, ISpanned)
+
+CSpannedString::CSpannedString()
 {
-    return _CSpannedString::Probe(riid);
 }
+
+CSpannedString::~CSpannedString()
+{}
 
 ECode CSpannedString::constructor(
     /* [in] */ ICharSequence* source)
 {
-    return SpannedString::Init(source);
+    VALIDATE_NOT_NULL(source);
+
+    Int32 len;
+    source->GetLength(&len);
+    return SpannableStringInternal::constructor(source, 0, len);
 }
 
 ECode CSpannedString::constructor(
@@ -23,115 +31,89 @@ ECode CSpannedString::constructor(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return SpannedString::Init(source, start, end);
+    return SpannableStringInternal::constructor(source, start, end);
 }
 
-CARAPI CSpannedString::SubSequence(
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [out] */ ICharSequence** res)
-{
-    VALIDATE_NOT_NULL(res);
-    AutoPtr<ICharSequence> seq = SpannedString::SubSequence(start, end);
-    *res = seq;
-    REFCOUNT_ADD(*res);
-    return NOERROR;
-}
-
-CARAPI CSpannedString::GetLength(
+ECode CSpannedString::GetLength(
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(number);
-    *number = SpannedString::GetLength();
-    return NOERROR;
+    return SpannableStringInternal::GetLength(number);
 }
 
-CARAPI CSpannedString::GetCharAt(
+ECode CSpannedString::GetCharAt(
     /* [in] */ Int32 index,
     /* [out] */ Char32* c)
 {
-    VALIDATE_NOT_NULL(c);
-    *c = SpannedString::GetCharAt(index);
-    return NOERROR;
+    return SpannableStringInternal::GetCharAt(index, c);
 }
 
-CARAPI CSpannedString::ToString(
-    /* [out] */ String* str)
-{
-    VALIDATE_NOT_NULL(str);
-    return SpannedString::ToString(str);
-}
-
-CARAPI CSpannedString::GetSpans(
+ECode CSpannedString::SubSequence(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
-    /* [in] */ const InterfaceID& type,
-    /* [out, callee] */ ArrayOf<IInterface*>** objs)
+    /* [out] */ ICharSequence** csq)
 {
-    VALIDATE_NOT_NULL(objs);
-    return SpannedString::GetSpans(start, end, type, objs);
-}
+    VALIDATE_NOT_NULL(csq);
+    *csq = NULL;
 
-CARAPI CSpannedString::GetSpanStart(
-    /* [in] */ IInterface* tag,
-    /* [out] */ Int32* start)
-{
-    VALIDATE_NOT_NULL(start);
-    *start = SpannedString::GetSpanStart(tag);
+    AutoPtr<ISpannedString> spannedString;
+    CSpannedString::New(ICharSequence::Probe(THIS_PROBE(ISpannedString)), start, end, (ISpannedString**)&spannedString);
+    *csq = ICharSequence::Probe(spannedString);
+    REFCOUNT_ADD(*csq)
     return NOERROR;
 }
 
-CARAPI CSpannedString::GetSpanEnd(
-    /* [in] */ IInterface* tag,
-    /* [out] */ Int32* end)
+ECode CSpannedString::ToString(
+    /* [out] */ String* str)
 {
-    VALIDATE_NOT_NULL(end);
-    *end = SpannedString::GetSpanEnd(tag);
-    return NOERROR;
+    return SpannableStringInternal::ToString(str);
 }
 
-CARAPI CSpannedString::GetSpanFlags(
-    /* [in] */ IInterface* tag,
-    /* [out] */ Int32* flags)
-{
-    VALIDATE_NOT_NULL(flags);
-    *flags = SpannedString::GetSpanFlags(tag);
-    return NOERROR;
-}
-
-CARAPI CSpannedString::NextSpanTransition(
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 limit,
-    /* [in] */ const InterfaceID& type,
-    /* [out] */ Int32* offset)
-{
-    VALIDATE_NOT_NULL(offset);
-    *offset = SpannedString::NextSpanTransition(start, limit, type);
-    return NOERROR;
-}
-
-CARAPI CSpannedString::GetChars(
+ECode CSpannedString::GetChars(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ ArrayOf<Char32>* dest,
     /* [in] */ Int32 destoff)
 {
-    return SpannedString::GetChars(start, end, dest, destoff);
+    return SpannableStringInternal::GetChars(start, end, dest, destoff);
 }
 
-CARAPI CSpannedString::SetSpan(
-    /* [in] */ IInterface* what,
+ECode CSpannedString::GetSpans(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
-    /* [in] */ Int32 flags)
+    /* [in] */ const InterfaceID& type,
+    /* [out, callee] */ ArrayOf<IInterface*>** objs)
 {
-    return SpannedString::SetSpan(what, start, end, flags);
+    return SpannableStringInternal::GetSpans(start, end, type, objs);
 }
 
-CARAPI CSpannedString::Remove(
-    /* [in] */ IInterface* what)
+ECode CSpannedString::GetSpanStart(
+    /* [in] */ IInterface* tag,
+    /* [out] */ Int32* start)
 {
-    return SpannedString::RemoveSpan(what);
+    return SpannableStringInternal::GetSpanStart(tag, start);
+}
+
+ECode CSpannedString::GetSpanEnd(
+    /* [in] */ IInterface* tag,
+    /* [out] */ Int32* end)
+{
+    return SpannableStringInternal::GetSpanEnd(tag, end);
+}
+
+ECode CSpannedString::GetSpanFlags(
+    /* [in] */ IInterface* tag,
+    /* [out] */ Int32* flags)
+{
+    return SpannableStringInternal::GetSpanFlags(tag, flags);
+}
+
+ECode CSpannedString::NextSpanTransition(
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 limit,
+    /* [in] */ const InterfaceID& type,
+    /* [out] */ Int32* offset)
+{
+    return SpannableStringInternal::NextSpanTransition(start, limit, type, offset);
 }
 
 AutoPtr<ISpannedString> CSpannedString::ValueOf(

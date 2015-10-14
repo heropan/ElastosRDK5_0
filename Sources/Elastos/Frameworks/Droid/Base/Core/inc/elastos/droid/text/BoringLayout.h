@@ -8,23 +8,6 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
-/*
- * Copyright (C) 2006 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-
 /**
  * A BoringLayout is a very simple Layout implementation for text that
  * fits on a single line and is all left-to-right characters.
@@ -38,12 +21,17 @@ namespace Text {
  * {@link android.graphics.Canvas#drawText(java.lang.CharSequence, int, int, float, float, android.graphics.Paint)
  *  Canvas.drawText()} directly.</p>
  */
-class BoringLayout : public Layout
+class BoringLayout
+    : public Layout
+    , public IBoringLayout
+    , public ITextUtilsEllipsizeCallback
 {
 public:
+    CAR_INTERFACE_DECL()
+
     BoringLayout();
 
-    BoringLayout(
+    CARAPI constructor(
         /* [in] */ ICharSequence* source,
         /* [in] */ ITextPaint* paint,
         /* [in] */ Int32 outerwidth,
@@ -53,7 +41,7 @@ public:
         /* [in] */ IBoringLayoutMetrics* metrics,
         /* [in] */ Boolean includepad);
 
-    BoringLayout(
+    CARAPI constructor(
         /* [in] */ ICharSequence* source,
         /* [in] */ ITextPaint* paint,
         /* [in] */ Int32 outerwidth,
@@ -65,10 +53,6 @@ public:
         /* [in] */ TextUtilsTruncateAt ellipsize,
         /* [in] */ Int32 ellipsizedWidth);
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-public:
     static CARAPI_(AutoPtr<IBoringLayout>) Make(
         /* [in] */ ICharSequence* source,
         /* [in] */ ITextPaint* paint,
@@ -126,7 +110,7 @@ public:
         /* [out] */ IBoringLayout** layout);
 
     /* package */
-    CARAPI_(void) Init(
+    CARAPI Init(
         /* [in] */ ICharSequence* source,
         /* [in] */ ITextPaint* paint,
         /* [in] */ Int32 outerwidth,
@@ -176,55 +160,69 @@ public:
         /* [in] */ IBoringLayoutMetrics* metrics);
 
     //@Override
-    CARAPI_(Int32) GetHeight();
+    CARAPI GetHeight(
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetLineCount();
+    CARAPI GetLineCount(
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetLineTop(
-        /* [in] */ Int32 line);
+    CARAPI GetLineTop(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetLineDescent(
-        /* [in] */ Int32 line);
+    CARAPI GetLineDescent(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetLineStart(
-        /* [in] */ Int32 line);
+    CARAPI GetLineStart(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetParagraphDirection(
-        /* [in] */ Int32 line);
+    CARAPI GetParagraphDirection(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Boolean) GetLineContainsTab(
-        /* [in] */ Int32 line);
+    CARAPI GetLineContainsTab(
+        /* [in] */ Int32 line,
+        /* [out] */ Boolean* result);
 
     //@Override
-    CARAPI_(Float) GetLineMax(
-        /* [in] */ Int32 line);
+    CARAPI GetLineMax(
+        /* [in] */ Int32 line,
+        /* [out] */ Float* result);
 
     //@Override
-    CARAPI_(AutoPtr<ILayoutDirections>) GetLineDirections(
-        /* [in] */ Int32 line);
+    CARAPI GetLineDirections(
+        /* [in] */ Int32 line,
+        /* [out] */ ILayoutDirections** dir);
 
     //@Override
-    CARAPI_(Int32) GetTopPadding();
+    CARAPI GetTopPadding(
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetBottomPadding();
+    CARAPI GetBottomPadding(
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetEllipsisCount(
-        /* [in] */ Int32 line);
+    CARAPI GetEllipsisCount(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetEllipsisStart(
-        /* [in] */ Int32 line);
+    CARAPI GetEllipsisStart(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetEllipsizedWidth();
+    CARAPI GetEllipsizedWidth(,
+        /* [out] */ Int32* result);
 
     // Override draw so it will be faster.
     //@Override
@@ -243,29 +241,6 @@ public:
 
 public:
     /* package */ Int32 mBottom, mDesc;   // for Direct
-
-protected:
-    CARAPI _Init(
-        /* [in] */ ICharSequence* source,
-        /* [in] */ ITextPaint* paint,
-        /* [in] */ Int32 outerwidth,
-        /* [in] */ LayoutAlignment align,
-        /* [in] */ Float spacingmult,
-        /* [in] */ Float spacingadd,
-        /* [in] */ IBoringLayoutMetrics* metrics,
-        /* [in] */ Boolean includepad);
-
-    CARAPI _Init(
-        /* [in] */ ICharSequence* source,
-        /* [in] */ ITextPaint* paint,
-        /* [in] */ Int32 outerwidth,
-        /* [in] */ LayoutAlignment align,
-        /* [in] */ Float spacingmult,
-        /* [in] */ Float spacingadd,
-        /* [in] */ IBoringLayoutMetrics* metrics,
-        /* [in] */ Boolean includepad,
-        /* [in] */ TextUtilsTruncateAt ellipsize,
-        /* [in] */ Int32 ellipsizedWidth);
 
 private:
     static const Char32 FIRST_RIGHT_TO_LEFT;// = '\u0590';

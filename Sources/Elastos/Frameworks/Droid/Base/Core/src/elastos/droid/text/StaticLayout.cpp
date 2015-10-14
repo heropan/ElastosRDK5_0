@@ -9,6 +9,12 @@
 
 #include <elastos/utility/logging/Slogger.h>
 #include <unistd.h>
+#include "unicode/locid.h"
+#include "unicode/brkiter.h"
+#include "utils/misc.h"
+#include "utils/Log.h"
+#include <vector>
+
 using Elastos::Utility::Logging::Slogger;
 
 using Elastos::Core::EIID_ICharSequence;
@@ -67,7 +73,7 @@ StaticLayout::StaticLayout()
     CPaintFontMetricsInt::New((IPaintFontMetricsInt**)&mFontMetricsInt);
 }
 
-StaticLayout::StaticLayout(
+ECode StaticLayout::constructor(
     /* [in] */ ICharSequence* source,
     /* [in] */ ITextPaint* paint,
     /* [in] */ Int32 width,
@@ -75,25 +81,15 @@ StaticLayout::StaticLayout(
     /* [in] */ Float spacingmult,
     /* [in] */ Float spacingadd,
     /* [in] */ Boolean includepad)
-    : mLineCount(0)
-    , mTopPadding(0)
-    , mBottomPadding(0)
-    , mColumns(0)
-    , mEllipsizedWidth(0)
-    , mMaximumVisibleLineCount(Elastos::Core::Math::INT32_MAX_VALUE)
 {
-    assert(source != NULL);
-    CPaintFontMetricsInt::New((IPaintFontMetricsInt**)&mFontMetricsInt);
+    VALIDATE_NOT_NULL(source)
     Int32 length = 0;
     source->GetLength(&length);
-    Init(source, 0, length, paint, width, align,
-             spacingmult, spacingadd, includepad);
+    return constructor(source, 0, length, paint, width, align,
+         spacingmult, spacingadd, includepad);
 }
 
-/**
- * @hide
- */
-StaticLayout::StaticLayout(
+ECode StaticLayout::constructor(
     /* [in] */ ICharSequence* source,
     /* [in] */ ITextPaint* paint,
     /* [in] */ Int32 width,
@@ -102,22 +98,15 @@ StaticLayout::StaticLayout(
     /* [in] */ Float spacingmult,
     /* [in] */ Float spacingadd,
     /* [in] */ Boolean includepad)
-    : mLineCount(0)
-    , mTopPadding(0)
-    , mBottomPadding(0)
-    , mColumns(0)
-    , mEllipsizedWidth(0)
-    , mMaximumVisibleLineCount(Elastos::Core::Math::INT32_MAX_VALUE)
 {
-    assert(source != NULL);
-    CPaintFontMetricsInt::New((IPaintFontMetricsInt**)&mFontMetricsInt);
+    VALIDATE_NOT_NULL(source)
     Int32 length = 0;
     source->GetLength(&length);
-    Init(source, 0, length, paint, width, align, textDir,
-                spacingmult, spacingadd, includepad);
+    return constructor(source, 0, length, paint, width, align, textDir,
+        spacingmult, spacingadd, includepad);
 }
 
-StaticLayout::StaticLayout(
+ECode StaticLayout::constructor(
     /* [in] */ ICharSequence* source,
     /* [in] */ Int32 bufstart,
     /* [in] */ Int32 bufend,
@@ -127,23 +116,13 @@ StaticLayout::StaticLayout(
     /* [in] */ Float spacingmult,
     /* [in] */ Float spacingadd,
     /* [in] */ Boolean includepad)
-    : mLineCount(0)
-    , mTopPadding(0)
-    , mBottomPadding(0)
-    , mColumns(0)
-    , mEllipsizedWidth(0)
-    , mMaximumVisibleLineCount(Elastos::Core::Math::INT32_MAX_VALUE)
 {
-    CPaintFontMetricsInt::New((IPaintFontMetricsInt**)&mFontMetricsInt);
-    Init(source, bufstart, bufend, paint, outerwidth, align,
-             spacingmult, spacingadd, includepad,
-             TextUtilsTruncateAt_NONE, 0);
+    return constructor(source, bufstart, bufend, paint, outerwidth, align,
+         spacingmult, spacingadd, includepad,
+         TextUtilsTruncateAt_NONE, 0);
 }
 
-/**
- * @hide
- */
-StaticLayout::StaticLayout(
+ECode StaticLayout::constructor(
     /* [in] */ ICharSequence* source,
     /* [in] */ Int32 bufstart,
     /* [in] */ Int32 bufend,
@@ -154,20 +133,13 @@ StaticLayout::StaticLayout(
     /* [in] */ Float spacingmult,
     /* [in] */ Float spacingadd,
     /* [in] */ Boolean includepad)
-    : mLineCount(0)
-    , mTopPadding(0)
-    , mBottomPadding(0)
-    , mColumns(0)
-    , mEllipsizedWidth(0)
-    , mMaximumVisibleLineCount(Elastos::Core::Math::INT32_MAX_VALUE)
 {
-    CPaintFontMetricsInt::New((IPaintFontMetricsInt**)&mFontMetricsInt);
-    Init(source, bufstart, bufend, paint, outerwidth, align, textDir,
-                spacingmult, spacingadd, includepad,
-                TextUtilsTruncateAt_NONE, 0, Elastos::Core::Math::INT32_MAX_VALUE);
+    return constructor(source, bufstart, bufend, paint, outerwidth, align, textDir,
+        spacingmult, spacingadd, includepad,
+        TextUtilsTruncateAt_NONE, 0, Elastos::Core::Math::INT32_MAX_VALUE);
 }
 
-StaticLayout::StaticLayout(
+ECode StaticLayout::constructor(
     /* [in] */ ICharSequence* source,
     /* [in] */ Int32 bufstart,
     /* [in] */ Int32 bufend,
@@ -179,24 +151,17 @@ StaticLayout::StaticLayout(
     /* [in] */ Boolean includepad,
     /* [in] */ TextUtilsTruncateAt ellipsize,
     /* [in] */ Int32 ellipsizedWidth)
-    : mLineCount(0)
-    , mTopPadding(0)
-    , mBottomPadding(0)
-    , mColumns(0)
-    , mEllipsizedWidth(0)
-    , mMaximumVisibleLineCount(Elastos::Core::Math::INT32_MAX_VALUE)
 {
-    CPaintFontMetricsInt::New((IPaintFontMetricsInt**)&mFontMetricsInt);
-    Init(source, bufstart, bufend, paint, outerwidth, align,
-                TextDirectionHeuristics::FIRSTSTRONG_LTR,
-                spacingmult, spacingadd, includepad, ellipsize,
-                ellipsizedWidth, Elastos::Core::Math::INT32_MAX_VALUE);
+    return constructor(source, bufstart, bufend, paint, outerwidth, align,
+            TextDirectionHeuristics::FIRSTSTRONG_LTR,
+            spacingmult, spacingadd, includepad, ellipsize,
+            ellipsizedWidth, Elastos::Core::Math::INT32_MAX_VALUE);
 }
 
 /**
  * @hide
  */
-StaticLayout::StaticLayout(
+ECode StaticLayout::constructor(
     /* [in] */ ICharSequence* source,
     /* [in] */ Int32 bufstart,
     /* [in] */ Int32 bufend,
@@ -210,24 +175,15 @@ StaticLayout::StaticLayout(
     /* [in] */ TextUtilsTruncateAt ellipsize,
     /* [in] */ Int32 ellipsizedWidth,
     /* [in] */ Int32 maxLines)
-    : mLineCount(0)
-    , mTopPadding(0)
-    , mBottomPadding(0)
-    , mColumns(0)
-    , mEllipsizedWidth(0)
-    , mMaximumVisibleLineCount(Elastos::Core::Math::INT32_MAX_VALUE)
 {
-    assert(source != NULL);
-
-    CPaintFontMetricsInt::New((IPaintFontMetricsInt**)&mFontMetricsInt);
+    VALIDATE_NOT_NULL(source)
     AutoPtr<ICharSequence> tempCS;
     if (source->Probe(EIID_ISpanned)) {
-        assert(0 && "TODO");
-//        tempCS = (ICharSequence*)(new SpannedEllipsizer(source));
-    } else {
-        tempCS = (ICharSequence*)(new Ellipsizer(source));
+        tempCS = (ICharSequence*)new SpannedEllipsizer(source);
     }
-
+    else {
+        tempCS = (ICharSequence*)new Ellipsizer(source);
+    }
     AutoPtr<ICharSequence> initCS;
     if (ellipsize == TextUtilsTruncateAt_NONE) {
         initCS = source;
@@ -235,8 +191,8 @@ StaticLayout::StaticLayout(
         initCS = tempCS;
     }
 
-    Layout::Init(initCS,
-          paint, outerwidth, align, textDir, spacingmult, spacingadd);
+    FAIL_RETURN(Layout::constructor(initCS, paint, outerwidth, align,
+        textDir, spacingmult, spacingadd))
 
     /*
      * This is annoying, but we can't refer to the layout until
@@ -247,10 +203,7 @@ StaticLayout::StaticLayout(
      * cares about the content instead of just holding the reference.
      */
     if (ellipsize != TextUtilsTruncateAt_NONE) {
-        AutoPtr<ICharSequence> charSeq = GetText();
-        AutoPtr<Ellipsizer> e = (Ellipsizer*)(charSeq->Probe(EIID_Ellipsizer));
-        assert(e != NULL);
-
+        AutoPtr<Ellipsizer> e = (Ellipsizer*)GetText().Get();
         e->mLayout = this;
         e->mWidth = ellipsizedWidth;
         e->mMethod = ellipsize;
@@ -261,43 +214,39 @@ StaticLayout::StaticLayout(
         mColumns = COLUMNS_NORMAL;
         mEllipsizedWidth = outerwidth;
     }
-
-    mLineDirections = ArrayUtils::NewUnpaddedArray(2 * mColumns);
-    mLines = ArrayOf<Int32>::Alloc(mLineDirections->GetLength);
+    assert(0 && "TODO");
+    // mLines = ArrayOf<Int32>::Alloc(ArrayUtils::IdealInt32ArraySize(2 * mColumns));
+    // mLineDirections = ArrayOf<ILayoutDirections*>::Alloc(ArrayUtils::IdealInt32ArraySize(2 * mColumns));
     mMaximumVisibleLineCount = maxLines;
 
     mMeasured = MeasuredText::Obtain();
 
     Generate(source, bufstart, bufend, paint, outerwidth, textDir, spacingmult,
-             spacingadd, includepad, includepad, ellipsizedWidth,
-             ellipsize);
+         spacingadd, includepad, includepad, ellipsizedWidth,
+         ellipsize);
 
     mMeasured = MeasuredText::Recycle(mMeasured);
     mFontMetricsInt = NULL;
+    return NOERROR;
 }
 
 /* package */
-StaticLayout::StaticLayout(
+ECode StaticLayout::constructor(
     /* [in] */ ICharSequence* text)
-    : mLineCount(0)
-    , mTopPadding(0)
-    , mBottomPadding(0)
-    , mColumns(0)
-    , mEllipsizedWidth(0)
-    , mMaximumVisibleLineCount(Elastos::Core::Math::INT32_MAX_VALUE)
 {
-    CPaintFontMetricsInt::New((IPaintFontMetricsInt**)&mFontMetricsInt);
-    Layout::Init(text, NULL, 0, ALIGN_NONE, 0.0f, 0.0f);
+    FAIL_RETURN(Layout::constructor(text, NULL, 0, ALIGN_NONE, 0.0f, 0.0f))
 
     mColumns = COLUMNS_ELLIPSIZE;
-    mLineDirections = ArrayUtils::NewUnpaddedArray(2 * mColumns);
-    mLines = ArrayOf<Int32>::Alloc(mLineDirections->GetLength);
+    assert(0 && "TODO");
+    // mLines = ArrayOf<Int32>::Alloc(ArrayUtils::IdealInt32ArraySize(2 * mColumns));
+    // mLineDirections = ArrayOf<ILayoutDirections*>::Alloc(ArrayUtils::IdealInt32ArraySize(2 * mColumns));
     // FIXME This is never recycled
     mMeasured = MeasuredText::Obtain();
+    return NOERROR;
 }
 
 /* package */
-void StaticLayout::Generate(
+ECode StaticLayout::Generate(
     /* [in] */ ICharSequence* source,
     /* [in] */ Int32 bufStart,
     /* [in] */ Int32 bufEnd,
@@ -682,16 +631,16 @@ void StaticLayout::Generate(
                 NULL, bufStart, ellipsize,
                 ellipsizedWidth, 0, paint, FALSE);
     }
+
+    return NOERROR;
 }
 
-// Override the base class so we can directly access our members,
-// rather than relying on member functions.
-// The logic mirrors that of Layout.getLineForVertical
-// FIXME: It may be faster to do a linear search for layouts without many lines.
-//@Override
-Int32 StaticLayout::GetLineForVertical(
-    /* [in] */ Int32 vertical)
+ECode StaticLayout::GetLineForVertical(
+    /* [in] */ Int32 vertical,
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Int32 high = mLineCount;
     Int32 low = -1;
     Int32 guess;
@@ -704,298 +653,166 @@ Int32 StaticLayout::GetLineForVertical(
             low = guess;
         }
     }
+
     if (low < 0) {
-        return 0;
+        *result = 0;
     } else {
-        return low;
+        *result = low;
     }
+
+    return NOERROR;
 }
 
 //@Override
-Int32 StaticLayout::GetLineCount()
+ECode StaticLayout::GetLineCount(
+    /* [out] */ Int32* result)
 {
-    return mLineCount;
+    VALIDATE_NOT_NULL(result)
+    *result = mLineCount;
+    return NOERROR;
 }
 
 //@Override
-Int32 StaticLayout::GetLineTop(
-    /* [in] */ Int32 line)
+ECode StaticLayout::GetLineTop(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
     assert(mLines != NULL);
     Int32 top = (*mLines)[mColumns * line + TOP];
     if (mMaximumVisibleLineCount > 0 && line >= mMaximumVisibleLineCount &&
             line != mLineCount) {
         top += GetBottomPadding();
     }
-    return top;
+    *result = top;
+    return NOERROR;
 }
 
 //@Override
-Int32 StaticLayout::GetLineDescent(
-    /* [in] */ Int32 line)
+ECode StaticLayout::GetLineDescent(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
     Int32 descent = (*mLines)[mColumns * line + DESCENT];
     if (mMaximumVisibleLineCount > 0 && line >= mMaximumVisibleLineCount - 1 && // -1 intended
             line != mLineCount) {
         descent += GetBottomPadding();
     }
-    return descent;
+    *result = descent;
+    return NOERROR;
 }
 
 //@Override
-Int32 StaticLayout::GetLineStart(
-    /* [in] */ Int32 line)
+ECode StaticLayout::GetLineStart(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
-    return (*mLines)[mColumns * line + START] & START_MASK;
+    VALIDATE_NOT_NULL(result)
+    *result = (*mLines)[mColumns * line + START] & START_MASK;
+    return NOERROR;
 }
 
 //@Override
-Int32 StaticLayout::GetParagraphDirection(
-    /* [in] */ Int32 line)
+ECode StaticLayout::GetParagraphDirection(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
-    return (*mLines)[mColumns * line + DIR] >> DIR_SHIFT;
+    VALIDATE_NOT_NULL(result)
+    *result = (*mLines)[mColumns * line + DIR] >> DIR_SHIFT;
+    return NOERROR;
 }
 
 //@Override
-Boolean StaticLayout::GetLineContainsTab(
-    /* [in] */ Int32 line)
+ECode StaticLayout::GetLineContainsTab(
+    /* [in] */ Int32 line,
+    /* [out] */ Boolean* result)
 {
-    return ((*mLines)[mColumns * line + TAB] & TAB_MASK) != 0;
+    VALIDATE_NOT_NULL(result)
+    *result = ((*mLines)[mColumns * line + TAB] & TAB_MASK) != 0;
+    return NOERROR;
 }
 
 //@Override
-AutoPtr<ILayoutDirections> StaticLayout::GetLineDirections(
-    /* [in] */ Int32 line)
+ECode StaticLayout::GetLineDirections(
+    /* [in] */ Int32 line,
+    /* [out] */ ILayoutDirections** result)
 {
+    VALIDATE_NOT_NULL(result)
     assert(line >= 0);
     AutoPtr<ILayoutDirections> ld;
     if (mLineDirections != NULL && line >= 0 && line < mLineDirections->GetLength()) {
         ld = (*mLineDirections)[line];
     }
-    return ld;
+    *result = ld;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 //@Override
-Int32 StaticLayout::GetTopPadding()
+ECode StaticLayout::GetTopPadding(
+    /* [out] */ Int32* result)
 {
-    return mTopPadding;
+    VALIDATE_NOT_NULL(result)
+    *result = mTopPadding;
+    return NOERROR;
 }
 
 //@Override
-Int32 StaticLayout::GetBottomPadding()
+ECode StaticLayout::GetBottomPadding(
+    /* [out] */ Int32* result)
 {
-    return mBottomPadding;
+    VALIDATE_NOT_NULL(result)
+    *result = mBottomPadding;
+    return NOERROR;
 }
 
 //@Override
-Int32 StaticLayout::GetEllipsisCount(
-    /* [in] */ Int32 line)
+ECode StaticLayout::GetEllipsisCount(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
     if (mColumns < COLUMNS_ELLIPSIZE) {
-        return 0;
+        *result = 0;
+        return NOERROR;
     }
 
-    return (*mLines)[mColumns * line + ELLIPSIS_COUNT];
+    *result = (*mLines)[mColumns * line + ELLIPSIS_COUNT];
+    return NOERROR;
 }
 
 //@Override
-Int32 StaticLayout::GetEllipsisStart(
-    /* [in] */ Int32 line)
+ECode StaticLayout::GetEllipsisStart(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
     if (mColumns < COLUMNS_ELLIPSIZE) {
-        return 0;
+        *result = 0;
+        return NOERROR;
     }
 
-    return (*mLines)[mColumns * line + ELLIPSIS_START];
+    *result = (*mLines)[mColumns * line + ELLIPSIS_START];
+    return NOERROR;
 }
 
 //@Override
-Int32 StaticLayout::GetEllipsizedWidth()
+ECode StaticLayout::GetEllipsizedWidth(,
+    /* [out] */ Int32* result)
 {
     return mEllipsizedWidth;
 }
 
-void StaticLayout::Prepare()
+ECode StaticLayout::Prepare()
 {
     mMeasured = MeasuredText::Obtain();
-}
-
-void StaticLayout::Finish()
-{
-    mMeasured = MeasuredText::Recycle(mMeasured);
-}
-
-ECode StaticLayout::Init(
-    /* [in] */ ICharSequence* source,
-    /* [in] */ ITextPaint* paint,
-    /* [in] */ Int32 width,
-    /* [in] */ LayoutAlignment align,
-    /* [in] */ Float spacingmult,
-    /* [in] */ Float spacingadd,
-    /* [in] */ Boolean includepad)
-{
-    assert(source != NULL);
-    Int32 length = 0;
-    source->GetLength(&length);
-    return Init(source, 0, length, paint, width, align,
-             spacingmult, spacingadd, includepad);
-}
-
-/**
- * @hide
- */
-ECode StaticLayout::Init(
-    /* [in] */ ICharSequence* source,
-    /* [in] */ ITextPaint* paint,
-    /* [in] */ Int32 width,
-    /* [in] */ LayoutAlignment align,
-    /* [in] */ ITextDirectionHeuristic* textDir,
-    /* [in] */ Float spacingmult,
-    /* [in] */ Float spacingadd,
-    /* [in] */ Boolean includepad)
-{
-    assert(source != NULL);
-    Int32 length = 0;
-    source->GetLength(&length);
-    return Init(source, 0, length, paint, width, align, textDir,
-                spacingmult, spacingadd, includepad);
-}
-
-ECode StaticLayout::Init(
-    /* [in] */ ICharSequence* source,
-    /* [in] */ Int32 bufstart,
-    /* [in] */ Int32 bufend,
-    /* [in] */ ITextPaint* paint,
-    /* [in] */ Int32 outerwidth,
-    /* [in] */ LayoutAlignment align,
-    /* [in] */ Float spacingmult,
-    /* [in] */ Float spacingadd,
-    /* [in] */ Boolean includepad)
-{
-    return Init(source, bufstart, bufend, paint, outerwidth, align,
-             spacingmult, spacingadd, includepad,
-             TextUtilsTruncateAt_NONE, 0);
-}
-
-/**
- * @hide
- */
-ECode StaticLayout::Init(
-    /* [in] */ ICharSequence* source,
-    /* [in] */ Int32 bufstart,
-    /* [in] */ Int32 bufend,
-    /* [in] */ ITextPaint* paint,
-    /* [in] */ Int32 outerwidth,
-    /* [in] */ LayoutAlignment align,
-    /* [in] */ ITextDirectionHeuristic* textDir,
-    /* [in] */ Float spacingmult,
-    /* [in] */ Float spacingadd,
-    /* [in] */ Boolean includepad)
-{
-    return Init(source, bufstart, bufend, paint, outerwidth, align, textDir,
-                spacingmult, spacingadd, includepad,
-                TextUtilsTruncateAt_NONE, 0, Elastos::Core::Math::INT32_MAX_VALUE);
-}
-
-ECode StaticLayout::Init(
-    /* [in] */ ICharSequence* source,
-    /* [in] */ Int32 bufstart,
-    /* [in] */ Int32 bufend,
-    /* [in] */ ITextPaint* paint,
-    /* [in] */ Int32 outerwidth,
-    /* [in] */ LayoutAlignment align,
-    /* [in] */ Float spacingmult,
-    /* [in] */ Float spacingadd,
-    /* [in] */ Boolean includepad,
-    /* [in] */ TextUtilsTruncateAt ellipsize,
-    /* [in] */ Int32 ellipsizedWidth)
-{
-    return Init(source, bufstart, bufend, paint, outerwidth, align,
-                TextDirectionHeuristics::FIRSTSTRONG_LTR,
-                spacingmult, spacingadd, includepad, ellipsize,
-                ellipsizedWidth, Elastos::Core::Math::INT32_MAX_VALUE);
-}
-
-/**
- * @hide
- */
-ECode StaticLayout::Init(
-    /* [in] */ ICharSequence* source,
-    /* [in] */ Int32 bufstart,
-    /* [in] */ Int32 bufend,
-    /* [in] */ ITextPaint* paint,
-    /* [in] */ Int32 outerwidth,
-    /* [in] */ LayoutAlignment align,
-    /* [in] */ ITextDirectionHeuristic* textDir,
-    /* [in] */ Float spacingmult,
-    /* [in] */ Float spacingadd,
-    /* [in] */ Boolean includepad,
-    /* [in] */ TextUtilsTruncateAt ellipsize,
-    /* [in] */ Int32 ellipsizedWidth,
-    /* [in] */ Int32 maxLines)
-{
-    assert(source != NULL);
-    AutoPtr<ICharSequence> tempCS;
-    if (source->Probe(EIID_ISpanned)) {
-        tempCS = (ICharSequence*)(new SpannedEllipsizer(source))->Probe(EIID_ICharSequence);
-    } else {
-        tempCS = (ICharSequence*)(new Ellipsizer(source));
-    }
-    AutoPtr<ICharSequence> initCS;
-    if (ellipsize == TextUtilsTruncateAt_NONE) {
-        initCS = source;
-    } else {
-        initCS = tempCS;
-    }
-    Layout::Init(initCS,
-          paint, outerwidth, align, textDir, spacingmult, spacingadd);
-
-    /*
-     * This is annoying, but we can't refer to the layout until
-     * superclass construction is finished, and the superclass
-     * constructor wants the reference to the display text.
-     *
-     * This will break if the superclass constructor ever actually
-     * cares about the content instead of just holding the reference.
-     */
-    if (ellipsize != TextUtilsTruncateAt_NONE) {
-        AutoPtr<Ellipsizer> e = (Ellipsizer*)GetText().Get();
-        e->mLayout = this;
-        e->mWidth = ellipsizedWidth;
-        e->mMethod = ellipsize;
-        mEllipsizedWidth = ellipsizedWidth;
-
-        mColumns = COLUMNS_ELLIPSIZE;
-    } else {
-        mColumns = COLUMNS_NORMAL;
-        mEllipsizedWidth = outerwidth;
-    }
-    mLines = ArrayOf<Int32>::Alloc(ArrayUtils::IdealInt32ArraySize(2 * mColumns));
-    mLineDirections = ArrayOf<ILayoutDirections*>::Alloc(ArrayUtils::IdealInt32ArraySize(2 * mColumns));
-    mMaximumVisibleLineCount = maxLines;
-
-    mMeasured = MeasuredText::Obtain();
-
-    Generate(source, bufstart, bufend, paint, outerwidth, textDir, spacingmult,
-             spacingadd, includepad, includepad, ellipsizedWidth,
-             ellipsize);
-
-    mMeasured = MeasuredText::Recycle(mMeasured);
-    mFontMetricsInt = NULL;
     return NOERROR;
 }
 
-/* package */
-ECode StaticLayout::Init(
-    /* [in] */ ICharSequence* text)
+ECode StaticLayout::Finish()
 {
-    Layout::Init(text, NULL, 0, ALIGN_NONE, 0.0f, 0.0f);
-
-    mColumns = COLUMNS_ELLIPSIZE;
-    mLines = ArrayOf<Int32>::Alloc(ArrayUtils::IdealInt32ArraySize(2 * mColumns));
-    mLineDirections = ArrayOf<ILayoutDirections*>::Alloc(ArrayUtils::IdealInt32ArraySize(2 * mColumns));
-    // FIXME This is never recycled
-    mMeasured = MeasuredText::Obtain();
+    mMeasured = MeasuredText::Recycle(mMeasured);
     return NOERROR;
 }
 
@@ -1268,13 +1085,123 @@ void StaticLayout::CalculateEllipsis(
     (*mLines)[mColumns * line + ELLIPSIS_COUNT] = ellipsisCount;
 }
 
+
+class ScopedIcuLocale {
+public:
+    ScopedIcuLocale(
+        /* [in] */ const String& javaLocaleName)
+    {
+        mLocale.setToBogus();
+
+        assert(javaLocaleName.IsNull() == FALSE && "javaLocaleName == null");
+        // if (javaLocaleName.IsNull()) {
+        //     jniThrowNullPointerException(mEnv, "javaLocaleName == null");
+        //     return;
+        // }
+
+        mLocale = Locale::createFromName(localeName.string());
+    }
+
+    ~ScopedIcuLocale() {
+    }
+
+    bool valid() const {
+        return !mLocale.isBogus();
+    }
+
+    Locale& locale() {
+        return mLocale;
+    }
+
+private:
+    Locale mLocale;
+
+    // Disallow copy and assignment.
+    ScopedIcuLocale(const ScopedIcuLocale&);
+    void operator=(const ScopedIcuLocale&);
+};
+
+class ScopedBreakIterator {
+public:
+    ScopedBreakIterator(
+        /* [in] */ BreakIterator* breakIterator,
+        /* [in] */ ArrayOf<Char32>* inputText,
+        /* [in] */Int32 length)
+        : mBreakIterator(breakIterator)
+        , mChars(inputText)
+    {
+        UErrorCode status = U_ZERO_ERROR;
+        mUText = utext_openUChars(NULL, mChars.Get(), length, &status);
+        if (mUText == NULL) {
+            return;
+        }
+
+        mBreakIterator->setText(mUText, status);
+    }
+
+    inline BreakIterator* operator->() {
+        return mBreakIterator;
+    }
+
+    ~ScopedBreakIterator() {
+        utext_close(mUText);
+        delete mBreakIterator;
+    }
+private:
+    BreakIterator* mBreakIterator;
+    AutoPtr<ArrayOf<Char32> > mChars;
+    UText* mUText;
+
+    // disable copying and assignment
+    ScopedBreakIterator(const ScopedBreakIterator&);
+    void operator=(const ScopedBreakIterator&);
+};
+
 AutoPtr<ArrayOf<Int32> > StaticLayout::nLineBreakOpportunities(
     /* [in] */ const String& locale,
     /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 length,
     /* [in] */ ArrayOf<Int32>* recycle)
 {
+    AutoPtr<ArrayOf<Int32> > ret;
 
+    std::vector<Int32> breaks;
+
+    ScopedIcuLocale icuLocale(javaLocaleName);
+    if (icuLocale.valid()) {
+        UErrorCode status = U_ZERO_ERROR;
+        BreakIterator* it = BreakIterator::createLineInstance(icuLocale.locale(), status);
+        if (!U_SUCCESS(status) || it == NULL) {
+            if (it) {
+                delete it;
+            }
+        } else {
+            ScopedBreakIterator breakIterator(env, it, inputText, length);
+            for (int loc = breakIterator->first(); loc != BreakIterator::DONE;
+                    loc = breakIterator->next()) {
+                breaks.push_back(loc);
+            }
+        }
+    }
+
+    breaks.push_back(-1); // sentinel terminal value
+
+    if (recycle != NULL && recycle->GetLength() >= breaks.size()) {
+        ret = recycle;
+    }
+    else {
+        ret = ArrayOf<Int32>::Alloc(breaks.size());
+    }
+
+    if (ret != NULL) {
+        std::vector<Int32>::iterator it;
+        Int32 i = 0;
+        for (it = breaks.begin(); it != breaks.end(); ++it) {
+            ret->Set(i++, *it);
+        }
+    }
+
+    return ret;
 }
 
 

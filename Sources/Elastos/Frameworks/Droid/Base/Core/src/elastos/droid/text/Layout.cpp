@@ -8,19 +8,20 @@
 #include "elastos/droid/text/CLayoutDirections.h"
 #include "elastos/droid/text/MeasuredText.h"
 #include "elastos/droid/text/AndroidBidi.h"
-#include "elastos/droid/text/method/CTextKeyListener.h"
+//#include "elastos/droid/text/method/CTextKeyListener.h"
 //#include "emoji/CEmojiFactoryHelper.h"
 #include "elastos/droid/graphics/CRect.h"
-#include "elastos/droid/internal/utility/ArrayUtils.h"
-#include "elastos/droid/internal/utility/GrowingArrayUtils.h"
+//#include "elastos/droid/internal/utility/ArrayUtils.h"
+//#include "elastos/droid/internal/utility/GrowingArrayUtils.h"
 
 #include <elastos/core/Math.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CString;
-using Elastos::Core::EIID_ICharSequence;
 //using Elastos::Droid::Emoji::IEmojiFactoryHelper;
 using Elastos::Droid::Graphics::CRect;
 //using Elastos::Droid::Graphics::PathDirection;
+using Elastos::Droid::Graphics::PathDirection_CW;
 using Elastos::Droid::Text::MeasuredText;
 using Elastos::Droid::Text::AndroidBidi;
 using Elastos::Droid::Text::Style::EIID_IParagraphStyle;
@@ -39,6 +40,10 @@ using Elastos::Droid::Text::Method::IMetaKeyKeyListener;
 using Elastos::Droid::Text::MeasuredText;
 using Elastos::Droid::Text::AndroidBidi;
 // using Elastos::Droid::Internal::Utility::ArrayUtils;
+
+using Elastos::Core::CString;
+using Elastos::Core::EIID_ICharSequence;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -85,8 +90,9 @@ ECode Layout::Ellipsizer::GetChars(
     /* [in] */ ArrayOf<Char32>* dest,
     /* [in] */ Int32 destoff)
 {
-    Int32 line1 = mLayout->GetLineForOffset(start);
-    Int32 line2 = mLayout->GetLineForOffset(end);
+    Int32 line1, line2;
+    mLayout->GetLineForOffset(start, &line1);
+    mLayout->GetLineForOffset(end, &line2);
 
     TextUtils::GetChars(mText, start, end, dest, destoff);
 
@@ -147,7 +153,7 @@ Layout::TabStops::TabStops(
     Reset(increment, spans);
 }
 
-void Layout::TabStops::Reset(
+ECode Layout::TabStops::Reset(
     /* [in] */ Int32 increment,
     /* [in] */ ArrayOf<IInterface*>* spans)
 {
@@ -183,7 +189,8 @@ void Layout::TabStops::Reset(
         }
 
         if (ns > 1) {
-            ArrayUtils::Sort(stops, 0, ns);
+            assert(0 && "TODO");
+            // ArrayUtils::Sort(stops, 0, ns);
         }
 
         if (stops != mStops) {
@@ -192,6 +199,7 @@ void Layout::TabStops::Reset(
     }
 
     mNumStops = ns;
+    return NOERROR;
 }
 
 Float Layout::TabStops::NextTab(
@@ -321,12 +329,11 @@ ECode Layout::SpannedEllipsizer::SubSequence(
 
     AutoPtr<ISpannableString> ss;
     FAIL_RETURN(CSpannableString::New(seq, (ISpannableString**)&ss));
-    TextUtils::CopySpansFrom(mSpanned, start, end, EIID_IInterface, ss, 0);
+    TextUtils::CopySpansFrom(mSpanned, start, end, EIID_IInterface, ISpannable::Probe(ss), 0);
     *subcsq = ICharSequence::Probe(ss);
     REFCOUNT_ADD(*subcsq);
     return NOERROR;
 }
-
 
 //========================================================================
 // Layout
@@ -449,7 +456,8 @@ ECode Layout::constructor(
     /* [in] */ Float spacingMult,
     /* [in] */ Float spacingAdd)
 {
-    return constructor(text, paint, width, align, TextDirectionHeuristics::FIRSTSTRONG_LTR,
+    AutoPtr<ITextDirectionHeuristic> tdh = TextDirectionHeuristics::GetFIRSTSTRONG_LTR();
+    return constructor(text, paint, width, align, tdh,
             spacingMult, spacingAdd);
 }
 
@@ -467,13 +475,12 @@ ECode Layout::constructor(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    IPaint* p = IPaint::Probe(paint);
     // Ensure paint doesn't have baselineShift set.
     // While normally we don't modify the paint the user passed in,
     // we were already doing this in Styled.drawUniformRun with both
     // baselineShift and bgColor.  We probably should reevaluate bgColor.
     if (paint != NULL) {
-        p->SetBgColor(0);
+        paint->SetBgColor(0);
         paint->SetBaselineShift(0);
     }
 
@@ -486,7 +493,7 @@ ECode Layout::constructor(
     mTextDir = textDir;
 
     CTextPaint::New((ITextPaint**)&mWorkPaint);
-    mSpannedText = ISpanned::Probe(text);
+    mSpannedText = ISpanned::Probe(text) != NULL;
     return NOERROR;
 }
 
@@ -510,7 +517,7 @@ ECode Layout::ReplaceWith(
     mAlignment = align;
     mSpacingMult = spacingmult;
     mSpacingAdd = spacingadd;
-    mSpannedText = text != NULL && text->Probe(EIID_ISpanned) != NULL;
+    mSpannedText = ISpanned::Probe(text) != NULL;
 
     return NOERROR;
 }
@@ -543,11 +550,13 @@ ECode Layout::DrawText(
     /* [in] */ Int32 firstLine,
     /* [in] */ Int32 lastLine)
 {
-    Int32 previousLineBottom = GetLineTop(firstLine);
-    Int32 previousLineEnd = GetLineStart(firstLine);
+    Int32 previousLineBottom, previousLineEnd;
+    GetLineTop(firstLine, &previousLineBottom);
+    GetLineStart(firstLine, &previousLineEnd);
     AutoPtr< ArrayOf<IInterface*> > spans = (ArrayOf<IInterface*>*)(NO_PARA_SPANS.Get());
     Int32 spanEnd = 0;
     AutoPtr<ITextPaint> paint = mPaint;
+    IPaint* p = IPaint::Probe(mPaint);
     AutoPtr<ICharSequence> buf = mText;
 
     LayoutAlignment paraAlign = mAlignment;
@@ -560,15 +569,13 @@ ECode Layout::DrawText(
     // The baseline is the top of the following line minus the current line's descent.
     for (Int32 i = firstLine; i <= lastLine; i++) {
         Int32 start = previousLineEnd;
-        previousLineEnd = GetLineStart(i + 1);
-        Int32 end;
-        GetLineVisibleEnd(i, start, previousLineEnd, &end);
+        GetLineStart(i + 1, &previousLineEnd);
+        Int32 end = GetLineVisibleEnd(i, start, previousLineEnd);
 
         Int32 ltop = previousLineBottom;
-        Int32 lbottom;
+        Int32 lbottom, lineDescent;
         GetLineTop(i + 1, &lbottom);
         previousLineBottom = lbottom;
-        Int32 lineDescent;
         GetLineDescent(i, &lineDescent);
         Int32 lbaseline = lbottom - lineDescent;
 
@@ -633,8 +640,9 @@ ECode Layout::DrawText(
                 if (lms2 != NULL) {
                     Int32 count, tmp;
                     lms2->GetLeadingMarginLineCount(&count);
-                    sp->GetSpanStart(margin, &tmp);
-                    Int32 startLine = GetLineForOffset(tmp);
+                    sp->GetSpanStart((*spans)[n], &tmp);
+                    Int32 startLine;
+                    GetLineForOffset(tmp, &startLine);
                     // if there is more than one LeadingMarginSpan2, use
                     // the count that is greatest
                     if (i < startLine + count) {
@@ -647,18 +655,18 @@ ECode Layout::DrawText(
                 ILeadingMarginSpan* margin = ILeadingMarginSpan::Probe((*spans)[n]);
                 if (margin != NULL) {
                     if (dir == ILayout::DIR_RIGHT_TO_LEFT) {
-                        margin->DrawLeadingMargin(canvas, paint, right, dir, ltop,
-                                                 lbaseline, lbottom, buf,
-                                                 start, end, isFirstParaLine, THIS_PROBE(ILayout));
+                        margin->DrawLeadingMargin(canvas, p, right, dir, ltop,
+                            lbaseline, lbottom, buf,
+                            start, end, isFirstParaLine, THIS_PROBE(ILayout));
 
                         Int32 tmp;
                         margin->GetLeadingMargin(useFirstLineMargin, &tmp);
                         right -= tmp;
                     }
                     else {
-                        margin->DrawLeadingMargin(canvas, paint, left, dir, ltop,
-                                                 lbaseline, lbottom, buf,
-                                                 start, end, isFirstParaLine, THIS_PROBE(ILayout));
+                        margin->DrawLeadingMargin(canvas, p, left, dir, ltop,
+                            lbaseline, lbottom, buf,
+                            start, end, isFirstParaLine, THIS_PROBE(ILayout));
                         Int32 tmp;
                         margin->GetLeadingMargin(useFirstLineMargin, &tmp);
                         left += tmp;
@@ -667,7 +675,8 @@ ECode Layout::DrawText(
             }
         }
 
-        Boolean hasTabOrEmoji = GetLineContainsTab(i);
+        Boolean hasTabOrEmoji;
+        GetLineContainsTab(i, &hasTabOrEmoji);
         // Can't tell if we have tabs for sure, currently
         if (hasTabOrEmoji && !tabStopsIsInitialized) {
             if (tabStops == NULL) {
@@ -709,10 +718,11 @@ ECode Layout::DrawText(
             }
         }
 
-        AutoPtr<ILayoutDirections> directions = GetLineDirections(i);
+        AutoPtr<ILayoutDirections> directions;
+        GetLineDirections(i, (ILayoutDirections**)&directions);
         if (directions == DIRS_ALL_LEFT_TO_RIGHT && !mSpannedText && !hasTabOrEmoji) {
             // XXX: assumes there's nothing additional to be done
-            canvas->DrawText(buf, start, end, x, lbaseline, paint);
+            canvas->DrawText(buf, start, end, x, lbaseline, p);
         } else {
             tl->Set(paint, buf, start, end, dir, directions, hasTabOrEmoji, tabStops);
             tl->Draw(canvas, x, ltop, lbaseline, lbottom);
@@ -744,28 +754,34 @@ ECode Layout::DrawBackground(
         }
 
         AutoPtr<ISpanned> buffer = ISpanned::Probe(mText);
+        ICharSequence* csq = ICharSequence::Probe(buffer);
         Int32 textLength;
-        buffer->GetLength(&textLength);
+        csq->GetLength(&textLength);
         mLineBackgroundSpans->Init(buffer, 0, textLength);
 
         Int32 numberOfSpans = mLineBackgroundSpans->mNumberOfSpans;
         if (numberOfSpans > 0) {
-            Int32 previousLineBottom = GetLineTop(firstLine);
-            Int32 previousLineEnd = GetLineStart(firstLine);
+            Int32 previousLineBottom, previousLineEnd;
+            GetLineTop(firstLine, &previousLineBottom);
+            GetLineStart(firstLine, &previousLineEnd);
             AutoPtr< ArrayOf<IInterface*> > spans = (ArrayOf<IInterface*>*)(NO_PARA_SPANS.Get());
             Int32 spansLength = 0;
             AutoPtr<ITextPaint> paint = mPaint;
+            IPaint* p = IPaint::Probe(mPaint);
             Int32 spanEnd = 0;
             Int32 width = mWidth;
             for (Int32 i = firstLine; i <= lastLine; i++) {
                 Int32 start = previousLineEnd;
-                Int32 end = GetLineStart(i + 1);
+                Int32 end;
+                GetLineStart(i + 1, &end);
                 previousLineEnd = end;
 
                 Int32 ltop = previousLineBottom;
-                Int32 lbottom = GetLineTop(i + 1);
+                Int32 lbottom, descent;
+                GetLineTop(i + 1, &lbottom);
                 previousLineBottom = lbottom;
-                Int32 lbaseline = lbottom - GetLineDescent(i);
+                GetLineDescent(i, &descent);
+                Int32 lbaseline = lbottom - descent;
 
                 if (start >= spanEnd) {
                     // These should be infrequent, so we'll use this so that
@@ -787,8 +803,9 @@ ECode Layout::DrawBackground(
                             if ((*spanStarts)[j] >= end || (*spanEnds)[j] <= start)
                                 continue;
 
-                            spans = GrowingArrayUtils::Append(
-                                    spans, spansLength, TO_IINTERFACE((*lbSpans)[i]));
+                            assert(0 && "TODO");
+                            // spans = GrowingArrayUtils::Append(
+                            //         spans, spansLength, TO_IINTERFACE((*lbSpans)[i]));
                             spansLength++;
                         }
                     }
@@ -798,9 +815,8 @@ ECode Layout::DrawBackground(
                     AutoPtr<ILineBackgroundSpan> lineBackgroundSpan
                         = ILineBackgroundSpan::Probe((*spans)[n]);
                     if (lineBackgroundSpan)
-                        lineBackgroundSpan->DrawBackground(canvas, paint, 0, width,
-                                ltop, lbaseline, lbottom,
-                                buffer, start, end, i);
+                        lineBackgroundSpan->DrawBackground(canvas, p, 0, width,
+                            ltop, lbaseline, lbottom, csq, start, end, i);
                 }
             }
         }
@@ -843,10 +859,16 @@ ECode Layout::GetLineRangeForDraw(
     }
 
     Int32 top = Elastos::Core::Math::Max(dtop, 0);
-    Int32 bottom = Elastos::Core::Math::Min(GetLineTop(GetLineCount()), dbottom);
+    Int32 count, tt;
+    GetLineCount(&count);
+    GetLineTop(count, &tt);
+    Int32 bottom = Elastos::Core::Math::Min(tt, dbottom);
 
     if (top >= bottom) return TextUtils::PackRangeInInt64(0, -1);
-    *result = TextUtils::PackRangeInInt64(GetLineForVertical(top), GetLineForVertical(bottom));
+    Int32 tv, bv;
+    GetLineForVertical(top, &tv);
+    GetLineForVertical(bottom, &bv);
+    *result = TextUtils::PackRangeInInt64(tv, bv);
     return NOERROR;
 }
 
@@ -857,8 +879,10 @@ Int32 Layout::GetLineStartPos(
 {
     // Adjust the point at which to start rendering depending on the
     // alignment of the paragraph.
-    LayoutAlignment align = GetParagraphAlignment(line);
-    Int32 dir = GetParagraphDirection(line);
+    LayoutAlignment align;
+    GetParagraphAlignment(line, &align);
+    Int32 dir;
+    GetParagraphDirection(line, &dir);
 
     if (align == ALIGN_LEFT) {
         align = (dir == ILayout::DIR_LEFT_TO_RIGHT) ? ALIGN_NORMAL : ALIGN_OPPOSITE;
@@ -875,12 +899,15 @@ Int32 Layout::GetLineStartPos(
         }
     } else {
         AutoPtr<TabStops> tabStops;
-        if (mSpannedText && GetLineContainsTab(line)) {
+        Boolean bval;
+        GetLineContainsTab(line, &bval);
+        if (mSpannedText && bval) {
             AutoPtr<ISpanned> spanned = ISpanned::Probe(mText);
-            Int32 start = GetLineStart(line);
+            Int32 start;
+            GetLineStart(line, &start);
             Int32 length;
             Int32 spanEnd;
-            spanned->GetLength(&length);
+            ICharSequence::Probe(spanned)->GetLength(&length);
             spanned->NextSpanTransition(start, length, EIID_ITabStopSpan, &spanEnd);
             AutoPtr< ArrayOf<IInterface*> > tabSpans = GetParagraphSpans(
                     spanned, start, spanEnd, EIID_ITabStopSpan);
@@ -912,7 +939,7 @@ ECode Layout::GetText(
     VALIDATE_NOT_NULL(csq)
     *csq = mText;
     REFCOUNT_ADD(*csq)
-    return NOT;
+    return NOERROR;
 }
 
 ECode Layout::GetPaint(
@@ -928,7 +955,7 @@ ECode Layout::GetWidth(
     /* [out] */ Int32* width)
 {
     VALIDATE_NOT_NULL(width)
-    *width = mWidth
+    *width = mWidth;
     return NOERROR;
 }
 
@@ -936,7 +963,7 @@ ECode Layout::GetEllipsizedWidth(
     /* [out] */ Int32* width)
 {
     VALIDATE_NOT_NULL(width)
-    *width = mWidth
+    *width = mWidth;
     return NOERROR;
 }
 
@@ -1001,10 +1028,13 @@ ECode Layout::GetLineBounds(
 {
     VALIDATE_NOT_NULL(result)
     if (bounds != NULL) {
+        Int32 top;
         bounds->SetLeft(0);
-        bounds->SetTop(GetLineTop(line));
+        GetLineTop(line, &top);
+        bounds->SetTop(top);
         bounds->SetRight(mWidth);   // ???
-        bounds->SetBottom(GetLineTop(line + 1));
+        GetLineTop(line + 1, &top);
+        bounds->SetBottom(top);
     }
 
     return GetLineBaseline(line, result);
@@ -1017,26 +1047,31 @@ ECode Layout::IsLevelBoundary(
     VALIDATE_NOT_NULL(result)
     *result = FALSE;
 
-    Int32 line = GetLineForOffset(offset);
-    AutoPtr<ILayoutDirections> dirs = GetLineDirections(line);
+    Int32 line;
+    GetLineForOffset(offset, &line);
+    AutoPtr<ILayoutDirections> dirs;
+    GetLineDirections(line, (ILayoutDirections**)&dirs);
     if (dirs == DIRS_ALL_LEFT_TO_RIGHT || dirs == DIRS_ALL_RIGHT_TO_LEFT) {
         return NOERROR;
     }
 
-    AutoPtr< ArrayOf<Int32> > runs = NULL;
+    AutoPtr< ArrayOf<Int32> > runs;
     dirs->GetDirections((ArrayOf<Int32>**)&runs);
-    Int32 lineStart = GetLineStart(line);
-    Int32 lineEnd = GetLineEnd(line);
+    Int32 lineStart, lineEnd;
+    GetLineStart(line, &lineStart);
+    GetLineEnd(line, &lineEnd);
     if (offset == lineStart || offset == lineEnd) {
-        Int32 paraLevel = GetParagraphDirection(line) == 1 ? 0 : 1;
-        Int32 runIndex = offset == lineStart ? 0 : runs.Get()->GetLength() - 2;
-        *result = (((*(runs.Get()))[runIndex + 1] /*>>>*/>> ILayout::RUN_LEVEL_SHIFT) & ILayout::RUN_LEVEL_MASK) != paraLevel;
+        Int32 dir;
+        GetParagraphDirection(line, &dir);
+        Int32 paraLevel = dir == 1 ? 0 : 1;
+        Int32 runIndex = offset == lineStart ? 0 : runs->GetLength() - 2;
+        *result = (((*runs)[runIndex + 1] /*>>>*/>> ILayout::RUN_LEVEL_SHIFT) & ILayout::RUN_LEVEL_MASK) != paraLevel;
         return NOERROR;
     }
 
     offset -= lineStart;
-    for (Int32 i = 0; i < runs.Get()->GetLength(); i += 2) {
-        if (offset == (*(runs.Get()))[i]) {
+    for (Int32 i = 0; i < runs->GetLength(); i += 2) {
+        if (offset == (*runs)[i]) {
             *result = TRUE;
             return NOERROR;
         }
@@ -1052,8 +1087,10 @@ ECode Layout::IsRtlCharAt(
     VALIDATE_NOT_NULL(result)
     *result = FALSE;
 
-    Int32 line = GetLineForOffset(offset);
-    AutoPtr<ILayoutDirections> dirs = GetLineDirections(line);
+    Int32 line;
+    GetLineForOffset(offset, &line);
+    AutoPtr<ILayoutDirections> dirs;
+    GetLineDirections(line, (ILayoutDirections**)&dirs);
     if (dirs == DIRS_ALL_LEFT_TO_RIGHT) {
         return NOERROR;
     }
@@ -1065,9 +1102,10 @@ ECode Layout::IsRtlCharAt(
 
     AutoPtr< ArrayOf<Int32> >runs;
     dirs->GetDirections((ArrayOf<Int32>**)&runs);
-    Int32 lineStart = GetLineStart(line);
-    for (Int32 i = 0; i < runs.Get()->GetLength(); i += 2) {
-        Int32 start = lineStart + ((*(runs.Get()))[i] & ILayout::RUN_LENGTH_MASK);
+    Int32 lineStart;
+    GetLineStart(line, &lineStart);
+    for (Int32 i = 0; i < runs->GetLength(); i += 2) {
+        Int32 start = lineStart + ((*runs)[i] & ILayout::RUN_LENGTH_MASK);
         Int32 limit = start + ((*runs)[i+1] & RUN_LENGTH_MASK);
         if (offset >= start && offset < limit) {
             Int32 level = ((*runs)[i+1] /*>>>*/>> ILayout::RUN_LEVEL_SHIFT) & ILayout::RUN_LEVEL_MASK;
@@ -1082,16 +1120,19 @@ ECode Layout::IsRtlCharAt(
 Boolean Layout::PrimaryIsTrailingPrevious(
     /* [in] */ Int32 offset)
 {
-    Int32 line = GetLineForOffset(offset);
-    Int32 lineStart = GetLineStart(line);
-    Int32 lineEnd = GetLineEnd(line);
+    Int32 line, lineStart, lineEnd;
+    GetLineForOffset(offset, &line);
+    GetLineStart(line, &lineStart);
+    GetLineEnd(line, &lineEnd);
     AutoPtr< ArrayOf<Int32> > runs;
-    GetLineDirections(line)->GetDirections((ArrayOf<Int32>**)&runs);
+    AutoPtr<ILayoutDirections> dirs;
+    GetLineDirections(line, (ILayoutDirections**)&dirs);
+    dirs->GetDirections((ArrayOf<Int32>**)&runs);
 
     Int32 levelAt = -1;
-    for (Int32 i = 0; i < runs.Get()->GetLength(); i += 2) {
-        Int32 start = lineStart + (*(runs.Get()))[i];
-        Int32 limit = start + ((*(runs.Get()))[i+1] & ILayout::RUN_LENGTH_MASK);
+    for (Int32 i = 0; i < runs->GetLength(); i += 2) {
+        Int32 start = lineStart + (*runs)[i];
+        Int32 limit = start + ((*runs)[i+1] & ILayout::RUN_LENGTH_MASK);
         if (limit > lineEnd) {
             limit = lineEnd;
         }
@@ -1102,30 +1143,35 @@ Boolean Layout::PrimaryIsTrailingPrevious(
                 return FALSE;
             }
 
-            levelAt = ((*(runs.Get()))[i+1] /*>>>*/>> ILayout::RUN_LEVEL_SHIFT) & ILayout::RUN_LEVEL_MASK;
+            levelAt = ((*runs)[i+1] /*>>>*/>> ILayout::RUN_LEVEL_SHIFT) & ILayout::RUN_LEVEL_MASK;
             break;
         }
     }
 
     if (levelAt == -1) {
         // Offset was limit of line.
-        levelAt = GetParagraphDirection(line) == 1 ? 0 : 1;
+        Int32 pd;
+        GetParagraphDirection(line, &pd);
+        levelAt = pd == 1 ? 0 : 1;
     }
 
     // At level boundary, check previous level.
     Int32 levelBefore = -1;
     if (offset == lineStart) {
-        levelBefore = GetParagraphDirection(line) == 1 ? 0 : 1;
-    } else {
+        Int32 pd;
+        GetParagraphDirection(line, &pd);
+        levelBefore = pd == 1 ? 0 : 1;
+    }
+    else {
         offset -= 1;
-        for (Int32 i = 0; i < runs.Get()->GetLength(); i += 2) {
-            Int32 start = lineStart + (*(runs.Get()))[i];
-            Int32 limit = start + ((*(runs.Get()))[i+1] & ILayout::RUN_LENGTH_MASK);
+        for (Int32 i = 0; i < runs->GetLength(); i += 2) {
+            Int32 start = lineStart + (*runs)[i];
+            Int32 limit = start + ((*runs)[i+1] & ILayout::RUN_LENGTH_MASK);
             if (limit > lineEnd) {
                 limit = lineEnd;
             }
             if (offset >= start && offset < limit) {
-                levelBefore = ((*(runs.Get()))[i+1] /*>>>*/>> ILayout::RUN_LEVEL_SHIFT) & ILayout::RUN_LEVEL_MASK;
+                levelBefore = ((*runs)[i+1] /*>>>*/>> ILayout::RUN_LEVEL_SHIFT) & ILayout::RUN_LEVEL_MASK;
                 break;
             }
         }
@@ -1216,8 +1262,9 @@ Float Layout::GetHorizontal(
         wid = mWidth;
     }
 
-    Int32 left = GetParagraphLeft(line);
-    Int32 right = GetParagraphRight(line);
+    Int32 left, right;
+    GetParagraphLeft(line, &left);
+    GetParagraphRight(line, &right);
 
     return GetLineStartPos(line, left, right) + wid;
 }
@@ -1242,7 +1289,7 @@ ECode Layout::GetLineLeft(
             Int32 right;
             GetParagraphRight(line, &right);
             Float fmax;
-            GetLineMax(line, &fmax)
+            GetLineMax(line, &fmax);
             *result = right - fmax;
             return NOERROR;
         }
@@ -1252,7 +1299,7 @@ ECode Layout::GetLineLeft(
     }
     else if (align == ALIGN_RIGHT) {
         Float fmax;
-        GetLineMax(line, &fmax)
+        GetLineMax(line, &fmax);
         return mWidth - max;
     }
     else if (align == ALIGN_OPPOSITE) {
@@ -1261,7 +1308,7 @@ ECode Layout::GetLineLeft(
         }
         else {
             Float fmax;
-            GetLineMax(line, &fmax)
+            GetLineMax(line, &fmax);
             return mWidth - max;
         }
     }
@@ -1324,7 +1371,7 @@ ECode Layout::GetLineRight(
     else { /* align == Alignment.ALIGN_CENTER */
         Int32 right;
         GetParagraphRight(line, &right);
-        Int32 max = ((Int32) GetLineMax(line)) & ~1;
+        Int32 max = ((Int32) max) & ~1;
 
         *result = right - ((right - left) - max) / 2;
         return NOERROR;
@@ -1353,13 +1400,10 @@ ECode Layout::GetLineWidth(
     return NOERROR;
 }
 
-ECode Layout::GetLineExtent(
+Float Layout::GetLineExtent(
     /* [in] */ Int32 line,
-    /* [in] */ Boolean full,
-    /* [out] */ Float* result)
+    /* [in] */ Boolean full)
 {
-    VALIDATE_NOT_NULL(result)
-    *result = 0;
 
     Int32 start, end, visibleEnd;
     GetLineStart(line, &start);
@@ -1367,7 +1411,8 @@ ECode Layout::GetLineExtent(
     GetLineVisibleEnd(line, &visibleEnd);
     Int32 end = full ? end : visibleEnd;
 
-    Boolean hasTabsOrEmoji = GetLineContainsTab(line);
+    Boolean hasTabsOrEmoji;
+    GetLineContainsTab(line, &hasTabsOrEmoji);
     AutoPtr<TabStops> tabStops;
     if (hasTabsOrEmoji && ISpanned::Probe(mText) != NULL) {
         // Just checking this line should be good enough, tabs should be
@@ -1384,42 +1429,44 @@ ECode Layout::GetLineExtent(
     GetLineDirections(line, (ILayoutDirections**)&directions);
     // Returned directions can actually be null
     if (directions == NULL) {
-        // return /*0f*/0.0;
-        return NOERROR;
+        return /*0f*/0.0;
     }
 
-    Int32 dir = GetParagraphDirection(line);
+    Int32 dir;
+    GetParagraphDirection(line, &dir);
 
     AutoPtr<TextLine> tl = TextLine::Obtain();
     tl->Set(mPaint, mText, start, end, dir, directions, hasTabsOrEmoji, tabStops);
     Float width = tl->Metrics(NULL);
     TextLine::Recycle(tl);
 
-    *result = width;
-    return NOERROR;
+    return width;
 }
 
-ECode Layout::GetLineExtent(
+Float Layout::GetLineExtent(
     /* [in] */ Int32 line,
     /* [in] */ TabStops* tabStops,
-    /* [in] */ Boolean full,
-    /* [out] */ Float* result)
+    /* [in] */ Boolean full)
 {
-    VALIDATE_NOT_NULL(result)
-
-    Int32 start = GetLineStart(line);
-    Int32 end = full ? GetLineEnd(line) : GetLineVisibleEnd(line);
-    Boolean hasTabsOrEmoji = GetLineContainsTab(line);
-    AutoPtr<ILayoutDirections> directions = GetLineDirections(line);
-    Int32 dir = GetParagraphDirection(line);
+    Int32 start,  end;
+    GetLineStart(line, &start);
+    if (full)
+        GetLineEnd(line, &end);
+    else
+        GetLineVisibleEnd(line, &end);
+    Boolean hasTabsOrEmoji;
+    GetLineContainsTab(line, &hasTabsOrEmoji);
+    AutoPtr<ILayoutDirections> directions;
+    GetLineDirections(line, (ILayoutDirections**)&directions);
+    Int32 dir;
+    GetParagraphDirection(line, &dir);
 
     AutoPtr<TextLine> tl = TextLine::Obtain();
     tl->Set(mPaint, mText, start, end, dir, directions, hasTabsOrEmoji, tabStops);
     Float width = tl->Metrics(NULL);
     TextLine::Recycle(tl);
 
-    *result = width;
-    return NOERROR;
+    return width;
 }
 
 ECode Layout::GetLineForVertical(
@@ -1427,6 +1474,7 @@ ECode Layout::GetLineForVertical(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = 0;
 
     Int32 high;
     GetLineCount(&high);
@@ -1442,30 +1490,38 @@ ECode Layout::GetLineForVertical(
     }
 
     if (low < 0)
-        return 0;
-    else
-        return low;
+        return NOERROR;
+
+    *result = low;
+    return NOERROR;
 }
 
 ECode Layout::GetLineForOffset(
     /* [in] */ Int32 offset,
     /* [out] */ Int32* result)
 {
-    Int32 high = GetLineCount(), low = -1, guess;
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
 
+    Int32 high;
+    GetLineCount(&high);
+    Int32 low = -1, guess;
+    Int32 start;
     while (high - low > 1) {
         guess = (high + low) / 2;
 
-        if (GetLineStart(guess) > offset)
+        GetLineStart(guess, &start);
+        if (start > offset)
             high = guess;
         else
             low = guess;
     }
 
     if (low < 0)
-        return 0;
-    else
-        return low;
+        return NOERROR;
+
+    *result = low;
+    return NOERROR;
 }
 
 ECode Layout::GetOffsetForHorizontal(
@@ -1473,15 +1529,25 @@ ECode Layout::GetOffsetForHorizontal(
     /* [in] */ Float horiz,
     /* [out] */ Int32* result)
 {
-    Int32 max = GetLineEnd(line) - 1;
-    Int32 min = GetLineStart(line);
-    AutoPtr<ILayoutDirections> dirs = GetLineDirections(line);
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
 
-    if (line == GetLineCount() - 1)
+    Int32 max, min;
+    GetLineEnd(line, &max);
+    GetLineStart(line, &min);
+    max = max - 1;
+    AutoPtr<ILayoutDirections> dirs;
+    GetLineDirections(line, (ILayoutDirections**)&dirs);
+
+    Int32 count;
+    GetLineCount(&count);
+    if (line == count - 1)
         max++;
 
     Int32 best = min;
-    Float bestdist = Elastos::Core::Math::Abs(GetPrimaryHorizontal(best) - horiz);
+    Float ph;
+    GetPrimaryHorizontal(best, &ph);
+    Float bestdist = Elastos::Core::Math::Abs(ph - horiz);
 
     AutoPtr< ArrayOf<Int32> > directions;
     dirs->GetDirections((ArrayOf<Int32>**)&directions);
@@ -1510,11 +1576,13 @@ ECode Layout::GetOffsetForHorizontal(
         if (low < there) {
             low = GetOffsetAtStartOf(low);
 
-            Float dist = Elastos::Core::Math::Abs(GetPrimaryHorizontal(low) - horiz);
+            GetPrimaryHorizontal(low, &ph);
+            Float dist = Elastos::Core::Math::Abs(ph - horiz);
 
             Int32 aft = TextUtils::GetOffsetAfter(mText, low);
             if (aft < there) {
-                Float other = Elastos::Core::Math::Abs(GetPrimaryHorizontal(aft) - horiz);
+                GetPrimaryHorizontal(aft, &ph);
+                Float other = Elastos::Core::Math::Abs(ph - horiz);
 
                 if (other < dist) {
                     dist = other;
@@ -1528,7 +1596,8 @@ ECode Layout::GetOffsetForHorizontal(
             }
         }
 
-        Float dist = Elastos::Core::Math::Abs(GetPrimaryHorizontal(here) - horiz);
+        GetPrimaryHorizontal(here, &ph);
+        Float dist = Elastos::Core::Math::Abs(ph - horiz);
 
         if (dist < bestdist) {
             bestdist = dist;
@@ -1536,7 +1605,8 @@ ECode Layout::GetOffsetForHorizontal(
         }
     }
 
-    Float dist = Elastos::Core::Math::Abs(GetPrimaryHorizontal(max) - horiz);
+    GetPrimaryHorizontal(max, &ph);
+    Float dist = Elastos::Core::Math::Abs(ph - horiz);
 
     if (dist <= bestdist) {
         bestdist = dist;
@@ -1550,14 +1620,17 @@ ECode Layout::GetLineEnd(
     /* [in] */ Int32 line,
     /* [out] */ Int32* result)
 {
-    return GetLineStart(line + 1);
+    return GetLineStart(line + 1, result);
 }
 
 ECode Layout::GetLineVisibleEnd(
     /* [in] */ Int32 line,
     /* [out] */ Int32* result)
 {
-    return GetLineVisibleEnd(line, GetLineStart(line), GetLineStart(line+1));
+    Int32 start, startNext;
+    GetLineStart(line, &start);
+    GetLineStart(line + 1, &startNext);
+    return GetLineVisibleEnd(line, start, startNext, result);
 }
 
 ECode Layout::GetLineVisibleEnd(
@@ -1566,17 +1639,25 @@ ECode Layout::GetLineVisibleEnd(
     /* [in] */ Int32 end,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = end;
+
     AutoPtr<ICharSequence> text = mText;
-    Char32 ch;
-    if (line == GetLineCount() - 1) {
-        return end;
+    Int32 count;
+    GetLineCount(&count);
+
+    if (line == count - 1) {
+        *result = end;
+        return NOERROR;
     }
 
+    Char32 ch;
     for (; end > start; end--) {
         text->GetCharAt(end - 1, &ch);
 
         if (ch == '\n') {
-            return end - 1;
+            *result = end - 1;
+            return NOERROR;
         }
 
         if (ch != ' ' && ch != '\t') {
@@ -1585,62 +1666,79 @@ ECode Layout::GetLineVisibleEnd(
 
     }
 
-    return end;
+    *result = end;
+    return NOERROR;
 }
 
 ECode Layout::GetLineBottom(
     /* [in] */ Int32 line,
     /* [out] */ Int32* result)
 {
-    return GetLineTop(line + 1);
+    return GetLineTop(line + 1, result);
 }
 
 ECode Layout::GetLineBaseline(
     /* [in] */ Int32 line,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
     // getLineTop(line+1) == getLineTop(line)
-    return GetLineTop(line+1) - GetLineDescent(line);
+    Int32 top, descent;
+    GetLineTop(line + 1, &top);
+    GetLineDescent(line, &descent);
+    *result = top - descent;
+    return NOERROR;
 }
 
 ECode Layout::GetLineAscent(
     /* [in] */ Int32 line,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
     // getLineTop(line+1) - getLineDescent(line) == getLineBaseLine(line)
-    return GetLineTop(line) - (GetLineTop(line+1) - GetLineDescent(line));
+    Int32 top, topNext, descent;
+    GetLineTop(line, &topNext);
+    GetLineTop(line + 1, &topNext);
+    GetLineDescent(line, &descent);
+    return top - (topNext - descent);
 }
 
 ECode Layout::GetOffsetToLeftOf(
     /* [in] */ Int32 offset,
     /* [out] */ Int32* result)
 {
-    return GetOffsetToLeftRightOf(offset, TRUE);
+    VALIDATE_NOT_NULL(result)
+    *result = GetOffsetToLeftRightOf(offset, TRUE);
+    return NOERROR;
 }
 
 ECode Layout::GetOffsetToRightOf(
     /* [in] */ Int32 offset,
     /* [out] */ Int32* result)
 {
-    return GetOffsetToLeftRightOf(offset, FALSE);
+    VALIDATE_NOT_NULL(result)
+    *result = GetOffsetToLeftRightOf(offset, FALSE);
+    return NOERROR;
 }
 
-ECode Layout::GetOffsetToLeftRightOf(
+Int32 Layout::GetOffsetToLeftRightOf(
     /* [in] */ Int32 caret,
-    /* [in] */ Boolean toLeft,
-    /* [out] */ Int32* result)
+    /* [in] */ Boolean toLeft)
 {
-    Int32 line = GetLineForOffset(caret);
-    Int32 lineStart = GetLineStart(line);
-    Int32 lineEnd = GetLineEnd(line);
-    Int32 lineDir = GetParagraphDirection(line);
+    Int32 line, lineStart, lineEnd, lineDir;
+    GetLineForOffset(caret, &line);
+    GetLineStart(line, &lineStart);
+    GetLineEnd(line, &lineEnd);
+    GetParagraphDirection(line, &lineDir);
 
+    Int32 count;
     Boolean lineChanged = FALSE;
     Boolean advance = toLeft == (lineDir == ILayout::DIR_RIGHT_TO_LEFT);
     // if walking off line, look at the line we're headed to
     if (advance) {
         if (caret == lineEnd) {
-            if (line < GetLineCount() - 1) {
+            GetLineCount(&count);
+            if (line < count - 1) {
                 lineChanged = TRUE;
                 ++line;
             } else {
@@ -1659,9 +1757,10 @@ ECode Layout::GetOffsetToLeftRightOf(
     }
 
     if (lineChanged) {
-        lineStart = GetLineStart(line);
-        lineEnd = GetLineEnd(line);
-        Int32 newDir = GetParagraphDirection(line);
+        GetLineStart(line, &lineStart);
+        GetLineEnd(line, &lineEnd);
+        Int32 newDir;
+        GetParagraphDirection(line, &newDir);
         if (newDir != lineDir) {
             // unusual case.  we want to walk onto the line, but it runs
             // in a different direction than this one, so we fake movement
@@ -1671,7 +1770,8 @@ ECode Layout::GetOffsetToLeftRightOf(
         }
     }
 
-    AutoPtr<ILayoutDirections> directions = GetLineDirections(line);
+    AutoPtr<ILayoutDirections> directions;
+    GetLineDirections(line, (ILayoutDirections**)&directions);
 
     AutoPtr<TextLine> tl = TextLine::Obtain();
     // XXX: we don't care about tabs
@@ -1682,9 +1782,8 @@ ECode Layout::GetOffsetToLeftRightOf(
     return caret;
 }
 
-ECode Layout::GetOffsetAtStartOf(
-    /* [in] */ Int32 offset,
-    /* [out] */ Int32* result)
+Int32 Layout::GetOffsetAtStartOf(
+    /* [in] */ Int32 offset)
 {
     // XXX this probably should skip local reorderings and
     // zero-width characters, look at callers
@@ -1704,7 +1803,7 @@ ECode Layout::GetOffsetAtStartOf(
     }
 
     if (mSpannedText) {
-        AutoPtr<ISpanned> spanned = (ISpanned*)(text->Probe(EIID_ISpanned));
+        AutoPtr<ISpanned> spanned = ISpanned::Probe(text));
 
         AutoPtr< ArrayOf<IInterface*> > spans;
         spanned->GetSpans(offset, offset, EIID_IReplacementSpan, (ArrayOf<IInterface*>**)&spans);
@@ -1727,15 +1826,26 @@ ECode Layout::ShouldClampCursor(
     /* [in] */ Int32 line,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     // Only clamp cursor position in left-aligned displays.
     switch (GetParagraphAlignment(line)) {
-        case LayoutAlignment_ALIGN_LEFT:
-            return TRUE;
-        case LayoutAlignment_ALIGN_NORMAL:
-            return GetParagraphDirection(line) > 0;
+        case LayoutAlignment_ALIGN_LEFT: {
+            *result = TRUE;
+            return NOERROR;
+        }
+        case LayoutAlignment_ALIGN_NORMAL: {
+            Int32 dir;
+            GetParagraphDirection(line, &dir);
+            *result = dir > 0;
+            return NOERROR;
+        }
         default:
-            return FALSE;
+            return NOERROR;
     }
+
+    return NOERROR;
 }
 
 ECode Layout::GetCursorPath(
@@ -1754,9 +1864,10 @@ ECode Layout::GetCursorPath(
     Float h2 = IsLevelBoundary(point) ? GetSecondaryHorizontal(point, clamped) - 0.5f : h1;
 
     Int32 caps = 0, fn = 0, dist = 0;
-    caps = CTextKeyListener::GetMetaState(editingBuffer, IMetaKeyKeyListener::META_SHIFT_ON)
-        | CTextKeyListener::GetMetaState(editingBuffer, IMetaKeyKeyListener::META_SELECTING);
-    fn = CTextKeyListener::GetMetaState(editingBuffer, IMetaKeyKeyListener::META_ALT_ON);
+    assert(0 && "TODO");
+    // caps = CTextKeyListener::GetMetaState(editingBuffer, IMetaKeyKeyListener::META_SHIFT_ON)
+    //     | CTextKeyListener::GetMetaState(editingBuffer, IMetaKeyKeyListener::META_SELECTING);
+    // fn = CTextKeyListener::GetMetaState(editingBuffer, IMetaKeyKeyListener::META_ALT_ON);
     dist = 0;
 
     if (caps != 0 || fn != 0) {
@@ -1827,22 +1938,24 @@ void Layout::AddSelection(
     /* [in] */ Int32 bottom,
     /* [in] */ IPath* dest)
 {
-    Int32 linestart = GetLineStart(line);
-    Int32 lineend = GetLineEnd(line);
-    AutoPtr<ILayoutDirections> dirs = GetLineDirections(line);
+    Int32 lineStart, lineEnd;
+    GetLineStart(line, &lineStart);
+    GetLineEnd(line, &lineEnd);
+    AutoPtr<ILayoutDirections> dirs;
+    GetLineDirections(line, (ILayoutDirections**)&dirs);
 
     Char32 ch;
-    if (lineend > linestart && (mText->GetCharAt(lineend - 1, &ch), ch) == '\n')
-        lineend--;
+    if (lineEnd > lineStart && (mText->GetCharAt(lineEnd - 1, &ch), ch) == '\n')
+        lineEnd--;
 
     AutoPtr< ArrayOf<Int32> > directions = NULL;
     dirs->GetDirections((ArrayOf<Int32>**)&directions);
     for (Int32 i = 0; i < directions->GetLength(); i += 2) {
-        Int32 here = linestart + (*directions)[i];
+        Int32 here = lineStart + (*directions)[i];
         Int32 there = here + ((*directions)[i+1] & ILayout::RUN_LENGTH_MASK);
 
-        if (there > lineend)
-            there = lineend;
+        if (there > lineEnd)
+            there = lineEnd;
 
         if (start <= there && end >= here) {
             Int32 st = Elastos::Core::Math::Max(start, here);
@@ -1855,18 +1968,12 @@ void Layout::AddSelection(
                 Float left = Elastos::Core::Math::Min(h1, h2);
                 Float right = Elastos::Core::Math::Max(h1, h2);
 
-                dest->AddRect(left, top, right, bottom, Elastos::Droid::Graphics::PathDirection_CW);
+                dest->AddRect(left, top, right, bottom, PathDirection_CW);
             }
         }
     }
 }
 
-/**
- * Fills in the specified Path with a representation of a highlight
- * between the specified offsets.  This will often be a rectangle
- * or a potentially discontinuous set of rectangles.  If the start
- * and end are the same, the returned path is empty.
- */
 ECode Layout::GetSelectionPath(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1883,62 +1990,80 @@ ECode Layout::GetSelectionPath(
         start = temp;
     }
 
-    Int32 startline = GetLineForOffset(start);
-    Int32 endline = GetLineForOffset(end);
-
-    Int32 top = GetLineTop(startline);
-    Int32 bottom = GetLineBottom(endline);
+    Int32 startline, endline, top, bottom;
+    GetLineForOffset(start, &startline);
+    GetLineForOffset(end, &endline);
+    GetLineTop(startline, &top);
+    GetLineBottom(endline, &bottom);
 
     if (startline == endline) {
         AddSelection(startline, start, end, top, bottom, dest);
     } else {
         Float width = mWidth;
 
-        AddSelection(startline, start, GetLineEnd(startline),
-                     top, GetLineBottom(startline), dest);
+        Int32 lb, le;
+        GetLineEnd(startline, &le);
+        GetLineEnd(startline, &lb);
+        AddSelection(startline, start, le, top, lb, dest);
 
-        if (GetParagraphDirection(startline) == ILayout::DIR_RIGHT_TO_LEFT)
-            dest->AddRect(GetLineLeft(startline), top,
-                          0, GetLineBottom(startline), Elastos::Droid::Graphics::PathDirection_CW);
-        else
-            dest->AddRect(GetLineRight(startline), top,
-                          width, GetLineBottom(startline), Elastos::Droid::Graphics::PathDirection_CW);
-
-        for (Int32 i = startline + 1; i < endline; i++) {
-            top = GetLineTop(i);
-            bottom = GetLineBottom(i);
-            dest->AddRect(0, top, width, bottom, Elastos::Droid::Graphics::PathDirection_CW);
+        Int32 dir;
+        GetParagraphDirection(startline, &dir);
+        if (dir == ILayout::DIR_RIGHT_TO_LEFT) {
+            Int32 ll;
+            GetLineLeft(startline, &ll);
+            dest->AddRect(ll, top, 0, lb, PathDirection_CW);
+        }
+        else {
+            Int32 lr;
+            GetLineRight(startline, &lr);
+            dest->AddRect(lr, top, width, lb, PathDirection_CW);
         }
 
-        top = GetLineTop(endline);
-        bottom = GetLineBottom(endline);
+        for (Int32 i = startline + 1; i < endline; i++) {
+            GetLineTop(i, &top);
+            GetLineBottom(i, &bottom);
+            dest->AddRect(0, top, width, bottom, PathDirection_CW);
+        }
 
-        AddSelection(endline, GetLineStart(endline), end,
-                     top, bottom, dest);
+        GetLineTop(endline, &top);
+        GetLineBottom(endline, &bottom);
 
-        if (GetParagraphDirection(endline) == ILayout::DIR_RIGHT_TO_LEFT)
-            dest->AddRect(width, top, GetLineRight(endline), bottom, Elastos::Droid::Graphics::PathDirection_CW);
-        else
-            dest->AddRect(0, top, GetLineLeft(endline), bottom, Elastos::Droid::Graphics::PathDirection_CW);
+        Int32 ls;
+        GetLineStart(endline, &ls);
+        AddSelection(endline, ls, end, top, bottom, dest);
+
+        Int32 dir;
+        GetParagraphDirection(endline, &dir);
+        if (dir == ILayout::DIR_RIGHT_TO_LEFT) {
+            Int32 lr;
+            GetLineRight(endline, &lr);
+            dest->AddRect(width, top, lr, bottom, PathDirection_CW);
+        }
+        else {
+            Int32 ll;
+            GetLineLeft(endline, &ll);
+            dest->AddRect(0, top, ll, bottom, PathDirection_CW);
+        }
     }
 
     return NOERROR;
 }
 
-/**
- * Get the alignment of the specified paragraph, taking into account
- * markup attached to it.
- */
-LayoutAlignment Layout::GetParagraphAlignment(
-    /* [in] */ Int32 line)
+ECode Layout::GetParagraphAlignment(
+    /* [in] */ Int32 line,
+    /* [out] */ LayoutAlignment* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     LayoutAlignment align = mAlignment;
 
     if (mSpannedText) {
         AutoPtr<ISpanned> spanned = ISpanned::Probe(mText);
         if (spanned) {
-            AutoPtr< ArrayOf<IInterface*> > spans = GetParagraphSpans(
-                    spanned, GetLineStart(line), GetLineEnd(line), EIID_IAlignmentSpan);
+            Int32 s, e;
+            GetLineStart(line, &s);
+            GetLineEnd(line, &e);
+            AutoPtr< ArrayOf<IInterface*> > spans = GetParagraphSpans(spanned, s, e, EIID_IAlignmentSpan);
             Int32 spanLength = spans->GetLength();
             if (spanLength > 0) {
                 IAlignmentSpan* as = IAlignmentSpan::Probe((*spans)[spanLength-1]);
@@ -1947,45 +2072,45 @@ LayoutAlignment Layout::GetParagraphAlignment(
         }
     }
 
-    return align;
+    *result = align;
+    return NOERROR;
 }
 
-/**
- * Get the left edge of the specified paragraph, inset by left margins.
- */
-Int32 Layout::GetParagraphLeft(
-    /* [in] */ Int32 line)
+ECode Layout::GetParagraphLeft(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Int32 left = 0;
-    Int32 dir = GetParagraphDirection(line);
+    Int32 dir;
+    GetParagraphDirection(line, &dir);
     if (dir == ILayout::DIR_RIGHT_TO_LEFT || !mSpannedText) {
-        return left; // leading margin has no impact, or no styles
+        *result = left; // leading margin has no impact, or no styles
+        return NOERROR;
     }
 
-    return GetParagraphLeadingMargin(line);
+    *result = GetParagraphLeadingMargin(line);
+    return NOERROR;
 }
 
-/**
- * Get the right edge of the specified paragraph, inset by right margins.
- */
-Int32 Layout::GetParagraphRight(
-    /* [in] */ Int32 line)
+ECode Layout::GetParagraphRight(
+    /* [in] */ Int32 line,
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
     Int32 right = mWidth;
-    Int32 dir = GetParagraphDirection(line);
+    Int32 dir;
+    GetParagraphDirection(line, &dir);
     if (dir == ILayout::DIR_LEFT_TO_RIGHT || !mSpannedText) {
-        return right; // leading margin has no impact, or no styles
+        *result = right; // leading margin has no impact, or no styles
+        return NOERROR;
     }
 
-    return right - GetParagraphLeadingMargin(line);
+    *result = right - GetParagraphLeadingMargin(line);
+    return NOERROR;
 }
 
-/**
- * Returns the effective leading margin (unsigned) for this line,
- * taking into account LeadingMarginSpan and LeadingMarginSpan2.
- * @param line the line index
- * @return the leading margin of this line
- */
 Int32 Layout::GetParagraphLeadingMargin(
     /* [in] */ Int32 line)
 {
@@ -2034,7 +2159,6 @@ Int32 Layout::GetParagraphLeadingMargin(
     return /*margin*/0;
 }
 
-/* package */
 Float Layout::MeasurePara(
     /* [in] */ ITextPaint* paint,
     /* [in] */ ICharSequence* text,
@@ -2182,18 +2306,18 @@ void Layout::Ellipsize(
     /* [in] */ Int32 destoff,
     /* [in] */ TextUtilsTruncateAt method)
 {
-    Int32 ellipsisCount = GetEllipsisCount(line);
-
+    Int32 ellipsisCount;
+    GetEllipsisCount(line, &ellipsisCount);
     if (ellipsisCount == 0) {
         return;
     }
 
-    Int32 ellipsisStart = GetEllipsisStart(line);
-    Int32 linestart = GetLineStart(line);
+    Int32 ellipsisStart, lineStart;
+    GetEllipsisStart(line, &ellipsisStart);
+    GetLineStart(line, &lineStart);
 
+    Char32 c;
     for (Int32 i = ellipsisStart; i < ellipsisStart + ellipsisCount; i++) {
-        Char32 c;
-
         if (i == ellipsisStart) {
             c = GetEllipsisChar(method); // ellipsis
         }
@@ -2201,8 +2325,7 @@ void Layout::Ellipsize(
             c = 0xFEFF;//'\uFEFF'; // 0-width space
         }
 
-        Int32 a = i + linestart;
-
+        Int32 a = i + lineStart;
         if (a >= start && a < end) {
             (*dest)[destoff + a - start] = c;
         }

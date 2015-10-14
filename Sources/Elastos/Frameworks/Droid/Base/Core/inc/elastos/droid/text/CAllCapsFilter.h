@@ -12,7 +12,7 @@ namespace Text {
 
 CarClass(CAllCapsFilter)
     , public Object
-    , public IInputFilterAllCaps
+    , public IAllCapsFilter
     , public IInputFilter
 {
 public:

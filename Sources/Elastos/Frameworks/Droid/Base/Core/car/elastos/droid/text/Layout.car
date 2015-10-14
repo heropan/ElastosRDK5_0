@@ -274,7 +274,6 @@ module
             [in] Int32 offset,
             [out] Boolean* flag);
 
-
         /**
          * Get the primary horizontal position for the specified text offset.
          * This is the location where a new character would be inserted in

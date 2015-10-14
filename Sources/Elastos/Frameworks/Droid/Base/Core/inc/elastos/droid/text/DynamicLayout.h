@@ -18,13 +18,16 @@ namespace Text {
  * {@link android.graphics.Canvas#drawText(java.lang.CharSequence, int, int, float, float, android.graphics.Paint)
  *  Canvas.drawText()} directly.</p>
  */
-class DynamicLayout : public Layout
+class DynamicLayout
+    : public Layout
+    , public IDynamicLayout
 {
 private:
     class ChangeWatcher
-        : public ElRefBase
+        : public Object
         , public ITextWatcher
         , public ISpanWatcher
+        , public INoCopySpan
     {
     public:
         CAR_INTERFACE_DECL()
@@ -80,13 +83,15 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     DynamicLayout();
 
     /**
      * Make a layout for the specified text that will be updated as
      * the text is changed.
      */
-    DynamicLayout(
+    CARAPI constructor(
         /* [in] */ ICharSequence* base,
         /* [in] */ ITextPaint* paint,
         /* [in] */ Int32 width,
@@ -100,7 +105,7 @@ public:
      * being the primary example of a transformation)
      * that will be updated as the base text is changed.
      */
-    DynamicLayout(
+    CARAPI constructor(
         /* [in] */ ICharSequence* base,
         /* [in] */ ICharSequence* display,
         /* [in] */ ITextPaint* paint,
@@ -117,7 +122,7 @@ public:
      * If ellipsize is non-null, the Layout will ellipsize the text
      * down to ellipsizedWidth.
      */
-    DynamicLayout(
+    CARAPI constructor(
         /* [in] */ ICharSequence* base,
         /* [in] */ ICharSequence* display,
         /* [in] */ ITextPaint* paint,
@@ -138,7 +143,7 @@ public:
      * *
      * *@hide
      */
-    DynamicLayout(
+    CARAPI constructor(
         /* [in] */ ICharSequence* base,
         /* [in] */ ICharSequence* display,
         /* [in] */ ITextPaint* paint,
@@ -171,7 +176,7 @@ public:
      *
      * @hide
      */
-    virtual CARAPI_(void) UpdateBlocks(
+    CARAPI UpdateBlocks(
         /* [in] */ Int32 startLine,
         /* [in] */ Int32 endLine,
         /* [in] */ Int32 newLineCount);
@@ -180,7 +185,7 @@ public:
      * This package private method is used for test purposes only
      * @hide
      */
-    virtual CARAPI_(void) SetBlocksDataForTest(
+    CARAPI SetBlocksDataForTest(
         /* [in] */ ArrayOf<Int32>* blockEndLines,
         /* [in] */ ArrayOf<Int32>* blockIndices,
         /* [in] */ Int32 numberOfBlocks);
@@ -188,22 +193,26 @@ public:
     /**
      * @hide
      */
-    virtual CARAPI_(AutoPtr< ArrayOf<Int32> >) GetBlockEndLines();
+    CARAPI GetBlockEndLines(
+        /* [out, calllee] */ ArrayOf<Int32>** lines);
 
     /**
      * @hide
      */
-    virtual CARAPI_(AutoPtr< ArrayOf<Int32> >) GetBlockIndices();
+    CARAPI GetBlockIndices(
+        /* [out, calllee] */ ArrayOf<Int32>** indices);
 
     /**
      * @hide
      */
-    CARAPI_(Int32) GetNumberOfBlocks();
+    CARAPI GetNumberOfBlocks(
+        /* [out] */ Int32* result);
 
     /**
      * @hide
      */
-    CARAPI_(Int32) GetIndexFirstChangedBlock();
+    CARAPI GetIndexFirstChangedBlock(
+        /* [out] */ Int32* result);
 
     /**
      * @hide
@@ -212,118 +221,60 @@ public:
         /* [in] */ Int32 block);
 
     //@Override
-    CARAPI_(Int32) GetLineCount();
+    CARAPI GetLineCount(
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetLineTop(
-        /* [in] */ Int32 line);
+    CARAPI GetLineTop(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetLineDescent(
-        /* [in] */ Int32 line);
+    CARAPI GetLineDescent(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetLineStart(
-        /* [in] */ Int32 line);
+    CARAPI GetLineStart(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Boolean) GetLineContainsTab(
-        /* [in] */ Int32 line);
+    CARAPI GetLineContainsTab(
+        /* [in] */ Int32 line,
+        /* [out] */ Boolean* result);
 
     //@Override
-    CARAPI_(Int32) GetParagraphDirection(
-        /* [in] */ Int32 line);
+    CARAPI GetParagraphDirection(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(AutoPtr<ILayoutDirections>) GetLineDirections(
-        /* [in] */ Int32 line);
+    CARAPI GetLineDirections(
+        /* [in] */ Int32 line,
+        /* [out] */ ILayoutDirections** result);
 
     //@Override
-    CARAPI_(Int32) GetTopPadding();
+    CARAPI GetTopPadding(
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetBottomPadding();
+    CARAPI GetBottomPadding(
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetEllipsizedWidth();
+    CARAPI GetEllipsizedWidth(
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetEllipsisStart(
-        /* [in] */ Int32 line);
+    CARAPI GetEllipsisStart(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
     //@Override
-    CARAPI_(Int32) GetEllipsisCount(
-        /* [in] */ Int32 line);
-
-protected:
-    /**
-     * Make a layout for the specified text that will be updated as
-     * the text is changed.
-     */
-    CARAPI Init(
-        /* [in] */ ICharSequence* base,
-        /* [in] */ ITextPaint* paint,
-        /* [in] */ Int32 width,
-        /* [in] */ LayoutAlignment align,
-        /* [in] */ Float spacingmult,
-        /* [in] */ Float spacingadd,
-        /* [in] */ Boolean includepad);
-
-    /**
-     * Make a layout for the transformed text (password transformation
-     * being the primary example of a transformation)
-     * that will be updated as the base text is changed.
-     */
-    CARAPI Init(
-        /* [in] */ ICharSequence* base,
-        /* [in] */ ICharSequence* display,
-        /* [in] */ ITextPaint* paint,
-        /* [in] */ Int32 width,
-        /* [in] */ LayoutAlignment align,
-        /* [in] */ Float spacingmult,
-        /* [in] */ Float spacingadd,
-        /* [in] */ Boolean includepad);
-
-    /**
-     * Make a layout for the transformed text (password transformation
-     * being the primary example of a transformation)
-     * that will be updated as the base text is changed.
-     * If ellipsize is non-null, the Layout will ellipsize the text
-     * down to ellipsizedWidth.
-     */
-    CARAPI Init(
-        /* [in] */ ICharSequence* base,
-        /* [in] */ ICharSequence* display,
-        /* [in] */ ITextPaint* paint,
-        /* [in] */ Int32 width,
-        /* [in] */ LayoutAlignment align,
-        /* [in] */ Float spacingmult,
-        /* [in] */ Float spacingadd,
-        /* [in] */ Boolean includepad,
-        /* [in] */ TextUtilsTruncateAt ellipsize,
-        /* [in] */ Int32 ellipsizedWidth);
-
-    /**
-     * Make a layout for the transformed text (password transformation
-     * being the primary example of a transformation)
-     * that will be updated as the base text is changed.
-     * If ellipsize is non-null, the Layout will ellipsize the text
-     * down to ellipsizedWidth.
-     * *
-     * *@hide
-     */
-    CARAPI Init(
-        /* [in] */ ICharSequence* base,
-        /* [in] */ ICharSequence* display,
-        /* [in] */ ITextPaint* paint,
-        /* [in] */ Int32 width,
-        /* [in] */ LayoutAlignment align,
-        /* [in] */ ITextDirectionHeuristic* textDir,
-        /* [in] */ Float spacingmult,
-        /* [in] */ Float spacingadd,
-        /* [in] */ Boolean includepad,
-        /* [in] */ TextUtilsTruncateAt ellipsize,
-        /* [in] */ Int32 ellipsizedWidth);
+    CARAPI GetEllipsisCount(
+        /* [in] */ Int32 line,
+        /* [out] */ Int32* result);
 
 private:
     CARAPI_(void) Reflow(

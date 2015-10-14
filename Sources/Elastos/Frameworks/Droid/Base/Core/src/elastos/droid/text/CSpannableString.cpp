@@ -55,12 +55,16 @@ ECode CSpannableString::SubSequence(
     }
 
     AutoPtr<ISpannableString> sub;
-    CSpannableString::New(
-        (ICharSequence*)this->Probe(EIID_ICharSequence),
-        start, end, (ISpannableString**)&sub);
-    *csq = ICharSequence::Probe(sub.Get());
+    CSpannableString::New(THIS_PROBE(ICharSequence), start, end, (ISpannableString**)&sub);
+    *csq = ICharSequence::Probe(sub);
     REFCOUNT_ADD(*csq);
     return NOERROR;
+}
+
+ECode CSpannableString::ToString(
+    /* [out] */ String* str)
+{
+    return SpannableStringInternal::ToString(str);
 }
 
 ECode CSpannableString::GetChars(

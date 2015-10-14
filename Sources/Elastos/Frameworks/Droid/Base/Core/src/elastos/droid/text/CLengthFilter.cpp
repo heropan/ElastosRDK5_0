@@ -10,9 +10,20 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
+CAR_INTERFACE_IMPL_2(CLengthFilter, Object, ILengthFilter, IInputFilter)
+
+CAR_OBJECT_IMPL(CLengthFilter)
+
 CLengthFilter::CLengthFilter()
     : mMax(0)
 {}
+
+ECode CLengthFilter::constructor(
+    /* [in] */ Int32 max)
+{
+    mMax = max;
+    return NOERROR;
+}
 
 ECode CLengthFilter::Filter(
     /* [in] */ ICharSequence* source,
@@ -26,7 +37,7 @@ ECode CLengthFilter::Filter(
     VALIDATE_NOT_NULL(cs);
 
     Int32 len;
-    dest->GetLength(&len);
+    ICharSequence::Probe(dest)->GetLength(&len);
     Int32 keep = mMax - (len - (dend - dstart));
 
     if (keep <= 0) {
@@ -47,13 +58,6 @@ ECode CLengthFilter::Filter(
         }
         return source->SubSequence(start, keep, cs);
     }
-}
-
-ECode CLengthFilter::constructor(
-    /* [in] */ Int32 max)
-{
-    mMax = max;
-    return NOERROR;
 }
 
 ECode CLengthFilter::GetMax(

@@ -11,8 +11,14 @@ namespace Droid {
 namespace Text {
 
 CarClass(CSpannedStringHelper)
+    , public Singleton
+    , public ISpannedStringHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI ValueOf(
         /* [in] */ ICharSequence* source,
         /* [out] */ ISpannedString** spannedString);
