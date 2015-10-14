@@ -3,13 +3,18 @@
 #define __ELASTOS_DROID_PREFERENCE_PREFERENCE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "R.h"
+#include <elastos/coredef.h>
+#include <elastos/core/Object.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/List.h>
+#include "elastos/droid/R.h"
+#include "elastos/droid/text/TextUtils.h"
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::ISet;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IComparable;
+using Elastos::Core::StringBuilder;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::ISharedPreferences;
@@ -27,21 +32,24 @@ using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::Widget::IImageView;
 using Elastos::Droid::Widget::ITextView;
 using Elastos::Droid::R;
+using Elastos::Droid::Text::TextUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Preference {
 
-extern "C" const InterfaceID EIID_Preference;
-
 class Preference
-    : public ElRefBase
-    , public IObject
+    : public Object
     , public IPreference
     , public IComparable
-    , public IOnDependencyChangeListener
-    , public IWeakReferenceSource
 {
+protected:
+    CARAPI_(void) Init(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyle,
+        /* [in] */ Int32 defStyleRes);
+
 public:
     Preference();
 
@@ -49,27 +57,23 @@ public:
 
     CAR_INTERFACE_DECL()
 
-    virtual CARAPI Initialize();
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
-    CARAPI Aggregate(
-        /* [in] */ AggrType aggrType,
-        /* [in] */ PInterface pObject);
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
 
-    CARAPI GetDomain(
-        /* [out] */ PInterface *ppObject);
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
 
-    CARAPI GetClassID(
-        /* [out] */ ClassID *pCLSID);
-
-    CARAPI Equals(
-        /* [in] */ IInterface* other,
-        /* [out] */ Boolean * result);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hash);
-
-    CARAPI GetWeakReference(
-        /* [out] */ IWeakReference** weakReference);
+    CARAPI constructor(
+        /* [in] */ IContext* context);
 
     virtual CARAPI OnGetDefaultValue(
         /* [in] */ ITypedArray* a,
@@ -111,6 +115,7 @@ public:
         /* [in] */ IViewGroup* parent,
         /* [out] */ IView** view);
 
+protected:
     virtual CARAPI OnCreateView(
         /* [in] */ IViewGroup* parent,
         /* [out] */ IView** view);
@@ -118,6 +123,7 @@ public:
     virtual CARAPI OnBindView(
         /* [in] */ IView* view);
 
+public:
     virtual CARAPI SetOrder(
         /* [in] */ Int32 order);
 
@@ -172,18 +178,23 @@ public:
     virtual CARAPI GetShouldDisableView(
         /* [out] */ Boolean* shouldDisableView);
 
-    CARAPI_(Int64) GetId();
+protected:
+    CARAPI GetId(
+        /* [out] */ Int64* id);
 
     virtual CARAPI OnClick();
 
+public:
     virtual CARAPI SetKey(
         /* [in] */ const String& key);
 
     virtual CARAPI GetKey(
         /* [out] */ String* key);
 
+protected:
     CARAPI RequireKey();
 
+public:
     virtual CARAPI HasKey(
         /* [out] */ Boolean* hasKey);
 
@@ -196,10 +207,12 @@ public:
     virtual CARAPI SetPersistent(
         /* [in] */ Boolean persistent);
 
+protected:
     virtual CARAPI CallChangeListener(
         /* [in] */ IInterface* newValue,
         /* [out] */ Boolean* shouldSetValue);
 
+public:
     virtual CARAPI SetOnPreferenceChangeListener(
         /* [in] */ IPreferenceOnPreferenceChangeListener* onPreferenceChangeListener);
 
@@ -244,7 +257,7 @@ public:
         /* [in] */ IInterface* another,
         /* [out] */ Int32* result);
 
-    CARAPI_(void) SetOnPreferenceChangeInternalListener(
+    CARAPI SetOnPreferenceChangeInternalListener(
         /* [in] */ IPreferenceOnPreferenceChangeInternalListener* listener);
 
     virtual CARAPI NotifyChanged();
@@ -269,6 +282,16 @@ public:
     virtual CARAPI OnDependencyChanged(
         /* [in] */ IPreference* dependency,
         /* [in] */ Boolean disableDependent);
+
+    /**
+     * Called when the implicit parent dependency changes.
+     *
+     * @param parent The Preference that this Preference depends on.
+     * @param disableChild Set true to disable this Preference.
+     */
+    virtual CARAPI OnParentChanged(
+        /* [in] */ IPreference* parent,
+        /* [in] */ Boolean disableChild);
 
     virtual CARAPI ShouldDisableDependents(
         /* [out] */ Boolean* shouldDisableDependents);
@@ -308,6 +331,7 @@ public:
         /* [in] */ Int32 value,
         /* [out] */ Boolean* isPersist);
 
+
     virtual CARAPI GetPersistedInt32(
         /* [in] */ Int32 defaultReturnValue,
         /* [out] */ Int32* value);
@@ -336,13 +360,14 @@ public:
         /* [in] */ Boolean defaultReturnValue,
         /* [out] */ Boolean* value);
 
-    virtual CARAPI HasSpecifiedLayout(
-        /* [out] */ Boolean* hasSpecifiedLayout);
+    virtual CARAPI CanRecycleLayout(
+        /* [out] */ Boolean* result);
 
     virtual CARAPI ToString(
         /* [out] */ String* str);
 
-    CARAPI_(String) GetFilterableString();
+    CARAPI GetFilterableString(
+        /* [out] */ String* fsb);
 
     virtual CARAPI SaveHierarchyState(
         /* [in] */ IBundle* container);
@@ -361,12 +386,6 @@ public:
 
     virtual CARAPI OnRestoreInstanceState(
         /* [in] */ IParcelable* state);
-
-protected:
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::preferenceStyle);
 
 private:
     /**
@@ -424,6 +443,7 @@ private:
     String mDependencyKey;
     AutoPtr<IInterface> mDefaultValue;
     Boolean mDependencyMet;
+    Boolean mParentDependencyMet;
 
     /**
      * @see #setShouldDisableView(boolean)
@@ -432,7 +452,7 @@ private:
 
     Int32 mLayoutResId;
     Int32 mWidgetLayoutResId;
-    Boolean mHasSpecifiedLayout;
+    Boolean mCanRecycleLayout;
     AutoPtr<IPreferenceOnPreferenceChangeInternalListener> mListener;
     AutoPtr< List<AutoPtr<IPreference> > > mDependents;
     Boolean mBaseMethodCalled;

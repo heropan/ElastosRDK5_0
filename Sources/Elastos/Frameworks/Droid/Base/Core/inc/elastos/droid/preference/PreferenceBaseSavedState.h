@@ -2,19 +2,36 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_PREFERENCEBASESAVEDSTATE_H__
 #define __ELASTOS_DROID_PREFERENCE_PREFERENCEBASESAVEDSTATE_H__
 
-#include "ext/frameworkdef.h"
-#include "view/AbsSavedState.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include <elastos/coredef.h>
+#include <elastos/core/Object.h>
+// #include "view/AbsSavedState.h"
 
-using Elastos::Droid::View::AbsSavedState;
+// using Elastos::Droid::View::AbsSavedState;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace Preference {
 
-class PreferenceBaseSavedState: public AbsSavedState
+// class PreferenceBaseSavedState
+//     : public AbsSavedState
+//     , public IPreferenceBaseSavedState
+class PreferenceBaseSavedState
+    : public Object
+    // : public AbsSavedState
+    , public IPreferenceBaseSavedState
+    , public IParcelable
 {
 public:
-    virtual ~PreferenceBaseSavedState() {}
+    CAR_INTERFACE_DECL()
+
+    virtual ~PreferenceBaseSavedState();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ IParcelable* source);
 
     virtual CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -24,10 +41,6 @@ public:
 
     virtual CARAPI GetSuperState(
         /* [out] */ IParcelable** superState);
-
-protected:
-    CARAPI Init(
-        /* [in] */ IParcelable* superState);
 };
 
 } // Preference
