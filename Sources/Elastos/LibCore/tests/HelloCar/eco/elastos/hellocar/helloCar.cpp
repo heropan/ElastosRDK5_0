@@ -1,5 +1,5 @@
-#include "CCat.h"
-#include "CDog.h"
+#include "elastos/hellocar/CCat.h"
+#include "elastos/hellocar/CDog.h"
 
 namespace Elastos {
 namespace HelloCar {

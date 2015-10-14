@@ -1,4 +1,4 @@
-#include "CAnimalHelper.h"
+#include "elastos/hellocar/CAnimalHelper.h"
 
 namespace Elastos {
 namespace HelloCar {

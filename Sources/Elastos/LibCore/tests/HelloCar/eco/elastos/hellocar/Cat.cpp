@@ -1,5 +1,5 @@
 
-#include "Cat.h"
+#include "elastos/hellocar/Cat.h"
 
 namespace Elastos {
 namespace HelloCar {
