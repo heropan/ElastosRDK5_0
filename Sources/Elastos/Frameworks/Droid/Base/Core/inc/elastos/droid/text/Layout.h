@@ -63,6 +63,7 @@ public:
     class Ellipsizer
         : public Object
         , public IGetChars
+        , public ICharSequence
     {
     public:
         CAR_INTERFACE_DECL()
@@ -761,6 +762,26 @@ public:
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
+
+    /**
+     * Returns the position of the next tab stop after h on the line.
+     *
+     * @param text the text
+     * @param start start of the line
+     * @param end limit of the line
+     * @param h the current horizontal offset
+     * @param tabs the tabs, can be null.  If it is null, any tabs in effect
+     * on the line will be used.  If there are no tabs, a default offset
+     * will be used to compute the tab stop.
+     * @return the offset of the next tab stop.
+     */
+    /* package */
+    static Float NextTab(
+        /* [in] */ ICharSequence* text,
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 end,
+        /* [in] */ Float h,
+        /* [in] */ ArrayOf<IInterface*>* tabs);
 
 private:
     /**

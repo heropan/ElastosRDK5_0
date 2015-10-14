@@ -5,7 +5,7 @@
 #include "_Elastos_Droid_Text_CBoringLayoutMetrics.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Droid::Graphics::IPaintFontMetrics;
+using Elastos::Droid::Graphics::IPaintFontMetricsInt;
 
 namespace Elastos {
 namespace Droid {
@@ -14,7 +14,7 @@ namespace Text {
 CarClass(CBoringLayoutMetrics)
     , public Object
     , public IBoringLayoutMetrics
-    , public IPaintFontMetrics
+    , public IPaintFontMetricsInt
 {
 public:
     CAR_INTERFACE_DECL()

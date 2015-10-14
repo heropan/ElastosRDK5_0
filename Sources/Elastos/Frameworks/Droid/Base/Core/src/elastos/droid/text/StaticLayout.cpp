@@ -1,25 +1,21 @@
 #include "elastos/droid/text/StaticLayout.h"
-#include <elastos/core/Math.h>
-#include <elastos/core/Character.h>
-#include "elastos/droid/utility/ArrayUtils.h"
-#include "elastos/droid/graphics/CPaintFontMetricsInt.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/text/TextDirectionHeuristics.h"
 #include "elastos/droid/text/AndroidBidi.h"
+//#include "elastos/droid/internal/utility/ArrayUtils.h"
+#include "elastos/droid/graphics/CPaintFontMetricsInt.h"
 
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/Character.h>
 #include <unistd.h>
 #include "unicode/locid.h"
 #include "unicode/brkiter.h"
 #include "utils/misc.h"
 #include "utils/Log.h"
-#include <vector>
+// #include <vector>
 
-using Elastos::Utility::Logging::Slogger;
-
-using Elastos::Core::EIID_ICharSequence;
-using Elastos::Core::Character;
-using Elastos::Droid::Internal::Utility::ArrayUtils;
+//using Elastos::Droid::Internal::Utility::ArrayUtils;
 using Elastos::Droid::Graphics::CPaintFontMetricsInt;
 using Elastos::Droid::Text::Style::EIID_ILineHeightSpan;
 using Elastos::Droid::Text::Style::EIID_ILeadingMarginSpan;
@@ -30,6 +26,10 @@ using Elastos::Droid::Text::Style::ILeadingMarginSpan2;
 using Elastos::Droid::Text::Style::EIID_IMetricAffectingSpan;
 using Elastos::Droid::Text::Style::IMetricAffectingSpan;
 using Elastos::Droid::Text::Style::EIID_ITabStopSpan;
+
+using Elastos::Utility::Logging::Slogger;
+using Elastos::Core::EIID_ICharSequence;
+using Elastos::Core::Character;
 
 namespace Elastos {
 namespace Droid {
@@ -61,6 +61,8 @@ const Double StaticLayout::EXTRA_ROUNDING;
 
 const Int32 StaticLayout::CHAR_FIRST_HIGH_SURROGATE;
 const Int32 StaticLayout::CHAR_LAST_LOW_SURROGATE;
+
+CAR_INTERFACE_IMPL(StaticLayout, Layout, IStaticLayout)
 
 StaticLayout::StaticLayout()
     : mLineCount(0)
@@ -152,8 +154,9 @@ ECode StaticLayout::constructor(
     /* [in] */ TextUtilsTruncateAt ellipsize,
     /* [in] */ Int32 ellipsizedWidth)
 {
+    AutoPtr<ITextDirectionHeuristic> ltr = TextDirectionHeuristics::GetFIRSTSTRONG_LTR();
     return constructor(source, bufstart, bufend, paint, outerwidth, align,
-            TextDirectionHeuristics::FIRSTSTRONG_LTR,
+            ltr,
             spacingmult, spacingadd, includepad, ellipsize,
             ellipsizedWidth, Elastos::Core::Math::INT32_MAX_VALUE);
 }
@@ -203,7 +206,9 @@ ECode StaticLayout::constructor(
      * cares about the content instead of just holding the reference.
      */
     if (ellipsize != TextUtilsTruncateAt_NONE) {
-        AutoPtr<Ellipsizer> e = (Ellipsizer*)GetText().Get();
+        AutoPtr<ICharSequence> csq;
+        GetText((ICharSequence**)&csq);
+        AutoPtr<Ellipsizer> e = (Ellipsizer*)csq.Get();
         e->mLayout = this;
         e->mWidth = ellipsizedWidth;
         e->mMethod = ellipsize;
@@ -260,9 +265,10 @@ ECode StaticLayout::Generate(
     /* [in] */ Float ellipsizedWidth,
     /* [in] */ TextUtilsTruncateAt ellipsize)
 {
+    IPaint* p = IPaint::Probe(paint);
     AutoPtr< ArrayOf<Int32> > breakOpp;
     AutoPtr<ILocale> locale;
-    paint->GetTextLocale((ILocale**)&locale);
+    p->GetTextLocale((ILocale**)&locale);
     String localeLanguageTag;
     locale->ToLanguageTag(&localeLanguageTag);
 
@@ -310,7 +316,8 @@ ECode StaticLayout::Generate(
                     AutoPtr<ILeadingMarginSpan2> lms2 = (ILeadingMarginSpan2*)(lms->Probe(EIID_ILeadingMarginSpan2));
                     Int32 temp = 0;
                     spanned->GetSpanStart(lms2, &temp);
-                    Int32 lmsFirstLine = GetLineForOffset(temp);
+                    Int32 lmsFirstLine;
+                    GetLineForOffset(temp, &lmsFirstLine);
                     lms2->GetLeadingMarginLineCount(&temp);
                     firstWidthLineLimit = Elastos::Core::Math::Max(firstWidthLineLimit, lmsFirstLine + temp);
                 }
@@ -318,15 +325,16 @@ ECode StaticLayout::Generate(
 
             chooseHt = GetParagraphSpans(spanned, paraStart, paraEnd, EIID_ILineHeightSpan);
 
+            assert(0 && "TODO");
             Int32 length = chooseHt->GetLength();
             if (length != 0) {
                 if (chooseHtv == NULL ||
                     chooseHtv->GetLength() < length) {
-                    chooseHtv = ArrayUtils::NewUnpaddedIntArray(chooseHt->GetLength());
+                    // chooseHtv = ArrayUtils::NewUnpaddedIntArray(chooseHt->GetLength());
                 }
 
                 for (Int32 i = 0; i < length; i++) {
-                    AutoPtr<ILineHeightSpan> lhs = (ILineHeightSpan*)((*chooseHt)[i]->Probe(EIID_ILineHeightSpan));
+                    AutoPtr<ILineHeightSpan> lhs = ILineHeightSpan::Probe((*chooseHt)[i]);
                     Int32 o = 0;
                     spanned->GetSpanStart(lhs, &o);
 
@@ -334,7 +342,9 @@ ECode StaticLayout::Generate(
                         // starts in this layout, before the
                         // current paragraph
 
-                        (*chooseHtv)[i] = GetLineTop(GetLineForOffset(o));
+                        Int32 lfo;
+                        GetLineForOffset(o, &lfo);
+                        GetLineTop(lfo, &(*chooseHtv)[i]);
                     } else {
                         // starts in this paragraph
 
@@ -568,7 +578,7 @@ ECode StaticLayout::Generate(
                     }
 
                     if (mLineCount >= mMaximumVisibleLineCount) {
-                        return;
+                        return NOERROR;
                     }
                 }
             }
@@ -577,7 +587,7 @@ ECode StaticLayout::Generate(
         if (paraEnd != here && mLineCount < mMaximumVisibleLineCount) {
             if ((fitTop | fitBottom | fitDescent | fitAscent) == 0) {
                 Int32 spacing;
-                paint->GetFontMetricsInt(fm, &spacing);
+                p->GetFontMetricsInt(fm, &spacing);
 
                 fm->GetTop(&fitTop);
                 fm->GetBottom(&fitBottom);
@@ -612,7 +622,7 @@ ECode StaticLayout::Generate(
         // Log.e("text", "output last " + bufEnd);
 
         Int32 spacing;
-        paint->GetFontMetricsInt(fm, &spacing);
+        p->GetFontMetricsInt(fm, &spacing);
 
         Int32 ascent, descent, top, bottom;
         fm->GetAscent(&ascent);
@@ -680,9 +690,11 @@ ECode StaticLayout::GetLineTop(
     VALIDATE_NOT_NULL(result)
     assert(mLines != NULL);
     Int32 top = (*mLines)[mColumns * line + TOP];
-    if (mMaximumVisibleLineCount > 0 && line >= mMaximumVisibleLineCount &&
-            line != mLineCount) {
-        top += GetBottomPadding();
+    if (mMaximumVisibleLineCount > 0 && line >= mMaximumVisibleLineCount
+        && line != mLineCount) {
+        Int32 padding;
+        GetBottomPadding(&padding);
+        top += padding;
     }
     *result = top;
     return NOERROR;
@@ -695,9 +707,11 @@ ECode StaticLayout::GetLineDescent(
 {
     VALIDATE_NOT_NULL(result)
     Int32 descent = (*mLines)[mColumns * line + DESCENT];
-    if (mMaximumVisibleLineCount > 0 && line >= mMaximumVisibleLineCount - 1 && // -1 intended
-            line != mLineCount) {
-        descent += GetBottomPadding();
+    if (mMaximumVisibleLineCount > 0 && line >= mMaximumVisibleLineCount - 1
+        && line != mLineCount) {
+        Int32 padding;
+        GetBottomPadding(&padding);
+        descent += padding;
     }
     *result = descent;
     return NOERROR;
@@ -798,10 +812,12 @@ ECode StaticLayout::GetEllipsisStart(
 }
 
 //@Override
-ECode StaticLayout::GetEllipsizedWidth(,
+ECode StaticLayout::GetEllipsizedWidth(
     /* [out] */ Int32* result)
 {
-    return mEllipsizedWidth;
+    VALIDATE_NOT_NULL(result)
+    *result = mEllipsizedWidth;
+    return NOERROR;
 }
 
 ECode StaticLayout::Prepare()
@@ -852,15 +868,16 @@ Int32 StaticLayout::Out(
     Int32 want = off + mColumns + TOP;
     AutoPtr< ArrayOf<Int32> > lines = mLines;
 
+    assert(0 && "TODO");
     if (want >= lines->GetLength()) {
-        AutoPtr< ArrayOf<ILayoutDirections*> > grow2 = ArrayUtils::NewUnpaddedArray(GrowingArrayUtils::GrowSize(want));
-        grow2->Copy(mLineDirections);
-        mLineDirections = grow2;
+        // AutoPtr< ArrayOf<ILayoutDirections*> > grow2 = ArrayUtils::NewUnpaddedArray(GrowingArrayUtils::GrowSize(want));
+        // grow2->Copy(mLineDirections);
+        // mLineDirections = grow2;
 
-        AutoPtr< ArrayOf<Int32> > grow = ArrayOf<Int32>::Alloc(grow2->GetLength());
-        grow->Copy(lines);
-        mLines = grow;
-        lines = grow;
+        // AutoPtr< ArrayOf<Int32> > grow = ArrayOf<Int32>::Alloc(grow2->GetLength());
+        // grow->Copy(lines);
+        // mLines = grow;
+        // lines = grow;
     }
 
     if (chooseHt != NULL) {
@@ -870,7 +887,7 @@ Int32 StaticLayout::Out(
         fm->SetBottom(bottom);
 
         for (Int32 i = 0; i < chooseHt->GetLength(); i++) {
-            ILineHeightSpan* obj = (ILineHeightSpan*)((*chooseHt)[i]->Probe(EIID_ILineHeightSpan));
+            ILineHeightSpan* obj = ILineHeightSpan::Probe((*chooseHt)[i]);
             assert(obj != NULL);
             ILineHeightSpanWithDensity* lhsd = ILineHeightSpanWithDensity::Probe(obj);
             if (lhsd) {
@@ -989,11 +1006,12 @@ void StaticLayout::CalculateEllipsis(
         return;
     }
 
+    IPaint* p = IPaint::Probe(paint);
     Float ellipsisWidth = 0.0f;
     AutoPtr< ArrayOf<Char32> > text = ArrayOf<Char32>::Alloc(1);
     (*text)[0] = (where == TextUtilsTruncateAt_END_SMALL) ?
             ELLIPSIS_TWO_DOTS[0] : ELLIPSIS_NORMAL[0];
-    paint->MeasureText(*text, 0, 1, &ellipsisWidth);
+    p->MeasureText(text, 0, 1, &ellipsisWidth);
     Int32 ellipsisStart = 0;
     Int32 ellipsisCount = 0;
     Int32 len = lineEnd - lineStart;
@@ -1089,11 +1107,11 @@ void StaticLayout::CalculateEllipsis(
 class ScopedIcuLocale {
 public:
     ScopedIcuLocale(
-        /* [in] */ const String& javaLocaleName)
+        /* [in] */ const String& localeName)
     {
         mLocale.setToBogus();
 
-        assert(javaLocaleName.IsNull() == FALSE && "javaLocaleName == null");
+        assert(localeName.IsNull() == FALSE && "javaLocaleName == null");
         // if (javaLocaleName.IsNull()) {
         //     jniThrowNullPointerException(mEnv, "javaLocaleName == null");
         //     return;
@@ -1131,7 +1149,7 @@ public:
         , mChars(inputText)
     {
         UErrorCode status = U_ZERO_ERROR;
-        mUText = utext_openUChars(NULL, mChars.Get(), length, &status);
+        mUText = utext_openUChars(NULL, (const UChar*)mChars->GetPayload(), length, &status);
         if (mUText == NULL) {
             return;
         }
@@ -1165,41 +1183,42 @@ AutoPtr<ArrayOf<Int32> > StaticLayout::nLineBreakOpportunities(
 {
     AutoPtr<ArrayOf<Int32> > ret;
 
-    std::vector<Int32> breaks;
+    assert(0 && "TODO");
+    // std::vector<Int32> breaks;
 
-    ScopedIcuLocale icuLocale(javaLocaleName);
-    if (icuLocale.valid()) {
-        UErrorCode status = U_ZERO_ERROR;
-        BreakIterator* it = BreakIterator::createLineInstance(icuLocale.locale(), status);
-        if (!U_SUCCESS(status) || it == NULL) {
-            if (it) {
-                delete it;
-            }
-        } else {
-            ScopedBreakIterator breakIterator(env, it, inputText, length);
-            for (int loc = breakIterator->first(); loc != BreakIterator::DONE;
-                    loc = breakIterator->next()) {
-                breaks.push_back(loc);
-            }
-        }
-    }
+    // ScopedIcuLocale icuLocale(javaLocaleName);
+    // if (icuLocale.valid()) {
+    //     UErrorCode status = U_ZERO_ERROR;
+    //     BreakIterator* it = BreakIterator::createLineInstance(icuLocale.locale(), status);
+    //     if (!U_SUCCESS(status) || it == NULL) {
+    //         if (it) {
+    //             delete it;
+    //         }
+    //     } else {
+    //         ScopedBreakIterator breakIterator(env, it, inputText, length);
+    //         for (int loc = breakIterator->first(); loc != BreakIterator::DONE;
+    //                 loc = breakIterator->next()) {
+    //             breaks.push_back(loc);
+    //         }
+    //     }
+    // }
 
-    breaks.push_back(-1); // sentinel terminal value
+    // breaks.push_back(-1); // sentinel terminal value
 
-    if (recycle != NULL && recycle->GetLength() >= breaks.size()) {
-        ret = recycle;
-    }
-    else {
-        ret = ArrayOf<Int32>::Alloc(breaks.size());
-    }
+    // if (recycle != NULL && recycle->GetLength() >= breaks.size()) {
+    //     ret = recycle;
+    // }
+    // else {
+    //     ret = ArrayOf<Int32>::Alloc(breaks.size());
+    // }
 
-    if (ret != NULL) {
-        std::vector<Int32>::iterator it;
-        Int32 i = 0;
-        for (it = breaks.begin(); it != breaks.end(); ++it) {
-            ret->Set(i++, *it);
-        }
-    }
+    // if (ret != NULL) {
+    //     std::vector<Int32>::iterator it;
+    //     Int32 i = 0;
+    //     for (it = breaks.begin(); it != breaks.end(); ++it) {
+    //         ret->Set(i++, *it);
+    //     }
+    // }
 
     return ret;
 }

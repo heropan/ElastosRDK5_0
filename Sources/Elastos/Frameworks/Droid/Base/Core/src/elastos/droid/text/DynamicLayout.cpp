@@ -4,20 +4,22 @@
 #include "elastos/droid/text/TextDirectionHeuristics.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/text/CStaticLayout.h"
-#include "internal/utility/ArrayUtils.h"
-#include "internal/utility/GrowingArrayUtils.h"
+// #include "elastos/droid/internal/utility/ArrayUtils.h"
+// #include "elastos/droid/internal/utility/GrowingArrayUtils.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::Graphics::IPaintFontMetricsInt;
 using Elastos::Droid::Text::Style::IUpdateLayout;
 using Elastos::Droid::Text::Style::EIID_IWrapTogetherSpan;
-using Elastos::Droid::Internal::Utility::ArrayUtils;
-using Elastos::Droid::Internal::Utility::GrowingArrayUtils;
+// using Elastos::Droid::Internal::Utility::ArrayUtils;
+// using Elastos::Droid::Internal::Utility::GrowingArrayUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 
-CAR_INTERFACE_IMPL_3(DynamicLayout::ChangeWatcher, Object, ITextWatcher, ISpanWatcher, INoCopySpan, )
+CAR_INTERFACE_IMPL_3(DynamicLayout::ChangeWatcher, Object, ITextWatcher, ISpanWatcher, INoCopySpan)
 
 DynamicLayout::ChangeWatcher::ChangeWatcher(
     /* [in] */ IWeakReference* layout)
@@ -77,7 +79,7 @@ ECode DynamicLayout::ChangeWatcher::OnSpanAdded(
     /* [in] */ Int32 end)
 {
     if (o != NULL && IUpdateLayout::Probe(o) != NULL) {
-        Reflow(s, start, end - start, end - start);
+        Reflow(ICharSequence::Probe(s), start, end - start, end - start);
     }
     return NOERROR;
 }
@@ -89,7 +91,7 @@ ECode DynamicLayout::ChangeWatcher::OnSpanRemoved(
     /* [in] */ Int32 end)
 {
     if (o != NULL && IUpdateLayout::Probe(o) != NULL) {
-        Reflow(s, start, end - start, end - start);
+        Reflow(ICharSequence::Probe(s), start, end - start, end - start);
     }
     return NOERROR;
 }
@@ -103,8 +105,8 @@ ECode DynamicLayout::ChangeWatcher::OnSpanChanged(
     /* [in] */ Int32 nend)
 {
     if (o != NULL && IUpdateLayout::Probe(o) != NULL) {
-        Reflow(s, start, end - start, end - start);
-        Reflow(s, nstart, nend - nstart, nend - nstart);
+        Reflow(ICharSequence::Probe(s), start, end - start, end - start);
+        Reflow(ICharSequence::Probe(s), nstart, nend - nstart, nend - nstart);
     }
     return NOERROR;
 }
@@ -116,7 +118,7 @@ const Int32 DynamicLayout::INVALID_BLOCK_INDEX;
 
 Boolean DynamicLayout::sIsStaticLayoutInited = FALSE;
 AutoPtr<CStaticLayout> DynamicLayout::sStaticLayout;
-Mutex DynamicLayout::sLock;
+Object DynamicLayout::sLock;
 
 const Int32 DynamicLayout::START;
 const Int32 DynamicLayout::DIR;
@@ -132,7 +134,7 @@ const Int32 DynamicLayout::DIR_SHIFT;
 const Int32 DynamicLayout::TAB_MASK;
 const Int32 DynamicLayout::ELLIPSIS_UNDEFINED;
 
-CAR_INTERFACE_IMPL(CStaticLayout, Layout, IStaticLayout)
+CAR_INTERFACE_IMPL(DynamicLayout, Layout, IDynamicLayout)
 
 AutoPtr<CStaticLayout> DynamicLayout::GetStaticLayout()
 {
@@ -215,7 +217,8 @@ ECode DynamicLayout::constructor(
     /* [in] */ TextUtilsTruncateAt ellipsize,
     /* [in] */ Int32 ellipsizedWidth)
 {
-    return constructor(base, display, paint, width, align, TextDirectionHeuristics::FIRSTSTRONG_LTR,
+    AutoPtr<ITextDirectionHeuristic> ltr = TextDirectionHeuristics::GetFIRSTSTRONG_LTR();
+    return constructor(base, display, paint, width, align, ltr,
         spacingmult, spacingadd, includepad, ellipsize, ellipsizedWidth);
 }
 
@@ -241,6 +244,7 @@ ECode DynamicLayout::constructor(
     /* [in] */ TextUtilsTruncateAt ellipsize,
     /* [in] */ Int32 ellipsizedWidth)
 {
+    IPaint* p = IPaint::Probe(paint);
     AutoPtr<ICharSequence> paramCS;
     if (ellipsize == TextUtilsTruncateAt_NONE) {
         paramCS = display;
@@ -253,8 +257,8 @@ ECode DynamicLayout::constructor(
             paramCS = new Ellipsizer(display);
         }
     }
-    Layout::Init(paramCS,
-          paint, width, align, textDir, spacingmult, spacingadd);
+    FAIL_RETURN(Layout::constructor(paramCS,
+          paint, width, align, textDir, spacingmult, spacingadd))
 
     mBase = base;
     mDisplay = display;
@@ -283,7 +287,9 @@ ECode DynamicLayout::constructor(
      * cares about the content instead of just holding the reference.
      */
     if (ellipsize != TextUtilsTruncateAt_NONE) {
-        AutoPtr<Ellipsizer> e = (Ellipsizer*)GetText().Get();
+        AutoPtr<ICharSequence> csq;
+        GetText((ICharSequence**)&csq);
+        AutoPtr<Ellipsizer> e = (Ellipsizer*)csq.Get();
         e->mLayout = this;
         e->mWidth = ellipsizedWidth;
         e->mMethod = ellipsize;
@@ -309,7 +315,7 @@ ECode DynamicLayout::constructor(
     dirs->Set(0, DIRS_ALL_LEFT_TO_RIGHT);
 
     AutoPtr<IPaintFontMetricsInt> fm;
-    paint->GetFontMetricsInt((IPaintFontMetricsInt**)&fm);
+    p->GetFontMetricsInt((IPaintFontMetricsInt**)&fm);
     Int32 asc, desc;
     fm->GetAscent(&asc);
     fm->GetDescent(&desc);
@@ -338,17 +344,18 @@ ECode DynamicLayout::constructor(
 
         // Strip out any watchers for other DynamicLayouts.
         AutoPtr<ISpannable> sp = ISpannable::Probe(base);
-        sp->GetLength(&len);
+        ICharSequence::Probe(sp)->GetLength(&len);
         AutoPtr< ArrayOf<IInterface*> > spans;
-        sp->GetSpans(0, len, EIID_ChangeWatcher, (ArrayOf<IInterface*>**)&spans);
+        //ChangeWatcher
+        ISpanned::Probe(sp)->GetSpans(0, len, EIID_ITextWatcher, (ArrayOf<IInterface*>**)&spans);
         for (Int32 i = 0; i < spans->GetLength(); i++) {
             sp->RemoveSpan((*spans)[i]);
         }
 
         base->GetLength(&len);
         sp->SetSpan(mWatcher->Probe(EIID_IInterface), 0, len,
-                   ISpannable::SPAN_INCLUSIVE_INCLUSIVE |
-                   (PRIORITY << ISpannable::SPAN_PRIORITY_SHIFT));
+                   ISpanned::SPAN_INCLUSIVE_INCLUSIVE |
+                   (PRIORITY << ISpanned::SPAN_PRIORITY_SHIFT));
     }
 
     return NOERROR;
@@ -437,15 +444,18 @@ void DynamicLayout::Reflow(
     }
 
     // find affected region of old layout
-    Int32 startline = GetLineForOffset(where);
-    Int32 startv = GetLineTop(startline);
+    Int32 startline, startv, endline, count;
+    GetLineForOffset(where, &startline);
+    GetLineTop(startline, &startv);
 
-    Int32 endline = GetLineForOffset(where + before);
+    GetLineForOffset(where + before, &endline);
     if (where + after == len) {
-        endline = GetLineCount();
+        GetLineCount(&endline);
     }
-    Int32 endv = GetLineTop(endline);
-    Boolean islast = (endline == GetLineCount());
+    Int32 endv;
+    GetLineTop(endline, &endv);
+    GetLineCount(&count);
+    Boolean islast = (endline == count);
 
     // generate new layout for affected text
     AutoPtr<CStaticLayout> reflowed;
@@ -464,11 +474,19 @@ void DynamicLayout::Reflow(
         reflowed->Prepare();
     }
 
-    reflowed->Generate(text, where, where + after,
-                GetPaint(), GetWidth(), GetTextDirectionHeuristic(), GetSpacingMultiplier(),
-                GetSpacingAdd(), FALSE,
-                TRUE, mEllipsizedWidth, mEllipsizeAt);
-    Int32 n = reflowed->GetLineCount();
+    AutoPtr<ITextPaint> tp;
+    GetPaint((ITextPaint**)&tp);
+    Int32 width;
+    GetWidth(&width);
+    AutoPtr<ITextDirectionHeuristic> dir;
+    GetTextDirectionHeuristic((ITextDirectionHeuristic**)&dir);
+    Float multiplier, spacingAdd;
+    GetSpacingMultiplier(&multiplier);
+    GetSpacingAdd(&spacingAdd);
+    reflowed->Generate(text, where, where + after, tp, width, dir, multiplier,
+        spacingAdd, FALSE, TRUE, mEllipsizedWidth, mEllipsizeAt);
+    Int32 n;
+    reflowed->GetLineCount(&n);
 
     // If the new layout has a blank line at the end, but it is not
     // the very end of the buffer, then we already have a line that
@@ -484,16 +502,17 @@ void DynamicLayout::Reflow(
 
     // adjust offsets in layout for new height and offsets
 
-    Int32 ht = reflowed->GetLineTop(n);
+    Int32 ht;
+    reflowed->GetLineTop(n, &ht);
     Int32 toppad = 0, botpad = 0;
 
     if (mIncludePad && startline == 0) {
-        toppad = reflowed->GetTopPadding();
+        reflowed->GetTopPadding(&toppad);
         mTopPadding = toppad;
         ht -= toppad;
     }
     if (mIncludePad && islast) {
-        botpad = reflowed->GetBottomPadding();
+        reflowed->GetBottomPadding(&botpad);
         mBottomPadding = botpad;
         ht += botpad;
     }
@@ -515,30 +534,37 @@ void DynamicLayout::Reflow(
 
     AutoPtr< ArrayOf<ILayoutDirections*> > objects = ArrayOf<ILayoutDirections*>::Alloc(1);
 
+    Int32 start, paraDir;
+    Boolean bval;
     for (Int32 i = 0; i < n; i++) {
-        (*ints)[START] = reflowed->GetLineStart(i) |
-                (reflowed->GetParagraphDirection(i) << DIR_SHIFT) |
-                (reflowed->GetLineContainsTab(i) ? TAB_MASK : 0);
+        reflowed->GetLineStart(i, &start);
+        reflowed->GetParagraphDirection(i, &paraDir);
+        reflowed->GetLineContainsTab(i, &bval);
+        (*ints)[START] =  start | (paraDir << DIR_SHIFT) | (bval ? TAB_MASK : 0);
 
-        Int32 top = reflowed->GetLineTop(i) + startv;
+        Int32 top;
+        reflowed->GetLineTop(i, &top);
+        top += startv;
         if (i > 0) {
             top -= toppad;
         }
         (*ints)[TOP] = top;
 
-        Int32 desc = reflowed->GetLineDescent(i);
+        Int32 desc;
+        reflowed->GetLineDescent(i, &desc);
         if (i == n - 1) {
             desc += botpad;
         }
 
         (*ints)[DESCENT] = desc;
 
-        AutoPtr<ILayoutDirections> directions = reflowed->GetLineDirections(i);
+        AutoPtr<ILayoutDirections> directions;
+        reflowed->GetLineDirections(i, (ILayoutDirections**)&directions);
         objects->Set(0, directions);
 
         if (mEllipsize) {
-            (*ints)[ELLIPSIS_START] = reflowed->GetEllipsisStart(i);
-            (*ints)[ELLIPSIS_COUNT] = reflowed->GetEllipsisCount(i);
+            reflowed->GetEllipsisStart(i, &(*ints)[ELLIPSIS_START]);
+            reflowed->GetEllipsisCount(i, &(*ints)[ELLIPSIS_COUNT]);
         }
 
         mInts->InsertAt(startline + i, ints);
@@ -594,22 +620,22 @@ void DynamicLayout::CreateBlocks()
 void DynamicLayout::AddBlockAtOffset(
     /* [in] */ Int32 offset)
 {
-    Int32 line = GetLineForOffset(offset);
+    Int32 line;
+    GetLineForOffset(offset, &line);
+    assert(0 && "TODO");
+    // if (mBlockEndLines == NULL) {
+    //     // Initial creation of the array, no test on previous block ending line
+    //     mBlockEndLines = ArrayUtils::NewUnpaddedIntArray(1);
+    //     (*mBlockEndLines)[mNumberOfBlocks] = line;
+    //     mNumberOfBlocks++;
+    //     return;
+    // }
 
-    if (mBlockEndLines == NULL) {
-        // Initial creation of the array, no test on previous block ending line
-        mBlockEndLines = ArrayUtils::NewUnpaddedIntArray(1);
-        // mBlockEndLines = ArrayOf<Int32>::Alloc(ArrayUtils::IdealInt32ArraySize(1));
-        (*mBlockEndLines)[mNumberOfBlocks] = line;
-        mNumberOfBlocks++;
-        return;
-    }
-
-    Int32 previousBlockEndLine = (*mBlockEndLines)[mNumberOfBlocks - 1];
-    if (line > previousBlockEndLine) {
-        mBlockEndLines = GrowingArrayUtils::Append(mBlockEndLines, mNumberOfBlocks, line);
-        mNumberOfBlocks++;
-    }
+    // Int32 previousBlockEndLine = (*mBlockEndLines)[mNumberOfBlocks - 1];
+    // if (line > previousBlockEndLine) {
+    //     mBlockEndLines = GrowingArrayUtils::Append(mBlockEndLines, mNumberOfBlocks, line);
+    //     mNumberOfBlocks++;
+    // }
 }
 
 ECode DynamicLayout::UpdateBlocks(
@@ -659,16 +685,17 @@ ECode DynamicLayout::UpdateBlocks(
         return NOERROR;
     }
 
+    assert(0 && "TODO");
     if (newNumberOfBlocks > mBlockEndLines->GetLength()) {
-        Int32 newSize = Elastos::Core::Math::Max(mBlockEndLines.length * 2, newNumberOfBlocks);
-        AutoPtr< ArrayOf<Int32> > blockEndLines = ArrayUtils::NewUnpaddedIntArray(newSize);
-        AutoPtr< ArrayOf<Int32> > blockIndices = ArrayOf<Int32>::Alloc(blockEndLines->GetLength());
-        blockEndLines->Copy(mBlockEndLines, firstBlock);
-        blockIndices->Copy(mBlockIndices, firstBlock);
-        blockEndLines->Copy(firstBlock + numAddedBlocks, mBlockEndLines, lastBlock + 1, mNumberOfBlocks - lastBlock - 1);
-        blockIndices->Copy(firstBlock + numAddedBlocks, mBlockIndices, lastBlock + 1, mNumberOfBlocks - lastBlock - 1);
-        mBlockEndLines = blockEndLines;
-        mBlockIndices = blockIndices;
+        // Int32 newSize = Elastos::Core::Math::Max(mBlockEndLines.length * 2, newNumberOfBlocks);
+        // AutoPtr< ArrayOf<Int32> > blockEndLines = ArrayUtils::NewUnpaddedIntArray(newSize);
+        // AutoPtr< ArrayOf<Int32> > blockIndices = ArrayOf<Int32>::Alloc(blockEndLines->GetLength());
+        // blockEndLines->Copy(mBlockEndLines, firstBlock);
+        // blockIndices->Copy(mBlockIndices, firstBlock);
+        // blockEndLines->Copy(firstBlock + numAddedBlocks, mBlockEndLines, lastBlock + 1, mNumberOfBlocks - lastBlock - 1);
+        // blockIndices->Copy(firstBlock + numAddedBlocks, mBlockIndices, lastBlock + 1, mNumberOfBlocks - lastBlock - 1);
+        // mBlockEndLines = blockEndLines;
+        // mBlockIndices = blockIndices;
     }
     else {
         mBlockEndLines->Copy(firstBlock + numAddedBlocks, mBlockEndLines, lastBlock + 1, mNumberOfBlocks - lastBlock - 1);
@@ -736,7 +763,7 @@ ECode DynamicLayout::SetBlocksDataForTest(
 ECode DynamicLayout::GetBlockEndLines(
     /* [out, calllee] */ ArrayOf<Int32>** result)
 {
-    VALIDATENOT_NULL(result)
+    VALIDATE_NOT_NULL(result)
     *result = mBlockEndLines;
     return NOERROR;
 }
@@ -747,7 +774,7 @@ ECode DynamicLayout::GetBlockEndLines(
 ECode DynamicLayout::GetBlockIndices(
     /* [out, calllee] */ ArrayOf<Int32>** result)
 {
-    VALIDATENOT_NULL(result)
+    VALIDATE_NOT_NULL(result)
     *result = mBlockIndices;
     return NOERROR;
 }
@@ -758,7 +785,7 @@ ECode DynamicLayout::GetBlockIndices(
 ECode DynamicLayout::GetNumberOfBlocks(
     /* [out] */ Int32* result)
 {
-    VALIDATENOT_NULL(result)
+    VALIDATE_NOT_NULL(result)
     *result = mNumberOfBlocks;
     return NOERROR;
 }
@@ -769,7 +796,7 @@ ECode DynamicLayout::GetNumberOfBlocks(
 ECode DynamicLayout::GetIndexFirstChangedBlock(
     /* [out] */ Int32* result)
 {
-    VALIDATENOT_NULL(result)
+    VALIDATE_NOT_NULL(result)
     *result = mIndexFirstChangedBlock;
     return NOERROR;
 }
@@ -788,7 +815,7 @@ ECode DynamicLayout::SetIndexFirstChangedBlock(
 ECode DynamicLayout::GetLineCount(
     /* [out] */ Int32* result)
 {
-    VALIDATENOT_NULL(result)
+    VALIDATE_NOT_NULL(result)
     *result = mInts->Size() - 1;
     return NOERROR;
 }
@@ -798,7 +825,7 @@ ECode DynamicLayout::GetLineTop(
     /* [in] */ Int32 line,
     /* [out] */ Int32* result)
 {
-    VALIDATENOT_NULL(result)
+    VALIDATE_NOT_NULL(result)
     *result = mInts->GetValue(line, TOP);
     return NOERROR;
 }
@@ -808,7 +835,7 @@ ECode DynamicLayout::GetLineDescent(
     /* [in] */ Int32 line,
     /* [out] */ Int32* result)
 {
-    VALIDATENOT_NULL(result)
+    VALIDATE_NOT_NULL(result)
     *result = mInts->GetValue(line, DESCENT);
     return NOERROR;
 }
@@ -818,7 +845,7 @@ ECode DynamicLayout::GetLineStart(
     /* [in] */ Int32 line,
     /* [out] */ Int32* result)
 {
-    VALIDATENOT_NULL(result)
+    VALIDATE_NOT_NULL(result)
     *result = mInts->GetValue(line, START) & START_MASK;
     return NOERROR;
 }
@@ -826,9 +853,9 @@ ECode DynamicLayout::GetLineStart(
 //@Override
 ECode DynamicLayout::GetLineContainsTab(
     /* [in] */ Int32 line,
-    /* [out] */ Int32* result)
+    /* [out] */ Boolean* result)
 {
-    VALIDATENOT_NULL(result)
+    VALIDATE_NOT_NULL(result)
     *result = (mInts->GetValue(line, TAB) & TAB_MASK) != 0;
     return NOERROR;
 }
@@ -838,7 +865,7 @@ ECode DynamicLayout::GetParagraphDirection(
     /* [in] */ Int32 line,
     /* [out] */ Int32* result)
 {
-    VALIDATENOT_NULL(result)
+    VALIDATE_NOT_NULL(result)
     *result = mInts->GetValue(line, DIR) >> DIR_SHIFT;
     return NOERROR;
 }
@@ -848,7 +875,7 @@ ECode DynamicLayout::GetLineDirections(
     /* [in] */ Int32 line,
     /* [out] */ ILayoutDirections** result)
 {
-    VALIDATENOT_NULL(result)
+    VALIDATE_NOT_NULL(result)
 
     assert(line >= 0);
     AutoPtr<ILayoutDirections> ld;
@@ -864,7 +891,7 @@ ECode DynamicLayout::GetLineDirections(
 ECode DynamicLayout::GetTopPadding(
     /* [out] */ Int32* result)
 {
-    VALIDATENOT_NULL(result)
+    VALIDATE_NOT_NULL(result)
     *result = mTopPadding;
     return NOERROR;
 }
@@ -873,7 +900,7 @@ ECode DynamicLayout::GetTopPadding(
 ECode DynamicLayout::GetBottomPadding(
     /* [out] */ Int32* result)
 {
-    VALIDATENOT_NULL(result)
+    VALIDATE_NOT_NULL(result)
     *result = mBottomPadding;
     return NOERROR;
 }
@@ -882,7 +909,7 @@ ECode DynamicLayout::GetBottomPadding(
 ECode DynamicLayout::GetEllipsizedWidth(
     /* [out] */ Int32* result)
 {
-    VALIDATENOT_NULL(result)
+    VALIDATE_NOT_NULL(result)
     *result = mEllipsizedWidth;
     return NOERROR;
 }
@@ -892,7 +919,7 @@ ECode DynamicLayout::GetEllipsisStart(
     /* [in] */ Int32 line,
     /* [out] */ Int32* result)
 {
-    VALIDATENOT_NULL(result)
+    VALIDATE_NOT_NULL(result)
     *result = 0;
     if (mEllipsizeAt == -1) {
         return NOERROR;
@@ -907,7 +934,7 @@ ECode DynamicLayout::GetEllipsisCount(
     /* [in] */ Int32 line,
     /* [out] */ Int32* result)
 {
-    VALIDATENOT_NULL(result)
+    VALIDATE_NOT_NULL(result)
     *result = 0;
 
     if (mEllipsizeAt == -1) {

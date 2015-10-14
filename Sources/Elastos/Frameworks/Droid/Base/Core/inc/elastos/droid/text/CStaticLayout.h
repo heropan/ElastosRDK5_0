@@ -12,7 +12,7 @@ CarClass(CStaticLayout)
     , public StaticLayout
 {
 public:
-    CAR_INTERFACE_DECL()
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Text

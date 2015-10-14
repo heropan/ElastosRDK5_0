@@ -46,6 +46,10 @@ TextLine::TextLine()
     mReplacementSpanSpanSet = new SpanSet<IReplacementSpan>(EIID_IReplacementSpan);
 }
 
+TextLine::~TextLine()
+{
+}
+
 AutoPtr<TextLine> TextLine::Obtain()
 {
     AutoPtr<TextLine> tl;
@@ -992,7 +996,6 @@ void TextLine::DrawTextRun(
     /* [in] */ Int32 y)
 {
     assert(c != NULL);
-    Int32 flags = runIsRtl ? ICanvas::DIRECTION_RTL : ICanvas::DIRECTION_LTR;
     if (mCharsValid) {
         Int32 count = end - start;
         Int32 contextCount = contextEnd - contextStart;

@@ -225,9 +225,10 @@ public:
      * [start, end[ range.
      * @hide
      */
-    CARAPI_(String) Substring(
+    CARAPI Substring(
         /* [in] */ Int32 start,
-        /* [in] */ Int32 end);
+        /* [in] */ Int32 end,
+        /* [out] */ String* subStr);
 
     /**
      * Don't call this yourself -- exists for Canvas to use internally.

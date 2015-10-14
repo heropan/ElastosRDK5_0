@@ -8,7 +8,7 @@
 #include <elastos/core/Math.h>
 
 using Elastos::Core::CString;
-using Elastos::Core::ECLSID_CStringWrapper;
+using Elastos::Core::ECLSID_CString;
 using Elastos::Droid::Text::Style::EIID_IParagraphStyle;
 
 namespace Elastos {
@@ -117,7 +117,9 @@ ECode BoringLayout::ReplaceOrMake(
         trust = FALSE;
     }
 
-    Init(GetText(), paint, outerwidth, align, spacingmult, spacingadd,
+    AutoPtr<ICharSequence> text;
+    GetText((ICharSequence**)&text);
+    Init(text, paint, outerwidth, align, spacingmult, spacingadd,
          metrics, includepad, trust);
 
     *layout = THIS_PROBE(IBoringLayout);
@@ -169,7 +171,7 @@ ECode BoringLayout::constructor(
      * but we can't use "this" for the callback until the call to
      * super() finishes.
      */
-    FAIL_RETURN(Layout::Init(source, paint, outerwidth, align, spacingmult, spacingadd))
+    FAIL_RETURN(Layout::constructor(source, paint, outerwidth, align, spacingmult, spacingadd))
 
     Boolean trust = FALSE;
 
@@ -189,7 +191,9 @@ ECode BoringLayout::constructor(
         trust = FALSE;
     }
 
-    return Init(GetText(), paint, outerwidth, align, spacingmult, spacingadd,
+    AutoPtr<ICharSequence> text;
+    GetText((ICharSequence**)&text);
+    return Init(text, paint, outerwidth, align, spacingmult, spacingadd,
          metrics, includepad, trust);
 }
 
@@ -219,9 +223,10 @@ ECode BoringLayout::Init(
         }
     }
 
-    mPaint = paint;
+    mPaint = IPaint::Probe(paint);
 
-    Int32 mtbottom, mttop, mtdescent, mtascent, mtwidth;
+    Float mtbottom, mttop, mtdescent, mtascent;
+    Int32 mtwidth;
     metrics->GetBottom(&mtbottom);
     metrics->GetTop(&mttop);
     metrics->GetDescent(&mtdescent);
@@ -269,7 +274,8 @@ AutoPtr<IBoringLayoutMetrics> BoringLayout::IsBoring(
     /* [in] */ ICharSequence* text,
     /* [in] */ ITextPaint* paint)
 {
-    return IsBoring(text, paint, TextDirectionHeuristics::FIRSTSTRONG_LTR, NULL);
+    AutoPtr<ITextDirectionHeuristic> ltr = TextDirectionHeuristics::GetFIRSTSTRONG_LTR();
+    return IsBoring(text, paint, ltr, NULL);
 }
 
 AutoPtr<IBoringLayoutMetrics> BoringLayout::IsBoring(
@@ -285,7 +291,8 @@ AutoPtr<IBoringLayoutMetrics> BoringLayout::IsBoring(
     /* [in] */ ITextPaint* paint,
     /* [in] */ IBoringLayoutMetrics* metrics)
 {
-    return IsBoring(text, paint, TextDirectionHeuristics::FIRSTSTRONG_LTR, metrics);
+    AutoPtr<ITextDirectionHeuristic> ltr = TextDirectionHeuristics::GetFIRSTSTRONG_LTR();
+    return IsBoring(text, paint, ltr, metrics);
 }
 
 AutoPtr<IBoringLayoutMetrics> BoringLayout::IsBoring(
@@ -348,7 +355,7 @@ outer:
         assert(line);
         line->Set(paint, text, 0, length, ILayout::DIR_LEFT_TO_RIGHT,
                 Layout::DIRS_ALL_LEFT_TO_RIGHT, FALSE, NULL);
-        Int32 wid = (Int32) Elastos::Core::Math::Ceil(line->Metrics(fm));
+        Int32 wid = (Int32) Elastos::Core::Math::Ceil(line->Metrics(IPaintFontMetricsInt::Probe(fm)));
         assert(fm != NULL);
         fm->SetWidth(wid);
         TextLine::Recycle(line);

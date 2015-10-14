@@ -11,8 +11,35 @@ namespace Droid {
 namespace Text {
 
 CarClass(CLayoutHelper)
+    , public Singleton
+    , public ILayoutHelper
 {
-    ILAYOUTHELPER_METHODS_DECL()
+public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
+    /**
+     * Return how wide a layout must be in order to display the
+     * specified text with one line per paragraph.
+     */
+    //static
+    CARAPI GetDesiredWidth(
+        /* [in] */ ICharSequence* source,
+        /* [in] */ ITextPaint* paint,
+        /* [out] */ Float* ret);
+
+    /**
+     * Return how wide a layout must be in order to display the
+     * specified text slice with one line per paragraph.
+     */
+    //static
+    CARAPI GetDesiredWidth(
+        /* [in] */ ICharSequence* source,
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 end,
+        /* [in] */ ITextPaint* paint,
+        /* [out] */ Float* ret);
 };
 
 } // namespace Text

@@ -1,11 +1,7 @@
 #include "elastos/droid/text/AndroidBidi.h"
-//#include "elastos/droid/text/CLayoutDirections.h"
-//#include "elastos/droid/text/CLayoutHelper.h"
+#include "elastos/droid/text/CLayoutDirections.h"
+#include "elastos/droid/text/Layout.h"
 #include "unicode/ubidi.h"
-
-//using Elastos::Droid::Text::CLayoutDirections;
-//using Elastos::Droid::Text::CLayoutHelper;
-using Elastos::Droid::Text::ILayoutHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -65,9 +61,7 @@ AutoPtr<ILayoutDirections> AndroidBidi::Directions(
     /* [in] */ Int32 len)
 {
     if (len == 0) {
-        assert(0 && "TODO");
-        return NULL;
-        // return Layout::DIRS_ALL_LEFT_TO_RIGHT;
+        return Layout::DIRS_ALL_LEFT_TO_RIGHT;
     }
 
     Int32 baseLevel = (dir == ILayout::DIR_LEFT_TO_RIGHT) ? 0 : 1;
@@ -105,18 +99,12 @@ AutoPtr<ILayoutDirections> AndroidBidi::Directions(
     }
 
     if (runCount == 1 && minLevel == baseLevel) {
-        AutoPtr<ILayoutHelper> helper;
-        assert(0 && "TODO");
-        // CLayoutHelper::AcquireSingleton((ILayoutHelper**)&helper);
         AutoPtr<ILayoutDirections> dir;
         // we're done, only one run on this line
         if ((minLevel & 1) != 0) {
-            helper->GetDirsAllRightToLeft((ILayoutDirections**)&dir);
+            return Layout::DIRS_ALL_RIGHT_TO_LEFT;
         }
-        else {
-            helper->GetDirsAllLeftToRight((ILayoutDirections**)&dir);
-        }
-        return dir;
+        return Layout::DIRS_ALL_LEFT_TO_RIGHT;
     }
 
     AutoPtr< ArrayOf<Int32> > ld = ArrayOf<Int32>::Alloc(runCount * 2);
@@ -193,8 +181,7 @@ AutoPtr<ILayoutDirections> AndroidBidi::Directions(
     }
 
     AutoPtr<ILayoutDirections> directions;
-    assert(0 && "TODO");
-    // CLayoutDirections::New(ld, (ILayoutDirections**)&directions);
+    CLayoutDirections::New(ld, (ILayoutDirections**)&directions);
     return directions;
 }
 

@@ -27,6 +27,8 @@ class StaticLayout
     , public IStaticLayout
 {
 public:
+    CAR_INTERFACE_DECL()
+
     StaticLayout();
 
     CARAPI constructor(
@@ -190,7 +192,7 @@ public:
         /* [out] */ Int32* result);
 
     //@Override
-    CARAPI GetEllipsizedWidth(,
+    CARAPI GetEllipsizedWidth(
         /* [out] */ Int32* result);
 
     CARAPI Prepare();

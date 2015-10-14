@@ -12,7 +12,7 @@
 #include <binder/Parcel.h>
 
 using Elastos::Core::CStringWrapper;
-using Elastos::Core::ECLSID_CStringWrapper;
+using Elastos::Core::ECLSID_CString;
 using Elastos::Core::IByte;
 using Elastos::Core::IInteger16;
 using Elastos::Core::IInteger32;
@@ -1431,7 +1431,7 @@ jobject Util::ToJavaBundle(
 
                         ClassID clsid;
                         object->GetClassID(&clsid);
-                        if (ECLSID_CStringWrapper == clsid) {
+                        if (ECLSID_CString == clsid) {
                             AutoPtr<ICharSequence> csitem = ICharSequence::Probe(item);
                             String sitem;
                             csitem->ToString(&sitem);

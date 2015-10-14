@@ -116,6 +116,7 @@ module
     using interface Elastos.Utility.ILocale;
 
     interface Elastos.Droid.Graphics.IPaint;
+    interface Elastos.Droid.Graphics.IPaintFontMetricsInt;
 
     //namespace Elastos {
     //namespace Droid {
@@ -1181,96 +1182,93 @@ module
         interface ITextUtils;
     }
 
-    // class CBoringLayout {
-    //     constructor(
-    //         [in] ICharSequence* source,
-    //         [in] ITextPaint* paint,
-    //         [in] Int32 outerwidth,
-    //         [in] LayoutAlignment align,
-    //         [in] Float spacingmult,
-    //         [in] Float spacingadd,
-    //         [in] IBoringLayoutMetrics* metrics,
-    //         [in] Boolean includepad);
+    class CBoringLayout {
+        constructor(
+            [in] ICharSequence* source,
+            [in] ITextPaint* paint,
+            [in] Int32 outerwidth,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] IBoringLayoutMetrics* metrics,
+            [in] Boolean includepad);
 
-    //     constructor(
-    //         [in] ICharSequence* source,
-    //         [in] ITextPaint* paint,
-    //         [in] Int32 outerwidth,
-    //         [in] LayoutAlignment align,
-    //         [in] Float spacingmult,
-    //         [in] Float spacingadd,
-    //         [in] IBoringLayoutMetrics* metrics,
-    //         [in] Boolean includepad,
-    //         [in] TextUtilsTruncateAt ellipsize,
-    //         [in] Int32 ellipsizedWidth);
+        constructor(
+            [in] ICharSequence* source,
+            [in] ITextPaint* paint,
+            [in] Int32 outerwidth,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] IBoringLayoutMetrics* metrics,
+            [in] Boolean includepad,
+            [in] TextUtilsTruncateAt ellipsize,
+            [in] Int32 ellipsizedWidth);
 
-    //     interface IBoringLayout;
-    //     interface ITextUtilsEllipsizeCallback;
-    // }
+        interface IBoringLayout;
+        interface ITextUtilsEllipsizeCallback;
+    }
 
-    // singleton class CBoringLayoutHelper {
-    //     interface IBoringLayoutHelper;
-    // }
+    singleton class CBoringLayoutHelper {
+        interface IBoringLayoutHelper;
+    }
 
-    // class CBoringLayoutMetrics {
-    //     interface IBoringLayoutMetrics;
-    // }
+    class CBoringLayoutMetrics {
+        interface IBoringLayoutMetrics;
+        interface IPaintFontMetricsInt;
+    }
 
-    // class CDynamicLayout {
-    //     constructor(
-    //         [in] ICharSequence* base,
-    //         [in] ITextPaint* paint,
-    //         [in] Int32 width,
-    //         [in] LayoutAlignment align,
-    //         [in] Float spacingmult,
-    //         [in] Float spacingadd,
-    //         [in] Boolean includepad);
+    class CDynamicLayout {
+        constructor(
+            [in] ICharSequence* base,
+            [in] ITextPaint* paint,
+            [in] Int32 width,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad);
 
-    //     constructor(
-    //         [in] ICharSequence* base,
-    //         [in] ICharSequence* display,
-    //         [in] ITextPaint* paint,
-    //         [in] Int32 width,
-    //         [in] LayoutAlignment align,
-    //         [in] Float spacingmult,
-    //         [in] Float spacingadd,
-    //         [in] Boolean includepad);
+        constructor(
+            [in] ICharSequence* base,
+            [in] ICharSequence* display,
+            [in] ITextPaint* paint,
+            [in] Int32 width,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad);
 
-    //     constructor(
-    //         [in] ICharSequence* base,
-    //         [in] ICharSequence* display,
-    //         [in] ITextPaint* paint,
-    //         [in] Int32 width,
-    //         [in] LayoutAlignment align,
-    //         [in] Float spacingmult,
-    //         [in] Float spacingadd,
-    //         [in] Boolean includepad,
-    //         [in] TextUtilsTruncateAt ellipsize,
-    //         [in] Int32 ellipsizedWidth);
+        constructor(
+            [in] ICharSequence* base,
+            [in] ICharSequence* display,
+            [in] ITextPaint* paint,
+            [in] Int32 width,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad,
+            [in] TextUtilsTruncateAt ellipsize,
+            [in] Int32 ellipsizedWidth);
 
-    //     constructor(
-    //         [in] ICharSequence* base,
-    //         [in] ICharSequence* display,
-    //         [in] ITextPaint* paint,
-    //         [in] Int32 width,
-    //         [in] LayoutAlignment align,
-    //         [in] ITextDirectionHeuristic* textDir,
-    //         [in] Float spacingmult,
-    //         [in] Float spacingadd,
-    //         [in] Boolean includepad,
-    //         [in] TextUtilsTruncateAt ellipsize,
-    //         [in] Int32 ellipsizedWidth);
+        constructor(
+            [in] ICharSequence* base,
+            [in] ICharSequence* display,
+            [in] ITextPaint* paint,
+            [in] Int32 width,
+            [in] LayoutAlignment align,
+            [in] ITextDirectionHeuristic* textDir,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad,
+            [in] TextUtilsTruncateAt ellipsize,
+            [in] Int32 ellipsizedWidth);
 
-    //     interface IDynamicLayout;
-    // }
+        interface IDynamicLayout;
+    }
 
-    // singleton class CDynamicLayoutHelper {
-    //     interface IDynamicLayoutHelper;
-    // }
-
-    // singleton class CLayoutHelper {
-    //     interface ILayoutHelper;
-    // }
+    singleton class CLayoutHelper {
+        interface ILayoutHelper;
+    }
 
     // singleton class CEditableFactory {
     //     interface IEditableFactory;
@@ -1288,91 +1286,91 @@ module
         interface ISelection;
     }
 
-    // class CStaticLayout {
-    //     constructor(
-    //         [in] ICharSequence* source,
-    //         [in] ITextPaint* paint,
-    //         [in] Int32 width,
-    //         [in] LayoutAlignment align,
-    //         [in] Float spacingmult,
-    //         [in] Float spacingadd,
-    //         [in] Boolean includepad);
+    class CStaticLayout {
+        constructor(
+            [in] ICharSequence* source,
+            [in] ITextPaint* paint,
+            [in] Int32 width,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad);
 
-    //     /**
-    //      * @hide
-    //      */
-    //     constructor(
-    //         [in] ICharSequence* source,
-    //         [in] ITextPaint* paint,
-    //         [in] Int32 width,
-    //         [in] LayoutAlignment align,
-    //         [in] ITextDirectionHeuristic* textDir,
-    //         [in] Float spacingmult,
-    //         [in] Float spacingadd,
-    //         [in] Boolean includepad);
+        /**
+         * @hide
+         */
+        constructor(
+            [in] ICharSequence* source,
+            [in] ITextPaint* paint,
+            [in] Int32 width,
+            [in] LayoutAlignment align,
+            [in] ITextDirectionHeuristic* textDir,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad);
 
-    //     constructor(
-    //         [in] ICharSequence* source,
-    //         [in] Int32 bufstart,
-    //         [in] Int32 bufend,
-    //         [in] ITextPaint* paint,
-    //         [in] Int32 outerwidth,
-    //         [in] LayoutAlignment align,
-    //         [in] Float spacingmult,
-    //         [in] Float spacingadd,
-    //         [in] Boolean includepad);
+        constructor(
+            [in] ICharSequence* source,
+            [in] Int32 bufstart,
+            [in] Int32 bufend,
+            [in] ITextPaint* paint,
+            [in] Int32 outerwidth,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad);
 
-    //     /**
-    //      * @hide
-    //      */
-    //     constructor(
-    //         [in] ICharSequence* source,
-    //         [in] Int32 bufstart,
-    //         [in] Int32 bufend,
-    //         [in] ITextPaint* paint,
-    //         [in] Int32 outerwidth,
-    //         [in] LayoutAlignment align,
-    //         [in] ITextDirectionHeuristic* textDir,
-    //         [in] Float spacingmult,
-    //         [in] Float spacingadd,
-    //         [in] Boolean includepad);
+        /**
+         * @hide
+         */
+        constructor(
+            [in] ICharSequence* source,
+            [in] Int32 bufstart,
+            [in] Int32 bufend,
+            [in] ITextPaint* paint,
+            [in] Int32 outerwidth,
+            [in] LayoutAlignment align,
+            [in] ITextDirectionHeuristic* textDir,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad);
 
-    //     constructor(
-    //         [in] ICharSequence* source,
-    //         [in] Int32 bufstart,
-    //         [in] Int32 bufend,
-    //         [in] ITextPaint* paint,
-    //         [in] Int32 outerwidth,
-    //         [in] LayoutAlignment align,
-    //         [in] Float spacingmult,
-    //         [in] Float spacingadd,
-    //         [in] Boolean includepad,
-    //         [in] TextUtilsTruncateAt ellipsize,
-    //         [in] Int32 ellipsizedWidth);
+        constructor(
+            [in] ICharSequence* source,
+            [in] Int32 bufstart,
+            [in] Int32 bufend,
+            [in] ITextPaint* paint,
+            [in] Int32 outerwidth,
+            [in] LayoutAlignment align,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad,
+            [in] TextUtilsTruncateAt ellipsize,
+            [in] Int32 ellipsizedWidth);
 
-    //     /**
-    //      * @hide
-    //      */
-    //     constructor(
-    //         [in] ICharSequence* source,
-    //         [in] Int32 bufstart,
-    //         [in] Int32 bufend,
-    //         [in] ITextPaint* paint,
-    //         [in] Int32 outerwidth,
-    //         [in] LayoutAlignment align,
-    //         [in] ITextDirectionHeuristic* textDir,
-    //         [in] Float spacingmult,
-    //         [in] Float spacingadd,
-    //         [in] Boolean includepad,
-    //         [in] TextUtilsTruncateAt ellipsize,
-    //         [in] Int32 ellipsizedWidth,
-    //         [in] Int32 maxLines);
+        /**
+         * @hide
+         */
+        constructor(
+            [in] ICharSequence* source,
+            [in] Int32 bufstart,
+            [in] Int32 bufend,
+            [in] ITextPaint* paint,
+            [in] Int32 outerwidth,
+            [in] LayoutAlignment align,
+            [in] ITextDirectionHeuristic* textDir,
+            [in] Float spacingmult,
+            [in] Float spacingadd,
+            [in] Boolean includepad,
+            [in] TextUtilsTruncateAt ellipsize,
+            [in] Int32 ellipsizedWidth,
+            [in] Int32 maxLines);
 
-    //     constructor(
-    //         [in] ICharSequence* text);
+        constructor(
+            [in] ICharSequence* text);
 
-    //     interface IStaticLayout;
-    // }
+        interface IStaticLayout;
+    }
 
     // class CSpannableStringBuilder {
     //     constructor();

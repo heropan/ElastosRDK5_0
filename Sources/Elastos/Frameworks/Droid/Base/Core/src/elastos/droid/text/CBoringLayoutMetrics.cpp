@@ -2,11 +2,13 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/text/CBoringLayoutMetrics.h"
 
+using Elastos::Droid::Graphics::EIID_IPaintFontMetricsInt;
+
 namespace Elastos {
 namespace Droid {
 namespace Text {
 
-CAR_INTERFACE_IMPL_2(CBoringLayoutMetrics, Object, IBoringLayoutMetrics, IPaintFontMetrics)
+CAR_INTERFACE_IMPL_2(CBoringLayoutMetrics, Object, IBoringLayoutMetrics, IPaintFontMetricsInt)
 
 CAR_OBJECT_IMPL(CBoringLayoutMetrics)
 

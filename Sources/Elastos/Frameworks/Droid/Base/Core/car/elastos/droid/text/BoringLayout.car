@@ -24,6 +24,36 @@ module
 
         SetWidth(
             [in] Int32 width);
+
+        GetTop(
+            [out] Float* top);
+
+        SetTop(
+            [in] Float top);
+
+        GetAscent(
+            [out] Float* ascent);
+
+        SetAscent(
+            [in] Float ascent);
+
+        GetDescent(
+            [out] Float* descent);
+
+        SetDescent(
+            [in] Float descent);
+
+        GetBottom(
+            [out] Float* bottom);
+
+        SetBottom(
+            [in] Float bottom);
+
+        GetLeading(
+            [out] Float* leading);
+
+        SetLeading(
+            [in] Float leading);
     }
 
     /**

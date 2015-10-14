@@ -221,7 +221,7 @@ public:
         /* [out] */ Int32* result);
 
     //@Override
-    CARAPI GetEllipsizedWidth(,
+    CARAPI GetEllipsizedWidth(
         /* [out] */ Int32* result);
 
     // Override draw so it will be faster.

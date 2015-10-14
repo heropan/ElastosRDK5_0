@@ -60,6 +60,7 @@ const Char32 Layout::ELLIPSIS_TWO_DOTS[] = { 0x2025 }; // this is ".."
 //========================================================================
 //          Layout::Ellipsizer
 //========================================================================
+CAR_INTERFACE_IMPL_2(Layout::Ellipsizer, Object, IGetChars, ICharSequence)
 
 Layout::Ellipsizer::Ellipsizer(
     /* [in] */ ICharSequence* s)
@@ -229,7 +230,7 @@ Float Layout::TabStops::NextDefaultStop(
 //========================================================================
 //          Layout::SpannedEllipsizer
 //========================================================================
-
+CAR_INTERFACE_IMPL(Layout::SpannedEllipsizer, Ellipsizer, ISpanned)
 
 Layout::SpannedEllipsizer::SpannedEllipsizer(
     /* [in] */ ICharSequence* display)
@@ -1300,7 +1301,7 @@ ECode Layout::GetLineLeft(
     else if (align == ALIGN_RIGHT) {
         Float fmax;
         GetLineMax(line, &fmax);
-        return mWidth - max;
+        return mWidth - fmax;
     }
     else if (align == ALIGN_OPPOSITE) {
         if (dir == ILayout::DIR_RIGHT_TO_LEFT) {
@@ -1309,7 +1310,7 @@ ECode Layout::GetLineLeft(
         else {
             Float fmax;
             GetLineMax(line, &fmax);
-            return mWidth - max;
+            return mWidth - fmax;
         }
     }
     else { /* align == Alignment.ALIGN_CENTER */
@@ -1342,6 +1343,7 @@ ECode Layout::GetLineRight(
     GetParagraphLeft(line, &left);
     Float max;
     GetLineMax(line, &max);
+
     if (align == ALIGN_LEFT) {
         *result = left + max;
         return NOERROR;
@@ -1362,6 +1364,7 @@ ECode Layout::GetLineRight(
     else if (align == ALIGN_OPPOSITE) {
         if (dir == ILayout::DIR_RIGHT_TO_LEFT) {
             *result = max;
+            return NOERROR;
         }
         else {
             *result = mWidth;
@@ -1371,11 +1374,12 @@ ECode Layout::GetLineRight(
     else { /* align == Alignment.ALIGN_CENTER */
         Int32 right;
         GetParagraphRight(line, &right);
-        Int32 max = ((Int32) max) & ~1;
+        Int32 imax = ((Int32) max) & ~1;
 
-        *result = right - ((right - left) - max) / 2;
-        return NOERROR;
+        *result = right - ((right - left) - imax) / 2;
     }
+
+    return NOERROR;
 }
 
 ECode Layout::GetLineMax(
@@ -1409,7 +1413,7 @@ Float Layout::GetLineExtent(
     GetLineStart(line, &start);
     GetLineEnd(line, &end);
     GetLineVisibleEnd(line, &visibleEnd);
-    Int32 end = full ? end : visibleEnd;
+    end = full ? end : visibleEnd;
 
     Boolean hasTabsOrEmoji;
     GetLineContainsTab(line, &hasTabsOrEmoji);
@@ -1478,12 +1482,12 @@ ECode Layout::GetLineForVertical(
 
     Int32 high;
     GetLineCount(&high);
-    Int32 low = -1, guess;
+    Int32 low = -1, guess, top;
 
     while (high - low > 1) {
         guess = (high + low) / 2;
-
-        if (GetLineTop(guess) > vertical)
+        GetLineTop(guess, &top);
+        if (top > vertical)
             high = guess;
         else
             low = guess;
@@ -1563,8 +1567,8 @@ ECode Layout::GetOffsetForHorizontal(
         while (high - low > 1) {
             guess = (high + low) / 2;
             Int32 adguess = GetOffsetAtStartOf(guess);
-
-            if (GetPrimaryHorizontal(adguess) * swap >= horiz * swap)
+            GetPrimaryHorizontal(adguess, &ph);
+            if (ph * swap >= horiz * swap)
                 high = guess;
             else
                 low = guess;
@@ -1630,25 +1634,21 @@ ECode Layout::GetLineVisibleEnd(
     Int32 start, startNext;
     GetLineStart(line, &start);
     GetLineStart(line + 1, &startNext);
-    return GetLineVisibleEnd(line, start, startNext, result);
+    *result = GetLineVisibleEnd(line, start, startNext);
+    return NOERROR;
 }
 
-ECode Layout::GetLineVisibleEnd(
+Int32 Layout::GetLineVisibleEnd(
     /* [in] */ Int32 line,
     /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [out] */ Int32* result)
+    /* [in] */ Int32 end)
 {
-    VALIDATE_NOT_NULL(result)
-    *result = end;
-
     AutoPtr<ICharSequence> text = mText;
     Int32 count;
     GetLineCount(&count);
 
     if (line == count - 1) {
-        *result = end;
-        return NOERROR;
+        return end;
     }
 
     Char32 ch;
@@ -1656,8 +1656,7 @@ ECode Layout::GetLineVisibleEnd(
         text->GetCharAt(end - 1, &ch);
 
         if (ch == '\n') {
-            *result = end - 1;
-            return NOERROR;
+            return end - 1;
         }
 
         if (ch != ' ' && ch != '\t') {
@@ -1666,8 +1665,7 @@ ECode Layout::GetLineVisibleEnd(
 
     }
 
-    *result = end;
-    return NOERROR;
+    return end;
 }
 
 ECode Layout::GetLineBottom(
@@ -1697,7 +1695,7 @@ ECode Layout::GetLineAscent(
     VALIDATE_NOT_NULL(result)
     // getLineTop(line+1) - getLineDescent(line) == getLineBaseLine(line)
     Int32 top, topNext, descent;
-    GetLineTop(line, &topNext);
+    GetLineTop(line, &top);
     GetLineTop(line + 1, &topNext);
     GetLineDescent(line, &descent);
     return top - (topNext - descent);
@@ -1803,7 +1801,7 @@ Int32 Layout::GetOffsetAtStartOf(
     }
 
     if (mSpannedText) {
-        AutoPtr<ISpanned> spanned = ISpanned::Probe(text));
+        AutoPtr<ISpanned> spanned = ISpanned::Probe(text);
 
         AutoPtr< ArrayOf<IInterface*> > spans;
         spanned->GetSpans(offset, offset, EIID_IReplacementSpan, (ArrayOf<IInterface*>**)&spans);
@@ -1830,12 +1828,14 @@ ECode Layout::ShouldClampCursor(
     *result = FALSE;
 
     // Only clamp cursor position in left-aligned displays.
-    switch (GetParagraphAlignment(line)) {
-        case LayoutAlignment_ALIGN_LEFT: {
+    LayoutAlignment align;
+    GetParagraphAlignment(line, &align);
+    switch (align) {
+        case Elastos::Droid::Text::ALIGN_LEFT: {
             *result = TRUE;
             return NOERROR;
         }
-        case LayoutAlignment_ALIGN_NORMAL: {
+        case Elastos::Droid::Text::ALIGN_NORMAL: {
             Int32 dir;
             GetParagraphDirection(line, &dir);
             *result = dir > 0;
@@ -1855,13 +1855,20 @@ ECode Layout::GetCursorPath(
 {
     dest->Reset();
 
-    Int32 line = GetLineForOffset(point);
-    Int32 top = GetLineTop(line);
-    Int32 bottom = GetLineTop(line+1);
+    Int32 line, top, bottom;
+    GetLineForOffset(point, &line);
+    GetLineTop(line, &top);
+    GetLineTop(line + 1, &bottom);
 
-    Boolean clamped = ShouldClampCursor(line);
-    Float h1 = GetPrimaryHorizontal(point, clamped) - 0.5f;
-    Float h2 = IsLevelBoundary(point) ? GetSecondaryHorizontal(point, clamped) - 0.5f : h1;
+    Boolean clamped;
+    ShouldClampCursor(line, &clamped);
+    Float horiz;
+    GetPrimaryHorizontal(point, clamped, &horiz);
+    Float h1 = horiz - 0.5f;
+    Boolean bval;
+    IsLevelBoundary(point, &bval);
+    GetSecondaryHorizontal(point, clamped, &horiz);
+    Float h2 = bval ? horiz - 0.5f : h1;
 
     Int32 caps = 0, fn = 0, dist = 0;
     assert(0 && "TODO");
@@ -2009,12 +2016,12 @@ ECode Layout::GetSelectionPath(
         Int32 dir;
         GetParagraphDirection(startline, &dir);
         if (dir == ILayout::DIR_RIGHT_TO_LEFT) {
-            Int32 ll;
+            Float ll;
             GetLineLeft(startline, &ll);
             dest->AddRect(ll, top, 0, lb, PathDirection_CW);
         }
         else {
-            Int32 lr;
+            Float lr;
             GetLineRight(startline, &lr);
             dest->AddRect(lr, top, width, lb, PathDirection_CW);
         }
@@ -2032,15 +2039,14 @@ ECode Layout::GetSelectionPath(
         GetLineStart(endline, &ls);
         AddSelection(endline, ls, end, top, bottom, dest);
 
-        Int32 dir;
         GetParagraphDirection(endline, &dir);
         if (dir == ILayout::DIR_RIGHT_TO_LEFT) {
-            Int32 lr;
+            Float lr;
             GetLineRight(endline, &lr);
             dest->AddRect(width, top, lr, bottom, PathDirection_CW);
         }
         else {
-            Int32 ll;
+            Float ll;
             GetLineLeft(endline, &ll);
             dest->AddRect(0, top, ll, bottom, PathDirection_CW);
         }
@@ -2120,8 +2126,9 @@ Int32 Layout::GetParagraphLeadingMargin(
 
     AutoPtr<ISpanned> spanned = ISpanned::Probe(mText);
 
-    Int32 lineStart = GetLineStart(line);
-    Int32 lineEnd = GetLineEnd(line);
+    Int32 lineStart, lineEnd;
+    GetLineStart(line, &lineStart);
+    GetLineEnd(line, &lineEnd);
     Int32 spanEnd;
     spanned->NextSpanTransition(lineStart, lineEnd, EIID_ILeadingMarginSpan, &spanEnd);
     AutoPtr< ArrayOf<IInterface*> > spans = GetParagraphSpans(spanned, lineStart, spanEnd,
@@ -2133,7 +2140,8 @@ Int32 Layout::GetParagraphLeadingMargin(
     Int32 margin = 0;
 
     Char32 ch;
-    Boolean isFirstParaLine = lineStart == 0 || (spanned->GetCharAt(lineStart - 1, &ch), ch) == '\n';
+    Boolean isFirstParaLine = (lineStart == 0)
+        || (ICharSequence::Probe(spanned)->GetCharAt(lineStart - 1, &ch), ch) == '\n';
     Boolean useFirstLineMargin = isFirstParaLine;
 
     Int32 length = spans->GetLength();
@@ -2142,7 +2150,7 @@ Int32 Layout::GetParagraphLeadingMargin(
         if (lms2 != NULL) {
             Int32 spStart, spanLine, count;
             spanned->GetSpanStart((*spans)[i], &spStart);
-            spanLine = GetLineForOffset(spStart);
+            GetLineForOffset(spStart, &spanLine);
             lms2->GetLeadingMarginLineCount(&count);
             // if there is more than one LeadingMarginSpan2, use the count that is greatest
             useFirstLineMargin |= line < spanLine + count;
@@ -2168,7 +2176,8 @@ Float Layout::MeasurePara(
     AutoPtr<MeasuredText> mt = MeasuredText::Obtain();
     AutoPtr<TextLine> tl = TextLine::Obtain();
     //try {
-        mt->SetPara(text, start, end, TextDirectionHeuristics::LTR);
+    AutoPtr<ITextDirectionHeuristic> ltr = TextDirectionHeuristics::GetLTR();
+        mt->SetPara(text, start, end, ltr);
         AutoPtr<ILayoutDirections> directions;
         Int32 dir;
         if (mt->mEasy) {

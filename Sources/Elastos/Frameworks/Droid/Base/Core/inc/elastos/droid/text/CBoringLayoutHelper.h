@@ -15,6 +15,7 @@ CarClass(CBoringLayoutHelper)
     , public Singleton
     , public IBoringLayoutHelper
 {
+public:
     CAR_INTERFACE_DECL()
 
     CAR_SINGLETON_DECL()

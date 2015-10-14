@@ -2,10 +2,12 @@
 #define __ELASTOS_DROID_TEXT_PACKEDOBJECTVECTOR_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
+//#include "elastos/droid/internal/utility/EmptyArray.h"
 #include <elastos/core/Object.h>
-#include "utility/ArrayUtils.h"
+#include <libcore/utility/EmptyArray.h>
 
-using Elastos::Droid::Internal::Utility::ArrayUtils;
+//using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Libcore::Utility::EmptyArray;
 
 namespace Elastos {
 namespace Droid {
@@ -61,12 +63,11 @@ template<typename E>
 PackedObjectVector<E>::PackedObjectVector(
     /* [in] */ Int32 columns)
     : mColumns(columns)
-    , mRows(ArrayUtils::IdealInt32ArraySize(0) / mColumns)
+    , mRows(0)
     , mRowGapStart(0)
     , mRowGapLength(mRows)
 {
     mValues = EmptyArray::OBJECT;
-    mRows = 0;
 }
 
 template<typename E>
@@ -153,18 +154,19 @@ Int32 PackedObjectVector<E>::Width()
 template<typename E>
 void PackedObjectVector<E>::GrowBuffer()
 {
-    AutoPtr< ArrayOf<IInterface*> > newvalues = ArrayUtils::NewUnpaddedObjectArray(
-            GrowingArrayUtils::GrowSize(size()) * mColumns);
-    Int32 newsize = newvalues->GetLength() / mColumns;
+    assert(0 && "TODO");
+    // AutoPtr< ArrayOf<IInterface*> > newvalues = ArrayUtils::NewUnpaddedObjectArray(
+    //         GrowingArrayUtils::GrowSize(size()) * mColumns);
+    // Int32 newsize = newvalues->GetLength() / mColumns;
 
-    Int32 after = mRows - (mRowGapStart + mRowGapLength);
+    // Int32 after = mRows - (mRowGapStart + mRowGapLength);
 
-    newvalues->Copy(mValues, mColumns * mRowGapStart);
-    newvalues->Copy((newsize - after) * mColumns, mValues, (mRows - after) * mColumns, after * mColumns);
+    // newvalues->Copy(mValues, mColumns * mRowGapStart);
+    // newvalues->Copy((newsize - after) * mColumns, mValues, (mRows - after) * mColumns, after * mColumns);
 
-    mRowGapLength += newsize - mRows;
-    mRows = newsize;
-    mValues = newvalues;
+    // mRowGapLength += newsize - mRows;
+    // mRows = newsize;
+    // mValues = newvalues;
 }
 
 template<typename E>

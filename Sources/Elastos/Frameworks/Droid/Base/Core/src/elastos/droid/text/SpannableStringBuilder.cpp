@@ -671,22 +671,29 @@ ECode SpannableStringBuilder::GetChars(
     }
 }
 
-String SpannableStringBuilder::ToString()
+ECode SpannableStringBuilder::ToString(
+    /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+    *str = String("");
     Int32 len = GetLength();
-    if (len == 0) return String("");
+    if (len == 0) return NOERROR;
     AutoPtr< ArrayOf<Char32> > buf = ArrayOf<Char32>::Alloc(len);
     GetChars(0, len, buf, 0);
-    return String(*buf);
+    *str String(*buf);
+    return NOERROR;
 }
 
-String SpannableStringBuilder::Substring(
+ECode SpannableStringBuilder::Substring(
     /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
+    /* [in] */ Int32 end,
+    /* [out] */ String* substr)
 {
+    VALIDATE_NOT_NULL(substr)
     AutoPtr< ArrayOf<Char32> > buf = ArrayOf<Char32>::Alloc(end - start);
     GetChars(start, end, buf, 0);
-    return String(*buf);
+    *substr = String(*buf);
+    return NOERROR;
 }
 
 ECode SpannableStringBuilder::DrawText(

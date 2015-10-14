@@ -493,7 +493,6 @@ module
          * Return how wide a layout must be in order to display the
          * specified text with one line per paragraph.
          */
-        //static
         GetDesiredWidth(
             [in] ICharSequence* source,
             [in] ITextPaint* paint,
@@ -503,19 +502,12 @@ module
          * Return how wide a layout must be in order to display the
          * specified text slice with one line per paragraph.
          */
-        //static
         GetDesiredWidth(
             [in] ICharSequence* source,
             [in] Int32 start,
             [in] Int32 end,
             [in] ITextPaint* paint,
             [out] Float* ret);
-
-        GetDirsAllLeftToRight(
-            [out] ILayoutDirections** dir);
-
-        GetDirsAllRightToLeft(
-            [out] ILayoutDirections** dir);
     }
 
     } // namespace Text
