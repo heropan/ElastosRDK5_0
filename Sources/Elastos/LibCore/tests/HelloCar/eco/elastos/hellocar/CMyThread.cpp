@@ -1,5 +1,5 @@
 
-#include "CMyThread.h"
+#include "elastos/hellocar/CMyThread.h"
 
 namespace Elastos {
 namespace HelloCar {

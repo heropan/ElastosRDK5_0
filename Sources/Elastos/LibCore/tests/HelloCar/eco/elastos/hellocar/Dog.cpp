@@ -1,5 +1,5 @@
 
-#include "Dog.h"
+#include "elastos/hellocar/Dog.h"
 
 namespace Elastos {
 namespace HelloCar {

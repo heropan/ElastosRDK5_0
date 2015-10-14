@@ -4,6 +4,8 @@ TARGET_TYPE= eco
 CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
+INCLUDES += $(MAKEDIR)/../../inc
+
 SOURCES = Elastos.HelloCar.car
 SOURCES += Animal.cpp
 SOURCES += Cat.cpp
