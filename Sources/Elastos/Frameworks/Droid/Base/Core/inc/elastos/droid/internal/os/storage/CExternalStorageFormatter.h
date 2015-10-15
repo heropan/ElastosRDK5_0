@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Internal_Os_Storage_CExternalStorageFormatter.h"
 #include "app/Service.h"
-#include "os/StorageEventListener.h"
+#include "os/storage/StorageEventListener.h"
 #include <elastos/core/Thread.h>
 
 using Elastos::Droid::App::Service;
@@ -17,7 +17,7 @@ using Elastos::Droid::Os::IMountService;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
 using Elastos::Droid::Os::IStorageVolume;
 using Elastos::Droid::Os::IStorageManager;
-using Elastos::Droid::Os::StorageEventListener;
+using Elastos::Droid::Os::Storage::StorageEventListener;
 using Elastos::Core::Thread;
 
 namespace Elastos {

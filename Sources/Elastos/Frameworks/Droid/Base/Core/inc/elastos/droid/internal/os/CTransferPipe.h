@@ -1,10 +1,10 @@
 
-#ifndef __ELASTOS_DROID_SERVER_AM_TRANSFERPIPE_H__
-#define __ELASTOS_DROID_SERVER_AM_TRANSFERPIPE_H__
+#ifndef __ELASTOS_DROID_INTERNAL_OS_CTRANSFERPIPE_H__
+#define __ELASTOS_DROID_INTERNAL_OS_CTRANSFERPIPE_H__
 
+#include "_Elastos_Droid_Internal_Os_CTransferPipe.h"
 #include "ext/frameworkext.h"
-#include "Elastos.Droid.Server_server.h"
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 
 using Elastos::IO::IFileDescriptor;
 using Elastos::Core::IRunnable;
@@ -13,20 +13,18 @@ using Elastos::Core::IThread;
 using Elastos::Core::CThread;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IParcelFileDescriptor;
-using Elastos::Droid::Os::IParcelFileDescriptorHelper;
-using Elastos::Droid::Os::CParcelFileDescriptorHelper;
 
 namespace Elastos {
 namespace Droid {
-namespace Server {
-namespace Am {
+namespace Internal {
+namespace Os {
 
 /**
  * Helper for transferring data through a pipe from a client app.
  */
-class TransferPipe
-    : public ElRefBase
-    , public IRunnable
+CarClass(CTransferPipe)
+    , public Object
+    , public ITransferPipe
 {
 public:
     interface ICaller : public IInterface
@@ -39,15 +37,18 @@ public:
     };
 
 public:
-    TransferPipe();
+    CTransferPipe();
 
     CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL()
 
     CARAPI Run();
 
     CARAPI_(AutoPtr<IParcelFileDescriptor>) GetReadFd();
 
-    CARAPI_(AutoPtr<IParcelFileDescriptor>) GetWriteFd();
+    CARAPI GetWriteFd(
+        /* [out] */ IParcelFileDescriptor** writeFd);
 
     CARAPI SetBufferPrefix(
         /* [in] */ const String& prefix);
@@ -105,13 +106,11 @@ public:
     Boolean mComplete;
 
     String mBufferPrefix;
-
-    Object mLock;
 };
 
-} // namespace Am
-} // namespace Server
+} // namespace Os
+} // namespace Internal
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_SERVER_AM_TRANSFERPIPE_H__
+#endif //__ELASTOS_DROID_INTERNAL_OS_CTRANSFERPIPE_H__

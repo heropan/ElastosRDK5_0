@@ -1,56 +1,69 @@
 
-#include "am/TransferPipe.h"
+#include "internal/os/CTransferPipe.h"
 #include "os/SystemClock.h"
-#include <elastos/utility/logging/Slogger.h>
+#include "os/CParcelFileDescriptorHelper.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::Logging::Slogger;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Os::IParcelFileDescriptorHelper;
+using Elastos::Droid::Os::CParcelFileDescriptorHelper;
+using Elastos::Core::AutoLock;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IOutputStream;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
 using Elastos::IO::IFileOutputStream;
 using Elastos::IO::CFileOutputStream;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::EIID_IRunnable;
-using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
-namespace Server {
-namespace Am {
+namespace Internal {
+namespace Os {
 
-const String TransferPipe::TAG("TransferPipe");
-const Boolean TransferPipe::DEBUG;
-const Int64 TransferPipe::DEFAULT_TIMEOUT;
+const String CTransferPipe::TAG("CTransferPipe");
+const Boolean CTransferPipe::DEBUG;
+const Int64 CTransferPipe::DEFAULT_TIMEOUT;
 
-TransferPipe::TransferPipe()
+CAR_INTERFACE_IMPL_2(CTransferPipe, Object, ITransferPipe, IRunnable)
+
+CAR_OBJECT_IMPL(CTransferPipe)
+
+CTransferPipe::CTransferPipe()
 {
-    CThread::New((IRunnable*)this->Probe(EIID_IRunnable), String("TransferPipe"), (IThread**)&mThread);
+    CThread::New((IRunnable*)this->Probe(EIID_IRunnable), String("CTransferPipe"), (IThread**)&mThread);
     AutoPtr<IParcelFileDescriptorHelper> helper;
     CParcelFileDescriptorHelper::AcquireSingleton((IParcelFileDescriptorHelper**)&helper);
     helper->CreatePipe((ArrayOf<IParcelFileDescriptor*>**)&mFds);
 }
 
-CAR_INTERFACE_IMPL(TransferPipe, IRunnable)
-
-AutoPtr<IParcelFileDescriptor> TransferPipe::GetReadFd()
+AutoPtr<IParcelFileDescriptor> CTransferPipe::GetReadFd()
 {
     return (*mFds)[0];
 }
 
-AutoPtr<IParcelFileDescriptor> TransferPipe::GetWriteFd()
+ECode CTransferPipe::GetWriteFd(
+    /* [out] */ IParcelFileDescriptor** writeFd)
 {
-    return (*mFds)[1];
+    VALIDATE_NOT_NULL(writeFd)
+    *writeFd = (*mFds)[1];
+    REFCOUNT_ADD(*writeFd)
+    return NOERROR;
 }
 
-ECode TransferPipe::SetBufferPrefix(
+ECode CTransferPipe::SetBufferPrefix(
     /* [in] */ const String& prefix)
 {
     mBufferPrefix = prefix;
     return NOERROR;
 }
 
-ECode TransferPipe::Go(
+ECode CTransferPipe::Go(
     /* [in] */ ICaller* caller,
     /* [in] */ IInterface* iface,
     /* [in] */ IFileDescriptor* out,
@@ -60,7 +73,7 @@ ECode TransferPipe::Go(
     return Go(caller, iface, out, prefix, args, DEFAULT_TIMEOUT);
 }
 
-ECode TransferPipe::Go(
+ECode CTransferPipe::Go(
     /* [in] */ ICaller* caller,
     /* [in] */ IInterface* iface,
     /* [in] */ IFileDescriptor* out,
@@ -77,10 +90,13 @@ ECode TransferPipe::Go(
         return NOERROR;
     }
 
-    AutoPtr<TransferPipe> tp = new TransferPipe();
+    AutoPtr<CTransferPipe> tp;
+    CTransferPipe::NewByFriend((CTransferPipe**)&tp);
     // try {
+    AutoPtr<IParcelFileDescriptor> writeFd;
+    tp->GetWriteFd((IParcelFileDescriptor**)&writeFd);
     AutoPtr<IFileDescriptor> fDes;
-    tp->GetWriteFd()->GetFileDescriptor((IFileDescriptor**)&fDes);
+    writeFd->GetFileDescriptor((IFileDescriptor**)&fDes);
     caller->Go(iface, fDes, prefix, args);
     tp->Go(out, timeout);
     // } finally {
@@ -89,7 +105,7 @@ ECode TransferPipe::Go(
     return NOERROR;
 }
 
-ECode TransferPipe::GoDump(
+ECode CTransferPipe::GoDump(
     /* [in] */ IBinder* binder,
     /* [in] */ IFileDescriptor* out,
     /* [in] */ ArrayOf<String>* args)
@@ -97,7 +113,7 @@ ECode TransferPipe::GoDump(
     return GoDump(binder, out, args, DEFAULT_TIMEOUT);
 }
 
-ECode TransferPipe::GoDump(
+ECode CTransferPipe::GoDump(
     /* [in] */ IBinder* binder,
     /* [in] */ IFileDescriptor* out,
     /* [in] */ ArrayOf<String>* args,
@@ -113,7 +129,8 @@ ECode TransferPipe::GoDump(
         return NOERROR;
     }
 
-    AutoPtr<TransferPipe> tp = new TransferPipe();
+    AutoPtr<CTransferPipe> tp;
+    CTransferPipe::NewByFriend((CTransferPipe**)&tp);
     // try {
         // TODO:
         // binder->DumpAsync(tp.getWriteFd().getFileDescriptor(), args);
@@ -124,24 +141,31 @@ ECode TransferPipe::GoDump(
     return NOERROR;
 }
 
-ECode TransferPipe::Go(
+ECode CTransferPipe::Go(
     /* [in] */ IFileDescriptor* out)
 {
     return Go(out, DEFAULT_TIMEOUT);
 }
 
-ECode TransferPipe::Go(
+ECode CTransferPipe::Go(
     /* [in] */ IFileDescriptor* out,
     /* [in] */ Int64 timeout)
 {
     // try {
     {
-        AutoLock lock(mLock);
+        AutoLock lock(this);
         mOutFd = out;
         mEndTime = SystemClock::GetUptimeMillis() + timeout;
 
-        if (DEBUG) Slogger::I(TAG, "read=%p write=%p out=%p", GetReadFd().Get(), GetWriteFd().Get(),
-                out);
+        if (DEBUG) {
+            AutoPtr<IParcelFileDescriptor> writeFd;
+            GetWriteFd((IParcelFileDescriptor**)&writeFd);
+            String strReadFd, strWriteFd, strOut;
+            IObject::Probe(GetReadFd())->ToString(&strReadFd);
+            IObject::Probe(writeFd)->ToString(&strWriteFd);
+            IObject::Probe(out)->ToString(&strOut);
+            Slogger::I(TAG, "read=%s write=%s out=%s", strReadFd.string(), strWriteFd.string(), strOut.string());
+        }
 
         // Close the write fd, so we know when the other side is done.
         CloseFd(1);
@@ -159,7 +183,7 @@ ECode TransferPipe::Go(
             }
 
             // try {
-            mLock.Wait(waitTime);
+            Wait(waitTime);
             // } catch (InterruptedException e) {
             // }
         }
@@ -177,7 +201,7 @@ ECode TransferPipe::Go(
     return NOERROR;
 }
 
-ECode TransferPipe::CloseFd(
+ECode CTransferPipe::CloseFd(
     /* [in] */ Int32 num)
 {
     if ((*mFds)[num] != NULL) {
@@ -191,22 +215,31 @@ ECode TransferPipe::CloseFd(
     return NOERROR;
 }
 
-ECode TransferPipe::Kill()
+ECode CTransferPipe::Kill()
 {
+    AutoLock lock(this);
     CloseFd(0);
     CloseFd(1);
     return NOERROR;
 }
 
-ECode TransferPipe::Run()
+ECode CTransferPipe::Run()
 {
     AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(1024);
-    AutoPtr<IFileDescriptor> fDes;
-    GetReadFd()->GetFileDescriptor((IFileDescriptor**)&fDes);
     AutoPtr<IFileInputStream> fis;
-    CFileInputStream::New(fDes, (IFileInputStream**)&fis);
     AutoPtr<IFileOutputStream> fos;
-    CFileOutputStream::New(mOutFd, (IFileOutputStream**)&fos);
+    {
+        AutoLock lock(this);
+        AutoPtr<IParcelFileDescriptor> readFd = GetReadFd();
+        if (readFd == NULL) {
+            Slogger::W(TAG, "Pipe has been closed...");
+            return NOERROR;
+        }
+        AutoPtr<IFileDescriptor> fDes;
+        readFd->GetFileDescriptor((IFileDescriptor**)&fDes);
+        CFileInputStream::New(fDes, (IFileInputStream**)&fis);
+        CFileOutputStream::New(mOutFd, (IFileOutputStream**)&fos);
+    }
 
     if (DEBUG) Slogger::I(TAG, "Ready to read pipe...");
     AutoPtr<ArrayOf<Byte> > bufferPrefix;
@@ -217,21 +250,21 @@ ECode TransferPipe::Run()
 
     Int32 size;
     // try {
-        while (fis->ReadBytes(buffer, &size), size > 0) {
+        while (IInputStream::Probe(fis)->Read(buffer, &size), size > 0) {
             if (DEBUG) Slogger::I(TAG, "Got %d bytes", size);
             if (bufferPrefix == NULL) {
-                fos->WriteBytes(*buffer, 0, size);
+                IOutputStream::Probe(fos)->Write(buffer, 0, size);
             }
             else {
                 Int32 start = 0;
                 for (Int32 i = 0; i < size; i++) {
                     if ((*buffer)[i] != '\n') {
                         if (i > start) {
-                            fos->WriteBytes(*buffer, start, i-start);
+                            IOutputStream::Probe(fos)->Write(buffer, start, i-start);
                         }
                         start = i;
                         if (needPrefix) {
-                            fos->WriteBytes(*bufferPrefix);
+                            IOutputStream::Probe(fos)->Write(bufferPrefix);
                             needPrefix = FALSE;
                         }
                         do {
@@ -243,7 +276,7 @@ ECode TransferPipe::Run()
                     }
                 }
                 if (size > start) {
-                    fos->WriteBytes(*buffer, start, size-start);
+                    IOutputStream::Probe(fos)->Write(buffer, start, size-start);
                 }
             }
         }
@@ -261,14 +294,14 @@ ECode TransferPipe::Run()
     //     }
     // }
 
-    AutoLock lock(mLock);
+    AutoLock lock(this);
     mComplete = TRUE;
-    mLock.NotifyAll();
+    NotifyAll();
 
     return NOERROR;
 }
 
-} // namespace Am
-} // namespace Server
+} // namespace Os
+} // namespace Internal
 } // namespace Droid
 } // namespace Elastos

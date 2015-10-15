@@ -22,6 +22,7 @@ module
 
     using interface Elastos.IO.IFile;
     using interface Elastos.Core.IComparable;
+    using interface Elastos.Core.IRunnable;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Os.IBatteryStatsUid;
     interface Elastos.Droid.Os.ILooper;
@@ -96,6 +97,26 @@ module
 
     singleton class CZygoteInit {
         interface IZygoteInit;
+    }
+
+    [local]
+    class CPowerProfile {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IPowerProfile;
+    }
+
+    class CProcessCpuTracker {
+        constructor(
+            [in] Boolean includeThreads);
+
+        interface IProcessCpuTracker;
+    }
+
+    class CTransferPipe {
+        interface ITransferPipe;
+        interface IRunnable;
     }
 
     } // namespace Os

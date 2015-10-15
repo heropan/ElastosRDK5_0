@@ -8,6 +8,68 @@ module
 
     [local]
     interface IProcessCpuTrackerStats {
+        GetPid(
+            [out] Int32* pid);
+
+        GetUid(
+            [out] Int32* uid);
+
+        GetInteresting(
+            [out] Boolean* interesting);
+
+        GetBaseName(
+            [out] String* name);
+
+        GetName(
+            [out] String* name);
+
+        GetNameWidth(
+            [out] Int32* width);
+
+        GetVsize(
+            [out] Int64* vsize);
+
+        GetBaseUptime(
+            [out] Int64* time);
+
+        GetRelUptime(
+            [out] Int64* time);
+
+        GetBaseUtime(
+            [out] Int64* time);
+
+        GetBaseStime(
+            [out] Int64* time);
+
+        GetRelUtime(
+            [out] Int32* time);
+
+        GetRelStime(
+            [out] Int32* time);
+
+        GetBaseMinfaults(
+            [out] Int64* faults);
+
+        GetBaseMajfaults(
+            [out] Int64* faults);
+
+        GetRelMinfaults(
+            [out] Int32* faults);
+
+        GetRelMajfaults(
+            [out] Int32* faults);
+
+        GetActive(
+            [out] Boolean* active);
+
+        GetWorking(
+            [out] Boolean* working);
+
+        GetAdded(
+            [out] Boolean* added);
+
+        GetRemoved(
+            [out] Boolean* removed);
     }
 
     [local]

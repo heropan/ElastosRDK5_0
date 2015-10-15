@@ -1,12 +1,12 @@
 
 #include "internal/os/storage/CExternalStorageFormatter.h"
-#include "app/CProgressDialog.h"
+// #include "app/CProgressDialog.h"
 #include "content/CComponentName.h"
 #include "os/ServiceManager.h"
 #include "R.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Droid::App::CProgressDialog;
+// using Elastos::Droid::App::CProgressDialog;
 using Elastos::Droid::Content::CComponentName;
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::View::IWindow;
@@ -154,7 +154,8 @@ ECode CExternalStorageFormatter::OnStartCommand(
     mStorageVolume = IStorageVolume::Probe(value);
 
     if (mProgressDialog == NULL) {
-        CProgressDialog::New(this, (IProgressDialog**)&mProgressDialog);
+        assert(0 && "TODO:CProgressDialog is not implemented!");
+        // CProgressDialog::New(this, (IProgressDialog**)&mProgressDialog);
         mProgressDialog->SetIndeterminate(TRUE);
         mProgressDialog->SetCancelable(TRUE);
         AutoPtr<IWindow> window;
