@@ -1,8 +1,8 @@
 
-#include "Preference.h"
-#include "os/CBundle.h"
+#include "elastos/droid/preference/Preference.h"
+#include "elastos/droid/os/CBundle.h"
 #include "text/TextUtils.h"
-#include "view/CAbsSavedStateHelper.h"
+//#include "view/CAbsSavedStateHelper.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
@@ -15,182 +15,32 @@ using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::View::IAbsSavedState;
-using Elastos::Droid::View::CAbsSavedStateHelper;
+//using Elastos::Droid::View::CAbsSavedStateHelper;
 using Elastos::Droid::View::IAbsSavedStateHelper;
 
 namespace Elastos {
 namespace Droid {
 namespace Preference {
 
-// {373C1451-FE12-4D41-883B-CC603F142FAD}
-extern "C" const InterfaceID EIID_Preference =
-        { 0x373c1451, 0xfe12, 0x4d41, { 0x88, 0x3b, 0xcc, 0x60, 0x3f, 0x14, 0x2f, 0xad } };
-
-Preference::Preference()
-    : mId(0)
-    , mOrder(IPreference::DEFAULT_ORDER)
-    , mTitleRes(0)
-    , mIconResId(0)
-    , mEnabled(TRUE)
-    , mSelectable(TRUE)
-    , mRequiresKey(FALSE)
-    , mPersistent(TRUE)
-    , mDependencyMet(TRUE)
-    , mShouldDisableView(TRUE)
-    , mLayoutResId(R::layout::preference)
-    , mWidgetLayoutResId(0)
-    , mHasSpecifiedLayout(FALSE)
-    , mBaseMethodCalled(FALSE)
-{}
-
-Preference::~Preference()
-{
-    if (mDependents != NULL) {
-        mDependents->Clear();
-        mDependents = NULL;
-    }
-}
-
-PInterface Preference::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IPreference*)this;
-    }
-    else if (riid == EIID_IObject) {
-        return (IObject*)this;
-    }
-    else if (riid == EIID_IPreference) {
-        return (IPreference*)this;
-    }
-    else if (riid == EIID_IComparable) {
-        return (IComparable*)this;
-    }
-    else if (riid == EIID_IOnDependencyChangeListener) {
-        return (IOnDependencyChangeListener*)this;
-    }
-    else if (riid == EIID_IWeakReferenceSource) {
-        return (IWeakReferenceSource*)this;
-    }
-    else if (riid == EIID_Preference) {
-        return reinterpret_cast<PInterface>(this);
-    }
-    return NULL;
-}
-
-UInt32 Preference::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Preference::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Preference::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface *)(IPreference *)this) {
-        *pIID = EIID_IPreference;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IObject *)this) {
-        *pIID = EIID_IObject;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IComparable *)this) {
-        *pIID = EIID_IComparable;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IOnDependencyChangeListener *)this) {
-        *pIID = EIID_IOnDependencyChangeListener;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IWeakReferenceSource *)this) {
-        *pIID = EIID_IWeakReferenceSource;
-        return NOERROR;
-    }
-
-    return E_INVALID_ARGUMENT;
-}
-
-ECode Preference::Initialize()
-{
-    return NOERROR;
-}
-
-ECode Preference::Aggregate(
-    /* [in] */ AggrType aggrType,
-    /* [in] */ PInterface pObject)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode Preference::GetDomain(
-    /* [out] */ PInterface *ppObject)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode Preference::GetClassID(
-    /* [out] */ ClassID *pCLSID)
-{
-    assert(0);
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode Preference::Equals(
-    /* [in] */ IInterface* other,
-    /* [out] */ Boolean * result)
-{
-    VALIDATE_NOT_NULL(result)
-    *result = FALSE;
-    VALIDATE_NOT_NULL(other)
-
-    IPreference* o = IPreference::Probe(other);
-    if (o != NULL) {
-        *result = (o == THIS_PROBE(IPreference));
-    }
-    return NOERROR;
-}
-
-ECode Preference::GetHashCode(
-    /* [out] */ Int32* hash)
-{
-    VALIDATE_NOT_NULL(hash);
-    *hash = (Int32)THIS_PROBE(IPreference);
-    return NOERROR;
-}
-
-ECode Preference::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL_2(Preference, Object, IPreference, IComparable)
 
 void Preference::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes)
 {
     mContext = context;
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::Preference),
             ARRAY_SIZE(R::styleable::Preference));
-    AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    const AutoPtr<ITypedArray> a;
+    context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
-    Int32 indexCount;
-    a->GetIndexCount(&indexCount);
-    for (Int32 i = indexCount; i >= 0; i--) {
+    Int32 count;
+    a->GetIndexCount(&count);
+    for (Int32 i = count; i >= 0; i--) {
         Int32 attr;
         a->GetIndex(i, &attr);
         switch (attr) {
@@ -203,20 +53,17 @@ void Preference::Init(
                 break;
 
             case R::styleable::Preference_title:
-            {
                 a->GetResourceId(attr, 0, &mTitleRes);
-                String str;
-                a->GetString(attr, &str);
-                CString::New(str, (ICharSequence**)&mTitle);
+                //String str;
+                // a->GetString(attr, &str);
+                // StringBuilder sb(str);
+                // mTitle = sb.ToCharSequence();
                 break;
-            }
+
             case R::styleable::Preference_summary:
-            {
-                String str;
-                a->GetString(attr, &str);
-                CString::New(str, (ICharSequence**)&mSummary);
+                // a->GetString(attr, &mSummary);
                 break;
-            }
+
             case R::styleable::Preference_order:
                 a->GetInt32(attr, mOrder, &mOrder);
                 break;
@@ -258,16 +105,76 @@ void Preference::Init(
                 break;
         }
     }
-
     a->Recycle();
 
-    // ClassID clsId;
-    // GetClassID(&clsId);
-    // String clsName(clsId.pUunm);
-    // if (!clsName.StartWith("Elastos.Droid.Core.eco")) {
-    //     // For subclasses not in this package, assume the worst and don't cache views
-    //     mHasSpecifiedLayout = TRUE;
-    // }
+#if 0
+//TODO: Wait for the getName() from classId
+//    if (!getClass().getName().startsWith("android.preference")
+//            && !getClass().getName().startsWith("com.android")) {
+        // For non-framework subclasses, assume the worst and don't cache views.
+//        mCanRecycleLayout = false;
+//    }
+#endif
+}
+
+Preference::Preference()
+    : mId(0)
+    , mOrder(IPreference::DEFAULT_ORDER)
+    , mTitleRes(0)
+    , mIconResId(0)
+    , mEnabled(TRUE)
+    , mSelectable(TRUE)
+    , mRequiresKey(FALSE)
+    , mPersistent(TRUE)
+    , mDependencyMet(TRUE)
+    , mParentDependencyMet(TRUE)
+    , mShouldDisableView(TRUE)
+    , mLayoutResId(R::layout::preference)
+    , mWidgetLayoutResId(0)
+    , mCanRecycleLayout(TRUE)
+    , mBaseMethodCalled(FALSE)
+{}
+
+Preference::~Preference()
+{
+    if (mDependents != NULL) {
+        mDependents->Clear();
+        mDependents = NULL;
+    }
+}
+
+ECode Preference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    Init(context, attrs, defStyleAttr, defStyleRes);
+    return NOERROR;
+}
+
+ECode Preference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    Init(context, attrs, defStyleAttr, 0);
+    return NOERROR;
+}
+
+ECode Preference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    Init(context, attrs, Elastos::Droid::R::attr::preferenceStyle, 0);
+    return NOERROR;
+}
+
+ECode Preference::constructor(
+    /* [in] */ IContext* context)
+{
+    Init(context, NULL, Elastos::Droid::R::attr::preferenceStyle, 0);
+    return NOERROR;
 }
 
 ECode Preference::OnGetDefaultValue(
@@ -338,7 +245,7 @@ ECode Preference::SetLayoutResource(
 {
     if (layoutResId != mLayoutResId) {
         // Layout changed
-        mHasSpecifiedLayout = TRUE;
+        mCanRecycleLayout = FALSE;
     }
 
     mLayoutResId = layoutResId;
@@ -358,7 +265,7 @@ ECode Preference::SetWidgetLayoutResource(
 {
     if (widgetLayoutResId != mWidgetLayoutResId) {
         // Layout changed
-        mHasSpecifiedLayout = TRUE;
+        mCanRecycleLayout = FALSE;
     }
     mWidgetLayoutResId = widgetLayoutResId;
     return NOERROR;
@@ -407,7 +314,8 @@ ECode Preference::OnCreateView(
             layoutInflater->Inflate(mWidgetLayoutResId, widgetFrame, (IView**)&t);
         }
         else {
-            widgetFrame->SetVisibility(IView::GONE);
+            AutoPtr<IView> vv = IView::Probe(widgetFrame);
+            vv->SetVisibility(IView::GONE);
         }
     }
     *view = layout;
@@ -421,34 +329,37 @@ ECode Preference::OnBindView(
     Slogger::E("Preference", "~~~~~~~~~~~~~~~~~~~~~OnBindView");
     AutoPtr<ITextView> titleView;
     view->FindViewById(R::id::title, (IView**)&titleView);
+    AutoPtr<IView> vv = IView::Probe(titleView);
     if (titleView != NULL) {
         AutoPtr<ICharSequence> title;
         GetTitle((ICharSequence**)&title);
-        if (!TextUtils::IsEmpty(title)) {
-            titleView->SetText(title);
-            titleView->SetVisibility(IView::VISIBLE);
-        }
-        else {
-            titleView->SetVisibility(IView::GONE);
-        }
+        // if (!TextUtils::IsEmpty(title)) {
+        //     titleView->SetText(title);
+        //     vv->SetVisibility(IView::VISIBLE);
+        // }
+        // else {
+        //     vv->SetVisibility(IView::GONE);
+        // }
     }
 
     AutoPtr<ITextView> summaryView;
     view->FindViewById(R::id::summary, (IView**)&summaryView);
+    vv = IView::Probe(summaryView);
     if (summaryView != NULL) {
         AutoPtr<ICharSequence> summary;
         GetSummary((ICharSequence**)&summary);
-        if (!TextUtils::IsEmpty(summary)) {
-            summaryView->SetText(summary);
-            summaryView->SetVisibility(IView::VISIBLE);
-        }
-        else {
-            summaryView->SetVisibility(IView::GONE);
-        }
+        // if (!TextUtils::IsEmpty(summary)) {
+        //     summaryView->SetText(summary);
+        //     vv->SetVisibility(IView::VISIBLE);
+        // }
+        // else {
+        //     vv->SetVisibility(IView::GONE);
+        // }
     }
 
     AutoPtr<IImageView> imageView;
     view->FindViewById(R::id::icon, (IView**)&imageView);
+    vv = IView::Probe(imageView);
     if (imageView != NULL) {
         if (mIconResId != 0 || mIcon != NULL) {
             if (mIcon == NULL) {
@@ -462,8 +373,14 @@ ECode Preference::OnBindView(
                 imageView->SetImageDrawable(mIcon);
             }
         }
-        imageView->SetVisibility(mIcon != NULL ? IView::VISIBLE : IView::GONE);
+        vv->SetVisibility(mIcon != NULL ? IView::VISIBLE : IView::GONE);
     }
+
+    // AutoPtr<IView> imageFrame;
+    // view->FindViewById(R::id::icon_frame, (IView**)&imageFrame);
+    // if (imageFrame != NULL) {
+    //     imageFrame->SetVisibility(mIcon != NULL ? IView::VISIBLE : IView::GONE);
+    // }
 
     if (mShouldDisableView) {
         Slogger::E("Preference", "~~~~~~~~~~~~~~~~~~~~~OnBindView, oh no");
@@ -481,13 +398,13 @@ void Preference::SetEnabledStateOnViews(
 {
     v->SetEnabled(enabled);
 
-    AutoPtr<IViewGroup> viewGroup= IViewGroup::Probe(v);
-    if (viewGroup != NULL) {
+    AutoPtr<IViewGroup> vg= IViewGroup::Probe(v);
+    if (vg != NULL) {
         Int32 childCount;
-        viewGroup->GetChildCount(&childCount);
+        vg->GetChildCount(&childCount);
         for (Int32 i = childCount -1; i >= 0; i--) {
             AutoPtr<IView> childView;
-            viewGroup->GetChildAt(i, (IView**)&childView);
+            vg->GetChildAt(i, (IView**)&childView);
             SetEnabledStateOnViews(childView, enabled);
         }
     }
@@ -516,15 +433,11 @@ ECode Preference::GetOrder(
 ECode Preference::SetTitle(
     /* [in] */ ICharSequence* title)
 {
-    if ((title == NULL && mTitle != NULL) || (title != NULL && mTitle == NULL)) {
-        mTitleRes = 0;
-        mTitle = title;
-        NotifyChanged();
-    }
-    else {
-        AutoPtr<IObject> obj = IObject::Probe(title);
-        Boolean isEquals;
-        if (obj != NULL && (obj->Equals(mTitle, &isEquals), !isEquals)) {
+    AutoPtr<IObject> obj = IObject::Probe(title);
+    Boolean isEquals;
+    if (obj != NULL) {
+        obj->Equals(mTitle, &isEquals);
+        if ((title == NULL && mTitle != NULL) || (title != NULL && !isEquals)) {
             mTitleRes = 0;
             mTitle = title;
             NotifyChanged();
@@ -576,11 +489,10 @@ ECode Preference::SetIcon(
     /* [in] */ Int32 iconResId)
 {
     mIconResId = iconResId;
-    AutoPtr<IResources> resources;
-    mContext->GetResources((IResources**)&resources);
-    AutoPtr<IDrawable> icon;
-    resources->GetDrawable(iconResId, (IDrawable**)&icon);
-    return SetIcon(icon);
+    AutoPtr<IDrawable> drawable;
+    mContext->GetDrawable(iconResId, (IDrawable**)&drawable);
+    SetIcon(drawable);
+    return NOERROR;
 }
 
 ECode Preference::GetIcon(
@@ -604,14 +516,11 @@ ECode Preference::GetSummary(
 ECode Preference::SetSummary(
     /* [in] */ ICharSequence* summary)
 {
-    if ((summary == NULL && mSummary != NULL) || (summary != NULL && mSummary == NULL)) {
-        mSummary = summary;
-        NotifyChanged();
-    }
-    else {
-        AutoPtr<IObject> obj = IObject::Probe(summary);
-        Boolean isEquals;
-        if (obj != NULL && (obj->Equals(mSummary, &isEquals), !isEquals)) {
+    AutoPtr<IObject> obj = IObject::Probe(summary);
+    Boolean isEquals;
+    if (obj != NULL) {
+        obj->Equals(mSummary, &isEquals);
+        if ((summary == NULL && mSummary != NULL) || (summary != NULL && !isEquals)) {
             mSummary = summary;
             NotifyChanged();
         }
@@ -648,7 +557,7 @@ ECode Preference::IsEnabled(
     /* [out] */ Boolean* isEnable)
 {
     VALIDATE_NOT_NULL(isEnable)
-    *isEnable = mEnabled && mDependencyMet;
+    *isEnable = mEnabled && mDependencyMet && mParentDependencyMet;
     return NOERROR;
 }
 
@@ -686,9 +595,12 @@ ECode Preference::GetShouldDisableView(
     return NOERROR;
 }
 
-Int64 Preference::GetId()
+ECode Preference::GetId(
+    /* [out] */ Int64* id)
 {
-    return mId;
+    VALIDATE_NOT_NULL(id)
+    *id = mId;
+    return NOERROR;
 }
 
 ECode Preference::OnClick()
@@ -898,16 +810,15 @@ ECode Preference::CompareTo(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
-
+/**
     AutoPtr<IPreference> another = THIS_PROBE(IPreference);
-    Int32 anotherOrder;
-    another->GetOrder(&anotherOrder);
-    if (mOrder != IPreference::DEFAULT_ORDER
-            || (mOrder == IPreference::DEFAULT_ORDER && anotherOrder != IPreference::DEFAULT_ORDER)) {
+    if (mOrder != another->mOrder) {
         // Do order comparison
-        *result = mOrder - anotherOrder;
-    }
-    else if (mTitle == NULL) {
+        *result = mOrder - another->mOrder;
+    } else if (mTitle == another->mTitle) {
+        // If titles are null or share same object comparison
+        *result = 0;
+    } else if (mTitle == NULL) {
         *result = 1;
     }
     else {
@@ -924,13 +835,15 @@ ECode Preference::CompareTo(
             *result = titleStr.CompareIgnoreCase(anotherTitleStr);
         }
     }
+**/
     return NOERROR;
 }
 
-void Preference::SetOnPreferenceChangeInternalListener(
+ECode Preference::SetOnPreferenceChangeInternalListener(
     /* [in] */ IPreferenceOnPreferenceChangeInternalListener* listener)
 {
     mListener = listener;
+    return NOERROR;
 }
 
 ECode Preference::NotifyChanged()
@@ -976,13 +889,14 @@ ECode Preference::OnAttachedToActivity()
 
 ECode Preference::RegisterDependency()
 {
-    if (TextUtils::IsEmpty(mDependencyKey)) return NOERROR;
+    // if (TextUtils::IsEmpty(mDependencyKey)) return NOERROR;
 
     AutoPtr<IPreference> preference;
     FindPreferenceInHierarchy(mDependencyKey, (IPreference**)&preference);
     if (preference != NULL) {
-        AutoPtr<Preference> p = reinterpret_cast<Preference*>(preference->Probe(EIID_Preference));
-        return p->RegisterDependent(this);
+        // AutoPtr<Preference> p = reinterpret_cast<Preference*>(preference);
+        // return p->RegisterDependent(this);
+        return NOERROR;
     }
     else {
 //        throw new IllegalStateException("Dependency \"" + mDependencyKey
@@ -1001,8 +915,8 @@ void Preference::UnregisterDependency()
         AutoPtr<IPreference> oldDependency;
         FindPreferenceInHierarchy(mDependencyKey, (IPreference**)&oldDependency);
         if (oldDependency != NULL) {
-            AutoPtr<Preference> preference = reinterpret_cast<Preference*>(oldDependency->Probe(EIID_Preference));
-            return preference->UnRegisterDependent(this);
+//            AutoPtr<Preference> preference = reinterpret_cast<Preference*>(oldDependency->Probe(EIID_Preference));
+//            return preference->UnRegisterDependent(this);
         }
     }
 }
@@ -1012,10 +926,10 @@ ECode Preference::FindPreferenceInHierarchy(
     /* [out] */ IPreference** preference)
 {
     VALIDATE_NOT_NULL(preference)
-    if (TextUtils::IsEmpty(key) || mPreferenceManager == NULL) {
-        *preference = NULL;
-        return NOERROR;
-    }
+    // if (TextUtils::IsEmpty(key) || mPreferenceManager == NULL) {
+    //     *preference = NULL;
+    //     return NOERROR;
+    // }
     AutoPtr<ICharSequence> cs;
     CString::New(key, (ICharSequence**)&cs);
     return mPreferenceManager->FindPreference(cs, preference);
@@ -1051,7 +965,7 @@ ECode Preference::NotifyDependencyChange(
 
     List<AutoPtr<IPreference> >::Iterator it;
     for (it = dependents->Begin(); it != dependents->End(); ++it) {
-        IOnDependencyChangeListener::Probe(*it)->OnDependencyChanged(THIS_PROBE(IPreference), disableDependents);
+        (*it)->OnDependencyChanged(THIS_PROBE(IPreference), disableDependents);
     }
     return NOERROR;
 }
@@ -1067,6 +981,23 @@ ECode Preference::OnDependencyChanged(
         Boolean shouldDisableDependents;
         ShouldDisableDependents(&shouldDisableDependents);
         NotifyDependencyChange(shouldDisableDependents);
+
+        NotifyChanged();
+    }
+    return NOERROR;
+}
+
+ECode Preference::OnParentChanged(
+    /* [in] */ IPreference* parent,
+    /* [in] */ Boolean disableChild)
+{
+    if (mParentDependencyMet == disableChild) {
+        mParentDependencyMet = !disableChild;
+
+        // Enabled state can change dependent preferences' states, so notify
+        Boolean should = FALSE;
+        ShouldDisableDependents(&should);
+        NotifyDependencyChange(should);
 
         NotifyChanged();
     }
@@ -1218,7 +1149,7 @@ ECode Preference::PersistStringSet(
 
         AutoPtr<ISharedPreferencesEditor> editor;
         mPreferenceManager->GetEditor((ISharedPreferencesEditor**)&editor);
-        editor->PutStringSet(mKey, values);
+        // editor->PutStringSet(mKey, values);
         TryCommit(editor);
         *isPersistStringSet = TRUE;
         return NOERROR;
@@ -1235,13 +1166,14 @@ ECode Preference::GetPersistedStringSet(
     Boolean shouldPersist;
     if (ShouldPersist(&shouldPersist), !shouldPersist) {
         *value = defaultReturnValue;
-        REFCOUNT_ADD(*value)
+        // ARRAYOF_ADDREF(*value)
         return NOERROR;
     }
 
     AutoPtr<ISharedPreferences> sp;
     mPreferenceManager->GetSharedPreferences((ISharedPreferences**)&sp);
-    return sp->GetStringSet(mKey, defaultReturnValue, value);
+    // return sp->GetStringSet(mKey, defaultReturnValue, value);
+    return NOERROR;
 }
 
 ECode Preference::PersistInt32(
@@ -1295,12 +1227,12 @@ ECode Preference::PersistFloat(
 
     Boolean shouldPersist;
     if (ShouldPersist(&shouldPersist), shouldPersist) {
-        Float persistValue;
-        if (GetPersistedFloat(Elastos::Core::Math::FLOAT_NAN, &persistValue), value == persistValue) {
-            // It's already there, so the same as persisting
-            *isPersist = TRUE;
-            return NOERROR;
-        }
+        // Float persistValue;
+        // if (GetPersistedFloat(Elastos::Core::Math::FLOAT_NAN, &persistValue), value == persistValue) {
+        //     // It's already there, so the same as persisting
+        //     *isPersist = TRUE;
+        //     return NOERROR;
+        // }
 
         AutoPtr<ISharedPreferencesEditor> editor;
         mPreferenceManager->GetEditor((ISharedPreferencesEditor**)&editor);
@@ -1417,11 +1349,11 @@ ECode Preference::GetPersistedBoolean(
     return sp->GetBoolean(mKey, defaultReturnValue, value);
 }
 
-ECode Preference::HasSpecifiedLayout(
-    /* [out] */ Boolean* hasSpecifiedLayout)
+ECode Preference::CanRecycleLayout(
+    /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(hasSpecifiedLayout)
-    *hasSpecifiedLayout = mHasSpecifiedLayout;
+    VALIDATE_NOT_NULL(result)
+    *result = mCanRecycleLayout;
     return NOERROR;
 }
 
@@ -1429,31 +1361,35 @@ ECode Preference::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
-    *str = GetFilterableString();
+    GetFilterableString(str);
     return NOERROR;
 }
 
-String Preference::GetFilterableString()
+ECode Preference::GetFilterableString(
+    /* [out] */ String* fsb)
 {
+    VALIDATE_NOT_NULL(fsb)
     StringBuilder sb;
     AutoPtr<ICharSequence> title;
     GetTitle((ICharSequence**)&title);
-    if (!TextUtils::IsEmpty(title)) {
-        sb += title;
-        sb += ' ';
-    }
+    // if (!TextUtils::IsEmpty(title)) {
+    //     sb += title;
+    //     sb += ' ';
+    // }
     AutoPtr<ICharSequence> summary;
     GetSummary((ICharSequence**)&summary);
-    if (!TextUtils::IsEmpty(summary)) {
-        sb += summary;
-        sb += ' ';
-    }
+    // if (!TextUtils::IsEmpty(summary)) {
+    //     sb += summary;
+    //     sb += ' ';
+    // }
     Int32 len = sb.GetLength();
     if (len > 0) {
         // Drop the last space
-        return sb.Substring(0, len - 2);
+        *fsb = sb.Substring(0, len - 2);
+        return NOERROR;
     }
-    return sb.ToString();
+    *fsb = sb.ToString();
+    return NOERROR;
 }
 
 ECode Preference::SaveHierarchyState(
@@ -1489,12 +1425,12 @@ ECode Preference::OnSaveInstanceState(
 {
     VALIDATE_NOT_NULL(state)
     mBaseMethodCalled = TRUE;
-    AutoPtr<IAbsSavedStateHelper> helper;
-    CAbsSavedStateHelper::AcquireSingleton((IAbsSavedStateHelper**)&helper);
-    AutoPtr<IAbsSavedState> emptyState;
-    helper->GetEMPTY_STATE((IAbsSavedState**)&emptyState);
-    *state = IParcelable::Probe(emptyState);
-    REFCOUNT_ADD(*state);
+    // AutoPtr<IAbsSavedStateHelper> helper;
+    // CAbsSavedStateHelper::AcquireSingleton((IAbsSavedStateHelper**)&helper);
+    // AutoPtr<IAbsSavedState> emptyState;
+    // helper->GetEMPTY_STATE((IAbsSavedState**)&emptyState);
+    // *state = IParcelable::Probe(emptyState);
+    // REFCOUNT_ADD(*state);
     return NOERROR;
 }
 
@@ -1529,6 +1465,7 @@ ECode Preference::OnRestoreInstanceState(
     /* [in] */ IParcelable* state)
 {
     mBaseMethodCalled = TRUE;
+/**
     AutoPtr<IAbsSavedStateHelper> helper;
     CAbsSavedStateHelper::AcquireSingleton((IAbsSavedStateHelper**)&helper);
     AutoPtr<IAbsSavedState> emptyState;
@@ -1538,6 +1475,7 @@ ECode Preference::OnRestoreInstanceState(
         Slogger::E("preference", "Wrong state class -- expecting Preference State");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+**/
     return NOERROR;
 }
 

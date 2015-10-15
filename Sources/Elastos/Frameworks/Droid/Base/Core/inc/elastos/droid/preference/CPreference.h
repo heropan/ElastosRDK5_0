@@ -1,28 +1,18 @@
-
 #ifndef __ELASTOS_DROID_PREFERENCE_CPREFERENCE_H__
 #define __ELASTOS_DROID_PREFERENCE_CPREFERENCE_H__
 
-#include "Preference.h"
 #include "_Elastos_Droid_Preference_CPreference.h"
+#include "elastos/droid/preference/Preference.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Preference {
 
-CarClass(CPreference) , public Preference
+CarClass(CPreference)
+    , public Preference
 {
 public:
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context);
+    CAR_OBJECT_DECL()
 };
 
 }
