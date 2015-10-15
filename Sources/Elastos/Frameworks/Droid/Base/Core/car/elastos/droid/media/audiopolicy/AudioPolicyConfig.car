@@ -9,6 +9,11 @@ module
      * @hide
      * Internal storage class for AudioPolicy configuration.
      */
+    /**
+     * @Involve
+     * interface IParcelable
+     */
+    [parcelable]
     interface IAudioPolicyConfig {
 
         /**
@@ -19,6 +24,9 @@ module
          */
         AddMix(
             [in] IAudioMix * mix);
+
+        ToString(
+            [out] String * result);
 
     }
 
