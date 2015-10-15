@@ -104,7 +104,8 @@ public:
 
     virtual CARAPI OnDebugDraw(
         /* [in] */ IView* view,
-        /* [in] */ ICanvas* canvas);
+        /* [in] */ ICanvas* canvas,
+        /* [in] */ IPaint* paint);
 
 protected:
     /**

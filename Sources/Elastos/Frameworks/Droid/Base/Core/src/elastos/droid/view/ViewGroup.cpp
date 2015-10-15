@@ -42,9 +42,6 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-extern "C" const InterfaceID EIID_ViewGroup =
-        { 0x9480e8f3, 0xf994, 0x4994, { 0xae, 0x66, 0x3a, 0xaf, 0x7f, 0x21, 0x7e, 0x62 } };
-
 const Int32 ViewGroup::FOCUS_BEFORE_DESCENDANTS;
 const Int32 ViewGroup::FOCUS_AFTER_DESCENDANTS;
 const Int32 ViewGroup::FOCUS_BLOCK_DESCENDANTS;
@@ -83,6 +80,14 @@ const Int32 ViewGroup::CLIP_TO_PADDING_MASK;
 const Int32 ViewGroup::CHILD_LEFT_INDEX;
 const Int32 ViewGroup::CHILD_TOP_INDEX;
 
+const Int32 ViewGroup::FLAG_LAYOUT_MODE_WAS_EXPLICITLY_SET;
+const Int32 ViewGroup::FLAG_IS_TRANSITION_GROUP;
+const Int32 ViewGroup::FLAG_IS_TRANSITION_GROUP_SET;
+const Int32 ViewGroup::FLAG_TOUCHSCREEN_BLOCKS_FOCUS;
+const Int32 ViewGroup::LAYOUT_MODE_UNDEFINED;
+
+Int32 ViewGroup::LAYOUT_MODE_DEFAULT = LAYOUT_MODE_CLIP_BOUNDS;
+
 AutoPtr<IPaint> ViewGroup::sDebugPaint;
 AutoPtr<ArrayOf<Float> > ViewGroup::sDebugLines;
 
@@ -107,6 +112,7 @@ Mutex ViewGroup::ViewLocationHolder::sPoolLock;
 AutoPtr<ViewGroup::ViewLocationHolder> ViewGroup::ViewLocationHolder::sPool;
 Int32 ViewGroup::ViewLocationHolder::sPoolSize = 0;
 
+Boolean ViewGroup::DEBUG_DRAW = FALSE;
 
 ViewGroup::NotifyAnimationListenerRunnable::NotifyAnimationListenerRunnable(
     /* [in] */ ViewGroup* host)
@@ -164,9 +170,9 @@ ECode ViewGroup::LayoutTransitionListener::EndTransition(
     /* [in] */ Int32 transitionType)
 {
     Boolean changing = FALSE;
-    if (mHost->mLayoutSuppressed && !(transition->IsChangingLayout(&changing), changing)) {
+    if (mHost->mLayoutCalledWhileSuppressed && !(transition->IsChangingLayout(&changing), changing)) {
         mHost->RequestLayout();
-        mHost->mLayoutSuppressed = FALSE;
+        mHost->mLayoutCalledWhileSuppressed = FALSE;
     }
     if (transitionType == ILayoutTransition::DISAPPEARING && !mHost->mTransitioningViews.IsEmpty()) {
         mHost->EndViewTransition(view);
@@ -261,7 +267,6 @@ void ViewGroup::HoverTarget::Recycle()
 }
 
 ViewGroup::ChildListForAccessibility::ChildListForAccessibility()
-    : mIsPooled(FALSE)
 {
 }
 
@@ -269,150 +274,100 @@ AutoPtr<ViewGroup::ChildListForAccessibility> ViewGroup::ChildListForAccessibili
     /* [in] */ IViewGroup* parent,
     /* [in] */ Boolean sort)
 {
-    AutoPtr<ChildListForAccessibility> list;
-    AutoLock lock(sPoolLock);
-    {
-        if (sPool != NULL) {
-            list = sPool;
-            sPool = list->mNext;
-            list->mNext = NULL;
-            list->mIsPooled = FALSE;
-            sPoolSize--;
-        }
-        else {
-            list = new ChildListForAccessibility();
-        }
-
-        list->Init(parent, sort);
-        return list;
+    AutoPtr<ChildListForAccessibility> list = sPool->Acquire();;
+    if (sPool == NULL) {
+        list = new ChildListForAccessibility();
     }
+
+    list->Init(parent, sort);
+    return list;
 }
 
 void ViewGroup::ChildListForAccessibility::Recycle()
 {
-    if (mIsPooled) {
-        assert(0);
-        //throw new IllegalStateException("Instance already recycled.");
-    }
-
     Clear();
-    AutoLock lock(sPoolLock);
-    {
-        if (sPoolSize < MAX_POOL_SIZE) {
-            mNext = sPool;
-            mIsPooled = TRUE;
-            sPool = this;
-            sPoolSize++;
-        }
-    }
+
+    sPool->Release(this);
 }
 
 Int32 ViewGroup::ChildListForAccessibility::GetChildCount()
 {
-    return mChildren.GetSize();
+    Int32 result;
+    mChildren->GetSize(&result);
+    return result;
 }
 
 AutoPtr<IView> ViewGroup::ChildListForAccessibility::GetChildAt(
     /* [in] */ Int32 index)
 {
-    return mChildren[index];
+    AutoPtr<IInterface> temp;
+    mChildren->Get(index, (IInterface**)&temp);
+    AutoPtr<IView> result = IView::Probe(temp);
+    return result;
 }
 
 Int32 ViewGroup::ChildListForAccessibility::GetChildIndex(
     /* [in] */ IView* child)
 {
-    List<AutoPtr<IView> >::Iterator iter = mChildren.Begin();
-    for (Int32 i = 0; iter != mChildren.End(); ++iter, ++i) {
-        if (iter->Get() == child)
-            return i;
-    }
-    return -1;
+    Int32 result;
+    mChildren->IndexOf(child, &result);
+    return result;
 }
 
 void ViewGroup::ChildListForAccessibility::Init(
     /* [in] */ IViewGroup* parent,
     /* [in] */ Boolean sort)
 {
-    Int32 childCount = 0;
-    parent->GetChildCount(&childCount);
+    Int32 childCount = parent->GetChildCount();
     for (Int32 i = 0; i < childCount; i++) {
-        AutoPtr<IView> child;
-        parent->GetChildAt(i, (IView**)&child);
-        mChildren.PushBack(child);
+        AutoPtr<IView> child = parent->GetChildAt(i);
+        mChildren->Add((IInterface*)child->Probe(EIID_IInterface));
     }
-
     if (sort) {
-        List<AutoPtr<IView> >::Iterator iter = mChildren.Begin();
-        for (; iter != mChildren.End(); ++iter) {
-            AutoPtr<ViewLocationHolder> holder = ViewLocationHolder::Obtain(parent, iter->Get());
-            mHolders.PushBack(holder);
+        for (Int32 i = 0; i < childCount; i++) {
+            AutoPtr<IInterface> temp;
+            mChildren->Get(index, (IInterface**)&temp);
+            AutoPtr<IView> child = IView::Probe(temp);
+            AutoPtr<ViewLocationHolder> holder = ViewLocationHolder::Obtain(parent, child);
+            mHolders->Add((IInterface*)holder->Probe(EIID_IInterface));
         }
-
-        SortList(mHolders);
-
-        iter = mChildren.Begin();
-        List<AutoPtr<ViewLocationHolder> >::Iterator iter2 = mHolders.Begin();
-        for (; iter != mChildren.End(); ++iter2, ++iter) {
-            *iter = IVIEW_PROBE((*iter2)->mView);
-            (*iter2)->Recycle();
+        Sort(mHolders);
+        for (Int32 i = 0; i < childCount; i++) {
+            AutoPtr<IInterface> temp, view;
+            mHolders->Get(index, (IInterface**)&temp);
+            AutoPtr<ViewLocationHolder> holder = ViewLocationHolder::Probe(temp);
+            view = (IInterface*)holder->mView->Probe(EIID_IInterface);
+            mChildren->Set(i, view);
+            holder->Recycle();
         }
-
-        mHolders.Clear();
+        mHolders->Clear();
     }
+}
+
+ECode ViewGroup::ChildListForAccessibility::Sort(
+    /* [in] */ IList* holders)
+{
+    // This is gross but the least risky solution. The current comparison
+    // strategy breaks transitivity but produces very good results. Coming
+    // up with a new strategy requires time which we do not have, so ...
+    //try {
+        ECode ec = ViewLocationHolder::SetComparisonStrategy(
+                ViewLocationHolder::COMPARISON_STRATEGY_STRIPE);
+        ECode other = Collections::Sort(holders);
+        if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION || other == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+            ViewLocationHolder::SetComparisonStrategy(
+                ViewLocationHolder::COMPARISON_STRATEGY_LOCATION);
+            Collections::Sort(holders);
+        }
+    //} catch (IllegalArgumentException iae) {
+        // Note that in practice this occurs extremely rarely in a couple
+        // of pathological cases.
+    //}
 }
 
 void ViewGroup::ChildListForAccessibility::Clear()
 {
     mChildren.Clear();
-}
-
-void ViewGroup::ChildListForAccessibility::Merge(
-    /* [in] */ List<AutoPtr<ViewLocationHolder> >& list1,
-    /* [in] */ List<AutoPtr<ViewLocationHolder> >& list2)
-{
-    List<AutoPtr<ViewLocationHolder> >::Iterator first1 = list1.Begin();
-    List<AutoPtr<ViewLocationHolder> >::Iterator last1 = list1.End();
-    List<AutoPtr<ViewLocationHolder> >::Iterator first2 = list2.Begin();
-    List<AutoPtr<ViewLocationHolder> >::Iterator last2 = list2.End();
-    while (first1 != last1 && first2 != last2) {
-        if ((*first1)->CompareTo(first2->Get()) < 0) {
-            List<AutoPtr<ViewLocationHolder> >::Iterator next = first2;
-            ++next;
-            list1.Splice(first1, list2, first2);
-            first2 = next;
-        }
-        else {
-            ++first1;
-        }
-    }
-    if (first2 != last2)
-        list1.Splice(last1, list2, first2, last2);
-}
-
-void ViewGroup::ChildListForAccessibility::SortList(
-    /* [in] */ List<AutoPtr<ViewLocationHolder> >& list)
-{
-    // Do nothing if the list has length 0 or 1.
-    if (list.GetSize() > 1) {
-        List<AutoPtr<ViewLocationHolder> > carry;
-        List<AutoPtr<ViewLocationHolder> > counter[64];
-        Int32 fill = 0;
-        while (!list.IsEmpty()) {
-            carry.Splice(carry.Begin(), list, list.Begin());
-            Int32 i = 0;
-            while(i < fill && !counter[i].IsEmpty()) {
-                Merge(counter[i], carry);
-                carry.Swap(counter[i++]);
-            }
-            carry.Swap(counter[i]);
-            if (i == fill) ++fill;
-        }
-
-        for (Int32 i = 1; i < fill; ++i) {
-            Merge(counter[i], counter[i-1]);
-        }
-        list.Swap(counter[fill-1]);
-    }
 }
 
 ViewGroup::ViewLocationHolder::ViewLocationHolder()
@@ -426,41 +381,24 @@ AutoPtr<ViewGroup::ViewLocationHolder> ViewGroup::ViewLocationHolder::Obtain(
     /* [in] */ IViewGroup* root,
     /* [in] */ IView* view)
 {
-    AutoPtr<ViewLocationHolder> holder;
-    AutoLock lock(sPoolLock);
-    {
-        if (sPool != NULL) {
-            holder = sPool;
-            sPool = holder->mNext;
-            holder->mNext = NULL;
-            holder->mIsPooled = FALSE;
-            sPoolSize--;
-        }
-        else {
-            holder = new ViewLocationHolder();
-        }
-        holder->Init(root, view);
-        return holder;
+    AutoPtr<ViewLocationHolder> holder = sPool->Acquire();
+    if (sPool == NULL) {
+        holder = new ViewLocationHolder();
     }
+    holder->Init(root, view);
+    return holder;
+}
+
+void ViewGroup::ViewLocationHolder::SetComparisonStrategy(
+    /* [in] */ Int32 strategy)
+{
+    sComparisonStrategy = strategy;
 }
 
 void ViewGroup::ViewLocationHolder::Recycle()
 {
-    if (mIsPooled) {
-        assert(0);
-        //throw new IllegalStateException("Instance already recycled.");
-    }
     Clear();
-
-    AutoLock lock(sPoolLock);
-    {
-        if (sPoolSize < MAX_POOL_SIZE) {
-            mNext = sPool;
-            mIsPooled = TRUE;
-            sPool = this;
-            sPoolSize++;
-        }
-    }
+    sPool->Release(this);
 }
 
 Int32 ViewGroup::ViewLocationHolder::CompareTo(
@@ -471,18 +409,18 @@ Int32 ViewGroup::ViewLocationHolder::CompareTo(
         return 1;
     }
 
-    // if (getClass() != another.getClass()) {
-    //     return 1;
-    // }
-    // First is above second.
-    if (mLocation->mBottom - another->mLocation->mTop <= 0) {
-        return -1;
+    if (sComparisonStrategy == COMPARISON_STRATEGY_STRIPE) {
+        // First is above second.
+        if (mLocation->mBottom - another->mLocation->mTop <= 0) {
+            return -1;
+        }
+        // First is below second.
+        if (mLocation->mTop - another->mLocation->mBottom >= 0) {
+            return 1;
+        }
     }
-    // First is below second.
-    if (mLocation->mTop - another->mLocation->mBottom >= 0) {
-        return 1;
-    }
-    // LTR
+
+    // We are ordering left-to-right, top-to-bottom.
     if (mLayoutDirection == IView::LAYOUT_DIRECTION_LTR) {
         Int32 leftDifference = mLocation->mLeft - another->mLocation->mLeft;
         // First more to the left than second.
@@ -531,7 +469,7 @@ void ViewGroup::ViewLocationHolder::Init(
     view->GetDrawingRect(mLocation.Get());
     root->OffsetDescendantRectToMyCoords(view, mLocation.Get());
     assert(view != NULL);
-    mView = VIEW_PROBE(view);
+    mView = View::Probe(view);
     root->GetLayoutDirection(&mLayoutDirection);
 }
 
@@ -550,9 +488,10 @@ ViewGroup::ViewGroup()
     , mLastTouchDownX(0.0f)
     , mLastTouchDownY(0.0f)
     , mHoveredSelf(FALSE)
-    , mLayoutMode(CLIP_BOUNDS)
-    , mLayoutSuppressed(FALSE)
+    , mLayoutMode(LAYOUT_MODE_UNDEFINED)
     , mChildrenCount(0)
+    , mSuppressLayout(FALSE)
+    , mLayoutCalledWhileSuppressed(FALSE)
     , mChildCountWithTransientState(0)
 {
     CTransformation::New((ITransformation**)&mChildTransformation);
@@ -561,101 +500,42 @@ ViewGroup::ViewGroup()
     mLayoutTransitionListener = new LayoutTransitionListener(this);
 }
 
-ViewGroup::ViewGroup(
+ECode ViewGroup::constructor(
     /* [in] */ IContext* context)
-    : View(context)
-    , mGroupFlags(0)
-    , mPersistentDrawingCache(0)
-    , mChildAcceptsDrag(FALSE)
-    , mLastTouchDownTime(0)
-    , mLastTouchDownIndex(-1)
-    , mLastTouchDownX(0.0f)
-    , mLastTouchDownY(0.0f)
-    , mHoveredSelf(FALSE)
-    , mLayoutMode(CLIP_BOUNDS)
-    , mLayoutSuppressed(FALSE)
-    , mChildrenCount(0)
-    , mChildCountWithTransientState(0)
 {
-    CTransformation::New((ITransformation**)&mChildTransformation);
-    CPointF::New((IPointF**)&mLocalPoint);
-
-    mLayoutTransitionListener = new LayoutTransitionListener(this);
-
-    InitViewGroup();
+    return constructor(context, NULL);
 }
 
-ViewGroup::ViewGroup(
+ECode ViewGroup::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
-    : View(context, attrs)
-    , mGroupFlags(0)
-    , mPersistentDrawingCache(0)
-    , mChildAcceptsDrag(FALSE)
-    , mLastTouchDownTime(0)
-    , mLastTouchDownIndex(-1)
-    , mLastTouchDownX(0.0f)
-    , mLastTouchDownY(0.0f)
-    , mHoveredSelf(FALSE)
-    , mLayoutMode(CLIP_BOUNDS)
-    , mLayoutSuppressed(FALSE)
-    , mChildrenCount(0)
-    , mChildCountWithTransientState(0)
 {
-    CTransformation::New((ITransformation**)&mChildTransformation);
-    CPointF::New((IPointF**)&mLocalPoint);
-
-    mLayoutTransitionListener = new LayoutTransitionListener(this);
-
-    InitViewGroup();
-    InitFromAttributes(context, attrs);
+    return constructor(context, attrs, 0);
 }
 
-ViewGroup::ViewGroup(
+ECode ViewGroup::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : View(context, attrs, defStyle)
-    , mGroupFlags(0)
-    , mPersistentDrawingCache(0)
-    , mChildAcceptsDrag(FALSE)
-    , mLastTouchDownTime(0)
-    , mLastTouchDownIndex(-1)
-    , mLastTouchDownX(0.0f)
-    , mLastTouchDownY(0.0f)
-    , mHoveredSelf(FALSE)
-    , mLayoutMode(CLIP_BOUNDS)
-    , mLayoutSuppressed(FALSE)
-    , mChildrenCount(0)
-    , mChildCountWithTransientState(0)
+    /* [in] */ Int32 defStyleAttr)
 {
-    CTransformation::New((ITransformation**)&mChildTransformation);
-    CPointF::New((IPointF**)&mLocalPoint);
-
-    mLayoutTransitionListener = new LayoutTransitionListener(this);
-
-    InitViewGroup();
-    InitFromAttributes(context, attrs);
+    return constructor(context, attrs, defStyleAttr, 0);
 }
 
-ViewGroup::~ViewGroup()
+ECode ViewGroup::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
-    if (mChildren != NULL) {
-        for (Int32 i = 0; i < mChildren->GetLength(); ++i) {
-            AutoPtr<IView> child = (*mChildren)[i];
-            if (child != NULL) {
-                View* v = reinterpret_cast<View*>(child->Probe(EIID_View));
-                v->AssignParent(NULL);
-                mChildren->Set(i, NULL);
-            }
-        }
-    }
-
+    View::constructor(context, attrs, defStyleAttr, defStyleRes);
+    InitViewGroup();
+    InitFromAttributes(context, attrs, defStyleAttr, defStyleRes);
+    return NOERROR;
 }
 
 Boolean ViewGroup::DebugDraw()
 {
-    return mAttachInfo != NULL && mAttachInfo->mDebugLayout;
+    return DEBUG_DRAW || mAttachInfo != NULL && mAttachInfo->mDebugLayout;
 }
 
 void ViewGroup::InitViewGroup()
@@ -686,7 +566,9 @@ void ViewGroup::InitViewGroup()
 
 void ViewGroup::InitFromAttributes(
     /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::ViewGroup),
@@ -778,6 +660,25 @@ void ViewGroup::InitFromAttributes(
                 }
                 break;
             }
+            case R.styleable.ViewGroup_layoutMode: {
+                Int32 temp;
+                a->GetInt32(attr, LAYOUT_MODE_UNDEFINED, &temp);
+                SetLayoutMode(temp);
+                break;
+            }
+            case R.styleable.ViewGroup_transitionGroup: {
+                Boolean value = FALSE;
+                a->GetBoolean(attr, FALSE, &value);
+                SetTransitionGroup(value);
+                break;
+            }
+            case R.styleable.ViewGroup_touchscreenBlocksFocus:
+            {
+                Boolean value = FALSE;
+                a->GetBoolean(attr, FALSE, &value);
+                SetTouchscreenBlocksFocus(value);
+                break;
+            }
             default:
                 break;
         }
@@ -814,7 +715,7 @@ ECode ViewGroup::HandleFocusGainInternal(
     /* [in] */ IRect* previouslyFocusedRect)
 {
     if (mFocused != NULL) {
-        VIEW_PROBE(mFocused)->UnFocus();
+        (View::Probe(mFocused))->UnFocus(THIS_PROBE(IView));
         mFocused = NULL;
     }
 
@@ -834,19 +735,19 @@ ECode ViewGroup::RequestChildFocus(
     }
 
     // Unfocus us, if necessary
-    View::UnFocus();
+    View::UnFocus(focused);
 
     // We had a previous notion of who had focus. Clear it.
     if (mFocused.Get() != child) {
         if (mFocused != NULL) {
-            VIEW_PROBE(mFocused)->UnFocus();
+            (View::Probe(mFocused))->UnFocus(focused);
         }
 
         mFocused = child;
     }
 
     if (mParent != NULL) {
-        mParent->RequestChildFocus(IVIEW_PROBE(this), focused);
+        mParent->RequestChildFocus(IView::Probe(this), focused);
     }
     return NOERROR;
 }
@@ -854,10 +755,17 @@ ECode ViewGroup::RequestChildFocus(
 ECode ViewGroup::FocusableViewAvailable(
     /* [in] */ IView* v)
 {
+    Int32 descendantFocusability;
+    GetDescendantFocusability(&descendantFocusability);
+    Boolean isFocused, isFocusableInTouchMode;
+    IsFocused(&isFocused);
+    IsFocusableInTouchMode(&isFocusableInTouchMode);
+
     if (mParent != NULL
         // shortcut: don't report a new focusable view if we block our descendants from
         // getting focus
-        && (GetDescendantFocusability() != FOCUS_BLOCK_DESCENDANTS)
+        && (descendantFocusability != FOCUS_BLOCK_DESCENDANTS)
+        && (isFocusableInTouchMode || !ShouldBlockFocusForTouchscreen())
         // shortcut: don't report a new focusable view if we already are focused
         // (and we don't prefer our descendants)
         //
@@ -865,7 +773,7 @@ ECode ViewGroup::FocusableViewAvailable(
         // to break the traversal since in that case we'd actually have to find
         // the focused view and make sure it wasn't FOCUS_AFTER_DESCENDANTS and
         // an ancestor of v; this will get checked for at ViewAncestor
-        && !(IsFocused() && GetDescendantFocusability() != FOCUS_AFTER_DESCENDANTS)) {
+        && !(isFocused && descendantFocusability != FOCUS_AFTER_DESCENDANTS)) {
         mParent->FocusableViewAvailable(v);
     }
     return NOERROR;
@@ -936,7 +844,7 @@ Boolean ViewGroup::RequestSendAccessibilityEvent(
         return FALSE;
     }
     Boolean res;
-    parent->RequestSendAccessibilityEvent(IVIEW_PROBE(this), event, &res);
+    parent->RequestSendAccessibilityEvent(IView::Probe(this), event, &res);
     return res;
 }
 
@@ -960,6 +868,168 @@ Boolean ViewGroup::OnRequestSendAccessibilityEventInternal(
     /* [in] */ IAccessibilityEvent* event)
 {
     return TRUE;
+}
+
+/**
+ * Translates the given bounds and intersections from child coordinates to
+ * local coordinates. In case any interactive sibling of the calling child
+ * covers the latter, a new intersections is added to the intersection list.
+ * This method is for the exclusive use by the accessibility layer to compute
+ * a point where a sequence of down and up events would click on a view.
+ *
+ * @param child The child making the call.
+ * @param bounds The bounds to translate in child coordinates.
+ * @param intersections The intersections of interactive views covering the child.
+ * @return True if the bounds and intersections were computed, false otherwise.
+ */
+ECode ViewGroup::TranslateBoundsAndIntersectionsInWindowCoordinates(
+    /* [in] */ IView* child,
+    /* [in] */ IRectF* bounds,
+    /* [in] */ IList* intersections,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    // Not attached, done.
+    if (mAttachInfo == NULL) {
+        *res = FALSE;
+        return NOERROR;
+    }
+
+    Float alpha, transitionAlpha;
+    Int32 visibility;
+    if ((GetAlpha(&alpha), alpha) <= 0 || (GetTransitionAlpha(&transitionAlpha), transitionAlpha) <= 0
+        || (GetVisibility(&visibility), visibility) != IView::VISIBLE) {
+        // Cannot click on a view with an invisible predecessor.
+        *res = FALSE;
+        return NOERROR;
+    }
+
+    // Compensate for the child transformation.
+    Boolean hasIdentityMatrix;
+    (View::Probe(child))->HasIdentityMatrix(&hasIdentityMatrix);
+    if (!hasIdentityMatrix) {
+        AutoPtr<IMatrix> matrix;
+        child->GetMatrix((IMatrix**)&matrix);
+        matrix->MapRect(bounds, &hasIdentityMatrix);
+
+        Int32 intersectionCount;
+        intersections->GetSize(&intersectionCount);
+
+        for (Int32 i = 0; i < intersectionCount; i++)
+        {
+            AutoPtr<IInterface> temp;
+            intersections->Get(i, (IInterface**)&temp);
+            AutoPtr<IRectF> intersection = IRectF::Probe(temp);
+            matrix->MapRect(intersection, &hasIdentityMatrix);
+        }
+    }
+
+    // Translate the bounds from child to parent coordinates.
+    View* temp = View::Probe(child);
+    Int32 dx = temp->mLeft - mScrollX;
+    Int32 dy = temp->mTop - mScrollY;
+    bounds->Offset(dx, dy);
+    OffsetRects(intersections, dx, dy);
+
+    // If the bounds do not intersect our bounds, done.
+    Int32 width, height;
+    GetWidth(&width);
+    GetHeight(&height);
+    Boolean result;
+    bounds->Intersects(0, 0, width, height, &result);
+    if (!result) {
+        *res = FALSE;
+        return NOERROR;
+    }
+
+    // Check whether any clickable siblings cover the child
+    // view and if so keep track of the intersections. Also
+    // respect Z ordering when iterating over children.
+    AutoPtr<IList> orderedList = BuildOrderedChildList();
+    Boolean useCustomOrder = orderedList == NULL
+            && IsChildrenDrawingOrderEnabled();
+
+    Int32 childCount = mChildrenCount;
+    for (Int32 i = childCount - 1; i >= 0; i--) {
+        Int32 childIndex = useCustomOrder
+                ? GetChildDrawingOrder(childCount, i) : i;
+        AutoPtr<IView> sibling = (orderedList == NULL)
+        if (orderedList == NULL) {
+            sibling = (*mChildren)[childIndex];
+        } else {
+            AutoPtr<IInterface> temp;
+            orderedList->Get(childIndex, (IInterface**)&temp);
+            sibling = IView::Probe(temp);
+        }
+
+        // We care only about siblings over the child.
+        if (child == sibling) {
+            break;
+        }
+
+        // Ignore invisible views as they are not interactive.
+        Int32 siblingVisibility;
+        sibling->GetVisibility(&siblingVisibility);
+        if (siblingVisibility != IView::VISIBLE) {
+            continue;
+        }
+
+        // If sibling is not interactive we do not care.
+        Boolean isClickable, isLongClickable;
+        sibling->IsClickable(&isClickable);
+        sibling->IsLongClickable(&isLongClickable);
+        if (!isClickable && !isLongClickable) {
+            continue;
+        }
+
+        // Compute the sibling bounds in its coordinates.
+        AutoPtr<IRectF> siblingBounds = mAttachInfo->mTmpTransformRect1;
+        Int32 siblingW, siblingH;
+        sibling->GetWidth(&siblingW);
+        sibling->GetHeight(&siblingH);
+        siblingBounds->Set(0, 0, siblingW, siblingH);
+
+        // Take into account the sibling transformation matrix.
+        Boolean siblingHasIdentityMatrix;
+        sibling->HasIdentityMatrix(&siblingHasIdentityMatrix);
+        if (!siblingHasIdentityMatrix) {
+            AutoPtr<IMatrix> matrix;
+            sibling->GetMatrix((IMatrix**)&matrix);
+            Boolean result;
+            matrix->MapRect(siblingBounds, &result);
+        }
+
+        // Offset the sibling to our coordinates.
+        View* siblingTemp = View::Probe(sibling);
+        Int32 siblingDx = siblingTemp->mLeft - mScrollX;
+        Int32 siblingDy = siblingTemp->mTop - mScrollY;
+        siblingBounds->Offset(siblingDx, siblingDy);
+
+        // Compute the intersection between the child and the sibling.
+        Boolean siblingBoundsIntersect;
+        siblingBounds->Intersect(bounds, &siblingBoundsIntersect);
+        if (siblingBoundsIntersect) {
+            // If an interactive sibling completely covers the child, done.
+            siblingBounds->Equals(bounds, &siblingBoundsIntersect)
+            if (siblingBoundsIntersect) {
+                *res = FALSE;
+                return NOERROR;
+            }
+            // Keep track of the intersection rectangle.
+            AutoPtr<IRectF> intersection;
+            CRectF::New(siblingBounds, (IRectF**)&intersection);
+            intersections->Add((IInterface*)intersection->Probe(EIID_IInterface));
+        }
+    }
+
+    if (IViewGroup::Probe(mParent)) {
+        AutoPtr<ViewGroup> parentGroup = (ViewGroup*)IViewGroup::Probe(mParent);
+        *res = parentGroup->TranslateBoundsAndIntersectionsInWindowCoordinates(
+                THIS_PROBE(IView), bounds, intersections);
+        return NOERROR;
+    }
+    *res = TRUE;
+    return NOERROR;
 }
 
 ECode ViewGroup::ChildHasTransientStateChanged(
@@ -1008,7 +1078,7 @@ ECode ViewGroup::ClearChildFocus(
 
     mFocused = NULL;
     if (mParent != NULL) {
-        mParent->ClearChildFocus(IVIEW_PROBE(this));
+        mParent->ClearChildFocus(IView::Probe(this));
     }
 
     return NOERROR;
@@ -1028,13 +1098,14 @@ ECode ViewGroup::ClearFocus()
     return NOERROR;
 }
 
-ECode ViewGroup::UnFocus()
+ECode ViewGroup::UnFocus(
+    /* [in] */ IView* focused)
 {
     if (mFocused == NULL) {
-        View::UnFocus();
+        View::UnFocus(focused);
     }
     else {
-        VIEW_PROBE(mFocused)->UnFocus();
+        (View::Probe(mFocused))->UnFocus(focused);
         mFocused = NULL;
     }
 
@@ -1044,6 +1115,29 @@ ECode ViewGroup::UnFocus()
 AutoPtr<IView> ViewGroup::GetFocusedChild()
 {
     return mFocused;
+}
+
+ECode ViewGroup::GetDeepestFocusedChild(
+    /* [out] */ IView** focused)
+{
+    VALIDATE_NOT_NULL(focused)
+    AutoPtr<IView> v = THIS_PROBE(IView);
+    while (v != NULL) {
+        Boolean res;
+        v->IsFocused(&res);
+        if (res) {
+            *focused = v;
+            REFCOUNT_ADD(*focused);
+            return NOERROR;
+        }
+        if (IViewGroup::Probe(v)) {
+            (IViewGroup::Probe(v))->GetFocusedChild((IView**)&v);
+        } else {
+            v = NULL;
+        }
+    }
+    *focused = NULL;
+    return NOERROR;
 }
 
 Boolean ViewGroup::HasFocus()
@@ -1059,11 +1153,11 @@ AutoPtr<IView> ViewGroup::FindFocus()
     }
 
     if (IsFocused()) {
-        return AutoPtr<IView>(IVIEW_PROBE(this));
+        return AutoPtr<IView>(IView::Probe(this));
     }
 
     if (mFocused != NULL) {
-        return VIEW_PROBE(mFocused)->FindFocus();
+        return (View::Probe(mFocused))->FindFocus();
     }
     return AutoPtr<IView>(NULL);
 }
@@ -1092,7 +1186,7 @@ Boolean ViewGroup::HasFocusable()
 }
 
 ECode ViewGroup::AddFocusables(
-    /* [in] */ IObjectContainer* views,
+    /* [in] */ IList* views,
     /* [in] */ Int32 direction,
     /* [in] */ Int32 focusableMode)
 {
@@ -1103,8 +1197,11 @@ ECode ViewGroup::AddFocusables(
 
     Int32 descendantFocusability = GetDescendantFocusability();
     if (descendantFocusability != FOCUS_BLOCK_DESCENDANTS) {
+        if (ShouldBlockFocusForTouchscreen()) {
+            focusableMode |= FOCUSABLES_TOUCH_MODE;
+        }
         for (Int32 i = 0; i < mChildrenCount; i++) {
-            View* temp = VIEW_PROBE((*mChildren)[i]);
+            View* temp = View::Probe((*mChildren)[i]);
             if ((temp->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE) {
                 temp->AddFocusables(views, direction, focusableMode);
             }
@@ -1117,14 +1214,67 @@ ECode ViewGroup::AddFocusables(
     // among the focusable children would be more interesting.
     //
     Int32 size;
-    views->GetObjectCount(&size);
-    if (descendantFocusability != FOCUS_AFTER_DESCENDANTS ||
-        // No focusable descendants
-        (focusableCount == size)) {
+    views->GetSize(&size);
+    Boolean isFocusableInTouchMode;
+    IsFocusableInTouchMode(&isFocusableInTouchMode);
+    if ((descendantFocusability != FOCUS_AFTER_DESCENDANTS
+            // No focusable descendants
+            || (focusableCount == size)) &&
+            (isFocusableInTouchMode || !ShouldBlockFocusForTouchscreen())) {
             View::AddFocusables(views, direction, focusableMode);
     }
 
     return NOERROR;
+}
+
+/**
+ * Set whether this ViewGroup should ignore focus requests for itself and its children.
+ * If this option is enabled and the ViewGroup or a descendant currently has focus, focus
+ * will proceed forward.
+ *
+ * @param touchscreenBlocksFocus true to enable blocking focus in the presence of a touchscreen
+ */
+ECode ViewGroup::SetTouchscreenBlocksFocus(
+    /* [in] */ Boolean touchscreenBlocksFocus)
+{
+    if (touchscreenBlocksFocus) {
+        mGroupFlags |= FLAG_TOUCHSCREEN_BLOCKS_FOCUS;
+        if (HasFocus()) {
+            AutoPtr<IView> focusedChild;
+            GetDeepestFocusedChild((IView**)&focusedChild);
+            Boolean isFocusableInTouchMode;
+            focusedChild->IsFocusableInTouchMode(&isFocusableInTouchMode);
+            if (!isFocusableInTouchMode) {
+                AutoPtr<IView> newFocus = FocusSearch(FOCUS_FORWARD);
+                if (newFocus != NULL) {
+                    newFocus->RequestFocus();
+                }
+            }
+        }
+    } else {
+        mGroupFlags &= ~FLAG_TOUCHSCREEN_BLOCKS_FOCUS;
+    }
+}
+
+/**
+ * Check whether this ViewGroup should ignore focus requests for itself and its children.
+ */
+ECode ViewGroup::getTouchscreenBlocksFocus(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    *res = (mGroupFlags & FLAG_TOUCHSCREEN_BLOCKS_FOCUS) != 0;
+    return NOERROR;
+}
+
+Boolean ViewGroup::ShouldBlockFocusForTouchscreen()
+{
+    Boolean touchscreenBlocksFocus, hasSystemFeature;
+    GetTouchscreenBlocksFocus(&touchscreenBlocksFocus);
+    AutoPtr<IPackageManager> pmg;
+    mContext0->GetPackageManager((IPackageManager**)&pmg);
+    pmg->HasSystemFeature(IPackageManager::FEATURE_TOUCHSCREEN, &hasSystemFeature);
+    return touchscreenBlocksFocus && hasSystemFeature;
 }
 
 ECode ViewGroup::FindViewsWithText(
@@ -1134,7 +1284,7 @@ ECode ViewGroup::FindViewsWithText(
 {
     View::FindViewsWithText(outViews, searched, flags);
     for (Int32 i = 0; i < mChildrenCount; i++) {
-        View* child = VIEW_PROBE((*mChildren)[i]);
+        View* child = View::Probe((*mChildren)[i]);
         if ((child->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE
                 && (child->mPrivateFlags & PFLAG_IS_ROOT_NAMESPACE) == 0) {
             child->FindViewsWithText(outViews, searched, flags);
@@ -1153,7 +1303,7 @@ AutoPtr<IView> ViewGroup::FindViewByAccessibilityIdTraversal(
     }
 
     for (Int32 i = 0; i < mChildrenCount; i++) {
-        View* child = VIEW_PROBE((*mChildren)[i]);
+        View* child = View::Probe((*mChildren)[i]);
         foundView = child->FindViewByAccessibilityIdTraversal(accessibilityId);
         if (foundView != NULL) {
             return foundView;
@@ -1180,7 +1330,7 @@ ECode ViewGroup::AddTouchables(
     View::AddTouchables(views);
 
     for (Int32 i = 0; i < mChildrenCount; i++) {
-        View* temp = VIEW_PROBE((*mChildren)[i]);
+        View* temp = View::Probe((*mChildren)[i]);
         if ((temp->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE) {
             temp->AddTouchables(views);
         }
@@ -1251,7 +1401,7 @@ void ViewGroup::DispatchVisibilityChanged(
     View::DispatchVisibilityChanged(changedView, visibility);
 
     for (Int32 i = 0; i < mChildrenCount; i++) {
-        VIEW_PROBE((*mChildren)[i])->DispatchVisibilityChanged(
+        View::Probe((*mChildren)[i])->DispatchVisibilityChanged(
             changedView, visibility);
     }
 }
@@ -1285,7 +1435,7 @@ ECode ViewGroup::RecomputeViewAttributes(
 {
     if (mAttachInfo != NULL && !mAttachInfo->mRecomputeGlobalAttributes) {
         if (mParent != NULL) {
-            return mParent->RecomputeViewAttributes(IVIEW_PROBE(this));
+            return mParent->RecomputeViewAttributes(IView::Probe(this));
         }
     }
 
@@ -1299,7 +1449,7 @@ ECode ViewGroup::DispatchCollectViewAttributes(
     if ((visibility & VISIBILITY_MASK) == IView::VISIBLE) {
         View::DispatchCollectViewAttributes(attachInfo, visibility);
         for (Int32 i = 0; i < mChildrenCount; i++) {
-            View* child = VIEW_PROBE((*mChildren)[i]);
+            View* child = View::Probe((*mChildren)[i]);
             child->DispatchCollectViewAttributes(attachInfo,
                     visibility | (child->mViewFlags & VISIBILITY_MASK));
         }
@@ -1315,12 +1465,21 @@ ECode ViewGroup::BringChildToFront(
     if (index >= 0) {
         RemoveFromArray(index);
         AddInArray(child, mChildrenCount);
-        VIEW_PROBE(child)->mParent =
+        View::Probe(child)->mParent =
             THIS_PROBE(IViewParent);
+        RequestLayout();
+        Invalidate();
     }
     return NOERROR;
 }
 
+AutoPtr<IPointF> ViewGroup::GetLocalPoint()
+{
+    if (mLocalPoint == NULL) {
+        CPointF::New((IPointF**)&mLocalPoint);
+    }
+    return mLocalPoint;
+}
 
 Boolean ViewGroup::DispatchDragEvent(
     /* [in] */ IDragEvent* event)
@@ -1332,6 +1491,9 @@ Boolean ViewGroup::DispatchDragEvent(
     event->GetY(&ty);
 
     ViewRootImpl* root = GetViewRootImpl();
+
+    // Dispatch down the view hierarchy
+    AutoPtr<IPointF> localPoint = GetLocalPoint();
 
     Int32 action = 0;
     event->GetAction(&action);
@@ -1348,7 +1510,7 @@ Boolean ViewGroup::DispatchDragEvent(
         // Now dispatch down to our children, caching the responses
         mChildAcceptsDrag = FALSE;
         for (Int32 i = 0; i < mChildrenCount; i++) {
-            View* child = VIEW_PROBE((*mChildren)[i]);
+            View* child = View::Probe((*mChildren)[i]);
             child->mPrivateFlags2 &= ~DRAG_MASK;
             if (child->GetVisibility() == IView::VISIBLE) {
                 Boolean handled = NotifyChildOfDrag((*mChildren)[i]);
@@ -1369,7 +1531,7 @@ Boolean ViewGroup::DispatchDragEvent(
         if (!mDragNotifiedChildren.IsEmpty()) {
             List<AutoPtr<IView> >::Iterator iter = mDragNotifiedChildren.Begin();
             for (; iter != mDragNotifiedChildren.End(); ++iter) {
-                View* child = VIEW_PROBE(iter->Get());
+                View* child = View::Probe(iter->Get());
                 assert(child != NULL);
                 // If a child was notified about an ongoing drag, it's told that it's over
                 child->DispatchDragEvent(event);
@@ -1378,8 +1540,10 @@ Boolean ViewGroup::DispatchDragEvent(
             }
 
             mDragNotifiedChildren.Clear();
-            mCurrentDrag->Recycle();
-            mCurrentDrag = NULL;
+            if (mCurrentDrag != NULL) {
+                mCurrentDrag->Recycle();
+                mCurrentDrag = NULL;
+            }
         }
 
         // We consider drag-ended to have been handled if one of our children
@@ -1391,7 +1555,7 @@ Boolean ViewGroup::DispatchDragEvent(
 
     case IDragEvent::ACTION_DRAG_LOCATION: {
         // Find the [possibly new] drag target
-        View* target = VIEW_PROBE(FindFrontmostDroppableChildAt(tx, ty, mLocalPoint));
+        View* target = View::Probe(FindFrontmostDroppableChildAt(tx, ty, localPoint));
 
         // If we've changed apparent drag target, tell the view root which view
         // we're over now [for purposes of the eventual drag-recipient-changed
@@ -1400,11 +1564,11 @@ Boolean ViewGroup::DispatchDragEvent(
         // the way down to the final leaf view that is handling the LOCATION event
         // before reporting the new potential recipient to the framework.
         if (mCurrentDragView != target) {
-            root->SetDragFocus(IVIEW_PROBE(target));
+            root->SetDragFocus(IView::Probe(target));
 
             // If we've dragged off of a child view, send it the EXITED message
             if (mCurrentDragView != NULL) {
-                View* view = VIEW_PROBE(mCurrentDragView);
+                View* view = View::Probe(mCurrentDragView);
                 event->SetAction(IDragEvent::ACTION_DRAG_EXITED);
                 view->DispatchDragEvent(event);
                 view->mPrivateFlags2 &= ~PFLAG2_DRAG_HOVERED;
@@ -1425,9 +1589,9 @@ Boolean ViewGroup::DispatchDragEvent(
         // Dispatch the actual drag location notice, localized into its coordinates
         if (target != NULL) {
             Float tmp = 0.0f;
-            mLocalPoint->GetX(&tmp);
+            localPoint->GetX(&tmp);
             event->SetX(tmp);
-            mLocalPoint->GetY(&tmp);
+            localPoint->GetY(&tmp);
             event->SetY(tmp);
 
             retval = target->DispatchDragEvent(event);
@@ -1461,12 +1625,12 @@ Boolean ViewGroup::DispatchDragEvent(
 
     case IDragEvent::ACTION_DROP: {
         // if (ViewDebug.DEBUG_DRAG) Log.d(View::VIEW_LOG_TAG, "Drop event: " + event);
-        View* target = VIEW_PROBE(FindFrontmostDroppableChildAt(tx, ty, mLocalPoint));
+        View* target = View::Probe(FindFrontmostDroppableChildAt(tx, ty, localPoint));
         if (target != NULL) {
             Float tmp = 0.0f;
-            mLocalPoint->GetX(&tmp);
+            localPoint->GetX(&tmp);
             event->SetX(tmp);
-            mLocalPoint->GetY(&tmp);
+            localPoint->GetY(&tmp);
             event->SetY(tmp);
 
             retval = target->DispatchDragEvent(event);
@@ -1499,7 +1663,7 @@ AutoPtr<IView> ViewGroup::FindFrontmostDroppableChildAt(
 {
     for (Int32 i = mChildrenCount - 1; i >= 0; i--) {
         AutoPtr<IView> child = (*mChildren)[i];
-        if (!VIEW_PROBE(child)->CanAcceptDrag()) {
+        if (!View::Probe(child)->CanAcceptDrag()) {
             continue;
         }
 
@@ -1525,7 +1689,7 @@ Boolean ViewGroup::NotifyChildOfDrag(
 
     if (iter == mDragNotifiedChildren.End()) {
         mDragNotifiedChildren.PushBack(child);
-        View* _child = VIEW_PROBE(child);
+        View* _child = View::Probe(child);
         canAccept = _child->DispatchDragEvent(mCurrentDrag);
         if (canAccept && !_child->CanAcceptDrag()) {
             _child->mPrivateFlags2 |= PFLAG2_DRAG_CAN_ACCEPT;
@@ -1567,7 +1731,7 @@ Boolean ViewGroup::UpdateLocalSystemUiVisibility(
     Boolean changed = View::UpdateLocalSystemUiVisibility(localValue, localChanges);
 
     for (Int32 i=0; i <mChildrenCount; i++) {
-        View* child = VIEW_PROBE((*mChildren)[i]);
+        View* child = View::Probe((*mChildren)[i]);
         changed |= child->UpdateLocalSystemUiVisibility(localValue, localChanges);
     }
 
@@ -1581,7 +1745,7 @@ Boolean ViewGroup::DispatchKeyEventPreIme(
         return View::DispatchKeyEventPreIme(event);
     }
     else if (mFocused != NULL) {
-        View* focused = VIEW_PROBE(mFocused);
+        View* focused = View::Probe(mFocused);
         assert(focused);
         if ((focused->mPrivateFlags & PFLAG_HAS_BOUNDS) == PFLAG_HAS_BOUNDS) {
             return focused->DispatchKeyEventPreIme(event);
@@ -1604,9 +1768,9 @@ Boolean ViewGroup::DispatchKeyEvent(
             return TRUE;
         }
     }
-    else if (mFocused != NULL && (VIEW_PROBE(mFocused)->mPrivateFlags & PFLAG_HAS_BOUNDS)
+    else if (mFocused != NULL && (View::Probe(mFocused)->mPrivateFlags & PFLAG_HAS_BOUNDS)
             == PFLAG_HAS_BOUNDS) {
-        if (VIEW_PROBE(mFocused)->DispatchKeyEvent(event)) {
+        if (View::Probe(mFocused)->DispatchKeyEvent(event)) {
             return TRUE;
         }
     }
@@ -1625,7 +1789,7 @@ Boolean ViewGroup::DispatchKeyShortcutEvent(
         return View::DispatchKeyShortcutEvent(event);
     }
     else if (mFocused != NULL) {
-        View* focused = VIEW_PROBE(mFocused);
+        View* focused = View::Probe(mFocused);
         assert(focused);
         if ((focused->mPrivateFlags & PFLAG_HAS_BOUNDS) == PFLAG_HAS_BOUNDS) {
             return focused->DispatchKeyShortcutEvent(event);
@@ -1648,9 +1812,9 @@ Boolean ViewGroup::DispatchTrackballEvent(
             return TRUE;
         }
     }
-    else if (mFocused != NULL && (VIEW_PROBE(mFocused)->mPrivateFlags & PFLAG_HAS_BOUNDS)
+    else if (mFocused != NULL && (View::Probe(mFocused)->mPrivateFlags & PFLAG_HAS_BOUNDS)
             == PFLAG_HAS_BOUNDS) {
-        if (VIEW_PROBE(mFocused)->DispatchTrackballEvent(event)) {
+        if (View::Probe(mFocused)->DispatchTrackballEvent(event)) {
             return TRUE;
         }
     }
@@ -1686,8 +1850,21 @@ Boolean ViewGroup::DispatchHoverEvent(
         event->GetY(&y);
 
         if (mChildrenCount != 0) {
+            AutoPtr<IList> preorderedList = BuildOrderedChildList();
+            Boolean customOrder = preorderedList == NULL && IsChildrenDrawingOrderEnabled();
+
             AutoPtr<HoverTarget> lastHoverTarget;
             for (Int32 i = mChildrenCount - 1; i >= 0; i--) {
+                Int32 childIndex = customOrder ? GetChildDrawingOrder(mChildrenCount, i) : i;
+                AutoPtr<IView> child;
+                if (preorderedList == NULL) {
+                    child = (*mChildren)[childIndex];
+                } else {
+                    AutoPtr<IInterface> temp;
+                    preorderedList->Get(childIndex, (IInterface**)&temp);
+                    child = IView::Probe(temp);
+                }
+
                 AutoPtr<IView> child = (*mChildren)[i];
                 if (!CanViewReceivePointerEvents(child)
                         || !IsTransformedTouchPointInView(x, y, child, NULL)) {
@@ -1726,9 +1903,9 @@ Boolean ViewGroup::DispatchHoverEvent(
                     lastHoverTarget->mNext = hoverTarget;
                 }
                 else {
-                    lastHoverTarget = hoverTarget;
                     mFirstHoverTarget = hoverTarget;
                 }
+                lastHoverTarget = hoverTarget;
 
                 // Dispatch the event to the child.
                 if (action == IMotionEvent::ACTION_HOVER_ENTER) {
@@ -1759,6 +1936,7 @@ Boolean ViewGroup::DispatchHoverEvent(
                     break;
                 }
             }
+            if (preorderedList != NULL) preorderedList->Clear();
         }
     }
 
@@ -1887,7 +2065,7 @@ void ViewGroup::CancelHoverTarget(
                 now, now, IMotionEvent::ACTION_HOVER_EXIT,
                 0.0f, 0.0f, 0, (CMotionEvent**)&event);
             event->SetSource(IInputDevice::SOURCE_TOUCHSCREEN);
-            VIEW_PROBE(view)->DispatchHoverEvent(event.Get());
+            (View::Probe(view))->DispatchHoverEvent(event.Get());
             event->Recycle();
             return;
         }
@@ -1909,10 +2087,10 @@ ECode ViewGroup::AddChildrenForAccessibility(
         ChildListForAccessibility::Obtain(THIS_PROBE(IViewGroup), TRUE);
     const Int32 childrenCount = children->GetChildCount();
     for (Int32 i = 0; i < childrenCount; i++) {
-        View* child = VIEW_PROBE(children->GetChildAt(i));
+        View* child = View::Probe(children->GetChildAt(i));
         if ((child->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE) {
             if (child->IncludeForAccessibility()) {
-                childrenForAccessibility->Add(IVIEW_PROBE(child));
+                childrenForAccessibility->Add(IView::Probe(child));
             }
             else {
                 child->AddChildrenForAccessibility(childrenForAccessibility);
@@ -1920,16 +2098,6 @@ ECode ViewGroup::AddChildrenForAccessibility(
         }
     }
     children->Recycle();
-
-    return NOERROR;
-}
-
-ECode ViewGroup::ChildAccessibilityStateChanged(
-    /* [in] */ IView* child)
-{
-    if (mParent != NULL) {
-        return mParent->ChildAccessibilityStateChanged(child);
-    }
 
     return NOERROR;
 }
@@ -1965,19 +2133,30 @@ Boolean ViewGroup::DispatchGenericPointerEvent(
         Float y = 0.0f;
         event->GetY(&y);
 
-        const Boolean customOrder = IsChildrenDrawingOrderEnabled();
+        AutoPtr<IList> preorderedList = BuildOrderedChildList();
+        const Boolean customOrder = preorderedList == NULL && IsChildrenDrawingOrderEnabled();
+
         for (Int32 i = mChildrenCount - 1; i >= 0; i--) {
             Int32 childIndex = customOrder ? GetChildDrawingOrder(mChildrenCount, i) : i;
-            AutoPtr<IView> child = (*mChildren)[childIndex];
+            AutoPtr<IView> child;
+            if (preorderedList == NULL) {
+                child = (*mChildren)[childIndex];
+            } else {
+                AutoPtr<IInterface> temp;
+                preorderedList->Get(childIndex, (IInterface*)&temp);
+                child = IView::Probe(temp);
+            }
             if (!CanViewReceivePointerEvents(child)
                     || !IsTransformedTouchPointInView(x, y, child, NULL)) {
                 continue;
             }
 
             if (DispatchTransformedGenericPointerEvent(event, child)) {
+                if (preorderedList != NULL) preorderedList->Clear();
                 return TRUE;
             }
         }
+        if (preorderedList != NULL) preorderedList->Clear();
     }
 
     // No child handled the event.  Send it to this view group.
@@ -1992,9 +2171,9 @@ Boolean ViewGroup::DispatchGenericFocusedEvent(
             == (PFLAG_FOCUSED | PFLAG_HAS_BOUNDS)) {
         return View::DispatchGenericFocusedEvent(event);
     }
-    else if (mFocused != NULL && (VIEW_PROBE(mFocused)->mPrivateFlags & PFLAG_HAS_BOUNDS)
+    else if (mFocused != NULL && ((View::Probe(mFocused))->mPrivateFlags & PFLAG_HAS_BOUNDS)
             == PFLAG_HAS_BOUNDS) {
-        return VIEW_PROBE(mFocused)->DispatchGenericMotionEvent(event);
+        return (View::Probe(mFocused))->DispatchGenericMotionEvent(event);
     }
     return FALSE;
 }
@@ -2003,7 +2182,7 @@ Boolean ViewGroup::DispatchTransformedGenericPointerEvent(
     /* [in] */ IMotionEvent* event,
     /* [in] */ IView* _child)
 {
-    View* child = VIEW_PROBE(_child);
+    View* child = View::Probe(_child);
     Float offsetX = mScrollX - child->mLeft;
     Float offsetY = mScrollY - child->mTop;
 
@@ -2096,7 +2275,7 @@ Boolean ViewGroup::DispatchTouchEvent(
                 RemovePointersFromTouchTargets(idBitsToAssign);
 
                 const Int32 childrenCount = mChildrenCount;
-                if (childrenCount != 0) {
+                if (newTouchTarget == NULL && childrenCount != 0) {
                     // Find a child that can receive the event.
                     // Scan children from front to back.
                     Float x = 0.0f;
@@ -2104,11 +2283,20 @@ Boolean ViewGroup::DispatchTouchEvent(
                     Float y = 0.0f;
                     ev->GetY(actionIndex, &y);
 
-                    Boolean customOrder = IsChildrenDrawingOrderEnabled();
+                    AutoPtr<IList> preorderedList = BuildOrderedChildList();
+                    Boolean customOrder = preorderedList == NULL && IsChildrenDrawingOrderEnabled();
+
                     for (Int32 i = childrenCount - 1; i >= 0; i--) {
                         Int32 childIndex = customOrder ?
                                 GetChildDrawingOrder(childrenCount, i) : i;
-                        AutoPtr<IView> child = (*mChildren)[childIndex];
+                        AutoPtr<IView> child;
+                        if (preorderedList == NULL) {
+                            child = (*mChildren)[childIndex];
+                        } else {
+                            AutoPtr<IInterface> temp;
+                            preorderedList->Get(childIndex, (IInterface**)&temp);
+                            child = IView::Probe(temp);
+                        }
                         if (!CanViewReceivePointerEvents(child)
                                 || !IsTransformedTouchPointInView(x, y, child, NULL)) {
                             continue;
@@ -2122,11 +2310,22 @@ Boolean ViewGroup::DispatchTouchEvent(
                             break;
                         }
 
-                        ResetCancelNextUpFlag(VIEW_PROBE(child));
+                        ResetCancelNextUpFlag(View::Probe(child));
                         if (DispatchTransformedTouchEvent(ev, FALSE, child, idBitsToAssign)) {
                             // Child wants to receive touch within its bounds.
                             ev->GetDownTime(&mLastTouchDownTime);
-                            mLastTouchDownIndex = childIndex;
+
+                            if (preorderedList != NULL) {
+                                // childIndex points into presorted list, find original index
+                                for (Int32 j = 0; j < childrenCount; j++) {
+                                    if ((*mChildren)[childIndex] == (*mChildren)[j]) {
+                                        mLastTouchDownIndex = j;
+                                        break;
+                                    }
+                                }
+                            } else {
+                                mLastTouchDownIndex = childIndex;
+                            }
                             ev->GetX(&mLastTouchDownX);
                             ev->GetY(&mLastTouchDownY);
                             newTouchTarget = AddTouchTarget(child, idBitsToAssign);
@@ -2134,6 +2333,7 @@ Boolean ViewGroup::DispatchTouchEvent(
                             break;
                         }
                     }
+                    if (preorderedList != NULL) preorderedList->Clear();
                 }
 
                 if (newTouchTarget == NULL && mFirstTouchTarget != NULL) {
@@ -2165,7 +2365,7 @@ Boolean ViewGroup::DispatchTouchEvent(
                     handled = TRUE;
                 }
                 else {
-                    Boolean cancelChild = ResetCancelNextUpFlag(VIEW_PROBE(target->mChild))
+                    Boolean cancelChild = ResetCancelNextUpFlag(View::Probe(target->mChild))
                         || intercepted;
                     if (DispatchTransformedTouchEvent(ev, cancelChild,
                             target->mChild, target->mPointerIdBits)) {
@@ -2218,6 +2418,7 @@ void ViewGroup::ResetTouchState()
     ClearTouchTargets();
     ResetCancelNextUpFlag(this);
     mGroupFlags &= ~FLAG_DISALLOW_INTERCEPT;
+    mNestedScrollAxes = IView::SCROLL_AXIS_NONE;
 }
 
 Boolean ViewGroup::ResetCancelNextUpFlag(
@@ -2260,7 +2461,7 @@ void ViewGroup::CancelAndClearTouchTargets(
 
         AutoPtr<TouchTarget> target = mFirstTouchTarget;
         for (; target != NULL; target = target->mNext) {
-            ResetCancelNextUpFlag(VIEW_PROBE(target->mChild));
+            ResetCancelNextUpFlag(View::Probe(target->mChild));
             DispatchTransformedTouchEvent(temp, TRUE, target->mChild, target->mPointerIdBits);
         }
         ClearTouchTargets();
@@ -2353,7 +2554,7 @@ void ViewGroup::CancelTouchTarget(
 Boolean ViewGroup::CanViewReceivePointerEvents(
     /* [in] */ IView* child)
 {
-    View* _child = VIEW_PROBE(child);
+    View* _child = View::Probe(child);
     assert(_child != NULL);
     return (_child->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE
             || _child->GetAnimation() != NULL;
@@ -2365,7 +2566,7 @@ Boolean ViewGroup::IsTransformedTouchPointInView(
     /* [in] */ IView* child,
     /* [in] */ IPointF* outLocalPoint)
 {
-    View* _child = VIEW_PROBE(child);
+    View* _child = View::Probe(child);
     Float localX = x + mScrollX - _child->mLeft;
     Float localY = y + mScrollY - _child->mTop;
     if (! _child->HasIdentityMatrix() && mAttachInfo != NULL) {
@@ -2394,7 +2595,7 @@ Boolean ViewGroup::DispatchTransformedTouchEvent(
     Boolean handled = FALSE;
     View* _child = NULL;
     if (child != NULL) {
-        _child = VIEW_PROBE(child);
+        _child = View::Probe(child);
     }
 
     // Canceling motions is a special case.  We don't need to perform any transformations
@@ -2493,6 +2694,53 @@ ECode ViewGroup::SetMotionEventSplittingEnabled(
 Boolean ViewGroup::IsMotionEventSplittingEnabled()
 {
     return (mGroupFlags & FLAG_SPLIT_MOTION_EVENTS) == FLAG_SPLIT_MOTION_EVENTS;
+}
+
+/**
+ * Returns true if this ViewGroup should be considered as a single entity for removal
+ * when executing an Activity transition. If this is false, child elements will move
+ * individually during the transition.
+ * @return True if the ViewGroup should be acted on together during an Activity transition.
+ * The default value is false when the background is null and true when the background
+ * is not null or if {@link #getTransitionName()} is not null.
+ */
+ECode ViewGroup::IsTransitionGroup(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    if ((mGroupFlags & FLAG_IS_TRANSITION_GROUP_SET) != 0) {
+        *res = ((mGroupFlags & FLAG_IS_TRANSITION_GROUP) != 0);
+        return NOERROR;
+    } else {
+        AutoPtr<IDrawable> background;
+        GetBackground((IDrawable**)&background);
+        String str;
+        getTransitionName(&str);
+
+        *res = (background != NULL || str.IsNullOrEmpty());
+        return NOERROR;
+    }
+}
+
+/**
+ * Changes whether or not this ViewGroup should be treated as a single entity during
+ * Activity Transitions.
+ * @param isTransitionGroup Whether or not the ViewGroup should be treated as a unit
+ *                          in Activity transitions. If false, the ViewGroup won't transition,
+ *                          only its children. If true, the entire ViewGroup will transition
+ *                          together.
+ * @see android.app.ActivityOptions#makeSceneTransitionAnimation(android.app.Activity,
+ * android.util.Pair[])
+ */
+ECode ViewGroup::SetTransitionGroup(
+    /* [in] */ Boolean isTransitionGroup)
+{
+    mGroupFlags |= FLAG_IS_TRANSITION_GROUP_SET;
+    if (isTransitionGroup) {
+        mGroupFlags |= FLAG_IS_TRANSITION_GROUP;
+    } else {
+        mGroupFlags &= ~FLAG_IS_TRANSITION_GROUP;
+    }
 }
 
 ECode ViewGroup::RequestDisallowInterceptTouchEvent(
@@ -2647,7 +2895,7 @@ Boolean ViewGroup::OnRequestFocusInDescendants(
     }
 
     for (Int32 i = index; i != end; i += increment) {
-        View* child = VIEW_PROBE((*mChildren)[i]);
+        View* child = View::Probe((*mChildren)[i]);
         if ((child->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE) {
             if (child->RequestFocus(direction, previouslyFocusedRect)) {
                 return TRUE;
@@ -2689,7 +2937,7 @@ void ViewGroup::DispatchAttachedToWindow(
     mGroupFlags &= ~FLAG_PREVENT_DISPATCH_ATTACHED_TO_WINDOW;
 
     for (Int32 i = 0; i < mChildrenCount; i++) {
-        View* child = VIEW_PROBE((*mChildren)[i]);
+        View* child = View::Probe((*mChildren)[i]);
         child->DispatchAttachedToWindow(info,
                 visibility | (child->mViewFlags&VISIBILITY_MASK));
     }
@@ -2702,7 +2950,7 @@ void ViewGroup::DispatchScreenStateChanged(
     View::DispatchScreenStateChanged(screenState);
 
     for (Int32 i = 0; i < mChildrenCount; i++) {
-        VIEW_PROBE((*mChildren)[i])->DispatchScreenStateChanged(screenState);
+        (View::Probe((*mChildren)[i]))->DispatchScreenStateChanged(screenState);
     }
 }
 
@@ -2722,7 +2970,7 @@ Boolean ViewGroup::DispatchPopulateAccessibilityEventInternal(
         THIS_PROBE(IViewGroup), TRUE);
     Int32 childCount = children->GetChildCount();
     for (Int32 i = 0; i < childCount; i++) {
-        View* child = VIEW_PROBE(children->GetChildAt(i));
+        View* child = View::Probe(children->GetChildAt(i));
         if ((child->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE) {
             handled = child->DispatchPopulateAccessibilityEvent(event);
             if (handled) {
@@ -2755,7 +3003,7 @@ void ViewGroup::OnInitializeAccessibilityNodeInfoInternal(
         while(children->MoveNext(&hasNext), hasNext) {
             AutoPtr<IView> child;
             children->Current((IInterface**)&child);
-            info->AddChild(child);
+            info->AddChildUnchecked(child);
         }
 
         childrenForAccessibility->Dispose();
@@ -2772,16 +3020,37 @@ void ViewGroup::OnInitializeAccessibilityEventInternal(
     event->SetClassName(seq);
 }
 
-/**
- * @hide
- */
 //@Override
-ECode ViewGroup::ResetAccessibilityStateChanged()
+ECode ViewGroup::NotifySubtreeAccessibilityStateChanged(
+    /* [in] */ IView* child,
+    /* [in] */ IView* source,
+    /* [in] */ Int32 changeType)
 {
-    View::ResetAccessibilityStateChanged();
+    // If this is a live region, we should send a subtree change event
+    // from this view. Otherwise, we can let it propagate up.
+    Int32 accessibilityLiveRegion = 0;
+    GetAccessibilityLiveRegion(&accessibilityLiveRegion);
+    if (accessibilityLiveRegion != IView::ACCESSIBILITY_LIVE_REGION_NONE) {
+        NotifyViewAccessibilityStateChangedIfNeeded(changeType);
+    } else if (mParent != NULL) {
+        //try {
+        ECode ec = mParent->NotifySubtreeAccessibilityStateChanged(THIS_PROBE(IView), source, changeType);
+        //} catch (AbstractMethodError e) {
+        //    Log.e(VIEW_LOG_TAG, mParent.getClass().getSimpleName() +
+        //            " does not fully implement ViewParent", e);
+        //}
+        return ec;
+    }
+    return NOERROR;
+}
+
+//@Override
+ECode ViewGroup::ResetSubtreeAccessibilityStateChanged()
+{
+    View::ResetSubtreeAccessibilityStateChanged();
     for (Int32 i = 0; i < mChildrenCount; i++) {
         AutoPtr<IView> child = (*mChildren)[i];
-        child->ResetAccessibilityStateChanged();
+        child->ResetSubtreeAccessibilityStateChanged();
     }
 
     return NOERROR;
@@ -2800,7 +3069,7 @@ ECode ViewGroup::DispatchDetachedFromWindow()
     ExitHoverTargets();
 
     // In case view is detached while transition is running
-    mLayoutSuppressed = FALSE;
+    mLayoutCalledWhileSuppressed = FALSE;
 
     // Tear down our drag tracking
     mDragNotifiedChildren.Clear();
@@ -2810,10 +3079,10 @@ ECode ViewGroup::DispatchDetachedFromWindow()
     }
 
     for (Int32 i = 0; i < mChildrenCount; i++) {
-        View* tmp = VIEW_PROBE((*mChildren)[i]);
+        View* tmp = View::Probe((*mChildren)[i]);
         FAIL_RETURN(tmp->DispatchDetachedFromWindow());
     }
-
+    ClearDisappearingChildren();
     return View::DispatchDetachedFromWindow();
 }
 
@@ -2839,7 +3108,7 @@ ECode ViewGroup::DispatchSaveInstanceState(
     FAIL_RETURN(View::DispatchSaveInstanceState(container));
 
     for (Int32 i = 0; i < mChildrenCount; i++) {
-        View* c = VIEW_PROBE((*mChildren)[i]);
+        View* c = View::Probe((*mChildren)[i]);
         if ((c->mViewFlags & PARENT_SAVE_DISABLED_MASK) != PARENT_SAVE_DISABLED) {
             c->DispatchSaveInstanceState(container);
         }
@@ -2860,7 +3129,7 @@ ECode ViewGroup::DispatchRestoreInstanceState(
     FAIL_RETURN(View::DispatchRestoreInstanceState(container));
 
     for (Int32 i = 0; i < mChildrenCount; i++) {
-        View* c = VIEW_PROBE((*mChildren)[i]);
+        View* c = View::Probe((*mChildren)[i]);
         if ((c->mViewFlags & PARENT_SAVE_DISABLED_MASK) != PARENT_SAVE_DISABLED) {
             c->DispatchRestoreInstanceState(container);
         }
@@ -2898,7 +3167,7 @@ void ViewGroup::OnAnimationStart()
     if ((mGroupFlags & FLAG_ANIMATION_CACHE) == FLAG_ANIMATION_CACHE) {
         Boolean buildCache = !IsHardwareAccelerated();
         for (Int32 i = 0; i < mChildrenCount; i++) {
-            View* child = VIEW_PROBE((*mChildren)[i]);
+            View* child = View::Probe((*mChildren)[i]);
             if ((child->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE) {
                 child->SetDrawingCacheEnabled(TRUE);
                 if (buildCache) {
@@ -2965,78 +3234,249 @@ ECode ViewGroup::CreateSnapshot(
     return NOERROR;
 }
 
-void ViewGroup::DrawRect(
+/** Return true if this ViewGroup is laying out using optical bounds. */
+Boolean ViewGroup::IsLayoutModeOptical()
+{
+    return mLayoutMode == LAYOUT_MODE_OPTICAL_BOUNDS;
+}
+
+AutoPtr<IInsets> ViewGroup::ComputeOpticalInsets()
+{
+    if (IsLayoutModeOptical()) {
+        Int32 left = 0, top = 0, right = 0, bottom = 0;
+        for (Int32 i = 0; i < mChildrenCount; i++) {
+            AutoPtr<IView> child = GetChildAt(i);
+            Int32 visibility;
+            child->GetVisibility(&visibility);
+            if (visibility == IView::VISIBLE) {
+                AutoPtr<IInsets> insets;
+                child->GetOpticalInsets((IInsets**)&insets);
+                Insets* temp = Insets::Probe(insets);
+                left = Elastos::Core::Math::Max(left, temp->mLeft);
+                top = Elastos::Core::Math::Max(top,    temp->mTop);
+                right = Elastos::Core::Math::Max(right,  temp->mRight);
+                bottom = Elastos::Core::Math::Max(bottom, temp->mBottom);
+            }
+        }
+        return Insets::Of(left, top, right, bottom);
+    } else {
+        return Insets::NONE;
+    }
+}
+
+void ViewGroup::FillRect(
+    /* [in] */ ICanvas* canvas,
+    /* [in] */ IPaint* paint,
+    /* [in] */ Int32 x1,
+    /* [in] */ Int32 y1,
+    /* [in] */ Int32 x2,
+    /* [in] */ Int32 y2)
+{
+    if (x1 != x2 && y1 != y2) {
+        if (x1 > x2) {
+            Int32 tmp = x1;
+            x1 = x2;
+            x2 = tmp;
+        }
+        if (y1 > y2) {
+            Int32 tmp = y1;
+            y1 = y2;
+            y2 = tmp;
+        }
+        canvas->DrawRect(x1, y1, x2, y2, paint);
+    }
+}
+
+Int32 ViewGroup::Sign(
+    /* [in] */ Int32 x)
+{
+    return (x >= 0) ? 1 : -1;
+}
+
+void ViewGroup::DrawCorner(
+    /* [in] */ ICanvas* canvas,
+    /* [in] */ IPaint* paint,
+    /* [in] */ Int32 x1,
+    /* [in] */ Int32 y1,
+    /* [in] */ Int32 dx,
+    /* [in] */ Int32 dy,
+    /* [in] */ Int32 lw)
+{
+    FillRect(canvas, paint, x1, y1, x1 + dx, y1 + lw * Sign(dy));
+    FillRect(canvas, paint, x1, y1, x1 + lw * Sign(dx), y1 + dy);
+}
+
+Int32 ViewGroup::DipsToPixels(
+    /* [in] */ Int32 dips)
+{
+    AutoPtr<IResources> res;
+    GetContext()->GetResources((IResources**)&res);
+    AutoPtr<IDisplayMetrics> metrics;
+    res->GetDisplayMetrics((IDisplayMetrics**)&metrics);
+    Float scale;
+    metrics->GetDensity(&scale);
+    return (Int32) (dips * scale + 0.5f);
+}
+
+void ViewGroup::DrawRectCorners(
     /* [in] */ ICanvas* canvas,
     /* [in] */ Int32 x1,
     /* [in] */ Int32 y1,
     /* [in] */ Int32 x2,
     /* [in] */ Int32 y2,
-    /* [in] */ Int32 color)
+    /* [in] */ IPaint* paint,
+    /* [in] */ Int32 lineLength,
+    /* [in] */ Int32 lineWidth)
 {
-    AutoPtr<IPaint> paint = GetDebugPaint();
-    paint->SetColor(color);
+    DrawCorner(canvas, paint, x1, y1, lineLength, lineLength, lineWidth);
+    DrawCorner(canvas, paint, x1, y2, lineLength, -lineLength, lineWidth);
+    DrawCorner(canvas, paint, x2, y1, -lineLength, lineLength, lineWidth);
+    DrawCorner(canvas, paint, x2, y2, -lineLength, -lineLength, lineWidth);
+}
 
-    canvas->DrawLines(*GetDebugLines(x1, y1, x2, y2), paint);
+void ViewGroup::FillDifference(
+    /* [in] */ ICanvas* canvas,
+    /* [in] */ Int32 x2,
+    /* [in] */ Int32 y2,
+    /* [in] */ Int32 x3,
+    /* [in] */ Int32 y3,
+    /* [in] */ Int32 dx1,
+    /* [in] */ Int32 dy1,
+    /* [in] */ Int32 dx2,
+    /* [in] */ Int32 dy2,
+    /* [in] */ IPaint* paint)
+{
+    Int32 x1 = x2 - dx1;
+    Int32 y1 = y2 - dy1;
+
+    Int32 x4 = x3 + dx2;
+    Int32 y4 = y3 + dy2;
+
+    FillRect(canvas, paint, x1, y1, x4, y2);
+    FillRect(canvas, paint, x1, y2, x2, y3);
+    FillRect(canvas, paint, x3, y2, x4, y3);
+    FillRect(canvas, paint, x1, y3, x4, y4);
+}
+
+void ViewGroup::DrawRect(
+    /* [in] */ ICanvas* canvas,
+    /* [in] */ IPaint* paint,
+    /* [in] */ Int32 x1,
+    /* [in] */ Int32 y1,
+    /* [in] */ Int32 x2,
+    /* [in] */ Int32 y2)
+{
+    if (sDebugLines== null) {
+        // TODO: This won't work with multiple UI threads in a single process
+        sDebugLines = ArrayOf<Float>::Alloc(16);
+    }
+
+    (*sDebugLines)[0] = x1;
+    (*sDebugLines)[1] = y1;
+    (*sDebugLines)[2] = x2;
+    (*sDebugLines)[3] = y1;
+
+    (*sDebugLines)[4] = x2;
+    (*sDebugLines)[5] = y1;
+    (*sDebugLines)[6] = x2;
+    (*sDebugLines)[7] = y2;
+
+    (*sDebugLines)[8] = x2;
+    (*sDebugLines)[9] = y2;
+    (*sDebugLines)[10] = x1;
+    (*sDebugLines)[11] = y2;
+
+    (*sDebugLines)[12] = x1;
+    (*sDebugLines)[13] = y2;
+    (*sDebugLines)[14] = x1;
+    (*sDebugLines)[15] = y1;
+
+    canvas->DrawLines(sDebugLines, paint);
 }
 
 void ViewGroup::OnDebugDrawMargins(
-    /* [in] */ ICanvas* canvas)
+    /* [in] */ ICanvas* canvas,
+    /* [in] */ IPaint* paint)
 {
     for (Int32 i = 0; i < GetChildCount(); i++) {
         AutoPtr<IView> c = GetChildAt(i);
         assert(c != NULL);
         AutoPtr<IViewGroupLayoutParams> params;
         c->GetLayoutParams((IViewGroupLayoutParams**)&params);
-        params->OnDebugDraw(c, canvas);
+        params->OnDebugDraw(c, canvas, paint);
     }
 }
 
 void ViewGroup::OnDebugDraw(
     /* [in] */ ICanvas* canvas)
 {
+    AutoPtr<IPaint> paint = GetDebugPaint();
+
     // Draw optical bounds
-    if (GetLayoutMode() == OPTICAL_BOUNDS) {
+    {
+        paint->SetColor(IColor::RED);
+        paint->SetStyle(PaintStyle_STROKE);
+
         for (Int32 i = 0; i < GetChildCount(); i++) {
-            View* c = VIEW_PROBE(GetChildAt(i));
+            View* c = View::Probe(GetChildAt(i));
             AutoPtr<IInsets> insets = c->GetOpticalInsets();
             Int32 l, r, t, b;
             insets->GetLeft(&l);
             insets->GetRight(&r);
             insets->GetTop(&t);
             insets->GetBottom(&b);
-            DrawRect(
-                canvas,c->GetLeft() + l, c->GetTop() + t,
-                c->GetRight() - r, c->GetBottom() - b, IColor::RED);
+            DrawRect(canvas, paint,
+                c->GetLeft() + l, c->GetTop() + t,
+                c->GetRight() - r - 1, c->GetBottom() - b - 1);
         }
     }
 
     // Draw margins
-    OnDebugDrawMargins(canvas);
+    {
+        Int32 marginsColor;
+        CColor::Argb(63, 255, 0, 255, &marginsColor);
+        paint->SetColor(marginsColor);
+        paint->SetStyle(PaintStyle_FILL);
 
-    // Draw bounds
-    for (Int32 i = 0; i < GetChildCount(); i++) {
-        View* c = VIEW_PROBE(GetChildAt(i));
-        DrawRect(canvas, c->GetLeft(), c->GetTop(), c->GetRight(), c->GetBottom(), IColor::BLUE);
+        OnDebugDrawMargins(canvas, paint);
+    }
+
+    // Draw clip bounds
+    {
+        Int32 clipColor;
+        CColor::Rgb(63, 127, 255, &clipColor);
+        paint->SetColor(clipColor);
+        paint->SetStyle(PaintStyle_FILL);
+
+        Int32 lineLength = DipsToPixels(8);
+        Int32 lineWidth = DipsToPixels(1);
+        for (Int32 i = 0; i < GetChildCount(); i++) {
+            View* c = View::Probe(GetChildAt(i));
+            DrawRectCorners(canvas, c.getLeft(), c.getTop(), c.getRight(), c.getBottom(),
+                    paint, lineLength, lineWidth);
+        }
     }
 }
 
 void ViewGroup::DispatchDraw(
     /* [in] */ ICanvas* canvas)
 {
-    Int32 count = mChildrenCount;
-    ArrayOf<IView*>* children = mChildren;
+    Boolean usingRenderNodeProperties;
+    canvas->IsRecordingFor((IInterface*)mRenderNode->Probe(EIID_IInterface), &usingRenderNodeProperties);
+    Int32 childrenCount = mChildrenCount;
+    AutoPtr<ArrayOf<IView*> > children = mChildren;
     Int32 flags = mGroupFlags;
 
     if ((flags & FLAG_RUN_ANIMATION) != 0 && CanAnimate()) {
         const Boolean cache = (mGroupFlags & FLAG_ANIMATION_CACHE) == FLAG_ANIMATION_CACHE;
         Boolean buildCache = !IsHardwareAccelerated();
 
-        for (Int32 i = 0; i < count; i++) {
-            View* child = VIEW_PROBE((*children)[i]);
+        for (Int32 i = 0; i < childrenCount; i++) {
+            View* child = View::Probe((*children)[i]);
             if ((child->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE) {
                 const AutoPtr<IViewGroupLayoutParams> params = child->GetLayoutParams();
-                AttachLayoutAnimationParameters(IVIEW_PROBE(child), params, i, count);
-                BindLayoutAnimation(IVIEW_PROBE(child));
+                AttachLayoutAnimationParameters(IView::Probe(child), params, i, childrenCount);
+                BindLayoutAnimation(IView::Probe(child));
                 if (cache) {
                     child->SetDrawingCacheEnabled(TRUE);
 
@@ -3069,10 +3509,10 @@ void ViewGroup::DispatchDraw(
         }
     }
 
-    Int32 saveCount = 0;
+    Int32 clipSaveCount = 0;
     const Boolean clipToPadding = (flags & CLIP_TO_PADDING_MASK) == CLIP_TO_PADDING_MASK;
     if (clipToPadding) {
-        canvas->Save(&saveCount);
+        canvas->Save(&clipSaveCount);
         Boolean isNonEmpty;
         canvas->ClipRect(mScrollX + mPaddingLeft, mScrollY + mPaddingTop,
                 mScrollX + mRight - mLeft - mPaddingRight,
@@ -3087,22 +3527,27 @@ void ViewGroup::DispatchDraw(
     Boolean more = FALSE;
     const Int64 drawingTime = GetDrawingTime();
 
-    if ((flags & FLAG_USE_CHILD_DRAWING_ORDER) == 0) {
-        for (Int32 i = 0; i < count; i++) {
-            View* child = VIEW_PROBE((*children)[i]);
-            if ((child->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE || child->GetAnimation() != NULL) {
-                more |= DrawChild(canvas, IVIEW_PROBE(child), drawingTime);
-            }
+    if (usingRenderNodeProperties) canvas->InsertReorderBarrier();
+    // Only use the preordered list if not HW accelerated, since the HW pipeline will do the
+    // draw reordering internally
+    AutoPtr<IList> preorderedList = usingRenderNodeProperties
+            ? NULL : BuildOrderedChildList();
+    Boolean customOrder = preorderedList == NULL && IsChildrenDrawingOrderEnabled();
+    for (Int32 i = 0; i < childrenCount; i++) {
+        Int32 childIndex = customOrder ? GetChildDrawingOrder(childrenCount, i) : i;
+        AutoPtr<IView> child;
+        if (preorderedList == null) {
+            child = (*children)[childIndex];
+        } else {
+            AutoPtr<IInterface> temp;
+            preorderedList->Get(childIndex, (IInterface**)&temp);
+            child = IView::Probe(temp);
+        }
+        if ((View::Probe(child)->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE || child->GetAnimation() != NULL) {
+            more |= DrawChild(canvas, child, drawingTime);
         }
     }
-    else {
-        for (Int32 i = 0; i < count; i++) {
-            View* child = VIEW_PROBE((*children)[GetChildDrawingOrder(count, i)]);
-            if ((child->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE || child->GetAnimation() != NULL) {
-                more |= DrawChild(canvas, IVIEW_PROBE(child), drawingTime);
-            }
-        }
-    }
+    if (preorderedList != NULL) preorderedList->Clear();
 
     // Draw any disappearing views that have animations
     List<AutoPtr<IView> >::ReverseIterator rit = mDisappearingChildren.RBegin();
@@ -3111,12 +3556,14 @@ void ViewGroup::DispatchDraw(
         more |= DrawChild(canvas, *rit, drawingTime);
     }
 
+    if (usingRenderNodeProperties) canvas->InsertInorderBarrier();
+
     if (DebugDraw()) {
         OnDebugDraw(canvas);
     }
 
     if (clipToPadding) {
-        canvas->RestoreToCount(saveCount);
+        canvas->RestoreToCount(clipSaveCount);
     }
 
     // mGroupFlags might have been updated by drawChild()
@@ -3141,6 +3588,37 @@ void ViewGroup::DispatchDraw(
 }
 
 /**
+ * Returns the ViewGroupOverlay for this view group, creating it if it does
+ * not yet exist. In addition to {@link ViewOverlay}'s support for drawables,
+ * {@link ViewGroupOverlay} allows views to be added to the overlay. These
+ * views, like overlay drawables, are visual-only; they do not receive input
+ * events and should not be used as anything other than a temporary
+ * representation of a view in a parent container, such as might be used
+ * by an animation effect.
+ *
+ * <p>Note: Overlays do not currently work correctly with {@link
+ * SurfaceView} or {@link TextureView}; contents in overlays for these
+ * types of views may not display correctly.</p>
+ *
+ * @return The ViewGroupOverlay object for this view.
+ * @see ViewGroupOverlay
+ */
+//@Override
+ECode ViewGroup::GetOverlay(
+    /* [out] */ IViewGroupOverlay** overlay)
+{
+    VALIDATE_NOT_NULL(overlay)
+    if (mOverlay == NULL) {
+        AutoPtr<IViewGroupOverlay> temp;
+        ViewGroupOverlay::New((IViewGroupOverlay**)&temp);
+        temp->constructor(mContext, THIS_PROBE(IView));
+        mOverlay = *overlay = temp;
+        REFCOUNT_ADD(*overlay)
+    }
+    return NOERROR;
+}
+
+/**
   * Returns the index of the child to draw for this iteration. Override this
   * if you want to change the drawing order of children. By default, it
   * returns i.
@@ -3159,6 +3637,58 @@ Int32 ViewGroup::GetChildDrawingOrder(
     /* [in] */ Int32 i)
 {
     return i;
+}
+
+Boolean ViewGroup::HasChildWithZ()
+{
+    for (Int32 i = 0; i < mChildrenCount; i++) {
+        Float z;
+        (*mChildren)[i]->GetZ(&z);
+        if (z != 0) return TRUE;
+    }
+    return FALSE;
+}
+
+/**
+ * Populates (and returns) mPreSortedChildren with a pre-ordered list of the View's children,
+ * sorted first by Z, then by child drawing order (if applicable).
+ *
+ * Uses a stable, insertion sort which is commonly O(n) for ViewGroups with very few elevated
+ * children.
+ */
+AutoPtr<IList> ViewGroup::BuildOrderedChildList()
+{
+    Int32 count = mChildrenCount;
+    if (count <= 1 || !HasChildWithZ()) return NULL;
+
+    if (mPreSortedChildren == NULL) {
+        CArrayList::New(count, (IArrayList**)&mPreSortedChildren);
+    } else {
+        mPreSortedChildren->EnsureCapacity(count);
+    }
+
+    Boolean useCustomOrder = IsChildrenDrawingOrderEnabled();
+    for (Int32 i = 0; i < mChildrenCount; i++) {
+        // add next child (in child order) to end of list
+        Int32 childIndex = useCustomOrder ? GetChildDrawingOrder(mChildrenCount, i) : i;
+        AutoPtr<IView> nextChild = (*mChildren)[childIndex];
+        float currentZ;
+        nextChild->GetZ(&currentZ);
+
+        // insert ahead of any Views with greater Z
+        Int32 insertIndex = i;
+        Float z;
+        AutoPtr<IInterface> temp;
+        mPreSortedChildren->Get(insertIndex - 1, (IInterface**)&temp);
+        (View::Probe(temp))->GetZ(&z);
+        while (insertIndex > 0 && z > currentZ) {
+            insertIndex--;
+            mPreSortedChildren->Get(insertIndex - 1, (IInterface**)&temp);
+            (View::Probe(temp))->GetZ(&z);
+        }
+        mPreSortedChildren->Add(insertIndex, (IInterface*)nextChild->Probe(EIID_IInterface));
+    }
+    return mPreSortedChildren;
 }
 
 void ViewGroup::NotifyAnimationListener()
@@ -3184,16 +3714,38 @@ void ViewGroup::NotifyAnimationListener()
 void ViewGroup::DispatchGetDisplayList()
 {
     for (Int32 i = 0; i < mChildrenCount; i++) {
-        View* child = VIEW_PROBE((*mChildren)[i]);
+        View* child = View::Probe((*mChildren)[i]);
         if (((child->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE || child->GetAnimation() != NULL) &&
                 child->HasStaticLayer()) {
-            child->mRecreateDisplayList = (child->mPrivateFlags & PFLAG_INVALIDATED)
-                    == PFLAG_INVALIDATED;
-            child->mPrivateFlags &= ~PFLAG_INVALIDATED;
-            child->GetDisplayList();
-            child->mRecreateDisplayList = FALSE;
+            recreateChildDisplayList(child);
         }
     }
+    if (mOverlay != NULL) {
+        AutoPtr<IView> overlayView = mOverlay->GetOverlayView();
+        RecreateChildDisplayList(overlayView);
+    }
+    if (mDisappearingChildren != NULL) {
+        AutoPtr<IList> disappearingChildren = mDisappearingChildren;
+        Int32 disappearingCount;
+        disappearingChildren->GetSize(&disappearingCount);
+        for (Int32 i = 0; i < disappearingCount; ++i) {
+            AutoPtr<IInterface> temp;
+            disappearingChildren->Get(i, (IInterface**)&temp);
+            AutoPtr<IView> child = IView::Probe(temp);
+            RecreateChildDisplayList(child);
+        }
+    }
+}
+
+void ViewGroup::RecreateChildDisplayList(
+    /* [in] */ IView* child)
+{
+    View* temp = View::Probe(child);
+    temp->mRecreateDisplayList = (temp->mPrivateFlags & PFLAG_INVALIDATED) == PFLAG_INVALIDATED;
+    temp->mPrivateFlags &= ~PFLAG_INVALIDATED;
+    AutoPtr<IRenderNode> node;
+    temp->GetDisplayList((IRenderNode**)&node);
+    temp->mRecreateDisplayList = FALSE;
 }
 
 /**
@@ -3212,7 +3764,24 @@ Boolean ViewGroup::DrawChild(
     /* [in] */ IView* child,
     /* [in] */ Int64 drawingTime)
 {
-    return VIEW_PROBE(child)->Draw(canvas, THIS_PROBE(IViewGroup), drawingTime);
+    return (View::Probe(child))->Draw(canvas, THIS_PROBE(IViewGroup), drawingTime);
+}
+
+/**
+ * Returns whether this group's children are clipped to their bounds before drawing.
+ * The default value is true.
+ * @see #setClipChildren(boolean)
+ *
+ * @return True if the group's children will be clipped to their bounds,
+ * false otherwise.
+ */
+//@ViewDebug.ExportedProperty(category = "drawing")
+ECode ViewGroup::GetClipChildren(
+        /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    *res = ((mGroupFlags & FLAG_CLIP_CHILDREN) != 0);
+    return NOERROR;
 }
 
 /**
@@ -3230,11 +3799,12 @@ void ViewGroup::SetClipChildren(
     if (clipChildren != previousValue) {
         SetBooleanFlag(FLAG_CLIP_CHILDREN, clipChildren);
         for (Int32 i = 0; i < mChildrenCount; ++i) {
-            View* child = VIEW_PROBE(GetChildAt(i));
-            if (child->mDisplayList != NULL) {
-                child->mDisplayList->SetClipChildren(clipChildren);
+            View* child = View::Probe(GetChildAt(i));
+            if (child->mRenderNode != NULL) {
+                child->mRenderNode->SetClipToBounds(clipChildren);
             }
         }
+        Invalidate(TRUE);
     }
 }
 
@@ -3249,7 +3819,26 @@ void ViewGroup::SetClipChildren(
 void ViewGroup::SetClipToPadding(
     /* [in] */ Boolean clipToPadding)
 {
-    SetBooleanFlag(FLAG_CLIP_TO_PADDING, clipToPadding);
+    if (HasBooleanFlag(FLAG_CLIP_TO_PADDING) != clipToPadding) {
+        SetBooleanFlag(FLAG_CLIP_TO_PADDING, clipToPadding);
+        Invalidate(TRUE);
+    }
+}
+
+/**
+ * Check if this ViewGroup is configured to clip child views to its padding.
+ *
+ * @return true if this ViewGroup clips children to its padding, false otherwise
+ *
+ * @attr ref android.R.styleable#ViewGroup_clipToPadding
+ */
+//@ViewDebug.ExportedProperty(category = "drawing")
+ECode ViewGroup::GetClipToPadding(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    *res = HasBooleanFlag(FLAG_CLIP_TO_PADDING);
+    return NOERROR;
 }
 
 /**
@@ -3277,17 +3866,22 @@ void ViewGroup::DispatchSetPressed(
     /* [in] */ Boolean pressed)
 {
     for (Int32 i = 0; i < mChildrenCount; i++) {
-        (*mChildren)[i]->SetPressed(pressed);
-
-        for (Int32 i = 0; i < mChildrenCount; i++) {
-            View* child = VIEW_PROBE((*mChildren)[i]);
-            // Children that are clickable on their own should not
-            // show a pressed state when their parent view does.
-            // Clearing a pressed state always propagates.
-            if (!pressed || (!child->IsClickable() && !child->IsLongClickable())) {
-                child->SetPressed(pressed);
-            }
+        View* child = View::Probe((*mChildren)[i]);
+        // Children that are clickable on their own should not
+        // show a pressed state when their parent view does.
+        // Clearing a pressed state always propagates.
+        if (!pressed || (!child->IsClickable() && !child->IsLongClickable())) {
+            child->SetPressed(pressed);
         }
+    }
+}
+
+//@Override
+void ViewGroup::DispatchCancelPendingInputEvents()
+{
+    View::DispatchCancelPendingInputEvents();
+    for (Int32 i = 0; i < mChildrenCount; i++) {
+        (*mChildren)[i]->DispatchCancelPendingInputEvents();
     }
 }
 
@@ -3318,11 +3912,19 @@ Boolean ViewGroup::GetChildStaticTransformation(
     return FALSE;
 }
 
+AutoPtr<ITransformation> ViewGroup::GetChildTransformation()
+{
+    if (mChildTransformation == NULL) {
+        CTransformation::New((ITransformation**)&mChildTransformation);
+    }
+    return mChildTransformation;
+}
+
 AutoPtr<IView> ViewGroup::FindViewTraversal(
     /* [in] */ Int32 id)
 {
     if (id == mID) {
-        return AutoPtr<IView>(IVIEW_PROBE(this));
+        return AutoPtr<IView>(IView::Probe(this));
     }
 
     for (Int32 i = 0; i < mChildrenCount; i++) {
@@ -3348,11 +3950,11 @@ AutoPtr<IView> ViewGroup::FindViewWithTagTraversal(
     /* [in] */ IInterface* tag)
 {
    if (tag != NULL && tag == mTag) {
-       return IVIEW_PROBE(this);
+       return IView::Probe(this);
    }
 
    for (Int32 i = 0; i < mChildrenCount; i++) {
-       View* v = VIEW_PROBE((*mChildren)[i]);
+       View* v = View::Probe((*mChildren)[i]);
 
        if ((v->mPrivateFlags & PFLAG_IS_ROOT_NAMESPACE) == 0) {
            AutoPtr<IView> view = v->FindViewWithTag(tag);
@@ -3375,7 +3977,7 @@ AutoPtr<IView> ViewGroup::FindViewByPredicateTraversal(
     }
 
     for (Int32 i = 0; i < mChildrenCount; i++) {
-        View* v = VIEW_PROBE((*mChildren)[i]);
+        View* v = View::Probe((*mChildren)[i]);
 
         if ((*mChildren)[i] != childToSkip &&
             (v->mPrivateFlags & PFLAG_IS_ROOT_NAMESPACE) == 0) {
@@ -3533,6 +4135,27 @@ void ViewGroup::OnViewRemoved(
     }
 }
 
+void ViewGroup::ClearCachedLayoutMode()
+{
+    if (!HasBooleanFlag(FLAG_LAYOUT_MODE_WAS_EXPLICITLY_SET)) {
+       mLayoutMode = LAYOUT_MODE_UNDEFINED;
+    }
+}
+
+//@Override
+void ViewGroup::OnAttachedToWindow()
+{
+    View::OnAttachedToWindow();
+    ClearCachedLayoutMode();
+}
+
+//@Override
+void ViewGroup::OnDetachedFromWindow()
+{
+    View::OnDetachedFromWindow();
+    ClearCachedLayoutMode();
+}
+
 Boolean ViewGroup::AddViewInLayout(
     /* [in] */ IView* child,
     /* [in] */ Int32 index,
@@ -3547,7 +4170,7 @@ Boolean ViewGroup::AddViewInLayout(
     /* [in] */ IViewGroupLayoutParams* params,
     /* [in] */ Boolean preventRequestLayout)
 {
-    View* v = VIEW_PROBE(child);
+    View* v = View::Probe(child);
     v->mParent = NULL;
     AddViewInner(child, index, params, preventRequestLayout);
     v->mPrivateFlags = (v->mPrivateFlags & ~PFLAG_DIRTY_MASK) | PFLAG_DRAWN;
@@ -3558,7 +4181,7 @@ Boolean ViewGroup::AddViewInLayout(
 void ViewGroup::CleanupLayoutState(
     /* [in] */ IView* child)
 {
-    View* v = VIEW_PROBE(child);
+    View* v = View::Probe(child);
     v->mPrivateFlags &= ~View::PFLAG_FORCE_LAYOUT;
 }
 
@@ -3577,7 +4200,7 @@ ECode ViewGroup::AddViewInner(
     }
 
     AutoPtr<IViewGroupLayoutParams> params = _params;
-    View* v = VIEW_PROBE(child);
+    View* v = View::Probe(child);
 
     if (v->GetParent() != NULL) {
 //        throw new IllegalStateException("The specified child already has a parent. " +
@@ -3645,6 +4268,12 @@ ECode ViewGroup::AddViewInner(
         ChildHasTransientStateChanged(child, TRUE);
     }
 
+    Int32 lastVisibility;
+    child->GetVisibility(&lastVisibility);
+    if (lastVisibility != IView::GONE) {
+        NotifySubtreeAccessibilityStateChangedIfNeeded();
+    }
+
     return NOERROR;
 }
 
@@ -3704,7 +4333,7 @@ ECode ViewGroup::RemoveFromArray(
     AutoPtr<IView> v = (*mChildren)[index];
     if (Find(mTransitioningViews.Begin(), mTransitioningViews.End(), v)
             == mTransitioningViews.End()) {
-        VIEW_PROBE(v)->mParent = NULL;
+        (View::Probe(v))->mParent = NULL;
     }
 
     const Int32 count = mChildrenCount;
@@ -3749,13 +4378,13 @@ ECode ViewGroup::RemoveFromArray(
 
     if (end == childrenCount) {
         for (Int32 i = start; i < end; i++) {
-            VIEW_PROBE((*mChildren)[i])->mParent = NULL;
+            (View::Probe((*mChildren)[i]))->mParent = NULL;
             mChildren->Set(i, NULL);
         }
     }
     else {
         for (Int32 i = start; i < end; i++) {
-            VIEW_PROBE((*mChildren)[i])->mParent = NULL;
+            (View::Probe((*mChildren)[i]))->mParent = NULL;
         }
 
         // Since we're looping above, we might as well do the copy, but is arraycopy()
@@ -3867,14 +4496,16 @@ void ViewGroup::RemoveViewInternal(
         mTransition->RemoveChild(THIS_PROBE(IViewGroup), view);
     }
 
-    View* v = VIEW_PROBE(view);
+    View* v = View::Probe(view);
     Boolean clearChildFocus = FALSE;
     if (view == mFocused) {
-        v->UnFocus();
+        v->UnFocus(NULL);
         clearChildFocus = TRUE;
     }
 
-    view->ClearAccessibilityFocus();
+    if (v->IsAccessibilityFocused()) {
+        view->ClearAccessibilityFocus();
+    }
 
     CancelTouchTarget(view);
     CancelHoverTarget(view);
@@ -3899,19 +4530,23 @@ void ViewGroup::RemoveViewInternal(
         ChildHasTransientStateChanged(view, FALSE);
     }
 
-    OnViewRemoved(view);
-
     NeedGlobalAttributesUpdate(FALSE);
 
     RemoveFromArray(index);
 
     if (clearChildFocus) {
         ClearChildFocus(view);
-        EnsureInputFocusOnFirstFocusable();
+        if (!RootViewRequestFocus()) {
+            NotifyGlobalFocusCleared(THIS_PROBE(IView));
+        }
     }
 
-    if (v->IsAccessibilityFocused()) {
-        v->ClearAccessibilityFocus();
+    OnViewRemoved(view);
+
+    Int32 lastVisibility;
+    view->GetVisibility(&lastVisibility);
+    if ( != IView::GONE) {
+        NotifySubtreeAccessibilityStateChangedIfNeeded();
     }
 }
 
@@ -3919,7 +4554,9 @@ ECode ViewGroup::SetLayoutTransition(
     /* [in] */ ILayoutTransition* transition)
 {
     if (mTransition != NULL) {
-        mTransition->RemoveTransitionListener(mLayoutTransitionListener);
+        AutoPtr<ILayoutTransition> previousTransition = mTransition;
+        previousTransition->Cancel();
+        previousTransition->RemoveTransitionListener(mLayoutTransitionListener);
     }
 
     mTransition = transition;
@@ -3941,24 +4578,26 @@ void ViewGroup::RemoveViewsInternal(
 {
     AutoPtr<IView> focused = mFocused;
     Boolean detach = mAttachInfo != NULL;
-    AutoPtr<IView> clearChildFocus;
+    Boolean clearChildFocus = FALSE;
 
     const Int32 end = start + count;
 
     for (Int32 i = start; i < end; i++) {
         AutoPtr<IView> _view = (*mChildren)[i];
-        View* view = VIEW_PROBE(_view);
+        View* view = View::Probe(_view);
 
         if (mTransition != NULL) {
             mTransition->RemoveChild(THIS_PROBE(IViewGroup), _view);
         }
 
         if (_view == focused) {
-            view->UnFocus();
-            clearChildFocus = _view;
+            view->UnFocus(NULL);
+            clearChildFocus = TRUE;
         }
 
-        view->ClearAccessibilityFocus();
+        if (view->IsAccessibilityFocused()) {
+            view->ClearAccessibilityFocus();
+        }
 
         CancelTouchTarget(_view);
         CancelHoverTarget(_view);
@@ -3989,9 +4628,11 @@ void ViewGroup::RemoveViewsInternal(
 
     RemoveFromArray(start, count);
 
-    if (clearChildFocus != NULL) {
-        ClearChildFocus(clearChildFocus);
-        EnsureInputFocusOnFirstFocusable();
+    if (clearChildFocus) {
+        ClearChildFocus(focused);
+        if (!RootViewRequestFocus()) {
+            NotifyGlobalFocusCleared(focused);
+        }
     }
 }
 
@@ -4015,7 +4656,7 @@ ECode ViewGroup::RemoveAllViewsInLayout()
 
     AutoPtr<IView> focused = mFocused;
     Boolean detach = mAttachInfo != NULL;
-    AutoPtr<IView> clearChildFocus = NULL;
+    Boolean clearChildFocus = FALSE;
 
     NeedGlobalAttributesUpdate(FALSE);
 
@@ -4027,11 +4668,13 @@ ECode ViewGroup::RemoveAllViewsInLayout()
         }
 
         if (view == focused) {
-            VIEW_PROBE(view)->UnFocus();
-            clearChildFocus = view;
+            (View::Probe(view))->UnFocus(NULL);
+            clearChildFocus = TRUE;
         }
 
-        view->ClearAccessibilityFocus();
+        if (view->IsAccessibilityFocused()) {
+            view->ClearAccessibilityFocus();
+        }
 
         CancelTouchTarget(view);
         CancelHoverTarget(view);
@@ -4047,7 +4690,7 @@ ECode ViewGroup::RemoveAllViewsInLayout()
         }
 
         assert(view->Probe(EIID_View) != NULL);
-        View* v = VIEW_PROBE(view);
+        View* v = View::Probe(view);
         if (v->GetAnimation() != NULL || contains) {
             AddDisappearingView(view);
         }
@@ -4066,8 +4709,10 @@ ECode ViewGroup::RemoveAllViewsInLayout()
     }
 
     if (clearChildFocus != NULL) {
-        ClearChildFocus(clearChildFocus);
-        EnsureInputFocusOnFirstFocusable();
+        ClearChildFocus(focused);
+        if (!RootViewRequestFocus()) {
+            NotifyGlobalFocusCleared(focused);
+        }
     }
 
     return NOERROR;
@@ -4090,7 +4735,7 @@ void ViewGroup::RemoveDetachedView(
     CancelTouchTarget(child);
     CancelHoverTarget(child);
 
-    View* _child = VIEW_PROBE(child);
+    View* _child = View::Probe(child);
     assert(_child != NULL);
 
     Boolean contains = FALSE;
@@ -4120,7 +4765,7 @@ void ViewGroup::AttachViewToParent(
     /* [in] */ IViewGroupLayoutParams* params)
 {
     assert(child != NULL);
-    View* v = VIEW_PROBE(child);
+    View* v = View::Probe(child);
 
     v->mLayoutParams = params;
 
@@ -4170,7 +4815,7 @@ void ViewGroup::DetachAllViewsFromParent()
     mChildrenCount = 0;
 
     for (int i = count - 1; i >= 0; i--) {
-        VIEW_PROBE((*mChildren)[i])->mParent = NULL;
+        View::Probe((*mChildren)[i])->mParent = NULL;
         mChildren->Set(i, NULL);
     }
 }
@@ -4180,7 +4825,7 @@ ECode ViewGroup::InvalidateChild(
     /* [in] */ IRect* dirty)
 {
     assert(child != NULL);
-    View* v = VIEW_PROBE(child);
+    View* v = View::Probe(child);
 
     AutoPtr<IViewParent> parent = THIS_PROBE(IViewParent);
 
@@ -4207,7 +4852,6 @@ ECode ViewGroup::InvalidateChild(
         if (v->mLayerType != IView::LAYER_TYPE_NONE) {
             mPrivateFlags |= PFLAG_INVALIDATED;
             mPrivateFlags &= ~PFLAG_DRAWING_CACHE_VALID;
-            v->mLocalDirtyRect->Union(dirty);
         }
 
         AutoPtr<ArrayOf<Int32> > location = ArrayOf<Int32>::Alloc(2);
@@ -4255,7 +4899,7 @@ ECode ViewGroup::InvalidateChild(
         do {
             View* view = NULL;
             if (IView::Probe(parent) != NULL) {
-                view = VIEW_PROBE(parent);
+                view = View::Probe(parent);
             }
 
             if (drawAnimation) {
@@ -4326,6 +4970,10 @@ AutoPtr<IViewParent> ViewGroup::InvalidateChildInParent(
             dirty->Offset((*location)[CHILD_LEFT_INDEX] - mScrollX,
                     (*location)[CHILD_TOP_INDEX] - mScrollY);
 
+            if ((mGroupFlags & FLAG_CLIP_CHILDREN) == 0) {
+                dirty->Union(0, 0, mRight - mLeft, mBottom - mTop);
+            }
+
             const Int32 left = mLeft;
             const Int32 top = mTop;
 
@@ -4343,7 +4991,6 @@ AutoPtr<IViewParent> ViewGroup::InvalidateChildInParent(
 
             if (mLayerType != IView::LAYER_TYPE_NONE) {
                 mPrivateFlags |= PFLAG_INVALIDATED;
-                mLocalDirtyRect->Union(dirty);
             }
 
             return mParent;
@@ -4364,7 +5011,6 @@ AutoPtr<IViewParent> ViewGroup::InvalidateChildInParent(
 
             if (mLayerType != IView::LAYER_TYPE_NONE) {
                 mPrivateFlags |= PFLAG_INVALIDATED;
-                mLocalDirtyRect->Union(dirty);
             }
 
             return mParent;
@@ -4374,19 +5020,48 @@ AutoPtr<IViewParent> ViewGroup::InvalidateChildInParent(
     return NULL;
 }
 
-ECode ViewGroup::InvalidateChildFast(
+/**
+ * Native-calculated damage path
+ * Returns false if this path was unable to complete successfully. This means
+ * it hit a ViewParent it doesn't recognize and needs to fall back to calculating
+ * damage area
+ * @hide
+ */
+ECode ViewGroup::DamageChildDeferred(
+    /* [in] */ IView* child,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    AutoPtr<IViewParent> parent;
+    GetParent((IViewParent**)&parent);
+    while (parent != NULL) {
+        if (IViewGroup::Probe(parent)) {
+           parent->GetParent((IViewParent**)&parent);
+        } else if (ViewRootImpl::Probe(parent)) {
+            (ViewRootImpl::Probe(parent))->Invalidate();
+            *res = TRUE;
+            return NOERROR;
+        } else {
+            parent = NULL;
+        }
+    }
+    *res = FALSE;
+    return NOERROR;
+}
+
+ECode ViewGroup::DamageChild(
     /* [in] */ IView* child,
     /* [in] */ IRect* dirty)
 {
     assert(child != NULL);
+    if (DamageChildDeferred(child)) {
+        return NOERROR;
+    }
     AutoPtr<IViewParent> parent = THIS_PROBE(IViewParent);
 
     AttachInfo* attachInfo = mAttachInfo;
-    View* v = VIEW_PROBE(child);
+    View* v = View::Probe(child);
     if (attachInfo != NULL) {
-        if (v->mLayerType != IView::LAYER_TYPE_NONE) {
-            v->mLocalDirtyRect->Union(dirty);
-        }
 
         Int32 left = v->mLeft;
         Int32 top = v->mTop;
@@ -4406,7 +5081,7 @@ ECode ViewGroup::InvalidateChildFast(
                     parent = NULL;
                 }
                 else {
-                    parent = parentVG->InvalidateChildInParentFast(left, top, dirty);
+                    parent = parentVG->DamageChildInParent(left, top, dirty);
                     left = parentVG->mLeft;
                     top = parentVG->mTop;
                 }
@@ -4430,22 +5105,22 @@ ECode ViewGroup::InvalidateChildFast(
     return NOERROR;
 }
 
-AutoPtr<IViewParent> ViewGroup::InvalidateChildInParentFast(
+AutoPtr<IViewParent> ViewGroup::DamageChildInParent(
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ IRect* dirty)
 {
-    if ((mPrivateFlags & PFLAG_DRAWN) == PFLAG_DRAWN ||
-            (mPrivateFlags & PFLAG_DRAWING_CACHE_VALID) == PFLAG_DRAWING_CACHE_VALID) {
+    if ((mPrivateFlags & PFLAG_DRAWN) != 0 ||
+            (mPrivateFlags & PFLAG_DRAWING_CACHE_VALID) != 0) {
         dirty->Offset(left - mScrollX, top - mScrollY);
+
+        if ((mGroupFlags & FLAG_CLIP_CHILDREN) == 0) {
+            dirty->Union(0, 0, mRight - mLeft, mBottom - mTop);
+        }
 
         Boolean isIntersect = FALSE;
         if ((mGroupFlags & FLAG_CLIP_CHILDREN) == 0 ||
             (dirty->Intersect(0, 0, mRight - mLeft, mBottom - mTop, &isIntersect), isIntersect)) {
-
-            if (mLayerType != IView::LAYER_TYPE_NONE) {
-                mLocalDirtyRect->Union(dirty);
-            }
 
             AutoPtr<IMatrix> tmpMatrix = GetMatrix();
             assert(tmpMatrix != NULL);
@@ -4485,11 +5160,11 @@ ECode ViewGroup::OffsetRectBetweenParentAndChild(
     assert(descendant != NULL);
 
     // already in the same coord system :)
-    if (descendant == IVIEW_PROBE(this)) {
+    if (descendant == IView::Probe(this)) {
         return NOERROR;
     }
 
-    View* v = VIEW_PROBE(descendant);
+    View* v = View::Probe(descendant);
     AutoPtr<IViewParent> theParent = v->mParent;
     IViewParent* thisParent = THIS_PROBE(IViewParent);
     Boolean result;
@@ -4502,19 +5177,19 @@ ECode ViewGroup::OffsetRectBetweenParentAndChild(
         if (offsetFromChildToParent) {
             rect->Offset(v->mLeft - v->mScrollX, v->mTop - v->mScrollY);
             if (clipToBounds) {
-                View* p = VIEW_PROBE(theParent);
+                View* p = View::Probe(theParent);
                 rect->Intersect(0, 0, p->mRight - p->mLeft, p->mBottom - p->mTop, &result);
             }
         }
         else {
             if (clipToBounds) {
-                View* p = VIEW_PROBE(theParent);
+                View* p = View::Probe(theParent);
                 rect->Intersect(0, 0, p->mRight - p->mLeft, p->mBottom - p->mTop, &result);
             }
             rect->Offset(v->mScrollX - v->mLeft, v->mScrollY - v->mTop);
         }
 
-        v = VIEW_PROBE(theParent);
+        v = View::Probe(theParent);
         theParent = v->mParent;
     }
 
@@ -4540,15 +5215,21 @@ ECode ViewGroup::OffsetRectBetweenParentAndChild(
 ECode ViewGroup::OffsetChildrenTopAndBottom(
     /* [in] */ Int32 offset)
 {
+    Boolean invalidate = FALSE;
     for (Int32 i = 0; i < mChildrenCount; i++) {
-        View* v = VIEW_PROBE((*mChildren)[i]);
+        View* v = View::Probe((*mChildren)[i]);
         v->mTop += offset;
         v->mBottom += offset;
-        if (v->mDisplayList != NULL) {
+        if (v->mRenderNode != NULL) {
+            invalidate = TRUE;
             v->mDisplayList->OffsetTopBottom(offset);
-            InvalidateViewProperty(FALSE, FALSE);
         }
     }
+
+    if (invalidate) {
+        InvalidateViewProperty(FALSE, FALSE);
+    }
+    NotifySubtreeAccessibilityStateChangedIfNeeded();
 
     return NOERROR;
 }
@@ -4573,7 +5254,7 @@ ECode ViewGroup::GetChildVisibleRect(
     rect->Set(r);
 
     assert(child != NULL && result != NULL);
-    View* _child = VIEW_PROBE(child);
+    View* _child = View::Probe(child);
     if (!_child->HasIdentityMatrix()) {
         Boolean res;
         _child->GetMatrix()->MapRect(rect, &res);
@@ -4620,7 +5301,7 @@ ECode ViewGroup::GetChildVisibleRect(
         r->Set((Int32)(l + 0.5f), (Int32)(t + 0.5f),
             (Int32)(rr + 0.5f), (Int32)(b + 0.5f));
 
-        return mParent->GetChildVisibleRect(IVIEW_PROBE(this), r, offset, result);
+        return mParent->GetChildVisibleRect(IView::Probe(this), r, offset, result);
     }
 
     *result = FALSE;
@@ -4634,7 +5315,7 @@ ECode ViewGroup::Layout(
     /* [in] */ Int32 b)
 {
     Boolean changing = FALSE;
-    if (mTransition == NULL || !(mTransition->IsChangingLayout(&changing), changing)) {
+    if (!mSuppressLayout && (mTransition == NULL || !(mTransition->IsChangingLayout(&changing), changing)) {
         if (mTransition != NULL) {
             mTransition->LayoutChange(THIS_PROBE(IViewGroup));
         }
@@ -4643,7 +5324,7 @@ ECode ViewGroup::Layout(
     }
     else {
         // record the fact that we noop'd it; request layout when transition finishes
-        mLayoutSuppressed = TRUE;
+        mLayoutCalledWhileSuppressed = TRUE;
     }
 
     return NOERROR;
@@ -4730,6 +5411,12 @@ void ViewGroup::SetChildrenDrawingOrderEnabled(
     SetBooleanFlag(FLAG_USE_CHILD_DRAWING_ORDER, enabled);
 }
 
+Boolean ViewGroup::HasBooleanFlag(
+    /* [in] */ Int32 flag)
+{
+    return (mGroupFlags & flag) == flag;
+}
+
 void ViewGroup::SetBooleanFlag(
     /* [in] */ Int32 flag,
     /* [in] */ Boolean value)
@@ -4754,8 +5441,64 @@ ECode ViewGroup::SetPersistentDrawingCache(
     return NOERROR;
 }
 
+void ViewGroup::SetLayoutMode(
+    /* [in] */ Int32 layoutMode,
+    /* [in] */ Boolean explicitly)
+{
+    mLayoutMode = layoutMode;
+    SetBooleanFlag(FLAG_LAYOUT_MODE_WAS_EXPLICITLY_SET, explicitly);
+}
+
+/**
+ * Recursively traverse the view hierarchy, resetting the layoutMode of any
+ * descendants that had inherited a different layoutMode from a previous parent.
+ * Recursion terminates when a descendant's mode is:
+ * <ul>
+ *     <li>Undefined</li>
+ *     <li>The same as the root node's</li>
+ *     <li>A mode that had been explicitly set</li>
+ * <ul/>
+ * The first two clauses are optimizations.
+ * @param layoutModeOfRoot
+ */
+//@Override
+void ViewGroup::InvalidateInheritedLayoutMode(
+    /* [in] */ Int32 layoutModeOfRoot)
+{
+    if (mLayoutMode == LAYOUT_MODE_UNDEFINED ||
+        mLayoutMode == layoutModeOfRoot ||
+        HasBooleanFlag(FLAG_LAYOUT_MODE_WAS_EXPLICITLY_SET)) {
+        return;
+    }
+    SetLayoutMode(LAYOUT_MODE_UNDEFINED, FALSE);
+
+    // apply recursively
+    for (Int32 i = 0, N = 0, GetChildCount(&N); i < N; i++) {
+        GetChildAt(i)->InvalidateInheritedLayoutMode(layoutModeOfRoot);
+    }
+}
+
+/**
+ * Returns the basis of alignment during layout operations on this ViewGroup:
+ * either {@link #LAYOUT_MODE_CLIP_BOUNDS} or {@link #LAYOUT_MODE_OPTICAL_BOUNDS}.
+ * <p>
+ * If no layoutMode was explicitly set, either programmatically or in an XML resource,
+ * the method returns the layoutMode of the view's parent ViewGroup if such a parent exists,
+ * otherwise the method returns a default value of {@link #LAYOUT_MODE_CLIP_BOUNDS}.
+ *
+ * @return the layout mode to use during layout operations
+ *
+ * @see #setLayoutMode(int)
+ */
 Int32 ViewGroup::GetLayoutMode()
 {
+    if (mLayoutMode == LAYOUT_MODE_UNDEFINED) {
+        Int32 inheritedLayoutMode = LAYOUT_MODE_DEFAULT;
+        if (IViewGroup::Probe(mParent)) {
+            (IViewGroup::Probe(mParent))->GetLayoutMode(&inheritedLayoutMode);
+        }
+        SetLayoutMode(inheritedLayoutMode, FALSE);
+    }
     return mLayoutMode;
 }
 
@@ -4763,7 +5506,8 @@ ECode ViewGroup::SetLayoutMode(
     /* [in] */ Int32 layoutMode)
 {
     if (mLayoutMode != layoutMode) {
-        mLayoutMode = layoutMode;
+        InvalidateInheritedLayoutMode(layoutMode);
+        SetLayoutMode(layoutMode, layoutMode != LAYOUT_MODE_UNDEFINED);
         RequestLayout();
     }
 
@@ -4891,7 +5635,7 @@ void ViewGroup::MeasureChildren(
     /* [in] */ Int32 heightMeasureSpec)
 {
     for (Int32 i = 0; i < mChildrenCount; i++) {
-        View* v = VIEW_PROBE((*mChildren)[i]);
+        View* v = View::Probe((*mChildren)[i]);
         if ((v->mViewFlags & VISIBILITY_MASK) != IView::GONE) {
             MeasureChild((*mChildren)[i], widthMeasureSpec, heightMeasureSpec);
         }
@@ -5058,9 +5802,21 @@ Int32 ViewGroup::GetChildMeasureSpec(
 
 ECode ViewGroup::ClearDisappearingChildren()
 {
-    mDisappearingChildren.Clear();
-    Invalidate();
-    return NOERROR;
+    if (mDisappearingChildren != NULL) {
+        Int32 count;
+        mDisappearingChildren->GetSize(&count);
+        for (Int32 i = 0; i < count; i++) {
+            AutoPtr<IInterface> temp;
+            mDisappearingChildren->Get(i, (IInterface**)&temp);
+            View* view = View::Probe(temp);
+            if (view->mAttachInfo != NULL) {
+                view->DispatchDetachedFromWindow();
+            }
+            view->ClearAnimation();
+        }
+        mDisappearingChildren->Clear();
+        Invalidate();
+    }
 }
 
 void ViewGroup::AddDisappearingView(
@@ -5074,7 +5830,7 @@ void ViewGroup::FinishAnimatingView(
     /* [in] */ IAnimation* animation)
 {
     assert(view != NULL);
-    View* v = VIEW_PROBE(view);
+    View* v = View::Probe(view);
 
     if (!mDisappearingChildren.IsEmpty()) {
         List<AutoPtr<IView> >::Iterator it = Find(
@@ -5127,7 +5883,7 @@ Boolean ViewGroup::IsViewTransitioning(
 ECode ViewGroup::StartViewTransition(
     /* [in] */ IView* view)
 {
-    View* v = VIEW_PROBE(view);
+    View* v = View::Probe(view);
     if (v->mParent == THIS_PROBE(IViewParent)) {
         mTransitioningViews.PushBack(view);
     }
@@ -5164,7 +5920,7 @@ ECode ViewGroup::EndViewTransition(
             mVisibilityChangingChildren.Remove(view);
         }
         else {
-            View* v = VIEW_PROBE(view);
+            View* v = View::Probe(view);
             if (v->mAttachInfo != NULL) {
                 v->DispatchDetachedFromWindow();
             }
@@ -5176,6 +5932,42 @@ ECode ViewGroup::EndViewTransition(
         Invalidate();
     }
 
+    return NOERROR;
+}
+
+/**
+ * Tells this ViewGroup to suppress all layout() calls until layout
+ * suppression is disabled with a later call to suppressLayout(false).
+ * When layout suppression is disabled, a requestLayout() call is sent
+ * if layout() was attempted while layout was being suppressed.
+ *
+ * @hide
+ */
+ECode ViewGroup::SuppressLayout(
+    /* [in] */ Boolean suppress)
+{
+    mSuppressLayout = suppress;
+    if (!suppress) {
+        if (mLayoutCalledWhileSuppressed) {
+            RequestLayout();
+            mLayoutCalledWhileSuppressed = FALSE;
+        }
+    }
+}
+
+/**
+ * Returns whether layout calls on this container are currently being
+ * suppressed, due to an earlier call to {@link #suppressLayout(boolean)}.
+ *
+ * @return true if layout calls are currently suppressed, false otherwise.
+ *
+ * @hide
+ */
+ECode ViewGroup::IsLayoutSuppressed(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    *res = mSuppressLayout;
     return NOERROR;
 }
 
@@ -5191,7 +5983,7 @@ Boolean ViewGroup::GatherTransparentRegion(
     View::GatherTransparentRegion(region);
     Boolean noneOfTheChildrenAreTransparent = TRUE;
     for (Int32 i = 0; i < mChildrenCount; i++) {
-        View* v = VIEW_PROBE((*mChildren)[i]);
+        View* v = View::Probe((*mChildren)[i]);
         if ((v->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE || v->GetAnimation() != NULL) {
             if (!v->GatherTransparentRegion(region)) {
                 noneOfTheChildrenAreTransparent = FALSE;
@@ -5205,29 +5997,34 @@ ECode ViewGroup::RequestTransparentRegion(
     /* [in] */ IView* child)
 {
     if (child != NULL) {
-        View* v = VIEW_PROBE(child);
+        View* v = View::Probe(child);
         v->mPrivateFlags |= View::PFLAG_REQUEST_TRANSPARENT_REGIONS;
         if (mParent != NULL) {
-            mParent->RequestTransparentRegion(IVIEW_PROBE(this));
+            mParent->RequestTransparentRegion(IView::Probe(this));
         }
     }
     return NOERROR;
 }
 
-Boolean ViewGroup::FitSystemWindows(
-    /* [in] */ IRect* insets)
+ECode ViewGroup::DispatchApplyWindowInsets(
+    /* [in] */ IWindowInsets* insets,
+    /* [out] */ IWindowInsets** res)
 {
-    Boolean done = View::FitSystemWindows(insets);
-    if (!done) {
-        for (Int32 i = 0; i < mChildrenCount; i++) {
-            View* v = VIEW_PROBE((*mChildren)[i]);
-            done = v->FitSystemWindows(insets);
-            if (done) {
+    VALIDATE_NOT_NULL(res)
+    View::DispatchApplyWindowInsets(insets, (IWindowInsets**)&insets);
+    Boolean isConsumed;
+    if (!(insets->IsConsumed(&isConsumed), isConsumed)) {
+        Int32 count = getChildCount();
+        for (Int32 i = 0; i < count; i++) {
+            GetChildAt(i)->DispatchApplyWindowInsets(insets, (IWindowInsets**)&insets);
+            if ((insets->IsConsumed(&isConsumed), isConsumed)) {
                 break;
             }
         }
     }
-    return done;
+    *res = insets;
+    REFCOUNT_ADD(*res)
+    return NOERROR;
 }
 
 AutoPtr<IAnimationListener> ViewGroup::GetLayoutAnimationListener()
@@ -5247,7 +6044,7 @@ ECode ViewGroup::DrawableStateChanged()
         }
 
         for (Int32 i = 0; i < mChildrenCount; i++) {
-            View* v = VIEW_PROBE((*mChildren)[i]);
+            View* v = View::Probe((*mChildren)[i]);
             if ((v->mViewFlags & DUPLICATE_PARENT_STATE) != 0) {
                 v->RefreshDrawableState();
             }
@@ -5266,6 +6063,27 @@ ECode ViewGroup::JumpDrawablesToCurrentState()
     return NOERROR;
 }
 
+//@Override
+ECode ViewGroup::DrawableHotspotChanged(
+    /* [in] */ Float x,
+    /* [in] */ Float y)
+{
+    View::DrawableHotspotChanged(x, y);
+
+    if ((mGroupFlags & FLAG_NOTIFY_CHILDREN_ON_DRAWABLE_STATE_CHANGE) != 0) {
+        if ((mGroupFlags & FLAG_ADD_STATES_FROM_CHILDREN) != 0) {
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+
+        for (Int32 i = 0; i < mChildrenCount; i++) {
+            View* child = View::Probe((*mChildren)[i]);
+            if ((child->mViewFlags & DUPLICATE_PARENT_STATE) != 0) {
+                child->DrawableHotspotChanged(x, y);
+            }
+        }
+    }
+}
+
 ECode ViewGroup::OnCreateDrawableState(
     /* [in] */ Int32 extraSpace,
     /* [out] */ ArrayOf<Int32>** drawableState)
@@ -5280,7 +6098,7 @@ ECode ViewGroup::OnCreateDrawableState(
     Int32 need = 0;
     Int32 n = GetChildCount();
     for (Int32 i = 0; i < n; i++) {
-        View* v = VIEW_PROBE(GetChildAt(i));
+        View* v = View::Probe(GetChildAt(i));
         AutoPtr<ArrayOf<Int32> > childState = v->GetDrawableState();
 
         if (childState != NULL) {
@@ -5292,7 +6110,7 @@ ECode ViewGroup::OnCreateDrawableState(
     ASSERT_SUCCEEDED(View::OnCreateDrawableState(extraSpace + need, (ArrayOf<Int32>**)&state));
 
     for (Int32 i = 0; i < n; i++) {
-        View* v = VIEW_PROBE(GetChildAt(i));
+        View* v = View::Probe(GetChildAt(i));
         AutoPtr<ArrayOf<Int32> > childState = v->GetDrawableState();
 
         if (childState != NULL) {
@@ -5350,17 +6168,20 @@ ECode ViewGroup::RequestTransitionStart(
     return NOERROR;
 }
 
-ECode ViewGroup::ResolveRtlPropertiesIfNeeded()
+ECode ViewGroup::ResolveRtlPropertiesIfNeeded(
+    /* [out] */ Boolean* res)
 {
-    View::ResolveRtlPropertiesIfNeeded();
-    Int32 count = GetChildCount();
-    for (Int32 i = 0; i < count; i++) {
-        View* child = VIEW_PROBE(GetChildAt(i));
-        if (child->IsLayoutDirectionInherited()) {
-            child->ResolveRtlPropertiesIfNeeded();
+    VALIDATE_NOT_NULL(res)
+    View::ResolveRtlPropertiesIfNeeded(res);
+    if (*res) {
+        Int32 count = GetChildCount();
+        for (Int32 i = 0; i < count; i++) {
+            View* child = View::Probe(GetChildAt(i));
+            if (child->IsLayoutDirectionInherited()) {
+                child->ResolveRtlPropertiesIfNeeded();
+            }
         }
     }
-
     return NOERROR;
 }
 
@@ -5370,7 +6191,7 @@ Boolean ViewGroup::ResolveLayoutDirection()
     if (result) {
         Int32 count = GetChildCount();
         for (Int32 i = 0; i < count; i++) {
-            View* child = VIEW_PROBE(GetChildAt(i));
+            View* child = View::Probe(GetChildAt(i));
             if (child->IsLayoutDirectionInherited()) {
                 child->ResolveLayoutDirection();
             }
@@ -5386,7 +6207,7 @@ Boolean ViewGroup::ResolveTextDirection()
     if (result) {
         Int32 count = GetChildCount();
         for (Int32 i = 0; i < count; i++) {
-            View* child = VIEW_PROBE(GetChildAt(i));
+            View* child = View::Probe(GetChildAt(i));
             if (child->IsTextDirectionInherited()) {
                 child->ResolveTextDirection();
             }
@@ -5401,7 +6222,7 @@ Boolean ViewGroup::ResolveTextAlignment()
     if (result) {
         Int32 count = GetChildCount();
         for (Int32 i = 0; i < count; i++) {
-            View* child = VIEW_PROBE(GetChildAt(i));
+            View* child = View::Probe(GetChildAt(i));
             if (child->IsTextAlignmentInherited()) {
                 child->ResolveTextAlignment();
             }
@@ -5415,7 +6236,7 @@ ECode ViewGroup::ResolvePadding()
     View::ResolvePadding();
     Int32 count = GetChildCount();
     for (Int32 i = 0; i < count; i++) {
-        View* child = VIEW_PROBE(GetChildAt(i));
+        View* child = View::Probe(GetChildAt(i));
         if (child->IsLayoutDirectionInherited()) {
             child->ResolvePadding();
         }
@@ -5429,7 +6250,7 @@ void ViewGroup::ResolveDrawables()
     View::ResolveDrawables();
     Int32 count = GetChildCount();
     for (Int32 i = 0; i < count; i++) {
-        View* child = VIEW_PROBE(GetChildAt(i));
+        View* child = View::Probe(GetChildAt(i));
         if (child->IsLayoutDirectionInherited()) {
             child->ResolveDrawables();
         }
@@ -5453,7 +6274,7 @@ ECode ViewGroup::ResetResolvedLayoutDirection()
 
     Int32 count = GetChildCount();
     for (Int32 i = 0; i < count; i++) {
-        View* child = VIEW_PROBE(GetChildAt(i));
+        View* child = View::Probe(GetChildAt(i));
         if (child->IsLayoutDirectionInherited()) {
             child->ResetResolvedLayoutDirection();
         }
@@ -5468,7 +6289,7 @@ ECode ViewGroup::ResetResolvedTextDirection()
 
     Int32 count = GetChildCount();
     for (Int32 i = 0; i < count; i++) {
-        View* child = VIEW_PROBE(GetChildAt(i));
+        View* child = View::Probe(GetChildAt(i));
         if (child->IsTextDirectionInherited()) {
             child->ResetResolvedTextDirection();
         }
@@ -5483,7 +6304,7 @@ ECode ViewGroup::ResetResolvedTextAlignment()
 
     Int32 count = GetChildCount();
     for (Int32 i = 0; i < count; i++) {
-        View* child = VIEW_PROBE(GetChildAt(i));
+        View* child = View::Probe(GetChildAt(i));
         if (child->IsTextAlignmentInherited()) {
             child->ResetResolvedTextAlignment();
         }
@@ -5498,7 +6319,7 @@ ECode ViewGroup::ResetResolvedPadding()
 
     Int32 count = GetChildCount();
     for (Int32 i = 0; i < count; i++) {
-        View* child = VIEW_PROBE(GetChildAt(i));
+        View* child = View::Probe(GetChildAt(i));
         if (child->IsLayoutDirectionInherited()) {
             child->ResetResolvedPadding();
         }
@@ -5513,7 +6334,7 @@ void ViewGroup::ResetResolvedDrawables()
 
     Int32 count = GetChildCount();
     for (Int32 i = 0; i < count; i++) {
-        View* child = VIEW_PROBE(GetChildAt(i));
+        View* child = View::Probe(GetChildAt(i));
         if (child->IsLayoutDirectionInherited()) {
             child->ResetResolvedDrawables();
         }
@@ -5525,39 +6346,168 @@ Boolean ViewGroup::ShouldDelayChildPressedState()
     return TRUE;
 }
 
+/**
+ * @inheritDoc
+ */
+//@Override
+ECode ViewGroup::OnStartNestedScroll(
+    /* [in] */ IView* child,
+    /* [in] */ IView* target,
+    /* [in] */ Int32 nestedScrollAxes,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    *res = FALSE;
+    return NOERROR;
+}
+
+/**
+ * @inheritDoc
+ */
+//@Override
+ECode ViewGroup::OnNestedScrollAccepted(
+    /* [in] */ IView* child,
+    /* [in] */ IView* target,
+    /* [in] */ Int32 axes)
+{
+    mNestedScrollAxes = axes;
+}
+
+/**
+ * @inheritDoc
+ *
+ * <p>The default implementation of onStopNestedScroll calls
+ * {@link #stopNestedScroll()} to halt any recursive nested scrolling in progress.</p>
+ */
+//@Override
+ECode ViewGroup::OnStopNestedScroll(
+    /* [in] */ IView* child)
+{
+    // Stop any recursive nested scrolling.
+    StopNestedScroll();
+}
+
+/**
+ * @inheritDoc
+ */
+//@Override
+ECode ViewGroup::OnNestedScroll(
+    /* [in] */ IView* target,
+    /* [in] */ Int32 dxConsumed,
+    /* [in] */ Int32 dyConsumed,
+    /* [in] */ Int32 dxUnconsumed,
+    /* [in] */ Int32 dyUnconsumed)
+{
+    // Do nothing
+}
+
+/**
+ * @inheritDoc
+ */
+//@Override
+ECode ViewGroup::OnNestedPreScroll(
+    /* [in] */ IView* target,
+    /* [in] */ Int32 dx,
+    /* [in] */ Int32 dy,
+    /* [in] */ ArrayOf<Int32>* consumed)
+{
+    // Do nothing
+}
+
+/**
+ * @inheritDoc
+ */
+//@Override
+ECode ViewGroup::OnNestedFling(
+    /* [in] */ IView* target,
+    /* [in] */ Float velocityX,
+    /* [in] */ Float velocityY,
+    /* [in] */ Boolean consumed,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    *res = FALSE;
+    return NOERROR;
+}
+
+/**
+ * @inheritDoc
+ */
+//@Override
+ECode ViewGroup::OnNestedPreFling(
+    /* [in] */ IView* target,
+    /* [in] */ Float velocityX,
+    /* [in] */ Float velocityY,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    *res = FALSE;
+    return NOERROR;
+}
+
+/**
+ * Return the current axes of nested scrolling for this ViewGroup.
+ *
+ * <p>A ViewGroup returning something other than {@link #SCROLL_AXIS_NONE} is currently
+ * acting as a nested scrolling parent for one or more descendant views in the hierarchy.</p>
+ *
+ * @return Flags indicating the current axes of nested scrolling
+ * @see #SCROLL_AXIS_HORIZONTAL
+ * @see #SCROLL_AXIS_VERTICAL
+ * @see #SCROLL_AXIS_NONE
+ */
+ECode ViewGroup::GetNestedScrollAxes(
+    /* [out] */ Int32* res)
+{
+    VALIDATE_NOT_NULL(res)
+    *res = mNestedScrollAxes;
+    return NOERROR;
+}
+
 void ViewGroup::OnSetLayoutParams(
     /* [in] */ IView* child,
     /* [in] */ IViewGroupLayoutParams* layoutParams)
 {
 }
 
-ECode ViewGroup::Init(
-    /* [in] */ IContext* context)
+/** @hide */
+//@Override
+ECode ViewGroup::CaptureTransitioningViews(
+    /* [in] */ IList* transitioningViews)
 {
-    ASSERT_SUCCEEDED(View::Init(context));
-    InitViewGroup();
-    return NOERROR;
+    Int32 visibility;
+    GetVisibility(&visibility);
+    if (visibility != IView::VISIBLE) {
+        return NOERROR;
+    }
+    Boolean isTransitionGroup;
+    if (IsTransitionGroup(&isTransitionGroup), isTransitionGroup) {
+        transitioningViews->Add((IInterface*)this->Probe(EIID_IInterface));
+    } else {
+        Int32 count = GetChildCount();
+        for (Int32 i = 0; i < count; i++) {
+            AutoPtr<IView> child = GetChildAt(i);
+            child->CaptureTransitioningViews(transitioningViews);
+        }
+    }
 }
 
-ECode ViewGroup::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
+/** @hide */
+//@Override
+ECode ViewGroup::FindNamedViews(
+    /* [in] */ IMap* namedElements)
 {
-    ASSERT_SUCCEEDED(View::Init(context, attrs));
-    InitViewGroup();
-    InitFromAttributes(context, attrs);
-    return NOERROR;
-}
-
-ECode ViewGroup::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    ASSERT_SUCCEEDED(View::Init(context, attrs, defStyle));
-    InitViewGroup();
-    InitFromAttributes(context, attrs);
-    return NOERROR;
+    Int32 visibility;
+    GetVisibility(&visibility);
+    if (visibility != IView::VISIBLE && mGhostView == NULL) {
+        return NOERROR;
+    }
+    View::FindNamedViews(namedElements);
+    Int32 count = getChildCount();
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IView> child = GetChildAt(i);
+        child->FindNamedViews(namedElements);
+    }
 }
 
 AutoPtr<IPaint> ViewGroup::GetDebugPaint()

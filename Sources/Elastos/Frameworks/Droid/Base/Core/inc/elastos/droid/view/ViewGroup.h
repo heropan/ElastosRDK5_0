@@ -14,14 +14,6 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-extern "C" const InterfaceID EIID_ViewGroup;
-
-#define VIEWGROUP_PROBE(expr) reinterpret_cast<ViewGroup*>((expr)->Probe(EIID_ViewGroup))
-#endif
-
-#define IVIEWGROUP_PROBE(expr) ((IViewGroup*)(expr)->Probe(EIID_IViewGroup))
-#endif
-
 class ViewGroup : public View
 {
     friend class View;
@@ -84,7 +76,8 @@ private:
      * As it happens, the lower layers of the input dispatch pipeline also use the
      * same trick so the assumption should be safe here...
      */
-    class TouchTarget : public ElRefBase
+    class TouchTarget
+        : public Object
     {
     public:
         static CARAPI_(AutoPtr<TouchTarget>) Obtain(
@@ -116,7 +109,8 @@ private:
     };
 
     /* Describes a hovered view. */
-    class HoverTarget : public ElRefBase
+    class HoverTarget
+        : public Obtain
     {
     public:
         static CARAPI_(AutoPtr<HoverTarget>) Obtain(
@@ -147,7 +141,8 @@ private:
      * Pooled class that orderes the children of a ViewGroup from start
      * to end based on how they are laid out and the layout direction.
      */
-    class ChildListForAccessibility : public ElRefBase
+    class ChildListForAccessibility
+        : public Object
     {
     public:
         static CARAPI_(AutoPtr<ChildListForAccessibility>) Obtain(
@@ -165,13 +160,8 @@ private:
             /* [in] */ IView* child);
 
     private:
-        // add by Elastos
-        static CARAPI_(void) Merge(
-            /* [in] */ List<AutoPtr<ViewLocationHolder> >& list1,
-            /* [in] */ List<AutoPtr<ViewLocationHolder> >& list2);
-
-        static CARAPI_(void) SortList(
-            /* [in] */ List<AutoPtr<ViewLocationHolder> >& list);
+        CARAPI Sort(
+            /* [in] */ IList* holders);
 
     private:
         CARAPI_(void) Init(
@@ -184,17 +174,12 @@ private:
 
     private:
         static const Int32 MAX_POOL_SIZE;
-        static Object sPoolLock;
-        static AutoPtr<ChildListForAccessibility> sPool;
-        static Int32 sPoolSize;
 
-        Boolean mIsPooled;
+        static SynchronizedPool<ChildListForAccessibility> sPool;//= new SynchronizedPool<ChildListForAccessibility>(MAX_POOL_SIZE);
 
-        AutoPtr<ChildListForAccessibility> mNext;
+        AutoPtr<IList> mChildren;
 
-        List<AutoPtr<IView> > mChildren;
-
-        List<AutoPtr<ViewLocationHolder> > mHolders;
+        AutoPtr<IList> mHolders;
     };
 
     /**
@@ -204,12 +189,15 @@ private:
      * on every comparison.
      */
     class ViewLocationHolder
-        : public ElRefBase
+        : public Object
     {
     public:
         static CARAPI_(AutoPtr<ViewLocationHolder>) Obtain(
             /* [in] */ IViewGroup* root,
             /* [in] */ IView* view);
+
+        static CARAPI_(void) SetComparisonStrategy(
+            /* [in] */ Int32 strategy);
 
         CARAPI_(void) Recycle();
 
@@ -228,14 +216,13 @@ private:
     public:
         View* mView;
 
+        static const Int32 COMPARISON_STRATEGY_STRIPE = 1;
+
+        static const Int32 COMPARISON_STRATEGY_LOCATION = 2;
+
     private:
         static const Int32 MAX_POOL_SIZE;
-        static Object sPoolLock;
-        static AutoPtr<ViewLocationHolder> sPool;
-        static Int32 sPoolSize;
-
-        Boolean mIsPooled;
-        AutoPtr<ViewLocationHolder> mNext;
+        static SynchronizedPool<ViewLocationHolder> sPool = new SynchronizedPool<ViewLocationHolder>(MAX_POOL_SIZE);
 
         AutoPtr<CRect> mLocation;
 
@@ -246,19 +233,23 @@ private:
 public:
     ViewGroup();
 
-    ViewGroup(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    ViewGroup(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    ViewGroup(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ Int32 defStyleAttr);
 
-    ~ViewGroup();
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     virtual CARAPI_(Int32) GetDescendantFocusability();
 
@@ -326,7 +317,11 @@ public:
 
     CARAPI ClearFocus();
 
-    CARAPI UnFocus();
+    CARAPI UnFocus(
+        /* [in] */ IView* focused);
+
+    CARAPI GetDeepestFocusedChild(
+        /* [out] */ IView** focused);
 
     virtual CARAPI_(AutoPtr<IView>) GetFocusedChild();
 
@@ -339,7 +334,7 @@ public:
     using View::AddFocusables;
 
     CARAPI AddFocusables(
-        /* [in] */ IObjectContainer* views,
+        /* [in] */ IList* views,
         /* [in] */ Int32 direction,
         /* [in] */ Int32 focusableMode);
 
@@ -410,9 +405,6 @@ public:
 
     virtual CARAPI AddChildrenForAccessibility(
         /* [in] */ IObjectContainer* childrenForAccessibility);
-
-    virtual CARAPI ChildAccessibilityStateChanged(
-        /* [in] */ IView* child);
 
     virtual CARAPI_(Boolean) OnInterceptHoverEvent(
         /* [in] */ IMotionEvent* event);
@@ -576,7 +568,7 @@ public:
      *
      * @hide
      */
-    virtual CARAPI InvalidateChildFast(
+    virtual CARAPI DamageChild(
         /* [in] */ IView* child,
         /* [in] */ IRect* dirty);
 
@@ -834,7 +826,7 @@ public:
 
     virtual CARAPI_(Boolean) IsMotionEventSplittingEnabled();
 
-    virtual CARAPI ResetAccessibilityStateChanged();
+    virtual CARAPI ResetSubtreeAccessibilityStateChanged();
 
     virtual CARAPI SetLayoutTransition(
         /* [in] */ ILayoutTransition* transition);
@@ -860,7 +852,8 @@ public:
     virtual CARAPI RequestTransitionStart(
         /* [in] */ ILayoutTransition* transition);
 
-    virtual CARAPI ResolveRtlPropertiesIfNeeded();
+    virtual CARAPI ResolveRtlPropertiesIfNeeded(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI_(Boolean) ResolveLayoutDirection();
 
@@ -881,6 +874,99 @@ public:
     virtual CARAPI ResetResolvedPadding();
 
     virtual CARAPI_(Boolean) ShouldDelayChildPressedState();
+
+    virtual CARAPI SetTouchscreenBlocksFocus(
+        /* [in] */ Boolean touchscreenBlocksFocus);
+
+    virtual CARAPI GetTouchscreenBlocksFocus(
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI IsTransitionGroup(
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI SetTransitionGroup(
+        /* [in] */ Boolean isTransitionGroup);
+
+    virtual CARAPI NotifySubtreeAccessibilityStateChanged(
+        /* [in] */ IView* child,
+        /* [in] */ IView* source,
+        /* [in] */ Int32 changeType);
+
+    virtual CARAPI GetOverlay(
+        /* [out] */ IViewGroupOverlay** overlay);
+
+    virtual CARAPI GetClipChildren(
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI GetClipToPadding(
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI DamageChildDeferred(
+        /* [in] */ IView* child,
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI SuppressLayout(
+        /* [in] */ Boolean suppress);
+
+    virtual CARAPI isLayoutSuppressed(
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI DispatchApplyWindowInsets(
+        /* [in] */ IWindowInsets* insets,
+        /* [out] */ IWindowInsets** res);
+
+    virtual CARAPI DrawableHotspotChanged(
+        /* [in] */ Float x,
+        /* [in] */ Float y);
+
+    virtual CARAPI OnStartNestedScroll(
+        /* [in] */ IView* child,
+        /* [in] */ IView* target,
+        /* [in] */ Int32 nestedScrollAxes,
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI OnNestedScrollAccepted(
+        /* [in] */ IView* child,
+        /* [in] */ IView* target,
+        /* [in] */ Int32 axes);
+
+    virtual CARAPI OnStopNestedScroll(
+        /* [in] */ IView* child);
+
+    virtual CARAPI OnNestedScroll(
+        /* [in] */ IView* target,
+        /* [in] */ Int32 dxConsumed,
+        /* [in] */ Int32 dyConsumed,
+        /* [in] */ Int32 dxUnconsumed,
+        /* [in] */ Int32 dyUnconsumed);
+
+    virtual CARAPI OnNestedPreScroll(
+        /* [in] */ IView* target,
+        /* [in] */ Int32 dx,
+        /* [in] */ Int32 dy,
+        /* [in] */ ArrayOf<Int32>* consumed);
+
+    virtual CARAPI OnNestedFling(
+        /* [in] */ IView* target,
+        /* [in] */ Float velocityX,
+        /* [in] */ Float velocityY,
+        /* [in] */ Boolean consumed,
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI OnNestedPreFling(
+        /* [in] */ IView* target,
+        /* [in] */ Float velocityX,
+        /* [in] */ Float velocityY,
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI GetNestedScrollAxes(
+        /* [out] */ Int32* res);
+
+    virtual CARAPI CaptureTransitioningViews(
+        /* [in] */ IList* transitioningViews);
+
+    virtual CARAPI FindNamedViews(
+        /* [in] */ IMap* namedElements);
 
 protected:
     CARAPI_(Boolean) OnRequestFocusInDescendants(
@@ -1271,9 +1357,6 @@ protected:
         /* [in] */ Int32 parentHeightMeasureSpec,
         /* [in] */ Int32 heightUsed);
 
-    CARAPI_(Boolean) FitSystemWindows(
-        /* [in] */ IRect* insets);
-
     CARAPI DrawableStateChanged();
 
     virtual CARAPI JumpDrawablesToCurrentState();
@@ -1281,18 +1364,6 @@ protected:
     virtual CARAPI OnCreateDrawableState(
         /* [in] */ Int32 extraSpace,
         /* [out] */ ArrayOf<Int32>** drawableState);
-
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
 
     /**
      * @see #onRequestSendAccessibilityEvent(View, AccessibilityEvent)
@@ -1375,7 +1446,8 @@ protected:
      * @hide
      */
     CARAPI_(void) OnDebugDrawMargins(
-        /* [in] */ ICanvas* canvas);
+        /* [in] */ ICanvas* canvas,
+        /* [in] */ IPaint* paint);
 
     /**
      * @hide
@@ -1441,6 +1513,10 @@ protected:
         /* [in] */ IView* child,
         /* [in] */ IViewGroupLayoutParams* layoutParams);
 
+    virtual CARAPI_(void) OnAttachedToWindow();
+
+    virtual CARAPI_(void) OnDetachedFromWindow();
+
 private:
     CARAPI_(Boolean) DebugDraw();
 
@@ -1448,7 +1524,9 @@ private:
 
     CARAPI_(void) InitFromAttributes(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     CARAPI_(void) NotifyAnimationListener();
 
@@ -1582,20 +1660,26 @@ private:
 
     static CARAPI_(void) DrawRect(
         /* [in] */ ICanvas* canvas,
+        /* [in] */ IPaint* paint,
         /* [in] */ Int32 x1,
         /* [in] */ Int32 y1,
         /* [in] */ Int32 x2,
-        /* [in] */ Int32 y2,
-        /* [in] */ Int32 color);
+        /* [in] */ Int32 y2);
 
     /**
      * Quick invalidation method that simply transforms the dirty rect into the parent's
      * coordinate system, pruning the invalidation if the parent has already been invalidated.
      */
-    CARAPI_(AutoPtr<IViewParent>) InvalidateChildInParentFast(
+    CARAPI_(AutoPtr<IViewParent>) DamageChildInParent(
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ IRect* dirty);
+
+    CARAPI TranslateBoundsAndIntersectionsInWindowCoordinates(
+        /* [in] */ IView* child,
+        /* [in] */ IRectF* bounds,
+        /* [in] */ IList* intersections,
+        /* [out] */ Boolean* res);
 
     static CARAPI_(AutoPtr<IPaint>) GetDebugPaint();
 
@@ -1604,6 +1688,82 @@ private:
             /* [in] */ Int32 y1,
             /* [in] */ Int32 x2,
             /* [in] */ Int32 y2);
+
+    CARAPI_(Boolean) ShouldBlockFocusForTouchscreen();
+
+    CARAPI_(AutoPtr<IPointF>) GetLocalPoint();
+
+    CARAPI_(Boolean) IsLayoutModeOptical();
+
+    CARAPI_(AutoPtr<IInsets>) ComputeOpticalInsets();
+
+    static CARAPI_(void) FillRect(
+        /* [in] */ ICanvas* canvas,
+        /* [in] */ IPaint* paint,
+        /* [in] */ Int32 x1,
+        /* [in] */ Int32 y1,
+        /* [in] */ Int32 x2,
+        /* [in] */ Int32 y2);
+
+    static CARAPI_(Int32) Sign(
+        /* [in] */ Int32 x);
+
+    static CARAPI_(void) DrawCorner(
+        /* [in] */ ICanvas* canvas,
+        /* [in] */ IPaint* paint,
+        /* [in] */ Int32 x1,
+        /* [in] */ Int32 y1,
+        /* [in] */ Int32 dx,
+        /* [in] */ Int32 dy,
+        /* [in] */ Int32 lw);
+
+    CARAPI_(Int32) DipsToPixels(
+        /* [in] */ Int32 dips);
+
+    static CARAPI_(void) DrawRectCorners(
+        /* [in] */ ICanvas* canvas,
+        /* [in] */ Int32 x1,
+        /* [in] */ Int32 y1,
+        /* [in] */ Int32 x2,
+        /* [in] */ Int32 y2,
+        /* [in] */ IPaint* paint,
+        /* [in] */ Int32 lineLength,
+        /* [in] */ Int32 lineWidth);
+
+    static CARAPI_(void) FillDifference(
+        /* [in] */ ICanvas* canvas,
+        /* [in] */ Int32 x2,
+        /* [in] */ Int32 y2,
+        /* [in] */ Int32 x3,
+        /* [in] */ Int32 y3,
+        /* [in] */ Int32 dx1,
+        /* [in] */ Int32 dy1,
+        /* [in] */ Int32 dx2,
+        /* [in] */ Int32 dy2,
+        /* [in] */ IPaint* paint);
+
+    CARAPI_(Boolean) HasChildWithZ();
+
+    CARAPI_(AutoPtr<IList>) BuildOrderedChildList();
+
+    CARAPI_(Boolean) RecreateChildDisplayList(
+        /* [in] */ IView* child);
+
+    CARAPI_(void) DispatchCancelPendingInputEvents();
+
+    CARAPI_(AutoPtr<ITransformation>) GetChildTransformation();
+
+    CARAPI_(void) ClearCachedLayoutMode();
+
+    CARAPI_(Boolean) HasBooleanFlag(
+        /* [in] */ Int32 flag);
+
+    CARAPI_(void) SetLayoutMode(
+        /* [in] */ Int32 layoutMode,
+        /* [in] */ Boolean explicitly);
+
+    CARAPI_(void) InvalidateInheritedLayoutMode(
+        /* [in] */ Int32 layoutModeOfRoot);
 
 public:
     /**
@@ -1651,7 +1811,7 @@ public:
      *
      * @hide
      */
-    static const Int32 CLIP_BOUNDS = 0;
+    static const Int32 LAYOUT_MODE_CLIP_BOUNDS = 0;
 
     /**
      * This constant is a {@link #setLayoutMode(int) layoutMode}.
@@ -1661,7 +1821,11 @@ public:
      *
      * @hide
      */
-    static const Int32 OPTICAL_BOUNDS = 1;
+    static const Int32 LAYOUT_MODE_OPTICAL_BOUNDS = 1;
+
+    static Int32 LAYOUT_MODE_DEFAULT;// = LAYOUT_MODE_CLIP_BOUNDS;
+
+    static Boolean DEBUG_DRAW;
 
 protected:
     // When set, ViewGroup invalidates only the child's rectangle
@@ -1685,10 +1849,6 @@ protected:
 
     // When set, the next call to drawChild() will clear mChildTransformation's matrix
     static const Int32 FLAG_CLEAR_TRANSFORMATION = 0x100;
-
-    // When the previous drawChild() invocation used an alpha value that was lower than
-    // 1.0 and set it in mCachePaint
-    static const Int32 FLAG_ALPHA_LOWER_THAN_ONE = 0x1000;
 
     /**
      * When set, this ViewGroup tries to always draw its children using their drawing cache.
@@ -1768,6 +1928,25 @@ private:
 
     static AutoPtr<ArrayOf<Float> > sDebugLines;
 
+    /**
+     * When true, indicates that a layoutMode has been explicitly set, either with
+     * an explicit call to {@link #setLayoutMode(int)} in code or from an XML resource.
+     * This distinguishes the situation in which a layout mode was inherited from
+     * one of the ViewGroup's ancestors and cached locally.
+     */
+    static const Int32 FLAG_LAYOUT_MODE_WAS_EXPLICITLY_SET = 0x800000;
+
+    static const Int32 FLAG_IS_TRANSITION_GROUP = 0x1000000;
+
+    static const Int32 FLAG_IS_TRANSITION_GROUP_SET = 0x2000000;
+
+    /**
+     * When set, focus will not be permitted to enter this group if a touchscreen is present.
+     */
+    static const Int32 FLAG_TOUCHSCREEN_BLOCKS_FOCUS = 0x4000000;
+
+    static const Int32 LAYOUT_MODE_UNDEFINED = -1;
+
 protected:
     /**
      * When set, the drawing method will call {@link #getChildDrawingOrder(Int32, Int32)}
@@ -1813,7 +1992,7 @@ protected:
      * This field should be made private, so it is hidden from the SDK.
      * {@hide}
      */
-    List<AutoPtr<IView> > mDisappearingChildren;
+    AutoPtr<IList> mDisappearingChildren;
 
     /**
      * Listener used to propagate events indicating when children are added
@@ -1924,8 +2103,16 @@ private:
     AutoPtr<ArrayOf<IView*> > mChildren;
     // Number of valid children in the mChildren array, the rest should be null or not
     // considered as children
-    Boolean mLayoutSuppressed;
     Int32 mChildrenCount;
+
+    // Whether layout calls are currently being suppressed, controlled by calls to
+    // suppressLayout()
+    Boolean mSuppressLayout;// = false;
+
+    // Whether any layout calls have actually been suppressed while mSuppressLayout
+    // has been true. This tracks whether we need to issue a requestLayout() when
+    // layout is later re-enabled.
+    Boolean mLayoutCalledWhileSuppressed;// = false;
 
     // Used to draw cached views
     AutoPtr<IPaint> mCachePaint;
@@ -1942,9 +2129,20 @@ private:
     // views during a transition when they otherwise would have become gone/invisible
     List<AutoPtr<IView> > mVisibilityChangingChildren;
 
+    // Temporary holder of presorted children, only used for
+    // input/software draw dispatch for correctly Z ordering.
+    AutoPtr<IList> mPreSortedChildren;
+
     // Indicates how many of this container's child subtrees contain transient state
     //@ViewDebug.ExportedProperty(category = "layout")
     Int32 mChildCountWithTransientState;
+
+     /**
+     * Currently registered axes for nested scrolling. Flag set consisting of
+     * {@link #SCROLL_AXIS_HORIZONTAL} {@link #SCROLL_AXIS_VERTICAL} or {@link #SCROLL_AXIS_NONE}
+     * for null.
+     */
+    Int32 mNestedScrollAxes;
 
     AutoPtr<ITransitionListener> mLayoutTransitionListener;
 };

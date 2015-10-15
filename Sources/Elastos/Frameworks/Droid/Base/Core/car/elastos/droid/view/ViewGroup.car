@@ -151,12 +151,18 @@ module
              * The default start and end margin.
              * @hide
              */
-            const Int32 DEFAULT_RELATIVE = 0x80000000;//Integer.MIN_VALUE
+            const Int32 DEFAULT_MARGIN_RELATIVE = 0x80000000;//Integer.MIN_VALUE
 
             GetLeftMargin(
                 [out] Int32* leftMargin);
 
             SetLeftMargin(
+                [in] Int32 leftMargin);
+
+            GetMarginFlags(
+                [out] Byte* leftMargin);
+
+            SetMarginFlags(
                 [in] Int32 leftMargin);
 
             /**

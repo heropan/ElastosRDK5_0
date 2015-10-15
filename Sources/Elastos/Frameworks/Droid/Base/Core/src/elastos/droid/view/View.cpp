@@ -1259,276 +1259,6 @@ View::View()
     mRenderNode = RenderNode::Create(String("View"), THIS_PROBE(IView));
 }
 
-View::View(
-    /* [in] */ IContext* context)
-    : mCachingFailed(FALSE)
-    , mMeasuredWidth(0)
-    , mMeasuredHeight(0)
-    , mRecreateDisplayList(FALSE)
-    , mID(IView::NO_ID)
-    , mAccessibilityViewId(IView::NO_ID)
-    , mAccessibilityCursorPosition(IView::ACCESSIBILITY_CURSOR_POSITION_UNDEFINED)
-    , mOverScrollMode(0)
-    , mParent(NULL)
-    , mPrivateFlags(0)
-    , mPrivateFlags2(0)
-    , mPrivateFlags3(0)
-    , mSystemUiVisibility(0)
-    , mTransientStateCount(0)
-    , mWindowAttachCount(0)
-    , mViewFlags(0)
-    , mLastIsOpaque(FALSE)
-    , mLeft(0)
-    , mRight(0)
-    , mTop(0)
-    , mBottom(0)
-    , mScrollX(0)
-    , mScrollY(0)
-    , mPaddingLeft(0)
-    , mPaddingRight(0)
-    , mPaddingTop(0)
-    , mPaddingBottom(0)
-    , mUserPaddingRight(0)
-    , mUserPaddingBottom(0)
-    , mUserPaddingLeft(0)
-    , mUserPaddingStart(0)
-    , mUserPaddingEnd(0)
-    , mUserPaddingLeftInitial(0)
-    , mUserPaddingRightInitial(0)
-    , mOldWidthMeasureSpec(Elastos::Core::Math::INT32_MIN_VALUE)
-    , mOldHeightMeasureSpec(Elastos::Core::Math::INT32_MIN_VALUE)
-    , mLabelForId(IView::NO_ID)
-    , mBackgroundResource(0)
-    , mBackgroundSizeChanged(FALSE)
-    , mNextFocusLeftId(IView::NO_ID)
-    , mNextFocusRightId(IView::NO_ID)
-    , mNextFocusUpId(IView::NO_ID)
-    , mNextFocusDownId(IView::NO_ID)
-    , mNextFocusForwardId(IView::NO_ID)
-    , mHasPerformedLongPress(FALSE)
-    , mMinHeight(0)
-    , mMinWidth(0)
-    , mDrawingCacheBackgroundColor(0)
-    , mTouchSlop(0)
-    , mVerticalScrollFactor(0.0f)
-    , mVerticalScrollbarPosition(0)
-    , mLayerType(IView::LAYER_TYPE_NONE)
-    , mSendingHoverAccessibilityEvents(FALSE)
-    , mLeftPaddingDefined(FALSE)
-    , mRightPaddingDefined(FALSE)
-    //, mOutlineProvider(ViewOutlineProvider::BACKGROUND)
-{
-    if (InputEventConsistencyVerifier::IsInstrumentationEnabled()) {
-        mInputEventConsistencyVerifier = new InputEventConsistencyVerifier((IInterface*)this, 0);
-    }
-
-    Init(context);
-}
-
-View::View(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : mCachingFailed(FALSE)
-    , mMeasuredWidth(0)
-    , mMeasuredHeight(0)
-    , mRecreateDisplayList(FALSE)
-    , mID(IView::NO_ID)
-    , mAccessibilityViewId(IView::NO_ID)
-    , mAccessibilityCursorPosition(IView::ACCESSIBILITY_CURSOR_POSITION_UNDEFINED)
-    , mOverScrollMode(0)
-    , mParent(NULL)
-    , mPrivateFlags(0)
-    , mPrivateFlags2(0)
-    , mPrivateFlags3(0)
-    , mSystemUiVisibility(0)
-    , mTransientStateCount(0)
-    , mWindowAttachCount(0)
-    , mViewFlags(0)
-    , mLastIsOpaque(FALSE)
-    , mLeft(0)
-    , mRight(0)
-    , mTop(0)
-    , mBottom(0)
-    , mScrollX(0)
-    , mScrollY(0)
-    , mPaddingLeft(0)
-    , mPaddingRight(0)
-    , mPaddingTop(0)
-    , mPaddingBottom(0)
-    , mUserPaddingRight(0)
-    , mUserPaddingBottom(0)
-    , mUserPaddingLeft(0)
-    , mUserPaddingStart(0)
-    , mUserPaddingEnd(0)
-    , mUserPaddingLeftInitial(0)
-    , mUserPaddingRightInitial(0)
-    , mOldWidthMeasureSpec(Elastos::Core::Math::INT32_MIN_VALUE)
-    , mOldHeightMeasureSpec(Elastos::Core::Math::INT32_MIN_VALUE)
-    , mLabelForId(IView::NO_ID)
-    , mBackgroundResource(0)
-    , mBackgroundSizeChanged(FALSE)
-    , mNextFocusLeftId(IView::NO_ID)
-    , mNextFocusRightId(IView::NO_ID)
-    , mNextFocusUpId(IView::NO_ID)
-    , mNextFocusDownId(IView::NO_ID)
-    , mNextFocusForwardId(IView::NO_ID)
-    , mHasPerformedLongPress(FALSE)
-    , mMinHeight(0)
-    , mMinWidth(0)
-    , mDrawingCacheBackgroundColor(0)
-    , mTouchSlop(0)
-    , mVerticalScrollFactor(0.0f)
-    , mVerticalScrollbarPosition(0)
-    , mLayerType(IView::LAYER_TYPE_NONE)
-    , mSendingHoverAccessibilityEvents(FALSE)
-    , mLeftPaddingDefined(FALSE)
-    , mRightPaddingDefined(FALSE)
-    //, mOutlineProvider(ViewOutlineProvider::BACKGROUND)
-{
-    if (InputEventConsistencyVerifier::IsInstrumentationEnabled()) {
-        mInputEventConsistencyVerifier = new InputEventConsistencyVerifier((IInterface*)this, 0);
-    }
-
-    Init(context, attrs, 0);
-}
-
-View::View(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr)
-    : mCachingFailed(FALSE)
-    , mMeasuredWidth(0)
-    , mMeasuredHeight(0)
-    , mRecreateDisplayList(FALSE)
-    , mID(IView::NO_ID)
-    , mAccessibilityViewId(IView::NO_ID)
-    , mAccessibilityCursorPosition(IView::ACCESSIBILITY_CURSOR_POSITION_UNDEFINED)
-    , mOverScrollMode(0)
-    , mParent(NULL)
-    , mPrivateFlags(0)
-    , mPrivateFlags2(0)
-    , mPrivateFlags3(0)
-    , mSystemUiVisibility(0)
-    , mTransientStateCount(0)
-    , mWindowAttachCount(0)
-    , mViewFlags(0)
-    , mLastIsOpaque(FALSE)
-    , mLeft(0)
-    , mRight(0)
-    , mTop(0)
-    , mBottom(0)
-    , mScrollX(0)
-    , mScrollY(0)
-    , mPaddingLeft(0)
-    , mPaddingRight(0)
-    , mPaddingTop(0)
-    , mPaddingBottom(0)
-    , mUserPaddingRight(0)
-    , mUserPaddingBottom(0)
-    , mUserPaddingLeft(0)
-    , mUserPaddingStart(0)
-    , mUserPaddingEnd(0)
-    , mUserPaddingLeftInitial(0)
-    , mUserPaddingRightInitial(0)
-    , mOldWidthMeasureSpec(Elastos::Core::Math::INT32_MIN_VALUE)
-    , mOldHeightMeasureSpec(Elastos::Core::Math::INT32_MIN_VALUE)
-    , mLabelForId(IView::NO_ID)
-    , mBackgroundResource(0)
-    , mBackgroundSizeChanged(FALSE)
-    , mNextFocusLeftId(IView::NO_ID)
-    , mNextFocusRightId(IView::NO_ID)
-    , mNextFocusUpId(IView::NO_ID)
-    , mNextFocusDownId(IView::NO_ID)
-    , mNextFocusForwardId(IView::NO_ID)
-    , mHasPerformedLongPress(FALSE)
-    , mMinHeight(0)
-    , mMinWidth(0)
-    , mDrawingCacheBackgroundColor(0)
-    , mTouchSlop(0)
-    , mVerticalScrollFactor(0.0f)
-    , mVerticalScrollbarPosition(0)
-    , mLayerType(IView::LAYER_TYPE_NONE)
-    , mSendingHoverAccessibilityEvents(FALSE)
-    , mLeftPaddingDefined(FALSE)
-    , mRightPaddingDefined(FALSE)
-    //, mOutlineProvider(ViewOutlineProvider::BACKGROUND)
-{
-    if (InputEventConsistencyVerifier::IsInstrumentationEnabled()) {
-        mInputEventConsistencyVerifier = new InputEventConsistencyVerifier((IInterface*)this, 0);
-    }
-
-    Init(context, attrs, defStyleAttr, 0);
-}
-
-View::View(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
-    : mCachingFailed(FALSE)
-    , mMeasuredWidth(0)
-    , mMeasuredHeight(0)
-    , mRecreateDisplayList(FALSE)
-    , mID(IView::NO_ID)
-    , mAccessibilityViewId(IView::NO_ID)
-    , mAccessibilityCursorPosition(IView::ACCESSIBILITY_CURSOR_POSITION_UNDEFINED)
-    , mOverScrollMode(0)
-    , mParent(NULL)
-    , mPrivateFlags(0)
-    , mPrivateFlags2(0)
-    , mPrivateFlags3(0)
-    , mSystemUiVisibility(0)
-    , mTransientStateCount(0)
-    , mWindowAttachCount(0)
-    , mViewFlags(0)
-    , mLastIsOpaque(FALSE)
-    , mLeft(0)
-    , mRight(0)
-    , mTop(0)
-    , mBottom(0)
-    , mScrollX(0)
-    , mScrollY(0)
-    , mPaddingLeft(0)
-    , mPaddingRight(0)
-    , mPaddingTop(0)
-    , mPaddingBottom(0)
-    , mUserPaddingRight(0)
-    , mUserPaddingBottom(0)
-    , mUserPaddingLeft(0)
-    , mUserPaddingStart(0)
-    , mUserPaddingEnd(0)
-    , mUserPaddingLeftInitial(0)
-    , mUserPaddingRightInitial(0)
-    , mOldWidthMeasureSpec(Elastos::Core::Math::INT32_MIN_VALUE)
-    , mOldHeightMeasureSpec(Elastos::Core::Math::INT32_MIN_VALUE)
-    , mLabelForId(IView::NO_ID)
-    , mBackgroundResource(0)
-    , mBackgroundSizeChanged(FALSE)
-    , mNextFocusLeftId(IView::NO_ID)
-    , mNextFocusRightId(IView::NO_ID)
-    , mNextFocusUpId(IView::NO_ID)
-    , mNextFocusDownId(IView::NO_ID)
-    , mNextFocusForwardId(IView::NO_ID)
-    , mHasPerformedLongPress(FALSE)
-    , mMinHeight(0)
-    , mMinWidth(0)
-    , mDrawingCacheBackgroundColor(0)
-    , mTouchSlop(0)
-    , mVerticalScrollFactor(0.0f)
-    , mVerticalScrollbarPosition(0)
-    , mLayerType(IView::LAYER_TYPE_NONE)
-    , mSendingHoverAccessibilityEvents(FALSE)
-    , mLeftPaddingDefined(FALSE)
-    , mRightPaddingDefined(FALSE)
-    //, mOutlineProvider(ViewOutlineProvider::BACKGROUND)
-{
-    if (InputEventConsistencyVerifier::IsInstrumentationEnabled()) {
-        mInputEventConsistencyVerifier = new InputEventConsistencyVerifier((IInterface*)this, 0);
-    }
-
-    Init(context, attrs, defStyleAttr, defStyleRes);
-}
-
 View::~View()
 {
     if (!mKeyedTags.IsEmpty()) {
@@ -16988,7 +16718,7 @@ ECode View::FindNamedViews(
     }
 }
 
-ECode View::Init(
+ECode View::constructor(
     /* [in] */ IContext* context)
 {
     mContext = context;
@@ -17031,29 +16761,29 @@ ECode View::Init(
     return NOERROR;
 }
 
-ECode View::Init(
+ECode View::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return Init(context, attrs, 0);
+    return constructor(context, attrs, 0);
 }
 
-ECode View::Init(
+ECode View::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr)
 {
-    return Init(context, attrs, defStyleAttr);
+    return constructor(context, attrs, defStyleAttr);
 }
 
 
-ECode View::Init(
+ECode View::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    Init(context);
+    constructor(context);
 
     //printf("View::Init\n");
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(

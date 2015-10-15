@@ -155,7 +155,8 @@ ECode ViewGroupLayoutParams::ResolveLayoutDirection(
 
 ECode ViewGroupLayoutParams::OnDebugDraw(
     /* [in] */ IView* view,
-    /* [in] */ ICanvas* canvas)
+    /* [in] */ ICanvas* canvas,
+    /* [in] */ IPaint* paint);
 {
     return NOERROR;
 }

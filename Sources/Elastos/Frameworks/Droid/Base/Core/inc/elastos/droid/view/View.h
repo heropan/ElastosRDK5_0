@@ -60,14 +60,6 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-extern "C" const InterfaceID EIID_View;
-
-#define VIEW_PROBE(expr) reinterpret_cast<View*>((expr)->Probe(EIID_View))
-#endif
-
-#define IVIEW_PROBE(expr) ((IView*)(expr)->Probe(EIID_IView))
-#endif
-
 class ViewRootImpl;
 class TouchDelegate;
 class ViewPropertyAnimator;
@@ -1208,7 +1200,8 @@ private:
     static const Int32 UNDEFINED_PADDING;
 
 protected:
-    class TransformationInfo : public ElRefBase
+    class TransformationInfo
+        : public Object
     {
         friend class View;
         friend class ViewPropertyAnimator;
@@ -1250,7 +1243,8 @@ protected:
         AutoPtr<IMatrix> mInverseMatrix;
     };
 
-    class ListenerInfo : public Object
+    class ListenerInfo
+        : public Object
     {
         friend class View;
     public:
@@ -1616,7 +1610,8 @@ public:
         Int32 mOriginalWindowAttachCount;
     };
 
-    class AttachInfo : public ElRefBase
+    class AttachInfo
+        : public Object
     {
     public:
         class Callbacks
@@ -2073,7 +2068,7 @@ public:
      * </p>
      */
     class AccessibilityDelegate :
-        public ElRefBase,
+        public Object,
         public IAccessibilityDelegate
     {
     public:
@@ -2417,7 +2412,7 @@ private:
     };
 
     class _Predicate
-        : public ElRefBase
+        : public Object
         , public IPredicate
     {
     public:
@@ -2513,19 +2508,19 @@ private:
 public:
     View();
 
-    View(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    View(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    View(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyleAttr);
 
-    View(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyleAttr,
@@ -4861,24 +4856,6 @@ protected:
         /* [in] */ Int32 scrollY,
         /* [in] */ Boolean clampedX,
         /* [in] */ Boolean clampedY);
-
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr,
-        /* [in] */ Int32 defStyleRes);
 
     CARAPI_(AutoPtr<ListenerInfo>) GetListenerInfo();
 

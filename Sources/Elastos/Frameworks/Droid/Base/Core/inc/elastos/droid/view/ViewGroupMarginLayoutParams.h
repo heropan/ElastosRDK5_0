@@ -149,19 +149,25 @@ public:
 
     virtual CARAPI_(Boolean) IsLayoutRtl();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* c,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IViewGroupMarginLayoutParams* source);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IViewGroupLayoutParams* source);
+
+    virtual CARAPI CopyMarginsFrom(
+        /* [in] */ IViewGroupMarginLayoutParams source);
+
+    private:
+        CARAPI_(void) DoResolveMargins();
 
 public:
     /**
@@ -209,13 +215,16 @@ private:
     //@ViewDebug.ExportedProperty(category = "layout")
     Int32 mEndMargin;
 
-    Int32 mInitialLeftMargin;
-    Int32 mInitialRightMargin;
+    Byte mMarginFlags;
 
-    static Int32 LAYOUT_DIRECTION_UNDEFINED;
+    static const Int32 LAYOUT_DIRECTION_MASK;
+    static const Int32 LEFT_MARGIN_UNDEFINED_MASK;// = 0x00000004;
+    static const Int32 RIGHT_MARGIN_UNDEFINED_MASK;// = 0x00000008;
+    static const Int32 RTL_COMPATIBILITY_MODE_MASK;// = 0x00000010;
+    static const Int32 NEED_RESOLUTION_MASK;// = 0x00000020;
 
-    // Layout direction undefined by default
-    Int32 mLayoutDirection;
+    static const Int32 DEFAULT_MARGIN_RESOLVED;// = 0;
+    static const Int32 UNDEFINED_MARGIN;// = DEFAULT_MARGIN_RELATIVE;
 };
 
 } // namespace View

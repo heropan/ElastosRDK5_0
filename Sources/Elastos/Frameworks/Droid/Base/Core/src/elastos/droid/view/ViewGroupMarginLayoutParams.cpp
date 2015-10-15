@@ -7,80 +7,24 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-Int32 ViewGroupMarginLayoutParams::LAYOUT_DIRECTION_UNDEFINED = -1;
+const Int32 ViewGroupMarginLayoutParams::LAYOUT_DIRECTION_UNDEFINED = -1;
+const Int32 ViewGroupMarginLayoutParams::LEFT_MARGIN_UNDEFINED_MASK = 0x00000004;
+const Int32 ViewGroupMarginLayoutParams::RIGHT_MARGIN_UNDEFINED_MASK = 0x00000008;
+const Int32 ViewGroupMarginLayoutParams::RTL_COMPATIBILITY_MODE_MASK = 0x00000010;
+const Int32 ViewGroupMarginLayoutParams::NEED_RESOLUTION_MASK = 0x00000020;
+const Int32 ViewGroupMarginLayoutParams::DEFAULT_MARGIN_RESOLVED = 0;
+const Int32 ViewGroupMarginLayoutParams::UNDEFINED_MARGIN = IViewGroupMarginLayoutParams::DEFAULT_MARGIN_RELATIVE;
 
 ViewGroupMarginLayoutParams::ViewGroupMarginLayoutParams()
     : mLeftMargin(0)
     , mTopMargin(0)
     , mRightMargin(0)
     , mBottomMargin(0)
-    , mStartMargin(IViewGroupMarginLayoutParams::DEFAULT_RELATIVE)
-    , mEndMargin(IViewGroupMarginLayoutParams::DEFAULT_RELATIVE)
+    , mStartMargin(IViewGroupMarginLayoutParams::DEFAULT_MARGIN_RELATIVE)
+    , mEndMargin(IViewGroupMarginLayoutParams::DEFAULT_MARGIN_RELATIVE)
     , mInitialLeftMargin(0)
     , mInitialRightMargin(0)
     , mLayoutDirection(LAYOUT_DIRECTION_UNDEFINED)
-{}
-
-ViewGroupMarginLayoutParams::ViewGroupMarginLayoutParams(
-    /* [in] */ IContext* c,
-    /* [in] */ IAttributeSet* attrs)
-    : mLeftMargin(0)
-    , mTopMargin(0)
-    , mRightMargin(0)
-    , mBottomMargin(0)
-    , mStartMargin(IViewGroupMarginLayoutParams::DEFAULT_RELATIVE)
-    , mEndMargin(IViewGroupMarginLayoutParams::DEFAULT_RELATIVE)
-    , mInitialLeftMargin(0)
-    , mInitialRightMargin(0)
-    , mLayoutDirection(LAYOUT_DIRECTION_UNDEFINED)
-{
-    ASSERT_SUCCEEDED(Init(c, attrs));
-}
-
-/**
- * {@inheritDoc}
- */
-ViewGroupMarginLayoutParams::ViewGroupMarginLayoutParams(
-    /* [in] */ Int32 width,
-    /* [in] */ Int32 height)
-    : ViewGroupLayoutParams(width, height)
-    , mLeftMargin(0)
-    , mTopMargin(0)
-    , mRightMargin(0)
-    , mBottomMargin(0)
-    , mStartMargin(IViewGroupMarginLayoutParams::DEFAULT_RELATIVE)
-    , mEndMargin(IViewGroupMarginLayoutParams::DEFAULT_RELATIVE)
-    , mInitialLeftMargin(0)
-    , mInitialRightMargin(0)
-    , mLayoutDirection(LAYOUT_DIRECTION_UNDEFINED)
-{}
-
-/**
- * Copy constructor. Clones the width, height and margin values of the source.
- *
- * @param source The layout params to copy from.
- */
-ViewGroupMarginLayoutParams::ViewGroupMarginLayoutParams(
-    /* [in] */ ViewGroupMarginLayoutParams* source)
-    : ViewGroupLayoutParams(source->mWidth, source->mHeight)
-    , mLeftMargin(source->mLeftMargin)
-    , mTopMargin(source->mTopMargin)
-    , mRightMargin(source->mRightMargin)
-    , mBottomMargin(source->mBottomMargin)
-    , mStartMargin(source->mStartMargin)
-    , mEndMargin(source->mEndMargin)
-    , mInitialLeftMargin(source->mLeftMargin)
-    , mInitialRightMargin(source->mRightMargin)
-{
-    SetLayoutDirection(source->mLayoutDirection);
-}
-
-/**
- * {@inheritDoc}
- */
-ViewGroupMarginLayoutParams::ViewGroupMarginLayoutParams(
-    /* [in] */ ViewGroupLayoutParams* source)
-    : ViewGroupLayoutParams(source)
 {}
 
 ECode ViewGroupMarginLayoutParams::GetLeftMargin(
@@ -153,8 +97,13 @@ ECode ViewGroupMarginLayoutParams::SetMargins(
     mTopMargin = top;
     mRightMargin = right;
     mBottomMargin = bottom;
-    mInitialLeftMargin = left;
-    mInitialRightMargin = right;
+    mMarginFlags &= ~LEFT_MARGIN_UNDEFINED_MASK;
+    mMarginFlags &= ~RIGHT_MARGIN_UNDEFINED_MASK;
+    if (IsMarginRelative()) {
+        mMarginFlags |= NEED_RESOLUTION_MASK;
+    } else {
+        mMarginFlags &= ~NEED_RESOLUTION_MASK;
+    }
     return NOERROR;
 }
 
@@ -183,8 +132,7 @@ ECode ViewGroupMarginLayoutParams::SetMarginsRelative(
     mTopMargin = top;
     mEndMargin = end;
     mBottomMargin = bottom;
-    mInitialLeftMargin = 0;
-    mInitialRightMargin = 0;
+    mMarginFlags |= NEED_RESOLUTION_MASK;
     return NOERROR;
 }
 
@@ -192,14 +140,19 @@ ECode ViewGroupMarginLayoutParams::SetMarginStart(
     /* [in] */ Int32 start)
 {
     mStartMargin = start;
+    mMarginFlags |= NEED_RESOLUTION_MASK;
     return NOERROR;
 }
 
 Int32 ViewGroupMarginLayoutParams::GetMarginStart()
 {
-    if (mStartMargin != IViewGroupMarginLayoutParams::DEFAULT_RELATIVE)
+    if (mStartMargin != IViewGroupMarginLayoutParams::DEFAULT_MARGIN_RELATIVE) {
         return mStartMargin;
-    switch(mLayoutDirection) {
+    }
+    if ((mMarginFlags & NEED_RESOLUTION_MASK) == NEED_RESOLUTION_MASK) {
+        DoResolveMargins();
+    }
+    switch(mMarginFlags & LAYOUT_DIRECTION_MASK) {
         case IView::LAYOUT_DIRECTION_RTL:
             return mRightMargin;
         case IView::LAYOUT_DIRECTION_LTR:
@@ -212,14 +165,19 @@ ECode ViewGroupMarginLayoutParams::SetMarginEnd(
     /* [in] */ Int32 end)
 {
     mEndMargin = end;
+    mMarginFlags |= NEED_RESOLUTION_MASK;
     return NOERROR;
 }
 
 Int32 ViewGroupMarginLayoutParams::GetMarginEnd()
 {
-    if (mEndMargin != IViewGroupMarginLayoutParams::DEFAULT_RELATIVE)
+    if (mEndMargin != IViewGroupMarginLayoutParams::DEFAULT_MARGIN_RELATIVE) {
         return mEndMargin;
-    switch(mLayoutDirection) {
+    }
+    if ((mMarginFlags & NEED_RESOLUTION_MASK) == NEED_RESOLUTION_MASK) {
+        DoResolveMargins();
+    }
+    switch(mMarginFlags & LAYOUT_DIRECTION_MASK) {
         case IView::LAYOUT_DIRECTION_RTL:
             return mLeftMargin;
         case IView::LAYOUT_DIRECTION_LTR:
@@ -230,8 +188,8 @@ Int32 ViewGroupMarginLayoutParams::GetMarginEnd()
 
 Boolean ViewGroupMarginLayoutParams::IsMarginRelative()
 {
-    return (mStartMargin != IViewGroupMarginLayoutParams::DEFAULT_RELATIVE)
-        || (mEndMargin != IViewGroupMarginLayoutParams::DEFAULT_RELATIVE);
+    return (mStartMargin != IViewGroupMarginLayoutParams::DEFAULT_MARGIN_RELATIVE)
+        || (mEndMargin != IViewGroupMarginLayoutParams::DEFAULT_MARGIN_RELATIVE);
 }
 
 ECode ViewGroupMarginLayoutParams::SetLayoutDirection(
@@ -241,13 +199,21 @@ ECode ViewGroupMarginLayoutParams::SetLayoutDirection(
             layoutDirection != IView::LAYOUT_DIRECTION_RTL) {
         return NOERROR;
     }
-    mLayoutDirection = layoutDirection;
+    if (layoutDirection != (mMarginFlags & LAYOUT_DIRECTION_MASK)) {
+        mMarginFlags &= ~LAYOUT_DIRECTION_MASK;
+        mMarginFlags |= (layoutDirection & LAYOUT_DIRECTION_MASK);
+        if (IsMarginRelative()) {
+            mMarginFlags |= NEED_RESOLUTION_MASK;
+        } else {
+            mMarginFlags &= ~NEED_RESOLUTION_MASK;
+        }
+    }
     return NOERROR;
 }
 
 Int32 ViewGroupMarginLayoutParams::GetLayoutDirection()
 {
-    return mLayoutDirection;
+    return (mMarginFlags & LAYOUT_DIRECTION_MASK);
 }
 
 ECode ViewGroupMarginLayoutParams::ResolveLayoutDirection(
@@ -255,55 +221,83 @@ ECode ViewGroupMarginLayoutParams::ResolveLayoutDirection(
 {
     SetLayoutDirection(layoutDirection);
 
-    if (!IsMarginRelative()) {
-        return NOERROR;
-    }
+    // No relative margin or pre JB-MR1 case or no need to resolve, just dont do anything
+    // Will use the left and right margins if no relative margin is defined.
+    if (!IsMarginRelative() ||
+            (mMarginFlags & NEED_RESOLUTION_MASK) != NEED_RESOLUTION_MASK) return;
 
-    switch(layoutDirection) {
-        case IView::LAYOUT_DIRECTION_RTL:
-            mLeftMargin = (mEndMargin > IViewGroupMarginLayoutParams::DEFAULT_RELATIVE)
-                ? mEndMargin : mInitialLeftMargin;
-            mRightMargin = (mStartMargin > IViewGroupMarginLayoutParams::DEFAULT_RELATIVE)
-                ? mStartMargin : mInitialRightMargin;
-            break;
-        case IView::LAYOUT_DIRECTION_LTR:
-        default:
-            mLeftMargin = (mStartMargin > IViewGroupMarginLayoutParams::DEFAULT_RELATIVE)
-                ? mStartMargin : mInitialLeftMargin;
-            mRightMargin = (mEndMargin > IViewGroupMarginLayoutParams::DEFAULT_RELATIVE)
-                ? mEndMargin : mInitialRightMargin;
-            break;
-    }
+    // Proceed with resolution
+    DoResolveMargins();
 
     return NOERROR;
 }
 
+void ViewGroupMarginLayoutParams::DoResolveMargins()
+{
+    if ((mMarginFlags & RTL_COMPATIBILITY_MODE_MASK) == RTL_COMPATIBILITY_MODE_MASK) {
+        // if left or right margins are not defined and if we have some start or end margin
+        // defined then use those start and end margins.
+        if ((mMarginFlags & LEFT_MARGIN_UNDEFINED_MASK) == LEFT_MARGIN_UNDEFINED_MASK
+                && mStartMargin > DEFAULT_MARGIN_RELATIVE) {
+            mLeftMargin = mStartMargin;
+        }
+        if ((mMarginFlags & RIGHT_MARGIN_UNDEFINED_MASK) == RIGHT_MARGIN_UNDEFINED_MASK
+                && mEndMargin > DEFAULT_MARGIN_RELATIVE) {
+            mRightMargin = mEndMargin;
+        }
+    } else {
+        // We have some relative margins (either the start one or the end one or both). So use
+        // them and override what has been defined for left and right margins. If either start
+        // or end margin is not defined, just set it to default "0".
+        switch(mMarginFlags & LAYOUT_DIRECTION_MASK) {
+            case IView::LAYOUT_DIRECTION_RTL:
+                mLeftMargin = (mEndMargin > DEFAULT_MARGIN_RELATIVE) ?
+                        mEndMargin : DEFAULT_MARGIN_RESOLVED;
+                mRightMargin = (mStartMargin > DEFAULT_MARGIN_RELATIVE) ?
+                        mStartMargin : DEFAULT_MARGIN_RESOLVED;
+                break;
+            case IView::LAYOUT_DIRECTION_LTR:
+            default:
+                mLeftMargin = (mStartMargin > DEFAULT_MARGIN_RELATIVE) ?
+                        mStartMargin : DEFAULT_MARGIN_RESOLVED;
+                mRightMargin = (mEndMargin > DEFAULT_MARGIN_RELATIVE) ?
+                        mEndMargin : DEFAULT_MARGIN_RESOLVED;
+                break;
+        }
+    }
+    mMarginFlags &= ~NEED_RESOLUTION_MASK;
+}
+
 Boolean ViewGroupMarginLayoutParams::IsLayoutRtl()
 {
-    return (mLayoutDirection == IView::LAYOUT_DIRECTION_RTL);
+    return ((mMarginFlags & LAYOUT_DIRECTION_MASK) == IView::LAYOUT_DIRECTION_RTL);
 }
 
 ECode ViewGroupMarginLayoutParams::OnDebugDraw(
     /* [in] */ IView* view,
     /* [in] */ ICanvas* canvas)
 {
-    Int32 l, t, r, b;
-    view->GetLeft(&l);
-    view->GetTop(&t);
-    view->GetRight(&r);
-    view->GetBottom(&b);
+    /*AutoPtr<IInsets> oi = IsLayoutModeOptical(view.mParent) ? view.getOpticalInsets() : Insets.NONE;
 
-    // ViewGroup::DrawRect(
-    //     canvas, l - mLeftMargin, t - mTopMargin,
-    //     r + mRightMargin, b + mBottomMargin, Color::MAGENTA);
+    fillDifference(canvas,
+            view.getLeft()   + oi.left,
+            view.getTop()    + oi.top,
+            view.getRight()  - oi.right,
+            view.getBottom() - oi.bottom,
+            leftMargin,
+            topMargin,
+            rightMargin,
+            bottomMargin,
+            paint);*/
 
     return NOERROR;
 }
 
-ECode ViewGroupMarginLayoutParams::Init(
+ECode ViewGroupMarginLayoutParams::constructor(
     /* [in] */ IContext* c,
     /* [in] */ IAttributeSet* attrs)
 {
+    ViewGroupLayoutParams::constructor(c, attrs);
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::ViewGroup_MarginLayout),
         ARRAY_SIZE(R::styleable::ViewGroup_MarginLayout));
@@ -332,46 +326,80 @@ ECode ViewGroupMarginLayoutParams::Init(
     else {
         a->GetDimensionPixelSize(
                 R::styleable::ViewGroup_MarginLayout_layout_marginLeft,
-                0, &mLeftMargin);
+                UNDEFINED_MARGIN, &mLeftMargin);
+        if (mLeftMargin == UNDEFINED_MARGIN) {
+            mMarginFlags |= LEFT_MARGIN_UNDEFINED_MASK;
+            mLeftMargin = DEFAULT_MARGIN_RESOLVED;
+        }
         a->GetDimensionPixelSize(
                 R::styleable::ViewGroup_MarginLayout_layout_marginTop,
-                0, &mTopMargin);
+                DEFAULT_MARGIN_RESOLVED, &mTopMargin);
         a->GetDimensionPixelSize(
                 R::styleable::ViewGroup_MarginLayout_layout_marginRight,
-                0, &mRightMargin);
+                UNDEFINED_MARGIN, &mRightMargin);
+        if (mRightMargin == UNDEFINED_MARGIN) {
+            mMarginFlags |= RIGHT_MARGIN_UNDEFINED_MASK;
+            mRightMargin = DEFAULT_MARGIN_RESOLVED;
+        }
         a->GetDimensionPixelSize(
                 R::styleable::ViewGroup_MarginLayout_layout_marginBottom,
-                0, &mBottomMargin);
+                DEFAULT_MARGIN_RESOLVED, &mBottomMargin);
 
         a->GetDimensionPixelSize(
                 R::styleable::ViewGroup_MarginLayout_layout_marginStart,
-                IViewGroupMarginLayoutParams::DEFAULT_RELATIVE, &mStartMargin);
+                IViewGroupMarginLayoutParams::DEFAULT_MARGIN_RELATIVE, &mStartMargin);
         a->GetDimensionPixelSize(
                 R::styleable::ViewGroup_MarginLayout_layout_marginEnd,
-                IViewGroupMarginLayoutParams::DEFAULT_RELATIVE, &mEndMargin);
+                IViewGroupMarginLayoutParams::DEFAULT_MARGIN_RELATIVE, &mEndMargin);
+
+        if (IsMarginRelative()) {
+           mMarginFlags |= NEED_RESOLUTION_MASK;
+        }
     }
 
-    mInitialLeftMargin = mLeftMargin;
-    mInitialRightMargin = mRightMargin;
+    AutoPtr<IApplicationInfo> info;
+    c->GetApplicationInfo((IApplicationInfo**)&info);
+    Boolean hasRtlSupport;
+    info->HasRtlSupport(&hasRtlSupport);
+    Int32 targetSdkVersion;
+    info->GetTargetSdkVersion(&targetSdkVersion);
+    if (targetSdkVersion < Build::VERSION_CODES::JELLY_BEAN_MR1 || !hasRtlSupport) {
+        mMarginFlags |= RTL_COMPATIBILITY_MODE_MASK;
+    }
+
+    // Layout direction is LTR by default
+    mMarginFlags |= LAYOUT_DIRECTION_LTR;
 
     a->Recycle();
     return NOERROR;
 }
 
-ECode ViewGroupMarginLayoutParams::Init(
+ECode ViewGroupMarginLayoutParams::constructor(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    return ViewGroupLayoutParams::Init(width, height);
+    ViewGroupLayoutParams::constructor(width, height);
+    mMarginFlags |= LEFT_MARGIN_UNDEFINED_MASK;
+    mMarginFlags |= RIGHT_MARGIN_UNDEFINED_MASK;
+
+    mMarginFlags &= ~NEED_RESOLUTION_MASK;
+    mMarginFlags &= ~RTL_COMPATIBILITY_MODE_MASK;
+    return NOERROR;
 }
 
-ECode ViewGroupMarginLayoutParams::Init(
+ECode ViewGroupMarginLayoutParams::constructor(
     /* [in] */ IViewGroupLayoutParams* source)
 {
-    return ViewGroupLayoutParams::Init(source);
+    ViewGroupLayoutParams::constructor(source);
+    mMarginFlags |= LEFT_MARGIN_UNDEFINED_MASK;
+    mMarginFlags |= RIGHT_MARGIN_UNDEFINED_MASK;
+
+    mMarginFlags &= ~NEED_RESOLUTION_MASK;
+    mMarginFlags &= ~RTL_COMPATIBILITY_MODE_MASK;
+    return NOERROR;
 }
 
-ECode ViewGroupMarginLayoutParams::Init(
+ECode ViewGroupMarginLayoutParams::constructor(
     /* [in] */ IViewGroupMarginLayoutParams* source)
 {
     source->GetWidth(&mWidth);
@@ -379,12 +407,22 @@ ECode ViewGroupMarginLayoutParams::Init(
     source->GetMargins(&mLeftMargin, &mTopMargin, &mRightMargin, &mBottomMargin);
     source->GetMarginStart(&mStartMargin);
     source->GetMarginEnd(&mEndMargin);
-    mInitialLeftMargin = mLeftMargin;
-    mInitialRightMargin = mRightMargin;
 
-    Int32 layoutDirection = 0;
-    source->GetLayoutDirection(&layoutDirection);
-    return SetLayoutDirection(layoutDirection);
+    source->GetMarginFlags(&mMarginFlags);
+    return NOERROR;
+}
+
+ECode ViewGroupMarginLayoutParams::CopyMarginsFrom(
+    /* [in] */ IViewGroupMarginLayoutParams source)
+{
+    source->GetLeftMargin(&mLeftMargin);
+    source->GetTopMargin(&mTopMargin);
+    source->GetRightMargin(&mRightMargin);
+    source->GetBottomMargin(&mBottomMargin);
+    source->GetMarginStart(&mStartMargin);
+    source->GetMarginEnd(&mEndMargin);
+    source->GetMarginFlags(&mMarginFlags);
+    return NOERROR;
 }
 
 } // namespace View
