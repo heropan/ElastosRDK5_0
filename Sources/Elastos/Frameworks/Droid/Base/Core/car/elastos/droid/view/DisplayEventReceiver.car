@@ -48,7 +48,7 @@ module
          */
         OnHotplug(
             [in] Int64 timestampNanos,
-            [in] Int64 builtInDisplayId,
+            [in] Int32 builtInDisplayId,
             [in] Boolean connected);
 
         /**

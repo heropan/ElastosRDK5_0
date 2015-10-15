@@ -1,14 +1,18 @@
 
-#include "view/CDisplayInfo.h"
+#include "view/DisplayInfo.h"
 #include "ext/frameworkext.h"
+#include "content/res/CCompatibilityInfoHelper.h"
+#include "view/Display.h"
 
+using Elastos::Droid::Content::Res::ICompatibilityInfoHelper;
+using Elastos::Droid::Content::Res::CCompatibilityInfoHelper;
 using Elastos::Droid::Content::Res::ICompatibilityInfo;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-CDisplayInfo::CDisplayInfo()
+DisplayInfo::DisplayInfo()
     : mLayerStack(0)
     , mFlags(0)
     , mType(0)
@@ -28,18 +32,7 @@ CDisplayInfo::CDisplayInfo()
 {
 }
 
-ECode CDisplayInfo::constructor()
-{
-    return NOERROR;
-}
-
-ECode CDisplayInfo::constructor(
-    /* [in] */ IDisplayInfo* other)
-{
-    return CopyFrom(other);
-}
-
-ECode CDisplayInfo::GetLayerStack(
+ECode DisplayInfo::GetLayerStack(
     /* [out] */ Int32* layerStack)
 {
     VALIDATE_NOT_NULL(layerStack);
@@ -47,14 +40,14 @@ ECode CDisplayInfo::GetLayerStack(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetLayerStack(
+ECode DisplayInfo::SetLayerStack(
     /* [in] */ Int32 layerStack)
 {
     mLayerStack = layerStack;
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetFlags(
+ECode DisplayInfo::GetFlags(
     /* [out] */ Int32* flags)
 {
     VALIDATE_NOT_NULL(flags);
@@ -62,14 +55,14 @@ ECode CDisplayInfo::GetFlags(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetFlags(
+ECode DisplayInfo::SetFlags(
     /* [in] */ Int32 flags)
 {
     mFlags = flags;
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetType(
+ECode DisplayInfo::GetType(
     /* [out] */ Int32* type)
 {
     VALIDATE_NOT_NULL(type);
@@ -77,14 +70,14 @@ ECode CDisplayInfo::GetType(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetType(
+ECode DisplayInfo::SetType(
     /* [in] */ Int32 type)
 {
     mType = type;
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetAddress(
+ECode DisplayInfo::GetAddress(
     /* [out] */ String* address)
 {
     VALIDATE_NOT_NULL(address);
@@ -92,14 +85,14 @@ ECode CDisplayInfo::GetAddress(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetAddress(
+ECode DisplayInfo::SetAddress(
     /* [in] */ const String& address)
 {
     mAddress = address;
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetName(
+ECode DisplayInfo::GetName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
@@ -107,14 +100,14 @@ ECode CDisplayInfo::GetName(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetName(
+ECode DisplayInfo::SetName(
     /* [in] */ const String& name)
 {
     mName = name;
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetAppWidth(
+ECode DisplayInfo::GetAppWidth(
     /* [out] */ Int32* appWidth)
 {
     VALIDATE_NOT_NULL(appWidth);
@@ -122,14 +115,14 @@ ECode CDisplayInfo::GetAppWidth(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetAppWidth(
+ECode DisplayInfo::SetAppWidth(
     /* [in] */ Int32 appWidth)
 {
     mAppWidth = appWidth;
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetAppHeight(
+ECode DisplayInfo::GetAppHeight(
     /* [out] */ Int32* appHeight)
 {
     VALIDATE_NOT_NULL(appHeight);
@@ -137,14 +130,14 @@ ECode CDisplayInfo::GetAppHeight(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetAppHeight(
+ECode DisplayInfo::SetAppHeight(
     /* [in] */ Int32 appHeight)
 {
     mAppHeight = appHeight;
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetSmallestNominalAppWidth(
+ECode DisplayInfo::GetSmallestNominalAppWidth(
     /* [out] */ Int32* smallestNominalAppWidth)
 {
     VALIDATE_NOT_NULL(smallestNominalAppWidth);
@@ -152,14 +145,14 @@ ECode CDisplayInfo::GetSmallestNominalAppWidth(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetSmallestNominalAppWidth(
+ECode DisplayInfo::SetSmallestNominalAppWidth(
     /* [in] */ Int32 smallestNominalAppWidth)
 {
     mSmallestNominalAppWidth = smallestNominalAppWidth;
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetSmallestNominalAppHeight(
+ECode DisplayInfo::GetSmallestNominalAppHeight(
     /* [out] */ Int32* smallestNominalAppHeight)
 {
     VALIDATE_NOT_NULL(smallestNominalAppHeight);
@@ -167,14 +160,14 @@ ECode CDisplayInfo::GetSmallestNominalAppHeight(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetSmallestNominalAppHeight(
+ECode DisplayInfo::SetSmallestNominalAppHeight(
     /* [in] */ Int32 smallestNominalAppHeight)
 {
     mSmallestNominalAppHeight = smallestNominalAppHeight;
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetLargestNominalAppWidth(
+ECode DisplayInfo::GetLargestNominalAppWidth(
     /* [out] */ Int32* largestNominalAppWidth)
 {
     VALIDATE_NOT_NULL(largestNominalAppWidth);
@@ -182,14 +175,14 @@ ECode CDisplayInfo::GetLargestNominalAppWidth(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetLargestNominalAppWidth(
+ECode DisplayInfo::SetLargestNominalAppWidth(
     /* [in] */ Int32 largestNominalAppWidth)
 {
     mLargestNominalAppWidth = largestNominalAppWidth;
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetLargestNominalAppHeight(
+ECode DisplayInfo::GetLargestNominalAppHeight(
     /* [out] */ Int32* largestNominalAppHeight)
 {
     VALIDATE_NOT_NULL(largestNominalAppHeight);
@@ -197,14 +190,14 @@ ECode CDisplayInfo::GetLargestNominalAppHeight(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetLargestNominalAppHeight(
+ECode DisplayInfo::SetLargestNominalAppHeight(
     /* [in] */ Int32 largestNominalAppHeight)
 {
     mLargestNominalAppHeight = largestNominalAppHeight;
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetLogicalWidth(
+ECode DisplayInfo::GetLogicalWidth(
     /* [out] */ Int32* logicalWidth)
 {
     VALIDATE_NOT_NULL(logicalWidth);
@@ -212,14 +205,14 @@ ECode CDisplayInfo::GetLogicalWidth(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetLogicalWidth(
+ECode DisplayInfo::SetLogicalWidth(
     /* [in] */ Int32 logicalWidth)
 {
     mLogicalWidth = logicalWidth;
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetLogicalHeight(
+ECode DisplayInfo::GetLogicalHeight(
     /* [out] */ Int32* logicalHeight)
 {
     VALIDATE_NOT_NULL(logicalHeight);
@@ -227,14 +220,74 @@ ECode CDisplayInfo::GetLogicalHeight(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetLogicalHeight(
+ECode DisplayInfo::SetLogicalHeight(
     /* [in] */ Int32 logicalHeight)
 {
     mLogicalHeight = logicalHeight;
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetRotation(
+ECode DisplayInfo::GetOverscanLeft(
+    /* [out] */ Int32* left)
+{
+    VALIDATE_NOT_NULL(left)
+    *left = mOverscanLeft;
+    return NOERROR;
+}
+
+ECode DisplayInfo::GetOverscanTop(
+    /* [out] */ Int32* top)
+{
+    VALIDATE_NOT_NULL(top)
+    *top = mOverscanTop;
+    return NOERROR;
+}
+
+ECode DisplayInfo::GetOverscanRight(
+    /* [out] */ Int32* right)
+{
+    VALIDATE_NOT_NULL(right)
+    *right = mOverscanRight;
+    return NOERROR;
+}
+
+ECode DisplayInfo::GetOverscanBottom(
+    /* [out] */ Int32* bottom)
+{
+    VALIDATE_NOT_NULL(bottom)
+    *bottom = mOverscanBottom;
+    return NOERROR;
+}
+
+ECode DisplayInfo::SetOverscanLeft(
+    /* [in] */ Int32 left)
+{
+    mOverscanLeft = left;
+    return NOERROR;
+}
+
+ECode DisplayInfo::SetOverscanTop(
+    /* [in] */ Int32 top)
+{
+    mOverscanTop = top;
+    return NOERROR;
+}
+
+ECode DisplayInfo::SetOverscanRight(
+    /* [in] */ Int32 right)
+{
+    mOverscanRight = right;
+    return NOERROR;
+}
+
+ECode DisplayInfo::SetOverscanBottom(
+    /* [in] */ Int32 bottom)
+{
+    mOverscanBottom = bottom;
+    return NOERROR;
+}
+
+ECode DisplayInfo::GetRotation(
     /* [out] */ Int32* rotation)
 {
     VALIDATE_NOT_NULL(rotation);
@@ -242,14 +295,14 @@ ECode CDisplayInfo::GetRotation(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetRotation(
+ECode DisplayInfo::SetRotation(
     /* [in] */ Int32 rotation)
 {
     mRotation = rotation;
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetRefreshRate(
+ECode DisplayInfo::GetRefreshRate(
     /* [out] */ Float* refreshRate)
 {
     VALIDATE_NOT_NULL(refreshRate);
@@ -257,14 +310,30 @@ ECode CDisplayInfo::GetRefreshRate(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetRefreshRate(
+ECode DisplayInfo::SetRefreshRate(
     /* [in] */ Float refreshRate)
 {
     mRefreshRate = refreshRate;
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetLogicalDensityDpi(
+ECode DisplayInfo::GetSupportedRefreshRates(
+    /* [out, callee] */ ArrayOf<Float>** rates)
+{
+    VALIDATE_NOT_NULL(rates)
+    *rates = mSupportedRefreshRates;
+    REFCOUNT_ADD(*rates)
+    return NOERROR;
+}
+
+ECode DisplayInfo::SetSupportedRefreshRates(
+    /* [in] */ ArrayOf<Float>* rates)
+{
+    mSupportedRefreshRates = rates;
+    return NOERROR;
+}
+
+ECode DisplayInfo::GetLogicalDensityDpi(
     /* [out] */ Int32* logicalDensityDpi)
 {
     VALIDATE_NOT_NULL(logicalDensityDpi);
@@ -272,14 +341,14 @@ ECode CDisplayInfo::GetLogicalDensityDpi(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetLogicalDensityDpi(
+ECode DisplayInfo::SetLogicalDensityDpi(
     /* [in] */ Int32 logicalDensityDpi)
 {
     mLogicalDensityDpi = logicalDensityDpi;
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetPhysicalXDpi(
+ECode DisplayInfo::GetPhysicalXDpi(
     /* [out] */ Float* physicalXDpi)
 {
     VALIDATE_NOT_NULL(physicalXDpi);
@@ -287,14 +356,14 @@ ECode CDisplayInfo::GetPhysicalXDpi(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetPhysicalXDpi(
+ECode DisplayInfo::SetPhysicalXDpi(
     /* [in] */ Float physicalXDpi)
 {
     mPhysicalXDpi = physicalXDpi;
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetPhysicalYDpi(
+ECode DisplayInfo::GetPhysicalYDpi(
     /* [out] */ Float* physicalYDpi)
 {
     VALIDATE_NOT_NULL(physicalYDpi);
@@ -302,19 +371,89 @@ ECode CDisplayInfo::GetPhysicalYDpi(
     return NOERROR;
 }
 
-ECode CDisplayInfo::SetPhysicalYDpi(
+ECode DisplayInfo::SetPhysicalYDpi(
     /* [in] */ Float physicalYDpi)
 {
     mPhysicalYDpi = physicalYDpi;
     return NOERROR;
 }
 
-ECode CDisplayInfo::Equals(
+ECode DisplayInfo::GetAppVsyncOffsetNanos(
+    /* [out] */ Int64* nanos)
+{
+    *nanos = mAppVsyncOffsetNanos;
+    return NOERROR;
+}
+
+ECode DisplayInfo::SetAppVsyncOffsetNanos(
+    /* [in] */ Int64 nanos)
+{
+    mAppVsyncOffsetNanos = nanos;
+    return NOERROR;
+}
+
+ECode DisplayInfo::GetPresentationDeadlineNanos(
+    /* [out] */ Int64* nanos)
+{
+    *nanos = mPresentationDeadlineNanos;
+    return NOERROR;
+}
+
+ECode DisplayInfo::SetPresentationDeadlineNanos(
+    /* [in] */ Int64 nanos)
+{
+    mPresentationDeadlineNanos = nanos;
+    return NOERROR;
+}
+
+ECode DisplayInfo::GetState(
+    /* [out] */ Int32* state)
+{
+    *state = mState;
+    return NOERROR;
+}
+
+ECode DisplayInfo::SetState(
+    /* [in] */ Int32 state)
+{
+    mState = state ;
+    return NOERROR;
+}
+
+ECode DisplayInfo::GetOwnerUid(
+    /* [out] */ Int32* uid)
+{
+    *uid = mOwnerUid;
+    return NOERROR;
+}
+
+ECode DisplayInfo::SetOwnerUid(
+    /* [in] */ Int32 uid)
+{
+    mOwnerUid = uid ;
+    return NOERROR;
+}
+
+ECode DisplayInfo::GetOwnerPackageName(
+    /* [out] */ String* name)
+{
+    *name = mOwnerPackageName;
+    return NOERROR;
+}
+
+ECode DisplayInfo::SetOwnerPackageName(
+    /* [in] */ String name)
+{
+    mOwnerPackageName = name;
+    return NOERROR;
+}
+
+ECode DisplayInfo::Equals(
     /* [in] */ IDisplayInfo* otherObj,
     /* [out] */ Boolean* isEquals)
 {
     VALIDATE_NOT_NULL(isEquals);
-    CDisplayInfo* other = (CDisplayInfo*)otherObj;
+    DisplayInfo* other = (DisplayInfo*)otherObj;
 
     *isEquals = other != NULL
         && mLayerStack == other->mLayerStack
@@ -330,16 +469,25 @@ ECode CDisplayInfo::Equals(
         && mLargestNominalAppHeight == other->mLargestNominalAppHeight
         && mLogicalWidth == other->mLogicalWidth
         && mLogicalHeight == other->mLogicalHeight
+        && mOverscanLeft == other->mOverscanLeft
+        && mOverscanTop == other->mOverscanTop
+        && mOverscanRight == other->mOverscanRight
+        && mOverscanBottom == other->mOverscanBottom
         && mRotation == other->mRotation
         && mRefreshRate == other->mRefreshRate
         && mLogicalDensityDpi == other->mLogicalDensityDpi
         && mPhysicalXDpi == other->mPhysicalXDpi
-        && mPhysicalYDpi == other->mPhysicalYDpi;
+        && mPhysicalYDpi == other->mPhysicalYDpi
+        && mAppVsyncOffsetNanos == other->mAppVsyncOffsetNanos
+        && mPresentationDeadlineNanos == other->mPresentationDeadlineNanos
+        && mState == other->mState
+        && mOwnerUid == other->mOwnerUid
+        && mOwnerPackageName.Equals(other->mOwnerPackageName);
 
     return NOERROR;
 }
 
-ECode CDisplayInfo::Equals(
+ECode DisplayInfo::Equals(
     /* [in] */ IInterface* other,
     /* [out] */ Boolean * result)
 {
@@ -350,7 +498,7 @@ ECode CDisplayInfo::Equals(
     return Equals(IDisplayInfo::Probe(other), result);
 }
 
-ECode CDisplayInfo::GetHashCode(
+ECode DisplayInfo::GetHashCode(
     /* [out] */ Int32* hash)
 {
     VALIDATE_NOT_NULL(hash);
@@ -358,7 +506,7 @@ ECode CDisplayInfo::GetHashCode(
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetNaturalWidth(
+ECode DisplayInfo::GetNaturalWidth(
     /* [out] */ Int32* width)
 {
     if(mRotation == ISurface::ROTATION_0 || mRotation == ISurface::ROTATION_180)
@@ -370,7 +518,7 @@ ECode CDisplayInfo::GetNaturalWidth(
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetNaturalHeight(
+ECode DisplayInfo::GetNaturalHeight(
     /* [out] */ Int32* height)
 {
     if(mRotation == ISurface::ROTATION_0 || mRotation == ISurface::ROTATION_180)
@@ -382,11 +530,22 @@ ECode CDisplayInfo::GetNaturalHeight(
     return NOERROR;
 }
 
-ECode CDisplayInfo::CopyFrom(
+/**
+ * Returns true if the specified UID has access to this display.
+ */
+ECode DisplayInfo::HasAccess(
+    /* [in] */ Int32 uid,
+    /* [out] */ Boolean* result)
+{
+    *result = Display::HasAccess(uid, mFlags, mOwnerUid);
+    return NOERROR;
+}
+
+ECode DisplayInfo::CopyFrom(
     /* [in] */ IDisplayInfo* otherObj)
 {
     assert(otherObj);
-    CDisplayInfo* other = (CDisplayInfo*)otherObj;
+    DisplayInfo* other = (DisplayInfo*)otherObj;
     mLayerStack = other->mLayerStack;
     mFlags = other->mFlags;
     mType = other->mType;
@@ -394,6 +553,10 @@ ECode CDisplayInfo::CopyFrom(
     mName = other->mName;
     mAppWidth = other->mAppWidth;
     mAppHeight = other->mAppHeight;
+    mOverscanLeft = other->mOverscanLeft;
+    mOverscanTop = other->mOverscanTop;
+    mOverscanRight = other->mOverscanRight;
+    mOverscanBottom = other->mOverscanBottom;
     mSmallestNominalAppWidth = other->mSmallestNominalAppWidth;
     mSmallestNominalAppHeight = other->mSmallestNominalAppHeight;
     mLargestNominalAppWidth = other->mLargestNominalAppWidth;
@@ -402,14 +565,22 @@ ECode CDisplayInfo::CopyFrom(
     mLogicalHeight = other->mLogicalHeight;
     mRotation = other->mRotation;
     mRefreshRate = other->mRefreshRate;
+    Int32 length = other->mSupportedRefreshRates->GetLength();
+    mSupportedRefreshRates = ArrayOf<Float>::Alloc(length);
+    mSupportedRefreshRates->Copy(other->mSupportedRefreshRates, length);
     mLogicalDensityDpi = other->mLogicalDensityDpi;
     mPhysicalXDpi = other->mPhysicalXDpi;
     mPhysicalYDpi = other->mPhysicalYDpi;
+    mAppVsyncOffsetNanos = other->mAppVsyncOffsetNanos;
+    mPresentationDeadlineNanos = other->mPresentationDeadlineNanos;
+    mState = other->mState;
+    mOwnerUid = other->mOwnerUid;
+    mOwnerPackageName = other->mOwnerPackageName;
 
     return NOERROR;
 }
 
-ECode CDisplayInfo::ReadFromParcel(
+ECode DisplayInfo::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     FAIL_RETURN(source->ReadInt32(&mLayerStack));
@@ -425,16 +596,28 @@ ECode CDisplayInfo::ReadFromParcel(
     FAIL_RETURN(source->ReadInt32(&mLargestNominalAppHeight));
     FAIL_RETURN(source->ReadInt32(&mLogicalWidth));
     FAIL_RETURN(source->ReadInt32(&mLogicalHeight));
+    FAIL_RETURN(source->ReadInt32(&mOverscanLeft));
+    FAIL_RETURN(source->ReadInt32(&mOverscanTop));
+    FAIL_RETURN(source->ReadInt32(&mOverscanRight));
+    FAIL_RETURN(source->ReadInt32(&mOverscanBottom));
     FAIL_RETURN(source->ReadInt32(&mRotation));
     FAIL_RETURN(source->ReadFloat(&mRefreshRate));
+    Handle32 array;
+    FAIL_RETURN(source->ReadArrayOf(&array));
+    mSupportedRefreshRates = reinterpret_cast<ArrayOf<Float>* >(array);
+    mSupportedRefreshRates->Release();
     FAIL_RETURN(source->ReadInt32(&mLogicalDensityDpi));
     FAIL_RETURN(source->ReadFloat(&mPhysicalXDpi));
     FAIL_RETURN(source->ReadFloat(&mPhysicalYDpi));
-
+    FAIL_RETURN(source->ReadInt64(&mAppVsyncOffsetNanos));
+    FAIL_RETURN(source->ReadInt64(&mPresentationDeadlineNanos));
+    FAIL_RETURN(source->ReadInt32(&mState));
+    FAIL_RETURN(source->ReadInt32(&mOwnerUid));
+    FAIL_RETURN(source->ReadString(&mOwnerPackageName));
     return NOERROR;
 }
 
-ECode CDisplayInfo::WriteToParcel(
+ECode DisplayInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
     FAIL_RETURN(dest->WriteInt32(mLayerStack));
@@ -450,32 +633,70 @@ ECode CDisplayInfo::WriteToParcel(
     FAIL_RETURN(dest->WriteInt32(mLargestNominalAppHeight));
     FAIL_RETURN(dest->WriteInt32(mLogicalWidth));
     FAIL_RETURN(dest->WriteInt32(mLogicalHeight));
+    FAIL_RETURN(dest->WriteInt32(mOverscanLeft));
+    FAIL_RETURN(dest->WriteInt32(mOverscanTop));
+    FAIL_RETURN(dest->WriteInt32(mOverscanRight));
+    FAIL_RETURN(dest->WriteInt32(mOverscanBottom));
     FAIL_RETURN(dest->WriteInt32(mRotation));
     FAIL_RETURN(dest->WriteFloat(mRefreshRate));
+    Handle32 array;
+    array = reinterpret_cast<Handle32>(mSupportedRefreshRates.Get());
+    FAIL_RETURN(dest->WriteArrayOf(array));
+    REFCOUNT_ADD(mSupportedRefreshRates)
     FAIL_RETURN(dest->WriteInt32(mLogicalDensityDpi));
     FAIL_RETURN(dest->WriteFloat(mPhysicalXDpi));
     FAIL_RETURN(dest->WriteFloat(mPhysicalYDpi));
+    FAIL_RETURN(dest->WriteInt64(mAppVsyncOffsetNanos));
+    FAIL_RETURN(dest->WriteInt64(mPresentationDeadlineNanos));
+    FAIL_RETURN(dest->WriteInt32(mState));
+    FAIL_RETURN(dest->WriteInt32(mOwnerUid));
+    FAIL_RETURN(dest->WriteString(mOwnerPackageName));
 
     return NOERROR;
 }
 
-ECode CDisplayInfo::GetAppMetrics(
-    /* [in] */ IDisplayMetrics* outMetrics,
-    /* [in] */ ICompatibilityInfoHolder* cih)
+ECode DisplayInfo::GetAppMetrics(
+    /* [in] */ IDisplayMetrics* outMetrics)
 {
-    return GetMetricsWithSize(outMetrics, cih, mAppWidth, mAppHeight);
+    AutoPtr<ICompatibilityInfoHelper> helper;
+    CCompatibilityInfoHelper::AcquireSingleton((ICompatibilityInfoHelper**)&helper);
+    AutoPtr<ICompatibilityInfo> info;
+    helper->GetDefault((ICompatibilityInfo**)&info);
+
+    return GetAppMetrics(outMetrics, info, NULL);
 }
 
-ECode CDisplayInfo::GetLogicalMetrics(
+ECode DisplayInfo::GetAppMetrics(
     /* [in] */ IDisplayMetrics* outMetrics,
-    /* [in] */ ICompatibilityInfoHolder* cih)
+    /* [in] */ IDisplayAdjustments* displayAdjustments)
 {
-    return GetMetricsWithSize(outMetrics, cih, mLogicalWidth, mLogicalHeight);
+    AutoPtr<ICompatibilityInfo> info;
+    displayAdjustments->GetCompatibilityInfo((ICompatibilityInfo**)&info);
+    AutoPtr<IBinder> token;
+    displayAdjustments->GetActivityToken((IBinder**)&token);
+    return GetMetricsWithSize(outMetrics, info, token, mAppWidth, mAppHeight);
 }
 
-ECode CDisplayInfo::GetMetricsWithSize(
+ECode DisplayInfo::GetAppMetrics(
     /* [in] */ IDisplayMetrics* outMetrics,
-    /* [in] */ ICompatibilityInfoHolder* cih,
+    /* [in] */ ICompatibilityInfo* ci,
+    /* [in] */ IBinder* token)
+{
+    return GetMetricsWithSize(outMetrics, ci, token, mAppWidth, mAppHeight);
+}
+
+ECode DisplayInfo::GetLogicalMetrics(
+    /* [in] */ IDisplayMetrics* outMetrics,
+    /* [in] */ ICompatibilityInfo* compatInfo,
+    /* [in] */ IBinder* token)
+{
+    return GetMetricsWithSize(outMetrics, compatInfo, token, mLogicalWidth, mLogicalHeight);
+}
+
+ECode DisplayInfo::GetMetricsWithSize(
+    /* [in] */ IDisplayMetrics* outMetrics,
+    /* [in] */ ICompatibilityInfo* compatInfo,
+    /* [in] */ IBinder* token,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
@@ -500,11 +721,15 @@ ECode CDisplayInfo::GetMetricsWithSize(
     outMetrics->SetYdpi(mPhysicalXDpi);
     outMetrics->SetNoncompatYdpi(mPhysicalXDpi);
 
-    if (cih != NULL) {
-        AutoPtr<ICompatibilityInfo> ci;
-        cih->GetIfNeeded((ICompatibilityInfo**)&ci);
-        if (ci != NULL) {
-            FAIL_RETURN(ci->ApplyToDisplayMetrics(outMetrics));
+    if (IObject::Probe(compatInfo) != NULL) {
+        AutoPtr<ICompatibilityInfoHelper> helper;
+        CCompatibilityInfoHelper::AcquireSingleton((ICompatibilityInfoHelper**)&helper);
+        AutoPtr<ICompatibilityInfo> info;
+        helper->GetDefault((ICompatibilityInfo**)&info);
+        Boolean eql;
+        IObject::Probe(compatInfo)->Equals(info, &eql);
+        if (!eql) {
+            FAIL_RETURN(compatInfo->ApplyToDisplayMetrics(outMetrics));
         }
     }
 

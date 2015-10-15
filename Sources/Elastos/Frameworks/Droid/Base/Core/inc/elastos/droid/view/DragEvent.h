@@ -3,10 +3,12 @@
 #define __ELASTOS_DROID_VIEW_CDRAGEVENT_H__
 
 #include "ext/frameworkdef.h"
-#include "_Elastos_Droid_View_CDragEvent.h"
 #include "Elastos.Droid.Core_server.h"
-#include <Elastos.CoreLibrary.h>
+#include <elastos/core/Object.h>
+#include <elastos/core/Mutex.h>
 
+using Elastos::Core::Object;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IClipData;
 using Elastos::Droid::Content::IClipDescription;
 
@@ -14,10 +16,14 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-CarClass(CDragEvent)
+class DragEvent
+    : public Object
+    , public IDragEvent
+    , public IParcelable
 {
 public:
-    CARAPI constructor();
+    CAR_INTERFACE_DECL()
+
     /**
      * Inspect the action value of this event.
      * @return One of the following action constants, in the order in which they usually occur
@@ -146,7 +152,7 @@ public:
 
 public:
     static CARAPI Obtain(
-        /* [out] */ CDragEvent ** ppEvent);
+        /* [out] */ IDragEvent ** ppEvent);
 
     static CARAPI Obtain(
         /* [in] */ Int32 action,
@@ -156,13 +162,23 @@ public:
         /* [in] */ IClipDescription * pDescription,
         /* [in] */ IClipData * pData,
         /* [in] */ Boolean result,
-        /* [out] */ CDragEvent ** ppEvent);
+        /* [out] */ IDragEvent ** ppEvent);
 
     static CARAPI Obtain(
-        /* [in] */ CDragEvent * pSource,
-        /* [out] */ CDragEvent ** ppEvent);
+        /* [in] */ IDragEvent * pSource,
+        /* [out] */ IDragEvent ** ppEvent);
 
+    static AutoPtr<DragEvent> Obtain(
+        /* [in] */ Int32 action,
+        /* [in] */ Float x,
+        /* [in] */ Float y,
+        /* [in] */ IInterface* localState,
+        /* [in] */ IClipDescription* description,
+        /* [in] */ IClipData* data,
+        /* [in] */ Boolean result);
 private:
+    DragEvent();
+
     CARAPI Init(
         /* [in] */ Int32 action,
         /* [in] */ Float x,
@@ -174,18 +190,18 @@ private:
 
 private:
     static const Int32 MAX_RECYCLED = 10;
-    static Object sRecyclerLock;
+    static Mutex sRecyclerLock;
     static Int32 sRecyclerUsed;
-    static AutoPtr<CDragEvent> sRecyclerTop;
+    static AutoPtr<DragEvent> sRecyclerTop;
     static const Boolean TRACK_RECYCLED_LOCATION = FALSE;
-    //RuntimeException mRecycledLocation;
+    Boolean mRecycledLocation;
     Int32 mAction;
     Float mX, mY;
     AutoPtr<IClipDescription> mClipDescription;
     AutoPtr<IClipData> mClipData;
     AutoPtr<IInterface> mLocalState;
     Boolean mDragResult;
-    AutoPtr<CDragEvent> mNext;
+    AutoPtr<DragEvent> mNext;
     Boolean mRecycled;
 };
 

@@ -9,6 +9,7 @@
 #include <elastos/utility/logging/Logger.h>
 #include "os/CMessageHelper.h"
 #include "os/Looper.h"
+#include "utility/TimeUtils.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -20,6 +21,7 @@ using Elastos::Droid::Os::SystemProperties;
 using Elastos::Droid::Os::IMessageHelper;
 using Elastos::Droid::Os::CMessageHelper;
 using Elastos::Utility::Logging::Logger;
+using Elastos::Droid::Utility::TimeUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -30,28 +32,52 @@ const Boolean Choreographer::DEBUG;
 const Int64 Choreographer::DEFAULT_FRAME_DELAY;
 volatile Int64 Choreographer::sFrameDelay = DEFAULT_FRAME_DELAY;
 
+static Boolean PropertiesGetBoolean(
+    /* [in] */ const String& name,
+    /* [in] */ Boolean def)
+{
+    Boolean rst;
+    SystemProperties::GetBoolean(name, def, &rst);
+    return rst;
+}
+
+static Int32 PropertiesGetInt32(
+    /* [in] */ const String& name,
+    /* [in] */ Int32 def)
+{
+    Int32 rst;
+    SystemProperties::GetInt32(name, def, &rst);
+    return rst;
+}
+
 pthread_key_t Choreographer::sKey;
 Boolean Choreographer::sHaveKey = FALSE;
-const Boolean Choreographer::USE_VSYNC = SystemProperties::GetBoolean(
+const Boolean Choreographer::USE_VSYNC = PropertiesGetBoolean(
         String("debug.choreographer.vsync"), TRUE);
-const Boolean Choreographer::USE_FRAME_TIME = SystemProperties::GetBoolean(
+const Boolean Choreographer::USE_FRAME_TIME = PropertiesGetBoolean(
         String("debug.choreographer.frametime"), TRUE);
-const Int32 Choreographer::SKIPPED_FRAME_WARNING_LIMIT = SystemProperties::GetInt32(
+const Int32 Choreographer::SKIPPED_FRAME_WARNING_LIMIT = PropertiesGetInt32(
         String("debug.choreographer.skipwarning"), 30);
-const Int64 Choreographer::NANOS_PER_MS;
-const AutoPtr<IInterface> Choreographer::FRAME_CALLBACK_TOKEN = new Choreographer::Token();
+const AutoPtr<IObject> Choreographer::FRAME_CALLBACK_TOKEN = new Choreographer::Token();
 const Int32 Choreographer::CALLBACK_LAST = IChoreographer::CALLBACK_TRAVERSAL;
 
 const Int32 Choreographer::MSG_DO_FRAME;// = 0;
 const Int32 Choreographer::MSG_DO_SCHEDULE_VSYNC;// = 1;
 const Int32 Choreographer::MSG_DO_SCHEDULE_CALLBACK;// = 2;
 
-CAR_INTERFACE_IMPL(Choreographer::Token, IInterface);
-
-String Choreographer::Token::ToString()
+ECode Choreographer::Token::ToString(
+            /* [out] */ String* info)
 {
-    return String("FRAME_CALLBACK_TOKEN");
+    *info = String("FRAME_CALLBACK_TOKEN");
+    return NOERROR;
 }
+
+Choreographer::FrameHandler::FrameHandler(
+    /* [in] */ ILooper* looper,
+    /* [in] */ Choreographer* host)
+    : Handler(looper)
+    , mHost(host)
+{}
 
 ECode Choreographer::FrameHandler::HandleMessage(
     /* [in] */ IMessage* msg)
@@ -79,7 +105,7 @@ ECode Choreographer::FrameHandler::HandleMessage(
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(Choreographer::FrameDisplayEventReceiver, IRunnable)
+CAR_INTERFACE_IMPL(Choreographer::FrameDisplayEventReceiver, DisplayEventReceiver, IRunnable)
 
 Choreographer::FrameDisplayEventReceiver::FrameDisplayEventReceiver(
     /* [in] */ ILooper* looper,
@@ -90,7 +116,7 @@ Choreographer::FrameDisplayEventReceiver::FrameDisplayEventReceiver(
 }
 
 //@Override
-void Choreographer::FrameDisplayEventReceiver::OnVsync(
+ECode Choreographer::FrameDisplayEventReceiver::OnVsync(
     /* [in] */ Int64 timestampNanos,
     /* [in] */ Int32 builtInDisplayId,
     /* [in] */ Int32 frame)
@@ -103,14 +129,14 @@ void Choreographer::FrameDisplayEventReceiver::OnVsync(
     // At this time Surface Flinger won't send us vsyncs for secondary displays
     // but that could change in the future so let's log a message to help us remember
     // that we need to fix this.
-    if (builtInDisplayId != ISurface::BUILT_IN_DISPLAY_ID_MAIN) {
+    if (builtInDisplayId != ISurfaceControl::BUILT_IN_DISPLAY_ID_MAIN) {
 //        Logger::D(Choreographer::TAG,
 //            "Received vsync from secondary display, but we don't support "
 //            "this case yet.  Choreographer needs a way to explicitly request "
 //            "vsync for a specific display to ensure it doesn't lose track "
 //            "of its scheduled vsync.");
         ScheduleVsync();
-        return;
+        return NOERROR;
     }
 
     // Post the vsync event to the Handler.
@@ -148,8 +174,18 @@ void Choreographer::FrameDisplayEventReceiver::OnVsync(
     helper->Obtain(mOwner->mHandler, (IRunnable*)this, (IMessage**)&msg);
     msg->SetAsynchronous(TRUE);
     Boolean result;
-    mOwner->mHandler->SendMessageAtTime(msg, timestampNanos / NANOS_PER_MS, &result);
+    mOwner->mHandler->SendMessageAtTime(msg, timestampNanos / TimeUtils::NANOS_PER_MS, &result);
+    return NOERROR;
 }
+
+ECode Choreographer::FrameDisplayEventReceiver::OnHotplug(
+    /* [in] */ Int64 timestampNanos,
+    /* [in] */ Int64 builtInDisplayId,
+    /* [in] */ Boolean connected)
+{
+    return NOERROR;
+}
+
 
 ECode Choreographer::FrameDisplayEventReceiver::Run()
 {
@@ -206,7 +242,7 @@ AutoPtr<Choreographer::CallbackRecord> Choreographer::CallbackQueue::ExtractDueC
 void Choreographer::CallbackQueue::AddCallbackLocked(
     /* [in] */ Int64 dueTime,
     /* [in] */ IInterface* action,
-    /* [in] */ IInterface* token)
+    /* [in] */ IObject* token)
 {
     AutoPtr<CallbackRecord> callback =
         mOwner->ObtainCallbackLocked(dueTime, action, token);
@@ -232,7 +268,7 @@ void Choreographer::CallbackQueue::AddCallbackLocked(
 
 void Choreographer::CallbackQueue::RemoveCallbacksLocked(
     /* [in] */ IInterface* action,
-    /* [in] */ IInterface* token)
+    /* [in] */ IObject* token)
 {
     AutoPtr<CallbackRecord> predecessor;
     for (AutoPtr<CallbackRecord> callback = mHead; callback != NULL;) {
@@ -254,7 +290,7 @@ void Choreographer::CallbackQueue::RemoveCallbacksLocked(
     }
 }
 
-CAR_INTERFACE_IMPL(Choreographer, IChoreographer);
+CAR_INTERFACE_IMPL(Choreographer, Object, IChoreographer);
 
 Choreographer::Choreographer(
     /* [in] */ ILooper* looper)
@@ -337,10 +373,17 @@ Int64 Choreographer::SubtractFrameDelay(
     return delayMillis <= frameDelay ? 0 : delayMillis - frameDelay;
 }
 
+ECode Choreographer::GetFrameIntervalNanos(
+    /* [out] */ Int64* nanos)
+{
+    *nanos = mFrameIntervalNanos;
+    return NOERROR;
+}
+
 ECode Choreographer::PostCallback(
     /* [in] */ Int32 callbackType,
     /* [in] */ IRunnable* action,
-    /* [in] */ IInterface* token)
+    /* [in] */ IObject* token)
 {
     return PostCallbackDelayed(callbackType, action, token, 0);
 }
@@ -348,7 +391,7 @@ ECode Choreographer::PostCallback(
 ECode Choreographer::PostCallbackDelayed(
     /* [in] */ Int32 callbackType,
     /* [in] */ IRunnable* action,
-    /* [in] */ IInterface* token,
+    /* [in] */ IObject* token,
     /* [in] */ Int64 delayMillis)
 {
     if (action == NULL) {
@@ -367,7 +410,7 @@ ECode Choreographer::PostCallbackDelayed(
 void Choreographer::PostCallbackDelayedInternal(
     /* [in] */ Int32 callbackType,
     /* [in] */ IInterface* action,
-    /* [in] */ IInterface* token,
+    /* [in] */ IObject* token,
     /* [in] */ Int64 delayMillis)
 {
     if (DEBUG) {
@@ -376,7 +419,7 @@ void Choreographer::PostCallbackDelayedInternal(
             callbackType, action, token, delayMillis);
     }
 
-    AutoLock lock(mLock);
+    Mutex::AutoLock lock(mLock);
     Int64 now = SystemClock::GetUptimeMillis();
     Int64 dueTime = now + delayMillis;
     (*mCallbackQueues)[callbackType]->AddCallbackLocked(dueTime, action, token);
@@ -397,7 +440,7 @@ void Choreographer::PostCallbackDelayedInternal(
 ECode Choreographer::RemoveCallbacks(
     /* [in] */ Int32 callbackType,
     /* [in] */ IRunnable* action,
-    /* [in] */ IInterface* token)
+    /* [in] */ IObject* token)
 {
     if (callbackType < 0 || callbackType > CALLBACK_LAST) {
         Logger::E(TAG, "callbackType is invalid");
@@ -411,14 +454,14 @@ ECode Choreographer::RemoveCallbacks(
 void Choreographer::RemoveCallbacksInternal(
     /* [in] */ Int32 callbackType,
     /* [in] */ IInterface* action,
-    /* [in] */ IInterface* token)
+    /* [in] */ IObject* token)
 {
     if (DEBUG) {
         Logger::D(TAG, "RemoveCallbacks: type=%d, action=0x%08x, token=0x%08x",
             callbackType, action, token);
     }
 
-    AutoLock lock(mLock);
+    Mutex::AutoLock lock(mLock);
     (*mCallbackQueues)[callbackType]->RemoveCallbacksLocked(action, token);
     if (action != NULL && token == NULL) {
         mHandler->RemoveMessages(MSG_DO_SCHEDULE_CALLBACK, action->Probe(EIID_IInterface));
@@ -462,7 +505,7 @@ ECode Choreographer::GetFrameTime(
 {
     VALIDATE_NOT_NULL(frameTime);
     FAIL_RETURN(GetFrameTimeNanos(frameTime));
-    *frameTime = *frameTime / NANOS_PER_MS;
+    *frameTime = *frameTime / TimeUtils::NANOS_PER_MS;
 
     return NOERROR;
 }
@@ -470,7 +513,7 @@ ECode Choreographer::GetFrameTime(
 ECode Choreographer::GetFrameTimeNanos(
     /* [out] */ Int64* frameTimeNanos)
 {
-    AutoLock lock(mLock);
+    Mutex::AutoLock lock(mLock);
     if (!mCallbacksRunning) {
         Logger::E(TAG, "This method must only be called as "
             "part of a callback while a frame is in progress.");
@@ -513,7 +556,7 @@ void Choreographer::ScheduleFrameLocked(
         }
         else {
             Int64 nextFrameTime = Elastos::Core::Math::Max(
-                    mLastFrameTimeNanos / NANOS_PER_MS + sFrameDelay, now);
+                    mLastFrameTimeNanos / TimeUtils::NANOS_PER_MS + sFrameDelay, now);
             if (DEBUG) {
                 Logger::D(TAG, "Scheduling next frame in %lld ms.", nextFrameTime - now);
             }
@@ -535,7 +578,7 @@ void Choreographer::DoFrame(
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
     Int64 startNanos;
     {
-        AutoLock lock(mLock);
+        Mutex::AutoLock lock(mLock);
         if (!mFrameScheduled) {
             return; // no work to do
         }
@@ -592,7 +635,7 @@ void Choreographer::DoCallbacks(
 {
     AutoPtr<CallbackRecord> callbacks;
     {
-        AutoLock lock(mLock);
+        Mutex::AutoLock lock(mLock);
         // We use "now" to determine when callbacks become due because it's possible
         // for earlier processing phases in a frame to post callbacks that should run
         // in a following phase, such as an input event that causes an animation to start.
@@ -614,7 +657,7 @@ void Choreographer::DoCallbacks(
     }
 
     {
-        AutoLock lock(mLock);
+        Mutex::AutoLock lock(mLock);
         mCallbacksRunning = FALSE;
         do {
             AutoPtr<CallbackRecord> next = callbacks->mNext;
@@ -626,7 +669,7 @@ void Choreographer::DoCallbacks(
 
 void Choreographer::DoScheduleVsync()
 {
-    AutoLock lock(mLock);
+    Mutex::AutoLock lock(mLock);
     if (mFrameScheduled) {
         ScheduleVsyncLocked();
     }
@@ -635,7 +678,7 @@ void Choreographer::DoScheduleVsync()
 void Choreographer::DoScheduleCallback(
     /* [in] */ Int32 callbackType)
 {
-    AutoLock lock(mLock);
+    Mutex::AutoLock lock(mLock);
     if (!mFrameScheduled) {
         const Int64 now = SystemClock::GetUptimeMillis();
         if ((*mCallbackQueues)[callbackType]->HasDueCallbacksLocked(now)) {
@@ -658,7 +701,7 @@ Boolean Choreographer::IsRunningOnLooperThreadLocked()
 AutoPtr<Choreographer::CallbackRecord> Choreographer::ObtainCallbackLocked(
     /* [in] */ Int64 dueTime,
     /* [in] */ IInterface* action,
-    /* [in] */ IInterface* token)
+    /* [in] */ IObject* token)
 {
     AutoPtr<CallbackRecord> callback = mCallbackPool;
     if (callback == NULL) {

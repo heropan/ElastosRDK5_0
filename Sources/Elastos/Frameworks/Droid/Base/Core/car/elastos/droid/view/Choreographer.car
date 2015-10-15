@@ -82,7 +82,7 @@ module
         PostCallback(
             [in] Int32 callbackType,
             [in] IRunnable* action,
-            [in] IInterface* token);
+            [in] IObject* token);
 
         /**
          * Posts a callback to run on the next frame after the specified delay.
@@ -101,7 +101,7 @@ module
         PostCallbackDelayed(
             [in] Int32 callbackType,
             [in] IRunnable* action,
-            [in] IInterface* token,
+            [in] IObject* token,
             [in] Int64 delayMillis);
 
         /**
@@ -120,7 +120,7 @@ module
         RemoveCallbacks(
             [in] Int32 callbackType,
             [in] IRunnable* action,
-            [in] IInterface* token);
+            [in] IObject* token);
 
         /**
          * Posts a frame callback to run on the next frame.

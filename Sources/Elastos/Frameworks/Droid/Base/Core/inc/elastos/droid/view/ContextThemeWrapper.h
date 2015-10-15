@@ -4,17 +4,19 @@
 #include "content/ContextWrapper.h"
 
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::ContextWrapper;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-class ContextThemeWrapper : public Elastos::Droid::Content::ContextWrapper
+class ContextThemeWrapper
+    : public ContextWrapper
 {
 public:
     ContextThemeWrapper();
 
-    ContextThemeWrapper(
+    CARAPI constructor(
         /* [in] */ IContext* base,
         /* [in] */ Int32 themeres);
 
@@ -56,9 +58,6 @@ protected:
         /* [in] */ Int32 resid,
         /* [in] */ Boolean first);
 
-    CARAPI Init(
-        /* [in] */ IContext* base,
-        /* [in] */ Int32 themeres);
 
 private:
     CARAPI InitializeTheme();

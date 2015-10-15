@@ -10,6 +10,7 @@ module
     merge("view/CollapsibleActionView.car");
     merge("view/ContextMenu.car");
     merge("view/ContextThemeWrapper.car");
+    merge("view/SurfaceControl.car");
     merge("view/Display.car");
     merge("view/DisplayAdjustments.car");
     merge("view/DisplayEventReceiver.car");

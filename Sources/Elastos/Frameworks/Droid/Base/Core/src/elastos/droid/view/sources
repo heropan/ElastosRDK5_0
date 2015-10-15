@@ -4,6 +4,7 @@ TARGET_TYPE= lib
 include $(MAKEDIR)/../../../../../../sources.inc
 
 INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../../../inc
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid
 INCLUDES += $(PREBUILD_INC)/skia/utils
 INCLUDES += $(PREBUILD_INC)/skia/core
@@ -16,6 +17,9 @@ SOURCES += ActionMode.cpp
 SOURCES += ActionProvider.cpp
 SOURCES += DisplayAdjustments.cpp
 SOURCES += Gravity.cpp
+SOURCES += Display.cpp
+SOURCES += DisplayInfo.cpp
+SOURCES += DragEvent.cpp
 #SOURCES += CGravity.cpp
 #SOURCES += AbsSavedState.cpp
 #SOURCES += CEmptyAbsSavedState.cpp
@@ -24,14 +28,14 @@ SOURCES += Gravity.cpp
 #SOURCES += CViewBaseSavedState.cpp
 #SOURCES += ActionMode.cpp
 #SOURCES += BaseSurfaceHolder.cpp
-#SOURCES += Choreographer.cpp
+SOURCES += Choreographer.cpp
 #SOURCES += CChoreographerHelper.cpp
 #SOURCES += CCompatibilityInfoHolder.cpp
 #SOURCES += CDispatcherState.cpp
-SOURCES += Display.cpp
+
 #SOURCES += NativeDisplayEventReceiver.cpp
 SOURCES += DisplayEventReceiver.cpp
-#SOURCES += CDisplayInfo.cpp
+
 #SOURCES += CDragShadowBuilder.cpp
 #SOURCES += NativeInputChannel.cpp
 #SOURCES += CInputChannel.cpp
@@ -87,7 +91,7 @@ SOURCES += DisplayEventReceiver.cpp
 #SOURCES += SimpleOnScaleGestureListener.cpp
 #SOURCES += CPointerIcon.cpp
 #SOURCES += CPointerIconHelper.cpp
-#SOURCES += ContextThemeWrapper.cpp
+SOURCES += ContextThemeWrapper.cpp
 #SOURCES += CContextThemeWrapper.cpp
 #SOURCES += VelocityTracker.cpp
 #SOURCES += CVelocityTrackerHelper.cpp

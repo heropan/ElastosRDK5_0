@@ -1,10 +1,15 @@
 
-#ifndef __ELASTOS_DROID_VIEW_CDISPLAYINFO_H__
-#define __ELASTOS_DROID_VIEW_CDISPLAYINFO_H__
+#ifndef __ELASTOS_DROID_VIEW_DISPLAYINFO_H__
+#define __ELASTOS_DROID_VIEW_DISPLAYINFO_H__
 
-#include "_Elastos_Droid_View_CDisplayInfo.h"
+#include <ext/frameworkext.h>
+#include <elastos/core/Object.h>
+#include "Elastos.Droid.Core_server.h"
 
+using Elastos::Core::Object;
 using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Content::Res::ICompatibilityInfo;
 
 namespace Elastos {
 namespace Droid {
@@ -14,15 +19,14 @@ namespace View {
  * Describes the characteristics of a particular logical display.
  * @hide
  */
-CarClass(CDisplayInfo)
+class DisplayInfo
+    : public Object
+    , public IDisplayInfo
 {
 public:
-    CDisplayInfo();
+    CAR_INTERFACE_DECL()
 
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ IDisplayInfo* other);
+    DisplayInfo();
 
     CARAPI GetLayerStack(
         /* [out] */ Int32* layerStack);
@@ -102,6 +106,30 @@ public:
     CARAPI SetLogicalHeight(
         /* [in] */ Int32 logicalHeight);
 
+    CARAPI GetOverscanLeft(
+        /* [out] */ Int32* left);
+
+    CARAPI GetOverscanTop(
+        /* [out] */ Int32* top);
+
+    CARAPI GetOverscanRight(
+        /* [out] */ Int32* right);
+
+    CARAPI GetOverscanBottom(
+        /* [out] */ Int32* bottom);
+
+    CARAPI SetOverscanLeft(
+        /* [in] */ Int32 left);
+
+    CARAPI SetOverscanTop(
+        /* [in] */ Int32 top);
+
+    CARAPI SetOverscanRight(
+        /* [in] */ Int32 right);
+
+    CARAPI SetOverscanBottom(
+        /* [in] */ Int32 bottom);
+
     CARAPI GetRotation(
         /* [out] */ Int32* rotation);
 
@@ -113,6 +141,12 @@ public:
 
     CARAPI SetRefreshRate(
         /* [in] */ Float refreshRate);
+
+    CARAPI GetSupportedRefreshRates(
+        /* [out, callee] */ ArrayOf<Float>** rates);
+
+    CARAPI SetSupportedRefreshRates(
+        /* [in] */ ArrayOf<Float>* rates);
 
     CARAPI GetLogicalDensityDpi(
         /* [out] */ Int32* logicalDensityDpi);
@@ -132,6 +166,36 @@ public:
     CARAPI SetPhysicalYDpi(
         /* [in] */ Float physicalYDpi);
 
+    CARAPI GetAppVsyncOffsetNanos(
+        /* [out] */ Int64* nanos);
+
+    CARAPI SetAppVsyncOffsetNanos(
+        /* [in] */ Int64 nanos);
+
+    CARAPI GetPresentationDeadlineNanos(
+        /* [out] */ Int64* nanos);
+
+    CARAPI SetPresentationDeadlineNanos(
+        /* [in] */ Int64 nanos);
+
+    CARAPI GetState(
+        /* [out] */ Int32* state);
+
+    CARAPI SetState(
+        /* [in] */ Int32 state);
+
+    CARAPI GetOwnerUid(
+        /* [out] */ Int32* uid);
+
+    CARAPI SetOwnerUid(
+        /* [in] */ Int32 uid);
+
+    CARAPI GetOwnerPackageName(
+        /* [out] */ String* name);
+
+    CARAPI SetOwnerPackageName(
+        /* [in] */ String name);
+
     CARAPI Equals(
         /* [in] */ IDisplayInfo* otherObj,
         /* [out] */ Boolean* isEquals);
@@ -147,12 +211,22 @@ public:
         /* [in] */ IDisplayInfo* otherObj);
 
     CARAPI GetAppMetrics(
+        /* [in] */ IDisplayMetrics* outMetrics);
+
+    CARAPI GetAppMetrics(
         /* [in] */ IDisplayMetrics* outMetrics,
-        /* [in] */ ICompatibilityInfoHolder* cih);
+        /* [in] */ IDisplayAdjustments* displayAdjustments);
+
+    CARAPI GetAppMetrics(
+        /* [in] */ IDisplayMetrics* outMetrics,
+        /* [in] */ ICompatibilityInfo* ci,
+        /* [in] */ IBinder* token);
 
     CARAPI GetLogicalMetrics(
         /* [in] */ IDisplayMetrics* outMetrics,
-        /* [in] */ ICompatibilityInfoHolder* cih);
+        /* [in] */ ICompatibilityInfo* ci,
+        /* [in] */ IBinder* token);
+
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -166,10 +240,15 @@ public:
     CARAPI GetNaturalHeight(
         /* [out] */ Int32* height);
 
+    CARAPI HasAccess(
+        /* [in] */ Int32 uid,
+        /* [out] */ Boolean* result);
+
 private:
     CARAPI GetMetricsWithSize(
         /* [in] */ IDisplayMetrics* outMetricsObj,
-        /* [in] */ ICompatibilityInfoHolder* cih,
+        /* [in] */ ICompatibilityInfo* cih,
+        /* [in] */ IBinder* token,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
@@ -255,6 +334,30 @@ public:
     Int32 mLogicalHeight;
 
     /**
+     * @hide
+     * Number of overscan pixels on the left side of the display.
+     */
+    Int32 mOverscanLeft;
+
+    /**
+     * @hide
+     * Number of overscan pixels on the top side of the display.
+     */
+    Int32 mOverscanTop;
+
+    /**
+     * @hide
+     * Number of overscan pixels on the right side of the display.
+     */
+    Int32 mOverscanRight;
+
+    /**
+     * @hide
+     * Number of overscan pixels on the bottom side of the display.
+     */
+    Int32 mOverscanBottom;
+
+    /**
      * The rotation of the display relative to its natural orientation.
      * May be one of {@link android.view.Surface#ROTATION_0},
      * {@link android.view.Surface#ROTATION_90}, {@link android.view.Surface#ROTATION_180},
@@ -274,6 +377,8 @@ public:
      * </p>
      */
     Float mRefreshRate;
+
+    AutoPtr<ArrayOf<Float> > mSupportedRefreshRates;
 
     /**
      * The logical display density which is the basis for density-independent
@@ -298,6 +403,42 @@ public:
      * </p>
      */
     Float mPhysicalYDpi;
+
+    /**
+     * This is a positive value indicating the phase offset of the VSYNC events provided by
+     * Choreographer relative to the display refresh.  For example, if Choreographer reports
+     * that the refresh occurred at time N, it actually occurred at (N - appVsyncOffsetNanos).
+     */
+    Int64 mAppVsyncOffsetNanos;
+
+    /**
+     * This is how far in advance a buffer must be queued for presentation at
+     * a given time.  If you want a buffer to appear on the screen at
+     * time N, you must submit the buffer before (N - bufferDeadlineNanos).
+     */
+    Int64 mPresentationDeadlineNanos;
+
+    /**
+     * The state of the display, such as {@link android.view.Display#STATE_ON}.
+     */
+    Int32 mState;
+
+    /**
+     * The UID of the application that owns this display, or zero if it is owned by the system.
+     * <p>
+     * If the display is private, then only the owner can use it.
+     * </p>
+     */
+    Int32 mOwnerUid;
+
+    /**
+     * The package name of the application that owns this display, or null if it is
+     * owned by the system.
+     * <p>
+     * If the display is private, then only the owner can use it.
+     * </p>
+     */
+    String mOwnerPackageName;
 };
 
 } // namespace View

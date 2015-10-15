@@ -5,10 +5,12 @@
 #include <ext/frameworkext.h>
 #include "view/DisplayEventReceiver.h"
 #include <pthread.h>
-#include "os/HandlerBase.h"
+#include "os/Handler.h"
+#include <elastos/core/Mutex.h>
 
+using Elastos::Core::Mutex;
 using Elastos::Core::IRunnable;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IMessage;
 
 namespace Elastos {
@@ -58,18 +60,16 @@ namespace View {
  * </p>
  */
 class Choreographer
-    : public ElRefBase
+    : public Object
     , public IChoreographer
 {
 private:
-    class FrameHandler : public HandlerBase
+    class FrameHandler : public Handler
     {
     public:
         FrameHandler(
             /* [in] */ ILooper* looper,
-            /* [in] */ Choreographer* host)
-            : mHost(host)
-        {}
+            /* [in] */ Choreographer* host);
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
@@ -78,13 +78,11 @@ private:
     };
 
     class Token
-        : public ElRefBase
-        , public IInterface
+        : public Object
     {
     public:
-        CAR_INTERFACE_DECL();
-
-        CARAPI_(String) ToString();
+        CARAPI ToString(
+            /* [out] */ String* info);
     };
 
     class FrameDisplayEventReceiver
@@ -99,13 +97,17 @@ private:
             /* [in] */ Choreographer* owner);
 
         //@Override
-        CARAPI_(void) OnVsync(
+        CARAPI OnVsync(
             /* [in] */ Int64 timestampNanos,
             /* [in] */ Int32 builtInDisplayId,
             /* [in] */ Int32 frame);
 
         CARAPI Run();
 
+        CARAPI OnHotplug(
+            /* [in] */ Int64 timestampNanos,
+            /* [in] */ Int64 builtInDisplayId,
+            /* [in] */ Boolean connected);
     private:
         Boolean mHavePendingVsync;
         Int64 mTimestampNanos;
@@ -113,7 +115,8 @@ private:
         Choreographer* mOwner;
     };
 
-    class CallbackRecord : public ElRefBase
+    class CallbackRecord
+        : public Object
     {
     public:
         CARAPI_(void) Run(
@@ -123,10 +126,11 @@ private:
         AutoPtr<CallbackRecord> mNext;
         Int64 mDueTime;
         AutoPtr<IInterface> mAction; // Runnable or FrameCallback
-        AutoPtr<IInterface> mToken;
+        AutoPtr<IObject> mToken;
     };
 
-    class CallbackQueue : public ElRefBase
+    class CallbackQueue
+        : public ElRefBase
     {
     public:
         CallbackQueue(
@@ -141,11 +145,11 @@ private:
         CARAPI_(void) AddCallbackLocked(
             /* [in] */ Int64 dueTime,
             /* [in] */ IInterface* action,
-            /* [in] */ IInterface* token);
+            /* [in] */ IObject* token);
 
         CARAPI_(void) RemoveCallbacksLocked(
             /* [in] */ IInterface* action,
-            /* [in] */ IInterface* token);
+            /* [in] */ IObject* token);
 
     private:
         AutoPtr<CallbackRecord> mHead;
@@ -248,7 +252,7 @@ public:
     CARAPI PostCallback(
         /* [in] */ Int32 callbackType,
         /* [in] */ IRunnable* action,
-        /* [in] */ IInterface* token);
+        /* [in] */ IObject* token);
 
     /**
      * Posts a callback to run on the next frame after the specified delay.
@@ -267,7 +271,7 @@ public:
     CARAPI PostCallbackDelayed(
         /* [in] */ Int32 callbackType,
         /* [in] */ IRunnable* action,
-        /* [in] */ IInterface* token,
+        /* [in] */ IObject* token,
         /* [in] */ Int64 delayMillis);
 
     /**
@@ -286,7 +290,7 @@ public:
     CARAPI RemoveCallbacks(
         /* [in] */ Int32 callbackType,
         /* [in] */ IRunnable* action,
-        /* [in] */ IInterface* token);
+        /* [in] */ IObject* token);
 
     /**
      * Posts a frame callback to run on the next frame.
@@ -368,6 +372,13 @@ public:
     CARAPI GetFrameTimeNanos(
         /* [out] */ Int64* frameTimeNanos);
 
+    /**
+     * @return The refresh rate as the nanoseconds between frames
+     * @hide
+     */
+    CARAPI GetFrameIntervalNanos(
+        /* [out] */ Int64* nanos);
+
 protected:
     CARAPI_(void) DoFrame(
         /* [in] */ Int64 frameTimeNanos,
@@ -386,13 +397,13 @@ private:
     CARAPI_(void) PostCallbackDelayedInternal(
         /* [in] */ Int32 callbackType,
         /* [in] */ IInterface* action,
-        /* [in] */ IInterface* token,
+        /* [in] */ IObject* token,
         /* [in] */ Int64 delayMillis);
 
     CARAPI_(void) RemoveCallbacksInternal(
         /* [in] */ Int32 callbackType,
         /* [in] */ IInterface* action,
-        /* [in] */ IInterface* token);
+        /* [in] */ IObject* token);
 
     CARAPI_(void) ScheduleFrameLocked(
         /* [in] */ Int64 now);
@@ -404,7 +415,7 @@ private:
     CARAPI_(AutoPtr<CallbackRecord>) ObtainCallbackLocked(
         /* [in] */ Int64 dueTime,
         /* [in] */ IInterface* action,
-        /* [in] */ IInterface* token);
+        /* [in] */ IObject* token);
 
     CARAPI_(void) RecycleCallbackLocked(
         /* [in] */ CallbackRecord* callback);
@@ -449,15 +460,13 @@ private:
     // Skipped frames imply jank.
     static const Int32 SKIPPED_FRAME_WARNING_LIMIT;
 
-    static const Int64 NANOS_PER_MS = 1000000;
-
     // All frame callbacks posted by applications have this token.
-    static const AutoPtr<IInterface> FRAME_CALLBACK_TOKEN;
+    static const AutoPtr<IObject> FRAME_CALLBACK_TOKEN;
 
     static const Int32 CALLBACK_LAST;
 
 private:
-    Object mLock;
+    Mutex mLock;
 
     AutoPtr<ILooper> mLooper;
     AutoPtr<FrameHandler> mHandler;

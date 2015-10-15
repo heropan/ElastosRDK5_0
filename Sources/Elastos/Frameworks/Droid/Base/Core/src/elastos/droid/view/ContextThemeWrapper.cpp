@@ -18,12 +18,13 @@ ContextThemeWrapper::ContextThemeWrapper()
 {
 }
 
-ContextThemeWrapper::ContextThemeWrapper(
+ECode ContextThemeWrapper::constructor(
     /* [in] */ IContext* base,
     /* [in] */ Int32 themeres)
-    : ContextWrapper(base)
-    , mThemeResource(themeres)
 {
+    ContextWrapper::constructor(base);
+    mThemeResource = themeres;
+    return NOERROR;
 }
 
 ECode ContextThemeWrapper::AttachBaseContext(
@@ -162,15 +163,6 @@ ECode ContextThemeWrapper::InitializeTheme()
         }
     }
     return OnApplyThemeResource(mTheme, mThemeResource, first);
-}
-
-ECode ContextThemeWrapper::Init(
-    /* [in] */ IContext* base,
-    /* [in] */ Int32 themeres)
-{
-    ContextWrapper::Init(base);
-    mThemeResource = themeres;
-    return NOERROR;
 }
 
 } // namespace View
