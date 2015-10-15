@@ -45,6 +45,8 @@ module
         GetStatus(
             [out] Int32 * result);
 
+        ToString(
+            [out] String * result);
     }
 
     /**
