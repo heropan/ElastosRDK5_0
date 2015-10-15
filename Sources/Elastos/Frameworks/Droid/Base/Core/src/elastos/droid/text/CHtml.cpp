@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
+CAR_INTERFACE_IMPL(CHtml, Singleton, IHtml)
+
+CAR_SINGLETON_IMPL(CHtml)
+
 ECode CHtml::FromHtml(
     /* [in] */ const String& source,
     /* [out] */ ISpanned** ret)

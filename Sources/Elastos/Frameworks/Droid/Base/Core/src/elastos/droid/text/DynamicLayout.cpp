@@ -4,16 +4,16 @@
 #include "elastos/droid/text/TextDirectionHeuristics.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/text/CStaticLayout.h"
-// #include "elastos/droid/internal/utility/ArrayUtils.h"
-// #include "elastos/droid/internal/utility/GrowingArrayUtils.h"
+#include "elastos/droid/internal/utility/ArrayUtils.h"
+#include "elastos/droid/internal/utility/GrowingArrayUtils.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::Graphics::IPaintFontMetricsInt;
 using Elastos::Droid::Text::Style::IUpdateLayout;
 using Elastos::Droid::Text::Style::EIID_IWrapTogetherSpan;
-// using Elastos::Droid::Internal::Utility::ArrayUtils;
-// using Elastos::Droid::Internal::Utility::GrowingArrayUtils;
+using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Droid::Internal::Utility::GrowingArrayUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -622,20 +622,20 @@ void DynamicLayout::AddBlockAtOffset(
 {
     Int32 line;
     GetLineForOffset(offset, &line);
-    assert(0 && "TODO");
-    // if (mBlockEndLines == NULL) {
-    //     // Initial creation of the array, no test on previous block ending line
-    //     mBlockEndLines = ArrayUtils::NewUnpaddedIntArray(1);
-    //     (*mBlockEndLines)[mNumberOfBlocks] = line;
-    //     mNumberOfBlocks++;
-    //     return;
-    // }
 
-    // Int32 previousBlockEndLine = (*mBlockEndLines)[mNumberOfBlocks - 1];
-    // if (line > previousBlockEndLine) {
-    //     mBlockEndLines = GrowingArrayUtils::Append(mBlockEndLines, mNumberOfBlocks, line);
-    //     mNumberOfBlocks++;
-    // }
+    if (mBlockEndLines == NULL) {
+        // Initial creation of the array, no test on previous block ending line
+        mBlockEndLines = ArrayUtils::NewUnpaddedInt32Array(1);
+        (*mBlockEndLines)[mNumberOfBlocks] = line;
+        mNumberOfBlocks++;
+        return;
+    }
+
+    Int32 previousBlockEndLine = (*mBlockEndLines)[mNumberOfBlocks - 1];
+    if (line > previousBlockEndLine) {
+        mBlockEndLines = GrowingArrayUtils::Append(mBlockEndLines, mNumberOfBlocks, line);
+        mNumberOfBlocks++;
+    }
 }
 
 ECode DynamicLayout::UpdateBlocks(
@@ -685,17 +685,16 @@ ECode DynamicLayout::UpdateBlocks(
         return NOERROR;
     }
 
-    assert(0 && "TODO");
     if (newNumberOfBlocks > mBlockEndLines->GetLength()) {
-        // Int32 newSize = Elastos::Core::Math::Max(mBlockEndLines.length * 2, newNumberOfBlocks);
-        // AutoPtr< ArrayOf<Int32> > blockEndLines = ArrayUtils::NewUnpaddedIntArray(newSize);
-        // AutoPtr< ArrayOf<Int32> > blockIndices = ArrayOf<Int32>::Alloc(blockEndLines->GetLength());
-        // blockEndLines->Copy(mBlockEndLines, firstBlock);
-        // blockIndices->Copy(mBlockIndices, firstBlock);
-        // blockEndLines->Copy(firstBlock + numAddedBlocks, mBlockEndLines, lastBlock + 1, mNumberOfBlocks - lastBlock - 1);
-        // blockIndices->Copy(firstBlock + numAddedBlocks, mBlockIndices, lastBlock + 1, mNumberOfBlocks - lastBlock - 1);
-        // mBlockEndLines = blockEndLines;
-        // mBlockIndices = blockIndices;
+        Int32 newSize = Elastos::Core::Math::Max(mBlockEndLines->GetLength() * 2, newNumberOfBlocks);
+        AutoPtr< ArrayOf<Int32> > blockEndLines = ArrayUtils::NewUnpaddedInt32Array(newSize);
+        AutoPtr< ArrayOf<Int32> > blockIndices = ArrayOf<Int32>::Alloc(blockEndLines->GetLength());
+        blockEndLines->Copy(mBlockEndLines, firstBlock);
+        blockIndices->Copy(mBlockIndices, firstBlock);
+        blockEndLines->Copy(firstBlock + numAddedBlocks, mBlockEndLines, lastBlock + 1, mNumberOfBlocks - lastBlock - 1);
+        blockIndices->Copy(firstBlock + numAddedBlocks, mBlockIndices, lastBlock + 1, mNumberOfBlocks - lastBlock - 1);
+        mBlockEndLines = blockEndLines;
+        mBlockIndices = blockIndices;
     }
     else {
         mBlockEndLines->Copy(firstBlock + numAddedBlocks, mBlockEndLines, lastBlock + 1, mNumberOfBlocks - lastBlock - 1);

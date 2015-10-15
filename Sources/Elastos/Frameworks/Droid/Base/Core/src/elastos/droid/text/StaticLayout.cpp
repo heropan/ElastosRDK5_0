@@ -2,7 +2,8 @@
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/text/TextDirectionHeuristics.h"
 #include "elastos/droid/text/AndroidBidi.h"
-//#include "elastos/droid/internal/utility/ArrayUtils.h"
+#include "elastos/droid/internal/utility/ArrayUtils.h"
+#include "elastos/droid/internal/utility/GrowingArrayUtils.h"
 #include "elastos/droid/graphics/CPaintFontMetricsInt.h"
 
 #include <elastos/utility/logging/Slogger.h>
@@ -15,7 +16,8 @@
 #include "utils/Log.h"
 // #include <vector>
 
-//using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Droid::Internal::Utility::GrowingArrayUtils;
 using Elastos::Droid::Graphics::CPaintFontMetricsInt;
 using Elastos::Droid::Text::Style::EIID_ILineHeightSpan;
 using Elastos::Droid::Text::Style::EIID_ILeadingMarginSpan;
@@ -219,9 +221,10 @@ ECode StaticLayout::constructor(
         mColumns = COLUMNS_NORMAL;
         mEllipsizedWidth = outerwidth;
     }
-    assert(0 && "TODO");
-    // mLines = ArrayOf<Int32>::Alloc(ArrayUtils::IdealInt32ArraySize(2 * mColumns));
-    // mLineDirections = ArrayOf<ILayoutDirections*>::Alloc(ArrayUtils::IdealInt32ArraySize(2 * mColumns));
+
+    ILayoutDirections* obj = NULL;
+    mLineDirections = ArrayUtils::NewUnpaddedArray(2 * mColumns, obj);
+    mLines = ArrayOf<Int32>::Alloc(mLineDirections->GetLength());
     mMaximumVisibleLineCount = maxLines;
 
     mMeasured = MeasuredText::Obtain();
@@ -242,9 +245,9 @@ ECode StaticLayout::constructor(
     FAIL_RETURN(Layout::constructor(text, NULL, 0, ALIGN_NONE, 0.0f, 0.0f))
 
     mColumns = COLUMNS_ELLIPSIZE;
-    assert(0 && "TODO");
-    // mLines = ArrayOf<Int32>::Alloc(ArrayUtils::IdealInt32ArraySize(2 * mColumns));
-    // mLineDirections = ArrayOf<ILayoutDirections*>::Alloc(ArrayUtils::IdealInt32ArraySize(2 * mColumns));
+    ILayoutDirections* obj = NULL;
+    mLineDirections = ArrayUtils::NewUnpaddedArray(2 * mColumns, obj);
+    mLines = ArrayOf<Int32>::Alloc(mLineDirections->GetLength());
     // FIXME This is never recycled
     mMeasured = MeasuredText::Obtain();
     return NOERROR;
@@ -325,12 +328,11 @@ ECode StaticLayout::Generate(
 
             chooseHt = GetParagraphSpans(spanned, paraStart, paraEnd, EIID_ILineHeightSpan);
 
-            assert(0 && "TODO");
             Int32 length = chooseHt->GetLength();
             if (length != 0) {
                 if (chooseHtv == NULL ||
                     chooseHtv->GetLength() < length) {
-                    // chooseHtv = ArrayUtils::NewUnpaddedIntArray(chooseHt->GetLength());
+                    chooseHtv = ArrayUtils::NewUnpaddedInt32Array(chooseHt->GetLength());
                 }
 
                 for (Int32 i = 0; i < length; i++) {
@@ -868,16 +870,16 @@ Int32 StaticLayout::Out(
     Int32 want = off + mColumns + TOP;
     AutoPtr< ArrayOf<Int32> > lines = mLines;
 
-    assert(0 && "TODO");
     if (want >= lines->GetLength()) {
-        // AutoPtr< ArrayOf<ILayoutDirections*> > grow2 = ArrayUtils::NewUnpaddedArray(GrowingArrayUtils::GrowSize(want));
-        // grow2->Copy(mLineDirections);
-        // mLineDirections = grow2;
+        ILayoutDirections* obj = NULL;
+        AutoPtr< ArrayOf<ILayoutDirections*> > grow2 = ArrayUtils::NewUnpaddedArray(GrowingArrayUtils::GrowSize(want), obj);
+        grow2->Copy(mLineDirections);
+        mLineDirections = grow2;
 
-        // AutoPtr< ArrayOf<Int32> > grow = ArrayOf<Int32>::Alloc(grow2->GetLength());
-        // grow->Copy(lines);
-        // mLines = grow;
-        // lines = grow;
+        AutoPtr< ArrayOf<Int32> > grow = ArrayOf<Int32>::Alloc(grow2->GetLength());
+        grow->Copy(lines);
+        mLines = grow;
+        lines = grow;
     }
 
     if (chooseHt != NULL) {

@@ -3,7 +3,7 @@
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/text/CTextPaint.h"
 #include "elastos/droid/graphics/CRectF.h"
-// #include "elastos/droid/internal/utility/ArrayUtils.h"
+#include "elastos/droid/internal/utility/ArrayUtils.h"
 #include <elastos/core/Character.h>
 #include <elastos/core/Math.h>
 #include <elastos/core/AutoLock.h>
@@ -16,7 +16,7 @@ using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::PaintStyle;
 using Elastos::Droid::Graphics::PaintStyle_FILL;
 using Elastos::Droid::Graphics::IPaintFontMetricsInt;
-// using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Droid::Internal::Utility::ArrayUtils;
 using Elastos::Droid::Text::Style::EIID_IMetricAffectingSpan;
 using Elastos::Droid::Text::Style::EIID_ICharacterStyle;
 using Elastos::Droid::Text::Style::EIID_IReplacementSpan;
@@ -134,10 +134,9 @@ ECode TextLine::Set(
 
     mCharsValid = hasReplacement || hasTabs || directions != Layout::DIRS_ALL_LEFT_TO_RIGHT;
 
-    assert(0 && "TODO");
     if (mCharsValid) {
         if (mChars == NULL || mChars->GetLength() < mLen) {
-            // mChars = ArrayUtils::NewUnpaddedCharArray(mLen);
+            mChars = ArrayUtils::NewUnpaddedChar32Array(mLen);
         }
 
         TextUtils::GetChars(text, start, limit, mChars, 0);

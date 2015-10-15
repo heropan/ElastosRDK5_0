@@ -101,7 +101,7 @@ module
          * associated with the largest key.</p>
          */
         ValueAt(
-            [in] Int32* index,
+            [in] Int32 index,
             [out] Int64* value);
 
         /** @hide */

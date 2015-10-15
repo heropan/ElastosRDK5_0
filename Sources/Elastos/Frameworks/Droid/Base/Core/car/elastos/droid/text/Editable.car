@@ -106,7 +106,7 @@ module
          * Convenience for append(String.valueOf(text)).
          * @see #replace(int, int, CharSequence, int, int)
          */
-        Append(
+        AppendChar(
             [in] Char32 text);
 
         //Clear();

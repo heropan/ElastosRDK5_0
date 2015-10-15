@@ -113,6 +113,12 @@ module
             [in] Int32 flags);
     }
 
+    interface ISpannableStringBuilderHelper {
+        ValueOf(
+            [in] ICharSequence* source,
+            [out] ISpannableStringBuilder** builder);
+    }
+
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos

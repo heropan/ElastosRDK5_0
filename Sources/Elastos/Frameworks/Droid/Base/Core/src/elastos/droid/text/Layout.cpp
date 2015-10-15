@@ -11,8 +11,8 @@
 //#include "elastos/droid/text/method/CTextKeyListener.h"
 //#include "emoji/CEmojiFactoryHelper.h"
 #include "elastos/droid/graphics/CRect.h"
-//#include "elastos/droid/internal/utility/ArrayUtils.h"
-//#include "elastos/droid/internal/utility/GrowingArrayUtils.h"
+#include "elastos/droid/internal/utility/ArrayUtils.h"
+#include "elastos/droid/internal/utility/GrowingArrayUtils.h"
 
 #include <elastos/core/Math.h>
 #include <elastos/core/AutoLock.h>
@@ -39,7 +39,8 @@ using Elastos::Droid::Text::Style::ILeadingMarginSpan2;
 using Elastos::Droid::Text::Method::IMetaKeyKeyListener;
 using Elastos::Droid::Text::MeasuredText;
 using Elastos::Droid::Text::AndroidBidi;
-// using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Droid::Internal::Utility::GrowingArrayUtils;
 
 using Elastos::Core::CString;
 using Elastos::Core::EIID_ICharSequence;
@@ -391,7 +392,8 @@ static AutoPtr<IEmojiFactory> InitEMOJI()
 }
 */
 
-AutoPtr< ArrayOf<IParagraphStyle*> > Layout::NO_PARA_SPANS = ArrayOf<IParagraphStyle*>::Alloc(0);
+// AutoPtr< ArrayOf<IParagraphStyle*> > Layout::NO_PARA_SPANS = ArrayOf<IParagraphStyle*>::Alloc(0);
+AutoPtr< ArrayOf<IInterface*> > Layout::NO_PARA_SPANS = ArrayOf<IInterface*>::Alloc(0);
 //AutoPtr<IEmojiFactory> Layout::EMOJI_FACTORY = InitEMOJI();
 AutoPtr<IRect> Layout::sTempRect = InitsTempRect();
 AutoPtr<ILayoutDirections> Layout::DIRS_ALL_LEFT_TO_RIGHT = InitDIRS_ALL_LEFT_TO_RIGHT();
@@ -554,7 +556,7 @@ ECode Layout::DrawText(
     Int32 previousLineBottom, previousLineEnd;
     GetLineTop(firstLine, &previousLineBottom);
     GetLineStart(firstLine, &previousLineEnd);
-    AutoPtr< ArrayOf<IInterface*> > spans = (ArrayOf<IInterface*>*)(NO_PARA_SPANS.Get());
+    AutoPtr< ArrayOf<IInterface*> > spans = NO_PARA_SPANS;
     Int32 spanEnd = 0;
     AutoPtr<ITextPaint> paint = mPaint;
     IPaint* p = IPaint::Probe(mPaint);
@@ -765,7 +767,7 @@ ECode Layout::DrawBackground(
             Int32 previousLineBottom, previousLineEnd;
             GetLineTop(firstLine, &previousLineBottom);
             GetLineStart(firstLine, &previousLineEnd);
-            AutoPtr< ArrayOf<IInterface*> > spans = (ArrayOf<IInterface*>*)(NO_PARA_SPANS.Get());
+            AutoPtr< ArrayOf<IInterface*> > spans = NO_PARA_SPANS;
             Int32 spansLength = 0;
             AutoPtr<ITextPaint> paint = mPaint;
             IPaint* p = IPaint::Probe(mPaint);
@@ -798,15 +800,14 @@ ECode Layout::DrawBackground(
                         AutoPtr< ArrayOf<Int32> > spanStarts = mLineBackgroundSpans->mSpanStarts;
                         AutoPtr< ArrayOf<Int32> > spanEnds = mLineBackgroundSpans->mSpanEnds;
                         AutoPtr< ArrayOf<ILineBackgroundSpan*> > lbSpans = mLineBackgroundSpans->mSpans;
+                        IInterface* obj;
                         for (Int32 j = 0; j < numberOfSpans; j++) {
                             // equal test is valid since both intervals are not empty by
                             // construction
                             if ((*spanStarts)[j] >= end || (*spanEnds)[j] <= start)
                                 continue;
-
-                            assert(0 && "TODO");
-                            // spans = GrowingArrayUtils::Append(
-                            //         spans, spansLength, TO_IINTERFACE((*lbSpans)[i]));
+                            obj = TO_IINTERFACE((*lbSpans)[i]);
+                            spans = GrowingArrayUtils::Append(spans, spansLength, obj);
                             spansLength++;
                         }
                     }

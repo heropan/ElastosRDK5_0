@@ -1,12 +1,15 @@
 
 #include "elastos/droid/text/SpannableStringInternal.h"
-//#include "elastos/droid/internal/utility/ArrayUtils.h"
+#include "elastos/droid/internal/utility/ArrayUtils.h"
+#include "elastos/droid/internal/utility/GrowingArrayUtils.h"
+
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuffer.h>
 #include <libcore/utility/EmptyArray.h>
 #include <elastos/utility/logging/Logger.h>
 
-// using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Droid::Internal::Utility::GrowingArrayUtils;
 using Elastos::Core::IComparable;
 using Elastos::Core::StringBuffer;
 using Elastos::Utility::Logging::Logger;
@@ -167,17 +170,16 @@ ECode SpannableStringInternal::SetSpan(
         }
     }
 
-    assert(0 && "TODO");
-    // if (mSpanCount + 1 >= mSpans->GetLength()) {
-    //     AutoPtr<ArrayOf<IInterface*> > newtags = ArrayUtils::NewUnpaddedObjectArray(GrowingArrayUtils::GrowSize(mSpanCount));
-    //     AutoPtr<ArrayOf<Int32> > newdata = ArrayOf<Int32>::Alloc(newtags->GetLength() * 3);
+    if (mSpanCount + 1 >= mSpans->GetLength()) {
+        AutoPtr<ArrayOf<IInterface*> > newtags = ArrayUtils::NewUnpaddedObjectArray(GrowingArrayUtils::GrowSize(mSpanCount));
+        AutoPtr<ArrayOf<Int32> > newdata = ArrayOf<Int32>::Alloc(newtags->GetLength() * 3);
 
-    //     newtags->Copy(0, mSpans, 0, mSpanCount);
-    //     newdata->Copy(0, mSpanData, 0, mSpanCount * 3);
+        newtags->Copy(0, mSpans, 0, mSpanCount);
+        newdata->Copy(0, mSpanData, 0, mSpanCount * 3);
 
-    //     mSpans = newtags;
-    //     mSpanData = newdata;
-    // }
+        mSpans = newtags;
+        mSpanData = newdata;
+    }
 
     mSpans->Set(mSpanCount, what);
     (*mSpanData)[mSpanCount * COLUMNS + START] = start;

@@ -99,4 +99,7 @@ SOURCES += Uri.cpp
 #SOURCES += CVpnProfileHelper.cpp
 
 
-#LIBRARIES += wifi/wifi.lib
+// LIBRARIES += nsd/nsd.lib
+// LIBRARIES += etherethernet.lib
+// LIBRARIES += pppoe/pppoe.lib
+// LIBRARIES += wifi/wifi.lib

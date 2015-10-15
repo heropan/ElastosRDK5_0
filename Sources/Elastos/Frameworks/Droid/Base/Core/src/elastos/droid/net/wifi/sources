@@ -39,3 +39,6 @@ SOURCES += SupplicantStateTracker.cpp
 SOURCES += WifiStateTracker.cpp
 SOURCES += WifiStateMachine.cpp
 SOURCES += WifiWatchdogStateMachine.cpp
+
+// LIBRARIES += p2p/p2p.lib
+// LIBRARIES += p2p/nsd/nsd.lib

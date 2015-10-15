@@ -2,18 +2,23 @@
 #include "elastos/droid/text/SpannableStringBuilder.h"
 #include "elastos/droid/text/CSpannableStringBuilder.h"
 #include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/utility/ArrayUtils.h"
-#include <elastos/core/StringBuffer.h>
 #include "elastos/droid/text/Selection.h"
+#include "elastos/droid/internal/utility/ArrayUtils.h"
+#include "elastos/droid/internal/utility/GrowingArrayUtils.h"
+#include <elastos/core/StringBuffer.h>
 #include <elastos/core/Math.h>
 #include <elastos/core/Character.h>
+#include <libcore/utility/EmptyArray.h>
 
+using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Droid::Internal::Utility::GrowingArrayUtils;
 using Elastos::Core::Character;
 using Elastos::Core::IComparable;
 using Elastos::Core::CString;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::EIID_ICharSequence;
-using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Core::EIID_IAppendable;
+using Libcore::Utility::EmptyArray;
 
 namespace Elastos {
 namespace Droid {
@@ -46,51 +51,34 @@ static AutoPtr<ICharSequence> CreateEmptyCs()
 
 AutoPtr<ICharSequence> SpannableStringBuilder::EMPTY_CS = CreateEmptyCs();
 
+CAR_INTERFACE_IMPL_8(SpannableStringBuilder, Object, ISpannableStringBuilder, ICharSequence, IGetChars, ISpannable, ISpanned, IEditable, IAppendable, IGraphicsOperations)
+
 SpannableStringBuilder::SpannableStringBuilder()
     : mGapStart(0)
     , mGapLength(0)
     , mSpanCount(0)
     , mSpanCountBeforeAdd(0)
 {
-    Init();
-}
-
-SpannableStringBuilder::SpannableStringBuilder(
-    /* [in] */ ICharSequence* text)
-{
-    Init(text);
-}
-
-SpannableStringBuilder::SpannableStringBuilder(
-    /* [in] */ ICharSequence* text,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
-{
-    Init(text, start, end);
 }
 
 SpannableStringBuilder::~SpannableStringBuilder()
+{}
+
+ECode SpannableStringBuilder::constructor()
 {
+    return constructor(EMPTY_CS);
 }
 
-ECode SpannableStringBuilder::Init()
-{
-    Init(EMPTY_CS);
-    return NOERROR;
-}
-
-ECode SpannableStringBuilder::Init(
+ECode SpannableStringBuilder::constructor(
     /* [in] */ ICharSequence* text)
 {
     VALIDATE_NOT_NULL(text);
     Int32 len;
     text->GetLength(&len);
-    Init(text, 0, len);
-
-    return NOERROR;
+    return constructor(text, 0, len);
 }
 
-ECode SpannableStringBuilder::Init(
+ECode SpannableStringBuilder::constructor(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -105,7 +93,7 @@ ECode SpannableStringBuilder::Init(
     mFilters = NO_FILTERS;
     Int32 srclen = end - start;
 
-    // mText = ArrayUtils::NewUnpaddedCharArray(GrowingArrayUtils::GrowSize(srclen));
+    mText = ArrayUtils::NewUnpaddedChar32Array(GrowingArrayUtils::GrowSize(srclen));
     mGapStart = srclen;
     mGapLength = mText->GetLength() - srclen;
 
@@ -172,7 +160,8 @@ ECode SpannableStringBuilder::GetCharAt(
     VALIDATE_NOT_NULL(c);
     *c = '\0';
 
-    Int32 len = GetLength();
+    Int32 len;
+    GetLength(&len);
     if (where < 0) {
         //throw new IndexOutOfBoundsException("GetCharAt: " + where + " < 0");
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -191,9 +180,12 @@ ECode SpannableStringBuilder::GetCharAt(
     return NOERROR;
 }
 
-Int32 SpannableStringBuilder::GetLength()
+ECode SpannableStringBuilder::GetLength(
+    /* [out] */ Int32* result)
 {
-    return mText->GetLength() - mGapLength;
+    VALIDATE_NOT_NULL(result)
+    *result = mText->GetLength() - mGapLength;
+    return NOERROR;
 }
 
 ECode SpannableStringBuilder::Insert(
@@ -220,8 +212,10 @@ ECode SpannableStringBuilder::Delete(
     /* [in] */ Int32 end)
 {
     FAIL_RETURN(Replace(start, end, EMPTY_CS, 0, 0));
-    if (mGapLength > 2 * GetLength()) {
-        FAIL_RETURN(ResizeFor(GetLength()));
+    Int32 len;
+    GetLength(&len);
+    if (mGapLength > 2 * len) {
+        FAIL_RETURN(ResizeFor(len));
     }
 
     return NOERROR;
@@ -229,7 +223,9 @@ ECode SpannableStringBuilder::Delete(
 
 ECode SpannableStringBuilder::Clear()
 {
-    return Replace(0, GetLength(), EMPTY_CS, 0, 0);
+    Int32 len;
+    GetLength(&len);
+    return Replace(0, len, EMPTY_CS, 0, 0);
 }
 
 ECode SpannableStringBuilder::ClearSpans()
@@ -262,18 +258,21 @@ ECode SpannableStringBuilder::Append(
     /* [in] */ Int32 flags)
 {
     VALIDATE_NOT_NULL(text);
-    Int32 length = GetLength();
+    Int32 start;
+    GetLength(&start);
     FAIL_RETURN(Append(text))
 
-    return SetSpan(what, start, GetLength(), flags);
+    Int32 length;
+    GetLength(&length);
+    return SetSpan(what, start, length, flags);
 }
 
 ECode SpannableStringBuilder::Append(
     /* [in] */ ICharSequence* text)
 {
     VALIDATE_NOT_NULL(text);
-    Int32 length = GetLength();
-    Int32 tLen;
+    Int32 length, tLen;
+    GetLength(&length);
     text->GetLength(&tLen);
     return Replace(length, length, text, 0, tLen);
 }
@@ -284,11 +283,12 @@ ECode SpannableStringBuilder::Append(
     /* [in] */ Int32 end)
 {
     VALIDATE_NOT_NULL(text);
-    Int32 length = GetLength();
+    Int32 length;
+    GetLength(&length);
     return Replace(length, length, text, start, end);
 }
 
-ECode SpannableStringBuilder::Append(
+ECode SpannableStringBuilder::AppendChar(
     /* [in] */ Char32 text)
 {
     VALIDATE_NOT_NULL(text);
@@ -341,13 +341,12 @@ ECode SpannableStringBuilder::Replace(
         return NOERROR;
     }
 
-    AutoPtr<ArrayOf<IInterface*> > tempWatchers = GetSpans(start, start + origLen, EIID_ITextWatcher);
+    AutoPtr<ArrayOf<IInterface*> > tempWatchers;
+    GetSpans(start, start + origLen, EIID_ITextWatcher, (ArrayOf<IInterface*>**)&tempWatchers);
     AutoPtr<ArrayOf<ITextWatcher*> > textWatchers = ArrayOf<ITextWatcher*>::Alloc(tempWatchers->GetLength());
-    for(Int32 i = 0; i < tempWatchers->GetLength(); i++)
-    {
-        AutoPtr<ITextWatcher> temp;
-        if(temp = ITextWatcher::Probe((*tempWatchers)[i]))
-        {
+    for (Int32 i = 0; i < tempWatchers->GetLength(); i++) {
+        AutoPtr<ITextWatcher> temp = ITextWatcher::Probe((*tempWatchers)[i]);
+        if (temp != NULL) {
             textWatchers->Set(i, temp);
         }
     }
@@ -433,9 +432,13 @@ ECode SpannableStringBuilder::RemoveSpan(
     return NOERROR;
 }
 
-Int32 SpannableStringBuilder::GetSpanStart(
-    /* [in] */ IInterface* what)
+ECode SpannableStringBuilder::GetSpanStart(
+    /* [in] */ IInterface* what,
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = -1;
+
     Int32 count = mSpanCount;
     for (Int32 i = count - 1; i >= 0; i--) {
         if ((*mSpans)[i] == what) {
@@ -445,16 +448,21 @@ Int32 SpannableStringBuilder::GetSpanStart(
                 where -= mGapLength;
             }
 
-            return where;
+            *result = where;
+            return NOERROR;
         }
     }
 
-    return -1;
+    return NOERROR;
 }
 
-Int32 SpannableStringBuilder::GetSpanEnd(
-    /* [in] */ IInterface* what)
+ECode SpannableStringBuilder::GetSpanEnd(
+    /* [in] */ IInterface* what,
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = -1;
+
     Int32 count = mSpanCount;
     for (Int32 i = count - 1; i >= 0; i--) {
         if ((*mSpans)[i] == what) {
@@ -464,31 +472,40 @@ Int32 SpannableStringBuilder::GetSpanEnd(
                 where -= mGapLength;
             }
 
-            return where;
+            *result = where;
+            return NOERROR;
         }
     }
 
-    return -1;
+    return NOERROR;
 }
 
-Int32 SpannableStringBuilder::GetSpanFlags(
-    /* [in] */ IInterface* what)
+ECode SpannableStringBuilder::GetSpanFlags(
+    /* [in] */ IInterface* what,
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
     Int32 count = mSpanCount;
     for (Int32 i = count - 1; i >= 0; i--) {
         if ((*mSpans)[i] == what) {
-            return (*mSpanFlags)[i];
+            *result = (*mSpanFlags)[i];
+            return NOERROR;
         }
     }
 
-    return 0;
+    return NOERROR;
 }
 
-AutoPtr<ArrayOf<IInterface*> > SpannableStringBuilder::GetSpans(
+ECode SpannableStringBuilder::GetSpans(
     /* [in] */ Int32 queryStart,
     /* [in] */ Int32 queryEnd,
-    /* [in] */ const InterfaceID& kind)
+    /* [in] */ const InterfaceID& kind,
+    /* [out, callee] */ ArrayOf<IInterface*>** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Int32 spanCount = mSpanCount;
     AutoPtr< ArrayOf<IInterface*> > spans = mSpans;
     AutoPtr< ArrayOf<Int32> > starts = mSpanStarts;
@@ -552,7 +569,9 @@ AutoPtr<ArrayOf<IInterface*> > SpannableStringBuilder::GetSpans(
                 Int32 j = 0;
 
                 for (j = 0; j < count; j++) {
-                    Int32 p = GetSpanFlags((*ret)[j]) & ISpanned::SPAN_PRIORITY;
+                    Int32 p;
+                    GetSpanFlags((*ret)[j], &p);
+                    p &= ISpanned::SPAN_PRIORITY;
                     if (prio > p) {
                         break;
                     }
@@ -575,31 +594,42 @@ AutoPtr<ArrayOf<IInterface*> > SpannableStringBuilder::GetSpans(
 
     if (count == 0) {
         ret = ArrayOf<IInterface*>::Alloc(0);
-        return ret;
+        *result = ret;
+        REFCOUNT_ADD(*result)
+        return NOERROR;
     }
 
-    if (count == 1) {
+    else if (count == 1) {
         // Safe conversion, but requires a suppressWarning
         ret = ArrayOf<IInterface*>::Alloc(1);
         ret->Set(0, ret1);
-        return ret;
+        *result = ret;
+        REFCOUNT_ADD(*result)
+        return NOERROR;
     }
 
     if (count == ret->GetLength()) {
-        return ret;
+        *result = ret;
+        REFCOUNT_ADD(*result)
+        return NOERROR;
     }
 
     // Safe conversion, but requires a suppressWarning
     AutoPtr< ArrayOf<IInterface*> > nret = ArrayOf<IInterface*>::Alloc(count);
     nret->Copy(ret, 0, count);
-    return nret;
+    *result = nret;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
-Int32 SpannableStringBuilder::NextSpanTransition(
+ECode SpannableStringBuilder::NextSpanTransition(
     /* [in] */ Int32 start,
     /* [in] */ Int32 limit,
-    /* [in] */ const InterfaceID& kind)
+    /* [in] */ const InterfaceID& kind,
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Int32 count = mSpanCount;
     Int32 gapstart = mGapStart;
     Int32 gaplen = mGapLength;
@@ -629,7 +659,8 @@ Int32 SpannableStringBuilder::NextSpanTransition(
         }
     }
 
-    return limit;
+    *result = limit;
+    return NOERROR;
 }
 
 ECode SpannableStringBuilder::SubSequence(
@@ -639,7 +670,7 @@ ECode SpannableStringBuilder::SubSequence(
 {
     AutoPtr<ISpannableStringBuilder> sub;
     FAIL_RETURN(CSpannableStringBuilder::New(
-        (ICharSequence*)this->Probe(Elastos::Core::EIID_ICharSequence), start, end,
+        THIS_PROBE(ICharSequence), start, end,
         (ISpannableStringBuilder**)&sub));
     *cs = ICharSequence::Probe(sub);
     REFCOUNT_ADD(*cs);
@@ -676,11 +707,12 @@ ECode SpannableStringBuilder::ToString(
 {
     VALIDATE_NOT_NULL(str)
     *str = String("");
-    Int32 len = GetLength();
+    Int32 len;
+    GetLength(&len);
     if (len == 0) return NOERROR;
     AutoPtr< ArrayOf<Char32> > buf = ArrayOf<Char32>::Alloc(len);
     GetChars(0, len, buf, 0);
-    *str String(*buf);
+    *str = String(*buf);
     return NOERROR;
 }
 
@@ -704,19 +736,19 @@ ECode SpannableStringBuilder::DrawText(
     /* [in] */ Float y,
     /* [in] */ IPaint* p)
 {
-    assert(c != NULL);
+    VALIDATE_NOT_NULL(c)
 
     FAIL_RETURN(CheckRange(String("drawText"), start, end));
 
     if (end <= mGapStart) {
-        c->DrawText(*mText, start, end - start, x, y, p);
+        c->DrawText(mText, start, end - start, x, y, p);
     } else if (start >= mGapStart) {
-        c->DrawText(*mText, start + mGapLength, end - start, x, y, p);
+        c->DrawText(mText, start + mGapLength, end - start, x, y, p);
     } else {
         AutoPtr< ArrayOf<Char32> > buf = TextUtils::Obtain(end - start);
 
         GetChars(start, end, buf, 0);
-        c->DrawText(*buf, 0, end - start, x, y, p);
+        c->DrawText(buf, 0, end - start, x, y, p);
         TextUtils::Recycle(buf);
     }
 
@@ -741,14 +773,14 @@ ECode SpannableStringBuilder::DrawTextRun(
     Int32 contextLen = contextEnd - contextStart;
     Int32 len = end - start;
     if (contextEnd <= mGapStart) {
-        c->DrawTextRun(*mText, start, len, contextStart, contextLen, x, y, isRtl, p);
+        c->DrawTextRun(mText, start, len, contextStart, contextLen, x, y, isRtl, p);
     } else if (contextStart >= mGapStart) {
-        c->DrawTextRun(*mText, start + mGapLength, len, contextStart + mGapLength,
+        c->DrawTextRun(mText, start + mGapLength, len, contextStart + mGapLength,
                 contextLen, x, y, isRtl, p);
     } else {
         AutoPtr< ArrayOf<Char32> > buf = TextUtils::Obtain(contextLen);
         GetChars(contextStart, contextEnd, buf, 0);
-        c->DrawTextRun(*buf, start - contextStart, len, 0, contextLen, x, y, isRtl, p);
+        c->DrawTextRun(buf, start - contextStart, len, 0, contextLen, x, y, isRtl, p);
         TextUtils::Recycle(buf);
     }
 
@@ -761,18 +793,20 @@ ECode SpannableStringBuilder::MeasureText(
     /* [in] */ IPaint* p,
     /* [out] */ Float* width)
 {
-    assert(width != NULL && p != NULL);
+    VALIDATE_NOT_NULL(width)
+    *width = 0;
+    assert(p != NULL);
     FAIL_RETURN(CheckRange(String("measureText"), start, end));
 
     if (end <= mGapStart) {
-        p->MeasureText(*mText, start, end - start, width);
+        p->MeasureText(mText, start, end - start, width);
     } else if (start >= mGapStart) {
-        p->MeasureText(*mText, start + mGapLength, end - start, width);
+        p->MeasureText(mText, start + mGapLength, end - start, width);
     } else {
         AutoPtr< ArrayOf<Char32> > buf = TextUtils::Obtain(end - start);
         GetChars(start, end, buf, 0);
 
-        p->MeasureText(*buf, 0, end - start, width);
+        p->MeasureText(buf, 0, end - start, width);
         TextUtils::Recycle(buf);
     }
 
@@ -786,25 +820,27 @@ ECode SpannableStringBuilder::GetTextWidths(
     /* [in] */ IPaint* p,
     /* [out] */ Int32* count)
 {
-    assert(count != NULL && p != NULL);
+    VALIDATE_NOT_NULL(count)
+    *count = 0;
+    assert(p != NULL);
     FAIL_RETURN(CheckRange(String("getTextWidths"), start, end));
 
     if (end <= mGapStart) {
-        p->GetTextWidths(*mText, start, end - start, widths, count);
+        p->GetTextWidths(mText, start, end - start, widths, count);
     } else if (start >= mGapStart) {
-        p->GetTextWidths(*mText, start + mGapLength, end - start, widths, count);
+        p->GetTextWidths(mText, start + mGapLength, end - start, widths, count);
     } else {
         AutoPtr< ArrayOf<Char32> > buf = TextUtils::Obtain(end - start);
         GetChars(start, end, buf, 0);
 
-        p->GetTextWidths(*buf, 0, end - start, widths, count);
+        p->GetTextWidths(buf, 0, end - start, widths, count);
         TextUtils::Recycle(buf);
     }
 
     return NOERROR;
 }
 
-Float SpannableStringBuilder::GetTextRunAdvances(
+ECode SpannableStringBuilder::GetTextRunAdvances(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ Int32 contextStart,
@@ -812,9 +848,12 @@ Float SpannableStringBuilder::GetTextRunAdvances(
     /* [in] */ Boolean isRtl,
     /* [in] */ ArrayOf<Float>* advances,
     /* [in] */ Int32 advancesPos,
-    /* [in] */ IPaint* p)
+    /* [in] */ IPaint* p,
+    /* [out] */ Float* result)
 {
-    assert(p != NULL);
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+    VALIDATE_NOT_NULL(p)
 
     Float ret;
 
@@ -822,57 +861,62 @@ Float SpannableStringBuilder::GetTextRunAdvances(
     Int32 len = end - start;
 
     if (end <= mGapStart) {
-        p->GetTextRunAdvances(*mText, start, len, contextStart, contextLen,
+        p->GetTextRunAdvances(mText, start, len, contextStart, contextLen,
                 isRtl, advances, advancesPos, &ret);
     } else if (start >= mGapStart) {
-        p->GetTextRunAdvances(*mText, start + mGapLength, len,
+        p->GetTextRunAdvances(mText, start + mGapLength, len,
                 contextStart + mGapLength, contextLen, isRtl, advances,
                 advancesPos, &ret);
     } else {
         AutoPtr< ArrayOf<Char32> > buf = TextUtils::Obtain(contextLen);
         GetChars(contextStart, contextEnd, buf, 0);
 
-        p->GetTextRunAdvances(*buf, start - contextStart, len,
+        p->GetTextRunAdvances(buf, start - contextStart, len,
                0, contextLen, isRtl, advances, advancesPos, &ret);
         TextUtils::Recycle(buf);
     }
 
-    return ret;
+    *result = ret;
+    return NOERROR;
 }
 
-Int32 SpannableStringBuilder::GetTextRunCursor(
+ECode SpannableStringBuilder::GetTextRunCursor(
     /* [in] */ Int32 contextStart,
     /* [in] */ Int32 contextEnd,
     /* [in] */ Int32 dir,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 cursorOpt,
-    /* [in] */ IPaint* p)
+    /* [in] */ IPaint* p,
+    /* [out] */ Int32* cursor)
 {
-    assert(p != NULL);
+    VALIDATE_NOT_NULL(cursor)
+    *cursor = 0;
+    VALIDATE_NOT_NULL(p)
 
     Int32 ret = 0;
 
     Int32 contextLen = contextEnd - contextStart;
     if (contextEnd <= mGapStart) {
-        p->GetTextRunCursor(*mText, contextStart, contextLen,
+        p->GetTextRunCursor(mText, contextStart, contextLen,
                 dir, offset, cursorOpt, &ret);
     } else if (contextStart >= mGapStart) {
-        p->GetTextRunCursor(*mText, contextStart + mGapLength, contextLen,
+        p->GetTextRunCursor(mText, contextStart + mGapLength, contextLen,
                 dir, offset + mGapLength, cursorOpt, &ret);
         ret -= mGapLength;
     } else {
         AutoPtr< ArrayOf<Char32> > buf = TextUtils::Obtain(contextLen);
         GetChars(contextStart, contextEnd, buf, 0);
-        p->GetTextRunCursor(*buf, 0, contextLen, dir, offset - contextStart, cursorOpt, &ret);
+        p->GetTextRunCursor(buf, 0, contextLen, dir, offset - contextStart, cursorOpt, &ret);
         ret += contextStart;
         TextUtils::Recycle(buf);
     }
 
-    return ret;
+    *cursor = ret;
+    return NOERROR;
 }
 
 ECode SpannableStringBuilder::SetFilters(
-        /* [in] */ ArrayOf<IInputFilter*>* filters)
+    /* [in] */ ArrayOf<IInputFilter*>* filters)
 {
     if (filters == NULL) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -882,9 +926,13 @@ ECode SpannableStringBuilder::SetFilters(
     return NOERROR;
 }
 
-AutoPtr< ArrayOf<IInputFilter*> > SpannableStringBuilder::GetFilters()
+ECode SpannableStringBuilder::GetFilters(
+    /* [out] */ ArrayOf<IInputFilter*>** filters)
 {
-    return mFilters;
+    VALIDATE_NOT_NULL(filters)
+    *filters = mFilters;
+    REFCOUNT_ADD(*filters)
+    return NOERROR;
 }
 
 ECode SpannableStringBuilder::ResizeFor(
@@ -895,10 +943,10 @@ ECode SpannableStringBuilder::ResizeFor(
         return NOERROR;
     }
 
-    AutoPtr< ArrayOf<Char32> > newText = ArrayUtils::NewUnpaddedCharArray(GrowingArrayUtils::GrowSize(size));
+    AutoPtr< ArrayOf<Char32> > newText = ArrayUtils::NewUnpaddedChar32Array(GrowingArrayUtils::GrowSize(size));
     newText->Copy(mText, mGapStart);
 
-    Int32 newLength = newText.length;
+    Int32 newLength = newText->GetLength();
     Int32 delta = newLength - oldLength;
 
     Int32 after = oldLength - (mGapStart + mGapLength);
@@ -925,7 +973,9 @@ void SpannableStringBuilder::MoveGapTo(
     if (where == mGapStart)
         return;
 
-    Boolean atEnd = (where == GetLength());
+    Int32 len;
+    GetLength(&len);
+    Boolean atEnd = (where == len);
 
     if (where < mGapStart) {
         Int32 overlap = mGapStart - where;
@@ -1004,12 +1054,12 @@ ECode SpannableStringBuilder::Change(
         if (( (*mSpanFlags)[i] & ISpanned::SPAN_PARAGRAPH) == ISpanned::SPAN_PARAGRAPH) {
             Int32 ost = spanStart;
             Int32 oen = spanEnd;
-            Int32 clen = GetLength();
+            Int32 clen;
+            GetLength(&clen);
 
             if (spanStart > start && spanStart <= end) {
                 Char32 c;
-                for (spanStart = end; spanStart < clen; spanStart++)
-                {
+                for (spanStart = end; spanStart < clen; spanStart++) {
                     GetCharAt(spanStart - 1, &c);
                     if (spanStart > end && c == '\n')
                         break;
@@ -1018,8 +1068,7 @@ ECode SpannableStringBuilder::Change(
 
             if (spanEnd > start && spanEnd <= end) {
                 Char32 c;
-                for (spanEnd = end; spanEnd < clen; spanEnd++)
-                {
+                for (spanEnd = end; spanEnd < clen; spanEnd++) {
                     GetCharAt(spanEnd - 1, &c);
                     if (spanEnd > end && c == '\n')
                         break;
@@ -1098,7 +1147,7 @@ ECode SpannableStringBuilder::Change(
         AutoPtr<ISpanned> sp = (ISpanned*) cs;
         AutoPtr< ArrayOf<IInterface*> > spans;
         sp->GetSpans(csStart, csEnd, EIID_IInterface, (ArrayOf<IInterface*>**)&spans);
-        Int32 st, en;
+        Int32 st, en, temp;
         for (Int32 i = 0; i < spans->GetLength(); i++) {
             sp->GetSpanStart((*spans)[i], &st);
             sp->GetSpanEnd((*spans)[i], &en);
@@ -1107,7 +1156,8 @@ ECode SpannableStringBuilder::Change(
             if (en > csEnd) en = csEnd;
 
             // Add span only if this object is not yet used as a span in this string
-            if (GetSpanStart((*spans)[i]) < 0) {
+            GetSpanStart((*spans)[i], &temp);
+            if (temp < 0) {
                 Int32 flag;
                 sp->GetSpanFlags((*spans)[i], &flag);
                 SetSpan(FALSE, (*spans)[i], st - csStart + start,
@@ -1317,11 +1367,13 @@ void SpannableStringBuilder::SendSpanAdded(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    AutoPtr< ArrayOf<IInterface*> > recip = GetSpans(start, end, EIID_ISpanWatcher);
+    AutoPtr< ArrayOf<IInterface*> > recip;
+    GetSpans(start, end, EIID_ISpanWatcher, (ArrayOf<IInterface*>**)&recip);
+    ISpannable* spannable = THIS_PROBE(ISpannable);
     Int32 n = recip->GetLength();
     for (Int32 i = 0; i < n; i++) {
-        AutoPtr<ISpanWatcher> sw = (ISpanWatcher*)((*recip)[i]->Probe(EIID_ISpanWatcher));
-        sw->OnSpanAdded(THIS_PROBE(ISpannable), what, start, end);
+        AutoPtr<ISpanWatcher> sw = ISpanWatcher::Probe((*recip)[i]);
+        sw->OnSpanAdded(spannable, what, start, end);
     }
 }
 
@@ -1330,11 +1382,13 @@ void SpannableStringBuilder::SendSpanRemoved(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    AutoPtr< ArrayOf<IInterface*> > recip = GetSpans(start, end, EIID_ISpanWatcher);
+    AutoPtr< ArrayOf<IInterface*> > recip;
+    GetSpans(start, end, EIID_ISpanWatcher, (ArrayOf<IInterface*>**)&recip);
+    ISpannable* spannable = THIS_PROBE(ISpannable);
     Int32 n = recip->GetLength();
     for (Int32 i = 0; i < n; i++) {
         AutoPtr<ISpanWatcher> sw = (ISpanWatcher*)((*recip)[i]->Probe(EIID_ISpanWatcher));
-        sw->OnSpanRemoved(THIS_PROBE(ISpannable), what, start, end);
+        sw->OnSpanRemoved(spannable, what, start, end);
     }
 }
 
@@ -1345,16 +1399,22 @@ void SpannableStringBuilder::SendSpanChanged(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
+    using Elastos::Core::Math;
     // The bounds of a possible SpanWatcher are guaranteed to be set before this method is
     // called, so that the order of the span does not affect this broadcast.
-    Int32 rStart = Elastos::Core::Math::Min(oldStart, start);
-    Int32 rEnd = Elastos::Core::Math::Min(Elastos::Core::Math::Max(oldEnd, end), GetLength());
-    AutoPtr< ArrayOf<IInterface*> > recip = GetSpans(rStart, rEnd, EIID_ISpanWatcher);
+    Int32 rStart = Math::Min(oldStart, start);
+    Int32 length;
+    GetLength(&length);
+    Int32 rEnd = Math::Min(Math::Max(oldEnd, end), length);
+
+    AutoPtr< ArrayOf<IInterface*> > recip;
+    GetSpans(rStart, rEnd, EIID_ISpanWatcher, (ArrayOf<IInterface*>**)&recip);
+    ISpannable* spannable = THIS_PROBE(ISpannable);
 
     Int32 n = recip->GetLength();
     for (Int32 i = 0; i < n; i++) {
-        AutoPtr<ISpanWatcher> sw = (ISpanWatcher*)((*recip)[i]->Probe(EIID_ISpanWatcher));
-        sw->OnSpanChanged(THIS_PROBE(ISpannable), what, oldStart, oldEnd, start, end);
+        AutoPtr<ISpanWatcher> sw = ISpanWatcher::Probe((*recip)[i]);
+        sw->OnSpanChanged(spannable, what, oldStart, oldEnd, start, end);
     }
 }
 
@@ -1381,7 +1441,8 @@ ECode SpannableStringBuilder::CheckRange(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    Int32 len = GetLength();
+    Int32 len;
+    GetLength(&len);
     if (start > len || end > len) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -1422,7 +1483,9 @@ ECode SpannableStringBuilder::SetSpan(
     FAIL_RETURN(CheckRange(String("setSpan"), start, end));
     Int32 flagsStart = (flags & START_MASK) >> START_SHIFT;
     if (flagsStart == PARAGRAPH) {
-        if (start != 0 && start != GetLength()) {
+        Int32 len;
+        GetLength(&len);
+        if (start != 0 && start != len) {
             Char32 c;
             GetCharAt(start - 1, &c);
 
@@ -1435,7 +1498,9 @@ ECode SpannableStringBuilder::SetSpan(
 
     Int32 flagsEnd = flags & END_MASK;
     if (flagsEnd == PARAGRAPH) {
-        if (end != 0 && end != GetLength()) {
+        Int32 len;
+        GetLength(&len);
+        if (end != 0 && end != len) {
             Char32 c;
             GetCharAt(end - 1, &c);
 
@@ -1459,10 +1524,12 @@ ECode SpannableStringBuilder::SetSpan(
     Int32 nstart = start;
     Int32 nend = end;
 
+    Int32 len;
+    GetLength(&len);
     if (start > mGapStart) {
         start += mGapLength;
     } else if (start == mGapStart) {
-        if (flagsStart == POINT || (flagsStart == PARAGRAPH && start == GetLength())) {
+        if (flagsStart == POINT || (flagsStart == PARAGRAPH && start == len)) {
             start += mGapLength;
         }
     }
@@ -1470,7 +1537,7 @@ ECode SpannableStringBuilder::SetSpan(
     if (end > mGapStart) {
         end += mGapLength;
     } else if (end == mGapStart) {
-        if (flagsEnd == POINT || (flagsEnd == PARAGRAPH && end == GetLength())) {
+        if (flagsEnd == POINT || (flagsEnd == PARAGRAPH && end == len)) {
             end += mGapLength;
         }
     }

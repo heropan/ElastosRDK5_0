@@ -1,16 +1,17 @@
 #include "elastos/droid/text/MeasuredText.h"
 #include "elastos/droid/text/TextUtils.h"
-//#include "elastos/droid/text/TextDirectionHeuristics.h"
-//#include "elastos/droid/text/AndroidBidi.h"
-//#include "elastos/droid/text/CTextPaint.h"
-//#include "elastos/droid/internal/utility/ArrayUtils.h"
+#include "elastos/droid/text/TextDirectionHeuristics.h"
+#include "elastos/droid/text/AndroidBidi.h"
+#include "elastos/droid/text/CTextPaint.h"
+#include "elastos/droid/text/Layout.h"
+#include "elastos/droid/internal/utility/ArrayUtils.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/AutoLock.h>
 
-// using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Droid::Internal::Utility::ArrayUtils;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IPaint;
-// using Elastos::Droid::Text::CTextPaint;
+using Elastos::Droid::Text::CTextPaint;
 using Elastos::Droid::Text::Style::IReplacementSpan;
 using Elastos::Droid::Text::Style::EIID_IMetricAffectingSpan;
 using Elastos::Droid::Text::Style::EIID_IReplacementSpan;
@@ -32,8 +33,7 @@ MeasuredText::MeasuredText()
     , mLen(0)
     , mPos(0)
 {
-    assert(0 && "TODO");
-    // CTextPaint::New((ITextPaint**)&mWorkPaint);
+    CTextPaint::New((ITextPaint**)&mWorkPaint);
 }
 
 AutoPtr<MeasuredText> MeasuredText::Obtain()
@@ -105,14 +105,13 @@ void MeasuredText::SetPara(
     mLen = len;
     mPos = 0;
 
-    assert(0 && "TODO");
-    // if (mWidths == NULL || mWidths->GetLength() < len) {
-    //     mWidths = ArrayUtils::NewUnpaddedFloatArray(len);//ArrayOf<Float>::Alloc(ArrayUtils::IdealFloatArraySize(len));
-    // }
-    // if (mChars == NULL || mChars->GetLength() < len) {
-    //     mChars = ArrayUtils::NewUnpaddedCharArray(len);//ArrayOf<Char32>::Alloc(ArrayUtils::IdealCharArraySize(len));
-    // }
-    // TextUtils::GetChars(text, start, end, mChars, 0);
+    if (mWidths == NULL || mWidths->GetLength() < len) {
+        mWidths = ArrayUtils::NewUnpaddedFloatArray(len);
+    }
+    if (mChars == NULL || mChars->GetLength() < len) {
+        mChars = ArrayUtils::NewUnpaddedChar32Array(len);
+    }
+    TextUtils::GetChars(text, start, end, mChars, 0);
 
     if (ISpanned::Probe(text)) {
         ISpanned* spanned = ISpanned::Probe(text);
@@ -138,39 +137,38 @@ void MeasuredText::SetPara(
         }
     }
 
-    //     assert(0 && "TODO");
-    // if ((textDir == TextDirectionHeuristics::LTR ||
-    //         textDir == TextDirectionHeuristics::FIRSTSTRONG_LTR ||
-    //         textDir == TextDirectionHeuristics::ANYRTL_LTR) &&
-    //         TextUtils::DoesNotNeedBidi(mChars, 0, len)) {
-    //     mDir = ILayout::DIR_LEFT_TO_RIGHT;
-    //     mEasy = TRUE;
-    // }
-    // else {
-    //     if (mLevels == NULL || mLevels->GetLength() < len) {
-    //         mLevels = ArrayUtils::NewUnpaddedByteArray(len);//ArrayOf<Byte>::Alloc(ArrayUtils::IdealByteArraySize(len));
-    //     }
-    //     Int32 bidiRequest;
-    //     if (textDir == TextDirectionHeuristics::LTR) {
-    //         bidiRequest = ILayout::DIR_REQUEST_LTR;
-    //     }
-    //     else if (textDir == TextDirectionHeuristics::RTL) {
-    //         bidiRequest = ILayout::DIR_REQUEST_RTL;
-    //     }
-    //     else if (textDir == TextDirectionHeuristics::FIRSTSTRONG_LTR) {
-    //         bidiRequest = ILayout::DIR_REQUEST_DEFAULT_LTR;
-    //     }
-    //     else if (textDir == TextDirectionHeuristics::FIRSTSTRONG_RTL) {
-    //         bidiRequest = ILayout::DIR_REQUEST_DEFAULT_RTL;
-    //     }
-    //     else {
-    //         Boolean isRtl;
-    //         textDir->IsRtl(mChars, 0, len, &isRtl);
-    //         bidiRequest = isRtl ? ILayout::DIR_REQUEST_RTL : ILayout::DIR_REQUEST_LTR;
-    //     }
-    //     // mDir = AndroidBidi::Bidi(bidiRequest, mChars, mLevels, len, FALSE);
-    //     mEasy = FALSE;
-    // }
+    if ((textDir == TextDirectionHeuristics::GetLTR() ||
+            textDir == TextDirectionHeuristics::GetFIRSTSTRONG_LTR() ||
+            textDir == TextDirectionHeuristics::GetANYRTL_LTR()) &&
+            TextUtils::DoesNotNeedBidi(mChars, 0, len)) {
+        mDir = ILayout::DIR_LEFT_TO_RIGHT;
+        mEasy = TRUE;
+    }
+    else {
+        if (mLevels == NULL || mLevels->GetLength() < len) {
+            mLevels = ArrayUtils::NewUnpaddedByteArray(len);
+        }
+        Int32 bidiRequest;
+        if (textDir == TextDirectionHeuristics::GetLTR()) {
+            bidiRequest = ILayout::DIR_REQUEST_LTR;
+        }
+        else if (textDir == TextDirectionHeuristics::GetRTL()) {
+            bidiRequest = ILayout::DIR_REQUEST_RTL;
+        }
+        else if (textDir == TextDirectionHeuristics::GetFIRSTSTRONG_LTR()) {
+            bidiRequest = ILayout::DIR_REQUEST_DEFAULT_LTR;
+        }
+        else if (textDir == TextDirectionHeuristics::GetFIRSTSTRONG_RTL()) {
+            bidiRequest = ILayout::DIR_REQUEST_DEFAULT_RTL;
+        }
+        else {
+            Boolean isRtl;
+            textDir->IsRtl(mChars, 0, len, &isRtl);
+            bidiRequest = isRtl ? ILayout::DIR_REQUEST_RTL : ILayout::DIR_REQUEST_LTR;
+        }
+        mDir = AndroidBidi::Bidi(bidiRequest, mChars, mLevels, len, FALSE);
+        mEasy = FALSE;
+    }
 }
 
 Float MeasuredText::AddStyleRun(
@@ -191,9 +189,8 @@ Float MeasuredText::AddStyleRun(
 
     Float retValue;
     if (mEasy) {
-        assert(0 && "TODO");
-        // Boolean isRtl = (mDir != Layout::DIR_LEFT_TO_RIGHT);
-        // return (p->GetTextRunAdvances(mChars, pos, len, pos, len, isRtl, mWidths, pos, &retValue), retValue);
+        Boolean isRtl = (mDir != Layout::DIR_LEFT_TO_RIGHT);
+        return (p->GetTextRunAdvances(mChars, pos, len, pos, len, isRtl, mWidths, pos, &retValue), retValue);
     }
 
     Float totalAdvance = 0;

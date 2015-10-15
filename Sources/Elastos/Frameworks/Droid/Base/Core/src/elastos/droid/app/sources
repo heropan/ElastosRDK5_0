@@ -127,3 +127,6 @@ SOURCES += CBackStackState.cpp
 SOURCES += CBackupAgentBackupServiceBinder.cpp
 SOURCES += CFragmentManagerState.cpp
 SOURCES += ListActivity.cpp
+
+// LIBRARIES += admin/admin.lib
+// LIBRARIES += backup/backup.lib

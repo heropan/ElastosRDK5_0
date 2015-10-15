@@ -1,2 +1,3 @@
 DIRS += content
 DIRS += os
+DIRS += utility

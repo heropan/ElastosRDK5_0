@@ -45,3 +45,5 @@ SOURCES += CGLDebugHelper.cpp
 SOURCES += GLErrorWrapper.cpp
 SOURCES += EGLLogWrapper.cpp
 SOURCES += GLLogWrapper.cpp
+
+// LIBRARIES += gles/gles.lib

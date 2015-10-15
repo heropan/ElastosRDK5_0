@@ -1,11 +1,7 @@
-#ifndef __ELASTOS_DROID_TEXT_LoginFilter_H__
-#define __ELASTOS_DROID_TEXT_LoginFilter_H__
+#ifndef __ELASTOS_DROID_TEXT_LOGINFILTER_H__
+#define __ELASTOS_DROID_TEXT_LOGINFILTER_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
@@ -18,35 +14,29 @@ namespace Text {
  * Abstract class for filtering login-related text (user names and passwords)
  *
  */
-//public abstract
 class LoginFilter
-    : public ElRefBase
+    : public Object
     , public ILoginFilter
     , public IInputFilter
 {
 public:
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface* object,
-        /* [out] */ InterfaceID* IID);
-
-    /**
-     * Base constructor for LoginFilter
-     * @param appendInvalid whether or not to append invalid characters.
-     */
-    LoginFilter(
-        /* [in] */ Boolean appendInvalid);
+    CAR_INTERFACE_DECL()
 
     /**
      * Default constructor for LoginFilter doesn't append invalid characters.
      */
     LoginFilter();
+
+    virtual ~LoginFilter();
+
+    CARAPI constructor();
+
+    /**
+     * Base constructor for LoginFilter
+     * @param appendInvalid whether or not to append invalid characters.
+     */
+    CARAPI constructor(
+        /* [in] */ Boolean appendInvalid);
 
     /**
      * This method is called when the buffer is going to replace the
@@ -102,13 +92,12 @@ private:
  * [a-zA-Z0-9.].
  *
  */
-class UsernameFilterGMail : public LoginFilter
+class UsernameFilterGMail
+    : public LoginFilter
+    , public IUsernameFilterGMail
 {
 public:
-    UsernameFilterGMail();
-
-    UsernameFilterGMail(
-        /* [in] */ Boolean appendInvalid);
+    CAR_INTERFACE_DECL()
 
     //@Override
     CARAPI IsAllowed(
@@ -121,13 +110,12 @@ public:
  * It is slightly less restrictive than the above filter in that it allows [a-zA-Z0-9._-+].
  *
  */
-class UsernameFilterGeneric : public LoginFilter
+class UsernameFilterGeneric
+    : public LoginFilter
+    , public IUsernameFilterGeneric
 {
 public:
-    UsernameFilterGeneric();
-
-    UsernameFilterGeneric(
-        /* [in] */ Boolean appendInvalid);
+    CAR_INTERFACE_DECL()
 
     //@Override
     CARAPI IsAllowed(
@@ -135,7 +123,7 @@ public:
         /* [out] */ Boolean* ret);
 
 private:
-    static CString mAllowed;// = "@_-+."; // Additional characters
+    static String mAllowed;// = "@_-+."; // Additional characters
 };
 
 /**
@@ -143,13 +131,12 @@ private:
  * the Latin-1 (ISO8859-1) char set.
  *
  */
-class PasswordFilterGMail : public LoginFilter
+class PasswordFilterGMail
+    : public LoginFilter
+    , public IPasswordFilterGMail
 {
 public:
-    PasswordFilterGMail();
-
-    PasswordFilterGMail(
-        /* [in] */ Boolean appendInvalid);
+    CAR_INTERFACE_DECL()
 
     // We should reject anything not in the Latin-1 (ISO8859-1) charset
     //@Override
@@ -162,4 +149,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_TEXT_LoginFilter_H__
+#endif //__ELASTOS_DROID_TEXT_LOGINFILTER_H__

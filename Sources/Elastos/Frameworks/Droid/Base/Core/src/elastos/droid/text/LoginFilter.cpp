@@ -1,65 +1,34 @@
 #include "elastos/droid/text/LoginFilter.h"
 #include "elastos/droid/text/CSpannableStringBuilder.h"
 
+using Elastos::Core::CString;
+
 namespace Elastos {
 namespace Droid {
 namespace Text {
 
 /*****************************LoginFilter*****************************/
-PInterface LoginFilter::Probe(
-    /* [in] */ REIID riid)
+CAR_INTERFACE_IMPL_2(LoginFilter, Object, ILoginFilter, IInputFilter)
+
+LoginFilter::LoginFilter()
+    : mAppendInvalid(FALSE)
 {
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(ILoginFilter*)this;
-    }
-    else if (riid == EIID_ILoginFilter) {
-        return (ILoginFilter*)this;
-    }
-    else if (riid == EIID_IInputFilter) {
-        return (IInputFilter*)this;
-    }
-    return NULL;
 }
 
-UInt32 LoginFilter::AddRef()
+LoginFilter::~LoginFilter()
 {
-    return ElRefBase::AddRef();
 }
 
-UInt32 LoginFilter::Release()
+ECode LoginFilter::constructor()
 {
-    return ElRefBase::Release();
-}
-
-ECode LoginFilter::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* IID)
-{
-    if (IID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (object == (IInterface*)(ILoginFilter*)this) {
-        *IID = EIID_ILoginFilter;
-    }
-    else if (object == (IInterface*)(IInputFilter*)this) {
-        *IID = EIID_IInputFilter;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
     return NOERROR;
 }
 
-LoginFilter::LoginFilter(
+ECode LoginFilter::constructor(
     /* [in] */ Boolean appendInvalid)
 {
     mAppendInvalid = appendInvalid;
-}
-
-LoginFilter::LoginFilter()
-{
-    mAppendInvalid = FALSE;
+    return NOERROR;
 }
 
 ECode LoginFilter::Filter(
@@ -71,13 +40,15 @@ ECode LoginFilter::Filter(
     /* [in] */ Int32 dend,
     /* [out] */ ICharSequence** ret)
 {
+    VALIDATE_NOT_NULL(ret)
     OnStart();
 
+    ICharSequence* d = ICharSequence::Probe(dest);
     // Scan through beginning characters in dest, calling onInvalidCharacter()
     // for each invalid character.
+    Char32 c;
     for (Int32 i = 0; i < dstart; i++) {
-        Char32 c;
-        dest->GetCharAt(i, &c);
+        d->GetCharAt(i, &c);
         Boolean bAllowed;
         if (!(IsAllowed(c, &bAllowed), bAllowed)) {
             OnInvalidCharacter(c);
@@ -86,10 +57,10 @@ ECode LoginFilter::Filter(
 
     // Scan through changed characters rejecting disallowed chars
     AutoPtr<ISpannableStringBuilder> modification;
+    IEditable* editable = NULL;
     Int32 modoff = 0;
 
     for (Int32 i = start; i < end; i++) {
-        Char32 c;
         source->GetCharAt(i, &c);
         Boolean bAllowed;
         if ((IsAllowed(c, &bAllowed), bAllowed)) {
@@ -104,9 +75,10 @@ ECode LoginFilter::Filter(
                 if (modification == NULL) {
                     CSpannableStringBuilder::New(source, start, end, (ISpannableStringBuilder**)&modification);
                     modoff = i - start;
+                    editable = IEditable::Probe(modification);
                 }
 
-                modification->Delete(modoff, modoff + 1);
+                editable->Delete(modoff, modoff + 1);
             }
 
             OnInvalidCharacter(c);
@@ -116,9 +88,8 @@ ECode LoginFilter::Filter(
     // Scan through remaining characters in dest, calling onInvalidCharacter()
     // for each invalid character.
     Int32 cLen;
-    for (Int32 i = dend; i < (dest->GetLength(&cLen), cLen); i++) {
-        Char32 c;
-        dest->GetCharAt(i, &c);
+    for (Int32 i = dend; i < (d->GetLength(&cLen), cLen); i++) {
+        d->GetCharAt(i, &c);
         Boolean bAllowed;
         if (!(IsAllowed(c, &bAllowed), bAllowed)) {
             OnInvalidCharacter(c);
@@ -129,7 +100,7 @@ ECode LoginFilter::Filter(
 
     // Either returns null if we made no changes,
     // or what we wanted to change it to if there were changes.
-    *ret = modification;
+    *ret = ICharSequence::Probe(modification);
     REFCOUNT_ADD(*ret);
     return NOERROR;
 }
@@ -151,19 +122,14 @@ ECode LoginFilter::OnStop()
 }
 
 /*****************************UsernameFilterGMail*****************************/
-UsernameFilterGMail::UsernameFilterGMail() : LoginFilter(FALSE)
-{
-}
-
-UsernameFilterGMail::UsernameFilterGMail(
-    /* [in] */ Boolean appendInvalid) : LoginFilter(appendInvalid)
-{
-}
+CAR_INTERFACE_IMPL(UsernameFilterGMail, LoginFilter, IUsernameFilterGMail)
 
 ECode UsernameFilterGMail::IsAllowed(
     /* [in] */ Char32 c,
     /* [out] */ Boolean* ret)
 {
+    VALIDATE_NOT_NULL(ret)
+
     // Allow [a-zA-Z0-9@.]
     if ('0' <= c && c <= '9') {
         *ret = TRUE;
@@ -186,21 +152,16 @@ ECode UsernameFilterGMail::IsAllowed(
 }
 
 /*****************************UsernameFilterGeneric*****************************/
-CString UsernameFilterGeneric::mAllowed = "@_-+."; // Additional characters
+String UsernameFilterGeneric::mAllowed("@_-+."); // Additional characters
 
-UsernameFilterGeneric::UsernameFilterGeneric() : LoginFilter(FALSE)
-{
-}
-
-UsernameFilterGeneric::UsernameFilterGeneric(
-    /* [in] */ Boolean appendInvalid) : LoginFilter(appendInvalid)
-{
-}
+CAR_INTERFACE_IMPL(UsernameFilterGeneric, LoginFilter, IUsernameFilterGeneric)
 
 ECode UsernameFilterGeneric::IsAllowed(
     /* [in] */ Char32 c,
     /* [out] */ Boolean* ret)
 {
+    VALIDATE_NOT_NULL(ret)
+
     // Allow [a-zA-Z0-9@.]
     if ('0' <= c && c <= '9') {
         *ret = TRUE;
@@ -223,19 +184,14 @@ ECode UsernameFilterGeneric::IsAllowed(
 }
 
 /*****************************PasswordFilterGMail*****************************/
-PasswordFilterGMail::PasswordFilterGMail() : LoginFilter(FALSE)
-{
-}
-
-PasswordFilterGMail::PasswordFilterGMail(
-    /* [in] */ Boolean appendInvalid) : LoginFilter(appendInvalid)
-{
-}
+CAR_INTERFACE_IMPL(PasswordFilterGMail, LoginFilter, IPasswordFilterGMail)
 
 ECode PasswordFilterGMail::IsAllowed(
     /* [in] */ Char32 c,
     /* [out] */ Boolean* ret)
 {
+    VALIDATE_NOT_NULL(ret)
+
     if (32 <= c && c <= 127) {
         *ret = TRUE; // standard charset
         return NOERROR;

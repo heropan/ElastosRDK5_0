@@ -2,15 +2,15 @@
 #define __ELASTOS_DROID_TEXT_Html_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/HashMap.h>
 #include <elastos/core/StringBuilder.h>
 
-//using Org::Ccil::Cowan::TagSoup::IParser;
+// import org.ccil.cowan.tagsoup.HTMLSchema;
+// import org.ccil.cowan.tagsoup.Parser;
+
 using Org::Xml::Sax::IContentHandler;
 using Org::Xml::Sax::IXMLReader;
 using Org::Xml::Sax::IAttributes;
 using Org::Xml::Sax::ILocator;
-using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;
 
@@ -76,8 +76,6 @@ public:
         /* [in] */ ICharSequence* text);
 
 private:
-    Html();
-
     static CARAPI_(void) WithinHtml(
         /* [in, out] */ StringBuilder* out,
         /* [in] */ ISpanned* text);
@@ -112,33 +110,37 @@ private:
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
+
+private:
+    Html();
+    Html(const Html&);
 };
 
 class HtmlToSpannedConverter
-    : public ElRefBase
+    : public Object
     , public IContentHandler
 {
 private:
-    class Bold : public ElRefBase
+    class Bold : public Object
     { };
-    class Italic : public ElRefBase
+    class Italic : public Object
     { };
-    class Underline : public ElRefBase
+    class Underline : public Object
     { };
-    class Big : public ElRefBase
+    class Big : public Object
     { };
-    class Small : public ElRefBase
+    class Small : public Object
     { };
-    class Monospace : public ElRefBase
+    class Monospace : public Object
     { };
-    class Blockquote : public ElRefBase
+    class Blockquote : public Object
     { };
-    class Super : public ElRefBase
+    class Super : public Object
     { };
-    class Sub : public ElRefBase
+    class Sub : public Object
     { };
 
-    class Font : public ElRefBase
+    class Font : public Object
     {
     public:
         Font(
@@ -150,7 +152,7 @@ private:
         String mFace;
     };
 
-    class Href : public ElRefBase
+    class Href : public Object
     {
     public:
         Href(
@@ -160,7 +162,7 @@ private:
         String mHref;
     };
 
-    class Header : public ElRefBase
+    class Header : public Object
     {
     public:
         Header(
@@ -171,16 +173,7 @@ private:
     };
 
 public:
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface* Object,
-        /* [out] */ InterfaceID* iID);
+    CAR_INTERFACE_DECL()
 
     HtmlToSpannedConverter(
         /* [in] */ const String& source,
@@ -248,7 +241,7 @@ private:
 
     static CARAPI_(AutoPtr<IInterface>) GetLast(
         /* [in] */ ISpanned* text,
-        /* [in] */ /*Class*/InterfaceID kind);
+        /* [in] */ /*Class*/const InterfaceID& kind);
 
     static CARAPI_(void) Start(
         /* [in] */ ISpannableStringBuilder* text,
@@ -256,7 +249,7 @@ private:
 
     static CARAPI_(void) End(
         /* [in] */ ISpannableStringBuilder* text,
-        /* [in] */ /*Class*/InterfaceID kind,
+        /* [in] */ /*Class*/const InterfaceID& kind,
         /* [in] */ IInterface* repl);
 
     static CARAPI_(void) StartImg(
@@ -280,8 +273,6 @@ private:
 
     static CARAPI_(void) EndHeader(
         /* [in] */ ISpannableStringBuilder* text);
-
-    static CARAPI_(AutoPtr< ArrayOf<Float> >) InitStaticHeaderSizes();
 
 private:
     static AutoPtr< ArrayOf<Float> > HEADER_SIZES; // = { 1.5f, 1.4f, 1.3f, 1.2f, 1.1f, 1f, };

@@ -4,9 +4,10 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::ICharSequence;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IPaint;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IAppendable;
 
 namespace Elastos {
 namespace Droid {
@@ -28,8 +29,6 @@ class SpannableStringBuilder
 {
 public:
     CAR_INTERFACE_DECL()
-
-    CAR_OBJECT_DECL()
 
     SpannableStringBuilder();
 
@@ -113,7 +112,7 @@ public:
         /* [in] */ Int32 end);
 
     // Documentation from interface
-    CARAPI Append(
+    CARAPI AppendChar(
         /* [in] */ Char32 text);
 
     // Documentation from interface
@@ -282,7 +281,7 @@ public:
      * Don't call this yourself -- exists for Paint to use internally.
      * {@hide}
      */
-    CARAPI_(Float) GetTextRunAdvances(
+    CARAPI GetTextRunAdvances(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ Int32 contextStart,
@@ -290,7 +289,8 @@ public:
         /* [in] */ Boolean isRtl,
         /* [in] */ ArrayOf<Float>* advances,
         /* [in] */ Int32 advancesPos,
-        /* [in] */ IPaint* p);
+        /* [in] */ IPaint* p,
+        /* [out] */ Float* result);
 
     /**
      * Returns the next cursor position in the run.  This avoids placing the cursor between
@@ -318,13 +318,14 @@ public:
      * @deprecated This is an internal method, refrain from using it in your code
      */
     //@Deprecated
-    CARAPI_(Int32) GetTextRunCursor(
+    CARAPI GetTextRunCursor(
         /* [in] */ Int32 contextStart,
         /* [in] */ Int32 contextEnd,
         /* [in] */ Int32 dir,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 cursorOpt,
-        /* [in] */ IPaint* p);
+        /* [in] */ IPaint* p,
+        /* [out] */ Int32* cursor);
 
     // Documentation from interface
     CARAPI SetFilters(
@@ -337,6 +338,9 @@ public:
     CARAPI Equals(
         /* [in] */ IInterface* o,
         /* [out] */ Boolean* result);
+
+    CARAPI GetHashCode(
+        /* [out] */ Int32* result);
 
 protected:
 

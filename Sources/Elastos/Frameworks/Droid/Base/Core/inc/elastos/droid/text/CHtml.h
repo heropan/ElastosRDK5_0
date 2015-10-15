@@ -3,19 +3,25 @@
 #define __ELASTOS_DROID_TEXT_CHTML_H__
 
 #include "_Elastos_Droid_Text_CHtml.h"
-#include <elastos/core/Object.h>
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::ICharSequence;
-//using Elastos::Droid::Text::IHtmlImageGetter;
-//using Elastos::Droid::Text::IHtmlTagHandler;
+using Elastos::Droid::Text::IHtmlImageGetter;
+using Elastos::Droid::Text::IHtmlTagHandler;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 
 CarClass(CHtml)
+    , public Singleton
+    , public IHtml
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI FromHtml(
         /* [in] */ const String& source,
         /* [out] */ ISpanned** ret);

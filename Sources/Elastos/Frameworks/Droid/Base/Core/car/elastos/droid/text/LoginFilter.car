@@ -40,14 +40,21 @@ module
      * @Involve
      * interface ILoginFilter
      */
-    interface ILoginFilterUsernameFilterGMail {
+    interface IUsernameFilterGMail {
     }
 
     /*
      * @Involve
      * interface ILoginFilter
      */
-    interface ILoginFilterUsernameFilterGeneric {
+    interface IUsernameFilterGeneric {
+    }
+
+    /*
+     * @Involve
+     * interface ILoginFilter
+     */
+    interface IPasswordFilterGMail {
     }
 
     }//namespace Text

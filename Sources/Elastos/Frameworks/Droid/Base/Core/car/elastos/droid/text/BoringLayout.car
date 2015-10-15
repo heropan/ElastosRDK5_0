@@ -26,34 +26,34 @@ module
             [in] Int32 width);
 
         GetTop(
-            [out] Float* top);
+            [out] Int32* top);
 
         SetTop(
-            [in] Float top);
+            [in] Int32 top);
 
         GetAscent(
-            [out] Float* ascent);
+            [out] Int32* ascent);
 
         SetAscent(
-            [in] Float ascent);
+            [in] Int32 ascent);
 
         GetDescent(
-            [out] Float* descent);
+            [out] Int32* descent);
 
         SetDescent(
-            [in] Float descent);
+            [in] Int32 descent);
 
         GetBottom(
-            [out] Float* bottom);
+            [out] Int32* bottom);
 
         SetBottom(
-            [in] Float bottom);
+            [in] Int32 bottom);
 
         GetLeading(
-            [out] Float* leading);
+            [out] Int32* leading);
 
         SetLeading(
-            [in] Float leading);
+            [in] Int32 leading);
     }
 
     /**

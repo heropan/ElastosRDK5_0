@@ -225,7 +225,7 @@ ECode BoringLayout::Init(
 
     mPaint = IPaint::Probe(paint);
 
-    Float mtbottom, mttop, mtdescent, mtascent;
+    Int32 mtbottom, mttop, mtdescent, mtascent;
     Int32 mtwidth;
     metrics->GetBottom(&mtbottom);
     metrics->GetTop(&mttop);

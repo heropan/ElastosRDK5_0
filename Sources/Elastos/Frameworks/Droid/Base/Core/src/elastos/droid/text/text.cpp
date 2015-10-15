@@ -4,9 +4,8 @@
 #include "elastos/droid/text/CBoringLayout.h"
 #include "elastos/droid/text/CDynamicLayout.h"
 #include "elastos/droid/text/CStaticLayout.h"
-//#include "elastos/droid/text/CEditableFactory.h"
 #include "elastos/droid/text/CNoCopySpanConcrete.h"
-
+#include "elastos/droid/text/CSpannableStringBuilder.h"
 #include "elastos/droid/text/CTextPaint.h"
 
 namespace Elastos {
@@ -21,7 +20,7 @@ CAR_OBJECT_IMPL(CAnnotation)
 CAR_OBJECT_IMPL(CBoringLayout)
 CAR_OBJECT_IMPL(CDynamicLayout)
 CAR_OBJECT_IMPL(CStaticLayout)
-//CAR_OBJECT_IMPL(CEditableFactory)
+CAR_OBJECT_IMPL(CSpannableStringBuilder)
 CAR_OBJECT_IMPL(CTextPaint)
 
 

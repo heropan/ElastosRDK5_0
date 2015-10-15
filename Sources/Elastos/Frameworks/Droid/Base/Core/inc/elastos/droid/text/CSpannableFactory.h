@@ -12,8 +12,14 @@ namespace Droid {
 namespace Text {
 
 CarClass(CSpannableFactory)
+    , public Singleton
+    , public ISpannableFactory
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI NewSpannable(
         /* [in] */ ICharSequence* source,
         /* [out] */ ISpannable** spannable);

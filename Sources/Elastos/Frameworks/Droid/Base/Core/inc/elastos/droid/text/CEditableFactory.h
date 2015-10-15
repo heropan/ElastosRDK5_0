@@ -3,17 +3,31 @@
 #define __ELASTOS_DROID_TEXT_CEDITABLEFACTORY_H__
 
 #include "_Elastos_Droid_Text_CEditableFactory.h"
-#include <elastos/droid/text/EditableFactory.h>
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 
-CarClass(EditableFactory)
-    , public EditableFactory
+CarClass(CEditableFactory)
+    , public Singleton
+    , public IEditableFactory
 {
 public:
-    CAR_OBJECT_DECL()
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
+    /**
+     * Returns a new SpannedStringBuilder from the specified
+     * CharSequence.  You can override this to provide
+     * a different kind of Spanned.
+     */
+    CARAPI NewEditable(
+        /* [in] */ ICharSequence* source,
+        /* [out] */ IEditable** editable);
 };
 
 } // namespace Text

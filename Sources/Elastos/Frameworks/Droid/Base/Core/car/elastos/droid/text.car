@@ -112,6 +112,7 @@ module
     merge("text/utility/Rfc822Token.car");
     merge("text/utility/Rfc822Tokenizer.car");
 
+    using interface Elastos.Core.IAppendable;
     using interface Elastos.Utility.IIterator;
     using interface Elastos.Utility.ILocale;
 
@@ -1270,13 +1271,13 @@ module
         interface ILayoutHelper;
     }
 
-    // singleton class CEditableFactory {
-    //     interface IEditableFactory;
-    // }
+    singleton class CEditableFactory {
+        interface IEditableFactory;
+    }
 
-    // singleton class CSpannableFactory {
-    //     interface ISpannableFactory;
-    // }
+    singleton class CSpannableFactory {
+        interface ISpannableFactory;
+    }
 
     class CNoCopySpanConcrete {
         interface INoCopySpan;
@@ -1372,26 +1373,30 @@ module
         interface IStaticLayout;
     }
 
-    // class CSpannableStringBuilder {
-    //     constructor();
+    class CSpannableStringBuilder {
+        constructor();
 
-    //     constructor(
-    //         [in] ICharSequence* source);
+        constructor(
+            [in] ICharSequence* source);
 
-    //     constructor(
-    //         [in] ICharSequence* source,
-    //         [in] Int32 start,
-    //         [in] Int32 end);
+        constructor(
+            [in] ICharSequence* source,
+            [in] Int32 start,
+            [in] Int32 end);
 
-    //     interface ISpannableStringBuilder;
-    //     interface IGetChars;
-    //     interface ISpannable;
-    //     interface Spanned;
-    //     interface IEditable;
-    //     interface IAppendable;
-    //     interface IGraphicsOperations;
-    //     interface ICharSequence;
-    // }
+        interface ISpannableStringBuilder;
+        interface IGetChars;
+        interface ISpannable;
+        interface ISpanned;
+        interface IEditable;
+        interface IAppendable;
+        interface IGraphicsOperations;
+        interface ICharSequence;
+    }
+
+    singleton class CSpannableStringBuilderHelper {
+        interface ISpannableStringBuilderHelper;
+    }
 
     class CSpannedString{
         constructor(
@@ -1454,9 +1459,9 @@ module
         interface IIterator;
     }
 
-    // singleton class CHtml{
-    //     interface IHtml;
-    // }
+    singleton class CHtml{
+        interface IHtml;
+    }
 
     } // namespace Text
     } // namepsace Droid

@@ -32,6 +32,7 @@
 #include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/content/res/CResourcesHelper.h"
 #include "elastos/droid/R.h"
+#include "elastos/droid/internal/utility/ArrayUtils.h"
 #include <elastos/core/Character.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
@@ -51,6 +52,7 @@ using Elastos::Droid::Content::Res::IResourcesHelper;
 using Elastos::Droid::Content::Res::CResourcesHelper;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Os::SystemProperties;
+using Elastos::Droid::Internal::Utility::ArrayUtils;
 using Libcore::ICU::IICUUtil;
 using Libcore::ICU::CICUUtil;
 using Elastos::Utility::ILocaleHelper;
@@ -1487,10 +1489,9 @@ AutoPtr< ArrayOf<Char32> > TextUtils::Obtain(
         sTemp = NULL;
     }
 
-    assert(0 && "TODO");
-    // if (buf == NULL || buf->GetLength() < len) {
-    //     buf = ArrayUtils::NewUnpaddedCharArray(len);
-    // }
+    if (buf == NULL || buf->GetLength() < len) {
+        buf = ArrayUtils::NewUnpaddedChar32Array(len);
+    }
 
     return buf;
 }

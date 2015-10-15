@@ -889,7 +889,7 @@ public:
     /* package */ AutoPtr<ITextPaint> mWorkPaint;
 
 private:
-    static AutoPtr< ArrayOf<IParagraphStyle*> > NO_PARA_SPANS;
+    static AutoPtr< ArrayOf<IInterface*> > NO_PARA_SPANS; //IParagraphStyle
     static const Int32 TAB_INCREMENT = 20;
     static AutoPtr<IRect> sTempRect;
     static Object sTempRectLock;

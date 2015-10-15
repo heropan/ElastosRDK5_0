@@ -106,3 +106,5 @@ SOURCES += CWorkSource.cpp
 #SOURCES += CPkgUsageStats.cpp
 #SOURCES += CParcelStringList.cpp
 #SOURCES += CZigbeeManager.cpp
+
+#LIBRARIES += storage/storage.lib

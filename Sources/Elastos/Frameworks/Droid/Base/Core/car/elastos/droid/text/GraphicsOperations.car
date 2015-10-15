@@ -58,7 +58,7 @@ module
         GetTextWidths(
             [in] Int32 start,
             [in] Int32 end,
-            [out, callee] ArrayOf<Float>* widths,
+            [in] ArrayOf<Float>* widths,
             [in] IPaint* p,
             [out] Int32* width);
 
