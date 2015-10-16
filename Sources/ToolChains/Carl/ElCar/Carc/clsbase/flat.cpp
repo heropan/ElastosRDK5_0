@@ -179,6 +179,7 @@ int CFlatBuffer::WriteMethodDescriptor(MethodDescriptor *pDesc)
     }
     d.mName = (char *)WriteString(d.mName);
     d.mSignature = (char *)WriteString(d.mSignature);
+    if (d.mAnnotation != NULL) d.mAnnotation = (char *)WriteString(d.mAnnotation);
 
     return WriteData(&d, sizeof(MethodDescriptor));
 }
@@ -559,6 +560,9 @@ int CalcMethodSize(MethodDescriptor *p)
 
     size += StringAlignSize(p->mName);
     size += StringAlignSize(p->mSignature);
+    if (p->mAnnotation != NULL) {
+        size += StringAlignSize(p->mAnnotation);
+    }
 
     for (n = 0; n < p->mParamCount; n++) {
         if (p->mParams[n]->mType.mNestedType) {

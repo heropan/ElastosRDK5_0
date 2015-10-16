@@ -3843,6 +3843,7 @@ int P_Method(InterfaceDirEntry *pItfDirEntry, BOOL isDeprecated)
 {
     int n;
     CARToken token;
+	char* annotation = NULL;
     DWORD attribs = 0;
     InterfaceDescriptor *pDesc = pItfDirEntry->mDesc;
 
@@ -3852,6 +3853,16 @@ int P_Method(InterfaceDirEntry *pItfDirEntry, BOOL isDeprecated)
         while (token != Token_S_rbracket) {
             if (token == Token_K_oneway) {
                 attribs |= MethodAttrib_Oneway;
+                token = GetToken(s_pFile);
+            }
+            else if (token == Token_S_at) {
+                token = GetToken(s_pFile);
+                if (token != Token_ident) {
+                    ErrorReport(CAR_E_IllegalMethodAnnotation, g_szCurrentToken);
+                    return Ret_AbortOnError;
+                }
+                annotation = (char*)malloc(sizeof(g_szCurrentToken) + 1);
+                strcpy(annotation, g_szCurrentToken);
                 token = GetToken(s_pFile);
             }
             else {
@@ -3873,6 +3884,7 @@ int P_Method(InterfaceDirEntry *pItfDirEntry, BOOL isDeprecated)
     }
     pDesc->mMethods[n]->mType.mType = Type_ECode;
     if (pDesc->mAttribs & InterfaceAttrib_oneway) attribs |= MethodAttrib_Oneway;
+    pDesc->mMethods[n]->mAnnotation = annotation;
     pDesc->mMethods[n]->mAttribs = attribs;
 
     if (GetToken(s_pFile) != Token_S_lparen) {

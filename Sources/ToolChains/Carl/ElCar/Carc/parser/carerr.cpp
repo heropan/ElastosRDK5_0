@@ -63,6 +63,8 @@ static ErrorMessage s_errorMessages[] = {
     { CAR_E_RedefUuid, "The uuid redefined." },
     { CAR_E_IllegalMethodProperties, \
         "The method has illegal properties." },
+    { CAR_E_IllegalMethodAnnotation, \
+        "The method has illegal annotation." },
     { CAR_E_IllegalInterfaceProperties, \
         "The interface has illegal properties." },
     { CAR_E_IllegalClassProperties, \

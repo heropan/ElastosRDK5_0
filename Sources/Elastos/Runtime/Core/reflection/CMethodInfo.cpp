@@ -115,6 +115,18 @@ ECode CMethodInfo::GetName(
     return NOERROR;
 }
 
+ECode CMethodInfo::GetAnnotation(
+    /* [out] */ String* annotation)
+{
+    if (annotation == NULL) {
+        return E_INVALID_ARGUMENT;
+    }
+
+    *annotation = adjustNameAddr(mBase, mMethodDescriptor->mAnnotation);
+
+    return NOERROR;
+}
+
 ECode CMethodInfo::GetParamCount(
     /* [out] */ Int32* count)
 {

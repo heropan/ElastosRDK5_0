@@ -1,0 +1,23 @@
+
+module
+{
+    interface IAnnotation {
+
+        [ oneway ] M1();
+
+        [ oneway ]
+        M2();
+
+        [oneway, @MainThread] M3();
+
+        [oneway, @MainThread]
+        M4();
+
+        [@NotMainThread]
+        M5();
+    }
+
+    class CAnnotation {
+        interface IAnnotation;
+    }
+}

@@ -53,6 +53,7 @@ static const SymbolToken s_symbolTable[] = {
     { '|', Token_S_ior },
     { '~', Token_S_not },
     { '+', Token_S_add },
+    { '@', Token_S_at },
     { EOF, Token_EOF },
 };
 const int c_symbolNumber = sizeof(s_symbolTable) / sizeof(SymbolToken);

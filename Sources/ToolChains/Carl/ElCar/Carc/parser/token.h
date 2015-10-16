@@ -19,9 +19,9 @@ typedef enum CARToken {
     Token_S_lparen,         Token_S_rparen,         Token_S_lbrace,
     Token_S_rbrace,         Token_S_colon,          Token_S_semicolon,
     Token_S_star,           Token_S_langle,         Token_S_rangle,
-    Token_S_assign,         Token_S_dot,             Token_S_and,
-    Token_S_eor,            Token_S_ior,              Token_S_not,
-    Token_S_add,
+    Token_S_assign,         Token_S_dot,            Token_S_and,
+    Token_S_eor,            Token_S_ior,            Token_S_not,
+    Token_S_add,            Token_S_at,
 
     // Keywords --> Token_K_xxx
     Token_keywords  = 1000,

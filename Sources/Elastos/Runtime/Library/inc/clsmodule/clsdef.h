@@ -176,6 +176,7 @@ struct MethodDescriptor
 {
     char*               mName;
     char*               mSignature;
+    char*               mAnnotation;
     TypeDescriptor      mType;
     unsigned short      mParamCount;
     ParamDescriptor**   mParams;

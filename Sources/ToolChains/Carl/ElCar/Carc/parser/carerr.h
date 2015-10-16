@@ -53,6 +53,7 @@ enum CARErrorNo {
     CAR_E_UuidNoMscom,
     CAR_E_RedefUuid,
     CAR_E_IllegalMethodProperties,
+    CAR_E_IllegalMethodAnnotation,
     CAR_E_IllegalInterfaceProperties,
     CAR_E_IllegalClassProperties,
     CAR_E_ExpectInterfaceName,

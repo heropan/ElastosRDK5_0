@@ -234,6 +234,9 @@ library
 
     [local]
     interface IMethodInfo extends IFunctionInfo {
+        GetAnnotation(
+            [out] String* annotation);
+
         CreateArgumentList(
             [out] IArgumentList** argumentList);
 

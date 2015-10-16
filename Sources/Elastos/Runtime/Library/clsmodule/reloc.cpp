@@ -51,6 +51,7 @@ void MapMethodDescriptor(
 {
     p->mName += sBase;
     p->mSignature += sBase;
+    if (p->mAnnotation != NULL) p->mAnnotation += sBase;
 
     if (0 != p->mParamCount) {
         p->mParams = (ParamDescriptor **)((int)p->mParams + sBase);
