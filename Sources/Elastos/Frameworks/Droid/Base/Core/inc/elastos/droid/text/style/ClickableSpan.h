@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_TEXT_STYLE_ClickableSpan_H__
 
 #include "elastos/droid/text/style/CharacterStyle.h"
-#include "Elastos.Droid.Core_server.h"
 
 using Elastos::Droid::View::IView;
 
@@ -18,9 +17,13 @@ namespace Style {
  * be called.
  */
 //public abstract
-class ClickableSpan : public CharacterStyle
+class ClickableSpan
+    : public CharacterStyle
+    , public IClickableSpan
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Performs the click action associated with this span.
      */

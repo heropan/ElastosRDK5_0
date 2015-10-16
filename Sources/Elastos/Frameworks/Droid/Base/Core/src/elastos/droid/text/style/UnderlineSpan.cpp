@@ -1,10 +1,11 @@
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/text/style/UnderlineSpan.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Style {
+
+CAR_INTERFACE_IMPL_4(UnderlineSpan, CharacterStyle, IUnderlineSpan, IUpdateAppearance, IParcelableSpan, IParcelable)
 
 UnderlineSpan::UnderlineSpan()
 {

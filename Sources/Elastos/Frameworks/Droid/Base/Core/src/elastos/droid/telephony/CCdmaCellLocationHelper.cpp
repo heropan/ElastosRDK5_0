@@ -1,6 +1,6 @@
 
 #include "CCdmaCellLocationHelper.h"
-#include <ext/frameworkdef.h>
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CDouble;

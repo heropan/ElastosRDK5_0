@@ -22,7 +22,8 @@ namespace Cookie {
  * @author Christopher Brown
  * @author Michael Becke
  */
-class DateUtils : public Object
+class DateUtils
+    : public Object
 {
 private:
     /**

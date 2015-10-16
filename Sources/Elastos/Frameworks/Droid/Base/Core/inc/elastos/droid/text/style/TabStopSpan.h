@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_TabStopSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_TabStopSpan_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos/droid/text/style/ParagraphStyle.h"
 
 namespace Elastos {
 namespace Droid {
@@ -13,43 +13,35 @@ namespace Style {
  */
 //public interface
 class TabStopSpan
+    : public ParagraphStyle
+    , public ITabStopSpan
+{
+public:
+};
+
+/**
+ * The default implementation of TabStopSpan.
+ */
+//static
+class Standard
+    : public TabStopSpan
+    , public ITabStopSpanStandard
 {
 public:
     /**
-     * The default implementation of TabStopSpan.
+     * Constructor.
+     *
+     * @param where the offset of the tab stop from the leading margin of
+     *        the line
      */
-    //static
-    class Standard
-        : public ElRefBase
-        , public ITabStopSpan
-    {
-    public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+    Standard(
+        /* [in] */ Int32 where);
 
-        CARAPI_(UInt32) AddRef();
+    CARAPI GetTabStop(
+        /* [out] */ Int32* ret);
 
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* object,
-            /* [in] */ InterfaceID* iid);
-    public:
-        /**
-         * Constructor.
-         *
-         * @param where the offset of the tab stop from the leading margin of
-         *        the line
-         */
-        Standard(
-            /* [in] */ Int32 where);
-
-        CARAPI GetTabStop(
-            /* [out] */ Int32* ret);
-
-    private:
-        Int32 mTab;
-    };
+private:
+    Int32 mTab;
 };
 
 } // namespace Style

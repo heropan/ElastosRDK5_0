@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_TEXT_STYLE_TextAppearanceSpan_H__
 
 #include "elastos/droid/text/style/MetricAffectingSpan.h"
-#include "Elastos.Droid.Core_server.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IColorStateList;
@@ -18,8 +17,13 @@ namespace Style {
  */
 class TextAppearanceSpan
     : public MetricAffectingSpan
+    , public ITextAppearanceSpan
+    , public IParcelableSpan
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Uses the specified TextAppearance resource to determine the
      * text appearance.  The <code>appearance</code> should be, for example,

@@ -1,7 +1,8 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_QuoteSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_QuoteSpan_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Graphics::ICanvas;
@@ -12,7 +13,14 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-class QuoteSpan{
+class QuoteSpan
+    : public Object
+    , public IQuoteSpan
+    , public ILeadingMarginSpan
+    , public IParcelableSpan
+    , public IParcelable
+    , public IParagraphStyle
+{
 public:
     QuoteSpan();
 

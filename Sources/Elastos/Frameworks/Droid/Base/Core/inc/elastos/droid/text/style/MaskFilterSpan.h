@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_TEXT_STYLE_MaskFilterSpan_H__
 
 #include "elastos/droid/text/style/CharacterStyle.h"
-#include "Elastos.Droid.Core_server.h"
 
 using Elastos::Droid::Graphics::IMaskFilter;
 using Elastos::Droid::Text::ITextPaint;
@@ -14,6 +13,8 @@ namespace Style {
 
 class MaskFilterSpan
     : public CharacterStyle
+    , public IMaskFilterSpan
+    , public IUpdateAppearance
 {
 public:
     MaskFilterSpan(

@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_TEXT_STYLE_SuggestionSpan_H__
 
 #include "elastos/droid/text/style/CharacterStyle.h"
-#include "Elastos.Droid.Core_server.h"
 
 using Libcore::ICU::ILocale;
 using Elastos::Droid::Content::IContext;
@@ -26,6 +25,9 @@ namespace Style {
  */
 class SuggestionSpan
     : public CharacterStyle
+    , public ISuggestionSpan
+    , public IParcelableSpan
+    , public IParcelable
 {
 public:
     /**
@@ -144,6 +146,10 @@ public:
      */
     CARAPI_(Int32) GetUnderlineColor();
 
+    CARAPI NotifySelection(
+        /* [in] */ IContext* context,
+        /* [in] */ const String& original,
+        /* [in] */ Int32 index);
 protected:
     SuggestionSpan();
 
@@ -157,6 +163,8 @@ private:
         /* [in] */ const String& notificationTargetClassName);
 
 private:
+    static const String TAG;// = "SuggestionSpan";
+
     /*
      * TODO: Needs to check the validity and add a feature that TextView will change
      * the current IME to the other IME which is specified in SuggestionSpan.
@@ -168,6 +176,7 @@ private:
     AutoPtr< ArrayOf<String> > mSuggestions;
     String mLocaleString;
     String mNotificationTargetClassName;
+    String mNotificationTargetPackageName;
     Int32 mHashCode;
 
     Float mEasyCorrectUnderlineThickness;

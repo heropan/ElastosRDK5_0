@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_TEXT_STYLE_ReplacementSpan_H__
 
 #include "elastos/droid/text/style/MetricAffectingSpan.h"
-#include "Elastos.Droid.Core_server.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Graphics::ICanvas;
@@ -15,7 +14,9 @@ namespace Text {
 namespace Style {
 
 //public abstract
-class ReplacementSpan : public MetricAffectingSpan
+class ReplacementSpan
+    : public MetricAffectingSpan
+    , public IReplacementSpan
 {
 public:
     virtual CARAPI_(Int32) GetSize(

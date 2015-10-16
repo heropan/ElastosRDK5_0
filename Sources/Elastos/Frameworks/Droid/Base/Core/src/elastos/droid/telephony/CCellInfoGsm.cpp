@@ -3,7 +3,7 @@
 #include "CCellIdentityGsm.h"
 #include "CCellSignalStrengthGsm.h"
 #include <elastos/core/StringBuilder.h>
-#include <ext/frameworkdef.h>
+#include "elastos/droid/ext/frameworkdef.h"
 
 using Elastos::Core::StringBuilder;
 

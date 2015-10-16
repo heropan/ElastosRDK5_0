@@ -8,7 +8,11 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-class RelativeSizeSpan : public MetricAffectingSpan
+class RelativeSizeSpan
+    : public MetricAffectingSpan
+    , public IRelativeSizeSpan
+    , public IParcelableSpan
+    , public IParcelable
 {
 public:
     RelativeSizeSpan(

@@ -1,11 +1,12 @@
 #include "elastos/droid/text/style/ClickableSpan.h"
 #include "elastos/droid/text/CTextPaint.h"
-//#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Style {
+
+CAR_INTERFACE_IMPL(ClickableSpan, CharacterStyle, IClickableSpan)
 
 ECode ClickableSpan::UpdateDrawState(
     /* [in] */ ITextPaint* ds)

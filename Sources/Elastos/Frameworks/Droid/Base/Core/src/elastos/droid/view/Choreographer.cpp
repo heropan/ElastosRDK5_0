@@ -9,6 +9,7 @@
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/utility/TimeUtils.h"
 #include <elastos/core/Math.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::ISystem;
@@ -419,7 +420,7 @@ void Choreographer::PostCallbackDelayedInternal(
             callbackType, action, token, delayMillis);
     }
 
-    Mutex::AutoLock lock(mLock);
+    AutoLock lock(mLock);
     Int64 now = SystemClock::GetUptimeMillis();
     Int64 dueTime = now + delayMillis;
     (*mCallbackQueues)[callbackType]->AddCallbackLocked(dueTime, action, token);
@@ -461,7 +462,7 @@ void Choreographer::RemoveCallbacksInternal(
             callbackType, action, token);
     }
 
-    Mutex::AutoLock lock(mLock);
+    AutoLock lock(mLock);
     (*mCallbackQueues)[callbackType]->RemoveCallbacksLocked(action, token);
     if (action != NULL && token == NULL) {
         mHandler->RemoveMessages(MSG_DO_SCHEDULE_CALLBACK, action->Probe(EIID_IInterface));
@@ -513,7 +514,7 @@ ECode Choreographer::GetFrameTime(
 ECode Choreographer::GetFrameTimeNanos(
     /* [out] */ Int64* frameTimeNanos)
 {
-    Mutex::AutoLock lock(mLock);
+    AutoLock lock(mLock);
     if (!mCallbacksRunning) {
         Logger::E(TAG, "This method must only be called as "
             "part of a callback while a frame is in progress.");
@@ -578,7 +579,7 @@ void Choreographer::DoFrame(
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
     Int64 startNanos;
     {
-        Mutex::AutoLock lock(mLock);
+        AutoLock lock(mLock);
         if (!mFrameScheduled) {
             return; // no work to do
         }
@@ -635,7 +636,7 @@ void Choreographer::DoCallbacks(
 {
     AutoPtr<CallbackRecord> callbacks;
     {
-        Mutex::AutoLock lock(mLock);
+        AutoLock lock(mLock);
         // We use "now" to determine when callbacks become due because it's possible
         // for earlier processing phases in a frame to post callbacks that should run
         // in a following phase, such as an input event that causes an animation to start.
@@ -657,7 +658,7 @@ void Choreographer::DoCallbacks(
     }
 
     {
-        Mutex::AutoLock lock(mLock);
+        AutoLock lock(mLock);
         mCallbacksRunning = FALSE;
         do {
             AutoPtr<CallbackRecord> next = callbacks->mNext;
@@ -669,7 +670,7 @@ void Choreographer::DoCallbacks(
 
 void Choreographer::DoScheduleVsync()
 {
-    Mutex::AutoLock lock(mLock);
+    AutoLock lock(mLock);
     if (mFrameScheduled) {
         ScheduleVsyncLocked();
     }
@@ -678,7 +679,7 @@ void Choreographer::DoScheduleVsync()
 void Choreographer::DoScheduleCallback(
     /* [in] */ Int32 callbackType)
 {
-    Mutex::AutoLock lock(mLock);
+    AutoLock lock(mLock);
     if (!mFrameScheduled) {
         const Int64 now = SystemClock::GetUptimeMillis();
         if ((*mCallbackQueues)[callbackType]->HasDueCallbacksLocked(now)) {

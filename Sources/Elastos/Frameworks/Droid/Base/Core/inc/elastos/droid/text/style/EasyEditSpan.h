@@ -1,7 +1,8 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_EasyEditSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_EasyEditSpan_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -19,8 +20,10 @@ class EasyEditSpan
 public:
     EasyEditSpan();
 
-    //@Override
-    CARAPI_(Int32) DescribeContents();
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ IPendingIntent* intent);
 
     //@Override
     CARAPI ReadFromParcel(
@@ -30,7 +33,40 @@ public:
         /* [in] */ IParcel* dest);
 
     //@Override
-    CARAPI_(Int32) GetSpanTypeId();
+    CARAPI GetSpanTypeId(
+        /* [out] */ Int32* id);
+
+    /**
+     * @return True if the {@link TextView} should offer the ability to delete the text.
+     *
+     * @hide
+     */
+    public boolean isDeleteEnabled() {
+        return mDeleteEnabled;
+    }
+
+    /**
+     * Enables or disables the deletion of the text.
+     *
+     * @hide
+     */
+    public void setDeleteEnabled(boolean value) {
+        mDeleteEnabled = value;
+    }
+
+    /**
+     * @return the pending intent to send when the wrapped text is deleted or modified.
+     *
+     * @hide
+     */
+    public PendingIntent getPendingIntent() {
+        return mPendingIntent;
+    }
+
+private:
+    AutoPtr<IPendingIntent> mPendingIntent;
+
+    Boolean mDeleteEnabled;
 };
 
 } // namespace Style

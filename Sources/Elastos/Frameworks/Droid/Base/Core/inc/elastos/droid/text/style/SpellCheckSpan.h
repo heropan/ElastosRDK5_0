@@ -1,7 +1,8 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_SpellCheckSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_SpellCheckSpan_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -16,6 +17,10 @@ namespace Style {
  * @hide
  */
 class SpellCheckSpan
+    : public Object
+    , public IsSpellCheckSpan
+    , public IParcelableSpan
+    , public IParcelable
 {
 public:
     SpellCheckSpan();

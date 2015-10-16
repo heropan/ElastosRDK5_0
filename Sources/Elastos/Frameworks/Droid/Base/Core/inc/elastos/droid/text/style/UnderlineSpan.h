@@ -8,32 +8,33 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-class UnderlineSpan : public CharacterStyle
+class UnderlineSpan
+    : public CharacterStyle
+    , public IUnderlineSpan
+    , public IUpdateAppearance
+    , public IParcelableSpan
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     UnderlineSpan();
 
-    UnderlineSpan(
-        /* [in] */ IParcel* src);
+    CARAPI constructor();
 
-    CARAPI_(void) Init();
+    CARAPI GetSpanTypeId(
+        /* [out] */ Int32* id);
 
-    CARAPI_(void) Init(
-        /* [in] */ IParcel* src);
+    //@Override
+    CARAPI UpdateDrawState(
+        /* [in] */ ITextPaint* ds);
 
-    CARAPI_(Int32) GetSpanTypeId();
-
-    CARAPI_(Int32) DescribeContents();
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
-
-    //@Override
-    CARAPI UpdateDrawState(
-        /* [in] */ ITextPaint* ds);
 };
 
 } // namespace Style

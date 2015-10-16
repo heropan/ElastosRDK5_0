@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_TEXT_STYLE_AbsoluteSizeSpan_H__
 
 #include "elastos/droid/text/style/MetricAffectingSpan.h"
-#include "Elastos.Droid.Core_server.h"
 
 using Elastos::Droid::Text::ITextPaint;
 

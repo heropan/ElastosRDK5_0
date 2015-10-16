@@ -8,7 +8,11 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-class SubscriptSpan : public MetricAffectingSpan
+class SubscriptSpan
+    : public MetricAffectingSpan
+    , public ISubscriptSpan
+    , public IParcelableSpan
+    , public IParcelable
 {
 public:
     SubscriptSpan();

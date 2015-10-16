@@ -239,9 +239,9 @@ ECode CDateUtils::TimeString(
     /* [out] */ ICharSequence** ret)
 {
     VALIDATE_NOT_NULL(ret);
-    AutoPtr<ICharSequence> cRet = DateUtils::TimeString(millis);
-    *ret = cRet;
-    REFCOUNT_ADD(*ret);
+    // AutoPtr<ICharSequence> cRet = DateUtils::TimeString(millis);
+    // *ret = cRet;
+    // REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

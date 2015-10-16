@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_TEXT_STYLE_MetricAffectingSpan_H__
 
 #include "elastos/droid/text/style/CharacterStyle.h"
-#include "Elastos.Droid.Core_server.h"
 
 using Elastos::Droid::Text::Style::IMetricAffectingSpan;
 
@@ -16,7 +15,11 @@ namespace Style {
  * changes the width or height of characters extend this class.
  */
 //public abstract
-class MetricAffectingSpan : public CharacterStyle
+class MetricAffectingSpan
+    : public CharacterStyle
+    , public IMetricAffectingSpan
+    , public IUpdateLayout
+    , public IUpdateAppearance
 {
 public:
     /**

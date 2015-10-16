@@ -19,6 +19,8 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
+const String SuggestionSpan::TAG("SuggestionSpan");
+
 SuggestionSpan::SuggestionSpan()
 {}
 
@@ -98,6 +100,10 @@ void SuggestionSpan::Init(
     else {
         Logger::E(String("SuggestionSpan"), String("No locale or context specified in SuggestionSpan constructor\n") );
         mLocaleString = "";
+    }
+
+    if (context != NULL) {
+        context->GetPackageName(&mNotificationTargetPackageName);
     }
 
     if (notificationTargetClass != NULL) {
@@ -192,6 +198,7 @@ ECode SuggestionSpan::ReadFromParcel(
     FAIL_RETURN(source->ReadInt32(&mFlags));
     FAIL_RETURN(source->ReadString(&mLocaleString));
     FAIL_RETURN(source->ReadString(&mNotificationTargetClassName));
+    FAIL_RETURN(source->ReadString(&mNotificationTargetPackageName));
     FAIL_RETURN(source->ReadInt32(&mHashCode));
     FAIL_RETURN(source->ReadInt32(&mEasyCorrectUnderlineColor));
     FAIL_RETURN(source->ReadFloat(&mEasyCorrectUnderlineThickness));
@@ -209,6 +216,7 @@ ECode SuggestionSpan::WriteToParcel(
     FAIL_RETURN(dest->WriteInt32(mFlags));
     FAIL_RETURN(dest->WriteString(mLocaleString));
     FAIL_RETURN(dest->WriteString(mNotificationTargetClassName));
+    FAIL_RETURN(dest->WriteString(mNotificationTargetPackageName));
     FAIL_RETURN(dest->WriteInt32(mHashCode));
     FAIL_RETURN(dest->WriteInt32(mEasyCorrectUnderlineColor));
     FAIL_RETURN(dest->WriteFloat(mEasyCorrectUnderlineThickness));
@@ -295,6 +303,48 @@ Int32 SuggestionSpan::GetUnderlineColor()
         return mAutoCorrectionUnderlineColor;
     }
     return 0;
+}
+
+/**
+ * Notifies a suggestion selection.
+ *
+ * @hide
+ */
+ECode SuggestionSpan::NotifySelection(
+    /* [in] */ IContext* context,
+    /* [in] */ const String& original,
+    /* [in] */ Int32 index)
+{
+    final Intent intent = new Intent();
+
+    if (context == NULL || mNotificationTargetClassName.IsNull()) {
+        return NOERROR;
+    }
+    // Ensures that only a class in the original IME package will receive the
+    // notification.
+    if (mSuggestions == null || index < 0 || index >= mSuggestions.length) {
+        Log.w(TAG, "Unable to notify the suggestion as the index is out of range index=" + index
+                + " length=" + mSuggestions.length);
+        return NOERROR;
+    }
+
+    // The package name is not mandatory (legacy from JB), and if the package name
+    // is missing, we try to notify the suggestion through the input method manager.
+    if (mNotificationTargetPackageName != null) {
+        intent.setClassName(mNotificationTargetPackageName, mNotificationTargetClassName);
+        intent.setAction(SuggestionSpan.ACTION_SUGGESTION_PICKED);
+        intent.putExtra(SuggestionSpan.SUGGESTION_SPAN_PICKED_BEFORE, original);
+        intent.putExtra(SuggestionSpan.SUGGESTION_SPAN_PICKED_AFTER, mSuggestions[index]);
+        intent.putExtra(SuggestionSpan.SUGGESTION_SPAN_PICKED_HASHCODE, hashCode());
+        context.sendBroadcast(intent);
+    } else {
+        InputMethodManager imm = InputMethodManager.peekInstance();
+        if (imm != null) {
+            imm.notifySuggestionPicked(this, original, index);
+        }
+    }
+
+    return NOERROR;
 }
 
 } // namespace Style

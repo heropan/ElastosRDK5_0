@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_TEXT_STYLE_StyleSpan_H__
 
 #include "elastos/droid/text/style/MetricAffectingSpan.h"
-#include "Elastos.Droid.Core_server.h"
 
 using Elastos::Droid::Graphics::IPaint;
 
@@ -21,6 +20,9 @@ namespace Style {
  */
 class StyleSpan
     : public MetricAffectingSpan
+    , public IStyleSpan
+    , public IParcelableSpan
+    , public IParcelable
 {
 public:
     /**

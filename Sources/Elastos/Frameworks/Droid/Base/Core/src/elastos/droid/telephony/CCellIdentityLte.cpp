@@ -1,6 +1,6 @@
 
 #include "CCellIdentityLte.h"
-#include <ext/frameworkdef.h>
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 

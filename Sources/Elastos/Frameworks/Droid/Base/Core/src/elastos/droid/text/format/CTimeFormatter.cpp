@@ -37,6 +37,12 @@ const Int32 CTimeFormatter::HOURSPERDAY = 24;
 const Int32 CTimeFormatter::DAYSPERLYEAR = 366;
 const Int32 CTimeFormatter::DAYSPERNYEAR = 365;
 
+AutoPtr<ILocale> CTimeFormatter::sLocale;
+AutoPtr<ILocaleData> CTimeFormatter::sLocaleData;
+String CTimeFormatter::sTimeOnlyFormat;
+String CTimeFormatter::sDateOnlyFormat;
+String CTimeFormatter::sDateTimeFormat;
+
 CAR_INTERFACE_IMPL(CTimeFormatter, Object, ITimeFormatter)
 
 CAR_OBJECT_IMPL(CTimeFormatter)

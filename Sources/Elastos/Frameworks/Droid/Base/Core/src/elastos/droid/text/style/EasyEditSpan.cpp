@@ -6,24 +6,33 @@ namespace Text {
 namespace Style {
 
 EasyEditSpan::EasyEditSpan()
+    : mDeleteEnabled(TRUE)
 {
-    // Empty
 }
 
-Int32 EasyEditSpan::DescribeContents()
+CARAPI constructor()
 {
-    return 0;
+}
+
+CARAPI constructor(
+    /* [in] */ IPendingIntent* intent)
+{
+
 }
 
 ECode EasyEditSpan::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
+        mPendingIntent = source.readParcelable(null);
+        mDeleteEnabled = (source.readByte() == 1);
     return NOERROR;
 }
 
 ECode EasyEditSpan::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
+        dest.writeParcelable(mPendingIntent, 0);
+        dest.writeByte((byte) (mDeleteEnabled ? 1 : 0));
     return NOERROR;
 }
 

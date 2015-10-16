@@ -14,7 +14,11 @@ namespace Style {
  *
  * @hide
  */
-class SuggestionRangeSpan : public CharacterStyle
+class SuggestionRangeSpan
+    : public CharacterStyle
+    , public ISuggestionRangeSpan
+    , public IParcelableSpan
+    , public IParcelable
 {
 public:
     SuggestionRangeSpan();

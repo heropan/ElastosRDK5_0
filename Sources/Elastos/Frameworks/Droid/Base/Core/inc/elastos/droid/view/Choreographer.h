@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/DisplayEventReceiver.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
 #include <pthread.h>
 
 using Elastos::Core::IRunnable;

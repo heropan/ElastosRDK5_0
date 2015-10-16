@@ -217,13 +217,13 @@ void ImageSpan::Init(
 
 AutoPtr<IDrawable> ImageSpan::GetDrawable()
 {
-    AutoPtr<IDrawable> drawable = NULL;
+    AutoPtr<IDrawable> drawable;
 
     if (mDrawable != NULL) {
         drawable = mDrawable;
     }
     else  if (mContentUri != NULL) {
-        AutoPtr<IBitmap> bitmap = NULL;
+        AutoPtr<IBitmap> bitmap;
         //try {
             AutoPtr<IContentResolver> cr;
             mContext->GetContentResolver((IContentResolver**)&cr);
@@ -246,9 +246,7 @@ AutoPtr<IDrawable> ImageSpan::GetDrawable()
     }
     else {
         //try {
-            AutoPtr<IResources> rs;
-            mContext->GetResources((IResources**)&rs);
-            rs->GetDrawable(mResourceId, (IDrawable**)&drawable);
+            mContext->GetDrawable(mResourceId, (IDrawable**)&drawable);
             Int32 dIntrinsicWidth, dIntrinsicHeight;
             drawable->GetIntrinsicWidth(&dIntrinsicWidth);
             drawable->GetIntrinsicHeight(&dIntrinsicHeight);

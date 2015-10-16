@@ -2,7 +2,7 @@
 #include "CSignalStrength.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
-#include <ext/frameworkdef.h>
+#include "elastos/droid/ext/frameworkdef.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Slogger;

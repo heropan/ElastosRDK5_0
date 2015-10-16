@@ -12,6 +12,8 @@ namespace Style {
 
 class RasterizerSpan
     : public CharacterStyle
+    , public IRasterizerSpan
+    , public IUpdateAppearance
 {
 public:
     RasterizerSpan(

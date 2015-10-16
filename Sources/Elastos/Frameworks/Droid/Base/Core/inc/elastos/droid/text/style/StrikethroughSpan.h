@@ -8,7 +8,12 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-class StrikethroughSpan : public CharacterStyle
+class StrikethroughSpan
+    : public CharacterStyle
+    , public IStrikethroughSpan
+    , public IUpdateAppearance
+    , public IParcelableSpan
+    , public IParcelable
 {
 public:
     StrikethroughSpan();

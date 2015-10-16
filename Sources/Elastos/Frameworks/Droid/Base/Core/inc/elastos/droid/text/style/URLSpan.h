@@ -8,24 +8,19 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-class URLSpan : public ClickableSpan
+class URLSpan
+    : public ClickableSpan
+    , public IParcelableSpan
+    , public IParcelable
 {
 public:
-    URLSpan(
+    URLSpan();
+
+    CARAPI constructor(
         /* [in] */ const String& url);
 
-    URLSpan(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(void) Init(
-        /* [in] */ const String& url);
-
-    CARAPI_(void) Init(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(Int32) GetSpanTypeId();
-
-    CARAPI_(Int32) DescribeContents();
+    CARAPI GetSpanTypeId(
+        /* [out] */ Int32* id);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);

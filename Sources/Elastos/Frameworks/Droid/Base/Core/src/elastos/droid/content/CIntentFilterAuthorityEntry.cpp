@@ -1,6 +1,6 @@
 
 #include "elastos/droid/content/CIntentFilterAuthorityEntry.h"
-#include <ext/frameworkdef.h>
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 

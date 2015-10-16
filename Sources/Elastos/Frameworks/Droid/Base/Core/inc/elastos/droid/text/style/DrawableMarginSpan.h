@@ -1,7 +1,8 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_DrawableMarginSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_DrawableMarginSpan_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Graphics::ICanvas;
@@ -15,8 +16,16 @@ namespace Text {
 namespace Style {
 
 class DrawableMarginSpan
+    : public Object
+    , public IDrawableMarginSpan
+    , public ILineHeightSpan
+    , public IParagraphStyle
+    , public IWrapTogetherSpan
+    , public ILeadingMarginSpan
 {
 public:
+    CAR_INTERFACE_DECL()
+
     DrawableMarginSpan(
         /* [in] */ IDrawable* b);
 

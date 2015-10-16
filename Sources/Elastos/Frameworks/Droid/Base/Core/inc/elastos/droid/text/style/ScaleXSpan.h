@@ -10,6 +10,10 @@ namespace Style {
 
 class ScaleXSpan
     : public MetricAffectingSpan
+    , public IScaleXSpan
+    , public IParcelableSpan
+    , public IParcelable
+
 {
 public:
     ScaleXSpan(

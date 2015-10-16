@@ -1,6 +1,6 @@
 
+#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/content/CContentResolverOpenResourceIdResult.h"
-#include <ext/frameworkdef.h>
 
 namespace Elastos {
 namespace Droid {

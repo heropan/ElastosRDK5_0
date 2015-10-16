@@ -82,20 +82,11 @@ module
      * <p>
      * As with LeadingMarginSpans, LeadingMarginSpan2s should be attached from
      * the beginning to the end of a paragraph.
-     *
-     * @Involve
-     * interface IParagraphStyle
-     * interface IWrapTogetherSpan
-     * interface IIParagraphStyle
-     * interface ILeadingMarginSpan
      */
     interface ILeadingMarginSpan2 {
         /**
-         * Returns the number of lines of text to which this object is
+         * Returns the number of lines of the paragraph to which this object is
          * attached that the "first line" margin will apply to.
-         * Note that if this returns N, the first N lines of the region,
-         * not the first N lines of each paragraph, will be given the
-         * special margin width.
          */
         GetLeadingMarginLineCount(
             [out] Int32* count);

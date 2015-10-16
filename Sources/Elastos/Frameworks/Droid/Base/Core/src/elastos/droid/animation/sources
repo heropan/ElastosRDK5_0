@@ -8,10 +8,6 @@ include $(MAKEDIR)/../../../../../../sources.inc
 
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../../inc/
-<<<<<<< HEAD
-=======
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid
->>>>>>> fix conflict.
 
 SOURCES = Animator.cpp
 SOURCES += TypeConverter.cpp

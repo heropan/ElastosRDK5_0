@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_TEXT_STYLE_TypefaceSpan_H__
 
 #include "elastos/droid/text/style/MetricAffectingSpan.h"
-#include "Elastos.Droid.Core_server.h"
 
 using Elastos::Droid::Graphics::IPaint;
 
@@ -14,7 +13,14 @@ namespace Style {
 /**
  * Changes the typeface family of the text to which the span is attached.
  */
-class TypefaceSpan : public MetricAffectingSpan
+class TypefaceSpan
+    : public MetricAffectingSpan
+    , public ITypefaceSpan
+    , public IParcelableSpan
+    , public IParcelable
+    , public ICharacterStyle
+    , public IUpdateLayout
+    , public IUpdateAppearance
 {
 public:
     /**
