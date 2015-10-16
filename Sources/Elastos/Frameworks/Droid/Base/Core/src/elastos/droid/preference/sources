@@ -11,3 +11,5 @@ INCLUDES += $(MAKEDIR)/../../../../inc
 SOURCES = preference.cpp
 SOURCES += Preference.cpp
 SOURCES += PreferenceBaseSavedState.cpp
+SOURCES += TwoStatePreference.cpp
+SOURCES += TwoStatePreferenceSavedState.cpp
