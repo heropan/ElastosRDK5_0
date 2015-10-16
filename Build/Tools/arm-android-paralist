@@ -110,19 +110,18 @@
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/ethernet
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/pppoe
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net
-  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/utility
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/utility
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/content/pm
-> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/content/res
-- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/content
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/content/res
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/content
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/drm/mobile1
-- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/media/audiofx
-- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/media/audiopolicy
-> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/media/browse
-#  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/media
-  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/mtp
-#> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media
-#- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/graphics/drawable/shapes
-#- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/graphics/drawable
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/audiofx
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/audiopolicy
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/browse
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/mtp
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/graphics/drawable/shapes
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/graphics/drawable
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/graphics
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/text/format
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/text/method
@@ -132,9 +131,13 @@
 #> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/app/admin
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/app/backup
 #> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/app
-> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/display
-- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/input
-- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/usb
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/content
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/os
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/utility
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/display
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/input
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/usb
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware
 #> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/inputmethod
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/accessibility
@@ -142,9 +145,9 @@
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/menu
 #> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/impl
-  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/animation
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/animation
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/bluetooth
-  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/preference
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/preference
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/location
 #< Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/speech/srec
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/speech/tts
@@ -160,13 +163,13 @@
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/privacy
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/provider
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/accessibilityservice
-- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/inputmethodservice
-- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/database/sqlite
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/inputmethodservice
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/database/sqlite
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/database
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/accounts
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/telephony
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/statusbar
-- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/service/media
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/service/media
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/service/wallpaper
 #> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/service
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/systemui/statusbar/policy
@@ -183,8 +186,8 @@
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/inputmethods/pinyinIME
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/swextend/gpio
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/sax
-#> Elastos/Frameworks/Droid/Base/Core/src
-#- Elastos/Frameworks/Droid/Base/Core
+> Elastos/Frameworks/Droid/Base/Core/src
+- Elastos/Frameworks/Droid/Base/Core
 #- Elastos/Frameworks/Droid/Base/Services/Server/src Elastos.Droid.Server.car
 #- Elastos/Frameworks/Droid/Base/Services/Server/src Elastos.Droid.System.eco
 #- Elastos/Frameworks/Droid/Base/Services/Server/src Org.Kxml2.IO.eco
@@ -261,4 +264,4 @@
 #> Elastos/Frameworks/Droid/Base/Test-runner/lib Elastos.Droid.Test.eco
 #> Elastos/Frameworks/Droid/Base/Test-runner/lib
 #> Elastos/Frameworks/Droid/Base/Test-runner
-#> Elastos
+> Elastos
