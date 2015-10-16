@@ -95,7 +95,7 @@
 > Elastos/LibCore/src/corelibrary
 # ==== buid Framework ====
 #> Elastos/Frameworks/Droid/ServiceManager
-#- Elastos/Frameworks/Droid/DroidRuntime/lib
+- Elastos/Frameworks/Droid/DroidRuntime/lib
 > Elastos/Frameworks/Droid/DroidRuntime
 - Elastos/Frameworks/Droid/Base/Core/inc
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid Elastos.Droid.Core.car
@@ -123,7 +123,7 @@
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/graphics/drawable/shapes
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/graphics/drawable
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/graphics
-#- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/text/format
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/text/format
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/text/method
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/text/style
 #> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/text/util
@@ -186,7 +186,7 @@
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/inputmethods/pinyinIME
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/swextend/gpio
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/sax
-> Elastos/Frameworks/Droid/Base/Core/src
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid
 - Elastos/Frameworks/Droid/Base/Core
 #- Elastos/Frameworks/Droid/Base/Services/Server/src Elastos.Droid.Server.car
 #- Elastos/Frameworks/Droid/Base/Services/Server/src Elastos.Droid.System.eco
@@ -208,8 +208,8 @@
 #> Elastos/Frameworks/Droid/Base/Services/Server/src
 #- Elastos/Frameworks/Droid/Lib Elastos.Droid.Core.eco
 #- Elastos/Frameworks/Droid/Lib
-- Elastos/Frameworks/Droid/App_process Elastos.Droid.Core.eco
-- Elastos/Frameworks/Droid/App_process
+> Elastos/Frameworks/Droid/App_process Elastos.Droid.Core.eco
+> Elastos/Frameworks/Droid/App_process
 #> Elastos/Frameworks/Droid/JavaProxy Elastos.Droid.JavaProxy.car
 #- Elastos/Frameworks/Droid/JavaProxy/src
 #> Elastos/Frameworks/Droid/JavaProxy
