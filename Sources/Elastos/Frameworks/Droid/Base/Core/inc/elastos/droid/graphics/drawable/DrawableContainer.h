@@ -413,7 +413,6 @@ protected:
     virtual CARAPI_(void) SetConstantState(
         /* [in] */ DrawableContainerState* state);
 
-private:
     CARAPI_(Boolean) NeedsMirroring();
 
 private:

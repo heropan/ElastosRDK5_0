@@ -57,11 +57,11 @@ ECode CNinePatchDrawable::constructor(
 }
 
 ECode CNinePatchDrawable::constructor(
-    /* [in] */ Handle32 state,
-    /* [in] */ IResources* res)
+    /* [in] */ IDrawableConstantState* state,
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme)
 {
-    return NinePatchDrawable::constructor(
-            reinterpret_cast<NinePatchDrawable::NinePatchState*>(state), res);
+    return NinePatchDrawable::constructor((NinePatchState*)state, res, theme);
 }
 
 } // namespace Drawable

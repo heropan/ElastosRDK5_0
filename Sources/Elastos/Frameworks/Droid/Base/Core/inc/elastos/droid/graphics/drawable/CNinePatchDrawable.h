@@ -46,8 +46,9 @@ public:
         /* [in] */ INinePatch* patch);
 
     CARAPI constructor(
-        /* [in] */ Handle32 state,
-        /* [in] */ IResources* res);
+        /* [in] */ IDrawableConstantState* state,
+        /* [in] */ IResources* res,
+        /* [in] */ IResourcesTheme* theme);
 };
 
 } // namespace Drawable

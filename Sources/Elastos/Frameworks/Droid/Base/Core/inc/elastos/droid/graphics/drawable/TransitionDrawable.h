@@ -32,6 +32,12 @@ public:
             /* [in] */ IResources* res,
             /* [out] */ IDrawable** drawable);
 
+        // @Override
+        CARAPI NewDrawable(
+            /* [in] */ IResources* res,
+            /* [in] */ IResourcesTheme* theme,
+            /* [out] */ IDrawable** drawable);
+
         //@Override
         CARAPI GetChangingConfigurations(
             /* [out] */ Int32* config);
@@ -115,7 +121,8 @@ protected:
 
     CARAPI constructor(
         /* [in] */ TransitionState* state,
-        /* [in] */ IResources* res);
+        /* [in] */ IResources* res,
+        /* [in] */ IResourcesTheme* theme);
 
     CARAPI constructor(
         /* [in] */ TransitionState* state,
@@ -124,7 +131,8 @@ protected:
 private:
     TransitionDrawable(
         /* [in] */ TransitionState* state,
-        /* [in] */ IResources* res);
+        /* [in] */ IResources* res,
+        /* [in] */ IResourcesTheme* theme);
 
     TransitionDrawable(
         /* [in] */ TransitionState* state,

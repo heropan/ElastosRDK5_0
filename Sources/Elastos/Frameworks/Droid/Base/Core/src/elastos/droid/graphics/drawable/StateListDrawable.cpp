@@ -4,9 +4,11 @@
 #include "elastos/droid/graphics/drawable/CStateListDrawable.h"
 #include "elastos/droid/utility/StateSet.h"
 #include "elastos/droid/R.h"
+#include <elastos/utility/Arrays.h>
 
 using Elastos::Droid::Utility::StateSet;
 using Elastos::Droid::R;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace Droid {
@@ -24,6 +26,13 @@ StateListDrawable::StateListDrawable()
 }
 
 StateListDrawable::StateListDrawable(
+    /* [in] */ StateListState* state)
+    : mMutated(FALSE)
+{
+    constructor(state);
+}
+
+StateListDrawable::StateListDrawable(
     /* [in] */ StateListState* state,
     /* [in] */ IResources* res)
     : mMutated(FALSE)
@@ -35,13 +44,30 @@ ECode StateListDrawable::constructor(
     /* [in] */ StateListState* state,
     /* [in] */ IResources* res)
 {
-    mStateListState = new StateListState(state, this, res);
-    SetConstantState(mStateListState);
+    AutoPtr<StateListState> newState = new StateListState(state, this, res);
+    SetConstantState(newState);
 
     AutoPtr<ArrayOf<Int32> > states;
     GetState((ArrayOf<Int32>**)&states);
     OnStateChange(states);
     return NOERROR;
+}
+
+ECode StateListDrawable::constructor(
+    /* [in] */ StateListState* state)
+{
+    if (state != NULL) {
+        SetConstantState(state);
+    }
+    return NOERROR;
+}
+
+void StateListDrawable::SetConstantState(
+    /* [in] */ StateListState* state)
+{
+    DrawableContainer::SetConstantState(state);
+
+    mStateListState = state;
 }
 
 ECode StateListDrawable::AddState(
@@ -86,15 +112,16 @@ Boolean StateListDrawable::OnStateChange(
 ECode StateListDrawable::Inflate(
     /* [in] */ IResources* r,
     /* [in] */ IXmlPullParser* parser,
-    /* [in] */ IAttributeSet* attrs)
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme)
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::StateListDrawable),
             ARRAY_SIZE(R::styleable::StateListDrawable));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(r->ObtainAttributes(attrs, attrIds, (ITypedArray**)&a));
+    FAIL_RETURN(ObtainAttributes(r, theme, attrs, attrIds, (ITypedArray**)&a));
 
-    Drawable::InflateWithAttributes(r, parser, a,
+    DrawableContainer::InflateWithAttributes(r, parser, a,
             R::styleable::StateListDrawable_visible);
 
     Boolean value;
@@ -110,6 +137,9 @@ ECode StateListDrawable::Inflate(
 
     a->GetBoolean(R::styleable::StateListDrawable_dither, DEFAULT_DITHER, &value);
     SetDither(value);
+    assert(0 && "TODO");
+    // a->GetBoolean(R::styleable::StateListDrawable_autoMirrored, FALSE, &value);
+    SetAutoMirrored(value);
 
     a->Recycle();
 
@@ -152,7 +182,7 @@ ECode StateListDrawable::Inflate(
 
         AutoPtr<IDrawable> dr;
         if (drawableRes != 0) {
-            r->GetDrawable(drawableRes, (IDrawable**)&dr);
+            r->GetDrawable(drawableRes, theme, (IDrawable**)&dr);
         }
         else {
             while (parser->Next(&type), type == IXmlPullParser::TEXT) {
@@ -164,7 +194,7 @@ ECode StateListDrawable::Inflate(
 //                                + "child tag defining a drawable");
                 return E_XML_PULL_PARSER_EXCEPTION;
             }
-            Drawable::CreateFromXmlInner(r, parser, attrs, (IDrawable**)&dr);
+            Drawable::CreateFromXmlInner(r, parser, attrs, theme, (IDrawable**)&dr);
         }
 
         mStateListState->AddStateSet(states, dr);
@@ -204,7 +234,7 @@ ECode StateListDrawable::GetStateDrawable(
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
-    *drawable = (*mStateListState->GetChildren())[index];
+    *drawable = mStateListState->GetChild(index);
     REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
@@ -244,14 +274,11 @@ ECode StateListDrawable::Mutate(
 ECode StateListDrawable::SetLayoutDirection(
     /* [in] */ Int32 layoutDirection)
 {
-    Int32 numStates = 0;
-    GetStateCount(&numStates);
-    for (Int32 i = 0; i < numStates; i++) {
-        AutoPtr<IDrawable> drawable;
-        GetStateDrawable(i, (IDrawable**)&drawable);
-        drawable->SetLayoutDirection(layoutDirection);
-    }
-    return Drawable::SetLayoutDirection(layoutDirection);
+    DrawableContainer::SetLayoutDirection(layoutDirection);
+    // Let the container handle setting its own layout direction. Otherwise,
+    // we're accessing potentially unused states.
+    mStateListState->SetLayoutDirection(layoutDirection);
+    return NOERROR;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -264,10 +291,10 @@ StateListDrawable::StateListState::StateListState(
     : DrawableContainerState(orig, owner, res)
 {
     if (orig != NULL) {
-        mStateSets = orig->mStateSets;
-    }
-    else {
-        mStateSets = ArrayOf< AutoPtr<ArrayOf<Int32> > >::Alloc(GetChildren()->GetLength());
+        mStateSets = NULL;
+        Arrays::CopyOf(orig->mStateSets, orig->mStateSets->GetLength(), (ArrayOf< AutoPtr<ArrayOf<Int32> > >**)&mStateSets);
+    } else {
+        mStateSets = ArrayOf< AutoPtr<ArrayOf<Int32> > >::Alloc(GetCapacity());
     }
 }
 
@@ -302,16 +329,14 @@ Int32 StateListDrawable::StateListState::IndexOfStateSet(
 ECode StateListDrawable::StateListState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
-    return CStateListDrawable::New((Handle32)this, NULL,
-        (IStateListDrawable**)drawable);
+    return CStateListDrawable::New(this, NULL, (IStateListDrawable**)drawable);
 }
 
 ECode StateListDrawable::StateListState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
-    return CStateListDrawable::New((Handle32)this, res,
-        (IStateListDrawable**)drawable);
+    return CStateListDrawable::New(this, res, (IStateListDrawable**)drawable);
 }
 
 void StateListDrawable::StateListState::GrowArray(

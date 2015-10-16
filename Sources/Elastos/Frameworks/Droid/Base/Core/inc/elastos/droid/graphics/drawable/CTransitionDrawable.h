@@ -31,11 +31,12 @@ public:
     CARAPI constructor();
 
     CARAPI constructor(
-        /* [in] */ Handle32 state,
-        /* [in] */ IResources* res);
+        /* [in] */ IDrawableConstantState* state,
+        /* [in] */ IResources* res,
+        /* [in] */ IResourcesTheme* theme);
 
     CARAPI constructor(
-        /* [in] */ Handle32 state,
+        /* [in] */ IDrawableConstantState* state,
         /* [in] */ ArrayOf<IDrawable*>* layers);
 };
 

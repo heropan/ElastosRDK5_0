@@ -20,14 +20,15 @@ ECode CTransitionDrawable::constructor()
 }
 
 ECode CTransitionDrawable::constructor(
-    /* [in] */ Handle32 state,
-    /* [in] */ IResources* res)
+    /* [in] */ IDrawableConstantState* state,
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme)
 {
-    return TransitionDrawable::constructor((TransitionState*)state, res);
+    return TransitionDrawable::constructor((TransitionState*)state, res, theme);
 }
 
 ECode CTransitionDrawable::constructor(
-    /* [in] */ Handle32 state,
+    /* [in] */ IDrawableConstantState* state,
     /* [in] */ ArrayOf<IDrawable*>* layers)
 {
     return TransitionDrawable::constructor((TransitionState*)state, layers);

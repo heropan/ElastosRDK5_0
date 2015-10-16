@@ -21,49 +21,77 @@ public:
         : public Drawable::ConstantState
     {
     public:
-        NinePatchState(
-            /* [in] */ INinePatch* ninePatch,
-            /* [in] */ IRect* padding);
+        NinePatchState();
 
         NinePatchState(
-            /* [in] */ INinePatch* ninePatch,
-            /* [in] */ IRect* padding,
-            /* [in] */ IRect* layoutInsets);
+            /* [in] *//*@NonNull*/ INinePatch* ninePatch,
+            /* [in] *//*@Nullable*/ IRect* padding);
 
         NinePatchState(
-            /* [in] */ INinePatch* ninePatch,
-            /* [in] */ IRect* rect,
-            /* [in] */ IRect* layoutInsets,
-            /* [in] */ Boolean dither);
+            /* [in] *//*@NonNull*/ INinePatch* ninePatch,
+            /* [in] *//*@Nullable*/ IRect* padding,
+            /* [in] *//*@Nullable*/ IRect* opticalInsets);
+
+        NinePatchState(
+            /* [in] *//*@NonNull*/ INinePatch* ninePatch,
+            /* [in] *//*@Nullable*/ IRect* padding,
+            /* [in] *//*@Nullable*/ IRect* opticalInsets,
+            /* [in] */ Boolean dither,
+            /* [in] */ Boolean autoMirror);
 
         // Copy constructor
         NinePatchState(
-            /* [in] */ NinePatchState* state);
+            /* [in] *//*@NonNull*/ NinePatchState* state);
 
+        // @Override
+        CARAPI CanApplyTheme(
+            /* [out] */ Boolean* can);
+
+        // @Override
+        CARAPI GetBitmap(
+            /* [out] */ IBitmap** bitmap);
+
+        // @Override
         CARAPI NewDrawable(
             /* [out] */ IDrawable** drawable);
 
+        // @Override
         CARAPI NewDrawable(
             /* [in] */ IResources* res,
             /* [out] */ IDrawable** drawable);
 
+        // @Override
+        CARAPI NewDrawable(
+            /* [in] */ IResources* res,
+            /* [in] */ IResourcesTheme* theme,
+            /* [out] */ IDrawable** drawable);
+
+        // @Override
         CARAPI GetChangingConfigurations(
             /* [out] */ Int32* config);
 
     private:
-        CARAPI_(void) constructor(
-            /* [in] */ INinePatch* ninePatch,
-            /* [in] */ IRect* rect,
-            /* [in] */ IRect* layoutInsets,
-            /* [in] */ Boolean dither);
+        CARAPI constructor(
+            /* [in] *//*@NonNull*/ INinePatch* ninePatch,
+            /* [in] *//*@Nullable*/ IRect* padding,
+            /* [in] *//*@Nullable*/ IRect* opticalInsets,
+            /* [in] */ Boolean dither,
+            /* [in] */ Boolean autoMirror);
 
     public:
+        // Values loaded during inflation.
+        AutoPtr<ArrayOf<Int32> > mThemeAttrs;
         AutoPtr<INinePatch> mNinePatch;
+        AutoPtr<IColorStateList> mTint;
+        PorterDuffMode mTintMode;
         AutoPtr<IRect> mPadding;
-        AutoPtr<Insets> mLayoutInsets;
+        AutoPtr<Insets> mOpticalInsets;
+        Float mBaseAlpha;
         Boolean mDither;
-        Int32 mChangingConfigurations;
         Int32 mTargetDensity;
+        Boolean mAutoMirrored;
+
+        Int32 mChangingConfigurations;
     };
 
 public:
@@ -95,7 +123,7 @@ public:
         /* [in] */ IBitmap* bitmap,
         /* [in] */ ArrayOf<Byte>* chunk,
         /* [in] */ IRect* padding,
-        /* [in] */ IRect* layoutInsets,
+        /* [in] */ IRect* opticalInsets,
         /* [in] */ const String& srcName);
 
     NinePatchDrawable(
@@ -107,7 +135,8 @@ public:
 
     NinePatchDrawable(
         /* [in] */ NinePatchState* state,
-        /* [in] */ IResources* res);
+        /* [in] */ IResources* res,
+        /* [in] */ IResourcesTheme* theme);
 
     virtual CARAPI SetTargetDensity(
         /* [in] */ ICanvas* canvas);
@@ -131,23 +160,48 @@ public:
         /* [in] */ IRect* padding,
         /* [out] */ Boolean* isPadding);
 
+    // @Override
+    CARAPI GetOutline(
+        /* [in] */ /*@NonNull*/ IOutline* outline);
+
     /**
      * @hide
      */
     //@Override
-    CARAPI_(AutoPtr<IInsets>) GetLayoutInsets();
+    CARAPI GetOpticalInsets(
+        /* [out] */ IInsets** insets);
 
     //@Override
     CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
 
+    // @Override
+    CARAPI GetAlpha(
+        /* [out] */ Int32* alpha);
+
     //@Override
     CARAPI SetColorFilter(
         /* [in] */ IColorFilter* cf);
 
+    // @Override
+    CARAPI SetTintList(
+        /* [in] */ IColorStateList* tint);
+
+    // @Override
+    CARAPI SetTintMode(
+        /* [in] */ PorterDuffMode tintMode);
+
     //@Override
     CARAPI SetDither(
         /* [in] */ Boolean dither);
+
+    // @Override
+    CARAPI SetAutoMirrored(
+        /* [in] */ Boolean mirrored);
+
+    // @Override
+    CARAPI IsAutoMirrored(
+        /* [out] */ Boolean* mirrored);
 
     //@Override
     CARAPI SetFilterBitmap(
@@ -157,7 +211,16 @@ public:
     CARAPI Inflate(
         /* [in] */ IResources* r,
         /* [in] */ IXmlPullParser* parser,
-        /* [in] */ IAttributeSet* attrs);
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ IResourcesTheme* theme);
+
+    // @Override
+    CARAPI ApplyTheme(
+        /* [in] */ IResourcesTheme* t);
+
+    // @Override
+    CARAPI CanApplyTheme(
+        /* [out] */ Boolean* can);
 
     virtual CARAPI GetPaint(
         /* [out] */ IPaint** paint);
@@ -194,6 +257,10 @@ public:
     CARAPI Mutate(
         /* [out] */ IDrawable** drawable);
 
+    // @Override
+    CARAPI IsStateful(
+        /* [out] */ Boolean* isStateful);
+
 protected:
     CARAPI constructor(
         /* [in] */ IBitmap* bitmap,
@@ -213,7 +280,7 @@ protected:
         /* [in] */ IBitmap* bitmap,
         /* [in] */ ArrayOf<Byte>* chunk,
         /* [in] */ IRect* padding,
-        /* [in] */ IRect* layoutInsets,
+        /* [in] */ IRect* opticalInsets,
         /* [in] */ const String& srcName);
 
     CARAPI constructor(
@@ -223,15 +290,20 @@ protected:
         /* [in] */ IResources* res,
         /* [in] */ INinePatch* patch);
 
+    /**
+     * The one constructor to rule them all. This is called by all public
+     * constructors to set the state and initialize local properties.
+     */
     CARAPI constructor(
         /* [in] */ NinePatchState* state,
-        /* [in] */ IResources* res);
+        /* [in] */ IResources* res,
+        /* [in] */ IResourcesTheme* theme);
+
+    // @Override
+    CARAPI_(Boolean) OnStateChange(
+        /* [in] */ const ArrayOf<Int32>& stateSet);
 
 private:
-    CARAPI_(void) SetNinePatchState(
-        /* [in] */ NinePatchState* state,
-        /* [in] */ IResources* res);
-
     static CARAPI_(AutoPtr<Insets>) ScaleFromDensity(
         /* [in] */ Insets* insets,
         /* [in] */ Int32 sdensity,
@@ -239,13 +311,32 @@ private:
 
     CARAPI_(void) ComputeBitmapSize();
 
+    CARAPI_(void) SetNinePatch(
+        /* [in] */ INinePatch* ninePatch);
+
+    CARAPI_(Boolean) NeedsMirroring();
+
+    /**
+     * Updates the constant state from the values in the typed array.
+     */
+    CARAPI UpdateStateFromTypedArray(
+        /* [in] */ ITypedArray* a) /*throws XmlPullParserException*/;
+
+    /**
+     * Initializes local dynamic properties from state.
+     */
+    CARAPI InitializeWithState(
+        /* [in] */ NinePatchState* state,
+        /* [in] */ IResources* res);
+
 private:
     // dithering helps a lot, and is pretty cheap, so default is true
-    static const Boolean DEFAULT_DITHER = TRUE;
+    static const Boolean DEFAULT_DITHER;
     AutoPtr<NinePatchState> mNinePatchState;
     AutoPtr<INinePatch> mNinePatch;
+    AutoPtr<IPorterDuffColorFilter> mTintFilter;
     AutoPtr<IRect> mPadding;
-    AutoPtr<Insets> mLayoutInsets;
+    AutoPtr<Insets> mOpticalInsets;
     AutoPtr<IPaint> mPaint;
     Boolean mMutated;
 

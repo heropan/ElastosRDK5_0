@@ -1,11 +1,13 @@
 
 #include "elastos/droid/graphics/drawable/ShapeDrawable.h"
 #include "elastos/droid/graphics/drawable/CShapeDrawable.h"
-// #include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/content/res/CTypedArray.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
+using Elastos::Droid::Content::Res::CTypedArray;
 using Elastos::Core::ICloneable;
 
 namespace Elastos {
@@ -16,13 +18,17 @@ namespace Drawable {
 ShapeDrawable::ShapeState::ShapeState(
     /* [in] */ ShapeState* orig)
     : mChangingConfigurations(0)
+    , mTintMode(DEFAULT_TINT_MODE)
     , mIntrinsicWidth(0)
     , mIntrinsicHeight(0)
     , mAlpha(255)
 {
     if (orig != NULL) {
+        mThemeAttrs = orig->mThemeAttrs;
         mPaint = orig->mPaint;
         mShape = orig->mShape;
+        mTint = orig->mTint;
+        mTintMode = orig->mTintMode;
         mPadding = orig->mPadding;
         mIntrinsicWidth = orig->mIntrinsicWidth;
         mIntrinsicHeight = orig->mIntrinsicHeight;
@@ -30,25 +36,39 @@ ShapeDrawable::ShapeState::ShapeState(
         mShaderFactory = orig->mShaderFactory;
     }
     else {
-        assert(0 && "TODO");
-        // CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mPaint);
+        CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mPaint);
     }
+}
+
+ECode ShapeDrawable::ShapeState::CanApplyTheme(
+    /* [out] */ Boolean* can)
+{
+    VALIDATE_NOT_NULL(can);
+    *can = mThemeAttrs != NULL;
+    return NOERROR;
 }
 
 ECode ShapeDrawable::ShapeState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
-    return CShapeDrawable::New((Handle32)this, (IShapeDrawable**)drawable);
+    return CShapeDrawable::New(this, NULL, NULL, (IShapeDrawable**)drawable);
 }
 
-//@Override
 ECode ShapeDrawable::ShapeState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
-    return CShapeDrawable::New((Handle32)this, (IShapeDrawable**)drawable);
+    return CShapeDrawable::New(this, res, NULL, (IShapeDrawable**)drawable);
+}
+
+ECode ShapeDrawable::ShapeState::NewDrawable(
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme,
+    /* [out] */ IDrawable** drawable)
+{
+    return CShapeDrawable::New(this, res, theme, (IShapeDrawable**)drawable);
 }
 
 ECode ShapeDrawable::ShapeState::GetChangingConfigurations(
@@ -69,15 +89,24 @@ ShapeDrawable::ShapeDrawable(
     /* [in] */ IShape* s)
     : mMutated(FALSE)
 {
-    mShapeState = new ShapeState(NULL);
-    mShapeState->mShape = s;
+    constructor(s);
 }
 
 ShapeDrawable::ShapeDrawable(
-    /* [in] */ ShapeState* state)
+    /* [in] */ ShapeState* state,
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme)
     : mMutated(FALSE)
 {
-    mShapeState = new ShapeState(state);
+    constructor(state, res, theme);
+}
+
+ECode ShapeDrawable::InitializeWithState(
+    /* [in] */ ShapeState* state,
+    /* [in] */ IResources* res)
+{
+    mTintFilter = UpdateTintFilter(mTintFilter, state->mTint, state->mTintMode);
+    return NOERROR;
 }
 
 ECode ShapeDrawable::GetShape(
@@ -222,24 +251,43 @@ ECode ShapeDrawable::Draw(
 {
     AutoPtr<IRect> r;
     GetBounds((IRect**)&r);
-    AutoPtr<IPaint> paint = mShapeState->mPaint;
+    AutoPtr<ShapeState> state = mShapeState;
+    AutoPtr<IPaint> paint = state->mPaint;
 
-    Int32 prevAlpha;
+    Int32 prevAlpha = 0;
     paint->GetAlpha(&prevAlpha);
-    paint->SetAlpha(ModulateAlpha(prevAlpha, mShapeState->mAlpha));
+    paint->SetAlpha(ModulateAlpha(prevAlpha, state->mAlpha));
 
-    if (mShapeState->mShape != NULL) {
-        // need the save both for the translate, and for the (unknown) Shape
-        Int32 count;
-        canvas->Save(&count);
-        canvas->Translate(
-                static_cast<CRect*>(r.Get())->mLeft,
-                static_cast<CRect*>(r.Get())->mTop);
-        OnDraw(mShapeState->mShape, canvas, paint);
-        canvas->RestoreToCount(count);
-    }
-    else {
-        canvas->DrawRect(r, paint);
+    // only draw shape if it may affect output
+    Int32 value = 0;
+    AutoPtr<IXfermode> xf;
+    Boolean has = FALSE;
+    paint->GetXfermode((IXfermode**)&xf);
+    if ((paint->GetAlpha(&value), value) != 0 || xf != NULL || (paint->HasShadowLayer(&has), has)) {
+        Boolean clearColorFilter = FALSE;
+        AutoPtr<IColorFilter> cf;
+        if (mTintFilter != NULL && (paint->GetColorFilter((IColorFilter**)&cf), cf.Get()) == NULL) {
+            paint->SetColorFilter(IColorFilter::Probe(mTintFilter));
+            clearColorFilter = TRUE;
+        } else {
+            clearColorFilter = FALSE;
+        }
+
+        if (state->mShape != NULL) {
+            // need the save both for the translate, and for the (unknown)
+            // Shape
+            Int32 count = 0;
+            canvas->Save(&count);
+            canvas->Translate(((CRect*)r.Get())->mLeft, ((CRect*)r.Get())->mTop);
+            OnDraw(state->mShape, canvas, paint);
+            canvas->RestoreToCount(count);
+        } else {
+            canvas->DrawRect(r, paint);
+        }
+
+        if (clearColorFilter) {
+            paint->SetColorFilter(NULL);
+        }
     }
 
     // restore
@@ -261,6 +309,30 @@ ECode ShapeDrawable::SetAlpha(
     /* [in] */ Int32 alpha)
 {
     mShapeState->mAlpha = alpha;
+    return InvalidateSelf();
+}
+
+ECode ShapeDrawable::GetAlpha(
+    /* [out] */ Int32* alpha)
+{
+    VALIDATE_NOT_NULL(alpha);
+    *alpha = mShapeState->mAlpha;
+    return NOERROR;
+}
+
+ECode ShapeDrawable::SetTintList(
+    /* [in] */ IColorStateList* tint)
+{
+    mShapeState->mTint = tint;
+    mTintFilter = UpdateTintFilter(mTintFilter, tint, mShapeState->mTintMode);
+    return InvalidateSelf();
+}
+
+ECode ShapeDrawable::SetTintMode(
+    /* [in] */ PorterDuffMode tintMode)
+{
+    mShapeState->mTintMode = tintMode;
+    mTintFilter = UpdateTintFilter(mTintFilter, mShapeState->mTint, tintMode);
     return InvalidateSelf();
 }
 
@@ -310,6 +382,27 @@ void ShapeDrawable::OnBoundsChange(
     UpdateShape();
 }
 
+Boolean ShapeDrawable::OnStateChange(
+    /* [in] */ const ArrayOf<Int32>& stateSet)
+{
+    AutoPtr<ShapeState> state = mShapeState;
+    if (state->mTint.Get() != NULL && state->mTintMode != -1) {
+        mTintFilter = UpdateTintFilter(mTintFilter, state->mTint, state->mTintMode);
+        return TRUE;
+    }
+    return FALSE;
+}
+
+ECode ShapeDrawable::IsStateful(
+    /* [out] */ Boolean* isStateful)
+{
+    VALIDATE_NOT_NULL(isStateful);
+    AutoPtr<ShapeState> s = mShapeState;
+    Boolean value = FALSE;
+    *isStateful = (Drawable::IsStateful(isStateful), *isStateful) || (s->mTint != NULL && (s->mTint->IsStateful(&value), value));
+    return NOERROR;
+}
+
 Boolean ShapeDrawable::InflateTag(
     /* [in] */ const String& name,
     /* [in] */ IResources* r,
@@ -343,33 +436,18 @@ Boolean ShapeDrawable::InflateTag(
 ECode ShapeDrawable::Inflate(
     /* [in] */ IResources* r,
     /* [in] */ IXmlPullParser* parser,
-    /* [in] */ IAttributeSet* attrs)
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme)
 {
-    FAIL_RETURN(Drawable::Inflate(r, parser, attrs));
+    FAIL_RETURN(Drawable::Inflate(r, parser, attrs, theme));
 
     Int32 size = ARRAY_SIZE(R::styleable::ShapeDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::ShapeDrawable, size);
 
     AutoPtr<ITypedArray> a;
-    r->ObtainAttributes(attrs, layout, (ITypedArray**)&a);
-
-    Int32 color;
-    mShapeState->mPaint->GetColor(&color);
-    a->GetColor(R::styleable::ShapeDrawable_color, color, &color);
-    mShapeState->mPaint->SetColor(color);
-
-    Boolean dither = FALSE;
-    a->GetBoolean(R::styleable::ShapeDrawable_dither, FALSE, &dither);
-    mShapeState->mPaint->SetDither(dither);
-
-    Float width, height;
-    a->GetDimension(
-            R::styleable::ShapeDrawable_width, 0.0f, &width);
-    a->GetDimension(
-            R::styleable::ShapeDrawable_height, 0.0f, &height);
-    SetIntrinsicWidth((Int32)width);
-    SetIntrinsicHeight((Int32)height);
+    FAIL_RETURN(ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a));
+    FAIL_RETURN(UpdateStateFromTypedArray(a));
 
     a->Recycle();
 
@@ -391,6 +469,83 @@ ECode ShapeDrawable::Inflate(
         }
     }
 
+    // Update local properties.
+    return InitializeWithState(mShapeState, r);
+}
+
+ECode ShapeDrawable::ApplyTheme(
+    /* [in] */ IResourcesTheme* t)
+{
+    Drawable::ApplyTheme(t);
+
+    AutoPtr<ShapeState> state = mShapeState;
+    if (state == NULL || state->mThemeAttrs == NULL) {
+        return NOERROR;
+    }
+
+    Int32 size = ARRAY_SIZE(R::styleable::ShapeDrawable);
+    AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+    layout->Copy(R::styleable::ShapeDrawable, size);
+    AutoPtr<ITypedArray> a;
+    assert(0 && "TODO");
+    // FAIL_RETURN(t->ResolveAttributes(state->mThemeAttrs, layout, (ITypedArray**)&a));
+    ECode ec = UpdateStateFromTypedArray(a);
+    if (FAILED(ec)) {
+        a->Recycle();
+        return ec;
+    }
+    a->Recycle();
+
+    // Update local properties.
+    AutoPtr<IResources> res;
+    assert(0 && "TODO");
+    // t->GetResources((IResources**)&res);
+    return InitializeWithState(state, res);
+}
+
+ECode ShapeDrawable::UpdateStateFromTypedArray(
+    /* [in] */ ITypedArray* a)
+{
+    AutoPtr<ShapeState> state = mShapeState;
+    AutoPtr<IPaint> paint = state->mPaint;
+
+    // Account for any configuration changes.
+    Int32 config = 0;
+    FAIL_RETURN(a->GetChangingConfigurations(&config));
+    state->mChangingConfigurations |= config;
+
+    // Extract the theme attributes, if any.
+    FAIL_RETURN(((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&state->mThemeAttrs));
+
+    Int32 color = 0;
+    paint->GetColor(&color);
+    FAIL_RETURN(a->GetColor(R::styleable::ShapeDrawable_color, color, &color));
+    paint->SetColor(color);
+
+    Boolean dither = FALSE;
+    paint->IsDither(&dither);
+    FAIL_RETURN(a->GetBoolean(R::styleable::ShapeDrawable_dither, dither, &dither));
+    paint->SetDither(dither);
+
+    Float value = 0;
+    FAIL_RETURN(a->GetDimension(R::styleable::ShapeDrawable_width, state->mIntrinsicWidth, &value));
+    SetIntrinsicWidth((Int32) value);
+    FAIL_RETURN(a->GetDimension(R::styleable::ShapeDrawable_height, state->mIntrinsicHeight, &value));
+    SetIntrinsicHeight((Int32) value);
+
+    Int32 tintMode = 0;
+    assert(0 && "TODO");
+    // FAIL_RETURN(a->GetInt32(R::styleable::ShapeDrawable_tintMode, -1, &tintMode));
+    if (tintMode != -1) {
+        Drawable::ParseTintMode(tintMode, PorterDuffMode_SRC_IN, &state->mTintMode);
+    }
+
+    AutoPtr<IColorStateList> tint;
+    assert(0 && "TODO");
+    // FAIL_RETURN(a->GetColorStateList(R::styleable::ShapeDrawable_tint, (IColorStateList**)&tint));
+    if (tint != NULL) {
+        state->mTint = tint;
+    }
     return NOERROR;
 }
 
@@ -411,6 +566,18 @@ void ShapeDrawable::UpdateShape()
         }
     }
     InvalidateSelf();
+}
+
+ECode ShapeDrawable::GetOutline(
+    /* [in] */ IOutline* outline)
+{
+    if (mShapeState->mShape != NULL) {
+        mShapeState->mShape->GetOutline(outline);
+        Int32 alpha = 0;
+        GetAlpha(&alpha);
+        outline->SetAlpha(alpha / 255.0f);
+    }
+    return NOERROR;
 }
 
 ECode ShapeDrawable::GetConstantState(
@@ -463,22 +630,31 @@ ECode ShapeDrawable::Mutate(
 
 ECode ShapeDrawable::constructor()
 {
-    return constructor((ShapeState*)NULL);
+    return constructor(new ShapeState(NULL), NULL, NULL);
 }
 
 ECode ShapeDrawable::constructor(
     /* [in] */ IShape* s)
 {
-    constructor((ShapeState*)NULL);
+    constructor(new ShapeState(NULL), NULL, NULL);
     mShapeState->mShape = s;
     return NOERROR;
 }
 
 ECode ShapeDrawable::constructor(
-    /* [in] */ ShapeState* state)
+    /* [in] */ ShapeState* state,
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme)
 {
-    mShapeState = new ShapeState(state);
-    return NOERROR;
+    Boolean can = FALSE;
+    if (theme != NULL && (state->CanApplyTheme(&can), can)) {
+        mShapeState = new ShapeState(state);
+        ApplyTheme(theme);
+    } else {
+        mShapeState = state;
+    }
+
+    return InitializeWithState(state, res);
 }
 
 } // namespace Drawable

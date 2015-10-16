@@ -2,13 +2,14 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/drawable/InsetDrawable.h"
 #include "elastos/droid/graphics/drawable/CInsetDrawable.h"
+#include "elastos/droid/graphics/Insets.h"
+#include "elastos/droid/content/res/CTypedArray.h"
 #include "elastos/droid/R.h"
+#include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 
-
+using Elastos::Droid::Content::Res::CTypedArray;
 using Elastos::Utility::Logging::Logger;
-
-using Elastos::Droid::R;
 
 namespace Elastos {
 namespace Droid {
@@ -28,6 +29,8 @@ InsetDrawable::InsetState::InsetState(
     , mCanConstantState(FALSE)
 {
     if (orig != NULL) {
+        mThemeAttrs = orig->mThemeAttrs;
+        mChangingConfigurations = orig->mChangingConfigurations;
         AutoPtr<IDrawableConstantState> state;
         orig->mDrawable->GetConstantState((IDrawableConstantState**)&state);
         if (res != NULL) {
@@ -37,6 +40,17 @@ InsetDrawable::InsetState::InsetState(
             state->NewDrawable((IDrawable**)&mDrawable);
         }
         mDrawable->SetCallback((IDrawableCallback*)owner->Probe(EIID_IDrawableCallback));
+
+        Int32 dir = 0;
+        orig->mDrawable->GetLayoutDirection(&dir);
+        mDrawable->SetLayoutDirection(dir);
+        AutoPtr<IRect> bounds;
+        orig->mDrawable->GetBounds((IRect**)&bounds);
+        mDrawable->SetBounds(bounds);
+        Int32 level = 0;
+        orig->mDrawable->GetLevel(&level);
+        Boolean tmp = FALSE;
+        mDrawable->SetLevel(level, &tmp);
         mInsetLeft = orig->mInsetLeft;
         mInsetTop = orig->mInsetTop;
         mInsetRight = orig->mInsetRight;
@@ -49,7 +63,7 @@ ECode InsetDrawable::InsetState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
-    return CInsetDrawable::New((Handle32)this, NULL, (IInsetDrawable**)drawable);
+    return CInsetDrawable::New(this, NULL, (IInsetDrawable**)drawable);
 }
 
 ECode InsetDrawable::InsetState::NewDrawable(
@@ -57,7 +71,7 @@ ECode InsetDrawable::InsetState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
-    return CInsetDrawable::New((Handle32)this, res, (IInsetDrawable**)drawable);
+    return CInsetDrawable::New(this, res, (IInsetDrawable**)drawable);
 }
 
 ECode InsetDrawable::InsetState::GetChangingConfigurations(
@@ -120,60 +134,154 @@ InsetDrawable::InsetDrawable(
 ECode InsetDrawable::Inflate(
     /* [in] */ IResources* r,
     /* [in] */ IXmlPullParser* parser,
-    /* [in] */ IAttributeSet* attrs)
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme) /*throws XmlPullParserException, IOException*/
 {
-    Int32 type;
-
     Int32 size = ARRAY_SIZE(R::styleable::InsetDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::InsetDrawable, size);
-
     AutoPtr<ITypedArray> a;
-    r->ObtainAttributes(attrs, layout, (ITypedArray**)&a);
+    ECode ec = ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
+    FAIL_GOTO(ec, error);
+    ec = Drawable::InflateWithAttributes(r, parser, a, R::styleable::InsetDrawable_visible);
+    FAIL_GOTO(ec, error);
 
-    Drawable::InflateWithAttributes(r, parser, a, R::styleable::InsetDrawable_visible);
+    mInsetState->mDrawable = NULL;
+    ec = UpdateStateFromTypedArray(a);
+    FAIL_GOTO(ec, error);
 
-    Int32 drawableRes;
-    a->GetResourceId(R::styleable::InsetDrawable_drawable, 0, &drawableRes);
-
-    Int32 inLeft, inTop, inRight, inBottom;
-    a->GetDimensionPixelOffset(R::styleable::InsetDrawable_insetLeft, 0, &inLeft);
-    a->GetDimensionPixelOffset(R::styleable::InsetDrawable_insetTop, 0, &inTop);
-    a->GetDimensionPixelOffset(R::styleable::InsetDrawable_insetRight, 0, &inRight);
-    a->GetDimensionPixelOffset(R::styleable::InsetDrawable_insetBottom, 0, &inBottom);
-
-    a->Recycle();
-
-    AutoPtr<IDrawable> dr;
-    if (drawableRes != 0) {
-        r->GetDrawable(drawableRes, (IDrawable**)&dr);
-    }
-    else {
-        while (parser->Next(&type), type == IXmlPullParser::TEXT) {
+    // Load inner XML elements.
+    if (mInsetState->mDrawable == NULL) {
+        Int32 type = 0;
+        while ((parser->Next(&type), type) == IXmlPullParser::TEXT) {
         }
         if (type != IXmlPullParser::START_TAG) {
-//            throw new XmlPullParserException(
-//                    parser.getPositionDescription()
-//                    + ": <inset> tag requires a 'drawable' attribute or "
-//                    + "child tag defining a drawable");
+            // throw new XmlPullParserException(
+            //         parser.getPositionDescription()
+            //                 + ": <inset> tag requires a 'drawable' attribute or "
+            //                 + "child tag defining a drawable");
             return E_XML_PULL_PARSER_EXCEPTION;
         }
-        Drawable::CreateFromXmlInner(r, parser, attrs, (IDrawable**)&dr);
-    }
-
-    if (dr == NULL) {
-        Logger::W("drawable", "No drawable specified for <inset>");
-    }
-
-    mInsetState->mDrawable = dr;
-    mInsetState->mInsetLeft = inLeft;
-    mInsetState->mInsetRight = inRight;
-    mInsetState->mInsetTop = inTop;
-    mInsetState->mInsetBottom = inBottom;
-
-    if (dr != NULL) {
+        AutoPtr<IDrawable> dr;
+        ec = Drawable::CreateFromXmlInner(r, parser, attrs, theme, (IDrawable**)&dr);
+        FAIL_GOTO(ec, error);
+        mInsetState->mDrawable = dr;
         dr->SetCallback((IDrawableCallback*)this->Probe(EIID_IDrawableCallback));
     }
+
+    ec = VerifyRequiredAttributes(a);
+
+error:
+    a->Recycle();
+    return ec;
+}
+
+ECode InsetDrawable::VerifyRequiredAttributes(
+    /* [in] */ ITypedArray* a) /*throws XmlPullParserException*/
+{
+    // If we're not waiting on a theme, verify required attributes.
+    if (mInsetState->mDrawable == NULL && (mInsetState->mThemeAttrs == NULL
+            || (*mInsetState->mThemeAttrs)[R::styleable::InsetDrawable_drawable] == 0)) {
+        // throw new XmlPullParserException(a.getPositionDescription() +
+        //         ": <inset> tag requires a 'drawable' attribute or "
+        //         + "child tag defining a drawable");
+        return E_XML_PULL_PARSER_EXCEPTION;
+    }
+    return NOERROR;
+}
+
+ECode InsetDrawable::UpdateStateFromTypedArray(
+    /* [in] */ ITypedArray* a) /*throws XmlPullParserException*/
+{
+    AutoPtr<InsetState> state = mInsetState;
+
+    // Account for any configuration changes.
+    Int32 config = 0;
+    a->GetChangingConfigurations(&config);
+    state->mChangingConfigurations |= config;
+
+    // Extract the theme attributes, if any.
+    ((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&state->mThemeAttrs);
+
+    Int32 N = 0, inset = 0, attr = 0;;
+    AutoPtr<IDrawable> dr;
+    assert(0 && "TODO");
+    FAIL_RETURN(a->GetIndexCount(&N));
+    for (Int32 i = 0; i < N; i++) {
+        attr = 0;
+        FAIL_RETURN(a->GetIndex(i, &attr));
+        switch (attr) {
+            case R::styleable::InsetDrawable_drawable:
+                dr = NULL;
+                FAIL_RETURN(a->GetDrawable(attr, (IDrawable**)&dr));
+                if (dr != NULL) {
+                    state->mDrawable = dr;
+                    dr->SetCallback((IDrawableCallback*)this->Probe(EIID_IDrawableCallback));
+                }
+                break;
+            // case R::styleable::InsetDrawable_inset:
+            //     FAIL_RETURN(a->GetDimensionPixelOffset(attr, Elastos::Core::Math::INT32_MIN_VALUE, &inset));
+            //     if (inset != Elastos::Core::Math::INT32_MIN_VALUE) {
+            //         state->mInsetLeft = inset;
+            //         state->mInsetTop = inset;
+            //         state->mInsetRight = inset;
+            //         state->mInsetBottom = inset;
+            //     }
+            //     break;
+            case R::styleable::InsetDrawable_insetLeft:
+                FAIL_RETURN(a->GetDimensionPixelOffset(attr, state->mInsetLeft, &state->mInsetLeft));
+                break;
+            case R::styleable::InsetDrawable_insetTop:
+                FAIL_RETURN(a->GetDimensionPixelOffset(attr, state->mInsetTop, &state->mInsetTop));
+                break;
+            case R::styleable::InsetDrawable_insetRight:
+                FAIL_RETURN(a->GetDimensionPixelOffset(attr, state->mInsetRight, &state->mInsetRight));
+                break;
+            case R::styleable::InsetDrawable_insetBottom:
+                FAIL_RETURN(a->GetDimensionPixelOffset(attr, state->mInsetBottom, &state->mInsetBottom));
+                break;
+        }
+    }
+    return NOERROR;
+}
+
+ECode InsetDrawable::ApplyTheme(
+    /* [in] */ IResourcesTheme* t)
+{
+    Drawable::ApplyTheme(t);
+
+    AutoPtr<InsetState> state = mInsetState;
+    if (state == NULL || state->mThemeAttrs == NULL) {
+        return NOERROR;
+    }
+
+    AutoPtr<ITypedArray> a;
+    Int32 size = ARRAY_SIZE(R::styleable::InsetDrawable);
+    AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+    layout->Copy(R::styleable::InsetDrawable, size);
+    assert(0 && "TODO");
+    // t->ResolveAttributes(state->mThemeAttrs, layout, (ITypedArray**)&a);
+    // try {
+    if (FAILED(UpdateStateFromTypedArray(a))) {
+        a->Recycle();
+        return E_RUNTIME_EXCEPTION;
+    }
+    if (FAILED(VerifyRequiredAttributes(a))) {
+        a->Recycle();
+        return E_RUNTIME_EXCEPTION;
+    }
+    // } catch (XmlPullParserException e) {
+    //     throw new RuntimeException(e);
+    // } finally {
+    return a->Recycle();
+    // }
+}
+
+ECode InsetDrawable::CanApplyTheme(
+    /* [out] */ Boolean* can)
+{
+    VALIDATE_NOT_NULL(can);
+    *can = mInsetState != NULL && mInsetState->mThemeAttrs != NULL;
     return NOERROR;
 }
 
@@ -245,13 +353,45 @@ ECode InsetDrawable::GetPadding(
     ((CRect*)padding)->mTop += mInsetState->mInsetTop;
     ((CRect*)padding)->mBottom += mInsetState->mInsetBottom;
 
-    if (pad || (mInsetState->mInsetLeft | mInsetState->mInsetRight |
-                mInsetState->mInsetTop | mInsetState->mInsetBottom) != 0) {
-        *isPadding = TRUE;
-        return NOERROR;
-    }
-    *isPadding = FALSE;
+    *isPadding = (pad || (mInsetState->mInsetLeft | mInsetState->mInsetRight |
+                mInsetState->mInsetTop | mInsetState->mInsetBottom) != 0);
     return NOERROR;
+}
+
+ECode InsetDrawable::GetOpticalInsets(
+    /* [out] */ IInsets** sets)
+{
+    VALIDATE_NOT_NULL(sets);
+    AutoPtr<IInsets> contentInsets;
+    Drawable::GetOpticalInsets((IInsets**)&contentInsets);
+    *sets = Insets::Of(((Insets*)contentInsets.Get())->mLeft + mInsetState->mInsetLeft,
+            ((Insets*)contentInsets.Get())->mTop + mInsetState->mInsetTop,
+            ((Insets*)contentInsets.Get())->mRight + mInsetState->mInsetRight,
+            ((Insets*)contentInsets.Get())->mBottom + mInsetState->mInsetBottom);
+    REFCOUNT_ADD(*sets);
+    return NOERROR;
+}
+
+ECode InsetDrawable::SetHotspot(
+    /* [in] */ Float x,
+    /* [in] */ Float y)
+{
+    return mInsetState->mDrawable->SetHotspot(x, y);
+}
+
+ECode InsetDrawable::SetHotspotBounds(
+    /* [in] */ Int32 left,
+    /* [in] */ Int32 top,
+    /* [in] */ Int32 right,
+    /* [in] */ Int32 bottom)
+{
+    return mInsetState->mDrawable->SetHotspotBounds(left, top, right, bottom);
+}
+
+ECode InsetDrawable::GetHotspotBounds(
+    /* [in] */ IRect* outRect)
+{
+    return mInsetState->mDrawable->GetHotspotBounds(outRect);
 }
 
 ECode InsetDrawable::SetVisible(
@@ -270,10 +410,34 @@ ECode InsetDrawable::SetAlpha(
     return mInsetState->mDrawable->SetAlpha(alpha);
 }
 
+ECode InsetDrawable::GetAlpha(
+    /* [out] */ Int32* alpha)
+{
+    return mInsetState->mDrawable->GetAlpha(alpha);
+}
+
 ECode InsetDrawable::SetColorFilter(
     /* [in] */ IColorFilter* cf)
 {
     return mInsetState->mDrawable->SetColorFilter(cf);
+}
+
+ECode InsetDrawable::SetTintList(
+    /* [in] */ IColorStateList* tint)
+{
+    return mInsetState->mDrawable->SetTintList(tint);
+}
+
+ECode InsetDrawable::SetTintMode(
+    /* [in] */ PorterDuffMode tintMode)
+{
+    return mInsetState->mDrawable->SetTintMode(tintMode);
+}
+
+ECode InsetDrawable::SetLayoutDirection(
+    /* [in] */ Int32 layoutDirection)
+{
+    return mInsetState->mDrawable->SetLayoutDirection(layoutDirection);
 }
 
 ECode InsetDrawable::GetOpacity(
@@ -298,6 +462,14 @@ Boolean InsetDrawable::OnStateChange(
     GetBounds((IRect**)&rect);
     OnBoundsChange(rect);
     return changed;
+}
+
+Boolean InsetDrawable::OnLevelChange(
+    /* [in] */ Int32 level)
+{
+    Boolean result = FALSE;
+    mInsetState->mDrawable->SetLevel(level, &result);
+    return result;
 }
 
 void InsetDrawable::OnBoundsChange(
@@ -326,6 +498,12 @@ ECode InsetDrawable::GetIntrinsicHeight(
 {
     VALIDATE_NOT_NULL(height);
     return mInsetState->mDrawable->GetIntrinsicHeight(height);
+}
+
+ECode InsetDrawable::GetOutline(
+    /* [in] */ /*@NonNull*/ IOutline* outline)
+{
+    return mInsetState->mDrawable->GetOutline(outline);
 }
 
 ECode InsetDrawable::GetConstantState(
@@ -360,8 +538,9 @@ ECode InsetDrawable::Mutate(
 ECode InsetDrawable::GetDrawable(
     /* [out] */ IDrawable** drawable)
 {
-    assert(0 && "TODO");
-    //not merge from android5.x
+    VALIDATE_NOT_NULL(drawable);
+    *drawable = mInsetState->mDrawable;
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 

@@ -39,14 +39,14 @@ AnimationDrawable::AnimationState::~AnimationState()
 ECode AnimationDrawable::AnimationState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
-    return CAnimationDrawable::New((Handle32)this, NULL, (IAnimationDrawable**)drawable);
+    return CAnimationDrawable::New(this, NULL, (IAnimationDrawable**)drawable);
 }
 
 ECode AnimationDrawable::AnimationState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
-    return CAnimationDrawable::New((Handle32)this, res, (IAnimationDrawable**)drawable);
+    return CAnimationDrawable::New(this, res, (IAnimationDrawable**)drawable);
 }
 
 void AnimationDrawable::AnimationState::AddFrame(

@@ -50,7 +50,7 @@ ECode ScaleDrawable::ScaleState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
-    return CScaleDrawable::New((Handle32)this, NULL, (IScaleDrawable**)drawable);
+    return CScaleDrawable::New(this, NULL, (IScaleDrawable**)drawable);
 }
 
 ECode ScaleDrawable::ScaleState::NewDrawable(
@@ -58,7 +58,7 @@ ECode ScaleDrawable::ScaleState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
-    return CScaleDrawable::New((Handle32)this, res, (IScaleDrawable**)drawable);
+    return CScaleDrawable::New(this, res, (IScaleDrawable**)drawable);
 }
 
 ECode ScaleDrawable::ScaleState::GetChangingConfigurations(
@@ -134,9 +134,10 @@ Float ScaleDrawable::GetPercent(
 ECode ScaleDrawable::Inflate(
     /* [in] */ IResources* r,
     /* [in] */ IXmlPullParser* parser,
-    /* [in] */ IAttributeSet* attrs)
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme)
 {
-    FAIL_RETURN(Drawable::Inflate(r, parser, attrs));
+    FAIL_RETURN(Drawable::Inflate(r, parser, attrs, theme));
 
     Int32 type;
 
@@ -145,7 +146,7 @@ ECode ScaleDrawable::Inflate(
     layout->Copy(R::styleable::ScaleDrawable, size);
 
     AutoPtr<ITypedArray> a;
-    r->ObtainAttributes(attrs, layout, (ITypedArray**)&a);
+    ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
 
     Float sw = GetPercent(a, R::styleable::ScaleDrawable_scaleWidth);
     Float sh = GetPercent(a, R::styleable::ScaleDrawable_scaleHeight);
@@ -167,7 +168,7 @@ ECode ScaleDrawable::Inflate(
             continue;
         }
         dr = NULL;
-        Drawable::CreateFromXmlInner(r, parser, attrs, (IDrawable**)&dr);
+        Drawable::CreateFromXmlInner(r, parser, attrs, theme, (IDrawable**)&dr);
     }
 
     if (dr == NULL) {
@@ -268,6 +269,24 @@ ECode ScaleDrawable::SetAlpha(
     /* [in] */ Int32 alpha)
 {
     return mScaleState->mDrawable->SetAlpha(alpha);
+}
+
+ECode ScaleDrawable::GetAlpha(
+    /* [out] */ Int32* alpha)
+{
+    return mScaleState->mDrawable->GetAlpha(alpha);
+}
+
+ECode ScaleDrawable::SetTintList(
+    /* [in] */ IColorStateList* tint)
+{
+    return mScaleState->mDrawable->SetTintList(tint);
+}
+
+ECode ScaleDrawable::SetTintMode(
+    /* [in] */ PorterDuffMode tintMode)
+{
+    return mScaleState->mDrawable->SetTintMode(tintMode);
 }
 
 ECode ScaleDrawable::SetColorFilter(

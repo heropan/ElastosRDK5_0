@@ -2,20 +2,23 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/drawable/GradientDrawable.h"
 #include "elastos/droid/graphics/drawable/CGradientDrawable.h"
-// #include "elastos/droid/graphics/CPaint.h"
-// #include "elastos/droid/graphics/CPath.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CPath.h"
 #include "elastos/droid/graphics/CRectF.h"
-// #include "elastos/droid/graphics/CDashPathEffect.h"
-// #include "elastos/droid/graphics/CLinearGradient.h"
-// #include "elastos/droid/graphics/CRadialGradient.h"
-// #include "elastos/droid/graphics/CSweepGradient.h"
+#include "elastos/droid/graphics/CDashPathEffect.h"
+#include "elastos/droid/graphics/CLinearGradient.h"
+#include "elastos/droid/graphics/CRadialGradient.h"
+#include "elastos/droid/graphics/CSweepGradient.h"
 #include "elastos/droid/R.h"
+#include "elastos/droid/content/res/CColorStateList.h"
+#include "elastos/droid/content/res/CTypedArray.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::Logging::Logger;
-
+using Elastos::Droid::Content::Res::CTypedArray;
+using Elastos::Droid::Content::Res::CColorStateList;
 using Elastos::Droid::R;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -28,26 +31,27 @@ GradientDrawable::GradientState::GradientState(
     : mChangingConfigurations(0)
     , mShape(IGradientDrawable::RECTANGLE)
     , mGradient(IGradientDrawable::LINEAR_GRADIENT)
+    , mAngle(0)
     , mOrientation(orientation)
-    , mHasSolidColor(FALSE)
-    , mSolidColor(0)
     , mStrokeWidth(-1)
-    , mStrokeColor(0)
     , mStrokeDashWidth(0)
     , mStrokeDashGap(0)
     , mRadius(0)
     , mWidth(-1)
     , mHeight(-1)
-    , mInnerRadiusRatio(0)
-    , mThicknessRatio(0)
-    , mInnerRadius(0)
-    , mThickness(0)
+    , mInnerRadiusRatio(DEFAULT_INNER_RADIUS_RATIO)
+    , mThicknessRatio(DEFAULT_THICKNESS_RATIO)
+    , mInnerRadius(-1)
+    , mDither(FALSE)
+    , mThickness(-1)
     , mCenterX(0.5f)
     , mCenterY(0.5f)
     , mGradientRadius(0.5f)
+    , mGradientRadiusType(RADIUS_TYPE_PIXELS)
     , mUseLevel(FALSE)
     , mUseLevelForShape(FALSE)
-    , mOpaque(FALSE)
+    , mOpaqueOverBounds(FALSE)
+    , mOpaqueOverShape(FALSE)
 {
     SetColors(colors);
 }
@@ -57,11 +61,11 @@ GradientDrawable::GradientState::GradientState(
     : mChangingConfigurations(state->mChangingConfigurations)
     , mShape(state->mShape)
     , mGradient(state->mGradient)
+    , mAngle(state->mAngle)
     , mOrientation(state->mOrientation)
-    , mHasSolidColor(state->mHasSolidColor)
-    , mSolidColor(state->mSolidColor)
+    , mColorStateList(state->mColorStateList)
+    , mStrokeColorStateList(state->mStrokeColorStateList)
     , mStrokeWidth(state->mStrokeWidth)
-    , mStrokeColor(state->mStrokeColor)
     , mStrokeDashWidth(state->mStrokeDashWidth)
     , mStrokeDashGap(state->mStrokeDashGap)
     , mRadius(state->mRadius)
@@ -71,12 +75,21 @@ GradientDrawable::GradientState::GradientState(
     , mThicknessRatio(state->mThicknessRatio)
     , mInnerRadius(state->mInnerRadius)
     , mThickness(state->mThickness)
+    , mThemeAttrs(state->mThemeAttrs)
+    , mAttrSize(state->mAttrSize)
+    , mAttrGradient(state->mAttrGradient)
+    , mAttrSolid(state->mAttrSolid)
+    , mAttrStroke(state->mAttrStroke)
+    , mAttrCorners(state->mAttrCorners)
+    , mAttrPadding(state->mAttrPadding)
     , mCenterX(state->mCenterX)
     , mCenterY(state->mCenterY)
     , mGradientRadius(state->mGradientRadius)
+    , mGradientRadiusType(state->mGradientRadiusType)
     , mUseLevel(state->mUseLevel)
     , mUseLevelForShape(state->mUseLevelForShape)
-    , mOpaque(state->mOpaque)
+    , mOpaqueOverBounds(state->mOpaqueOverBounds)
+    , mOpaqueOverShape(state->mOpaqueOverShape)
 {
     if (state->mColors != NULL) {
         mColors = state->mColors->Clone();
@@ -88,7 +101,7 @@ GradientDrawable::GradientState::GradientState(
         mRadiusArray = state->mRadiusArray->Clone();
     }
     if (state->mPadding != NULL) {
-        CRect::NewByFriend((IRect*)state->mPadding.Get(), (CRect**)&mPadding);
+        CRect::New(state->mPadding, (IRect**)&mPadding);
     }
 }
 
@@ -96,12 +109,20 @@ GradientDrawable::GradientState::~GradientState()
 {
 }
 
+ECode GradientDrawable::GradientState::CanApplyTheme(
+    /* [out] */ Boolean* can)
+{
+    VALIDATE_NOT_NULL(can);
+    *can = mThemeAttrs != NULL;
+    return NOERROR;
+}
+
 ECode GradientDrawable::GradientState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
 
-    return CGradientDrawable::New(this, (IGradientDrawable**)drawable);
+    return CGradientDrawable::New(this, NULL, (IGradientDrawable**)drawable);
 }
 
 ECode GradientDrawable::GradientState::NewDrawable(
@@ -110,7 +131,17 @@ ECode GradientDrawable::GradientState::NewDrawable(
 {
     VALIDATE_NOT_NULL(drawable);
 
-    return CGradientDrawable::New(this, (IGradientDrawable**)drawable);
+    return CGradientDrawable::New(this, NULL, (IGradientDrawable**)drawable);
+}
+
+ECode GradientDrawable::GradientState::NewDrawable(
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme,
+    /* [out] */ IDrawable** drawable)
+{
+    VALIDATE_NOT_NULL(drawable);
+
+    return CGradientDrawable::New(this, theme, (IGradientDrawable**)drawable);
 }
 
 ECode GradientDrawable::GradientState::GetChangingConfigurations(
@@ -146,52 +177,43 @@ void GradientDrawable::GradientState::SetGradientCenter(
 void GradientDrawable::GradientState::SetColors(
     /* [in] */ ArrayOf<Int32>* colors)
 {
-    mHasSolidColor = FALSE;
     mColors = colors;
+    mColorStateList = NULL;
     ComputeOpacity();
 }
 
-void GradientDrawable::GradientState::SetSolidColor(
-    /* [in] */ Int32 argb)
+void GradientDrawable::GradientState::SetColorStateList(
+    /* [in] */ IColorStateList* colorStateList)
 {
-    mHasSolidColor = TRUE;
-    mSolidColor = argb;
     mColors = NULL;
+    mColorStateList = colorStateList;
     ComputeOpacity();
 }
 
 void GradientDrawable::GradientState::ComputeOpacity()
 {
-    if (mShape != IGradientDrawable::RECTANGLE) {
-        mOpaque = FALSE;
-        return;
-    }
-
-    if (mRadius > 0 || mRadiusArray != NULL) {
-        mOpaque = FALSE;
-        return;
-    }
-
-    if (mStrokeWidth > 0 && !IsOpaque(mStrokeColor)) {
-        mOpaque = FALSE;
-        return;
-    }
-
-    if (mHasSolidColor) {
-        mOpaque = IsOpaque(mSolidColor);
-        return;
-    }
+    mOpaqueOverBounds = FALSE;
+    mOpaqueOverShape = FALSE;
 
     if (mColors != NULL) {
         for (Int32 i = 0; i < mColors->GetLength(); i++) {
             if (!IsOpaque((*mColors)[i])) {
-                mOpaque = FALSE;
                 return;
             }
         }
     }
 
-    mOpaque = TRUE;
+    // An unfilled shape is not opaque over bounds or shape
+    if (mColors == NULL && mColorStateList == NULL) {
+        return;
+    }
+
+    // Colors are opaque, so opaqueOverShape=true,
+    mOpaqueOverShape = TRUE;
+    // and opaqueOverBounds=true if shape fills bounds
+    mOpaqueOverBounds = mShape == RECTANGLE
+            && mRadius <= 0
+            && mRadiusArray == NULL;
 }
 
 Boolean GradientDrawable::GradientState::IsOpaque(
@@ -202,21 +224,12 @@ Boolean GradientDrawable::GradientState::IsOpaque(
 
 void GradientDrawable::GradientState::SetStroke(
     /* [in] */ Int32 width,
-    /* [in] */ Int32 color)
-{
-    mStrokeWidth = width;
-    mStrokeColor = color;
-    ComputeOpacity();
-}
-
-void GradientDrawable::GradientState::SetStroke(
-    /* [in] */ Int32 width,
-    /* [in] */ Int32 color,
+    /* [in] */ IColorStateList* colorStateList,
     /* [in] */ Float dashWidth,
     /* [in] */ Float dashGap)
 {
     mStrokeWidth = width;
-    mStrokeColor = color;
+    mStrokeColorStateList = colorStateList;
     mStrokeDashWidth = dashWidth;
     mStrokeDashGap = dashGap;
     ComputeOpacity();
@@ -250,23 +263,29 @@ void GradientDrawable::GradientState::SetSize(
 }
 
 void GradientDrawable::GradientState::SetGradientRadius(
-    /* [in] */ Float gradientRadius)
+    /* [in] */ Float gradientRadius,
+    /* [in] */ Int32 type)
 {
     mGradientRadius = gradientRadius;
+    mGradientRadiusType = type;
 }
 
 
+const Int32 GradientDrawable::RADIUS_TYPE_PIXELS = 0;
+const Int32 GradientDrawable::RADIUS_TYPE_FRACTION = 1;
+const Int32 GradientDrawable::RADIUS_TYPE_FRACTION_PARENT = 2;
+const Float GradientDrawable::DEFAULT_INNER_RADIUS_RATIO = 3.0f;
+const Float GradientDrawable::DEFAULT_THICKNESS_RATIO = 9.0f;
 CAR_INTERFACE_IMPL(GradientDrawable, Drawable, IGradientDrawable)
 GradientDrawable::GradientDrawable()
     : mAlpha(0xFF)
-    , mDither(FALSE)
-    , mRectIsDirty(FALSE)
+    , mGradientIsDirty(FALSE)
     , mMutated(FALSE)
     , mPathIsDirty(TRUE)
+    , mGradientRadius(0)
 {
-    assert(0 && "TODO");
-    // CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mFillPaint);
-    // CPath::New((IPath**)&mPath);
+    CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mFillPaint);
+    CPath::New((IPath**)&mPath);
     CRectF::New((IRectF**)&mRect);
 }
 
@@ -274,17 +293,16 @@ GradientDrawable::GradientDrawable(
     /* [in] */ GradientDrawableOrientation orientation,
     /* [in] */ ArrayOf<Int32>* colors)
     : mAlpha(0xFF)
-    , mDither(FALSE)
-    , mRectIsDirty(FALSE)
+    , mGradientIsDirty(FALSE)
     , mMutated(FALSE)
     , mPathIsDirty(TRUE)
+    , mGradientRadius(0)
 {
-    assert(0 && "TODO");
-    // CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mFillPaint);
-    // CPath::New((IPath**)&mPath);
+    CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mFillPaint);
+    CPath::New((IPath**)&mPath);
     CRectF::NewByFriend((CRectF**)&mRect);
     AutoPtr<GradientState> state = new GradientState(orientation, colors);
-    constructor(state);
+    constructor(state, NULL);
 }
 
 ECode GradientDrawable::GetPadding(
@@ -293,7 +311,7 @@ ECode GradientDrawable::GetPadding(
 {
     VALIDATE_NOT_NULL(isPadding);
     if (mPadding != NULL) {
-        padding->Set((IRect*)mPadding.Get());
+        padding->Set(mPadding);
         *isPadding = TRUE;
         return NOERROR;
     }
@@ -329,26 +347,10 @@ ECode GradientDrawable::SetStroke(
     /* [in] */ Float dashWidth,
     /* [in] */ Float dashGap)
 {
-    mGradientState->SetStroke(width, color, dashWidth, dashGap);
-
-    if (mStrokePaint == NULL)  {
-        assert(0 && "TODO");
-        // CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mStrokePaint);
-        mStrokePaint->SetStyle(PaintStyle_STROKE);
-    }
-    mStrokePaint->SetStrokeWidth(width);
-    mStrokePaint->SetColor(color);
-
-    AutoPtr<IPathEffect> e;
-    if (dashWidth > 0) {
-        AutoPtr<ArrayOf<Float> > intervals = ArrayOf<Float>::Alloc(2);
-        (*intervals)[0] = dashWidth;
-        (*intervals)[1] = dashGap;
-        assert(0 && "TODO");
-        // CDashPathEffect::New(*intervals, 0, (IDashPathEffect**)&e);
-    }
-    mStrokePaint->SetPathEffect(e);
-    return InvalidateSelf();;
+    AutoPtr<IColorStateList> csl;
+    CColorStateList::ValueOf(color, (IColorStateList**)&csl);
+    mGradientState->SetStroke(width, csl, dashWidth, dashGap);
+    return SetStrokeInternal(width, color, dashWidth, dashGap);
 }
 
 ECode GradientDrawable::SetStroke(
@@ -357,18 +359,47 @@ ECode GradientDrawable::SetStroke(
     /* [in] */ Float dashWidth,
     /* [in] */ Float dashGap)
 {
-    assert(0 && "TODO");
-    //not merge from android5.x
-    return NOERROR;
+    mGradientState->SetStroke(width, colorStateList, dashWidth, dashGap);
+    Int32 color;
+    if (colorStateList == NULL) {
+        color = IColor::TRANSPARENT;
+    } else {
+        AutoPtr<ArrayOf<Int32> > stateSet;
+        GetState((ArrayOf<Int32>**)&stateSet);
+        colorStateList->GetColorForState(stateSet, 0, &color);
+    }
+    return SetStrokeInternal(width, color, dashWidth, dashGap);
+}
+
+ECode GradientDrawable::SetStrokeInternal(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 color,
+    /* [in] */ Float dashWidth,
+    /* [in] */ Float dashGap)
+{
+    if (mStrokePaint == NULL)  {
+        CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mStrokePaint);
+        mStrokePaint->SetStyle(PaintStyle_STROKE);
+    }
+    mStrokePaint->SetStrokeWidth(width);
+    mStrokePaint->SetColor(color);
+
+    AutoPtr<IDashPathEffect> e;
+    if (dashWidth > 0) {
+        AutoPtr<ArrayOf<Float> > intervals = ArrayOf<Float>::Alloc(2);
+        (*intervals)[0] = dashWidth;
+        (*intervals)[1] = dashGap;
+        CDashPathEffect::New(*intervals, 0, (IDashPathEffect**)&e);
+    }
+    mStrokePaint->SetPathEffect(IPathEffect::Probe(e));
+    return InvalidateSelf();
 }
 
 ECode GradientDrawable::SetStroke(
     /* [in] */ Int32 width,
     /* [in] */ IColorStateList* colorStateList)
 {
-    assert(0 && "TODO");
-    //not merge from android5.x
-    return NOERROR;
+    return SetStroke(width, colorStateList, 0, 0);
 }
 
 ECode GradientDrawable::SetSize(
@@ -393,7 +424,7 @@ ECode GradientDrawable::SetGradientType(
     /* [in] */ Int32 gradient)
 {
     mGradientState->SetGradientType(gradient);
-    mRectIsDirty = TRUE;
+    mGradientIsDirty  = TRUE;
     return InvalidateSelf();
 }
 
@@ -402,28 +433,35 @@ ECode GradientDrawable::SetGradientCenter(
     /* [in] */ Float y)
 {
     mGradientState->SetGradientCenter(x, y);
-    mRectIsDirty = TRUE;
+    mGradientIsDirty  = TRUE;
     return InvalidateSelf();
 }
 
 ECode GradientDrawable::SetGradientRadius(
     /* [in] */ Float gradientRadius)
 {
-    mGradientState->SetGradientRadius(gradientRadius);
-    mRectIsDirty = TRUE;
+    mGradientState->SetGradientRadius(gradientRadius, ITypedValue::COMPLEX_UNIT_PX);
+    mGradientIsDirty  = TRUE;
     return InvalidateSelf();
+}
+
+Boolean GradientDrawable::IsOpaque(
+    /* [in] */ Int32 color)
+{
+    return ((color >> 24) & 0xff) == 0xff;
 }
 
 ECode GradientDrawable::GetGradientRadius(
     /* [out] */ Float* gradientRadius)
 {
-    assert(0 && "TODO");
-    // if (mGradientState.mGradient != RADIAL_GRADIENT) {
-    //     return 0;
-    // }
+    VALIDATE_NOT_NULL(gradientRadius);
+    if (mGradientState->mGradient != RADIAL_GRADIENT) {
+        *gradientRadius = 0;
+        return NOERROR;
+    }
 
-    // ensureValidRect();
-    // return mGradientRadius;
+    EnsureValidRect();
+    *gradientRadius = mGradientRadius;
     return NOERROR;
 }
 
@@ -431,7 +469,7 @@ ECode GradientDrawable::SetUseLevel(
     /* [in] */ Boolean useLevel)
 {
     mGradientState->mUseLevel = useLevel;
-    mRectIsDirty = TRUE;
+    mGradientIsDirty  = TRUE;
     return InvalidateSelf();
 }
 
@@ -454,7 +492,7 @@ ECode GradientDrawable::SetOrientation(
     /* [in] */ GradientDrawableOrientation orientation)
 {
     mGradientState->mOrientation = orientation;
-    mRectIsDirty = TRUE;
+    mGradientIsDirty  = TRUE;
     return InvalidateSelf();
 }
 
@@ -462,7 +500,7 @@ ECode GradientDrawable::SetColors(
     /* [in] */ ArrayOf<Int32>* colors)
 {
     mGradientState->SetColors(colors);
-    mRectIsDirty = TRUE;
+    mGradientIsDirty  = TRUE;
     return InvalidateSelf();
 }
 
@@ -508,7 +546,7 @@ ECode GradientDrawable::Draw(
             assert(0 && "TODO");
             // CPaint::New((IPaint**)&mLayerPaint);
         }
-        mLayerPaint->SetDither(mDither);
+        mLayerPaint->SetDither(st->mDither);
         mLayerPaint->SetAlpha(mAlpha);
         mLayerPaint->SetColorFilter(mColorFilter);
 
@@ -529,14 +567,14 @@ ECode GradientDrawable::Draw(
             individual paints
         */
         mFillPaint->SetAlpha(currFillAlpha);
-        mFillPaint->SetDither(mDither);
+        mFillPaint->SetDither(st->mDither);
         mFillPaint->SetColorFilter(mColorFilter);
-        if (mColorFilter != NULL && !mGradientState->mHasSolidColor) {
+        if (mColorFilter != NULL && st->mColorStateList == NULL) {
             mFillPaint->SetColor(mAlpha << 24);
         }
         if (haveStroke) {
             mStrokePaint->SetAlpha(currStrokeAlpha);
-            mStrokePaint->SetDither(mDither);
+            mStrokePaint->SetDither(st->mDither);
             mStrokePaint->SetColorFilter(mColorFilter);
         }
     }
@@ -544,12 +582,7 @@ ECode GradientDrawable::Draw(
     switch (st->mShape) {
         case IGradientDrawable::RECTANGLE:
             if (st->mRadiusArray != NULL) {
-                if (mPathIsDirty || mRectIsDirty) {
-                    mPath->Reset();
-                    mPath->AddRoundRect((IRectF*)mRect.Get(), st->mRadiusArray,
-                            PathDirection_CW);
-                    mPathIsDirty = mRectIsDirty = FALSE;
-                }
+                BuildPathIfDirty();
                 canvas->DrawPath(mPath, mFillPaint);
                 if (haveStroke) {
                     canvas->DrawPath(mPath, mStrokePaint);
@@ -561,14 +594,12 @@ ECode GradientDrawable::Draw(
                 // to show it. If we did nothing, Skia would clamp the rad
                 // independently along each axis, giving us a thin ellipse
                 // if the rect were very wide but not very tall
-                Float rad = st->mRadius;
                 Float width, height;
                 mRect->GetWidth(&width);
                 mRect->GetHeight(&height);
-                Float r = Elastos::Core::Math::Min(width, height) * 0.5f;
-                if (rad > r) {
-                    rad = r;
-                }
+                Float rad = Elastos::Core::Math::Min(st->mRadius,
+                        Elastos::Core::Math::Min(width, height) * 0.5f);
+
                 canvas->DrawRoundRect(mRect, rad, rad, mFillPaint);
                 if (haveStroke) {
                     canvas->DrawRoundRect(mRect, rad, rad, mStrokePaint);
@@ -596,7 +627,9 @@ ECode GradientDrawable::Draw(
             CRectF* r = mRect;
             Float y;
             r->GetCenterY(&y);
-            canvas->DrawLine(r->mLeft, y, r->mRight, y, mStrokePaint);
+            if (haveStroke) {
+                canvas->DrawLine(r->mLeft, y, r->mRight, y, mStrokePaint);
+            }
             break;
         }
         case IGradientDrawable::RING:
@@ -618,6 +651,17 @@ ECode GradientDrawable::Draw(
         }
     }
     return NOERROR;
+}
+
+void GradientDrawable::BuildPathIfDirty()
+{
+    AutoPtr<GradientState> st = mGradientState;
+    if (mPathIsDirty) {
+        EnsureValidRect();
+        mPath->Reset();
+        mPath->AddRoundRect(mRect, st->mRadiusArray, PathDirection_CW);
+        mPathIsDirty = FALSE;
+    }
 }
 
 AutoPtr<IPath> GradientDrawable::BuildRing(
@@ -688,7 +732,9 @@ AutoPtr<IPath> GradientDrawable::BuildRing(
 ECode GradientDrawable::SetColor(
     /* [in] */ Int32 argb)
 {
-    mGradientState->SetSolidColor(argb);
+    AutoPtr<IColorStateList> csl;
+    CColorStateList::ValueOf(argb, (IColorStateList**)&csl);
+    mGradientState->SetColorStateList(csl);
     mFillPaint->SetColor(argb);
     return InvalidateSelf();
 }
@@ -696,17 +742,70 @@ ECode GradientDrawable::SetColor(
 ECode GradientDrawable::SetColor(
     /* [in] */ IColorStateList* colorStateList)
 {
-    assert(0 && "TODO");
-    // mGradientState.setColorStateList(colorStateList);
-    // final int color;
-    // if (colorStateList == null) {
-    //     color = Color.TRANSPARENT;
-    // } else {
-    //     final int[] stateSet = getState();
-    //     color = colorStateList.getColorForState(stateSet, 0);
-    // }
-    // mFillPaint.setColor(color);
-    // invalidateSelf();
+    mGradientState->SetColorStateList(colorStateList);
+    Int32 color;
+    if (colorStateList == NULL) {
+        color = IColor::TRANSPARENT;
+    } else {
+        AutoPtr<ArrayOf<Int32> > stateSet;
+        GetState((ArrayOf<Int32>**)&stateSet);
+        colorStateList->GetColorForState(stateSet, 0, &color);
+    }
+    mFillPaint->SetColor(color);
+    return InvalidateSelf();
+}
+
+Boolean GradientDrawable::OnStateChange(
+    /* [in] */ const ArrayOf<Int32>* stateSet)
+{
+    Boolean invalidateSelf = FALSE;
+
+    AutoPtr<GradientState> s = mGradientState;
+    AutoPtr<IColorStateList> stateList = s->mColorStateList;
+    if (stateList != NULL) {
+        Int32 newColor = 0;
+        stateList->GetColorForState((ArrayOf<Int32>*)stateSet, 0, &newColor);
+        Int32 oldColor = 0;
+        mFillPaint->GetColor(&oldColor);
+        if (oldColor != newColor) {
+            mFillPaint->SetColor(newColor);
+            invalidateSelf = TRUE;
+        }
+    }
+
+    AutoPtr<IPaint> strokePaint = mStrokePaint;
+    if (strokePaint != NULL) {
+        AutoPtr<IColorStateList> strokeStateList = s->mStrokeColorStateList;
+        if (strokeStateList != NULL) {
+            Int32 newStrokeColor = 0;
+            strokeStateList->GetColorForState((ArrayOf<Int32>*)stateSet, 0, &newStrokeColor);
+            Int32 oldStrokeColor = 0;
+            strokePaint->GetColor(&oldStrokeColor);
+            if (oldStrokeColor != newStrokeColor) {
+                strokePaint->SetColor(newStrokeColor);
+                invalidateSelf = TRUE;
+            }
+        }
+    }
+
+    if (invalidateSelf) {
+        InvalidateSelf();
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+ECode GradientDrawable::IsStateful(
+    /* [out] */ Boolean* isStateful)
+{
+    VALIDATE_NOT_NULL(isStateful);
+    AutoPtr<GradientState> s = mGradientState;
+    Boolean sf1 = FALSE, sf2 = FALSE;
+    Drawable::IsStateful(isStateful);
+    *isStateful = (*isStateful)
+            || (s->mColorStateList != NULL && (s->mColorStateList->IsStateful(&sf1), sf1))
+            || (s->mStrokeColorStateList != NULL && (s->mStrokeColorStateList->IsStateful(&sf2), sf2));
     return NOERROR;
 }
 
@@ -730,13 +829,30 @@ ECode GradientDrawable::SetAlpha(
     return NOERROR;
 }
 
+ECode GradientDrawable::GetAlpha(
+    /* [out] */ Int32* alpha)
+{
+    VALIDATE_NOT_NULL(alpha);
+    *alpha = mAlpha;
+    return NOERROR;
+}
+
 ECode GradientDrawable::SetDither(
     /* [in] */ Boolean dither)
 {
-    if (dither != mDither) {
-        mDither = dither;
+    if (dither != mGradientState->mDither) {
+        mGradientState->mDither = dither;
         InvalidateSelf();
     }
+    return NOERROR;
+}
+
+ECode GradientDrawable::GetColorFilter(
+    /* [out] */ IColorFilter** filter)
+{
+    VALIDATE_NOT_NULL(filter);
+    *filter = mColorFilter;
+    REFCOUNT_ADD(*filter);
     return NOERROR;
 }
 
@@ -754,7 +870,8 @@ ECode GradientDrawable::GetOpacity(
     /* [out] */ Int32* opacity)
 {
     VALIDATE_NOT_NULL(opacity);
-    *opacity = mGradientState->mOpaque ? IPixelFormat::OPAQUE : IPixelFormat::TRANSLUCENT;
+    *opacity = (mAlpha == 255 && mGradientState->mOpaqueOverBounds && IsOpaqueForState()) ?
+            IPixelFormat::OPAQUE : IPixelFormat::TRANSLUCENT;
     return NOERROR;
 }
 
@@ -764,14 +881,14 @@ void GradientDrawable::OnBoundsChange(
     Drawable::OnBoundsChange(r);
     mRingPath = NULL;
     mPathIsDirty = TRUE;
-    mRectIsDirty = TRUE;
+    mGradientIsDirty  = TRUE;
 }
 
 Boolean GradientDrawable::OnLevelChange(
     /* [in] */ Int32 level)
 {
     Drawable::OnLevelChange(level);
-    mRectIsDirty = TRUE;
+    mGradientIsDirty  = TRUE;
     mPathIsDirty = TRUE;
     InvalidateSelf();
     return TRUE;
@@ -779,8 +896,8 @@ Boolean GradientDrawable::OnLevelChange(
 
 Boolean GradientDrawable::EnsureValidRect()
 {
-    if (mRectIsDirty) {
-        mRectIsDirty = FALSE;
+    if (mGradientIsDirty ) {
+        mGradientIsDirty  = FALSE;
 
         AutoPtr<IRect> rect;
         GetBounds((IRect**)&rect);
@@ -805,7 +922,7 @@ Boolean GradientDrawable::EnsureValidRect()
             if (st->mGradient == IGradientDrawable::LINEAR_GRADIENT) {
                 Int32 tmp = 0;
                 GetLevel(&tmp);
-                Float level = st->mUseLevel ? (Float)tmp / 10000.0f : 1.0f;
+                Float level = st->mUseLevel ? tmp / 10000.0f : 1.0f;
                 switch (st->mOrientation) {
                 case GradientDrawableOrientation_TOP_BOTTOM:
                     x0 = r->mLeft;          y0 = r->mTop;
@@ -842,31 +959,42 @@ Boolean GradientDrawable::EnsureValidRect()
                 }
 
                 AutoPtr<IShader> shader;
-                assert(0 && "TODO");
-                // CLinearGradient::New(x0, y0, x1, y1, *colors,
-                //         st->mPositions, ShaderTileMode_CLAMP, (ILinearGradient**)&shader);
+                CLinearGradient::New(x0, y0, x1, y1, *colors,
+                        st->mPositions, ShaderTileMode_CLAMP, (ILinearGradient**)&shader);
                 mFillPaint->SetShader(shader);
-                if (!mGradientState->mHasSolidColor) {
-                    mFillPaint->SetColor(mAlpha << 24);
-                }
             }
             else if (st->mGradient == IGradientDrawable::RADIAL_GRADIENT) {
                 x0 = r->mLeft + (r->mRight - r->mLeft) * st->mCenterX;
                 y0 = r->mTop + (r->mBottom - r->mTop) * st->mCenterY;
 
-                Int32 tmp = 0;
-                GetLevel(&tmp);
-                Float level = st->mUseLevel ? (Float)tmp / 10000.0f : 1.0f;
-
-                AutoPtr<IShader> shader;
-                assert(0 && "TODO");
-                // CRadialGradient::New(x0, y0,
-                //         level * st->mGradientRadius, *colors, NULL,
-                //         ShaderTileMode_CLAMP, (IRadialGradient**)&shader);
-                mFillPaint->SetShader(shader);
-                if (!mGradientState->mHasSolidColor) {
-                    mFillPaint->SetColor(mAlpha << 24);
+                Float radius = st->mGradientRadius;
+                if (st->mGradientRadiusType == RADIUS_TYPE_FRACTION) {
+                    radius *= Elastos::Core::Math::Min(st->mWidth, st->mHeight);
+                } else if (st->mGradientRadiusType == RADIUS_TYPE_FRACTION_PARENT) {
+                    Float width = 0, height = 0;
+                    r->GetWidth(&width);
+                    r->GetHeight(&height);
+                    radius *= Elastos::Core::Math::Min(width, height);
                 }
+
+                if (st->mUseLevel) {
+                    Int32 level = 0;
+                    GetLevel(&level);
+                    radius *= level / 10000.0f;
+                }
+
+                mGradientRadius = radius;
+
+                if (radius == 0) {
+                    // We can't have a shader with zero radius, so let's
+                    // have a very, very small radius.
+                    radius = 0.001f;
+                }
+
+                AutoPtr<IRadialGradient> shader;
+                CRadialGradient::New(
+                        x0, y0, radius, *colors, NULL, ShaderTileMode_CLAMP, (IRadialGradient**)&shader);
+                mFillPaint->SetShader(IShader::Probe(shader));
             }
             else if (st->mGradient == IGradientDrawable::SWEEP_GRADIENT) {
                 x0 = r->mLeft + (r->mRight - r->mLeft) * st->mCenterX;
@@ -885,14 +1013,14 @@ Boolean GradientDrawable::EnsureValidRect()
                     (*tempColors)[length] = (*colors)[length - 1];
 
                     tempPositions = st->mTempPositions;
-                    Float fraction = 1.0f / (Float)(length - 1);
+                    Float fraction = 1.0f / (length - 1);
                     if (tempPositions == NULL || tempPositions->GetLength() != length + 1) {
                         tempPositions = st->mTempPositions = ArrayOf<Float>::Alloc(length + 1);
                     }
 
                     Int32 tmp = 0;
                     GetLevel(&tmp);
-                    Float level = (Float)tmp / 10000.0f;
+                    Float level = tmp / 10000.0f;
                     for (Int32 i = 0; i < length; i++) {
                         (*tempPositions)[i] = i * fraction * level;
                     }
@@ -900,12 +1028,14 @@ Boolean GradientDrawable::EnsureValidRect()
 
                 }
                 AutoPtr<IShader> shader;
-                assert(0 && "TODO");
-                // CSweepGradient::New(x0, y0, *tempColors, tempPositions, (ISweepGradient**)&shader);
+                CSweepGradient::New(x0, y0, *tempColors, tempPositions, (ISweepGradient**)&shader);
                 mFillPaint->SetShader(shader);
-                if (!mGradientState->mHasSolidColor) {
-                    mFillPaint->SetColor(mAlpha << 24);
-                }
+            }
+
+            // If we don't have a solid color, the alpha channel must be
+            // maxed out so that alpha modulation works correctly.
+            if (st->mColorStateList == NULL) {
+                mFillPaint->SetColor(IColor::BLACK);
             }
         }
     }
@@ -917,48 +1047,197 @@ Boolean GradientDrawable::EnsureValidRect()
 ECode GradientDrawable::Inflate(
     /* [in] */ IResources* r,
     /* [in] */ IXmlPullParser* parser,
-    /* [in] */ IAttributeSet* attrs)
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme)
 {
-    AutoPtr<GradientState> st = mGradientState;
-
     Int32 size = ARRAY_SIZE(R::styleable::GradientDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::GradientDrawable, size);
 
     AutoPtr<ITypedArray> a;
-    r->ObtainAttributes(attrs, layout,(ITypedArray**)&a);
+    ECode ec = ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
+    FAIL_GOTO(ec, error);
+    ec = Drawable::InflateWithAttributes(r, parser, a, R::styleable::GradientDrawable_visible);
+    FAIL_GOTO(ec, error);
+    ec = UpdateStateFromTypedArray(a);
 
-    Drawable::InflateWithAttributes(r, parser, a, R::styleable::GradientDrawable_visible);
-
-    Int32 shapeType;
-    a->GetInt32(R::styleable::GradientDrawable_shape, IGradientDrawable::RECTANGLE, &shapeType);
-    Boolean dither;
-    a->GetBoolean(R::styleable::GradientDrawable_dither, FALSE, &dither);
-
-    if (shapeType == IGradientDrawable::RING) {
-        a->GetDimensionPixelSize(R::styleable::GradientDrawable_innerRadius, -1, &st->mInnerRadius);
-        if (st->mInnerRadius == -1) {
-            a->GetFloat(R::styleable::GradientDrawable_innerRadiusRatio, 3.0f, &st->mInnerRadiusRatio);
-        }
-        a->GetDimensionPixelSize(R::styleable::GradientDrawable_thickness, -1, &st->mThickness);
-        if (st->mThickness == -1) {
-            a->GetFloat(R::styleable::GradientDrawable_thicknessRatio, 9.0f, &st->mThicknessRatio);
-        }
-        a->GetBoolean(R::styleable::GradientDrawable_useLevel, TRUE, &st->mUseLevelForShape);
+error:
+    a->Recycle();
+    if (ec != NOERROR) {
+        return ec;
     }
 
-    a->Recycle();
+    FAIL_RETURN(InflateChildElements(r, parser, attrs, theme));
+    mGradientState->ComputeOpacity();
+    return NOERROR;
+}
 
-    SetShape(shapeType);
-    SetDither(dither);
+ECode GradientDrawable::UpdateStateFromTypedArray(
+    /* [in] */ ITypedArray* a)
+{
+    AutoPtr<GradientState> state = mGradientState;
 
+    // Account for any configuration changes.
+    Int32 configuration = 0;
+    a->GetChangingConfigurations(&configuration);
+    state->mChangingConfigurations |= configuration;
+
+    // Extract the theme attributes, if any.
+    ((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&state->mThemeAttrs);
+
+    FAIL_RETURN(a->GetInt32(R::styleable::GradientDrawable_shape, state->mShape, &state->mShape));
+    FAIL_RETURN(a->GetBoolean(R::styleable::GradientDrawable_dither, state->mDither, &state->mDither));
+
+    if (state->mShape == RING) {
+        FAIL_RETURN(a->GetDimensionPixelSize(R::styleable::GradientDrawable_innerRadius, state->mInnerRadius, &state->mInnerRadius));
+
+        if (state->mInnerRadius == -1) {
+            FAIL_RETURN(a->GetFloat(R::styleable::GradientDrawable_innerRadiusRatio, state->mInnerRadiusRatio, &state->mInnerRadiusRatio));
+        }
+
+        FAIL_RETURN(a->GetDimensionPixelSize(R::styleable::GradientDrawable_thickness, state->mThickness, &state->mThickness));
+
+        if (state->mThickness == -1) {
+            FAIL_RETURN(a->GetFloat(R::styleable::GradientDrawable_thicknessRatio, state->mThicknessRatio, &state->mThicknessRatio));
+        }
+
+        FAIL_RETURN(a->GetBoolean(R::styleable::GradientDrawable_useLevel, state->mUseLevelForShape, &state->mUseLevelForShape));
+    }
+    return NOERROR;
+}
+
+ECode GradientDrawable::CanApplyTheme(
+    /* [out] */ Boolean* can)
+{
+    VALIDATE_NOT_NULL(can);
+    AutoPtr<GradientState> st = mGradientState;
+    *can = st != NULL && (st->mThemeAttrs != NULL || st->mAttrSize != NULL
+            || st->mAttrGradient != NULL || st->mAttrSolid != NULL
+            || st->mAttrStroke != NULL || st->mAttrCorners != NULL
+            || st->mAttrPadding != NULL);
+
+    return NOERROR;
+}
+
+ECode GradientDrawable::ApplyThemeChildElements(
+    /* [in] */ IResourcesTheme* t)
+{
+    AutoPtr<GradientState> st = mGradientState;
+
+    if (st->mAttrSize != NULL) {
+        AutoPtr<ITypedArray> a;
+
+        Int32 size = ARRAY_SIZE(R::styleable::GradientDrawableSize);
+        AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+        layout->Copy(R::styleable::GradientDrawableSize, size);
+        assert(0 && "TODO");
+        // t->ResolveAttributes(st->mAttrSize, layout, (ITypedArray**)&a);
+        ECode ec = UpdateGradientDrawableSize(a);
+        a->Recycle();
+        if (FAILED(ec)) {
+            return ec;
+        }
+    }
+
+    if (st->mAttrGradient != NULL) {
+        Int32 size = ARRAY_SIZE(R::styleable::GradientDrawableGradient);
+        AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+        layout->Copy(R::styleable::GradientDrawableGradient, size);
+        AutoPtr<ITypedArray> a;
+        assert(0 && "TODO");
+        // t->ResolveAttributes(st->mAttrGradient, layout, (ITypedArray**)&a);
+        // try {
+        AutoPtr<IResources> res;
+        assert(0 && "TODO");
+        // t->GetResources((IResources**)&res);
+        ECode ec = UpdateGradientDrawableGradient(res, a);
+        // } catch (XmlPullParserException e) {
+        //     throw new RuntimeException(e);
+        // } finally {
+        a->Recycle();
+        // }
+        if (FAILED(ec)) {
+            return E_RUNTIME_EXCEPTION;
+        }
+    }
+
+    if (st->mAttrSolid != NULL) {
+        Int32 size = ARRAY_SIZE(R::styleable::GradientDrawableSolid);
+        AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+        layout->Copy(R::styleable::GradientDrawableSolid, size);
+
+        AutoPtr<ITypedArray> a;
+        assert(0 && "TODO");
+        // t->ResolveAttributes(st->mAttrSolid, layout, (ITypedArray**)&a);
+        ECode ec = UpdateGradientDrawableSolid(a);
+        a->Recycle();
+        if (FAILED(ec)) {
+            return ec;
+        }
+    }
+
+    if (st->mAttrStroke != NULL) {
+        Int32 size = ARRAY_SIZE(R::styleable::GradientDrawableStroke);
+        AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+        layout->Copy(R::styleable::GradientDrawableStroke, size);
+
+        AutoPtr<ITypedArray> a;
+        assert(0 && "TODO");
+        // t->ResolveAttributes(st->mAttrStroke, layout, (ITypedArray**)&a);
+        ECode ec = UpdateGradientDrawableStroke(a);
+        a->Recycle();
+        if (FAILED(ec)) {
+            return ec;
+        }
+    }
+
+    if (st->mAttrCorners != NULL) {
+        Int32 size = ARRAY_SIZE(R::styleable::DrawableCorners);
+        AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+        layout->Copy(R::styleable::DrawableCorners, size);
+
+        AutoPtr<ITypedArray> a;
+        assert(0 && "TODO");
+        // t->ResolveAttributes(st->mAttrCorners, layout, (ITypedArray**)&a);
+        ECode ec = UpdateDrawableCorners(a);
+        a->Recycle();
+        if (FAILED(ec)) {
+            return ec;
+        }
+    }
+
+    if (st->mAttrPadding != NULL) {
+        Int32 size = ARRAY_SIZE(R::styleable::GradientDrawablePadding);
+        AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+        layout->Copy(R::styleable::GradientDrawablePadding, size);
+
+        AutoPtr<ITypedArray> a;
+        assert(0 && "TODO");
+        // t->ResolveAttributes(st->mAttrPadding, layout, (ITypedArray**)&a);
+        ECode ec = UpdateGradientDrawablePadding(a);
+        a->Recycle();
+        if (FAILED(ec)) {
+            return ec;
+        }
+    }
+    return NOERROR;
+}
+
+ECode GradientDrawable::InflateChildElements(
+    /* [in] */ IResources* r,
+    /* [in] */ IXmlPullParser* parser,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme) /*throws XmlPullParserException, IOException*/
+{
+    AutoPtr<ITypedArray> a;
     Int32 type;
 
-    Int32 innerDepth, depth;
+    Int32 innerDepth = 0;
     parser->GetDepth(&innerDepth);
     innerDepth += 1;
-    while ((parser->Next(&type), type != IXmlPullParser::END_DOCUMENT)
-           && ((parser->GetDepth(&depth), depth >= innerDepth)
+    Int32 depth = 0;
+    while ((parser->Next(&type), type) != IXmlPullParser::END_DOCUMENT
+           && ((parser->GetDepth(&depth), depth) >= innerDepth
                    || type != IXmlPullParser::END_TAG)) {
         if (type != IXmlPullParser::START_TAG) {
             continue;
@@ -968,214 +1247,369 @@ ECode GradientDrawable::Inflate(
             continue;
         }
 
-        a = NULL;
         String name;
         parser->GetName(&name);
 
         if (name.Equals("size")) {
-            size = ARRAY_SIZE(R::styleable::GradientDrawableSize);
-            layout = ArrayOf<Int32>::Alloc(size);
+            Int32 size = ARRAY_SIZE(R::styleable::GradientDrawableSize);
+            AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::GradientDrawableSize, size);
-            r->ObtainAttributes(attrs, layout, (ITypedArray**)&a);
-            Int32 width, height;
-            a->GetDimensionPixelSize(R::styleable::GradientDrawableSize_width, -1, &width);
-            a->GetDimensionPixelSize(R::styleable::GradientDrawableSize_height, -1, &height);
+            ECode ec = ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
+            if (FAILED(ec)) {
+                a->Recycle();
+                return ec;
+            }
+            ec = UpdateGradientDrawableSize(a);
             a->Recycle();
-            SetSize(width, height);
-        }
-        else if (name.Equals("gradient")) {
-            size = ARRAY_SIZE(R::styleable::GradientDrawableGradient);
-            layout = ArrayOf<Int32>::Alloc(size);
+            if (FAILED(ec)) {
+                return ec;
+            }
+        } else if (name.Equals("gradient")) {
+            Int32 size = ARRAY_SIZE(R::styleable::GradientDrawableGradient);
+            AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::GradientDrawableGradient, size);
-            r->ObtainAttributes(attrs, layout, (ITypedArray**)&a);
-            Int32 startColor;
-            a->GetColor(R::styleable::GradientDrawableGradient_startColor, 0, &startColor);
-            Boolean hasCenterColor;
-            a->HasValue(R::styleable::GradientDrawableGradient_centerColor, &hasCenterColor);
-            Int32 centerColor;
-            a->GetColor(R::styleable::GradientDrawableGradient_centerColor, 0, &centerColor);
-            Int32 endColor;
-            a->GetColor(R::styleable::GradientDrawableGradient_endColor, 0, &endColor);
-            Int32 gradientType;
-            a->GetInt32(R::styleable::GradientDrawableGradient_type,
-                IGradientDrawable::LINEAR_GRADIENT, &gradientType);
-
-            st->mCenterX = GetFloatOrFraction(a, R::styleable::GradientDrawableGradient_centerX, 0.5f);
-            st->mCenterY = GetFloatOrFraction(a, R::styleable::GradientDrawableGradient_centerY, 0.5f);
-
-            a->GetBoolean(R::styleable::GradientDrawableGradient_useLevel, FALSE, &st->mUseLevel);
-            st->mGradient = gradientType;
-
-            if (gradientType == IGradientDrawable::LINEAR_GRADIENT) {
-                Float anglef;
-                a->GetFloat(R::styleable::GradientDrawableGradient_angle, 0, &anglef);
-                Int32 angle = (Int32)anglef % 360;
-                if (angle % 45 != 0) {
-//                    throw new XmlPullParserException(a.getPositionDescription()
-//                            + "<gradient> tag requires 'angle' attribute to "
-//                            + "be a multiple of 45");
-                    return E_XML_PULL_PARSER_EXCEPTION;
-                }
-
-                switch (angle) {
-                case 0:
-                    st->mOrientation = GradientDrawableOrientation_LEFT_RIGHT;
-                    break;
-                case 45:
-                    st->mOrientation = GradientDrawableOrientation_BL_TR;
-                    break;
-                case 90:
-                    st->mOrientation = GradientDrawableOrientation_BOTTOM_TOP;
-                    break;
-                case 135:
-                    st->mOrientation = GradientDrawableOrientation_BR_TL;
-                    break;
-                case 180:
-                    st->mOrientation = GradientDrawableOrientation_RIGHT_LEFT;
-                    break;
-                case 225:
-                    st->mOrientation = GradientDrawableOrientation_TR_BL;
-                    break;
-                case 270:
-                    st->mOrientation = GradientDrawableOrientation_TOP_BOTTOM;
-                    break;
-                case 315:
-                    st->mOrientation = GradientDrawableOrientation_TL_BR;
-                    break;
-                }
+            ECode ec = ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
+            if (FAILED(ec)) {
+                a->Recycle();
+                return ec;
             }
-            else {
-                AutoPtr<ITypedValue> tv;
-                a->PeekValue(R::styleable::GradientDrawableGradient_gradientRadius, (ITypedValue**)&tv);
-                if (tv != NULL) {
-                    Int32 type;
-                    tv->GetType(&type);
-                    Boolean radiusRel = type == ITypedValue::TYPE_FRACTION;
-                    radiusRel ? tv->GetFraction(1.0f, 1.0f, &st->mGradientRadius)
-                              : tv->GetFloat(&st->mGradientRadius);
-                }
-                else if (gradientType == IGradientDrawable::RADIAL_GRADIENT) {
-//                    throw new XmlPullParserException(
-//                            a.getPositionDescription()
-//                            + "<gradient> tag requires 'gradientRadius' "
-//                            + "attribute with radial type");
-                    return E_XML_PULL_PARSER_EXCEPTION;
-                }
-            }
-
+            ec = UpdateGradientDrawableGradient(r, a);
             a->Recycle();
-
-            if (hasCenterColor) {
-                st->mColors = ArrayOf<Int32>::Alloc(3);
-                (*st->mColors)[0] = startColor;
-                (*st->mColors)[1] = centerColor;
-                (*st->mColors)[2] = endColor;
-
-                st->mPositions = ArrayOf<Float>::Alloc(3);
-                (*st->mPositions)[0] = 0.0f;
-                // Since 0.5f is default value, try to take the one that isn't 0.5f
-                (*st->mPositions)[1] = st->mCenterX != 0.5f ? st->mCenterX : st->mCenterY;
-                (*st->mPositions)[2] = 1.0f;
+            if (FAILED(ec)) {
+                return ec;
             }
-            else {
-                st->mColors = ArrayOf<Int32>::Alloc(2);
-                (*st->mColors)[0] = startColor;
-                (*st->mColors)[1] = endColor;
-            }
-
-        }
-        else if (name.Equals("solid")) {
-            size = ARRAY_SIZE(R::styleable::GradientDrawableSolid);
-            layout = ArrayOf<Int32>::Alloc(size);
+        } else if (name.Equals("solid")) {
+            Int32 size = ARRAY_SIZE(R::styleable::GradientDrawableSolid);
+            AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::GradientDrawableSolid, size);
-
-            r->ObtainAttributes(attrs, layout, (ITypedArray**)&a);
-            Int32 argb;
-            a->GetColor(R::styleable::GradientDrawableSolid_color, 0, &argb);
+            ECode ec = ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
+            if (FAILED(ec)) {
+                a->Recycle();
+                return ec;
+            }
+            ec = UpdateGradientDrawableSolid(a);
             a->Recycle();
-            SetColor(argb);
-        }
-        else if (name.Equals("stroke")) {
-            size = ARRAY_SIZE(R::styleable::GradientDrawableStroke);
-            layout = ArrayOf<Int32>::Alloc(size);
+            if (FAILED(ec)) {
+                return ec;
+            }
+        } else if (name.Equals("stroke")) {
+            Int32 size = ARRAY_SIZE(R::styleable::GradientDrawableStroke);
+            AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::GradientDrawableStroke, size);
-
-            r->ObtainAttributes(attrs, layout, (ITypedArray**)&a);
-            Int32 width;
-            a->GetDimensionPixelSize(R::styleable::GradientDrawableStroke_width, 0, &width);
-            Int32 color;
-            a->GetColor(R::styleable::GradientDrawableStroke_color, 0, &color);
-            Float dashWidth;
-            a->GetDimension(R::styleable::GradientDrawableStroke_dashWidth, 0, &dashWidth);
-            if (dashWidth != 0.0f) {
-                Float dashGap;
-                a->GetDimension(R::styleable::GradientDrawableStroke_dashGap, 0, &dashGap);
-                SetStroke(width, color, dashWidth, dashGap);
+            ECode ec = ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
+            if (FAILED(ec)) {
+                a->Recycle();
+                return ec;
             }
-            else {
-                SetStroke(width, color);
-            }
+            ec = UpdateGradientDrawableStroke(a);
             a->Recycle();
-        }
-        else if (name.Equals("corners")) {
-            size = ARRAY_SIZE(R::styleable::DrawableCorners);
-            layout = ArrayOf<Int32>::Alloc(size);
+            if (FAILED(ec)) {
+                return ec;
+            }
+        } else if (name.Equals("corners")) {
+            Int32 size = ARRAY_SIZE(R::styleable::DrawableCorners);
+            AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::DrawableCorners, size);
-
-            r->ObtainAttributes(attrs, layout, (ITypedArray**)&a);
-            Int32 radius;
-            a->GetDimensionPixelSize(R::styleable::DrawableCorners_radius, 0, &radius);
-            SetCornerRadius(radius);
-            Int32 topLeftRadius;
-            a->GetDimensionPixelSize(R::styleable::DrawableCorners_topLeftRadius, radius, &topLeftRadius);
-            Int32 topRightRadius;
-            a->GetDimensionPixelSize(R::styleable::DrawableCorners_topRightRadius, radius, &topRightRadius);
-            Int32 bottomLeftRadius;
-            a->GetDimensionPixelSize(R::styleable::DrawableCorners_bottomLeftRadius, radius, &bottomLeftRadius);
-            Int32 bottomRightRadius;
-            a->GetDimensionPixelSize(R::styleable::DrawableCorners_bottomRightRadius, radius, &bottomRightRadius);
-            if (topLeftRadius != radius || topRightRadius != radius ||
-                    bottomLeftRadius != radius || bottomRightRadius != radius) {
-                // The corner radii are specified in clockwise order (see Path.addRoundRect())
-                AutoPtr< ArrayOf<Float> > radii = ArrayOf<Float>::Alloc(8);
-                (*radii)[0] = topLeftRadius;
-                (*radii)[1] = topLeftRadius;
-                (*radii)[2] = topRightRadius;
-                (*radii)[3] = topRightRadius;
-                (*radii)[4] = bottomRightRadius;
-                (*radii)[5] = bottomRightRadius;
-                (*radii)[6] = bottomLeftRadius;
-                (*radii)[7] = bottomLeftRadius;
-                SetCornerRadii(radii);
+            ECode ec = ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
+            if (FAILED(ec)) {
+                a->Recycle();
+                return ec;
             }
+            ec = UpdateDrawableCorners(a);
             a->Recycle();
-        }
-        else if (name.Equals("padding")) {
-            size = ARRAY_SIZE(R::styleable::GradientDrawablePadding);
-            layout = ArrayOf<Int32>::Alloc(size);
+            if (FAILED(ec)) {
+                return ec;
+            }
+        } else if (name.Equals("padding")) {
+            Int32 size = ARRAY_SIZE(R::styleable::GradientDrawablePadding);
+            AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::GradientDrawablePadding, size);
-
-            r->ObtainAttributes(attrs, layout, (ITypedArray**)&a);
-            Int32 left, top, right, bottom;
-            a->GetDimensionPixelOffset(
-                    R::styleable::GradientDrawablePadding_left, 0, &left),
-            a->GetDimensionPixelOffset(
-                    R::styleable::GradientDrawablePadding_top, 0, &top),
-            a->GetDimensionPixelOffset(
-                    R::styleable::GradientDrawablePadding_right, 0, &right),
-            a->GetDimensionPixelOffset(
-                    R::styleable::GradientDrawablePadding_bottom, 0, &bottom);
-            mPadding = NULL;
-            CRect::NewByFriend(left, top, right, bottom, (CRect**)&mPadding);
+            ECode ec = ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
+            if (FAILED(ec)) {
+                a->Recycle();
+                return ec;
+            }
+            ec = UpdateGradientDrawablePadding(a);
             a->Recycle();
-            mGradientState->mPadding = mPadding;
-        }
-        else {
-            Logger::W("drawable", "Bad element under <shape>: %s", name.string());
+            if (FAILED(ec)) {
+                return ec;
+            }
+        } else {
+            Logger::W(String("drawable"), String("Bad element under <shape>: ") + name);
         }
     }
+    return NOERROR;
+}
 
-    mGradientState->ComputeOpacity();
+ECode GradientDrawable::UpdateGradientDrawablePadding(
+    /* [in] */ ITypedArray* a)
+{
+    AutoPtr<GradientState> st = mGradientState;
+
+    // Account for any configuration changes.
+    Int32 config = 0;
+    a->GetChangingConfigurations(&config);
+    st->mChangingConfigurations |= config;
+
+    // Extract the theme attributes, if any.
+    ((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&st->mAttrPadding);
+
+    if (st->mPadding == NULL) {
+        CRect::New((IRect**)&st->mPadding);
+    }
+
+    AutoPtr<IRect> pad = st->mPadding;
+    Int32 left = 0, top = 0, right = 0, bottom = 0;
+    pad->Get(&left, &top, &right, &bottom);
+    a->GetDimensionPixelOffset(R::styleable::GradientDrawablePadding_left, left, &left);
+    a->GetDimensionPixelOffset(R::styleable::GradientDrawablePadding_top, top, &top);
+    a->GetDimensionPixelOffset(R::styleable::GradientDrawablePadding_right, right, &right);
+    a->GetDimensionPixelOffset(R::styleable::GradientDrawablePadding_bottom, bottom, &bottom);
+    pad->Set(left, top , right, bottom);
+    mPadding = pad;
+    return NOERROR;
+}
+
+ECode GradientDrawable::UpdateDrawableCorners(
+    /* [in] */ ITypedArray* a)
+{
+    AutoPtr<GradientState> st = mGradientState;
+
+    // Account for any configuration changes.
+    Int32 config = 0;
+    a->GetChangingConfigurations(&config);
+    st->mChangingConfigurations |= config;
+
+    // Extract the theme attributes, if any.
+    ((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&st->mAttrCorners);
+
+    Int32 radius = 0;
+    a->GetDimensionPixelSize(R::styleable::DrawableCorners_radius, (Int32) st->mRadius, &radius);
+    SetCornerRadius(radius);
+
+    // TODO: Update these to be themeable.
+    Int32 topLeftRadius = 0;
+    a->GetDimensionPixelSize(R::styleable::DrawableCorners_topLeftRadius, radius, &topLeftRadius);
+    Int32 topRightRadius = 0;
+    a->GetDimensionPixelSize(R::styleable::DrawableCorners_topRightRadius, radius, &topRightRadius);
+    Int32 bottomLeftRadius = 0;
+    a->GetDimensionPixelSize(R::styleable::DrawableCorners_bottomLeftRadius, radius, &bottomLeftRadius);
+    Int32 bottomRightRadius = 0;
+    a->GetDimensionPixelSize(R::styleable::DrawableCorners_bottomRightRadius, radius, &bottomRightRadius);
+    if (topLeftRadius != radius || topRightRadius != radius ||
+            bottomLeftRadius != radius || bottomRightRadius != radius) {
+        // The corner radii are specified in clockwise order (see Path.addRoundRect())
+        AutoPtr<ArrayOf<Float> > values = ArrayOf<Float>::Alloc(8);
+        (*values)[0] = topLeftRadius;
+        (*values)[1] = topLeftRadius;
+        (*values)[2] = topRightRadius;
+        (*values)[3] = topRightRadius;
+        (*values)[4] = bottomRightRadius;
+        (*values)[5] = bottomRightRadius;
+        (*values)[6] = bottomLeftRadius;
+        (*values)[7] = bottomLeftRadius;
+        SetCornerRadii(values);
+    }
+    return NOERROR;
+}
+
+ECode GradientDrawable::UpdateGradientDrawableStroke(
+    /* [in] */ ITypedArray* a)
+{
+    AutoPtr<GradientState> st = mGradientState;
+
+    // Account for any configuration changes.
+    Int32 config = 0;
+    a->GetChangingConfigurations(&config);
+    st->mChangingConfigurations |= config;
+
+    // Extract the theme attributes, if any.
+    FAIL_RETURN(((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&st->mAttrStroke));
+
+    // We have an explicit stroke defined, so the default stroke width
+    // must be at least 0 or the current stroke width.
+    Int32 defaultStrokeWidth = Elastos::Core::Math::Max(0, st->mStrokeWidth);
+    Int32 width = 0;
+    FAIL_RETURN(a->GetDimensionPixelSize(R::styleable::GradientDrawableStroke_width, defaultStrokeWidth, &width));
+    Float dashWidth = 0;
+    FAIL_RETURN(a->GetDimension(R::styleable::GradientDrawableStroke_dashWidth, st->mStrokeDashWidth, &dashWidth));
+
+    AutoPtr<IColorStateList> colorStateList;
+    FAIL_RETURN(a->GetColorStateList(R::styleable::GradientDrawableStroke_color, (IColorStateList**)&colorStateList));
+    if (colorStateList == NULL) {
+        colorStateList = st->mStrokeColorStateList;
+    }
+
+    if (dashWidth != 0.0f) {
+        Float dashGap = 0;
+        FAIL_RETURN(a->GetDimension(R::styleable::GradientDrawableStroke_dashGap, st->mStrokeDashGap, &dashGap));
+        FAIL_RETURN(SetStroke(width, colorStateList, dashWidth, dashGap));
+    } else {
+        FAIL_RETURN(SetStroke(width, colorStateList));
+    }
+    return NOERROR;
+}
+
+ECode GradientDrawable::UpdateGradientDrawableSolid(
+    /* [in] */ ITypedArray* a)
+{
+    AutoPtr<GradientState> st = mGradientState;
+
+    // Account for any configuration changes.
+    Int32 config = 0;
+    a->GetChangingConfigurations(&config);
+    st->mChangingConfigurations |= config;
+
+    // Extract the theme attributes, if any.
+    FAIL_RETURN(((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&st->mAttrSolid));
+
+    AutoPtr<IColorStateList> colorStateList;
+    FAIL_RETURN(a->GetColorStateList(R::styleable::GradientDrawableSolid_color, (IColorStateList**)&colorStateList));
+    if (colorStateList != NULL) {
+        FAIL_RETURN(SetColor(colorStateList));
+    }
+    return NOERROR;
+}
+
+ECode GradientDrawable::UpdateGradientDrawableGradient(
+    /* [in] */ IResources* r,
+    /* [in] */ ITypedArray* a) /*throws XmlPullParserException*/
+{
+    AutoPtr<GradientState> st = mGradientState;
+
+    // Account for any configuration changes.
+    Int32 config = 0;
+    a->GetChangingConfigurations(&config);
+    st->mChangingConfigurations |= config;
+
+    // Extract the theme attributes, if any.
+    FAIL_RETURN(((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&st->mAttrGradient));
+
+    st->mCenterX = GetFloatOrFraction(a, R::styleable::GradientDrawableGradient_centerX, st->mCenterX);
+    st->mCenterY = GetFloatOrFraction(a, R::styleable::GradientDrawableGradient_centerY, st->mCenterY);
+    FAIL_RETURN(a->GetBoolean(R::styleable::GradientDrawableGradient_useLevel, st->mUseLevel, &st->mUseLevel));
+    FAIL_RETURN(a->GetInt32(R::styleable::GradientDrawableGradient_type, st->mGradient, &st->mGradient));
+
+    // TODO: Update these to be themeable.
+    Int32 startColor = 0;
+    FAIL_RETURN(a->GetColor(R::styleable::GradientDrawableGradient_startColor, 0, &startColor));
+    Boolean hasCenterColor = FALSE;
+    FAIL_RETURN(a->HasValue(R::styleable::GradientDrawableGradient_centerColor, &hasCenterColor));
+    Int32 centerColor = 0;
+    FAIL_RETURN(a->GetColor(R::styleable::GradientDrawableGradient_centerColor, 0, &centerColor));
+    Int32 endColor = 0;
+    FAIL_RETURN(a->GetColor(R::styleable::GradientDrawableGradient_endColor, 0, &endColor));
+
+    if (hasCenterColor) {
+        st->mColors = ArrayOf<Int32>::Alloc(3);
+        (*st->mColors)[0] = startColor;
+        (*st->mColors)[1] = centerColor;
+        (*st->mColors)[2] = endColor;
+
+        st->mPositions = ArrayOf<Float>::Alloc(3);
+        (*st->mPositions)[0] = 0.0f;
+        // Since 0.5f is default value, try to take the one that isn't 0.5f
+        (*st->mPositions)[1] = st->mCenterX != 0.5f ? st->mCenterX : st->mCenterY;
+        (*st->mPositions)[2] = 1.f;
+    } else {
+        st->mColors = ArrayOf<Int32>::Alloc(2);
+        (*st->mColors)[0] = startColor;
+        (*st->mColors)[1] = endColor;
+    }
+
+    if (st->mGradient == LINEAR_GRADIENT) {
+        Float value = 0;
+        FAIL_RETURN(a->GetFloat(R::styleable::GradientDrawableGradient_angle, st->mAngle, &value));
+        Int32 angle = (Int32) value;
+        angle %= 360;
+
+        if (angle % 45 != 0) {
+            // throw new XmlPullParserException(a.getPositionDescription()
+            //         + "<gradient> tag requires 'angle' attribute to "
+            //         + "be a multiple of 45");
+            return E_XML_PULL_PARSER_EXCEPTION;
+        }
+
+        st->mAngle = angle;
+
+        switch (angle) {
+            case 0:
+                st->mOrientation = GradientDrawableOrientation_LEFT_RIGHT;
+                break;
+            case 45:
+                st->mOrientation = GradientDrawableOrientation_BL_TR;
+                break;
+            case 90:
+                st->mOrientation = GradientDrawableOrientation_BOTTOM_TOP;
+                break;
+            case 135:
+                st->mOrientation = GradientDrawableOrientation_BR_TL;
+                break;
+            case 180:
+                st->mOrientation = GradientDrawableOrientation_RIGHT_LEFT;
+                break;
+            case 225:
+                st->mOrientation = GradientDrawableOrientation_TR_BL;
+                break;
+            case 270:
+                st->mOrientation = GradientDrawableOrientation_TOP_BOTTOM;
+                break;
+            case 315:
+                st->mOrientation = GradientDrawableOrientation_TL_BR;
+                break;
+        }
+    } else {
+        AutoPtr<ITypedValue> tv;
+        FAIL_RETURN(a->PeekValue(R::styleable::GradientDrawableGradient_gradientRadius, (ITypedValue**)&tv));
+        if (tv != NULL) {
+            Float radius = 0;
+            Int32 radiusType = 0;
+            Int32 value = 0;
+            if ((tv->GetType(&value), value) == ITypedValue::TYPE_FRACTION) {
+                tv->GetFraction(1.0f, 1.0f, &radius);
+
+
+                Int32 unit = ((tv->GetData(&value), value) >> ITypedValue::COMPLEX_UNIT_SHIFT)
+                        & ITypedValue::COMPLEX_UNIT_MASK;
+                if (unit == ITypedValue::COMPLEX_UNIT_FRACTION_PARENT) {
+                    radiusType = RADIUS_TYPE_FRACTION_PARENT;
+                } else {
+                    radiusType = RADIUS_TYPE_FRACTION;
+                }
+            } else {
+                AutoPtr<IDisplayMetrics> dm;
+                tv->GetDimension((r->GetDisplayMetrics((IDisplayMetrics**)&dm), dm), &radius);
+                radiusType = RADIUS_TYPE_PIXELS;
+            }
+
+            st->mGradientRadius = radius;
+            st->mGradientRadiusType = radiusType;
+        } else if (st->mGradient == RADIAL_GRADIENT) {
+            // throw new XmlPullParserException(
+            //         a.getPositionDescription()
+            //         + "<gradient> tag requires 'gradientRadius' "
+            //         + "attribute with radial type");
+            return E_XML_PULL_PARSER_EXCEPTION;
+        }
+    }
+    return NOERROR;
+}
+
+ECode GradientDrawable::UpdateGradientDrawableSize(
+    /* [in] */ ITypedArray* a)
+{
+    AutoPtr<GradientState> st = mGradientState;
+
+    // Account for any configuration changes.
+    Int32 config = 0;
+    a->GetChangingConfigurations(&config);
+    st->mChangingConfigurations |= config;
+
+    // Extract the theme attributes, if any.
+    FAIL_RETURN(((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&st->mAttrSize));
+
+    FAIL_RETURN(a->GetDimensionPixelSize(R::styleable::GradientDrawableSize_width, st->mWidth, &st->mWidth));
+    FAIL_RETURN(a->GetDimensionPixelSize(R::styleable::GradientDrawableSize_height, st->mHeight, &st->mHeight));
     return NOERROR;
 }
 
@@ -1222,6 +1656,75 @@ ECode GradientDrawable::GetConstantState(
     return NOERROR;
 }
 
+Boolean GradientDrawable::IsOpaqueForState()
+{
+    Int32 color = 0;
+    if (mGradientState->mStrokeWidth >= 0 && mStrokePaint != NULL
+            && !IsOpaque((mStrokePaint->GetColor(&color), color))) {
+        return FALSE;
+    }
+
+    if (!IsOpaque((mFillPaint->GetColor(&color), color))) {
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+ECode GradientDrawable::GetOutline(
+    /* [out] */ IOutline* outline)
+{
+    AutoPtr<GradientState> st = mGradientState;
+    AutoPtr<IRect> bounds;
+    GetBounds((IRect**)&bounds);
+    // only report non-zero alpha if shape being drawn is opaque
+    outline->SetAlpha(st->mOpaqueOverShape && IsOpaqueForState() ? (mAlpha / 255.0f) : 0.0f);
+
+    Float rad = 0, centerY = 0, halfStrokeWidth = 0;;
+    Float value = 0;
+    Int32 tmp = 0;
+    Int32 left = 0, right = 0, top = 0, bottom = 0;
+    switch (st->mShape) {
+        case RECTANGLE:
+            if (st->mRadiusArray != NULL) {
+                BuildPathIfDirty();
+                outline->SetConvexPath(mPath);
+                return NOERROR;
+            }
+
+            if (st->mRadius > 0.0f) {
+                // clamp the radius based on width & height, matching behavior in draw()
+                Int32 width = 0, height = 0;
+                bounds->GetWidth(&width);
+                bounds->GetHeight(&height);
+                rad = Elastos::Core::Math::Min(st->mRadius,
+                        Elastos::Core::Math::Min(width, height) * 0.5f);
+            }
+            outline->SetRoundRect(bounds, rad);
+            return NOERROR;
+        case OVAL:
+            outline->SetOval(bounds);
+            return NOERROR;
+        case LINE:
+            // Hairlines (0-width stroke) must have a non-empty outline for
+            // shadows to draw correctly, so we'll use a very small width.
+            halfStrokeWidth = mStrokePaint == NULL ?
+                    0.0001f : (mStrokePaint->GetStrokeWidth(&value), value) * 0.5f;
+            bounds->GetCenterY(&tmp);
+            centerY = tmp;
+            top = (Int32) Elastos::Core::Math::Floor(centerY - halfStrokeWidth);
+            bottom = (Int32) Elastos::Core::Math::Ceil(centerY + halfStrokeWidth);
+
+            bounds->GetLeft(&left);
+            bounds->GetRight(&right);
+            outline->SetRect(left, top, right, bottom);
+            return NOERROR;
+        default:
+            ;// TODO: support more complex shapes
+    }
+    return NOERROR;
+}
+
 ECode GradientDrawable::Mutate(
     /* [out] */ IDrawable** drawable)
 {
@@ -1238,21 +1741,26 @@ ECode GradientDrawable::Mutate(
 }
 
 GradientDrawable::GradientDrawable(
-    /* [in] */ GradientState* state)
+    /* [in] */ GradientState* state,
+    /* [in] */ IResourcesTheme* theme)
     : mAlpha(0xFF)
-    , mDither(FALSE)
-    , mRectIsDirty(FALSE)
+    , mGradientIsDirty(FALSE)
     , mMutated(FALSE)
     , mPathIsDirty(TRUE)
+    , mGradientRadius(0)
 {
-    constructor(state);
+    constructor(state, theme);
 }
 
 void GradientDrawable::InitializeWithState(
     /* [in] */ GradientState* state)
 {
-    if (state->mHasSolidColor) {
-        mFillPaint->SetColor(state->mSolidColor);
+    if (state->mColorStateList != NULL) {
+        AutoPtr<ArrayOf<Int32> > currentState;
+        GetState((ArrayOf<Int32>**)&currentState);
+        Int32 stateColor = 0;
+        state->mColorStateList->GetColorForState(currentState, 0, &stateColor);
+        mFillPaint->SetColor(stateColor);
     }
     else if (state->mColors == NULL) {
         // If we don't have a solid color and we don't have a gradient,
@@ -1260,22 +1768,31 @@ void GradientDrawable::InitializeWithState(
         // value of state.mSolidColor
         mFillPaint->SetColor(0);
     }
+    else {
+        // Otherwise, make sure the fill alpha is maxed out.
+        mFillPaint->SetColor(IColor::BLACK);
+    }
+
     mPadding = state->mPadding;
     if (state->mStrokeWidth >= 0) {
         mStrokePaint = NULL;
-        assert(0 && "TODO");
-        // CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mStrokePaint);
+        CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mStrokePaint);
         mStrokePaint->SetStyle(PaintStyle_STROKE);
         mStrokePaint->SetStrokeWidth(state->mStrokeWidth);
-        mStrokePaint->SetColor(state->mStrokeColor);
+        if (state->mStrokeColorStateList != NULL) {
+            AutoPtr<ArrayOf<Int32> > currentState;
+            GetState((ArrayOf<Int32>**)&currentState);
+            Int32 strokeStateColor = 0;
+            state->mStrokeColorStateList->GetColorForState(currentState, 0, &strokeStateColor);
+            mStrokePaint->SetColor(strokeStateColor);
+        }
 
         if (state->mStrokeDashWidth != 0.0f) {
             AutoPtr<IDashPathEffect> e;
             AutoPtr<ArrayOf<Float> > intervals = ArrayOf<Float>::Alloc(2);
             (*intervals)[0] = state->mStrokeDashWidth;
             (*intervals)[1] = state->mStrokeDashGap;
-            assert(0 && "TODO");
-            // CDashPathEffect::New(*intervals, 0, (IDashPathEffect**)&e);
+            CDashPathEffect::New(*intervals, 0, (IDashPathEffect**)&e);
             mStrokePaint->SetPathEffect((IPathEffect*)e.Get());
         }
     }
@@ -1284,7 +1801,7 @@ void GradientDrawable::InitializeWithState(
 ECode GradientDrawable::constructor()
 {
     AutoPtr<GradientState> state = new GradientState(GradientDrawableOrientation_TOP_BOTTOM, NULL);
-    return constructor(state);
+    return constructor(state, NULL);
 }
 
 ECode GradientDrawable::constructor(
@@ -1292,15 +1809,25 @@ ECode GradientDrawable::constructor(
     /* [in] */ ArrayOf<Int32>* colors)
 {
     AutoPtr<GradientState> state = new GradientState(orientation, colors);
-    return constructor(state);
+    return constructor(state, NULL);
 }
 
 ECode GradientDrawable::constructor(
-    /* [in] */ GradientState* state)
+    /* [in] */ GradientState* state,
+    /* [in] */ IResourcesTheme* theme)
 {
-    mGradientState = state;
+    Boolean can = FALSE;
+    if (theme != NULL && (state->CanApplyTheme(&can), can)) {
+        // If we need to apply a theme, implicitly mutate.
+        mGradientState = new GradientState(state);
+        ApplyTheme(theme);
+    } else {
+        mGradientState = state;
+    }
+
     InitializeWithState(state);
-    mRectIsDirty = TRUE;
+
+    mGradientIsDirty = TRUE;
     mMutated = FALSE;
     return NOERROR;
 }

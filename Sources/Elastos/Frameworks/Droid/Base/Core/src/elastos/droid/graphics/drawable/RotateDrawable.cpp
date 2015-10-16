@@ -42,6 +42,16 @@ RotateDrawable::RotateState::RotateState(
             state->NewDrawable((IDrawable**)&mDrawable);
         }
         mDrawable->SetCallback((IDrawableCallback*)owner->Probe(EIID_IDrawableCallback));
+        Int32 value = 0;
+        source->mDrawable->GetLayoutDirection(&value);
+        mDrawable->SetLayoutDirection(value);
+        AutoPtr<IRect> bounds;
+        source->mDrawable->GetBounds((IRect**)&bounds);
+        mDrawable->SetBounds(bounds);
+        Int32 level = 0;
+        source->mDrawable->GetLevel(&level);
+        Boolean tmp = FALSE;
+        mDrawable->SetLevel(value, &tmp);
         mPivotXRel = source->mPivotXRel;
         mPivotX = source->mPivotX;
         mPivotYRel = source->mPivotYRel;
@@ -56,7 +66,7 @@ ECode RotateDrawable::RotateState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
-    return CRotateDrawable::New((Handle32)this, NULL, (IRotateDrawable**)drawable);
+    return CRotateDrawable::New(this, NULL, (IRotateDrawable**)drawable);
 }
 
 ECode RotateDrawable::RotateState::NewDrawable(
@@ -64,7 +74,7 @@ ECode RotateDrawable::RotateState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
-    return CRotateDrawable::New((Handle32)this, res, (IRotateDrawable**)drawable);
+    return CRotateDrawable::New(this, res, (IRotateDrawable**)drawable);
 }
 
 ECode RotateDrawable::RotateState::GetChangingConfigurations(
@@ -106,26 +116,37 @@ RotateDrawable::RotateDrawable(
 ECode RotateDrawable::Draw(
     /* [in] */ ICanvas* canvas)
 {
-    Int32 saveCount;
-    canvas->Save(&saveCount);
-
-    AutoPtr<IRect> bounds;
-    mState->mDrawable->GetBounds((IRect**)&bounds);
-
-    CRect* _bounds = (CRect*)bounds.Get();
-    Int32 w = _bounds->mRight - _bounds->mLeft;
-    Int32 h = _bounds->mBottom - _bounds->mTop;
-
     const RotateState* st = mState;
+    AutoPtr<IDrawable> d = st->mDrawable;
+    AutoPtr<IRect> _bounds;
+    d->GetBounds((IRect**)&_bounds);
+    CRect* bounds = (CRect*)_bounds.Get();
+    const Int32 w = bounds->mRight - bounds->mLeft;
+    const Int32 h = bounds->mBottom - bounds->mTop;
+    const Float px = st->mPivotXRel ? (w * st->mPivotX) : st->mPivotX;
+    const Float py = st->mPivotYRel ? (h * st->mPivotY) : st->mPivotY;
 
-    Float px = st->mPivotXRel ? (w * st->mPivotX) : st->mPivotX;
-    Float py = st->mPivotYRel ? (h * st->mPivotY) : st->mPivotY;
-
-    canvas->Rotate(st->mCurrentDegrees, px + _bounds->mLeft, py + _bounds->mTop);
-
-    st->mDrawable->Draw(canvas);
-
+    Int32 saveCount = 0;
+    canvas->Save(&saveCount);
+    canvas->Rotate(st->mCurrentDegrees, px + bounds->mLeft, py + bounds->mTop);
+    d->Draw(canvas);
     canvas->RestoreToCount(saveCount);
+    return NOERROR;
+}
+
+ECode RotateDrawable::SetDrawable(
+    /* [in] */ IDrawable* drawable)
+{
+    AutoPtr<IDrawable> oldDrawable = mState->mDrawable;
+    if (oldDrawable.Get() != drawable) {
+        if (oldDrawable != NULL) {
+            oldDrawable->SetCallback(NULL);
+        }
+        mState->mDrawable = drawable;
+        if (drawable != NULL) {
+            drawable->SetCallback(THIS_PROBE(IDrawableCallback));
+        }
+    }
     return NOERROR;
 }
 
@@ -155,6 +176,132 @@ ECode RotateDrawable::SetAlpha(
     /* [in] */ Int32 alpha)
 {
     return mState->mDrawable->SetAlpha(alpha);
+}
+
+ECode RotateDrawable::GetAlpha(
+    /* [out] */ Int32* alpha)
+{
+    return mState->mDrawable->GetAlpha(alpha);
+}
+
+ECode RotateDrawable::SetTintList(
+    /* [in] */ IColorStateList* tint)
+{
+    return mState->mDrawable->SetTintList(tint);
+}
+
+ECode RotateDrawable::SetTintMode(
+    /* [in] */ PorterDuffMode tintMode)
+{
+    return mState->mDrawable->SetTintMode(tintMode);
+}
+
+ECode RotateDrawable::SetFromDegrees(
+    /* [in] */ Float fromDegrees)
+{
+    if (mState->mFromDegrees != fromDegrees) {
+        mState->mFromDegrees = fromDegrees;
+        InvalidateSelf();
+    }
+    return NOERROR;
+}
+
+ECode RotateDrawable::GetFromDegrees(
+    /* [out] */ Float* degrees)
+{
+    VALIDATE_NOT_NULL(degrees);
+    *degrees = mState->mFromDegrees;
+    return NOERROR;
+}
+
+ECode RotateDrawable::SetToDegrees(
+    /* [in] */ Float toDegrees)
+{
+    if (mState->mToDegrees != toDegrees) {
+        mState->mToDegrees = toDegrees;
+        InvalidateSelf();
+    }
+    return NOERROR;
+}
+
+ECode RotateDrawable::GetToDegrees(
+    /* [out] */ Float* degrees)
+{
+    VALIDATE_NOT_NULL(degrees);
+    *degrees = mState->mToDegrees;
+    return NOERROR;
+}
+
+ECode RotateDrawable::SetPivotX(
+    /* [in] */ Float pivotX)
+{
+    if (mState->mPivotX == pivotX) {
+        mState->mPivotX = pivotX;
+        InvalidateSelf();
+    }
+    return NOERROR;
+}
+
+ECode RotateDrawable::GetPivotX(
+    /* [out] */ Float* pivotX)
+{
+    VALIDATE_NOT_NULL(pivotX);
+    *pivotX = mState->mPivotX;
+    return NOERROR;
+}
+
+ECode RotateDrawable::SetPivotXRelative(
+    /* [in] */ Boolean relative)
+{
+    if (mState->mPivotXRel == relative) {
+        mState->mPivotXRel = relative;
+        InvalidateSelf();
+    }
+    return NOERROR;
+}
+
+ECode RotateDrawable::IsPivotXRelative(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mState->mPivotXRel;
+    return NOERROR;
+}
+
+ECode RotateDrawable::SetPivotY(
+    /* [in] */ Float pivotY)
+{
+    if (mState->mPivotY == pivotY) {
+        mState->mPivotY = pivotY;
+        InvalidateSelf();
+    }
+    return NOERROR;
+}
+
+ECode RotateDrawable::GetPivotY(
+    /* [out] */ Float* pivotY)
+{
+    VALIDATE_NOT_NULL(pivotY);
+    *pivotY = mState->mPivotY;
+    return NOERROR;
+}
+
+ECode RotateDrawable::SetPivotYRelative(
+    /* [in] */ Boolean relative)
+{
+    if (mState->mPivotYRel == relative) {
+        mState->mPivotYRel = relative;
+        InvalidateSelf();
+    }
+    return NOERROR;
+}
+
+ECode RotateDrawable::IsPivotYRelative(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mState->mPivotYRel;
+    return NOERROR;
 }
 
 ECode RotateDrawable::SetColorFilter(
@@ -253,7 +400,7 @@ Boolean RotateDrawable::OnLevelChange(
 
     mState->mCurrentDegrees = mState->mFromDegrees +
             (mState->mToDegrees - mState->mFromDegrees) *
-                    ((Float)level / MAX_LEVEL);
+                    (level / MAX_LEVEL);
 
     InvalidateSelf();
     return TRUE;
@@ -299,14 +446,15 @@ ECode RotateDrawable::GetConstantState(
 ECode RotateDrawable::Inflate(
     /* [in] */ IResources* r,
     /* [in] */ IXmlPullParser* parser,
-    /* [in] */ IAttributeSet* attrs)
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme)
 {
     Int32 size = ARRAY_SIZE(R::styleable::RotateDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::RotateDrawable, size);
 
     AutoPtr<ITypedArray> a;
-    r->ObtainAttributes(attrs, layout, (ITypedArray**)&a);
+    ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
 
     Drawable::InflateWithAttributes(r, parser, a,
             R::styleable::RotateDrawable_visible);
@@ -352,7 +500,7 @@ ECode RotateDrawable::Inflate(
             R::styleable::RotateDrawable_drawable, 0, &res);
     AutoPtr<IDrawable> drawable;
     if (res > 0) {
-        r->GetDrawable(res, (IDrawable**)&drawable);
+        r->GetDrawable(res, theme, (IDrawable**)&drawable);
     }
 
     a->Recycle();
@@ -367,7 +515,7 @@ ECode RotateDrawable::Inflate(
         }
 
         drawable = NULL;
-        Drawable::CreateFromXmlInner(r, parser, attrs, (IDrawable**)&drawable);
+        Drawable::CreateFromXmlInner(r, parser, attrs, theme, (IDrawable**)&drawable);
         if (drawable == NULL) {
             String name;
             parser->GetName(&name);
@@ -406,110 +554,6 @@ ECode RotateDrawable::Mutate(
     }
     *drawable = THIS_PROBE(IDrawable);
     REFCOUNT_ADD(*drawable);
-    return NOERROR;
-}
-
-ECode RotateDrawable::SetDrawable(
-    /* [in] */ IDrawable* drawable)
-{
-    assert(0 && "TODO");
-    //not merge from android5.x
-    return NOERROR;
-}
-
-ECode RotateDrawable::SetFromDegrees(
-    /* [in] */ Float degrees)
-{
-    assert(0 && "TODO");
-    //not merge from android5.x
-    return NOERROR;
-}
-
-ECode RotateDrawable::GetFromDegrees(
-    /* [in] */ Float* degrees)
-{
-    assert(0 && "TODO");
-    //not merge from android5.x
-    return NOERROR;
-}
-
-ECode RotateDrawable::SetToDegrees(
-    /* [in] */ Float degrees)
-{
-    assert(0 && "TODO");
-    //not merge from android5.x
-    return NOERROR;
-}
-
-ECode RotateDrawable::GetToDegrees(
-    /* [in] */ Float* degrees)
-{
-    assert(0 && "TODO");
-    //not merge from android5.x
-    return NOERROR;
-}
-
-ECode RotateDrawable::SetPivotX(
-    /* [in] */ Float pivotX)
-{
-    assert(0 && "TODO");
-    //not merge from android5.x
-    return NOERROR;
-}
-
-ECode RotateDrawable::GetPivotX(
-    /* [in] */ Float* pivotX)
-{
-    assert(0 && "TODO");
-    //not merge from android5.x
-    return NOERROR;
-}
-
-ECode RotateDrawable::SetPivotXRelative(
-    /* [in] */ Boolean pivotX)
-{
-    assert(0 && "TODO");
-    //not merge from android5.x
-    return NOERROR;
-}
-
-ECode RotateDrawable::IsPivotXRelative(
-    /* [in] */ Boolean* pivotX)
-{
-    assert(0 && "TODO");
-    //not merge from android5.x
-    return NOERROR;
-}
-
-ECode RotateDrawable::SetPivotY(
-    /* [in] */ Float pivotY)
-{
-    assert(0 && "TODO");
-    //not merge from android5.x
-    return NOERROR;
-}
-
-ECode RotateDrawable::GetPivotY(
-    /* [in] */ Float* pivotY)
-{
-    assert(0 && "TODO");
-    //not merge from android5.x
-    return NOERROR;
-}
-
-ECode RotateDrawable::SetPivotYRelative(
-    /* [in] */ Boolean pivotY)
-{
-    assert(0 && "TODO");
-    //not merge from android5.x
-    return NOERROR;
-}
-
-ECode RotateDrawable::IsPivotYRelative(
-    /* [in] */ Boolean* pivotY)
-{
-    assert(0 && "TODO");
-    //not merge from android5.x
     return NOERROR;
 }
 

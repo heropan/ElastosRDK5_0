@@ -72,7 +72,8 @@ public:
     CARAPI Inflate(
         /* [in] */ IResources* r,
         /* [in] */ IXmlPullParser* parser,
-        /* [in] */ IAttributeSet* attrs);
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ IResourcesTheme* theme);
 
     CARAPI InvalidateDrawable(
         /* [in] */ IDrawable* who);
@@ -108,6 +109,18 @@ public:
     //@Override
     CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
+
+    // @Override
+    CARAPI GetAlpha(
+        /* [out] */ Int32* alpha);
+
+    // @Override
+    CARAPI SetTintList(
+        /* [in] */ IColorStateList* tint);
+
+    // @Override
+    CARAPI SetTintMode(
+        /* [in] */ PorterDuffMode tintMode);
 
     //@Override
     CARAPI SetColorFilter(

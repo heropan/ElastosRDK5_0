@@ -92,6 +92,9 @@ module
          */
         GetTarget(
             [out] IInterface** object);
+
+        SetAutoCancel(
+            [in] Boolean cancel);
     }
 
     [deprecated, local]
