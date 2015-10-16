@@ -128,6 +128,7 @@
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/text/style
 #> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/text/util
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/text
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/transition
 #> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/app/admin
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/app/backup
 #> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/app
@@ -143,7 +144,7 @@
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/accessibility
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/animation
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/menu
-#> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/impl
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/animation
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/bluetooth
