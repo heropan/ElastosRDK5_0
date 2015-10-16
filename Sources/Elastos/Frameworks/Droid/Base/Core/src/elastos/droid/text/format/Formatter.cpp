@@ -11,6 +11,10 @@ namespace Droid {
 namespace Text {
 namespace Format {
 
+const Int32 Formatter::SECONDS_PER_MINUTE = 60;
+const Int32 Formatter::SECONDS_PER_HOUR = 60 * 60;
+const Int32 Formatter::SECONDS_PER_DAY = 24 * 60 * 60;
+
 String Formatter::FormatFileSize(
     /* [in] */ IContext* context,
     /* [in] */ Int64 number)

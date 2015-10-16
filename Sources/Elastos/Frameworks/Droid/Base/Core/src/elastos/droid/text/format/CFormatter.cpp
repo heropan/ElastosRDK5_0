@@ -8,6 +8,7 @@ namespace Text {
 namespace Format {
 
 CAR_INTERFACE_IMPL(CFormatter, Singleton, IFormatter)
+
 CAR_SINGLETON_IMPL(CFormatter)
 
 ECode CFormatter::FormatFileSize(

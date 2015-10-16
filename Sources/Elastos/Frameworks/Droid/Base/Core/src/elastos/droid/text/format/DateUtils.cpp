@@ -1,6 +1,6 @@
 #include "elastos/droid/text/format/DateUtils.h"
 #include "elastos/droid/text/format/DateFormat.h"
-// #include "elastos/droid/text/format/CTime.h"
+#include "elastos/droid/text/format/CTime.h"
 #include "elastos/droid/content/res/CResourcesHelper.h"
 #include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/R.h"
@@ -245,9 +245,9 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeTimeSpanString(
 }
 
 AutoPtr<ICharSequence> DateUtils::GetRelativeTimeSpanString(
-        /* [in] */ Int64 time,
-        /* [in] */ Int64 now,
-        /* [in] */ Int64 minResolution)
+    /* [in] */ Int64 time,
+    /* [in] */ Int64 now,
+    /* [in] */ Int64 minResolution)
 {
     Int32 flags = IDateUtils::FORMAT_SHOW_DATE | IDateUtils::FORMAT_SHOW_YEAR | IDateUtils::FORMAT_ABBREV_MONTH;
     return GetRelativeTimeSpanString(time, now, minResolution, flags);

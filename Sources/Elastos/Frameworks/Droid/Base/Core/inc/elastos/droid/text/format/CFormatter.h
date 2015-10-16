@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_TEXT_FORMAT_CFormatter_H__
 
 #include "_Elastos_Droid_Text_Format_CFormatter.h"
-#include "Elastos.Droid.Core_server.h"
 #include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
@@ -18,6 +17,7 @@ CarClass(CFormatter)
 {
 public:
     CAR_INTERFACE_DECL()
+
     CAR_SINGLETON_DECL()
 
     CARAPI FormatFileSize(

@@ -2,8 +2,6 @@
 #define __ELASTOS_DROID_TEXT_FORMAT_CDATEUTILS_H__
 
 #include "_Elastos_Droid_Text_Format_CDateUtils.h"
-#include "Elastos.Droid.Core_server.h"
-#include "DateUtils.h"
 #include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
@@ -22,6 +20,7 @@ CarClass(CDateUtils)
 {
 public:
     CAR_INTERFACE_DECL()
+
     CAR_SINGLETON_DECL()
 
     CARAPI Assign(
@@ -142,18 +141,6 @@ public:
     CARAPI IsToday(
         /* [in] */ Int64 when,
         /* [out] */ Boolean* ret);
-
-    CARAPI IsUTC(
-        /* [in] */ const String& s,
-        /* [out] */ Boolean* ret);
-
-    CARAPI NewCalendar(
-        /* [in] */ Boolean zulu,
-        /* [out] */ ICalendar** ret);
-
-    CARAPI TimeString(
-        /* [in] */ Int64 millis,
-        /* [out] */ ICharSequence** ret);
 };
 
 } // namespace Format

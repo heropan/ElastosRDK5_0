@@ -2,7 +2,6 @@
 #include "elastos/droid/text/format/DateFormat.h"
 #include "elastos/droid/text/format/CDateUtils.h"
 #include "elastos/droid/text/CSpannedString.h"
-// #include "elastos/droid/text/CSpannableStringBuilder.h"
 // #include "elastos/droid/provider/Settings.h"
 // #include "elastos/droid/provider/CSettingsSystem.h"
 #include "elastos/droid/R.h"
@@ -19,7 +18,6 @@ using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Provider::ISettingsSystem;
 // using Elastos::Droid::Internal::Widget::ILockSettings;
 using Elastos::Droid::Text::ISpannableStringBuilder;
-// using Elastos::Droid::Text::CSpannableStringBuilder;
 using Elastos::Droid::Text::ISpannedString;
 using Elastos::Droid::Text::CSpannedString;
 using Elastos::Droid::Text::IEditable;
@@ -130,6 +128,31 @@ AutoPtr<Elastos::Text::IDateFormat> DateFormat::GetTimeFormat(
     AutoPtr<ISimpleDateFormat> sdf;
     CSimpleDateFormat::New(timeFormat, (ISimpleDateFormat**)&sdf);
     return Elastos::Text::IDateFormat::Probe(sdf);
+}
+
+
+String DateFormat::GetTimeFormatString(
+    /* [in] */ IContext* context)
+{
+    AutoPtr<ILocaleDataHelper> helper;
+    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
+    AutoPtr<IResources> res;
+    context->GetResources((IResources**)&res);
+    AutoPtr<IConfiguration> config;
+    res->GetConfiguration((IConfiguration**)&config);
+    AutoPtr<ILocale> locale;
+    config->GetLocale((ILocale**)&locale);
+    AutoPtr<ILocaleData> d;
+    helper->Get(locale, (ILocaleData**)&d);
+
+    String format;
+    if (Is24HourFormat(context)) {
+        d->GetTimeFormat24(&format);
+    }
+    else {
+        d->GetTimeFormat12(&format);
+    }
+    return format;
 }
 
 AutoPtr<Elastos::Text::IDateFormat> DateFormat::GetDateFormat(

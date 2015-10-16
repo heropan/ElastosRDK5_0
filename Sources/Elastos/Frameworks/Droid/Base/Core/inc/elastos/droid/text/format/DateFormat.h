@@ -48,11 +48,7 @@ public:
      * @hide
      */
     static CARAPI_(String) GetTimeFormatString(
-        /* [in] */ IContext* context)
-    {
-        assert(0);
-        return String("");
-    }
+        /* [in] */ IContext* context);
 
     /**
      * Returns a {@link java.text.DateFormat} object that can format the date

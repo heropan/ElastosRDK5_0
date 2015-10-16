@@ -234,17 +234,6 @@ ECode CDateUtils::IsToday(
     return NOERROR;
 }
 
-ECode CDateUtils::TimeString(
-    /* [in] */ Int64 millis,
-    /* [out] */ ICharSequence** ret)
-{
-    VALIDATE_NOT_NULL(ret);
-    // AutoPtr<ICharSequence> cRet = DateUtils::TimeString(millis);
-    // *ret = cRet;
-    // REFCOUNT_ADD(*ret);
-    return NOERROR;
-}
-
 ECode CDateUtils::GetSameMonthTable(
     /* [out, callee] */ ArrayOf<Int32>** sameMonthTable)
 {

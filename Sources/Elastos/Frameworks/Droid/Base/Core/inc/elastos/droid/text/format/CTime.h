@@ -31,8 +31,6 @@ private:
         : public Object
     {
         public:
-            // CAR_INTERFACE_DECL()
-
             TimeCalculator(const String& timezoneId);
 
             CARAPI_(Int64) ToMillis(

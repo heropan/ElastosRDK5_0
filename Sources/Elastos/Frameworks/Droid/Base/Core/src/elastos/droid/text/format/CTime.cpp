@@ -22,12 +22,6 @@ using Libcore::Utility::CZoneInfoWallTime;
 using Libcore::Utility::ITzData;
 using Libcore::Utility::CZoneInfoDB;
 using Libcore::Utility::IZoneInfoDB;
-// using Libcore::ICU::ILocaleHelper;
-// using Libcore::ICU::ILocaleData;
-// using Libcore::ICU::ILocaleDataHelper;
-// using Libcore::ICU::CLocale;
-// using Libcore::ICU::CLocaleHelper;
-// using Libcore::ICU::CLocaleDataHelper;
 
 
 namespace Elastos {

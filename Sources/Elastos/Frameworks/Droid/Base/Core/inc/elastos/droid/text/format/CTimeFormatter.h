@@ -3,7 +3,6 @@
 
 #include "_Elastos_Droid_Text_Format_CTimeFormatter.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/core/Object.h>
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

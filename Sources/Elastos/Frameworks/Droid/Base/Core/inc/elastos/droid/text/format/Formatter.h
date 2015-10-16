@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_FORMAT_Formatter_H__
 #define __ELASTOS_DROID_TEXT_FORMAT_Formatter_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Droid::Content::IContext;
@@ -11,6 +11,7 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Format {
+
 /**
  * Utility class to aid in formatting common values that are not covered
  * by the {@link java.util.Formatter} class in {@link java.util}
@@ -67,6 +68,7 @@ public:
 
 private:
     Formatter();
+    Formatter(const Formatter&);
 
     static CARAPI_(String) FormatFileSize(
         /* [in] */ IContext* context,
@@ -74,9 +76,9 @@ private:
         /* [in] */ Boolean shorter);
 
 private:
-    static const Int32 SECONDS_PER_MINUTE = 60;
-    static const Int32 SECONDS_PER_HOUR = 60 * 60;
-    static const Int32 SECONDS_PER_DAY = 24 * 60 * 60;
+    static const Int32 SECONDS_PER_MINUTE;// = 60;
+    static const Int32 SECONDS_PER_HOUR;// = 60 * 60;
+    static const Int32 SECONDS_PER_DAY;// = 24 * 60 * 60;
 };
 
 
