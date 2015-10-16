@@ -111,8 +111,6 @@ private:
         : public TransitionListenerAdapter
     {
     public:
-        CAR_INTERFACE_DECL()
-
         TransitionListenerAdapter_1(
             /* [in] */ IViewGroup* parent);
 
@@ -137,8 +135,6 @@ private:
         : public AnimatorListenerAdapter
     {
     public:
-        CAR_INTERFACE_DECL()
-
         AnimatorListenerAdapter_1(
             /* [in] */ IViewGroup* sceneRoot,
             /* [in] */ IBitmapDrawable* drawable,
@@ -159,8 +155,6 @@ private:
         : public AnimatorListenerAdapter
     {
     public:
-        CAR_INTERFACE_DECL()
-
         AnimatorListenerAdapter_2(
             /* [in] */ IView* v);
 

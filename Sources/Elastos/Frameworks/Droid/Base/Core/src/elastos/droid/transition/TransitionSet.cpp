@@ -815,7 +815,7 @@ ECode TransitionSet::TransitionSetListener::OnTransitionStart(
 {
     AutoPtr<TransitionSet> cts = (TransitionSet*)mTransitionSet.Get();
     if (!cts->mStarted) {
-        mTransitionSet->Start();
+        ITransition::Probe(mTransitionSet)->Start();
         cts->mStarted = TRUE;
     }
     return NOERROR;
@@ -829,7 +829,7 @@ ECode TransitionSet::TransitionSetListener::OnTransitionEnd(
     if (cts->mCurrentListeners == 0) {
         // All child trans
         cts->mStarted = FALSE;
-        mTransitionSet->End();
+        ITransition::Probe(mTransitionSet)->End();
     }
     AutoPtr<ITransition> res;
     transition->RemoveListener(this, (ITransition**)&res);
