@@ -5,6 +5,11 @@ include $(MAKEDIR)/../../../../../../sources.inc
 
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../../inc/
+<<<<<<< HEAD
+=======
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid/utility
+>>>>>>> fix conflict.
 
 C_DEFINES += -DDROID_CORE
 

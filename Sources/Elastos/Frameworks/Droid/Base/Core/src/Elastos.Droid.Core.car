@@ -1,0 +1,71 @@
+
+module
+{
+    importlib("Elastos.CoreLibrary.eco");
+
+    merge("../car/Exceptions.car");
+    merge("../car/fake_interfaces.car");
+    merge("../car/util.car");
+    merge("../car/os.car");
+    merge("../car/animation.car");
+    merge("../car/database.car");
+    merge("../car/text.car");
+    merge("../car/content.car");
+    merge("../car/graphics.car");
+    merge("../car/location.car");
+    merge("../car/view.car");
+    merge("../car/hardware.car");
+    merge("../car/app.car");
+    merge("../car/net.car");
+    merge("../car/nfc.car");
+    merge("../car/widget.car");
+    merge("../car/gesture.car");
+    merge("../car/preference.car");
+    merge("../car/accounts.car");
+    merge("../car/accessibilityservice.car");
+    merge("../car/provider.car");
+    merge("../car/inputmethods.car");
+    merge("../car/transition.car");
+    merge("../car/systemui.car");
+    merge("../car/opengl.car");
+    merge("../car/transition.car");
+
+    merge("../car/internal/app.car");
+    merge("../car/internal/appwidget.car");
+    merge("../car/internal/backup.car");
+    merge("../car/internal/content.car");
+    merge("../car/internal/database.car");
+    merge("../car/internal/http.car");
+    merge("../car/internal/inputmethod.car");
+    merge("../car/internal/logging.car");
+    merge("../car/internal/net.car");
+    merge("../car/internal/os.car");
+    merge("../car/internal/policy.car");
+    merge("../car/internal/preference.car");
+    merge("../car/internal/statusbar.car");
+    merge("../car/internal/telephony.car");
+    merge("../car/internal/textservice.car");
+    merge("../car/internal/util.car");
+    merge("../car/internal/view.car");
+    merge("../car/internal/widget.car");
+
+    merge("../car/inputmethodservice.car");
+    merge("../car/media.car");
+    //merge("../car/bluetooth.car");
+    //merge("../car/menu1.car");
+    //merge("../car/text2.car");
+    //merge("../car/menu2.car");
+    //merge("../car/content2.car");
+    //merge("../car/app/ResolverActivity.car");
+    //merge("../car/pppoe.car");
+    //merge("../car/ethernet.car");
+    merge("../car/speech.car");
+    //merge("../car/webkit.car");
+    //merge("../car/privacy.car");
+    merge("../car/service.car");
+    merge("../car/appwidget.car");
+    //merge("../car/swextend.car");
+    //merge("../car/telephony.car");
+    merge("../car/sax.car");
+    merge("../car/keystore.car");
+}

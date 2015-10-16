@@ -2,6 +2,7 @@
 module
 {
     interface Elastos.Utility.IList;
+    interface Elastos.Utility.IArrayList;
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IViewGroup;
     interface Elastos.Droid.Utility.IArrayMap;
@@ -11,6 +12,7 @@ module
     interface Elastos.Droid.Transition.ITransition;
     interface Elastos.Droid.Transition.ITransitionValues;
     interface Elastos.Droid.Transition.ITransitionPropagation;
+    interface Elastos.Droid.Transition.ITransitionValuesMaps;
 
     namespace Elastos {
     namespace Droid {
@@ -182,7 +184,7 @@ module
     /**
      * involve interface ICloneable
      */
-    [local]
+    [local, deprecated]
     interface ITransition {
 
         const Boolean DBG = FALSE;
@@ -379,7 +381,7 @@ module
          *                If none are provided, then the default match order will be set.
          */
         SetMatchOrder(
-            [in] Int32 matches);
+            [in] ArrayOf<Int32>* matches);
 
         /**
          * Internal utility method for checking whether a given view/id
@@ -1134,6 +1136,74 @@ module
         ToString(
             [in] String indent,
             [out] String* result);
+
+        /**
+         * This is a utility method used by subclasses to handle standard parts of
+         * setting up and running an Animator: it sets the {@link #getDuration()
+         * duration} and the {@link #getStartDelay() startDelay}, starts the
+         * animation, and, when the animator ends, calls {@link #end()}.
+         *
+         * @param animator The Animator to be run during this transition.
+         *
+         * @hide
+         */
+        Animate(
+            [in] IAnimator* animator);
+
+        /**
+         * This method is called automatically by the transition and
+         * TransitionSet classes prior to a Transition subclass starting;
+         * subclasses should not need to call it directly.
+         *
+         * @hide
+         */
+        Start();
+
+        /**
+         * This method is called automatically by the Transition and
+         * TransitionSet classes when a transition finishes, either because
+         * a transition did nothing (returned a null Animator from
+         * {@link Transition#createAnimator(ViewGroup, TransitionValues,
+         * TransitionValues)}) or because the transition returned a valid
+         * Animator and end() was called in the onAnimationEnd()
+         * callback of the AnimatorListener.
+         *
+         * @hide
+         */
+        End();
+
+        /**
+         * This method cancels a transition that is currently running.
+         *
+         * @hide
+         */
+        Cancel();
+
+        /**
+         * This method, essentially a wrapper around all calls to createAnimator for all
+         * possible target views, is called with the entire set of start/end
+         * values. The implementation in Transition iterates through these lists
+         * and calls {@link #createAnimator(ViewGroup, TransitionValues, TransitionValues)}
+         * with each set of start/end values on this transition. The
+         * TransitionSet subclass overrides this method and delegates it to
+         * each of its children in succession.
+         *
+         * @hide
+         */
+        CreateAnimators(
+            [in] IViewGroup* sceneRoot,
+            [in] ITransitionValuesMaps* startValues,
+            [in] ITransitionValuesMaps* endValues,
+            [in] IArrayList* startValuesList,
+            [in] IArrayList* endValuesList);
+
+        /**
+         * This is called internally once all animations have been set up by the
+         * transition hierarchy.
+         *
+         * @hide
+         */
+        RunAnimators();
     }
 
     } // Transition

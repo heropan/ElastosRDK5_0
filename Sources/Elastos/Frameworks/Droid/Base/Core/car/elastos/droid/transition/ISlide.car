@@ -1,6 +1,9 @@
 
 module
 {
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.IViewGroup;
+
     namespace Elastos {
     namespace Droid {
     namespace Transition {
@@ -14,6 +17,21 @@ module
      * limited as described in {@link Visibility#onDisappear(android.view.ViewGroup,
      * TransitionValues, int, TransitionValues, int)}.
      */
+    [local]
+    interface ICalculateSlide {
+
+        /** Returns the translation value for view when it goes out of the scene */
+        GetGoneX(
+            [in] IViewGroup* sceneRoot,
+            [in] IView* view,
+            [out] Float* result);
+
+        /** Returns the translation value for view when it goes out of the scene */
+        GetGoneY(
+            [in] IViewGroup* sceneRoot,
+            [in] IView* view,
+            [out] Float* result);
+    }
 
     /**
      * involve interface IVisibility

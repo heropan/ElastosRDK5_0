@@ -17,7 +17,7 @@ module
      *
      * @hide
      */
-    [local]
+    [local, deprecated]
     interface ITransitionUtils {
 
         MergeAnimators(
@@ -26,7 +26,7 @@ module
             [out] IAnimator** result);
 
         MergeTransitions(
-            [in] ITransition* transitions,
+            [in] ArrayOf<ITransition*>* transitions,
             [out] ITransition** result);
 
         /**

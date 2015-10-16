@@ -5,10 +5,17 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/CRectF.h"
+<<<<<<< HEAD
 // #include "elastos/droid/view/CSurface.h"
 // #include "elastos/droid/view/InputEventConsistencyVerifier.h"
 // #include "elastos/droid/view/HardwareRenderer.h"
 // #include "elastos/droid/os/Runnable.h"
+=======
+// #include "view/CSurface.h"
+// #include "view/InputEventConsistencyVerifier.h"
+// #include "view/HardwareRenderer.h"
+// #include "os/Runnable.h"
+>>>>>>> fix conflict.
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 

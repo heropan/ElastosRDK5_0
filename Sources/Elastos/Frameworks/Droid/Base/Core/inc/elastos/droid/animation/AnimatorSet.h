@@ -4,7 +4,7 @@
 
 #include "elastos/droid/animation/Animator.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "AnimatorListenerAdapter.h"
+#include "elastos/droid/animation/AnimatorListenerAdapter.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Core::EIID_ICloneable;
