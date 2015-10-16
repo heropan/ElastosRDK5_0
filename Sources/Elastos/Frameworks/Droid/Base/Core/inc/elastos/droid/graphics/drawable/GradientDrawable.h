@@ -3,7 +3,6 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_GRADIENTDRAWABLE_H__
 
 #include "elastos/droid/graphics/drawable/Drawable.h"
-#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/CRectF.h"
 
 namespace Elastos {
@@ -73,6 +72,12 @@ public:
             /* [in] */ IResources* res,
             /* [out] */ IDrawable** drawable);
 
+        // @Override
+        CARAPI NewDrawable(
+            /* [in] */ IResources* res,
+            /* [in] */ IResourcesTheme* theme,
+            /* [out] */ IDrawable** drawable);
+
         CARAPI GetChangingConfigurations(
             /* [out] */ Int32* config);
 
@@ -89,16 +94,12 @@ public:
         CARAPI_(void) SetColors(
             /* [in] */ ArrayOf<Int32>* colors);
 
-        CARAPI_(void) SetSolidColor(
-            /* [in] */ Int32 argb);
+        CARAPI_(void) SetColorStateList(
+            /* [in] */ IColorStateList* colorStateList);
 
         CARAPI_(void) SetStroke(
             /* [in] */ Int32 width,
-            /* [in] */ Int32 color);
-
-        CARAPI_(void) SetStroke(
-            /* [in] */ Int32 width,
-            /* [in] */ Int32 color,
+            /* [in] */ IColorStateList* colorStateList,
             /* [in] */ Float dashWidth,
             /* [in] */ Float dashGap);
 
@@ -113,7 +114,12 @@ public:
             /* [in] */ Int32 height);
 
         CARAPI_(void) SetGradientRadius(
-            /* [in] */ Float gradientRadius);
+            /* [in] */ Float gradientRadius,
+            /* [in] */ Int32 type);
+
+        // @Override
+        virtual CARAPI CanApplyTheme(
+            /* [out] */ Boolean* can);
 
     private:
         CARAPI_(void) ComputeOpacity();
@@ -125,34 +131,44 @@ public:
         Int32 mChangingConfigurations;
         Int32 mShape;
         Int32 mGradient;
+        Int32 mAngle;
         GradientDrawableOrientation mOrientation;
+        AutoPtr<IColorStateList> mColorStateList;
+        AutoPtr<IColorStateList> mStrokeColorStateList;
         AutoPtr< ArrayOf<Int32> > mColors;
         AutoPtr< ArrayOf<Int32> > mTempColors; // no need to copy
         AutoPtr< ArrayOf<Float> > mTempPositions; // no need to copy
         AutoPtr< ArrayOf<Float> > mPositions;
-        Boolean mHasSolidColor;
-        Int32 mSolidColor;
         Int32 mStrokeWidth;   // if >= 0 use stroking.
-        Int32 mStrokeColor;
         Float mStrokeDashWidth;
         Float mStrokeDashGap;
         Float mRadius;    // use this if mRadiusArray is null
         AutoPtr< ArrayOf<Float> > mRadiusArray;
-        AutoPtr<CRect> mPadding;
+        AutoPtr<IRect> mPadding;
         Int32 mWidth;
         Int32 mHeight;
         Float mInnerRadiusRatio;
         Float mThicknessRatio;
         Int32 mInnerRadius;
+        Boolean mDither;
         Int32 mThickness;
+        AutoPtr<ArrayOf<Int32> > mThemeAttrs;
+        AutoPtr<ArrayOf<Int32> > mAttrSize;
+        AutoPtr<ArrayOf<Int32> > mAttrGradient;
+        AutoPtr<ArrayOf<Int32> > mAttrSolid;
+        AutoPtr<ArrayOf<Int32> > mAttrStroke;
+        AutoPtr<ArrayOf<Int32> > mAttrCorners;
+        AutoPtr<ArrayOf<Int32> > mAttrPadding;
 
     private:
         Float mCenterX;
         Float mCenterY;
         Float mGradientRadius;
+        Int32 mGradientRadiusType;
         Boolean mUseLevel;
         Boolean mUseLevelForShape;
-        Boolean mOpaque;
+        Boolean mOpaqueOverBounds;
+        Boolean mOpaqueOverShape;
     };
 
 public:
@@ -306,10 +322,11 @@ public:
         /* [out] */ Int32* opacity);
 
     //@Override
-    CARAPI Inflate(
+    virtual CARAPI Inflate(
         /* [in] */ IResources* r,
         /* [in] */ IXmlPullParser* parser,
-        /* [in] */ IAttributeSet* attrs);
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ IResourcesTheme* theme)/* throws XmlPullParserException, IOException*/;
 
     //@Override
     CARAPI GetIntrinsicWidth(
@@ -326,6 +343,23 @@ public:
     //@Override
     CARAPI Mutate(
         /* [out] */ IDrawable** drawable);
+
+    virtual CARAPI IsStateful(
+        /* [out] */ Boolean* isStateful);
+
+    virtual CARAPI GetAlpha(
+        /* [out] */ Int32* alpha);
+
+    virtual CARAPI GetColorFilter(
+        /* [out] */ IColorFilter** filter);
+
+    // @Override
+    CARAPI CanApplyTheme(
+        /* [out] */ Boolean* can);
+
+    // @Override
+    CARAPI GetOutline(
+        /* [out] */ IOutline* outline);
 
 protected:
     //@Override
@@ -347,11 +381,16 @@ protected:
         /* [in] */ ArrayOf<Int32>* colors);
 
     CARAPI constructor(
-        /* [in] */ GradientState* state);
+        /* [in] */ GradientState* state,
+        /* [in] */ IResourcesTheme* theme);
+
+    CARAPI_(Boolean) OnStateChange(
+        /* [in] */ const ArrayOf<Int32>* stateSet);
 
 private:
     GradientDrawable(
-        /* [in] */ GradientState* state);
+        /* [in] */ GradientState* state,
+        /* [in] */ IResourcesTheme* theme);
 
     CARAPI_(Int32) ModulateAlpha(
         /* [in] */ Int32 alpha);
@@ -375,24 +414,85 @@ private:
     CARAPI_(void) InitializeWithState(
         /* [in] */ GradientState* state);
 
+    CARAPI SetStrokeInternal(
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 color,
+        /* [in] */ Float dashWidth,
+        /* [in] */ Float dashGap);
+
+    CARAPI_(void) BuildPathIfDirty();
+
+    /**
+     * Updates the constant state from the values in the typed array.
+     */
+    CARAPI UpdateStateFromTypedArray(
+        /* [in] */ ITypedArray* a);
+
+    CARAPI ApplyThemeChildElements(
+        /* [in] */ IResourcesTheme* t);
+
+    CARAPI InflateChildElements(
+        /* [in] */ IResources* r,
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ IResourcesTheme* theme) /*throws XmlPullParserException, IOException*/;
+
+    CARAPI UpdateGradientDrawablePadding(
+        /* [in] */ ITypedArray* a);
+
+    CARAPI UpdateDrawableCorners(
+        /* [in] */ ITypedArray* a);
+
+    CARAPI UpdateGradientDrawableStroke(
+        /* [in] */ ITypedArray* a);
+
+    CARAPI UpdateGradientDrawableSolid(
+        /* [in] */ ITypedArray* a);
+
+    CARAPI UpdateGradientDrawableGradient(
+        /* [in] */ IResources* r,
+        /* [in] */ ITypedArray* a) /*throws XmlPullParserException*/;
+
+    CARAPI UpdateGradientDrawableSize(
+        /* [in] */ ITypedArray* a);
+
+    CARAPI_(Boolean) IsOpaqueForState();
+
+    static CARAPI_(Boolean) IsOpaque(
+        /* [in] */ Int32 color);
+
 private:
+    /** Radius is in pixels. */
+    static const Int32 RADIUS_TYPE_PIXELS;
+
+    /** Radius is a fraction of the base size. */
+    static const Int32 RADIUS_TYPE_FRACTION;
+
+    /** Radius is a fraction of the bounds size. */
+    static const Int32 RADIUS_TYPE_FRACTION_PARENT;
+
+    static const Float DEFAULT_INNER_RADIUS_RATIO;
+    static const Float DEFAULT_THICKNESS_RATIO;
+
     AutoPtr<GradientState> mGradientState;
 
     AutoPtr<IPaint> mFillPaint;
-    AutoPtr<CRect> mPadding;
+    AutoPtr<IRect> mPadding;
     AutoPtr<IPaint> mStrokePaint;   // optional, set by the caller
     AutoPtr<IColorFilter> mColorFilter;   // optional, set by the caller
     Int32 mAlpha;  // modified by the caller
-    Boolean mDither;
 
     AutoPtr<IPath> mPath;
     AutoPtr<CRectF> mRect;
 
     AutoPtr<IPaint> mLayerPaint;    // internal, used if we use saveLayer()
-    Boolean mRectIsDirty;   // internal state
+    Boolean mGradientIsDirty;   // internal state
     Boolean mMutated;
     AutoPtr<IPath> mRingPath;
     Boolean mPathIsDirty;
+
+    /** Current gradient radius, valid when {@link #mGradientIsDirty} is false. */
+    Float mGradientRadius;
 };
 
 } // namespace Drawable

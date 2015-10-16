@@ -3,8 +3,11 @@
 #include "elastos/droid/graphics/drawable/LayerDrawable.h"
 #include "elastos/droid/graphics/drawable/CLayerDrawable.h"
 #include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/content/res/CTypedArray.h"
 #include "elastos/droid/R.h"
+#include <elastos/core/Math.h>
 
+using Elastos::Droid::Content::Res::CTypedArray;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::R;
 
@@ -12,6 +15,45 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 namespace Drawable {
+
+LayerDrawable::ChildDrawable::ChildDrawable()
+    : mInsetL(0)
+    , mInsetT(0)
+    , mInsetR(0)
+    , mInsetB(0)
+    , mId(IView::NO_ID)
+{}
+
+LayerDrawable::ChildDrawable::ChildDrawable(
+    /* [in] */ ChildDrawable* orig,
+    /* [in] */ LayerDrawable* owner,
+    /* [in] */ IResources* res)
+    : mThemeAttrs(orig->mThemeAttrs)
+    , mInsetL(orig->mInsetL)
+    , mInsetT(orig->mInsetT)
+    , mInsetR(orig->mInsetR)
+    , mInsetB(orig->mInsetB)
+    , mId(orig->mId)
+{
+    AutoPtr<IDrawableConstantState> state;
+    orig->mDrawable->GetConstantState((IDrawableConstantState**)&state);
+    if (res != NULL) {
+        state->NewDrawable(res, (IDrawable**)&mDrawable);
+    } else {
+        state->NewDrawable((IDrawable**)&mDrawable);
+    }
+    mDrawable->SetCallback(owner);
+    Int32 dir = 0;
+    orig->mDrawable->GetLayoutDirection(&dir);
+    mDrawable->SetLayoutDirection(dir);
+    AutoPtr<IRect> bounds;
+    orig->mDrawable->GetBounds((IRect**)&bounds);
+    mDrawable->SetBounds(bounds);
+    Int32 level = 0;
+    orig->mDrawable->GetLevel(&level);
+    Boolean changed = FALSE;
+    mDrawable->SetLevel(level, &changed);
+}
 
 LayerDrawable::LayerState::LayerState(
     /* [in] */ LayerState* orig,
@@ -22,10 +64,10 @@ LayerDrawable::LayerState::LayerState(
     , mChildrenChangingConfigurations(0)
     , mHaveOpacity(FALSE)
     , mOpacity(0)
-    , mHaveStateful(FALSE)
-    , mStateful(FALSE)
-    , mCheckedConstantState(FALSE)
-    , mCanConstantState(FALSE)
+    , mHaveIsStateful(FALSE)
+    , mIsStateful(FALSE)
+    , mAutoMirrored(FALSE)
+    , mPaddingMode(PADDING_MODE_NEST)
 {
     if (orig != NULL) {
         AutoPtr<ArrayOf<ChildDrawable*> > origChildDrawable = orig->mChildren;
@@ -37,36 +79,30 @@ LayerDrawable::LayerState::LayerState(
         mChildrenChangingConfigurations = orig->mChildrenChangingConfigurations;
 
         for (Int32 i = 0; i < N; i++) {
-            AutoPtr<ChildDrawable> r = new ChildDrawable();
-            mChildren->Set(i, r);
-            AutoPtr<ChildDrawable> r2 = (*origChildDrawable)[i];
-            AutoPtr<IDrawableConstantState> state;
-            r2->mDrawable->GetConstantState((IDrawableConstantState**)&state);
-            if (res != NULL) {
-                state->NewDrawable(res, (IDrawable**)(&(r->mDrawable)));
-            }
-            else {
-                state->NewDrawable((IDrawable**)(&(r->mDrawable)));
-            }
-            r->mDrawable->SetCallback(
-                owner != NULL ? (IDrawableCallback*)owner->Probe(EIID_IDrawableCallback) : NULL);
-            r->mInsetL = r2->mInsetL;
-            r->mInsetT = r2->mInsetT;
-            r->mInsetR = r2->mInsetR;
-            r->mInsetB = r2->mInsetB;
-            r->mId = r2->mId;
+            AutoPtr<ChildDrawable> cd = (*origChildDrawable)[i];
+            (*mChildren)[i] = new ChildDrawable(cd, owner, res);
         }
 
         mHaveOpacity = orig->mHaveOpacity;
         mOpacity = orig->mOpacity;
-        mHaveStateful = orig->mHaveStateful;
-        mStateful = orig->mStateful;
-        mCheckedConstantState = mCanConstantState = TRUE;
+        mHaveIsStateful = orig->mHaveIsStateful;
+        mIsStateful = orig->mIsStateful;
+        mAutoMirrored = orig->mAutoMirrored;
+        mPaddingMode = orig->mPaddingMode;
+        mThemeAttrs = orig->mThemeAttrs;
     }
     else {
         mNum = 0;
         mChildren = NULL;
     }
+}
+
+ECode LayerDrawable::LayerState::CanApplyTheme(
+    /* [out] */ Boolean* can)
+{
+    VALIDATE_NOT_NULL(can);
+    *can = mThemeAttrs != NULL;
+    return NOERROR;
 }
 
 LayerDrawable::LayerState::~LayerState()
@@ -75,14 +111,22 @@ LayerDrawable::LayerState::~LayerState()
 ECode LayerDrawable::LayerState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
-    return CLayerDrawable::New(this, NULL, (ILayerDrawable**)drawable);
+    return CLayerDrawable::New(this, NULL, NULL, (ILayerDrawable**)drawable);
 }
 
 ECode LayerDrawable::LayerState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
-    return CLayerDrawable::New(this, res, (ILayerDrawable**)drawable);
+    return CLayerDrawable::New(this, res, NULL, (ILayerDrawable**)drawable);
+}
+
+ECode LayerDrawable::LayerState::NewDrawable(
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme,
+    /* [out] */ IDrawable** drawable)
+{
+    return CLayerDrawable::New(this, res, theme, (ILayerDrawable**)drawable);
 }
 
 ECode LayerDrawable::LayerState::GetChangingConfigurations(
@@ -116,8 +160,8 @@ Int32 LayerDrawable::LayerState::GetOpacity()
 
 Boolean LayerDrawable::LayerState::IsStateful()
 {
-    if (mHaveStateful) {
-        return mStateful;
+    if (mHaveIsStateful) {
+        return mIsStateful;
     }
 
     Boolean stateful = FALSE;
@@ -131,29 +175,31 @@ Boolean LayerDrawable::LayerState::IsStateful()
         }
     }
 
-    mStateful = stateful;
-    mHaveStateful = TRUE;
+    mIsStateful = stateful;
+    mHaveIsStateful = TRUE;
     return stateful;
 }
 
 Boolean LayerDrawable::LayerState::CanConstantState()
 {
-    if (!mCheckedConstantState && mChildren != NULL) {
-        mCanConstantState = TRUE;
-        Int32 N = mNum;
-        for (Int32 i=0; i<N; i++) {
-            AutoPtr<IDrawableConstantState> state;
-            (*mChildren)[i]->mDrawable->GetConstantState(
-                (IDrawableConstantState**)&state);
-            if (state == NULL) {
-                mCanConstantState = FALSE;
-                break;
-            }
+    AutoPtr<ArrayOf<ChildDrawable*> > array = mChildren;
+    const Int32 N = mNum;
+    for (Int32 i = 0; i < N; i++) {
+        AutoPtr<IDrawableConstantState> state;
+        (*array)[i]->mDrawable->GetConstantState((IDrawableConstantState**)&state);
+        if (state == NULL) {
+            return FALSE;
         }
-        mCheckedConstantState = TRUE;
     }
 
-    return mCanConstantState;
+    // Don't cache the result, this method is not called very often.
+    return TRUE;
+}
+
+void LayerDrawable::LayerState::InvalidateCache()
+{
+    mHaveOpacity = FALSE;
+    mHaveIsStateful = FALSE;
 }
 
 CAR_INTERFACE_IMPL_2(LayerDrawable, Drawable, ILayerDrawable, IDrawableCallback);
@@ -162,7 +208,7 @@ LayerDrawable::LayerDrawable()
     , mMutated(FALSE)
 {
     ASSERT_SUCCEEDED(CRect::New((IRect**)&mTmpRect));
-    constructor((LayerState*)NULL, NULL);
+    constructor((LayerState*)NULL, NULL, NULL);
 }
 
 LayerDrawable::LayerDrawable(
@@ -177,12 +223,13 @@ LayerDrawable::LayerDrawable(
 
 LayerDrawable::LayerDrawable(
     /* [in] */ LayerState* state,
-    /* [in] */ IResources* res)
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme)
     : mOpacityOverride(IPixelFormat::UNKNOWN)
     , mMutated(FALSE)
 {
     ASSERT_SUCCEEDED(CRect::New((IRect**)&mTmpRect));
-    constructor(state, res);
+    constructor(state, res, theme);
 }
 
 LayerDrawable::~LayerDrawable()
@@ -198,134 +245,286 @@ AutoPtr<LayerDrawable::LayerState> LayerDrawable::CreateConstantState(
 ECode LayerDrawable::Inflate(
     /* [in] */ IResources* r,
     /* [in] */ IXmlPullParser* parser,
-    /* [in] */ IAttributeSet* attrs)
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme)
 {
-    Drawable::Inflate(r, parser, attrs);
-
-    Int32 type;
+    Drawable::Inflate(r, parser, attrs, theme);
+    AutoPtr<ITypedArray> a;
 
     Int32 size = ARRAY_SIZE(R::styleable::LayerDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::LayerDrawable, size);
-
-    AutoPtr<ITypedArray> a;
-    r->ObtainAttributes(attrs, layout, (ITypedArray**)&a);
-
-    a->GetInt32(R::styleable::LayerDrawable_opacity,
-            IPixelFormat::UNKNOWN, &mOpacityOverride);
-
+    ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
+    UpdateStateFromTypedArray(a);
     a->Recycle();
 
-    Int32 innerDepth;
+    InflateLayers(r, parser, attrs, theme);
+
+    EnsurePadding();
+    AutoPtr<ArrayOf<Int32> > state;
+    GetState((ArrayOf<Int32>**)&state);
+    OnStateChange(state);
+    return NOERROR;
+}
+
+void LayerDrawable::UpdateStateFromTypedArray(
+    /* [in] */ ITypedArray* a)
+{
+    AutoPtr<LayerState> state = mLayerState;
+
+    // Account for any configuration changes.
+    Int32 config = 0;
+    a->GetChangingConfigurations(&config);
+    state->mChangingConfigurations |= config;
+
+    // Extract the theme attributes, if any.
+    ((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&state->mThemeAttrs);
+
+    a->GetInt32(R::styleable::LayerDrawable_opacity, mOpacityOverride, &mOpacityOverride);
+
+    assert(0 && "TODO");
+    // a->GetBoolean(R::styleable::LayerDrawable_autoMirrored, state->mAutoMirrored, &state->mAutoMirrored);
+    // a->GetInteger(R::styleable::LayerDrawable_paddingMode, state->mPaddingMode, &state->mPaddingMode);
+}
+
+ECode LayerDrawable::InflateLayers(
+    /* [in] */ IResources* r,
+    /* [in] */ IXmlPullParser* parser,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme) /*throws XmlPullParserException, IOException*/
+{
+    AutoPtr<LayerState> state = mLayerState;
+
+    Int32 innerDepth = 0;
     parser->GetDepth(&innerDepth);
-    innerDepth++;
-    Int32 depth;
+    innerDepth += 1;
+    Int32 type = 0;
+    Int32 depth = 0;
     while ((parser->Next(&type), type) != IXmlPullParser::END_DOCUMENT
-        && ((parser->GetDepth(&depth), depth) >= innerDepth
-        || type != IXmlPullParser::END_TAG)) {
+            && ((parser->GetDepth(&depth), depth) >= innerDepth || type != IXmlPullParser::END_TAG)) {
         if (type != IXmlPullParser::START_TAG) {
             continue;
         }
 
         String name;
-        if (depth > innerDepth || (parser->GetName(&name), !name.Equals("item"))) {
+        parser->GetName(&name);
+        if (depth > innerDepth || !name.Equals("item")) {
             continue;
         }
 
-        size = ARRAY_SIZE(R::styleable::LayerDrawableItem);
-        layout = ArrayOf<Int32>::Alloc(size);
+        AutoPtr<ChildDrawable> layer = new ChildDrawable();
+        AutoPtr<ITypedArray> a;
+        Int32 size = ARRAY_SIZE(R::styleable::LayerDrawableItem);
+        AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
         layout->Copy(R::styleable::LayerDrawableItem, size);
-
-        a = NULL;
-        r->ObtainAttributes(attrs, layout, (ITypedArray**)&a);
-
-        Int32 left;
-        a->GetDimensionPixelOffset(
-            R::styleable::LayerDrawableItem_left, 0, &left);
-        Int32 top;
-        a->GetDimensionPixelOffset(
-            R::styleable::LayerDrawableItem_top, 0, &top);
-        Int32 right;
-        a->GetDimensionPixelOffset(
-            R::styleable::LayerDrawableItem_right, 0, &right);
-        Int32 bottom;
-        a->GetDimensionPixelOffset(
-            R::styleable::LayerDrawableItem_bottom, 0, &bottom);
-        Int32 drawableRes;
-        a->GetResourceId(
-            R::styleable::LayerDrawableItem_drawable, 0, &drawableRes);
-        Int32 id;
-        a->GetResourceId(
-            R::styleable::LayerDrawableItem_id, IView::NO_ID, &id);
-
+        FAIL_RETURN(ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a));
+        UpdateLayerFromTypedArray(layer, a);
         a->Recycle();
 
-        AutoPtr<IDrawable> dr;
-        if (drawableRes != 0) {
-            r->GetDrawable(drawableRes, (IDrawable**)&dr);
-        }
-        else {
+        if (layer->mDrawable == NULL) {
             while ((parser->Next(&type), type) == IXmlPullParser::TEXT) {
             }
             if (type != IXmlPullParser::START_TAG) {
-                //throw new XmlPullParserException(parser->getPositionDescription()
-                //        + ": <item> tag requires a 'drawable' attribute or "
-                //        + "child tag defining a drawable");
+                // throw new XmlPullParserException(parser.getPositionDescription()
+                //         + ": <item> tag requires a 'drawable' attribute or "
+                //         + "child tag defining a drawable");
                 return E_XML_PULL_PARSER_EXCEPTION;
             }
-            Drawable::CreateFromXmlInner(r, parser, attrs, (IDrawable**)&dr);
+            FAIL_RETURN(Drawable::CreateFromXmlInner(r, parser, attrs, theme, (IDrawable**)&layer->mDrawable));
         }
 
-        FAIL_RETURN(AddLayer(dr, id, left, top, right, bottom));
+        if (layer->mDrawable != NULL) {
+            Int32 config = 0;
+            layer->mDrawable->GetChangingConfigurations(&config);
+            state->mChildrenChangingConfigurations |= config;
+            layer->mDrawable->SetCallback(THIS_PROBE(IDrawableCallback));
+        }
+
+        AddLayer(layer);
+    }
+    return NOERROR;
+}
+
+void LayerDrawable::UpdateLayerFromTypedArray(
+    /* [in] */ ChildDrawable* layer,
+    /* [in] */ ITypedArray* a)
+{
+    AutoPtr<LayerState> state = mLayerState;
+
+    // Account for any configuration changes.
+    Int32 config = 0;
+    a->GetChangingConfigurations(&config);
+    state->mChildrenChangingConfigurations |= config;
+
+    // Extract the theme attributes, if any.
+    ((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&layer->mThemeAttrs);
+
+    a->GetDimensionPixelOffset(R::styleable::LayerDrawableItem_left, layer->mInsetL, &layer->mInsetL);
+    a->GetDimensionPixelOffset(R::styleable::LayerDrawableItem_top, layer->mInsetT, &layer->mInsetT);
+    a->GetDimensionPixelOffset(R::styleable::LayerDrawableItem_right, layer->mInsetR, &layer->mInsetR);
+    a->GetDimensionPixelOffset(R::styleable::LayerDrawableItem_bottom, layer->mInsetB, &layer->mInsetB);
+    a->GetResourceId(R::styleable::LayerDrawableItem_id, layer->mId, &layer->mId);
+
+    AutoPtr<IDrawable> dr;
+    a->GetDrawable(R::styleable::LayerDrawableItem_drawable, (IDrawable**)&dr);
+    if (dr != NULL) {
+        layer->mDrawable = dr;
+    }
+}
+
+ECode LayerDrawable::ApplyTheme(
+    /* [in] */ IResourcesTheme* t)
+{
+    Drawable::ApplyTheme(t);
+
+    AutoPtr<LayerState> state = mLayerState;
+    if (state == NULL) {
+        return NOERROR;
+    }
+
+    if (state->mThemeAttrs != NULL) {
+        AutoPtr<ITypedArray> a;
+        Int32 size = ARRAY_SIZE(R::styleable::LayerDrawable);
+        AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+        layout->Copy(R::styleable::LayerDrawable, size);
+        assert(0 && "TODO");
+        // t->ResolveAttributes(state->mThemeAttrs, layout, (ITypedArray**)&a);
+        UpdateStateFromTypedArray(a);
+        a->Recycle();
+    }
+
+    AutoPtr<ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
+    const Int32 N = mLayerState->mNum;
+    for (Int32 i = 0; i < N; i++) {
+        AutoPtr<ChildDrawable> layer = (*array)[i];
+        if (layer->mThemeAttrs != NULL) {
+            AutoPtr<ITypedArray> a;
+
+            Int32 size = ARRAY_SIZE(R::styleable::LayerDrawableItem);
+            AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+            layout->Copy(R::styleable::LayerDrawableItem, size);
+            assert(0 && "TODO");
+            // t->ResolveAttributes(layer->mThemeAttrs, layout, (ITypedArray**)&a);
+            UpdateLayerFromTypedArray(layer, a);
+            a->Recycle();
+        }
+
+        AutoPtr<IDrawable> d = layer->mDrawable;
+        Boolean can = FALSE;
+        if (d->CanApplyTheme(&can), can) {
+            d->ApplyTheme(t);
+        }
     }
 
     EnsurePadding();
     AutoPtr<ArrayOf<Int32> > states;
     GetState((ArrayOf<Int32>**)&states);
-    OnStateChange(states);
+    return OnStateChange(states);
+}
+
+ECode LayerDrawable::CanApplyTheme(
+    /* [out] */ Boolean* can)
+{
+    VALIDATE_NOT_NULL(can);
+    AutoPtr<LayerState> state = mLayerState;
+    if (state == NULL) {
+        *can = FALSE;
+        return NOERROR;
+    }
+
+    if (state->mThemeAttrs != NULL) {
+        *can = TRUE;
+        return NOERROR;
+    }
+
+    AutoPtr<ArrayOf<ChildDrawable*> >  array = state->mChildren;
+    const Int32 N = state->mNum;
+    for (Int32 i = 0; i < N; i++) {
+        AutoPtr<ChildDrawable> layer = (*array)[i];
+        Boolean tmp = FALSE;
+        if (layer->mThemeAttrs != NULL || (layer->mDrawable->CanApplyTheme(&tmp), tmp)) {
+            *can = TRUE;
+            return NOERROR;
+        }
+    }
+
+    *can = FALSE;
     return NOERROR;
 }
 
-ECode LayerDrawable::AddLayer(
+ECode LayerDrawable::IsProjected(
+    /* [out] */ Boolean* projected)
+{
+    VALIDATE_NOT_NULL(projected);
+    if ((Drawable::IsProjected(projected), *projected)) {
+        *projected = TRUE;
+        return NOERROR;
+    }
+
+    AutoPtr<ArrayOf<ChildDrawable*> > layers = mLayerState->mChildren;
+    const Int32 N = mLayerState->mNum;
+    Boolean tmp = FALSE;
+    for (Int32 i = 0; i < N; i++) {
+        if ((*layers)[i]->mDrawable->IsProjected(&tmp), tmp) {
+            *projected = TRUE;
+            return NOERROR;
+        }
+    }
+
+    *projected = FALSE;
+    return NOERROR;
+}
+
+void LayerDrawable::AddLayer(
+    /* [in] */ ChildDrawable* layer)
+{
+    AutoPtr<LayerState> st = mLayerState;
+    const Int32 N = st->mChildren != NULL ? st->mChildren->GetLength() : 0;
+    const Int32 i = st->mNum;
+    if (i >= N) {
+        AutoPtr<ArrayOf<ChildDrawable*> > nu = ArrayOf<ChildDrawable*>::Alloc(N + 10);
+        if (i > 0) {
+            // System.arraycopy(st.mChildren, 0, nu, 0, i);
+            nu->Copy(0, st->mChildren, 0, i);
+        }
+
+        st->mChildren = nu;
+    }
+
+    (*st->mChildren)[i] = layer;
+    st->mNum++;
+    st->InvalidateCache();
+}
+
+AutoPtr<LayerDrawable::ChildDrawable> LayerDrawable::AddLayer(
     /* [in] */ IDrawable* layer,
+    /* [in] */ ArrayOf<Int32>* themeAttrs,
     /* [in] */ Int32 id,
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom)
 {
-    LayerState* st = mLayerState;
-    Int32 N = st->mChildren != NULL ? st->mChildren->GetLength() : 0;
-    Int32 i = st->mNum;
-    if (i >= N) {
-        AutoPtr<ArrayOf<ChildDrawable*> > nu = ArrayOf<ChildDrawable*>::Alloc(N + 10);
-        if (i > 0) {
-            if (i >= N + 10) {
-                return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-            }
-
-            for (Int32 j = 0; j < i; j++) {
-                nu->Set(j, (*st->mChildren)[j]);
-            }
-        }
-        st->mChildren = nu;
-    }
-
-    Int32 config;
-    layer->GetChangingConfigurations(&config);
-    mLayerState->mChildrenChangingConfigurations |= config;
-
     AutoPtr<ChildDrawable> childDrawable = new ChildDrawable();
-    st->mChildren->Set(i, childDrawable);
     childDrawable->mId = id;
+    childDrawable->mThemeAttrs = themeAttrs;
     childDrawable->mDrawable = layer;
+    Boolean mirrored = FALSE;
+    IsAutoMirrored(&mirrored);
+    childDrawable->mDrawable->SetAutoMirrored(mirrored);
     childDrawable->mInsetL = left;
     childDrawable->mInsetT = top;
     childDrawable->mInsetR = right;
     childDrawable->mInsetB = bottom;
-    st->mNum++;
 
-    return layer->SetCallback((IDrawableCallback*)this->Probe(EIID_IDrawableCallback));
+    AddLayer(childDrawable);
+
+    Int32 config = 0;
+    layer->GetChangingConfigurations(&config);
+    mLayerState->mChildrenChangingConfigurations |= config;
+    layer->SetCallback(THIS_PROBE(IDrawableCallback));
+
+    return childDrawable;
 }
 
 ECode LayerDrawable::FindDrawableByLayerId(
@@ -389,20 +588,26 @@ ECode LayerDrawable::SetDrawableByLayerId(
     VALIDATE_NOT_NULL(res);
     AutoPtr< ArrayOf<ChildDrawable*> > layers = mLayerState->mChildren;
 
-    for (Int32 i = mLayerState->mNum - 1; i >= 0; i--) {
-        if ((*layers)[i]->mId == id) {
-            if ((*layers)[i]->mDrawable != NULL) {
+    const Int32 N = mLayerState->mNum;
+    for (Int32 i = 0; i < N; i++) {
+        AutoPtr<ChildDrawable> childDrawable = (*layers)[i];
+        if (childDrawable->mId == id) {
+            if (childDrawable->mDrawable != NULL) {
                 if (drawable != NULL) {
                     AutoPtr<IRect> bounds;
-                    (*layers)[i]->mDrawable->GetBounds((IRect**)&bounds);
+                    childDrawable->mDrawable->GetBounds((IRect**)&bounds);
                     drawable->SetBounds(bounds);
                 }
-                (*layers)[i]->mDrawable->SetCallback(NULL);
+
+                childDrawable->mDrawable->SetCallback(NULL);
             }
+
             if (drawable != NULL) {
                 drawable->SetCallback((IDrawableCallback*)this->Probe(EIID_IDrawableCallback));
             }
-            (*layers)[i]->mDrawable = drawable;
+
+            childDrawable->mDrawable = drawable;
+            mLayerState->InvalidateCache();
             *res = TRUE;
             return NOERROR;
         }
@@ -430,10 +635,9 @@ ECode LayerDrawable::SetLayerInset(
 ECode LayerDrawable::SetPaddingMode(
     /* [in] */ Int32 mode)
 {
-    assert(0 && "TODO");
-    // if (mLayerState->mPaddingMode != mode) {
-    //     mLayerState->mPaddingMode = mode;
-    // }
+    if (mLayerState->mPaddingMode != mode) {
+        mLayerState->mPaddingMode = mode;
+    }
     return NOERROR;
 }
 
@@ -441,20 +645,14 @@ ECode LayerDrawable::GetPaddingMode(
     /* [out] */ Int32* mode)
 {
     VALIDATE_NOT_NULL(mode);
-    assert(0 && "TODO");
-    // *mode = mLayerState->mPaddingMode;
+    *mode = mLayerState->mPaddingMode;
     return NOERROR;
 }
 
 ECode LayerDrawable::InvalidateDrawable(
     /* [in] */ IDrawable* who)
 {
-    AutoPtr<IDrawableCallback> callback;
-    GetCallback((IDrawableCallback**)&callback);
-    if (callback != NULL) {
-        callback->InvalidateDrawable((IDrawable*)this->Probe(EIID_IDrawable));
-    }
-    return NOERROR;
+    return InvalidateSelf();
 }
 
 ECode LayerDrawable::ScheduleDrawable(
@@ -462,26 +660,14 @@ ECode LayerDrawable::ScheduleDrawable(
     /* [in] */ IRunnable* what,
     /* [in] */ Int64 when)
 {
-    AutoPtr<IDrawableCallback> callback;
-    GetCallback((IDrawableCallback**)&callback);
-    if (callback != NULL) {
-        callback->ScheduleDrawable(
-            (IDrawable*)this->Probe(EIID_IDrawable), what, when);
-    }
-    return NOERROR;
+    return ScheduleSelf(what, when);
 }
 
 ECode LayerDrawable::UnscheduleDrawable(
     /* [in] */ IDrawable* who,
     /* [in] */ IRunnable* what)
 {
-    AutoPtr<IDrawableCallback> callback;
-    GetCallback((IDrawableCallback**)&callback);
-    if (callback != NULL) {
-        callback->UnscheduleDrawable(
-            (IDrawable*)this->Probe(EIID_IDrawable), what);
-    }
-    return NOERROR;
+    return UnscheduleSelf(what);
 }
 
 ECode LayerDrawable::Draw(
@@ -511,24 +697,117 @@ ECode LayerDrawable::GetPadding(
     /* [out] */ Boolean* isPadding)
 {
     VALIDATE_NOT_NULL(isPadding);
-    CRect* rect = (CRect*)padding;
-    // Arbitrarily get the padding from the first image.
-    // Technically we should maybe do something more intelligent,
-    // like take the max padding of all the images.
-    rect->mLeft = 0;
-    rect->mTop = 0;
-    rect->mRight = 0;
-    rect->mBottom = 0;
-    AutoPtr< ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
-    Int32 N = mLayerState->mNum;
-    for (Int32 i = 0; i < N; i++) {
-        ReapplyPadding(i, (*array)[i]);
-        rect->mLeft += (*mPaddingL)[i];
-        rect->mTop += (*mPaddingT)[i];
-        rect->mRight += (*mPaddingT)[i];
-        rect->mBottom += (*mPaddingB)[i];
+    if (mLayerState->mPaddingMode == PADDING_MODE_NEST) {
+        ComputeNestedPadding(padding);
+    } else {
+        ComputeStackedPadding(padding);
     }
-    *isPadding = TRUE;
+
+    CRect* rect = (CRect*)padding;
+    *isPadding = rect->mLeft != 0 || rect->mTop != 0 || rect->mRight != 0 || rect->mBottom != 0;
+    return NOERROR;
+}
+
+void LayerDrawable::ComputeNestedPadding(
+    /* [in] */ IRect* rect)
+{
+    CRect* padding = (CRect*)rect;
+    padding->mLeft = 0;
+    padding->mTop = 0;
+    padding->mRight = 0;
+    padding->mBottom = 0;
+
+    // Add all the padding.
+    AutoPtr<ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
+    const Int32 N = mLayerState->mNum;
+    for (Int32 i = 0; i < N; i++) {
+        RefreshChildPadding(i, (*array)[i]);
+
+        padding->mLeft += (*mPaddingL)[i];
+        padding->mTop += (*mPaddingT)[i];
+        padding->mRight += (*mPaddingR)[i];
+        padding->mBottom += (*mPaddingB)[i];
+    }
+}
+
+void LayerDrawable::ComputeStackedPadding(
+    /* [in] */ IRect* _padding)
+{
+    CRect* padding = (CRect*)_padding;
+    padding->mLeft = 0;
+    padding->mTop = 0;
+    padding->mRight = 0;
+    padding->mBottom = 0;
+
+    // Take the max padding.
+    AutoPtr<ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
+    const Int32 N = mLayerState->mNum;
+    for (Int32 i = 0; i < N; i++) {
+        RefreshChildPadding(i, (*array)[i]);
+
+        padding->mLeft = Elastos::Core::Math::Max(padding->mLeft, (*mPaddingL)[i]);
+        padding->mTop = Elastos::Core::Math::Max(padding->mTop, (*mPaddingT)[i]);
+        padding->mRight = Elastos::Core::Math::Max(padding->mRight, (*mPaddingR)[i]);
+        padding->mBottom = Elastos::Core::Math::Max(padding->mBottom, (*mPaddingB)[i]);
+    }
+}
+
+ECode LayerDrawable::GetOutline(
+    /* [in] */ /*@NonNull*/ IOutline* outline)
+{
+    AutoPtr<LayerState> state = mLayerState;
+    AutoPtr<ArrayOf<ChildDrawable*> > children = state->mChildren;
+    const Int32 N = state->mNum;
+    for (Int32 i = 0; i < N; i++) {
+        (*children)[i]->mDrawable->GetOutline(outline);
+        Boolean empty = FALSE;
+        if (!(outline->IsEmpty(&empty), empty)) {
+            return NOERROR;
+        }
+    }
+    return NOERROR;
+}
+
+ECode LayerDrawable::SetHotspot(
+    /* [in] */ Float x,
+    /* [in] */ Float y)
+{
+    AutoPtr<ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
+    const Int32 N = mLayerState->mNum;
+    for (Int32 i = 0; i < N; i++) {
+        (*array)[i]->mDrawable->SetHotspot(x, y);
+    }
+    return NOERROR;
+}
+
+ECode LayerDrawable::SetHotspotBounds(
+    /* [in] */ Int32 left,
+    /* [in] */ Int32 top,
+    /* [in] */ Int32 right,
+    /* [in] */ Int32 bottom)
+{
+    AutoPtr<ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
+    const Int32 N = mLayerState->mNum;
+    for (Int32 i = 0; i < N; i++) {
+        (*array)[i]->mDrawable->SetHotspotBounds(left, top, right, bottom);
+    }
+
+    if (mHotspotBounds == NULL) {
+        CRect::New(left, top, right, bottom, (IRect**)&mHotspotBounds);
+    } else {
+        mHotspotBounds->Set(left, top, right, bottom);
+    }
+    return NOERROR;
+}
+
+ECode LayerDrawable::GetHotspotBounds(
+    /* [in] */ IRect* outRect)
+{
+    if (mHotspotBounds != NULL) {
+        outRect->Set(mHotspotBounds);
+    } else {
+        Drawable::GetHotspotBounds(outRect);
+    }
     return NOERROR;
 }
 
@@ -572,6 +851,19 @@ ECode LayerDrawable::SetAlpha(
     return NOERROR;
 }
 
+ECode LayerDrawable::GetAlpha(
+    /* [out] */ Int32* alpha)
+{
+    VALIDATE_NOT_NULL(alpha);
+    AutoPtr< ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
+    if (mLayerState->mNum > 0) {
+        // All layers should have the same alpha set on them - just return
+        // the first one
+        return (*array)[0]->mDrawable->GetAlpha(alpha);
+    }
+    return Drawable::GetAlpha(alpha);
+}
+
 ECode LayerDrawable::SetColorFilter(
     /* [in] */ IColorFilter* cf)
 {
@@ -579,6 +871,28 @@ ECode LayerDrawable::SetColorFilter(
     Int32 N = mLayerState->mNum;
     for (Int32 i = 0; i < N; i++) {
         (*array)[i]->mDrawable->SetColorFilter(cf);
+    }
+    return NOERROR;
+}
+
+ECode LayerDrawable::SetTintList(
+    /* [in] */ IColorStateList* tint)
+{
+    AutoPtr< ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
+    const Int32 N = mLayerState->mNum;
+    for (Int32 i = 0; i < N; i++) {
+        (*array)[i]->mDrawable->SetTintList(tint);
+    }
+    return NOERROR;
+}
+
+ECode LayerDrawable::SetTintMode(
+    /* [in] */ PorterDuffMode tintMode)
+{
+    AutoPtr< ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
+    const Int32 N = mLayerState->mNum;
+    for (Int32 i = 0; i < N; i++) {
+        (*array)[i]->mDrawable->SetTintMode(tintMode);
     }
     return NOERROR;
 }
@@ -602,6 +916,27 @@ ECode LayerDrawable::GetOpacity(
     return NOERROR;
 }
 
+ECode LayerDrawable::SetAutoMirrored(
+    /* [in] */ Boolean mirrored)
+{
+    mLayerState->mAutoMirrored = mirrored;
+
+    AutoPtr< ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
+    const Int32 N = mLayerState->mNum;
+    for (Int32 i = 0; i < N; i++) {
+        (*array)[i]->mDrawable->SetAutoMirrored(mirrored);
+    }
+    return NOERROR;
+}
+
+ECode LayerDrawable::IsAutoMirrored(
+    /* [out] */ Boolean* mirrored)
+{
+    VALIDATE_NOT_NULL(mirrored);
+    *mirrored = mLayerState->mAutoMirrored;
+    return NOERROR;
+}
+
 ECode LayerDrawable::IsStateful(
     /* [out] */ Boolean* isStateful)
 {
@@ -613,18 +948,20 @@ ECode LayerDrawable::IsStateful(
 Boolean LayerDrawable::OnStateChange(
     /* [in] */ const ArrayOf<Int32>* state)
 {
-    AutoPtr< ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
-    Int32 N = mLayerState->mNum;
     Boolean paddingChanged = FALSE;
     Boolean changed = FALSE;
+    AutoPtr< ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
+    Int32 N = mLayerState->mNum;
+
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<ChildDrawable> r = (*array)[i];
-        Boolean res;
+        Boolean res = FALSE, res2 = FALSE;
         r->mDrawable->SetState(const_cast<ArrayOf<Int32>*>(state), &res);
-        if (res) {
+        r->mDrawable->IsStateful(&res2);
+        if (res2 && res) {
             changed = TRUE;
         }
-        if (ReapplyPadding(i, r)) {
+        if (RefreshChildPadding(i, r)) {
             paddingChanged = TRUE;
         }
     }
@@ -636,21 +973,21 @@ Boolean LayerDrawable::OnStateChange(
     return changed;
 }
 
-//@Override
 Boolean LayerDrawable::OnLevelChange(
     /* [in] */ Int32 level)
 {
-    AutoPtr< ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
-    Int32 N = mLayerState->mNum;
     Boolean paddingChanged = FALSE;
     Boolean changed = FALSE;
+    AutoPtr< ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
+    Int32 N = mLayerState->mNum;
+
     for (Int32 i = 0; i < N; i++) {
         Boolean res;
         (*array)[i]->mDrawable->SetLevel(level, &res);
         if (res) {
             changed = TRUE;
         }
-        if (ReapplyPadding(i, (*array)[i])) {
+        if (RefreshChildPadding(i, (*array)[i])) {
             paddingChanged = TRUE;
         }
     }
@@ -662,10 +999,10 @@ Boolean LayerDrawable::OnLevelChange(
     return changed;
 }
 
-//@Override
 void LayerDrawable::OnBoundsChange(
     /* [in] */ IRect* bounds)
 {
+    Boolean nest = mLayerState->mPaddingMode == PADDING_MODE_NEST;
     CRect* rect = (CRect*)bounds;
     AutoPtr< ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
     Int32 N = mLayerState->mNum;
@@ -677,10 +1014,12 @@ void LayerDrawable::OnBoundsChange(
             rect->mTop + r->mInsetT + padT,
             rect->mRight - r->mInsetR - padR,
             rect->mBottom - r->mInsetB - padB);
-        padL += (*mPaddingL)[i];
-        padR += (*mPaddingT)[i];
-        padT += (*mPaddingT)[i];
-        padB += (*mPaddingB)[i];
+        if (nest) {
+            padL += (*mPaddingL)[i];
+            padR += (*mPaddingR)[i];
+            padT += (*mPaddingT)[i];
+            padB += (*mPaddingB)[i];
+        }
     }
 }
 
@@ -689,6 +1028,7 @@ Int32 LayerDrawable::GetIntrinsicWidth(
 {
     VALIDATE_NOT_NULL(res);
     Int32 width = -1;
+    Boolean nest = mLayerState->mPaddingMode == PADDING_MODE_NEST;
     AutoPtr< ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
     Int32 N = mLayerState->mNum;
     Int32 padL = 0, padR = 0;
@@ -700,8 +1040,11 @@ Int32 LayerDrawable::GetIntrinsicWidth(
         if (w > width) {
             width = w;
         }
-        padL += (*mPaddingL)[i];
-        padR += (*mPaddingT)[i];
+
+        if (nest) {
+            padL += (*mPaddingL)[i];
+            padR += (*mPaddingR)[i];
+        }
     }
     *res = width;
     return NOERROR;
@@ -712,6 +1055,7 @@ Int32 LayerDrawable::GetIntrinsicHeight(
 {
     VALIDATE_NOT_NULL(res);
     Int32 height = -1;
+    Boolean nest = mLayerState->mPaddingMode == PADDING_MODE_NEST;
     AutoPtr< ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
     Int32 N = mLayerState->mNum;
     Int32 padT = 0, padB = 0;
@@ -723,14 +1067,17 @@ Int32 LayerDrawable::GetIntrinsicHeight(
         if (h > height) {
             height = h;
         }
-        padT += (*mPaddingT)[i];
-        padB += (*mPaddingB)[i];
+
+        if (nest) {
+            padT += (*mPaddingT)[i];
+            padB += (*mPaddingB)[i];
+        }
     }
     *res = height;
     return NOERROR;
 }
 
-Boolean LayerDrawable::ReapplyPadding(
+Boolean LayerDrawable::RefreshChildPadding(
     /* [in] */ Int32 i,
     /* [in] */ ChildDrawable* r)
 {
@@ -782,7 +1129,7 @@ ECode LayerDrawable::Mutate(
     if (!mMutated && ((Drawable::Mutate((IDrawable**)&tmp), tmp.Get())
         == (IDrawable*)this->Probe(EIID_IDrawable))) {
 
-        mLayerState = new LayerState(mLayerState, this, NULL);
+        mLayerState = CreateConstantState(mLayerState, NULL);
         AutoPtr< ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
         Int32 N = mLayerState->mNum;
         for (Int32 i = 0; i < N; i++) {
@@ -814,7 +1161,7 @@ ECode LayerDrawable::constructor(
     /* [in] */ ArrayOf<IDrawable*>* layers,
     /* [in] */ LayerState* state)
 {
-    constructor(state, NULL);
+    constructor(state, NULL, NULL);
     Int32 length = layers->GetLength();
     AutoPtr< ArrayOf<ChildDrawable*> > r = ArrayOf<ChildDrawable*>::Alloc(length);
 
@@ -836,13 +1183,20 @@ ECode LayerDrawable::constructor(
 
 ECode LayerDrawable::constructor(
     /* [in] */ LayerState* state,
-    /* [in] */ IResources* res)
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme)
 {
     AutoPtr<LayerState> as = CreateConstantState(state, res);
     mLayerState = as;
     if (as->mNum > 0) {
         EnsurePadding();
     }
+
+    Boolean can = FALSE;
+    if (theme != NULL && (CanApplyTheme(&can), can)) {
+        ApplyTheme(theme);
+    }
+
     return NOERROR;
 }
 

@@ -14,7 +14,7 @@ ECode CLevelListDrawable::constructor()
 }
 
 ECode CLevelListDrawable::constructor(
-    /* [in] */ Handle32 state,
+    /* [in] */ IDrawableConstantState* state,
     /* [in] */ IResources* res)
 {
     return LevelListDrawable::constructor((LevelListState*)state, res);

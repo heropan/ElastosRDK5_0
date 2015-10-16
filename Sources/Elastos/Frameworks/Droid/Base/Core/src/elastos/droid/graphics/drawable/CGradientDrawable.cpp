@@ -21,9 +21,10 @@ ECode CGradientDrawable::constructor(
 }
 
 ECode CGradientDrawable::constructor(
-    /* [in] */ IDrawableConstantState* state)
+    /* [in] */ IDrawableConstantState* state,
+    /* [in] */ IResourcesTheme* theme)
 {
-    return GradientDrawable::constructor((GradientState*)state);
+    return GradientDrawable::constructor((GradientState*)state, theme);
 }
 
 } // namespace Drawable

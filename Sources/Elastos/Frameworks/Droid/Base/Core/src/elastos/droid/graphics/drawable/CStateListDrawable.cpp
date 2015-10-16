@@ -14,10 +14,16 @@ ECode CStateListDrawable::constructor()
 }
 
 ECode CStateListDrawable::constructor(
-    /* [in] */ Handle32 state,
+    /* [in] */ IDrawableConstantState* state,
     /* [in] */ IResources* res)
 {
-    return StateListDrawable::constructor((StateListDrawable::StateListState*)state, res);
+    return StateListDrawable::constructor((StateListState*)state, res);
+}
+
+ECode CStateListDrawable::constructor(
+    /* [in] */ IDrawableConstantState* state)
+{
+    return StateListDrawable::constructor((StateListState*)state);
 }
 
 } // namespace Drawable

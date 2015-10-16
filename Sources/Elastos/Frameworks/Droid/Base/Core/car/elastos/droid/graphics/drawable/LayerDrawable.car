@@ -101,6 +101,21 @@ module
      */
     interface ILayerDrawable {
         /**
+         * Padding mode used to nest each layer inside the padding of the previous
+         * layer.
+         *
+         * @see #setPaddingMode(int)
+         */
+        const Int32 PADDING_MODE_NEST = 0;
+
+        /**
+         * Padding mode used to stack each layer directly atop the previous layer.
+         *
+         * @see #setPaddingMode(int)
+         */
+        const Int32 PADDING_MODE_STACK = 1;
+
+        /**
          * Look for a layer with the given id, and returns its Drawable.
          *
          * @sa Drawable

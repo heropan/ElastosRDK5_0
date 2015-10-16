@@ -25,7 +25,7 @@ public:
         /* [in] */ Float scaleHeight);
 
     CARAPI constructor(
-        /* [in] */ Handle32 state,
+        /* [in] */ IDrawableConstantState* state,
         /* [in] */ IResources* res);
 };
 

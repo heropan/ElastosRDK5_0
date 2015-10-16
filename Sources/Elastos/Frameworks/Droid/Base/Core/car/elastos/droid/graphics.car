@@ -1080,7 +1080,7 @@ module
         constructor();
 
         /*private*/ constructor(
-            [in] Handle32 state,
+            [in] IDrawableConstantState* state,
             [in] IResources* res);
 
         interface IAnimationDrawable;
@@ -1218,8 +1218,9 @@ module
             [in] Elastos.Droid.Graphics.INinePatch* patch);
 
         constructor(
-            [in] Handle32 state,
-            [in] IResources* res);
+            [in] IDrawableConstantState* state,
+            [in] IResources* res,
+            [in] IResourcesTheme* theme);
 
         interface INinePatchDrawable;
         interface IDrawable;
@@ -1293,7 +1294,8 @@ module
 
         constructor(
             [in] IDrawableConstantState* state,
-            [in] IResources* res);
+            [in] IResources* res,
+            [in] IResourcesTheme* theme);
 
         interface ILayerDrawable;
         interface IDrawable;
@@ -1313,7 +1315,8 @@ module
             [in] ArrayOf<Int32>* colors);
 
         constructor(
-            [in] IDrawableConstantState* state);
+            [in] IDrawableConstantState* state,
+            [in] IResourcesTheme* theme);
 
         interface IGradientDrawable;
         interface IDrawable;
@@ -1334,7 +1337,9 @@ module
             [in] IShape* s);
 
         /*private*/ constructor(
-            [in] Handle32 state);
+            [in] IDrawableConstantState* state,
+            [in] IResources* res,
+            [in] IResourcesTheme* theme);
 
         interface IShapeDrawable;
         interface IDrawable;
@@ -1354,7 +1359,7 @@ module
          * @param rotateState the state for this drawable
          */
         constructor(
-            [in] Handle32 state,
+            [in] IDrawableConstantState* state,
             [in] IResources* res);
 
         interface IRotateDrawable;
@@ -1377,7 +1382,7 @@ module
             [in] Int32 insetBottom);
 
         constructor(
-            [in] Handle32 state,
+            [in] IDrawableConstantState* state,
             [in] IResources* res);
 
         interface IInsetDrawable;
@@ -1389,8 +1394,11 @@ module
         constructor();
 
         /*private*/ constructor(
-            [in] Handle32 state,
+            [in] IDrawableConstantState* state,
             [in] IResources* res);
+
+        constructor(
+            [in] IDrawableConstantState* state);
 
         interface IStateListDrawable;
         interface IDrawableContainer;
@@ -1422,7 +1430,7 @@ module
             [in] Float scaleHeight);
 
         constructor(
-            [in] Handle32 state,
+            [in] IDrawableConstantState* state,
             [in] IResources* res);
 
         interface IScaleDrawable;
@@ -1448,11 +1456,12 @@ module
         constructor();
 
         constructor(
-            [in] Handle32 state,
-            [in] IResources* res);
+            [in] IDrawableConstantState* state,
+            [in] IResources* res,
+            [in] IResourcesTheme* theme);
 
         constructor(
-            [in] Handle32 state,
+            [in] IDrawableConstantState* state,
             [in] ArrayOf<IDrawable*>* layers);
 
         interface ITransitionDrawable;
@@ -1465,7 +1474,7 @@ module
         constructor();
 
         constructor(
-            [in] Handle32 state,
+            [in] IDrawableConstantState* state,
             [in] IResources* res);
 
         interface ILevelListDrawable;
@@ -1496,6 +1505,31 @@ module
             [in] Elastos.Droid.Graphics.IPicture* picture);
 
         interface IPictureDrawable;
+        interface IDrawable;
+    }
+
+    class CAnimatedStateListDrawable {
+        constructor(
+            [in] /*@Nullable*/ IDrawableConstantState* state,
+            [in] /*@Nullable*/ IResources* res);
+
+        interface IAnimatedStateListDrawable;
+        interface IStateListDrawable;
+        interface IDrawableContainer;
+        interface IDrawableCallback;
+        interface IDrawable;
+    }
+
+    class CAnimatedVectorDrawable {
+        constructor();
+
+        constructor(
+            [in] IDrawableConstantState* state,
+            [in] IResources* res,
+            [in] IResourcesTheme* theme);
+
+        interface IAnimatedVectorDrawable;
+        interface IAnimatable;
         interface IDrawable;
     }
 

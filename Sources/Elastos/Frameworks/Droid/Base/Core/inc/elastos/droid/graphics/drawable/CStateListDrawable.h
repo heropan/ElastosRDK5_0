@@ -18,8 +18,11 @@ public:
     CARAPI constructor();
 
     CARAPI constructor(
-        /* [in] */ Handle32 state,
+        /* [in] */ IDrawableConstantState* state,
         /* [in] */ IResources* res);
+
+    CARAPI constructor(
+        /* [in] */ IDrawableConstantState* state);
 };
 
 } // namespace Drawable

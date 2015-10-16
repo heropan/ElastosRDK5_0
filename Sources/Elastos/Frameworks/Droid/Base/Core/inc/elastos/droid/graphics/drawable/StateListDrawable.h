@@ -60,6 +60,13 @@ public:
         /* [in] */ IResources* res);
 
     /**
+     * This constructor exists so subclasses can avoid calling the default
+     * constructor and setting up a StateListDrawable-specific constant state.
+     */
+    StateListDrawable(
+        /* [in] */ StateListState* state);
+
+    /**
      * Add a new image/string ID to the set of images.
      *
      * @param stateSet - An array of resource Ids to associate with the image.
@@ -78,7 +85,8 @@ public:
     CARAPI Inflate(
         /* [in] */ IResources* r,
         /* [in] */ IXmlPullParser* parser,
-        /* [in] */ IAttributeSet* attrs);
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ IResourcesTheme* theme);
 
     virtual CARAPI_(AutoPtr<StateListState>) GetStateListState();
 
@@ -141,6 +149,9 @@ public:
     CARAPI SetLayoutDirection(
         /* [in] */ Int32 layoutDirection);
 
+    CARAPI_(void) SetConstantState(
+        /* [in] */ StateListState* state);
+
 protected:
     //@Override
     CARAPI_(Boolean) OnStateChange(
@@ -149,6 +160,9 @@ protected:
     CARAPI constructor(
         /* [in] */ StateListState* state,
         /* [in] */ IResources* res);
+
+    CARAPI constructor(
+        /* [in] */ StateListState* state);
 
 private:
     /**

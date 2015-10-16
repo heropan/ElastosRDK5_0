@@ -18,26 +18,30 @@ TransitionDrawable::TransitionState::TransitionState(
     : LayerState(orig, owner, res)
 {}
 
-//@Override
 ECode TransitionDrawable::TransitionState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
-    return CTransitionDrawable::New(
-            (Handle32)this, (IResources*)NULL, (ITransitionDrawable**)drawable);
+    return CTransitionDrawable::New(this, NULL, NULL, (ITransitionDrawable**)drawable);
 }
 
-//@Override
 ECode TransitionDrawable::TransitionState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
-    return CTransitionDrawable::New(
-            (Handle32)this, res, (ITransitionDrawable**)drawable);
+    return CTransitionDrawable::New(this, res, NULL, (ITransitionDrawable**)drawable);
 }
 
-//@Override
+ECode TransitionDrawable::TransitionState::NewDrawable(
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme,
+    /* [out] */ IDrawable** drawable)
+{
+    VALIDATE_NOT_NULL(drawable);
+    return CTransitionDrawable::New(this, res, theme, (ITransitionDrawable**)drawable);
+}
+
 ECode TransitionDrawable::TransitionState::GetChangingConfigurations(
     /* [out] */ Int32* config)
 {
@@ -46,11 +50,9 @@ ECode TransitionDrawable::TransitionState::GetChangingConfigurations(
     return NOERROR;
 }
 
-
 const Int32 TransitionDrawable::TRANSITION_STARTING;
 const Int32 TransitionDrawable::TRANSITION_RUNNING;
 const Int32 TransitionDrawable::TRANSITION_NONE;
-
 CAR_INTERFACE_IMPL(TransitionDrawable, LayerDrawable, ITransitionDrawable);
 TransitionDrawable::TransitionDrawable(
     /* [in] */ ArrayOf<IDrawable*>* layers)
@@ -83,8 +85,9 @@ TransitionDrawable::TransitionDrawable()
 
 TransitionDrawable::TransitionDrawable(
     /* [in] */ TransitionState* state,
-    /* [in] */ IResources* res)
-    : LayerDrawable(state, res)
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme)
+    : LayerDrawable(state, res, theme)
     , mTransitionState(TRANSITION_NONE)
     , mReverse(FALSE)
     , mStartTimeMillis(0)
@@ -111,7 +114,6 @@ TransitionDrawable::TransitionDrawable(
     , mCrossFade(FALSE)
 {}
 
-//@Override
 AutoPtr<LayerDrawable::LayerState> TransitionDrawable::CreateConstantState(
     /* [in] */ LayerState* state,
     /* [in] */ IResources* res)
@@ -119,11 +121,6 @@ AutoPtr<LayerDrawable::LayerState> TransitionDrawable::CreateConstantState(
     return new TransitionState((TransitionState*)state, this, res);
 }
 
-/**
- * Begin the second layer on top of the first layer.
- *
- * @param durationMillis The length of the transition in milliseconds
- */
 ECode TransitionDrawable::StartTransition(
     /* [in] */ Int32 durationMillis)
 {
@@ -137,9 +134,6 @@ ECode TransitionDrawable::StartTransition(
     return NOERROR;
 }
 
-/**
- * Show only the first layer.
- */
 ECode TransitionDrawable::ResetTransition()
 {
     mAlpha = 0;
@@ -148,14 +142,6 @@ ECode TransitionDrawable::ResetTransition()
     return NOERROR;
 }
 
-/**
- * Reverses the transition, picking up where the transition currently is.
- * If the transition is not currently running, this will start the transition
- * with the specified duration. If the transition is already running, the last
- * known duration will be used.
- *
- * @param duration The duration to use if no transition is running.
- */
 ECode TransitionDrawable::ReverseTransition(
     /* [in] */ Int32 duration)
 {
@@ -276,14 +262,15 @@ ECode TransitionDrawable::constructor(
 ECode TransitionDrawable::constructor()
 {
     AutoPtr<TransitionState> state = new TransitionState(NULL, NULL, NULL);
-    return constructor(state, (IResources*)NULL);
+    return constructor(state, NULL, NULL);
 }
 
 ECode TransitionDrawable::constructor(
     /* [in] */ TransitionState* state,
-    /* [in] */ IResources* res)
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme)
 {
-    return LayerDrawable::constructor(state, res);
+    return LayerDrawable::constructor(state, res, theme);
 }
 
 ECode TransitionDrawable::constructor(

@@ -39,6 +39,7 @@ public:
         CARAPI_(Boolean) CanConstantState();
 
     public:
+        AutoPtr<ArrayOf<Int32> > mThemeAttrs;
         AutoPtr<IDrawable> mDrawable;
         Int32 mChangingConfigurations;
 
@@ -67,11 +68,20 @@ public:
         /* [in] */ Int32 insetRight,
         /* [in] */ Int32 insetBottom);
 
-    //@Override
+    // @Override
     CARAPI Inflate(
         /* [in] */ IResources* r,
         /* [in] */ IXmlPullParser* parser,
-        /* [in] */ IAttributeSet* attrs);
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ IResourcesTheme* theme) /*throws XmlPullParserException, IOException*/;
+
+    // @Override
+    CARAPI ApplyTheme(
+        /* [in] */ IResourcesTheme* t);
+
+    // @Override
+    CARAPI CanApplyTheme(
+        /* [out] */ Boolean* can);
 
     CARAPI InvalidateDrawable(
         /* [in] */ IDrawable* who);
@@ -98,6 +108,28 @@ public:
         /* [in] */ IRect* padding,
         /* [out] */ Boolean* isPadding);
 
+    /** @hide */
+    // @Override
+    CARAPI GetOpticalInsets(
+        /* [out] */ IInsets** sets);
+
+    // @Override
+    CARAPI SetHotspot(
+        /* [in] */ Float x,
+        /* [in] */ Float y);
+
+    // @Override
+    CARAPI SetHotspotBounds(
+        /* [in] */ Int32 left,
+        /* [in] */ Int32 top,
+        /* [in] */ Int32 right,
+        /* [in] */ Int32 bottom);
+
+    /** @hide */
+    // @Override
+    CARAPI GetHotspotBounds(
+        /* [in] */ IRect* outRect);
+
     //@Override
     CARAPI SetVisible(
         /* [in] */ Boolean visible,
@@ -107,8 +139,25 @@ public:
     CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
 
+    // @Override
+    CARAPI GetAlpha(
+        /* [out] */ Int32* alpha);
+
     CARAPI SetColorFilter(
         /* [in] */ IColorFilter* cf);
+
+    // @Override
+    CARAPI SetTintList(
+        /* [in] */ IColorStateList* tint);
+
+    // @Override
+    CARAPI SetTintMode(
+        /* [in] */ PorterDuffMode tintMode);
+
+    /** {@hide} */
+    // @Override
+    CARAPI SetLayoutDirection(
+        /* [in] */ Int32 layoutDirection);
 
     CARAPI GetOpacity(
         /* [out] */ Int32* opacity);
@@ -124,6 +173,10 @@ public:
     //@Override
     CARAPI GetIntrinsicHeight(
         /* [out] */ Int32* height);
+
+    // @Override
+    CARAPI GetOutline(
+        /* [in] */ /*@NonNull*/ IOutline* outline);
 
     //@Override
     CARAPI GetConstantState(
@@ -158,6 +211,10 @@ protected:
     CARAPI_(Boolean) OnStateChange(
         /* [in] */ const ArrayOf<Int32>* state);
 
+    // @Override
+    CARAPI_(Boolean) OnLevelChange(
+        /* [in] */ Int32 level);
+
     //@Override
     CARAPI_(void) OnBoundsChange(
         /* [in] */ IRect* bounds);
@@ -167,8 +224,13 @@ private:
         /* [in] */ InsetState* state,
         /* [in] */ IResources* res);
 
+    CARAPI VerifyRequiredAttributes(
+        /* [in] */ ITypedArray* a) /*throws XmlPullParserException*/;
+
+    CARAPI UpdateStateFromTypedArray(
+        /* [in] */ ITypedArray* a) /*throws XmlPullParserException*/;
+
 private:
-    // Most of this is copied from ScaleDrawable.
     AutoPtr<InsetState> mInsetState;
     AutoPtr<CRect> mTmpRect;
     Boolean mMutated;

@@ -92,9 +92,8 @@ module
      * @attr ref android.R.styleable#AnimatedVectorDrawableTarget_animation
 
      * @Involve
-     * extends Drawable
+     * extends IDrawable
      * implements IAnimatable
-     * implements IDrawableCallback
     */
     interface IAnimatedVectorDrawable {
         /**

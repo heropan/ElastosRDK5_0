@@ -6,7 +6,6 @@ include $(MAKEDIR)/../../../../../../../sources.inc
 
 INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../../../inc/
-
 INCLUDES += $(PREBUILD_INC)/skia/utils
 INCLUDES += $(PREBUILD_INC)/skia/core
 INCLUDES += $(PREBUILD_INC)/skia/effects
@@ -24,6 +23,8 @@ SOURCES += NinePatchDrawable.cpp
 SOURCES += CNinePatchDrawable.cpp
 SOURCES += StateListDrawable.cpp
 SOURCES += CStateListDrawable.cpp
+SOURCES += AnimatedStateListDrawable.cpp
+SOURCES += CAnimatedStateListDrawable.cpp
 SOURCES += AnimatedRotateDrawable.cpp
 SOURCES += CAnimatedRotateDrawable.cpp
 SOURCES += LayerDrawable.cpp
@@ -50,5 +51,7 @@ SOURCES += PaintDrawable.cpp
 SOURCES += CPaintDrawable.cpp
 SOURCES += PictureDrawable.cpp
 SOURCES += CPictureDrawable.cpp
+SOURCES += AnimatedVectorDrawable.cpp
+SOURCES += CAnimatedVectorDrawable.cpp
 
 LIBRARIES += shapes/shapes.lib

@@ -1,11 +1,13 @@
 
 #include "elastos/droid/graphics/drawable/BitmapDrawable.h"
 #include "elastos/droid/graphics/drawable/CBitmapDrawable.h"
-// #include "elastos/droid/graphics/CPaint.h"
-// #include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
 #include "elastos/droid/graphics/CRect.h"
-// #include "elastos/droid/graphics/CBitmapShader.h"
-// #include "elastos/droid/view/CGravity.h"
+#include "elastos/droid/graphics/CBitmapShader.h"
+#include "elastos/droid/graphics/Insets.h"
+#include "elastos/droid/graphics/CMatrix.h"
+// #include "view/CGravity.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 
@@ -33,8 +35,7 @@ BitmapDrawable::BitmapState::BitmapState(
     , mChangingConfigurations(0)
     , mRebuildShader(FALSE)
 {
-    assert(0 && "TODO");
-    // ASSERT_SUCCEEDED(CPaint::New(DEFAULT_PAINT_FLAGS, (IPaint**)&mPaint));
+    ASSERT_SUCCEEDED(CPaint::New(DEFAULT_PAINT_FLAGS, (IPaint**)&mPaint));
 }
 
 BitmapDrawable::BitmapState::BitmapState(
@@ -59,8 +60,7 @@ BitmapDrawable::BitmapState::BitmapState(
     mTileModeY = state->mTileModeY;
     mTargetDensity = state->mTargetDensity;
     mBaseAlpha = state->mBaseAlpha;
-    assert(0 && "TODO");
-    // ASSERT_SUCCEEDED(CPaint::New(state->mPaint, (IPaint**)&mPaint));
+    ASSERT_SUCCEEDED(CPaint::New(state->mPaint, (IPaint**)&mPaint));
     mRebuildShader = state->mRebuildShader;
     mAutoMirrored = state->mAutoMirrored;
 }
@@ -133,8 +133,7 @@ BitmapDrawable::BitmapDrawable()
     , mBitmapHeight(0)
 {
     CRect::New((IRect**)&mDstRect);
-    assert(0 && "TODO");
-    // mOpticalInsets = Insets::NONE;
+    mOpticalInsets = Insets::NONE;
     constructor();
 }
 
@@ -441,8 +440,7 @@ void BitmapDrawable::UpdateMirrorMatrix(
     /* [in] */ Float dx)
 {
     if (mMirrorMatrix == NULL) {
-        assert(0 && "TODO");
-        // mMirrorMatrix = new Matrix();
+        CMatrix::New((IMatrix**)&mMirrorMatrix);
     }
     mMirrorMatrix->SetTranslate(dx, 0);
     Boolean res = FALSE;
@@ -467,8 +465,7 @@ void BitmapDrawable::OnBoundsChange(
         } else {
             if (mMirrorMatrix != NULL) {
                 mMirrorMatrix = NULL;
-                assert(0 && "TODO");
-                // shader->SetLocalMatrix(CMatrix::IDENTITY_MATRIX);
+                shader->SetLocalMatrix(CMatrix::IDENTITY_MATRIX);
                 mBitmapState->mPaint->SetShader(shader);
             }
         }
@@ -492,10 +489,9 @@ ECode BitmapDrawable::Draw(
             paint->SetShader(NULL);
         } else {
             AutoPtr<IBitmapShader> s;
-            assert(0 && "TODO");
-            // CBitmapShader::New(bitmap,
-            //         tmx == -1 ? ShaderTileMode_CLAMP : tmx,
-            //         tmy == -1 ? ShaderTileMode_CLAMP : tmy, (IBitmapShader**)&s);
+            CBitmapShader::New(bitmap,
+                    tmx == -1 ? ShaderTileMode_CLAMP : tmx,
+                    tmy == -1 ? ShaderTileMode_CLAMP : tmy, (IBitmapShader**)&s);
             state->mPaint->SetShader(IShader::Probe(s));
         }
 
@@ -554,8 +550,7 @@ ECode BitmapDrawable::Draw(
         } else {
             if (mMirrorMatrix != NULL) {
                 mMirrorMatrix = NULL;
-                assert(0 && "TODO");
-                // shader->SetLocalMatrix(CMatrix::IDENTITY_MATRIX);
+                shader->SetLocalMatrix(CMatrix::IDENTITY_MATRIX);
                 paint->SetShader(shader);
             }
         }
@@ -594,12 +589,10 @@ void BitmapDrawable::UpdateDstRectAndInsetsIfDirty()
             Int32 top = dr->mTop - bd->mTop;
             Int32 right = bd->mRight - dr->mRight;
             Int32 bottom = bd->mBottom - dr->mBottom;
-            assert(0 && "TODO");
-            // mOpticalInsets = Insets::Of(left, top, right, bottom);
+            mOpticalInsets = Insets::Of(left, top, right, bottom);
         } else {
             CopyBounds(mDstRect);
-            assert(0 && "TODO");
-            // mOpticalInsets = Insets::NONE;
+            mOpticalInsets = Insets::NONE;
         }
     }
     mDstRectAndInsetsDirty = FALSE;
@@ -721,12 +714,11 @@ ECode BitmapDrawable::Mutate(
 Boolean BitmapDrawable::OnStateChange(
     /* [in] */ const ArrayOf<Int32>* stateSet)
 {
-    assert(0 && "TODO");
-    // final BitmapState state = mBitmapState;
-    // if (state.mTint != null && state.mTintMode != null) {
-    //     mTintFilter = updateTintFilter(mTintFilter, state.mTint, state.mTintMode);
-    //     return true;
-    // }
+    AutoPtr<BitmapState> state = mBitmapState;
+    if (state->mTint != NULL && state->mTintMode != -1) {
+        mTintFilter = UpdateTintFilter(mTintFilter, state->mTint, state->mTintMode);
+        return TRUE;
+    }
     return FALSE;
 }
 
@@ -789,8 +781,7 @@ ECode BitmapDrawable::UpdateStateFromTypedArray(
     FAIL_RETURN(a->GetResourceId(R::styleable::BitmapDrawable_src, 0, &srcResId));
     if (srcResId != 0) {
         AutoPtr<IBitmapFactory> bmFactory;
-        assert(0 && "TODO");
-        // CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bmFactory);
+        CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bmFactory);
         AutoPtr<IBitmap> bitmap;
         bmFactory->DecodeResource(r, srcResId, (IBitmap**)&bitmap);
         if (bitmap == NULL) {
@@ -1026,8 +1017,7 @@ ECode BitmapDrawable::constructor(
 {
     AutoPtr<IBitmapFactory> factory;
     AutoPtr<IBitmap> bitmap;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
+    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
     FAIL_RETURN(factory->DecodeFile(filepath, (IBitmap**)&bitmap));
 
     AutoPtr<BitmapState> state = new BitmapState(bitmap);
@@ -1044,8 +1034,7 @@ ECode BitmapDrawable::constructor(
 {
     AutoPtr<IBitmapFactory> factory;
     AutoPtr<IBitmap> bitmap;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
+    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
     FAIL_RETURN(factory->DecodeFile(filepath, (IBitmap**)&bitmap));
 
     AutoPtr<BitmapState> state = new BitmapState(bitmap);
@@ -1062,8 +1051,7 @@ ECode BitmapDrawable::constructor(
 {
     AutoPtr<IBitmapFactory> factory;
     AutoPtr<IBitmap> bitmap;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
+    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
     FAIL_RETURN(factory->DecodeStream(is, (IBitmap**)&bitmap));
 
     AutoPtr<BitmapState> state = new BitmapState(bitmap);
@@ -1080,8 +1068,7 @@ ECode BitmapDrawable::constructor(
 {
     AutoPtr<IBitmapFactory> factory;
     AutoPtr<IBitmap> bitmap;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
+    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
     FAIL_RETURN(factory->DecodeStream(is, (IBitmap**)&bitmap));
 
     AutoPtr<BitmapState> state = new BitmapState(bitmap);

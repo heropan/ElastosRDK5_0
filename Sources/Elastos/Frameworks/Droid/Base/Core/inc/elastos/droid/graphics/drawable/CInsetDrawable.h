@@ -29,7 +29,7 @@ public:
         /* [in] */ Int32 insetBottom);
 
     CARAPI constructor(
-        /* [in] */ Handle32 state,
+        /* [in] */ IDrawableConstantState* state,
         /* [in] */ IResources* res);
 };
 

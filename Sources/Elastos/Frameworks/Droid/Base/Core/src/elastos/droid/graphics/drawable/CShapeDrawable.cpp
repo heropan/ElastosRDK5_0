@@ -20,9 +20,11 @@ ECode CShapeDrawable::constructor(
 }
 
 ECode CShapeDrawable::constructor(
-    /* [in] */ Handle32 state)
+    /* [in] */ IDrawableConstantState* state,
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme)
 {
-    return ShapeDrawable::constructor((ShapeState*)state);
+    return ShapeDrawable::constructor((ShapeState*)state, res, theme);
 }
 
 } // namespace Drawable

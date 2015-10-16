@@ -31,7 +31,7 @@ ECode CInsetDrawable::constructor(
 }
 
 ECode CInsetDrawable::constructor(
-    /* [in] */ Handle32 state,
+    /* [in] */ IDrawableConstantState* state,
     /* [in] */ IResources* res)
 {
     return InsetDrawable::constructor((InsetState*)state, res);

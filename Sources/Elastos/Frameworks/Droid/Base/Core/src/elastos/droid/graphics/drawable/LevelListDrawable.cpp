@@ -22,8 +22,8 @@ LevelListDrawable::LevelListState::LevelListState(
         mHighs = orig->mHighs;
     }
     else {
-        mLows = ArrayOf<Int32>::Alloc(GetChildren()->GetLength());
-        mHighs = ArrayOf<Int32>::Alloc(GetChildren()->GetLength());
+        mLows = ArrayOf<Int32>::Alloc(GetCapacity());
+        mHighs = ArrayOf<Int32>::Alloc(GetCapacity());
     }
 }
 
@@ -51,26 +51,21 @@ Int32 LevelListDrawable::LevelListState::IndexOfLevel(
     return -1;
 }
 
-//@Override
 ECode LevelListDrawable::LevelListState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
-    return CLevelListDrawable::New(
-            (Handle32)this, NULL, (ILevelListDrawable**)drawable);
+    return CLevelListDrawable::New(this, NULL, (ILevelListDrawable**)drawable);
 }
 
-//@Override
 ECode LevelListDrawable::LevelListState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
-    return CLevelListDrawable::New(
-            (Handle32)this, res, (ILevelListDrawable**)drawable);
+    return CLevelListDrawable::New(this, res, (ILevelListDrawable**)drawable);
 }
 
-//@Override
 void LevelListDrawable::LevelListState::GrowArray(
     /* [in] */ Int32 oldSize,
     /* [in] */ Int32 newSize)
@@ -130,11 +125,12 @@ Boolean LevelListDrawable::OnLevelChange(
 }
 
 ECode LevelListDrawable::Inflate(
-        /* [in] */ IResources* r,
-        /* [in] */ IXmlPullParser* parser,
-        /* [in] */ IAttributeSet* attrs)
+    /* [in] */ IResources* r,
+    /* [in] */ IXmlPullParser* parser,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ IResourcesTheme* theme)
 {
-    FAIL_RETURN(DrawableContainer::Inflate(r, parser, attrs));
+    FAIL_RETURN(DrawableContainer::Inflate(r, parser, attrs, theme));
 
     Int32 type;
 
@@ -160,8 +156,7 @@ ECode LevelListDrawable::Inflate(
         layout->Copy(R::styleable::LevelListDrawableItem, size);
 
         AutoPtr<ITypedArray> a;
-        r->ObtainAttributes(attrs, layout,
-                (ITypedArray**)&a);
+        FAIL_RETURN(ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a));
 
         a->GetInt32(
                 R::styleable::LevelListDrawableItem_minLevel, 0, &low);
@@ -182,7 +177,7 @@ ECode LevelListDrawable::Inflate(
 
         AutoPtr<IDrawable> dr;
         if (drawableRes != 0) {
-            r->GetDrawable(drawableRes, (IDrawable**)&dr);
+            r->GetDrawable(drawableRes, theme, (IDrawable**)&dr);
         }
         else {
             while (parser->Next(&type), type == IXmlPullParser::TEXT) {
@@ -194,7 +189,7 @@ ECode LevelListDrawable::Inflate(
 //                                + "child tag defining a drawable");
                 return E_XML_PULL_PARSER_EXCEPTION;
             }
-            Drawable::CreateFromXmlInner(r, parser, attrs, (IDrawable**)&dr);
+            Drawable::CreateFromXmlInner(r, parser, attrs, theme, (IDrawable**)&dr);
         }
 
         mLevelListState->AddLevel(low, high, dr);

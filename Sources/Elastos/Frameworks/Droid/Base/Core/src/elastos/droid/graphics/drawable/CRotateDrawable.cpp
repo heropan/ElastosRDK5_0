@@ -13,7 +13,7 @@ ECode CRotateDrawable::constructor()
 }
 
 ECode CRotateDrawable::constructor(
-    /* [in] */ Handle32 state,
+    /* [in] */ IDrawableConstantState* state,
     /* [in] */ IResources* res)
 {
     return RotateDrawable::constructor((RotateState*)state, res);

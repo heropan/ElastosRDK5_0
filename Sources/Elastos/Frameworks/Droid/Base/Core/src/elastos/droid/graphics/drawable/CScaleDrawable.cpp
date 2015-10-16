@@ -24,7 +24,7 @@ ECode CScaleDrawable::constructor(
 }
 
 ECode CScaleDrawable::constructor(
-    /* [in] */ Handle32 state,
+    /* [in] */ IDrawableConstantState* state,
     /* [in] */ IResources* res)
 {
     return ScaleDrawable::constructor((ScaleState*)state, res);

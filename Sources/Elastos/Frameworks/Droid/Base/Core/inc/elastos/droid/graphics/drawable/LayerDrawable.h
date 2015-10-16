@@ -4,7 +4,6 @@
 
 #include "elastos/droid/graphics/drawable/Drawable.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
@@ -16,18 +15,18 @@ class LayerDrawable
     , public IDrawableCallback
 {
 public:
-    class ChildDrawable : public ElRefBase
+    class ChildDrawable : public Object
     {
     public:
-        ChildDrawable()
-            : mInsetL(0)
-            , mInsetT(0)
-            , mInsetR(0)
-            , mInsetB(0)
-            , mId(0)
-        {}
+        ChildDrawable();
+
+        ChildDrawable(
+            /* [in] */ ChildDrawable* orig,
+            /* [in] */ LayerDrawable* owner,
+            /* [in] */ IResources* res);
 
         AutoPtr<IDrawable> mDrawable;
+        AutoPtr<ArrayOf<Int32> > mThemeAttrs;
         Int32 mInsetL;
         Int32 mInsetT;
         Int32 mInsetR;
@@ -46,11 +45,20 @@ public:
 
         virtual ~LayerState();
 
+        CARAPI CanApplyTheme(
+            /* [out] */ Boolean* can);
+
         CARAPI NewDrawable(
             /* [out] */ IDrawable** drawable);
 
         CARAPI NewDrawable(
             /* [in] */ IResources* res,
+            /* [out] */ IDrawable** drawable);
+
+        // @Override
+        CARAPI NewDrawable(
+            /* [in] */ IResources* res,
+            /* [in] */ IResourcesTheme* theme,
             /* [out] */ IDrawable** drawable);
 
         CARAPI GetChangingConfigurations(
@@ -60,11 +68,14 @@ public:
 
         CARAPI_(Boolean) IsStateful();
 
-        virtual CARAPI_(Boolean) CanConstantState();
+        CARAPI_(Boolean) CanConstantState();
+
+        CARAPI_(void) InvalidateCache();
 
     public:
         Int32 mNum;
         AutoPtr< ArrayOf<ChildDrawable*> > mChildren;
+        AutoPtr<ArrayOf<Int32> > mThemeAttrs;
 
         Int32 mChangingConfigurations;
         Int32 mChildrenChangingConfigurations;
@@ -73,11 +84,12 @@ public:
         Boolean mHaveOpacity;
         Int32 mOpacity;
 
-        Boolean mHaveStateful;
-        Boolean mStateful;
+        Boolean mHaveIsStateful;
+        Boolean mIsStateful;
+        Boolean mAutoMirrored;
 
-        Boolean mCheckedConstantState;
-        Boolean mCanConstantState;
+        Int32 mPaddingMode;
+        friend class LayerDrawable;
     };
 
 public:
@@ -98,20 +110,41 @@ public:
 
     LayerDrawable(
         /* [in] */ LayerState* state,
-        /* [in] */ IResources* res);
+        /* [in] */ IResources* res,
+        /* [in] */ IResourcesTheme* theme);
 
     virtual ~LayerDrawable();
 
     CARAPI Inflate(
         /* [in] */ IResources* r,
         /* [in] */ IXmlPullParser* parser,
-        /* [in] */ IAttributeSet* attrs);
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ IResourcesTheme* theme);
+
+    // @Override
+    CARAPI ApplyTheme(
+        /* [in] */ IResourcesTheme* t);
+
+    // @Override
+    CARAPI CanApplyTheme(
+        /* [out] */ Boolean* can);
 
     /**
-     * Look for a layer with the given id, and returns its {@link Drawable}.
+     * @hide
+     */
+    // @Override
+    CARAPI IsProjected(
+        /* [out] */ Boolean* projected);
+
+    /**
+     * Looks for a layer with the given ID and returns its {@link Drawable}.
+     * <p>
+     * If multiple layers are found for the given ID, returns the
+     * {@link Drawable} for the matching layer at the highest index.
      *
-     * @param id The layer ID to search for->
-     * @return The {@link Drawable} of the layer that has the given id in the hierarchy or NULL.
+     * @param id The layer ID to search for.
+     * @return The {@link Drawable} for the highest-indexed layer that has the
+     *         given ID, or null if not found.
      */
     virtual CARAPI FindDrawableByLayerId(
         /* [in] */ Int32 id,
@@ -169,12 +202,15 @@ public:
         /* [in] */ IDrawable* drawable,
         /* [out] */ Boolean* res);
 
-    /** Specify modifiers to the bounds for the drawable[index]->
-        left += l
-        top += t;
-        right -= r;
-        bottom -= b;
-    */
+    /**
+     * Specifies the insets in pixels for the drawable at the specified index.
+     *
+     * @param index the index of the drawable to adjust
+     * @param l number of pixels to add to the left bound
+     * @param t number of pixels to add to the top bound
+     * @param r number of pixels to subtract from the right bound
+     * @param b number of pixels to subtract from the bottom bound
+     */
     virtual CARAPI SetLayerInset(
         /* [in] */ Int32 index,
         /* [in] */ Int32 l,
@@ -251,9 +287,21 @@ public:
     CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
 
+    // @Override
+    CARAPI GetAlpha(
+        /* [out] */ Int32* alpha);
+
     //@Override
     CARAPI SetColorFilter(
         /* [in] */ IColorFilter* cf);
+
+    // @Override
+    CARAPI SetTintList(
+        /* [in] */ IColorStateList* tint);
+
+    // @Override
+    CARAPI SetTintMode(
+        /* [in] */ PorterDuffMode tintMode);
 
     /**
      * Sets the opacity of this drawable directly, instead of collecting the states from
@@ -273,6 +321,14 @@ public:
     //@Override
     CARAPI GetOpacity(
         /* [out] */ Int32* opacity);
+
+    // @Override
+    CARAPI SetAutoMirrored(
+        /* [in] */ Boolean mirrored);
+
+    // @Override
+    CARAPI IsAutoMirrored(
+        /* [out] */ Boolean* mirrored);
 
     //@Override
     CARAPI IsStateful(
@@ -298,6 +354,32 @@ public:
     CARAPI SetLayoutDirection(
         /* [in] */ Int32 layoutDirection);
 
+    /**
+     * Populates <code>outline</code> with the first available (non-empty) layer outline.
+     *
+     * @param outline Outline in which to place the first available layer outline
+     */
+    // @Override
+    virtual CARAPI GetOutline(
+        /* [in] */ /*@NonNull*/ IOutline* outline);
+
+    // @Override
+    virtual CARAPI SetHotspot(
+        /* [in] */ Float x,
+        /* [in] */ Float y);
+
+    // @Override
+    virtual CARAPI SetHotspotBounds(
+        /* [in] */ Int32 left,
+        /* [in] */ Int32 top,
+        /* [in] */ Int32 right,
+        /* [in] */ Int32 bottom);
+
+    /** @hide */
+    // @Override
+    virtual CARAPI GetHotspotBounds(
+        /* [in] */ IRect* outRect);
+
 protected:
     CARAPI_(AutoPtr<LayerState>) CreateConstantState(
         /* [in] */ LayerState* state,
@@ -321,22 +403,71 @@ protected:
 
     CARAPI constructor(
         /* [in] */ LayerState* state,
-        /* [in] */ IResources* res);
+        /* [in] */ IResources* res,
+        /* [in] */ IResourcesTheme* theme);
 
 private:
-    CARAPI AddLayer(
+    /**
+     * Add a new layer to this drawable. The new layer is identified by an id.
+     *
+     * @param layer The drawable to add as a layer.
+     * @param themeAttrs Theme attributes extracted from the layer.
+     * @param id The id of the new layer.
+     * @param left The left padding of the new layer.
+     * @param top The top padding of the new layer.
+     * @param right The right padding of the new layer.
+     * @param bottom The bottom padding of the new layer.
+     */
+    CARAPI_(AutoPtr<ChildDrawable>) AddLayer(
         /* [in] */ IDrawable* layer,
+        /* [in] */ ArrayOf<Int32>* themeAttrs,
         /* [in] */ Int32 id,
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
         /* [in] */ Int32 bottom);
 
-    CARAPI_(Boolean) ReapplyPadding(
+    /**
+     * Refreshes the cached padding values for the specified child.
+     *
+     * @return true if the child's padding has changed
+     */
+    CARAPI_(Boolean) RefreshChildPadding(
         /* [in] */ Int32 i,
         /* [in] */ ChildDrawable* r);
 
+    /**
+     * Ensures the child padding caches are large enough.
+     */
     CARAPI_(void) EnsurePadding();
+
+    /**
+     * Initializes the constant state from the values in the typed array.
+     */
+    CARAPI_(void) UpdateStateFromTypedArray(
+        /* [in] */ ITypedArray* a);
+
+    /**
+     * Inflates child layers using the specified parser.
+     */
+    CARAPI InflateLayers(
+        /* [in] */ IResources* r,
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ IResourcesTheme* theme) /*throws XmlPullParserException, IOException*/;
+
+    CARAPI_(void) UpdateLayerFromTypedArray(
+        /* [in] */ ChildDrawable* layer,
+        /* [in] */ ITypedArray* a);
+
+    CARAPI_(void) AddLayer(
+        /* [in] */ ChildDrawable* layer);
+
+    CARAPI_(void) ComputeNestedPadding(
+        /* [in] */ IRect* padding);
+
+    CARAPI_(void) ComputeStackedPadding(
+        /* [in] */ IRect* padding);
 
 public:
     AutoPtr<LayerState> mLayerState;
@@ -349,6 +480,7 @@ private:
     AutoPtr< ArrayOf<Int32> > mPaddingB;
 
     AutoPtr<IRect> mTmpRect;
+    AutoPtr<IRect> mHotspotBounds;
     Boolean mMutated;
 };
 
@@ -356,5 +488,7 @@ private:
 } // namespace Graphics
 } // namespace Droid
 } // namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::Graphics::Drawable::LayerDrawable::ChildDrawable, IInterface)
 
 #endif // __ELASTOS_DROID_GRAPHICS_DRAWABLE_LAYERDRAWABLE_H__

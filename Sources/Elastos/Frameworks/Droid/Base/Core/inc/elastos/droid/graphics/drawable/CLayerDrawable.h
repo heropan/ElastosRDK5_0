@@ -27,7 +27,8 @@ public:
 
     CARAPI constructor(
         /* [in] */ IDrawableConstantState* state,
-        /* [in] */ IResources* res);
+        /* [in] */ IResources* res,
+        /* [in] */ IResourcesTheme* theme);
 };
 
 } // namespace Drawable

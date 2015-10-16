@@ -63,7 +63,8 @@ public:
     CARAPI Inflate(
         /* [in] */ IResources* r,
         /* [in] */ IXmlPullParser* parser,
-        /* [in] */ IAttributeSet* attrs);
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ IResourcesTheme* theme);
 
     //@Override
     CARAPI Mutate(

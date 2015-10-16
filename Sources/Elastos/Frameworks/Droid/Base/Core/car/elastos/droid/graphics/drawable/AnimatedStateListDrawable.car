@@ -32,11 +32,10 @@ module
 
      * @Involve
      * implements IDrawableCallback
-     * extends Drawable
-     * extends DrawableContainer
-     * extends StateListDrawable
+     * extends IDrawable
+     * extends IDrawableContainer
+     * extends IStateListDrawable
     */
-
     [deprecated]
     interface IAnimatedStateListDrawable {
         /**

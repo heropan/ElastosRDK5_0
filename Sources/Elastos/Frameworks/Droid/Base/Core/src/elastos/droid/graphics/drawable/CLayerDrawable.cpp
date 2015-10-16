@@ -28,9 +28,10 @@ ECode CLayerDrawable::constructor(
 
 ECode CLayerDrawable::constructor(
     /* [in] */ IDrawableConstantState* state,
-    /* [in] */ IResources* res)
+    /* [in] */ IResources* res,
+    /* [in] */ IResourcesTheme* theme)
 {
-    return LayerDrawable::constructor((LayerState*)state, res);
+    return LayerDrawable::constructor((LayerState*)state, res, theme);
 }
 
 } // namespace Drawable

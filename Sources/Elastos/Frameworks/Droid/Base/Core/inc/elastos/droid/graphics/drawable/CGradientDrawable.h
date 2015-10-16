@@ -26,7 +26,8 @@ public:
         /* [in] */ ArrayOf<Int32>* colors);
 
     CARAPI constructor(
-        /* [in] */ IDrawableConstantState* state);
+        /* [in] */ IDrawableConstantState* state,
+        /* [in] */ IResourcesTheme* theme);
 };
 
 } // namespace Drawable

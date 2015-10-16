@@ -26,6 +26,10 @@ protected:
         ShapeState(
             /* [in] */ ShapeState* orig);
 
+        // @Override
+        CARAPI CanApplyTheme(
+            /* [out] */ Boolean* can);
+
         //@Override
         CARAPI NewDrawable(
             /* [out] */ IDrawable** drawable);
@@ -35,14 +39,23 @@ protected:
             /* [in] */ IResources* res,
             /* [out] */ IDrawable** drawable);
 
+        // @Override
+        CARAPI NewDrawable(
+            /* [in] */ IResources* res,
+            /* [in] */ IResourcesTheme* theme,
+            /* [out] */ IDrawable** drawable);
+
         //@Override
         CARAPI GetChangingConfigurations(
             /* [out] */ Int32* conf);
 
     public:
+        AutoPtr<ArrayOf<Int32> > mThemeAttrs;
         Int32 mChangingConfigurations;
         AutoPtr<IPaint> mPaint;
         AutoPtr<IShape> mShape;
+        AutoPtr<IColorStateList> mTint;
+        PorterDuffMode mTintMode;
         AutoPtr<IRect> mPadding;
         Int32 mIntrinsicWidth;
         Int32 mIntrinsicHeight;
@@ -172,6 +185,18 @@ public:
     CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
 
+    // @Override
+    CARAPI GetAlpha(
+        /* [out] */ Int32* alpha);
+
+    // @Override
+    CARAPI SetTintList(
+        /* [in] */ IColorStateList* tint);
+
+    // @Override
+    CARAPI SetTintMode(
+        /* [in] */ PorterDuffMode tintMode);
+
     //@Override
     CARAPI SetColorFilter(
         /* [in] */ IColorFilter* cf);
@@ -188,7 +213,12 @@ public:
     CARAPI Inflate(
         /* [in] */ IResources* r,
         /* [in] */ IXmlPullParser* parser,
-        /* [in] */ IAttributeSet* attrs);
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ IResourcesTheme* theme);
+
+    // @Override
+    CARAPI ApplyTheme(
+        /* [in] */ IResourcesTheme* t);
 
     //@Override
     CARAPI GetConstantState(
@@ -198,14 +228,28 @@ public:
     CARAPI Mutate(
         /* [out] */ IDrawable** drawable);
 
+    // @Override
+    CARAPI IsStateful(
+        /* [out] */ Boolean* isStateful);
+
+    // @Override
+    CARAPI GetOutline(
+        /* [in] */ IOutline* outline);
+
 protected:
     CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ IShape* s);
 
+    /**
+     * The one constructor to rule them all. This is called by all public
+     * constructors to set the state and initialize local properties.
+     */
     CARAPI constructor(
-        /* [in] */ ShapeState* state);
+        /* [in] */ ShapeState* state,
+        /* [in] */ IResources* res,
+        /* [in] */ IResourcesTheme* theme);
 
     /**
      * Called from the drawable's draw() method after the canvas has been set
@@ -231,9 +275,15 @@ protected:
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IAttributeSet* attrs);
 
+    // @Override
+    CARAPI_(Boolean) OnStateChange(
+        /* [in] */ const ArrayOf<Int32>& stateSet);
+
 private:
     ShapeDrawable(
-        /* [in] */ ShapeState* state);
+        /* [in] */ ShapeState* state,
+        /* [in] */ IResources* res,
+        /* [in] */ IResourcesTheme* theme);
 
     static CARAPI_(Int32) ModulateAlpha(
         /* [in] */ Int32 paintAlpha,
@@ -241,8 +291,21 @@ private:
 
     CARAPI_(void) UpdateShape();
 
+    CARAPI UpdateStateFromTypedArray(
+        /* [in] */ ITypedArray* a);
+
+    /**
+     * Initializes local dynamic properties from state. This should be called
+     * after significant state changes, e.g. from the One True Constructor and
+     * after inflating or applying a theme.
+     */
+    CARAPI InitializeWithState(
+        /* [in] */ ShapeState* state,
+        /* [in] */ IResources* res);
+
 private:
     AutoPtr<ShapeState> mShapeState;
+    AutoPtr<IPorterDuffColorFilter> mTintFilter;
     Boolean mMutated;
 };
 
