@@ -1,4 +1,27 @@
-#include "CTimeFormatter.h"
+#include "elastos/droid/text/format/CTimeFormatter.h"
+#include "elastos/droid/content/res/CResourcesHelper.h"
+#include <elastos/core/AutoLock.h>
+
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IResourcesHelper;
+using Elastos::Droid::Content::Res::CResourcesHelper;
+using Libcore::ICU::ILocaleDataHelper;
+using Libcore::ICU::CLocaleDataHelper;
+using Elastos::Utility::CLocale;
+using Elastos::Utility::IFormatter;
+using Elastos::Utility::CFormatter;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::ITimeZone;
+using Elastos::IO::IBuffer;
+using Elastos::IO::ICharBufferHelper;
+// using Elastos::IO::CCharBufferHelper;
+using Elastos::Core::IAppendable;
+using Elastos::Core::IInteger32;
+using Elastos::Core::CInteger32;
+using Elastos::Core::EIID_IAppendable;
+using Elastos::Core::CString;
+
 
 namespace Elastos {
 namespace Droid {
@@ -26,98 +49,111 @@ CTimeFormatter::~CTimeFormatter()
 
 ECode CTimeFormatter::constructor()
 {
-    // synchronized (mLock) {
-    //     AutoPtr<ILocale> locale_;
-    //     CLocale::New((ILocale**)&locale_);
-    //     AutoPtr<ILocale> locale = locale_->GetDefault();
+    synchronized (mLock) {
 
-    //     Boolean isEqual = FALSE;
-    //     locale->Equals(IInterface::Probe(sLocale), &isEqual);
-    //     if (sLocale == null || !isEqual) {
-    //         sLocale = locale;
-    //         AutoPtr<ILocaleDataHelper> localeDataHelper;
-    //         CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper);
-    //         localeDataHelper->Get(locale, (ILocale**)&sLocaleData);
+        AutoPtr<ILocaleHelper> localeHelper;
+        CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
+        AutoPtr<ILocale> locale;
+        localeHelper->GetDefault((ILocale**)&locale);
 
-    //         AutoPtr<IResources> r;
-    //         AutoPtr<IResourcesHelper> resourcesHelper;
-    //         CResourcesHelper::AcquireSingleton((resourcesHelper**)&resourcesHelper);
-    //         resourcesHelper->GetSystem((IResources**)&r);
+        Boolean isEqual = FALSE;
+        locale->Equals(sLocale, &isEqual);
+        if (sLocale == NULL || !isEqual) {
+            sLocale = locale;
+            AutoPtr<ILocaleDataHelper> localeDataHelper;
+            CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper);
+            localeDataHelper->Get(locale, (ILocaleData**)&sLocaleData);
 
-    //         r->GetString(com.android.internal.R.string.time_of_day, &sTimeOnlyFormat)
-    //         r->GetString(com.android.internal.R.string.month_day_year, &sDateOnlyFormat)
-    //         r->GetString(com.android.internal.R.string.date_and_time, &sDateTimeFormat)
-    //     }
+            AutoPtr<IResources> r;
+            AutoPtr<IResourcesHelper> resourcesHelper;
+            CResourcesHelper::AcquireSingleton((IResourcesHelper**)&resourcesHelper);
+            resourcesHelper->GetSystem((IResources**)&r);
 
-    //     mDateTimeFormat = sDateTimeFormat;
-    //     mTimeOnlyFormat = sTimeOnlyFormat;
-    //     mDateOnlyFormat = sDateOnlyFormat;
-    //     mLocaleData = sLocaleData;
-    // }
+            assert(0 && "TODO");
+            // r->GetString(com.android.internal.R.string.time_of_day, &sTimeOnlyFormat);
+            // r->GetString(com.android.internal.R.string.month_day_year, &sDateOnlyFormat);
+            // r->GetString(com.android.internal.R.string.date_and_time, &sDateTimeFormat);
+        }
+
+        mDateTimeFormat = sDateTimeFormat;
+        mTimeOnlyFormat = sTimeOnlyFormat;
+        mDateOnlyFormat = sDateOnlyFormat;
+        mLocaleData = sLocaleData;
+    }
     return NOERROR;
 }
 
-String CTiemFormatter::Format(
+ECode CTimeFormatter::Format(
     /* [in] */ const String& pattern,
     /* [in] */ IZoneInfoWallTime* wallTime,
     /* [in] */ IZoneInfo* zoneInfo,
-    /* [out] */ String* result)
+    /* [out] */ String* ret)
 {
-    VALIDATE_NOT_NULL(result)
+    VALIDATE_NOT_NULL(ret)
     // try {
-    //   StringBuilder stringBuilder;
+    //java
+      // StringBuilder stringBuilder = new StringBuilder();
 
-    //   mOutputBuilder = stringBuilder;
-    //   // This uses the US locale because number localization is handled separately (see below)
-    //   // and locale sensitive strings are output directly using outputBuilder.
-    //   CFormatter::New(IAppendable::Probe(stringBuilder), CLocale::US, (IFormatter**)&mNumberFormatter);
+      // outputBuilder = stringBuilder;
+      StringBuilder stringBuilder;
 
-    //   FormatInternal(pattern, wallTime, zoneInfo);
-    //   String result;
-    //   stringBuilder.ToString(&result);
-    //   // This behavior is the source of a bug since some formats are defined as being
-    //   // in ASCII and not localized.
-    //   if (mLocaleData->mZeroDigit != '0') {
-    //     result = LocalizeDigits(result);
-    //   }
-    //   return result;
+      // This uses the US locale because number localization is handled separately (see below)
+      // and locale sensitive strings are output directly using outputBuilder.
+      AutoPtr<ILocaleHelper> localeHelper;
+      CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
+      AutoPtr<ILocale> us;
+      localeHelper->GetUS((ILocale**)&us);
+      CFormatter::New((IAppendable*)stringBuilder.Probe(EIID_IAppendable), us.Get(), (Elastos::Utility::IFormatter**)&mNumberFormatter);
+      FormatInternal(pattern, wallTime, zoneInfo);
+      String result;
+      stringBuilder.ToString(&result);
+      // This behavior is the source of a bug since some formats are defined as being
+      // in ASCII and not localized.
+      Char32 digit;
+      if ((mLocaleData->GetZeroDigit(&digit), digit) != '0') {
+        result = LocalizeDigits(result);
+      }
+      *ret = result;
+      return NOERROR;
     // } finally {
-    //   mOutputBuilder = NULL;
-    //   mNumberFormatter = NULL;
+      // mOutputBuilder = NULL;
+      // mNumberFormatter = NULL;
     // }
-
-    return String("");
 }
 
-String CTiemFormatter::LocalizeDigits(
+String CTimeFormatter::LocalizeDigits(
     /* [in] */ const String& s)
 {
     Int32 length = s.GetLength();
-    Int32 offsetToLocalizedDigits = mLocaleData->mZeroDigit - '0';
+
+    Char32 zrDigit;
+    mLocaleData->GetZeroDigit(&zrDigit);
+    Int32 offsetToLocalizedDigits = zrDigit - '0';
     AutoPtr<StringBuilder> result = new StringBuilder(length);
     for (Int32 i = 0; i < length; ++i) {
         Char32 ch = s.GetChar(i);
         if (ch >= '0' && ch <= '9') {
             ch += offsetToLocalizedDigits;
         }
-        result->Append(ch);
+        result->AppendChar(ch);
     }
-    return result->ToString();
 
+    return result->ToString();
 }
 
-ECode CTiemFormatter::FormatInternal(
+ECode CTimeFormatter::FormatInternal(
     /* [in] */ const String& pattern,
     /* [in] */ IZoneInfoWallTime* wallTime,
     /* [in] */ IZoneInfo* zoneInfo)
 {
     AutoPtr<ICharBufferHelper> formatBufferHelper;
-    CCharBufferHelper::AcquireSingleton((ICharBufferHelper**)&formatBufferHelper);
+    assert(0 && "TODO");
+    // CCharBufferHelper::AcquireSingleton((ICharBufferHelper**)&formatBufferHelper);
     AutoPtr<ArrayOf<Char32> > pattern_ = pattern.GetChars(0);
     AutoPtr<ICharBuffer> formatBuffer;
     formatBufferHelper->Wrap(pattern_, (ICharBuffer**)&formatBuffer);
     Int32 remaining;
-    IBuffer::Probe(formatBuffer)->GetRemaining(&remaining);
+    (IBuffer::Probe(formatBuffer))->GetRemaining(&remaining);
     Int32 position;
     Char32 currentChar;
     while (remaining > 0) {
@@ -131,15 +167,16 @@ ECode CTiemFormatter::FormatInternal(
         if (outputCurrentChar) {
             IBuffer::Probe(formatBuffer)->GetPosition(&position);
             formatBuffer->GetCharAt(position, &currentChar);
-            mOutputBuilder->Append(currentChar);
+            mOutputBuilder.AppendChar(currentChar);
         }
-        formatBuffer->GetPosition(&position);
-        AutoPtr<IBuffer> out;
-        return formatBuffer->Position(position + 1, (IBuffer**)&out);
+        IBuffer::Probe(formatBuffer)->GetPosition(&position);
+
+        return IBuffer::Probe(formatBuffer)->SetPosition(position + 1);
     }
+    return NOERROR;
 }
 
-Boolean CTiemFormatter::HandleToken(
+Boolean CTimeFormatter::HandleToken(
     /* [in] */ ICharBuffer* formatBuffer,
     /* [in] */ IZoneInfoWallTime* wallTime,
     /* [in] */ IZoneInfo* zoneInfo)
@@ -147,14 +184,13 @@ Boolean CTiemFormatter::HandleToken(
     // The char at formatBuffer.position() is expected to be '%' at this point.
     Int32 modifier = 0;
     Int32 remaining;
-    formatBuffer->GetRemaining(&remaining);
+    IBuffer::Probe(formatBuffer)->GetRemaining(&remaining);
     while (remaining > 1) {
         // Increment the position then get the new current char.
         Int32 position;
-        formatBuffer->GetPosition(&position);
-        AutoPtr<IBuffer> buffer;
-        formatBuffer->Position(position + 1, (IBuffer**)&buffer);
-        formatBuffer->GetPosition(&position);
+        IBuffer::Probe(formatBuffer)->GetPosition(&position);
+        IBuffer::Probe(formatBuffer)->SetPosition(position + 1);
+        IBuffer::Probe(formatBuffer)->GetPosition(&position);
         Char32 currentChar;
         formatBuffer->Get(position, &currentChar);
         Int32 weekDay;
@@ -165,63 +201,88 @@ Boolean CTiemFormatter::HandleToken(
         wallTime->GetYear(&year);
         Int32 monthDay;
         wallTime->GetMonthDay(&monthDay);
-        Int32 hour;
-        wallTime->GetHour(&hour);
+        Int32 wtHour;
+        wallTime->GetHour(&wtHour);
         Int32 minute;
         wallTime->GetMinute(&minute);
         Int32 second;
         wallTime->GetSecond(&second);
-        Int32 yearDay;
-        wallTime->GetYearDay(&yearDay);
+        Int32 wtYearDay;
+        wallTime->GetYearDay(&wtYearDay);
         Int32 iDst;
         wallTime->GetIsDst(&iDst);
+        AutoPtr<ArrayOf<String> > longWeekdayNames;
+        mLocaleData->GetLongWeekdayNames((ArrayOf<String>**)&longWeekdayNames);
+        AutoPtr<ArrayOf<String> > shortWeekdayNames;
+        mLocaleData->GetShortWeekdayNames((ArrayOf<String>**)&shortWeekdayNames);
+        AutoPtr<ArrayOf<String> > longStandAloneMonthNames;
+        mLocaleData->GetLongStandAloneWeekdayNames((ArrayOf<String>**)&longStandAloneMonthNames);
+        AutoPtr<ArrayOf<String> > longMonthNames;
+        mLocaleData->GetLongMonthNames((ArrayOf<String>**)&longMonthNames);
+        AutoPtr<ArrayOf<String> > shortMonthNames;
+        mLocaleData->GetShortMonthNames((ArrayOf<String>**)&shortMonthNames);
+
+        AutoPtr<ICharSequence> questionMark;
+        CString::New(String("?"), (ICharSequence**)&questionMark);
+        AutoPtr<ArrayOf<IInterface*> > array = ArrayOf<IInterface*>::Alloc(1);
+
+        AutoPtr<ArrayOf<String> > amPm;
+        mLocaleData->GetAmPm((ArrayOf<String>**)&amPm);
+        AutoPtr<ICharSequence> tmpCs;
+        AutoPtr<IInteger32> integer;
         String format;
+        String outStr;
+        AutoPtr<ICharSequence> csOne;
+        AutoPtr<ICharSequence> csTwo;
+        CString::New((*amPm)[0], (ICharSequence**)&csOne);
+        CString::New((*amPm)[1], (ICharSequence**)&csTwo);
         switch (currentChar) {
             case 'A':
-                assert(0 && "TODO"); //Localedata
+                CString::New((*longWeekdayNames)[weekDay + 1], (ICharSequence**)&tmpCs);
                 ModifyAndAppend((weekDay < 0
                                 || weekDay >= DAYSPERWEEK)
-                                ? "?" : (*mLocaleData).longWeekdayNames[weekDay + 1],
-                        modifier);
+                                ? questionMark.Get() : tmpCs.Get(), modifier);
                 return FALSE;
             case 'a':
+                CString::New((*shortWeekdayNames)[weekDay + 1], (ICharSequence**)&tmpCs);
                 ModifyAndAppend((weekDay < 0
                                || weekDay >= DAYSPERWEEK)
-                               ? "?" : (*mLocaleData).shortWeekdayNames[weekDay + 1],
-                        modifier);
+                               ? questionMark.Get() : tmpCs.Get(), modifier);
                 return FALSE;
             case 'B':
                 if (modifier == '-') {
+                    CString::New((*longStandAloneMonthNames)[month], (ICharSequence**)&tmpCs);
                     ModifyAndAppend((month < 0
                                    || month >= MONSPERYEAR)
-                                   ? "?"
-                                   : (*mLocaleData).longStandAloneMonthNames[month],
-                            modifier);
+                                   ? questionMark.Get()
+                                   : tmpCs.Get(), modifier);
                } else {
+                    CString::New(const_cast<const String&>((*longMonthNames)[month]), (ICharSequence**)&tmpCs);
                     ModifyAndAppend((month < 0
                                    || month >= MONSPERYEAR)
-                                   ? "?" : (*mLocaleData).longMonthNames[month],
-                            modifier);
+                                   ? questionMark.Get() : tmpCs.Get(), modifier);
                }
                return FALSE;
            case 'b':
            case 'h':
+                CString::New((*shortMonthNames)[month], (ICharSequence**)&tmpCs);
                 ModifyAndAppend((month < 0 || month >= MONSPERYEAR)
-                               ? "?" : (*mLocaleData).shortMonthNames[month],
-                            modifier);
+                               ? questionMark.Get() : tmpCs.Get(), modifier);
                 return FALSE;
            case 'C':
                 OutputYear(year, TRUE, FALSE, modifier);
                 return FALSE;
            case 'c':
-                FormatInternal(dateTimeFormat, wallTime, zoneInfo);
+                FormatInternal(mDateTimeFormat, wallTime, zoneInfo);
                 return FALSE;
            case 'D':
-                FormatInternal("%m/%d/%y", wallTime, zoneInfo);
+                FormatInternal(String("%m/%d/%y"), wallTime, zoneInfo);
                 return FALSE;
            case 'd':
-                format = GetFormat(modifier, "%02d", "%2d", "%d", "%02d");
-                mNumberFormatter->Format(format, monthDay);
+                format = GetFormat(modifier, String("%02d"), String("%2d"), String("%d"), String("%02d"));
+                CInteger32::New(monthDay, (IInteger32**)&integer);
+                array->Set(0, integer);
+                mNumberFormatter->Format(format, array);
                 return FALSE;
            case 'E':
            case 'O':
@@ -235,82 +296,110 @@ Boolean CTiemFormatter::HandleToken(
                 modifier = currentChar;
                 continue;
            case 'e':
-                format = GetFormat(modifier, "%2d", "%2d", "%d", "%02d");
-                mNumberFormatter->Format(format, monthDay);
+                format = GetFormat(modifier, String("%2d"), String("%2d"), String("%d"), String("%02d"));
+                CInteger32::New(monthDay, (IInteger32**)&integer);
+                array->Set(0, integer);
+                mNumberFormatter->Format(format, array);
                 return FALSE;
            case 'F':
-                FormatInternal("%Y-%m-%d", wallTime, zoneInfo);
+                FormatInternal(String("%Y-%m-%d"), wallTime, zoneInfo);
                 return FALSE;
            case 'H':
-                format = GetFormat(modifier, "%02d", "%2d", "%d", "%02d");
-                mNumberFormatter->Format(format, hour);
+                format = GetFormat(modifier, String("%02d"), String("%2d"), String("%d"), String("%02d"));
+                CInteger32::New(wtHour, (IInteger32**)&integer);
+                array->Set(0, integer);
+                mNumberFormatter->Format(format, array);
                 return FALSE;
            case 'I':
-                Int32 hour = (hour % 12 != 0) ? (hour % 12) : 12;
-                format = GetFormat(modifier, "%02d", "%2d", "%d", "%02d");
-                mNumberFormatter->Format(format, hour);
+                Int32 hour;
+                hour = (wtHour % 12 != 0) ? (wtHour % 12) : 12;
+                format = GetFormat(modifier, String("%02d"), String("%2d"), String("%d"), String("%02d"));
+                CInteger32::New(hour, (IInteger32**)&integer);
+                array->Set(0, integer);
+                mNumberFormatter->Format(format, array);
                return FALSE;
            case 'j':
-                Int32 yearDay_ = yearDay + 1;
-                format = GetFormat(modifier, "%03d", "%3d", "%d", "%03d");
-                mNumberFormatter->Format(format, yearDay_);
+                Int32 yearDay;
+                yearDay = wtYearDay + 1;
+                format = GetFormat(modifier, String("%03d"), String("%3d"), String("%d"), String("%03d"));
+                CInteger32::New(yearDay, (IInteger32**)&integer);
+                array->Set(0, integer);
+                mNumberFormatter->Format(format, array);
                 return FALSE;
            case 'k':
-                format = GetFormat(modifier, "%2d", "%2d", "%d", "%02d");
-                mNumberFormatter->Format(format, hour);
+                format = GetFormat(modifier, String("%2d"), String("%2d"), String("%d"), String("%02d"));
+                CInteger32::New(wtHour, (IInteger32**)&integer);
+                array->Set(0, integer);
+                mNumberFormatter->Format(format, array);
                 return FALSE;
            case 'l':
-                Int32 n2 = (hour % 12 != 0) ? (hour % 12) : 12;
-                format = GetFormat(modifier, "%2d", "%2d", "%d", "%02d");
-                mNumberFormatter->Format(format, n2);
+                Int32 n2;
+                n2 = (wtHour % 12 != 0) ? (wtHour % 12) : 12;
+                format = GetFormat(modifier, String("%2d"), String("%2d"), String("%d"), String("%02d"));
+                CInteger32::New(n2, (IInteger32**)&integer);
+                array->Set(0, integer);
+                mNumberFormatter->Format(format, array);
                 return FALSE;
            case 'M':
-                format = GetFormat(modifier, "%02d", "%2d", "%d", "%02d");
-                mNumberFormatter->Format(format, minute);
+                format = GetFormat(modifier, String("%02d"), String("%2d"), String("%d"), String("%02d"));
+                CInteger32::New(minute, (IInteger32**)&integer);
+                array->Set(0, integer);
+                mNumberFormatter->Format(format, array);
                 return FALSE;
            case 'm':
-                format = GetFormat(modifier, "%02d", "%2d", "%d", "%02d");
-                mNumberFormatter->Format(format, month + 1);
+                format = GetFormat(modifier, String("%02d"), String("%2d"), String("%d"), String("%02d"));
+                CInteger32::New(month + 1, (IInteger32**)&integer);
+                array->Set(0, integer);
+                mNumberFormatter->Format(format, array);
                 return FALSE;
            case 'n':
-                mOutputBuilder->Append('\n');
+                mOutputBuilder.Append('\n');
                 return FALSE;
            case 'p':
-                ModifyAndAppend((hour >= (HOURSPERDAY / 2)) ? (*mLocaleData).amPm[1]
-                       : (*mLocaleData).amPm[0], modifier);
+                ModifyAndAppend((hour >= (HOURSPERDAY / 2)) ? csTwo.Get()
+                       : csOne.Get(), modifier);
                 return FALSE;
            case 'P':
-                ModifyAndAppend((hour >= (HOURSPERDAY / 2)) ? (*mLocaleData).amPm[1]
-                       : (*mLocaleData).amPm[0], FORCE_LOWER_CASE);
+                ModifyAndAppend((hour >= (HOURSPERDAY / 2)) ? csTwo.Get()
+                       : csOne.Get(), FORCE_LOWER_CASE);
                 return FALSE;
            case 'R':
-                FormatInternal("%H:%M", wallTime, zoneInfo);
+                FormatInternal(String("%H:%M"), wallTime, zoneInfo);
                 return FALSE;
            case 'r':
-                FormatInternal("%I:%M:%S %p", wallTime, zoneInfo);
+                FormatInternal(String("%I:%M:%S %p"), wallTime, zoneInfo);
                 return FALSE;
            case 'S':
-                format = GetFormat(modifier, "%02d", "%2d", "%d", "%02d");
-                mNumberFormatter->Format(format, second);
+                format = GetFormat(modifier, String("%02d"), String("%2d"), String("%d"), String("%02d"));
+                CInteger32::New(second, (IInteger32**)&integer);
+                array->Set(0, integer);
+                mNumberFormatter->Format(format, array);
                 return FALSE;
            case 's':
                 Int32 timeInSeconds;
                 wallTime->Mktime(zoneInfo, &timeInSeconds);
-                mOutputBuilder->Append(Integer.toString(timeInSeconds));
+                CInteger32::New(timeInSeconds, (IInteger32**)&integer);
+                ((Object*)((CInteger32*)integer.Get()))->ToString(&outStr);
+                mOutputBuilder.Append(outStr);
                 return FALSE;
            case 'T':
-                FormatInternal("%H:%M:%S", wallTime, zoneInfo);
+                FormatInternal(String("%H:%M:%S"), wallTime, zoneInfo);
                 return FALSE;
            case 't':
-                mOutputBuilder->Append('\t');
+                mOutputBuilder.Append('\t');
                 return FALSE;
            case 'U':
-                format = GetFormat(modifier, "%02d", "%2d", "%d", "%02d");
-                mNumberFormatter->Format(format, (yearDay + DAYSPERWEEK - weekDay) / DAYSPERWEEK);
+                format = GetFormat(modifier, String("%02d"), String("%2d"), String("%d"), String("%02d"));
+                CInteger32::New((yearDay + DAYSPERWEEK - weekDay) / DAYSPERWEEK, (IInteger32**)&integer);
+                array->Set(0, integer);
+                mNumberFormatter->Format(format, array);
                 return FALSE;
            case 'u':
-                Int32 day = (weekDay == 0) ? DAYSPERWEEK : weekDay;
-                mNumberFormatter->Format("%d", day);
+                Int32 day;
+                day = (weekDay == 0) ? DAYSPERWEEK : weekDay;
+                CInteger32::New(day, (IInteger32**)&integer);
+                array->Set(0, integer);
+                mNumberFormatter->Format(String("%d"), array);
                 return FALSE;
            case 'V':   /* ISO 8601 week number */
            case 'G':   /* ISO 8601 year (four digits) */
@@ -344,8 +433,10 @@ Boolean CTiemFormatter::HandleToken(
                    yday += IsLeap(year) ? DAYSPERLYEAR : DAYSPERNYEAR;
                }
                if (currentChar == 'V') {
-                   format = GetFormat(modifier, "%02d", "%2d", "%d", "%02d");
-                   mNumberFormatter->Format(format, w);
+                   format = GetFormat(modifier, String("%02d"), String("%2d"), String("%d"), String("%02d"));
+                   CInteger32::New(w, (IInteger32**)&integer);
+                   array->Set(0, integer);
+                   mNumberFormatter->Format(format, array);
                } else if (currentChar == 'g') {
                    OutputYear(year, FALSE, TRUE, modifier);
                } else {
@@ -354,23 +445,28 @@ Boolean CTiemFormatter::HandleToken(
                return FALSE;
            }
            case 'v':
-               FormatInternal("%e-%b-%Y", wallTime, zoneInfo);
+               FormatInternal(String("%e-%b-%Y"), wallTime, zoneInfo);
                return FALSE;
            case 'W':
-               Int32 n = (yearDay + DAYSPERWEEK - (
+               Int32 n;
+               n = (wtYearDay + DAYSPERWEEK - (
                                weekDay != 0 ? (weekDay - 1)
-                                       : (DAYSPERWEEK - 1))) / DAYSPERWEEK;
-               format = GetFormat(modifier, "%02d", "%2d", "%d", "%02d");
-               mNumberFormatter->Format(format, n);
+                               : (DAYSPERWEEK - 1))) / DAYSPERWEEK;
+               format = GetFormat(modifier, String("%02d"), String("%2d"), String("%d"), String("%02d"));
+               CInteger32::New(n, (IInteger32**)&integer);
+               array->Set(0, integer);
+               mNumberFormatter->Format(format, array);
                return FALSE;
            case 'w':
-               mNumberFormatter->Format("%d", weekDay);
+               CInteger32::New(weekDay, (IInteger32**)&integer);
+               array->Set(0, integer);
+               mNumberFormatter->Format(String("%d"), array);
                return FALSE;
            case 'X':
-               FormatInternal(timeOnlyFormat, wallTime, zoneInfo);
+               FormatInternal(mTimeOnlyFormat, wallTime, zoneInfo);
                return FALSE;
            case 'x':
-               FormatInternal(dateOnlyFormat, wallTime, zoneInfo);
+               FormatInternal(mDateOnlyFormat, wallTime, zoneInfo);
                return FALSE;
            case 'y':
                OutputYear(year, FALSE, TRUE, modifier);
@@ -382,8 +478,11 @@ Boolean CTiemFormatter::HandleToken(
                if (iDst < 0) {
                    return FALSE;
                }
-               boolean isDst = isDst != 0;
-               ModifyAndAppend(ITimeZone::Probe(zoneInfo)->GetDisplayName(isDst, TimeZone.SHORT), modifier);
+               Boolean isDst;
+               isDst = iDst != 0;
+               ITimeZone::Probe(zoneInfo)->GetDisplayName(isDst, ITimeZone::SHORT, &outStr);
+               CString::New(outStr, (ICharSequence**)&tmpCs);
+               ModifyAndAppend(tmpCs.Get(), modifier);
                return FALSE;
            case 'z': {
                if (iDst < 0) {
@@ -398,19 +497,23 @@ Boolean CTiemFormatter::HandleToken(
                } else {
                    sign = '+';
                }
-               mOutputBuilder->Append(sign);
+               mOutputBuilder.AppendChar(sign);
                diff /= SECSPERMIN;
                diff = (diff / MINSPERHOUR) * 100 + (diff % MINSPERHOUR);
-               format = GetFormat(modifier, "%04d", "%4d", "%d", "%04d");
-               mNumberFormatter->Format(format, diff);
+               format = GetFormat(modifier, String("%04d"), String("%4d"), String("%d"), String("%04d"));
+               AutoPtr<IInteger32> integer;
+               CInteger32::New(diff, (IInteger32**)&integer);
+               array->Set(0, integer);
+               mNumberFormatter->Format(format, array);
                return FALSE;
            }
            case '+':
-               FormatInternal("%a %b %e %H:%M:%S %Z %Y", wallTime, zoneInfo);
+               FormatInternal(String("%a %b %e %H:%M:%S %Z %Y"), wallTime, zoneInfo);
                return FALSE;
            case '%':
                // If conversion char is undefined, behavior is undefined. Print out the
                // character itself.
+               return TRUE;
            default:
                return TRUE;
        }
@@ -430,12 +533,12 @@ ECode CTimeFormatter::ModifyAndAppend(
     case FORCE_LOWER_CASE:
         for (Int32 i = 0; i < length; i++) {
             str->GetCharAt(i,&c);
-            mOutputBuilder.Append(BrokenToLower(c));
+            mOutputBuilder.AppendChar(BrokenToLower(c));
         }
         break;
     case '^':
         for (Int32 i = 0; i < length; i++) {
-            mOutputBuilder.Append(BrokenToUpper(c));
+            mOutputBuilder.AppendChar(BrokenToUpper(c));
         }
         break;
     case '#':
@@ -446,7 +549,7 @@ ECode CTimeFormatter::ModifyAndAppend(
             } else if (BrokenIsLower(c)) {
                 c = BrokenToUpper(c);
             }
-            mOutputBuilder.Append(c);
+            mOutputBuilder.AppendChar(c);
         }
         break;
     default:
@@ -474,17 +577,29 @@ ECode CTimeFormatter::OutputYear(
         trail -= DIVISOR;
         ++lead;
     }
+
+    const String& s1 = String("%02d");
+    const String& s2 = String("%2d");
+    const String& s3 = String("%d");
+    const String& s4 = String("%02d");
+    AutoPtr<IInteger32> tmp;
+AutoPtr<ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
     if (outputTop) {
         if (lead == 0 && trail < 0) {
-            mOutputBuilder->Append("-0");
+            mOutputBuilder.Append("-0");
         } else {
-            mNumberFormatter->Format(GetFormat(modifier, "%02d", "%2d", "%d", "%02d"), lead);
+          CInteger32::New(lead, (IInteger32**)&tmp);
+          args->Set(0, tmp);
+          mNumberFormatter->Format(GetFormat(modifier, s1, s2, s3, s4), args);
         }
     }
     if (outputBottom) {
         Int32 n = ((trail < 0) ? -trail : trail);
-        mNumberFormatter->Format(GetFormat(modifier, "%02d", "%2d", "%d", "%02d"), n);
+        CInteger32::New(n, (IInteger32**)&tmp);
+        args->Set(0, tmp);
+        mNumberFormatter->Format(GetFormat(modifier, s1, s2, s3, s4), args);
     }
+    return NOERROR;
 }
 
 String CTimeFormatter::GetFormat(

@@ -28,6 +28,10 @@ public:
     static CARAPI_(Boolean) Is24HourFormat(
         /* [in] */ IContext* context);
 
+    static CARAPI_(String) GetBestDateTimePattern(
+        /* [in] */ ILocale* locale,
+        /* [in] */ String skeleton);
+
     /**
      * Returns a {@link java.text.DateFormat} object that can format the time according
      * to the current locale and the user's 12-/24-hour clock preference.
@@ -96,8 +100,9 @@ public:
      * not just the day, month, and year, and not necessarily in the same
      * order returned here.
      */
-    static CARAPI_(AutoPtr< ArrayOf<Char32> >) GetDateFormatOrder(
-        /* [in] */ IContext* context);
+    static CARAPI GetDateFormatOrder(
+        /* [in] */ IContext* context,
+        /* [out] */ ArrayOf<Char32>** ret);
 
     /**
      * Given a format string and a time in milliseconds since Jan 1, 1970 GMT, returns a
@@ -140,6 +145,21 @@ public:
         /* [in] */ ICharSequence* inFormat);
 
     /**
+     * Indicates whether the specified format string contains seconds.
+     *
+     * Always returns false if the input format is null.
+     *
+     * @param inFormat the format string, as described in {@link android.text.format.DateFormat}
+     *
+     * @return true if the format string contains {@link #SECONDS}, false otherwise
+     *
+     * @hide
+     */
+    static CARAPI_(Boolean) HasDesignator(
+        /* [in] */ ICharSequence* inFormat,
+        /* [in] */ Char32 designator);
+
+    /**
      * Given a format string and a {@link java.util.Calendar} object, returns a CharSequence
      * containing the requested date.
      * @param inFormat the format string, as described in {@link android.text.format.DateFormat}
@@ -166,6 +186,12 @@ private:
     static CARAPI_(String) GetDayOfWeekString(
         /* [in] */ ILocaleData* ld,
         /* [in] */ Int32 day,
+        /* [in] */ Int32 count,
+        /* [in] */ Int32 kind);
+
+    static CARAPI_(String) GetMonthString(
+        /* [in] */ ILocaleData* ld,
+        /* [in] */ Int32 month,
         /* [in] */ Int32 count,
         /* [in] */ Int32 kind);
 

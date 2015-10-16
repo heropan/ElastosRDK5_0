@@ -2,6 +2,8 @@
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/text/format/CDateFormat.h"
 
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IConfiguration;
 using Libcore::ICU::IICUUtil;
 using Libcore::ICU::CICUUtil;
 using Libcore::ICU::ILocaleData;
@@ -33,7 +35,8 @@ ECode CDateFormat::GetBestDateTimePattern(
 {
     AutoPtr<IICUUtil> icu;
     CICUUtil::AcquireSingleton((IICUUtil**)&icu);
-    return icu->GetBestDateTimePattern(skeleton, locale);
+    String ret;
+    return icu->GetBestDateTimePattern(skeleton, locale, &ret);
 }
 
 ECode CDateFormat::GetTimeFormat(
@@ -122,7 +125,8 @@ ECode CDateFormat::GetDateFormatOrder(
     /* [out, callee] */ ArrayOf<Char32>** order)
 {
     VALIDATE_NOT_NULL(order);
-    AutoPtr< ArrayOf<Char32> > o =DateFormat::GetDateFormatOrder(context);
+    AutoPtr< ArrayOf<Char32> > o;
+    DateFormat::GetDateFormatOrder(context, (ArrayOf<Char32>**)&o);
     *order = o;
     REFCOUNT_ADD(*order);
     return NOERROR;

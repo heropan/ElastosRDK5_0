@@ -1,5 +1,5 @@
 #include "elastos/droid/text/format/DateUtils.h"
-// #include "elastos/droid/text/format/DateFormat.h"
+#include "elastos/droid/text/format/DateFormat.h"
 // #include "elastos/droid/text/format/CTime.h"
 #include "elastos/droid/content/res/CResourcesHelper.h"
 #include "elastos/droid/content/res/CResources.h"
@@ -704,32 +704,31 @@ AutoPtr<Elastos::Utility::IFormatter> DateUtils::FormatDateRange(
     /* [in] */ Int32 flags,
     /* [in] */ const String& timeZone)
 {
-    assert(0 && "TODO");
     // If we're being asked to format a time without being explicitly told whether to use
     // the 12- or 24-hour clock, icu4c will fall back to the locale's preferred 12/24 format,
     // but we want to fall back to the user's preference.
-    // if ((flags & (IDateUtils::FORMAT_SHOW_TIME
-    //     | IDateUtils::FORMAT_12HOUR
-    //     | IDateUtils::FORMAT_24HOUR))
-    //     == IDateUtils::FORMAT_SHOW_TIME) {
-    //     flags |= DateFormat::Is24HourFormat(context)
-    //           ? IDateUtils::FORMAT_24HOUR
-    //           : IDateUtils::FORMAT_12HOUR;
-    // }
+    if ((flags & (IDateUtils::FORMAT_SHOW_TIME
+        | IDateUtils::FORMAT_12HOUR
+        | IDateUtils::FORMAT_24HOUR))
+        == IDateUtils::FORMAT_SHOW_TIME) {
+        flags |= DateFormat::Is24HourFormat(context)
+              ? IDateUtils::FORMAT_24HOUR
+              : IDateUtils::FORMAT_12HOUR;
+    }
 
-    // AutoPtr<IDateIntervalFormat> dIntervalFormat;
-    // CDateIntervalFormat::AcquireSingleton((IDateIntervalFormat**)&dIntervalFormat);
-    // String range;
-    // dIntervalFormat->FormatDateRange(startMillis, endMillis, flags, timeZone, &range);
+    AutoPtr<IDateIntervalFormat> dIntervalFormat;
+    CDateIntervalFormat::AcquireSingleton((IDateIntervalFormat**)&dIntervalFormat);
+    String range;
+    dIntervalFormat->FormatDateRange(startMillis, endMillis, flags, timeZone, &range);
     // try {
-    //     AutoPtr<IAppendable> appendable;
-    //     formatter->GetOut((IAppendable**)&appendable);
-    //     AutoPtr<ICharSequence> cs;
-    //     CString::New(range, (ICharSequence**)&cs);
-    //     appendable->Append(cs);
+        AutoPtr<IAppendable> appendable;
+        formatter->GetOut((IAppendable**)&appendable);
+        AutoPtr<ICharSequence> cs;
+        CString::New(range, (ICharSequence**)&cs);
+        appendable->Append(cs);
     // } catch () {
-    //     // throw new AssertionError(impossible);
-    //     // return E_ASSERTION_ERROR;
+        // throw new AssertionError(impossible);
+        // return E_ASSERTION_ERROR;
     // }
     return formatter;
 }

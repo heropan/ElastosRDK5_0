@@ -2,25 +2,31 @@
 #include "elastos/droid/text/format/DateFormat.h"
 #include "elastos/droid/text/format/CDateUtils.h"
 #include "elastos/droid/text/CSpannedString.h"
-#include "elastos/droid/text/CSpannableStringBuilder.h"
-#include "elastos/droid/provider/Settings.h"
+// #include "elastos/droid/text/CSpannableStringBuilder.h"
+// #include "elastos/droid/provider/Settings.h"
+// #include "elastos/droid/provider/CSettingsSystem.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/StringBuilder.h>
 #include <Elastos.CoreLibrary.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/Object.h>
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IConfiguration;
-using Elastos::Droid::Provider::Settings;
+// using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Provider::ISettingsSystem;
+// using Elastos::Droid::Internal::Widget::ILockSettings;
 using Elastos::Droid::Text::ISpannableStringBuilder;
-using Elastos::Droid::Text::CSpannableStringBuilder;
+// using Elastos::Droid::Text::CSpannableStringBuilder;
 using Elastos::Droid::Text::ISpannedString;
 using Elastos::Droid::Text::CSpannedString;
+using Elastos::Droid::Text::IEditable;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
 using Elastos::Text::IDateFormatHelper;
 using Elastos::Text::CDateFormatHelper;
 using Elastos::Text::ISimpleDateFormat;
@@ -31,6 +37,13 @@ using Elastos::Utility::ICalendar;
 using Elastos::Utility::IGregorianCalendar;
 using Elastos::Utility::CGregorianCalendar;
 using Elastos::Utility::ITimeZone;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
+using Libcore::ICU::ILocaleDataHelper;
+using Libcore::ICU::CLocaleDataHelper;
+using Libcore::ICU::CLocaleData;
+using Libcore::ICU::IICUUtil;
+using Libcore::ICU::CICUUtil;
 
 namespace Elastos {
 namespace Droid {
@@ -44,10 +57,14 @@ Boolean DateFormat::sIs24Hour = FALSE;
 Boolean DateFormat::Is24HourFormat(
     /* [in] */ IContext* context)
 {
+    VALIDATE_NOT_NULL(context)
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
+    AutoPtr<ISettingsSystem> settingsSystem;
+    assert(0 && "TODO");
+    // CSettingsSystem::New((ISettingsSystem**)&settingsSystem);
     String value;
-    Settings::System::GetString(resolver, ISettingsSystem::TIME_12_24, &value);
+    settingsSystem->GetString(resolver, ISettingsSystem::TIME_12_24, &value);
 
     if (value.IsNull()) {
         AutoPtr<IResources> res;
@@ -56,8 +73,7 @@ Boolean DateFormat::Is24HourFormat(
         res->GetConfiguration((IConfiguration**)&config);
         AutoPtr<ILocale> locale;
         config->GetLocale((ILocale**)&locale);
-
-        synchronized(sLocaleLock){
+        synchronized(sLocaleLock) {
             Boolean bIs24HourLocale;
             if (sIs24HourLocale != NULL &&
                     (sIs24HourLocale->Equals(locale, &bIs24HourLocale), bIs24HourLocale)) {
@@ -96,6 +112,17 @@ Boolean DateFormat::Is24HourFormat(
     return value.Equals("24");
 }
 
+String DateFormat::GetBestDateTimePattern(
+    /* [in] */ ILocale* locale,
+    /* [in] */ String skeleton)
+{
+    AutoPtr<IICUUtil> icu;
+    CICUUtil::AcquireSingleton((IICUUtil**)&icu);
+    String ret;
+    icu->GetBestDateTimePattern(skeleton, locale, &ret);
+    return ret;
+}
+
 AutoPtr<Elastos::Text::IDateFormat> DateFormat::GetTimeFormat(
     /* [in] */ IContext* context)
 {
@@ -110,8 +137,11 @@ AutoPtr<Elastos::Text::IDateFormat> DateFormat::GetDateFormat(
 {
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
+    AutoPtr<ISettingsSystem> settingsSystem;
+    assert(0 && "TODO");
+    // CSettingsSystem::New((ISettingsSystem**)&settingsSystem);
     String value;
-    Settings::System::GetString(resolver, ISettingsSystem::DATE_FORMAT, &value);
+    settingsSystem->GetString(resolver, ISettingsSystem::DATE_FORMAT, &value);
     return GetDateFormatForSetting(context, value);
 }
 
@@ -170,16 +200,20 @@ String DateFormat::GetDateFormatStringForSetting(
 
     // The setting is not set; use the locale's default.
     AutoPtr<IResources> resources;
-    context->GetResources(IResources**(&resources));
+    context->GetResources((IResources**)&resources);
     AutoPtr<IConfiguration> config;
-    resources->GetConfiguration(IConfiguration**(&config));
+    resources->GetConfiguration((IConfiguration**)&config);
     AutoPtr<ILocale> locale;
-    config->GetLocale(ILocale**(&locale));
+    config->GetLocale((ILocale**)&locale);
+    AutoPtr<ILocaleDataHelper> localeDataHelper;
+    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper);
     AutoPtr<ILocaleData> d;
-    LocaleData::Get(locale, (ILocaleData**)&d);
-
-    assert(0&&"TODO"); //localeData::mshorDateFormat4
-  //  return d->GetShortDateFormat4();
+    localeDataHelper->Get(locale, (ILocaleData**)&d);
+    assert(0 && "TODO");
+    // String ret;
+    // d->GetShortDateFormat4(&ret);
+    // return ret;
+    return String("");
 }
 
 AutoPtr<Elastos::Text::IDateFormat> DateFormat::GetLongDateFormat(
@@ -202,10 +236,15 @@ AutoPtr<Elastos::Text::IDateFormat> DateFormat::GetMediumDateFormat(
     return df;
 }
 
-AutoPtr< ArrayOf<Char32> > DateFormat::GetDateFormatOrder(
-    /* [in] */ IContext* context)
+ECode DateFormat::GetDateFormatOrder(
+    /* [in] */ IContext* context,
+    /* [out] */ ArrayOf<Char32>** ret)
 {
-    return Libcore::ICU::GetDateFormatOrder(GetDateFormatString(context));
+    VALIDATE_NOT_NULL(ret)
+    AutoPtr<IICUUtil> icu;
+    CICUUtil::AcquireSingleton((IICUUtil**)&icu);
+    AutoPtr<ArrayOf<Char32> > locales;
+    return icu->GetDateFormatOrder(GetDateFormatString(context), ret);
 }
 
 String DateFormat::GetDateFormatString(
@@ -213,8 +252,11 @@ String DateFormat::GetDateFormatString(
 {
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
+    AutoPtr<ISettingsSystem> settingsSystem;
+    assert(0 && "TODO");
+    // CSettingsSystem::New((ISettingsSystem**)&settingsSystem);
     String value;
-    Settings::System::GetString(resolver, ISettingsSystem::DATE_FORMAT, &value);
+    settingsSystem->GetString(resolver, ISettingsSystem::DATE_FORMAT, &value);
     return GetDateFormatStringForSetting(context, value);
 }
 
@@ -255,12 +297,12 @@ AutoPtr<ICharSequence> DateFormat::Format(
 Boolean DateFormat::HasSeconds(
     /* [in] */ ICharSequence* inFormat)
 {
-    return HasDesignator(inFormat, SECONDS);
+    return HasDesignator(inFormat, IDateFormat::SECONDS);
 }
 
 Boolean DateFormat::HasDesignator(
     /* [in] */ ICharSequence* inFormat,
-    /* [in] */ Char32* designator)
+    /* [in] */ Char32 designator)
 {
     if (inFormat == NULL) return FALSE;
 
@@ -327,7 +369,7 @@ AutoPtr<ICharSequence> DateFormat::Format(
     /* [in] */ ICalendar* inDate)
 {
     AutoPtr<ISpannableStringBuilder> s;
-    CSpannableStringBuilder::New(inFormat, (ISpannableStringBuilder**)&s);
+    // CSpannableStringBuilder::New(inFormat, (ISpannableStringBuilder**)&s);
     Int32 count;
 
     AutoPtr<ILocaleHelper> localeHelper;
@@ -346,17 +388,17 @@ AutoPtr<ICharSequence> DateFormat::Format(
         Int32 temp;
 
         count = 1;
-        Int32 c;
-        s->GetCharAt(i, &c);
+        Char32 c;
+        ICharSequence::Probe(s)->GetCharAt(i, &c);
 
         if (c == Elastos::Droid::Text::Format::IDateFormat::QUOTE) {
             count = AppendQuotedText(s, i, len);
-            s->GetLength(&len);
+            ICharSequence::Probe(s)->GetLength(&len);
             continue;
         }
 
         Char32 cc;
-        while ((i + count < len) && (s->GetCharAt(i + count, &cc), cc == c)) {
+        while ((i + count < len) && (ICharSequence::Probe(s)->GetCharAt(i + count, &cc), cc == c)) {
             count++;
         }
 
@@ -367,9 +409,9 @@ AutoPtr<ICharSequence> DateFormat::Format(
             case 'a':
                 {
                     inDate->Get(ICalendar::AM_PM, &temp);
-                    ArrayOf<String> amPm;
+                    AutoPtr<ArrayOf<String> > amPm;
                     localeData->GetAmPm((ArrayOf<String>**)&amPm);
-                    replacement = amPm[temp - ICalendar::AM];
+                    replacement = (*amPm)[temp - ICalendar::AM];
                 }
                 break;
             case 'd':
@@ -430,7 +472,7 @@ AutoPtr<ICharSequence> DateFormat::Format(
                 break;
             case 's':
                 {
-                    inDate->Get(ICalendar::SECONDS, &temp);
+                    inDate->Get(ICalendar::SECOND, &temp);
                     replacement = ZeroPad(temp, count);
                 }
                 break;
@@ -445,34 +487,29 @@ AutoPtr<ICharSequence> DateFormat::Format(
                     replacement = GetTimeZoneString(inDate, count);
                 }
                 break;
-            }
-            case Elastos::Droid::Text::Format::IDateFormat::YEAR: {
-                replacement = GetYearString(inDate, count);
-                break;
-            }
             default:
                 replacement = NULL;
                 break;
-        }
+            }
 
         if (!replacement.IsNull()) {
-            s->Replace(i, i + count, replacement);
+            AutoPtr<ICharSequence> cs;
+            CString::New(replacement, (ICharSequence**)&cs);
+            IEditable::Probe(s)->Replace(i, i + count, cs);
             count = replacement.GetLength(); // CARE: count is used in the for loop above
-            s->GetLength(&len);
+            ICharSequence::Probe(s)->GetLength(&len);
         }
     }
 
-    AutoPtr<ICharSequence> cseq;
     if (ISpanned::Probe(inFormat) != NULL) {
-        AutoPtr<ISpannedString> ss;
-        CSpannedString::New(s, (ISpannedString**)&ss);
-        cseq = ICharSequence::Probe(ss.Get());
+        AutoPtr<ICharSequence> cseq;
+        cseq = (ICharSequence*)ICharSequence::Probe(s);
+        AutoPtr<ISpannedString> spannedStr;
+        CSpannedString::New(cseq, (ISpannedString**)&spannedStr);
+        return (ICharSequence*)ICharSequence::Probe(spannedStr);
     } else {
-        String str;
-        s->ToString(&str);
-        CString::New(str, (ICharSequence**)&cseq);
+        return (ICharSequence*)ICharSequence::Probe(s);
     }
-    return cseq;
 }
 
 String DateFormat::GetDayOfWeekString(
@@ -487,59 +524,52 @@ String DateFormat::GetDayOfWeekString(
         ld->GetTinyStandAloneWeekdayNames((ArrayOf<String>**)&tsaWeekdayNames);
         AutoPtr<ArrayOf<String> > tWeekdayNames;
         ld->GetTinyWeekdayNames((ArrayOf<String>**)&tWeekdayNames);
-        return standalone ? tsaWeekdayNames[day] : tWeekdayNames[day];
+        return standalone ? (*tsaWeekdayNames)[day] : (*tWeekdayNames)[day];
 
     } else if (count == 4) {
         AutoPtr<ArrayOf<String> > lsaWeekdayNames;
         ld->GetLongStandAloneWeekdayNames((ArrayOf<String>**)&lsaWeekdayNames);
         AutoPtr<ArrayOf<String> > lWeekdayNames;
         ld->GetLongWeekdayNames((ArrayOf<String>**)&lWeekdayNames);
-        return standalone ? lsaWeekdayNames[day] : lWeekdayNames[day];
+        return standalone ? (*lsaWeekdayNames)[day] : (*lWeekdayNames)[day];
     } else {
         AutoPtr<ArrayOf<String> > ssaWeekdayNames;
         ld->GetShortStandAloneWeekdayNames((ArrayOf<String>**)&ssaWeekdayNames);
         AutoPtr<ArrayOf<String> > sWeekdayNames;
         ld->GetShortWeekdayNames((ArrayOf<String>**)&sWeekdayNames);
-        return standalone ? ssaWeekdayNames[day] : sWeekdayNames[day];
+        return standalone ? (*ssaWeekdayNames)[day] : (*sWeekdayNames)[day];
     }
 }
 
 String DateFormat::GetMonthString(
-    /* [in] */ ICalendar* inDate,
+    /* [in] */ ILocaleData* ld,
+    /* [in] */ Int32 month,
     /* [in] */ Int32 count,
     /* [in] */ Int32 kind)
 {
-    Boolean standalone = (kind == Elastos::Droid::Text::Format::IDateFormat::STANDALONE_MONTH);
-    Int32 month;
-    inDate->Get(ICalendar::MONTH, &month);
+    Boolean standalone = (kind == 'L');
+    AutoPtr<ArrayOf<String> > tsaMonthNames;
+    ld->GetTinyStandAloneMonthNames((ArrayOf<String>**)&tsaMonthNames);
+    AutoPtr<ArrayOf<String> > tMonthNames;
+    ld->GetTinyMonthNames((ArrayOf<String>**)&tMonthNames);
+    AutoPtr<ArrayOf<String> > lsaMonthNames;
+    ld->GetLongStandAloneMonthNames((ArrayOf<String>**)&lsaMonthNames);
+    AutoPtr<ArrayOf<String> > lMonthNames;
+    ld->GetLongMonthNames((ArrayOf<String>**)&lMonthNames);
+    AutoPtr<ArrayOf<String> > ssaMonthNames;
+    ld->GetShortStandAloneMonthNames((ArrayOf<String>**)&ssaMonthNames);
+    AutoPtr<ArrayOf<String> > sMonthNames;
+    ld->GetShortMonthNames((ArrayOf<String>**)&sMonthNames);
 
-    if (count >= 4) {
-        AutoPtr<IDateUtils> du;
-        CDateUtils::AcquireSingleton((IDateUtils**)&du);
-        String str;
-        if(standalone){
-            du->GetStandaloneMonthString(month, IDateUtils::LENGTH_LONG, &str);
-        }
-        else {
-            du->GetMonthString(month, IDateUtils::LENGTH_LONG, &str);
-        }
-        return str;
-    }
-    else if (count == 3) {
-        AutoPtr<IDateUtils> du;
-        CDateUtils::AcquireSingleton((IDateUtils**)&du);
-        String str;
-        if(standalone){
-            du->GetStandaloneMonthString(month, IDateUtils::LENGTH_MEDIUM, &str);
-        }
-        else {
-            du->GetMonthString(month, IDateUtils::LENGTH_MEDIUM, &str);
-        }
-        return str;
-    }
-    else {
+    if (count == 5) {
+        return standalone ? (*tsaMonthNames)[month] : (*tMonthNames)[month];
+    } else if (count == 4) {
+        return standalone ? (*lsaMonthNames)[month] : (*lMonthNames)[month];
+    } else if (count == 3) {
+        return standalone ? (*ssaMonthNames)[month] : (*sMonthNames)[month];
+    } else {
         // Calendar.JANUARY == 0, so add 1 to month.
-        return ZeroPad(month + 1, count);
+        return ZeroPad(month+1, count);
     }
 }
 
@@ -584,17 +614,15 @@ String DateFormat::FormatZoneOffset(
     Int32 hours = offset / 3600;
     Int32 minutes = (offset % 3600) / 60;
 
-    tb.AppendString(ZeroPad(hours, 2));
-    tb.AppendString(ZeroPad(minutes, 2));
+    tb.Append(ZeroPad(hours, 2));
+    tb.Append(ZeroPad(minutes, 2));
     return tb.ToString();
 }
 
 String DateFormat::GetYearString(
-    /* [in] */ Int32* year,
+    /* [in] */ Int32 year,
     /* [in] */ Int32 count)
 {
-    Int32 year;
-    inDate->Get(ICalendar::YEAR, &year);
     if(count <= 2) {
         return ZeroPad(year % 100, 2);
     }
@@ -603,9 +631,8 @@ String DateFormat::GetYearString(
         CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
         AutoPtr<ILocale> defaultLocale;
         localeHelper->GetDefault((ILocale**)&defaultLocale);
-        assert("TODO");
         //String.format(defaultLocale, "%d", year);
-        return StringUtils::Int32ToString(year);
+        return StringUtils::ToOctalString(year);
     }
 }
 
@@ -615,34 +642,34 @@ Int32 DateFormat::AppendQuotedText(
     /* [in] */ Int32 len)
 {
     Char32 cc;
-    if (i + 1 < len && (s->GetCharAt(i + 1, &cc),
+    if (i + 1 < len && (ICharSequence::Probe(s)->GetCharAt(i + 1, &cc),
             cc == Elastos::Droid::Text::Format::IDateFormat::QUOTE)) {
-        s->Delete(i, i + 1);
+        IEditable::Probe(s)->Delete(i, i + 1);
         return 1;
     }
 
     Int32 count = 0;
 
     // delete leading quote
-    s->Delete(i, i + 1);
+    IEditable::Probe(s)->Delete(i, i + 1);
     len--;
 
     while (i < len) {
         Char32 c;
-        s->GetCharAt(i, &c);
+        ICharSequence::Probe(s)->GetCharAt(i, &c);
 
         if (c == Elastos::Droid::Text::Format::IDateFormat::QUOTE) {
             //  QUOTEQUOTE -> QUOTE
-            if (i + 1 < len && (s->GetCharAt(i + 1, &cc),
+            if (i + 1 < len && (ICharSequence::Probe(s)->GetCharAt(i + 1, &cc),
                     cc == Elastos::Droid::Text::Format::IDateFormat::QUOTE)) {
-                s->Delete(i, i + 1);
+                IEditable::Probe(s)->Delete(i, i + 1);
                 len--;
                 count++;
                 i++;
             }
             else {
                 //  Closing QUOTE ends quoted text copying
-                s->Delete(i, i + 1);
+                IEditable::Probe(s)->Delete(i, i + 1);
                 break;
             }
         }

@@ -38,7 +38,7 @@ public:
         /* [in] */ const String& pattern,
         /* [in] */ IZoneInfoWallTime* wallTime,
         /* [in] */ IZoneInfo* zoneInfo,
-        /* [out] */ String* result);
+        /* [out] */ String* ret);
 
 private:
     CARAPI_(String) LocalizeDigits(
@@ -106,13 +106,13 @@ private:
     static String sDateOnlyFormat;
     static String sDateTimeFormat;
 
-    const AutoPtr<ILocaleData> mLocaleData;
-    const String mDateTimeFormat;
-    const String mTimeOnlyFormat;
-    const String mDateOnlyFormat;
+    /*const*/ AutoPtr<ILocaleData> mLocaleData;
+    /*const*/ String mDateTimeFormat;
+    /*const*/ String mTimeOnlyFormat;
+    /*const*/ String mDateOnlyFormat;
 
     StringBuilder mOutputBuilder;
-    AutoPtr<IFormatter> mNumberFormatter;
+    AutoPtr<Elastos::Utility::IFormatter> mNumberFormatter;
     Object mLock;
 };
 
