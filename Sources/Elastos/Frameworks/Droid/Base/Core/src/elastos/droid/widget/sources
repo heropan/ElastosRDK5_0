@@ -284,3 +284,5 @@ SOURCES += StackViewLayoutParams.cpp
 SOURCES += CStackViewLayoutParams.cpp
 SOURCES += ActivityChooserModel.cpp
 SOURCES += CActivityChooserModelHelper.cpp
+
+#LIBRARIES += internal/internal.lib
